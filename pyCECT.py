@@ -33,12 +33,6 @@ def main(argv):
     opts_dict['minPCFail'] = 3
     opts_dict['minRunFail'] = 2
     opts_dict['printVarTest'] = False
-    fp=np.zeros((opts_dict['nPC'],),dtype=np.float32)
-    fp[0]=0.30305
-    fp[1]=0.05069
-    fp[2]=0.005745
-    fp[3]=0.000435
-    fp[4]=5.0e-05
     # Call utility library getopt_parseconfig to parse the option keys
     # and save to the dictionary
     caller='CECT'

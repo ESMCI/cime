@@ -732,17 +732,19 @@ def comparePCAscores(new_scores,sigma_scores_gm,opts_dict):
         totalcount=totalcount+1
         sum_index.append(i+1)
 
+   false_positive=check_falsepositive(opts_dict,sum_index)
+   
    #If the length of sum_index is larger than min_PC_fail, the three runs failed
    if len(sum_index) >= opts_dict['minPCFail']:
       decision='FAILED'
    else:
       decision='PASSED'
    print ' '
-   print "Summary: "+str(totalcount)+" PC scores failed at least 2 runs: ",sum_index 
+   print "Summary: "+str(totalcount)+" PC scores failed at least "+str(opts_dict['minRunFail'])+" runs: ",sum_index 
    print ' '
    print 'These runs '+decision+' according to our testing criterion.'
-   if decision == 'FAILED':
-     print 'The probability of this test failing although everything functions correctly (false positive) is XX%.'
+   if decision == 'FAILED' and false_positive != 1.0:
+     print 'The probability of this test failing although everything functions correctly (false positive) is ',false_positive
    print ' '
    print ' '
 
@@ -825,4 +827,25 @@ def Random_pickup(ifiles):
 
     return new_ifiles
 
+#
+# Check the false positive rate
+#
+def check_falsepositive(opts_dict,sum_index):
 
+    fp=np.zeros((opts_dict['nPC'],),dtype=np.float32)
+    fp[0]=0.30305
+    fp[1]=0.05069
+    fp[2]=0.005745
+    fp[3]=0.000435
+    fp[4]=5.0e-05
+    nPC = 50
+    sigMul = 2
+    minPCFail = 3
+    minRunFail = 1
+
+    if (nPC == opts_dict['nPC']) and (sigMul == opts_dict['sigMul']) and (minPCFail == opts_dict['minPCFail']) and (minRunFail == opts_dict['minRunFail']):
+       false_positive=fp[len(sum_index)]
+    else:
+       false_positive=1.0
+
+    return false_positive
