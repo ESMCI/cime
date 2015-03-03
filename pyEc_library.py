@@ -731,6 +731,9 @@ def comparePCAscores(new_scores,sigma_scores_gm,opts_dict):
       if sum[i] >= opts_dict['minRunFail']:
         totalcount=totalcount+1
         sum_index.append(i+1)
+        num_run_less=False
+      else:
+        num_run_less=True
 
    false_positive=check_falsepositive(opts_dict,sum_index)
    
@@ -739,14 +742,19 @@ def comparePCAscores(new_scores,sigma_scores_gm,opts_dict):
       decision='FAILED'
    else:
       decision='PASSED'
-   print ' '
-   print "Summary: "+str(totalcount)+" PC scores failed at least "+str(opts_dict['minRunFail'])+" runs: ",sum_index 
-   print ' '
-   print 'These runs '+decision+' according to our testing criterion.'
-   if decision == 'FAILED' and false_positive != 1.0:
-     print 'The probability of this test failing although everything functions correctly (false positive) is ',false_positive
-   print ' '
-   print ' '
+   if not num_run_less:
+     print ' '
+     print "Summary: "+str(totalcount)+" PC scores failed at least "+str(opts_dict['minRunFail'])+" runs: ",sum_index 
+     print ' '
+     print 'These runs '+decision+' according to our testing criterion.'
+     if decision == 'FAILED' and false_positive != 1.0:
+       print 'The probability of this test failing although everything functions correctly (false positive) is ',false_positive
+     print ' '
+     print ' '
+   else:
+     print ' '
+     print 'The number of run files is less than minRunFail (=2), so we cannot determin an overall pass or fail.'
+     print ' ' 
 
    #Record the histogram of comp_array which value is one by the PCA scores
    for i in range(opts_dict['nPC']):
@@ -817,8 +825,11 @@ def Ec_usage():
 #
 # Random pick up three files out of a lot files
 #
-def Random_pickup(ifiles):
-    random_index=random.sample(range(0,len(ifiles)),3)
+def Random_pickup(ifiles,opts_dict):
+    if len(ifiles) > opts_dict['minRunFail']:
+      random_index=random.sample(range(0,len(ifiles)),3)
+    else:
+      random_index=range(len(ifiles))
     new_ifiles=[]
     for i in random_index:
        new_ifiles.append(ifiles[i])
@@ -841,7 +852,7 @@ def check_falsepositive(opts_dict,sum_index):
     nPC = 50
     sigMul = 2
     minPCFail = 3
-    minRunFail = 1
+    minRunFail = 2
 
     if (nPC == opts_dict['nPC']) and (sigMul == opts_dict['sigMul']) and (minPCFail == opts_dict['minPCFail']) and (minRunFail == opts_dict['minRunFail']):
        false_positive=fp[len(sum_index)]

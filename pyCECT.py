@@ -57,7 +57,7 @@ def main(argv):
     ifiles=[]
     in_files_temp=os.listdir(opts_dict['indir'])
     in_files=sorted(in_files_temp)
-    in_files_random=pyEc_library.Random_pickup(in_files)
+    in_files_random=pyEc_library.Random_pickup(in_files,opts_dict)
     for frun_file in in_files_random:
          if (os.path.isfile(opts_dict['indir'] +'/'+ frun_file)):
              ifiles.append(Nio.open_file(opts_dict['indir']+'/'+frun_file,"r"))
