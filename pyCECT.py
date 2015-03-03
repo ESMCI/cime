@@ -124,7 +124,7 @@ def main(argv):
   
     # Calculate the PCA scores of the new run
     new_scores=pyEc_library.standardized(means,mu_gm,sigma_gm,loadings_gm)
-    pyEc_library.comparePCAscores(new_scores,sigma_scores_gm,opts_dict)
+    pyEc_library.comparePCAscores(ifiles,new_scores,sigma_scores_gm,opts_dict)
 
     # Print out 
     if opts_dict['printVarTest']:

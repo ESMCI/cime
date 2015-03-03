@@ -705,7 +705,7 @@ def evaluatestatus(name,rangename,variables,key,results,thefile):
 #
 # Evaluate if the new run PCA scores pass or fail by comparing with the PCA scores of the ensemble summary
 #
-def comparePCAscores(new_scores,sigma_scores_gm,opts_dict):
+def comparePCAscores(ifiles,new_scores,sigma_scores_gm,opts_dict):
 
    comp_array=np.zeros(new_scores.shape,dtype=np.int32)
    sum=np.zeros(new_scores.shape[0],dtype=np.int32)
@@ -726,14 +726,16 @@ def comparePCAscores(new_scores,sigma_scores_gm,opts_dict):
          #Only check the first nPC number of scores, and sum comp_array together
          sum[i]=sum[i]+comp_array[i][j]   
        
+
+   if len(ifiles) >= opts_dict['minRunFail']:
+     num_run_less = False
+   else:
+     num_run_less = True
    #Check to see if sum is larger than min_run_fail, if so save the index of the sum
    for i in range(opts_dict['nPC']):
       if sum[i] >= opts_dict['minRunFail']:
         totalcount=totalcount+1
         sum_index.append(i+1)
-        num_run_less=False
-      else:
-        num_run_less=True
 
    false_positive=check_falsepositive(opts_dict,sum_index)
    
@@ -742,13 +744,13 @@ def comparePCAscores(new_scores,sigma_scores_gm,opts_dict):
       decision='FAILED'
    else:
       decision='PASSED'
-   if not num_run_less:
+   if num_run_less == False:
      print ' '
      print "Summary: "+str(totalcount)+" PC scores failed at least "+str(opts_dict['minRunFail'])+" runs: ",sum_index 
      print ' '
      print 'These runs '+decision+' according to our testing criterion.'
      if decision == 'FAILED' and false_positive != 1.0:
-       print 'The probability of this test failing although everything functions correctly (false positive) is ',false_positive
+       print 'The probability of this test failing although everything functions correctly (false positive) is '+'{0:5.2f}'.format(false_positive*100)+'%.'
      print ' '
      print ' '
    else:
@@ -855,7 +857,7 @@ def check_falsepositive(opts_dict,sum_index):
     minRunFail = 2
 
     if (nPC == opts_dict['nPC']) and (sigMul == opts_dict['sigMul']) and (minPCFail == opts_dict['minPCFail']) and (minRunFail == opts_dict['minRunFail']):
-       false_positive=fp[len(sum_index)]
+       false_positive=fp[len(sum_index)-1]
     else:
        false_positive=1.0
 
