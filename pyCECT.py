@@ -4,7 +4,7 @@ import sys,getopt,os
 import numpy as np
 import Nio
 import time
-import pyEc_library
+import pyEnsLib
 from datetime import datetime
 
 #This routine compares the results of several 3 new cam tests
@@ -20,7 +20,7 @@ def main(argv):
     try:
         opts, args = getopt.getopt(argv,"h",optkeys)
     except getopt.GetoptError:
-        pyEc_library.CECT_usage()
+        pyEnsLib.CECT_usage()
         sys.exit(2)
   
     
@@ -36,7 +36,7 @@ def main(argv):
     # Call utility library getopt_parseconfig to parse the option keys
     # and save to the dictionary
     caller='CECT'
-    opts_dict = pyEc_library.getopt_parseconfig(opts,optkeys,caller,opts_dict)
+    opts_dict = pyEnsLib.getopt_parseconfig(opts,optkeys,caller,opts_dict)
     #axasprint opts_dict
 
     # Print out timestamp, input ensemble file and new run directory
@@ -57,7 +57,7 @@ def main(argv):
     ifiles=[]
     in_files_temp=os.listdir(opts_dict['indir'])
     in_files=sorted(in_files_temp)
-    in_files_random=pyEc_library.Random_pickup(in_files,opts_dict)
+    in_files_random=pyEnsLib.Random_pickup(in_files,opts_dict)
     for frun_file in in_files_random:
          if (os.path.isfile(opts_dict['indir'] +'/'+ frun_file)):
              ifiles.append(Nio.open_file(opts_dict['indir']+'/'+frun_file,"r"))
@@ -68,15 +68,15 @@ def main(argv):
 
  
     # Read all variables from the ensemble summary file
-    ens_var_name,ens_avg,ens_stddev,ens_rmsz,ens_gm,num_3d,mu_gm,sigma_gm,loadings_gm,sigma_scores_gm=pyEc_library.read_ensemble_summary(opts_dict['sumfile']) 
+    ens_var_name,ens_avg,ens_stddev,ens_rmsz,ens_gm,num_3d,mu_gm,sigma_gm,loadings_gm,sigma_scores_gm=pyEnsLib.read_ensemble_summary(opts_dict['sumfile']) 
 
     # Add ensemble rmsz and global mean to the dictionary "variables"
     variables={}
     for k,v in ens_rmsz.iteritems():
-      pyEc_library.addvariables(variables,k,'zscoreRange',v)
+      pyEnsLib.addvariables(variables,k,'zscoreRange',v)
 
     for k,v in ens_gm.iteritems():
-      pyEc_library.addvariables(variables,k,'gmRange',v)
+      pyEnsLib.addvariables(variables,k,'gmRange',v)
 
     # Get 3d variable name list and 2d variable name list seperately
     var_name3d=[]
@@ -88,7 +88,7 @@ def main(argv):
         var_name2d.append(v)
 
     # Get ncol and nlev value
-    npts3d,npts2d,is_SE=pyEc_library.get_ncol_nlev(ifiles[0])
+    npts3d,npts2d,is_SE=pyEnsLib.get_ncol_nlev(ifiles[0])
  
     # Compare the new run and the ensemble summary file to get rmsz score
     results={}
@@ -98,33 +98,33 @@ def main(argv):
 	 otimeSeries = fid.variables 
 	 for var_name in ens_var_name: 
 	      orig=otimeSeries[var_name]
-	      Zscore,has_zscore=pyEc_library.calculate_raw_score(var_name,orig[opts_dict['timeslice']],npts3d,npts2d,ens_avg,ens_stddev,is_SE) 
+	      Zscore,has_zscore=pyEnsLib.calculate_raw_score(var_name,orig[opts_dict['timeslice']],npts3d,npts2d,ens_avg,ens_stddev,is_SE) 
 	      if has_zscore:
 		  #print var_name, Zscore,'f'+str(fcount)
 		  # Add the new run rmsz zscore to the dictionary "results"
-		  pyEc_library.addresults(results,'zscore',Zscore,var_name,'f'+str(fcount))
+		  pyEnsLib.addresults(results,'zscore',Zscore,var_name,'f'+str(fcount))
 
 
     # Evaluate the new run rmsz score if is in the range of the ensemble summary rmsz zscore range
     for fcount,fid in enumerate(ifiles):
-       countzscore[fcount]=pyEc_library.evaluatestatus('zscore','zscoreRange',variables,'ens',results,'f'+str(fcount))
+       countzscore[fcount]=pyEnsLib.evaluatestatus('zscore','zscoreRange',variables,'ens',results,'f'+str(fcount))
 
     # Calculate the new run global mean
-    mean3d,mean2d=pyEc_library.generate_global_mean_for_summary(ifiles,var_name3d,var_name2d,opts_dict['timeslice'],is_SE,verbose)
+    mean3d,mean2d=pyEnsLib.generate_global_mean_for_summary(ifiles,var_name3d,var_name2d,opts_dict['timeslice'],is_SE,verbose)
     means=np.concatenate((mean3d,mean2d),axis=0)
 
     # Add the new run global mean to the dictionary "results"
     for i in range(means.shape[1]):
       for j in range(means.shape[0]):
-	 pyEc_library.addresults(results,'means',means[j][i],ens_var_name[j],'f'+str(i))
+	 pyEnsLib.addresults(results,'means',means[j][i],ens_var_name[j],'f'+str(i))
 
     # Evaluate the new run global mean if it is in the range of the ensemble summary global mean range
     for fcount,fid in enumerate(ifiles):
-       countgm[fcount]=pyEc_library.evaluatestatus('means','gmRange',variables,'gm',results,'f'+str(fcount))
+       countgm[fcount]=pyEnsLib.evaluatestatus('means','gmRange',variables,'gm',results,'f'+str(fcount))
   
     # Calculate the PCA scores of the new run
-    new_scores=pyEc_library.standardized(means,mu_gm,sigma_gm,loadings_gm)
-    pyEc_library.comparePCAscores(ifiles,new_scores,sigma_scores_gm,opts_dict)
+    new_scores=pyEnsLib.standardized(means,mu_gm,sigma_gm,loadings_gm)
+    pyEnsLib.comparePCAscores(ifiles,new_scores,sigma_scores_gm,opts_dict)
 
     # Print out 
     if opts_dict['printVarTest']:
@@ -136,10 +136,10 @@ def main(argv):
 	print 'Run '+str(fcount+1)+":"
 	print ' '
 	print '***'+str(countzscore[fcount])," of "+str(len(ens_var_name))+' variables are outside of ensemble RMSZ distribution***'
-	pyEc_library.printsummary(results,'ens','zscore','zscoreRange',(fcount),variables,'RMSZ')
+	pyEnsLib.printsummary(results,'ens','zscore','zscoreRange',(fcount),variables,'RMSZ')
 	print ' '
 	print '***'+str(countgm[fcount])," of "+str(len(ens_var_name))+' variables are outside of ensemble global mean distribution***'
-	pyEc_library.printsummary(results,'gm','means','gmRange',fcount,variables,'global mean')
+	pyEnsLib.printsummary(results,'gm','means','gmRange',fcount,variables,'global mean')
 	print ' '
 	print '----------------------------------------------------------------------------'
 
