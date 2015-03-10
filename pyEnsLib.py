@@ -821,6 +821,7 @@ def EnsSum_usage():
     print '   --jsonfile <fname>   : Jsonfile to provide that a list of variables that will be excluded  (no default)'
     print '   --mpi_enable         : Enable mpi mode if True'
     print '   --maxnorm            : Enable to generate max norm ensemble files'
+    print '   --gmonly             : Only generate global_mean and its related variables'
     print '   '
     print 'Version 0.1'
 
