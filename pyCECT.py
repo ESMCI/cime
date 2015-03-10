@@ -14,7 +14,7 @@ from datetime import datetime
 def main(argv):
 
 
-    #get command line stuff and store in a dictionary
+    # Get command line stuff and store in a dictionary
     s='verbose sumfile= indir= timeslice= nPC= sigMul= minPCFail= minRunFail= printVarTest'
     optkeys = s.split()
     try:
@@ -25,7 +25,7 @@ def main(argv):
   
     
     # Set the default value for options
-    opts_dict={}
+    opts_dict = {}
     opts_dict['timeslice'] = 1
     opts_dict['nPC'] = 50
     opts_dict['sigMul'] = 2
@@ -35,9 +35,9 @@ def main(argv):
     opts_dict['printVarTest'] = False
     # Call utility library getopt_parseconfig to parse the option keys
     # and save to the dictionary
-    caller='CECT'
+    caller = 'CECT'
+    gmonly = False
     opts_dict = pyEnsLib.getopt_parseconfig(opts,optkeys,caller,opts_dict)
-    #axasprint opts_dict
 
     # Print out timestamp, input ensemble file and new run directory
     dt=datetime.now()
@@ -70,13 +70,16 @@ def main(argv):
     # Read all variables from the ensemble summary file
     ens_var_name,ens_avg,ens_stddev,ens_rmsz,ens_gm,num_3d,mu_gm,sigma_gm,loadings_gm,sigma_scores_gm=pyEnsLib.read_ensemble_summary(opts_dict['sumfile']) 
 
+    if len(ens_rmsz) == 0:
+        gmonly = True
     # Add ensemble rmsz and global mean to the dictionary "variables"
     variables={}
-    for k,v in ens_rmsz.iteritems():
-      pyEnsLib.addvariables(variables,k,'zscoreRange',v)
+    if not gmonly:
+	for k,v in ens_rmsz.iteritems():
+	    pyEnsLib.addvariables(variables,k,'zscoreRange',v)
 
     for k,v in ens_gm.iteritems():
-      pyEnsLib.addvariables(variables,k,'gmRange',v)
+        pyEnsLib.addvariables(variables,k,'gmRange',v)
 
     # Get 3d variable name list and 2d variable name list seperately
     var_name3d=[]
@@ -94,20 +97,20 @@ def main(argv):
     results={}
     countzscore=np.zeros(len(ifiles),dtype=np.int32)
     countgm=np.zeros(len(ifiles),dtype=np.int32)
-    for fcount,fid in enumerate(ifiles): 
-	 otimeSeries = fid.variables 
-	 for var_name in ens_var_name: 
-	      orig=otimeSeries[var_name]
-	      Zscore,has_zscore=pyEnsLib.calculate_raw_score(var_name,orig[opts_dict['timeslice']],npts3d,npts2d,ens_avg,ens_stddev,is_SE) 
-	      if has_zscore:
-		  #print var_name, Zscore,'f'+str(fcount)
-		  # Add the new run rmsz zscore to the dictionary "results"
-		  pyEnsLib.addresults(results,'zscore',Zscore,var_name,'f'+str(fcount))
+    if not gmonly:
+	for fcount,fid in enumerate(ifiles): 
+	    otimeSeries = fid.variables 
+	    for var_name in ens_var_name: 
+		orig=otimeSeries[var_name]
+		Zscore,has_zscore=pyEnsLib.calculate_raw_score(var_name,orig[opts_dict['timeslice']],npts3d,npts2d,ens_avg,ens_stddev,is_SE) 
+		if has_zscore:
+		    # Add the new run rmsz zscore to the dictionary "results"
+		    pyEnsLib.addresults(results,'zscore',Zscore,var_name,'f'+str(fcount))
 
 
-    # Evaluate the new run rmsz score if is in the range of the ensemble summary rmsz zscore range
-    for fcount,fid in enumerate(ifiles):
-       countzscore[fcount]=pyEnsLib.evaluatestatus('zscore','zscoreRange',variables,'ens',results,'f'+str(fcount))
+	# Evaluate the new run rmsz score if is in the range of the ensemble summary rmsz zscore range
+	for fcount,fid in enumerate(ifiles):
+	    countzscore[fcount]=pyEnsLib.evaluatestatus('zscore','zscoreRange',variables,'ens',results,'f'+str(fcount))
 
     # Calculate the new run global mean
     mean3d,mean2d=pyEnsLib.generate_global_mean_for_summary(ifiles,var_name3d,var_name2d,opts_dict['timeslice'],is_SE,verbose)
@@ -115,12 +118,12 @@ def main(argv):
 
     # Add the new run global mean to the dictionary "results"
     for i in range(means.shape[1]):
-      for j in range(means.shape[0]):
-	 pyEnsLib.addresults(results,'means',means[j][i],ens_var_name[j],'f'+str(i))
+        for j in range(means.shape[0]):
+	    pyEnsLib.addresults(results,'means',means[j][i],ens_var_name[j],'f'+str(i))
 
     # Evaluate the new run global mean if it is in the range of the ensemble summary global mean range
     for fcount,fid in enumerate(ifiles):
-       countgm[fcount]=pyEnsLib.evaluatestatus('means','gmRange',variables,'gm',results,'f'+str(fcount))
+        countgm[fcount]=pyEnsLib.evaluatestatus('means','gmRange',variables,'gm',results,'f'+str(fcount))
   
     # Calculate the PCA scores of the new run
     new_scores=pyEnsLib.standardized(means,mu_gm,sigma_gm,loadings_gm)
@@ -128,20 +131,21 @@ def main(argv):
 
     # Print out 
     if opts_dict['printVarTest']:
-      print '*********************************************** '
-      print 'Variable-based testing (for reference only - not used to determine pass/fail)'
-      print '*********************************************** '
-      for fcount,fid in enumerate(ifiles):
-	print ' '
-	print 'Run '+str(fcount+1)+":"
-	print ' '
-	print '***'+str(countzscore[fcount])," of "+str(len(ens_var_name))+' variables are outside of ensemble RMSZ distribution***'
-	pyEnsLib.printsummary(results,'ens','zscore','zscoreRange',(fcount),variables,'RMSZ')
-	print ' '
-	print '***'+str(countgm[fcount])," of "+str(len(ens_var_name))+' variables are outside of ensemble global mean distribution***'
-	pyEnsLib.printsummary(results,'gm','means','gmRange',fcount,variables,'global mean')
-	print ' '
-	print '----------------------------------------------------------------------------'
+	print '*********************************************** '
+	print 'Variable-based testing (for reference only - not used to determine pass/fail)'
+	print '*********************************************** '
+	for fcount,fid in enumerate(ifiles):
+	    print ' '
+	    print 'Run '+str(fcount+1)+":"
+	    print ' '
+	    if not gmonly:
+		print '***'+str(countzscore[fcount])," of "+str(len(ens_var_name))+' variables are outside of ensemble RMSZ distribution***'
+		pyEnsLib.printsummary(results,'ens','zscore','zscoreRange',(fcount),variables,'RMSZ')
+		print ' '
+	    print '***'+str(countgm[fcount])," of "+str(len(ens_var_name))+' variables are outside of ensemble global mean distribution***'
+	    pyEnsLib.printsummary(results,'gm','means','gmRange',fcount,variables,'global mean')
+	    print ' '
+	    print '----------------------------------------------------------------------------'
 
 if __name__ == "__main__":
     main(sys.argv[1:])

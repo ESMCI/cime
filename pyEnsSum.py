@@ -17,7 +17,7 @@ def main(argv):
     print 'Running pyEnsSum!'
 
     # Get command line stuff and store in a dictionary
-    s = 'tag= compset= esize= tslice= res= sumfile= indir= mach= verbose jsonfile= mpi_enable maxnorm'
+    s = 'tag= compset= esize= tslice= res= sumfile= indir= mach= verbose jsonfile= mpi_enable maxnorm gmonly'
     optkeys = s.split()
     try: 
         opts, args = getopt.getopt(argv, "h", optkeys)
@@ -41,6 +41,7 @@ def main(argv):
     opts_dict['verbose'] = True
     opts_dict['mpi_enable'] = False
     opts_dict['maxnorm'] = False
+    opts_dict['gmonly'] = False
 
     # This creates the dictionary of input arguments 
     opts_dict = pyEnsLib.getopt_parseconfig(opts,optkeys,'Ec',opts_dict)
@@ -267,18 +268,19 @@ def main(argv):
 	v_vars = nc_sumfile.create_variable("vars", 'S1', ('nvars', 'str_size'))
 	v_var3d = nc_sumfile.create_variable("var3d", 'S1', ('nvars3d', 'str_size'))
 	v_var2d = nc_sumfile.create_variable("var2d", 'S1', ('nvars2d', 'str_size'))
-	if (is_SE == True):
-	    v_ens_avg3d = nc_sumfile.create_variable("ens_avg3d", 'f', ('nvars3d', 'nlev', 'ncol'))
-	    v_ens_stddev3d = nc_sumfile.create_variable("ens_stddev3d", 'f', ('nvars3d', 'nlev', 'ncol'))
-	    v_ens_avg2d = nc_sumfile.create_variable("ens_avg2d", 'f', ('nvars2d', 'ncol'))
-	    v_ens_stddev2d = nc_sumfile.create_variable("ens_stddev2d", 'f', ('nvars2d', 'ncol'))
-	else:
-	    v_ens_avg3d = nc_sumfile.create_variable("ens_avg3d", 'f', ('nvars3d', 'nlev', 'nlat', 'nlon'))
-	    v_ens_stddev3d = nc_sumfile.create_variable("ens_stddev3d", 'f', ('nvars3d', 'nlev', 'nlat', 'nlon'))
-	    v_ens_avg2d = nc_sumfile.create_variable("ens_avg2d", 'f', ('nvars2d', 'nlat', 'nlon'))
-	    v_ens_stddev2d = nc_sumfile.create_variable("ens_stddev2d", 'f', ('nvars2d', 'nlat', 'nlon'))
+        if not opts_dict['gmonly']:
+	    if (is_SE == True):
+		v_ens_avg3d = nc_sumfile.create_variable("ens_avg3d", 'f', ('nvars3d', 'nlev', 'ncol'))
+		v_ens_stddev3d = nc_sumfile.create_variable("ens_stddev3d", 'f', ('nvars3d', 'nlev', 'ncol'))
+		v_ens_avg2d = nc_sumfile.create_variable("ens_avg2d", 'f', ('nvars2d', 'ncol'))
+		v_ens_stddev2d = nc_sumfile.create_variable("ens_stddev2d", 'f', ('nvars2d', 'ncol'))
+	    else:
+		v_ens_avg3d = nc_sumfile.create_variable("ens_avg3d", 'f', ('nvars3d', 'nlev', 'nlat', 'nlon'))
+		v_ens_stddev3d = nc_sumfile.create_variable("ens_stddev3d", 'f', ('nvars3d', 'nlev', 'nlat', 'nlon'))
+		v_ens_avg2d = nc_sumfile.create_variable("ens_avg2d", 'f', ('nvars2d', 'nlat', 'nlon'))
+		v_ens_stddev2d = nc_sumfile.create_variable("ens_stddev2d", 'f', ('nvars2d', 'nlat', 'nlon'))
 
-	v_RMSZ = nc_sumfile.create_variable("RMSZ", 'f', ('nvars', 'ens_size'))
+	    v_RMSZ = nc_sumfile.create_variable("RMSZ", 'f', ('nvars', 'ens_size'))
 	v_gm = nc_sumfile.create_variable("global_mean", 'f', ('nvars', 'ens_size'))
 	v_loadings_gm = nc_sumfile.create_variable('loadings_gm','f',('nvars','nvars'))
 	v_mu_gm = nc_sumfile.create_variable('mu_gm','f',('nvars',))
@@ -347,7 +349,8 @@ def main(argv):
     # Calculate RMSZ scores  
     if (verbose == True):
         print "Calculating RMSZ scores ....."
-    zscore3d,zscore2d,ens_avg3d,ens_stddev3d,ens_avg2d,ens_stddev2d=pyEnsLib.calc_rmsz(o_files,o_files[0],var3_list_loc,var2_list_loc,tslice,is_SE,verbose)    
+    if not opts_dict['gmonly']:
+        zscore3d,zscore2d,ens_avg3d,ens_stddev3d,ens_avg2d,ens_stddev2d=pyEnsLib.calc_rmsz(o_files,o_files[0],var3_list_loc,var2_list_loc,tslice,is_SE,verbose)    
 
     # Calculate max norm ensemble
     if opts_dict['maxnorm']:
@@ -363,13 +366,14 @@ def main(argv):
 	# Gather global means 3d results
 	gm3d=gather_npArray(gm3d,me,slice_index,(len(d3_var_names),len(o_files)))
 
-	# Gather zscore3d results
-	zscore3d=gather_npArray(zscore3d,me,slice_index,(len(d3_var_names),len(o_files)))
+	if not opts_dict['gmonly']:
+	    # Gather zscore3d results
+	    zscore3d=gather_npArray(zscore3d,me,slice_index,(len(d3_var_names),len(o_files)))
 
-	# Gather ens_avg3d and ens_stddev3d results
-	shape_tuple3d=get_shape(ens_avg3d.shape,len(d3_var_names),me.get_rank())
-	ens_avg3d=gather_npArray(ens_avg3d,me,slice_index,shape_tuple3d) 
-	ens_stddev3d=gather_npArray(ens_stddev3d,me,slice_index,shape_tuple3d) 
+	    # Gather ens_avg3d and ens_stddev3d results
+	    shape_tuple3d=get_shape(ens_avg3d.shape,len(d3_var_names),me.get_rank())
+	    ens_avg3d=gather_npArray(ens_avg3d,me,slice_index,shape_tuple3d) 
+	    ens_stddev3d=gather_npArray(ens_stddev3d,me,slice_index,shape_tuple3d) 
 
 	# Gather 2d variable results from all processors to the master processor
 	slice_index=get_stride_list(len(d2_var_names),me)
@@ -377,35 +381,38 @@ def main(argv):
 	# Gather global means 2d results
 	gm2d=gather_npArray(gm2d,me,slice_index,(len(d2_var_names),len(o_files)))
 
-	# Gather zscore2d results
-	zscore2d=gather_npArray(zscore2d,me,slice_index,(len(d2_var_names),len(o_files)))
+	if not opts_dict['gmonly']:
+	    # Gather zscore2d results
+	    zscore2d=gather_npArray(zscore2d,me,slice_index,(len(d2_var_names),len(o_files)))
 
-	# Gather ens_avg3d and ens_stddev2d results
-	shape_tuple2d=get_shape(ens_avg2d.shape,len(d2_var_names),me.get_rank())
-	ens_avg2d=gather_npArray(ens_avg2d,me,slice_index,shape_tuple2d) 
-	ens_stddev2d=gather_npArray(ens_stddev2d,me,slice_index,shape_tuple2d) 
+	    # Gather ens_avg3d and ens_stddev2d results
+	    shape_tuple2d=get_shape(ens_avg2d.shape,len(d2_var_names),me.get_rank())
+	    ens_avg2d=gather_npArray(ens_avg2d,me,slice_index,shape_tuple2d) 
+	    ens_stddev2d=gather_npArray(ens_stddev2d,me,slice_index,shape_tuple2d) 
 
     # Assign to file:
     if me.get_rank() == 0:
 	gmall=np.concatenate((gm3d,gm2d),axis=0)
-	Zscoreall=np.concatenate((zscore3d,zscore2d),axis=0)
 	mu_gm,sigma_gm,standardized_global_mean,loadings_gm,scores_gm=pyEnsLib.pre_PCA(gmall)
-	v_RMSZ[:,:]=Zscoreall[:,:]
+	if not opts_dict['gmonly']:
+	    Zscoreall=np.concatenate((zscore3d,zscore2d),axis=0)
+	    v_RMSZ[:,:]=Zscoreall[:,:]
 	v_gm[:,:]=gmall[:,:]
 	v_mu_gm[:]=mu_gm[:]
 	v_sigma_gm[:]=sigma_gm[:].astype(np.float32)
 	v_loadings_gm[:,:]=loadings_gm[:,:]
 	v_sigma_scores_gm[:]=scores_gm[:]
-	if (is_SE == True):
-	    v_ens_avg3d[:,:,:]=ens_avg3d[:,:,:]
-	    v_ens_stddev3d[:,:,:]=ens_stddev3d[:,:,:]
-	    v_ens_avg2d[:,:]=ens_avg2d[:,:]
-	    v_ens_stddev2d[:,:]=ens_stddev2d[:,:]
-	else:
-	    v_ens_avg3d[:,:,:,:]=ens_avg3d[:,:,:,:]
-	    v_ens_stddev3d[:,:,:,:]=ens_stddev3d[:,:,:,:]
-	    v_ens_avg2d[:,:,:]=ens_avg2d[:,:,:]
-	    v_ens_stddev2d[:,:,:]=ens_stddev2d[:,:,:]
+	if not opts_dict['gmonly']:
+	    if (is_SE == True):
+		v_ens_avg3d[:,:,:]=ens_avg3d[:,:,:]
+		v_ens_stddev3d[:,:,:]=ens_stddev3d[:,:,:]
+		v_ens_avg2d[:,:]=ens_avg2d[:,:]
+		v_ens_stddev2d[:,:]=ens_stddev2d[:,:]
+	    else:
+		v_ens_avg3d[:,:,:,:]=ens_avg3d[:,:,:,:]
+		v_ens_stddev3d[:,:,:,:]=ens_stddev3d[:,:,:,:]
+		v_ens_avg2d[:,:,:]=ens_avg2d[:,:,:]
+		v_ens_stddev2d[:,:,:]=ens_stddev2d[:,:,:]
 	print "All Done"
 
 #
