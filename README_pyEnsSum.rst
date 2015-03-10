@@ -73,6 +73,9 @@ Examples for generating summary files:
            To enable parallel mode:
             --mpi_enable    
 
+           To generate global_mean and related variables:
+            --gmonly
+
 	   This yields the following command:
 
            mpirun.lsf python  pyEnsSum.py --verbose --esize 151 --tslice 1 --indir /glade/u/tdd/asap/verification/cesm1_3_beta11/sz151-yellowstone-intel/ --tag cesm1_3_beta11 --sumfile intel_test.nc --jsonfile ens_excluded_varlist.json --mpi_enable
