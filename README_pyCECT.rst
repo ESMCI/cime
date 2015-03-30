@@ -39,11 +39,15 @@ Examples for generating consistency results:
 
 	    -sumfile  ens.summary.nc
 
-	    and specifying the directory path that contains at least 3 runs:
+	    and specifying the directory path that contains at runs:
 	    
 	    -indir  /glade/u/tdd/asap/verification/cesm1_3_beta11/mira
        	    
+            specifying the number of run files (default is 3) in the indir that will be picked up:
+
+            -numRunFile 5
+
 	    yields the following command:
 
-	    python pyCECT.py --sumfile  ens.summary.nc --indir  /glade/u/tdd/asap/verification/cesm1_3_beta11/mira
+	    python pyCECT.py --sumfile  ens.summary.nc --indir  /glade/u/tdd/asap/verification/cesm1_3_beta11/mira -numRunFile 5
        	    
