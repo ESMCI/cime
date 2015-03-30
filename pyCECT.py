@@ -15,7 +15,7 @@ def main(argv):
 
 
     # Get command line stuff and store in a dictionary
-    s='verbose sumfile= indir= timeslice= nPC= sigMul= minPCFail= minRunFail= printVarTest'
+    s='verbose sumfile= indir= timeslice= nPC= sigMul= minPCFail= minRunFail= numRunFile= printVarTest'
     optkeys = s.split()
     try:
         opts, args = getopt.getopt(argv,"h",optkeys)
@@ -32,6 +32,7 @@ def main(argv):
     opts_dict['verbose'] = False
     opts_dict['minPCFail'] = 3
     opts_dict['minRunFail'] = 2
+    opts_dict['numRunFile'] = 3
     opts_dict['printVarTest'] = False
     # Call utility library getopt_parseconfig to parse the option keys
     # and save to the dictionary

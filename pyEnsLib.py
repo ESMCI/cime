@@ -765,7 +765,7 @@ def comparePCAscores(ifiles,new_scores,sigma_scores_gm,opts_dict):
            if comp_array[i][j] == 1:
               index_list.append(j+1)
        if len(index_list) > 0:
-          print "PC "+str(i)+": failed "+str(len(index_list))+" runs ",index_list
+          print "PC "+str(i+1)+": failed "+str(len(index_list))+" runs ",index_list
    print ' '
 
    #Record the index of comp_array which value is one
@@ -796,6 +796,7 @@ def CECT_usage():
     print '   --sigMul   <num>        : number of standard deviations away from the mean defining the "acceptance region" (default = 2)'
     print '   --minPCFail <num>       : minimum number of PCs that must fail the specified number of runs for a FAILURE (default = 3)'
     print '   --minRunFail <num>      : minimum number of runs that <minPCfail> PCs must fail for a FAILURE (default = 2)'
+    print '   --numRunFile <num.      : number of runs to include in test (default = 3)'
 
     print 'Version 0.1'
 
@@ -831,7 +832,7 @@ def EnsSum_usage():
 #
 def Random_pickup(ifiles,opts_dict):
     if len(ifiles) > opts_dict['minRunFail']:
-      random_index=random.sample(range(0,len(ifiles)),3)
+      random_index=random.sample(range(0,len(ifiles)),opts_dict['numRunFile'])
     else:
       random_index=range(len(ifiles))
     new_ifiles=[]
@@ -857,8 +858,9 @@ def check_falsepositive(opts_dict,sum_index):
     sigMul = 2
     minPCFail = 3
     minRunFail = 2
+    numRunFile = 3
 
-    if (nPC == opts_dict['nPC']) and (sigMul == opts_dict['sigMul']) and (minPCFail == opts_dict['minPCFail']) and (minRunFail == opts_dict['minRunFail']):
+    if (nPC == opts_dict['nPC']) and (sigMul == opts_dict['sigMul']) and (minPCFail == opts_dict['minPCFail']) and (minRunFail == opts_dict['minRunFail']) and (numRunFile == opts_dict['numRunFile']):
        false_positive=fp[len(sum_index)-1]
     else:
        false_positive=1.0

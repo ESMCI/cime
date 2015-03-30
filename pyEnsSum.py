@@ -60,7 +60,7 @@ def main(argv):
     # The var list that will be excluded
     ex_varlist=[]
 
-    # Create a mip simplecomm object
+    # Create a mpi simplecomm object
     if opts_dict['mpi_enable']:
         me=simplecomm.create_comm()
     else:
