@@ -44,9 +44,11 @@ Notes:
 
        Esize can be less than or equal to the number of files in "--indir".
 
-       Note that --res, --tag, --compset, and --mach only affect the metadata in the summary file.
+       Note that --res, --tag, --compset, and --mach only affect the metadata 
+       in the summary file.
 
-       Recommended number of cores to use is one for each 3D variable (current default number of 3D variables is 42). 
+       Recommended number of cores to use is one for each 3D variable (current 
+       default number of 3D variables is 42). 
 
 Examples for generating summary files:
 --------------------------------------
@@ -66,11 +68,13 @@ Examples for generating summary files:
 	   metadata of intel_summary.nc):
 	    --tag cesm1_3_beta11
 
-           We can exclude some variables from the analysis by specifying them in a json
-	   file:
+           We can exclude some variables from the analysis by specifying them 
+	   in a json file:
             --jsonfile ens_excluded_varlist.json
        
-           To generate only global_mean and related PCA loadings (i.e., exclude RMSZ and max-error calculations.  This speeds up the calculation and is useful for large ensemble sizes if RMSZ info is not needed.):
+           To generate only global_mean and related PCA loadings (i.e., exclude 
+	   RMSZ and max-error calculations.  This speeds up the calculation and 
+	   is useful for large ensemble sizes if RMSZ info is not needed.):
             --gmonly
 
  To enable parallel mode:
