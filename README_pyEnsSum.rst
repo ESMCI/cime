@@ -77,7 +77,7 @@ Examples for generating summary files:
 	   is useful for large ensemble sizes if RMSZ info is not needed.):
             --gmonly
 
- To enable parallel mode:
+           To enable parallel mode:
             --mpi_enable    
 
 	   This yields the following command:
