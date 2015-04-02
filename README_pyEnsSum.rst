@@ -2,7 +2,7 @@
 README.pyEnsSum
 ===============
 
-This package is used to create a summary file for a  collection 
+This package is used to create a summary file for a collection 
 (or ensemble) of runs. The user must specify the location of the input files.
 The summary file calculates global means, RMSZ scores, PCA loadings, and max errors.
 This summary file is required for pyCECT.py.
@@ -46,7 +46,7 @@ Notes:
 
        Note that --res, --tag, --compset, and --mach only affect the metadata in the summary file.
 
-       Recommended number of cores is 42. 
+       Recommended number of cores to use is one for each 3D variable (current default number of 3D variables is 42). 
 
 Examples for generating summary files:
 --------------------------------------
@@ -56,7 +56,7 @@ Examples for generating summary files:
 	    --esize 151
 	    --indir /glade/u/tdd/asap/verification/cesm1_3_beta11/sz151-yellowstone-intel/
 
-           We also specify the file to create for the summary:
+           We also specify the name of file to create for the summary:
  	    --sumfile intel_summary.nc 
 
 	   Since these are yearly average files, we set
@@ -70,15 +70,15 @@ Examples for generating summary files:
 	   file:
             --jsonfile ens_excluded_varlist.json
        
-           To enable parallel mode:
-            --mpi_enable    
-
-           To generate global_mean and related variables:
+           To generate only global_mean and related PCA loadings (i.e., exclude RMSZ and max-error calculations.  This speeds up the calculation and is useful for large ensemble sizes if RMSZ info is not needed.):
             --gmonly
+
+ To enable parallel mode:
+            --mpi_enable    
 
 	   This yields the following command:
 
-           mpirun.lsf python  pyEnsSum.py --verbose --esize 151 --tslice 1 --indir /glade/u/tdd/asap/verification/cesm1_3_beta11/sz151-yellowstone-intel/ --tag cesm1_3_beta11 --sumfile intel_test.nc --jsonfile ens_excluded_varlist.json --mpi_enable
+           mpirun.lsf python  pyEnsSum.py --verbose --esize 151 --tslice 1 --indir /glade/u/tdd/asap/verification/cesm1_3_beta11/sz151-yellowstone-intel/ --tag cesm1_3_beta11 --sumfile intel_test.nc --jsonfile ens_excluded_varlist.json --gmonly --mpi_enable 
 
 
 
