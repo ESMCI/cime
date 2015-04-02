@@ -9,7 +9,7 @@ from partition import EqualStride, Duplicate
 import simplecomm 
 import pyEnsLib
 
-#This routine creates a summary file from an ensemble of cam
+#This routine creates a summary file from an ensemble of CAM
 #output files
 
 def main(argv):
