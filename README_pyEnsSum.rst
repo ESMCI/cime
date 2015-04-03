@@ -7,6 +7,13 @@ This package is used to create a summary file for a collection
 The summary file calculates global means, RMSZ scores, PCA loadings, and max errors.
 This summary file is required for pyCECT.py.
 
+:AUTHORS: Haiying Xu, Allison Baker
+:VERSION: 1.0.0
+:COPYRIGHT: See the document entitled LICENSE.txt
+
+Send questions and comments to Haiying Xu (haiyingx@ucar.edu).
+
+
 This package includes:  
 ----------------------
      	pyEnsSum.py             
@@ -30,8 +37,10 @@ Before you start to use the package, you need to load the following modules:
        - module load numpy
        - module load scipy
        - module load pynio
-
-
+       - svn co https://proxy.subversion.ucar.edu/pubasap/pyTools/tags/v0.3 ASAPTool
+       Note: need to install asaptools from pyTools and setup PYTHONPATH by following 
+             the instruction at README.rst
+       
 To see all options (and defaults):
 ----------------------------------
        python pyEnsSum.py -h

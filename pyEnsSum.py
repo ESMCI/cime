@@ -5,8 +5,8 @@ import numpy as np
 import Nio 
 import time
 import re
-from partition import EqualStride, Duplicate
-import simplecomm 
+from asaptools.partition import EqualStride, Duplicate
+import asaptools.simplecomm as simplecomm 
 import pyEnsLib
 
 #This routine creates a summary file from an ensemble of CAM

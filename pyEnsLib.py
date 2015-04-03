@@ -798,7 +798,7 @@ def CECT_usage():
     print '   --minRunFail <num>      : minimum number of runs that <minPCfail> PCs must fail for a FAILURE (default = 2)'
     print '   --numRunFile <num>      : total number of runs to include in test (default = 3)'
 
-    print 'Version 0.1'
+    print 'Version 1.0.0'
 
 #
 # Command options for pyEnsSum.py
@@ -824,7 +824,7 @@ def EnsSum_usage():
     print '   --maxnorm            : Enable to generate max norm ensemble files'
     print '   --gmonly             : Only generate global_mean and PCA loadings (omit RMSZ information)'
     print '   '
-    print 'Version 0.1'
+    print 'Version 1.0.0'
 
 
 #
