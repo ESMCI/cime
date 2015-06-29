@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+
+<?xml-stylesheet type="text/xsl" href="setup_comp.xsl" ?>
+
+<setup name="XATM">
+
+  <variable
+     name="COMP_ATM" 
+     type="char"
+     valid_values="xatm"
+     value="xatm"  
+     group="case_comp"
+     sdesc="Name of atmosphere component">
+  </variable>
+
+</setup>

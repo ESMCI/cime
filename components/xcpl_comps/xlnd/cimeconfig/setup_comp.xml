@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+
+<?xml-stylesheet type="text/xsl" href="setup_comp.xsl" ?>
+
+<setup name="XLND">
+
+  <variable
+     name="COMP_LND" 
+     type="char"
+     valid_values="xlnd"
+     value="xlnd"  
+     group="case_comp"
+     sdesc="Name of land component">
+  </variable>
+
+</setup>

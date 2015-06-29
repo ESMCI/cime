@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+
+<?xml-stylesheet type="text/xsl" href="setup_comp.xsl" ?>
+
+<setup name="XWAV">
+
+  <variable
+     name="COMP_WAV" 
+     type="char"
+     valid_values="xwav"
+     value="xwav"  
+     group="case_comp"
+     sdesc="Name of wave component">
+  </variable>
+
+</setup>

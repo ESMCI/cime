@@ -1,0 +1,336 @@
+<?xml version="1.0"?>
+
+<?xml-stylesheet type="text/xsl" href="definitions_variables.xsl" ?>
+
+<definitions_variables> 
+
+  <entry id="PIO_CONFIG_OPTS"> 
+      <type>char</type>
+      <valid_values></valid_values>
+      <default_value></default_value>
+      <group>build_macros</group>
+      <desc>PIO configure options, see PIO configure utility for details</desc>
+  </entry>
+
+  <entry id="PIO_ASYNC_INTERFACE">
+    <type>logical</type>
+    <valid_values>TRUE,FALSE</valid_values>
+    <default_value>FALSE</default_value>
+    <group>run_pio</group>
+    <desc>TRUE implies perform asynchronous i/o</desc>
+  </entry> 
+
+  <entry id="PIO_STRIDE">
+      <type>integer</type>
+      <valid_values></valid_values> 
+      <default_value>4</default_value>
+      <group>run_pio</group>
+      <desc>mpi task stride between io tasks</desc>
+  </entry>
+
+  <entry id="PIO_ROOT">
+    <type>integer</type>
+    <valid_values></valid_values>
+    <default_value>1</default_value>
+    <group>run_pio</group>
+    <desc>pio root processor</desc>
+  </entry>
+
+  <entry id="PIO_NUMTASKS">
+      <type>integer</type>
+      <valid_values></valid_values> 
+      <default_value>-1</default_value>
+      <group>run_pio</group>
+      <desc>pio number of io tasks</desc>
+  </entry>
+
+  <entry id="PIO_TYPENAME">
+    <type>char</type>
+    <valid_values>netcdf,pnetcdf,netcdf4p,netcdf4c,default</valid_values>
+    <default_value>netcdf</default_value>
+    <group>run_pio</group>
+    <desc>pio io type</desc>
+  </entry> 
+
+  <entry id="PIO_DEBUG_LEVEL">
+      <type>integer</type>
+      <valid_values></valid_values>,1,2,3,4,5,6" 
+      <default_value>0</default_value>
+      <group>run_pio</group>
+      <desc>pio debug level</desc>
+  </entry>
+
+  <entry id="PIO_BLOCKSIZE">
+    <type>integer</type>
+    <valid_values></valid_values>
+    <default_value>-1</default_value>
+    <group>run_pio</group>
+    <desc>pio blocksize</desc>
+  </entry>
+
+  <entry id="PIO_BUFFER_SIZE_LIMIT">
+      <type>integer</type>
+      <valid_values></valid_values> 
+      <default_value>-1</default_value>
+      <group>run_pio</group>
+      <desc>pio buffer size limit</desc>
+  </entry>
+
+  <entry id="OCN_PIO_STRIDE">
+    <type>integer</type>
+    <valid_values></valid_values>
+    <default_value>-99</default_value>
+    <group>run_pio</group>
+    <desc>pio stride</desc>
+  </entry>
+
+  <entry id="OCN_PIO_ROOT">
+      <type>integer</type>
+      <valid_values></valid_values> 
+      <default_value>-99</default_value>
+      <group>run_pio</group>
+      <desc>pio root processor</desc>
+  </entry>
+
+  <entry id="OCN_PIO_NUMTASKS">
+    <type>integer</type>
+    <valid_values></valid_values>
+    <default_value>-1</default_value>
+    <group>run_pio</group>
+    <desc>pio number of io tasks</desc>
+  </entry>
+
+  <entry id="OCN_PIO_TYPENAME">
+      <type>char</type>
+      <valid_values>nothing,netcdf,pnetcdf,netcdf4p,netcdf4c</valid_values>
+      <default_value>nothing</default_value>
+      <group>run_pio</group>
+      <desc>pio io type</desc>
+  </entry> 
+
+  <entry id="LND_PIO_STRIDE">
+    <type>integer</type>
+    <valid_values></valid_values>
+    <default_value>-99</default_value>
+    <group>run_pio</group>
+    <desc>pio stride</desc>
+  </entry>
+
+  <entry id="LND_PIO_ROOT">
+      <type>integer</type>
+      <valid_values></valid_values> 
+      <default_value>-99</default_value>
+      <group>run_pio</group>
+      <desc>pio root processor</desc>
+  </entry>
+
+  <entry id="LND_PIO_NUMTASKS">
+    <type>integer</type>
+    <valid_values></valid_values>
+    <default_value>-1</default_value>
+    <group>run_pio</group>
+    <desc>pio number of io tasks</desc>
+  </entry>
+
+  <entry id="LND_PIO_TYPENAME">
+      <type>char</type>
+      <valid_values>nothing,netcdf,pnetcdf,netcdf4p,netcdf4c</valid_values>
+      <default_value>nothing</default_value>
+      <group>run_pio</group>
+      <desc>pio io type</desc>
+  </entry> 
+
+  <entry id="ROF_PIO_STRIDE">
+    <type>integer</type>
+    <valid_values></valid_values>
+    <default_value>-99</default_value>
+    <group>run_pio</group>
+    <desc>pio stride</desc>
+  </entry>
+
+  <entry id="ROF_PIO_ROOT">
+      <type>integer</type>
+      <valid_values></valid_values> 
+      <default_value>-99</default_value>
+      <group>run_pio</group>
+      <desc>pio root processor</desc>
+  </entry>
+
+  <entry id="ROF_PIO_NUMTASKS">
+    <type>integer</type>
+    <valid_values></valid_values>
+    <default_value>-1</default_value>
+    <group>run_pio</group>
+    <desc>pio number of io tasks</desc>
+  </entry>
+
+  <entry id="ROF_PIO_TYPENAME">
+      <type>char</type>
+      <valid_values>nothing,netcdf,pnetcdf,netcdf4p,netcdf4c</valid_values>
+      <default_value>nothing</default_value>
+      <group>run_pio</group>
+      <desc>pio io type</desc>
+  </entry> 
+
+  <entry id="ICE_PIO_STRIDE">
+    <type>integer</type>
+    <valid_values></valid_values>
+    <default_value>-99</default_value>
+    <group>run_pio</group>
+    <desc>pio stride</desc>
+  </entry>
+
+  <entry id="ICE_PIO_ROOT">
+      <type>integer</type>
+      <valid_values></valid_values> 
+      <default_value>-99</default_value>
+      <group>run_pio</group>
+      <desc>pio root processor</desc>
+  </entry>
+
+  <entry id="ICE_PIO_NUMTASKS">
+    <type>integer</type>
+    <valid_values></valid_values>
+    <default_value>-1</default_value>
+    <group>run_pio</group>
+    <desc>pio number of io tasks</desc>
+  </entry>
+
+  <entry id="ICE_PIO_TYPENAME">
+      <type>char</type>
+      <valid_values>nothing,netcdf,pnetcdf,netcdf4p,netcdf4c</valid_values>
+      <default_value>nothing</default_value>
+      <group>run_pio</group>
+      <desc>pio io type</desc>
+  </entry> 
+
+  <entry id="ATM_PIO_STRIDE">
+    <type>integer</type>
+    <valid_values></valid_values>
+    <default_value>-99</default_value>
+    <group>run_pio</group>
+    <desc>pio stride</desc>
+  </entry>
+
+  <entry id="ATM_PIO_ROOT">
+      <type>integer</type>
+      <valid_values></valid_values> 
+      <default_value>-99</default_value>
+      <group>run_pio</group>
+      <desc>pio root processor</desc>
+  </entry>
+
+  <entry id="ATM_PIO_NUMTASKS">
+    <type>integer</type>
+    <valid_values></valid_values>
+    <default_value>-1</default_value>
+    <group>run_pio</group>
+    <desc>pio number of io tasks</desc>
+  </entry>
+
+  <entry id="ATM_PIO_TYPENAME">
+      <type>char</type>
+      <valid_values>nothing,netcdf,pnetcdf,netcdf4p,netcdf4c</valid_values>
+      <default_value>nothing</default_value>
+      <group>run_pio</group>
+      <desc>pio io type</desc>
+  </entry> 
+
+  <entry id="CPL_PIO_STRIDE">
+    <type>integer</type>
+    <valid_values></valid_values>
+    <default_value>-99</default_value>
+    <group>run_pio</group>
+    <desc>pio stride</desc>
+  </entry>
+
+  <entry id="CPL_PIO_ROOT">
+      <type>integer</type>
+      <valid_values></valid_values> 
+      <default_value>-99</default_value>
+      <group>run_pio</group>
+      <desc>pio root processor</desc>
+  </entry>
+
+  <entry id="CPL_PIO_NUMTASKS">
+    <type>integer</type>
+    <valid_values></valid_values>
+    <default_value>-1</default_value>
+    <group>run_pio</group>
+    <desc>pio number of io tasks</desc>
+  </entry>
+
+  <entry id="CPL_PIO_TYPENAME">
+      <type>char</type>
+      <valid_values>nothing,netcdf,pnetcdf,netcdf4p,netcdf4c</valid_values>
+      <default_value>nothing</default_value>
+      <group>run_pio</group>
+      <desc>pio io type</desc>
+  </entry> 
+
+  <entry id="GLC_PIO_STRIDE">
+    <type>integer</type>
+    <valid_values></valid_values>
+    <default_value>-99</default_value>
+    <group>run_pio</group>
+    <desc>pio stride</desc>
+  </entry>
+
+  <entry id="GLC_PIO_ROOT">
+      <type>integer</type>
+      <valid_values></valid_values> 
+      <default_value>-99</default_value>
+      <group>run_pio</group>
+      <desc>pio root processor</desc>
+  </entry>
+
+  <entry id="GLC_PIO_NUMTASKS">
+    <type>integer</type>
+    <valid_values></valid_values>
+    <default_value>-1</default_value>
+    <group>run_pio</group>
+    <desc>pio number of io tasks</desc>
+  </entry>
+
+  <entry id="GLC_PIO_TYPENAME">
+      <type>char</type>
+      <valid_values>nothing,netcdf,pnetcdf,netcdf4p,netcdf4c</valid_values>
+      <default_value>nothing</default_value>
+      <group>run_pio</group>
+      <desc>pio io type</desc>
+  </entry> 
+
+  <entry id="WAV_PIO_STRIDE">
+    <type>integer</type>
+    <valid_values></valid_values>
+    <default_value>-99</default_value>
+    <group>run_pio</group>
+    <desc>pio stride</desc>
+  </entry>
+
+  <entry id="WAV_PIO_ROOT">
+      <type>integer</type>
+      <valid_values></valid_values>
+      <default_value>-99</default_value>
+      <group>run_pio</group>
+      <desc>pio root processor</desc>
+  </entry>
+
+  <entry id="WAV_PIO_NUMTASKS">
+    <type>integer</type>
+    <valid_values></valid_values>
+    <default_value>-1</default_value>
+    <group>run_pio</group>
+    <desc>pio number of io tasks</desc>
+  </entry>
+
+  <entry id="WAV_PIO_TYPENAME">
+      <type>char</type>
+      <valid_values>nothing,netcdf,pnetcdf,netcdf4p,netcdf4c</valid_values>
+      <default_value>nothing</default_value>
+      <group>run_pio</group>
+      <desc>pio io type</desc>
+  </entry>
+
+</definitions_variables> 
+

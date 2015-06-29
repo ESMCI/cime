@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+
+<?xml-stylesheet type="text/xsl" href="setup_comp.xsl" ?>
+
+<setup name="XGLC">
+
+  <variable
+     name="COMP_GLC" 
+     type="char"
+     valid_values="xglc"
+     value="xglc"  
+     group="case_comp"
+     sdesc="Name of land-ice component">
+  </variable>
+
+</setup>

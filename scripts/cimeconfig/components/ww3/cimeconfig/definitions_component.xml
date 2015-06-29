@@ -1,0 +1,108 @@
+<?xml version="1.0"?>
+
+<?xml-stylesheet type="text/xsl" href="definitions_variables" ?>
+
+<definitions_variables>
+
+  <entry id="SSTICE_STREAM"> 
+    <type>char</type>
+    <valid_values></valid_values>
+    <default_value>UNSET</default_value>
+    <group>run_sstice</group>
+    <desc>Prescribed SST and ice coverage stream name.</desc>
+    <desc>Sets SST and ice coverage stream name for prescribed runs.</desc>
+    <values>
+      <SSTICE_STREAM   compset=".*WW3" grid="a%ww3a">WW3</SSTICE_STREAM>
+    </values>
+  </entry>
+
+  <entry id="SSTICE_DATA_FILENAME">
+    <type>char</type>
+    <valid_values></valid_values>
+    <default_value>UNSET</default_value>
+    <values>
+      <value grid="a%ww3a">$DIN_LOC_ROOT/wav/ww3/core2_G4_ice_30min_20000601_to_05.nc</value>
+    </values>
+    <group>run_sstice</group>
+    <desc>
+      Sets SST and ice coverage data file name for prescribed runs
+    </desc>
+  </entry> 
+
+  <entry id="SSTICE_GRID_FILENAME">
+    <type>char</type>
+    <valid_values></valid_values>
+    <default_value>UNSET</default_value>
+    <values>
+      <value grid="a%ww3a">$DIN_LOC_ROOT/wav/ww3/core2_G4_ice_30min_20000601_to_05.nc</value>
+    </values>
+    <group>run_sstice</group>
+    <desc>
+      Sets SST and ice coverage grid file name for prescribed runs.
+    </desc>
+  </entry> 
+
+  <entry id="SSTICE_YEAR_ALIGN"> 
+    <type>integer</type>
+    <valid_values></valid_values>
+    <default_value>-999</default_value>
+    <values>
+      <value grid="a%ww3a">1</value>
+    </values>
+    <group>run_sstice</group>
+    <desc>
+      Prescribed SST and ice coverage data will be aligned so that the first year of
+      data corresponds to SSTICE_YEAR_ALIGN in the model. For instance, if the first
+      year of prescribed data is the same as the first year of the model run, this
+      should be set to the year given in RUN_STARTDATE.
+      If SSTICE_YEAR_ALIGN is later than the model's starting year, or if the model is
+      run after the prescribed data ends (as determined by SSTICE_YEAR_END), the
+      default behavior is to assume that the data from SSTICE_YEAR_START to
+      SSTICE_YEAR_END cyclically repeats. This behavior is controlled by the
+      &quot;taxmode&quot; stream option; see the data model documentation for more details.
+    </desc>
+  </entry> 
+
+  <entry id="SSTICE_YEAR_START"> 
+    <type>integer</type>
+    <valid_values></valid_values>
+    <default_value>-999</default_value>
+    <values>
+      <value grid="a%ww3a">2000</value>
+    </values>
+    <group>run_sstice</group>
+    <desc>
+      This is the first year of prescribed SST and ice coverage data to use. For
+      example, if a data file has data for years 0-99, and SSTICE_YEAR_START is 10,
+      years 0-9 in the file will not be used.">
+    </desc>
+  </entry> 
+
+  <entry id="SSTICE_YEAR_END"> 
+    <name>value</name>
+    <type>integer</type>
+    <valid_values></valid_values>
+    <default_value>-999</default_value>
+    <values>
+      <value grid="a%ww3a">2000</value>
+    </values>
+    <group>run_sstice</group>
+    <desc>
+      This is the last year of prescribed SST and ice coverage data to use. For
+      example, if a data file has data for years 0-99, and value is 49,
+      years 50-99 in the file will not be used.
+    </desc>
+  </entry>
+
+  <description>
+    <desc compset="_WW3" >WW3:</desc>
+  </description>
+
+  <help>
+    =========================================
+    WW3 naming conventions
+    =========================================
+  </help>
+
+</definitions_variables>
+

@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+
+<?xml-stylesheet type="text/xsl" href="definitions_variables.xsl" ?>
+
+<definitions_variables> 
+
+  <entry id="CHECK_TIMING"> 
+    <type>logical</type>
+    <valid_values>TRUE,FALSE</valid_values>
+    <default_value>TRUE</default_value>
+    <group>run_flags</group>
+    <desc>logical to diagnose model timing at the end of the run</desc>
+  </entry>
+
+  <entry id="SAVE_TIMING"> 
+    <type>logical</type>
+    <valid_values>TRUE,FALSE</valid_values>
+    <default_value>FALSE</default_value>
+    <group>run_flags</group>
+    <desc>logical to save timing files in rundir</desc>
+  </entry>
+
+  <entry id="TIMER_LEVEL"> 
+    <type>integer</type>
+    <valid_values></valid_values>
+    <default_value>12</default_value>
+    <group>run_flags</group>
+    <desc>timer output depth</desc>
+  </entry>
+
+  <entry id="PROFILE_PAPI_ENABLE">
+    <type>logical</type>
+    <valid_values>TRUE,FALSE</valid_values>
+    <default_value>FALSE</default_value>
+    <group>run_cesm</group>
+    <desc>
+      Enables the papi hardware counters in gptl
+      The papi library must be included in the build step for 
+      this to work.
+    </desc>
+  </entry>
+
+  <entry id="COMP_RUN_BARRIERS"> 
+    <type>logical</type>
+    <valid_values>TRUE,FALSE</valid_values>
+    <default_value>FALSE</default_value>
+    <group>run_flags</group>
+    <desc>Turns on component barriers for component timing</desc>
+  </entry>
+
+</definitions_variables> 

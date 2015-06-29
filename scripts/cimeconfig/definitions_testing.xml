@@ -1,0 +1,127 @@
+<?xml version="1.0"?>
+
+<?xml-stylesheet type="text/xsl" href="definitions_variables.xsl" ?>
+
+<definitions_variables> 
+
+  <entry id="NAME">
+      <type>char</type>
+      <valid_values></valid_values>
+      <default_value>nothing</default_value>
+      <group>case_test</group>
+      <desc>Test type name</desc>
+  </entry>
+
+  <entry id="DESC">
+    <type>char</type>
+    <valid_values></valid_values>
+    <default_value>nothing</default_value>
+    <group>case_test</group>
+    <desc>Test type descriptor</desc>
+  </entry>
+
+  <entry id="TESTCASE">
+      <type>char</type>
+      <valid_values></valid_values>
+      <default_value>nothing</default_value>
+      <group>case_test</group>
+      <desc>Testcase short name</desc>
+  </entry>
+
+  <entry id="CASEBASEID">
+    <type>char</type>
+    <valid_values></valid_values>
+    <default_value>nothing</default_value>
+    <group>case_test</group>
+    <desc>Case base ID</desc>
+  </entry>
+
+  <entry id="TEST_ARGV">
+      <type>char</type>
+      <valid_values></valid_values>
+      <default_value>nothing</default_value>
+      <group>case_test</group>
+      <desc>Arguments supplied to create_test</desc>
+  </entry>
+
+  <entry id="TEST_TESTID">
+    <type>char</type>
+    <valid_values></valid_values>
+    <default_value>nothing</default_value>
+    <group>case_test</group>
+    <desc>supplied or computed test id</desc>
+  </entry>
+
+  <entry id="CCSM_BASELINE"> 
+    <type>char</type>
+    <valid_values></valid_values>
+    <default_value>/UNSET</default_value>
+    <group>case_test</group>
+    <desc>standard ccsm baselines directory for testing</desc>
+  </entry> 
+
+  <entry id="GENERATE_BASELINE">
+      <type>logical</type>
+      <valid_values>TRUE,FALSE</valid_values>
+      <default_value>FALSE</default_value>
+      <group>case_test</group>
+      <desc>Whether to generate a baseline</desc>
+  </entry>
+
+  <entry id="COMPARE_BASELINE">
+    <type>logical</type>
+    <valid_values>TRUE,FALSE</valid_values>
+    <default_value>FALSE</default_value>
+    <group>case_test</group>
+    <desc>Whether to compare the baseline</desc>
+  </entry>
+
+  <entry id="BASEGEN_CASE">
+      <type>char</type>
+      <valid_values></valid_values>
+      <default_value></default_value>
+      <group>case_test</group>
+      <desc>The tagname we are comparing baselines against</desc>
+  </entry>
+
+  <entry id="BASECMP_CASE">
+    <type>char</type>
+    <valid_values></valid_values>
+    <default_value></default_value>
+    <group>case_test</group>
+    <desc>The tagname we are comparing baselines against</desc>
+  </entry>
+
+  <entry id="BASELINE_ROOT">
+      <type>char</type>
+      <valid_values></valid_values>
+      <default_value></default_value>
+      <group>case_test</group>
+      <desc>The directory where baselines are stored</desc>
+  </entry>
+
+  <entry id="BASELINE_NAME_GEN">
+    <type>char</type>
+    <valid_values></valid_values>
+    <default_value></default_value>
+    <group>case_test</group>
+    <desc>The tagname we are generating baselines for</desc>
+  </entry>
+
+  <entry id="BASELINE_NAME_CMP">
+      <type>char</type>
+      <valid_values></valid_values>
+      <default_value></default_value>
+      <group>case_test</group>
+      <desc>The tagname we are comparing baselines against</desc>
+  </entry>
+
+  <entry id="CLEANUP">
+    <type>logical</type>
+    <valid_values>TRUE,FALSE</valid_values>
+    <default_value>FALSE</default_value>
+    <group>case_test</group>
+    <desc>Whether to clean the test after it is built/run</desc>
+  </entry>
+
+</definitions_variables> 

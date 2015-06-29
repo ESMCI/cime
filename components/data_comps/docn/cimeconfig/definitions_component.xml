@@ -1,0 +1,94 @@
+<?xml version="1.0"?>
+
+<?xml-stylesheet type="text/xsl" href="setup_comp.xsl" ?>
+
+<definitions_variables> 
+
+  <entry id="COMP_OCN"> 
+    <type>char</type>
+    <valid_values>docn</valid_values>
+    <default_value>dlnd</default_value>
+    <group>case_comp</group>
+    <sdesc>Name of ocn component</sdesc>
+  </entry>
+
+  <entry id="DOCN_MODE"> 
+    <type>char</type>
+    <valid_values>prescribed,som,copyall,null</valid_values>
+    <default_value>prescribed</default_value>
+    <group>run_component_docn</group>
+    <sdesc>DOCN mode</sdesc>
+    <ldesc>
+      The data ocean component (DOCN) always returns SSTs to the
+      driver. The atmosphere/ocean fluxes are computed in the
+      coupler. Therefore, the data ocean model does not compute fluxes like
+      the data ice model. DOCN has two distinct modes of operation. It can
+      arun as a pure data model, reading in ocean SSTs (normally
+      climatological) from input datasets, performing time/spatial
+      interpolations, and passing these to the coupler. Alternatively,
+      DOCN can compute updated SSTs by running as a slab ocean model where
+      bottom ocean heat flux convergence and boundary layer depths are read
+      in and used with the atmosphere/ocean and ice/ocean fluxes obtained
+      from the driver.
+      --- A setting of prescribed assumes the only field in the input stream is SST.
+      It also assumes the SST is in Celsius and must be converted to Kelvin.
+      All other fields are set to zero except for ocean salinity, which
+      is set to a constant reference salinity value.
+      Normally the ice fraction data is found in the same data files that
+      provide SST data to the data ocean model. They are normally found in
+      the same file because the SST and ice fraction data are derived from
+      the same observational data sets and are consistent with each other.
+      to the data ocean model. They are normally found in the same file
+      because the SST and ice fraction data are derived from the same
+      observational data sets and are consistent with each other.
+      --- A setting of som (slab ocean model) mode is a prognostic mode.  This mode
+      computes a prognostic sea surface temperature and a freeze/melt
+      potential (surface Q-flux) used by the sea ice model.  This
+      calculation requires an external SOM forcing data file that includes
+      ocean mixed layer depths and bottom-of-the-slab Q-fluxes.
+      Scientifically appropriate bottom-of-the-slab Q-fluxes are normally
+      ocean resolution dependent and are derived from the ocean model output
+      of a fully coupled CCSM run.  Note that while this mode runs out of
+      the box, the default SOM forcing file is not scientifically
+      appropriate and is provided for testing and development purposes only.
+      Users must create scientifically appropriate data for their particular
+      application.  A tool is available to derive valid SOM forcing. 
+      Default is prescribed.
+    </ldesc>
+    <values>
+      <value compset="_DOCN%NULL">null</value>
+      <value compset="_DOCN%DOM" >prescribed</value>
+      <value compset="_DOCN%SOM" >som</value>
+      <value compset="_DOCN%US20">us20</value>
+      <value compset="_DOCN%COPY">copyall</value>
+    </values>
+  </entry>
+
+  <entry id="DOCN_SOM_FILENAME">
+    <type>char</type>
+    <valid_values></valid_values>
+    <default_value>UNSET</default_value>
+    <group>run_component_docn</group>
+    <sdesc>Sets SOM forcing data filename for pres runs, only used in D and E compset</sdesc>
+    <ldesc>Sets SOM forcing data filename for pres runs, only used in D and E compset</ldesc>
+    <values>
+      <value compset="_DOCN%SOM.*_TEST" >pop_frc.1x1d.090130.nc</value>
+    </values>
+  </entry>
+
+  <description>
+    <desc compset="_DOCN%NULL">docn null mode:</desc>
+    <desc compset="_DOCN%SOM" >docn slab ocean mode:</desc>
+    <desc compset="_DOCN%DOM" >docn data mode:</desc>
+    <desc compset="_DOCN%US20">docn us20 mode:</desc>
+    <desc compset="_DOCN%COPY">docn copy mode:</desc>
+  </description>
+
+  <help>
+    =========================================
+    DOCN naming conventions
+    =========================================
+  </help>
+
+</definitions_variables> 
+

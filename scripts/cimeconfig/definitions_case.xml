@@ -1,0 +1,108 @@
+<?xml version="1.0"?>
+
+<?xml-stylesheet type="text/xsl" href="definitions_variables.xsl" ?>
+
+<definitions_variables> 
+
+  <entry id="CASE"> 
+    <type>char*256</type>
+    <valid_values></valid_values>
+    <default_value>UNSET</default_value>
+    <group>case_def</group>
+    <desc>case name</desc>
+  </entry>
+
+  <entry id="CASESTR"> 
+    <type>char</type>
+    <valid_values></valid_values> 
+    <default_value>UNSET</default_value>
+    <group>run_desc</group>
+    <desc>case description</desc>
+  </entry>
+
+  <entry id='GRID'>
+    <type>char</type>
+    <valid_values></valid_values>
+    <default_value>UNSET</default_value>
+    <group>build_grid</group>
+    <desc>CESM grid - DO NOT EDIT (for experts only)</desc>
+  </entry>
+
+  <entry id="COMPSET"> 
+    <type>char</type>
+    <valid_values></valid_values> 
+    <default_value>UNSET</default_value>
+    <group>case_last</group>
+    <desc>Component set long name (for documentation only - DO NOT EDIT)</desc>
+  </entry>
+
+  <entry id="CIME_REPOTAG"> 
+    <type>char</type>
+    <valid_values></valid_values>  
+    <default_value>UNSET</default_value>
+    <group>run_desc</group>
+    <desc>Version name of CIME repository tag</desc>
+  </entry> 
+
+  <entry id="CCSM_REPOTAG"> 
+    <type>char</type>
+    <valid_values></valid_values>
+    <default_value>UNSET</default_value>
+    <group>run_desc</group>
+    <desc>repository tag</desc>
+  </entry> 
+
+  <entry id="SUPPORTED_BY"> 
+    <type>char</type>
+    <valid_values></valid_values>
+    <default_value>UNSET</default_value>
+    <group>case_def</group>
+    <desc>current machine name support contact</desc>
+  </entry>
+
+  <entry id="USER"> 
+    <type>char</type>
+    <valid_values></valid_values>  
+    <default_value>UNSET</default_value>
+    <group>case_desc</group>
+    <desc>case user name</desc>
+  </entry> 
+
+  <entry id="CCSMUSER"> 
+    <type>char</type>
+    <valid_values></valid_values>  
+    <default_value>UNSET</default_value>
+    <group>case_desc</group>
+    <desc>case user name (this will be depracated in favor of USER moving forwards)</desc>
+  </entry> 
+
+  <entry id="GLC_NEC"> 
+    <type>integer</type>
+    <valid_values>0,1,3,5,10,36</valid_values>
+    <default_value>0</default_value>
+    <group>run_cesm</group>
+    <desc>
+      Glacier model number of elevation classes, 0 implies no glacier land unit in clm
+      Used by both CLM and CISM (even if CISM is not running, and only SGLC is used)
+    </desc>
+  </entry>
+
+  <entry id="GLC_TWO_WAY_COUPLING"> 
+    <type>logical</type>
+    <valid_values>TRUE,FALSE</valid_values>
+    <default_value>FALSE</default_value>
+    <group>run_cesm</group>
+    <desc>
+      Whether the glacier component feeds back to the rest of the system
+      This affects:
+      (1) Whether CLM updates its areas based on glacier areas sent from GLC
+      (2) Whether GLC sends fluxes (e.g., calving fluxes) to the coupler
+      Note that this is set to TRUE by default for TG compsets - even though there are
+      no feedbacks for TG compsets, this enables extra coupler diagnostics for these
+      compsets.
+    </desc>
+  </entry>
+
+</definitions_variables> 
+
+

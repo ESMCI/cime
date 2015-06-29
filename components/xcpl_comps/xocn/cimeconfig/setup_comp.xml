@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+
+<?xml-stylesheet type="text/xsl" href="setup_comp.xsl" ?>
+
+<setup>
+
+  <variable
+     name="COMP_OCN" 
+     type="char"
+     valid_values="xocn"
+     value="xocn"  
+     group="case_comp"
+     sdesc="Name of ocean component">
+  </variable>
+
+</setup>

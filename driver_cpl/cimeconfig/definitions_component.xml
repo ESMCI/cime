@@ -1,0 +1,763 @@
+<?xml version="1.0"?>
+
+<?xml-stylesheet type="text/xsl" href="config_compsets.xsl" ?>
+
+<definitions_component>
+
+  <entry id="COMP_CPL"> 
+    <type>char</type>
+    <valid_values>cpl</valid_values>
+    <default_value>cpl</default_value>
+    <group>case_comp</group>
+    <desc>
+      Name of coupling component
+    </desc>
+  </entry>
+
+  <entry id="RUN_TYPE"> 
+    <type>char</type>
+    <valid_values>startup,hybrid,branch</valid_values>
+    <default_value>startup</default_value>
+    <group>run_start</group>
+    <desc>
+      Determines the model run initialization type.  
+      This setting is only important for the initial run of a production run when the 
+      CONTINUE_RUN variable is set to FALSE.  After the initial run, the CONTINUE_RUN
+      variable is set to TRUE, and the model restarts exactly using input
+      files in a case, date, and bit-for-bit continuous fashion.
+      Default: startup.
+      -- In a startup run (the default), all components are initialized
+      using baseline states.  These baseline states are set independently by
+      each component and can include the use of restart files, initial
+      files, external observed data files, or internal initialization (i.e.,
+      a cold start). In a startup run, the coupler sends the start date to
+      the components at initialization. In addition, the coupler does not
+      need an input data file.  In a startup initialization, the ocean model
+      does not start until the second ocean coupling (normally the second
+      day).
+      -- In a branch run, all components are initialized using a consistent
+      set of restart files from a previous run (determined by the
+      RUN_REFCASE and RUN_REFDATE variables in env_run.xml).  The case name
+      is generally changed for a branch run, although it does not have to
+      be. In a branch run, setting RUN_STARTDATE is ignored because the
+      model components obtain the start date from their restart datasets.
+      Therefore, the start date cannot be changed for a branch run. This is
+      the same mechanism that is used for performing a restart run (where
+      CONTINUE_RUN is set to TRUE in the env_run.xml) Branch runs are
+      typically used when sensitivity or parameter studies are required, or
+      when settings for history file output streams need to be modified
+      while still maintaining bit-for-bit reproducibility. Under this
+      scenario, the new case is able to produce an exact bit-for-bit restart
+      in the same manner as a continuation run IF no source code or
+      component namelist inputs are modified. All models use restart files
+      to perform this type of run.  RUN_REFCASE and RUN_REFDATE are required
+      for branch runs.
+      To set up a branch run, locate the restart tar file or restart
+      directory for RUN_REFCASE and RUN_REFDATE from a previous run, then
+      place those files in the RUNDIR directory.
+      --- In a hybrid run the model is initialized as a startup, BUT uses  
+      initialization datasets FROM A PREVIOUS case.  This
+      is somewhat analogous to a branch run with relaxed restart
+      constraints.  A hybrid run allows users to bring together combinations
+      of initial/restart files from a previous case (specified by
+      RUN_REFCASE) at a given model output date (specified by
+      RUN_REFDATE). Unlike a branch run, the starting date of a hybrid run
+      (specified by RUN_STARTDATE) can be modified relative to the reference
+      case. In a hybrid run, the model does not continue in a bit-for-bit
+      fashion with respect to the reference case. The resulting climate,
+      however, should be continuous provided that no model source code or
+      namelists are changed in the hybrid run.  In a hybrid initialization,
+      the ocean model does not start until the second ocean coupling
+      (normally the second day), and the coupler does a cold start without
+      a restart file.
+    </desc>
+  </entry>
+
+  <entry id="RUN_STARTDATE"> 
+    <type>char</type>
+    <valid_values></valid_values> 
+    <default_value>0001-01-01</default_value>
+    <group>run_start</group>
+    <desc>
+      Run start date (yyyy-mm-dd). Only used for startup or hybrid runs
+    </desc>
+  </entry>
+
+  <entry id="START_TOD"> 
+    <type>integer</type>
+    <valid_values></valid_values>
+    <default_value>0</default_value>
+    <group>run_start</group>
+    <desc>
+      Run start time-of-day
+    </desc>
+  </entry>
+
+  <entry id="RUN_REFDIR"> 
+    <type>char*256</type>
+    <valid_values></valid_values> 
+    <default_value>ccsm4_init</default_value>
+    <group>run_start</group>
+    <desc>
+      Reference directory containing RUN_REFCASE data - used for hybrid or branch runs
+    </desc>
+  </entry>
+
+  <entry id="RUN_REFCASE"> 
+    <type>char*256</type>
+    <valid_values></valid_values>
+    <default_value>case.std</default_value>
+    <group>run_start</group>
+    <desc>
+      Reference case for hybrid or branch runs
+    </desc>
+  </entry>
+
+  <entry id="RUN_REFDATE"> 
+    <type>char*10</type>
+    <valid_values></valid_values> 
+    <default_value>0001-01-01</default_value>
+    <group>run_start</group>
+    <desc>
+      Reference date for hybrid or branch runs (yyyy-mm-dd)
+    </desc>
+  </entry>
+
+  <entry id="RUN_REFTOD"> 
+    <type>char</type>
+    <valid_values></valid_values>
+    <default_value>00000</default_value>
+    <group>run_start</group>
+    <desc>
+      Reference time of day (seconds) for hybrid or branch runs (sssss)
+    </desc>
+  </entry>
+
+  <entry id="BRNCH_RETAIN_CASENAME"> 
+    <type>logical</type>
+    <valid_values>TRUE,FALSE</valid_values>
+    <default_value>FALSE</default_value>
+    <group>run_start</group>
+    <desc>
+      Allow same branch casename as reference casename
+    </desc>
+  </entry> 
+
+  <entry id="GET_REFCASE"> 
+    <type>logical</type>
+    <valid_values>TRUE,FALSE</valid_values>
+    <default_value>FALSE</default_value>
+    <group>run_start</group>
+    <desc>flag for automatically prestaging the refcase restart dataset</desc>
+  </entry> 
+
+  <entry id="STOP_OPTION"> 
+    <type>char</type>
+    <valid_values>none,never,nsteps,nstep,nseconds,nsecond,nminutes,nminute,nhours,nhour,ndays,nday,nmonths,nmonth,nyears,nyear,date,ifdays0,end</valid_values>
+    <default_value>ndays</default_value>
+    <group>run_stop</group>
+    <desc>
+      Sets the run length along with STOP_N and STOP_DATE (must be nyear(s) for _GLC compsets for restarts to work properly)
+      (must be nyear(s) for _GLC compsets for restarts to work properly)
+    </desc>
+  </entry>
+
+  <entry id="STOP_N"> 
+    <type>integer</type>
+    <valid_values></valid_values>
+    <default_value>5</default_value>
+    <group>run_stop</group>
+    <desc>
+      Provides a numerical count for $STOP_OPTION.
+    </desc>
+  </entry>
+
+  <entry id="STOP_DATE"> 
+    <type>integer</type>
+    <valid_values></valid_values> 
+    <default_value>-999</default_value>
+    <group>run_stop</group>
+    <desc>
+      Alternative date yyyymmdd date option, sets the run length with STOP_OPTION and STOP_N
+      negative value implies off
+    </desc>
+  </entry>
+
+  <entry id="REST_OPTION"> 
+    <type>char</type>
+    <valid_values>none,never,nsteps,nstep,nseconds,nsecond,nminutes,nminute,nhours,nhour,ndays,nday,nmonths,nmonth,nyears,nyear,date,ifdays0,end</valid_values>
+    <default_value>$STOP_OPTION</default_value>
+    <group>run_rest</group>
+    <desc>
+      sets frequency of model restart writes (same options as STOP_OPTION) (must be nyear(s) for _GLC compsets)
+      (must be nyear(s) for _GLC compsets)
+    </desc>
+  </entry>
+
+  <entry id="REST_N"> 
+    <type>char</type>
+    <valid_values></valid_values>  
+    <default_value>$STOP_N</default_value>
+    <group>run_rest</group>
+    <desc> 
+      sets model restart writes with REST_OPTION and REST_DATE
+    </desc>
+  </entry>
+
+  <entry id="REST_DATE"> 
+    <type>char</type>
+    <valid_values></valid_values>
+    <default_value>$STOP_DATE</default_value>
+    <group>run_rest</group>
+    <desc>
+      Alternative date in yyyymmdd format
+      sets model restart write date with REST_OPTION and REST_N
+    </desc>
+  </entry>
+
+  <entry id="CONTINUE_RUN"> 
+    <type>logical</type>
+    <valid_values>TRUE,FALSE</valid_values>
+    <default_value>FALSE</default_value>
+    <group>run_rest</group>
+    <desc>
+      A setting of TRUE implies a continuation run    
+      When you first begin a branch, hybrid or startup run, CONTINUE_RUN
+      must be set to FALSE. When you successfully run and get a restart
+      file, you will need to change CONTINUE_RUN to TRUE for the remainder
+      of your run. This variable determines if the run is a restart run.   
+      Set to FALSE when initializing a startup, branch or hybrid case.
+      Set to TRUE when continuing a run.
+    </desc>
+  </entry>
+
+  <entry id="RESUBMIT"> 
+    <type>integer</type>
+    <valid_values></valid_values>
+    <default_value>0</default_value>
+    <group>run_rest</group>
+    <desc>
+      If RESUBMIT is greater than 0, then case will automatically resubmit
+      Enables the model to automatically resubmit a new run.  To get
+      multiple runs, set RESUBMIT greater than 0, then RESUBMIT will be
+      decremented and the case will be resubmitted.  The case will stop automatically
+      resubmitting when the RESUBMIT value reaches 0. 
+      Long runs can easily outstrip supercomputer queue time limits. For
+      this reason, a case is usually run as a series of jobs, each
+      restarting where the previous finished.
+    </desc>
+  </entry>
+
+  <entry id="HIST_OPTION"> 
+    <type>char</type>
+    <valid_values></valid_values>  
+    <default_value>never</default_value> 
+    <values>
+      <value compset="CISM">nyears</value>
+    </values>
+    <group>run_cplhist</group>
+    <desc>
+      sets coupler snapshot history file frequency (like REST_OPTION)
+    </desc>
+  </entry>
+
+  <entry id="HIST_N"> 
+    <type>integer</type>
+    <valid_values></valid_values>  
+    <default_value>-999</default_value> 
+    <values>
+      <value compset="CISM">1</value>
+    </values>
+    <group>run_cplhist</group>
+    <desc>
+      sets coupler snapshot history file frequency (like REST_N)
+    </desc>
+  </entry>
+
+  <entry id="HIST_DATE"> 
+    <type>integer</type>
+    <valid_values></valid_values>  
+    <default_value>-999</default_value> 
+    <group>run_cplhist</group>
+    <desc>
+      yyyymmdd format, sets coupler snapshot history date (like REST_DATE)
+    </desc>
+  </entry>
+
+  <entry id="AVGHIST_OPTION"> 
+    <type>char</type>
+    <valid_values></valid_values>  
+    <default_value>never</default_value> 
+    <group>run_cplhist</group>
+    <desc>
+      sets coupler average history file frequency (like REST_OPTION)
+    </desc>
+  </entry>
+
+  <entry id="AVGHIST_N"> 
+    <type>char</type>
+    <valid_values></valid_values>  
+    <default_value>-999</default_value> 
+    <group>run_cplhist</group>
+    <desc>
+      sets coupler average history file frequency (like REST_N)
+    </desc>
+  </entry>
+
+  <entry id="AVGHIST_DATE"> 
+    <type>integer</type>
+    <valid_values></valid_values>  
+    <default_value>-999</default_value> 
+    <group>run_cplhist</group>
+    <desc>
+      yyyymmdd format, sets coupler average history date (like REST_DATE)
+    </desc>
+  </entry>
+
+  <entry id="BUDGETS"> 
+    <type>logical</type>
+    <valid_values>TRUE,FALSE</valid_values>
+    <default_value>FALSE</default_value>
+    <values>
+      <value compset="DATM.*_POP"    >TRUE</value>
+      <value compset="CAM.*_POP"     >TRUE</value>
+      <value compset="CAM.*_DOCN%SOM">TRUE</value>
+    </values>
+    <group>run_flags</group>
+    <desc>
+      logical that turns on diagnostic budgets
+    </desc>
+  </entry>
+
+  <entry id="CPL_ALBAV"> 
+    <type>logical</type>
+    <valid_values>true,false</valid_values>
+    <default_value>false</default_value> 
+    <values>
+      <value compset="DATM.*_POP2"> true</value>
+    </values>
+    <group>run_cesm</group>
+    <desc>
+      Only used for compsets with DATM and POP (currently C and G): if true, 
+      compute albedos to work with daily avg SW down
+      If false (default), albedos are computed with the assumption that downward
+      solar radiation from the atm component has a diurnal cycle and zenith-angle 
+      dependence. This is normally the case when using an active atm component
+      If true, albedos are computed with the assumption that downward
+      solar radiation from the atm component is a daily average quantity and
+      does not have a zenith-angle dependence. This is often the case when
+      using a data atm component. Only used for compsets with DATM and POP (currently C and G)
+    </desc>
+  </entry>
+
+  <entry id="CPL_EPBAL"> 
+    <type>char</type>
+    <valid_values>off,ocn</valid_values>
+    <default_value>off</default_value> 
+    <group>run_cesm</group>
+    <desc>
+      Only used for compsets with DATM and POP (currently C and G): if ocn, ocn provides EP balance factor for precip
+      Provides EP balance factor for precip for POP. A factor computed by
+      POP is applied to precipitation so that precipitation balances
+      evaporation and ocn global salinity does not drift. This is intended
+      for use when coupling POP to a DATM. Only used for C and G compsets.
+      Default is off
+    </desc>
+  </entry>
+
+  <entry id="NCPL_BASE_PERIOD"> 
+    <type>char</type>
+    <valid_values>hour,day,year,decade</valid_values>
+    <group>run_coupling</group>
+    <default_value>day</default_value>
+    <values>
+      <value compset="_DLND.*_CISM">year  </value>
+      <value compset="_MPAS"       >hour  </value>
+    </values>
+    <desc>
+      base period associated with NCPL coupling frequency
+    </desc>
+  </entry>
+
+  <entry id="ATM_NCPL"> 
+    <type>char</type>
+    <valid_values></valid_values>
+    <default_value>0</default_value>
+    <values>
+      <value compset="_SATM"              > 48</value>
+      <value compset="_XATM"              > 48</value>
+      <value compset="_CAM[45]"           > 48</value>  
+      <value compset="_DATM"              > 48</value>  
+      <value compset="_CAM[45]%WCBC"      >144</value>
+      <value compset="_CAM4%WCMX"         >288</value>
+      <value compset="_CAM4%WCXI"         >288</value>
+      <value compset="_DATM%COPYALL_NPS"  > 72</value> 
+      <value compset="_DATM.*_DICE.*_POP2">  4</value>
+      <value compset="_DATM.*_CICE.*_DOCN"> 24</value>
+      <value compset="_DATM.*_CICE.*_POP2"> 24</value>
+      <value compset="_DATM.*_DOCN%US20"  > 24</value> 
+      <value compset="_CAM%ADIAB"         > 48</value>  
+      <value compset="_CAM%IDEAL"         > 48</value>  
+      <value compset="_MPAS"              >  1</value>  
+      <value compset="_CICE" grid="oi%tx0.1v2">48</value>
+      <value compset=".+" grid="a%0.23x0.31">96</value>
+      <value compset=".+" grid="a%ne60np4"  >96</value>
+      <value compset=".+" grid="a%ne120np4" >96</value>
+      <value compset=".+" grid="a%ne240np4" >96</value>
+      <value compset=".+" grid="a%T85"      >144</value>
+      <value compset=".+" grid="a%T341"     >288</value>
+      <value compset=".+" grid="w%ww3a"     >48</value>
+      <value compset="_DLND.*_CISM">1</value>
+    </values>
+    <group>run_coupling</group>
+    <desc>
+      number of atm coupling intervals per NCPL_BASE_PERIOD
+    </desc>
+  </entry>
+
+  <entry id="LND_NCPL"> 
+    <type>char</type>
+    <valid_values></valid_values> 
+    <default_value>$ATM_NCPL</default_value>
+    <values>
+      <value compset="_DLND.*_CISM">1</value>
+    </values>
+    <group>run_coupling</group>
+    <desc>
+      number of land coupling intervals per NCPL_BASE_PERIOD
+    </desc>
+  </entry>
+
+  <entry id="ICE_NCPL"> 
+    <type>char</type>
+    <valid_values></valid_values>
+    <default_value>$ATM_NCPL</default_value>
+    <values>
+      <value compset="_DLND.*_CISM">1</value>
+    </values>
+    <group>run_coupling</group>
+    <desc>
+      number of ice coupling intervals per NCPL_BASE_PERIOD
+    </desc>
+  </entry>
+
+  <entry id="OCN_NCPL"> 
+    <type>char</type>
+    <valid_values></valid_values> 
+    <default_value>$ATM_NCPL</default_value>
+    <values>
+      <value compset="_POP2">1</value>
+      <value compset="_POP2" grid="oi%tx0.1v2">4</value> 
+      <value compset="_DATM.*_DLND.*_DICE.*_DOCN.*_SWAV">1</value>
+      <value compset="_DATM.*_DLND.*_DICE.*_DOCN.*_DWAV">1</value>
+      <value compset="_XATM.*_XLND.*_XICE.*_XOCN">1</value>
+      <value compset="_DATM.*_CLM4.*_SICE.*_SOCN">1</value>
+      <value compset="_SATM.*_SLND.*_SICE.*_SOCN">1</value>
+      <value compset="_DLND.*_CISM">1</value>
+    </values>
+    <group>run_coupling</group>
+    <desc>
+      number of ocn coupling intervals per NCPL_BASE_PERIOD
+    </desc>
+  </entry>
+
+  <entry id="GLC_NCPL"> 
+    <type>char</type>
+    <valid_values></valid_values>
+    <default_value>1</default_value>
+    <values>
+      <value compset="_DLND.*_CISM">1</value>
+    </values>
+    <group>run_coupling</group>
+    <desc>
+      number of glc coupling intervals per NCPL_BASE_PERIOD
+    </desc>
+  </entry>
+
+  <entry id="ROF_NCPL"> 
+    <type>char</type>
+    <valid_values></valid_values> 
+    <default_value>8</default_value>
+    <values>
+      <value compset="_DATM.*_POP2">$ATM_NCPL</value>
+      <value compset="_DATM.*_DOCN%SOM">$ATM_NCPL</value>
+      <value compset="_DATM.*_DLND.*_DICE.*_DOCN">$ATM_NCPL</value>
+      <value compset="_XATM.*_XLND.*_XICE.*_XOCN">$ATM_NCPL</value>
+      <value compset="_DLND.*_CISM">1</value>
+    </values>
+    <group>run_coupling</group>
+    <desc> 
+      number of rof coupling intervals per NCPL_BASE_PERIOD
+    </desc>
+  </entry>
+
+  <entry id="WAV_NCPL">
+    <type>char</type>
+    <valid_values></valid_values>
+    <default_value>$ATM_NCPL</default_value>
+    <group>run_coupling</group>
+    <desc>
+      number of wav coupling intervals per NCPL_BASE_PERIOD
+    </desc>
+  </entry>
+
+  <entry id="CPL_SEQ_OPTION">
+    <type>char</type>
+    <valid_values>CESM1_ORIG,CESM1_ORIG_TIGHT,CESM1_MOD,CESM1_MOD_TIGHT,RASM_OPTION1,RASM_OPTION2</valid_values>
+    <default_value>CESM1_MOD_TIGHT</default_value>
+    <values>
+      <value compset="_DATM.*_DOCN%SOM"          >CESM1_MOD</value>
+      <value compset="_POP2"                     >CESM1_MOD</value>
+      <value compset="_DATM.*_DLND.*_DICE.*_DOCN">CESM1_MOD</value>
+      <value compset="_XATM.*_XLND.*_XICE.*_XOCN">CESM1_MOD</value>
+      <value compset="_SOCN"                     >CESM1_MOD</value>
+      <value compset="_MPAS"                     >CESM1_MOD</value>
+    </values>
+    <group>run_coupling</group>
+    <desc>
+      coupler sequencing option. 
+      CESM1_ORIG is the cesm1.1 implementation.  
+      CESM1_MOD includes a cesm1.3 mod that swaps ocean merging and atm/ocn flux 
+      computation.  
+      RASM_OPTION1 runs prep ocean before the ocean coupling reducing 
+      most of the lags and field inconsistency but still allowing the ocean to run 
+      concurrently with the ice and atmosphere.  
+      RASM_OPTION2 is similar to RASM_OPTION1 
+      but sequences the ice model, prep ocean and ocean model in that order.  The 
+      ocean model loses some of the concurrency with the ice model.  
+      CESM1_ORIG_TIGHT and CESM1_MOD_TIGHT are consistent with the old variables 
+      ocean_tight_coupling = true in the driver.  That namelist is gone and the 
+      cpl_seq_option flags take it's place.
+      TIGHT coupling makes no sense with the OPTION5 and OPTION6 flags.
+    </desc>
+  </entry>
+
+  <entry id="CCSM_BGC"> 
+    <type>char</type>
+    <valid_values></valid_values>one,CO2A,CO2B,CO2C,CO2_DMSA"  
+    <default_value>none</default_value> 
+    <values>
+      <value compset="_CAM"     >CO2A</value>
+      <value compset="_DATM"    >none</value>
+      <value compset="_BGC%BPRP">CO2C</value>
+      <value compset="_BGC%BDRD">CO2C</value>
+      <value compset="HIST.*_DATM%(QIA|CRU)">CO2A</value>
+      <value compset="RCP.*_DATM%(QIA|CRU)" >CO2A</value>
+    </values>
+    <group>run_cesm</group>
+    <desc>
+      BGC flag. If the value is not none, the coupler is compiled so that optional 
+      BGC related fields are exchanged between component models.  Currently 
+      only none and CO2A are supported.  CO2A will activate sending 
+      diagnostic and prognostic co2 from the atm component to the lnd component.
+    </desc>
+  </entry> 
+
+  <entry id="CCSM_CO2_PPMV"> 
+    <type>real</type>
+    <valid_values></valid_values>
+    <default_value>379.000</default_value> 
+    <values>
+      <value compset="^1850"           >284.7</value>
+      <value compset="^HIST.+BGC%BPRP" >284.7</value>
+      <value compset="^HIST_CAM4%FCHM" >0.000001</value>
+      <value compset="^2000_"          >367.0</value>
+      <value compset="^1850.+DATM%NYF" >379.000</value>
+      <value compset="^1850.+DATM%NYF.*_POP2%ECO" >284.7</value>
+      <value compset="^2000.+DATM%NYF" >379.000</value>
+      <value compset="^2000.+DATM%IAF" >379.000</value>
+      <value compset="^HIST.+DATM"     >367.0</value>
+      <value compset="^4804.+DATM"     >367.0</value> 
+      <value compset="^RCP2.+DATM"     >367.0</value> 
+      <value compset="^RCP4.+DATM"     >367.0</value> 
+      <value compset="^RCP6.+DATM"     >367.0</value> 
+      <value compset="^RCP8.+DATM"     >367.0</value> 
+      <value compset="^2000.+XATM"     >379.000 </value>
+      <value compset="^HIST.+CAM"      >0.000001</value>
+      <value compset="^5505.+CAM"      >0.000001</value>
+      <value compset="^RCP2.+CAM"      >0.000001</value>
+      <value compset="^RCP4.+CAM"      >0.000001</value>
+      <value compset="^RCP6.+CAM"      >0.000001</value>
+      <value compset="^RCP8.+CAM"      >0.000001</value>
+      <value compset="^2013.+CAM"      >0.000001</value>
+      <value compset="^GEOS.+CAM"      >0.000001</value>
+      <value compset="^AMIP.+CAM"      >0.000001</value>
+      <value compset="^AR95"           >368.9</value> 
+      <value compset="^AR97"           >368.9</value>
+      <value compset="^2003"           >367.0</value> 
+      <!-- Override values based on CAM (WACCM) chemistry -->
+      <value compset="CAM[45]%W"          >0.000001</value>
+      <value compset="CAM[45]%SSOA"       >0.000001</value>
+      <value compset="^2000.+CAM[45]%WCSC">368.9</value>
+      <value compset="^2000.+CAM[45]%MOZM">0.000001</value>
+      <value compset="^2000.+CAM[45]%MMOS">0.000001</value>
+      <value compset="^2000.+CAM[45]%TMOZ">0.000001</value>
+      <value compset="^2000.+CAM[45]%SMA3">0.000001</value>
+      <value compset="^2000.+CAM[45]%SMA7">0.000001</value>
+      <value compset="^2000.+CAM[45]%SSOA">0.000001</value>
+    </values>
+    <group>run_cesm</group>
+    <desc>
+      This set the namelist values of CO2 ppmv for CAM and CLM. This variables is
+      introduced to coordinate this value among multiple components
+    </desc>
+  </entry>
+
+  <entry id="CCSM_CCOST"> 
+    <type>integer</type>
+    <valid_values></valid_values> 
+    <default_value>0</default_value> 
+    <values>
+      <!-- estimated cost (used only for development purposes)  -->     
+      <value compset="_DATM.*_DLND.*_DICE.*_DOCN.*_DROF.*_SGLC_SWAV"   >-3</value> <!-- A --> 
+      <value compset="_DATM.*_DICE.*_DOCN.*_WW3"                       >-3</value> <!-- A_WAV --> 
+      <value compset="_DATM.*_SLND.*_DICE.*_POP2_DROF.*_SGLC_SWAV"     >-1</value> <!-- C --> 
+      <value compset="_DATM.*_SLND.*_DICE.*_POP2%ECO_DROF.*_SGLC_SWAV" > 1</value> <!-- CECO --> 
+      <value compset="_DATM.*_SLND.*_CICE.*_DOCN%SOM_DROF.*_SGLC_SWAV" > 1</value> <!-- D --> 
+      <value compset="_DATM.*_SLND.*_CICE.*_POP2_DROF.*_SGLC_SWAV"     >-1</value> <!-- G,H --> 
+      <value compset="_DATM.*_SLND.*_CICE.*_POP2%ECO_DROF.*_SGLC_SWAV" > 1</value> <!-- GECO --> 
+      <value compset="_DATM.*_CLM.*_SICE_SOCN_RTM.*_SGLC_SWAV"         >-2</value> <!-- I --> 
+      <value compset="_SATM_DLND.*_SICE_SOCN_SROF_CISM_SWAV"           >-5</value> <!-- TG -->
+      <value compset="_SATM_DLND.*_SICE_SOCN_RTM.*_SGLC_SWAV"          >-5</value> <!-- U -->
+      <value compset="_SATM_SLND_SICE_SOCN_SROF_SGLC_SWAV"             >-6</value> <!-- U -->
+      <value compset="_CAM4.*_CLM.*_CICE.*_DOCN.*_DROF.*_SGLC_SWAV"> 0</value> <!-- E --> 
+      <value compset="_CAM4.*_CLM.*_CICE.*_DOCN.*_RTM.*_SGLC_SWAV" > 0</value> <!-- F --> 
+      <value compset="_CAM4.*_CLM.*_DICE.*_DOCN.*_RTM.*_SGLC_SWAV" > 0</value> <!-- K --> 
+      <value compset="_CAM4.*_DLND.*_DICE.*_DOCN.*_SROF_SGLC_SWAV" > 0</value> <!-- L --> 
+      <value compset="_CAM4%TMOZ.*_CLM.*_CICE_DOCN.*_RTM.*_SGLC_SWAV"    > 1</value> <!-- FMOZ --> 
+      <value compset="GEOS_CAM4%TBAM.*_CLM.*_CICE_DOCN.*_RTM.*_SGLC_SWAV"> 3</value> <!-- FSDBAM --> 
+      <value compset="_CAM5"           >1</value>
+      <value compset="_CAM[45]%W"      >3</value>
+      <value compset="_CAM[45]%WCSC"   >1</value>
+      <value compset="_CAM5%MOZM"      >3</value>
+      <value compset="_CAM4%MOZS"      >3</value>
+      <value compset="_CAM4%SMA[37]"   >3</value>
+      <value compset="_CAM4%SSOA"      >3</value>
+      <value compset="_CAM4%TMOZ"      >1</value>
+      <value compset="_CAM4.*_BGC%BDRD">2</value>
+      <value compset="_CAM4.*_BGC%BPRP">2</value>
+      <value compset="CAM.*_CLM.*_CICE.*_POP2%DAR.*_RTM_SGLC_SWAV"  > 2</value> <!-- BDAR -->
+      <value compset="DATM.*_DLND.*_DICE.*_POP2%DAR.*_RTM_SGLC_SWAV"> 1</value> <!-- CDAR -->
+      <value compset="DATM.*_DLND.*_CICE.*_POP2%DAR.*_RTM_SGLC_SWAV"> 1</value> <!-- GDAR -->
+    </values>
+    <group>case_last</group>
+    <desc>
+      2**n relative cost of compset where B is 1 (DO NOT EDIT)
+    </desc>
+  </entry>
+
+  <entry id="CCSM_GCOST"> 
+    <type>integer</type>
+    <valid_values></valid_values> 
+    <default_value>0</default_value> 
+    <group>case_last</group>
+    <desc>
+      2**n relative cost of grid where f19_g15 is 1 (DO NOT EDIT)
+    </desc>
+  </entry>
+
+  <entry id="CCSM_MCOST"> 
+    <type>integer</type>
+    <valid_values></valid_values> 
+    <default_value>0</default_value> 
+    <group>case_last</group>
+    <desc>
+      2**n relative cost of machine (DO NOT EDIT)
+    </desc>
+  </entry>
+
+  <entry id="DRV_THREADING"> 
+    <type>logical</type>
+    <valid_values>TRUE,FALSE</valid_values>
+    <default_value>FALSE</default_value>
+    <group>run_flags</group>
+    <desc>
+      Turns on component varying thread control in the driver
+    </desc>
+  </entry>
+
+  <entry id="CPL_DECOMP"> 
+    <type>integer</type>
+    <valid_values>0,1,2,3,4,5,6</valid_values>
+    <default_value>0</default_value>
+    <group>run_flags</group>
+    <desc>
+      cpl decomp option
+    </desc>
+  </entry>
+
+  <entry id="BFBFLAG"> 
+    <type>logical</type>
+    <valid_values>TRUE,FALSE</valid_values>
+    <default_value>FALSE</default_value>
+    <group>run_flags</group>
+    <desc>turns on bit-for-bit reproducibility with varying pe counts in coupler</desc>
+  </entry>
+
+  <entry id="INFO_DBUG"> 
+    <type>integer</type>
+    <valid_values>0,1,2,3</valid_values>
+    <default_value>1</default_value>
+    <group>run_flags</group>
+    <desc>level of debug output, 0=minimum, 1=normal, 2=more, 3=too much</desc>
+  </entry> 
+
+  <entry id="SCIENCE_SUPPORT"> 
+    <type>char*256</type>
+    <valid_values></valid_values> 
+    <default_value>off</default_value>
+    <group>case_def</group>
+    <desc>case name</desc>
+  </entry>       
+
+  <descriptions>
+    <desc compset="BGC%BPRP">BGC CO2=prog, rad CO2=prog:</desc>
+    <desc compset="BGC%BDRD">BGC CO2=diag, rad CO2=diag:</desc>
+    <desc compset="POP2%ECO">ECO in POP:</desc>
+    <desc compset="_TEST" >--DO NOT USE FOR LONG SIMULATIONS: </desc> 
+    <desc compset="1850_">pre-industrial:</desc>
+    <desc compset="2000_">present day:</desc>
+    <desc compset="HIST_">Historical 1850 to 2000 transient: </desc> 
+    <desc compset="C2R[68]_">CCMI REFC2 1950 to 2100 transient: </desc> 
+    <desc compset="C2R4_">CCMI REFC2 2004 to 2100 transient: </desc> 
+    <desc compset="FRC1_">CCMI REFC1 Free running, 1950 to 2010 transient: </desc> 
+    <desc compset="SDC1_">CCMI REFC1 Specified dynamics, 1975 to 2010 transient: </desc> 
+    <desc compset="C2R8_">RCP8.5 future scenario: </desc>
+    <desc compset="C2R6_">RCP6.0 future scenario: </desc>
+    <desc compset="C2R4_">RCP4.5 future scenario: </desc>
+    <desc compset="5505_">1955 to 2005 transient: </desc> 
+    <desc compset="RCP8_">RCP8.5 future scenario: </desc>
+    <desc compset="RCP6_">RCP6.0 future scenario: </desc>
+    <desc compset="RCP4_">RCP4.5 future scenario: </desc>
+    <desc compset="RCP2_">RCP2.6 future scenario: </desc>
+    <desc compset="2013_">RCP4.5 based scenario from 2013 (control for WACCM/CARMA nuclear winter study): </desc>
+    <desc compset="9205_CAM"   >1992 to 2005 transient: </desc>
+    <desc compset="GEOS_CAM">GEOS5 meteorology: for stand-alone cam     </desc> 
+    <desc compset="HIST_CLM4[05]%CN">CLM transient land use: </desc>
+    <desc compset="PIPD">
+      pre-industrial (1850) to present day:
+      -----------------------------WARNING ------------------------------------------------
+      "PIPD" compsets use complete forcing data from observed sources 
+      up to the year 2005. Following this period they are a combination of observed sources 
+      (land-use, SST, sea ice, CO2, CH4, N2O) to present day and IPCC RCP4.5 scenario data.  
+      -------------------------------------------------------------------------------------
+    </desc>
+    <desc compset="CAM4.*_BGC%B">
+      -----------------------------WARNING ------------------------------------------------
+      This compset is not spun-up! In later versions of the model, spun-up initial
+      conditions will be provided and this warning will be removed.
+      -------------------------------------------------------------------------------------
+    </desc>
+  </descriptions>
+
+  <help>
+    =========================================
+    Notes: 
+    (1) Time period is first four characters of
+    compset name
+    =========================================
+  </help>
+
+</definitions_component>
+
+

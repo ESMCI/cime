@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+
+<?xml-stylesheet type="text/xsl" href="definitions_variables.xsl" ?>
+
+<definitions_variables> 
+
+  <entry id="CCSM_PCOST">
+    <type>integer</type>
+    <valid_values></valid_values>
+    <default_value>0</default_value>
+    <group>mach_pes_last</group>
+    <desc>cost relative to 64 pes (DO NOT EDIT)</desc>
+  </entry>
+
+  <entry id="CCSM_TCOST"> 
+    <type>integer</type>
+    <valid_values></valid_values> 
+    <default_value>0</default_value> 
+    <group>mach_pes_last</group>
+    <desc>relative cost of test where ERS is 1 (DO NOT EDIT)</desc>
+  </entry>
+
+  <entry id="CCSM_ESTCOST"> 
+    <type>integer</type>
+    <valid_values></valid_values> 
+    <default_value>0</default_value> 
+    <group>mach_pes_last</group>
+    <desc>relative total cost of case (DO NOT EDIT)</desc>
+  </entry>
+
+</definitions_variables>

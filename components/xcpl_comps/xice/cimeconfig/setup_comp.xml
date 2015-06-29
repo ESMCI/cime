@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+
+<?xml-stylesheet type="text/xsl" href="setup_comp.xsl" ?>
+
+<setup name="XICE">
+
+  <variable
+     name="COMP_ICE" 
+     type="char"
+     valid_values="xice"
+     value="xice"  
+     group="case_comp"
+     sdesc="Name of sea-ice component">
+  </variable>
+
+</setup>
