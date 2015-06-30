@@ -605,11 +605,11 @@ def getopt_parseconfig(opts,optkeys,caller,opts_dict):
 def standardized(gm,mu_gm,sigma_gm,loadings_gm):
     nvar=gm.shape[0]
     nfile=gm.shape[1] 
-    standardized_mean=np.zeros(gm.shape,dtype=np.float32)
+    standardized_mean=np.zeros(gm.shape,dtype=np.float64)
     for var in range(nvar):
       for file in range(nfile):
-        standardized_mean[var,file]=(gm[var,file]-mu_gm[var])/sigma_gm[var]
-    new_scores=np.dot(loadings_gm.T,standardized_mean)
+        standardized_mean[var,file]=(gm[var,file].astype(np.float64)-mu_gm[var].astype(np.float64))/sigma_gm[var].astype(np.float64)
+    new_scores=np.dot(loadings_gm.T.astype(np.float64),standardized_mean)
 
     return new_scores
 

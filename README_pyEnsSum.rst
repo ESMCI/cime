@@ -38,8 +38,9 @@ Before you start to use the package, you need to load the following modules:
        - module load scipy
        - module load pynio
        - svn co https://proxy.subversion.ucar.edu/pubasap/pyTools/tags/v0.3 ASAPTool
-       Note: need to install asaptools from pyTools and setup PYTHONPATH by following 
-             the instruction at README.rst
+       Note: need to install asaptools and setup PYTHONPATH by following 
+             the instruction at README.rst in ASAPTool, please make sure
+             to set the correct python verion in the PYTHONPATH
        
 To see all options (and defaults):
 ----------------------------------
