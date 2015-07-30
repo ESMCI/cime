@@ -1114,6 +1114,7 @@ def compare_raw_score(opts_dict,ifiles,timeslice,Var3d,Var2d):
     npts2d=0
     is_SE=False
     for fcount,fid in enumerate(ifiles): 
+        print 'case number= ', fcount
 	otimeSeries = fid.variables 
 	for vcount,var_name in enumerate(Var3d): 
 	    orig=otimeSeries[var_name][0]
