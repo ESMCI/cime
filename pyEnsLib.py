@@ -114,7 +114,7 @@ def calc_rmsz(o_files,openfile,var_name3d,var_name2d,tslice,is_SE,opts_dict,verb
               print Zscore.shape
               np.savetxt(fout,Zscore[0,1,:], fmt='%.3e')
 	   Zscore3d[vcount,fcount,:],bins = np.histogram(Zscore.astype(np.float64),bins=40,normed=True,range=(minrange,maxrange),density=True)
-           Zscore3d[vcount,fcount,:]=Zscore3d[vcount,fcount,:].astype(np.float64)/sum(Zscore3d[vcount,fcount,:]
+           Zscore3d[vcount,fcount,:]=Zscore3d[vcount,fcount,:].astype(np.float64)/sum(Zscore3d[vcount,fcount,:])
            print 'zscore3d vcount,fcount=',vcount,fcount,Zscore3d[vcount,fcount]
 
     for vcount,vname in enumerate(var_name2d):
@@ -159,7 +159,7 @@ def calc_rmsz(o_files,openfile,var_name3d,var_name2d,tslice,is_SE,opts_dict,verb
            moutput2d=np.ma.masked_values(output2d[fcount],data._FillValue)
 	   Zscore=abs((moutput2d-ens_avg2d[vcount])/np.where(ens_stddev2d[vcount] <= threshold, data._FillValue,ens_stddev2d[vcount]))
 	   Zscore2d[vcount,fcount,:],bins = np.histogram(Zscore.astype(np.float64),bins=40,normed=True,range=(minrange,maxrange),density=True)
-           Zscore2d[vcount,fcount,:]=Zscore2d[vcount,fcount,:].astype(np.float64)/sum(Zscore2d[vcount,fcount,:]
+           Zscore2d[vcount,fcount,:]=Zscore2d[vcount,fcount,:].astype(np.float64)/sum(Zscore2d[vcount,fcount,:])
            print 'zscore2d vcount,fcount=',vcount,fcount,Zscore2d[vcount,fcount]
      
     return Zscore3d,Zscore2d,ens_avg3d,ens_stddev3d,ens_avg2d,ens_stddev2d
@@ -179,6 +179,7 @@ def calculate_raw_score(k,v,npts3d,npts2d,ens_avg,ens_stddev,is_SE,opts_dict,Fil
       moutput=np.ma.masked_values(v,FillValue)
       Zscore=abs((moutput.astype(np.float64)-ens_avg)/np.where(ens_stddev <= threshold, FillValue,ens_stddev))
       Zscore,bins = np.histogram(Zscore.astype(np.float64),bins=opts_dict['nbin'],normed=True,range=(minrange,maxrange),density=True)
+      Zscore=Zscore.astype(np.float64)/sum(Zscore)
       print k,' zscore =',Zscore
   else:
       if k in ens_avg:
@@ -1088,6 +1089,9 @@ def gather_npArray_pop(npArray,me,array_shape):
 
 
 def compare_raw_score(opts_dict,ifiles,timeslice,Var3d,Var2d):
+    nbin=opts_dict['nbin']
+    Zscore3d = np.zeros((len(Var3d),len(ifiles),(nbin)),dtype=np.float32) 
+    Zscore2d = np.zeros((len(Var2d),len(ifiles),(nbin)),dtype=np.float32) 
     sum_file = Nio.open_file(opts_dict['sumfile'],'r')
     for k,v in sum_file.variables.iteritems():
 	if k == 'ens_stddev2d':
@@ -1107,14 +1111,15 @@ def compare_raw_score(opts_dict,ifiles,timeslice,Var3d,Var2d):
 	for vcount,var_name in enumerate(Var3d): 
 	    orig=otimeSeries[var_name][0]
             FillValue=otimeSeries[var_name]._FillValue
-	    Zscore,has_zscore=calculate_raw_score(var_name,orig,npts3d,npts2d,ens_avg3d[timeslice][vcount],ens_stddev3d[timeslice][vcount],is_SE,opts_dict,FillValue,0) 
+	    Zscore3d[vcount,fcount,:],has_zscore=calculate_raw_score(var_name,orig,npts3d,npts2d,ens_avg3d[timeslice][vcount],ens_stddev3d[timeslice][vcount],is_SE,opts_dict,FillValue,0) 
 	for vcount,var_name in enumerate(Var2d): 
 	    orig=otimeSeries[var_name][0]
             FillValue=otimeSeries[var_name]._FillValue
             print var_name,timeslice
-	    Zscore,has_zscore=calculate_raw_score(var_name,orig,npts3d,npts2d,ens_avg2d[timeslice][vcount],ens_stddev2d[timeslice][vcount],is_SE,opts_dict,FillValue,0) 
-     if has_zscore:
-        return Zscore
-     else:
-        Zscore=0
-        return Zscore
+	    Zscore2d[vcount,fcount,:],has_zscore=calculate_raw_score(var_name,orig,npts3d,npts2d,ens_avg2d[timeslice][vcount],ens_stddev2d[timeslice][vcount],is_SE,opts_dict,FillValue,0) 
+    if has_zscore:
+        return Zscore3d,Zscore2d
+    else:
+        Zscore3d=0
+        Zscore2d=0
+        return Zscore3d,Zscore2d
