@@ -108,11 +108,11 @@ def calc_rmsz(o_files,openfile,var_name3d,var_name2d,tslice,is_SE,opts_dict,verb
         else:
            moutput3d=np.ma.masked_values(output3d[fcount],data._FillValue)
 	   Zscore=abs((moutput3d-ens_avg3d[vcount])/np.where(ens_stddev3d[vcount] <= threshold, data._FillValue,ens_stddev3d[vcount]))
-           if fcount == 0 & vcount ==0:
-              time_val = this_file.variables['time'][0]
-	      fout = "Zscore_"+str(time_val)+".txt"
-              print Zscore.shape
-              np.savetxt(fout,Zscore[0,1,:], fmt='%.3e')
+           #if fcount == 0 & vcount ==0:
+           #   time_val = this_file.variables['time'][0]
+	   #   fout = "Zscore_"+str(time_val)+".txt"
+           #   print Zscore.shape
+           #   np.savetxt(fout,Zscore[0,1,:], fmt='%.3e')
 	   Zscore3d[vcount,fcount,:],bins = np.histogram(Zscore.astype(np.float64),bins=40,normed=True,range=(minrange,maxrange),density=True)
            Zscore3d[vcount,fcount,:]=Zscore3d[vcount,fcount,:].astype(np.float64)/sum(Zscore3d[vcount,fcount,:])
            print 'zscore3d vcount,fcount=',vcount,fcount,Zscore3d[vcount,fcount]
@@ -158,7 +158,7 @@ def calc_rmsz(o_files,openfile,var_name3d,var_name2d,tslice,is_SE,opts_dict,verb
         else:
            moutput2d=np.ma.masked_values(output2d[fcount],data._FillValue)
 	   Zscore=abs((moutput2d-ens_avg2d[vcount])/np.where(ens_stddev2d[vcount] <= threshold, data._FillValue,ens_stddev2d[vcount]))
-           count2d=np.ma.masked_value(Zscore,data_FillValue).count()
+           count2d=Zscore.count()
            print 'minrange=',minrange,maxrange,count2d,Zscore.shape
 	   Zscore2d[vcount,fcount,:],bins = np.histogram(Zscore.astype(np.float64),bins=40,range=(minrange,maxrange))
            Zscore2d[vcount,fcount,:]=Zscore2d[vcount,fcount,:].astype(np.float64)/count2d
@@ -179,8 +179,11 @@ def calculate_raw_score(k,v,npts3d,npts2d,ens_avg,ens_stddev,is_SE,opts_dict,Fil
   maxrange=opts_dict['maxrange'] 
   if popens:
       moutput=np.ma.masked_values(v,FillValue)
+      
       Zscore=abs((moutput.astype(np.float64)-ens_avg)/np.where(ens_stddev <= threshold, FillValue,ens_stddev))
-      print Zscore.shape,FillValue
+      print "Zscore count 1=",Zscore.count(),FillValue
+      Zscore=np.masked_where((moutput!=0)&(ens_stddev==0),Zscore)
+      print "Zscore count 2=",Zscore.count(),FillValue
       count=Zscore.count()
       print 'minrange=',minrange,maxrange,count,Zscore.shape
       Zscore,bins = np.histogram(Zscore.astype(np.float64),bins=40,range=(minrange,maxrange))
