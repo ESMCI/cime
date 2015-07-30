@@ -158,8 +158,10 @@ def calc_rmsz(o_files,openfile,var_name3d,var_name2d,tslice,is_SE,opts_dict,verb
         else:
            moutput2d=np.ma.masked_values(output2d[fcount],data._FillValue)
 	   Zscore=abs((moutput2d-ens_avg2d[vcount])/np.where(ens_stddev2d[vcount] <= threshold, data._FillValue,ens_stddev2d[vcount]))
-	   Zscore2d[vcount,fcount,:],bins = np.histogram(Zscore.astype(np.float64),bins=40,normed=True,range=(minrange,maxrange),density=True)
-           Zscore2d[vcount,fcount,:]=Zscore2d[vcount,fcount,:].astype(np.float64)/sum(Zscore2d[vcount,fcount,:])
+           count2d=np.ma.masked_value(Zscore,data_FillValue).count()
+           print 'minrange=',minrange,maxrange,count2d,Zscore.shape
+	   Zscore2d[vcount,fcount,:],bins = np.histogram(Zscore.astype(np.float64),bins=40,range=(minrange,maxrange))
+           Zscore2d[vcount,fcount,:]=Zscore2d[vcount,fcount,:].astype(np.float64)/count2d
            print 'zscore2d vcount,fcount=',vcount,fcount,Zscore2d[vcount,fcount]
      
     return Zscore3d,Zscore2d,ens_avg3d,ens_stddev3d,ens_avg2d,ens_stddev2d
@@ -178,8 +180,13 @@ def calculate_raw_score(k,v,npts3d,npts2d,ens_avg,ens_stddev,is_SE,opts_dict,Fil
   if popens:
       moutput=np.ma.masked_values(v,FillValue)
       Zscore=abs((moutput.astype(np.float64)-ens_avg)/np.where(ens_stddev <= threshold, FillValue,ens_stddev))
-      Zscore,bins = np.histogram(Zscore.astype(np.float64),bins=opts_dict['nbin'],normed=True,range=(minrange,maxrange),density=True)
-      Zscore=Zscore.astype(np.float64)/sum(Zscore)
+      print Zscore.shape,FillValue
+      count=Zscore.count()
+      print 'minrange=',minrange,maxrange,count,Zscore.shape
+      Zscore,bins = np.histogram(Zscore.astype(np.float64),bins=40,range=(minrange,maxrange))
+      print Zscore
+      Zscore=Zscore.astype(np.float32)/count
+      #Zscore=Zscore.astype(np.float64)/sum(Zscore)
       print k,' zscore =',Zscore
   else:
       if k in ens_avg:
