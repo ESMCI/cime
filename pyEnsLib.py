@@ -166,6 +166,14 @@ def calc_rmsz(o_files,openfile,var_name3d,var_name2d,tslice,is_SE,opts_dict,verb
      
     return Zscore3d,Zscore2d,ens_avg3d,ens_stddev3d,ens_avg2d,ens_stddev2d
 
+
+#def pop_zpdf(input_array,nbin,range,ens_avg,ens_stddev,FillValue):
+#   
+#   moutput=np.ma.masked_values(v,FillValue)
+#   moutput2=moutput
+#   Zscore_temp=np.fabs(moutput2.astype(np.float64)-ens_avg)/np.where(ens_stddev<=threshold,FillValue,ens_stddev))
+#   count=Zscore_temp.count()
+    
 #
 # Calculate rmsz score by compare the run file with the ensemble summary file 
 #
@@ -180,15 +188,17 @@ def calculate_raw_score(k,v,npts3d,npts2d,ens_avg,ens_stddev,is_SE,opts_dict,Fil
   if popens:
       #Masked the missing value
       moutput=np.ma.masked_values(v,FillValue)
+      print 'count=',moutput.count(),FillValue
       #Masked the ens_stddev=0
-      moutput2=moutput
       #moutput2=np.ma.masked_where(ens_stddev<=threshold,moutput)
-      Zscore_temp=np.fabs((moutput2.astype(np.float64)-ens_avg)/np.where(ens_stddev <=threshold,FillValue,ens_stddev))
+      Zscore_temp=np.fabs((moutput.astype(np.float64)-ens_avg)/np.where(ens_stddev <=threshold,FillValue,ens_stddev))
       #Count the unmasked value
       count=Zscore_temp.count()
       #Get the histogram in nbin and range
+      print 'compress=',Zscore_temp.compressed().shape
       Zscore,bins = np.histogram(Zscore_temp.compressed(),bins=40,range=(minrange,maxrange))
       #Normalize the number by dividing the count
+      print 'sum = ',sum(Zscore),count
       if count != 0:
          Zscore=Zscore.astype(np.float32)/count
       print k,' zscore =',Zscore
