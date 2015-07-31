@@ -172,24 +172,23 @@ def calc_rmsz(o_files,openfile,var_name3d,var_name2d,tslice,is_SE,opts_dict,verb
 def calculate_raw_score(k,v,npts3d,npts2d,ens_avg,ens_stddev,is_SE,opts_dict,FillValue,timeslice):
   count=0
   Zscore=0
-  threshold = 1.0e-13
+  threshold = 1.0e-12
   has_zscore=True
   popens=opts_dict['popens']
   minrange=opts_dict['minrange'] 
   maxrange=opts_dict['maxrange'] 
   if popens:
+      #Masked the missing value
       moutput=np.ma.masked_values(v,FillValue)
-      
-      Zscore=abs((moutput.astype(np.float64)-ens_avg)/np.where(ens_stddev <= threshold, FillValue,ens_stddev))
-      print "Zscore count 1=",Zscore.count(),FillValue
-      Zscore=np.masked_where((moutput!=0)&(ens_stddev==0),Zscore)
-      print "Zscore count 2=",Zscore.count(),FillValue
-      count=Zscore.count()
-      print 'minrange=',minrange,maxrange,count,Zscore.shape
-      Zscore,bins = np.histogram(Zscore.astype(np.float64),bins=40,range=(minrange,maxrange))
-      print Zscore
+      #Masked the ens_stddev=0
+      moutput2=np.ma.masked_where(ens_stddev<=threshold,moutput)
+      Zscore_temp=np.fabs((moutput2.astype(np.float64)-ens_avg)/ens_stddev)
+      #Count the unmasked value
+      count=Zscore_temp.count()
+      #Get the histogram in nbin and range
+      Zscore,bins = np.histogram(Zscore_temp.compressed(),bins=40,range=(minrange,maxrange))
+      #Normalize the number by dividing the count
       Zscore=Zscore.astype(np.float32)/count
-      #Zscore=Zscore.astype(np.float64)/sum(Zscore)
       print k,' zscore =',Zscore
   else:
       if k in ens_avg:
