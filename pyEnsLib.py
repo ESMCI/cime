@@ -82,7 +82,7 @@ def calc_rmsz(o_files,openfile,var_name3d,var_name2d,tslice,is_SE,opts_dict,verb
       if popens:
          moutput3d=np.ma.masked_values(output3d,data._FillValue)
          ens_avg3d[vcount]=np.ma.average(moutput3d,axis=0)
-         ens_stddev3d[vcount]=np.ma.std(moutput3d,axis=0,dtype=np.float64)
+         ens_stddev3d[vcount]=np.ma.std(moutput3d,axis=0,dtype=np.float32)
       else:
          ens_avg3d[vcount]=np.average(output3d,axis=0).astype(np.float32)
          ens_stddev3d[vcount]=np.std(output3d.astype(np.float64),axis=0,dtype=np.float64).astype(np.float32)
@@ -108,11 +108,11 @@ def calc_rmsz(o_files,openfile,var_name3d,var_name2d,tslice,is_SE,opts_dict,verb
         else:
            moutput3d=np.ma.masked_values(output3d[fcount],data._FillValue)
 	   Zscore=abs((moutput3d-ens_avg3d[vcount])/np.where(ens_stddev3d[vcount] <= threshold, data._FillValue,ens_stddev3d[vcount]))
-           #if fcount == 0 & vcount ==0:
-           #   time_val = this_file.variables['time'][0]
-	   #   fout = "Zscore_"+str(time_val)+".txt"
-           #   print Zscore.shape
-           #   np.savetxt(fout,Zscore[0,1,:], fmt='%.3e')
+           if fcount == 0 & vcount ==0:
+              time_val = this_file.variables['time'][0]
+	      fout = "Zscore_"+str(time_val)+".txt"
+              print Zscore.shape
+              np.savetxt(fout,Zscore[0,3,:], fmt='%.3e')
 	   Zscore3d[vcount,fcount,:],bins = np.histogram(Zscore.astype(np.float64),bins=40,normed=True,range=(minrange,maxrange),density=True)
            Zscore3d[vcount,fcount,:]=Zscore3d[vcount,fcount,:].astype(np.float64)/sum(Zscore3d[vcount,fcount,:])
            print 'zscore3d vcount,fcount=',vcount,fcount,Zscore3d[vcount,fcount]
@@ -131,7 +131,7 @@ def calc_rmsz(o_files,openfile,var_name3d,var_name2d,tslice,is_SE,opts_dict,verb
       if popens:
          moutput2d=np.ma.masked_values(output2d,data._FillValue)
          ens_avg2d[vcount]=np.ma.average(moutput2d,axis=0)
-         ens_stddev2d[vcount]=np.ma.std(moutput2d,axis=0,dtype=np.float64)
+         ens_stddev2d[vcount]=np.ma.std(moutput2d,axis=0,dtype=np.float32)
       else:
          ens_avg2d[vcount]=np.average(output2d,axis=0).astype(np.float32)
          ens_stddev2d[vcount]=np.std(output2d,axis=0,dtype=np.float64).astype(np.float32)
@@ -181,14 +181,16 @@ def calculate_raw_score(k,v,npts3d,npts2d,ens_avg,ens_stddev,is_SE,opts_dict,Fil
       #Masked the missing value
       moutput=np.ma.masked_values(v,FillValue)
       #Masked the ens_stddev=0
-      moutput2=np.ma.masked_where(ens_stddev<=threshold,moutput)
-      Zscore_temp=np.fabs((moutput2.astype(np.float64)-ens_avg)/ens_stddev)
+      moutput2=moutput
+      #moutput2=np.ma.masked_where(ens_stddev<=threshold,moutput)
+      Zscore_temp=np.fabs((moutput2.astype(np.float64)-ens_avg)/np.where(ens_stddev <=threshold,FillValue,ens_stddev))
       #Count the unmasked value
       count=Zscore_temp.count()
       #Get the histogram in nbin and range
       Zscore,bins = np.histogram(Zscore_temp.compressed(),bins=40,range=(minrange,maxrange))
       #Normalize the number by dividing the count
-      Zscore=Zscore.astype(np.float32)/count
+      if count != 0:
+         Zscore=Zscore.astype(np.float32)/count
       print k,' zscore =',Zscore
   else:
       if k in ens_avg:
@@ -684,16 +686,6 @@ def getopt_parseconfig(opts,optkeys,caller,opts_dict):
   flt  = '-*[0-9]+\.[0-9]+'
   flt_p=re.compile(flt)
 
-  #opts_dict={}
-  #put all optkeys in a dictionary and set default value
-  #for key in optkeys:
-  #  if key.find('=') != -1:
-  #    if key.find('tstart') !=-1 or key.find('tend') != -1:
-  #      opts_dict[key[0:key.find('=')]]=0
-  #    else:
-  #      opts_dict[key[0:key.find('=')]]=''
-  #  else:
-  #    opts_dict[key]=False
 
   for opt,arg in opts:
     if opt =='-h' and caller=='CECT':
@@ -730,7 +722,6 @@ def getopt_parseconfig(opts,optkeys,caller,opts_dict):
       for k in optkeys:
 	if k.find("=") != -1:
 	  keyword=k[0:k.find('=')]
-	  #if opt.find(keyword)!= -1:
           if opt == '--'+keyword:
             if arg.isdigit():
 	      opts_dict[keyword]=int(arg)
