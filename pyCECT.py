@@ -17,7 +17,7 @@ def main(argv):
 
 
     # Get command line stuff and store in a dictionary
-    s='verbose sumfile= indir= timeslice= nPC= sigMul= minPCFail= minRunFail= numRunFile= printVarTest popens jsonfile= mpi_enable nbin= minrange= maxrange='
+    s='verbose sumfile= indir= timeslice= nPC= sigMul= minPCFail= minRunFail= numRunFile= printVarTest popens jsonfile= mpi_enable nbin= minrange= maxrange= outfile='
     optkeys = s.split()
     try:
         opts, args = getopt.getopt(argv,"h",optkeys)
@@ -42,6 +42,7 @@ def main(argv):
     opts_dict['nbin'] = 40
     opts_dict['minrange'] = 0.0
     opts_dict['maxrange'] = 4.0
+    opts_dict['outfile'] = ''
     # Call utility library getopt_parseconfig to parse the option keys
     # and save to the dictionary
     caller = 'CECT'
@@ -97,7 +98,7 @@ def main(argv):
         if opts_dict['mpi_enable']:
             zmall = pyEnsLib.gather_npArray_pop(zmall,me,(me.get_size(),len(Var3d)+len(Var2d),len(ifiles),opts_dict['nbin'])) 
             if me.get_rank()==0:
-                fout = open("testcase.result","w")
+                fout = open(opts_dict['outfile'],"w")
 		for i in range(me.get_size()):
 		    for j in zmall[i]:
                         np.savetxt(fout,j,fmt='%-7.2e')

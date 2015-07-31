@@ -106,15 +106,17 @@ def calc_rmsz(o_files,openfile,var_name3d,var_name2d,tslice,is_SE,opts_dict,verb
 	   else:
 	     print "WARNING: no variance in "+vname
         else:
-           moutput3d=np.ma.masked_values(output3d[fcount],data._FillValue)
-	   Zscore=abs((moutput3d-ens_avg3d[vcount])/np.where(ens_stddev3d[vcount] <= threshold, data._FillValue,ens_stddev3d[vcount]))
-           if fcount == 0 & vcount ==0:
-              time_val = this_file.variables['time'][0]
-	      fout = "Zscore_"+str(time_val)+".txt"
-              print Zscore.shape
-              np.savetxt(fout,Zscore[0,3,:], fmt='%.3e')
-	   Zscore3d[vcount,fcount,:],bins = np.histogram(Zscore.astype(np.float64),bins=40,normed=True,range=(minrange,maxrange),density=True)
-           Zscore3d[vcount,fcount,:]=Zscore3d[vcount,fcount,:].astype(np.float64)/sum(Zscore3d[vcount,fcount,:])
+           Zscore=pop_zpdf(output3d[fcount],nbin,(minrange,maxrange),ens_avg3d[vcount],ens_stddev3d[vcount],data._FillValue,threshold)
+           #moutput3d=np.ma.masked_values(output3d[fcount],data._FillValue)
+	   #Zscore=abs((moutput3d-ens_avg3d[vcount])/np.where(ens_stddev3d[vcount] <= threshold, data._FillValue,ens_stddev3d[vcount]))
+           #if fcount == 0 & vcount ==0:
+           #   time_val = this_file.variables['time'][0]
+	   #   fout = "Zscore_"+str(time_val)+".txt"
+           #   print Zscore.shape
+           #   np.savetxt(fout,Zscore[0,3,:], fmt='%.3e')
+	   #Zscore3d[vcount,fcount,:],bins = np.histogram(Zscore.astype(np.float64),bins=40,normed=True,range=(minrange,maxrange),density=True)
+           #Zscore3d[vcount,fcount,:]=Zscore3d[vcount,fcount,:].astype(np.float64)/sum(Zscore3d[vcount,fcount,:])
+           Zscore3d[vcount,fcount,:]=Zscore[:]
            print 'zscore3d vcount,fcount=',vcount,fcount,Zscore3d[vcount,fcount]
 
     for vcount,vname in enumerate(var_name2d):
@@ -156,23 +158,33 @@ def calc_rmsz(o_files,openfile,var_name3d,var_name2d,tslice,is_SE,opts_dict,verb
 	   else:
 	     print "WARNING: no variance in "+vname
         else:
-           moutput2d=np.ma.masked_values(output2d[fcount],data._FillValue)
-	   Zscore=abs((moutput2d-ens_avg2d[vcount])/np.where(ens_stddev2d[vcount] <= threshold, data._FillValue,ens_stddev2d[vcount]))
-           count2d=Zscore.count()
-           print 'minrange=',minrange,maxrange,count2d,Zscore.shape
-	   Zscore2d[vcount,fcount,:],bins = np.histogram(Zscore.astype(np.float64),bins=40,range=(minrange,maxrange))
-           Zscore2d[vcount,fcount,:]=Zscore2d[vcount,fcount,:].astype(np.float64)/count2d
+           Zscore=pop_zpdf(output2d[fcount],nbin,(minrange,maxrange),ens_avg2d[vcount],ens_stddev2d[vcount],data._FillValue,threshold)
+           #moutput2d=np.ma.masked_values(output2d[fcount],data._FillValue)
+	   #Zscore=abs((moutput2d-ens_avg2d[vcount])/np.where(ens_stddev2d[vcount] <= threshold, data._FillValue,ens_stddev2d[vcount]))
+           #count2d=Zscore.count()
+           #print 'minrange=',minrange,maxrange,count2d,Zscore.shape
+	   #Zscore2d[vcount,fcount,:],bins = np.histogram(Zscore.astype(np.float64),bins=40,range=(minrange,maxrange))
+           #Zscore2d[vcount,fcount,:]=Zscore2d[vcount,fcount,:].astype(np.float64)/count2d
+           Zscore2d[vcount,fcount,:]=Zscore[:]
            print 'zscore2d vcount,fcount=',vcount,fcount,Zscore2d[vcount,fcount]
      
     return Zscore3d,Zscore2d,ens_avg3d,ens_stddev3d,ens_avg2d,ens_stddev2d
 
 
-#def pop_zpdf(input_array,nbin,range,ens_avg,ens_stddev,FillValue):
-#   
-#   moutput=np.ma.masked_values(v,FillValue)
-#   moutput2=moutput
-#   Zscore_temp=np.fabs(moutput2.astype(np.float64)-ens_avg)/np.where(ens_stddev<=threshold,FillValue,ens_stddev))
-#   count=Zscore_temp.count()
+def pop_zpdf(input_array,nbin,zrange,ens_avg,ens_stddev,FillValue,threshold):
+   
+   #Masked the missing value
+   moutput=np.ma.masked_values(input_array,FillValue)
+   #Masked the ens_stddev=0
+   #moutput2=np.ma.masked_where(ens_stddev<=threshold,moutput)
+   Zscore_temp=np.fabs((moutput.astype(np.float64)-ens_avg)/np.where(ens_stddev<=threshold,FillValue,ens_stddev))
+   #Count the unmasked value
+   count=Zscore_temp.count()
+   Zscore,bins = np.histogram(Zscore_temp.compressed(),bins=nbin,range=zrange)
+   #Normalize the number by dividing the count
+   if count != 0:
+      Zscore=Zscore.astype(np.float32)/count
+   return Zscore
     
 #
 # Calculate rmsz score by compare the run file with the ensemble summary file 
@@ -186,22 +198,7 @@ def calculate_raw_score(k,v,npts3d,npts2d,ens_avg,ens_stddev,is_SE,opts_dict,Fil
   minrange=opts_dict['minrange'] 
   maxrange=opts_dict['maxrange'] 
   if popens:
-      #Masked the missing value
-      moutput=np.ma.masked_values(v,FillValue)
-      print 'count=',moutput.count(),FillValue
-      #Masked the ens_stddev=0
-      #moutput2=np.ma.masked_where(ens_stddev<=threshold,moutput)
-      Zscore_temp=np.fabs((moutput.astype(np.float64)-ens_avg)/np.where(ens_stddev <=threshold,FillValue,ens_stddev))
-      #Count the unmasked value
-      count=Zscore_temp.count()
-      #Get the histogram in nbin and range
-      print 'compress=',Zscore_temp.compressed().shape
-      Zscore,bins = np.histogram(Zscore_temp.compressed(),bins=40,range=(minrange,maxrange))
-      #Normalize the number by dividing the count
-      print 'sum = ',sum(Zscore),count
-      if count != 0:
-         Zscore=Zscore.astype(np.float32)/count
-      print k,' zscore =',Zscore
+      Zscore=pop_zpdf(v,opts_dict['nbin'],(minrange,maxrange),ens_avg,ens_stddev,FillValue,threshold)
   else:
       if k in ens_avg:
 	if is_SE:
