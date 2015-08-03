@@ -106,16 +106,13 @@ def calc_rmsz(o_files,openfile,var_name3d,var_name2d,tslice,is_SE,opts_dict,verb
 	   else:
 	     print "WARNING: no variance in "+vname
         else:
-           Zscore=pop_zpdf(output3d[fcount],nbin,(minrange,maxrange),ens_avg3d[vcount],ens_stddev3d[vcount],data._FillValue,threshold)
-           #moutput3d=np.ma.masked_values(output3d[fcount],data._FillValue)
-	   #Zscore=abs((moutput3d-ens_avg3d[vcount])/np.where(ens_stddev3d[vcount] <= threshold, data._FillValue,ens_stddev3d[vcount]))
+           rmask=this_file.variables['REGION_MASK']
+           Zscore=pop_zpdf(output3d[fcount],nbin,(minrange,maxrange),ens_avg3d[vcount],ens_stddev3d[vcount],data._FillValue,threshold,rmask)
            #if fcount == 0 & vcount ==0:
            #   time_val = this_file.variables['time'][0]
 	   #   fout = "Zscore_"+str(time_val)+".txt"
            #   print Zscore.shape
            #   np.savetxt(fout,Zscore[0,3,:], fmt='%.3e')
-	   #Zscore3d[vcount,fcount,:],bins = np.histogram(Zscore.astype(np.float64),bins=40,normed=True,range=(minrange,maxrange),density=True)
-           #Zscore3d[vcount,fcount,:]=Zscore3d[vcount,fcount,:].astype(np.float64)/sum(Zscore3d[vcount,fcount,:])
            Zscore3d[vcount,fcount,:]=Zscore[:]
            print 'zscore3d vcount,fcount=',vcount,fcount,Zscore3d[vcount,fcount]
 
@@ -158,28 +155,34 @@ def calc_rmsz(o_files,openfile,var_name3d,var_name2d,tslice,is_SE,opts_dict,verb
 	   else:
 	     print "WARNING: no variance in "+vname
         else:
-           Zscore=pop_zpdf(output2d[fcount],nbin,(minrange,maxrange),ens_avg2d[vcount],ens_stddev2d[vcount],data._FillValue,threshold)
-           #moutput2d=np.ma.masked_values(output2d[fcount],data._FillValue)
-	   #Zscore=abs((moutput2d-ens_avg2d[vcount])/np.where(ens_stddev2d[vcount] <= threshold, data._FillValue,ens_stddev2d[vcount]))
-           #count2d=Zscore.count()
-           #print 'minrange=',minrange,maxrange,count2d,Zscore.shape
-	   #Zscore2d[vcount,fcount,:],bins = np.histogram(Zscore.astype(np.float64),bins=40,range=(minrange,maxrange))
-           #Zscore2d[vcount,fcount,:]=Zscore2d[vcount,fcount,:].astype(np.float64)/count2d
+           rmask=this_file.variables['REGION_MASK']
+           Zscore=pop_zpdf(output2d[fcount],nbin,(minrange,maxrange),ens_avg2d[vcount],ens_stddev2d[vcount],data._FillValue,threshold,rmask)
            Zscore2d[vcount,fcount,:]=Zscore[:]
            print 'zscore2d vcount,fcount=',vcount,fcount,Zscore2d[vcount,fcount]
      
     return Zscore3d,Zscore2d,ens_avg3d,ens_stddev3d,ens_avg2d,ens_stddev2d
 
 
-def pop_zpdf(input_array,nbin,zrange,ens_avg,ens_stddev,FillValue,threshold):
+def pop_zpdf(input_array,nbin,zrange,ens_avg,ens_stddev,FillValue,threshold,rmask):
    
    #Masked the missing value
    moutput=np.ma.masked_values(input_array,FillValue)
-   #Masked the ens_stddev=0
-   #moutput2=np.ma.masked_where(ens_stddev<=threshold,moutput)
-   Zscore_temp=np.fabs((moutput.astype(np.float64)-ens_avg)/np.where(ens_stddev<=threshold,FillValue,ens_stddev))
+   print 'before count=',moutput.count()
+   if input_array.ndim==3:
+      rmask3d=np.zeros(input_array.shape,dtype=np.int32)
+      for i in rmask3d:
+          i[:,:]=rmask[:,:]
+      rmask_array=rmask3d
+   elif input_array.ndim==2:
+      rmask_array=np.zeros(input_array.shape,dtype=np.int32)
+      rmask_array[:,:]=rmask[:,:]
+   #Masked the rmask<1 or rmask>6
+   moutput2=np.ma.masked_where((rmask_array<1)|(rmask_array>6),moutput)
+   print 'moutput2 count=',moutput2.count()
+   Zscore_temp=np.fabs((moutput2.astype(np.float64)-ens_avg)/np.where(ens_stddev<=threshold,FillValue,ens_stddev))
    #Count the unmasked value
    count=Zscore_temp.count()
+   print 'Zscore count=',count
    Zscore,bins = np.histogram(Zscore_temp.compressed(),bins=nbin,range=zrange)
    #Normalize the number by dividing the count
    if count != 0:
@@ -189,7 +192,7 @@ def pop_zpdf(input_array,nbin,zrange,ens_avg,ens_stddev,FillValue,threshold):
 #
 # Calculate rmsz score by compare the run file with the ensemble summary file 
 #
-def calculate_raw_score(k,v,npts3d,npts2d,ens_avg,ens_stddev,is_SE,opts_dict,FillValue,timeslice):
+def calculate_raw_score(k,v,npts3d,npts2d,ens_avg,ens_stddev,is_SE,opts_dict,FillValue,timeslice,rmask):
   count=0
   Zscore=0
   threshold = 1.0e-12
@@ -198,7 +201,7 @@ def calculate_raw_score(k,v,npts3d,npts2d,ens_avg,ens_stddev,is_SE,opts_dict,Fil
   minrange=opts_dict['minrange'] 
   maxrange=opts_dict['maxrange'] 
   if popens:
-      Zscore=pop_zpdf(v,opts_dict['nbin'],(minrange,maxrange),ens_avg,ens_stddev,FillValue,threshold)
+      Zscore=pop_zpdf(v,opts_dict['nbin'],(minrange,maxrange),ens_avg,ens_stddev,FillValue,threshold,rmask)
   else:
       if k in ens_avg:
 	if is_SE:
@@ -1096,6 +1099,7 @@ def gather_npArray_pop(npArray,me,array_shape):
 
 
 def compare_raw_score(opts_dict,ifiles,timeslice,Var3d,Var2d):
+    rmask_var = 'REGION_MASK'
     nbin=opts_dict['nbin']
     Zscore3d = np.zeros((len(Var3d),len(ifiles),(nbin)),dtype=np.float32) 
     Zscore2d = np.zeros((len(Var2d),len(ifiles),(nbin)),dtype=np.float32) 
@@ -1116,15 +1120,16 @@ def compare_raw_score(opts_dict,ifiles,timeslice,Var3d,Var2d):
     for fcount,fid in enumerate(ifiles): 
         print 'case number= ', fcount
 	otimeSeries = fid.variables 
+        rmask=otimeSeries[rmask_var]
 	for vcount,var_name in enumerate(Var3d): 
 	    orig=otimeSeries[var_name][0]
             FillValue=otimeSeries[var_name]._FillValue
-	    Zscore3d[vcount,fcount,:],has_zscore=calculate_raw_score(var_name,orig,npts3d,npts2d,ens_avg3d[timeslice][vcount],ens_stddev3d[timeslice][vcount],is_SE,opts_dict,FillValue,0) 
+	    Zscore3d[vcount,fcount,:],has_zscore=calculate_raw_score(var_name,orig,npts3d,npts2d,ens_avg3d[timeslice][vcount],ens_stddev3d[timeslice][vcount],is_SE,opts_dict,FillValue,0,rmask) 
 	for vcount,var_name in enumerate(Var2d): 
 	    orig=otimeSeries[var_name][0]
             FillValue=otimeSeries[var_name]._FillValue
             print var_name,timeslice
-	    Zscore2d[vcount,fcount,:],has_zscore=calculate_raw_score(var_name,orig,npts3d,npts2d,ens_avg2d[timeslice][vcount],ens_stddev2d[timeslice][vcount],is_SE,opts_dict,FillValue,0) 
+	    Zscore2d[vcount,fcount,:],has_zscore=calculate_raw_score(var_name,orig,npts3d,npts2d,ens_avg2d[timeslice][vcount],ens_stddev2d[timeslice][vcount],is_SE,opts_dict,FillValue,0,rmask) 
     if has_zscore:
         return Zscore3d,Zscore2d
     else:
