@@ -5,6 +5,8 @@ import numpy as np
 import Nio
 import time
 import pyEnsLib
+import json
+import random
 from datetime import datetime
 from asaptools.partition import EqualStride, Duplicate
 import asaptools.simplecomm as simplecomm 
@@ -17,7 +19,7 @@ def main(argv):
 
 
     # Get command line stuff and store in a dictionary
-    s='verbose sumfile= indir= timeslice= nPC= sigMul= minPCFail= minRunFail= numRunFile= printVarTest popens jsonfile= mpi_enable nbin= minrange= maxrange= outfile='
+    s='verbose sumfile= indir= timeslice= nPC= sigMul= minPCFail= minRunFail= numRunFile= printVarTest popens jsonfile= mpi_enable nbin= minrange= maxrange= outfile= casejson= npick='
     optkeys = s.split()
     try:
         opts, args = getopt.getopt(argv,"h",optkeys)
@@ -42,7 +44,9 @@ def main(argv):
     opts_dict['nbin'] = 40
     opts_dict['minrange'] = 0.0
     opts_dict['maxrange'] = 4.0
-    opts_dict['outfile'] = ''
+    opts_dict['outfile'] = 'testcase.result'
+    opts_dict['casejson'] = ''
+    opts_dict['npick'] = 10
     # Call utility library getopt_parseconfig to parse the option keys
     # and save to the dictionary
     caller = 'CECT'
@@ -69,10 +73,19 @@ def main(argv):
     else:
         me=simplecomm.create_comm(not opts_dict['mpi_enable'])
   
-    # Open all input files
     ifiles=[]
-    in_files_temp=os.listdir(opts_dict['indir'])
+    if opts_dict['casejson']:
+       with open(opts_dict['casejson']) as fin:
+            result=json.load(fin)
+            in_files_first=result['not_pick_files']
+            in_files_temp=random.sample(in_files_first,opts_dict['npick'])
+            
+    else: 
+       # Open all input files
+       in_files_temp=os.listdir(opts_dict['indir'])
     in_files=sorted(in_files_temp)
+    print 'testcase files:'
+    print '\n'.join(in_files)
 
     if popens:
         #Partition the input file list 

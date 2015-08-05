@@ -8,6 +8,7 @@ import re
 import json
 import random
 import asaptools.simplecomm as simplecomm 
+import fnmatch
 
 #
 # Parse header file of a netcdf to get the varaible 3d/2d/1d list
@@ -187,6 +188,9 @@ def pop_zpdf(input_array,nbin,zrange,ens_avg,ens_stddev,FillValue,threshold,rmas
    #Normalize the number by dividing the count
    if count != 0:
       Zscore=Zscore.astype(np.float32)/count
+      print 'sum=',np.sum(Zscore)
+   else:
+      print 'count=0,sum=',np.sum(Zscore)
    return Zscore
     
 #
@@ -1019,6 +1023,35 @@ def Random_pickup(ifiles,opts_dict):
 
     return new_ifiles
 
+
+def Random_pickup_pop(indir,opts_dict,npick):
+    random_year_range=opts_dict['nyear']
+    random_month_range=opts_dict['nmonth']
+    random_case_range=opts_dict['npert']
+    #pyear=random.sample(range(1,random_year_range+1),1)[0]
+    pyear=1
+    pmonth=12
+    #pmonth=random.sample(range(1,random_month_range+1),1)[0]
+    pcase=random.sample(range(0,random_case_range),npick)
+ 
+
+    new_ifiles_temp=[] 
+    not_pick_files=[]
+    for i in pcase: 
+        wildname='*'+str(i).zfill(4)+'*'+str(pyear).zfill(4)+'-'+str(pmonth).zfill(2)+'*'
+        print wildname
+        for filename in os.listdir(opts_dict['indir']):
+            if fnmatch.fnmatch(filename,wildname):
+               new_ifiles_temp.append(filename)
+    for filename in os.listdir(opts_dict['indir']):
+        if filename not in new_ifiles_temp:
+           not_pick_files.append(filename)
+    with open(opts_dict['jsondir']+'random_testcase.'+str(npick)+'.'+str(opts_dict['seq'])+'.json','wb') as fout:
+         json.dump({'not_pick_files':not_pick_files},fout,sort_keys=True,indent=4,ensure_ascii=True)
+    print sorted(new_ifiles_temp)
+    print sorted(not_pick_files)
+    return sorted(new_ifiles_temp)
+    
 #
 # Check the false positive rate
 #

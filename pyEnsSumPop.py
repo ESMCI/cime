@@ -13,7 +13,7 @@ def main(argv):
     print 'Running pyEnsSumPop!'
 
     # Get command line stuff and store in a dictionary
-    s = 'tag= compset= nyear= nmonth= npert= nbin= minrange= maxrange= res= sumfile= indir= mach= verbose jsonfile= mpi_enable gmonly popens'
+    s = 'tag= compset= nyear= nmonth= npert= nbin= minrange= maxrange= res= sumfile= indir= mach= verbose jsonfile= mpi_enable gmonly popens nrand= rand seq= jsondir='
     optkeys = s.split()
     try: 
         opts, args = getopt.getopt(argv, "h", optkeys)
@@ -42,6 +42,10 @@ def main(argv):
     opts_dict['mpi_enable'] = False
     opts_dict['gmonly'] = False
     opts_dict['popens'] = True
+    opts_dict['nrand'] = 40 
+    opts_dict['rand'] = False
+    opts_dict['seq'] = 0 
+    opts_dict['jsondir'] = '/glade/scratch/haiyingx' 
 
     # This creates the dictionary of input arguments 
     print "before parseconfig"
@@ -75,9 +79,12 @@ def main(argv):
 
     in_files=[]
     if(os.path.exists(input_dir)):
-        # Get the list of files
-        in_files_temp = os.listdir(input_dir)
-        in_files=sorted(in_files_temp)
+        if opts_dict['rand']:
+           in_files=pyEnsLib.Random_pickup_pop(input_dir,opts_dict,opts_dict['nrand'])
+        else:    
+           # Get the list of files
+           in_files_temp = os.listdir(input_dir)
+           in_files=sorted(in_files_temp)
         # Make sure we have enough
         num_files = len(in_files)
     else:
@@ -101,6 +108,9 @@ def main(argv):
         else:
             print "COULD NOT LOCATE FILE "+ input_dir + onefile + "! EXITING...."
             sys.exit() 
+
+
+    print in_file_list
 
     # Store dimensions of the input fields
     if (verbose == True):
@@ -249,7 +259,7 @@ def main(argv):
        print "Calculating global means ....."
     is_SE = False
     tslice=0
-    gm3d,gm2d = pyEnsLib.generate_global_mean_for_summary(o_files,Var3d,Var2d,tslice, is_SE,opts_dict['popens'],False,verbose)
+    #gm3d,gm2d = pyEnsLib.generate_global_mean_for_summary(o_files,Var3d,Var2d,tslice, is_SE,opts_dict['popens'],False,verbose)
     if verbose:
        print "Finish calculating global means ....."
 
@@ -262,14 +272,14 @@ def main(argv):
     if opts_dict['mpi_enable'] :
 	# Gather the 3d variable results from all processors to the master processor
 	# Gather global means 3d results
-        gmall=np.concatenate((gm3d,gm2d),axis=0)
-        print "before gather, gmall.shape=",gmall.shape
-	gmall=pyEnsLib.gather_npArray_pop(gmall,me,(me.get_size(),len(Var3d)+len(Var2d),len(o_files)))
+        #gmall=np.concatenate((gm3d,gm2d),axis=0)
+        #print "before gather, gmall.shape=",gmall.shape
+	#gmall=pyEnsLib.gather_npArray_pop(gmall,me,(me.get_size(),len(Var3d)+len(Var2d),len(o_files)))
         zmall=np.concatenate((zscore3d,zscore2d),axis=0)
         zmall=pyEnsLib.gather_npArray_pop(zmall,me,(me.get_size(),len(Var3d)+len(Var2d),len(o_files),nbin))
         print 'zmall=',zmall
         
-        print "after gather, gmall.shape=",gmall.shape
+        #print "after gather, gmall.shape=",gmall.shape
         print "before gather, ens_avg3d.shape=",ens_avg3d.shape
         ens_avg3d=pyEnsLib.gather_npArray_pop(ens_avg3d,me,(me.get_size(),len(Var3d),nlev,(nlat),nlon))
         print "after gather, ens_avg3d.shape=",ens_avg3d.shape
@@ -286,7 +296,7 @@ def main(argv):
 	    v_ens_stddev3d[:,:,:,:,:]=ens_stddev3d[:,:,:,:,:]
 	    v_ens_avg2d[:,:,:,:]=ens_avg2d[:,:,:,:]
 	    v_ens_stddev2d[:,:,:,:]=ens_stddev2d[:,:,:,:]
-	v_gm[:,:,:]=gmall[:,:,:]
+	#v_gm[:,:,:]=gmall[:,:,:]
         print "All done"
 
 if __name__ == "__main__":
