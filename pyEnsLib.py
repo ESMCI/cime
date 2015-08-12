@@ -25,12 +25,12 @@ def parse_header_file(filename):
 def calc_rmsz(o_files,openfile,var_name3d,var_name2d,tslice,is_SE,opts_dict,verbose):
     threshold=1e-12
     popens = opts_dict['popens']
-    nbin = opts_dict['nbin']
-    minrange = opts_dict['minrange']
-    maxrange = opts_dict['maxrange']
 
     input_dims = openfile.dimensions
     if popens:
+       nbin = opts_dict['nbin']
+       minrange = opts_dict['minrange']
+       maxrange = opts_dict['maxrange']
        nlev=input_dims['z_t']
     else:
        nlev=input_dims["lev"]
@@ -46,8 +46,13 @@ def calc_rmsz(o_files,openfile,var_name3d,var_name2d,tslice,is_SE,opts_dict,verb
       ens_avg2d=np.zeros((len(var_name2d),ncol),dtype=np.float32)
       ens_stddev2d=np.zeros((len(var_name2d),ncol),dtype=np.float32)
     else:
-      nlon = input_dims["nlon"]
-      nlat = input_dims["nlat"]
+      if 'nlon' in input_dims:
+         nlon = input_dims["nlon"]
+         nlat = input_dims["nlat"]
+      elif 'lon' in input_dims:
+         nlon = input_dims["lon"]
+         nlat = input_dims["lat"]
+       
       npts2d=nlat*nlon
       npts3d=nlev*nlat*nlon
       output3d = np.zeros((len(o_files),nlev,nlat,nlon),dtype=np.float32)
@@ -234,6 +239,8 @@ def calculate_raw_score(k,v,npts3d,npts2d,ens_avg,ens_stddev,is_SE,opts_dict,Fil
 # Create some variables and call a function to calculate PCA
 #
 def pre_PCA(gm):
+    threshold= 1.0e-12
+    FillValue= 1.0e+30
     gm_len=gm.shape
     nvar=gm_len[0]
     nfile=gm_len[1]
@@ -244,7 +251,8 @@ def pre_PCA(gm):
 
     for var in range(nvar):
       for file in range(nfile):
-        standardized_global_mean[var,file]=(gm[var,file]-mu_gm[var])/sigma_gm[var]
+        standardized_global_mean[var,file]=(gm[var,file]-mu_gm[var])/np.where(sigma_gm[var]<=threshold,FillValue,sigma_gm[var])
+
     loadings_gm=princomp(standardized_global_mean)
 
     #now do coord transformation on the standardized meana to get the scores
@@ -393,8 +401,12 @@ def generate_global_mean_for_summary(o_files,var_name3d,var_name2d,tslice,is_SE,
            nlat = get_lev(input_dims,'lat') 
            gw = o_files[0].variables["gw"]
         else:
-           nlon = get_lev(input_dims,'nlon') 
-           nlat = get_lev(input_dims,'nlat') 
+           if 'nlon' in input_dims:
+              nlon = get_lev(input_dims,'nlon') 
+              nlat = get_lev(input_dims,'nlat') 
+           elif 'lon' in input_dims:
+              nlon = get_lev(input_dims,'lon') 
+              nlat = get_lev(input_dims,'lat') 
            gw = o_files[0].variables["TAREA"]
            z_wgt = o_files[0].variables["dz"]  
         output3d = np.zeros((nlev, nlat, nlon))
@@ -611,10 +623,10 @@ def get_ncol_nlev(frun):
       nlev = v
     if k == 'ncol':
       ncol = v
-    if k == 'lat':
+    if (k == 'lat') or (k=='nlat'):
       nlat = v
       
-    if k == 'lon':
+    if (k == 'lon') or (k=='nlon'):
       nlon = v
     
   if ncol == -1 :
@@ -756,12 +768,14 @@ def getopt_parseconfig(opts,optkeys,caller,opts_dict):
 # Figure out the scores of the 3 new runs, standardized global means, then multiple by the loadings_gm
 #
 def standardized(gm,mu_gm,sigma_gm,loadings_gm):
+    threshold=1.0e-12
+    FillValue=1.0e+30
     nvar=gm.shape[0]
     nfile=gm.shape[1] 
     standardized_mean=np.zeros(gm.shape,dtype=np.float64)
     for var in range(nvar):
       for file in range(nfile):
-        standardized_mean[var,file]=(gm[var,file].astype(np.float64)-mu_gm[var].astype(np.float64))/sigma_gm[var].astype(np.float64)
+        standardized_mean[var,file]=(gm[var,file].astype(np.float64)-mu_gm[var].astype(np.float64))/np.where(sigma_gm[var].astype(np.float64<=threshold, FillValue,sigma_gm[var]))
     new_scores=np.dot(loadings_gm.T.astype(np.float64),standardized_mean)
 
     return new_scores

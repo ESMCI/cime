@@ -366,7 +366,7 @@ def main(argv):
     if (verbose == True):
         print "Calculating RMSZ scores ....."
     if not opts_dict['gmonly']:
-        zscore3d,zscore2d,ens_avg3d,ens_stddev3d,ens_avg2d,ens_stddev2d=pyEnsLib.calc_rmsz(o_files,o_files[0],var3_list_loc,var2_list_loc,tslice,is_SE,verbose)    
+        zscore3d,zscore2d,ens_avg3d,ens_stddev3d,ens_avg2d,ens_stddev2d=pyEnsLib.calc_rmsz(o_files,o_files[0],var3_list_loc,var2_list_loc,tslice,is_SE,opts_dict,verbose)    
 
     # Calculate max norm ensemble
     if opts_dict['maxnorm']:
