@@ -19,7 +19,7 @@ def main(argv):
 
 
     # Get command line stuff and store in a dictionary
-    s='verbose sumfile= indir= timeslice= nPC= sigMul= minPCFail= minRunFail= numRunFile= printVarTest popens jsonfile= mpi_enable nbin= minrange= maxrange= outfile= casejson= npick='
+    s='verbose sumfile= indir= timeslice= nPC= sigMul= minPCFail= minRunFail= numRunFile= printVarTest popens jsonfile= mpi_enable nbin= minrange= maxrange= outfile= casejson= npick= pepsi_gm'
     optkeys = s.split()
     try:
         opts, args = getopt.getopt(argv,"h",optkeys)
@@ -47,6 +47,7 @@ def main(argv):
     opts_dict['outfile'] = 'testcase.result'
     opts_dict['casejson'] = ''
     opts_dict['npick'] = 10
+    opts_dict['pepsi_gm'] = False
     # Call utility library getopt_parseconfig to parse the option keys
     # and save to the dictionary
     caller = 'CECT'
@@ -151,7 +152,7 @@ def main(argv):
 		otimeSeries = fid.variables 
 		for var_name in ens_var_name: 
 		    orig=otimeSeries[var_name]
-		    Zscore,has_zscore=pyEnsLib.calculate_raw_score(var_name,orig[opts_dict['timeslice']],npts3d,npts2d,ens_avg,ens_stddev,is_SE) 
+		    Zscore,has_zscore=pyEnsLib.calculate_raw_score(var_name,orig[opts_dict['timeslice']],npts3d,npts2d,ens_avg,ens_stddev,is_SE,opts_dict,0,0,0) 
 		    if has_zscore:
 			# Add the new run rmsz zscore to the dictionary "results"
 			pyEnsLib.addresults(results,'zscore',Zscore,var_name,'f'+str(fcount))
@@ -162,7 +163,7 @@ def main(argv):
 		countzscore[fcount]=pyEnsLib.evaluatestatus('zscore','zscoreRange',variables,'ens',results,'f'+str(fcount))
 
 	# Calculate the new run global mean
-	mean3d,mean2d=pyEnsLib.generate_global_mean_for_summary(ifiles,var_name3d,var_name2d,opts_dict['timeslice'],is_SE,verbose)
+	mean3d,mean2d=pyEnsLib.generate_global_mean_for_summary(ifiles,var_name3d,var_name2d,opts_dict['timeslice'],is_SE,opts_dict['popens'],opts_dict['pepsi_gm'],verbose)
 	means=np.concatenate((mean3d,mean2d),axis=0)
 
 	# Add the new run global mean to the dictionary "results"

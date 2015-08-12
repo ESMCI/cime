@@ -202,9 +202,9 @@ def calculate_raw_score(k,v,npts3d,npts2d,ens_avg,ens_stddev,is_SE,opts_dict,Fil
   threshold = 1.0e-12
   has_zscore=True
   popens=opts_dict['popens']
-  minrange=opts_dict['minrange'] 
-  maxrange=opts_dict['maxrange'] 
   if popens:
+      minrange=opts_dict['minrange'] 
+      maxrange=opts_dict['maxrange'] 
       Zscore=pop_zpdf(v,opts_dict['nbin'],(minrange,maxrange),ens_avg,ens_stddev,FillValue,threshold,rmask)
   else:
       if k in ens_avg:
