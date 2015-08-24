@@ -775,7 +775,7 @@ def standardized(gm,mu_gm,sigma_gm,loadings_gm):
     standardized_mean=np.zeros(gm.shape,dtype=np.float64)
     for var in range(nvar):
       for file in range(nfile):
-        standardized_mean[var,file]=(gm[var,file].astype(np.float64)-mu_gm[var].astype(np.float64))/np.where(sigma_gm[var].astype(np.float64<=threshold, FillValue,sigma_gm[var]))
+        standardized_mean[var,file]=(gm[var,file].astype(np.float64)-mu_gm[var].astype(np.float64))/np.where(sigma_gm[var].astype(np.float64)<=threshold, FillValue,sigma_gm[var])
     new_scores=np.dot(loadings_gm.T.astype(np.float64),standardized_mean)
 
     return new_scores
