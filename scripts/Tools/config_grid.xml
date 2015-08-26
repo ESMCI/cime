@@ -90,6 +90,13 @@ Each grid is associated with five names
 <GRID sname="ne120np4_ne120np4"     alias="ne120_ne120"  compset="(DOCN|XOCN|SOCN|AQUAP)">a%ne120np4_l%ne120np4_oi%ne120np4_r%r05_m%gx1v6_g%null_w%null</GRID>
 <GRID sname="ne240np4_ne240np4"     alias="ne240_ne240"  compset="(DOCN|XOCN|SOCN|AQUAP)">a%ne240np4_l%ne240np4_oi%ne240np4_r%null_m%gx1v6_g%null_w%null</GRID>
 
+<!--  cubed-sphere finite-volume grids -->
+
+<GRID sname="C48_1.9x2.5_gx1v6"      alias="C48_f19_g16"  >a%C48_l%1.9x2.5_oi%gx1v6_r%r05_m%gx1v6_g%null_w%null</GRID>  
+<GRID sname="C96_0.9x1.25_gx1v6"     alias="C96_f09_g16"  >a%C96_l%0.9x1.25_oi%gx1v6_r%r05_m%gx1v6_g%null_w%null</GRID>  
+<GRID sname="C192_0.47x0.63_gx1v6"   alias="C192_f05_g16" >a%C192_l%0.47x0.63_oi%gx1v6_r%r05_m%gx1v6_g%null_w%null</GRID>  
+<GRID sname="C384_0.23x0.31_gx1v6"   alias="C384_f02_g16" >a%C384_l%0.23x0.31_oi%gx1v6_r%r05_m%gx1v6_g%null_w%null</GRID>  
+
 <!--- cism grids --> 
 
 <GRID sname="0.9x1.25_gx1v6_gland4"    alias="f09_g16_gl4" compset="_CISM">a%0.9x1.25_l%0.9x1.25_oi%gx1v6_r%r05_m%gx1v6_g%gland4_w%null</GRID>
@@ -244,6 +251,28 @@ Each grid is associated with five names
   <support_level>For low resolution testing</support_level>
   <nx>24</nx>   <ny>19</ny>   
   <desc>10x15 is FV 10-deg grid:</desc> 
+</gridhorz>
+
+<!-- cubed-sphere finite-volume grids-->
+
+<gridhorz name="C48">
+  <nx>13824</nx> <ny>1</ny>
+  <desc>C48 is Cubed-sphere Finite-volume 2-deg grid:</desc>
+</gridhorz>
+
+<gridhorz name="C96">
+  <nx>55296</nx> <ny>1</ny>
+  <desc>C96 is Cubed-sphere Finite-volume 1-deg grid:</desc>
+</gridhorz>
+
+<gridhorz name="C192">
+  <nx>221184</nx> <ny>1</ny>
+  <desc>C192 is Cubed-sphere Finite-volume 0.5-deg grid:</desc>
+</gridhorz>
+
+<gridhorz name="C384">
+  <nx>884736</nx> <ny>1</ny>
+  <desc>C384 is Cubed-sphere Finite-volume 0.25-deg grid:</desc>
 </gridhorz>
 
 <!-- global spectral (eulerian dycore) grids-->
@@ -784,6 +813,114 @@ do not use scientific experiments; use the T62_g16 resolution instead:
   <ICE_DOMAIN_PATH>$DIN_LOC_ROOT/share/domains/domain.clm</ICE_DOMAIN_PATH>
   <OCN_DOMAIN_PATH>$DIN_LOC_ROOT/share/domains/domain.clm</OCN_DOMAIN_PATH>
 </griddom>
+
+<!-- zlj, 2014.08.28 -->
+
+<!-- ====================  -->
+<!--  atm fvcubed: C48     -->
+<!-- ====================  -->
+
+<griddom grid="C48" mask="gx1v6">
+  <ATM_DOMAIN_FILE>domain.lnd.C48_gx1v6.140925.nc</ATM_DOMAIN_FILE>
+  <LND_DOMAIN_FILE>domain.lnd.C48_gx1v6.140925.nc</LND_DOMAIN_FILE>
+  <ICE_DOMAIN_FILE>domain.ocn.C48_gx1v6_140925.nc</ICE_DOMAIN_FILE>
+  <OCN_DOMAIN_FILE>domain.ocn.C48_gx1v6_140925.nc</OCN_DOMAIN_FILE>
+</griddom>
+
+<gridmap atm_grid="C48" ocn_grid="gx1v6">
+  <ATM2OCN_FMAPNAME>cpl/cpl6/map_am_C48_TO_pop_gx1v6_aave.140925.nc</ATM2OCN_FMAPNAME>
+  <ATM2OCN_SMAPNAME>cpl/cpl6/map_am_C48_TO_pop_gx1v6_aave.140925.nc</ATM2OCN_SMAPNAME>
+  <ATM2OCN_VMAPNAME>cpl/cpl6/map_am_C48_TO_pop_gx1v6_aave.140925.nc</ATM2OCN_VMAPNAME>
+  <OCN2ATM_FMAPNAME>cpl/cpl6/map_pop_gx1v6_TO_am_C48_aave.140925.nc</OCN2ATM_FMAPNAME>
+  <OCN2ATM_SMAPNAME>cpl/cpl6/map_pop_gx1v6_TO_am_C48_aave.140925.nc</OCN2ATM_SMAPNAME>
+</gridmap>
+
+<gridmap atm_grid="C48" lnd_grid="1.9x2.5">
+  <ATM2LND_FMAPNAME>cpl/cpl6/map_am_C48_TO_clm_fv1.9x2.5_aave.140925.nc</ATM2LND_FMAPNAME>
+  <ATM2LND_SMAPNAME>cpl/cpl6/map_am_C48_TO_clm_fv1.9x2.5_aave.140925.nc</ATM2LND_SMAPNAME>
+  <LND2ATM_FMAPNAME>cpl/cpl6/map_clm_fv1.9x2.5_TO_am_C48_aave.140925.nc</LND2ATM_FMAPNAME>
+  <LND2ATM_SMAPNAME>cpl/cpl6/map_clm_fv1.9x2.5_TO_am_C48_aave.140925.nc</LND2ATM_SMAPNAME>
+</gridmap>
+
+<!-- ====================  -->
+<!--  atm fvcubed: C96     -->
+<!-- ====================  -->
+
+<griddom grid="C96" mask="gx1v6">
+  <ATM_DOMAIN_FILE>domain.lnd.C96_gx1v6.140925.nc</ATM_DOMAIN_FILE>
+  <LND_DOMAIN_FILE>domain.lnd.C96_gx1v6.140925.nc</LND_DOMAIN_FILE>
+  <ICE_DOMAIN_FILE>domain.ocn.C96_gx1v6_140925.nc</ICE_DOMAIN_FILE>
+  <OCN_DOMAIN_FILE>domain.ocn.C96_gx1v6_140925.nc</OCN_DOMAIN_FILE>
+</griddom>
+
+<gridmap atm_grid="C96" ocn_grid="gx1v6">
+  <ATM2OCN_FMAPNAME>cpl/cpl6/map_am_C96_TO_pop_gx1v6_aave.140925.nc</ATM2OCN_FMAPNAME>
+  <ATM2OCN_SMAPNAME>cpl/cpl6/map_am_C96_TO_pop_gx1v6_aave.140925.nc</ATM2OCN_SMAPNAME>
+  <ATM2OCN_VMAPNAME>cpl/cpl6/map_am_C96_TO_pop_gx1v6_aave.140925.nc</ATM2OCN_VMAPNAME>
+  <OCN2ATM_FMAPNAME>cpl/cpl6/map_pop_gx1v6_TO_am_C96_aave.140925.nc</OCN2ATM_FMAPNAME>
+  <OCN2ATM_SMAPNAME>cpl/cpl6/map_pop_gx1v6_TO_am_C96_aave.140925.nc</OCN2ATM_SMAPNAME>
+</gridmap>
+
+<gridmap atm_grid="C96" lnd_grid="0.9x1.25">
+  <ATM2LND_FMAPNAME>cpl/cpl6/map_am_C96_TO_clm_fv0.9x1.25_aave.140925.nc</ATM2LND_FMAPNAME>
+  <ATM2LND_SMAPNAME>cpl/cpl6/map_am_C96_TO_clm_fv0.9x1.25_aave.140925.nc</ATM2LND_SMAPNAME>
+  <LND2ATM_FMAPNAME>cpl/cpl6/map_clm_fv0.9x1.25_TO_am_C96_aave.140925.nc</LND2ATM_FMAPNAME>
+  <LND2ATM_SMAPNAME>cpl/cpl6/map_clm_fv0.9x1.25_TO_am_C96_aave.140925.nc</LND2ATM_SMAPNAME>
+</gridmap>
+
+<!-- ====================  -->
+<!--  atm fvcubed: C192     -->
+<!-- ====================  -->
+
+<griddom grid="C192" mask="gx1v6">
+  <ATM_DOMAIN_FILE>domain.lnd.C192_gx1v6.140925.nc</ATM_DOMAIN_FILE>
+  <LND_DOMAIN_FILE>domain.lnd.C192_gx1v6.140925.nc</LND_DOMAIN_FILE>
+  <ICE_DOMAIN_FILE>domain.ocn.C192_gx1v6_140925.nc</ICE_DOMAIN_FILE>
+  <OCN_DOMAIN_FILE>domain.ocn.C192_gx1v6_140925.nc</OCN_DOMAIN_FILE>
+</griddom>
+
+<gridmap atm_grid="C192" ocn_grid="gx1v6">
+  <ATM2OCN_FMAPNAME>cpl/cpl6/map_am_C192_TO_pop_gx1v6_aave.140925.nc</ATM2OCN_FMAPNAME>
+  <ATM2OCN_SMAPNAME>cpl/cpl6/map_am_C192_TO_pop_gx1v6_aave.140925.nc</ATM2OCN_SMAPNAME>
+  <ATM2OCN_VMAPNAME>cpl/cpl6/map_am_C192_TO_pop_gx1v6_aave.140925.nc</ATM2OCN_VMAPNAME>
+  <OCN2ATM_FMAPNAME>cpl/cpl6/map_pop_gx1v6_TO_am_C192_aave.140925.nc</OCN2ATM_FMAPNAME>
+  <OCN2ATM_SMAPNAME>cpl/cpl6/map_pop_gx1v6_TO_am_C192_aave.140925.nc</OCN2ATM_SMAPNAME>
+</gridmap>
+
+<gridmap atm_grid="C192" lnd_grid="0.47x0.63">
+  <ATM2LND_FMAPNAME>cpl/cpl6/map_am_C192_TO_clm_fv0.47x0.63_aave.140925.nc</ATM2LND_FMAPNAME>
+  <ATM2LND_SMAPNAME>cpl/cpl6/map_am_C192_TO_clm_fv0.47x0.63_aave.140925.nc</ATM2LND_SMAPNAME>
+  <LND2ATM_FMAPNAME>cpl/cpl6/map_clm_fv0.47x0.63_TO_am_C192_aave.140925.nc</LND2ATM_FMAPNAME>
+  <LND2ATM_SMAPNAME>cpl/cpl6/map_clm_fv0.47x0.63_TO_am_C192_aave.140925.nc</LND2ATM_SMAPNAME>
+</gridmap>
+
+<!-- ====================  -->
+<!--  atm fvcubed: C384     -->
+<!-- ====================  -->
+
+<griddom grid="C384" mask="gx1v6">
+  <ATM_DOMAIN_FILE>domain.lnd.C384_gx1v6.140925.nc</ATM_DOMAIN_FILE>
+  <LND_DOMAIN_FILE>domain.lnd.C384_gx1v6.140925.nc</LND_DOMAIN_FILE>
+  <ICE_DOMAIN_FILE>domain.ocn.C384_gx1v6_140925.nc</ICE_DOMAIN_FILE>
+  <OCN_DOMAIN_FILE>domain.ocn.C384_gx1v6_140925.nc</OCN_DOMAIN_FILE>
+</griddom>
+
+<gridmap atm_grid="C384" ocn_grid="gx1v6">
+  <ATM2OCN_FMAPNAME>cpl/cpl6/map_am_C384_TO_pop_gx1v6_aave.140925.nc</ATM2OCN_FMAPNAME>
+  <ATM2OCN_SMAPNAME>cpl/cpl6/map_am_C384_TO_pop_gx1v6_aave.140925.nc</ATM2OCN_SMAPNAME>
+  <ATM2OCN_VMAPNAME>cpl/cpl6/map_am_C384_TO_pop_gx1v6_aave.140925.nc</ATM2OCN_VMAPNAME>
+  <OCN2ATM_FMAPNAME>cpl/cpl6/map_pop_gx1v6_TO_am_C384_aave.140925.nc</OCN2ATM_FMAPNAME>
+  <OCN2ATM_SMAPNAME>cpl/cpl6/map_pop_gx1v6_TO_am_C384_aave.140925.nc</OCN2ATM_SMAPNAME>
+</gridmap>
+
+<gridmap atm_grid="C384" lnd_grid="0.23x0.31">
+  <ATM2LND_FMAPNAME>cpl/cpl6/map_am_C384_TO_clm_fv0.23x0.31_aave.140925.nc</ATM2LND_FMAPNAME>
+  <ATM2LND_SMAPNAME>cpl/cpl6/map_am_C384_TO_clm_fv0.23x0.31_aave.140925.nc</ATM2LND_SMAPNAME>
+  <LND2ATM_FMAPNAME>cpl/cpl6/map_clm_fv0.23x0.31_TO_am_C384_aave.140925.nc</LND2ATM_FMAPNAME>
+  <LND2ATM_SMAPNAME>cpl/cpl6/map_clm_fv0.23x0.31_TO_am_C384_aave.140925.nc</LND2ATM_SMAPNAME>
+</gridmap>
+
+<!-- zlj, 2014.08.28 -->
 
 <!-- ====================  -->
 <!--  atm se: ne16np4      -->

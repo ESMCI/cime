@@ -576,6 +576,7 @@ GEOS => GEOS5 meteorology for "stand-alone" CAM
 <CAM_DYCORE compset="_CAM" grid=".+"       >fv   </CAM_DYCORE>
 <CAM_DYCORE compset="_CAM" grid="a%T[1-9]" >eul  </CAM_DYCORE>
 <CAM_DYCORE compset="_CAM" grid="a%ne[1-9]">se</CAM_DYCORE>
+<CAM_DYCORE compset="_CAM" grid="a%C[1-9]" >fv3</CAM_DYCORE>
 
 <CAM_CONFIG_OPTS compset="_CAM4"          >-phys cam4</CAM_CONFIG_OPTS>              
 <CAM_CONFIG_OPTS compset="_CAM5"          >-phys cam5</CAM_CONFIG_OPTS> 

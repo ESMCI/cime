@@ -1223,7 +1223,7 @@
 
   <entry id="CAM_DYCORE" 
 	 type="char"
-	 valid_values="eul,fv,se" 
+	 valid_values="eul,fv,se,fv3"
 	 value="fv" 
 	 group="build_component_cam"
 	 sdesc="CAM dynamical core"
