@@ -113,10 +113,10 @@ value of RUN_STARTDATE will be date2.
 
 <COMPSET sname="B_1850_WACCM5"					alias="B1850W5"			>1850_CAM5%WCCM_CLM45%SP_CICE_POP2_RTM_SGLC_SWAV</COMPSET>
 <COMPSET sname="B_1850_WACCM5_CN"				alias="B1850W5CN"		>1850_CAM5%WCCM_CLM45%CN_CICE_POP2_RTM_SGLC_SWAV</COMPSET>
-<COMPSET sname="B_1850_WACCM5_TSMLT_CN"                         alias="B1850W5TCN"              >1850_CAM5%WTSM_CLM40%CN_CICE_POP2_RTM_SGLC_SWAV</COMPSET>
+<COMPSET sname="B_1850_WACCM5_TSMLT_CN"                         alias="B1850W5TCN"              >1850_CAM5%WTSM%CLB_CLM40%CN_CICE_POP2_RTM_SGLC_SWAV</COMPSET>
 <COMPSET sname="B_1850_WACCM4_SC_CN"				alias="B1850WSCCN"		>1850_CAM4%WCSC_CLM45%CN_CICE_POP2_RTM_SGLC_SWAV</COMPSET>
 <COMPSET sname="B_1850-2005_WACCM4_CN"				alias="BHISTWCN"		>HIST_CAM4%WCCM_CLM45%CN_CICE_POP2_RTM_SGLC_SWAV</COMPSET>
-<COMPSET sname="B_VOLC_WACCM5_TSMLT_CN"                         alias="BVOLCW5TCN"              >VOLC_CAM5%WTSM_CLM40%CN_CICE_POP2_RTM_SGLC_SWAV</COMPSET>
+<COMPSET sname="B_VOLC_WACCM5_TSMLT_CN"                         alias="BVOLCW5TCN"              >VOLC_CAM5%WTSM%CLB_CLM40%CN_CICE_POP2_RTM_SGLC_SWAV</COMPSET>
 <COMPSET sname="B_1955-2005_WACCM5_CN"				alias="B55TRWCN"		>5505_CAM5%WCCM_CLM45%CN_CICE_POP2_RTM_SGLC_SWAV</COMPSET>
 <COMPSET sname="B_1955-2005_WACCM4_SC_CN"			alias="B55TRWSCCN"		>5505_CAM4%WCSC_CLM45%CN_CICE_POP2_RTM_SGLC_SWAV</COMPSET>
 <COMPSET sname="B_RCP2.6_WACCM5_CN"				alias="BRCP26W5CN"		>RCP2_CAM5%WCCM_CLM45%CN_CICE_POP2_RTM_SGLC_SWAV</COMPSET>
@@ -584,7 +584,7 @@ GEOS => GEOS5 meteorology for "stand-alone" CAM
 
 <CAM_CONFIG_OPTS compset="_CAM4"          >-phys cam4</CAM_CONFIG_OPTS>              
 <CAM_CONFIG_OPTS compset="_CAM5"          >-phys cam5</CAM_CONFIG_OPTS> 
-<CAM_CONFIG_OPTS compset="_CAM5%CLB"      >-clubb_sgs</CAM_CONFIG_OPTS>
+<CAM_CONFIG_OPTS compset="_CAM5.*%CLB"    >-clubb_sgs</CAM_CONFIG_OPTS>
 <CAM_CONFIG_OPTS compset="_CAM5%WCCB"     >-clubb_sgs</CAM_CONFIG_OPTS>
 <CAM_CONFIG_OPTS compset="_CAM4%TBAM"     >-chem trop_bam</CAM_CONFIG_OPTS>
 <CAM_CONFIG_OPTS compset="_CAM4%TMOZ"     >-chem trop_mozart</CAM_CONFIG_OPTS>
@@ -602,7 +602,7 @@ GEOS => GEOS5 meteorology for "stand-alone" CAM
 <CAM_CONFIG_OPTS compset="_CAM5%WC"       >-chem waccm_mozart_mam3</CAM_CONFIG_OPTS>
 <CAM_CONFIG_OPTS compset="_CAM4%WCSC"     >-chem waccm_sc</CAM_CONFIG_OPTS>
 <CAM_CONFIG_OPTS compset="_CAM4%WTSM"     >-chem waccm_tsmlt</CAM_CONFIG_OPTS>
-<CAM_CONFIG_OPTS compset="_CAM5%WTSM"     >-phys cam5.4 -clubb_sgs -chem waccm_tsmlt_mam3</CAM_CONFIG_OPTS>
+<CAM_CONFIG_OPTS compset="_CAM5%WTSM"     >-phys cam5.4 -chem waccm_tsmlt_mam3</CAM_CONFIG_OPTS>
 <CAM_CONFIG_OPTS compset="_CAM[45]%WCBC"  >-carma bc_strat</CAM_CONFIG_OPTS>
 <CAM_CONFIG_OPTS compset="_CAM4%WCSF"     >-chem waccm_mozart_sulfur -carma sulfate</CAM_CONFIG_OPTS>
 <CAM_CONFIG_OPTS compset="_CAM[45]%WCMX"  >-waccmx</CAM_CONFIG_OPTS>
@@ -737,7 +737,7 @@ GEOS => GEOS5 meteorology for "stand-alone" CAM
 
 <desc compset="_CAM4"  >cam4 physics:</desc>
 <desc compset="_CAM5"  >cam5 physics:</desc>
-<desc compset="_CAM5%CLB"    >CAM CLUBB:</desc>
+<desc compset="_CAM5.*%CLB"  >CAM CLUBB:</desc>
 <desc compset="_CAM5%PM"     >CAM prescribed modal aerosols:</desc>
 <desc compset="_CAM[45]%WCCM">CAM WACCM with daily solar data and SPEs:</desc>
 <desc compset="_CAM5%WCCB"   >CAM WACCM with daily solar data and SPEs, CLUBB enabled:</desc>
@@ -1434,6 +1434,13 @@ DOCN%COPY => docn copy mode
 <SSTICE_GRID_FILENAME compset="(AMIP_|HIST_|5505_|PIPD_|%TSCH).*_DOCN%DOM" grid="a%0.23x0.31.*_oi%0.23x0.31" >$DIN_LOC_ROOT/atm/cam/ocnfrac/domain.camocn.0.23x0.31_gx1v6_101108.nc</SSTICE_GRID_FILENAME>
 <SSTICE_DATA_FILENAME compset="(AMIP_|HIST_|5505_|PIPD_|%TSCH).*_DOCN%DOM" grid="a%0.23x0.31.*_oi%0.23x0.31" >$DIN_LOC_ROOT/atm/cam/sst/sst_HadOIBl_bc_0.23x0.31_1850_2012_c130411.nc</SSTICE_DATA_FILENAME>
 
+<SSTICE_STREAM        compset="(FRC1_|SDC1_|VOLC_|GEOS_).*_DOCN%DOM" grid=".+">CAMDATA</SSTICE_STREAM>
+<SSTICE_YEAR_ALIGN    compset="(FRC1_|SDC1_|VOLC_|GEOS_).*_DOCN%DOM" grid=".+">1850</SSTICE_YEAR_ALIGN>
+<SSTICE_YEAR_START    compset="(FRC1_|SDC1_|VOLC_|GEOS_).*_DOCN%DOM" grid=".+">1850</SSTICE_YEAR_START> 
+<SSTICE_YEAR_END      compset="(FRC1_|SDC1_|VOLC_|GEOS_).*_DOCN%DOM" grid=".+">2014</SSTICE_YEAR_END> 
+<SSTICE_GRID_FILENAME compset="(FRC1_|SDC1_|VOLC_|GEOS_).*_DOCN%DOM" grid=".+">$DIN_LOC_ROOT/ocn/docn7/domain.ocn.1x1.111007.nc</SSTICE_GRID_FILENAME>
+<SSTICE_DATA_FILENAME compset="(FRC1_|SDC1_|VOLC_|GEOS_).*_DOCN%DOM" grid=".+">$DIN_LOC_ROOT/atm/cam/sst/sst_HadOIBl_bc_1x1_1850_2014_c150416.nc</SSTICE_DATA_FILENAME>
+
 <SSTICE_STREAM        compset="1850.*_DOCN%DOM" grid=".+">CAMDATA</SSTICE_STREAM>
 <SSTICE_YEAR_ALIGN    compset="1850.*_DOCN%DOM" grid=".+">1</SSTICE_YEAR_ALIGN>
 <SSTICE_YEAR_START    compset="1850.*_DOCN%DOM" grid=".+">0</SSTICE_YEAR_START>
@@ -1725,11 +1732,11 @@ DOCN%COPY => docn copy mode
 <RUN_REFCASE grid="a%1.9x2.5_l%1.9x2.5_oi%gx1v6_r%r05" compset="1850_CAM4%WCSC_CLM40%CN">b40.1850.track1.2deg.wcm.007</RUN_REFCASE> 
 <RUN_REFDATE grid="a%1.9x2.5_l%1.9x2.5_oi%gx1v6_r%r05" compset="1850_CAM4%WCSC_CLM40%CN">0156-01-01</RUN_REFDATE>
 
-<RUN_REFCASE grid="a%1.9x2.5_l%1.9x2.5_oi%gx1v6_r%r05" compset="1850_CAM5%WTSM_CLM40%CN">b.e13.B1850W5TCN.f19_g16.igwsProgAer.noMEGAN.006.rhminl.8900</RUN_REFCASE> 
-<RUN_REFDATE grid="a%1.9x2.5_l%1.9x2.5_oi%gx1v6_r%r05" compset="1850_CAM5%WTSM_CLM40%CN">0011-01-01</RUN_REFDATE>
+<RUN_REFCASE grid="a%1.9x2.5_l%1.9x2.5_oi%gx1v6_r%r05" compset="1850_CAM5%WTSM%CLB_CLM40%CN">b.e13.B1850W5TCN.f19_g16.igwsProgAer.noMEGAN.006.rhminl.8900</RUN_REFCASE> 
+<RUN_REFDATE grid="a%1.9x2.5_l%1.9x2.5_oi%gx1v6_r%r05" compset="1850_CAM5%WTSM%CLB_CLM40%CN">0011-01-01</RUN_REFDATE>
 
-<RUN_REFCASE grid="a%1.9x2.5_l%1.9x2.5_oi%gx1v6_r%r05" compset="VOLC_CAM5%WTSM_CLM40%CN">b.e13.B20TRW5TCN.f19_g16.beta13_stratmodal.002</RUN_REFCASE> 
-<RUN_REFDATE grid="a%1.9x2.5_l%1.9x2.5_oi%gx1v6_r%r05" compset="VOLC_CAM5%WTSM_CLM40%CN">1985-01-01</RUN_REFDATE>
+<RUN_REFCASE grid="a%1.9x2.5_l%1.9x2.5_oi%gx1v6_r%r05" compset="VOLC_CAM5%WTSM%CLB_CLM40%CN">b.e13.B20TRW5TCN.f19_g16.beta13_stratmodal.002</RUN_REFCASE> 
+<RUN_REFDATE grid="a%1.9x2.5_l%1.9x2.5_oi%gx1v6_r%r05" compset="VOLC_CAM5%WTSM%CLB_CLM40%CN">1985-01-01</RUN_REFDATE>
 
 <RUN_REFCASE grid="a%1.9x2.5_l%1.9x2.5_oi%gx1v6_r%r05" compset="1850_CAM4_CLM40%CN_CICE_POP2_RTM_SGLC_SWAV">b40.1850.track1.2deg.003</RUN_REFCASE>   
 <RUN_REFDATE grid="a%1.9x2.5_l%1.9x2.5_oi%gx1v6_r%r05" compset="1850_CAM4_CLM40%CN_CICE_POP2_RTM_SGLC_SWAV">0501-01-01</RUN_REFDATE> 
