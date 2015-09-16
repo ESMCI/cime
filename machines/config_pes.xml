@@ -1571,18 +1571,6 @@
     <NTASKS_GLC>1</NTASKS_GLC>  <ROOTPE_GLC>$ROOTPE_CPL</ROOTPE_GLC>
 </pes>
 
-<!-- Threading is broken for CLUBB.  Only use 1 thread with CLUBB
-     compsets.  -->
-<pes CCSM_LCOMPSET="CLB">
-    <NTHRDS_ATM>1</NTHRDS_ATM>
-    <NTHRDS_LND>1</NTHRDS_LND>
-    <NTHRDS_ROF>1</NTHRDS_ROF>
-    <NTHRDS_ICE>1</NTHRDS_ICE>
-    <NTHRDS_OCN>1</NTHRDS_OCN>
-    <NTHRDS_CPL>1</NTHRDS_CPL>
-    <NTHRDS_GLC>1</NTHRDS_GLC>
-</pes>
-
 <!-- Moby is not thread-safe, so using the "darwin" ocean tracer module
      option requires using a single ocean thread -->
 <pes CCSM_LCOMPSET="POP2%DAR">
