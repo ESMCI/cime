@@ -28,28 +28,29 @@ use XML::LibXML;
 use Exporter qw(import);
 use lib '.';
 require Task::TaskMaker;
+
 #my $cesmRunSuffix = '$config{\'EXEROOT\'}/cesm.exe >> $cesm.log.$LID 2>&1';
-my @requiredargs = qw/caseroot case machroot machine scriptsroot cimeroot/;
+my @requiredargs = qw/caseroot case machroot machine cimeroot/;
 
 #==============================================================================
 #  Class constructor.  We need to know where in the filesystem we are, 
-#  so caseroot, case, machroot, machine, scriptsroot, 
+#  so caseroot, case, machroot, machine, cimeroot
 #==============================================================================
 sub new
 {
 	my ($class, %params) = @_;
 	my $self = {
-		case     => $params{'case'}     || undef,
-		caseroot => $params{'caseroot'} || undef,
-		compiler    => $params{'compiler'}     || undef,
-		config => $params{'config'}           || undef,
-		machine     => $params{'machine'}     || undef,
-		scriptsroot => $params{'scriptsroot'} || undef,
-	    cimeroot  => $params{'cimeroot'} || undef,
-        machroot    => $params{'machroot'}    || ".",
-        mpilib      => $params{'mpilib'}      || undef,
+	    case	=> $params{'case'}	|| undef,
+	    caseroot	=> $params{'caseroot'}	|| undef,
+	    compiler    => $params{'compiler'}  || undef,
+	    config	=> $params{'config'}    || undef,
+	    machine     => $params{'machine'}   || undef,
+	    cimeroot	=> $params{'cimeroot'}	|| undef,
+	    machroot    => $params{'machroot'}  || ".",
+	    mpilib      => $params{'mpilib'}    || undef,
+            threaded    => $params{'threaded'}  || undef,
 	};
-    $self->{'ccsmroot'} = $self->{'cimeroot'} if defined $self->{'cimeroot'};
+	$self->{'srcroot'} = $self->{'cimeroot'} if defined $self->{'cimeroot'};
 
 	# make sure that the required args are supplied
 	foreach my $reqarg(@requiredargs)
@@ -64,14 +65,11 @@ sub new
 	$self->{'output_error_path'} = $self->{'case'};
 	$self->{'configbatch'} = "$self->{'machroot'}/config_batch.xml";
 	$self->{'configmachines'} = "$self->{'machroot'}/config_machines.xml";
-
-	# we need ConfigCase, and ProjectTools. 
-	my $casetoolsdir = "$self->{'caseroot'}/Tools";
-	push(@INC, $casetoolsdir);
-	my $toolsdir = "$self->{'scriptsroot'}/ccsm_utils/Tools";
-	push(@INC, $toolsdir);
-	require ConfigCase;
-	require ProjectTools;
+	
+	# we need ProjectTools. 
+	my $cimeroot = "$self->{'cimeroot'}";
+	push(@INC, "$cimeroot/utils/per5lib");
+	require Project::ProjectTools;
 	$self->{'cwd'} = Cwd::getcwd();
 	bless $self, $class;
 	return $self;
@@ -343,11 +341,11 @@ sub setTaskInfo()
 {
 	my $self = shift;
 	chdir $self->{'caseroot'};
-	my $taskmaker = new Task::TaskMaker(caseroot => $self->{'caseroot'});
+	my $taskmaker = new Task::TaskMaker(cimeroot => $self->{'cimeroot'});
 	$self->{'taskmaker'} = $taskmaker;
 	$self->{'sumpes'} = $taskmaker->sumPES();
 	$self->{'tasks_per_node'} = $taskmaker->taskPerNode();
-    $self->{'MAX_TASKS_PER_NODE'} = $taskmaker->maxTasksPerNode();
+	$self->{'MAX_TASKS_PER_NODE'} = $taskmaker->maxTasksPerNode();
 	$self->{'tasks_per_numa'} = $taskmaker->taskPerNuma();
 	$self->{'fullsum'} = $taskmaker->sumOnly();
 	$self->{'task_count'} = $taskmaker->sumOnly();
@@ -366,6 +364,7 @@ sub setTaskInfo()
 	if(defined $self->{'overridenodecount'})
 	{
 		$self->{'sumpes'} = $self->{'overridenodecount'};
+		$self->{'totaltasks'} = $self->{'overridenodecount'};
 		$self->{'fullsum'} = $self->{'overridenodecount'};
 		$self->{'sumtasks'} = $self->{'overridenodecount'};
 		$self->{'task_count'} = $self->{'overridenodecount'};
@@ -411,6 +410,18 @@ sub setWallTime()
 			$self->{'wall_time'} = $defaultelem->textContent();
 		}
 	}
+
+	my @wtmax = split(':',$self->{walltimemax});
+	my @wt = split(':',$self->{wall_time});
+
+	for(my $i=0;$i<$#wtmax;$i++){
+	    if($wtmax[$i]<$wt[$i]){
+		$self->{wall_time} = $self->{walltimemax};
+		last;
+	    }
+	    last if($wtmax[$i] > $wt[$i]);
+	}
+
 }
 
 #==============================================================================
@@ -419,25 +430,43 @@ sub setWallTime()
 sub setProject()
 {
 	my $self = shift;
-	my $project = ProjectTools::find_project();
-	if(defined $project && length($project) > 0)
+    my $envrunfile = "$self->{'caseroot'}/env_case.xml";
+ 	my $envrunparser = XML::LibXML->new(no_blanks => 1);
+    my $envrunxml = $envrunparser->parse_file($envrunfile);
+	my @projelems = $envrunxml->findnodes("//entry[\@id=\'PROJECT\']");
+	my $project; 
+	
+	foreach my $projelem(@projelems)
 	{
-		$self->{'account'} = $project;
+		$project = $projelem->getAttribute('value');
+	}
+	if(defined $project)
+	{
 		$self->{'project'} = $project;
+		$self->{'account'} = $project;
+	}
+	if($project =~ /UNSET/)
+	{
+		$self->{'project'} = undef;
+		$self->{'account'} = undef;
+	}
+	elsif(! defined $project)
+	{
+		$self->{'project'} = undef;
+		$self->{'account'} = undef;
 	}
 }
 
 #==============================================================================
-# Get the estimated cost for this run.  This value is currently calculated as part of cesm_setup. 
+# Get the estimated cost for this run.  This value is currently calculated as part of case_setup. 
 # TODO: modularize the cost calculation??? 
 #==============================================================================
 sub getEstCost()
 {
-	my $self = shift;
-	chdir $self->{'caseroot'};
-	my $envcfg = ConfigCase->new("$self->{'caseroot'}/Tools/config_definition.xml", "env_mach_pes.xml");
-	$self->{'CCSM_ESTCOST'} = $envcfg->get('CCSM_ESTCOST');
-	chdir $self->{'cwd'};
+        my $self = shift;
+        chdir $self->{'caseroot'};
+        $self->{'CCSM_ESTCOST'} = `./xmlquery CCSM_ESTCOST -value`;
+        chdir $self->{'cwd'};
 }
 
 #==============================================================================
@@ -454,20 +483,19 @@ sub setQueue()
 	my $configmachinesparser = $self->{'configmachinesparser'};
 	
 
-	# First, set the queue based on the default queue defined in config_batch.xml. If not found, 
-	# we die. 
-	# TODO find a better method of alerting the user that there is no default queue defined for this machine.   
+	# First, set the queue based on the default queue defined in config_batch.xml. 
 	my @defaultqueue = $configmachinesparser->findnodes("/config_machines/machine[\@MACH=\'$self->{'machine'}\']/batch_system/queues/queue[\@default=\'true\']");
 
-	die "Cannot set queue for this machine! No default queue defined" if (! @defaultqueue);
 	
-	# set the default queue. 
-	my $defelement = $defaultqueue[0];
+	# set the default queue IF we have a default queue defined, some machines (blues) do not allow one to 
+	# specifiy the queue directly. 
+	if(@defaultqueue)
+	{
+        my $defelement = $defaultqueue[0];
+        $self->{'queue'} = $defelement->textContent();
+	}
 
-	$self->{'queue'} = $defelement->textContent();
-
-	
-	# We already have a default queue at this point, but if there is a queue that our job's node count
+	# We may have a default queue at this point, but if there is a queue that our job's node count
 	# falls in between, then we should use that queue. 
 	my @qelems = $configmachinesparser->findnodes("/config_machines/machine[\@MACH=\'$self->{'machine'}\']/batch_system/queues/queue");
 	foreach my $qelem(@qelems)
@@ -477,7 +505,7 @@ sub setQueue()
 		my $jobmax = undef;
 		$jobmin = $qelem->getAttribute('jobmin');
 		$jobmax = $qelem->getAttribute('jobmax');
-
+                $self->{walltimemax} = $qelem->getAttribute('walltimemax');
 		# if the fullsum is between the min and max # jobs, then use this queue.  
 		if(defined $jobmin && defined $jobmax && $self->{'fullsum'} >= $jobmin && $self->{'fullsum'} <= $jobmax)
 		{
@@ -526,23 +554,29 @@ sub setCESMRun()
 		# if any of the attributes match any of our instance variables, 
 		# we have a match, break out of the attribute loop, and use that as our 
 		# chosen mpi run element. 
-		my $match = 0;
-		my @mpiattrs = $mpielem->getAttributes();
-		foreach my $attr(@mpiattrs)
-		{
-			my $attrName = $attr->getName();
-			my $attrValue = $attr->getValue();
-			#print "attr Name: $attrName \n";
-			#print "attr Value: $attrValue \n";
-			if(defined $self->{$attrName} && (lc $self->{$attrName} eq $attrValue))
-			{
-				$match = 1;
-				last;
-			}
-		}
-		if($match)
+		if(! $mpielem->hasAttributes())
 		{
 			$chosenmpielem = $mpielem;
+		}
+		else
+		{
+		    my $attrMatch = 1;
+		    
+		    my @mpiattrs = $mpielem->getAttributes();
+		    foreach my $attr(@mpiattrs)
+		    {
+		    	my $attrName = $attr->getName();
+		    	my $attrValue = $attr->getValue();
+		    	if(defined $self->{$attrName} && (lc $self->{$attrName} ne $attrValue))
+		    	{
+		    		$attrMatch = 0;
+		    		last;
+		    	}
+		    }
+		    if($attrMatch)
+		    {
+		    	$chosenmpielem = $mpielem;
+		    }
 		}
 	}
 	
@@ -550,7 +584,37 @@ sub setCESMRun()
 	if(! defined $chosenmpielem)
 	{
 		my @defaultmpielems = $configmachinesparser->findnodes("/config_machines/machine[\@MACH=\'$self->{'machine'}\']/mpirun[\@mpilib=\'default\']");
-		$chosenmpielem = $defaultmpielems[0];
+		foreach my $defelem(@defaultmpielems)
+		{
+			if(! $defelem->hasAttributes() )
+			{
+				$chosenmpielem = $defelem;
+			}	
+			else
+			{
+				my $attrMatch = 1;
+				my @attrs = $defelem->getAttributes();
+				foreach my $attr(@attrs)
+				{
+					my $attrName = $attr->getName();
+					my $attrValue = $attr->getValue();
+					next if($attrValue eq 'default');
+					my $lcAttrName = lc $attrName;
+					if(defined $self->{$lcAttrName} && (lc $self->{$attrName} ne lc $attrValue))
+					{
+						$attrMatch = 0;
+						last;	
+					}
+				}
+				if($attrMatch)
+				{
+					$chosenmpielem = $defelem;
+					last;
+				}
+			
+			}
+		}
+		#$chosenmpielem = $defaultmpielems[0];
 	}
 		
 	# die if we haven't found an mpirun for this machine by now..
@@ -674,6 +738,7 @@ use Data::Dumper;
 sub getBatchMaker()
 {
 	my (%params) = @_;
+
 	if(! defined $params{'machine'})
 	{
 		die "BatchFactory: params{'machine'} must be defined!";
@@ -756,8 +821,8 @@ sub _test()
 sub setTaskInfo()
 {
     my $self = shift;
-	#print "in Batch::BatchMaker_cray setTaskInfo\n";
-    #my $taskmaker = new Task::TaskMaker(caseroot => $self->{'caseroot'});
+    #print "in Batch::BatchMaker_cray setTaskInfo\n";
+    #my $taskmaker = new Task::TaskMaker(cimeroot => $self->{'cimeroot'});
     #my $config = $taskmaker->{'config'};
     #my $maxTasksPerNode = ${$taskmaker->{'config'}}{'MAX_TASKS_PER_NODE'};
     #$self->{'mppsize'} = $self->{'mppsum'};
@@ -785,27 +850,44 @@ sub _test()
 }
 sub setTaskInfo()
 {
-	my $self = shift;
+    my $self = shift;
     $self->SUPER::setTaskInfo();
-	my $taskmaker = new Task::TaskMaker(caseroot => $self->{'caseroot'});
+    my $taskmaker = new Task::TaskMaker(caseroot => $self->{'caseroot'},
+	                                cimeroot => $self->{cimeroot});
+
     my $maxTasksPerNode = ${$taskmaker->{'config'}}{'MAX_TASKS_PER_NODE'};
+    my $pes_per_node = ${$taskmaker->{'config'}}{'PES_PER_NODE'};
 
-	$self->{'mppsize'}  = $taskmaker->sumTasks();
-    if($self->{'mppsize'} % $maxTasksPerNode > 0)
-    {
-        my $mppnodes = POSIX::floor($self->{'mppsize'} / $maxTasksPerNode);
-        $mppnodes += 1;
-        $self->{'mppsize'} = $mppnodes * $maxTasksPerNode;
-    }
-	$self->{'mppsum'} = $taskmaker->sumPES();
+    # Handle the case where
 
-    if($self->{'mppsum'} > 1)
+    $self->{'mppsize'}  = $taskmaker->sumTasks();
+
+    if($self->{mppsize} > $pes_per_node && $self->{'mppsize'} % $maxTasksPerNode > 0)
     {
-        $self->{'mppwidth'} = $self->{'mppsum'} / 2;
+	die("odd number of tasks to handle");
+#        my $mppnodes = POSIX::floor($self->{'mppsize'} / $maxTasksPerNode);
+#        $mppnodes += 1;
+#        $self->{'mppsize'} = $mppnodes * $maxTasksPerNode;
     }
-    else
+
+    $self->{'mppsum'} = $taskmaker->sumPES();
+    
+    if($self->{maxthreads} == 1){
+	    $self->{mppwidth} = $self->{mppsum};
+    }else{
+	    $self->{mppwidth} = $self->{mppsum} * $pes_per_node/ $maxTasksPerNode;
+    }
+
+    if($self->{mppwidth} < $pes_per_node){
+	    $self->{mppwidth} = $pes_per_node;
+    }
+    
+    if(defined $self->{'overridenodecount'})
     {
-        $self->{'mppwidth'} = 1;
+        $self->{mppwidth} = 24;
+        $self->{num_tasks} = 1;
+        $self->{tasks_per_numa} = 1;
+        $self->{tasks_per_node} = 1;
     }
 
 }
@@ -845,7 +927,7 @@ sub _test()
 sub setTaskInfo()
 {
 	my $self = shift;
-	my $taskmaker = new Task::TaskMaker(caseroot => $self->{'caseroot'});
+	my $taskmaker = new Task::TaskMaker(cimeroot => $self->{'cimeroot'});
 	$self->{'mppsum'} = $taskmaker->sumOnly();
     $self->SUPER::setTaskInfo();
 }
@@ -920,16 +1002,16 @@ sub _test()
 sub setTaskInfo()
 {
     my $self = shift;
-    my $taskmaker = new Task::TaskMaker(caseroot => $self->{'caseroot'});
-	my $mppsize = $taskmaker->sumOnly();
+    my $taskmaker = new Task::TaskMaker(cimeroot => $self->{'cimeroot'});
+    my $mppsize = $taskmaker->sumOnly();
     my $config = $taskmaker->{'config'};
     my $maxTasksPerNode = ${$taskmaker->{'config'}}{'MAX_TASKS_PER_NODE'};
 
     if($mppsize % $maxTasksPerNode > 0)
 	{
-		my $mppnodes = $mppsize / $maxTasksPerNode;
-		$mppnodes = $mppnodes + 1;
-		$mppsize = $mppnodes * $maxTasksPerNode;
+	    my $mppnodes = $mppsize / $maxTasksPerNode;
+	    $mppnodes = $mppnodes + 1;
+	    $mppsize = $mppnodes * $maxTasksPerNode;
 	}
 	$self->{'mppsize'} = $mppsize;
     $self->SUPER::setTaskInfo();
@@ -949,6 +1031,29 @@ sub setQueue()
 		$self->{'partition'} = "c1";
 	}
 }
-
+package Batch::BatchMaker_erebus;
 use base qw (Batch::BatchMaker );
+sub _test()
+{
+    my $self = shift;
+    return 1;
+}
+
+sub writeBatchScript()
+{
+    my $self = shift;
+    if($ENV{'HOSTNAME'} =~ /login/)
+    {
+        my $hostfilename = $self->{caseroot} . "/hostfile";
+        open my $HFILE, "<", $hostfilename or die "could not open $hostfilename for writing!";
+        print $HFILE $ENV{'HOSTNAME'}; 
+        close $HFILE;
+        $ENV{'MP_HOSTFILE'} = $hostfilename;
+        $ENV{'MP_PROCS'} = 1;
+        
+    }
+    $self->SUPER::writeBatchScript();
+}
+
+
 1;
