@@ -518,6 +518,7 @@ value of RUN_STARTDATE will be date2.
 <desc compset="C2R[68]_" >CCMI REFC2 1950 to 2100 transient: </desc> 
 <desc compset="C2R4_" >CCMI REFC2 2004 to 2100 transient: </desc> 
 <desc compset="FRC1_" >CCMI REFC1 Free running, 1950 to 2010 transient: </desc> 
+<desc compset="FRC1_CAM5%WTSM" >WACCM5.5 REFC1 Free running, transient starting in 1987: </desc> 
 <desc compset="SDC1_" >CCMI REFC1 Specified dynamics, 1975 to 2010 transient: </desc> 
 <desc compset="C2R8_" >RCP8.5 future scenario: </desc>
 <desc compset="C2R6_" >RCP6.0 future scenario: </desc>
@@ -1488,6 +1489,7 @@ DOCN%COPY => docn copy mode
 <RUN_STARTDATE compset="C2R[68]_CAM"      >1950-01-01</RUN_STARTDATE> 
 <RUN_STARTDATE compset="C2R4_CAM"         >2004-01-01</RUN_STARTDATE>
 <RUN_STARTDATE compset="FRC1_CAM"         >1950-01-01</RUN_STARTDATE>
+<RUN_STARTDATE compset="FRC1_CAM5%WTSM"   >1987-01-01</RUN_STARTDATE>
 <RUN_STARTDATE compset="SDC1_CAM"         >1979-01-01</RUN_STARTDATE>
 <RUN_STARTDATE compset="5505_CAM[45]"     >1955-01-01</RUN_STARTDATE> 
 <RUN_STARTDATE compset="2000_CAM[45]%WCMX">2000-01-01</RUN_STARTDATE>
