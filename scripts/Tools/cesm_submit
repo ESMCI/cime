@@ -39,13 +39,13 @@ sub main
     }
 	
 	my $moduleloader = new Module::ModuleLoader(machine => $config{'MACH'}, compiler => $config{'COMPILER'},
-                                            mpilib => $config{'MPILIB'}, debug => $config{'DEBUG'},
+                                            mpilib => $config{'MPILIB'}, debug => $config{'DEBUG'}, cimeroot => $config{'CIMEROOT'},
                                             scriptsroot => $config{'SCRIPTSROOT'}, caseroot => $config{'CASEROOT'});
     $moduleloader->loadModules();
 
 	#my $batchutils = new Batch::BatchUtils(machine => $machine, machroot => $machroot, caseconfig => \%config);
 	my $batchutils = Batch::BatchUtilsFactory::getBatchUtils( case => $case, caseconfig => \%config, caseroot => $caseroot, 
-                                            ccsmroot => $cimeroot, compiler => $compiler, machine => $machine, 
+                                            cimeroot => $cimeroot, compiler => $compiler, machine => $machine, 
                                             machroot => $machroot, mpilib => $mpilib, scriptsroot => $scriptsroot );
 	
 	$batchutils->dependencyCheck("sta_ok");

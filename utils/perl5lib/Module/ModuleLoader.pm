@@ -38,6 +38,7 @@ sub new
 		debug  =>   $params{'debug'} || undef,
 		scriptsroot => $params{'scriptsroot'} || undef,
 		caseroot => $params{'caseroot'} || undef,
+		cimeroot => $params{'cimeroot'} || undef,
 	};
 	if(! defined $params{'debug'} )
 	{

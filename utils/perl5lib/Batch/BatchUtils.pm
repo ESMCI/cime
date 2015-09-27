@@ -12,6 +12,7 @@ package Batch::BatchUtils;
 use Cwd;
 use Exporter qw(import);
 use XML::LibXML;
+use Data::Dumper;
 require Batch::BatchMaker;
 use lib '.';
 #==============================================================================
@@ -368,7 +369,12 @@ sub getSubmitArguments()
     my $batchconfig = $xml->parse_file($self->{'configbatch'});
     my $root = $batchconfig->getDocumentElement();
 
-    my @dependargs = $root->findnodes("/config_batch/batch_system[\@type=\'$self->{'batchtype'}\']/submit_args/arg");
+    my @dependargs;
+    @dependargs = $root->findnodes("/config_batch/batch_system[\@type=\'$self->{'batchtype'}\']/submit_args/arg");
+    if(! @dependargs)
+    {
+        @dependargs = $root->findnodes("/config_batch/batch_system[\@MACH=\'$self->{'machine'}\']/submit_args/arg");
+    }
 
     my $submitargs = '';
 
