@@ -235,8 +235,8 @@ if (! $clean ) {
 	# create batch file
 	#--------------------------------------------------------------
 	print "Creating batch script $case.run $eol";
- # Use BatchFactory to get the appropriate instance of a BatchMaker,
-    # use it to create our batch scripts
+	# Use BatchFactory to get the appropriate instance of a BatchMaker,
+	# use it to create our batch scripts
     my $batchmaker = Batch::BatchFactory::getBatchMaker( caseroot => $xmlvars{'CASEROOT'},
                                                   cimeroot => $cimeroot,
                                                   case      => $xmlvars{'CASE'},
@@ -245,7 +245,8 @@ if (! $clean ) {
                                                   machroot => $xmlvars{'CCSM_MACHDIR'},
                                                   machine => $xmlvars{'MACH'},
                                                   compiler => $xmlvars{'COMPILER'},
-                                                  threaded => $build_threaded);
+                                                  threaded => $build_threaded, 
+	                                          job => 'run');
 	
     my $inputbatchscript = "$xmlvars{'CCSM_MACHDIR'}/template.cesmrun";
     my $outputbatchscript = "$xmlvars{'CASEROOT'}/$case.run";

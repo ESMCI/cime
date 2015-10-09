@@ -19,7 +19,7 @@ sub new
 	my ($class, %params) = @_;
 	if(! defined $params{'caseroot'})
 	{
-		die "TaskMaker.pm: the caseroot must be set as an argument!";
+	    die "TaskMaker.pm: the caseroot must be set as an argument!";
 	}
 	
 	my $self = {

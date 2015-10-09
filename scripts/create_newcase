@@ -1077,6 +1077,11 @@ if ($print) {print "Created $caseroot/env_run.xml \n";}
 $cfg_ref->write_file("$caseroot/env_archive.xml" , "xml", "$scriptsroot/Tools");
 if ($print) {print "Created $caseroot/env_archive.xml \n";}
 
+# Copy env_batch.xml to case - this is a backport hack to make this work in cime2
+$sysmod = "cp $cimeroot/utils/perl5lib/Config/env_batch.xml $caseroot/"; 
+system($sysmod) == 0 or die "ERROR: $sysmod failed: $?\n";
+
+
 # Copy env_case.xml in to locked files
 $sysmod = "cp $caseroot/env_case.xml $caseroot/LockedFiles/env_case.xml.locked"; 
 system($sysmod) == 0 or die "ERROR: $sysmod failed: $?\n";

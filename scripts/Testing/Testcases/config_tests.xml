@@ -36,6 +36,15 @@
           STOP_N="11"
           DOUT_S="FALSE" />
 
+<ccsmtest NAME="ERR"
+          DESC="exact restart from startup with resubmit and st_archive, default 6 days + 5 days"
+          INFO_DBUG="1"
+          CCSM_TCOST="0"
+          STOP_OPTION="ndays"
+          STOP_N="7"
+          DOUT_S="TRUE"
+          RESUBMIT="1" />
+
 <ccsmtest NAME="ERS"
           DESC="exact restart from startup, default 6 days + 5 days"
           INFO_DBUG="1"

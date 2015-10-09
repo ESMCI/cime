@@ -60,7 +60,7 @@ sub new
 #------------------------------------------------------------------------------
 sub loadModules()
 {
-	my $self = shift;
+	my ($self) = @_;
 	#my $self = {	
 	#	machine => $params{'machine'} || undef,
 	#	compiler => $params{'compiler'} || undef,

@@ -1,55 +1,133 @@
 #!/usr/bin/env perl 
 
 use strict;
-use warnings;
-use Data::Dumper;
+use XML::LibXML;
+use Getopt::Long;
 
-my $toolsdir = "./Tools";
-push(@INC, $toolsdir);
-require ConfigCase;
+my $xml = XML::LibXML->new( no_blanks => 1)->parse_file("env_case.xml"); 
+my @nodes = $xml->findnodes(".//entry[\@id=\"CIMEROOT\"]"); 
+my $cimeroot = $nodes[0]->getAttribute('value');
+my %opts=(loglevel=>"INFO");
+$ENV{CIMEROOT}=$cimeroot;
+unshift @INC, "$cimeroot/utils/perl5lib";
 
-my %config = ConfigCase->getAllResolved();
-my $machine = $config{'MACH'};
-my $machroot = $config{'CCSM_MACHDIR'};
-my $compiler = $config{'COMPILER'};
-my $mpilib = $config{'MPILIB'};
-my $caseroot = $config{'CASEROOT'};
-my $case = $config{'CASE'};
-my $cimeroot = $config{'CIMEROOT'};
-my $scriptsroot = $config{'SCRIPTSROOT'};
-my $perl5lib = "$config{'CIMEROOT'}/utils/perl5lib";
-push(@INC, $perl5lib);
 require Batch::BatchUtils;
 require Module::ModuleLoader;
-my $lastjobid = undef;
-sub main
-{
-	# Check the case only once..
-	print "checking the case..\n";
-	open(my $CHECKCASE, "-|", "./check_case");
-	while(<$CHECKCASE>)
-	{
-		print "$_";
-	}
-    close $CHECKCASE;
-    if($?)
-    {
-        print "check_case failed\n";
-        exit(-1);
-    }
-	
-	my $moduleloader = new Module::ModuleLoader(machine => $config{'MACH'}, compiler => $config{'COMPILER'},
-                                            mpilib => $config{'MPILIB'}, debug => $config{'DEBUG'}, cimeroot => $config{'CIMEROOT'},
-                                            scriptsroot => $config{'SCRIPTSROOT'}, caseroot => $config{'CASEROOT'});
-    $moduleloader->loadModules();
+my %config;
 
-	#my $batchutils = new Batch::BatchUtils(machine => $machine, machroot => $machroot, caseconfig => \%config);
-	my $batchutils = Batch::BatchUtilsFactory::getBatchUtils( case => $case, caseconfig => \%config, caseroot => $caseroot, 
-                                            cimeroot => $cimeroot, compiler => $compiler, machine => $machine, 
-                                            machroot => $machroot, mpilib => $mpilib, scriptsroot => $scriptsroot );
-	
-	$batchutils->dependencyCheck("sta_ok");
-	$batchutils->submitJobs("sta_ok");
+# Get options, if any..
+sub opts()
+{
+    GetOptions( "resubmit" => \$opts{'resubmit'},
+                "scriptname=s"  => \$opts{'scriptname'});
+
 }
 
-main(@ARGV) unless caller();
+
+sub main
+{
+    &opts();
+
+    my $machine	= `./xmlquery -value MACH`;
+    my $machroot	=  `./xmlquery -value CCSM_MACHDIR`;
+    my $compiler	=  `./xmlquery -value COMPILER`;
+    my $mpilib	=  `./xmlquery -value MPILIB`;
+    my $caseroot	=  `./xmlquery -value CASEROOT`;
+    my $case	=  `./xmlquery -value CASE`;
+    my $debug       = `./xmlquery -value DEBUG`;
+    my $scriptsroot       = `./xmlquery -value SCRIPTSROOT`;
+    my $testcase       = `./xmlquery -value TESTCASE`;
+    $config{DOUT_S}    = `./xmlquery -value DOUT_S`;
+    $config{CASE} = $case;
+
+    # Check the case only once..
+    if(!$opts{resubmit}){
+	#$logger->info( "checking the case..");
+	qx(./check_case);
+	if($?)
+	{
+	    die( "check_case failed");
+	    exit(-1);
+	}
+    }
+
+    my $moduleloader = Module::ModuleLoader->new(machine  => $machine, 
+						 compiler => $compiler, 
+						 mpilib   => $mpilib, 
+						 debug    => $debug, 
+						 caseroot => $caseroot, 
+						 cimeroot => $cimeroot,
+						 scriptsroot => $scriptsroot,
+						 
+						 );
+
+
+    $moduleloader->loadModules();
+
+
+
+    my $job;
+    if(defined $testcase){
+	$job = "test";
+    }else{
+	$job = "run";
+    }
+
+#    $logger->debug( "Job = $job");
+    my $batchutils = Batch::BatchUtilsFactory::getBatchUtils( case	   => $case, 
+							      caseconfig   =>\%config,
+							      caseroot	   => $caseroot, 
+							      cimeroot	   => $cimeroot, 
+							      compiler	   => $compiler, 
+							      machine	   => $machine, 
+							      machroot	   => $machroot, 
+							      mpilib	   => $mpilib,
+	                                                      job                => $job); 
+    
+    
+    if(defined $opts{'resubmit'})
+    {
+        if(! defined $opts{'scriptname'})
+        {
+            die (" resubmit option given without scriptname provided, aborting!");
+        }
+        else
+        {
+            `./xmlchange RUN_WITH_SUBMIT=TRUE`;
+            $config{RUN_WITH_SUBMIT}='TRUE';
+            $batchutils->doResubmit($opts{'scriptname'});
+        }
+    }
+    else
+    {
+        $batchutils->dependencyCheck();
+#        check_DA_settings();
+        `./xmlchange RUN_WITH_SUBMIT=TRUE`;
+	$config{RUN_WITH_SUBMIT}='TRUE';
+        $batchutils->submitJobs();
+    }
+
+}
+
+
+
+sub doResubmit()
+{
+    my $scriptname = shift;
+    my $job;
+# This gets the extension (everything after the last . ) in $scriptname
+    $scriptname =~ /\.([^\.]+)$/;
+    $job = $1;
+    my $batchutils = Batch::BatchUtilsFactory::getBatchUtils( case => $config{'CASE'},
+                                                              caseconfig => \%config,
+                                                              cimeroot => $config{'CIMEROOT'},
+                                                              compiler => $config{'COMPILER'},
+                                                              machine =>  $config{'MACH'},
+                                                              machroot => $config{'MACHDIR'},
+                                                              mpilib   => $config{'MPILIB'},
+	                                                      job => $job);
+    
+    $batchutils->doResubmit($scriptname);
+}
+
+main(@ARGV) ;

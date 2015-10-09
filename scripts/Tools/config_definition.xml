@@ -88,6 +88,8 @@
 	 sdesc="case user name"
 	 ></entry> 
 
+
+
   <entry id="PROJECT" 
 	 type="char"
 	 valid_values=""  
@@ -3590,6 +3592,18 @@
 		Set to FALSE when initializing a startup, branch or hybrid case.
 		Set to TRUE when continuing a run. (logical)"
 	 ></entry>
+
+
+  <entry id="RUN_WITH_SUBMIT"
+	 type="logical"
+	 group="run_rest"
+	 value="FALSE"
+	 valid_values="TRUE,FALSE"
+	 ldesc="Logical to determine whether CESM run has been submitted with the submit script or not"
+   ></entry>
+
+
+
 
   <entry id="RESUBMIT" 
 	 type="integer"

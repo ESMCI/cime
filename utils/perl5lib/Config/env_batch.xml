@@ -1,0 +1,71 @@
+<?xml version="1.0"?> 
+
+<config_definition> 
+
+<header>
+      These variables may be changed anytime during a run, they
+      control arguments to the batch submit command.
+    </header> 
+
+<groups>
+   <group>job_submission</group> 
+</groups>
+
+  <job name="run">
+      <entry id="JOB_QUEUE"  value="">
+        <type>character</type> 
+        <group>job_submission</group> 
+        <desc>The machine queue in which to submit the job.  Default determined in config_machines.xml can be overwritten by testing</desc> 
+      </entry> 
+
+      <entry id="JOB_WALLCLOCK_TIME"  value="">
+        <type>character</type> 
+        <group>job_submission</group> 
+        <desc>The machine wallclock setting.  Default determined in config_machines.xml can be overwritten by testing</desc> 
+      </entry> 
+  </job>
+  <job name="test">
+      <entry id="JOB_QUEUE"  value="">
+        <type>character</type> 
+        <group>job_submission</group> 
+        <desc>The machine queue in which to submit the job.  Default determined in config_machines.xml can be overwritten by testing</desc> 
+      </entry> 
+
+      <entry id="JOB_WALLCLOCK_TIME"  value="">
+        <type>character</type> 
+        <group>job_submission</group> 
+        <desc>The machine wallclock setting.  Default determined in config_machines.xml can be overwritten by testing</desc> 
+      </entry> 
+
+  </job>
+  <job name="st_archive">
+      <entry id="JOB_QUEUE"  value="">
+        <type>character</type> 
+        <group>job_submission</group> 
+        <desc>The machine queue in which to submit the job.  Default determined in config_machines.xml can be overwritten by testing</desc> 
+      </entry> 
+
+      <entry id="JOB_WALLCLOCK_TIME"  value="">
+        <type>character</type> 
+        <group>job_submission</group> 
+        <desc>The machine wallclock setting.  Default determined in config_machines.xml can be overwritten by testing</desc> 
+      </entry> 
+
+  </job>
+  <job name="lt_archive">
+      <entry id="JOB_QUEUE"  value="">
+        <type>character</type> 
+        <group>job_submission</group> 
+        <desc>The machine queue in which to submit the job.  Default determined in config_machines.xml can be overwritten by testing</desc> 
+      </entry> 
+
+      <entry id="JOB_WALLCLOCK_TIME"  value="">
+        <type>character</type> 
+        <group>job_submission</group> 
+        <desc>The machine wallclock setting.  Default determined in config_machines.xml can be overwritten by testing</desc> 
+      </entry> 
+
+
+  </job>
+
+</config_definition> 

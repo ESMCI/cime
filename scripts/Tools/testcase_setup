@@ -139,14 +139,15 @@ require ConfigCase;
 # ------------------ testcase_begin ------------------------------------------
 # -- Make batch script using the BatchMaker module --- 
 my $batchmaker = Batch::BatchFactory::getBatchMaker( caseroot => $caseroot, 
-                                                     ccsmroot => $cimeroot,
+                                                     cimeroot => $cimeroot,
                                                      case     => $case,
                                                      mpilib => $mpilib,
                                                      scriptsroot => $scriptsroot, 
                                                      machroot => $ccsm_machdir,
                                                      machine     => $mach,        
                                                      compiler => $compiler, 
-                                                     threaded => $build_threaded);
+                                                     threaded => $build_threaded,
+                                                     job=>'test');
 
 my $batchdirectives = $batchmaker->getBatchDirectives();
                                                      
