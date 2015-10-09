@@ -7,7 +7,7 @@ use Getopt::Long;
 my $xml = XML::LibXML->new( no_blanks => 1)->parse_file("env_case.xml"); 
 my @nodes = $xml->findnodes(".//entry[\@id=\"CIMEROOT\"]"); 
 my $cimeroot = $nodes[0]->getAttribute('value');
-my %opts=(loglevel=>"INFO");
+my %opts=();
 $ENV{CIMEROOT}=$cimeroot;
 unshift @INC, "$cimeroot/utils/perl5lib";
 
@@ -39,10 +39,16 @@ sub main
     my $testcase       = `./xmlquery -value TESTCASE`;
     $config{DOUT_S}    = `./xmlquery -value DOUT_S`;
     $config{CASE} = $case;
+    $config{BATCHSUBMIT} = `./xmlquery -value BATCHSUBMIT`;
+    $config{BATCHQUERY} = `./xmlquery -value BATCHQUERY`;
+    $config{BATCHREDIRECT} = `./xmlquery -value BATCHREDIRECT`;
+    $config{TESTCASE} = `./xmlquery -value TESTCASE`;
+    $config{CASEROOT} = `./xmlquery -value CASEROOT`;
+    $config{COMP_RUN_BARRIERS} = `./xmlquery -value COMP_RUN_BARRIERS`;
 
     # Check the case only once..
     if(!$opts{resubmit}){
-	#$logger->info( "checking the case..");
+	print "checking the case..\n";
 	qx(./check_case);
 	if($?)
 	{
@@ -73,7 +79,7 @@ sub main
 	$job = "run";
     }
 
-#    $logger->debug( "Job = $job");
+
     my $batchutils = Batch::BatchUtilsFactory::getBatchUtils( case	   => $case, 
 							      caseconfig   =>\%config,
 							      caseroot	   => $caseroot, 
@@ -123,9 +129,9 @@ sub doResubmit()
                                                               cimeroot => $config{'CIMEROOT'},
                                                               compiler => $config{'COMPILER'},
                                                               machine =>  $config{'MACH'},
-                                                              machroot => $config{'MACHDIR'},
+                                                              machroot => $config{'CCSM_MACHDIR'},
                                                               mpilib   => $config{'MPILIB'},
-	                                                      job => $job);
+	                                                     job => $job);
     
     $batchutils->doResubmit($scriptname);
 }

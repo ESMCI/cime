@@ -45,8 +45,8 @@ system($sysmod) == 0 or die "ERROR: $sysmod failed: $?\n";
 if ($BUILD_COMPLETE ne "TRUE") {
     print "BUILD_COMPLETE is not TRUE \n" ;
     print "Please rebuild the model interactively via calling \n";
-    print "   ./${CASE}.build \n";
-    die;
+    die("   ./${CASE}.build ");
+    ;
 }
 
 print "check_case OK \n";

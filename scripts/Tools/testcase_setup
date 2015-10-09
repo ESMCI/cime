@@ -11,16 +11,7 @@ use Getopt::Long;
 use IO::File;
 use IO::Handle;
 
-#-----------------------------------------------------------------------------------------------
-# Setting autoflush (an IO::Handle method) on STDOUT helps in debugging.  It forces the test
-# descriptions to be printed to STDOUT before the error messages start.
 
-*STDOUT->autoflush();                  
-
-#-----------------------------------------------------------------------------------------------
-# Set the directory that contains this script.
-
-my $eol = "\n";
 my $banner = '-' x 80;
 
 #-----------------------------------------------------------------------------------------------
@@ -51,36 +42,44 @@ GetOptions(
 # Give usage message.
 usage() if $opts{'help'};
 
+my $cimeroot		=  `./xmlquery CIMEROOT			-value`;
+
+
+push(@INC, "$cimeroot/utils/perl5lib/");
+require Batch::BatchMaker;
+require Task::TaskMaker;
+
+
 # Check for unparsed argumentss
 if (@ARGV) {
-    print "ERROR: unrecognized arguments: @ARGV $eol";
+    print "ERROR: unrecognized arguments: @ARGV\n";
     usage();
 }
+
 
 # Check for required arguments
 my $caseroot;
 if ($opts{'caseroot'}) {
     $caseroot = $opts{'caseroot'};
 } else {
-    die "ERROR:  caseroot must be a supplied argument $eol";
+    die ("ERROR:  caseroot must be a supplied argument ");
 }
 
 # Check for presence of xmlquery in caseroot
 if (! -e "$caseroot/xmlquery" ) {
-    die "ERROR:  xmlquery is not present in $caseroot $eol";
+    die ("ERROR:  xmlquery is not present in $caseroot");
 }
 
 #-----------------------------------------------------------------------------------------------
 # Test case setup
 #-----------------------------------------------------------------------------------------------
 
+my $eol = "\n";
 my $mach		=  `./xmlquery MACH			-value`;
-my $ccsm_machdir	=  `./xmlquery CCSM_MACHDIR		-value`;
-my $cimeroot		=  `./xmlquery CIMEROOT			-value`;
+my $machdir	        =  `./xmlquery CCSM_MACHDIR        -value`;
 my $rundir              =  `./xmlquery RUNDIR			-value`;
 my $exeroot             =  `./xmlquery EXEROOT			-value`;
 my $libroot             =  `./xmlquery LIBROOT			-value`;
-my $scriptsroot         =  `./xmlquery SCRIPTSROOT		-value`;
 my $dout_s_root         =  `./xmlquery DOUT_S_ROOT		-value`;
 my $caseroot		=  `./xmlquery CASEROOT			-value`;
 my $case		=  `./xmlquery CASE			-value`;
@@ -97,10 +96,10 @@ my $compare_baseline	=  `./xmlquery COMPARE_BASELINE		-value`;
 my $generate_baseline	=  `./xmlquery GENERATE_BASELINE	-value`;
 my $cleanup             =  `./xmlquery CLEANUP	                -value`;
 my $ccsm_baseline       =  `./xmlquery CCSM_BASELINE            -value`;
-my $casetools           =  `./xmlquery CASETOOLS            -value`;
-my $compiler            =  `./xmlquery COMPILER             -value`;
-my $mpilib              =  `./xmlquery MPILIB               -value`;
-my $build_threaded      =  `./xmlquery BUILD_THREADED       -value`;
+my $compiler            =  `./xmlquery COMPILER                 -value`;
+my $mpilib              =  `./xmlquery MPILIB                   -value`;
+my $build_threaded      =  `./xmlquery BUILD_THREADED           -value`;
+my $debug               =  `./xmlquery DEBUG                    -value`;
 
 # generate baseline test flag
 my $basegen_dir;
@@ -130,42 +129,27 @@ if (! $baselineroot) {
 
 chdir($caseroot); 
 
-push(@INC, $casetools);
-my $perl5libdir = "$cimeroot/utils/perl5lib/";
-push(@INC, $perl5libdir);
-require Batch::BatchMaker;
-require Task::TaskMaker;
-require ConfigCase; 
 # ------------------ testcase_begin ------------------------------------------
 # -- Make batch script using the BatchMaker module --- 
+
 my $batchmaker = Batch::BatchFactory::getBatchMaker( caseroot => $caseroot, 
-                                                     cimeroot => $cimeroot,
-                                                     case     => $case,
-                                                     mpilib => $mpilib,
-                                                     scriptsroot => $scriptsroot, 
-                                                     machroot => $ccsm_machdir,
-                                                     machine     => $mach,        
-                                                     compiler => $compiler, 
+						     cimeroot => $cimeroot,
+                                                     case     => $case,     
+						     mpilib   => $mpilib,
+						     machroot => $machdir,
+                                                     machine  => $mach,        
+						     compiler => $compiler,
                                                      threaded => $build_threaded,
-                                                     job=>'test');
+                                                     job => 'test');
 
 my $batchdirectives = $batchmaker->getBatchDirectives();
                                                      
 
-# create batch header for testing script
-#my $batchfile = "$ENV{'HOME'}/.cesm/mkbatch.${mach}";
-#if ( ! -e $batchfile ) {
-#    $batchfile = "${ccsm_machdir}/mkbatch.${mach}";
-#}
-#my $sysmod = "env PHASE=set_batch env TESTMODE=test $batchfile";
-#system ($sysmod); if ($? == -1) {die "$sysmod failed: $! $eol";};
-#exit(1);
-#
 ## create test file
 my $sysmod;
 my $testfile = "$caseroot/${case}.test";
 my $testfh = new IO::File;
-$testfh->open(">>$testfile") or die "can't open file: $testfile $eol";
+$testfh->open(">>$testfile") or die ("can't open file: $testfile ");
 print $testfh "#!/bin/csh -f $eol";
 print $testfh "#$banner$eol";
 print $testfh "# This is a CESM test-specific job script$eol";
@@ -184,10 +168,8 @@ print $testfh " $eol cd $caseroot  $eol";
 # interpolate variables in following EOF block
 my $testcase_interp = <<END_INTERP;
 
-    setenv CASEROOT  $caseroot
-
     source env_mach_specific
-
+    setenv CIMEROOT `./xmlquery CIMEROOT -value`
     # valid test output states are:  
     #   PASS      Test passed
     #   FAIL      Test failed
@@ -206,12 +188,12 @@ my $testcase_interp = <<END_INTERP;
     # (Don't) Remove test status files! create_test puts the namelist comparision 
     # status and output into these files, respectively.  
     #======================================================================
-
+    setenv CASEROOT             $caseroot
     set CASE			=  $case
     set CASEBASEID		=  $casebaseid
     set TEST_TESTID		=  $test_testid 
     set CIMEROOT		=  $cimeroot
-    set SCRIPTSROOT             =  $scriptsroot
+    set SCRIPTSROOT             = "$cimeroot/scripts";
     set RUNDIR                  =  $rundir
     set EXEROOT                 =  $exeroot
     set LIBROOT                 =  $libroot
@@ -259,29 +241,34 @@ my $testcase_begin = <<'END_BEGIN';
     #-------------------------------------------------------------
 
     unset IOP_ON
-
-    # Reset all previous settings: obtain copy of original env_run.xml file
-    if ( -e env_run.orig )  then
-       cp env_run.orig env_run.xml
-    else
-       cp env_run.xml env_run.orig
-    endif
-
-    if ( $?IOP_ON ) then
-       set add_iop = "-add_iop $IOP_TYPE"
-       set msg = "iop_${IOP_TYPE}_test"
-    else
-       set add_iop = ''
-       set testname = `./xmlquery TESTCASE -value`
-       set msg = "${testname}_test"
-    endif
-
+    set testname = `./xmlquery TESTCASE -value`
+    set resubmit =  `./xmlquery RESUBMIT -value`
+    set add_iop = ''
+    set msg = "${testname}_test"
+    if( $testname == "ERR" && $resubmit <= 0 ) then
+       echo "Second pass of ERR test"
+    else    
+      # Reset all previous settings: obtain copy of original env_run.xml file
+      if ( -e env_run.orig )  then
+        cp env_run.orig env_run.xml
+      else
+         cp env_run.xml env_run.orig
+      endif
+      set resubmit =  `./xmlquery RESUBMIT -value`
+      if ( $?IOP_ON ) then
+         set add_iop = "-add_iop $IOP_TYPE"
+         set msg = "iop_${IOP_TYPE}_test"
+      endif
+   endif
 END_BEGIN
 
 print $testfh $testcase_begin;
 
+my $file = "${cimeroot}/scripts/Testing/Testcases/${testcase}" . "_script";
+(-f $file) or die ("ERROR testcase_setup: $file does not exist"); 
+
 $sysmod = "cat ${cimeroot}/scripts/Testing/Testcases/${testcase}" . "_script" . " >> $testfile";
-system($sysmod) == 0 or die "ERROR: $sysmod failed: $? $eol";
+system($sysmod) == 0 or die ("ERROR: $sysmod failed: $?");
 
 my $testcase_iop = <<'END_IOP';
 
@@ -302,7 +289,7 @@ my $testcase_iop = <<'END_IOP';
     # Reset all previous settings: obtain copy of original env_run.xml file
     if ( -e env_run.orig )  then
 	cp env_run.orig env_run.xml
-	else
+    else
 	cp env_run.xml env_run.orig
     endif
     # ********turn on IOP case***************
@@ -325,7 +312,7 @@ if ( "${case}" =~ /.+_IOP.+/ ) {
     print $testfh $testcase_iop;
 
     $sysmod = "cat ${cimeroot}/scripts/Testing/Testcases/${testcase}" . "_script" . " >> $testfile";
-    system($sysmod) == 0 or die "ERROR: $sysmod failed: $? $eol";
+    system($sysmod) == 0 or die ("ERROR: $sysmod failed: $?");
 }
 
 my $testcase_end = <<'END_TEST';
@@ -480,7 +467,6 @@ my $testcase_end = <<'END_TEST';
 	 set npes = ""
 	 set tag  = "unknown"
 	 if ( $?TOTALPES)     set npes = `echo $TOTALPES`
-	 if ( $?CCSM_REPOTAG) set tag  = `echo $CCSM_REPOTAG`
 	 if ( $?BASEGEN_NAME) set tag  = `echo $BASEGEN_NAME`
 
 	 set tput = `zgrep "# simulated years "    $CplLogFile | cut -c 63-72`
@@ -575,10 +561,10 @@ print $testfh $testcase_end;
 $testfh->close();
 
 $sysmod= "chmod 755 $case* *pl";
-system ($sysmod); if ($? == -1) {die "$sysmod failed: $! $eol";};
+system ($sysmod); if ($? == -1) {die ("$sysmod failed: $!");};
 
 $sysmod = "chmod 755 $testfile";
-system($sysmod) == 0 or die "ERROR: $sysmod failed: $? $eol";
+system($sysmod) == 0 or die ("ERROR: $sysmod failed: $? ");
 
 chdir($caseroot);
 
