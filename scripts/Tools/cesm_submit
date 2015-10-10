@@ -45,6 +45,8 @@ sub main
     $config{TESTCASE} = `./xmlquery -value TESTCASE`;
     $config{CASEROOT} = `./xmlquery -value CASEROOT`;
     $config{COMP_RUN_BARRIERS} = `./xmlquery -value COMP_RUN_BARRIERS`;
+    $config{RESUBMIT} = `./xmlquery -value RESUBMIT`;
+
 
     # Check the case only once..
     if(!$opts{resubmit}){
@@ -132,7 +134,7 @@ sub doResubmit()
                                                               machroot => $config{'CCSM_MACHDIR'},
                                                               mpilib   => $config{'MPILIB'},
 	                                                     job => $job);
-    
+    print "Submitting $scriptname\n";    
     $batchutils->doResubmit($scriptname);
 }
 

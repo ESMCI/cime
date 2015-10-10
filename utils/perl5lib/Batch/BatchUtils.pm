@@ -226,13 +226,13 @@ sub _decrementResubmitCounter()
 {
     my ($self,$config) = @_;
     my $newresubmit;
-    if(defined $config->{RESUBMIT}){
-	$newresubmit = $config->{'RESUBMIT'} - 1;
-    }else{
-	die("RESUBMIT not defined in \$config");
-    }
     my $owd = getcwd;
     chdir $config->{'CASEROOT'};
+    if(! defined $config->{RESUBMIT}){
+	$config->{RESUBMIT} = `./xmlquery -value RESUBMIT`;
+#	die("RESUBMIT not defined in \$config");
+    }
+    $newresubmit = $config->{'RESUBMIT'} - 1;
     if($config->{COMP_RUN_BARRIERS} ne "TRUE") 
     {
 	`./xmlchange CONTINUE_RUN=TRUE`;
@@ -599,7 +599,7 @@ sub submitSingleJob()
     my $exitstatus = ($?>>8);
     if($exitstatus != 0)
     {
-        die( "job submission failed");
+        die( "job submission failed: $runcmd");
         exit(1);
     }
     chomp $output;
@@ -619,7 +619,7 @@ sub doResubmit()
     #If we're NOT doing short-term archiving, and we need to resubmit, then we need to resubmit JUST the run
 
     my $issta = ($scriptname =~ /archive/);
-  
+ 
     if(! $issta && $config{'RESUBMIT'} > 0  && $config{'DOUT_S'} eq 'FALSE')
     {
         chdir $config{'CASEROOT'};
