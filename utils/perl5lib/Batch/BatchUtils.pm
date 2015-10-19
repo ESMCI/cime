@@ -348,6 +348,9 @@ sub getSubmitArguments()
     # We need the script name and the dependent job id.
     my $scriptname = shift;
     my $dependentjobid = shift;
+    
+    $scriptname =~ /\w+\.(\w+)$/;
+    $self->{job}=$1;
 
     # Get a BatchMaker instance, we need its instance data. 
     my $batchmaker = Batch::BatchFactory::getBatchMaker( caseroot => $self->{caseroot}, 
