@@ -7,6 +7,7 @@ import time
 import pyEnsLib
 import json
 import random
+import glob
 from datetime import datetime
 from asaptools.partition import EqualStride, Duplicate
 import asaptools.simplecomm as simplecomm 
@@ -19,7 +20,7 @@ def main(argv):
 
 
     # Get command line stuff and store in a dictionary
-    s='verbose sumfile= indir= timeslice= nPC= sigMul= minPCFail= minRunFail= numRunFile= printVarTest popens jsonfile= mpi_enable nbin= minrange= maxrange= outfile= casejson= npick= pepsi_gm'
+    s='verbose sumfile= indir= input_globs= timeslice= nPC= sigMul= minPCFail= minRunFail= numRunFile= printVarTest popens jsonfile= mpi_enable nbin= minrange= maxrange= outfile= casejson= npick= pepsi_gm test_failure pop_tol= pop_threshold='
     optkeys = s.split()
     try:
         opts, args = getopt.getopt(argv,"h",optkeys)
@@ -30,6 +31,8 @@ def main(argv):
     
     # Set the default value for options
     opts_dict = {}
+    opts_dict['input_globs'] = ''
+    opts_dict['indir'] = ''
     opts_dict['timeslice'] = 1
     opts_dict['nPC'] = 50
     opts_dict['sigMul'] = 2
@@ -48,6 +51,9 @@ def main(argv):
     opts_dict['casejson'] = ''
     opts_dict['npick'] = 10
     opts_dict['pepsi_gm'] = False
+    opts_dict['test_failure'] = False
+    opts_dict['pop_tol'] = 0.03
+    opts_dict['pop_threshold'] = 0.90
     # Call utility library getopt_parseconfig to parse the option keys
     # and save to the dictionary
     caller = 'CECT'
@@ -64,7 +70,7 @@ def main(argv):
     print ' '
     print 'Ensemble summary file = '+opts_dict['sumfile']
     print ' '
-    print 'Cam output directory = '+opts_dict['indir']    
+    print 'Testcase file directory = '+opts_dict['indir']    
     print ' '
     print ' '
 
@@ -75,17 +81,24 @@ def main(argv):
         me=simplecomm.create_comm(not opts_dict['mpi_enable'])
   
     ifiles=[]
+    in_files=[]
+    # Random pick pop files from not_pick_files list
     if opts_dict['casejson']:
        with open(opts_dict['casejson']) as fin:
             result=json.load(fin)
             in_files_first=result['not_pick_files']
-            in_files_temp=random.sample(in_files_first,opts_dict['npick'])
+            in_files=random.sample(in_files_first,opts_dict['npick'])
             
     else: 
+       wildname='*'+opts_dict['input_globs']+'*'
        # Open all input files
-       in_files_temp=os.listdir(opts_dict['indir'])
-    in_files=sorted(in_files_temp)
-    print 'testcase files:'
+       if (os.path.exists(opts_dict['indir'])):
+          full_glob_str=os.path.join(opts_dict['indir'],wildname)
+          glob_files=glob.glob(full_glob_str)
+          in_files.extend(glob_files)
+          #in_files_temp=os.listdir(opts_dict['indir'])
+    in_files.sort()
+    print 'Testcase files:'
     print '\n'.join(in_files)
 
     if popens:
@@ -93,22 +106,30 @@ def main(argv):
         in_files_list=me.partition(in_files,func=EqualStride(),involved=True)
 
     else:
+        # Random pick non pop files
         in_files_list=pyEnsLib.Random_pickup(in_files,opts_dict)
     for frun_file in in_files_list:
-         if (os.path.isfile(opts_dict['indir'] +'/'+ frun_file)):
-             ifiles.append(Nio.open_file(opts_dict['indir']+'/'+frun_file,"r"))
+         if frun_file.find(opts_dict['indir']) != -1:
+            frun_temp=frun_file
          else:
-             print "COULD NOT LOCATE FILE " +opts_dict['indir']+frun_file+" EXISTING"
+            frun_temp=opts_dict['indir']+'/'+frun_file
+         if (os.path.isfile(frun_temp)):
+             ifiles.append(Nio.open_file(frun_temp,"r"))
+         else:
+             print "COULD NOT LOCATE FILE " +frun_temp+" EXISTING"
              sys.exit()
     
     if popens:
         
         # Read in the included var list
         Var2d,Var3d=pyEnsLib.read_jsonlist(opts_dict['jsonfile'],'ESP')
-        Zscore3d,Zscore2d=pyEnsLib.compare_raw_score(opts_dict,ifiles,me.get_rank(),Var3d,Var2d)  
-        print Zscore3d.shape,Zscore2d.shape
-        zmall = np.concatenate((Zscore3d,Zscore2d),axis=0)
+        print ' '
+        print 'Z-score tolerance = '+'{:3.2f}'.format(opts_dict['pop_tol'])
+        print 'ZPR = '+'{:.2%}'.format(opts_dict['pop_threshold'])
+        zmall,n_timeslice=pyEnsLib.compare_raw_score(opts_dict,ifiles,me.get_rank(),Var3d,Var2d)  
+        #zmall = np.concatenate((Zscore3d,Zscore2d),axis=0)
         np.set_printoptions(threshold=np.nan)
+
         if opts_dict['mpi_enable']:
             zmall = pyEnsLib.gather_npArray_pop(zmall,me,(me.get_size(),len(Var3d)+len(Var2d),len(ifiles),opts_dict['nbin'])) 
             if me.get_rank()==0:
@@ -118,7 +139,7 @@ def main(argv):
                         np.savetxt(fout,j,fmt='%-7.2e')
     else:
 	# Read all variables from the ensemble summary file
-	ens_var_name,ens_avg,ens_stddev,ens_rmsz,ens_gm,num_3d,mu_gm,sigma_gm,loadings_gm,sigma_scores_gm=pyEnsLib.read_ensemble_summary(opts_dict['sumfile']) 
+	ens_var_name,ens_avg,ens_stddev,ens_rmsz,ens_gm,num_3d,mu_gm,sigma_gm,loadings_gm,sigma_scores_gm,is_SE_sum=pyEnsLib.read_ensemble_summary(opts_dict['sumfile']) 
 
 	if len(ens_rmsz) == 0:
 	    gmonly = True
@@ -142,6 +163,10 @@ def main(argv):
 
 	# Get ncol and nlev value
 	npts3d,npts2d,is_SE=pyEnsLib.get_ncol_nlev(ifiles[0])
+ 
+        if (is_SE ^ is_SE_sum):
+           print 'Warning: please note the ensemble summary file is different from the testing files, they use different grids'
+           
      
 	# Compare the new run and the ensemble summary file to get rmsz score
 	results={}

@@ -29,12 +29,12 @@ def main(argv):
     opts_dict={}
     
     # Defaults
-    opts_dict['tag'] = 'cesm1_2_0'
-    opts_dict['compset'] = 'FC5'
-    opts_dict['mach'] = 'yellowstone'
+    opts_dict['tag'] = ''
+    opts_dict['compset'] = ''
+    opts_dict['mach'] = ''
     opts_dict['esize'] = 151
     opts_dict['tslice'] = 0
-    opts_dict['res'] = 'ne30_ne30'
+    opts_dict['res'] = ''
     opts_dict['sumfile'] = 'ens.summary.nc'
     opts_dict['indir'] = './'
     opts_dict['sumfiledir'] = './'
@@ -57,6 +57,10 @@ def main(argv):
         print opts_dict
         print 'Ensemble size for summary = ', esize
 
+    if not (opts_dict['tag'] and opts_dict['compset'] and opts_dict['mach'] or opts_dict['res']):
+       print 'Please specify --tag, --compset, --mach and --res options'
+       sys.exit()
+       
     # Now find file names in indir
     input_dir = opts_dict['indir']
     # The var list that will be excluded
