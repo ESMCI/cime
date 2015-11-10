@@ -13,7 +13,7 @@ def main(argv):
     print 'Running pyEnsSumPop!'
 
     # Get command line stuff and store in a dictionary
-    s = 'tag= compset= nyear= nmonth= npert= nbin= minrange= maxrange= res= sumfile= indir= mach= verbose jsonfile= mpi_enable gmonly popens nrand= rand seq= jsondir='
+    s = 'tag= compset= nyear= nmonth= npert= nbin= minrange= maxrange= res= sumfile= indir= mach= tslice= verbose jsonfile= mpi_enable gmonly popens nrand= rand seq= jsondir='
     optkeys = s.split()
     try: 
         opts, args = getopt.getopt(argv, "h", optkeys)
@@ -28,6 +28,7 @@ def main(argv):
     opts_dict['tag'] = 'cesm1_2_0'
     opts_dict['compset'] = 'FC5'
     opts_dict['mach'] = 'yellowstone'
+    opts_dict['tslice'] = 0 
     opts_dict['nyear'] = 3
     opts_dict['nmonth'] = 12
     opts_dict['npert'] = 40
@@ -45,7 +46,7 @@ def main(argv):
     opts_dict['nrand'] = 40 
     opts_dict['rand'] = False
     opts_dict['seq'] = 0 
-    opts_dict['jsondir'] = '/glade/scratch/haiyingx' 
+    opts_dict['jsondir'] = '/glade/scratch/haiyingx/' 
 
     # This creates the dictionary of input arguments 
     print "before parseconfig"
@@ -259,7 +260,7 @@ def main(argv):
        print "Calculating global means ....."
     is_SE = False
     tslice=0
-    #gm3d,gm2d = pyEnsLib.generate_global_mean_for_summary(o_files,Var3d,Var2d,tslice, is_SE,opts_dict['popens'],False,verbose)
+    #gm3d,gm2d = pyEnsLib.generate_global_mean_for_summary(o_files,Var3d,Var2d, is_SE,False,verbose)
     if verbose:
        print "Finish calculating global means ....."
 
@@ -267,7 +268,7 @@ def main(argv):
     if (verbose == True):
         print "Calculating RMSZ scores ....."
     if not opts_dict['gmonly']:
-        zscore3d,zscore2d,ens_avg3d,ens_stddev3d,ens_avg2d,ens_stddev2d=pyEnsLib.calc_rmsz(o_files,o_files[0],Var3d,Var2d,tslice,is_SE,opts_dict,verbose)    
+        zscore3d,zscore2d,ens_avg3d,ens_stddev3d,ens_avg2d,ens_stddev2d,temp1,temp2=pyEnsLib.calc_rmsz(o_files,Var3d,Var2d,is_SE,opts_dict)    
 
     if opts_dict['mpi_enable'] :
 	# Gather the 3d variable results from all processors to the master processor

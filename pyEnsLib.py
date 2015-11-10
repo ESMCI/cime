@@ -23,11 +23,15 @@ def parse_header_file(filename):
 #
 # Create RMSZ zscores for ensemble file sets 
 #
-def calc_rmsz(o_files,openfile,var_name3d,var_name2d,tslice,is_SE,opts_dict,verbose):
+def calc_rmsz(o_files,var_name3d,var_name2d,is_SE,opts_dict):
     threshold=1e-12
     popens = opts_dict['popens']
-
-    input_dims = openfile.dimensions
+    tslice = opts_dict['tslice']
+    if 'cumul' in opts_dict:
+       cumul=opts_dict['cumul']
+    else:
+       cumul=False
+    input_dims = o_files[0].dimensions
     if popens:
        nbin = opts_dict['nbin']
        minrange = opts_dict['minrange']
@@ -73,8 +77,13 @@ def calc_rmsz(o_files,openfile,var_name3d,var_name2d,tslice,is_SE,opts_dict,verb
     avg2d={}
     stddev2d={}
     indices = np.arange(0,len(o_files),1)
-   
-    
+    gm3d=[]
+    gm2d=[]
+        
+    if cumul:
+      temp1,temp2,area_wgt,z_wgt=get_area_wgt(o_files,is_SE,input_dims,nlev,popens)
+      gm3d = np.zeros((len(var_name3d)),dtype=np.float32)
+      gm2d = np.zeros((len(var_name2d)),dtype=np.float32)
     for vcount,vname in enumerate(var_name3d):
       #Read in vname's data of all files
       for fcount, this_file in enumerate(o_files):
@@ -85,7 +94,7 @@ def calc_rmsz(o_files,openfile,var_name3d,var_name2d,tslice,is_SE,opts_dict,verb
         else:
           output3d[fcount,:,:,:]=data[tslice,:,:,:]
 
-      #Generate ens_avg and esn_stddev to store in the ensemble summary file
+      #Generate ens_avg and ens_stddev to store in the ensemble summary file
       if popens:
          moutput3d=np.ma.masked_values(output3d,data._FillValue)
          ens_avg3d[vcount]=np.ma.average(moutput3d,axis=0)
@@ -93,35 +102,38 @@ def calc_rmsz(o_files,openfile,var_name3d,var_name2d,tslice,is_SE,opts_dict,verb
       else:
          ens_avg3d[vcount]=np.average(output3d,axis=0).astype(np.float32)
          ens_stddev3d[vcount]=np.std(output3d.astype(np.float64),axis=0,dtype=np.float64).astype(np.float32)
+         if cumul:
+            gm3d[vcount],temp3=calc_global_mean_for_onefile(this_file,area_wgt,[vname],[],ens_avg3d[vcount],temp2,tslice,is_SE,nlev,opts_dict)
 
-      #Generate avg, stddev and zscore for 3d variable
-      for fcount,this_file in enumerate(o_files):
-        data=this_file.variables[vname]
-        if not popens:
-	   new_index=np.where(indices!=fcount)
-	   ensemble3d = output3d[new_index] 
-	   avg3d=np.average(ensemble3d,axis=0)
-	   stddev3d=np.std(ensemble3d,axis=0,dtype=np.float64) 
+      if not cumul:
+	 #Generate avg, stddev and zscore for 3d variable
+	 for fcount,this_file in enumerate(o_files):
+	   data=this_file.variables[vname]
+	   if not popens:
+	      new_index=np.where(indices!=fcount)
+	      ensemble3d = output3d[new_index] 
+	      avg3d=np.average(ensemble3d,axis=0)
+	      stddev3d=np.std(ensemble3d,axis=0,dtype=np.float64) 
 
-	   flag3d = False
-	   count3d = 0
-	   count3d,ret_val=calc_Z(output3d[fcount].astype(np.float64),avg3d.astype(np.float64),stddev3d.astype(np.float64),count3d,flag3d)
-	   Zscore=np.sum(np.square(ret_val))
+	      flag3d = False
+	      count3d = 0
+	      count3d,ret_val=calc_Z(output3d[fcount].astype(np.float64),avg3d.astype(np.float64),stddev3d.astype(np.float64),count3d,flag3d)
+	      Zscore=np.sum(np.square(ret_val))
 
-	   if (count3d < npts3d):
-	     Zscore3d[vcount,fcount]=np.sqrt(Zscore/(npts3d-count3d))
+	      if (count3d < npts3d):
+		Zscore3d[vcount,fcount]=np.sqrt(Zscore/(npts3d-count3d))
+	      else:
+		print "WARNING: no variance in "+vname
 	   else:
-	     print "WARNING: no variance in "+vname
-        else:
-           rmask=this_file.variables['REGION_MASK']
-           Zscore=pop_zpdf(output3d[fcount],nbin,(minrange,maxrange),ens_avg3d[vcount],ens_stddev3d[vcount],data._FillValue,threshold,rmask,opts_dict)
-           #if fcount == 0 & vcount ==0:
-           #   time_val = this_file.variables['time'][0]
-	   #   fout = "Zscore_"+str(time_val)+".txt"
-           #   print Zscore.shape
-           #   np.savetxt(fout,Zscore[0,3,:], fmt='%.3e')
-           Zscore3d[vcount,fcount,:]=Zscore[:]
-           #print 'zscore3d vcount,fcount=',vcount,fcount,Zscore3d[vcount,fcount]
+	      rmask=this_file.variables['REGION_MASK']
+	      Zscore=pop_zpdf(output3d[fcount],nbin,(minrange,maxrange),ens_avg3d[vcount],ens_stddev3d[vcount],data._FillValue,threshold,rmask,opts_dict)
+	      #if fcount == 0 & vcount ==0:
+	      #   time_val = this_file.variables['time'][0]
+	      #   fout = "Zscore_"+str(time_val)+".txt"
+	      #   print Zscore.shape
+	      #   np.savetxt(fout,Zscore[0,3,:], fmt='%.3e')
+	      Zscore3d[vcount,fcount,:]=Zscore[:]
+	      #print 'zscore3d vcount,fcount=',vcount,fcount,Zscore3d[vcount,fcount]
 
     for vcount,vname in enumerate(var_name2d):
       #Read in vname's data of all files
@@ -141,39 +153,46 @@ def calc_rmsz(o_files,openfile,var_name3d,var_name2d,tslice,is_SE,opts_dict,verb
       else:
          ens_avg2d[vcount]=np.average(output2d,axis=0).astype(np.float32)
          ens_stddev2d[vcount]=np.std(output2d,axis=0,dtype=np.float64).astype(np.float32)
+         if cumul:
+            temp3,gm2d[vcount]=calc_global_mean_for_onefile(this_file,area_wgt,[],[vname],temp1,ens_avg2d[vcount],tslice,is_SE,nlev,opts_dict)
 
-      #Generate avg, stddev and zscore for 3d variable
-      for fcount,this_file in enumerate(o_files):
+      if not cumul:
+	 #Generate avg, stddev and zscore for 3d variable
+	 for fcount,this_file in enumerate(o_files):
 
-        data=this_file.variables[vname]
-        if not popens:
-	   new_index=np.where(indices!=fcount)
-	   ensemble2d = output2d[new_index] 
-	   avg2d=np.average(ensemble2d,axis=0)
-	   stddev2d=np.std(ensemble2d,axis=0,dtype=np.float64) 
+	   data=this_file.variables[vname]
+	   if not popens:
+	      new_index=np.where(indices!=fcount)
+	      ensemble2d = output2d[new_index] 
+	      avg2d=np.average(ensemble2d,axis=0)
+	      stddev2d=np.std(ensemble2d,axis=0,dtype=np.float64) 
 
-	   flag2d = False
-	   count2d = 0
-	   count2d,ret_val=calc_Z(output2d[fcount].astype(np.float64),avg2d.astype(np.float64),stddev2d.astype(np.float64),count2d,flag2d)
-	   Zscore=np.sum(np.square(ret_val))
+	      flag2d = False
+	      count2d = 0
+	      count2d,ret_val=calc_Z(output2d[fcount].astype(np.float64),avg2d.astype(np.float64),stddev2d.astype(np.float64),count2d,flag2d)
+	      Zscore=np.sum(np.square(ret_val))
 
-	   if (count2d < npts2d):
-	     Zscore2d[vcount,fcount]=np.sqrt(Zscore/(npts2d-count2d))
+	      if (count2d < npts2d):
+		Zscore2d[vcount,fcount]=np.sqrt(Zscore/(npts2d-count2d))
+	      else:
+		print "WARNING: no variance in "+vname
 	   else:
-	     print "WARNING: no variance in "+vname
-        else:
-           rmask=this_file.variables['REGION_MASK']
-           Zscore=pop_zpdf(output2d[fcount],nbin,(minrange,maxrange),ens_avg2d[vcount],ens_stddev2d[vcount],data._FillValue,threshold,rmask,opts_dict)
-           Zscore2d[vcount,fcount,:]=Zscore[:]
-           #print 'zscore2d vcount,fcount=',vcount,fcount,Zscore2d[vcount,fcount]
+	      rmask=this_file.variables['REGION_MASK']
+	      Zscore=pop_zpdf(output2d[fcount],nbin,(minrange,maxrange),ens_avg2d[vcount],ens_stddev2d[vcount],data._FillValue,threshold,rmask,opts_dict)
+	      Zscore2d[vcount,fcount,:]=Zscore[:]
+	      #print 'zscore2d vcount,fcount=',vcount,fcount,Zscore2d[vcount,fcount]
      
-    return Zscore3d,Zscore2d,ens_avg3d,ens_stddev3d,ens_avg2d,ens_stddev2d
+    return Zscore3d,Zscore2d,ens_avg3d,ens_stddev3d,ens_avg2d,ens_stddev2d,gm3d,gm2d
 
 #
 # Calculate pop zscore pass rate (ZPR) or pop zpdf values
 #
 def pop_zpdf(input_array,nbin,zrange,ens_avg,ens_stddev,FillValue,threshold,rmask,opts_dict):
-   
+  
+   if 'test_failure' in opts_dict:
+      test_failure=opts_dict['test_failure']
+   else:
+      test_failure=False 
    #Masked the missing value
    moutput=np.ma.masked_values(input_array,FillValue)
    #print 'before count=',moutput.count()
@@ -197,7 +216,7 @@ def pop_zpdf(input_array,nbin,zrange,ens_avg,ens_stddev,FillValue,threshold,rmas
    Zscore_nomask=Zscore_temp[~Zscore_temp.mask]
 
    #If just test failure, calculate ZPR only
-   if opts_dict['test_failure']:
+   if test_failure:
       #Zpr=the count of Zscore_nomask is less than pop_tol (3.0)/ the total count of Zscore_nomask  
       Zpr=np.where(Zscore_nomask<=opts_dict['pop_tol'])[0].size/float(Zscore_temp.count())
       return Zpr
@@ -382,28 +401,20 @@ def pop_area_avg(data, weight):
 
 def get_lev(file_dim_dict,lev_name):
     return file_dim_dict[lev_name]
-    
-#
-# Open input files,compute area_wgts, and then loop through all files to call calc_global_means_for_onefile
-#
-def generate_global_mean_for_summary(o_files,var_name3d,var_name2d,tslice,is_SE,popens,pepsi_gm,verbose):
+   
 
-    #openfile - should have already been opened by Nio.open_file()
-    n3d = len(var_name3d)
-    n2d = len(var_name2d)
-    tot = n3d + n2d
-
-    gm3d = np.zeros((n3d,len(o_files)),dtype=np.float32)
-    gm2d = np.zeros((n2d,len(o_files)),dtype=np.float32)
-
+def get_nlev(o_files,popens):
     #get dimensions and compute area_wgts
     input_dims = o_files[0].dimensions
     if not popens:
        nlev = get_lev(input_dims,'lev')
     else:
        nlev = get_lev(input_dims,'z_t')
-
+    return input_dims,nlev
    
+
+def get_area_wgt(o_files,is_SE,input_dims,nlev,popens): 
+    z_wgt={}
     if (is_SE == True):
         ncol = input_dims["ncol"]
         output3d = np.zeros((nlev, ncol))
@@ -431,6 +442,24 @@ def generate_global_mean_for_summary(o_files,var_name3d,var_name2d,tslice,is_SE,
         output2d = np.zeros((nlat, nlon))
         #area_wgt = np.zeros(nlat) #note gaues weights are length nlat
         area_wgt = gw
+
+    return output3d,output2d,area_wgt,z_wgt
+#
+# Open input files,compute area_wgts, and then loop through all files to call calc_global_means_for_onefile
+#
+def generate_global_mean_for_summary(o_files,var_name3d,var_name2d,is_SE,pepsi_gm,opts_dict):
+    tslice=opts_dict['tslice']
+    popens=opts_dict['popens']
+    #openfile - should have already been opened by Nio.open_file()
+    n3d = len(var_name3d)
+    n2d = len(var_name2d)
+    tot = n3d + n2d
+
+    gm3d = np.zeros((n3d,len(o_files)),dtype=np.float32)
+    gm2d = np.zeros((n2d,len(o_files)),dtype=np.float32)
+
+    input_dims,nlev=get_nlev(o_files,popens)
+    output3d,output2d,area_wgt,z_wgt=get_area_wgt(o_files,is_SE,input_dims,nlev,popens) 
     
     #loop through the input file list to calculate global means
     #var_name3d=[]
@@ -445,21 +474,20 @@ def generate_global_mean_for_summary(o_files,var_name3d,var_name2d,tslice,is_SE,
 	     if k == 'time':
 	       ntslice=v[:]
 	   for i in np.nditer(ntslice):
-	     temp1,temp2=calc_global_mean_for_onefile(fname,area_wgt,var_name3d,var_name2d,output3d,output2d,int(i),is_SE,nlev,verbose)
+	     temp1,temp2=calc_global_mean_for_onefile(fname,area_wgt,var_name3d,var_name2d,output3d,output2d,int(i),is_SE,nlev,opts_dict)
 	     fout.write(str(temp2[0])+'\n')
         elif popens:
-           print 'fcount=',fcount
-           gm3d[:,fcount],gm2d[:,fcount]=calc_global_mean_for_onefile_pop(fname,area_wgt,z_wgt,var_name3d,var_name2d,output3d,output2d,tslice,is_SE,nlev,verbose)
+           gm3d[:,fcount],gm2d[:,fcount]=calc_global_mean_for_onefile_pop(fname,area_wgt,z_wgt,var_name3d,var_name2d,output3d,output2d,tslice,is_SE,nlev,opts_dict)
 
         else:
-           gm3d[:,fcount],gm2d[:,fcount]=calc_global_mean_for_onefile(fname,area_wgt,var_name3d,var_name2d,output3d,output2d,tslice,is_SE,nlev,verbose)
+           gm3d[:,fcount],gm2d[:,fcount]=calc_global_mean_for_onefile(fname,area_wgt,var_name3d,var_name2d,output3d,output2d,tslice,is_SE,nlev,opts_dict)
     
     return gm3d,gm2d
 
 #
 # Calculate global means for one input file
 #
-def calc_global_mean_for_onefile_pop(fname, area_wgt,z_wgt,var_name3d, var_name2d,output3d,output2d, tslice, is_SE, nlev,verbose):
+def calc_global_mean_for_onefile_pop(fname, area_wgt,z_wgt,var_name3d, var_name2d,output3d,output2d, tslice, is_SE, nlev,opts_dict):
     n3d = len(var_name3d)
     n2d = len(var_name2d)
 
@@ -478,7 +506,6 @@ def calc_global_mean_for_onefile_pop(fname, area_wgt,z_wgt,var_name3d, var_name2
 	    gm_lev[k] = pop_area_avg(moutput3d, area_wgt)
 	#note: averaging over levels should probably be pressure-weighted(TO DO)        
 	gm3d[count] = np.average(gm_lev,weights=z_wgt)         
-        print "gm3d vcount=",count
 	
     #calculate global mean for each 2D variable 
     for count, vname in enumerate(var_name2d):
@@ -489,14 +516,17 @@ def calc_global_mean_for_onefile_pop(fname, area_wgt,z_wgt,var_name3d, var_name2
         moutput2d=np.ma.masked_values(output2d[:,:],data._FillValue)
 	gm2d_mean = pop_area_avg(moutput2d, area_wgt)
 	gm2d[count]=gm2d_mean
-        print "gm2d vcount=",count
     return gm3d,gm2d        
 
 #
 # Calculate global means for one input file
 #
-def calc_global_mean_for_onefile(fname, area_wgt,var_name3d, var_name2d,output3d,output2d, tslice, is_SE, nlev,verbose):
+def calc_global_mean_for_onefile(fname, area_wgt,var_name3d, var_name2d,output3d,output2d, tslice, is_SE, nlev,opts_dict):
     
+    if 'cumul' in opts_dict:
+       cumul = opts_dict['cumul']
+    else:
+       cumul = False 
     n3d = len(var_name3d)
     n2d = len(var_name2d)
 
@@ -513,11 +543,13 @@ def calc_global_mean_for_onefile(fname, area_wgt,var_name3d, var_name2d,output3d
            continue
 	data = fname.variables[vname]
 	if (is_SE == True):
-	    output3d[:,:] = data[tslice,:,:] 
+            if not cumul: 
+	        output3d[:,:] = data[tslice,:,:] 
 	    for k in range(nlev):
 		gm_lev[k] = area_avg(output3d[k,:], area_wgt, is_SE)
 	else:
-	    output3d[:,:,:] = data[tslice,:,:,:] 
+            if not cumul:
+	        output3d[:,:,:] = data[tslice,:,:,:] 
 	    for k in range(nlev):
 		gm_lev[k] = area_avg(output3d[k,:,:], area_wgt, is_SE)
 	#note: averaging over levels should probably be pressure-weighted(TO DO)        
@@ -533,10 +565,12 @@ def calc_global_mean_for_onefile(fname, area_wgt,var_name3d, var_name2d,output3d
            continue
 	data = fname.variables[vname]
 	if (is_SE == True):
-	    output2d[:] = data[tslice,:] 
+            if not cumul:
+	        output2d[:] = data[tslice,:] 
 	    gm2d_mean = area_avg(output2d[:], area_wgt, is_SE)
 	else:
-	    output2d[:,:] = data[tslice,:,:] 
+            if not cumul:
+	        output2d[:,:] = data[tslice,:,:] 
 	    gm2d_mean = area_avg(output2d[:,:], area_wgt, is_SE)
 	gm2d[count]=gm2d_mean
 
@@ -783,7 +817,6 @@ def getopt_parseconfig(opts,optkeys,caller,opts_dict):
 	      if flt_p.match(arg)  :
                 opts_dict[keyword]=float(arg)
               elif int_p.match(arg) :
-                print arg
                 opts_dict[keyword]=int(arg)
               else: 
 	        opts_dict[keyword]=arg
@@ -1140,7 +1173,7 @@ def get_stride_list(len_of_list,me):
     return slice_index
 
 # 
-# Gather arrays from each processor to the master processor and make it an array
+# Gather arrays from each processor by the file_list to the master processor and make it an array
 #
 def gather_npArray_pop(npArray,me,array_shape):
     the_array=np.zeros(array_shape,dtype=np.float32)
@@ -1151,6 +1184,8 @@ def gather_npArray_pop(npArray,me,array_shape):
         j=me.get_rank()
         if len(array_shape) == 1:
            the_array[j]=npArray[0]
+        elif len(array_shape) == 2:
+           the_array[j,:]=npArray[:]
         elif len(array_shape) == 3:
 	   the_array[j,:,:]=npArray[:,:]
         elif len(array_shape) == 4:
@@ -1162,6 +1197,8 @@ def gather_npArray_pop(npArray,me,array_shape):
 	    rank,npArray=me.collect()
             if len(array_shape) == 1:
                the_array[rank]=npArray[0]
+            elif len(array_shape) == 2:
+               the_array[rank,:]=npArray[:]
             elif len(array_shape) == 3:
 	       the_array[rank,:,:]=npArray[:,:]
             elif len(array_shape) == 4:
