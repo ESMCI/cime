@@ -13,7 +13,7 @@ def main(argv):
     print 'Running pyEnsSumPop!'
 
     # Get command line stuff and store in a dictionary
-    s = 'tag= compset= nyear= nmonth= npert= nbin= minrange= maxrange= res= sumfile= indir= mach= tslice= verbose jsonfile= mpi_enable gmonly popens nrand= rand seq= jsondir='
+    s = 'tag= compset= nyear= nmonth= npert= nbin= minrange= maxrange= res= sumfile= indir= mach= tslice= verbose jsonfile= mpi_enable zscoreonly popens nrand= rand seq= jsondir='
     optkeys = s.split()
     try: 
         opts, args = getopt.getopt(argv, "h", optkeys)
@@ -41,7 +41,7 @@ def main(argv):
     opts_dict['jsonfile'] = ''
     opts_dict['verbose'] = True
     opts_dict['mpi_enable'] = False
-    opts_dict['gmonly'] = False
+    opts_dict['zscoreonly'] = False
     opts_dict['popens'] = True
     opts_dict['nrand'] = 40 
     opts_dict['rand'] = False
@@ -80,6 +80,7 @@ def main(argv):
 
     in_files=[]
     if(os.path.exists(input_dir)):
+        # Pick up the 'nrand' random number of input files to generate summary files
         if opts_dict['rand']:
            in_files=pyEnsLib.Random_pickup_pop(input_dir,opts_dict,opts_dict['nrand'])
         else:    
@@ -188,14 +189,14 @@ def main(argv):
        v_var3d = nc_sumfile.create_variable("var3d", 'S1', ('nvars3d', 'str_size'))
        v_var2d = nc_sumfile.create_variable("var2d", 'S1', ('nvars2d', 'str_size'))
        v_time = nc_sumfile.create_variable("time",'d',('time',))
-       if not opts_dict['gmonly']:
-	   v_ens_avg3d = nc_sumfile.create_variable("ens_avg3d", 'f', ('time','nvars3d', 'nlev', 'nlat', 'nlon'))
-	   v_ens_stddev3d = nc_sumfile.create_variable("ens_stddev3d", 'f', ('time','nvars3d', 'nlev', 'nlat', 'nlon'))
-	   v_ens_avg2d = nc_sumfile.create_variable("ens_avg2d", 'f', ('time','nvars2d', 'nlat', 'nlon'))
-	   v_ens_stddev2d = nc_sumfile.create_variable("ens_stddev2d", 'f', ('time','nvars2d', 'nlat', 'nlon'))
+       v_ens_avg3d = nc_sumfile.create_variable("ens_avg3d", 'f', ('time','nvars3d', 'nlev', 'nlat', 'nlon'))
+       v_ens_stddev3d = nc_sumfile.create_variable("ens_stddev3d", 'f', ('time','nvars3d', 'nlev', 'nlat', 'nlon'))
+       v_ens_avg2d = nc_sumfile.create_variable("ens_avg2d", 'f', ('time','nvars2d', 'nlat', 'nlon'))
+       v_ens_stddev2d = nc_sumfile.create_variable("ens_stddev2d", 'f', ('time','nvars2d', 'nlat', 'nlon'))
 
-	   v_RMSZ = nc_sumfile.create_variable("RMSZ", 'f', ('time','nvars', 'ens_size','nbin'))
-       v_gm = nc_sumfile.create_variable("global_mean", 'f', ('time','nvars', 'ens_size'))
+       v_RMSZ = nc_sumfile.create_variable("RMSZ", 'f', ('time','nvars', 'ens_size','nbin'))
+       if not opts_dict['zscoreonly']:
+          v_gm = nc_sumfile.create_variable("global_mean", 'f', ('time','nvars', 'ens_size'))
 
 
        # Assign vars, var3d and var2d
@@ -260,44 +261,44 @@ def main(argv):
        print "Calculating global means ....."
     is_SE = False
     tslice=0
-    #gm3d,gm2d = pyEnsLib.generate_global_mean_for_summary(o_files,Var3d,Var2d, is_SE,False,verbose)
+    if not opts_dict['zscoreonly']:
+       gm3d,gm2d = pyEnsLib.generate_global_mean_for_summary(o_files,Var3d,Var2d, is_SE,False,opts_dict)
     if verbose:
        print "Finish calculating global means ....."
 
     # Calculate RMSZ scores  
     if (verbose == True):
-        print "Calculating RMSZ scores ....."
-    if not opts_dict['gmonly']:
-        zscore3d,zscore2d,ens_avg3d,ens_stddev3d,ens_avg2d,ens_stddev2d,temp1,temp2=pyEnsLib.calc_rmsz(o_files,Var3d,Var2d,is_SE,opts_dict)    
+       print "Calculating RMSZ scores ....."
+    zscore3d,zscore2d,ens_avg3d,ens_stddev3d,ens_avg2d,ens_stddev2d,temp1,temp2=pyEnsLib.calc_rmsz(o_files,Var3d,Var2d,is_SE,opts_dict)    
 
+    # Collect from all processors
     if opts_dict['mpi_enable'] :
 	# Gather the 3d variable results from all processors to the master processor
 	# Gather global means 3d results
-        #gmall=np.concatenate((gm3d,gm2d),axis=0)
-        #print "before gather, gmall.shape=",gmall.shape
-	#gmall=pyEnsLib.gather_npArray_pop(gmall,me,(me.get_size(),len(Var3d)+len(Var2d),len(o_files)))
+        if not opts_dict['zscoreonly']:
+           gmall=np.concatenate((gm3d,gm2d),axis=0)
+           #print "before gather, gmall.shape=",gmall.shape
+	   gmall=pyEnsLib.gather_npArray_pop(gmall,me,(me.get_size(),len(Var3d)+len(Var2d),len(o_files)))
         zmall=np.concatenate((zscore3d,zscore2d),axis=0)
         zmall=pyEnsLib.gather_npArray_pop(zmall,me,(me.get_size(),len(Var3d)+len(Var2d),len(o_files),nbin))
-        print 'zmall=',zmall
+        #print 'zmall=',zmall
         
         #print "after gather, gmall.shape=",gmall.shape
-        print "before gather, ens_avg3d.shape=",ens_avg3d.shape
         ens_avg3d=pyEnsLib.gather_npArray_pop(ens_avg3d,me,(me.get_size(),len(Var3d),nlev,(nlat),nlon))
-        print "after gather, ens_avg3d.shape=",ens_avg3d.shape
         ens_avg2d=pyEnsLib.gather_npArray_pop(ens_avg2d,me,(me.get_size(),len(Var2d),(nlat),nlon))
         ens_stddev3d=pyEnsLib.gather_npArray_pop(ens_stddev3d,me,(me.get_size(),len(Var3d),nlev,(nlat),nlon))
         ens_stddev2d=pyEnsLib.gather_npArray_pop(ens_stddev2d,me,(me.get_size(),len(Var2d),(nlat),nlon))
 
     # Assign to file:
     if me.get_rank() == 0 :
-	if not opts_dict['gmonly']:
-	    Zscoreall=np.concatenate((zscore3d,zscore2d),axis=0)
-	    v_RMSZ[:,:,:,:]=zmall[:,:,:,:]
-	    v_ens_avg3d[:,:,:,:,:]=ens_avg3d[:,:,:,:,:]
-	    v_ens_stddev3d[:,:,:,:,:]=ens_stddev3d[:,:,:,:,:]
-	    v_ens_avg2d[:,:,:,:]=ens_avg2d[:,:,:,:]
-	    v_ens_stddev2d[:,:,:,:]=ens_stddev2d[:,:,:,:]
-	#v_gm[:,:,:]=gmall[:,:,:]
+	#Zscoreall=np.concatenate((zscore3d,zscore2d),axis=0)
+	v_RMSZ[:,:,:,:]=zmall[:,:,:,:]
+	v_ens_avg3d[:,:,:,:,:]=ens_avg3d[:,:,:,:,:]
+	v_ens_stddev3d[:,:,:,:,:]=ens_stddev3d[:,:,:,:,:]
+	v_ens_avg2d[:,:,:,:]=ens_avg2d[:,:,:,:]
+	v_ens_stddev2d[:,:,:,:]=ens_stddev2d[:,:,:,:]
+	if not opts_dict['zscoreonly']:
+	   v_gm[:,:,:]=gmall[:,:,:]
         print "All done"
 
 if __name__ == "__main__":

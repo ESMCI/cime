@@ -1,4 +1,4 @@
 {
-"Var3d": ["UVEL","VVEL","TEMP","SALT","VDC_T","VDC_S"],
-"Var2d": ["SSH","IFRAC"]
+"Var3d": ["UVEL","VVEL","TEMP","SALT"],
+"Var2d": ["SSH"]
 }
