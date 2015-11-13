@@ -388,21 +388,22 @@ def area_avg(data, weight, is_SE):
 
 
 #
-# Calculate weighted global mean for one level of CAM output
+# Calculate weighted global mean for one level of OCN output
 #
 def pop_area_avg(data, weight):
 
-    #TO DO: tke into account missing values
+    #Take into account missing values
     #a = wgt_areaave(data, weight, 1.0, 1)
     #weights are for lat 
     a = np.ma.average(data, weights=weight)
-    #a = np.ma.average(a_lat)
     return a
 
 def get_lev(file_dim_dict,lev_name):
     return file_dim_dict[lev_name]
    
-
+#
+# Get dimension 'lev' or 'z_t'
+#
 def get_nlev(o_files,popens):
     #get dimensions and compute area_wgts
     input_dims = o_files[0].dimensions
@@ -412,7 +413,9 @@ def get_nlev(o_files,popens):
        nlev = get_lev(input_dims,'z_t')
     return input_dims,nlev
    
-
+#
+# Calculate area_wgt when processes cam se/cam fv/pop files
+#
 def get_area_wgt(o_files,is_SE,input_dims,nlev,popens): 
     z_wgt={}
     if (is_SE == True):
@@ -485,7 +488,7 @@ def generate_global_mean_for_summary(o_files,var_name3d,var_name2d,is_SE,pepsi_g
     return gm3d,gm2d
 
 #
-# Calculate global means for one input file
+# Calculate global means for one OCN input file
 #
 def calc_global_mean_for_onefile_pop(fname, area_wgt,z_wgt,var_name3d, var_name2d,output3d,output2d, tslice, is_SE, nlev,opts_dict):
     n3d = len(var_name3d)
@@ -519,7 +522,7 @@ def calc_global_mean_for_onefile_pop(fname, area_wgt,z_wgt,var_name3d, var_name2
     return gm3d,gm2d        
 
 #
-# Calculate global means for one input file
+# Calculate global means for one CAM input file
 #
 def calc_global_mean_for_onefile(fname, area_wgt,var_name3d, var_name2d,output3d,output2d, tslice, is_SE, nlev,opts_dict):
     
@@ -1099,7 +1102,7 @@ def Random_pickup(ifiles,opts_dict):
     return new_ifiles
 
 #
-# Random pick up opts_dict['npick'] files out of a lot of pop files
+# Random pick up opts_dict['npick'] files out of a lot of OCN files
 #
 def Random_pickup_pop(indir,opts_dict,npick):
     random_year_range=opts_dict['nyear']
@@ -1130,7 +1133,7 @@ def Random_pickup_pop(indir,opts_dict,npick):
     return sorted(new_ifiles_temp)
     
 #
-# Check the false positive rate
+# Check the false positive rate 
 #
 def check_falsepositive(opts_dict,sum_index):
 
