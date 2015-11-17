@@ -281,7 +281,7 @@ def pre_PCA(gm):
     gm_len=gm.shape
     nvar=gm_len[0]
     nfile=gm_len[1]
-    mu_gm=np.average(gm,axis=1)
+    mu_gm=np.average(gm,axis=1).astype(np.float64)
     sigma_gm=np.std(gm,axis=1,dtype=np.float64)
     standardized_global_mean=np.zeros(gm.shape,dtype=np.float64)
     scores_gm=np.zeros(gm.shape,dtype=np.float64)
