@@ -62,7 +62,7 @@ Examples for generating summary files:
 	 (A) To generate (in parallel) a summary file for a set of simulation runs, 
        	 
            we specify the data location:
-	    --indir /glade/u/tdd/asap/pop_verification/ensemble_80/
+	    --indir /glade/scratch/haiyingx/pop_ensemble_data60/
 
            We also specify the name of file to create for the summary:
  	    --sumfile pop.ens.sum.nc
@@ -72,7 +72,7 @@ Examples for generating summary files:
 
            We also specify the number of years, the number of months, 
            and the number of pertubations:
-            --nyear 3
+            --nyear 1
             --nmonth 12
             --npert 80
 
@@ -95,13 +95,12 @@ Examples for generating summary files:
            To enable parallel mode:
             --mpi_enable    
 
+           Please note to set span[ptile=1] in the job submission script if npert>=60.
+
 	   This yields the following command:
 
-           mpirun.lsf python  pyEnsSumPop.py --verbose --tslice 0 --indir /glade/u/tdd/asap/pop_verification/ensemble_80/ --tag cesm1_4_beta11 --sumfile pop.ens.sum.nc --nyear 3 --nmonth 12 --npert 80 --jsonfile pop_ensemble.json --mpi_enable 
+           mpirun.lsf python  pyEnsSumPop.py --verbose --tslice 0 --indir /glade/scratch/haiyingx/pop_ensemble_data60/ --sumfile pop.ens.sum.nc --nyear 1 --nmonth 12 --npert 80 --jsonfile pop_ensemble.json --mpi_enable 
 
 
 
-	 (B) To generate (in serial) a summary file for a set of simulation runs, 
-
-           python  pyEnsSumPop.py --verbose --tslice 0 --indir /glade/u/tdd/asap/pop_verification/ensemble_80/ --tag cesm1_4_beta11 --sumfile pop.ens.sum.nc --jsonfile pop_ensemble.json --nyear 3 --nmonth 12 --npert 80
 
