@@ -4,7 +4,7 @@ README.pyEnsSumPop
 
 This package is used to create a summary file for a collection 
 (or ensemble) of runs. The user must specify the location of the input files.
-The summary file calculates averages, standard deviations, global means, RMSZ scores.
+The summary file calculates averages, standard deviations, global means, and Z-scores.
 This summary file is required for pyCECT.py.
 
 :AUTHORS: Haiying Xu, Allison Baker
@@ -21,14 +21,14 @@ This package includes:
      		            from a collection of files.
 
         pyEnsLib.py     
-                            Library python script used by pyEnsSum.py
+                            Library python script used by pyEnsSum.py.
 
         pyEnsSumPop_test.sh        
-                            Bsub script to submit pyEnsSum.py to yellowstone
+                            Bsub script to submit pyEnsSum.py to yellowstone.
 
         pop_ensemble.json
                             The variable list that will be included for
-                            reading and processing
+                            reading and processing.
 
 
 Before you start to use the package, you need to load the following modules: 
@@ -37,10 +37,13 @@ Before you start to use the package, you need to load the following modules:
        - module load numpy
        - module load scipy
        - module load pynio
-       - svn co https://proxy.subversion.ucar.edu/pubasap/pyTools/tags/v0.3 ASAPTool
-       Note: need to install asaptools and setup PYTHONPATH by following 
-             the instruction at README.rst in ASAPTool, please make sure
-             to set the correct python verion in the PYTHONPATH
+       - Install asaptools
+       git clone https://github.com/NCAR-CISL-ASAP/ASAPPyTools
+       or
+       pip install [--user] ASAPTools
+      (Follow the instructions in README.rst in ASAPTools and please make sure
+             to set the correct python verion in the PYTHONPATH)
+
        
 To see all options (and defaults):
 ----------------------------------
@@ -71,15 +74,16 @@ Examples for generating summary files:
 	    --tslice 0
 
            We also specify the number of years, the number of months, 
-           and the number of pertubations:
+           and the number of pertubations (e.g. ensemble size):
             --nyear 1
             --nmonth 12
             --npert 80
 
-	   We also specify the tag (cesm1_4_beta11 that will be written to the
-	   metadata of intel_summary.nc):
+	   We also can specify the tag, resolution, machine and compset
+	   information (that will be written to the
+	   metadata of the summary file):
 	    --tag cesm1_4_beta11
-            --res
+            --res T62_g16
             --mach yellowstone
             --compset G
 
@@ -95,7 +99,8 @@ Examples for generating summary files:
            To enable parallel mode:
             --mpi_enable    
 
-           Please note to set span[ptile=1] in the job submission script if npert>=60.
+           On Yellowstone, please note to set span[ptile=1] in the job submission 
+	   script if npert>=60.
 
 	   This yields the following command:
 
