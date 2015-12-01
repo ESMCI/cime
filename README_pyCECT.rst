@@ -66,13 +66,13 @@ Examples for generating consistency results:
 	    
 	    -indir /glade/u/tdd/asap/pop_verification/testcases/
 
-            specifying the search patterns of the input files:
+            specifying the search patterns of the testcase file to get from the input directory above:
 
-            --input_glob cvtd100000.0.pop.h.003
+            --input_glob cvtd100000.0.pop.h.0003
            
-            enable the popens, test_failure option:
+            enable the popens option:
 
-            --popens  --test_failure
+            --popens 
          
             specifying the json file that includes the variables which will be run the test on:
 
@@ -80,11 +80,15 @@ Examples for generating consistency results:
 
             specifying test tolerance
 
-            --pop_tol 3
+            --pop_tol 3.0
+
+            specifying pop threshold
+ 
+            --pop_threshold 0.9
 
             enable printVarTest option:
 
             --printVarTest
 
-            python pyCECT.py --sumfile /glade/u/tdd/asap/pop_verification/ens_sum/pop.40ens.openseas.nc --indir /glade/u/tdd/asap/pop_verification/testcases/ --input_glob cvtd100000.0.pop.h.0003 --popens --jsonfile pop_ensemble.json --outfile /glade/scratch/haiyingx/testcase.result --test_failure --pop_tol 3 --printVarTest
+            python pyCECT.py --sumfile /glade/u/tdd/asap/pop_verification/ens_sum/pop.40ens.openseas.nc --indir /glade/u/tdd/asap/pop_verification/testcases/ --input_glob cvtd100000.0.pop.h.0003 --popens --jsonfile pop_ensemble.json --outfile /glade/scratch/haiyingx/testcase.result --test_failure --pop_tol 3.0 --pop_threshold 0.9 --printVarTest
        	    
