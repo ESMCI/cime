@@ -13,7 +13,7 @@ def main(argv):
     print 'Running pyEnsSumPop!'
 
     # Get command line stuff and store in a dictionary
-    s = 'tag= compset= nyear= nmonth= npert= nbin= minrange= maxrange= res= sumfile= indir= mach= tslice= verbose jsonfile= mpi_enable zscoreonly popens nrand= rand seq= jsondir='
+    s = 'nyear= nmonth= npert= tag= res= mach= compset= sumfile= indir= tslice= verbose jsonfile= mpi_enable zscoreonly nrand= rand seq= jsondir='
     optkeys = s.split()
     try: 
         opts, args = getopt.getopt(argv, "h", optkeys)
