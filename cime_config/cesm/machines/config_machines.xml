@@ -1519,6 +1519,85 @@
     </environment_variables>
   </machine>
 
+
+<machine MACH="hexagon">
+         <DESC>"Parallab XE6m (pgi), os is CNL, 32 pes/node, batch system is PBS"</DESC>
+         <OS>CNL</OS>
+         <COMPILERS>intel,pgi</COMPILERS>
+         <MPILIBS>mpich2,cray-mpich2</MPILIBS>
+         <RUNDIR>/work/$USER/noresm/$CASE/run</RUNDIR>	
+         <EXEROOT>/work/$USER/noresm/$CASE/bld</EXEROOT>
+         <DIN_LOC_ROOT>/work/shared/noresm/inputdata</DIN_LOC_ROOT>
+         <DIN_LOC_ROOT_CLMFORC>UNSET</DIN_LOC_ROOT_CLMFORC>
+         <DOUT_S_ROOT>/work/$USER/archive/$CASE</DOUT_S_ROOT>
+         <DOUT_L_MSROOT>/norstore_osl/projects/NS2345K/noresm/cases/$CASE</DOUT_L_MSROOT>
+         <DOUT_L_MSHOST>norstore.uio.no</DOUT_L_MSHOST>
+         <CCSM_BASELINE>UNSET</CCSM_BASELINE>
+         <CCSM_CPRNC>UNSET</CCSM_CPRNC>
+         <BATCHQUERY>qstat -f</BATCHQUERY>
+         <BATCHSUBMIT>qsub</BATCHSUBMIT> 
+         <GMAKE_J>8</GMAKE_J>
+         <MAX_TASKS_PER_NODE>32</MAX_TASKS_PER_NODE>
+         <PES_PER_NODE>32</PES_PER_NODE>
+</machine>
+
+<machine MACH="vilje">
+         <DESC>SGI Altix ICE X, 16-way nodes, dual eight-core Xeon E5-2670@2.60GHz, 32 GiB per node</DESC>
+         <OS>LINUX</OS>
+         <COMPILERS>intel</COMPILERS>
+         <MPILIBS>mpich,mpi-serial</MPILIBS>
+         <RUNDIR>/work/$USER/noresm/$CASE/run</RUNDIR>
+         <EXEROOT>/work/$USER/noresm/$CASE/bld</EXEROOT>
+         <DIN_LOC_ROOT>/work/shared/noresm/inputdata</DIN_LOC_ROOT>
+         <DIN_LOC_ROOT_CLMFORC>UNSET</DIN_LOC_ROOT_CLMFORC>
+         <DOUT_S_ROOT>/work/$USER/archive/$CASE</DOUT_S_ROOT>
+         <DOUT_L_MSROOT>/norstore_osl/projects/NS2345K/noresm/cases/$CASE</DOUT_L_MSROOT>
+         <CCSM_BASELINE>UNSET</CCSM_BASELINE>
+         <CCSM_CPRNC>UNSET</CCSM_CPRNC>
+         <BATCHQUERY>qstat -f</BATCHQUERY>
+         <BATCHSUBMIT>qsub</BATCHSUBMIT>
+         <BATCHREDIRECT></BATCHREDIRECT>
+         <GMAKE_J>4</GMAKE_J>
+         <MAX_TASKS_PER_NODE>16</MAX_TASKS_PER_NODE>
+         <PES_PER_NODE>32</PES_PER_NODE>
+         <batch_system type="pbs" version="x.y">
+           <queues>
+             <queue walltimemax="10:00:00" jobmin="1" jobmax="9999" default="true">workq</queue>
+           </queues>
+            <walltimes>
+              <walltime default="true">10:00:00</walltime>
+            </walltimes>
+         </batch_system>
+        <mpirun mpilib="mpi-serial">
+          <executable></executable>
+        </mpirun>
+        <mpirun mpilib="default">
+          <executable>mpiexec_mpt</executable>
+          <arguments>
+            <arg name="num_tasks">-n {{ num_tasks }}</arg>
+          </arguments>
+        </mpirun>
+       <module_system type="module">
+         <init_path lang="csh">/usr/share/modules/init/csh</init_path>
+         <init_path lang="perl">/usr/share/modules/init/perl</init_path>
+         <init_path lang="sh">/usr/share/modules/init/sh</init_path>
+         <cmd_path lang="csh">module</cmd_path>
+         <cmd_path lang="perl">/usr/bin/modulecmd perl</cmd_path>
+         <cmd_path lang="sh">module</cmd_path>
+         <modules>
+            <command name="purge"/>
+            <command name="load">perl/5.22.0</command>
+            <command name="load">intelcomp/15.0.1</command>
+            <command name="load">mpt/2.10</command>
+            <command name="load">netcdf/4.3.2/</command>
+         </modules>
+       </module_system>
+    <environment_variables>
+      <env name="KMP_STACKSIZE">64M</env>
+      <env name="decfort_dump_flag">Y</env>
+    </environment_variables>
+</machine>
+
   <machine MACH="rosa">
     <DESC>CSCS Cray XE6, os is CNL, 32 pes/node, batch system is SLURM</DESC>
     <COMPILERS>pgi,cray,gnu</COMPILERS>

@@ -54,6 +54,7 @@
       <value>pnetcdf</value>
       <value mach="userdefined">netcdf</value>
       <value mach="pleiades.*">netcdf</value>
+      <value mach="vilje">netcdf</value>
       <value mpilib="mpi-serial">netcdf</value>
       <value mach="hobart" compiler="!intel">netcdf</value>
       <value mach="hobart" compiler="intel" mpilib="!mpi-serial">pnetcdf</value> 
