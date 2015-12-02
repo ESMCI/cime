@@ -1040,7 +1040,7 @@ def CECT_usage():
     print '   --pop_threshold <num>   : set pop threshold, default is 0.9'
     print '   --input_globs <search pattern> : set the search pattern of the testcase file to get from '
     print '                           the input directory (indir), such as core48.pop.h.0003-12 or core48.pop.h.0003'
-    print 'Version 1.0.0'
+    print 'Version 2.0.0'
 
 #
 # Command options for pyEnsSum.py
@@ -1066,7 +1066,7 @@ def EnsSum_usage():
     print '   --maxnorm            : Enable to generate max norm ensemble files'
     print '   --gmonly             : Only generate global_mean and PCA loadings (omit RMSZ information)'
     print '   '
-    print 'Version 1.0.0'
+    print 'Version 1.5.0'
 
 
 #

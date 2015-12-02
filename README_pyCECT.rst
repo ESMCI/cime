@@ -27,7 +27,7 @@ Discussions, Dec. 2015
 
 
 :AUTHORS: Haiying Xu, Allison Baker
-:VERSION: 1.1.0
+:VERSION: 2.0.0
 :COPYRIGHT: See the document entitled LICENSE.txt
 
 Send questions and comments to Haiying Xu (haiyingx@ucar.edu).
