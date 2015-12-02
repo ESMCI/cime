@@ -295,7 +295,7 @@ def pre_PCA(gm):
     #now do coord transformation on the standardized meana to get the scores
     scores_gm=np.dot(loadings_gm.T,standardized_global_mean)
     sigma_scores_gm =np.std(scores_gm,axis=1,dtype=np.float64)
-    return mu_gm,sigma_gm.astype(np.float32),standardized_global_mean.astype(np.float32),loadings_gm.astype(np.float32),sigma_scores_gm.astype(np.float32)
+    return mu_gm.astype(np.float32),sigma_gm.astype(np.float32),standardized_global_mean.astype(np.float32),loadings_gm.astype(np.float32),sigma_scores_gm.astype(np.float32)
 
 #
 # Performs principal components analysis  (PCA) on the p-by-n data matrix A
