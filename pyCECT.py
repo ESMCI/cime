@@ -51,7 +51,7 @@ def main(argv):
     opts_dict['casejson'] = ''
     opts_dict['npick'] = 10
     opts_dict['pepsi_gm'] = False
-    opts_dict['test_failure'] = False
+    opts_dict['test_failure'] = True
     opts_dict['pop_tol'] = 3.0
     opts_dict['pop_threshold'] = 0.90
     # Call utility library getopt_parseconfig to parse the option keys
