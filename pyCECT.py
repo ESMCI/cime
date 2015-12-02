@@ -52,7 +52,7 @@ def main(argv):
     opts_dict['npick'] = 10
     opts_dict['pepsi_gm'] = False
     opts_dict['test_failure'] = False
-    opts_dict['pop_tol'] = 0.03
+    opts_dict['pop_tol'] = 3.0
     opts_dict['pop_threshold'] = 0.90
     # Call utility library getopt_parseconfig to parse the option keys
     # and save to the dictionary
