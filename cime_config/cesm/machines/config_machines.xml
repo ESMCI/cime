@@ -1683,7 +1683,6 @@
          <DIN_LOC_ROOT_CLMFORC>UNSET</DIN_LOC_ROOT_CLMFORC>
          <DOUT_S_ROOT>/work/$USER/archive/$CASE</DOUT_S_ROOT>
          <DOUT_L_MSROOT>/norstore_osl/projects/NS2345K/noresm/cases/$CASE</DOUT_L_MSROOT>
-         <DOUT_L_MSHOST>norstore.uio.no</DOUT_L_MSHOST>
          <CCSM_BASELINE>UNSET</CCSM_BASELINE>
          <CCSM_CPRNC>UNSET</CCSM_CPRNC>
          <BATCHQUERY>qstat -f</BATCHQUERY>
@@ -1691,6 +1690,48 @@
          <GMAKE_J>8</GMAKE_J>
          <MAX_TASKS_PER_NODE>32</MAX_TASKS_PER_NODE>
          <PES_PER_NODE>32</PES_PER_NODE>
+         <batch_system type="pbs" version="x.y">
+           <queues>
+             <queue walltimemax="10:00:00" jobmin="1" jobmax="9999" default="true">workq</queue>
+           </queues>
+            <walltimes>
+              <walltime default="true">10:00:00</walltime>
+            </walltimes>
+         </batch_system>
+        <mpirun mpilib="mpi-serial">
+          <executable></executable>
+        </mpirun>
+        <mpirun mpilib="default">
+          <executable>mpiexec_mpt</executable>
+          <arguments>
+            <arg name="num_tasks">-n {{ num_tasks }}</arg>
+          </arguments>
+        </mpirun>
+       <module_system type="module">
+         <init_path lang="csh">/opt/modules/default/init/csh</init_path>
+         <init_path lang="perl">/opt/modules/default/init/perl.pm</init_path>
+         <init_path lang="sh">/opt/modules/default/init/sh</init_path>
+         <cmd_path lang="csh">module</cmd_path>
+         <cmd_path lang="perl">/opt/modules/3.2.10.3/bin/modulecmd perl</cmd_path>
+         <cmd_path lang="sh">module</cmd_path>
+         <modules>
+            <command name="unload">PrgEnv-cray</command>
+            <command name="load">perl/5.22.0-dso</command>
+            <command name="load">PrgEnv-intel</command>
+            <command name="load">intel/14.0.1.106</command>
+            <command name="load">craype/2.4.2</command>
+            <command name="load">cray-libsci/13.2.0</command>
+            <command name="load">cray-mpich/7.2.5</command>
+            <command name="load">cray-netcdf/4.3.3.1/</command>
+            <command name="load">cray-parallel-netcdf/1.5.0/</command>
+            <command name="load">cmake/2.8.10.2</command>
+         </modules>
+       </module_system>
+    <environment_variables>
+      <env name="KMP_STACKSIZE">64M</env>
+      <env name="decfort_dump_flag">Y</env>
+    </environment_variables>
+
 </machine>
 
 <machine MACH="vilje">
@@ -1714,7 +1755,7 @@
          <PES_PER_NODE>32</PES_PER_NODE>
          <batch_system type="pbs" version="x.y">
            <queues>
-             <queue walltimemax="10:00:00" jobmin="1" jobmax="9999" default="true">workq</queue>
+             <queue walltimemax="120:00:00" jobmin="1" jobmax="9999" default="true">workq</queue>
            </queues>
             <walltimes>
               <walltime default="true">10:00:00</walltime>

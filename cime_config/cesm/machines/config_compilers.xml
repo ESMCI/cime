@@ -781,6 +781,15 @@ for mct, etc.
   <ADD_SLIBS>-L$(NETCDF_DIR)/lib -lnetcdff -lnetcdf</ADD_SLIBS>
 </compiler>
 
+<compiler MACH="hexagon">
+  <NETCDF_PATH>/opt/cray/netcdf/4.3.3.1/INTEL/14.0</NETCDF_PATH>
+  <MPI_PATH>$(MPI_ROOT)</MPI_PATH>
+  <MPI_LIB_NAME>mpi</MPI_LIB_NAME>
+  <ADD_FFLAGS DEBUG="FALSE"> -O2 -xAVX </ADD_FFLAGS>
+  <ADD_SLIBS>-L$(NETCDF_DIR)/lib -lnetcdff -lnetcdf</ADD_SLIBS>
+  <MPICC> cc </MPICC>
+</compiler>
+
 <compiler MACH="vilje">
   <NETCDF_PATH>/sw/sdev/Modules/netcdf/netcdf-4.3.2</NETCDF_PATH>
   <MPI_PATH>$(MPI_ROOT)</MPI_PATH>

@@ -56,6 +56,7 @@
       <value mach="eastwind">netcdf</value>
       <value mach="pleiades.*">netcdf</value>
       <value mach="vilje">netcdf</value>
+      <value mach="hexagon">netcdf</value>
       <value mpilib="mpi-serial">netcdf</value>
       <value mach="hobart" compiler="!intel">netcdf</value>
       <value mach="hobart" compiler="intel" mpilib="!mpi-serial">pnetcdf</value> 
