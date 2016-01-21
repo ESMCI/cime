@@ -905,10 +905,10 @@ sub _create_caseroot_tools
     @files = ("$cimeroot/scripts/Tools/check_lockedfiles", 
 	      "$cimeroot/scripts/Tools/lt_archive.sh", 
 	      "$cimeroot/scripts/Tools/getTiming", 
-	      "$machines_dir/taskmaker.pl", 
-	      "$machines_dir/Makefile",
-	      "$machines_dir/mkSrcfiles", 
-	      "$machines_dir/mkDepends"); 
+	      "$cimeroot/cime_config/share/taskmaker.pl", 
+	      "$cimeroot/cime_config/share/Makefile",
+	      "$cimeroot/cime_config/share/mkSrcfiles", 
+	      "$cimeroot/cime_config/mkDepends"); 
     
     foreach my $file (@files) {
 	$sysmod = "cp -p $file $caseroot/Tools/. "; 
@@ -930,12 +930,6 @@ sub _create_caseroot_files
     my $case          = $config->get('CASE');
 
     my $machines_dir  = dirname($machines_file);
-    my $mkbatch_file = "$ENV{'HOME'}/.cime/mkbatch.$machine";
-    if (! -f "$mkbatch_file") {
-	$mkbatch_file = "$machines_dir/mkbatch.$machine";
-    } else {
-	$logger->warn("\nUsing UNSUPPORTED userdefined mkbatch script: \"~/.cime/mkbatch.$machine\"\n");
-    }
 
     # Create $caseroot/Buildconf/build.pl
     $sysmod = "cp $cimeroot/scripts/Tools/case.build  $caseroot/case.build";

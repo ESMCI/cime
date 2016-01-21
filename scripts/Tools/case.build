@@ -97,7 +97,6 @@ sub main {
     if (! -f "case.run") {
 	$logger->logdie ("ERROR: must invoke case.setup script before calling build script ");
     }
-
     my $TESTCASE  = `./xmlquery -value TESTCASE`;
     if(defined $TESTCASE && -e "$CIMEROOT/scripts/Testing/Testcases/${TESTCASE}_build.csh" && ! defined $opts{testmode}){
 	$logger->logdie("$TESTCASE build must be invoked via case.testbuild script");
@@ -141,6 +140,7 @@ sub main {
     my $COMP_CPL	= `./xmlquery  COMP_CPL		-value `;
     my $machines_file   = `./xmlquery  MACHINES_SPEC_FILE -value `;
     $machines_dir       = dirname($machines_file);
+    my $share_dir = "$CIMEROOT/cime_config/share";
 
     my $CONFIG_ATM_FILE	= `./xmlquery  CONFIG_ATM_FILE	-value `;
     my $CONFIG_LND_FILE	= `./xmlquery  CONFIG_LND_FILE	-value `;
@@ -599,7 +599,7 @@ sub buildLibraries()
 	map { print $FB "$_: $ENV{$_}\n"} sort keys %ENV;
 	close $FB;
 	
-	my $file = "${machines_dir}/buildlib.${lib}";
+	my $file = "${share_dir}/buildlib.${lib}";
 	eval {system("$file $SHAREDPATH $CASEROOT >> $file_build 2>&1")};
 	if ($?)	{
 	    $logger->logdie("ERROR: buildlib.$lib failed, cat $file_build");
