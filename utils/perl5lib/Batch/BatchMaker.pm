@@ -185,7 +185,7 @@ sub makeBatchScript()
     $logger->debug("In makeBatchScript 1");
     if(! -f $inputfilename)
     {
-	die "$inputfilename does not exist!";
+	$logger->logdie( "$inputfilename does not exist!");
     }
     
     $self->getBatchSystemTypeForMachine();

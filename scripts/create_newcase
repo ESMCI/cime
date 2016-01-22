@@ -265,7 +265,7 @@ my $srcroot = abs_path("$cimeroot/../");
 # *** Set master config file ***
 #------------------------------------------------------------------------------------------
 # The following specifies all necessary files that will be used to configure the case
-my $files_spec_file = "$cimeroot/cime_config/${model}/config_files.xml";
+my $files_spec_file = "$cimeroot/cime_config/models/${model}/config_files.xml";
 
 #------------------------------------------------------------------------------------------
 # *** Create config object ***
@@ -908,7 +908,7 @@ sub _create_caseroot_tools
 	      "$cimeroot/cime_config/share/taskmaker.pl", 
 	      "$cimeroot/cime_config/share/Makefile",
 	      "$cimeroot/cime_config/share/mkSrcfiles", 
-	      "$cimeroot/cime_config/mkDepends"); 
+	      "$cimeroot/cime_config/share/mkDepends"); 
     
     foreach my $file (@files) {
 	$sysmod = "cp -p $file $caseroot/Tools/. "; 
@@ -995,7 +995,7 @@ sub _create_caseroot_files
 
     # Create env_archive.xml
     $config->write_file("$caseroot/env_archive.xml", "$file", $caseroot, $cimeroot, 
-			"$cimeroot/cime_config/${model}/archive.xml");
+			"$cimeroot/cime_config/models/${model}/archive.xml");
     $logger->info( "Created $caseroot/env_archive.xml ");
 
     # Create env_batch.xml

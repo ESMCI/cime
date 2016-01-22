@@ -351,10 +351,10 @@ def get_model():
         try:
             _MODEL = os.environ["CIME_MODEL"]
         except KeyError:
-            modelroot = os.path.join(get_cime_root(), "cime_config")
+            modelroot = os.path.join(get_cime_root(), "cime_config","models")
             models = os.listdir(modelroot)
             msg = "Environment variable CIME_MODEL must be set to one of: "
-            msg += ", ".join([model for model in models if os.path.isdir(os.path.join(modelroot,model)) and model != "xml_schemas"])
+            msg += ", ".join([model for model in models if os.path.isdir(os.path.join(modelroot,model)) ])
             expect(False, msg)
 
     return _MODEL
@@ -362,7 +362,7 @@ def get_model():
 ###############################################################################
 def get_model_config_location_within_cime(model=get_model()):
 ###############################################################################
-    return os.path.join("cime_config", model)
+    return os.path.join("cime_config", "models", model)
 
 ###############################################################################
 def get_acme_root():

@@ -270,19 +270,19 @@ if (! $clean ) {
 
 
 	
-	my $inputbatchscript  = "$xmlvars{'MACHDIR'}/template.case.run";
+	my $inputbatchscript  = "$cimeroot/cime_config/share/template.case.run";
 	my $outputbatchscript = "$xmlvars{'CASEROOT'}/case.run";
 
 	$batchmaker->makeBatchScript($inputbatchscript, $outputbatchscript);
 	$logger->info("Creating batch script case.st_archive");
 	$batchmaker->overrideNodeCount(1);
 	$batchmaker->set({job=>'st_archive'});
-	$batchmaker->makeBatchScript("$xmlvars{'MACHDIR'}/template.st_archive", "$xmlvars{'CASEROOT'}/case.st_archive");
+	$batchmaker->makeBatchScript("$cimeroot/cime_config/share/template.st_archive", "$xmlvars{'CASEROOT'}/case.st_archive");
 
 	$logger->info("Creating batch script case.lt_archive");
 	$batchmaker->overrideNodeCount(1);
 	$batchmaker->set({job=>'lt_archive'});
-	$batchmaker->makeBatchScript("$xmlvars{'MACHDIR'}/template.lt_archive", "$xmlvars{'CASEROOT'}/case.lt_archive");
+	$batchmaker->makeBatchScript("$cimeroot/cime_config/share/template.lt_archive", "$xmlvars{'CASEROOT'}/case.lt_archive");
 	
 	# Make a copy of env_mach_pes.xml in order to be able 
 	# to check that it does not change once case.setup is invoked

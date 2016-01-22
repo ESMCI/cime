@@ -50,7 +50,7 @@ sub new
     {
         $self->{debug} = 'false';
     }
-    $self->{machroot} = Cwd::abs_path($self->{cimeroot}) . "/cime_config/" . $self->{model} . "/machines/";
+    $self->{machroot} = Cwd::abs_path($self->{cimeroot}) . "/cime_config/models/" . $self->{model} . "/machines/";
     bless $self, $class;
     $self->moduleInit();
     return $self;

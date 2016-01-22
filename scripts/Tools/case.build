@@ -263,7 +263,7 @@ sub main {
     $sdate = strftime("%y%m%d-%H%M%S", localtime);
     print $CS "build started $sdate\n";
 
-    buildLibraries();
+    buildLibraries($share_dir);
     buildModel();
 
     $sdate = strftime("%y%m%d-%H%M%S", localtime);
@@ -560,6 +560,7 @@ sub buildChecks()
 #-----------------------------------------------------------------------------------------------
 sub buildLibraries()
 {
+    my ($share_dir) = @_;
     $logger->info("    .... calling builds for utility libraries (compiler is $COMPILER) ");
 
     chdir $EXEROOT;
