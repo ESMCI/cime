@@ -45,7 +45,7 @@ def main(argv):
     opts_dict['gmonly'] = False
     opts_dict['popens'] = False
     opts_dict['cumul'] = False
-    opts_dict['regx'] = ''
+    opts_dict['regx'] = 'test'
     opts_dict['startMon'] = 1
     opts_dict['endMon'] = 1
     opts_dict['fIndex'] = 151
