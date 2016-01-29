@@ -92,6 +92,7 @@ def main(argv):
         # Get the list of files
         in_files_temp = os.listdir(input_dir)
         in_files=sorted(in_files_temp)
+        #print in_files
         # Make sure we have enough
         num_files = len(in_files)
         if (verbose == True):
@@ -461,16 +462,18 @@ def get_cumul_filelist(opts_dict,indir,regx):
       print 'input dir is not specified'
       sys.exit(2)
    #regx='(pgi(.)*-(01|02))'
+   regx_list=["mon","gnu","pgi"]
    all_files=[]
-   for i in range(opts_dict['fIndex'],opts_dict['fIndex']+opts_dict['esize']):
-       for j in range(opts_dict['startMon'],opts_dict['endMon']+1):
-           mon_str=str(j).zfill(2)
-           regx='('+str(i)+'(.)*-('+mon_str+'))'
-           print 'regx=',regx
-           res=[f for f in os.listdir(indir) if re.search(regx,f)]
-           in_files=sorted(res)
-           all_files.extend(in_files)
-   print all_files
+   for prefix in regx_list: 
+       for i in range(opts_dict['fIndex'],opts_dict['fIndex']+opts_dict['esize']/3):
+	   for j in range(opts_dict['startMon'],opts_dict['endMon']+1):
+	       mon_str=str(j).zfill(2)
+	       regx='(^'+prefix+'(.)*'+str(i)+'(.)*-('+mon_str+'))'
+	       print 'regx=',regx
+	       res=[f for f in os.listdir(indir) if re.search(regx,f)]
+	       in_files=sorted(res)
+	       all_files.extend(in_files)
+   print "all_files=",all_files
    #in_files=res
    return all_files
    
