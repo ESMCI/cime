@@ -20,7 +20,7 @@ def main(argv):
 
 
     # Get command line stuff and store in a dictionary
-    s='verbose sumfile= indir= input_globs= timeslice= nPC= sigMul= minPCFail= minRunFail= numRunFile= printVarTest popens jsonfile= mpi_enable nbin= minrange= maxrange= outfile= casejson= npick= pepsi_gm test_failure pop_tol= pop_threshold='
+    s='verbose sumfile= indir= input_globs= tslice= nPC= sigMul= minPCFail= minRunFail= numRunFile= printVarTest popens jsonfile= mpi_enable nbin= minrange= maxrange= outfile= casejson= npick= pepsi_gm test_failure pop_tol= pop_threshold='
     optkeys = s.split()
     try:
         opts, args = getopt.getopt(argv,"h",optkeys)
@@ -33,7 +33,7 @@ def main(argv):
     opts_dict = {}
     opts_dict['input_globs'] = ''
     opts_dict['indir'] = ''
-    opts_dict['timeslice'] = 1
+    opts_dict['tslice'] = 1
     opts_dict['nPC'] = 50
     opts_dict['sigMul'] = 2
     opts_dict['verbose'] = False
@@ -88,6 +88,8 @@ def main(argv):
             result=json.load(fin)
             in_files_first=result['not_pick_files']
             in_files=random.sample(in_files_first,opts_dict['npick'])
+            print 'Testcase files:'
+            print '\n'.join(in_files)
             
     else: 
        wildname='*'+opts_dict['input_globs']+'*'
@@ -98,8 +100,6 @@ def main(argv):
           in_files.extend(glob_files)
           #in_files_temp=os.listdir(opts_dict['indir'])
     in_files.sort()
-    print 'Testcase files:'
-    print '\n'.join(in_files)
 
     if popens:
         #Partition the input file list 
@@ -177,7 +177,7 @@ def main(argv):
 		otimeSeries = fid.variables 
 		for var_name in ens_var_name: 
 		    orig=otimeSeries[var_name]
-		    Zscore,has_zscore=pyEnsLib.calculate_raw_score(var_name,orig[opts_dict['timeslice']],npts3d,npts2d,ens_avg,ens_stddev,is_SE,opts_dict,0,0,0) 
+		    Zscore,has_zscore=pyEnsLib.calculate_raw_score(var_name,orig[opts_dict['tslice']],npts3d,npts2d,ens_avg,ens_stddev,is_SE,opts_dict,0,0,0) 
 		    if has_zscore:
 			# Add the new run rmsz zscore to the dictionary "results"
 			pyEnsLib.addresults(results,'zscore',Zscore,var_name,'f'+str(fcount))
@@ -188,7 +188,7 @@ def main(argv):
 		countzscore[fcount]=pyEnsLib.evaluatestatus('zscore','zscoreRange',variables,'ens',results,'f'+str(fcount))
 
 	# Calculate the new run global mean
-	mean3d,mean2d=pyEnsLib.generate_global_mean_for_summary(ifiles,var_name3d,var_name2d,opts_dict['timeslice'],is_SE,opts_dict['popens'],opts_dict['pepsi_gm'],verbose)
+	mean3d,mean2d=pyEnsLib.generate_global_mean_for_summary(ifiles,var_name3d,var_name2d,is_SE,opts_dict['pepsi_gm'],opts_dict)
 	means=np.concatenate((mean3d,mean2d),axis=0)
 
 	# Add the new run global mean to the dictionary "results"
