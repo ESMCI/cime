@@ -122,6 +122,9 @@ def calc_rmsz(o_files,var_name3d,var_name2d,is_SE,opts_dict):
 
 	      if (count3d < npts3d):
 		Zscore3d[vcount,fcount]=np.sqrt(Zscore/(npts3d-count3d))
+                #if opts_dict['sumfile']
+	        #fout = vname+".txt"
+	        #np.savetxt(fout,Zscore3d[vcount,fcount], fmt='%.3e')
 	      else:
 		print "WARNING: no variance in "+vname
 	   else:
@@ -145,7 +148,7 @@ def calc_rmsz(o_files,var_name3d,var_name2d,is_SE,opts_dict):
         else:
           output2d[fcount,:,:]=data[tslice,:,:]
 
-      #Generate ens_avg and esn_stddev to store in the ensemble summary file
+      #Generate ens_avg and ens_stddev to store in the ensemble summary file
       if popens:
          moutput2d=np.ma.masked_values(output2d,data._FillValue)
          ens_avg2d[vcount]=np.ma.average(moutput2d,axis=0)
@@ -169,11 +172,29 @@ def calc_rmsz(o_files,var_name3d,var_name2d,is_SE,opts_dict):
 
 	      flag2d = False
 	      count2d = 0
-	      count2d,ret_val=calc_Z(output2d[fcount].astype(np.float64),avg2d.astype(np.float64),stddev2d.astype(np.float64),count2d,flag2d)
+	      #count2d,ret_val=calc_Z(output2d[fcount].astype(np.float64),avg2d.astype(np.float64),stddev2d.astype(np.float64),count2d,flag2d)
+	      count2d,ret_val=calc_Z(output2d[fcount],avg2d,stddev2d.astype(np.float64),count2d,flag2d)
+              if vname == 'TS' and fcount==100: 
+                 np.set_printoptions(threshold=np.nan)
+                 print "output[0:10]=",output2d[fcount][0:21]
+                 print "output=",output2d[fcount][-21:]
+                 print "avg[0:10]",avg2d.shape,avg2d[0:21]
+                 print "avg",avg2d.shape,avg2d[-21:]
+                 print "std[0:10]=",stddev2d.shape,stddev2d[0:21]
+                 print "std=",stddev2d.shape,stddev2d[-21:]
+                 print "ret_val[0:10]",ret_val[0:21]
+                 print "ret_val=",ret_val[-21:]
+                 print "count2d=",count2d
+                 fout="TS_100.txt"
+	         np.savetxt(fout,ret_val, fmt='%.10e')
 	      Zscore=np.sum(np.square(ret_val))
+              if vname == 'TS' and fcount==100: 
+                 print 'Zscore=',Zscore
 
 	      if (count2d < npts2d):
 		Zscore2d[vcount,fcount]=np.sqrt(Zscore/(npts2d-count2d))
+                if vname == 'TS' and fcount==100: 
+                   print 'Zscore2d=',Zscore2d[vcount,fcount]
 	      else:
 		print "WARNING: no variance in "+vname
 	   else:
@@ -321,8 +342,8 @@ def princomp(standardized_global_mean):
 # Calculate (val-avg)/stddev and exclude zero value
 #          
 def calc_Z(val,avg,stddev,count,flag):
-  return_val=np.empty(val.shape,dtype=np.float32,order='C')
-  tol =1e-12   
+  return_val=np.empty(val.shape,dtype=np.float64,order='C')
+  tol =1.0e-12   
   if stddev[(stddev > tol)].size ==0:
     if flag: 
       print "WARNING: ALL standard dev = 0"
