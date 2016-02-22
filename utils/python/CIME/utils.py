@@ -514,5 +514,20 @@ def handle_standard_logging_options(args):
 
     if (args.verbose == True):
         root_logger.setLevel(logging.INFO)
+    # DEBUG trumps INFO
     if (args.debug == True):
         root_logger.setLevel(logging.DEBUG)
+
+def get_logging_options():
+    """
+    Use to pass same logging options as was used for current
+    executable to subprocesses.
+    """
+    root_logger = logging.getLogger()
+
+    if (root_logger.level == logging.INFO):
+        return "--verbose"
+    elif (root_logger.level == logging.DEBUG):
+        return "--debug"
+    else:
+        return ""
