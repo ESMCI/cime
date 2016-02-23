@@ -1050,7 +1050,7 @@ def CECT_usage():
     print '   --minPCFail <num>       : minimum number of PCs that must fail the specified number of runs for a FAILURE (default = 3)'
     print '   --minRunFail <num>      : minimum number of runs that <minPCfail> PCs must fail for a FAILURE (default = 2)'
     print '   --numRunFile <num>      : total number of runs to include in test (default = 3)'
-    print '   --timeslice <num>       : which time slice to use from input run files (default = 1)'
+    print '   --tslice <num>       : which time slice to use from input run files (default = 1)'
     print '   --printVarTest          : print out variable comparisons to RMSZ and global means (turned off by default)'
     print '  ----------------------------'
     print '   Args for POP-CECT :'
