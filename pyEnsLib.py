@@ -122,21 +122,12 @@ def calc_rmsz(o_files,var_name3d,var_name2d,is_SE,opts_dict):
 
 	      if (count3d < npts3d):
 		Zscore3d[vcount,fcount]=np.sqrt(Zscore/(npts3d-count3d))
-                #if opts_dict['sumfile']
-	        #fout = vname+".txt"
-	        #np.savetxt(fout,Zscore3d[vcount,fcount], fmt='%.3e')
 	      else:
 		print "WARNING: no variance in "+vname
 	   else:
 	      rmask=this_file.variables['REGION_MASK']
 	      Zscore=pop_zpdf(output3d[fcount],nbin,(minrange,maxrange),ens_avg3d[vcount],ens_stddev3d[vcount],data._FillValue,threshold,rmask,opts_dict)
-	      #if fcount == 0 & vcount ==0:
-	      #   time_val = this_file.variables['time'][0]
-	      #   fout = "Zscore_"+str(time_val)+".txt"
-	      #   print Zscore.shape
-	      #   np.savetxt(fout,Zscore[0,3,:], fmt='%.3e')
 	      Zscore3d[vcount,fcount,:]=Zscore[:]
-	      #print 'zscore3d vcount,fcount=',vcount,fcount,Zscore3d[vcount,fcount]
 
     for vcount,vname in enumerate(var_name2d):
       #Read in vname's data of all files
@@ -174,34 +165,16 @@ def calc_rmsz(o_files,var_name3d,var_name2d,is_SE,opts_dict):
 	      count2d = 0
 	      #count2d,ret_val=calc_Z(output2d[fcount].astype(np.float64),avg2d.astype(np.float64),stddev2d.astype(np.float64),count2d,flag2d)
 	      count2d,ret_val=calc_Z(output2d[fcount],avg2d,stddev2d.astype(np.float64),count2d,flag2d)
-              if vname == 'TS' and fcount==100: 
-                 np.set_printoptions(threshold=np.nan)
-                 print "output[0:10]=",output2d[fcount][0:21]
-                 print "output=",output2d[fcount][-21:]
-                 print "avg[0:10]",avg2d.shape,avg2d[0:21]
-                 print "avg",avg2d.shape,avg2d[-21:]
-                 print "std[0:10]=",stddev2d.shape,stddev2d[0:21]
-                 print "std=",stddev2d.shape,stddev2d[-21:]
-                 print "ret_val[0:10]",ret_val[0:21]
-                 print "ret_val=",ret_val[-21:]
-                 print "count2d=",count2d
-                 fout="TS_100.txt"
-	         np.savetxt(fout,ret_val, fmt='%.10e')
 	      Zscore=np.sum(np.square(ret_val))
-              if vname == 'TS' and fcount==100: 
-                 print 'Zscore=',Zscore
 
 	      if (count2d < npts2d):
 		Zscore2d[vcount,fcount]=np.sqrt(Zscore/(npts2d-count2d))
-                if vname == 'TS' and fcount==100: 
-                   print 'Zscore2d=',Zscore2d[vcount,fcount]
 	      else:
 		print "WARNING: no variance in "+vname
 	   else:
 	      rmask=this_file.variables['REGION_MASK']
 	      Zscore=pop_zpdf(output2d[fcount],nbin,(minrange,maxrange),ens_avg2d[vcount],ens_stddev2d[vcount],data._FillValue,threshold,rmask,opts_dict)
 	      Zscore2d[vcount,fcount,:]=Zscore[:]
-	      #print 'zscore2d vcount,fcount=',vcount,fcount,Zscore2d[vcount,fcount]
      
     return Zscore3d,Zscore2d,ens_avg3d,ens_stddev3d,ens_avg2d,ens_stddev2d,gm3d,gm2d
 
@@ -228,7 +201,6 @@ def pop_zpdf(input_array,nbin,zrange,ens_avg,ens_stddev,FillValue,threshold,rmas
 
    #Masked the rmask<1 or rmask>6
    moutput2=np.ma.masked_where((rmask_array<1)|(rmask_array>6),moutput)
-   #print 'moutput2 count=',moutput2.count()
 
    #Use the masked array moutput2 to calculate Zscore_temp=(data-avg)/stddev
    Zscore_temp=np.fabs((moutput2.astype(np.float64)-ens_avg)/np.where(ens_stddev<=threshold,FillValue,ens_stddev))
@@ -245,7 +217,6 @@ def pop_zpdf(input_array,nbin,zrange,ens_avg,ens_stddev,FillValue,threshold,rmas
    #Else calculate zpdf and return as zscore
    #Count the unmasked value
    count=Zscore_temp.count()
-   #print 'Zscore count=',count
    Zscore,bins = np.histogram(Zscore_temp.compressed(),bins=nbin,range=zrange)
 
    #Normalize the number by dividing the count
@@ -309,7 +280,7 @@ def pre_PCA(gm):
 
     for var in range(nvar):
       for file in range(nfile):
-        standardized_global_mean[var,file]=(gm[var,file]-mu_gm[var])/np.where(sigma_gm[var]<=threshold,FillValue,sigma_gm[var])
+        standardized_global_mean[var,file]=(gm[var,file]-mu_gm[var])/sigma_gm[var]
 
     loadings_gm=princomp(standardized_global_mean)
 

@@ -191,7 +191,8 @@ def main(argv):
     # Remove the excluded variables (specified in json file) from variable dictionary
     if ex_varlist:
 	for i in ex_varlist:
-	    del vars_dict[i]
+            if i in vars_dict:
+	       del vars_dict[i]
     num_vars = len(vars_dict)
     if (verbose == True):
         print 'Number of variables (including metadata) found =  ', num_vars
