@@ -467,7 +467,7 @@ class SystemTest(object):
     def _sharedlib_build_phase(self, test):
     ###########################################################################
         test_dir = self._get_test_dir(test)
-        return self._shell_cmd_for_phase(test, "./case.build --testmode --sharedlib-only", SHAREDLIB_BUILD_PHASE, from_dir=test_dir)
+        return self._shell_cmd_for_phase(test, "./case.test_build --sharedlib-only", SHAREDLIB_BUILD_PHASE, from_dir=test_dir)
 
     ###########################################################################
     def _model_build_phase(self, test):

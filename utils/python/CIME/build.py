@@ -147,9 +147,12 @@ def post_build(case, logs):
     shutil.copy("env_build.xml", "LockedFiles")
 
 ###############################################################################
-def case_build(caseroot, testmode, sharedlib_only, model_only):
+def case_build(caseroot, testmode=False, sharedlib_only=False, model_only=False):
 ###############################################################################
     t1 = time.time()
+
+    expect(not (sharedlib_only and model_only),
+           "Contradiction: both sharedlib_only and model_only")
 
     logging.info("sharedlib_only is %s" % sharedlib_only)
     logging.info("model_only is %s" % model_only)
@@ -289,9 +292,10 @@ def case_build(caseroot, testmode, sharedlib_only, model_only):
     # Load modules
     env_module = EnvModule(mach, compiler, cimeroot, caseroot, mpilib, debug)
     env_module.load_env_for_case()
-    # Need to flush case xml to disk before calling preview_namelists
-    case.flush()
+
     if not sharedlib_only:
+        # Need to flush case xml to disk before calling preview_namelists
+        case.flush()
         run_cmd("./preview_namelists")
 
     build_checks(case, build_threaded, comp_interface, use_esmf_lib, compiler, mpilib, debug, sharedlibroot,

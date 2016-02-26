@@ -28,8 +28,9 @@ class SystemTestsCommon(object):
             shutil.copy("env_run.xml",
                         os.path.join(lockedfiles, "env_run.orig.xml"))
 
-    def build(self):
-        build.case_build(self._caseroot, True)
+    def build(self, sharedlib_only=False, model_only=False):
+        build.case_build(self._caseroot, testmode=True,
+                         sharedlib_only=sharedlib_only, model_only=model_only)
 
     def run(self):
         run_cmd("case.run")
@@ -60,56 +61,62 @@ class SystemTestsCommon(object):
         return True
 
 class TESTRUNPASS(SystemTestsCommon):
-    def build(self):
-        exeroot = self._case.get_value("EXEROOT")
-        cime_model = self._case.get_value("MODEL")
-        rundir = self._case.get_value("RUNDIR")
-        cimeroot = self._case.get_value("CIMEROOT")
-        case = self._case.get_value("CASE")
-        modelexe = os.path.join(exeroot, "%s.exe"%cime_model)
-        with open(modelexe, 'w') as f:
-            f.write("#!/bin/bash\n")
-            f.write("echo Insta pass\n")
-            f.write("echo SUCCESSFUL TERMINATION > %s/cpl.log.$LID\n"%rundir)
-        f.closed
-        os.chmod(modelexe, 0755)
-        self._case.set_value("BUILD_COMPLETE", "TRUE")
-        self._case.flush()
+
+    def build(self, sharedlib_only=False, model_only=False):
+        if (not sharedlib_only):
+            exeroot = self._case.get_value("EXEROOT")
+            cime_model = self._case.get_value("MODEL")
+            rundir = self._case.get_value("RUNDIR")
+            cimeroot = self._case.get_value("CIMEROOT")
+            case = self._case.get_value("CASE")
+            modelexe = os.path.join(exeroot, "%s.exe"%cime_model)
+            with open(modelexe, 'w') as f:
+                f.write("#!/bin/bash\n")
+                f.write("echo Insta pass\n")
+                f.write("echo SUCCESSFUL TERMINATION > %s/cpl.log.$LID\n"%rundir)
+
+            os.chmod(modelexe, 0755)
+            self._case.set_value("BUILD_COMPLETE", "TRUE")
+            self._case.flush()
 
 class TESTRUNDIFF(SystemTestsCommon):
-    def build(self):
-        exeroot = self._case.get_value("EXEROOT")
-        cime_model = self._case.get_value("MODEL")
-        rundir = self._case.get_value("RUNDIR")
-        cimeroot = self._case.get_value("CIMEROOT")
-        case = self._case.get_value("CASE")
-        modelexe = os.path.join(exeroot, "%s.exe"%cime_model)
-        with open(modelexe, 'w') as f:
-            f.write("#!/bin/bash\n")
-            f.write("echo Insta pass\n")
-            f.write("echo SUCCESSFUL TERMINATION > %s/cpl.log.$LID\n"%rundir)
-            f.write("cp %s/utils/python/tests/cpl.hi1.nc.test %s/%s.cpl.hi.0.nc.base\n"%
-                    (cimeroot, rundir, case))
-        f.closed
-        os.chmod(modelexe, 0755)
-        self._case.set_value("BUILD_COMPLETE", "TRUE")
-        self._case.flush()
+
+    def build(self, sharedlib_only=False, model_only=False):
+        if (not sharedlib_only):
+            exeroot = self._case.get_value("EXEROOT")
+            cime_model = self._case.get_value("MODEL")
+            rundir = self._case.get_value("RUNDIR")
+            cimeroot = self._case.get_value("CIMEROOT")
+            case = self._case.get_value("CASE")
+            modelexe = os.path.join(exeroot, "%s.exe"%cime_model)
+            with open(modelexe, 'w') as f:
+                f.write("#!/bin/bash\n")
+                f.write("echo Insta pass\n")
+                f.write("echo SUCCESSFUL TERMINATION > %s/cpl.log.$LID\n"%rundir)
+                f.write("cp %s/utils/python/tests/cpl.hi1.nc.test %s/%s.cpl.hi.0.nc.base\n"%
+                        (cimeroot, rundir, case))
+
+            os.chmod(modelexe, 0755)
+            self._case.set_value("BUILD_COMPLETE", "TRUE")
+            self._case.flush()
 
 class TESTRUNFAIL(SystemTestsCommon):
-    def build(self):
-        exeroot = self._case.get_value("EXEROOT")
-        cime_model = self._case.get_value("MODEL")
-        rundir = self._case.get_value("RUNDIR")
-        cimeroot = self._case.get_value("CIMEROOT")
-        case = self._case.get_value("CASE")
-        modelexe = os.path.join(exeroot, "%s.exe"%cime_model)
-        with open(modelexe, 'w') as f:
-            f.write("#!/bin/bash\n")
-            f.write("echo Insta fail\n")
-            f.write("echo model failed > %s/cpl.log.$LID\n"%rundir)
-            f.write("$LID\n")
-            f.write("exit -1\n")
-        f.closed
-        os.chmod(modelexe, 0755)
-        self._case.set_value("BUILD_COMPLETE", "TRUE")
-        self._case.flush()
+
+    def build(self, sharedlib_only=False, model_only=False):
+        if (not sharedlib_only):
+            exeroot = self._case.get_value("EXEROOT")
+            cime_model = self._case.get_value("MODEL")
+            rundir = self._case.get_value("RUNDIR")
+            cimeroot = self._case.get_value("CIMEROOT")
+            case = self._case.get_value("CASE")
+            modelexe = os.path.join(exeroot, "%s.exe"%cime_model)
+            with open(modelexe, 'w') as f:
+                f.write("#!/bin/bash\n")
+                f.write("echo Insta fail\n")
+                f.write("echo model failed > %s/cpl.log.$LID\n"%rundir)
+                f.write("$LID\n")
+                f.write("exit -1\n")
+
+            os.chmod(modelexe, 0755)
+            self._case.set_value("BUILD_COMPLETE", "TRUE")
+            self._case.flush()
