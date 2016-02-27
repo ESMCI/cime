@@ -40,7 +40,6 @@ class NCK(SystemTestsCommon):
                         self._case.set_value("ROOTPE_%s"%comp, "%s"%int(rootpe/2))
             self._case.flush()
 
-
             run_cmd("case.setup -clean -testmode")
             run_cmd("case.setup")
             run_cmd('case.clean_build')
