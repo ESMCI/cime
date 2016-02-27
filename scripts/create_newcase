@@ -287,9 +287,6 @@ $config->set('MODEL'   , $model);
 my ($pes_setby, $compsets_file, $compset_longname, $support_level);
 if ($opts{'user_compset'}) {
     $compset = $opts{'user_compset'};
-#    $compset_longname = $opts{'user_compset'};
-#    $pes_setby = $opts{'user_pes_setby'};
-#    $config->set('COMPSET',$compset_longname)
 } else {
     if (! $opts{'compset'}) {
 	$logger->logdie ("ERROR: must set the -compset option to create_newcase ");
@@ -303,7 +300,6 @@ if($opts{'user_compset'}){
 	$logger->logdie("Could not resolve user compset $compset");
     }
 }
-
 
 # Now given the target component, determine the full pathname of the file that
 # defines the compsets for this target component
@@ -452,6 +448,7 @@ if (defined $opts{'confopts'}) {
     _set_confopts($confopts, $config);
 }
 
+
 #------------------------------------------------------------------------------------------
 # *** Set the case pe-layout
 #------------------------------------------------------------------------------------------
@@ -474,7 +471,9 @@ ConfigCompsetGrid::setComponent($file, $config);
 # and also check that compset is supported for target grid
 # Note- this needs to come last since it will overwrite any values set above
 
+
 ConfigCompsetGrid::setCompsetGeneralVars($config);
+
 
 # Special case - if land and river grids are different AND there is no mapping file
 # between land and river then set the river mode  to null if the river component is rtm
@@ -881,9 +880,9 @@ sub _create_caseroot_tools
 	"$cimeroot/scripts/Tools/archive_metadata.sh",
 	"$cimeroot/scripts/Tools/check_case",
 	"$cimeroot/scripts/Tools/create_production_test",
+	"$cimeroot/scripts/Tools/st_archive",
 	"$cimeroot/scripts/Tools/xmlchange",
 	"$cimeroot/scripts/Tools/xmlquery",
-	"$cimeroot/scripts/Tools/st_archive",
 	"$cimeroot/scripts/Tools/README.post_process",
 	);
     foreach my $file (@files) {
@@ -904,11 +903,8 @@ sub _create_caseroot_tools
     }
 
     # Copy relevant files into $caseroot/Tools/
-    @files = ("$cimeroot/cime_config/${model}/archive.xml",
-	      "$cimeroot/cime_config/xml_schemas/archive.xsd",
-	      "$cimeroot/scripts/Tools/check_lockedfiles",
+    @files = ("$cimeroot/scripts/Tools/check_lockedfiles",
 	      "$cimeroot/scripts/Tools/lt_archive.sh",
-	      "$cimeroot/scripts/Tools/st_archive",
 	      "$cimeroot/scripts/Tools/getTiming",
 	      "$cimeroot/scripts/Tools/compare_namelists.pl",
 	      "$machines_dir/taskmaker.pl",
@@ -1016,7 +1012,7 @@ sub _create_caseroot_files
 
 
     # copy env_case.xml in to locked files
-    $sysmod = "cp $caseroot/env_case.xml $caseroot/LockedFiles/env_case.xml.locked";
+    $sysmod = "cp $caseroot/env_case.xml $caseroot/LockedFiles/env_case.xml";
     system($sysmod) == 0 or $logger->logdie( "ERROR: create_newcase $sysmod failed: $?");
     $logger->info( "Locking file $caseroot/env_case.xml ");
 
