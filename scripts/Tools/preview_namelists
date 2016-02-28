@@ -146,11 +146,6 @@ if($dryrun){
 	    mkpath($objdir, 0755) or $logger->logdie("Could not create directory $objdir");
 	    $logger->debug("Created directory $objdir");
 	}
-	my $libdir = "$EXEROOT/$model";
-	if (! -d $libdir) {
-	    mkpath($libdir, 0755) or $logger->logdie("Could not create directory $libdir");
-	    $logger->debug("Created directory $libdir");
-	}
     }
 }
 

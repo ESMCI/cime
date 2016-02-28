@@ -42,7 +42,8 @@ class NCK(SystemTestsCommon):
 
             run_cmd("case.setup -clean -testmode")
             run_cmd("case.setup")
-            run_cmd('case.clean_build')
+            if (not sharedlib_only):
+                run_cmd('case.clean_build')
             SystemTestsCommon.build(self, sharedlib_only=sharedlib_only, model_only=model_only)
             if (not sharedlib_only):
                 shutil.move("%s/%s.exe"%(exeroot,cime_model),
@@ -55,9 +56,10 @@ class NCK(SystemTestsCommon):
         # other systems we need to copy the original env_mach_pes.xml
         # back
         #
-        shutil.copy(machpes1,"env_mach_pes.xml")
-        shutil.copy("env_mach_pes.xml",
-                    os.path.join("LockedFiles","env_mach_pes.xml"))
+        if (not sharedlib_only):
+            shutil.copy(machpes1,"env_mach_pes.xml")
+            shutil.copy("env_mach_pes.xml",
+                        os.path.join("LockedFiles","env_mach_pes.xml"))
 
     def run(self):
         SystemTestsCommon.run(self)
