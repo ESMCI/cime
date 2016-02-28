@@ -30,7 +30,7 @@ class SystemTestsCommon(object):
 
     def build(self, sharedlib_only=False, model_only=False):
         build.case_build(self._caseroot, testmode=True,
-                         sharedlib_only=sharedlib_only, model_only=model_only)
+                         sharedlib_only=sharedlib_only, model_only=model_only, case=self._case)
 
     def run(self):
         run_cmd("case.run")

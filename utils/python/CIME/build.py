@@ -147,7 +147,7 @@ def post_build(case, logs):
     shutil.copy("env_build.xml", "LockedFiles")
 
 ###############################################################################
-def case_build(caseroot, testmode=False, sharedlib_only=False, model_only=False):
+def case_build(caseroot, testmode=False, sharedlib_only=False, model_only=False, case=None):
 ###############################################################################
     t1 = time.time()
 
@@ -163,7 +163,7 @@ def case_build(caseroot, testmode=False, sharedlib_only=False, model_only=False)
     expect(os.path.exists("case.run"),
            "ERROR: must invoke case.setup script before calling build script ")
 
-    case = Case()
+    case = Case() if case is None else case
     testcase = case.get_value("TESTCASE")
     cimeroot = case.get_value("CIMEROOT")
     expect(not (testcase is not None and
