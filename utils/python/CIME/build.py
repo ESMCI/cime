@@ -101,15 +101,8 @@ def build_model(case, build_threaded, exeroot, clm_config_opts, incroot,
     cime_model = get_model()
     file_build = os.path.join(exeroot, "%s.bldlog.%s" % (cime_model, lid))
 
-    objdir = os.path.join(exeroot, cime_model, "obj")
-    libdir = os.path.join(exeroot, cime_model)
-    for build_dir in [objdir, libdir]:
-        if not os.path.exists(build_dir):
-            os.makedirs(build_dir)
-
     stat = run_cmd("%s/driver_cpl/cime_config/buildexe %s >> %s 2>&1" %
                    (cimeroot, caseroot, file_build),
-                   from_dir=os.path.join(exeroot, cime_model),
                    ok_to_fail=True,
                    verbose=True)[0]
     expect(stat == 0, "ERROR: buildexe failed, cat %s" % file_build)

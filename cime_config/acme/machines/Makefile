@@ -802,7 +802,7 @@ cleanatm:
 	cd $(EXEROOT)/atm/obj;  $(RM) -f *.o *.mod
 
 cleancpl:
-	cd $(EXEROOT)/drv/obj;  $(RM) -f *.o *.mod
+	cd $(EXEROOT)/cpl/obj;  $(RM) -f *.o *.mod
 
 cleanocn:
 	$(RM) -f $(LIBROOT)/libocn.a
