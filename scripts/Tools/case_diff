@@ -117,6 +117,7 @@ def recursive_diff(dir1, dir2):
 
             stat, out, _ = run_cmd("diff -w %s %s" % (path1, path2), ok_to_fail=True)
             if (stat != 0):
+                print "==============================================================================="
                 print path1 + " DIFFERS (contents)"
                 num_differing_files += 1
                 print "  ", out
