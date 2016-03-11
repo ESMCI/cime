@@ -46,6 +46,7 @@
       <value>pnetcdf</value>
       <value mach="userdefined">netcdf</value>
       <value mach="eastwind">netcdf</value>
+      <value mach="constance">netcdf</value>
       <value mach="pleiades.*">netcdf</value>
       <value mach="vilje">netcdf</value>
       <value mach="hexagon">netcdf</value>
