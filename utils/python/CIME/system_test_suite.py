@@ -1,5 +1,5 @@
 """
-Implementation of System Test functionality from CIME
+Implementation of System Test Suite functionality from CIME
 """
 import shutil, traceback, stat, glob, threading, time, thread
 from CIME.XML.standard_module_setup import *
@@ -31,7 +31,7 @@ CONTINUE = [TEST_PASS_STATUS, NAMELIST_FAIL_STATUS]
 ###############################################################################
 logger = logging.getLogger(__name__)
 
-class SystemTest(object):
+class SystemTestSuite(object):
 ###############################################################################
 
     ###########################################################################
@@ -805,7 +805,7 @@ class SystemTest(object):
             logger.warning("FAILED to set up cs files: %s" % str(e))
 
     ###########################################################################
-    def system_test(self):
+    def system_test_suite(self):
     ###########################################################################
         """
         Main API for this class.
@@ -829,7 +829,7 @@ class SystemTest(object):
         self._setup_cs_files()
 
         # Return True if all tests passed
-        logger.info( "At system_test close, state is:")
+        logger.info( "At system_test_suite close, state is:")
         rv = True
         for test in self._tests:
             phase, status, nl_fail = self._get_test_data(test)
@@ -855,6 +855,6 @@ class SystemTest(object):
 
             logger.info( "    Case dir: %s" % self._get_test_dir(test))
 
-        logger.warn( "system_test took %s seconds"% (time.time() - start_time))
+        logger.warn( "system_test_suite took %s seconds"% (time.time() - start_time))
 
         return rv
