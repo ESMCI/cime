@@ -14,3 +14,23 @@ class EnvTest(EnvBase):
         initialize an object interface to file env_test.xml in the case directory
         """
         EnvBase.__init__(self, case_root, infile)
+
+    def add_test(self,testnode):
+        self.root.append(testnode)
+        self.write()
+
+    def get_step_phase_cnt(self,step):
+        bldnodes = self.get_nodes(step)
+        cnt = 0
+        for node in bldnodes:
+            cnt = max(cnt, int(node.attrib["phase"]))
+        return cnt
+
+    def get_settings_for_phase(self, name, cnt):
+        node = self.get_node(name,{"phase":cnt})
+        settings = []
+        for child in node:
+            logger.debug ("Here child is %s with value %s"%(child.tag,child.text))
+            settings.append((child.tag, child.text))
+
+        return settings

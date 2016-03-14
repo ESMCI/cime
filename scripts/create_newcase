@@ -518,10 +518,10 @@ $logger->info( "$testsforcase") if(defined $testsforcase);
 #------------------------------------------------------------------------------------------
 # *** Set the testname parameters
 #------------------------------------------------------------------------------------------
-if (defined $opts{'testname'}) {
-    $testname = $opts{'testname'};
-    _set_test("$cfgdir/Testing/Testcases/config_tests.xml", $testname, $config);
-}
+#if (defined $opts{'testname'}) {
+#    $testname = $opts{'testname'};
+#    _set_test("$cfgdir/Testing/Testcases/config_tests.xml", $testname, $config);
+#}
 
 #------------------------------------------------------------------------------------------
 # *** Set the project id
@@ -974,6 +974,7 @@ sub _set_test
     if (@nodes) {
 	foreach my $node (@nodes) {
 	    my $id = $node->nodeName();
+	    next if ($id eq "RUN" or $id eq "BUILD");
 	    my $value = $node->textContent();
 	    $config->set($id, $value);
 	}

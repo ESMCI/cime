@@ -21,3 +21,8 @@ class EnvBase(EntryID):
             headerobj = Headers()
             headernode = headerobj.get_header_node(os.path.basename(fullpath))
             self.root.append(headernode)
+
+#    def add_header(self):
+#        headers = Headers()
+#        hnode = headers.get_header_node(self.filename)
+#        self.root.append(hnode)

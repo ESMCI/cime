@@ -15,6 +15,7 @@ from CIME.XML.files import Files
 from CIME.XML.component import Component
 from CIME.XML.testlist import Testlist
 from CIME.case import Case
+from CIME.XML.tests import Tests
 import CIME.test_utils
 
 INITIAL_PHASE         = "INIT"
@@ -369,7 +370,10 @@ class SystemTestSuite(object):
             create_newcase_cmd += " -user_mods_dir %s" % test_mod_file
 
         logger.debug("Calling create_newcase: "+create_newcase_cmd)
-        return self._shell_cmd_for_phase(test, create_newcase_cmd, CREATE_NEWCASE_PHASE)
+        rc = self._shell_cmd_for_phase(test, create_newcase_cmd, CREATE_NEWCASE_PHASE)
+        if rc:
+            self.add_test_instructions_to_case(test_dir,test_case)
+        return rc
 
     ###########################################################################
     def _xml_phase(self, test):
@@ -803,6 +807,16 @@ class SystemTestSuite(object):
 
         except Exception as e:
             logger.warning("FAILED to set up cs files: %s" % str(e))
+
+
+    def add_test_instructions_to_case(self, caseroot, testname):
+        """
+        Add the test instructions from config_test to env_test in the case
+        """
+        config_test = Tests()
+        env_test = EnvTest(caseroot)
+        testnode = config_test.get_test_node(testname)
+        env_test.add_test(testnode)
 
     ###########################################################################
     def system_test_suite(self):

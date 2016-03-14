@@ -103,6 +103,7 @@ class GenericXML(object):
             # one attribute in an xpath query so we query seperately for each attribute
             # and create a result with the intersection of those lists
             for key, value in attributes.iteritems():
+                expect(isinstance(value, str), " Bad value passed for key %s"%key)
                 xpath = ".//%s[@%s=\'%s\']" % (nodename, key, value)
                 logger.debug("xpath is %s"%xpath)
                 newnodes = root.findall(xpath)
@@ -167,7 +168,7 @@ class GenericXML(object):
         'one BAR two BARF three'
         """
         logger.debug("raw_value %s" % raw_value)
-        reference_re = re.compile(r'\$(\w+)')
+        reference_re = re.compile(r'\${?(\w+)}?')
         env_ref_re   = re.compile(r'\$ENV\{(\w+)\}')
         item_data = raw_value
 

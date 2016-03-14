@@ -8,8 +8,8 @@
 from standard_script_setup import *
 
 from CIME.utils import expect, run_cmd
+from CIME.system_test import SystemTest
 from CIME.case import Case
-from CIME.SystemTests.sms import SMS
 import argparse, doctest, shutil, glob
 
 ###############################################################################
@@ -47,15 +47,14 @@ formatter_class=argparse.ArgumentDefaultsHelpFormatter
     return args.caseroot, args.testname
 
 def cimetest(caseroot, testname=None):
-    case = Case(caseroot)
-    test = object()
+    case = None
     if(testname is None):
+        case = Case(caseroot)
         testname = case.get_value('TESTCASE')
 
     logging.warn("Running test for %s"%testname)
 
-    if(testname == 'SMS'):
-        test = SMS(caseroot, case)
+    test = SystemTest(testname, caseroot, case)
 
     test.run()
 
