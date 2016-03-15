@@ -119,12 +119,16 @@
 
   <test NAME="TESTRUNDIFF">
     <DESC>For testing infra only. Produces a canned hist file.</DESC>
-    <INFO_DBUG>1</INFO_DBUG>
-    <CCSM_TCOST>0</CCSM_TCOST>
-    <STOP_OPTION>ndays</STOP_OPTION>
-    <STOP_N>11</STOP_N>
-    <CHECK_TIMING>FALSE</CHECK_TIMING>
-    <DOUT_S>FALSE</DOUT_S>
+    <BUILD phase="1">
+      <eval> echo "#! /bin/bash" > $EXEROOT/${MODEL}.exe </eval>
+      <eval> echo "echo Insta pass" >> $EXEROOT/${MODEL}.exe</eval>
+      <eval> echo -n "echo SUCCESSFUL TERMINATION > $RUNDIR/cpl.log." >> $EXEROOT/${MODEL}.exe </eval>
+      <eval> echo '$LID' >> $EXEROOT/${MODEL}.exe </eval>
+      <eval> echo "cp $CIMEROOT/utils/python/tests/cpl.hi1.nc.test $RUNDIR/$CASE.cpl.hi.0.nc.base" >> $EXEROOT/${MODEL}.exe</eval>
+      <eval> chmod +x $EXEROOT/${MODEL}.exe</eval>
+      <BUILD_COMPLETE>TRUE</BUILD_COMPLETE>
+      </BUILD>
+      <RUN phase="1"/>
   </test>
 
   <test NAME="TESTRUNSLOWPASS">
