@@ -112,7 +112,7 @@ testcase_base=''
 suffix1=''
 suffix2=''
 add_iop=''
-msg='' 
+msg=''
 
 #----------------------------------------------------------------------
 # Process command-line arguments
@@ -161,7 +161,7 @@ while [ $# -gt 0 ]; do
 done
 
 #----------------------------------------------------------------------
-# Exit if required command-line arguments weren't provided 
+# Exit if required command-line arguments weren't provided
 #----------------------------------------------------------------------
 error=0  # no errors yet
 if [ -z "$rundir" ]; then
@@ -193,11 +193,7 @@ fi
 #------------------------------------------------------------------
 # Determine location of cprnc
 #------------------------------------------------------------------
-if [ -z $CASEROOT ]; then
-    echo " environment variable CASEROOT is not defined "
-    exit 1
-fi
-cd $CASEROOT
+
 cprnc_exe=`./xmlquery CCSM_CPRNC -value`
 
 #------------------------------------------------------------------
@@ -209,7 +205,7 @@ overall_status='PASS'
 
 models=(cam cice clm2 pop cism cpl rtm mosart)
 for model in ${models[*]}; do
-    
+
     if [ "$model" = "cism" ]; then
 	extensions=(h)
     elif [ "$model" = "clm2" ]; then
@@ -236,7 +232,7 @@ for model in ${models[*]}; do
     # Loop over history file extensions
     #------------------------------------------------------------------
     for extension in ${extensions[*]}; do
-    
+
         #--------------------------------------------------------------
         # Find last component hist files in this run directory, and
         # determine corresponding name of the baseline file (used for
@@ -278,7 +274,7 @@ for model in ${models[*]}; do
 		    fi
 
 		fi
-	    fi		
+	    fi
 
 	elif [[ "$testcase" =~ .*_N2.* ]]; then
 
@@ -316,7 +312,7 @@ for model in ${models[*]}; do
 
 		hist1=`cd $rundir; ls -1 ${testcase}.${model}.${extension}.*.nc.${suffix1} 2>/dev/null | tail -1`
 		hist2=`cd $rundir; ls -1 ${testcase}.${model}.${extension}.*.nc.${suffix2} 2>/dev/null | tail -1`
-		
+
 		if  [[ -f ${hist1} ]] && [[ -f ${hist2} ]] ; then
 		    compare_result=`${tools_dir}/component_compare.sh -baseline_dir "$rundir" -test_dir "$rundir" -baseline_hist "$hist1" -test_hist "$hist2" -cprnc_exe "$cprnc_exe"`
 		    compare_status=`get_status "$compare_result"`
@@ -344,7 +340,7 @@ for model in ${models[*]}; do
 		    compare_info=`get_info "$compare_result"`
 		    print_comment "$compare_status" "$compare_info: ${model}.${extension}.nc : test compare ${model}.${extension} (.${suffix1} and .${suffix1}_${add_iop} files)" "${testcase_base}"
 		fi
-		
+
 		hist1=`cd $rundir; ls -1 ${testcase}.${model}*.${extension}.*.nc.${suffix2}            2>/dev/null | tail -1`
 		hist2=`cd $rundir; ls -1 ${testcase}.${model}*.${extension}.*.nc.${suffix2}_${add_iop} 2>/dev/null | tail -1`
 
@@ -374,17 +370,17 @@ for model in ${models[*]}; do
 		    overall_status="FAIL"
 		fi
 	    fi
-	    
+
 	fi
 
     done # loop over history file extensions
 
 done  # loop over models
 
-if [ -z "$msg" ]; then 
-    print_status "$overall_status" "$compare_info: test functionality summary" "${testcase_base}"
+if [ -z "$msg" ]; then
+    print_status "$overall_status" "$compare_info: test functionality summary" "${testcase_base}\n"
 else
-    print_status "$overall_status" "$compare_info: test functionality summary ($msg)" "${testcase_base}"
+    print_status "$overall_status" "$compare_info: test functionality summary ($msg)" "${testcase_base}\n"
 fi
 
-
+exit 0

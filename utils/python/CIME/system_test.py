@@ -9,6 +9,8 @@ from CIME.XML.env_test import EnvTest
 from CIME.utils import run_cmd, convert_to_type
 import CIME.build as build
 
+logger = logging.getLogger(__name__)
+
 class SystemTest(object):
     def __init__(self,  testname, caseroot=os.getcwd(), case=None):
         """
@@ -37,7 +39,7 @@ class SystemTest(object):
     def build(self, sharedlib_only=False, model_only=False):
         bldphases = self._case._test.get_step_phase_cnt("BUILD")
         pattern = re.compile("^TEST")
-        for bld in str(bldphases):
+        for bld in range(1,bldphases+1):
             self._update_settings("BUILD", bld)
             if not pattern.match(self._testname):
                 build.case_build(self._caseroot, case=self._case,
@@ -45,7 +47,7 @@ class SystemTest(object):
 
     def _update_settings(self, name, cnt):
         test = self._case._test
-        settings = test.get_settings_for_phase(name, cnt)
+        settings = test.get_settings_for_phase(name, str(cnt))
         if settings:
             for name,value in settings:
                 if name == "eval":
@@ -58,16 +60,73 @@ class SystemTest(object):
 
     def run(self):
         runphases = self._case._test.get_step_phase_cnt("RUN")
-        for run in str(runphases):
+        for run in range(1,runphases+1):
             self._update_settings("RUN", run)
-            run_cmd("./case.run")
-            if run == 1:
-                ccm = os.path.join(self._case.get_value("SCRIPTSROOT"),"Tools","component_compare_move.sh")
-                run_cmd("ccm -rundir %s -testcase %s -suffix \"base\""%(self._case.get_value("RUNDIR"),
-                                                                        self._case.get_value("CASE")))
+            test_dir = self._case.get_value("CASEROOT")
+            rc, output, errput = run_cmd("./case.run", ok_to_fail=True,
+                                         from_dir=test_dir)
+            logger.info("Run %s of %s completed with rc %s" % (run, runphases, rc))
+            with open(os.path.join(test_dir, "TestStatus"), "r") as fe:
+                teststatus = fe.read()
+            if rc != 0:
+                teststatus = teststatus.replace('PEND','FAIL')
+                lognote = "case.run failed.\nOutput: %s\n\nErrput: %s" % (output,errput)
+                logger.info(lognote)
+                with open(os.path.join(test_dir, "TestStatus.log"), "a") as fd:
+                    fd.write(lognote)
+            else:
+                teststatus = teststatus.replace('PEND','PASS')
 
-    def report(self):
-        return
+            with open(os.path.join(test_dir, "TestStatus"), "w") as fd:
+                fd.write(teststatus)
+            if rc != 0:
+                break
+            self.checkformemleak(test_dir, run)
+            if runphases > 1:
+                ccm = os.path.join(self._case.get_value("SCRIPTSROOT"),"Tools","component_compare_move.sh")
+
+                if run == 1:
+                    run_cmd("%s -rundir %s -testcase %s -suffix base"%(ccm, self._case.get_value("RUNDIR"),
+                                                                            self._case.get_value("CASE")), verbose=True)
+                elif run == 2:
+                    run_cmd("%s -rundir %s -testcase %s -suffix rest"%(ccm, self._case.get_value("RUNDIR"),
+                                                                            self._case.get_value("CASE")), verbose=True)
+                    self.compare(test_dir)
+
+
+
+    def checkformemleak(self, test_dir, runnum):
+        newestcpllogfile = min(glob.iglob(os.path.join(
+                    self._case.get_value('RUNDIR'),'cpl.log.*')), key=os.path.getctime)
+        cmd = os.path.join(self._case.get_value("SCRIPTSROOT"),"Tools","check_memory.pl")
+        rc, out, err = run_cmd("%s -file1 %s -m 1.5"%(cmd, newestcpllogfile),ok_to_fail=True)
+        if rc == 0:
+            with open(os.path.join(test_dir, "TestStatus"), "a") as fd:
+                fd.write("PASS %s memleak run: %s\n"%(self._case.get_value("CASEBASEID"), runnum))
+        else:
+            with open(os.path.join(test_dir, "TestStatus.log"), "a") as fd:
+                fd.write("memleak out: %s\n\nerror: %s"%(out,err))
+            with open(os.path.join(test_dir, "TestStatus"), "a") as fd:
+                fd.write("FAIL %s memleak run: %s\n"%(self._case.get_value("CASEBASEID"), runnum))
+
+
+
+    def compare(self, test_dir):
+        # check to see if there are history files to be compared, compare if they are there
+        cmd = os.path.join(self._case.get_value("SCRIPTSROOT"),"Tools",
+                                                "component_compare_test.sh")
+        rc, out, err = run_cmd("%s -rundir %s -testcase %s -testcase_base %s -suffix1 base -suffix2 rest"
+                               %(cmd, self._case.get_value('RUNDIR'), self._case.get_value('CASE'),
+                                 self._case.get_value('CASEBASEID')), ok_to_fail=True)
+        if rc == 0:
+            with open(os.path.join(test_dir, "TestStatus"), "a") as fd:
+                fd.write(out)
+        else:
+            with open(os.path.join(test_dir, "TestStatus.log"), "a") as fd:
+                fd.write("Component_compare_test.sh failed\nout: %s\n\nerr: %s\n"%(out,err))
+
+
+
 
     def check_mem_leak(self):
         """ TODO: incomplete """

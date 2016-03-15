@@ -155,8 +155,8 @@ def case_build(caseroot, case=None, sharedlib_only=False, model_only=False):
     expect(not (sharedlib_only and model_only),
            "Contradiction: both sharedlib_only and model_only")
 
-    logger.info("sharedlib_only is %s" % sharedlib_only)
-    logger.info("model_only is %s" % model_only)
+    logger.debug("sharedlib_only is %s" % sharedlib_only)
+    logger.debug("model_only is %s" % model_only)
 
     expect(os.path.isdir(caseroot), "'%s' is not a valid directory" % caseroot)
     os.chdir(caseroot)

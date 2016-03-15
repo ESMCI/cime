@@ -192,7 +192,7 @@ class GenericXML(object):
                 logger.debug("resolve: %s" % ref)
                 item_data = item_data.replace(m.group(), str(self.get_resolved_value(ref)))
             elif var in os.environ:
-                logging.warn("resolve from env: %s" % var)
+                logging.debug("resolve from env: " + var)
                 item_data = item_data.replace(m.group(), os.environ[var])
 
         return item_data
