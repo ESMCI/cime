@@ -48,7 +48,9 @@ class SystemTest(object):
             self._update_settings("BUILD", bld)
             build.case_build(self._caseroot, case=self._case,
                              sharedlib_only=sharedlib_only, model_only=model_only,
-                             testcase=pattern.match(self._testname))
+                             testonly=pattern.match(self._testname))
+            expect(self._testname != "TESTBUILDFAIL", "Test build failure")
+
 
     def _update_settings(self, name, cnt):
         """

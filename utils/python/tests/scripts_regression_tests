@@ -517,7 +517,7 @@ class TestSystemTestSuite(TestCreateTestCommon):
         for test_status in test_statuses:
             status, test_name = wait_for_tests.parse_test_status_file(test_status)
             if (test_name == build_fail_test):
-                self.assertEqual(status[CIME.system_test_suite.MODEL_BUILD_PHASE], wait_for_tests.TEST_FAIL_STATUS)
+                self.assertEqual(status[CIME.system_test_suite.SHAREDLIB_BUILD_PHASE], wait_for_tests.TEST_FAIL_STATUS)
             elif (test_name == run_fail_test):
                 self.assertEqual(status[CIME.system_test_suite.RUN_PHASE], wait_for_tests.TEST_FAIL_STATUS)
             else:
