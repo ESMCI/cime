@@ -58,12 +58,10 @@ def cimetest(caseroot, testname=None):
 
     test.run()
 
-# TODO:
-#    test.generate_baseline()     if case.get_value('GENERATE_BASELINE')
-#
-#    test.compare_baseline()     if case.get_value('COMPARE_BASELINE')
-
-
+    if case.get_value('COMPARE_BASELINE'):
+        test.compare_baseline()
+    if case.get_value('GENERATE_BASELINE'):
+        test.generate_baseline()
 
 def _main_func(description):
     if ("--test" in sys.argv):

@@ -140,12 +140,18 @@ class SystemTestSuite(object):
         if compare or generate:
             # Figure out what baseline name to use
             if baseline_name is None:
-                if compare is not None and isinstance(compare, str):
-                    self._baseline_cmp_name = compare
-                    self._compare = True
-                if generate is not None and isinstance(generate, str):
-                    self._baseline_gen_name = generate
-                    self._generate = True
+                if compare is not None:
+                    if isinstance(compare, str):
+                        self._baseline_cmp_name = compare
+                        self._compare = True
+                    else:
+                        self._compare = compare
+                if generate is not None :
+                    if isinstance(generate, str):
+                        self._baseline_gen_name = generate
+                        self._generate = True
+                    else:
+                        self._generate = generate
                 branch_name = CIME.utils.get_current_branch(repo=self._cime_root)
                 expect(branch_name is not None,
                        "Could not determine baseline name from branch, please use -b option")
@@ -501,7 +507,6 @@ class SystemTestSuite(object):
 
         if self._generate or self._compare:
             envtest.set_value("BASELINE_ROOT", self._baseline_root)
-
         envtest.set_value("GENERATE_BASELINE", self._generate)
         envtest.set_value("COMPARE_BASELINE", self._compare)
         envtest.set_value("CCSM_CPRNC", self._machobj.get_value("CCSM_CPRNC", resolved=False))

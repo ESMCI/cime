@@ -85,7 +85,7 @@
   <test NAME="TESTBUILDFAIL">
     <DESC>For testing infra only. Insta-fail build step.</DESC>
     <BUILD phase="1">
-      <eval>echo "ERROR: Intentional fail for testing infrastructure" | tee $EXEROOT/cesm.bldlog.$TEST_TESTID</eval>
+      <eval>echo "ERROR: Intentional fail for testing infrastructure" | tee $EXEROOT/${MODEL}.bldlog.$TEST_TESTID</eval>
     </BUILD>
   </test>
 

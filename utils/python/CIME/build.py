@@ -148,7 +148,7 @@ def post_build(case, logs):
     shutil.copy("env_build.xml", "LockedFiles")
 
 ###############################################################################
-def case_build(caseroot, case=None, sharedlib_only=False, model_only=False):
+def case_build(caseroot, case=None, sharedlib_only=False, model_only=False, testcase=False):
 ###############################################################################
     t1 = time.time()
 
@@ -302,11 +302,11 @@ def case_build(caseroot, case=None, sharedlib_only=False, model_only=False):
     t2 = time.time()
     logs = []
 
-    if not model_only:
+    if not model_only and not testcase:
         logs = build_libraries(case, exeroot, caseroot, cimeroot, libroot, mpilib, lid,
                                machines_file)
 
-    if not sharedlib_only:
+    if not sharedlib_only and not testcase:
         logs.extend(build_model(case, build_threaded, exeroot, clm_config_opts, incroot,
                                 comp_atm,   comp_lnd,   comp_ice,   comp_ocn,   comp_glc,   comp_wav,   comp_rof,
                                 nthrds_atm, nthrds_lnd, nthrds_ice, nthrds_ocn, nthrds_glc, nthrds_wav, nthrds_rof,
