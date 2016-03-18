@@ -19,6 +19,14 @@ class EnvTest(EnvBase):
         self.root.append(testnode)
         self.write()
 
+    def set_initial_values(self, case):
+        tnode = self.get_node("test")
+        for child in tnode:
+            if child.tag != "BUILD" and child.tag != "RUN":
+                case.set_value(child.tag,child.text)
+
+
+
     def get_step_phase_cnt(self,step):
         bldnodes = self.get_nodes(step)
         cnt = 0

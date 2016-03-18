@@ -676,7 +676,9 @@ sub _value_ok
     $value =~ s/^\s+//;
     $value =~ s/\s+$//;
     foreach my $expect (@expect) {
+	print ">$value<>$expect<\n";
 	if ($value =~ /^$expect$/) { return 1; }
+	if ($value eq $expect) { return 1;}
     }
     return 0;
 }

@@ -518,10 +518,10 @@ $logger->info( "$testsforcase") if(defined $testsforcase);
 #------------------------------------------------------------------------------------------
 # *** Set the testname parameters
 #------------------------------------------------------------------------------------------
-#if (defined $opts{'testname'}) {
-#    $testname = $opts{'testname'};
-#    _set_test("$cfgdir/Testing/Testcases/config_tests.xml", $testname, $config);
-#}
+if (defined $opts{'testname'}) {
+    $testname = $opts{'testname'};
+    _set_test("$cfgdir/Testing/Testcases/config_tests.xml", $testname, $config);
+}
 
 #------------------------------------------------------------------------------------------
 # *** Set the project id

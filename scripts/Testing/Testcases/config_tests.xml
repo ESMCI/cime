@@ -48,14 +48,15 @@
     <STOP_N>11</STOP_N>
     <DOUT_S>FALSE</DOUT_S>
     <REST_OPTION>$STOP_OPTION</REST_OPTION>
+    <BUILD phase="1"/>
     <RUN phase="1">
-      <REST_N>$STOP_N / 2 + 1</REST_N>
+      <REST_N eval="TRUE">$STOP_N / 2 + 1</REST_N>
       <HIST_N>$STOP_N</HIST_N>
       <CONTINUE_RUN>FALSE</CONTINUE_RUN>
     </RUN>
     <RUN phase="2">
       <CONTINUE_RUN>TRUE</CONTINUE_RUN>
-      <STOP_N>$STOP_N-$REST_N</STOP_N>
+      <STOP_N eval="TRUE">$STOP_N-$REST_N</STOP_N>
       <REST_OPTION>never</REST_OPTION>
       <HIST_OPTION>$STOP_OPTION</HIST_OPTION>
     </RUN>

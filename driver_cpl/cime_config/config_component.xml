@@ -344,7 +344,7 @@
 
   <entry id="REST_OPTION">
     <type>char</type>
-    <valid_values>none,never,nsteps,nstep,nseconds,nsecond,nminutes,nminute,nhours,nhour,ndays,nday,nmonths,nmonth,nyears,nyear,date,ifdays0,end</valid_values>
+    <valid_values>$STOP_OPTION,none,never,nsteps,nstep,nseconds,nsecond,nminutes,nminute,nhours,nhour,ndays,nday,nmonths,nmonth,nyears,nyear,date,ifdays0,end</valid_values>
     <default_value>$STOP_OPTION</default_value>
     <group>run_begin_stop_restart</group>
     <file>env_run.xml</file>
@@ -3250,7 +3250,7 @@
   </entry>
 
   <entry id="AVGHIST_N">
-    <type>char</type>
+    <type>integer</type>
     <valid_values></valid_values>
     <default_value>-999</default_value>
     <values>

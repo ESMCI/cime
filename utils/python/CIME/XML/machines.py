@@ -98,7 +98,7 @@ class Machines(GenericXML):
 
         return machine
 
-    def get_value(self, name, resolved=True):
+    def get_value(self, name, resolved=True, settype=True):
         """
         Get Value of fields in the config_machines.xml file
         """
@@ -118,7 +118,7 @@ class Machines(GenericXML):
 
         if value is None:
             # if all else fails
-            value = GenericXML.get_value(self, name)
+            value = GenericXML.get_value(self, name,settype)
 
         if resolved:
             if value is not None:

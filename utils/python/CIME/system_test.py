@@ -28,15 +28,19 @@ class SystemTest(object):
         self._testname = testname
 
         if os.path.isfile(os.path.join(caseroot, "LockedFiles", "env_run.orig.xml")):
-            self.compare_env_run(expectedrunvars)
+            self.compare_env_run()
         elif os.path.isfile(os.path.join(caseroot, "env_run.xml")):
-            lockedfiles = os.path.join(caseroot, "Lockedfiles")
+            lockedfiles = os.path.join(caseroot, "LockedFiles")
             try:
                 os.stat(lockedfiles)
             except:
                 os.mkdir(lockedfiles)
             shutil.copy("env_run.xml",
                         os.path.join(lockedfiles, "env_run.orig.xml"))
+        self._case._test.set_initial_values(self._case)
+
+
+
 
     def build(self, sharedlib_only=False, model_only=False):
         """
@@ -66,7 +70,13 @@ class SystemTest(object):
                     run_cmd(cmd)
                 else:
                     type_str = self._case.get_type_info(name)
-                    self._case.set_value(name, convert_to_type(value, type_str, name))
+                    newvalue = convert_to_type(value,
+                                               type_str, name, ok_to_fail=True)
+                    if type(value) is type(newvalue):
+                        newvalue = self._case.get_resolved_value(newvalue)
+                    if type(newvalue) is str and type_str != "char":
+                        newvalue = eval(newvalue)
+                    self._case.set_value(name, newvalue)
             self._case.flush()
 
     def run(self):
@@ -222,7 +232,7 @@ class SystemTest(object):
         f2obj = EnvRun(self._caseroot, os.path.join("LockedFiles", "env_run.orig.xml"))
         diffs = f1obj.compare_xml(f2obj)
         for key in diffs.keys():
-            if key in expected:
+            if expected is not None and key in expected:
                 logging.warn("  Resetting %s for test"%key)
                 f1obj.set_value(key, f2obj.get_value(key, resolved=False))
             else:

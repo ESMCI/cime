@@ -4,7 +4,7 @@ be used by other XML interface modules and not directly.
 """
 from standard_module_setup import *
 from xml.dom import minidom
-from CIME.utils import expect, get_cime_root
+from CIME.utils import expect, get_cime_root, convert_to_string
 
 logger = logging.getLogger(__name__)
 
@@ -128,7 +128,7 @@ class GenericXML(object):
             root = self.root
         self.root.append(node)
 
-    def get_value(self, item, resolved=True):
+    def get_value(self, item, resolved=True, settype=True):
         """
         get_value is expected to be defined by the derived classes, if you get here it is an error.
         """
@@ -187,7 +187,7 @@ class GenericXML(object):
         for m in reference_re.finditer(item_data):
             var = m.groups()[0]
             logger.debug("find: %s" % var)
-            ref = self.get_value(var)
+            ref = self.get_value(var, settype=False)
             if ref is not None:
                 logger.debug("resolve: %s" % ref)
                 item_data = item_data.replace(m.group(), str(self.get_resolved_value(ref)))

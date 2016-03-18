@@ -78,7 +78,7 @@ class EntryID(GenericXML):
         else:
             return None
 
-    def get_value(self, vid, attribute={}, resolved=True, subgroup=None):
+    def get_value(self, vid, attribute={}, resolved=True, subgroup=None, settype=True):
         """
         get a value for entry with id attribute vid.
         or from the values field if the attribute argument is provided
@@ -191,9 +191,9 @@ class EntryID(GenericXML):
         f1nodes = self.get_nodes("entry")
         for node in f1nodes:
             vid = node.attrib["id"]
-            f2val = other.get_value(vid, resolved=False)
+            f2val = other.get_value(vid, resolved=False, settype=False)
             if f2val is not None:
-                f1val = self.get_value(vid, resolved=False)
+                f1val = self.get_value(vid, resolved=False, settype=False)
                 if f2val != f1val:
                     xmldiffs[vid] = [f1val, f2val]
 
