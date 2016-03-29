@@ -64,19 +64,19 @@ class SystemTest(object):
         test = self._case._test
         settings = test.get_settings_for_phase(name, str(cnt))
         if settings:
-            for name,value in settings:
-                if name == "eval":
+            for vid,value in settings:
+                if vid == "eval":
                     cmd = self._case.get_resolved_value(value)
                     run_cmd(cmd)
                 else:
-                    type_str = self._case.get_type_info(name)
+                    type_str = self._case.get_type_info(vid)
                     newvalue = convert_to_type(value,
-                                               type_str, name, ok_to_fail=True)
+                                               type_str, vid, ok_to_fail=True)
                     if type(value) is type(newvalue):
                         newvalue = self._case.get_resolved_value(newvalue)
                     if type(newvalue) is str and type_str != "char":
                         newvalue = eval(newvalue)
-                    self._case.set_value(name, newvalue)
+                    self._case.set_value(vid, newvalue)
             self._case.flush()
 
     def run(self):
