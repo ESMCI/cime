@@ -28,6 +28,7 @@
     <STOP_N>22</STOP_N>
     <CCSM_TCOST>0</CCSM_TCOST>
     <DOUT_S>FALSE</DOUT_S>
+    <GET_REFCASE>FALSE</GET_REFCASE>
     <BUILD phase="1"/>
     <RUN phase="1" clone="$CASEROOT.ref1">
       <STOP_N>$STOP_N / 6</STOP_N>
@@ -38,6 +39,14 @@
       <STOP_N>$STOP_N - $STOP_N / 6</STOP_N>
       <REST_N>$STOP_N / 2 + 1</REST_N>
       <HIST_N>$STOP_N</HIST_N>
+      <RUN_REFCASE>$CASEROOT.ref1</RUN_REFCASE>
+      <RUN_TYPE>hybrid</RUN_TYPE>
+      <RUN_STARTDATE>0003-01-01</RUN_STARTDATE>
+    </RUN>
+    <RUN phase="3">
+      <CONTINUE_RUN>TRUE</CONTINUE_RUN>
+      <RUN_TYPE>branch</RUN_TYPE>
+      <RUN_REFCASE>$CASEROOT.ref2</RUN_REFCASE>
     </RUN>
   </test>
 
@@ -142,7 +151,7 @@
       <eval> chmod +x $EXEROOT/${MODEL}.exe</eval>
       <BUILD_COMPLETE>TRUE</BUILD_COMPLETE>
       </BUILD>
-    # need two run phases to trigger compare tests
+    <!-- need two run phases to trigger compare tests -->
       <RUN phase="1"/>
       <RUN phase="2"/>
   </test>

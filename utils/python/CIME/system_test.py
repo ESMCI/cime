@@ -89,9 +89,11 @@ class SystemTest(object):
         runphases = self._case._test.get_step_phase_cnt("RUN")
         for run in range(1,runphases+1):
             test_dir = self._case.get_value("CASEROOT")
-            clone = self._case.get_resolved_value(self._case._test.run_phase_get_clone_name(run))
+            clone = self._case._test.run_phase_get_clone_name(run)
             case = self._case
             if clone is not None:
+                if "$" in clone:
+                    clone = self._case.get_resolved_value(clone)
                 if os.path.exists(clone):
                     os.remove(clone)
                 scriptsroot = case.get_value("SCRIPTSROOT")
