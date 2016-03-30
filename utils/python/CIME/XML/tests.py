@@ -22,7 +22,7 @@ class Tests(GenericXML):
         GenericXML.__init__(self,  infile)
 
     def get_test_node(self, testname):
-        logger.info("Get settings for %s"%testname)
+        logger.debug("Get settings for %s"%testname)
         node = self.get_node("test",{"NAME":testname})
-        print node.text
+        logger.debug("Found %s"%node.text)
         return node

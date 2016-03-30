@@ -42,3 +42,10 @@ class EnvTest(EnvBase):
             settings.append((child.tag, child.text))
 
         return settings
+
+    def run_phase_requires_clone(self, phase):
+        node = self.get_node("RUN",{"phase":phase})
+        if clone in node.attrib:
+            return node.attrib["clone"]
+        return None
+

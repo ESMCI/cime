@@ -578,7 +578,7 @@ def get_logging_options():
     else:
         return ""
 
-def convert_to_type(value, type_str, vid="",ok_to_fail=False):
+def convert_to_type(value, type_str, vid=""):
     """
     Convert value from string to another type.
     vid is only for generating better error messages.
@@ -592,8 +592,7 @@ def convert_to_type(value, type_str, vid="",ok_to_fail=False):
             try:
                 value = int(eval(value))
             except:
-                if not ok_to_fail:
-                    expect(False, "Entry %s was listed as type int but value '%s' is not valid int" % (vid, value))
+                expect(False, "Entry %s was listed as type int but value '%s' is not valid int" % (vid, value))
 
         elif type_str == "logical":
             expect(value in ["TRUE", "FALSE","true","false"],
@@ -604,49 +603,32 @@ def convert_to_type(value, type_str, vid="",ok_to_fail=False):
             try:
                 value = float(value)
             except:
-                if not ok_to_fail:
-                    expect(False, "Entry %s was listed as type real but value '%s' is not valid real" % (vid, value))
+                expect(False, "Entry %s was listed as type real but value '%s' is not valid real" % (vid, value))
 
         else:
             expect(False, "Unknown type '%s'" % type_str)
 
     return value
 
-def convert_to_string(value, type_str=None, vid="", ok_to_fail=False):
+def convert_to_string(value, type_str=None, vid=""):
     """
     Convert value back to string.
     vid is only for generating better error messages.
     """
-    if value is not None:
-        if type_str is None:
-            if type(value) is str:
-                return value
-            elif type(value) is int:
-                value = str(value)
-            elif type(value) is bool:
-                value = "TRUE" if value else "FALSE"
-            elif type(value) is float:
-                value = str(value)
-            else:
-                expect(False, "Unknown type '%s'" % type(value))
+    if value is not None and type(value) is not str:
+        if type_str == "char":
+            expect(type(value) is str, "Wrong type for entry id '%s'" % vid)
+        elif type_str == "integer":
+            expect(type(value) is int, "Wrong type for entry id '%s'" % vid)
+            value = str(value)
+        elif type_str == "logical":
+            expect(type(value) is bool, "Wrong type for entry id '%s'" % vid)
+            value = "TRUE" if value else "FALSE"
+        elif type_str == "real":
+            expect(type(value) is float, "Wrong type for entry id '%s'" % vid)
+            value = str(value)
         else:
-            if type_str == "char":
-                if not ok_to_fail:
-                    expect(type(value) is str, "Wrong type for entry id '%s'" % vid)
-            elif type_str == "integer":
-                if not ok_to_fail:
-                    expect(type(value) is int, "Wrong type for entry id '%s'" % vid)
-                value = str(value)
-            elif type_str == "logical":
-                if not ok_to_fail:
-                    expect(type(value) is bool, "Wrong type for entry id '%s'" % vid)
-                value = "TRUE" if value else "FALSE"
-            elif type_str == "real":
-                if not ok_to_fail:
-                    expect(type(value) is float, "Wrong type for entry id '%s'" % vid)
-                value = str(value)
-            else:
-                expect(False, "Unknown type '%s'" % type_str)
+            expect(False, "Unknown type '%s'" % type_str)
 
     return value
 

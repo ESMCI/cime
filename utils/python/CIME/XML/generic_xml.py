@@ -189,8 +189,8 @@ class GenericXML(object):
             logger.debug("find: %s" % var)
             ref = self.get_value(var, settype=False)
             if ref is not None:
-                logger.debug("resolve: %s" % ref)
-                item_data = item_data.replace(m.group(), str(self.get_resolved_value(ref)))
+                logger.debug("resolve: " + str(ref))
+                item_data = item_data.replace(m.group(), self.get_resolved_value(str(ref)))
             elif var in os.environ:
                 logging.debug("resolve from env: " + var)
                 item_data = item_data.replace(m.group(), os.environ[var])

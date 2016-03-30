@@ -645,7 +645,8 @@ class TestBlessTestResults(TestCreateTestCommon):
         self.assertEqual(len(baseline_glob), 1, msg="Expected one match, got:\n%s" % "\n".join(baseline_glob))
 
         baseline_dir = baseline_glob[0]
-        os.remove(os.path.join(baseline_dir, "cpl.hi.nc"))
+        if os.path.exists("cpl.hi.nc"):
+            os.remove(os.path.join(baseline_dir, "cpl.hi.nc"))
         shutil.copy(os.path.join(CIME.utils.get_python_libs_root(), "tests", "cpl.hi2.nc.test"), os.path.join(baseline_dir, "cpl.hi.nc"))
 
         # Hist compare should now fail

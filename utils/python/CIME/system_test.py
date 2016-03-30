@@ -50,34 +50,37 @@ class SystemTest(object):
         pattern = re.compile("^TEST")
         for bld in range(1,bldphases+1):
             self._update_settings("BUILD", bld)
+            run_cmd("./case.setup -clean -testmode")
+            run_cmd("./case.setup")
             build.case_build(self._caseroot, case=self._case,
                              sharedlib_only=sharedlib_only, model_only=model_only,
                              testonly=pattern.match(self._testname))
             expect(self._testname != "TESTBUILDFAIL", "Test build failure")
 
 
-    def _update_settings(self, name, cnt):
+    def _update_settings(self, name, cnt, case=None):
         """
         Update the case based on the settings defined in env_tests.xml for the cnt phase of the
         name (BUILD,RUN) step
         """
-        test = self._case._test
+        if case is None:
+            case = self._case
+        test = case._test
         settings = test.get_settings_for_phase(name, str(cnt))
         if settings:
             for vid,value in settings:
                 if vid == "eval":
-                    cmd = self._case.get_resolved_value(value)
+                    cmd = case.get_resolved_value(value)
                     run_cmd(cmd)
                 else:
-                    type_str = self._case.get_type_info(vid)
-                    newvalue = convert_to_type(value,
-                                               type_str, vid, ok_to_fail=True)
-                    if type(value) is type(newvalue):
-                        newvalue = self._case.get_resolved_value(newvalue)
-                    if type(newvalue) is str and type_str != "char":
-                        newvalue = eval(newvalue)
-                    self._case.set_value(vid, newvalue)
-            self._case.flush()
+                    if "$" in value:
+                        value = case.get_resolved_value(value)
+                        # Handle a limited number of simple math expressions
+                        # such as $REST_N = $STOP_N / 2 + 1
+                        if re.findall('\d+? *?[\-\+\*\/] *?\d+?', value):
+                            value = eval(value)
+                    case.set_value(vid, value)
+            case.flush()
 
     def run(self):
         """
@@ -85,8 +88,19 @@ class SystemTest(object):
         """
         runphases = self._case._test.get_step_phase_cnt("RUN")
         for run in range(1,runphases+1):
-            self._update_settings("RUN", run)
             test_dir = self._case.get_value("CASEROOT")
+            clone = self._case.get_resolved_value(self._case._test.run_phase_get_clone_name(run))
+            case = self._case
+            if clone is not None:
+                if os.path.exists(clone):
+                    os.remove(clone)
+                scriptsroot = case.get_value("SCRIPTSROOT")
+                create_clone = os.path.join(scriptsroot,"create_clone")
+                run_cmd("%s -keepexe -clone %s -case %s"%(create_clone, clone, test_dir))
+                test_dir = clone
+                case = Case(test_dir)
+
+            self._update_settings("RUN", run, case)
             rc, output, errput = run_cmd("./case.run", ok_to_fail=True,
                                          from_dir=test_dir)
             logger.info("Run %s of %s completed with rc %s" % (run, runphases, rc))
@@ -107,14 +121,14 @@ class SystemTest(object):
                 break
             self._checkformemleak(test_dir, run)
             if runphases > 1:
-                ccm = os.path.join(self._case.get_value("SCRIPTSROOT"),"Tools","component_compare_move.sh")
+                ccm = os.path.join(case.get_value("SCRIPTSROOT"),"Tools","component_compare_move.sh")
 
                 if run == 1:
                     suffix = "base"
                 elif run == 2:
                     suffix = "rest"
-                run_cmd("%s -rundir %s -testcase %s -suffix %s"%(ccm, self._case.get_value("RUNDIR"),
-                                                                   self._case.get_value("CASE"),suffix))
+                run_cmd("%s -rundir %s -testcase %s -suffix %s"%(ccm, case.get_value("RUNDIR"),
+                                                                   case.get_value("CASE"),suffix))
         if runphases > 1:
             self._compare(test_dir)
 
