@@ -7,6 +7,7 @@ from CIME.case import Case
 from CIME.XML.env_run import EnvRun
 from CIME.XML.env_test import EnvTest
 from CIME.utils import run_cmd, convert_to_type
+from CIME.case_setup import case_setup
 import CIME.build as build
 
 logger = logging.getLogger(__name__)
@@ -51,16 +52,8 @@ class SystemTest(object):
         for bld in range(1,bldphases+1):
             self._update_settings("BUILD", bld)
             logger.warn("running Case.setup")
-            rc, output, error = run_cmd("./case.setup -clean -testmode -loglevel DEBUG",ok_to_fail=True)
-            print output
-            print error
-            rc, output, error = run_cmd("./case.setup -loglevel DEBUG",ok_to_fail=True)
-            print output
-            print error
-            rc, output, error = run_cmd("./xmlchange TOTALPES=1",ok_to_fail=True)
-            print output
-            print error
-            expect(False, "Stop here")
+            case_setup(self._caseroot,True,True)
+            case_setup(self._caseroot,False,True)
             build.case_build(self._caseroot, case=self._case,
                              sharedlib_only=sharedlib_only, model_only=model_only,
                              testonly=pattern.match(self._testname))

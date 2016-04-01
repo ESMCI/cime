@@ -103,18 +103,19 @@ class GenericXML(object):
             # one attribute in an xpath query so we query seperately for each attribute
             # and create a result with the intersection of those lists
             for key, value in attributes.iteritems():
-                expect(isinstance(value, str), " Bad value passed for key %s"%key)
-                xpath = ".//%s[@%s=\'%s\']" % (nodename, key, value)
-                logger.debug("xpath is %s"%xpath)
-                newnodes = root.findall(xpath)
-                if not nodes:
-                    nodes = newnodes
-                else:
-                    for node in nodes[:]:
-                        if node not in newnodes:
-                            nodes.remove(node)
-                if not nodes:
-                    return []
+                if value is not None:
+                    expect(isinstance(value, str), " Bad value passed for key %s"%key)
+                    xpath = ".//%s[@%s=\'%s\']" % (nodename, key, value)
+                    logger.debug("xpath is %s"%xpath)
+                    newnodes = root.findall(xpath)
+                    if not nodes:
+                        nodes = newnodes
+                    else:
+                        for node in nodes[:]:
+                            if node not in newnodes:
+                                nodes.remove(node)
+                    if not nodes:
+                        return []
         else:
             nodes = root.findall(xpath)
 
@@ -187,7 +188,7 @@ class GenericXML(object):
         for m in reference_re.finditer(item_data):
             var = m.groups()[0]
             logger.debug("find: %s" % var)
-            ref = self.get_value(var, settype=False)
+            ref = self.get_value(var)
             if ref is not None:
                 logger.debug("resolve: " + str(ref))
                 item_data = item_data.replace(m.group(), self.get_resolved_value(str(ref)))

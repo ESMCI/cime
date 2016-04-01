@@ -55,7 +55,6 @@ def _main_func(description):
         sys.exit(1 if test_results.failed > 0 else 0)
 
     caseroot, clean, test_mode = parse_command_line(sys.argv, description)
-
     case_setup(caseroot, clean, test_mode)
 
 if __name__ == "__main__":

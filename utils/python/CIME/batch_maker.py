@@ -226,7 +226,7 @@ within model's Machines directory, and add a batch system type for this machine
             elif variable in defaults:
                 text = text.replace(whole_match, defaults[variable])
             else:
-                logger.warn("Could not replace variable '%s'" % variable)
+                logger.debug("Could not replace variable '%s'" % variable)
                 text = text.replace(whole_match, "")
 
         return text

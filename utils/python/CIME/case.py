@@ -38,8 +38,8 @@ class Case(object):
         self._env_entryid_files.append(EnvBatch(case_root))
         if(os.path.isfile(os.path.join(case_root,"env_test.xml"))):
             # system_test needs to reference the test object directly so create an explicit reference here
-               self._test = EnvTest(case_root)
-               self._env_entryid_files.append(self._test)
+            self._test = EnvTest(case_root)
+            self._env_entryid_files.append(self._test)
         self._env_generic_files.append(EnvMachSpecific(case_root))
         self._env_generic_files.append(EnvArchive(case_root))
 
@@ -65,7 +65,7 @@ class Case(object):
                     return self.get_resolved_value(result)
                 return result
 
-        logging.info("Not able to retreive value for item '%s'" % item)
+        logging.debug("Not able to retreive value for item '%s'" % item)
 
     def get_type_info(self, item):
         result = None
