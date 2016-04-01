@@ -50,8 +50,17 @@ class SystemTest(object):
         pattern = re.compile("^TEST")
         for bld in range(1,bldphases+1):
             self._update_settings("BUILD", bld)
-            run_cmd("./case.setup -clean -testmode")
-            run_cmd("./case.setup")
+            logger.warn("running Case.setup")
+            rc, output, error = run_cmd("./case.setup -clean -testmode -loglevel DEBUG",ok_to_fail=True)
+            print output
+            print error
+            rc, output, error = run_cmd("./case.setup -loglevel DEBUG",ok_to_fail=True)
+            print output
+            print error
+            rc, output, error = run_cmd("./xmlchange TOTALPES=1",ok_to_fail=True)
+            print output
+            print error
+            expect(False, "Stop here")
             build.case_build(self._caseroot, case=self._case,
                              sharedlib_only=sharedlib_only, model_only=model_only,
                              testonly=pattern.match(self._testname))
