@@ -15,32 +15,20 @@ class EnvBatch(EnvBase):
         """
         EnvBase.__init__(self, case_root, infile)
 
-<<<<<<< HEAD
     def set_value(self, item, value, subgroup="run", ignore_type=False):
-=======
-    def set_value(self, item, value, subgroup=None, resolved=True):
->>>>>>> I think this branch is a dead end, plan to pick it apart to apply to master
         val = None
         # allow the user to set all instances of item if subgroup is not provided
         if subgroup is None:
             nodes = self.get_nodes("entry", {"id":item})
             for node in nodes:
-<<<<<<< HEAD
                 self._set_value(node, item, value, ignore_type)
-=======
-                self._set_value(node, item, value, resolved)
->>>>>>> I think this branch is a dead end, plan to pick it apart to apply to master
                 val = value
         else:
             nodes = self.get_nodes("job", {"name":subgroup})
             for node in nodes:
                 vnode = self.get_optional_node("entry", {"id":item}, root=node)
                 if vnode is not None:
-<<<<<<< HEAD
                     val = self._set_value(vnode, item, value, ignore_type=ignore_type)
-=======
-                    val = self._set_value(vnode, item, value, resolved)
->>>>>>> I think this branch is a dead end, plan to pick it apart to apply to master
 
         return val
 
