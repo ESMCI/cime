@@ -114,8 +114,7 @@ class SystemTest(object):
                 logger.info(lognote)
                 with open(os.path.join(test_dir, "TestStatus.log"), "a") as fd:
                     fd.write(lognote)
-            else:
-                teststatus = teststatus.replace('PEND','PASS')
+
 
             with open(os.path.join(test_dir, "TestStatus"), "w") as fd:
                 fd.write(teststatus)
@@ -174,7 +173,7 @@ class SystemTest(object):
                                  self._case.get_value('CASEBASEID')), ok_to_fail=True)
         if rc == 0:
             with open(os.path.join(test_dir, "TestStatus"), "a") as fd:
-                fd.write(out)
+                fd.write(out+"\n")
         else:
             with open(os.path.join(test_dir, "TestStatus.log"), "a") as fd:
                 fd.write("Component_compare_test.sh failed out: %s\n\nerr: %s\n"%(out,err))
@@ -208,6 +207,15 @@ class SystemTest(object):
                 fd.write("Error in Baseline compare: %s"%err)
 
 
+    def complete(self):
+        test_dir = self._case.get_value("CASEROOT")
+        with open(os.path.join(test_dir, "TestStatus"), "r") as fe:
+            teststatus = fe.read()
+        teststatus = teststatus.replace('PEND','PASS')
+        with open(os.path.join(test_dir, "TestStatus"), "w") as fd:
+            fd.write(teststatus)
+
+
     def generate_baseline(self):
         """
         generate a new baseline case based on the current test
@@ -219,9 +227,9 @@ class SystemTest(object):
         for bdir in (baselineroot, basegen_dir):
             if not os.path.isdir(bdir):
                 with open(os.path.join(test_dir, "TestStatus"), "a") as fd:
-                    fd.write("GFAIL %s baseline\n",self._case.get_value("CASEBASEID"))
+                    fd.write("GFAIL %s baseline\n" % self._case.get_value("CASEBASEID"))
                 with open(os.path.join(test_dir, "TestStatus.log"), "a") as fd:
-                    fd.write("ERROR %s does not exist",bdir)
+                    fd.write("ERROR %s does not exist" % bdir)
                 return -1
         compgen = os.path.join(self._case.get_value("SCRIPTSROOT"),"Tools",
                                "component_compgen_baseline.sh")
@@ -232,10 +240,12 @@ class SystemTest(object):
         compgen += " -testcase_base "+self._case.get_value("CASEBASEID")
         rc, out, err = run_cmd(compgen, ok_to_fail=True)
         # copy latest cpl log to baseline
-        shutil.copyfile(newestcpllogfile, basegen_dir)
+        shutil.copyfile(newestcpllogfile,
+                        os.path.join(basegen_dir,
+                                     os.path.basename(newestcpllogfile)))
 
         with open(os.path.join(test_dir, "TestStatus"), "a") as fd:
-            fd.write(out)
+            fd.write(out+"\n")
         if rc != 0:
             with open(os.path.join(test_dir, "TestStatus.log"), "a") as fd:
                 fd.write("Error in Baseline Generate: %s"%err)

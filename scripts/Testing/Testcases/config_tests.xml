@@ -146,7 +146,7 @@
       <eval> echo "echo Insta pass" >> $EXEROOT/${MODEL}.exe</eval>
       <eval> echo -n "echo SUCCESSFUL TERMINATION > $RUNDIR/cpl.log." >> $EXEROOT/${MODEL}.exe </eval>
       <eval> echo '$LID' >> $EXEROOT/${MODEL}.exe </eval>
-      <eval> echo "cp $CIMEROOT/utils/python/tests/cpl.hi1.nc.test $RUNDIR/$CASE.cpl.hi.0.nc" >> $EXEROOT/${MODEL}.exe</eval>
+      <eval> echo "cp $CIMEROOT/utils/python/tests/cpl.hi1.nc.test $RUNDIR/$CASE.cpl.hi.0.nc.base" >> $EXEROOT/${MODEL}.exe</eval>
       <eval> echo "exit 0" >> $EXEROOT/${MODEL}.exe </eval>
       <eval> chmod +x $EXEROOT/${MODEL}.exe</eval>
       <BUILD_COMPLETE>TRUE</BUILD_COMPLETE>

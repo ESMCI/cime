@@ -378,9 +378,9 @@ for model in ${models[*]}; do
 done  # loop over models
 
 if [ -z "$msg" ]; then
-    print_status "$overall_status" "$compare_info: test functionality summary" "${testcase_base}\n"
+    print_status "$overall_status" "$compare_info: test functionality summary" "${testcase_base}"
 else
-    print_status "$overall_status" "$compare_info: test functionality summary ($msg)" "${testcase_base}\n"
+    print_status "$overall_status" "$compare_info: test functionality summary ($msg)" "${testcase_base}"
 fi
 
 exit 0
