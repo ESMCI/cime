@@ -6,7 +6,9 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
-
+   CUG_Introduction
+   CUG_Download
+   CUG_Use
 
 Indices and tables
 ==================
