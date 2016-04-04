@@ -460,7 +460,7 @@
       <executable></executable>
     </mpirun>
     <mpirun mpilib="mvapich2">
-      <executable>srun</executable>  
+      <executable>srun</executable>
       <arguments>
         <arg name="mpi">--mpi=none</arg>
         <arg name="num_tasks">--ntasks={{ num_tasks }}</arg>
@@ -469,7 +469,7 @@
       </arguments>
     </mpirun>
     <mpirun mpilib="mvapich">
-      <executable>srun</executable>  
+      <executable>srun</executable>
       <arguments>
         <arg name="num_tasks">--ntasks={{ num_tasks }}</arg>
         <arg name="cpu_bind">--cpu_bind=sockets --cpu_bind=verbose</arg>
@@ -1978,7 +1978,7 @@
     </environment_variables>
   </machine>
   <default_run_suffix>
-    <default_run_exe>$config{'EXEROOT'}/cesm.exe </default_run_exe>
+    <default_run_exe>$config{EXEROOT}/$config{EXEC_SE}</default_run_exe>
     <default_run_misc_suffix> >> cesm.log.$LID 2>&amp;1 </default_run_misc_suffix>
   </default_run_suffix>
 

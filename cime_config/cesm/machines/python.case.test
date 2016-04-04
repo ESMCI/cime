@@ -62,7 +62,7 @@ def cimetest(caseroot, testname=None):
         test.compare_baseline()
     if case.get_value('GENERATE_BASELINE'):
         test.generate_baseline()
-    test.complete()
+    test.mark_complete()
 
 
 def _main_func(description):

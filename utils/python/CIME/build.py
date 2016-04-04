@@ -115,8 +115,10 @@ def build_model(case, build_threaded, exeroot, clm_config_opts, incroot,
                    verbose=True)[0]
     expect(stat == 0, "ERROR: buildexe failed, cat %s" % file_build)
 
+
+    exename = case.get_value("EXEC_SE")
     # Copy the just-built ${MODEL}.exe to ${MODEL}.exe.$LID
-    shutil.copy("%s/%s.exe" % (exeroot, cime_model), "%s/%s.exe.%s" % (exeroot, cime_model, lid))
+    shutil.copy("%s/%s" % (exeroot, exename), "%s/%s.%s" % (exeroot, exename, lid))
 
     logs.append(file_build)
 

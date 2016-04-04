@@ -34,6 +34,14 @@
   <!-- and directories to configure a case -->
   <!-- ===================================================================== -->
 
+  <entry id="EXEC_SE">
+    <type>char</type>
+    <default_value>$MODEL.exe</default_value>
+    <group>build_def</group>
+    <file>env_build.xml</file>
+    <desc>Name of model executable</desc>
+  </entry>
+
   <entry id="FILES_CONFIG_SPEC">
     <type>char</type>
     <default_value>$CIMEROOT/config_files.xml</default_value>

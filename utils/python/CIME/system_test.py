@@ -209,7 +209,7 @@ class SystemTest(object):
                 fd.write("Error in Baseline compare: %s"%err)
 
 
-    def complete(self):
+    def mark_complete(self):
         test_dir = self._case.get_value("CASEROOT")
         with open(os.path.join(test_dir, "TestStatus"), "r") as fe:
             teststatus = fe.read()
