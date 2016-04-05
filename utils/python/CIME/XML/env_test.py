@@ -3,7 +3,8 @@ Interface to the env_test.xml file.  This class inherits from EnvBase
 """
 from standard_module_setup import *
 
-from env_base import EnvBase
+from CIME.XML.env_base import EnvBase
+from CIME.utils import convert_to_type
 
 logger = logging.getLogger(__name__)
 
@@ -20,12 +21,38 @@ class EnvTest(EnvBase):
         self.write()
 
     def set_initial_values(self, case):
+        """
+        The values to initialize a test are defined in env_test.xml
+        copy them to the appropriate case env files to initialize a test
+        ignore fields set in the BUILD and RUN clauses, they are set in
+        the appropriate build and run phases.
+        """
         tnode = self.get_node("test")
         for child in tnode:
             if child.tag != "BUILD" and child.tag != "RUN":
-                case.set_value(child.tag,child.text)
+                logger.info("Setting %s to %s for test"%(child.tag,child.text))
+                if "$" in child.text:
+                    case.set_value(child.tag,child.text,ignore_type=True)
+                else:
+                    item_type = case.get_type_info(child.tag)
+                    case.set_value(child.tag,convert_to_type(child.text,item_type,child.tag))
 
+    def set_test_parameter(self, name, value):
+        """
+        If a node already exists update the value
+        otherwise create a node and initialize it to value
+        """
+        case = self.get_value("TESTCASE")
+        tnode = self.get_node("test",{"NAME":case})
+        # This xpath statement gets immediate children only (ignoring
+        # children of build and run blocks)
+        idnode = self.get_optional_node(name, root=tnode, xpath=name)
 
+        if idnode is None:
+            newnode = ET.SubElement(tnode, name)
+            newnode.text = value
+        else:
+            idnode.text = value
 
     def get_step_phase_cnt(self,step):
         bldnodes = self.get_nodes(step)

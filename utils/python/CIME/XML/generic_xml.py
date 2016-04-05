@@ -70,34 +70,37 @@ class GenericXML(object):
         with open(outfile,'w') as xmlout:
             doc.writexml(xmlout,addindent='  ')
 
-    def get_node(self, nodename, attributes=None, root=None):
+    def get_node(self, nodename, attributes=None, root=None, xpath=None):
         """
         Get an xml element matching nodename with optional attributes.
 
         Error unless exactly one match.
         """
-        nodes = self.get_nodes(nodename, attributes=attributes, root=root)
+        nodes = self.get_nodes(nodename, attributes=attributes, root=root, xpath=xpath)
         expect(len(nodes) == 1, "Incorrect number of matches, %d, for nodename '%s' and attrs '%s' in file '%s'" %
                (len(nodes), nodename, attributes, self.filename))
         return nodes[0]
 
-    def get_optional_node(self, nodename, attributes=None, root=None):
+    def get_optional_node(self, nodename, attributes=None, root=None, xpath=None):
         """
         Get an xml element matching nodename with optional attributes.
 
         Return None if no match.
         """
-        nodes = self.get_nodes(nodename, attributes=attributes, root=root)
+        nodes = self.get_nodes(nodename, attributes=attributes, root=root, xpath=xpath)
 
         expect(len(nodes) <= 1, "Multiple matches for nodename '%s' and attrs '%s' in file '%s'" %
                (nodename, attributes, self.filename))
         return nodes[0] if nodes else None
 
-    def get_nodes(self, nodename, attributes=None, root=None):
+    def get_nodes(self, nodename, attributes=None, root=None, xpath=None):
         if root is None:
             root = self.root
         nodes = []
-        xpath = ".//"+nodename
+        expect(attributes is None or xpath is None,
+               " Arguments attributes and xpath are exclusive")
+        if xpath is None:
+            xpath = ".//"+nodename
         if attributes is not None:
             # xml.etree has limited support for xpath and does not allow more than
             # one attribute in an xpath query so we query seperately for each attribute
