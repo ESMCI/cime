@@ -89,12 +89,14 @@
     <STOP_OPTION>ndays</STOP_OPTION>
     <STOP_N>7</STOP_N>
     <DOUT_S>TRUE</DOUT_S>
-    <BUILD phase="1"/>
-    <RUN phase="1">
+    <!-- putting RESUBMIT in the BUILD stanza prevents this test running away
+	 but also requires that you rebuild the test before you can run it a second time -->
+    <BUILD phase="1">
       <RESUBMIT>1</RESUBMIT>
+    </BUILD>
+    <RUN phase="1">
       <REST_N>$STOP_N/2 + 1 </REST_N>
       <REST_OPTION>$STOP_OPTION</REST_OPTION>
-
     </RUN>
   </test>
 
@@ -246,6 +248,14 @@
     <INFO_DBUG>1</INFO_DBUG>
     <CCSM_TCOST>-1</CCSM_TCOST>
     <DOUT_S>FALSE</DOUT_S>
+    <ROOTPE_ATM>0</ROOTPE_ATM>
+    <ROOTPE_CPL>0</ROOTPE_CPL>
+    <ROOTPE_OCN>0</ROOTPE_OCN>
+    <ROOTPE_WAV>0</ROOTPE_WAV>
+    <ROOTPE_GLC>0</ROOTPE_GLC>
+    <ROOTPE_ICE>0</ROOTPE_ICE>
+    <ROOTPE_ROF>0</ROOTPE_ROF>
+    <ROOTPE_LND>0</ROOTPE_LND>
     <BUILD phase="1">
       <NINST_ATM>1</NINST_ATM>
       <NINST_OCN>1</NINST_OCN>
@@ -255,13 +265,13 @@
       <NINST_ROF>1</NINST_ROF>
       <NINST_LND>1</NINST_LND>
       <NINST_BLD>0</NINST_BLD>
-      <NTASKS_ATM>max(1,$NTASKS_ATM/2)</NTASKS_ATM>
-      <NTASKS_OCN>max(1,$NTASKS_OCN/2)</NTASKS_OCN>
-      <NTASKS_WAV>max(1,$NTASKS_WAV/2)</NTASKS_WAV>
-      <NTASKS_GLC>max(1,$NTASKS_GLC/2)</NTASKS_GLC>
-      <NTASKS_ICE>max(1,$NTASKS_ICE/2)</NTASKS_ICE>
-      <NTASKS_ROF>max(1,$NTASKS_ROF/2)</NTASKS_ROF>
-      <NTASKS_LND>max(1,$NTASKS_LND/2)</NTASKS_LND>
+      <NTASKS_ATM>$NTASKS_ATM*2</NTASKS_ATM>
+      <NTASKS_OCN>$NTASKS_OCN*2</NTASKS_OCN>
+      <NTASKS_WAV>$NTASKS_WAV*2</NTASKS_WAV>
+      <NTASKS_GLC>$NTASKS_GLC*2</NTASKS_GLC>
+      <NTASKS_ICE>$NTASKS_ICE*2</NTASKS_ICE>
+      <NTASKS_ROF>$NTASKS_ROF*2</NTASKS_ROF>
+      <NTASKS_LND>$NTASKS_LND*2</NTASKS_LND>
       <EXEC_SE>${CIME_MODEL}.exe.1</EXEC_SE>
     </BUILD>
     <BUILD phase="2">
@@ -273,13 +283,6 @@
       <NINST_ROF>2</NINST_ROF>
       <NINST_LND>2</NINST_LND>
       <NINST_BLD>0</NINST_BLD>
-      <NTASKS_ATM>$NTASKS_ATM*2</NTASKS_ATM>
-      <NTASKS_OCN>$NTASKS_OCN*2</NTASKS_OCN>
-      <NTASKS_WAV>$NTASKS_WAV*2</NTASKS_WAV>
-      <NTASKS_GLC>$NTASKS_GLC*2</NTASKS_GLC>
-      <NTASKS_ICE>$NTASKS_ICE*2</NTASKS_ICE>
-      <NTASKS_ROF>$NTASKS_ROF*2</NTASKS_ROF>
-      <NTASKS_LND>$NTASKS_LND*2</NTASKS_LND>
       <EXEC_SE>${CIME_MODEL}.exe.2</EXEC_SE>
     </BUILD>
     <RUN phase="1">

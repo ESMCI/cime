@@ -51,12 +51,12 @@ _TEST_SUITES = {
                             ),
 
     "cime_developer" : (None,
-                            ("NCK_Ld3.f45_g37_rx1.A",
-                             "ERI_D.f45_g37_rx1.A",
-                             "SEQ_Ld3.f09_g16.X",
-                             "ERS_Ld3.ne30_g16_rx1.A",
-                             "ERS_N2_Ld3.f19_g16_rx1.A",
-                             "ERR_Ld3.f45_g37_rx1.A")
+                            ("NCK_Ln9.f45_g37_rx1.A",
+                             "ERI_D_Ln22.f45_g37_rx1.A",
+                             "SEQ_Ln9.f09_g16.X",
+                             "ERS_Ln9.ne30_g16_rx1.A",
+                             "ERS_N2_Ln9.f19_g16_rx1.A",
+                             "ERR_Ln9.f45_g37_rx1.A")
                             ),
 
     "acme_developer" : ("acme_land_developer",
