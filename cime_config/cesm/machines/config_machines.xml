@@ -1813,7 +1813,7 @@
           <executable></executable>
         </mpirun>
         <mpirun mpilib="default">
-          <executable>mpiexec_mpt</executable>
+          <executable>aprun</executable>
           <arguments>
             <arg name="num_tasks">-n {{ num_tasks }}</arg>
           </arguments>
@@ -1827,6 +1827,7 @@
          <cmd_path lang="sh">module</cmd_path>
          <modules>
             <command name="unload">PrgEnv-cray</command>
+            <command name="unload">netcdf</command>
             <command name="load">perl/5.22.0-dso</command>
             <command name="load">PrgEnv-intel</command>
             <command name="load">intel/16.0.1</command>

@@ -215,7 +215,7 @@
     <directives>
       <directive>-A nn2345k</directive>
       <directive>-W group_list={{ project }} </directive>
-      <directive>-l select={{ num_nodes }}:ncpus={{ MAX_TASKS_PER_NODE }}:mpiprocs={{ tasks_per_node }}:ompthreads={{ thread_count }}</directive>
+      <directive>-l mppwidth={{ MAX_TASKS_PER_NODE }} </directive>
     </directives>
   </batch_system>
 
