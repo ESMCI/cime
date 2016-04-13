@@ -215,7 +215,7 @@
     <directives>
       <directive>-A nn2345k</directive>
       <directive>-W group_list={{ project }} </directive>
-      <directive>-l mppwidth={{ MAX_TASKS_PER_NODE }} </directive>
+      <directive>-l mppwidth={{ mppsum }}</directive>
     </directives>
   </batch_system>
 

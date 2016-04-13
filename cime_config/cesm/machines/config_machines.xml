@@ -1842,6 +1842,7 @@
     <environment_variables>
       <env name="KMP_STACKSIZE">64M</env>
       <env name="decfort_dump_flag">Y</env>
+      <env name="MPICH_NO_BUFFER_ALIAS_CHECK">1</env>
     </environment_variables>
 
 </machine>

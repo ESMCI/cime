@@ -1015,6 +1015,21 @@ sub setCESMRun()
 
 }
 
+#=================================================
+package Batch::BatchMaker_hexagon;
+use base qw (Batch::BatchMaker_pbs);
+sub setTaskInfo()
+{
+    my $self = shift;
+    $self->SUPER::setTaskInfo();
+    my $taskmaker = new Task::TaskMaker(caseroot => $self->{'caseroot'},
+	                                cimeroot => $self->{cimeroot});
+
+    my $maxTasksPerNode = ${$taskmaker->{'config'}}{'MAX_TASKS_PER_NODE'};
+    my $numberOfNodes = $taskmaker->nodeCount();
+
+    $self->{'mppsum'} =  $numberOfNodes*$maxTasksPerNode; 
+}
 
 #==============================================================================
 #==============================================================================
