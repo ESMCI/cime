@@ -2,8 +2,8 @@
 """
 template to create a case short term archiving script
 """
-import sys
-import os
+
+import sys, os
 _CIMEROOT = os.environ.get("CIMEROOT")
 if _CIMEROOT is None:
     raise SystemExit("ERROR: must set CIMEROOT environment variable")
@@ -12,10 +12,10 @@ _LIBDIR = os.path.join(_CIMEROOT, "scripts", "Tools")
 sys.path.append(_LIBDIR)
 
 import time
-from standard_script_setup          import *
+from standard_script_setup import *
 from CIME.XML.standard_module_setup import *
-from CIME.case                      import Case
-from CIME.utils                     import expect, get_model, run_cmd, does_file_have_string, appendStatus
+from CIME.case import Case
+from CIME.utils import expect, get_model, run_cmd, does_file_have_string, appendStatus
 
 logger = logging.getLogger(__name__)
 

@@ -3,6 +3,7 @@
 """
 template to create a case short term archiving script
 """
+
 import sys, os, time
 _CIMEROOT = os.environ.get("CIMEROOT")
 if _CIMEROOT is None:
