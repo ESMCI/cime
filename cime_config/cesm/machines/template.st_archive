@@ -1,5 +1,8 @@
 #!/usr/bin/env python2
 
+# Batch system directives
+{{ batchdirectives }}
+
 """
 Script to controls short term archiving tasks after the model run is
 successfully completed.  It is called after the case.run script
@@ -19,11 +22,11 @@ ENV_ARCHIVE.XML SCHEMA AND DOCUMENT TYPE DEFINITION (DTD)
     http://www.cesm.ucar.edu/models/cesm2.0/filename_conventions_cesm.html
 
     You can view the env_archive.xml file and check the XML validity
-    after editing by running "$CASEROOT/st_archive -input".
+    after editing by running "case.st_archive --input".
 
     The attributes in the <comp_archive_spec> XML tag definitions are
-    used to define how the files in the $RUNDIR are distributed into
-    corresponding subdirectories in the $DOUT_S_ROOT archive
+    used to define how the files in the RUNDIR are distributed into
+    corresponding subdirectories in the DOUT_S_ROOT archive
     location and whether or not copies of files with specified
     suffices are preserved in the RUNDIR in addition to being copied
     to the DOUT_S_ROOT archive locations.
@@ -32,14 +35,14 @@ ENV_ARCHIVE.XML SCHEMA AND DOCUMENT TYPE DEFINITION (DTD)
     nested <file_extension> elements included as part of a well formed
     XML <comp_archive_spec> markup tag defintion.
 
-    When making changes to the env_archive.xml file in a $CASEROOT, it
+    When making changes to the env_archive.xml file in a CASEROOT, it
     is recommended that the XML be validated against the xml schema
     defintion document in the
-    $CIMEROOT/cime_config/xml_schemas/archive.xsd. For systems that
+    CIMEROOT/cime_config/xml_schemas/archive.xsd. For systems that
     have the xmllint utility installed, execute the following:
 
-    > cd $CASEROOT
-    > xmllint -schema $CIMEROOT/cime_config/xml_schemas/archive.xsd env_archive.xml
+    > cd CASEROOT
+    > xmllint -schema CIMEROOT/cime_config/xml_schemas/archive.xsd env_archive.xml
 
     If the env_archive.xml file contains valid XML code, then output
     from this command should be a complete listing of the
@@ -48,55 +51,50 @@ ENV_ARCHIVE.XML SCHEMA AND DOCUMENT TYPE DEFINITION (DTD)
     env_archive.xml validates
 
     Any errors in the XML will be reported by the xmllint command and
-    should be resolved before running the st_archive script in either
+    should be resolved before running the case.st_archive script in either
     the case run script or as a stand-alone script.
 
     The XML markup tag defintions in < >, data type definitions
     denoted in [ ], and "|" separated valid options in ( ) for the
     env_archive.xml file are defined as follows:
 
-    <\?xml version="1.0"\?>
-
-    <config_definition>
     <components>
+       <comp_archive_spec name="model component name">                              (see 1)
+          <rootdir>[string]</rootdir>                                               (see 2)
+             <files>                                                                (see 3)
+                <file_extension regex_suffix="[regular expression string]">         (see 4)
+                   <subdir>[string]</subdir>                                        (see 5)
+                   <keep_last_in_rundir>[string] (true|false)</keep_last_in_rundir> (see 6)
+                </file_extension>
+             </files>
+         <rootdir> 
+      </comp_archive_spec>
+   </components>
 
-      <comp_archive_spec name="[regular expression string]
-      (cpl|dart|cam\\*|datm|clm\\?|dlnd|rtm|cice|dice|pop|docn|cism|ww3|dwav)">
-      Model component name (note: cam\\* and clm\\? are
-      historical for CAM and CLM model components).
+   (1) model component name.  note - cam\\* and clm\\? are historical
+   for CAM and CLM model components
+   (2) Component root directory name to be created under DOUT_S_ROOT 
+   (3) list of file_extensions for given component
+   (4) Perl regular expression specification for "globbing" filenames
+   for matching. Run the command "case.st_archive -input" command
+   to see the list of valid suffices. If the suffix begins with a "."
+   then all files matching *.(regex_suffix) are included in the
+   globbing. If the suffix begins with a character other than "." then
+   all files matching exactly the (regex_suffix) are included in the
+   globbing. 
+   (5) subdirectory name to be created under DOUT_S_ROOT/rootdir
+   (6) Option to specify whether or not to keep the most recent
+   copy of the file with matching suffix in the RUNDIR in
+   addition to copying it to the DOUT_S_ROOT/rootdir/subdir
+   location.
 
-        <rootdir>[string]</rootdir> 
-        Component root directory name to be created under the
-        $DOUT_S_ROOT location.  These may not correspond to the model
-        component name. For cesm, [string] can have the values of
-        (rest|cpl|dart|atm|lnd|rof|ice|ocn|glc|wav).
+XML VARIABLES USED BY THE SHORT TERM ARCHIVER 
 
-        <files> <file_extension regex_suffix="[regular expression string]">
-	Perl regular expression specification for "globbing" filenames
-	for matching. Run the command "$CASEROOT/st_archive -input"
-	command to see the list of valid suffices. If the suffix
-	begins with a "." then all files matching *.(regex_suffix) are
-	included in the globbing. If the suffix begins with a
-	character other than "." then all files matching exactly the
-	(regex_suffix) are included in the globbing.
-
-            <subdir>[string] (logs|rest|hist|init|diag)</subdir>
-	    subdirectory name to be created under the
-	    $DOUT_S_ROOT/rootdir location
-
-	    <keep_last_in_rundir>[string] (true|false)</keep_last_in_rundir>
-            Option to specify whether or not to keep the most recent
-            copy of the file with matching suffix in the RUNDIR in
-            addition to copying it to the $DOUT_S_ROOT/rootdir/subdir
-            location.
-
-ADDITIONAL XML VARIABLES USED BY THE SHORT TERM ARCHIVER 
-
-    The following xml variables in $CASEROOT/env_run.xml control the
+    The following xml variables in CASEROOT/env_run.xml control the
     behavior of the short term archiver.  They can be queried using
     the xmlquery tool and modified using the xmlchange tool.
 
-    DOUT_S - [boolean] (default TRUE) Checked in $CASE.run script. If
+    DOUT_S - [boolean] (default TRUE) Checked in CASE.run script. If
     TRUE then st_archive script called at the end of a job.
 
     DOUT_S_ROOT - [string] Valid directory path to stage short term
@@ -106,9 +104,9 @@ ADDITIONAL XML VARIABLES USED BY THE SHORT TERM ARCHIVER
     TRUE, then perform short term archiving on all interim restart
     files, not just those at the end of the run. The restart files
     are saved under the specific component directory of
-    $DOUT_S_ROOT/[comp_archive_spec/rootdir]/rest in addition to the
-    top-level $DOUT_S_ROOT/rest/[datename] directory.  Interim restart
-    files are created using the $REST_N and $REST_OPTION variables.
+    DOUT_S_ROOT/[comp_archive_spec/rootdir]/rest in addition to the
+    top-level DOUT_S_ROOT/rest/[datename] directory.  Interim restart
+    files are created using the REST_N and REST_OPTION variables.
     The associated rpointer files are not saved with the interim
     restart files and need to be manually generated in order for these
     restart files to be used to restart a run. This is for expert
@@ -132,9 +130,6 @@ from CIME.utils                     import get_model, run_cmd, appendStatus
 from CIME.st_archive                import short_term_archive
 
 logger = logging.getLogger(__name__)
-
-# Batch system directives
-{{ batchdirectives }}
 
 ###############################################################################
 def parse_command_line(args, description):
@@ -160,7 +155,7 @@ def parse_command_line(args, description):
                         help="List out the contents of the archive directory.")
 
     parser.add_argument("--undo", "-undo", action="store_true",
-                        help="move all the files from the $DOUT_S_ROOT back into the $RUNDIR")
+                        help="move all the files from the DOUT_S_ROOT back into the RUNDIR")
 
     args = parser.parse_args()
 
@@ -178,19 +173,12 @@ def _main_func(description):
 
     input_flag, output_flag, undo_flag = parse_command_line(sys.argv, description)
 
-    case = Case()
-    caseroot = case.get_value("CASEROOT")
-
     # do short-term archiving
-    appendStatus("st_archiving starting",
-                 caseroot=caseroot, sfile="CaseStatus")
-
     short_term_archive(input_flag, output_flag, undo_flag)
 
-    appendStatus("st_archiving completed",
-                 caseroot=caseroot, sfile="CaseStatus")
-
     # resubmit case if appropriate
+    case = Case()
+    caseroot = case.get_value("CASEROOT")
     resubmit = int(case.get_value("RESUBMIT"))
     if resubmit > 0:
         appendStatus("resubmitting from st_archive",
