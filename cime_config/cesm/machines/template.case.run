@@ -43,7 +43,7 @@ def parse_command_line(args):
 
     CIME.utils.setup_standard_logging_options(parser)
 
-    parser.add_argument("--caseroot", 
+    parser.add_argument("--caseroot",
                         help="Case directory to build")
 
     args = parser.parse_args()
