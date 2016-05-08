@@ -239,6 +239,7 @@ class Case(object):
     def get_compset_components(self):
         # If are doing a create_clone then, self._compsetname is not set yet
         compset = self.get_value("COMPSET")
+        components = []
         if compset is None:
             compset = self._compsetname
         expect(compset is not None,
@@ -251,8 +252,8 @@ class Case(object):
             else:
                 element_component = element.split('%')[0].lower()
                 element_component = re.sub(r'[0-9]*',"",element_component)
-                self._components.append(element_component)
-        return self._components
+                components.append(element_component)
+        return components
 
     def __iter__(self):
         for entryid_file in self._env_entryid_files:
@@ -276,11 +277,11 @@ class Case(object):
 
         # loop over all elements of both component_classes and components - and get config_component_file for
         # for each component if ESP is not a component add sesp here
-        component_classes =drv_comp.get_valid_model_components()
-        if len(component_classes) > len(self._components):
+        self._component_classes = drv_comp.get_valid_model_components()
+        if len(self._component_classes) > len(self._components):
             self._components.append('sesp')
-        for i in xrange(1,len(component_classes)):
-            comp_class = component_classes[i]
+        for i in xrange(1,len(self._component_classes)):
+            comp_class = self._component_classes[i]
             comp_name  = self._components[i-1]
 	    node_name = 'CONFIG_' + comp_class + '_FILE';
             comp_config_file = files.get_value(node_name, {"component":comp_name}, resolved=True)
@@ -308,8 +309,8 @@ class Case(object):
         # compset, pesfile, and compset components
         #--------------------------------------------
         self._set_compset_and_pesfile(compset_name, user_compset=user_compset, pesfile=pesfile)
+        self._components = self.get_compset_components()
 
-        self.get_compset_components()
         #FIXME - if --user-compset is True then need to determine that
         #all of the compset settings are valid
 
@@ -408,6 +409,16 @@ class Case(object):
             mach_pes_obj.set_value(key,int(value))
         for key, value in pes_rootpe.items():
             mach_pes_obj.set_value(key,int(value))
+
+        for compclass in self._component_classes:
+            if compclass == "DRV":
+                continue
+            key = "NTASKS_%s"%compclass
+            if key not in pes_ntasks.keys():
+                mach_pes_obj.set_value(key, 1)
+            key = "NTHRDS_%s"%compclass
+            if key not in pes_nthrds.keys():
+                mach_pes_obj.set_value(key, 1)
 
         self.set_value("COMPSET",self._compsetname)
 
