@@ -16,7 +16,7 @@
  * href="http://www.unidata.ucar.edu/software/netcdf/docs/group__variables.html">netCDF
  * variable documentation</a> for details about the operation of this
  * function.
- * 
+ *
  * @param ncid the ncid of the open file.
  * @param varid the ID of the variable.
  * @param shuffle non-zero to turn on shuffle filter (can be good for
@@ -25,7 +25,7 @@
  * variable.
  * @param deflate_level 1 to 9, with 1 being faster and 9 being more
  * compressed.
- * 
+ *
  * @return PIO_NOERR for success, otherwise an error code.
  */
 int PIOc_def_var_deflate(int ncid, int varid, int shuffle, int deflate,
@@ -48,7 +48,7 @@ int PIOc_def_var_deflate(int ncid, int varid, int shuffle, int deflate,
 
     if (ios->async_interface && ! ios->ioproc)
     {
-	if (ios->compmaster) 
+	if (ios->compmaster)
 	    mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
 	mpierr = MPI_Bcast(&(file->fh),1, MPI_INT, 0, ios->intercomm);
     }
@@ -101,7 +101,7 @@ int PIOc_def_var_deflate(int ncid, int varid, int shuffle, int deflate,
 	free(errstr);
 
     return ierr;
-}    
+}
 
 /**
  * @ingroup PIO_inq_var
@@ -115,7 +115,7 @@ int PIOc_def_var_deflate(int ncid, int varid, int shuffle, int deflate,
  * href="http://www.unidata.ucar.edu/software/netcdf/docs/group__variables.html">netCDF
  * variable documentation</a> for details about the operation of this
  * function.
- * 
+ *
  * @param ncid the ncid of the open file.
  * @param varid the ID of the variable to set chunksizes for.
  * @param shufflep pointer to an int that will get the status of the
@@ -124,7 +124,7 @@ int PIOc_def_var_deflate(int ncid, int varid, int shuffle, int deflate,
  * deflation is in use for this variable.
  * @param deflate_levelp pointer to an int that will get the deflation
  * level (from 1-9) if deflation is in use for this variable.
- * 
+ *
  * @return PIO_NOERR for success, otherwise an error code.
  */
 int PIOc_inq_var_deflate(int ncid, int varid, int *shufflep,
@@ -148,7 +148,7 @@ int PIOc_inq_var_deflate(int ncid, int varid, int *shufflep,
 
     if (ios->async_interface && ! ios->ioproc)
     {
-	if (ios->compmaster) 
+	if (ios->compmaster)
 	    mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
 	mpierr = MPI_Bcast(&(file->fh),1, MPI_INT, 0, ios->intercomm);
     }
@@ -206,12 +206,12 @@ int PIOc_inq_var_deflate(int ncid, int varid, int *shufflep,
 	    ierr = MPI_Bcast(deflate_levelp, 1, MPI_INT, ios->ioroot, ios->my_comm);
     }
     return ierr;
-}    
+}
 
 /**
  * @ingroup PIO_def_var
  * Set chunksizes for a variable.
- * 
+ *
  * This function only applies to netCDF-4 files. When used with netCDF
  * classic files, the error PIO_ENOTNC4 will be returned.
  *
@@ -229,11 +229,11 @@ int PIOc_inq_var_deflate(int ncid, int varid, int *shufflep,
  * @param storage NC_CONTIGUOUS or NC_CHUNKED.
  * @param chunksizep an array of chunksizes. Must have a chunksize for
  * every variable dimension.
- * 
+ *
  * @return PIO_NOERR for success, otherwise an error code.
  */
 int PIOc_def_var_chunking(int ncid, int varid, int storage,
-			  const PIO_Offset *chunksizesp) 
+			  const PIO_Offset *chunksizesp)
 {
     int ierr;
     int msg;
@@ -252,7 +252,7 @@ int PIOc_def_var_chunking(int ncid, int varid, int storage,
 
     if (ios->async_interface && ! ios->ioproc)
     {
-	if (ios->compmaster) 
+	if (ios->compmaster)
 	    mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
 	mpierr = MPI_Bcast(&(file->fh),1, MPI_INT, 0, ios->intercomm);
     }
@@ -315,7 +315,7 @@ int PIOc_def_var_chunking(int ncid, int varid, int storage,
  * href="http://www.unidata.ucar.edu/software/netcdf/docs/group__variables.html">netCDF
  * variable documentation</a> for details about the operation of this
  * function.
- * 
+ *
  * @param ncid the ncid of the open file.
  * @param varid the ID of the variable to set chunksizes for.
  * @param storagep pointer to int which will be set to either
@@ -323,7 +323,7 @@ int PIOc_def_var_chunking(int ncid, int varid, int storage,
  * @param chunksizep pointer to memory where chunksizes will be
  * set. There are the same number of chunksizes as there are
  * dimensions.
- * 
+ *
  * @return PIO_NOERR for success, otherwise an error code.
  */
 int PIOc_inq_var_chunking(int ncid, int varid, int *storagep, PIO_Offset *chunksizesp)
@@ -346,7 +346,7 @@ int PIOc_inq_var_chunking(int ncid, int varid, int *storagep, PIO_Offset *chunks
 
     if (ios->async_interface && ! ios->ioproc)
     {
-	if (ios->compmaster) 
+	if (ios->compmaster)
 	    mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
 	mpierr = MPI_Bcast(&(file->fh),1, MPI_INT, 0, ios->intercomm);
     }
@@ -419,7 +419,7 @@ int PIOc_inq_var_chunking(int ncid, int varid, int *storagep, PIO_Offset *chunks
  * href="http://www.unidata.ucar.edu/software/netcdf/docs/group__variables.html">netCDF
  * variable documentation</a> for details about the operation of this
  * function.
- * 
+ *
  * Chunksizes have important performance repercussions. NetCDF
  * attempts to choose sensible chunk sizes by default, but for best
  * performance check chunking against access patterns.
@@ -429,7 +429,7 @@ int PIOc_inq_var_chunking(int ncid, int varid, int *storagep, PIO_Offset *chunks
  * @param storage NC_CONTIGUOUS or NC_CHUNKED.
  * @param chunksizep an array of chunksizes. Must have a chunksize for
  * every variable dimension.
- * 
+ *
  * @return PIO_NOERR for success, otherwise an error code.
  */
 int PIOc_def_var_fill(int ncid, int varid, int no_fill, const void *fill_value)
@@ -451,7 +451,7 @@ int PIOc_def_var_fill(int ncid, int varid, int no_fill, const void *fill_value)
 
     if (ios->async_interface && ! ios->ioproc)
     {
-	if (ios->compmaster) 
+	if (ios->compmaster)
 	    mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
 	mpierr = MPI_Bcast(&(file->fh),1, MPI_INT, 0, ios->intercomm);
     }
@@ -514,7 +514,7 @@ int PIOc_def_var_fill(int ncid, int varid, int no_fill, const void *fill_value)
  * href="http://www.unidata.ucar.edu/software/netcdf/docs/group__variables.html">netCDF
  * variable documentation</a> for details about the operation of this
  * function.
- * 
+ *
  * Chunksizes have important performance repercussions. NetCDF
  * attempts to choose sensible chunk sizes by default, but for best
  * performance check chunking against access patterns.
@@ -524,7 +524,7 @@ int PIOc_def_var_fill(int ncid, int varid, int no_fill, const void *fill_value)
  * @param storage NC_CONTIGUOUS or NC_CHUNKED.
  * @param chunksizep an array of chunksizes. Must have a chunksize for
  * every variable dimension.
- * 
+ *
  * @return PIO_NOERR for success, otherwise an error code.
  */
 int PIOc_def_var_endian(int ncid, int varid, int endian)
@@ -546,7 +546,7 @@ int PIOc_def_var_endian(int ncid, int varid, int endian)
 
     if (ios->async_interface && ! ios->ioproc)
     {
-	if (ios->compmaster) 
+	if (ios->compmaster)
 	    mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
 	mpierr = MPI_Bcast(&(file->fh),1, MPI_INT, 0, ios->intercomm);
     }
@@ -609,7 +609,7 @@ int PIOc_def_var_endian(int ncid, int varid, int endian)
  * href="http://www.unidata.ucar.edu/software/netcdf/docs/group__variables.html">netCDF
  * variable documentation</a> for details about the operation of this
  * function.
- * 
+ *
  * @param ncid the ncid of the open file.
  * @param varid the ID of the variable to set chunksizes for.
  * @param storagep pointer to int which will be set to either
@@ -617,7 +617,7 @@ int PIOc_def_var_endian(int ncid, int varid, int endian)
  * @param chunksizep pointer to memory where chunksizes will be
  * set. There are the same number of chunksizes as there are
  * dimensions.
- * 
+ *
  * @return PIO_NOERR for success, otherwise an error code.
  */
 int PIOc_inq_var_endian(int ncid, int varid, int *endianp)
@@ -639,7 +639,7 @@ int PIOc_inq_var_endian(int ncid, int varid, int *endianp)
 
     if (ios->async_interface && ! ios->ioproc)
     {
-	if (ios->compmaster) 
+	if (ios->compmaster)
 	    mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
 	mpierr = MPI_Bcast(&(file->fh),1, MPI_INT, 0, ios->intercomm);
     }
@@ -691,7 +691,7 @@ int PIOc_inq_var_endian(int ncid, int varid, int *endianp)
 	ierr = MPI_Bcast(endianp, 1, MPI_INT, ios->ioroot, ios->my_comm);
 
     return ierr;
-}    
+}
 
 /**
  * @ingroup PIO_def_var
@@ -711,12 +711,12 @@ int PIOc_inq_var_endian(int ncid, int varid, int *endianp)
  * href="http://www.unidata.ucar.edu/software/netcdf/docs/group__variables.html">netCDF
  * variable documentation</a> for details about the operation of this
  * function.
- * 
+ *
  * @param iotype the iotype of files to be created or opened.
  * @param size size of file cache.
  * @param nelems number of elements in file cache.
  * @param preemption preemption setting for file cache.
- * 
+ *
  * @return PIO_NOERR for success, otherwise an error code.
  */
 int PIOc_set_chunk_cache(int iosysid, int iotype, PIO_Offset size,
@@ -769,10 +769,10 @@ int PIOc_set_chunk_cache(int iosysid, int iotype, PIO_Offset size,
     }
 
     /* Propogate error code to all processes. */
-    MPI_Bcast(&ierr, 1, MPI_INTEGER, ios->ioroot, ios->my_comm);    
+    MPI_Bcast(&ierr, 1, MPI_INTEGER, ios->ioroot, ios->my_comm);
 
     return ierr;
-}    
+}
 
 /**
  * @ingroup PIO_def_var
@@ -792,7 +792,7 @@ int PIOc_set_chunk_cache(int iosysid, int iotype, PIO_Offset size,
  * href="http://www.unidata.ucar.edu/software/netcdf/docs/group__variables.html">netCDF
  * variable documentation</a> for details about the operation of this
  * function.
- * 
+ *
  * Chunksizes have important performance repercussions. NetCDF
  * attempts to choose sensible chunk sizes by default, but for best
  * performance check chunking against access patterns.
@@ -801,7 +801,7 @@ int PIOc_set_chunk_cache(int iosysid, int iotype, PIO_Offset size,
  * @param sizep gets the size of file cache.
  * @param nelemsp gets the number of elements in file cache.
  * @param preemptionp gets the preemption setting for file cache.
- * 
+ *
  * @return PIO_NOERR for success, otherwise an error code.
  */
 int PIOc_get_chunk_cache(int iosysid, int iotype, PIO_Offset *sizep,
@@ -886,7 +886,7 @@ int PIOc_get_chunk_cache(int iosysid, int iotype, PIO_Offset *sizep,
  * href="http://www.unidata.ucar.edu/software/netcdf/docs/group__variables.html">netCDF
  * variable documentation</a> for details about the operation of this
  * function.
- * 
+ *
  * Chunksizes have important performance repercussions. NetCDF
  * attempts to choose sensible chunk sizes by default, but for best
  * performance check chunking against access patterns.
@@ -896,7 +896,7 @@ int PIOc_get_chunk_cache(int iosysid, int iotype, PIO_Offset *sizep,
  * @param storage NC_CONTIGUOUS or NC_CHUNKED.
  * @param chunksizep an array of chunksizes. Must have a chunksize for
  * every variable dimension.
- * 
+ *
  * @return PIO_NOERR for success, otherwise an error code.
  */
 int PIOc_set_var_chunk_cache(int ncid, int varid, PIO_Offset size, PIO_Offset nelems,
@@ -919,7 +919,7 @@ int PIOc_set_var_chunk_cache(int ncid, int varid, PIO_Offset size, PIO_Offset ne
 
     if (ios->async_interface && ! ios->ioproc)
     {
-	if (ios->compmaster) 
+	if (ios->compmaster)
 	    mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
 	mpierr = MPI_Bcast(&(file->fh),1, MPI_INT, 0, ios->intercomm);
     }
@@ -967,7 +967,7 @@ int PIOc_set_var_chunk_cache(int ncid, int varid, PIO_Offset size, PIO_Offset ne
 	free(errstr);
 
     return ierr;
-}    
+}
 
 /**
  * @ingroup PIO_inq_var
@@ -983,13 +983,13 @@ int PIOc_set_var_chunk_cache(int ncid, int varid, PIO_Offset size, PIO_Offset ne
  * href="http://www.unidata.ucar.edu/software/netcdf/docs/group__variables.html">netCDF
  * variable documentation</a> for details about the operation of this
  * function.
- * 
+ *
  * @param ncid the ncid of the open file.
  * @param varid the ID of the variable to set chunksizes for.
  * @param sizep will get the size of the cache in bytes.
  * @param nelemsp will get the number of elements in the cache.
  * @param preemptionp will get the cache preemption value.
- * 
+ *
  * @return PIO_NOERR for success, otherwise an error code.
  */
 int PIOc_get_var_chunk_cache(int ncid, int varid, PIO_Offset *sizep, PIO_Offset *nelemsp,
@@ -1066,13 +1066,13 @@ int PIOc_get_var_chunk_cache(int ncid, int varid, PIO_Offset *sizep, PIO_Offset 
 
     /* Broadcast results to all tasks. */
     if (sizep && !ierr)
-	ierr = MPI_Bcast(sizep, 1, MPI_OFFSET, ios->ioroot, ios->my_comm);	
+	ierr = MPI_Bcast(sizep, 1, MPI_OFFSET, ios->ioroot, ios->my_comm);
     if (nelemsp && !ierr)
     	ierr = MPI_Bcast(nelemsp, 1, MPI_OFFSET, ios->ioroot, ios->my_comm);
     if (preemptionp && !ierr)
     	ierr = MPI_Bcast(preemptionp, 1, MPI_FLOAT, ios->ioroot, ios->my_comm);
 
     return ierr;
-}    
+}
 
-	    
+

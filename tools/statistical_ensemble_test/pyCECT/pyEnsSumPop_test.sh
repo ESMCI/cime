@@ -1,5 +1,5 @@
 #!/bin/bash
-#BSUB -n 12 
+#BSUB -n 12
 #BSUB -q regular
 #BSUB -R "span[ptile=1]"
 #BSUB -a poe

@@ -57,7 +57,7 @@ module dice_comp_mod
   integer(IN)   :: logunit               ! logging unit number
   integer       :: inst_index            ! number of current instance (ie. 1)
   character(len=16) :: inst_name         ! fullname of current instance (ie. "lnd_0001")
-  character(len=16) :: inst_suffix       ! char string associated with instance 
+  character(len=16) :: inst_suffix       ! char string associated with instance
                                          ! (ie. "_0001" or "")
   character(CL) :: ice_mode              ! mode
   integer(IN)   :: dbug = 0              ! debug level (higher is more)
@@ -76,7 +76,7 @@ module dice_comp_mod
 
   real(R8),parameter  :: pi     = shr_const_pi      ! pi
   real(R8),parameter  :: spval  = shr_const_spval   ! flags invalid data
-  real(R8),parameter  :: tFrz   = shr_const_tkfrz   ! temp of freezing 
+  real(R8),parameter  :: tFrz   = shr_const_tkfrz   ! temp of freezing
   real(R8),parameter  :: latice = shr_const_latice  ! latent heat of fusion
   real(R8),parameter  :: cDay   = shr_const_cDay    ! sec in calendar day
   real(R8),parameter  :: waterMax = 1000.0_R8        ! wrt iFrac comp & frazil ice (kg/m^2)
@@ -288,7 +288,7 @@ subroutine dice_comp_init( EClock, cdata, x2i, i2x, NLFilename )
     decomp = "1d"
     flux_swpf  =     0.0_R8  ! no penetration
     flux_Qmin  =  -300.0_R8  ! kg/s/m^2
-    flux_Qacc  = .false.     ! no accumulation 
+    flux_Qacc  = .false.     ! no accumulation
     flux_Qacc0 =     0.0_R8  ! no water
     restfilm = trim(nullstr)
     restfils = trim(nullstr)
@@ -339,10 +339,10 @@ subroutine dice_comp_init( EClock, cdata, x2i, i2x, NLFilename )
     !----------------------------------------------------------------------------
     ! Initialize IO
     !----------------------------------------------------------------------------
-    
+
 
     ice_pio_subsystem=>shr_pio_getiosys(trim(inst_name))
-    
+
     call shr_strdata_pioinit(SDICE, ice_pio_subsystem, shr_pio_getiotype(trim(inst_name)))
 
     !----------------------------------------------------------------------------
@@ -708,14 +708,14 @@ subroutine dice_comp_run( EClock, cdata,  x2i, i2x)
 
    select case (trim(ice_mode))
 
-   case('COPYALL') 
+   case('COPYALL')
       ! do nothing extra
 
    case('SSTDATA')
       if (firstcall .and. .not. read_restart) then
 !         iFrac0 = iFrac  ! previous step's ice fraction
          water  = 0.0_R8 ! previous step's water accumulation
-         where (i2x%rAttr(kiFrac,:) > 0.0_R8) water(:) = flux_Qacc0 
+         where (i2x%rAttr(kiFrac,:) > 0.0_R8) water(:) = flux_Qacc0
       endif
 
 ! tcraig, feb 10, 2012, ymd2eday no longer exists, use ymd2julian instead
@@ -734,20 +734,20 @@ subroutine dice_comp_run( EClock, cdata,  x2i, i2x)
       do n = 1,lsize
 
          !--- fix erroneous iFrac ---
-         i2x%rAttr(kiFrac,n) = min(1.0_R8,max(0.0_R8,i2x%rAttr(kiFrac,n))) 
+         i2x%rAttr(kiFrac,n) = min(1.0_R8,max(0.0_R8,i2x%rAttr(kiFrac,n)))
 
          !--- fabricate ice surface T, fix erroneous iFrac ---
-         if ( yc(n) > 0.0_R8) then 
+         if ( yc(n) > 0.0_R8) then
             i2x%rAttr(kt,n) = 260.0_R8 + 10.0_R8*cos(cosArg)
          else
             i2x%rAttr(kt,n) = 260.0_R8 - 10.0_R8*cos(cosArg)
          end if
 
          !--- set albedos (constant) ---
-         i2x%rAttr(kavsdr,n) = ax_vsdr 
-         i2x%rAttr(kanidr,n) = ax_nidr 
-         i2x%rAttr(kavsdf,n) = ax_vsdf 
-         i2x%rAttr(kanidf,n) = ax_nidf 
+         i2x%rAttr(kavsdr,n) = ax_vsdr
+         i2x%rAttr(kanidr,n) = ax_nidr
+         i2x%rAttr(kavsdf,n) = ax_vsdf
+         i2x%rAttr(kanidf,n) = ax_nidf
 
          !--- swnet is sent to cpl as a diagnostic quantity only ---
          !--- newly recv'd swdn goes with previously sent albedo ---
@@ -814,7 +814,7 @@ subroutine dice_comp_run( EClock, cdata,  x2i, i2x)
          end if
 
          !--- modify T wrt iFrac: (iFrac -> 0) => (T -> tfreeze) ---
-         i2x%rAttr(kt,n) = tfreeze(n) + i2x%rAttr(kiFrac,n)*(i2x%rAttr(kt,n)-tfreeze(n)) 
+         i2x%rAttr(kt,n) = tfreeze(n) + i2x%rAttr(kiFrac,n)*(i2x%rAttr(kt,n)-tfreeze(n))
 
       end do
 
@@ -908,7 +908,7 @@ subroutine dice_comp_run( EClock, cdata,  x2i, i2x)
       call shr_sys_flush(logunit)
    end if
    firstcall = .false.
-      
+
    call shr_file_setLogUnit (shrlogunit)
    call shr_file_setLogLevel(shrloglev)
    call shr_sys_flush(logunit)
@@ -948,11 +948,11 @@ subroutine dice_comp_final()
    call t_startf('DICE_FINAL')
 
    if (my_task == master_task) then
-      write(logunit,F91) 
+      write(logunit,F91)
       write(logunit,F00) trim(myModelName),': end of main integration loop'
-      write(logunit,F91) 
+      write(logunit,F91)
    end if
-      
+
    call t_stopf('DICE_FINAL')
 
 end subroutine dice_comp_final

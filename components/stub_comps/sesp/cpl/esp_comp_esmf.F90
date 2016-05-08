@@ -153,7 +153,7 @@ CONTAINS
     type(ESMF_State)             :: export_state
     type(ESMF_Clock)             :: EClock
     integer, intent(out)         :: rc
- 
+
 
     rc = ESMF_SUCCESS
 

@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 import ConfigParser
-import sys, getopt, os 
-import numpy as np 
-import Nio 
+import sys, getopt, os
+import numpy as np
+import Nio
 import time
 import re
 from asaptools.partition import EqualStride, Duplicate,EqualLength
-import asaptools.simplecomm as simplecomm 
+import asaptools.simplecomm as simplecomm
 import pyEnsLib
 
 #This routine creates a summary file from an ensemble of CAM
@@ -19,7 +19,7 @@ def main(argv):
     # Get command line stuff and store in a dictionary
     s = 'tag= compset= esize= tslice= res= sumfile= indir= sumfiledir= mach= verbose jsonfile= mpi_enable maxnorm gmonly popens cumul regx= startMon= endMon= fIndex='
     optkeys = s.split()
-    try: 
+    try:
         opts, args = getopt.getopt(argv, "h", optkeys)
     except getopt.GetoptError:
         pyEnsLib.EnsSum_usage()
@@ -27,7 +27,7 @@ def main(argv):
 
     # Put command line options in a dictionary - also set defaults
     opts_dict={}
-    
+
     # Defaults
     opts_dict['tag'] = ''
     opts_dict['compset'] = ''
@@ -50,7 +50,7 @@ def main(argv):
     opts_dict['endMon'] = 1
     opts_dict['fIndex'] = 151
 
-    # This creates the dictionary of input arguments 
+    # This creates the dictionary of input arguments
     opts_dict = pyEnsLib.getopt_parseconfig(opts,optkeys,'ES',opts_dict)
 
     verbose = opts_dict['verbose']
@@ -65,7 +65,7 @@ def main(argv):
     if not (opts_dict['tag'] and opts_dict['compset'] and opts_dict['mach'] or opts_dict['res']):
        print 'Please specify --tag, --compset, --mach and --res options'
        sys.exit()
-       
+
     # Now find file names in indir
     input_dir = opts_dict['indir']
     # The var list that will be excluded
@@ -86,7 +86,7 @@ def main(argv):
     # Broadcast the excluded var list to each processor
     if opts_dict['mpi_enable']:
 	ex_varlist=me.partition(ex_varlist,func=Duplicate(),involved=True)
-        
+
     in_files=[]
     if(os.path.exists(input_dir)):
         # Get the list of files
@@ -123,7 +123,7 @@ def main(argv):
             o_files.append(Nio.open_file(input_dir+'/' + onefile,"r"))
         else:
             print "COULD NOT LOCATE FILE "+ input_dir + onefile + "! EXITING...."
-            sys.exit() 
+            sys.exit()
 
     # Store dimensions of the input fields
     if (verbose == True):
@@ -149,20 +149,20 @@ def main(argv):
         elif (key == "nlat") or (key == "lat"):
             nlat = input_dims[key]
             latkey=key
-        
-    if (nlev == -1) : 
+
+    if (nlev == -1) :
         print "COULD NOT LOCATE valid dimension lev => EXITING...."
-        sys.exit() 
+        sys.exit()
 
     if (( ncol == -1) and ((nlat == -1) or (nlon == -1))):
         print "Need either lat/lon or ncol  => EXITING...."
-        sys.exit()            
+        sys.exit()
 
     # Check if this is SE or FV data
     if (ncol != -1):
-        is_SE = True 
+        is_SE = True
     else:
-        is_SE = False    
+        is_SE = False
 
     # Make sure all files have the same dimensions
     if (verbose == True):
@@ -175,18 +175,18 @@ def main(argv):
             print 'nlon = ', nlon
 
     for count, this_file in enumerate(o_files):
-        input_dims = this_file.dimensions     
+        input_dims = this_file.dimensions
         if (is_SE == True):
             if ( nlev != int(input_dims["lev"]) or ( ncol != int(input_dims["ncol"]))):
                 print "Dimension mismatch between ", in_files[0], 'and', in_files[0], '!!!'
-                sys.exit() 
+                sys.exit()
         else:
             if ( nlev != int(input_dims["lev"]) or ( nlat != int(input_dims[latkey]))\
-                  or ( nlon != int(input_dims[lonkey]))): 
+                  or ( nlon != int(input_dims[lonkey]))):
                 print "Dimension mismatch between ", in_files[0], 'and', in_files[0], '!!!'
-                sys.exit() 
+                sys.exit()
 
-    # Get 2d vars, 3d vars and all vars (For now include all variables) 
+    # Get 2d vars, 3d vars and all vars (For now include all variables)
     vars_dict = o_files[0].variables
     # Remove the excluded variables (specified in json file) from variable dictionary
     if ex_varlist:
@@ -203,8 +203,8 @@ def main(argv):
     num_2d = 0
     num_3d = 0
 
-    # Which are 2d, which are 3d and max str_size 
-    for k,v in vars_dict.iteritems():  
+    # Which are 2d, which are 3d and max str_size
+    for k,v in vars_dict.iteritems():
         var = k
         vd = v.dimensions # all the variable's dimensions (names)
         vr = v.rank # num dimension
@@ -212,30 +212,30 @@ def main(argv):
         is_2d = False
         is_3d = False
         if (is_SE == True): # (time, lev, ncol) or (time, ncol)
-	    if ((vr == 2) and (vs[1] == ncol)):  
-		is_2d = True 
+	    if ((vr == 2) and (vs[1] == ncol)):
+		is_2d = True
 		num_2d += 1
-	    elif ((vr == 3) and (vs[2] == ncol and vs[1] == nlev )):  
-		is_3d = True 
+	    elif ((vr == 3) and (vs[2] == ncol and vs[1] == nlev )):
+		is_3d = True
 		num_3d += 1
         else: # (time, lev, nlon, nlon) or (time, nlat, nlon)
-            if ((vr == 3) and (vs[1] == nlat and vs[2] == nlon)):  
-                is_2d = True 
+            if ((vr == 3) and (vs[1] == nlat and vs[2] == nlon)):
+                is_2d = True
                 num_2d += 1
-            elif ((vr == 4) and (vs[2] == nlat and vs[3] == nlon and vs[1] == nlev )):  
-                is_3d = True 
+            elif ((vr == 4) and (vs[2] == nlat and vs[3] == nlon and vs[1] == nlev )):
+                is_3d = True
                 num_3d += 1
         if (is_3d == True) :
             str_size = max(str_size, len(k))
             d3_var_names.append(k)
-        elif  (is_2d == True):    
+        elif  (is_2d == True):
             str_size = max(str_size, len(k))
             d2_var_names.append(k)
 
 
-    # Now sort these and combine (this sorts caps first, then lower case - 
+    # Now sort these and combine (this sorts caps first, then lower case -
     # which is what we want)
-    d2_var_names.sort()       
+    d2_var_names.sort()
     d3_var_names.sort()
 
 
@@ -282,10 +282,10 @@ def main(argv):
 	    print "Setting global attributes ....."
 	setattr(nc_sumfile, 'creation_date',now)
 	setattr(nc_sumfile, 'title', 'CAM verification ensemble summary file')
-	setattr(nc_sumfile, 'tag', opts_dict["tag"]) 
-	setattr(nc_sumfile, 'compset', opts_dict["compset"]) 
-	setattr(nc_sumfile, 'resolution', opts_dict["res"]) 
-	setattr(nc_sumfile, 'machine', opts_dict["mach"]) 
+	setattr(nc_sumfile, 'tag', opts_dict["tag"])
+	setattr(nc_sumfile, 'compset', opts_dict["compset"])
+	setattr(nc_sumfile, 'resolution', opts_dict["res"])
+	setattr(nc_sumfile, 'machine', opts_dict["mach"])
 
 	# Create variables
 	if (verbose == True):
@@ -375,15 +375,15 @@ def main(argv):
     if (verbose == True):
         print "Calculating global means ....."
     if not opts_dict['cumul']:
-        gm3d,gm2d = pyEnsLib.generate_global_mean_for_summary(o_files,var3_list_loc,var2_list_loc , is_SE, False,opts_dict)      
+        gm3d,gm2d = pyEnsLib.generate_global_mean_for_summary(o_files,var3_list_loc,var2_list_loc , is_SE, False,opts_dict)
     if (verbose == True):
         print "Finish calculating global means ....."
 
-    # Calculate RMSZ scores  
+    # Calculate RMSZ scores
     if (verbose == True):
         print "Calculating RMSZ scores ....."
     if (not opts_dict['gmonly']) | (opts_dict['cumul']):
-        zscore3d,zscore2d,ens_avg3d,ens_stddev3d,ens_avg2d,ens_stddev2d,temp1,temp2=pyEnsLib.calc_rmsz(o_files,var3_list_loc,var2_list_loc,is_SE,opts_dict)    
+        zscore3d,zscore2d,ens_avg3d,ens_stddev3d,ens_avg2d,ens_stddev2d,temp1,temp2=pyEnsLib.calc_rmsz(o_files,var3_list_loc,var2_list_loc,is_SE,opts_dict)
 
     # Calculate max norm ensemble
     if opts_dict['maxnorm']:
@@ -397,7 +397,7 @@ def main(argv):
         if not opts_dict['cumul']:
 	    # Gather the 3d variable results from all processors to the master processor
 	    slice_index=get_stride_list(len(d3_var_names),me)
-	 
+
 	    # Gather global means 3d results
 	    gm3d=gather_npArray(gm3d,me,slice_index,(len(d3_var_names),len(o_files)))
 
@@ -407,8 +407,8 @@ def main(argv):
 
 		# Gather ens_avg3d and ens_stddev3d results
 		shape_tuple3d=get_shape(ens_avg3d.shape,len(d3_var_names),me.get_rank())
-		ens_avg3d=gather_npArray(ens_avg3d,me,slice_index,shape_tuple3d) 
-		ens_stddev3d=gather_npArray(ens_stddev3d,me,slice_index,shape_tuple3d) 
+		ens_avg3d=gather_npArray(ens_avg3d,me,slice_index,shape_tuple3d)
+		ens_stddev3d=gather_npArray(ens_stddev3d,me,slice_index,shape_tuple3d)
 
 	    # Gather 2d variable results from all processors to the master processor
 	    slice_index=get_stride_list(len(d2_var_names),me)
@@ -422,8 +422,8 @@ def main(argv):
 
 		# Gather ens_avg3d and ens_stddev2d results
 		shape_tuple2d=get_shape(ens_avg2d.shape,len(d2_var_names),me.get_rank())
-		ens_avg2d=gather_npArray(ens_avg2d,me,slice_index,shape_tuple2d) 
-		ens_stddev2d=gather_npArray(ens_stddev2d,me,slice_index,shape_tuple2d) 
+		ens_avg2d=gather_npArray(ens_avg2d,me,slice_index,shape_tuple2d)
+		ens_stddev2d=gather_npArray(ens_stddev2d,me,slice_index,shape_tuple2d)
 
         else:
 	    gmall=np.concatenate((temp1,temp2),axis=0)
@@ -455,7 +455,7 @@ def main(argv):
 	v_sigma_gm[:]=sigma_gm[:].astype(np.float32)
 	v_loadings_gm[:,:]=loadings_gm[:,:]
 	v_sigma_scores_gm[:]=scores_gm[:]
-                
+
 	print "All Done"
 
 def get_cumul_filelist(opts_dict,indir,regx):
@@ -465,7 +465,7 @@ def get_cumul_filelist(opts_dict,indir,regx):
    #regx='(pgi(.)*-(01|02))'
    regx_list=["mon","gnu","pgi"]
    all_files=[]
-   for prefix in regx_list: 
+   for prefix in regx_list:
        for i in range(opts_dict['fIndex'],opts_dict['fIndex']+opts_dict['esize']/3):
 	   for j in range(opts_dict['startMon'],opts_dict['endMon']+1):
 	       mon_str=str(j).zfill(2)
@@ -477,20 +477,20 @@ def get_cumul_filelist(opts_dict,indir,regx):
    print "all_files=",all_files
    #in_files=res
    return all_files
-   
-   
-      
-   
+
+
+
+
 
 #
 # Get the shape of all variable list in tuple for all processor
-# 
+#
 def get_shape(shape_tuple,shape1,rank):
     lst=list(shape_tuple)
     lst[0]=shape1
     shape_tuple=tuple(lst)
     return shape_tuple
- 
+
 #
 # Get the mpi partition list for each processor
 #
@@ -501,7 +501,7 @@ def get_stride_list(len_of_list,me):
 	slice_index.append(index_arr[i::me.get_size()])
     return slice_index
 
-# 
+#
 # Gather arrays from each processor by the var_list to the master processor and make it an array
 #
 def gather_npArray(npArray,me,slice_index,array_shape):
@@ -518,11 +518,11 @@ def gather_npArray(npArray,me,slice_index,array_shape):
 	    for j in slice_index[rank]:
 		the_array[j,:]=npArray[k,:]
 		k=k+1
-    if me.get_rank() != 0: 
+    if me.get_rank() != 0:
 	message={"from_rank":me.get_rank(),"shape":npArray.shape}
 	me.collect(npArray)
     me.sync()
     return the_array
-        
+
 if __name__ == "__main__":
     main(sys.argv[1:])

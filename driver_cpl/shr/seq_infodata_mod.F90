@@ -1310,7 +1310,7 @@ SUBROUTINE seq_infodata_GetData_bytype( component_firstletter, infodata,      &
           write(logunit,*) trim(subname),' Note: ESP type has no histavg property'
         end if
       end if
-     
+
       call seq_infodata_GetData(infodata, esp_present=comp_present,           &
            esp_prognostic=comp_prognostic, esp_phase=comp_phase)
     else
@@ -1765,7 +1765,7 @@ SUBROUTINE seq_infodata_PutData_bytype( component_firstletter, infodata,      &
           write(logunit,*) trim(subname),' Note: ESP type has no histavg property'
         end if
       end if
-     
+
       call seq_infodata_PutData(infodata, esp_present=comp_present,           &
            esp_prognostic=comp_prognostic, esp_phase=comp_phase)
     else

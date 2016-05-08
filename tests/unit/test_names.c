@@ -1,5 +1,5 @@
 /**
- * @file 
+ * @file
  * Tests for names of vars, atts, and dims.
  *
  */
@@ -28,7 +28,7 @@
 	fprintf(stderr, "MPI error, line %d, file %s: %s\n", __LINE__, __FILE__, err_buffer); \
 	MPI_Finalize();							\
 	return ERR_AWFUL;							\
-    } while (0) 
+    } while (0)
 
 /** Handle non-MPI errors by finalizing the MPI library and exiting
  * with an exit code. */
@@ -36,7 +36,7 @@
         fprintf(stderr, "Error %d in %s, line %d\n", e, __FILE__, __LINE__); \
 	MPI_Finalize();				\
 	return e;				\
-    } while (0) 
+    } while (0)
 
 /** Global err buffer for MPI. */
 char err_buffer[MPI_MAX_ERROR_STRING];
@@ -55,7 +55,7 @@ size_t chunksize[NDIM] = {2, X_DIM_LEN/2, Y_DIM_LEN/2};
  *
  * @param my_rank rank of process
  * @param ncid ncid of open netCDF file
- * 
+ *
  * @returns 0 for success, error code otherwise. */
 int
 check_dim_names(int my_rank, int ncid, int verbose)
@@ -90,7 +90,7 @@ check_dim_names(int my_rank, int ncid, int verbose)
  *
  * @param my_rank rank of process
  * @param ncid ncid of open netCDF file
- * 
+ *
  * @returns 0 for success, error code otherwise. */
 int
 check_var_name(int my_rank, int ncid, int verbose)
@@ -120,7 +120,7 @@ check_var_name(int my_rank, int ncid, int verbose)
  *
  * @param my_rank rank of process
  * @param ncid ncid of open netCDF file
- * 
+ *
  * @returns 0 for success, error code otherwise. */
 int
 check_att_name(int my_rank, int ncid, int verbose)
@@ -157,7 +157,7 @@ int
 main(int argc, char **argv)
 {
     int verbose = 1;
-    
+
     /** Zero-based rank of processor. */
     int my_rank;
 
@@ -168,7 +168,7 @@ main(int argc, char **argv)
     int iotype;
 
     /** Different output flavors. */
-    int format[NUM_NETCDF_FLAVORS] = {PIO_IOTYPE_PNETCDF, 
+    int format[NUM_NETCDF_FLAVORS] = {PIO_IOTYPE_PNETCDF,
 				      PIO_IOTYPE_NETCDF,
 				      PIO_IOTYPE_NETCDF4C,
 				      PIO_IOTYPE_NETCDF4P};
@@ -178,7 +178,7 @@ main(int argc, char **argv)
 							  "test_names_classic.nc",
 							  "test_names_serial4.nc",
 							  "test_names_parallel4.nc"};
-	
+
     /** Number of processors that will do IO. In this test we
      * will do IO from all processors. */
     int niotasks;
@@ -213,10 +213,10 @@ main(int argc, char **argv)
 
     /** Chunksizes set in the file. */
     size_t my_chunksize[NDIM];
-    
+
     /** The shuffle filter setting in the netCDF-4 test file. */
     int shuffle;
-    
+
     /** Non-zero if deflate set for the variable in the netCDF-4 test file. */
     int deflate;
 
@@ -244,9 +244,9 @@ main(int argc, char **argv)
     /* Number of elements in var cache. */
     size_t var_cache_nelems;
 
-    /* Var cache preemption. */    
+    /* Var cache preemption. */
     float var_cache_preemption;
-    
+
     /** The I/O description ID. */
     int ioid;
 
@@ -264,13 +264,13 @@ main(int argc, char **argv)
 
     /** Index for loops. */
     int fmt, d, d1, i;
-    
-#ifdef TIMING    
+
+#ifdef TIMING
     /* Initialize the GPTL timing library. */
     if ((ret = GPTLinitialize ()))
 	return ret;
-#endif    
-    
+#endif
+
     /* Initialize MPI. */
     if ((ret = MPI_Init(&argc, &argv)))
 	MPIERR(ret);
@@ -289,8 +289,8 @@ main(int argc, char **argv)
 	printf("%d: ParallelIO Library example1 running on %d processors.\n",
 	       my_rank, ntasks);
 
-    /* keep things simple - 1 iotask per MPI process */    
-    niotasks = ntasks; 
+    /* keep things simple - 1 iotask per MPI process */
+    niotasks = ntasks;
 
     /* Initialize the PIO IO system. This specifies how
      * many and which processors are involved in I/O. */
@@ -305,7 +305,7 @@ main(int argc, char **argv)
     for (i = 0; i < elements_per_pe; i++) {
 	compdof[i] = my_rank * elements_per_pe + i + 1;
     }
-	
+
     /* Create the PIO decomposition for this test. */
     if (verbose)
 	printf("rank: %d Creating decomposition...\n", my_rank);
@@ -330,10 +330,10 @@ main(int argc, char **argv)
     format[fmtidx++] = PIO_IOTYPE_NETCDF4C;
     format[fmtidx] = PIO_IOTYPE_NETCDF4P;
 #endif
-    
+
     /* Use PIO to create the example file in each of the four
      * available ways. */
-    for (fmt = 0; fmt < num_flavors; fmt++) 
+    for (fmt = 0; fmt < num_flavors; fmt++)
     {
 	/* Create the netCDF output file. */
 	if (verbose)
@@ -342,7 +342,7 @@ main(int argc, char **argv)
 	if ((ret = PIOc_createfile(iosysid, &ncid, &(format[fmt]), filename[fmt],
 				   PIO_CLOBBER)))
 	    ERR(ret);
-	
+
 	/* Define netCDF dimensions and variable. */
 	if (verbose)
 	    printf("rank: %d Defining netCDF metadata...\n", my_rank);
@@ -389,13 +389,13 @@ main(int argc, char **argv)
 	    MPIERR(ret);
 
     }
-	
+
     /* Free the PIO decomposition. */
     if (verbose)
 	printf("rank: %d Freeing PIO decomposition...\n", my_rank);
     if ((ret = PIOc_freedecomp(iosysid, ioid)))
 	ERR(ret);
-	
+
     /* Finalize the IO system. */
     if (verbose)
 	printf("rank: %d Freeing PIO resources...\n", my_rank);
@@ -405,12 +405,12 @@ main(int argc, char **argv)
     /* Finalize the MPI library. */
     MPI_Finalize();
 
-#ifdef TIMING    
+#ifdef TIMING
     /* Finalize the GPTL timing library. */
     if ((ret = GPTLfinalize ()))
 	return ret;
-#endif    
-    
+#endif
+
 
     return 0;
 }

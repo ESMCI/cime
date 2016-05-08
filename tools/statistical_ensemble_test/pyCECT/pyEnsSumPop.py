@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 import ConfigParser
-import sys, getopt, os 
-import numpy as np 
-import Nio 
+import sys, getopt, os
+import numpy as np
+import Nio
 import time
 import re
 from asaptools.partition import EqualStride, Duplicate
-import asaptools.simplecomm as simplecomm 
+import asaptools.simplecomm as simplecomm
 import pyEnsLib
 
 def main(argv):
@@ -15,7 +15,7 @@ def main(argv):
     # Get command line stuff and store in a dictionary
     s = 'nyear= nmonth= npert= tag= res= mach= compset= sumfile= indir= tslice= verbose jsonfile= mpi_enable zscoreonly nrand= rand seq= jsondir='
     optkeys = s.split()
-    try: 
+    try:
         opts, args = getopt.getopt(argv, "h", optkeys)
     except getopt.GetoptError:
         pyEnsLib.EnsSumPop_usage()
@@ -28,7 +28,7 @@ def main(argv):
     opts_dict['tag'] = 'cesm1_2_0'
     opts_dict['compset'] = 'FC5'
     opts_dict['mach'] = 'yellowstone'
-    opts_dict['tslice'] = 0 
+    opts_dict['tslice'] = 0
     opts_dict['nyear'] = 3
     opts_dict['nmonth'] = 12
     opts_dict['npert'] = 40
@@ -43,12 +43,12 @@ def main(argv):
     opts_dict['mpi_enable'] = False
     opts_dict['zscoreonly'] = False
     opts_dict['popens'] = True
-    opts_dict['nrand'] = 40 
+    opts_dict['nrand'] = 40
     opts_dict['rand'] = False
-    opts_dict['seq'] = 0 
-    opts_dict['jsondir'] = '/glade/scratch/haiyingx/' 
+    opts_dict['seq'] = 0
+    opts_dict['jsondir'] = '/glade/scratch/haiyingx/'
 
-    # This creates the dictionary of input arguments 
+    # This creates the dictionary of input arguments
     print "before parseconfig"
     opts_dict = pyEnsLib.getopt_parseconfig(opts,optkeys,'ESP',opts_dict)
 
@@ -57,7 +57,7 @@ def main(argv):
 
     if verbose:
        print opts_dict
-       
+
     # Now find file names in indir
     input_dir = opts_dict['indir']
 
@@ -83,7 +83,7 @@ def main(argv):
         # Pick up the 'nrand' random number of input files to generate summary files
         if opts_dict['rand']:
            in_files=pyEnsLib.Random_pickup_pop(input_dir,opts_dict,opts_dict['nrand'])
-        else:    
+        else:
            # Get the list of files
            in_files_temp = os.listdir(input_dir)
            in_files=sorted(in_files_temp)
@@ -98,10 +98,10 @@ def main(argv):
         me=simplecomm.create_comm()
     else:
         me=simplecomm.create_comm(not opts_dict['mpi_enable'])
-    #Partition the input file list 
+    #Partition the input file list
     in_file_list=me.partition(in_files,func=EqualStride(),involved=True)
 
-    
+
     # Open the files in the input directory
     o_files=[]
     for onefile in in_file_list:
@@ -109,7 +109,7 @@ def main(argv):
             o_files.append(Nio.open_file(input_dir+'/' + onefile,"r"))
         else:
             print "COULD NOT LOCATE FILE "+ input_dir + onefile + "! EXITING...."
-            sys.exit() 
+            sys.exit()
 
 
     print in_file_list
@@ -135,11 +135,11 @@ def main(argv):
             nlat = input_dims["nlat"]
 
     for count, this_file in enumerate(o_files):
-        input_dims = this_file.dimensions     
+        input_dims = this_file.dimensions
 	if ( nlev != int(input_dims["z_t"]) or ( nlat != int(input_dims["nlat"]))\
 	      or ( nlon != int(input_dims["nlon"]))):
 	    print "Dimension mismatch between ", in_file_list[0], 'and', in_file_list[count], '!!!'
-	    sys.exit() 
+	    sys.exit()
 
 
     # Create new summary ensemble file
@@ -176,10 +176,10 @@ def main(argv):
 	   print "Setting global attributes ....."
        setattr(nc_sumfile, 'creation_date',now)
        setattr(nc_sumfile, 'title', 'POP verification ensemble summary file')
-       setattr(nc_sumfile, 'tag', opts_dict["tag"]) 
-       setattr(nc_sumfile, 'compset', opts_dict["compset"]) 
-       setattr(nc_sumfile, 'resolution', opts_dict["res"]) 
-       setattr(nc_sumfile, 'machine', opts_dict["mach"]) 
+       setattr(nc_sumfile, 'tag', opts_dict["tag"])
+       setattr(nc_sumfile, 'compset', opts_dict["compset"])
+       setattr(nc_sumfile, 'resolution', opts_dict["res"])
+       setattr(nc_sumfile, 'machine', opts_dict["mach"])
 
        # Create variables
        if (verbose == True):
@@ -245,7 +245,7 @@ def main(argv):
        vars_dict = o_files[0].variables
        lev_data = vars_dict["z_t"]
        v_lev = lev_data
-       
+
     # Time-varient metadata
     if verbose:
        print "Assigning time variant metadata ....."
@@ -256,7 +256,7 @@ def main(argv):
     if me.get_rank() == 0:
        v_time[:]=time_array[:]
 
-    # Calculate global mean, average, standard deviation 
+    # Calculate global mean, average, standard deviation
     if verbose:
        print "Calculating global means ....."
     is_SE = False
@@ -266,10 +266,10 @@ def main(argv):
     if verbose:
        print "Finish calculating global means ....."
 
-    # Calculate RMSZ scores  
+    # Calculate RMSZ scores
     if (verbose == True):
        print "Calculating RMSZ scores ....."
-    zscore3d,zscore2d,ens_avg3d,ens_stddev3d,ens_avg2d,ens_stddev2d,temp1,temp2=pyEnsLib.calc_rmsz(o_files,Var3d,Var2d,is_SE,opts_dict)    
+    zscore3d,zscore2d,ens_avg3d,ens_stddev3d,ens_avg2d,ens_stddev2d,temp1,temp2=pyEnsLib.calc_rmsz(o_files,Var3d,Var2d,is_SE,opts_dict)
 
     # Collect from all processors
     if opts_dict['mpi_enable'] :
@@ -282,7 +282,7 @@ def main(argv):
         zmall=np.concatenate((zscore3d,zscore2d),axis=0)
         zmall=pyEnsLib.gather_npArray_pop(zmall,me,(me.get_size(),len(Var3d)+len(Var2d),len(o_files),nbin))
         #print 'zmall=',zmall
-        
+
         #print "after gather, gmall.shape=",gmall.shape
         ens_avg3d=pyEnsLib.gather_npArray_pop(ens_avg3d,me,(me.get_size(),len(Var3d),nlev,(nlat),nlon))
         ens_avg2d=pyEnsLib.gather_npArray_pop(ens_avg2d,me,(me.get_size(),len(Var2d),(nlat),nlon))
