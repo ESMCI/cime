@@ -524,7 +524,7 @@ SUBROUTINE seq_infodata_Init( infodata, nmlfile, ID, pioid)
        reprosum_recompute    = .false.
        mct_usealltoall       = .false.
        mct_usevector         = .false.
-       max_cplstep_time      = 0.0
+       max_cplstep_time = 0.0
        !---------------------------------------------------------------------------
        ! Read in namelist
        !---------------------------------------------------------------------------

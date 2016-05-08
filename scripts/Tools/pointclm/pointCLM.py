@@ -665,7 +665,7 @@ if (options.clean_config):
         os.system('rm -f Macro')
         os.system('rm -f user-nl-*')
 
-# Add options for FFLAGS to Macros file here
+# Add options for FFLAGS to Macros file here 
 
 #clm namelist modifications
 for i in range(1,int(options.ninst)+1):
@@ -715,7 +715,7 @@ for i in range(1,int(options.ninst)+1):
             output.write(" hist_fincl2 = 'CWDC_vr', 'CWDN_vr', 'CWDP_vr', 'SOIL3C_vr', 'SOIL3N_vr', 'SOIL3P_vr', 'SOIL2C_vr', " + \
                              "'SOIL2N_vr', 'SOIL2P_vr', 'DEADSTEMC', 'DEADSTEMN', 'DEADSTEMP', 'DEADCROOTC', 'DEADCROOTN', "+ \
                              "'DEADCROOTP', 'LITR3C_vr', 'LITR3N_vr', 'LITR3P_vr'\n")
-        else:
+        else:	
            output.write(" hist_fincl2 = 'CWDC_vr', 'CWDN_vr', 'CWDP_vr', 'SOIL4C_vr', 'SOIL4N_vr', 'SOIL4P_vr', 'SOIL3C_vr', " + \
 	                    "'SOIL3N_vr', 'SOIL3P_vr', 'DEADSTEMC', 'DEADSTEMN', 'DEADSTEMP', 'DEADCROOTC', 'DEADCROOTN', "+ \
 	                    "'DEADCROOTP', 'LITR3C_vr', 'LITR3N_vr', 'LITR3P_vr'\n")

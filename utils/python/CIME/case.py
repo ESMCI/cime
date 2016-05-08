@@ -282,7 +282,7 @@ class Case(object):
         for i in xrange(1,len(component_classes)):
             comp_class = component_classes[i]
             comp_name  = self._components[i-1]
-            node_name = 'CONFIG_' + comp_class + '_FILE';
+	    node_name = 'CONFIG_' + comp_class + '_FILE';
             comp_config_file = files.get_value(node_name, {"component":comp_name}, resolved=True)
             logger.debug( "comp_config_file is %s"%comp_config_file)
             compobj = Component(comp_config_file)

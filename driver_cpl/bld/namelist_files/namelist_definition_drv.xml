@@ -1946,12 +1946,12 @@ default: .false.
 <entry
 id="profile_add_detail"
 type="logical"
-category="performance"
+category="performance" 
 group="prof_inparm">
 default: .false.
 </entry>
 
-<entry
+<entry 
 id="profile_outpe_num"
 type="integer"
 category="performance"
