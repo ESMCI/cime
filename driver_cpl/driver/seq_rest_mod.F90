@@ -100,6 +100,7 @@ module seq_rest_mod
    logical     :: rof_prognostic         ! .true.  => rof comp expects input
    logical     :: glc_present            ! .true.  => glc is present
    logical     :: wav_present            ! .true.  => wav is present
+   logical     :: esp_present            ! .true.  => esp is present
 
    logical     :: atm_prognostic         ! .true.  => atm comp expects input
    logical     :: lnd_prognostic         ! .true.  => lnd comp expects input
@@ -108,6 +109,7 @@ module seq_rest_mod
    logical     :: ocnrof_prognostic      ! .true.  => ocn comp expects runoff input
    logical     :: glc_prognostic         ! .true.  => glc comp expects input
    logical     :: wav_prognostic         ! .true.  => wav comp expects input
+   logical     :: esp_prognostic         ! .true.  => esp comp expects input
 
    integer(IN) :: info_debug = 0         ! local info_debug level
 
@@ -127,7 +129,7 @@ contains
 !===============================================================================
 
   subroutine seq_rest_read(rest_file, infodata, &
-       atm, lnd, ice, ocn, rof, glc, wav, &
+       atm, lnd, ice, ocn, rof, glc, wav, esp,  &
        fractions_ax, fractions_lx, fractions_ix, fractions_ox, &
        fractions_rx, fractions_gx, fractions_wx)
 
@@ -142,6 +144,7 @@ contains
    type (component_type) , intent(inout) :: rof(:)
    type (component_type) , intent(inout) :: glc(:)
    type (component_type) , intent(inout) :: wav(:)
+   type (component_type) , intent(inout) :: esp(:)
    type(mct_aVect)  , intent(inout) :: fractions_ax(:)   ! Fractions on atm grid/decomp
    type(mct_aVect)  , intent(inout) :: fractions_lx(:)   ! Fractions on lnd grid/decomp
    type(mct_aVect)  , intent(inout) :: fractions_ix(:)   ! Fractions on ice grid/decomp
@@ -247,6 +250,7 @@ contains
          call seq_io_read(rest_file, gsmap, fractions_wx, 'fractions_wx')
          call seq_io_read(rest_file, wav, 'c2x', 'w2x_wx')
       endif
+      ! Add ESP restart read here
 
       n = size(budg_dataG)
       allocate(ds(n),ns(n))
@@ -276,7 +280,7 @@ end subroutine seq_rest_read
 !===============================================================================
 
 subroutine seq_rest_write(EClock_d, seq_SyncClock, infodata, &
-     atm, lnd, ice, ocn, rof, glc, wav,                      &
+     atm, lnd, ice, ocn, rof, glc, wav, esp,                 &
      fractions_ax, fractions_lx, fractions_ix, fractions_ox, &
      fractions_rx, fractions_gx, fractions_wx)
 
@@ -292,6 +296,7 @@ subroutine seq_rest_write(EClock_d, seq_SyncClock, infodata, &
    type (component_type)       , intent(inout) :: rof(:)
    type (component_type)       , intent(inout) :: glc(:)
    type (component_type)       , intent(inout) :: wav(:)
+   type (component_type)       , intent(inout) :: esp(:)
    type(mct_aVect)        , intent(inout) :: fractions_ax(:)   ! Fractions on atm grid/decomp
    type(mct_aVect)        , intent(inout) :: fractions_lx(:)   ! Fractions on lnd grid/decomp
    type(mct_aVect)        , intent(inout) :: fractions_ix(:)   ! Fractions on ice grid/decomp
@@ -511,6 +516,7 @@ subroutine seq_rest_write(EClock_d, seq_SyncClock, infodata, &
             call seq_io_write(rest_file, wav, 'c2x', 'w2x_wx', &
                  whead=whead, wdata=wdata)
          endif
+         ! Write ESP restart data here
       enddo
 
       call seq_io_close(rest_file)
