@@ -1115,13 +1115,6 @@
     <desc>number of rof cells in j direction - DO NOT EDIT (for experts only)</desc>
   </entry>
 
-  <entry id="GLC_GRID">
-    <type>char</type>
-    <default_value>UNSET</default_value>
-    <group>build_grid</group>
-    <file>env_build.xml</file>
-    <desc>(glc) grid for the coupler</desc>
-  </entry>
 
   <entry id="GLC_NX">
     <type>integer</type>
@@ -3559,15 +3552,6 @@
       run MPASLI on a machine that does not have Albany, or for which
       the CIME scripts are not aware of the existence of
       Albany.</desc>
-  </entry>
-
-  <entry id="GLC_SMB">
-    <type>logical</type>
-    <valid_values>true,false</valid_values>
-    <default_value>true</default_value>
-    <group>run_component_mpasli</group>
-    <file>env_run.xml</file>
-    <desc>true => have LND calculate surface mass balance</desc>
   </entry>
 
   <entry id="GLC_TWO_WAY_COUPLING">
