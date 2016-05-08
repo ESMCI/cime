@@ -17,7 +17,7 @@ def main(argv):
     print 'Running pyEnsSum!'
 
     # Get command line stuff and store in a dictionary
-    s = 'tag= compset= esize= tslice= res= sumfile= indir= mach= verbose jsonfile= mpi_enable maxnorm gmonly'
+    s = 'tag= compset= esize= tslice= res= sumfile= indir= sumfiledir= mach= verbose jsonfile= mpi_enable maxnorm gmonly popens cumul regx= startMon= endMon= fIndex='
     optkeys = s.split()
     try:
         opts, args = getopt.getopt(argv, "h", optkeys)
@@ -55,6 +55,10 @@ def main(argv):
         print opts_dict
         print 'Ensemble size for summary = ', esize
 
+    if not (opts_dict['tag'] and opts_dict['compset'] and opts_dict['mach'] or opts_dict['res']):
+       print 'Please specify --tag, --compset, --mach and --res options'
+       sys.exit()
+       
     # Now find file names in indir
     input_dir = opts_dict['indir']
     # The var list that will be excluded
@@ -65,10 +69,12 @@ def main(argv):
         me=simplecomm.create_comm()
     else:
         me=simplecomm.create_comm(not opts_dict['mpi_enable'])
+
+
     if me.get_rank() == 0:
 	if opts_dict['jsonfile']:
 	    # Read in the excluded var list
-	    ex_varlist=pyEnsLib.read_jsonlist(opts_dict['jsonfile'])
+	    ex_varlist=pyEnsLib.read_jsonlist(opts_dict['jsonfile'],'ES')
 
     # Broadcast the excluded var list to each processor
     if opts_dict['mpi_enable']:
@@ -79,6 +85,7 @@ def main(argv):
         # Get the list of files
         in_files_temp = os.listdir(input_dir)
         in_files=sorted(in_files_temp)
+        #print in_files
         # Make sure we have enough
         num_files = len(in_files)
         if (verbose == True):
@@ -92,8 +99,15 @@ def main(argv):
                 'is greater than specified ensemble size of ', esize ,\
                 '\nwill just use the first ',  esize, 'files'
     else:
-        print 'Input directory: ',input,' not found'
+        print 'Input directory: ',input_dir,' not found'
         sys.exit(2)
+
+    if opts_dict['cumul']:
+        if opts_dict['regx']:
+           in_files_list=get_cumul_filelist(opts_dict,opts_dict['indir'],opts_dict['regx'])
+        in_files=me.partition(in_files_list,func=EqualLength(),involved=True)
+        if me.get_rank()==0:
+           print 'in_files=',in_files
 
     # Open the files in the input directory
     o_files=[]
@@ -111,7 +125,8 @@ def main(argv):
     ncol = -1
     nlat = -1
     nlon = -1
-
+    lonkey=''
+    latkey=''
     # Look at first file and get dims
     input_dims = o_files[0].dimensions
     ndims = len(input_dims)
@@ -157,8 +172,8 @@ def main(argv):
                 print "Dimension mismatch between ", in_files[0], 'and', in_files[0], '!!!'
                 sys.exit()
         else:
-            if ( nlev != int(input_dims["lev"]) or ( nlat != int(input_dims["nlat"]))\
-                  or ( nlon != int(input_dims["nlon"]))):
+            if ( nlev != int(input_dims["lev"]) or ( nlat != int(input_dims[latkey]))\
+                  or ( nlon != int(input_dims[lonkey]))): 
                 print "Dimension mismatch between ", in_files[0], 'and', in_files[0], '!!!'
                 sys.exit()
 
@@ -224,9 +239,10 @@ def main(argv):
 
     # Create new summary ensemble file
     this_sumfile = opts_dict["sumfile"]
+
     if (verbose == True):
         print "Creating ", this_sumfile, "  ..."
-    if(me.get_rank() ==0 ):
+    if(me.get_rank() ==0 | opts_dict["popens"]):
 	if os.path.exists(this_sumfile):
 	    os.unlink(this_sumfile)
 

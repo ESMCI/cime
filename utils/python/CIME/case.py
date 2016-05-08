@@ -275,8 +275,10 @@ class Case(object):
             nodes = env_file.add_elements_by_group(drv_comp, attributes=attlist);
 
         # loop over all elements of both component_classes and components - and get config_component_file for
-        # for each component
+        # for each component if ESP is not a component add sesp here
         component_classes =drv_comp.get_valid_model_components()
+        if len(component_classes) > len(self._components):
+            self._components.append('sesp')
         for i in xrange(1,len(component_classes)):
             comp_class = component_classes[i]
             comp_name  = self._components[i-1]

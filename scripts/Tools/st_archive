@@ -342,9 +342,10 @@ sub getDname
     $logger->debug("In getDname...");
 
     my $DIR = $config{'RUNDIR'};
+    my $CASE = $config{'CASE'};
     opendir( my $dh, $DIR ) or $logger->logdie("st_archive: Error - cannot open directory $DIR. Exiting...");
 
-    my @files = sort( grep(m/^*\.cpl\.r.(.*).nc$/, readdir $dh) );
+    my @files = sort( grep(m/^${CASE}\.cpl\.r.(.*).nc$/, readdir $dh) );
 
     my @names = split(/\./,$files[$#files]);
 

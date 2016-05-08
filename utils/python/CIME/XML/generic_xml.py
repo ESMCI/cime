@@ -93,7 +93,10 @@ class GenericXML(object):
         Return None if no match.
         """
         nodes = self.get_nodes(nodename, attributes=attributes, root=root, xpath=xpath)
-
+        # useful for debugging
+        #if len(nodes) > 1:
+        #     for node in nodes:
+        #        ET.dump(node)
         expect(len(nodes) <= 1, "Multiple matches for nodename '%s' and attrs '%s' in file '%s'" %
                (nodename, attributes, self.filename))
         return nodes[0] if nodes else None

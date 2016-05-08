@@ -865,11 +865,19 @@ contains
     ! Must fabricate "reasonable" data (using dead components)
 
     call seq_infodata_GetData(infodata, &
+         read_restart=read_restart, &
          dead_comps=dead_comps,         &
          atm_nx=atm_nx, atm_ny=atm_ny,  &
          ocn_nx=ocn_nx, ocn_ny=ocn_ny,  &
          ocn_prognostic=ocn_prognostic,  &
          flux_diurnal=flux_diurnal)
+
+    cold_start = .false.   ! use restart data or data from last timestep
+
+    if (first_call) then
+       if (.not.read_restart) cold_start = .true.
+       first_call = .false. 
+    endif
 
     if (dead_comps) then
        do n = 1,nloc_a2o
@@ -932,7 +940,8 @@ contains
                           warmMaxInc, windMaxInc, qSolInc, windInc, nInc, &
                           tbulk, tskin, tskin_day, tskin_night, &
                           cskin, cskin_night, tod, dt,          &
-                          duu10n,ustar, re  , ssq , missval = 0.0_r8 )
+                          duu10n,ustar, re  , ssq , missval = 0.0_r8, &
+                          cold_start=cold_start)
     else
        call shr_flux_atmocn (nloc_a2o , zbot , ubot, vbot, thbot, &
                           shum , dens , tbot, uocn, vocn , &
