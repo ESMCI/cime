@@ -239,7 +239,12 @@ sub _decrementResubmitCounter()
     }
     my $owd = getcwd;
     chdir $config->{'CASEROOT'};
-    `./xmlchange -noecho CONTINUE_RUN=TRUE`;
+    if($config->{RESUBMIT_SETS_CONTINUE_RUN} eq "TRUE")
+    {
+	`./xmlchange -noecho CONTINUE_RUN=TRUE`;
+    }else{
+	$logger->warn("NOT changing CONTINUE_RUN since RESUBMIT_SETS_CONTINUE_RUN is FALSE")
+    }
     `./xmlchange -noecho RESUBMIT=$newresubmit`;
     if($?)
     {
