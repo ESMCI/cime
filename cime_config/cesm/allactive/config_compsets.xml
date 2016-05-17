@@ -71,12 +71,17 @@
   </compset>
 
   <compset>
+    <alias>B1850Ww</alias>
+    <lname>1850_CAM55_CLM50%BGC_CICE_POP2%ECO_MOSART_CISM1%NOEVOLVE_WW3_BGC%BDRD</lname>
+  </compset>
+
+  <compset>
     <alias>B1850R</alias>
     <lname>1850_CAM55_CLM50%BGC_CICE_POP2%ECO_RTM_SGLC_SWAV_BGC%BDRD</lname>
   </compset>
 
   <compset>
-    <alias>B1850Cw</alias>  
+    <alias>B1850Cw</alias>
     <lname>1850_CAM55%WTSM_CLM50%BGC_CICE_POP2%ECO_MOSART_SGLC_SWAV</lname>
   </compset>
 
