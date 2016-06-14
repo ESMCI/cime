@@ -415,6 +415,84 @@
     </files>
   </comp_archive_spec>
 
+  <comp_archive_spec name="micom">
+    <rootdir>ocn</rootdir>
+    <files>
+      <file_extension regex_suffix=".log\..*">
+        <subdir>logs</subdir>
+        <keep_last_in_rundir>false</keep_last_in_rundir>
+      </file_extension>
+      <file_extension regex_suffix=".r\..*\.hdr">
+        <subdir>rest</subdir>
+        <keep_last_in_rundir>true</keep_last_in_rundir>
+      </file_extension>
+      <file_extension regex_suffix=".r\.[0-9|-]+\.nc">
+        <subdir>rest</subdir>
+        <keep_last_in_rundir>true</keep_last_in_rundir>
+      </file_extension>
+      <file_extension regex_suffix=".r\.[0-9|-]+[^\.nc]">
+        <subdir>rest</subdir>
+        <keep_last_in_rundir>true</keep_last_in_rundir>
+      </file_extension>
+      <file_extension regex_suffix=".rh.ecosys\.\w+\.hdr">
+        <subdir>rest</subdir>
+        <keep_last_in_rundir>true</keep_last_in_rundir>
+      </file_extension>
+      <file_extension regex_suffix=".rh.ecosys\.\w+\.nc">
+        <subdir>rest</subdir>
+        <keep_last_in_rundir>true</keep_last_in_rundir>
+      </file_extension>
+      <file_extension regex_suffix=".rh.ecosys\.[0-9|-]+[^\.nc]">
+        <subdir>rest</subdir>
+        <keep_last_in_rundir>true</keep_last_in_rundir>
+      </file_extension>
+      <file_extension regex_suffix=".rh\..*\.hdr">
+        <subdir>rest</subdir>
+        <keep_last_in_rundir>true</keep_last_in_rundir>
+      </file_extension>
+      <file_extension regex_suffix=".rh\.[0-9|-]+\.nc">
+        <subdir>rest</subdir>
+        <keep_last_in_rundir>true</keep_last_in_rundir>
+      </file_extension>
+      <file_extension regex_suffix=".rh\.[0-9|-]+[^\.nc]">
+        <subdir>rest</subdir>
+        <keep_last_in_rundir>true</keep_last_in_rundir>
+      </file_extension>
+      <file_extension regex_suffix=".ro\..*">
+        <subdir>rest</subdir>
+        <keep_last_in_rundir>true</keep_last_in_rundir>
+      </file_extension>
+      <file_extension regex_suffix=".d\w*">
+        <subdir>hist</subdir>
+        <keep_last_in_rundir>false</keep_last_in_rundir>
+      </file_extension>
+      <file_extension regex_suffix=".h.\d{4}-\d{2}\..*">
+        <subdir>hist</subdir>
+        <keep_last_in_rundir>false</keep_last_in_rundir>
+      </file_extension>
+      <file_extension regex_suffix=".hd.\d{4}-\d{2}\..*">
+        <subdir>hist</subdir>
+        <keep_last_in_rundir>false</keep_last_in_rundir>
+      </file_extension>
+      <file_extension regex_suffix=".hm.\d{4}-\d{2}\..*">
+        <subdir>hist</subdir>
+        <keep_last_in_rundir>false</keep_last_in_rundir>
+      </file_extension>
+      <file_extension regex_suffix=".h.nday1\..*">
+        <subdir>hist</subdir>
+        <keep_last_in_rundir>false</keep_last_in_rundir>
+      </file_extension>
+      <file_extension regex_suffix=".h.nyear1\..*">
+        <subdir>hist</subdir>
+        <keep_last_in_rundir>false</keep_last_in_rundir>
+      </file_extension>
+      <file_extension regex_suffix=".h\.[\w\-\.]*\.nc$">
+        <subdir>hist</subdir>
+        <keep_last_in_rundir>false</keep_last_in_rundir>
+      </file_extension>
+    </files>
+  </comp_archive_spec>
+
   <comp_archive_spec name="docn">
     <rootdir>ocn</rootdir>
     <files>

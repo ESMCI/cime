@@ -303,7 +303,7 @@ if (! $clean ) {
     if (!-f "./user_nl_cpl") {
 	$logger->info("Creating user_nl_xxx files for components and cpl");
     }
-    my @models = qw( ATM LND ICE OCN GLC ROF WAV ESP );
+    my @models = qw( ATM LND ICE OCN GLC ROF WAV ESP MICOM);
     # loop over models
     foreach my $model (@models) {
 	# what is actual component associated with each model

@@ -1819,6 +1819,7 @@
          <cmd_path lang="sh">module</cmd_path>
          <modules>
             <command name="unload">PrgEnv-cray</command>
+            <command name="unload">PrgEnv-pgi</command>
             <command name="unload">netcdf</command>
             <command name="load">perl/5.22.0-dso</command>
             <command name="load">PrgEnv-intel</command>

@@ -277,8 +277,8 @@ for mct, etc.
   <ADD_FFLAGS DEBUG="FALSE"> -O2 -debug minimal </ADD_FFLAGS>
   <ADD_CFLAGS DEBUG="FALSE"> -O2 -debug minimal </ADD_CFLAGS>
   <ADD_CFLAGS DEBUG="TRUE"> -O0 -g </ADD_CFLAGS>
-  <FFLAGS> -no-opt-dynamic-align  -convert big_endian -assume byterecl -ftz -traceback -assume realloc_lhs -fp-model source  </FFLAGS>
-  <CFLAGS>  -no-opt-dynamic-align -fp-model precise -std=gnu99 </CFLAGS>
+  <FFLAGS> -qno-opt-dynamic-align -convert big_endian -assume byterecl -ftz -traceback -assume realloc_lhs -fp-model source  </FFLAGS>
+  <CFLAGS> -qno-opt-dynamic-align -fp-model precise -std=gnu99 </CFLAGS>
   <FFLAGS_NOOPT> -O0 </FFLAGS_NOOPT>
   <ADD_FFLAGS_NOOPT compile_threaded="true"> -openmp </ADD_FFLAGS_NOOPT>
   <FC_AUTO_R8> -r8 </FC_AUTO_R8>
@@ -787,6 +787,7 @@ for mct, etc.
   <MPI_PATH>$(MPI_ROOT)</MPI_PATH>
   <MPI_LIB_NAME>mpi</MPI_LIB_NAME>
   <ADD_FFLAGS DEBUG="FALSE"> -O2</ADD_FFLAGS>
+  <ADD_FFLAGS MODEL="micom"> -r8 </ADD_FFLAGS>
   <ADD_SLIBS>-L$(NETCDF_DIR)/lib -lnetcdff -lnetcdf</ADD_SLIBS>
   <MPICC> cc </MPICC>
 </compiler>
@@ -796,6 +797,7 @@ for mct, etc.
   <MPI_PATH>$(MPI_ROOT)</MPI_PATH>
   <MPI_LIB_NAME>mpi</MPI_LIB_NAME>
   <ADD_FFLAGS DEBUG="FALSE"> -O2 -xAVX </ADD_FFLAGS>
+  <ADD_FFLAGS MODEL="micom"> -r8 </ADD_FFLAGS>
   <ADD_SLIBS>-L$(NETCDF_DIR)/lib -lnetcdff -lnetcdf</ADD_SLIBS>
 </compiler>
 
