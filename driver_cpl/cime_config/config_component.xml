@@ -2888,6 +2888,7 @@
     <values>
       <value compset="_DATM.*_DOCN%SOM"          >CESM1_MOD</value>
       <value compset="_POP2"                     >CESM1_MOD</value>
+      <value compset="_MICOM"                     >CESM1_MOD</value>
       <value compset="_DATM.*_DLND.*_DICE.*_DOCN">CESM1_MOD</value>
       <value compset="_XATM.*_XLND.*_XICE.*_XOCN">CESM1_MOD</value>
       <value compset="_SOCN"                     >CESM1_MOD</value>
@@ -2970,7 +2971,9 @@
       <value compset="_DATM%COPYALL_NPS"    >72</value>
       <value compset="_DATM.*_CLM"          >48</value>
       <value compset="_DATM.*_DICE.*_POP2"  >4</value>
+      <value compset="_DATM.*_DICE.*_MICOM"  >4</value>
       <value compset="_DATM.*_SLND.*_CICE.*_POP2">24</value>
+      <value compset="_DATM.*_SLND.*_CICE.*_MICOM">24</value>
       <value compset="_DATM.*_CICE.*_DOCN"  >24</value>
       <value compset="_DATM.*_DOCN%US20"    >24</value>
       <value compset="_MPAS"                >1</value>
@@ -2988,6 +2991,8 @@
       <value compset="_DLND.*_CISM"         >1</value>
       <value compset="_DATM.*_DICE.*_POP2.*_WW3" >4</value>
       <value compset="_DATM.*_DICE.*_POP2.*_DWAV">4</value>
+      <value compset="_DATM.*_DICE.*_MICOM.*_WW3" >4</value>
+      <value compset="_DATM.*_DICE.*_MICOM.*_DWAV">4</value>
     </values>
     <group>run_coupling</group>
     <file>env_run.xml</file>
@@ -3027,6 +3032,7 @@
     <default_value>$ATM_NCPL</default_value>
     <values>
       <value compset="_POP2">1</value>
+      <value compset="_MICOM">1</value>
       <value compset="_POP2" grid="oi%tx0.1v2">4</value>
       <value compset="_DATM.*_CLM4.*_SICE.*_SOCN">1</value>
       <value compset="_DATM.*_DLND.*_DICE.*_DOCN.*_SWAV">1</value>
@@ -3059,6 +3065,7 @@
     <default_value>8</default_value>
     <values>
       <value compset="_DATM.*_POP2.*_DROF">$ATM_NCPL</value>
+      <value compset="_DATM.*_MICOM.*_DROF">$ATM_NCPL</value>
       <value compset="_DATM.*_DOCN%SOM">$ATM_NCPL</value>
       <value compset="_DATM.*_DLND.*_DICE.*_DOCN">$ATM_NCPL</value>
       <value compset="_XATM.*_XLND.*_XICE.*_XOCN">$ATM_NCPL</value>
@@ -3090,6 +3097,7 @@
     <default_value>false</default_value>
     <values>
       <value compset="DATM.+POP">true</value>
+      <value compset="DATM.+MICOM">true</value>
       <value compset="DATM.+DOCN%IAF">true</value>
     </values>
     <group>run_component_cpl</group>
@@ -3116,6 +3124,7 @@
     <default_value>off</default_value>
     <values>
       <value compset="DATM.+POP">ocn</value>
+      <value compset="DATM.+MICOM">ocn</value>
     </values>
     <group>run_component_cpl</group>
     <file>env_run.xml</file>
@@ -3208,6 +3217,8 @@
     <values>
       <value compset="DATM.*_POP"    >TRUE</value>
       <value compset="CAM.*_POP"     >TRUE</value>
+      <value compset="DATM.*_MICOM"    >TRUE</value>
+      <value compset="CAM.*_MICOM"     >TRUE</value>
       <value compset="CAM.*_DOCN%SOM">TRUE</value>
     </values>
     <group>run_budgets</group>
@@ -3257,6 +3268,7 @@
       <value compset="^2000.+CAM[45]%SMA3"			>0.000001</value>
       <value compset="^2000.+CAM[45]%SMA7"			>0.000001</value>
       <value compset="^2000.+CAM[45]%SSOA"			>0.000001</value>
+      <value compset="^1850.+DATM%NYF.*_MICOM%ECO"              >284.7</value>
     </values>
     <group>run_co2</group>
     <file>env_run.xml</file>
@@ -3287,6 +3299,9 @@
     <type>logical</type>
     <valid_values>TRUE,FALSE</valid_values>
     <default_value>FALSE</default_value>
+    <values>
+      <value compset="_MICOM">TRUE</value>
+    </values>
     <group>run_flags</group>
     <file>env_run.xml</file>
     <desc>turns on coupler bit-for-bit reproducibility with varying pe counts</desc>
@@ -3347,6 +3362,7 @@
       <value compset="CAM.*_CLM.*_CICE.*_POP2%DAR.*_RTM_SGLC_SWAV"		>2</value> <!-- BDAR -->
       <value compset="DATM.*_DLND.*_DICE.*_POP2%DAR.*_RTM_SGLC_SWAV"		>1</value> <!-- CDAR -->
       <value compset="DATM.*_DLND.*_CICE.*_POP2%DAR.*_RTM_SGLC_SWAV"		>1</value> <!-- GDAR -->
+      <value compset="_DATM.*_DLND.*_CICE.*_MICOM"                              >-1</value>
     </values>
     <group>case_cost</group>
     <file>env_case.xml</file>

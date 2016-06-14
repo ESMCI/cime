@@ -261,7 +261,11 @@
     <lname>1850_CAM5_CLM45%BGC_CICE_POP2_MOSART_CISM2_SWAV</lname>
   </compset>
 
-
+  <!-- NorESM compset -->
+  <compset>
+    <alias>N1850C5L45BGCR</alias>
+    <lname>1850_CAM5_CLM45%BGC_CICE_MICOM_RTM_SGLC_SWAV</lname>
+  </compset>
   <!-- Prognostic wave -->
 
 
