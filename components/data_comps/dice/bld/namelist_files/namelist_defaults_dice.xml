@@ -77,9 +77,9 @@ Currently the following datamode values are supported
 <!--- stream: SSMI_IAF                          -->
 <!-- =========================================  -->
 
-<strm_year_align stream="SSMI_IAF">   1 </strm_year_align>
-<strm_year_start stream="SSMI_IAF">1948 </strm_year_start>
-<strm_year_end   stream="SSMI_IAF">2009 </strm_year_end>
+<strm_year_align stream="SSMI_IAF">1</strm_year_align>
+<strm_year_start stream="SSMI_IAF">1948</strm_year_start>
+<strm_year_end   stream="SSMI_IAF">2009</strm_year_end>
 <strm_domdir     stream="SSMI_IAF">$DIN_LOC_ROOT/ice/dice7</strm_domdir>
 <strm_domfil     stream="SSMI_IAF">domain.ocn.x0.5.090227.nc</strm_domfil>
 <strm_datdir     stream="SSMI_IAF">$DIN_LOC_ROOT/ocn/iaf</strm_datdir>
@@ -194,6 +194,8 @@ ssmi.ifrac.0.5x0.5.2009.20120420.nc
 <decomp>1d</decomp>
 
 <flux_qacc>.true.</flux_qacc>
+
+<strm_offset>0</strm_offset> 
 
 <strm_fillalgo>nn</strm_fillalgo>
 

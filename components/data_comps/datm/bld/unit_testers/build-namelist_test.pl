@@ -30,12 +30,21 @@ OPTIONS
 EOF
 }
 # The env variables that will need to be set
-my %xmlenv = ( "DATM_CO2_TSERIES", "RUN_TYPE", "DIN_LOC_ROOT", "ATM_DOMAIN_FILE", "ATM_DOMAIN_PATH", "DATM_MODE", "DATM_PRESAERO", "ATM_GRID",
-"GRID", "DATM_TOPO" );
-my $envxmlfile = "env_utrun.xml";   # Filename to write env settings to
-#
+my %xmlenv = ( "DATM_CO2_TSERIES", 
+	       "RUN_TYPE", 
+	       "DIN_LOC_ROOT", 
+	       "ATM_DOMAIN_FILE", 
+	       "ATM_DOMAIN_PATH", 
+	       "DATM_MODE", 
+	       "DATM_PRESAERO", 
+	       "ATM_GRID",
+	       "GRID", 
+	       "DATM_TOPO" );
+
+# Filename to write env settings to
+my $envxmlfile = "env_utrun.xml";   
+
 # Process command-line options.
-#
 my %opts = ( help     => 0,
              generate => 0,
              compare  => undef,
@@ -70,7 +79,9 @@ my $cwd = `pwd`;
 chomp( $cwd );
 my $CASEROOT = "$cwd/testcase";
 print "CASEROOT = $CASEROOT\n";
+
 my $confdir = "$CASEROOT/Buildconf/datmconf";
+system( "mkdir -p $confdir" );
 
 # Check that CIMEROOT set so can run
 if ( $ENV{'CIMEROOT'} eq "" ) {
@@ -86,8 +97,8 @@ if ( $ENV{'CIMEROOT'} eq "" ) {
    }
 }
 #
-#
-my $bldnml = "../build-namelist -debug -caseroot $CASEROOT -cimeroot $ENV{'CIMEROOT'}";
+
+my $bldnml = "../build-namelist $CASEROOT, $ENV{'CIMEROOT'}, $confdir" = @ARGV;
 
 my $tempfile = "temp_file.txt";
 if ( -f $tempfile ) {
@@ -146,10 +157,12 @@ my %diff;
 if ( defined($opts{'compare'}) ) {
    &comparefiles( \%diff, "default", "$xmlenv{'DATM_MODE'}", $opts{'compare'} );
 }
+
 # Cleanup
 system( "/bin/rm -rf $confdir"         );
 
 my %wc;
+
 # Run all the different options
 foreach my $option ( "-print 0", "-print 1", "-print 2", "-test -print 2",
                      "-namelist \"&datm_exp taxmode='extend'/\"",

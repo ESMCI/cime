@@ -9,6 +9,8 @@ from CIME.utils import expect, handle_standard_logging_options, setup_standard_l
 from CIME.case import Case
 import sys, os, shutil, glob, argparse
 
+logger = logging.getLogger(__name__)
+
 ###############################################################################
 def parse_input(argv):
 ###############################################################################
@@ -104,8 +106,12 @@ def build_data_nml(argv, compclass):
     cimeroot = case.get_value("CIMEROOT")
     rundir   = case.get_value("RUNDIR")
     ninst    = case.get_value("NINST_%s" % compclass.upper())
-
     compname = "d" + compclass
+    din_loc_root = case.get_value("DIN_LOC_ROOT")
+
+    if not os.path.isdir(din_loc_root):
+        os.makedirs(din_loc_root)
+        logger.info("Created input root directory %s" %din_loc_root)
 
     confdir = os.path.join(caseroot,"Buildconf",compname + "conf")
     if not os.path.isdir(confdir):
@@ -135,18 +141,27 @@ def build_data_nml(argv, compclass):
         namelist_infile = os.path.join(confdir, "cesm_namelist")
         create_namelist_infile(case, user_nl_file, namelist_infile)
 
-        # call build-namelist
+        # call data comps build-namelist
         user_xml_dir = os.path.join(caseroot, "SourceMods", "src." + compname)
+        expect (os.path.isdir(user_xml_dir),
+                "user_xml_dir %s does not exist " %user_xml_dir)
+
         inst_string_label = inst_string
         if not inst_string_label:
             inst_string_label = "\"\""
-        bldnamelist = os.path.join(cimeroot, "components", "data_comps", compname, "bld", "build-namelist")
 
-        cmd = "%s -caseroot %s -cimeroot %s -inst_string %s -infile %s -user_xml_dir %s" \
-            % (bldnamelist, caseroot, cimeroot, inst_string_label, namelist_infile, user_xml_dir)
+        command = os.path.join(cimeroot, "components", "data_comps", compname, "bld", "build-namelist")
+
+        cmd = "%s %s %s %s %s %s %s" \
+            % (command, caseroot, cimeroot, confdir, inst_string_label, namelist_infile, user_xml_dir)
+
+        logger.info( "cmd is: %s " %cmd)
 
         rc, out, err = run_cmd(cmd, from_dir=confdir, ok_to_fail=True)
         expect(rc==0,"Command %s failed rc=%d\nout=%s\nerr=%s"%(cmd,rc,out,err))
+        
+        print "%s " %out #FIXME - the print works but the logger.info does not
+        logger.info(out)
 
         # copy namelist files and stream text files, to rundir
         if os.path.isdir(rundir):

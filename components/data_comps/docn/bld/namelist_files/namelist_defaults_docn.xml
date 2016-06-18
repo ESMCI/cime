@@ -212,6 +212,8 @@ Currently the following docn modes are supported
 
 <decomp>1d</decomp>
 
+<strm_offset>0</strm_offset> 
+
 <strm_fillalgo>nn</strm_fillalgo>
 
 <strm_fillmask>nomask</strm_fillmask>
