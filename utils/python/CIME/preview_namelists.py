@@ -80,7 +80,9 @@ def preview_namelists(case, dryrun=False, casedir=None):
         if (logger.level == logging.DEBUG):
             run_cmd("PREVIEW_NML=1 %s %s" % (cmd, caseroot))
         else:
-            run_cmd("%s %s" % (cmd, caseroot))
+            rc, out, err = run_cmd("%s %s" % (cmd, caseroot), ok_to_fail=True)
+            expect(rc==0,"Command %s failed rc=%d\nout=%s\nerr=%s"%(cmd,rc,out,err))
+            logger.info(out)
 
     # Save namelists to docdir
     if (not os.path.isdir(docdir)):
