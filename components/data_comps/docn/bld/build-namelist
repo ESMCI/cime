@@ -85,13 +85,13 @@ foreach my $stream ( @streams ) {
     if ($stream eq "prescribed" || $stream eq "copyall") {
 	# Currently ASSUME ONLY 1 FILE for prescribed mode
 	my $grid_file = $defaults->get_value( "strm_grid_file", \%namelist_opts );
-	my $grid_file = SetupTools::expand_xml_var($grid_file, \%xmlvars);
 	my $data_file = $defaults->get_value( "strm_data_file", \%namelist_opts );
+	my $grid_file = SetupTools::expand_xml_var($grid_file, \%xmlvars);
 	my $data_file = SetupTools::expand_xml_var($data_file, \%xmlvars);
-	$stream_template_opts{'domainpath'} = dirname($grid_file);
-	$stream_template_opts{'domain'}     = basename($grid_file);
-	$stream_template_opts{'filepath'}   = dirname($data_file);
-	$stream_template_opts{'filenames'}  = basename($data_file);
+	$stream_template_opts{'domain_filepath'}  = dirname($grid_file);
+	$stream_template_opts{'domain_filenames'} = basename($grid_file);
+	$stream_template_opts{'data_filepath'}    = dirname($data_file);
+	$stream_template_opts{'data_filenames'}   = basename($data_file);
     }
     BuildNamelistUtils::create_stream_file($caseroot, $confdir, \%xmlvars, $defaults, 
 					   \%namelist_opts, \%stream_template_opts, \%streams_namelists, 

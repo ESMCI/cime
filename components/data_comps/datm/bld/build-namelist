@@ -174,7 +174,6 @@ BuildNamelistUtils::create_shr_strdata_nml('datm', $nl, $defaults, $definition,
 					   \%namelist_opts, \%streams_namelists, 
 					   $DIN_LOC_ROOT, "${ATM_DOMAIN_PATH}/${ATM_DOMAIN_FILE}" );
 
-
 ##########################################################
 # namelist group: datm_nml  (in file datm_in)            #
 ##########################################################

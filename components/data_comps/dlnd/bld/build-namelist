@@ -92,6 +92,7 @@ $fh_out->close;
 # namelist group: shr_strdata_nml  (in file dlnd_lnd_in) #
 ##########################################################
 
+print "DEBUG: ${LND_DOMAIN_FILE}, ${LND_DOMAIN_PATH} \n";
 BuildNamelistUtils::create_shr_strdata_nml('dlnd', $nl, $defaults, $definition, 
 					   \%namelist_opts, \%streams_namelists, 
 					   $DIN_LOC_ROOT, "${LND_DOMAIN_PATH}/${LND_DOMAIN_FILE}" );

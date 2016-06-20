@@ -5,7 +5,6 @@ use strict;
 use English;
 use Cwd qw( getcwd abs_path chdir);
 use IO::File;
-use XML::LibXML;
 use Data::Dumper;
 use List::Util qw ( max );
 use Log::Log4perl qw(get_logger);
@@ -13,7 +12,6 @@ use Build::Config;
 use Build::NamelistDefinition;
 use Build::NamelistDefaults;
 use Build::Namelist;
-use Streams::TemplateGeneric;
 use Config::SetupTools;
 
 my $logger;
@@ -107,78 +105,110 @@ sub create_stream_file{
 
     my ($caseroot, $confdir, $xmlvars, $defaults, 
 	$namelist_opts, $stream_template_opts, $streams_namelists, 
-	$stream, $outstream, $fh_out) = @_;
+	$stream, $streamfile, $fh_out) = @_;
 
-    if (-e "$caseroot/user_$outstream") {
-        if ( ! -w "$caseroot/user_$outstream" ) {
-           print "Your user streams file is read-only: $caseroot/user_$outstream\n";
+    if (-e "$caseroot/user_$streamfile") {
+        if ( ! -w "$caseroot/user_$streamfile" ) {
+           print "Your user streams file is read-only: $caseroot/user_$streamfile\n";
            die "Make it writable to continue\n";
         }
-	my $command = "cp -p $caseroot/user_$outstream $confdir/$outstream";
+	my $command = "cp -p $caseroot/user_$streamfile $confdir/$streamfile";
 	system($command) == 0  or die "system $command failed: $? \n";
 	return
     }
 
+
     my %template;
-    $template{'printing'}   = 0;
-    $template{'test'}       = "";
-    $template{'ProgName'}   = "create_stream_template";
-    $template{'ProgDir'}    = "";
-    $template{'cmdline'}    = "";
+    $template{'offset'}           = $defaults->get_value( "strm_offset"    , $namelist_opts);
+    $template{'data_filepath'}    = $defaults->get_value( "strm_datdir"    , $namelist_opts);
+    $template{'data_filenames'}   = $defaults->get_value( "strm_datfil"    , $namelist_opts);
+    $template{'data_varnames'}    = $defaults->get_value( "strm_datvar"    , $namelist_opts);
+    $template{'domain_filepath'}  = $defaults->get_value( "strm_domdir"    , $namelist_opts);
+    $template{'domain_filenames'} = $defaults->get_value( "strm_domfil"    , $namelist_opts);
+    $template{'domain_varnames'}  = $defaults->get_value( "strm_domvar"    , $namelist_opts);
+    $template{'yearfirst'}        = $defaults->get_value( "strm_year_start", $namelist_opts);
+    $template{'yearlast'}         = $defaults->get_value( "strm_year_end"  , $namelist_opts);
 
-    $template{'offset'}     = $defaults->get_value( "strm_offset"    , $namelist_opts);
-    $template{'filepath'}   = $defaults->get_value( "strm_datdir"    , $namelist_opts);
-    $template{'filenames'}  = $defaults->get_value( "strm_datfil"    , $namelist_opts);
-    $template{'domainpath'} = $defaults->get_value( "strm_domdir"    , $namelist_opts);
-    $template{'domain'}     = $defaults->get_value( "strm_domfil"    , $namelist_opts);
-    $template{'datvarnames'}= $defaults->get_value( "strm_datvar"    , $namelist_opts);
-    $template{'domvarnames'}= $defaults->get_value( "strm_domvar"    , $namelist_opts);
-    $template{'yearfirst'}  = $defaults->get_value( "strm_year_start", $namelist_opts);
-    $template{'yearlast'}   = $defaults->get_value( "strm_year_end"  , $namelist_opts);
+    $template{'data_filepath'}    = SetupTools::expand_xml_var( $template{'data_filepath'}   , $xmlvars );
+    $template{'data_filenames'}   = SetupTools::expand_xml_var( $template{'data_filenames'}  , $xmlvars );
+    $template{'domain_filepath'}  = SetupTools::expand_xml_var( $template{'domain_filepath'} , $xmlvars );
+    $template{'domain_filenames'} = SetupTools::expand_xml_var( $template{'domain_filenames'}, $xmlvars );
+    $template{'yearfirst'}        = SetupTools::expand_xml_var( $template{'yearfirst'}       , $xmlvars );
+    $template{'yearlast'}         = SetupTools::expand_xml_var( $template{'yearlast'}        , $xmlvars );
 
-    $template{'filepath'}   = SetupTools::expand_xml_var( $template{'filepath'}  , $xmlvars );
-    $template{'filenames'}  = SetupTools::expand_xml_var( $template{'filenames'} , $xmlvars );
-    $template{'domainpath'} = SetupTools::expand_xml_var( $template{'domainpath'}, $xmlvars );
-    $template{'domain'}     = SetupTools::expand_xml_var( $template{'domain'}    , $xmlvars );
-    $template{'yearfirst'}  = SetupTools::expand_xml_var( $template{'yearfirst'} , $xmlvars );
-    $template{'yearlast'}   = SetupTools::expand_xml_var( $template{'yearlast'}  , $xmlvars );
-
-    # Overwrite %template with values from %stream_template_otps passed in 
+    # Overwrite %template with values from %stream_template_opts passed in 
     foreach my $key (keys %$stream_template_opts) {
 	$template{$key} = $$stream_template_opts{$key};
     }
 
+    # Consistency check
     foreach my $item ( "yearfirst", "yearlast", "offset", 
-		       "filepath", "filenames", "domainpath", "domain", 
-		       "datvarnames", "domvarnames" ) {
+		       "data_filepath", "data_filenames", "data_varnames",
+		       "domain_filepath", "domain_filenames", "domain_varnames") {
 	if ( $template{$item} =~ /^[ ]*$/ ) {
 	    die "ERROR:: bad $item for stream:  $stream\n";
 	}
     }
 
-    # Create the streams txt file for this stream (from a generic template)
-    my $stream_template = Streams::TemplateGeneric->new( \%template );
-    $stream_template->Read( "${caseroot}/Buildconf/template.streams.xml" );
-    $stream_template->Write( $outstream );
+    # Write stream file
+    my $fh = new IO::File;
+    if ( $streamfile ne "" ) {
+	$fh->open(">$streamfile") or die "** can't open output stream file: $streamfile, $!\n";
+	print "Opening output stream file: $streamfile\n" ;
 
-    # Append to comp.input_data_list
-    my @filenames = $stream_template->GetDataFilenames( 'domain');
-    my $i = 0;
-    foreach my $file ( @filenames ) {
-	$i++;
-	print $fh_out "domain${i} = $file\n";
-    }
+	print $fh "<dataSource> \n";
+	print $fh "   GENERIC \n";
+	print $fh "</dataSource> \n";
+	print $fh "<domainInfo> \n";
+	print $fh "  <variableNames>";
+	print $fh "     $template{'domain_varnames'}";
+	print $fh "  </variableNames> \n";
+	print $fh "  <filePath> \n";
+	print $fh "     $template{'domain_filepath'} \n";
+	print $fh "  </filePath> \n";
+	print $fh "  <fileNames> \n";
+	print $fh "     $template{'domain_filenames'}\n";  
+	print $fh "  </fileNames> \n";    
+	print $fh "</domainInfo> \n";
 
-    my @filenames = $stream_template->GetDataFilenames( 'data');
-    my $i = 0;
-    foreach my $file ( @filenames ) {
-	$i++;
-	print $fh_out "file${i} = $file\n";
+	print $fh "<fieldInfo> \n";
+	print $fh "   <variableNames>";
+	print $fh "      $template{'data_varnames'}"; 
+	print $fh "   </variableNames> \n";
+	print $fh "   <filePath> \n";
+	print $fh "      $template{'filepath'} \n";
+	print $fh "   </filePath> \n";
+	print $fh "   <fileNames> \n";
+	print $fh "      $template{'filenames'} \n";
+	print $fh "   </fileNames> \n";
+	print $fh "   <offset> \n";
+	print $fh "      $template{'offset'} \n";
+	print $fh "   </offset> \n";
+	print $fh "</fieldInfo> \n";
+
+	$fh->close();
     }
+    
+    # Update the component input_data_list in Buildconf/
+    my $i = 0;
+    my @filenames = $template{'domain_filenames'};
+    my $filepath = $template{'domain_filepath'};
+    foreach my $file ( @filenames) {
+     	$i++;
+	my $subfile = Sub($file);
+     	print $fh_out "domain${i} = ${filepath}/${file}\n";
+     }
+    my $i = 0;
+    my @filenames = $template{'data_filenames'};
+    my $filepath = $template{'data_filepath'};
+    foreach my $file ( @filenames) {
+     	$i++;
+     	print $fh_out "file${i} = ${filepath}/${file}\n";
+     }
 
     # Update the streams_namelists hash for the new stream
     update_streams_namelists($defaults, $namelist_opts, 
-			     $xmlvars, $stream, $outstream, $streams_namelists);
+			     $xmlvars, $stream, $streamfile, $streams_namelists);
 
 }
 
@@ -190,7 +220,7 @@ sub update_streams_namelists {
     my $namelist_opts	  = shift;
     my $xmlvars		  = shift;
     my $stream		  = shift; 
-    my $outstream	  = shift;
+    my $streamfile	  = shift;
     my $streams_namelists = shift;
 
     # Stream specific namelist variables used below for $nl
@@ -221,17 +251,17 @@ sub update_streams_namelists {
     }
 
     if ( ! defined($$streams_namelists{"ostreams"}))  {
-	$$streams_namelists{"ostreams"}	= "\"$outstream $align_year $beg_year $end_year\"";
-	$$streams_namelists{"omapalgo"}	= "\'$mapalgo\'";
-	$$streams_namelists{"omapmask"}	= "\'$mapmask\'";
+	$$streams_namelists{"ostreams"}	 = "\"$streamfile $align_year $beg_year $end_year\"";
+	$$streams_namelists{"omapalgo"}	 = "\'$mapalgo\'";
+	$$streams_namelists{"omapmask"}	 = "\'$mapmask\'";
 	$$streams_namelists{"otintalgo"} = "\'$tintalgo\'";
-	$$streams_namelists{"otaxmode"}	= "\'$taxmode\'";
+	$$streams_namelists{"otaxmode"}	 = "\'$taxmode\'";
 	$$streams_namelists{"ofillalgo"} = "\'$fillalgo\'";
 	$$streams_namelists{"ofillmask"} = "\'$fillmask\'";
-	$$streams_namelists{"odtlimit"}  = "$dtlimit";
+	$$streams_namelists{"odtlimit"}	 = "$dtlimit";
     } else {
 	my $ostreams =  $$streams_namelists{"ostreams"} ;
-	$$streams_namelists{"ostreams"}   = "$ostreams,\"$outstream $align_year $beg_year $end_year\"";
+	$$streams_namelists{"ostreams"}   = "$ostreams,\"$streamfile $align_year $beg_year $end_year\"";
 	$$streams_namelists{"omapalgo"}  .= ",\'$mapalgo\'";
 	$$streams_namelists{"omapmask"}  .= ",\'$mapmask\'";
 	$$streams_namelists{"otintalgo"} .= ",\'$tintalgo\'";
@@ -419,11 +449,11 @@ sub create_shr_strdata_nml {
 		    $nl, 'vectors', "$vectors");
     }
 
+    if (defined $domain_filename) {
+	add_default($definition, $defaults, $din_loc_root, 
+		    $nl, 'domainfile', "$domain_filename");
+    }
     if ($datamode ne 'NULL') {
-	if (defined $domain_file) {
-	    add_default($definition, $defaults, $din_loc_root, 
-			$nl, 'domainfile', "$domain_filename");
-	}
 
 	add_default($definition, $defaults, $din_loc_root, 
 		    $nl, 'streams', $$streams_namelists{"ostreams"});
@@ -446,8 +476,10 @@ sub create_shr_strdata_nml {
 	add_default($definition, $defaults, $din_loc_root, 
 		    $nl, 'fillmask', $$streams_namelists{"ofillmask"});
 
-	add_default($definition, $defaults, $din_loc_root, 
-		    $nl, 'dtlimit', $$streams_namelists{"odtlimit"});
+	if ($$streams_namelists{"odtlimit"} ne "") { 
+	    add_default($definition, $defaults, $din_loc_root, 
+			$nl, 'dtlimit', $$streams_namelists{"odtlimit"});
+	}
     }
 }
 
@@ -463,26 +495,24 @@ sub write_output_files {
     # Validate that the entire resultant namelist is valid
     $definition->validate($nl);
 
-    my $note = "";
-
     # dcomp_comp_in file
     my @groups = qw(shr_strdata_nml);
     my $outfile = "./d${comp}_${comp}_in";
-    $nl->write($outfile, 'groups'=>\@groups, 'note'=>"$note" );
-    print "Writing d${comp}_dshr namelist to $outfile \n"; 
+    $nl->write($outfile, 'groups'=>\@groups);
+    #print "Writing d${comp}_dshr namelist \n"; 
 
     # comp_in
-    @groups = qw(${comp}_nml);
+    @groups = ("d${comp}_nml");
     $outfile = "./d${comp}_in";
-    $nl->write($outfile, 'groups'=>\@groups, 'note'=>"$note" );
-    print "Writing d${comp}_in namelist to $outfile \n"; 
+    $nl->write($outfile, 'groups'=>\@groups);
+    #print "Writing d${comp}_in namelist \n";
 
     # comp_modelio
     @groups = qw(modelio);
     $outfile = "./${comp}_modelio.nml";
     $nl->set_variable_value( "modelio", "logfile", "'atm.log'" );
-    $nl->write($outfile, 'groups'=>\@groups, 'note'=>"$note" );
-    print "Writing ${comp}_modelio.nml namelist to $outfile \n"; 
+    $nl->write($outfile, 'groups'=>\@groups);
+    #print "Writing ${comp}_modelio.nml namelist \n"; 
 
     # Test that input files exist locally.
     check_input_files($definition, $nl, $din_loc_root, 
@@ -541,5 +571,166 @@ sub quote_string {
         $str = "\'$str\'";
     }
     return $str;
+}
+
+#-----------------------------------------------------------------------------------------------
+sub Sub {
+
+    # Substitute indicators with given values
+    #
+    # Replace any instance of the following substring indicators with the appropriate values:#
+    #
+    #     %y    = year from the range yearfirst to yearlast
+    #     %ym   = year-month from the range yearfirst to yearlast with all 12 months
+    #     %ymd  = year-month-day from the range yearfirst to yearlast with all 12 months
+    #
+    # fileNames or anything with %y, %ym or %ymd will be returned as a reference to an array.
+    # Everything else is returned as a scalar.
+    #
+    # Difference between Sub and SubFields: Sub is called for anything
+    # that might be filenames, and does replacements that may be
+    # needed for filenames 
+    # SubFields is called for the field list in datvarnames, and does
+    # replacements that might be needed for this field list.
+    #
+    my $value     = shift;
+    my $yearfirst = shift;
+    my $yearlast  = shift;
+
+    $value =~  s/^[ \n]+//;          # remove leading spaces
+    $value =~  s/[ \n]+$//;          # remove ending spaces
+
+    # Replace % indicators appropriately
+    #
+    # If year or year/month indicators exist
+    if ( $value =~ /%([1-9]*)y([m]?)([d]?)/ ) {
+
+	my $digits = 4;
+	if ( $1 ne "" ) { $digits = $2; }
+	my $months = 1;
+	if ( $2 eq "" ) { $months = 0; }
+	my $days   = 0;
+	if ( $3 ne "" ) {
+	    if ( ! $months ) {
+		die "Months NOT defined but days are? (\%yd is NOT valid indicator)\n";
+	    }
+	    $months = 0;
+	    $days   = 1;
+	}
+	if ( ($yearfirst < 0)  || ($yearlast < 0) ) {
+	    die "yearfirst and yearlast  was NOT defined on command line and needs to be set\n";
+	}
+	#
+	# Loop over year range
+	#
+	my @filenames;
+	my $startfilename;
+	my $endfilename;
+	#
+	# FIXME - this no longer seems to be used
+	# Include previous December if %ym form and lastmonth is true
+	#
+	# if ( $lastmonth && $months ) {
+	#     my $year = $yearfirst-1;
+	#     my $filename = $value;
+	#     my $month = 12;
+	#     if ( $filename =~ /^([^%]*)%[1-9]?ym([^ ]*)$/ ) {
+	# 	$startfilename = $1;
+	# 	$endfilename   = $2;
+	# 	$filename = sprintf "%s%${digits}.${digits}d-%2.2d%s", $startfilename,
+	# 	$year, $month, $endfilename;
+	# 	push @filenames, $filename;
+	#     }
+	# }
+	# #
+	# # Include previous December/31 if %ymd form and lastmonth is true
+	# #
+	# if ( $lastmonth && $months ) {
+	#     my $year = $yearfirst-1;
+	#     my $filename = $value;
+	#     my $month = 12;
+	#     my $day   = 31;
+	#     if ( $filename =~ /^([^%]*)%[1-9]?ymd([^ ]*)$/ ) {
+	# 	$startfilename = $1;
+	# 	$endfilename   = $2;
+	# 	$filename = sprintf "%s%${digits}.${digits}d-%2.2d-%2.2d%s", $startfilename,
+	# 	$year, $month, $day, $endfilename;
+	# 	push @filenames, $filename;
+	#     }
+	# }
+	for ( my $year = $yearfirst; $year <= $yearlast; $year++ ) {
+	    #
+	    # If include year and months AND days
+	    #
+	    if ( $days ) {
+		for ( my $month = 1; $month <= 12; $month++ ) {
+		    my $dpm = DaysPerMonth( $month, $year );
+		    for ( my $day = 1; $day <= $dpm; $day++ ) {
+			my $filename = $value;
+			if ( $filename =~ /^([^%]*)%[1-9]?ymd([^ ]*)$/ ) {
+			    $startfilename = $1;
+			    $endfilename   = $2;
+			    $filename = sprintf "%s%${digits}.${digits}d-%2.2d-%2.2d%s",
+			    $startfilename, $year, $month, $day, $endfilename;
+			    push @filenames, $filename;
+			}
+		    }
+		}
+		#
+		# If include year and months
+		#
+	    } elsif ( $months ) {
+		for ( my $month = 1; $month <= 12; $month++ ) {
+		    my $filename = $value;
+		    if ( $filename =~ /^([^%]*)%[1-9]?ym([^ ]*)$/ ) {
+			$startfilename = $1;
+			$endfilename   = $2;
+			$filename = sprintf "%s%${digits}.${digits}d-%2.2d%s", $startfilename,
+			$year, $month, $endfilename;
+			push @filenames, $filename;
+		    }
+		}
+		#
+		# If just years
+		#
+	    } else {
+		my $filename = $value;
+		if ( $filename =~ /^([^%]*)%[1-9]?y([^ ]*)$/ ) {
+		    $startfilename = $1;
+		    $endfilename   = $2;
+		    $filename = sprintf "%s%${digits}.${digits}d%s", $startfilename, $year,
+		    $endfilename;
+		    push @filenames, $filename;
+		}
+	    }
+	}
+	if ( $#filenames < 0 ) {
+	    die "No output filenames -- must be something wrong in template or input filename indicator\n";
+	}
+	return( \@filenames );
+
+    } else {
+
+	# Otherwise return a scalar value
+	return( "$value" );
+    }
+}
+
+#-------------------------------------------------------------------------------
+
+sub DaysPerMonth {
+
+    # Return the number of days per month for a given month
+    # (and in general year -- but right now just do a noleap calendar of 365 days/year)
+
+    my $month = shift;
+    my $year  = shift;
+
+    my @dpm = ( 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 );
+    if ( $month < 1 || $month > 12 ) {
+	die "Input month is NOT valid = $month\n";
+    }
+    my $days = $dpm[$month-1];
+    return( $days );
 }
 
