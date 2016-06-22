@@ -225,14 +225,6 @@ valid_values="">
 Namelist filename for data model rof share stream data namelist
 </entry>
 
-<entry id="rof_in"
-type="char*256"
-category="drof"
-group="drof_nml"
-valid_values="">
-Namelist filename for data model rof share stream data namelist
-</entry>
-
 <entry id="decomp"
 type="char*4"
 category="drof"
@@ -251,7 +243,7 @@ valid_values="">
 Master restart file name for drof model
 </entry>
 
-<entry id="restfilsr"
+<entry id="restfils"
 type="char*256"
 category="drof"
 group="drof_nml"

@@ -1,59 +1,40 @@
 #!/usr/bin/env perl
 
-#-----------------------------------------------------------------------------------------------
-# build-namelist script for the CIME datm (Data Atmosphere Model).
-#--------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------------
+# build-namelist script for the CIME Data Atmosphere Model
+#-------------------------------------------------------------------------------------------
 
 use strict;
 use English;
 use IO::File;
-#-----------------------------------------------------------------------------------------------
 
 my ($caseroot, $cimeroot, $confdir, $inst_string, $namelist_infile, $user_xml_dir) = @ARGV;
 
-my @dirs = ( "$cimeroot/utils/perl5lib");
+my @dirs = ( "$cimeroot/utils/perl5lib" );
 unshift @INC, @dirs;
-
-require Build::NamelistDefinition;
-require Build::NamelistDefaults;
-require Build::Namelist;
 require Streams::BuildNamelistUtils;
 
-####################################
-# Create required objects
-####################################
+#-------------------------------------------
+# Create nmlgen object
+#-------------------------------------------
 
-my ($definition, $defaults, $nl) = 
-    BuildNamelistUtils::create_namelist_objects('datm', $cimeroot, $caseroot, $confdir,
-						$user_xml_dir, $namelist_infile);
+my $nmlgen = BuildNamelistUtils->new('datm',$cimeroot, $caseroot, $confdir, 
+				     $user_xml_dir, $namelist_infile);
 
-####################################
-# Required xml variables           #
-####################################
+#-------------------------------------------
+# Required xml variables           
+#-------------------------------------------
 
-my %xmlvars = ();
-SetupTools::getxmlvars(${caseroot},\%xmlvars);
-foreach my $attr (keys %xmlvars) {
-    $xmlvars{$attr} = SetupTools::expand_xml_var($xmlvars{$attr}, \%xmlvars);
-}
-foreach my $var ( "DIN_LOC_ROOT", "ATM_DOMAIN_FILE", "ATM_DOMAIN_PATH",
-		  "DATM_MODE", "DATM_PRESAERO", "DATM_TOPO", "DATM_CO2_TSERIES",
-                  "ATM_GRID", "GRID" ) {
-    if ( ! defined($xmlvars{$var})  || $xmlvars{$var} =~ /^(UNSET|)$/ ) {
-	die "** $var is NOT set  ** \n"
-    }
-}
-
-my $DIN_LOC_ROOT    = $xmlvars{'DIN_LOC_ROOT'};
-my $ATM_DOMAIN_FILE = $xmlvars{'ATM_DOMAIN_FILE'};
-my $ATM_DOMAIN_PATH = $xmlvars{'ATM_DOMAIN_PATH'};
-my $DATM_MODE       = $xmlvars{'DATM_MODE'};
-my $DATM_PRESAERO   = $xmlvars{'DATM_PRESAERO'};
-my $DATM_TOPO       = $xmlvars{'DATM_TOPO'};
-my $DATM_CO2_TSERIES= $xmlvars{'DATM_CO2_TSERIES'};
-my $ATM_GRID        = $xmlvars{'ATM_GRID'};
-my $GRID            = $xmlvars{'GRID'};
-my $CLM_USRDAT_NAME = $xmlvars{'CLM_USRDAT_NAME'};
+my $DIN_LOC_ROOT    = $nmlgen->get_xmlvar('DIN_LOC_ROOT');
+my $ATM_DOMAIN_FILE = $nmlgen->get_xmlvar('ATM_DOMAIN_FILE');
+my $ATM_DOMAIN_PATH = $nmlgen->get_xmlvar('ATM_DOMAIN_PATH');
+my $DATM_MODE       = $nmlgen->get_xmlvar('DATM_MODE');
+my $DATM_PRESAERO   = $nmlgen->get_xmlvar('DATM_PRESAERO');
+my $DATM_TOPO       = $nmlgen->get_xmlvar('DATM_TOPO');
+my $DATM_CO2_TSERIES= $nmlgen->get_xmlvar('DATM_CO2_TSERIES');
+my $ATM_GRID        = $nmlgen->get_xmlvar('ATM_GRID');
+my $GRID            = $nmlgen->get_xmlvar('GRID');
+my $CLM_USRDAT_NAME = $nmlgen->get_xmlvar('CLM_USRDAT_NAME');
 
 if ( $DATM_MODE =~ /CLM/ && $DATM_PRESAERO eq "none" ) {
    die "A DATM_MODE for CLM is incompatible with DATM_PRESAERO=none\n";
@@ -65,27 +46,23 @@ if ( $GRID eq "CLM_USRDAT" && $CLM_USRDAT_NAME =~ /^(UNSET|)$/ ) {
     die "** GRID=CLM_USRDAT and CLM_USRDAT_NAME is NOT set  **";
 }
 
-my $var = "DATM_MODE";
-my $group = $definition->get_group_name($var);
-$nl->set_variable_value( $group, $var, "\'$xmlvars{$var}\'" );
+my $var = "DATM_MODE"; 
+my $value = $nmlgen->get_xmlvar($var);
+$nmlgen->set_variable_value($var, "\'$value\'" );
 
 my $var= "DATM_PRESAERO";
-my $group = $definition->get_group_name($var);
-$nl->set_variable_value( $group, $var, "\'$xmlvars{$var}\'" );
+my $value = $nmlgen->get_xmlvar($var);
+$nmlgen->set_variable_value($var, "\'$value\'" );
 
-print "  datm mode          is $DATM_MODE \n"; 
-print "  datm grid          is $ATM_GRID \n";
-print "  datm presaero mode is $DATM_PRESAERO \n"; 
-print "  datm topo mode     is $DATM_TOPO \n"; 
+print "DATM mode is $DATM_MODE \n"; 
+print "DATM grid is $ATM_GRID \n";
+print "DATM presaero mode is $DATM_PRESAERO \n"; 
+print "DATM topo mode is $DATM_TOPO \n"; 
 
-####################################
-# Streams file(s)                  #
-####################################
+#-------------------------------------------
+# Determine hash for parsing default_namelist_datm.xml
+#-------------------------------------------
 
-# Get defaults for data manipulation options associated with
-# each stream (mapping, filling, time-interp etc.)
-
-# Hash for parsing default_namelist_datm.xml
 my %namelist_opts;
 $namelist_opts{'grid'}             = $GRID;
 $namelist_opts{'atm_grid'}         = $ATM_GRID;
@@ -98,11 +75,11 @@ if ($DATM_PRESAERO ne 'none') {
     $namelist_opts{'presaero_flag'} = "none";
 }
 
+#-------------------------------------------
 # Determine streams
-my $streams = $defaults->get_value( "streamslist", \%namelist_opts );
-$streams = SetupTools::expand_xml_var( $streams, \%xmlvars );
-my @streams = split ",", $streams, -1;
+#-------------------------------------------
 
+my @streams = $nmlgen->get_streams(\%namelist_opts );
 if ($DATM_PRESAERO ne "none") {
     if ($DATM_PRESAERO eq "pt1_pt1") {
 	push (@streams, "presaero.$DATM_PRESAERO.$ATM_GRID");
@@ -118,26 +95,26 @@ if ($DATM_CO2_TSERIES ne "none") {
 }
 
 # Check for bias correction streams
-my $bias_correct = $nl->get_value( 'bias_correct' );
-$bias_correct =~ s/[\'\"]//g;
+my $bias_correct = $nmlgen->get_value( 'bias_correct' );
 if ( $bias_correct ) {
     push (@streams, $bias_correct); #from namelist_defaults_datm.xml
 }
 
 # Check for anomaly forcing streams
-my $anomaly_forcing = $nl->get_value( 'anomaly_forcing' );
-$anomaly_forcing =~ s/[\'\"]//g;
+my $anomaly_forcing = $nmlgen->get_value( 'anomoly forcing' );
 my @anomaly_forcing = split ",", $anomaly_forcing, -1;
 if ( @anomaly_forcing ) {
     push (@streams, @anomaly_forcing);
 }
 
-# Create input data list 
+#-------------------------------------------
+# For each stream, create stream text file and update input data list
+#-------------------------------------------
+
 my $fh_out = new IO::File;
 $fh_out->open(">$caseroot/Buildconf/datm.input_data_list") or
     die "** can't open filepath file: datm.input_data_list\n";
 
-my %streams_namelists; 
 foreach my $stream ( @streams ) {
     if ($stream eq "NULL") {
 	next;
@@ -146,7 +123,7 @@ foreach my $stream ( @streams ) {
 	# Skip there is no prescribed aerosol stream
 	next;
     }
-    print "  datm stream is $stream$inst_string \n";
+    print "DATM stream is $stream$inst_string \n";
 
     # Create hash needed to parse namelist_defaults.xml file
     $namelist_opts{'stream'} = $stream;
@@ -158,61 +135,43 @@ foreach my $stream ( @streams ) {
 
     # Determine stream txt file and update the streams_namelists hash for the new stream
     my $outstream = "datm.streams.txt" . ".$stream" . "$inst_string";
-    my %stream_template_opts;
-    BuildNamelistUtils::create_stream_file($caseroot, $confdir, \%xmlvars, $defaults, 
-					   \%namelist_opts, \%stream_template_opts, \%streams_namelists, 
-					   $stream, $outstream, $fh_out);
+    $nmlgen->create_stream_file(\%namelist_opts, $stream, $outstream, $fh_out);
 }
 
 $fh_out->close;
 
-##########################################################
-# namelist group: shr_strdata_nml  (in file datm_atm_in) #
-##########################################################
+#-------------------------------------------
+# namelist group: shr_strdata_nml  (in file datm_atm_in) 
+#-------------------------------------------
 
-BuildNamelistUtils::create_shr_strdata_nml('datm', $nl, $defaults, $definition, 
-					   \%namelist_opts, \%streams_namelists, 
-					   $DIN_LOC_ROOT, "${ATM_DOMAIN_PATH}/${ATM_DOMAIN_FILE}" );
+$nmlgen->create_shr_strdata_nml(\%namelist_opts, "${ATM_DOMAIN_PATH}/${ATM_DOMAIN_FILE}" );
 
-##########################################################
-# namelist group: datm_nml  (in file datm_in)            #
-##########################################################
+#-------------------------------------------
+# namelist group: datm_nml  (in file datm_in)
+#-------------------------------------------
 
-BuildNamelistUtils::add_default($definition, $defaults, $DIN_LOC_ROOT, 
-				$nl, 'atm_in' , "datm_atm_in${inst_string}");
-
-BuildNamelistUtils::add_default($definition, $defaults, $DIN_LOC_ROOT, 
-				$nl, 'iradsw');
+$nmlgen->add_default('iradsw');
 
 if ($DATM_MODE =~ /^CORE/) {
     my $factorfn = "$DIN_LOC_ROOT/atm/datm7/CORE2/COREv2.correction_factors.T62.121007.nc";
-    BuildNamelistUtils::add_default($definition, $defaults, $DIN_LOC_ROOT, 
-				    $nl, 'factorfn', "$factorfn" );
+    $nmlgen->add_default('factorfn', "$factorfn" );
 }
 if ($DATM_PRESAERO eq "none" ) {
-    BuildNamelistUtils::add_default($definition, $defaults, $DIN_LOC_ROOT, 
-				    $nl, 'presaero', '.false.');
+    $nmlgen->add_default('presaero', '.false.');
 } else {
-    BuildNamelistUtils::add_default($definition, $defaults, $DIN_LOC_ROOT, 
-				    $nl, 'presaero', '.true.');
+    $nmlgen->add_default('presaero', '.true.');
 }
-BuildNamelistUtils::add_default($definition, $defaults, $DIN_LOC_ROOT, 
-				$nl, 'decomp',    '1d');
 
-BuildNamelistUtils::add_default($definition, $defaults, $DIN_LOC_ROOT, 
-				$nl, 'force_prognostic_true', '.false.');
+$nmlgen->add_default('atm_in' , "datm_atm_in${inst_string}");
+$nmlgen->add_default('decomp', '1d');
+$nmlgen->add_default('force_prognostic_true', '.false.');
+$nmlgen->add_default('restfilm',  'undefined');
+$nmlgen->add_default('restfils',  'undefined');
 
-BuildNamelistUtils::add_default($definition, $defaults, $DIN_LOC_ROOT, 
-				$nl, 'restfilm',  'undefined');
-
-BuildNamelistUtils::add_default($definition, $defaults, $DIN_LOC_ROOT, 
-				$nl, 'restfils',  'undefined');
-
-
-##########################################################
+#-------------------------------------------
 # Write output files
-##########################################################
+#-------------------------------------------
 
-BuildNamelistUtils::write_output_files('atm', $nl, $definition, $DIN_LOC_ROOT, $caseroot); 
+$nmlgen->write_output_files('atm');
 
 

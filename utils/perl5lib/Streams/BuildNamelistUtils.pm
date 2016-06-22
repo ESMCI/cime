@@ -6,13 +6,13 @@ use English;
 use Cwd qw( getcwd abs_path chdir);
 use IO::File;
 use Data::Dumper;
+use File::Basename;
 use List::Util qw ( max );
 use Log::Log4perl qw(get_logger);
-use Build::Config;
 use Build::NamelistDefinition;
-use Build::NamelistDefaults;
 use Build::Namelist;
 use Config::SetupTools;
+use Streams::NamelistDefaults;
 
 my $logger;
 
@@ -20,61 +20,67 @@ BEGIN{
     $logger = get_logger();
 }
 
-#-----------------------------------------------------------------------------------------------
-sub create_namelist_objects {
-
+sub new {
+    
+    # Create a Streams TemplateGeneric object
+    my $class		= shift;
     my $comp		= shift;
     my $cimeroot	= shift;
     my $caseroot	= shift;
     my $confdir		= shift;
     my $user_xml_dir	= shift;
-    my $infile		= shift;
+    my $infile          = shift;
 
-    my $nl_definition_file = "$cimeroot/components/data_comps/${comp}/bld/namelist_files/namelist_definition_${comp}.xml";
+    my $self = {};
+    $self->{'comp'}	    = $comp;
+    $self->{'cimeroot'}	    = $cimeroot;
+    $self->{'caseroot'}	    = $caseroot;
+    $self->{'confdir'}	    = $confdir;
+    $self->{'user_xml_dir'} = $user_xml_dir;
+    $self->{'infile'}	    = $infile;
+    $self->{'streams_namelists'} = {};
+
+    my %xmlvars = {};
+    SetupTools::getxmlvars($caseroot, \%xmlvars);
+    foreach my $attr (keys %xmlvars) {
+	$xmlvars{$attr} = SetupTools::expand_xml_var($xmlvars{$attr}, \%xmlvars);
+    }
+    $self->{'din_loc_root'} = $xmlvars{'DIN_LOC_ROOT'};
+    $self->{'xmlvars'} = \%xmlvars;
+
+    my $definition_file = "$cimeroot/components/data_comps/${comp}/bld/namelist_files/namelist_definition_${comp}.xml";
     if (defined $user_xml_dir) {
 	# user has user namelist definition files
-	my $filename = $nl_definition_file;
+	my $filename = $definition_file;
 	$filename    =~ s!(.*)/!!;
 	my $newfile  = "${user_xml_dir}/$filename";
 	if ( -f "$newfile" ) {
-	    $nl_definition_file = $newfile;
+	    $definition_file = $newfile;
 	}
     }
-    (-f "$nl_definition_file")  or  die "** Cannot find namelist definition file \"$nl_definition_file\" **";
+    (-f "$definition_file")  or  die "** Cannot find namelist definition file \"$definition_file\" **";
 
-
-    my @nl_defaults_files = ( "$cimeroot/components/data_comps/${comp}/bld/namelist_files/namelist_defaults_${comp}.xml");
+    my @defaults_files = ( "$cimeroot/components/data_comps/${comp}/bld/namelist_files/namelist_defaults_${comp}.xml");
     if (defined $user_xml_dir) {
 	# user has user namelist defaults files
-	my @filelist = @nl_defaults_files;
+	my @filelist = @defaults_files;
 	foreach my $file  ( @filelist ) {
 	    $file =~ s!(.*)/!!;
 	    my $newfile = "${user_xml_dir}/$file";
 	    if ( -f "$newfile" ) {
-		unshift @nl_defaults_files, $newfile;
+		unshift @defaults_files, $newfile;
 	    }
 	}
     }
-    foreach my $nl_defaults_file ( @nl_defaults_files ) {
-	(-f "$nl_defaults_file")  or  die "** Cannot find namelist defaults file \"$nl_defaults_file\" **";
-	# print "Using namelist defaults file $nl_defaults_file$eol"; }
+    foreach my $defaults_file ( @defaults_files ) {
+	(-f "$defaults_file")  or  die "** Cannot find namelist defaults file \"$defaults_file\" **";
+	# print "Using namelist defaults file $defaults_file$eol"; }
     }
 
-    # build empty config_cache.xml file 
-    my $config_cache = "$confdir/config_cache.xml";
-    my  $fh = new IO::File;
-    $fh->open(">$config_cache") or die "** can't open file: $config_cache\n";
-    print $fh  <<"EOF";
-<?xml version="1.0"?>
-<config_definition>
-</config_definition>
-EOF
-    $fh->close;
-    my $cfg        = Build::Config->new( $config_cache );
-    my $definition = Build::NamelistDefinition->new( $nl_definition_file );
-    my $defaults   = Build::NamelistDefaults->new( shift( @nl_defaults_files ), $cfg);
-    foreach my $nl_defaults_file ( @nl_defaults_files ) {
-	$defaults->add( "$nl_defaults_file" );
+    my $defaults   = NamelistDefaults->new( shift( @defaults_files ));
+    my $definition = Build::NamelistDefinition->new( $definition_file );
+    foreach my $defaults_file ( @defaults_files ) {
+	$defaults->add( "$defaults_file" );
     }
     my $nl = Build::Namelist->new();
 
@@ -97,15 +103,28 @@ EOF
 	}
     }
 
-    return $definition, $defaults, $nl;
+    $self->{'definition'} = $definition;
+    $self->{'defaults'}   = $defaults;
+    $self->{'nl'}         = $nl;
+
+    # bless the object here so the initialization has access to object methods
+    bless( $self, $class );
+    return $self;
 }
 
 #-----------------------------------------------------------------------------------------------
 sub create_stream_file{
 
-    my ($caseroot, $confdir, $xmlvars, $defaults, 
-	$namelist_opts, $stream_template_opts, $streams_namelists, 
-	$stream, $streamfile, $fh_out) = @_;
+    my $self			= shift;
+    my $namelist_opts		= shift;
+    my $stream			= shift;
+    my $streamfile		= shift;
+    my $fh_out			= shift;
+    
+    my $caseroot = $self->{'caseroot'};
+    my $confdir	 = $self->{'$confdir'};
+    my $xmlvars	 = $self->{'xmlvars'};
+    my $defaults = $self->{'defaults'}; 
 
     if (-e "$caseroot/user_$streamfile") {
         if ( ! -w "$caseroot/user_$streamfile" ) {
@@ -117,17 +136,29 @@ sub create_stream_file{
 	return
     }
 
-
     my %template;
-    $template{'offset'}           = $defaults->get_value( "strm_offset"    , $namelist_opts);
-    $template{'data_filepath'}    = $defaults->get_value( "strm_datdir"    , $namelist_opts);
-    $template{'data_filenames'}   = $defaults->get_value( "strm_datfil"    , $namelist_opts);
+
+    if ($stream eq "prescribed" || $stream eq "copyall") {
+	# Currently ASSUME ONLY 1 FILE for prescribed mode
+	my $grid_file = $defaults->get_value( "strm_grid_file", $namelist_opts );
+	my $data_file = $defaults->get_value( "strm_data_file", $namelist_opts );
+	my $grid_file = SetupTools::expand_xml_var($grid_file, $xmlvars);
+	my $data_file = SetupTools::expand_xml_var($data_file, $xmlvars);
+	$template{'domain_filepath'}  = dirname($grid_file);
+	$template{'domain_filenames'} = basename($grid_file);
+	$template{'data_filepath'}    = dirname($data_file);
+	$template{'data_filenames'}   = basename($data_file);
+    } else {
+	$template{'domain_filepath'}  = $defaults->get_value( "strm_domdir"    , $namelist_opts);
+	$template{'domain_filenames'} = $defaults->get_value( "strm_domfil"    , $namelist_opts);
+	$template{'data_filepath'}    = $defaults->get_value( "strm_datdir"    , $namelist_opts);
+	$template{'data_filenames'}   = $defaults->get_value( "strm_datfil"    , $namelist_opts);
+    }
     $template{'data_varnames'}    = $defaults->get_value( "strm_datvar"    , $namelist_opts);
-    $template{'domain_filepath'}  = $defaults->get_value( "strm_domdir"    , $namelist_opts);
-    $template{'domain_filenames'} = $defaults->get_value( "strm_domfil"    , $namelist_opts);
     $template{'domain_varnames'}  = $defaults->get_value( "strm_domvar"    , $namelist_opts);
     $template{'yearfirst'}        = $defaults->get_value( "strm_year_start", $namelist_opts);
     $template{'yearlast'}         = $defaults->get_value( "strm_year_end"  , $namelist_opts);
+    $template{'offset'}           = $defaults->get_value( "strm_offset"    , $namelist_opts);
 
     $template{'data_filepath'}    = SetupTools::expand_xml_var( $template{'data_filepath'}   , $xmlvars );
     $template{'data_filenames'}   = SetupTools::expand_xml_var( $template{'data_filenames'}  , $xmlvars );
@@ -136,10 +167,7 @@ sub create_stream_file{
     $template{'yearfirst'}        = SetupTools::expand_xml_var( $template{'yearfirst'}       , $xmlvars );
     $template{'yearlast'}         = SetupTools::expand_xml_var( $template{'yearlast'}        , $xmlvars );
 
-    # Overwrite %template with values from %stream_template_opts passed in 
-    foreach my $key (keys %$stream_template_opts) {
-	$template{$key} = $$stream_template_opts{$key};
-    }
+    my @data_filenames = _Sub($template{'data_filenames'}, $template{'yearfirst'}, $template{'yearlast'});
 
     # Consistency check
     foreach my $item ( "yearfirst", "yearlast", "offset", 
@@ -176,10 +204,12 @@ sub create_stream_file{
 	print $fh "      $template{'data_varnames'}"; 
 	print $fh "   </variableNames> \n";
 	print $fh "   <filePath> \n";
-	print $fh "      $template{'filepath'} \n";
+	print $fh "      $template{'data_filepath'} \n";
 	print $fh "   </filePath> \n";
 	print $fh "   <fileNames> \n";
-	print $fh "      $template{'filenames'} \n";
+	foreach my  $data_filename (@data_filenames) {
+	    print $fh "      $data_filename \n";
+	}
 	print $fh "   </fileNames> \n";
 	print $fh "   <offset> \n";
 	print $fh "      $template{'offset'} \n";
@@ -195,7 +225,7 @@ sub create_stream_file{
     my $filepath = $template{'domain_filepath'};
     foreach my $file ( @filenames) {
      	$i++;
-	my $subfile = Sub($file);
+	my $subfile = _Sub($file);
      	print $fh_out "domain${i} = ${filepath}/${file}\n";
      }
     my $i = 0;
@@ -207,22 +237,22 @@ sub create_stream_file{
      }
 
     # Update the streams_namelists hash for the new stream
-    update_streams_namelists($defaults, $namelist_opts, 
-			     $xmlvars, $stream, $streamfile, $streams_namelists);
-
+    $self->update_streams_namelists($namelist_opts, $stream, $streamfile);
 }
 
 
 #-----------------------------------------------------------------------------------------------
 sub update_streams_namelists {
 
-    my $defaults	  = shift;
-    my $namelist_opts	  = shift;
-    my $xmlvars		  = shift;
-    my $stream		  = shift; 
-    my $streamfile	  = shift;
-    my $streams_namelists = shift;
+    my $self          = shift;
+    my $namelist_opts = shift;
+    my $stream	      = shift; 
+    my $streamfile    = shift;
 
+    my $defaults          = $self->{'defaults'};
+    my $streams_namelists = $self->{'streams_namelists'};
+    my $xmlvars		  = $self->{'xmlvars'};
+    
     # Stream specific namelist variables used below for $nl
     my $tintalgo   = $defaults->get_value( "strm_tintalgo"  , $namelist_opts);
     my $mapalgo    = $defaults->get_value( 'strm_mapalgo'   , $namelist_opts);
@@ -260,7 +290,7 @@ sub update_streams_namelists {
 	$$streams_namelists{"ofillmask"} = "\'$fillmask\'";
 	$$streams_namelists{"odtlimit"}	 = "$dtlimit";
     } else {
-	my $ostreams =  $$streams_namelists{"ostreams"} ;
+	my $ostreams = $$streams_namelists{"ostreams"} ;
 	$$streams_namelists{"ostreams"}   = "$ostreams,\"$streamfile $align_year $beg_year $end_year\"";
 	$$streams_namelists{"omapalgo"}  .= ",\'$mapalgo\'";
 	$$streams_namelists{"omapmask"}  .= ",\'$mapmask\'";
@@ -290,14 +320,16 @@ sub add_default {
     # Example 1: Specify the default value $val for the namelist variable $var in namelist
     #            object $nl:
     #
-    #  add_default($definition, $defaults, $din_loc_root, $nl, $var, $value)
+    #  add_default($var, $value)
 
-    my $definition	= shift;
-    my $defaults	= shift;
-    my $din_loc_root	= shift;
-    my $nl		= shift;	# namelist object
-    my $var		= shift;	# name of namelist variable
-    my $value		= shift;	# value
+    my $self    = shift;
+    my $var	= shift;	# name of namelist variable
+    my $value	= shift;	# value
+
+    my $definition	= $self->{'definition'};
+    my $defaults	= $self->{'defaults'};
+    my $nl		= $self->{'nl'}; 
+    my $din_loc_root	= $self->{'din_loc_root'};
 
     # If variable has quotes around it
     if ( $var =~ /'(.+)'/ ) {
@@ -430,55 +462,38 @@ sub check_input_files {
 #-----------------------------------------------------------------------------------------------
 sub create_shr_strdata_nml {
 
-    my $comp			= shift;
-    my $nl			= shift;
-    my $defaults		= shift;
-    my $definition              = shift;
-    my $namelist_opts		= shift;
-    my $streams_namelists	= shift;
-    my $din_loc_root		= shift;
-    my $domain_filename         = shift;
+    my $self            = shift;
+    my $namelist_opts	= shift;
+    my $domain_filename = shift;
 
-    my $datamode   = $defaults->get_value( "datamode", $namelist_opts );
-    add_default($definition, $defaults, $din_loc_root, 
-		$nl, 'datamode', "$datamode");  
+    my $comp		  = $self->{'comp'};
+    my $nl		  = $self->{'nl'};
+    my $definition	  = $self->{'definition'};
+    my $defaults	  = $self->{'defaults'};
+    my $streams_namelists = $self->{'streams_namelists'};
+    my $din_loc_root	  = $self->{'din_loc_root'};
+
+    my $datamode = $defaults->get_value( "datamode", $namelist_opts );
+    $self->add_default('datamode', "$datamode");  
 
     if ($comp eq 'datm') {
-	my $vectors    = $defaults->get_value( "vectors",  $namelist_opts );
-	add_default($definition, $defaults, $din_loc_root, 
-		    $nl, 'vectors', "$vectors");
+	my $vectors = $defaults->get_value( "vectors", $namelist_opts);
+	$self->add_default('vectors', "$vectors");
     }
 
     if (defined $domain_filename) {
-	add_default($definition, $defaults, $din_loc_root, 
-		    $nl, 'domainfile', "$domain_filename");
+	$self->add_default('domainfile', "$domain_filename");
     }
     if ($datamode ne 'NULL') {
-
-	add_default($definition, $defaults, $din_loc_root, 
-		    $nl, 'streams', $$streams_namelists{"ostreams"});
-
-	add_default($definition, $defaults, $din_loc_root, 
-		    $nl, 'mapalgo', $$streams_namelists{"omapalgo"});
-
-	add_default($definition, $defaults, $din_loc_root, 
-		    $nl, 'mapmask', $$streams_namelists{"omapmask"});
-
-	add_default($definition, $defaults, $din_loc_root, 
-		    $nl, 'tintalgo', $$streams_namelists{"otintalgo"});
-
-	add_default($definition, $defaults, $din_loc_root, 
-		    $nl, 'taxmode', $$streams_namelists{"otaxmode"});
-
-	add_default($definition, $defaults, $din_loc_root, 
-		    $nl, 'fillalgo', $$streams_namelists{"ofillalgo"});
-
-	add_default($definition, $defaults, $din_loc_root, 
-		    $nl, 'fillmask', $$streams_namelists{"ofillmask"});
-
+	$self->add_default('streams' , $$streams_namelists{"ostreams"});
+	$self->add_default('mapalgo' , $$streams_namelists{"omapalgo"});
+	$self->add_default('mapmask' , $$streams_namelists{"omapmask"});
+	$self->add_default('tintalgo', $$streams_namelists{"otintalgo"});
+	$self->add_default('taxmode' , $$streams_namelists{"otaxmode"});
+	$self->add_default('fillalgo', $$streams_namelists{"ofillalgo"});
+	$self->add_default('fillmask', $$streams_namelists{"ofillmask"});
 	if ($$streams_namelists{"odtlimit"} ne "") { 
-	    add_default($definition, $defaults, $din_loc_root, 
-			$nl, 'dtlimit', $$streams_namelists{"odtlimit"});
+	    $self->add_default('dtlimit', $$streams_namelists{"odtlimit"});
 	}
     }
 }
@@ -486,11 +501,13 @@ sub create_shr_strdata_nml {
 #-----------------------------------------------------------------------------------------------
 sub write_output_files {
 
-    my $comp		= shift;
-    my $nl		= shift;
-    my $definition	= shift;
-    my $din_loc_root	= shift;
-    my $caseroot	= shift;
+    my $self = shift;
+    my $comp = shift;
+
+    my $nl           = $self->{'nl'};
+    my $definition   = $self->{'definition'};
+    my $caseroot     = $self->{'caseroot'};
+    my $din_loc_root = $self->{'din_loc_root'};
 
     # Validate that the entire resultant namelist is valid
     $definition->validate($nl);
@@ -574,7 +591,7 @@ sub quote_string {
 }
 
 #-----------------------------------------------------------------------------------------------
-sub Sub {
+sub _Sub {
 
     # Substitute indicators with given values
     #
@@ -659,10 +676,8 @@ sub Sub {
 	#     }
 	# }
 	for ( my $year = $yearfirst; $year <= $yearlast; $year++ ) {
-	    #
-	    # If include year and months AND days
-	    #
 	    if ( $days ) {
+		# If include year and months AND days
 		for ( my $month = 1; $month <= 12; $month++ ) {
 		    my $dpm = DaysPerMonth( $month, $year );
 		    for ( my $day = 1; $day <= $dpm; $day++ ) {
@@ -676,10 +691,8 @@ sub Sub {
 			}
 		    }
 		}
-		#
-		# If include year and months
-		#
 	    } elsif ( $months ) {
+		# If include year and months
 		for ( my $month = 1; $month <= 12; $month++ ) {
 		    my $filename = $value;
 		    if ( $filename =~ /^([^%]*)%[1-9]?ym([^ ]*)$/ ) {
@@ -690,10 +703,8 @@ sub Sub {
 			push @filenames, $filename;
 		    }
 		}
-		#
-		# If just years
-		#
 	    } else {
+		# If just years
 		my $filename = $value;
 		if ( $filename =~ /^([^%]*)%[1-9]?y([^ ]*)$/ ) {
 		    $startfilename = $1;
@@ -707,7 +718,7 @@ sub Sub {
 	if ( $#filenames < 0 ) {
 	    die "No output filenames -- must be something wrong in template or input filename indicator\n";
 	}
-	return( \@filenames );
+	return( @filenames );
 
     } else {
 
@@ -717,7 +728,6 @@ sub Sub {
 }
 
 #-------------------------------------------------------------------------------
-
 sub DaysPerMonth {
 
     # Return the number of days per month for a given month
@@ -734,3 +744,48 @@ sub DaysPerMonth {
     return( $days );
 }
 
+#-------------------------------------------------------------------------------
+sub set_variable_value() {
+    my $self  = shift;
+    my $var   = shift;
+    my $value = shift;
+
+    my $group = $self->{'definition'}->get_group_name($var);
+    $self->{'nl'}->set_variable_value( $group, $var, $value );
+}
+
+#-------------------------------------------------------------------------------
+sub get_value() {
+    my $self  = shift;
+    my $var   = shift;
+
+    my $value = $self->{'nl'}->get_value($var);
+    $value =~ s/[\'\"]//g;
+    return $value;
+}
+
+#-------------------------------------------------------------------------------
+sub get_streams {
+    my $self = shift;
+    my $namelist_opts = shift;
+
+    my $defaults = $self->{'defaults'};
+    my $xmlvars  = $self->{'xmlvars'};
+
+    my $streams = $defaults->get_value( "streamslist", $namelist_opts );
+    $streams = SetupTools::expand_xml_var( $streams, $xmlvars );
+    my @streams = split ",", $streams, -1;
+    return @streams;
+}
+
+#-------------------------------------------------------------------------------
+sub get_xmlvar{
+    my $self = shift;
+    my $var  = shift;
+
+    my $value = ${$self->{'xmlvars'}}{$var};
+    if ( ! defined($value) || $value =~ /^(UNSET|)$/ ) {
+	print " WARNING: ** $var is NOT set  ** \n";
+    }
+    return  $value;
+}

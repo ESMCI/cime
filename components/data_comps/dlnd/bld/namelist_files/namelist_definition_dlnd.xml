@@ -233,7 +233,7 @@ valid_values="">
 Master restart file name for dlnd model
 </entry>
 
-<entry id="restfilsl"
+<entry id="restfils"
 type="char*256"
 category="dlnd"
 group="dlnd_nml"

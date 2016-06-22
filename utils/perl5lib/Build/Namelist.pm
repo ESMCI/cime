@@ -788,7 +788,7 @@ sub validate_variable_value
            }
         }
      }
-     die "ERROR: in $nm (package $pkg_nm): Variable name $var has values that " .
+     die "ERROR: in $nm (package $pkg_nm): Variable name $var has values $variable_value that " .
          "does NOT match any of the valid values: @$valid_values_ref.\n";
   }
   return( 1 );

@@ -1,120 +1,93 @@
 #!/usr/bin/env perl
 
-#-----------------------------------------------------------------------------------------------
-# build-namelist script for the CIME dlnd (Data Land Model).
-#--------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------------
+# build-namelist script for the CIME Data Land Model
+#-------------------------------------------------------------------------------------------
 
 use strict;
 use English;
 use IO::File;
-#-----------------------------------------------------------------------------------------------
 
 my ($caseroot, $cimeroot, $confdir, $inst_string, $namelist_infile, $user_xml_dir) = @ARGV;
 
-my @dirs = ( "$cimeroot/utils/perl5lib");
+my @dirs = ( "$cimeroot/utils/perl5lib" );
 unshift @INC, @dirs;
-
-require Build::NamelistDefinition;
-require Build::NamelistDefaults;
-require Build::Namelist;
 require Streams::BuildNamelistUtils;
 
-####################################
-# Create required objects
-####################################
+#-------------------------------------------
+# Create nmlgen object
+#-------------------------------------------
 
-my ($definition, $defaults, $nl) = 
-    BuildNamelistUtils::create_namelist_objects('dlnd', $cimeroot, $caseroot, $confdir,
-						$user_xml_dir, $namelist_infile);
+my $nmlgen = BuildNamelistUtils->new('dlnd',$cimeroot, $caseroot, $confdir, 
+				     $user_xml_dir, $namelist_infile);
 
-####################################
-# Required xml variables           #
-####################################
+#-------------------------------------------
+# Required xml variables           
+#-------------------------------------------
 
-my %xmlvars = {};
-SetupTools::getxmlvars(${caseroot},\%xmlvars);
-foreach my $attr (keys %xmlvars) {
-    $xmlvars{$attr} = SetupTools::expand_xml_var($xmlvars{$attr}, \%xmlvars);
-}
+my $DIN_LOC_ROOT     = $nmlgen->get_xmlvar('DIN_LOC_ROOT');   
+my $LND_DOMAIN_FILE  = $nmlgen->get_xmlvar('LND_DOMAIN_FILE');
+my $LND_DOMAIN_PATH  = $nmlgen->get_xmlvar('LND_DOMAIN_PATH');
+my $LND_GRID         = $nmlgen->get_xmlvar('LND_GRID');	    
+my $DLND_MODE        = $nmlgen->get_xmlvar('DLND_MODE');	    
+my $GLC_NEC          = $nmlgen->get_xmlvar('GLC_NEC');        
 
-my $RUN_TYPE         = $xmlvars{'RUN_TYPE'};
-my $DIN_LOC_ROOT     = $xmlvars{'DIN_LOC_ROOT'};
-my $LND_DOMAIN_FILE  = $xmlvars{'LND_DOMAIN_FILE'};
-my $LND_DOMAIN_PATH  = $xmlvars{'LND_DOMAIN_PATH'};
-my $LND_GRID         = $xmlvars{'LND_GRID'};
-my $DLND_MODE        = $xmlvars{'DLND_MODE'};
-my $GLC_NEC          = $xmlvars{'GLC_NEC'};
+print "DLND mode is $DLND_MODE \n"; 
+print "DLND grid is $LND_GRID \n"; 
 
-print "  dlnd mode is $DLND_MODE \n"; 
-print "  dlnd grid is $LND_GRID \n"; 
-
-####################################
-# Streams file(s)                  #
-####################################
-
-# Hash for parsing default_namelist_dlnd.xml
+#-------------------------------------------
+# Determine hash for parsing default_namelist_dlnd.xml
+#-------------------------------------------
 my %namelist_opts;
 $namelist_opts{'dlnd_mode'} = $DLND_MODE;
 $namelist_opts{'lnd_grid'}  = $LND_GRID;
 
+#-------------------------------------------
 # Determine streams
-my $streams = $defaults->get_value( "streamslist", \%namelist_opts );
-$streams = SetupTools::expand_xml_var( $streams, \%xmlvars );
-my @streams = split ",", $streams, -1;
+#-------------------------------------------
 
-# Create input data list 
+# Determine streams
+my @streams = $nmlgen->get_streams(\%namelist_opts );
+
+#-------------------------------------------
+# For each stream, create stream text file and update input data list
+#-------------------------------------------
+
 my $fh_out = new IO::File;
 $fh_out->open(">$caseroot/Buildconf/dlnd.input_data_list") or
     die "** can't open filepath file: dlnd.input_data_list\n";
 
-my %streams_namelists; 
 foreach my $stream ( @streams ) {
     if ($stream eq "NULL") {
 	next;
     }
-    print "  dlnd stream is $stream$inst_string \n";
-
-    # Set stream specific part of default_namelist_opts hash
-    $namelist_opts{'stream'} = $stream;
+    print "DLND stream is $stream$inst_string \n";
 
     # Determine stream txt file and update the streams_namelists hash for the new stream
     my $outstream = "dlnd.streams.txt" . ".$stream" . "$inst_string";
-
-    my %stream_template_opts;
-    $stream_template_opts{'glc_nec'} = $GLC_NEC;
-    BuildNamelistUtils::create_stream_file($caseroot, $confdir, \%xmlvars, $defaults, 
-					   \%namelist_opts, \%stream_template_opts, \%streams_namelists, 
-					   $stream, $outstream, $fh_out);
+    $nmlgen->create_stream_file(\%namelist_opts, $stream, $outstream, $fh_out);
 }
+
 $fh_out->close;
 
-##########################################################
-# namelist group: shr_strdata_nml  (in file dlnd_lnd_in) #
-##########################################################
+#-------------------------------------------
+# namelist group: shr_strdata_nml  (in file dlnd_lnd_in) 
+#-------------------------------------------
 
-print "DEBUG: ${LND_DOMAIN_FILE}, ${LND_DOMAIN_PATH} \n";
-BuildNamelistUtils::create_shr_strdata_nml('dlnd', $nl, $defaults, $definition, 
-					   \%namelist_opts, \%streams_namelists, 
-					   $DIN_LOC_ROOT, "${LND_DOMAIN_PATH}/${LND_DOMAIN_FILE}" );
+$nmlgen->create_shr_strdata_nml(\%namelist_opts, "${LND_DOMAIN_PATH}/${LND_DOMAIN_FILE}" );
 
-##########################################################
-# namelist group: dlnd_nml  (in file dlnd_in)            #
-##########################################################
+#-------------------------------------------
+# namelist group: dlnd_nml  (in file dlnd_in)            
+#-------------------------------------------
 
-BuildNamelistUtils::add_default($definition, $defaults, $DIN_LOC_ROOT, 
-				$nl, 'lnd_in', "dlnd_lnd_in${inst_string}");
+$nmlgen->add_default('lnd_in' , "dlnd_lnd_in${inst_string}");
+$nmlgen->add_default('decomp', '1d');
+$nmlgen->add_default('force_prognostic_true', '.false.');
+$nmlgen->add_default('restfilm',  'undefined');
+$nmlgen->add_default('restfils',  'undefined');
 
-BuildNamelistUtils::add_default($definition, $defaults, $DIN_LOC_ROOT, 
-				$nl, 'decomp',    '1d');
-
-BuildNamelistUtils::add_default($definition, $defaults, $DIN_LOC_ROOT, 
-				$nl, 'force_prognostic_true', '.false.');
-
-
-##########################################################
+#-------------------------------------------
 # Write output files
-##########################################################
+#-------------------------------------------
 
-BuildNamelistUtils::write_output_files('lnd', $nl, $definition, $DIN_LOC_ROOT, $caseroot); 
-
-
+$nmlgen->write_output_files('lnd');
