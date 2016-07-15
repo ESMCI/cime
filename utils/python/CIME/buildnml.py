@@ -7,7 +7,9 @@ These are used by components/<model_type>/<component>/cime_config/buildnml
 from CIME.XML.standard_module_setup import *
 from CIME.utils import expect, handle_standard_logging_options, setup_standard_logging_options
 from CIME.case import Case
-import sys, os, shutil, glob, argparse
+import sys, os, shutil, glob, argparse, doctest
+
+logger = logging.getLogger(__name__)
 
 logger = logging.getLogger(__name__)
 
@@ -42,12 +44,13 @@ def build_xcpl_nml(argv, compclass):
 
     caseroot = parse_input(argv)
 
-    case = Case(caseroot)
-
-    rundir = case.get_value("RUNDIR")
-    ninst  = case.get_value("NINST_%s" % compclass.upper())
-    nx     = case.get_value("%s_NX" % compclass.upper())
-    ny     = case.get_value("%s_NY" % compclass.upper())
+    with Case(caseroot) as case:
+        rundir = case.get_value("RUNDIR")
+        ninst  = case.get_value("NINST_%s" % compclass.upper())
+        nx     = case.get_value("%s_NX" % compclass.upper())
+        ny     = case.get_value("%s_NY" % compclass.upper())
+        if compname == "xrof":
+            flood_mode = case.get_value('XROF_FLOOD_MODE')
 
     extras = []
     dtype = 1
@@ -69,7 +72,6 @@ def build_xcpl_nml(argv, compclass):
         dtype = 4
     elif compname == "xrof":
         dtype = 11
-        flood_mode = Case('XROF_FLOOD_MODE')
         if flood_mode == "ACTIVE":
             extras = [[".true.", "flood flag"]]
         else:
@@ -98,10 +100,15 @@ def build_xcpl_nml(argv, compclass):
 ###############################################################################
 def build_data_nml(argv, compclass):
 ###############################################################################
-
+    # This function is just a wrapper for the one below, to avoid having to
+    # indent everything for the "with" block.
     caseroot = parse_input(argv)
+    with Case(caseroot) as case:
+        _build_data_nml(case, caseroot, compclass)
 
-    case = Case(caseroot)
+###############################################################################
+def _build_data_nml(case, caseroot, compclass):
+###############################################################################
 
     cimeroot = case.get_value("CIMEROOT")
     rundir   = case.get_value("RUNDIR")
@@ -130,9 +137,9 @@ def build_data_nml(argv, compclass):
             # single-case restart for each instance
             rpointer = "rpointer." + compname
             if (os.path.isfile(os.path.join(rundir,rpointer)) and
-                (not os.path.isfile(os.path.join(rundir,rpointer+inst_string)))):
-                     shutil.copy(os.path.isfile(os.path.join(rundir,rpointer),
-                                                os.path.join(rundir,rpointer+inst_string)))
+                (not os.path.isfile(os.path.join(rundir,rpointer + inst_string)))):
+                shutil.copy(os.path.join(rundir, rpointer),
+                            os.path.join(rundir, rpointer + inst_string))
 
         # create namelist output infile using user_nl_file as input
         user_nl_file = os.path.join(caseroot, "user_nl_" + compname + inst_string)
@@ -199,8 +206,8 @@ def create_namelist_infile(case, user_nl_file, namelist_infile, infile_text=""):
         logger.info("file_infile %s " %infile_text)
 
     for line in lines_input:
-        match1 = re.search("^[\&\/\!]",line)
-        match2 = re.search("\$([\w\_])+",line)
+        match1 = re.search(r"^[\&\/\!]", line)
+        match2 = re.search(r"\$([\w\_])+", line)
 	if match1 is None and match2 is not None:
             line = case.get_resolved_value(line)
         if match1 is None:

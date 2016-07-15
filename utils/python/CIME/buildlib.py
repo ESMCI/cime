@@ -5,7 +5,7 @@ common utilities for buildlib
 from CIME.XML.standard_module_setup import *
 from CIME.utils import expect, run_cmd, handle_standard_logging_options, setup_standard_logging_options
 from CIME.case  import Case
-import sys, os, argparse
+import sys, os, argparse, doctest
 
 logger = logging.getLogger(__name__)
 
@@ -24,6 +24,7 @@ def parse_input(argv):
     parser.add_argument("caseroot", default=os.getcwd(),
                         help="Case directory")
 
+    # JGF: This doesn't appear to be used anywhere
     parser.add_argument("bldroot",
                         help="root for building library")
 
@@ -42,18 +43,18 @@ def build_data_lib(argv, compclass):
 
     caseroot, libroot, bldroot = parse_input(argv)
 
-    case = Case(caseroot)
+    with Case(caseroot) as case:
 
-    cimeroot  = case.get_value("CIMEROOT")
+        cimeroot  = case.get_value("CIMEROOT")
 
-    # Write directory list (Filepath)
-    compname = "d" + compclass
-    with open('Filepath', 'w') as out:
-        out.write(os.path.join(caseroot, "SourceMods", "src.%s" %compname) + "\n")
-        out.write(os.path.join(cimeroot, "components", "data_comps", compname) + "\n")
+        # Write directory list (Filepath)
+        compname = "d" + compclass
+        with open('Filepath', 'w') as out:
+            out.write(os.path.join(caseroot, "SourceMods", "src.%s" %compname) + "\n")
+            out.write(os.path.join(cimeroot, "components", "data_comps", compname) + "\n")
 
-    # Build the component
-    run_gmake(case, compclass, libroot)
+        # Build the component
+        run_gmake(case, compclass, libroot)
 
 ###############################################################################
 def build_xcpl_lib(argv, compclass):
@@ -61,19 +62,19 @@ def build_xcpl_lib(argv, compclass):
 
     caseroot, libroot, bldroot = parse_input(argv)
 
-    case = Case(caseroot)
+    with Case(caseroot) as case:
 
-    cimeroot  = case.get_value("CIMEROOT")
+        cimeroot  = case.get_value("CIMEROOT")
 
-    # Write directory list
-    compname = "x" + compclass
-    with open('Filepath', 'w') as out:
-        out.write(os.path.join(caseroot, "SourceMods", "src.%s", compname) + "\n")
-        out.write(os.path.join(cimeroot, "components", "xcpl_comps", "xshare") + "\n")
-        out.write(os.path.join(cimeroot, "components", "xcpl_comps",compname, "cpl") + "\n")
+        # Write directory list
+        compname = "x" + compclass
+        with open('Filepath', 'w') as out:
+            out.write(os.path.join(caseroot, "SourceMods", "src.%s", compname) + "\n")
+            out.write(os.path.join(cimeroot, "components", "xcpl_comps", "xshare") + "\n")
+            out.write(os.path.join(cimeroot, "components", "xcpl_comps",compname, "cpl") + "\n")
 
-    # Build the component
-    run_gmake(case, compclass, libroot)
+        # Build the component
+        run_gmake(case, compclass, libroot)
 
 ###############################################################################
 def build_stub_lib(argv, compclass):
@@ -81,19 +82,19 @@ def build_stub_lib(argv, compclass):
 
     caseroot, libroot, bldroot = parse_input(argv)
 
-    case = Case(caseroot)
+    with Case(caseroot) as case:
 
-    cimeroot = case.get_value("CIMEROOT")
+        cimeroot = case.get_value("CIMEROOT")
 
-    # Write directory list
-    compname = "s" + compclass
-    with open('Filepath', 'w') as out:
-        out.write(os.path.join(caseroot, "SourceMods", "src.%s", compname) + "\n")
-        out.write(os.path.join(cimeroot, "components", "stub_comps", "xshare") + "\n")
-        out.write(os.path.join(cimeroot, "components", "stub_comps",compname, "cpl") + "\n")
+        # Write directory list
+        compname = "s" + compclass
+        with open('Filepath', 'w') as out:
+            out.write(os.path.join(caseroot, "SourceMods", "src.%s", compname) + "\n")
+            out.write(os.path.join(cimeroot, "components", "stub_comps", "xshare") + "\n")
+            out.write(os.path.join(cimeroot, "components", "stub_comps",compname, "cpl") + "\n")
 
-    # Build the component
-    run_gmake(case, compclass, libroot)
+        # Build the component
+        run_gmake(case, compclass, libroot)
 
 ###############################################################################
 def run_gmake(case, compclass, libroot, libname="", user_cppdefs=""):
@@ -115,7 +116,7 @@ def run_gmake(case, compclass, libroot, libname="", user_cppdefs=""):
     macfile  = os.path.join(caseroot, "Macros.%s" % mach)
 
     if user_cppdefs:
-        cmd = "%s complib -j %d MODEL=%s COMPLIB=%s -f %s MACFILE=%s USER_CPPDEFS=%s" \
+        cmd = "%s complib -j %d MODEL=%s COMPLIB=%s -f %s MACFILE=%s USER_CPPDEFS='%s'" \
             % (gmake, gmake_j, compclass, complib, makefile, macfile, user_cppdefs )
     else:
         cmd = "%s complib -j %d MODEL=%s COMPLIB=%s -f %s MACFILE=%s " \

@@ -2,7 +2,7 @@
 API for preview namelist
 """
 
-from XML.standard_module_setup import *
+from CIME.XML.standard_module_setup import *
 from CIME.utils import expect, run_cmd
 from CIME.XML.env_mach_specific import EnvMachSpecific
 
@@ -10,19 +10,17 @@ import glob, shutil
 logger = logging.getLogger(__name__)
 
 def preview_namelists(case, dryrun=False, casedir=None):
+    # refresh case xml files from object
+    case.flush()
+
     # Get data from XML
     exeroot = case.get_value("EXEROOT")
     libroot = case.get_value("LIBROOT")
     incroot = case.get_value("INCROOT")
     rundir = case.get_value("RUNDIR")
     caseroot = case.get_value("CASEROOT")
-    cimeroot = case.get_value("CIMEROOT")
     casebuild = case.get_value("CASEBUILD")
     testcase = case.get_value("TESTCASE")
-    compiler = case.get_value("COMPILER")
-    mach = case.get_value("MACH")
-    debug = case.get_value("DEBUG")
-    mpilib = case.get_value("MPILIB")
 
     logger.debug("LID is: '%s'" % os.getenv("LID", ""))
     logger.debug("caseroot is: '%s'" % caseroot)
@@ -66,10 +64,6 @@ def preview_namelists(case, dryrun=False, casedir=None):
                 except OSError as e:
                     expect(False, "Could not make directory '%s', error: %s" % (dir_to_make, e))
 
-    # Remove the drv_flds_in file if it exists
-    if ( os.path.isfile(os.path.join(rundir,"drv_flds_in"))):
-        os.remove(os.path.join(rundir,"drv_flds_in"))
-
     # Create namelists
     for model in models:
         model_str = "drv" if model == "cpl" else model
@@ -78,12 +72,14 @@ def preview_namelists(case, dryrun=False, casedir=None):
         cmd = os.path.join(config_dir, "buildnml")
         logger.info("Running %s"%cmd)
         if (logger.level == logging.DEBUG):
-            run_cmd("PREVIEW_NML=1 %s %s" % (cmd, caseroot))
+            rc, out, err = run_cmd("PREVIEW_NML=1 %s %s" % (cmd, caseroot), ok_to_fail=True)
+            expect(rc==0,"Command %s failed rc=%d\nout=%s\nerr=%s"%(cmd,rc,out,err))
         else:
             rc, out, err = run_cmd("%s %s" % (cmd, caseroot), ok_to_fail=True)
             expect(rc==0,"Command %s failed rc=%d\nout=%s\nerr=%s"%(cmd,rc,out,err))
-            logger.info(out)
 
+    # refresh case xml object from file
+    case.read_xml(caseroot)
     # Save namelists to docdir
     if (not os.path.isdir(docdir)):
         os.makedirs(docdir)

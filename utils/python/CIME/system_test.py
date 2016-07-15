@@ -44,10 +44,13 @@ class SystemTest(object):
                  project=None, parallel_jobs=None,
                  xml_machine=None, xml_compiler=None, xml_category=None,
                  xml_testlist=None, walltime=None, proc_pool=None,
-                 use_existing=False):
+                 use_existing=False, save_timing=False):
     ###########################################################################
-        self._cime_root = CIME.utils.get_cime_root()
+        self._cime_root  = CIME.utils.get_cime_root()
         self._cime_model = CIME.utils.get_model()
+
+        self._save_timing = save_timing
+
         # needed for perl interface
         os.environ["CIMEROOT"] = self._cime_root
 
@@ -110,6 +113,7 @@ class SystemTest(object):
                                                            xml_compiler, xml_testlist,
                                                            machine_name, compiler)
             test_names = [item["name"] for item in test_data]
+            logger.info("Testnames: %s"%test_names)
             for test_datum in test_data:
                 self._test_xml[test_datum["name"]] = test_datum
         else:
@@ -117,15 +121,7 @@ class SystemTest(object):
             test_names = update_acme_tests.get_full_test_names(test_names,
                                                                machine_name, self._compiler)
 
-        if walltime is not None:
-            for test in test_names:
-                if test in self._test_xml:
-                    test_datum = self._test_xml[test]
-                else:
-                    test_datum = {}
-                    self._test_xml[test] = test_datum
-                test_datum["wallclock"] = walltime
-
+        self._walltime = walltime
 
         if parallel_jobs is None:
             self._parallel_jobs = min(len(test_names),
@@ -355,9 +351,6 @@ class SystemTest(object):
 
         _, case_opts, grid, compset,\
             machine, compiler, test_mods = CIME.utils.parse_test_name(test)
-        if compiler != self._compiler:
-            raise StandardError("Test '%s' has compiler that does"
-                                " not match instance compliler '%s'" % (test, self._compiler))
 
         create_newcase_cmd = "%s --case %s --res %s --mach %s --compiler %s --compset %s"\
                                " --project %s --test"%\
@@ -389,6 +382,10 @@ class SystemTest(object):
                 if pesize:
                     create_newcase_cmd += " --pecount %s"%pesize.group(1)
 
+        if self._walltime is not None:
+            create_newcase_cmd += " --walltime %s" % self._walltime
+        elif test in self._test_xml and "wallclock" in self._test_xml[test]:
+            create_newcase_cmd += " --walltime %s" % self._test_xml[test]['wallclock']
 
         logger.debug("Calling create_newcase: " + create_newcase_cmd)
         return self._shell_cmd_for_phase(test, create_newcase_cmd, CREATE_NEWCASE_PHASE)
@@ -534,12 +531,14 @@ class SystemTest(object):
         shutil.copy(os.path.join(test_dir,"env_run.xml"),
                     os.path.join(lockedfiles, "env_run.orig.xml"))
 
-        case = Case(test_dir)
-        case.set_value("SHAREDLIBROOT",
-                       os.path.join(self._test_root,
-                                    "sharedlibroot.%s"%self._test_id))
+        with Case(test_dir, read_only=False) as case:
+            case.set_value("SHAREDLIBROOT",
+                           os.path.join(self._test_root,
+                                        "sharedlibroot.%s"%self._test_id))
+            envtest.set_initial_values(case)
+            if self._save_timing:
+                case.set_value("SAVE_TIMING", True)
 
-        envtest.set_initial_values(case)
         return True
 
     ###########################################################################
@@ -634,11 +633,6 @@ class SystemTest(object):
     def _run_phase(self, test):
     ###########################################################################
         test_dir = self._get_test_dir(test)
-        # wallclock is an optional field in the version 2.0 testlist.xml file
-        # setting wallclock time close to the expected test time will help queue throughput
-        if test in self._test_xml and "wallclock" in self._test_xml[test]:
-            run_cmd("./xmlchange JOB_WALLCLOCK_TIME=%s" %
-                    self._test_xml[test]["wallclock"], from_dir=test_dir)
         if self._no_batch:
             cmd = "./case.submit --no-batch"
         else:

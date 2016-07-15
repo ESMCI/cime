@@ -126,7 +126,12 @@ class GenericXML(object):
                     expect(isinstance(value, str), " Bad value passed for key %s"%key)
                     xpath = ".//%s[@%s=\'%s\']" % (nodename, key, value)
                     logger.debug("xpath is %s"%xpath)
-                    newnodes = root.findall(xpath)
+
+                    try:
+                        newnodes = root.findall(xpath)
+                    except Exception as e:
+                        expect(False, "Bad xpath search term '%s', error: %s" % (xpath, e))
+
                     if not nodes:
                         nodes = newnodes
                     else:
@@ -152,7 +157,7 @@ class GenericXML(object):
             root = self.root
         self.root.append(node)
 
-    def get_value(self, item, attribute={}, resolved=True, subgroup=None):
+    def get_value(self, item, attribute=None, resolved=True, subgroup=None):
         """
         get_value is expected to be defined by the derived classes, if you get here
         the value was not found in the class.

@@ -1,7 +1,7 @@
 """
 Base class for CIME system tests
 """
-import shutil, glob, gzip
+import shutil, glob, gzip, time
 from CIME.XML.standard_module_setup import *
 from CIME.XML.env_run import EnvRun
 from CIME.utils import run_cmd, append_status
@@ -22,6 +22,7 @@ class SystemTestsCommon(object):
         changed in a previous run of the test.
         """
         self._case = case
+        self._start_time = time.time()
         caseroot = case.get_value("CASEROOT")
         self._caseroot = caseroot
         self._orig_caseroot = caseroot
@@ -45,6 +46,7 @@ class SystemTestsCommon(object):
 
         case_setup(self._case, reset=True, test_mode=True)
         self._case.set_value("TEST",True)
+        self._case.flush()
 
     def build(self, sharedlib_only=False, model_only=False):
         build.case_build(self._caseroot, case=self._case,
@@ -64,19 +66,26 @@ class SystemTestsCommon(object):
         self._caseroot = case.get_value("CASEROOT")
 
     def _run(self, suffix="base", coupler_log_path=None, st_archive=False):
-        success = case_run(self._case)
-        if success and st_archive:
-            success = case_st_archive(self._case)
+        try:
+            success = case_run(self._case)
+            if success and st_archive:
+                success = case_st_archive(self._case)
 
-        if success and self._coupler_log_indicates_run_complete(coupler_log_path):
-            if self._runstatus != "FAIL":
-                self._runstatus = "PASS"
-        else:
+            if success and self._coupler_log_indicates_run_complete(coupler_log_path):
+                if self._runstatus != "FAIL":
+                    self._runstatus = "PASS"
+            else:
+                success = False
+                self._runstatus = "FAIL"
+
+            if success and suffix is not None:
+                self._component_compare_move(suffix)
+        except:
+            # An exception must not prevent the TestStatus file from
+            # being marked FAIL
             success = False
             self._runstatus = "FAIL"
-
-        if success and suffix is not None:
-            self._component_compare_move(suffix)
+            logger.warning("Exception during run: %s" % (sys.exc_info()[1]))
 
         return success
 
@@ -87,8 +96,10 @@ class SystemTestsCommon(object):
                 teststatusfile = f.read()
             li = teststatusfile.rsplit('PEND', 1)
             teststatusfile = self._runstatus.join(li)
+            total_time = int(time.time() - self._start_time)
             with open(test_status, 'w') as f:
                 f.write(teststatusfile)
+                f.write("COMMENT TIME %d\n" % total_time)
 
     def _coupler_log_indicates_run_complete(self, coupler_log_path):
         newestcpllogfile = self._get_latest_cpl_log(coupler_log_path)
@@ -230,8 +241,8 @@ class SystemTestsCommon(object):
         basecmp_dir = os.path.join(baselineroot, self._case.get_value("BASECMP_CASE"))
         for bdir in (baselineroot, basecmp_dir):
             if not os.path.isdir(bdir):
-                append_status("GFAIL %s baseline\n",self._case.get_value("CASEBASEID"),
-                             sfile="TestStatus")
+                append_status("FAIL %s compare\n"%self._case.get_value("CASEBASEID"),
+                              sfile="TestStatus")
                 append_status("ERROR %s does not exist"%bdir, sfile="TestStatus.log")
                 return -1
         compgen = os.path.join(self._case.get_value("SCRIPTSROOT"),"Tools",
@@ -259,9 +270,13 @@ class SystemTestsCommon(object):
             curmem = memlist[-1][1]
             diff = (curmem-blmem)/blmem
             if(diff < 0.1):
-                append_status("PASS  Memory usage baseline compare ",sfile="TestStatus")
+                append_status("PASS %s memcomp\n"%self._case.get_value("CASEBASEID"),
+                              sfile="TestStatus")
             else:
-                append_status("FAIL  Memory usage increase > 10% from baseline",sfile="TestStatus")
+                append_status("FAIL %s memcomp\n"%self._case.get_value("CASEBASEID"),
+                              sfile="TestStatus")
+                append_status("Error in memory compare: Memory usage increase > 10% from baseline",
+                              sfile="TestStatus.log")
         # compare throughput to baseline
         current = self._get_throughput(newestcpllogfile)
         baseline = self._get_throughput(baselog)
@@ -269,11 +284,13 @@ class SystemTestsCommon(object):
         if baseline is not None and current is not None:
             diff = (baseline - current)/baseline
             if(diff < 0.25):
-                append_status("PASS  Throughput baseline compare ",sfile="TestStatus")
+                append_status("PASS %s tputcomp\n"%self._case.get_value("CASEBASEID"),
+                              sfile="TestStatus")
             else:
-                append_status("FAIL  Throughput increase > 25% from baseline",sfile="TestStatus")
-
-
+                append_status("FAIL %s tputcomp\n"%self._case.get_value("CASEBASEID"),
+                              sfile="TestStatus")
+                append_status("Error in throughput compare: Computation time increase > 25% from baseline",
+                              sfile="TestStatus.log")
 
     def generate_baseline(self):
         """
@@ -288,7 +305,7 @@ class SystemTestsCommon(object):
         basegen_dir = os.path.join(baselineroot, self._case.get_value("BASEGEN_CASE"))
         for bdir in (baselineroot, basegen_dir):
             if not os.path.isdir(bdir):
-                append_status("GFAIL %s baseline\n" % self._case.get_value("CASEBASEID"),
+                append_status("FAIL %s generate\n" % self._case.get_value("CASEBASEID"),
                              sfile="TestStatus")
                 append_status("ERROR %s does not exist" % bdir, sfile="TestStatus.log")
                 return -1
@@ -353,8 +370,12 @@ class TESTRUNDIFF(FakeTest):
 """
 echo Insta pass
 echo SUCCESSFUL TERMINATION > %s/cpl.log.$LID
-cp %s/utils/python/tests/cpl.hi1.nc.test %s/%s.cpl.hi.0.nc.base
-""" % (rundir, cimeroot, rundir, case)
+if [ -z "$TESTRUNDIFF_ALTERNATE" ]; then
+  cp %s/utils/python/tests/cpl.hi1.nc.test %s/%s.cpl.hi.0.nc.base
+else
+  cp %s/utils/python/tests/cpl.hi2.nc.test %s/%s.cpl.hi.0.nc.base
+fi
+""" % (rundir, cimeroot, rundir, case, cimeroot, rundir, case)
         self._set_script(script)
         FakeTest.build(self,
                        sharedlib_only=sharedlib_only, model_only=model_only)

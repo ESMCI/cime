@@ -5,10 +5,10 @@ All interaction with and between the module files in XML/ takes place
 through the Case module.
 """
 from copy   import deepcopy
-import glob, shutil
+import glob, os, shutil, traceback
 from CIME.XML.standard_module_setup import *
 
-from CIME.utils                     import expect, run_cmd, get_cime_root
+from CIME.utils                     import expect, get_cime_root
 from CIME.utils                     import convert_to_type, get_model, get_project
 from CIME.XML.machines              import Machines
 from CIME.XML.pes                   import Pes
@@ -32,6 +32,7 @@ from CIME.XML.env_batch             import EnvBatch
 from CIME.XML.generic_xml           import GenericXML
 from CIME.user_mod_support          import apply_user_mods
 from CIME.case_setup import case_setup
+from CIME.macros import MacroMaker
 
 logger = logging.getLogger(__name__)
 
@@ -61,28 +62,16 @@ class Case(object):
     by reading and interpreting the CIME config classes.
 
     """
-    def __init__(self, case_root=None):
+    def __init__(self, case_root=None, read_only=True):
 
         if case_root is None:
             case_root = os.getcwd()
 
-        # Init first, if no valid case_root expect fails and tears down object, __del__ expects self._env_files_that_need_rewrite
-        self._env_files_that_need_rewrite = set()
-
         logger.debug("Initializing Case.")
-
-        self._env_entryid_files = []
-        self._env_entryid_files.append(EnvRun(case_root))
-        self._env_entryid_files.append(EnvBuild(case_root))
-        self._env_entryid_files.append(EnvMachPes(case_root))
-        self._env_entryid_files.append(EnvCase(case_root))
-        self._env_entryid_files.append(EnvBatch(case_root))
-        if os.path.isfile(os.path.join(case_root,"env_test.xml")):
-            self._env_entryid_files.append(EnvTest(case_root))
-        self._env_generic_files = []
-        self._env_generic_files.append(EnvMachSpecific(case_root))
-        self._env_generic_files.append(EnvArchive(case_root))
-        self._files = self._env_entryid_files + self._env_generic_files
+        self._env_files_that_need_rewrite = set()
+        self._read_only_mode = True
+        self._force_read_only = read_only
+        self.read_xml(case_root)
 
         # Hold arbitary values. In create_newcase we may set values
         # for xml files that haven't been created yet. We need a place
@@ -100,16 +89,53 @@ class Case(object):
         self._gridfile = None
         self._components = []
         self._component_config_files = []
+        self._component_classes = []
 
-    def __del__(self):
+    # Define __enter__ and __exit__ so that we can use this as a context manager
+    # and force a flush on exit.
+    def __enter__(self):
+        if not self._force_read_only:
+            self._read_only_mode = False
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
         self.flush()
+        self._read_only_mode = True
+        return False
+
+    def schedule_rewrite(self, env_file):
+        assert not self._read_only_mode, \
+            "case.py scripts error: attempted to modify an env file while in " \
+            "read-only mode"
+        self._env_files_that_need_rewrite.add(env_file)
+
+    def read_xml(self, case_root):
+        if(len(self._env_files_that_need_rewrite)>0):
+            files = ""
+            for env_file in self._env_files_that_need_rewrite:
+                files += " "+env_file.filename
+            expect(False,"Object(s) %s seem to have newer data than the corresponding case file"%files)
+
+        self._env_entryid_files = []
+        self._env_entryid_files.append(EnvRun(case_root))
+        self._env_entryid_files.append(EnvBuild(case_root))
+        self._env_entryid_files.append(EnvMachPes(case_root))
+        self._env_entryid_files.append(EnvCase(case_root))
+        self._env_entryid_files.append(EnvBatch(case_root))
+        if os.path.isfile(os.path.join(case_root,"env_test.xml")):
+            self._env_entryid_files.append(EnvTest(case_root))
+        self._env_generic_files = []
+        self._env_generic_files.append(EnvMachSpecific(case_root))
+        self._env_generic_files.append(EnvArchive(case_root))
+        self._files = self._env_entryid_files + self._env_generic_files
 
     def _get_env(self, short_name):
-          full_name = "env_%s.xml" % (short_name)
-          for env_file in self._files:
-              if os.path.basename(env_file.filename) == full_name:
-                  return env_file
-          expect(False, "Could not find object for %s in case"%full_name)
+        full_name = "env_%s.xml" % (short_name)
+        for env_file in self._files:
+            if os.path.basename(env_file.filename) == full_name:
+                return env_file
+
+        expect(False, "Could not find object for %s in case"%full_name)
 
     def copy(self, newcasename, newcaseroot, newcimeroot=None, newsrcroot=None):
         newcase = deepcopy(self)
@@ -132,14 +158,12 @@ class Case(object):
     def flush(self, flushall=False):
         if flushall:
             for env_file in self._files:
-                env_file.write()
-        else:
-            for env_file in self._env_files_that_need_rewrite:
-                env_file.write()
-
+                self.schedule_rewrite(env_file)
+        for env_file in self._env_files_that_need_rewrite:
+            env_file.write()
         self._env_files_that_need_rewrite = set()
 
-    def get_value(self, item, attribute={}, resolved=True, subgroup=None):
+    def get_value(self, item, attribute=None, resolved=True, subgroup=None):
         result = None
         for env_file in self._env_entryid_files:
             # Wait and resolve in self rather than in env_file
@@ -166,17 +190,18 @@ class Case(object):
         return result
 
 
-    def get_values(self, item=None, attribute={}, resolved=True, subgroup=None):
+    def get_values(self, item=None, attribute=None, resolved=True, subgroup=None):
 
         """
         Return info object for given item, return all info for all item if item is empty.
         """
 
+        logger.debug("(get_values) Input values: %s , %s , %s , %s , %s" , self.__class__.__name__ , item, attribute, resolved, subgroup)
+
         # Empty result list
         results = []
 
-
-        for env_file in self._files:
+        for env_file in self._env_entryid_files:
             # Wait and resolve in self rather than in env_file
             logger.debug("Searching in %s" , env_file.__class__.__name__)
             result = None
@@ -197,11 +222,18 @@ class Case(object):
                     for r in result :
                         if type(r['value']) is str:
                             logger.debug("Resolving %s" , r['value'])
-
                             r['value'] = self.get_resolved_value(r['value'])
 
-                results = results + result
+                if subgroup :
+                    found = []
+                    for r in result :
+                        if r['group'] == subgroup :
+                            found.append(r)
+                    results += found
+                else:
+                    results = results + result
 
+        logger.debug("(get_values) Return value:  %s" , results )
         return results
 
 
@@ -243,11 +275,11 @@ class Case(object):
         then that value will be set in the file object and the file
         name is returned
         """
-        result = None;
+        result = None
         for env_file in self._env_entryid_files:
             result = env_file.set_value(item, value, subgroup, ignore_type)
             if (result is not None):
-                logger.debug("Will rewrite file %s",env_file.filename)
+                logger.debug("Will rewrite file %s %s",env_file.filename, item)
                 self._env_files_that_need_rewrite.add(env_file)
                 return result
         if result is None:
@@ -311,7 +343,7 @@ class Case(object):
 
 
     def get_compset_components(self):
-        # If are doing a create_clone then, self._compsetname is not set yet
+        #If are doing a create_clone then, self._compsetname is not set yet
         components = []
         compset = self.get_value("COMPSET")
         if compset is None:
@@ -350,7 +382,7 @@ class Case(object):
         drv_config_file = files.get_value("CONFIG_DRV_FILE")
         drv_comp = Component(drv_config_file)
         for env_file in self._env_entryid_files:
-            nodes = env_file.add_elements_by_group(drv_comp, attributes=attlist);
+            env_file.add_elements_by_group(drv_comp, attributes=attlist)
 
         # loop over all elements of both component_classes and components - and get config_component_file for
         # for each component
@@ -361,27 +393,52 @@ class Case(object):
         for i in xrange(1,len(self._component_classes)):
             comp_class = self._component_classes[i]
             comp_name  = self._components[i-1]
-	    node_name = 'CONFIG_' + comp_class + '_FILE';
+	    node_name = 'CONFIG_' + comp_class + '_FILE'
             comp_config_file = files.get_value(node_name, {"component":comp_name}, resolved=True)
             expect(comp_config_file is not None,"No config file for component %s"%comp_name)
             compobj = Component(comp_config_file)
             for env_file in self._env_entryid_files:
-                env_file.add_elements_by_group(compobj, attributes=attlist);
+                env_file.add_elements_by_group(compobj, attributes=attlist)
             self._component_config_files.append((node_name,comp_config_file))
 
         # Add the group and elements for the config_files.xml
         for env_file in self._env_entryid_files:
-            env_file.add_elements_by_group(files, attlist);
+            env_file.add_elements_by_group(files, attlist)
 
         for key,value in self.lookups.items():
             result = self.set_value(key,value)
             if result is not None:
                 del self.lookups[key]
 
+    def get_components(self):
+        """
+        return dictionary of the form [component_class:component],
+        e.g. [atm:cam], for all compset components
+        """
+
+        files = Files()
+        drv_comp = Component(files.get_value("CONFIG_DRV_FILE"))
+
+        # Determine list of component classes that this coupler/driver knows how
+        # to deal with. This list follows the same order as compset longnames follow.
+        component_classes = drv_comp.get_valid_model_components()
+        components = self.get_compset_components()
+
+        # Note that component classes can have a bigger range than
+        # compents since stub esp (sesp) is an optional component - so
+        # need to take the min of the two below
+        comp_dict = {}
+        for i in xrange(0,len(components)):
+            comp_name  = components[i]
+            comp_class = component_classes[i+1]
+            comp_dict[comp_class] = comp_name
+        return comp_dict
+
     def configure(self, compset_name, grid_name, machine_name=None,
                   project=None, pecount=None, compiler=None, mpilib=None,
                   user_compset=False, pesfile=None,
-                  user_grid=False, gridfile=None, ninst=1, test=False):
+                  user_grid=False, gridfile=None, ninst=1, test=False,
+                  walltime=None):
 
         #--------------------------------------------
         # compset, pesfile, and compset components
@@ -396,7 +453,7 @@ class Case(object):
         # grid
         #--------------------------------------------
         if user_grid is True and gridfile is not None:
-            self.set_value("GRIDS_SPEC_FILE", gridfile);
+            self.set_value("GRIDS_SPEC_FILE", gridfile)
         grids = Grids(gridfile)
 
         gridinfo = grids.get_grid_info(name=grid_name, compset=self._compsetname)
@@ -413,7 +470,7 @@ class Case(object):
         self.get_compset_var_settings()
 
         # Add the group and elements for the config_files.xml
-        for idx, config_file in enumerate(self._component_config_files):
+        for config_file in self._component_config_files:
             self.set_value(config_file[0],config_file[1])
 
         #--------------------------------------------
@@ -465,12 +522,13 @@ class Case(object):
                     expect(response.startswith("u"), "Aborting by user request")
 
         # the following go into the env_mach_specific file
-        vars = ("module_system", "environment_variables", "mpirun")
+        items = ("module_system", "environment_variables", "mpirun")
         env_mach_specific_obj = self._get_env("mach_specific")
-        for var in vars:
-            nodes = machobj.get_first_child_nodes(var)
+        for item in items:
+            nodes = machobj.get_first_child_nodes(item)
             for node in nodes:
                 env_mach_specific_obj.add_child(node)
+        self.schedule_rewrite(env_mach_specific_obj)
 
         #--------------------------------------------
         # pe payout
@@ -528,8 +586,8 @@ class Case(object):
         env_batch = self._get_env("batch")
         env_batch.set_batch_system(batch, batch_system_type=batch_system_type)
         env_batch.create_job_groups(bjobs)
-        env_batch.set_job_defaults(bjobs, pesize=maxval)
-        self._env_files_that_need_rewrite.add(env_batch)
+        env_batch.set_job_defaults(bjobs, pesize=maxval, walltime=walltime)
+        self.schedule_rewrite(env_batch)
 
         self.set_value("COMPSET",self._compsetname)
 
@@ -578,7 +636,6 @@ class Case(object):
             self.set_value(vid,value)
 
     def _create_caseroot_tools(self):
-        cime_model = get_model()
         machines_dir = os.path.abspath(self.get_value("MACHDIR"))
         toolsdir = os.path.join(self.get_value("CIMEROOT"),"scripts","Tools")
         caseroot = self.get_value("CASEROOT")
@@ -587,11 +644,9 @@ class Case(object):
                     os.path.join(toolsdir, "case.build"),
                     os.path.join(toolsdir, "case.submit"),
                     os.path.join(toolsdir, "preview_namelists"),
-                    os.path.join(toolsdir, "testcase.setup"),
                     os.path.join(toolsdir, "check_input_data"),
                     os.path.join(toolsdir, "check_case"),
                     os.path.join(toolsdir, "archive_metadata.sh"),
-                    os.path.join(toolsdir, "create_production_test"),
                     os.path.join(toolsdir, "xmlchange"),
                     os.path.join(toolsdir, "xmlquery"))
         try:
@@ -604,9 +659,7 @@ class Case(object):
         # set up utility files in caseroot/Tools/
         toolfiles = (os.path.join(toolsdir, "check_lockedfiles"),
                      os.path.join(toolsdir, "lt_archive.sh"),
-                     os.path.join(toolsdir, "st_archive"),
                      os.path.join(toolsdir, "getTiming"),
-                     os.path.join(toolsdir, "compare_namelists.pl"),
                      os.path.join(machines_dir,"taskmaker.pl"),
                      os.path.join(machines_dir,"Makefile"),
                      os.path.join(machines_dir,"mkSrcfiles"),
@@ -620,8 +673,19 @@ class Case(object):
             except Exception as e:
                 logger.warning("FAILED to set up toolfiles: %s %s %s" % (str(e), toolfile, destfile))
 
-        # Copy any system or compiler Depends files to the case
+        # Create Macros file.
         machine = self.get_value("MACH")
+        if os.getenv("CIME_USE_CONFIG_BUILD") == "TRUE":
+            os_ = self.get_value("OS")
+            caseroot = self.get_value("CASEROOT")
+            files = Files()
+            build_file = files.get_value("BUILD_SPEC_FILE")
+            machobj = Machines(machine=machine, files=files)
+            macro_maker = MacroMaker(os_, machobj)
+            with open(os.path.join(caseroot, "Macros"), "w") as macros_file:
+                macro_maker.write_macros('Makefile', build_file, macros_file)
+
+        # Copy any system or compiler Depends files to the case.
         compiler = self.get_value("COMPILER")
         for dep in (machine, compiler):
             dfile = "Depends.%s"%dep
@@ -678,7 +742,7 @@ class Case(object):
     def create_caseroot(self, clone=False):
         caseroot = self.get_value("CASEROOT")
         if not os.path.exists(caseroot):
-        # Make the case directory
+            # Make the case directory
             logger.info(" Creating Case directory %s" %caseroot)
             os.makedirs(caseroot)
         os.chdir(caseroot)
