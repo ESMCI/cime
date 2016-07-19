@@ -1,9 +1,10 @@
 """Module containing tools for dealing with Fortran namelists.
 
 The public interface consists of the following functions:
-- `parse`
 - `is_valid_fortran_name`
 - `is_valid_fortran_namelist_literal`
+- `parse`
+- `write`
 
 For the moment, only a subset of namelist syntax is supported; specifically, we
 assume that only variables of intrinsic type are used, and indexing/co-indexing
@@ -436,6 +437,45 @@ def parse(namelist, convert_tab_to_space=True):
         # Deal with unexpected EOF or other parsing errors.
         expect(False, str(error))
     return namelist_dict
+
+
+def write(settings, out_file):
+    """Write a Fortran namelist to a file.
+
+    The `settings` method must be a dictionary associating group names to
+    dictionaries of variable name-value pairs, i.e. the same type of data
+    structure returned by `parse`.
+
+    As with `parse`, the `out_file` argument can be either a file name, or a
+    file object with a `write` method that accepts unicode.
+    """
+    if isinstance(out_file, str) or isinstance(out_file, unicode):
+        with open(out_file, 'w') as file_obj:
+            _write(settings, file_obj)
+    else:
+         _write(settings, out_file)
+
+
+def _write(settings, out_file):
+    """Unwrapped version of `write` that assumes that a file object is input."""
+    for group_name in sorted(settings.keys()):
+        out_file.write("&%s\n" % group_name)
+        group = settings[group_name]
+        for name in sorted(group.keys()):
+            values = group[name]
+            # To prettify things for long lists of values, build strings line-
+            # by-line.
+            lines = ["  %s = %s" % (name, values[0])]
+            for value in values[1:]:
+                if len(lines[-1]) + len(value) <= 77:
+                    lines[-1] += ", " + value
+                else:
+                    lines[-1] += ",\n"
+                    lines.append("      " + value)
+            lines[-1] += "\n"
+            for line in lines:
+                out_file.write(line)
+        out_file.write("/\n")
 
 
 class _NamelistEOF(Exception):
