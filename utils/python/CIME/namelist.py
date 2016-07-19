@@ -425,9 +425,11 @@ def parse(namelist, convert_tab_to_space=True):
     Python integer `2`. Null values are returned as the empty string ("").
     """
     if isinstance(namelist, str) or isinstance(namelist, unicode):
+        logger.debug("Reading namelist at: %s", namelist)
         with open(namelist) as namelist_obj:
             text = namelist_obj.read()
     else:
+        logger.debug("Reading namelist from file object")
         text = namelist.read()
     if convert_tab_to_space:
         text = text.replace('\t', ' ')
@@ -450,10 +452,12 @@ def write(settings, out_file):
     file object with a `write` method that accepts unicode.
     """
     if isinstance(out_file, str) or isinstance(out_file, unicode):
+        logger.debug("Writing namelist to: %s", out_file)
         with open(out_file, 'w') as file_obj:
             _write(settings, file_obj)
     else:
-         _write(settings, out_file)
+        logger.debug("Writing namelist to file object")
+        _write(settings, out_file)
 
 
 def _write(settings, out_file):
