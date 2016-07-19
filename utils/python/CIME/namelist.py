@@ -1,5 +1,10 @@
 """Module containing tools for dealing with Fortran namelists.
 
+The public interface consists of the following functions:
+- `parse`
+- `is_valid_fortran_name`
+- `is_valid_fortran_namelist_literal`
+
 For the moment, only a subset of namelist syntax is supported; specifically, we
 assume that only variables of intrinsic type are used, and indexing/co-indexing
 of arrays to set a portion of a variable is not supported. (However, null values
@@ -392,6 +397,45 @@ def is_valid_fortran_namelist_literal(type_, string):
     if string == '':
         return True
     return FORTRAN_LITERAL_REGEXES[type_].search(string) is not None
+
+
+def parse(namelist, convert_tab_to_space=True):
+    """Parse a Fortran namelist.
+
+    The `namelist` argument must be either a `str` or `unicode` object
+    containing a file name, or a text I/O object with a `read` method that
+    returns the text of the namelist.
+
+    The `convert_tab_to_space` option can be used to force all tabs in the file
+    to be converted to spaces, and is on by default. Note that this will usually
+    allow files that use tabs as whitespace to be parsed. However, the
+    implementation of this option is crude; it converts *all* tabs in the file,
+    including those in character literals. (Note that there are many characters
+    that cannot be passed in via namelist in any standard way, including '\n',
+    so it is already a bad idea to assume that the namelist will preserve
+    whitespace in strings, aside from simple spaces.)
+
+    The return value is a dictionary associating group names to settings, where
+    the setting for each namelist group is itself a dictionary associating
+    variable names to lists of values.
+
+    All names and values returned are ultimately unicode strings. E.g. a value
+    of "6*2" is returned as that string; it is not converted to 6 copies of the
+    Python integer `2`. Null values are returned as the empty string ("").
+    """
+    if isinstance(namelist, str) or isinstance(namelist, unicode):
+        with open(namelist) as namelist_obj:
+            text = namelist_obj.read()
+    else:
+        text = namelist.read()
+    if convert_tab_to_space:
+        text = text.replace('\t', ' ')
+    try:
+        namelist_dict = _NamelistParser(text, groupless).parse_namelist()
+    except (_NamelistEOF, _NamelistParseError) as error:
+        # Deal with unexpected EOF or other parsing errors.
+        expect(False, str(error))
+    return namelist_dict
 
 
 class _NamelistEOF(Exception):
