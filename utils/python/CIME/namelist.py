@@ -400,12 +400,21 @@ def is_valid_fortran_namelist_literal(type_, string):
     return FORTRAN_LITERAL_REGEXES[type_].search(string) is not None
 
 
-def parse(namelist, convert_tab_to_space=True):
+def parse(namelist, groupless=False, convert_tab_to_space=True):
     """Parse a Fortran namelist.
 
     The `namelist` argument must be either a `str` or `unicode` object
     containing a file name, or a text I/O object with a `read` method that
     returns the text of the namelist.
+
+    The `groupless` argument changes namelist parsing in two ways:
+
+    1. `parse` allows an alternate file format where no group names or slashes
+       are present. In effect, the file is parsed as if an invisible, arbitrary
+       group name was prepended, and an invisible slash was appended. However,
+       if any group names actually are present, the file is parsed normally.
+    2. The return value of this function contains no group names. Instead a
+       single, flattened dictionary of name-value pairs is returned.
 
     The `convert_tab_to_space` option can be used to force all tabs in the file
     to be converted to spaces, and is on by default. Note that this will usually
@@ -446,7 +455,7 @@ def write(settings, out_file):
 
     The `settings` method must be a dictionary associating group names to
     dictionaries of variable name-value pairs, i.e. the same type of data
-    structure returned by `parse`.
+    structure returned by `parse` with `groupless=False`.
 
     As with `parse`, the `out_file` argument can be either a file name, or a
     file object with a `write` method that accepts unicode.
@@ -526,7 +535,7 @@ class _NamelistParseError(Exception):
         return string
 
 
-class _NamelistParser(object):
+class _NamelistParser(object): # pylint:disable=too-few-public-methods
 
     """Class to validate and read from Fortran namelist input.
 
@@ -534,7 +543,7 @@ class _NamelistParser(object):
     directly. Use the `parse` function in this module instead.
     """
 
-    def __init__(self, text):
+    def __init__(self, text, groupless=False):
         """Create a `_NamelistParser` given text to parse in a string."""
         # Current location within the file.
         self._pos = 0
@@ -544,8 +553,10 @@ class _NamelistParser(object):
         self._text = unicode(text)
         self._len = len(self._text)
         # Dictionary with group names as keys, and dictionaries of variable
-        # name-value pairs as values.
-        self._settings = dict()
+        # name-value pairs as values. (Or a single flat dictionary if
+        # `groupless=True`.)
+        self._settings = {}
+        self._groupless = groupless
 
     def _line_col_string(self):
         r"""Return a string specifying the current line and column number.
@@ -575,8 +586,14 @@ class _NamelistParser(object):
             self._advance()
         return self._text[self._pos+1]
 
-    def _advance(self, nchars=1):
+    def _advance(self, nchars=1, check_eof=False):
         r"""Advance the parser's current position by `nchars` characters.
+
+        The `nchars` argument must be non-negative. If the end of file is
+        reached, an exception is thrown, unless `check_eof=True` is passed. If
+        `check_eof=True` is passed, the position is advanced past the end of the
+        file (`self._pos == `self._len`), and a boolean is returned to signal
+        whether or not the end of the file was reached.
 
         >>> _NamelistParser('abcd')._advance(-1)
         Traceback (most recent call last):
@@ -608,6 +625,13 @@ class _NamelistParser(object):
         Traceback (most recent call last):
             ...
         _NamelistEOF: Unexpected end of file encountered in namelist. (At line 2, column 0)
+        >>> x = _NamelistParser('ab')
+        >>> x._advance(check_eof=True)
+        False
+        >>> x._curr()
+        u'b'
+        >>> x._advance(check_eof=True)
+        True
         """
         assert nchars >= 0, \
             "_NamelistParser attempted to 'advance' backwards"
@@ -621,7 +645,10 @@ class _NamelistParser(object):
         if lines > 0:
             self._col = -(consumed_text.rfind('\n') + 1)
         self._col += len(consumed_text)
-        if new_pos == self._len:
+        end_of_file = new_pos == self._len
+        if check_eof:
+            return end_of_file
+        elif end_of_file:
             raise _NamelistEOF(message="At "+self._line_col_string())
 
     def _eat_whitespace(self, allow_initial_comment=False):
@@ -721,28 +748,28 @@ class _NamelistParser(object):
         return True
 
     def _expect_char(self, chars):
-        """Raise an error if the wrong character is present, else advance.
+        """Raise an error if the wrong character is present.
 
         Does not return anything, but raises a `_NamelistParseError` if `chars`
         does not contain the character at the current position.
 
-        >>> x = _NamelistParser('abc')
+        >>> x = _NamelistParser('ab')
         >>> x._expect_char('a')
+        >>> x._advance()
         >>> x._expect_char('a')
         Traceback (most recent call last):
             ...
         _NamelistParseError: Error in parsing namelist: expected 'a' but found 'b' at line 1, column 1
         >>> x._expect_char('ab')
-        >>> x._expect_char('c')
-        Traceback (most recent call last):
-            ...
-        _NamelistEOF: Unexpected end of file encountered in namelist. (At line 1, column 3)
         """
         if self._curr() not in chars:
-            raise _NamelistParseError("expected %r but found %r at %s" %
-                                      (str(chars), str(self._curr()),
+            if len(chars) == 1:
+                char_description = repr(str(chars))
+            else:
+                char_description = "one of the characters in %r" % str(chars)
+            raise _NamelistParseError("expected %s but found %r at %s" %
+                                      (char_description, str(self._curr()),
                                        self._line_col_string()))
-        self._advance()
 
     def _parse_namelist_group_name(self):
         r"""Parses and returns a namelist group name at the current position.
@@ -773,6 +800,7 @@ class _NamelistParser(object):
         _NamelistParseError: Error in parsing namelist: '' is not a valid variable name at line 1, column 1
         """
         self._expect_char("&")
+        self._advance()
         return self._parse_variable_name(allow_equals=False)
 
     def _parse_variable_name(self, allow_equals=True):
@@ -816,10 +844,13 @@ class _NamelistParser(object):
     def _parse_character_literal(self):
         """Parse and return a character literal (a string).
 
-        >>> _NamelistParser('"abc"')._parse_character_literal()
+        Position on return is the last character of the string; we avoid
+        advancing past that in order to avoid potential EOF errors.
+
+        >>> _NamelistParser('"abc')._parse_character_literal()
         Traceback (most recent call last):
             ...
-        _NamelistEOF: Unexpected end of file encountered in namelist. (At line 1, column 5)
+        _NamelistEOF: Unexpected end of file encountered in namelist. (At line 1, column 4)
         >>> _NamelistParser('"abc" ')._parse_character_literal()
         u'"abc"'
         >>> _NamelistParser("'abc' ")._parse_character_literal()
@@ -827,7 +858,7 @@ class _NamelistParser(object):
         >>> _NamelistParser("*abc* ")._parse_character_literal()
         Traceback (most recent call last):
             ...
-        _NamelistParseError: Error in parsing namelist: *abc* is not a valid character literal at line 1, column 5
+        _NamelistParseError: Error in parsing namelist: *abc* is not a valid character literal at line 1, column 4
         >>> _NamelistParser("'abc''def' ")._parse_character_literal()
         u"'abc''def'"
         >>> _NamelistParser("'abc''' ")._parse_character_literal()
@@ -841,13 +872,15 @@ class _NamelistParser(object):
         while True:
             while self._curr() != delimiter:
                 self._advance()
+            # Avoid end-of-file condition.
+            if self._pos == self._len - 1:
+                break
             # Doubled delimiters are escaped.
             if self._next() == delimiter:
                 self._advance(2)
             else:
                 break
-        self._advance()
-        text = self._text[old_pos:self._pos]
+        text = self._text[old_pos:self._pos+1]
         if not is_valid_fortran_namelist_literal("character", text):
             raise _NamelistParseError("%s is not a valid character literal at %s" %
                                       (text, self._line_col_string()))
@@ -856,28 +889,53 @@ class _NamelistParser(object):
     def _parse_complex_literal(self):
         """Parse and return a complex literal.
 
-        >>> _NamelistParser('(1.,2.)')._parse_complex_literal()
+        Position on return is the last character of the string; we avoid
+        advancing past that in order to avoid potential EOF errors.
+
+        >>> _NamelistParser('(1.,2.')._parse_complex_literal()
         Traceback (most recent call last):
             ...
-        _NamelistEOF: Unexpected end of file encountered in namelist. (At line 1, column 7)
+        _NamelistEOF: Unexpected end of file encountered in namelist. (At line 1, column 6)
         >>> _NamelistParser('(1.,2.) ')._parse_complex_literal()
         u'(1.,2.)'
         >>> _NamelistParser("(A,B) ")._parse_complex_literal()
         Traceback (most recent call last):
             ...
-        _NamelistParseError: Error in parsing namelist: '(A,B)' is not a valid complex literal at line 1, column 5
+        _NamelistParseError: Error in parsing namelist: '(A,B)' is not a valid complex literal at line 1, column 4
         """
         old_pos = self._pos
         while self._curr() != ')':
             self._advance()
-        self._advance()
-        text = self._text[old_pos:self._pos]
+        text = self._text[old_pos:self._pos+1]
         if not is_valid_fortran_namelist_literal("complex", text):
             raise _NamelistParseError("%r is not a valid complex literal at %s"
                                       % (str(text), self._line_col_string()))
         return text
 
-    def _parse_literal(self, allow_name=False):
+    def _look_ahead_for_equals(self, pos):
+        r"""Look ahead to see if the next whitespace character is '='.
+
+        The `pos` argument is the position in the text to start from while
+        looking. This function returns a boolean.
+
+        >>> _NamelistParser('=')._look_ahead_for_equals(0)
+        True
+        >>> _NamelistParser('a \n=')._look_ahead_for_equals(1)
+        True
+        >>> _NamelistParser('')._look_ahead_for_equals(0)
+        False
+        >>> _NamelistParser('a=')._look_ahead_for_equals(0)
+        False
+        """
+        for test_pos in range(pos, self._len):
+            if self._text[test_pos] not in (' ', '\n'):
+                if self._text[test_pos] == '=':
+                    return True
+                else:
+                    break
+        return False
+
+    def _parse_literal(self, allow_name=False, allow_eof_end=False):
         r"""Parse and return a variable value at the current position.
 
         The basic strategy is this:
@@ -893,11 +951,26 @@ class _NamelistParser(object):
         name-value pair. In this case, `None` is returned, and the current
         position remains unchanged.
 
+        If the argument `allow_eof_end=True` is passed in, we allow end-of-file
+        to mark the end of a literal.
+
         >>> _NamelistParser('"abc" ')._parse_literal()
         u'"abc"'
         >>> _NamelistParser("'abc' ")._parse_literal()
         u"'abc'"
+        >>> _NamelistParser('"abc"')._parse_literal()
+        Traceback (most recent call last):
+            ...
+        _NamelistEOF: Unexpected end of file encountered in namelist. (At line 1, column 5)
+        >>> _NamelistParser('"abc"')._parse_literal(allow_eof_end=True)
+        u'"abc"'
         >>> _NamelistParser('(1.,2.) ')._parse_literal()
+        u'(1.,2.)'
+        >>> _NamelistParser('(1.,2.)')._parse_literal()
+        Traceback (most recent call last):
+            ...
+        _NamelistEOF: Unexpected end of file encountered in namelist. (At line 1, column 7)
+        >>> _NamelistParser('(1.,2.)')._parse_literal(allow_eof_end=True)
         u'(1.,2.)'
         >>> _NamelistParser('5 ')._parse_literal()
         u'5'
@@ -931,6 +1004,8 @@ class _NamelistParser(object):
         Traceback (most recent call last):
             ...
         _NamelistEOF: Unexpected end of file encountered in namelist. (At line 1, column 2)
+        >>> _NamelistParser('6*')._parse_literal(allow_eof_end=True)
+        u'6*'
         >>> _NamelistParser('foo= ')._parse_literal()
         Traceback (most recent call last):
             ...
@@ -953,47 +1028,46 @@ class _NamelistParser(object):
         >>> x._parse_literal(allow_name=True)
         >>> x._curr()
         u'f'
-        >>> x = _NamelistParser('foo\n')
-        >>> x._parse_literal(allow_name=True)
-        Traceback (most recent call last):
-            ...
-        _NamelistEOF: Unexpected end of file encountered in namelist. (At line 2, column 0)
+        >>> _NamelistParser('')._parse_literal(allow_eof_end=True)
+        u''
         """
+        # Deal with empty input string.
+        if allow_eof_end and self._pos == self._len:
+            return u''
         # Deal with a repeated value prefix.
         old_pos = self._pos
         if FORTRAN_REPEAT_PREFIX_REGEX.search(self._text[self._pos:]):
             allow_name = False
             while self._curr() != '*':
                 self._advance()
-            self._advance()
+            if self._advance(check_eof=allow_eof_end):
+                # In case the file ends with the 'r*' form of null value.
+                return self._text[old_pos:]
         prefix = self._text[old_pos:self._pos]
         # Deal with delimited literals.
         if self._curr() in ('"', "'"):
-            return prefix + self._parse_character_literal()
+            literal = self._parse_character_literal()
+            self._advance(check_eof=allow_eof_end)
+            return prefix + literal
         if self._curr() == '(':
-            return prefix + self._parse_complex_literal()
+            literal = self._parse_complex_literal()
+            self._advance(check_eof=allow_eof_end)
+            return prefix + literal
         # Deal with non-delimited literals.
         new_pos = self._pos
-        while self._text[new_pos] not in (' ', '\n', ',', '/'):
-            if allow_name and self._text[new_pos] == '=':
-                # In this case it turns out that we have a name rather than a
-                # value, so:
-                return
+        separators = [' ', '\n', ',', '/']
+        if allow_name:
+            separators.append('=')
+        while new_pos != self._len and self._text[new_pos] not in separators:
             new_pos += 1
-            if new_pos == self._len:
-                # At the end of the file, give up by throwing an EOF exception.
-                self._advance(self._len)
-        # If `allow_name` is set, and we ended up on whitespace, we need to
-        # check and see if the next non-blank character is '='.
-        if allow_name and self._text[new_pos] in (' ', '\n'):
-            test_pos = new_pos
-            while self._text[test_pos] in (' ', '\n'):
-                test_pos += 1
-                if test_pos == self._len:
-                    self._advance(self._len)
-            if self._text[test_pos] == '=':
-                return
-        self._advance(new_pos - self._pos)
+        if not allow_eof_end and new_pos == self._len:
+            # At the end of the file, give up by throwing an EOF.
+            self._advance(self._len)
+        # If `allow_name` is set, we need to check and see if the next non-blank
+        # character is '=', and return `None` if so.
+        if allow_name and self._look_ahead_for_equals(new_pos):
+            return
+        self._advance(new_pos - self._pos, check_eof=allow_eof_end)
         text = self._text[old_pos:self._pos]
         if not any(is_valid_fortran_namelist_literal(type_, text)
                    for type_ in ("integer", "logical", "real")):
@@ -1001,7 +1075,7 @@ class _NamelistParser(object):
                                       % (str(text), self._line_col_string()))
         return text
 
-    def _expect_separator(self):
+    def _expect_separator(self, allow_eof=False):
         r"""Advance past the current value separator.
 
         This function raises an error if we are not positioned at a valid value
@@ -1009,6 +1083,13 @@ class _NamelistParser(object):
         encountered, in which case this function will leave the current position
         at the '/'. This function returns `True` otherwise, and skips to the
         location of the next non-whitespace character.
+
+        If `allow_eof=True` is passed to this function, the meanings of '/' and
+        the end-of-file are reversed. That is, an exception will be raised if a
+        '/' is encountered, but the end-of-file will cause `False` to be
+        returned rather than `True`. (An end-of-file after a ',' will be taken
+        to be part of the next separator, and will not cause `False` to be
+        returned.)
 
         >>> x = _NamelistParser("\na")
         >>> x._expect_separator()
@@ -1034,7 +1115,7 @@ class _NamelistParser(object):
         >>> x._expect_separator()
         Traceback (most recent call last):
             ...
-        _NamelistParseError: Error in parsing namelist: expected value separator but found 'a' at line 1, column 0
+        _NamelistParseError: Error in parsing namelist: expected one of the characters in ' \n,/' but found 'a' at line 1, column 0
         >>> x = _NamelistParser(" , a")
         >>> x._expect_separator()
         True
@@ -1055,25 +1136,58 @@ class _NamelistParser(object):
         True
         >>> x._curr()
         u'a'
+        >>> _NamelistParser("")._expect_separator(allow_eof=True)
+        False
+        >>> x = _NamelistParser(" ")
+        >>> x._expect_separator(allow_eof=True)
+        False
+        >>> x = _NamelistParser(" ,")
+        >>> x._expect_separator(allow_eof=True)
+        True
+        >>> x = _NamelistParser(" / ")
+        >>> x._expect_separator(allow_eof=True)
+        Traceback (most recent call last):
+            ...
+        _NamelistParseError: Error in parsing namelist: found group-terminating '/' in file without group names at line 1, column 1
         """
-        # Must actually be at a value separator.
-        if self._curr() not in (' ', ',', '\n', '/'):
-            raise _NamelistParseError("expected value separator but found %r at %s"
-                                      % (str(self._curr()), self._line_col_string()))
-        self._eat_whitespace()
-        if self._curr() == '/':
+        errstring = "found group-terminating '/' in file without group names at "
+        # Deal with the possibility that we are already at EOF.
+        if allow_eof and self._pos == self._len:
             return False
-        if self._curr() == ',':
-            self._advance()
-            self._eat_whitespace(allow_initial_comment=True)
+        # Must actually be at a value separator.
+        self._expect_char(' \n,/')
+        try:
+            self._eat_whitespace()
+            if self._curr() == '/':
+                if allow_eof:
+                    raise _NamelistParseError(errstring +
+                                              self._line_col_string())
+                else:
+                    return False
+        except _NamelistEOF:
+            if allow_eof:
+                return False
+            else:
+                raise
+        try:
+            if self._curr() == ',':
+                self._advance()
+                self._eat_whitespace(allow_initial_comment=True)
+        except _NamelistEOF:
+            if not allow_eof:
+                raise
         return True
 
-    def _parse_name_and_values(self):
+    def _parse_name_and_values(self, allow_eof_end=False):
         r"""Parse and return a variable name and values assigned to that name.
 
         The return value of this function is a tuple containing (a) the name of
         the variable in a string, and (b) a list of the variable's values. Null
         values are represented by the empty string.
+
+        If `allow_eof_end=True`, the end of the sequence of values might come
+        from an empty string rather than a slash. (This is used for the
+        alternate file format in "groupless" mode.)
 
         >>> _NamelistParser("foo='bar' /")._parse_name_and_values()
         (u'foo', [u"'bar'"])
@@ -1095,23 +1209,46 @@ class _NamelistParser(object):
         Traceback (most recent call last):
             ...
         _NamelistParseError: Error in parsing namelist: expected literal value, but got "foo2='ban'" at line 1, column 15
+        >>> _NamelistParser("foo=,,'bazz',6* ")._parse_name_and_values(allow_eof_end=True)
+        (u'foo', [u'', u'', u"'bazz'", u'6*'])
+        >>> _NamelistParser("foo=")._parse_name_and_values()
+        Traceback (most recent call last):
+            ...
+        _NamelistEOF: Unexpected end of file encountered in namelist. (At line 1, column 4)
+        >>> _NamelistParser("foo=")._parse_name_and_values(allow_eof_end=True)
+        (u'foo', [u''])
+        >>> _NamelistParser("foo= ")._parse_name_and_values(allow_eof_end=True)
+        (u'foo', [u''])
+        >>> _NamelistParser("foo=2")._parse_name_and_values(allow_eof_end=True)
+        (u'foo', [u'2'])
+        >>> _NamelistParser("foo=1,2")._parse_name_and_values(allow_eof_end=True)
+        (u'foo', [u'1', u'2'])
+        >>> _NamelistParser("foo=1,")._parse_name_and_values(allow_eof_end=True)
+        (u'foo', [u'1', u''])
         """
         name = self._parse_variable_name()
         self._eat_whitespace()
         self._expect_char("=")
-        self._eat_whitespace()
-        # Expect at least one literal, even if it's a null value.
-        values = [self._parse_literal()]
-        # While we haven't reached the end of the namelist group...
-        while self._expect_separator():
-            # see if we can parse a literal (we might get a variable name)...
-            literal = self._parse_literal(allow_name=True)
-            if literal is not None:
-                # and if it really is a literal, add it.
-                values.append(literal)
+        try:
+            self._advance()
+            self._eat_whitespace()
+        except _NamelistEOF:
+            # If we hit the end of file, return a name assigned to a null value.
+            if allow_eof_end:
+                return name, [u'']
             else:
-                # Otherwise we're done here.
+                raise
+        # Expect at least one literal, even if it's a null value.
+        values = [self._parse_literal(allow_eof_end=allow_eof_end)]
+        # While we haven't reached the end of the namelist group...
+        while self._expect_separator(allow_eof=allow_eof_end):
+            # see if we can parse a literal (we might get a variable name)...
+            literal = self._parse_literal(allow_name=True,
+                                          allow_eof_end=allow_eof_end)
+            if literal is None:
                 break
+            # and if it really is a literal, add it.
+            values.append(literal)
         return name, values
 
     def _parse_namelist_group(self):
@@ -1130,15 +1267,23 @@ class _NamelistParser(object):
         >>> x._parse_namelist_group()
         >>> x._settings
         {u'group': {u'foo': [u"'bar'", u"'bazz'", u''], u'foo2': [u'2*5']}}
+        >>> x = _NamelistParser("&group\n foo='bar','bazz'\n,, foo2=2*5\n /", groupless=True)
+        >>> x._parse_namelist_group()
+        >>> x._settings
+        {u'foo': [u"'bar'", u"'bazz'", u''], u'foo2': [u'2*5']}
         >>> x._curr()
         u'/'
         """
         group_name = self._parse_namelist_group_name()
-        self._settings[group_name] = {}
+        if not self._groupless:
+            self._settings[group_name] = {}
         self._eat_whitespace()
         while self._curr() != '/':
             name, values = self._parse_name_and_values()
-            self._settings[group_name][name] = values
+            if self._groupless:
+                self._settings[name] = values
+            else:
+                self._settings[group_name][name] = values
 
     def parse_namelist(self):
         r"""Parse the contents of an entire namelist file.
@@ -1158,6 +1303,12 @@ class _NamelistParser(object):
         {u'group': {}}
         >>> _NamelistParser("&group1\n foo='bar','bazz'\n,, foo2=2*5\n / &group2 /").parse_namelist()
         {u'group1': {u'foo': [u"'bar'", u"'bazz'", u''], u'foo2': [u'2*5']}, u'group2': {}}
+        >>> _NamelistParser("!blah \n foo='bar','bazz'\n,, foo2=2*5\n ", groupless=True).parse_namelist()
+        {u'foo': [u"'bar'", u"'bazz'", u''], u'foo2': [u'2*5']}
+        >>> _NamelistParser("!blah \n foo='bar','bazz'\n,, foo2=2*5,6\n ", groupless=True).parse_namelist()
+        {u'foo': [u"'bar'", u"'bazz'", u''], u'foo2': [u'2*5', u'6']}
+        >>> _NamelistParser("!blah \n foo='bar'", groupless=True).parse_namelist()
+        {u'foo': [u"'bar'"]}
         """
         # Return empty dictionary for empty files.
         if self._len == 0:
@@ -1167,6 +1318,12 @@ class _NamelistParser(object):
         try:
             self._eat_whitespace(allow_initial_comment=True)
         except _NamelistEOF:
+            return self._settings
+        # Handle case with no namelist groups.
+        if self._groupless and self._curr() != '&':
+            while self._pos < self._len:
+                name, values = self._parse_name_and_values(allow_eof_end=True)
+                self._settings[name] = values
             return self._settings
         # Loop over namelist groups in the file.
         while True:
