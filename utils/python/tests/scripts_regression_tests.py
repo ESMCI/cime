@@ -17,6 +17,7 @@ import CIME.system_test
 from  CIME.system_test import SystemTest
 from  CIME.XML.machines import Machines
 from  CIME.XML.files import Files
+from  CIME.XML.namelist_definition import NamelistDefinition
 from  CIME.case import Case
 from  CIME.macros import MacroMaker
 
@@ -1601,6 +1602,83 @@ class TestCMakeMacros(TestMakeMacros):
         """Helper that directly converts an XML string to a MakefileTester."""
         test_xml = _wrap_config_build_xml(xml_string)
         return CMakeTester(self, get_macros(self._maker, test_xml, "CMake"))
+
+
+###############################################################################
+class TestNamelistDefinition(unittest.TestCase):
+###############################################################################
+
+    # Define some test data for tests.
+    _xml_data = """<?xml version="1.0"?>
+    <namelist_definition>
+
+    <entry id="force_prognostic_true"
+    type="logical"
+    category="datm"
+    group="datm_nml">
+    If TRUE, prognostic is forced to true.
+    default=false
+    </entry>
+
+    <entry id="factorfn"
+    type="char*256"
+    category="datm"
+    group="datm_nml"
+    valid_values=""
+    input_pathname="abs" >
+    filename containing correction factors for use only with CORE2 modes (CORE2_IAF and CORE2_NYF).
+    default='null'.
+    </entry>
+
+    <entry id="decomp"
+    type="char*4"
+    category="datm"
+    group="datm_nml"
+    valid_values="1d,root" >
+    Set the decomposition option for the data model.
+    </entry>
+    </namelist_definition>
+    """
+
+    ###########################################################################
+    def namelist_definition_from_text(self, text):
+    ###########################################################################
+        directory = tempfile.mkdtemp()
+        xml_path = os.path.join(directory, "namelist_definition.xml")
+        with open(xml_path, 'w') as xml_file:
+            xml_file.write(text)
+        nml_def = NamelistDefinition(xml_path)
+        shutil.rmtree(directory)
+        return nml_def
+
+    ###########################################################################
+    def test_get_value(self):
+    ###########################################################################
+        nml_def = self.namelist_definition_from_text(self._xml_data)
+
+        scalar_info = nml_def.get_value("force_prognostic_true")
+        self.assertEqual(scalar_info['type'], 'logical')
+        self.assertEqual(scalar_info['category'], 'datm')
+        self.assertEqual(scalar_info['group'], 'datm_nml')
+        self.assertIsNotNone(scalar_info['description'])
+        self.assertIsNone(scalar_info['valid_values'])
+        self.assertIsNone(scalar_info['input_pathname'])
+
+        pathname_info = nml_def.get_value("factorfn")
+        self.assertEqual(pathname_info['type'], 'char*256')
+        self.assertEqual(pathname_info['category'], 'datm')
+        self.assertEqual(pathname_info['group'], 'datm_nml')
+        self.assertIsNotNone(pathname_info['description'])
+        self.assertIsNone(pathname_info['valid_values'])
+        self.assertEqual(pathname_info['input_pathname'], "abs")
+
+        values_info = nml_def.get_value("decomp")
+        self.assertEqual(values_info['type'], 'char*4')
+        self.assertEqual(values_info['category'], 'datm')
+        self.assertEqual(values_info['group'], 'datm_nml')
+        self.assertIsNotNone(values_info['description'])
+        self.assertListEqual(values_info['valid_values'], ["1d", "root"])
+        self.assertIsNone(values_info['input_pathname'])
 
 
 ###############################################################################
