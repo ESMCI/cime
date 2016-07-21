@@ -56,6 +56,38 @@ text between one namelist group and the next. This module assumes that namelist
 groups are separated by (optional) whitespace and comments, and nothing else.
 """
 
+###############################################################################
+#
+# Lexer/parser design notes
+#
+# The bulk of the complexity of this module is in the `_NamelistParser` object.
+# Lexing, parsing, and translation of namelist data is all performed in a single
+# pass (though it would be possible to use separate stages if needed). The style
+# is that of a recursive descent parser, i.e. the functions correspond roughly
+# to concepts in the Fortran namelist grammar, and top-down parsing is used.
+# Parsing is done left-to-right with no backtracking.
+#
+# The most important attributes of a `_NamelistParser` are the input text
+# itself (`_text`), and the current position in the text (`_pos`). The position
+# is only changed via the `_advance` method, which also maintains line and
+# column numbers for error-reporting purposes. The `_settings` attribute
+# holds the final output, i.e. the variable name-value pairs.
+#
+# Parsing errors are signaled by one of two exceptions. The first is
+# `_NamelistParseError`, which always signals an unrecoverable error. This is
+# caught and translated to a user-visible error in `parse`. The second is
+# `_NamelistEOF`, which may or may not represent a true error. During parsing of
+# a standard namelist, it is treated in the same manner as
+# `_NamelistParseError`, unless it occurs outside of any namelist group, in
+# which case the `parse_namelist` method will catch it and return normally.
+#
+# The non-standard "groupless" format complicates things significantly by
+# allowing an end-of-file at any location where a '/' would normally be. This is
+# the reason for most of the `allow_eof` flags and related logic, since any
+# `_NamelistEOF` exceptions raised must be caught and dealt with.
+#
+###############################################################################
+
 # Disable these because of doctest, and because we don't typically follow the
 # (rather specific) pylint naming conventions.
 # pylint: disable=line-too-long,too-many-lines,invalid-name
