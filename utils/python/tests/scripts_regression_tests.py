@@ -11,7 +11,7 @@ sys.path.append(LIB_DIR)
 import subprocess
 subprocess.call('/bin/rm $(find . -name "*.pyc")', shell=True, cwd=LIB_DIR)
 
-from CIME.utils import run_cmd, run_cmd_no_fail
+from CIME.utils import run_cmd, run_cmd_no_fail, expect
 import CIME.utils, update_acme_tests, wait_for_tests
 import CIME.system_test
 from  CIME.system_test import SystemTest
@@ -22,7 +22,7 @@ from  CIME.macros import MacroMaker
 
 SCRIPT_DIR  = CIME.utils.get_scripts_root()
 TOOLS_DIR   = os.path.join(SCRIPT_DIR,"Tools")
-MACHINE     = Machines()
+MACHINE     = None
 FAST_ONLY   = False
 NO_BATCH    = False
 
@@ -1617,6 +1617,29 @@ def _main_func():
         sys.argv.remove("--no-batch")
         global NO_BATCH
         NO_BATCH = True
+
+    # Handle --machine argument.
+    # In the long run it might be better to use argparse, and find a way to
+    # ensure that `unittest` still gets the remaining arguments.
+    global MACHINE
+    for argn in range(1, len(sys.argv)):
+        # Split on an equals sign.
+        arg, equals, value = sys.argv[argn].partition('=')
+        # If we are at the --machine argument...
+        if arg == "--machine":
+            if equals == '=':
+                # If there's an equals sign, the machine name is in `value`.
+                MACHINE = Machines(machine=value)
+            else:
+                # Otherwise it's in the next argument.
+                expect(argn < len(sys.argv) - 1,
+                       "You must provide an argument to --machine.")
+                MACHINE = Machines(machine=sys.argv[argn+1])
+                sys.argv.remove(sys.argv[argn+1])
+            sys.argv.remove(sys.argv[argn])
+            break
+    if MACHINE is None:
+        MACHINE = Machines()
 
     args = lambda: None # just something to set attrs on
     for log_param in ["debug", "silent"]:
