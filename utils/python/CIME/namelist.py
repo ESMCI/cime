@@ -3,6 +3,7 @@
 The public interface consists of the following functions:
 - `is_valid_fortran_name`
 - `is_valid_fortran_namelist_literal`
+- `namelist_literal_base_value`
 - `parse`
 - `write`
 
@@ -162,6 +163,30 @@ def is_valid_fortran_name(string):
     True
     """
     return FORTRAN_NAME_REGEX.search(string) is not None
+
+
+def fortran_namelist_base_value(string):
+    r"""Strip off whitespace and repetition syntax from a namelist value.
+
+    >>> fortran_namelist_base_value("")
+    ''
+    >>> fortran_namelist_base_value("f")
+    'f'
+    >>> fortran_namelist_base_value("6*")
+    ''
+    >>> fortran_namelist_base_value("6*f")
+    'f'
+    >>> fortran_namelist_base_value(" \n6* \n")
+    ''
+    >>> fortran_namelist_base_value("\n 6*f\n ")
+    'f'
+    """
+    # Strip leading/trailing whitespace.
+    string = string.strip(" \n")
+    # Strip off repeated value prefix.
+    if FORTRAN_REPEAT_PREFIX_REGEX.search(string) is not None:
+        string = string[string.find('*') + 1:]
+    return string
 
 
 def is_valid_fortran_namelist_literal(type_, string):
@@ -421,11 +446,8 @@ def is_valid_fortran_namelist_literal(type_, string):
     """
     expect(type_ in FORTRAN_LITERAL_REGEXES,
            "Invalid Fortran type for a namelist: %s" % type_)
-    # Strip leading/trailing whitespace.
-    string = string.strip(" \n")
-    # Strip off repeated value prefix.
-    if FORTRAN_REPEAT_PREFIX_REGEX.search(string) is not None:
-        string = string[string.find('*') + 1:]
+    # Strip off whitespace and repetition.
+    string = fortran_namelist_base_value(string)
     # Null values are always allowed.
     if string == '':
         return True

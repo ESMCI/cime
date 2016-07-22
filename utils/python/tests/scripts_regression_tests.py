@@ -1654,6 +1654,7 @@ class TestNamelistDefinition(unittest.TestCase):
     ###########################################################################
     def test_get_value(self):
     ###########################################################################
+        """Namelist variable definitions can be read from xml."""
         nml_def = self.namelist_definition_from_text(self._xml_data)
 
         scalar_info = nml_def.get_value("force_prognostic_true")
@@ -1680,6 +1681,47 @@ class TestNamelistDefinition(unittest.TestCase):
         self.assertListEqual(values_info['valid_values'], ["1d", "root"])
         self.assertIsNone(values_info['input_pathname'])
 
+    ###########################################################################
+    def test_is_valid_value_scalar(self):
+    ###########################################################################
+        """Simple scalar values validate against a namelist definition."""
+        nml_def = self.namelist_definition_from_text(self._xml_data)
+        self.assertTrue(nml_def.is_valid_value("force_prognostic_true",
+                                               ['']))
+        self.assertTrue(nml_def.is_valid_value("force_prognostic_true",
+                                               ['true']))
+        self.assertTrue(nml_def.is_valid_value("force_prognostic_true",
+                                               ['.false.']))
+        self.assertFalse(nml_def.is_valid_value("force_prognostic_true",
+                                                ['bacon']))
+
+    ###########################################################################
+    def test_is_valid_value_character_len(self):
+    ###########################################################################
+        """The length of a character variable is used to validate it."""
+        nml_def = self.namelist_definition_from_text(self._xml_data)
+        self.assertTrue(nml_def.is_valid_value("factorfn",
+                                               ['']))
+        self.assertTrue(nml_def.is_valid_value("factorfn",
+                                               ["'a'"]))
+        self.assertTrue(nml_def.is_valid_value("factorfn",
+                                               ["'" + "a" * 256 + "'"]))
+        self.assertFalse(nml_def.is_valid_value("factorfn",
+                                                ["'" + "a" * 257 + "'"]))
+
+    ###########################################################################
+    def test_is_valid_value_valid_values(self):
+    ###########################################################################
+        """The "valid_values" attribute is used during validation."""
+        nml_def = self.namelist_definition_from_text(self._xml_data)
+        self.assertTrue(nml_def.is_valid_value("decomp",
+                                               ['']))
+        self.assertTrue(nml_def.is_valid_value("decomp",
+                                               ["'1d'"]))
+        self.assertTrue(nml_def.is_valid_value("decomp",
+                                               ['"root"']))
+        self.assertFalse(nml_def.is_valid_value("decomp",
+                                                ["'bad'"]))
 
 ###############################################################################
 

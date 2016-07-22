@@ -7,9 +7,11 @@ This module contains only one class, `NamelistDefinition`, inheriting from
 # Disable warnings due to using `standard_module_setup`
 # pylint:disable=wildcard-import,unused-wildcard-import
 
+from CIME.namelist import fortran_namelist_base_value, \
+    is_valid_fortran_namelist_literal
+
 from CIME.XML.standard_module_setup import *
 from CIME.XML.generic_xml import GenericXML
-
 
 class NamelistDefinition(GenericXML):
 
@@ -77,3 +79,62 @@ class NamelistDefinition(GenericXML):
         """This function is not implemented."""
         raise TypeError, \
             "NamelistDefinition does not support `get_resolved_value`."
+
+    def is_valid_value(self, name, value):
+        """Determine whether a value is valid for the named variable.
+
+        The `value` argument must be a list of strings formatted as they would
+        appear in the namelist (even for scalar variables, in which case the
+        length of the list is always 1).
+        """
+        var_info = self.get_value(name)
+        # 'char' is frequently used as an abbreviation of 'character'.
+        type_string = var_info["type"].replace('char', 'character')
+        # Separate into a type and an optional length.
+        type_, star, length = type_string.partition('*')
+        for scalar in value:
+            if not is_valid_fortran_namelist_literal(type_, scalar):
+                return False
+        # Now that we know that the strings as input are valid Fortran, do some
+        # canonicalization for further checks.
+        canonical_value = [fortran_namelist_base_value(scalar)
+                           for scalar in value]
+        if type_ == 'character':
+            for i, scalar in enumerate(canonical_value):
+                # Figure out whether a quote or apostrophe is the delimiter.
+                delimiter = None
+                for char in scalar:
+                    if char in ("'", '"'):
+                        delimiter = char
+                # If neither, this is a null value.
+                if delimiter is None:
+                    continue
+                # Find left and right edges of the string, extract middle.
+                left_pos = scalar.find(delimiter)
+                right_pos = scalar.rfind(delimiter)
+                new_scalar = scalar[left_pos+1:right_pos]
+                # Replace escaped quote and apostrophe characters.
+                canonical_value[i] = new_scalar.replace(delimiter * 2,
+                                                        delimiter)
+        if star == '*':
+            # Length allowed only for character variables.
+            expect(type_ == 'character',
+                   "In namelist definition, length specified for non-character "
+                   "variable %s." % name)
+            # Check that the length is actually an integer, to make the error
+            # message a bit cleaner if the xml input is bad.
+            try:
+                max_len = int(length)
+            except ValueError:
+                expect(False,
+                       "In namelist definition, character variable %s had the "
+                       "non-integer string %r specified as a length." %
+                       (name, length))
+            for scalar in canonical_value:
+                if len(scalar) > max_len:
+                    return False
+        if var_info["valid_values"] is not None:
+            for scalar in canonical_value:
+                if scalar != '' and scalar not in var_info["valid_values"]:
+                    return False
+        return True
