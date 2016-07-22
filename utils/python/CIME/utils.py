@@ -2,8 +2,7 @@
 Common functions used by cime python scripts
 Warning: you cannot use CIME Classes in this module as it causes circular dependencies
 """
-import sys, os, time, re, logging, gzip, shutil
-from ConfigParser import SafeConfigParser as config_parser
+import logging, gzip, sys, os, time, re, shutil
 
 # Return this error code if the scripts worked but tests failed
 TESTS_FAILED_ERR_CODE = 100
@@ -35,6 +34,8 @@ def _read_cime_config_file():
     CIME_MODEL=acme,cesm
     PROJECT=someprojectnumber
     """
+    from ConfigParser import SafeConfigParser as config_parser
+
     cime_config_file = os.path.abspath(os.path.join(os.path.expanduser("~"),
                                                   ".cime","config"))
     cime_config = config_parser()
@@ -54,6 +55,13 @@ def get_cime_config():
 
     return _CIMECONFIG
 
+def reset_cime_config():
+    """
+    Useful to keep unit tests from interfering with each other
+    """
+    global _CIMECONFIG
+    _CIMECONFIG = None
+
 def get_python_libs_location_within_cime():
     """
     From within CIME, return subdirectory of python libraries
@@ -71,13 +79,14 @@ def get_cime_root():
     if(cime_config.has_option('main','CIMEROOT')):
         cimeroot = cime_config.get('main','CIMEROOT')
     else:
-        try:
+        if "CIMEROOT" in os.environ:
             cimeroot = os.environ["CIMEROOT"]
-        except KeyError:
+        else:
             script_absdir = os.path.abspath(os.path.join(os.path.dirname(__file__),".."))
             assert script_absdir.endswith(get_python_libs_location_within_cime()), script_absdir
             cimeroot = os.path.abspath(os.path.join(script_absdir,"..",".."))
         cime_config.set('main','CIMEROOT',cimeroot)
+
     logger.debug( "CIMEROOT is " + cimeroot)
     return cimeroot
 
@@ -98,6 +107,7 @@ def get_model():
     >>> set_model('rocky')
     >>> get_model()
     'rocky'
+    >>> reset_cime_config()
     """
     model = os.environ.get("CIME_MODEL")
     if (model is not None):
@@ -130,26 +140,14 @@ def get_model():
                       and model != "xml_schemas"])
     expect(False, msg)
 
-
 _hack=object()
-def run_cmd(cmd, ok_to_fail=False, input_str=None, from_dir=None, verbose=None,
+def run_cmd(cmd, input_str=None, from_dir=None, verbose=None,
             arg_stdout=_hack, arg_stderr=_hack):
     """
     Wrapper around subprocess to make it much more convenient to run shell commands
 
-    >>> run_cmd('echo foo')
-    'foo'
-
-    >>> run_cmd('ls file_i_hope_doesnt_exist')
-    Traceback (most recent call last):
-        ...
-    SystemExit: ERROR: Command: 'ls file_i_hope_doesnt_exist' failed with error 'ls: cannot access file_i_hope_doesnt_exist: No such file or directory'
-
-    >>> run_cmd('ls file_i_hope_doesnt_exist', ok_to_fail=True)[0] != 0
+    >>> run_cmd('ls file_i_hope_doesnt_exist')[0] != 0
     True
-
-    >>> run_cmd('grep foo', input_str='foo')
-    'foo'
     """
     import subprocess # Not safe to do globally, module not available in older pythons
 
@@ -158,6 +156,7 @@ def run_cmd(cmd, ok_to_fail=False, input_str=None, from_dir=None, verbose=None,
         arg_stdout = subprocess.PIPE
     if (arg_stderr is _hack):
         arg_stderr = subprocess.PIPE
+
 
     if (verbose or logger.level == logging.DEBUG):
         logger.info("RUN: %s" % cmd)
@@ -187,17 +186,29 @@ def run_cmd(cmd, ok_to_fail=False, input_str=None, from_dir=None, verbose=None,
         if errput:
             logger.info("  errput: %s\n" % errput)
 
-    if (ok_to_fail):
-        return stat, output, errput
-    else:
-        if (arg_stderr is not None):
-            errput = errput if errput is not None else open(arg_stderr.name, "r").read()
-            expect(stat == 0, "Command: '%s' failed with error '%s'%s" %
-                   (cmd, errput, "" if from_dir is None else " from dir '%s'" % from_dir))
-        else:
-            expect(stat == 0, "Command: '%s' failed%s. See terminal output" %
-                   (cmd, "" if from_dir is None else " from dir '%s'" % from_dir))
-        return output
+    return stat, output, errput
+
+def run_cmd_no_fail(cmd, input_str=None, from_dir=None, verbose=None,
+                    arg_stdout=_hack, arg_stderr=_hack):
+    """
+    Wrapper around subprocess to make it much more convenient to run shell commands.
+    Expects command to work. Just returns output string.
+
+    >>> run_cmd_no_fail('echo foo')
+    'foo'
+
+    >>> run_cmd_no_fail('ls file_i_hope_doesnt_exist')
+    Traceback (most recent call last):
+        ...
+    SystemExit: ERROR: Command: 'ls file_i_hope_doesnt_exist' failed with error 'ls: cannot access file_i_hope_doesnt_exist: No such file or directory'
+
+    >>> run_cmd_no_fail('grep foo', input_str='foo')
+    'foo'
+    """
+    stat, output, errput = run_cmd(cmd, input_str, from_dir, verbose, arg_stdout, arg_stderr)
+    expect(stat == 0, "Command: '%s' failed with error '%s'%s" %
+           (cmd, errput, "" if from_dir is None else " from dir '%s'" % from_dir))
+    return output
 
 def check_minimum_python_version(major, minor):
     """
@@ -207,7 +218,7 @@ def check_minimum_python_version(major, minor):
     >>>
     """
     expect(sys.version_info[0] == major and sys.version_info[1] >= minor,
-           "Python %d.%d+ is required, you have %d.%d" %
+           "Python %d, minor verion %d+ is required, you have %d.%d" %
            (major, minor, sys.version_info[0], sys.version_info[1]))
 
 def normalize_case_id(case_id):
@@ -253,7 +264,7 @@ def parse_test_name(test_name):
     >>> parse_test_name('ERS.fe12_123.JGF.machine_compiler.test-mods')
     ['ERS', None, 'fe12_123', 'JGF', 'machine', 'compiler', 'test/mods']
     """
-    rv = [None] * 6
+    rv = [None] * 7
     num_dots = test_name.count(".")
     expect(num_dots <= 4,
            "'%s' does not look like a CIME test name, expect TESTCASE.GRID.COMPSET[.MACHINE_COMPILER[.TESTMODS]]" % test_name)
@@ -261,6 +272,7 @@ def parse_test_name(test_name):
     rv[0:num_dots+1] = test_name.split(".")
     testcase_field_underscores = rv[0].count("_")
     rv.insert(1, None) # Make room for caseopts
+    rv.pop()
     if (testcase_field_underscores > 0):
         full_str = rv[0]
         rv[0]    = full_str.split("_")[0]
@@ -321,7 +333,7 @@ def get_full_test_name(partial_test, grid=None, compset=None, machine=None, comp
         else:
             result += ".%s" % testmod.replace("/", "-")
     elif (testmod is not None):
-        expect(arg_val == partial_val,
+        expect(arg_val == partial_val, # pylint: disable=undefined-loop-variable
                "Mismatch in field testmod, partial string '%s' indicated it should be '%s' but you provided '%s'" % (partial_test, partial_testmod, testmod))
 
     return result
@@ -342,7 +354,7 @@ def get_current_branch(repo=None):
             branch = branch.replace("origin/", "", 1)
         return branch
     else:
-        stat, output, _ = run_cmd("git symbolic-ref HEAD", from_dir=repo, ok_to_fail=True)
+        stat, output, _ = run_cmd("git symbolic-ref HEAD", from_dir=repo)
         if (stat != 0):
             return None
         else:
@@ -355,7 +367,7 @@ def get_current_commit(short=False, repo=None):
     >>> get_current_commit() is not None
     True
     """
-    output = run_cmd("git rev-parse %s HEAD" % ("--short" if short else ""), from_dir=repo)
+    output = run_cmd_no_fail("git rev-parse %s HEAD" % ("--short" if short else ""), from_dir=repo)
     return output
 
 def get_scripts_location_within_cime():
@@ -370,7 +382,8 @@ def get_cime_location_within_acme():
     """
     return "cime"
 
-def get_model_config_location_within_cime(model=get_model()):
+def get_model_config_location_within_cime(model=None):
+    model = get_model() if model is None else model
     return os.path.join("cime_config", model)
 
 def get_acme_root():
@@ -399,13 +412,14 @@ def get_python_libs_root():
     """
     return os.path.join(get_cime_root(), get_python_libs_location_within_cime())
 
-def get_model_config_root(model=get_model()):
+def get_model_config_root(model=None):
     """
     Get absolute path to model config area"
 
     >>> os.path.isdir(get_model_config_root())
     True
     """
+    model = get_model() if model is None else model
     return os.path.join(get_cime_root(), get_model_config_location_within_cime(model))
 
 def stop_buffering_output():
@@ -439,7 +453,6 @@ def safe_copy(src_dir, tgt_dir, file_map):
     read-only file. Files can be relative paths and the relative path will be
     matched on the tgt side.
     """
-    import shutil
     for src_file, tgt_file in file_map:
         full_tgt = os.path.join(tgt_dir, tgt_file)
         full_src = src_file if os.path.isabs(src_file) else os.path.join(src_dir, src_file)
@@ -463,13 +476,13 @@ def find_proc_id(proc_name=None,
 
     pgrep_cmd = "pgrep %s %s" % (proc_name if proc_name is not None else "",
                                  "-P %d" % parent if children_only else "")
-    stat, output, errput = run_cmd(pgrep_cmd, ok_to_fail=True)
+    stat, output, errput = run_cmd(pgrep_cmd)
     expect(stat in [0, 1], "pgrep failed with error: '%s'" % errput)
 
     rv = set([int(item.strip()) for item in output.splitlines()])
     if (children_only):
         pgrep_cmd = "pgrep -P %s" % parent
-        stat, output, errput = run_cmd(pgrep_cmd, ok_to_fail=True)
+        stat, output, errput = run_cmd(pgrep_cmd)
         expect(stat in [0, 1], "pgrep failed with error: '%s'" % errput)
 
         for child in output.splitlines():
@@ -799,7 +812,7 @@ def wait_for_unlocked(filepath):
             file_object = open(filepath, 'a', buffer_size)
             if file_object:
                 locked = False
-        except IOError, message:
+        except IOError:
             locked = True
             time.sleep(1)
         finally:

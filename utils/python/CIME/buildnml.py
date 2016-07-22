@@ -83,7 +83,7 @@ def build_xcpl_nml(argv, compclass):
         if ninst == 1:
             filename = os.path.join(rundir, "%s_in" % compname)
         else:
-            filename = os.path.join(rundir, "%s_in%4.4d" % (compname, i))
+            filename = os.path.join(rundir, "%s_in_%4.4d" % (compname, i))
 
         with open(filename, 'w') as infile:
             infile.write("%-20d ! i-direction global dimension\n" % nx)
@@ -164,7 +164,7 @@ def _build_data_nml(case, caseroot, compclass):
 
         logger.info( "cmd is: %s " %cmd)
 
-        rc, out, err = run_cmd(cmd, from_dir=confdir, ok_to_fail=True)
+        rc, out, err = run_cmd(cmd, from_dir=confdir)
         expect(rc==0,"Command %s failed rc=%d\nout=%s\nerr=%s"%(cmd,rc,out,err))
         
         print "%s " %out #FIXME - the print works but the logger.info does not
@@ -208,7 +208,7 @@ def create_namelist_infile(case, user_nl_file, namelist_infile, infile_text=""):
     for line in lines_input:
         match1 = re.search(r"^[\&\/\!]", line)
         match2 = re.search(r"\$([\w\_])+", line)
-	if match1 is None and match2 is not None:
+        if match1 is None and match2 is not None:
             line = case.get_resolved_value(line)
         if match1 is None:
             lines_output.append(line)

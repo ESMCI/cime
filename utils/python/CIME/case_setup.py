@@ -9,7 +9,8 @@ from CIME.preview_namelists import preview_namelists
 from CIME.XML.env_mach_pes  import EnvMachPes
 from CIME.XML.component     import Component
 from CIME.XML.compilers     import Compilers
-from CIME.utils             import expect, run_cmd, append_status
+from CIME.utils             import append_status, parse_test_name
+from CIME.user_mod_support  import apply_user_mods
 
 import shutil, time, glob
 
@@ -41,7 +42,7 @@ def _check_pelayouts_require_rebuild(case, models):
                 if old_tasks != new_tasks or old_threads != new_threads or old_inst != new_inst:
                     logger.warn("%s pe change requires clean build" % comp)
                     cleanflag = comp.lower()
-                    run_cmd("./case.build --clean %s" % cleanflag)
+                    run_cmd_no_fail("./case.build --clean %s" % cleanflag)
 
         os.remove(locked_pes)
 
@@ -159,14 +160,17 @@ def case_setup(case, clean=False, test_mode=False, reset=False):
 
         # Check ninst.
         # In CIME there can be multiple instances of each component model (an ensemble) NINST is the instance of that component.
+        # Save ninst in a dict to use later in apply_user_mods
+        ninst = dict()
         for comp in models:
-            ninst  = case.get_value("NINST_%s" % comp)
+            comp_model = case.get_value("COMP_%s" % comp)
+            ninst[comp_model]  = case.get_value("NINST_%s" % comp)
             ntasks = case.get_value("NTASKS_%s" % comp)
-            if ninst > ntasks:
+            if ninst[comp_model] > ntasks:
                 if ntasks == 1:
-                    case.set_value("NTASKS_%s" % comp, ninst)
+                    case.set_value("NTASKS_%s" % comp, ninst[comp_model])
                 else:
-                    expect(False, "NINST_%s value %d greater than NTASKS_%s %d" % (comp, ninst, comp, ntasks))
+                    expect(False, "NINST_%s value %d greater than NTASKS_%s %d" % (comp, ninst[comp_model], comp, ntasks))
 
         expect(not (case.get_value("BUILD_THREADED") and case.get_value("COMPILER") == "nag"),
                "it is not possible to run with OpenMP if using the NAG Fortran compiler")
@@ -182,7 +186,7 @@ def case_setup(case, clean=False, test_mode=False, reset=False):
             case.flush()
             check_lockedfiles()
 
-            pestot = int(run_cmd("Tools/taskmaker.pl -sumonly"))
+            pestot = int(run_cmd_no_fail("Tools/taskmaker.pl -sumonly"))
             case.set_value("TOTALPES", pestot)
 
             # Compute cost based on PE count
@@ -219,7 +223,7 @@ def case_setup(case, clean=False, test_mode=False, reset=False):
 
             # Use BatchFactory to get the appropriate instance of a BatchMaker,
             # use it to create our batch scripts
-            env_batch = case._get_env("batch")
+            env_batch = case.get_env("batch")
             for job in env_batch.get_jobs():
                 input_batch_script  = os.path.join(case.get_value("MACHDIR"), env_batch.get_value('template', subgroup=job))
                 if job == "case.test" and testcase is not None and not test_mode:
@@ -247,9 +251,15 @@ def case_setup(case, clean=False, test_mode=False, reset=False):
             logger.info("Building %s usernl files"%model)
             _build_usernl_files(case, model, comp)
             if comp == "cism":
-                run_cmd("%s/../components/cism/cime_config/cism.template %s" % (cimeroot, caseroot))
+                run_cmd_no_fail("%s/../components/cism/cime_config/cism.template %s" % (cimeroot, caseroot))
 
         _build_usernl_files(case, "drv", "cpl")
+
+        if case.get_value("TEST"):
+            test_mods = parse_test_name(case.get_value("CASEBASEID"))[6]
+            if test_mods is not None:
+                user_mods_path = os.path.join(case.get_value("TESTS_MODS_DIR"), test_mods)
+                apply_user_mods(caseroot, user_mods_path=user_mods_path, ninst=ninst)
 
         # Run preview namelists for scripts
         logger.info("preview_namelists")
@@ -263,7 +273,7 @@ def case_setup(case, clean=False, test_mode=False, reset=False):
         if os.path.exists("env_test.xml"):
             if not os.path.exists("case.test"):
                 logger.info("Starting testcase.setup")
-                run_cmd("./testcase.setup -caseroot %s" % caseroot)
+                run_cmd_no_fail("./testcase.setup -caseroot %s" % caseroot)
                 logger.info("Finished testcase.setup")
 
         msg = "case.setup complete"

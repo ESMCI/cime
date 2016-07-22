@@ -3,14 +3,14 @@ user_mod_support.py
 """
 
 from CIME.XML.standard_module_setup import *
-from CIME.utils import expect, run_cmd
-import shutil, glob, tempfile
+from CIME.utils import expect, run_cmd_no_fail
+import shutil, glob
 
 logger = logging.getLogger(__name__)
 
 def apply_user_mods(caseroot, user_mods_path, ninst=None):
     '''
-    Recursivlely apply user_mods to caseroot - this includes updating user_nl_xxx, 
+    Recursivlely apply user_mods to caseroot - this includes updating user_nl_xxx,
     updating SourceMods and creating case_shel_commands and xmlchange_cmds files
     '''
     include_dirs = build_include_dirs_list(user_mods_path)
@@ -23,10 +23,10 @@ def apply_user_mods(caseroot, user_mods_path, ninst=None):
             case_user_nl = user_nl.replace(include_dir, caseroot)
             comp = case_user_nl.split('_')[-1]
             if ninst is not None and comp in ninst.keys():
-                for comp_inst in xrange(1, ninst[comp]):
+                for comp_inst in xrange(1, ninst[comp]+1):
                     case_user_nl_inst = case_user_nl + "_%4.4d"%comp_inst
                     logger.info("Pre-pending file %s"%case_user_nl_inst)
-                    if os.path.isfile(case_user_nl):
+                    if os.path.isfile(case_user_nl_inst):
                         with open(case_user_nl_inst, "r") as fd:
                             old_contents = fd.read()
                             contents = contents + old_contents
@@ -42,7 +42,7 @@ def apply_user_mods(caseroot, user_mods_path, ninst=None):
                         old_contents = fd.read()
                         contents = contents + old_contents
                 with open(case_user_nl, "w") as fd:
-                     fd.write(contents)
+                    fd.write(contents)
 
         # update SourceMods in caseroot
         for root, _, files in os.walk(include_dir,followlinks=True,topdown=False):
@@ -70,12 +70,12 @@ def apply_user_mods(caseroot, user_mods_path, ninst=None):
             with open(case_shell_commands, "a") as fd:
                 fd.write(new_shell_commands)
 
-    shell_command_files = [os.path.join(caseroot,"shell_commands"), 
+    shell_command_files = [os.path.join(caseroot,"shell_commands"),
                            os.path.join(caseroot,"xmlchange_cmnds")]
     for shell_command_file in shell_command_files:
         if os.path.isfile(shell_command_file):
             os.chmod(shell_command_file, 0777)
-            run_cmd(shell_command_file)
+            run_cmd_no_fail(shell_command_file)
 
 def build_include_dirs_list(user_mods_path, include_dirs=None):
     '''
