@@ -11,8 +11,6 @@ import sys, os, shutil, glob, argparse, doctest
 
 logger = logging.getLogger(__name__)
 
-logger = logging.getLogger(__name__)
-
 ###############################################################################
 def parse_input(argv):
 ###############################################################################
@@ -163,11 +161,8 @@ def _build_data_nml(case, caseroot, compclass):
             % (command, caseroot, cimeroot, confdir, inst_string_label, namelist_infile, user_xml_dir)
 
         logger.info( "cmd is: %s " %cmd)
-
         rc, out, err = run_cmd(cmd, from_dir=confdir)
         expect(rc==0,"Command %s failed rc=%d\nout=%s\nerr=%s"%(cmd,rc,out,err))
-        
-        print "%s " %out #FIXME - the print works but the logger.info does not
         logger.info(out)
 
         # copy namelist files and stream text files, to rundir

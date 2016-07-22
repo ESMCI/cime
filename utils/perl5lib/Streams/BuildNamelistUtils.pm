@@ -8,21 +8,13 @@ use IO::File;
 use Data::Dumper;
 use File::Basename;
 use List::Util qw ( max );
-use Log::Log4perl qw(get_logger);
 use Build::NamelistDefinition;
 use Build::Namelist;
 use Config::SetupTools;
 use Streams::NamelistDefaults;
 
-my $logger;
-
-BEGIN{
-    $logger = get_logger();
-}
-
+#-----------------------------------------------------------------------------------------------
 sub new {
-    
-    # Create a Streams TemplateGeneric object
     my $class		= shift;
     my $comp		= shift;
     my $cimeroot	= shift;
@@ -46,7 +38,8 @@ sub new {
 	$xmlvars{$attr} = SetupTools::expand_xml_var($xmlvars{$attr}, \%xmlvars);
     }
     $self->{'din_loc_root'} = $xmlvars{'DIN_LOC_ROOT'};
-    $self->{'xmlvars'} = \%xmlvars;
+    $self->{'glc_nec'}      = $xmlvars{'GLC_NEC'};
+    $self->{'xmlvars'}      = \%xmlvars;
 
     my $definition_file = "$cimeroot/components/data_comps/${comp}/bld/namelist_files/namelist_definition_${comp}.xml";
     if (defined $user_xml_dir) {
@@ -115,16 +108,17 @@ sub new {
 #-----------------------------------------------------------------------------------------------
 sub create_stream_file{
 
-    my $self			= shift;
-    my $namelist_opts		= shift;
-    my $stream			= shift;
-    my $streamfile		= shift;
-    my $fh_out			= shift;
+    my $self	      = shift;
+    my $namelist_opts = shift;
+    my $stream	      = shift;
+    my $streamfile    = shift;
+    my $fh_out	      = shift;
     
     my $caseroot = $self->{'caseroot'};
     my $confdir	 = $self->{'$confdir'};
     my $xmlvars	 = $self->{'xmlvars'};
     my $defaults = $self->{'defaults'}; 
+    my $glc_nec  = $self->{'glc_nec'};
 
     if (-e "$caseroot/user_$streamfile") {
         if ( ! -w "$caseroot/user_$streamfile" ) {
@@ -167,7 +161,8 @@ sub create_stream_file{
     $template{'yearfirst'}        = SetupTools::expand_xml_var( $template{'yearfirst'}       , $xmlvars );
     $template{'yearlast'}         = SetupTools::expand_xml_var( $template{'yearlast'}        , $xmlvars );
 
-    my @data_filenames = _Sub($template{'data_filenames'}, $template{'yearfirst'}, $template{'yearlast'});
+    $template{'data_varnames'}    = _SubFields($template{'data_varnames'}, $glc_nec);
+    my @data_filenames = _SubYMD($template{'data_filenames'}, $template{'yearfirst'}, $template{'yearlast'});
 
     # Consistency check
     foreach my $item ( "yearfirst", "yearlast", "offset", 
@@ -225,13 +220,12 @@ sub create_stream_file{
     my $filepath = $template{'domain_filepath'};
     foreach my $file ( @filenames) {
      	$i++;
-	my $subfile = _Sub($file);
+	my $subfile = _SubYMD($file);
      	print $fh_out "domain${i} = ${filepath}/${file}\n";
      }
     my $i = 0;
-    my @filenames = $template{'data_filenames'};
     my $filepath = $template{'data_filepath'};
-    foreach my $file ( @filenames) {
+    foreach my $file ( @data_filenames) {
      	$i++;
      	print $fh_out "file${i} = ${filepath}/${file}\n";
      }
@@ -591,7 +585,7 @@ sub quote_string {
 }
 
 #-----------------------------------------------------------------------------------------------
-sub _Sub {
+sub _SubYMD {
 
     # Substitute indicators with given values
     #
@@ -643,43 +637,11 @@ sub _Sub {
 	my @filenames;
 	my $startfilename;
 	my $endfilename;
-	#
-	# FIXME - this no longer seems to be used
-	# Include previous December if %ym form and lastmonth is true
-	#
-	# if ( $lastmonth && $months ) {
-	#     my $year = $yearfirst-1;
-	#     my $filename = $value;
-	#     my $month = 12;
-	#     if ( $filename =~ /^([^%]*)%[1-9]?ym([^ ]*)$/ ) {
-	# 	$startfilename = $1;
-	# 	$endfilename   = $2;
-	# 	$filename = sprintf "%s%${digits}.${digits}d-%2.2d%s", $startfilename,
-	# 	$year, $month, $endfilename;
-	# 	push @filenames, $filename;
-	#     }
-	# }
-	# #
-	# # Include previous December/31 if %ymd form and lastmonth is true
-	# #
-	# if ( $lastmonth && $months ) {
-	#     my $year = $yearfirst-1;
-	#     my $filename = $value;
-	#     my $month = 12;
-	#     my $day   = 31;
-	#     if ( $filename =~ /^([^%]*)%[1-9]?ymd([^ ]*)$/ ) {
-	# 	$startfilename = $1;
-	# 	$endfilename   = $2;
-	# 	$filename = sprintf "%s%${digits}.${digits}d-%2.2d-%2.2d%s", $startfilename,
-	# 	$year, $month, $day, $endfilename;
-	# 	push @filenames, $filename;
-	#     }
-	# }
 	for ( my $year = $yearfirst; $year <= $yearlast; $year++ ) {
 	    if ( $days ) {
 		# If include year and months AND days
 		for ( my $month = 1; $month <= 12; $month++ ) {
-		    my $dpm = DaysPerMonth( $month, $year );
+		    my $dpm = _DaysPerMonth( $month, $year );
 		    for ( my $day = 1; $day <= $dpm; $day++ ) {
 			my $filename = $value;
 			if ( $filename =~ /^([^%]*)%[1-9]?ymd([^ ]*)$/ ) {
@@ -728,7 +690,55 @@ sub _Sub {
 }
 
 #-------------------------------------------------------------------------------
-sub DaysPerMonth {
+
+sub _SubFields {
+
+    # Substitute indicators with given values in a list of fields
+    # This is meant to be used with the fields in datvarnames
+    # Replace any instance of the following substring indicators with the appropriate values:
+    #    %glc = two-digit GLC elevation class from 01 through glc_nec
+    # Returns a reference to an array
+    # Example: If __SubFields__ is called with an array containing two elements, each of which
+    # contains two strings, and glc_nec=3:
+    #     foo               bar
+    #     s2x_Ss_tsrf%glc   tsrf%glc
+    # then the returned array will be:
+    #     foo               bar
+    #     s2x_Ss_tsrf01     tsrf01
+    #     s2x_Ss_tsrf02     tsrf02
+    #     s2x_Ss_tsrf03     tsrf03
+    # Difference between __Sub__ and __SubFields__: __Sub__ is called for anything that might
+    # be filenames, and does replacements that may be needed for filenames; __SubFields__ is
+    # called for the field list in datvarnames, and does replacements that might be needed for
+    # this field list.
+
+    my $data_varnames = shift;
+    my $glc_nec = shift; 
+    my @subbedFields;
+
+    my @fields = split "\n", $data_varnames, -1;
+
+    foreach my $field (@fields) {
+	if ($field =~ /%glc/) {
+	    for (my $n = 1; $n <= $glc_nec; $n++) {
+		my $indexStr = sprintf("%02d", $n);
+		my $newfield = $field;
+		$newfield =~ s/%glc/$indexStr/g;
+		$newfield = $newfield . "\n";
+		push @subbedFields, $newfield;
+	    }
+	}
+	else {  # no special indicators present
+	    push @subbedFields, $field;
+	}
+    }
+    my $SubstituteFields = join("", @subbedFields);
+    $SubstituteFields = "\n" . $SubstituteFields;
+    return $SubstituteFields;
+}
+
+#-------------------------------------------------------------------------------
+sub _DaysPerMonth {
 
     # Return the number of days per month for a given month
     # (and in general year -- but right now just do a noleap calendar of 365 days/year)

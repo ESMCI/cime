@@ -32,8 +32,9 @@ my $LND_GRID         = $nmlgen->get_xmlvar('LND_GRID');
 my $DLND_MODE        = $nmlgen->get_xmlvar('DLND_MODE');	    
 my $GLC_NEC          = $nmlgen->get_xmlvar('GLC_NEC');        
 
-print "DLND mode is $DLND_MODE \n"; 
-print "DLND grid is $LND_GRID \n"; 
+print "DLND mode    is $DLND_MODE \n"; 
+print "DLND grid    is $LND_GRID \n"; 
+print "DLND glc_nec is $GLC_NEC \n"; 
 
 #-------------------------------------------
 # Determine hash for parsing default_namelist_dlnd.xml

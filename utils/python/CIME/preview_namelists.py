@@ -75,6 +75,7 @@ def preview_namelists(case, dryrun=False):
         else:
             rc, out, err = run_cmd("%s %s" % (cmd, caseroot))
             expect(rc==0,"Command %s failed rc=%d\nout=%s\nerr=%s"%(cmd,rc,out,err))
+        logger.info(out)
 
     # refresh case xml object from file
     case.read_xml()
