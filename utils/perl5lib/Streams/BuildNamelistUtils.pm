@@ -161,7 +161,7 @@ sub create_stream_file{
     $template{'yearfirst'}        = SetupTools::expand_xml_var( $template{'yearfirst'}       , $xmlvars );
     $template{'yearlast'}         = SetupTools::expand_xml_var( $template{'yearlast'}        , $xmlvars );
 
-    $template{'data_varnames'}    = _SubFields($template{'data_varnames'}, $glc_nec);
+    $template{'data_varnames'} = _SubFields($template{'data_varnames'}, $glc_nec);
     my @data_filenames = _SubYMD($template{'data_filenames'}, $template{'yearfirst'}, $template{'yearlast'});
 
     # Consistency check
@@ -506,17 +506,10 @@ sub write_output_files {
     # Validate that the entire resultant namelist is valid
     $definition->validate($nl);
 
-    # dcomp_comp_in file
-    my @groups = qw(shr_strdata_nml);
-    my $outfile = "./d${comp}_${comp}_in";
-    $nl->write($outfile, 'groups'=>\@groups);
-    #print "Writing d${comp}_dshr namelist \n"; 
-
     # comp_in
-    @groups = ("d${comp}_nml");
-    $outfile = "./d${comp}_in";
+    my @groups = ("d${comp}_nml", "shr_strdata_nml");
+    my $outfile = "./d${comp}_in";
     $nl->write($outfile, 'groups'=>\@groups);
-    #print "Writing d${comp}_in namelist \n";
 
     # comp_modelio
     @groups = qw(modelio);
@@ -719,17 +712,19 @@ sub _SubFields {
     my @fields = split "\n", $data_varnames, -1;
 
     foreach my $field (@fields) {
-	if ($field =~ /%glc/) {
-	    for (my $n = 1; $n <= $glc_nec; $n++) {
-		my $indexStr = sprintf("%02d", $n);
-		my $newfield = $field;
-		$newfield =~ s/%glc/$indexStr/g;
-		$newfield = $newfield . "\n";
-		push @subbedFields, $newfield;
+	if ($field) {
+	    if ($field =~ /%glc/) {
+		for (my $n = 1; $n <= $glc_nec; $n++) {
+		    my $indexStr = sprintf("%02d", $n);
+		    my $newfield = $field;
+		    $newfield =~ s/%glc/$indexStr/g;
+		    $newfield = $newfield . "\n";
+		    push @subbedFields, $newfield;
+		}
+	    } else {  # no special indicators present
+		$field = $field . "\n";
+		push @subbedFields, $field;
 	    }
-	}
-	else {  # no special indicators present
-	    push @subbedFields, $field;
 	}
     }
     my $SubstituteFields = join("", @subbedFields);

@@ -216,22 +216,8 @@ default="null".
 </entry>
 
 <!-- =========================================  -->
-<!--- dice_nml (in file dice_in)                -->
+<!--- dice_nml -->
 <!-- =========================================  -->
-
-<entry id="ice_in"
-type="char*256"
-category="dice"
-group="dice_nml"
-valid_values="">
-The data ice specific namelist input is as follows.  The namelist
-input filename is hardwired in the data model code to "dice_in".  The
-namelist group is called "dice_nml".  The variable formats are
-character string (char), integer (int), double precision real (r8), or
-logical (log) or one dimensional arrays of any of those things.
-ice_in sets the filename for the data ice shr_strmdata namelist.
-default: dice_ice_in.
-</entry>
 
 <entry id="decomp"
 type="char*4"

@@ -69,18 +69,17 @@ foreach my $stream ( @streams ) {
 $fh_out->close;
 
 #-------------------------------------------
-# namelist group: shr_strdata_nml  (in file dice_ice_in) 
+# namelist group: shr_strdata_nml
 #-------------------------------------------
 
 $nmlgen->create_shr_strdata_nml(\%namelist_opts, "${ICE_DOMAIN_PATH}/${ICE_DOMAIN_FILE}" );
 
 #-------------------------------------------
-# namelist group: dice_nml  (in file dice_in)            
+# namelist group: dice_nml  
 #-------------------------------------------
 
 $nmlgen->add_default('flux_qacc'); #FIXME - is this right?
 
-$nmlgen->add_default('ice_in', "dice_ice_in${inst_string}");
 $nmlgen->add_default('decomp', '1d');
 $nmlgen->add_default('force_prognostic_true', '.false.');
 $nmlgen->add_default('restfilm', 'undefined');

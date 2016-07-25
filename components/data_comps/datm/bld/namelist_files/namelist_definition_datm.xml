@@ -29,7 +29,7 @@ Prescribed aerosol mode
 <!-- ========================================================================================  -->
 
 <!-- =========================================  -->
-<!--- shr_strmdata_nml (file datm_atm_in)       -->
+<!--- shr_strmdata_nml                          -->
 <!-- =========================================  -->
 
 <entry id="datamode"
@@ -265,7 +265,7 @@ default="".
 </entry>
 
 <!-- =========================================  -->
-<!--- datm_nml (in file datm_in)                -->
+<!--- datm_nml                                  -->
 <!-- =========================================  -->
 
 <!--- anomaly forcing - bias correction -->
@@ -286,21 +286,8 @@ valid_values="Anomaly.Forcing.Precip,Anomaly.Forcing.Temperature,Anomaly.Forcing
 If set, include anomaly forcing streams in namelist.
 default = ""
 </entry>
-
 <!--- for anomaly forcing -->
 
-<entry id="atm_in"
-type="char*256"
-category="datm"
-group="datm_nml">
-The data atmosphere specific namelist input is as follows.  The
-namelist input filename is hardwired in the data model code to
-"datm_in".  The namelist group is called "datm_nml".  The variable
-formats are character string (char), integer (int), double precision
-real (r8), or logical (log) or one dimensional arrays of any of those
-things.  atm_in sets the filename for the data atmosphere shr_strmdata namelist.
-default: datm_atm_in.
-</entry>
 
 <entry id="decomp"
 type="char*4"

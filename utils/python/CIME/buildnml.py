@@ -165,16 +165,9 @@ def _build_data_nml(case, caseroot, compclass):
         expect(rc==0,"Command %s failed rc=%d\nout=%s\nerr=%s"%(cmd,rc,out,err))
         logger.info(out)
 
-        # copy namelist files and stream text files, to rundir
+        # copy namelist file and stream text files to rundir
         if os.path.isdir(rundir):
             filename = compname + "_in"
-            file_src  = os.path.join(confdir, filename)
-            file_dest = os.path.join(rundir, filename)
-            if inst_string:
-                file_dest += inst_string
-            shutil.copy(file_src,file_dest)
-
-            filename = compname + "_" + compclass + "_in"
             file_src  = os.path.join(confdir, filename)
             file_dest = os.path.join(rundir, filename)
             if inst_string:

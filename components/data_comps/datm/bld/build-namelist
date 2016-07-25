@@ -141,13 +141,13 @@ foreach my $stream ( @streams ) {
 $fh_out->close;
 
 #-------------------------------------------
-# namelist group: shr_strdata_nml  (in file datm_atm_in) 
+# namelist group: shr_strdata_nml 
 #-------------------------------------------
 
 $nmlgen->create_shr_strdata_nml(\%namelist_opts, "${ATM_DOMAIN_PATH}/${ATM_DOMAIN_FILE}" );
 
 #-------------------------------------------
-# namelist group: datm_nml  (in file datm_in)
+# namelist group: datm_nml 
 #-------------------------------------------
 
 $nmlgen->add_default('iradsw');
@@ -162,7 +162,6 @@ if ($DATM_PRESAERO eq "none" ) {
     $nmlgen->add_default('presaero', '.true.');
 }
 
-$nmlgen->add_default('atm_in' , "datm_atm_in${inst_string}");
 $nmlgen->add_default('decomp', '1d');
 $nmlgen->add_default('force_prognostic_true', '.false.');
 $nmlgen->add_default('restfilm',  'undefined');

@@ -10,7 +10,7 @@
 <!-- ========================================================================================  -->
 
 <!-- =========================================  -->
-<!--- shr_strmdata_nml (file docn_ocn_in)       -->
+<!--- shr_strmdata_nml       -->
 <!-- =========================================  -->
 
 <entry id="datamode"
@@ -240,16 +240,8 @@ default="null".
 </entry>
 
 <!-- =========================================  -->
-<!--- docn_nml (in file docn_in)                -->
+<!--- docn_nml                -->
 <!-- =========================================  -->
-
-<entry id="ocn_in"
-type="char*256"
-category="docn"
-group="docn_nml"
-valid_values="">
-Namelist filename for data model share stream data namelist
-</entry>
 
 <entry id="decomp"
 type="char*4"

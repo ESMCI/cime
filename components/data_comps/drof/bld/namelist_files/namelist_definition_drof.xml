@@ -9,7 +9,7 @@
 <!-- ========================================================================================  -->
 
 <!-- =========================================  -->
-<!--- shr_strmdata_nml (file drof_rof_in)       -->
+<!--- shr_strmdata_nml       -->
 <!-- =========================================  -->
 
 <entry id="datamode"
@@ -214,16 +214,8 @@ default="null".
 </entry>
 
 <!-- =========================================  -->
-<!--- drof_nml (in file drof_in)                -->
+<!--- drof_nml                -->
 <!-- =========================================  -->
-
-<entry id="rof_in"
-type="char*256"
-category="drof"
-group="drof_nml"
-valid_values="">
-Namelist filename for data model rof share stream data namelist
-</entry>
 
 <entry id="decomp"
 type="char*4"

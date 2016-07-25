@@ -131,7 +131,6 @@ subroutine drof_comp_init( EClock, cdata, x2r, r2x, NLFilename )
     integer(IN)   :: yearLast    ! last  year to use in data stream
     integer(IN)   :: yearAlign   ! data year that aligns with yearFirst
 
-    character(CL) :: rof_in      ! dshr rof namelist
     character(CL) :: decomp      ! decomp strategy
     character(CL) :: rest_file   ! restart filename
     character(CL) :: rest_file_strm_r   ! restart filename for stream
@@ -147,7 +146,7 @@ subroutine drof_comp_init( EClock, cdata, x2r, r2x, NLFilename )
 
     !----- define namelist -----
     namelist / drof_nml / &
-        rof_in, decomp, restfilm, restfilsr, &
+        decomp, restfilm, restfilsr, &
         force_prognostic_true
 
     !--- formats ---
@@ -211,7 +210,6 @@ subroutine drof_comp_init( EClock, cdata, x2r, r2x, NLFilename )
     call t_startf('drof_readnml')
 
     filename = "drof_in"//trim(inst_suffix)
-    rof_in = "unset"
     decomp = "1d"
     restfilm  = trim(nullstr)
     restfilsr = trim(nullstr)
@@ -226,13 +224,11 @@ subroutine drof_comp_init( EClock, cdata, x2r, r2x, NLFilename )
           write(logunit,F01) 'ERROR: reading input namelist, '//trim(filename)//' iostat=',ierr
           call shr_sys_abort(subName//': namelist read error '//trim(filename))
        end if
-       write(logunit,F00)' rof_in = ',trim(rof_in)
        write(logunit,F00)' decomp = ',trim(decomp)
        write(logunit,F00)' restfilm = ',trim(restfilm)
        write(logunit,F00)' restfilsr = ',trim(restfilsr)
        write(logunit,F0L)' force_prognostic_true = ',force_prognostic_true
     endif
-    call shr_mpi_bcast(rof_in,mpicom,'rof_in')
     call shr_mpi_bcast(decomp,mpicom,'decomp')
     call shr_mpi_bcast(restfilm,mpicom,'restfilm')
     call shr_mpi_bcast(restfilsr,mpicom,'restfilsr')
@@ -249,7 +245,7 @@ subroutine drof_comp_init( EClock, cdata, x2r, r2x, NLFilename )
     ! Read dshr namelist
     !----------------------------------------------------------------------------
 
-    call shr_strdata_readnml(SDROF,trim(rof_in),mpicom=mpicom)
+    call shr_strdata_readnml(SDROF,trim(filename),mpicom=mpicom)
 
     !----------------------------------------------------------------------------
     ! Validate mode

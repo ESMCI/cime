@@ -71,7 +71,7 @@ foreach my $stream ( @streams ) {
 $fh_out->close;
 
 #-------------------------------------------
-# namelist group: shr_strdata_nml  (in file dwav_wav_in) 
+# namelist group: shr_strdata_nml  
 #-------------------------------------------
 
 $nmlgen->create_shr_strdata_nml(\%namelist_opts );
@@ -80,10 +80,9 @@ $nmlgen->create_shr_strdata_nml(\%namelist_opts );
 # to create_shr_strdata_nml and in fact domainfile does not appear in the namelist - WHY?
 
 #-------------------------------------------
-# namelist group: dwav_nml  (in file dwav_in)            
+# namelist group: dwav_nml             
 #-------------------------------------------
 
-$nmlgen->add_default('wav_in', "dwav_wav_in${inst_string}");
 $nmlgen->add_default('decomp', '1d');
 $nmlgen->add_default('force_prognostic_true', '.false.');
 $nmlgen->add_default('restfilm', 'undefined');

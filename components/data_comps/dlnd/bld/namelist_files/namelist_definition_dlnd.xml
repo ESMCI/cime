@@ -10,7 +10,7 @@
 <!-- ========================================================================================  -->
 
 <!-- =========================================  -->
-<!--- shr_strmdata_nml (file dlnd_lnd_in)       -->
+<!--- shr_strmdata_nml -->
 <!-- =========================================  -->
 
 <entry id="datamode"
@@ -204,16 +204,8 @@ default="null".
 </entry>
 
 <!-- =========================================  -->
-<!--- dlnd_nml (in file dlnd_in)                -->
+<!--- dlnd_nml -->
 <!-- =========================================  -->
-
-<entry id="lnd_in"
-type="char*256"
-category="dlnd"
-group="dlnd_nml"
-valid_values="">
-Namelist filename for data model lnd share stream data namelist
-</entry>
 
 <entry id="decomp"
 type="char*4"

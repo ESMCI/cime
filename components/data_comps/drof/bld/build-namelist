@@ -71,7 +71,7 @@ foreach my $stream ( @streams ) {
 $fh_out->close;
 
 #-------------------------------------------
-# namelist group: shr_strdata_nml  (in file drof_rof_in) 
+# namelist group: shr_strdata_nml
 #-------------------------------------------
 
 $nmlgen->create_shr_strdata_nml(\%namelist_opts );
@@ -83,7 +83,6 @@ $nmlgen->create_shr_strdata_nml(\%namelist_opts );
 # namelist group: drof_nml  (in file drof_in)            
 #-------------------------------------------
 
-$nmlgen->add_default('rof_in', "drof_rof_in${inst_string}");
 $nmlgen->add_default('decomp', '1d');
 $nmlgen->add_default('force_prognostic_true', '.false.');
 $nmlgen->add_default('restfilm', 'undefined');

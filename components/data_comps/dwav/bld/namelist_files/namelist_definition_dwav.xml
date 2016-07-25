@@ -9,7 +9,7 @@
 <!-- ========================================================================================  -->
 
 <!-- =========================================  -->
-<!--- shr_strmdata_nml (file dwav_wav_in)       -->
+<!--- shr_strmdata_nml -->
 <!-- =========================================  -->
 
 <entry id="datamode"
@@ -28,10 +28,9 @@ datamode = "copyall"
   Copies all fields directly from the input data streams Any required
   fields not found on an input stream will be set to zero.
 
-Set by the following xml variables in env_run.xml
-DWAV_MODE
-   specifies values for wav mode: copyall,null
-   default value: copyall
+Set by the following xml variables in env_run.xml DWAV_MODE
+specifies values for wav mode: copyall,null
+default value: copyall
 </entry>
 
 <entry id="domainfile"
@@ -205,16 +204,8 @@ default="null".
 </entry>
 
 <!-- =========================================  -->
-<!--- dwav_nml (in file dwav_in)                -->
+<!--- dwav_nml -->
 <!-- =========================================  -->
-
-<entry id="wav_in"
-type="char*256"
-category="dwav"
-group="dwav_nml"
-valid_values="">
-Namelist filename for data model wav share stream data namelist
-</entry>
 
 <entry id="decomp"
 type="char*4"
