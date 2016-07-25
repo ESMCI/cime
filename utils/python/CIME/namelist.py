@@ -5,7 +5,8 @@ The public interface consists of the following functions:
 - `is_valid_fortran_namelist_literal`
 - `namelist_literal_base_value`
 - `parse`
-- `write`
+
+In addition, the `Namelist` class represents a namelist held in memory.
 
 For the moment, only a subset of namelist syntax is supported; specifically, we
 assume that only variables of intrinsic type are used, and indexing/co-indexing
@@ -454,12 +455,15 @@ def is_valid_fortran_namelist_literal(type_, string):
     return FORTRAN_LITERAL_REGEXES[type_].search(string) is not None
 
 
-def parse(namelist, groupless=False, convert_tab_to_space=True):
+def parse(in_file=None, text=None, groupless=False, convert_tab_to_space=True):
     """Parse a Fortran namelist.
 
-    The `namelist` argument must be either a `str` or `unicode` object
-    containing a file name, or a text I/O object with a `read` method that
-    returns the text of the namelist.
+    The `in_file` argument must be either a `str` or `unicode` object containing
+    a file name, or a text I/O object with a `read` method that returns the text
+    of the namelist.
+
+    Alternatively, the `text` argument can be provided, in which case it must be
+    the text of the namelist itself.
 
     The `groupless` argument changes namelist parsing in two ways:
 
@@ -467,7 +471,7 @@ def parse(namelist, groupless=False, convert_tab_to_space=True):
        are present. In effect, the file is parsed as if an invisible, arbitrary
        group name was prepended, and an invisible slash was appended. However,
        if any group names actually are present, the file is parsed normally.
-    2. The return value of this function contains no group names. Instead a
+    2. The return value of this function is not a `Namelist` object. Instead a
        single, flattened dictionary of name-value pairs is returned.
 
     The `convert_tab_to_space` option can be used to force all tabs in the file
@@ -479,21 +483,23 @@ def parse(namelist, groupless=False, convert_tab_to_space=True):
     so it is already a bad idea to assume that the namelist will preserve
     whitespace in strings, aside from simple spaces.)
 
-    The return value is a dictionary associating group names to settings, where
-    the setting for each namelist group is itself a dictionary associating
-    variable names to lists of values.
+    The return value, if `groupless=False`, is a `Namelist` object.
 
     All names and values returned are ultimately unicode strings. E.g. a value
     of "6*2" is returned as that string; it is not converted to 6 copies of the
     Python integer `2`. Null values are returned as the empty string ("").
     """
-    if isinstance(namelist, str) or isinstance(namelist, unicode):
-        logger.debug("Reading namelist at: %s", namelist)
-        with open(namelist) as namelist_obj:
-            text = namelist_obj.read()
-    else:
+    expect(in_file is not None or text is not None,
+           "Must specify an input file or text to the namelist parser.")
+    expect(in_file is None or text is None,
+           "Cannot specify both input file and text to the namelist parser.")
+    if isinstance(in_file, str) or isinstance(in_file, unicode):
+        logger.debug("Reading namelist at: %s", in_file)
+        with open(in_file) as in_file_obj:
+            text = in_file_obj.read()
+    elif in_file is not None:
         logger.debug("Reading namelist from file object")
-        text = namelist.read()
+        text = in_file.read()
     if convert_tab_to_space:
         text = text.replace('\t', ' ')
     try:
@@ -501,48 +507,176 @@ def parse(namelist, groupless=False, convert_tab_to_space=True):
     except (_NamelistEOF, _NamelistParseError) as error:
         # Deal with unexpected EOF or other parsing errors.
         expect(False, str(error))
-    return namelist_dict
-
-
-def write(settings, out_file):
-    """Write a Fortran namelist to a file.
-
-    The `settings` method must be a dictionary associating group names to
-    dictionaries of variable name-value pairs, i.e. the same type of data
-    structure returned by `parse` with `groupless=False`.
-
-    As with `parse`, the `out_file` argument can be either a file name, or a
-    file object with a `write` method that accepts unicode.
-    """
-    if isinstance(out_file, str) or isinstance(out_file, unicode):
-        logger.debug("Writing namelist to: %s", out_file)
-        with open(out_file, 'w') as file_obj:
-            _write(settings, file_obj)
+    if groupless:
+        return namelist_dict
     else:
-        logger.debug("Writing namelist to file object")
-        _write(settings, out_file)
+        return Namelist(namelist_dict)
 
 
-def _write(settings, out_file):
-    """Unwrapped version of `write` that assumes that a file object is input."""
-    for group_name in sorted(settings.keys()):
-        out_file.write("&%s\n" % group_name)
-        group = settings[group_name]
-        for name in sorted(group.keys()):
-            values = group[name]
-            # To prettify things for long lists of values, build strings line-
-            # by-line.
-            lines = ["  %s = %s" % (name, values[0])]
-            for value in values[1:]:
-                if len(lines[-1]) + len(value) <= 77:
-                    lines[-1] += ", " + value
-                else:
-                    lines[-1] += ",\n"
-                    lines.append("      " + value)
-            lines[-1] += "\n"
-            for line in lines:
-                out_file.write(line)
-        out_file.write("/\n")
+class Namelist(object):
+
+    """Class representing a Fortran namelist.
+
+    Public methods:
+    __init__
+    write
+    """
+
+    def __init__(self, groups=None):
+        """Construct a new `Namelist` object.
+
+        The `groups` argument is a dictionary associating group names to
+        dictionaries of name/value pairs. If omitted, an empty namelist object
+        is created.
+
+        Unless you are deliberately creating an empty `Namelist`, it is easier/
+        safer to use `parse` than to directly call this constructor.
+        """
+        if groups is None:
+            self.groups = {}
+        else:
+            self.groups = groups
+
+    def get_group_names(self):
+        """Return a list of all groups in the namelist.
+
+        >>> Namelist().get_group_names()
+        []
+        >>> sorted(parse(text='&foo / &bar /').get_group_names())
+        [u'bar', u'foo']
+        """
+        return self.groups.keys()
+
+    def get_variable_names(self, group_name):
+        """Return a list of all variables in the given namelist group.
+
+        If the specified group is not in the namelist, returns an empty list.
+
+        >>> Namelist().get_variable_names('foo')
+        []
+        >>> x = parse(text='&foo bar=,bazz=true,bang=6*""/')
+        >>> sorted(x.get_variable_names('foo'))
+        [u'bang', u'bar', u'bazz']
+        """
+        if group_name not in self.groups:
+            return []
+        return self.groups[group_name].keys()
+
+    def get_variable_value(self, group_name, variable_name):
+        """Return the value of the specified variable.
+
+        This function always returns a non-empty list containing strings. If the
+        specified `group_name` or `variable_name` is not present, `[u'']` is
+        returned.
+
+        >>> Namelist().get_variable_value('foo', 'bar')
+        [u'']
+        >>> parse(text='&foo bar=1,2 /').get_variable_value('foo', 'bazz')
+        [u'']
+        >>> parse(text='&foo bar=1,2 /').get_variable_value('foo', 'bar')
+        [u'1', u'2']
+        """
+        if group_name not in self.groups or \
+           variable_name not in self.groups[group_name]:
+            return [u'']
+        return self.groups[group_name][variable_name]
+
+    def get_value(self, variable_name):
+        """Return the value of a uniquely-named variable.
+
+        This function is similar to `get_variable_value`, except that it does
+        not require a `group_name`, and it requires that the `variable_name` be
+        unique across all groups.
+
+        >>> parse(text='&foo bar=1 / &bazz bar=1 /').get_value('bar')
+        Traceback (most recent call last):
+        ...
+        SystemExit: ERROR: Namelist.get_value: Variable %s is present in multiple groups: [u'bazz', u'foo']
+        >>> parse(text='&foo bar=1 / &bazz /').get_value('bar')
+        [u'1']
+        >>> parse(text='&foo / &bazz /').get_value('bar')
+        [u'']
+        """
+        possible_groups = [group_name for group_name in self.groups
+                           if variable_name in self.groups[group_name]]
+        expect(len(possible_groups) <= 1,
+               "Namelist.get_value: Variable %s is present in multiple groups: "
+               + str(possible_groups))
+        if possible_groups:
+            return self.groups[possible_groups[0]][variable_name]
+        else:
+            return [u'']
+
+    def set_variable_value(self, group_name, variable_name, value):
+        """Set the value of the specified variable.
+
+        >>> x = parse(text='&foo bar=1 /')
+        >>> x.set_variable_value('foo', 'bar', [u'2'])
+        >>> x.set_variable_value('foo', 'bazz', [u'3'])
+        >>> x.set_variable_value('brack', 'bar', [u'4'])
+        >>> x.get_variable_value('foo', 'bar')
+        [u'2']
+        >>> x.get_variable_value('foo', 'bazz')
+        [u'3']
+        >>> x.get_variable_value('brack', 'bar')
+        [u'4']
+        """
+        if group_name not in self.groups:
+            self.groups[group_name] = {}
+        self.groups[group_name][variable_name] = value
+
+    def delete_variable(self, group_name, variable_name):
+        """Delete a variable from a specified group.
+
+        If the specified group or variable does not exist, this is a no-op.
+
+        >>> x = parse(text='&foo bar=1 /')
+        >>> x.delete_variable('foo', 'bar')
+        >>> x.delete_variable('foo', 'bazz')
+        >>> x.delete_variable('brack', 'bazz')
+        >>> x.get_variable_names('foo')
+        []
+        >>> x.get_variable_names('brack')
+        []
+        """
+        if group_name in self.groups and \
+           variable_name in self.groups[group_name]:
+            del self.groups[group_name][variable_name]
+
+    def write(self, out_file):
+        """Write a Fortran namelist to a file.
+
+        As with `parse`, the `out_file` argument can be either a file name, or a
+        file object with a `write` method that accepts unicode.
+        """
+        if isinstance(out_file, str) or isinstance(out_file, unicode):
+            logger.debug("Writing namelist to: %s", out_file)
+            with open(out_file, 'w') as file_obj:
+                self._write(file_obj)
+        else:
+            logger.debug("Writing namelist to file object")
+            self._write(out_file)
+
+    def _write(self, out_file):
+        """Unwrapped version of `write` assuming that a file object is input."""
+        for group_name in sorted(self.groups.keys()):
+            out_file.write("&%s\n" % group_name)
+            group = self.groups[group_name]
+            for name in sorted(group.keys()):
+                values = group[name]
+                # To prettify things for long lists of values, build strings line-
+                # by-line.
+                lines = ["  %s = %s" % (name, values[0])]
+                for value in values[1:]:
+                    if len(lines[-1]) + len(value) <= 77:
+                        lines[-1] += ", " + value
+                    else:
+                        lines[-1] += ",\n"
+                        lines.append("      " + value)
+                lines[-1] += "\n"
+                for line in lines:
+                    out_file.write(line)
+            out_file.write("/\n")
 
 
 class _NamelistEOF(Exception):
