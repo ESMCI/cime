@@ -1461,9 +1461,20 @@ class _NamelistParser(object): # pylint:disable=too-few-public-methods
         {u'foo': [u"'bar'", u"'bazz'", u''], u'foo2': [u'2*5']}
         >>> x._curr()
         u'/'
+        >>> x = _NamelistParser("&group /&group /")
+        >>> x._parse_namelist_group()
+        >>> x._advance()
+        >>> x._parse_namelist_group()
+        Traceback (most recent call last):
+            ...
+        _NamelistParseError: Error in parsing namelist: Namelist group 'group' encountered twice.
         """
         group_name = self._parse_namelist_group_name()
         if not self._groupless:
+            # Make sure that this is the first time we've seen this group.
+            if group_name in self._settings:
+                raise _NamelistParseError("Namelist group %r encountered twice."
+                                          % str(group_name))
             self._settings[group_name] = {}
         self._eat_whitespace()
         while self._curr() != '/':
