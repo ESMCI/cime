@@ -147,7 +147,6 @@ Currently the following docn modes are supported
 <strm_year_end   stream="copyall">$SSTICE_YEAR_END</strm_year_end>
 <strm_grid_file  stream="copyall">$SSTICE_GRID_FILENAME</strm_grid_file>
 <strm_data_file  stream="copyall">$SSTICE_DATA_FILENAME</strm_data_file>
-
 <strm_domvar     stream="copyall" sstice_stream="WW3">
   time    time
   gridLon lon

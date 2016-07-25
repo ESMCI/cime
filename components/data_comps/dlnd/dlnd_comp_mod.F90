@@ -165,7 +165,7 @@ subroutine dlnd_comp_init( EClock, cdata_l, x2l, l2x, NLFilename )
     character(CL) :: rest_file   ! restart filename
     character(CL) :: rest_file_strm_l   ! restart filename for stream
     character(CL) :: restfilm    ! model restart file namelist
-    character(CL) :: restfilsl   ! stream restart file namelist
+    character(CL) :: restfils    ! stream restart file namelist
     logical       :: exists      ! file existance logical
     logical       :: exists_l    ! file existance logical
     integer(IN)   :: nu          ! unit number
@@ -175,7 +175,7 @@ subroutine dlnd_comp_init( EClock, cdata_l, x2l, l2x, NLFilename )
 
     !----- define namelist -----
     namelist / dlnd_nml / &
-        decomp, restfilm, restfilsl, &
+        decomp, restfilm, restfils, &
         force_prognostic_true
 
     !--- formats ---
@@ -242,7 +242,7 @@ subroutine dlnd_comp_init( EClock, cdata_l, x2l, l2x, NLFilename )
     filename = "dlnd_in"//trim(inst_suffix)
     decomp = "1d"
     restfilm = trim(nullstr)
-    restfilsl = trim(nullstr)
+    restfils = trim(nullstr)
     force_prognostic_true = .false.
     if (my_task == master_task) then
        nunit = shr_file_getUnit() ! get unused unit number
@@ -256,16 +256,16 @@ subroutine dlnd_comp_init( EClock, cdata_l, x2l, l2x, NLFilename )
        end if
        write(logunit,F00)' decomp = ',trim(decomp)
        write(logunit,F00)' restfilm  = ',trim(restfilm)
-       write(logunit,F00)' restfilsl = ',trim(restfilsl)
+       write(logunit,F00)' restfils = ',trim(restfils)
        write(logunit,F0L)' force_prognostic_true = ',force_prognostic_true
     endif
     call shr_mpi_bcast(decomp,mpicom,'decomp')
     call shr_mpi_bcast(restfilm,mpicom,'restfilm')
-    call shr_mpi_bcast(restfilsl,mpicom,'restfilsl')
+    call shr_mpi_bcast(restfils,mpicom,'restfils')
     call shr_mpi_bcast(force_prognostic_true,mpicom,'force_prognostic_true')
 
     rest_file = trim(restfilm)
-    rest_file_strm_l = trim(restfilsl)
+    rest_file_strm_l = trim(restfils)
     if (force_prognostic_true) then
        lnd_present    = .true.
        lnd_prognostic = .true.

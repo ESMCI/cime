@@ -120,6 +120,7 @@ sub create_stream_file{
     my $defaults = $self->{'defaults'}; 
     my $glc_nec  = $self->{'glc_nec'};
 
+
     if (-e "$caseroot/user_$streamfile") {
         if ( ! -w "$caseroot/user_$streamfile" ) {
            print "Your user streams file is read-only: $caseroot/user_$streamfile\n";
@@ -130,6 +131,9 @@ sub create_stream_file{
 	return
     }
 
+    # Add stream as a hash entry - since this is being passed in as a reference this will override
+    # previous values - but its only needed here
+    $$namelist_opts{'stream'} = $stream;
     my %template;
 
     if ($stream eq "prescribed" || $stream eq "copyall") {
@@ -678,7 +682,8 @@ sub _SubYMD {
     } else {
 
 	# Otherwise return a scalar value
-	return( "$value" );
+	my @fields = split "\n", $value, -1;
+	return( @fields );
     }
 }
 
