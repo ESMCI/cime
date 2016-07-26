@@ -742,6 +742,65 @@ class Namelist(object):
            variable_name in self.groups[group_name]:
             del self.groups[group_name][variable_name]
 
+    def merge_nl(self, other, overwrite=False):
+        """Merge this namelist object with another.
+
+        Values in the invoking (`self`) `Namelist` will take precedence over
+        values in the `other` `Namelist`, unless `overwrite=True` is passed in,
+        in which case `other` values take precedence.
+
+        >>> x = parse(text='&foo bar=1 bazz=,2 brat=3/')
+        >>> y = parse(text='&foo bar=2 bazz=3*1 baker=4 / &foo2 barter=5 /')
+        >>> x.merge_nl(y)
+        >>> sorted(x.get_group_names())
+        [u'foo', u'foo2']
+        >>> sorted(x.get_variable_names('foo'))
+        [u'baker', u'bar', u'bazz', u'brat']
+        >>> sorted(x.get_variable_names('foo2'))
+        [u'barter']
+        >>> x.get_value('bar')
+        [u'1']
+        >>> x.get_value('bazz')
+        [u'1', u'2', u'1']
+        >>> x.get_value('brat')
+        [u'3']
+        >>> x.get_value('baker')
+        [u'4']
+        >>> x.get_value('barter')
+        [u'5']
+
+        >>> x = parse(text='&foo bar=1 bazz=,2 brat=3/')
+        >>> y = parse(text='&foo bar=2 bazz=3*1 baker=4 / &foo2 barter=5 /')
+        >>> x.merge_nl(y, overwrite=True)
+        >>> sorted(x.get_group_names())
+        [u'foo', u'foo2']
+        >>> sorted(x.get_variable_names('foo'))
+        [u'baker', u'bar', u'bazz', u'brat']
+        >>> sorted(x.get_variable_names('foo2'))
+        [u'barter']
+        >>> x.get_value('bar')
+        [u'2']
+        >>> x.get_value('bazz')
+        [u'3*1']
+        >>> x.get_value('brat')
+        [u'3']
+        >>> x.get_value('baker')
+        [u'4']
+        >>> x.get_value('barter')
+        [u'5']
+        """
+        # Pretty simple strategy: go through the entire other namelist, and
+        # merge all values with this one's.
+        for group_name in other.get_group_names():
+            for variable_name in other.get_variable_names(group_name):
+                self_val = self.get_variable_value(group_name, variable_name)
+                other_val = other.get_variable_value(group_name, variable_name)
+                if overwrite:
+                    merged_val = _merge_literal_lists(self_val, other_val)
+                else:
+                    merged_val = _merge_literal_lists(other_val, self_val)
+                self.set_variable_value(group_name, variable_name, merged_val)
+
     def write(self, out_file):
         """Write a Fortran namelist to a file.
 
