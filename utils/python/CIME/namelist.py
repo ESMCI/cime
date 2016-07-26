@@ -801,29 +801,32 @@ class Namelist(object):
                     merged_val = _merge_literal_lists(other_val, self_val)
                 self.set_variable_value(group_name, variable_name, merged_val)
 
-    def write(self, out_file):
+    def write(self, out_file, groups=None):
         """Write a Fortran namelist to a file.
 
         As with `parse`, the `out_file` argument can be either a file name, or a
-        file object with a `write` method that accepts unicode.
+        file object with a `write` method that accepts unicode. If specified,
+        the `groups` argument specifies a subset of all groups to write out.
         """
         if isinstance(out_file, str) or isinstance(out_file, unicode):
             logger.debug("Writing namelist to: %s", out_file)
             with open(out_file, 'w') as file_obj:
-                self._write(file_obj)
+                self._write(file_obj, groups)
         else:
             logger.debug("Writing namelist to file object")
-            self._write(out_file)
+            self._write(out_file, groups)
 
-    def _write(self, out_file):
+    def _write(self, out_file, groups):
         """Unwrapped version of `write` assuming that a file object is input."""
-        for group_name in sorted(self.groups.keys()):
+        if groups is None:
+            groups = self.groups.keys()
+        for group_name in sorted(list(groups)):
             out_file.write("&%s\n" % group_name)
             group = self.groups[group_name]
             for name in sorted(group.keys()):
                 values = group[name]
-                # To prettify things for long lists of values, build strings line-
-                # by-line.
+                # To prettify things for long lists of values, build strings
+                # line-by-line.
                 lines = ["  %s = %s" % (name, values[0])]
                 for value in values[1:]:
                     if len(lines[-1]) + len(value) <= 77:
