@@ -801,16 +801,21 @@ class Namelist(object):
                     merged_val = _merge_literal_lists(other_val, self_val)
                 self.set_variable_value(group_name, variable_name, merged_val)
 
-    def write(self, out_file, groups=None):
+    def write(self, out_file, groups=None, append=False):
         """Write a Fortran namelist to a file.
 
         As with `parse`, the `out_file` argument can be either a file name, or a
         file object with a `write` method that accepts unicode. If specified,
         the `groups` argument specifies a subset of all groups to write out.
+
+        If `out_file` is a file name, and `append=True` is passed in, the
+        namelist will be appended to the named file instead of overwriting it.
+        The `append` option has no effect if a file object is passed in.
         """
         if isinstance(out_file, str) or isinstance(out_file, unicode):
             logger.debug("Writing namelist to: %s", out_file)
-            with open(out_file, 'w') as file_obj:
+            flag = 'a' if append else 'w'
+            with open(out_file, flag) as file_obj:
                 self._write(file_obj, groups)
         else:
             logger.debug("Writing namelist to file object")
