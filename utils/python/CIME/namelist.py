@@ -801,7 +801,7 @@ class Namelist(object):
                     merged_val = _merge_literal_lists(other_val, self_val)
                 self.set_variable_value(group_name, variable_name, merged_val)
 
-    def write(self, out_file, groups=None, append=False):
+    def write(self, out_file, groups=None, append=False, format_='nml'):
         """Write a Fortran namelist to a file.
 
         As with `parse`, the `out_file` argument can be either a file name, or a
@@ -811,28 +811,39 @@ class Namelist(object):
         If `out_file` is a file name, and `append=True` is passed in, the
         namelist will be appended to the named file instead of overwriting it.
         The `append` option has no effect if a file object is passed in.
+
+        The `format_` option can be either 'nml' (namelist) or 'rc', and
+        specifies the file format. Formats other than 'nml' may not support all
+        possible output values.
         """
+        expect(format_ in ('nml', 'rc'),
+               "Namelist.write: unexpected output format %r" % str(format_))
         if isinstance(out_file, str) or isinstance(out_file, unicode):
             logger.debug("Writing namelist to: %s", out_file)
             flag = 'a' if append else 'w'
             with open(out_file, flag) as file_obj:
-                self._write(file_obj, groups)
+                self._write(file_obj, groups, format_)
         else:
             logger.debug("Writing namelist to file object")
-            self._write(out_file, groups)
+            self._write(out_file, groups, format_)
 
-    def _write(self, out_file, groups):
+    def _write(self, out_file, groups, format_):
         """Unwrapped version of `write` assuming that a file object is input."""
         if groups is None:
             groups = self.groups.keys()
+        if format_ == 'nml':
+            equals = ' ='
+        elif format_ == 'rc':
+            equals = ':'
         for group_name in sorted(list(groups)):
-            out_file.write("&%s\n" % group_name)
+            if format_ == 'nml':
+                out_file.write("&%s\n" % group_name)
             group = self.groups[group_name]
             for name in sorted(group.keys()):
                 values = group[name]
                 # To prettify things for long lists of values, build strings
                 # line-by-line.
-                lines = ["  %s = %s" % (name, values[0])]
+                lines = ["  %s%s %s" % (name, equals, values[0])]
                 for value in values[1:]:
                     if len(lines[-1]) + len(value) <= 77:
                         lines[-1] += ", " + value
@@ -842,7 +853,8 @@ class Namelist(object):
                 lines[-1] += "\n"
                 for line in lines:
                     out_file.write(line)
-            out_file.write("/\n")
+            if format_ == 'nml':
+                out_file.write("/\n")
 
 
 class _NamelistEOF(Exception):
