@@ -455,6 +455,105 @@ def is_valid_fortran_namelist_literal(type_, string):
     return FORTRAN_LITERAL_REGEXES[type_].search(string) is not None
 
 
+def _expand_literal_list(literals):
+    """Expands a list of literal values to get rid of repetition syntax.
+
+    >>> _expand_literal_list([])
+    []
+    >>> _expand_literal_list(['true'])
+    ['true']
+    >>> _expand_literal_list(['1', '2', 'f*', '3*3', '5'])
+    ['1', '2', 'f*', '3', '3', '3', '5']
+    >>> _expand_literal_list([u'2*f*'])
+    [u'f*', u'f*']
+    """
+    expanded = []
+    for literal in literals:
+        if FORTRAN_REPEAT_PREFIX_REGEX.search(literal) is not None:
+            num, _, value = literal.partition('*')
+            expanded += int(num) * [value]
+        else:
+            expanded.append(literal)
+    return expanded
+
+
+def _compress_literal_list(literals):
+    """Uses repetition syntax to shorten a literal list.
+
+    >>> _compress_literal_list([])
+    []
+    >>> _compress_literal_list(['true'])
+    ['true']
+    >>> _compress_literal_list(['1', '2', 'f*', '3', '3', '3', '5'])
+    ['1', '2', 'f*', '3*3', '5']
+    >>> _compress_literal_list([u'f*', u'f*'])
+    [u'2*f*']
+    """
+    compressed = []
+    if len(literals) == 0:
+        return compressed
+    # Start with the first literal.
+    old_literal = literals[0]
+    num_reps = 1
+    for literal in literals[1:]:
+        if literal == old_literal:
+            # For each new literal, if it matches the old one, it increases the
+            # number of repetitions by one.
+            num_reps += 1
+        else:
+            # Otherwise, write out the previous literal and start tracking the
+            # new one.
+            rep_str = str(num_reps) + '*' if num_reps > 1 else ''
+            compressed.append(rep_str + old_literal)
+            old_literal = literal
+            num_reps = 1
+    rep_str = str(num_reps) + '*' if num_reps > 1 else ''
+    compressed.append(rep_str + old_literal)
+    return compressed
+
+
+def _merge_literal_lists(default, overwrite):
+    """Merge two lists of literal value strings.
+
+    The `overwrite` values have higher precedence, so will overwrite the
+    `default` values. However, if `overwrite` contains null values, or is
+    shorter than `default` (and thus implicitly ends in null values), the
+    elements of `default` will be used where `overwrite` is null.
+
+    >>> _merge_literal_lists([], [])
+    []
+    >>> _merge_literal_lists(['true'], ['false'])
+    ['false']
+    >>> _merge_literal_lists([], ['false'])
+    ['false']
+    >>> _merge_literal_lists(['true'], [''])
+    ['true']
+    >>> _merge_literal_lists([], [''])
+    ['']
+    >>> _merge_literal_lists(['true'], [])
+    ['true']
+    >>> _merge_literal_lists(['true'], [])
+    ['true']
+    >>> _merge_literal_lists(['3*false', '3*true'], ['true', '4*', 'false'])
+    ['true', '2*false', '2*true', 'false']
+    """
+    merged = []
+    default = _expand_literal_list(default)
+    overwrite = _expand_literal_list(overwrite)
+    for default_elem, elem in zip(default, overwrite):
+        if elem == '':
+            merged.append(default_elem)
+        else:
+            merged.append(elem)
+    def_len = len(default)
+    ovw_len = len(overwrite)
+    if ovw_len < def_len:
+        merged[ovw_len:def_len] = default[ovw_len:def_len]
+    else:
+        merged[def_len:ovw_len] = overwrite[def_len:ovw_len]
+    return _compress_literal_list(merged)
+
+
 def parse(in_file=None, text=None, groupless=False, convert_tab_to_space=True):
     """Parse a Fortran namelist.
 
@@ -1468,6 +1567,18 @@ class _NamelistParser(object): # pylint:disable=too-few-public-methods
         Traceback (most recent call last):
             ...
         _NamelistParseError: Error in parsing namelist: Namelist group 'group' encountered twice.
+        >>> x = _NamelistParser("&group foo='bar', foo='bazz' /")
+        >>> x._parse_namelist_group()
+        >>> x._settings
+        {u'group': {u'foo': [u"'bazz'"]}}
+        >>> x = _NamelistParser("&group foo='bar', foo= /")
+        >>> x._parse_namelist_group()
+        >>> x._settings
+        {u'group': {u'foo': [u"'bar'"]}}
+        >>> x = _NamelistParser("&group foo='bar', foo= /", groupless=True)
+        >>> x._parse_namelist_group()
+        >>> x._settings
+        {u'foo': [u"'bar'"]}
         """
         group_name = self._parse_namelist_group_name()
         if not self._groupless:
@@ -1480,9 +1591,14 @@ class _NamelistParser(object): # pylint:disable=too-few-public-methods
         while self._curr() != '/':
             name, values = self._parse_name_and_values()
             if self._groupless:
+                if name in self._settings:
+                    values = _merge_literal_lists(self._settings[name], values)
                 self._settings[name] = values
             else:
-                self._settings[group_name][name] = values
+                group = self._settings[group_name]
+                if name in group:
+                    values = _merge_literal_lists(group[name], values)
+                group[name] = values
 
     def parse_namelist(self):
         r"""Parse the contents of an entire namelist file.
@@ -1508,6 +1624,10 @@ class _NamelistParser(object): # pylint:disable=too-few-public-methods
         {u'foo': [u"'bar'", u"'bazz'", u''], u'foo2': [u'2*5', u'6']}
         >>> _NamelistParser("!blah \n foo='bar'", groupless=True).parse_namelist()
         {u'foo': [u"'bar'"]}
+        >>> _NamelistParser("foo='bar', foo='bazz'", groupless=True).parse_namelist()
+        {u'foo': [u"'bazz'"]}
+        >>> _NamelistParser("foo='bar', foo=", groupless=True).parse_namelist()
+        {u'foo': [u"'bar'"]}
         """
         # Return empty dictionary for empty files.
         if self._len == 0:
@@ -1522,6 +1642,8 @@ class _NamelistParser(object): # pylint:disable=too-few-public-methods
         if self._groupless and self._curr() != '&':
             while self._pos < self._len:
                 name, values = self._parse_name_and_values(allow_eof_end=True)
+                if name in self._settings:
+                    values = _merge_literal_lists(self._settings[name], values)
                 self._settings[name] = values
             return self._settings
         # Loop over namelist groups in the file.
