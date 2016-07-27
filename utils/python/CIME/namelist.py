@@ -668,10 +668,15 @@ class Namelist(object):
         Unless you are deliberately creating an empty `Namelist`, it is easier/
         safer to use `parse` than to directly call this constructor.
         """
-        if groups is None:
-            self._groups = {}
-        else:
-            self._groups = groups
+        self._groups = {}
+        if groups is not None:
+            for group_name in groups:
+                group_lc = group_name.lower()
+                self._groups[group_lc] = {}
+                for variable_name in groups[group_name]:
+                    variable_lc = variable_name.lower()
+                    self._groups[group_lc][variable_lc] = \
+                                        groups[group_name][variable_name]
 
     def get_group_names(self):
         """Return a list of all groups in the namelist.
@@ -691,9 +696,10 @@ class Namelist(object):
         >>> Namelist().get_variable_names('foo')
         []
         >>> x = parse(text='&foo bar=,bazz=true,bang=6*""/')
-        >>> sorted(x.get_variable_names('foo'))
+        >>> sorted(x.get_variable_names('fOo'))
         [u'bang', u'bar', u'bazz']
         """
+        group_name = group_name.lower()
         if group_name not in self._groups:
             return []
         return self._groups[group_name].keys()
@@ -709,9 +715,11 @@ class Namelist(object):
         [u'']
         >>> parse(text='&foo bar=1,2 /').get_variable_value('foo', 'bazz')
         [u'']
-        >>> parse(text='&foo bar=1,2 /').get_variable_value('foo', 'bar')
+        >>> parse(text='&foo bar=1,2 /').get_variable_value('foO', 'Bar')
         [u'1', u'2']
         """
+        group_name = group_name.lower()
+        variable_name = variable_name.lower()
         if group_name not in self._groups or \
            variable_name not in self._groups[group_name]:
             return [u'']
@@ -728,11 +736,12 @@ class Namelist(object):
         Traceback (most recent call last):
         ...
         SystemExit: ERROR: Namelist.get_value: Variable %s is present in multiple groups: [u'bazz', u'foo']
-        >>> parse(text='&foo bar=1 / &bazz /').get_value('bar')
+        >>> parse(text='&foo bar=1 / &bazz /').get_value('Bar')
         [u'1']
         >>> parse(text='&foo / &bazz /').get_value('bar')
         [u'']
         """
+        variable_name = variable_name.lower()
         possible_groups = [group_name for group_name in self._groups
                            if variable_name in self._groups[group_name]]
         expect(len(possible_groups) <= 1,
@@ -749,7 +758,7 @@ class Namelist(object):
         >>> x = parse(text='&foo bar=1 /')
         >>> x.set_variable_value('foo', 'bar', [u'2'])
         >>> x.set_variable_value('foo', 'bazz', [u'3'])
-        >>> x.set_variable_value('brack', 'bar', [u'4'])
+        >>> x.set_variable_value('Brack', 'baR', [u'4'])
         >>> x.get_variable_value('foo', 'bar')
         [u'2']
         >>> x.get_variable_value('foo', 'bazz')
@@ -757,6 +766,8 @@ class Namelist(object):
         >>> x.get_variable_value('brack', 'bar')
         [u'4']
         """
+        group_name = group_name.lower()
+        variable_name = variable_name.lower()
         if group_name not in self._groups:
             self._groups[group_name] = {}
         self._groups[group_name][variable_name] = value
@@ -767,7 +778,7 @@ class Namelist(object):
         If the specified group or variable does not exist, this is a no-op.
 
         >>> x = parse(text='&foo bar=1 /')
-        >>> x.delete_variable('foo', 'bar')
+        >>> x.delete_variable('FOO', 'BAR')
         >>> x.delete_variable('foo', 'bazz')
         >>> x.delete_variable('brack', 'bazz')
         >>> x.get_variable_names('foo')
@@ -775,6 +786,8 @@ class Namelist(object):
         >>> x.get_variable_names('brack')
         []
         """
+        group_name = group_name.lower()
+        variable_name = variable_name.lower()
         if group_name in self._groups and \
            variable_name in self._groups[group_name]:
             del self._groups[group_name][variable_name]
@@ -872,7 +885,7 @@ class Namelist(object):
             equals = ' ='
         elif format_ == 'rc':
             equals = ':'
-        for group_name in sorted(list(groups)):
+        for group_name in sorted(group.lower() for group in groups):
             if format_ == 'nml':
                 out_file.write("&%s\n" % group_name)
             group = self._groups[group_name]

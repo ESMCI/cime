@@ -55,7 +55,7 @@ class NamelistDefinition(GenericXML):
         expect(attribute is None, "This class does not support attributes.")
         expect(not resolved, "This class does not support env resolution.")
         expect(subgroup is None, "This class does not support subgroups.")
-        elem = self.get_node("entry", attributes={'id': item})
+        elem = self.get_node("entry", attributes={'id': item.lower()})
         var_info = {}
 
         def get_required_field(name):
@@ -165,6 +165,7 @@ class NamelistDefinition(GenericXML):
         appear in the namelist (even for scalar variables, in which case the
         length of the list is always 1).
         """
+        name = name.lower()
         var_info = self.get_value(name)
         # Separate into a type, optional length, and optional size.
         type_, max_len, size = self._split_type_string(name, var_info["type"])
@@ -230,10 +231,11 @@ class NamelistDefinition(GenericXML):
         """
         groups = {}
         for variable_name in dict_:
-            self._expect_variable_in_definition(variable_name)
-            var_info = self.get_value(variable_name)
+            variable_lc = variable_name.lower()
+            self._expect_variable_in_definition(variable_lc)
+            var_info = self.get_value(variable_lc)
             group_name = var_info['group']
             if group_name not in groups:
                 groups[group_name] = {}
-            groups[group_name][variable_name] = dict_[variable_name]
+            groups[group_name][variable_lc] = dict_[variable_name]
         return Namelist(groups)

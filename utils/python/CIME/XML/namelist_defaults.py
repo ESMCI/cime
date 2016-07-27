@@ -33,7 +33,7 @@ class NamelistDefaults(GenericXML):
         expect(attribute is None, "This class does not support attributes.")
         expect(not resolved, "This class does not support env resolution.")
         expect(subgroup is None, "This class does not support subgroups.")
-        node = self.get_optional_node(item)
+        node = self.get_optional_node(item.lower())
         if node is None:
             return None
         if node.text is None:
