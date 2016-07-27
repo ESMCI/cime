@@ -14,7 +14,7 @@ import re
 
 from CIME.namelist import fortran_namelist_base_value, \
     is_valid_fortran_namelist_literal, character_literal_to_string, \
-    expand_literal_list
+    expand_literal_list, Namelist
 
 from CIME.XML.standard_module_setup import *
 from CIME.XML.generic_xml import GenericXML
@@ -191,17 +191,17 @@ class NamelistDefinition(GenericXML):
             return False
         return True
 
+    def _expect_variable_in_definition(self, name):
+        """Used to get a better error message for an unexpected variable."""
+        node = self.get_optional_node("entry", attributes={'id': name})
+        expect(node is not None,
+               "Variable %r is not in the namelist definition." % str(name))
+
     def validate(self, namelist):
         """Validate a namelist object against this definition."""
         for group_name in namelist.get_group_names():
             for variable_name in namelist.get_variable_names(group_name):
-                # Do this to get a better error message when a variable does not
-                # exist in the definition.
-                node = self.get_optional_node("entry",
-                                              attributes={'id': variable_name})
-                expect(node is not None,
-                       "Variable %r is not in the namelist definition." %
-                       str(variable_name))
+                self._expect_variable_in_definition(variable_name)
                 var_info = self.get_value(variable_name)
                 expect(var_info['group'] == group_name,
                        "Variable %r is in a group named %r, but should be in "
@@ -211,3 +211,21 @@ class NamelistDefinition(GenericXML):
                 expect(self.is_valid_value(variable_name, value),
                        "Variable %r has invalid value %r." %
                        (str(variable_name), [str(scalar) for scalar in value]))
+
+    def dict_to_namelist(self, dict_):
+        """Converts a dictionary of name-value pairs to a `Namelist`.
+
+        The input is assumed to be similar to the output of `parse` when
+        `groupless=True` is set. This function uses the namelist definition file
+        to look up the namelist group associated with each variable, and uses
+        this information to create a true `Namelist` object.
+        """
+        groups = {}
+        for variable_name in dict_:
+            self._expect_variable_in_definition(variable_name)
+            var_info = self.get_value(variable_name)
+            group_name = var_info['group']
+            if group_name not in groups:
+                groups[group_name] = {}
+            groups[group_name][variable_name] = dict_[variable_name]
+        return Namelist(groups)

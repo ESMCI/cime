@@ -1802,6 +1802,29 @@ class TestNamelistDefinition(unittest.TestCase):
                                      r"""\['"bad"'\]\.$"""):
             nml_def.validate(namelist)
 
+    ###########################################################################
+    def test_dict_to_namelist(self):
+    ###########################################################################
+        """A namelist definition can convert a dict into a true namelist."""
+        nml_def = self.namelist_definition_from_text(self._xml_data)
+        nml_dict = nml.parse(text='decomp="1d", phys_alltoall=1',
+                             groupless=True)
+        namelist = nml_def.dict_to_namelist(nml_dict)
+        self.assertItemsEqual(('datm_nml', 'phys_grid_nl'),
+                              namelist.get_group_names())
+        self.assertItemsEqual(('decomp',),
+                              namelist.get_variable_names('datm_nml'))
+        self.assertEqual(['"1d"'], namelist.get_value('decomp'))
+        self.assertItemsEqual(('phys_alltoall',),
+                              namelist.get_variable_names('phys_grid_nl'))
+        self.assertEqual(['1'], namelist.get_value('phys_alltoall'))
+        # Check for pretty error message.
+        nml_dict = nml.parse(text='bad=0', groupless=True)
+        with self.assertRaisesRegexp(SystemExit,
+                                     r"Variable 'bad' is not in the namelist "
+                                     r"definition\.$"):
+            nml_def.dict_to_namelist(nml_dict)
+
 ###############################################################################
 
 
