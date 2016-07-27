@@ -13,6 +13,8 @@ This module contains only one class, `NamelistDefaults`, inheriting from
 from CIME.XML.standard_module_setup import *
 from CIME.XML.generic_xml import GenericXML
 
+logger = logging.getLogger(__name__)
+
 class NamelistDefaults(GenericXML):
 
     """Class representing variable default values for a namelist."""

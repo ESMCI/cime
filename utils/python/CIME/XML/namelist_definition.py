@@ -19,6 +19,8 @@ from CIME.namelist import fortran_namelist_base_value, \
 from CIME.XML.standard_module_setup import *
 from CIME.XML.generic_xml import GenericXML
 
+logger = logging.getLogger(__name__)
+
 _array_size_re = re.compile(r'^(?P<type>[^(]+)\((?P<size>[^)]+)\)$')
 
 class NamelistDefinition(GenericXML):
