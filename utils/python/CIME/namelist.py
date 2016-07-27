@@ -648,6 +648,13 @@ class Namelist(object):
 
     Public methods:
     __init__
+    delete_variable
+    get_group_names
+    get_value
+    get_variable_names
+    get_variable_value
+    merge_nl
+    set_variable_value
     write
     """
 
@@ -662,9 +669,9 @@ class Namelist(object):
         safer to use `parse` than to directly call this constructor.
         """
         if groups is None:
-            self.groups = {}
+            self._groups = {}
         else:
-            self.groups = groups
+            self._groups = groups
 
     def get_group_names(self):
         """Return a list of all groups in the namelist.
@@ -674,7 +681,7 @@ class Namelist(object):
         >>> sorted(parse(text='&foo / &bar /').get_group_names())
         [u'bar', u'foo']
         """
-        return self.groups.keys()
+        return self._groups.keys()
 
     def get_variable_names(self, group_name):
         """Return a list of all variables in the given namelist group.
@@ -687,9 +694,9 @@ class Namelist(object):
         >>> sorted(x.get_variable_names('foo'))
         [u'bang', u'bar', u'bazz']
         """
-        if group_name not in self.groups:
+        if group_name not in self._groups:
             return []
-        return self.groups[group_name].keys()
+        return self._groups[group_name].keys()
 
     def get_variable_value(self, group_name, variable_name):
         """Return the value of the specified variable.
@@ -705,10 +712,10 @@ class Namelist(object):
         >>> parse(text='&foo bar=1,2 /').get_variable_value('foo', 'bar')
         [u'1', u'2']
         """
-        if group_name not in self.groups or \
-           variable_name not in self.groups[group_name]:
+        if group_name not in self._groups or \
+           variable_name not in self._groups[group_name]:
             return [u'']
-        return self.groups[group_name][variable_name]
+        return self._groups[group_name][variable_name]
 
     def get_value(self, variable_name):
         """Return the value of a uniquely-named variable.
@@ -726,13 +733,13 @@ class Namelist(object):
         >>> parse(text='&foo / &bazz /').get_value('bar')
         [u'']
         """
-        possible_groups = [group_name for group_name in self.groups
-                           if variable_name in self.groups[group_name]]
+        possible_groups = [group_name for group_name in self._groups
+                           if variable_name in self._groups[group_name]]
         expect(len(possible_groups) <= 1,
                "Namelist.get_value: Variable %s is present in multiple groups: "
                + str(possible_groups))
         if possible_groups:
-            return self.groups[possible_groups[0]][variable_name]
+            return self._groups[possible_groups[0]][variable_name]
         else:
             return [u'']
 
@@ -750,9 +757,9 @@ class Namelist(object):
         >>> x.get_variable_value('brack', 'bar')
         [u'4']
         """
-        if group_name not in self.groups:
-            self.groups[group_name] = {}
-        self.groups[group_name][variable_name] = value
+        if group_name not in self._groups:
+            self._groups[group_name] = {}
+        self._groups[group_name][variable_name] = value
 
     def delete_variable(self, group_name, variable_name):
         """Delete a variable from a specified group.
@@ -768,9 +775,9 @@ class Namelist(object):
         >>> x.get_variable_names('brack')
         []
         """
-        if group_name in self.groups and \
-           variable_name in self.groups[group_name]:
-            del self.groups[group_name][variable_name]
+        if group_name in self._groups and \
+           variable_name in self._groups[group_name]:
+            del self._groups[group_name][variable_name]
 
     def merge_nl(self, other, overwrite=False):
         """Merge this namelist object with another.
@@ -860,7 +867,7 @@ class Namelist(object):
     def _write(self, out_file, groups, format_):
         """Unwrapped version of `write` assuming that a file object is input."""
         if groups is None:
-            groups = self.groups.keys()
+            groups = self._groups.keys()
         if format_ == 'nml':
             equals = ' ='
         elif format_ == 'rc':
@@ -868,7 +875,7 @@ class Namelist(object):
         for group_name in sorted(list(groups)):
             if format_ == 'nml':
                 out_file.write("&%s\n" % group_name)
-            group = self.groups[group_name]
+            group = self._groups[group_name]
             for name in sorted(group.keys()):
                 values = group[name]
                 # To prettify things for long lists of values, build strings
