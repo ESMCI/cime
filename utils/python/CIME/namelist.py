@@ -1,9 +1,10 @@
 """Module containing tools for dealing with Fortran namelists.
 
 The public interface consists of the following functions:
+- `character_literal_to_string`
+- `fortran_namelist_base_value`
 - `is_valid_fortran_name`
 - `is_valid_fortran_namelist_literal`
-- `namelist_literal_base_value`
 - `parse`
 
 In addition, the `Namelist` class represents a namelist held in memory.
@@ -188,6 +189,33 @@ def fortran_namelist_base_value(string):
     if FORTRAN_REPEAT_PREFIX_REGEX.search(string) is not None:
         string = string[string.find('*') + 1:]
     return string
+
+
+def character_literal_to_string(literal):
+    """Convert a Fortran character literal to a Python string.
+
+    This function assumes (without checking) that `literal` is a valid literal.
+
+    >>> character_literal_to_string("'blah'")
+    'blah'
+    >>> character_literal_to_string('"blah"')
+    'blah'
+    >>> character_literal_to_string("'don''t'")
+    "don't"
+    >>> character_literal_to_string('"' + '""Hello!""' + '"')
+    '"Hello!"'
+    """
+    # Figure out whether a quote or apostrophe is the delimiter.
+    delimiter = None
+    for char in literal:
+        if char in ("'", '"'):
+            delimiter = char
+    # Find left and right edges of the string, extract middle.
+    left_pos = literal.find(delimiter)
+    right_pos = literal.rfind(delimiter)
+    new_literal = literal[left_pos+1:right_pos]
+    # Replace escaped quote and apostrophe characters.
+    return new_literal.replace(delimiter * 2, delimiter)
 
 
 def is_valid_fortran_namelist_literal(type_, string):

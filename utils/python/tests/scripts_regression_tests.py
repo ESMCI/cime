@@ -1637,6 +1637,13 @@ class TestNamelistDefinition(unittest.TestCase):
     valid_values="1d,root" >
     Set the decomposition option for the data model.
     </entry>
+
+    <entry id="phys_alltoall"
+    type="integer"
+    category="perf_dp_coup"
+    group="phys_grid_nl"
+    valid_values="0,1,2,11,12,13">
+    </entry>
     </namelist_definition>
     """
 
@@ -1714,14 +1721,26 @@ class TestNamelistDefinition(unittest.TestCase):
     ###########################################################################
         """The "valid_values" attribute is used during validation."""
         nml_def = self.namelist_definition_from_text(self._xml_data)
+        # Test a character variable.
         self.assertTrue(nml_def.is_valid_value("decomp",
                                                ['']))
         self.assertTrue(nml_def.is_valid_value("decomp",
                                                ["'1d'"]))
         self.assertTrue(nml_def.is_valid_value("decomp",
-                                               ['"root"']))
+                                               ['1*"root"']))
         self.assertFalse(nml_def.is_valid_value("decomp",
                                                 ["'bad'"]))
+        # An integer now.
+        self.assertTrue(nml_def.is_valid_value("phys_alltoall",
+                                               ['']))
+        self.assertTrue(nml_def.is_valid_value("phys_alltoall",
+                                               ['1']))
+        self.assertTrue(nml_def.is_valid_value("phys_alltoall",
+                                               ['1*1']))
+        self.assertTrue(nml_def.is_valid_value("phys_alltoall",
+                                               ['+1']))
+        self.assertFalse(nml_def.is_valid_value("phys_alltoall",
+                                                ['-1']))
 
 ###############################################################################
 
