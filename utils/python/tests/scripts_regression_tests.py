@@ -40,8 +40,8 @@ class A_RunUnitTests(unittest.TestCase):
         stat, output, _ = run_cmd("./%s --test 2>&1" % script, from_dir=from_dir)
         self.assertEqual(stat, 0, msg=output)
 
-    def test_acme_bisect_unit_test(self):
-        self.do_unit_tests("acme_bisect",from_dir=TOOLS_DIR)
+    def test_cime_bisect_unit_test(self):
+        self.do_unit_tests("cime_bisect",from_dir=TOOLS_DIR)
 
     def test_compare_namelists_unit_test(self):
         self.do_unit_tests("compare_namelists",from_dir=TOOLS_DIR)
@@ -1762,7 +1762,7 @@ def _main_func():
         MACHINE = Machines()
 
     args = lambda: None # just something to set attrs on
-    for log_param in ["debug", "silent"]:
+    for log_param in ["debug", "silent", "verbose"]:
         flag = "--%s" % log_param
         if flag in sys.argv:
             sys.argv.remove(flag)
