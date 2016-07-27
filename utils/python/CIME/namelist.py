@@ -2,6 +2,8 @@
 
 The public interface consists of the following functions:
 - `character_literal_to_string`
+- `compress_literal_list`
+- `expand_literal_list`
 - `fortran_namelist_base_value`
 - `is_valid_fortran_name`
 - `is_valid_fortran_namelist_literal`
@@ -483,16 +485,16 @@ def is_valid_fortran_namelist_literal(type_, string):
     return FORTRAN_LITERAL_REGEXES[type_].search(string) is not None
 
 
-def _expand_literal_list(literals):
+def expand_literal_list(literals):
     """Expands a list of literal values to get rid of repetition syntax.
 
-    >>> _expand_literal_list([])
+    >>> expand_literal_list([])
     []
-    >>> _expand_literal_list(['true'])
+    >>> expand_literal_list(['true'])
     ['true']
-    >>> _expand_literal_list(['1', '2', 'f*', '3*3', '5'])
+    >>> expand_literal_list(['1', '2', 'f*', '3*3', '5'])
     ['1', '2', 'f*', '3', '3', '3', '5']
-    >>> _expand_literal_list([u'2*f*'])
+    >>> expand_literal_list([u'2*f*'])
     [u'f*', u'f*']
     """
     expanded = []
@@ -505,16 +507,16 @@ def _expand_literal_list(literals):
     return expanded
 
 
-def _compress_literal_list(literals):
+def compress_literal_list(literals):
     """Uses repetition syntax to shorten a literal list.
 
-    >>> _compress_literal_list([])
+    >>> compress_literal_list([])
     []
-    >>> _compress_literal_list(['true'])
+    >>> compress_literal_list(['true'])
     ['true']
-    >>> _compress_literal_list(['1', '2', 'f*', '3', '3', '3', '5'])
+    >>> compress_literal_list(['1', '2', 'f*', '3', '3', '3', '5'])
     ['1', '2', 'f*', '3*3', '5']
-    >>> _compress_literal_list([u'f*', u'f*'])
+    >>> compress_literal_list([u'f*', u'f*'])
     [u'2*f*']
     """
     compressed = []
@@ -566,8 +568,8 @@ def _merge_literal_lists(default, overwrite):
     ['true', '2*false', '2*true', 'false']
     """
     merged = []
-    default = _expand_literal_list(default)
-    overwrite = _expand_literal_list(overwrite)
+    default = expand_literal_list(default)
+    overwrite = expand_literal_list(overwrite)
     for default_elem, elem in zip(default, overwrite):
         if elem == '':
             merged.append(default_elem)
@@ -579,7 +581,7 @@ def _merge_literal_lists(default, overwrite):
         merged[ovw_len:def_len] = default[ovw_len:def_len]
     else:
         merged[def_len:ovw_len] = overwrite[def_len:ovw_len]
-    return _compress_literal_list(merged)
+    return compress_literal_list(merged)
 
 
 def parse(in_file=None, text=None, groupless=False, convert_tab_to_space=True):

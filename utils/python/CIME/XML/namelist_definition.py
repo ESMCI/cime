@@ -4,14 +4,22 @@ This module contains only one class, `NamelistDefinition`, inheriting from
 `GenericXML`.
 """
 
+# Warnings we typically ignore.
+# pylint:disable=invalid-name
+
 # Disable warnings due to using `standard_module_setup`
 # pylint:disable=wildcard-import,unused-wildcard-import
 
+import re
+
 from CIME.namelist import fortran_namelist_base_value, \
-    is_valid_fortran_namelist_literal, character_literal_to_string
+    is_valid_fortran_namelist_literal, character_literal_to_string, \
+    expand_literal_list
 
 from CIME.XML.standard_module_setup import *
 from CIME.XML.generic_xml import GenericXML
+
+_array_size_re = re.compile(r'^(?P<type>[^(]+)\((?P<size>[^)]+)\)$')
 
 class NamelistDefinition(GenericXML):
 
@@ -89,12 +97,26 @@ class NamelistDefinition(GenericXML):
 
         The return value is a tuple consisting of the type itself, a length
         (which is an integer for character variables, otherwise `None`), and the
-        size of the array (which is "1" for scalar variables).
+        size of the array (which is 1 for scalar variables).
 
         This method also checks to ensure that the input `type_string` is valid.
         """
         # 'char' is frequently used as an abbreviation of 'character'.
         type_string = type_string.replace('char', 'character')
+        # Separate into a size and the rest of the type.
+        size_match = _array_size_re.search(type_string)
+        if size_match:
+            type_string = size_match.group('type')
+            size_string = size_match.group('size')
+            try:
+                size = int(size_string)
+            except ValueError:
+                expect(False,
+                       "In namelist definition, variable %s had the "
+                       "non-integer string %r specified as an array size." %
+                       (name, size_string))
+        else:
+            size = 1
         # Separate into a type and an optional length.
         type_, star, length = type_string.partition('*')
         if star == '*':
@@ -113,7 +135,20 @@ class NamelistDefinition(GenericXML):
                        (name, length))
         else:
             max_len = None
-        return type_, max_len
+        return type_, max_len, size
+
+    @staticmethod
+    def _canonicalize_value(type_, value):
+        """Create 'canonical' version of a value for comparison purposes."""
+        canonical_value = [fortran_namelist_base_value(scalar)
+                           for scalar in value]
+        canonical_value = [scalar for scalar in canonical_value if scalar != '']
+        if type_ == 'character':
+            canonical_value = [character_literal_to_string(scalar)
+                               for scalar in canonical_value]
+        elif type_ == 'integer':
+            canonical_value = [int(scalar) for scalar in canonical_value]
+        return canonical_value
 
     def is_valid_value(self, name, value):
         """Determine whether a value is valid for the named variable.
@@ -123,22 +158,15 @@ class NamelistDefinition(GenericXML):
         length of the list is always 1).
         """
         var_info = self.get_value(name)
-        # Separate into a type and an optional length.
-        type_, max_len = self._split_type_string(name, var_info["type"])
+        # Separate into a type, optional length, and optional size.
+        type_, max_len, size = self._split_type_string(name, var_info["type"])
         # Check value against type.
         for scalar in value:
             if not is_valid_fortran_namelist_literal(type_, scalar):
                 return False
         # Now that we know that the strings as input are valid Fortran, do some
         # canonicalization for further checks.
-        canonical_value = [fortran_namelist_base_value(scalar)
-                           for scalar in value]
-        canonical_value = [scalar for scalar in canonical_value if scalar != '']
-        if type_ == 'character':
-            canonical_value = [character_literal_to_string(scalar)
-                               for scalar in canonical_value]
-        elif type_ == 'integer':
-            canonical_value = [int(scalar) for scalar in canonical_value]
+        canonical_value = self._canonicalize_value(type_, value)
         # Check maximum length (if applicable).
         if max_len is not None:
             for scalar in canonical_value:
@@ -151,11 +179,14 @@ class NamelistDefinition(GenericXML):
                    "type %s, but valid_values only allowed for character "
                    "and integer variables." % (name, type_))
             if type_ == 'integer':
-                compare_list = [int(value)
-                                for value in var_info["valid_values"]]
+                compare_list = [int(vv)
+                                for vv in var_info["valid_values"]]
             else:
                 compare_list = var_info["valid_values"]
             for scalar in canonical_value:
                 if scalar not in compare_list:
                     return False
+        # Check size of input array.
+        if len(expand_literal_list(value)) > size:
+            return False
         return True

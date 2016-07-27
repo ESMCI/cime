@@ -1644,6 +1644,13 @@ class TestNamelistDefinition(unittest.TestCase):
     group="phys_grid_nl"
     valid_values="0,1,2,11,12,13">
     </entry>
+
+    <entry id="fillalgo"
+    type="char*256(30)"
+    category="streams"
+    group="shr_strdata_nml"
+    valid_values="copy,bilinear,nn,nnoni,nnonj,spval">
+    </entry>
     </namelist_definition>
     """
 
@@ -1741,6 +1748,30 @@ class TestNamelistDefinition(unittest.TestCase):
                                                ['+1']))
         self.assertFalse(nml_def.is_valid_value("phys_alltoall",
                                                 ['-1']))
+
+    ###########################################################################
+    def test_is_valid_value_array(self):
+    ###########################################################################
+        """The array size is checked during validation."""
+        nml_def = self.namelist_definition_from_text(self._xml_data)
+        # Can't specify multiple values for scalars.
+        self.assertFalse(nml_def.is_valid_value("phys_alltoall",
+                                                ['1', '1']))
+        self.assertFalse(nml_def.is_valid_value("phys_alltoall",
+                                                ['2*1']))
+        # Check proper operation for an array variable.
+        self.assertTrue(nml_def.is_valid_value("fillalgo",
+                                               ['']))
+        self.assertTrue(nml_def.is_valid_value("fillalgo",
+                                               ["'copy'"]))
+        self.assertTrue(nml_def.is_valid_value("fillalgo",
+                                               ["30*'copy'"]))
+        self.assertFalse(nml_def.is_valid_value("fillalgo",
+                                                ["31*'copy'"]))
+        self.assertTrue(nml_def.is_valid_value("fillalgo",
+                                               30 * ["'copy'"]))
+        self.assertFalse(nml_def.is_valid_value("fillalgo",
+                                                31 * ["'copy'"]))
 
 ###############################################################################
 
