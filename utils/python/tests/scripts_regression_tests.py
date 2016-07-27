@@ -19,6 +19,7 @@ from  CIME.system_test import SystemTest
 from  CIME.XML.machines import Machines
 from  CIME.XML.files import Files
 from  CIME.XML.namelist_definition import NamelistDefinition
+from  CIME.XML.namelist_defaults import NamelistDefaults
 from  CIME.case import Case
 from  CIME.macros import MacroMaker
 
@@ -1863,6 +1864,50 @@ class TestNamelistDefinition(unittest.TestCase):
                          'datm_nml')
         self.assertEqual(nml_def.get_value('phys_alltoall')['group'],
                          'phys_grid_nl')
+
+
+###############################################################################
+class TestNamelistDefaults(unittest.TestCase):
+###############################################################################
+
+    # Define some test data for tests.
+    _xml_data = """<?xml version="1.0"?>
+    <namelist_defaults>
+    <foo></foo>
+    <bar>1</bar>
+    <many_bar>2,3</many_bar>
+    <char>fuzzy</char>
+    <many_char> 'fuzzier', "fuzziest" </many_char>
+    <char_with_comma>'fuzzier, fuzziest'</char_with_comma>
+    </namelist_defaults>
+    """
+
+    ###########################################################################
+    def namelist_defaults_from_text(self, text):
+    ###########################################################################
+        directory = tempfile.mkdtemp()
+        xml_path = os.path.join(directory, "namelist_defaults.xml")
+        with open(xml_path, 'w') as xml_file:
+            xml_file.write(text)
+        defaults = NamelistDefaults(xml_path)
+        shutil.rmtree(directory)
+        return defaults
+
+    ###########################################################################
+    def test_get_value(self):
+    ###########################################################################
+        """Values can be looked up in the namelist defaults file."""
+        defaults = self.namelist_defaults_from_text(self._xml_data)
+        self.assertIsNone(defaults.get_value('brains'))
+        self.assertListEqual(defaults.get_value('foo'), [""])
+        self.assertListEqual(defaults.get_value('bar'), ["1"])
+        self.assertListEqual(defaults.get_value('many_bar'), ["2", "3"])
+        self.assertListEqual(defaults.get_value('char'), ['fuzzy'])
+        self.assertListEqual(defaults.get_value('many_char'),
+                             ["'fuzzier'", '"fuzziest"'])
+        self.assertListEqual(defaults.get_value('char_with_comma'),
+                             ["'fuzzier, fuzziest'"])
+
 
 ###############################################################################
 
