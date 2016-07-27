@@ -29,6 +29,12 @@ class NamelistDefinition(GenericXML):
         """Construct a `NamelistDefinition` from an XML file."""
         super(NamelistDefinition, self).__init__(infile)
 
+    def add(self, infile):
+        """Add the contents of an XML file to the namelist definition."""
+        new_root = ET.parse(infile).getroot()
+        for elem in new_root:
+            self.root.append(elem)
+
     def get_value(self, item, attribute=None, resolved=False, subgroup=None):
         """Get data about the namelist variable named `item`.
 

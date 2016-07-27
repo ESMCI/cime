@@ -1825,6 +1825,45 @@ class TestNamelistDefinition(unittest.TestCase):
                                      r"definition\.$"):
             nml_def.dict_to_namelist(nml_dict)
 
+    ###########################################################################
+    def test_add(self):
+    ###########################################################################
+        """A new file can be added to a namelist definition."""
+        xml_data1 = """<?xml version="1.0"?>
+        <namelist_definition>
+        <entry id="force_prognostic_true"
+        type="logical"
+        category="datm"
+        group="datm_nml">
+        If TRUE, prognostic is forced to true.
+        default=false
+        </entry>
+        </namelist_definition>
+        """
+        xml_data2 = """<?xml version="1.0"?>
+        <namelist_definition>
+        <entry id="phys_alltoall"
+        type="integer"
+        category="perf_dp_coup"
+        group="phys_grid_nl"
+        valid_values="0,1,2,11,12,13">
+        </entry>
+        </namelist_definition>
+        """
+        nml_def = self.namelist_definition_from_text(xml_data1)
+        # Some gobbledygook to create a new file and add its contents.
+        directory = tempfile.mkdtemp()
+        xml_path = os.path.join(directory, "namelist_definition.xml")
+        with open(xml_path, 'w') as xml_file:
+            xml_file.write(xml_data2)
+        nml_def.add(xml_path)
+        shutil.rmtree(directory)
+        # Now check that both files' data can be viewed.
+        self.assertEqual(nml_def.get_value('force_prognostic_true')['group'],
+                         'datm_nml')
+        self.assertEqual(nml_def.get_value('phys_alltoall')['group'],
+                         'phys_grid_nl')
+
 ###############################################################################
 
 
