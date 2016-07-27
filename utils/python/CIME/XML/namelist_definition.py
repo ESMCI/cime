@@ -190,3 +190,24 @@ class NamelistDefinition(GenericXML):
         if len(expand_literal_list(value)) > size:
             return False
         return True
+
+    def validate(self, namelist):
+        """Validate a namelist object against this definition."""
+        for group_name in namelist.get_group_names():
+            for variable_name in namelist.get_variable_names(group_name):
+                # Do this to get a better error message when a variable does not
+                # exist in the definition.
+                node = self.get_optional_node("entry",
+                                              attributes={'id': variable_name})
+                expect(node is not None,
+                       "Variable %r is not in the namelist definition." %
+                       str(variable_name))
+                var_info = self.get_value(variable_name)
+                expect(var_info['group'] == group_name,
+                       "Variable %r is in a group named %r, but should be in "
+                       "%r." % (str(variable_name), str(group_name),
+                                str(var_info['group'])))
+                value = namelist.get_variable_value(group_name, variable_name)
+                expect(self.is_valid_value(variable_name, value),
+                       "Variable %r has invalid value %r." %
+                       (str(variable_name), [str(scalar) for scalar in value]))

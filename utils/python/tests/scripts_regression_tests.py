@@ -14,6 +14,7 @@ subprocess.call('/bin/rm $(find . -name "*.pyc")', shell=True, cwd=LIB_DIR)
 from CIME.utils import run_cmd, run_cmd_no_fail, expect
 import CIME.utils, update_acme_tests, wait_for_tests
 import CIME.system_test
+import CIME.namelist as nml
 from  CIME.system_test import SystemTest
 from  CIME.XML.machines import Machines
 from  CIME.XML.files import Files
@@ -1772,6 +1773,34 @@ class TestNamelistDefinition(unittest.TestCase):
                                                30 * ["'copy'"]))
         self.assertFalse(nml_def.is_valid_value("fillalgo",
                                                 31 * ["'copy'"]))
+
+    ###########################################################################
+    def test_validate(self):
+    ###########################################################################
+        """A complete namelist can be validated against a definition."""
+        nml_def = self.namelist_definition_from_text(self._xml_data)
+        # Valid namelist should raise no errors.
+        namelist = nml.parse(text='&datm_nml force_prognostic_true = .false. /')
+        nml_def.validate(namelist)
+        # A variable not in the definition should raise an error.
+        namelist = nml.parse(text='&datm_nml not_a_variable = .false. /')
+        with self.assertRaisesRegexp(SystemExit,
+                                     r"Variable 'not_a_variable' is not in the "
+                                     r"namelist definition\.$"):
+            nml_def.validate(namelist)
+        # A wrong group name should raise errors.
+        namelist = nml.parse(text='&bad force_prognostic_true = .false. /')
+        with self.assertRaisesRegexp(SystemExit,
+                                     r"Variable 'force_prognostic_true' is in "
+                                     r"a group named 'bad', but should be in "
+                                     r"'datm_nml'\.$"):
+            nml_def.validate(namelist)
+        # Finally, bad values should cause an error.
+        namelist = nml.parse(text='&datm_nml decomp = "bad" /')
+        with self.assertRaisesRegexp(SystemExit,
+                                     r"Variable 'decomp' has invalid value "
+                                     r"""\['"bad"'\]\.$"""):
+            nml_def.validate(namelist)
 
 ###############################################################################
 
