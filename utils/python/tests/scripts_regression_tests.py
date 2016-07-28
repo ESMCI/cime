@@ -1789,6 +1789,12 @@ class TestNamelistDefinition(unittest.TestCase):
                                      r"Variable 'not_a_variable' is not in the "
                                      r"namelist definition\.$"):
             nml_def.validate(namelist)
+        # Check file-specific error message.
+        with self.assertRaisesRegexp(SystemExit,
+                                     r"Variable 'not_a_variable' from file "
+                                     r"'foo_nl' is not in the namelist "
+                                     r"definition\.$"):
+            nml_def.validate(namelist, 'foo_nl')
         # A wrong group name should raise errors.
         namelist = nml.parse(text='&bad force_prognostic_true = .false. /')
         with self.assertRaisesRegexp(SystemExit,
@@ -1796,12 +1802,23 @@ class TestNamelistDefinition(unittest.TestCase):
                                      r"a group named 'bad', but should be in "
                                      r"'datm_nml'\.$"):
             nml_def.validate(namelist)
+        # Check file-specific error message.
+        with self.assertRaisesRegexp(SystemExit,
+                                     r"Variable 'force_prognostic_true' from "
+                                     r"file 'foo_nl' is in a group named "
+                                     r"'bad', but should be in 'datm_nml'\.$"):
+            nml_def.validate(namelist, 'foo_nl')
         # Finally, bad values should cause an error.
         namelist = nml.parse(text='&datm_nml decomp = "bad" /')
         with self.assertRaisesRegexp(SystemExit,
                                      r"Variable 'decomp' has invalid value "
                                      r"""\['"bad"'\]\.$"""):
             nml_def.validate(namelist)
+        # Check file-specific error message.
+        with self.assertRaisesRegexp(SystemExit,
+                                     r"Variable 'decomp' from file 'foo_nl' "
+                                     r"""has invalid value \['"bad"'\]\.$"""):
+            nml_def.validate(namelist, 'foo_nl')
 
     ###########################################################################
     def test_dict_to_namelist(self):
@@ -1825,6 +1842,10 @@ class TestNamelistDefinition(unittest.TestCase):
                                      r"Variable 'bad' is not in the namelist "
                                      r"definition\.$"):
             nml_def.dict_to_namelist(nml_dict)
+        with self.assertRaisesRegexp(SystemExit,
+                                     r"Variable 'bad' from file 'foo_nl' is "
+                                     r"not in the namelist definition\.$"):
+            nml_def.dict_to_namelist(nml_dict, 'foo_nl')
 
     ###########################################################################
     def test_add(self):

@@ -213,39 +213,63 @@ class NamelistDefinition(GenericXML):
             return False
         return True
 
-    def _expect_variable_in_definition(self, name):
+    def _expect_variable_in_definition(self, name, variable_template):
         """Used to get a better error message for an unexpected variable."""
         node = self.get_optional_node("entry", attributes={'id': name})
         expect(node is not None,
-               "Variable %r is not in the namelist definition." % str(name))
+               (variable_template + " is not in the namelist definition.") %
+               str(name))
 
-    def validate(self, namelist):
-        """Validate a namelist object against this definition."""
+    def validate(self, namelist, filename=None):
+        """Validate a namelist object against this definition.
+
+        The optional `filename` argument can be used to assist in error
+        reporting when the namelist comes from a specific, known file.
+        """
+        # Improve error reporting when a file name is provided.
+        if filename is None:
+            variable_template = "Variable %r"
+        else:
+            variable_template = "Variable %r from file " + repr(str(filename))
+        # Iterate through variables.
         for group_name in namelist.get_group_names():
             for variable_name in namelist.get_variable_names(group_name):
-                self._expect_variable_in_definition(variable_name)
+                # Check that the variable is defined...
+                self._expect_variable_in_definition(variable_name,
+                                                    variable_template)
+                # and has the right group name...
                 var_info = self.get_value(variable_name)
                 expect(var_info['group'] == group_name,
-                       "Variable %r is in a group named %r, but should be in "
-                       "%r." % (str(variable_name), str(group_name),
-                                str(var_info['group'])))
+                       (variable_template + " is in a group named %r, but "
+                        "should be in %r.") %
+                       (str(variable_name), str(group_name),
+                        str(var_info['group'])))
+                # and has a valid value.
                 value = namelist.get_variable_value(group_name, variable_name)
                 expect(self.is_valid_value(variable_name, value),
-                       "Variable %r has invalid value %r." %
+                       (variable_template + " has invalid value %r.") %
                        (str(variable_name), [str(scalar) for scalar in value]))
 
-    def dict_to_namelist(self, dict_):
+    def dict_to_namelist(self, dict_, filename=None):
         """Converts a dictionary of name-value pairs to a `Namelist`.
 
         The input is assumed to be similar to the output of `parse` when
         `groupless=True` is set. This function uses the namelist definition file
         to look up the namelist group associated with each variable, and uses
         this information to create a true `Namelist` object.
+
+        The optional `filename` argument can be used to assist in error
+        reporting when the namelist comes from a specific, known file.
         """
+        # Improve error reporting when a file name is provided.
+        if filename is None:
+            variable_template = "Variable %r"
+        else:
+            variable_template = "Variable %r from file " + repr(str(filename))
         groups = {}
         for variable_name in dict_:
             variable_lc = variable_name.lower()
-            self._expect_variable_in_definition(variable_lc)
+            self._expect_variable_in_definition(variable_lc, variable_template)
             var_info = self.get_value(variable_lc)
             group_name = var_info['group']
             if group_name not in groups:
