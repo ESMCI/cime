@@ -8,6 +8,7 @@ The public interface consists of the following functions:
 - `is_valid_fortran_name`
 - `is_valid_fortran_namelist_literal`
 - `parse`
+- `string_to_character_literal`
 
 In addition, the `Namelist` class represents a namelist held in memory.
 
@@ -219,6 +220,21 @@ def character_literal_to_string(literal):
     # Replace escaped quote and apostrophe characters.
     return new_literal.replace(delimiter * 2, delimiter)
 
+
+def string_to_character_literal(string):
+    r"""Convert a Python string to a Fortran character literal.
+
+    This function always uses double quotes (") as the delimiter.
+
+    >>> string_to_character_literal('blah')
+    '"blah"'
+    >>> string_to_character_literal("'blah'")
+    '"\'blah\'"'
+    >>> string_to_character_literal('She said "Hi!".')
+    '"She said ""Hi!""."'
+    """
+    string = string.replace('"', '""')
+    return '"' + string + '"'
 
 def is_valid_fortran_namelist_literal(type_, string):
     r"""Determine whether a literal is valid in a Fortran namelist.
