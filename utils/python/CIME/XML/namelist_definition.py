@@ -25,7 +25,20 @@ _array_size_re = re.compile(r'^(?P<type>[^(]+)\((?P<size>[^)]+)\)$')
 
 class NamelistDefinition(GenericXML):
 
-    """Class representing variable definitions for a namelist."""
+    """Class representing variable definitions for a namelist.
+
+    This class inherits from `GenericXML`, and supports most inherited methods;
+    however, `set_value` and `get_resolved_value` are unsupported.
+
+    The `get_value` implementation returns a dictionary containing all relevant
+    metadata about a given namelist variable.
+
+    Additional public methods:
+    - add
+    - dict_to_namelist.
+    - is_valid_value
+    - validate
+    """
 
     def __init__(self, infile):
         """Construct a `NamelistDefinition` from an XML file."""

@@ -17,7 +17,14 @@ logger = logging.getLogger(__name__)
 
 class NamelistDefaults(GenericXML):
 
-    """Class representing variable default values for a namelist."""
+    """Class representing variable default values for a namelist.
+
+    This class inherits from `GenericXML`, and supports most inherited methods;
+    however, `get_resolved_value` is unsupported.
+
+    Additional public methods:
+    - add
+    """
 
     def __init__(self, infile, attributes=None):
         """Construct a `NamelistDefaults` from an XML file."""
