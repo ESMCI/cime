@@ -1675,6 +1675,8 @@ class TestNamelistDefinition(unittest.TestCase):
 
         scalar_info = nml_def.get_value("force_prognostic_true")
         self.assertEqual(scalar_info['type'], 'logical')
+        self.assertIsNone(scalar_info['length'])
+        self.assertEqual(scalar_info['size'], 1)
         self.assertEqual(scalar_info['category'], 'datm')
         self.assertEqual(scalar_info['group'], 'datm_nml')
         self.assertIsNotNone(scalar_info['description'])
@@ -1682,19 +1684,25 @@ class TestNamelistDefinition(unittest.TestCase):
         self.assertIsNone(scalar_info['input_pathname'])
 
         pathname_info = nml_def.get_value("factorfn")
-        self.assertEqual(pathname_info['type'], 'char*256')
+        self.assertEqual(pathname_info['type'], 'character')
+        self.assertEqual(pathname_info['length'], 256)
+        self.assertEqual(pathname_info['size'], 1)
         self.assertEqual(pathname_info['category'], 'datm')
         self.assertEqual(pathname_info['group'], 'datm_nml')
         self.assertIsNotNone(pathname_info['description'])
         self.assertIsNone(pathname_info['valid_values'])
         self.assertEqual(pathname_info['input_pathname'], "abs")
 
-        values_info = nml_def.get_value("decomp")
-        self.assertEqual(values_info['type'], 'char*4')
-        self.assertEqual(values_info['category'], 'datm')
-        self.assertEqual(values_info['group'], 'datm_nml')
+        values_info = nml_def.get_value("fillalgo")
+        self.assertEqual(values_info['type'], 'character')
+        self.assertEqual(values_info['length'], 256)
+        self.assertEqual(values_info['size'], 30)
+        self.assertEqual(values_info['category'], 'streams')
+        self.assertEqual(values_info['group'], 'shr_strdata_nml')
         self.assertIsNotNone(values_info['description'])
-        self.assertListEqual(values_info['valid_values'], ["1d", "root"])
+        self.assertListEqual(values_info['valid_values'],
+                             ["copy", "bilinear", "nn", "nnoni", "nnonj",
+                              "spval"])
         self.assertIsNone(values_info['input_pathname'])
 
     ###########################################################################

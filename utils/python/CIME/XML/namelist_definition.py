@@ -55,15 +55,28 @@ class NamelistDefinition(GenericXML):
 
         The returned value will be a dict with the following keys:
          - type
+         - length
+         - size
          - category
          - group
          - valid_values
          - input_pathname
          - description
 
-        All such values will be strings, except that `valid_values` will be a
-        list of valid values for the namelist variable to take, or `None` if no
-        such constraint is provided.
+        Most values are strings, and correspond directly to the information
+        present in the file. The exceptions are:
+
+        `type` is string specifying a normalized scalar type, i.e. "character",
+        "complex", "integer", "logical", or "real".
+
+        `length` is an `int` specifying the length of a character variable, or
+        `None` for all other variables.
+
+        `size` is an `int` specifying the size of an array. For scalars, this is
+        set to `1`.
+
+        `valid_values` will be a list of valid values for the namelist variable
+        to take, or `None` if no such constraint is provided.
         """
         expect(attribute is None, "This class does not support attributes.")
         expect(not resolved, "This class does not support env resolution.")
@@ -81,6 +94,11 @@ class NamelistDefinition(GenericXML):
         get_required_field('type')
         get_required_field('category')
         get_required_field('group')
+        # Convert type string into more usable information.
+        type_, length, size = self._split_type_string(item, var_info["type"])
+        var_info["type"] = type_
+        var_info["length"] = length
+        var_info["size"] = size
         # The "valid_values" attribute is not required, and an empty string has
         # the same effect as not specifying it.
         valid_values = elem.get('valid_values')
@@ -181,7 +199,9 @@ class NamelistDefinition(GenericXML):
         name = name.lower()
         var_info = self.get_value(name)
         # Separate into a type, optional length, and optional size.
-        type_, max_len, size = self._split_type_string(name, var_info["type"])
+        type_ = var_info["type"]
+        max_len = var_info["length"]
+        size = var_info["size"]
         # Check value against type.
         for scalar in value:
             if not is_valid_fortran_namelist_literal(type_, scalar):
