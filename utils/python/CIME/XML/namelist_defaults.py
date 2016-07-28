@@ -24,6 +24,12 @@ class NamelistDefaults(GenericXML):
         super(NamelistDefaults, self).__init__(infile)
         self._attributes = attributes
 
+    def add(self, infile):
+        """Add the contents of an XML file to the defaults."""
+        new_root = ET.parse(infile).getroot()
+        for elem in new_root:
+            self.root.append(elem)
+
     @staticmethod
     def _split_defaults_text(string):
         """Take a comma-separated list in a string, and split it into a list."""

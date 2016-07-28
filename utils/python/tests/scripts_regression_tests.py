@@ -1930,6 +1930,31 @@ class TestNamelistDefaults(unittest.TestCase):
                                                     {'opt1': 'a', 'opt2': 'b'})
         self.assertListEqual(defaults.get_value('foo'), ["3"])
 
+    ###########################################################################
+    def test_add(self):
+    ###########################################################################
+        """Multiple files can be added to one object."""
+        xml_data1 = """<?xml version="1.0"?>
+        <namelist_defaults>
+        <foo></foo>
+        </namelist_defaults>
+        """
+        xml_data2 = """<?xml version="1.0"?>
+        <namelist_defaults>
+        <bar>1</bar>
+        </namelist_defaults>
+        """
+        defaults = self.namelist_defaults_from_text(xml_data1)
+        # Some gobbledygook to create a new file and add its contents.
+        directory = tempfile.mkdtemp()
+        xml_path = os.path.join(directory, "namelist_defaults.xml")
+        with open(xml_path, 'w') as xml_file:
+            xml_file.write(xml_data2)
+        defaults.add(xml_path)
+        shutil.rmtree(directory)
+        self.assertListEqual(defaults.get_value('foo'), [""])
+        self.assertListEqual(defaults.get_value('bar'), ["1"])
+
 
 ###############################################################################
 
