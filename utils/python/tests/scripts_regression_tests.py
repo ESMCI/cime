@@ -1879,17 +1879,21 @@ class TestNamelistDefaults(unittest.TestCase):
     <char>fuzzy</char>
     <many_char> 'fuzzier', "fuzziest" </many_char>
     <char_with_comma>'fuzzier, fuzziest'</char_with_comma>
+    <foo opt1="a">1</foo>
+    <foo opt1="blah" opt2="b">unused</foo>
+    <foo opt2="b">2</foo>
+    <foo opt1="a" opt2="b">3</foo>
     </namelist_defaults>
     """
 
     ###########################################################################
-    def namelist_defaults_from_text(self, text):
+    def namelist_defaults_from_text(self, text, attributes=None):
     ###########################################################################
         directory = tempfile.mkdtemp()
         xml_path = os.path.join(directory, "namelist_defaults.xml")
         with open(xml_path, 'w') as xml_file:
             xml_file.write(text)
-        defaults = NamelistDefaults(xml_path)
+        defaults = NamelistDefaults(xml_path, attributes)
         shutil.rmtree(directory)
         return defaults
 
@@ -1907,6 +1911,24 @@ class TestNamelistDefaults(unittest.TestCase):
                              ["'fuzzier'", '"fuzziest"'])
         self.assertListEqual(defaults.get_value('char_with_comma'),
                              ["'fuzzier, fuzziest'"])
+
+    ###########################################################################
+    def test_get_value_matches(self):
+    ###########################################################################
+        """Values are selected based on attribute matches."""
+        # Single match gets first specific result.
+        defaults = self.namelist_defaults_from_text(self._xml_data,
+                                                    {'opt1': 'a'})
+        self.assertListEqual(defaults.get_value('foo'), ["1"])
+        # "Extra" options from input are not used, but "extra" options in file
+        # prevent a match.
+        defaults = self.namelist_defaults_from_text(self._xml_data,
+                                                    {'opt2': 'b', 'opt3': 'c'})
+        self.assertListEqual(defaults.get_value('foo'), ["2"])
+        # Double match beats single match (and skips a non-match).
+        defaults = self.namelist_defaults_from_text(self._xml_data,
+                                                    {'opt1': 'a', 'opt2': 'b'})
+        self.assertListEqual(defaults.get_value('foo'), ["3"])
 
 
 ###############################################################################

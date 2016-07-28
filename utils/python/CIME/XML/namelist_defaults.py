@@ -19,9 +19,36 @@ class NamelistDefaults(GenericXML):
 
     """Class representing variable default values for a namelist."""
 
-    def __init__(self, infile):
+    def __init__(self, infile, attributes=None):
         """Construct a `NamelistDefaults` from an XML file."""
         super(NamelistDefaults, self).__init__(infile)
+        self._attributes = attributes
+
+    @staticmethod
+    def _split_defaults_text(string):
+        """Take a comma-separated list in a string, and split it into a list."""
+        # Some trickiness here; we want to split items on commas, but not inside
+        # quote-delimited strings. Stripping whitespace is also useful.
+        value = []
+        pos = 0
+        delim = None
+        for i, char in enumerate(string):
+            if delim is None:
+                # If not inside a string...
+                if char in ('"', "'"):
+                    # if we have a quote character, start a string.
+                    delim = char
+                elif char == ',':
+                    # if we have a comma, this is a new value.
+                    value.append(string[pos:i].strip())
+                    pos = i+1
+            else:
+                # If inside a string, the only thing that can happen is the end
+                # of the string.
+                if char == delim:
+                    delim = None
+        value.append(string[pos:].strip())
+        return value
 
     def get_value(self, item, attribute=None, resolved=False, subgroup=None):
         """Return the default value for the variable named `item`.
@@ -33,33 +60,34 @@ class NamelistDefaults(GenericXML):
         expect(attribute is None, "This class does not support attributes.")
         expect(not resolved, "This class does not support env resolution.")
         expect(subgroup is None, "This class does not support subgroups.")
-        node = self.get_optional_node(item.lower())
-        if node is None:
-            return None
+        nodes = self.get_nodes(item.lower())
+        if self._attributes is None:
+            if not nodes:
+                return None
+            node = nodes[0]
+        else:
+            # Store nodes that match the attributes and their scores.
+            matches = []
+            for node in nodes:
+                # For each node in the list start a score.
+                score = 0
+                for attribute in node.keys():
+                    # For each attribute, add to the score.
+                    score += 1
+                    # If some attribute is specified that we don't know about,
+                    # or the values don't match, it's not a match we want.
+                    if attribute not in self._attributes or \
+                       self._attributes[attribute] != node.get(attribute):
+                        score = -1
+                        break
+                # Add valid matches to the list.
+                if score >= 0:
+                    matches.append((score, node))
+            # Get maximum score using custom `key` function, extract the node.
+            _, node = max(matches, key=lambda x: x[0])
         if node.text is None:
             return ['']
-        # Some trickiness here; we want to split items on commas, but not inside
-        # quote-delimited strings. Stripping whitespace is also useful.
-        value = []
-        pos = 0
-        delim = None
-        for i, char in enumerate(node.text):
-            if delim is None:
-                # If not inside a string...
-                if char in ('"', "'"):
-                    # if we have a quote character, start a string.
-                    delim = char
-                elif char == ',':
-                    # if we have a comma, this is a new value.
-                    value.append(node.text[pos:i].strip())
-                    pos = i+1
-            else:
-                # If inside a string, the only thing that can happen is the end
-                # of the string.
-                if char == delim:
-                    delim = None
-        value.append(node.text[pos:].strip())
-        return value
+        return self._split_defaults_text(node.text)
 
     # While there are environment variable references in the file at times, they
     # usually involve env files that we don't know about at this low level. So
