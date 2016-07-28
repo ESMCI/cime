@@ -43,12 +43,14 @@ class NamelistDefinition(GenericXML):
     def __init__(self, infile):
         """Construct a `NamelistDefinition` from an XML file."""
         super(NamelistDefinition, self).__init__(infile)
+        self._value_cache = {}
 
     def add(self, infile):
         """Add the contents of an XML file to the namelist definition."""
         new_root = ET.parse(infile).getroot()
         for elem in new_root:
             self.root.append(elem)
+        self._value_cache = {}
 
     def get_value(self, item, attribute=None, resolved=False, subgroup=None):
         """Get data about the namelist variable named `item`.
@@ -81,7 +83,12 @@ class NamelistDefinition(GenericXML):
         expect(attribute is None, "This class does not support attributes.")
         expect(not resolved, "This class does not support env resolution.")
         expect(subgroup is None, "This class does not support subgroups.")
-        elem = self.get_node("entry", attributes={'id': item.lower()})
+        # Normalize case.
+        item = item.lower()
+        # Check cache in case we can avoid everything below.
+        if item in self._value_cache:
+            return self._value_cache[item]
+        elem = self.get_node("entry", attributes={'id': item})
         var_info = {}
 
         def get_required_field(name):
@@ -111,6 +118,8 @@ class NamelistDefinition(GenericXML):
         var_info['input_pathname'] = elem.get('input_pathname')
         # The description is the data on the node itself.
         var_info['description'] = elem.text
+        # Cache result of query.
+        self._value_cache[item] = var_info
         return var_info
 
     # Currently we don't use this object to construct new files, and it's no
