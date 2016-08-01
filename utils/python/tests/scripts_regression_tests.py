@@ -1912,6 +1912,7 @@ class TestNamelistDefaults(unittest.TestCase):
     <foo opt1="blah" opt2="b">unused</foo>
     <foo opt2="b">2</foo>
     <foo opt1="a" opt2="b">3</foo>
+    <bagel llama="donut"></bagel>
     </namelist_defaults>
     """
 
@@ -1945,6 +1946,10 @@ class TestNamelistDefaults(unittest.TestCase):
     def test_get_value_matches(self):
     ###########################################################################
         """Values are selected based on attribute matches."""
+        # Get nothing if no matches.
+        defaults = self.namelist_defaults_from_text(self._xml_data,
+                                                    {'llama': 'muffin'})
+        self.assertIsNone(defaults.get_value('bagel'))
         # Single match gets first specific result.
         defaults = self.namelist_defaults_from_text(self._xml_data,
                                                     {'opt1': 'a'})
@@ -1958,6 +1963,16 @@ class TestNamelistDefaults(unittest.TestCase):
         defaults = self.namelist_defaults_from_text(self._xml_data,
                                                     {'opt1': 'a', 'opt2': 'b'})
         self.assertListEqual(defaults.get_value('foo'), ["3"])
+
+    ###########################################################################
+    def test_get_value_attribute(self):
+    ###########################################################################
+        """Values are selected based on attributes passed in to `get_value`."""
+        # Single match gets first specific result.
+        defaults = self.namelist_defaults_from_text(self._xml_data,
+                                                    {'opt1': 'a'})
+        self.assertListEqual(defaults.get_value('foo', attribute={'opt2': 'b'}),
+                             ["3"])
 
     ###########################################################################
     def test_add(self):

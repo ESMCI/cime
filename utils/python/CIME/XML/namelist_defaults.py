@@ -70,34 +70,36 @@ class NamelistDefaults(GenericXML):
         comma-separated list of entries for the value (length 1 for scalars). If
         there is no default value in the file, this returns `None`.
         """
-        expect(attribute is None, "This class does not support attributes.")
         expect(not resolved, "This class does not support env resolution.")
         expect(subgroup is None, "This class does not support subgroups.")
         nodes = self.get_nodes(item.lower())
-        if self._attributes is None:
-            if not nodes:
-                return None
-            node = nodes[0]
-        else:
-            # Store nodes that match the attributes and their scores.
-            matches = []
-            for node in nodes:
-                # For each node in the list start a score.
-                score = 0
-                for attribute in node.keys():
-                    # For each attribute, add to the score.
-                    score += 1
-                    # If some attribute is specified that we don't know about,
-                    # or the values don't match, it's not a match we want.
-                    if attribute not in self._attributes or \
-                       self._attributes[attribute] != node.get(attribute):
-                        score = -1
-                        break
-                # Add valid matches to the list.
-                if score >= 0:
-                    matches.append((score, node))
-            # Get maximum score using custom `key` function, extract the node.
-            _, node = max(matches, key=lambda x: x[0])
+        # Merge internal attributes with those passed in.
+        all_attributes = {}
+        if self._attributes is not None:
+            all_attributes.update(self._attributes)
+        if attribute is not None:
+            all_attributes.update(attribute)
+        # Store nodes that match the attributes and their scores.
+        matches = []
+        for node in nodes:
+            # For each node in the list start a score.
+            score = 0
+            for attribute in node.keys():
+                # For each attribute, add to the score.
+                score += 1
+                # If some attribute is specified that we don't know about,
+                # or the values don't match, it's not a match we want.
+                if attribute not in all_attributes or \
+                   all_attributes[attribute] != node.get(attribute):
+                    score = -1
+                    break
+            # Add valid matches to the list.
+            if score >= 0:
+                matches.append((score, node))
+        if not matches:
+            return None
+        # Get maximum score using custom `key` function, extract the node.
+        _, node = max(matches, key=lambda x: x[0])
         if node.text is None:
             return ['']
         return self._split_defaults_text(node.text)
