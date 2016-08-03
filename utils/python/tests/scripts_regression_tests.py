@@ -1705,6 +1705,12 @@ class TestNamelistDefinition(unittest.TestCase):
                               "spval"])
         self.assertIsNone(values_info['input_pathname'])
 
+        # Nice error message for invalid variables.
+        with self.assertRaisesRegexp(SystemExit,
+                                     r"Variable 'bad' is not in the namelist "
+                                     r"definition\.$"):
+            nml_def.get_value("bad")
+
     ###########################################################################
     def test_is_valid_value_scalar(self):
     ###########################################################################
