@@ -1,176 +1,204 @@
-#!/usr/bin/env perl
+#!/usr/bin/env python
 
-#-------------------------------------------------------------------------------------------
-# build-namelist script for the CIME Data Atmosphere Model
-#-------------------------------------------------------------------------------------------
+"""Namelist creator for CIME's data atmosphere model.
 
-use strict;
-use English;
-use IO::File;
+While `build-namelist` historically has been a script in its own right, this
+module can be imported, and provides the same functionality via the
+`build_namelist` function.
+"""
 
-my ($caseroot, $cimeroot, $confdir, $inst_string, $namelist_infile, $user_xml_dir) = @ARGV;
+# Typically ignore this.
+# pylint: disable=invalid-name
 
-my @dirs = ( "$cimeroot/utils/perl5lib" );
-unshift @INC, @dirs;
-require Streams::BuildNamelistUtils;
+# Disable these because this is our standard setup
+# pylint: disable=wildcard-import,unused-wildcard-import,wrong-import-position
 
-#-------------------------------------------
-# Create nmlgen object
-#-------------------------------------------
+import os
+import shutil
+import sys
 
-my $nmlgen = BuildNamelistUtils->new('datm',$cimeroot, $caseroot, $confdir, 
-				     $user_xml_dir, $namelist_infile);
+CIMEROOT = os.environ.get("CIMEROOT")
+if CIMEROOT is None:
+    raise SystemExit("ERROR: must set CIMEROOT environment variable")
+sys.path.append(os.path.join(CIMEROOT, "scripts", "Tools"))
 
-#-------------------------------------------
-# Required xml variables           
-#-------------------------------------------
+from standard_script_setup import *
+from CIME.case import Case
+from CIME.nmlgen import NamelistGenerator
+from CIME.utils import expect
 
-my $DIN_LOC_ROOT    = $nmlgen->get_xmlvar('DIN_LOC_ROOT');
-my $ATM_DOMAIN_FILE = $nmlgen->get_xmlvar('ATM_DOMAIN_FILE');
-my $ATM_DOMAIN_PATH = $nmlgen->get_xmlvar('ATM_DOMAIN_PATH');
-my $DATM_MODE       = $nmlgen->get_xmlvar('DATM_MODE');
-my $DATM_PRESAERO   = $nmlgen->get_xmlvar('DATM_PRESAERO');
-my $DATM_TOPO       = $nmlgen->get_xmlvar('DATM_TOPO');
-my $DATM_CO2_TSERIES= $nmlgen->get_xmlvar('DATM_CO2_TSERIES');
-my $ATM_GRID        = $nmlgen->get_xmlvar('ATM_GRID');
-my $GRID            = $nmlgen->get_xmlvar('GRID');
-my $CLM_USRDAT_NAME = $nmlgen->get_xmlvar('CLM_USRDAT_NAME');
+logger = logging.getLogger(__name__)
 
-if ( $DATM_MODE =~ /CLM/ && $DATM_PRESAERO eq "none" ) {
-   die "A DATM_MODE for CLM is incompatible with DATM_PRESAERO=none\n";
-}
-if ( $DATM_MODE =~ /CLM/ && $DATM_TOPO eq "none" ) {
-   die "A DATM_MODE for CLM is incompatible with DATM_TOPO=none\n";
-}
-if ( $GRID eq "CLM_USRDAT" && $CLM_USRDAT_NAME =~ /^(UNSET|)$/ ) {
-    die "** GRID=CLM_USRDAT and CLM_USRDAT_NAME is NOT set  **";
-}
+COMPONENT = 'datm'
 
-my $var = "DATM_MODE"; 
-my $value = $nmlgen->get_xmlvar($var);
-$nmlgen->set_variable_value($var, "\'$value\'" );
+# Yes this is a long function, but for now just live with it.
+# pylint: disable=too-many-arguments,too-many-locals,too-many-branches,too-many-statements
+def build_namelist(case, confdir, inst_string, infiles, definition_files,
+                   defaults_files):
+    """Write out the namelist for this component.
 
-my $var= "DATM_PRESAERO";
-my $value = $nmlgen->get_xmlvar($var);
-$nmlgen->set_variable_value($var, "\'$value\'" );
+    Most arguments are the same as those for `NamelistGenerator`. The
+    `inst_string` argument is used as a suffix to distinguish files for
+    different instances. The `confdir` argument is used to specify the directory
+    in which output files will be placed.
+    """
 
-print "DATM mode is $DATM_MODE \n"; 
-print "DATM grid is $ATM_GRID \n";
-print "DATM presaero mode is $DATM_PRESAERO \n"; 
-print "DATM topo mode is $DATM_TOPO \n"; 
+    # Get a bunch of information from the case.
+    din_loc_root = case.get_value("DIN_LOC_ROOT")
+    atm_domain_file = case.get_value("ATM_DOMAIN_FILE")
+    atm_domain_path = case.get_value("ATM_DOMAIN_PATH")
+    datm_mode = case.get_value("DATM_MODE")
+    datm_presaero = case.get_value("DATM_PRESAERO")
+    datm_topo = case.get_value("DATM_TOPO")
+    datm_co2_tseries = case.get_value("DATM_CO2_TSERIES")
+    atm_grid = case.get_value("ATM_GRID")
+    grid = case.get_value("GRID")
+    clm_usrdat_name = case.get_value("CLM_USRDAT_NAME")
 
-#-------------------------------------------
-# Determine hash for parsing default_namelist_datm.xml
-#-------------------------------------------
+    # Check for incompatible options.
+    if "CLM" in datm_mode:
+        expect(datm_presaero != "none",
+               "A DATM_MODE for CLM is incompatible with DATM_PRESAERO=none.")
+        expect(datm_topo != "none",
+               "A DATM_MODE for CLM is incompatible with DATM_TOPO=none.")
+    expect(grid != "CLM_USRDAT" or clm_usrdat_name in ("", "UNSET"),
+           "GRID=CLM_USRDAT and CLM_USRDAT_NAME is NOT set.")
 
-my %namelist_opts;
-$namelist_opts{'grid'}             = $GRID;
-$namelist_opts{'atm_grid'}         = $ATM_GRID;
-$namelist_opts{'datm_mode'}        = $DATM_MODE;
-$namelist_opts{'presaero_mode'}    = $DATM_PRESAERO;
-$namelist_opts{'datm_co2_tseries'} = $DATM_CO2_TSERIES;
-if ($DATM_PRESAERO ne 'none') {
-    $namelist_opts{'presaero_flag'} = "active";
-} else {
-    $namelist_opts{'presaero_flag'} = "none";
-}
+    # Log some settings.
+    logger.info("DATM mode is %s", datm_mode)
+    logger.info("DATM grid is %s", atm_grid)
+    logger.info("DATM presaero mode is %s", datm_presaero)
+    logger.info("DATM topo mode is %s", datm_topo)
 
-#-------------------------------------------
-# Determine streams
-#-------------------------------------------
+    # Create configuration information.
+    config = {}
+    config['grid'] = grid
+    config['atm_grid'] = atm_grid
+    config['datm_mode'] = datm_mode
+    config['datm_presaero'] = datm_presaero
+    config['datm_co2_tseries'] = datm_co2_tseries
+    if datm_presaero == 'none':
+        config['presaero_flag'] = "none"
+    else:
+        config['presaero_flag'] = "active"
 
-my @streams = $nmlgen->get_streams(\%namelist_opts );
-if ($DATM_PRESAERO ne "none") {
-    if ($DATM_PRESAERO eq "pt1_pt1") {
-	push (@streams, "presaero.$DATM_PRESAERO.$ATM_GRID");
-    } else {
-	push (@streams, "presaero.$DATM_PRESAERO");
-    }
- }
-if ($DATM_TOPO ne "none") {
-   push (@streams, "topo.$DATM_TOPO");
-}
-if ($DATM_CO2_TSERIES ne "none") {
-    push (@streams, "co2tseries.$DATM_CO2_TSERIES");
-}
+    # Construct the namelist generator.
+    nmlgen = NamelistGenerator(case, infiles, definition_files, defaults_files,
+                               config)
 
-# Check for bias correction streams
-my $bias_correct = $nmlgen->get_value( 'bias_correct' );
-if ( $bias_correct ) {
-    push (@streams, $bias_correct); #from namelist_defaults_datm.xml
-}
+    # Construct the list of streams.
+    streams = nmlgen.get_streams()
+    if datm_presaero == "pt1_pt1":
+        streams.append("presaero.%s.%s" % (datm_presaero, atm_grid))
+    elif datm_presaero != "none":
+        streams.append("presaero.%s" % datm_presaero)
+    if datm_topo != "none":
+        streams.append("topo.%s" % datm_topo)
+    if datm_co2_tseries != "none":
+        streams.append("co2tseries.%s" % datm_co2_tseries)
+    # Add bias correction stream if given in namelist.
+    bias_correct = nmlgen.get_value("bias_correct")
+    streams.append(bias_correct)
+    # Add all anomaly forcing streams given in namelist.
+    anomaly_forcing = nmlgen.get_value("anomaly_forcing")
+    streams += anomaly_forcing
 
-# Check for anomaly forcing streams
-my $anomaly_forcing = $nmlgen->get_value( 'anomoly forcing' );
-my @anomaly_forcing = split ",", $anomaly_forcing, -1;
-if ( @anomaly_forcing ) {
-    push (@streams, @anomaly_forcing);
-}
+    # Clear out old data.
+    data_list_path = os.path.join(case.get_case_root(), "Buildconf",
+                                  "datm.input_data_list")
+    if os.path.exists(data_list_path):
+        os.remove(data_list_path)
+    # For each stream, create stream text file and update input data list.
+    for stream in streams:
+        # Ignore null values.
+        if stream is None or stream in ("NULL", ""):
+            continue
+        if "presaero" in stream:
+            if datm_presaero == "none":
+                # Ignore aerosol streams when they are disabled.
+                continue
+            config = {'ispresaerostream': 'TRUE'}
+        else:
+            config = {'ispresaerostream': 'FALSE'}
+        inst_stream = stream + inst_string
+        logger.info("DATM stream is %s", inst_stream)
+        stream_path = os.path.join(confdir,
+                                   "datm.streams.txt." + inst_stream)
+        user_stream_path = os.path.join(case.get_case_root(),
+                                        "user_datm.streams.txt." + inst_stream)
+        # Use the user's stream file, or create one if necessary.
+        if os.path.exists(user_stream_path):
+            shutil.copyfile(user_stream_path, stream_path)
+        else:
+            nmlgen.create_stream_file(config, stream, stream_path,
+                                      data_list_path)
 
-#-------------------------------------------
-# For each stream, create stream text file and update input data list
-#-------------------------------------------
+    # Create `shr_strdata_nml` namelist group.
+    atm_full_domain_path = os.path.join(atm_domain_path, atm_domain_file)
+    nmlgen.create_shr_strdata_nml(domain_file_path=atm_full_domain_path)
+    # This is specific to datm.
+    nmlgen.add_default("vectors")
 
-my $fh_out = new IO::File;
-$fh_out->open(">$caseroot/Buildconf/datm.input_data_list") or
-    die "** can't open filepath file: datm.input_data_list\n";
+    # Create `datm_nml` namelist group.
+    nmlgen.add_default("iradsw")
+    if datm_mode.startswith("CORE"):
+        factorfn = "atm/datm7/CORE2/COREv2.correction_factors.T62.121007.nc"
+        nmlgen.add_default("factorfn", os.path.join(din_loc_root, factorfn))
+    presaero = ".false." if datm_presaero == "none" else ".true."
+    nmlgen.add_default("presaero", value=presaero)
+    # Should the following be in the namelist definitions file instead of here?
+    nmlgen.add_default("decomp", "1d")
+    nmlgen.add_default("force_prognostic_true", ".false.")
+    nmlgen.add_default("restfilm", "undefined")
+    nmlgen.add_default("restfils", "undefined")
 
-foreach my $stream ( @streams ) {
-    if ($stream eq "NULL") {
-	next;
-    }
-    if ($stream eq "presaero" && $DATM_PRESAERO eq "none" ) {
-	# Skip there is no prescribed aerosol stream
-	next;
-    }
-    print "DATM stream is $stream$inst_string \n";
+    # Create `modelio` namelist group.
+    nmlgen.add_default("logfile", "atm.log")
 
-    # Create hash needed to parse namelist_defaults.xml file
-    $namelist_opts{'stream'} = $stream;
-    if ( $stream =~ /presaero/ ) {
-	$namelist_opts{'ispresaerostream'} = "TRUE";
-    } else {
-	$namelist_opts{'ispresaerostream'} = "FALSE";
-    }
+    # Finally, write out all the namelists.
+    namelist_file = os.path.join(confdir, COMPONENT+"_in")
+    modelio_file = os.path.join(confdir, "atm_modelio.nml")
+    nmlgen.write_output_files(namelist_file, modelio_file, data_list_path)
 
-    # Determine stream txt file and update the streams_namelists hash for the new stream
-    my $outstream = "datm.streams.txt" . ".$stream" . "$inst_string";
-    $nmlgen->create_stream_file(\%namelist_opts, $stream, $outstream, $fh_out);
-}
+# pylint: enable=too-many-arguments,too-many-locals,too-many-branches,too-many-statements
 
-$fh_out->close;
+def _main_func(caseroot, confdir, inst_string, namelist_infiles, user_xml_dir):
+    # Figure out where definition/defaults files are.
+    namelist_xml_dir = os.path.join(CIMEROOT, "components", "data_comps",
+                                    COMPONENT, "bld", "namelist_files")
+    definition_file_basename = "namelist_definition_%s.xml" % COMPONENT
+    definition_files = [os.path.join(namelist_xml_dir, definition_file_basename)]
+    user_definition = os.path.join(user_xml_dir, definition_file_basename)
+    # User definition *replaces* existing definition.
+    if os.path.isfile(user_definition):
+        definition_files = [user_definition]
+    defaults_file_basename = "namelist_defaults_%s.xml" % COMPONENT
+    defaults_files = [os.path.join(namelist_xml_dir, defaults_file_basename)]
+    user_defaults = os.path.join(user_xml_dir, defaults_file_basename)
+    # User defaults *extends* existing defaults.
+    if os.path.isfile(user_defaults):
+        defaults_files.append(user_defaults)
+    for file_ in definition_files + defaults_files:
+        expect(os.path.isfile(file_),
+               "Namelist XML file %s not found!" % file_)
+    # Split apart input file names.
+    if namelist_infiles == '':
+        infiles = []
+    else:
+        infiles = namelist_infiles.split(',')
+    # Now build the namelist.
+    with Case(caseroot) as case:
+        build_namelist(case, confdir, inst_string, infiles,
+                       definition_files, defaults_files)
 
-#-------------------------------------------
-# namelist group: shr_strdata_nml 
-#-------------------------------------------
-
-$nmlgen->create_shr_strdata_nml(\%namelist_opts, "${ATM_DOMAIN_PATH}/${ATM_DOMAIN_FILE}" );
-
-#-------------------------------------------
-# namelist group: datm_nml 
-#-------------------------------------------
-
-$nmlgen->add_default('iradsw');
-
-if ($DATM_MODE =~ /^CORE/) {
-    my $factorfn = "$DIN_LOC_ROOT/atm/datm7/CORE2/COREv2.correction_factors.T62.121007.nc";
-    $nmlgen->add_default('factorfn', "$factorfn" );
-}
-if ($DATM_PRESAERO eq "none" ) {
-    $nmlgen->add_default('presaero', '.false.');
-} else {
-    $nmlgen->add_default('presaero', '.true.');
-}
-
-$nmlgen->add_default('decomp', '1d');
-$nmlgen->add_default('force_prognostic_true', '.false.');
-$nmlgen->add_default('restfilm',  'undefined');
-$nmlgen->add_default('restfils',  'undefined');
-
-#-------------------------------------------
-# Write output files
-#-------------------------------------------
-
-$nmlgen->write_output_files('atm');
-
-
+if __name__ == "__main__":
+    # Arguments expected from the buildnml script.
+    CASEROOT = sys.argv[1]
+    # This is passed in, but ignore it, since we require CIMEROOT to be set in
+    # the environment.
+    # CIMEROOT = sys.argv[2]
+    CONFDIR = sys.argv[3]
+    INST_STRING = sys.argv[4]
+    NAMELIST_INFILES = sys.argv[5]
+    USER_XML_DIR = sys.argv[6]
+    _main_func(CASEROOT, CONFDIR, INST_STRING, NAMELIST_INFILES, USER_XML_DIR)

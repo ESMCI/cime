@@ -4,24 +4,85 @@
 
 <namelist_definition>
 
-<!-- =========================================  -->
-<!--- DATM env settings                         -->
-<!-- =========================================  -->
+<!-- ========================================================================================  -->
+<!-- Stream file variables                                                                     -->
+<!-- ========================================================================================  -->
 
-<entry id="DATM_MODE"
-type="char*256"
-category="datm_setting"
-group="datm_env_settings" 
-valid_values="CLM_QIAN,CLM1PT,CLMCRUNCEP,CLMCRUNCEP_V5,CLMGSWP3,CPLHIST3HrWx,CORE2_NYF,CORE2_IAF,COPYALL_NPS_v1,COPYALL_CORE2_v1,WW3,NLDAS">
-Data Model mode to process forcing data
+<entry id="streamslist"
+type="char*1024(100)"
+category="streams"
+group="streams_file">
+List of streams used for the given datm_mode.
 </entry>
 
-<entry id="DATM_PRESAERO"
-type="char*256"
-category="datm_setting"
-group="datm_env_settings"
-valid_values="none,pt1_pt1,clim_2000,clim_1850,trans_1850-2000,rcp2.6,rcp4.5,rcp6.0,rcp8.5">
-Prescribed aerosol mode
+<entry id="strm_domdir"
+type="char*4096"
+category="streams"
+group="streams_file">
+Stream domain file directory.
+</entry>
+
+<entry id="strm_domfil"
+type="char*4096"
+category="streams"
+group="streams_file">
+Stream domain file path(s).
+</entry>
+
+<entry id="strm_domvar"
+type="char*4096"
+category="streams"
+group="streams_file">
+Stream domain variable name(s).
+</entry>
+
+<entry id="strm_datdir"
+type="char*4096"
+category="streams"
+group="streams_file">
+Stream data file directory.
+</entry>
+
+<entry id="strm_datfil"
+type="char*4096"
+category="streams"
+group="streams_file">
+Stream data file path(s).
+</entry>
+
+<entry id="strm_datvar"
+type="char*4096"
+category="streams"
+group="streams_file">
+Stream data variable name(s).
+</entry>
+
+<entry id="strm_offset"
+type="integer"
+category="streams"
+group="streams_file">
+Stream offset.
+</entry>
+
+<entry id="strm_year_align"
+type="integer"
+category="streams"
+group="streams_file">
+Simulation year to align stream to.
+</entry>
+
+<entry id="strm_year_start"
+type="integer"
+category="streams"
+group="streams_file">
+First year of stream.
+</entry>
+
+<entry id="strm_year_end"
+type="integer"
+category="streams"
+group="streams_file">
+Last year of stream.
 </entry>
 
 <!-- ========================================================================================  -->
