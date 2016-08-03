@@ -7,6 +7,7 @@ The public interface consists of the following functions:
 - `fortran_namelist_base_value`
 - `is_valid_fortran_name`
 - `is_valid_fortran_namelist_literal`
+- `merge_literal_lists`
 - `parse`
 - `string_to_character_literal`
 
@@ -558,7 +559,7 @@ def compress_literal_list(literals):
     return compressed
 
 
-def _merge_literal_lists(default, overwrite):
+def merge_literal_lists(default, overwrite):
     """Merge two lists of literal value strings.
 
     The `overwrite` values have higher precedence, so will overwrite the
@@ -566,21 +567,21 @@ def _merge_literal_lists(default, overwrite):
     shorter than `default` (and thus implicitly ends in null values), the
     elements of `default` will be used where `overwrite` is null.
 
-    >>> _merge_literal_lists([], [])
+    >>> merge_literal_lists([], [])
     []
-    >>> _merge_literal_lists(['true'], ['false'])
+    >>> merge_literal_lists(['true'], ['false'])
     ['false']
-    >>> _merge_literal_lists([], ['false'])
+    >>> merge_literal_lists([], ['false'])
     ['false']
-    >>> _merge_literal_lists(['true'], [''])
+    >>> merge_literal_lists(['true'], [''])
     ['true']
-    >>> _merge_literal_lists([], [''])
+    >>> merge_literal_lists([], [''])
     ['']
-    >>> _merge_literal_lists(['true'], [])
+    >>> merge_literal_lists(['true'], [])
     ['true']
-    >>> _merge_literal_lists(['true'], [])
+    >>> merge_literal_lists(['true'], [])
     ['true']
-    >>> _merge_literal_lists(['3*false', '3*true'], ['true', '4*', 'false'])
+    >>> merge_literal_lists(['3*false', '3*true'], ['true', '4*', 'false'])
     ['true', '2*false', '2*true', 'false']
     """
     merged = []
@@ -862,9 +863,9 @@ class Namelist(object):
                 self_val = self.get_variable_value(group_name, variable_name)
                 other_val = other.get_variable_value(group_name, variable_name)
                 if overwrite:
-                    merged_val = _merge_literal_lists(self_val, other_val)
+                    merged_val = merge_literal_lists(self_val, other_val)
                 else:
-                    merged_val = _merge_literal_lists(other_val, self_val)
+                    merged_val = merge_literal_lists(other_val, self_val)
                 self.set_variable_value(group_name, variable_name, merged_val)
 
     def write(self, out_file, groups=None, append=False, format_='nml'):
@@ -1737,12 +1738,12 @@ class _NamelistParser(object): # pylint:disable=too-few-public-methods
             name, values = self._parse_name_and_values()
             if self._groupless:
                 if name in self._settings:
-                    values = _merge_literal_lists(self._settings[name], values)
+                    values = merge_literal_lists(self._settings[name], values)
                 self._settings[name] = values
             else:
                 group = self._settings[group_name]
                 if name in group:
-                    values = _merge_literal_lists(group[name], values)
+                    values = merge_literal_lists(group[name], values)
                 group[name] = values
 
     def parse_namelist(self):
@@ -1788,7 +1789,7 @@ class _NamelistParser(object): # pylint:disable=too-few-public-methods
             while self._pos < self._len:
                 name, values = self._parse_name_and_values(allow_eof_end=True)
                 if name in self._settings:
-                    values = _merge_literal_lists(self._settings[name], values)
+                    values = merge_literal_lists(self._settings[name], values)
                 self._settings[name] = values
             return self._settings
         # Loop over namelist groups in the file.
