@@ -792,7 +792,6 @@ sub _set_mpi_library
 	    $mpilib = "mpi-serial";
 	}else{
 	    my $compiler = $config->get('COMPILER');
-	    $mpilib = "openmpi" if($compiler eq "nag");
         }
     }
     if ( $mpilib =~ 'default' || $mpilib =~ m/^\s*$/ ) {
