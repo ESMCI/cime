@@ -7,6 +7,7 @@ The public interface consists of the following functions:
 - `fortran_namelist_base_value`
 - `is_valid_fortran_name`
 - `is_valid_fortran_namelist_literal`
+- `literal_to_python_value`
 - `merge_literal_lists`
 - `parse`
 - `string_to_character_literal`
@@ -493,13 +494,111 @@ def is_valid_fortran_namelist_literal(type_, string):
     True
     """
     expect(type_ in FORTRAN_LITERAL_REGEXES,
-           "Invalid Fortran type for a namelist: %s" % type_)
+           "Invalid Fortran type for a namelist: %r" % str(type_))
     # Strip off whitespace and repetition.
     string = fortran_namelist_base_value(string)
     # Null values are always allowed.
     if string == '':
         return True
     return FORTRAN_LITERAL_REGEXES[type_].search(string) is not None
+
+
+def literal_to_python_value(literal, type_=None):
+    r"""Convert a Fortran literal string to a Python value.
+
+    This function assumes that the input contains a single value, i.e.
+    repetition syntax is not used. The type can be specified by passing a string
+    as the `type_` argument, or if this option is not provided, this function
+    will attempt to autodetect the variable type.
+
+    Note that it is not possible to be certain whether a literal like "123" is
+    intended to represent an integer or a floating-point value, however, nor can
+    we be certain of the precision that will be used to hold this value in
+    actual Fortran code. We also cannot use the optional information in a NaN
+    float, so this will cause the function to throw an error if that information
+    is present (e.g. a string like "NAN(1234)" will cause an error).
+
+    The Python type of the return value is as follows for different `type_`
+    arguments:
+    "character" - `str`
+    "complex" - `complex`
+    "integer" - `int`
+    "logical" - `bool`
+    "real" - `float`
+
+    If a null value is input (i.e. the empty string), `None` will be returned.
+
+    >>> literal_to_python_value("'She''s a winner!'")
+    "She's a winner!"
+    >>> literal_to_python_value("1")
+    1
+    >>> literal_to_python_value("1.")
+    1.0
+    >>> literal_to_python_value(" (\n 1. , 2. )\n ")
+    (1+2j)
+    >>> literal_to_python_value(".true.")
+    True
+    >>> literal_to_python_value("Fortune")
+    False
+    >>> literal_to_python_value("bacon")
+    Traceback (most recent call last):
+    ...
+    SystemExit: ERROR: 'bacon' is not a valid literal for any Fortran type.
+    >>> literal_to_python_value("1", type_="real")
+    1.0
+    >>> literal_to_python_value("bacon", type_="logical")
+    Traceback (most recent call last):
+    ...
+    SystemExit: ERROR: 'bacon' is not a valid literal of type 'logical'.
+    >>> literal_to_python_value("1", type_="booga")
+    Traceback (most recent call last):
+    ...
+    SystemExit: ERROR: Invalid Fortran type for a namelist: 'booga'
+    >>> literal_to_python_value("2*1")
+    Traceback (most recent call last):
+    ...
+    SystemExit: ERROR: Cannot use repetition syntax in literal_to_python_value
+    >>> literal_to_python_value("")
+    >>> literal_to_python_value("-1.D+10")
+    -10000000000.0
+    >>> literal_to_python_value("nan(1234)")
+    Traceback (most recent call last):
+    ...
+    ValueError: invalid literal for float(): nan(1234)
+    """
+    expect(FORTRAN_REPEAT_PREFIX_REGEX.search(literal) is None,
+           "Cannot use repetition syntax in literal_to_python_value")
+    # Handle null value.
+    if fortran_namelist_base_value(literal) == '':
+        return None
+    if type_ is None:
+        # Autodetect type.
+        for test_type in ('character', 'complex', 'integer', 'logical', 'real'):
+            if is_valid_fortran_namelist_literal(test_type, literal):
+                type_ = test_type
+                break
+        expect(type_ is not None,
+               "%r is not a valid literal for any Fortran type." % str(literal))
+    else:
+        # Check that type is valid.
+        expect(is_valid_fortran_namelist_literal(type_, literal),
+               "%r is not a valid literal of type %r." %
+               (str(literal), str(type_)))
+    # Conversion for each type.
+    if type_ == 'character':
+        return character_literal_to_string(literal)
+    elif type_ == 'complex':
+        literal = literal.lstrip(' \n(').rstrip(' \n)')
+        real_part, comma, imag_part = literal.partition(',')
+        return complex(float(real_part), float(imag_part))
+    elif type_ == 'integer':
+        return int(literal)
+    elif type_ == 'logical':
+        literal = literal.lstrip(' \n.')
+        return literal[0] in 'tT'
+    elif type_ == 'real':
+        literal = literal.lower().replace('d', 'e')
+        return float(literal)
 
 
 def expand_literal_list(literals):
