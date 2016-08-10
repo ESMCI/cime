@@ -69,9 +69,11 @@ def literal_list_to_dict(literals):
     literal_dict = {}
     for literal in literals:
         scalar = literal_to_python_value(literal, type_="character")
-        if scalar.strip() == '':
+        if scalar is None:
             continue
-        key, _, value = scalar.partition('->')
+        # Disable no-member, because unlike pylint we know for sure that
+        # `scalar` is a string.
+        key, _, value = scalar.partition('->') #pylint:disable=no-member
         literal_dict[key.strip()] = string_to_character_literal(value.strip())
     return literal_dict
 
