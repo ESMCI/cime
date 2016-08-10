@@ -1,186 +1,11 @@
 import os, re, logging
 
-from CIME.utils  import expect
+from CIME.namelist import expand_literal_list, is_valid_fortran_namelist_literal, \
+    string_to_character_literal, literal_to_python_value, parse
+from CIME.utils import expect
 logger=logging.getLogger(__name__)
 
 # pragma pylint: disable=unsubscriptable-object
-
-###############################################################################
-def parse_namelists(namelist_lines, filename):
-###############################################################################
-    """
-    Return data in form: {namelist -> {key -> value} }.
-      value can be an int, string, list, or dict
-
-    >>> teststr = '''&nml
-    ...   val = 'foo'
-    ...   aval = 'one','two', 'three'
-    ...   maval = 'one', 'two',
-    ...       'three', 'four'
-    ...   dval = 'one->two', 'three -> four'
-    ...   mdval = 'one   -> two',
-    ...           'three -> four',
-    ...           'five -> six'
-    ...   nval = 1850
-    ... /
-    ...
-    ... # Hello
-    ...
-    ...   &nml2
-    ...   val2 = .false.
-    ... /
-    ... '''
-    >>> parse_namelists(teststr.splitlines(), 'foo')
-    {'nml': {'dval': {'three': 'four', 'one': 'two'}, 'val': "'foo'", 'maval': ["'one'", "'two'", "'three'", "'four'"], 'aval': ["'one'", "'two'", "'three'"], 'nval': '1850', 'mdval': {'five': 'six', 'three': 'four', 'one': 'two'}}, 'nml2': {'val2': '.false.'}}
-    >>> parse_namelists('blah', 'foo')
-    Traceback (most recent call last):
-        ...
-    SystemExit: ERROR: File 'foo' does not appear to be a namelist file, skipping
-
-    >>> teststr = '''&nml
-    ... val = 'one', 'two',
-    ... val2 = 'three'
-    ... /'''
-    >>> parse_namelists(teststr.splitlines(), 'foo')
-    Traceback (most recent call last):
-        ...
-    SystemExit: ERROR: In file 'foo', Incomplete multiline variable: 'val'
-
-    >>> teststr = '''&nml
-    ... val = 'one', 'two',
-    ... /'''
-    >>> parse_namelists(teststr.splitlines(), 'foo')
-    Traceback (most recent call last):
-        ...
-    SystemExit: ERROR: In file 'foo', Incomplete multiline variable: 'val'
-
-    >>> teststr = '''&nml
-    ... val = 'one', 'two',
-    ...       'three -> four'
-    ... /'''
-    >>> parse_namelists(teststr.splitlines(), 'foo')
-    Traceback (most recent call last):
-        ...
-    SystemExit: ERROR: In file 'foo', multiline list variable 'val' had dict entries
-    """
-
-    comment_re = re.compile(r'^[#!]')
-    namelist_re = re.compile(r'^&(\S+)$')
-    name_re = re.compile(r"^([^\s=']+)\s*=\s*(.+)$")
-    dict_re = re.compile(r"^'(\S+)\s*->\s*(\S+)'")
-    comma_re = re.compile(r'\s*,\s*')
-
-    rv = {}
-    current_namelist = None
-    multiline_variable = None # (name, value)
-    for line in namelist_lines:
-
-        line = line.strip()
-
-        logger.debug("Parsing line: '%s'" % line)
-
-        if (line == "" or comment_re.match(line)):
-            logger.debug("  Line was whitespace or comment, skipping.")
-            continue
-
-        if (current_namelist is None):
-            # Must start a namelist
-            expect(multiline_variable is None,
-                   "In file '%s', Incomplete multiline variable: '%s'" % (filename, multiline_variable[0] if multiline_variable is not None else ""))
-
-            # Unfornately, other tools were using the old compare_namelists.pl script
-            # to compare files that are not namelist files. We need a special error
-            # to signify this event
-            if (namelist_re.match(line) is None):
-                expect(rv != {},
-                       "File '%s' does not appear to be a namelist file, skipping" % filename)
-                expect(False,
-                       "In file '%s', Line '%s' did not begin a namelist as expected" % (filename, line))
-
-            current_namelist = namelist_re.match(line).groups()[0]
-            expect(current_namelist not in rv,
-                   "In file '%s', Duplicate namelist '%s'" % (filename, current_namelist))
-
-            rv[current_namelist] = {}
-
-            logger.debug("  Starting namelist '%s'" % current_namelist)
-
-        elif (line == "/"):
-            # Ends a namelist
-            logger.debug("  Ending namelist '%s'" % current_namelist)
-
-            expect(multiline_variable is None,
-                   "In file '%s', Incomplete multiline variable: '%s'" % (filename, multiline_variable[0] if multiline_variable is not None else ""))
-
-            current_namelist = None
-
-        elif (name_re.match(line)):
-            # Defining a variable (AKA name)
-            name, value = name_re.match(line).groups()
-
-            logger.debug("  Parsing variable '%s' with data '%s'" % (name, value))
-
-            expect(multiline_variable is None,
-                   "In file '%s', Incomplete multiline variable: '%s'" % (filename, multiline_variable[0] if multiline_variable is not None else ""))
-            expect(name not in rv[current_namelist], "In file '%s', Duplicate name: '%s'" % (filename, name))
-
-            tokens = [item.strip() for item in comma_re.split(value) if item.strip() != ""]
-            if ("->" in value):
-                # dict
-                rv[current_namelist][name] = {}
-                for token in tokens:
-                    m = dict_re.match(token)
-                    expect(m is not None, "In file '%s', Dict entry '%s' does not match expected format" % (filename, token))
-                    k, v = m.groups()
-                    rv[current_namelist][name][k] = v
-                    logger.debug("    Adding dict entry '%s' -> '%s'" % (k, v))
-
-            elif ("," in value):
-                # list
-                rv[current_namelist][name] = tokens
-
-                logger.debug("    Adding list entries: %s" % ", ".join(tokens))
-
-            else:
-                rv[current_namelist][name] = value
-
-                logger.debug("    Setting to value '%s'" % value)
-
-            if (line.endswith(",")):
-                # Value will continue on in subsequent lines
-                multiline_variable = (name, rv[current_namelist][name])
-
-                logger.debug("    Var is multiline...")
-
-        elif (multiline_variable is not None):
-            # Continuation of list or dict variable
-            current_value = multiline_variable[1]
-            logger.debug("  Continuing multiline variable '%s' with data '%s'" % (multiline_variable[0], line))
-            tokens = [item.strip() for item in comma_re.split(line) if item.strip() != ""]
-            if (type(current_value) is list):
-                expect("->" not in line, "In file '%s', multiline list variable '%s' had dict entries" % (filename, multiline_variable[0]))
-                current_value.extend(tokens)
-                logger.debug("    Adding list entries: %s" % ", ".join(tokens))
-            elif (type(current_value) is dict):
-                for token in tokens:
-                    m = dict_re.match(token)
-                    expect(m is not None, "In file '%s', Dict entry '%s' does not match expected format" % (filename, token))
-                    k, v = m.groups()
-                    current_value[k] = v
-                    logger.debug("    Adding dict entry '%s' -> '%s'" % (k, v))
-            else:
-                expect(False, "In file '%s', Continuation should have been for list or dict, instead it was: '%s'" % (filename, type(current_value)))
-
-            if (not line.endswith(",")):
-                # Completed
-                multiline_variable = None
-
-                logger.debug("    Terminating multiline variable")
-
-        else:
-            expect(False, "In file '%s', Unrecognized line: '%s'" % (filename, line))
-
-    return rv
 
 ###############################################################################
 def normalize_string_value(name, value, case):
@@ -190,6 +15,7 @@ def normalize_string_value(name, value, case):
     to diffs, like file paths, etc. This function attempts to normalize that
     data so that it will not cause diffs.
     """
+    value = str(value)
     # Any occurance of case must be normalized because test-ids might not match
     if (case is not None):
         case_re = re.compile(r'%s[.]([GC])[.]([^./\s]+)' % case)
@@ -213,70 +39,100 @@ def normalize_string_value(name, value, case):
         return value
 
 ###############################################################################
+def compare_scalar_values(name, gold_literal, comp_literal, case, do_print):
+###############################################################################
+    norm_gold = literal_to_python_value(gold_literal)
+    norm_comp = literal_to_python_value(comp_literal)
+    if isinstance(norm_gold, str) or isinstance(norm_gold, unicode):
+        norm_gold = normalize_string_value(name, norm_gold, case)
+        norm_comp = normalize_string_value(name, norm_comp, case)
+    equal = norm_gold == norm_comp
+    if do_print and not equal:
+        print "  BASE: %s = %r" % (name, norm_gold)
+        print "  COMP: %s = %r" % (name, norm_comp)
+    return equal
+
+###############################################################################
+def is_dict_like(literals):
+###############################################################################
+    all_empty = True
+    for literal in literals:
+        if literal.strip() != '':
+            all_empty = False
+            if not is_valid_fortran_namelist_literal("character", literal) or '->' not in literal:
+                return False
+    return not all_empty
+
+###############################################################################
+def literal_list_to_dict(literals):
+###############################################################################
+    literal_dict = {}
+    for literal in literals:
+        scalar = literal_to_python_value(literal, type_="character")
+        if scalar.strip() == '':
+            continue
+        key, _, value = scalar.partition('->')
+        literal_dict[key.strip()] = string_to_character_literal(value.strip())
+    return literal_dict
+
+###############################################################################
 def compare_values(name, gold_value, comp_value, case, do_print=False):
 ###############################################################################
     """
     Compare values for a specific variable in a namelist.
     """
-    if (type(gold_value) != type(comp_value)):
-        if do_print:
-            print "  variable '%s' did not have expected type '%s', instead is type '%s'" % \
-                (name, type(gold_value), type(comp_value))
-        return False
-
+    gold_literals = expand_literal_list(gold_value)
+    comp_literals = expand_literal_list(comp_value)
     rv = True
-    if (type(gold_value) is list):
-        # Note, list values remain order sensitive
-        for idx, gold_value_list_item in enumerate(gold_value):
-            if (idx < len(comp_value)):
-                rv &= compare_values("%s list item %d" % (name, idx),
-                                     gold_value_list_item, comp_value[idx], case,
-                                     do_print)
-            else:
-                rv = False
-                if do_print:
-                    print "  list variable '%s' missing value %s" % (name, gold_value_list_item)
 
-        if (len(comp_value) > len(gold_value)):
-            for comp_value_list_item in comp_value[len(gold_value):]:
-                rv = False
-                if do_print:
-                    print "  list variable '%s' has extra value %s" % (name, comp_value_list_item)
-
-    elif (type(gold_value) is dict):
-        for key, gold_value_dict_item in gold_value.iteritems():
-            if (key in comp_value):
-                rv &= compare_values("%s dict item %s" % (name, key),
-                                     gold_value_dict_item, comp_value[key], case,
-                                     do_print)
+    dict_mode = is_dict_like(gold_literals) and is_dict_like(comp_literals)
+    if dict_mode:
+        # Deal with '->' dictionaries-as-arrays.
+        # Convert to dictionaries.
+        gold_dict = literal_list_to_dict(gold_literals)
+        comp_dict = literal_list_to_dict(comp_literals)
+        for key, gold_literal in gold_dict.iteritems():
+            if key in comp_dict:
+                comp_literal = comp_dict[key]
+                rv &= compare_scalar_values("%s dict item %s" % (name, key), gold_literal,
+                                            comp_literal, case, do_print)
             else:
                 rv = False
                 if do_print:
                     print "  dict variable '%s' missing key %s with value %s" \
-                        % (name, key, gold_value_dict_item)
+                        % (name, key, gold_literal)
 
-        for key in comp_value:
-            if (key not in gold_value):
+        for key, comp_literal in comp_dict.iteritems():
+            if key not in gold_dict:
                 rv = False
                 if do_print:
                     print "  dict variable '%s' has extra key %s with value %s" \
-                        % (name, key, comp_value[key])
+                        % (name, key, comp_literal)
+    elif len(gold_literals) > 1 or len(comp_literals) > 1:
+        # Non-dictionary list values.
+        # Note, list values remain order sensitive
+        for idx, gold_literal in enumerate(gold_literals):
+            if idx < len(comp_literals):
+                comp_literal = comp_literals[idx]
+                rv &= compare_scalar_values("%s list item %d" % (name, idx), gold_literal,
+                                            comp_literal, case, do_print)
+            else:
+                rv = False
+                if do_print:
+                    print "  list variable '%s' missing value %s" % (name, gold_literal)
 
+        if len(comp_literals) > len(gold_literals):
+            for comp_literal in comp_literals[len(gold_literals):]:
+                rv = False
+                if do_print:
+                    print "  list variable '%s' has extra value %s" % (name, comp_literal)
     else:
-        expect(type(gold_value) is str, "Unexpected type found: '%s'" % type(gold_value))
-        norm_gold_value = normalize_string_value(name, gold_value, case)
-        norm_comp_value = normalize_string_value(name, comp_value, case)
-
-        if (norm_gold_value != norm_comp_value):
-            rv = False
-            if do_print:
-                print "  BASE: %s = %s" % (name, norm_gold_value)
-                print "  COMP: %s = %s" % (name, norm_comp_value)
-
+        # Scalar values.
+        rv = compare_scalar_values(name, gold_literals[0], comp_literals[0], case, do_print)
     return rv
 
 ###############################################################################
-def compare_namelists(gold_namelists, comp_namelists, case):
+def compare_namelists(gold_namelist, comp_namelist, case):
 ###############################################################################
     """
     Compare two namelists. Print diff information if any. Return true if
@@ -297,7 +153,7 @@ def compare_namelists(gold_namelists, comp_namelists, case):
     ...   val2 = .false.
     ... /
     ... '''
-    >>> compare_namelists(parse_namelists(teststr.splitlines(), 'foo'), parse_namelists(teststr.splitlines(), 'bar'), None)
+    >>> compare_namelists(parse(text=teststr), parse(text=teststr), None)
     True
 
     >>> teststr1 = '''&nml1
@@ -310,7 +166,10 @@ def compare_namelists(gold_namelists, comp_namelists, case):
     ...   val24 = '1 -> 2', '2 -> 3', '3 -> 4'
     ... /
     ... &nml3
-    ...   val3 = .false.
+    ...   val31 = F
+    ...   val32 = 0.2
+    ...   val33 = +025
+    ...   val34 = 2*'bazz'
     ... /'''
     >>> teststr2 = '''&nml01
     ...   val11 = 'foo'
@@ -322,22 +181,22 @@ def compare_namelists(gold_namelists, comp_namelists, case):
     ...   val24 = '1 -> 20', '2 -> 3', '30 -> 4'
     ... /
     ... &nml3
-    ...   val3 = .false.
+    ...   val31 = .false. , val32 = 2.e-1 , val33 = 25, val34 = "bazz", "bazz"
     ... /'''
-    >>> compare_namelists(parse_namelists(teststr1.splitlines(), 'foo'), parse_namelists(teststr2.splitlines(), 'bar'), None)
-    Differences in namelist 'nml2':
+    >>> compare_namelists(parse(text=teststr1), parse(text=teststr2), None)
+    Differences in namelist group 'nml2':
       BASE: val21 = 'foo'
       COMP: val21 = 'foo0'
       BASE: val22 list item 1 = 'bar'
       COMP: val22 list item 1 = 'bar0'
       missing variable: 'val23'
-      BASE: val24 dict item 1 = 2
-      COMP: val24 dict item 1 = 20
-      dict variable 'val24' missing key 3 with value 4
-      dict variable 'val24' has extra key 30 with value 4
+      BASE: val24 dict item 1 = '2'
+      COMP: val24 dict item 1 = '20'
+      dict variable 'val24' missing key 3 with value "4"
+      dict variable 'val24' has extra key 30 with value "4"
       found extra variable: 'val230'
-    Missing namelist: nml1
-    Found extra namelist: nml01
+    Missing namelist group: nml1
+    Found extra namelist group: nml01
     False
 
     >>> teststr1 = '''&rad_cnst_nl
@@ -388,69 +247,78 @@ def compare_namelists(gold_namelists, comp_namelists, case):
     ...   'N:CFC11:CFC11', 'N:CFC12:CFC12', 'M:mam3_mode1:/something/else/inputdata/atm/cam/physprops/mam3_mode1_rrtmg_c110318.nc',
     ...   'M:mam3_mode2:/something/else/inputdata/atm/cam/physprops/mam3_mode2_rrtmg_c110318.nc', 'M:mam3_mode3:/something/else/inputdata/atm/cam/physprops/mam3_mode3_rrtmg_c110318.nc'
     ... /'''
-    >>> compare_namelists(parse_namelists(teststr1.splitlines(), 'foo'), parse_namelists(teststr2.splitlines(), 'bar'), 'ERB.f19_g16.B1850C5.skybridge_intel')
+    >>> compare_namelists(parse(text=teststr1), parse(text=teststr2), 'ERB.f19_g16.B1850C5.skybridge_intel')
     True
     """
     rv = True
 
     # We want to keep lists of differences and print results in a second pass,
     # in order to ensure that the order is not scrambled when we change Python
-    # versions and/or parse_namelists implementation details.
-    # (Would using an ordered dict in parse_namelists be easier?)
-    different_namelists = []
-    missing_namelists = []
-    for namelist, gold_names in gold_namelists.iteritems():
-        if (namelist not in comp_namelists):
+    # versions and/or parse implementation details.
+    gold_groups = gold_namelist.get_group_names()
+    comp_groups = comp_namelist.get_group_names()
+    different_groups = []
+    missing_groups = []
+    for group_name in gold_groups:
+        if (group_name not in comp_groups):
             rv = False
-            missing_namelists.append(namelist)
+            missing_groups.append(group_name)
         else:
-            comp_names = comp_namelists[namelist]
+            gold_names = gold_namelist.get_variable_names(group_name)
+            comp_names = comp_namelist.get_variable_names(group_name)
             namelists_equal = True
-            for name, gold_value in gold_names.iteritems():
-                if (name not in comp_names):
+            for variable_name in gold_names:
+                if (variable_name not in comp_names):
                     namelists_equal = False
                     break
                 else:
-                    comp_value = comp_names[name]
-                    if not compare_values(name, gold_value, comp_value, case):
+                    gold_value = gold_namelist.get_variable_value(group_name,
+                                                                  variable_name)
+                    comp_value = comp_namelist.get_variable_value(group_name,
+                                                                  variable_name)
+                    if not compare_values(variable_name, gold_value, comp_value,
+                                          case):
                         namelists_equal = False
                         break
 
-            for name in comp_names:
-                if (name not in gold_names):
+            for variable_name in comp_names:
+                if (variable_name not in gold_names):
                     namelists_equal = False
                     break
 
             if not namelists_equal:
-                different_namelists.append(namelist)
+                different_groups.append(group_name)
                 rv = False
 
-    for namelist in sorted(different_namelists):
-        print "Differences in namelist '%s':" % namelist
-        gold_names = gold_namelists[namelist]
-        comp_names = comp_namelists[namelist]
-        for name in sorted(gold_names.keys()):
-            if (name not in comp_names):
-                print "  missing variable: '%s'" % name
+    for group_name in sorted(different_groups):
+        print "Differences in namelist group '%s':" % group_name
+        gold_names = gold_namelist.get_variable_names(group_name)
+        comp_names = comp_namelist.get_variable_names(group_name)
+        for variable_name in sorted(gold_names):
+            if (variable_name not in comp_names):
+                print "  missing variable: '%s'" % variable_name
             else:
-                gold_value = gold_names[name]
-                comp_value = comp_names[name]
-                compare_values(name, gold_value, comp_value, case, do_print=True)
-        for name in sorted(comp_names.keys()):
-            if name not in gold_names:
-                print "  found extra variable: '%s'" % name
+                gold_value = gold_namelist.get_variable_value(group_name,
+                                                              variable_name)
+                comp_value = comp_namelist.get_variable_value(group_name,
+                                                              variable_name)
+                compare_values(variable_name, gold_value, comp_value, case,
+                               do_print=True)
+        for variable_name in sorted(comp_names):
+            if variable_name not in gold_names:
+                print "  found extra variable: '%s'" % variable_name
 
-    for namelist in sorted(missing_namelists):
-        print "Missing namelist:", namelist
+    for group_name in sorted(missing_groups):
+        print "Missing namelist group:", group_name
 
-    extra_namelists = []
-    for namelist in comp_namelists:
-        if (namelist not in gold_namelists):
+    extra_groups = []
+    for group_name in comp_groups:
+        if (group_name not in gold_groups):
             rv = False
-            extra_namelists.append(namelist)
+            extra_groups.append(group_name)
 
-    for namelist in sorted(extra_namelists):
-        print "Found extra namelist:", namelist
+    for group_name in sorted(extra_groups):
+        print "Found extra namelist group:", group_name
 
     return rv
 
@@ -460,18 +328,18 @@ def compare_namelist_files(gold_file, compare_file, case=None):
     expect(os.path.exists(gold_file), "File not found: %s" % gold_file)
     expect(os.path.exists(compare_file), "File not found: %s" % compare_file)
 
-    gold_namelists = parse_namelists(open(gold_file, "r").readlines(), gold_file)
-    comp_namelists = parse_namelists(open(compare_file, "r").readlines(), compare_file)
+    gold_namelist = parse(in_file=gold_file)
+    comp_namelist = parse(in_file=compare_file)
 
-    return compare_namelists(gold_namelists, comp_namelists, case)
+    return compare_namelists(gold_namelist, comp_namelist, case)
 
 ###############################################################################
 def is_namelist_file(file_path):
 ###############################################################################
     try:
-        compare_namelist_files(file_path, file_path)
+        parse(in_file=file_path)
     except SystemExit as e:
-        assert "does not appear to be a namelist file" in str(e), str(e)
+        assert "Unexpected end of file encountered in namelist." in str(e) or \
+            "Error in parsing namelist" in str(e), str(e)
         return False
     return True
-
