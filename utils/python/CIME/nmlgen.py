@@ -436,8 +436,8 @@ class NamelistGenerator(object):
                "Stream %s starts at year %d, but ends at earlier year %d." %
                (stream, year_start, year_end))
         # Add to streams file.
-        stream_string = "%s %d %d %d" % (stream_path, year_align, year_start,
-                                         year_end)
+        stream_string = "%s %d %d %d" % (os.path.basename(stream_path),
+                                         year_align, year_start, year_end)
         self._streams_namelists["streams"].append(stream_string)
         for variable in self._streams_variables:
             default = self.get_default(variable, config)
