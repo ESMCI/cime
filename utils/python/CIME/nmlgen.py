@@ -407,12 +407,16 @@ class NamelistGenerator(object):
         with open(stream_path, 'w') as stream_file:
             stream_file.write(stream_file_text)
         with open(data_list_path, 'a') as input_data_list:
-            for i, filename in enumerate(domain_filenames):
-                filepath = os.path.join(domain_filepath, filename)
-                input_data_list.write("domain%d = %s" % (i+1, filepath))
-            for i, filename in enumerate(data_filenames):
-                filepath = os.path.join(data_filepath, filename)
-                input_data_list.write("file%d = %s" % (i+1, filepath))
+            for i, filename in enumerate(domain_filenames.split("\n")):
+                if filename.strip() == '':
+                    continue
+                filepath = os.path.join(domain_filepath, filename.strip())
+                input_data_list.write("domain%d = %s\n" % (i+1, filepath))
+            for i, filename in enumerate(data_filenames.split("\n")):
+                if filename.strip() == '':
+                    continue
+                filepath = os.path.join(data_filepath, filename.strip())
+                input_data_list.write("file%d = %s\n" % (i+1, filepath))
         self.update_streams_namelists(config, stream, stream_path)
 
     def update_streams_namelists(self, config, stream, stream_path):
