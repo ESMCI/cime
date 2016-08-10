@@ -589,7 +589,7 @@ def literal_to_python_value(literal, type_=None):
         return character_literal_to_string(literal)
     elif type_ == 'complex':
         literal = literal.lstrip(' \n(').rstrip(' \n)')
-        real_part, comma, imag_part = literal.partition(',')
+        real_part, _, imag_part = literal.partition(',')
         return complex(float(real_part), float(imag_part))
     elif type_ == 'integer':
         return int(literal)
