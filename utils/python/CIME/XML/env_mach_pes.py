@@ -1,22 +1,20 @@
 """
-Interface to the env_mach_pes.xml file.  This class inherits from EnvBase
+Interface to the env_mach_pes.xml file.  This class inherits from EntryID
 """
 from CIME.XML.standard_module_setup import *
 
-from CIME.XML.env_base import EnvBase
+from CIME.XML.entry_id import EntryID
 
 logger = logging.getLogger(__name__)
 
-class EnvMachPes(EnvBase):
+class EnvMachPes(EntryID):
 
-    def __init__(self, case_root=None, infile="env_mach_pes.xml"):
-        """
-        initialize an object interface to file env_mach_pes.xml in the case directory
-        """
-        EnvBase.__init__(self, case_root, infile)
+    @staticmethod
+    def constructEnvMachPes(case_root, infile = "env_mach_pes.xml"):
+        return EnvMachPes.construct(case_root, infile)
 
     def get_value(self, vid, attribute=None, resolved=True, subgroup=None):
-        value = EnvBase.get_value(self, vid, attribute, resolved, subgroup)
+        value = EntryID.get_value(self, vid, attribute, resolved, subgroup)
         if "NTASKS" in vid and value < 0:
             value = -1*value*self.get_value("PES_PER_NODE")
         if "NTHRDS" in vid and value < 0:
@@ -38,5 +36,5 @@ class EnvMachPes(EnvBase):
             value = -1*value*self.get_value("PES_PER_NODE")
         if "ROOTPE" in vid and value < 0:
             value = -1*value*self.get_value("PES_PER_NODE")
-        val = EnvBase._set_value(self, node, value, vid, subgroup, ignore_type)
+        val = EntryID._set_value(self, node, value, vid, subgroup, ignore_type)
         return val

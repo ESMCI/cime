@@ -19,12 +19,10 @@ from CIME.XML.grids                 import Grids
 from CIME.XML.batch                 import Batch
 from CIME.XML.pio                   import PIO
 
+from CIME.XML.entry_id              import EntryID
 from CIME.XML.env_test              import EnvTest
 from CIME.XML.env_mach_specific     import EnvMachSpecific
-from CIME.XML.env_case              import EnvCase
 from CIME.XML.env_mach_pes          import EnvMachPes
-from CIME.XML.env_build             import EnvBuild
-from CIME.XML.env_run               import EnvRun
 from CIME.XML.env_archive           import EnvArchive
 from CIME.XML.env_batch             import EnvBatch
 
@@ -120,15 +118,15 @@ class Case(object):
             expect(False,"Object(s) %s seem to have newer data than the corresponding case file"%files)
 
         self._env_entryid_files = []
-        self._env_entryid_files.append(EnvRun(self._caseroot))
-        self._env_entryid_files.append(EnvBuild(self._caseroot))
-        self._env_entryid_files.append(EnvMachPes(self._caseroot))
-        self._env_entryid_files.append(EnvCase(self._caseroot))
-        self._env_entryid_files.append(EnvBatch(self._caseroot))
+        self._env_entryid_files.append(EntryID.constructEnvRun(self._caseroot))
+        self._env_entryid_files.append(EntryID.constructEnvBuild(self._caseroot))
+        self._env_entryid_files.append(EnvMachPes.constructEnvMachPes(self._caseroot))
+        self._env_entryid_files.append(EntryID.constructEnvCase(self._caseroot))
+        self._env_entryid_files.append(EnvBatch.constructEnvBatch(self._caseroot))
         if os.path.isfile(os.path.join(self._caseroot,"env_test.xml")):
-            self._env_entryid_files.append(EnvTest(self._caseroot))
+            self._env_entryid_files.append(EnvTest.constructEnvTest(self._caseroot))
         self._env_generic_files = []
-        self._env_generic_files.append(EnvMachSpecific(self._caseroot))
+        self._env_generic_files.append(EnvMachSpecific.constructEnvMachSpecific(self._caseroot))
         self._env_generic_files.append(EnvArchive(self._caseroot))
         self._files = self._env_entryid_files + self._env_generic_files
 

@@ -17,6 +17,42 @@ class EntryID(GenericXML):
         GenericXML.__init__(self, infile)
         self.groups={}
 
+    # Use factory methods to create basic types of entryids
+    @staticmethod
+    def _get_fullpath(case_root, infile):
+        if os.path.isabs(infile):
+            fullpath = infile
+        else:
+            if case_root is None:
+                case_root = os.getcwd()
+            fullpath = os.path.join(case_root, infile)
+        return fullpath
+
+    @classmethod
+    def construct(cls, case_root, infile):
+        fullpath = cls._get_fullpath(case_root, infile)
+        env = cls(fullpath)
+        env.fullpath = fullpath
+        if not os.path.isfile(fullpath):
+            from CIME.XML.headers import Headers
+            headerobj = Headers()
+            headernode = headerobj.get_header_node(
+                os.path.basename(fullpath)) 
+            env.root.append(headernode)
+        return env
+
+    @staticmethod
+    def constructEnvRun(case_root, infile = "env_run.xml"):
+        return EntryID.construct(case_root, infile)
+
+    @staticmethod
+    def constructEnvBuild(case_root, infile = "env_run.xml"):
+        return EntryID.construct(case_root, infile)
+
+    @staticmethod
+    def constructEnvCase(case_root, infile = "env_run.xml"):
+        return EntryID.construct(case_root, infile)
+
     def get_default_value(self, node, attributes=None):
         """
         Set the value of an entry to the default value for that entry
@@ -260,7 +296,6 @@ class EntryID(GenericXML):
                     file_   = self.filename
                 except AttributeError:
                     logger.debug("Can't call filename on %s (%s)" , self , self.__class__.__name__ )
-                #t   =  super(EnvBase , self).get_type( node )
                 v = { 'group' : g , 'attribute' : attr , 'value' : val , 'type' : t , 'description' : desc , 'default' : default , 'file' : file_}
 
                 results.append(v)
