@@ -413,7 +413,7 @@ class TestScheduler(object):
 
         # Create, fill and write an envtest object
         test_dir = self._get_test_dir(test)
-        envtest = EnvTest(test_dir)
+        envtest = EnvTest.constructEnvTest(test_dir)
 
         # Determine list of component classes that this coupler/driver knows how
         # to deal with. This list follows the same order as compset longnames follow.
