@@ -3,7 +3,7 @@ Base class for CIME system tests
 """
 import shutil, glob, gzip, time
 from CIME.XML.standard_module_setup import *
-from CIME.XML.env_run import EnvRun
+from CIME.XML.entry_id import EntryID
 from CIME.utils import append_status
 from CIME.case_setup import case_setup
 from CIME.case_run import case_run
@@ -292,8 +292,8 @@ class SystemTestsCommon(object):
                     self._test_status.set_status(MEMLEAK_PHASE, TEST_FAIL_STATUS, comments=comment)
 
     def compare_env_run(self, expected=None):
-        f1obj = EnvRun(self._caseroot, "env_run.xml")
-        f2obj = EnvRun(self._caseroot, os.path.join("LockedFiles", "env_run.orig.xml"))
+        f1obj = EntryID.constructEnvRun(self._caseroot, "env_run.xml")
+        f2obj = EntryID.constructEnvRun(self._caseroot, os.path.join("LockedFiles", "env_run.orig.xml"))
         diffs = f1obj.compare_xml(f2obj)
         for key in diffs.keys():
             if expected is not None and key in expected:

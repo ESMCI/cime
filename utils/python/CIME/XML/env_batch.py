@@ -1,12 +1,12 @@
 """
-Interface to the env_batch.xml file.  This class inherits from EnvBase
+Interface to the env_batch.xml file.  This class inherits from EntryID
 """
 import stat
 import time
 from CIME.XML.standard_module_setup import *
 from CIME.task_maker import TaskMaker
 from CIME.utils import convert_to_type
-from CIME.XML.env_base import EnvBase
+from CIME.XML.entry_id import EntryID
 from CIME.utils import transform_vars, get_cime_root
 from copy import deepcopy
 
@@ -16,15 +16,19 @@ logger = logging.getLogger(__name__)
 
 # pragma pylint: disable=attribute-defined-outside-init
 
-class EnvBatch(EnvBase):
+class EnvBatch(EntryID):
 
-    def __init__(self, case_root=None, infile="env_batch.xml"):
+    def __init__(self, infile="env_batch.xml"):
         """
         initialize an object interface to file env_batch.xml in the case directory
         """
-        EnvBase.__init__(self, case_root, infile)
+        EntryID.__init__(self, infile)
         self.prereq_jobid = None
         self.batchtype = None
+
+    @staticmethod
+    def constructEnvBatch(case_root, infile = "env_batch.xml"):
+        return EnvBatch.construct(case_root, infile)
 
     def set_value(self, item, value, subgroup=None, ignore_type=False):
         val = None
@@ -71,7 +75,7 @@ class EnvBatch(EnvBase):
                 if resolved:
                     value = self.get_resolved_value(value)
             else:
-                value = EnvBase.get_value(self,item,attribute,resolved)
+                value = EntryID.get_value(self,item,attribute,resolved)
         else:
             job_node = self.get_optional_node("job", {"name":subgroup})
             if job_node is not None:
@@ -205,7 +209,7 @@ class EnvBatch(EnvBase):
             if vnode is not None:
                 node.remove(vnode)
         else:
-            node = EnvBase.cleanupnode(self, node)
+            node = EntryID.cleanupnode(self, node)
         return node
 
     def set_batch_system(self, batchobj, batch_system_type=None):

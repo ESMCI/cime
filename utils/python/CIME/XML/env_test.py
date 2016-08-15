@@ -1,20 +1,18 @@
 """
-Interface to the env_test.xml file.  This class inherits from EnvBase
+Interface to the env_test.xml file.  This class inherits from EntryID
 """
 from CIME.XML.standard_module_setup import *
 
-from CIME.XML.env_base import EnvBase
+from CIME.XML.entry_id import EntryID
 from CIME.utils import convert_to_type
 
 logger = logging.getLogger(__name__)
 
-class EnvTest(EnvBase):
+class EnvTest(EntryID):
 
-    def __init__(self, case_root=None, infile="env_test.xml"):
-        """
-        initialize an object interface to file env_test.xml in the case directory
-        """
-        EnvBase.__init__(self, case_root, infile)
+    @staticmethod
+    def constructEnvTest(case_root, infile = "env_test.xml"):
+        return EnvTest.construct(case_root, infile)
 
     def add_test(self,testnode):
         self.root.append(testnode)

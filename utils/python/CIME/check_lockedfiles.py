@@ -3,8 +3,7 @@ API for checking locked files
 """
 
 from CIME.XML.standard_module_setup import *
-from CIME.XML.env_build import EnvBuild
-from CIME.XML.env_case import EnvCase
+from CIME.XML.entry_id import EntryID
 from CIME.XML.env_mach_pes import EnvMachPes
 
 import glob
@@ -21,14 +20,14 @@ def check_lockedfiles(caseroot=os.getcwd()):
             objname = fpart.split('.')[0]
             logging.info("Checking file %s"%objname)
             if objname == "env_build":
-                f1obj = EnvBuild(caseroot, cfile)
-                f2obj = EnvBuild(caseroot, lfile)
+                f1obj = EntryID.constructEnvBuild(caseroot, cfile)
+                f2obj = EntryID.constructEnvBuild(caseroot, lfile)
             elif objname == "env_mach_pes":
-                f1obj = EnvMachPes(caseroot, cfile)
-                f2obj = EnvMachPes(caseroot, lfile)
+                f1obj = EnvMachPes.constructEnvMachPes(caseroot, cfile)
+                f2obj = EnvMachPes.constructEnvMachPes(caseroot, lfile)
             elif objname == "env_case":
-                f1obj = EnvCase(caseroot, cfile)
-                f2obj = EnvCase(caseroot, lfile)
+                f1obj = EntryID.constructEnvCase(caseroot, cfile)
+                f2obj = EntryID.constructEnvCase(caseroot, lfile)
 
             diffs = f1obj.compare_xml(f2obj)
             if diffs:
