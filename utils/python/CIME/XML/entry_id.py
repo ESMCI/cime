@@ -46,11 +46,11 @@ class EntryID(GenericXML):
         return EntryID.construct(case_root, infile)
 
     @staticmethod
-    def constructEnvBuild(case_root, infile = "env_run.xml"):
+    def constructEnvBuild(case_root, infile = "env_build.xml"):
         return EntryID.construct(case_root, infile)
 
     @staticmethod
-    def constructEnvCase(case_root, infile = "env_run.xml"):
+    def constructEnvCase(case_root, infile = "env_case.xml"):
         return EntryID.construct(case_root, infile)
 
     def get_default_value(self, node, attributes=None):

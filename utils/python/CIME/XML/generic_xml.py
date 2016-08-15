@@ -23,6 +23,7 @@ class GenericXML(object):
         if infile == None:
             # if file is not defined just return
             self.filename = None
+            self.root = None
             return
 
         if os.path.isfile(infile) and os.access(infile, os.R_OK):
