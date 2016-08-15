@@ -360,6 +360,41 @@ int PIOc_createfile(const int iosysid, int *ncidp, int *iotype,
     return ierr;
 }
 
+/** Open a new file using pio.  Input parameters are read on comp task
+ * 0 and ignored elsewhere.
+ *
+ * @public
+ * @ingroup PIO_create
+ * 
+ * @param iosysid : A defined pio system descriptor (input)
+ * @param cmode : The netcdf mode for the create operation
+ * @param filename : The filename to open 
+ * @param ncidp : A pio file descriptor (output)
+ */
+int
+PIOc_create(int iosysid, const char *filename, int cmode, int *ncidp)
+{
+    int iotype;            /* The PIO IO type. */
+
+    /* Figure out the iotype. */
+    if (cmode & NC_NETCDF4)
+    {
+      if (cmode & NC_MPIIO || cmode & NC_MPIPOSIX)
+	iotype = PIO_IOTYPE_NETCDF4P;
+      else
+	iotype = PIO_IOTYPE_NETCDF4C;
+    }
+    else
+    {
+      if (cmode & NC_PNETCDF)
+	iotype = PIO_IOTYPE_PNETCDF;
+      else
+	iotype = PIO_IOTYPE_NETCDF;
+    }
+
+    return PIOc_createfile(iosysid, ncidp, &iotype, filename, cmode);
+}
+
 /** Close a file previously opened with PIO.
  * @ingroup PIO_closefile
  * 

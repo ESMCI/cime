@@ -50,6 +50,9 @@ if (PIO_ENABLE_ASYNC AND NOT PIO_USE_MPI_SERIAL)
   add_executable (test_darray_async EXCLUDE_FROM_ALL test_darray_async.c)
   target_link_libraries (test_darray_async pioc)
   add_dependencies (tests test_darray_async)
+  add_executable (test_file EXCLUDE_FROM_ALL test_file.c)
+  target_link_libraries (test_file pioc)
+  add_dependencies (tests test_file)
 endif ()
 add_executable (test_names EXCLUDE_FROM_ALL test_names.c)
 target_link_libraries (test_names pioc)
@@ -87,6 +90,10 @@ else ()
         NUMPROCS 4
         TIMEOUT ${DEFAULT_TEST_TIMEOUT})
   if (PIO_ENABLE_ASYNC)
+    add_mpi_test(test_file
+        EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_file
+        NUMPROCS 4
+        TIMEOUT ${DEFAULT_TEST_TIMEOUT})
     add_mpi_test(test_intercomm
         EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_intercomm
         NUMPROCS 4
