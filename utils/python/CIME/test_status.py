@@ -13,6 +13,11 @@ TEST_PENDING_STATUS  = "PEND"
 TEST_PASS_STATUS     = "PASS"
 TEST_FAIL_STATUS     = "FAIL"
 
+# An extra status possible for the overall test result
+TEST_INCOMPLETE_STATUS = "INCOMPLETE"
+
+# TEST_INCOMPLETE_STATUS is not in the ALL_PHASE_STATUSES list because it is not
+# a valid status for an individual phase
 ALL_PHASE_STATUSES = [TEST_PENDING_STATUS, TEST_PASS_STATUS, TEST_FAIL_STATUS]
 
 # Special statuses that the overall test can be in
@@ -34,6 +39,10 @@ MEMLEAK_PHASE         = "MEMLEAK"
 COMPARE_PHASE         = "COMPARE" # This is one special, real phase will be COMPARE_$WHAT
 GENERATE_PHASE        = "GENERATE"
 
+# A pseudo-phase used to indicate if a test is incomplete
+INCOMPLETE_PHASE      = "TEST_COMPLETE"
+
+# INCOMPLETE_PHASE is not in the ALL_PHASES list because it is handled specially
 ALL_PHASES = [INITIAL_PHASE,
               CREATE_NEWCASE_PHASE,
               XML_PHASE,
@@ -125,6 +134,9 @@ class TestStatus(object):
                     else:
                         fd.write("%s %s %s %s\n" % (status, self._test_name, phase, comments))
 
+                if not self._has_run_phase():
+                    fd.write("%s %s %s\n" % (TEST_FAIL_STATUS, self._test_name, INCOMPLETE_PHASE))
+
     def _parse_test_status(self, file_contents):
         """
         >>> contents = '''
@@ -133,6 +145,7 @@ class TestStatus(object):
         ... FAIL ERS.foo.A SETUP
         ... PASS ERS.foo.A COMPARE_baseline
         ... PASS ERS.foo.A SHAREDLIB_BUILD Time=42
+        ... FAIL ERS.foo.A TEST_COMPLETE
         ... '''
         >>> _test_helper1(contents)
         OrderedDict([('CREATE_NEWCASE', ('PASS', '')), ('XML', ('PASS', '')), ('SETUP', ('FAIL', '')), ('COMPARE_baseline', ('PASS', '')), ('SHAREDLIB_BUILD', ('PASS', 'Time=42'))])
@@ -149,6 +162,11 @@ class TestStatus(object):
                 else:
                     expect(self._test_name == curr_test_name,
                            "inconsistent test name in parse_test_status: '%s' != '%s'" % (self._test_name, curr_test_name))
+
+                if phase == INCOMPLETE_PHASE:
+                    # The INCOMPLETE_PHASE isn't stored in the object, so
+                    # nothing needs to be done here
+                    continue
 
                 expect(status in ALL_PHASE_STATUSES,
                        "Unexpected status '%s' in parse_test_status for test '%s'" % (status, self._test_name))
@@ -192,7 +210,9 @@ class TestStatus(object):
         >>> _test_helper2('PASS ERS.foo.A COMPARE_1\nFAIL ERS.foo.A NLCOMP\nFAIL ERS.foo.A COMPARE_2\nPASS ERS.foo.A RUN')
         'DIFF'
         >>> _test_helper2('PASS ERS.foo.A MODEL_BUILD')
-        'PASS'
+        'INCOMPLETE'
+        >>> _test_helper2('FAIL ERS.foo.A MODEL_BUILD')
+        'FAIL'
         >>> _test_helper2('PASS ERS.foo.A MODEL_BUILD', wait_for_run=True)
         'PEND'
         >>> _test_helper2('FAIL ERS.foo.A MODEL_BUILD', wait_for_run=True)
@@ -205,11 +225,8 @@ class TestStatus(object):
         'PASS'
         """
         rv = TEST_PASS_STATUS
-        run_phase_found = False
         for phase, data in self._phase_statuses.iteritems():
             status = data[0]
-            if phase == RUN_PHASE:
-                run_phase_found = True
 
             if (status == TEST_PENDING_STATUS):
                 return status
@@ -233,7 +250,25 @@ class TestStatus(object):
 
         # The test did not fail but the RUN phase was not found, so if the user requested
         # that we wait for the RUN phase, then the test must still be considered pending.
-        if rv != TEST_FAIL_STATUS and not run_phase_found and wait_for_run:
-            rv = TEST_PENDING_STATUS
+        if rv != TEST_FAIL_STATUS and not self._has_run_phase():
+            if wait_for_run:
+                # Some tools calling this depend on having a PENDING status
+                # (rather than INCOMPLETE) returned under these conditions, when
+                # wait_for_run is True. (In the future, we may want to change
+                # those tools so that they treat TEST_INCOMPLETE_STATUS in the
+                # same way as TEST_PENDING_STATUS. Then we could remove the
+                # wait_for_run argument.)
+                rv = TEST_PENDING_STATUS
+            else:
+                rv = TEST_INCOMPLETE_STATUS
 
         return rv
+
+    def _has_run_phase(self):
+        """
+        Returns True if RUN_PHASE is included in the list of phases, False if not
+
+        This is an important check because decisions about the overall test
+        status are based partially on whether the RUN_PHASE is present
+        """
+        return (RUN_PHASE in self._phase_statuses)
