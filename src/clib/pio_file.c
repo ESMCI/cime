@@ -262,7 +262,7 @@ PIOc_open(int iosysid, const char *path, int mode, int *ncidp)
     }
     else
     {
-      if (mode & NC_PNETCDF)
+      if (mode & NC_PNETCDF || mode & NC_MPIIO)
 	iotype = PIO_IOTYPE_PNETCDF;
       else
 	iotype = PIO_IOTYPE_NETCDF;
@@ -466,17 +466,17 @@ PIOc_create(int iosysid, const char *filename, int cmode, int *ncidp)
     /* Figure out the iotype. */
     if (cmode & NC_NETCDF4)
     {
-      if (cmode & NC_MPIIO || cmode & NC_MPIPOSIX)
-	iotype = PIO_IOTYPE_NETCDF4P;
-      else
-	iotype = PIO_IOTYPE_NETCDF4C;
+	if (cmode & NC_MPIIO || cmode & NC_MPIPOSIX)
+	    iotype = PIO_IOTYPE_NETCDF4P;
+	else
+	    iotype = PIO_IOTYPE_NETCDF4C;
     }
     else
     {
-      if (cmode & NC_PNETCDF)
-	iotype = PIO_IOTYPE_PNETCDF;
-      else
-	iotype = PIO_IOTYPE_NETCDF;
+	if (cmode & NC_PNETCDF || cmode & NC_MPIIO)
+	    iotype = PIO_IOTYPE_PNETCDF;
+	else
+	    iotype = PIO_IOTYPE_NETCDF;
     }
 
     return PIOc_createfile(iosysid, ncidp, &iotype, filename, cmode);

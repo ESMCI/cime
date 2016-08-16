@@ -1,6 +1,6 @@
 /**
- * @file Tests for the file functions PIOc_create, PIOc_open, and
- * PIOc_close.
+ * @file Tests for names of vars, atts, and dims. Also test the
+ * PIOc_strerror() function.
  *
  */
 #include <pio.h>
@@ -48,11 +48,8 @@ char dim_name[NDIM][NC_MAX_NAME + 1] = {"timestep", "x", "y"};
 /** Length of the dimensions in the sample data. */
 int dim_len[NDIM] = {NC_UNLIMITED, X_DIM_LEN, Y_DIM_LEN};
 
-/** Length of chunksizes to use in netCDF-4 files. */
-size_t chunksize[NDIM] = {2, X_DIM_LEN/2, Y_DIM_LEN/2};
 
-
-/** Run Tests for PIO file operations.
+/** Run Tests for NetCDF-4 Functions.
  *
  * @param argc argument count
  * @param argv array of arguments
@@ -112,6 +109,45 @@ main(int argc, char **argv)
     /** The ID of the netCDF varable. */
     int varid;
 
+    /** Storage of netCDF-4 files (contiguous vs. chunked). */
+    int storage;
+
+    /** Chunksizes set in the file. */
+    size_t my_chunksize[NDIM];
+    
+    /** The shuffle filter setting in the netCDF-4 test file. */
+    int shuffle;
+    
+    /** Non-zero if deflate set for the variable in the netCDF-4 test file. */
+    int deflate;
+
+    /** The deflate level set for the variable in the netCDF-4 test file. */
+    int deflate_level;
+
+    /** Non-zero if fletcher32 filter is used for variable. */
+    int fletcher32;
+
+    /** Endianness of variable. */
+    int endianness;
+
+    /* Size of the file chunk cache. */
+    size_t chunk_cache_size;
+
+    /* Number of elements in file cache. */
+    size_t nelems;
+
+    /* File cache preemption. */
+    float preemption;
+
+    /* Size of the var chunk cache. */
+    size_t var_cache_size;
+
+    /* Number of elements in var cache. */
+    size_t var_cache_nelems;
+
+    /* Var cache preemption. */    
+    float var_cache_preemption;
+    
     /** The I/O description ID. */
     int ioid;
 
@@ -200,18 +236,23 @@ main(int argc, char **argv)
      * available ways. */
     for (fmt = 0; fmt < num_flavors; fmt++) 
     {
+	/* Figure out the mode. */
+	int mode = PIO_CLOBBER;
+	if (format[fmt] == PIO_IOTYPE_NETCDF4C || format[fmt] == PIO_IOTYPE_NETCDF4P)
+	    mode |= NC_NETCDF4;
+	else if (format[fmt] == PIO_IOTYPE_PNETCDF || format[fmt] == PIO_IOTYPE_NETCDF4P)
+	    mode |= NC_MPIIO;
+
 	/* Create the netCDF output file. */
 	if (verbose)
 	    printf("rank: %d Creating sample file %s with format %d...\n",
 		   my_rank, filename[fmt], format[fmt]);
-	if ((ret = PIOc_createfile(iosysid, &ncid, &(format[fmt]), filename[fmt],
-				   PIO_CLOBBER)))
-	    ERR(ret);
-
-	/* End define mode. */
-	if ((ret = PIOc_enddef(ncid)))
+	if ((ret = PIOc_create(iosysid, filename[fmt], mode, &ncid)))
 	    ERR(ret);
 	
+	if ((ret = PIOc_enddef(ncid)))
+	    ERR(ret);
+
 	/* Close the netCDF file. */
 	if (verbose)
 	    printf("rank: %d Closing the sample data file...\n", my_rank);

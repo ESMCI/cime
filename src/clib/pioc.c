@@ -544,12 +544,6 @@ int PIOc_finalize(const int iosysid)
   if(ios->intercomm != MPI_COMM_NULL){
     MPI_Comm_free(&(ios->intercomm));
   }
-  if(ios->io_comm != MPI_COMM_NULL){
-    MPI_Comm_free(&(ios->io_comm));
-  }
-  if(ios->comp_comm != MPI_COMM_NULL){
-    MPI_Comm_free(&(ios->comp_comm));
-  }
   if(ios->union_comm != MPI_COMM_NULL){
     MPI_Comm_free(&(ios->union_comm));
   }
