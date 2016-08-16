@@ -396,7 +396,8 @@ main(int argc, char **argv)
 	/* Define netCDF dimensions and variable. */
 	if (verbose)
 	    printf("rank: %d Defining netCDF metadata...\n", my_rank);
-	for (d = 0; d < NDIM; d++) {
+	for (d = 0; d < NDIM; d++)
+	{
 	    if (verbose)
 		printf("rank: %d Defining netCDF dimension %s, length %d\n", my_rank,
 		       dim_name[d], dim_len[d]);

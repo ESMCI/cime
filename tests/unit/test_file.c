@@ -1,6 +1,6 @@
 /**
- * @file Tests for names of vars, atts, and dims. Also test the
- * PIOc_strerror() function.
+ * @file Tests for the file functions PIOc_create, PIOc_open, and
+ * PIOc_close.
  *
  */
 #include <pio.h>
@@ -38,6 +38,23 @@
 	return e;				\
     } while (0) 
 
+/** Handle MPI errors. This should only be used with MPI library
+ * function calls. */
+#define MPIERR(e) do {                                                  \
+	MPI_Error_string(e, err_buffer, &resultlen);			\
+	fprintf(stderr, "MPI error, line %d, file %s: %s\n", __LINE__, __FILE__, err_buffer); \
+	MPI_Finalize();							\
+	return ERR_AWFUL;							\
+    } while (0)
+
+/** Handle non-MPI errors by finalizing the MPI library and exiting
+ * with an exit code. */
+#define ERR(e) do {				\
+        fprintf(stderr, "Error %d in %s, line %d\n", e, __FILE__, __LINE__); \
+	MPI_Finalize();				\
+	return e;				\
+    } while (0) 
+
 /** Global err buffer for MPI. */
 char err_buffer[MPI_MAX_ERROR_STRING];
 int resultlen;
@@ -48,8 +65,61 @@ char dim_name[NDIM][NC_MAX_NAME + 1] = {"timestep", "x", "y"};
 /** Length of the dimensions in the sample data. */
 int dim_len[NDIM] = {NC_UNLIMITED, X_DIM_LEN, Y_DIM_LEN};
 
+/** Define metadata for the test file. */
+int
+define_metadata(int ncid)
+{    
+    int dimids[NDIM]; /* The dimension IDs. */
+    int varid; /* The variable ID. */
+    int ret;
 
-/** Run Tests for NetCDF-4 Functions.
+    for (int d = 0; d < NDIM; d++)
+	if ((ret = PIOc_def_dim(ncid, dim_name[d], (PIO_Offset)dim_len[d], &dimids[d])))
+	    ERR(ret);
+
+    if ((ret = PIOc_def_var(ncid, VAR_NAME, NC_INT, NDIM, dimids, &varid)))
+	ERR(ret);
+    
+    return PIO_NOERR;
+}
+
+/** Check the metadata in the test file. */
+int
+check_metadata(int ncid)
+{
+    int ndims, nvars, ngatts, unlimdimid, natts, dimid[NDIM];
+    PIO_Offset len_in;
+    char name_in[NC_MAX_NAME + 1];
+    nc_type xtype_in;
+    int ret;
+
+    /* Check how many dims, vars, global atts there are, and the id of
+     * the unlimited dimension. */
+    if ((ret = PIOc_inq(ncid, &ndims, &nvars, &ngatts, &unlimdimid)))
+	return ret;
+    if (ndims != NDIM || nvars != 1 || ngatts != 0 || unlimdimid != 0)
+	return ERR_AWFUL;
+
+    /* Check the dimensions. */
+    for (int d = 0; d < NDIM; d++)
+    {
+	if ((ret = PIOc_inq_dim(ncid, d, name_in, &len_in)))
+	    ERR(ret);
+	if (len_in != dim_len[d] || strcmp(name_in, dim_name[d]))
+	    return ERR_AWFUL;
+    }
+
+    /* Check the variable. */
+    if ((ret = PIOc_inq_var(ncid, 0, name_in, &xtype_in, &ndims, dimid, &natts)))
+	ERR(ret);
+    if (strcmp(name_in, VAR_NAME) || xtype_in != NC_INT || ndims != NDIM ||
+	dimid[0] != 0 || dimid[1] != 1 || dimid[2] != 2 || natts != 0)
+	return ERR_AWFUL;
+
+    return PIO_NOERR;
+}
+
+/** Run Tests for PIO file operations.
  *
  * @param argc argument count
  * @param argv array of arguments
@@ -109,45 +179,6 @@ main(int argc, char **argv)
     /** The ID of the netCDF varable. */
     int varid;
 
-    /** Storage of netCDF-4 files (contiguous vs. chunked). */
-    int storage;
-
-    /** Chunksizes set in the file. */
-    size_t my_chunksize[NDIM];
-    
-    /** The shuffle filter setting in the netCDF-4 test file. */
-    int shuffle;
-    
-    /** Non-zero if deflate set for the variable in the netCDF-4 test file. */
-    int deflate;
-
-    /** The deflate level set for the variable in the netCDF-4 test file. */
-    int deflate_level;
-
-    /** Non-zero if fletcher32 filter is used for variable. */
-    int fletcher32;
-
-    /** Endianness of variable. */
-    int endianness;
-
-    /* Size of the file chunk cache. */
-    size_t chunk_cache_size;
-
-    /* Number of elements in file cache. */
-    size_t nelems;
-
-    /* File cache preemption. */
-    float preemption;
-
-    /* Size of the var chunk cache. */
-    size_t var_cache_size;
-
-    /* Number of elements in var cache. */
-    size_t var_cache_nelems;
-
-    /* Var cache preemption. */    
-    float var_cache_preemption;
-    
     /** The I/O description ID. */
     int ioid;
 
@@ -250,21 +281,29 @@ main(int argc, char **argv)
 	if ((ret = PIOc_create(iosysid, filename[fmt], mode, &ncid)))
 	    ERR(ret);
 
+	/* Define the test file metadata. */
+	if ((ret = define_metadata(ncid)))
+	    ERR(ret);
+	
 	/* End define mode. */
 	if ((ret = PIOc_enddef(ncid)))
 	    ERR(ret);
-
+	
 	/* Close the netCDF file. */
 	if (verbose)
 	    printf("rank: %d Closing the sample data file...\n", my_rank);
 	if ((ret = PIOc_closefile(ncid)))
 	    ERR(ret);
 
-	/* Reopen the file. */
+	/* Reopen the test file. */
 	if (verbose)
 	    printf("rank: %d Re-opening sample file %s with format %d...\n",
 		   my_rank, filename[fmt], format[fmt]);
 	if ((ret = PIOc_open(iosysid, filename[fmt], mode, &ncid)))
+	    ERR(ret);
+
+	/* Check the test file metadata. */
+	if ((ret = check_metadata(ncid)))
 	    ERR(ret);
 
 	/* Close the netCDF file. */
