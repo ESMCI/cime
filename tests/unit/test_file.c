@@ -249,8 +249,22 @@ main(int argc, char **argv)
 		   my_rank, filename[fmt], format[fmt]);
 	if ((ret = PIOc_create(iosysid, filename[fmt], mode, &ncid)))
 	    ERR(ret);
-	
+
+	/* End define mode. */
 	if ((ret = PIOc_enddef(ncid)))
+	    ERR(ret);
+
+	/* Close the netCDF file. */
+	if (verbose)
+	    printf("rank: %d Closing the sample data file...\n", my_rank);
+	if ((ret = PIOc_closefile(ncid)))
+	    ERR(ret);
+
+	/* Reopen the file. */
+	if (verbose)
+	    printf("rank: %d Re-opening sample file %s with format %d...\n",
+		   my_rank, filename[fmt], format[fmt]);
+	if ((ret = PIOc_open(iosysid, filename[fmt], mode, &ncid)))
 	    ERR(ret);
 
 	/* Close the netCDF file. */
