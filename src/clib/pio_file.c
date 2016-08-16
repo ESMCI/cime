@@ -423,12 +423,19 @@ int PIOc_createfile(const int iosysid, int *ncidp, int *iotype,
     {
 	if ((mpierr = MPI_Bcast(&file->mode, 1, MPI_INT, ios->ioroot, ios->union_comm)))
 	    return check_mpi(file, mpierr, __FILE__, __LINE__);
-	file->mode = file->mode | PIO_WRITE;  // This flag is implied by netcdf create functions but we need to know if its set
+
+	/* This flag is implied by netcdf create functions but we need
+	   to know if its set. */
+	file->mode = file->mode | PIO_WRITE;  
 	
 	if ((mpierr = MPI_Bcast(&file->fh, 1, MPI_INT, ios->ioroot, ios->union_comm)))
 	    return check_mpi(file, mpierr, __FILE__, __LINE__);
 
+	/* Return the ncid to the caller. */
 	*ncidp = file->fh;
+
+	/* Add the struct with this files info to the global list of
+	 * open files. */
 	pio_add_to_file_list(file);
     }
     
