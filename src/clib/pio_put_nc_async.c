@@ -129,6 +129,11 @@ int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
 	for (int vd = 0; vd < ndims; vd++)
 	    num_elem *= (rcount[vd] - rstart[vd])/rstride[vd];
 	LOG((2, "PIOc_put_vars_tc num_elem = %d", num_elem));
+
+	/* Free resources. */
+	free(rstart);
+	free(rcount);
+	free(rstride);
     }
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */

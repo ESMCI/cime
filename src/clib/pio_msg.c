@@ -335,7 +335,7 @@ int inq_att_handler(iosystem_desc_t *ios)
     int varid;
     int mpierr;
     int ret;
-    char *name5;
+    char *name;
     int namelen;
     int *op, *ip;
     nc_type xtype, *xtypep = NULL;
@@ -352,9 +352,9 @@ int inq_att_handler(iosystem_desc_t *ios)
 	return PIO_EIO;
     if ((mpierr = MPI_Bcast(&namelen, 1, MPI_INT,  ios->compmaster, ios->intercomm)))
 	return PIO_EIO;
-    if (!(name5 = malloc((namelen + 1) * sizeof(char))))
+    if (!(name = malloc((namelen + 1) * sizeof(char))))
 	return PIO_ENOMEM;
-    if ((mpierr = MPI_Bcast((void *)name5, namelen + 1, MPI_CHAR, ios->compmaster,
+    if ((mpierr = MPI_Bcast((void *)name, namelen + 1, MPI_CHAR, ios->compmaster,
 			    ios->intercomm)))
 	return PIO_ENOMEM;
     if ((mpierr = MPI_Bcast(&xtype_present, 1, MPI_CHAR, 0, ios->intercomm)))
@@ -369,8 +369,11 @@ int inq_att_handler(iosystem_desc_t *ios)
 	lenp = &len;
 
     /* Call the function to learn about the attribute. */
-    if ((ret = PIOc_inq_att(ncid, varid, name5, xtypep, lenp)))
+    if ((ret = PIOc_inq_att(ncid, varid, name, xtypep, lenp)))
 	return ret;
+
+    /* Free memory. */
+    free(name);
 
     return PIO_NOERR;
 }
@@ -735,6 +738,8 @@ int put_vars_handler(iosystem_desc_t *ios)
 	/* 		     stridep, buf); */
 #endif /* _NETCDF4 */		
     }
+
+    free(buf);
     
     return PIO_NOERR;
 }
@@ -883,6 +888,7 @@ int get_vars_handler(iosystem_desc_t *ios)
 #endif /* _NETCDF4 */		
     }
 
+    free(buf);
     LOG((1, "get_vars_handler succeeded!"));
     return PIO_NOERR;
 }
@@ -1824,6 +1830,7 @@ int PIOc_Init_Intercomm(int component_count, MPI_Comm peer_comm,
 	    {
 		/* Copy the computation communicator. */
 		mpierr = MPI_Comm_dup(comp_comms[cmp], &my_iosys->comp_comm);
+		LOG((1, "copied comm to %d", my_iosys->comp_comm));
 		CheckMPIReturn(mpierr, __FILE__, __LINE__);
 		if (mpierr)
 		    ierr = PIO_EIO;
