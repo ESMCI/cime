@@ -212,7 +212,7 @@ class TimingParser:
         else:
             logger.warning("Unknown NCPL_BASE_PERIOD=%s" % ncpl_base_period)
 
-        nprocs, ncount = self.gettime2('CPL:CLOCK_ADVANCE ')
+        nprocs, ncount = self.gettime2('"CPL:CLOCK_ADVANCE" ')
         nsteps = ncount / nprocs
         adays = nsteps*tlen/atm_ncpl
         odays = adays
@@ -269,24 +269,24 @@ class TimingParser:
                        % (m.name.lower(), m.comp, m.ntasks, m.rootpe,
                           m.ntasks, m.nthrds, m.ninst, m.pstrid))
 
-        nmin, nmax, found = self.gettime(' CPL:INIT ')
-        tmin, tmax, found = self.gettime(' CPL:RUN_LOOP ')
-        wtmin, wtmax, found = self.gettime(' CPL:TPROF_WRITE ')
-        fmin, fmax, found = self.gettime(' CPL:FINAL ')
+        nmin, nmax, found = self.gettime(' "CPL:INIT" ')
+        tmin, tmax, found = self.gettime(' "CPL:RUN_LOOP" ')
+        wtmin, wtmax, found = self.gettime(' "CPL:TPROF_WRITE" ')
+        fmin, fmax, found = self.gettime(' "CPL:FINAL" ')
         for k in components:
             if k != "CPL":
                 m = self.models[k]
-            m.tmin, m.tmax, found = self.gettime(' CPL:%s_RUN ' %  m.name)
-        otmin, otmax, found = self.gettime(' CPL:OCNT_RUN ')
+            m.tmin, m.tmax, found = self.gettime(' "CPL:%s_RUN" ' %  m.name)
+        otmin, otmax, found = self.gettime(' "CPL:OCNT_RUN" ')
 
         # pick OCNT_RUN for tight coupling
         if otmax > ocn.tmax:
             ocn.tmin = otmin
             ocn.tmax = otmax
 
-        cpl.tmin, cpl.tmax, found = self.gettime(' CPL:RUN ')
-        xmin, xmax, found = self.gettime(' CPL:COMM ')
-        ocnwaittime, ignore, found = self.gettime(' CPL:C2O_INITWAIT')
+        cpl.tmin, cpl.tmax, found = self.gettime(' "CPL:RUN" ')
+        xmin, xmax, found = self.gettime(' "CPL:COMM" ')
+        ocnwaittime, ignore, found = self.gettime(' "CPL:C2O_INITWAIT"')
 
         if odays != 0:
             ocnrunitime = ocn.tmax * (adays/odays - 1.0)
