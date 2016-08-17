@@ -1824,6 +1824,7 @@ int PIOc_Init_Intercomm(int component_count, MPI_Comm peer_comm,
 	    {
 		/* Copy the computation communicator. */
 		mpierr = MPI_Comm_dup(comp_comms[cmp], &my_iosys->comp_comm);
+		LOG((1, "copied comm to %d", my_iosys->comp_comm));
 		CheckMPIReturn(mpierr, __FILE__, __LINE__);
 		if (mpierr)
 		    ierr = PIO_EIO;

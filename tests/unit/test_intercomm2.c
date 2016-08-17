@@ -328,7 +328,7 @@ main(int argc, char **argv)
     /* Initialize the PIO IO system. This specifies how many and which
      * processors are involved in I/O. */
 #define COMPONENT_COUNT 1
-    MPI_Comm comp_comms;
+    MPI_Comm comp_comms[COMPONENT_COUNT];
     MPI_Comm io_comm;
 
     /* Tasks 0 and 1 will be computational. Tasks 2 and 3 will be I/O
@@ -352,7 +352,7 @@ main(int argc, char **argv)
     {
 	/* We will define comp_comm. The io_comm will get null. */
 	io_comm = MPI_COMM_NULL;
-	comp_comms = row_comm;
+	comp_comms[0] = row_comm;
 	comp_task = 1;
 	if (verbose)
 	    printf("%d added to the comp_comm\n", my_rank);
@@ -360,7 +360,7 @@ main(int argc, char **argv)
     else
     {
 	/* We will define io_comm. The comp_comms array will get nulls. */
-	comp_comms = MPI_COMM_NULL;
+	comp_comms[0] = MPI_COMM_NULL;
 	io_comm = row_comm;
 	comp_task = 0;
 	if (verbose)
@@ -372,7 +372,7 @@ main(int argc, char **argv)
 	ERR(ret);
 
     /* Initialize the async setup. */
-    if ((ret = PIOc_Init_Intercomm(COMPONENT_COUNT, MPI_COMM_WORLD, &comp_comms,
+    if ((ret = PIOc_Init_Intercomm(COMPONENT_COUNT, MPI_COMM_WORLD, comp_comms,
 				   io_comm, &iosysid)))
 	ERR(ret);
     if (verbose)
@@ -545,7 +545,8 @@ main(int argc, char **argv)
 	printf("%d test_intercomm Freeing local MPI resources...\n", my_rank);
     if (comp_task)
     {
-	MPI_Comm_free(&comp_comms);
+	for (int c = 0; c < COMPONENT_COUNT; c++)
+	    MPI_Comm_free(&comp_comms[c]);
     }
     else
     {
