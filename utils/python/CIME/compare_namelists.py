@@ -18,7 +18,7 @@ def normalize_string_value(name, value, case):
     value = str(value)
     # Any occurance of case must be normalized because test-ids might not match
     if (case is not None):
-        case_re = re.compile(r'%s[.]([GC])[.]([^./\s]+)' % case)
+        case_re = re.compile(r'%s[.]([GC]+)[.]([^./\s]+)' % case)
         value = case_re.sub("%s.ACTION.TESTID" % case, value)
 
     if (name in ["runid", "model_version", "username"]):

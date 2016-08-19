@@ -163,9 +163,10 @@ def _build_data_nml(case, caseroot, compclass):
         logger.info( "cmd is: %s " %cmd)
         rc, out, err = run_cmd(cmd, from_dir=confdir)
         expect(rc==0,"Command %s failed rc=%d\nout=%s\nerr=%s"%(cmd,rc,out,err))
-        logger.info(out)
-
-        # copy namelist file and stream text files to rundir
+        if out is not None:
+            logger.debug("cmd=%s"%cmd)
+            logger.info("out = %s"%out)
+        # copy namelist files and stream text files, to rundir
         if os.path.isdir(rundir):
             filename = compname + "_in"
             file_src  = os.path.join(confdir, filename)

@@ -34,6 +34,8 @@ sub new {
 
     my %xmlvars = {};
     SetupTools::getxmlvars($caseroot, \%xmlvars);
+    # need to expand DIN_LOC_ROOT first
+    $xmlvars{DIN_LOC_ROOT} = SetupTools::expand_xml_var($xmlvars{DIN_LOC_ROOT}, \%xmlvars);
     foreach my $attr (keys %xmlvars) {
 	$xmlvars{$attr} = SetupTools::expand_xml_var($xmlvars{$attr}, \%xmlvars);
     }

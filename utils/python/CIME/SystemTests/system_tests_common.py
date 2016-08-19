@@ -30,9 +30,23 @@ class SystemTestsCommon(object):
         self._casebaseid = self._case.get_value("CASEBASEID")
         self._test_status = TestStatus(test_dir=caseroot, test_name=self._casebaseid)
 
+        self._init_environment(caseroot)
+        self._init_locked_files(caseroot, expected)
+        self._init_case_setup()
+
+    def _init_environment(self, caseroot):
+        """
+        Do initializations of environment variables that are needed in __init__
+        """
         # Needed for sh scripts
         os.environ["CASEROOT"] = caseroot
 
+    def _init_locked_files(self, caseroot, expected):
+        """
+        If the file LockedFiles/env_run.orig.xml does not exist, copy the current
+        env_run.xml file. If it does exist, restore values changed in a previous
+        run of the test.
+        """
         if os.path.isfile(os.path.join(caseroot, "LockedFiles", "env_run.orig.xml")):
             self.compare_env_run(expected=expected)
         elif os.path.isfile(os.path.join(caseroot, "env_run.xml")):
@@ -44,6 +58,10 @@ class SystemTestsCommon(object):
             shutil.copy(os.path.join(caseroot,"env_run.xml"),
                         os.path.join(lockedfiles, "env_run.orig.xml"))
 
+    def _init_case_setup(self):
+        """
+        Do initial case setup needed in __init__
+        """
         if self._case.get_value("IS_FIRST_RUN"):
             self._case.set_initial_test_values()
 
@@ -70,6 +88,7 @@ class SystemTestsCommon(object):
                                      model_only=(phase_name==MODEL_BUILD_PHASE))
                 except:
                     success = False
+                    logger.warning("Exception during build:\n%s" % (sys.exc_info()[1]))
 
                 time_taken = time.time() - start_time
                 with self._test_status:
@@ -125,7 +144,7 @@ class SystemTestsCommon(object):
 
         except:
             success = False
-            logger.warning("Exception during run: %s" % (sys.exc_info()[1]))
+            logger.warning("Exception during run:\n%s" % (sys.exc_info()[1]))
 
         # Always try to report, should NOT throw an exception
         self.report()
@@ -147,6 +166,12 @@ class SystemTestsCommon(object):
         PLEASE THROW AN EXCEPTION ON FAIL
         """
         self.run_indv()
+
+    def _get_caseroot(self):
+        """
+        Returns the current CASEROOT value
+        """
+        return self._caseroot
 
     def _set_active_case(self, case):
         """
@@ -431,8 +456,8 @@ class FakeTest(SystemTestsCommon):
                 f.write(self._script)
 
             os.chmod(modelexe, 0755)
-            self._case.set_value("BUILD_COMPLETE", True)
-            self._case.flush()
+
+            build.post_build(self._case, [])
 
     def run_phase(self):
         self.run_indv(suffix=None)
@@ -490,11 +515,22 @@ exit -1
         FakeTest.build_phase(self,
                              sharedlib_only=sharedlib_only, model_only=model_only)
 
+class TESTRUNFAILEXC(TESTRUNPASS):
+
+    def run_phase(self):
+        raise RuntimeError("Exception from run_phase")
+
 class TESTBUILDFAIL(FakeTest):
 
     def build_phase(self, sharedlib_only=False, model_only=False):
         if (not sharedlib_only):
-            expect(False, "ERROR: Intentional fail for testing infrastructure")
+            expect(False, "Intentional fail for testing infrastructure")
+
+class TESTBUILDFAILEXC(FakeTest):
+
+    def __init__(self, case):
+        FakeTest.__init__(self, case)
+        raise RuntimeError("Exception from init")
 
 class TESTRUNSLOWPASS(FakeTest):
 
