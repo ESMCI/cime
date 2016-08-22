@@ -514,16 +514,16 @@ int att_put_handler(iosystem_desc_t *ios)
     if (!(op = malloc(attlen * typelen)))
 	return PIO_ENOMEM;
     if ((mpierr = MPI_Bcast((void *)op, attlen * typelen, MPI_BYTE, 0, ios->intercomm)))
-	return PIO_EIO;	
+	return PIO_EIO;
     LOG((1, "att_put_handler ncid = %d varid = %d namelen = %d name = %s iotype = %d"
 	 "atttype = %d attlen = %d typelen = %d",
-	 ncid, varid, namelen, name, iotype, atttype, attlen, typelen));    
+	 ncid, varid, namelen, name, iotype, atttype, attlen, typelen));
 
     /* Call the function to read the attribute. */
     if ((ierr = PIOc_put_att(ncid, varid, name, atttype, attlen, op)))
 	return ierr;
     LOG((2, "put_handler called PIOc_put_att, ierr = %d", ierr));
-    
+
     /* Free resources. */
     free(name);
     free(op);
@@ -574,16 +574,16 @@ int att_get_handler(iosystem_desc_t *ios)
 	return PIO_EIO;
     LOG((1, "att_get_handler ncid = %d varid = %d namelen = %d name = %s iotype = %d"
 	 "atttype = %d attlen = %d typelen = %d",
-	 ncid, varid, namelen, name, iotype, atttype, attlen, typelen));    
+	 ncid, varid, namelen, name, iotype, atttype, attlen, typelen));
 
     /* Allocate space for the attribute data. */
     if (!(ip = malloc(attlen * typelen)))
 	return PIO_ENOMEM;
-    
+
     /* Call the function to read the attribute. */
     if ((ierr = PIOc_get_att(ncid, varid, name, ip)))
 	return ierr;
-    
+
     /* Free resources. */
     free(name);
     free(ip);
@@ -610,7 +610,7 @@ int put_vars_handler(iosystem_desc_t *ios)
     PIO_Offset *startp = NULL, *countp = NULL, *stridep = NULL;
     int ndims; /** Number of dimensions. */
     void *buf; /** Buffer for data storage. */
-    PIO_Offset num_elem; /** Number of data elements in the buffer. */    
+    PIO_Offset num_elem; /** Number of data elements in the buffer. */
 
     LOG((1, "put_vars_handler"));
 
@@ -675,7 +675,7 @@ int put_vars_handler(iosystem_desc_t *ios)
 
     /* for (int e = 0; e < num_elem; e++) */
     /* 	LOG((2, "element %d = %d", e, ((int *)buf)[e])); */
-    
+
     /* Set the non-NULL pointers. */
     if (start_present)
 	startp = start;
@@ -708,7 +708,7 @@ int put_vars_handler(iosystem_desc_t *ios)
 	ierr = PIOc_put_vars_double(ncid, varid, startp, countp,
 				    stridep, buf);
 	break;
-#ifdef _NETCDF4		
+#ifdef _NETCDF4
     case NC_UBYTE:
 	ierr = PIOc_put_vars_uchar(ncid, varid, startp, countp,
 				   stridep, buf);
@@ -736,11 +736,11 @@ int put_vars_handler(iosystem_desc_t *ios)
 	/*    default:*/
 	/* ierr = PIOc_put_vars(ncid, varid, startp, countp, */
 	/* 		     stridep, buf); */
-#endif /* _NETCDF4 */		
+#endif /* _NETCDF4 */
     }
 
     free(buf);
-    
+
     return PIO_NOERR;
 }
 
@@ -763,7 +763,7 @@ int get_vars_handler(iosystem_desc_t *ios)
     PIO_Offset *startp = NULL, *countp = NULL, *stridep = NULL;
     int ndims; /** Number of dimensions. */
     void *buf; /** Buffer for data storage. */
-    PIO_Offset num_elem; /** Number of data elements in the buffer. */    
+    PIO_Offset num_elem; /** Number of data elements in the buffer. */
 
     LOG((1, "get_vars_handler"));
 
@@ -857,7 +857,7 @@ int get_vars_handler(iosystem_desc_t *ios)
 	ierr = PIOc_get_vars_double(ncid, varid, startp, countp,
 				    stridep, buf);
 	break;
-#ifdef _NETCDF4		
+#ifdef _NETCDF4
     case NC_UBYTE:
 	ierr = PIOc_get_vars_uchar(ncid, varid, startp, countp,
 				   stridep, buf);
@@ -885,7 +885,7 @@ int get_vars_handler(iosystem_desc_t *ios)
 	/*    default:*/
 	/* ierr = PIOc_get_vars(ncid, varid, startp, countp, */
 	/* 		     stridep, buf); */
-#endif /* _NETCDF4 */		
+#endif /* _NETCDF4 */
     }
 
     free(buf);
@@ -1823,59 +1823,46 @@ int PIOc_Init_Intercomm(int component_count, MPI_Comm peer_comm,
 	    my_iosys = &iosys[cmp];
 
 	    /* Create an MPI info object. */
-	    CheckMPIReturn(MPI_Info_create(&(my_iosys->info)),__FILE__,__LINE__);
+	    if ((mpierr = MPI_Info_create(&my_iosys->info)))
+		ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
 
 	    /* This task is part of the computation communicator. */
 	    if (comp_comms[cmp] != MPI_COMM_NULL)
 	    {
 		/* Copy the computation communicator. */
-		mpierr = MPI_Comm_dup(comp_comms[cmp], &my_iosys->comp_comm);
+		if ((mpierr = MPI_Comm_dup(comp_comms[cmp], &my_iosys->comp_comm)))
+		    ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
 		LOG((1, "copied comm to %d", my_iosys->comp_comm));
-		CheckMPIReturn(mpierr, __FILE__, __LINE__);
-		if (mpierr)
-		    ierr = PIO_EIO;
 
 		/* Create an MPI group with the computation tasks. */
-		mpierr = MPI_Comm_group(my_iosys->comp_comm, &my_iosys->compgroup);
-		CheckMPIReturn(mpierr, __FILE__, __LINE__);
-		if (mpierr)
-		    ierr = PIO_EIO;
+		if ((mpierr = MPI_Comm_group(my_iosys->comp_comm, &my_iosys->compgroup)))
+		    ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
 
 		/* Find out how many tasks are in this communicator. */
-		mpierr = MPI_Comm_size(iosys->comp_comm, &my_iosys->num_comptasks);
-		CheckMPIReturn(mpierr, __FILE__, __LINE__);
-		if (mpierr)
-		    ierr = PIO_EIO;
+		if ((mpierr = MPI_Comm_size(iosys->comp_comm, &my_iosys->num_comptasks)))
+		    ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
 
 		/* Set the rank within the comp_comm. */
-		mpierr = MPI_Comm_rank(my_iosys->comp_comm, &my_iosys->comp_rank);
-		CheckMPIReturn(mpierr, __FILE__, __LINE__);
-		if (mpierr)
-		    ierr = PIO_EIO;
+		if ((mpierr = MPI_Comm_rank(my_iosys->comp_comm, &my_iosys->comp_rank)))
+		    ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
 
 		/* Find the rank of the io leader in peer_comm. */
 		iam = -1;
-		mpierr = MPI_Allreduce(&iam, &io_leader, 1, MPI_INT, MPI_MAX, peer_comm);
-		CheckMPIReturn(mpierr, __FILE__, __LINE__);
-		if (mpierr)
-		    ierr = PIO_EIO;
+		if ((mpierr = MPI_Allreduce(&iam, &io_leader, 1, MPI_INT, MPI_MAX, peer_comm)))
+		    ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
 
 		/* Find the rank of the comp leader in peer_comm. */
 		if (!my_iosys->comp_rank)
 		{
-		    mpierr = MPI_Comm_rank(peer_comm, &iam);
-		    CheckMPIReturn(mpierr, __FILE__, __LINE__);
-		    if (mpierr)
-			ierr = PIO_EIO;
+		    if ((mpierr = MPI_Comm_rank(peer_comm, &iam)))
+			ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
 		}
 		else
 		    iam = -1;
 
 		/* Find the lucky comp_leader task. */
-		mpierr = MPI_Allreduce(&iam, &comp_leader, 1, MPI_INT, MPI_MAX, peer_comm);
-		CheckMPIReturn(mpierr, __FILE__, __LINE__);
-		if (mpierr)
-		    ierr = PIO_EIO;
+		if ((mpierr = MPI_Allreduce(&iam, &comp_leader, 1, MPI_INT, MPI_MAX, peer_comm)))
+		    ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
 
 		/* Is this the compmaster? Only if the comp_rank is zero. */
 		if (!my_iosys->comp_rank)
@@ -1887,17 +1874,13 @@ int PIOc_Init_Intercomm(int component_count, MPI_Comm peer_comm,
 		    my_iosys->compmaster = MPI_PROC_NULL;
 
 		/* Set up the intercomm from the computation side. */
-		mpierr = MPI_Intercomm_create(my_iosys->comp_comm, 0, peer_comm,
-					      io_leader, cmp, &my_iosys->intercomm);
-		CheckMPIReturn(mpierr, __FILE__, __LINE__);
-		if (mpierr)
-		    ierr = PIO_EIO;
+		if ((mpierr = MPI_Intercomm_create(my_iosys->comp_comm, 0, peer_comm,
+						   io_leader, cmp, &my_iosys->intercomm)))
+		    ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
 
 		/* Create the union communicator. */
-		mpierr = MPI_Intercomm_merge(my_iosys->intercomm, 0, &my_iosys->union_comm);
-		CheckMPIReturn(mpierr, __FILE__, __LINE__);
-		if (mpierr)
-		    ierr = PIO_EIO;
+		if ((mpierr = MPI_Intercomm_merge(my_iosys->intercomm, 0, &my_iosys->union_comm)))
+		    ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
 	    }
 	    else
 	    {
@@ -1911,52 +1894,38 @@ int PIOc_Init_Intercomm(int component_count, MPI_Comm peer_comm,
 	    if (io_comm != MPI_COMM_NULL)
 	    {
 		/* Copy the IO communicator. */
-		mpierr = MPI_Comm_dup(io_comm, &my_iosys->io_comm);
-		CheckMPIReturn(mpierr, __FILE__, __LINE__);
-		if (mpierr)
-		    ierr = PIO_EIO;
+		if ((mpierr = MPI_Comm_dup(io_comm, &my_iosys->io_comm)))
+		    ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
 
 		/* Get an MPI group that includes the io tasks. */
-		mpierr = MPI_Comm_group(my_iosys->io_comm, &my_iosys->iogroup);
-		CheckMPIReturn(mpierr, __FILE__, __LINE__);
-		if (mpierr)
-		    ierr = PIO_EIO;
+		if ((mpierr = MPI_Comm_group(my_iosys->io_comm, &my_iosys->iogroup)))
+		    ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
 
 		/* Find out how many tasks are in this communicator. */
-		mpierr = MPI_Comm_size(iosys->io_comm, &my_iosys->num_iotasks);
-		CheckMPIReturn(mpierr, __FILE__, __LINE__);
-		if (mpierr)
-		    ierr = PIO_EIO;
+		if ((mpierr = MPI_Comm_size(iosys->io_comm, &my_iosys->num_iotasks)))
+		    ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
 
 		/* Set the rank within the io_comm. */
-		mpierr = MPI_Comm_rank(my_iosys->io_comm, &my_iosys->io_rank);
-		CheckMPIReturn(mpierr, __FILE__, __LINE__);
-		if (mpierr)
-		    ierr = PIO_EIO;
+		if ((mpierr = MPI_Comm_rank(my_iosys->io_comm, &my_iosys->io_rank)))
+		    ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
 
 		/* Find the rank of the io leader in peer_comm. */
 		if (!my_iosys->io_rank)
 		{
-		    mpierr = MPI_Comm_rank(peer_comm, &iam);
-		    CheckMPIReturn(mpierr, __FILE__, __LINE__);
-		    if (mpierr)
-			ierr = PIO_EIO;
+		    if ((mpierr = MPI_Comm_rank(peer_comm, &iam)))
+			ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
 		}
 		else
 		    iam = -1;
 
 		/* Find the lucky io_leader task. */
-		mpierr = MPI_Allreduce(&iam, &io_leader, 1, MPI_INT, MPI_MAX, peer_comm);
-		CheckMPIReturn(mpierr, __FILE__, __LINE__);
-		if (mpierr)
-		    ierr = PIO_EIO;
+		if ((mpierr = MPI_Allreduce(&iam, &io_leader, 1, MPI_INT, MPI_MAX, peer_comm)))
+		    ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
 
 		/* Find the rank of the comp leader in peer_comm. */
 		iam = -1;
-		mpierr = MPI_Allreduce(&iam, &comp_leader, 1, MPI_INT, MPI_MAX, peer_comm);
-		CheckMPIReturn(mpierr, __FILE__, __LINE__);
-		if (mpierr)
-		    ierr = PIO_EIO;
+		if ((mpierr = MPI_Allreduce(&iam, &comp_leader, 1, MPI_INT, MPI_MAX, peer_comm)))
+		    ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
 
 		/* This is an io task. */
 		my_iosys->ioproc = true;
@@ -1971,18 +1940,13 @@ int PIOc_Init_Intercomm(int component_count, MPI_Comm peer_comm,
 		    my_iosys->iomaster = 0;
 
 		/* Set up the intercomm from the I/O side. */
-		mpierr = MPI_Intercomm_create(my_iosys->io_comm, 0, peer_comm,
-					      comp_leader, cmp, &my_iosys->intercomm);
-		CheckMPIReturn(mpierr, __FILE__, __LINE__);
-		if (mpierr)
-		    ierr = PIO_EIO;
+		if ((mpierr = MPI_Intercomm_create(my_iosys->io_comm, 0, peer_comm,
+						   comp_leader, cmp, &my_iosys->intercomm)))
+		    ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
 
 		/* Create the union communicator. */
-		mpierr = MPI_Intercomm_merge(my_iosys->intercomm, 0, &my_iosys->union_comm);
-		CheckMPIReturn(mpierr, __FILE__, __LINE__);
-		if (mpierr)
-		    ierr = PIO_EIO;
-
+		if ((mpierr = MPI_Intercomm_merge(my_iosys->intercomm, 0, &my_iosys->union_comm)))
+		    ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);		
 	    }
 	    else
 	    {
@@ -2000,10 +1964,8 @@ int PIOc_Init_Intercomm(int component_count, MPI_Comm peer_comm,
 	    my_iosys->my_comm = my_iosys->union_comm;
 
 	    /* Find rank in union communicator. */
-	    mpierr = MPI_Comm_rank(my_iosys->union_comm, &my_iosys->union_rank);
-	    CheckMPIReturn(mpierr, __FILE__, __LINE__);
-	    if (mpierr)
-		ierr = PIO_EIO;
+	    if ((mpierr = MPI_Comm_rank(my_iosys->union_comm, &my_iosys->union_rank)))
+		ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);		
 
 	    /* Find the rank of the io leader in the union communicator. */
 	    if (!my_iosys->io_rank)
@@ -2012,11 +1974,9 @@ int PIOc_Init_Intercomm(int component_count, MPI_Comm peer_comm,
 		my_iosys->ioroot = -1;
 
 	    /* Distribute the answer to all tasks. */
-	    mpierr = MPI_Allreduce(&my_iosys->ioroot, &root, 1, MPI_INT, MPI_MAX,
-				   my_iosys->union_comm);
-	    CheckMPIReturn(mpierr, __FILE__, __LINE__);
-	    if (mpierr)
-		ierr = PIO_EIO;
+	    if ((mpierr = MPI_Allreduce(&my_iosys->ioroot, &root, 1, MPI_INT, MPI_MAX,
+					my_iosys->union_comm)))
+		ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);		
 	    my_iosys->ioroot = root;
 
 	    /* Find the rank of the computation leader in the union
@@ -2027,11 +1987,9 @@ int PIOc_Init_Intercomm(int component_count, MPI_Comm peer_comm,
 		my_iosys->comproot = -1;
 
 	    /* Distribute the answer to all tasks. */
-	    mpierr = MPI_Allreduce(&my_iosys->comproot, &root, 1, MPI_INT, MPI_MAX,
-				   my_iosys->union_comm);
-	    CheckMPIReturn(mpierr, __FILE__, __LINE__);
-	    if (mpierr)
-		ierr = PIO_EIO;
+	    if ((mpierr = MPI_Allreduce(&my_iosys->comproot, &root, 1, MPI_INT, MPI_MAX,
+					my_iosys->union_comm)))
+		ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);			    
 	    my_iosys->comproot = root;
 
 	    /* Send the number of tasks in the IO and computation
@@ -2044,22 +2002,22 @@ int PIOc_Init_Intercomm(int component_count, MPI_Comm peer_comm,
 	    if (io_comm != MPI_COMM_NULL)
 	    {
 		comp_master = 0;
-		mpierr = MPI_Bcast(&my_iosys->num_comptasks, 1, MPI_INT, comp_master,
-				   my_iosys->intercomm);
-		CheckMPIReturn(mpierr, __FILE__, __LINE__);
-		mpierr = MPI_Bcast(&my_iosys->num_iotasks, 1, MPI_INT, io_master,
-				   my_iosys->intercomm);
-		CheckMPIReturn(mpierr, __FILE__, __LINE__);
+		if ((mpierr = MPI_Bcast(&my_iosys->num_comptasks, 1, MPI_INT, comp_master,
+					my_iosys->intercomm)))
+		    ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);			    
+		if ((mpierr = MPI_Bcast(&my_iosys->num_iotasks, 1, MPI_INT, io_master,
+					my_iosys->intercomm)))
+		    ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);			    
 	    }
 	    else
 	    {
 		io_master = 0;
-		mpierr = MPI_Bcast(&my_iosys->num_comptasks, 1, MPI_INT, comp_master,
-				   my_iosys->intercomm);
-		CheckMPIReturn(mpierr, __FILE__, __LINE__);
-		mpierr = MPI_Bcast(&my_iosys->num_iotasks, 1, MPI_INT, io_master,
-				   my_iosys->intercomm);
-		CheckMPIReturn(mpierr, __FILE__, __LINE__);
+		if ((mpierr = MPI_Bcast(&my_iosys->num_comptasks, 1, MPI_INT, comp_master,
+					my_iosys->intercomm)))
+		    ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);			    
+		if ((mpierr = MPI_Bcast(&my_iosys->num_iotasks, 1, MPI_INT, io_master,
+					my_iosys->intercomm)))
+		    ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);			    
 	    }
 
 	    /* Allocate an array to hold the ranks of the IO tasks
@@ -2078,9 +2036,9 @@ int PIOc_Init_Intercomm(int component_count, MPI_Comm peer_comm,
 		tmp_ioranks[cnt] = -1;
 	    if (io_comm != MPI_COMM_NULL)
 		tmp_ioranks[my_iosys->io_rank] = my_iosys->union_rank;
-	    mpierr = MPI_Allreduce(tmp_ioranks, my_iosys->ioranks, my_iosys->num_iotasks, MPI_INT, MPI_MAX,
-				   my_iosys->union_comm);
-	    CheckMPIReturn(mpierr, __FILE__, __LINE__);
+	    if ((mpierr = MPI_Allreduce(tmp_ioranks, my_iosys->ioranks, my_iosys->num_iotasks, MPI_INT, MPI_MAX,
+					my_iosys->union_comm)))
+		ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);			    
 
 	    /* Free temp array. */
 	    free(tmp_ioranks);
@@ -2115,12 +2073,8 @@ int PIOc_Init_Intercomm(int component_count, MPI_Comm peer_comm,
 
     /* If there was an error, make sure all tasks see it. */
     if (ierr)
-    {
-	mpierr = MPI_Bcast(&ierr, 1, MPI_INT, 0, iosys->intercomm);
-	CheckMPIReturn(mpierr, __FILE__, __LINE__);
-	if (mpierr)
-	    ierr = PIO_EIO;
-    }
+	if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, 0, iosys->intercomm)))
+	    ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);			    
 
     return ierr;
 }

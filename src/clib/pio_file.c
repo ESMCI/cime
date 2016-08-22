@@ -138,9 +138,8 @@ int PIOc_openfile_retry(const int iosysid, int *ncidp, int *iotype,
 #endif
 
 	case PIO_IOTYPE_NETCDF:
-	    if(ios->io_rank==0){
+	    if (ios->io_rank == 0)
 		ierr = nc_open(filename, file->mode, &file->fh);
-	    }
 	    break;
 #endif
 
