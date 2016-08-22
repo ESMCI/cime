@@ -1818,278 +1818,274 @@ int PIOc_Init_Intercomm(int component_count, MPI_Comm peer_comm,
 
     /* Is this task part of a computation communicator? If so,
      * one of the comp_comm array members will be non-null. */
-    int cmp;
-    for (cmp = 0; cmp < component_count; cmp++)
-    	if (comp_comms[cmp] != MPI_COMM_NULL)
+    int cmp1;
+    for (cmp1 = 0; cmp1 < component_count; cmp1++)
+    	if (comp_comms[cmp1] != MPI_COMM_NULL)
     	    break;
-    LOG((2, "cmp = %d", cmp));
+    LOG((2, "cmp1 = %d", cmp1));
 
-    for (cmp = 0; cmp < component_count; cmp++)
+    int cmp = 0;
+
+    /* These are used when using the intercomm. */
+    int comp_master = MPI_PROC_NULL, io_master = MPI_PROC_NULL;
+
+    /* Get a pointer to the iosys struct */
+    my_iosys = &iosys[cmp];
+
+    /* Create an MPI info object. */
+    if ((mpierr = MPI_Info_create(&my_iosys->info)))
+	ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
+
+    /* This task is part of the computation communicator. */
+    if (comp_comms[cmp] != MPI_COMM_NULL)
     {
-	LOG((2, "comp_comms[%d] = %d (MPI_COMM_NULL = %d)", cmp, comp_comms[cmp],
-	     MPI_COMM_NULL));
+	LOG((2, "This is part of computation component %d", cmp));
 
-	/* These are used when using the intercomm. */
-	int comp_master = MPI_PROC_NULL, io_master = MPI_PROC_NULL;
+	/* Copy the computation communicator. */
+	if ((mpierr = MPI_Comm_dup(comp_comms[cmp], &my_iosys->comp_comm)))
+	    ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
+	LOG((3, "copied comm to %d", my_iosys->comp_comm));
 
-	/* Get a pointer to the iosys struct */
-	my_iosys = &iosys[cmp];
-
-	/* Create an MPI info object. */
-	if ((mpierr = MPI_Info_create(&my_iosys->info)))
+	/* Create an MPI group with the computation tasks. */
+	if ((mpierr = MPI_Comm_group(my_iosys->comp_comm, &my_iosys->compgroup)))
 	    ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
 
-	/* This task is part of the computation communicator. */
-	if (comp_comms[cmp] != MPI_COMM_NULL)
-	{
-	    LOG((2, "This is part of computation component %d", cmp));
-
-	    /* Copy the computation communicator. */
-	    if ((mpierr = MPI_Comm_dup(comp_comms[cmp], &my_iosys->comp_comm)))
-		ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
-	    LOG((3, "copied comm to %d", my_iosys->comp_comm));
-
-	    /* Create an MPI group with the computation tasks. */
-	    if ((mpierr = MPI_Comm_group(my_iosys->comp_comm, &my_iosys->compgroup)))
-		ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
-
-	    /* Find out how many tasks are in this communicator. */
-	    if ((mpierr = MPI_Comm_size(iosys->comp_comm, &my_iosys->num_comptasks)))
-		ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
-
-	    /* Set the rank within the comp_comm. */
-	    if ((mpierr = MPI_Comm_rank(my_iosys->comp_comm, &my_iosys->comp_rank)))
-		ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
-
-	    /* Find the rank of the io leader in peer_comm. */
-	    iam = -1;
-	    if ((mpierr = MPI_Allreduce(&iam, &io_leader, 1, MPI_INT, MPI_MAX, peer_comm)))
-		ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
-
-	    /* Find the rank of the comp leader in peer_comm. */
-	    if (!my_iosys->comp_rank)
-	    {
-		if ((mpierr = MPI_Comm_rank(peer_comm, &iam)))
-		    ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
-	    }
-	    else
-		iam = -1;
-
-	    /* Find the lucky comp_leader task. */
-	    if ((mpierr = MPI_Allreduce(&iam, &comp_leader, 1, MPI_INT, MPI_MAX, peer_comm)))
-		ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
-
-	    /* Is this the compmaster? Only if the comp_rank is zero. */
-	    if (!my_iosys->comp_rank)
-	    {
-		my_iosys->compmaster = MPI_ROOT;
-		comp_master = MPI_ROOT;
-	    }
-	    else
-		my_iosys->compmaster = MPI_PROC_NULL;
-
-	    /* Set up the intercomm from the computation side. */
-	    if ((mpierr = MPI_Intercomm_create(my_iosys->comp_comm, 0, peer_comm,
-					       io_leader, cmp, &my_iosys->intercomm)))
-		ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
-
-	    /* Create the union communicator. */
-	    if ((mpierr = MPI_Intercomm_merge(my_iosys->intercomm, 0, &my_iosys->union_comm)))
-		ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
-	}
-	else
-	{
-	    my_iosys->comp_comm = MPI_COMM_NULL;
-	    my_iosys->compgroup = MPI_GROUP_NULL;
-	    my_iosys->comp_rank = -1;
-	}
-
-	/* This task is part of the IO communicator, so set up the
-	 * IO stuff. */
-	if (io_comm != MPI_COMM_NULL)
-	{
-	    LOG((2, "This is part of the IO component"));
-	    /* Copy the IO communicator. */
-	    if ((mpierr = MPI_Comm_dup(io_comm, &my_iosys->io_comm)))
-		ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
-
-	    /* Get an MPI group that includes the io tasks. */
-	    if ((mpierr = MPI_Comm_group(my_iosys->io_comm, &my_iosys->iogroup)))
-		ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
-
-	    /* Find out how many tasks are in this communicator. */
-	    if ((mpierr = MPI_Comm_size(iosys->io_comm, &my_iosys->num_iotasks)))
-		ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
-
-	    /* Set the rank within the io_comm. */
-	    if ((mpierr = MPI_Comm_rank(my_iosys->io_comm, &my_iosys->io_rank)))
-		ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
-
-	    /* Find the rank of the io leader in peer_comm. */
-	    if (!my_iosys->io_rank)
-	    {
-		if ((mpierr = MPI_Comm_rank(peer_comm, &iam)))
-		    ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
-	    }
-	    else
-		iam = -1;
-
-	    /* Find the lucky io_leader task. */
-	    if ((mpierr = MPI_Allreduce(&iam, &io_leader, 1, MPI_INT, MPI_MAX, peer_comm)))
-		ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
-
-	    /* Find the rank of the comp leader in peer_comm. */
-	    iam = -1;
-	    if ((mpierr = MPI_Allreduce(&iam, &comp_leader, 1, MPI_INT, MPI_MAX, peer_comm)))
-		ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
-
-	    /* This is an io task. */
-	    my_iosys->ioproc = true;
-
-	    /* Is this the iomaster? Only if the io_rank is zero. */
-	    if (!my_iosys->io_rank)
-	    {
-		my_iosys->iomaster = MPI_ROOT;
-		io_master = MPI_ROOT;
-	    }
-	    else
-		my_iosys->iomaster = 0;
-
-	    /* Set up the intercomm from the I/O side. */
-	    if ((mpierr = MPI_Intercomm_create(my_iosys->io_comm, 0, peer_comm,
-					       comp_leader, cmp, &my_iosys->intercomm)))
-		ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
-
-	    /* Create the union communicator. */
-	    if ((mpierr = MPI_Intercomm_merge(my_iosys->intercomm, 0, &my_iosys->union_comm)))
-		ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
-	}
-	else
-	{
-	    my_iosys->io_comm = MPI_COMM_NULL;
-	    my_iosys->iogroup = MPI_GROUP_NULL;
-	    my_iosys->io_rank = -1;
-	    my_iosys->ioproc = false;
-	    my_iosys->iomaster = false;
-	}
-
-	/* my_comm points to the union communicator for async, and
-	 * the comp_comm for non-async. It should not be freed
-	 * since it is not a proper copy of the commuicator, just
-	 * a copy of the reference to it. */
-	my_iosys->my_comm = my_iosys->union_comm;
-	LOG((3, "setting iosys->my_comm = %d", iosys->my_comm));
-
-	/* Find rank in union communicator. */
-	if ((mpierr = MPI_Comm_rank(my_iosys->union_comm, &my_iosys->union_rank)))
+	/* Find out how many tasks are in this communicator. */
+	if ((mpierr = MPI_Comm_size(iosys->comp_comm, &my_iosys->num_comptasks)))
 	    ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
-	LOG((3, "union rank = %d", iosys->union_rank));	    
 
-	/* Find the rank of the io leader in the union communicator. */
-	if (!my_iosys->io_rank)
-	    my_iosys->ioroot = my_iosys->union_rank;
-	else
-	    my_iosys->ioroot = -1;
-	LOG((3, "before allreduce iosys->ioroot = %d", iosys->ioroot));
-	    
-	/* Distribute the answer to all tasks. */
-	if ((mpierr = MPI_Allreduce(&my_iosys->ioroot, &root, 1, MPI_INT, MPI_MAX,
-				    my_iosys->union_comm)))
+	/* Set the rank within the comp_comm. */
+	if ((mpierr = MPI_Comm_rank(my_iosys->comp_comm, &my_iosys->comp_rank)))
 	    ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
-	my_iosys->ioroot = root;
-	LOG((3, "after allreduce iosys->ioroot = %d", iosys->ioroot));
 
-	/* Find the rank of the computation leader in the union
-	 * communicator. */
+	/* Find the rank of the io leader in peer_comm. */
+	iam = -1;
+	if ((mpierr = MPI_Allreduce(&iam, &io_leader, 1, MPI_INT, MPI_MAX, peer_comm)))
+	    ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
+
+	/* Find the rank of the comp leader in peer_comm. */
 	if (!my_iosys->comp_rank)
-	    my_iosys->comproot = my_iosys->union_rank;
-	else
-	    my_iosys->comproot = -1;
-
-	/* Distribute the answer to all tasks. */
-	if ((mpierr = MPI_Allreduce(&my_iosys->comproot, &root, 1, MPI_INT, MPI_MAX,
-				    my_iosys->union_comm)))
-	    ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
-	my_iosys->comproot = root;
-	LOG((3, "after allreduce iosys->comproot = %d", iosys->comproot));
-
-	/* Send the number of tasks in the IO and computation
-	   communicators to each other over the intercomm. This is
-	   a one-to-all bcast from the local task that passes
-	   MPI_ROOT as the root (all other local tasks should pass
-	   MPI_PROC_NULL as the root). The bcast is recieved by
-	   all the members of the leaf group which each pass the
-	   rank of the root relative to the root group. */
-	if (io_comm != MPI_COMM_NULL)
 	{
-	    comp_master = 0;
-	    if ((mpierr = MPI_Bcast(&my_iosys->num_comptasks, 1, MPI_INT, comp_master,
-				    my_iosys->intercomm)))
-		ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
-	    if ((mpierr = MPI_Bcast(&my_iosys->num_iotasks, 1, MPI_INT, io_master,
-				    my_iosys->intercomm)))
+	    if ((mpierr = MPI_Comm_rank(peer_comm, &iam)))
 		ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
 	}
 	else
-	{
-	    io_master = 0;
-	    if ((mpierr = MPI_Bcast(&my_iosys->num_comptasks, 1, MPI_INT, comp_master,
-				    my_iosys->intercomm)))
-		ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
-	    if ((mpierr = MPI_Bcast(&my_iosys->num_iotasks, 1, MPI_INT, io_master,
-				    my_iosys->intercomm)))
-		ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
-	}
+	    iam = -1;
 
-	/* Allocate an array to hold the ranks of the IO tasks
-	 * within the union communicator. */
-	if (!(my_iosys->ioranks = malloc(my_iosys->num_iotasks * sizeof(int))))
-	    return PIO_ENOMEM;
-
-	/* Allocate a temp array to help get the IO ranks. */
-	int *tmp_ioranks;
-	if (!(tmp_ioranks = malloc(my_iosys->num_iotasks * sizeof(int))))
-	    return PIO_ENOMEM;
-
-	/* Init array, then have IO tasks set their values, then
-	 * use allreduce to distribute results to all tasks. */
-	for (int cnt = 0 ; cnt < my_iosys->num_iotasks; cnt++)
-	    tmp_ioranks[cnt] = -1;
-	if (io_comm != MPI_COMM_NULL)
-	    tmp_ioranks[my_iosys->io_rank] = my_iosys->union_rank;
-	if ((mpierr = MPI_Allreduce(tmp_ioranks, my_iosys->ioranks, my_iosys->num_iotasks, MPI_INT, MPI_MAX,
-				    my_iosys->union_comm)))
+	/* Find the lucky comp_leader task. */
+	if ((mpierr = MPI_Allreduce(&iam, &comp_leader, 1, MPI_INT, MPI_MAX, peer_comm)))
 	    ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
 
-	/* Free temp array. */
-	free(tmp_ioranks);
-
-	/* Set the default error handling. */
-	my_iosys->error_handler = PIO_INTERNAL_ERROR;
-
-	/* We do support asynch interface. */
-	my_iosys->async_interface = true;
-
-	/* Uncomment the following to print out some debug info. */
-	int my_rank;
-	MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
-	for (int t = 0; t < my_iosys->num_iotasks + my_iosys->num_comptasks; t++)
+	/* Is this the compmaster? Only if the comp_rank is zero. */
+	if (!my_iosys->comp_rank)
 	{
-	    MPI_Barrier(my_iosys->union_comm);
-	    if (my_rank == t)
-		pio_iosys_print(my_rank, my_iosys);
+	    my_iosys->compmaster = MPI_ROOT;
+	    comp_master = MPI_ROOT;
 	}
+	else
+	    my_iosys->compmaster = MPI_PROC_NULL;
 
-	/* Add this id to the list of PIO iosystem ids. */
-	iosysidp[cmp] = pio_add_to_iosystem_list(my_iosys);
-	LOG((2, "added to iosystem_list iosysid = %d", iosysidp[cmp]));
+	/* Set up the intercomm from the computation side. */
+	if ((mpierr = MPI_Intercomm_create(my_iosys->comp_comm, 0, peer_comm,
+					   io_leader, cmp, &my_iosys->intercomm)))
+	    ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
 
-	/* Now call the function from which the IO tasks will not
-	 * return until the PIO_MSG_EXIT message is sent. */
-	if (io_comm != MPI_COMM_NULL)
-	    if ((ierr = pio_msg_handler(my_iosys->io_rank, component_count, iosys)))
-		return ierr;
+	/* Create the union communicator. */
+	if ((mpierr = MPI_Intercomm_merge(my_iosys->intercomm, 0, &my_iosys->union_comm)))
+	    ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
     }
+    else
+    {
+	my_iosys->comp_comm = MPI_COMM_NULL;
+	my_iosys->compgroup = MPI_GROUP_NULL;
+	my_iosys->comp_rank = -1;
+    }
+
+    /* This task is part of the IO communicator, so set up the
+     * IO stuff. */
+    if (io_comm != MPI_COMM_NULL)
+    {
+	LOG((2, "This is part of the IO component"));
+	/* Copy the IO communicator. */
+	if ((mpierr = MPI_Comm_dup(io_comm, &my_iosys->io_comm)))
+	    ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
+
+	/* Get an MPI group that includes the io tasks. */
+	if ((mpierr = MPI_Comm_group(my_iosys->io_comm, &my_iosys->iogroup)))
+	    ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
+
+	/* Find out how many tasks are in this communicator. */
+	if ((mpierr = MPI_Comm_size(iosys->io_comm, &my_iosys->num_iotasks)))
+	    ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
+
+	/* Set the rank within the io_comm. */
+	if ((mpierr = MPI_Comm_rank(my_iosys->io_comm, &my_iosys->io_rank)))
+	    ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
+
+	/* Find the rank of the io leader in peer_comm. */
+	if (!my_iosys->io_rank)
+	{
+	    if ((mpierr = MPI_Comm_rank(peer_comm, &iam)))
+		ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
+	}
+	else
+	    iam = -1;
+
+	/* Find the lucky io_leader task. */
+	if ((mpierr = MPI_Allreduce(&iam, &io_leader, 1, MPI_INT, MPI_MAX, peer_comm)))
+	    ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
+
+	/* Find the rank of the comp leader in peer_comm. */
+	iam = -1;
+	if ((mpierr = MPI_Allreduce(&iam, &comp_leader, 1, MPI_INT, MPI_MAX, peer_comm)))
+	    ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
+
+	/* This is an io task. */
+	my_iosys->ioproc = true;
+
+	/* Is this the iomaster? Only if the io_rank is zero. */
+	if (!my_iosys->io_rank)
+	{
+	    my_iosys->iomaster = MPI_ROOT;
+	    io_master = MPI_ROOT;
+	}
+	else
+	    my_iosys->iomaster = 0;
+
+	/* Set up the intercomm from the I/O side. */
+	if ((mpierr = MPI_Intercomm_create(my_iosys->io_comm, 0, peer_comm,
+					   comp_leader, cmp, &my_iosys->intercomm)))
+	    ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
+
+	/* Create the union communicator. */
+	if ((mpierr = MPI_Intercomm_merge(my_iosys->intercomm, 0, &my_iosys->union_comm)))
+	    ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
+    }
+    else
+    {
+	my_iosys->io_comm = MPI_COMM_NULL;
+	my_iosys->iogroup = MPI_GROUP_NULL;
+	my_iosys->io_rank = -1;
+	my_iosys->ioproc = false;
+	my_iosys->iomaster = false;
+    }
+
+    /* my_comm points to the union communicator for async, and
+     * the comp_comm for non-async. It should not be freed
+     * since it is not a proper copy of the commuicator, just
+     * a copy of the reference to it. */
+    my_iosys->my_comm = my_iosys->union_comm;
+    LOG((3, "setting iosys->my_comm = %d", iosys->my_comm));
+
+    /* Find rank in union communicator. */
+    if ((mpierr = MPI_Comm_rank(my_iosys->union_comm, &my_iosys->union_rank)))
+	ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
+    LOG((3, "union rank = %d", iosys->union_rank));	    
+
+    /* Find the rank of the io leader in the union communicator. */
+    if (!my_iosys->io_rank)
+	my_iosys->ioroot = my_iosys->union_rank;
+    else
+	my_iosys->ioroot = -1;
+    LOG((3, "before allreduce iosys->ioroot = %d", iosys->ioroot));
+	    
+    /* Distribute the answer to all tasks. */
+    if ((mpierr = MPI_Allreduce(&my_iosys->ioroot, &root, 1, MPI_INT, MPI_MAX,
+				my_iosys->union_comm)))
+	ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
+    my_iosys->ioroot = root;
+    LOG((3, "after allreduce iosys->ioroot = %d", iosys->ioroot));
+
+    /* Find the rank of the computation leader in the union
+     * communicator. */
+    if (!my_iosys->comp_rank)
+	my_iosys->comproot = my_iosys->union_rank;
+    else
+	my_iosys->comproot = -1;
+
+    /* Distribute the answer to all tasks. */
+    if ((mpierr = MPI_Allreduce(&my_iosys->comproot, &root, 1, MPI_INT, MPI_MAX,
+				my_iosys->union_comm)))
+	ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
+    my_iosys->comproot = root;
+    LOG((3, "after allreduce iosys->comproot = %d", iosys->comproot));
+
+    /* Send the number of tasks in the IO and computation
+       communicators to each other over the intercomm. This is
+       a one-to-all bcast from the local task that passes
+       MPI_ROOT as the root (all other local tasks should pass
+       MPI_PROC_NULL as the root). The bcast is recieved by
+       all the members of the leaf group which each pass the
+       rank of the root relative to the root group. */
+    if (io_comm != MPI_COMM_NULL)
+    {
+	comp_master = 0;
+	if ((mpierr = MPI_Bcast(&my_iosys->num_comptasks, 1, MPI_INT, comp_master,
+				my_iosys->intercomm)))
+	    ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
+	if ((mpierr = MPI_Bcast(&my_iosys->num_iotasks, 1, MPI_INT, io_master,
+				my_iosys->intercomm)))
+	    ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
+    }
+    else
+    {
+	io_master = 0;
+	if ((mpierr = MPI_Bcast(&my_iosys->num_comptasks, 1, MPI_INT, comp_master,
+				my_iosys->intercomm)))
+	    ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
+	if ((mpierr = MPI_Bcast(&my_iosys->num_iotasks, 1, MPI_INT, io_master,
+				my_iosys->intercomm)))
+	    ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
+    }
+
+    /* Allocate an array to hold the ranks of the IO tasks
+     * within the union communicator. */
+    if (!(my_iosys->ioranks = malloc(my_iosys->num_iotasks * sizeof(int))))
+	return PIO_ENOMEM;
+
+    /* Allocate a temp array to help get the IO ranks. */
+    int *tmp_ioranks;
+    if (!(tmp_ioranks = malloc(my_iosys->num_iotasks * sizeof(int))))
+	return PIO_ENOMEM;
+
+    /* Init array, then have IO tasks set their values, then
+     * use allreduce to distribute results to all tasks. */
+    for (int cnt = 0 ; cnt < my_iosys->num_iotasks; cnt++)
+	tmp_ioranks[cnt] = -1;
+    if (io_comm != MPI_COMM_NULL)
+	tmp_ioranks[my_iosys->io_rank] = my_iosys->union_rank;
+    if ((mpierr = MPI_Allreduce(tmp_ioranks, my_iosys->ioranks, my_iosys->num_iotasks, MPI_INT, MPI_MAX,
+				my_iosys->union_comm)))
+	ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
+
+    /* Free temp array. */
+    free(tmp_ioranks);
+
+    /* Set the default error handling. */
+    my_iosys->error_handler = PIO_INTERNAL_ERROR;
+
+    /* We do support asynch interface. */
+    my_iosys->async_interface = true;
+
+    /* Uncomment the following to print out some debug info. */
+    int my_rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
+    for (int t = 0; t < my_iosys->num_iotasks + my_iosys->num_comptasks; t++)
+    {
+	MPI_Barrier(my_iosys->union_comm);
+	if (my_rank == t)
+	    pio_iosys_print(my_rank, my_iosys);
+    }
+
+    /* Add this id to the list of PIO iosystem ids. */
+    iosysidp[cmp] = pio_add_to_iosystem_list(my_iosys);
+    LOG((2, "added to iosystem_list iosysid = %d", iosysidp[cmp]));
+
+    /* Now call the function from which the IO tasks will not
+     * return until the PIO_MSG_EXIT message is sent. */
+    if (io_comm != MPI_COMM_NULL)
+	if ((ierr = pio_msg_handler(my_iosys->io_rank, component_count, iosys)))
+	    return ierr;
 
     /* If there was an error, make sure all tasks see it. */
     if (ierr)
