@@ -423,6 +423,10 @@ main(int argc, char **argv)
     if ((ret = init_io(MPI_COMM_WORLD, COMPONENT_COUNT, color, comp_comms, &io_comm,
 		       &comp_task, verbose)))
 	ERR(ERR_AWFUL);
+    if (verbose)
+	printf("%d IO system initialized\n", my_rank);
+
+    MPI_Barrier(MPI_COMM_WORLD);    
     
     /* /\* Initialize the async setup. *\/ */
     /* if ((ret = PIOc_Init_Intercomm(COMPONENT_COUNT, MPI_COMM_WORLD, comp_comms, */
@@ -432,6 +436,7 @@ main(int argc, char **argv)
     /* 	printf("%d test_intercomm2 init intercomm returned %d iosysid = %d\n", my_rank, ret, */
     /* 	       iosysid); */
 
+    MPI_Barrier(MPI_COMM_WORLD);    
     /* /\* All the netCDF calls are only executed on the computation */
     /*  * tasks. The IO tasks have not returned from PIOc_Init_Intercomm, */
     /*  * and when the do, they should go straight to finalize. *\/ */
