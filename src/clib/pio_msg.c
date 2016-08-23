@@ -1680,6 +1680,23 @@ pio_iosys_print(int my_rank, iosystem_desc_t *iosys)
  *
  */
 int
+init_io_comm(MPI_Comm io_comm, iosystem_desc_t *my_iosys, MPI_Comm peer_comm,
+	     int cmp, int *comp_leader, int *io_leader)
+{
+    int iam;
+    int mpierr;
+    int ierr = PIO_NOERR;
+
+    return ierr;
+}
+
+/** 
+ * Initialize a computation communicator. This is only run on tasks
+ * that are part of a computation component. It is run for each
+ * computation component.
+ *
+ */
+int
 init_comp_comm(MPI_Comm comp_comm, iosystem_desc_t *my_iosys, MPI_Comm peer_comm,
 	       int cmp, int *comp_leader, int *io_leader)
 {
@@ -1925,6 +1942,9 @@ int PIOc_Init_Intercomm(int component_count, MPI_Comm peer_comm,
     if (io_comm != MPI_COMM_NULL)
     {
 	LOG((2, "This is part of the IO component"));
+
+	ierr = init_io_comm(io_comm, my_iosys, peer_comm, cmp,
+			    &comp_leader, &io_leader);
 
 	/* Copy the IO communicator. */
 	if ((mpierr = MPI_Comm_dup(io_comm, &my_iosys->io_comm)))
