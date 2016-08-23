@@ -1703,6 +1703,27 @@ init_io_comm(MPI_Comm io_comm, iosystem_desc_t *my_iosys, MPI_Comm peer_comm,
     if ((mpierr = MPI_Comm_rank(my_iosys->io_comm, &my_iosys->io_rank)))
 	ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
 
+    /* Find the rank of the io leader in peer_comm. */
+    if (!my_iosys->io_rank)
+    {
+	if ((mpierr = MPI_Comm_rank(peer_comm, &iam)))
+	    ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
+    }
+    else
+	iam = -1;
+
+    /* Find the lucky io_leader task. */
+    if ((mpierr = MPI_Allreduce(&iam, io_leader, 1, MPI_INT, MPI_MAX, peer_comm)))
+	ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
+
+    /* Find the rank of the comp leader in peer_comm. */
+    iam = -1;
+    if ((mpierr = MPI_Allreduce(&iam, comp_leader, 1, MPI_INT, MPI_MAX, peer_comm)))
+	ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
+
+    /* This is an io task. */
+    my_iosys->ioproc = true;
+
     return ierr;
 }
 
@@ -1928,11 +1949,12 @@ int PIOc_Init_Intercomm(int component_count, MPI_Comm peer_comm,
 
     int cmp = 0;
 
-    /* These are used when using the intercomm. */
-    int io_master = MPI_PROC_NULL;
-
     /* Get a pointer to the iosys struct */
     my_iosys = &iosys[cmp];
+
+    /* These are used when using the intercomm. */
+    int io_master = MPI_PROC_NULL;
+    my_iosys->iomaster = MPI_PROC_NULL;
 
     /* Create an MPI info object. */
     if ((mpierr = MPI_Info_create(&my_iosys->info)))
@@ -1961,28 +1983,6 @@ int PIOc_Init_Intercomm(int component_count, MPI_Comm peer_comm,
 
 	ierr = init_io_comm(io_comm, my_iosys, peer_comm, cmp,
 			    &comp_leader, &io_leader);
-
-
-	/* Find the rank of the io leader in peer_comm. */
-	if (!my_iosys->io_rank)
-	{
-	    if ((mpierr = MPI_Comm_rank(peer_comm, &iam)))
-		ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
-	}
-	else
-	    iam = -1;
-
-	/* Find the lucky io_leader task. */
-	if ((mpierr = MPI_Allreduce(&iam, &io_leader, 1, MPI_INT, MPI_MAX, peer_comm)))
-	    ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
-
-	/* Find the rank of the comp leader in peer_comm. */
-	iam = -1;
-	if ((mpierr = MPI_Allreduce(&iam, &comp_leader, 1, MPI_INT, MPI_MAX, peer_comm)))
-	    ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
-
-	/* This is an io task. */
-	my_iosys->ioproc = true;
 
 	/* Is this the iomaster? Only if the io_rank is zero. */
 	if (!my_iosys->io_rank)
@@ -2052,12 +2052,12 @@ int PIOc_Init_Intercomm(int component_count, MPI_Comm peer_comm,
     LOG((3, "after allreduce iosys->comproot = %d", iosys->comproot));
 
     /* Send the number of tasks in the IO and computation
-       communicators to each other over the intercomm. This is
-       a one-to-all bcast from the local task that passes
-       MPI_ROOT as the root (all other local tasks should pass
-       MPI_PROC_NULL as the root). The bcast is recieved by
-       all the members of the leaf group which each pass the
-       rank of the root relative to the root group. */
+       communicators to each other over the intercomm. This is a
+       one-to-all bcast from the local task that passes MPI_ROOT as
+       the root (all other local tasks should pass MPI_PROC_NULL as
+       the root). The bcast is recieved by all the members of the leaf
+       group which each pass the rank of the root relative to the root
+       group. */
     if (io_comm != MPI_COMM_NULL)
     {
 	my_iosys->compmaster = 0;
