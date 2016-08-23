@@ -1724,6 +1724,23 @@ init_io_comm(MPI_Comm io_comm, iosystem_desc_t *my_iosys, MPI_Comm peer_comm,
     /* This is an io task. */
     my_iosys->ioproc = true;
 
+    /* Is this the iomaster? Only if the io_rank is zero. */
+    if (!my_iosys->io_rank)
+    {
+	my_iosys->iomaster = MPI_ROOT;
+    }
+    else
+	my_iosys->iomaster = MPI_PROC_NULL;
+
+    /* Set up the intercomm from the I/O side. */
+    if ((mpierr = MPI_Intercomm_create(my_iosys->io_comm, 0, peer_comm,
+				       *comp_leader, cmp, &my_iosys->intercomm)))
+	ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
+
+    /* Create the union communicator. */
+    if ((mpierr = MPI_Intercomm_merge(my_iosys->intercomm, 0, &my_iosys->union_comm)))
+	ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
+
     return ierr;
 }
 
@@ -1983,23 +2000,6 @@ int PIOc_Init_Intercomm(int component_count, MPI_Comm peer_comm,
 	/* Initialize the IO component. */
 	ierr = init_io_comm(io_comm, my_iosys, peer_comm, cmp,
 			    &comp_leader, &io_leader);
-
-	/* Is this the iomaster? Only if the io_rank is zero. */
-	if (!my_iosys->io_rank)
-	{
-	    my_iosys->iomaster = MPI_ROOT;
-	}
-	else
-	    my_iosys->iomaster = MPI_PROC_NULL;
-
-	/* Set up the intercomm from the I/O side. */
-	if ((mpierr = MPI_Intercomm_create(my_iosys->io_comm, 0, peer_comm,
-					   comp_leader, cmp, &my_iosys->intercomm)))
-	    ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
-
-	/* Create the union communicator. */
-	if ((mpierr = MPI_Intercomm_merge(my_iosys->intercomm, 0, &my_iosys->union_comm)))
-	    ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
     }
     else
     {
