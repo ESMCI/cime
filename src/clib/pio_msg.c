@@ -2045,7 +2045,6 @@ int PIOc_Init_Intercomm(int component_count, MPI_Comm peer_comm,
     iosystem_desc_t *iosys;
     iosystem_desc_t *my_iosys;
     int io_leader, comp_leader;
-    int root;
     int comp_comp = 0;
     int ierr = PIO_NOERR;
     int mpierr;
@@ -2080,23 +2079,22 @@ int PIOc_Init_Intercomm(int component_count, MPI_Comm peer_comm,
 
     /* Create an MPI info object. */
     if ((mpierr = MPI_Info_create(&my_iosys->info)))
-	ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
+	return check_mpi(NULL, mpierr,__FILE__,__LINE__);
 
     /* Is this task is part of a computation communicator? */
-    if (!ierr)
-	if (cmp1 < component_count && comp_comms[cmp1] != MPI_COMM_NULL)
-	{
-	    /* Initialize the computational component. */
-	    ierr = init_comp_comm(comp_comms[cmp], my_iosys, peer_comm, cmp1,
-				  &comp_leader, &io_leader);
-	}
-	else
-	{
-	    my_iosys->comp_comm = MPI_COMM_NULL;
-	    my_iosys->compgroup = MPI_GROUP_NULL;
-	    my_iosys->comp_rank = -1;
-	}
-
+    if (cmp1 < component_count && comp_comms[cmp1] != MPI_COMM_NULL)
+    {
+	/* Initialize the computational component. */
+	ierr = init_comp_comm(comp_comms[cmp], my_iosys, peer_comm, cmp1,
+			      &comp_leader, &io_leader);
+    }
+    else
+    {
+	my_iosys->comp_comm = MPI_COMM_NULL;
+	my_iosys->compgroup = MPI_GROUP_NULL;
+	my_iosys->comp_rank = -1;
+    }
+    
     /* Is this task is part of the IO communicator? */
     if (!ierr)
 	if (io_comm != MPI_COMM_NULL)
