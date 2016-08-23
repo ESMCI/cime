@@ -2084,10 +2084,10 @@ int PIOc_Init_Intercomm(int component_count, MPI_Comm peer_comm,
 
     /* Is this task is part of a computation communicator? */
     if (!ierr)
-	if (comp_comms[cmp] != MPI_COMM_NULL)
+	if (cmp1 < component_count && comp_comms[cmp1] != MPI_COMM_NULL)
 	{
 	    /* Initialize the computational component. */
-	    ierr = init_comp_comm(comp_comms[cmp], my_iosys, peer_comm, cmp,
+	    ierr = init_comp_comm(comp_comms[cmp], my_iosys, peer_comm, cmp1,
 				  &comp_leader, &io_leader);
 	}
 	else
