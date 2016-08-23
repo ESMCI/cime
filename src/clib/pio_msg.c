@@ -1960,11 +1960,12 @@ int PIOc_Init_Intercomm(int component_count, MPI_Comm peer_comm,
     if ((mpierr = MPI_Info_create(&my_iosys->info)))
 	ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
 
-    /* This task is part of the computation communicator. */
+    /* Is this task is part of a computation communicator? */
     if (comp_comms[cmp] != MPI_COMM_NULL)
     {
 	LOG((2, "This is part of computation component %d", cmp));
 
+	/* Initialize the computational component. */
 	ierr = init_comp_comm(comp_comms[cmp], my_iosys, peer_comm, cmp,
 			      &comp_leader, &io_leader);
     }
@@ -1975,12 +1976,12 @@ int PIOc_Init_Intercomm(int component_count, MPI_Comm peer_comm,
 	my_iosys->comp_rank = -1;
     }
 
-    /* This task is part of the IO communicator, so set up the
-     * IO stuff. */
+    /* Is this task is part of the IO communicator? */
     if (io_comm != MPI_COMM_NULL)
     {
 	LOG((2, "This is part of the IO component"));
 
+	/* Initialize the IO component. */
 	ierr = init_io_comm(io_comm, my_iosys, peer_comm, cmp,
 			    &comp_leader, &io_leader);
 
@@ -1991,7 +1992,7 @@ int PIOc_Init_Intercomm(int component_count, MPI_Comm peer_comm,
 	    io_master = MPI_ROOT;
 	}
 	else
-	    my_iosys->iomaster = 0;
+	    my_iosys->iomaster = MPI_PROC_NULL;
 
 	/* Set up the intercomm from the I/O side. */
 	if ((mpierr = MPI_Intercomm_create(my_iosys->io_comm, 0, peer_comm,
@@ -2008,7 +2009,7 @@ int PIOc_Init_Intercomm(int component_count, MPI_Comm peer_comm,
 	my_iosys->iogroup = MPI_GROUP_NULL;
 	my_iosys->io_rank = -1;
 	my_iosys->ioproc = false;
-	my_iosys->iomaster = false;
+	my_iosys->iomaster = MPI_PROC_NULL;
     }
 
     /* my_comm points to the union communicator for async, and
@@ -2064,7 +2065,7 @@ int PIOc_Init_Intercomm(int component_count, MPI_Comm peer_comm,
 	if ((mpierr = MPI_Bcast(&my_iosys->num_comptasks, 1, MPI_INT, my_iosys->compmaster,
 				my_iosys->intercomm)))
 	    ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
-	if ((mpierr = MPI_Bcast(&my_iosys->num_iotasks, 1, MPI_INT, io_master,
+	if ((mpierr = MPI_Bcast(&my_iosys->num_iotasks, 1, MPI_INT, my_iosys->iomaster,
 				my_iosys->intercomm)))
 	    ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
     }
