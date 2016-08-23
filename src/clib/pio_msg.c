@@ -1687,6 +1687,22 @@ init_io_comm(MPI_Comm io_comm, iosystem_desc_t *my_iosys, MPI_Comm peer_comm,
     int mpierr;
     int ierr = PIO_NOERR;
 
+    /* Copy the IO communicator. */
+    if ((mpierr = MPI_Comm_dup(io_comm, &my_iosys->io_comm)))
+	ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
+
+    /* Get an MPI group that includes the io tasks. */
+    if ((mpierr = MPI_Comm_group(my_iosys->io_comm, &my_iosys->iogroup)))
+	ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
+
+    /* Find out how many tasks are in this communicator. */
+    if ((mpierr = MPI_Comm_size(my_iosys->io_comm, &my_iosys->num_iotasks)))
+	ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
+
+    /* Set the rank within the io_comm. */
+    if ((mpierr = MPI_Comm_rank(my_iosys->io_comm, &my_iosys->io_rank)))
+	ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
+
     return ierr;
 }
 
@@ -1946,21 +1962,6 @@ int PIOc_Init_Intercomm(int component_count, MPI_Comm peer_comm,
 	ierr = init_io_comm(io_comm, my_iosys, peer_comm, cmp,
 			    &comp_leader, &io_leader);
 
-	/* Copy the IO communicator. */
-	if ((mpierr = MPI_Comm_dup(io_comm, &my_iosys->io_comm)))
-	    ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
-
-	/* Get an MPI group that includes the io tasks. */
-	if ((mpierr = MPI_Comm_group(my_iosys->io_comm, &my_iosys->iogroup)))
-	    ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
-
-	/* Find out how many tasks are in this communicator. */
-	if ((mpierr = MPI_Comm_size(iosys->io_comm, &my_iosys->num_iotasks)))
-	    ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
-
-	/* Set the rank within the io_comm. */
-	if ((mpierr = MPI_Comm_rank(my_iosys->io_comm, &my_iosys->io_rank)))
-	    ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
 
 	/* Find the rank of the io leader in peer_comm. */
 	if (!my_iosys->io_rank)
