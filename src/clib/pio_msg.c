@@ -1814,6 +1814,27 @@ init_comp_comm(MPI_Comm comp_comm, iosystem_desc_t *my_iosys, MPI_Comm peer_comm
     return ierr;
 }
 
+int
+init_union_comm(iosystem_desc_t *my_iosys)
+{
+    int mpierr;
+    int ierr = PIO_NOERR;
+
+    /* my_comm points to the union communicator for async, and
+     * the comp_comm for non-async. It should not be freed
+     * since it is not a proper copy of the commuicator, just
+     * a copy of the reference to it. */
+    my_iosys->my_comm = my_iosys->union_comm;
+    LOG((3, "setting my_iosys->my_comm = %d", my_iosys->my_comm));
+
+    /* Find rank in union communicator. */
+    if ((mpierr = MPI_Comm_rank(my_iosys->union_comm, &my_iosys->union_rank)))
+	ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
+    LOG((3, "union rank = %d", my_iosys->union_rank));	    
+
+    return ierr;
+}
+
 /** @ingroup PIO_init
  * Library initialization used when IO tasks are distinct from compute
  * tasks.
@@ -2009,17 +2030,7 @@ int PIOc_Init_Intercomm(int component_count, MPI_Comm peer_comm,
 	my_iosys->iomaster = MPI_PROC_NULL;
     }
 
-    /* my_comm points to the union communicator for async, and
-     * the comp_comm for non-async. It should not be freed
-     * since it is not a proper copy of the commuicator, just
-     * a copy of the reference to it. */
-    my_iosys->my_comm = my_iosys->union_comm;
-    LOG((3, "setting iosys->my_comm = %d", iosys->my_comm));
-
-    /* Find rank in union communicator. */
-    if ((mpierr = MPI_Comm_rank(my_iosys->union_comm, &my_iosys->union_rank)))
-	ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
-    LOG((3, "union rank = %d", iosys->union_rank));	    
+    ierr = init_union_comm(my_iosys);
 
     /* Find the rank of the io leader in the union communicator. */
     if (!my_iosys->io_rank)
