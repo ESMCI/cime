@@ -2102,8 +2102,9 @@ int PIOc_Init_Intercomm(int component_count, MPI_Comm peer_comm,
 	if (io_comm != MPI_COMM_NULL)
 	{
 	    /* Initialize the IO component. */
-	    ierr = init_io_comm(io_comm, my_iosys, peer_comm, cmp,
-				&comp_leader, &io_leader);
+	    for (cmp1 = 0; cmp1 < component_count; cmp1++)	    
+		ierr = init_io_comm(io_comm, my_iosys, peer_comm, cmp1,
+				    &comp_leader, &io_leader);
 	}
 	else
 	{
