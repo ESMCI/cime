@@ -1847,6 +1847,48 @@ init_union_comm(iosystem_desc_t *my_iosys)
     my_iosys->ioroot = root;
     LOG((3, "after allreduce iosys->ioroot = %d", my_iosys->ioroot));
 
+    /* Find the rank of the computation leader in the union
+     * communicator. */
+    if (!my_iosys->comp_rank)
+	my_iosys->comproot = my_iosys->union_rank;
+    else
+	my_iosys->comproot = -1;
+
+    /* Distribute the answer to all tasks. */
+    if ((mpierr = MPI_Allreduce(&my_iosys->comproot, &root, 1, MPI_INT, MPI_MAX,
+				my_iosys->union_comm)))
+	ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
+    my_iosys->comproot = root;
+    LOG((3, "after allreduce iosys->comproot = %d", my_iosys->comproot));
+
+    /* Send the number of tasks in the IO and computation
+       communicators to each other over the intercomm. This is a
+       one-to-all bcast from the local task that passes MPI_ROOT as
+       the root (all other local tasks should pass MPI_PROC_NULL as
+       the root). The bcast is recieved by all the members of the leaf
+       group which each pass the rank of the root relative to the root
+       group. */
+    if (my_iosys->ioproc)
+    {
+	my_iosys->compmaster = 0;
+	if ((mpierr = MPI_Bcast(&my_iosys->num_comptasks, 1, MPI_INT, my_iosys->compmaster,
+				my_iosys->intercomm)))
+	    ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
+	if ((mpierr = MPI_Bcast(&my_iosys->num_iotasks, 1, MPI_INT, my_iosys->iomaster,
+				my_iosys->intercomm)))
+	    ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
+    }
+    else
+    {
+	my_iosys->iomaster = 0;
+	if ((mpierr = MPI_Bcast(&my_iosys->num_comptasks, 1, MPI_INT, my_iosys->compmaster,
+				my_iosys->intercomm)))
+	    ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
+	if ((mpierr = MPI_Bcast(&my_iosys->num_iotasks, 1, MPI_INT, my_iosys->iomaster,
+				my_iosys->intercomm)))
+	    ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
+    }
+
     return ierr;
 }
 
@@ -2046,48 +2088,6 @@ int PIOc_Init_Intercomm(int component_count, MPI_Comm peer_comm,
     }
 
     ierr = init_union_comm(my_iosys);
-
-    /* Find the rank of the computation leader in the union
-     * communicator. */
-    if (!my_iosys->comp_rank)
-	my_iosys->comproot = my_iosys->union_rank;
-    else
-	my_iosys->comproot = -1;
-
-    /* Distribute the answer to all tasks. */
-    if ((mpierr = MPI_Allreduce(&my_iosys->comproot, &root, 1, MPI_INT, MPI_MAX,
-				my_iosys->union_comm)))
-	ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
-    my_iosys->comproot = root;
-    LOG((3, "after allreduce iosys->comproot = %d", iosys->comproot));
-
-    /* Send the number of tasks in the IO and computation
-       communicators to each other over the intercomm. This is a
-       one-to-all bcast from the local task that passes MPI_ROOT as
-       the root (all other local tasks should pass MPI_PROC_NULL as
-       the root). The bcast is recieved by all the members of the leaf
-       group which each pass the rank of the root relative to the root
-       group. */
-    if (io_comm != MPI_COMM_NULL)
-    {
-	my_iosys->compmaster = 0;
-	if ((mpierr = MPI_Bcast(&my_iosys->num_comptasks, 1, MPI_INT, my_iosys->compmaster,
-				my_iosys->intercomm)))
-	    ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
-	if ((mpierr = MPI_Bcast(&my_iosys->num_iotasks, 1, MPI_INT, my_iosys->iomaster,
-				my_iosys->intercomm)))
-	    ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
-    }
-    else
-    {
-	my_iosys->iomaster = 0;
-	if ((mpierr = MPI_Bcast(&my_iosys->num_comptasks, 1, MPI_INT, my_iosys->compmaster,
-				my_iosys->intercomm)))
-	    ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
-	if ((mpierr = MPI_Bcast(&my_iosys->num_iotasks, 1, MPI_INT, my_iosys->iomaster,
-				my_iosys->intercomm)))
-	    ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
-    }
 
     /* Allocate an array to hold the ranks of the IO tasks
      * within the union communicator. */
