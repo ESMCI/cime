@@ -33,14 +33,8 @@
       <test name="SMS_D">
         <machine compiler="intel" testtype="prebeta" testmods="allactive/defaultio">yellowstone</machine>
       </test>
-      <test name="CME_Ld5">
-        <machine compiler="intel" testtype="prebeta" testmods="allactive/defaultio">yellowstone</machine>
-      </test>
       <test name="ERR">
         <machine compiler="intel" testtype="prealpha" testmods="allactive/defaultio">edison</machine>
-      </test>
-      <test name="ERS_E_Ld7">
-        <machine compiler="intel" testtype="prebeta" testmods="allactive/defaultio">yellowstone</machine>
       </test>
       <test name="ERS_Ld7">
         <machine compiler="pgi" testtype="prebeta" testmods="allactive/defaultio">bluewaters</machine>
@@ -127,7 +121,7 @@
       </test>
     </grid>
   </compset>
-  <compset name="B1850W">
+  <compset name="B1850Ws">
     <grid name="f09_g16">
       <test name="ERS">
         <machine compiler="pgi" testtype="prealpha" testmods="allactive/defaultio">bluewaters</machine>
@@ -155,7 +149,7 @@
       </test>
     </grid>
   </compset>
-  <compset name="B1850Cw">
+  <compset name="B1850CwWs">
     <grid name="f19_g16">
       <test name="ERS_Ld3">
         <machine compiler="gnu" testtype="prebeta" testmods="allactive/defaultio">yellowstone</machine>
@@ -183,7 +177,7 @@
       </test>
     </grid>
   </compset>
-  <compset name="BHISTC5L40CNR">
+  <compset name="BHISTC5L40CNRWs">
     <grid name="f19_g16">
       <test name="ERS_N3_Ld7">
         <machine compiler="intel" testtype="prebeta" testmods="allactive/defaultio">edison</machine>
@@ -192,7 +186,7 @@
       </test>
     </grid>
   </compset>
-  <compset name="BHISTC5L45BGCR">
+  <compset name="BHISTC5L45BGCRWs">
     <grid name="f09_g16">
       <test name="ERS_Ld7">
         <machine compiler="pgi" testtype="prebeta" testmods="allactive/defaultio">bluewaters</machine>
@@ -253,6 +247,13 @@
     <grid name="f09_g16_gl4">
       <test name="SMS_Ld5">
         <machine compiler="gnu" testtype="prebeta" testmods="allactive/cism/test_coupling">yellowstone</machine>
+      </test>
+    </grid>
+  </compset>
+  <compset name="Bi1850C5CN">
+    <grid name="f19_g16">
+      <test name="ERS">
+        <machine compiler="intel" testtype="aux_isotope" testmods="allactive/default">yellowstone</machine>
       </test>
     </grid>
   </compset>
