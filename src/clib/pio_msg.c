@@ -1889,6 +1889,29 @@ init_union_comm(iosystem_desc_t *my_iosys)
 	    ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
     }
 
+    /* Allocate an array to hold the ranks of the IO tasks
+     * within the union communicator. */
+    if (!(my_iosys->ioranks = malloc(my_iosys->num_iotasks * sizeof(int))))
+	return PIO_ENOMEM;
+
+    /* Allocate a temp array to help get the IO ranks. */
+    int *tmp_ioranks;
+    if (!(tmp_ioranks = malloc(my_iosys->num_iotasks * sizeof(int))))
+	return PIO_ENOMEM;
+
+    /* Init array, then have IO tasks set their values, then
+     * use allreduce to distribute results to all tasks. */
+    for (int cnt = 0 ; cnt < my_iosys->num_iotasks; cnt++)
+	tmp_ioranks[cnt] = -1;
+    if (my_iosys->ioproc)
+	tmp_ioranks[my_iosys->io_rank] = my_iosys->union_rank;
+    if ((mpierr = MPI_Allreduce(tmp_ioranks, my_iosys->ioranks, my_iosys->num_iotasks, MPI_INT, MPI_MAX,
+				my_iosys->union_comm)))
+	ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
+
+    /* Free temp array. */
+    free(tmp_ioranks);
+
     return ierr;
 }
 
@@ -2088,29 +2111,6 @@ int PIOc_Init_Intercomm(int component_count, MPI_Comm peer_comm,
     }
 
     ierr = init_union_comm(my_iosys);
-
-    /* Allocate an array to hold the ranks of the IO tasks
-     * within the union communicator. */
-    if (!(my_iosys->ioranks = malloc(my_iosys->num_iotasks * sizeof(int))))
-	return PIO_ENOMEM;
-
-    /* Allocate a temp array to help get the IO ranks. */
-    int *tmp_ioranks;
-    if (!(tmp_ioranks = malloc(my_iosys->num_iotasks * sizeof(int))))
-	return PIO_ENOMEM;
-
-    /* Init array, then have IO tasks set their values, then
-     * use allreduce to distribute results to all tasks. */
-    for (int cnt = 0 ; cnt < my_iosys->num_iotasks; cnt++)
-	tmp_ioranks[cnt] = -1;
-    if (io_comm != MPI_COMM_NULL)
-	tmp_ioranks[my_iosys->io_rank] = my_iosys->union_rank;
-    if ((mpierr = MPI_Allreduce(tmp_ioranks, my_iosys->ioranks, my_iosys->num_iotasks, MPI_INT, MPI_MAX,
-				my_iosys->union_comm)))
-	ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
-
-    /* Free temp array. */
-    free(tmp_ioranks);
 
     /* Set the default error handling. */
     my_iosys->error_handler = PIO_INTERNAL_ERROR;
