@@ -1953,7 +1953,6 @@ int PIOc_Init_Intercomm(int component_count, MPI_Comm peer_comm,
     my_iosys = &iosys[cmp];
 
     /* These are used when using the intercomm. */
-    int io_master = MPI_PROC_NULL;
     my_iosys->iomaster = MPI_PROC_NULL;
 
     /* Create an MPI info object. */
@@ -1989,7 +1988,6 @@ int PIOc_Init_Intercomm(int component_count, MPI_Comm peer_comm,
 	if (!my_iosys->io_rank)
 	{
 	    my_iosys->iomaster = MPI_ROOT;
-	    io_master = MPI_ROOT;
 	}
 	else
 	    my_iosys->iomaster = MPI_PROC_NULL;
@@ -2071,11 +2069,11 @@ int PIOc_Init_Intercomm(int component_count, MPI_Comm peer_comm,
     }
     else
     {
-	io_master = 0;
+	my_iosys->iomaster = 0;
 	if ((mpierr = MPI_Bcast(&my_iosys->num_comptasks, 1, MPI_INT, my_iosys->compmaster,
 				my_iosys->intercomm)))
 	    ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
-	if ((mpierr = MPI_Bcast(&my_iosys->num_iotasks, 1, MPI_INT, io_master,
+	if ((mpierr = MPI_Bcast(&my_iosys->num_iotasks, 1, MPI_INT, my_iosys->iomaster,
 				my_iosys->intercomm)))
 	    ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
     }
