@@ -1817,6 +1817,7 @@ init_comp_comm(MPI_Comm comp_comm, iosystem_desc_t *my_iosys, MPI_Comm peer_comm
 int
 init_union_comm(iosystem_desc_t *my_iosys)
 {
+    int root;
     int mpierr;
     int ierr = PIO_NOERR;
 
@@ -1831,6 +1832,20 @@ init_union_comm(iosystem_desc_t *my_iosys)
     if ((mpierr = MPI_Comm_rank(my_iosys->union_comm, &my_iosys->union_rank)))
 	ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
     LOG((3, "union rank = %d", my_iosys->union_rank));	    
+
+    /* Find the rank of the io leader in the union communicator. */
+    if (!my_iosys->io_rank)
+	my_iosys->ioroot = my_iosys->union_rank;
+    else
+	my_iosys->ioroot = -1;
+    LOG((3, "before allreduce iosys->ioroot = %d", my_iosys->ioroot));
+	    
+    /* Distribute the answer to all tasks. */
+    if ((mpierr = MPI_Allreduce(&my_iosys->ioroot, &root, 1, MPI_INT, MPI_MAX,
+				my_iosys->union_comm)))
+	ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
+    my_iosys->ioroot = root;
+    LOG((3, "after allreduce iosys->ioroot = %d", my_iosys->ioroot));
 
     return ierr;
 }
@@ -2031,20 +2046,6 @@ int PIOc_Init_Intercomm(int component_count, MPI_Comm peer_comm,
     }
 
     ierr = init_union_comm(my_iosys);
-
-    /* Find the rank of the io leader in the union communicator. */
-    if (!my_iosys->io_rank)
-	my_iosys->ioroot = my_iosys->union_rank;
-    else
-	my_iosys->ioroot = -1;
-    LOG((3, "before allreduce iosys->ioroot = %d", iosys->ioroot));
-	    
-    /* Distribute the answer to all tasks. */
-    if ((mpierr = MPI_Allreduce(&my_iosys->ioroot, &root, 1, MPI_INT, MPI_MAX,
-				my_iosys->union_comm)))
-	ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
-    my_iosys->ioroot = root;
-    LOG((3, "after allreduce iosys->ioroot = %d", iosys->ioroot));
 
     /* Find the rank of the computation leader in the union
      * communicator. */
