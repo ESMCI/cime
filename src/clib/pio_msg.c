@@ -2069,6 +2069,12 @@ int PIOc_Init_Intercomm(int component_count, MPI_Comm peer_comm,
     /* Get a pointer to the iosys struct */
     my_iosys = &iosys[cmp];
 
+    /* Set the default error handling. */
+    my_iosys->error_handler = PIO_INTERNAL_ERROR;
+
+    /* We do support asynch interface. */
+    my_iosys->async_interface = true;
+
     /* These are used when using the intercomm. */
     my_iosys->iomaster = MPI_PROC_NULL;
 
@@ -2077,46 +2083,42 @@ int PIOc_Init_Intercomm(int component_count, MPI_Comm peer_comm,
 	ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
 
     /* Is this task is part of a computation communicator? */
-    if (comp_comms[cmp] != MPI_COMM_NULL)
-    {
-	LOG((2, "This is part of computation component %d", cmp));
-
-	/* Initialize the computational component. */
-	ierr = init_comp_comm(comp_comms[cmp], my_iosys, peer_comm, cmp,
-			      &comp_leader, &io_leader);
-    }
-    else
-    {
-	my_iosys->comp_comm = MPI_COMM_NULL;
-	my_iosys->compgroup = MPI_GROUP_NULL;
-	my_iosys->comp_rank = -1;
-    }
+    if (!ierr)
+	if (comp_comms[cmp] != MPI_COMM_NULL)
+	{
+	    /* Initialize the computational component. */
+	    ierr = init_comp_comm(comp_comms[cmp], my_iosys, peer_comm, cmp,
+				  &comp_leader, &io_leader);
+	}
+	else
+	{
+	    my_iosys->comp_comm = MPI_COMM_NULL;
+	    my_iosys->compgroup = MPI_GROUP_NULL;
+	    my_iosys->comp_rank = -1;
+	}
 
     /* Is this task is part of the IO communicator? */
-    if (io_comm != MPI_COMM_NULL)
-    {
-	LOG((2, "This is part of the IO component"));
+    if (!ierr)
+	if (io_comm != MPI_COMM_NULL)
+	{
+	    /* Initialize the IO component. */
+	    ierr = init_io_comm(io_comm, my_iosys, peer_comm, cmp,
+				&comp_leader, &io_leader);
+	}
+	else
+	{
+	    my_iosys->io_comm = MPI_COMM_NULL;
+	    my_iosys->iogroup = MPI_GROUP_NULL;
+	    my_iosys->io_rank = -1;
+	    my_iosys->ioproc = false;
+	    my_iosys->iomaster = MPI_PROC_NULL;
+	}
 
-	/* Initialize the IO component. */
-	ierr = init_io_comm(io_comm, my_iosys, peer_comm, cmp,
-			    &comp_leader, &io_leader);
-    }
-    else
-    {
-	my_iosys->io_comm = MPI_COMM_NULL;
-	my_iosys->iogroup = MPI_GROUP_NULL;
-	my_iosys->io_rank = -1;
-	my_iosys->ioproc = false;
-	my_iosys->iomaster = MPI_PROC_NULL;
-    }
-
-    ierr = init_union_comm(my_iosys);
-
-    /* Set the default error handling. */
-    my_iosys->error_handler = PIO_INTERNAL_ERROR;
-
-    /* We do support asynch interface. */
-    my_iosys->async_interface = true;
+    /* Set up the union communicator, an intracomm that includes all
+     * tasks in a computational component, plus all tasks in the IO
+     * component. */
+    if (!ierr)
+	ierr = init_union_comm(my_iosys);
 
     /* Uncomment the following to print out some debug info. */
     int my_rank;
@@ -2129,14 +2131,16 @@ int PIOc_Init_Intercomm(int component_count, MPI_Comm peer_comm,
     }
 
     /* Add this id to the list of PIO iosystem ids. */
-    iosysidp[cmp] = pio_add_to_iosystem_list(my_iosys);
+    if (!ierr)
+	iosysidp[cmp] = pio_add_to_iosystem_list(my_iosys);
     LOG((2, "added to iosystem_list iosysid = %d", iosysidp[cmp]));
 
     /* Now call the function from which the IO tasks will not
      * return until the PIO_MSG_EXIT message is sent. */
-    if (io_comm != MPI_COMM_NULL)
-	if ((ierr = pio_msg_handler(my_iosys->io_rank, component_count, iosys)))
-	    return ierr;
+    if (!ierr)
+	if (io_comm != MPI_COMM_NULL)
+	    if ((ierr = pio_msg_handler(my_iosys->io_rank, component_count, iosys)))
+		return ierr;
 
     /* If there was an error, make sure all tasks see it. */
     if (ierr)
