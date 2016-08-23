@@ -1687,6 +1687,9 @@ init_io_comm(MPI_Comm io_comm, iosystem_desc_t *my_iosys, MPI_Comm peer_comm,
     int mpierr;
     int ierr = PIO_NOERR;
 
+    LOG((2, "init_io_comm io_comm = %d peer_comm = %d cmp = %d",
+	 io_comm, peer_comm, cmp));
+    
     /* Copy the IO communicator. */
     if ((mpierr = MPI_Comm_dup(io_comm, &my_iosys->io_comm)))
 	ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
@@ -1725,12 +1728,7 @@ init_io_comm(MPI_Comm io_comm, iosystem_desc_t *my_iosys, MPI_Comm peer_comm,
     my_iosys->ioproc = true;
 
     /* Is this the iomaster? Only if the io_rank is zero. */
-    if (!my_iosys->io_rank)
-    {
-	my_iosys->iomaster = MPI_ROOT;
-    }
-    else
-	my_iosys->iomaster = MPI_PROC_NULL;
+    my_iosys->iomaster = !my_iosys->io_rank ? MPI_ROOT : MPI_PROC_NULL;    
 
     /* Set up the intercomm from the I/O side. */
     if ((mpierr = MPI_Intercomm_create(my_iosys->io_comm, 0, peer_comm,
@@ -1757,6 +1755,9 @@ init_comp_comm(MPI_Comm comp_comm, iosystem_desc_t *my_iosys, MPI_Comm peer_comm
     int iam;
     int mpierr;
     int ierr = PIO_NOERR;
+
+    LOG((2, "init_comp_comm comp_comm = %d peer_comm = %d cmp = %d",
+	 comp_comm, peer_comm, cmp));
     
     /* Copy the computation communicator. */
     if ((mpierr = MPI_Comm_dup(comp_comm, &my_iosys->comp_comm)))
@@ -1942,13 +1943,11 @@ int PIOc_Init_Intercomm(int component_count, MPI_Comm peer_comm,
 {
     iosystem_desc_t *iosys;
     iosystem_desc_t *my_iosys;
-    int ierr = PIO_NOERR;
-    int mpierr;
-    int iam;
     int io_leader, comp_leader;
     int root;
-    MPI_Group io_grp, comm_grp, union_grp;
     int comp_comp = 0;
+    int ierr = PIO_NOERR;
+    int mpierr;
 
     LOG((1, "PIOc_Init_Intercomm component_count = %d", component_count));
 
