@@ -277,30 +277,40 @@ init_io(MPI_Comm world, int component_count, int color, MPI_Comm *comp_comms,
 	MPI_Comm *io_comm, int *comp_task, int verbose)
 {
     int my_rank;
-    MPI_Comm row_comm;
-    int row_rank, row_size;
+    MPI_Comm newcomm;
     int ret;
 
     /* Get rank of this task. */
     if ((ret = MPI_Comm_rank(world, &my_rank)))
-	return PIO_NOERR;
+	MPIERR(ret);	
 
     /* Split the communicator based on the color and use the original
        rank for ordering. */
-    MPI_Comm_split(world, color, my_rank, &row_comm);
+    if ((ret = MPI_Comm_split(world, color, my_rank, &newcomm)))
+	MPIERR(ret);	
 
-    /* Get the rank of this task, and the size, of the communicator. */
-    MPI_Comm_rank(row_comm, &row_rank);
-    MPI_Comm_size(row_comm, &row_size);
-    printf("WORLD RANK: %d \t ROW RANK/SIZE: %d/%d\n", my_rank, row_rank, row_size);
+    if (verbose)
+    {
+	int newcomm_rank, newcomm_size;
+	
+	/* Get the rank of this task, and the size, of the communicator. */
+	if ((ret = MPI_Comm_rank(newcomm, &newcomm_rank)))
+	    MPIERR(ret);	
+	if ((ret = MPI_Comm_size(newcomm, &newcomm_size)))
+	    MPIERR(ret);	
+	
+	printf("WORLD RANK: %d \t NEWCOMM RANK/SIZE: %d/%d\n", my_rank,
+	       newcomm_rank, newcomm_size);
+    }
 
+    /* We will define io_comm. The comp_comms array will get nulls. */
+    for (int c = 0; c < component_count; c++)
+	comp_comms[c] = MPI_COMM_NULL;
+    
     /* A color of 0 means this belongs to the IO group. */
     if (color == 0) 
     {
-	/* We will define io_comm. The comp_comms array will get nulls. */
-	for (int c = 0; c < component_count; c++)
-	    comp_comms[c] = MPI_COMM_NULL;
-	*io_comm = row_comm;
+	*io_comm = newcomm;
 	*comp_task = 0;
 	if (verbose)
 	    printf("%d added to the io_comm\n", my_rank);
@@ -312,7 +322,7 @@ init_io(MPI_Comm world, int component_count, int color, MPI_Comm *comp_comms,
 	*io_comm = MPI_COMM_NULL;
 	for (int c = 0; c < component_count; c++)
 	    comp_comms[c] = MPI_COMM_NULL;
-	comp_comms[color - 1] = row_comm;
+	comp_comms[color - 1] = newcomm;
 	*comp_task = color;
 	if (verbose)
 	    printf("%d added to the comp_comm %d\n", my_rank, color);
@@ -424,17 +434,21 @@ main(int argc, char **argv)
 		       &comp_task, verbose)))
 	ERR(ERR_AWFUL);
     if (verbose)
+    {
 	printf("%d IO system initialized\n", my_rank);
+	for (int c = 0; c < COMPONENT_COUNT; c++)
+	    printf("%d comp_comms[%d] = %d\n", my_rank, c, comp_comms[c]);
+    }
 
     MPI_Barrier(MPI_COMM_WORLD);    
     
-    /* /\* Initialize the async setup. *\/ */
-    /* if ((ret = PIOc_Init_Intercomm(COMPONENT_COUNT, MPI_COMM_WORLD, comp_comms, */
-    /* 				   io_comm, &iosysid))) */
-    /* 	ERR(ret); */
-    /* if (verbose) */
-    /* 	printf("%d test_intercomm2 init intercomm returned %d iosysid = %d\n", my_rank, ret, */
-    /* 	       iosysid); */
+    /* Initialize the async setup. */
+    if ((ret = PIOc_Init_Intercomm(COMPONENT_COUNT, MPI_COMM_WORLD, comp_comms,
+    				   io_comm, &iosysid)))
+    	ERR(ret);
+    if (verbose)
+    	printf("%d test_intercomm2 init intercomm returned %d iosysid = %d\n", my_rank, ret,
+    	       iosysid);
 
     MPI_Barrier(MPI_COMM_WORLD);    
     /* /\* All the netCDF calls are only executed on the computation */
@@ -600,11 +614,11 @@ main(int argc, char **argv)
     /* 	} /\* next netcdf format flavor *\/ */
     /* } */
 
-    /* /\* Finalize the IO system. *\/ */
-    /* if (verbose) */
-    /* 	printf("%d test_intercomm2 Freeing PIO resources...\n", my_rank); */
-    /* if ((ret = PIOc_finalize(iosysid))) */
-    /* 	ERR(ret); */
+    /* Finalize the IO system. */
+    if (verbose)
+    	printf("%d test_intercomm2 Freeing PIO resources...\n", my_rank);
+    if ((ret = PIOc_finalize(iosysid)))
+    	ERR(ret);
 
     /* Free local MPI resources. */
     if (verbose)
