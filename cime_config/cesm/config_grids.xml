@@ -328,6 +328,12 @@
     </grid>
 
     <grid>
+      <sname>1.9x2.5_tnx1v1</sname>
+      <alias>f19_tn11</alias>
+      <lname>a%1.9x2.5_l%1.9x2.5_oi%tnx1v1_r%r05_m%tnx1v1_g%null_w%null</lname>
+    </grid>
+
+    <grid>
       <sname>0.9x1.25_tnx0.25v1</sname>
       <alias>f09_tn0251</alias>
       <lname>a%0.9x1.25_l%0.9x1.25_oi%tnx0.25v1_r%r05_m%tnx0.25v1_g%null_w%null</lname>
