@@ -18,6 +18,7 @@ int PIOc_openfile(const int iosysid, int *ncidp, int *iotype,
 {
     iosystem_desc_t *ios;  /** Pointer to io system information. */
     file_desc_t *file;     /** Pointer to file information. */
+    int tmp_fh = -1;
     int ierr = PIO_NOERR;  /** Return code from function calls. */
     int mpierr = MPI_SUCCESS, mpierr2;  /** Return code from MPI function codes. */
 
@@ -41,6 +42,7 @@ int PIOc_openfile(const int iosysid, int *ncidp, int *iotype,
 	return PIO_ENOMEM;
 
     /* Fill in some file values. */
+    file->fh = -1;
     file->iotype = *iotype;
     file->next = NULL;
     file->iosystem = ios;
@@ -142,6 +144,7 @@ int PIOc_openfile(const int iosysid, int *ncidp, int *iotype,
 		    LOG((1, "%d Setting IO buffer %ld", __LINE__, PIO_BUFFER_SIZE_LIMIT));
 		ierr = ncmpi_buffer_attach(file->fh, PIO_BUFFER_SIZE_LIMIT);
 	    }
+	    LOG((1, "ncmpi_open(%s) : fd = %d", filename, file->fh)); 
 	    break;
 #endif
 
@@ -180,8 +183,14 @@ int PIOc_openfile(const int iosysid, int *ncidp, int *iotype,
 	if ((mpierr = MPI_Bcast(&file->mode, 1, MPI_INT, ios->ioroot, ios->union_comm)))
 	    return check_mpi(file, mpierr, __FILE__, __LINE__);
       
-	if ((mpierr = MPI_Bcast(&file->fh, 1, MPI_INT, ios->ioroot, ios->union_comm)))
+      tmp_fh = file->fh;
+	if ((mpierr = MPI_Bcast(&tmp_fh, 1, MPI_INT, ios->ioroot, ios->union_comm)))
 	    return check_mpi(file, mpierr, __FILE__, __LINE__);
+
+      if(file->fh == -1){
+        /* Not io proc - file handle is not set by netcdf* /pnetcdfc */
+        file->fh = tmp_fh;
+      }
       
 	*ncidp = file->fh;
 	pio_add_to_file_list(file);
