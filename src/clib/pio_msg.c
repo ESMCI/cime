@@ -1691,6 +1691,11 @@ init_io_comm(MPI_Comm io_comm, iosystem_desc_t *my_iosys, MPI_Comm peer_comm,
     LOG((2, "init_io io_comm = %d peer_comm = %d cmp = %d",
 	 io_comm, peer_comm, cmp));
 
+    /* Set these for all IO comms. */
+    my_iosys->comp_comm = MPI_COMM_NULL;
+    my_iosys->compgroup = MPI_GROUP_NULL;
+    my_iosys->comp_rank = -1;
+
     /* Copy the IO communicator. */
     if ((mpierr = MPI_Comm_dup(io_comm, &my_iosys->io_comm)))
 	ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
@@ -1721,9 +1726,10 @@ init_io_comm(MPI_Comm io_comm, iosystem_desc_t *my_iosys, MPI_Comm peer_comm,
 
     /* Find the lucky io_leader task. This matches a call in
      * init_comp_comm(). */
+    LOG((3, "calling Allreduce for io_leader = %d", *io_leader));
     if ((mpierr = MPI_Allreduce(&iam, io_leader, 1, MPI_INT, MPI_MAX, peer_comm)))
 	ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
-    LOG((3, "IO leader = %d ierr = %d", *io_leader, ierr));    
+    LOG((3, "called Allreduce for io_leader = %d", *io_leader));
 
     /* Find the rank of the comp leader in peer_comm. */
     iam = -1;
@@ -1736,31 +1742,232 @@ init_io_comm(MPI_Comm io_comm, iosystem_desc_t *my_iosys, MPI_Comm peer_comm,
     /* Is this the iomaster? Only if the io_rank is zero. */
     my_iosys->iomaster = !my_iosys->io_rank ? MPI_ROOT : MPI_PROC_NULL;
     LOG((3, "I am IO %s!", my_iosys->iomaster == MPI_ROOT ? "MASTER" : "SERVANT"));
-    
+
     /* Set up the intercomm from the I/O side. */
+    LOG((3, "about to call MPI_Intercomm_create my_iosys->io_comm = %d comp_leader = %d cmp = %d",
+	 my_iosys->io_comm, *comp_leader, cmp));
     if ((mpierr = MPI_Intercomm_create(my_iosys->io_comm, 0, peer_comm,
 				       *comp_leader, cmp, &my_iosys->intercomm)))
 	ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
     LOG((3, "intercomm created!"));
-    
+
     /* Create the union communicator. */
     if ((mpierr = MPI_Intercomm_merge(my_iosys->intercomm, 0, &my_iosys->union_comm)))
 	ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
-    LOG((3, "union communicator created"));    
+    LOG((3, "union communicator created"));
 
     return ierr;
+}
+
+/** Set up the communicators for parallel I/O.
+ *
+ * @param world the communicator containing all the available tasks.
+ * @param component_count number of computational components
+ * @param color for this task. Use 0 for an I/O task, 1 for the first
+ * computational group, 2 for the next computational group, etc. 0 >=
+ * color <= component_count.
+ * @param comp_comms pointer to an array that will get the MPI_Comm
+ * values associated with the components.
+ * @param io_comm pointer that will get the MPI_Comm of the IO
+ * communicator.
+ * @param comp_task a pointer to int that will get a 1 if the
+ * executing task is a computational task, and a 0 if it is an IO
+ * task.
+ * @param verbose print output if this is non-zero
+ *
+ * @return PIO_NOERR on success, error code otherwise.
+ */
+int
+PIOc_init_io(MPI_Comm world, int component_count, int *num_procs_per_comp, int **proc_list,
+	     MPI_Comm *comp_comms, MPI_Comm *io_comm, int *comp_task, int verbose)
+{
+    int my_rank;
+    MPI_Comm newcomm;
+    int **my_proc_list;
+    int color;
+    int ret;
+
+    LOG((1, "PIOc_init_io component_count = %d", component_count));
+
+    /* If the user did not provide a list of processes for each
+     * component, create one. */
+    if (!proc_list)
+    {
+	int last_proc = 0;
+
+	/* Allocate space for array of arrays. */
+	if (!(my_proc_list = malloc((component_count + 1) * sizeof(int *))))
+	    return PIO_ENOMEM;
+
+	/* Fill the array of arrays. */
+	for (int cmp = 0; cmp < component_count + 1; cmp++)
+	{
+	    LOG((3, "calculating processors for component %d", cmp));
+
+	    /* Allocate space for each array. */
+	    if (!(my_proc_list[cmp] = malloc(num_procs_per_comp[cmp] * sizeof(int))))
+		return PIO_ENOMEM;
+
+	    int proc;
+	    for (proc = last_proc; proc < num_procs_per_comp[cmp] + last_proc; proc++)
+	    {
+		my_proc_list[cmp][proc - last_proc] = proc;
+		LOG((3, "my_proc_list[%d][%d] = %d", cmp, proc - last_proc, proc));
+	    }
+	    last_proc = proc;
+	}
+    }
+    else
+	my_proc_list = proc_list;
+
+    /* Get rank of this task. */
+    if ((ret = MPI_Comm_rank(world, &my_rank)))
+	return check_mpi(NULL, ret,__FILE__,__LINE__);
+
+    /* Initialize the comp_comms array with nulls in all tasks. All
+     * tasks share this array, but values for the computation
+     * commuicators are only set in tasks which participate in those
+     * communicators. */
+    for (int c = 0; c < component_count; c++)
+	comp_comms[c] = MPI_COMM_NULL;
+
+    /* Create group for world. */
+    MPI_Group world_group;
+    if ((ret = MPI_Comm_group(world, &world_group)))
+	return check_mpi(NULL, ret,__FILE__,__LINE__);
+    LOG((3, "world group created"));
+
+    /* We will create a group for each component. */
+    MPI_Group group[component_count + 1];
+
+    /* We will also create a group for each component and the IO
+     * component processes (i.e. a union of computation and IO
+     * processes. */
+    MPI_Group union_group[component_count];
+
+    /* For each component, starting with the IO component. */
+    for (int cmp = 0; cmp < component_count + 1; cmp++)
+    {
+	if ((ret = MPI_Group_incl(world_group, num_procs_per_comp[cmp], my_proc_list[cmp],
+				  &group[cmp])))
+	    return check_mpi(NULL, ret,__FILE__,__LINE__);
+	LOG((3, "group[%d] = %d", cmp, group[cmp]));
+
+	/* For all the computation components, create a union group
+	 * with their processors and the processors of the (shared) IO
+	 * component. */
+	if (cmp)
+	{
+	    int nprocs_union = num_procs_per_comp[0] + num_procs_per_comp[cmp];
+
+	    /* This will hold proc number from both computation and IO
+	     * components. */
+	    int proc_list_union[nprocs_union];
+
+	    /* Add proc numbers from IO. */
+	    for (int p = 0; p < num_procs_per_comp[0]; p++)
+		proc_list_union[p] = my_proc_list[0][p];
+
+	    /* Add proce numbers from computation component. */
+	    for (int p = 0; p < num_procs_per_comp[cmp]; p++)
+		proc_list_union[p + num_procs_per_comp[0]] = my_proc_list[cmp][p];
+
+	    /* Create the union group. */
+	    if ((ret = MPI_Group_incl(world_group, nprocs_union, proc_list_union,
+				      &union_group[cmp - 1])))
+		return check_mpi(NULL, ret,__FILE__,__LINE__);
+	    LOG((3, "union_group[%d] = %d", cmp, group[cmp]));
+	}
+
+	/* Is this process in the IO component? */
+	int in_cmp = 0;
+	int pidx;
+	for (pidx = 0; pidx < num_procs_per_comp[0]; pidx++)
+	    if (my_rank == my_proc_list[0][pidx])
+		break;
+	int in_io = (pidx == num_procs_per_comp[0]) ? 0 : 1;
+	LOG((3, "in_io = %d", in_io));
+
+	/* Is this process in this computation component (which is the
+	 * IO component if cmp == 0)? */
+	for (pidx = 0; pidx < num_procs_per_comp[cmp]; pidx++)
+	    if (my_rank == my_proc_list[cmp][pidx])
+		break;
+	in_cmp = (pidx == num_procs_per_comp[cmp]) ? 0 : 1;
+	LOG((3, "pidx = %d num_procs_per_comp[%d] = %d in_cmp = %d",
+	     pidx, cmp, num_procs_per_comp[cmp], in_cmp));
+
+	/* Create an intracomm for this component. Only processes in
+	 * the component need to participate in the intracomm create
+	 * call. */
+	if (in_cmp || in_io)
+	{
+	    MPI_Comm *comm_ptr = cmp ? &comp_comms[cmp - 1] : io_comm;
+	    if ((ret = MPI_Comm_create_group(world, group[cmp], cmp,
+					     comm_ptr)))
+		return check_mpi(NULL, ret,__FILE__,__LINE__);
+	    LOG((3, "intracomm created for cmp = %d comp_comms[%d] = %d",
+		 cmp, cmp, comp_comms[cmp]));
+	}
+
+	/* All the processes in this component, and the IO component,
+	 * are part of the union_comm. */
+	MPI_Comm union_comm[component_count];
+	MPI_Comm intercomm;
+	if (cmp)
+	    if (in_io || in_cmp)
+	    {
+		if ((ret = MPI_Comm_create_group(world, union_group[cmp - 1], cmp,
+						 &union_comm[cmp - 1])))
+		    return check_mpi(NULL, ret,__FILE__,__LINE__);
+		LOG((3, "intracomm created for union cmp = %d", cmp));
+
+		if (in_io)
+		{
+		    /* Create the intercomm. */
+		    LOG((3, "about to create intercomm for IO component cmp = %d", cmp));
+		    if ((ret = MPI_Intercomm_create(*io_comm, 0, union_comm[cmp - 1], num_procs_per_comp[0],
+						    my_rank, &intercomm)))
+			return check_mpi(NULL, ret,__FILE__,__LINE__);
+		}
+		else
+		{
+		    /* Create the intercomm. */
+		    LOG((3, "about to create intercomm for cmp = %d comp_comms[%d] = %d", cmp, cmp,
+			 comp_comms[cmp]));
+		    if ((ret = MPI_Intercomm_create(comp_comms[cmp - 1], 0, union_comm[cmp - 1], 0,
+						    my_rank, &intercomm)))
+			return check_mpi(NULL, ret,__FILE__,__LINE__);
+		}
+		LOG((3, "intercomm created for cmp = %d", cmp));
+	    }
+    }
+
+    /* Free resources if needed. */
+    if (!proc_list)
+    {
+	for (int cmp = 0; cmp < component_count + 1; cmp++)
+	    free(my_proc_list[cmp]);
+	free(my_proc_list);
+    }
+
+    return PIO_NOERR;
 }
 
 /**
  * Initialize a computation communicator. This is only run on tasks
  * that are part of a computation component. It is run for each
- * computation component.
+ * computation component, on each computational task. When more than
+ * one computational coponent is involved, the comp_comms[] element
+ * for that component will be NULL except for the compent on which it
+ * applies.
  *
  */
 int
 init_comp_comm(MPI_Comm comp_comm, iosystem_desc_t *my_iosys, MPI_Comm peer_comm,
 	       int cmp, int *comp_leader, int *io_leader)
 {
+    MPI_Group peer_group;
     int iam;
     int mpierr;
     int ierr = PIO_NOERR;
@@ -1768,39 +1975,73 @@ init_comp_comm(MPI_Comm comp_comm, iosystem_desc_t *my_iosys, MPI_Comm peer_comm
     LOG((2, "init_comp_comm comp_comm = %d peer_comm = %d cmp = %d",
 	 comp_comm, peer_comm, cmp));
 
-    /* Copy the computation communicator. */
-    if ((mpierr = MPI_Comm_dup(comp_comm, &my_iosys->comp_comm)))
-	ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
-    LOG((3, "copied comp comm to %d ierr = %d", my_iosys->comp_comm, ierr));
+    /* Set these values for all comp comms. */
+    my_iosys->io_comm = MPI_COMM_NULL;
+    my_iosys->iogroup = MPI_GROUP_NULL;
+    my_iosys->io_rank = -1;
+    my_iosys->ioproc = false;
+    my_iosys->iomaster = MPI_PROC_NULL;
 
-    /* Create an MPI group with the computation tasks. */
-    if ((mpierr = MPI_Comm_group(my_iosys->comp_comm, &my_iosys->compgroup)))
-	ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
+    /* If multiple components are in use, this function will be called
+     * num_component times on each task. All but one of those times,
+     * it will have a NULL comp_comm. */
+    if (comp_comm != MPI_COMM_NULL)
+    {
+	/* Copy the computation communicator. */
+	if ((mpierr = MPI_Comm_dup(comp_comm, &my_iosys->comp_comm)))
+	    ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
+	LOG((3, "copied comp comm to %d ierr = %d", my_iosys->comp_comm, ierr));
 
-    /* Find out how many tasks are in this communicator. */
-    if ((mpierr = MPI_Comm_size(my_iosys->comp_comm, &my_iosys->num_comptasks)))
-	ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
-    LOG((3, "number of compute tasks = %d ierr = %d", my_iosys->num_comptasks, ierr));
+	/* Create an MPI group with the computation tasks. */
+	if ((mpierr = MPI_Comm_group(my_iosys->comp_comm, &my_iosys->compgroup)))
+	    ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
 
-    /* Set the rank within the comp_comm. */
-    if ((mpierr = MPI_Comm_rank(my_iosys->comp_comm, &my_iosys->comp_rank)))
-	ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
-    LOG((3, "rank in comp_comm = %d ierr = %d", my_iosys->comp_rank, ierr));
+	/* Find out how many tasks are in this communicator. */
+	if ((mpierr = MPI_Comm_size(my_iosys->comp_comm, &my_iosys->num_comptasks)))
+	    ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
+	LOG((3, "number of compute tasks = %d ierr = %d", my_iosys->num_comptasks, ierr));
+
+	/* Set the rank within the comp_comm. */
+	if ((mpierr = MPI_Comm_rank(my_iosys->comp_comm, &my_iosys->comp_rank)))
+	    ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
+	LOG((3, "rank in comp_comm = %d ierr = %d", my_iosys->comp_rank, ierr));
+
+	/* /\* Create an MPI group with all tasks. *\/ */
+	/* if ((mpierr = MPI_Comm_group(peer_comm, &peer_group))) */
+	/* 	ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__); */
+
+	/* /\* Find the rank of the comp leader in peer_comm. *\/ */
+	/* int rank_in_comp_comm = 0; */
+	/* int rank_in_peer_comm; */
+	/* if ((mpierr = MPI_Group_translate_ranks(my_iosys->compgroup, 1, &rank_in_comp_comm, */
+	/* 					    peer_group, &rank_in_peer_comm))) */
+	/* 	ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__); */
+	/* LOG((3, "rank_in_comp_comm = %d rank_in_peer_comm = %d", rank_in_comp_comm, */
+	/* 	 rank_in_peer_comm)); */
+
+	/* /\* Free the peer group. *\/ */
+	/* if ((mpierr = MPI_Group_free(&peer_group))) */
+	/* 	ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__); */
+    }
 
     /* Find the rank of the io leader in peer_comm. This matches a
      * call in init_io_comm(). */
+    LOG((3, "calling Allreduce for io_leader = %d", *io_leader));
     iam = -1;
     if ((mpierr = MPI_Allreduce(&iam, io_leader, 1, MPI_INT, MPI_MAX, peer_comm)))
 	ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
+    LOG((3, "called Allreduce for io_leader = %d", *io_leader));
 
-    /* Find the rank of the comp leader in peer_comm. */
-    if (!my_iosys->comp_rank)
+    /* Find the rank of the comp leader in peer_comm. This is the task
+     * with comp_rank zero, which also has a valid comp_comm. */
+    if (my_iosys->comp_comm != MPI_COMM_NULL && !my_iosys->comp_rank)
     {
 	if ((mpierr = MPI_Comm_rank(peer_comm, &iam)))
 	    ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
     }
     else
 	iam = -1;
+    LOG((3, "iam = %d", iam));
 
     /* Find the lucky comp_leader task. */
     if ((mpierr = MPI_Allreduce(&iam, comp_leader, 1, MPI_INT, MPI_MAX, peer_comm)))
@@ -1812,9 +2053,14 @@ init_comp_comm(MPI_Comm comp_comm, iosystem_desc_t *my_iosys, MPI_Comm peer_comm
     LOG((3, "I am compute %s!", my_iosys->compmaster == MPI_ROOT ? "MASTER" : "SERVANT"));
 
     /* Set up the intercomm from the computation side. */
-    if ((mpierr = MPI_Intercomm_create(my_iosys->comp_comm, 0, peer_comm,
-				       *io_leader, cmp, &my_iosys->intercomm)))
-	ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
+    LOG((3, "MPI_COMM_NULL = %d", MPI_COMM_NULL));
+    LOG((3, "about to call MPI_Intercomm_create my_iosys->comp_comm = %d io_leader = %d cmp = %d",
+	 my_iosys->io_comm, *io_leader, cmp));
+    mpierr = MPI_Intercomm_create(my_iosys->comp_comm, 0, peer_comm,
+				  *io_leader, cmp, &my_iosys->intercomm);
+    /* if ((mpierr = MPI_Intercomm_create(my_iosys->comp_comm, 0, peer_comm, */
+    /* 				       *io_leader, cmp, &my_iosys->intercomm))) */
+    /* 	ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__); */
     LOG((3, "intercomm created!"));
 
     /* Create the union communicator. */
@@ -1885,7 +2131,7 @@ init_union_comm(iosystem_desc_t *my_iosys)
     if (my_iosys->ioproc)
     {
 	LOG((3, "IO task before Bcast my_iosys->num_comptasks = %d my_iosys->num_iotasks = %d",
-	     my_iosys->num_comptasks, my_iosys->num_iotasks));	
+	     my_iosys->num_comptasks, my_iosys->num_iotasks));
 	my_iosys->compmaster = 0;
 	if ((mpierr = MPI_Bcast(&my_iosys->num_comptasks, 1, MPI_INT, my_iosys->compmaster,
 				my_iosys->intercomm)))
@@ -1894,12 +2140,12 @@ init_union_comm(iosystem_desc_t *my_iosys)
 				my_iosys->intercomm)))
 	    ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
 	LOG((3, "IO task after Bcast my_iosys->num_comptasks = %d my_iosys->num_iotasks = %d",
-	     my_iosys->num_comptasks, my_iosys->num_iotasks));	
+	     my_iosys->num_comptasks, my_iosys->num_iotasks));
     }
     else
     {
 	LOG((3, "Comp task before Bcast my_iosys->num_comptasks = %d my_iosys->num_iotasks = %d",
-	     my_iosys->num_comptasks, my_iosys->num_iotasks));	
+	     my_iosys->num_comptasks, my_iosys->num_iotasks));
 	my_iosys->iomaster = 0;
 	if ((mpierr = MPI_Bcast(&my_iosys->num_comptasks, 1, MPI_INT, my_iosys->compmaster,
 				my_iosys->intercomm)))
@@ -1908,7 +2154,7 @@ init_union_comm(iosystem_desc_t *my_iosys)
 				my_iosys->intercomm)))
 	    ierr = check_mpi(NULL, mpierr,__FILE__,__LINE__);
 	LOG((3, "Comp task after Bcast my_iosys->num_comptasks = %d my_iosys->num_iotasks = %d",
-	     my_iosys->num_comptasks, my_iosys->num_iotasks));	
+	     my_iosys->num_comptasks, my_iosys->num_iotasks));
     }
 
     /* Allocate an array to hold the ranks of the IO tasks
@@ -2081,81 +2327,59 @@ int PIOc_Init_Intercomm(int component_count, MPI_Comm peer_comm,
 
     /* Is this task part of a computation communicator? If so,
      * one of the comp_comm array members will be non-null. */
-    int cmp1;
-    for (cmp1 = 0; cmp1 < component_count; cmp1++)
-    	if (comp_comms[cmp1] != MPI_COMM_NULL)
-    	    break;
-    LOG((2, "cmp1 = %d", cmp1));
-
-    int cmp = 0;
-
-    /* Get a pointer to the iosys struct */
-    my_iosys = &iosys[cmp];
-
-    /* Set the default error handling. */
-    my_iosys->error_handler = PIO_INTERNAL_ERROR;
-
-    /* We do support asynch interface. */
-    my_iosys->async_interface = true;
-
-    /* These are used when using the intercomm. */
-    my_iosys->iomaster = MPI_PROC_NULL;
-
-    /* Create an MPI info object. */
-    if ((mpierr = MPI_Info_create(&my_iosys->info)))
-	return check_mpi(NULL, mpierr,__FILE__,__LINE__);
-
-    /* Is this task is part of a computation communicator? */
-    if (cmp1 < component_count && comp_comms[cmp1] != MPI_COMM_NULL)
+    for (int cmp1 = 0; cmp1 < component_count; cmp1++)
     {
-	/* Initialize the computational component. */
-	ierr = init_comp_comm(comp_comms[cmp1], my_iosys, peer_comm, cmp1,
-			      &comp_leader, &io_leader);
-    }
-    else
-    {
-	my_iosys->comp_comm = MPI_COMM_NULL;
-	my_iosys->compgroup = MPI_GROUP_NULL;
-	my_iosys->comp_rank = -1;
-    }
+	/* Get a pointer to the iosys struct */
+	my_iosys = &iosys[cmp1];
 
-    /* Is this task is part of the IO communicator? */
-    if (!ierr)
-	if (io_comm != MPI_COMM_NULL)
+	/* Set the default error handling. */
+	my_iosys->error_handler = PIO_INTERNAL_ERROR;
+
+	/* We do support asynch interface. */
+	my_iosys->async_interface = true;
+
+	/* These are used when using the intercomm. */
+	my_iosys->iomaster = MPI_PROC_NULL;
+
+	/* Create an MPI info object. */
+	if ((mpierr = MPI_Info_create(&my_iosys->info)))
+	    return check_mpi(NULL, mpierr,__FILE__,__LINE__);
+
+	/* Is this task is part of a computation communicator? */
+	if (io_comm == MPI_COMM_NULL)
+	{
+	    /* Initialize the computational component. */
+	    ierr = init_comp_comm(comp_comms[cmp1], my_iosys, peer_comm, cmp1,
+				  &comp_leader, &io_leader);
+	}
+	else
 	{
 	    /* Initialize the IO component. */
 	    ierr = init_io_comm(io_comm, my_iosys, peer_comm, cmp1,
 				&comp_leader, &io_leader);
 	}
-	else
+
+	/* Set up the union communicator, an intracomm that includes all
+	 * tasks in a computational component, plus all tasks in the IO
+	 * component. */
+	if (!ierr)
+	    ierr = init_union_comm(my_iosys);
+
+	/* Uncomment the following to print out some debug info. */
+	int my_rank;
+	MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
+	for (int t = 0; t < my_iosys->num_iotasks + my_iosys->num_comptasks; t++)
 	{
-	    my_iosys->io_comm = MPI_COMM_NULL;
-	    my_iosys->iogroup = MPI_GROUP_NULL;
-	    my_iosys->io_rank = -1;
-	    my_iosys->ioproc = false;
-	    my_iosys->iomaster = MPI_PROC_NULL;
+	    MPI_Barrier(my_iosys->union_comm);
+	    if (my_rank == t)
+		pio_iosys_print(my_rank, my_iosys);
 	}
 
-    /* Set up the union communicator, an intracomm that includes all
-     * tasks in a computational component, plus all tasks in the IO
-     * component. */
-    if (!ierr)
-	ierr = init_union_comm(my_iosys);
-
-    /* Uncomment the following to print out some debug info. */
-    int my_rank;
-    MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
-    for (int t = 0; t < my_iosys->num_iotasks + my_iosys->num_comptasks; t++)
-    {
-	MPI_Barrier(my_iosys->union_comm);
-	if (my_rank == t)
-	    pio_iosys_print(my_rank, my_iosys);
-    }
-
-    /* Add this id to the list of PIO iosystem ids. */
-    if (!ierr)
-	iosysidp[cmp] = pio_add_to_iosystem_list(my_iosys);
-    LOG((2, "added to iosystem_list iosysid = %d", iosysidp[cmp]));
+	/* Add this id to the list of PIO iosystem ids. */
+	if (!ierr)
+	    iosysidp[cmp1] = pio_add_to_iosystem_list(my_iosys);
+	LOG((2, "added to iosystem_list iosysid = %d", iosysidp[cmp1]));
+    } /* next component */
 
     /* Now call the function from which the IO tasks will not
      * return until the PIO_MSG_EXIT message is sent. */

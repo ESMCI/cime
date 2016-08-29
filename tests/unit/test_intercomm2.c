@@ -3,7 +3,7 @@
  * function, and basic asynch I/O capability.
  *
  * To run with valgrind, use this command:
- * <pre>mpiexec -n 4 valgrind -v --leak-check=full --suppressions=../../../tests/unit/valsupp_test.supp 
+ * <pre>mpiexec -n 4 valgrind -v --leak-check=full --suppressions=../../../tests/unit/valsupp_test.supp
  * --error-exitcode=99 --track-origins=yes ./test_intercomm2</pre>
  *
  */
@@ -52,7 +52,7 @@
 	fprintf(stderr, "MPI error, line %d, file %s: %s\n", __LINE__, __FILE__, err_buffer); \
 	MPI_Finalize();							\
 	return ERR_AWFUL;							\
-    } while (0) 
+    } while (0)
 
 /** Handle non-MPI errors by finalizing the MPI library and exiting
  * with an exit code. */
@@ -60,7 +60,7 @@
         fprintf(stderr, "Error %d in %s, line %d\n", e, __FILE__, __LINE__); \
 	MPI_Finalize();				\
 	return e;				\
-    } while (0) 
+    } while (0)
 
 /** Global err buffer for MPI. When there is an MPI error, this buffer
  * is used to store the error message that is associated with the MPI
@@ -95,16 +95,16 @@ check_file(int iosysid, int format, char *filename, int my_rank, int verbose)
     short short_att_data;
     float float_att_data;
     double double_att_data;
-        
+
     /* Re-open the file to check it. */
     if (verbose)
 	printf("%d test_intercomm2 opening file %s format %d\n", my_rank, filename, format);
     if ((ret = PIOc_openfile(iosysid, &ncid, &format, filename,
 			     NC_NOWRITE)))
 	ERR(ret);
-    
+
     /* Try to read the data. */
-    PIO_Offset start[NDIM] = {0}, count[NDIM] = {DIM_LEN};    
+    PIO_Offset start[NDIM] = {0}, count[NDIM] = {DIM_LEN};
     int data_in[DIM_LEN];
     if ((ret = PIOc_get_vars_tc(ncid, 0, start, count, NULL, NC_INT, data_in)))
 	ERR(ret);
@@ -143,8 +143,8 @@ check_file(int iosysid, int format, char *filename, int my_rank, int verbose)
     	ERR(ret);
     if (unlimdimid != -1)
     	ERR(ERR_WRONG);
-    /* Should succeed, do nothing. */   
-    if ((ret = PIOc_inq_unlimdim(ncid, NULL))) 
+    /* Should succeed, do nothing. */
+    if ((ret = PIOc_inq_unlimdim(ncid, NULL)))
     	ERR(ret);
 
     /* Check out the dimension. */
@@ -243,8 +243,8 @@ check_file(int iosysid, int format, char *filename, int my_rank, int verbose)
     	ERR(ret);
     if (double_att_data != ATT_VALUE)
     	ERR(ERR_WRONG);
-    
-	    
+
+
     /* Close the file. */
     if (verbose)
 	printf("%d test_intercomm2 closing file (again) ncid = %d\n", my_rank, ncid);
@@ -252,83 +252,6 @@ check_file(int iosysid, int format, char *filename, int my_rank, int verbose)
 	ERR(ret);
 
     return 0;
-}
-
-/** Set up the communicators for parallel I/O.
- *
- * @param world the communicator containing all the available tasks.
- * @param component_count number of computational components
- * @param color for this task. Use 0 for an I/O task, 1 for the first
- * computational group, 2 for the next computational group, etc. 0 >=
- * color <= component_count.
- * @param comp_comms pointer to an array that will get the MPI_Comm
- * values associated with the components.
- * @param io_comm pointer that will get the MPI_Comm of the IO
- * communicator.
- * @param comp_task a pointer to int that will get a 1 if the
- * executing task is a computational task, and a 0 if it is an IO
- * task.
- * @param verbose print output if this is non-zero
- *
- * @return PIO_NOERR on success, error code otherwise.
- */
-int
-init_io(MPI_Comm world, int component_count, int color, MPI_Comm *comp_comms,
-	MPI_Comm *io_comm, int *comp_task, int verbose)
-{
-    int my_rank;
-    MPI_Comm newcomm;
-    int ret;
-
-    /* Get rank of this task. */
-    if ((ret = MPI_Comm_rank(world, &my_rank)))
-	MPIERR(ret);	
-
-    /* Split the communicator based on the color and use the original
-       rank for ordering. */
-    if ((ret = MPI_Comm_split(world, color, my_rank, &newcomm)))
-	MPIERR(ret);	
-
-    if (verbose)
-    {
-	int newcomm_rank, newcomm_size;
-	
-	/* Get the rank of this task, and the size, of the communicator. */
-	if ((ret = MPI_Comm_rank(newcomm, &newcomm_rank)))
-	    MPIERR(ret);	
-	if ((ret = MPI_Comm_size(newcomm, &newcomm_size)))
-	    MPIERR(ret);	
-	
-	printf("WORLD RANK: %d \t NEWCOMM RANK/SIZE: %d/%d\n", my_rank,
-	       newcomm_rank, newcomm_size);
-    }
-
-    /* We will define io_comm. The comp_comms array will get nulls. */
-    for (int c = 0; c < component_count; c++)
-	comp_comms[c] = MPI_COMM_NULL;
-    
-    /* A color of 0 means this belongs to the IO group. */
-    if (color == 0) 
-    {
-	*io_comm = newcomm;
-	*comp_task = 0;
-	if (verbose)
-	    printf("%d added to the io_comm\n", my_rank);
-    }
-    else
-    {
-	/* Set other values based on global rank. */
-	/* We will define comp_comm. The io_comm will get null. */
-	*io_comm = MPI_COMM_NULL;
-	for (int c = 0; c < component_count; c++)
-	    comp_comms[c] = MPI_COMM_NULL;
-	comp_comms[color - 1] = newcomm;
-	*comp_task = color;
-	if (verbose)
-	    printf("%d added to the comp_comm %d\n", my_rank, color);
-    }
-
-    return PIO_NOERR;
 }
 
 /** Run Tests for Init_Intercomm
@@ -340,7 +263,7 @@ int
 main(int argc, char **argv)
 {
     int verbose = 1;
-    
+
     /** Zero-based rank of processor. */
     int my_rank;
 
@@ -348,7 +271,7 @@ main(int argc, char **argv)
     int ntasks;
 
     /** Different output flavors. */
-    int format[NUM_NETCDF_FLAVORS] = {PIO_IOTYPE_PNETCDF, 
+    int format[NUM_NETCDF_FLAVORS] = {PIO_IOTYPE_PNETCDF,
 				      PIO_IOTYPE_NETCDF,
 				      PIO_IOTYPE_NETCDF4C,
 				      PIO_IOTYPE_NETCDF4P};
@@ -358,7 +281,7 @@ main(int argc, char **argv)
 							  "test_intercomm2_classic.nc",
 							  "test_intercomm2_serial4.nc",
 							  "test_intercomm2_parallel4.nc"};
-	
+
     /** The ID for the parallel I/O system. */
     int iosysid;
 
@@ -373,13 +296,13 @@ main(int argc, char **argv)
 
     /** Index for loops. */
     int fmt, d, d1, i;
-    
+
 #ifdef TIMING
     /* Initialize the GPTL timing library. */
     if ((ret = GPTLinitialize ()))
 	return ret;
 #endif
-    
+
     /* Initialize MPI. */
     if ((ret = MPI_Init(&argc, &argv)))
 	MPIERR(ret);
@@ -430,8 +353,9 @@ main(int argc, char **argv)
 	printf("%d my color = %d\n", my_rank, color);
 
     /* Initialize the IO system. */
-    if ((ret = init_io(MPI_COMM_WORLD, COMPONENT_COUNT, color, comp_comms, &io_comm,
-		       &comp_task, verbose)))
+    int num_procs[COMPONENT_COUNT + 1] = {2, 1, 1};
+    if ((ret = PIOc_init_io(MPI_COMM_WORLD, COMPONENT_COUNT, num_procs, NULL, comp_comms, &io_comm,
+			    &comp_task, verbose)))
 	ERR(ERR_AWFUL);
     if (verbose)
     {
@@ -440,17 +364,17 @@ main(int argc, char **argv)
 	    printf("%d comp_comms[%d] = %d\n", my_rank, c, comp_comms[c]);
     }
 
-    MPI_Barrier(MPI_COMM_WORLD);    
-    
-    /* Initialize the async setup. */
-    if ((ret = PIOc_Init_Intercomm(COMPONENT_COUNT, MPI_COMM_WORLD, comp_comms,
-    				   io_comm, &iosysid)))
-    	ERR(ret);
-    if (verbose)
-    	printf("%d test_intercomm2 init intercomm returned %d iosysid = %d\n", my_rank, ret,
-    	       iosysid);
+    /* MPI_Barrier(MPI_COMM_WORLD); */
 
-    MPI_Barrier(MPI_COMM_WORLD);    
+    /* /\* Initialize the async setup. *\/ */
+    /* if ((ret = PIOc_Init_Intercomm(COMPONENT_COUNT, MPI_COMM_WORLD, comp_comms, */
+    /* 				   io_comm, &iosysid))) */
+    /* 	ERR(ret); */
+    /* if (verbose) */
+    /* 	printf("%d test_intercomm2 init intercomm returned %d iosysid = %d\n", my_rank, ret, */
+    /* 	       iosysid); */
+
+    /* MPI_Barrier(MPI_COMM_WORLD); */
     /* /\* All the netCDF calls are only executed on the computation */
     /*  * tasks. The IO tasks have not returned from PIOc_Init_Intercomm, */
     /*  * and when the do, they should go straight to finalize. *\/ */
@@ -461,7 +385,7 @@ main(int argc, char **argv)
     /* 	    int ncid, varid, dimid; */
     /* 	    PIO_Offset start[NDIM], count[NDIM] = {0}; */
     /* 	    int data[DIM_LEN]; */
-	
+
     /* 	    /\* Create a netCDF file with one dimension and one variable. *\/ */
     /* 	    if (verbose) */
     /* 	    	printf("%d test_intercomm2 creating file %s\n", my_rank, filename[fmt]); */
@@ -505,7 +429,7 @@ main(int argc, char **argv)
     /* 		if (type_size != type_len[i]) */
     /* 		    ERR(ERR_AWFUL); */
     /* 	    } */
-	    
+
     /* 	    /\* Define a dimension. *\/ */
     /* 	    char dimname2[NC_MAX_NAME + 1]; */
     /* 	    if (verbose) */
@@ -610,15 +534,15 @@ main(int argc, char **argv)
     /* 	    /\* if ((ret = PIOc_openfile(iosysid, &ncid, &format[fmt], filename[fmt], *\/ */
     /* 	    /\* 			     NC_NOWRITE)) != PIO_ENFILE) *\/ */
     /* 	    /\* 	ERR(ERR_AWFUL); *\/ */
-	    
+
     /* 	} /\* next netcdf format flavor *\/ */
     /* } */
 
-    /* Finalize the IO system. */
-    if (verbose)
-    	printf("%d test_intercomm2 Freeing PIO resources...\n", my_rank);
-    if ((ret = PIOc_finalize(iosysid)))
-    	ERR(ret);
+    /* /\* Finalize the IO system. *\/ */
+    /* if (verbose) */
+    /* 	printf("%d test_intercomm2 Freeing PIO resources...\n", my_rank); */
+    /* if ((ret = PIOc_finalize(iosysid))) */
+    /* 	ERR(ret); */
 
     /* Free local MPI resources. */
     if (verbose)
@@ -648,7 +572,7 @@ main(int argc, char **argv)
 	    printf("%d test_intercomm2 freed io_comm\n", my_rank);
 	}
     }
-    
+
     /* Finalize the MPI library. */
     MPI_Finalize();
 
@@ -661,6 +585,6 @@ main(int argc, char **argv)
     if (verbose)
 	printf("%d test_intercomm2 SUCCESS!!\n", my_rank);
 
-    
+
     return 0;
 }
