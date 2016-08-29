@@ -151,7 +151,7 @@ class J_TestCreateNewcase(unittest.TestCase):
         self._do_teardown = []
 
     def test_createnewcase(self):
-        testdir = os.path.join(self._testroot, 'scripts_regression_tests.testcreatenewcase.%s'% CIME.utils.get_utc_timestamp())
+        testdir = os.path.join(self._testroot, 'scripts_regression_tests.testcreatenewcase.%s'% CIME.utils.get_timestamp())
         if os.path.exists(testdir):
             shutil.rmtree(testdir)
         self._testdirs.append(testdir)
@@ -167,7 +167,7 @@ class J_TestCreateNewcase(unittest.TestCase):
         self._do_teardown.append(testdir)
 
     def test_user_mods(self):
-        testdir = os.path.join(self._testroot, 'scripts_regression_tests.testusermods.%s'% CIME.utils.get_utc_timestamp())
+        testdir = os.path.join(self._testroot, 'scripts_regression_tests.testusermods.%s'% CIME.utils.get_timestamp())
         if os.path.exists(testdir):
             shutil.rmtree(testdir)
         self._testdirs.append(testdir)
@@ -200,10 +200,10 @@ class M_TestWaitForTests(unittest.TestCase):
     def setUp(self):
     ###########################################################################
         self._testroot = MACHINE.get_value("CESMSCRATCHROOT")
-        self._testdir_all_pass    = os.path.join(self._testroot, 'scripts_regression_tests.testdir_all_pass.%s'% CIME.utils.get_utc_timestamp())
-        self._testdir_with_fail   = os.path.join(self._testroot, 'scripts_regression_tests.testdir_with_fail.%s'% CIME.utils.get_utc_timestamp())
-        self._testdir_unfinished  = os.path.join(self._testroot, 'scripts_regression_tests.testdir_unfinished.%s'% CIME.utils.get_utc_timestamp())
-        self._testdir_unfinished2 = os.path.join(self._testroot, 'scripts_regression_tests.testdir_unfinished2.%s'% CIME.utils.get_utc_timestamp())
+        self._testdir_all_pass    = os.path.join(self._testroot, 'scripts_regression_tests.testdir_all_pass.%s'% CIME.utils.get_timestamp())
+        self._testdir_with_fail   = os.path.join(self._testroot, 'scripts_regression_tests.testdir_with_fail.%s'% CIME.utils.get_timestamp())
+        self._testdir_unfinished  = os.path.join(self._testroot, 'scripts_regression_tests.testdir_unfinished.%s'% CIME.utils.get_timestamp())
+        self._testdir_unfinished2 = os.path.join(self._testroot, 'scripts_regression_tests.testdir_unfinished2.%s'% CIME.utils.get_timestamp())
         testdirs = [self._testdir_all_pass, self._testdir_with_fail, self._testdir_unfinished, self._testdir_unfinished2]
         for testdir in testdirs:
             if os.path.exists(testdir):
@@ -408,7 +408,7 @@ class TestCreateTestCommon(unittest.TestCase):
     ###########################################################################
         self._thread_error      = None
         self._unset_proxy       = setup_proxy()
-        self._baseline_name     = "fake_testing_only_%s" % CIME.utils.get_utc_timestamp()
+        self._baseline_name     = "fake_testing_only_%s" % CIME.utils.get_timestamp()
         self._machine           = MACHINE.get_machine_name()
         self._baseline_area     = MACHINE.get_value("CCSM_BASELINE")
         self._testroot          = MACHINE.get_value("CESMSCRATCHROOT")
@@ -474,10 +474,10 @@ class N_TestCreateTest(TestCreateTestCommon):
         else:
             genarg = "-g %s -o"%self._baseline_name
             comparg = "-c %s"%self._baseline_name
-        self.simple_test(True, "%s -n -t %s-%s" % (genarg,self._baseline_name, CIME.utils.get_utc_timestamp()))
+        self.simple_test(True, "%s -n -t %s-%s" % (genarg,self._baseline_name, CIME.utils.get_timestamp()))
 
         # Basic namelist compare
-        self.simple_test(True, "%s -n -t %s-%s" % (comparg, self._baseline_name, CIME.utils.get_utc_timestamp()))
+        self.simple_test(True, "%s -n -t %s-%s" % (comparg, self._baseline_name, CIME.utils.get_timestamp()))
 
         # Modify namelist
         fake_nl = """
@@ -499,13 +499,13 @@ class N_TestCreateTest(TestCreateTestCommon):
             nl_file.write(fake_nl)
 
         # Basic namelist compare should now fail
-        self.simple_test(False, "%s -n -t %s-%s" % (comparg, self._baseline_name, CIME.utils.get_utc_timestamp()))
+        self.simple_test(False, "%s -n -t %s-%s" % (comparg, self._baseline_name, CIME.utils.get_timestamp()))
 
         # Regen
-        self.simple_test(True, "%s -n -t %s-%s" % (genarg, self._baseline_name, CIME.utils.get_utc_timestamp()))
+        self.simple_test(True, "%s -n -t %s-%s" % (genarg, self._baseline_name, CIME.utils.get_timestamp()))
 
         # Basic namelist compare should now pass again
-        self.simple_test(True, "%s -n -t %s-%s" % (comparg, self._baseline_name, CIME.utils.get_utc_timestamp()))
+        self.simple_test(True, "%s -n -t %s-%s" % (comparg, self._baseline_name, CIME.utils.get_timestamp()))
 
 ###############################################################################
 class O_TestTestScheduler(TestCreateTestCommon):
@@ -591,7 +591,7 @@ class O_TestTestScheduler(TestCreateTestCommon):
     def test_b_full(self):
     ###########################################################################
         tests = update_acme_tests.get_full_test_names(["cime_test_only"], self._machine, self._compiler)
-        test_id="%s-%s" % (self._baseline_name, CIME.utils.get_utc_timestamp())
+        test_id="%s-%s" % (self._baseline_name, CIME.utils.get_timestamp())
         ct = TestScheduler(tests, test_id=test_id, no_batch=NO_BATCH)
 
         build_fail_test     = [item for item in tests if "TESTBUILDFAIL." in item][0]
@@ -722,7 +722,7 @@ class P_TestJenkinsGenericJob(TestCreateTestCommon):
         self.simple_test(True, "-t cime_test_only_pass -g -b %s" % self._baseline_name)
         self.assert_num_leftovers()
 
-        build_name = "jenkins_generic_job_pass_%s" % CIME.utils.get_utc_timestamp()
+        build_name = "jenkins_generic_job_pass_%s" % CIME.utils.get_timestamp()
         self.simple_test(True, "-t cime_test_only_pass -b %s" % self._baseline_name, build_name=build_name)
         self.assert_num_leftovers() # jenkins_generic_job should have automatically cleaned up leftovers from prior run
         assert_dashboard_has_build(self, build_name)
@@ -730,7 +730,7 @@ class P_TestJenkinsGenericJob(TestCreateTestCommon):
     ###########################################################################
     def test_jenkins_generic_job_kill(self):
     ###########################################################################
-        build_name = "jenkins_generic_job_kill_%s" % CIME.utils.get_utc_timestamp()
+        build_name = "jenkins_generic_job_kill_%s" % CIME.utils.get_timestamp()
         run_thread = threading.Thread(target=self.threaded_test, args=(False, " -t cime_test_only_slow_pass -b master --baseline-compare=no", build_name))
         run_thread.daemon = True
         run_thread.start()
@@ -789,16 +789,16 @@ class Q_TestBlessTestResults(TestCreateTestCommon):
             genarg = "-g %s -o"%self._baseline_name
             comparg = "-c %s"%self._baseline_name
 
-        self.simple_test(True, "%s -t %s-%s" % (genarg, self._baseline_name, CIME.utils.get_utc_timestamp()))
+        self.simple_test(True, "%s -t %s-%s" % (genarg, self._baseline_name, CIME.utils.get_timestamp()))
 
         # Hist compare should pass
-        self.simple_test(True, "%s -t %s-%s" % (comparg, self._baseline_name, CIME.utils.get_utc_timestamp()))
+        self.simple_test(True, "%s -t %s-%s" % (comparg, self._baseline_name, CIME.utils.get_timestamp()))
 
         # Change behavior
         os.environ["TESTRUNDIFF_ALTERNATE"] = "True"
 
         # Hist compare should now fail
-        test_id = "%s-%s" % (self._baseline_name, CIME.utils.get_utc_timestamp())
+        test_id = "%s-%s" % (self._baseline_name, CIME.utils.get_timestamp())
         self.simple_test(False, "%s -t %s" % (comparg, test_id))
 
         # compare_test_results should detect the fail
@@ -816,7 +816,7 @@ class Q_TestBlessTestResults(TestCreateTestCommon):
         run_cmd_no_fail("%s/bless_test_results --hist-only --force -b %s -t %s" % (TOOLS_DIR, self._baseline_name, test_id))
 
         # Hist compare should now pass again
-        self.simple_test(True, "%s -t %s-%s" % (comparg, self._baseline_name, CIME.utils.get_utc_timestamp()))
+        self.simple_test(True, "%s -t %s-%s" % (comparg, self._baseline_name, CIME.utils.get_timestamp()))
 
 ###############################################################################
 @unittest.skip("Disabling this test until we figure out how to integrate ACME tests and CIME xml files.")
@@ -1023,7 +1023,7 @@ class C_TestXMLQuery(unittest.TestCase):
         self._testdirs = []
         self._do_teardown = []
 
-        testdir = os.path.join(self._testroot, 'scripts_regression_tests.testscripts.%s'% CIME.utils.get_utc_timestamp())
+        testdir = os.path.join(self._testroot, 'scripts_regression_tests.testscripts.%s'% CIME.utils.get_timestamp())
         machine = 'melvin'
         if os.path.exists(testdir):
             shutil.rmtree(testdir)
