@@ -110,7 +110,7 @@ def _hists_match(model, hists1, hists2, suffix1="", suffix2=""):
     for hists, suffix, normalized in [(hists1, suffix1, normalized1), (hists2, suffix2, normalized2)]:
         for hist in hists:
             normalized_name = hist[hist.rfind(model):]
-            if suffix1 != "":
+            if suffix != "":
                 expect(normalized_name.endswith(suffix), "How did '%s' hot have suffix '%s'" % (hist, suffix))
                 normalized_name = normalized_name[:len(normalized_name) - len(suffix)]
 
