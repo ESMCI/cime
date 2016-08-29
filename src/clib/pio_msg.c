@@ -1779,12 +1779,15 @@ init_io_comm(MPI_Comm io_comm, iosystem_desc_t *my_iosys, MPI_Comm peer_comm,
  */
 int
 PIOc_init_io(MPI_Comm world, int component_count, int *num_procs_per_comp, int **proc_list,
-	     MPI_Comm *comp_comms, MPI_Comm *io_comm, int *comp_task, int verbose)
+	     int *iosysidp)
 {
     int my_rank;
     MPI_Comm newcomm;
     int **my_proc_list;
-    int color;
+    MPI_Comm intercomm;
+    MPI_Comm union_comm[component_count];
+    MPI_Comm comp_comms[component_count];
+    MPI_Comm io_comm;
     int ret;
 
     LOG((1, "PIOc_init_io component_count = %d", component_count));
@@ -1824,6 +1827,11 @@ PIOc_init_io(MPI_Comm world, int component_count, int *num_procs_per_comp, int *
     if ((ret = MPI_Comm_rank(world, &my_rank)))
 	return check_mpi(NULL, ret,__FILE__,__LINE__);
 
+    /* Allocate struct to hold io system info for each component. */
+    iosystem_desc_t *iosys;    
+    if (!(iosys = (iosystem_desc_t *) calloc(1, sizeof(iosystem_desc_t) * component_count)))
+	return PIO_ENOMEM;
+
     /* Initialize the comp_comms array with nulls in all tasks. All
      * tasks share this array, but values for the computation
      * commuicators are only set in tasks which participate in those
@@ -1848,6 +1856,7 @@ PIOc_init_io(MPI_Comm world, int component_count, int *num_procs_per_comp, int *
     /* For each component, starting with the IO component. */
     for (int cmp = 0; cmp < component_count + 1; cmp++)
     {
+	/* Create a group for this component. */
 	if ((ret = MPI_Group_incl(world_group, num_procs_per_comp[cmp], my_proc_list[cmp],
 				  &group[cmp])))
 	    return check_mpi(NULL, ret,__FILE__,__LINE__);
@@ -1900,9 +1909,12 @@ PIOc_init_io(MPI_Comm world, int component_count, int *num_procs_per_comp, int *
 	/* Create an intracomm for this component. Only processes in
 	 * the component need to participate in the intracomm create
 	 * call. */
-	if (in_cmp || in_io)
+	if (in_cmp)
 	{
-	    MPI_Comm *comm_ptr = cmp ? &comp_comms[cmp - 1] : io_comm;
+	    /* Decide where the comm ID will end up. */
+	    MPI_Comm *comm_ptr = cmp ? &comp_comms[cmp - 1] : &io_comm;
+
+	    /* Create the intracomm from the group. */
 	    if ((ret = MPI_Comm_create_group(world, group[cmp], cmp,
 					     comm_ptr)))
 		return check_mpi(NULL, ret,__FILE__,__LINE__);
@@ -1912,11 +1924,11 @@ PIOc_init_io(MPI_Comm world, int component_count, int *num_procs_per_comp, int *
 
 	/* All the processes in this component, and the IO component,
 	 * are part of the union_comm. */
-	MPI_Comm union_comm[component_count];
-	MPI_Comm intercomm;
 	if (cmp)
 	    if (in_io || in_cmp)
 	    {
+		/* Create a group for the union of the IO component
+		 * and one of the computation components. */
 		if ((ret = MPI_Comm_create_group(world, union_group[cmp - 1], cmp,
 						 &union_comm[cmp - 1])))
 		    return check_mpi(NULL, ret,__FILE__,__LINE__);
@@ -1924,15 +1936,15 @@ PIOc_init_io(MPI_Comm world, int component_count, int *num_procs_per_comp, int *
 
 		if (in_io)
 		{
-		    /* Create the intercomm. */
+		    /* Create the intercomm from IO to computation component. */
 		    LOG((3, "about to create intercomm for IO component cmp = %d", cmp));
-		    if ((ret = MPI_Intercomm_create(*io_comm, 0, union_comm[cmp - 1], num_procs_per_comp[0],
-						    my_rank, &intercomm)))
+		    if ((ret = MPI_Intercomm_create(io_comm, 0, union_comm[cmp - 1],
+						    num_procs_per_comp[0], my_rank, &intercomm)))
 			return check_mpi(NULL, ret,__FILE__,__LINE__);
 		}
 		else
 		{
-		    /* Create the intercomm. */
+		    /* Create the intercomm from computation component to IO component. */
 		    LOG((3, "about to create intercomm for cmp = %d comp_comms[%d] = %d", cmp, cmp,
 			 comp_comms[cmp]));
 		    if ((ret = MPI_Intercomm_create(comp_comms[cmp - 1], 0, union_comm[cmp - 1], 0,
@@ -1949,6 +1961,16 @@ PIOc_init_io(MPI_Comm world, int component_count, int *num_procs_per_comp, int *
 	for (int cmp = 0; cmp < component_count + 1; cmp++)
 	    free(my_proc_list[cmp]);
 	free(my_proc_list);
+    }
+
+    /* Free MPI groups. */
+    for (int cmp = 0; cmp < component_count + 1; cmp++)
+    {
+	if ((ret = MPI_Group_free(&group[cmp])))
+	    return check_mpi(NULL, ret,__FILE__,__LINE__);		
+	if (cmp)
+	    if ((ret = MPI_Group_free(&union_group[cmp - 1])))
+		return check_mpi(NULL, ret,__FILE__,__LINE__);		
     }
 
     return PIO_NOERR;

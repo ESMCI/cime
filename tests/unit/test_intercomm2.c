@@ -332,37 +332,17 @@ main(int argc, char **argv)
     /* Initialize the PIO IO system. This specifies how many and which
      * processors are involved in I/O. */
 #define COMPONENT_COUNT 2
-    MPI_Comm comp_comms[COMPONENT_COUNT];
-    int color;
-    MPI_Comm io_comm;
-
-    /* Will be non-zero if this is not an IO task (i.e. is a
-     * computational task). */
-    int comp_task;
 
     /* Turn on logging. */
     if ((ret = PIOc_set_log_level(3)))
 	ERR(ret);
 
-    /* Determine what communicator this task will belong to. */
-    if (my_rank < 2)
-	color = 0;
-    else
-	color = my_rank - 1;
-    if (verbose)
-	printf("%d my color = %d\n", my_rank, color);
+    /* How many processors will be used for our IO and 2 computation components. */
+    int num_procs[COMPONENT_COUNT + 1] = {2, 1, 1};
 
     /* Initialize the IO system. */
-    int num_procs[COMPONENT_COUNT + 1] = {2, 1, 1};
-    if ((ret = PIOc_init_io(MPI_COMM_WORLD, COMPONENT_COUNT, num_procs, NULL, comp_comms, &io_comm,
-			    &comp_task, verbose)))
+    if ((ret = PIOc_init_io(MPI_COMM_WORLD, COMPONENT_COUNT, num_procs, NULL, &iosysid)))
 	ERR(ERR_AWFUL);
-    if (verbose)
-    {
-	printf("%d IO system initialized\n", my_rank);
-	for (int c = 0; c < COMPONENT_COUNT; c++)
-	    printf("%d comp_comms[%d] = %d\n", my_rank, c, comp_comms[c]);
-    }
 
     /* MPI_Barrier(MPI_COMM_WORLD); */
 
@@ -547,31 +527,31 @@ main(int argc, char **argv)
     /* Free local MPI resources. */
     if (verbose)
 	printf("%d test_intercomm2 Freeing local MPI resources...\n", my_rank);
-    if (comp_task)
-    {
-	for (int c = 0; c < COMPONENT_COUNT; c++)
-	{
-	    if (comp_comms[c] != MPI_COMM_NULL)
-	    {
-		if (verbose)
-		    printf("%d test_intercomm2 freeing comp_comms[%d] = %d\n",
-			   my_rank, c, comp_comms[c]);
-		MPI_Comm_free(&comp_comms[c]);
-		printf("%d test_intercomm2 freed comp_comms[%d]\n",
-		       my_rank, c);
-	    }
-	}
-    }
-    else
-    {
-	if (verbose)
-	    printf("%d test_intercomm2 freeing io_comm = %d\n", my_rank, io_comm);
-	if (io_comm != MPI_COMM_NULL)
-	{
-	    MPI_Comm_free(&io_comm);
-	    printf("%d test_intercomm2 freed io_comm\n", my_rank);
-	}
-    }
+    /* if (comp_task) */
+    /* { */
+    /* 	for (int c = 0; c < COMPONENT_COUNT; c++) */
+    /* 	{ */
+    /* 	    if (comp_comms[c] != MPI_COMM_NULL) */
+    /* 	    { */
+    /* 		if (verbose) */
+    /* 		    printf("%d test_intercomm2 freeing comp_comms[%d] = %d\n", */
+    /* 			   my_rank, c, comp_comms[c]); */
+    /* 		MPI_Comm_free(&comp_comms[c]); */
+    /* 		printf("%d test_intercomm2 freed comp_comms[%d]\n", */
+    /* 		       my_rank, c); */
+    /* 	    } */
+    /* 	} */
+    /* } */
+    /* else */
+    /* { */
+    /* 	if (verbose) */
+    /* 	    printf("%d test_intercomm2 freeing io_comm = %d\n", my_rank, io_comm); */
+    /* 	if (io_comm != MPI_COMM_NULL) */
+    /* 	{ */
+    /* 	    MPI_Comm_free(&io_comm); */
+    /* 	    printf("%d test_intercomm2 freed io_comm\n", my_rank); */
+    /* 	} */
+    /* } */
 
     /* Finalize the MPI library. */
     MPI_Finalize();
