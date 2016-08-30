@@ -1,78 +1,75 @@
-#! /usr/bin/env perl
-#------------------------------------------------------------------------------
+#!/usr/bin/env python
+
+"""
+template to create a case short term archiving script. This should only ever be called
+by case.submit when on batch system. This script only exists as a way of providing
+batch directives. Use case.submit from the command line to run your case.
+"""
+
+import sys, os, time
+os.chdir( '{{ caseroot }}')
+
+_LIBDIR = os.path.join("{{ cimeroot }}", "scripts", "Tools")
+sys.path.append(_LIBDIR)
+
+from standard_script_setup          import *
+from CIME.case import Case
+from CIME.case_st_archive import case_st_archive
+
+logger = logging.getLogger(__name__)
+
 # Batch system directives
-#------------------------------------------------------------------------------
 {{ batchdirectives }}
-use strict;
-if(! -e "./xmlquery" and defined $ENV{'PBS_O_WORKDIR'})
-{
-	chdir $ENV{'PBS_O_WORKDIR'};
-}
 
-my $scriptname = $0;
-my $caseroot = `./xmlquery -value CASEROOT`;
-my $cimeroot = `./xmlquery -value CIMEROOT`;
+###############################################################################
+def parse_command_line(args, description):
+###############################################################################
 
-chdir $caseroot;
-my $perl5lib = "$cimeroot/utils/perl5lib";
-push(@INC, $perl5lib);
-require Config::SetupTools;
-require Batch::BatchUtils;
-use Cwd;
-require Log::Log4perl;
+    parser = argparse.ArgumentParser(
+        usage="""\n%s [--verbose]
+OR
+%s --help
+OR
+%s --test
 
-my $level = Log::Log4perl::Level::to_priority("INFO");
-Log::Log4perl->easy_init({level=>$level,
-			  layout=>'%m%n'});
+\033[1mEXAMPLES:\033[0m
+    \033[1;32m# case.run SMS\033[0m
+    > %s
+""" % ((os.path.basename(args[0]), ) * 4),
 
-my $logger = Log::Log4perl::get_logger();
+description=description,
 
-#------------------------------------------------------------------------------
-# PE Layout Documentation:
-#------------------------------------------------------------------------------
-{{ pedocumentation }}
+formatter_class=argparse.ArgumentDefaultsHelpFormatter
+)
 
-# -------------------------------------------------------------------------
-# global data needed by the script, stuff like the max number of threads,
-# -------------------------------------------------------------------------
+    CIME.utils.setup_standard_logging_options(parser)
 
-# First, get the configuration from every xml file.
-my %config = SetupTools::getAllResolved();
+    parser.add_argument("--caseroot", default=os.getcwd(),
+                        help="Case directory to build")
 
+    args = parser.parse_args()
 
-my $testlog = "$config{CASEROOT}/TestStatus.log";
-if(-e $testlog){
-    open(TL,">>$testlog");
-    print TL "st_archive starting\n";
-    close(TL);
-}
-$logger->info("st_archive starting");
-system("$config{CASEROOT}/st_archive >> stArchiveStatus 2>&1");
-if(-e $testlog){
-    open(TL,">>$testlog");
-    print TL "st_archive complete\n";
-    close(TL);
-}
-$logger->info("st_archive complete");
-print TL "st_archive complete\n";
-resubmitCheck();
+    CIME.utils.handle_standard_logging_options(args)
 
-sub resubmitCheck()
-{
-    if($config{RESUBMIT} > 0){
-	my $submitscript = "$config{'CASEROOT'}/case.submit";
-	my $cwd = getcwd;
-	chdir $config{CASEROOT};
-	my $resubmitcommand = "$submitscript  -resubmit -scriptname case.st_archive";
-	$logger->debug( "running resubmit check $resubmitcommand");
-	if(-e $testlog){
-	    open(TL,">>$testlog");
-	    print TL "running resubmit check $resubmitcommand\n";
-	    close(TL);
-	}
-       system($resubmitcommand);
-        if($?){ $logger->warn ("could not run CESM submit script, $! $?");}
-	chdir $cwd;
-    }
-}
-	
+    if args.caseroot is not None:
+        os.chdir(args.caseroot)
+
+    return args.caseroot
+
+###############################################################################
+def _main_func(description):
+###############################################################################
+    if ("--test" in sys.argv):
+        test_results = doctest.testmod(verbose=True)
+        sys.exit(1 if test_results.failed > 0 else 0)
+
+    caseroot = parse_command_line(sys.argv, description)
+    with Case(caseroot, read_only=False) as case:
+        success = case_st_archive(case)
+
+    sys.exit(0 if success else 1)
+
+###############################################################################
+
+if __name__ == "__main__":
+    _main_func(__doc__)

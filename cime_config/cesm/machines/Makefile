@@ -80,7 +80,7 @@ endif
 # set CPP options (must use this before any flags or cflags settings)
 #===============================================================================
 
-CPPDEFS := $(USER_CPPDEFS) -D$(OS)
+CPPDEFS := $(USER_CPPDEFS) -D$(OS) -DCPR$(shell echo $(COMPILER) | tr a-z A-z)
 
 # Unless DEBUG mode is enabled, use NDEBUG to turn off assert statements.
 ifneq ($(strip $(DEBUG)),TRUE)
@@ -541,6 +541,14 @@ ifdef PNETCDF_PATH
 else
         CMAKE_OPTS += -D WITH_PNETCDF:LOGICAL=FALSE -D PIO_USE_MPIIO:LOGICAL=FALSE
 endif
+
+# NAG doesn't get along too nicely with PnetCDF Fortran interfaces.
+ifeq ($(COMPILER),nag)
+  ifeq ($(PIO_VERSION),1)
+        CMAKE_OPTS += -D WITH_PNETCDF:LOGICAL=FALSE -D PIO_USE_MPIIO:LOGICAL=FALSE
+  endif
+endif
+
 ifdef PIO_FILESYSTEM_HINTS
 	CMAKE_OPTS += -D PIO_FILESYSTEM_HINTS:STRING="$(PIO_FILESYSTEM_HINTS)"
 endif
@@ -682,8 +690,8 @@ endif
 
 ifndef CLIBS
    ifdef ULIBDEP
-     # For each occurrence of something like /path/to/foo/libbar.a in ULIBDEP,
-     # CLIBS will contain -L/path/to/foo -lbar
+     # For each occurrence of something like /path/../foo/libbar.a in ULIBDEP,
+     # CLIBS will contain -L/path/../foo -lbar
      CLIBS := $(foreach LIBDEP,$(strip $(ULIBDEP)), -L$(dir $(LIBDEP)) $(patsubst lib%.a,-l%,$(notdir $(LIBDEP))))
    endif
 endif
