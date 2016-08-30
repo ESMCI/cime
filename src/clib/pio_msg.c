@@ -1828,16 +1828,9 @@ PIOc_init_io(MPI_Comm world, int component_count, int *num_procs_per_comp, int *
 	return check_mpi(NULL, ret,__FILE__,__LINE__);
 
     /* Allocate struct to hold io system info for each component. */
-    iosystem_desc_t *iosys;    
+    iosystem_desc_t *iosys, *my_iosys;    
     if (!(iosys = (iosystem_desc_t *) calloc(1, sizeof(iosystem_desc_t) * component_count)))
 	return PIO_ENOMEM;
-
-    /* Initialize the comp_comms array with nulls in all tasks. All
-     * tasks share this array, but values for the computation
-     * commuicators are only set in tasks which participate in those
-     * communicators. */
-    for (int c = 0; c < component_count; c++)
-	comp_comms[c] = MPI_COMM_NULL;
 
     /* Create group for world. */
     MPI_Group world_group;
@@ -1856,6 +1849,14 @@ PIOc_init_io(MPI_Comm world, int component_count, int *num_procs_per_comp, int *
     /* For each component, starting with the IO component. */
     for (int cmp = 0; cmp < component_count + 1; cmp++)
     {
+
+	/* Initialize the comp_comms array with nulls in all
+	 * tasks. All tasks share this array, but values for the
+	 * computation commuicators are only set in tasks which
+	 * participate in those communicators. */
+	for (int c = 0; c < component_count; c++)
+	    comp_comms[c] = MPI_COMM_NULL;
+
 	/* Create a group for this component. */
 	if ((ret = MPI_Group_incl(world_group, num_procs_per_comp[cmp], my_proc_list[cmp],
 				  &group[cmp])))
@@ -1911,12 +1912,9 @@ PIOc_init_io(MPI_Comm world, int component_count, int *num_procs_per_comp, int *
 	 * call. */
 	if (in_cmp)
 	{
-	    /* Decide where the comm ID will end up. */
-	    MPI_Comm *comm_ptr = cmp ? &comp_comms[cmp - 1] : &io_comm;
-
 	    /* Create the intracomm from the group. */
 	    if ((ret = MPI_Comm_create_group(world, group[cmp], cmp,
-					     comm_ptr)))
+					     cmp ? &comp_comms[cmp - 1] : &io_comm)))
 		return check_mpi(NULL, ret,__FILE__,__LINE__);
 	    LOG((3, "intracomm created for cmp = %d comp_comms[%d] = %d",
 		 cmp, cmp, comp_comms[cmp]));
