@@ -1854,6 +1854,8 @@ PIOc_init_io(MPI_Comm world, int component_count, int *num_procs_per_comp, int *
 	/* Initialize some values. */
 	my_iosys->io_comm = MPI_COMM_NULL;
 	my_iosys->comp_comm = MPI_COMM_NULL;
+	my_iosys->async_interface = 1;
+	my_iosys->error_handler = PIO_INTERNAL_ERROR;	
 	
 	/* Create a group for this component. */
 	if ((ret = MPI_Group_incl(world_group, num_procs_per_comp[cmp], my_proc_list[cmp],
@@ -1896,6 +1898,7 @@ PIOc_init_io(MPI_Comm world, int component_count, int *num_procs_per_comp, int *
 		break;
 	int in_io = (pidx == num_procs_per_comp[0]) ? 0 : 1;
 	LOG((3, "in_io = %d", in_io));
+	my_iosys->ioproc = in_io;
 
 	/* Is this process in this computation component (which is the
 	 * IO component if cmp == 0)? */
@@ -1913,12 +1916,30 @@ PIOc_init_io(MPI_Comm world, int component_count, int *num_procs_per_comp, int *
 	{
 	    /* Create the intracomm from the group. */
 	    LOG((3, "creating intracomm cmp = %d from group[%d] = %d", cmp, cmp, group[cmp]));
-	    if ((ret = MPI_Comm_create_group(world, group[cmp], cmp,
-					     cmp ? &my_iosys->comp_comm : &my_iosys->io_comm)))
-		return check_mpi(NULL, ret,__FILE__,__LINE__);
-	    LOG((3, "intracomm created for cmp = %d %s comm = %d", cmp,
-		 cmp ? "comp" : "io", cmp ? my_iosys->comp_comm : my_iosys->io_comm));
-	    LOG((3, "my_iosys->io_comm = %d", my_iosys->io_comm));
+
+	    /* We handle the IO comm differently (cmp == 0). */
+	    if (!cmp)
+	    {
+		if ((ret = MPI_Comm_create_group(world, group[cmp], cmp, &my_iosys->io_comm)))
+		    return check_mpi(NULL, ret,__FILE__,__LINE__);
+		if ((ret = MPI_Comm_rank(my_iosys->io_comm, &my_iosys->io_rank)))
+		    return check_mpi(NULL, ret, __FILE__, __LINE__);
+		my_iosys->iomaster = !my_iosys->io_rank ? MPI_ROOT : MPI_PROC_NULL;		
+		LOG((3, "intracomm created for cmp = %d io_comm = %d io_rank = %d IO %s",
+		     cmp, my_iosys->io_comm, my_iosys->io_rank,
+		     my_iosys->iomaster == MPI_ROOT ? "MASTER" : "SERVANT"));
+	    }
+	    else
+	    {
+		if ((ret = MPI_Comm_create_group(world, group[cmp], cmp, &my_iosys->comp_comm)))
+		    return check_mpi(NULL, ret, __FILE__, __LINE__);
+		if ((ret = MPI_Comm_rank(my_iosys->comp_comm, &my_iosys->comp_rank)))
+		    return check_mpi(NULL, ret, __FILE__, __LINE__);
+		my_iosys->compmaster = my_iosys->comp_rank ? MPI_PROC_NULL : MPI_ROOT;		
+		LOG((3, "intracomm created for cmp = %d comp_comm = %d comp_rank = %d comp %s",
+		     cmp, my_iosys->comp_comm, my_iosys->comp_rank,
+		     my_iosys->compmaster == MPI_ROOT ? "MASTER" : "SERVANT"));
+	    }
 	}
 
 	/* If this is the IO component, remember the
@@ -1949,7 +1970,10 @@ PIOc_init_io(MPI_Comm world, int component_count, int *num_procs_per_comp, int *
 		if ((ret = MPI_Comm_create_group(world, union_group[cmp - 1], cmp,
 						 &my_iosys->union_comm)))
 		    return check_mpi(NULL, ret,__FILE__,__LINE__);
-		LOG((3, "intracomm created for union cmp = %d", cmp));
+		if ((ret = MPI_Comm_rank(my_iosys->union_comm, &my_iosys->union_rank)))
+		    return check_mpi(NULL, ret, __FILE__, __LINE__);
+		LOG((3, "intracomm created for union cmp = %d union_rank = %d", cmp,
+		     my_iosys->union_rank));
 
 		if (in_io)
 		{
