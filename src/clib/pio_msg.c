@@ -1432,9 +1432,25 @@ int freedecomp_handler(iosystem_desc_t *ios)
 
 int finalize_handler(iosystem_desc_t *ios)
 {
+    int iosysid;
+    int mpierr;
+    int ret;
+
     int my_rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
     LOG((1, "%d finalize_handler called\n", my_rank));
+
+    /* Get the parameters for this function that the the comp master
+     * task is broadcasting. */
+    if ((mpierr = MPI_Bcast(&iosysid, 1, MPI_INT, 0, ios->intercomm)))
+	return PIO_EIO;
+    LOG((1, "%d finalize_handler got parameter iosysid = %d\n", iosysid));
+
+    /* /\* Call the close file function. *\/ */
+    /* if ((ret = PIOc_finalize(iosysid))) */
+    /* 	return ret; */
+
+    LOG((1, "close_finalize_handler succeeded!\n", my_rank));
     return PIO_NOERR;
 }
 
@@ -1864,6 +1880,8 @@ PIOc_init_io(MPI_Comm world, int component_count, int *num_procs_per_comp, int *
 	    my_iosys->error_handler = PIO_INTERNAL_ERROR;
 	    my_iosys->num_comptasks = num_procs_per_comp[cmp];
 	    my_iosys->num_iotasks = num_procs_per_comp[0];
+	    my_iosys->compgroup = MPI_GROUP_NULL;
+	    my_iosys->iogroup = MPI_GROUP_NULL;
 
 	    /* Create an MPI info object. */
 	    if ((ret = MPI_Info_create(&my_iosys->info)))
@@ -1985,8 +2003,8 @@ PIOc_init_io(MPI_Comm world, int component_count, int *num_procs_per_comp, int *
 		    return check_mpi(NULL, ret, __FILE__, __LINE__);
 		if ((ret = MPI_Comm_rank(my_iosys->union_comm, &my_iosys->union_rank)))
 		    return check_mpi(NULL, ret, __FILE__, __LINE__);
-		LOG((3, "intracomm created for union cmp = %d union_rank = %d", cmp,
-		     my_iosys->union_rank));
+		LOG((3, "intracomm created for union cmp = %d union_rank = %d union_comm = %d",
+		     cmp, my_iosys->union_rank, my_iosys->union_comm));
 
 		if (in_io)
 		{
@@ -2012,8 +2030,8 @@ PIOc_init_io(MPI_Comm world, int component_count, int *num_procs_per_comp, int *
 	    }
 
 	    /* Add this id to the list of PIO iosystem ids. */
-	    iosysidp[cmp] = pio_add_to_iosystem_list(my_iosys);
-	    LOG((2, "new iosys ID added to iosystem_list iosysid = %d\n", iosysidp[cmp]));
+	    iosysidp[cmp - 1] = pio_add_to_iosystem_list(my_iosys);
+	    LOG((2, "new iosys ID added to iosystem_list iosysid = %d\n", iosysidp[cmp - 1]));
 	}
     }
 

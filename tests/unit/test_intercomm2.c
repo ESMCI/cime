@@ -524,7 +524,6 @@ main(int argc, char **argv)
     /* } */
 
     /* Finalize the IO system. */
-    /* Finalize the IO system. */
     MPI_Barrier(MPI_COMM_WORLD);     
     for (int cmp = 0; cmp < COMPONENT_COUNT; cmp++)
     {
@@ -532,6 +531,7 @@ main(int argc, char **argv)
 	    printf("%d test_intercomm2 Freeing PIO resources for component %d\n", my_rank, cmp);
 	/* if ((ret = PIOc_finalize(iosysid[cmp]))) */
 	/*     ERR(ret); */
+	MPI_Barrier(MPI_COMM_WORLD);     
     }
 
     /* Free local MPI resources. */
