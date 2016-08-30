@@ -13,6 +13,9 @@
 #include <gptl.h>
 #endif
 
+/* Number of computational components to create. */
+#define COMPONENT_COUNT 2
+
 /** The number of possible output netCDF output flavors available to
  * the ParallelIO library. */
 #define NUM_NETCDF_FLAVORS 4
@@ -283,7 +286,7 @@ main(int argc, char **argv)
 							  "test_intercomm2_parallel4.nc"};
 
     /** The ID for the parallel I/O system. */
-    int iosysid;
+    int iosysid[COMPONENT_COUNT];
 
     /** The ncid of the netCDF file. */
     int ncid;
@@ -331,7 +334,6 @@ main(int argc, char **argv)
 
     /* Initialize the PIO IO system. This specifies how many and which
      * processors are involved in I/O. */
-#define COMPONENT_COUNT 2
 
     /* Turn on logging. */
     if ((ret = PIOc_set_log_level(3)))
@@ -341,7 +343,7 @@ main(int argc, char **argv)
     int num_procs[COMPONENT_COUNT + 1] = {2, 1, 1};
 
     /* Initialize the IO system. */
-    if ((ret = PIOc_init_io(MPI_COMM_WORLD, COMPONENT_COUNT, num_procs, NULL, &iosysid)))
+    if ((ret = PIOc_init_io(MPI_COMM_WORLD, COMPONENT_COUNT, num_procs, NULL, iosysid)))
 	ERR(ERR_AWFUL);
 
     /* MPI_Barrier(MPI_COMM_WORLD); */
