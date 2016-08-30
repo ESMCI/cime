@@ -1843,27 +1843,32 @@ PIOc_init_io(MPI_Comm world, int component_count, int *num_procs_per_comp, int *
      * processes. */
     MPI_Group union_group[component_count];
 
+    int iomaster;
+    int io_rank;
+    
     /* For each component, starting with the IO component. */
     for (int cmp = 0; cmp < component_count + 1; cmp++)
     {
 	LOG((3, "processing component %d", cmp));
 
-	/* Get pointer to current iosys. */
-	my_iosys = &iosys[cmp];
-
-	/* Initialize some values. */
-	my_iosys->io_comm = MPI_COMM_NULL;
-	my_iosys->comp_comm = MPI_COMM_NULL;
-	my_iosys->async_interface = 1;
-	my_iosys->error_handler = PIO_INTERNAL_ERROR;
+	/* Don't start initing iosys until after IO component. */
 	if (cmp)
+	{
+	    /* Get pointer to current iosys. */
+	    my_iosys = &iosys[cmp - 1];
+	    
+	    /* Initialize some values. */
+	    my_iosys->io_comm = MPI_COMM_NULL;
+	    my_iosys->comp_comm = MPI_COMM_NULL;
+	    my_iosys->async_interface = 1;
+	    my_iosys->error_handler = PIO_INTERNAL_ERROR;
 	    my_iosys->num_comptasks = num_procs_per_comp[cmp];
-	else
-	    my_iosys->num_iotasks = num_procs_per_comp[cmp];
+	    my_iosys->num_iotasks = num_procs_per_comp[0];
 
-	/* Create an MPI info object. */
-	if ((ret = MPI_Info_create(&my_iosys->info)))
-	    return check_mpi(NULL, ret, __FILE__, __LINE__);
+	    /* Create an MPI info object. */
+	    if ((ret = MPI_Info_create(&my_iosys->info)))
+		return check_mpi(NULL, ret, __FILE__, __LINE__);
+	}
 
 	/* Create a group for this component. */
 	if ((ret = MPI_Group_incl(world_group, num_procs_per_comp[cmp], my_proc_list[cmp],
@@ -1906,7 +1911,8 @@ PIOc_init_io(MPI_Comm world, int component_count, int *num_procs_per_comp, int *
 		break;
 	int in_io = (pidx == num_procs_per_comp[0]) ? 0 : 1;
 	LOG((3, "in_io = %d", in_io));
-	my_iosys->ioproc = in_io;
+	if (cmp)
+	    my_iosys->ioproc = in_io;
 
 	/* Is this process in this computation component (which is the
 	 * IO component if cmp == 0)? */
@@ -1928,14 +1934,15 @@ PIOc_init_io(MPI_Comm world, int component_count, int *num_procs_per_comp, int *
 	    /* We handle the IO comm differently (cmp == 0). */
 	    if (!cmp)
 	    {
-		if ((ret = MPI_Comm_create_group(world, group[cmp], cmp, &my_iosys->io_comm)))
+		LOG((3, "about to create io comm"));
+		if ((ret = MPI_Comm_create_group(world, group[cmp], cmp, &io_comm)))
 		    return check_mpi(NULL, ret, __FILE__, __LINE__);
-		if ((ret = MPI_Comm_rank(my_iosys->io_comm, &my_iosys->io_rank)))
+		LOG((3, "about to get io rank"));		
+		if ((ret = MPI_Comm_rank(io_comm, &io_rank)))
 		    return check_mpi(NULL, ret, __FILE__, __LINE__);
-		my_iosys->iomaster = !my_iosys->io_rank ? MPI_ROOT : MPI_PROC_NULL;
+		iomaster = !io_rank ? MPI_ROOT : MPI_PROC_NULL;
 		LOG((3, "intracomm created for cmp = %d io_comm = %d io_rank = %d IO %s",
-		     cmp, my_iosys->io_comm, my_iosys->io_rank,
-		     my_iosys->iomaster == MPI_ROOT ? "MASTER" : "SERVANT"));
+		     cmp, io_comm, io_rank, iomaster == MPI_ROOT ? "MASTER" : "SERVANT"));
 	    }
 	    else
 	    {
@@ -1954,22 +1961,20 @@ PIOc_init_io(MPI_Comm world, int component_count, int *num_procs_per_comp, int *
 	 * comm. Otherwise make a copy of the comm for each
 	 * component. */
 	if (in_io)
-	    if (!cmp)
+	    if (cmp)
 	    {
-		LOG((3, "setting io_comm to %d", my_iosys->io_comm));
-		io_comm = my_iosys->io_comm;
-	    }
-	    else
-	    {
-		LOG((3, "making a dup of io_comm = %d", io_comm));
+		LOG((3, "making a dup of io_comm = %d io_rank = %d", io_comm, io_rank));
 		if ((ret = MPI_Comm_dup(io_comm, &my_iosys->io_comm)))
 		    return check_mpi(NULL, ret, __FILE__, __LINE__);
+		my_iosys->iomaster = iomaster;
+		my_iosys->io_rank = io_rank;
+		my_iosys->ioroot = 0;
 	    }
 
 	/* All the processes in this component, and the IO component,
 	 * are part of the union_comm. */
-	    LOG((3, "my_iosys->io_comm = %d", my_iosys->io_comm));
 	if (cmp)
+	{
 	    if (in_io || in_cmp)
 	    {
 		LOG((3, "my_iosys->io_comm = %d", my_iosys->io_comm));
@@ -2006,9 +2011,10 @@ PIOc_init_io(MPI_Comm world, int component_count, int *num_procs_per_comp, int *
 		LOG((3, "intercomm created for cmp = %d", cmp));
 	    }
 
-	/* Add this id to the list of PIO iosystem ids. */
-	iosysidp[cmp] = pio_add_to_iosystem_list(my_iosys);
-	LOG((2, "new iosys ID added to iosystem_list iosysid = %d\n", iosysidp[cmp]));
+	    /* Add this id to the list of PIO iosystem ids. */
+	    iosysidp[cmp] = pio_add_to_iosystem_list(my_iosys);
+	    LOG((2, "new iosys ID added to iosystem_list iosysid = %d\n", iosysidp[cmp]));
+	}
     }
 
     /* Free resources if needed. */

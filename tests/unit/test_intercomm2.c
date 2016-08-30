@@ -13,6 +13,9 @@
 #include <gptl.h>
 #endif
 
+/* Number of processors that will do IO. */
+#define IO_PROCS 2
+
 /* Number of computational components to create. */
 #define COMPONENT_COUNT 2
 
@@ -520,11 +523,16 @@ main(int argc, char **argv)
     /* 	} /\* next netcdf format flavor *\/ */
     /* } */
 
-    /* /\* Finalize the IO system. *\/ */
-    /* if (verbose) */
-    /* 	printf("%d test_intercomm2 Freeing PIO resources...\n", my_rank); */
-    /* if ((ret = PIOc_finalize(iosysid))) */
-    /* 	ERR(ret); */
+    /* Finalize the IO system. */
+    /* Finalize the IO system. */
+    MPI_Barrier(MPI_COMM_WORLD);     
+    for (int cmp = 0; cmp < COMPONENT_COUNT; cmp++)
+    {
+	if (verbose)
+	    printf("%d test_intercomm2 Freeing PIO resources for component %d\n", my_rank, cmp);
+	/* if ((ret = PIOc_finalize(iosysid[cmp]))) */
+	/*     ERR(ret); */
+    }
 
     /* Free local MPI resources. */
     if (verbose)
