@@ -2327,6 +2327,14 @@ PIOc_Init_Async(MPI_Comm world, int num_io_procs, int *io_proc_list, int compone
 	return check_mpi(NULL, ret, __FILE__, __LINE__);
     LOG((3, "world group created\n"));
 
+    /* We will create a group for the IO component. */
+    MPI_Group io_group;
+    
+    /* Create a group for the IO component. */
+    if ((ret = MPI_Group_incl(world_group, num_io_procs, my_io_proc_list, &io_group)))
+	return check_mpi(NULL, ret, __FILE__, __LINE__);
+    LOG((3, "created IO group - io_group = %d", io_group));
+
     /* We will create a group for each component. */
     MPI_Group group[component_count + 1];
 
@@ -2530,6 +2538,9 @@ PIOc_Init_Async(MPI_Comm world, int num_io_procs, int *io_proc_list, int compone
     }
 
     /* Free MPI groups. */
+    if ((ret = MPI_Group_free(&io_group)))
+	return check_mpi(NULL, ret, __FILE__, __LINE__);
+    
     for (int cmp = 0; cmp < component_count + 1; cmp++)
     {
 	if ((ret = MPI_Group_free(&group[cmp])))
