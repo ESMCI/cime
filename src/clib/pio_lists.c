@@ -83,28 +83,26 @@ int pio_delete_file_from_list(int ncid)
   return PIO_EBADID;
 }
 
+/** Delete iosystem info from list. */
 int pio_delete_iosystem_from_list(int piosysid)
 {
+    iosystem_desc_t *ciosystem, *piosystem;
+    piosystem = NULL;
 
-  iosystem_desc_t *ciosystem, *piosystem;
-
-  piosystem = NULL;
-
-  //  printf(" %d iosystem_top = %ld \n",__LINE__,pio_iosystem_list);
-
-  for(ciosystem=pio_iosystem_list; ciosystem != NULL; ciosystem=ciosystem->next){
-    if(ciosystem->iosysid == piosysid){
-      if(piosystem == NULL){
-	pio_iosystem_list = ciosystem->next;
-      }else{
-	piosystem->next = ciosystem->next;
-      }
-      free(ciosystem);
-      return PIO_NOERR;
+    for (ciosystem = pio_iosystem_list; ciosystem; ciosystem = ciosystem->next)
+    {
+	if (ciosystem->iosysid == piosysid)
+	{
+	    if (piosystem == NULL)
+		pio_iosystem_list = ciosystem->next;
+	    else
+		piosystem->next = ciosystem->next;
+	    free(ciosystem);
+	    return PIO_NOERR;
+	}
+	piosystem = ciosystem;
     }
-    piosystem = ciosystem;
-  }
-  return PIO_EBADID;
+    return PIO_EBADID;
 }
 
 int pio_add_to_iosystem_list(iosystem_desc_t *ios)

@@ -523,15 +523,13 @@ main(int argc, char **argv)
     /* 	} /\* next netcdf format flavor *\/ */
     /* } */
 
-    /* Finalize the IO system. */
-    MPI_Barrier(MPI_COMM_WORLD);     
-    for (int cmp = 0; cmp < COMPONENT_COUNT; cmp++)
+    /* Finalize the IO system. Only call this from the computation tasks. */
+    if (my_rank >= 2)
     {
 	if (verbose)
-	    printf("%d test_intercomm2 Freeing PIO resources for component %d\n", my_rank, cmp);
-	/* if ((ret = PIOc_finalize(iosysid[cmp]))) */
-	/*     ERR(ret); */
-	MPI_Barrier(MPI_COMM_WORLD);     
+	    printf("%d test_intercomm2 Freeing PIO resources\n", my_rank);
+	if ((ret = PIOc_finalize(iosysid[my_rank - 2])))
+	    ERR(ret);
     }
 
     /* Free local MPI resources. */

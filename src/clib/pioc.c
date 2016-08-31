@@ -517,6 +517,7 @@ int PIOc_finalize(const int iosysid)
     /* Find the IO system information. */
     if (!(ios = pio_get_iosystem_from_id(iosysid)))
 	return PIO_EBADID;
+    LOG((3, "found iosystem info"));
 
     /* If asynch IO is in use, send the PIO_MSG_EXIT message from the
      * comp master to the IO processes. */
@@ -526,8 +527,8 @@ int PIOc_finalize(const int iosysid)
 	
 	if (!ios->ioproc)
 	{
-	    LOG((2, "sending msg = %d ioroot = %d union_comm = %d", msg, ios->ioroot,
-		 ios->union_comm));
+	    LOG((2, "sending msg = %d ioroot = %d union_comm = %d", msg,
+		 ios->ioroot, ios->union_comm));
 
 	    /* Send the message to the message handler. */	    
             if (ios->compmaster)
@@ -539,15 +540,18 @@ int PIOc_finalize(const int iosysid)
 	}
 
         /* Handle MPI errors. */
+	LOG((3, "handling async errors comproot = %d", ios->comproot));
         if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
             return check_mpi(NULL, mpierr2, __FILE__, __LINE__);
 	if (mpierr)
 	    return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+	LOG((3, "async errors bcast"));
     }
 
     /* Free this memory that was allocated in init_intracomm. */
     if (ios->ioranks)
-	free(ios->ioranks);
+    	free(ios->ioranks);
+    LOG((3, "Freed ioranks."));
 	
     /* Free the buffer pool. */
     free_cn_buffer_pool(*ios);
@@ -555,28 +559,28 @@ int PIOc_finalize(const int iosysid)
     
     /* Free the MPI groups. */
     if (ios->compgroup != MPI_GROUP_NULL)
-	MPI_Group_free(&ios->compgroup);
+    	MPI_Group_free(&ios->compgroup);
     
     if (ios->iogroup != MPI_GROUP_NULL)
-	MPI_Group_free(&(ios->iogroup));
-    LOG((2, "Freed MPI groups."));    
+    	MPI_Group_free(&(ios->iogroup));
+    LOG((2, "Freed MPI groups."));
     
     /* Free the MPI communicators. my_comm is just a copy (but not an
      * MPI copy), so does not have to have an MPI_Comm_free()
      * call. comp_comm and io_comm are MPI duplicates of the comms
      * handed into init_intercomm. So they need to be freed by MPI. */
     if (ios->intercomm != MPI_COMM_NULL)
-	MPI_Comm_free(&ios->intercomm);
+    	MPI_Comm_free(&ios->intercomm);
     if (ios->union_comm != MPI_COMM_NULL)
-	MPI_Comm_free(&ios->union_comm);
-    if (ios->io_comm != MPI_COMM_NULL)
-	MPI_Comm_free(&ios->io_comm);
+    	MPI_Comm_free(&ios->union_comm);
+    /* if (ios->io_comm != MPI_COMM_NULL) */
+    /* 	MPI_Comm_free(&ios->io_comm); */
     if (ios->comp_comm != MPI_COMM_NULL)
-	MPI_Comm_free(&ios->comp_comm);
+    	MPI_Comm_free(&ios->comp_comm);
     LOG((2, "Freed MPI communicators."));    
 	
     /* Delete the iosystem_desc_t data associated with this id. */
-    ierr = pio_delete_iosystem_from_list(iosysid);
+    /*ierr = pio_delete_iosystem_from_list(iosysid);*/
 
     return ierr;
 }
