@@ -14,7 +14,7 @@
 #endif
 
 /* Number of processors that will do IO. */
-#define IO_PROCS 2
+#define NUM_IO_PROCS 2
 
 /* Number of computational components to create. */
 #define COMPONENT_COUNT 2
@@ -346,7 +346,8 @@ main(int argc, char **argv)
     int num_procs[COMPONENT_COUNT + 1] = {2, 1, 1};
 
     /* Initialize the IO system. */
-    if ((ret = PIOc_init_io(MPI_COMM_WORLD, COMPONENT_COUNT, num_procs, NULL, iosysid)))
+    if ((ret = PIOc_Init_Async(MPI_COMM_WORLD, NUM_IO_PROCS, NULL, COMPONENT_COUNT,
+			       num_procs, NULL, iosysid)))
 	ERR(ERR_AWFUL);
 
     /* MPI_Barrier(MPI_COMM_WORLD); */

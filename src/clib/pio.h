@@ -521,8 +521,8 @@ extern "C" {
   int PIOc_Init_Intracomm(const MPI_Comm comp_comm, 
 			  const int num_iotasks, const int stride, 
 			  const int base, const int rearr, int *iosysidp);
-  int PIOc_init_io(MPI_Comm world, int component_count, int *num_procs_per_comp, int **proc_list,
-		   int *iosysidp);
+    int PIOc_Init_Async(MPI_Comm world, int num_io_procs, int *io_proc_list, int component_count,
+			int *num_procs_per_comp, int **proc_list, int *iosysidp);
   int PIOc_Init_Intercomm(int component_count, MPI_Comm peer_comm, MPI_Comm *comp_comms,
 			  MPI_Comm io_comm, int *iosysidp);
   int PIOc_closefile(int ncid);

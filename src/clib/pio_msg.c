@@ -2251,16 +2251,27 @@ int PIOc_Init_Intercomm(int component_count, MPI_Comm peer_comm,
  * @return PIO_NOERR on success, error code otherwise.
  */
 int
-PIOc_init_io(MPI_Comm world, int component_count, int *num_procs_per_comp,
-	     int **proc_list, int *iosysidp)
+PIOc_Init_Async(MPI_Comm world, int num_io_procs, int *io_proc_list, int component_count,
+		int *num_procs_per_comp, int **proc_list, int *iosysidp)
 {
     int my_rank;
     MPI_Comm newcomm;
     int **my_proc_list;
+    int *my_io_proc_list;
     MPI_Comm io_comm; /* Only one IO comm is created. */
     int ret;
 
     LOG((1, "PIOc_init_io component_count = %d", component_count));
+
+    if (!io_proc_list)
+    {
+	if (!(my_io_proc_list = malloc(num_io_procs * sizeof(int))))
+	    return PIO_ENOMEM;
+	for (int p = 0; p < num_io_procs; p++)
+	    my_io_proc_list[p] = p;
+    }
+    else
+	my_io_proc_list = io_proc_list;
 
     /* If the user did not provide a list of processes for each
      * component, create one. */
@@ -2508,6 +2519,9 @@ PIOc_init_io(MPI_Comm world, int component_count, int *num_procs_per_comp,
 	    return ret;
 
     /* Free resources if needed. */
+    if (!io_proc_list)
+	free(my_io_proc_list);
+    
     if (!proc_list)
     {
 	for (int cmp = 0; cmp < component_count + 1; cmp++)
