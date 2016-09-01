@@ -1494,7 +1494,7 @@ int pio_msg_handler(int io_rank, int component_count, iosystem_desc_t *iosys)
     while (msg != -1)
     {
 	LOG((3, "pio_msg_handler at top of loop"));
-	
+
 	/* Wait until any one of the requests are complete. */
 	if (!io_rank)
 	{
@@ -1658,7 +1658,7 @@ int pio_msg_handler(int io_rank, int component_count, iosystem_desc_t *iosys)
 		msg = 0;
 
 	LOG((3, "pio_msg_handler done msg = %d open_components = %d",
-	     msg, open_components));	
+	     msg, open_components));
     }
 
     LOG((3, "returning from pio_msg_handler"));
@@ -2258,11 +2258,12 @@ PIOc_Init_Async(MPI_Comm world, int num_io_procs, int *io_proc_list, int compone
     MPI_Comm newcomm;
     int **my_proc_list;
     int *my_io_proc_list;
-    MPI_Comm io_comm; /* Only one IO comm is created. */
     int ret;
 
     LOG((1, "PIOc_init_io component_count = %d", component_count));
 
+    /* If the user did not supply a list of process numbers to use for
+     * IO, create it. */
     if (!io_proc_list)
     {
 	if (!(my_io_proc_list = malloc(num_io_procs * sizeof(int))))
@@ -2316,7 +2317,7 @@ PIOc_Init_Async(MPI_Comm world, int num_io_procs, int *io_proc_list, int compone
     int in_io = (pidx == num_procs_per_comp[0]) ? 0 : 1;
     LOG((3, "in_io = %d", in_io));
 
-    /* Allocate struct to hold io system info for each component. */
+    /* Allocate struct to hold io system info for each computation component. */
     iosystem_desc_t *iosys, *my_iosys;
     if (!(iosys = (iosystem_desc_t *) calloc(1, sizeof(iosystem_desc_t) * component_count)))
 	return PIO_ENOMEM;
@@ -2329,11 +2330,38 @@ PIOc_Init_Async(MPI_Comm world, int num_io_procs, int *io_proc_list, int compone
 
     /* We will create a group for the IO component. */
     MPI_Group io_group;
-    
+
+    /* The shared IO communicator. */
+    MPI_Comm io_comm;
+
+    /* Rank of current process in IO communicator. */
+    int io_rank = -1;
+
+    /* Set to MPI_ROOT on master process, MPI_PROC_NULL on other
+     * processes. */
+    int iomaster;
+
     /* Create a group for the IO component. */
     if ((ret = MPI_Group_incl(world_group, num_io_procs, my_io_proc_list, &io_group)))
 	return check_mpi(NULL, ret, __FILE__, __LINE__);
     LOG((3, "created IO group - io_group = %d", io_group));
+
+    /* There is one shared IO comm. Create it. */
+    LOG((3, "about to create io comm"));
+    if ((ret = MPI_Comm_create_group(world, io_group, 0, &io_comm)))
+	return check_mpi(NULL, ret, __FILE__, __LINE__);
+
+    /* For processes in the IO component, get their rank within the IO
+     * communicator. */
+    if (in_io)
+    {
+	LOG((3, "about to get io rank"));
+	if ((ret = MPI_Comm_rank(io_comm, &io_rank)))
+	    return check_mpi(NULL, ret, __FILE__, __LINE__);
+	iomaster = !io_rank ? MPI_ROOT : MPI_PROC_NULL;
+	LOG((3, "intracomm created for io_comm = %d io_rank = %d IO %s",
+	     io_comm, io_rank, iomaster == MPI_ROOT ? "MASTER" : "SERVANT"));
+    }
 
     /* We will create a group for each component. */
     MPI_Group group[component_count + 1];
@@ -2343,9 +2371,6 @@ PIOc_Init_Async(MPI_Comm world, int num_io_procs, int *io_proc_list, int compone
      * processes. */
     MPI_Group union_group[component_count];
 
-    int iomaster;
-    int io_rank;
-    
     /* For each component, starting with the IO component. */
     for (int cmp = 0; cmp < component_count + 1; cmp++)
     {
@@ -2356,7 +2381,7 @@ PIOc_Init_Async(MPI_Comm world, int num_io_procs, int *io_proc_list, int compone
 	{
 	    /* Get pointer to current iosys. */
 	    my_iosys = &iosys[cmp - 1];
-	    
+
 	    /* Initialize some values. */
 	    my_iosys->io_comm = MPI_COMM_NULL;
 	    my_iosys->comp_comm = MPI_COMM_NULL;
@@ -2433,15 +2458,15 @@ PIOc_Init_Async(MPI_Comm world, int num_io_procs, int *io_proc_list, int compone
 	    /* We handle the IO comm differently (cmp == 0). */
 	    if (!cmp)
 	    {
-		LOG((3, "about to create io comm"));
-		if ((ret = MPI_Comm_create_group(world, group[cmp], cmp, &io_comm)))
-		    return check_mpi(NULL, ret, __FILE__, __LINE__);
-		LOG((3, "about to get io rank"));		
-		if ((ret = MPI_Comm_rank(io_comm, &io_rank)))
-		    return check_mpi(NULL, ret, __FILE__, __LINE__);
-		iomaster = !io_rank ? MPI_ROOT : MPI_PROC_NULL;
-		LOG((3, "intracomm created for cmp = %d io_comm = %d io_rank = %d IO %s",
-		     cmp, io_comm, io_rank, iomaster == MPI_ROOT ? "MASTER" : "SERVANT"));
+		/* LOG((3, "about to create io comm")); */
+		/* if ((ret = MPI_Comm_create_group(world, group[cmp], cmp, &io_comm))) */
+		/*     return check_mpi(NULL, ret, __FILE__, __LINE__); */
+		/* LOG((3, "about to get io rank"));		 */
+		/* if ((ret = MPI_Comm_rank(io_comm, &io_rank))) */
+		/*     return check_mpi(NULL, ret, __FILE__, __LINE__); */
+		/* iomaster = !io_rank ? MPI_ROOT : MPI_PROC_NULL; */
+		/* LOG((3, "intracomm created for cmp = %d io_comm = %d io_rank = %d IO %s", */
+		/*      cmp, io_comm, io_rank, iomaster == MPI_ROOT ? "MASTER" : "SERVANT")); */
 	    }
 	    else
 	    {
@@ -2488,7 +2513,7 @@ PIOc_Init_Async(MPI_Comm world, int num_io_procs, int *io_proc_list, int compone
 		/* Set my_comm to union_comm for async. */
 		my_iosys->my_comm = my_iosys->union_comm;
 		LOG((3, "intracomm created for union cmp = %d union_rank = %d union_comm = %d",
-		     cmp, my_iosys->union_rank, my_iosys->union_comm));		
+		     cmp, my_iosys->union_rank, my_iosys->union_comm));
 
 		if (in_io)
 		{
@@ -2529,7 +2554,7 @@ PIOc_Init_Async(MPI_Comm world, int num_io_procs, int *io_proc_list, int compone
     /* Free resources if needed. */
     if (!io_proc_list)
 	free(my_io_proc_list);
-    
+
     if (!proc_list)
     {
 	for (int cmp = 0; cmp < component_count + 1; cmp++)
@@ -2540,7 +2565,7 @@ PIOc_Init_Async(MPI_Comm world, int num_io_procs, int *io_proc_list, int compone
     /* Free MPI groups. */
     if ((ret = MPI_Group_free(&io_group)))
 	return check_mpi(NULL, ret, __FILE__, __LINE__);
-    
+
     for (int cmp = 0; cmp < component_count + 1; cmp++)
     {
 	if ((ret = MPI_Group_free(&group[cmp])))
@@ -2552,4 +2577,3 @@ PIOc_Init_Async(MPI_Comm world, int num_io_procs, int *io_proc_list, int compone
 
     return PIO_NOERR;
 }
-
