@@ -75,13 +75,9 @@ def move(case, suffix):
             comments += "    Copying '%s' to '%s'\n" % (test_hist, new_file)
             shutil.copy(test_hist, new_file)
 
-    all_success = True
-    if num_moved == 0:
-        all_success = False
-        comments += "WARNING: No hist files found in rundir '%s'" % rundir
+    expect(num_moved > 0, "move failed: no hist files found in rundir '%s'" % rundir)
 
-    return all_success, comments
-
+    return comments
 
 def _hists_match(model, hists1, hists2, suffix1="", suffix2=""):
     """
