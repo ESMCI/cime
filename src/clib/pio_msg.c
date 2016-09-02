@@ -1449,7 +1449,7 @@ int finalize_handler(iosystem_desc_t *ios)
     if ((ret = PIOc_finalize(iosysid)))
     	return ret;
 
-    LOG((1, "close_finalize_handler succeeded!"));
+    LOG((1, "finalize_handler succeeded!"));
     return PIO_NOERR;
 }
 
@@ -1495,7 +1495,9 @@ int pio_msg_handler(int io_rank, int component_count, iosystem_desc_t *iosys)
     {
 	LOG((3, "pio_msg_handler at top of loop"));
 
-	/* Wait until any one of the requests are complete. */
+	/* Wait until any one of the requests are complete. Once it
+	 * returns, the Waitany function automatically sets the
+	 * appropriate member of the req array to MPI_REQUEST_NULL. */
 	if (!io_rank)
 	{
 	    LOG((1, "about to call MPI_Waitany req[0] = %d MPI_REQUEST_NULL = %d\n",
@@ -1509,14 +1511,19 @@ int pio_msg_handler(int io_rank, int component_count, iosystem_desc_t *iosys)
 
 	/* Broadcast the index of the computational component that
 	 * originated the request to the rest of the IO tasks. */
-	LOG((3, "About to do Bcast of index = %d io_comm = %d", index, iosys->io_comm));
-	mpierr = MPI_Bcast(&index, 1, MPI_INT, 0, iosys->io_comm);
+	iosystem_desc_t *temp_iosys = iosys;
+	while (temp_iosys->io_comm == MPI_COMM_NULL)
+	    temp_iosys++;
+	LOG((3, "About to do Bcast of index = %d io_comm = %d", index, temp_iosys->io_comm));
+	mpierr = MPI_Bcast(&index, 1, MPI_INT, 0, temp_iosys->io_comm);
 	CheckMPIReturn(mpierr, __FILE__, __LINE__);
-	my_iosys = &iosys[index];
 	LOG((3, "index MPI_Bcast complete index = %d", index));
 
+	/* Now set the correct IO system, based on the index. */
+	my_iosys = &iosys[index];
+
 	/* Broadcast the msg value to the rest of the IO tasks. */
-	LOG((3, "about to call msg MPI_Bcast"));
+	LOG((3, "about to call msg MPI_Bcast my_iosys->io_comm = %d", my_iosys->io_comm));
 	mpierr = MPI_Bcast(&msg, 1, MPI_INT, 0, my_iosys->io_comm);
 	CheckMPIReturn(mpierr, __FILE__, __LINE__);
 	LOG((1, "pio_msg_handler msg MPI_Bcast complete msg = %d", msg));
@@ -1665,45 +1672,260 @@ int pio_msg_handler(int io_rank, int component_count, iosystem_desc_t *iosys)
     return PIO_NOERR;
 }
 
-int
-pio_iosys_print(int my_rank, iosystem_desc_t *iosys)
+/** This function is called by the IO tasks.  This function will not
+ return, unless there is an error. */
+int pio_msg_handler2(int io_rank, int component_count, iosystem_desc_t **iosys, MPI_Comm io_comm)
 {
-    printf("%d iosysid: %d\n", my_rank, iosys->iosysid);
-    if (iosys->union_comm == MPI_COMM_NULL)
-	printf("%d union_comm: MPI_COMM_NULL ", my_rank);
-    else
-	printf("%d union_comm: %d ", my_rank, iosys->union_comm);
+    iosystem_desc_t *my_iosys;
+    int msg = 0;
+    MPI_Request req[component_count];
+    MPI_Status status;
+    int index;
+    int mpierr;
+    int ret = PIO_NOERR;
+    int open_components = component_count;
 
-    if (iosys->comp_comm == MPI_COMM_NULL)
-	printf("comp_comm: MPI_COMM_NULL ");
-    else
-	printf("comp_comm: %d ", iosys->comp_comm);
+    int my_rank;
+    MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
+    LOG((1, "pio_msg_handler called"));
 
-    if (iosys->io_comm == MPI_COMM_NULL)
-	printf("io_comm: MPI_COMM_NULL ");
-    else
-	printf("io_comm: %d ", iosys->io_comm);
+    /* Have IO comm rank 0 (the ioroot) register to receive
+     * (non-blocking) for a message from each of the comproots. */
+    if (!io_rank)
+    {
+	for (int cmp = 0; cmp < component_count; cmp++)
+	{
+	    my_iosys = iosys[cmp];
+	    LOG((1, "about to call MPI_Irecv union_comm = %d", my_iosys->union_comm));
+	    mpierr = MPI_Irecv(&msg, 1, MPI_INT, my_iosys->comproot, MPI_ANY_TAG,
+			       my_iosys->union_comm, &req[cmp]);
+	    CheckMPIReturn(mpierr, __FILE__, __LINE__);
+	    LOG((1, "MPI_Irecv req[%d] = %d", cmp, req[cmp]));
+	}
+    }
 
-    if (iosys->intercomm == MPI_COMM_NULL)
-	printf("intercomm: MPI_COMM_NULL\n");
-    else
-	printf("intercomm: %d\n", iosys->intercomm);
+    /* If the message is not -1, keep processing messages. */
+    while (msg != -1)
+    {
+	LOG((3, "pio_msg_handler at top of loop"));
 
-    printf("%d num_iotasks=%d num_comptasks=%d union_rank=%d, comp_rank=%d, "
-	   "io_rank=%d async_interface=%d\n",
-	   my_rank, iosys->num_iotasks, iosys->num_comptasks, iosys->union_rank,
-	   iosys->comp_rank, iosys->io_rank, iosys->async_interface);
+	/* Wait until any one of the requests are complete. Once it
+	 * returns, the Waitany function automatically sets the
+	 * appropriate member of the req array to MPI_REQUEST_NULL. */
+	if (!io_rank)
+	{
+	    LOG((1, "about to call MPI_Waitany req[0] = %d MPI_REQUEST_NULL = %d\n",
+		 req[0], MPI_REQUEST_NULL));
+	    for (int c = 0; c < component_count; c++)
+		LOG((2, "req[%d] = %d", c, req[c]));
+	    mpierr = MPI_Waitany(component_count, req, &index, &status);
+	    CheckMPIReturn(mpierr, __FILE__, __LINE__);
+	    LOG((3, "Waitany returned index = %d req[%d] = %d", index, index, req[index]));
+	}
 
-    printf("%d ioroot=%d comproot=%d iomaster=%d, compmaster=%d\n",
-	   my_rank, iosys->ioroot, iosys->comproot, iosys->iomaster,
-	   iosys->compmaster);
+	/* Broadcast the index of the computational component that
+	 * originated the request to the rest of the IO tasks. */
+	LOG((3, "About to do Bcast of index = %d io_comm = %d", index, io_comm));
+	mpierr = MPI_Bcast(&index, 1, MPI_INT, 0, io_comm);
+	CheckMPIReturn(mpierr, __FILE__, __LINE__);
+	LOG((3, "index MPI_Bcast complete index = %d", index));
 
-    printf("%d iotasks:", my_rank);
-    for (int i = 0; i < iosys->num_iotasks; i++)
-	printf("%d ", iosys->ioranks[i]);
-    printf("\n");
+	/* Set the correct iosys depending on the index. */
+	my_iosys = iosys[index];
+
+	/* Broadcast the msg value to the rest of the IO tasks. */
+	LOG((3, "about to call msg MPI_Bcast my_iosys->io_comm = %d", my_iosys->io_comm));
+	mpierr = MPI_Bcast(&msg, 1, MPI_INT, 0, my_iosys->io_comm);
+	CheckMPIReturn(mpierr, __FILE__, __LINE__);
+	LOG((1, "pio_msg_handler msg MPI_Bcast complete msg = %d", msg));
+
+	/* Handle the message. This code is run on all IO tasks. */
+	switch (msg)
+	{
+	case PIO_MSG_INQ_TYPE:
+	    inq_type_handler(my_iosys);
+	    break;
+	case PIO_MSG_INQ_FORMAT:
+	    inq_format_handler(my_iosys);
+	    break;
+	case PIO_MSG_CREATE_FILE:
+	    create_file_handler(my_iosys);
+	    LOG((2, "returned from create_file_handler"));
+	    break;
+	case PIO_MSG_SYNC:
+	    sync_file_handler(my_iosys);
+	    break;
+	case PIO_MSG_ENDDEF:
+	case PIO_MSG_REDEF:
+	    LOG((2, "calling change_def_file_handler"));
+	    change_def_file_handler(my_iosys, msg);
+	    LOG((2, "returned from change_def_file_handler"));
+	    break;
+	case PIO_MSG_OPEN_FILE:
+	    open_file_handler(my_iosys);
+	    break;
+	case PIO_MSG_CLOSE_FILE:
+	    close_file_handler(my_iosys);
+	    break;
+	case PIO_MSG_DELETE_FILE:
+	    delete_file_handler(my_iosys);
+	    break;
+	case PIO_MSG_RENAME_DIM:
+	    rename_dim_handler(my_iosys);
+	    break;
+	case PIO_MSG_RENAME_VAR:
+	    rename_var_handler(my_iosys);
+	    break;
+	case PIO_MSG_RENAME_ATT:
+	    rename_att_handler(my_iosys);
+	    break;
+	case PIO_MSG_DEL_ATT:
+	    delete_att_handler(my_iosys);
+	    break;
+	case PIO_MSG_DEF_DIM:
+	    def_dim_handler(my_iosys);
+	    break;
+	case PIO_MSG_DEF_VAR:
+	    def_var_handler(my_iosys);
+	    break;
+	case PIO_MSG_INQ:
+	    inq_handler(my_iosys);
+	    break;
+	case PIO_MSG_INQ_DIM:
+	    inq_dim_handler(my_iosys, msg);
+	    break;
+	case PIO_MSG_INQ_DIMID:
+	    inq_dimid_handler(my_iosys);
+	    break;
+	case PIO_MSG_INQ_VAR:
+	    inq_var_handler(my_iosys);
+	    break;
+	case PIO_MSG_GET_ATT:
+	    ret = att_get_handler(my_iosys);
+	    break;
+	case PIO_MSG_PUT_ATT:
+	    ret = att_put_handler(my_iosys);
+	    break;
+	case PIO_MSG_INQ_VARID:
+	    inq_varid_handler(my_iosys);
+	    break;
+	case PIO_MSG_INQ_ATT:
+	    inq_att_handler(my_iosys);
+	    break;
+	case PIO_MSG_INQ_ATTNAME:
+	    inq_attname_handler(my_iosys);
+	    break;
+	case PIO_MSG_INQ_ATTID:
+	    inq_attid_handler(my_iosys);
+	    break;
+	case PIO_MSG_GET_VARS:
+	    get_vars_handler(my_iosys);
+	    break;
+	case PIO_MSG_PUT_VARS:
+	    put_vars_handler(my_iosys);
+	    break;
+	case PIO_MSG_INITDECOMP_DOF:
+	    initdecomp_dof_handler(my_iosys);
+	    break;
+	case PIO_MSG_WRITEDARRAY:
+	    writedarray_handler(my_iosys);
+	    break;
+	case PIO_MSG_READDARRAY:
+	    readdarray_handler(my_iosys);
+	    break;
+	case PIO_MSG_SETERRORHANDLING:
+	    seterrorhandling_handler(my_iosys);
+	    break;
+	case PIO_MSG_FREEDECOMP:
+	    freedecomp_handler(my_iosys);
+	    break;
+	case PIO_MSG_EXIT:
+	    finalize_handler(my_iosys);
+	    msg = -1;
+	    break;
+	default:
+	    pio_callback_handler(my_iosys, msg);
+	}
+
+	/* If an error was returned by the handler, do something! */
+	LOG((3, "pio_msg_handler checking error ret = %d", ret));
+	if (ret)
+	{
+	    LOG((0, "hander returned error code %d", ret));
+	    MPI_Finalize();
+	}
+
+	LOG((3, "pio_msg_handler getting ready to listen"));
+
+	/* Unless finalize was called, listen for another msg from the
+	 * component whose message we just handled. */
+	if (!io_rank && msg != -1)
+	{
+	    LOG((3, "pio_msg_handler about to Irecv comproot = %d union_comm = %d",
+		 my_iosys->comproot, my_iosys->union_comm));
+	    my_iosys = iosys[index];
+	    mpierr = MPI_Irecv(&msg, 1, MPI_INT, my_iosys->comproot, MPI_ANY_TAG, my_iosys->union_comm,
+			       &req[index]);
+	    LOG((3, "pio_msg_handler called MPI_Irecv req[%d] = %d\n", index, req[index]));
+	    CheckMPIReturn(mpierr, __FILE__, __LINE__);
+	}
+
+	/* If there are still open components, keep listening. */
+	if (msg == -1)
+	    if (--open_components)
+		msg = PIO_MSG_EXIT;
+
+	LOG((3, "pio_msg_handler done msg = %d open_components = %d",
+	     msg, open_components));
+
+	/* If there are no more open components, exit. */
+	if (open_components == 0)
+	    break;
+    }
+
+    LOG((3, "returning from pio_msg_handler"));
     return PIO_NOERR;
 }
+
+/* int */
+/* pio_iosys_print(int my_rank, iosystem_desc_t *iosys) */
+/* { */
+/*     printf("%d iosysid: %d\n", my_rank, iosys->iosysid); */
+/*     if (iosys->union_comm == MPI_COMM_NULL) */
+/* 	printf("%d union_comm: MPI_COMM_NULL ", my_rank); */
+/*     else */
+/* 	printf("%d union_comm: %d ", my_rank, iosys->union_comm); */
+
+/*     if (iosys->comp_comm == MPI_COMM_NULL) */
+/* 	printf("comp_comm: MPI_COMM_NULL "); */
+/*     else */
+/* 	printf("comp_comm: %d ", iosys->comp_comm); */
+
+/*     if (iosys->io_comm == MPI_COMM_NULL) */
+/* 	printf("io_comm: MPI_COMM_NULL "); */
+/*     else */
+/* 	printf("io_comm: %d ", iosys->io_comm); */
+
+/*     if (iosys->intercomm == MPI_COMM_NULL) */
+/* 	printf("intercomm: MPI_COMM_NULL\n"); */
+/*     else */
+/* 	printf("intercomm: %d\n", iosys->intercomm); */
+
+/*     printf("%d num_iotasks=%d num_comptasks=%d union_rank=%d, comp_rank=%d, " */
+/* 	   "io_rank=%d async_interface=%d\n", */
+/* 	   my_rank, iosys->num_iotasks, iosys->num_comptasks, iosys->union_rank, */
+/* 	   iosys->comp_rank, iosys->io_rank, iosys->async_interface); */
+
+/*     printf("%d ioroot=%d comproot=%d iomaster=%d, compmaster=%d\n", */
+/* 	   my_rank, iosys->ioroot, iosys->comproot, iosys->iomaster, */
+/* 	   iosys->compmaster); */
+
+/*     printf("%d iotasks:", my_rank); */
+/*     for (int i = 0; i < iosys->num_iotasks; i++) */
+/* 	printf("%d ", iosys->ioranks[i]); */
+/*     printf("\n"); */
+/*     return PIO_NOERR; */
+/* } */
 
 /**
  * Initialize a computation communicator. This is only run on tasks
@@ -2158,8 +2380,8 @@ int PIOc_Init_Intercomm(int component_count, MPI_Comm peer_comm,
     LOG((1, "PIOc_Init_Intercomm component_count = %d", component_count));
 
     /* Allocate struct to hold io system info for each component. */
-    if (!(iosys = (iosystem_desc_t *) calloc(1, sizeof(iosystem_desc_t) * component_count)))
-	return PIO_ENOMEM;
+    if (!(iosys = (iosystem_desc_t *)calloc(1, sizeof(iosystem_desc_t) * component_count)))
+	    return PIO_ENOMEM;
 
     /* Is this task part of a computation communicator? If so,
      * one of the comp_comm array members will be non-null. */
@@ -2318,9 +2540,11 @@ PIOc_Init_Async(MPI_Comm world, int num_io_procs, int *io_proc_list, int compone
     LOG((3, "in_io = %d", in_io));
 
     /* Allocate struct to hold io system info for each computation component. */
-    iosystem_desc_t *iosys, *my_iosys;
-    if (!(iosys = (iosystem_desc_t *) calloc(1, sizeof(iosystem_desc_t) * component_count)))
-	return PIO_ENOMEM;
+    /* Allocate struct to hold io system info for each component. */
+    iosystem_desc_t *iosys[component_count], *my_iosys;
+    for (int cmp1 = 0; cmp1 < component_count; cmp1++)    
+	if (!(iosys[cmp1] = (iosystem_desc_t *)calloc(1, sizeof(iosystem_desc_t))))
+	    return PIO_ENOMEM;
 
     /* Create group for world. */
     MPI_Group world_group;
@@ -2380,7 +2604,7 @@ PIOc_Init_Async(MPI_Comm world, int num_io_procs, int *io_proc_list, int compone
 	if (cmp)
 	{
 	    /* Get pointer to current iosys. */
-	    my_iosys = &iosys[cmp - 1];
+	    my_iosys = iosys[cmp - 1];
 
 	    /* Initialize some values. */
 	    my_iosys->io_comm = MPI_COMM_NULL;
@@ -2394,6 +2618,7 @@ PIOc_Init_Async(MPI_Comm world, int num_io_procs, int *io_proc_list, int compone
 
 	    /* The rank of the computation leader in the union comm. */
 	    my_iosys->comproot = num_procs_per_comp[0];
+	    LOG((3, "my_iosys->comproot = %d", my_iosys->comproot));
 
 	    /* Create an MPI info object. */
 	    if ((ret = MPI_Info_create(&my_iosys->info)))
@@ -2548,7 +2773,7 @@ PIOc_Init_Async(MPI_Comm world, int num_io_procs, int *io_proc_list, int compone
      * until the PIO_MSG_EXIT message is sent. This will handle all
      * components. */
     if (in_io)
-	if ((ret = pio_msg_handler(io_rank, component_count, iosys)))
+	if ((ret = pio_msg_handler2(io_rank, component_count, iosys, io_comm)))
 	    return ret;
 
     /* Free resources if needed. */

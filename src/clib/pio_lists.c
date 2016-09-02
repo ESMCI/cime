@@ -1,3 +1,4 @@
+#include <config.h>
 #include <pio.h>
 #include <pio_internal.h>
 #include <string.h>
@@ -89,14 +90,30 @@ int pio_delete_iosystem_from_list(int piosysid)
     iosystem_desc_t *ciosystem, *piosystem;
     piosystem = NULL;
 
+    for (ciosystem = pio_iosystem_list; ciosystem; ciosystem = ciosystem->next)    
+	LOG((2, "iosysid = %d union_comm = %d io_comm = %d my_comm = %d intercomm = %d comproot = %d"
+	     " next = %d",
+	     ciosystem->iosysid, ciosystem->union_comm, ciosystem->io_comm, ciosystem->my_comm,
+	     ciosystem->intercomm, ciosystem->comproot, ciosystem->next));
+	    
+    LOG((1, "pio_delete_iosystem_from_list piosysid = %d", piosysid));
     for (ciosystem = pio_iosystem_list; ciosystem; ciosystem = ciosystem->next)
     {
+	LOG((2, "iosysid = %d union_comm = %d io_comm = %d my_comm = %d intercomm = %d comproot = %d",
+	     ciosystem->iosysid, ciosystem->union_comm, ciosystem->io_comm, ciosystem->my_comm,
+	     ciosystem->intercomm, ciosystem->comproot));
 	if (ciosystem->iosysid == piosysid)
 	{
 	    if (piosystem == NULL)
+	    {
+		LOG((3, "start of list"));
 		pio_iosystem_list = ciosystem->next;
+	    }
 	    else
+	    {
+		LOG((3, "setting next"));
 		piosystem->next = ciosystem->next;
+	    }
 	    free(ciosystem);
 	    return PIO_NOERR;
 	}
@@ -131,18 +148,26 @@ int pio_add_to_iosystem_list(iosystem_desc_t *ios)
 
 iosystem_desc_t *pio_get_iosystem_from_id(int iosysid)
 {
-  iosystem_desc_t *ciosystem;
+    iosystem_desc_t *ciosystem;
 
-  ciosystem = pio_iosystem_list;
+    for (ciosystem = pio_iosystem_list; ciosystem; ciosystem = ciosystem->next)    
+	LOG((2, "iosysid = %d union_comm = %d io_comm = %d my_comm = %d intercomm = %d comproot = %d"
+	     " next = %d",
+	     ciosystem->iosysid, ciosystem->union_comm, ciosystem->io_comm, ciosystem->my_comm,
+	     ciosystem->intercomm, ciosystem->comproot, ciosystem->next));
+    
+    for (ciosystem = pio_iosystem_list; ciosystem; ciosystem = ciosystem->next)    
+	if (ciosystem->iosysid == iosysid)
+	{
+	    LOG((2, "FOUND! iosysid = %d union_comm = %d io_comm = %d my_comm = %d intercomm = %d comproot = %d"
+		 " next = %d",
+		 ciosystem->iosysid, ciosystem->union_comm, ciosystem->io_comm, ciosystem->my_comm,
+		 ciosystem->intercomm, ciosystem->comproot, ciosystem->next));
+	    return ciosystem;
+	}
 
-  while(ciosystem != NULL){
-    // fprintf(stderr, "%d ciosystem %ld %ld %d\n",__LINE__,pio_iosystem_list, ciosystem,iosysid);
-    if(ciosystem->iosysid == iosysid){
-      return ciosystem;
-    }
-    ciosystem = ciosystem->next;
-  }
-  return NULL;
+
+    return NULL;
   
 }
 

@@ -517,7 +517,7 @@ int PIOc_finalize(const int iosysid)
     /* Find the IO system information. */
     if (!(ios = pio_get_iosystem_from_id(iosysid)))
 	return PIO_EBADID;
-    LOG((3, "found iosystem info"));
+    LOG((3, "found iosystem info comproot = %d", ios->comproot));
 
     /* If asynch IO is in use, send the PIO_MSG_EXIT message from the
      * comp master to the IO processes. */
@@ -573,14 +573,16 @@ int PIOc_finalize(const int iosysid)
     	MPI_Comm_free(&ios->intercomm);
     if (ios->union_comm != MPI_COMM_NULL)
     	MPI_Comm_free(&ios->union_comm);
-    /* if (ios->io_comm != MPI_COMM_NULL) */
-    /* 	MPI_Comm_free(&ios->io_comm); */
+    if (ios->io_comm != MPI_COMM_NULL)
+    	MPI_Comm_free(&ios->io_comm);
     if (ios->comp_comm != MPI_COMM_NULL)
     	MPI_Comm_free(&ios->comp_comm);
     LOG((2, "Freed MPI communicators."));    
 	
     /* Delete the iosystem_desc_t data associated with this id. */
-    /*ierr = pio_delete_iosystem_from_list(iosysid);*/
+    LOG((2, "About to delete iosysid %d.", iosysid));    
+    ierr = pio_delete_iosystem_from_list(iosysid);
+    LOG((2, "Deleted iosysid %d.", iosysid));    
 
     return ierr;
 }
