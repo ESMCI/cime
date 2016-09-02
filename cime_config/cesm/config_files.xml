@@ -65,6 +65,7 @@
       <value component="cice"     >$SRCROOT/components/cice/cime_config/config_compsets.xml</value>
       <value component="pop"      >$SRCROOT/components/pop/cime_config/config_compsets.xml</value>
       <value component="micom"    >$SRCROOT/components/micom/cime_config/config_compsets.xml</value>
+      <value component="mpas-o"   >$SRCROOT/components/mpas-o/cime_config/config_compsets.xml</value>
     </values>
     <group>case_last</group>
     <file>env_case.xml</file>
@@ -83,6 +84,7 @@
       <value component="cice"     >$SRCROOT/components/cice/cime_config/config_pes.xml</value>
       <value component="pop"      >$SRCROOT/components/pop/cime_config/config_pes.xml</value>
       <value component="micom"    >$SRCROOT/components/micom/cime_config/config_pes.xml</value>
+      <value component="mpas-o"   >$SRCROOT/components/mpas-o/cime_config/config_pes.xml</value>
     </values>
     <group>case_last</group>
     <file>env_case.xml</file>
@@ -141,6 +143,7 @@
       <value component="mosart"   >$SRCROOT/components/mosart/cime_config/usermods_dirs</value>
       <value component="pop"      >$SRCROOT/components/pop/cime_config/usermods_dirs</value>
       <value component="micom"    >$SRCROOT/components/micom/cime_config/usermods_dirs</value>
+      <value component="mpas-o"   >$SRCROOT/components/mpas-o/cime_config/usermods_dirs</value>
     </values>
     <group>case_last</group>
     <file>env_case.xml</file>
@@ -222,6 +225,7 @@
     <default_value>unset</default_value>
     <values>
       <value component="pop"  >$SRCROOT/components/pop/cime_config/config_component.xml</value>
+      <value component="mpas-o"  >$SRCROOT/components/mpas-o/cime_config/config_component.xml</value>
       <value component="aquap">$SRCROOT/components/aquap/cime_config/config_component.xml</value>
       <value component="docn" >$CIMEROOT/components/data_comps/docn/cime_config/config_component.xml</value>
       <value component="socn" >$CIMEROOT/components/stub_comps/socn/cime_config/config_component.xml</value>
