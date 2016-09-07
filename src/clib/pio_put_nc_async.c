@@ -89,6 +89,8 @@ int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
 	if ((ierr = PIOc_inq_type(ncid, xtype, NULL, &typelen)))
 	    return check_netcdf(file, ierr, __FILE__, __LINE__);
 
+	LOG((2, "ndims = %d typelen = %d", ndims, typelen));
+
 	PIO_Offset dimlen[ndims];
 
 	/* If no count array was passed, we need to know the dimlens
@@ -104,8 +106,11 @@ int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
 
 	    /* Get the length of each dimension. */
 	    for (int vd = 0; vd < ndims; vd++)
+	    {
 		if ((ierr = PIOc_inq_dimlen(ncid, dimid[vd], &dimlen[vd])))
 		    return check_netcdf(file, ierr, __FILE__, __LINE__);
+		LOG((3, "dimlen[%d] = %d", vd, dimlen[vd]));
+	    }
 	}
 
 	/* Allocate memory for these arrays, now that we know ndims. */
@@ -123,6 +128,8 @@ int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
 	    rstart[vd] = start ? start[vd] : 0;
 	    rcount[vd] = count ? count[vd] : dimlen[vd];
 	    rstride[vd] = stride ? stride[vd] : 1;
+	    LOG((3, "rstart[%d] = %d rcount[%d] = %d rstride[%d] = %d", vd,
+		 rstart[vd], vd, rcount[vd], vd, rstride[vd]));
 	}
 
 	/* How many elements in buf? */

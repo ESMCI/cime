@@ -907,7 +907,7 @@ int inq_var_handler(iosystem_desc_t *ios)
     int varid;
     int mpierr;
     char name_present, xtype_present, ndims_present, dimids_present, natts_present;
-    char name[NC_MAX_NAME + 1], *namep;
+    char name[NC_MAX_NAME + 1], *namep = NULL;
     nc_type xtype, *xtypep = NULL;
     int *ndimsp = NULL, *dimidsp = NULL, *nattsp = NULL;
     int ndims, dimids[NC_MAX_DIMS], natts;
