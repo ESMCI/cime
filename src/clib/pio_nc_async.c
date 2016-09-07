@@ -628,7 +628,6 @@ int PIOc_inq_var(int ncid, int varid, char *name, nc_type *xtypep, int *ndimsp,
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
 
     LOG((1, "PIOc_inq_var ncid = %d varid = %d", ncid, varid));
-    LOG((3, "name = %d", name));
 
     /* Get the file info, based on the ncid. */
     if (!(file = pio_get_file_from_id(ncid)))
@@ -671,7 +670,6 @@ int PIOc_inq_var(int ncid, int varid, char *name, nc_type *xtypep, int *ndimsp,
         }
 
         /* Handle MPI errors. */
-	LOG((3, "Handling mpi errors mpierr = %d", mpierr));
         if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
             return check_mpi(file, mpierr2, __FILE__, __LINE__);
 	if (mpierr)
@@ -703,25 +701,17 @@ int PIOc_inq_var(int ncid, int varid, char *name, nc_type *xtypep, int *ndimsp,
             if (!ierr)
                 ierr = nc_inq_var(file->fh, varid, my_name, &my_xtype, &my_ndims, my_dimids, &my_natts);
 	    LOG((3, "my_name = %s my_xtype = %d my_ndims = %d my_natts = %d",  my_name, my_xtype, my_ndims, my_natts));
-	    for (int d = 0; d < ndims; d++)
-		LOG((3, "my_dimids[%d] = %d", d, my_dimids[d]));
-	    LOG((3, "name = %d", name));
 	    if (name)
 		strcpy(name, my_name);
-	    LOG((3, "name"));
 	    if (xtypep)
 		*xtypep = my_xtype;
-	    LOG((3, "name"));
 	    if (ndimsp)
 		*ndimsp = my_ndims;
-	    LOG((3, "name"));
 	    if (dimidsp)
 		for (int d = 0; d < ndims; d++)
 		    dimidsp[d] = my_dimids[d];
-	    LOG((3, "name"));
 	    if (nattsp)
 		*nattsp = my_natts;
-	    LOG((2, "inq_var returned from netCDF"));	    
         }           
 #endif /* _NETCDF */
 	if (ndimsp)
