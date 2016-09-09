@@ -251,11 +251,13 @@ contains
     integer, save :: index_l2x_Flrl_rofsub
     integer, save :: index_l2x_Flrl_rofdto
     integer, save :: index_l2x_Flrl_rofi
+    integer, save :: index_l2x_Flrl_frac_irrig
     integer, save :: index_x2r_Flrl_rofsur
     integer, save :: index_x2r_Flrl_rofgwl
     integer, save :: index_x2r_Flrl_rofsub
     integer, save :: index_x2r_Flrl_rofdto
     integer, save :: index_x2r_Flrl_rofi
+    integer, save :: index_x2r_Flrl_frac_irrig
     integer, save :: index_lfrac
     logical, save :: first_time = .true.
     real(r8)      :: lfrac
@@ -283,12 +285,14 @@ contains
        index_l2x_Flrl_rofgwl = mct_aVect_indexRA(l2x_r,'Flrl_rofgwl' )
        index_l2x_Flrl_rofsub = mct_aVect_indexRA(l2x_r,'Flrl_rofsub' )
        index_l2x_Flrl_rofdto = mct_aVect_indexRA(l2x_r,'Flrl_rofdto' )
+       index_l2x_Flrl_frac_irrig = mct_aVect_indexRA(l2x_r,'Flrl_frac_irrig' )
        index_l2x_Flrl_rofi   = mct_aVect_indexRA(l2x_r,'Flrl_rofi' )
        index_x2r_Flrl_rofsur = mct_aVect_indexRA(x2r_r,'Flrl_rofsur' )
        index_x2r_Flrl_rofgwl = mct_aVect_indexRA(x2r_r,'Flrl_rofgwl' )
        index_x2r_Flrl_rofsub = mct_aVect_indexRA(x2r_r,'Flrl_rofsub' )
        index_x2r_Flrl_rofdto = mct_aVect_indexRA(x2r_r,'Flrl_rofdto' )
        index_x2r_Flrl_rofi   = mct_aVect_indexRA(x2r_r,'Flrl_rofi' )
+       index_x2r_Flrl_frac_irrig = mct_aVect_indexRA(x2r_r,'Flrl_frac_irrig' )
        index_lfrac = mct_aVect_indexRA(fractions_r,"lfrac")
 
        mrgstr(index_x2r_Flrl_rofsur) = trim(mrgstr(index_x2r_Flrl_rofsur))//' = '// &
@@ -301,6 +305,8 @@ contains
           'lfrac*l2x%Flrl_rofdto'
        mrgstr(index_x2r_Flrl_rofi) = trim(mrgstr(index_x2r_Flrl_rofi))//' = '// &
           'lfrac*l2x%Flrl_rofi'
+       mrgstr(index_x2r_Flrl_frac_irrig) = trim(mrgstr(index_x2r_Flrl_frac_irrig))//' = '// &
+          'lfrac*l2x%Flrl_frac_irrig'
     end if
 
     do i = 1,lsize
@@ -310,6 +316,7 @@ contains
        x2r_r%rAttr(index_x2r_Flrl_rofsub,i) = l2x_r%rAttr(index_l2x_Flrl_rofsub,i) * lfrac
        x2r_r%rAttr(index_x2r_Flrl_rofdto,i) = l2x_r%rAttr(index_l2x_Flrl_rofdto,i) * lfrac
        x2r_r%rAttr(index_x2r_Flrl_rofi,i) = l2x_r%rAttr(index_l2x_Flrl_rofi,i) * lfrac
+       x2r_r%rAttr(index_x2r_Flrl_frac_irrig,i) = l2x_r%rAttr(index_l2x_Flrl_frac_irrig,i) * lfrac
     end do
 
     if (first_time) then
