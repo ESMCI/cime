@@ -99,7 +99,7 @@ int pio_delete_iosystem_from_list(int piosysid)
     LOG((1, "pio_delete_iosystem_from_list piosysid = %d", piosysid));
     for (ciosystem = pio_iosystem_list; ciosystem; ciosystem = ciosystem->next)
     {
-	LOG((2, "iosysid = %d union_comm = %d io_comm = %d my_comm = %d intercomm = %d comproot = %d",
+	LOG((3, "iosysid = %d union_comm = %d io_comm = %d my_comm = %d intercomm = %d comproot = %d",
 	     ciosystem->iosysid, ciosystem->union_comm, ciosystem->io_comm, ciosystem->my_comm,
 	     ciosystem->intercomm, ciosystem->comproot));
 	if (ciosystem->iosysid == piosysid)

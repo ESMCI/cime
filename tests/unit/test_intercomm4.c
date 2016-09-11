@@ -14,10 +14,10 @@
 #endif
 
 /* Number of processors that will do IO. */
-#define NUM_IO_PROCS 2
+#define NUM_IO_PROCS 1
 
 /* Number of computational components to create. */
-#define COMPONENT_COUNT 2
+#define COMPONENT_COUNT 1
 
 /** The number of possible output netCDF output flavors available to
  * the ParallelIO library. */
@@ -283,10 +283,10 @@ main(int argc, char **argv)
 				      PIO_IOTYPE_NETCDF4P};
 
     /** Names for the output files. */
-    char base_filename[NUM_NETCDF_FLAVORS][NC_MAX_NAME + 1] = {"test_intercomm3_pnetcdf",
-							       "test_intercomm3_classic",
-							       "test_intercomm3_serial4",
-							       "test_intercomm3_parallel4"};
+    char base_filename[NUM_NETCDF_FLAVORS][NC_MAX_NAME + 1] = {"test_intercomm4_pnetcdf",
+							       "test_intercomm4_classic",
+							       "test_intercomm4_serial4",
+							       "test_intercomm4_parallel4"};
 
     /** The ID for the parallel I/O system. */
     int iosysid[COMPONENT_COUNT];
@@ -320,37 +320,29 @@ main(int argc, char **argv)
 	MPIERR(ret);
 
     /* Check that a valid number of processors was specified. */
-    if (ntasks != 4)
+    if (ntasks != 2)
     {
-	fprintf(stderr, "test_intercomm3 Number of processors must be exactly 4!\n");
+	fprintf(stderr, "test_intercomm4 Number of processors must be exactly 2!\n");
 	ERR(ERR_AWFUL);
     }
     if (verbose)
-	printf("%d: test_intercomm3 ParallelIO Library test_intercomm3 running on %d processors.\n",
+	printf("%d: test_intercomm4 ParallelIO Library test_intercomm4 running on %d processors.\n",
 	       my_rank, ntasks);
-
-    /* For example, if I have 4 processors, and I want to have 2 of them be computational, */
-    /* and 2 of them be IO: component count is 1  */
-    /* peer_comm = MPI_COMM_WORLD */
-    /* comp_comms is an array of comms of size 1 with a comm defined just over tasks (0,1) */
-    /* io_comm is a comm over tasks (2,3) */
-
-    /* Initialize the PIO IO system. This specifies how many and which
-     * processors are involved in I/O. */
 
     /* Turn on logging. */
     if ((ret = PIOc_set_log_level(3)))
 	ERR(ret);
 
-    /* How many processors will be used for our IO and 2 computation components. */
-    int num_procs[COMPONENT_COUNT + 1] = {2, 1, 1};
+    /* How many processors will be used for our IO and computation
+     * component. */
+    int num_procs[COMPONENT_COUNT + 1] = {1, 1};
 
     /* Is the current process a computation task? */
-    int comp_task = my_rank < 2 ? 0 : 1;
+    int comp_task = my_rank < 1 ? 0 : 1;
 
     /* Index of computation task in iosysid array. Varies by rank and
      * does not apply to IO component processes. */
-    int my_comp_idx = comp_task ? my_rank - 2 : -1;
+    int my_comp_idx = comp_task ? my_rank - 1 : -1;
 
     /* Initialize the IO system. */
     if ((ret = PIOc_Init_Async(MPI_COMM_WORLD, NUM_IO_PROCS, NULL, COMPONENT_COUNT,
@@ -374,18 +366,18 @@ main(int argc, char **argv)
 
     	    /* Create a netCDF file with one dimension and one variable. */
     	    if (verbose)
-    	    	printf("%d test_intercomm3 creating file %s\n", my_rank, filename);
+    	    	printf("%d test_intercomm4 creating file %s\n", my_rank, filename);
     	    if ((ret = PIOc_createfile(iosysid[my_comp_idx], &ncid, &format[fmt], filename,
     	    			       NC_CLOBBER)))
     	    	ERR(ret);
     	    if (verbose)
-    	    	printf("%d test_intercomm3 file created ncid = %d\n", my_rank, ncid);
+    	    	printf("%d test_intercomm4 file created ncid = %d\n", my_rank, ncid);
 
     	    /* /\* End define mode, then re-enter it. *\/ */
     	    if ((ret = PIOc_enddef(ncid)))
     	    	ERR(ret);
     	    if (verbose)
-    	    	printf("%d test_intercomm3 calling redef\n", my_rank);
+    	    	printf("%d test_intercomm4 calling redef\n", my_rank);
     	    if ((ret = PIOc_redef(ncid)))
     	    	ERR(ret);
 
@@ -419,7 +411,7 @@ main(int argc, char **argv)
     	    /* Define a dimension. */
     	    char dimname2[NC_MAX_NAME + 1];
     	    if (verbose)
-    	    	printf("%d test_intercomm3 defining dimension %s\n", my_rank, DIM_NAME);
+    	    	printf("%d test_intercomm4 defining dimension %s\n", my_rank, DIM_NAME);
     	    if ((ret = PIOc_def_dim(ncid, FIRST_DIM_NAME, DIM_LEN, &dimid)))
     	    	ERR(ret);
     	    if ((ret = PIOc_inq_dimname(ncid, 0, dimname2)))
@@ -432,7 +424,7 @@ main(int argc, char **argv)
     	    /* Define a 1-D variable. */
     	    char varname2[NC_MAX_NAME + 1];
     	    if (verbose)
-    	    	printf("%d test_intercomm3 defining variable %s\n", my_rank, VAR_NAME);
+    	    	printf("%d test_intercomm4 defining variable %s\n", my_rank, VAR_NAME);
     	    if ((ret = PIOc_def_var(ncid, FIRST_VAR_NAME, NC_INT, NDIM, &dimid, &varid)))
     	    	ERR(ret);
     	    if ((ret = PIOc_inq_varname(ncid, 0, varname2)))
@@ -446,7 +438,7 @@ main(int argc, char **argv)
 
     	    /* /\* Add a global attribute. *\/ */
     	    /* if (verbose) */
-    	    /* 	printf("%d test_intercomm3 writing attributes %s\n", my_rank, ATT_NAME); */
+    	    /* 	printf("%d test_intercomm4 writing attributes %s\n", my_rank, ATT_NAME); */
     	    /* int att_data = ATT_VALUE; */
     	    /* short short_att_data = ATT_VALUE; */
     	    /* float float_att_data = ATT_VALUE; */
@@ -484,11 +476,11 @@ main(int argc, char **argv)
 
     	    /* End define mode. */
     	    if (verbose)
-    	    	printf("%d test_intercomm3 ending define mode ncid = %d\n", my_rank, ncid);
+    	    	printf("%d test_intercomm4 ending define mode ncid = %d\n", my_rank, ncid);
     	    if ((ret = PIOc_enddef(ncid)))
     	    	ERR(ret);
-	    printf("%d test_intercomm3 define mode ended ncid = %d\n", my_rank, ncid);
-	    
+	    printf("%d test_intercomm4 define mode ended ncid = %d\n", my_rank, ncid);
+
     	    /* /\* Write some data. For the PIOc_put/get functions, all */
     	    /*  * data must be on compmaster before the function is */
     	    /*  * called. Only compmaster's arguments are passed to the */
@@ -497,9 +489,9 @@ main(int argc, char **argv)
     	    /* for (int i = 0; i < DIM_LEN; i++) */
     	    /* 	data[i] = i; */
     	    /* if (verbose) */
-    	    /* 	printf("%d test_intercomm3 writing data\n", my_rank); */
+    	    /* 	printf("%d test_intercomm4 writing data\n", my_rank); */
     	    /* if (verbose) */
-    	    /* 	printf("%d test_intercomm3 writing data\n", my_rank); */
+    	    /* 	printf("%d test_intercomm4 writing data\n", my_rank); */
     	    /* start[0] = 0; */
     	    /* count[0] = DIM_LEN; */
     	    /* if ((ret = PIOc_put_vars_tc(ncid, varid, start, count, NULL, NC_INT, data))) */
@@ -507,10 +499,10 @@ main(int argc, char **argv)
 
     	    /* Close the file. */
     	    if (verbose)
-    	    	printf("%d test_intercomm3 closing file ncid = %d\n", my_rank, ncid);
+    	    	printf("%d test_intercomm4 closing file ncid = %d\n", my_rank, ncid);
     	    if ((ret = PIOc_closefile(ncid)))
     	    	ERR(ret);
-	    printf("%d test_intercomm3 closed file ncid = %d\n", my_rank, ncid);	    
+	    printf("%d test_intercomm4 closed file ncid = %d\n", my_rank, ncid);
 
     	    /* /\* /\\* Check the file for correctness. *\\/ *\/ */
     	    /* /\* if ((ret = check_file(iosysid, format[fmt], filename[fmt], my_rank, verbose))) *\/ */
@@ -530,17 +522,17 @@ main(int argc, char **argv)
 
 	/* Finalize the IO system. Only call this from the computation tasks. */
 	if (verbose)
-	    printf("%d test_intercomm3 Freeing PIO resources\n", my_rank);
+	    printf("%d test_intercomm4 Freeing PIO resources\n", my_rank);
 	for (int c = 0; c < COMPONENT_COUNT; c++)
 	{
 	    if ((ret = PIOc_finalize(iosysid[c])))
 		ERR(ret);
-	    printf("%d test_intercomm3 PIOc_finalize completed for iosysid = %d\n", my_rank, iosysid[c]);
+	    printf("%d test_intercomm4 PIOc_finalize completed for iosysid = %d\n", my_rank, iosysid[c]);
 	}
     } /* endif comp_task */
 
     if (verbose)
-	printf("%d test_intercomm3 Freeing local MPI resources...\n", my_rank);
+	printf("%d test_intercomm4 Freeing local MPI resources...\n", my_rank);
     /* if (comp_task) */
     /* { */
     /* 	for (int c = 0; c < COMPONENT_COUNT; c++) */
@@ -548,10 +540,10 @@ main(int argc, char **argv)
     /* 	    if (comp_comms[c] != MPI_COMM_NULL) */
     /* 	    { */
     /* 		if (verbose) */
-    /* 		    printf("%d test_intercomm3 freeing comp_comms[%d] = %d\n", */
+    /* 		    printf("%d test_intercomm4 freeing comp_comms[%d] = %d\n", */
     /* 			   my_rank, c, comp_comms[c]); */
     /* 		MPI_Comm_free(&comp_comms[c]); */
-    /* 		printf("%d test_intercomm3 freed comp_comms[%d]\n", */
+    /* 		printf("%d test_intercomm4 freed comp_comms[%d]\n", */
     /* 		       my_rank, c); */
     /* 	    } */
     /* 	} */
@@ -559,18 +551,18 @@ main(int argc, char **argv)
     /* else */
     /* { */
     /* 	if (verbose) */
-    /* 	    printf("%d test_intercomm3 freeing io_comm = %d\n", my_rank, io_comm); */
+    /* 	    printf("%d test_intercomm4 freeing io_comm = %d\n", my_rank, io_comm); */
     /* 	if (io_comm != MPI_COMM_NULL) */
     /* 	{ */
     /* 	    MPI_Comm_free(&io_comm); */
-    /* 	    printf("%d test_intercomm3 freed io_comm\n", my_rank); */
+    /* 	    printf("%d test_intercomm4 freed io_comm\n", my_rank); */
     /* 	} */
     /* } */
 
     /* Wait for everyone to catch up. */
-    printf("%d test_intercomm3 waiting for other processes!\n", my_rank);    
+    printf("%d test_intercomm4 waiting for other processes!\n", my_rank);
     MPI_Barrier(MPI_COMM_WORLD);
-    printf("%d test_intercomm3 done waiting for other processes!\n", my_rank);    
+    printf("%d test_intercomm4 done waiting for other processes!\n", my_rank);
 
     /* Finalize the MPI library. */
     printf("finalizing MPI");
@@ -584,7 +576,7 @@ main(int argc, char **argv)
 #endif
 
     if (verbose)
-	printf("%d test_intercomm3 SUCCESS!!\n", my_rank);
+	printf("%d test_intercomm4 SUCCESS!!\n", my_rank);
 
 
     return 0;

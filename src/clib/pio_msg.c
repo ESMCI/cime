@@ -1429,7 +1429,59 @@ int freedecomp_handler(iosystem_desc_t *ios)
     return PIO_NOERR;
 }
 
-int finalize_handler(iosystem_desc_t *ios)
+int PIOc_noop_finalize(const int iosysid)
+{
+    iosystem_desc_t *ios, *nios;
+    int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
+    int ierr = PIO_NOERR;
+
+    LOG((1, "PIOc_noop_finalize iosysid = %d MPI_COMM_NULL = %d", iosysid, MPI_COMM_NULL));
+
+    /* Find the IO system information. */
+    if (!(ios = pio_get_iosystem_from_id(iosysid)))
+	return PIO_EBADID;
+    LOG((3, "found iosystem info comproot = %d union_comm = %d", ios->comproot,
+	 ios->union_comm));
+
+    /* If asynch IO is in use, send the PIO_MSG_EXIT message from the
+     * comp master to the IO processes. This may be called by
+     * componets for other components iosysid. So don't send unless
+     * there is a valid union_comm. */
+    if (ios->async_interface)
+    {
+	int msg = PIO_MSG_EXIT;
+	LOG((3, "async"));
+	
+	if (!ios->ioproc)
+	{
+	    LOG((2, "sending msg = %d ioroot = %d union_comm = %d", msg,
+		 ios->ioroot, ios->union_comm));
+	    
+	    /* Send the message to the message handler. */
+	    if (ios->compmaster)
+		mpierr = MPI_Send(&msg, 1, MPI_INT, ios->ioroot, 1, ios->union_comm);
+	    
+	    LOG((2, "sending iosysid = %d", iosysid));
+	    
+	    /* Send the parameters of the function call. */
+	    if (!mpierr)
+		mpierr = MPI_Bcast((int *)&iosysid, 1, MPI_INT, ios->compmaster, ios->intercomm);
+	}
+	    
+	/* Handle MPI errors. */
+	LOG((3, "handling async errors mpierr = %d my_comm = %d", mpierr, ios->my_comm));
+	if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
+	    return check_mpi(NULL, mpierr2, __FILE__, __LINE__);
+	if (mpierr)
+	    return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+	LOG((3, "async errors bcast"));
+    }
+
+    return ierr;
+}
+
+
+int finalize_handler(iosystem_desc_t *ios, int index)
 {
     int iosysid;
     int mpierr;
@@ -1437,7 +1489,7 @@ int finalize_handler(iosystem_desc_t *ios)
 
     int my_rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
-    LOG((1, "finalize_handler called"));
+    LOG((1, "finalize_handler called index = %d", index));
 
     /* Get the parameters for this function that the the comp master
      * task is broadcasting. */
@@ -1446,8 +1498,10 @@ int finalize_handler(iosystem_desc_t *ios)
     LOG((1, "finalize_handler got parameter iosysid = %d", iosysid));
 
     /* Call the close file function. */
+    LOG((2, "finalize_handler calling PIOc_finalize for iosysid = %d",
+	 iosysid));
     if ((ret = PIOc_finalize(iosysid)))
-    	return ret;
+	return ret;
 
     LOG((1, "finalize_handler succeeded!"));
     return PIO_NOERR;
@@ -1629,7 +1683,7 @@ int pio_msg_handler(int io_rank, int component_count, iosystem_desc_t *iosys)
 	    freedecomp_handler(my_iosys);
 	    break;
 	case PIO_MSG_EXIT:
-	    finalize_handler(my_iosys);
+	    finalize_handler(my_iosys, index);
 	    msg = -1;
 	    break;
 	default:
@@ -1661,8 +1715,12 @@ int pio_msg_handler(int io_rank, int component_count, iosystem_desc_t *iosys)
 
 	/* If there are still open components, keep listening. */
 	if (msg == -1)
+	{
+	    LOG((2, "msg = %d open_components = %d", msg, open_components));
 	    if (--open_components)
 		msg = 0;
+	    LOG((2, "msg set to 0 msg = %d open_components = %d", msg, open_components));
+	}
 
 	LOG((3, "pio_msg_handler done msg = %d open_components = %d",
 	     msg, open_components));
@@ -1687,7 +1745,7 @@ int pio_msg_handler2(int io_rank, int component_count, iosystem_desc_t **iosys, 
 
     int my_rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
-    LOG((1, "pio_msg_handler called"));
+    LOG((1, "pio_msg_handler2 called"));
 
     /* Have IO comm rank 0 (the ioroot) register to receive
      * (non-blocking) for a message from each of the comproots. */
@@ -1707,7 +1765,7 @@ int pio_msg_handler2(int io_rank, int component_count, iosystem_desc_t **iosys, 
     /* If the message is not -1, keep processing messages. */
     while (msg != -1)
     {
-	LOG((3, "pio_msg_handler at top of loop"));
+	LOG((3, "pio_msg_handler2 at top of loop"));
 
 	/* Wait until any one of the requests are complete. Once it
 	 * returns, the Waitany function automatically sets the
@@ -1737,7 +1795,7 @@ int pio_msg_handler2(int io_rank, int component_count, iosystem_desc_t **iosys, 
 	LOG((3, "about to call msg MPI_Bcast my_iosys->io_comm = %d", my_iosys->io_comm));
 	mpierr = MPI_Bcast(&msg, 1, MPI_INT, 0, my_iosys->io_comm);
 	CheckMPIReturn(mpierr, __FILE__, __LINE__);
-	LOG((1, "pio_msg_handler msg MPI_Bcast complete msg = %d", msg));
+	LOG((1, "pio_msg_handler2 msg MPI_Bcast complete msg = %d", msg));
 
 	/* Handle the message. This code is run on all IO tasks. */
 	switch (msg)
@@ -1840,7 +1898,7 @@ int pio_msg_handler2(int io_rank, int component_count, iosystem_desc_t **iosys, 
 	    freedecomp_handler(my_iosys);
 	    break;
 	case PIO_MSG_EXIT:
-	    finalize_handler(my_iosys);
+	    finalize_handler(my_iosys, index);
 	    msg = -1;
 	    break;
 	default:
@@ -1848,42 +1906,35 @@ int pio_msg_handler2(int io_rank, int component_count, iosystem_desc_t **iosys, 
 	}
 
 	/* If an error was returned by the handler, do something! */
-	LOG((3, "pio_msg_handler checking error ret = %d", ret));
+	LOG((3, "pio_msg_handler2 checking error ret = %d", ret));
 	if (ret)
-	{
-	    LOG((0, "hander returned error code %d", ret));
 	    MPI_Finalize();
-	}
 
-	LOG((3, "pio_msg_handler getting ready to listen"));
+	LOG((3, "pio_msg_handler2 getting ready to listen"));
 
 	/* Unless finalize was called, listen for another msg from the
 	 * component whose message we just handled. */
 	if (!io_rank && msg != -1)
 	{
-	    LOG((3, "pio_msg_handler about to Irecv comproot = %d union_comm = %d",
-		 my_iosys->comproot, my_iosys->union_comm));
 	    my_iosys = iosys[index];
+	    LOG((3, "pio_msg_handler2 about to Irecv index = %d comproot = %d union_comm = %d",
+		 index, my_iosys->comproot, my_iosys->union_comm));
 	    mpierr = MPI_Irecv(&msg, 1, MPI_INT, my_iosys->comproot, MPI_ANY_TAG, my_iosys->union_comm,
 			       &req[index]);
-	    LOG((3, "pio_msg_handler called MPI_Irecv req[%d] = %d\n", index, req[index]));
+	    LOG((3, "pio_msg_handler2 called MPI_Irecv req[%d] = %d\n", index, req[index]));
 	    CheckMPIReturn(mpierr, __FILE__, __LINE__);
 	}
 
-	/* If there are still open components, keep listening. */
-	if (msg == -1)
-	    if (--open_components)
-		msg = PIO_MSG_EXIT;
-
-	LOG((3, "pio_msg_handler done msg = %d open_components = %d",
+	LOG((3, "pio_msg_handler2 done msg = %d open_components = %d",
 	     msg, open_components));
 
 	/* If there are no more open components, exit. */
-	if (open_components == 0)
-	    break;
+	if (msg == -1)
+	    if (--open_components)
+		msg = PIO_MSG_EXIT;
     }
 
-    LOG((3, "returning from pio_msg_handler"));
+    LOG((3, "returning from pio_msg_handler2"));
     return PIO_NOERR;
 }
 
@@ -2609,6 +2660,9 @@ PIOc_Init_Async(MPI_Comm world, int num_io_procs, int *io_proc_list, int compone
 	    /* Initialize some values. */
 	    my_iosys->io_comm = MPI_COMM_NULL;
 	    my_iosys->comp_comm = MPI_COMM_NULL;
+	    my_iosys->union_comm = MPI_COMM_NULL;
+	    my_iosys->intercomm = MPI_COMM_NULL;
+	    my_iosys->my_comm = MPI_COMM_NULL;
 	    my_iosys->async_interface = 1;
 	    my_iosys->error_handler = PIO_INTERNAL_ERROR;
 	    my_iosys->num_comptasks = num_procs_per_comp[cmp];
@@ -2715,9 +2769,11 @@ PIOc_Init_Async(MPI_Comm world, int num_io_procs, int *io_proc_list, int compone
 		LOG((3, "making a dup of io_comm = %d io_rank = %d", io_comm, io_rank));
 		if ((ret = MPI_Comm_dup(io_comm, &my_iosys->io_comm)))
 		    return check_mpi(NULL, ret, __FILE__, __LINE__);
+		LOG((3, "dup of io_comm = %d io_rank = %d", my_iosys->io_comm, io_rank));
 		my_iosys->iomaster = iomaster;
 		my_iosys->io_rank = io_rank;
 		my_iosys->ioroot = 0;
+		my_iosys->comp_idx = cmp - 1;
 	    }
 
 	/* All the processes in this component, and the IO component,
@@ -2777,9 +2833,11 @@ PIOc_Init_Async(MPI_Comm world, int num_io_procs, int *io_proc_list, int compone
 	    return ret;
 
     /* Free resources if needed. */
+    LOG((2, "about to free io_proc_list"));
     if (!io_proc_list)
 	free(my_io_proc_list);
 
+    LOG((2, "about to free proc_list"));
     if (!proc_list)
     {
 	for (int cmp = 0; cmp < component_count + 1; cmp++)
@@ -2788,6 +2846,7 @@ PIOc_Init_Async(MPI_Comm world, int num_io_procs, int *io_proc_list, int compone
     }
 
     /* Free MPI groups. */
+    LOG((2, "about to free MPI groups"));
     if ((ret = MPI_Group_free(&io_group)))
 	return check_mpi(NULL, ret, __FILE__, __LINE__);
 
@@ -2800,5 +2859,6 @@ PIOc_Init_Async(MPI_Comm world, int num_io_procs, int *io_proc_list, int compone
 		return check_mpi(NULL, ret, __FILE__, __LINE__);
     }
 
+    LOG((2, "successfully done with PIO_Init_Async"));
     return PIO_NOERR;
 }

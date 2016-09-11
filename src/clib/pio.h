@@ -196,11 +196,12 @@ typedef struct iosystem_desc_t
   int compmaster;
 
   /** Rank of IO root task (which is rank 0 in io_comm) in the union
-   * communicator. */
+   * communicator. Will always be 0 for async situations. */
   int ioroot;
 
   /** Rank of computation root task (which is rank 0 in
-   * comm_comms[cmp]) in the union communicator. */
+   * comm_comms[cmp]) in the union communicator. Will always = number
+   * of IO tasks in async situations. */
   int comproot;
 
   /** An array of the ranks of all IO tasks within the union
@@ -222,6 +223,9 @@ typedef struct iosystem_desc_t
 
   /** MPI Info object. */
   MPI_Info info;
+
+  /** Index of this component in the list of components. */
+  int comp_idx;
 
   /** Pointer to the next iosystem_desc_t in the list. */
   struct iosystem_desc_t *next;
