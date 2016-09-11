@@ -553,56 +553,56 @@ int PIOc_finalize(const int iosysid)
 	LOG((3, "async errors bcast"));
     }
 
-    /* /\* Free this memory that was allocated in init_intracomm. *\/ */
-    /* if (ios->ioranks) */
-    /* 	free(ios->ioranks); */
-    /* LOG((3, "Freed ioranks.")); */
+    /* Free this memory that was allocated in init_intracomm. */
+    if (ios->ioranks)
+    	free(ios->ioranks);
+    LOG((3, "Freed ioranks."));
 
-    /* /\* Free the buffer pool. *\/ */
-    /* free_cn_buffer_pool(*ios); */
-    /* LOG((2, "Freed buffer pool.")); */
+    /* Free the buffer pool. */
+    free_cn_buffer_pool(*ios);
+    LOG((2, "Freed buffer pool."));
 
-    /* /\* Free the MPI groups. *\/ */
-    /* if (ios->compgroup != MPI_GROUP_NULL) */
-    /* 	MPI_Group_free(&ios->compgroup); */
+    /* Free the MPI groups. */
+    if (ios->compgroup != MPI_GROUP_NULL)
+    	MPI_Group_free(&ios->compgroup);
 
-    /* if (ios->iogroup != MPI_GROUP_NULL) */
-    /* { */
-    /* 	MPI_Group_free(&(ios->iogroup)); */
-    /* 	LOG((2, "Freed MPI groups.")); */
-    /* } */
+    if (ios->iogroup != MPI_GROUP_NULL)
+    {
+    	MPI_Group_free(&(ios->iogroup));
+    	LOG((2, "Freed MPI groups."));
+    }
 
     /* Free the MPI communicators. my_comm is just a copy (but not an
      * MPI copy), so does not have to have an MPI_Comm_free()
      * call. comp_comm and io_comm are MPI duplicates of the comms
      * handed into init_intercomm. So they need to be freed by MPI. */
-    /* if (ios->intercomm != MPI_COMM_NULL) */
-    /* { */
-    /* 	LOG((3, "freeing intercomm %d", ios->intercomm)); */
-    /* 	MPI_Comm_free(&ios->intercomm); */
-    /* } */
-    /* if (ios->union_comm != MPI_COMM_NULL) */
-    /* { */
-    /* 	LOG((3, "freeing union_comm %d", ios->union_comm)); */
-    /* 	MPI_Comm_free(&ios->union_comm); */
-    /* } */
-    /* if (ios->io_comm != MPI_COMM_NULL) */
-    /* { */
-    /* 	LOG((3, "freeing io_comm %d", ios->io_comm)); */
-    /* 	MPI_Comm_free(&ios->io_comm); */
-    /* } */
-    /* if (ios->comp_comm != MPI_COMM_NULL) */
-    /* { */
-    /* 	LOG((3, "freeing comp_comm %d", ios->comp_comm)); */
-    /* 	MPI_Comm_free(&ios->comp_comm); */
-    /* } */
-    /* if (ios->my_comm != MPI_COMM_NULL) */
-    /* 	ios->my_comm = MPI_COMM_NULL; */
+    if (ios->intercomm != MPI_COMM_NULL)
+    {
+    	LOG((3, "freeing intercomm %d", ios->intercomm));
+    	MPI_Comm_free(&ios->intercomm);
+    }
+    if (ios->union_comm != MPI_COMM_NULL)
+    {
+    	LOG((3, "freeing union_comm %d", ios->union_comm));
+    	MPI_Comm_free(&ios->union_comm);
+    }
+    if (ios->io_comm != MPI_COMM_NULL)
+    {
+    	LOG((3, "freeing io_comm %d", ios->io_comm));
+    	MPI_Comm_free(&ios->io_comm);
+    }
+    if (ios->comp_comm != MPI_COMM_NULL)
+    {
+    	LOG((3, "freeing comp_comm %d", ios->comp_comm));
+    	MPI_Comm_free(&ios->comp_comm);
+    }
+    if (ios->my_comm != MPI_COMM_NULL)
+    	ios->my_comm = MPI_COMM_NULL;
 
-    /* /\* Delete the iosystem_desc_t data associated with this id. *\/ */
-    /* LOG((2, "About to delete iosysid %d.", iosysid)); */
-    /* ierr = pio_delete_iosystem_from_list(iosysid); */
-    /* LOG((2, "Deleted iosysid %d ierr = %d", iosysid, ierr)); */
+    /* Delete the iosystem_desc_t data associated with this id. */
+    LOG((2, "About to delete iosysid %d.", iosysid));
+    ierr = pio_delete_iosystem_from_list(iosysid);
+    LOG((2, "Deleted iosysid %d ierr = %d", iosysid, ierr));
     LOG((2, "PIOc_finalize completed successfully"));
 
     return ierr;
