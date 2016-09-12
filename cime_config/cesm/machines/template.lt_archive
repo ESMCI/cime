@@ -1,177 +1,76 @@
-#! /usr/bin/env perl
-#------------------------------------------------------------------------------
+#!/usr/bin/env python
+
+"""
+template to create a case longterm term archiving script. This should only ever be called
+by case.submit when on batch system. This script only exists as a way of providing
+batch directives. Use case.submit from the command line to run your case.
+"""
+
+import sys
+import os
+os.chdir( '{{ caseroot }}' )
+
+_LIBDIR = os.path.join("{{ cimeroot }}", "scripts", "Tools")
+sys.path.append(_LIBDIR)
+
+from standard_script_setup          import *
+from CIME.case                      import Case
+from CIME.case_lt_archive           import case_lt_archive
+
+logger = logging.getLogger(__name__)
+
 # Batch system directives
-#------------------------------------------------------------------------------
 {{ batchdirectives }}
 
-use POSIX qw(strftime);
-use File::Path;
-use File::Copy;
-use File::Spec;
-use File::Basename;
-use XML::LibXML;
+###############################################################################
+def parse_command_line(args, description):
+###############################################################################
 
-if(! -e "./xmlquery" and defined $ENV{'PBS_O_WORKDIR'})
-{
-	chdir $ENV{'PBS_O_WORKDIR'};
-}
+    parser = argparse.ArgumentParser(
+        usage="""\n%s [--verbose]
+OR
+%s --help
+OR
+%s --test
 
-my $scriptname = $0;
-my %config;
-my $caseroot = `./xmlquery -value CASEROOT`;
-my $cimeroot = `./xmlquery -value CIMEROOT`;
-chdir $caseroot;
-my $perl5lib = "$cimeroot/utils/perl5lib";
-push(@INC, $perl5lib);
-require Config::SetupTools;
-require Batch::BatchUtils;
-use Cwd;
-require Log::Log4perl;
+\033[1mEXAMPLES:\033[0m
+    \033[1;32m# case.run SMS\033[0m
+    > %s
+""" % ((os.path.basename(args[0]), ) * 4),
 
-my $level = Log::Log4perl::Level::to_priority("DEBUG");
-Log::Log4perl->easy_init({level=>$level,
-                          layout=>'%m%n'});
+description=description,
 
-my $logger = Log::Log4perl::get_logger();
+formatter_class=argparse.ArgumentDefaultsHelpFormatter
+)
 
-#------------------------------------------------------------------------------
-# PE Layout Documentation:
-#------------------------------------------------------------------------------
-{{ pedocumentation }}
+    CIME.utils.setup_standard_logging_options(parser)
 
-# -------------------------------------------------------------------------
-# global data needed by the script, stuff like the max number of threads,
-# -------------------------------------------------------------------------
+    parser.add_argument("--caseroot", default=os.getcwd(),
+                        help="Case directory to build")
 
-#-----------------------------------------------------------------------------------------------
-# checkRun - check if run is complete
-#-----------------------------------------------------------------------------------------------
-sub checkRun
-{
-    my $statusFile = shift;
-    my $runComplete = 0;
+    args = parser.parse_args()
 
-    $logger->debug("In checkRun..."); 
-#
-# check if the run completed successfully
-#
-    if( -f $statusFile ) 
-    {
-	open my $CASESTATUS, "<", "$statusFile"  or die qq(lt_archive: unable to open $statusFile. Exiting...\n);
-	while( <$CASESTATUS> ) 
-	{
-	    chomp $_;
-	        if( /^run SUCCESSFUL/ )
-		{
-		    $runComplete = 1;
-		}
-	}
-	close( $CASESTATUS );
-    }
-}
+    CIME.utils.handle_standard_logging_options(args)
 
-#-----------------------------------------------------------------------------------------------
-# checkSta - check if short term archive is complete
-#-----------------------------------------------------------------------------------------------
-sub checkSta
-{
-    my $statusFile = shift;
-    my $staComplete = 0;
+    if args.caseroot is not None:
+        os.chdir(args.caseroot)
 
-    $logger->debug("In checkSta..."); 
-#
-# check if the short term archive completed successfully
-#
-    if( -f $statusFile ) 
-    {
-	open my $STASTATUS, "<", "$statusFile"  or die qq(lt_archive: unable to open $statusFile. Exiting...\n);
-	while( <$STASTATUS> ) 
-	{
-	    chomp $_;
-	        if( /^st_archive process complete/ )
-		{
-		    $staComplete = 1;
-		}
-	}
-	close( $STASTATUS );
-    }
-}
+    return args.caseroot
 
+###############################################################################
+def _main_func(description):
+###############################################################################
+    if ("--test" in sys.argv):
+        test_results = doctest.testmod(verbose=True)
+        sys.exit(1 if test_results.failed > 0 else 0)
 
-#-----------------------------------------------------------------------------------------------
-# main
-#-----------------------------------------------------------------------------------------------
-sub main
-{
-    $ENV{'maxthrds'} = 1;
+    caseroot = parse_command_line(sys.argv, description)
+    with Case(caseroot) as case:
+        success = case_lt_archive(case)
 
-    # First, get the configuration from every xml file.
-    %config = SetupTools::getAllResolved();
-    
-    
-    # Change to the case root
-    chdir($config{'CASEROOT'});
-    my $testlog = "$config{CASEROOT}/TestStatus.log";
-    if(-e $testlog)
-    {
-        open(TL, ">>$testlog");
-        print TL "lt_archive starting\n";
-        close(TL);
-    }
-    $logger->info("lt_archive starting");
-    
-    # set up envrionment vars and call the lt_archive.sh script                               
-    my $runComplete = checkRun( "$config{'CASEROOT'}/CaseStatus" );
-    my $staComplete = checkSta( "$config{'CASEROOT'}/stArchiveStatus" );
+    sys.exit(0 if success else 1)
 
-    if( $runComplete && $staComplete )
-    {
-	$ENV{DOUT_S_ROOT} = $config{'DOUT_S_ROOT'};
-	$ENV{DOUT_L_MSROOT} = $config{'DOUT_L_MSROOT'};
-	$ENV{DOUT_L_HPSS_ACCNT} = $config{'DOUT_L_HPSS_ACCNT'};
+###############################################################################
 
-	my $LID = strftime("%y%m%d-%H%M%S", localtime);
-
-	qx($config{'CASEROOT'}/Tools/lt_archive.sh {{ lt_archive_args }} >> ltArchiveStatus.$LID 2>&1);
-    }
-    else
-    {
-	$logger->info("lt_archive: run or st_archive is not yet complete or was not successful. Unable to perform long term archive...");
-	exit 1;
-    }
-
-    if(-e $testlog)
-    {
-        open(TL, ">>$testlog");
-        print TL "lt_archive complete\n"; 
-        close(TL);
-    }
-    $logger->info("lt_archive complete\n");
-    resubmitCheck();
-}
-
-#-----------------------------------------------------------------------------------------------
-# resubmitCheck - check if the case needs to be resubmitted
-#-----------------------------------------------------------------------------------------------
-
-sub resubmitCheck()
-{
-    if($config{RESUBMIT} > 0)
-    {
-        my $submitscript = "$config{CASEROOT}/$config{CASE}.submit";
-        my $cwd = getcwd;
-        chdir $config{CASEROOT};
-        my $resubmitcommand = "$submitscript -resubmit -scriptname $config{'CASE'}.lt_archive";
-        $logger->debug(" running resubmit check $resubmitcommand");
-        if(-e $testlog)
-        {
-            open(TL, ">>$testlog");
-            print TL "lt_archive complete\n"; 
-            close(TL);
-        }
-        qx($resubmitcommand);
-        if($?) { $logger->warn("could not run CESM submit script, $! $?") ; }            
-        chdir $cwd;
-    }
-}
-main(@ARGV) unless caller;
+if __name__ == "__main__":
+    _main_func(__doc__)
