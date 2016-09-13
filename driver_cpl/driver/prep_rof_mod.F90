@@ -433,7 +433,7 @@ contains
     ! ------------------------------------------------------------------------
 
     lsize_l = mct_aVect_lsize(l2racc_lx(eli))
-    lsize_r = mct_aVect_lsize(l2x_rx(eri))
+    lsize_r = mct_aVect_lsize(l2r_rx(eri))
 
     ! ------------------------------------------------------------------------
     ! Extract the necessary fields from attribute vectors
