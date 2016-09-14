@@ -76,8 +76,8 @@ Currently the following streams are supported
 <strm_year_start stream="rof.diatren_ann_rx1">1</strm_year_start>
 <strm_year_end   stream="rof.diatren_ann_rx1">1</strm_year_end>
 <strm_offset     stream="rof.diatren_ann_rx1">0</strm_offset>
-<strm_tintalgo   stream="rof.diatren_ann_rx1">upper</strm_tintalgo>
-<strm_taxmode    stream="rof.diatren_ann_rx1">cycle</strm_taxmode>
+<tintalgo        stream="rof.diatren_ann_rx1">upper</tintalgo>
+<taxmode         stream="rof.diatren_ann_rx1">cycle</taxmode>
 <strm_domdir     stream="rof.diatren_ann_rx1">$DIN_LOC_ROOT/lnd/dlnd7/RX1</strm_domdir>
 <strm_domfil     stream="rof.diatren_ann_rx1">runoff.daitren.annual.090225.nc</strm_domfil>
 <strm_datdir     stream="rof.diatren_ann_rx1">$DIN_LOC_ROOT/lnd/dlnd7/RX1</strm_datdir>
@@ -103,7 +103,7 @@ Currently the following streams are supported
 <strm_year_start stream="rof.diatren_iaf_rx1">1948</strm_year_start>
 <strm_year_end   stream="rof.diatren_iaf_rx1">2009</strm_year_end>
 <strm_offset     stream="rof.diatren_iaf_rx1">0</strm_offset>
-<strm_tintalgo   stream="rof.diatren_iaf_rx1">upper</strm_tintalgo>
+<tintalgo        stream="rof.diatren_iaf_rx1">upper</tintalgo>
 <strm_taxmode    stream="rof.diatren_iaf_rx1">cycle</strm_taxmode>
 <strm_domdir     stream="rof.diatren_iaf_rx1">$DIN_LOC_ROOT/lnd/dlnd7/RX1</strm_domdir>
 <strm_domfil     stream="rof.diatren_iaf_rx1">runoff.daitren.iaf.20120419.nc</strm_domfil>
@@ -129,7 +129,7 @@ Currently the following streams are supported
 <strm_year_end   stream="rof.cplhist">$DROF_CPLHIST_YR_END</strm_year_end>
 <strm_cpl_case   stream="rof.cplhist">$DROF_CPLHIST_CASE</strm_cpl_case>
 <strm_offset     stream="rof.cplhist">-43200</strm_offset>
-<strm_tintalgo   stream="rof.cplhist">lower</strm_tintalgo>
+<tintalgo        stream="rof.cplhist">lower</tintalgo>
 <strm_taxmode    stream="rof.cplhist">cycle</strm_taxmode>
 <strm_domdir     stream="rof.cplhist">$ROF_DOMAIN_PATH</strm_domdir>
 <strm_domfil     stream="rof.cplhist">$ROF_DOMAIN_FILE</strm_domfil>
@@ -148,23 +148,35 @@ Currently the following streams are supported
 </strm_datvar>
 
 <!-- =========================================  -->
-<!--- non stream-specific vars (for now)        -->
+<!--- other stream variables         -->
 <!-- =========================================  -->
 
-<decomp>1d</decomp>
+<strm_offset>0</strm_offset>
 
-<strm_dtlimit>1.5e0</strm_dtlimit>
+<strm_domvar>
+   time    time
+   xc      lon
+   yc      lat
+   area    area
+   mask    mask
+</strm_domvar>
 
-<strm_fillalgo>nn</strm_fillalgo>
+<tintalgo>linear</tintalgo>
 
-<strm_fillmask>nomask</strm_fillmask>
+<fillalgo>nn</fillalgo>
 
-<strm_mapalgo>bilinear</strm_mapalgo>
+<fillmask>nomask</fillmask>
 
-<strm_mapmask>dstmask</strm_mapmask>
+<mapalgo>bilinear</mapalgo>
 
-<strm_tintalgo>linear</strm_tintalgo>
+<mapmask>dstmask</mapmask>
 
-<strm_taxmode>cycle</strm_taxmode>
+<taxmode>cycle</taxmode>
+
+<dtlimit>1.5e0</dtlimit>
+
+<!-- =========================================  -->
+<!--- non-stream variables        -->
+<!-- =========================================  -->
 
 </namelist_defaults>

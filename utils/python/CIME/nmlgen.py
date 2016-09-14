@@ -477,17 +477,21 @@ class NamelistGenerator(object):
         """
         var_info = self._definition.get_value(name)
         group = var_info["group"]
+
         # Use this to see if we need to raise an error when nothing is found.
         have_value = False
+
         # Check for existing value.
         current_literals = self._namelist.get_variable_value(group, name)
         if current_literals != [""]:
             have_value = True
+
         # Check for input argument.
         if value is not None:
             have_value = True
             literals = self._to_namelist_literals(name, value)
             current_literals = merge_literal_lists(literals, current_literals)
+
         # Check for default value.
         default = self.get_default(name, allow_none=True)
         if default is not None:
@@ -496,6 +500,7 @@ class NamelistGenerator(object):
             current_literals = merge_literal_lists(default_literals,
                                                    current_literals)
         expect(have_value, "No default value found for %s." % name)
+
         # Go through file names and prepend input data root directory for
         # absolute pathnames.
         if var_info["input_pathname"] == 'abs':
@@ -507,10 +512,13 @@ class NamelistGenerator(object):
                 if file_path == 'null':
                     continue
                 file_path = self.set_abs_file_path(file_path)
-                expect(os.path.exists(file_path),
-                       "File not found: %s = %s" % (name, literal))
+                # Do not exit if domain file is set to UNSET value
+                if (os.path.basename(file_path) != 'UNSET'):
+                    expect(os.path.exists(file_path),
+                           "File not found: %s = %s" % (name, literal))
                 current_literals[i] = string_to_character_literal(file_path)
             current_literals = compress_literal_list(current_literals)
+
         # Set the new value.
         self._namelist.set_variable_value(group, name, current_literals)
 

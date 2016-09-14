@@ -1575,12 +1575,14 @@
 
     <domain name="rx1">
       <nx>360</nx> <ny>180</ny>
+      <file>domain.rof.rx1.160914.nc</file>
       <desc>rx1 is 1 degree river routing grid (only valid for DROF):</desc>
       <support>Can only be used by DROF</support>
     </domain>
 
     <domain name="r05">
       <nx>720</nx> <ny>360</ny>
+      <file>FILL_THIS_IN</file>
       <desc>r05 is 1/2 degree river routing grid:</desc>
     </domain>
 
