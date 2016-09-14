@@ -21,6 +21,7 @@
 #define NUM_FLAVORS 4
 
 /** Error code for when things go wrong. */
+#define ERR_CHECK 1109
 #define ERR_INIT 1110
 #define ERR_AWFUL 1111
 #define ERR_WRONG 2222
@@ -56,5 +57,6 @@ char *flavor_name(int flavor);
 int pio_test_init(int argc, char **argv, int *my_rank, int *ntasks, int target_ntasks);
 int create_nc_sample_1(int iosysid, int format, char *filename, int my_rank);
 int check_nc_sample_1(int iosysid, int format, char *filename, int my_rank);
+int pio_test_finalize();
 
 #endif /* _PIO_TESTS_H */
