@@ -1,6 +1,6 @@
 /**
- * @file Tests for PIOc_Intercomm. This tests the Init_Intercomm()
- * function, and basic asynch I/O capability.
+ * @file Tests for PIOc_Intercomm. This tests basic asynch I/O capability.
+ * @author Ed Hartnett
  *
  * To run with valgrind, use this command:
  * <pre>mpiexec -n 4 valgrind -v --leak-check=full --suppressions=../../../tests/unit/valsupp_test.supp
@@ -8,10 +8,7 @@
  *
  */
 #include <pio.h>
-#include <unistd.h>
-#ifdef TIMING
-#include <gptl.h>
-#endif
+#include <pio_tests.h>
 
 /* Number of processors that will do IO. */
 #define NUM_IO_PROCS 2
@@ -22,6 +19,12 @@
 /** The number of possible output netCDF output flavors available to
  * the ParallelIO library. */
 #define NUM_NETCDF_FLAVORS 4
+
+/* The number of tasks this test should run on. */
+#define TARGET_NTASKS 4
+
+/* The name of this test. */
+#define TEST_NAME "test_intercomm3"
 
 /** The number of dimensions in the test data. */
 #define NDIM 1
@@ -47,35 +50,6 @@
 /** The value of the global attribute in the netCDF output file. */
 #define ATT_VALUE 42
 
-/** Error code for when things go wrong. */
-#define ERR_AWFUL 1111
-#define ERR_WRONG 2222
-
-/** Handle MPI errors. This should only be used with MPI library
- * function calls. */
-#define MPIERR(e) do {                                                  \
-	MPI_Error_string(e, err_buffer, &resultlen);			\
-	fprintf(stderr, "MPI error, line %d, file %s: %s\n", __LINE__, __FILE__, err_buffer); \
-	MPI_Finalize();							\
-	return ERR_AWFUL;							\
-    } while (0)
-
-/** Handle non-MPI errors by finalizing the MPI library and exiting
- * with an exit code. */
-#define ERR(e) do {				\
-        fprintf(stderr, "Error %d in %s, line %d\n", e, __FILE__, __LINE__); \
-	MPI_Finalize();				\
-	return e;				\
-    } while (0)
-
-/** Global err buffer for MPI. When there is an MPI error, this buffer
- * is used to store the error message that is associated with the MPI
- * error. */
-char err_buffer[MPI_MAX_ERROR_STRING];
-
-/** This is the length of the most recent MPI error message, stored
- * int the global error string. */
-int resultlen;
 
 /* Check the file for correctness. */
 int

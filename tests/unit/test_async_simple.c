@@ -8,7 +8,7 @@
  *
  * To run with valgrind, use this command:
  * <pre>mpiexec -n 4 valgrind -v --leak-check=full --suppressions=../../../tests/unit/valsupp_test.supp
- * --error-exitcode=99 --track-origins=yes ./test_intercomm3</pre>
+ * --error-exitcode=99 --track-origins=yes ./test_async_simple</pre>
  *
  */
 #include <pio.h>
