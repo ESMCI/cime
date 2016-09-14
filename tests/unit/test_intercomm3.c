@@ -93,44 +93,9 @@ main(int argc, char **argv)
     /** Index for loops. */
     int fmt, d, d1, i;
 
-#ifdef TIMING
-    /* Initialize the GPTL timing library. */
-    if ((ret = GPTLinitialize ()))
-	return ret;
-#endif
-
-    /* Initialize MPI. */
-    if ((ret = MPI_Init(&argc, &argv)))
-	MPIERR(ret);
-
-    /* Learn my rank and the total number of processors. */
-    if ((ret = MPI_Comm_rank(MPI_COMM_WORLD, &my_rank)))
-	MPIERR(ret);
-    if ((ret = MPI_Comm_size(MPI_COMM_WORLD, &ntasks)))
-	MPIERR(ret);
-
-    /* Check that a valid number of processors was specified. */
-    if (ntasks != 4)
-    {
-	fprintf(stderr, "test_intercomm3 Number of processors must be exactly 4!\n");
-	ERR(ERR_AWFUL);
-    }
-    if (verbose)
-	printf("%d: test_intercomm3 ParallelIO Library test_intercomm3 running on %d processors.\n",
-	       my_rank, ntasks);
-
-    /* For example, if I have 4 processors, and I want to have 2 of them be computational, */
-    /* and 2 of them be IO: component count is 1  */
-    /* peer_comm = MPI_COMM_WORLD */
-    /* comp_comms is an array of comms of size 1 with a comm defined just over tasks (0,1) */
-    /* io_comm is a comm over tasks (2,3) */
-
-    /* Initialize the PIO IO system. This specifies how many and which
-     * processors are involved in I/O. */
-
-    /* Turn on logging. */
-    if ((ret = PIOc_set_log_level(3)))
-	ERR(ret);
+    /* Initialize test. */
+    if ((ret = pio_test_init(argc, argv, &my_rank, &ntasks, TARGET_NTASKS)))
+	ERR(ERR_INIT);
 
     /* How many processors will be used for our IO and 2 computation components. */
     int num_procs[COMPONENT_COUNT + 1] = {2, 1, 1};
