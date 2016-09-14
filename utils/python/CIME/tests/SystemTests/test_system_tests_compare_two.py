@@ -4,6 +4,11 @@
 This module contains unit tests of the core logic in SystemTestsCompareTwo.
 """
 
+# Ignore privacy concerns for unit tests, so that unit tests can access
+# protected members of the system under test
+#
+# pylint:disable=protected-access
+
 import unittest
 from collections import namedtuple
 import os
@@ -18,19 +23,17 @@ from CIME.tests.case_fake import CaseFake
 # Structure for storing information about calls made to methods
 # ========================================================================
 
-"""
-You can create a Call object to record a single call made to a method:
-
-Call(method, arguments)
-    method (str): name of method
-    arguments (dict): dictionary mapping argument names to values
-
-Example:
-    If you want to record a call to foo(bar = 1, baz = 2):
-        somecall = Call(method = 'foo', arguments = {'bar': 1, 'baz': 2})
-    Or simply:
-        somecall = Call('foo', {'bar': 1, 'baz': 2})
-"""
+# You can create a Call object to record a single call made to a method:
+#
+# Call(method, arguments)
+#     method (str): name of method
+#     arguments (dict): dictionary mapping argument names to values
+#
+# Example:
+#     If you want to record a call to foo(bar = 1, baz = 2):
+#         somecall = Call(method = 'foo', arguments = {'bar': 1, 'baz': 2})
+#     Or simply:
+#         somecall = Call('foo', {'bar': 1, 'baz': 2})
 Call = namedtuple('Call', ['method', 'arguments'])
 
 # ========================================================================
@@ -135,7 +138,7 @@ class SystemTestsCompareTwoFake(SystemTestsCompareTwo):
     # SystemTestsCommon
     # ------------------------------------------------------------------------
 
-    def run_indv(self, suffix="base"):
+    def run_indv(self, suffix="base", st_archive=False):
         """
         This fake implementation appends to the log and raises an exception if
         it's supposed to
@@ -224,10 +227,15 @@ class SystemTestsCompareTwoFake(SystemTestsCompareTwo):
 class TestSystemTestsCompareTwo(unittest.TestCase):
 
     def setUp(self):
+        self.original_wd = os.getcwd()
         # create a sandbox in which case directories can be created
         self.tempdir = tempfile.mkdtemp()
 
     def tearDown(self):
+        # Some tests trigger a chdir call in the SUT; make sure we return to the
+        # original directory at the end of the test
+        os.chdir(self.original_wd)
+
         shutil.rmtree(self.tempdir, ignore_errors=True)
 
     def test_setup(self):
@@ -295,9 +303,9 @@ class TestSystemTestsCompareTwo(unittest.TestCase):
 
         # Exercise
         with self.assertRaises(Exception):
-            mytest = SystemTestsCompareTwoFake(case1,
-                                               run_two_suffix = 'test',
-                                               case2setup_raises_exception = True)
+            SystemTestsCompareTwoFake(case1,
+                                      run_two_suffix = 'test',
+                                      case2setup_raises_exception = True)
 
         # Verify
         self.assertFalse(os.path.exists(os.path.join(case1root, 'case1.test')))
