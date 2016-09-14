@@ -1,5 +1,7 @@
 include (LibMPI)
 
+include_directories("${CMAKE_SOURCE_DIR}/tests/unit")
+
 # Compiler-specific compiler options
 if ("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99")

@@ -8,6 +8,7 @@
  *
  */
 #include <pio.h>
+#include <pio_tests.h>
 #include <unistd.h>
 #ifdef TIMING
 #include <gptl.h>
