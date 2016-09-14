@@ -26,8 +26,7 @@
 /* The name of this test. */
 #define TEST_NAME "test_intercomm4"
 
-/** Run Tests for Init_Intercomm
- */
+/** Run simple async test. */
 int
 main(int argc, char **argv)
 {
@@ -47,10 +46,6 @@ main(int argc, char **argv)
     /* Is the current process a computation task? */
     int comp_task = my_rank < 1 ? 0 : 1;
 
-    /* Index of computation task in iosysid array. Varies by rank and
-     * does not apply to IO component processes. */
-    int my_comp_idx = comp_task ? my_rank - 1 : -1;
-
     /* Initialize the IO system. */
     if ((ret = PIOc_Init_Async(MPI_COMM_WORLD, NUM_IO_PROCS, NULL, COMPONENT_COUNT,
 			       num_procs, NULL, iosysid)))
@@ -63,10 +58,10 @@ main(int argc, char **argv)
     {
     	for (int flv = 0; flv < NUM_FLAVORS; flv++)
     	{
-	    char filename[NC_MAX_NAME + 1];
+	    char filename[NC_MAX_NAME + 1]; /* Test filename. */
+	    int my_comp_idx = my_rank - 1; /* Index in iosysid array. */
 
-	    /* Create a filename for this test, flavor, and
-	     * computation component. */
+	    /* Create a filename. */
 	    sprintf(filename, "%s_%s_%d.nc", TEST_NAME, flavor_name(flv), my_comp_idx);
 
 	    /* Create the sample file. */
@@ -95,14 +90,10 @@ main(int argc, char **argv)
     MPI_Barrier(MPI_COMM_WORLD);
 
     /* Finalize the MPI library. */
-    printf("%d %s Finalizing MPI...\n", my_rank, TEST_NAME);
-    MPI_Finalize();
+    printf("%d %s Finalizing...\n", my_rank, TEST_NAME);
 
-#ifdef TIMING
-    /* Finalize the GPTL timing library. */
-    if ((ret = GPTLfinalize()))
-	return ret;
-#endif
+    if ((ret = pio_test_finalize()))
+	ERR(ERR_AWFUL);
 
     printf("%d %s SUCCESS!!\n", my_rank, TEST_NAME);
 
