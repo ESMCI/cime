@@ -57,6 +57,8 @@ char *flavor_name(int flavor);
 int pio_test_init(int argc, char **argv, int *my_rank, int *ntasks, int target_ntasks);
 int create_nc_sample_1(int iosysid, int format, char *filename, int my_rank);
 int check_nc_sample_1(int iosysid, int format, char *filename, int my_rank);
+int create_nc_sample_2(int iosysid, int format, char *filename, int my_rank);
+int check_nc_sample_2(int iosysid, int format, char *filename, int my_rank);
 int pio_test_finalize();
 
 #endif /* _PIO_TESTS_H */

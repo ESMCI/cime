@@ -24,7 +24,7 @@
 #define TARGET_NTASKS 2
 
 /* The name of this test. */
-#define TEST_NAME "test_intercomm4"
+#define TEST_NAME "test_async_simple"
 
 /** Run simple async test. */
 int
@@ -60,11 +60,12 @@ main(int argc, char **argv)
     	{
 	    char filename[NC_MAX_NAME + 1]; /* Test filename. */
 	    int my_comp_idx = my_rank - 1; /* Index in iosysid array. */
+	    int sample = 0;
 
 	    /* Create a filename. */
-	    sprintf(filename, "%s_%s_%d.nc", TEST_NAME, flavor_name(flv), my_comp_idx);
+	    sprintf(filename, "%s_%s_%d_%d.nc", TEST_NAME, flavor_name(flv), sample, my_comp_idx);
 
-	    /* Create the sample file. */
+	    /* Create sample file 1. */
 	    printf("%d %s creating file %s\n", my_rank, TEST_NAME, filename);
 	    if ((ret = create_nc_sample_1(iosysid[my_comp_idx], flavor[flv], filename, my_rank)))
 		ERR(ret);
@@ -72,6 +73,19 @@ main(int argc, char **argv)
     	    /* Check the file for correctness. */
     	    if ((ret = check_nc_sample_1(iosysid[my_comp_idx], flavor[flv], filename, my_rank)))
     	    	ERR(ret);
+
+	    /* Create a filename. */
+	    sample++;
+	    sprintf(filename, "%s_%s_%d_%d.nc", TEST_NAME, flavor_name(flv), sample, my_comp_idx);
+	    
+	    /* Create sample file 2. */
+	    printf("%d %s creating file %s\n", my_rank, TEST_NAME, filename);
+	    if ((ret = create_nc_sample_2(iosysid[my_comp_idx], flavor[flv], filename, my_rank)))
+		ERR(ret);
+
+    	    /* Check the file for correctness. */
+    	    /* if ((ret = check_nc_sample_2(iosysid[my_comp_idx], flavor[flv], filename, my_rank))) */
+    	    /* 	ERR(ret); */
     	} /* next netcdf flavor */
 
 	/* Finalize the IO system. Only call this from the computation tasks. */
