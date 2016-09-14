@@ -65,37 +65,43 @@ class NamelistGenerator(object):
         """Construct a namelist generator.
 
         Arguments:
-        `case` - `Case` object corresponding to the current case.
-        `infiles` - List of files with user namelist options.
+        `case`             - `Case` object corresponding to the current case.
+        `infiles`          - List of files with user namelist options.
         `definition_files` - List of XML files containing namelist definitions.
-        `defaults_files` - List of XML files containing namelist defaults.
-        `config` - A dictionary of attributes for matching defaults.
+        `defaults_files`   - List of XML files containing namelist defaults.
+        `config`           - A dictionary of attributes for matching defaults.
         """
         # Save off important information from inputs.
         self._case = case
         self._din_loc_root = case.get_value('DIN_LOC_ROOT')
         self._glc_nec = case.get_value('GLC_NEC')
+
         # Start out with empty streams namelists.
         self._streams_namelists = {"streams": []}
         for variable in self._streams_variables:
             self._streams_namelists[variable] = []
+
         # Create definition and defaults objects.
         self._definition = NamelistDefinition(definition_files[0])
         for file_ in definition_files[1:]:
             self._definition.add(file_)
+
         self._defaults = NamelistDefaults(defaults_files[0], attributes=config)
         for file_ in defaults_files[1:]:
             self._defaults.add(file_)
+
         # Create namelist object.
         self._namelist = Namelist()
         for file_ in infiles:
             # Parse settings in "groupless" mode.
             nml_dict = parse(in_file=file_, groupless=True)
+
             # Add groups using the namelist definition.
             new_namelist = self._definition.dict_to_namelist(nml_dict,
                                                              filename=file_)
             # Make sure that the input is actually valid.
             self._definition.validate(new_namelist, filename=file_)
+
             # Merge into existing settings (earlier settings have precedence
             # over later settings).
             self._namelist.merge_nl(new_namelist)
@@ -212,13 +218,14 @@ class NamelistGenerator(object):
            exists. This behavior is suppressed within single-quoted strings
            (similar to parameter expansion in shell scripts).
         """
-        var_info = self._definition.get_value(name)
         default = self._defaults.get_value(name, attribute=config)
         if default is None:
             expect(allow_none, "No default value found for %s." % name)
             return None
         default = expand_literal_list(default)
+
         # Expand variable references.
+        var_info = self._definition.get_value(name)
         for i, scalar in enumerate(default):
             # Skip single-quoted strings.
             if var_info['type'] == 'character' and scalar != '' and \
@@ -243,7 +250,7 @@ class NamelistGenerator(object):
         return default
 
     def get_streams(self):
-        """Get a list of all streams used for the current datm mode."""
+        """Get a list of all streams used for the current data model  mode."""
         return self.get_default("streamslist")
 
     def _sub_fields(self, varnames):

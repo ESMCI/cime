@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-"""Namelist creator for CIME's data atmosphere model.
+"""Namelist creator for CIME's data river model.
 
 While `build-namelist` historically has been a script in its own right, this
 module can be imported, and provides the same functionality via the
@@ -29,7 +29,7 @@ from CIME.utils import expect
 
 logger = logging.getLogger(__name__)
 
-COMPONENT = 'datm'
+COMPONENT = 'drof'
 
 # Yes this is a long function, but for now just live with it.
 # pylint: disable=too-many-arguments,too-many-locals,too-many-branches,too-many-statements
@@ -49,40 +49,30 @@ def build_namelist(case, confdir, inst_string, infiles, definition_files,
     # Get a bunch of information from the case.
     #----------------------------------------------------
     din_loc_root = case.get_value("DIN_LOC_ROOT")
-    atm_domain_file = case.get_value("ATM_DOMAIN_FILE")
-    atm_domain_path = case.get_value("ATM_DOMAIN_PATH")
-    datm_mode = case.get_value("DATM_MODE")
-    datm_presaero = case.get_value("DATM_PRESAERO")
-    datm_topo = case.get_value("DATM_TOPO")
-    datm_co2_tseries = case.get_value("DATM_CO2_TSERIES")
-    atm_grid = case.get_value("ATM_GRID")
-    grid = case.get_value("GRID")
-    clm_usrdat_name = case.get_value("CLM_USRDAT_NAME")
+    rof_domain_file = case.get_value("ROF_DOMAIN_FILE")
+    rof_domain_path = case.get_value("ROF_DOMAIN_PATH")
+    drof_mode = case.get_value("DROF_MODE")
+    rof_grid = case.get_value("ROF_GRID")
 
     #----------------------------------------------------
     # Check for incompatible options.
     #----------------------------------------------------
-    if "CLM" in datm_mode:
-        expect(datm_presaero != "none",
-               "A DATM_MODE for CLM is incompatible with DATM_PRESAERO=none.")
-        expect(datm_topo != "none",
-               "A DATM_MODE for CLM is incompatible with DATM_TOPO=none.")
-    expect(grid != "CLM_USRDAT" or clm_usrdat_name in ("", "UNSET"),
-           "GRID=CLM_USRDAT and CLM_USRDAT_NAME is NOT set.")
+    expect(rof_grid != "null",
+           "ROF_GRID cannot be null")
+    expect(drof_mode != "NULL",
+           "DROF_MODE cannot be NULL")
 
     #----------------------------------------------------
     # Log some settings.
     #----------------------------------------------------
-    logger.info("DATM mode is %s", datm_mode)
-    logger.info("DATM grid is %s", atm_grid)
-    logger.info("DATM presaero mode is %s", datm_presaero)
-    logger.info("DATM topo mode is %s", datm_topo)
+    logger.info("DROF mode is %s", drof_mode)
+    logger.info("DROF grid is %s", rof_grid)
 
     #----------------------------------------------------
     # Clear out old data.
     #----------------------------------------------------
     data_list_path = os.path.join(case.get_case_root(), "Buildconf",
-                                  "datm.input_data_list")
+                                  "drof.input_data_list")
     if os.path.exists(data_list_path):
         os.remove(data_list_path)
 
@@ -90,15 +80,8 @@ def build_namelist(case, confdir, inst_string, infiles, definition_files,
     # Create configuration information.
     #----------------------------------------------------
     config = {}
-    config['grid'] = grid
-    config['atm_grid'] = atm_grid
-    config['datm_mode'] = datm_mode
-    config['datm_presaero'] = datm_presaero
-    config['datm_co2_tseries'] = datm_co2_tseries
-    if datm_presaero == 'none':
-        config['presaero_flag'] = "none"
-    else:
-        config['presaero_flag'] = "active"
+    config['rof_grid'] = rof_grid
+    config['drof_mode'] = drof_mode
 
     #----------------------------------------------------
     # Construct the namelist generator.
@@ -111,25 +94,6 @@ def build_namelist(case, confdir, inst_string, infiles, definition_files,
     #----------------------------------------------------
     streams = nmlgen.get_streams()
 
-    if datm_presaero == "pt1_pt1":
-        streams.append("presaero.%s.%s" % (datm_presaero, atm_grid))
-    elif datm_presaero != "none":
-        streams.append("presaero.%s" % datm_presaero)
-
-    if datm_topo != "none":
-        streams.append("topo.%s" % datm_topo)
-
-    if datm_co2_tseries != "none":
-        streams.append("co2tseries.%s" % datm_co2_tseries)
-
-    # Add bias correction stream if given in namelist.
-    bias_correct = nmlgen.get_value("bias_correct")
-    streams.append(bias_correct)
-
-    # Add all anomaly forcing streams given in namelist.
-    anomaly_forcing = nmlgen.get_value("anomaly_forcing")
-    streams += anomaly_forcing
-
     #----------------------------------------------------
     # For each stream, create stream text file and update input data list.
     #----------------------------------------------------
@@ -139,20 +103,12 @@ def build_namelist(case, confdir, inst_string, infiles, definition_files,
         if stream is None or stream in ("NULL", ""):
             continue
 
-        if "presaero" in stream:
-            if datm_presaero == "none":
-                # Ignore aerosol streams when they are disabled.
-                continue
-            config = {'ispresaerostream': 'TRUE'}
-        else:
-            config = {'ispresaerostream': 'FALSE'}
-
         inst_stream = stream + inst_string
-        logger.info("DATM stream is %s", inst_stream)
+        logger.info("DROF stream is %s", inst_stream)
         stream_path = os.path.join(confdir,
-                                   "datm.streams.txt." + inst_stream)
+                                   "drof.streams.txt." + inst_stream)
         user_stream_path = os.path.join(case.get_case_root(),
-                                        "user_datm.streams.txt." + inst_stream)
+                                        "user_drof.streams.txt." + inst_stream)
 
         # Use the user's stream file, or create one if necessary.
         if os.path.exists(user_stream_path):
@@ -162,40 +118,27 @@ def build_namelist(case, confdir, inst_string, infiles, definition_files,
                                       data_list_path)
 
     #----------------------------------------------------
-    # Create namelist
+    # Create namelist groups
     #----------------------------------------------------
     # Create namelist `shr_strdata_nml` namelist group.
-    atm_full_domain_path = os.path.join(atm_domain_path, atm_domain_file)
-    nmlgen.create_shr_strdata_nml(domain_file_path=atm_full_domain_path)
+    rof_full_domain_path = os.path.join(rof_domain_path, rof_domain_file)
+    nmlgen.create_shr_strdata_nml(domain_file_path=rof_full_domain_path)
 
-    # This is specific to datm.
-    nmlgen.add_default("vectors")
-
-    # Create `datm_nml` namelist group.
-    nmlgen.add_default("iradsw")
-    if datm_mode.startswith("CORE"):
-        factorfn = "atm/datm7/CORE2/COREv2.correction_factors.T62.121007.nc"
-        nmlgen.add_default("factorfn", os.path.join(din_loc_root, factorfn))
-
-    presaero = ".false." if datm_presaero == "none" else ".true."
-    nmlgen.add_default("presaero", value=presaero)
-
+    # Create `drof_nml` namelist group.
     # Should the following be in the namelist definitions file instead of here?
     nmlgen.add_default("decomp", "1d")
     nmlgen.add_default("force_prognostic_true", ".false.")
     nmlgen.add_default("restfilm", "undefined")
     nmlgen.add_default("restfils", "undefined")
 
-    #----------------------------------------------------
     # Create `modelio` namelist group.
-    #----------------------------------------------------
-    nmlgen.add_default("logfile", "atm.log")
+    nmlgen.add_default("logfile", "rof.log")
 
     #----------------------------------------------------
     # Finally, write out all the namelists.
     #----------------------------------------------------
     namelist_file = os.path.join(confdir, COMPONENT+"_in")
-    modelio_file = os.path.join(confdir, "atm_modelio.nml")
+    modelio_file = os.path.join(confdir, "rof_modelio.nml")
     nmlgen.write_output_files(namelist_file, modelio_file, data_list_path)
 
 # pylint: enable=too-many-arguments,too-many-locals,too-many-branches,too-many-statements

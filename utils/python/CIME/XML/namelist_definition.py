@@ -83,11 +83,14 @@ class NamelistDefinition(GenericXML):
         expect(attribute is None, "This class does not support attributes.")
         expect(not resolved, "This class does not support env resolution.")
         expect(subgroup is None, "This class does not support subgroups.")
+
         # Normalize case.
         item = item.lower()
+
         # Check cache in case we can avoid everything below.
         if item in self._value_cache:
             return self._value_cache[item]
+
         # Nicer error message if the variable is not found.
         self._expect_variable_in_definition(item, "Variable %r")
         elem = self.get_node("entry", attributes={'id': item})

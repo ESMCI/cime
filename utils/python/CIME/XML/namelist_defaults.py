@@ -73,12 +73,14 @@ class NamelistDefaults(GenericXML):
         expect(not resolved, "This class does not support env resolution.")
         expect(subgroup is None, "This class does not support subgroups.")
         nodes = self.get_nodes(item.lower())
+
         # Merge internal attributes with those passed in.
         all_attributes = {}
         if self._attributes is not None:
             all_attributes.update(self._attributes)
         if attribute is not None:
             all_attributes.update(attribute)
+
         # Store nodes that match the attributes and their scores.
         matches = []
         for node in nodes:
@@ -98,6 +100,7 @@ class NamelistDefaults(GenericXML):
                 matches.append((score, node))
         if not matches:
             return None
+
         # Get maximum score using custom `key` function, extract the node.
         _, node = max(matches, key=lambda x: x[0])
         if node.text is None:

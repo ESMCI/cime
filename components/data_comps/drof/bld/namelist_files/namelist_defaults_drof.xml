@@ -66,7 +66,7 @@ Currently the following streams are supported
 <streamslist drof_mode="DIATREN_IAF_RX1">rof.diatren_iaf_rx1</streamslist>
 
 <!-- =========================================  -->
-<!--- stream: dlnd.diatren_ann_rx1              -->
+<!--- stream: rof.diatren_ann_rx1              -->
 <!--- Dai-Trenberth 1 degree runoff (NCAR OCE)  -->
 <!--- annual climatology                        -->
 <!-- =========================================  -->
@@ -94,7 +94,7 @@ Currently the following streams are supported
 </strm_datvar>
 
 <!-- =========================================  -->
-<!--- stream: dlnd.rof.diatren_iaf_rx1              -->
+<!--- stream: rof.diatren_iaf_rx1               -->
 <!--- Dai-Trenberth 1 degree runoff (NCAR OCE)  -->
 <!--- inter-annual                              -->
 <!-- =========================================  -->
@@ -121,7 +121,7 @@ Currently the following streams are supported
 </strm_datvar>
 
 <!-- =========================================  -->
-<!--- dlnd.rof.cplhist                          -->
+<!--- rof.cplhist                               -->
 <!-- =========================================  -->
 
 <strm_year_align stream="rof.cplhist">$DROF_CPLHIST_YR_ALIGN</strm_year_align>
@@ -131,8 +131,8 @@ Currently the following streams are supported
 <strm_offset     stream="rof.cplhist">-43200</strm_offset>
 <strm_tintalgo   stream="rof.cplhist">lower</strm_tintalgo>
 <strm_taxmode    stream="rof.cplhist">cycle</strm_taxmode>
-<strm_domdir     stream="rof.cplhist">$DIN_LOC_ROOT/lnd/dlnd7</strm_domdir>
-<strm_domfil     stream="rof.cplhist">domain.lnd.fv1.9x2.5_gx1v6.090206.nc</strm_domfil>
+<strm_domdir     stream="rof.cplhist">$ROF_DOMAIN_PATH</strm_domdir>
+<strm_domfil     stream="rof.cplhist">$ROF_DOMAIN_FILE</strm_domfil>
 <strm_datdir     stream="rof.cplhist">$DROF_CPLHIST_DIR</strm_datdir>
 <strm_datfil     stream="rof.cplhist">$DROF_CPLHIST_CASE.cpl.hr2xacc.%y.nc</strm_datfil>
 <strm_domvar     stream="rof.cplhist">
