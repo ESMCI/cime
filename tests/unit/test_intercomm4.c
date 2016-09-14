@@ -23,10 +23,6 @@
 /* The number of tasks this test should run on. */
 #define TARGET_NTASKS 2
 
-/** The number of possible output netCDF output flavors available to
- * the ParallelIO library. */
-#define NUM_FLAVORS 4
-
 /* The name of this test. */
 #define TEST_NAME "test_intercomm4"
 
@@ -42,8 +38,6 @@ main(int argc, char **argv)
     int ret; /* Return code. */
     int flavor[NUM_FLAVORS] = {PIO_IOTYPE_PNETCDF, PIO_IOTYPE_NETCDF,
 			       PIO_IOTYPE_NETCDF4C, PIO_IOTYPE_NETCDF4P};
-    char flavor_name[NUM_FLAVORS][NC_MAX_NAME + 1] = {"pnetcdf", "classic",
-						      "serial4", "parallel4"};
     int num_procs[COMPONENT_COUNT + 1] = {1, 1}; /* Num procs for IO and computation. */
 
     /* Initialize test. */
@@ -73,7 +67,7 @@ main(int argc, char **argv)
 
 	    /* Create a filename for this test, flavor, and
 	     * computation component. */
-	    sprintf(filename, "%s_%s_%d.nc", TEST_NAME, flavor_name[flv], my_comp_idx);
+	    sprintf(filename, "%s_%s_%d.nc", TEST_NAME, flavor_name(flv), my_comp_idx);
 
 	    /* Create the sample file. */
 	    printf("%d %s creating file %s\n", my_rank, TEST_NAME, filename);
