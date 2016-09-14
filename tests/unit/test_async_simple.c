@@ -84,8 +84,8 @@ main(int argc, char **argv)
 		ERR(ret);
 
     	    /* Check the file for correctness. */
-    	    /* if ((ret = check_nc_sample_2(iosysid[my_comp_idx], flavor[flv], filename, my_rank))) */
-    	    /* 	ERR(ret); */
+    	    if ((ret = check_nc_sample_2(iosysid[my_comp_idx], flavor[flv], filename, my_rank)))
+    	    	ERR(ret);
     	} /* next netcdf flavor */
 
 	/* Finalize the IO system. Only call this from the computation tasks. */
