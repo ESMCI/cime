@@ -52,12 +52,12 @@ if (PIO_ENABLE_ASYNC AND NOT PIO_USE_MPI_SERIAL)
   add_executable (test_intercomm2 EXCLUDE_FROM_ALL test_intercomm2.c)
   target_link_libraries (test_intercomm2 pioc)
   add_dependencies (tests test_intercomm2)
-  add_executable (test_intercomm3 EXCLUDE_FROM_ALL test_intercomm3.c test_common.c)
-  target_link_libraries (test_intercomm3 pioc)
-  add_dependencies (tests test_intercomm3)
   add_executable (test_async_simple EXCLUDE_FROM_ALL test_async_simple.c test_common.c)
   target_link_libraries (test_async_simple pioc)
   add_dependencies (tests test_async_simple)
+  add_executable (test_async_2comp EXCLUDE_FROM_ALL test_async_2comp.c test_common.c)
+  target_link_libraries (test_async_2comp pioc)
+  add_dependencies (tests test_async_2comp)
   add_executable (test_darray_async EXCLUDE_FROM_ALL test_darray_async.c)
   target_link_libraries (test_darray_async pioc)
   add_dependencies (tests test_darray_async)
@@ -113,13 +113,13 @@ else ()
         EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_intercomm2
         NUMPROCS 4
         TIMEOUT ${DEFAULT_TEST_TIMEOUT})
-    add_mpi_test(test_intercomm3
-        EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_intercomm3
-        NUMPROCS 4
-        TIMEOUT ${DEFAULT_TEST_TIMEOUT})
     add_mpi_test(test_async_simple
         EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_async_simple
         NUMPROCS 2
+        TIMEOUT ${DEFAULT_TEST_TIMEOUT})
+    add_mpi_test(test_async_2comp
+        EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_async_2comp
+        NUMPROCS 4
         TIMEOUT ${DEFAULT_TEST_TIMEOUT})
   endif ()
     add_mpi_test(test_names

@@ -22,34 +22,8 @@
 /* The name of this test. */
 #define TEST_NAME "test_intercomm3"
 
-/** The number of dimensions in the test data. */
-#define NDIM 1
-
-/** The length of our test data. */
-#define DIM_LEN 4
-
-/** The name of the dimension in the netCDF output file. */
-#define FIRST_DIM_NAME "jojo"
-#define DIM_NAME "dim_test_intercomm3"
-
-/** The name of the variable in the netCDF output file. */
-#define FIRST_VAR_NAME "bill"
-#define VAR_NAME "var_test_intercomm3"
-
-/** The name of the global attribute in the netCDF output file. */
-#define FIRST_ATT_NAME "willy_gatt_test_intercomm3"
-#define ATT_NAME "gatt_test_intercomm3"
-#define SHORT_ATT_NAME "short_gatt_test_intercomm3"
-#define FLOAT_ATT_NAME "float_gatt_test_intercomm3"
-#define DOUBLE_ATT_NAME "double_gatt_test_intercomm3"
-
-/** The value of the global attribute in the netCDF output file. */
-#define ATT_VALUE 42
-
 /** Run Tests for Init_Intercomm
  *
- * @param argc argument count
- * @param argv array of arguments
  */
 int
 main(int argc, char **argv)
