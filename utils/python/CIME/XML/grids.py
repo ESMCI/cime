@@ -98,36 +98,27 @@ class Grids(GenericXML):
                  ("OCN", component_grids[2]), \
                  ("ICE", component_grids[2]), \
                  ("ROF", component_grids[3]), \
-                 ("MASK", component_grids[4]), \
                  ("GLC", component_grids[5]), \
                  ("WAV", component_grids[6])]
         mask = component_grids[4]
 
         domains = {}
+        mask_name = None
         for grid in grids:
             file_name = grid[0] + "_DOMAIN_FILE"
             path_name = grid[0] + "_DOMAIN_PATH"
-            mask_name = None
             if grid[0] == "ATM" or grid[0] == "LND":
                 mask_name = "lnd_mask"
             if grid[0] == "ICE" or grid[0] == "OCN":
                 mask_name = "ocn_mask"
             root = self.get_optional_node(nodename="domain", attributes={"name":grid[1]})
             if root is not None:
-                if grid[0] != "MASK":
-                    domains[grid[0]+"_NX"] = int(self.get_value("nx", root=root))
-                    domains[grid[0]+"_NY"] = int(self.get_value("ny", root=root))
+                domains[grid[0]+"_NX"] = int(self.get_value("nx", root=root))
+                domains[grid[0]+"_NY"] = int(self.get_value("ny", root=root))
                 domains[grid[0] + "_GRID"] = grid[1]
                 if mask_name is not None:
                     file_ = self.get_value("file", attributes={mask_name:mask}, root=root)
                     path  = self.get_value("path", attributes={mask_name:mask}, root=root)
-                    if file_ is not None:
-                        domains[file_name] = file_
-                    if path is not None:
-                        domains[path_name] = path
-                else:
-                    file_ = self.get_value("file", root=root)
-                    path  = self.get_value("path", root=root)
                     if file_ is not None:
                         domains[file_name] = file_
                     if path is not None:

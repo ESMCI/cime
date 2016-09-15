@@ -489,7 +489,7 @@ class NamelistGenerator(object):
         # Check for input argument.
         if value is not None:
             have_value = True
-            literals = self._to_namelist_literals(name, value)
+            literals = self._to_namelist_literals(name, value) #FIXME - this is where an array is compressed into a 3*value
             current_literals = merge_literal_lists(literals, current_literals)
 
         # Check for default value.
@@ -522,14 +522,9 @@ class NamelistGenerator(object):
         # Set the new value.
         self._namelist.set_variable_value(group, name, current_literals)
 
-    def create_shr_strdata_nml(self, domain_file_path=None):
-        """Set defaults for `shr_strdata_nml` variables.
-
-        `domain_file_path` is used to set the `domainfile` variable.
-        """
+    def create_shr_strdata_nml(self):
+        """Set defaults for `shr_strdata_nml` variables other than the variable domainfile """
         self.add_default("datamode")
-        if domain_file_path is not None:
-            self.add_default("domainfile", value=domain_file_path)
         if self.get_value("datamode") != 'NULL':
             self.add_default("streams",
                              value=self._streams_namelists["streams"])

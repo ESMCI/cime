@@ -103,8 +103,7 @@ def build_namelist(case, confdir, inst_string, infiles, definition_files,
     #----------------------------------------------------
     # Construct the namelist generator.
     #----------------------------------------------------
-    nmlgen = NamelistGenerator(case, infiles, definition_files, defaults_files,
-                               config)
+    nmlgen = NamelistGenerator(case, infiles, definition_files, defaults_files,  config)
 
     #----------------------------------------------------
     # Construct the list of streams.
@@ -165,20 +164,25 @@ def build_namelist(case, confdir, inst_string, infiles, definition_files,
     # Create namelist
     #----------------------------------------------------
     # Create namelist `shr_strdata_nml` namelist group.
-    atm_full_domain_path = os.path.join(atm_domain_path, atm_domain_file)
-    nmlgen.create_shr_strdata_nml(domain_file_path=atm_full_domain_path)
+    nmlgen.create_shr_strdata_nml()
+
+    # set atm_domain_file
+    if atm_domain_file != "UNSET":
+        full_domain_path = os.path.join(atm_domain_path, atm_domain_file)
+        nmlgen.add_default("domainfile", value=full_domain_path)
 
     # This is specific to datm.
     nmlgen.add_default("vectors")
+
+    # This is also specific to datm
+    presaero = ".false." if datm_presaero == "none" else ".true."
+    nmlgen.add_default("presaero", value=presaero)
 
     # Create `datm_nml` namelist group.
     nmlgen.add_default("iradsw")
     if datm_mode.startswith("CORE"):
         factorfn = "atm/datm7/CORE2/COREv2.correction_factors.T62.121007.nc"
         nmlgen.add_default("factorfn", os.path.join(din_loc_root, factorfn))
-
-    presaero = ".false." if datm_presaero == "none" else ".true."
-    nmlgen.add_default("presaero", value=presaero)
 
     # Should the following be in the namelist definitions file instead of here?
     nmlgen.add_default("decomp", "1d")

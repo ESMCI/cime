@@ -86,9 +86,7 @@ def build_namelist(case, confdir, inst_string, infiles, definition_files,
     #----------------------------------------------------
     # Construct the namelist generator.
     #----------------------------------------------------
-
-    nmlgen = NamelistGenerator(case, infiles, definition_files, defaults_files,
-                               config)
+    nmlgen = NamelistGenerator(case, infiles, definition_files, defaults_files, config)
 
     #----------------------------------------------------
     # Construct the list of streams.
@@ -122,8 +120,12 @@ def build_namelist(case, confdir, inst_string, infiles, definition_files,
     # Create namelist groups
     #----------------------------------------------------
     # Create namelist `shr_strdata_nml` namelist group.
-    rof_full_domain_path = os.path.join(rof_domain_path, rof_domain_file)
-    nmlgen.create_shr_strdata_nml(domain_file_path=rof_full_domain_path)
+    nmlgen.create_shr_strdata_nml()
+
+    # set rof_domain_file
+    if rof_domain_file != "UNSET":
+        full_domain_path = os.path.join(rof_domain_path, rof_domain_file)
+        nmlgen.add_default("domainfile", value=full_domain_path)
 
     # Create `drof_nml` namelist group.
     # Should the following be in the namelist definitions file instead of here?
