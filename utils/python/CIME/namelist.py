@@ -655,8 +655,7 @@ def compress_literal_list(literals):
             num_reps = 1
     rep_str = str(num_reps) + '*' if num_reps > 1 else ''
     compressed.append(rep_str + old_literal)
-    #return compressed #FIXME - temporary fix
-    return literals
+    return compressed 
 
 def merge_literal_lists(default, overwrite):
     """Merge two lists of literal value strings.
