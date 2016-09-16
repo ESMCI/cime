@@ -372,9 +372,22 @@ sub transform_src
     $out_line = $out_line . $1 . "END IF";
     $cur_test_case_num += 1;
 }
+  elsif(/^(\s*)PIO_TF_PASSERT\((.+),([a-zA-Z0-9\s]+),([^)]+)\)(.*)$/s){
+    $out_line = $1 . $5 . "\n";
+    $out_line = $out_line . $1 . "IF (.NOT. (PIO_TF_Passert_($2, $3))) THEN\n";
+    $out_line = $out_line . $1 . "  pio_tf_retval_utest_ = -1\n";
+    $out_line = $out_line . $1 . "  IF (pio_tf_world_rank_ == 0) THEN\n";
+    $out_line = $out_line . $1 . "    PRINT *, \"PIO_TF: Assertion failed :\",&\n";
+    $out_line = $out_line . $1 . "      " . $4 . ",&\n";
+    $out_line = $out_line . $1 . "       \":\", __FILE__, \":\", __LINE__,&\n";
+    $out_line = $out_line . $1 . "      " . "\"($template_fname:$template_line_no)\"\n";
+    $out_line = $out_line . $1 . "  END IF\n";
+    $out_line = $out_line . $1 . "  RETURN\n";
+    $out_line = $out_line . $1 . "END IF";
+  }
   elsif(/^(\s*)PIO_TF_PASSERT\((.+),([^)]+)\)(.*)$/s){
     $out_line = $1 . $4 . "\n";
-    $out_line = $out_line . $1 . "IF (.NOT. (PIO_TF_Passert_($2))) THEN\n";
+    $out_line = $out_line . $1 . "IF (.NOT. (PIO_TF_Passert_($2, pio_tf_comm_))) THEN\n";
     $out_line = $out_line . $1 . "  pio_tf_retval_utest_ = -1\n";
     $out_line = $out_line . $1 . "  IF (pio_tf_world_rank_ == 0) THEN\n";
     $out_line = $out_line . $1 . "    PRINT *, \"PIO_TF: Assertion failed :\",&\n";
@@ -396,9 +409,22 @@ sub transform_src
     $out_line = $out_line . $1 . "  RETURN\n";
     $out_line = $out_line . $1 . "END IF";
   }
+  elsif(/^(\s*)PIO_TF_CHECK_ERR\(([^,]+),([a-zA-Z0-9\s]+),(.+)\)(\s*)$/s){
+    $out_line = $1 . $5 . "\n";
+    $out_line = $out_line . $1 . "IF (.NOT. (PIO_TF_Passert_(($2) == PIO_NOERR, $3))) THEN\n";
+    $out_line = $out_line . $1 . "  pio_tf_retval_utest_ = -1\n";
+    $out_line = $out_line . $1 . "  IF (pio_tf_world_rank_ == 0) THEN\n";
+    $out_line = $out_line . $1 . "    PRINT *, \"PIO_TF: PIO Function failed:\",&\n";
+    $out_line = $out_line . $1 . "      " . $4 . ",&\n";
+    $out_line = $out_line . $1 . "      \":\", __FILE__, \":\", __LINE__,&\n";
+    $out_line = $out_line . $1 . "      " . "\"($template_fname:$template_line_no)\"\n";
+    $out_line = $out_line . $1 . "  END IF\n";
+    $out_line = $out_line . $1 . "  RETURN\n";
+    $out_line = $out_line . $1 . "END IF";
+  }
   elsif(/^(\s*)PIO_TF_CHECK_ERR\(([^,]+),(.+)\)(\s*)$/s){
     $out_line = $1 . $4 . "\n";
-    $out_line = $out_line . $1 . "IF (.NOT. (PIO_TF_Passert_(($2) == PIO_NOERR))) THEN\n";
+    $out_line = $out_line . $1 . "IF (.NOT. (PIO_TF_Passert_(($2) == PIO_NOERR, pio_tf_comm_))) THEN\n";
     $out_line = $out_line . $1 . "  pio_tf_retval_utest_ = -1\n";
     $out_line = $out_line . $1 . "  IF (pio_tf_world_rank_ == 0) THEN\n";
     $out_line = $out_line . $1 . "    PRINT *, \"PIO_TF: PIO Function failed:\",&\n";

@@ -171,26 +171,27 @@ CONTAINS
   ! Collective assert - Internal (Not directly used by unit tests)
   ! Each processes passes in its local assert condition and the function
   ! returns the global assert condition
-  LOGICAL FUNCTION PIO_TF_Passert_(local_result)
+  LOGICAL FUNCTION PIO_TF_Passert_(local_result, comm)
 #ifndef NO_MPIMOD
     use mpi
 #else
     include 'mpif.h'
 #endif
     LOGICAL, INTENT(IN) ::  local_result
+    INTEGER, INTENT(IN) ::  comm
     LOGICAL :: global_result
     LOGICAL :: failed, all_failed
     INTEGER :: rank, ierr
     LOGICAL, DIMENSION(:), ALLOCATABLE :: failed_ranks
 
-    CALL MPI_ALLREDUCE(local_result, global_result, 1, MPI_LOGICAL, MPI_LAND, pio_tf_comm_, ierr)
+    CALL MPI_ALLREDUCE(local_result, global_result, 1, MPI_LOGICAL, MPI_LAND, comm, ierr)
     IF (.NOT. global_result) THEN
       failed = .NOT. local_result
 !      IF (pio_tf_world_rank_ == 0) THEN
         ALLOCATE(failed_ranks(pio_tf_world_sz_))
 !      END IF
       ! Gather the ranks where assertion failed
-      CALL MPI_GATHER(failed, 1, MPI_LOGICAL, failed_ranks, 1, MPI_LOGICAL, 0, pio_tf_comm_, ierr)
+      CALL MPI_GATHER(failed, 1, MPI_LOGICAL, failed_ranks, 1, MPI_LOGICAL, 0, comm, ierr)
 
       ! Display the ranks where the assertion failed
       IF (pio_tf_world_rank_ == 0) THEN
