@@ -2620,11 +2620,13 @@ PIOc_Init_Async(MPI_Comm world, int num_io_procs, int *io_proc_list, int compone
     if ((ret = MPI_Group_incl(world_group, num_io_procs, my_io_proc_list, &io_group)))
 	return check_mpi(NULL, ret, __FILE__, __LINE__);
     LOG((3, "created IO group - io_group = %d", io_group));
+    for (int p = 0; p < num_io_procs; p++)
+	LOG((3, "my_io_proc_list[%d] = %d", p, my_io_proc_list[p]));
 
     /* There is one shared IO comm. Create it. */
-    LOG((3, "about to create io comm"));
     if ((ret = MPI_Comm_create_group(world, io_group, 0, &io_comm)))
 	return check_mpi(NULL, ret, __FILE__, __LINE__);
+    LOG((3, "created io comm io_comm = %d", io_comm));
 
     /* For processes in the IO component, get their rank within the IO
      * communicator. */
