@@ -415,8 +415,11 @@ sub setGridMaps
     @nodes = $xml->findnodes(".//gridmap[\@ocn_grid=\"$ocn_grid\" and \@rof_grid=\"$rof_grid\"]/ROF2OCN_FMAPNAME");
     if (@nodes) {$config->set('ROF2OCN_FMAPNAME',$nodes[0]->textContent())}
 
-    @nodes = $xml->findnodes(".//gridmap[\@ocn_grid=\"$ocn_grid\" and \@rof_grid=\"$rof_grid\"]/ROF2OCN_RMAPNAME");
-    if (@nodes) {$config->set('ROF2OCN_RMAPNAME',$nodes[0]->textContent())}
+    @nodes = $xml->findnodes(".//gridmap[\@ocn_grid=\"$ocn_grid\" and \@rof_grid=\"$rof_grid\"]/ROF2OCN_LIQ_RMAPNAME");
+    if (@nodes) {$config->set('ROF2OCN_LIQ_RMAPNAME',$nodes[0]->textContent())}
+
+    @nodes = $xml->findnodes(".//gridmap[\@ocn_grid=\"$ocn_grid\" and \@rof_grid=\"$rof_grid\"]/ROF2OCN_ICE_RMAPNAME");
+    if (@nodes) {$config->set('ROF2OCN_ICE_RMAPNAME',$nodes[0]->textContent())}
 
     @nodes = $xml->findnodes(".//gridmap[\@ocn_grid=\"$ocn_grid\" and \@rof_grid=\"$rof_grid\" and \@lnd_grid=\"$lnd_grid\"]/XROF_FLOOD_MODE");
     if (@nodes) {$config->set('XROF_FLOOD_MODE',$nodes[0]->textContent())}
