@@ -2,13 +2,13 @@
  * @file Tests for PIOc_Intercomm. This tests basic asynch I/O capability.
  * @author Ed Hartnett
  *
- * This very simple test runs on two ranks. One is used for
- * computation, the other for IO. A sample netCDF file is created and
+ * This very simple test runs on 32 ranks. Eight are used for IO, the
+ * other 24 for computation. The netCDF sample files are created and
  * checked.
  *
  * To run with valgrind, use this command:
  * <pre>mpiexec -n 4 valgrind -v --leak-check=full --suppressions=../../../tests/unit/valsupp_test.supp
- * --error-exitcode=99 --track-origins=yes ./test_async_simple</pre>
+ * --error-exitcode=99 --track-origins=yes ./test_async_8io_24comp</pre>
  *
  */
 #include <pio.h>
@@ -24,9 +24,9 @@
 #define TARGET_NTASKS 2
 
 /* The name of this test. */
-#define TEST_NAME "test_async_simple"
+#define TEST_NAME "test_async_8io_24comp"
 
-/** Run simple async test. */
+/** Run async tests. */
 int
 main(int argc, char **argv)
 {
@@ -65,19 +65,6 @@ main(int argc, char **argv)
 	    /* Create a filename. */
 	    sprintf(filename, "%s_%s_%d_%d.nc", TEST_NAME, flavor_name(flv), sample, my_comp_idx);
 
-	    /* Create sample file 0. */
-	    printf("%d %s creating file %s\n", my_rank, TEST_NAME, filename);
-	    if ((ret = create_nc_sample_0(iosysid[my_comp_idx], flavor[flv], filename, my_rank)))
-		ERR(ret);
-
-    	    /* Check the file for correctness. */
-    	    if ((ret = check_nc_sample_0(iosysid[my_comp_idx], flavor[flv], filename, my_rank)))
-    	    	ERR(ret);
-
-	    /* Create a filename. */
-	    sample++;
-	    sprintf(filename, "%s_%s_%d_%d.nc", TEST_NAME, flavor_name(flv), sample, my_comp_idx);
-
 	    /* Create sample file 1. */
 	    printf("%d %s creating file %s\n", my_rank, TEST_NAME, filename);
 	    if ((ret = create_nc_sample_1(iosysid[my_comp_idx], flavor[flv], filename, my_rank)))
@@ -87,18 +74,18 @@ main(int argc, char **argv)
     	    if ((ret = check_nc_sample_1(iosysid[my_comp_idx], flavor[flv], filename, my_rank)))
     	    	ERR(ret);
 
-	    /* Create a filename. */
-	    sample++;
-	    sprintf(filename, "%s_%s_%d_%d.nc", TEST_NAME, flavor_name(flv), sample, my_comp_idx);
+	    /* /\* Create a filename. *\/ */
+	    /* sample++; */
+	    /* sprintf(filename, "%s_%s_%d_%d.nc", TEST_NAME, flavor_name(flv), sample, my_comp_idx); */
 	    
-	    /* Create sample file 2. */
-	    printf("%d %s creating file %s\n", my_rank, TEST_NAME, filename);
-	    if ((ret = create_nc_sample_2(iosysid[my_comp_idx], flavor[flv], filename, my_rank)))
-		ERR(ret);
+	    /* /\* Create sample file 2. *\/ */
+	    /* printf("%d %s creating file %s\n", my_rank, TEST_NAME, filename); */
+	    /* if ((ret = create_nc_sample_2(iosysid[my_comp_idx], flavor[flv], filename, my_rank))) */
+	    /* 	ERR(ret); */
 
-    	    /* Check the file for correctness. */
-    	    if ((ret = check_nc_sample_2(iosysid[my_comp_idx], flavor[flv], filename, my_rank)))
-    	    	ERR(ret);
+    	    /* /\* Check the file for correctness. *\/ */
+    	    /* if ((ret = check_nc_sample_2(iosysid[my_comp_idx], flavor[flv], filename, my_rank))) */
+    	    /* 	ERR(ret); */
     	} /* next netcdf flavor */
 
 	/* Finalize the IO system. Only call this from the computation tasks. */

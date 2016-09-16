@@ -158,6 +158,86 @@ test_inq_type(int ncid, int format)
     return PIO_NOERR;
 }
 
+/** This creates an empty netCDF file in the specified format. */
+int
+create_nc_sample_0(int iosysid, int format, char *filename, int my_rank)
+{
+    int ncid;
+    int ret;
+
+    /* Create the file. */
+    if ((ret = PIOc_createfile(iosysid, &ncid, &format, filename, NC_CLOBBER)))
+	return ret;
+    printf("%d file created ncid = %d\n", my_rank, ncid);
+
+    /* End define mode. */
+    if ((ret = PIOc_enddef(ncid)))
+	return ret;
+
+    /* Test inq_format. */
+    if ((ret = test_inq_format(ncid, format)))
+	return ret;
+
+    /* Test inq_type. */
+    if ((ret = test_inq_type(ncid, format)))
+	return ret;
+
+    /* Close the file. */
+    printf("%d closing file ncid = %d\n", my_rank, ncid);
+    if ((ret = PIOc_closefile(ncid)))
+	return ret;
+    printf("%d closed file ncid = %d\n", my_rank, ncid);
+    
+    return PIO_NOERR;
+}
+
+/* Check sample file 1 for correctness. */
+int
+check_nc_sample_0(int iosysid, int format, char *filename, int my_rank)
+{
+    int ncid;
+    int ndims, nvars, ngatts, unlimdimid;
+    int ndims2, nvars2, ngatts2, unlimdimid2;
+    int ret;
+
+    /* Re-open the file to check it. */
+    printf("%d opening file %s format %d\n", my_rank, filename, format);
+    if ((ret = PIOc_openfile(iosysid, &ncid, &format, filename,
+    			     NC_NOWRITE)))
+    	ERR(ret);
+
+    /* Find the number of dimensions, variables, and global attributes.*/
+    if ((ret = PIOc_inq(ncid, &ndims, &nvars, &ngatts, &unlimdimid)))
+    	ERR(ret);
+    if (ndims != 0 || nvars != 0 || ngatts != 0 || unlimdimid != -1)
+    	ERR(ERR_WRONG);
+
+    /* Check the other functions that get these values. */
+    if ((ret = PIOc_inq_ndims(ncid, &ndims2)))
+    	ERR(ret);
+    if (ndims2 != 0)
+    	ERR(ERR_WRONG);
+    if ((ret = PIOc_inq_nvars(ncid, &nvars2)))
+    	ERR(ret);
+    if (nvars2 != 0)
+    	ERR(ERR_WRONG);
+    if ((ret = PIOc_inq_natts(ncid, &ngatts2)))
+    	ERR(ret);
+    if (ngatts2 != 0)
+    	ERR(ERR_WRONG);
+    if ((ret = PIOc_inq_unlimdim(ncid, &unlimdimid2)))
+    	ERR(ret);
+    if (unlimdimid != -1)
+    	ERR(ERR_WRONG);
+
+    /* Close the file. */
+    printf("%d closing file (again) ncid = %d\n", my_rank, ncid);
+    if ((ret = PIOc_closefile(ncid)))
+    	ERR(ret);
+
+    return 0;
+}
+
 /** This creates a netCDF file in the specified format, with some
  * sample values. */
 int
