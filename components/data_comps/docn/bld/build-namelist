@@ -1,94 +1,200 @@
-#!/usr/bin/env perl
+#!/usr/bin/env python
 
-#-------------------------------------------------------------------------------------------
-# build-namelist script for the CIME Data Ocean Model
-#-------------------------------------------------------------------------------------------
+"""Namelist creator for CIME's data ocn model.
 
-use strict;
-use English;
-use IO::File;
+While `build-namelist` historically has been a script in its own right, this
+module can be imported, and provides the same functionality via the
+`build_namelist` function.
+"""
 
-my ($caseroot, $cimeroot, $confdir, $inst_string, $namelist_infile, $user_xml_dir) = @ARGV;
+# Typically ignore this.
+# pylint: disable=invalid-name
 
-my @dirs = ( "$cimeroot/utils/perl5lib" );
-unshift @INC, @dirs;
-require Streams::BuildNamelistUtils;
+# Disable these because this is our standard setup
+# pylint: disable=wildcard-import,unused-wildcard-import,wrong-import-position
 
-#-------------------------------------------
-# Create nmlgen object
-#-------------------------------------------
+import os
+import shutil
+import sys
 
-my $nmlgen = BuildNamelistUtils->new('docn',$cimeroot, $caseroot, $confdir, 
-				     $user_xml_dir, $namelist_infile);
+CIMEROOT = os.environ.get("CIMEROOT")
+if CIMEROOT is None:
+    raise SystemExit("ERROR: must set CIMEROOT environment variable")
+sys.path.append(os.path.join(CIMEROOT, "scripts", "Tools"))
 
-#-------------------------------------------
-# Required xml variables           
-#-------------------------------------------
+from standard_script_setup import *
+from CIME.case import Case
+from CIME.nmlgen import NamelistGenerator
+from CIME.utils import expect
 
-my $DIN_LOC_ROOT     = $nmlgen->get_xmlvar('DIN_LOC_ROOT');   
-my $OCN_DOMAIN_FILE  = $nmlgen->get_xmlvar('OCN_DOMAIN_FILE');
-my $OCN_DOMAIN_PATH  = $nmlgen->get_xmlvar('OCN_DOMAIN_PATH');
-my $OCN_GRID         = $nmlgen->get_xmlvar('OCN_GRID');	    
-my $DOCN_MODE        = $nmlgen->get_xmlvar('DOCN_MODE');	    
-my $SSTICE_STREAM    = $nmlgen->get_xmlvar('SSTICE_STREAM');
+logger = logging.getLogger(__name__)
 
-print "DOCN mode is $DOCN_MODE \n";
-print "DOCN grid is $OCN_GRID \n";
+COMPONENT = 'docn'
 
-#-------------------------------------------
-# Determine hash for parsing default_namelist_docn.xml
-#-------------------------------------------
-my %namelist_opts;
-$namelist_opts{'docn_mode'}     = $DOCN_MODE;
-$namelist_opts{'ocn_grid'}      = $OCN_GRID;
-$namelist_opts{'sstice_stream'} = $SSTICE_STREAM;
+# Yes this is a long function, but for now just live with it.
+# pylint: disable=too-many-arguments,too-many-locals,too-many-branches,too-many-statements
+####################################################################################
+def build_namelist(case, confdir, inst_string, infiles, definition_files,
+                   defaults_files):
+####################################################################################
+    """Write out the namelist for this component.
 
-#-------------------------------------------
-# Determine streams
-#-------------------------------------------
+    Most arguments are the same as those for `NamelistGenerator`. The
+    `inst_string` argument is used as a suffix to distinguish files for
+    different instances. The `confdir` argument is used to specify the directory
+    in which output files will be placed.
+    """
 
-# Determine streams
-my @streams = $nmlgen->get_streams(\%namelist_opts );
+    #----------------------------------------------------
+    # Get a bunch of information from the case.
+    #----------------------------------------------------
+    din_loc_root = case.get_value("DIN_LOC_ROOT")
+    ocn_domain_file = case.get_value("OCN_DOMAIN_FILE")
+    ocn_domain_path = case.get_value("OCN_DOMAIN_PATH")
+    docn_mode = case.get_value("DOCN_MODE")
+    ocn_grid = case.get_value("OCN_GRID")
+    sstice_stream = case.get_value("SSTICE_STREAM")
 
-#-------------------------------------------
-# For each stream, create stream text file and update input data list
-#-------------------------------------------
+    #----------------------------------------------------
+    # Check for incompatible options.
+    #----------------------------------------------------
+    expect(ocn_grid != "null",
+           "OCN_GRID cannot be null")
+    expect(docn_mode != "NULL",
+           "DOCN_MODE cannot be NULL")
 
-my $fh_out = new IO::File;
-$fh_out->open(">$caseroot/Buildconf/docn.input_data_list") or
-    die "** can't open filepath file: docn.input_data_list\n";
+    #----------------------------------------------------
+    # Log some settings.
+    #----------------------------------------------------
+    logger.info("DOCN mode is %s", docn_mode)
+    logger.info("DOCN grid is %s", ocn_grid)
 
-foreach my $stream ( @streams ) {
-    if ($stream eq "NULL") {
-	next;
-    }
-    print "DOCN stream is $stream$inst_string \n";
+    #----------------------------------------------------
+    # Clear out old data.
+    #----------------------------------------------------
+    data_list_path = os.path.join(case.get_case_root(), "Buildconf",
+                                  "docn.input_data_list")
+    if os.path.exists(data_list_path):
+        os.remove(data_list_path)
 
-    # Determine stream txt file and update the streams_namelists hash for the new stream
-    my $outstream = "docn.streams.txt" . ".$stream" . "$inst_string";
-    $nmlgen->create_stream_file(\%namelist_opts, $stream, $outstream, $fh_out);
-}
+    #----------------------------------------------------
+    # Create configuration information.
+    #----------------------------------------------------
+    config = {}
+    config['ocn_grid'] = ocn_grid
+    config['docn_mode'] = docn_mode
+    config['sstice_stream'] = sstice_stream
 
-$fh_out->close;
+    #----------------------------------------------------
+    # Construct the namelist generator.
+    #----------------------------------------------------
+    nmlgen = NamelistGenerator(case, infiles, definition_files, defaults_files, config)
 
-#-------------------------------------------
-# namelist group: shr_strdata_nml
-#-------------------------------------------
+    #----------------------------------------------------
+    # Construct the list of streams.
+    #----------------------------------------------------
+    streams = nmlgen.get_streams()
 
-$nmlgen->create_shr_strdata_nml(\%namelist_opts, "${OCN_DOMAIN_PATH}/${OCN_DOMAIN_FILE}" );
+    #----------------------------------------------------
+    # For each stream, create stream text file and update input data list.
+    #----------------------------------------------------
+    for stream in streams:
 
-#-------------------------------------------
-# namelist group: docn_nml  (in file docn_in)            
-#-------------------------------------------
+        # Ignore null values.
+        if stream is None or stream in ("NULL", ""):
+            continue
 
-$nmlgen->add_default('decomp', '1d');
-$nmlgen->add_default('force_prognostic_true', '.false.');
-$nmlgen->add_default('restfilm', 'undefined');
-$nmlgen->add_default('restfils', 'undefined');
+        inst_stream = stream + inst_string
+        logger.info("DOCN stream is %s", inst_stream)
+        stream_path = os.path.join(confdir,
+                                   "docn.streams.txt." + inst_stream)
+        user_stream_path = os.path.join(case.get_case_root(),
+                                        "user_docn.streams.txt." + inst_stream)
 
-#-------------------------------------------
-# Write output files
-#-------------------------------------------
+        # Use the user's stream file, or create one if necessary.
+        if os.path.exists(user_stream_path):
+            shutil.copyfile(user_stream_path, stream_path)
+        else:
+            nmlgen.create_stream_file(config, stream, stream_path,
+                                      data_list_path)
 
-$nmlgen->write_output_files('ocn');
+    #----------------------------------------------------
+    # Create namelist groups
+    #----------------------------------------------------
+    # Create namelist `shr_strdata_nml` namelist group.
+    nmlgen.create_shr_strdata_nml()
 
+    # Set ocn_domain_file
+    if ocn_domain_file != "UNSET":
+        full_domain_path = os.path.join(ocn_domain_path, ocn_domain_file)
+        nmlgen.add_default("domainfile", value=full_domain_path)
+
+    # Create `docn_nml` namelist group.
+    # Should the following be in the namelist definitions file instead of here?
+    nmlgen.add_default("decomp", "1d")
+    nmlgen.add_default("force_prognostic_true", ".false.")
+    nmlgen.add_default("restfilm", "undefined")
+    nmlgen.add_default("restfils", "undefined")
+
+    # Specific to docn only
+    nmlgen.add_default("flux_qacc");
+
+    # Create `modelio` namelist group.
+    nmlgen.add_default("logfile", "ocn.log")
+
+    #----------------------------------------------------
+    # Finally, write out all the namelists.
+    #----------------------------------------------------
+    namelist_file = os.path.join(confdir, COMPONENT+"_in")
+    modelio_file = os.path.join(confdir, "ocn_modelio.nml")
+    nmlgen.write_output_files(namelist_file, modelio_file, data_list_path)
+
+# pylint: enable=too-many-arguments,too-many-locals,too-many-branches,too-many-statements
+####################################################################################
+def _main_func(caseroot, confdir, inst_string, namelist_infiles, user_xml_dir):
+####################################################################################
+    # Figure out where definition/defaults files are.
+    namelist_xml_dir = os.path.join(CIMEROOT, "components", "data_comps",
+                                    COMPONENT, "bld", "namelist_files")
+    definition_file_basename = "namelist_definition_%s.xml" % COMPONENT
+    definition_files = [os.path.join(namelist_xml_dir, definition_file_basename)]
+    user_definition = os.path.join(user_xml_dir, definition_file_basename)
+
+    # User definition *replaces* existing definition.
+    if os.path.isfile(user_definition):
+        definition_files = [user_definition]
+    defaults_file_basename = "namelist_defaults_%s.xml" % COMPONENT
+    defaults_files = [os.path.join(namelist_xml_dir, defaults_file_basename)]
+    user_defaults = os.path.join(user_xml_dir, defaults_file_basename)
+
+    # User defaults *extends* existing defaults.
+    if os.path.isfile(user_defaults):
+        defaults_files.append(user_defaults)
+    for file_ in definition_files + defaults_files:
+        expect(os.path.isfile(file_),
+               "Namelist XML file %s not found!" % file_)
+
+    # Split apart input file names.
+    if namelist_infiles == '':
+        infiles = []
+    else:
+        infiles = namelist_infiles.split(',')
+
+    # Now build the component namelist and required stream txt files
+    with Case(caseroot) as case:
+        build_namelist(case, confdir, inst_string, infiles,
+                       definition_files, defaults_files)
+
+####################################################################################
+if __name__ == "__main__":
+####################################################################################
+    # Arguments expected from the buildnml script.
+    CASEROOT = sys.argv[1]
+    # This is passed in, but ignore it, since we require CIMEROOT to be set in
+    # the environment.
+    # CIMEROOT = sys.argv[2]
+    CONFDIR = sys.argv[3]
+    INST_STRING = sys.argv[4]
+    NAMELIST_INFILES = sys.argv[5]
+    USER_XML_DIR = sys.argv[6]
+    _main_func(CASEROOT, CONFDIR, INST_STRING, NAMELIST_INFILES, USER_XML_DIR)

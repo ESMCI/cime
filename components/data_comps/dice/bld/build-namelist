@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-"""Namelist creator for CIME's data river model.
+"""Namelist creator for CIME's data ice model.
 
 While `build-namelist` historically has been a script in its own right, this
 module can be imported, and provides the same functionality via the

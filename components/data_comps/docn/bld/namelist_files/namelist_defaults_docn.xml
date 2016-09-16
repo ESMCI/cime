@@ -209,20 +209,28 @@ Currently the following docn modes are supported
 <!--- non stream-specific vars (for now)        -->
 <!-- =========================================  -->
 
-<decomp>1d</decomp>
-
 <strm_offset>0</strm_offset> 
 
-<strm_fillalgo>nn</strm_fillalgo>
+<strm_domvar>
+   time    time
+   xc      lon
+   yc      lat
+   area    area
+   mask    mask
+</strm_domvar>
 
-<strm_fillmask>nomask</strm_fillmask>
+<tintalgo>linear</tintalgo>
 
-<strm_mapalgo>bilinear</strm_mapalgo>
+<fillalgo>nn</fillalgo>
 
-<strm_mapmask>dstmask</strm_mapmask>
+<fillmask>nomask</fillmask>
 
-<strm_tintalgo>linear</strm_tintalgo>
+<mapalgo>bilinear</mapalgo>
 
-<strm_taxmode>cycle</strm_taxmode>
+<mapmask>dstmask</mapmask>
+
+<taxmode>cycle</taxmode>
+
+<dtlimit>1.5e0</dtlimit>
 
 </namelist_defaults>
