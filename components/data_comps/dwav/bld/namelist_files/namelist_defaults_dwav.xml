@@ -30,21 +30,19 @@ Replace any instance of the following substring indicators with the appropriate 
              using in build-namelist $namelist_defaults_opts{'yearlast'}
              obtained from values of <strm_year_start> -> <strm_year_end> below
 
-Replace any instance of $VARNAME with the environment variable obtained from any
+Replace any instance of $VARNAME with the xml variable value obtained from any
 of the $CASEROOT/env*xml files
 
-In dwav_wav_in,  streams namelist input has the form
+In dwav_in,  streams namelist input has the form
      streams = 'stream1.txt year_align year_first year_last ',
                'stream2.txt year_align year_first year_last ',
                ...
                'streamN.txt year_align year_first year_last '
 
 Currently the following streams are supported
-
    wav.cplhist
    wav.diatren_ann_rx1
    wav.diatren_iaf_rx1
-
 -->
 
 <!-- =========================================  -->
@@ -88,23 +86,31 @@ Currently the following streams are supported
 </strm_datvar>
 
 <!-- =========================================  -->
-<!--- non stream-specific vars (for now)        -->
+<!-- Other stream variables                     -->
 <!-- =========================================  -->
 
-<decomp>1d</decomp>
+  <strm_offset>0</strm_offset> 
 
-<strm_dtlimit>1.5e0</strm_dtlimit>
+  <strm_domvar>
+    time    time
+    xc      lon
+    yc      lat
+    area    area
+    mask    mask
+  </strm_domvar>
 
-<strm_fillalgo>nn</strm_fillalgo>
+  <tintalgo>linear</tintalgo>
 
-<strm_fillmask>nomask</strm_fillmask>
+  <fillalgo>nn</fillalgo>
 
-<strm_mapalgo>bilinear</strm_mapalgo>
+  <fillmask>nomask</fillmask>
 
-<strm_mapmask>dstmask</strm_mapmask>
+  <mapalgo>bilinear</mapalgo>
 
-<strm_tintalgo>linear</strm_tintalgo>
+  <mapmask>dstmask</mapmask>
 
-<strm_taxmode>cycle</strm_taxmode>
+  <taxmode>cycle</taxmode>
+
+  <dtlimit>1.5e0</dtlimit>
 
 </namelist_defaults>
