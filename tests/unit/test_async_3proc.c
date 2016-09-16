@@ -37,7 +37,7 @@ main(int argc, char **argv)
     int ret; /* Return code. */
     int flavor[NUM_FLAVORS] = {PIO_IOTYPE_PNETCDF, PIO_IOTYPE_NETCDF,
 			       PIO_IOTYPE_NETCDF4C, PIO_IOTYPE_NETCDF4P};
-    int num_procs[COMPONENT_COUNT + 1] = {1, 2}; /* Num procs for IO and computation. */
+    int num_procs[COMPONENT_COUNT + 1] = {2, 1}; /* Num procs for IO and computation. */
 
     /* Initialize test. */
     if ((ret = pio_test_init(argc, argv, &my_rank, &ntasks, TARGET_NTASKS)))
