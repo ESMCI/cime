@@ -1835,7 +1835,12 @@ PIOc_Init_Async(MPI_Comm world, int num_io_procs, int *io_proc_list,
     int ret;
 
     /* Check input parameters. */
-    if (num_io_procs < 1 || !num_procs_per_comp || !iosysidp)
+    if (num_io_procs < 1 || component_count < 1 || !num_procs_per_comp ||
+	!iosysidp)
+	return PIO_EINVAL;
+
+    /* Temporarily limit to one computational component. */
+    if (component_count > 1)
 	return PIO_EINVAL;
 
     LOG((1, "PIOc_init_io component_count = %d", component_count));
