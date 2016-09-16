@@ -150,6 +150,8 @@ iosystem_desc_t *pio_get_iosystem_from_id(int iosysid)
 {
     iosystem_desc_t *ciosystem;
 
+    LOG((1, "pio_get_iosystem_from_id iosysid = %d", iosysid));
+    
     for (ciosystem = pio_iosystem_list; ciosystem; ciosystem = ciosystem->next)    
 	LOG((2, "iosysid = %d union_comm = %d io_comm = %d my_comm = %d intercomm = %d comproot = %d"
 	     " next = %d",

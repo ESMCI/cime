@@ -158,6 +158,44 @@ test_inq_type(int ncid, int format)
     return PIO_NOERR;
 }
 
+/** This creates a netCDF sample file in the specified format. */
+int
+create_nc_sample(int sample, int iosysid, int format, char *filename, int my_rank)
+{
+    switch(sample)
+    {
+	case 0:
+	    return create_nc_sample_0(iosysid, format, filename, my_rank);
+	    break;
+	case 1:
+	    return create_nc_sample_1(iosysid, format, filename, my_rank);
+	    break;
+	case 2:
+	    return create_nc_sample_2(iosysid, format, filename, my_rank);
+	    break;
+    }
+    return PIO_EINVAL;
+}
+
+/** This checks a netCDF sample file in the specified format. */
+int
+check_nc_sample(int sample, int iosysid, int format, char *filename, int my_rank)
+{
+    switch(sample)
+    {
+	case 0:
+	    return check_nc_sample_0(iosysid, format, filename, my_rank);
+	    break;
+	case 1:
+	    return check_nc_sample_1(iosysid, format, filename, my_rank);
+	    break;
+	case 2:
+	    return check_nc_sample_2(iosysid, format, filename, my_rank);
+	    break;
+    }
+    return PIO_EINVAL;
+}
+
 /** This creates an empty netCDF file in the specified format. */
 int
 create_nc_sample_0(int iosysid, int format, char *filename, int my_rank)

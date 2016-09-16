@@ -129,7 +129,7 @@ else ()
         TIMEOUT ${DEFAULT_TEST_TIMEOUT})
     add_mpi_test(test_async_3proc
         EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_async_3proc
-        NUMPROCS 2
+        NUMPROCS 3
         TIMEOUT ${DEFAULT_TEST_TIMEOUT})
     add_mpi_test(test_async_8io_24comp
         EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_async_8io_24comp
