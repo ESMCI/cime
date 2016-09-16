@@ -348,20 +348,20 @@ else ()
 endif ()
 
 #===== pio_iosystems_test2 =====
-add_executable (pio_iosystem_tests2 EXCLUDE_FROM_ALL
-    pio_iosystem_tests2.F90
-    ${CMAKE_CURRENT_SOURCE_DIR}/util/pio_tutil.F90)
-target_link_libraries (pio_iosystem_tests2 piof)
-add_dependencies (tests pio_iosystem_tests2)
+# add_executable (pio_iosystem_tests2 EXCLUDE_FROM_ALL
+#     pio_iosystem_tests2.F90
+#     ${CMAKE_CURRENT_SOURCE_DIR}/util/pio_tutil.F90)
+# target_link_libraries (pio_iosystem_tests2 piof)
+# add_dependencies (tests pio_iosystem_tests2)
 
-if (PIO_USE_MPISERIAL)
-    add_test(NAME pio_iosystem_tests2
-        COMMAND pio_iosystem_tests2)
-    set_tests_properties(pio_iosystem_tests2
-        PROPERTIES TIMEOUT ${DEFAULT_TEST_TIMEOUT})
-else ()
-    add_mpi_test(pio_iosystem_tests2
-        EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/pio_iosystem_tests2
-        NUMPROCS 4
-        TIMEOUT ${DEFAULT_TEST_TIMEOUT})
-endif ()
+# if (PIO_USE_MPISERIAL)
+#     add_test(NAME pio_iosystem_tests2
+#         COMMAND pio_iosystem_tests2)
+#     set_tests_properties(pio_iosystem_tests2
+#         PROPERTIES TIMEOUT ${DEFAULT_TEST_TIMEOUT})
+# else ()
+#     add_mpi_test(pio_iosystem_tests2
+#         EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/pio_iosystem_tests2
+#         NUMPROCS 4
+#         TIMEOUT ${DEFAULT_TEST_TIMEOUT})
+# endif ()

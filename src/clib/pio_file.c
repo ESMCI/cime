@@ -203,14 +203,13 @@ int PIOc_openfile_retry(const int iosysid, int *ncidp, int *iotype,
 	if ((mpierr = MPI_Bcast(&file->mode, 1, MPI_INT, ios->ioroot, ios->union_comm)))
 	    return check_mpi(file, mpierr, __FILE__, __LINE__);
       
-      tmp_fh = file->fh;
+	tmp_fh = file->fh;
 	if ((mpierr = MPI_Bcast(&tmp_fh, 1, MPI_INT, ios->ioroot, ios->union_comm)))
 	    return check_mpi(file, mpierr, __FILE__, __LINE__);
 
-      if(file->fh == -1){
-        /* Not io proc - file handle is not set by netcdf* /pnetcdfc */
-        file->fh = tmp_fh;
-      }
+	/* Not io proc - file handle is not set by pnetcdfc */
+	if (file->fh == -1)
+	    file->fh = tmp_fh;
       
 	*ncidp = file->fh;
 	pio_add_to_file_list(file);
