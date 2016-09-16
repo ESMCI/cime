@@ -107,6 +107,14 @@ If CCSM_BGC is set to 'CO2_DMSA', then flds_co2_dmsa will be set to .true.
 </entry>
 
 <entry 
+id="flds_wiso"
+type="logical" 
+category="seq_flds" 
+group="seq_cplflds_inparm" >
+Pass water isotopes between components
+</entry>
+
+<entry 
 id="glc_nec"
 type="integer" 
 category="seq_flds" 
@@ -2465,7 +2473,7 @@ grid.
 </entry>
 
 <entry 
-id="rof2ocn_rmapname"
+id="rof2ocn_liq_rmapname"
 type="char*256"
 category="mapping" 
 input_pathname="abs"
@@ -2474,7 +2482,28 @@ runoff to ocn nearest neighbor plus smoothing conservative mapping file
 </entry>
 
 <entry 
-id="rof2ocn_rmaptype"
+id="rof2ocn_ice_rmapname"
+type="char*256"
+category="mapping" 
+input_pathname="abs"
+group="seq_maps">
+runoff to ocn nearest neighbor plus smoothing conservative mapping file
+</entry>
+
+<entry 
+id="rof2ocn_liq_rmaptype"
+type="char*256"
+category="mapping" 
+group="seq_maps">
+The type of mapping desired, either "source" or "destination" mapping.
+X is associated with rearrangement of the source grid to the
+destination grid and then local mapping.  Y is associated with mapping
+on the source grid and then rearrangement and sum to the destination
+grid.
+</entry>
+
+<entry 
+id="rof2ocn_ice_rmaptype"
 type="char*256"
 category="mapping" 
 group="seq_maps">

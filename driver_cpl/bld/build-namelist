@@ -447,6 +447,12 @@ add_default($nl, 'cpl_decomp');
 add_default($nl, 'wall_time_limit');
 add_default($nl, 'force_stop_at');
 
+if ( $xmlvars{'FLDS_WISO'} eq "TRUE" ) {
+   add_default($nl, 'flds_wiso', 'val'=>".true.",  'xml'=>'FLDS_WISO');
+} else {
+   add_default($nl, 'flds_wiso', 'val'=>".false.", 'xml'=>'FLDS_WISO');
+}
+
 add_default($nl, 'do_histinit');
 add_default($nl, 'shr_map_dopole');
 add_default($nl, 'cpl_cdf64');
@@ -733,7 +739,8 @@ add_default($nl, 'lnd2atm_smapname');
 add_default($nl, 'lnd2rof_fmapname');
 add_default($nl, 'rof2lnd_fmapname');
 add_default($nl, 'rof2ocn_fmapname');
-add_default($nl, 'rof2ocn_rmapname');
+add_default($nl, 'rof2ocn_liq_rmapname');
+add_default($nl, 'rof2ocn_ice_rmapname');
 add_default($nl, 'glc2ocn_rmapname');
 add_default($nl, 'glc2ice_rmapname');
 add_default($nl, 'lnd2glc_fmapname');
@@ -768,7 +775,8 @@ add_default($nl, 'lnd2atm_smaptype', 'BFBFLAG'=>"$xmlvars{'BFBFLAG'}");
 add_default($nl, 'lnd2rof_fmaptype', 'BFBFLAG'=>"$xmlvars{'BFBFLAG'}");
 add_default($nl, 'rof2lnd_fmaptype', 'BFBFLAG'=>"$xmlvars{'BFBFLAG'}");
 add_default($nl, 'rof2ocn_fmaptype', 'BFBFLAG'=>"$xmlvars{'BFBFLAG'}");
-add_default($nl, 'rof2ocn_rmaptype', 'BFBFLAG'=>"$xmlvars{'BFBFLAG'}");
+add_default($nl, 'rof2ocn_liq_rmaptype', 'BFBFLAG'=>"$xmlvars{'BFBFLAG'}");
+add_default($nl, 'rof2ocn_ice_rmaptype', 'BFBFLAG'=>"$xmlvars{'BFBFLAG'}");
 add_default($nl, 'glc2ocn_rmaptype', 'BFBFLAG'=>"$xmlvars{'BFBFLAG'}");
 add_default($nl, 'glc2ice_rmaptype', 'BFBFLAG'=>"$xmlvars{'BFBFLAG'}");
 add_default($nl, 'lnd2glc_fmaptype', 'BFBFLAG'=>"$xmlvars{'BFBFLAG'}");
