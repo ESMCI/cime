@@ -1761,6 +1761,7 @@ int pio_msg_handler2(int io_rank, int component_count, iosystem_desc_t **iosys, 
 /* } */
 
 /** @ingroup PIO_init
+ *
  * Library initialization used when IO tasks are distinct from compute
  * tasks.
  *
@@ -1770,73 +1771,6 @@ int pio_msg_handler2(int io_rank, int component_count, iosystem_desc_t **iosys, 
  * do not return from this call.  Instead they go to an internal loop
  * and wait to receive further instructions from the computational
  * tasks.
- *
- * For 4 tasks, to have 2 of them be computational, and 2 of them
- * be IO, I would provide the following:
- *
- * component_count = 1
- *
- * peer_comm = MPI_COMM_WORLD
- *
- * comp_comms = an array with one element, an MPI (intra) communicator
- * that contains the two tasks designated to do computation
- * (processors 0, 1).
-
- * io_comm = an MPI (intra) communicator with the other two tasks (2,
- * 3).
- *
- * iosysidp = pointer that gets the IO system ID.
- *
- * Fortran function (from PIO1, in piolib_mod.F90) is:
- *
- * subroutine init_intercom(component_count, peer_comm, comp_comms,
- * io_comm, iosystem, rearr_opts)
- *
- * Some notes from Jim:
- *
- * Components and Component Count
- * ------------------------------
- *
- * It's a cesm thing - the cesm model is composed of several component
- * models (atm, ocn, ice, lnd, etc) that may or may not be collocated
- * on mpi tasks.  Since for intercomm the IOCOMM tasks are a subset of
- * the compute tasks for a given component we have a separate iocomm
- * for each model component.  and we call init_inracomm independently
- * for each component.
- *
- * When the IO tasks are independent of any model component then we
- * can have all of the components share one set of iotasks and we call
- * init_intercomm once with the information for all components.
- *
- * Inter vs Intra Communicators
- * ----------------------------
- *
- * ​For an intra you just need to provide the compute comm, pio creates
- * an io comm as a subset of that compute comm.
- *
- * For an inter you need to provide multiple comms - peer comm is the
- * communicator that is going to encompass all of the tasks - usually
- * this will be mpi_comm_world.  Then you need to provide a comm for
- * each component model that will share the io server, then an
- * io_comm.
- *
- * Example of Communicators
- * ------------------------
- *
- * Starting from MPI_COMM_WORLD the calling program will create an
- * IO_COMM and one or more COMP_COMMs, I think an example might be best:
- *
- * Suppose we have 10 tasks and 2 of them will be IO tasks.  Then 0:7
- * are in COMP_COMM and 8:9 are in IO_COMM In this case on tasks 0:7
- * COMP_COMM is defined and IO_COMM is MPI_COMM_NULL and on tasks 8:9
- * IO_COMM is defined and COMP_COMM is MPI_COMM_NULL The communicators
- * to handle communications between COMP_COMM and IO_COMM are defined
- * in init_intercomm and held in a pio internal data structure.
- *
- * Return or Not
- * -------------
- *
- * The io_comm tasks do not return from the init_intercomm routine.
  *
  * Sequence of Events to do Asynch I/O
  * -----------------------------------
@@ -1867,29 +1801,32 @@ int pio_msg_handler2(int io_rank, int component_count, iosystem_desc_t **iosys, 
  *
  * @param world the communicator containing all the available tasks.
  *
+ * @param num_io_procs the number of processes for the IO component.
+ *
+ * @param io_proc_list an array of lenth num_io_procs with the
+ * processor number for each IO processor. If NULL then the IO
+ * processes are assigned starting at processes 0.
+ *
  * @param component_count number of computational components
  *
- * @param color for this task. Use 0 for an I/O task, 1 for the first
- * computational group, 2 for the next computational group, etc. 0 >=
- * color <= component_count.
+ * @param num_procs_per_comp an array of int, of length
+ * component_count, with the number of processors in each computation
+ * component.
  *
- * @param comp_comms pointer to an array that will get the MPI_Comm
- * values associated with the components.
+ * @param proc_list an array of arrays containing the processor
+ * numbers for each computation component. If NULL then the
+ * computation components are assigned processors sequentially
+ * starting with processor num_io_procs.
  *
- * @param io_comm pointer that will get the MPI_Comm of the IO
- * communicator.
- *
- * @param comp_task a pointer to int that will get a 1 if the
- * executing task is a computational task, and a 0 if it is an IO
- * task.
- *
- * @param verbose print output if this is non-zero
+ * @param iosysidp pointer to array of length component_count that
+ * gets the iosysid for each component.
  *
  * @return PIO_NOERR on success, error code otherwise.
  */
 int
-PIOc_Init_Async(MPI_Comm world, int num_io_procs, int *io_proc_list, int component_count,
-		int *num_procs_per_comp, int **proc_list, int *iosysidp)
+PIOc_Init_Async(MPI_Comm world, int num_io_procs, int *io_proc_list,
+		int component_count, int *num_procs_per_comp, int **proc_list,
+		int *iosysidp)
 {
     int my_rank;
     MPI_Comm newcomm;
