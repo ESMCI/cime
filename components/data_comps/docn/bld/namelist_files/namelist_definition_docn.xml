@@ -85,6 +85,19 @@
     Last year of stream.
   </entry>
 
+  <entry id="strm_grid_file"
+	 type="char*1024"
+	 category="streams"
+	 group="streams_file">
+    Grid file to use for prescribed mode stream (docn/dice only)
+  </entry>
+
+  <entry id="strm_data_file"
+	 type="char*1024"
+	 category="streams"
+	 group="streams_file">
+    Data file to use for prescribed mode stream (docn/dice only)
+  </entry>
 
   <!-- ========================================================================================  -->
   <!-- DOCN Namelists                                                                            -->

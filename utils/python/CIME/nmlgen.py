@@ -23,7 +23,8 @@ _var_ref_re = re.compile(r"\$(\{)?(?P<name>\w+)(?(1)\})")
 
 _ymd_re = re.compile(r"%(?P<digits>[1-9][0-9]*)?y(?P<month>m(?P<day>d)?)?")
 
-_stream_file_template = """<dataSource>
+_stream_file_template = """
+<dataSource>
    GENERIC
 </dataSource>
 <domainInfo>
@@ -283,7 +284,10 @@ class NamelistGenerator(object):
             if not line:
                 continue
             if "%glc" in line:
-                for i in range(self._glc_nec):
+                glc_nec_indices = range(self._glc_nec)
+                glc_nec_indices.append(glc_nec_indices[-1] + 1)
+                glc_nec_indices.pop(0)
+                for i in glc_nec_indices:
                     new_lines.append(line.replace("%glc", "%02d" % i))
             else:
                 new_lines.append(line)

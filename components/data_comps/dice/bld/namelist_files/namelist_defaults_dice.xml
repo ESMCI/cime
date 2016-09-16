@@ -18,7 +18,7 @@ Replace any instance of the following substring indicators with the appropriate 
     %ym   = year-month from the range yearfirst to yearlast with all 12 months
     %ymd  = year-month-day from the range yearfirst to yearlast with all 12 months
 
-In dice_atm_in,  streams namelist input has the form
+In dice_in,  streams namelist input has the form
      streams = 'stream1.txt year_align year_first year_last ',
                'stream2.txt year_align year_first year_last ',
                ...
@@ -28,7 +28,6 @@ Currently the following datamode values are supported
      SSMI
      SSMI_IAF
      NULL
-
 -->
 
 <!-- =========================================  -->

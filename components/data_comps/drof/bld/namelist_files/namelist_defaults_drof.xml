@@ -30,10 +30,10 @@ Replace any instance of the following substring indicators with the appropriate 
              using in build-namelist $namelist_defaults_opts{'yearlast'}
              obtained from values of <strm_year_start> -> <strm_year_end> below
 
-Replace any instance of $VARNAME with the environment variable obtained from any
+Replace any instance of $VARNAME with the xml variable value obtained from any
 of the $CASEROOT/env*xml files
 
-In drof_rof_in,  streams namelist input has the form
+In drof_in,  streams namelist input has the form
      streams = 'stream1.txt year_align year_first year_last ',
                'stream2.txt year_align year_first year_last ',
                ...
@@ -44,7 +44,6 @@ Currently the following streams are supported
    rof.cplhist
    rof.diatren_ann_rx1
    rof.diatren_iaf_rx1
-
   -->
 
   <!-- =========================================  -->

@@ -36,20 +36,18 @@ Replace any instance of the following substring indicators with the appropriate 
     %glc  => GLC elevation class from the range 1 to GLC_NEC,
              obtained from the GLC_NEC xml variable
 
-Replace any instance of $VARNAME with the environment variable obtained from any
+Replace any instance of $VARNAME with the xml variable value obtained from any
 of the $CASEROOT/env*xml files
 
-In dlnd_lnd_in,  streams namelist input has the form
+In dlnd_in,  streams namelist input has the form
      streams = 'stream1.txt year_align year_first year_last ',
                'stream2.txt year_align year_first year_last ',
                ...
                'streamN.txt year_align year_first year_last '
 
 Currently the following streams are supported
-
    lnd.cplhist
    sno.cplhist
-
 -->
 
 <!-- =========================================  -->
@@ -77,8 +75,8 @@ Currently the following streams are supported
 <strm_year_end   stream="sno.cplhist">$DLND_CPLHIST_YR_END</strm_year_end>
 <strm_cpl_case   stream="sno.cplhist">$DLND_CPLHIST_CASE</strm_cpl_case>
 <strm_offset     stream="sno.cplhist">0</strm_offset>
-<strm_tintalgo   stream="sno.cplhist">lower</strm_tintalgo>
-<strm_taxmode    stream="sno.cplhist">cycle</strm_taxmode>
+<tintalgo        stream="sno.cplhist">lower</tintalgo>
+<taxmode         stream="sno.cplhist">cycle</taxmode>
 <strm_domdir     stream="sno.cplhist">$DIN_LOC_ROOT/lnd/dlnd7</strm_domdir>
 <strm_domfil     stream="sno.cplhist">domain.lnd.fv0.9x1.25_gx1v6.090309.nc</strm_domfil>
 <strm_datdir     stream="sno.cplhist">$DLND_CPLHIST_DIR</strm_datdir>
@@ -100,20 +98,28 @@ Currently the following streams are supported
 <!--- non stream-specific vars (for now)        -->
 <!-- =========================================  -->
 
-<decomp>1d</decomp>
+  <strm_offset>0</strm_offset> 
 
-<strm_dtlimit>1.5e0</strm_dtlimit>
+  <strm_domvar>
+    time    time
+    xc      lon
+    yc      lat
+    area    area
+    mask    mask
+  </strm_domvar>
 
-<strm_fillalgo>nn</strm_fillalgo>
+  <tintalgo>linear</tintalgo>
 
-<strm_fillmask>nomask</strm_fillmask>
+  <fillalgo>nn</fillalgo>
 
-<strm_mapalgo>bilinear</strm_mapalgo>
+  <fillmask>nomask</fillmask>
 
-<strm_mapmask>dstmask</strm_mapmask>
+  <mapalgo>bilinear</mapalgo>
 
-<strm_tintalgo>linear</strm_tintalgo>
+  <mapmask>dstmask</mapmask>
 
-<strm_taxmode>cycle</strm_taxmode>
+  <taxmode>cycle</taxmode>
+
+  <dtlimit>1.5e0</dtlimit>
 
 </namelist_defaults>

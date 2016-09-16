@@ -166,6 +166,8 @@ def _build_data_nml(case, caseroot, compclass):
         if out is not None and len(out) > 0:
             logger.debug("cmd=%s"%cmd)
             logger.info("out = %s"%out)
+        if err is not None and len(err) > 0:
+            logger.info("err= %s"%err)
 
         # copy namelist files and stream text files, to rundir
         if os.path.isdir(rundir):

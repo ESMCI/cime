@@ -136,9 +136,6 @@ def build_namelist(case, confdir, inst_string, infiles, definition_files,
     nmlgen.add_default("restfilm", "undefined")
     nmlgen.add_default("restfils", "undefined")
 
-    # Specific to docn only
-    nmlgen.add_default("flux_qacc");
-
     # Create `modelio` namelist group.
     nmlgen.add_default("logfile", "ocn.log")
 
