@@ -26,13 +26,12 @@ from standard_script_setup import *
 from CIME.case import Case
 from CIME.nmlgen import NamelistGenerator
 from CIME.utils import expect
-from CIME.build_namelist import setup_build_namelist
+from CIME.build_namelist import setup_build_namelist, create_namelist_groups
 
 logger = logging.getLogger(__name__)
 
 COMPONENT = 'datm'
 
-# Yes this is a long function, but for now just live with it.
 # pylint: disable=too-many-arguments,too-many-locals,too-many-branches,too-many-statements
 ####################################################################################
 def build_namelist(case, confdir, inst_string, infiles, definition_files,
@@ -158,43 +157,23 @@ def build_namelist(case, confdir, inst_string, infiles, definition_files,
         if os.path.exists(user_stream_path):
             shutil.copyfile(user_stream_path, stream_path)
         else:
-            nmlgen.create_stream_file(config, stream, stream_path,
-                                      data_list_path)
+            nmlgen.create_stream_file(config, stream, stream_path, data_list_path)
 
     #----------------------------------------------------
     # Create namelist
     #----------------------------------------------------
-    # Create namelist `shr_strdata_nml` namelist group.
-    nmlgen.create_shr_strdata_nml()
+    # set default values in namelist groups
+    create_namelist_groups(nmlgen, case, COMPONENT, atm_domain_file, atm_domain_path)
 
-    # set atm_domain_file
-    if atm_domain_file != "UNSET":
-        full_domain_path = os.path.join(atm_domain_path, atm_domain_file)
-        nmlgen.add_default("domainfile", value=full_domain_path)
-
-    # This is specific to datm.
     nmlgen.add_default("vectors")
 
-    # This is also specific to datm
     presaero = ".false." if datm_presaero == "none" else ".true."
     nmlgen.add_default("presaero", value=presaero)
 
-    # Create `datm_nml` namelist group.
     nmlgen.add_default("iradsw")
     if datm_mode.startswith("CORE"):
         factorfn = "atm/datm7/CORE2/COREv2.correction_factors.T62.121007.nc"
         nmlgen.add_default("factorfn", os.path.join(din_loc_root, factorfn))
-
-    # Should the following be in the namelist definitions file instead of here?
-    nmlgen.add_default("decomp", "1d")
-    nmlgen.add_default("force_prognostic_true", ".false.")
-    nmlgen.add_default("restfilm", "undefined")
-    nmlgen.add_default("restfils", "undefined")
-
-    #----------------------------------------------------
-    # Create `modelio` namelist group.
-    #----------------------------------------------------
-    nmlgen.add_default("logfile", "atm.log")
 
     #----------------------------------------------------
     # Finally, write out all the namelists.

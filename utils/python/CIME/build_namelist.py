@@ -83,3 +83,26 @@ def setup_build_namelist(argv, component, cimeroot):
         infiles = namelist_infiles.split(',')
 
     return caseroot, confdir, inst_string, infiles, definition_files, defaults_files 
+
+####################################################################################
+def create_namelist_groups(nmlgen, case, component, domain_file, domain_path):
+####################################################################################
+    """ 
+    sets up namelist groups and default values common to all data models
+    """
+    # Create namelist `shr_strdata_nml` namelist group.
+    nmlgen.create_shr_strdata_nml()
+
+    # add defaults for  `dxxx_nml` namelist group - where xxx is component
+    nmlgen.add_default("decomp", "1d")
+    nmlgen.add_default("force_prognostic_true", ".false.")
+    nmlgen.add_default("restfilm", "undefined")
+    nmlgen.add_default("restfils", "undefined")
+
+    if domain_file != "UNSET":
+        full_domain_path = os.path.join(domain_path, domain_file)
+        nmlgen.add_default("domainfile", value=full_domain_path)
+
+    # Create `modelio` namelist group.
+    logfile = component + ".log"
+    nmlgen.add_default("logfile", logfile)

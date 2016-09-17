@@ -26,13 +26,12 @@ from standard_script_setup import *
 from CIME.case import Case
 from CIME.nmlgen import NamelistGenerator
 from CIME.utils import expect
-from CIME.build_namelist import setup_build_namelist
+from CIME.build_namelist import setup_build_namelist, create_namelist_groups
 
 logger = logging.getLogger(__name__)
 
 COMPONENT = 'drof'
 
-# Yes this is a long function, but for now just live with it.
 # pylint: disable=too-many-arguments,too-many-locals,too-many-branches,too-many-statements
 ####################################################################################
 def build_namelist(case, confdir, inst_string, infiles, definition_files,
@@ -114,29 +113,13 @@ def build_namelist(case, confdir, inst_string, infiles, definition_files,
         if os.path.exists(user_stream_path):
             shutil.copyfile(user_stream_path, stream_path)
         else:
-            nmlgen.create_stream_file(config, stream, stream_path,
-                                      data_list_path)
+            nmlgen.create_stream_file(config, stream, stream_path, data_list_path)
 
     #----------------------------------------------------
     # Create namelist groups
     #----------------------------------------------------
-    # Create namelist `shr_strdata_nml` namelist group.
-    nmlgen.create_shr_strdata_nml()
-
-    # set rof_domain_file
-    if rof_domain_file != "UNSET":
-        full_domain_path = os.path.join(rof_domain_path, rof_domain_file)
-        nmlgen.add_default("domainfile", value=full_domain_path)
-
-    # Create `drof_nml` namelist group.
-    # Should the following be in the namelist definitions file instead of here?
-    nmlgen.add_default("decomp", "1d")
-    nmlgen.add_default("force_prognostic_true", ".false.")
-    nmlgen.add_default("restfilm", "undefined")
-    nmlgen.add_default("restfils", "undefined")
-
-    # Create `modelio` namelist group.
-    nmlgen.add_default("logfile", "rof.log")
+    # set default values in namelist groups
+    create_namelist_groups(nmlgen, case, COMPONENT, rof_domain_file, rof_domain_path)
 
     #----------------------------------------------------
     # Finally, write out all the namelists.
