@@ -75,10 +75,10 @@ class NamelistDefinition(GenericXML):
         `None` for all other variables.
 
         `size` is an `int` specifying the size of an array. For scalars, this is
-        set to `1`.
+         set to `1`.
 
         `valid_values` will be a list of valid values for the namelist variable
-        to take, or `None` if no such constraint is provided.
+         to take, or `None` if no such constraint is provided.
         """
         expect(attribute is None, "This class does not support attributes.")
         expect(not resolved, "This class does not support env resolution.")
@@ -97,8 +97,8 @@ class NamelistDefinition(GenericXML):
         var_info = {}
 
         def get_required_field(name):
-            """Copy a required attribute from `entry` element to `var_info`."""
-            var_info[name] = elem.get(name)
+            """Copy a required node from `entry` element to `var_info`."""
+            var_info[name] = self.get_node(name, root=elem).text
             expect(var_info[name] is not None,
                    "field %s missing from namelist definition for %s" %
                    (name, item))
@@ -106,23 +106,39 @@ class NamelistDefinition(GenericXML):
         get_required_field('type')
         get_required_field('category')
         get_required_field('group')
+
         # Convert type string into more usable information.
         type_, length, size = self._split_type_string(item, var_info["type"])
         var_info["type"] = type_
         var_info["length"] = length
         var_info["size"] = size
+
         # The "valid_values" attribute is not required, and an empty string has
         # the same effect as not specifying it.
-        valid_values = elem.get('valid_values')
-        if valid_values == '':
-            valid_values = None
-        if valid_values is not None:
-            valid_values = valid_values.split(',')
+        node = self.get_optional_node('valid_values', root=elem)
+        valid_values = None
+        if node is not None:
+            valid_values = node.text
+            if valid_values == '':
+                valid_values = None
+            if valid_values is not None:
+                valid_values = valid_values.split(',')
         var_info['valid_values'] = valid_values
+
         # The "input_pathname" attribute is not required.
-        var_info['input_pathname'] = elem.get('input_pathname')
+        node = self.get_optional_node('input_pathname', root=elem)
+        if node is not None:
+            var_info['input_pathname'] = node.text
+        else:
+            var_info['input_pathname'] = None
+
         # The description is the data on the node itself.
-        var_info['description'] = elem.text
+        node = self.get_optional_node('description', root=elem)
+        if node is not None:
+            var_info['description'] = node.text
+        else:
+            var_info['description'] = None
+
         # Cache result of query.
         self._value_cache[item] = var_info
         return var_info
