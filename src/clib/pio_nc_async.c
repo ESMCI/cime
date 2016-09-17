@@ -61,7 +61,7 @@ int PIOc_inq(int ncid, int *ndimsp, int *nvarsp, int *ngattsp, int *unlimdimidp)
             char unlimdimid_present = unlimdimidp ? true : false;
             
             if (ios->compmaster) 
-                mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
+                mpierr = MPI_Send(&msg, 1, MPI_INT, ios->ioroot, 1, ios->union_comm);
             
             if (!mpierr)
                 mpierr = MPI_Bcast(&file->fh, 1, MPI_INT, ios->compmaster, ios->intercomm);
@@ -633,6 +633,7 @@ int PIOc_inq_var(int ncid, int varid, char *name, nc_type *xtypep, int *ndimsp,
     if (!(file = pio_get_file_from_id(ncid)))
         return PIO_EBADID;
     ios = file->iosystem;
+    LOG((2, "got file and iosystem"));
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
     if (ios->async_interface)
@@ -640,11 +641,11 @@ int PIOc_inq_var(int ncid, int varid, char *name, nc_type *xtypep, int *ndimsp,
         if (!ios->ioproc)
         {
             int msg = PIO_MSG_INQ_VAR;
-            char name_present = name ? true : false;
-            char xtype_present = xtypep ? true : false;
-            char ndims_present = ndimsp ? true : false;
-            char dimids_present = dimidsp ? true : false;
-            char natts_present = nattsp ? true : false;
+	    char name_present = name ? true : false;
+	    char xtype_present = xtypep ? true : false;
+	    char ndims_present = ndimsp ? true : false;
+	    char dimids_present = dimidsp ? true : false;
+	    char natts_present = nattsp ? true : false;
 
             if(ios->compmaster) 
                 mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
@@ -678,10 +679,12 @@ int PIOc_inq_var(int ncid, int varid, char *name, nc_type *xtypep, int *ndimsp,
     /* Call the netCDF layer. */
     if (ios->ioproc)
     {
+	LOG((2, "Calling the netCDF layer"));
 #ifdef _PNETCDF
         if (file->iotype == PIO_IOTYPE_PNETCDF)
         {
             ierr = ncmpi_inq_varndims(file->fh, varid, &ndims);
+	    LOG((2, "from pnetcdf ndims = %d", ndims));
             if (!ierr)
                 ierr = ncmpi_inq_var(file->fh, varid, name, xtypep, ndimsp, dimidsp, nattsp);;
         }
@@ -690,14 +693,30 @@ int PIOc_inq_var(int ncid, int varid, char *name, nc_type *xtypep, int *ndimsp,
         if (file->iotype != PIO_IOTYPE_PNETCDF && file->do_io)
         {
             ierr = nc_inq_varndims(file->fh, varid, &ndims);
+	    char my_name[NC_MAX_NAME + 1];
+	    nc_type my_xtype;
+	    int my_ndims, my_dimids[ndims], my_natts;
+	    LOG((2, "file->fh = %d varid = %d xtypep = %d ndimsp = %d dimidsp = %d nattsp = %d",
+		 file->fh, varid, xtypep, ndimsp, dimidsp, nattsp));	    
             if (!ierr)
-                ierr = nc_inq_var(file->fh, varid, name, xtypep, ndimsp, dimidsp, nattsp);
+                ierr = nc_inq_var(file->fh, varid, my_name, &my_xtype, &my_ndims, my_dimids, &my_natts);
+	    LOG((3, "my_name = %s my_xtype = %d my_ndims = %d my_natts = %d",  my_name, my_xtype, my_ndims, my_natts));
+	    if (name)
+		strcpy(name, my_name);
+	    if (xtypep)
+		*xtypep = my_xtype;
+	    if (ndimsp)
+		*ndimsp = my_ndims;
+	    if (dimidsp)
+		for (int d = 0; d < ndims; d++)
+		    dimidsp[d] = my_dimids[d];
+	    if (nattsp)
+		*nattsp = my_natts;
         }           
 #endif /* _NETCDF */
+	if (ndimsp)
+	    LOG((2, "PIOc_inq_var ndims = %d ierr = %d", *ndimsp, ierr));
     }
-
-    if (ndimsp)
-	LOG((2, "PIOc_inq_var ndims = %d ierr = %d", *ndimsp, ierr));
 
     /* Broadcast and check the return code. */
     if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))

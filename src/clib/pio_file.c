@@ -203,14 +203,13 @@ int PIOc_openfile_retry(const int iosysid, int *ncidp, int *iotype,
 	if ((mpierr = MPI_Bcast(&file->mode, 1, MPI_INT, ios->ioroot, ios->union_comm)))
 	    return check_mpi(file, mpierr, __FILE__, __LINE__);
       
-      tmp_fh = file->fh;
+	tmp_fh = file->fh;
 	if ((mpierr = MPI_Bcast(&tmp_fh, 1, MPI_INT, ios->ioroot, ios->union_comm)))
 	    return check_mpi(file, mpierr, __FILE__, __LINE__);
 
-      if(file->fh == -1){
-        /* Not io proc - file handle is not set by netcdf* /pnetcdfc */
-        file->fh = tmp_fh;
-      }
+	/* Not io proc - file handle is not set by pnetcdfc */
+	if (file->fh == -1)
+	    file->fh = tmp_fh;
       
 	*ncidp = file->fh;
 	pio_add_to_file_list(file);
@@ -306,9 +305,15 @@ int PIOc_createfile(const int iosysid, int *ncidp, int *iotype,
     if (!ncidp || !iotype || !filename || strlen(filename) > NC_MAX_NAME)
 	return PIO_EINVAL;
 
+    LOG((1, "PIOc_createfile iosysid = %d iotype = %d filename = %s mode = %d",
+	 iosysid, *iotype, filename, mode));
+
     /* Get the IO system info from the iosysid. */
     if (!(ios = pio_get_iosystem_from_id(iosysid)))
 	return PIO_EBADID;
+
+    LOG((1, "PIOc_createfile iosysid = %d iotype = %d filename = %s mode = %d",
+	 iosysid, *iotype, filename, mode));
 
     /* Allocate space for the file info. */
     if (!(file = (file_desc_t *)malloc(sizeof(file_desc_t))))
@@ -348,6 +353,7 @@ int PIOc_createfile(const int iosysid, int *ncidp, int *iotype,
 	file->do_io = 1;
     else
 	file->do_io = 0;
+    LOG((2, "file->do_io = %d", file->do_io));
 
     /* If async is in use, and this is not an IO task, bcast the
      * parameters. */
@@ -371,9 +377,12 @@ int PIOc_createfile(const int iosysid, int *ncidp, int *iotype,
 		mpierr = MPI_Bcast(&file->iotype, 1, MPI_INT, ios->compmaster, ios->intercomm);
 	    if (!mpierr)
 		mpierr = MPI_Bcast(&file->mode, 1, MPI_INT, ios->compmaster, ios->intercomm);
+	    LOG((2, "len = %d filename = %s iotype = %d mode = %d", len, filename,
+		 file->iotype, file->mode));
 	}
 
 	/* Handle MPI errors. */
+	LOG((2, "handling mpi errors mpierr = %d", mpierr));
         if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
             return check_mpi(file, mpierr2, __FILE__, __LINE__);
 	if (mpierr)
@@ -387,28 +396,27 @@ int PIOc_createfile(const int iosysid, int *ncidp, int *iotype,
 #ifdef _NETCDF
 #ifdef _NETCDF4
 	case PIO_IOTYPE_NETCDF4P:
-	    //         The 64 bit options are not compatable with hdf5 format files
-	    //      printf("%d %d %d %d %d \n",__LINE__,file->mode,PIO_64BIT_DATA, PIO_64BIT_OFFSET, NC_MPIIO);
 	    file->mode = file->mode |  NC_MPIIO | NC_NETCDF4;
-	    //printf("%s %d %d %d\n",__FILE__,__LINE__,file->mode, NC_MPIIO| NC_NETCDF4);
-	    ierr = nc_create_par(filename, file->mode, ios->io_comm,ios->info  , &(file->fh));
+	    LOG((2, "Calling nc_create_par mode = %d", file->mode));
+	    ierr = nc_create_par(filename, file->mode, ios->io_comm, ios->info, &file->fh);
 	    break;
 	case PIO_IOTYPE_NETCDF4C:
 	    file->mode = file->mode | NC_NETCDF4;
 #endif
 	case PIO_IOTYPE_NETCDF:
-	    if(ios->io_rank==0){
-		ierr = nc_create(filename, file->mode, &(file->fh));
+	    if (!ios->io_rank)
+	    {
+		LOG((2, "Calling nc_create mode = %d", file->mode));
+		ierr = nc_create(filename, file->mode, &file->fh);
 	    }
 	    break;
 #endif
 #ifdef _PNETCDF
 	case PIO_IOTYPE_PNETCDF:
-	    ierr = ncmpi_create(ios->io_comm, filename, file->mode, ios->info, &(file->fh));
-	    if(ierr == PIO_NOERR){
-		if(ios->io_rank==0){
-		    printf("%d Setting IO buffer size on all iotasks to %ld\n",ios->io_rank,PIO_BUFFER_SIZE_LIMIT);
-		}
+	    LOG((2, "Calling ncmpi_create mode = %d", file->mode));	    
+	    ierr = ncmpi_create(ios->io_comm, filename, file->mode, ios->info, &file->fh);
+	    if (ierr == PIO_NOERR)
+	    {
 		int oldfill;
 		ierr = ncmpi_buffer_attach(file->fh, PIO_BUFFER_SIZE_LIMIT );
 		//	ierr = ncmpi_set_fill(file->fh, NC_FILL, &oldfill);
@@ -438,6 +446,7 @@ int PIOc_createfile(const int iosysid, int *ncidp, int *iotype,
 	
 	if ((mpierr = MPI_Bcast(&file->fh, 1, MPI_INT, ios->ioroot, ios->union_comm)))
 	    return check_mpi(file, mpierr, __FILE__, __LINE__);
+	LOG((2, "file->fh = %d", file->fh));
 
 	/* Return the ncid to the caller. */
 	*ncidp = file->fh;
@@ -447,13 +456,12 @@ int PIOc_createfile(const int iosysid, int *ncidp, int *iotype,
 	pio_add_to_file_list(file);
     }
     
-    if (ios->io_rank == 0)
-	LOG((1, "Create file %s %d", filename, file->fh)); 
+    LOG((1, "Created file %s %d", filename, file->fh)); 
 
     return ierr;
 }
 
-/** Open a new file using pio.  Input parameters are read on comp task
+/** Open a new file using pio. Input parameters are read on comp task
  * 0 and ignored elsewhere.
  *
  * @public

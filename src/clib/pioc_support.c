@@ -13,8 +13,12 @@
 #define versno 2001
 
 #if PIO_ENABLE_LOGGING
+#define MAX_LOG_MSG 1024
+#define MAX_RANK_STR 12
+#define ERROR_PREFIX "ERROR: " 
 int pio_log_level = 0;
 int my_rank;
+FILE *LOG_FILE;
 #endif /* PIO_ENABLE_LOGGING */
 
 /** Return a string description of an error code. If zero is passed, a
@@ -73,9 +77,13 @@ PIOc_strerror(int pioerr, char *errmsg)
 int PIOc_set_log_level(int level)
 {
 #if PIO_ENABLE_LOGGING
+    char log_filename[NC_MAX_NAME];
+    
     printf("setting log level to %d\n", level);
     pio_log_level = level;
     MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
+    sprintf(log_filename, "pio_log_%d.txt", my_rank);
+    LOG_FILE = fopen(log_filename, "w");
 #endif /* PIO_ENABLE_LOGGING */
     return PIO_NOERR;
 }
@@ -97,6 +105,9 @@ pio_log(int severity, const char *fmt, ...)
 {
    va_list argp;
    int t;
+   char msg[MAX_LOG_MSG];
+   char *ptr = msg;
+   char rank_str[MAX_RANK_STR];
 
    /* If the severity is greater than the log level, we don't print
       this message. */
@@ -110,21 +121,36 @@ pio_log(int severity, const char *fmt, ...)
    /* If the severity is zero, this is an error. Otherwise insert that
       many tabs before the message. */
    if (!severity)
-       fprintf(stdout, "ERROR: ");
+   {
+       strcpy(ptr, ERROR_PREFIX);
+       ptr += strlen(ERROR_PREFIX);
+   }
    for (t = 0; t < severity; t++)
-       fprintf(stdout, "\t");
+       strcpy(ptr++, "\t");
 
    /* Show the rank. */
-   fprintf(stdout, "%d ", my_rank);
+   sprintf(rank_str, "%d ", my_rank);
+   strcpy(ptr, rank_str);
+   ptr += strlen(rank_str);
    
    /* Print out the variable list of args with vprintf. */
    va_start(argp, fmt);
-   vfprintf(stdout, fmt, argp);
+   vsprintf(ptr, fmt, argp);
    va_end(argp);
    
    /* Put on a final linefeed. */
-   fprintf(stdout, "\n");
+   ptr = msg + strlen(msg);
+   strcpy(ptr, "\n\0");
+
+   /* Send message to stdout. */
+   fprintf(stdout, "%s", msg);
+
+   /* Send message to log file. */
+   fprintf(LOG_FILE, "%s", msg);
+
+   /* Ensure an immediate flush of stdout. */
    fflush(stdout);
+   fflush(LOG_FILE);
 }
 #endif /* PIO_ENABLE_LOGGING */
 
