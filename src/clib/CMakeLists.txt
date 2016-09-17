@@ -21,12 +21,8 @@ set (PIO_GENNC_SRCS ${CMAKE_CURRENT_BINARY_DIR}/pio_put_nc.c
   ${CMAKE_CURRENT_BINARY_DIR}/pio_get_nc.c
   ${CMAKE_CURRENT_BINARY_DIR}/pio_nc.c)
 
-if (PIO_ENABLE_ASYNC)
-  set (PIO_ADDL_SRCS pio_nc_async.c pio_put_nc_async.c pio_get_nc_async.c
-    pio_msg.c pio_varm.c pio_darray_async.c)
-else ()
-  set (PIO_ADDL_SRCS pio_darray.c ${PIO_GENNC_SRCS})
-endif ()
+set (PIO_ADDL_SRCS pio_nc_async.c pio_put_nc_async.c pio_get_nc_async.c
+  pio_msg.c pio_varm.c pio_darray_async.c)
 
 add_library (pioc ${PIO_C_SRCS} ${PIO_ADDL_SRCS})
 
