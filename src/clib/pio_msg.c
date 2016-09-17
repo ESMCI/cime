@@ -1720,46 +1720,6 @@ int pio_msg_handler2(int io_rank, int component_count, iosystem_desc_t **iosys, 
     return PIO_NOERR;
 }
 
-/* int */
-/* pio_iosys_print(int my_rank, iosystem_desc_t *iosys) */
-/* { */
-/*     printf("%d iosysid: %d\n", my_rank, iosys->iosysid); */
-/*     if (iosys->union_comm == MPI_COMM_NULL) */
-/* 	printf("%d union_comm: MPI_COMM_NULL ", my_rank); */
-/*     else */
-/* 	printf("%d union_comm: %d ", my_rank, iosys->union_comm); */
-
-/*     if (iosys->comp_comm == MPI_COMM_NULL) */
-/* 	printf("comp_comm: MPI_COMM_NULL "); */
-/*     else */
-/* 	printf("comp_comm: %d ", iosys->comp_comm); */
-
-/*     if (iosys->io_comm == MPI_COMM_NULL) */
-/* 	printf("io_comm: MPI_COMM_NULL "); */
-/*     else */
-/* 	printf("io_comm: %d ", iosys->io_comm); */
-
-/*     if (iosys->intercomm == MPI_COMM_NULL) */
-/* 	printf("intercomm: MPI_COMM_NULL\n"); */
-/*     else */
-/* 	printf("intercomm: %d\n", iosys->intercomm); */
-
-/*     printf("%d num_iotasks=%d num_comptasks=%d union_rank=%d, comp_rank=%d, " */
-/* 	   "io_rank=%d async_interface=%d\n", */
-/* 	   my_rank, iosys->num_iotasks, iosys->num_comptasks, iosys->union_rank, */
-/* 	   iosys->comp_rank, iosys->io_rank, iosys->async_interface); */
-
-/*     printf("%d ioroot=%d comproot=%d iomaster=%d, compmaster=%d\n", */
-/* 	   my_rank, iosys->ioroot, iosys->comproot, iosys->iomaster, */
-/* 	   iosys->compmaster); */
-
-/*     printf("%d iotasks:", my_rank); */
-/*     for (int i = 0; i < iosys->num_iotasks; i++) */
-/* 	printf("%d ", iosys->ioranks[i]); */
-/*     printf("\n"); */
-/*     return PIO_NOERR; */
-/* } */
-
 /** @ingroup PIO_init
  *
  * Library initialization used when IO tasks are distinct from compute
