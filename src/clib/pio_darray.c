@@ -254,8 +254,14 @@ int pio_write_darray_nc(file_desc_t *file, io_desc_t *iodesc, const int vid,
 		
 		size_t tstart[ndims], tcount[ndims];
 
-		/* The IO master task does all the data writes, but
-		 * sends the data to the other IO tasks (why?). */
+		/* When using the serial netcdf PIO acts like a
+		 * funnel. Data is moved from compute tasks to IO
+		 * tasks then from IO tasks to IO task 0 for
+		 * write. For read data the opposite happens, data is
+		 * read on IO task 0 distributed to all io tasks and
+		 * then to compute tasks. We could optimize these data
+		 * paths but serial netcdf is not the primary mode for
+		 * PIO. */
 		if (ios->io_rank == 0)
 		{
 		    for (i = 0; i < iodesc->num_aiotasks; i++)
