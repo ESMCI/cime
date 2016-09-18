@@ -10,18 +10,6 @@
 #include <config.h>
 #include <pio.h>
 #include <pio_internal.h>
-/* #include <unistd.h> /\* only for sleep() *\/ */
-
-/* MPI serial builds stub out MPI functions so that the MPI code can
- * work on one processor. This function is missing from our serial MPI
- * implementation, so it is included here. This can be removed after
- * it is added to the MPI serial library. */
-/* #ifdef USE_MPI_SERIAL */
-/* int MPI_Intercomm_merge(MPI_Comm intercomm, int high, MPI_Comm *newintracomm) */
-/* { */
-/*     return MPI_SUCCESS; */
-/* } */
-/* #endif /\* USE_MPI_SERIAL *\/ */
 
 #ifdef PIO_ENABLE_LOGGING
 extern int my_rank;
