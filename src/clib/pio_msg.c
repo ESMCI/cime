@@ -1,10 +1,11 @@
-/**
- * @file
- * @author Ed Hartnett
- * @date  2016
- * @brief PIO async msg handling
+/** @file 
  *
- * @see http://code.google.com/p/parallelio/
+ * PIO async message handling. This file contains the code which
+ * runs on the IO nodes when async is in use. This code waits for
+ * messages from the computation nodes, and responds to messages by
+ * running the appropriate netCDF function.
+ *
+ * @author Ed Hartnett
  */
 
 #include <config.h>
@@ -16,8 +17,8 @@ extern int my_rank;
 extern int pio_log_level;
 #endif /* PIO_ENABLE_LOGGING */
 
-/** This function is run on the IO tasks to find netCDF type
- * length. */
+/** This function is run on the IO tasks to handle nc_inq_type*()
+ * functions. */
 int inq_type_handler(iosystem_desc_t *ios)
 {
     int ncid;
