@@ -369,6 +369,9 @@ int PIOc_Init_Intracomm(const MPI_Comm comp_comm, const int num_iotasks,
   int lbase;
   int mpierr;
 
+  LOG((1, "PIOc_Init_Intracomm comp_comm = %d num_iotasks = %d stride = %d base = %d "
+       "rearr = %d", comp_comm, num_iotasks, stride, base, rearr));
+  
   iosys = (iosystem_desc_t *) malloc(sizeof(iosystem_desc_t));
 
   /* Copy the computation communicator into union_comm. */
@@ -430,6 +433,9 @@ int PIOc_Init_Intracomm(const MPI_Comm comp_comm, const int num_iotasks,
       }
       iosys->ioroot = iosys->ioranks[0];
 
+      for(int i = 0; i < iosys->num_iotasks; i++)
+	  LOG((3, "iosys->ioranks[%d] = %d", i, iosys->ioranks[i]));
+
       /* Create an MPI info object. */
       CheckMPIReturn(MPI_Info_create(&(iosys->info)),__FILE__,__LINE__);
       iosys->info = MPI_INFO_NULL;
@@ -453,6 +459,7 @@ int PIOc_Init_Intracomm(const MPI_Comm comp_comm, const int num_iotasks,
 	  CheckMPIReturn(MPI_Comm_rank(iosys->io_comm, &(iosys->io_rank)),__FILE__,__LINE__);
       else
 	  iosys->io_rank = -1;
+      LOG((3, "iosys->io_rank = %d", iosys->io_rank));
 
       iosys->union_rank = iosys->comp_rank;
 
