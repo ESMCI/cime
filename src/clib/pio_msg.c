@@ -1,35 +1,24 @@
-/**
- * @file
- * @author Ed Hartnett
- * @date  2016
- * @brief PIO async msg handling
+/** @file 
  *
- * @see http://code.google.com/p/parallelio/
+ * PIO async message handling. This file contains the code which
+ * runs on the IO nodes when async is in use. This code waits for
+ * messages from the computation nodes, and responds to messages by
+ * running the appropriate netCDF function.
+ *
+ * @author Ed Hartnett
  */
 
 #include <config.h>
 #include <pio.h>
 #include <pio_internal.h>
-/* #include <unistd.h> /\* only for sleep() *\/ */
-
-/* MPI serial builds stub out MPI functions so that the MPI code can
- * work on one processor. This function is missing from our serial MPI
- * implementation, so it is included here. This can be removed after
- * it is added to the MPI serial library. */
-/* #ifdef USE_MPI_SERIAL */
-/* int MPI_Intercomm_merge(MPI_Comm intercomm, int high, MPI_Comm *newintracomm) */
-/* { */
-/*     return MPI_SUCCESS; */
-/* } */
-/* #endif /\* USE_MPI_SERIAL *\/ */
 
 #ifdef PIO_ENABLE_LOGGING
 extern int my_rank;
 extern int pio_log_level;
 #endif /* PIO_ENABLE_LOGGING */
 
-/** This function is run on the IO tasks to find netCDF type
- * length. */
+/** This function is run on the IO tasks to handle nc_inq_type*()
+ * functions. */
 int inq_type_handler(iosystem_desc_t *ios)
 {
     int ncid;
@@ -1719,46 +1708,6 @@ int pio_msg_handler2(int io_rank, int component_count, iosystem_desc_t **iosys, 
     LOG((3, "returning from pio_msg_handler2"));
     return PIO_NOERR;
 }
-
-/* int */
-/* pio_iosys_print(int my_rank, iosystem_desc_t *iosys) */
-/* { */
-/*     printf("%d iosysid: %d\n", my_rank, iosys->iosysid); */
-/*     if (iosys->union_comm == MPI_COMM_NULL) */
-/* 	printf("%d union_comm: MPI_COMM_NULL ", my_rank); */
-/*     else */
-/* 	printf("%d union_comm: %d ", my_rank, iosys->union_comm); */
-
-/*     if (iosys->comp_comm == MPI_COMM_NULL) */
-/* 	printf("comp_comm: MPI_COMM_NULL "); */
-/*     else */
-/* 	printf("comp_comm: %d ", iosys->comp_comm); */
-
-/*     if (iosys->io_comm == MPI_COMM_NULL) */
-/* 	printf("io_comm: MPI_COMM_NULL "); */
-/*     else */
-/* 	printf("io_comm: %d ", iosys->io_comm); */
-
-/*     if (iosys->intercomm == MPI_COMM_NULL) */
-/* 	printf("intercomm: MPI_COMM_NULL\n"); */
-/*     else */
-/* 	printf("intercomm: %d\n", iosys->intercomm); */
-
-/*     printf("%d num_iotasks=%d num_comptasks=%d union_rank=%d, comp_rank=%d, " */
-/* 	   "io_rank=%d async_interface=%d\n", */
-/* 	   my_rank, iosys->num_iotasks, iosys->num_comptasks, iosys->union_rank, */
-/* 	   iosys->comp_rank, iosys->io_rank, iosys->async_interface); */
-
-/*     printf("%d ioroot=%d comproot=%d iomaster=%d, compmaster=%d\n", */
-/* 	   my_rank, iosys->ioroot, iosys->comproot, iosys->iomaster, */
-/* 	   iosys->compmaster); */
-
-/*     printf("%d iotasks:", my_rank); */
-/*     for (int i = 0; i < iosys->num_iotasks; i++) */
-/* 	printf("%d ", iosys->ioranks[i]); */
-/*     printf("\n"); */
-/*     return PIO_NOERR; */
-/* } */
 
 /** @ingroup PIO_init
  *

@@ -337,8 +337,11 @@ main(int argc, char **argv)
     /* Turn on logging. */
     if ((ret = PIOc_set_log_level(3)))
 	ERR(ret);
-    if ((ret = nc_set_log_level(0)))
-	ERR(ret);
+    
+    /* The following only works for netCDF builds where enable-logging
+     * was used during configure. */
+    /* if ((ret = nc_set_log_level(0))) */
+    /* 	ERR(ret); */
 
     /* How many processors will be used for our IO and 2 computation components. */
     int num_procs[COMPONENT_COUNT + 1] = {2, 2};

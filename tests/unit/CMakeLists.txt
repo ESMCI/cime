@@ -45,7 +45,7 @@ if ("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
         PRIVATE -ffree-line-length-none)
 endif()
 
-if (PIO_ENABLE_ASYNC AND NOT PIO_USE_MPI_SERIAL)
+if (NOT PIO_USE_MPI_SERIAL)
   add_executable (test_intercomm2 EXCLUDE_FROM_ALL test_intercomm2.c)
   target_link_libraries (test_intercomm2 pioc)
   add_dependencies (tests test_intercomm2)
@@ -103,7 +103,6 @@ else ()
         EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_darray
         NUMPROCS 4
         TIMEOUT ${DEFAULT_TEST_TIMEOUT})
-  if (PIO_ENABLE_ASYNC)
     add_mpi_test(test_file
         EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_file
         NUMPROCS 4
@@ -128,7 +127,6 @@ else ()
         EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_async_4proc
         NUMPROCS 4
         TIMEOUT ${DEFAULT_TEST_TIMEOUT})
-  endif ()
     add_mpi_test(test_names
         EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_names
         NUMPROCS 4
