@@ -539,12 +539,13 @@ int PIOc_inq_dimid(int ncid, const char *name, int *idp)
     if (!name)
         return PIO_EINVAL;
     
-    LOG((1, "PIOc_inq_dimid name = %s", name));
+    LOG((1, "PIOc_inq_dimid ncid = %d name = %s", ncid, name));
 
     /* Get the file info, based on the ncid. */
-    if (!(file = pio_get_file_from_id(ncid)))
-        return PIO_EBADID;
+    if ((ierr = pio_get_file_from_id2(ncid, &file)))
+	return ierr;
     ios = file->iosystem;
+    LOG((2, "iosysid = %d", ios->iosysid));    
 
     /* If using async, and not an IO task, then send parameters. */
     if (ios->async_interface)
@@ -580,13 +581,14 @@ int PIOc_inq_dimid(int ncid, const char *name, int *idp)
     {
 #ifdef _PNETCDF
         if (file->iotype == PIO_IOTYPE_PNETCDF)
-            ierr = ncmpi_inq_dimid(file->fh, name, idp);;
+            ierr = ncmpi_inq_dimid(file->fh, name, idp);
 #endif /* _PNETCDF */
 #ifdef _NETCDF
         if (file->iotype != PIO_IOTYPE_PNETCDF && file->do_io)
-            ierr = nc_inq_dimid(file->fh, name, idp);;
+            ierr = nc_inq_dimid(file->fh, name, idp);
 #endif /* _NETCDF */
     }
+    LOG((3, "nc_inq_dimid call complete ierr = %d", ierr));
 
     /* Broadcast and check the return code. */
     if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
@@ -598,7 +600,8 @@ int PIOc_inq_dimid(int ncid, const char *name, int *idp)
         if (idp)
             if ((mpierr = MPI_Bcast(idp, 1, MPI_INT, ios->ioroot, ios->my_comm)))
                 return check_mpi(file, mpierr, __FILE__, __LINE__);
-
+    LOG((3, "id = %d", *idp));
+    
     return ierr;
 }
 
@@ -686,7 +689,7 @@ int PIOc_inq_var(int ncid, int varid, char *name, nc_type *xtypep, int *ndimsp,
             ierr = ncmpi_inq_varndims(file->fh, varid, &ndims);
 	    LOG((2, "from pnetcdf ndims = %d", ndims));
             if (!ierr)
-                ierr = ncmpi_inq_var(file->fh, varid, name, xtypep, ndimsp, dimidsp, nattsp);;
+                ierr = ncmpi_inq_var(file->fh, varid, name, xtypep, ndimsp, dimidsp, nattsp);
         }
 #endif /* _PNETCDF */
 #ifdef _NETCDF
@@ -874,7 +877,7 @@ int PIOc_inq_varid (int ncid, const char *name, int *varidp)
     {
 #ifdef _PNETCDF
         if (file->iotype == PIO_IOTYPE_PNETCDF)
-            ierr = ncmpi_inq_varid(file->fh, name, varidp);;        
+            ierr = ncmpi_inq_varid(file->fh, name, varidp);        
 #endif /* _PNETCDF */
 #ifdef _NETCDF
         if (file->iotype != PIO_IOTYPE_PNETCDF && file->do_io)
@@ -1085,11 +1088,11 @@ int PIOc_inq_attname(int ncid, int varid, int attnum, char *name)
     {
 #ifdef _PNETCDF
         if (file->iotype == PIO_IOTYPE_PNETCDF)
-            ierr = ncmpi_inq_attname(file->fh, varid, attnum, name);;
+            ierr = ncmpi_inq_attname(file->fh, varid, attnum, name);
 #endif /* _PNETCDF */
 #ifdef _NETCDF
         if (file->iotype != PIO_IOTYPE_PNETCDF && file->do_io)
-            ierr = nc_inq_attname(file->fh, varid, attnum, name);;
+            ierr = nc_inq_attname(file->fh, varid, attnum, name);
 #endif /* _NETCDF */
         LOG((2, "PIOc_inq_attname netcdf call returned %d", ierr));
     }
@@ -1186,11 +1189,11 @@ int PIOc_inq_attid(int ncid, int varid, const char *name, int *idp)
     {
 #ifdef _PNETCDF
         if (file->iotype == PIO_IOTYPE_PNETCDF)
-            ierr = ncmpi_inq_attid(file->fh, varid, name, idp);;
+            ierr = ncmpi_inq_attid(file->fh, varid, name, idp);
 #endif /* _PNETCDF */
 #ifdef _NETCDF
         if (file->iotype != PIO_IOTYPE_PNETCDF && file->do_io)
-            ierr = nc_inq_attid(file->fh, varid, name, idp);;
+            ierr = nc_inq_attid(file->fh, varid, name, idp);
 #endif /* _NETCDF */
         LOG((2, "PIOc_inq_attname netcdf call returned %d", ierr));
     }
@@ -1285,7 +1288,7 @@ int PIOc_rename_dim(int ncid, int dimid, const char *name)
 #endif /* _PNETCDF */
 #ifdef _NETCDF
         if (file->iotype != PIO_IOTYPE_PNETCDF && file->do_io)
-            ierr = nc_rename_dim(file->fh, dimid, name);;
+            ierr = nc_rename_dim(file->fh, dimid, name);
 #endif /* _NETCDF */
         LOG((2, "PIOc_inq netcdf call returned %d", ierr));
     }
@@ -1373,7 +1376,7 @@ int PIOc_rename_var(int ncid, int varid, const char *name)
 #endif /* _PNETCDF */
 #ifdef _NETCDF
         if (file->iotype != PIO_IOTYPE_PNETCDF && file->do_io)
-            ierr = nc_rename_var(file->fh, varid, name);;
+            ierr = nc_rename_var(file->fh, varid, name);
 #endif /* _NETCDF */
         LOG((2, "PIOc_inq netcdf call returned %d", ierr));
     }
@@ -1822,7 +1825,7 @@ int PIOc_def_dim (int ncid, const char *name, PIO_Offset len, int *idp)
     {
 #ifdef _PNETCDF
         if (file->iotype == PIO_IOTYPE_PNETCDF)
-            ierr = ncmpi_def_dim(file->fh, name, len, idp);;        
+            ierr = ncmpi_def_dim(file->fh, name, len, idp);        
 #endif /* _PNETCDF */
 #ifdef _NETCDF
         if (file->iotype != PIO_IOTYPE_PNETCDF && file->do_io)

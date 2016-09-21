@@ -89,8 +89,8 @@ add_dependencies (tests test_darray)
 add_dependencies (tests test_nc4)
 add_dependencies (tests pio_unit_test)
 
-# Test Timeout (4 min = 240 sec)
-set (DEFAULT_TEST_TIMEOUT 240)
+# Test Timeout in seconds.
+set (DEFAULT_TEST_TIMEOUT 60)
 
 if (PIO_USE_MPISERIAL)
     add_test(NAME test_names

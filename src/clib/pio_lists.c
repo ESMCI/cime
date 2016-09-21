@@ -59,6 +59,43 @@ file_desc_t *pio_get_file_from_id(int ncid)
   }
   return cfile;
 }
+
+/** Get a pointer to the file_desc_t using the ncid. */
+int
+pio_get_file_from_id2(int ncid, file_desc_t **cfile1)
+{
+    file_desc_t *cfile = NULL;
+
+    LOG((1, "pio_get_file_from_id2 ncid = %d", ncid));
+
+    /* Caller must provide this. */
+    if (!cfile1)
+	return PIO_EINVAL;
+
+    /* Find the file pointer. */
+    if (current_file && current_file->fh == ncid)
+	cfile = current_file;
+    else
+	for (cfile = pio_file_list; cfile; cfile=cfile->next)
+	{
+	    if (cfile->fh == ncid)
+	    {
+		current_file = cfile;
+		break;
+	    }
+	}
+
+    /* If not found, return error. */
+    if (!cfile)
+	return PIO_EBADID;
+
+    LOG((3, "file found!"));
+
+    /* Copy pointer to file info. */
+    *cfile1 = cfile;
+    
+    return PIO_NOERR;
+}
   
 int pio_delete_file_from_list(int ncid)
 {

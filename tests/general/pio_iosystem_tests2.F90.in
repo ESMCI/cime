@@ -225,6 +225,7 @@ PIO_TF_AUTO_TEST_SUB_BEGIN three_files_two_iosystems_odd_even
     !                 fname, attname, dimname, ret)
     ! PIO_TF_CHECK_ERR(ret, "Checking (second) contents of file failed :" // fname)
 
+    call  MPI_Barrier(pio_tf_comm_);
     call PIO_closefile(pio_file)
     call PIO_closefile(pio_file0)
   end do

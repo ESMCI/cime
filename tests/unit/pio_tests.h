@@ -41,7 +41,7 @@
 /** Handle non-MPI errors by finalizing the MPI library and exiting
  * with an exit code. */
 #define ERR(e) do {				\
-        fprintf(stderr, "Error %d in %s, line %d\n", e, __FILE__, __LINE__); \
+        fprintf(stderr, "%d Error %d in %s, line %d\n", my_rank, e, __FILE__, __LINE__); \
 	MPI_Finalize();				\
 	return e;				\
     } while (0)

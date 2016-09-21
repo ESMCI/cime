@@ -215,8 +215,7 @@ int PIOc_openfile_retry(const int iosysid, int *ncidp, int *iotype,
 	pio_add_to_file_list(file);
     }
   
-    if (ios->io_rank == 0)
-	LOG((1, "Open file %s %d", filename, file->fh)); 
+    LOG((1, "Opened file %s file->fh = %d ierr = %d", filename, file->fh, ierr)); 
   
     return ierr;
 }
@@ -311,9 +310,6 @@ int PIOc_createfile(const int iosysid, int *ncidp, int *iotype,
     /* Get the IO system info from the iosysid. */
     if (!(ios = pio_get_iosystem_from_id(iosysid)))
 	return PIO_EBADID;
-
-    LOG((1, "PIOc_createfile iosysid = %d iotype = %d filename = %s mode = %d",
-	 iosysid, *iotype, filename, mode));
 
     /* Allocate space for the file info. */
     if (!(file = (file_desc_t *)malloc(sizeof(file_desc_t))))

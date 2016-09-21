@@ -85,12 +85,12 @@ pio_test_init(int argc, char **argv, int *my_rank, int *ntasks,
     {
 	fprintf(stderr, "ERROR: Number of processors must be exactly %d for this test!\n",
 	    target_ntasks);
-	ERR(ERR_AWFUL);
+	return ERR_AWFUL;
     }
 
     /* Turn on logging. */
     if ((ret = PIOc_set_log_level(3)))
-	ERR(ret);
+	return ret;
     
     return PIO_NOERR;
 }
@@ -121,7 +121,7 @@ test_inq_format(int ncid, int format)
 
     /* Get the format of an open file. */
     if ((ret = PIOc_inq_format(ncid, &myformat)))
-	ERR(ret);
+	return ret;
 
     /* Check the result. */
     if ((format == PIO_IOTYPE_PNETCDF || format == PIO_IOTYPE_NETCDF) && myformat != 1)
@@ -150,9 +150,9 @@ test_inq_type(int ncid, int format)
     for (int i = 0; i < max_type; i++)
     {
 	if ((ret = PIOc_inq_type(ncid, xtype[i], type_name, &type_size)))
-	    ERR(ret);
+	    return ret;
 	if (type_size != type_len[i])
-	    ERR(ERR_AWFUL);
+	    return ERR_AWFUL;
     }
 
     return PIO_NOERR;
@@ -242,36 +242,36 @@ check_nc_sample_0(int iosysid, int format, char *filename, int my_rank)
     printf("%d opening file %s format %d\n", my_rank, filename, format);
     if ((ret = PIOc_openfile(iosysid, &ncid, &format, filename,
     			     NC_NOWRITE)))
-    	ERR(ret);
+    	return ret;
 
     /* Find the number of dimensions, variables, and global attributes.*/
     if ((ret = PIOc_inq(ncid, &ndims, &nvars, &ngatts, &unlimdimid)))
-    	ERR(ret);
+    	return ret;
     if (ndims != 0 || nvars != 0 || ngatts != 0 || unlimdimid != -1)
-    	ERR(ERR_WRONG);
+    	return ERR_WRONG;
 
     /* Check the other functions that get these values. */
     if ((ret = PIOc_inq_ndims(ncid, &ndims2)))
-    	ERR(ret);
+    	return ret;
     if (ndims2 != 0)
-    	ERR(ERR_WRONG);
+    	return ERR_WRONG;
     if ((ret = PIOc_inq_nvars(ncid, &nvars2)))
-    	ERR(ret);
+    	return ret;
     if (nvars2 != 0)
-    	ERR(ERR_WRONG);
+    	return ERR_WRONG;
     if ((ret = PIOc_inq_natts(ncid, &ngatts2)))
-    	ERR(ret);
+    	return ret;
     if (ngatts2 != 0)
-    	ERR(ERR_WRONG);
+    	return ERR_WRONG;
     if ((ret = PIOc_inq_unlimdim(ncid, &unlimdimid2)))
-    	ERR(ret);
+    	return ret;
     if (unlimdimid != -1)
-    	ERR(ERR_WRONG);
+    	return ERR_WRONG;
 
     /* Close the file. */
     printf("%d closing file (again) ncid = %d\n", my_rank, ncid);
     if ((ret = PIOc_closefile(ncid)))
-    	ERR(ret);
+    	return ret;
 
     return 0;
 }
@@ -387,65 +387,65 @@ check_nc_sample_1(int iosysid, int format, char *filename, int my_rank)
     printf("%d opening file %s format %d\n", my_rank, filename, format);
     if ((ret = PIOc_openfile(iosysid, &ncid, &format, filename,
     			     NC_NOWRITE)))
-    	ERR(ret);
+    	return ret;
 
     /* Try to read the data. */
     PIO_Offset start[NDIM_S1] = {0}, count[NDIM_S1] = {DIM_LEN_S1};
     int data_in[DIM_LEN_S1];
     if ((ret = PIOc_get_vars_tc(ncid, 0, start, count, NULL, NC_INT, data_in)))
-    	ERR(ret);
+    	return ret;
     for (int i = 0; i < DIM_LEN_S1; i++)
     {
     	printf("%d read data_in[%d] = %d\n", my_rank, i, data_in[i]);
     	if (data_in[i] != i)
-    	    ERR(ERR_AWFUL);
+    	    return ERR_AWFUL;
     }
 
     /* Find the number of dimensions, variables, and global attributes.*/
     if ((ret = PIOc_inq(ncid, &ndims, &nvars, &ngatts, &unlimdimid)))
-    	ERR(ret);
+    	return ret;
     if (ndims != 1 || nvars != 1 || ngatts != 0 || unlimdimid != -1)
-    	ERR(ERR_WRONG);
+    	return ERR_WRONG;
 
     /* This should return PIO_NOERR. */
     if ((ret = PIOc_inq(ncid, NULL, NULL, NULL, NULL)))
-    	ERR(ret);
+    	return ret;
 
     /* Check the other functions that get these values. */
     if ((ret = PIOc_inq_ndims(ncid, &ndims2)))
-    	ERR(ret);
+    	return ret;
     if (ndims2 != 1)
-    	ERR(ERR_WRONG);
+    	return ERR_WRONG;
     if ((ret = PIOc_inq_nvars(ncid, &nvars2)))
-    	ERR(ret);
+    	return ret;
     if (nvars2 != 1)
-    	ERR(ERR_WRONG);
+    	return ERR_WRONG;
     if ((ret = PIOc_inq_natts(ncid, &ngatts2)))
-    	ERR(ret);
+    	return ret;
     if (ngatts2 != 0)
-    	ERR(ERR_WRONG);
+    	return ERR_WRONG;
     if ((ret = PIOc_inq_unlimdim(ncid, &unlimdimid2)))
-    	ERR(ret);
+    	return ret;
     if (unlimdimid != -1)
-    	ERR(ERR_WRONG);
+    	return ERR_WRONG;
 
     /* Check out the dimension. */
     if ((ret = PIOc_inq_dim(ncid, 0, dimname, &dimlen)))
-    	ERR(ret);
+    	return ret;
     if (strcmp(dimname, DIM_NAME_S1) || dimlen != DIM_LEN_S1)
-    	ERR(ERR_WRONG);
+    	return ERR_WRONG;
 
     /* Check out the variable. */
     if ((ret = PIOc_inq_var(ncid, 0, varname, &vartype, &varndims, &vardimids, &varnatts)))
-    	ERR(ret);
+    	return ret;
     if (strcmp(varname, VAR_NAME_S1) || vartype != NC_INT || varndims != NDIM_S1 ||
     	vardimids != 0 || varnatts != 0)
-    	ERR(ERR_WRONG);
+    	return ERR_WRONG;
 
     /* Close the file. */
     printf("%d closing file (again) ncid = %d\n", my_rank, ncid);
     if ((ret = PIOc_closefile(ncid)))
-    	ERR(ret);
+    	return ret;
 
     return 0;
 }
@@ -463,38 +463,38 @@ create_nc_sample_2(int iosysid, int format, char *filename, int my_rank)
     /* Create a netCDF file with one dimension and one variable. */
     printf("%d creating file %s\n", my_rank, filename);
     if ((ret = PIOc_createfile(iosysid, &ncid, &format, filename, NC_CLOBBER)))
-    	ERR(ret);
+    	return ret;
     printf("%d file created ncid = %d\n", my_rank, ncid);
 
     /* End define mode, then re-enter it. */
     if ((ret = PIOc_enddef(ncid)))
-    	ERR(ret);
+    	return ret;
     if ((ret = PIOc_redef(ncid)))
-    	ERR(ret);
+    	return ret;
 
     /* Define a dimension. */
     char dimname2[NC_MAX_NAME + 1];
     printf("%d defining dimension %s\n", my_rank, DIM_NAME_S2);
     if ((ret = PIOc_def_dim(ncid, FIRST_DIM_NAME_S2, DIM_LEN_S2, &dimid)))
-    	ERR(ret);
+    	return ret;
     if ((ret = PIOc_inq_dimname(ncid, 0, dimname2)))
-    	ERR(ret);
+    	return ret;
     if (strcmp(dimname2, FIRST_DIM_NAME_S2))
-    	ERR(ERR_WRONG);
+    	return ERR_WRONG;
     if ((ret = PIOc_rename_dim(ncid, 0, DIM_NAME_S2)))
-    	ERR(ret);
+    	return ret;
 
     /* Define a 1-D variable. */
     char varname2[NC_MAX_NAME + 1];
     printf("%d defining variable %s\n", my_rank, VAR_NAME_S2);
     if ((ret = PIOc_def_var(ncid, FIRST_VAR_NAME_S2, NC_INT, NDIM_S2, &dimid, &varid)))
-    	ERR(ret);
+    	return ret;
     if ((ret = PIOc_inq_varname(ncid, 0, varname2)))
-    	ERR(ret);
+    	return ret;
     if (strcmp(varname2, FIRST_VAR_NAME_S2))
-    	ERR(ERR_WRONG);
+    	return ERR_WRONG;
     if ((ret = PIOc_rename_var(ncid, 0, VAR_NAME_S2)))
-    	ERR(ret);
+    	return ret;
 
     /* char *buf111 = malloc(19999); */
 
@@ -507,38 +507,38 @@ create_nc_sample_2(int iosysid, int format, char *filename, int my_rank)
     char attname2[NC_MAX_NAME + 1];
     /* Write an att and rename it. */
     if ((ret = PIOc_put_att_int(ncid, NC_GLOBAL, FIRST_ATT_NAME_S2, NC_INT, 1, &att_data)))
-    	ERR(ret);
+    	return ret;
     if ((ret = PIOc_inq_attname(ncid, NC_GLOBAL, 0, attname2)))
-    	ERR(ret);
+    	return ret;
     if (strcmp(attname2, FIRST_ATT_NAME_S2))
-    	ERR(ERR_WRONG);
+    	return ERR_WRONG;
     if ((ret = PIOc_rename_att(ncid, NC_GLOBAL, FIRST_ATT_NAME_S2, ATT_NAME_S2)))
-    	ERR(ret);
+    	return ret;
 
     /* Write an att and delete it. */
     nc_type myatttype;
     if ((ret = PIOc_put_att_int(ncid, NC_GLOBAL, FIRST_ATT_NAME_S2, NC_INT, 1, &att_data)))
-    	ERR(ret);
+    	return ret;
     if ((ret = PIOc_del_att(ncid, NC_GLOBAL, FIRST_ATT_NAME_S2)))
-    	ERR(ret);
+    	return ret;
     /* if ((ret = PIOc_inq_att(ncid, NC_GLOBAL, FIRST_ATT_NAME_S2, NULL, NULL)) != PIO_ENOTATT) */
     /* { */
     /* 	printf("ret = %d\n", ret); */
-    /* 	ERR(ERR_AWFUL); */
+    /* 	return ERR_AWFUL; */
     /* } */
 
     /* Write some atts of different types. */
     if ((ret = PIOc_put_att_short(ncid, NC_GLOBAL, SHORT_ATT_NAME_S2, NC_SHORT, 1, &short_att_data)))
-    	ERR(ret);
+    	return ret;
     if ((ret = PIOc_put_att_float(ncid, NC_GLOBAL, FLOAT_ATT_NAME_S2, NC_FLOAT, 1, &float_att_data)))
-    	ERR(ret);
+    	return ret;
     if ((ret = PIOc_put_att_double(ncid, NC_GLOBAL, DOUBLE_ATT_NAME_S2, NC_DOUBLE, 1, &double_att_data)))
-    	ERR(ret);
+    	return ret;
 
     /* End define mode. */
     printf("%d ending define mode ncid = %d\n", my_rank, ncid);
     if ((ret = PIOc_enddef(ncid)))
-    	ERR(ret);
+    	return ret;
     printf("%d define mode ended ncid = %d\n", my_rank, ncid);
 	    
     /* Write some data. For the PIOc_put/get functions, all data must
@@ -552,12 +552,12 @@ create_nc_sample_2(int iosysid, int format, char *filename, int my_rank)
     start[0] = 0;
     count[0] = DIM_LEN_S2;
     if ((ret = PIOc_put_vars_tc(ncid, varid, start, count, NULL, NC_INT, data)))
-    	ERR(ret);
+    	return ret;
 
     /* Close the file. */
     printf("%d closing file ncid = %d\n", my_rank, ncid);
     if ((ret = PIOc_closefile(ncid)))
-    	ERR(ret);
+    	return ret;
     printf("%d closed file ncid = %d\n", my_rank, ncid);
 
     return PIO_NOERR;
@@ -606,7 +606,7 @@ check_nc_sample_2(int iosysid, int format, char *filename, int my_rank)
     {
 	printf("%d read data_in[%d] = %d\n", my_rank, i, data_in[i]);
 	if (data_in[i] != i)
-	    ERR(ERR_AWFUL);
+	    return ERR_AWFUL;
     }
 
     /* Find the number of dimensions, variables, and global attributes.*/
