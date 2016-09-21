@@ -180,8 +180,6 @@ PIO_TF_AUTO_TEST_SUB_BEGIN three_files_two_iosystems_odd_even
   ! Split world to odd and even procs
   call split_world_odd_even(odd_even_comm, odd_even_comm_rank, odd_even_comm_size, is_even)
 
-  ret = pio_set_log_level(3)
-
   call PIO_init(odd_even_comm_rank, odd_even_comm, odd_even_comm_size, &
                 1, &! Num aggregators
                 1, &! Stride
@@ -222,10 +220,10 @@ PIO_TF_AUTO_TEST_SUB_BEGIN three_files_two_iosystems_odd_even
                     pio_file, fname, attname, dimname, .true., ret)
     PIO_TF_CHECK_ERR(ret, "Checking contents of file failed :" // fname)
 
-    ! Make sure that we can still check the contents of the file
-    call check_file(odd_even_comm, odd_even_iosys, iotypes(i), pio_file, &
-                    fname, attname, dimname, ret)
-    PIO_TF_CHECK_ERR(ret, "Checking (second) contents of file failed :" // fname)
+    ! ! Make sure that we can still check the contents of the file
+    ! call check_file(odd_even_comm, odd_even_iosys, iotypes(i), pio_file, &
+    !                 fname, attname, dimname, ret)
+    ! PIO_TF_CHECK_ERR(ret, "Checking (second) contents of file failed :" // fname)
 
     call PIO_closefile(pio_file)
     call PIO_closefile(pio_file0)

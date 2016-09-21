@@ -109,7 +109,7 @@ CONTAINS
     call t_initf('gptl.nl')
 #endif
 
-
+    ierr = pio_set_log_level(3)
 
     pio_tf_log_level_ = 0
     pio_tf_num_aggregators_ = 0

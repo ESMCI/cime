@@ -465,6 +465,7 @@ int PIOc_Init_Intracomm(const MPI_Comm comp_comm, const int num_iotasks,
 
       /* Add this iosys struct to the list in the PIO library. */
       *iosysidp = pio_add_to_iosystem_list(iosys);
+      LOG((2, "iosysid = %d", *iosysidp));
 
       pio_get_env();
 
