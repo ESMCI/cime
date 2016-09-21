@@ -180,6 +180,8 @@ PIO_TF_AUTO_TEST_SUB_BEGIN three_files_two_iosystems_odd_even
   ! Split world to odd and even procs
   call split_world_odd_even(odd_even_comm, odd_even_comm_rank, odd_even_comm_size, is_even)
 
+  ret = pio_set_log_level(3)
+
   call PIO_init(odd_even_comm_rank, odd_even_comm, odd_even_comm_size, &
                 1, &! Num aggregators
                 1, &! Stride

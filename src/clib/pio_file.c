@@ -353,7 +353,7 @@ int PIOc_createfile(const int iosysid, int *ncidp, int *iotype,
 	file->do_io = 1;
     else
 	file->do_io = 0;
-    LOG((2, "file->do_io = %d", file->do_io));
+    LOG((2, "file->do_io = %d ios->async_interface = %d", file->do_io, ios->async_interface));
 
     /* If async is in use, and this is not an IO task, bcast the
      * parameters. */
