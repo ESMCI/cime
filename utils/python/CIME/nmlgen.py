@@ -98,8 +98,8 @@ class NamelistGenerator(object):
             nml_dict = parse(in_file=file_, groupless=True)
 
             # Add groups using the namelist definition.
-            new_namelist = self._definition.dict_to_namelist(nml_dict,
-                                                             filename=file_)
+            new_namelist = self._definition.dict_to_namelist(nml_dict, filename=file_)
+
             # Make sure that the input is actually valid.
             self._definition.validate(new_namelist, filename=file_)
 
@@ -513,13 +513,13 @@ class NamelistGenerator(object):
                 if literal == '':
                     continue
                 file_path = character_literal_to_string(literal)
+                if file_path == 'UNSET' or file_path == 'idmap':
+                    continue
                 if file_path == 'null':
                     continue
                 file_path = self.set_abs_file_path(file_path)
-                # Do not exit if domain file is set to UNSET value
-                if (os.path.basename(file_path) != 'UNSET'):
-                    expect(os.path.exists(file_path),
-                           "File not found: %s = %s" % (name, literal))
+                expect(os.path.exists(file_path),
+                       "File not found: %s = %s" % (name, literal))
                 current_literals[i] = string_to_character_literal(file_path)
             current_literals = compress_literal_list(current_literals)
 
@@ -566,7 +566,7 @@ class NamelistGenerator(object):
                         input_data_list.write("%s = %s\n" %
                                               (variable_name, file_path))
 
-    def write_output_files(self, namelist_file, modelio_file, data_list_path):
+    def write_output_files(self, namelist_file, modelio_file, data_list_path, groups=None):
         """Write out the namelists and input data files.
 
         The `namelist_file` and `modelio_file` are the locations to which the
@@ -575,9 +575,26 @@ class NamelistGenerator(object):
         file, which will have the input data files added to it.
         """
         self._definition.validate(self._namelist)
-        groups = self._namelist.get_group_names()
-        groups.remove("modelio")
-        self._namelist.write(modelio_file, groups=["modelio"])
+        if groups is None:
+            groups = self._namelist.get_group_names()
+
+        # remove groups that are never in namelist file
+        if "modelio" in groups:
+            groups.remove("modelio")
+        if "seq_maps" in groups:
+            groups.remove("seq_maps")
+            
+        # write namelist file
         self._namelist.write(namelist_file, groups=groups)
+
+        # append to input_data_list file
         with open(data_list_path, "a") as input_data_list:
             self._write_input_files(input_data_list)
+
+    def write_seq_maps(self, filename):
+        """ Write out seq_maps.rc"""
+        self._namelist.write(filename, groups=["seq_maps"], format_="rc")
+
+    def write_modelio_file(self, filename ):
+        """ Append to  component modelio files"""
+        self._namelist.write(filename, groups=["modelio", "pio_default_inparm"], format_="nml")

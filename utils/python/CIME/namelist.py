@@ -650,11 +650,11 @@ def compress_literal_list(literals):
             # Otherwise, write out the previous literal and start tracking the
             # new one.
             rep_str = str(num_reps) + '*' if num_reps > 1 else ''
-            compressed.append(rep_str + old_literal)
+            compressed.append(rep_str + str(old_literal))
             old_literal = literal
             num_reps = 1
     rep_str = str(num_reps) + '*' if num_reps > 1 else ''
-    compressed.append(rep_str + old_literal)
+    compressed.append(rep_str + str(old_literal))
     return compressed 
 
 def merge_literal_lists(default, overwrite):
@@ -994,13 +994,17 @@ class Namelist(object):
 
     def _write(self, out_file, groups, format_):
         """Unwrapped version of `write` assuming that a file object is input."""
+        print "DEBUG: format_ is ",format_
+        print "DEBUG: groups is ",groups
         if groups is None:
             groups = self._groups.keys()
+        print "DEBUG: groups is ",groups
         if format_ == 'nml':
             equals = ' ='
         elif format_ == 'rc':
             equals = ':'
         for group_name in sorted(group.lower() for group in groups):
+            print "DEBUG: group_name is ",group_name
             if format_ == 'nml':
                 out_file.write("&%s\n" % group_name)
             group = self._groups[group_name]

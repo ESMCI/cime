@@ -264,17 +264,6 @@
     </desc>
   </entry>
 
-  <entry id="BRNCH_RETAIN_CASENAME">
-    <type>logical</type>
-    <valid_values>TRUE,FALSE</valid_values>
-    <default_value>FALSE</default_value>
-    <group>run_begin_stop_restart</group>
-    <file>env_run.xml</file>
-    <desc>
-      Allow same branch casename as reference casename. Only used for branch runs.
-    </desc>
-  </entry>
-
   <entry id="GET_REFCASE">
     <type>logical</type>
     <valid_values>TRUE,FALSE</valid_values>
@@ -915,6 +904,14 @@
     <group>run_flags</group>
     <file>env_run.xml</file>
     <desc>timer output depth</desc>
+  </entry>
+
+  <entry id="TIMER_DETAIL">
+    <type>integer</type>
+    <default_value>1</default_value>
+    <group>run_flags</group>
+    <file>env_run.xml</file>
+    <desc>timer detail FIXME - add documentation</desc>
   </entry>
 
   <entry id="PROFILE_PAPI_ENABLE">

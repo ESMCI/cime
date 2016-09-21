@@ -270,6 +270,14 @@ class NamelistDefinition(GenericXML):
                (variable_template + " is not in the namelist definition.") %
                str(name))
 
+    def _user_modifiable_in_variable_definition(self, name, filename):
+        # Is name user modifiable?
+        node = self.get_optional_node("entry", attributes={'id': name})
+        user_modifiable = self.get_optional_node("unmodifiable_via_user_nl", root=node)
+        if user_modifiable is not None:
+            expect(False, 
+                   "Cannot change %s in user_nl_xxx file, %s" %(name, user_modifiable.text))
+
     def validate(self, namelist, filename=None):
         """Validate a namelist object against this definition.
 
@@ -281,12 +289,17 @@ class NamelistDefinition(GenericXML):
             variable_template = "Variable %r"
         else:
             variable_template = "Variable %r from file " + repr(str(filename))
+
         # Iterate through variables.
         for group_name in namelist.get_group_names():
             for variable_name in namelist.get_variable_names(group_name):
                 # Check that the variable is defined...
-                self._expect_variable_in_definition(variable_name,
-                                                    variable_template)
+                self._expect_variable_in_definition(variable_name, variable_template)
+
+                # Check if can actually change this variable via filename change
+                if filename is not None:
+                    self._user_modifiable_in_variable_definition(variable_name, filename)
+                
                 # and has the right group name...
                 var_info = self.get_value(variable_name)
                 expect(var_info['group'] == group_name,
@@ -294,6 +307,7 @@ class NamelistDefinition(GenericXML):
                         "should be in %r.") %
                        (str(variable_name), str(group_name),
                         str(var_info['group'])))
+
                 # and has a valid value.
                 value = namelist.get_variable_value(group_name, variable_name)
                 expect(self.is_valid_value(variable_name, value),

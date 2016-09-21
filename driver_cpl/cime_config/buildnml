@@ -35,7 +35,6 @@ def _main_func():
         rof_grid = case.get_value("ROF_GRID")
         wav_grid = case.get_value("WAV_GRID")
         comp_atm = case.get_value("COMP_ATM")
-        pio_version = case.get_value("PIO_VERSION")
 
         confdir = os.path.join(casebuild, "cplconf")
         if not os.path.isdir(confdir):
@@ -58,24 +57,30 @@ def _main_func():
         namelist_infile = os.path.join(confdir, "namelist")
         create_namelist_infile(case, user_nl_file, namelist_infile, infile_text)
 
+    user_xml_dir = os.path.join(caseroot, "SourceMods", "src.drv")
+    expect (os.path.isdir(user_xml_dir),
+            "user_xml_dir %s does not exist " %user_xml_dir)
+
     # call build-namelist
 
     bldnamelist = os.path.join(cimeroot, "driver_cpl", "bld", "build-namelist")
 
-    cmd = "%s -caseroot %s -cimeroot %s  -infile %s -pio_version %s" \
-        % (bldnamelist, caseroot, cimeroot, namelist_infile, pio_version)
-
-    cmd = cmd + " -grid %s -atm_grid %s -lnd_grid %s -rof_grid %s -ocn_grid %s -wav_grid %s" \
-        % (grid, atm_grid, lnd_grid, rof_grid, ocn_grid, wav_grid)
+    cmd = "%s --confdir %s --caseroot %s --cimeroot %s  --infile %s --user_xml_dir %s " \
+        % (bldnamelist, confdir, caseroot, cimeroot, namelist_infile, user_xml_dir)
 
     rc, out, err = run_cmd(cmd, from_dir=confdir)
     expect(rc==0,"Command %s failed rc=%d\nout=%s\nerr=%s"%(cmd,rc,out,err))
+    if out is not None and len(out) > 0:
+        logger.debug("cmd=%s"%cmd)
+        logger.info("out = %s"%out)
+    if err is not None and len(err) > 0:
+        logger.info("err= %s"%err)
 
     # copy drv_in, drv_flds_in, seq_maps.rc and all *modio* files to rundir
 
     shutil.copy(os.path.join(confdir,"drv_in"), rundir)
 
-    shutil.copy(os.path.join(confdir,"drv_flds_in"), rundir)
+    #shutil.copy(os.path.join(confdir,"drv_flds_in"), rundir)  #FIXME
 
     shutil.copy(os.path.join(confdir,"seq_maps.rc"), rundir)
 
