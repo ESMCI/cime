@@ -518,6 +518,33 @@ def _create_driver_namelist(case, confdir, infile, definition_files,  defaults_f
     seq_maps_file = os.path.join(confdir, "seq_maps.rc")
     nmlgen.write_seq_maps(seq_maps_file)
 
+    #-----------------------------------------------------------------------------
+    # (3) Write drv_flds_in
+    #-----------------------------------------------------------------------------
+    # In thte following, all values come simply from the infiles - no default values need to be added
+    # FIXME - do want to add the possibility that will use a user definition file for drv_flds_in
+
+    cimeroot = case.get_value('CIMEROOT')
+    caseroot = case.get_value('CASEROOT')
+
+    namelist_file = os.path.join(confdir, "drv_flds_in")
+    nmlgen.add_default('drv_flds_in_files' )
+    drvflds_files = nmlgen.get_default('drv_flds_in_files')
+    infiles = []
+    for drvflds_file in drvflds_files:
+        infile = os.path.join(caseroot, drvflds_file)
+        if os.path.isfile(infile):
+            infiles.append(infile)
+
+    if len(infiles) != 0:
+        config = {}
+        definition_files = [os.path.join(cimeroot, "driver_cpl", "bld", "namelist_files", "namelist_definition_drv_flds_v2.xml")]
+        defaults_files = [os.path.join(cimeroot, "driver_cpl", "bld", "namelist_files", "namelist_definition_drv_v2.xml")]
+        nmlgen = NamelistGenerator(case, infiles, definition_files, defaults_files,  config)
+        groups = nmlgen._namelist.get_group_names()
+        drv_flds_in = os.path.join(caseroot, "CaseDocs", "drv_flds_in")
+        nmlgen.write_output_file(drv_flds_in)
+
 ###############################################################################
 def _main_func():
 ###############################################################################
@@ -526,7 +553,7 @@ def _main_func():
 
     # Figure out where definition/defaults files are.
     namelist_xml_dir = os.path.join(cimeroot, "driver_cpl", "bld", "namelist_files")
-    definition_file_basename = "namelist_definition_drv.xml"
+    definition_file_basename = "namelist_definition_drv_v2.xml"
     definition_files = [os.path.join(namelist_xml_dir, definition_file_basename)]
     user_definition = os.path.join(user_xml_dir, definition_file_basename)
 

@@ -228,22 +228,27 @@ class NamelistDefinition(GenericXML):
         """
         name = name.lower()
         var_info = self.get_value(name)
+
         # Separate into a type, optional length, and optional size.
         type_ = var_info["type"]
         max_len = var_info["length"]
         size = var_info["size"]
+
         # Check value against type.
         for scalar in value:
             if not is_valid_fortran_namelist_literal(type_, scalar):
                 return False
+
         # Now that we know that the strings as input are valid Fortran, do some
         # canonicalization for further checks.
         canonical_value = self._canonicalize_value(type_, value)
+
         # Check maximum length (if applicable).
         if max_len is not None:
             for scalar in canonical_value:
                 if len(scalar) > max_len:
                     return False
+
         # Check valid value constraints (if applicable).
         if var_info["valid_values"] is not None:
             expect(type_ in ('integer', 'character'),
@@ -255,9 +260,12 @@ class NamelistDefinition(GenericXML):
                                 for vv in var_info["valid_values"]]
             else:
                 compare_list = var_info["valid_values"]
+                print "DEBUG: compare_list is ",compare_list
+                print "DEBUG: value is ",value
             for scalar in canonical_value:
                 if scalar not in compare_list:
                     return False
+
         # Check size of input array.
         if len(expand_literal_list(value)) > size:
             return False

@@ -566,7 +566,7 @@ class NamelistGenerator(object):
                         input_data_list.write("%s = %s\n" %
                                               (variable_name, file_path))
 
-    def write_output_file(self, namelist_file, data_list_path, groups=None):
+    def write_output_file(self, namelist_file, data_list_path=None, groups=None):
         """Write out the namelists and input data files.
 
         The `namelist_file` and `modelio_file` are the locations to which the
@@ -587,9 +587,10 @@ class NamelistGenerator(object):
         # write namelist file
         self._namelist.write(namelist_file, groups=groups)
 
-        # append to input_data_list file
-        with open(data_list_path, "a") as input_data_list:
-            self._write_input_files(input_data_list)
+        if data_list_path is not None:
+            # append to input_data_list file
+            with open(data_list_path, "a") as input_data_list:
+                self._write_input_files(input_data_list)
 
     def write_seq_maps(self, filename):
         """ Write out seq_maps.rc"""
