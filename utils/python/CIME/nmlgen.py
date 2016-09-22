@@ -566,7 +566,7 @@ class NamelistGenerator(object):
                         input_data_list.write("%s = %s\n" %
                                               (variable_name, file_path))
 
-    def write_output_files(self, namelist_file, modelio_file, data_list_path, groups=None):
+    def write_output_file(self, namelist_file, data_list_path, groups=None):
         """Write out the namelists and input data files.
 
         The `namelist_file` and `modelio_file` are the locations to which the

@@ -101,42 +101,38 @@ def _create_group_seq_infodata_inparm(case, nmlgen):
     nmlgen.add_default('glc_gnam')
     nmlgen.add_default('wav_gnam')
 
-    run_type = case.get_value('RUN_TYPE')
-    if run_type == 'startup':
-        start_type = "startup"
-    elif run_type == 'hybrid':
-        start_type = "startup"
-    elif run_type == 'branch':
-        start_type = "branch"
+    start_type = case.get_value('RUN_TYPE')
+    if start_type == 'hybrid':
+        start_type = 'startup'
     if case.get_value('CONTINUE_RUN') == 'TRUE':
         start_type = "continue"
     nmlgen.add_default('start_type', value=start_type)
 
     nmlgen.add_default('brnch_retain_casename', value='.false.')
-    if run_type != 'startup':
+    if start_type != 'startup':
         if case.get_value('CASE') == case.get_value('RUN_REFCASE'):
             nmlgen.add_default('brnch_retain_casename', value='.true.')
         
-    config['COMP_RUN_BARRIERS'] = case.get_value('COMP_RUN_BARRIERS'):
-    nmlgen.add_default('run_barriers', value=nmlgen.get_default('comp_run_barriers', config=config))
+    config['COMP_RUN_BARRIERS'] = case.get_value('COMP_RUN_BARRIERS')
+    nmlgen.add_default('run_barriers', value=nmlgen.get_default('run_barriers', config=config))
         
-    config['DRV_THREADING'] = case.get_value('DRV_THREADING'):
-    nmlgen.add_default('run_barriers', value=nmlgen.get_default('drv_threading', config=config))
+    config['DRV_THREADING'] = case.get_value('DRV_THREADING')
+    nmlgen.add_default('drv_threading', value=nmlgen.get_default('drv_threading', config=config))
 
-    config['BFBFLAG'] = case.get_value('BFBFLAG'):
-    nmlgen.add_default('run_barriers', value=nmlgen.get_default('bfbflag', config=config))
+    config['BFBFLAG'] = case.get_value('BFBFLAG')
+    nmlgen.add_default('bfbflag', value=nmlgen.get_default('bfbflag', config=config))
 
-    config['CPL_ALBAV'] = case.get_value('CPL_ALBAV'):
-    nmlgen.add_default('run_barriers', value=nmlgen.get_default('cpl_albav', config=config))
+    config['CPL_ALBAV'] = case.get_value('CPL_ALBAV')
+    nmlgen.add_default('flux_albav', value=nmlgen.get_default('flux_albav', config=config))
 
-    config['CPL_EPBAL'] = case.get_value('CPL_EPBAL'):
-    nmlgen.add_default('run_barriers', value=nmlgen.get_default('cpl_epbal', config=config))
+    config['CPL_EPBAL'] = case.get_value('CPL_EPBAL')
+    nmlgen.add_default('flux_epbal', value=nmlgen.get_default('flux_epbal', config=config))
 
-    config['FLDS_WISO'] = case.get_value('FLDS_WISO'):
-    nmlgen.add_default('run_barriers', value=nmlgen.get_default('flds_wiso', config=config))
+    config['FLDS_WISO'] = case.get_value('FLDS_WISO')
+    nmlgen.add_default('flds_wiso', value=nmlgen.get_default('flds_wiso', config=config))
    
-    config['BUDGETS'] = case.get_value('BUDGETS'):
-    nmlgen.add_default('run_barriers', value=nmlgen.get_default('budgets', config=config))
+    config['BUDGETS'] = case.get_value('BUDGETS')
+    nmlgen.add_default('do_budgets', value=nmlgen.get_default('do_budgets', config=config))
     nmlgen.add_default('budget_inst')
     nmlgen.add_default('budget_daily')
     nmlgen.add_default('budget_month')
@@ -321,10 +317,10 @@ def _create_group_prof_inparm(case, nmlgen):
     if case.get_value('PROFILE_PAPI_ENABLE'):
         config['PROFILE_PAPI_ENABLE'] = 'On'
 
-    nmlgen.add_default('profile_disable', , value=nmlgen.get_default('profile_disable', config=config))
+    nmlgen.add_default('profile_disable', value=nmlgen.get_default('profile_disable', config=config))
     nmlgen.add_default('profile_depth_limit', value=nmlgen.get_default('profile_depth_limit', config=config))
     nmlgen.add_default('profile_detail_limit', value=nmlgen.get_default('profile_detail_limit', config=config))
-    nmlgen.add_default('profile_papi_enable', value=nmlgen.get_default('profile_papi', config=config))
+    nmlgen.add_default('profile_papi_enable', value=nmlgen.get_default('profile_papi_enable', config=config))
     nmlgen.add_default('profile_timer', value=nmlgen.get_default('profile_timer', config=config))
     nmlgen.add_default('profile_global_stats')
     nmlgen.add_default('profile_single_file')
@@ -345,36 +341,36 @@ def _create_group_pio_default_inparm(case, nmlgen):
 ###############################################################################
     config = {}
 
-    # if case.get_value('PIO_ASYNC_INTERFACE'):
-    #     config['PIO_ASYNC_INTERFACE'] = 'On'
-    # if case.get_value('PIO_REARR_COMM_ENABLE_HS_COMP2IO'):
-    #     config['PIO_REARR_COMM_ENABLE_HS_COMP2IO'] = 'On'
-    # if case.get_value('PIO_REARR_COMM_ENABLE_ISEND_COMP2IO'):
-    #     config['PIO_REARR_COMM_ENABLE_ISEND_COMP2IO'] = 'On'
-    # if case.get_value('PIO_REARR_COMM_ENABLE_HS_IO2COMP'):
-    #     config['PIO_REARR_COMM_ENABLE_HS_IO2COMP'] = 'On'
-    # if case.get_value('PIO_REARR_COMM_ENABLE_ISEND_IO2COMP'):
-    #     config['PIO_REARR_COMM_ENABLE_ISEND_IO2COMP'] = 'On'
+    if case.get_value('PIO_ASYNC_INTERFACE'):
+         config['PIO_ASYNC_INTERFACE'] = 'On'
+    if case.get_value('PIO_REARR_COMM_ENABLE_HS_COMP2IO'):
+        config['PIO_REARR_COMM_ENABLE_HS_COMP2IO'] = 'On'
+    if case.get_value('PIO_REARR_COMM_ENABLE_ISEND_COMP2IO'):
+        config['PIO_REARR_COMM_ENABLE_ISEND_COMP2IO'] = 'On'
+    if case.get_value('PIO_REARR_COMM_ENABLE_HS_IO2COMP'):
+        config['PIO_REARR_COMM_ENABLE_HS_IO2COMP'] = 'On'
+    if case.get_value('PIO_REARR_COMM_ENABLE_ISEND_IO2COMP'):
+        config['PIO_REARR_COMM_ENABLE_ISEND_IO2COMP'] = 'On'
 
-    # nmlgen.add_default('pio_async_interface', value=nmlgen.get_default('pio_async_interface', config=config))
-    # nmlgen.add_default('pio_stride')
-    # nmlgen.add_default('pio_root')
-    # nmlgen.add_default('pio_rearranger')
-    # nmlgen.add_default('pio_numiotasks')
-    # nmlgen.add_default('pio_typename')
-    # nmlgen.add_default('pio_debug_level')
-    # nmlgen.add_default('pio_blocksize')
-    # nmlgen.add_default('pio_buffer_size_limit') 
-    # if case.get_value('PIO_VERSION') == 1:
-    #     nmlgen.add_default('pio_rearr_comm_type')
-    #     nmlgen.add_default('pio_rearr_comm_fcd')
-    #     nmlgen.add_default('pio_rearr_comm_max_pend_req_comp2io')
-    #     nmlgen.add_default('pio_rearr_comm_enable_hs_comp2io', 
-    #                        value=nmlgen.get_default('pio_rearr_comm_enable_hs_comp2io', config=config))
-    #     nmlgen.add_default('pio_rearr_comm_enable_isend_comp2io')
-    #     nmlgen.add_default('pio_rearr_comm_max_pend_req_io2comp')
-    #     nmlgen.add_default('pio_rearr_comm_enable_hs_io2comp')
-    #     nmlgen.add_default('pio_rearr_comm_enable_isend_io2comp')
+    nmlgen.add_default('pio_async_interface', value=nmlgen.get_default('pio_async_interface', config=config))
+    nmlgen.add_default('pio_stride')
+    nmlgen.add_default('pio_root')
+    nmlgen.add_default('pio_rearranger')
+    nmlgen.add_default('pio_numiotasks')
+    nmlgen.add_default('pio_typename')
+    nmlgen.add_default('pio_debug_level')
+    nmlgen.add_default('pio_blocksize')
+    nmlgen.add_default('pio_buffer_size_limit') 
+    if case.get_value('PIO_VERSION') == 1:
+        nmlgen.add_default('pio_rearr_comm_type')
+        nmlgen.add_default('pio_rearr_comm_fcd')
+        nmlgen.add_default('pio_rearr_comm_max_pend_req_comp2io')
+        nmlgen.add_default('pio_rearr_comm_enable_hs_comp2io', 
+                           value=nmlgen.get_default('pio_rearr_comm_enable_hs_comp2io', config=config))
+        nmlgen.add_default('pio_rearr_comm_enable_isend_comp2io')
+        nmlgen.add_default('pio_rearr_comm_max_pend_req_io2comp')
+        nmlgen.add_default('pio_rearr_comm_enable_hs_io2comp')
+        nmlgen.add_default('pio_rearr_comm_enable_isend_io2comp')
 
     # Note: pio_async_interface=.true. is not yet supported
     # If pio_async_interface is .true. or {component}_PIO_* variable is not set or set to -99
@@ -383,6 +379,9 @@ def _create_group_pio_default_inparm(case, nmlgen):
 ###############################################################################
 def _create_group_seq_maps(case, nmlgen):
 ###############################################################################
+
+    config = {}
+    config['BFBFLAG'] = case.get_value('BFBFLAG')
 
     items = ['atm2ocn_fmapname', 'atm2ocn_smapname', 'atm2ocn_vmapname', 'ocn2atm_fmapname',
              'ocn2atm_smapname', 'atm2lnd_fmapname', 'atm2lnd_smapname', 'lnd2atm_fmapname',
@@ -399,7 +398,7 @@ def _create_group_seq_maps(case, nmlgen):
              'ocn2wav_smaptype', 'ice2wav_smaptype', 'wav2ocn_smaptype']
 
     for item in items:
-        nmlgen.add_default(item)
+        nmlgen.add_default(item, nmlgen.get_default(item, config=config))
 
 ###############################################################################
 def _create_component_modelio_namelists(case, confdir, definition_files, defaults_files):
@@ -511,7 +510,7 @@ def _create_driver_namelist(case, confdir, infile, definition_files,  defaults_f
 
     namelist_file = os.path.join(confdir, "drv_in")
     modelio_file = os.path.join(confdir, "drv_modelio.nml")
-    nmlgen.write_output_files(namelist_file, modelio_file, data_list_path)
+    nmlgen.write_output_file(namelist_file, data_list_path )
 
     #-----------------------------------------------------------------------------------------------
     # (2) Write out seq_map.rc file
@@ -547,7 +546,6 @@ def _main_func():
 
     # Now build the component namelist and required stream txt files
     with Case(caseroot) as case:
-        _create_config_dict(case)
         _create_driver_namelist(case, confdir, infiles, definition_files, defaults_files)
         _create_component_modelio_namelists(case, confdir, definition_files, defaults_files)
 

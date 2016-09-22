@@ -98,8 +98,8 @@
   <histavg_wav    >.true.</histavg_wav    >
   <histavg_xao    >.true.</histavg_xao    >
 
-  <comp_run_barriers>.false.</comp_run_barriers>
-  <comp_run_barriers COMP_RUN_BARRIERS="TRUE">.true.</comp_run_barriers>
+  <run_barriers>.false.</run_barriers>
+  <run_barriers COMP_RUN_BARRIERS="TRUE">.true.</run_barriers>
 
   <drv_threading>.false.</drv_threading>
   <drv_threading DRV_THREADING="TRUE">.true.</drv_threading>
@@ -107,17 +107,17 @@
   <bfbflag>.false.</bfbflag>
   <bfbflag BFBFLAG="TRUE">.true.</bfbflag>
 
-  <cpl_albav>.false.</cpl_albav>
-  <cpl_albav CPL_ALBAV="TRUE">.true.</cpl_albav>
+  <flux_albav>.false.</flux_albav>
+  <flux_albav CPL_ALBAV="TRUE">.true.</flux_albav>
 
-  <cpl_epbal>.false.</cpl_epbal>
-  <cpl_epbal CPL_EPBAL="TRUE">.true.</cpl_epbal>
+  <flux_epbal>off</flux_epbal>
+  <flux_epbal CPL_EPBAL="TRUE">$CPL_EPBAL</flux_epbal>
 
   <flds_wiso>.false.</flds_wiso>
   <flds_wiso FLDS_WISO="TRUE">.true.</flds_wiso>
 
-  <budgets>.false.</budgets>
-  <budgets BUDGETS="TRUE">.true.</budgets>
+  <do_budgets>.false.</do_budgets>
+  <do_budgets BUDGETS="TRUE">.true.</do_budgets>
 
   <budget_inst >0</budget_inst>
   <budget_daily>0</budget_daily>

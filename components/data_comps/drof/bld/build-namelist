@@ -125,8 +125,7 @@ def build_namelist(case, confdir, inst_string, infiles, definition_files,
     # Finally, write out all the namelists.
     #----------------------------------------------------
     namelist_file = os.path.join(confdir, COMPONENT+"_in")
-    modelio_file = os.path.join(confdir, "rof_modelio.nml")
-    nmlgen.write_output_files(namelist_file, modelio_file, data_list_path)
+    nmlgen.write_output_file(namelist_file, data_list_path)
 
 ###############################################################################
 def _main_func():
