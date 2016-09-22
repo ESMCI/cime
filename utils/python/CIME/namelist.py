@@ -994,17 +994,13 @@ class Namelist(object):
 
     def _write(self, out_file, groups, format_):
         """Unwrapped version of `write` assuming that a file object is input."""
-        print "DEBUG: format_ is ",format_
-        print "DEBUG: groups is ",groups
         if groups is None:
             groups = self._groups.keys()
-        print "DEBUG: groups is ",groups
         if format_ == 'nml':
             equals = ' ='
         elif format_ == 'rc':
             equals = ':'
         for group_name in sorted(group.lower() for group in groups):
-            print "DEBUG: group_name is ",group_name
             if format_ == 'nml':
                 out_file.write("&%s\n" % group_name)
             group = self._groups[group_name]

@@ -44,6 +44,11 @@ class NamelistDefinition(GenericXML):
         """Construct a `NamelistDefinition` from an XML file."""
         super(NamelistDefinition, self).__init__(infile)
         self._value_cache = {}
+        self._version = self._get_version(infile)
+
+    def _get_version(self, infile):
+        version = self.get_node("version").text
+        return version
 
     def add(self, infile):
         """Add the contents of an XML file to the namelist definition."""
@@ -98,10 +103,13 @@ class NamelistDefinition(GenericXML):
 
         def get_required_field(name):
             """Copy a required node from `entry` element to `var_info`."""
-            var_info[name] = self.get_node(name, root=elem).text
+            if self._version == "1.0":
+                var_info[name] = elem.get(name)
+            elif self._version == "2.0":
+                var_info[name] = self.get_node(name, root=elem).text
             expect(var_info[name] is not None,
-                   "field %s missing from namelist definition for %s" %
-                   (name, item))
+                   "field %s missing from namelist definition for %s" 
+                   % (name, item))
 
         get_required_field('type')
         get_required_field('category')
@@ -115,29 +123,38 @@ class NamelistDefinition(GenericXML):
 
         # The "valid_values" attribute is not required, and an empty string has
         # the same effect as not specifying it.
-        node = self.get_optional_node('valid_values', root=elem)
-        valid_values = None
-        if node is not None:
-            valid_values = node.text
-            if valid_values == '':
-                valid_values = None
-            if valid_values is not None:
-                valid_values = valid_values.split(',')
+        valid_values = ''
+        if self._version == "1.0":
+            valid_values = elem.get('valid_values')
+        elif self._version == "2.0":
+            node = self.get_optional_node('valid_values', root=elem)
+            if node is not None:
+                valid_values = node.text
+        if valid_values == '':
+            valid_values = None
+        if valid_values is not None:
+            valid_values = valid_values.split(',')
         var_info['valid_values'] = valid_values
 
         # The "input_pathname" attribute is not required.
-        node = self.get_optional_node('input_pathname', root=elem)
-        if node is not None:
-            var_info['input_pathname'] = node.text
-        else:
-            var_info['input_pathname'] = None
+        if self._version == "1.0":
+            var_info['input_pathname'] = elem.get('input_pathname')
+        elif self._version == "2.0": 
+            node = self.get_optional_node('input_pathname', root=elem)
+            if node is not None:
+                var_info['input_pathname'] = node.text
+            else:
+                var_info['input_pathname'] = None
 
         # The description is the data on the node itself.
-        node = self.get_optional_node('description', root=elem)
-        if node is not None:
-            var_info['description'] = node.text
-        else:
-            var_info['description'] = None
+        if self._version == "1.0.":
+            var_info['description'] = elem.text
+        elif self._version == "2.0":
+            node = self.get_optional_node('description', root=elem)
+            if node is not None:
+                var_info['description'] = node.text
+            else:
+                var_info['description'] = None
 
         # Cache result of query.
         self._value_cache[item] = var_info
@@ -260,8 +277,6 @@ class NamelistDefinition(GenericXML):
                                 for vv in var_info["valid_values"]]
             else:
                 compare_list = var_info["valid_values"]
-                print "DEBUG: compare_list is ",compare_list
-                print "DEBUG: value is ",value
             for scalar in canonical_value:
                 if scalar not in compare_list:
                     return False

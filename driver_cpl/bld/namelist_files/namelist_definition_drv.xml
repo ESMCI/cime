@@ -2,7 +2,10 @@
 
 <?xml-stylesheet type="text/xsl" href="http://www.cgd.ucar.edu/~cam/namelist/namelist_definition.xsl"?>
 
+
 <namelist_definition>
+
+  <version>1.0</version>
 
 <!-- Each namelist variable is defined in an <entry> element.  The
      content of the element is the documentation of how the variable is
