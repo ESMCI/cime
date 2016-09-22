@@ -1,9 +1,10 @@
 /**
- * @file Tests for PIOc_Intercomm. This tests basic asynch I/O capability.
- * @author Ed Hartnett
+ * @file Tests the PIO library with multiple iosysids in use at the
+ * same time.
  *
  * This is a simplified, C version of the fortran pio_iosystem_tests2.F90.
  *
+ * @author Ed Hartnett
  */
 #include <pio.h>
 #include <pio_tests.h>
@@ -177,7 +178,7 @@ main(int argc, char **argv)
 	int ncid2;
 	char *fname = even ? fname1 : fname2;
 	printf("\n***\n");
-	if ((ret = open_and_check_file(MPI_COMM_WORLD, iosysid, iotypes[i], &ncid2, fname1,
+	if ((ret = open_and_check_file(newcomm, iosysid, iotypes[i], &ncid2, fname,
 				       ATTNAME, DIMNAME, 1, my_rank)))
 	    ERR(ret);
 	
