@@ -561,7 +561,7 @@ def _main_func():
         definition_file = [user_definition]
 
     # User defaults *extends* existing defaults.
-    defaults_file_basename = "namelist_defaults_drv.xml"
+    defaults_file_basename = "namelist_definition_drv_v2.xml"
     defaults_files = [os.path.join(namelist_xml_dir, defaults_file_basename)]
     user_defaults = os.path.join(user_xml_dir, defaults_file_basename)
     if os.path.isfile(user_defaults):

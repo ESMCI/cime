@@ -71,6 +71,8 @@
     namelist cpl_flds_inparm and are currently triggered by the xml variable CCSM_BGC.
     If CCSM_BGC is set to 'CO2A', then flds_co2a will be set to .true.
   </description>
+  <flds_co2a>.false.</flds_co2a>
+  <flds_co2a BGC_MODE="CO2A">.true.</flds_co2a>
 </entry>
 
 <entry id="flds_co2b">
@@ -84,6 +86,8 @@
     namelist cpl_flds_inparm and are currently triggered by the xml variable CCSM_BGC.
     If CCSM_BGC is set to 'CO2B', then flds_co2b will be set to .true.
   </description>
+  <flds_co2b>.false.</flds_co2b>
+  <flds_co2b BGC_MODE="CO2B">.true.</flds_co2b>
 </entry>
 
 <entry id="flds_co2c">
@@ -97,6 +101,8 @@
     namelist cpl_flds_inparm and are currently triggered by the xml variable CCSM_BGC.
     If CCSM_BGC is set to 'CO2C', then flds_co2c will be set to .true.
   </description>
+  <flds_co2c>.false.</flds_co2c>
+  <flds_co2c BGC_MODE="CO2C">.true.</flds_co2c>
 </entry>
 
 <entry id="flds_co2_dmsa">
@@ -110,6 +116,8 @@
     namelist cpl_flds_inparm and are currently triggered by the xml variable CCSM_BGC.
     If CCSM_BGC is set to 'CO2_DMSA', then flds_co2_dmsa will be set to .true.
   </description>
+  <flds_co2_dmsa>.false.</flds_co2_dmsa>
+  <flds_co2_dmsa BGC_MODE="CO2_DMSA">.true.</flds_co2_dmsa>
 </entry>
 
 <entry id="flds_bgc">
@@ -124,6 +132,7 @@
     This is a new master switch for turning ACME BGC off and on, just for testing.
     If ACME_BGC is set to 'TRUE', then flds_bgc will be set to .true.
   </description>
+  <flds_bgc>.false.</flds_bgc>
 </entry>
 
 <entry  id="flds_wiso">
@@ -133,6 +142,8 @@
   <description>
     Pass water isotopes between components
   </description>
+  <flds_wiso>.false.</flds_wiso>
+  <flds_wiso FLDS_WISO="TRUE">.true.</flds_wiso>
 </entry>
 
 <entry  id="glc_nec">
@@ -154,6 +165,7 @@
     Number of sea ice thickness categories.
     Set by the xml variable ICE_NCAT in env_build.xml
   </description>
+  <ice_ncat>$ICE_NCAT</ice_ncat>
 </entry>
 
 <entry id="seq_flds_i2o_per_cat">
@@ -165,6 +177,8 @@
     .true. if select per ice thickness category fields are passed to the ocean.
     Set by the xml variable CPL_I2O_PER_CAT in env_run.xml
   </description>
+  <seq_flds_i2o_per_cat>.false.</seq_flds_i2o_per_cat>
+  <seq_flds_i2o_per_cat CPL_I2O_PER_CAT="TRUE">.true.</seq_flds_i2o_per_cat>  
 </entry>
 
 <!-- =========================== -->
@@ -241,6 +255,7 @@
   <description>
     case name.
   </description>
+  <case_name>$CASE</case_name>
 </entry>
 
 <entry id="case_desc">
@@ -251,6 +266,7 @@
   <description>
     case description.
   </description>
+  <case_desc>$CASESTR</case_desc>
 </entry>
 
 <entry id="model_version">
@@ -271,6 +287,7 @@
   <description>
     username documentation
   </description>
+  <username>$USER</username>
 </entry>
 
 <entry id="hostname">
@@ -281,6 +298,7 @@
   <description>
     hostname information,
   </description>
+  <hostname>$MACH</hostname>
 </entry>
 
 <entry id="timing_dir">
@@ -290,6 +308,7 @@
   <description>
     location of timing output.
   </description>
+  <timing_dir>./timing</timing_dir>
 </entry>
 
 <entry id="tchkpt_dir">
@@ -299,6 +318,7 @@
   <description>
     location of timing checkpoint output.
   </description>
+  <tchkpt_dir>./timing/checkpoints</tchkpt_dir>
 </entry>
 
 <entry id="start_type">
@@ -331,6 +351,7 @@
   <description>
     Level of debug output, 0=minimum, 1=normal, 2=more, 3=too much (default: 1)
   </description>
+  <info_debug>$INFO_DBUG</info_debug>
 </entry>
 
 <entry id="bfbflag">
@@ -342,6 +363,8 @@
     turns on bfb option in coupler which produce bfb results in the
     coupler on different processor counts.  (default: .false.)
   </description>
+  <bfbflag>.false.</bfbflag>
+  <bfbflag BFBFLAG="TRUE">.true.</bfbflag>
 </entry>
 
 <entry id="orb_mode">
@@ -362,6 +385,7 @@
     integration.  set by ORBITAL_MODE in env_run.xml.  [fixed_year,
     variable_year, fixed_parameters]  (default: 'fixed_year'.)
   </description>
+  <orb_mode>fixed_year</orb_mode>
 </entry>
 
 <entry id="orb_iyear_align">
@@ -371,6 +395,7 @@
   <description>
     model year associated with orb_iyear when orb_mode is variable_year. (default: 1990)
   </description>
+  <orb_iyear_align>1990</orb_iyear_align>
 </entry>
 
 <entry id="orb_iyear">
@@ -380,6 +405,7 @@
   <description>
     year of orbit, used when orb_mode is fixed_year or variable_year. (default: 1990)
   </description>
+  <orb_iyear>1990</orb_iyear>
 </entry>
 
 <entry id="orb_eccen">
@@ -426,6 +452,7 @@
     Bolton (1980); 'Flatau' for Flatau, Walko, and Cotton (1992).
     Default: GoffGratch
   </description>
+  <wv_sat_scheme>GoffGratch</wv_sat_scheme>
 </entry>
 
 <entry id="wv_sat_transition_start">
@@ -441,6 +468,7 @@
     so many different parameterizations, changes to this variable may require a
     significant retuning of CAM's cloud physics to give reasonable results.
   </description>
+  <wv_sat_transition_start>20.0D0</wv_sat_transition_start>
 </entry>
 
 <entry id="wv_sat_use_tables">
@@ -452,6 +480,7 @@
     saturation vapor pressure.
     Default: .false.
   </description>
+  <wv_sat_use_tables>.false.</wv_sat_use_tables>
 </entry>
 
 <entry id="wv_sat_table_spacing">
@@ -463,6 +492,7 @@
     (This is only used if wv_sat_use_tables is .true.)
     Default: 1.0
   </description>
+  <wv_sat_table_spacing>1.0D0</wv_sat_table_spacing>
 </entry>
 
 <entry id="tfreeze_option">
@@ -474,6 +504,7 @@
     Freezing point calculation for salt water.
     Default: minus1p8
   </description>
+  <tfreeze_option>minus1p8</tfreeze_option>
 </entry>
 
 <entry  id="flux_epbal">
@@ -486,6 +517,8 @@
     Only used for C,G compsets: if ocn, ocn provides EP balance factor for precip
     default: off
   </description>
+  <flux_epbal>off</flux_epbal>
+  <flux_epbal CPL_EPBAL="TRUE">$CPL_EPBAL</flux_epbal>
 </entry>
 
 <entry id="flux_albav">
@@ -497,6 +530,8 @@
     Only used for C,G compsets: if true, compute albedos to work with daily avg SW down
     default: false
   </description>
+  <flux_albav>.false.</flux_albav>
+  <flux_albav CPL_ALBAV="TRUE">.true.</flux_albav>
 </entry>
 
 <entry id="wall_time_limit">
@@ -507,6 +542,7 @@
     Wall time limit for run
     default: -1.0
   </description>
+  <wall_time_limit>-1.0</wall_time_limit>
 </entry>
 
 <entry id="force_stop_at">
@@ -518,6 +554,7 @@
     Force stop at the next month, day, etc when wall_time_limit is hit
     default: month
   </description>
+  <force_stop_at>month</force_stop_at>
 </entry>
 
 <entry id="flux_diurnal">
@@ -528,6 +565,7 @@
     If true, turn on diurnal cycle in computing atm/ocn fluxes
     default: false
   </description>
+  <flux_diurnal>.false.</flux_diurnal>
 </entry>
 
 <entry id="atm_gnam">
@@ -538,6 +576,7 @@
   <description>
     ATM_GRID values passed into driver.
   </description>
+  <atm_gnam>$ATM_GRID</atm_gnam>
 </entry>
 
 <entry id="lnd_gnam">
@@ -548,6 +587,7 @@
   <description>
     LND_GRID values passed into driver.
   </description>
+  <lnd_gnam>$LND_GRID</lnd_gnam>
 </entry>
 
 <entry id="ocn_gnam">
@@ -558,6 +598,7 @@
   <description>
     OCN_GRID values passed into driver.
   </description>
+  <ocn_gnam>$OCN_GRID</ocn_gnam>
 </entry>
 
 <entry id="ice_gnam">
@@ -568,6 +609,7 @@
   <description>
     ICE_GRID values passed into driver.
   </description>
+  <ice_gnam>$ICE_GRID</ice_gnam>
 </entry>
 
 <entry id="rof_gnam">
@@ -578,6 +620,7 @@
   <unmodifiable_via_user_nl>must be set via xml variable ROF_GRID</unmodifiable_via_user_nl>
     ROF_GRID values passed into driver.
   </description>
+  <rof_gnam>$ROF_GRID</rof_gnam>
 </entry>
 
 <entry id="glc_gnam">
@@ -588,6 +631,7 @@
   <description>
     GLC_GRID values passed into driver.
   </description>
+  <glc_gnam>$GLC_GRID</glc_gnam>
 </entry>
 
 <entry id="wav_gnam">
@@ -598,6 +642,7 @@
   <description>
     WAV_GRID values passed into driver.
   </description>
+  <wav_gnam>$WAV_GRID</wav_gnam>
 </entry>
 
 <entry id="shr_map_dopole">
@@ -607,6 +652,7 @@
   <description>
     invoke pole averaging corrections in shr_map_mod weights generation (default: true)
   </description>
+  <shr_map_dopole>.true.</shr_map_dopole>
 </entry>
 
 <entry id="vect_map">
@@ -633,6 +679,7 @@
     mapping.
     default: npfix
   </description>
+  <vect_map>$VECT_MAP</vect_map>
 </entry>
 
 <entry id="aoflux_grid">
@@ -644,6 +691,7 @@
     Grid for atm ocn flux calc (untested)
     default: ocn
   </description>
+  <aoflux_grid>ocn</aoflux_grid>
 </entry>
 
 <entry id="mct_usealltoall">
@@ -654,6 +702,7 @@
     mct alltoall mapping flag
     default: false
   </description>
+  <mct_usealltoall>.false.</mct_usealltoall>
 </entry>
 
 <entry id="mct_usevector">
@@ -664,6 +713,7 @@
     mct vector flag
     default: false
   </description>
+  <mct_usevector>.false.</mct_usevector>
 </entry>
 
 <entry id="cpl_decomp">
@@ -676,6 +726,7 @@
     cpl decomp option (0=default, 1=comp decomp, 2=rearr comp decomp, 3=new single 1d seg
     default: 0
   </description>
+  <cpl_decomp>$CPL_DECOMP</cpl_decomp>
 </entry>
 
 <entry id="cpl_seq_option">
@@ -687,6 +738,7 @@
   <description>
     Set the coupler sequencing.  See CPL_SEQ_OPTION in env_run. (default: CESM1_MOD)
   </description>
+  <cpl_seq_option>$CPL_SEQ_OPTION</cpl_seq_option>
 </entry>
 
 <entry id="cpl_cdf64">
@@ -696,6 +748,7 @@
   <description>
     default: true
   </description>
+  <cpl_cdf64>.true.</cpl_cdf64>
 </entry>
 
 <entry id="do_budgets">
@@ -707,6 +760,8 @@
     logical that turns on diagnostic budgets, false means budgets will never be written
     default: false
   </description>
+  <do_budgets>.false.</do_budgets>
+  <do_budgets BUDGETS="TRUE">.true.</do_budgets>
 </entry>
 
 <entry id="do_histinit">
@@ -716,6 +771,7 @@
   <description>
     logical to write an extra initial coupler history file
   </description>
+  <do_histinit>.false.</do_histinit>
 </entry>
 
 <entry id="budget_inst">
@@ -732,6 +788,7 @@
     3=+detailed atm budgets
     default: 0
   </description>
+  <budget_inst >0</budget_inst>
 </entry>
 
 <entry id="budget_daily">
@@ -748,6 +805,7 @@
     3=+detailed atm budgets
     default: 0
   </description>
+  <budget_daily>0</budget_daily>
 </entry>
 
 <entry id="budget_month">
@@ -764,6 +822,7 @@
     3=+detailed atm budgets
     default: 1
   </description>
+  <budget_month>1</budget_month>
 </entry>
 
 <entry id="budget_ann">
@@ -780,6 +839,7 @@
     3=+detailed atm budgets
     default: 1
   </description>
+  <budget_ann  >1</budget_ann>
 </entry>
 
 <entry id="budget_ltann">
@@ -797,6 +857,7 @@
     3=+detailed atm budgets,
     default: 1
   </description>
+  <budget_ltann>1</budget_ltann>
 </entry>
 
 <entry id="budget_ltend">
@@ -814,6 +875,7 @@
     3=+detailed atm budgets,
     default: 0
   </description>
+  <budget_ltend>0</budget_ltend>
 </entry>
 
 <entry id="histaux_a2x">
@@ -824,6 +886,7 @@
     turns on coupler history stream for instantaneous atm to coupler fields.
     default: false
   </description>
+  <histaux_a2x    >.false.</histaux_a2x    >
 </entry>
 
 <entry id="histaux_a2x3hr">
@@ -834,6 +897,7 @@
     turns on coupler history stream for 3-hour average atm to coupler fields.
     default: false
   </description>
+  <histaux_a2x3hr >.false.</histaux_a2x3hr >
 </entry>
 
 <entry id="histaux_a2x3hrp">
@@ -844,6 +908,7 @@
     turns on coupler history stream for 3-hour average atm to coupler precip fields.
     default: false
   </description>
+  <histaux_a2x3hrp>.false.</histaux_a2x3hrp>
 </entry>
 
 <entry id="histaux_a2x24hr">
@@ -854,6 +919,7 @@
     turns on coupler history stream for daily average atm to coupler fields.
     default: false
   </description>
+  <histaux_a2x24hr>.false.</histaux_a2x24hr>
 </entry>
 
 <entry id="histaux_l2x">
@@ -864,6 +930,7 @@
     turns on coupler history stream for instantaneous land to coupler fields.
     default: false
   </description>
+  <histaux_l2x    >.false.</histaux_l2x    >
 </entry>
 
 <entry id="histaux_r2x">
@@ -874,6 +941,7 @@
     turns on coupler history stream for instantaneous runoff to coupler fields.
     default: false
   </description>
+  <histaux_r2x    >.false.</histaux_r2x    >
 </entry>
 
 <entry id="histaux_l2x1yr">
@@ -884,6 +952,7 @@
     turns on coupler history stream for annual sno to coupler fields.
     default: false
   </description>
+  <histaux_l2x1yr >.false.</histaux_l2x1yr >
 </entry>
 
 <entry id="histavg_atm">
@@ -894,6 +963,7 @@
     writes atm fields in coupler average history files.
     default: true
   </description>
+  <histavg_atm    >.true.</histavg_atm    >
 </entry>
 
 <entry id="histavg_lnd">
@@ -904,6 +974,7 @@
     writes lnd fields in coupler average history files.
     default: true
   </description>
+  <histavg_lnd    >.true.</histavg_lnd    >
 </entry>
 
 <entry id="histavg_ocn">
@@ -914,6 +985,7 @@
     writes ocn fields in coupler average history files.
     default: true
   </description>
+  <histavg_ocn    >.true.</histavg_ocn    >
 </entry>
 
 <entry id="histavg_ice">
@@ -924,6 +996,7 @@
     writes ice fields in coupler average history files.
     default: true
   </description>
+  <histavg_ice    >.true.</histavg_ice    >
 </entry>
 
 <entry id="histavg_rof">
@@ -934,6 +1007,7 @@
     writes rof fields in coupler average history files.
     default: true
   </description>
+  <histavg_rof    >.true.</histavg_rof    >
 </entry>
 
 <entry id="histavg_glc">
@@ -944,6 +1018,7 @@
     writes glc fields in coupler average history files.
     default: true
   </description>
+  <histavg_glc    >.true.</histavg_glc    >
 </entry>
 
 <entry id="histavg_wav">
@@ -954,6 +1029,7 @@
     writes wav fields in coupler average history files.
     default: true
   </description>
+  <histavg_wav    >.true.</histavg_wav    >
 </entry>
 
 <entry id="histavg_xao">
@@ -964,6 +1040,7 @@
     writes xao fields in coupler average history files.
     default: true
   </description>
+  <histavg_xao    >.true.</histavg_xao    >
 </entry>
 
 <entry id="drv_threading">
@@ -974,6 +1051,8 @@
     turn on run time control of threading per pe per component by the driver
     default: false
   </description>
+  <drv_threading>.false.</drv_threading>
+  <drv_threading DRV_THREADING="TRUE">.true.</drv_threading>
 </entry>
 
 <entry id="run_barriers">
@@ -983,6 +1062,8 @@
   <description>
     default: .false.
   </description>
+  <run_barriers>.false.</run_barriers>
+  <run_barriers COMP_RUN_BARRIERS="TRUE">.true.</run_barriers>
 </entry>
 
 <entry id="eps_frac">
@@ -994,6 +1075,7 @@
     Error tolerance for differences in fractions in domain checking
     default: 1.0e-02
   </description>
+  <eps_frac>$EPS_FRAC</eps_frac>
 </entry>
 
 <entry id="eps_amask">
@@ -1005,6 +1087,7 @@
     Error tolerance for differences in atm/land masks in domain checking
     default: 1.0e-13
   </description>
+  <eps_amask>$EPS_AMASK</eps_amask>
 </entry>
 
 <entry id="eps_agrid">
@@ -1016,6 +1099,7 @@
     Error tolerance for differences in atm/land lat/lon in domain checking
     default: 1.0e-12
   </description>
+  <eps_agrid>$EPS_AGRID</eps_agrid>
 </entry>
 
 <entry id="eps_aarea">
@@ -1027,6 +1111,7 @@
     Error tolerance for differences in atm/land areas in domain checking
     default: 1.0e-07
   </description>
+  <eps_aarea>$EPS_AAREA</eps_aarea>
 </entry>
 
 <entry id="eps_omask">
@@ -1038,6 +1123,7 @@
     Error tolerance for differences in ocean/ice masks in domain checking
     default: 1.0e-06
   </description>
+  <eps_omask>$EPS_OMASK</eps_omask>
 </entry>
 
 <entry id="eps_ogrid">
@@ -1049,6 +1135,7 @@
     Error tolerance for differences in ocean/ice lon/lat in domain checking
     default: 1.0e-2
   </description>
+  <eps_ogrid>$EPS_OGRID</eps_ogrid>
 </entry>
 
 <entry id="eps_oarea">
@@ -1060,6 +1147,7 @@
     Error tolerance for differences in ocean/ice lon/lat in domain checking
     default: 1.0e-1
   </description>
+  <eps_oarea>$EPS_OAREA</eps_oarea>
 </entry>
 
 <entry id="single_column">
@@ -1320,6 +1408,7 @@
     Start time-of-day in universal time (seconds), should be between zero and 86400
     default: 0
   </description>
+  <start_tod>$START_TOD</start_tod>
 </entry>
 
 <entry id="stop_option">
@@ -1344,6 +1433,7 @@
     [ifdays0]   , stops at stop_n calendar day value and seconds equal 0
     [end]       , stops at end
   </description>
+  <stop_option>$STOP_OPTION</stop_option>
 </entry>
 
 <entry id="stop_n">
@@ -1354,6 +1444,7 @@
   <description>
     Sets the run length with stop_option and stop_ymd
   </description>
+  <stop_n>$STOP_N</stop_n>
 </entry>
 
 <entry id="stop_ymd">
@@ -1365,6 +1456,7 @@
     date in yyyymmdd format, sets the run length with stop_option and stop_n,
     can be in addition to stop_option and stop_n, negative value implies off
   </description>
+  <stop_ymd>$STOP_DATE</stop_ymd>
 </entry>
 
 <entry id="restart_file">
@@ -1400,6 +1492,7 @@
     [ifdays0]   , restarts at restart_n calendar day value and seconds equal 0
     [end]       , restarts at end
   </description>
+  <restart_option>$REST_OPTION</restart_option>
 </entry>
 
 <entry id="restart_n">
@@ -1410,6 +1503,7 @@
   <description>
     Sets model restart writes with restart_option and restart_ymd (same options as stop_n)
   </description>
+  <restart_n>$REST_N</restart_n>
 </entry>
 
 <entry id="restart_ymd">
@@ -1421,6 +1515,7 @@
     Date in yyyymmdd format, sets model restart write date with rest_option and restart_n
     default: STOP_N
   </description>
+  <restart_ymd>$REST_DATE</restart_ymd>
 </entry>
 
 <entry id="end_restart">
@@ -1434,6 +1529,7 @@
     will be set to false if restart_option is none or never.
     default: false
   </description>
+  <end_restart>.false.</end_restart>
 </entry>
 
 <entry id="history_option">
@@ -1459,6 +1555,7 @@
     [ifdays0]   , history snapshot at history_n calendar day value and seconds equal 0
     [end]       , history snapshot at end
   </description>
+  <history_option>$HIST_OPTION</history_option>
 </entry>
 
 <entry id="history_n">
@@ -1470,6 +1567,7 @@
     sets coupler snapshot history file frequency (like restart_n)
     set by HIST_N in env_run.xml.
   </description>
+  <history_n>$HIST_N</history_n>
 </entry>
 
 <entry id="history_ymd">
@@ -1481,6 +1579,7 @@
     date associated with history_option date.  yyyymmdd format.
     set by HIST_DATE in env_run.xml.
   </description>
+  <history_ymd>$HIST_DATE</history_ymd>
 </entry>
 
 <entry id="histavg_option">
@@ -1506,6 +1605,7 @@
     [ifdays0]   , history snapshot at histavg_n calendar day value and seconds equal 0
     [end]       , history snapshot at end
   </description>
+  <histavg_option>$AVGHIST_OPTION</histavg_option>
 </entry>
 
 <entry id="histavg_n">
@@ -1517,6 +1617,7 @@
     Sets coupler time-average history file frequency (like restart_option)
     set by AVGHIST_N in env_run.xml.
   </description>
+  <histavg_n>$AVGHIST_N</histavg_n>
 </entry>
 
 <entry id="histavg_ymd">
@@ -1528,6 +1629,7 @@
     date associated with histavg_option date.  yyyymmdd format.
     set by AVGHIST_DATE in env_run.xml.
   </description>
+  <histavg_ymd>$AVGHIST_DATE</histavg_ymd>
 </entry>
 
 <entry id="barrier_option">
@@ -1541,6 +1643,7 @@
     barrier_option alarms are like restart_option
     default: never
   </description>
+  <barrier_option>$BARRIER_OPTION</barrier_option>
 </entry>
 
 <entry id="barrier_n">
@@ -1552,6 +1655,7 @@
     Sets model barriers with barrier_option and barrier_ymd (same options as stop_n)
     default: 1
   </description>
+  <barrier_n>$BARRIER_N</barrier_n>
 </entry>
 
 <entry id="barrier_ymd">
@@ -1562,6 +1666,7 @@
   <description>
     Date in yyyymmdd format, sets model barriers date with barrier_option and barrier_n
   </description>
+  <barrier_ymd>$BARRIER_DATE</barrier_ymd>
 </entry>
 
 <entry id="tprof_option">
@@ -1585,6 +1690,7 @@
     [ifdays0]   , at tprof_n calendar day value and seconds equal 0
     [end]       , at end
   </description>
+  <tprof_option>never</tprof_option>
 </entry>
 
 <entry id="tprof_n">
@@ -1594,6 +1700,7 @@
   <description>
     Sets timing output file frequency (like restart_n)
   </description>
+  <tprof_n>-999</tprof_n>
 </entry>
 
 <entry id="tprof_ymd">
@@ -1603,6 +1710,7 @@
   <description>
     yyyymmdd format, sets timing output file date (like restart_date)
   </description>
+  <tprof_ymd>-999</tprof_ymd>
 </entry>
 
 
@@ -1636,6 +1744,7 @@
     if &lt; 0 then use abs(max_cplstep_time)*cktime as the threshold.
     default: 0
   </description>
+  <max_cplstep_time>0.0</max_cplstep_time>
 </entry>
 
 <!-- =========================== -->
@@ -1651,6 +1760,7 @@
     the number of mpi tasks assigned to the atm components.
     set by NTASKS_ATM in env_configure.xml.
   </description>
+  <atm_ntasks>$NTASKS_ATM</atm_ntasks>
 </entry>
 
 <entry id="atm_nthreads">
@@ -1662,6 +1772,7 @@
     the number of threads per mpi task for the atm component.
     set by NTHRDS_ATM in env_configure.xml.
   </description>
+  <atm_nthreads>$NTHRDS_ATM</atm_nthreads>
 </entry>
 
 <entry id="atm_rootpe">
@@ -1673,6 +1784,7 @@
     the global mpi task rank of the root processor assigned to the atm component.
     set by ROOTPE_ATM in env_configure.xml.
   </description>
+  <atm_rootpe>$ROOTPE_ATM</atm_rootpe>
 </entry>
 
 <entry id="atm_pestride">
@@ -1684,6 +1796,7 @@
     the mpi global processors stride associated with the mpi tasks for the atm component.
     set by PSTRID_ATM in env_configure.xml.
   </description>
+  <atm_pestride>$PSTRID_ATM</atm_pestride>
 </entry>
 
 <entry id="atm_layout">
@@ -1695,6 +1808,7 @@
   <description>
     Layout of multi-instance atms (if there are more than 1)
   </description>
+  <atm_layout>$NINST_ATM_LAYOUT</atm_layout>
 </entry>
 
 <entry id="lnd_ntasks">
@@ -1706,6 +1820,7 @@
     the number of mpi tasks assigned to the lnd components.
     set by NTASKS_LND in env_configure.xml.
   </description>
+  <lnd_ntasks>$NTASKS_LND</lnd_ntasks>
 </entry>
 
 <entry id="lnd_nthreads">
@@ -1717,6 +1832,7 @@
     the number of threads per mpi task for the lnd component.
     set by NTHRDS_LND in env_configure.xml.
   </description>
+  <lnd_nthreads>$NTHRDS_LND</lnd_nthreads>
 </entry>
 
 <entry id="lnd_rootpe">
@@ -1728,6 +1844,7 @@
     the global mpi task rank of the root processor assigned to the lnd component.
     set by ROOTPE_LND in env_configure.xml.
   </description>
+  <lnd_rootpe>$ROOTPE_LND</lnd_rootpe>
 </entry>
 
 <entry id="lnd_pestride">
@@ -1739,6 +1856,7 @@
     the mpi global processors stride associated with the mpi tasks for the lnd component.
     set by PSTRID_LND in env_configure.xml.
   </description>
+  <lnd_pestride>$PSTRID_LND</lnd_pestride>
 </entry>
 
 <entry id="lnd_layout">
@@ -1750,6 +1868,7 @@
   <description>
     Layout of multi-instance lnds (if there are more than 1)
   </description>
+  <lnd_layout>$NINST_LND_LAYOUT</lnd_layout>
 </entry>
 
 <entry id="ice_ntasks">
@@ -1761,6 +1880,7 @@
     the number of mpi tasks assigned to the ice components.
     set by NTASKS_ICE in env_configure.xml.
   </description>
+  <ice_ntasks>$NTASKS_ICE</ice_ntasks>
 </entry>
 
 <entry id="ice_nthreads">
@@ -1772,6 +1892,7 @@
     the number of threads per mpi task for the ice component.
     set by NTHRDS_ICE in env_configure.xml.
   </description>
+  <ice_nthreads>$NTHRDS_ICE</ice_nthreads>
 </entry>
 
 <entry id="ice_rootpe">
@@ -1783,6 +1904,7 @@
     the global mpi task rank of the root processor assigned to the ice component.
     set by ROOTPE_ICE in env_configure.xml.
   </description>
+  <ice_rootpe>$ROOTPE_ICE</ice_rootpe>
 </entry>
 
 <entry id="ice_pestride">
@@ -1794,6 +1916,7 @@
     the mpi global processors stride associated with the mpi tasks for the ice component.
     set by PSTRID_ICE in env_configure.xml.
   </description>
+  <ice_pestride>$PSTRID_ICE</ice_pestride>
 </entry>
 
 <entry id="ice_layout">
@@ -1805,6 +1928,7 @@
   <description>
     Layout of multi-instance ices (if there are more than 1)
   </description>
+  <ice_layout>$NINST_ICE_LAYOUT</ice_layout>
 </entry>
 
 <entry id="ocn_ntasks">
@@ -1816,6 +1940,7 @@
     the number of mpi tasks assigned to the ocn components.
     set by NTASKS_OCN in env_configure.xml.
   </description>
+  <ocn_ntasks>$NTASKS_OCN</ocn_ntasks>
 </entry>
 
 <entry id="ocn_nthreads">
@@ -1827,6 +1952,7 @@
     the number of threads per mpi task for the ocn component.
     set by NTHRDS_OCN in env_configure.xml.
   </description>
+  <ocn_nthreads>$NTHRDS_OCN</ocn_nthreads>
 </entry>
 
 <entry id="ocn_rootpe">
@@ -1838,6 +1964,7 @@
     the global mpi task rank of the root processor assigned to the ocn component.
     set by ROOTPE_OCN in env_configure.xml.
   </description>
+  <ocn_rootpe>$ROOTPE_OCN</ocn_rootpe>
 </entry>
 
 <entry id="ocn_pestride">
@@ -1849,6 +1976,7 @@
     the mpi global processors stride associated with the mpi tasks for the ocn component.
     set by PSTRID_OCN in env_configure.xml.  default: 1
   </description>
+  <ocn_pestride>$PSTRID_OCN</ocn_pestride>
 </entry>
 
 <entry id="ocn_layout">
@@ -1860,6 +1988,7 @@
   <description>
     Layout of multi-instance ocns (if there are more than 1)
   </description>
+  <ocn_layout>$NINST_OCN_LAYOUT</ocn_layout>
 </entry>
 
 <entry id="glc_ntasks">
@@ -1871,6 +2000,7 @@
     the number of mpi tasks assigned to the glc components.
     set by NTASKS_GLC in env_configure.xml.
   </description>
+  <glc_ntasks>$NTASKS_GLC</glc_ntasks>
 </entry>
 
 <entry id="glc_nthreads">
@@ -1882,6 +2012,7 @@
     the number of threads per mpi task for the glc component.
     set by NTHRDS_GLC in env_configure.xml.
   </description>
+  <glc_nthreads>$NTHRDS_GLC</glc_nthreads>
 </entry>
 
 <entry id="glc_rootpe">
@@ -1893,6 +2024,7 @@
     the global mpi task rank of the root processor assigned to the glc component.
     set by ROOTPE_GLC in env_configure.xml.
   </description>
+  <glc_rootpe>$ROOTPE_GLC</glc_rootpe>
 </entry>
 
 <entry id="glc_pestride">
@@ -1904,6 +2036,7 @@
     the mpi global processors stride associated with the mpi tasks for the glc component.
     set by PSTRID_GLC in env_configure.xml.
   </description>
+  <glc_pestride>$PSTRID_GLC</glc_pestride>
 </entry>
 
 <entry id="glc_layout">
@@ -1915,6 +2048,7 @@
   <description>
     Layout of multi-instance glcs (if there are more than 1)
   </description>
+  <glc_layout>$NINST_GLC_LAYOUT</glc_layout>
 </entry>
 
 <entry id="wav_ntasks">
@@ -1926,6 +2060,7 @@
     the number of mpi tasks assigned to the wav components.
     set by NTASKS_WAV in env_configure.xml.
   </description>
+  <wav_ntasks>$NTASKS_WAV</wav_ntasks>
 </entry>
 
 <entry id="wav_nthreads">
@@ -1937,6 +2072,7 @@
     the number of threads per mpi task for the wav component.
     set by NTHRDS_WAV in env_configure.xml.
   </description>
+  <wav_nthreads>$NTHRDS_WAV</wav_nthreads>
 </entry>
 
 <entry id="wav_rootpe">
@@ -1948,6 +2084,7 @@
     the global mpi task rank of the root processor assigned to the wav component.
     set by ROOTPE_WAV in env_configure.xml.
   </description>
+  <wav_rootpe>$ROOTPE_WAV</wav_rootpe>
 </entry>
 
 <entry id="wav_pestride">
@@ -1959,6 +2096,7 @@
     the mpi global processors stride associated with the mpi tasks for the wav component.
     set by PSTRID_WAV in env_configure.xml.
   </description>
+  <wav_pestride>$PSTRID_WAV</wav_pestride>
 </entry>
 
 <entry id="wav_layout">
@@ -1970,6 +2108,7 @@
   <description>
     Layout of multi-instance wavs (if there are more than 1)
   </description>
+  <wav_layout>$NINST_WAV_LAYOUT</wav_layout>
 </entry>
 
 <entry id="rof_ntasks">
@@ -1981,6 +2120,7 @@
     the number of mpi tasks assigned to the lnd components.
     set by NTASKS_LND in env_configure.xml.
   </description>
+  <rof_ntasks>$NTASKS_ROF</rof_ntasks>
 </entry>
 
 <entry id="rof_nthreads">
@@ -1992,6 +2132,7 @@
     the number of threads per mpi task for the lnd component.
     set by NTHRDS_LND in env_configure.xml.
   </description>
+  <rof_nthreads>$NTHRDS_ROF</rof_nthreads>
 </entry>
 
 <entry id="rof_rootpe">
@@ -2003,6 +2144,7 @@
     the global mpi task rank of the root processor assigned to the lnd component.
     set by ROOTPE_LND in env_configure.xml.
   </description>
+  <rof_rootpe>$ROOTPE_ROF</rof_rootpe>
 </entry>
 
 <entry id="rof_pestride">
@@ -2014,6 +2156,7 @@
     the mpi global processors stride associated with the mpi tasks for the lnd component.
     set by PSTRID_LND in env_configure.xml.
   </description>
+  <rof_pestride>$PSTRID_ROF</rof_pestride>
 </entry>
 
 <entry id="rof_layout">
@@ -2025,6 +2168,7 @@
   <description>
     Layout of multi-instance lnds (if there are more than 1)
   </description>
+  <rof_layout>$NINST_ROF_LAYOUT</rof_layout>
 </entry>
 
 <entry id="esp_ntasks">
@@ -2036,6 +2180,7 @@
     the number of mpi tasks assigned to the esp components. 
     set by NTASKS_ESP in env_configure.xml.  
   </description>
+  <esp_ntasks>$NTASKS_ESP</esp_ntasks>
 </entry>
 
 <entry  id="esp_nthreads">
@@ -2047,6 +2192,7 @@
     the number of threads per mpi task for the esp component.  
     set by NTHRDS_ESP in env_configure.xml.  
   </description>
+  <esp_nthreads>$NTHRDS_ESP</esp_nthreads>
 </entry>
 
 <entry  id="esp_rootpe">
@@ -2058,6 +2204,7 @@
     the global mpi task rank of the root processor assigned to the esp component.  
     set by ROOTPE_ESP in env_configure.xml.
   </description>
+  <esp_rootpe>$ROOTPE_ESP</esp_rootpe>
 </entry>
 
 <entry  id="esp_pestride">
@@ -2069,6 +2216,7 @@
     the mpi global processors stride associated with the mpi tasks for the esp component.  
     set by PSTRID_ESP in env_configure.xml.  
   </description>
+  <esp_pestride>$PSTRID_ESP</esp_pestride>
 </entry>
 
 <entry  id="esp_layout">
@@ -2080,6 +2228,7 @@
   <description>
     Layout of multi-instance external system processor (if there are more than 1)
   </description>
+  <esp_layout>$NINST_ESP_LAYOUT</esp_layout>
 </entry>
 
 <entry  id="cpl_ntasks">
@@ -2091,6 +2240,7 @@
     the number of mpi tasks assigned to the cpl components.
     set by NTASKS_CPL in env_configure.xml.
   </description>
+  <cpl_ntasks>$NTASKS_CPL</cpl_ntasks>
 </entry>
 
 <entry id="cpl_nthreads">
@@ -2102,6 +2252,7 @@
     the number of threads per mpi task for the cpl component.
     set by NTHRDS_CPL in env_configure.xml.
   </description>
+  <cpl_nthreads>$NTHRDS_CPL</cpl_nthreads>
 </entry>
 
 <entry id="cpl_rootpe">
@@ -2113,6 +2264,7 @@
     the global mpi task rank of the root processor assigned to the cpl component.
     set by ROOTPE_CPL in env_configure.xml.
   </description>
+  <cpl_rootpe>$ROOTPE_CPL</cpl_rootpe>
 </entry>
 
 <entry id="cpl_pestride">
@@ -2124,6 +2276,7 @@
     the mpi global processors stride associated with the mpi tasks for the cpl component.
     set by PSTRID_CPL in env_configure.xml.
   </description>
+  <cpl_pestride>$PSTRID_CPL</cpl_pestride>
 </entry>
 
 <!-- =========================== -->
@@ -2137,6 +2290,7 @@
   <group>prof_inparm</group>
   <description>
   </description>
+  <profile_global_stats>.true.</profile_global_stats>
 </entry>
 
 <entry id="profile_single_file">
@@ -2145,6 +2299,7 @@
   <group>prof_inparm</group>
   <description>
   </description>
+  <profile_single_file>.false.</profile_single_file>
 </entry>
 
 <entry id="profile_disable">
@@ -2153,6 +2308,8 @@
   <group>prof_inparm</group>
   <description>
   </description>
+  <profile_disable>.true.</profile_disable>
+  <profile_disable TIMER_LEVEL_LOGICAL="pos">.false.</profile_disable>
 </entry>
 
 <entry id="profile_barrier">
@@ -2161,6 +2318,7 @@
   <group>prof_inparm</group>
   <description>
   </description>
+  <profile_barrier>.false.</profile_barrier>
 </entry>
 
 <entry id="profile_depth_limit">
@@ -2169,6 +2327,8 @@
   <group>prof_inparm</group>
   <description>
   </description>
+  <profile_depth_limit>20</profile_depth_limit>
+  <profile_depth_limit TIMER_LEVEL_LOGICAL="pos">$TIMER_LEVEL</profile_depth_limit>
 </entry>
 
 <entry id="profile_outpe_stride">
@@ -2186,6 +2346,8 @@
   <description>
     default: 0
   </description>
+  <profile_detail_limit>0</profile_detail_limit>
+  <profile_detail_limit TIMER_DETAIL_LOGICAL="pos">$TIMER_DETAIL</profile_detail_limit>
 </entry>
 
 <entry id="profile_timer">
@@ -2194,6 +2356,10 @@
   <group>prof_inparm</group>
   <description>
   </description>
+  <profile_timer>4</profile_timer> <!-- mpiwtime -->
+  <profile_timer MACH="yellowstone">2</profile_timer> <!-- nanotime -->
+  <profile_timer MPILIB="mpi-serial">1</profile_timer> <!-- gettimeofday -->
+  <profile_timer MPILIB="mpi-serial" OS="AIX">3</profile_timer> <!-- read_real_time -->
 </entry>
 
 <entry id="profile_ovhd_measurement">
@@ -2203,6 +2369,7 @@
   <description>
     default: .false.
   </description>
+  <profile_ovhd_measurement>.false.</profile_ovhd_measurement>
 </entry>
 
 <entry id="profile_add_detail">
@@ -2212,6 +2379,7 @@
   <description>
     default: .false.
   </description>
+  <profile_add_detail>.false.</profile_add_detail>
 </entry>
 
 <entry  id="profile_outpe_num">
@@ -2221,6 +2389,7 @@
   <description>
     default: 1
   </description>
+  <profile_outpe_num>1</profile_outpe_num>
 </entry>
 
 <entry id="profile_papi_enable">
@@ -2231,6 +2400,8 @@
   <description>
     default: .false.
   </description>
+  <profile_papi_enable>.false.</profile_papi_enable>
+  <profile_papi_enable PROFILE_PAPI_ENABLE="On">.true.</profile_papi_enable>
 </entry>
 
 <!-- =========================== -->
@@ -2245,6 +2416,7 @@
   <description>
     See gptl_papi.c for the list of valid values
   </description>
+  <papi_ctr1_str>PAPI_FP_OPS</papi_ctr1_str>
 </entry>
 
 <entry id="papi_ctr2_str">
@@ -2254,6 +2426,7 @@
   <description>
     See gptl_papi.c for the list of valid values
   </description>
+  <papi_ctr2_str>PAPI_NO_CTR</papi_ctr2_str>
 </entry>
 
 <entry id="papi_ctr3_str">
@@ -2263,6 +2436,7 @@
   <description>
     See gptl_papi.c for the list of valid values
   </description>
+  <papi_ctr3_str>PAPI_NO_CTR</papi_ctr3_str>
 </entry>
 
 <entry id="papi_ctr4_str">
@@ -2272,6 +2446,7 @@
   <description>
     See gptl_papi.c for the list of valid values
   </description>
+  <papi_ctr4_str>PAPI_NO_CTR</papi_ctr4_str>
 </entry>
 
 <!-- =========================== -->
@@ -2286,6 +2461,8 @@
     future asynchronous IO capability (not currently supported).
     default: .false.
   </description>
+  <pio_async_interface>.false.</pio_async_interface>
+  <pio_async_interface PIO_ASYNC_INTERFACE="On">.true.</pio_async_interface>
 </entry>
 
 <entry id="pio_stride">
@@ -2296,6 +2473,7 @@
   <description>
     stride of tasks in pio used generically, component based value takes precedent.
   </description>
+  <pio_stride>$PIO_STRIDE</pio_stride>
 </entry>
 
 <entry id="pio_root">
@@ -2306,6 +2484,7 @@
   <description>
     io task root in pio used generically, component based value takes precedent.
   </description>
+  <pio_root>$PIO_ROOT</pio_root>
 </entry>
 
 <entry id="pio_rearranger">
@@ -2316,6 +2495,7 @@
   <description>
     Rearranger method for pio 1=box, 2=subset.
   </description>
+  <pio_rearranger>$PIO_REARRANGER</pio_rearranger>
 </entry>
 
 <entry id="pio_numiotasks">
@@ -2326,6 +2506,7 @@
   <description>
     number of io tasks in pio used generically, component based value takes precedent.
   </description>
+  <pio_numiotasks>$PIO_NUMTASKS</pio_numiotasks>
 </entry>
 
 <entry id="pio_typename">
@@ -2338,6 +2519,7 @@
     io type in pio used generically, component based value takes precedent.
     valid values: netcdf, pnetcdf, netcdf4p, netcdf4c, default
   </description>
+  <pio_typename>$PIO_TYPENAME</pio_typename>
 </entry>
 
 <entry id="pio_debug_level">
@@ -2350,6 +2532,7 @@
     pio debug level
     valid values: 0,1,2,3,4,5,6
   </description>
+  <pio_debug_level>$PIO_DEBUG_LEVEL</pio_debug_level>
 </entry>
 
 <entry id="pio_blocksize">
@@ -2360,6 +2543,7 @@
   <description>
     pio blocksize
   </description>
+  <pio_blocksize>$PIO_BLOCKSIZE</pio_blocksize>
 </entry>
 
 <entry id="pio_buffer_size_limit">
@@ -2370,6 +2554,7 @@
   <description>
     pio buffer size limit
   </description>
+  <pio_buffer_size_limit>$PIO_BUFFER_SIZE_LIMIT</pio_buffer_size_limit>
 </entry>
 
 <entry id="pio_rearr_comm_type">
@@ -2382,6 +2567,7 @@
     pio rearranger communication type.
     valid values: p2p, coll, default
   </description>
+  <pio_rearr_comm_type>$PIO_REARR_COMM_TYPE</pio_rearr_comm_type>
 </entry>
 
 <entry id="pio_rearr_comm_fcd">
@@ -2393,6 +2579,7 @@
   <description>
     pio rearranger communication flow control direction.
   </description>
+  <pio_rearr_comm_fcd>$PIO_REARR_COMM_FCD</pio_rearr_comm_fcd>
 </entry>
 
 <entry id="pio_rearr_comm_max_pend_req_comp2io">
@@ -2403,6 +2590,7 @@
   <description>
     pio rearranger communication max pending req (comp2io)
   </description>
+  <pio_rearr_comm_max_pend_req_comp2io>$PIO_REARR_COMM_MAX_PEND_REQ_COMP2IO</pio_rearr_comm_max_pend_req_comp2io>
 </entry>
 
 <entry id="pio_rearr_comm_enable_hs_comp2io">
@@ -2413,6 +2601,8 @@
     pio rearranger communication option: Enable handshake (comp2io)
     default: .true.
   </description>
+  <pio_rearr_comm_enable_hs_comp2io>.false.</pio_rearr_comm_enable_hs_comp2io>
+  <pio_rearr_comm_enable_hs_comp2io PIO_REARR_COMM_ENABLE_HS_COMP2IO="On">.true.</pio_rearr_comm_enable_hs_comp2io>
 </entry>
 
 <entry id="pio_rearr_comm_enable_isend_comp2io">
@@ -2423,6 +2613,8 @@
     pio rearranger communication option: Enable isends (comp2io)
     default: .false.
   </description>
+  <pio_rearr_comm_enable_isend_comp2io>.false.</pio_rearr_comm_enable_isend_comp2io>
+  <pio_rearr_comm_enable_isend_comp2io PIO_REARR_COMM_ENABLE_ISEND_COMP2IO="On">.true.</pio_rearr_comm_enable_isend_comp2io>
 </entry>
 
 <entry id="pio_rearr_comm_max_pend_req_io2comp">
@@ -2433,6 +2625,7 @@
   <description>
     pio rearranger communication max pending req (io2comp)
   </description>
+  <pio_rearr_comm_max_pend_req_io2comp>$PIO_REARR_COMM_MAX_PEND_REQ_IO2COMP</pio_rearr_comm_max_pend_req_io2comp>
 </entry>
 
 <entry id="pio_rearr_comm_enable_hs_io2comp">
@@ -2443,6 +2636,8 @@
     pio rearranger communication option: Enable handshake (io2comp)
     default: .true.
   </description>
+  <pio_rearr_comm_enable_hs_io2comp>.false.</pio_rearr_comm_enable_hs_io2comp>
+  <pio_rearr_comm_enable_hs_io2comp PIO_REARR_COMM_ENABLE_HS_IO2COMP="On">.true.</pio_rearr_comm_enable_hs_io2comp>
 </entry>
 
 <entry id="pio_rearr_comm_enable_isend_io2comp">
@@ -2453,6 +2648,8 @@
     pio rearranger communication option: Enable isends (io2comp)
     default: .false.
   </description>
+  <pio_rearr_comm_enable_isend_io2comp>.false.</pio_rearr_comm_enable_isend_io2comp>
+  <pio_rearr_comm_enable_isend_io2comp PIO_REARR_COMM_ENABLE_ISEND_IO2COMP="On">.true.</pio_rearr_comm_enable_isend_io2comp>
 </entry>
 
 <!-- =========================== -->
@@ -2496,6 +2693,7 @@
   <description>
     atm to ocn flux mapping file for fluxes
   </description>
+  <atm2ocn_fmapname>$ATM2OCN_FMAPNAME</atm2ocn_fmapname>
 </entry>
 
 <entry id="atm2ocn_fmaptype">
@@ -2510,6 +2708,8 @@
     on the source grid and then rearrangement and sum to the destination
     grid.
   </description>
+  <atm2ocn_fmaptype>$ATM2OCN_FMAPTYPE</atm2ocn_fmaptype>
+  <atm2ocn_fmaptype BFBFLAG="TRUE">X</atm2ocn_fmaptype>
 </entry>
 
 <entry id="atm2ocn_smapname">
@@ -2521,6 +2721,7 @@
   <description>
     atm to ocn state mapping file for states
   </description>
+  <atm2ocn_smapname>$ATM2OCN_SMAPNAME</atm2ocn_smapname>
 </entry>
 
 <entry id="atm2ocn_smaptype">
@@ -2535,6 +2736,8 @@
     on the source grid and then rearrangement and sum to the destination
     grid.
   </description>
+  <atm2ocn_smaptype>$ATM2OCN_SMAPTYPE</atm2ocn_smaptype>
+  <atm2ocn_smaptype BFBFLAG="TRUE">X</atm2ocn_smaptype>
 </entry>
 
 <entry id="atm2ocn_vmapname">
@@ -2546,6 +2749,7 @@
   <description>
     atm to ocn state mapping file for velocity
   </description>
+  <atm2ocn_vmapname>$ATM2OCN_VMAPNAME</atm2ocn_vmapname>
 </entry>
 
 <entry id="atm2ocn_vmaptype">
@@ -2560,6 +2764,8 @@
     on the source grid and then rearrangement and sum to the destination
     grid.
   </description>
+  <atm2ocn_vmaptype>$ATM2OCN_VMAPTYPE</atm2ocn_vmaptype>
+  <atm2ocn_vmaptype BFBFLAG="TRUE">X</atm2ocn_vmaptype>
 </entry>
 
 <entry id="ocn2atm_fmapname">
@@ -2571,6 +2777,7 @@
   <description>
     ocn to atm mapping file for fluxes
   </description>
+  <ocn2atm_fmapname>$OCN2ATM_FMAPNAME</ocn2atm_fmapname>
 </entry>
 
 <entry id="ocn2atm_fmaptype">
@@ -2585,6 +2792,8 @@
     on the source grid and then rearrangement and sum to the destination
     grid.
   </description>
+  <ocn2atm_fmaptype>$OCN2ATM_FMAPTYPE</ocn2atm_fmaptype>
+  <ocn2atm_fmaptype BFBFLAG="TRUE">X</ocn2atm_fmaptype>
 </entry>
 
 <entry id="ocn2atm_smapname">
@@ -2596,6 +2805,7 @@
   <description>
     ocn to atm mapping file for states
   </description>
+  <ocn2atm_smapname>$OCN2ATM_SMAPNAME</ocn2atm_smapname>
 </entry>
 
 <entry id="ocn2atm_smaptype">
@@ -2610,6 +2820,8 @@
     on the source grid and then rearrangement and sum to the destination
     grid.
   </description>
+  <ocn2atm_smaptype>$OCN2ATM_SMAPTYPE</ocn2atm_smaptype>
+  <ocn2atm_smaptype BFBFLAG="TRUE">X</ocn2atm_smaptype>
 </entry>
 
 <entry id="atm2ice_fmapname">
@@ -2621,6 +2833,7 @@
   <description>
     atm to ice flux mapping file for fluxes
   </description>
+  <atm2ice_fmapname>$ATM2OCN_FMAPNAME</atm2ice_fmapname>
 </entry>
 
 <entry id="atm2ice_fmaptype">
@@ -2646,6 +2859,7 @@
   <description>
     atm to ice state mapping file for states
   </description>
+  <atm2ice_smapname>$ATM2OCN_SMAPNAME</atm2ice_smapname>
 </entry>
 
 <entry id="atm2ice_smaptype">
@@ -2671,6 +2885,7 @@
   <description>
     atm to ice state mapping file for velocity
   </description>
+  <atm2ice_vmapname>$ATM2OCN_VMAPNAME</atm2ice_vmapname>
 </entry>
 
 <entry id="atm2ice_vmaptype">
@@ -2696,6 +2911,7 @@
   <description>
     ice to atm mapping file for fluxes
   </description>
+  <ice2atm_fmapname>$OCN2ATM_FMAPNAME</ice2atm_fmapname>
 </entry>
 
 <entry id="ice2atm_fmaptype">
@@ -2721,6 +2937,7 @@
   <description>
     ice to atm mapping file for states
   </description>
+  <ice2atm_smapname>$OCN2ATM_SMAPNAME</ice2atm_smapname>
 </entry>
 
 <entry id="ice2atm_smaptype">
@@ -2746,6 +2963,7 @@
   <description>
     atm to land mapping file for fluxes
   </description>
+  <atm2lnd_fmapname>$ATM2LND_FMAPNAME</atm2lnd_fmapname>
 </entry>
 
 <entry id="atm2lnd_fmaptype">
@@ -2760,6 +2978,8 @@
     on the source grid and then rearrangement and sum to the destination
     grid.
   </description>
+  <atm2lnd_fmaptype>$ATM2LND_FMAPTYPE</atm2lnd_fmaptype>
+  <atm2lnd_fmaptype BFBFLAG="TRUE">X</atm2lnd_fmaptype>
 </entry>
 
 <entry id="atm2lnd_smapname">
@@ -2771,6 +2991,7 @@
   <description>
     atm to land mapping file for states
   </description>
+  <atm2lnd_smapname>$ATM2LND_SMAPNAME</atm2lnd_smapname>
 </entry>
 
 <entry id="atm2lnd_smaptype">
@@ -2785,6 +3006,8 @@
     on the source grid and then rearrangement and sum to the destination
     grid.
   </description>
+  <atm2lnd_smaptype>$ATM2LND_SMAPTYPE</atm2lnd_smaptype>
+  <atm2lnd_smaptype BFBFLAG="TRUE">X</atm2lnd_smaptype>
 </entry>
 
 <entry id="lnd2atm_fmapname">
@@ -2796,6 +3019,7 @@
   <description>
     land to atm mapping file for fluxes
   </description>
+  <lnd2atm_fmapname>$LND2ATM_FMAPNAME</lnd2atm_fmapname>
 </entry>
 
 <entry id="lnd2atm_fmaptype">
@@ -2810,6 +3034,8 @@
     on the source grid and then rearrangement and sum to the destination
     grid.
   </description>
+  <lnd2atm_fmaptype>$LND2ATM_FMAPTYPE</lnd2atm_fmaptype>
+  <lnd2atm_fmaptype BFBFLAG="TRUE">X</lnd2atm_fmaptype>
 </entry>
 
 <entry id="lnd2atm_smapname">
@@ -2821,6 +3047,7 @@
   <description>
     land to atm mapping file for states
   </description>
+  <lnd2atm_smapname>$LND2ATM_SMAPNAME</lnd2atm_smapname>
 </entry>
 
 <entry id="lnd2atm_smaptype">
@@ -2835,6 +3062,8 @@
     on the source grid and then rearrangement and sum to the destination
     grid.
   </description>
+  <lnd2atm_smaptype>$LND2ATM_SMAPTYPE</lnd2atm_smaptype>
+  <lnd2atm_smaptype BFBFLAG="TRUE">X</lnd2atm_smaptype>
 </entry>
 
 <entry id="lnd2rof_fmapname">
@@ -2846,6 +3075,7 @@
   <description>
     lnd to runoff conservative mapping file
   </description>
+  <lnd2rof_fmapname>$LND2ROF_FMAPNAME</lnd2rof_fmapname>
 </entry>
 
 <entry id="lnd2rof_fmaptype">
@@ -2860,6 +3090,8 @@
     on the source grid and then rearrangement and sum to the destination
     grid.
   </description>
+  <lnd2rof_fmaptype>$LND2ROF_FMAPTYPE</lnd2rof_fmaptype>
+  <lnd2rof_fmaptype BFBFLAG="TRUE">X</lnd2rof_fmaptype>
 </entry>
 
 <entry id="rof2lnd_fmapname">
@@ -2871,6 +3103,7 @@
   <description>
     runoff to lnd conservative mapping file
   </description>
+  <rof2lnd_fmapname>$ROF2LND_FMAPNAME</rof2lnd_fmapname>
 </entry>
 
 <entry id="rof2lnd_fmaptype">
@@ -2885,6 +3118,8 @@
     on the source grid and then rearrangement and sum to the destination
     grid.
   </description>
+  <rof2lnd_fmaptype>$ROF2LND_FMAPTYPE</rof2lnd_fmaptype>
+  <rof2lnd_fmaptype BFBFLAG="TRUE">X</rof2lnd_fmaptype>
 </entry>
 
 <entry id="rof2ocn_fmapname">
@@ -2896,6 +3131,7 @@
   <description>
     runoff to ocn area overlap conservative mapping file
   </description>
+  <rof2ocn_fmapname>$ROF2OCN_FMAPNAME</rof2ocn_fmapname>
 </entry>
 
 <entry id="rof2ocn_fmaptype">
@@ -2910,6 +3146,8 @@
     on the source grid and then rearrangement and sum to the destination
     grid.
   </description>
+  <rof2ocn_fmaptype>$ROF2OCN_FMAPTYPE</rof2ocn_fmaptype>
+  <rof2ocn_fmaptype BFBFLAG="TRUE">X</rof2ocn_fmaptype>
 </entry>
 
 <entry id="glc2ocn_rmapname">
@@ -2921,6 +3159,7 @@
   <description>
     glc to ocn runoff conservative mapping file
   </description>
+  <glc2ocn_rmapname>$GLC2OCN_RMAPNAME</glc2ocn_rmapname>
 </entry>
 
 <entry id="glc2ocn_rmaptype">
@@ -2935,6 +3174,8 @@
     on the source grid and then rearrangement and sum to the destination
     grid.
   </description>
+  <glc2ocn_rmaptype>$GLC2OCN_RMAPTYPE</glc2ocn_rmaptype>
+  <glc2ocn_rmaptype BFBFLAG="TRUE">X</glc2ocn_rmaptype>
 </entry>
 
 <entry id="glc2ice_rmapname">
@@ -2946,6 +3187,7 @@
   <description>
     glc to ice runoff conservative mapping file
   </description>
+  <glc2ice_rmapname>$GLC2ICE_RMAPNAME</glc2ice_rmapname>
 </entry>
 
 <entry id="glc2ice_rmaptype">
@@ -2960,6 +3202,8 @@
     on the source grid and then rearrangement and sum to the destination
     grid.
   </description>
+  <glc2ice_rmaptype>$GLC2ICE_RMAPTYPE</glc2ice_rmaptype>
+  <glc2ice_rmaptype BFBFLAG="TRUE">X</glc2ice_rmaptype>
 </entry>
 
 <entry id="rof2ocn_rmapname">
@@ -2971,6 +3215,7 @@
   <description>
     runoff to ocn nearest neighbor plus smoothing conservative mapping file
   </description>
+  <rof2ocn_rmapname>$ROF2OCN_RMAPNAME</rof2ocn_rmapname>
 </entry>
 
 <entry id="rof2ocn_rmaptype">
@@ -2985,6 +3230,8 @@
     on the source grid and then rearrangement and sum to the destination
     grid.
   </description>
+  <rof2ocn_rmaptype>$ROF2OCN_RMAPTYPE</rof2ocn_rmaptype>
+  <rof2ocn_rmaptype BFBFLAG="TRUE">X</rof2ocn_rmaptype>
 </entry>
 
 <entry id="lnd2glc_fmapname">
@@ -2996,6 +3243,7 @@
   <description>
     land to glc mapping file for fluxes
   </description>
+  <lnd2glc_fmapname>$LND2GLC_FMAPNAME</lnd2glc_fmapname>
 </entry>
 
 <entry id="lnd2glc_fmaptype">
@@ -3010,6 +3258,8 @@
     on the source grid and then rearrangement and sum to the destination
     grid.
   </description>
+  <lnd2glc_fmaptype>$LND2GLC_FMAPTYPE</lnd2glc_fmaptype>
+  <lnd2glc_fmaptype BFBFLAG="TRUE">X</lnd2glc_fmaptype>
 </entry>
 
 <entry id="lnd2glc_smapname">
@@ -3021,6 +3271,7 @@
   <description>
     land to glc mapping file for states
   </description>
+  <lnd2glc_smapname>$LND2GLC_SMAPNAME</lnd2glc_smapname>
 </entry>
 
 <entry id="lnd2glc_smaptype">
@@ -3035,6 +3286,8 @@
     on the source grid and then rearrangement and sum to the destination
     grid.
   </description>
+  <lnd2glc_smaptype>$LND2GLC_SMAPTYPE</lnd2glc_smaptype>
+  <lnd2glc_smaptype BFBFLAG="TRUE">X</lnd2glc_smaptype>
 </entry>
 
 <entry id="glc2lnd_fmapname">
@@ -3046,6 +3299,7 @@
   <description>
     glc to land mapping file for fluxes
   </description>
+  <glc2lnd_fmapname>$GLC2LND_FMAPNAME</glc2lnd_fmapname>
 </entry>
 
 <entry id="glc2lnd_fmaptype">
@@ -3060,6 +3314,8 @@
     on the source grid and then rearrangement and sum to the destination
     grid.
   </description>
+  <glc2lnd_fmaptype>$GLC2LND_FMAPTYPE</glc2lnd_fmaptype>
+  <glc2lnd_fmaptype BFBFLAG="TRUE">X</glc2lnd_fmaptype>
 </entry>
 
 <entry id="glc2lnd_smapname">
@@ -3071,6 +3327,7 @@
   <description>
     glc to land mapping file for states
   </description>
+  <glc2lnd_smapname>$GLC2LND_SMAPNAME</glc2lnd_smapname>
 </entry>
 
 <entry id="glc2lnd_smaptype">
@@ -3085,6 +3342,8 @@
     on the source grid and then rearrangement and sum to the destination
     grid.
   </description>
+  <glc2lnd_smaptype>$GLC2LND_SMAPTYPE</glc2lnd_smaptype>
+  <glc2lnd_smaptype BFBFLAG="TRUE">X</glc2lnd_smaptype>
 </entry>
 
 <entry id="atm2wav_smapname">
@@ -3096,6 +3355,7 @@
   <description>
     atm to wav state mapping file for states
   </description>
+  <atm2wav_smapname>$ATM2WAV_SMAPNAME</atm2wav_smapname>
 </entry>
 
 <entry id="atm2wav_smaptype">
@@ -3110,6 +3370,8 @@
     on the source grid and then rearrangement and sum to the destination
     grid.
   </description>
+  <atm2wav_smaptype>$ATM2WAV_SMAPTYPE</atm2wav_smaptype>
+  <atm2wav_smaptype BFBFLAG="TRUE">X</atm2wav_smaptype>
 </entry>
 
 <entry id="ocn2wav_smapname">
@@ -3121,6 +3383,7 @@
   <description>
     ocn to wav state mapping file for states
   </description>
+  <ocn2wav_smapname>$OCN2WAV_SMAPNAME</ocn2wav_smapname>
 </entry>
 
 <entry id="ocn2wav_smaptype">
@@ -3135,6 +3398,8 @@
     on the source grid and then rearrangement and sum to the destination
     grid.
   </description>
+  <ocn2wav_smaptype>$OCN2WAV_SMAPTYPE</ocn2wav_smaptype>
+  <ocn2wav_smaptype BFBFLAG="TRUE">X</ocn2wav_smaptype>
 </entry>
 
 <entry id="ice2wav_smapname">
@@ -3146,6 +3411,7 @@
   <description>
     ice to wav state mapping file for states
   </description>
+  <ice2wav_smapname>$ICE2WAV_SMAPNAME</ice2wav_smapname>
 </entry>
 
 <entry id="ice2wav_smaptype">
@@ -3160,6 +3426,8 @@
     on the source grid and then rearrangement and sum to the destination
     grid.
   </description>
+  <ice2wav_smaptype>$ICE2WAV_SMAPTYPE</ice2wav_smaptype>
+  <ice2wav_smaptype BFBFLAG="TRUE">X</ice2wav_smaptype>
 </entry>
 
 <entry id="wav2ocn_smapname">
@@ -3171,6 +3439,7 @@
   <description>
     wav to ocn state mapping file for states
   </description>
+  <wav2ocn_smapname>$WAV2OCN_SMAPNAME</wav2ocn_smapname>
 </entry>
 
 <entry id="wav2ocn_smaptype">
@@ -3185,6 +3454,8 @@
     on the source grid and then rearrangement and sum to the destination
     grid.
   </description>
+  <wav2ocn_smaptype>$WAV2OCN_SMAPTYPE</wav2ocn_smaptype>
+  <wav2ocn_smaptype BFBFLAG="TRUE">X</wav2ocn_smaptype>
 </entry>
 
   <entry id="drv_flds_in_files">
@@ -3197,6 +3468,7 @@
       the driver reads and gives information on additional fields to be passed to different
       components that need to look at the same data.
     </description>
+    <drv_flds_in_files>Buildconf/camconf/drv_flds_in,Buildconf/clmconf/drv_flds_in</drv_flds_in_files>
   </entry>
 
 </namelist_definition>
