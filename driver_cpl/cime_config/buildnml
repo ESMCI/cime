@@ -28,13 +28,6 @@ def _main_func():
         caseroot = case.get_value("CASEROOT")
         casebuild = case.get_value("CASEBUILD")
         rundir = case.get_value("RUNDIR")
-        grid = case.get_value("GRID")
-        atm_grid = case.get_value("ATM_GRID")
-        lnd_grid = case.get_value("LND_GRID")
-        ocn_grid = case.get_value("OCN_GRID")
-        rof_grid = case.get_value("ROF_GRID")
-        wav_grid = case.get_value("WAV_GRID")
-        comp_atm = case.get_value("COMP_ATM")
 
         confdir = os.path.join(casebuild, "cplconf")
         if not os.path.isdir(confdir):
@@ -42,8 +35,7 @@ def _main_func():
 
         # create cplconf/namelist
         infile_text = ""
-        if comp_atm == 'cam':
-            # *** FIXME - this is confusing!!!***
+        if case.get_value('COMP_ATM') == 'cam':
             # cam is actually changing the driver namelist settings
             cam_config_opts = case.get_value("CAM_CONFIG_OPTS")
             if "adiabatic" in cam_config_opts:
@@ -54,7 +46,7 @@ def _main_func():
                 infile_text = "aqua_planet = .true. \n aqua_planet_sst = 1"
 
         user_nl_file = os.path.join(caseroot, "user_nl_cpl")
-        namelist_infile = os.path.join(confdir, "namelist")
+        namelist_infile = os.path.join(confdir, "namelist_infile")
         create_namelist_infile(case, user_nl_file, namelist_infile, infile_text)
 
     user_xml_dir = os.path.join(caseroot, "SourceMods", "src.drv")
@@ -63,10 +55,9 @@ def _main_func():
 
     # call build-namelist
 
-    bldnamelist = os.path.join(cimeroot, "driver_cpl", "bld", "build-namelist")
-
+    command = os.path.join(cimeroot, "driver_cpl", "bld", "build-namelist")
     cmd = "%s --confdir %s --caseroot %s --cimeroot %s  --infile %s --user_xml_dir %s " \
-        % (bldnamelist, confdir, caseroot, cimeroot, namelist_infile, user_xml_dir)
+        % (command, confdir, caseroot, cimeroot, namelist_infile, user_xml_dir)
 
     rc, out, err = run_cmd(cmd, from_dir=confdir)
     expect(rc==0,"Command %s failed rc=%d\nout=%s\nerr=%s"%(cmd,rc,out,err))

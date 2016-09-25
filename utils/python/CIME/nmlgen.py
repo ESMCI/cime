@@ -518,8 +518,9 @@ class NamelistGenerator(object):
                 if file_path == 'null':
                     continue
                 file_path = self.set_abs_file_path(file_path)
-                expect(os.path.exists(file_path),
-                       "File not found: %s = %s" % (name, literal))
+                #DEBUG
+                # expect(os.path.exists(file_path),
+                #        "File not found: %s = %s" % (name, literal))
                 current_literals[i] = string_to_character_literal(file_path)
             current_literals = compress_literal_list(current_literals)
 

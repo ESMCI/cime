@@ -139,27 +139,26 @@ def _build_data_nml(case, caseroot, compclass):
                 shutil.copy(os.path.join(rundir, rpointer),
                             os.path.join(rundir, rpointer + inst_string))
 
-        # create namelist output infile using user_nl_file as input
-        user_nl_file = os.path.join(caseroot, "user_nl_" + compname + inst_string)
-        expect(os.path.isfile(user_nl_file),
-               "Missing required user_nl_file %s " %(user_nl_file))
-        namelist_infile = os.path.join(confdir, "cesm_namelist")
-        create_namelist_infile(case, user_nl_file, namelist_infile)
-
-        # call data comps build-namelist
-        user_xml_dir = os.path.join(caseroot, "SourceMods", "src." + compname)
-        expect (os.path.isdir(user_xml_dir),
-                "user_xml_dir %s does not exist " %user_xml_dir)
-
         inst_string_label = inst_string
         if not inst_string_label:
             inst_string_label = "\"\""
 
+        # create namelist output infile using user_nl_file as input
+        user_nl_file = os.path.join(caseroot, "user_nl_" + compname + inst_string)
+        expect(os.path.isfile(user_nl_file),
+               "Missing required user_nl_file %s " %(user_nl_file))
+        infile = os.path.join(confdir, "namelist_infile")
+        create_namelist_infile(case, user_nl_file, infile)
+
+        # determine directory for user modified namelist_definitions.xml and namelist_defaults.xml
+        user_xml_dir = os.path.join(caseroot, "SourceMods", "src." + compname)
+        expect (os.path.isdir(user_xml_dir),
+                "user_xml_dir %s does not exist " %user_xml_dir)
+
+        # call build-namelist for data component
         command = os.path.join(cimeroot, "components", "data_comps", compname, "bld", "build-namelist")
-
-        cmd = "%s %s %s %s %s %s %s" \
-            % (command, caseroot, cimeroot, confdir, inst_string_label, namelist_infile, user_xml_dir)
-
+        cmd = "%s --confdir %s --caseroot %s --cimeroot %s  --infile %s --user_xml_dir %s --inst_string %s" \
+              % (command, confdir, caseroot, cimeroot, infile, user_xml_dir, inst_string_label)
         logger.info( "cmd is: %s " %cmd)
         rc, out, err = run_cmd(cmd, from_dir=confdir)
         expect(rc==0,"Command %s failed rc=%d\nout=%s\nerr=%s"%(cmd,rc,out,err))

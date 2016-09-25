@@ -31,7 +31,7 @@ from CIME.utils import run_cmd_no_fail
 logger = logging.getLogger(__name__)
 
 ###############################################################################
-def parse_input(argv):
+def _parse_input(argv):
 ###############################################################################
 
     if "--test" in argv:
@@ -42,26 +42,27 @@ def parse_input(argv):
 
     setup_standard_logging_options(parser)
 
-    parser.add_argument("--caseroot", required=True, 
-                        help="Case diretory")
-
     parser.add_argument("--cimeroot", required=True,
                         help="CIMEROOT directory")
 
-    parser.add_argument("--confdir", required=True,
-                        help="Configuration directory where namelists are generated")
+    parser.add_argument("--caseroot", required=True, 
+                        help="Case diretory")
 
-    parser.add_argument("--infile", required=True,
-                        help="File containing user-modified namelists settings")
+    parser.add_argument("--confdir", required=True,
+                        help="configuration directory for component namelist generation")
+
+    parser.add_argument("--infile", nargs="+", required=True,
+                        help="file containing user-modified namelists settings")
 
     parser.add_argument("--user_xml_dir", required=True,
-                        help="File containing user modified namelist_defaults and namelist_definition files")
+                        help="user xml directory, user changes to "
+                        "namelist_defaults.xml and namelist_definitions.xml")
 
     args = parser.parse_args()
 
     handle_standard_logging_options(args)
 
-    return args.caseroot, args.confdir, args.cimeroot, args.infile, args.user_xml_dir
+    return args.cimeroot, args.caseroot, args.confdir, args.infile, args.user_xml_dir
 
 ###############################################################################
 def _create_group_seq_cplflds_inparm(case, nmlgen):
@@ -453,7 +454,7 @@ def _create_component_modelio_namelists(case, confdir, definition_files, default
             inst_index = inst_index + 1
 
 ####################################################################################
-def _create_driver_namelist(case, confdir, infile, definition_files,  defaults_files):
+def _create_namelists(case, confdir, infiles, definition_files,  defaults_files):
 ####################################################################################
     """Write out the namelist for this component.
 
@@ -464,7 +465,6 @@ def _create_driver_namelist(case, confdir, infile, definition_files,  defaults_f
     #----------------------------------------------------
     # Construct the namelist generator.
     #----------------------------------------------------
-    infiles = [infile]
     config = {}
     nmlgen = NamelistGenerator(case, infiles, definition_files, defaults_files,  config)
 
@@ -548,31 +548,33 @@ def _create_driver_namelist(case, confdir, infile, definition_files,  defaults_f
 def _main_func():
 ###############################################################################
 
-    caseroot, confdir, cimeroot, infiles, user_xml_dir = parse_input(sys.argv)
+    cimeroot, caseroot, confdir, infiles, user_xml_dir = _parse_input(sys.argv)
 
     # Figure out where definition/defaults files are.
     namelist_xml_dir = os.path.join(cimeroot, "driver_cpl", "bld", "namelist_files")
+
+    # User definition *replaces* existing definition.
     definition_file_basename = "namelist_definition_drv_v2.xml"
     definition_files = [os.path.join(namelist_xml_dir, definition_file_basename)]
     user_definition = os.path.join(user_xml_dir, definition_file_basename)
-
-    # User definition *replaces* existing definition.
     if os.path.isfile(user_definition):
-        definition_files = [user_definition]
+        definition_file = [user_definition]
+
+    # User defaults *extends* existing defaults.
     defaults_file_basename = "namelist_defaults_drv.xml"
     defaults_files = [os.path.join(namelist_xml_dir, defaults_file_basename)]
     user_defaults = os.path.join(user_xml_dir, defaults_file_basename)
-
-    # User defaults *extends* existing defaults.
     if os.path.isfile(user_defaults):
         defaults_files.append(user_defaults)
+
+    # Checkout if definition and defaults file exist
     for file_ in definition_files + defaults_files:
         expect(os.path.isfile(file_),
                "Namelist XML file %s not found!" % file_)
 
     # Now build the component namelist and required stream txt files
     with Case(caseroot) as case:
-        _create_driver_namelist(case, confdir, infiles, definition_files, defaults_files)
+        _create_namelists(case, confdir, infiles, definition_files, defaults_files)
         _create_component_modelio_namelists(case, confdir, definition_files, defaults_files)
 
 ###############################################################################
