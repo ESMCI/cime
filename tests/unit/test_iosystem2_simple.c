@@ -10,15 +10,10 @@
 #include <pio_tests.h>
 
 /* The number of tasks this test should run on. */
-#define TARGET_NTASKS 2
+#define TARGET_NTASKS 4
 
 /* The name of this test. */
 #define TEST_NAME "test_iosystem2_simple"
-
-/* Used to define netcdf test file. */
-#define PIO_TF_MAX_STR_LEN 100
-#define ATTNAME "filename"
-#define DIMNAME "filename_dim"
 
 /* Number of test files generated. */
 #define NUM_FILES 3
@@ -28,46 +23,6 @@
 #define BASE 0
 #define REARRANGER 1
 
-/** This creates a netCDF file in the specified format, with some
- * sample values. */
-int
-create_file(int iosysid, int format, char *filename, int my_rank)
-{
-    int ncid, varid, dimid;
-    int ret;
-
-    /* Create the file. */
-    if ((ret = PIOc_createfile(iosysid, &ncid, &format, filename, NC_CLOBBER)))
-	return ret;
-    printf("%d file created ncid = %d\n", my_rank, ncid);
-
-    /* Define a dimension. */
-    printf("%d defining dimension %s\n", my_rank, DIMNAME);
-    if ((ret = PIOc_def_dim(ncid, DIMNAME, PIO_TF_MAX_STR_LEN, &dimid)))
-	return ret;
-
-    /* Define a 1-D variable. */
-    printf("%d defining variable %s\n", my_rank, ATTNAME);
-    if ((ret = PIOc_def_var(ncid, ATTNAME, NC_CHAR, 1, &dimid, &varid)))
-    	return ret;
-
-    /* Write an attribute. */
-    if ((ret = PIOc_put_att_text(ncid, varid, ATTNAME, strlen(filename), filename)))
-    	return ret;
-
-    /* End define mode. */
-    if ((ret = PIOc_enddef(ncid)))
-	return ret;
-    printf("%d define mode ended ncid = %d\n", my_rank, ncid);
-
-    /* Close the file. */
-    if ((ret = PIOc_closefile(ncid)))
-	return ret;
-    printf("%d closed file ncid = %d\n", my_rank, ncid);
-
-    return PIO_NOERR;
-}
-
 /** Run test. */
 int
 main(int argc, char **argv)
@@ -76,10 +31,9 @@ main(int argc, char **argv)
     int ntasks; /* Number of processors involved in current execution. */
     int iosysid; /* The ID for the parallel I/O system. */
     int iosysid_world; /* The ID for the parallel I/O system. */
-    int ret; /* Return code. */
-
     int iotypes[NUM_FLAVORS] = {PIO_IOTYPE_PNETCDF, PIO_IOTYPE_NETCDF,
 			       PIO_IOTYPE_NETCDF4C, PIO_IOTYPE_NETCDF4P};
+    int ret; /* Return code. */
 
     /* Initialize test. */
     if ((ret = pio_test_init(argc, argv, &my_rank, &ntasks, TARGET_NTASKS)))
@@ -92,64 +46,60 @@ main(int argc, char **argv)
 	MPIERR(ret);
     printf("%d newcomm = %d even = %d\n", my_rank, newcomm, even);
 
-    /* Get rank in new communicator and its size. */
-    int new_rank, new_size;
-    if ((ret = MPI_Comm_rank(newcomm, &new_rank)))
-	MPIERR(ret);
+    /* Get size of new communicator. */
+    int new_size;
     if ((ret = MPI_Comm_size(newcomm, &new_size)))
 	MPIERR(ret);
-    printf("%d newcomm = %d new_rank = %d new_size = %d\n", my_rank, newcomm,
-	   new_rank, new_size);
 
-    /* Initialize PIO system. */
+    /* Initialize an intracomm for evens/odds. */
     if ((ret = PIOc_Init_Intracomm(newcomm, new_size, STRIDE, BASE, REARRANGER, &iosysid)))
 	ERR(ret);
 
-    /* Initialize another PIO system. */
+    /* Initialize an intracomm for all processes. */
     if ((ret = PIOc_Init_Intracomm(MPI_COMM_WORLD, ntasks, STRIDE, BASE, REARRANGER,
 				   &iosysid_world)))
 	ERR(ret);
 
-    int ncid[NUM_FLAVORS];
-    int ncid2[NUM_FLAVORS];
+    int ncid;
+    int ncid2;
     for (int i = 2; i < 4; i++)
     {
 	char fn[NUM_FILES][NC_MAX_NAME + 1];
+
+	/* Create the test files. */
 	for (int f = 0; f < NUM_FILES; f++)
 	{
+	    int lncid;
 	    sprintf(fn[f], "pio_iosys_test_file%d.nc", f);
-	    if ((ret = create_file(iosysid_world, iotypes[i], fn[f], my_rank)))
-		ERR(ret);
+	    if ((ret = PIOc_createfile(iosysid_world, &lncid, &iotypes[i], fn[f], NC_CLOBBER)))
+		return ret;
+	    if ((ret = PIOc_enddef(lncid)))
+		return ret;
+	    if ((ret = PIOc_closefile(lncid)))
+		return ret;
 	}
 
-	MPI_Barrier(MPI_COMM_WORLD);
-
 	/* Open the first file with world iosystem. */
-	if ((ret = PIOc_openfile(iosysid_world, &ncid[i], &iotypes[i], fn[1], PIO_WRITE)))
+	if ((ret = PIOc_openfile(iosysid_world, &ncid, &iotypes[i], fn[1], PIO_WRITE)))
 	    return ret;
 
-	/* Now have the odd/even communicators each check one of the
-	 * remaining files. */
-	char *fname = even ? fn[1] : fn[2];
-	printf("\n***\n");
-	if ((ret = PIOc_openfile(iosysid, &ncid2[i], &iotypes[i], fname, PIO_WRITE)))
+	/* Now have the even communicator open file. */
+	char *file = even ? fn[1] : fn[2];
+	if ((ret = PIOc_openfile(iosysid, &ncid2, &iotypes[i], file, PIO_WRITE)))
 	    return ret;
+
+	/* Close the still-open files. */
+	if ((ret = PIOc_closefile(ncid)))
+	    ERR(ret);
+	if ((ret = PIOc_closefile(ncid2)))
+	    ERR(ret);
     } /* next iotype */
 
-    /* Close the still-open files. */
-    for (int i = 2; i < 4; i++)
-    {
-	if ((ret = PIOc_closefile(ncid[i])))
-	    ERR(ret);
-	if ((ret = PIOc_closefile(ncid2[i])))
-	    ERR(ret);
-    }
-
-    /* Finalize PIO system. */
+    /* Finalize PIO odd/even intracomm. */
     if ((ret = PIOc_finalize(iosysid)))
 	ERR(ret);
 
-    /* Finalize PIO system. */
+    /* Finalize PIO world intracomm. */
     if ((ret = PIOc_finalize(iosysid_world)))
 	ERR(ret);
 

@@ -190,12 +190,6 @@ iosystem_desc_t *pio_get_iosystem_from_id(int iosysid)
     LOG((1, "pio_get_iosystem_from_id iosysid = %d", iosysid));
     
     for (ciosystem = pio_iosystem_list; ciosystem; ciosystem = ciosystem->next)    
-	LOG((2, "iosysid = %d union_comm = %d io_comm = %d my_comm = %d intercomm = %d comproot = %d"
-	     " next = %d",
-	     ciosystem->iosysid, ciosystem->union_comm, ciosystem->io_comm, ciosystem->my_comm,
-	     ciosystem->intercomm, ciosystem->comproot, ciosystem->next));
-    
-    for (ciosystem = pio_iosystem_list; ciosystem; ciosystem = ciosystem->next)    
 	if (ciosystem->iosysid == iosysid)
 	{
 	    LOG((2, "FOUND! iosysid = %d union_comm = %d io_comm = %d my_comm = %d intercomm = %d comproot = %d"

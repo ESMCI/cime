@@ -1664,7 +1664,6 @@ int pioc_change_def(int ncid, int is_enddef)
     if (!(file = pio_get_file_from_id(ncid)))
         return PIO_EBADID;
     ios = file->iosystem;
-    LOG((2, "pioc_change_def found file"));
     
     /* If async is in use, and this is not an IO task, bcast the parameters. */
     if (ios->async_interface)
@@ -1672,7 +1671,6 @@ int pioc_change_def(int ncid, int is_enddef)
         if (!ios->ioproc)
         {
             int msg = is_enddef ? PIO_MSG_ENDDEF : PIO_MSG_REDEF;
-	    LOG((2, "sending message msg = %d", msg));
             if(ios->compmaster) 
                 mpierr = MPI_Send(&msg, 1, MPI_INT, ios->ioroot, 1, ios->union_comm);
 
@@ -1708,7 +1706,7 @@ int pioc_change_def(int ncid, int is_enddef)
             else
                 ierr = nc_redef(file->fh);
 #endif /* _NETCDF */
-	LOG((2, "pioc_change_def ierr = %d", ierr));
+
     }
 
     /* Broadcast and check the return code. */
