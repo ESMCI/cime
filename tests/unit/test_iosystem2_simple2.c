@@ -13,10 +13,15 @@
 #define TARGET_NTASKS 4
 
 /* The name of this test. */
-#define TEST_NAME "test_iosystem2_simple"
+#define TEST_NAME "test_iosystem2_simple2"
 
 /* Number of test files generated. */
 #define NUM_FILES 3
+
+/* Used to define netcdf test file. */
+#define PIO_TF_MAX_STR_LEN 100
+#define ATTNAME "filename"
+#define DIMNAME "filename_dim"
 
 /* Needed to init intracomm. */
 #define STRIDE 1
@@ -69,10 +74,24 @@ main(int argc, char **argv)
 	/* Create the test files. */
 	for (int f = 0; f < NUM_FILES; f++)
 	{
-	    int lncid;
+	    int lncid, dimid, varid;
+	    
 	    sprintf(fn[f], "pio_iosys_test_file%d.nc", f);
 	    if ((ret = PIOc_createfile(iosysid_world, &lncid, &iotypes[i], fn[f], NC_CLOBBER)))
 		return ret;
+	    /* Define a dimension. */
+	    if ((ret = PIOc_def_dim(lncid, DIMNAME, PIO_TF_MAX_STR_LEN, &dimid)))
+		return ret;
+
+	    /* Define a 1-D variable. */
+	    if ((ret = PIOc_def_var(lncid, ATTNAME, NC_CHAR, 1, &dimid, &varid)))
+		return ret;
+
+	    /* Write an attribute. */
+	    if ((ret = PIOc_put_att_text(lncid, varid, ATTNAME, strlen(fn[f]), fn[f])))
+		return ret;
+
+	    /* Done! */
 	    if ((ret = PIOc_enddef(lncid)))
 		return ret;
 	    if ((ret = PIOc_closefile(lncid)))

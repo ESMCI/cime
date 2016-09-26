@@ -9,9 +9,6 @@
 #include <pio.h>
 #include <pio_tests.h>
 
-/* Number of computational components to create. */
-#define COMPONENT_COUNT 2
-
 /* The number of tasks this test should run on. */
 #define TARGET_NTASKS 4
 
