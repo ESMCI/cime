@@ -10,7 +10,7 @@
 #include <pio_tests.h>
 
 /* The number of tasks this test should run on. */
-#define TARGET_NTASKS 4
+#define TARGET_NTASKS 2
 
 /* The name of this test. */
 #define TEST_NAME "test_iosystem2_simple"
