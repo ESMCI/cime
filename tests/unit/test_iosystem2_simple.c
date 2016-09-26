@@ -62,7 +62,7 @@ main(int argc, char **argv)
 
     int ncid;
     int ncid2;
-    for (int i = 2; i < 4; i++)
+    for (int i = 0; i < NUM_FLAVORS; i++)
     {
 	char fn[NUM_FILES][NC_MAX_NAME + 1];
 
