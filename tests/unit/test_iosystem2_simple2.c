@@ -67,9 +67,10 @@ main(int argc, char **argv)
 
     int ncid;
     int ncid2;
-    for (int i = 0; i < NUM_FLAVORS; i++)
+    for (int i = 0; i < 1; i++)
     {
 	char fn[NUM_FILES][NC_MAX_NAME + 1];
+	char dimname[NC_MAX_NAME + 1];
 
 	/* Create the test files. */
 	for (int f = 0; f < NUM_FILES; f++)
@@ -107,6 +108,19 @@ main(int argc, char **argv)
 	if ((ret = PIOc_openfile(iosysid, &ncid2, &iotypes[i], file, PIO_WRITE)))
 	    return ret;
 
+	/* Check the first file. */
+	int dimid_in;
+	/* if ((ret = PIOc_inq_dimid(ncid, DIMNAME, &dimid_in))) */
+	/*     return ret; */
+	/* if (dimid_in != 0) */
+	/*     return ERR_WRONG; */
+
+	/* Check the other files. */
+	if ((ret = PIOc_inq_dimid(ncid2, DIMNAME, &dimid_in)))
+	    return ret;
+	if (dimid_in != 0)
+	    return ERR_WRONG;
+	
 	/* Close the still-open files. */
 	if ((ret = PIOc_closefile(ncid)))
 	    ERR(ret);

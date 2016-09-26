@@ -18,6 +18,11 @@
 /* Number of test files generated. */
 #define NUM_FILES 3
 
+/* Used to define netcdf test file. */
+#define PIO_TF_MAX_STR_LEN 100
+#define ATTNAME "filename"
+#define DIMNAME "filename_dim"
+
 /* Needed to init intracomm. */
 #define STRIDE 1
 #define BASE 0
@@ -87,6 +92,19 @@ main(int argc, char **argv)
 	char *file = even ? fn[1] : fn[2];
 	if ((ret = PIOc_openfile(iosysid, &ncid2, &iotypes[i], file, PIO_WRITE)))
 	    return ret;
+
+	/* Check the first file. */
+	int ndims;
+	if ((ret = PIOc_inq(ncid, &ndims, NULL, NULL, NULL)))
+	    return ret;
+	if (ndims)
+	    return ERR_WRONG;
+
+	/* Check the other files. */
+	if ((ret = PIOc_inq(ncid2, &ndims, NULL, NULL, NULL)))
+	    return ret;
+	if (ndims)
+	    return ERR_WRONG;
 
 	/* Close the still-open files. */
 	if ((ret = PIOc_closefile(ncid)))

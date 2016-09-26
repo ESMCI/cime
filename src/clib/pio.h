@@ -475,7 +475,7 @@ extern "C" {
   int PIOc_rename_att (int ncid, int varid, const char *name, const char *newname); 
   int PIOc_del_att (int ncid, int varid, const char *name); 
   int PIOc_inq_natts (int ncid, int *ngattsp); 
-  int PIOc_inq (int ncid, int *ndimsp, int *nvarsp, int *ngattsp, int *unlimdimidp);  
+  int PIOc_inq(int ncid, int *ndimsp, int *nvarsp, int *ngattsp, int *unlimdimidp);  
   int PIOc_get_att_text (int ncid, int varid, const char *name, char *ip); 
   int PIOc_get_att_short (int ncid, int varid, const char *name, short *ip); 
   int PIOc_put_att_long (int ncid, int varid, const char *name, nc_type xtype, PIO_Offset len, const long *op); 
