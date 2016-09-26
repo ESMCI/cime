@@ -384,6 +384,7 @@ class NamelistGenerator(object):
         # Stream-specific configuration.
         config = config.copy()
         config["stream"] = stream
+
         # Figure out the details of this stream.
         if stream in ("prescribed", "copyall"):
             # Assume only one file for prescribed mode!
@@ -396,16 +397,14 @@ class NamelistGenerator(object):
             domain_filenames = self.get_default("strm_domfil", config)
             data_filepath = self.get_default("strm_datdir", config)
             data_filenames = self.get_default("strm_datfil", config)
-        domain_varnames = self._sub_fields(self.get_default("strm_domvar",
-                                                            config))
-        data_varnames = self._sub_fields(self.get_default("strm_datvar",
-                                                          config))
+
+        domain_varnames = self._sub_fields(self.get_default("strm_domvar", config))
+        data_varnames = self._sub_fields(self.get_default("strm_datvar", config))
         offset = self.get_default("strm_offset", config)
         year_start = int(self.get_default("strm_year_start", config))
         year_end = int(self.get_default("strm_year_end", config))
         data_filenames = self._sub_paths(data_filenames, year_start, year_end)
-        domain_filenames = self._sub_paths(domain_filenames, year_start,
-                                           year_end)
+        domain_filenames = self._sub_paths(domain_filenames, year_start, year_end)
         stream_file_text = _stream_file_template.format(
             domain_varnames=domain_varnames,
             domain_filepath=domain_filepath,
@@ -518,9 +517,8 @@ class NamelistGenerator(object):
                 if file_path == 'null':
                     continue
                 file_path = self.set_abs_file_path(file_path)
-                #DEBUG
-                # expect(os.path.exists(file_path),
-                #        "File not found: %s = %s" % (name, literal))
+                expect(os.path.exists(file_path),
+                       "File not found: %s = %s" % (name, literal))
                 current_literals[i] = string_to_character_literal(file_path)
             current_literals = compress_literal_list(current_literals)
 
