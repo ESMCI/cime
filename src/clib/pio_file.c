@@ -35,7 +35,8 @@ int PIOc_openfile_retry(const int iosysid, int *ncidp, int *iotype,
     int ierr = PIO_NOERR;  /** Return code from function calls. */
     int mpierr = MPI_SUCCESS, mpierr2;  /** Return code from MPI function codes. */
 
-    LOG((1, "PIOc_openfile iosysid = %d", iosysid));
+    LOG((2, "PIOc_openfile_retry iosysid = %d iotype = %d filename = %s mode = %d retry = %d",
+	 iosysid, *iotype, filename, mode, retry));
 
     /* User must provide valid input for these parameters. */
     if (!ncidp || !iotype || !filename)
@@ -153,10 +154,10 @@ int PIOc_openfile_retry(const int iosysid, int *ncidp, int *iotype,
 	    if (ierr == PIO_NOERR && (file->mode & PIO_WRITE))
 	    {
 		if(ios->iomaster)
-		    LOG((1, "%d Setting IO buffer %ld", __LINE__, PIO_BUFFER_SIZE_LIMIT));
+		    LOG((2, "%d Setting IO buffer %ld", __LINE__, PIO_BUFFER_SIZE_LIMIT));
 		ierr = ncmpi_buffer_attach(file->fh, PIO_BUFFER_SIZE_LIMIT);
 	    }
-	    LOG((1, "ncmpi_open(%s) : fd = %d", filename, file->fh)); 
+	    LOG((2, "ncmpi_open(%s) : fd = %d", filename, file->fh)); 
 	    break;
 #endif
 
@@ -215,7 +216,7 @@ int PIOc_openfile_retry(const int iosysid, int *ncidp, int *iotype,
 	pio_add_to_file_list(file);
     }
   
-    LOG((1, "Opened file %s file->fh = %d ierr = %d", filename, file->fh, ierr)); 
+    LOG((2, "Opened file %s file->fh = %d ierr = %d", filename, file->fh, ierr)); 
   
     return ierr;
 }
@@ -452,7 +453,7 @@ int PIOc_createfile(const int iosysid, int *ncidp, int *iotype,
 	pio_add_to_file_list(file);
     }
     
-    LOG((1, "Created file %s %d", filename, file->fh)); 
+    LOG((2, "Created file %s %d", filename, file->fh)); 
 
     return ierr;
 }

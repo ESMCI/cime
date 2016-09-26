@@ -66,7 +66,7 @@ pio_get_file_from_id2(int ncid, file_desc_t **cfile1)
 {
     file_desc_t *cfile = NULL;
 
-    LOG((1, "pio_get_file_from_id2 ncid = %d", ncid));
+    LOG((2, "pio_get_file_from_id2 ncid = %d", ncid));
 
     /* Caller must provide this. */
     if (!cfile1)
@@ -187,12 +187,12 @@ iosystem_desc_t *pio_get_iosystem_from_id(int iosysid)
 {
     iosystem_desc_t *ciosystem;
 
-    LOG((1, "pio_get_iosystem_from_id iosysid = %d", iosysid));
+    LOG((2, "pio_get_iosystem_from_id iosysid = %d", iosysid));
     
     for (ciosystem = pio_iosystem_list; ciosystem; ciosystem = ciosystem->next)    
 	if (ciosystem->iosysid == iosysid)
 	{
-	    LOG((2, "FOUND! iosysid = %d union_comm = %d io_comm = %d my_comm = %d intercomm = %d comproot = %d"
+	    LOG((3, "FOUND! iosysid = %d union_comm = %d io_comm = %d my_comm = %d intercomm = %d comproot = %d"
 		 " next = %d",
 		 ciosystem->iosysid, ciosystem->union_comm, ciosystem->io_comm, ciosystem->my_comm,
 		 ciosystem->intercomm, ciosystem->comproot, ciosystem->next));

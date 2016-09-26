@@ -1658,7 +1658,7 @@ int pioc_change_def(int ncid, int is_enddef)
     int ierr = PIO_NOERR;  /* Return code from function calls. */
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI functions. */
 
-    LOG((1, "pioc_change_def ncid = %d is_enddef = %d", ncid, is_enddef));
+    LOG((2, "pioc_change_def ncid = %d is_enddef = %d", ncid, is_enddef));
 
     /* Find the info about this file. */
     if (!(file = pio_get_file_from_id(ncid)))
@@ -1676,11 +1676,11 @@ int pioc_change_def(int ncid, int is_enddef)
 
             if (!mpierr)            
                 mpierr = MPI_Bcast(&file->fh, 1, MPI_INT, ios->compmaster, ios->intercomm);
-	    LOG((2, "pioc_change_def ncid = %d mpierr = %d", file->fh, mpierr));
+	    LOG((3, "pioc_change_def ncid = %d mpierr = %d", file->fh, mpierr));
         }
 
         /* Handle MPI errors. */
-	LOG((2, "pioc_change_def handling MPI errors"));	
+	LOG((3, "pioc_change_def handling MPI errors"));	
         if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
             check_mpi(file, mpierr2, __FILE__, __LINE__);           
         if (mpierr)
@@ -1688,10 +1688,10 @@ int pioc_change_def(int ncid, int is_enddef)
     }
 
     /* If this is an IO task, then call the netCDF function. */
-    LOG((2, "pioc_change_def ios->ioproc = %d", ios->ioproc));    
+    LOG((3, "pioc_change_def ios->ioproc = %d", ios->ioproc));    
     if (ios->ioproc)
     {
-	LOG((2, "pioc_change_def calling netcdf function"));
+	LOG((3, "pioc_change_def calling netcdf function"));
 #ifdef _PNETCDF
         if (file->iotype == PIO_IOTYPE_PNETCDF)
             if (is_enddef)
@@ -1710,12 +1710,12 @@ int pioc_change_def(int ncid, int is_enddef)
     }
 
     /* Broadcast and check the return code. */
-    LOG((2, "pioc_change_def bcasting return code ierr = %d", ierr));
+    LOG((3, "pioc_change_def bcasting return code ierr = %d", ierr));
     if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
         return check_mpi(file, mpierr, __FILE__, __LINE__);            
     if (ierr)
 	return check_netcdf(file, ierr, __FILE__, __LINE__);
-    LOG((2, "pioc_change_def succeeded"));
+    LOG((3, "pioc_change_def succeeded"));
 
     return ierr;
 }
