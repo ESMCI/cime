@@ -64,6 +64,9 @@ if (NOT PIO_USE_MPI_SERIAL)
   add_executable (test_iosystem2_simple EXCLUDE_FROM_ALL test_iosystem2_simple.c test_common.c)
   target_link_libraries (test_iosystem2_simple pioc)
   add_dependencies (tests test_iosystem2_simple)
+  add_executable (test_iosystem2_simple2 EXCLUDE_FROM_ALL test_iosystem2_simple2.c test_common.c)
+  target_link_libraries (test_iosystem2_simple2 pioc)
+  add_dependencies (tests test_iosystem2_simple2)
   add_executable (test_iosystem2 EXCLUDE_FROM_ALL test_iosystem2.c test_common.c)
   target_link_libraries (test_iosystem2 pioc)
   add_dependencies (tests test_iosystem2)
@@ -136,6 +139,10 @@ else ()
     add_mpi_test(test_iosystem2_simple
         EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_iosystem2_simple
         NUMPROCS 2
+        TIMEOUT ${DEFAULT_TEST_TIMEOUT})
+    add_mpi_test(test_iosystem2_simple2
+        EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_iosystem2_simple2
+        NUMPROCS 4
         TIMEOUT ${DEFAULT_TEST_TIMEOUT})
     add_mpi_test(test_iosystem2
         EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_iosystem2
