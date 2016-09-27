@@ -499,7 +499,7 @@ extern "C" {
   int PIOc_inq_varndims (int ncid, int varid, int *ndimsp); 
   int PIOc_get_att_long (int ncid, int varid, const char *name, long *ip); 
   int PIOc_inq_dim (int ncid, int dimid, char *name, PIO_Offset *lenp); 
-  int PIOc_inq_dimid (int ncid, const char *name, int *idp); 
+  int PIOc_inq_dimid(int ncid, const char *name, int *idp); 
   int PIOc_inq_unlimdim (int ncid, int *unlimdimidp); 
   int PIOc_inq_vardimid (int ncid, int varid, int *dimidsp); 
   int PIOc_inq_attlen (int ncid, int varid, const char *name, PIO_Offset *lenp); 

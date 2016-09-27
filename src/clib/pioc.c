@@ -459,7 +459,7 @@ int PIOc_Init_Intracomm(const MPI_Comm comp_comm, const int num_iotasks,
 	  CheckMPIReturn(MPI_Comm_rank(iosys->io_comm, &(iosys->io_rank)),__FILE__,__LINE__);
       else
 	  iosys->io_rank = -1;
-      LOG((3, "iosys->io_rank = %d", iosys->io_rank));
+      LOG((3, "iosys->io_comm = %d iosys->io_rank = %d", iosys->io_comm, iosys->io_rank));
 
       iosys->union_rank = iosys->comp_rank;
 

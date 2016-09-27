@@ -67,16 +67,24 @@ main(int argc, char **argv)
 
     int ncid;
     int ncid2;
-    for (int i = 0; i < NUM_FLAVORS; i++)
+    for (int i = 2; i < NUM_FLAVORS; i++)
     {
 	char fn[NUM_FILES][NC_MAX_NAME + 1];
+	char dimname[NUM_FILES][NC_MAX_NAME + 1];
 
 	/* Create the test files. */
 	for (int f = 0; f < NUM_FILES; f++)
 	{
-	    int lncid;
+	    int lncid, dimid;
+
+	    /* Creat file and dimension name. */
 	    sprintf(fn[f], "pio_iosys_test_file%d.nc", f);
+	    sprintf(dimname[f], "dim_%d", f);
+	    
 	    if ((ret = PIOc_createfile(iosysid_world, &lncid, &iotypes[i], fn[f], NC_CLOBBER)))
+		return ret;
+	    /* Define a dimension. */
+	    if ((ret = PIOc_def_dim(lncid, dimname[f], PIO_TF_MAX_STR_LEN, &dimid)))
 		return ret;
 	    if ((ret = PIOc_enddef(lncid)))
 		return ret;
@@ -85,7 +93,7 @@ main(int argc, char **argv)
 	}
 
 	/* Open the first file with world iosystem. */
-	if ((ret = PIOc_openfile(iosysid_world, &ncid, &iotypes[i], fn[1], PIO_WRITE)))
+	if ((ret = PIOc_openfile(iosysid_world, &ncid, &iotypes[i], fn[0], PIO_WRITE)))
 	    return ret;
 
 	/* Now have the even communicator open file. */
@@ -94,16 +102,19 @@ main(int argc, char **argv)
 	    return ret;
 
 	/* Check the first file. */
-	int ndims;
-	if ((ret = PIOc_inq(ncid, &ndims, NULL, NULL, NULL)))
+	char dimname_in[NC_MAX_NAME + 1];
+	if ((ret = PIOc_inq_dimname(ncid, 0, dimname_in)))
 	    return ret;
-	if (ndims)
+	printf("%d ncid dimname_in = %s should be %s\n", my_rank, dimname_in, dimname[0]);
+	if (strcmp(dimname_in, dimname[0]))
 	    return ERR_WRONG;
 
 	/* Check the other files. */
-	if ((ret = PIOc_inq(ncid2, &ndims, NULL, NULL, NULL)))
+	char *dimn = even ? dimname[1] : dimname[2];	
+	if ((ret = PIOc_inq_dimname(ncid2, 0, dimname_in)))
 	    return ret;
-	if (ndims)
+	printf("%d ncid2 dimname_in = %s should be %s\n", my_rank, dimname_in, dimn);
+	if (strcmp(dimname_in, dimn))
 	    return ERR_WRONG;
 
 	/* Close the still-open files. */

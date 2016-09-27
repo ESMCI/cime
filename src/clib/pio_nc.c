@@ -418,11 +418,11 @@ int PIOc_inq_dim(int ncid, int dimid, char *name, PIO_Offset *lenp)
     int ierr = PIO_NOERR;  /* Return code from function calls. */
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
 
-    LOG((1, "PIOc_inq_dim"));
+    LOG((1, "PIOc_inq_dim ncid = %d dimid = %d", ncid, dimid));
 
     /* Get the file info, based on the ncid. */
-    if (!(file = pio_get_file_from_id(ncid)))
-        return PIO_EBADID;
+    if ((ierr = pio_get_file_from_id2(ncid, &file)))
+        return ierr;
     ios = file->iosystem;
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
@@ -461,12 +461,19 @@ int PIOc_inq_dim(int ncid, int dimid, char *name, PIO_Offset *lenp)
     {
 #ifdef _PNETCDF
         if (file->iotype == PIO_IOTYPE_PNETCDF)
-            ierr = ncmpi_inq_dim(file->fh, dimid, name, lenp);;     
+	{
+	    LOG((2, "calling ncmpi_inq_dim"));
+            ierr = ncmpi_inq_dim(file->fh, dimid, name, lenp);;
+	}
 #endif /* _PNETCDF */
 #ifdef _NETCDF
         if (file->iotype != PIO_IOTYPE_PNETCDF && file->do_io)
-            ierr = nc_inq_dim(file->fh, dimid, name, (size_t *)lenp);;      
+	{
+	    LOG((2, "calling nc_inq_dim"));
+            ierr = nc_inq_dim(file->fh, dimid, name, (size_t *)lenp);;
+	}
 #endif /* _NETCDF */
+	LOG((2, "ierr = %d", ierr));
     }
 
     /* Broadcast and check the return code. */
@@ -480,6 +487,7 @@ int PIOc_inq_dim(int ncid, int dimid, char *name, PIO_Offset *lenp)
         if (name)
         { 
             int slen;
+	    LOG((2, "bcasting results my_comm = %d", ios->my_comm));
             if (ios->iomaster)
                 slen = strlen(name);
             if ((mpierr = MPI_Bcast(&slen, 1, MPI_INT, ios->ioroot, ios->my_comm)))
@@ -492,7 +500,8 @@ int PIOc_inq_dim(int ncid, int dimid, char *name, PIO_Offset *lenp)
             if ((mpierr = MPI_Bcast(lenp , 1, MPI_OFFSET, ios->ioroot, ios->my_comm)))
                 return check_mpi(file, mpierr, __FILE__, __LINE__);         
     }
-    
+
+    LOG((2, "done with PIOc_inq_dim"));
     return ierr;
 }
 
@@ -502,6 +511,7 @@ int PIOc_inq_dim(int ncid, int dimid, char *name, PIO_Offset *lenp)
  */
 int PIOc_inq_dimname(int ncid, int dimid, char *name) 
 {
+    LOG((1, "PIOc_inq_dimname ncid = %d dimid = %d", ncid, dimid));
     return PIOc_inq_dim(ncid, dimid, name, NULL);
 }
 
