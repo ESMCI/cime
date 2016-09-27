@@ -375,8 +375,9 @@ sub transform_src
   elsif(/^(\s*)PIO_TF_PASSERT\((.+),([^,]+),([^)]+)\)(.*)$/s){
     $out_line = $1 . $5 . "\n";
     $out_line = $out_line . $1 . "IF (.NOT. (PIO_TF_Passert_($2, $3))) THEN\n";
+    $out_line = $out_line . $1 . "  call MPI_COMM_RANK($3, pio_tf_tmp_comm_rank_, pio_tf_retval_utest_)\n";
     $out_line = $out_line . $1 . "  pio_tf_retval_utest_ = -1\n";
-    $out_line = $out_line . $1 . "  IF (pio_tf_world_rank_ == 0) THEN\n";
+    $out_line = $out_line . $1 . "  IF (pio_tf_tmp_comm_rank_ == 0) THEN\n";
     $out_line = $out_line . $1 . "    PRINT *, \"PIO_TF: Assertion failed :\",&\n";
     $out_line = $out_line . $1 . "      " . $4 . ",&\n";
     $out_line = $out_line . $1 . "       \":\", __FILE__, \":\", __LINE__,&\n";
@@ -412,8 +413,9 @@ sub transform_src
   elsif(/^(\s*)PIO_TF_CHECK_ERR\(([^,]+),([^,]+),(.+)\)(\s*)$/s){
     $out_line = $1 . $5 . "\n";
     $out_line = $out_line . $1 . "IF (.NOT. (PIO_TF_Passert_(($2) == PIO_NOERR, $3))) THEN\n";
+    $out_line = $out_line . $1 . "  call MPI_COMM_RANK($3, pio_tf_tmp_comm_rank_, pio_tf_retval_utest_)\n";
     $out_line = $out_line . $1 . "  pio_tf_retval_utest_ = -1\n";
-    $out_line = $out_line . $1 . "  IF (pio_tf_world_rank_ == 0) THEN\n";
+    $out_line = $out_line . $1 . "  IF (pio_tf_tmp_comm_rank_ == 0) THEN\n";
     $out_line = $out_line . $1 . "    PRINT *, \"PIO_TF: PIO Function failed:\",&\n";
     $out_line = $out_line . $1 . "      " . $4 . ",&\n";
     $out_line = $out_line . $1 . "      \":\", __FILE__, \":\", __LINE__,&\n";
