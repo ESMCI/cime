@@ -136,10 +136,10 @@ else ()
         EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_async_4proc
         NUMPROCS 4
         TIMEOUT ${DEFAULT_TEST_TIMEOUT}) 
-    # add_mpi_test(test_iosystem2_simple
-    #     EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_iosystem2_simple
-    #     NUMPROCS 2
-    #     TIMEOUT ${DEFAULT_TEST_TIMEOUT})
+    add_mpi_test(test_iosystem2_simple
+        EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_iosystem2_simple
+        NUMPROCS 2
+        TIMEOUT ${DEFAULT_TEST_TIMEOUT})
     # add_mpi_test(test_iosystem2_simple2
     #     EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_iosystem2_simple2
     #     NUMPROCS 4

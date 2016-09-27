@@ -117,8 +117,9 @@ main(int argc, char **argv)
 	/* Close the still-open files. */
 	if ((ret = PIOc_closefile(ncid)))
 	    ERR(ret);
-	if ((ret = PIOc_closefile(ncid2)))
-	    ERR(ret);
+	if (even)
+	    if ((ret = PIOc_closefile(ncid2)))
+		ERR(ret);
     } /* next iotype */
 
     /* Finalize PIO odd/even intracomm. */
