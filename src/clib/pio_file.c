@@ -2,6 +2,8 @@
 #include <pio.h>
 #include <pio_internal.h>
 
+int pio_next_ncid = 16;
+
 /** Open an existing file using PIO library. This is an internal
  * function. Depending on the value of the retry parameter, a failed
  * open operation will be handled differently. If retry is non-zero,
@@ -217,6 +219,7 @@ int PIOc_openfile_retry(const int iosysid, int *ncidp, int *iotype,
 	 * because otherwise ncids will be reused if files are opened
 	 * on multiple iosystems. */
 	file->pio_ncid = file->fh;
+	//file->pio_ncid = pio_next_ncid++;
 
 	/* Return the PIO ncid to the user. */
 	*ncidp = file->pio_ncid;
@@ -459,6 +462,7 @@ int PIOc_createfile(const int iosysid, int *ncidp, int *iotype,
 	 * on mutilple iosystems, causing the underlying library to
 	 * reuse ncids. Hilarious confusion ensues. */
 	file->pio_ncid = file->fh;
+	//file->pio_ncid = pio_next_ncid++;
 
 	/* Return the ncid to the caller. */
 	*ncidp = file->pio_ncid;
