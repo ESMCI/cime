@@ -14,7 +14,8 @@ SET(GENERATED_SRCS pio_file_simple_tests.F90
                    pio_decomp_tests.F90
                    pio_decomp_fillval.F90
                    pio_iosystem_tests.F90
-                   pio_iosystem_tests2.F90)
+                   pio_iosystem_tests2.F90
+                   pio_iosystem_tests3.F90)
 
 foreach (SRC_FILE IN LISTS GENERATED_SRCS)
     add_custom_command (
@@ -347,6 +348,7 @@ else ()
         TIMEOUT ${DEFAULT_TEST_TIMEOUT})
 endif ()
 
+
 #===== pio_iosystems_test2 =====
 add_executable (pio_iosystem_tests2 EXCLUDE_FROM_ALL
     pio_iosystem_tests2.F90
@@ -354,14 +356,33 @@ add_executable (pio_iosystem_tests2 EXCLUDE_FROM_ALL
 target_link_libraries (pio_iosystem_tests2 piof)
 add_dependencies (tests pio_iosystem_tests2)
 
-# if (PIO_USE_MPISERIAL)
-#     add_test(NAME pio_iosystem_tests2
-#         COMMAND pio_iosystem_tests2)
-#     set_tests_properties(pio_iosystem_tests2
-#         PROPERTIES TIMEOUT ${DEFAULT_TEST_TIMEOUT})
-# else ()
-#     add_mpi_test(pio_iosystem_tests2
-#         EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/pio_iosystem_tests2
-#         NUMPROCS 4
-#         TIMEOUT ${DEFAULT_TEST_TIMEOUT})
-# endif ()
+if (PIO_USE_MPISERIAL)
+    add_test(NAME pio_iosystem_tests2
+        COMMAND pio_iosystem_tests2)
+    set_tests_properties(pio_iosystem_tests2
+        PROPERTIES TIMEOUT ${DEFAULT_TEST_TIMEOUT})
+else ()
+    add_mpi_test(pio_iosystem_tests2
+        EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/pio_iosystem_tests2
+        NUMPROCS 4
+        TIMEOUT ${DEFAULT_TEST_TIMEOUT})
+endif ()
+
+#===== pio_iosystems_test3 =====
+add_executable (pio_iosystem_tests3 EXCLUDE_FROM_ALL
+    pio_iosystem_tests3.F90
+    ${CMAKE_CURRENT_SOURCE_DIR}/util/pio_tutil.F90)
+target_link_libraries (pio_iosystem_tests3 piof)
+add_dependencies (tests pio_iosystem_tests3)
+
+if (PIO_USE_MPISERIAL)
+    add_test(NAME pio_iosystem_tests3
+        COMMAND pio_iosystem_tests3)
+    set_tests_properties(pio_iosystem_tests3
+        PROPERTIES TIMEOUT ${DEFAULT_TEST_TIMEOUT})
+else ()
+    add_mpi_test(pio_iosystem_tests3
+        EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/pio_iosystem_tests3
+        NUMPROCS 4
+        TIMEOUT ${DEFAULT_TEST_TIMEOUT})
+endif ()
