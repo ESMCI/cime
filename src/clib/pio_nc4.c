@@ -50,7 +50,7 @@ int PIOc_def_var_deflate(int ncid, int varid, int shuffle, int deflate,
     {
 	if (ios->compmaster)
 	    mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
-	mpierr = MPI_Bcast(&(file->fh),1, MPI_INT, 0, ios->intercomm);
+	mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
     }
 
     if (ios->ioproc)
@@ -150,7 +150,7 @@ int PIOc_inq_var_deflate(int ncid, int varid, int *shufflep,
     {
 	if (ios->compmaster)
 	    mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
-	mpierr = MPI_Bcast(&(file->fh),1, MPI_INT, 0, ios->intercomm);
+	mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
     }
 
     if (ios->ioproc)
@@ -258,7 +258,7 @@ int PIOc_def_var_chunking(int ncid, int varid, int storage,
 		mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
 
 	    if (!mpierr)
-		mpierr = MPI_Bcast(&(file->fh),1, MPI_INT, 0, ios->intercomm);
+		mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
 	}
 
         /* Handle MPI errors. */
@@ -352,7 +352,7 @@ int PIOc_inq_var_chunking(int ncid, int varid, int *storagep, PIO_Offset *chunks
     {
 	if (ios->compmaster)
 	    mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
-	mpierr = MPI_Bcast(&(file->fh),1, MPI_INT, 0, ios->intercomm);
+	mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
     }
 
     if (ios->ioproc)
@@ -457,7 +457,7 @@ int PIOc_def_var_fill(int ncid, int varid, int no_fill, const void *fill_value)
     {
 	if (ios->compmaster)
 	    mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
-	mpierr = MPI_Bcast(&(file->fh),1, MPI_INT, 0, ios->intercomm);
+	mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
     }
 
     if (ios->ioproc)
@@ -552,7 +552,7 @@ int PIOc_def_var_endian(int ncid, int varid, int endian)
     {
 	if (ios->compmaster)
 	    mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
-	mpierr = MPI_Bcast(&(file->fh),1, MPI_INT, 0, ios->intercomm);
+	mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
     }
 
     if (ios->ioproc)
@@ -645,7 +645,7 @@ int PIOc_inq_var_endian(int ncid, int varid, int *endianp)
     {
 	if (ios->compmaster)
 	    mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
-	mpierr = MPI_Bcast(&(file->fh),1, MPI_INT, 0, ios->intercomm);
+	mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
     }
 
     if (ios->ioproc)
@@ -744,7 +744,7 @@ int PIOc_set_chunk_cache(int iosysid, int iotype, PIO_Offset size,
   /* if (ios->async_interface && ! ios->ioproc){ */
     /* 	if (ios->compmaster) */
     /* 	    mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm); */
-    /* 	mpierr = MPI_Bcast(&(file->fh),1, MPI_INT, 0, ios->intercomm); */
+    /* 	mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm); */
     /* } */
 
     switch (iotype)
@@ -832,7 +832,7 @@ int PIOc_get_chunk_cache(int iosysid, int iotype, PIO_Offset *sizep,
     /* if (ios->async_interface && ! ios->ioproc){ */
     /* 	if (ios->compmaster)  */
     /* 	    mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm); */
-    /* 	mpierr = MPI_Bcast(&(file->fh),1, MPI_INT, 0, ios->intercomm); */
+    /* 	mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm); */
     /* } */
 
     switch (iotype)
@@ -925,7 +925,7 @@ int PIOc_set_var_chunk_cache(int ncid, int varid, PIO_Offset size, PIO_Offset ne
     {
 	if (ios->compmaster)
 	    mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
-	mpierr = MPI_Bcast(&(file->fh),1, MPI_INT, 0, ios->intercomm);
+	mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
     }
 
     if (ios->ioproc)
@@ -1021,7 +1021,7 @@ int PIOc_get_var_chunk_cache(int ncid, int varid, PIO_Offset *sizep, PIO_Offset 
     /* if (ios->async_interface && ! ios->ioproc){ */
     /* 	if (ios->compmaster)  */
     /* 	    mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm); */
-    /* 	mpierr = MPI_Bcast(&(file->fh),1, MPI_INT, 0, ios->intercomm); */
+    /* 	mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm); */
     /* } */
 
     if (ios->ioproc)

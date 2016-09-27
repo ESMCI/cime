@@ -130,7 +130,7 @@ int PIOc_openfile_retry(const int iosysid, int *ncidp, int *iotype,
 
 	case PIO_IOTYPE_NETCDF4P:
 #ifdef _MPISERIAL
-	    ierr = nc_open(filename, file->mode, &(file->fh));
+	    ierr = nc_open(filename, file->mode, &file->fh);
 #else
 	    file->mode = file->mode |  NC_MPIIO;
 	    ierr = nc_open_par(filename, file->mode, ios->io_comm, ios->info, &file->fh);
@@ -188,7 +188,7 @@ int PIOc_openfile_retry(const int iosysid, int *ncidp, int *iotype,
 		// open netcdf file serially on main task
 		if (ios->io_rank==0)
 		{
-		    ierr = nc_open(filename, file->mode, &(file->fh));
+		    ierr = nc_open(filename, file->mode, &file->fh);
 		}
 	    }
 #endif
@@ -574,9 +574,8 @@ int PIOc_closefile(int ncid)
 	case PIO_IOTYPE_NETCDF4C:
 #endif
 	case PIO_IOTYPE_NETCDF:
-	    if (ios->io_rank==0){
+	    if (ios->io_rank == 0)
 		ierr = nc_close(file->fh);
-	    }
 	    break;
 #endif
 #ifdef _PNETCDF

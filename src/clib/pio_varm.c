@@ -1009,7 +1009,7 @@ int PIOc_get_varm_uchar (int ncid, int varid, const PIO_Offset start[], const PI
   ios = file->iosystem;
   msg = PIO_MSG_GET_VARM_UCHAR;
   ibuftype = MPI_UNSIGNED_CHAR;
-  ierr = PIOc_inq_varndims(file->fh, varid, &ndims);
+  ierr = PIOc_inq_varndims(ncid, varid, &ndims);
   ibufcnt = 1;
   for(int i=0;i<ndims;i++){
     ibufcnt *= count[i]/stride[i];
@@ -1019,7 +1019,7 @@ int PIOc_get_varm_uchar (int ncid, int varid, const PIO_Offset start[], const PI
   if(ios->async_interface && ! ios->ioproc){
     if(ios->compmaster) 
       mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
-    mpierr = MPI_Bcast(&(file->fh),1, MPI_INT, 0, ios->intercomm);
+    mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
   }
 
 
@@ -1086,7 +1086,7 @@ int PIOc_get_varm_schar (int ncid, int varid, const PIO_Offset start[], const PI
   ios = file->iosystem;
   msg = PIO_MSG_GET_VARM_SCHAR;
   ibuftype = MPI_CHAR;
-  ierr = PIOc_inq_varndims(file->fh, varid, &ndims);
+  ierr = PIOc_inq_varndims(ncid, varid, &ndims);
   ibufcnt = 1;
   for(int i=0;i<ndims;i++){
     ibufcnt *= count[i]/stride[i];
@@ -1096,7 +1096,7 @@ int PIOc_get_varm_schar (int ncid, int varid, const PIO_Offset start[], const PI
   if(ios->async_interface && ! ios->ioproc){
     if(ios->compmaster) 
       mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
-    mpierr = MPI_Bcast(&(file->fh),1, MPI_INT, 0, ios->intercomm);
+    mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
   }
 
 
@@ -1163,7 +1163,7 @@ int PIOc_get_varm_double (int ncid, int varid, const PIO_Offset start[], const P
   ios = file->iosystem;
   msg = PIO_MSG_GET_VARM_DOUBLE;
   ibuftype = MPI_DOUBLE;
-  ierr = PIOc_inq_varndims(file->fh, varid, &ndims);
+  ierr = PIOc_inq_varndims(ncid, varid, &ndims);
   ibufcnt = 1;
   for(int i=0;i<ndims;i++){
     ibufcnt *= count[i]/stride[i];
@@ -1173,7 +1173,7 @@ int PIOc_get_varm_double (int ncid, int varid, const PIO_Offset start[], const P
   if(ios->async_interface && ! ios->ioproc){
     if(ios->compmaster) 
       mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
-    mpierr = MPI_Bcast(&(file->fh),1, MPI_INT, 0, ios->intercomm);
+    mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
   }
 
 
@@ -1240,7 +1240,7 @@ int PIOc_get_varm_text (int ncid, int varid, const PIO_Offset start[], const PIO
   ios = file->iosystem;
   msg = PIO_MSG_GET_VARM_TEXT;
   ibuftype = MPI_CHAR;
-  ierr = PIOc_inq_varndims(file->fh, varid, &ndims);
+  ierr = PIOc_inq_varndims(ncid, varid, &ndims);
   ibufcnt = 1;
   for(int i=0;i<ndims;i++){
     ibufcnt *= count[i]/stride[i];
@@ -1250,7 +1250,7 @@ int PIOc_get_varm_text (int ncid, int varid, const PIO_Offset start[], const PIO
   if(ios->async_interface && ! ios->ioproc){
     if(ios->compmaster) 
       mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
-    mpierr = MPI_Bcast(&(file->fh),1, MPI_INT, 0, ios->intercomm);
+    mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
   }
 
 
@@ -1317,7 +1317,7 @@ int PIOc_get_varm_int (int ncid, int varid, const PIO_Offset start[], const PIO_
   ios = file->iosystem;
   msg = PIO_MSG_GET_VARM_INT;
   ibuftype = MPI_INT;
-  ierr = PIOc_inq_varndims(file->fh, varid, &ndims);
+  ierr = PIOc_inq_varndims(ncid, varid, &ndims);
   ibufcnt = 1;
   for(int i=0;i<ndims;i++){
     ibufcnt *= count[i]/stride[i];
@@ -1327,7 +1327,7 @@ int PIOc_get_varm_int (int ncid, int varid, const PIO_Offset start[], const PIO_
   if(ios->async_interface && ! ios->ioproc){
     if(ios->compmaster) 
       mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
-    mpierr = MPI_Bcast(&(file->fh),1, MPI_INT, 0, ios->intercomm);
+    mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
   }
 
 
@@ -1394,7 +1394,7 @@ int PIOc_get_varm_uint (int ncid, int varid, const PIO_Offset start[], const PIO
   ios = file->iosystem;
   msg = PIO_MSG_GET_VARM_UINT;
   ibuftype = MPI_UNSIGNED;
-  ierr = PIOc_inq_varndims(file->fh, varid, &ndims);
+  ierr = PIOc_inq_varndims(ncid, varid, &ndims);
   ibufcnt = 1;
   for(int i=0;i<ndims;i++){
     ibufcnt *= count[i]/stride[i];
@@ -1404,7 +1404,7 @@ int PIOc_get_varm_uint (int ncid, int varid, const PIO_Offset start[], const PIO
   if(ios->async_interface && ! ios->ioproc){
     if(ios->compmaster) 
       mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
-    mpierr = MPI_Bcast(&(file->fh),1, MPI_INT, 0, ios->intercomm);
+    mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
   }
 
 
@@ -1477,7 +1477,7 @@ int PIOc_get_varm (int ncid, int varid, const PIO_Offset start[], const PIO_Offs
   if(ios->async_interface && ! ios->ioproc){
     if(ios->compmaster) 
       mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
-    mpierr = MPI_Bcast(&(file->fh),1, MPI_INT, 0, ios->intercomm);
+    mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
   }
 
 
@@ -1544,7 +1544,7 @@ int PIOc_get_varm_float (int ncid, int varid, const PIO_Offset start[], const PI
   ios = file->iosystem;
   msg = PIO_MSG_GET_VARM_FLOAT;
   ibuftype = MPI_FLOAT;
-  ierr = PIOc_inq_varndims(file->fh, varid, &ndims);
+  ierr = PIOc_inq_varndims(ncid, varid, &ndims);
   ibufcnt = 1;
   for(int i=0;i<ndims;i++){
     ibufcnt *= count[i]/stride[i];
@@ -1554,7 +1554,7 @@ int PIOc_get_varm_float (int ncid, int varid, const PIO_Offset start[], const PI
   if(ios->async_interface && ! ios->ioproc){
     if(ios->compmaster) 
       mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
-    mpierr = MPI_Bcast(&(file->fh),1, MPI_INT, 0, ios->intercomm);
+    mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
   }
 
 
@@ -1621,7 +1621,7 @@ int PIOc_get_varm_long (int ncid, int varid, const PIO_Offset start[], const PIO
   ios = file->iosystem;
   msg = PIO_MSG_GET_VARM_LONG;
   ibuftype = MPI_LONG;
-  ierr = PIOc_inq_varndims(file->fh, varid, &ndims);
+  ierr = PIOc_inq_varndims(ncid, varid, &ndims);
   ibufcnt = 1;
   for(int i=0;i<ndims;i++){
     ibufcnt *= count[i]/stride[i];
@@ -1631,7 +1631,7 @@ int PIOc_get_varm_long (int ncid, int varid, const PIO_Offset start[], const PIO
   if(ios->async_interface && ! ios->ioproc){
     if(ios->compmaster) 
       mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
-    mpierr = MPI_Bcast(&(file->fh),1, MPI_INT, 0, ios->intercomm);
+    mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
   }
 
 
@@ -1698,7 +1698,7 @@ int PIOc_get_varm_ushort (int ncid, int varid, const PIO_Offset start[], const P
   ios = file->iosystem;
   msg = PIO_MSG_GET_VARM_USHORT;
   ibuftype = MPI_UNSIGNED_SHORT;
-  ierr = PIOc_inq_varndims(file->fh, varid, &ndims);
+  ierr = PIOc_inq_varndims(ncid, varid, &ndims);
   ibufcnt = 1;
   for(int i=0;i<ndims;i++){
     ibufcnt *= count[i]/stride[i];
@@ -1708,7 +1708,7 @@ int PIOc_get_varm_ushort (int ncid, int varid, const PIO_Offset start[], const P
   if(ios->async_interface && ! ios->ioproc){
     if(ios->compmaster) 
       mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
-    mpierr = MPI_Bcast(&(file->fh),1, MPI_INT, 0, ios->intercomm);
+    mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
   }
 
 
@@ -1775,7 +1775,7 @@ int PIOc_get_varm_longlong (int ncid, int varid, const PIO_Offset start[], const
   ios = file->iosystem;
   msg = PIO_MSG_GET_VARM_LONGLONG;
   ibuftype = MPI_LONG_LONG;
-  ierr = PIOc_inq_varndims(file->fh, varid, &ndims);
+  ierr = PIOc_inq_varndims(ncid, varid, &ndims);
   ibufcnt = 1;
   for(int i=0;i<ndims;i++){
     ibufcnt *= count[i]/stride[i];
@@ -1785,7 +1785,7 @@ int PIOc_get_varm_longlong (int ncid, int varid, const PIO_Offset start[], const
   if(ios->async_interface && ! ios->ioproc){
     if(ios->compmaster) 
       mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
-    mpierr = MPI_Bcast(&(file->fh),1, MPI_INT, 0, ios->intercomm);
+    mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
   }
 
 
@@ -1852,7 +1852,7 @@ int PIOc_get_varm_short (int ncid, int varid, const PIO_Offset start[], const PI
   ios = file->iosystem;
   msg = PIO_MSG_GET_VARM_SHORT;
   ibuftype = MPI_SHORT;
-  ierr = PIOc_inq_varndims(file->fh, varid, &ndims);
+  ierr = PIOc_inq_varndims(ncid, varid, &ndims);
   ibufcnt = 1;
   for(int i=0;i<ndims;i++){
     ibufcnt *= count[i]/stride[i];
@@ -1862,7 +1862,7 @@ int PIOc_get_varm_short (int ncid, int varid, const PIO_Offset start[], const PI
   if(ios->async_interface && ! ios->ioproc){
     if(ios->compmaster) 
       mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
-    mpierr = MPI_Bcast(&(file->fh),1, MPI_INT, 0, ios->intercomm);
+    mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
   }
 
 
@@ -1929,7 +1929,7 @@ int PIOc_get_varm_ulonglong (int ncid, int varid, const PIO_Offset start[], cons
   ios = file->iosystem;
   msg = PIO_MSG_GET_VARM_ULONGLONG;
   ibuftype = MPI_UNSIGNED_LONG_LONG;
-  ierr = PIOc_inq_varndims(file->fh, varid, &ndims);
+  ierr = PIOc_inq_varndims(ncid, varid, &ndims);
   ibufcnt = 1;
   for(int i=0;i<ndims;i++){
     ibufcnt *= count[i]/stride[i];
@@ -1939,7 +1939,7 @@ int PIOc_get_varm_ulonglong (int ncid, int varid, const PIO_Offset start[], cons
   if(ios->async_interface && ! ios->ioproc){
     if(ios->compmaster) 
       mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
-    mpierr = MPI_Bcast(&(file->fh),1, MPI_INT, 0, ios->intercomm);
+    mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
   }
 
 
