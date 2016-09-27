@@ -19,9 +19,7 @@
 #define NUM_FILES 3
 
 /* Used to define netcdf test file. */
-#define PIO_TF_MAX_STR_LEN 100
-#define ATTNAME "filename"
-#define DIMNAME "filename_dim"
+#define DIMLEN 1
 
 /* Needed to init intracomm. */
 #define STRIDE 1
@@ -84,7 +82,7 @@ main(int argc, char **argv)
 	    if ((ret = PIOc_createfile(iosysid_world, &lncid, &iotypes[i], fn[f], NC_CLOBBER)))
 		return ret;
 	    /* Define a dimension. */
-	    if ((ret = PIOc_def_dim(lncid, dimname[f], PIO_TF_MAX_STR_LEN, &dimid)))
+	    if ((ret = PIOc_def_dim(lncid, dimname[f], DIMLEN, &dimid)))
 		return ret;
 	    if ((ret = PIOc_enddef(lncid)))
 		return ret;

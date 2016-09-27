@@ -38,26 +38,25 @@ void pio_add_to_file_list(file_desc_t *file)
       cfile->next = file;
   }
 }
-     
+
+/** Given ncid, find the file_desc_t data for an open file. The ncid
+ * used is the interally generated pio_ncid. */
 file_desc_t *pio_get_file_from_id(int ncid)
 {
-  file_desc_t *cfile;
+    file_desc_t *cfile = NULL;
 
-  cfile = NULL;
+    /* Check to see if the current_file is already set to this ncid. */
+    if (current_file && current_file->pio_ncid == ncid)
+	cfile = current_file;
+    else
+	for (cfile = pio_file_list; cfile; cfile = cfile->next)
+	    if (cfile->pio_ncid == ncid)
+	    {
+		current_file = cfile;
+		break;
+	    }
 
-  if(current_file != NULL && current_file->fh == ncid)
-    cfile=current_file;
-  for(cfile=pio_file_list; cfile != NULL; cfile=cfile->next){
-    if(cfile->fh == ncid){
-      current_file = cfile;
-      break;
-    }
-  }
-
-  if(cfile==NULL){
-    printf("ERROR: Operation on undefined file %s %d\n",__FILE__,__LINE__);
-  }
-  return cfile;
+    return cfile;
 }
 
 /** Get a pointer to the file_desc_t using the ncid. */
