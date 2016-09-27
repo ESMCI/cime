@@ -240,27 +240,27 @@ int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
 		switch(xtype)
 		{
 		case NC_BYTE:
-		    ierr = ncmpi_bput_vars_schar(ncid, varid, start, count, fake_stride, buf, request);
+		    ierr = ncmpi_bput_vars_schar(file->fh, varid, start, count, fake_stride, buf, request);
 		    break;
 		case NC_CHAR:
-		    ierr = ncmpi_bput_vars_text(ncid, varid, start, count, fake_stride, buf, request);
+		    ierr = ncmpi_bput_vars_text(file->fh, varid, start, count, fake_stride, buf, request);
 		    break;
 		case NC_SHORT:
-		    ierr = ncmpi_bput_vars_short(ncid, varid, start, count, fake_stride, buf, request);
+		    ierr = ncmpi_bput_vars_short(file->fh, varid, start, count, fake_stride, buf, request);
 		    break;
 		case NC_INT:
 		    LOG((2, "PIOc_put_vars_tc io_rank 0 doing pnetcdf for int"));
-		    ierr = ncmpi_bput_vars_int(ncid, varid, start, count, fake_stride, buf, request);
+		    ierr = ncmpi_bput_vars_int(file->fh, varid, start, count, fake_stride, buf, request);
 		    LOG((2, "PIOc_put_vars_tc io_rank 0 done with pnetcdf call for int ierr = %d", ierr));	    		    
 		    break;
 		case NC_FLOAT:
-		    ierr = ncmpi_bput_vars_float(ncid, varid, start, count, fake_stride, buf, request);
+		    ierr = ncmpi_bput_vars_float(file->fh, varid, start, count, fake_stride, buf, request);
 		    break;
 		case NC_DOUBLE:
-		    ierr = ncmpi_bput_vars_double(ncid, varid, start, count, fake_stride, buf, request);
+		    ierr = ncmpi_bput_vars_double(file->fh, varid, start, count, fake_stride, buf, request);
 		    break;
 		case NC_INT64:
-		    ierr = ncmpi_bput_vars_longlong(ncid, varid, start, count, fake_stride, buf, request);
+		    ierr = ncmpi_bput_vars_longlong(file->fh, varid, start, count, fake_stride, buf, request);
 		    break;
 		default:
 		    LOG((0, "Unknown type for pnetcdf file! xtype = %d", xtype));
@@ -288,56 +288,56 @@ int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
 	    switch(xtype)
 	    {
 	    case NC_BYTE:
-		ierr = nc_put_vars_schar(ncid, varid, (size_t *)start, (size_t *)count,
+		ierr = nc_put_vars_schar(file->fh, varid, (size_t *)start, (size_t *)count,
 					 (ptrdiff_t *)stride, buf);
 		break;
 	    case NC_CHAR:
-		ierr = nc_put_vars_schar(ncid, varid, (size_t *)start, (size_t *)count,
+		ierr = nc_put_vars_schar(file->fh, varid, (size_t *)start, (size_t *)count,
 					 (ptrdiff_t *)stride, buf);
 		break;
 	    case NC_SHORT:
-		ierr = nc_put_vars_short(ncid, varid, (size_t *)start, (size_t *)count,
+		ierr = nc_put_vars_short(file->fh, varid, (size_t *)start, (size_t *)count,
 					 (ptrdiff_t *)stride, buf);
 		break;
 	    case NC_INT:
-		ierr = nc_put_vars_int(ncid, varid, (size_t *)start, (size_t *)count,
+		ierr = nc_put_vars_int(file->fh, varid, (size_t *)start, (size_t *)count,
 				       (ptrdiff_t *)stride, buf);
 		break;
 	    case NC_FLOAT:
-		ierr = nc_put_vars_float(ncid, varid, (size_t *)start, (size_t *)count,
+		ierr = nc_put_vars_float(file->fh, varid, (size_t *)start, (size_t *)count,
 					 (ptrdiff_t *)stride, buf);
 		break;
 	    case NC_DOUBLE:
-		ierr = nc_put_vars_double(ncid, varid, (size_t *)start, (size_t *)count,
+		ierr = nc_put_vars_double(file->fh, varid, (size_t *)start, (size_t *)count,
 					  (ptrdiff_t *)stride, buf);
 		break;
 #ifdef _NETCDF4
 	    case NC_UBYTE:
-		ierr = nc_put_vars_uchar(ncid, varid, (size_t *)start, (size_t *)count,
+		ierr = nc_put_vars_uchar(file->fh, varid, (size_t *)start, (size_t *)count,
 					 (ptrdiff_t *)stride, buf);
 		break;
 	    case NC_USHORT:
-		ierr = nc_put_vars_ushort(ncid, varid, (size_t *)start, (size_t *)count,
+		ierr = nc_put_vars_ushort(file->fh, varid, (size_t *)start, (size_t *)count,
 					  (ptrdiff_t *)stride, buf);
 		break;
 	    case NC_UINT:
-		ierr = nc_put_vars_uint(ncid, varid, (size_t *)start, (size_t *)count,
+		ierr = nc_put_vars_uint(file->fh, varid, (size_t *)start, (size_t *)count,
 					(ptrdiff_t *)stride, buf);
 		break;
 	    case NC_INT64:
-		ierr = nc_put_vars_longlong(ncid, varid, (size_t *)start, (size_t *)count,
+		ierr = nc_put_vars_longlong(file->fh, varid, (size_t *)start, (size_t *)count,
 					    (ptrdiff_t *)stride, buf);
 		break;
 	    case NC_UINT64:
-		ierr = nc_put_vars_ulonglong(ncid, varid, (size_t *)start, (size_t *)count,
+		ierr = nc_put_vars_ulonglong(file->fh, varid, (size_t *)start, (size_t *)count,
 					     (ptrdiff_t *)stride, buf);
 		break;
 		/* case NC_STRING: */
-		/* 	ierr = nc_put_vars_string(ncid, varid, (size_t *)start, (size_t *)count, */
+		/* 	ierr = nc_put_vars_string(file->fh, varid, (size_t *)start, (size_t *)count, */
 		/* 				  (ptrdiff_t *)stride, (void *)buf); */
 		/* 	break; */
 	    default:
-		ierr = nc_put_vars(ncid, varid, (size_t *)start, (size_t *)count,
+		ierr = nc_put_vars(file->fh, varid, (size_t *)start, (size_t *)count,
 				   (ptrdiff_t *)stride, buf);
 #endif /* _NETCDF4 */
 	    }

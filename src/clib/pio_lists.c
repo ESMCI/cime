@@ -10,7 +10,7 @@ static iosystem_desc_t *pio_iosystem_list=NULL;
 static file_desc_t *pio_file_list = NULL;
 static file_desc_t *current_file=NULL;
 
-/** Add a new entry to the global list of open files. 
+/** Add a new entry to the global list of open files.
  *
  * @param file pointer to the file_desc_t struct for the new file.
 */
@@ -29,7 +29,7 @@ void pio_add_to_file_list(file_desc_t *file)
 
   /* If there is nothing in the list, then file will be the first
    * entry. Otherwise, move to end of the list. */
-  if (!cfile) 
+  if (!cfile)
       pio_file_list = file;
   else
   {
@@ -72,12 +72,12 @@ pio_get_file_from_id2(int ncid, file_desc_t **cfile1)
 	return PIO_EINVAL;
 
     /* Find the file pointer. */
-    if (current_file && current_file->fh == ncid)
+    if (current_file && current_file->pio_ncid == ncid)
 	cfile = current_file;
     else
 	for (cfile = pio_file_list; cfile; cfile=cfile->next)
 	{
-	    if (cfile->fh == ncid)
+	    if (cfile->pio_ncid == ncid)
 	    {
 		current_file = cfile;
 		break;
@@ -92,32 +92,42 @@ pio_get_file_from_id2(int ncid, file_desc_t **cfile1)
 
     /* Copy pointer to file info. */
     *cfile1 = cfile;
-    
+
     return PIO_NOERR;
 }
-  
+
+/** Delete a file from the list of open files. */
 int pio_delete_file_from_list(int ncid)
 {
 
-  file_desc_t *cfile, *pfile;
+    file_desc_t *cfile, *pfile = NULL;
 
-  pfile = NULL;
+    /* Look through list of open files. */
+    for (cfile = pio_file_list; cfile; cfile = cfile->next)
+    {
+	if (cfile->pio_ncid == ncid)
+	{
+	    if (!pfile)
+	    {
+		pio_file_list = cfile->next;
+	    }
+	    else
+	    {
+		pfile->next = cfile->next;
+	    }
 
-  for(cfile=pio_file_list; cfile != NULL; cfile=cfile->next){
-    if(cfile->fh == ncid){
-      if(pfile == NULL){
-	pio_file_list = cfile->next;
-      }else{
-	pfile->next = cfile->next;
-      }
-      if(current_file==cfile)
-	current_file=pfile;
-      free(cfile);      
-      return PIO_NOERR;
+	    if (current_file == cfile)
+		current_file = pfile;
+
+	    /* Free the memory used for this file. */
+	    free(cfile);
+	    return PIO_NOERR;
+	}
+	pfile = cfile;
     }
-    pfile = cfile;
-  }
-  return PIO_EBADID;
+
+    /* No file was found. */
+    return PIO_EBADID;
 }
 
 /** Delete iosystem info from list. */
@@ -126,12 +136,12 @@ int pio_delete_iosystem_from_list(int piosysid)
     iosystem_desc_t *ciosystem, *piosystem;
     piosystem = NULL;
 
-    for (ciosystem = pio_iosystem_list; ciosystem; ciosystem = ciosystem->next)    
+    for (ciosystem = pio_iosystem_list; ciosystem; ciosystem = ciosystem->next)
 	LOG((2, "iosysid = %d union_comm = %d io_comm = %d my_comm = %d intercomm = %d comproot = %d"
 	     " next = %d",
 	     ciosystem->iosysid, ciosystem->union_comm, ciosystem->io_comm, ciosystem->my_comm,
 	     ciosystem->intercomm, ciosystem->comproot, ciosystem->next));
-	    
+
     LOG((1, "pio_delete_iosystem_from_list piosysid = %d", piosysid));
     for (ciosystem = pio_iosystem_list; ciosystem; ciosystem = ciosystem->next)
     {
@@ -187,8 +197,8 @@ iosystem_desc_t *pio_get_iosystem_from_id(int iosysid)
     iosystem_desc_t *ciosystem;
 
     LOG((2, "pio_get_iosystem_from_id iosysid = %d", iosysid));
-    
-    for (ciosystem = pio_iosystem_list; ciosystem; ciosystem = ciosystem->next)    
+
+    for (ciosystem = pio_iosystem_list; ciosystem; ciosystem = ciosystem->next)
 	if (ciosystem->iosysid == iosysid)
 	{
 	    LOG((3, "FOUND! iosysid = %d union_comm = %d io_comm = %d my_comm = %d intercomm = %d comproot = %d"
@@ -200,7 +210,7 @@ iosystem_desc_t *pio_get_iosystem_from_id(int iosysid)
 
 
     return NULL;
-  
+
 }
 
 int pio_add_to_iodesc_list(io_desc_t *iodesc)
@@ -222,7 +232,7 @@ int pio_add_to_iodesc_list(io_desc_t *iodesc)
   return iodesc->ioid;
 }
 
-     
+
 io_desc_t *pio_get_iodesc_from_id(int ioid)
 {
   io_desc_t *ciodesc;
@@ -247,7 +257,7 @@ io_desc_t *pio_get_iodesc_from_id(int ioid)
 
   return ciodesc;
 }
-  
+
 int pio_delete_iodesc_from_list(int ioid)
 {
 

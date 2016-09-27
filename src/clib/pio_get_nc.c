@@ -196,25 +196,25 @@ int PIOc_get_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
 		switch(xtype)
 		{
 		case NC_BYTE:
-		    ierr = ncmpi_get_vars_schar(ncid, varid, start, count, stride, buf);
+		    ierr = ncmpi_get_vars_schar(file->fh, varid, start, count, stride, buf);
 		    break;
 		case NC_CHAR:
-		    ierr = ncmpi_get_vars_text(ncid, varid, start, count, stride, buf);
+		    ierr = ncmpi_get_vars_text(file->fh, varid, start, count, stride, buf);
 		    break;
 		case NC_SHORT:
-		    ierr = ncmpi_get_vars_short(ncid, varid, start, count, stride, buf);
+		    ierr = ncmpi_get_vars_short(file->fh, varid, start, count, stride, buf);
 		    break;
 		case NC_INT:
-		    ierr = ncmpi_get_vars_int(ncid, varid, start, count, stride, buf);
+		    ierr = ncmpi_get_vars_int(file->fh, varid, start, count, stride, buf);
 		    break;
 		case NC_FLOAT:
-		    ierr = ncmpi_get_vars_float(ncid, varid, start, count, stride, buf);
+		    ierr = ncmpi_get_vars_float(file->fh, varid, start, count, stride, buf);
 		    break;
 		case NC_DOUBLE:
-		    ierr = ncmpi_get_vars_double(ncid, varid, start, count, stride, buf);
+		    ierr = ncmpi_get_vars_double(file->fh, varid, start, count, stride, buf);
 		    break;
 		case NC_INT64:
-		    ierr = ncmpi_get_vars_longlong(ncid, varid, start, count, stride, buf);
+		    ierr = ncmpi_get_vars_longlong(file->fh, varid, start, count, stride, buf);
 		    break;
 		default:
 		    LOG((0, "Unknown type for pnetcdf file! xtype = %d", xtype));
@@ -227,27 +227,27 @@ int PIOc_get_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
 	    switch(xtype)
 	    {
 	    case NC_BYTE:
-		ierr = ncmpi_get_vars_schar_all(ncid, varid, start, count, stride, buf);
+		ierr = ncmpi_get_vars_schar_all(file->fh, varid, start, count, stride, buf);
 		break;
 	    case NC_CHAR:
-		ierr = ncmpi_get_vars_text_all(ncid, varid, start, count, stride, buf);
+		ierr = ncmpi_get_vars_text_all(file->fh, varid, start, count, stride, buf);
 		break;
 	    case NC_SHORT:
-		ierr = ncmpi_get_vars_short_all(ncid, varid, start, count, stride, buf);
+		ierr = ncmpi_get_vars_short_all(file->fh, varid, start, count, stride, buf);
 		break;
 	    case NC_INT:
-		ierr = ncmpi_get_vars_int_all(ncid, varid, start, count, stride, buf);
+		ierr = ncmpi_get_vars_int_all(file->fh, varid, start, count, stride, buf);
 		for (int i = 0; i < 4; i++)
 		    LOG((2, "((int *)buf)[%d] = %d", i, ((int *)buf)[0]));
 		break;
 	    case NC_FLOAT:
-		ierr = ncmpi_get_vars_float_all(ncid, varid, start, count, stride, buf);
+		ierr = ncmpi_get_vars_float_all(file->fh, varid, start, count, stride, buf);
 		break;
 	    case NC_DOUBLE:
-		ierr = ncmpi_get_vars_double_all(ncid, varid, start, count, stride, buf);
+		ierr = ncmpi_get_vars_double_all(file->fh, varid, start, count, stride, buf);
 		break;
 	    case NC_INT64:
-		ierr = ncmpi_get_vars_longlong_all(ncid, varid, start, count, stride, buf);
+		ierr = ncmpi_get_vars_longlong_all(file->fh, varid, start, count, stride, buf);
 		break;
 	    default:
 		LOG((0, "Unknown type for pnetcdf file! xtype = %d", xtype));
@@ -260,56 +260,56 @@ int PIOc_get_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
 	    switch(xtype)
 	    {
 	    case NC_BYTE:
-		ierr = nc_get_vars_schar(ncid, varid, (size_t *)start, (size_t *)count,
+		ierr = nc_get_vars_schar(file->fh, varid, (size_t *)start, (size_t *)count,
 					 (ptrdiff_t *)stride, buf);
 		break;
 	    case NC_CHAR:
-		ierr = nc_get_vars_schar(ncid, varid, (size_t *)start, (size_t *)count,
+		ierr = nc_get_vars_schar(file->fh, varid, (size_t *)start, (size_t *)count,
 					 (ptrdiff_t *)stride, buf);
 		break;
 	    case NC_SHORT:
-		ierr = nc_get_vars_short(ncid, varid, (size_t *)start, (size_t *)count,
+		ierr = nc_get_vars_short(file->fh, varid, (size_t *)start, (size_t *)count,
 					 (ptrdiff_t *)stride, buf);
 		break;
 	    case NC_INT:
-		ierr = nc_get_vars_int(ncid, varid, (size_t *)start, (size_t *)count,
+		ierr = nc_get_vars_int(file->fh, varid, (size_t *)start, (size_t *)count,
 				       (ptrdiff_t *)stride, buf);
 		break;
 	    case NC_FLOAT:
-		ierr = nc_get_vars_float(ncid, varid, (size_t *)start, (size_t *)count,
+		ierr = nc_get_vars_float(file->fh, varid, (size_t *)start, (size_t *)count,
 					 (ptrdiff_t *)stride, buf);
 		break;
 	    case NC_DOUBLE:
-		ierr = nc_get_vars_double(ncid, varid, (size_t *)start, (size_t *)count,
+		ierr = nc_get_vars_double(file->fh, varid, (size_t *)start, (size_t *)count,
 					  (ptrdiff_t *)stride, buf);
 		break;
 #ifdef _NETCDF4
 	    case NC_UBYTE:
-		ierr = nc_get_vars_uchar(ncid, varid, (size_t *)start, (size_t *)count,
+		ierr = nc_get_vars_uchar(file->fh, varid, (size_t *)start, (size_t *)count,
 					 (ptrdiff_t *)stride, buf);
 		break;
 	    case NC_USHORT:
-		ierr = nc_get_vars_ushort(ncid, varid, (size_t *)start, (size_t *)count,
+		ierr = nc_get_vars_ushort(file->fh, varid, (size_t *)start, (size_t *)count,
 					  (ptrdiff_t *)stride, buf);
 		break;
 	    case NC_UINT:
-		ierr = nc_get_vars_uint(ncid, varid, (size_t *)start, (size_t *)count,
+		ierr = nc_get_vars_uint(file->fh, varid, (size_t *)start, (size_t *)count,
 					(ptrdiff_t *)stride, buf);
 		break;
 	    case NC_INT64:
-		ierr = nc_get_vars_longlong(ncid, varid, (size_t *)start, (size_t *)count,
+		ierr = nc_get_vars_longlong(file->fh, varid, (size_t *)start, (size_t *)count,
 					    (ptrdiff_t *)stride, buf);
 		break;
 	    case NC_UINT64:
-		ierr = nc_get_vars_ulonglong(ncid, varid, (size_t *)start, (size_t *)count,
+		ierr = nc_get_vars_ulonglong(file->fh, varid, (size_t *)start, (size_t *)count,
 					     (ptrdiff_t *)stride, buf);
 		break;
 		/* case NC_STRING: */
-		/* 	ierr = nc_get_vars_string(ncid, varid, (size_t *)start, (size_t *)count, */
+		/* 	ierr = nc_get_vars_string(file->fh, varid, (size_t *)start, (size_t *)count, */
 		/* 				  (ptrdiff_t *)stride, (void *)buf); */
 		/* 	break; */
 	    default:
-		ierr = nc_get_vars(ncid, varid, (size_t *)start, (size_t *)count,
+		ierr = nc_get_vars(file->fh, varid, (size_t *)start, (size_t *)count,
 				   (ptrdiff_t *)stride, buf);
 #endif /* _NETCDF4 */
 	    }
@@ -617,7 +617,7 @@ int PIOc_get_var1_longlong(int ncid, int varid, const PIO_Offset *index,
     return PIOc_get_var1_tc(ncid, varid, index, NC_INT64, buf);    
 }
     
-int PIOc_get_var (int ncid, int varid, void *buf, PIO_Offset bufcount, MPI_Datatype buftype)
+int PIOc_get_var(int ncid, int varid, void *buf, PIO_Offset bufcount, MPI_Datatype buftype)
 {
     int ierr;
     int msg;
@@ -643,7 +643,6 @@ int PIOc_get_var (int ncid, int varid, void *buf, PIO_Offset bufcount, MPI_Datat
 	    mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
 	mpierr = MPI_Bcast(&(file->fh),1, MPI_INT, 0, ios->intercomm);
     }
-
 
     if(ios->ioproc){
 	switch(file->iotype){
@@ -690,12 +689,7 @@ int PIOc_get_var (int ncid, int varid, void *buf, PIO_Offset bufcount, MPI_Datat
     return ierr;
 }
 
-
-
-
-
-
-int PIOc_get_var1 (int ncid, int varid, const PIO_Offset *index, void *buf, PIO_Offset bufcount, MPI_Datatype buftype)
+int PIOc_get_var1(int ncid, int varid, const PIO_Offset *index, void *buf, PIO_Offset bufcount, MPI_Datatype buftype)
 {
     int ierr;
     int msg;
@@ -768,7 +762,7 @@ int PIOc_get_var1 (int ncid, int varid, const PIO_Offset *index, void *buf, PIO_
     return ierr;
 }
 
-int PIOc_get_vara (int ncid, int varid, const PIO_Offset *start, const PIO_Offset *count, void *buf, PIO_Offset bufcount, MPI_Datatype buftype)
+int PIOc_get_vara(int ncid, int varid, const PIO_Offset *start, const PIO_Offset *count, void *buf, PIO_Offset bufcount, MPI_Datatype buftype)
 {
     int ierr;
     int msg;
@@ -841,12 +835,7 @@ int PIOc_get_vara (int ncid, int varid, const PIO_Offset *start, const PIO_Offse
     return ierr;
 }
 
-
-
-
-
-
-int PIOc_get_vars (int ncid, int varid, const PIO_Offset *start, const PIO_Offset *count, const PIO_Offset *stride, void *buf, PIO_Offset bufcount, MPI_Datatype buftype)
+int PIOc_get_vars(int ncid, int varid, const PIO_Offset *start, const PIO_Offset *count, const PIO_Offset *stride, void *buf, PIO_Offset bufcount, MPI_Datatype buftype)
 {
     int ierr;
     int msg;
