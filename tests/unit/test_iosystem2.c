@@ -113,7 +113,7 @@ main(int argc, char **argv)
     int ret; /* Return code. */
 
     int iotypes[NUM_FLAVORS] = {PIO_IOTYPE_PNETCDF, PIO_IOTYPE_NETCDF,
-			       PIO_IOTYPE_NETCDF4C, PIO_IOTYPE_NETCDF4P};
+				PIO_IOTYPE_NETCDF4C, PIO_IOTYPE_NETCDF4P};
 
     /* Initialize test. */
     if ((ret = pio_test_init(argc, argv, &my_rank, &ntasks, TARGET_NTASKS)))
@@ -143,7 +143,7 @@ main(int argc, char **argv)
     if ((ret = PIOc_Init_Intracomm(MPI_COMM_WORLD, 4, 1, 0, 1, &iosysid_world)))
 	ERR(ret);
     
-    for (int i = 2; i < 4; i++)
+    for (int i = 0; i < NUM_FLAVORS; i++)
     {
 	char fname0[] = "pio_iosys_test_file0.nc"; 
 	char fname1[] = "pio_iosys_test_file1.nc"; 
@@ -183,8 +183,8 @@ main(int argc, char **argv)
 	/* Close the still-open files. */
 	if ((ret = PIOc_closefile(ncid)))
 	    ERR(ret);
-	/* if ((ret = PIOc_closefile(ncid2))) */
-	/*     ERR(ret); */
+	if ((ret = PIOc_closefile(ncid2)))
+	    ERR(ret);
     } /* next iotype */
 
     /* Finalize PIO system. */

@@ -1686,7 +1686,7 @@ int pioc_change_def(int ncid, int is_enddef)
 
             if (!mpierr)            
                 mpierr = MPI_Bcast(&ncid, 1, MPI_INT, ios->compmaster, ios->intercomm);
-	    LOG((3, "pioc_change_def ncid = %d mpierr = %d", file->fh, mpierr));
+	    LOG((3, "pioc_change_def ncid = %d mpierr = %d", ncid, mpierr));
         }
 
         /* Handle MPI errors. */
@@ -1701,7 +1701,7 @@ int pioc_change_def(int ncid, int is_enddef)
     LOG((3, "pioc_change_def ios->ioproc = %d", ios->ioproc));    
     if (ios->ioproc)
     {
-	LOG((3, "pioc_change_def calling netcdf function"));
+	LOG((3, "pioc_change_def calling netcdf function file->fh = %d", file->fh));
 #ifdef _PNETCDF
         if (file->iotype == PIO_IOTYPE_PNETCDF)
             if (is_enddef)
