@@ -372,7 +372,7 @@ sub transform_src
     $out_line = $out_line . $1 . "END IF";
     $cur_test_case_num += 1;
 }
-  elsif(/^(\s*)PIO_TF_PASSERT\((.+),([a-zA-Z0-9\s]+),([^)]+)\)(.*)$/s){
+  elsif(/^(\s*)PIO_TF_PASSERT\((.+),([^,]+),([^)]+)\)(.*)$/s){
     $out_line = $1 . $5 . "\n";
     $out_line = $out_line . $1 . "IF (.NOT. (PIO_TF_Passert_($2, $3))) THEN\n";
     $out_line = $out_line . $1 . "  pio_tf_retval_utest_ = -1\n";
@@ -409,7 +409,7 @@ sub transform_src
     $out_line = $out_line . $1 . "  RETURN\n";
     $out_line = $out_line . $1 . "END IF";
   }
-  elsif(/^(\s*)PIO_TF_CHECK_ERR\(([^,]+),([a-zA-Z0-9\s]+),(.+)\)(\s*)$/s){
+  elsif(/^(\s*)PIO_TF_CHECK_ERR\(([^,]+),([^,]+),(.+)\)(\s*)$/s){
     $out_line = $1 . $5 . "\n";
     $out_line = $out_line . $1 . "IF (.NOT. (PIO_TF_Passert_(($2) == PIO_NOERR, $3))) THEN\n";
     $out_line = $out_line . $1 . "  pio_tf_retval_utest_ = -1\n";
