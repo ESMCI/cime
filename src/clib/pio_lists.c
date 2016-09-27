@@ -108,13 +108,9 @@ int pio_delete_file_from_list(int ncid)
 	if (cfile->pio_ncid == ncid)
 	{
 	    if (!pfile)
-	    {
 		pio_file_list = cfile->next;
-	    }
 	    else
-	    {
 		pfile->next = cfile->next;
-	    }
 
 	    if (current_file == cfile)
 		current_file = pfile;

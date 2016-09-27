@@ -218,8 +218,8 @@ int PIOc_openfile_retry(const int iosysid, int *ncidp, int *iotype,
 	/* Create the ncid that the user will see. This is necessary
 	 * because otherwise ncids will be reused if files are opened
 	 * on multiple iosystems. */
-	file->pio_ncid = file->fh;
-	//file->pio_ncid = pio_next_ncid++;
+	//file->pio_ncid = file->fh;
+	file->pio_ncid = pio_next_ncid++;
 
 	/* Return the PIO ncid to the user. */
 	*ncidp = file->pio_ncid;
@@ -461,8 +461,8 @@ int PIOc_createfile(const int iosysid, int *ncidp, int *iotype,
 	/* Assign the PIO ncid, necessary because files may be opened
 	 * on mutilple iosystems, causing the underlying library to
 	 * reuse ncids. Hilarious confusion ensues. */
-	file->pio_ncid = file->fh;
-	//file->pio_ncid = pio_next_ncid++;
+	//file->pio_ncid = file->fh;
+	file->pio_ncid = pio_next_ncid++;
 
 	/* Return the ncid to the caller. */
 	*ncidp = file->pio_ncid;
@@ -551,7 +551,7 @@ int PIOc_closefile(int ncid)
 		mpierr = MPI_Send(&msg, 1, MPI_INT, ios->ioroot, 1, ios->union_comm);
 
             if (!mpierr)
-                mpierr = MPI_Bcast(&file->fh, 1, MPI_INT, ios->compmaster, ios->intercomm);
+                mpierr = MPI_Bcast(&ncid, 1, MPI_INT, ios->compmaster, ios->intercomm);
 	}
 
         /* Handle MPI errors. */
@@ -692,7 +692,7 @@ int PIOc_sync(int ncid)
 	    if (ios->comp_rank == 0)
 		mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
 
-	    mpierr = MPI_Bcast(&(file->fh),1, MPI_INT, ios->compmaster, ios->intercomm);
+	    mpierr = MPI_Bcast(&ncid, 1, MPI_INT, ios->compmaster, ios->intercomm);
 	}
     }
 
