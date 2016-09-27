@@ -16,7 +16,7 @@
 #define TEST_NAME "test_iosystem2_simple"
 
 /* Number of test files generated. */
-#define NUM_FILES 3
+#define NUM_FILES 2
 
 /* Used to define netcdf test file. */
 #define DIMLEN 1
@@ -65,7 +65,7 @@ main(int argc, char **argv)
 
     int ncid;
     int ncid2;
-    for (int i = 2; i < NUM_FLAVORS; i++)
+    for (int i = 0; i < NUM_FLAVORS; i++)
     {
 	char fn[NUM_FILES][NC_MAX_NAME + 1];
 	char dimname[NUM_FILES][NC_MAX_NAME + 1];
@@ -94,11 +94,6 @@ main(int argc, char **argv)
 	if ((ret = PIOc_openfile(iosysid_world, &ncid, &iotypes[i], fn[0], PIO_WRITE)))
 	    return ret;
 
-	/* Now have the even communicator open file. */
-	char *file = even ? fn[1] : fn[2];
-	if ((ret = PIOc_openfile(iosysid, &ncid2, &iotypes[i], file, PIO_WRITE)))
-	    return ret;
-
 	/* Check the first file. */
 	char dimname_in[NC_MAX_NAME + 1];
 	if ((ret = PIOc_inq_dimname(ncid, 0, dimname_in)))
@@ -107,13 +102,17 @@ main(int argc, char **argv)
 	if (strcmp(dimname_in, dimname[0]))
 	    return ERR_WRONG;
 
-	/* Check the other files. */
-	char *dimn = even ? dimname[1] : dimname[2];	
-	if ((ret = PIOc_inq_dimname(ncid2, 0, dimname_in)))
-	    return ret;
-	printf("%d ncid2 dimname_in = %s should be %s\n", my_rank, dimname_in, dimn);
-	if (strcmp(dimname_in, dimn))
-	    return ERR_WRONG;
+	/* Check the other file with the other IO. */
+	if (even)
+	{
+	    if ((ret = PIOc_openfile(iosysid, &ncid2, &iotypes[i], fn[1], PIO_WRITE)))
+		return ret;
+	    if ((ret = PIOc_inq_dimname(ncid2, 0, dimname_in)))
+		return ret;
+	    printf("%d ncid2 dimname_in = %s should be %s\n", my_rank, dimname_in, dimname[1]);
+	    if (strcmp(dimname_in, dimname[1]))
+		return ERR_WRONG;
+	}
 
 	/* Close the still-open files. */
 	if ((ret = PIOc_closefile(ncid)))
