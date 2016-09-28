@@ -71,7 +71,8 @@ main(int argc, char **argv)
     {
 	char fn[NUM_FILES][NC_MAX_NAME + 1];
 	char dimname[NC_MAX_NAME + 1];
-	char filename[NUM_SAMPLES][NC_MAX_NAME + 1]; /* Test filename. */	
+	char filename[NUM_SAMPLES][NC_MAX_NAME + 1]; /* Test filename. */
+	int sample_ncid[NUM_SAMPLES];
 
 	for (int sample = 0; sample < NUM_SAMPLES; sample++)
 	{
@@ -84,7 +85,7 @@ main(int argc, char **argv)
 		ERR(ret);
 		    
 	    /* Check the file for correctness. */
-	    if ((ret = check_nc_sample(sample, iosysid_world, iotypes[flv], filename[sample], my_rank, NULL)))
+	    if ((ret = check_nc_sample(sample, iosysid_world, iotypes[flv], filename[sample], my_rank, &sample_ncid[sample])))
 		ERR(ret);
 
 	}
@@ -94,9 +95,17 @@ main(int argc, char **argv)
 	int this_sample = even ? 0 : 1;
 	char *file1 = filename[this_sample];
 	int ncid2;
-	if ((ret = check_nc_sample(this_sample, iosysid, iotypes[flv], file1, my_rank, NULL)))
+	if ((ret = check_nc_sample(this_sample, iosysid, iotypes[flv], file1, my_rank, &ncid2)))
 	    ERR(ret);
 
+	/* Now close the open files. */
+	for (int sample = 0; sample < NUM_SAMPLES; sample++)
+	    if ((ret = PIOc_closefile(sample_ncid[sample])))
+		ERR(ret);
+
+	if ((ret = PIOc_closefile(ncid2)))
+	    ERR(ret);
+	
     } /* next iotype */
 
     /* Finalize PIO odd/even intracomm. */
