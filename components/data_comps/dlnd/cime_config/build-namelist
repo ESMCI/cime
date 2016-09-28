@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-"""Namelist creator for CIME's data ice model.
+"""Namelist creator for CIME's data ocn model.
 
 While `build-namelist` historically has been a script in its own right, this
 module can be imported, and provides the same functionality via the
@@ -56,8 +56,7 @@ def _parse_input(argv):
                         help="file containing user-modified namelists settings")
 
     parser.add_argument("--user_xml_dir", required=True,
-                        help="user xml directory, user changes to "
-                        "namelist_defaults.xml and namelist_definitions.xml")
+                        help="user xml directory, user changes to namelist_definitions.xml")
 
     parser.add_argument("--inst_string", required=True,
                         help="instance string")
@@ -68,10 +67,9 @@ def _parse_input(argv):
 
     return args.cimeroot, args.caseroot, args.confdir, args.inst_string, args.infile, args.user_xml_dir 
 
-
 # pylint: disable=too-many-arguments,too-many-locals,too-many-branches,too-many-statements
 ####################################################################################
-def _create_namelists(case, confdir, inst_string, infiles, definition_files, defaults_files):
+def _create_namelists(case, confdir, inst_string, infiles, definition_file):
 ####################################################################################
     """Write out the namelist for this component.
 
@@ -85,44 +83,47 @@ def _create_namelists(case, confdir, inst_string, infiles, definition_files, def
     # Get a bunch of information from the case.
     #----------------------------------------------------
     din_loc_root = case.get_value("DIN_LOC_ROOT")
-    ice_domain_file = case.get_value("ICE_DOMAIN_FILE")
-    ice_domain_path = case.get_value("ICE_DOMAIN_PATH")
-    dice_mode = case.get_value("DICE_MODE")
-    ice_grid = case.get_value("ICE_GRID")
+    lnd_domain_file = case.get_value("LND_DOMAIN_FILE")
+    lnd_domain_path = case.get_value("LND_DOMAIN_PATH")
+    dlnd_mode = case.get_value("DLND_MODE")
+    lnd_grid = case.get_value("LND_GRID")
+
+    glc_nec = case.get_value("GLC_NEC")
 
     #----------------------------------------------------
     # Check for incompatible options.
     #----------------------------------------------------
-    expect(ice_grid != "null",
-           "ICE_GRID cannot be null")
-    expect(dice_mode != "NULL",
-           "DICE_MODE cannot be NULL")
+    expect(lnd_grid != "null",
+           "LND_GRID cannot be null")
+    expect(dlnd_mode != "NULL",
+           "DLND_MODE cannot be NULL")
 
     #----------------------------------------------------
     # Log some settings.
     #----------------------------------------------------
-    logger.info("DICE mode is %s", dice_mode)
-    logger.info("DICE grid is %s", ice_grid)
-
-    #----------------------------------------------------
-    # Create configuration information.
-    #----------------------------------------------------
-    config = {}
-    config['ice_grid'] = ice_grid
-    config['dice_mode'] = dice_mode
+    logger.info("DLND mode is %s", dlnd_mode)
+    logger.info("DLND grid is %s", lnd_grid)
+    logger.info("DLND glc_nec is %s", glc_nec) 
 
     #----------------------------------------------------
     # Clear out old data.
     #----------------------------------------------------
     data_list_path = os.path.join(case.get_case_root(), "Buildconf",
-                                  "dice.input_data_list")
+                                  "dlnd.input_data_list")
     if os.path.exists(data_list_path):
         os.remove(data_list_path)
 
     #----------------------------------------------------
+    # Create configuration information.
+    #----------------------------------------------------
+    config = {}
+    config['lnd_grid'] = lnd_grid
+    config['dlnd_mode'] = dlnd_mode
+
+    #----------------------------------------------------
     # Construct the namelist generator.
     #----------------------------------------------------
-    nmlgen = NamelistGenerator(case, infiles, definition_files, defaults_files, config)
+    nmlgen = NamelistGenerator(case, infiles, definition_file, definition_file, config)
 
     #----------------------------------------------------
     # Construct the list of streams.
@@ -139,10 +140,10 @@ def _create_namelists(case, confdir, inst_string, infiles, definition_files, def
             continue
 
         inst_stream = stream + inst_string
-        logger.info("DICE stream is %s", inst_stream)
-        stream_path = os.path.join(confdir, "dice.streams.txt." + inst_stream)
+        logger.info("DLND stream is %s", inst_stream)
+        stream_path = os.path.join(confdir, "dlnd.streams.txt." + inst_stream)
         user_stream_path = os.path.join(case.get_case_root(),
-                                        "user_dice.streams.txt." + inst_stream)
+                                        "user_dlnd.streams.txt." + inst_stream)
 
         # Use the user's stream file, or create one if necessary.
         if os.path.exists(user_stream_path):
@@ -159,17 +160,14 @@ def _create_namelists(case, confdir, inst_string, infiles, definition_files, def
     nmlgen.add_default("force_prognostic_true", ".false.")
     nmlgen.add_default("restfilm", "undefined")
     nmlgen.add_default("restfils", "undefined")
-    if ice_domain_file != "UNSET":
-        full_domain_path = os.path.join(ice_domain_path, ice_domain_file)
+    if lnd_domain_file != "UNSET":
+        full_domain_path = os.path.join(lnd_domain_path, lnd_domain_file)
         nmlgen.add_default("domainfile", value=full_domain_path)
-
-    # Specific to dice only
-    nmlgen.add_default("flux_qacc");
 
     #----------------------------------------------------
     # Finally, write out all the namelists.
     #----------------------------------------------------
-    namelist_file = os.path.join(confdir, "dice_in")
+    namelist_file = os.path.join(confdir, "dlnd_in")
     nmlgen.write_output_file(namelist_file, data_list_path)
 
 ###############################################################################
@@ -178,31 +176,20 @@ def _main_func():
 
     cimeroot, caseroot, confdir, inst_string, infile, user_xml_dir = _parse_input(sys.argv)
 
-    # Figure out where definition/defaults files are.
-    namelist_xml_dir = os.path.join(cimeroot, "components", "data_comps",
-                                    "dice", "bld", "namelist_files")
-
-    # User definition *replaces* existing definition.
-    definition_file_basename = "namelist_definition_dice.xml"
-    definition_file = [os.path.join(namelist_xml_dir, definition_file_basename)]
-    user_definition = os.path.join(user_xml_dir, definition_file_basename)
+    # NOTE: User definition *replaces* existing definition.
+    namelist_xml_dir = os.path.join(cimeroot, "components", "data_comps", "dlnd", "cime_config")
+    definition_file = [os.path.join(namelist_xml_dir, "namelist_definition_dlnd.xml")]
+    user_definition = os.path.join(user_xml_dir, "namelist_definition_dlnd.xml")
     if os.path.isfile(user_definition):
         definition_file = [user_definition]
 
-    # User defaults *extends* existing defaults.
-    defaults_file_basename = "namelist_defaults_dice.xml"
-    defaults_files = [os.path.join(namelist_xml_dir, defaults_file_basename)]
-    user_defaults = os.path.join(user_xml_dir, defaults_file_basename)
-    if os.path.isfile(user_defaults):
-        defaults_files.append(user_defaults)
-
-    # Checkout if definition and defaults file exist
-    for file_ in definition_file + defaults_files:
+    # Checkout if definition file exists
+    for file_ in definition_file:
         expect(os.path.isfile(file_), "Namelist XML file %s not found!" % file_)
 
     # Now build the component namelist and required stream txt files
     with Case(caseroot) as case:
-        _create_namelists(case, confdir, inst_string, infile, definition_file, defaults_files)
+        _create_namelists(case, confdir, inst_string, infile, definition_file)
 
 ###############################################################################
 

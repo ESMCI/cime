@@ -12,7 +12,7 @@ sys.path.append(os.path.join(os.environ["CIMEROOT"],"scripts","Tools"))
 
 from standard_script_setup import *
 from CIME.case             import Case
-from CIME.buildnml         import create_namelist_infile, parse_input
+from CIME.buildnml_utils   import create_namelist_infile, parse_input
 from CIME.utils            import expect, run_cmd
 
 logger = logging.getLogger(__name__)

@@ -2308,7 +2308,7 @@
   <group>prof_inparm</group>
   <description>
   </description>
-  <profile_disable>.true.</profile_disable>
+  <profile_disable TIMER_LEVEL_LOGICAL="neg">.true.</profile_disable>
   <profile_disable TIMER_LEVEL_LOGICAL="pos">.false.</profile_disable>
 </entry>
 
@@ -2327,7 +2327,7 @@
   <group>prof_inparm</group>
   <description>
   </description>
-  <profile_depth_limit>20</profile_depth_limit>
+  <profile_depth_limit TIMER_LEVEL_LOGICAL="neg">20</profile_depth_limit>
   <profile_depth_limit TIMER_LEVEL_LOGICAL="pos">$TIMER_LEVEL</profile_depth_limit>
 </entry>
 
@@ -2346,7 +2346,7 @@
   <description>
     default: 0
   </description>
-  <profile_detail_limit>0</profile_detail_limit>
+  <profile_detail_limit TIMER_DETAIL_LOGICAL="neg">0</profile_detail_limit>
   <profile_detail_limit TIMER_DETAIL_LOGICAL="pos">$TIMER_DETAIL</profile_detail_limit>
 </entry>
 
@@ -2400,8 +2400,7 @@
   <description>
     default: .false.
   </description>
-  <profile_papi_enable>.false.</profile_papi_enable>
-  <profile_papi_enable PROFILE_PAPI_ENABLE="On">.true.</profile_papi_enable>
+  <profile_papi_enable>$PROFILE_PAPI_ENABLE</profile_papi_enable>
 </entry>
 
 <!-- =========================== -->
@@ -2461,8 +2460,7 @@
     future asynchronous IO capability (not currently supported).
     default: .false.
   </description>
-  <pio_async_interface>.false.</pio_async_interface>
-  <pio_async_interface PIO_ASYNC_INTERFACE="On">.true.</pio_async_interface>
+  <pio_async_interface>$PIO_ASYNC_INTERFACE</pio_async_interface>
 </entry>
 
 <entry id="pio_stride">
@@ -2601,8 +2599,7 @@
     pio rearranger communication option: Enable handshake (comp2io)
     default: .true.
   </description>
-  <pio_rearr_comm_enable_hs_comp2io>.false.</pio_rearr_comm_enable_hs_comp2io>
-  <pio_rearr_comm_enable_hs_comp2io PIO_REARR_COMM_ENABLE_HS_COMP2IO="On">.true.</pio_rearr_comm_enable_hs_comp2io>
+  <pio_rearr_comm_enable_hs_comp2io>$PIO_REARR_COMM_ENABLE_HS_COMP2IO</pio_rearr_comm_enable_hs_comp2io>
 </entry>
 
 <entry id="pio_rearr_comm_enable_isend_comp2io">
@@ -2613,8 +2610,7 @@
     pio rearranger communication option: Enable isends (comp2io)
     default: .false.
   </description>
-  <pio_rearr_comm_enable_isend_comp2io>.false.</pio_rearr_comm_enable_isend_comp2io>
-  <pio_rearr_comm_enable_isend_comp2io PIO_REARR_COMM_ENABLE_ISEND_COMP2IO="On">.true.</pio_rearr_comm_enable_isend_comp2io>
+  <pio_rearr_comm_enable_isend_comp2io>$PIO_REARR_COMM_ENABLE_ISEND_COMP2IO</pio_rearr_comm_enable_isend_comp2io>
 </entry>
 
 <entry id="pio_rearr_comm_max_pend_req_io2comp">
@@ -2636,8 +2632,7 @@
     pio rearranger communication option: Enable handshake (io2comp)
     default: .true.
   </description>
-  <pio_rearr_comm_enable_hs_io2comp>.false.</pio_rearr_comm_enable_hs_io2comp>
-  <pio_rearr_comm_enable_hs_io2comp PIO_REARR_COMM_ENABLE_HS_IO2COMP="On">.true.</pio_rearr_comm_enable_hs_io2comp>
+  <pio_rearr_comm_enable_hs_io2comp>$PIO_REARR_COMM_ENABLE_HS_IO2COMP</pio_rearr_comm_enable_hs_io2comp>
 </entry>
 
 <entry id="pio_rearr_comm_enable_isend_io2comp">
@@ -2648,8 +2643,7 @@
     pio rearranger communication option: Enable isends (io2comp)
     default: .false.
   </description>
-  <pio_rearr_comm_enable_isend_io2comp>.false.</pio_rearr_comm_enable_isend_io2comp>
-  <pio_rearr_comm_enable_isend_io2comp PIO_REARR_COMM_ENABLE_ISEND_IO2COMP="On">.true.</pio_rearr_comm_enable_isend_io2comp>
+  <pio_rearr_comm_enable_isend_io2comp>$PIO_REARR_COMM_ENABLE_ISEND_IO2COMP</pio_rearr_comm_enable_isend_io2comp>
 </entry>
 
 <!-- =========================== -->

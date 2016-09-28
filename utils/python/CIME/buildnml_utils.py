@@ -156,7 +156,7 @@ def _build_data_nml(case, caseroot, compclass):
                 "user_xml_dir %s does not exist " %user_xml_dir)
 
         # call build-namelist for data component
-        command = os.path.join(cimeroot, "components", "data_comps", compname, "bld", "build-namelist")
+        command = os.path.join(cimeroot, "components", "data_comps", compname, "cime_config", "build-namelist")
         cmd = "%s --confdir %s --caseroot %s --cimeroot %s  --infile %s --user_xml_dir %s --inst_string %s" \
               % (command, confdir, caseroot, cimeroot, infile, user_xml_dir, inst_string_label)
         logger.info( "cmd is: %s " %cmd)

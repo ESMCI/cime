@@ -3197,8 +3197,8 @@
        than compset: see https://github.com/ESMCI/cime/issues/120 -->
   <entry id="CPL_ALBAV">
     <type>logical</type>
-    <valid_values>true,false</valid_values>
-    <default_value>false</default_value>
+    <valid_values>TRUE,FALSE</valid_values>
+    <default_value>FALSE</default_value>
     <values>
       <value compset="DATM.+POP\d">true</value>
       <value compset="DATM.+DOCN%IAF">true</value>

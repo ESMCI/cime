@@ -1008,8 +1008,12 @@ class Namelist(object):
                 values = group[name]
                 # To prettify things for long lists of values, build strings
                 # line-by-line.
+                if values[0] == "True" or values[0] == "False":
+                    values[0] = values[0].replace("True",".true.").replace("False",".false.")
                 lines = ["  %s%s %s" % (name, equals, values[0])]
                 for value in values[1:]:
+                    if value == "True" or value == "False":
+                        value = value.replace("True",".true.").replace("False",".false.")
                     if len(lines[-1]) + len(value) <= 77:
                         lines[-1] += ", " + value
                     else:

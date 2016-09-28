@@ -26,7 +26,7 @@ from standard_script_setup import *
 from CIME.case import Case
 from CIME.nmlgen import NamelistGenerator
 from CIME.utils import expect, handle_standard_logging_options, setup_standard_logging_options 
-from CIME.utils import run_cmd_no_fail
+from CIME.utils import run_cmd_no_fail, convert_to_string
 
 logger = logging.getLogger(__name__)
 
@@ -67,6 +67,7 @@ def _parse_input(argv):
 ###############################################################################
 def _create_group_seq_cplflds_inparm(case, nmlgen):
 ###############################################################################
+
     config = {}
 
     config['BGC_MODE'] = case.get_value("CCSM_BGC")
@@ -88,6 +89,7 @@ def _create_group_seq_cplflds_inparm(case, nmlgen):
 ###############################################################################
 def _create_group_seq_infodata_inparm(case, nmlgen):
 ###############################################################################
+
     config = {}
 
     nmlgen.add_default('case_name')
@@ -293,6 +295,7 @@ def _create_group_seq_timemgr_inparm(case, nmlgen):
 ###############################################################################
 def _create_group_ccsm_pes(case, nmlgen):
 ###############################################################################
+
     comps = ["atm", "lnd", "ice", "ocn", "glc", "rof", "wav", "esp", "cpl"]
     for comp in comps:
         nmlgen.add_default( comp + '_ntasks')
@@ -305,6 +308,7 @@ def _create_group_ccsm_pes(case, nmlgen):
 ###############################################################################
 def _create_group_prof_inparm(case, nmlgen):
 ###############################################################################
+
     config = {}
 
     config['MACH'] = case.get_value('MACH')
@@ -313,16 +317,24 @@ def _create_group_prof_inparm(case, nmlgen):
 
     if case.get_value('TIMER_DETAIL') >= 1:
         config["TIMER_DETAIL_LOGICAL"] = "pos"
+    else:
+        config["TIMER_DETAIL_LOGICAL"] = "neg"
+
     if case.get_value('TIMER_LEVEL_LOGICAL') >= 1:
         config["TIMER_LEVEL_LOGICAL"] = "pos"
-    if case.get_value('PROFILE_PAPI_ENABLE'):
-        config['PROFILE_PAPI_ENABLE'] = 'On'
+    else:
+        config["TIMER_LEVEL_LOGICAL"] = "neg"
+
+    if case.get_value('TIMER_LEVEL') >= 1:
+        config["TIMER_LEVEL"] = "pos"
+    else:
+        config["TIMER_LEVEL"] = "neg"
 
     nmlgen.add_default('profile_disable', value=nmlgen.get_default('profile_disable', config=config))
     nmlgen.add_default('profile_depth_limit', value=nmlgen.get_default('profile_depth_limit', config=config))
     nmlgen.add_default('profile_detail_limit', value=nmlgen.get_default('profile_detail_limit', config=config))
-    nmlgen.add_default('profile_papi_enable', value=nmlgen.get_default('profile_papi_enable', config=config))
     nmlgen.add_default('profile_timer', value=nmlgen.get_default('profile_timer', config=config))
+    nmlgen.add_default('profile_papi_enable')
     nmlgen.add_default('profile_global_stats')
     nmlgen.add_default('profile_single_file')
     nmlgen.add_default('profile_barrier')
@@ -332,6 +344,7 @@ def _create_group_prof_inparm(case, nmlgen):
 ###############################################################################
 def _create_group_papi_inparm(case, nmlgen):
 ###############################################################################
+
     nmlgen.add_default('papi_ctr1_str')
     nmlgen.add_default('papi_ctr2_str')
     nmlgen.add_default('papi_ctr3_str')
@@ -340,20 +353,8 @@ def _create_group_papi_inparm(case, nmlgen):
 ###############################################################################
 def _create_group_pio_default_inparm(case, nmlgen):
 ###############################################################################
-    config = {}
 
-    if case.get_value('PIO_ASYNC_INTERFACE'):
-         config['PIO_ASYNC_INTERFACE'] = 'On'
-    if case.get_value('PIO_REARR_COMM_ENABLE_HS_COMP2IO'):
-        config['PIO_REARR_COMM_ENABLE_HS_COMP2IO'] = 'On'
-    if case.get_value('PIO_REARR_COMM_ENABLE_ISEND_COMP2IO'):
-        config['PIO_REARR_COMM_ENABLE_ISEND_COMP2IO'] = 'On'
-    if case.get_value('PIO_REARR_COMM_ENABLE_HS_IO2COMP'):
-        config['PIO_REARR_COMM_ENABLE_HS_IO2COMP'] = 'On'
-    if case.get_value('PIO_REARR_COMM_ENABLE_ISEND_IO2COMP'):
-        config['PIO_REARR_COMM_ENABLE_ISEND_IO2COMP'] = 'On'
-
-    nmlgen.add_default('pio_async_interface', value=nmlgen.get_default('pio_async_interface', config=config))
+    nmlgen.add_default('pio_async_interface') 
     nmlgen.add_default('pio_stride')
     nmlgen.add_default('pio_root')
     nmlgen.add_default('pio_rearranger')
@@ -366,11 +367,10 @@ def _create_group_pio_default_inparm(case, nmlgen):
         nmlgen.add_default('pio_rearr_comm_type')
         nmlgen.add_default('pio_rearr_comm_fcd')
         nmlgen.add_default('pio_rearr_comm_max_pend_req_comp2io')
-        nmlgen.add_default('pio_rearr_comm_enable_hs_comp2io', 
-                           value=nmlgen.get_default('pio_rearr_comm_enable_hs_comp2io', config=config))
-        nmlgen.add_default('pio_rearr_comm_enable_isend_comp2io')
         nmlgen.add_default('pio_rearr_comm_max_pend_req_io2comp')
+        nmlgen.add_default('pio_rearr_comm_enable_hs_comp2io')
         nmlgen.add_default('pio_rearr_comm_enable_hs_io2comp')
+        nmlgen.add_default('pio_rearr_comm_enable_isend_comp2io')
         nmlgen.add_default('pio_rearr_comm_enable_isend_io2comp')
 
     # Note: pio_async_interface=.true. is not yet supported

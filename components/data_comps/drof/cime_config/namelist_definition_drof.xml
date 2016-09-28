@@ -6,6 +6,41 @@
 
   <version>2.0</version>
 
+  <!--
+      Values to use by default for creation of DOCN model docn namelists.
+      The element names are the same as the corresponding namelist
+      variables.  Values that depend on the model configuration use
+      attributes to express the dependency.  The recognized attributes
+      are: grid.attributes from the config_cache.xml file (with keys converted to upper-case).
+
+      strm_year_first is the first year of the stream data that will be used
+      strm_year_last  is the last  year of the stream data that will be used
+      strm_year_align is the model year that will be aligned with stream data for year_first
+
+      For cplhist forcing - the following substitutions will be made belwo
+      Replace any instance of the following substring indicators with the appropriate values:
+      %y    => year from the range yearfirst to yearlast
+               obtained from values of <strm_year_start> -> <strm_year_end> below
+      %ym   => year-month from the range yearfirst to yearlast with all 12 months
+               obtained from values of <strm_year_start> -> <strm_year_end> below
+      %ymd  => year-month-day from the range yearfirst to yearlast with all 12 months
+               obtained from values of <strm_year_start> -> <strm_year_end> below
+
+      Replace any instance of $VARNAME with the xml variable value obtained from any
+      of the $CASEROOT/env*xml files
+
+      In drof_in,  streams namelist input has the form
+      streams = 'stream1.txt year_align year_first year_last ',
+                'stream2.txt year_align year_first year_last ',
+                ...
+                'streamN.txt year_align year_first year_last '
+
+     Currently the following streams are supported
+        rof.cplhist
+	rof.diatren_ann_rx1
+	rof.diatren_iaf_rx1
+  -->
+
   <!-- ========================================================================================  -->
   <!-- Stream file variables                                                                     -->
   <!-- ========================================================================================  -->
@@ -15,6 +50,10 @@
     <category>streams</category>
     <group>streams_file</group>
     <description>List of streams used for the given drof_mode.</description>
+    <streamslist drof_mode="NULL"           >NULL</streamslist>
+    <streamslist drof_mode="CPLHIST"        >rof.cplhist</streamslist>
+    <streamslist drof_mode="DIATREN_ANN_RX1">rof.diatren_ann_rx1</streamslist>
+    <streamslist drof_mode="DIATREN_IAF_RX1">rof.diatren_iaf_rx1</streamslist>
   </entry>
 
   <entry id="strm_domdir">
@@ -22,6 +61,9 @@
     <category>streams</category>
     <group>streams_file</group>
     <description>Stream domain file directory.</description>
+    <strm_domdir     stream="rof.diatren_ann_rx1">$DIN_LOC_ROOT/lnd/dlnd7/RX1</strm_domdir>
+    <strm_domdir     stream="rof.diatren_iaf_rx1">$DIN_LOC_ROOT/lnd/dlnd7/RX1</strm_domdir>
+    <strm_domdir     stream="rof.cplhist">$ROF_DOMAIN_PATH</strm_domdir>
   </entry>
 
   <entry id="strm_domfil">
@@ -29,6 +71,9 @@
     <category>streams</category>
     <group>streams_file</group>
     <description>Stream domain file path(s).</description>
+    <strm_domfil     stream="rof.diatren_ann_rx1">runoff.daitren.annual.090225.nc</strm_domfil>
+    <strm_domfil     stream="rof.diatren_iaf_rx1">runoff.daitren.iaf.20120419.nc</strm_domfil>
+    <strm_domfil     stream="rof.cplhist">$ROF_DOMAIN_FILE</strm_domfil>
   </entry>
 
   <entry id="strm_domvar">
@@ -36,6 +81,13 @@
     <category>streams</category>
     <group>streams_file</group>
     <description>Stream domain variable name(s).</description>
+    <strm_domvar>
+      time   time
+      xc     lon
+      yc     lat
+      area   area
+      mask   mask
+    </strm_domvar>
   </entry>
 
   <entry id="strm_datdir">
@@ -43,6 +95,9 @@
     <category>streams</category>
     <group>streams_file</group>
     <description>Stream data file directory.</description>
+    <strm_datdir     stream="rof.diatren_ann_rx1">$DIN_LOC_ROOT/lnd/dlnd7/RX1</strm_datdir>
+    <strm_datdir     stream="rof.diatren_iaf_rx1">$DIN_LOC_ROOT/lnd/dlnd7/RX1</strm_datdir>
+    <strm_datdir     stream="rof.cplhist">$DROF_CPLHIST_DIR</strm_datdir>
   </entry>
 
   <entry id="strm_datfil">
@@ -50,6 +105,9 @@
     <category>streams</category>
     <group>streams_file</group>
     <description>Stream data file path(s).</description>
+    <strm_datfil     stream="rof.diatren_ann_rx1">runoff.daitren.annual.090225.nc</strm_datfil>
+    <strm_datfil     stream="rof.diatren_iaf_rx1">runoff.daitren.iaf.20120419.nc</strm_datfil>
+    <strm_datfil     stream="rof.cplhist">$DROF_CPLHIST_CASE.cpl.hr2xacc.%y.nc</strm_datfil>
   </entry>
 
   <entry id="strm_datvar">
@@ -57,6 +115,16 @@
     <category>streams</category>
     <group>streams_file</group>
     <description>Stream data variable name(s).</description>
+    <strm_datvar     stream="rof.diatren_ann_rx1">
+      runoff rofl
+    </strm_datvar>
+    <strm_datvar     stream="rof.diatren_iaf_rx1">
+      runoff rofl
+    </strm_datvar>
+    <strm_datvar     stream="rof.cplhist">
+      r2xacc_Forr_roff  rofl
+      r2xacc_Forr_ioff  rofi
+    </strm_datvar>
   </entry>
 
   <entry id="strm_offset">
@@ -64,6 +132,8 @@
     <category>streams</category>
     <group>streams_file</group>
     <description>Stream offset.</description>
+    <strm_offset>0</strm_offset>
+    <strm_offset stream="rof.cplhist">-43200</strm_offset>
   </entry>
 
   <entry id="strm_year_align">
@@ -71,6 +141,9 @@
     <category>streams</category>
     <group>streams_file</group>
     <description>Simulation year to align stream to.</description>
+    <strm_year_align stream="rof.diatren_ann_rx1">1</strm_year_align>
+    <strm_year_align stream="rof.diatren_iaf_rx1">1</strm_year_align>
+    <strm_year_align stream="rof.cplhist">$DROF_CPLHIST_YR_ALIGN</strm_year_align>
   </entry>
 
   <entry id="strm_year_start">
@@ -78,6 +151,9 @@
     <category>streams</category>
     <group>streams_file</group>
     <description>First year of stream.</description>
+    <strm_year_start stream="rof.diatren_ann_rx1">1</strm_year_start>
+    <strm_year_start stream="rof.diatren_iaf_rx1">1948</strm_year_start>
+    <strm_year_start stream="rof.cplhist">$DROF_CPLHIST_YR_START</strm_year_start>
   </entry>
 
   <entry id="strm_year_end">
@@ -85,6 +161,9 @@
     <category>streams</category>
     <group>streams_file</group>
     <description>Last year of stream.</description>
+    <strm_year_end   stream="rof.diatren_ann_rx1">1</strm_year_end>
+    <strm_year_end   stream="rof.diatren_iaf_rx1">2009</strm_year_end>
+    <strm_year_end   stream="rof.cplhist">$DROF_CPLHIST_YR_END</strm_year_end>
   </entry>
 
   <!-- ========================================================================================  -->
@@ -116,11 +195,14 @@
       Reads in annual forcing river data used for CORE2 forcing runs
       datamode = DIATREN_ANN_RX1,DIATREN_IAF_RX1
       Reads in intra-annual forcing river data used for CORE2 forcing runs
-
       Set by the the DROF_MODE xml variables in env_run.xml
       specifies values for rof mode: CPLHIST,DIATREN_ANN_RX1,DIATREN_IAF_RX1,NULL
       default value: DIATREN_ANN_RX1
     </description>
+    <datamode drof_mode="NULL"           >NULL</datamode>
+    <datamode drof_mode="CPLHIST"        >CPLHIST</datamode>
+    <datamode drof_mode="DIATREN_ANN_RX1">DIATREN_ANN_RX1</datamode>
+    <datamode drof_mode="DIATREN_IAF_RX1">DIATREN_IAF_RX1</datamode>
   </entry>
 
   <entry id="domainfile">
@@ -160,6 +242,7 @@
       valid values: "nomask,srcmask,dstmask,bothmask"
       default: "nomask"
     </description>
+    <fillmask>nomask</fillmask>
   </entry>
 
   <entry id="fillread">
@@ -173,6 +256,7 @@
       and fillmask are ignored.
       default: unset
     </description>
+    <fillalgo>nn</fillalgo>
   </entry>
 
   <entry id="fillwrite">
@@ -201,6 +285,7 @@
       valid values: srcmask, dstmask, nomask,bothmask
       default: dstmask
     </description>
+    <mapmask>dstmask</mapmask>
   </entry>
 
   <entry id="mapalgo">
@@ -216,6 +301,7 @@
       valid values: copy,spval,nn,nnoni,nnonj,bilinear
       default: bilinear
     </description>
+    <mapalgo>bilinear</mapalgo>
   </entry>
 
   <entry id="mapread">
@@ -259,6 +345,10 @@
       coszen  = Scale according to the cosine of the solar zenith angle (for solar)
       default="linear".
     </description>
+    <tintalgo>linear</tintalgo>
+    <tintalgo stream="rof.diatren_ann_rx1">upper</tintalgo>
+    <tintalgo stream="rof.diatren_iaf_rx1">upper</tintalgo>
+    <tintalgo stream="rof.cplhist">lower</tintalgo>
   </entry>
 
   <entry id="taxmode">
@@ -279,6 +369,7 @@
       limit  = restrict to the period for which the data is valid
       default="cycle".
     </description>
+    <taxmode>cycle</taxmode>
   </entry>
 
   <entry id="dtlimit">
@@ -300,6 +391,7 @@
       to turn off trapping, set the value to 1.0e30 or something similar.
       default=1.5.
     </description>
+    <dtlimit>1.5e0</dtlimit>
   </entry>
 
   <entry id="streams">
@@ -356,15 +448,4 @@
     <description>If TRUE, prognostic is forced to true.  (default=false)</description>
   </entry>
 
-  <!-- =========================================  -->
-  <!--- modelio (in file rof_modeio.nml)          -->
-  <!-- =========================================  -->
-
-  <entry id="logfile">
-    <type>char*256</type>
-    <category>drof</category>
-    <group>modelio</group>
-    <description>DROF logfile name  (default='rof.log')</description>
-  </entry>
-  
 </namelist_definition>
