@@ -67,65 +67,36 @@ main(int argc, char **argv)
 
     int ncid;
     int ncid2;
-    for (int i = 0; i < 1; i++)
+    for (int flv = 0; flv < NUM_FLAVORS; flv++)
     {
 	char fn[NUM_FILES][NC_MAX_NAME + 1];
 	char dimname[NC_MAX_NAME + 1];
+	char filename[NUM_SAMPLES][NC_MAX_NAME + 1]; /* Test filename. */	
 
-	/* Create the test files. */
-	for (int f = 0; f < NUM_FILES; f++)
+	for (int sample = 0; sample < NUM_SAMPLES; sample++)
 	{
-	    int lncid, dimid, varid;
-	    
-	    sprintf(fn[f], "pio_iosys_test_file%d.nc", f);
-	    if ((ret = PIOc_createfile(iosysid_world, &lncid, &iotypes[i], fn[f], NC_CLOBBER)))
-		return ret;
-	    /* Define a dimension. */
-	    if ((ret = PIOc_def_dim(lncid, DIMNAME, PIO_TF_MAX_STR_LEN, &dimid)))
-		return ret;
+	    /* Create a filename. */
+	    sprintf(filename[sample], "%s_%s_%d_%d.nc", TEST_NAME, flavor_name(flv), sample, 0);
+		    
+	    /* Create sample file. */
+	    printf("%d %s creating file %s\n", my_rank, TEST_NAME, filename[sample]);
+	    if ((ret = create_nc_sample(sample, iosysid_world, iotypes[flv], filename[sample], my_rank, NULL)))
+		ERR(ret);
+		    
+	    /* Check the file for correctness. */
+	    if ((ret = check_nc_sample(sample, iosysid_world, iotypes[flv], filename[sample], my_rank, NULL)))
+		ERR(ret);
 
-	    /* Define a 1-D variable. */
-	    if ((ret = PIOc_def_var(lncid, ATTNAME, NC_CHAR, 1, &dimid, &varid)))
-		return ret;
-
-	    /* Write an attribute. */
-	    if ((ret = PIOc_put_att_text(lncid, varid, ATTNAME, strlen(fn[f]), fn[f])))
-		return ret;
-
-	    /* Done! */
-	    if ((ret = PIOc_enddef(lncid)))
-		return ret;
-	    if ((ret = PIOc_closefile(lncid)))
-		return ret;
 	}
 
-	/* Open the first file with world iosystem. */
-	if ((ret = PIOc_openfile(iosysid_world, &ncid, &iotypes[i], fn[1], PIO_WRITE)))
-	    return ret;
-
-	/* Now have the even communicator open file. */
-	char *file = even ? fn[1] : fn[2];
-	if ((ret = PIOc_openfile(iosysid, &ncid2, &iotypes[i], file, PIO_WRITE)))
-	    return ret;
-
-	/* Check the first file. */
-	int dimid_in;
-	/* if ((ret = PIOc_inq_dimid(ncid, DIMNAME, &dimid_in))) */
-	/*     return ret; */
-	/* if (dimid_in != 0) */
-	/*     return ERR_WRONG; */
-
-	/* Check the other files. */
-	if ((ret = PIOc_inq_dimid(ncid2, DIMNAME, &dimid_in)))
-	    return ret;
-	if (dimid_in != 0)
-	    return ERR_WRONG;
-	
-	/* Close the still-open files. */
-	if ((ret = PIOc_closefile(ncid)))
+	/* Now check the files with the other iosysid. Even and odd
+	 * processes will check different files. */
+	int this_sample = even ? 0 : 1;
+	char *file1 = filename[this_sample];
+	int ncid2;
+	if ((ret = check_nc_sample(this_sample, iosysid, iotypes[flv], file1, my_rank, NULL)))
 	    ERR(ret);
-	if ((ret = PIOc_closefile(ncid2)))
-	    ERR(ret);
+
     } /* next iotype */
 
     /* Finalize PIO odd/even intracomm. */

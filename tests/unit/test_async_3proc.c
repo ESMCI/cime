@@ -80,11 +80,11 @@ main(int argc, char **argv)
 		    
 		    /* Create sample file. */
 		    printf("%d %s creating file %s\n", my_rank, TEST_NAME, filename);
-		    if ((ret = create_nc_sample(sample, iosysid[my_comp_idx], flavor[flv], filename, my_rank)))
+		    if ((ret = create_nc_sample(sample, iosysid[my_comp_idx], flavor[flv], filename, my_rank, NULL)))
 			ERR(ret);
 		    
 		    /* Check the file for correctness. */
-		    if ((ret = check_nc_sample(sample, iosysid[my_comp_idx], flavor[flv], filename, my_rank)))
+		    if ((ret = check_nc_sample(sample, iosysid[my_comp_idx], flavor[flv], filename, my_rank, NULL)))
 			ERR(ret);
 		}
 	    } /* next netcdf flavor */

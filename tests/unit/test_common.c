@@ -160,18 +160,18 @@ test_inq_type(int ncid, int format)
 
 /** This creates a netCDF sample file in the specified format. */
 int
-create_nc_sample(int sample, int iosysid, int format, char *filename, int my_rank)
+create_nc_sample(int sample, int iosysid, int format, char *filename, int my_rank, int *ncid)
 {
     switch(sample)
     {
 	case 0:
-	    return create_nc_sample_0(iosysid, format, filename, my_rank);
+	    return create_nc_sample_0(iosysid, format, filename, my_rank, ncid);
 	    break;
 	case 1:
-	    return create_nc_sample_1(iosysid, format, filename, my_rank);
+	    return create_nc_sample_1(iosysid, format, filename, my_rank, ncid);
 	    break;
 	case 2:
-	    return create_nc_sample_2(iosysid, format, filename, my_rank);
+	    return create_nc_sample_2(iosysid, format, filename, my_rank, ncid);
 	    break;
     }
     return PIO_EINVAL;
@@ -179,18 +179,18 @@ create_nc_sample(int sample, int iosysid, int format, char *filename, int my_ran
 
 /** This checks a netCDF sample file in the specified format. */
 int
-check_nc_sample(int sample, int iosysid, int format, char *filename, int my_rank)
+check_nc_sample(int sample, int iosysid, int format, char *filename, int my_rank, int *ncid)
 {
     switch(sample)
     {
 	case 0:
-	    return check_nc_sample_0(iosysid, format, filename, my_rank);
+	    return check_nc_sample_0(iosysid, format, filename, my_rank, ncid);
 	    break;
 	case 1:
-	    return check_nc_sample_1(iosysid, format, filename, my_rank);
+	    return check_nc_sample_1(iosysid, format, filename, my_rank, ncid);
 	    break;
 	case 2:
-	    return check_nc_sample_2(iosysid, format, filename, my_rank);
+	    return check_nc_sample_2(iosysid, format, filename, my_rank, ncid);
 	    break;
     }
     return PIO_EINVAL;
@@ -198,7 +198,7 @@ check_nc_sample(int sample, int iosysid, int format, char *filename, int my_rank
 
 /** This creates an empty netCDF file in the specified format. */
 int
-create_nc_sample_0(int iosysid, int format, char *filename, int my_rank)
+create_nc_sample_0(int iosysid, int format, char *filename, int my_rank, int *ncidp)
 {
     int ncid;
     int ret;
@@ -220,18 +220,23 @@ create_nc_sample_0(int iosysid, int format, char *filename, int my_rank)
     if ((ret = test_inq_type(ncid, format)))
 	return ret;
 
-    /* Close the file. */
-    printf("%d closing file ncid = %d\n", my_rank, ncid);
-    if ((ret = PIOc_closefile(ncid)))
-	return ret;
-    printf("%d closed file ncid = %d\n", my_rank, ncid);
+    /* Close the file if ncidp was not provided. */
+    if (ncidp)
+	*ncidp = ncid;
+    else
+    {
+	printf("%d closing file ncid = %d\n", my_rank, ncid);
+	if ((ret = PIOc_closefile(ncid)))
+	    return ret;
+	printf("%d closed file ncid = %d\n", my_rank, ncid);
+    }
     
     return PIO_NOERR;
 }
 
 /* Check sample file 1 for correctness. */
 int
-check_nc_sample_0(int iosysid, int format, char *filename, int my_rank)
+check_nc_sample_0(int iosysid, int format, char *filename, int my_rank, int *ncidp)
 {
     int ncid;
     int ndims, nvars, ngatts, unlimdimid;
@@ -268,10 +273,15 @@ check_nc_sample_0(int iosysid, int format, char *filename, int my_rank)
     if (unlimdimid != -1)
     	return ERR_WRONG;
 
-    /* Close the file. */
-    printf("%d closing file (again) ncid = %d\n", my_rank, ncid);
-    if ((ret = PIOc_closefile(ncid)))
-    	return ret;
+    /* Close the file if ncidp was not provided. */
+    if (ncidp)
+	*ncidp = ncid;
+    else
+    {
+	printf("%d closing file (again) ncid = %d\n", my_rank, ncid);
+	if ((ret = PIOc_closefile(ncid)))
+	    return ret;
+    }
 
     return 0;
 }
@@ -279,7 +289,7 @@ check_nc_sample_0(int iosysid, int format, char *filename, int my_rank)
 /** This creates a netCDF file in the specified format, with some
  * sample values. */
 int
-create_nc_sample_1(int iosysid, int format, char *filename, int my_rank)
+create_nc_sample_1(int iosysid, int format, char *filename, int my_rank, int *ncidp)
 {
     /* The ncid of the netCDF file. */
     int ncid;
@@ -349,18 +359,23 @@ create_nc_sample_1(int iosysid, int format, char *filename, int my_rank)
     if ((ret = test_inq_type(ncid, format)))
 	return ret;
 
-    /* Close the file. */
-    printf("%d closing file ncid = %d\n", my_rank, ncid);
-    if ((ret = PIOc_closefile(ncid)))
-	return ret;
-    printf("%d closed file ncid = %d\n", my_rank, ncid);
+    /* Close the file if ncidp was not provided. */
+    if (ncidp)
+	*ncidp = ncid;
+    else
+    {
+	printf("%d closing file ncid = %d\n", my_rank, ncid);
+	if ((ret = PIOc_closefile(ncid)))
+	    return ret;
+	printf("%d closed file ncid = %d\n", my_rank, ncid);
+    }
     
     return PIO_NOERR;
 }
 
 /* Check sample file 1 for correctness. */
 int
-check_nc_sample_1(int iosysid, int format, char *filename, int my_rank)
+check_nc_sample_1(int iosysid, int format, char *filename, int my_rank, int *ncidp)
 {
     int ncid;
     int ret;
@@ -442,10 +457,15 @@ check_nc_sample_1(int iosysid, int format, char *filename, int my_rank)
     	vardimids != 0 || varnatts != 0)
     	return ERR_WRONG;
 
-    /* Close the file. */
-    printf("%d closing file (again) ncid = %d\n", my_rank, ncid);
-    if ((ret = PIOc_closefile(ncid)))
-    	return ret;
+    /* Close the file if ncidp was not provided. */
+    if (ncidp)
+	*ncidp = ncid;
+    else
+    {
+	printf("%d closing file (again) ncid = %d\n", my_rank, ncid);
+	if ((ret = PIOc_closefile(ncid)))
+	    return ret;
+    }
 
     return 0;
 }
@@ -453,7 +473,7 @@ check_nc_sample_1(int iosysid, int format, char *filename, int my_rank)
 /** This creates a netCDF file in the specified format, with some
  * sample values. */
 int
-create_nc_sample_2(int iosysid, int format, char *filename, int my_rank)
+create_nc_sample_2(int iosysid, int format, char *filename, int my_rank, int *ncidp)
 {
     int ncid, varid, dimid;
     PIO_Offset start[NDIM_S2], count[NDIM_S2] = {0};
@@ -554,18 +574,27 @@ create_nc_sample_2(int iosysid, int format, char *filename, int my_rank)
     if ((ret = PIOc_put_vars_tc(ncid, varid, start, count, NULL, NC_INT, data)))
     	return ret;
 
-    /* Close the file. */
-    printf("%d closing file ncid = %d\n", my_rank, ncid);
-    if ((ret = PIOc_closefile(ncid)))
-    	return ret;
-    printf("%d closed file ncid = %d\n", my_rank, ncid);
+    /* Close the file if ncidp was not provided. */
+    if (ncidp)
+	*ncidp = ncid;
+    else
+    {
+	printf("%d closing file ncid = %d\n", my_rank, ncid);
+	if ((ret = PIOc_closefile(ncid)))
+	    return ret;
+	printf("%d closed file ncid = %d\n", my_rank, ncid);
+    }
 
     return PIO_NOERR;
 }
 
-/* Check sample file 2 for correctness. */
+/* Check sample file 2 for correctness. 
+*
+* @param ncidp if NULL, close file, otherwise return ncid of still-open file. 
+* @reaturns 0 for success and error code otherwise. 
+*/
 int
-check_nc_sample_2(int iosysid, int format, char *filename, int my_rank)
+check_nc_sample_2(int iosysid, int format, char *filename, int my_rank, int *ncidp)
 {
     int ncid;
     int ret;
@@ -732,10 +761,15 @@ check_nc_sample_2(int iosysid, int format, char *filename, int my_rank)
     if (double_att_data != ATT_VALUE_S2)
     	return ERR_WRONG;
 
-    /* Close the file. */
-    printf("%d closing file (again) ncid = %d\n", my_rank, ncid);
-    if ((ret = PIOc_closefile(ncid)))
-	return ERR_CHECK;
+    /* Close the file if ncidp was not provided. */
+    if (ncidp)
+	*ncidp = ncid;
+    else
+    {
+	printf("%d closing file (again) ncid = %d\n", my_rank, ncid);
+	if ((ret = PIOc_closefile(ncid)))
+	    return ERR_CHECK;
+    }
 
     return 0;
 }
