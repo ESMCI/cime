@@ -2092,6 +2092,7 @@ int PIOc_get_att(int ncid, int varid, const char *name, void *ip)
             check_netcdf(file, ierr, __FILE__, __LINE__);
             return ierr;
         }
+	LOG((2, "atttype = %d attlen = %d", atttype, attlen));
 
         /* Get the length (in bytes) of the type. */
         if ((ierr = PIOc_inq_type(ncid, atttype, NULL, &typelen)))
@@ -2099,7 +2100,9 @@ int PIOc_get_att(int ncid, int varid, const char *name, void *ip)
             check_netcdf(file, ierr, __FILE__, __LINE__);
             return ierr;
         }
+	LOG((2, "typelen = %d", typelen));
     }
+    LOG((2, "again typelen = %d", typelen));
 
     /* If async is in use, and this is not an IO task, bcast the
      * parameters and the attribute and type information we fetched. */
@@ -2108,6 +2111,7 @@ int PIOc_get_att(int ncid, int varid, const char *name, void *ip)
         if (!ios->ioproc)
         {
             int msg = PIO_MSG_GET_ATT;
+	    LOG((2, "sending parameters"));
 
             /* Send the message to IO master. */
             if(ios->compmaster) 
@@ -2131,6 +2135,9 @@ int PIOc_get_att(int ncid, int varid, const char *name, void *ip)
                 mpierr = MPI_Bcast(&attlen, 1, MPI_OFFSET, ios->compmaster, ios->intercomm);
             if (!mpierr)
                 mpierr = MPI_Bcast(&typelen, 1, MPI_OFFSET, ios->compmaster, ios->intercomm);
+	    LOG((2, "Bcast complete ncid = %d varid = %d namelen = %d name = %s iotype = %d "
+		 "atttype = %d attlen = %d typelen = %d", ncid, varid, namelen, name, file->iotype,
+		 atttype, attlen, typelen));
         }
 
         /* Handle MPI errors. */
@@ -2138,6 +2145,7 @@ int PIOc_get_att(int ncid, int varid, const char *name, void *ip)
             check_mpi(file, mpierr2, __FILE__, __LINE__);           
         if (mpierr)
 	    return check_mpi(file, mpierr, __FILE__, __LINE__);
+	LOG((2, "mpi errors handled"));
         
         /* Broadcast values currently only known on computation tasks to IO tasks. */
         LOG((2, "PIOc_get_att bcast from comproot = %d attlen = %d typelen = %d", ios->comproot, attlen, typelen));
@@ -2151,6 +2159,7 @@ int PIOc_get_att(int ncid, int varid, const char *name, void *ip)
     /* If this is an IO task, then call the netCDF function. */
     if (ios->ioproc)
     {
+	LOG((2, "calling pnetcdf/netcdf"));
 #ifdef _PNETCDF
         if (file->iotype == PIO_IOTYPE_PNETCDF)
             ierr = ncmpi_get_att(file->fh, varid, name, ip);
@@ -2162,23 +2171,19 @@ int PIOc_get_att(int ncid, int varid, const char *name, void *ip)
     }
 
     /* Broadcast and check the return code. */
+    LOG((2, "ierr = %d", ierr));
     if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
-    {
-        check_mpi(file, mpierr, __FILE__, __LINE__);            
-        return PIO_EIO;
-    }
-    check_netcdf(file, ierr, __FILE__, __LINE__);
-    
+        return check_mpi(file, mpierr, __FILE__, __LINE__);
+    if (ierr)
+	return check_netcdf(file, ierr, __FILE__, __LINE__);
+
     /* Broadcast results to all tasks. */
     if (!ierr)
-    {
         if ((mpierr = MPI_Bcast(ip, (int)attlen * typelen, MPI_BYTE, ios->ioroot,
                                 ios->my_comm)))
-        {
-            check_mpi(file, mpierr, __FILE__, __LINE__);
-            return PIO_EIO;
-        }
-    }
+	    return check_mpi(file, mpierr, __FILE__, __LINE__);
+
+    LOG((2, "get_att data bcast complete"));    
     return ierr;
 }
 
