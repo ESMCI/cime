@@ -60,6 +60,16 @@
 <!-- group seq_cplflds_inparm    -->
 <!-- =========================== -->
 
+<entry id="cime_model">
+   <type>char*8</type>
+   <category>expdef</category>
+   <group>seq_infodata_inparm</group>
+   <unmodifiable_via_user_nl>must be set via xml variable CIME_MODEL</unmodifiable_via_user_nl>
+   <valid_values>acme,cesm</valid_values>
+   <description>cime model</description>
+   <cime_model>unset</cime_model>
+</entry>
+
 <entry id="flds_co2a">
   <type>logical</type>
   <category>seq_flds</category>
@@ -205,6 +215,7 @@
     vector field.
     Modify user_nl_cpl to edit this.
   </description>
+  <cplflds_custom>' '</cplflds_custom>
 </entry>
 
 <!-- =========================== -->
@@ -1389,7 +1400,7 @@
 </entry>
 
 <entry id="start_ymd">
-  <type>char*10</type>
+  <type>integer</type>
   <category>time</category>
   <group>seq_timemgr_inparm</group>
   <unmodifiable_via_user_nl>must be set via xml variable RUN_STARTDATE</unmodifiable_via_user_nl>
@@ -1397,6 +1408,7 @@
     Run start date in yyyymmdd format, only used for startup and hybrid runs.
     default: 00010101
   </description>
+  <start_ymd>00010101</start_ymd>
 </entry>
 
 <entry id="start_tod">
@@ -2327,8 +2339,7 @@
   <group>prof_inparm</group>
   <description>
   </description>
-  <profile_depth_limit TIMER_LEVEL_LOGICAL="neg">20</profile_depth_limit>
-  <profile_depth_limit TIMER_LEVEL_LOGICAL="pos">$TIMER_LEVEL</profile_depth_limit>
+  <profile_depth_limit>>20</profile_depth_limit>
 </entry>
 
 <entry id="profile_outpe_stride">
@@ -2346,8 +2357,7 @@
   <description>
     default: 0
   </description>
-  <profile_detail_limit TIMER_DETAIL_LOGICAL="neg">0</profile_detail_limit>
-  <profile_detail_limit TIMER_DETAIL_LOGICAL="pos">$TIMER_DETAIL</profile_detail_limit>
+  <profile_detail_limit>0</profile_detail_limit>
 </entry>
 
 <entry id="profile_timer">
@@ -3200,23 +3210,23 @@
   <glc2ice_rmaptype BFBFLAG="TRUE">X</glc2ice_rmaptype>
 </entry>
 
-<entry id="rof2ocn_rmapname">
+<entry id="rof2ocn_liq_rmapname">
   <type>char*256</type>
   <category>mapping</category>
   <input_pathname>abs</input_pathname>
   <group>seq_maps</group>
-  <unmodifiable_via_user_nl>must be set via xml variable ROF2OCN_RMAPNAME</unmodifiable_via_user_nl>
+  <unmodifiable_via_user_nl>must be set via xml variable ROF2OCN_LIQ_RMAPNAME</unmodifiable_via_user_nl>
   <description>
     runoff to ocn nearest neighbor plus smoothing conservative mapping file
   </description>
-  <rof2ocn_rmapname>$ROF2OCN_RMAPNAME</rof2ocn_rmapname>
+  <rof2ocn_liq_rmapname>$ROF2OCN_LIQ_RMAPNAME</rof2ocn_liq_rmapname>
 </entry>
 
-<entry id="rof2ocn_rmaptype">
+<entry id="rof2ocn_liq_rmaptype">
   <type>char*256</type>
   <category>mapping</category>
   <group>seq_maps</group>
-  <unmodifiable_via_user_nl>must be set via xml variable ROF2OCN_RMAPTYPE</unmodifiable_via_user_nl>
+  <unmodifiable_via_user_nl>must be set via xml variable ROF2OCN_LIQ_RMAPTYPE</unmodifiable_via_user_nl>
   <description>
     The type of mapping desired, either "source" or "destination" mapping.
     X is associated with rearrangement of the source grid to the
@@ -3224,9 +3234,38 @@
     on the source grid and then rearrangement and sum to the destination
     grid.
   </description>
-  <rof2ocn_rmaptype>$ROF2OCN_RMAPTYPE</rof2ocn_rmaptype>
-  <rof2ocn_rmaptype BFBFLAG="TRUE">X</rof2ocn_rmaptype>
+  <rof2ocn_liq_rmaptype>$ROF2OCN_LIQ_RMAPTYPE</rof2ocn_liq_rmaptype>
+  <rof2ocn_liq_rmaptype BFBFLAG="TRUE">X</rof2ocn_liq_rmaptype>
 </entry>
+
+<entry id="rof2ocn_ice_rmapname">
+  <type>char*256</type>
+  <category>mapping</category>
+  <input_pathname>abs</input_pathname>
+  <group>seq_maps</group>
+  <unmodifiable_via_user_nl>must be set via xml variable ROF2OCN_ICE_RMAPNAME</unmodifiable_via_user_nl>
+  <description>
+    runoff to ocn nearest neighbor plus smoothing conservative mapping file
+  </description>
+  <rof2ocn_ice_rmapname>$ROF2OCN_ICE_RMAPNAME</rof2ocn_ice_rmapname>
+</entry>
+
+<entry id="rof2ocn_ice_rmaptype">
+  <type>char*256</type>
+  <category>mapping</category>
+  <group>seq_maps</group>
+  <unmodifiable_via_user_nl>must be set via xml variable ROF2OCN_ICE_RMAPTYPE</unmodifiable_via_user_nl>
+  <description>
+    The type of mapping desired, either "source" or "destination" mapping.
+    X is associated with rearrangement of the source grid to the
+    destination grid and then local mapping.  Y is associated with mapping
+    on the source grid and then rearrangement and sum to the destination
+    grid.
+  </description>
+  <rof2ocn_ice_rmaptype>$ROF2OCN_ICE_RMAPTYPE</rof2ocn_ice_rmaptype>
+  <rof2ocn_ice_rmaptype BFBFLAG="TRUE">X</rof2ocn_ice_rmaptype>
+</entry>
+
 
 <entry id="lnd2glc_fmapname">
   <type>char*256</type>

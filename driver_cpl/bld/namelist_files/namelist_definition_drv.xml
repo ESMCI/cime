@@ -1,89 +1,17 @@
 <?xml version="1.0"?>
 
-<?xml-stylesheet type="text/xsl" href="http://www.cgd.ucar.edu/~cam/namelist/namelist_definition.xsl"?>
-
-
 <namelist_definition>
 
   <version>1.0</version>
 
-<!-- Each namelist variable is defined in an <entry> element.  The
-     content of the element is the documentation of how the variable is
-     used.  Other aspects of the variable's definition are expressed as
-     attributes of the <entry> element.  Note that it is an XML requirement
-     that the attribute values are enclosed in quotes.  The attributes are:
+  <!-- The following entries are being used by CLM's build-namelist, 
+       which has not been converted to parse the version 2.0 schema for
+       a namelist_definition.xml file
+  -->
 
-     id
-          The variable's name.  *** N.B. *** The name must be lower case.
-          The module convert all namelist variable names to lower case
-          since Fortran is case insensitive.
-
-     type
-          An abbreviation of the fortran declaration for the variable.
-	  Valid declarations are:
-
-          char*n
-	  integer
-	  logical
-	  real
-
-	  Any of these types may be followed by a comma separated list of
-	  integers enclosed in parenthesis to indicate an array.
-
-	  The current namelist validation code only distinquishes between
-	  string and non-string types.
-
-     input_pathname
-          Only include this attribute to indicate that the variable
-          contains the pathname of an input dataset that resides in the
-          CIME inputdata directory tree.
-
-	  The recognized values are
-           "abs"  - an absolute  pathname is required
-	   "rel:var_name"  - the  pathname is relative and that
-            the namelist variable "var_name" contains the absolute
-	    root directory.
-           "mapping" - the absolute inputdata path is specified and
-            will be included in the cpl.inputdata_list
-
-     category
-          A category assigned for organizing the documentation.
-
-     group
-          The namelist group that the variable is declared in.
-
-     valid_values
-          This is an optional attribute that is mainly useful for variables
-          that have only a small number of allowed values.
--->
-
-<entry
-id="start_type"
-type="char*64"
-category="expdef"
-group="seq_infodata_inparm"
-valid_values="startup,branch,continue" >
-mode to start the run up, [startup,branch,continue],
-automatically derived from RUN_TYPE in env_run.xml
-</entry>
-
-<entry
-id="start_ymd"
-type="integer"
-category="time"
-group="seq_timemgr_inparm">
-Run start date in yyyymmdd format, only used for startup and hybrid runs.
-default: 00010101
-</entry>
-
-<entry 
-id="glc_nec"
-type="integer"
-category="seq_flds"
-group="seq_cplflds_inparm" >
-Number of cism elevation classes.
-Set by the xml variable GLC_NEC in env_run.xml
-</entry>
+  <entry id="start_type" type="char*64" category="expdef"   group="seq_infodata_inparm" valid_values="startup,branch,continue"> </entry>
+  <entry id="start_ymd"  type="integer" category="time"     group="seq_timemgr_inparm"> </entry>
+  <entry id="glc_nec"    type="integer" category="seq_flds" group="seq_cplflds_inparm"> </entry>
 
 </namelist_definition>
 

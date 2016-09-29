@@ -4,7 +4,7 @@
 
 <namelist_definition>
 
-  <version>2.0</version> 
+  <version>1.0</version> 
 
   <entry id="drv_flds_in_files" type="char*256(10)" category="drv_physics"
 	 group="default_settings" valid_values="" >

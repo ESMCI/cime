@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 """Namelist creator for CIME's driver.
-
 While `build-namelist` historically has been a script in its own right, this
 module can be imported, and provides the same functionality via the
 `build_namelist` function.
@@ -55,14 +54,24 @@ def _parse_input(argv):
                         help="file containing user-modified namelists settings")
 
     parser.add_argument("--user_xml_dir", required=True,
-                        help="user xml directory, user changes to "
-                        "namelist_defaults.xml and namelist_definitions.xml")
+                        help="user xml directory, user changes to namelist_definitions.xml")
+
+    parser.add_argument("--cime_model", required=True,
+                        help="cime_model (acme or cesm currently)")
 
     args = parser.parse_args()
 
     handle_standard_logging_options(args)
 
-    return args.cimeroot, args.caseroot, args.confdir, args.infile, args.user_xml_dir
+    return args.cimeroot, args.caseroot, args.confdir, args.infile, args.user_xml_dir, \
+        args.cime_model
+
+
+###############################################################################
+def _create_group_seq_cplflds_userspec(case, nmlgen):
+###############################################################################
+
+    nmlgen.add_default('cplflds_custom')
 
 ###############################################################################
 def _create_group_seq_cplflds_inparm(case, nmlgen):
@@ -87,11 +96,12 @@ def _create_group_seq_cplflds_inparm(case, nmlgen):
     nmlgen.add_default('glc_nec', value=glc_nec)
 
 ###############################################################################
-def _create_group_seq_infodata_inparm(case, nmlgen):
+def _create_group_seq_infodata_inparm(case, cime_model, nmlgen):
 ###############################################################################
 
     config = {}
 
+    nmlgen.add_default('cime_model', value=cime_model)
     nmlgen.add_default('case_name')
     nmlgen.add_default('case_desc')
     nmlgen.add_default('username')
@@ -314,26 +324,20 @@ def _create_group_prof_inparm(case, nmlgen):
     config['MACH'] = case.get_value('MACH')
     config['MPILIB'] = case.get_value('MPILIB')
     config['OS'] = case.get_value('OS')
-
-    if case.get_value('TIMER_DETAIL') >= 1:
-        config["TIMER_DETAIL_LOGICAL"] = "pos"
-    else:
-        config["TIMER_DETAIL_LOGICAL"] = "neg"
-
-    if case.get_value('TIMER_LEVEL_LOGICAL') >= 1:
-        config["TIMER_LEVEL_LOGICAL"] = "pos"
-    else:
-        config["TIMER_LEVEL_LOGICAL"] = "neg"
+    nmlgen.add_default('profile_timer', value=nmlgen.get_default('profile_timer', config=config))
 
     if case.get_value('TIMER_LEVEL') >= 1:
-        config["TIMER_LEVEL"] = "pos"
+        nmlgen.add_default('profile_disable', value=".false.")
+        nmlgen.add_default('profile_depth_limit', value=case.get_value('TIMER_LEVEL'))
     else:
-        config["TIMER_LEVEL"] = "neg"
+        nmlgen.add_default('profile_disable', value=".true.")
+        nmlgen.add_default('profile_depth_limit', value=20)
 
-    nmlgen.add_default('profile_disable', value=nmlgen.get_default('profile_disable', config=config))
-    nmlgen.add_default('profile_depth_limit', value=nmlgen.get_default('profile_depth_limit', config=config))
-    nmlgen.add_default('profile_detail_limit', value=nmlgen.get_default('profile_detail_limit', config=config))
-    nmlgen.add_default('profile_timer', value=nmlgen.get_default('profile_timer', config=config))
+    if case.get_value('TIMER_DETAIL') >= 1:
+        nmlgen.add_default('profile_detail_limit', value=case.get_value('TIMER_DETAIL'))
+    else:
+        nmlgen.add_default('profile_detail_limit', 0)
+
     nmlgen.add_default('profile_papi_enable')
     nmlgen.add_default('profile_global_stats')
     nmlgen.add_default('profile_single_file')
@@ -384,31 +388,42 @@ def _create_group_seq_maps(case, nmlgen):
     config = {}
     config['BFBFLAG'] = case.get_value('BFBFLAG')
 
-    items = ['atm2ocn_fmapname', 'atm2ocn_smapname', 'atm2ocn_vmapname', 'ocn2atm_fmapname',
-             'ocn2atm_smapname', 'atm2lnd_fmapname', 'atm2lnd_smapname', 'lnd2atm_fmapname',
-             'lnd2atm_smapname', 'lnd2rof_fmapname', 'rof2lnd_fmapname', 'rof2ocn_fmapname',
-             'rof2ocn_rmapname', 'glc2ocn_rmapname', 'glc2ice_rmapname', 'lnd2glc_fmapname', 
-             'lnd2glc_smapname', 'glc2lnd_fmapname', 'glc2lnd_smapname', 'atm2wav_smapname',
-             'ocn2wav_smapname', 'ice2wav_smapname', 'wav2ocn_smapname', 'atm2ice_fmapname',
-             'atm2ice_smapname', 'atm2ice_vmapname', 'ice2atm_fmapname', 'ice2atm_smapname',
-             'atm2ocn_fmaptype', 'atm2ocn_smaptype', 'atm2ocn_vmaptype', 'ocn2atm_fmaptype',
-             'ocn2atm_smaptype', 'atm2lnd_fmaptype', 'atm2lnd_smaptype', 'lnd2atm_fmaptype', 
-             'lnd2atm_smaptype', 'lnd2rof_fmaptype', 'rof2lnd_fmaptype', 'rof2ocn_fmaptype',
-             'rof2ocn_rmaptype', 'glc2ocn_rmaptype', 'glc2ice_rmaptype', 'lnd2glc_fmaptype',
-             'lnd2glc_smaptype', 'glc2lnd_fmaptype', 'glc2lnd_smaptype', 'atm2wav_smaptype',
-             'ocn2wav_smaptype', 'ice2wav_smaptype', 'wav2ocn_smaptype']
+    items = ['atm2ocn_fmapname', 'atm2ocn_smapname', 'atm2ocn_vmapname', 
+             'ocn2atm_fmapname', 'ocn2atm_smapname', 
+             'atm2lnd_fmapname', 'atm2lnd_smapname', 
+             'lnd2atm_fmapname', 'lnd2atm_smapname', 
+             'lnd2rof_fmapname', 'rof2lnd_fmapname', 
+             'rof2ocn_fmapname', 'rof2ocn_liq_rmapname', 'rof2ocn_ice_rmapname', 
+             'glc2ocn_rmapname', 'glc2ice_rmapname', 
+             'lnd2glc_fmapname', 'lnd2glc_smapname', 
+             'glc2lnd_fmapname', 'glc2lnd_smapname', 
+             'atm2wav_smapname', 'ocn2wav_smapname', 
+             'ice2wav_smapname', 'wav2ocn_smapname', 
+             'atm2ice_fmapname', 'atm2ice_smapname', 'atm2ice_vmapname', 
+             'ice2atm_fmapname', 'ice2atm_smapname', 
+             'atm2ocn_fmaptype', 'atm2ocn_smaptype', 'atm2ocn_vmaptype', 
+             'ocn2atm_fmaptype', 'ocn2atm_smaptype', 
+             'atm2lnd_fmaptype', 'atm2lnd_smaptype', 
+             'lnd2atm_fmaptype', 'lnd2atm_smaptype', 
+             'lnd2rof_fmaptype', 'rof2lnd_fmaptype', 
+             'rof2ocn_fmaptype', 'rof2ocn_liq_rmaptype', 'rof2ocn_ice_rmaptype', 
+             'glc2ocn_rmaptype', 'glc2ice_rmaptype', 
+             'lnd2glc_fmaptype', 'lnd2glc_smaptype', 
+             'glc2lnd_fmaptype', 'glc2lnd_smaptype', 
+             'atm2wav_smaptype', 'ocn2wav_smaptype', 'ice2wav_smaptype', 
+             'wav2ocn_smaptype']
 
     for item in items:
         nmlgen.add_default(item, nmlgen.get_default(item, config=config))
 
 ###############################################################################
-def _create_component_modelio_namelists(case, confdir, definition_files, defaults_files):
+def _create_component_modelio_namelists(case, confdir, definition_file):
 ###############################################################################
 
     # will need to create a new namelist generator
     infiles = []
     config = {}
-    nmlgen = NamelistGenerator(case, infiles, definition_files, defaults_files,  config)
+    nmlgen = NamelistGenerator(case, infiles, definition_file, definition_file,  config)
 
     models = ["cpl", "atm", "lnd", "ice", "ocn", "glc", "rof", "wav", "esp"]
 
@@ -454,7 +469,7 @@ def _create_component_modelio_namelists(case, confdir, definition_files, default
             inst_index = inst_index + 1
 
 ####################################################################################
-def _create_namelists(case, confdir, infiles, definition_files,  defaults_files):
+def _create_namelists(case, cime_model, confdir, infiles, definition_file):
 ####################################################################################
     """Write out the namelist for this component.
 
@@ -466,37 +481,22 @@ def _create_namelists(case, confdir, infiles, definition_files,  defaults_files)
     # Construct the namelist generator.
     #----------------------------------------------------
     config = {}
-    nmlgen = NamelistGenerator(case, infiles, definition_files, defaults_files,  config)
+    nmlgen = NamelistGenerator(case, infiles, definition_file, definition_file,  config)
 
     #----------------------------------------------------
     # Construct the namelist groups
     #----------------------------------------------------
 
-    # create namelist group: seq_cplflds_userspec
-    # nmlgen.add_default('cplflds_custom', value='') FIXME - this is not returning cplflds_custom = ' '
+    # Note: prof_inparm  and papi_inparm are in utils/timing/perf_mod.F90
 
-    # crate namelist group: seq_cplflds_inparm      
+    _create_group_seq_cplflds_userspec(case, nmlgen)
     _create_group_seq_cplflds_inparm(case, nmlgen)
-
-    # create namelist group: seq_infodata_inparm      
-    _create_group_seq_infodata_inparm(case, nmlgen)
-
-    # create namelist group: seq_timemgr_inparm      
+    _create_group_seq_infodata_inparm(case, cime_model, nmlgen)
     _create_group_seq_timemgr_inparm(case, nmlgen)
-
-    # create namelist group: ccsm_pes
     _create_group_ccsm_pes(case, nmlgen)
-    
-    # create namelist group: prof_inparm (in utils/timing/perf_mod.F90)
     _create_group_prof_inparm(case, nmlgen)
-
-    # create namelist group: papi_inparm (in utils/timing/perf_mod.F90)
     _create_group_papi_inparm(case, nmlgen)
-
-    # create namelist group: pio_default_inparm        
     _create_group_pio_default_inparm(case, nmlgen)
-
-    # create group seq_maps that will go into file seq_map.rc
     _create_group_seq_maps(case, nmlgen)
 
     #-----------------------------------------------------------------------------------------------
@@ -528,7 +528,7 @@ def _create_namelists(case, confdir, infiles, definition_files,  defaults_files)
     caseroot = case.get_value('CASEROOT')
 
     namelist_file = os.path.join(confdir, "drv_flds_in")
-    nmlgen.add_default('drv_flds_in_files' )
+    nmlgen.add_default('drv_flds_in_files')
     drvflds_files = nmlgen.get_default('drv_flds_in_files')
     infiles = []
     for drvflds_file in drvflds_files:
@@ -538,9 +538,8 @@ def _create_namelists(case, confdir, infiles, definition_files,  defaults_files)
 
     if len(infiles) != 0:
         config = {}
-        definition_files = [os.path.join(cimeroot, "driver_cpl", "bld", "namelist_files", "namelist_definition_drv_flds.xml")]
-        defaults_files = [os.path.join(cimeroot, "driver_cpl", "bld", "namelist_files", "namelist_defaults.xml")]
-        nmlgen = NamelistGenerator(case, infiles, definition_files, defaults_files,  config)
+        definition_file = [os.path.join(cimeroot, "driver_cpl", "bld", "namelist_files", "namelist_definition_drv_flds.xml")]
+        nmlgen = NamelistGenerator(case, infiles, definition_file, definition_file,  config)
         drv_flds_in = os.path.join(caseroot, "CaseDocs", "drv_flds_in")
         nmlgen.write_output_file(drv_flds_in)
 
@@ -548,34 +547,24 @@ def _create_namelists(case, confdir, infiles, definition_files,  defaults_files)
 def _main_func():
 ###############################################################################
 
-    cimeroot, caseroot, confdir, infiles, user_xml_dir = _parse_input(sys.argv)
+    cimeroot, caseroot, confdir, infiles, user_xml_dir, cime_model = _parse_input(sys.argv)
 
-    # Figure out where definition/defaults files are.
-    namelist_xml_dir = os.path.join(cimeroot, "driver_cpl", "bld", "namelist_files")
-
-    # User definition *replaces* existing definition.
-    definition_file_basename = "namelist_definition_drv_v2.xml"
-    definition_files = [os.path.join(namelist_xml_dir, definition_file_basename)]
-    user_definition = os.path.join(user_xml_dir, definition_file_basename)
+    # NOTE: User definition *replaces* existing definition.
+    namelist_xml_dir = os.path.join(cimeroot, "driver_cpl", "cime_config")
+    definition_file = [os.path.join(namelist_xml_dir, "namelist_definition_drv.xml")]
+    user_definition = os.path.join(user_xml_dir, "namelist_definition_drv.xml")
     if os.path.isfile(user_definition):
         definition_file = [user_definition]
 
-    # User defaults *extends* existing defaults.
-    defaults_file_basename = "namelist_definition_drv_v2.xml"
-    defaults_files = [os.path.join(namelist_xml_dir, defaults_file_basename)]
-    user_defaults = os.path.join(user_xml_dir, defaults_file_basename)
-    if os.path.isfile(user_defaults):
-        defaults_files.append(user_defaults)
-
-    # Checkout if definition and defaults file exist
-    for file_ in definition_files + defaults_files:
+    # Checkout if definition file exists
+    for file_ in definition_file:
         expect(os.path.isfile(file_),
                "Namelist XML file %s not found!" % file_)
 
     # Now build the component namelist and required stream txt files
     with Case(caseroot) as case:
-        _create_namelists(case, confdir, infiles, definition_files, defaults_files)
-        _create_component_modelio_namelists(case, confdir, definition_files, defaults_files)
+        _create_namelists(case, cime_model, confdir, infiles, definition_file)
+        _create_component_modelio_namelists(case, confdir, definition_file)
 
 ###############################################################################
 
