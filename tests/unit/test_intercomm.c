@@ -536,28 +536,28 @@ main(int argc, char **argv)
 	    /* if ((ret = PIOc_openfile(iosysid, &ncid, &format[fmt], filename[fmt], */
 	    /* 			     NC_NOWRITE)) != PIO_ENFILE) */
 	    /* 	ERR(ERR_AWFUL); */
-	    
+
 	} /* next netcdf format flavor */
+
+	/* Finalize the IO system. */
+	if (verbose)
+	    printf("%d test_intercomm Freeing PIO resources...\n", my_rank);
+	if ((ret = PIOc_finalize(iosysid)))
+	    ERR(ret);
     }
 
     /* Free local MPI resources. */
     if (verbose)
 	printf("%d test_intercomm Freeing local MPI resources...\n", my_rank);
-    if (comp_task)
-    {
-	MPI_Comm_free(&comp_comms);
-    }
-    else
-    {
-	MPI_Comm_free(&io_comm);
-    }
+    /* if (comp_task) */
+    /* { */
+    /* 	MPI_Comm_free(&comp_comms); */
+    /* } */
+    /* else */
+    /* { */
+    /* 	MPI_Comm_free(&io_comm); */
+    /* } */
     
-    /* Finalize the IO system. */
-    if (verbose)
-	printf("%d test_intercomm Freeing PIO resources...\n", my_rank);
-    if ((ret = PIOc_finalize(iosysid)))
-    	ERR(ret);
-
     /* Finalize the MPI library. */
     MPI_Finalize();
 

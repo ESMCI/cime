@@ -1,5 +1,7 @@
 include (LibMPI)
 
+include_directories("${CMAKE_SOURCE_DIR}/tests/unit")
+
 # Compiler-specific compiler options
 if ("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99")
@@ -43,13 +45,28 @@ if ("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
         PRIVATE -ffree-line-length-none)
 endif()
 
-if (PIO_ENABLE_ASYNC AND NOT PIO_USE_MPI_SERIAL)
-  add_executable (test_intercomm EXCLUDE_FROM_ALL test_intercomm.c)
-  target_link_libraries (test_intercomm pioc)
-  add_dependencies (tests test_intercomm)
+if (NOT PIO_USE_MPI_SERIAL)
+  add_executable (test_intercomm2 EXCLUDE_FROM_ALL test_intercomm2.c)
+  target_link_libraries (test_intercomm2 pioc)
+  add_dependencies (tests test_intercomm2)
+  add_executable (test_async_simple EXCLUDE_FROM_ALL test_async_simple.c test_common.c)
+  target_link_libraries (test_async_simple pioc)
+  add_dependencies (tests test_async_simple)
+  # add_executable (test_async_2comp EXCLUDE_FROM_ALL test_async_2comp.c test_common.c)
+  # target_link_libraries (test_async_2comp pioc)
+  # add_dependencies (tests test_async_2comp)
+  add_executable (test_async_3proc EXCLUDE_FROM_ALL test_async_3proc.c test_common.c)
+  target_link_libraries (test_async_3proc pioc)
+  add_dependencies (tests test_async_3proc)
+  add_executable (test_async_4proc EXCLUDE_FROM_ALL test_async_4proc.c test_common.c)
+  target_link_libraries (test_async_4proc pioc)
+  add_dependencies (tests test_async_4proc)
   add_executable (test_darray_async EXCLUDE_FROM_ALL test_darray_async.c)
   target_link_libraries (test_darray_async pioc)
   add_dependencies (tests test_darray_async)
+  add_executable (test_file EXCLUDE_FROM_ALL test_file.c)
+  target_link_libraries (test_file pioc)
+  add_dependencies (tests test_file)
 endif ()
 add_executable (test_names EXCLUDE_FROM_ALL test_names.c)
 target_link_libraries (test_names pioc)
@@ -86,12 +103,30 @@ else ()
         EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_darray
         NUMPROCS 4
         TIMEOUT ${DEFAULT_TEST_TIMEOUT})
-  if (PIO_ENABLE_ASYNC)
-    add_mpi_test(test_intercomm
-        EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_intercomm
+    add_mpi_test(test_file
+        EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_file
         NUMPROCS 4
         TIMEOUT ${DEFAULT_TEST_TIMEOUT})
-  endif ()
+    add_mpi_test(test_intercomm2
+        EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_intercomm2
+        NUMPROCS 4
+        TIMEOUT ${DEFAULT_TEST_TIMEOUT})
+    add_mpi_test(test_async_simple
+        EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_async_simple
+        NUMPROCS 2
+        TIMEOUT ${DEFAULT_TEST_TIMEOUT})
+    # add_mpi_test(test_async_2comp
+    #     EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_async_2comp
+    #     NUMPROCS 4
+    #     TIMEOUT ${DEFAULT_TEST_TIMEOUT})
+    add_mpi_test(test_async_3proc
+        EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_async_3proc
+        NUMPROCS 3
+        TIMEOUT ${DEFAULT_TEST_TIMEOUT})
+    add_mpi_test(test_async_4proc
+        EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_async_4proc
+        NUMPROCS 4
+        TIMEOUT ${DEFAULT_TEST_TIMEOUT})
     add_mpi_test(test_names
         EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_names
         NUMPROCS 4

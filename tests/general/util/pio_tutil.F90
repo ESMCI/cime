@@ -25,6 +25,7 @@ MODULE pio_tutil
 
   ! MPI info
   INTEGER ::  pio_tf_world_rank_, pio_tf_world_sz_
+  INTEGER :: pio_tf_tmp_comm_rank_, pio_tf_tmp_comm_sz_
   INTEGER :: pio_tf_comm_
 
   ! REAL types
@@ -171,31 +172,35 @@ CONTAINS
   ! Collective assert - Internal (Not directly used by unit tests)
   ! Each processes passes in its local assert condition and the function
   ! returns the global assert condition
-  LOGICAL FUNCTION PIO_TF_Passert_(local_result)
+  LOGICAL FUNCTION PIO_TF_Passert_(local_result, comm)
 #ifndef NO_MPIMOD
     use mpi
 #else
     include 'mpif.h'
 #endif
     LOGICAL, INTENT(IN) ::  local_result
+    INTEGER, INTENT(IN) ::  comm
     LOGICAL :: global_result
     LOGICAL :: failed, all_failed
     INTEGER :: rank, ierr
     LOGICAL, DIMENSION(:), ALLOCATABLE :: failed_ranks
 
-    CALL MPI_ALLREDUCE(local_result, global_result, 1, MPI_LOGICAL, MPI_LAND, pio_tf_comm_, ierr)
+    CALL MPI_COMM_RANK(comm, pio_tf_tmp_comm_rank_, ierr)
+    CALL MPI_COMM_SIZE(comm, pio_tf_tmp_comm_sz_, ierr)
+
+    CALL MPI_ALLREDUCE(local_result, global_result, 1, MPI_LOGICAL, MPI_LAND, comm, ierr)
     IF (.NOT. global_result) THEN
       failed = .NOT. local_result
 !      IF (pio_tf_world_rank_ == 0) THEN
-        ALLOCATE(failed_ranks(pio_tf_world_sz_))
+        ALLOCATE(failed_ranks(pio_tf_tmp_comm_sz_))
 !      END IF
       ! Gather the ranks where assertion failed
-      CALL MPI_GATHER(failed, 1, MPI_LOGICAL, failed_ranks, 1, MPI_LOGICAL, 0, pio_tf_comm_, ierr)
+      CALL MPI_GATHER(failed, 1, MPI_LOGICAL, failed_ranks, 1, MPI_LOGICAL, 0, comm, ierr)
 
       ! Display the ranks where the assertion failed
-      IF (pio_tf_world_rank_ == 0) THEN
+      IF (pio_tf_tmp_comm_rank_ == 0) THEN
         all_failed = .TRUE.
-        DO rank=1,pio_tf_world_sz_
+        DO rank=1,pio_tf_tmp_comm_sz_
           IF (.NOT. failed_ranks(rank)) THEN
             all_failed = .FALSE.
             ! Thank you - f90
@@ -207,7 +212,7 @@ CONTAINS
         ELSE
           PRINT *, "PIO_TF: Fatal Error: Assertion failed on following processes: "
           WRITE(*,"(A8)",ADVANCE="NO") "PIO_TF: "
-          DO rank=1,pio_tf_world_sz_
+          DO rank=1,pio_tf_tmp_comm_sz_
             IF (failed_ranks(rank)) THEN
               WRITE(*,"(I5,A)",ADVANCE="NO") rank-1, ","
             END IF

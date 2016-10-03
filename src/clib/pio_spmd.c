@@ -22,6 +22,10 @@
 #include <pio_internal.h>
 #endif
 
+#if PIO_ENABLE_LOGGING
+extern FILE *LOG_FILE;
+#endif /* PIO_ENABLE_LOGGING */    
+
 /** 
  ** @brief Wrapper for MPI calls to print the Error string on error
  */
@@ -643,6 +647,10 @@ int main( int argc, char **argv )
     free( rbuf );
     free( sbuf );
     MPI_Finalize();
+
+#if PIO_ENABLE_LOGGING
+    fclose(LOG_FILE);
+#endif /* PIO_ENABLE_LOGGING */    
     return 0;
 }
 

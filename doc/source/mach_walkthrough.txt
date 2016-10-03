@@ -311,6 +311,13 @@ downloads page</a>. (These instructions were tested using version
 <p>Now you should be able to access mpicc, mpifort, and mpirun from
 the command line. (If not, make sure /usr/local/bin is in path.)
 
+<p>Note that if you wish to use valgrind on your programs, you should
+configure MPICH like this:
+<pre>CPPFLAGS=-I/usr/include/valgrind ./configure --prefix=/usr/local --enable-g=mem,meminit</pre>
+
+<p>For this to work you must have packages valgrind and valgrind-devel
+installed.
+
 <li>Installing Zlib
 
 <p>Download from the <a href="http://www.zlib.net/">zlib
