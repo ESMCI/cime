@@ -70,6 +70,9 @@ if (NOT PIO_USE_MPI_SERIAL)
   add_executable (test_iosystem2 EXCLUDE_FROM_ALL test_iosystem2.c test_common.c)
   target_link_libraries (test_iosystem2 pioc)
   add_dependencies (tests test_iosystem2)
+  add_executable (test_iosystem3 EXCLUDE_FROM_ALL test_iosystem3.c test_common.c)
+  target_link_libraries (test_iosystem3 pioc)
+  add_dependencies (tests test_iosystem3)
   add_executable (test_darray_async EXCLUDE_FROM_ALL test_darray_async.c)
   target_link_libraries (test_darray_async pioc)
   add_dependencies (tests test_darray_async)
@@ -146,6 +149,10 @@ else ()
         TIMEOUT ${DEFAULT_TEST_TIMEOUT})
     add_mpi_test(test_iosystem2
         EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_iosystem2
+        NUMPROCS 4
+        TIMEOUT ${DEFAULT_TEST_TIMEOUT})
+    add_mpi_test(test_iosystem3
+        EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_iosystem3
         NUMPROCS 4
         TIMEOUT ${DEFAULT_TEST_TIMEOUT})
    add_mpi_test(test_names
