@@ -181,77 +181,61 @@ main(int argc, char **argv)
     printf("%d overlap_comm = %d overlap_rank = %d overlap_size = %d\n", my_rank,
 	   overlap_comm, overlap_rank, overlap_size);
 
-    /* Split world into odd and even. */
-    MPI_Comm newcomm;
-    int even = my_rank % 2 ? 0 : 1;
-    if ((ret = MPI_Comm_split(MPI_COMM_WORLD, even, 0, &newcomm)))
-	MPIERR(ret);
-    printf("%d newcomm = %d even = %d\n", my_rank, newcomm, even);
-
-    /* Get rank in new communicator and its size. */
-    int new_rank, new_size;
-    if ((ret = MPI_Comm_rank(newcomm, &new_rank)))
-	MPIERR(ret);
-    if ((ret = MPI_Comm_size(newcomm, &new_size)))
-	MPIERR(ret);
-    printf("%d newcomm = %d new_rank = %d new_size = %d\n", my_rank, newcomm,
-	   new_rank, new_size);
-
     /* Initialize PIO system. */
-    if ((ret = PIOc_Init_Intracomm(newcomm, 2, 1, 0, 1, &iosysid)))
-	ERR(ret);
+    /* if ((ret = PIOc_Init_Intracomm(newcomm, 2, 1, 0, 1, &iosysid))) */
+    /* 	ERR(ret); */
 
-    for (int i = 0; i < NUM_FLAVORS; i++)
-    {
-	char fname0[] = "pio_iosys_test_file0.nc"; 
-	char fname1[] = "pio_iosys_test_file1.nc"; 
-	char fname2[] = "pio_iosys_test_file2.nc";
-	printf("\n\n%d i = %d\n", my_rank, i);
+    /* for (int i = 0; i < NUM_FLAVORS; i++) */
+    /* { */
+    /* 	char fname0[] = "pio_iosys_test_file0.nc";  */
+    /* 	char fname1[] = "pio_iosys_test_file1.nc";  */
+    /* 	char fname2[] = "pio_iosys_test_file2.nc"; */
+    /* 	printf("\n\n%d i = %d\n", my_rank, i); */
 
-	if ((ret = create_file(MPI_COMM_WORLD, iosysid_world, iotypes[i], fname0, ATTNAME,
-			       DIMNAME, my_rank)))
-	    ERR(ret);
+    /* 	if ((ret = create_file(MPI_COMM_WORLD, iosysid_world, iotypes[i], fname0, ATTNAME, */
+    /* 			       DIMNAME, my_rank))) */
+    /* 	    ERR(ret); */
 
-	if ((ret = create_file(MPI_COMM_WORLD, iosysid_world, iotypes[i], fname1, ATTNAME,
-			       DIMNAME, my_rank)))
-	    ERR(ret);
+    /* 	if ((ret = create_file(MPI_COMM_WORLD, iosysid_world, iotypes[i], fname1, ATTNAME, */
+    /* 			       DIMNAME, my_rank))) */
+    /* 	    ERR(ret); */
 
-	if ((ret = create_file(MPI_COMM_WORLD, iosysid_world, iotypes[i], fname2, ATTNAME,
-			       DIMNAME, my_rank)))
-	    ERR(ret);
+    /* 	if ((ret = create_file(MPI_COMM_WORLD, iosysid_world, iotypes[i], fname2, ATTNAME, */
+    /* 			       DIMNAME, my_rank))) */
+    /* 	    ERR(ret); */
 
-	MPI_Barrier(MPI_COMM_WORLD);
+    /* 	MPI_Barrier(MPI_COMM_WORLD); */
 
-	/* Now check the first file. */
-	int ncid;
-	if ((ret = open_and_check_file(MPI_COMM_WORLD, iosysid_world, iotypes[i], &ncid, fname0,
-				       ATTNAME, DIMNAME, 1, my_rank)))
-	    ERR(ret);
+    /* 	/\* Now check the first file. *\/ */
+    /* 	int ncid; */
+    /* 	if ((ret = open_and_check_file(MPI_COMM_WORLD, iosysid_world, iotypes[i], &ncid, fname0, */
+    /* 				       ATTNAME, DIMNAME, 1, my_rank))) */
+    /* 	    ERR(ret); */
 
-	/* Now have the odd/even communicators each check one of the
-	 * remaining files. */
-	int ncid2;
-	char *fname = even ? fname1 : fname2;
-	printf("\n***\n");
-	if ((ret = open_and_check_file(newcomm, iosysid, iotypes[i], &ncid2, fname,
-				       ATTNAME, DIMNAME, 1, my_rank)))
-	    ERR(ret);
+    /* 	/\* Now have the odd/even communicators each check one of the */
+    /* 	 * remaining files. *\/ */
+    /* 	int ncid2; */
+    /* 	char *fname = even ? fname1 : fname2; */
+    /* 	printf("\n***\n"); */
+    /* 	if ((ret = open_and_check_file(newcomm, iosysid, iotypes[i], &ncid2, fname, */
+    /* 				       ATTNAME, DIMNAME, 1, my_rank))) */
+    /* 	    ERR(ret); */
 	
 
-	/* Close the still-open files. */
-	if ((ret = PIOc_closefile(ncid)))
-	    ERR(ret);
-	if ((ret = PIOc_closefile(ncid2)))
-	    ERR(ret);
-    } /* next iotype */
+    /* 	/\* Close the still-open files. *\/ */
+    /* 	if ((ret = PIOc_closefile(ncid))) */
+    /* 	    ERR(ret); */
+    /* 	if ((ret = PIOc_closefile(ncid2))) */
+    /* 	    ERR(ret); */
+    /* } /\* next iotype *\/ */
 
-    /* Finalize PIO system. */
-    if ((ret = PIOc_finalize(iosysid)))
-	ERR(ret);
+    /* /\* Finalize PIO system. *\/ */
+    /* if ((ret = PIOc_finalize(iosysid))) */
+    /* 	ERR(ret); */
 
-    /* Finalize PIO system. */
-    if ((ret = PIOc_finalize(iosysid_world)))
-	ERR(ret);
+    /* /\* Finalize PIO system. *\/ */
+    /* if ((ret = PIOc_finalize(iosysid_world))) */
+    /* 	ERR(ret); */
 
     /* Free MPI resources used by test. */
     if ((ret = MPI_Group_free(&overlap_group)))
