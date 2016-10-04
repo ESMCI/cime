@@ -115,6 +115,7 @@ main(int argc, char **argv)
     int ntasks; /* Number of processors involved in current execution. */
     int iosysid; /* The ID for the parallel I/O system. */
     int iosysid_world; /* The ID for the parallel I/O system. */
+    int even_iosysid; /* The ID for iosystem of even_comm. */
     MPI_Group world_group; /* An MPI group of world. */
     MPI_Group even_group; /* An MPI group of 0 and 2. */
     MPI_Group overlap_group; /* An MPI group of 0, 1, and 3. */
@@ -181,9 +182,12 @@ main(int argc, char **argv)
     printf("%d overlap_comm = %d overlap_rank = %d overlap_size = %d\n", my_rank,
 	   overlap_comm, overlap_rank, overlap_size);
 
-    /* Initialize PIO system. */
-    /* if ((ret = PIOc_Init_Intracomm(newcomm, 2, 1, 0, 1, &iosysid))) */
-    /* 	ERR(ret); */
+    /* Initialize PIO system for even. */
+    if (even_comm != MPI_COMM_NULL)
+    {
+	if ((ret = PIOc_Init_Intracomm(even_comm, 1, 1, 0, 1, &even_iosysid)))
+	    ERR(ret);
+    }
 
     /* for (int i = 0; i < NUM_FLAVORS; i++) */
     /* { */
@@ -234,8 +238,9 @@ main(int argc, char **argv)
     /* 	ERR(ret); */
 
     /* /\* Finalize PIO system. *\/ */
-    /* if ((ret = PIOc_finalize(iosysid_world))) */
-    /* 	ERR(ret); */
+    if (even_comm != MPI_COMM_NULL)
+	if ((ret = PIOc_finalize(even_iosysid)))
+	    ERR(ret);
 
     /* Free MPI resources used by test. */
     if ((ret = MPI_Group_free(&overlap_group)))
