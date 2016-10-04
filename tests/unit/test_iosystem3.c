@@ -118,6 +118,8 @@ main(int argc, char **argv)
     MPI_Group world_group; /* An MPI group of world. */
     MPI_Group even_group; /* An MPI group of 0 and 2. */
     MPI_Group overlap_group; /* An MPI group of 0, 1, and 3. */
+    MPI_Comm even_comm = MPI_COMM_NULL; /* Communicator for tasks 0, 2 */
+    MPI_Comm overlap_comm = MPI_COMM_NULL; /* Communicator for tasks 0, 1, 2. */
     int ret; /* Return code. */
 
     int iotypes[NUM_FLAVORS] = {PIO_IOTYPE_PNETCDF, PIO_IOTYPE_NETCDF,
@@ -135,17 +137,26 @@ main(int argc, char **argv)
     if ((ret = MPI_Comm_group(MPI_COMM_WORLD, &world_group)))
 	ERR(ret);
 
-    /* Create a comm with tasks 0 and 2. */
+    /* Create a group with tasks 0 and 2. */
     int even_ranges[EVEN_NUM_RANGES][3] = {0, 2, 2};
     if ((ret = MPI_Group_range_incl(world_group, EVEN_NUM_RANGES, even_ranges, &even_group)))
 	ERR(ret);
 
-    /* Create a comm with tasks 0, 1, and 3. */
+    /* Create a communicator from the even_group. */
+    if ((ret = MPI_Comm_create(MPI_COMM_WORLD, even_group, &even_comm)))
+	ERR(ret);
+
+    /* Create a group with tasks 0, 1, and 3. */
     int overlap_ranges[OVERLAP_NUM_RANGES][3] = {{1, 3, 2}, {0, 0, 1}};
     if ((ret = MPI_Group_range_incl(world_group, OVERLAP_NUM_RANGES,
 				    overlap_ranges, &overlap_group)))
 	ERR(ret);
     
+    /* Create a communicator from the overlap_group. */
+    if ((ret = MPI_Comm_create(MPI_COMM_WORLD, overlap_group, &overlap_comm)))
+	ERR(ret);
+    printf("%d overlap_comm = %d\n", my_rank, overlap_comm);
+
     /* Split world into odd and even. */
     MPI_Comm newcomm;
     int even = my_rank % 2 ? 0 : 1;
@@ -225,6 +236,12 @@ main(int argc, char **argv)
 	ERR(ret);
     if ((ret = MPI_Group_free(&world_group)))
 	ERR(ret);
+    if (overlap_comm != MPI_COMM_NULL)
+	if ((ret = MPI_Comm_free(&overlap_comm)))
+	    ERR(ret);
+    if (even_comm != MPI_COMM_NULL)
+    	if ((ret = MPI_Comm_free(&even_comm)))
+    	    ERR(ret);
 
     /* Finalize test. */
     printf("%d %s finalizing...\n", my_rank, TEST_NAME);
