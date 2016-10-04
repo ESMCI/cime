@@ -2,7 +2,8 @@
  * @file Tests the PIO library with multiple iosysids in use at the
  * same time.
  *
- * This is a simplified, C version of the fortran pio_iosystem_tests2.F90.
+ * This is a simplified, C version of the fortran
+ * pio_iosystem_tests3.F90.
  *
  * @author Ed Hartnett
  */
@@ -13,12 +14,16 @@
 #define TARGET_NTASKS 4
 
 /* The name of this test. */
-#define TEST_NAME "test_iosystem2"
+#define TEST_NAME "test_iosystem3"
 
 /* Used to define netcdf test file. */
 #define PIO_TF_MAX_STR_LEN 100
 #define ATTNAME "filename"
 #define DIMNAME "filename_dim"
+
+/* Used to devide up the tasks into MPI groups. */
+#define OVERLAP_NUM_RANGES 2
+#define EVEN_NUM_RANGES 1
 
 /** This creates a netCDF file in the specified format, with some
  * sample values. */
@@ -110,6 +115,9 @@ main(int argc, char **argv)
     int ntasks; /* Number of processors involved in current execution. */
     int iosysid; /* The ID for the parallel I/O system. */
     int iosysid_world; /* The ID for the parallel I/O system. */
+    MPI_Group world_group; /* An MPI group of world. */
+    MPI_Group even_group; /* An MPI group of 0 and 2. */
+    MPI_Group overlap_group; /* An MPI group of 0, 1, and 3. */
     int ret; /* Return code. */
 
     int iotypes[NUM_FLAVORS] = {PIO_IOTYPE_PNETCDF, PIO_IOTYPE_NETCDF,
@@ -119,6 +127,25 @@ main(int argc, char **argv)
     if ((ret = pio_test_init(argc, argv, &my_rank, &ntasks, TARGET_NTASKS)))
 	ERR(ERR_INIT);
 
+    /* Initialize PIO system on world. */
+    if ((ret = PIOc_Init_Intracomm(MPI_COMM_WORLD, 4, 1, 0, 1, &iosysid_world)))
+	ERR(ret);
+
+    /* Get MPI_Group of world comm. */
+    if ((ret = MPI_Comm_group(MPI_COMM_WORLD, &world_group)))
+	ERR(ret);
+
+    /* Create a comm with tasks 0 and 2. */
+    int even_ranges[EVEN_NUM_RANGES][3] = {0, 2, 2};
+    if ((ret = MPI_Group_range_incl(world_group, EVEN_NUM_RANGES, even_ranges, &even_group)))
+	ERR(ret);
+
+    /* Create a comm with tasks 0, 1, and 3. */
+    int overlap_ranges[OVERLAP_NUM_RANGES][3] = {{1, 3, 2}, {0, 0, 1}};
+    if ((ret = MPI_Group_range_incl(world_group, OVERLAP_NUM_RANGES,
+				    overlap_ranges, &overlap_group)))
+	ERR(ret);
+    
     /* Split world into odd and even. */
     MPI_Comm newcomm;
     int even = my_rank % 2 ? 0 : 1;
@@ -139,10 +166,6 @@ main(int argc, char **argv)
     if ((ret = PIOc_Init_Intracomm(newcomm, 2, 1, 0, 1, &iosysid)))
 	ERR(ret);
 
-    /* Initialize another PIO system. */
-    if ((ret = PIOc_Init_Intracomm(MPI_COMM_WORLD, 4, 1, 0, 1, &iosysid_world)))
-	ERR(ret);
-    
     for (int i = 0; i < NUM_FLAVORS; i++)
     {
 	char fname0[] = "pio_iosys_test_file0.nc"; 
@@ -193,6 +216,14 @@ main(int argc, char **argv)
 
     /* Finalize PIO system. */
     if ((ret = PIOc_finalize(iosysid_world)))
+	ERR(ret);
+
+    /* Free MPI resources used by test. */
+    if ((ret = MPI_Group_free(&overlap_group)))
+	ERR(ret);
+    if ((ret = MPI_Group_free(&even_group)))
+	ERR(ret);
+    if ((ret = MPI_Group_free(&world_group)))
 	ERR(ret);
 
     /* Finalize test. */

@@ -409,6 +409,7 @@ int PIOc_Init_Intracomm(const MPI_Comm comp_comm, const int num_iotasks,
       CheckMPIReturn(MPI_Comm_size(iosys->comp_comm, &(iosys->num_comptasks)),__FILE__,__LINE__);
       if(iosys->comp_rank==0)
 	  iosys->compmaster = MPI_ROOT;
+      LOG((2, "comp_rank = %d num_comptasks = %d", iosys->comp_rank, iosys->num_comptasks));
 
       /* Ensure that settings for number of computation tasks, number
        * of IO tasks, and the stride are reasonable. */
