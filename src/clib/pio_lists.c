@@ -209,6 +209,23 @@ iosystem_desc_t *pio_get_iosystem_from_id(int iosysid)
 
 }
 
+/** Count the number of open iosystems. */
+int
+pio_num_iosystem(int *niosysid)
+{
+    int count = 0;
+
+    /* Count the elements in the list. */
+    for (iosystem_desc_t *c = pio_iosystem_list; c; c = c->next)
+	count++;
+
+    /* Return count to caller via pointer. */
+    if (niosysid)
+	*niosysid = count;
+
+    return PIO_NOERR;
+}
+
 int pio_add_to_iodesc_list(io_desc_t *iodesc)
 {
   io_desc_t *ciodesc;

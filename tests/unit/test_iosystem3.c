@@ -162,7 +162,7 @@ main(int argc, char **argv)
 	   even_comm, even_rank, even_size);
 
     /* Create a group with tasks 0, 1, and 3. */
-    int overlap_ranges[OVERLAP_NUM_RANGES][3] = {{1, 3, 2}, {0, 0, 1}};
+    int overlap_ranges[OVERLAP_NUM_RANGES][3] = {{0, 0, 1}, {1, 3, 2}};
     if ((ret = MPI_Group_range_incl(world_group, OVERLAP_NUM_RANGES,
 				    overlap_ranges, &overlap_group)))
 	ERR(ret);

@@ -79,6 +79,7 @@ void compute_buffer_init(iosystem_desc_t ios)
 	bectl(NULL, malloc, free, PIO_CNBUFFER_LIMIT);
     }
 #endif
+    LOG((2, "compute_buffer_init CN_bpool = %d", CN_bpool));
 }
 
 /** Write a single distributed field to output. This routine is only
@@ -2044,7 +2045,8 @@ int flush_output_buffer(file_desc_t *file, bool force, PIO_Offset addsize)
 void cn_buffer_report(iosystem_desc_t ios, bool collective)
 {
 
-    LOG((2, "cn_buffer_report ios.iossysid = %d collective = %d", ios.iosysid, collective));
+    LOG((2, "cn_buffer_report ios.iossysid = %d collective = %d CN_bpool = %d",
+	 ios.iosysid, collective, CN_bpool));
     if (CN_bpool)
     {
 	long bget_stats[5];
@@ -2100,14 +2102,14 @@ void cn_buffer_report(iosystem_desc_t ios, bool collective)
 void free_cn_buffer_pool(iosystem_desc_t ios)
 {
 #if !PIO_USE_MALLOC
-    LOG((2, "free_cn_buffer_pool"));
+    LOG((2, "free_cn_buffer_pool CN_bpool = %d", CN_bpool));
     if (CN_bpool)
     {
-	LOG((2, "free_cn_buffer_pool"));
+	LOG((2, "free_cn_buffer_pool about to call cn_buffer_report"));
 	cn_buffer_report(ios, true);
-	LOG((2, "free_cn_buffer_pool"));
+	LOG((2, "free_cn_buffer_pool about to call bpoolrelease"));
 	bpoolrelease(CN_bpool);
-	LOG((2, "free_cn_buffer_pool"));
+	LOG((2, "free_cn_buffer_pool done!"));
 	//    free(CN_bpool);
 	CN_bpool = NULL;
     }

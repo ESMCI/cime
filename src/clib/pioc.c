@@ -570,9 +570,17 @@ int PIOc_finalize(const int iosysid)
     LOG((3, "Freed ioranks."));
 
     /* Free the buffer pool. */
-    LOG((2, "Freeing buffer pool."));
-    free_cn_buffer_pool(*ios);
-    LOG((2, "Freed buffer pool."));
+    int niosysid;
+    if ((ierr = pio_num_iosystem(&niosysid)))
+	return ierr;
+    LOG((2, "%d iosystems are still open.", niosysid));
+
+    /* Only free the buffer pool if this is the last open iosysid. */
+    if (niosysid == 1)
+    {
+	free_cn_buffer_pool(*ios);
+	LOG((2, "Freed buffer pool."));
+    }
 
     /* Free the MPI groups. */
     if (ios->compgroup != MPI_GROUP_NULL)

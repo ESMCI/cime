@@ -156,7 +156,7 @@ else ()
         TIMEOUT ${DEFAULT_TEST_TIMEOUT})
     add_mpi_test(test_iosystem3_simple
         EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_iosystem3_simple
-        NUMPROCS 2
+        NUMPROCS 4
         TIMEOUT ${DEFAULT_TEST_TIMEOUT})
     add_mpi_test(test_iosystem3
         EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_iosystem3
