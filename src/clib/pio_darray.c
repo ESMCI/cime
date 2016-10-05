@@ -2044,6 +2044,7 @@ int flush_output_buffer(file_desc_t *file, bool force, PIO_Offset addsize)
 void cn_buffer_report(iosystem_desc_t ios, bool collective)
 {
 
+    LOG((2, "cn_buffer_report ios.iossysid = %d collective = %d", ios.iosysid, collective));
     if (CN_bpool)
     {
 	long bget_stats[5];
@@ -2053,7 +2054,9 @@ void cn_buffer_report(iosystem_desc_t ios, bool collective)
 	bstats(bget_stats, bget_stats+1,bget_stats+2,bget_stats+3,bget_stats+4);
 	if (collective)
 	{
+	    LOG((3, "cn_buffer_report calling MPI_Reduce ios.comp_comm = %d", ios.comp_comm));
 	    MPI_Reduce(bget_stats, bget_maxs, 5, MPI_LONG, MPI_MAX, 0, ios.comp_comm);
+	    LOG((3, "cn_buffer_report calling MPI_Reduce"));
 	    MPI_Reduce(bget_stats, bget_mins, 5, MPI_LONG, MPI_MIN, 0, ios.comp_comm);
 	    if (ios.compmaster)
 	    {
@@ -2097,10 +2100,14 @@ void cn_buffer_report(iosystem_desc_t ios, bool collective)
 void free_cn_buffer_pool(iosystem_desc_t ios)
 {
 #if !PIO_USE_MALLOC
+    LOG((2, "free_cn_buffer_pool"));
     if (CN_bpool)
     {
+	LOG((2, "free_cn_buffer_pool"));
 	cn_buffer_report(ios, true);
+	LOG((2, "free_cn_buffer_pool"));
 	bpoolrelease(CN_bpool);
+	LOG((2, "free_cn_buffer_pool"));
 	//    free(CN_bpool);
 	CN_bpool = NULL;
     }

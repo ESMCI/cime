@@ -116,6 +116,7 @@ main(int argc, char **argv)
     int iosysid; /* The ID for the parallel I/O system. */
     int iosysid_world; /* The ID for the parallel I/O system. */
     int even_iosysid; /* The ID for iosystem of even_comm. */
+    int overlap_iosysid; /* The ID for iosystem of even_comm. */
     MPI_Group world_group; /* An MPI group of world. */
     MPI_Group even_group; /* An MPI group of 0 and 2. */
     MPI_Group overlap_group; /* An MPI group of 0, 1, and 3. */
@@ -134,7 +135,7 @@ main(int argc, char **argv)
 
     /* Initialize PIO system on world. */
     if ((ret = PIOc_Init_Intracomm(MPI_COMM_WORLD, 4, 1, 0, 1, &iosysid_world)))
-	ERR(ret);
+    	ERR(ret);
 
     /* Get MPI_Group of world comm. */
     if ((ret = MPI_Comm_group(MPI_COMM_WORLD, &world_group)))
@@ -182,10 +183,17 @@ main(int argc, char **argv)
     printf("%d overlap_comm = %d overlap_rank = %d overlap_size = %d\n", my_rank,
 	   overlap_comm, overlap_rank, overlap_size);
 
-    /* Initialize PIO system for even. */
-    if (even_comm != MPI_COMM_NULL)
+    /* /\* Initialize PIO system for even. *\/ */
+    /* if (even_comm != MPI_COMM_NULL) */
+    /* { */
+    /* 	if ((ret = PIOc_Init_Intracomm(even_comm, 1, 1, 0, 1, &even_iosysid))) */
+    /* 	    ERR(ret); */
+    /* } */
+
+    /* Initialize PIO system for overlap comm. */
+    if (overlap_comm != MPI_COMM_NULL)
     {
-	if ((ret = PIOc_Init_Intracomm(even_comm, 1, 1, 0, 1, &even_iosysid)))
+	if ((ret = PIOc_Init_Intracomm(overlap_comm, 1, 1, 0, 1, &overlap_iosysid)))
 	    ERR(ret);
     }
 
@@ -238,9 +246,20 @@ main(int argc, char **argv)
     /* 	ERR(ret); */
 
     /* /\* Finalize PIO system. *\/ */
-    if (even_comm != MPI_COMM_NULL)
-	if ((ret = PIOc_finalize(even_iosysid)))
+    /* printf("%d pio finalizing %d\n", my_rank, even_iosysid); */
+    /* if (even_comm != MPI_COMM_NULL) */
+    /* 	if ((ret = PIOc_finalize(even_iosysid))) */
+    /* 	    ERR(ret); */
+    printf("%d pio finalizing %d\n", my_rank, overlap_iosysid);
+    if (overlap_comm != MPI_COMM_NULL)
+    {
+	printf("%d calling PIOc_finalize with iosysid = %d\n", my_rank, overlap_iosysid);
+	if ((ret = PIOc_finalize(overlap_iosysid)))
 	    ERR(ret);
+    }
+    printf("%d pio finalized\n", my_rank);
+    if ((ret = PIOc_finalize(iosysid_world)))
+    	ERR(ret);
 
     /* Free MPI resources used by test. */
     if ((ret = MPI_Group_free(&overlap_group)))

@@ -388,6 +388,7 @@ int PIOc_Init_Intracomm(const MPI_Comm comp_comm, const int num_iotasks,
       if (mpierr)
 	  ierr = PIO_EIO;
   }
+  LOG((2, "union_comm = %d comp_comm = %d", iosys->union_comm, iosys->comp_comm));
 
   if (!ierr)
   {
@@ -520,7 +521,8 @@ int PIOc_finalize(const int iosysid)
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
     int ierr = PIO_NOERR;
 
-    LOG((1, "PIOc_finalize iosysid = %d MPI_COMM_NULL = %d", iosysid, MPI_COMM_NULL));
+    LOG((1, "PIOc_finalize iosysid = %d MPI_COMM_NULL = %d", iosysid,
+	 MPI_COMM_NULL));
 
     /* Find the IO system information. */
     if (!(ios = pio_get_iosystem_from_id(iosysid)))
@@ -568,6 +570,7 @@ int PIOc_finalize(const int iosysid)
     LOG((3, "Freed ioranks."));
 
     /* Free the buffer pool. */
+    LOG((2, "Freeing buffer pool."));
     free_cn_buffer_pool(*ios);
     LOG((2, "Freed buffer pool."));
 
