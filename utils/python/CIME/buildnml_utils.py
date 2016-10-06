@@ -111,8 +111,12 @@ def _build_data_nml(case, caseroot, compclass):
     cimeroot = case.get_value("CIMEROOT")
     rundir   = case.get_value("RUNDIR")
     ninst    = case.get_value("NINST_%s" % compclass.upper())
-
     compname = "d" + compclass
+    din_loc_root = case.get_value("DIN_LOC_ROOT")
+
+    if not os.path.isdir(din_loc_root):
+        os.makedirs(din_loc_root)
+        logger.info("Created input root directory %s" %din_loc_root)
 
     confdir = os.path.join(caseroot,"Buildconf",compname + "conf")
     if not os.path.isdir(confdir):
@@ -135,38 +139,38 @@ def _build_data_nml(case, caseroot, compclass):
                 shutil.copy(os.path.join(rundir, rpointer),
                             os.path.join(rundir, rpointer + inst_string))
 
+        inst_string_label = inst_string
+        if not inst_string_label:
+            inst_string_label = "\"\""
+
         # create namelist output infile using user_nl_file as input
         user_nl_file = os.path.join(caseroot, "user_nl_" + compname + inst_string)
         expect(os.path.isfile(user_nl_file),
                "Missing required user_nl_file %s " %(user_nl_file))
-        namelist_infile = os.path.join(confdir, "cesm_namelist")
-        create_namelist_infile(case, user_nl_file, namelist_infile)
+        infile = os.path.join(confdir, "namelist_infile")
+        create_namelist_infile(case, user_nl_file, infile)
 
-        # call build-namelist
+        # determine directory for user modified namelist_definitions.xml and namelist_defaults.xml
         user_xml_dir = os.path.join(caseroot, "SourceMods", "src." + compname)
-        inst_string_label = inst_string
-        if not inst_string_label:
-            inst_string_label = "\"\""
-        bldnamelist = os.path.join(cimeroot, "components", "data_comps", compname, "bld", "build-namelist")
+        expect (os.path.isdir(user_xml_dir),
+                "user_xml_dir %s does not exist " %user_xml_dir)
 
-        cmd = "%s -caseroot %s -cimeroot %s -inst_string %s -infile %s -user_xml_dir %s" \
-            % (bldnamelist, caseroot, cimeroot, inst_string_label, namelist_infile, user_xml_dir)
-
+        # call build-namelist for data component
+        command = os.path.join(cimeroot, "components", "data_comps", compname, "cime_config", "build-namelist")
+        cmd = "%s --confdir %s --caseroot %s --cimeroot %s  --infile %s --user_xml_dir %s --inst_string %s" \
+              % (command, confdir, caseroot, cimeroot, infile, user_xml_dir, inst_string_label)
+        logger.info( "cmd is: %s " %cmd)
         rc, out, err = run_cmd(cmd, from_dir=confdir)
         expect(rc==0,"Command %s failed rc=%d\nout=%s\nerr=%s"%(cmd,rc,out,err))
         if out is not None and len(out) > 0:
             logger.debug("cmd=%s"%cmd)
             logger.info("out = %s"%out)
+        if err is not None and len(err) > 0:
+            logger.info("err= %s"%err)
+
         # copy namelist files and stream text files, to rundir
         if os.path.isdir(rundir):
             filename = compname + "_in"
-            file_src  = os.path.join(confdir, filename)
-            file_dest = os.path.join(rundir, filename)
-            if inst_string:
-                file_dest += inst_string
-            shutil.copy(file_src,file_dest)
-
-            filename = compname + "_" + compclass + "_in"
             file_src  = os.path.join(confdir, filename)
             file_dest = os.path.join(rundir, filename)
             if inst_string:

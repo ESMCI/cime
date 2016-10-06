@@ -12,6 +12,6 @@ if _CIMEROOT is None:
 sys.path.append(os.path.join(os.environ["CIMEROOT"],"scripts","Tools"))
 
 from standard_script_setup import *
-from CIME.buildnml import build_data_nml
+from CIME.buildnml_utils import build_data_nml
 
 build_data_nml(sys.argv, 'rof')

@@ -681,7 +681,7 @@ sub _get_datatype
     if (      $type_def =~ /^(char|logical|integer|complex|real)/ ) {
       $datatype{'type'} = $1;
     } else {
-	die "ERROR: in $nm (package $pkg): datatype $type_def is NOT valid\n";
+	die "ERROR: in $nm (package $pkg): datatype $type_def is NOT valid for $lc_name\n";
     }
     # Arrays
     if ( $type_def =~ /\(/ ) {

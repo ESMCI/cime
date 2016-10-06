@@ -15,15 +15,18 @@ from CIME.utils import run_cmd, run_cmd_no_fail, get_lids, get_current_commit
 import update_acme_tests
 import CIME.test_scheduler, CIME.wait_for_tests
 from  CIME.test_scheduler import TestScheduler
+import CIME.namelist as nml
 from  CIME.XML.build import Build
 from  CIME.XML.machines import Machines
 from  CIME.XML.files import Files
+from  CIME.XML.namelist_definition import NamelistDefinition
+from  CIME.XML.namelist_defaults import NamelistDefaults
 from  CIME.case import Case
 from CIME.test_status import *
 
 SCRIPT_DIR  = CIME.utils.get_scripts_root()
 TOOLS_DIR   = os.path.join(SCRIPT_DIR,"Tools")
-MACHINE     = Machines()
+MACHINE     = None
 FAST_ONLY   = False
 NO_BATCH    = False
 
@@ -1735,6 +1738,406 @@ class S_TestManageAndQuery(unittest.TestCase):
         self._run_and_assert_query_testlist(extra_args="--list categories")
 
 ###############################################################################
+class TestNamelistDefinition(unittest.TestCase):
+###############################################################################
+
+    # Define some test data for tests.
+    _xml_data = """<?xml version="1.0"?>
+    <namelist_definition>
+
+    <entry id="force_prognostic_true"
+    type="logical"
+    category="datm"
+    group="datm_nml">
+    If TRUE, prognostic is forced to true.
+    default=false
+    </entry>
+
+    <entry id="factorfn"
+    type="char*256"
+    category="datm"
+    group="datm_nml"
+    valid_values=""
+    input_pathname="abs" >
+    filename containing correction factors for use only with CORE2 modes (CORE2_IAF and CORE2_NYF).
+    default='null'.
+    </entry>
+
+    <entry id="decomp"
+    type="char*4"
+    category="datm"
+    group="datm_nml"
+    valid_values="1d,root" >
+    Set the decomposition option for the data model.
+    </entry>
+
+    <entry id="phys_alltoall"
+    type="integer"
+    category="perf_dp_coup"
+    group="phys_grid_nl"
+    valid_values="0,1,2,11,12,13">
+    </entry>
+
+    <entry id="fillalgo"
+    type="char*256(30)"
+    category="streams"
+    group="shr_strdata_nml"
+    valid_values="copy,bilinear,nn,nnoni,nnonj,spval">
+    </entry>
+    </namelist_definition>
+    """
+
+    ###########################################################################
+    def namelist_definition_from_text(self, text):
+    ###########################################################################
+        directory = tempfile.mkdtemp()
+        xml_path = os.path.join(directory, "namelist_definition.xml")
+        with open(xml_path, 'w') as xml_file:
+            xml_file.write(text)
+        nml_def = NamelistDefinition(xml_path)
+        shutil.rmtree(directory)
+        return nml_def
+
+    ###########################################################################
+    def test_get_value(self):
+    ###########################################################################
+        """Namelist variable definitions can be read from xml."""
+        nml_def = self.namelist_definition_from_text(self._xml_data)
+
+        scalar_info = nml_def.get_value("force_prognostic_true")
+        self.assertEqual(scalar_info['type'], 'logical')
+        self.assertIsNone(scalar_info['length'])
+        self.assertEqual(scalar_info['size'], 1)
+        self.assertEqual(scalar_info['category'], 'datm')
+        self.assertEqual(scalar_info['group'], 'datm_nml')
+        self.assertIsNotNone(scalar_info['description'])
+        self.assertIsNone(scalar_info['valid_values'])
+        self.assertIsNone(scalar_info['input_pathname'])
+
+        pathname_info = nml_def.get_value("factorfn")
+        self.assertEqual(pathname_info['type'], 'character')
+        self.assertEqual(pathname_info['length'], 256)
+        self.assertEqual(pathname_info['size'], 1)
+        self.assertEqual(pathname_info['category'], 'datm')
+        self.assertEqual(pathname_info['group'], 'datm_nml')
+        self.assertIsNotNone(pathname_info['description'])
+        self.assertIsNone(pathname_info['valid_values'])
+        self.assertEqual(pathname_info['input_pathname'], "abs")
+
+        values_info = nml_def.get_value("fillalgo")
+        self.assertEqual(values_info['type'], 'character')
+        self.assertEqual(values_info['length'], 256)
+        self.assertEqual(values_info['size'], 30)
+        self.assertEqual(values_info['category'], 'streams')
+        self.assertEqual(values_info['group'], 'shr_strdata_nml')
+        self.assertIsNotNone(values_info['description'])
+        self.assertListEqual(values_info['valid_values'],
+                             ["copy", "bilinear", "nn", "nnoni", "nnonj",
+                              "spval"])
+        self.assertIsNone(values_info['input_pathname'])
+
+        # Nice error message for invalid variables.
+        with self.assertRaisesRegexp(SystemExit,
+                                     r"Variable 'bad' is not in the namelist "
+                                     r"definition\.$"):
+            nml_def.get_value("bad")
+
+    ###########################################################################
+    def test_is_valid_value_scalar(self):
+    ###########################################################################
+        """Simple scalar values validate against a namelist definition."""
+        nml_def = self.namelist_definition_from_text(self._xml_data)
+        self.assertTrue(nml_def.is_valid_value("force_prognostic_true",
+                                               ['']))
+        self.assertTrue(nml_def.is_valid_value("force_prognostic_true",
+                                               ['true']))
+        self.assertTrue(nml_def.is_valid_value("force_prognostic_true",
+                                               ['.false.']))
+        self.assertFalse(nml_def.is_valid_value("force_prognostic_true",
+                                                ['bacon']))
+
+    ###########################################################################
+    def test_is_valid_value_character_len(self):
+    ###########################################################################
+        """The length of a character variable is used to validate it."""
+        nml_def = self.namelist_definition_from_text(self._xml_data)
+        self.assertTrue(nml_def.is_valid_value("factorfn",
+                                               ['']))
+        self.assertTrue(nml_def.is_valid_value("factorfn",
+                                               ["'a'"]))
+        self.assertTrue(nml_def.is_valid_value("factorfn",
+                                               ["'" + "a" * 256 + "'"]))
+        self.assertFalse(nml_def.is_valid_value("factorfn",
+                                                ["'" + "a" * 257 + "'"]))
+
+    ###########################################################################
+    def test_is_valid_value_valid_values(self):
+    ###########################################################################
+        """The "valid_values" attribute is used during validation."""
+        nml_def = self.namelist_definition_from_text(self._xml_data)
+        # Test a character variable.
+        self.assertTrue(nml_def.is_valid_value("decomp",
+                                               ['']))
+        self.assertTrue(nml_def.is_valid_value("decomp",
+                                               ["'1d'"]))
+        self.assertTrue(nml_def.is_valid_value("decomp",
+                                               ['1*"root"']))
+        self.assertFalse(nml_def.is_valid_value("decomp",
+                                                ["'bad'"]))
+        # An integer now.
+        self.assertTrue(nml_def.is_valid_value("phys_alltoall",
+                                               ['']))
+        self.assertTrue(nml_def.is_valid_value("phys_alltoall",
+                                               ['1']))
+        self.assertTrue(nml_def.is_valid_value("phys_alltoall",
+                                               ['1*1']))
+        self.assertTrue(nml_def.is_valid_value("phys_alltoall",
+                                               ['+1']))
+        self.assertFalse(nml_def.is_valid_value("phys_alltoall",
+                                                ['-1']))
+
+    ###########################################################################
+    def test_is_valid_value_array(self):
+    ###########################################################################
+        """The array size is checked during validation."""
+        nml_def = self.namelist_definition_from_text(self._xml_data)
+        # Can't specify multiple values for scalars.
+        self.assertFalse(nml_def.is_valid_value("phys_alltoall",
+                                                ['1', '1']))
+        self.assertFalse(nml_def.is_valid_value("phys_alltoall",
+                                                ['2*1']))
+        # Check proper operation for an array variable.
+        self.assertTrue(nml_def.is_valid_value("fillalgo",
+                                               ['']))
+        self.assertTrue(nml_def.is_valid_value("fillalgo",
+                                               ["'copy'"]))
+        self.assertTrue(nml_def.is_valid_value("fillalgo",
+                                               ["30*'copy'"]))
+        self.assertFalse(nml_def.is_valid_value("fillalgo",
+                                                ["31*'copy'"]))
+        self.assertTrue(nml_def.is_valid_value("fillalgo",
+                                               30 * ["'copy'"]))
+        self.assertFalse(nml_def.is_valid_value("fillalgo",
+                                                31 * ["'copy'"]))
+
+    ###########################################################################
+    def test_validate(self):
+    ###########################################################################
+        """A complete namelist can be validated against a definition."""
+        nml_def = self.namelist_definition_from_text(self._xml_data)
+        # Valid namelist should raise no errors.
+        namelist = nml.parse(text='&datm_nml force_prognostic_true = .false. /')
+        nml_def.validate(namelist)
+        # A variable not in the definition should raise an error.
+        namelist = nml.parse(text='&datm_nml not_a_variable = .false. /')
+        with self.assertRaisesRegexp(SystemExit,
+                                     r"Variable 'not_a_variable' is not in the "
+                                     r"namelist definition\.$"):
+            nml_def.validate(namelist)
+        # Check file-specific error message.
+        with self.assertRaisesRegexp(SystemExit,
+                                     r"Variable 'not_a_variable' from file "
+                                     r"'foo_nl' is not in the namelist "
+                                     r"definition\.$"):
+            nml_def.validate(namelist, 'foo_nl')
+        # A wrong group name should raise errors.
+        namelist = nml.parse(text='&bad force_prognostic_true = .false. /')
+        with self.assertRaisesRegexp(SystemExit,
+                                     r"Variable 'force_prognostic_true' is in "
+                                     r"a group named 'bad', but should be in "
+                                     r"'datm_nml'\.$"):
+            nml_def.validate(namelist)
+        # Check file-specific error message.
+        with self.assertRaisesRegexp(SystemExit,
+                                     r"Variable 'force_prognostic_true' from "
+                                     r"file 'foo_nl' is in a group named "
+                                     r"'bad', but should be in 'datm_nml'\.$"):
+            nml_def.validate(namelist, 'foo_nl')
+        # Finally, bad values should cause an error.
+        namelist = nml.parse(text='&datm_nml decomp = "bad" /')
+        with self.assertRaisesRegexp(SystemExit,
+                                     r"Variable 'decomp' has invalid value "
+                                     r"""\['"bad"'\]\.$"""):
+            nml_def.validate(namelist)
+        # Check file-specific error message.
+        with self.assertRaisesRegexp(SystemExit,
+                                     r"Variable 'decomp' from file 'foo_nl' "
+                                     r"""has invalid value \['"bad"'\]\.$"""):
+            nml_def.validate(namelist, 'foo_nl')
+
+    ###########################################################################
+    def test_dict_to_namelist(self):
+    ###########################################################################
+        """A namelist definition can convert a dict into a true namelist."""
+        nml_def = self.namelist_definition_from_text(self._xml_data)
+        nml_dict = nml.parse(text='decomp="1d", phys_alltoall=1',
+                             groupless=True)
+        namelist = nml_def.dict_to_namelist(nml_dict)
+        self.assertItemsEqual(('datm_nml', 'phys_grid_nl'),
+                              namelist.get_group_names())
+        self.assertItemsEqual(('decomp',),
+                              namelist.get_variable_names('datm_nml'))
+        self.assertEqual(['"1d"'], namelist.get_value('decomp'))
+        self.assertItemsEqual(('phys_alltoall',),
+                              namelist.get_variable_names('phys_grid_nl'))
+        self.assertEqual(['1'], namelist.get_value('phys_alltoall'))
+        # Check for pretty error message.
+        nml_dict = nml.parse(text='bad=0', groupless=True)
+        with self.assertRaisesRegexp(SystemExit,
+                                     r"Variable 'bad' is not in the namelist "
+                                     r"definition\.$"):
+            nml_def.dict_to_namelist(nml_dict)
+        with self.assertRaisesRegexp(SystemExit,
+                                     r"Variable 'bad' from file 'foo_nl' is "
+                                     r"not in the namelist definition\.$"):
+            nml_def.dict_to_namelist(nml_dict, 'foo_nl')
+
+    ###########################################################################
+    def test_add(self):
+    ###########################################################################
+        """A new file can be added to a namelist definition."""
+        xml_data1 = """<?xml version="1.0"?>
+        <namelist_definition>
+        <entry id="force_prognostic_true"
+        type="logical"
+        category="datm"
+        group="datm_nml">
+        If TRUE, prognostic is forced to true.
+        default=false
+        </entry>
+        </namelist_definition>
+        """
+        xml_data2 = """<?xml version="1.0"?>
+        <namelist_definition>
+        <entry id="phys_alltoall"
+        type="integer"
+        category="perf_dp_coup"
+        group="phys_grid_nl"
+        valid_values="0,1,2,11,12,13">
+        </entry>
+        </namelist_definition>
+        """
+        nml_def = self.namelist_definition_from_text(xml_data1)
+        # Some gobbledygook to create a new file and add its contents.
+        directory = tempfile.mkdtemp()
+        xml_path = os.path.join(directory, "namelist_definition.xml")
+        with open(xml_path, 'w') as xml_file:
+            xml_file.write(xml_data2)
+        nml_def.add(xml_path)
+        shutil.rmtree(directory)
+        # Now check that both files' data can be viewed.
+        self.assertEqual(nml_def.get_value('force_prognostic_true')['group'],
+                         'datm_nml')
+        self.assertEqual(nml_def.get_value('phys_alltoall')['group'],
+                         'phys_grid_nl')
+
+
+###############################################################################
+class TestNamelistDefaults(unittest.TestCase):
+###############################################################################
+
+    # Define some test data for tests.
+    _xml_data = """<?xml version="1.0"?>
+    <namelist_defaults>
+    <foo></foo>
+    <bar>1</bar>
+    <many_bar>2,3</many_bar>
+    <char>fuzzy</char>
+    <many_char> 'fuzzier', "fuzziest" </many_char>
+    <char_with_comma>'fuzzier, fuzziest'</char_with_comma>
+    <foo opt1="a">1</foo>
+    <foo opt1="blah" opt2="b">unused</foo>
+    <foo opt2="b">2</foo>
+    <foo opt1="a" opt2="b">3</foo>
+    <bagel llama="donut"></bagel>
+    </namelist_defaults>
+    """
+
+    ###########################################################################
+    def namelist_defaults_from_text(self, text, attributes=None):
+    ###########################################################################
+        directory = tempfile.mkdtemp()
+        xml_path = os.path.join(directory, "namelist_defaults.xml")
+        with open(xml_path, 'w') as xml_file:
+            xml_file.write(text)
+        defaults = NamelistDefaults(xml_path, attributes)
+        shutil.rmtree(directory)
+        return defaults
+
+    ###########################################################################
+    def test_get_value(self):
+    ###########################################################################
+        """Values can be looked up in the namelist defaults file."""
+        defaults = self.namelist_defaults_from_text(self._xml_data)
+        self.assertIsNone(defaults.get_value('brains'))
+        self.assertListEqual(defaults.get_value('foo'), [""])
+        self.assertListEqual(defaults.get_value('bar'), ["1"])
+        self.assertListEqual(defaults.get_value('many_bar'), ["2", "3"])
+        self.assertListEqual(defaults.get_value('char'), ['fuzzy'])
+        self.assertListEqual(defaults.get_value('many_char'),
+                             ["'fuzzier'", '"fuzziest"'])
+        self.assertListEqual(defaults.get_value('char_with_comma'),
+                             ["'fuzzier, fuzziest'"])
+
+    ###########################################################################
+    def test_get_value_matches(self):
+    ###########################################################################
+        """Values are selected based on attribute matches."""
+        # Get nothing if no matches.
+        defaults = self.namelist_defaults_from_text(self._xml_data,
+                                                    {'llama': 'muffin'})
+        self.assertIsNone(defaults.get_value('bagel'))
+        # Single match gets first specific result.
+        defaults = self.namelist_defaults_from_text(self._xml_data,
+                                                    {'opt1': 'a'})
+        self.assertListEqual(defaults.get_value('foo'), ["1"])
+        # "Extra" options from input are not used, but "extra" options in file
+        # prevent a match.
+        defaults = self.namelist_defaults_from_text(self._xml_data,
+                                                    {'opt2': 'b', 'opt3': 'c'})
+        self.assertListEqual(defaults.get_value('foo'), ["2"])
+        # Double match beats single match (and skips a non-match).
+        defaults = self.namelist_defaults_from_text(self._xml_data,
+                                                    {'opt1': 'a', 'opt2': 'b'})
+        self.assertListEqual(defaults.get_value('foo'), ["3"])
+
+    ###########################################################################
+    def test_get_value_attribute(self):
+    ###########################################################################
+        """Values are selected based on attributes passed in to `get_value`."""
+        # Single match gets first specific result.
+        defaults = self.namelist_defaults_from_text(self._xml_data,
+                                                    {'opt1': 'a'})
+        self.assertListEqual(defaults.get_value('foo', attribute={'opt2': 'b'}),
+                             ["3"])
+
+    ###########################################################################
+    def test_add(self):
+    ###########################################################################
+        """Multiple files can be added to one object."""
+        xml_data1 = """<?xml version="1.0"?>
+        <namelist_defaults>
+        <foo></foo>
+        </namelist_defaults>
+        """
+        xml_data2 = """<?xml version="1.0"?>
+        <namelist_defaults>
+        <bar>1</bar>
+        </namelist_defaults>
+        """
+        defaults = self.namelist_defaults_from_text(xml_data1)
+        # Some gobbledygook to create a new file and add its contents.
+        directory = tempfile.mkdtemp()
+        xml_path = os.path.join(directory, "namelist_defaults.xml")
+        with open(xml_path, 'w') as xml_file:
+            xml_file.write(xml_data2)
+        defaults.add(xml_path)
+        shutil.rmtree(directory)
+        self.assertListEqual(defaults.get_value('foo'), [""])
+        self.assertListEqual(defaults.get_value('bar'), ["1"])
+
+
+###############################################################################
 
 
 def _main_func():
@@ -1748,6 +2151,29 @@ def _main_func():
         sys.argv.remove("--no-batch")
         global NO_BATCH
         NO_BATCH = True
+
+    # Handle --machine argument.
+    # In the long run it might be better to use argparse, and find a way to
+    # ensure that `unittest` still gets the remaining arguments.
+    global MACHINE
+    for argn in range(1, len(sys.argv)):
+        # Split on an equals sign.
+        arg, equals, value = sys.argv[argn].partition('=')
+        # If we are at the --machine argument...
+        if arg == "--machine":
+            if equals == '=':
+                # If there's an equals sign, the machine name is in `value`.
+                MACHINE = Machines(machine=value)
+            else:
+                # Otherwise it's in the next argument.
+                expect(argn < len(sys.argv) - 1,
+                       "You must provide an argument to --machine.")
+                MACHINE = Machines(machine=sys.argv[argn+1])
+                sys.argv.remove(sys.argv[argn+1])
+            sys.argv.remove(sys.argv[argn])
+            break
+    if MACHINE is None:
+        MACHINE = Machines()
 
     args = lambda: None # just something to set attrs on
     for log_param in ["debug", "silent", "verbose"]:

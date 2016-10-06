@@ -79,8 +79,10 @@ def preview_namelists(case, dryrun=False):
             logger.info("     %s"%out)
         if err is not None:
             logger.info("     %s"%err)
+
     # refresh case xml object from file
     case.read_xml()
+
     # Save namelists to docdir
     if (not os.path.isdir(docdir)):
         os.makedirs(docdir)
