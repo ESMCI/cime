@@ -26,8 +26,13 @@
 #define EVEN_NUM_RANGES 1
 
 /* Used when initializing PIO. */
-#define STRIDE 1
-#define BASE 0
+#define STRIDE1 1
+#define STRIDE2 2
+#define BASE0 0
+#define BASE1 1
+#define NUM_IO1 1
+#define NUM_IO2 2
+#define NUM_IO4 4
 #define REARRANGER 1
 
 /** This creates a netCDF file in the specified format, with some
@@ -139,7 +144,7 @@ main(int argc, char **argv)
 	ERR(ERR_INIT);
 
     /* Initialize PIO system on world. */
-    if ((ret = PIOc_Init_Intracomm(MPI_COMM_WORLD, 4, STRIDE, BASE, REARRANGER, &iosysid_world)))
+    if ((ret = PIOc_Init_Intracomm(MPI_COMM_WORLD, NUM_IO4, STRIDE1, BASE0, REARRANGER, &iosysid_world)))
     	ERR(ret);
 
     /* Get MPI_Group of world comm. */
@@ -191,14 +196,14 @@ main(int argc, char **argv)
     /* Initialize PIO system for even. */
     if (even_comm != MPI_COMM_NULL)
     {
-    	if ((ret = PIOc_Init_Intracomm(even_comm, 1, STRIDE, BASE, REARRANGER, &even_iosysid)))
+    	if ((ret = PIOc_Init_Intracomm(even_comm, NUM_IO1, STRIDE1, BASE1, REARRANGER, &even_iosysid)))
     	    ERR(ret);
     }
 
     /* Initialize PIO system for overlap comm. */
     if (overlap_comm != MPI_COMM_NULL)
     {
-	if ((ret = PIOc_Init_Intracomm(overlap_comm, 1, STRIDE, BASE, REARRANGER, &overlap_iosysid)))
+	if ((ret = PIOc_Init_Intracomm(overlap_comm, NUM_IO2, STRIDE1, BASE1, REARRANGER, &overlap_iosysid)))
 	    ERR(ret);
     }
 
