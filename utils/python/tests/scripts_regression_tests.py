@@ -11,7 +11,7 @@ sys.path.append(LIB_DIR)
 import subprocess
 subprocess.call('/bin/rm $(find . -name "*.pyc")', shell=True, cwd=LIB_DIR)
 
-from CIME.utils import run_cmd, run_cmd_no_fail, get_lids, get_current_commit
+from CIME.utils import run_cmd, run_cmd_no_fail, get_lids, get_current_commit, get_python_libs_location_within_cime
 import update_acme_tests
 import CIME.test_scheduler, CIME.wait_for_tests
 from  CIME.test_scheduler import TestScheduler
@@ -1759,6 +1759,10 @@ def _main_func():
         sys.argv.remove("--no-batch")
         global NO_BATCH
         NO_BATCH = True
+
+    if "CIMEROOT" in os.environ:
+        expect(os.path.join(os.environ["CIMEROOT"], get_python_libs_location_within_cime()) == LIB_DIR,
+               "You cannot set CIMEROOT to a different repo from the one in which you're running the tests")
 
     args = lambda: None # just something to set attrs on
     for log_param in ["debug", "silent", "verbose"]:
