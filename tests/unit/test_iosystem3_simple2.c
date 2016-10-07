@@ -114,13 +114,13 @@ main(int argc, char **argv)
 	    if ((ret = PIOc_def_dim(ncid, DIMNAME, PIO_TF_MAX_STR_LEN, &dimid)))
 		return ret;
 
-	    /* Define a 1-D variable. */
-	    if ((ret = PIOc_def_var(ncid, ATTNAME, NC_CHAR, 1, &dimid, &varid)))
-		return ret;
+	    /* /\* Define a 1-D variable. *\/ */
+	    /* if ((ret = PIOc_def_var(ncid, ATTNAME, NC_CHAR, 1, &dimid, &varid))) */
+	    /* 	return ret; */
 
-	    /* Write an attribute. */
-	    if ((ret = PIOc_put_att_text(ncid, varid, ATTNAME, strlen(fname0), fname0)))
-		return ret;
+	    /* /\* Write an attribute. *\/ */
+	    /* if ((ret = PIOc_put_att_text(ncid, varid, ATTNAME, strlen(fname0), fname0))) */
+	    /* 	return ret; */
 
 	    /* End define mode. */
 	    if ((ret = PIOc_enddef(ncid)))
