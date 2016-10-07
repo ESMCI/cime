@@ -21,9 +21,6 @@
 #define ATTNAME "filename"
 #define DIMNAME "filename_dim"
 
-/* Used to devide up the tasks into MPI groups. */
-#define EVEN_NUM_RANGES 1
-
 /* Used when initializing PIO. */
 #define STRIDE1 1
 #define STRIDE2 2
@@ -124,12 +121,7 @@ main(int argc, char **argv)
     int ntasks; /* Number of processors involved in current execution. */
     int iosysid; /* The ID for the parallel I/O system. */
     int iosysid_world; /* The ID for the parallel I/O system. */
-    int even_iosysid; /* The ID for iosystem of even_comm. */
     MPI_Group world_group; /* An MPI group of world. */
-    MPI_Group even_group; /* An MPI group of 0 and 2. */
-    MPI_Comm even_comm = MPI_COMM_NULL; /* Communicator for tasks 0, 2 */
-    int even_rank = -1; /* Tasks rank in communicator. */
-    int even_size = 0; /* Size of communicator. */
     int ret; /* Return code. */
 
     int iotypes[NUM_FLAVORS] = {PIO_IOTYPE_PNETCDF, PIO_IOTYPE_NETCDF,
@@ -168,22 +160,12 @@ main(int argc, char **argv)
     } /* next iotype */
 
     /* Finalize PIO systems. */
-    printf("%d pio finalizing %d\n", my_rank, even_iosysid);
-    if (even_comm != MPI_COMM_NULL)
-    	if ((ret = PIOc_finalize(even_iosysid)))
-    	    ERR(ret);
-    printf("%d pio finalized\n", my_rank);
+    printf("%d pio finalizing\n", my_rank);
     if ((ret = PIOc_finalize(iosysid_world)))
     	ERR(ret);
 
-    /* Free MPI resources used by test. */
-    if ((ret = MPI_Group_free(&even_group)))
-	ERR(ret);
     if ((ret = MPI_Group_free(&world_group)))
 	ERR(ret);
-    if (even_comm != MPI_COMM_NULL)
-    	if ((ret = MPI_Comm_free(&even_comm)))
-    	    ERR(ret);
 
     /* Finalize test. */
     printf("%d %s finalizing...\n", my_rank, TEST_NAME);
