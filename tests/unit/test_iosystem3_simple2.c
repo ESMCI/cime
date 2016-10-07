@@ -31,49 +31,6 @@
 #define NUM_IO4 4
 #define REARRANGER 1
 
-/** This creates a netCDF file in the specified format, with some
- * sample values. */
-int
-create_file(MPI_Comm comm, int iosysid, int format, char *filename,
-	    char *attname, char *dimname, int my_rank)
-{
-    int ncid, varid, dimid;
-    int ret;
-
-    /* Create the file. */
-    if ((ret = PIOc_createfile(iosysid, &ncid, &format, filename, NC_CLOBBER)))
-	return ret;
-    printf("%d file created ncid = %d\n", my_rank, ncid);
-
-    /* Define a dimension. */
-    printf("%d defining dimension %s\n", my_rank, dimname);
-    if ((ret = PIOc_def_dim(ncid, dimname, PIO_TF_MAX_STR_LEN, &dimid)))
-	return ret;
-
-    /* Define a 1-D variable. */
-    printf("%d defining variable %s\n", my_rank, attname);
-    if ((ret = PIOc_def_var(ncid, attname, NC_CHAR, 1, &dimid, &varid)))
-    	return ret;
-
-    /* Write an attribute. */
-    if ((ret = PIOc_put_att_text(ncid, varid, attname, strlen(filename), filename)))
-    	return ret;
-
-    /* End define mode. */
-    printf("%d ending define mode ncid = %d\n", my_rank, ncid);
-    if ((ret = PIOc_enddef(ncid)))
-	return ret;
-    printf("%d define mode ended ncid = %d\n", my_rank, ncid);
-
-    /* Close the file. */
-    printf("%d closing file ncid = %d\n", my_rank, ncid);
-    if ((ret = PIOc_closefile(ncid)))
-	return ret;
-    printf("%d closed file ncid = %d\n", my_rank, ncid);
-    
-    return PIO_NOERR;
-}
-
 /** This checks an already-open netCDF file. */
 int
 check_file(MPI_Comm comm, int iosysid, int format, int ncid, char *filename,
@@ -121,7 +78,6 @@ main(int argc, char **argv)
     int ntasks; /* Number of processors involved in current execution. */
     int iosysid; /* The ID for the parallel I/O system. */
     int iosysid_world; /* The ID for the parallel I/O system. */
-    MPI_Group world_group; /* An MPI group of world. */
     int ret; /* Return code. */
 
     int iotypes[NUM_FLAVORS] = {PIO_IOTYPE_PNETCDF, PIO_IOTYPE_NETCDF,
@@ -135,22 +91,47 @@ main(int argc, char **argv)
     if ((ret = PIOc_Init_Intracomm(MPI_COMM_WORLD, NUM_IO4, STRIDE1, BASE0, REARRANGER, &iosysid_world)))
     	ERR(ret);
 
-    /* Get MPI_Group of world comm. */
-    if ((ret = MPI_Comm_group(MPI_COMM_WORLD, &world_group)))
-	ERR(ret);
-
 /*    for (int i = 0; i < NUM_FLAVORS; i++)*/
     for (int i = 2; i < 4; i++)
     {
     	char fname0[] = "pio_iosys_test_file0.nc";
     	printf("\n\n%d i = %d\n", my_rank, i);
 
-    	if ((ret = create_file(MPI_COMM_WORLD, iosysid_world, iotypes[i], fname0, ATTNAME,
-    			       DIMNAME, my_rank)))
-    	    ERR(ret);
+    	/* if ((ret = create_file(MPI_COMM_WORLD, iosysid_world, iotypes[i], fname0, ATTNAME, */
+    	/* 		       DIMNAME, my_rank))) */
+    	/*     ERR(ret); */
 
-    	MPI_Barrier(MPI_COMM_WORLD);
+	{
+	    int ncid, varid, dimid;
+	    int ret;
 
+	    /* Create the file. */
+	    if ((ret = PIOc_createfile(iosysid_world, &ncid, &iotypes[i], fname0, NC_CLOBBER)))
+		return ret;
+	    printf("%d file created ncid = %d\n", my_rank, ncid);
+
+	    /* Define a dimension. */
+	    if ((ret = PIOc_def_dim(ncid, DIMNAME, PIO_TF_MAX_STR_LEN, &dimid)))
+		return ret;
+
+	    /* Define a 1-D variable. */
+	    if ((ret = PIOc_def_var(ncid, ATTNAME, NC_CHAR, 1, &dimid, &varid)))
+		return ret;
+
+	    /* Write an attribute. */
+	    if ((ret = PIOc_put_att_text(ncid, varid, ATTNAME, strlen(fname0), fname0)))
+		return ret;
+
+	    /* End define mode. */
+	    if ((ret = PIOc_enddef(ncid)))
+		return ret;
+	    printf("%d define mode ended ncid = %d\n", my_rank, ncid);
+
+	    /* Close the file. */
+	    if ((ret = PIOc_closefile(ncid)))
+		return ret;
+    
+	}
     	/* Now check the first file from WORLD communicator. */
     	int ncid;
     	if ((ret = open_and_check_file(MPI_COMM_WORLD, iosysid_world, iotypes[i], &ncid, fname0,
@@ -163,9 +144,6 @@ main(int argc, char **argv)
     printf("%d pio finalizing\n", my_rank);
     if ((ret = PIOc_finalize(iosysid_world)))
     	ERR(ret);
-
-    if ((ret = MPI_Group_free(&world_group)))
-	ERR(ret);
 
     /* Finalize test. */
     printf("%d %s finalizing...\n", my_rank, TEST_NAME);
