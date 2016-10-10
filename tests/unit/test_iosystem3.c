@@ -85,21 +85,29 @@ check_file(MPI_Comm comm, int iosysid, int format, int ncid, char *filename,
 {
     int dimid;
     int varid;
+    char *att_data;
     int ret;
 
     /* Check the dimid. */
     if ((ret = PIOc_inq_dimid(ncid, dimname, &dimid)))
 	return ret;
-    printf("%d dimid = %d\n", my_rank, dimid);
     if (dimid)
 	return ERR_WRONG;
 
     /* Check the varid (it's got the same name as the att). */
     if ((ret = PIOc_inq_varid(ncid, attname, &varid)))
 	return ret;
-    printf("%d varid = %d\n", my_rank, varid);
     if (varid)
 	return ERR_WRONG;
+
+    /* Check the attribute. */
+    if (!(att_data = malloc(strlen(filename) * sizeof(char))))
+	return PIO_ENOMEM;
+    if ((ret = PIOc_get_att(ncid, varid, attname, &att_data)))
+	return ret;
+    if (varid)
+	return ERR_WRONG;
+    free(att_data);
     
     return PIO_NOERR;
 }
