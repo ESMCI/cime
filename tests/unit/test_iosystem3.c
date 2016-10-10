@@ -84,13 +84,23 @@ check_file(MPI_Comm comm, int iosysid, int format, int ncid, char *filename,
 	   char *attname, char *dimname, int my_rank)
 {
     int dimid;
+    int varid;
     int ret;
 
-    /* Check the file. */
+    /* Check the dimid. */
     if ((ret = PIOc_inq_dimid(ncid, dimname, &dimid)))
 	return ret;
     printf("%d dimid = %d\n", my_rank, dimid);
+    if (dimid)
+	return ERR_WRONG;
 
+    /* Check the varid (it's got the same name as the att). */
+    if ((ret = PIOc_inq_varid(ncid, attname, &varid)))
+	return ret;
+    printf("%d varid = %d\n", my_rank, varid);
+    if (varid)
+	return ERR_WRONG;
+    
     return PIO_NOERR;
 }
 
@@ -226,8 +236,6 @@ main(int argc, char **argv)
     			       DIMNAME, my_rank)))
     	    ERR(ret);
 
-    	MPI_Barrier(MPI_COMM_WORLD);
-
     	/* Now check the first file from WORLD communicator. */
     	int ncid;
     	if ((ret = open_and_check_file(MPI_COMM_WORLD, iosysid_world, iotypes[i], &ncid, fname0,
@@ -242,6 +250,9 @@ main(int argc, char **argv)
 	    if ((ret = open_and_check_file(even_comm, even_iosysid, iotypes[i], &ncid2, fname1,
 					   ATTNAME, DIMNAME, 1, my_rank)))
 		ERR(ret);
+	    if ((ret = check_file(even_comm, even_iosysid, iotypes[i], ncid2, fname1,
+				  ATTNAME, DIMNAME, my_rank)))
+		ERR(ret);
 	}
 
     	/* Now have the overlap communicators check the files. */
@@ -251,6 +262,9 @@ main(int argc, char **argv)
 	    printf("\n***\n");
 	    if ((ret = open_and_check_file(overlap_comm, overlap_iosysid, iotypes[i], &ncid3, fname2,
 					   ATTNAME, DIMNAME, 1, my_rank)))
+		ERR(ret);
+	    if ((ret = check_file(overlap_comm, overlap_iosysid, iotypes[i], ncid3, fname2,
+				  ATTNAME, DIMNAME, my_rank)))
 		ERR(ret);
 	}
 
