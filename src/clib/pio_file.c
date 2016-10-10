@@ -196,29 +196,31 @@ int PIOc_openfile_retry(const int iosysid, int *ncidp, int *iotype,
     }
 
     /* Broadcast and check the return code. */
+    LOG((2, "Bcasting error code ierr = %d ios->ioroot = %d ios->my_comm = %d", ierr, ios->ioroot,
+	 ios->my_comm));
     if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
         return check_mpi(file, mpierr, __FILE__, __LINE__);
     if (ierr)
 	return check_netcdf(file, ierr, __FILE__, __LINE__);
+    LOG((2, "error code Bcast complete ierr = %d ios->my_comm = %d", ierr, ios->my_comm));
 
     /* Broadcast results to all tasks. Ignore NULL parameters. */
     if (!ierr)
     {
-	if ((mpierr = MPI_Bcast(&file->mode, 1, MPI_INT, ios->ioroot, ios->union_comm)))
+	if ((mpierr = MPI_Bcast(&file->mode, 1, MPI_INT, ios->ioroot, ios->my_comm)))
 	    return check_mpi(file, mpierr, __FILE__, __LINE__);
 
-	tmp_fh = file->fh;
-	if ((mpierr = MPI_Bcast(&tmp_fh, 1, MPI_INT, ios->ioroot, ios->union_comm)))
-	    return check_mpi(file, mpierr, __FILE__, __LINE__);
+	/* tmp_fh = file->fh; */
+	/* if ((mpierr = MPI_Bcast(&tmp_fh, 1, MPI_INT, ios->ioroot, ios->union_comm))) */
+	/*     return check_mpi(file, mpierr, __FILE__, __LINE__); */
 
-	/* Not io proc - file handle is not set by pnetcdfc */
-	if (file->fh == -1)
-	    file->fh = tmp_fh;
+	/* /\* Not io proc - file handle is not set by pnetcdfc *\/ */
+	/* if (file->fh == -1) */
+	/*     file->fh = tmp_fh; */
 
 	/* Create the ncid that the user will see. This is necessary
 	 * because otherwise ncids will be reused if files are opened
 	 * on multiple iosystems. */
-	//file->pio_ncid = file->fh;
 	file->pio_ncid = pio_next_ncid++;
 
 	/* Return the PIO ncid to the user. */

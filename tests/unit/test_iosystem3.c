@@ -207,8 +207,7 @@ main(int argc, char **argv)
 	    ERR(ret);
     }
 
-/*    for (int i = 0; i < NUM_FLAVORS; i++)*/
-    for (int i = 2; i < 4; i++)
+    for (int i = 0; i < NUM_FLAVORS; i++)
     {
     	char fname0[] = "pio_iosys_test_file0.nc";
     	char fname1[] = "pio_iosys_test_file1.nc";
@@ -235,21 +234,39 @@ main(int argc, char **argv)
     				       ATTNAME, DIMNAME, 1, my_rank)))
     	    ERR(ret);
 
-    	/* /\* Now have the odd/even communicators each check one of the */
-    	/*  * remaining files. *\/ */
-    	/* int ncid2; */
-    	/* char *fname = even ? fname1 : fname2; */
-    	/* printf("\n***\n"); */
-    	/* if ((ret = open_and_check_file(newcomm, iosysid, iotypes[i], &ncid2, fname, */
-    	/* 			       ATTNAME, DIMNAME, 1, my_rank))) */
-    	/*     ERR(ret); */
-	
+    	/* Now have the even communicators check the files. */
+    	int ncid2;
+    	if (even_comm != MPI_COMM_NULL)
+	{
+	    printf("\n***\n");
+	    if ((ret = open_and_check_file(even_comm, even_iosysid, iotypes[i], &ncid2, fname1,
+					   ATTNAME, DIMNAME, 1, my_rank)))
+		ERR(ret);
+	}
 
-    	/* /\* Close the still-open files. *\/ */
-    	/* if ((ret = PIOc_closefile(ncid))) */
-    	/*     ERR(ret); */
-    	/* if ((ret = PIOc_closefile(ncid2))) */
-    	/*     ERR(ret); */
+    	/* Now have the overlap communicators check the files. */
+    	int ncid3;
+    	if (overlap_comm != MPI_COMM_NULL)
+	{
+	    printf("\n***\n");
+	    if ((ret = open_and_check_file(overlap_comm, overlap_iosysid, iotypes[i], &ncid3, fname2,
+					   ATTNAME, DIMNAME, 1, my_rank)))
+		ERR(ret);
+	}
+
+    	/* Close the still-open files. */
+    	if ((ret = PIOc_closefile(ncid)))
+    	    ERR(ret);
+    	if (even_comm != MPI_COMM_NULL)
+	{
+	    if ((ret = PIOc_closefile(ncid2)))
+		ERR(ret);
+	}
+    	if (overlap_comm != MPI_COMM_NULL)
+	{
+	    if ((ret = PIOc_closefile(ncid3)))
+		ERR(ret);
+	}
     } /* next iotype */
 
     /* Finalize PIO systems. */
