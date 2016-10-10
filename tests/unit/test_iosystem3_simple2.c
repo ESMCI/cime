@@ -29,7 +29,7 @@ main(int argc, char **argv)
     int my_rank; /* Zero-based rank of processor. */
     int ntasks; /* Number of processors involved in current execution. */
     int iosysid_world; /* The ID for the parallel I/O system. */
-    char fname0[] = "pio_iosys_test_file0.nc";
+    char fname0[NC_MAX_NAME + 1];
     int ncid;
     int ret; /* Return code. */
 
@@ -44,10 +44,10 @@ main(int argc, char **argv)
     if ((ret = PIOc_Init_Intracomm(MPI_COMM_WORLD, NUM_IO4, STRIDE1, BASE0, REARRANGER, &iosysid_world)))
     	ERR(ret);
 
-/*    for (int i = 0; i < NUM_FLAVORS; i++)*/
-    for (int i = 2; i < 4; i++)
+    for (int i = 0; i < NUM_FLAVORS; i++)
     {
 	/* Create the file. */
+	sprintf(fname0, "test_iosystem3_simple2_%d.nc", i);
 	if ((ret = PIOc_createfile(iosysid_world, &ncid, &iotypes[i], fname0, NC_CLOBBER)))
 	    return ret;
 
@@ -62,7 +62,8 @@ main(int argc, char **argv)
     	/* Now check the first file from WORLD communicator. */
 	int mode = PIO_WRITE;
 
-	/* Open the file. */
+	/* Open the file. Note that we never close it, which is bad,
+	 * but should not cause a failure. */
 	if ((ret = PIOc_openfile(iosysid_world, &ncid, &iotypes[i], fname0, mode)))
 	    return ret;
 

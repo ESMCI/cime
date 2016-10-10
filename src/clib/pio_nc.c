@@ -1701,7 +1701,8 @@ int pioc_change_def(int ncid, int is_enddef)
     LOG((3, "pioc_change_def ios->ioproc = %d", ios->ioproc));    
     if (ios->ioproc)
     {
-	LOG((3, "pioc_change_def calling netcdf function file->fh = %d", file->fh));
+	LOG((3, "pioc_change_def calling netcdf function file->fh = %d file->do_io = %d",
+	     file->fh, file->do_io));
 #ifdef _PNETCDF
         if (file->iotype == PIO_IOTYPE_PNETCDF)
             if (is_enddef)
@@ -1711,12 +1712,14 @@ int pioc_change_def(int ncid, int is_enddef)
 #endif /* _PNETCDF */
 #ifdef _NETCDF
         if (file->iotype != PIO_IOTYPE_PNETCDF && file->do_io)
-            if (is_enddef)          
-                ierr = nc_enddef(file->fh);
+            if (is_enddef)
+	    {
+		LOG((3, "pioc_change_def calling nc_enddef file->fh = %d", file->fh));
+		ierr = nc_enddef(file->fh);
+	    }
             else
                 ierr = nc_redef(file->fh);
 #endif /* _NETCDF */
-
     }
 
     /* Broadcast and check the return code. */

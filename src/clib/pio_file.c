@@ -413,6 +413,7 @@ int PIOc_createfile(const int iosysid, int *ncidp, int *iotype,
 	    LOG((2, "Calling nc_create_par io_comm = %d mode = %d fh = %d",
 		 ios->io_comm, file->mode, file->fh));
 	    ierr = nc_create_par(filename, file->mode, ios->io_comm, ios->info, &file->fh);
+	    LOG((2, "nc_create_par returned %d file->fh = %d", ierr, file->fh));
 	    break;
 	case PIO_IOTYPE_NETCDF4C:
 	    file->mode = file->mode | NC_NETCDF4;
@@ -454,15 +455,11 @@ int PIOc_createfile(const int iosysid, int *ncidp, int *iotype,
 	   to know if its set. */
 	file->mode = file->mode | PIO_WRITE;
 
-	if ((mpierr = MPI_Bcast(&file->fh, 1, MPI_INT, ios->ioroot, ios->union_comm)))
-	    return check_mpi(file, mpierr, __FILE__, __LINE__);
-	LOG((2, "file->fh = %d", file->fh));
-
 	/* Assign the PIO ncid, necessary because files may be opened
 	 * on mutilple iosystems, causing the underlying library to
 	 * reuse ncids. Hilarious confusion ensues. */
-	//file->pio_ncid = file->fh;
 	file->pio_ncid = pio_next_ncid++;
+	LOG((2, "file->fh = %d file->pio_ncid = %d", file->fh, file->pio_ncid));
 
 	/* Return the ncid to the caller. */
 	*ncidp = file->pio_ncid;
@@ -472,7 +469,8 @@ int PIOc_createfile(const int iosysid, int *ncidp, int *iotype,
 	pio_add_to_file_list(file);
     }
 
-    LOG((2, "Created file %s %d", filename, file->fh));
+    LOG((2, "Created file %s file->fh = %d file->pio_ncid = %d", filename,
+	 file->fh, file->pio_ncid));
 
     return ierr;
 }
