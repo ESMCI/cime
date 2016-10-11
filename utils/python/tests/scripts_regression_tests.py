@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import io, glob, os, re, shutil, signal, sys, tempfile, \
-    threading, time, logging, unittest
+    threading, time, logging, unittest, getpass
 
 from xml.etree.ElementTree import ParseError
 
@@ -11,7 +11,7 @@ sys.path.append(LIB_DIR)
 import subprocess
 subprocess.call('/bin/rm $(find . -name "*.pyc")', shell=True, cwd=LIB_DIR)
 
-from CIME.utils import run_cmd, run_cmd_no_fail
+from CIME.utils import run_cmd, run_cmd_no_fail, get_lids, get_current_commit
 import update_acme_tests
 import CIME.test_scheduler, CIME.wait_for_tests
 from  CIME.test_scheduler import TestScheduler
@@ -31,10 +31,10 @@ os.environ["CIME_GLOBAL_WALLTIME"] = "0:05:00"
 
 # pragma pylint: disable=protected-access
 ###############################################################################
-def run_cmd_assert_result(test_obj, cmd, from_dir=None, expected_stat=0):
+def run_cmd_assert_result(test_obj, cmd, from_dir=None, expected_stat=0, env=None):
 ###############################################################################
     from_dir = os.getcwd() if from_dir is None else from_dir
-    stat, output, errput = run_cmd(cmd, from_dir=from_dir)
+    stat, output, errput = run_cmd(cmd, from_dir=from_dir, env=env)
     if expected_stat == 0:
         expectation = "SHOULD HAVE WORKED, INSTEAD GOT STAT %s" % stat
     else:
@@ -50,6 +50,14 @@ ERRPUT: %s
     test_obj.assertEqual(stat, expected_stat, msg=msg)
 
     return output
+
+###############################################################################
+class AA_ReportCommit(unittest.TestCase):
+###############################################################################
+
+    def test_report_tested_commit(self):
+        curr_commit = get_current_commit(repo=LIB_DIR)
+        logging.info("\nTesting commit %s" % curr_commit)
 
 ###############################################################################
 class A_RunUnitTests(unittest.TestCase):
@@ -984,9 +992,10 @@ class L_TestSaveTimings(TestCreateTestCommon):
 ###############################################################################
 
     ###########################################################################
-    def test_save_timings(self):
+    def simple_test(self, manual_timing=False):
     ###########################################################################
-        create_test_cmd =  "%s/create_test SMS_Ln9_Mmpi-serial.f19_g16_rx1.A --save-timing --walltime 0:15:00 -t %s" % (SCRIPT_DIR, self._baseline_name)
+        timing_flag = "" if manual_timing else "--save-timing"
+        create_test_cmd =  "%s/create_test SMS_Ln9_Mmpi-serial.f19_g16_rx1.A %s --walltime 0:15:00 -t %s" % (SCRIPT_DIR, timing_flag, self._baseline_name)
         if NO_BATCH:
             create_test_cmd += " --no-batch"
 
@@ -994,6 +1003,34 @@ class L_TestSaveTimings(TestCreateTestCommon):
         if (self._hasbatch):
             run_cmd_assert_result(self, "%s/wait_for_tests *%s/TestStatus" % (TOOLS_DIR, self._baseline_name),
                                   from_dir=self._testroot)
+
+        statuses = glob.glob("%s/*%s/TestStatus" % (self._testroot, self._baseline_name))
+        self.assertEqual(len(statuses), 1, msg="Should have had exactly one match, found %s" % statuses)
+        casedir = os.path.dirname(statuses[0])
+
+        with Case(casedir, read_only=True) as case:
+            lids = get_lids(case)
+            timing_dir = case.get_value("SAVE_TIMING_DIR")
+            casename = case.get_value("CASE")
+
+        self.assertEqual(len(lids), 1, msg="Expected one LID, found %s" % lids)
+
+        if manual_timing:
+            run_cmd_assert_result(self, "cd %s && %s/save_provenance postrun" % (casedir, TOOLS_DIR))
+
+        if CIME.utils.get_model() == "acme":
+            provenance_dir = os.path.join(timing_dir, "performance_archive", getpass.getuser(), casename, lids[0])
+            self.assertTrue(os.path.isdir(provenance_dir), msg="'%s' was missing" % provenance_dir)
+
+    ###########################################################################
+    def test_save_timings(self):
+    ###########################################################################
+        self.simple_test()
+
+    ###########################################################################
+    def test_save_timings_manual(self):
+    ###########################################################################
+        self.simple_test(manual_timing=True)
 
 ###############################################################################
 class C_TestXMLQuery(unittest.TestCase):
@@ -1094,7 +1131,7 @@ class B_CheckCode(unittest.TestCase):
             pylintver = re.search(r"pylint\s+(\d+)[.](\d+)[.](\d+)", output)
             major = int(pylintver.group(1))
             minor = int(pylintver.group(2))
-        if pylint is None or (major <= 1 and minor < 5):
+        if pylint is None or major < 1 or (major == 1 and minor < 5):
             self.skipTest("pylint version 1.5 or newer not found")
         else:
             run_cmd_assert_result(self, os.path.join(TOOLS_DIR, "code_checker -d 2>&1"))
@@ -1219,8 +1256,10 @@ query:
         environment = os.environ.copy()
         environment.update(env)
         environment.update(var)
-        subprocess.check_output(["gmake", "query", "--directory="+temp_dir],
-                                stderr=subprocess.STDOUT, env=environment)
+        gmake_exe = MACHINE.get_value("GMAKE")
+        if gmake_exe is None:
+            gmake_exe = "gmake"
+        run_cmd_assert_result(self.parent, "%s query --directory=%s 2>&1" % (gmake_exe, temp_dir), env=environment)
 
         with open(output_name, "r") as output:
             query_result = output.read().strip()
@@ -1308,8 +1347,7 @@ file(WRITE query.out "${{{}}}")
 
         environment = os.environ.copy()
         environment.update(env)
-        subprocess.check_output(["cmake", "."], cwd=temp_dir,
-                                stderr=subprocess.STDOUT, env=environment)
+        run_cmd_assert_result(self.parent, "cmake . 2>&1", from_dir=temp_dir, env=environment)
 
         with open(output_name, "r") as output:
             query_result = output.read().strip()

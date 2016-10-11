@@ -206,7 +206,7 @@ class SystemTestsCommon(object):
             expect(False, "Coupler did not indicate run passed")
 
         if suffix is not None:
-            self._component_compare_move(suffix)
+            self._component_compare_copy(suffix)
 
         if st_archive:
             case_st_archive(self._case)
@@ -222,13 +222,9 @@ class SystemTestsCommon(object):
             logger.info("%s is not compressed, assuming run failed"%newestcpllogfile)
         return False
 
-    def _component_compare_move(self, suffix):
-        success, comments = move(self._case, suffix)
+    def _component_compare_copy(self, suffix):
+        comments = copy(self._case, suffix)
         append_status(comments, sfile="TestStatus.log")
-        status = TEST_PASS_STATUS if success else TEST_FAIL_STATUS
-        with self._test_status:
-            self._test_status.set_status("%s_%s" % (COMPARE_PHASE, suffix), status)
-        return success
 
     def _component_compare_test(self, suffix1, suffix2):
         """
@@ -255,6 +251,9 @@ class SystemTestsCommon(object):
                     m = meminfo.match(line)
                     if m:
                         memlist.append((float(m.group(1)), float(m.group(2))))
+        # Remove the last mem record, it's sometimes artificially high
+        if len(memlist) > 0:
+            memlist.pop()
         return memlist
 
     def _get_throughput(self, cpllog):

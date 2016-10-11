@@ -187,10 +187,15 @@ class GenericXML(object):
         >>> os.environ["BAZ"] = "BARF"
         >>> obj.get_resolved_value("one $ENV{FOO} two $ENV{BAZ} three")
         'one BAR two BARF three'
+        >>> obj.get_resolved_value("2 + 3 - 1")
+        '4'
+        >>> obj.get_resolved_value("0001-01-01")
+        '0001-01-01'
         """
         logger.debug("raw_value %s" % raw_value)
         reference_re = re.compile(r'\${?(\w+)}?')
         env_ref_re   = re.compile(r'\$ENV\{(\w+)\}')
+        math_re = re.compile(r'\s[+-/*]\s')
         item_data = raw_value
 
         if item_data is None:
@@ -218,5 +223,20 @@ class GenericXML(object):
             elif var == "SRCROOT":
                 srcroot = os.path.join(get_cime_root(),"..")
                 item_data = item_data.replace(m.group(), srcroot)
-
+            elif var in os.environ:
+                logging.debug("resolve from env: " + var)
+                item_data = item_data.replace(m.group(), os.environ[var])
+        if math_re.search(item_data):
+            try:
+                tmp = eval(item_data)
+            except:
+                tmp = item_data
+            item_data = str(tmp)
         return item_data
+
+    def add_sub_node(self, node, subnode_name, subnode_text):
+        expect(node is not None," Bad value passed")
+        subnode = ET.Element(subnode_name)
+        subnode.text = subnode_text
+        node.append(subnode)
+        return node
