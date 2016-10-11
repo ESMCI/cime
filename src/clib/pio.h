@@ -275,7 +275,8 @@ typedef struct file_desc_t
     /** ??? */
     int mode;
 
-    /** ??? */
+    /** The wmulti_buffer is used to aggregate multiple variables with
+     * the same communication pattern prior to a write. */
     struct wmulti_buffer buffer;
 
     /** Pointer to the next file_desc_t in the list of open files. */

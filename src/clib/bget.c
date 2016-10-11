@@ -566,7 +566,6 @@ static int maxsize=0;
 /* added for PIO so that a bpool can be freed and another allocated */
 void bpoolrelease()
 {
-    printf("howdy\n");
     LOG((2, "bpoolrelease"));
   freelist.bh.prevfree=0;
   freelist.bh.bsize=0;
