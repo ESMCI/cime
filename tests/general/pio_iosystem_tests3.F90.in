@@ -110,6 +110,9 @@ SUBROUTINE create_file(comm, iosys, iotype, fname, attname, dimname, ret)
     ret = PIO_put_att(pio_file, pio_var, attname, fname)
     PIO_TF_CHECK_ERR(ret, comm, "Failed to put att " // trim(attname) // " in file :" // trim(fname))
 
+    ret = PIO_enddef(pio_file)
+    PIO_TF_CHECK_ERR(ret, comm, "Failed to enddef " // trim(attname) // " in file :" // trim(fname))
+
     call PIO_closefile(pio_file)
 END SUBROUTINE create_file
 

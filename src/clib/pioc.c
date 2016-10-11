@@ -45,17 +45,21 @@ int PIOc_File_is_Open(int ncid)
 }
 
 /**
- ** @brief Set the error handling method to be used for subsequent
+ ** Set the error handling method to be used for subsequent
  ** pio library calls, returns the previous method setting
  */
 int PIOc_Set_File_Error_Handling(int ncid, int method)
 {
   file_desc_t *file;
   int oldmethod;
-  file = pio_get_file_from_id(ncid);
+
+  /* Find info for this file. */
+  if (!(file = pio_get_file_from_id(ncid)))
+      return PIO_EBADID;
+  
   oldmethod = file->iosystem->error_handler;
   file->iosystem->error_handler = method;
-  return(oldmethod);
+  return oldmethod;
 }
 
 /**
@@ -142,23 +146,29 @@ int PIOc_get_local_array_size(int ioid)
 }
 
 /**
- ** @ingroup PIO_error_method
- ** @brief Set the error handling method used for subsequent calls
+ * @ingroup PIO_error_method
+ * Set the error handling method used for subsequent calls.
  */
-
- int PIOc_Set_IOSystem_Error_Handling(int iosysid, int method)
+int PIOc_Set_IOSystem_Error_Handling(int iosysid, int method)
 {
   iosystem_desc_t *ios;
   int oldmethod;
-  ios = pio_get_iosystem_from_id(iosysid);
-  if(ios==NULL){
-    fprintf(stderr,"%s %d Error setting eh method\n",__FILE__,__LINE__);
-    print_trace(stderr);
-    return PIO_EBADID;
+
+  /* Find info about this iosystem. */
+  if (!(ios = pio_get_iosystem_from_id(iosysid)))
+  {
+      fprintf(stderr,"%s %d Error setting eh method\n",__FILE__,__LINE__);
+      print_trace(stderr);
+      return PIO_EBADID;
   }
+
+  /* Remember old method setting. */
   oldmethod = ios->error_handler;
+
+  /* Set new error handler. */
   ios->error_handler = method;
-  return(oldmethod);
+  
+  return oldmethod;
 }
 
 /**
@@ -467,12 +477,14 @@ int PIOc_Init_Intracomm(const MPI_Comm comp_comm, const int num_iotasks,
 
       /* Add this iosys struct to the list in the PIO library. */
       *iosysidp = pio_add_to_iosystem_list(iosys);
-      LOG((2, "iosysid = %d", *iosysidp));
 
+      /* Get some info from the environment. */
       pio_get_env();
 
-      /* allocate buffer space for compute nodes */
+      /* Allocate buffer space for compute nodes. */
       compute_buffer_init(*iosys);
+      
+      LOG((2, "Init_Intracomm complete iosysid = %d", *iosysidp));
   }
 
   return ierr;

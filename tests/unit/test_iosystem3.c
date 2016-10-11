@@ -33,7 +33,7 @@
 #define NUM_IO1 1
 #define NUM_IO2 2
 #define NUM_IO4 4
-#define REARRANGER 1
+#define REARRANGER 2
 
 /** This creates a netCDF file in the specified format, with some
  * sample values. */
@@ -60,7 +60,7 @@ create_file(MPI_Comm comm, int iosysid, int format, char *filename,
     	return ret;
 
     /* Write an attribute. */
-    if ((ret = PIOc_put_att_text(ncid, varid, attname, strlen(filename) + 1,
+    if ((ret = PIOc_put_att_text(ncid, varid, attname, strlen(filename),
 				 filename)))
     	return ret;
 
@@ -101,15 +101,15 @@ check_file(MPI_Comm comm, int iosysid, int format, int ncid, char *filename,
     if (varid)
 	return ERR_WRONG;
 
-    /* Check the attribute. */
-    if (!(att_data = malloc((strlen(filename) + 1) * sizeof(char))))
+    /* Check the attribute. Null terminating byte deliberately ignored
+     * to match fortran code. */
+    if (!(att_data = malloc(strlen(filename) * sizeof(char))))
 	return PIO_ENOMEM;
     if ((ret = PIOc_get_att(ncid, varid, attname, att_data)))
 	return ret;
     printf("%d DONE with get_att!!!\n", my_rank);
-    if (strcmp(att_data, filename))
+    if (strncmp(att_data, filename, strlen(filename)))
     	return ERR_WRONG;
-    printf("%d att_data = %s\n", my_rank, att_data);
     free(att_data);
     printf("%d DONE with get_att!!!\n", my_rank);
     
@@ -169,6 +169,9 @@ main(int argc, char **argv)
     if ((ret = PIOc_Init_Intracomm(MPI_COMM_WORLD, NUM_IO4, STRIDE1, BASE0, REARRANGER, &iosysid_world)))
     	ERR(ret);
 
+    /* Set the error handler. */
+    PIOc_Set_IOSystem_Error_Handling(iosysid_world, PIO_BCAST_ERROR);
+
     /* Get MPI_Group of world comm. */
     if ((ret = MPI_Comm_group(MPI_COMM_WORLD, &world_group)))
 	ERR(ret);
@@ -220,6 +223,9 @@ main(int argc, char **argv)
     {
     	if ((ret = PIOc_Init_Intracomm(even_comm, NUM_IO1, STRIDE1, BASE1, REARRANGER, &even_iosysid)))
     	    ERR(ret);
+
+	/* Set the error handler. */
+	PIOc_Set_IOSystem_Error_Handling(even_iosysid, PIO_BCAST_ERROR);
     }
 
     /* Initialize PIO system for overlap comm. */
@@ -227,6 +233,9 @@ main(int argc, char **argv)
     {
 	if ((ret = PIOc_Init_Intracomm(overlap_comm, NUM_IO2, STRIDE1, BASE1, REARRANGER, &overlap_iosysid)))
 	    ERR(ret);
+
+	/* Set the error handler. */
+	PIOc_Set_IOSystem_Error_Handling(overlap_iosysid, PIO_BCAST_ERROR);
     }
 
     for (int i = 0; i < NUM_FLAVORS; i++)
@@ -259,10 +268,10 @@ main(int argc, char **argv)
     	if (even_comm != MPI_COMM_NULL)
 	{
 	    printf("\n***\n%d Checking file for even_comm\n", my_rank);
-	    if ((ret = open_and_check_file(even_comm, even_iosysid, iotypes[i], &ncid2, fname1,
+	    if ((ret = open_and_check_file(even_comm, even_iosysid, iotypes[i], &ncid2, fname2,
 					   ATTNAME, DIMNAME, 1, my_rank)))
 		ERR(ret);
-	    if ((ret = check_file(even_comm, even_iosysid, iotypes[i], ncid2, fname1,
+	    if ((ret = check_file(even_comm, even_iosysid, iotypes[i], ncid2, fname2,
 				  ATTNAME, DIMNAME, my_rank)))
 		ERR(ret);
 	}
@@ -272,10 +281,10 @@ main(int argc, char **argv)
     	if (overlap_comm != MPI_COMM_NULL)
 	{
 	    printf("\n***%d Checking file for overlap_comm\n", my_rank);
-	    if ((ret = open_and_check_file(overlap_comm, overlap_iosysid, iotypes[i], &ncid3, fname2,
+	    if ((ret = open_and_check_file(overlap_comm, overlap_iosysid, iotypes[i], &ncid3, fname1,
 					   ATTNAME, DIMNAME, 1, my_rank)))
 		ERR(ret);
-	    if ((ret = check_file(overlap_comm, overlap_iosysid, iotypes[i], ncid3, fname2,
+	    if ((ret = check_file(overlap_comm, overlap_iosysid, iotypes[i], ncid3, fname1,
 				  ATTNAME, DIMNAME, my_rank)))
 		ERR(ret);
 	}
