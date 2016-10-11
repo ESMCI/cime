@@ -20,8 +20,6 @@ SUBROUTINE split_world_two_with_overlap(new_comms, new_ranks, new_sizes, overlap
   integer :: nranges
   integer, dimension(3,NUM_GROUP_RANGES) :: new_group_ranges
   integer, dimension(NUM_COMMS) :: new_groups
-  integer :: rng
-  integer :: idx
 
   do i=1,NUM_COMMS
     new_comms(i) = MPI_COMM_NULL
@@ -52,12 +50,6 @@ SUBROUTINE split_world_two_with_overlap(new_comms, new_ranks, new_sizes, overlap
       new_group_ranges(3,1) = NUM_COMMS
     end if
 
-    print *, 'nranges = ', nranges
-    do rng = 1, nranges
-       do idx = 1, 3
-          print *, rng, idx, new_group_ranges(idx, rng)
-       end do
-    end do
     call MPI_Group_range_incl(world_group, nranges, new_group_ranges,&
           new_groups(i), ierr)
   end do
@@ -110,9 +102,6 @@ SUBROUTINE create_file(comm, iosys, iotype, fname, attname, dimname, ret)
     ret = PIO_put_att(pio_file, pio_var, attname, fname)
     PIO_TF_CHECK_ERR(ret, comm, "Failed to put att " // trim(attname) // " in file :" // trim(fname))
 
-    ret = PIO_enddef(pio_file)
-    PIO_TF_CHECK_ERR(ret, comm, "Failed to enddef " // trim(attname) // " in file :" // trim(fname))
-
     call PIO_closefile(pio_file)
 END SUBROUTINE create_file
 
@@ -136,7 +125,6 @@ SUBROUTINE check_file(comm, iosys, iotype, pio_file, fname, attname, dimname, re
     type(var_desc_t) :: pio_var
     character(len=PIO_TF_MAX_STR_LEN) :: val
 
-    print *, 'check_file fname = ', fname
     ret = PIO_inq_dimid(pio_file, dimname, pio_dim)
     PIO_TF_CHECK_ERR(ret, comm, "Failed to find dim "// trim(dimname) // "in file :" // trim(fname))
 
