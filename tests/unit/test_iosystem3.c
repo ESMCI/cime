@@ -60,7 +60,8 @@ create_file(MPI_Comm comm, int iosysid, int format, char *filename,
     	return ret;
 
     /* Write an attribute. */
-    if ((ret = PIOc_put_att_text(ncid, varid, attname, strlen(filename), filename)))
+    if ((ret = PIOc_put_att_text(ncid, varid, attname, strlen(filename) + 1,
+				 filename)))
     	return ret;
 
     /* End define mode. */
@@ -101,13 +102,16 @@ check_file(MPI_Comm comm, int iosysid, int format, int ncid, char *filename,
 	return ERR_WRONG;
 
     /* Check the attribute. */
-    if (!(att_data = malloc(strlen(filename) * sizeof(char))))
+    if (!(att_data = malloc((strlen(filename) + 1) * sizeof(char))))
 	return PIO_ENOMEM;
-    if ((ret = PIOc_get_att(ncid, varid, attname, &att_data)))
+    if ((ret = PIOc_get_att(ncid, varid, attname, att_data)))
 	return ret;
-    if (varid)
-	return ERR_WRONG;
+    printf("%d DONE with get_att!!!\n", my_rank);
+    if (strcmp(att_data, filename))
+    	return ERR_WRONG;
+    printf("%d att_data = %s\n", my_rank, att_data);
     free(att_data);
+    printf("%d DONE with get_att!!!\n", my_rank);
     
     return PIO_NOERR;
 }
