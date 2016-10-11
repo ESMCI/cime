@@ -258,7 +258,7 @@ main(int argc, char **argv)
     	int ncid2;
     	if (even_comm != MPI_COMM_NULL)
 	{
-	    printf("\n***\n");
+	    printf("\n***\n%d Checking file for even_comm\n", my_rank);
 	    if ((ret = open_and_check_file(even_comm, even_iosysid, iotypes[i], &ncid2, fname1,
 					   ATTNAME, DIMNAME, 1, my_rank)))
 		ERR(ret);
@@ -271,7 +271,7 @@ main(int argc, char **argv)
     	int ncid3;
     	if (overlap_comm != MPI_COMM_NULL)
 	{
-	    printf("\n***\n");
+	    printf("\n***%d Checking file for overlap_comm\n", my_rank);
 	    if ((ret = open_and_check_file(overlap_comm, overlap_iosysid, iotypes[i], &ncid3, fname2,
 					   ATTNAME, DIMNAME, 1, my_rank)))
 		ERR(ret);
