@@ -256,7 +256,6 @@
   <batch_system MACH="hexagon"  type="pbs" version="x.y">
     <directives>
       <directive>-A nn2345k</directive>
-      <directive>-W group_list={{ project }} </directive>
       <directive>-l mppwidth={{ num_tasks }}</directive>
     </directives>
     <queues>
@@ -265,9 +264,6 @@
     <walltimes>
 	    <walltime default="true">00:59:00</walltime>
     </walltimes>
-    <submit_args>
-      <arg flag="-l mppwidth=" name="1*$TOTALPES"/> 
-    </submit_args>
   </batch_system>
 
   <batch_system MACH="laramie" type="pbs">
