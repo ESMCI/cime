@@ -74,10 +74,6 @@ int PIOc_get_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
     if (!(file = pio_get_file_from_id(ncid)))
 	return PIO_EBADID;
     ios = file->iosystem;
-    if(ios == NULL){
-      fprintf(stderr, "%s:%d ERROR: File has no iosystem associated to it\n", __FILE__, __LINE__);
-      return PIO_EBADID;
-    }
 
     /* Run these on all tasks if async is not in use, but only on
      * non-IO tasks if async is in use. */
@@ -637,10 +633,6 @@ int PIOc_get_var (int ncid, int varid, void *buf, PIO_Offset bufcount, MPI_Datat
     if(file == NULL)
 	return PIO_EBADID;
     ios = file->iosystem;
-    if(ios == NULL){
-      fprintf(stderr, "%s:%d ERROR: File has no iosystem associated to it\n", __FILE__, __LINE__);
-      return PIO_EBADID;
-    }
     msg = PIO_MSG_GET_VAR;
     ibufcnt = bufcount;
     ibuftype = buftype;
@@ -719,10 +711,6 @@ int PIOc_get_var1 (int ncid, int varid, const PIO_Offset *index, void *buf, PIO_
     if(file == NULL)
 	return PIO_EBADID;
     ios = file->iosystem;
-    if(ios == NULL){
-      fprintf(stderr, "%s:%d ERROR: File has no iosystem associated to it\n", __FILE__, __LINE__);
-      return PIO_EBADID;
-    }
     msg = PIO_MSG_GET_VAR1;
     ibufcnt = bufcount;
     ibuftype = buftype;
@@ -796,10 +784,6 @@ int PIOc_get_vara (int ncid, int varid, const PIO_Offset *start, const PIO_Offse
     if(file == NULL)
 	return PIO_EBADID;
     ios = file->iosystem;
-    if(ios == NULL){
-      fprintf(stderr, "%s:%d ERROR: File has no iosystem associated to it\n", __FILE__, __LINE__);
-      return PIO_EBADID;
-    }
     msg = PIO_MSG_GET_VARA;
     ibufcnt = bufcount;
     ibuftype = buftype;
@@ -878,10 +862,6 @@ int PIOc_get_vars (int ncid, int varid, const PIO_Offset *start, const PIO_Offse
     if(file == NULL)
 	return PIO_EBADID;
     ios = file->iosystem;
-    if(ios == NULL){
-      fprintf(stderr, "%s:%d ERROR: File has no iosystem associated to it\n", __FILE__, __LINE__);
-      return PIO_EBADID;
-    }
     msg = PIO_MSG_GET_VARS;
     ibufcnt = bufcount;
     ibuftype = buftype;

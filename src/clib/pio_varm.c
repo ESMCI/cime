@@ -26,10 +26,6 @@ int PIOc_put_varm (int ncid, int varid, const PIO_Offset start[], const PIO_Offs
   if(file == NULL)
     return PIO_EBADID;
   ios = file->iosystem;
-  if(ios == NULL){
-    fprintf(stderr, "%s:%d File has no iosys associated with it\n", __FILE__, __LINE__);
-    return PIO_EBADID;
-  }
   msg = PIO_MSG_PUT_VARM;
 
   /* Sorry, but varm functions are not supported by the async interface. */
@@ -59,10 +55,6 @@ int PIOc_put_varm (int ncid, int varid, const PIO_Offset start[], const PIO_Offs
       if(vdesc->nreqs%PIO_REQUEST_ALLOC_CHUNK == 0 ){
 	vdesc->request = realloc(vdesc->request, 
 				 sizeof(int)*(vdesc->nreqs+PIO_REQUEST_ALLOC_CHUNK));
-        if(vdesc->request == NULL){
-          fprintf(stderr, "%s:%d ERROR: Memory allocation error\n", __FILE__, __LINE__);
-          return PIO_ENOMEM;
-        }
       }
       request = vdesc->request+vdesc->nreqs;
 
@@ -109,10 +101,6 @@ int PIOc_put_varm_uchar (int ncid, int varid, const PIO_Offset start[], const PI
   if(file == NULL)
     return PIO_EBADID;
   ios = file->iosystem;
-  if(ios == NULL){
-    fprintf(stderr, "%s:%d File has no iosys associated with it\n", __FILE__, __LINE__);
-    return PIO_EBADID;
-  }
   msg = PIO_MSG_PUT_VARM_UCHAR;
 
   /* Sorry, but varm functions are not supported by the async interface. */
@@ -142,10 +130,6 @@ int PIOc_put_varm_uchar (int ncid, int varid, const PIO_Offset start[], const PI
       if(vdesc->nreqs%PIO_REQUEST_ALLOC_CHUNK == 0 ){
 	vdesc->request = realloc(vdesc->request, 
 				 sizeof(int)*(vdesc->nreqs+PIO_REQUEST_ALLOC_CHUNK));
-        if(vdesc->request == NULL){
-          fprintf(stderr, "%s:%d ERROR: Memory allocation error\n", __FILE__, __LINE__);
-          return PIO_ENOMEM;
-        }
       }
       request = vdesc->request+vdesc->nreqs;
 
@@ -192,10 +176,6 @@ int PIOc_put_varm_short (int ncid, int varid, const PIO_Offset start[], const PI
   if(file == NULL)
     return PIO_EBADID;
   ios = file->iosystem;
-  if(ios == NULL){
-    fprintf(stderr, "%s:%d File has no iosys associated with it\n", __FILE__, __LINE__);
-    return PIO_EBADID;
-  }
   msg = PIO_MSG_PUT_VARM_SHORT;
 
   /* Sorry, but varm functions are not supported by the async interface. */
@@ -225,10 +205,6 @@ int PIOc_put_varm_short (int ncid, int varid, const PIO_Offset start[], const PI
       if(vdesc->nreqs%PIO_REQUEST_ALLOC_CHUNK == 0 ){
 	vdesc->request = realloc(vdesc->request, 
 				 sizeof(int)*(vdesc->nreqs+PIO_REQUEST_ALLOC_CHUNK));
-        if(vdesc->request == NULL){
-          fprintf(stderr, "%s:%d ERROR: Memory allocation error\n", __FILE__, __LINE__);
-          return PIO_ENOMEM;
-        }
       }
       request = vdesc->request+vdesc->nreqs;
 
@@ -274,10 +250,6 @@ int PIOc_put_varm_text (int ncid, int varid, const PIO_Offset start[], const PIO
   if(file == NULL)
     return PIO_EBADID;
   ios = file->iosystem;
-  if(ios == NULL){
-    fprintf(stderr, "%s:%d File has no iosys associated with it\n", __FILE__, __LINE__);
-    return PIO_EBADID;
-  }
   msg = PIO_MSG_PUT_VARM_TEXT;
 
   /* Sorry, but varm functions are not supported by the async interface. */
@@ -309,10 +281,6 @@ int PIOc_put_varm_text (int ncid, int varid, const PIO_Offset start[], const PIO
       if(vdesc->nreqs%PIO_REQUEST_ALLOC_CHUNK == 0 ){
 	vdesc->request = realloc(vdesc->request, 
 				 sizeof(int)*(vdesc->nreqs+PIO_REQUEST_ALLOC_CHUNK));
-        if(vdesc->request == NULL){
-          fprintf(stderr, "%s:%d ERROR: Memory allocation error\n", __FILE__, __LINE__);
-          return PIO_ENOMEM;
-        }
       }
       request = vdesc->request+vdesc->nreqs;
 
@@ -359,10 +327,6 @@ int PIOc_put_varm_ushort (int ncid, int varid, const PIO_Offset start[], const P
   if(file == NULL)
     return PIO_EBADID;
   ios = file->iosystem;
-  if(ios == NULL){
-    fprintf(stderr, "%s:%d File has no iosys associated with it\n", __FILE__, __LINE__);
-    return PIO_EBADID;
-  }
   msg = PIO_MSG_PUT_VARM_USHORT;
 
   /* Sorry, but varm functions are not supported by the async interface. */
@@ -394,10 +358,6 @@ int PIOc_put_varm_ushort (int ncid, int varid, const PIO_Offset start[], const P
       if(vdesc->nreqs%PIO_REQUEST_ALLOC_CHUNK == 0 ){
 	vdesc->request = realloc(vdesc->request, 
 				 sizeof(int)*(vdesc->nreqs+PIO_REQUEST_ALLOC_CHUNK));
-        if(vdesc->request == NULL){
-          fprintf(stderr, "%s:%d ERROR: Memory allocation error\n", __FILE__, __LINE__);
-          return PIO_ENOMEM;
-        }
       }
       request = vdesc->request+vdesc->nreqs;
 
@@ -444,10 +404,6 @@ int PIOc_put_varm_ulonglong (int ncid, int varid, const PIO_Offset start[], cons
   if(file == NULL)
     return PIO_EBADID;
   ios = file->iosystem;
-  if(ios == NULL){
-    fprintf(stderr, "%s:%d File has no iosys associated with it\n", __FILE__, __LINE__);
-    return PIO_EBADID;
-  }
   msg = PIO_MSG_PUT_VARM_ULONGLONG;
 
   /* Sorry, but varm functions are not supported by the async interface. */
@@ -479,10 +435,6 @@ int PIOc_put_varm_ulonglong (int ncid, int varid, const PIO_Offset start[], cons
       if(vdesc->nreqs%PIO_REQUEST_ALLOC_CHUNK == 0 ){
 	vdesc->request = realloc(vdesc->request, 
 				 sizeof(int)*(vdesc->nreqs+PIO_REQUEST_ALLOC_CHUNK));
-        if(vdesc->request == NULL){
-          fprintf(stderr, "%s:%d ERROR: Memory allocation error\n", __FILE__, __LINE__);
-          return PIO_ENOMEM;
-        }
       }
       request = vdesc->request+vdesc->nreqs;
 
@@ -528,10 +480,6 @@ int PIOc_put_varm_int (int ncid, int varid, const PIO_Offset start[], const PIO_
   if(file == NULL)
     return PIO_EBADID;
   ios = file->iosystem;
-  if(ios == NULL){
-    fprintf(stderr, "%s:%d File has no iosys associated with it\n", __FILE__, __LINE__);
-    return PIO_EBADID;
-  }
   msg = PIO_MSG_PUT_VARM_INT;
 
   /* Sorry, but varm functions are not supported by the async interface. */
@@ -563,10 +511,6 @@ int PIOc_put_varm_int (int ncid, int varid, const PIO_Offset start[], const PIO_
       if(vdesc->nreqs%PIO_REQUEST_ALLOC_CHUNK == 0 ){
 	vdesc->request = realloc(vdesc->request, 
 				 sizeof(int)*(vdesc->nreqs+PIO_REQUEST_ALLOC_CHUNK));
-        if(vdesc->request == NULL){
-          fprintf(stderr, "%s:%d ERROR: Memory allocation error\n", __FILE__, __LINE__);
-          return PIO_ENOMEM;
-        }
       }
       request = vdesc->request+vdesc->nreqs;
 
@@ -613,10 +557,6 @@ int PIOc_put_varm_float (int ncid, int varid, const PIO_Offset start[], const PI
   if(file == NULL)
     return PIO_EBADID;
   ios = file->iosystem;
-  if(ios == NULL){
-    fprintf(stderr, "%s:%d File has no iosys associated with it\n", __FILE__, __LINE__);
-    return PIO_EBADID;
-  }
   msg = PIO_MSG_PUT_VARM_FLOAT;
 
   /* Sorry, but varm functions are not supported by the async interface. */
@@ -648,10 +588,6 @@ int PIOc_put_varm_float (int ncid, int varid, const PIO_Offset start[], const PI
       if(vdesc->nreqs%PIO_REQUEST_ALLOC_CHUNK == 0 ){
 	vdesc->request = realloc(vdesc->request, 
 				 sizeof(int)*(vdesc->nreqs+PIO_REQUEST_ALLOC_CHUNK));
-        if(vdesc->request == NULL){
-          fprintf(stderr, "%s:%d ERROR: Memory allocation error\n", __FILE__, __LINE__);
-          return PIO_ENOMEM;
-        }
       }
       request = vdesc->request+vdesc->nreqs;
 
@@ -697,10 +633,6 @@ int PIOc_put_varm_long (int ncid, int varid, const PIO_Offset start[], const PIO
   if(file == NULL)
     return PIO_EBADID;
   ios = file->iosystem;
-  if(ios == NULL){
-    fprintf(stderr, "%s:%d File has no iosys associated with it\n", __FILE__, __LINE__);
-    return PIO_EBADID;
-  }
   msg = PIO_MSG_PUT_VARM_LONG;
 
   /* Sorry, but varm functions are not supported by the async interface. */
@@ -732,10 +664,6 @@ int PIOc_put_varm_long (int ncid, int varid, const PIO_Offset start[], const PIO
       if(vdesc->nreqs%PIO_REQUEST_ALLOC_CHUNK == 0 ){
 	vdesc->request = realloc(vdesc->request, 
 				 sizeof(int)*(vdesc->nreqs+PIO_REQUEST_ALLOC_CHUNK));
-        if(vdesc->request == NULL){
-          fprintf(stderr, "%s:%d ERROR: Memory allocation error\n", __FILE__, __LINE__);
-          return PIO_ENOMEM;
-        }
       }
       request = vdesc->request+vdesc->nreqs;
 
@@ -782,10 +710,6 @@ int PIOc_put_varm_uint (int ncid, int varid, const PIO_Offset start[], const PIO
   if(file == NULL)
     return PIO_EBADID;
   ios = file->iosystem;
-  if(ios == NULL){
-    fprintf(stderr, "%s:%d File has no iosys associated with it\n", __FILE__, __LINE__);
-    return PIO_EBADID;
-  }
   msg = PIO_MSG_PUT_VARM_UINT;
 
   /* Sorry, but varm functions are not supported by the async interface. */
@@ -817,10 +741,6 @@ int PIOc_put_varm_uint (int ncid, int varid, const PIO_Offset start[], const PIO
       if(vdesc->nreqs%PIO_REQUEST_ALLOC_CHUNK == 0 ){
 	vdesc->request = realloc(vdesc->request, 
 				 sizeof(int)*(vdesc->nreqs+PIO_REQUEST_ALLOC_CHUNK));
-        if(vdesc->request == NULL){
-          fprintf(stderr, "%s:%d ERROR: Memory allocation error\n", __FILE__, __LINE__);
-          return PIO_ENOMEM;
-        }
       }
       request = vdesc->request+vdesc->nreqs;
 
@@ -867,10 +787,6 @@ int PIOc_put_varm_double (int ncid, int varid, const PIO_Offset start[], const P
   if(file == NULL)
     return PIO_EBADID;
   ios = file->iosystem;
-  if(ios == NULL){
-    fprintf(stderr, "%s:%d File has no iosys associated with it\n", __FILE__, __LINE__);
-    return PIO_EBADID;
-  }
   msg = PIO_MSG_PUT_VARM_DOUBLE;
 
   /* Sorry, but varm functions are not supported by the async interface. */
@@ -902,10 +818,6 @@ int PIOc_put_varm_double (int ncid, int varid, const PIO_Offset start[], const P
       if(vdesc->nreqs%PIO_REQUEST_ALLOC_CHUNK == 0 ){
 	vdesc->request = realloc(vdesc->request, 
 				 sizeof(int)*(vdesc->nreqs+PIO_REQUEST_ALLOC_CHUNK));
-        if(vdesc->request == NULL){
-          fprintf(stderr, "%s:%d ERROR: Memory allocation error\n", __FILE__, __LINE__);
-          return PIO_ENOMEM;
-        }
       }
       request = vdesc->request+vdesc->nreqs;
 
@@ -951,10 +863,6 @@ int PIOc_put_varm_schar (int ncid, int varid, const PIO_Offset start[], const PI
   if(file == NULL)
     return PIO_EBADID;
   ios = file->iosystem;
-  if(ios == NULL){
-    fprintf(stderr, "%s:%d File has no iosys associated with it\n", __FILE__, __LINE__);
-    return PIO_EBADID;
-  }
   msg = PIO_MSG_PUT_VARM_SCHAR;
 
   /* Sorry, but varm functions are not supported by the async interface. */
@@ -986,10 +894,6 @@ int PIOc_put_varm_schar (int ncid, int varid, const PIO_Offset start[], const PI
       if(vdesc->nreqs%PIO_REQUEST_ALLOC_CHUNK == 0 ){
 	vdesc->request = realloc(vdesc->request, 
 				 sizeof(int)*(vdesc->nreqs+PIO_REQUEST_ALLOC_CHUNK));
-        if(vdesc->request == NULL){
-          fprintf(stderr, "%s:%d ERROR: Memory allocation error\n", __FILE__, __LINE__);
-          return PIO_ENOMEM;
-        }
       }
       request = vdesc->request+vdesc->nreqs;
 
@@ -1036,10 +940,6 @@ int PIOc_put_varm_longlong (int ncid, int varid, const PIO_Offset start[], const
   if(file == NULL)
     return PIO_EBADID;
   ios = file->iosystem;
-  if(ios == NULL){
-    fprintf(stderr, "%s:%d File has no iosys associated with it\n", __FILE__, __LINE__);
-    return PIO_EBADID;
-  }
   msg = PIO_MSG_PUT_VARM_LONGLONG;
 
   /* Sorry, but varm functions are not supported by the async interface. */
@@ -1069,10 +969,6 @@ int PIOc_put_varm_longlong (int ncid, int varid, const PIO_Offset start[], const
       if(vdesc->nreqs%PIO_REQUEST_ALLOC_CHUNK == 0 ){
 	vdesc->request = realloc(vdesc->request, 
 				 sizeof(int)*(vdesc->nreqs+PIO_REQUEST_ALLOC_CHUNK));
-        if(vdesc->request == NULL){
-          fprintf(stderr, "%s:%d ERROR: Memory allocation error\n", __FILE__, __LINE__);
-          return PIO_ENOMEM;
-        }
       }
       request = vdesc->request+vdesc->nreqs;
 
@@ -1111,17 +1007,9 @@ int PIOc_get_varm_uchar (int ncid, int varid, const PIO_Offset start[], const PI
   if(file == NULL)
     return PIO_EBADID;
   ios = file->iosystem;
-  if(ios == NULL){
-    fprintf(stderr, "%s:%d File has no iosys associated with it\n", __FILE__, __LINE__);
-    return PIO_EBADID;
-  }
   msg = PIO_MSG_GET_VARM_UCHAR;
   ibuftype = MPI_UNSIGNED_CHAR;
   ierr = PIOc_inq_varndims(file->fh, varid, &ndims);
-  if(ierr != PIO_NOERR){
-    fprintf(stderr, "%s:%d ERROR: Unable to query num dims for var\n", __FILE__, __LINE__);
-    return ierr;
-  }
   ibufcnt = 1;
   for(int i=0;i<ndims;i++){
     ibufcnt *= count[i]/stride[i];
@@ -1196,17 +1084,9 @@ int PIOc_get_varm_schar (int ncid, int varid, const PIO_Offset start[], const PI
   if(file == NULL)
     return PIO_EBADID;
   ios = file->iosystem;
-  if(ios == NULL){
-    fprintf(stderr, "%s:%d File has no iosys associated with it\n", __FILE__, __LINE__);
-    return PIO_EBADID;
-  }
   msg = PIO_MSG_GET_VARM_SCHAR;
   ibuftype = MPI_CHAR;
   ierr = PIOc_inq_varndims(file->fh, varid, &ndims);
-  if(ierr != PIO_NOERR){
-    fprintf(stderr, "%s:%d ERROR: Unable to query num dims for var\n", __FILE__, __LINE__);
-    return ierr;
-  }
   ibufcnt = 1;
   for(int i=0;i<ndims;i++){
     ibufcnt *= count[i]/stride[i];
@@ -1281,17 +1161,9 @@ int PIOc_get_varm_double (int ncid, int varid, const PIO_Offset start[], const P
   if(file == NULL)
     return PIO_EBADID;
   ios = file->iosystem;
-  if(ios == NULL){
-    fprintf(stderr, "%s:%d File has no iosys associated with it\n", __FILE__, __LINE__);
-    return PIO_EBADID;
-  }
   msg = PIO_MSG_GET_VARM_DOUBLE;
   ibuftype = MPI_DOUBLE;
   ierr = PIOc_inq_varndims(file->fh, varid, &ndims);
-  if(ierr != PIO_NOERR){
-    fprintf(stderr, "%s:%d ERROR: Unable to query num dims for var\n", __FILE__, __LINE__);
-    return ierr;
-  }
   ibufcnt = 1;
   for(int i=0;i<ndims;i++){
     ibufcnt *= count[i]/stride[i];
@@ -1366,17 +1238,9 @@ int PIOc_get_varm_text (int ncid, int varid, const PIO_Offset start[], const PIO
   if(file == NULL)
     return PIO_EBADID;
   ios = file->iosystem;
-  if(ios == NULL){
-    fprintf(stderr, "%s:%d File has no iosys associated with it\n", __FILE__, __LINE__);
-    return PIO_EBADID;
-  }
   msg = PIO_MSG_GET_VARM_TEXT;
   ibuftype = MPI_CHAR;
   ierr = PIOc_inq_varndims(file->fh, varid, &ndims);
-  if(ierr != PIO_NOERR){
-    fprintf(stderr, "%s:%d ERROR: Unable to query num dims for var\n", __FILE__, __LINE__);
-    return ierr;
-  }
   ibufcnt = 1;
   for(int i=0;i<ndims;i++){
     ibufcnt *= count[i]/stride[i];
@@ -1451,17 +1315,9 @@ int PIOc_get_varm_int (int ncid, int varid, const PIO_Offset start[], const PIO_
   if(file == NULL)
     return PIO_EBADID;
   ios = file->iosystem;
-  if(ios == NULL){
-    fprintf(stderr, "%s:%d File has no iosys associated with it\n", __FILE__, __LINE__);
-    return PIO_EBADID;
-  }
   msg = PIO_MSG_GET_VARM_INT;
   ibuftype = MPI_INT;
   ierr = PIOc_inq_varndims(file->fh, varid, &ndims);
-  if(ierr != PIO_NOERR){
-    fprintf(stderr, "%s:%d ERROR: Unable to query num dims for var\n", __FILE__, __LINE__);
-    return ierr;
-  }
   ibufcnt = 1;
   for(int i=0;i<ndims;i++){
     ibufcnt *= count[i]/stride[i];
@@ -1536,17 +1392,9 @@ int PIOc_get_varm_uint (int ncid, int varid, const PIO_Offset start[], const PIO
   if(file == NULL)
     return PIO_EBADID;
   ios = file->iosystem;
-  if(ios == NULL){
-    fprintf(stderr, "%s:%d File has no iosys associated with it\n", __FILE__, __LINE__);
-    return PIO_EBADID;
-  }
   msg = PIO_MSG_GET_VARM_UINT;
   ibuftype = MPI_UNSIGNED;
   ierr = PIOc_inq_varndims(file->fh, varid, &ndims);
-  if(ierr != PIO_NOERR){
-    fprintf(stderr, "%s:%d ERROR: Unable to query num dims for var\n", __FILE__, __LINE__);
-    return ierr;
-  }
   ibufcnt = 1;
   for(int i=0;i<ndims;i++){
     ibufcnt *= count[i]/stride[i];
@@ -1621,10 +1469,6 @@ int PIOc_get_varm (int ncid, int varid, const PIO_Offset start[], const PIO_Offs
   if(file == NULL)
     return PIO_EBADID;
   ios = file->iosystem;
-  if(ios == NULL){
-    fprintf(stderr, "%s:%d File has no iosys associated with it\n", __FILE__, __LINE__);
-    return PIO_EBADID;
-  }
   msg = PIO_MSG_GET_VARM;
   ibufcnt = bufcount;
   ibuftype = buftype;
@@ -1698,17 +1542,9 @@ int PIOc_get_varm_float (int ncid, int varid, const PIO_Offset start[], const PI
   if(file == NULL)
     return PIO_EBADID;
   ios = file->iosystem;
-  if(ios == NULL){
-    fprintf(stderr, "%s:%d File has no iosys associated with it\n", __FILE__, __LINE__);
-    return PIO_EBADID;
-  }
   msg = PIO_MSG_GET_VARM_FLOAT;
   ibuftype = MPI_FLOAT;
   ierr = PIOc_inq_varndims(file->fh, varid, &ndims);
-  if(ierr != PIO_NOERR){
-    fprintf(stderr, "%s:%d ERROR: Unable to query num dims for var\n", __FILE__, __LINE__);
-    return ierr;
-  }
   ibufcnt = 1;
   for(int i=0;i<ndims;i++){
     ibufcnt *= count[i]/stride[i];
@@ -1783,17 +1619,9 @@ int PIOc_get_varm_long (int ncid, int varid, const PIO_Offset start[], const PIO
   if(file == NULL)
     return PIO_EBADID;
   ios = file->iosystem;
-  if(ios == NULL){
-    fprintf(stderr, "%s:%d File has no iosys associated with it\n", __FILE__, __LINE__);
-    return PIO_EBADID;
-  }
   msg = PIO_MSG_GET_VARM_LONG;
   ibuftype = MPI_LONG;
   ierr = PIOc_inq_varndims(file->fh, varid, &ndims);
-  if(ierr != PIO_NOERR){
-    fprintf(stderr, "%s:%d ERROR: Unable to query num dims for var\n", __FILE__, __LINE__);
-    return ierr;
-  }
   ibufcnt = 1;
   for(int i=0;i<ndims;i++){
     ibufcnt *= count[i]/stride[i];
@@ -1868,17 +1696,9 @@ int PIOc_get_varm_ushort (int ncid, int varid, const PIO_Offset start[], const P
   if(file == NULL)
     return PIO_EBADID;
   ios = file->iosystem;
-  if(ios == NULL){
-    fprintf(stderr, "%s:%d File has no iosys associated with it\n", __FILE__, __LINE__);
-    return PIO_EBADID;
-  }
   msg = PIO_MSG_GET_VARM_USHORT;
   ibuftype = MPI_UNSIGNED_SHORT;
   ierr = PIOc_inq_varndims(file->fh, varid, &ndims);
-  if(ierr != PIO_NOERR){
-    fprintf(stderr, "%s:%d ERROR: Unable to query num dims for var\n", __FILE__, __LINE__);
-    return ierr;
-  }
   ibufcnt = 1;
   for(int i=0;i<ndims;i++){
     ibufcnt *= count[i]/stride[i];
@@ -1953,17 +1773,9 @@ int PIOc_get_varm_longlong (int ncid, int varid, const PIO_Offset start[], const
   if(file == NULL)
     return PIO_EBADID;
   ios = file->iosystem;
-  if(ios == NULL){
-    fprintf(stderr, "%s:%d File has no iosys associated with it\n", __FILE__, __LINE__);
-    return PIO_EBADID;
-  }
   msg = PIO_MSG_GET_VARM_LONGLONG;
   ibuftype = MPI_LONG_LONG;
   ierr = PIOc_inq_varndims(file->fh, varid, &ndims);
-  if(ierr != PIO_NOERR){
-    fprintf(stderr, "%s:%d ERROR: Unable to query num dims for var\n", __FILE__, __LINE__);
-    return ierr;
-  }
   ibufcnt = 1;
   for(int i=0;i<ndims;i++){
     ibufcnt *= count[i]/stride[i];
@@ -2038,17 +1850,9 @@ int PIOc_get_varm_short (int ncid, int varid, const PIO_Offset start[], const PI
   if(file == NULL)
     return PIO_EBADID;
   ios = file->iosystem;
-  if(ios == NULL){
-    fprintf(stderr, "%s:%d File has no iosys associated with it\n", __FILE__, __LINE__);
-    return PIO_EBADID;
-  }
   msg = PIO_MSG_GET_VARM_SHORT;
   ibuftype = MPI_SHORT;
   ierr = PIOc_inq_varndims(file->fh, varid, &ndims);
-  if(ierr != PIO_NOERR){
-    fprintf(stderr, "%s:%d ERROR: Unable to query num dims for var\n", __FILE__, __LINE__);
-    return ierr;
-  }
   ibufcnt = 1;
   for(int i=0;i<ndims;i++){
     ibufcnt *= count[i]/stride[i];
@@ -2123,17 +1927,9 @@ int PIOc_get_varm_ulonglong (int ncid, int varid, const PIO_Offset start[], cons
   if(file == NULL)
     return PIO_EBADID;
   ios = file->iosystem;
-  if(ios == NULL){
-    fprintf(stderr, "%s:%d File has no iosys associated with it\n", __FILE__, __LINE__);
-    return PIO_EBADID;
-  }
   msg = PIO_MSG_GET_VARM_ULONGLONG;
   ibuftype = MPI_UNSIGNED_LONG_LONG;
   ierr = PIOc_inq_varndims(file->fh, varid, &ndims);
-  if(ierr != PIO_NOERR){
-    fprintf(stderr, "%s:%d ERROR: Unable to query num dims for var\n", __FILE__, __LINE__);
-    return ierr;
-  }
   ibufcnt = 1;
   for(int i=0;i<ndims;i++){
     ibufcnt *= count[i]/stride[i];

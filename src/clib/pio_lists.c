@@ -18,8 +18,6 @@ void pio_add_to_file_list(file_desc_t *file)
 {
   file_desc_t *cfile;
 
-  pioassert(file != NULL, "NULL pointer to file descriptor", __FILE__, __LINE__);
-
   /* This file will be at the end of the list, and have no next. */
   file->next = NULL;
 
@@ -130,7 +128,6 @@ int pio_add_to_iosystem_list(iosystem_desc_t *ios)
   int i=1;
 
   //assert(ios != NULL);
-  pioassert(ios != NULL, "NULL pointer to iodesc", __FILE__, __LINE__);
   ios->next = NULL;
   cios = pio_iosystem_list;
   if(cios==NULL)
@@ -181,7 +178,6 @@ int pio_add_to_iodesc_list(io_desc_t *iodesc)
   io_desc_t *ciodesc;
   int imax=512;
 
-  pioassert(iodesc != NULL, "NULL pointer to iodesc", __FILE__, __LINE__);
   iodesc->next = NULL;
   if(pio_iodesc_list == NULL)
     pio_iodesc_list = iodesc;

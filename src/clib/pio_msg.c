@@ -30,7 +30,6 @@ int inq_type_handler(iosystem_desc_t *ios)
     int ret;
 
     LOG((1, "inq_type_handler"));
-    pioassert(ios != NULL, "NULL pointer to iodesc", __FILE__, __LINE__);
 
     /* Get the parameters for this function that the the comp master
      * task is broadcasting. */
@@ -68,7 +67,6 @@ int inq_format_handler(iosystem_desc_t *ios)
     int ret;
 
     LOG((1, "inq_format_handler"));
-    pioassert(ios != NULL, "NULL pointer to iodesc", __FILE__, __LINE__);
 
     /* Get the parameters for this function that the the comp master
      * task is broadcasting. */
@@ -106,7 +104,6 @@ int create_file_handler(iosystem_desc_t *ios)
     int ret;
 
     LOG((1, "create_file_handler comproot = %d\n", ios->comproot));
-    pioassert(ios != NULL, "NULL pointer to iodesc", __FILE__, __LINE__);
 
     /* Get the parameters for this function that the he comp master
      * task is broadcasting. */
@@ -152,7 +149,6 @@ int close_file_handler(iosystem_desc_t *ios)
     int my_rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
     LOG((1, "close_file_handler"));
-    pioassert(ios != NULL, "NULL pointer to iodesc", __FILE__, __LINE__);
 
     /* Get the parameters for this function that the the comp master
      * task is broadcasting. */
@@ -186,7 +182,6 @@ int inq_handler(iosystem_desc_t *ios)
     int my_rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
     LOG((1, "inq_handler"));
-    pioassert(ios != NULL, "NULL pointer to iodesc", __FILE__, __LINE__);
 
     /* Get the parameters for this function that the the comp master
      * task is broadcasting. */
@@ -243,7 +238,6 @@ int inq_dim_handler(iosystem_desc_t *ios, int msg)
     int ret;
 
     LOG((1, "inq_dim_handler"));
-    pioassert(ios != NULL, "NULL pointer to iodesc", __FILE__, __LINE__);
 
     /* Get the parameters for this function that the the comp master
      * task is broadcasting. */
@@ -288,7 +282,6 @@ int inq_dimid_handler(iosystem_desc_t *ios)
     char *name;
 
     LOG((1, "inq_dimid_handler"));
-    pioassert(ios != NULL, "NULL pointer to iodesc", __FILE__, __LINE__);
 
     /* Get the parameters for this function that the the comp master
      * task is broadcasting. */
@@ -340,7 +333,6 @@ int inq_att_handler(iosystem_desc_t *ios)
     char xtype_present, len_present;
 
     LOG((1, "inq_att_handler"));
-    pioassert(ios != NULL, "NULL pointer to iodesc", __FILE__, __LINE__);
 
     /* Get the parameters for this function that the the comp master
      * task is broadcasting. */
@@ -394,7 +386,6 @@ int inq_attname_handler(iosystem_desc_t *ios)
     int ret;
 
     LOG((1, "inq_att_name_handler"));
-    pioassert(ios != NULL, "NULL pointer to iodesc", __FILE__, __LINE__);
 
     /* Get the parameters for this function that the the comp master
      * task is broadcasting. */
@@ -440,7 +431,6 @@ int inq_attid_handler(iosystem_desc_t *ios)
     int ret;
 
     LOG((1, "inq_attid_handler"));
-    pioassert(ios != NULL, "NULL pointer to iodesc", __FILE__, __LINE__);
 
     /* Get the parameters for this function that the the comp master
      * task is broadcasting. */
@@ -493,7 +483,6 @@ int att_put_handler(iosystem_desc_t *ios)
     int iotype;
 
     LOG((1, "att_put_handler"));
-    pioassert(ios != NULL, "NULL pointer to iodesc", __FILE__, __LINE__);
 
     /* Get the parameters for this function that the the comp master
      * task is broadcasting. */
@@ -553,7 +542,6 @@ int att_get_handler(iosystem_desc_t *ios)
     int iotype;
 
     LOG((1, "att_get_handler"));
-    pioassert(ios != NULL, "NULL pointer to iodesc", __FILE__, __LINE__);
 
     /* Get the parameters for this function that the the comp master
      * task is broadcasting. */
@@ -615,7 +603,6 @@ int put_vars_handler(iosystem_desc_t *ios)
     PIO_Offset num_elem; /** Number of data elements in the buffer. */
 
     LOG((1, "put_vars_handler"));
-    pioassert(ios != NULL, "NULL pointer to iodesc", __FILE__, __LINE__);
 
     /* Get the parameters for this function that the the comp master
      * task is broadcasting. */
@@ -769,7 +756,6 @@ int get_vars_handler(iosystem_desc_t *ios)
     PIO_Offset num_elem; /** Number of data elements in the buffer. */
 
     LOG((1, "get_vars_handler"));
-    pioassert(ios != NULL, "NULL pointer to iodesc", __FILE__, __LINE__);
 
     /* Get the parameters for this function that the the comp master
      * task is broadcasting. */
@@ -917,7 +903,6 @@ int inq_var_handler(iosystem_desc_t *ios)
     int ret;
 
     LOG((1, "inq_var_handler"));
-    pioassert(ios != NULL, "NULL pointer to iodesc", __FILE__, __LINE__);
 
     /* Get the parameters for this function that the the comp master
      * task is broadcasting. */
@@ -976,7 +961,6 @@ int inq_varid_handler(iosystem_desc_t *ios)
     int namelen;
     char *name;
 
-    pioassert(ios != NULL, "NULL pointer to iodesc", __FILE__, __LINE__);
     /* Get the parameters for this function that the the comp master
      * task is broadcasting. */
     if ((mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm)))
@@ -1010,7 +994,6 @@ int sync_file_handler(iosystem_desc_t *ios)
     int ret;
 
     LOG((1, "sync_file_handler"));
-    pioassert(ios != NULL, "NULL pointer to iodesc", __FILE__, __LINE__);
 
     /* Get the parameters for this function that the comp master
      * task is broadcasting. */
@@ -1038,7 +1021,6 @@ int change_def_file_handler(iosystem_desc_t *ios, int msg)
     int ret;
 
     LOG((1, "change_def_file_handler"));
-    pioassert(ios != NULL, "NULL pointer to iodesc", __FILE__, __LINE__);
 
     /* Get the parameters for this function that the comp master
      * task is broadcasting. */
@@ -1071,7 +1053,6 @@ int def_var_handler(iosystem_desc_t *ios)
     int my_rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
     LOG((1, "def_var_handler comproot = %d", ios->comproot));
-    pioassert(ios != NULL, "NULL pointer to iodesc", __FILE__, __LINE__);
 
     /* Get the parameters for this function that the he comp master
      * task is broadcasting. */
@@ -1123,7 +1104,6 @@ int def_dim_handler(iosystem_desc_t *ios)
     int my_rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
     LOG((1, "def_dim_handler comproot = %d", ios->comproot));
-    pioassert(ios != NULL, "NULL pointer to iodesc", __FILE__, __LINE__);
 
     /* Get the parameters for this function that the he comp master
      * task is broadcasting. */
@@ -1167,7 +1147,6 @@ int rename_dim_handler(iosystem_desc_t *ios)
     char name1[NC_MAX_NAME + 1];
 
     LOG((1, "rename_dim_handler"));
-    pioassert(ios != NULL, "NULL pointer to iodesc", __FILE__, __LINE__);
 
     /* Get the parameters for this function that the he comp master
      * task is broadcasting. */
@@ -1210,7 +1189,6 @@ int rename_var_handler(iosystem_desc_t *ios)
     char name1[NC_MAX_NAME + 1];
 
     LOG((1, "rename_var_handler"));
-    pioassert(ios != NULL, "NULL pointer to iodesc", __FILE__, __LINE__);
 
     /* Get the parameters for this function that the he comp master
      * task is broadcasting. */
@@ -1250,7 +1228,6 @@ int rename_att_handler(iosystem_desc_t *ios)
     int ret;
 
     LOG((1, "rename_att_handler"));
-    pioassert(ios != NULL, "NULL pointer to iodesc", __FILE__, __LINE__);
 
     /* Get the parameters for this function that the he comp master
      * task is broadcasting. */
@@ -1297,7 +1274,6 @@ int delete_att_handler(iosystem_desc_t *ios)
     int ret;
 
     LOG((1, "delete_att_handler"));
-    pioassert(ios != NULL, "NULL pointer to iodesc", __FILE__, __LINE__);
 
     /* Get the parameters for this function that the he comp master
      * task is broadcasting. */
@@ -1343,7 +1319,6 @@ int open_file_handler(iosystem_desc_t *ios)
     int my_rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
     LOG((1, "open_file_handler comproot = %d", ios->comproot));
-    pioassert(ios != NULL, "NULL pointer to iodesc", __FILE__, __LINE__);
 
     /* Get the parameters for this function that the he comp master
      * task is broadcasting. */
@@ -1389,7 +1364,6 @@ int delete_file_handler(iosystem_desc_t *ios)
     int my_rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
     LOG((1, "delete_file_handler comproot = %d", ios->comproot));
-    pioassert(ios != NULL, "NULL pointer to iodesc", __FILE__, __LINE__);
 
     /* Get the parameters for this function that the he comp master
      * task is broadcasting. */
@@ -1505,7 +1479,6 @@ int finalize_handler(iosystem_desc_t *ios, int index)
     int my_rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
     LOG((1, "finalize_handler called index = %d", index));
-    pioassert(ios != NULL, "NULL pointer to iodesc", __FILE__, __LINE__);
 
     /* Get the parameters for this function that the the comp master
      * task is broadcasting. */
@@ -1544,7 +1517,6 @@ int pio_msg_handler2(int io_rank, int component_count, iosystem_desc_t **iosys, 
     int my_rank;
     MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
     LOG((1, "pio_msg_handler2 called"));
-    pioassert(iosys != NULL, "NULL pointer to iosys array", __FILE__, __LINE__);
 
     /* Have IO comm rank 0 (the ioroot) register to receive
      * (non-blocking) for a message from each of the comproots. */
