@@ -311,20 +311,14 @@ add_executable (pio_decomp_fillval EXCLUDE_FROM_ALL
 target_link_libraries (pio_decomp_fillval piof)
 add_dependencies (tests pio_decomp_fillval)
 
-add_executable (pio_decomp_fillval2 EXCLUDE_FROM_ALL
-    pio_decomp_fillval2.F90
-    ${CMAKE_CURRENT_SOURCE_DIR}/util/pio_tutil.F90)
-target_link_libraries (pio_decomp_fillval2 piof)
-add_dependencies (tests pio_decomp_fillval2)
-
 if (PIO_USE_MPISERIAL)
-    add_test(NAME pio_decomp_fillval2
-        COMMAND pio_decomp_fillval2)
-    set_tests_properties(pio_decomp_fillval2
+    add_test(NAME pio_decomp_fillval
+        COMMAND pio_decomp_fillval)
+    set_tests_properties(pio_decomp_fillval
         PROPERTIES TIMEOUT ${DEFAULT_TEST_TIMEOUT})
 else ()
-    add_mpi_test(pio_decomp_fillval2
-        EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/pio_decomp_fillval2
+    add_mpi_test(pio_decomp_fillval
+        EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/pio_decomp_fillval
         NUMPROCS 4
         TIMEOUT ${DEFAULT_TEST_TIMEOUT})
 endif ()
