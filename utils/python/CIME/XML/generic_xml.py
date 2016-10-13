@@ -125,7 +125,8 @@ class GenericXML(object):
 
             for key, value in attributes.iteritems():
                 if value is not None:
-                    expect(isinstance(value, str), " Bad value passed for key %s"%key)
+                    expect(isinstance(value, str) or isinstance(value, unicode),
+                           " Bad value passed for key %s"%key)
                     xpath = ".//%s[@%s=\'%s\']" % (nodename, key, value)
                     logger.debug("xpath is %s"%xpath)
 
@@ -241,3 +242,17 @@ class GenericXML(object):
         subnode.text = subnode_text
         node.append(subnode)
         return node
+
+    def validate_xml_file(self, filename, schema):
+        """
+        validate an XML file against a provided schema file using pylint
+        """
+        expect(os.path.isfile(filename),"xml file not found %s"%filename)
+        expect(os.path.isfile(schema),"schema file not found %s"%schema)
+        xmllint = find_executable("xmllint")
+        if xmllint is not None:
+            logger.info("Checking file %s against schema %s"%(filename, schema))
+            run_cmd_no_fail("%s --noout --schema %s %s"%(xmllint, schema, filename))
+        else:
+            logger.warn("xmllint not found, could not validate file %s"%filename)
+
