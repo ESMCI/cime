@@ -514,6 +514,10 @@ int PIOc_closefile(int ncid)
     if (!(file = pio_get_file_from_id(ncid)))
         return PIO_EBADID;
     ios = file->iosystem;
+    if(ios == NULL){
+      fprintf(stderr, "%s:%d ERROR: File has no iosystem attached to it\n", __FILE__, __LINE__);
+      return PIO_EBADID;
+    }
 
     /* Sync changes before closing. */
     if (file->mode & PIO_WRITE)
@@ -663,6 +667,10 @@ int PIOc_sync(int ncid)
     if (!(file = pio_get_file_from_id(ncid)))
 	return PIO_EBADID;
     ios = file->iosystem;
+    if(ios == NULL){
+      fprintf(stderr, "%s:%d ERROR: File has no iosystem associated to it\n", __FILE__, __LINE__);
+      return PIO_EBADID;
+    }
 
     /* If async is in use, send message to IO master tasks. */
     if (ios->async_interface)

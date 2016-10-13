@@ -48,6 +48,10 @@ int PIOc_inq(int ncid, int *ndimsp, int *nvarsp, int *ngattsp, int *unlimdimidp)
     if (!(file = pio_get_file_from_id(ncid)))
         return PIO_EBADID;
     ios = file->iosystem;
+    if(ios == NULL){
+      fprintf(stderr, "%s:%d ERROR: File has no associated iosys\n", __FILE__, __LINE__);
+      return PIO_EBADID;
+    }
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
     if (ios->async_interface)
@@ -254,6 +258,10 @@ int PIOc_inq_type(int ncid, nc_type xtype, char *name, PIO_Offset *sizep)
     if (!(file = pio_get_file_from_id(ncid)))
         return PIO_EBADID;
     ios = file->iosystem;
+    if(ios == NULL){
+      fprintf(stderr, "%s:%d ERROR: File has no associated iosys\n", __FILE__, __LINE__);
+      return PIO_EBADID;
+    }
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
     if (ios->async_interface)
@@ -342,6 +350,10 @@ int PIOc_inq_format (int ncid, int *formatp)
     if (!(file = pio_get_file_from_id(ncid)))
         return PIO_EBADID;
     ios = file->iosystem;
+    if(ios == NULL){
+      fprintf(stderr, "%s:%d ERROR: File has no associated iosys\n", __FILE__, __LINE__);
+      return PIO_EBADID;
+    }
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
     if (ios->async_interface)
@@ -424,6 +436,10 @@ int PIOc_inq_dim(int ncid, int dimid, char *name, PIO_Offset *lenp)
     if (!(file = pio_get_file_from_id(ncid)))
         return PIO_EBADID;
     ios = file->iosystem;
+    if(ios == NULL){
+      fprintf(stderr, "%s:%d ERROR: File has no associated iosys\n", __FILE__, __LINE__);
+      return PIO_EBADID;
+    }
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
     if (ios->async_interface)
@@ -545,6 +561,10 @@ int PIOc_inq_dimid(int ncid, const char *name, int *idp)
     if (!(file = pio_get_file_from_id(ncid)))
         return PIO_EBADID;
     ios = file->iosystem;
+    if(ios == NULL){
+      fprintf(stderr, "%s:%d ERROR: File has no associated iosys\n", __FILE__, __LINE__);
+      return PIO_EBADID;
+    }
 
     /* If using async, and not an IO task, then send parameters. */
     if (ios->async_interface)
@@ -633,6 +653,10 @@ int PIOc_inq_var(int ncid, int varid, char *name, nc_type *xtypep, int *ndimsp,
     if (!(file = pio_get_file_from_id(ncid)))
         return PIO_EBADID;
     ios = file->iosystem;
+    if(ios == NULL){
+      fprintf(stderr, "%s:%d ERROR: File has no associated iosys\n", __FILE__, __LINE__);
+      return PIO_EBADID;
+    }
     LOG((2, "got file and iosystem"));
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
@@ -840,6 +864,10 @@ int PIOc_inq_varid (int ncid, const char *name, int *varidp)
     if (!(file = pio_get_file_from_id(ncid)))
         return PIO_EBADID;
     ios = file->iosystem;
+    if(ios == NULL){
+      fprintf(stderr, "%s:%d ERROR: File has no associated iosys\n", __FILE__, __LINE__);
+      return PIO_EBADID;
+    }
 
     LOG((1, "PIOc_inq_varid ncid = %d name = %s", ncid, name));
 
@@ -934,6 +962,10 @@ int PIOc_inq_att(int ncid, int varid, const char *name, nc_type *xtypep,
     if (!(file = pio_get_file_from_id(ncid)))
         return PIO_EBADID;
     ios = file->iosystem;
+    if(ios == NULL){
+      fprintf(stderr, "%s:%d ERROR: File has no associated iosys\n", __FILE__, __LINE__);
+      return PIO_EBADID;
+    }
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
     if (ios->async_interface)
@@ -1051,6 +1083,10 @@ int PIOc_inq_attname(int ncid, int varid, int attnum, char *name)
     if (!(file = pio_get_file_from_id(ncid)))
         return PIO_EBADID;
     ios = file->iosystem;
+    if(ios == NULL){
+      fprintf(stderr, "%s:%d ERROR: File has no associated iosys\n", __FILE__, __LINE__);
+      return PIO_EBADID;
+    }
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
     if (ios->async_interface)
@@ -1149,6 +1185,10 @@ int PIOc_inq_attid(int ncid, int varid, const char *name, int *idp)
     if (!(file = pio_get_file_from_id(ncid)))
         return PIO_EBADID;
     ios = file->iosystem;
+    if(ios == NULL){
+      fprintf(stderr, "%s:%d ERROR: File has no associated iosys\n", __FILE__, __LINE__);
+      return PIO_EBADID;
+    }
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
     if (ios->async_interface)
@@ -1244,6 +1284,10 @@ int PIOc_rename_dim(int ncid, int dimid, const char *name)
     if (!(file = pio_get_file_from_id(ncid)))
         return PIO_EBADID;
     ios = file->iosystem;
+    if(ios == NULL){
+      fprintf(stderr, "%s:%d ERROR: File has no associated iosys\n", __FILE__, __LINE__);
+      return PIO_EBADID;
+    }
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
     if (ios->async_interface)
@@ -1332,6 +1376,10 @@ int PIOc_rename_var(int ncid, int varid, const char *name)
     if (!(file = pio_get_file_from_id(ncid)))
         return PIO_EBADID;
     ios = file->iosystem;
+    if(ios == NULL){
+      fprintf(stderr, "%s:%d ERROR: File has no associated iosys\n", __FILE__, __LINE__);
+      return PIO_EBADID;
+    }
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
     if (ios->async_interface)
@@ -1424,6 +1472,10 @@ int PIOc_rename_att (int ncid, int varid, const char *name,
     if (!(file = pio_get_file_from_id(ncid)))
         return PIO_EBADID;
     ios = file->iosystem;
+    if(ios == NULL){
+      fprintf(stderr, "%s:%d ERROR: File has no associated iosys\n", __FILE__, __LINE__);
+      return PIO_EBADID;
+    }
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
     if (ios->async_interface)
@@ -1514,6 +1566,10 @@ int PIOc_del_att(int ncid, int varid, const char *name)
     if (!(file = pio_get_file_from_id(ncid)))
         return PIO_EBADID;
     ios = file->iosystem;
+    if(ios == NULL){
+      fprintf(stderr, "%s:%d ERROR: File has no associated iosys\n", __FILE__, __LINE__);
+      return PIO_EBADID;
+    }
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
     if (ios->async_interface)
@@ -1595,6 +1651,10 @@ int PIOc_set_fill (int ncid, int fillmode, int *old_modep)
     if (!(file = pio_get_file_from_id(ncid)))
         return PIO_EBADID;
     ios = file->iosystem;
+    if(ios == NULL){
+      fprintf(stderr, "%s:%d ERROR: File has no associated iosys\n", __FILE__, __LINE__);
+      return PIO_EBADID;
+    }
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
     if (ios->async_interface)
@@ -1661,6 +1721,10 @@ int pioc_change_def(int ncid, int is_enddef)
     if (!(file = pio_get_file_from_id(ncid)))
         return PIO_EBADID;
     ios = file->iosystem;
+    if(ios == NULL){
+      fprintf(stderr, "%s:%d ERROR: File has no associated iosys\n", __FILE__, __LINE__);
+      return PIO_EBADID;
+    }
     LOG((2, "pioc_change_def found file"));
     
     /* If async is in use, and this is not an IO task, bcast the parameters. */
@@ -1786,6 +1850,10 @@ int PIOc_def_dim (int ncid, const char *name, PIO_Offset len, int *idp)
     if (!(file = pio_get_file_from_id(ncid)))
         return PIO_EBADID;
     ios = file->iosystem;
+    if(ios == NULL){
+      fprintf(stderr, "%s:%d ERROR: File has no associated iosys\n", __FILE__, __LINE__);
+      return PIO_EBADID;
+    }
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
     if (ios->async_interface)
@@ -1885,6 +1953,10 @@ int PIOc_def_var (int ncid, const char *name, nc_type xtype, int ndims,
         return PIO_EBADID;
     }
     ios = file->iosystem;
+    if(ios == NULL){
+      fprintf(stderr, "%s:%d ERROR: File has no associated iosys\n", __FILE__, __LINE__);
+      return PIO_EBADID;
+    }
 
     /* If using async, and not an IO task, then send parameters. */
     if (ios->async_interface)
@@ -1984,6 +2056,10 @@ int PIOc_inq_var_fill(int ncid, int varid, int *no_fill, void *fill_valuep)
     if (!(file = pio_get_file_from_id(ncid)))
         return PIO_EBADID;
     ios = file->iosystem;
+    if(ios == NULL){
+      fprintf(stderr, "%s:%d ERROR: File has no associated iosys\n", __FILE__, __LINE__);
+      return PIO_EBADID;
+    }
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
     if (ios->async_interface)
@@ -2070,6 +2146,10 @@ int PIOc_get_att(int ncid, int varid, const char *name, void *ip)
     if (!(file = pio_get_file_from_id(ncid)))
         return PIO_EBADID;
     ios = file->iosystem;
+    if(ios == NULL){
+      fprintf(stderr, "%s:%d ERROR: File has no associated iosys\n", __FILE__, __LINE__);
+      return PIO_EBADID;
+    }
 
     /* Run these on all tasks if async is not in use, but only on
      * non-IO tasks if async is in use. */
@@ -2200,6 +2280,10 @@ int PIOc_put_att(int ncid, int varid, const char *name, nc_type xtype,
     if (!(file = pio_get_file_from_id(ncid)))
         return PIO_EBADID;
     ios = file->iosystem;
+    if(ios == NULL){
+      fprintf(stderr, "%s:%d ERROR: File has no associated iosys\n", __FILE__, __LINE__);
+      return PIO_EBADID;
+    }
 
     /* Run these on all tasks if async is not in use, but only on
      * non-IO tasks if async is in use. */
