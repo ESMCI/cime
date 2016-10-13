@@ -151,6 +151,7 @@ void compute_maxIObuffersize(MPI_Comm io_comm, io_desc_t *iodesc)
   int i;
   io_region *region;
 
+  pioassert(iodesc != NULL, "NULL pointer to iodesc", __FILE__, __LINE__);
   //  compute the max io buffer size, for conveneance it is the combined size of all regions
   totiosize=0;
   region = iodesc->firstregion;
@@ -204,6 +205,10 @@ int create_mpi_datatypes(const MPI_Datatype basetype,const int msgcnt,const PIO_
   if(mindex != NULL){
     // memcpy(lindex, mindex, (size_t) (dlen*sizeof(PIO_Offset)));
     lindex = malloc(numinds*sizeof(PIO_Offset));
+    if(lindex == NULL){
+      fprintf(stderr,"%s:%d ERROR: Memory allocation error\n", __FILE__, __LINE__);
+      return PIO_ENOMEM; 
+    }
     memcpy(lindex, mindex, (size_t) (numinds*sizeof(PIO_Offset)));
   }
 
@@ -383,7 +388,7 @@ int compute_counts(const iosystem_desc_t ios, io_desc_t *iodesc, const int maple
   int numiotasks;
   PIO_Offset s2rindex[iodesc->ndof];
 
-
+  pioassert(iodesc != NULL, "Null pointer to iodesc", __FILE__, __LINE__);
   
   if(iodesc->rearranger==PIO_REARR_BOX)
     numiotasks = ios.num_iotasks;
@@ -615,6 +620,8 @@ int rearrange_comp2io(const iosystem_desc_t ios, io_desc_t *iodesc, void *sbuf,
 #ifdef TIMING
   GPTLstart("PIO:rearrange_comp2io");
 #endif
+
+  pioassert(iodesc != NULL, "NULL iodesc", __FILE__, __LINE__);
   
   if(iodesc->rearranger == PIO_REARR_BOX){
     mycomm = ios.union_comm;
@@ -781,6 +788,9 @@ int rearrange_io2comp(const iosystem_desc_t ios, io_desc_t *iodesc, void *sbuf, 
 #ifdef TIMING
   GPTLstart("PIO:rearrange_io2comp");
 #endif
+
+  pioassert(iodesc != NULL, "NULL iodesc", __FILE__, __LINE__);
+
   if(iodesc->rearranger==PIO_REARR_BOX){
     mycomm = ios.union_comm;
     niotasks = ios.num_iotasks;
@@ -883,6 +893,9 @@ void determine_fill(iosystem_desc_t ios, io_desc_t *iodesc, const int gsize[], c
   PIO_Offset totalllen=0;
   PIO_Offset totalgridsize=1;
   int i;
+
+  pioassert(iodesc != NULL, "NULL iodesc", __FILE__, __LINE__);
+
   for( i=0;i<iodesc->ndims;i++){
     totalgridsize *= gsize[i];
   }
@@ -926,6 +939,10 @@ void determine_fill(iosystem_desc_t ios, io_desc_t *iodesc, const int gsize[], c
 
 void iodesc_dump(io_desc_t *iodesc)
 {
+  if(iodesc == NULL){
+    printf("iodesc is NULL\n");
+    return;
+  }
   printf("ioid= %d\n",iodesc->ioid);
   printf("async_id= %d\n",iodesc->async_id);
   printf("nrecvs= %d\n",iodesc->nrecvs);
@@ -983,6 +1000,8 @@ int box_rearrange_create(const iosystem_desc_t ios,const int maplen, const PIO_O
   MPI_Datatype dtypes[nprocs];
   PIO_Offset iomaplen[nioprocs];
   int maxreq = MAX_GATHER_BLOCK_SIZE;
+
+  pioassert(iodesc != NULL, "NULL iodesc", __FILE__, __LINE__);
 
   iodesc->rearranger = PIO_REARR_BOX;
 
@@ -1126,6 +1145,7 @@ int compare_offsets(const void *a,const void *b)
 {
   mapsort *x = (mapsort *) a;
   mapsort *y = (mapsort *) b;
+  if((x == NULL) || (y == NULL)) return 0;
   return (int) (x->iomap - y->iomap);
 }    
 
@@ -1142,6 +1162,9 @@ void get_start_and_count_regions(const int ndims, const int gdims[],const int ma
   int nmaplen;
   int regionlen;
   io_region *region, *prevregion;
+
+  pioassert(maxregions != NULL, "NULL maxregions", __FILE__, __LINE__);
+  pioassert(firstregion != NULL, "NULL firstregion", __FILE__, __LINE__);
 
   nmaplen = 0;
   region = firstregion;
@@ -1196,6 +1219,8 @@ void default_subset_partition(const iosystem_desc_t ios, io_desc_t *iodesc)
   int color;
   int key;
 
+  pioassert(iodesc != NULL, "NULL iodesc", __FILE__, __LINE__);
+
   /* Create a new comm for each subset group with the io task in rank 0 and
      only 1 io task per group */
 
@@ -1239,6 +1264,7 @@ int subset_rearrange_create(const iosystem_desc_t ios,const int maplen, PIO_Offs
   int rank, ntasks, rcnt;
   size_t pio_offset_size=sizeof(PIO_Offset);
   
+  pioassert(iodesc != NULL, "NULL iodesc", __FILE__, __LINE__);
   
   tmpioproc = ios.io_rank;
 
@@ -1476,6 +1502,9 @@ int subset_rearrange_create(const iosystem_desc_t ios,const int maplen, PIO_Offs
 	  //	  printf("%s %d %d %d %d %d\n",__FILE__,__LINE__,nio,i,gcnt[i],displs[i]);
 	} 
 	myusegrid = (PIO_Offset *) bget(thisgridsize[nio]*sizeof(PIO_Offset));
+  if(myusegrid == NULL){
+    piomemerror(ios,thisgridsize[nio]*sizeof(PIO_Offset), __FILE__,__LINE__);
+  }
 	for(i=0;i<thisgridsize[nio];i++){
 	  myusegrid[i]=-1;
 	}
@@ -1505,6 +1534,9 @@ int subset_rearrange_create(const iosystem_desc_t ios,const int maplen, PIO_Offs
     iodesc->holegridsize=thisgridsize[ios.io_rank]-cnt;
     if(iodesc->holegridsize>0){
       myfillgrid = (PIO_Offset *) bget(iodesc->holegridsize * sizeof(PIO_Offset));
+      if(myfillgrid == NULL){
+        piomemerror(ios,iodesc->holegridsize * sizeof(PIO_Offset), __FILE__,__LINE__);
+      }
     }
     for(i=0;i<iodesc->holegridsize;i++){
       myfillgrid[i]=-1;
@@ -1600,14 +1632,22 @@ void performance_tune_rearranger(iosystem_desc_t ios, io_desc_t *iodesc)
   int tsize;
   int myrank;
 
+  pioassert(iodesc != NULL, "NULL iodesc", __FILE__, __LINE__);
+
   MPI_Type_size(iodesc->basetype, &tsize);
   cbuf = NULL;
   ibuf = NULL;
   if(iodesc->ndof>0){
     cbuf = bget( iodesc->ndof * tsize );
+    if(cbuf == NULL){
+      piomemerror(ios,iodesc->ndof * tsize, __FILE__, __LINE__);
+    }
   }
   if(iodesc->llen>0){
     ibuf = bget( iodesc->llen * tsize );
+    if(ibuf == NULL){
+      piomemerror(ios,iodesc->llen * tsize, __FILE__, __LINE__);
+    }
   }
 
   if(iodesc->rearranger == PIO_REARR_BOX){
@@ -1621,6 +1661,9 @@ void performance_tune_rearranger(iosystem_desc_t ios, io_desc_t *iodesc)
 
   int log2 = log(nprocs) / log(2) + 1;
   wall = bget(2*4*log2*sizeof(double));
+  if(wall == NULL){
+    piomemerror(ios, 2*4*log2*sizeof(double), __FILE__, __LINE__);
+  }
   double mintime;
   int k=0;
 

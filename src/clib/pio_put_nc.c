@@ -76,6 +76,10 @@ int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
     if (!(file = pio_get_file_from_id(ncid)))
 	return PIO_EBADID;
     ios = file->iosystem;
+    if(ios == NULL){
+      fprintf(stderr, "%s:%d ERROR: File does not have iosys associated to it\n", __FILE__, __LINE__);
+      return PIO_EBADID;
+    }
 
     /* Run these on all tasks if async is not in use, but only on
      * non-IO tasks if async is in use. */
@@ -227,6 +231,10 @@ int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
 	    if (vdesc->nreqs % PIO_REQUEST_ALLOC_CHUNK == 0)
 		vdesc->request = realloc(vdesc->request,
 					 sizeof(int) * (vdesc->nreqs + PIO_REQUEST_ALLOC_CHUNK));
+      if(vdesc->request == NULL){
+        fprintf(stderr, "%s:%d ERROR: Memory allocation error\n", __FILE__, __LINE__);
+        return PIO_ENOMEM;
+      }
 	    request = vdesc->request + vdesc->nreqs;
 	    LOG((2, "PIOc_put_vars_tc request = %d", vdesc->request));	    
 
@@ -715,6 +723,10 @@ int PIOc_put_var(int ncid, int varid, const void *buf, PIO_Offset bufcount,
     if(file == NULL)
 	return PIO_EBADID;
     ios = file->iosystem;
+    if(ios == NULL){
+      fprintf(stderr, "%s:%d ERROR: File does not have iosys associated to it\n", __FILE__, __LINE__);
+      return PIO_EBADID;
+    }
     msg = PIO_MSG_PUT_VAR;
 
     if(ios->async_interface && ! ios->ioproc){
@@ -747,6 +759,10 @@ int PIOc_put_var(int ncid, int varid, const void *buf, PIO_Offset bufcount,
 	    if(vdesc->nreqs%PIO_REQUEST_ALLOC_CHUNK == 0 ){
 		vdesc->request = realloc(vdesc->request,
 					 sizeof(int)*(vdesc->nreqs+PIO_REQUEST_ALLOC_CHUNK));
+        if(vdesc->request == NULL){
+          fprintf(stderr, "%s:%d ERROR: Memory allocation error\n", __FILE__, __LINE__);
+          return PIO_ENOMEM;
+        }
 	    }
 	    request = vdesc->request+vdesc->nreqs;
 
@@ -797,6 +813,10 @@ int PIOc_put_vars(int ncid, int varid, const PIO_Offset *start, const PIO_Offset
     if(file == NULL)
 	return PIO_EBADID;
     ios = file->iosystem;
+    if(ios == NULL){
+      fprintf(stderr, "%s:%d ERROR: File does not have iosys associated to it\n", __FILE__, __LINE__);
+      return PIO_EBADID;
+    }
     msg = PIO_MSG_PUT_VARS;
 
     if(ios->async_interface && ! ios->ioproc){
@@ -830,6 +850,10 @@ int PIOc_put_vars(int ncid, int varid, const PIO_Offset *start, const PIO_Offset
 	    if(vdesc->nreqs%PIO_REQUEST_ALLOC_CHUNK == 0 ){
 		vdesc->request = realloc(vdesc->request,
 					 sizeof(int)*(vdesc->nreqs+PIO_REQUEST_ALLOC_CHUNK));
+        if(vdesc->request == NULL){
+          fprintf(stderr, "%s:%d ERROR: Memory allocation error\n", __FILE__, __LINE__);
+          return PIO_ENOMEM;
+        }
 	    }
 	    request = vdesc->request+vdesc->nreqs;
 
@@ -872,6 +896,10 @@ int PIOc_put_var1(int ncid, int varid, const PIO_Offset *index, const void *buf,
     if(file == NULL)
 	return PIO_EBADID;
     ios = file->iosystem;
+    if(ios == NULL){
+      fprintf(stderr, "%s:%d ERROR: File does not have iosys associated to it\n", __FILE__, __LINE__);
+      return PIO_EBADID;
+    }
     msg = PIO_MSG_PUT_VAR1;
 
     if(ios->async_interface && ! ios->ioproc){
@@ -904,6 +932,10 @@ int PIOc_put_var1(int ncid, int varid, const PIO_Offset *index, const void *buf,
 	    if(vdesc->nreqs%PIO_REQUEST_ALLOC_CHUNK == 0 ){
 		vdesc->request = realloc(vdesc->request,
 					 sizeof(int)*(vdesc->nreqs+PIO_REQUEST_ALLOC_CHUNK));
+        if(vdesc->request == NULL){
+          fprintf(stderr, "%s:%d ERROR: Memory allocation error\n", __FILE__, __LINE__);
+          return PIO_ENOMEM;
+        }
 	    }
 	    request = vdesc->request+vdesc->nreqs;
 
@@ -945,6 +977,10 @@ int PIOc_put_vara(int ncid, int varid, const PIO_Offset *start, const PIO_Offset
     if(file == NULL)
 	return PIO_EBADID;
     ios = file->iosystem;
+    if(ios == NULL){
+      fprintf(stderr, "%s:%d ERROR: File does not have iosys associated to it\n", __FILE__, __LINE__);
+      return PIO_EBADID;
+    }
     msg = PIO_MSG_PUT_VARA;
 
     if(ios->async_interface && ! ios->ioproc){
@@ -977,6 +1013,10 @@ int PIOc_put_vara(int ncid, int varid, const PIO_Offset *start, const PIO_Offset
 	    if(vdesc->nreqs%PIO_REQUEST_ALLOC_CHUNK == 0 ){
 		vdesc->request = realloc(vdesc->request,
 					 sizeof(int)*(vdesc->nreqs+PIO_REQUEST_ALLOC_CHUNK));
+        if(vdesc->request == NULL){
+          fprintf(stderr, "%s:%d ERROR: Memory allocation error\n", __FILE__, __LINE__);
+          return PIO_ENOMEM;
+        }
 	    }
 	    request = vdesc->request+vdesc->nreqs;
 

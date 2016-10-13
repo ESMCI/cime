@@ -19,6 +19,11 @@ static int counter=0;
 int PIOc_iosystem_is_active(const int iosysid, bool *active)
 {
   iosystem_desc_t *ios;
+  if(active == NULL){
+    fprintf(stderr, "%s:%d ERROR: Null pointer, expected valid ptr in 2nd arg\n", __FILE__, __LINE__);
+    return PIO_EINVAL;
+  }
+
   ios = pio_get_iosystem_from_id(iosysid);
   if(ios == NULL)
     return PIO_EBADID;
@@ -53,6 +58,13 @@ int PIOc_Set_File_Error_Handling(int ncid, int method)
   file_desc_t *file;
   int oldmethod;
   file = pio_get_file_from_id(ncid);
+  if((file == NULL) || (file->iosystem == NULL)){
+    fprintf(stderr,"%s:%d ERROR: Unable to find file corresponding to ncid=%d or the file does not have an iosystem", __FILE__, __LINE__, ncid);
+    fprintf(stderr,"Unable to set error handling for the file\n");
+    /* Since this function does not support returning error codes,
+ *     return the default for iosystems */
+    return PIO_INTERNAL_ERROR;
+  }
   oldmethod = file->iosystem->error_handler;
   file->iosystem->error_handler = method;
   return(oldmethod);
@@ -64,6 +76,12 @@ int PIOc_Set_File_Error_Handling(int ncid, int method)
 int PIOc_advanceframe(int ncid, int varid)
 {
   file_desc_t *file;
+
+  if((varid < 0) || (varid >= PIO_MAX_VARS)){
+    fprintf(stderr, "%s:%d ERROR: Invalid varid\n", __FILE__, __LINE__);
+    return PIO_EBADID;
+  }
+
   file = pio_get_file_from_id(ncid);
   if(file == NULL)
     return PIO_EBADID;
@@ -103,6 +121,11 @@ int PIOc_setframe(const int ncid, const int varid, const int frame)
 int PIOc_get_numiotasks(int iosysid, int *numiotasks)
 {
   iosystem_desc_t *ios;
+  if(numiotasks == NULL){
+    fprintf(stderr, "%s:%d ERROR: Null pointer to numiotasks\n", __FILE__, __LINE__);
+    return PIO_EINVAL;
+  }
+
   ios = pio_get_iosystem_from_id(iosysid);
   if(ios == NULL)
     return PIO_EBADID;
@@ -120,6 +143,11 @@ int PIOc_get_numiotasks(int iosysid, int *numiotasks)
 int PIOc_get_iorank(int iosysid, int *iorank)
 {
   iosystem_desc_t *ios;
+  if(iorank == NULL){
+    fprintf(stderr, "%s:%d ERROR: Null pointer to iorank\n", __FILE__, __LINE__);
+    return PIO_EINVAL;
+  }
+
   ios = pio_get_iosystem_from_id(iosysid);
   if(ios == NULL)
     return PIO_EBADID;
@@ -138,6 +166,9 @@ int PIOc_get_local_array_size(int ioid)
 {
   io_desc_t *iodesc;
   iodesc = pio_get_iodesc_from_id(ioid);
+  if(iodesc == NULL){
+    fprintf(stderr,"%s:%d ERROR : Unable to find iodesc corresponding to ioid = %d\n", __FILE__, __LINE__, ioid);
+  }
   return(iodesc->ndof);
 }
 
@@ -154,7 +185,7 @@ int PIOc_get_local_array_size(int ioid)
   if(ios==NULL){
     fprintf(stderr,"%s %d Error setting eh method\n",__FILE__,__LINE__);
     print_trace(stderr);
-    return PIO_EBADID;
+    return PIO_INTERNAL_ERROR;
   }
   oldmethod = ios->error_handler;
   ios->error_handler = method;
@@ -185,6 +216,11 @@ int PIOc_InitDecomp(const int iosysid, const int basetype,const int ndims, const
   int ierr;
   int iosize;
   int ndisp;
+
+  if(ioidp == NULL){
+    fprintf(stderr, "%s:%d ERROR: Null pionter to io description\n", __FILE__, __LINE__);
+    return PIO_EINVAL;
+  }
 
   for(int i=0;i<ndims;i++){
     if(dims[i]<=0){
@@ -287,6 +323,8 @@ int PIOc_InitDecomp_bc(const int iosysid, const int basetype,const int ndims, co
   int iosize;
   int ndisp;
 
+  if(ioidp == NULL)
+    return PIO_EINVAL;
 
   for(int i=0;i<ndims;i++){
     if(dims[i]<=0){
@@ -369,7 +407,16 @@ int PIOc_Init_Intracomm(const MPI_Comm comp_comm, const int num_iotasks,
   int lbase;
   int mpierr;
 
+  if(iosysidp == NULL){
+    fprintf(stderr, "%s:%d ERROR: Null pointer to iosys\n", __FILE__, __LINE__);
+    return PIO_EINVAL;
+  }
+
   iosys = (iosystem_desc_t *) malloc(sizeof(iosystem_desc_t));
+  if(iosys == NULL){
+    fprintf(stderr, "ERROR: Memory allocation error\n");
+    return PIO_ENOMEM;
+  }
 
   /* Copy the computation communicator into union_comm. */
   mpierr = MPI_Comm_dup(comp_comm, &iosys->union_comm);
@@ -614,6 +661,11 @@ int PIOc_finalize(const int iosysid)
 int PIOc_iam_iotask(const int iosysid, bool *ioproc)
 {
   iosystem_desc_t *ios;
+  if(ioproc == NULL){
+    fprintf(stderr, "%s:%d ERROR: Null pointer to ioproc\n", __FILE__, __LINE__);
+    return PIO_EINVAL;
+  }
+
   ios = pio_get_iosystem_from_id(iosysid);
   if(ios == NULL)
     return PIO_EBADID;
@@ -629,6 +681,11 @@ int PIOc_iam_iotask(const int iosysid, bool *ioproc)
 int PIOc_iotask_rank(const int iosysid, int *iorank)
 {
   iosystem_desc_t *ios;
+  if(iorank == NULL){
+    fprintf(stderr, "%s:%d ERROR: Null pointer to iorank\n", __FILE__, __LINE__);
+    return PIO_EINVAL;
+  }
+
   ios = pio_get_iosystem_from_id(iosysid);
   if(ios == NULL)
     return PIO_EBADID;
