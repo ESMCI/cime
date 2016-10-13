@@ -40,12 +40,8 @@ PIO_Offset PIOc_set_buffer_size_limit(const PIO_Offset limit)
 {
     PIO_Offset oldsize;
     oldsize = PIO_BUFFER_SIZE_LIMIT;
-    if (limit > 0){
-      PIO_BUFFER_SIZE_LIMIT = limit;
-    }
-    else{
-      fprintf(stderr, "%s:%d ERROR: Invalid buffer size (%d) specified, unable to set buffer size limit\n", __FILE__, __LINE__, limit);
-    }
+    if (limit > 0)
+	PIO_BUFFER_SIZE_LIMIT = limit;
     return oldsize;
 }
 
@@ -121,14 +117,6 @@ int pio_write_darray_nc(file_desc_t *file, io_desc_t *iodesc, const int vid,
     GPTLstart("PIO:write_darray_nc");
 #endif
 
-    if((file == NULL) || (iodesc == NULL))
-      return PIO_EINVAL;
-
-    if(IOBUF == NULL){
-      fprintf("%s:%d ERROR: Trying to write NULL IOBUF\n", __FILE__, __LINE__);
-      return PIO_EINVAL;
-    }
-
     /* Get the IO system info. */
     if (!(ios = file->iosystem))
 	return PIO_EBADID;
@@ -141,10 +129,6 @@ int pio_write_darray_nc(file_desc_t *file, io_desc_t *iodesc, const int vid,
 
     /* Get the number of dims for this var from netcdf. */
     ierr = PIOc_inq_varndims(file->fh, vid, &fndims);
-    if(ierr != PIO_NOERR){
-      fprintf(stderr, "%s:%d ERROR: Unable to get the number of dims for var\n", __FILE__, __LINE__);
-      return ierr;
-    }
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
     if (ios->async_interface)
@@ -305,10 +289,6 @@ int pio_write_darray_nc(file_desc_t *file, io_desc_t *iodesc, const int vid,
 				mpierr = MPI_Recv(tcount, ndims, MPI_OFFSET, i, 2 * ios->num_iotasks + i,
 						  ios->io_comm, &status);
 				tmp_buf = malloc(buflen * dsize);
-            if(tmp_buf == NULL){
-              fprintf(stderr,"%s:%d ERROR: Memory allocation error\n", __FILE__, __LINE__);
-              return PIO_ENOMEM;
-            }
 				mpierr = MPI_Recv(tmp_buf, buflen, iodesc->basetype, i, i, ios->io_comm, &status);
 			    }
 			}
@@ -396,10 +376,6 @@ int pio_write_darray_nc(file_desc_t *file, io_desc_t *iodesc, const int vid,
 		    {
 			vdesc->request = realloc(vdesc->request,
 						 sizeof(int) * (vdesc->nreqs + PIO_REQUEST_ALLOC_CHUNK));
-          if(vdesc->request == NULL){
-            fprintf(stderr, "%s:%d ERROR: Memory allocation error\n", __FILE__, __LINE__);
-            return PIO_ENOMEM;
-          }
 
 			for (int i = vdesc->nreqs; i < vdesc->nreqs + PIO_REQUEST_ALLOC_CHUNK; i++)
 			    vdesc->request[i] = NC_REQ_NULL;
@@ -500,14 +476,6 @@ int pio_write_darray_multi_nc(file_desc_t *file, const int nvars, const int *vid
     /* Start timing this function. */
     GPTLstart("PIO:write_darray_multi_nc");
 #endif
-    if(file == NULL){
-      fprintf(stderr, "%s:%d ERROR: NULL ptr to file descriptor\n", __FILE__, __LINE__);
-      return PIO_EINVAL;
-    }
-    if(vid == NULL){
-      fprintf(stderr, "%s:%d ERROR: Invalid array of vids\n", __FILE__, __LINE__);
-      return PIO_EINVAL;
-    }
 
     ios = file->iosystem;
     if (ios == NULL)
@@ -557,16 +525,6 @@ int pio_write_darray_multi_nc(file_desc_t *file, const int nvars, const int *vid
 
 	ncid = file->fh;
 	region = firstregion;
-
-  if(IOBUF == NULL){
-    fprintf(stderr, "%s:%d ERROR: Trying to write NULL IOBUF\n", __FILE__, __LINE__);
-    return PIO_EINVAL;
-  }
-
-  if ((vdesc->record >= 0) && (ndims<fndims) && (frame == NULL)){
-    fprintf(stderr, "%s:%d ERROR: Frame dimension array is NULL\n", __FILE__, __LINE__);
-    return PIO_EINVAL;
-  }
 
 	rrcnt = 0;
 	for (regioncnt = 0; regioncnt < maxregions; regioncnt++)
@@ -740,7 +698,7 @@ int pio_write_darray_multi_nc(file_desc_t *file, const int nvars, const int *vid
 	    }
 	    if (region)
 		region = region->next;
-	} //    for (regioncnt=0;regioncnt<iodesc->maxregions;regioncnt++)
+	} //    for (regioncnt=0;regioncnt<iodesc->maxregions;regioncnt++){
     } // if (ios->ioproc)
 
     ierr = check_netcdf(file, ierr, __FILE__,__LINE__);
@@ -808,14 +766,6 @@ int pio_write_darray_multi_nc_serial(file_desc_t *file, const int nvars, const i
     /* Start timing this function. */
     GPTLstart("PIO:write_darray_multi_nc_serial");
 #endif
-    if(file == NULL){
-      fprintf(stderr, "%s:%d ERROR: NULL ptr to file descriptor\n", __FILE__, __LINE__);
-      return PIO_EINVAL;
-    }
-    if(vid == NULL){
-      fprintf(stderr, "%s:%d ERROR: Invalid array of vids\n", __FILE__, __LINE__);
-      return PIO_EINVAL;
-    }
 
     if (!(ios = file->iosystem))
     {
@@ -860,17 +810,6 @@ int pio_write_darray_multi_nc_serial(file_desc_t *file, const int nvars, const i
 	size_t tmp_count[fndims*maxregions];
 
 	int ndims = iodesc_ndims;
-
-  if(IOBUF == NULL){
-    fprintf(stderr, "%s:%d ERROR: Trying to write NULL IOBUF\n", __FILE__, __LINE__);
-    return PIO_EINVAL;
-  }
-
-  if ((vdesc->record >= 0) && (ndims<fndims) && (frame == NULL)){
-    fprintf(stderr, "%s:%d ERROR: frame dimension array is NULL\n", __FILE__, __LINE__);
-    return PIO_EINVAL;
-  }
-
 
 	ncid = file->fh;
 	region = firstregion;
@@ -1065,17 +1004,6 @@ int PIOc_write_darray_multi(const int ncid, const int *vid, const int ioid,
 	fprintf(stderr,"File handle not found %d %d\n",ncid,__LINE__);
 	return PIO_EBADID;
     }
-    if(vid == NULL){
-      fprintf(stderr, "%s:%d ERROR: Invalid (NULL) array of variable ids\n", __FILE__, __LINE__);
-      return PIO_EINVAL;
-    }
-    /*
-    if(fillvalue == NULL){
-      fprintf(stderr, "%s:%d ERROR: Invalid (NULL) pointer to fillvalue\n", __FILE__, __LINE__);
-      return PIO_EINVAL;
-    }
-    */
-
     if (! (file->mode & PIO_WRITE))
     {
 	fprintf(stderr,"ERROR:  Attempt to write to read-only file\n");
@@ -1490,14 +1418,6 @@ int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, const int vid,
     /* Start timing this function. */
     GPTLstart("PIO:read_darray_nc");
 #endif
-    if(file == NULL){
-      fprintf(stderr, "%s:%d ERROR: Null pointer to file descriptor\n",__FILE__, __LINE__);
-      return PIO_EINVAL;
-    }
-    if(iodesc == NULL){
-      fprintf(stderr, "%s:%d ERROR: Null pointer to io descriptor\n",__FILE__, __LINE__);
-      return PIO_EINVAL;
-    }
     ios = file->iosystem;
     if (ios == NULL)
 	return PIO_EBADID;
@@ -1529,10 +1449,6 @@ int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, const int vid,
 	PIO_Offset *startlist[iodesc->maxregions];
 	PIO_Offset *countlist[iodesc->maxregions];
 
-  if(IOBUF == NULL){
-    fprintf(stderr, "%s:%d ERROR: Trying to write NULL IOBUF\n", __FILE__, __LINE__);
-    return PIO_EINVAL;
-  }
 	// buffer is incremented by byte and loffset is in terms of the iodessc->basetype
 	// so we need to multiply by the size of the basetype
 	// We can potentially allow for one iodesc to have multiple datatypes by allowing the
@@ -1624,9 +1540,6 @@ int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, const int vid,
 		{
 		    startlist[rrlen] = (PIO_Offset *) bget(fndims * sizeof(PIO_Offset));
 		    countlist[rrlen] = (PIO_Offset *) bget(fndims * sizeof(PIO_Offset));
-        if((startlist[rrlen] == NULL) || (countlist[rrlen] == NULL)){
-          piomemerror(*ios, 2 * fndims * sizeof(PIO_Offset), __FILE__, __LINE__);
-        }
 
 		    for (int j = 0; j < fndims; j++)
 		    {
@@ -1694,14 +1607,6 @@ int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc,
     /* Start timing this function. */
     GPTLstart("PIO:read_darray_nc_serial");
 #endif
-    if(file == NULL){
-      fprintf(stderr, "%s:%d ERROR: Null pointer to file descriptor\n",__FILE__, __LINE__);
-      return PIO_EINVAL;
-    }
-    if(iodesc == NULL){
-      fprintf(stderr, "%s:%d ERROR: Null pointer to io descriptor\n",__FILE__, __LINE__);
-      return PIO_EINVAL;
-    }
     ios = file->iosystem;
     if (ios == NULL)
 	return PIO_EBADID;
@@ -1731,10 +1636,6 @@ int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc,
 
 	int rrlen = 0;
 
-  if(IOBUF == NULL){
-    fprintf(stderr, "%s:%d ERROR: Trying to write NULL IOBUF\n", __FILE__, __LINE__);
-    return PIO_EINVAL;
-  }
 	// buffer is incremented by byte and loffset is in terms of the iodessc->basetype
 	// so we need to multiply by the size of the basetype
 	// We can potentially allow for one iodesc to have multiple datatypes by allowing the
@@ -2251,7 +2152,6 @@ void compute_maxaggregate_bytes(const iosystem_desc_t ios, io_desc_t *iodesc)
     int maxbytes;
 
     // printf("%s %d %d %d\n",__FILE__,__LINE__,iodesc->maxiobuflen, iodesc->ndof);
-    pioassert(iodesc != NULL, "iodesc pointer is NULL", __FILE__, __LINE__);
 
     if (ios.ioproc && iodesc->maxiobuflen > 0)
 	maxbytesoniotask = PIO_BUFFER_SIZE_LIMIT / iodesc->maxiobuflen;

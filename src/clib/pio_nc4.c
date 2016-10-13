@@ -44,10 +44,6 @@ int PIOc_def_var_deflate(int ncid, int varid, int shuffle, int deflate,
     if (!(file = pio_get_file_from_id(ncid)))
 	return PIO_EBADID;
     ios = file->iosystem;
-    if(ios == NULL){
-      fprintf(stderr, "%s:%d ERROR: File has no iosys associated with it\n", __FILE__, __LINE__);
-      return PIO_EBADID;
-    }
     msg = PIO_MSG_DEF_VAR_DEFLATE;
 
     if (ios->async_interface && ! ios->ioproc)
@@ -94,10 +90,6 @@ int PIOc_def_var_deflate(int ncid, int varid, int shuffle, int deflate,
     if (ierr != PIO_NOERR)
     {
 	errstr = (char *) malloc((strlen(__FILE__) + 20)* sizeof(char));
-      if(errstr == NULL){
-        fprintf(stderr, "%s:%d ERROR: Memory allocation error", __FILE__, __LINE__);
-        return PIO_ENOMEM;
-      }
 	sprintf(errstr,"in file %s",__FILE__);
     }
 
@@ -152,10 +144,6 @@ int PIOc_inq_var_deflate(int ncid, int varid, int *shufflep,
     if (!(file = pio_get_file_from_id(ncid)))
 	return PIO_EBADID;
     ios = file->iosystem;
-    if(ios == NULL){
-      fprintf(stderr, "%s:%d ERROR: File has no iosys associated with it\n", __FILE__, __LINE__);
-      return PIO_EBADID;
-    }
     msg = PIO_MSG_INQ_VAR_DEFLATE;
 
     if (ios->async_interface && ! ios->ioproc)
@@ -197,10 +185,6 @@ int PIOc_inq_var_deflate(int ncid, int varid, int *shufflep,
     if (ierr != PIO_NOERR)
     {
 	errstr = (char *) malloc((strlen(__FILE__) + 20)* sizeof(char));
-      if(errstr == NULL){
-        fprintf(stderr, "%s:%d ERROR: Memory allocation error\n", __FILE__, __LINE__);
-        return PIO_ENOMEM;
-      }
 	sprintf(errstr,"in file %s",__FILE__);
     }
 
@@ -262,10 +246,6 @@ int PIOc_def_var_chunking(int ncid, int varid, int storage,
     if (!(file = pio_get_file_from_id(ncid)))
 	return PIO_EBADID;
     ios = file->iosystem;
-    if(ios == NULL){
-      fprintf(stderr, "%s:%d ERROR: File has no iosys associated with it\n", __FILE__, __LINE__);
-      return PIO_EBADID;
-    }
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
     if (ios->async_interface)
@@ -366,10 +346,6 @@ int PIOc_inq_var_chunking(int ncid, int varid, int *storagep, PIO_Offset *chunks
     if (!(file = pio_get_file_from_id(ncid)))
 	return PIO_EBADID;
     ios = file->iosystem;
-    if(ios == NULL){
-      fprintf(stderr, "%s:%d ERROR: File has no iosys associated with it\n", __FILE__, __LINE__);
-      return PIO_EBADID;
-    }
     msg = PIO_MSG_INQ_VAR_CHUNKING;
 
     if (ios->async_interface && ! ios->ioproc)
@@ -416,10 +392,6 @@ int PIOc_inq_var_chunking(int ncid, int varid, int *storagep, PIO_Offset *chunks
     if (ierr != PIO_NOERR)
     {
 	errstr = (char *) malloc((strlen(__FILE__) + 20)* sizeof(char));
-      if(errstr == NULL){
-        fprintf(stderr, "%s:%d ERROR: Memory allocation error\n", __FILE__, __LINE__);
-        return PIO_ENOMEM;
-      }
 	sprintf(errstr,"in file %s",__FILE__);
     }
 
@@ -479,10 +451,6 @@ int PIOc_def_var_fill(int ncid, int varid, int no_fill, const void *fill_value)
     if (!(file = pio_get_file_from_id(ncid)))
 	return PIO_EBADID;
     ios = file->iosystem;
-    if(ios == NULL){
-      fprintf(stderr, "%s:%d ERROR: File has no iosys associated with it\n", __FILE__, __LINE__);
-      return PIO_EBADID;
-    }
     msg = PIO_MSG_SET_FILL;
 
     if (ios->async_interface && ! ios->ioproc)
@@ -526,10 +494,6 @@ int PIOc_def_var_fill(int ncid, int varid, int no_fill, const void *fill_value)
     if (ierr != PIO_NOERR)
     {
 	errstr = (char *) malloc((strlen(__FILE__) + 20)* sizeof(char));
-      if(errstr == NULL){
-        fprintf(stderr, "%s:%d ERROR: Memory allocation error\n", __FILE__, __LINE__);
-        return PIO_ENOMEM;
-      }
 	sprintf(errstr,"in file %s",__FILE__);
     }
 
@@ -582,10 +546,6 @@ int PIOc_def_var_endian(int ncid, int varid, int endian)
     if (!(file = pio_get_file_from_id(ncid)))
 	return PIO_EBADID;
     ios = file->iosystem;
-    if(ios == NULL){
-      fprintf(stderr, "%s:%d ERROR: File has no iosys associated with it\n", __FILE__, __LINE__);
-      return PIO_EBADID;
-    }
     msg = PIO_MSG_DEF_VAR_ENDIAN;
 
     if (ios->async_interface && ! ios->ioproc)
@@ -629,10 +589,6 @@ int PIOc_def_var_endian(int ncid, int varid, int endian)
     if (ierr != PIO_NOERR)
     {
 	errstr = (char *) malloc((strlen(__FILE__) + 20)* sizeof(char));
-      if(errstr == NULL){
-        fprintf(stderr, "%s:%d ERROR: Memory allocation error\n", __FILE__, __LINE__);
-        return PIO_ENOMEM;
-      }
 	sprintf(errstr,"in file %s",__FILE__);
     }
 
@@ -683,10 +639,6 @@ int PIOc_inq_var_endian(int ncid, int varid, int *endianp)
     if (!(file = pio_get_file_from_id(ncid)))
 	return PIO_EBADID;
     ios = file->iosystem;
-    if(ios == NULL){
-      fprintf(stderr, "%s:%d ERROR: File has no iosys associated with it\n", __FILE__, __LINE__);
-      return PIO_EBADID;
-    }
     msg = PIO_MSG_INQ_VAR_CHUNKING;
 
     if (ios->async_interface && ! ios->ioproc)
@@ -728,10 +680,6 @@ int PIOc_inq_var_endian(int ncid, int varid, int *endianp)
     if (ierr != PIO_NOERR)
     {
 	errstr = (char *) malloc((strlen(__FILE__) + 20)* sizeof(char));
-      if(errstr == NULL){
-        fprintf(stderr, "%s:%d ERROR: Memory allocation error\n", __FILE__, __LINE__);
-        return PIO_ENOMEM;
-      }
 	sprintf(errstr,"in file %s",__FILE__);
     }
 
@@ -971,10 +919,6 @@ int PIOc_set_var_chunk_cache(int ncid, int varid, PIO_Offset size, PIO_Offset ne
     if (!(file = pio_get_file_from_id(ncid)))
 	return PIO_EBADID;
     ios = file->iosystem;
-    if(ios == NULL){
-      fprintf(stderr, "%s:%d ERROR: File has no iosys associated with it\n", __FILE__, __LINE__);
-      return PIO_EBADID;
-    }
     msg = PIO_MSG_SET_VAR_CHUNK_CACHE;
 
     if (ios->async_interface && ! ios->ioproc)
@@ -1016,10 +960,6 @@ int PIOc_set_var_chunk_cache(int ncid, int varid, PIO_Offset size, PIO_Offset ne
     if (ierr != PIO_NOERR)
     {
 	errstr = (char *) malloc((strlen(__FILE__) + 20)* sizeof(char));
-      if(errstr == NULL){
-        fprintf(stderr, "%s:%d ERROR: Memory allocation error\n", __FILE__, __LINE__);
-        return PIO_ENOMEM;
-      }
 	sprintf(errstr,"in file %s",__FILE__);
     }
 
@@ -1072,10 +1012,6 @@ int PIOc_get_var_chunk_cache(int ncid, int varid, PIO_Offset *sizep, PIO_Offset 
     if (!(file = pio_get_file_from_id(ncid)))
 	return PIO_EBADID;
     ios = file->iosystem;
-    if(ios == NULL){
-      fprintf(stderr, "%s:%d ERROR: File has no iosys associated with it\n", __FILE__, __LINE__);
-      return PIO_EBADID;
-    }
 
     /* Since this is a property of the running HDF5 instance, not the
      * file, it's not clear if this message passing will apply. For
@@ -1122,10 +1058,6 @@ int PIOc_get_var_chunk_cache(int ncid, int varid, PIO_Offset *sizep, PIO_Offset 
     if (ierr != PIO_NOERR)
     {
 	errstr = (char *) malloc((strlen(__FILE__) + 20)* sizeof(char));
-      if(errstr == NULL){
-        fprintf(stderr, "%s:%d ERROR: Memory allocation error\n", __FILE__, __LINE__);
-        return PIO_ENOMEM;
-      }
 	sprintf(errstr,"in file %s",__FILE__);
     }
 
