@@ -34,13 +34,17 @@ main(int argc, char **argv)
     int ntasks; /* Number of processors involved in current execution. */
     int iosysid; /* The ID for the parallel I/O system. */
     int iosysid_world; /* The ID for the parallel I/O system. */
-    int iotypes[NUM_FLAVORS] = {PIO_IOTYPE_PNETCDF, PIO_IOTYPE_NETCDF,
-			       PIO_IOTYPE_NETCDF4C, PIO_IOTYPE_NETCDF4P};
+    int num_flavors; /* Number of PIO netCDF flavors in this build. */
+    int flavor[NUM_FLAVORS]; /* iotypes for the supported netCDF IO flavors. */
     int ret; /* Return code. */
 
     /* Initialize test. */
     if ((ret = pio_test_init(argc, argv, &my_rank, &ntasks, TARGET_NTASKS)))
 	ERR(ERR_INIT);
+
+    /* Figure out iotypes. */
+    if ((ret = get_iotypes(&num_flavors, flavor)))
+	ERR(ret);
 
     /* Split world into odd and even. */
     MPI_Comm newcomm;
@@ -65,7 +69,7 @@ main(int argc, char **argv)
 
     int ncid;
     int ncid2;
-    for (int i = 0; i < NUM_FLAVORS; i++)
+    for (int i = 0; i < num_flavors; i++)
     {
 	char fn[NUM_FILES][NC_MAX_NAME + 1];
 	char dimname[NUM_FILES][NC_MAX_NAME + 1];
@@ -79,7 +83,7 @@ main(int argc, char **argv)
 	    sprintf(fn[f], "pio_iosys_test_file%d.nc", f);
 	    sprintf(dimname[f], "dim_%d", f);
 	    
-	    if ((ret = PIOc_createfile(iosysid_world, &lncid, &iotypes[i], fn[f], NC_CLOBBER)))
+	    if ((ret = PIOc_createfile(iosysid_world, &lncid, &flavor[i], fn[f], NC_CLOBBER)))
 		return ret;
 	    /* Define a dimension. */
 	    if ((ret = PIOc_def_dim(lncid, dimname[f], DIMLEN, &dimid)))
@@ -91,7 +95,7 @@ main(int argc, char **argv)
 	}
 
 	/* Open the first file with world iosystem. */
-	if ((ret = PIOc_openfile(iosysid_world, &ncid, &iotypes[i], fn[0], PIO_WRITE)))
+	if ((ret = PIOc_openfile(iosysid_world, &ncid, &flavor[i], fn[0], PIO_WRITE)))
 	    return ret;
 
 	/* Check the first file. */
@@ -105,7 +109,7 @@ main(int argc, char **argv)
 	/* Check the other file with the other IO. */
 	if (even)
 	{
-	    if ((ret = PIOc_openfile(iosysid, &ncid2, &iotypes[i], fn[1], PIO_WRITE)))
+	    if ((ret = PIOc_openfile(iosysid, &ncid2, &flavor[i], fn[1], PIO_WRITE)))
 		return ret;
 	    if ((ret = PIOc_inq_dimname(ncid2, 0, dimname_in)))
 		return ret;

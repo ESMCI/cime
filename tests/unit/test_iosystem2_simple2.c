@@ -36,13 +36,17 @@ main(int argc, char **argv)
     int ntasks; /* Number of processors involved in current execution. */
     int iosysid; /* The ID for the parallel I/O system. */
     int iosysid_world; /* The ID for the parallel I/O system. */
-    int iotypes[NUM_FLAVORS] = {PIO_IOTYPE_PNETCDF, PIO_IOTYPE_NETCDF,
-			       PIO_IOTYPE_NETCDF4C, PIO_IOTYPE_NETCDF4P};
+    int num_flavors; /* Number of PIO netCDF flavors in this build. */
+    int flavor[NUM_FLAVORS]; /* iotypes for the supported netCDF IO flavors. */
     int ret; /* Return code. */
 
     /* Initialize test. */
     if ((ret = pio_test_init(argc, argv, &my_rank, &ntasks, TARGET_NTASKS)))
 	ERR(ERR_INIT);
+
+    /* Figure out iotypes. */
+    if ((ret = get_iotypes(&num_flavors, flavor)))
+	ERR(ret);
 
     /* Split world into odd and even. */
     MPI_Comm newcomm;
@@ -67,7 +71,7 @@ main(int argc, char **argv)
 
     int ncid;
     int ncid2;
-    for (int flv = 0; flv < NUM_FLAVORS; flv++)
+    for (int flv = 0; flv < num_flavors; flv++)
     {
 	char fn[NUM_FILES][NC_MAX_NAME + 1];
 	char dimname[NC_MAX_NAME + 1];
@@ -81,11 +85,11 @@ main(int argc, char **argv)
 		    
 	    /* Create sample file. */
 	    printf("%d %s creating file %s\n", my_rank, TEST_NAME, filename[sample]);
-	    if ((ret = create_nc_sample(sample, iosysid_world, iotypes[flv], filename[sample], my_rank, NULL)))
+	    if ((ret = create_nc_sample(sample, iosysid_world, flavor[flv], filename[sample], my_rank, NULL)))
 		ERR(ret);
 		    
 	    /* Check the file for correctness. */
-	    if ((ret = check_nc_sample(sample, iosysid_world, iotypes[flv], filename[sample], my_rank, &sample_ncid[sample])))
+	    if ((ret = check_nc_sample(sample, iosysid_world, flavor[flv], filename[sample], my_rank, &sample_ncid[sample])))
 		ERR(ret);
 
 	}
@@ -95,7 +99,7 @@ main(int argc, char **argv)
 	int this_sample = even ? 0 : 1;
 	char *file1 = filename[this_sample];
 	int ncid2;
-	if ((ret = check_nc_sample(this_sample, iosysid, iotypes[flv], file1, my_rank, &ncid2)))
+	if ((ret = check_nc_sample(this_sample, iosysid, flavor[flv], file1, my_rank, &ncid2)))
 	    ERR(ret);
 
 	/* Now close the open files. */
