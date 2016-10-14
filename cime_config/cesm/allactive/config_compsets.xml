@@ -276,9 +276,13 @@
   </compset>
 
   <compset>
-    <alias>N1850P</alias>
-    <lname>1850_CAM54%PTAERO_CLM50%BGC_CICE_POP2%ECO_MOSART_CISM1%NOEVOLVE_SWAV_BGC%BDRD</lname>
+  <alias>N1850P</alias>
+    <lname>1850_CAM54%PTAERO_CLM50%BGC_CICE_POP2_MOSART_SGLC_SWAV</lname>
+  </compset>
 
+  <compset>
+  <alias>N1850PCL</alias>
+    <lname>1850_CAM55%PTAERO_CLM50%BGC_CICE_POP2_MOSART_SGLC_SWAV</lname>
   </compset>
 
   <compset>
@@ -287,10 +291,14 @@
   </compset>
 
   <compset>
-    <alias>N1850PCL</alias>
-    <lname>1850_CAM55%PTAERO_CLM50%BGC_CICE_POP2%ECO_MOSART_CISM1%NOEVOLVE_SWAV_BGC%BDRD</lname>
+   <alias>N1850WO</alias>
+    <lname>1850_CAM55%PTAERO_CLM50%BGC_CICE_MICOM_MOSART_SGLC_SWAV</lname>
   </compset>
 
+  <compset>
+  <alias>N1850WO54</alias>
+    <lname>1850_CAM54%PTAERO_CLM50%BGC_CICE_MICOM_MOSART_SGLC_SWAV</lname>
+  </compset>
 
   <!-- Prognostic wave -->
 
