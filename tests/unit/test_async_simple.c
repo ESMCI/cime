@@ -34,15 +34,19 @@ main(int argc, char **argv)
     int ntasks; /* Number of processors involved in current execution. */
     int iosysid[COMPONENT_COUNT]; /* The ID for the parallel I/O system. */
     int flv; /* Index for loop of PIO netcdf flavors. */
+    int num_flavors; /* Number of PIO netCDF flavors in this build. */
+    int flavor[NUM_FLAVORS]; /* iotypes for the supported netCDF IO flavors. */
     int ret; /* Return code. */
-    int flavor[NUM_FLAVORS] = {PIO_IOTYPE_PNETCDF, PIO_IOTYPE_NETCDF,
-			       PIO_IOTYPE_NETCDF4C, PIO_IOTYPE_NETCDF4P};
     int num_procs[COMPONENT_COUNT + 1] = {1, 1}; /* Num procs for IO and computation. */
 
     /* Initialize test. */
     if ((ret = pio_test_init(argc, argv, &my_rank, &ntasks, TARGET_NTASKS)))
 	ERR(ERR_INIT);
     
+    /* Figure out iotypes. */
+    if ((ret = get_iotypes(&num_flavors, flavor)))
+	ERR(ret);
+
     /* Is the current process a computation task? */
     int comp_task = my_rank < NUM_IO_PROCS ? 0 : 1;
 
@@ -56,7 +60,7 @@ main(int argc, char **argv)
      * and when the do, they should go straight to finalize. */
     if (comp_task)
     {
-    	for (int flv = 0; flv < NUM_FLAVORS; flv++)
+    	for (int flv = 0; flv < num_flavors; flv++)
     	{
 	    char filename[NC_MAX_NAME + 1]; /* Test filename. */
 	    int my_comp_idx = my_rank - 1; /* Index in iosysid array. */
