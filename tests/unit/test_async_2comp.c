@@ -30,34 +30,39 @@ main(int argc, char **argv)
 {
     int verbose = 1;
 
-    /** Zero-based rank of processor. */
+    /* Zero-based rank of processor. */
     int my_rank;
 
-    /** Number of processors involved in current execution. */
+    /* Number of processors involved in current execution. */
     int ntasks;
 
-    /** Different output flavors. */
-    int flavor[NUM_FLAVORS] = {PIO_IOTYPE_PNETCDF, PIO_IOTYPE_NETCDF,
-			       PIO_IOTYPE_NETCDF4C, PIO_IOTYPE_NETCDF4P};
+    /* Different output flavors. */
+    int flavor[NUM_FLAVORS];
 
-    /** The ID for the parallel I/O system. */
+    int num_flavors;
+
+    /* The ID for the parallel I/O system. */
     int iosysid[COMPONENT_COUNT];
 
-    /** The ncid of the netCDF file. */
+    /* The ncid of the netCDF file. */
     int ncid;
 
-    /** The ID of the netCDF varable. */
+    /* The ID of the netCDF varable. */
     int varid;
 
-    /** Return code. */
+    /* Return code. */
     int ret;
 
-    /** Index for loops. */
+    /* Index for loops. */
     int fmt, d, d1, i;
 
     /* Initialize test. */
     if ((ret = pio_test_init(argc, argv, &my_rank, &ntasks, TARGET_NTASKS)))
 	ERR(ERR_INIT);
+
+    /* Figure out iotypes. */
+    if ((ret = get_iotypes(&num_flavors, flavor)))
+	ERR(ret);
 
     /* How many processors will be used for our IO and 2 computation components. */
     int num_procs[COMPONENT_COUNT + 1] = {2, 1, 1};
@@ -79,7 +84,7 @@ main(int argc, char **argv)
      * and when the do, they should go straight to finalize. */
     if (comp_task)
     {
-    	for (int flv = 1; flv < NUM_FLAVORS - 2; flv++)
+    	for (int flv = 0; flv < num_flavors; flv++)
     	{
 	    char filename[NC_MAX_NAME + 1];
 
