@@ -43,6 +43,38 @@
 /** The value of the global attribute in the sample 2 output file. */
 #define ATT_VALUE_S2 42
 
+/* How many flavors of netCDF are available? */
+int
+get_iotypes(int *num_flavors, int *flavors)
+{
+    int num = 0;
+    int fmtidx = 0;
+    int format[NUM_FLAVORS];
+	
+#ifdef _PNETCDF
+    num++;
+    format[fmtidx++] = PIO_IOTYPE_PNETCDF;
+#endif
+#ifdef _NETCDF
+    num++;
+    format[fmtidx++] = PIO_IOTYPE_NETCDF;
+#endif
+#ifdef _NETCDF4
+    num += 2;
+    format[fmtidx++] = PIO_IOTYPE_NETCDF4C;
+    format[fmtidx] = PIO_IOTYPE_NETCDF4P;
+#endif
+
+    /* Pass results back to caller. */
+    if (num_flavors)
+	*num_flavors = num;
+    if (flavors)
+	for (int f = 0; f < num; f++)
+	    flavors[f] = format[f];
+
+    return PIO_NOERR;
+}
+
 /* Name of each flavor. */
 char *
 flavor_name(int flavor)

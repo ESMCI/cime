@@ -111,13 +111,16 @@ main(int argc, char **argv)
     int iosysid; /* The ID for the parallel I/O system. */
     int iosysid_world; /* The ID for the parallel I/O system. */
     int ret; /* Return code. */
-
-    int iotypes[NUM_FLAVORS] = {PIO_IOTYPE_PNETCDF, PIO_IOTYPE_NETCDF,
-				PIO_IOTYPE_NETCDF4C, PIO_IOTYPE_NETCDF4P};
+    int num_flavors;
+    int iotypes[NUM_FLAVORS];
 
     /* Initialize test. */
     if ((ret = pio_test_init(argc, argv, &my_rank, &ntasks, TARGET_NTASKS)))
 	ERR(ERR_INIT);
+
+    /* Figure out iotypes. */
+    if ((ret = get_iotypes(&num_flavors, iotypes)))
+	ERR(ret);
 
     /* Split world into odd and even. */
     MPI_Comm newcomm;
@@ -143,7 +146,7 @@ main(int argc, char **argv)
     if ((ret = PIOc_Init_Intracomm(MPI_COMM_WORLD, 4, 1, 0, 1, &iosysid_world)))
 	ERR(ret);
     
-    for (int i = 0; i < NUM_FLAVORS; i++)
+    for (int i = 0; i < num_flavors; i++)
     {
 	char fname0[] = "pio_iosys_test_file0.nc"; 
 	char fname1[] = "pio_iosys_test_file1.nc"; 
