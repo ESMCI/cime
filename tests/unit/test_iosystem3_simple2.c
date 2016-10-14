@@ -31,24 +31,27 @@ main(int argc, char **argv)
     int iosysid_world; /* The ID for the parallel I/O system. */
     char fname0[NC_MAX_NAME + 1];
     int ncid;
+    int num_flavors; /* Number of PIO netCDF flavors in this build. */
+    int flavor[NUM_FLAVORS]; /* iotypes for the supported netCDF IO flavors. */
     int ret; /* Return code. */
-
-    int iotypes[NUM_FLAVORS] = {PIO_IOTYPE_PNETCDF, PIO_IOTYPE_NETCDF,
-				PIO_IOTYPE_NETCDF4C, PIO_IOTYPE_NETCDF4P};
 
     /* Initialize test. */
     if ((ret = pio_test_init(argc, argv, &my_rank, &ntasks, TARGET_NTASKS)))
 	ERR(ERR_INIT);
 
+    /* Figure out iotypes. */
+    if ((ret = get_iotypes(&num_flavors, flavor)))
+	ERR(ret);
+
     /* Initialize PIO system on world. */
     if ((ret = PIOc_Init_Intracomm(MPI_COMM_WORLD, NUM_IO4, STRIDE1, BASE0, REARRANGER, &iosysid_world)))
     	ERR(ret);
 
-    for (int i = 0; i < NUM_FLAVORS; i++)
+    for (int i = 0; i < num_flavors; i++)
     {
 	/* Create the file. */
 	sprintf(fname0, "test_iosystem3_simple2_%d.nc", i);
-	if ((ret = PIOc_createfile(iosysid_world, &ncid, &iotypes[i], fname0, NC_CLOBBER)))
+	if ((ret = PIOc_createfile(iosysid_world, &ncid, &flavor[i], fname0, NC_CLOBBER)))
 	    return ret;
 
 	/* End define mode. */
@@ -64,7 +67,7 @@ main(int argc, char **argv)
 
 	/* Open the file. Note that we never close it, which is bad,
 	 * but should not cause a failure. */
-	if ((ret = PIOc_openfile(iosysid_world, &ncid, &iotypes[i], fname0, mode)))
+	if ((ret = PIOc_openfile(iosysid_world, &ncid, &flavor[i], fname0, mode)))
 	    return ret;
 
 	/* Check the file. */
