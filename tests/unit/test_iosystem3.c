@@ -156,14 +156,17 @@ main(int argc, char **argv)
     MPI_Comm overlap_comm = MPI_COMM_NULL; /* Communicator for tasks 0, 1, 2. */
     int even_rank = -1, overlap_rank = -1; /* Tasks rank in communicator. */
     int even_size = 0, overlap_size = 0; /* Size of communicator. */
+    int num_flavors; /* Number of PIO netCDF flavors in this build. */
+    int flavor[NUM_FLAVORS]; /* iotypes for the supported netCDF IO flavors. */
     int ret; /* Return code. */
-
-    int iotypes[NUM_FLAVORS] = {PIO_IOTYPE_PNETCDF, PIO_IOTYPE_NETCDF,
-				PIO_IOTYPE_NETCDF4C, PIO_IOTYPE_NETCDF4P};
 
     /* Initialize test. */
     if ((ret = pio_test_init(argc, argv, &my_rank, &ntasks, TARGET_NTASKS)))
 	ERR(ERR_INIT);
+
+    /* Figure out iotypes. */
+    if ((ret = get_iotypes(&num_flavors, flavor)))
+	ERR(ret);
 
     /* Initialize PIO system on world. */
     if ((ret = PIOc_Init_Intracomm(MPI_COMM_WORLD, NUM_IO4, STRIDE1, BASE0, REARRANGER, &iosysid_world)))
@@ -238,28 +241,28 @@ main(int argc, char **argv)
 	PIOc_Set_IOSystem_Error_Handling(overlap_iosysid, PIO_BCAST_ERROR);
     }
 
-    for (int i = 0; i < NUM_FLAVORS; i++)
+    for (int i = 0; i < num_flavors; i++)
     {
     	char fname0[] = "pio_iosys_test_file0.nc";
     	char fname1[] = "pio_iosys_test_file1.nc";
     	char fname2[] = "pio_iosys_test_file2.nc";
     	printf("\n\n%d i = %d\n", my_rank, i);
 
-    	if ((ret = create_file(MPI_COMM_WORLD, iosysid_world, iotypes[i], fname0, ATTNAME,
+    	if ((ret = create_file(MPI_COMM_WORLD, iosysid_world, flavor[i], fname0, ATTNAME,
     			       DIMNAME, my_rank)))
     	    ERR(ret);
 
-    	if ((ret = create_file(MPI_COMM_WORLD, iosysid_world, iotypes[i], fname1, ATTNAME,
+    	if ((ret = create_file(MPI_COMM_WORLD, iosysid_world, flavor[i], fname1, ATTNAME,
     			       DIMNAME, my_rank)))
     	    ERR(ret);
 
-    	if ((ret = create_file(MPI_COMM_WORLD, iosysid_world, iotypes[i], fname2, ATTNAME,
+    	if ((ret = create_file(MPI_COMM_WORLD, iosysid_world, flavor[i], fname2, ATTNAME,
     			       DIMNAME, my_rank)))
     	    ERR(ret);
 
     	/* Now check the first file from WORLD communicator. */
     	int ncid;
-    	if ((ret = open_and_check_file(MPI_COMM_WORLD, iosysid_world, iotypes[i], &ncid, fname0,
+    	if ((ret = open_and_check_file(MPI_COMM_WORLD, iosysid_world, flavor[i], &ncid, fname0,
     				       ATTNAME, DIMNAME, 1, my_rank)))
     	    ERR(ret);
 
@@ -268,10 +271,10 @@ main(int argc, char **argv)
     	if (even_comm != MPI_COMM_NULL)
 	{
 	    printf("\n***\n%d Checking file for even_comm\n", my_rank);
-	    if ((ret = open_and_check_file(even_comm, even_iosysid, iotypes[i], &ncid2, fname2,
+	    if ((ret = open_and_check_file(even_comm, even_iosysid, flavor[i], &ncid2, fname2,
 					   ATTNAME, DIMNAME, 1, my_rank)))
 		ERR(ret);
-	    if ((ret = check_file(even_comm, even_iosysid, iotypes[i], ncid2, fname2,
+	    if ((ret = check_file(even_comm, even_iosysid, flavor[i], ncid2, fname2,
 				  ATTNAME, DIMNAME, my_rank)))
 		ERR(ret);
 	}
@@ -281,10 +284,10 @@ main(int argc, char **argv)
     	if (overlap_comm != MPI_COMM_NULL)
 	{
 	    printf("\n***%d Checking file for overlap_comm\n", my_rank);
-	    if ((ret = open_and_check_file(overlap_comm, overlap_iosysid, iotypes[i], &ncid3, fname1,
+	    if ((ret = open_and_check_file(overlap_comm, overlap_iosysid, flavor[i], &ncid3, fname1,
 					   ATTNAME, DIMNAME, 1, my_rank)))
 		ERR(ret);
-	    if ((ret = check_file(overlap_comm, overlap_iosysid, iotypes[i], ncid3, fname1,
+	    if ((ret = check_file(overlap_comm, overlap_iosysid, flavor[i], ncid3, fname1,
 				  ATTNAME, DIMNAME, my_rank)))
 		ERR(ret);
 	}
