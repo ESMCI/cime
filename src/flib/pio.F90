@@ -28,7 +28,7 @@ module pio
        pio_nofill, pio_unlimited, pio_fill_int, pio_fill_double, pio_fill_float, &
 #endif
        pio_64bit_offset, pio_64bit_data, &
-       pio_internal_error, pio_bcast_error, pio_return_error
+       pio_internal_error, pio_bcast_error, pio_return_error, pio_rearr_opt_t
 
   use piodarray, only : pio_read_darray, pio_write_darray, pio_set_buffer_size_limit  
 
