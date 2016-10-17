@@ -65,13 +65,17 @@ MODULE pio_tutil
   PUBLIC  :: PIO_TF_Get_data_types
   PUBLIC  :: PIO_TF_Check_val_
   ! Private functions
+  PRIVATE :: PIO_TF_Check_int_arr_arr_
   PRIVATE :: PIO_TF_Check_int_arr_val, PIO_TF_Check_int_arr_arr
   PRIVATE :: PIO_TF_Check_int_arr_arr_tol
   PRIVATE :: PIO_TF_Check_real_arr_val, PIO_TF_Check_real_arr_arr
+  PRIVATE :: PIO_TF_Check_real_arr_arr_tol_
   PRIVATE :: PIO_TF_Check_real_arr_arr_tol
   PRIVATE :: PIO_TF_Check_double_arr_val, PIO_TF_Check_double_arr_arr
+  PRIVATE :: PIO_TF_Check_double_arr_arr_tol_
   PRIVATE :: PIO_TF_Check_double_arr_arr_tol
   PRIVATE :: PIO_TF_Check_char_str_str
+  PRIVATE :: PIO_TF_Print_idx_from_1d_idx
 
   ! Note that the tolerance value provided is ignored when comparing two
   ! integer arrays
@@ -492,7 +496,18 @@ CONTAINS
 
   END SUBROUTINE PIO_TF_Get_data_types
 
-  LOGICAL FUNCTION PIO_TF_Check_int_arr_arr(arr, exp_arr)
+  ! Print original (multi-d) index string from 1d (reshaped) index
+  INTEGER FUNCTION PIO_TF_Print_idx_from_1d_idx(idx_1d, arr_shape)
+    INTEGER, INTENT(IN) :: idx_1d
+    INTEGER, DIMENSION(:), INTENT(IN) :: arr_shape 
+
+    WRITE(*, "(I5)", ADVANCE="NO") idx_1d
+
+    PIO_TF_Print_idx_from_1d_idx = PIO_NOERR
+
+  END FUNCTION PIO_TF_Print_idx_from_1d_idx
+
+  LOGICAL FUNCTION PIO_TF_Check_int_arr_arr_(arr, exp_arr, arr_shape)
 #ifndef NO_MPIMOD
     USE mpi
 #else
@@ -500,6 +515,7 @@ CONTAINS
 #endif
     INTEGER, DIMENSION(:), INTENT(IN) :: arr
     INTEGER, DIMENSION(:), INTENT(IN) :: exp_arr
+    INTEGER, DIMENSION(:), INTENT(IN) :: arr_shape
     INTEGER :: arr_sz, i, ierr
     ! Not equal at id = nequal_idx
     INTEGER :: nequal_idx
@@ -541,14 +557,23 @@ CONTAINS
       IF (pio_tf_world_rank_ == 0) THEN
          DO i=1,pio_tf_world_sz_
             IF(gfail_info(i) % idx /= -1) THEN
-               PRINT *, "PIO_TF: Fatal Error: rank =", i, ", Val[", gfail_info(i) % idx, "]=", &
+               PRINT *, "PIO_TF: Fatal Error: rank =", i, ", Val[",&
+                    PIO_TF_Print_idx_from_1d_idx(gfail_info(i) % idx, arr_shape),&
+                    "]=", &
                     gfail_info(i) % val, ", Expected = ", gfail_info(i) % exp_val
             END IF
          END DO
       END IF
       deallocate(gfail_info)
    end if
-    PIO_TF_Check_int_arr_arr = gequal
+    PIO_TF_Check_int_arr_arr_ = gequal
+  END FUNCTION
+
+  LOGICAL FUNCTION PIO_TF_Check_int_arr_arr(arr, exp_arr)
+    INTEGER, DIMENSION(:), INTENT(IN) :: arr
+    INTEGER, DIMENSION(:), INTENT(IN) :: exp_arr
+
+    PIO_TF_Check_int_arr_arr = PIO_TF_Check_int_arr_arr_(arr, exp_arr, SHAPE(arr))
   END FUNCTION
 
   ! Note that the tolerance value is ignored when comparing two integer arrays
@@ -573,7 +598,7 @@ CONTAINS
     DEALLOCATE(arr_val)
   END FUNCTION
 
-  LOGICAL FUNCTION PIO_TF_Check_real_arr_arr_tol(arr, exp_arr, tol)
+  LOGICAL FUNCTION PIO_TF_Check_real_arr_arr_tol_(arr, exp_arr, arr_shape, tol)
 #ifndef NO_MPIMOD
     USE mpi
 #else
@@ -581,6 +606,7 @@ CONTAINS
 #endif
     REAL(KIND=fc_real), DIMENSION(:), INTENT(IN) :: arr
     REAL(KIND=fc_real), DIMENSION(:), INTENT(IN) :: exp_arr
+    INTEGER, DIMENSION(:), INTENT(IN) :: arr_shape
     REAL, INTENT(IN) :: tol
 
     INTEGER :: arr_sz, i, ierr
@@ -625,14 +651,24 @@ CONTAINS
         DO i=1,pio_tf_world_sz_
           IF(INT(gfail_info(i) % idx) /= -1) THEN
             PRINT *, "PIO_TF: Fatal Error: rank =", i, ", Val[", &
-                 INT(gfail_info(i) % idx), "]=", gfail_info(i) % val, ", Expected = ", gfail_info(i) % exp_val
+                 PIO_TF_Print_idx_from_1d_idx(INT(gfail_info(i)%idx), arr_shape),&
+                 "]=", gfail_info(i) % val, ", Expected = ", gfail_info(i) % exp_val
           END IF
         END DO
       END IF
       DEALLOCATE(gfail_info)
    END IF
 
-    PIO_TF_Check_real_arr_arr_tol = gequal
+    PIO_TF_Check_real_arr_arr_tol_ = gequal
+  END FUNCTION
+
+  LOGICAL FUNCTION PIO_TF_Check_real_arr_arr_tol(arr, exp_arr, tol)
+    REAL(KIND=fc_real), DIMENSION(:), INTENT(IN) :: arr
+    REAL(KIND=fc_real), DIMENSION(:), INTENT(IN) :: exp_arr
+    REAL, INTENT(IN) :: tol
+
+    PIO_TF_Check_real_arr_arr_tol = PIO_TF_Check_real_arr_arr_tol_(arr, exp_arr,&
+                                SHAPE(arr), 0.0)
   END FUNCTION
 
   LOGICAL FUNCTION PIO_TF_Check_real_arr_arr(arr, exp_arr)
@@ -653,7 +689,7 @@ CONTAINS
     DEALLOCATE(arr_val)
   END FUNCTION
 
-  LOGICAL FUNCTION PIO_TF_Check_double_arr_arr_tol(arr, exp_arr, tol)
+  LOGICAL FUNCTION PIO_TF_Check_double_arr_arr_tol_(arr, exp_arr, arr_shape, tol)
 #ifndef NO_MPIMOD
     USE mpi
 #else
@@ -664,6 +700,7 @@ CONTAINS
 #endif
     REAL(KIND=fc_double), DIMENSION(:), INTENT(IN) :: arr
     REAL(KIND=fc_double), DIMENSION(:), INTENT(IN) :: exp_arr
+    INTEGER, DIMENSION(:), INTENT(IN) :: arr_shape
     REAL, INTENT(IN) :: tol
     INTEGER :: arr_sz, i, ierr
     ! Not equal at id = nequal_idx
@@ -709,7 +746,8 @@ CONTAINS
         DO i=1,pio_tf_world_sz_
           IF(INT(gfail_info(i) % idx) /= -1) THEN
             PRINT *, "PIO_TF: Fatal Error: rank =", i, ", Val[", &
-                  INT(gfail_info(i) % idx), "]=", gfail_info(i) % val, &
+                 PIO_TF_Print_idx_from_1d_idx(INT(gfail_info(i)%idx), arr_shape),&
+                  "]=", gfail_info(i) % val, &
                   ", Expected = ", gfail_info(i) % exp_val
           END IF
         END DO
@@ -717,7 +755,16 @@ CONTAINS
       DEALLOCATE(gfail_info)
    END IF
 
-    PIO_TF_Check_double_arr_arr_tol = gequal
+    PIO_TF_Check_double_arr_arr_tol_ = gequal
+  END FUNCTION
+
+  LOGICAL FUNCTION PIO_TF_Check_double_arr_arr_tol(arr, exp_arr, tol)
+    REAL(KIND=fc_double), DIMENSION(:), INTENT(IN) :: arr
+    REAL(KIND=fc_double), DIMENSION(:), INTENT(IN) :: exp_arr
+    REAL, INTENT(IN) :: tol
+
+    PIO_TF_Check_double_arr_arr_tol = PIO_TF_Check_double_arr_arr_tol_(arr, exp_arr,&
+                                    SHAPE(arr), 0.0)
   END FUNCTION
 
   LOGICAL FUNCTION PIO_TF_Check_double_arr_arr(arr, exp_arr)
