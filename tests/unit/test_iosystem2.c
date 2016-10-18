@@ -28,7 +28,6 @@ create_file(MPI_Comm comm, int iosysid, int format, char *filename,
 {
     int ncid, varid, dimid;
     int ret;
-
     /* Create the file. */
     if ((ret = PIOc_createfile(iosysid, &ncid, &format, filename, NC_CLOBBER)))
 	return ret;
@@ -59,7 +58,7 @@ create_file(MPI_Comm comm, int iosysid, int format, char *filename,
     if ((ret = PIOc_closefile(ncid)))
 	return ret;
     printf("%d closed file ncid = %d\n", my_rank, ncid);
-    
+
     return PIO_NOERR;
 }
 
@@ -98,7 +97,7 @@ int open_and_check_file(MPI_Comm comm, int iosysid, int iotype, int *ncid, char 
     if (!disable_close)
 	if ((ret = PIOc_closefile(*ncid)))
 	    return ret;
-	
+
     return PIO_NOERR;
 }
 
@@ -113,63 +112,65 @@ main(int argc, char **argv)
     int ret; /* Return code. */
     int num_flavors;
     int iotypes[NUM_FLAVORS];
+    MPI_Comm test_comm;
 
     /* Initialize test. */
-    if ((ret = pio_test_init(argc, argv, &my_rank, &ntasks, TARGET_NTASKS)))
+    if ((ret = pio_test_init(argc, argv, &my_rank, &ntasks, TARGET_NTASKS, &test_comm)))
 	ERR(ERR_INIT);
-
-    /* Figure out iotypes. */
-    if ((ret = get_iotypes(&num_flavors, iotypes)))
-	ERR(ret);
-
-    /* Split world into odd and even. */
-    MPI_Comm newcomm;
-    int even = my_rank % 2 ? 0 : 1;
-    if ((ret = MPI_Comm_split(MPI_COMM_WORLD, even, 0, &newcomm)))
-	MPIERR(ret);
-    printf("%d newcomm = %d even = %d\n", my_rank, newcomm, even);
-
-    /* Get rank in new communicator and its size. */
-    int new_rank, new_size;
-    if ((ret = MPI_Comm_rank(newcomm, &new_rank)))
-	MPIERR(ret);
-    if ((ret = MPI_Comm_size(newcomm, &new_size)))
-	MPIERR(ret);
-    printf("%d newcomm = %d new_rank = %d new_size = %d\n", my_rank, newcomm,
-	   new_rank, new_size);
-
-    /* Initialize PIO system. */
-    if ((ret = PIOc_Init_Intracomm(newcomm, 2, 1, 0, 1, &iosysid)))
-	ERR(ret);
-
-    /* Initialize another PIO system. */
-    if ((ret = PIOc_Init_Intracomm(MPI_COMM_WORLD, 4, 1, 0, 1, &iosysid_world)))
-	ERR(ret);
-    
-    for (int i = 0; i < num_flavors; i++)
+    if (my_rank < TARGET_NTASKS)
     {
-	char fname0[] = "pio_iosys_test_file0.nc"; 
-	char fname1[] = "pio_iosys_test_file1.nc"; 
+      /* Figure out iotypes. */
+      if ((ret = get_iotypes(&num_flavors, iotypes)))
+	ERR(ret);
+
+      /* Split world into odd and even. */
+      MPI_Comm newcomm;
+      int even = my_rank % 2 ? 0 : 1;
+      if ((ret = MPI_Comm_split(test_comm, even, 0, &newcomm)))
+	MPIERR(ret);
+      printf("%d newcomm = %d even = %d\n", my_rank, newcomm, even);
+
+      /* Get rank in new communicator and its size. */
+      int new_rank, new_size;
+      if ((ret = MPI_Comm_rank(newcomm, &new_rank)))
+	MPIERR(ret);
+      if ((ret = MPI_Comm_size(newcomm, &new_size)))
+	MPIERR(ret);
+      printf("%d newcomm = %d new_rank = %d new_size = %d\n", my_rank, newcomm,
+	     new_rank, new_size);
+
+      /* Initialize PIO system. */
+      if ((ret = PIOc_Init_Intracomm(newcomm, 2, 1, 0, 1, &iosysid)))
+	ERR(ret);
+
+      /* Initialize another PIO system. */
+      if ((ret = PIOc_Init_Intracomm(test_comm, 4, 1, 0, 1, &iosysid_world)))
+	ERR(ret);
+
+      for (int i = 0; i < num_flavors; i++)
+      {
+	char fname0[] = "pio_iosys_test_file0.nc";
+	char fname1[] = "pio_iosys_test_file1.nc";
 	char fname2[] = "pio_iosys_test_file2.nc";
 	printf("\n\n%d i = %d\n", my_rank, i);
 
-	if ((ret = create_file(MPI_COMM_WORLD, iosysid_world, iotypes[i], fname0, ATTNAME,
+	if ((ret = create_file(test_comm, iosysid_world, iotypes[i], fname0, ATTNAME,
 			       DIMNAME, my_rank)))
 	    ERR(ret);
 
-	if ((ret = create_file(MPI_COMM_WORLD, iosysid_world, iotypes[i], fname1, ATTNAME,
+	if ((ret = create_file(test_comm, iosysid_world, iotypes[i], fname1, ATTNAME,
 			       DIMNAME, my_rank)))
 	    ERR(ret);
 
-	if ((ret = create_file(MPI_COMM_WORLD, iosysid_world, iotypes[i], fname2, ATTNAME,
+	if ((ret = create_file(test_comm, iosysid_world, iotypes[i], fname2, ATTNAME,
 			       DIMNAME, my_rank)))
 	    ERR(ret);
 
-	MPI_Barrier(MPI_COMM_WORLD);
+	MPI_Barrier(test_comm);
 
 	/* Now check the first file. */
 	int ncid;
-	if ((ret = open_and_check_file(MPI_COMM_WORLD, iosysid_world, iotypes[i], &ncid, fname0,
+	if ((ret = open_and_check_file(test_comm, iosysid_world, iotypes[i], &ncid, fname0,
 				       ATTNAME, DIMNAME, 1, my_rank)))
 	    ERR(ret);
 
@@ -181,22 +182,23 @@ main(int argc, char **argv)
 	if ((ret = open_and_check_file(newcomm, iosysid, iotypes[i], &ncid2, fname,
 				       ATTNAME, DIMNAME, 1, my_rank)))
 	    ERR(ret);
-	
+
 
 	/* Close the still-open files. */
 	if ((ret = PIOc_closefile(ncid)))
 	    ERR(ret);
 	if ((ret = PIOc_closefile(ncid2)))
 	    ERR(ret);
-    } /* next iotype */
-
-    /* Finalize PIO system. */
-    if ((ret = PIOc_finalize(iosysid)))
+      } /* next iotype */
+      /* Finalize PIO system. */
+      if ((ret = PIOc_finalize(iosysid)))
 	ERR(ret);
 
-    /* Finalize PIO system. */
-    if ((ret = PIOc_finalize(iosysid_world)))
+      /* Finalize PIO system. */
+      if ((ret = PIOc_finalize(iosysid_world)))
 	ERR(ret);
+    }/* my_rank < TARGET_NTASKS */
+    MPI_Barrier(MPI_COMM_WORLD);
 
     /* Finalize test. */
     printf("%d %s finalizing...\n", my_rank, TEST_NAME);

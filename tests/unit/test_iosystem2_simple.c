@@ -37,40 +37,42 @@ main(int argc, char **argv)
     int num_flavors; /* Number of PIO netCDF flavors in this build. */
     int flavor[NUM_FLAVORS]; /* iotypes for the supported netCDF IO flavors. */
     int ret; /* Return code. */
+    MPI_Comm test_comm;
 
     /* Initialize test. */
-    if ((ret = pio_test_init(argc, argv, &my_rank, &ntasks, TARGET_NTASKS)))
+    if ((ret = pio_test_init(argc, argv, &my_rank, &ntasks, TARGET_NTASKS, &test_comm)))
 	ERR(ERR_INIT);
-
-    /* Figure out iotypes. */
-    if ((ret = get_iotypes(&num_flavors, flavor)))
+    if(my_rank < TARGET_NTASKS)
+    {
+      /* Figure out iotypes. */
+      if ((ret = get_iotypes(&num_flavors, flavor)))
 	ERR(ret);
 
-    /* Split world into odd and even. */
-    MPI_Comm newcomm;
-    int even = my_rank % 2 ? 0 : 1;
-    if ((ret = MPI_Comm_split(MPI_COMM_WORLD, even, 0, &newcomm)))
+      /* Split world into odd and even. */
+      MPI_Comm newcomm;
+      int even = my_rank % 2 ? 0 : 1;
+      if ((ret = MPI_Comm_split(test_comm, even, 0, &newcomm)))
 	MPIERR(ret);
-    printf("%d newcomm = %d even = %d\n", my_rank, newcomm, even);
+      printf("%d newcomm = %d even = %d\n", my_rank, newcomm, even);
 
-    /* Get size of new communicator. */
-    int new_size;
-    if ((ret = MPI_Comm_size(newcomm, &new_size)))
+      /* Get size of new communicator. */
+      int new_size;
+      if ((ret = MPI_Comm_size(newcomm, &new_size)))
 	MPIERR(ret);
 
     /* Initialize an intracomm for evens/odds. */
-    if ((ret = PIOc_Init_Intracomm(newcomm, new_size, STRIDE, BASE, REARRANGER, &iosysid)))
+      if ((ret = PIOc_Init_Intracomm(newcomm, new_size, STRIDE, BASE, REARRANGER, &iosysid)))
 	ERR(ret);
 
-    /* Initialize an intracomm for all processes. */
-    if ((ret = PIOc_Init_Intracomm(MPI_COMM_WORLD, ntasks, STRIDE, BASE, REARRANGER,
+      /* Initialize an intracomm for all processes. */
+      if ((ret = PIOc_Init_Intracomm(test_comm, TARGET_NTASKS, STRIDE, BASE, REARRANGER,
 				   &iosysid_world)))
 	ERR(ret);
 
-    int ncid;
-    int ncid2;
-    for (int i = 0; i < num_flavors; i++)
-    {
+      int ncid;
+      int ncid2;
+      for (int i = 0; i < num_flavors; i++)
+      {
 	char fn[NUM_FILES][NC_MAX_NAME + 1];
 	char dimname[NUM_FILES][NC_MAX_NAME + 1];
 
@@ -82,7 +84,7 @@ main(int argc, char **argv)
 	    /* Creat file and dimension name. */
 	    sprintf(fn[f], "pio_iosys_test_file%d.nc", f);
 	    sprintf(dimname[f], "dim_%d", f);
-	    
+
 	    if ((ret = PIOc_createfile(iosysid_world, &lncid, &flavor[i], fn[f], NC_CLOBBER)))
 		return ret;
 	    /* Define a dimension. */
@@ -124,15 +126,18 @@ main(int argc, char **argv)
 	if (even)
 	    if ((ret = PIOc_closefile(ncid2)))
 		ERR(ret);
-    } /* next iotype */
+      } /* next iotype */
 
-    /* Finalize PIO odd/even intracomm. */
-    if ((ret = PIOc_finalize(iosysid)))
+      /* Finalize PIO odd/even intracomm. */
+      if ((ret = PIOc_finalize(iosysid)))
 	ERR(ret);
 
-    /* Finalize PIO world intracomm. */
-    if ((ret = PIOc_finalize(iosysid_world)))
+
+      /* Finalize PIO world intracomm. */
+      if ((ret = PIOc_finalize(iosysid_world)))
 	ERR(ret);
+    }/* my_rank < TARGET_NTASKS */
+    MPI_Barrier(MPI_COMM_WORLD);
 
     /* Finalize test. */
     printf("%d %s finalizing...\n", my_rank, TEST_NAME);

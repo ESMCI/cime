@@ -50,7 +50,7 @@ get_iotypes(int *num_flavors, int *flavors)
     int num = 0;
     int fmtidx = 0;
     int format[NUM_FLAVORS];
-	
+
 #ifdef _PNETCDF
     num++;
     format[fmtidx++] = PIO_IOTYPE_PNETCDF;
@@ -92,10 +92,10 @@ flavor_name(int flavor)
 /* Initalize the test system. */
 int
 pio_test_init(int argc, char **argv, int *my_rank, int *ntasks,
-	      int target_ntasks)
+	      int target_ntasks, MPI_Comm *comm)
 {
     int ret; /* Return value. */
-    
+
 #ifdef TIMING
     /* Initialize the GPTL timing library. */
     if ((ret = GPTLinitialize()))
@@ -113,17 +113,37 @@ pio_test_init(int argc, char **argv, int *my_rank, int *ntasks,
 	MPIERR(ret);
 
     /* Check that a valid number of processors was specified. */
-    if (*ntasks != target_ntasks)
+    if (*ntasks < target_ntasks)
     {
-	fprintf(stderr, "ERROR: Number of processors must be exactly %d for this test!\n",
+	fprintf(stderr, "ERROR: Number of processors must be at least %d for this test!\n",
 	    target_ntasks);
 	return ERR_AWFUL;
     }
-
+    else if (*ntasks > target_ntasks)
+    {
+      int color, key;
+      if(*my_rank < target_ntasks)
+      {
+	color = 0;
+	key = *my_rank;
+      }
+      else
+      {
+	color = 1;
+	key = *my_rank - target_ntasks;
+      }
+      if ((ret=MPI_Comm_split(MPI_COMM_WORLD, color, key, comm)))
+	MPIERR(ret);
+    }
+    else
+    {
+      if ((ret=MPI_Comm_dup(MPI_COMM_WORLD, comm)))
+	MPIERR(ret);
+    }
     /* Turn on logging. */
     if ((ret = PIOc_set_log_level(3)))
 	return ret;
-    
+
     return PIO_NOERR;
 }
 
@@ -132,7 +152,7 @@ int
 pio_test_finalize()
 {
     int ret; /* Return value. */
-    
+
     /* Finalize MPI. */
     MPI_Finalize();
 
@@ -142,7 +162,7 @@ pio_test_finalize()
 	return ret;
 #endif
 
-}    
+}
 
 /** Test the inq_format function. */
 int
@@ -262,7 +282,7 @@ create_nc_sample_0(int iosysid, int format, char *filename, int my_rank, int *nc
 	    return ret;
 	printf("%d closed file ncid = %d\n", my_rank, ncid);
     }
-    
+
     return PIO_NOERR;
 }
 
@@ -401,7 +421,7 @@ create_nc_sample_1(int iosysid, int format, char *filename, int my_rank, int *nc
 	    return ret;
 	printf("%d closed file ncid = %d\n", my_rank, ncid);
     }
-    
+
     return PIO_NOERR;
 }
 
@@ -592,7 +612,7 @@ create_nc_sample_2(int iosysid, int format, char *filename, int my_rank, int *nc
     if ((ret = PIOc_enddef(ncid)))
     	return ret;
     printf("%d define mode ended ncid = %d\n", my_rank, ncid);
-	    
+
     /* Write some data. For the PIOc_put/get functions, all data must
      * be on compmaster before the function is called. Only
      * compmaster's arguments are passed to the async msg handler. All
@@ -620,10 +640,10 @@ create_nc_sample_2(int iosysid, int format, char *filename, int my_rank, int *nc
     return PIO_NOERR;
 }
 
-/* Check sample file 2 for correctness. 
+/* Check sample file 2 for correctness.
 *
-* @param ncidp if NULL, close file, otherwise return ncid of still-open file. 
-* @reaturns 0 for success and error code otherwise. 
+* @param ncidp if NULL, close file, otherwise return ncid of still-open file.
+* @reaturns 0 for success and error code otherwise.
 */
 int
 check_nc_sample_2(int iosysid, int format, char *filename, int my_rank, int *ncidp)
@@ -654,7 +674,7 @@ check_nc_sample_2(int iosysid, int format, char *filename, int my_rank, int *nci
     int myid;
     PIO_Offset start[NDIM_S2] = {0}, count[NDIM_S2] = {DIM_LEN_S2};
     int data_in[DIM_LEN_S2];
-    
+
     /* Re-open the file to check it. */
     printf("%d opening file %s format %d\n", my_rank, filename, format);
     if ((ret = PIOc_openfile(iosysid, &ncid, &format, filename, NC_NOWRITE)))
