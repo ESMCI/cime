@@ -75,7 +75,7 @@ MODULE pio_tutil
   PRIVATE :: PIO_TF_Check_double_arr_arr_tol_
   PRIVATE :: PIO_TF_Check_double_arr_arr_tol
   PRIVATE :: PIO_TF_Check_char_str_str
-  PRIVATE :: PIO_TF_Print_idx_from_1d_idx
+  PRIVATE :: PIO_TF_Get_idx_from_1d_idx
 
   ! Note that the tolerance value provided is ignored when comparing two
   ! integer arrays
@@ -496,16 +496,15 @@ CONTAINS
 
   END SUBROUTINE PIO_TF_Get_data_types
 
-  ! Print original (multi-d) index string from 1d (reshaped) index
-  INTEGER FUNCTION PIO_TF_Print_idx_from_1d_idx(idx_1d, arr_shape)
+  ! Get original (multi-d) index string from 1d (reshaped) index
+  SUBROUTINE PIO_TF_Get_idx_from_1d_idx(idx_1d, arr_shape, idx_str)
     INTEGER, INTENT(IN) :: idx_1d
     INTEGER, DIMENSION(:), INTENT(IN) :: arr_shape 
+    CHARACTER(LEN=*), INTENT(OUT) :: idx_str
 
-    WRITE(*, "(I5)", ADVANCE="NO") idx_1d
+    WRITE(idx_str, "(I5)") idx_1d
 
-    PIO_TF_Print_idx_from_1d_idx = PIO_NOERR
-
-  END FUNCTION PIO_TF_Print_idx_from_1d_idx
+  END SUBROUTINE PIO_TF_Get_idx_from_1d_idx
 
   LOGICAL FUNCTION PIO_TF_Check_int_arr_arr_(arr, exp_arr, arr_shape)
 #ifndef NO_MPIMOD
@@ -516,6 +515,8 @@ CONTAINS
     INTEGER, DIMENSION(:), INTENT(IN) :: arr
     INTEGER, DIMENSION(:), INTENT(IN) :: exp_arr
     INTEGER, DIMENSION(:), INTENT(IN) :: arr_shape
+
+    CHARACTER(LEN=PIO_TF_MAX_STR_LEN) :: idx_str
     INTEGER :: arr_sz, i, ierr
     ! Not equal at id = nequal_idx
     INTEGER :: nequal_idx
@@ -557,9 +558,9 @@ CONTAINS
       IF (pio_tf_world_rank_ == 0) THEN
          DO i=1,pio_tf_world_sz_
             IF(gfail_info(i) % idx /= -1) THEN
+               CALL PIO_TF_Get_idx_from_1d_idx(gfail_info(i) % idx, arr_shape, idx_str)
                PRINT *, "PIO_TF: Fatal Error: rank =", i, ", Val[",&
-                    PIO_TF_Print_idx_from_1d_idx(gfail_info(i) % idx, arr_shape),&
-                    "]=", &
+                    trim(idx_str), "]=",&
                     gfail_info(i) % val, ", Expected = ", gfail_info(i) % exp_val
             END IF
          END DO
@@ -609,6 +610,7 @@ CONTAINS
     INTEGER, DIMENSION(:), INTENT(IN) :: arr_shape
     REAL, INTENT(IN) :: tol
 
+    CHARACTER(LEN=PIO_TF_MAX_STR_LEN) :: idx_str
     INTEGER :: arr_sz, i, ierr
     ! Not equal at id = nequal_idx
     REAL(KIND=fc_real) :: nequal_idx
@@ -650,8 +652,8 @@ CONTAINS
       IF (pio_tf_world_rank_ == 0) THEN
         DO i=1,pio_tf_world_sz_
           IF(INT(gfail_info(i) % idx) /= -1) THEN
-            PRINT *, "PIO_TF: Fatal Error: rank =", i, ", Val[", &
-                 PIO_TF_Print_idx_from_1d_idx(INT(gfail_info(i)%idx), arr_shape),&
+            CALL PIO_TF_Get_idx_from_1d_idx(INT(gfail_info(i)%idx), arr_shape, idx_str)
+            PRINT *, "PIO_TF: Fatal Error: rank =", i, ", Val[", trim(idx_str),&
                  "]=", gfail_info(i) % val, ", Expected = ", gfail_info(i) % exp_val
           END IF
         END DO
@@ -702,6 +704,8 @@ CONTAINS
     REAL(KIND=fc_double), DIMENSION(:), INTENT(IN) :: exp_arr
     INTEGER, DIMENSION(:), INTENT(IN) :: arr_shape
     REAL, INTENT(IN) :: tol
+
+    CHARACTER(LEN=PIO_TF_MAX_STR_LEN) :: idx_str
     INTEGER :: arr_sz, i, ierr
     ! Not equal at id = nequal_idx
     REAL(KIND=fc_double) :: nequal_idx
@@ -745,9 +749,9 @@ CONTAINS
       IF (pio_tf_world_rank_ == 0) THEN
         DO i=1,pio_tf_world_sz_
           IF(INT(gfail_info(i) % idx) /= -1) THEN
-            PRINT *, "PIO_TF: Fatal Error: rank =", i, ", Val[", &
-                 PIO_TF_Print_idx_from_1d_idx(INT(gfail_info(i)%idx), arr_shape),&
-                  "]=", gfail_info(i) % val, &
+            CALL PIO_TF_Get_idx_from_1d_idx(INT(gfail_info(i)%idx), arr_shape, idx_str)
+            PRINT *, "PIO_TF: Fatal Error: rank =", i, ", Val[",&
+                  trim(idx_str), "]=", gfail_info(i) % val,&
                   ", Expected = ", gfail_info(i) % exp_val
           END IF
         END DO
