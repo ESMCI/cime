@@ -50,11 +50,11 @@ main(int argc, char **argv)
 	return ret;
 
       /* Initialize PIO system on world. */
-      if ((ret = PIOc_Init_Intracomm(MPI_COMM_WORLD, 4, 1, 0, 1, &iosysid_world)))
+      if ((ret = PIOc_Init_Intracomm(test_comm, 4, 1, 0, 1, &iosysid_world)))
     	ERR(ret);
 
       /* Get MPI_Group of world comm. */
-      if ((ret = MPI_Comm_group(MPI_COMM_WORLD, &world_group)))
+      if ((ret = MPI_Comm_group(test_comm, &world_group)))
 	ERR(ret);
 
       /* Create a group with tasks 0, 1, 3. */
@@ -106,21 +106,13 @@ main(int argc, char **argv)
       if (overlap_comm != MPI_COMM_NULL)
 	if ((ret = MPI_Comm_free(&overlap_comm)))
 	    ERR(ret);
+      printf("%d %s SUCCESS!!\n", my_rank, TEST_NAME);
     }
     MPI_Barrier(MPI_COMM_WORLD);
-    /* Finalize test. */
-    printf("%d %s finalizing MPI...\n", my_rank, TEST_NAME);
 
-    /* Finalize MPI. */
-    MPI_Finalize();
+    if ((ret = pio_test_finalize()))
+      ERR(ret);
 
-#ifdef TIMING
-    /* Finalize the GPTL timing library. */
-    if ((ret = GPTLfinalize()))
-	return ret;
-#endif
-
-    printf("%d %s SUCCESS!!\n", my_rank, TEST_NAME);
 
     return 0;
 }

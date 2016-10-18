@@ -69,7 +69,7 @@ main(int argc, char **argv)
 	ERR(ret);
 
       /* Initialize an intracomm for all processes. */
-      if ((ret = PIOc_Init_Intracomm(test_comm, ntasks, STRIDE, BASE, REARRANGER,
+      if ((ret = PIOc_Init_Intracomm(test_comm, TARGET_NTASKS, STRIDE, BASE, REARRANGER,
 				   &iosysid_world)))
 	ERR(ret);
 
