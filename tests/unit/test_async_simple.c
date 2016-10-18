@@ -92,7 +92,7 @@ main(int argc, char **argv)
 		   iosysid[c]);
 	}
       } /* endif comp_task */
-    } /* endif my_rank < TARGET_NTASKS
+    } /* endif my_rank < TARGET_NTASKS */
     /* Wait for everyone to catch up. */
     printf("%d %s waiting for all processes!\n", my_rank, TEST_NAME);
     MPI_Barrier(test_comm);

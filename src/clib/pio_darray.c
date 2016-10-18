@@ -1136,29 +1136,28 @@ int PIOc_write_darray_multi(const int ncid, const int *vid, const int ioid,
 	switch(file->iotype)
 	{
 	case PIO_IOTYPE_PNETCDF:
+	case PIO_IOTYPE_NETCDF4P:
 	    ierr = pio_write_darray_multi_nc(file, nvars, vid,
 					     iodesc->ndims, iodesc->basetype, iodesc->gsize,
 					     iodesc->maxfillregions, iodesc->fillregion, iodesc->holegridsize,
 					     iodesc->holegridsize, iodesc->num_aiotasks,
 					     vdesc0->fillbuf, frame);
 	    break;
-	case PIO_IOTYPE_NETCDF4P:
 	case PIO_IOTYPE_NETCDF4C:
 	case PIO_IOTYPE_NETCDF:
-	    /*       ierr = pio_write_darray_multi_nc_serial(file, nvars, vid,
+	  ierr = pio_write_darray_multi_nc_serial(file, nvars, vid,
 		     iodesc->ndims, iodesc->basetype, iodesc->gsize,
 		     iodesc->maxfillregions, iodesc->fillregion, iodesc->holegridsize,
 		     iodesc->holegridsize, iodesc->num_aiotasks,
 		     vdesc0->fillbuf, frame);
-	    */
-	    /*       if (vdesc0->fillbuf != NULL){
-		     printf("%s %d %x\n",__FILE__,__LINE__,vdesc0->fillbuf);
-		     brel(vdesc0->fillbuf);
-		     vdesc0->fillbuf = NULL;
-		     }
-	    */
 	    break;
 	}
+
+	if (vdesc0->fillbuf != NULL){
+	  brel(vdesc0->fillbuf);
+	  vdesc0->fillbuf = NULL;
+	}
+
     }
 
     flush_output_buffer(file, flushtodisk, 0);
@@ -1235,7 +1234,7 @@ int PIOc_write_darray(const int ncid, const int vid, const int ioid,
 	return PIO_EBADID;
 
     /* Is this a record variable? */
-    recordvar = vdesc->record < 0 ? true : false;
+    recordvar = vdesc->record >= 0 ? true : false;
 
     if (iodesc->ndof != arraylen)
     {
@@ -1919,11 +1918,6 @@ int flush_output_buffer(file_desc_t *file, bool force, PIO_Offset addsize)
     int *status;
     PIO_Offset usage = 0;
 
-#ifdef TIMING
-    /* Start timing this function. */
-    GPTLstart("PIO:flush_output_buffer");
-#endif
-
     pioassert(file != NULL, "file pointer not defined", __FILE__,
 	      __LINE__);
 
@@ -1984,7 +1978,8 @@ int flush_output_buffer(file_desc_t *file, bool force, PIO_Offset addsize)
 	    {
 		request[rcnt++] = max(vdesc->request[reqcnt],NC_REQ_NULL);
 	    }
-	    free(vdesc->request);
+	    if (vdesc->request != NULL)
+	      free(vdesc->request);
 	    vdesc->request = NULL;
 	    vdesc->nreqs = 0;
 	    //      if (file->iosystem->io_rank < 2) printf("%s %d varid=%d\n",__FILE__,__LINE__,i);
@@ -2024,11 +2019,6 @@ int flush_output_buffer(file_desc_t *file, bool force, PIO_Offset addsize)
 	}
 
     }
-
-#ifdef TIMING
-    /* Stop timing this function. */
-    GPTLstop("PIO:flush_output_buffer");
-#endif
 
 #endif /* _PNETCDF */
     return ierr;

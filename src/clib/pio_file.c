@@ -210,14 +210,6 @@ int PIOc_openfile_retry(const int iosysid, int *ncidp, int *iotype,
 	if ((mpierr = MPI_Bcast(&file->mode, 1, MPI_INT, ios->ioroot, ios->my_comm)))
 	    return check_mpi(file, mpierr, __FILE__, __LINE__);
 
-	/* tmp_fh = file->fh; */
-	/* if ((mpierr = MPI_Bcast(&tmp_fh, 1, MPI_INT, ios->ioroot, ios->union_comm))) */
-	/*     return check_mpi(file, mpierr, __FILE__, __LINE__); */
-
-	/* /\* Not io proc - file handle is not set by pnetcdfc *\/ */
-	/* if (file->fh == -1) */
-	/*     file->fh = tmp_fh; */
-
 	/* Create the ncid that the user will see. This is necessary
 	 * because otherwise ncids will be reused if files are opened
 	 * on multiple iosystems. */
