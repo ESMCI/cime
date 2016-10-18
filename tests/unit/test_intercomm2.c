@@ -9,6 +9,7 @@
  */
 #define LOGGING 1
 #include <pio.h>
+#include <pio_tests.h>
 #include <netcdf.h>
 #include <unistd.h>
 #ifdef TIMING
@@ -31,6 +32,7 @@
 /** The length of our test data. */
 #define DIM_LEN 4
 
+#define TARGET_NTASKS 4
 /** The name of the dimension in the netCDF output file. */
 #define FIRST_DIM_NAME "jojo"
 #define DIM_NAME "dim_test_intercomm2"
@@ -53,22 +55,6 @@
 #define ERR_AWFUL 1111
 #define ERR_WRONG 2222
 
-/** Handle MPI errors. This should only be used with MPI library
- * function calls. */
-#define MPIERR(e) do {                                                  \
-	MPI_Error_string(e, err_buffer, &resultlen);			\
-	fprintf(stderr, "MPI error, line %d, file %s: %s\n", __LINE__, __FILE__, err_buffer); \
-	MPI_Finalize();							\
-	return ERR_AWFUL;							\
-    } while (0)
-
-/** Handle non-MPI errors by finalizing the MPI library and exiting
- * with an exit code. */
-#define ERR(e) do {				\
-        fprintf(stderr, "Error %d in %s, line %d\n", e, __FILE__, __LINE__); \
-	MPI_Finalize();				\
-	return e;				\
-    } while (0)
 
 /** Global err buffer for MPI. When there is an MPI error, this buffer
  * is used to store the error message that is associated with the MPI
@@ -305,64 +291,49 @@ main(int argc, char **argv)
     /** Index for loops. */
     int fmt, d, d1, i;
 
-#ifdef TIMING
-    /* Initialize the GPTL timing library. */
-    if ((ret = GPTLinitialize ()))
-	return ret;
-#endif
+    MPI_Comm test_comm;
 
-    /* Initialize MPI. */
-    if ((ret = MPI_Init(&argc, &argv)))
-	MPIERR(ret);
-
-    /* Learn my rank and the total number of processors. */
-    if ((ret = MPI_Comm_rank(MPI_COMM_WORLD, &my_rank)))
-	MPIERR(ret);
-    if ((ret = MPI_Comm_size(MPI_COMM_WORLD, &ntasks)))
-	MPIERR(ret);
-
-    /* Check that a valid number of processors was specified. */
-    if (ntasks != 4)
+    if ((ret = pio_test_init(argc, argv, &my_rank, &ntasks, TARGET_NTASKS, &test_comm)))
+	ERR(ERR_INIT);
+    if(my_rank < TARGET_NTASKS)
     {
-	fprintf(stderr, "test_intercomm2 Number of processors must be exactly 4!\n");
-	ERR(ERR_AWFUL);
-    }
-    if (verbose)
+      if (verbose)
 	printf("%d: test_intercomm2 ParallelIO Library test_intercomm2 running on %d processors.\n",
 	       my_rank, ntasks);
 
-    /* Initialize the PIO IO system. This specifies how many and which
-     * processors are involved in I/O. */
+      /* Initialize the PIO IO system. This specifies how many and which
+       * processors are involved in I/O. */
 
-    /* Turn on logging. */
-    if ((ret = PIOc_set_log_level(3)))
+      /* Turn on logging. */
+      if ((ret = PIOc_set_log_level(3)))
 	ERR(ret);
-    
-    /* The following only works for netCDF builds where enable-logging
-     * was used during configure. */
-    /* if ((ret = nc_set_log_level(0))) */
-    /* 	ERR(ret); */
 
-    /* How many processors will be used for our IO and 2 computation components. */
-    int num_procs[COMPONENT_COUNT + 1] = {2, 2};
+      /* How many processors will be used for our IO and 2 computation components. */
+      int num_procs[COMPONENT_COUNT + 1] = {2, 2};
 
-    /* Is the current process a computation task? */
-    int comp_task = my_rank < 2 ? 0 : 1;
+      /* Is the current process a computation task? */
+      int comp_task = my_rank < 2 ? 0 : 1;
 
-    /* Index of computation task in iosysid array. Varies by rank and
+      /* Index of computation task in iosysid array. Varies by rank and
      * does not apply to IO component processes. */
-    int my_comp_idx = comp_task ? 0 : -1;
+      int my_comp_idx = comp_task ? 0 : -1;
 
-    /* Initialize the IO system. */
-    if ((ret = PIOc_Init_Async(MPI_COMM_WORLD, NUM_IO_PROCS, NULL, COMPONENT_COUNT,
+      /* Initialize the IO system. */
+      if ((ret = PIOc_Init_Async(test_comm, NUM_IO_PROCS, NULL, COMPONENT_COUNT,
 			       num_procs, NULL, iosysid)))
 	ERR(ERR_AWFUL);
 
-    /* All the netCDF calls are only executed on the computation
-     * tasks. The IO tasks have not returned from PIOc_Init_Intercomm,
-     * and when the do, they should go straight to finalize. */
-    if (comp_task)
-    {
+      if (verbose)
+	printf("%d: test_intercomm2 ParallelIO Library test_intercomm2 comp task returned.\n",
+	       my_rank);
+
+
+
+      /* All the netCDF calls are only executed on the computation
+       * tasks. The IO tasks have not returned from PIOc_Init_Intercomm,
+       * and when the do, they should go straight to finalize. */
+      if (comp_task)
+      {
     	for (int fmt = 1; fmt < NUM_NETCDF_FLAVORS; fmt++)
     	{
     	    int ncid, varid, dimid;
@@ -525,36 +496,10 @@ main(int argc, char **argv)
 	    printf("%d test_intercomm2 Freeing PIO resources\n", my_rank);
 	if ((ret = PIOc_finalize(iosysid[my_comp_idx])))
 	    ERR(ret);
-    }
+      }
 
-    /* Free local MPI resources. */
-    if (verbose)
-	printf("%d test_intercomm2 Freeing local MPI resources...\n", my_rank);
-    /* if (comp_task) */
-    /* { */
-    /* 	for (int c = 0; c < COMPONENT_COUNT; c++) */
-    /* 	{ */
-    /* 	    if (comp_comms[c] != MPI_COMM_NULL) */
-    /* 	    { */
-    /* 		if (verbose) */
-    /* 		    printf("%d test_intercomm2 freeing comp_comms[%d] = %d\n", */
-    /* 			   my_rank, c, comp_comms[c]); */
-    /* 		MPI_Comm_free(&comp_comms[c]); */
-    /* 		printf("%d test_intercomm2 freed comp_comms[%d]\n", */
-    /* 		       my_rank, c); */
-    /* 	    } */
-    /* 	} */
-    /* } */
-    /* else */
-    /* { */
-    /* 	if (verbose) */
-    /* 	    printf("%d test_intercomm2 freeing io_comm = %d\n", my_rank, io_comm); */
-    /* 	if (io_comm != MPI_COMM_NULL) */
-    /* 	{ */
-    /* 	    MPI_Comm_free(&io_comm); */
-    /* 	    printf("%d test_intercomm2 freed io_comm\n", my_rank); */
-    /* 	} */
-    /* } */
+    } /* my_rank < TARGET_NTASKS */
+    MPI_Barrier(MPI_COMM_WORLD);
 
     /* Finalize the MPI library. */
     MPI_Finalize();

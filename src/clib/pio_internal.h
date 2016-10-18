@@ -76,8 +76,10 @@ extern "C" {
     int  pio_add_to_iodesc_list(io_desc_t *iodesc);
     io_desc_t *pio_get_iodesc_from_id(int ioid);
     int pio_delete_iodesc_from_list(int ioid);
+    int pio_num_iosystem(int *niosysid);
 
     file_desc_t *pio_get_file_from_id(int ncid);
+    int pio_get_file_from_id2(int ncid, file_desc_t **filep);
     int pio_delete_file_from_list(int ncid);
     void pio_add_to_file_list(file_desc_t *file);
     void pio_push_request(file_desc_t *file, int request);

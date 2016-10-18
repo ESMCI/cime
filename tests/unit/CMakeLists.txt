@@ -23,11 +23,11 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O0")
 #  PREPARE FOR TESTING
 #==============================================================================
 
-file (COPY "./input.nl" 
+file (COPY "./input.nl"
       DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-file (COPY "./not_netcdf.ieee" 
+file (COPY "./not_netcdf.ieee"
       DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-      
+
 #==============================================================================
 #  DEFINE THE TARGETS AND TESTS
 #==============================================================================
@@ -37,7 +37,7 @@ set (SRCS basic_tests.F90
           global_vars.F90
           ncdf_tests.F90
           nc_set_log_level2.c)
-	
+
 add_executable (pio_unit_test EXCLUDE_FROM_ALL ${SRCS})
 target_link_libraries (pio_unit_test piof)
 if ("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
@@ -46,7 +46,7 @@ if ("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
 endif()
 
 if (NOT PIO_USE_MPI_SERIAL)
-  add_executable (test_intercomm2 EXCLUDE_FROM_ALL test_intercomm2.c)
+  add_executable (test_intercomm2 EXCLUDE_FROM_ALL test_intercomm2.c test_common.c)
   target_link_libraries (test_intercomm2 pioc)
   add_dependencies (tests test_intercomm2)
   add_executable (test_async_simple EXCLUDE_FROM_ALL test_async_simple.c test_common.c)
@@ -61,6 +61,24 @@ if (NOT PIO_USE_MPI_SERIAL)
   add_executable (test_async_4proc EXCLUDE_FROM_ALL test_async_4proc.c test_common.c)
   target_link_libraries (test_async_4proc pioc)
   add_dependencies (tests test_async_4proc)
+  add_executable (test_iosystem2_simple EXCLUDE_FROM_ALL test_iosystem2_simple.c test_common.c)
+  target_link_libraries (test_iosystem2_simple pioc)
+  add_dependencies (tests test_iosystem2_simple)
+  add_executable (test_iosystem2_simple2 EXCLUDE_FROM_ALL test_iosystem2_simple2.c test_common.c)
+  target_link_libraries (test_iosystem2_simple2 pioc)
+  add_dependencies (tests test_iosystem2_simple2)
+  add_executable (test_iosystem2 EXCLUDE_FROM_ALL test_iosystem2.c test_common.c)
+  target_link_libraries (test_iosystem2 pioc)
+  add_dependencies (tests test_iosystem2)
+  add_executable (test_iosystem3_simple EXCLUDE_FROM_ALL test_iosystem3_simple.c test_common.c)
+  target_link_libraries (test_iosystem3_simple pioc)
+  add_dependencies (tests test_iosystem3_simple)
+  add_executable (test_iosystem3_simple2 EXCLUDE_FROM_ALL test_iosystem3_simple2.c test_common.c)
+  target_link_libraries (test_iosystem3_simple2 pioc)
+  add_dependencies (tests test_iosystem3_simple2)
+  add_executable (test_iosystem3 EXCLUDE_FROM_ALL test_iosystem3.c test_common.c)
+  target_link_libraries (test_iosystem3 pioc)
+  add_dependencies (tests test_iosystem3)
   add_executable (test_darray_async EXCLUDE_FROM_ALL test_darray_async.c)
   target_link_libraries (test_darray_async pioc)
   add_dependencies (tests test_darray_async)
@@ -86,8 +104,8 @@ add_dependencies (tests test_darray)
 add_dependencies (tests test_nc4)
 add_dependencies (tests pio_unit_test)
 
-# Test Timeout (4 min = 240 sec)
-set (DEFAULT_TEST_TIMEOUT 240)
+# Test Timeout in seconds.
+set (DEFAULT_TEST_TIMEOUT 60)
 
 if (PIO_USE_MPISERIAL)
     add_test(NAME test_names
@@ -127,7 +145,31 @@ else ()
         EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_async_4proc
         NUMPROCS 4
         TIMEOUT ${DEFAULT_TEST_TIMEOUT})
-    add_mpi_test(test_names
+    add_mpi_test(test_iosystem2_simple
+        EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_iosystem2_simple
+        NUMPROCS 2
+        TIMEOUT ${DEFAULT_TEST_TIMEOUT})
+    add_mpi_test(test_iosystem2_simple2
+        EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_iosystem2_simple2
+        NUMPROCS 4
+        TIMEOUT ${DEFAULT_TEST_TIMEOUT})
+    add_mpi_test(test_iosystem2
+        EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_iosystem2
+        NUMPROCS 4
+        TIMEOUT ${DEFAULT_TEST_TIMEOUT})
+    add_mpi_test(test_iosystem3_simple
+        EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_iosystem3_simple
+        NUMPROCS 4
+        TIMEOUT ${DEFAULT_TEST_TIMEOUT})
+    add_mpi_test(test_iosystem3_simple2
+        EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_iosystem3_simple2
+        NUMPROCS 4
+        TIMEOUT ${DEFAULT_TEST_TIMEOUT})
+    add_mpi_test(test_iosystem3
+        EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_iosystem3
+        NUMPROCS 4
+        TIMEOUT ${DEFAULT_TEST_TIMEOUT})
+   add_mpi_test(test_names
         EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_names
         NUMPROCS 4
         TIMEOUT ${DEFAULT_TEST_TIMEOUT})
@@ -141,7 +183,7 @@ else ()
         TIMEOUT ${DEFAULT_TEST_TIMEOUT})
 endif ()
 
-if (PIO_HDF5_LOGGING) 
-    target_compile_definitions (pio_unit_test 
+if (PIO_HDF5_LOGGING)
+    target_compile_definitions (pio_unit_test
         PUBLIC LOGGING)
 endif ()

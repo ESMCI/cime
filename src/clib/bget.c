@@ -397,6 +397,9 @@
     BGET CONFIGURATION
     ==================
 */
+#include <config.h>
+#include <pio.h>
+#include <pio_internal.h>
 #ifdef PIO_USE_MALLOC
 #include <stdlib.h>
 #endif
@@ -563,10 +566,12 @@ static int maxsize=0;
 /* added for PIO so that a bpool can be freed and another allocated */
 void bpoolrelease()
 {
+    LOG((2, "bpoolrelease"));
   freelist.bh.prevfree=0;
   freelist.bh.bsize=0;
   freelist.ql.flink=&freelist;
   freelist.ql.blink=&freelist;
+    LOG((2, "bpoolrelease"));
 
 #ifdef BufStats
   totalloc = 0;	      /* Total space currently allocated */
@@ -580,6 +585,7 @@ void bpoolrelease()
   numdrel = 0; /* Number of direct gets and rels */
 #endif /* BECtl */
 #endif /* BufStats */
+    LOG((2, "bpoolrelease"));
 
 #ifdef BECtl
 /* Automatic expansion block management functions */
@@ -589,6 +595,7 @@ void bpoolrelease()
   exp_incr = 0;	
   pool_len = 0;
 #endif
+    LOG((2, "bpoolrelease"));
 
 }
 

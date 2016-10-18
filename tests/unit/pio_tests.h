@@ -41,7 +41,7 @@
 /** Handle non-MPI errors by finalizing the MPI library and exiting
  * with an exit code. */
 #define ERR(e) do {				\
-        fprintf(stderr, "Error %d in %s, line %d\n", e, __FILE__, __LINE__); \
+        fprintf(stderr, "%d Error %d in %s, line %d\n", my_rank, e, __FILE__, __LINE__); \
 	MPI_Finalize();				\
 	return e;				\
     } while (0)
@@ -57,15 +57,16 @@ int resultlen;
 
 /* Function prototypes. */
 char *flavor_name(int flavor);
-int pio_test_init(int argc, char **argv, int *my_rank, int *ntasks, int target_ntasks);
-int create_nc_sample(int sample, int iosysid, int format, char *filename, int my_rank);
-int check_nc_sample(int sample, int iosysid, int format, char *filename, int my_rank);
-int create_nc_sample_0(int iosysid, int format, char *filename, int my_rank);
-int check_nc_sample_0(int iosysid, int format, char *filename, int my_rank);
-int create_nc_sample_1(int iosysid, int format, char *filename, int my_rank);
-int check_nc_sample_1(int iosysid, int format, char *filename, int my_rank);
-int create_nc_sample_2(int iosysid, int format, char *filename, int my_rank);
-int check_nc_sample_2(int iosysid, int format, char *filename, int my_rank);
+int pio_test_init(int argc, char **argv, int *my_rank, int *ntasks, int target_ntasks, MPI_Comm *test_comm);
+int create_nc_sample(int sample, int iosysid, int format, char *filename, int my_rank, int *ncid);
+int check_nc_sample(int sample, int iosysid, int format, char *filename, int my_rank, int *ncid);
+int create_nc_sample_0(int iosysid, int format, char *filename, int my_rank, int *ncid);
+int check_nc_sample_0(int iosysid, int format, char *filename, int my_rank, int *ncid);
+int create_nc_sample_1(int iosysid, int format, char *filename, int my_rank, int *ncid);
+int check_nc_sample_1(int iosysid, int format, char *filename, int my_rank, int *ncid);
+int create_nc_sample_2(int iosysid, int format, char *filename, int my_rank, int *ncid);
+int check_nc_sample_2(int iosysid, int format, char *filename, int my_rank, int *ncid);
+int get_iotypes(int *num_flavors, int *flavors);
 int pio_test_finalize();
 
 #endif /* _PIO_TESTS_H */
