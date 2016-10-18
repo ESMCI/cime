@@ -502,7 +502,38 @@ CONTAINS
     INTEGER, DIMENSION(:), INTENT(IN) :: arr_shape 
     CHARACTER(LEN=*), INTENT(OUT) :: idx_str
 
-    WRITE(idx_str, "(I5)") idx_1d
+    CHARACTER(LEN=PIO_TF_MAX_STR_LEN) :: fmt_str
+    ! Number of elems in that dim in "1D view"
+    INTEGER, DIMENSION(:), ALLOCATABLE :: dim_wgt
+    INTEGER, DIMENSION(:), ALLOCATABLE :: idx_md
+    INTEGER :: tmp_idx
+    INTEGER :: i, sz
+
+    idx_str = ""
+
+    sz = SIZE(arr_shape)
+    ALLOCATE(dim_wgt(sz))
+    ALLOCATE(idx_md(sz))
+
+    ! Assign place weights = num of elems in that dim in "1D view"
+    dim_wgt = 1
+    DO i=2,sz
+      dim_wgt(i) = dim_wgt(i-1) * arr_shape(i-1) 
+    END DO
+
+    ! Convert 1d reshaped index to original multi-d index
+    tmp_idx = idx_1d - 1
+    idx_md = 0
+    DO i=sz,1,-1
+      idx_md(i) = tmp_idx / dim_wgt(i) + 1
+      tmp_idx = MOD(tmp_idx, dim_wgt(i)) 
+    END DO
+
+    WRITE(fmt_str, *) "(",SIZE(idx_md),"(I5,',')", ")"
+    WRITE(idx_str,fmt_str) idx_md
+
+    DEALLOCATE(idx_md)
+    DEALLOCATE(dim_wgt)
 
   END SUBROUTINE PIO_TF_Get_idx_from_1d_idx
 
@@ -515,7 +546,6 @@ CONTAINS
     INTEGER, DIMENSION(:), INTENT(IN) :: arr
     INTEGER, DIMENSION(:), INTENT(IN) :: exp_arr
     INTEGER, DIMENSION(:), INTENT(IN) :: arr_shape
-
     CHARACTER(LEN=PIO_TF_MAX_STR_LEN) :: idx_str
     INTEGER :: arr_sz, i, ierr
     ! Not equal at id = nequal_idx
