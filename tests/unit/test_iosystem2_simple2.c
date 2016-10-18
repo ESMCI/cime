@@ -45,12 +45,13 @@ main(int argc, char **argv)
     if ((ret = pio_test_init(argc, argv, &my_rank, &ntasks, TARGET_NTASKS, &test_comm)))
 	ERR(ERR_INIT);
 
+    /* Figure out iotypes. */
+    if ((ret = get_iotypes(&num_flavors, flavor)))
+      ERR(ret);
+
+
     if (my_rank < TARGET_NTASKS)
     {
-      /* Figure out iotypes. */
-      if ((ret = get_iotypes(&num_flavors, flavor)))
-	ERR(ret);
-
       /* Split world into odd and even. */
       MPI_Comm newcomm;
       int even = my_rank % 2 ? 0 : 1;
@@ -115,16 +116,16 @@ main(int argc, char **argv)
 
       } /* next iotype */
 
-    /* Finalize PIO odd/even intracomm. */
-    if ((ret = PIOc_finalize(iosysid)))
+      /* Finalize PIO odd/even intracomm. */
+      if ((ret = PIOc_finalize(iosysid)))
 	ERR(ret);
 
-    /* Finalize PIO world intracomm. */
-    if ((ret = PIOc_finalize(iosysid_world)))
+      /* Finalize PIO world intracomm. */
+      if ((ret = PIOc_finalize(iosysid_world)))
 	ERR(ret);
+
     }  /* my_rank < TARGET_NTASKS */
     MPI_Barrier(MPI_COMM_WORLD);
-
     /* Finalize test. */
     printf("%d %s finalizing...\n", my_rank, TEST_NAME);
     if ((ret = pio_test_finalize()))

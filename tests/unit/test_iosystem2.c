@@ -195,7 +195,7 @@ main(int argc, char **argv)
 	ERR(ret);
 
       /* Finalize PIO system. */
-      if ((ret = PIOc_finalize(iosysid_world)))
+     if ((ret = PIOc_finalize(iosysid_world)))
 	ERR(ret);
     }/* my_rank < TARGET_NTASKS */
     MPI_Barrier(MPI_COMM_WORLD);

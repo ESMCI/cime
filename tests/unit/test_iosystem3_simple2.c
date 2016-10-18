@@ -67,8 +67,7 @@ main(int argc, char **argv)
     	/* Now check the first file from WORLD communicator. */
 	int mode = PIO_WRITE;
 
-	/* Open the file. Note that we never close it, which is bad,
-	 * but should not cause a failure. */
+	/* Open the file. */
 	if ((ret = PIOc_openfile(iosysid_world, &ncid, &flavor[i], fname0, mode)))
 	    return ret;
 
@@ -76,6 +75,11 @@ main(int argc, char **argv)
 	int ndims;
 	if ((ret = PIOc_inq(ncid, &ndims, NULL, NULL, NULL)))
 	    return ret;
+
+	/* Close the file. */
+	if ((ret = PIOc_closefile(ncid)))
+	    return ret;
+
       } /* next iotype */
       /* Finalize PIO systems. */
       printf("%d pio finalizing\n", my_rank);
