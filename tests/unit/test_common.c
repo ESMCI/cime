@@ -89,29 +89,6 @@ flavor_name(int flavor)
     return ans;
 }
 
-/* Name of each flavor. 
-*
-* @param iotype the IO type
-* @param name pointer that will get name of IO type. Must have enough
-* memory allocated (NC_MAX_NAME + 1 works.)
-* @returns 0 for success, error code otherwise.
-* @internal
-*/
-int get_iotype_name(int iotype, char *name)
-{
-    char flavor_name[NUM_FLAVORS][NC_MAX_NAME + 1] = {"pnetcdf", "classic",
-						      "serial4", "parallel4"};
-
-    /* Check inputs. */
-    if (!name || iotype < PIO_IOTYPE_PNETCDF || iotype > PIO_IOTYPE_NETCDF4P)
-	return PIO_EINVAL;
-    
-    /* Return name of iotype. They are numbered 1-4 in pio.h. */
-    strcpy(name, flavor_name[iotype - 1]);
-
-    return PIO_NOERR;
-}
-
 /* Initalize the test system. */
 int
 pio_test_init(int argc, char **argv, int *my_rank, int *ntasks,
@@ -155,15 +132,14 @@ pio_test_init(int argc, char **argv, int *my_rank, int *ntasks,
 	color = 1;
 	key = *my_rank - target_ntasks;
       }
-      if ((ret = MPI_Comm_split(MPI_COMM_WORLD, color, key, comm)))
+      if ((ret=MPI_Comm_split(MPI_COMM_WORLD, color, key, comm)))
 	MPIERR(ret);
     }
     else
     {
-      if ((ret = MPI_Comm_dup(MPI_COMM_WORLD, comm)))
+      if ((ret=MPI_Comm_dup(MPI_COMM_WORLD, comm)))
 	MPIERR(ret);
     }
-
     /* Turn on logging. */
     if ((ret = PIOc_set_log_level(3)))
 	return ret;
