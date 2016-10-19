@@ -199,5 +199,11 @@ int PIOc_inq_attname(int ncid, int varid, int attnum, char *name)
 }
 </pre>
 
+## Further Information ##
+
+<p>For style issues not already covered in this document, see this <a
+href="https://www.kernel.org/doc/Documentation/CodingStyle">style
+guide</a>.
+
 _Last updated: 05-16-2016_
 */
