@@ -39,12 +39,15 @@ add to it, carefully.
 <li>Assign and check return values in the same if statement.
 </ul>
 
-## Indentation ##
+## Indentation and Spacing##
 
 <ul>
 <li>Use spaces not tabs.
 <li>4 spaces is the unit of intendation.
 <li>Indentation as defined by the "linux" style in emacs (see below).
+<li>Use spaces around most operators (=+-*/) not pointer or prefix/postfile (*++--)
+<li>Spaces after most keywords (if, for, while, etc.)
+<li>No spaces after function name.
 </ul>
 
 ## Braces ##
