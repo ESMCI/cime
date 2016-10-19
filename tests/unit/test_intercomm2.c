@@ -22,6 +22,10 @@
 /* Number of computational components to create. */
 #define COMPONENT_COUNT 1
 
+/** The number of possible output netCDF output flavors available to
+ * the ParallelIO library. */
+#define NUM_NETCDF_FLAVORS 4
+
 /** The number of dimensions in the test data. */
 #define NDIM 1
 
@@ -50,6 +54,7 @@
 /** Error code for when things go wrong. */
 #define ERR_AWFUL 1111
 #define ERR_WRONG 2222
+
 
 /** Global err buffer for MPI. When there is an MPI error, this buffer
  * is used to store the error message that is associated with the MPI
@@ -259,11 +264,17 @@ main(int argc, char **argv)
     /** Number of processors involved in current execution. */
     int ntasks;
 
-    int num_flavors; /* Number of PIO netCDF flavors in this build. */
-    int flavor[NUM_FLAVORS]; /* iotypes for the supported netCDF IO flavors. */
+    /** Different output flavors. */
+    int format[NUM_NETCDF_FLAVORS] = {PIO_IOTYPE_PNETCDF,
+				      PIO_IOTYPE_NETCDF,
+				      PIO_IOTYPE_NETCDF4C,
+				      PIO_IOTYPE_NETCDF4P};
 
     /** Names for the output files. */
-    char filename[NUM_FLAVORS][NC_MAX_NAME + 1];
+    char filename[NUM_NETCDF_FLAVORS][NC_MAX_NAME + 1] = {"test_intercomm2_pnetcdf.nc",
+							  "test_intercomm2_classic.nc",
+							  "test_intercomm2_serial4.nc",
+							  "test_intercomm2_parallel4.nc"};
 
     /** The ID for the parallel I/O system. */
     int iosysid[COMPONENT_COUNT];
@@ -284,11 +295,6 @@ main(int argc, char **argv)
 
     if ((ret = pio_test_init(argc, argv, &my_rank, &ntasks, TARGET_NTASKS, &test_comm)))
 	ERR(ERR_INIT);
-
-    /* Figure out iotypes. */
-    if ((ret = get_iotypes(&num_flavors, flavor)))
-      ERR(ret);
-
     if(my_rank < TARGET_NTASKS)
     {
       if (verbose)
@@ -328,19 +334,16 @@ main(int argc, char **argv)
        * and when the do, they should go straight to finalize. */
       if (comp_task)
       {
-    	for (int fmt = 1; fmt < num_flavors; fmt++)
+    	for (int fmt = 1; fmt < NUM_NETCDF_FLAVORS; fmt++)
     	{
     	    int ncid, varid, dimid;
     	    PIO_Offset start[NDIM], count[NDIM] = {0};
     	    int data[DIM_LEN];
 
-	    /* Create the filename for this flavor. */
-	    sprintf(filename[fmt], "test_intercomm2_%d.nc", flavor[fmt]);
-
     	    /* Create a netCDF file with one dimension and one variable. */
     	    if (verbose)
     	    	printf("%d test_intercomm2 creating file %s\n", my_rank, filename[fmt]);
-    	    if ((ret = PIOc_createfile(iosysid[my_comp_idx], &ncid, &flavor[fmt], filename[fmt],
+    	    if ((ret = PIOc_createfile(iosysid[my_comp_idx], &ncid, &format[fmt], filename[fmt],
     	    			       NC_CLOBBER)))
     	    	ERR(ret);
     	    if (verbose)
@@ -358,10 +361,10 @@ main(int argc, char **argv)
     	    int myformat;
     	    if ((ret = PIOc_inq_format(ncid, &myformat)))
     	    	ERR(ret);
-    	    if ((flavor[fmt] == PIO_IOTYPE_PNETCDF || flavor[fmt] == PIO_IOTYPE_NETCDF) &&
+    	    if ((format[fmt] == PIO_IOTYPE_PNETCDF || format[fmt] == PIO_IOTYPE_NETCDF) &&
     	    	myformat != 1)
     	    	ERR(ERR_AWFUL);
-    	    else if ((flavor[fmt] == PIO_IOTYPE_NETCDF4C || flavor[fmt] == PIO_IOTYPE_NETCDF4P) &&
+    	    else if ((format[fmt] == PIO_IOTYPE_NETCDF4C || format[fmt] == PIO_IOTYPE_NETCDF4P) &&
     	    	     myformat != 3)
     	    	ERR(ERR_AWFUL);
 
@@ -372,7 +375,7 @@ main(int argc, char **argv)
     	    nc_type xtype[NUM_TYPES] = {NC_CHAR, NC_BYTE, NC_SHORT, NC_INT, NC_FLOAT, NC_DOUBLE,
     	    				NC_UBYTE, NC_USHORT, NC_UINT, NC_INT64, NC_UINT64};
     	    int type_len[NUM_TYPES] = {1, 1, 2, 4, 4, 8, 1, 2, 4, 8, 8};
-    	    int max_type = flavor[fmt] == PIO_IOTYPE_NETCDF ? NC_DOUBLE : NC_UINT64;
+    	    int max_type = format[fmt] == PIO_IOTYPE_NETCDF ? NC_DOUBLE : NC_UINT64;
     	    for (int i = 0; i < max_type; i++)
     	    {
     	    	if ((ret = PIOc_inq_type(ncid, xtype[i], type_name, &type_size)))
@@ -476,17 +479,17 @@ main(int argc, char **argv)
     	    	ERR(ret);
 
     	    /* Check the file for correctness. */
-    	    if ((ret = check_file(iosysid[my_comp_idx], flavor[fmt], filename[fmt], my_rank, verbose)))
+    	    if ((ret = check_file(iosysid[my_comp_idx], format[fmt], filename[fmt], my_rank, verbose)))
     	    	ERR(ret);
 
     	    /* Now delete the file. */
     	    /* if ((ret = PIOc_deletefile(iosysid, filename[fmt]))) */
     	    /* 	ERR(ret); */
-    	    /* if ((ret = PIOc_openfile(iosysid, &ncid, &flavor[fmt], filename[fmt], */
+    	    /* if ((ret = PIOc_openfile(iosysid, &ncid, &format[fmt], filename[fmt], */
     	    /* 			     NC_NOWRITE)) != PIO_ENFILE) */
     	    /* 	ERR(ERR_AWFUL); */
 
-    	} /* next netcdf flavor */
+    	} /* next netcdf format flavor */
 
 	/* Finalize the IO system. Only call this from the computation tasks. */
 	if (verbose)
