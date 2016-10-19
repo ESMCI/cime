@@ -52,10 +52,11 @@ int PIOc_Set_File_Error_Handling(int ncid, int method)
 {
   file_desc_t *file;
   int oldmethod;
+  int ret;
 
   /* Find info for this file. */
-  if (!(file = pio_get_file_from_id(ncid)))
-      return PIO_EBADID;
+  if ((ret = pio_get_file(ncid, &file)))
+      return ret;
   
   oldmethod = file->iosystem->error_handler;
   file->iosystem->error_handler = method;
