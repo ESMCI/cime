@@ -67,6 +67,7 @@ int check_nc_sample_1(int iosysid, int format, char *filename, int my_rank, int 
 int create_nc_sample_2(int iosysid, int format, char *filename, int my_rank, int *ncid);
 int check_nc_sample_2(int iosysid, int format, char *filename, int my_rank, int *ncid);
 int get_iotypes(int *num_flavors, int *flavors);
+int get_iotype_name(int iotype, char *name);
 int pio_test_finalize();
 
 #endif /* _PIO_TESTS_H */
