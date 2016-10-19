@@ -41,23 +41,23 @@ void pio_add_to_file_list(file_desc_t *file)
 
 /** Given ncid, find the file_desc_t data for an open file. The ncid
  * used is the interally generated pio_ncid. */
-file_desc_t *pio_get_file_from_id(int ncid)
-{
-    file_desc_t *cfile = NULL;
+/* file_desc_t *pio_get_file_from_id(int ncid) */
+/* { */
+/*     file_desc_t *cfile = NULL; */
 
-    /* Check to see if the current_file is already set to this ncid. */
-    if (current_file && current_file->pio_ncid == ncid)
-	cfile = current_file;
-    else
-	for (cfile = pio_file_list; cfile; cfile = cfile->next)
-	    if (cfile->pio_ncid == ncid)
-	    {
-		current_file = cfile;
-		break;
-	    }
+/*     /\* Check to see if the current_file is already set to this ncid. *\/ */
+/*     if (current_file && current_file->pio_ncid == ncid) */
+/* 	cfile = current_file; */
+/*     else */
+/* 	for (cfile = pio_file_list; cfile; cfile = cfile->next) */
+/* 	    if (cfile->pio_ncid == ncid) */
+/* 	    { */
+/* 		current_file = cfile; */
+/* 		break; */
+/* 	    } */
 
-    return cfile;
-}
+/*     return cfile; */
+/* } */
 
 /** Get a pointer to the file_desc_t using the ncid. */
 int pio_get_file(int ncid, file_desc_t **cfile1)

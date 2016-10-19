@@ -41,8 +41,9 @@ int PIOc_def_var_deflate(int ncid, int varid, int shuffle, int deflate,
     errstr = NULL;
     ierr = PIO_NOERR;
 
-    if (!(file = pio_get_file_from_id(ncid)))
-	return PIO_EBADID;
+    /* Get the file info. */
+    if ((ierr = pio_get_file(ncid, &file)))
+	return ierr;
     ios = file->iosystem;
     msg = PIO_MSG_DEF_VAR_DEFLATE;
 
@@ -141,8 +142,9 @@ int PIOc_inq_var_deflate(int ncid, int varid, int *shufflep,
     errstr = NULL;
     ierr = PIO_NOERR;
 
-    if (!(file = pio_get_file_from_id(ncid)))
-	return PIO_EBADID;
+    /* Get the file info. */
+    if ((ierr = pio_get_file(ncid, &file)))
+	return ierr;
     ios = file->iosystem;
     msg = PIO_MSG_INQ_VAR_DEFLATE;
 
@@ -243,8 +245,8 @@ int PIOc_def_var_chunking(int ncid, int varid, int storage,
     errstr = NULL;
 
     /* Find the info about this file. */
-    if (!(file = pio_get_file_from_id(ncid)))
-	return PIO_EBADID;
+    if ((ierr = pio_get_file(ncid, &file)))
+	return ierr;
     ios = file->iosystem;
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
@@ -343,8 +345,8 @@ int PIOc_inq_var_chunking(int ncid, int varid, int *storagep, PIO_Offset *chunks
     errstr = NULL;
     ierr = PIO_NOERR;
 
-    if (!(file = pio_get_file_from_id(ncid)))
-	return PIO_EBADID;
+    if ((ierr = pio_get_file(ncid, &file)))
+	return ierr;
     ios = file->iosystem;
     msg = PIO_MSG_INQ_VAR_CHUNKING;
 
@@ -448,8 +450,8 @@ int PIOc_def_var_fill(int ncid, int varid, int no_fill, const void *fill_value)
     errstr = NULL;
     ierr = PIO_NOERR;
 
-    if (!(file = pio_get_file_from_id(ncid)))
-	return PIO_EBADID;
+    if ((ierr = pio_get_file(ncid, &file)))
+	return ierr;
     ios = file->iosystem;
     msg = PIO_MSG_SET_FILL;
 
@@ -543,8 +545,8 @@ int PIOc_def_var_endian(int ncid, int varid, int endian)
     errstr = NULL;
     ierr = PIO_NOERR;
 
-    if (!(file = pio_get_file_from_id(ncid)))
-	return PIO_EBADID;
+    if ((ierr = pio_get_file(ncid, &file)))
+	return ierr;
     ios = file->iosystem;
     msg = PIO_MSG_DEF_VAR_ENDIAN;
 
@@ -636,8 +638,8 @@ int PIOc_inq_var_endian(int ncid, int varid, int *endianp)
     errstr = NULL;
     ierr = PIO_NOERR;
 
-    if (!(file = pio_get_file_from_id(ncid)))
-	return PIO_EBADID;
+    if ((ierr = pio_get_file(ncid, &file)))
+	return ierr;
     ios = file->iosystem;
     msg = PIO_MSG_INQ_VAR_CHUNKING;
 
@@ -916,8 +918,8 @@ int PIOc_set_var_chunk_cache(int ncid, int varid, PIO_Offset size, PIO_Offset ne
     errstr = NULL;
     ierr = PIO_NOERR;
 
-    if (!(file = pio_get_file_from_id(ncid)))
-	return PIO_EBADID;
+    if ((ierr = pio_get_file(ncid, &file)))
+	return ierr;
     ios = file->iosystem;
     msg = PIO_MSG_SET_VAR_CHUNK_CACHE;
 
@@ -1009,8 +1011,8 @@ int PIOc_get_var_chunk_cache(int ncid, int varid, PIO_Offset *sizep, PIO_Offset 
     errstr = NULL;
     ierr = PIO_NOERR;
 
-    if (!(file = pio_get_file_from_id(ncid)))
-	return PIO_EBADID;
+    if ((ierr = pio_get_file(ncid, &file)))
+	return ierr;
     ios = file->iosystem;
 
     /* Since this is a property of the running HDF5 instance, not the
