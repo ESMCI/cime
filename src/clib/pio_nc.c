@@ -421,7 +421,7 @@ int PIOc_inq_dim(int ncid, int dimid, char *name, PIO_Offset *lenp)
     LOG((1, "PIOc_inq_dim ncid = %d dimid = %d", ncid, dimid));
 
     /* Get the file info, based on the ncid. */
-    if ((ierr = pio_get_file_from_id2(ncid, &file)))
+    if ((ierr = pio_get_file(ncid, &file)))
         return ierr;
     ios = file->iosystem;
 
@@ -552,7 +552,7 @@ int PIOc_inq_dimid(int ncid, const char *name, int *idp)
     LOG((1, "PIOc_inq_dimid ncid = %d name = %s", ncid, name));
 
     /* Get the file info, based on the ncid. */
-    if ((ierr = pio_get_file_from_id2(ncid, &file)))
+    if ((ierr = pio_get_file(ncid, &file)))
 	return ierr;
     ios = file->iosystem;
     LOG((2, "iosysid = %d", ios->iosysid));    
