@@ -87,11 +87,14 @@ MODULE pio_tutil
         PIO_TF_Check_int_arr_val,     &
         PIO_TF_Check_int_arr_arr,     &
         PIO_TF_Check_int_arr_arr_tol, &
+        PIO_TF_Check_2d_int_arr_arr,  &
         PIO_TF_Check_real_arr_val,    &
         PIO_TF_Check_real_arr_arr,    &
+        PIO_TF_Check_2d_real_arr_arr, &
         PIO_TF_Check_real_arr_arr_tol,&
         PIO_TF_Check_double_arr_val,  &
         PIO_TF_Check_double_arr_arr,  &
+        PIO_TF_Check_2d_double_arr_arr,&
         PIO_TF_Check_double_arr_arr_tol,&
         PIO_TF_Check_char_str_str
   END INTERFACE
