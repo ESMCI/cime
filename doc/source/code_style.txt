@@ -79,6 +79,24 @@ correctly. M-x indent-region will indent a selected region of code.
 
 <p>M-x untabify will convert all the tabs in a file to spaces.
 
+## Code Review ##
+
+<ul>
+
+<li>Pull requests will be as small as possible and focused on
+one(-ish) issue.
+
+<li>Pull requests will be left up on github for at least a day to
+allow all team members time to look at them.
+
+<li>Jim will identify key stakeholders in chaged code and ensure they
+accept code changes.
+
+<li>Reviewers are open-minded and ready to accept improvements to the
+library.
+
+</ul>
+
 ## Example ##
 
 <pre>
