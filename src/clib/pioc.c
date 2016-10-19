@@ -36,12 +36,13 @@ int PIOc_iosystem_is_active(const int iosysid, bool *active)
 
 int PIOc_File_is_Open(int ncid)
 {
-  file_desc_t *file;
-  file = pio_get_file_from_id(ncid);
-  if(file==NULL)
-    return 0;
-  else
-    return 1;
+    file_desc_t *file;
+
+    /* If get file returns non-zero, then this file is not open. */
+    if (pio_get_file(ncid, &file))
+	return 0;
+    else
+	return 1;
 }
 
 /**
