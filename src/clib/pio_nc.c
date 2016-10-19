@@ -45,8 +45,8 @@ int PIOc_inq(int ncid, int *ndimsp, int *nvarsp, int *ngattsp, int *unlimdimidp)
     LOG((1, "PIOc_inq ncid = %d", ncid));
 
     /* Find the info about this file. */
-    if (!(file = pio_get_file_from_id(ncid)))
-        return PIO_EBADID;
+    if ((ierr = pio_get_file(ncid, &file)))
+	return ierr;
     ios = file->iosystem;
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
@@ -251,8 +251,8 @@ int PIOc_inq_type(int ncid, nc_type xtype, char *name, PIO_Offset *sizep)
     LOG((1, "PIOc_inq_type ncid = %d xtype = %d", ncid, xtype));
 
     /* Find the info about this file. */
-    if (!(file = pio_get_file_from_id(ncid)))
-        return PIO_EBADID;
+    if ((ierr = pio_get_file(ncid, &file)))
+	return ierr;
     ios = file->iosystem;
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
@@ -339,8 +339,8 @@ int PIOc_inq_format (int ncid, int *formatp)
     LOG((1, "PIOc_inq ncid = %d", ncid));
 
     /* Find the info about this file. */
-    if (!(file = pio_get_file_from_id(ncid)))
-        return PIO_EBADID;
+    if ((ierr = pio_get_file(ncid, &file)))
+	return ierr;
     ios = file->iosystem;
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
