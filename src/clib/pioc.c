@@ -69,10 +69,12 @@ int PIOc_Set_File_Error_Handling(int ncid, int method)
 int PIOc_advanceframe(int ncid, int varid)
 {
   file_desc_t *file;
-  file = pio_get_file_from_id(ncid);
-  if(file == NULL)
-    return PIO_EBADID;
+  int ret;
 
+  /* Get the file info. */
+  if ((ret = pio_get_file(ncid, &file)))
+      return ret;
+      
   file->varlist[varid].record++;
 
   return(PIO_NOERR);
@@ -92,14 +94,19 @@ int PIOc_advanceframe(int ncid, int varid)
 int PIOc_setframe(const int ncid, const int varid, const int frame)
 {
   file_desc_t *file;
-  file = pio_get_file_from_id(ncid);
-  if(file == NULL || varid<0 || varid>=PIO_MAX_VARS){
-    return PIO_EBADID;
-  }
+  int ret;
+
+  /* Check inputs. */
+  if (varid < 0 || varid >= PIO_MAX_VARS)
+    return PIO_EINVAL;
+  
+  /* Get file info. */
+  if ((ret = pio_get_file(ncid, &file)))
+      return ret;
 
   file->varlist[varid].record = frame;
 
-  return(PIO_NOERR);
+  return PIO_NOERR;
 }
 
 /**
