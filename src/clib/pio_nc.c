@@ -643,8 +643,8 @@ int PIOc_inq_var(int ncid, int varid, char *name, nc_type *xtypep, int *ndimsp,
     LOG((1, "PIOc_inq_var ncid = %d varid = %d", ncid, varid));
 
     /* Get the file info, based on the ncid. */
-    if (!(file = pio_get_file_from_id(ncid)))
-        return PIO_EBADID;
+    if ((ierr = pio_get_file(ncid, &file)))
+	return ierr;
     ios = file->iosystem;
     LOG((2, "got file and iosystem"));
 
@@ -850,8 +850,8 @@ int PIOc_inq_varid (int ncid, const char *name, int *varidp)
         return PIO_EINVAL;
 
     /* Get file info based on ncid. */
-    if (!(file = pio_get_file_from_id(ncid)))
-        return PIO_EBADID;
+    if ((ierr = pio_get_file(ncid, &file)))
+	return ierr;
     ios = file->iosystem;
 
     LOG((1, "PIOc_inq_varid ncid = %d name = %s", ncid, name));
@@ -944,8 +944,8 @@ int PIOc_inq_att(int ncid, int varid, const char *name, nc_type *xtypep,
          ncid, varid, xtypep, lenp));
 
     /* Find file based on ncid. */
-    if (!(file = pio_get_file_from_id(ncid)))
-        return PIO_EBADID;
+    if ((ierr = pio_get_file(ncid, &file)))
+	return ierr;
     ios = file->iosystem;
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
@@ -1061,8 +1061,8 @@ int PIOc_inq_attname(int ncid, int varid, int attnum, char *name)
          attnum));
 
     /* Find the info about this file. */
-    if (!(file = pio_get_file_from_id(ncid)))
-        return PIO_EBADID;
+    if ((ierr = pio_get_file(ncid, &file)))
+	return ierr;
     ios = file->iosystem;
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
@@ -1159,8 +1159,8 @@ int PIOc_inq_attid(int ncid, int varid, const char *name, int *idp)
     LOG((1, "PIOc_inq_attid ncid = %d varid = %d name = %s", ncid, varid, name));
 
     /* Find the info about this file. */
-    if (!(file = pio_get_file_from_id(ncid)))
-        return PIO_EBADID;
+    if ((ierr = pio_get_file(ncid, &file)))
+	return ierr;
     ios = file->iosystem;
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
@@ -1254,8 +1254,8 @@ int PIOc_rename_dim(int ncid, int dimid, const char *name)
     LOG((1, "PIOc_rename_dim ncid = %d dimid = %d name = %s", ncid, dimid, name));
 
     /* Find the info about this file. */
-    if (!(file = pio_get_file_from_id(ncid)))
-        return PIO_EBADID;
+    if ((ierr = pio_get_file(ncid, &file)))
+	return ierr;
     ios = file->iosystem;
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
@@ -1342,8 +1342,8 @@ int PIOc_rename_var(int ncid, int varid, const char *name)
     LOG((1, "PIOc_rename_var ncid = %d varid = %d name = %s", ncid, varid, name));
 
     /* Find the info about this file. */
-    if (!(file = pio_get_file_from_id(ncid)))
-        return PIO_EBADID;
+    if ((ierr = pio_get_file(ncid, &file)))
+	return ierr;
     ios = file->iosystem;
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
@@ -1434,8 +1434,8 @@ int PIOc_rename_att (int ncid, int varid, const char *name,
          ncid, varid, name, newname));
 
     /* Find the info about this file. */
-    if (!(file = pio_get_file_from_id(ncid)))
-        return PIO_EBADID;
+    if ((ierr = pio_get_file(ncid, &file)))
+	return ierr;
     ios = file->iosystem;
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
@@ -1524,8 +1524,8 @@ int PIOc_del_att(int ncid, int varid, const char *name)
     LOG((1, "PIOc_del_att ncid = %d varid = %d name = %s", ncid, varid, name));
 
     /* Find the info about this file. */
-    if (!(file = pio_get_file_from_id(ncid)))
-        return PIO_EBADID;
+    if ((ierr = pio_get_file(ncid, &file)))
+	return ierr;
     ios = file->iosystem;
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
@@ -1605,8 +1605,8 @@ int PIOc_set_fill (int ncid, int fillmode, int *old_modep)
          old_modep));
 
     /* Find the info about this file. */
-    if (!(file = pio_get_file_from_id(ncid)))
-        return PIO_EBADID;
+    if ((ierr = pio_get_file(ncid, &file)))
+	return ierr;
     ios = file->iosystem;
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
@@ -1671,8 +1671,8 @@ int pioc_change_def(int ncid, int is_enddef)
     LOG((2, "pioc_change_def ncid = %d is_enddef = %d", ncid, is_enddef));
 
     /* Find the info about this file. */
-    if (!(file = pio_get_file_from_id(ncid)))
-        return PIO_EBADID;
+    if ((ierr = pio_get_file(ncid, &file)))
+	return ierr;
     ios = file->iosystem;
     
     /* If async is in use, and this is not an IO task, bcast the parameters. */
@@ -1797,8 +1797,8 @@ int PIOc_def_dim (int ncid, const char *name, PIO_Offset len, int *idp)
     LOG((1, "PIOc_def_dim ncid = %d name = %s len = %d", ncid, name, len));
 
     /* Find the info about this file. */
-    if (!(file = pio_get_file_from_id(ncid)))
-        return PIO_EBADID;
+    if ((ierr = pio_get_file(ncid, &file)))
+	return ierr;
     ios = file->iosystem;
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
@@ -1893,11 +1893,8 @@ int PIOc_def_var (int ncid, const char *name, nc_type xtype, int ndims,
     }
 
     /* Get the file information. */
-    if (!(file = pio_get_file_from_id(ncid)))
-    {
-        check_netcdf(file, PIO_EBADID, __FILE__, __LINE__);     
-        return PIO_EBADID;
-    }
+    if ((ierr = pio_get_file(ncid, &file)))
+	return ierr;
     ios = file->iosystem;
 
     /* If using async, and not an IO task, then send parameters. */
@@ -1995,8 +1992,8 @@ int PIOc_inq_var_fill(int ncid, int varid, int *no_fill, void *fill_valuep)
     LOG((1, "PIOc_inq ncid = %d", ncid));
 
     /* Find the info about this file. */
-    if (!(file = pio_get_file_from_id(ncid)))
-        return PIO_EBADID;
+    if ((ierr = pio_get_file(ncid, &file)))
+	return ierr;
     ios = file->iosystem;
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
@@ -2081,8 +2078,8 @@ int PIOc_get_att(int ncid, int varid, const char *name, void *ip)
     LOG((1, "PIOc_get_att ncid %d varid %d name %s", ncid, varid, name));
 
     /* Find the info about this file. */
-    if (!(file = pio_get_file_from_id(ncid)))
-        return PIO_EBADID;
+    if ((ierr = pio_get_file(ncid, &file)))
+	return ierr;
     ios = file->iosystem;
 
     /* Run these on all tasks if async is not in use, but only on
@@ -2216,8 +2213,8 @@ int PIOc_put_att(int ncid, int varid, const char *name, nc_type xtype,
     LOG((1, "PIOc_put_att ncid = %d varid = %d name = %s", ncid, varid, name));
 
     /* Find the info about this file. */
-    if (!(file = pio_get_file_from_id(ncid)))
-        return PIO_EBADID;
+    if ((ierr = pio_get_file(ncid, &file)))
+	return ierr;
     ios = file->iosystem;
 
     /* Run these on all tasks if async is not in use, but only on

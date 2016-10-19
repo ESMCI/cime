@@ -524,8 +524,8 @@ int PIOc_closefile(int ncid)
     LOG((1, "PIOc_closefile ncid = %d", ncid));
 
     /* Find the info about this file. */
-    if (!(file = pio_get_file_from_id(ncid)))
-        return PIO_EBADID;
+    if ((ierr = pio_get_file(ncid, &file)))
+        return ierr;
     ios = file->iosystem;
 
     /* Sync changes before closing. */
