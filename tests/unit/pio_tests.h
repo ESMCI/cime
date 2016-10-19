@@ -56,7 +56,6 @@ char err_buffer[MPI_MAX_ERROR_STRING];
 int resultlen;
 
 /* Function prototypes. */
-char *flavor_name(int flavor);
 int pio_test_init(int argc, char **argv, int *my_rank, int *ntasks, int target_ntasks, MPI_Comm *test_comm);
 int create_nc_sample(int sample, int iosysid, int format, char *filename, int my_rank, int *ncid);
 int check_nc_sample(int sample, int iosysid, int format, char *filename, int my_rank, int *ncid);
