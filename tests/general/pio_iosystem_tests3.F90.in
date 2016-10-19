@@ -30,7 +30,12 @@ SUBROUTINE split_world_two_with_overlap(new_comms, new_ranks, new_sizes, overlap
   call MPI_Comm_group(pio_tf_comm_, world_group, ierr)
 
   do i=1,NUM_COMMS
-    if(overlapped_rank / NUM_COMMS /= i-1) then
+    if(pio_tf_world_sz_ == 1) then
+      nranges = 1
+      new_group_ranges(1,1) = overlapped_rank
+      new_group_ranges(2,1) = overlapped_rank
+      new_group_ranges(3,1) = 1
+    else if(overlapped_rank / NUM_COMMS /= i-1) then
       nranges = 2
       ! Include rank == overlapped_rank
       new_group_ranges(1,1) = overlapped_rank
