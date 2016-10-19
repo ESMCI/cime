@@ -71,8 +71,8 @@ int PIOc_get_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
 	return PIO_EINVAL;
 
     /* Find the info about this file. */
-    if (!(file = pio_get_file_from_id(ncid)))
-	return PIO_EBADID;
+    if ((ierr = pio_get_file(ncid, &file)))
+	return ierr;
     ios = file->iosystem;
 
     /* Run these on all tasks if async is not in use, but only on
@@ -629,10 +629,11 @@ int PIOc_get_var(int ncid, int varid, void *buf, PIO_Offset bufcount, MPI_Dataty
     int ibufcnt;
     bool bcast = false;
 
-    file = pio_get_file_from_id(ncid);
-    if(file == NULL)
-	return PIO_EBADID;
+    /* Get the file info. */
+    if ((ierr = pio_get_file(ncid, &file)))
+	return ierr;
     ios = file->iosystem;
+    
     msg = PIO_MSG_GET_VAR;
     ibufcnt = bufcount;
     ibuftype = buftype;
@@ -701,10 +702,11 @@ int PIOc_get_var1(int ncid, int varid, const PIO_Offset *index, void *buf, PIO_O
     int ibufcnt;
     bool bcast = false;
 
-    file = pio_get_file_from_id(ncid);
-    if(file == NULL)
-	return PIO_EBADID;
+    /* Get file info. */
+    if ((ierr = pio_get_file(ncid, &file)))
+	return ierr;
     ios = file->iosystem;
+    
     msg = PIO_MSG_GET_VAR1;
     ibufcnt = bufcount;
     ibuftype = buftype;
@@ -774,10 +776,11 @@ int PIOc_get_vara(int ncid, int varid, const PIO_Offset *start, const PIO_Offset
     int ibufcnt;
     bool bcast = false;
 
-    file = pio_get_file_from_id(ncid);
-    if(file == NULL)
-	return PIO_EBADID;
+    /* Get file info. */
+    if ((ierr = pio_get_file(ncid, &file)))
+	return ierr;
     ios = file->iosystem;
+    
     msg = PIO_MSG_GET_VARA;
     ibufcnt = bufcount;
     ibuftype = buftype;
@@ -847,10 +850,11 @@ int PIOc_get_vars(int ncid, int varid, const PIO_Offset *start, const PIO_Offset
     int ibufcnt;
     bool bcast = false;
 
-    file = pio_get_file_from_id(ncid);
-    if(file == NULL)
-	return PIO_EBADID;
+    /* Get file info. */
+    if ((ierr = pio_get_file(ncid, &file)))
+	return ierr;
     ios = file->iosystem;
+    
     msg = PIO_MSG_GET_VARS;
     ibufcnt = bufcount;
     ibuftype = buftype;

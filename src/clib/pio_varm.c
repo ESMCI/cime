@@ -22,9 +22,13 @@ int PIOc_put_varm (int ncid, int varid, const PIO_Offset start[], const PIO_Offs
 
   ierr = PIO_NOERR;
 
-  file = pio_get_file_from_id(ncid);
-  if(file == NULL)
-    return PIO_EBADID;
+  /* Get file info. */
+  if ((ierr = pio_get_file(ncid, &file)))
+      return ierr;
+
+  /* Get file info. */
+  if ((ierr = pio_get_file(ncid, &file)))
+      return ierr;
   ios = file->iosystem;
   msg = PIO_MSG_PUT_VARM;
 
@@ -97,9 +101,9 @@ int PIOc_put_varm_uchar (int ncid, int varid, const PIO_Offset start[], const PI
 
   ierr = PIO_NOERR;
 
-  file = pio_get_file_from_id(ncid);
-  if(file == NULL)
-    return PIO_EBADID;
+  /* Get file info. */
+  if ((ierr = pio_get_file(ncid, &file)))
+      return ierr;
   ios = file->iosystem;
   msg = PIO_MSG_PUT_VARM_UCHAR;
 
@@ -172,9 +176,9 @@ int PIOc_put_varm_short (int ncid, int varid, const PIO_Offset start[], const PI
 
   ierr = PIO_NOERR;
 
-  file = pio_get_file_from_id(ncid);
-  if(file == NULL)
-    return PIO_EBADID;
+  /* Get file info. */
+  if ((ierr = pio_get_file(ncid, &file)))
+      return ierr;
   ios = file->iosystem;
   msg = PIO_MSG_PUT_VARM_SHORT;
 
@@ -246,9 +250,9 @@ int PIOc_put_varm_text (int ncid, int varid, const PIO_Offset start[], const PIO
 
   ierr = PIO_NOERR;
 
-  file = pio_get_file_from_id(ncid);
-  if(file == NULL)
-    return PIO_EBADID;
+  /* Get file info. */
+  if ((ierr = pio_get_file(ncid, &file)))
+      return ierr;
   ios = file->iosystem;
   msg = PIO_MSG_PUT_VARM_TEXT;
 
@@ -323,9 +327,9 @@ int PIOc_put_varm_ushort (int ncid, int varid, const PIO_Offset start[], const P
 
   ierr = PIO_NOERR;
 
-  file = pio_get_file_from_id(ncid);
-  if(file == NULL)
-    return PIO_EBADID;
+  /* Get file info. */
+  if ((ierr = pio_get_file(ncid, &file)))
+      return ierr;
   ios = file->iosystem;
   msg = PIO_MSG_PUT_VARM_USHORT;
 
@@ -400,9 +404,9 @@ int PIOc_put_varm_ulonglong (int ncid, int varid, const PIO_Offset start[], cons
 
   ierr = PIO_NOERR;
 
-  file = pio_get_file_from_id(ncid);
-  if(file == NULL)
-    return PIO_EBADID;
+  /* Get file info. */
+  if ((ierr = pio_get_file(ncid, &file)))
+      return ierr;
   ios = file->iosystem;
   msg = PIO_MSG_PUT_VARM_ULONGLONG;
 
@@ -476,9 +480,9 @@ int PIOc_put_varm_int (int ncid, int varid, const PIO_Offset start[], const PIO_
 
   ierr = PIO_NOERR;
 
-  file = pio_get_file_from_id(ncid);
-  if(file == NULL)
-    return PIO_EBADID;
+  /* Get file info. */
+  if ((ierr = pio_get_file(ncid, &file)))
+      return ierr;
   ios = file->iosystem;
   msg = PIO_MSG_PUT_VARM_INT;
 
@@ -553,9 +557,9 @@ int PIOc_put_varm_float (int ncid, int varid, const PIO_Offset start[], const PI
 
   ierr = PIO_NOERR;
 
-  file = pio_get_file_from_id(ncid);
-  if(file == NULL)
-    return PIO_EBADID;
+  /* Get file info. */
+  if ((ierr = pio_get_file(ncid, &file)))
+      return ierr;
   ios = file->iosystem;
   msg = PIO_MSG_PUT_VARM_FLOAT;
 
@@ -629,9 +633,9 @@ int PIOc_put_varm_long (int ncid, int varid, const PIO_Offset start[], const PIO
 
   ierr = PIO_NOERR;
 
-  file = pio_get_file_from_id(ncid);
-  if(file == NULL)
-    return PIO_EBADID;
+  /* Get file info. */
+  if ((ierr = pio_get_file(ncid, &file)))
+      return ierr;
   ios = file->iosystem;
   msg = PIO_MSG_PUT_VARM_LONG;
 
@@ -706,9 +710,9 @@ int PIOc_put_varm_uint (int ncid, int varid, const PIO_Offset start[], const PIO
 
   ierr = PIO_NOERR;
 
-  file = pio_get_file_from_id(ncid);
-  if(file == NULL)
-    return PIO_EBADID;
+  /* Get file info. */
+  if ((ierr = pio_get_file(ncid, &file)))
+      return ierr;
   ios = file->iosystem;
   msg = PIO_MSG_PUT_VARM_UINT;
 
@@ -783,9 +787,9 @@ int PIOc_put_varm_double (int ncid, int varid, const PIO_Offset start[], const P
 
   ierr = PIO_NOERR;
 
-  file = pio_get_file_from_id(ncid);
-  if(file == NULL)
-    return PIO_EBADID;
+  /* Get file info. */
+  if ((ierr = pio_get_file(ncid, &file)))
+      return ierr;
   ios = file->iosystem;
   msg = PIO_MSG_PUT_VARM_DOUBLE;
 
@@ -859,9 +863,9 @@ int PIOc_put_varm_schar (int ncid, int varid, const PIO_Offset start[], const PI
 
   ierr = PIO_NOERR;
 
-  file = pio_get_file_from_id(ncid);
-  if(file == NULL)
-    return PIO_EBADID;
+  /* Get file info. */
+  if ((ierr = pio_get_file(ncid, &file)))
+      return ierr;
   ios = file->iosystem;
   msg = PIO_MSG_PUT_VARM_SCHAR;
 
@@ -936,9 +940,9 @@ int PIOc_put_varm_longlong (int ncid, int varid, const PIO_Offset start[], const
 
   ierr = PIO_NOERR;
 
-  file = pio_get_file_from_id(ncid);
-  if(file == NULL)
-    return PIO_EBADID;
+  /* Get file info. */
+  if ((ierr = pio_get_file(ncid, &file)))
+      return ierr;
   ios = file->iosystem;
   msg = PIO_MSG_PUT_VARM_LONGLONG;
 
@@ -1003,9 +1007,9 @@ int PIOc_get_varm_uchar (int ncid, int varid, const PIO_Offset start[], const PI
   int ibufcnt;
   bool bcast = false;
 
-  file = pio_get_file_from_id(ncid);
-  if(file == NULL)
-    return PIO_EBADID;
+  /* Get file info. */
+  if ((ierr = pio_get_file(ncid, &file)))
+      return ierr;
   ios = file->iosystem;
   msg = PIO_MSG_GET_VARM_UCHAR;
   ibuftype = MPI_UNSIGNED_CHAR;
@@ -1080,9 +1084,9 @@ int PIOc_get_varm_schar (int ncid, int varid, const PIO_Offset start[], const PI
   int ibufcnt;
   bool bcast = false;
 
-  file = pio_get_file_from_id(ncid);
-  if(file == NULL)
-    return PIO_EBADID;
+  /* Get file info. */
+  if ((ierr = pio_get_file(ncid, &file)))
+      return ierr;
   ios = file->iosystem;
   msg = PIO_MSG_GET_VARM_SCHAR;
   ibuftype = MPI_CHAR;
@@ -1157,9 +1161,9 @@ int PIOc_get_varm_double (int ncid, int varid, const PIO_Offset start[], const P
   int ibufcnt;
   bool bcast = false;
 
-  file = pio_get_file_from_id(ncid);
-  if(file == NULL)
-    return PIO_EBADID;
+  /* Get file info. */
+  if ((ierr = pio_get_file(ncid, &file)))
+      return ierr;
   ios = file->iosystem;
   msg = PIO_MSG_GET_VARM_DOUBLE;
   ibuftype = MPI_DOUBLE;
@@ -1234,9 +1238,9 @@ int PIOc_get_varm_text (int ncid, int varid, const PIO_Offset start[], const PIO
   int ibufcnt;
   bool bcast = false;
 
-  file = pio_get_file_from_id(ncid);
-  if(file == NULL)
-    return PIO_EBADID;
+  /* Get file info. */
+  if ((ierr = pio_get_file(ncid, &file)))
+      return ierr;
   ios = file->iosystem;
   msg = PIO_MSG_GET_VARM_TEXT;
   ibuftype = MPI_CHAR;
@@ -1311,9 +1315,9 @@ int PIOc_get_varm_int (int ncid, int varid, const PIO_Offset start[], const PIO_
   int ibufcnt;
   bool bcast = false;
 
-  file = pio_get_file_from_id(ncid);
-  if(file == NULL)
-    return PIO_EBADID;
+  /* Get file info. */
+  if ((ierr = pio_get_file(ncid, &file)))
+      return ierr;
   ios = file->iosystem;
   msg = PIO_MSG_GET_VARM_INT;
   ibuftype = MPI_INT;
@@ -1388,9 +1392,9 @@ int PIOc_get_varm_uint (int ncid, int varid, const PIO_Offset start[], const PIO
   int ibufcnt;
   bool bcast = false;
 
-  file = pio_get_file_from_id(ncid);
-  if(file == NULL)
-    return PIO_EBADID;
+  /* Get file info. */
+  if ((ierr = pio_get_file(ncid, &file)))
+      return ierr;
   ios = file->iosystem;
   msg = PIO_MSG_GET_VARM_UINT;
   ibuftype = MPI_UNSIGNED;
@@ -1465,9 +1469,9 @@ int PIOc_get_varm (int ncid, int varid, const PIO_Offset start[], const PIO_Offs
   int ibufcnt;
   bool bcast = false;
 
-  file = pio_get_file_from_id(ncid);
-  if(file == NULL)
-    return PIO_EBADID;
+  /* Get file info. */
+  if ((ierr = pio_get_file(ncid, &file)))
+      return ierr;
   ios = file->iosystem;
   msg = PIO_MSG_GET_VARM;
   ibufcnt = bufcount;
@@ -1538,9 +1542,9 @@ int PIOc_get_varm_float (int ncid, int varid, const PIO_Offset start[], const PI
   int ibufcnt;
   bool bcast = false;
 
-  file = pio_get_file_from_id(ncid);
-  if(file == NULL)
-    return PIO_EBADID;
+  /* Get file info. */
+  if ((ierr = pio_get_file(ncid, &file)))
+      return ierr;
   ios = file->iosystem;
   msg = PIO_MSG_GET_VARM_FLOAT;
   ibuftype = MPI_FLOAT;
@@ -1615,9 +1619,9 @@ int PIOc_get_varm_long (int ncid, int varid, const PIO_Offset start[], const PIO
   int ibufcnt;
   bool bcast = false;
 
-  file = pio_get_file_from_id(ncid);
-  if(file == NULL)
-    return PIO_EBADID;
+  /* Get file info. */
+  if ((ierr = pio_get_file(ncid, &file)))
+      return ierr;
   ios = file->iosystem;
   msg = PIO_MSG_GET_VARM_LONG;
   ibuftype = MPI_LONG;
@@ -1692,9 +1696,9 @@ int PIOc_get_varm_ushort (int ncid, int varid, const PIO_Offset start[], const P
   int ibufcnt;
   bool bcast = false;
 
-  file = pio_get_file_from_id(ncid);
-  if(file == NULL)
-    return PIO_EBADID;
+  /* Get file info. */
+  if ((ierr = pio_get_file(ncid, &file)))
+      return ierr;
   ios = file->iosystem;
   msg = PIO_MSG_GET_VARM_USHORT;
   ibuftype = MPI_UNSIGNED_SHORT;
@@ -1769,9 +1773,9 @@ int PIOc_get_varm_longlong (int ncid, int varid, const PIO_Offset start[], const
   int ibufcnt;
   bool bcast = false;
 
-  file = pio_get_file_from_id(ncid);
-  if(file == NULL)
-    return PIO_EBADID;
+  /* Get file info. */
+  if ((ierr = pio_get_file(ncid, &file)))
+      return ierr;
   ios = file->iosystem;
   msg = PIO_MSG_GET_VARM_LONGLONG;
   ibuftype = MPI_LONG_LONG;
@@ -1846,9 +1850,9 @@ int PIOc_get_varm_short (int ncid, int varid, const PIO_Offset start[], const PI
   int ibufcnt;
   bool bcast = false;
 
-  file = pio_get_file_from_id(ncid);
-  if(file == NULL)
-    return PIO_EBADID;
+  /* Get file info. */
+  if ((ierr = pio_get_file(ncid, &file)))
+      return ierr;
   ios = file->iosystem;
   msg = PIO_MSG_GET_VARM_SHORT;
   ibuftype = MPI_SHORT;
@@ -1923,9 +1927,9 @@ int PIOc_get_varm_ulonglong (int ncid, int varid, const PIO_Offset start[], cons
   int ibufcnt;
   bool bcast = false;
 
-  file = pio_get_file_from_id(ncid);
-  if(file == NULL)
-    return PIO_EBADID;
+  /* Get file info. */
+  if ((ierr = pio_get_file(ncid, &file)))
+      return ierr;
   ios = file->iosystem;
   msg = PIO_MSG_GET_VARM_ULONGLONG;
   ibuftype = MPI_UNSIGNED_LONG_LONG;

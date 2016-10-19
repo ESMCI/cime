@@ -36,12 +36,13 @@ int PIOc_iosystem_is_active(const int iosysid, bool *active)
 
 int PIOc_File_is_Open(int ncid)
 {
-  file_desc_t *file;
-  file = pio_get_file_from_id(ncid);
-  if(file==NULL)
-    return 0;
-  else
-    return 1;
+    file_desc_t *file;
+
+    /* If get file returns non-zero, then this file is not open. */
+    if (pio_get_file(ncid, &file))
+	return 0;
+    else
+	return 1;
 }
 
 /**
@@ -52,10 +53,11 @@ int PIOc_Set_File_Error_Handling(int ncid, int method)
 {
   file_desc_t *file;
   int oldmethod;
+  int ret;
 
   /* Find info for this file. */
-  if (!(file = pio_get_file_from_id(ncid)))
-      return PIO_EBADID;
+  if ((ret = pio_get_file(ncid, &file)))
+      return ret;
   
   oldmethod = file->iosystem->error_handler;
   file->iosystem->error_handler = method;
@@ -68,10 +70,12 @@ int PIOc_Set_File_Error_Handling(int ncid, int method)
 int PIOc_advanceframe(int ncid, int varid)
 {
   file_desc_t *file;
-  file = pio_get_file_from_id(ncid);
-  if(file == NULL)
-    return PIO_EBADID;
+  int ret;
 
+  /* Get the file info. */
+  if ((ret = pio_get_file(ncid, &file)))
+      return ret;
+      
   file->varlist[varid].record++;
 
   return(PIO_NOERR);
@@ -91,14 +95,19 @@ int PIOc_advanceframe(int ncid, int varid)
 int PIOc_setframe(const int ncid, const int varid, const int frame)
 {
   file_desc_t *file;
-  file = pio_get_file_from_id(ncid);
-  if(file == NULL || varid<0 || varid>=PIO_MAX_VARS){
-    return PIO_EBADID;
-  }
+  int ret;
+
+  /* Check inputs. */
+  if (varid < 0 || varid >= PIO_MAX_VARS)
+    return PIO_EINVAL;
+  
+  /* Get file info. */
+  if ((ret = pio_get_file(ncid, &file)))
+      return ret;
 
   file->varlist[varid].record = frame;
 
-  return(PIO_NOERR);
+  return PIO_NOERR;
 }
 
 /**

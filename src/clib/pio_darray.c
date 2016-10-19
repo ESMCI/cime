@@ -999,12 +999,10 @@ int PIOc_write_darray_multi(const int ncid, const int *vid, const int ioid,
 
     ierr = PIO_NOERR;
 
-    file = pio_get_file_from_id(ncid);
-    if (file == NULL)
-    {
-	fprintf(stderr,"File handle not found %d %d\n",ncid,__LINE__);
-	return PIO_EBADID;
-    }
+    /* Get the file info. */
+    if ((ierr = pio_get_file(ncid, &file)))
+	return ierr;
+
     if (! (file->mode & PIO_WRITE))
     {
 	fprintf(stderr,"ERROR:  Attempt to write to read-only file\n");
@@ -1209,12 +1207,11 @@ int PIOc_write_darray(const int ncid, const int vid, const int ioid,
 
     ierr = PIO_NOERR;
     needsflush = 0; // false
-    file = pio_get_file_from_id(ncid);
-    if (file == NULL)
-    {
-	fprintf(stderr,"File handle not found %d %d\n",ncid,__LINE__);
-	return PIO_EBADID;
-    }
+
+    /* Get the file info. */
+    if ((ierr = pio_get_file(ncid, &file)))
+	return ierr;
+
     if (! (file->mode & PIO_WRITE))
     {
 	fprintf(stderr,"ERROR:  Attempt to write to read-only file\n");
@@ -1832,13 +1829,10 @@ int PIOc_read_darray(const int ncid, const int vid, const int ioid,
     int ierr, tsize;
     MPI_Datatype vtype;
 
-    file = pio_get_file_from_id(ncid);
+    /* Get the file info. */
+    if ((ierr = pio_get_file(ncid, &file)))
+	return ierr;
 
-    if (file == NULL)
-    {
-	fprintf(stderr,"File handle not found %d %d\n",ncid,__LINE__);
-	return PIO_EBADID;
-    }
     iodesc = pio_get_iodesc_from_id(ioid);
     if (iodesc == NULL)
     {
