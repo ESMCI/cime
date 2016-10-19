@@ -532,7 +532,11 @@ CONTAINS
       tmp_idx = MOD(tmp_idx, dim_wgt(i)) 
     END DO
 
-    WRITE(fmt_str, *) "(",SIZE(idx_md),"(I5,',')", ")"
+    IF(sz == 1) THEN
+      WRITE(fmt_str, *) "(",sz,"(I5)", ")"
+    ELSE
+      WRITE(fmt_str, *) "(",sz,"(I5,',')", ")"
+    END IF
     WRITE(idx_str,fmt_str) idx_md
 
     DEALLOCATE(idx_md)
