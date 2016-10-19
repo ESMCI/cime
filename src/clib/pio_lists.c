@@ -88,6 +88,10 @@ pio_get_file(int ncid, file_desc_t **cfile1)
     if (!cfile)
 	return PIO_EBADID;
 
+    /* We depend on every file having a pointer to the iosystem. */
+    if (!cfile->iosystem)
+	return PIO_EINVAL;
+
     LOG((3, "file found!"));
 
     /* Copy pointer to file info. */
