@@ -2,13 +2,7 @@
  * @file Tests for PIOc_Intercomm. This tests basic asynch I/O capability.
  * @author Ed Hartnett
  *
- * This very simple test runs on 32 ranks. Eight are used for IO, the
- * other 24 for computation. The netCDF sample files are created and
- * checked.
- *
- * To run with valgrind, use this command:
- * <pre>mpiexec -n 4 valgrind -v --leak-check=full --suppressions=../../../tests/unit/valsupp_test.supp
- * --error-exitcode=99 --track-origins=yes ./test_async_8io_24comp</pre>
+ * This very simple test runs on 4 ranks.
  *
  */
 #include <pio.h>
@@ -80,8 +74,12 @@ main(int argc, char **argv)
 
 		for (int sample = 0; sample < NUM_SAMPLES; sample++)
 		{
+		    char iotype_name[NC_MAX_NAME + 1];
+		    
 		    /* Create a filename. */
-		    sprintf(filename, "%s_%s_%d_%d.nc", TEST_NAME, flavor_name(flv), sample, my_comp_idx);
+		    if ((ret = get_iotype_name(flavor[flv], iotype_name)))
+			return ret;
+		    sprintf(filename, "%s_%s_%d_%d.nc", TEST_NAME, iotype_name, sample, my_comp_idx);
 
 		    /* Create sample file. */
 		    printf("%d %s creating file %s\n", my_rank, TEST_NAME, filename);
