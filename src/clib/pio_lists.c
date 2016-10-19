@@ -40,31 +40,20 @@ void pio_add_to_file_list(file_desc_t *file)
 }
 
 /** Given ncid, find the file_desc_t data for an open file. The ncid
- * used is the interally generated pio_ncid. */
-/* file_desc_t *pio_get_file_from_id(int ncid) */
-/* { */
-/*     file_desc_t *cfile = NULL; */
-
-/*     /\* Check to see if the current_file is already set to this ncid. *\/ */
-/*     if (current_file && current_file->pio_ncid == ncid) */
-/* 	cfile = current_file; */
-/*     else */
-/* 	for (cfile = pio_file_list; cfile; cfile = cfile->next) */
-/* 	    if (cfile->pio_ncid == ncid) */
-/* 	    { */
-/* 		current_file = cfile; */
-/* 		break; */
-/* 	    } */
-
-/*     return cfile; */
-/* } */
-
-/** Get a pointer to the file_desc_t using the ncid. */
+ * used is the interally generated pio_ncid. 
+ *
+ * @param ncid the PIO assigned ncid of the open file.
+ * @param cfile1 pointer to a pointer to a file_desc_t. The pointer
+ * will get a copy of the pointer to the file info. 
+ *
+ * @returns 0 for success, error code otherwise. 
+ * @internal
+*/
 int pio_get_file(int ncid, file_desc_t **cfile1)
 {
     file_desc_t *cfile = NULL;
 
-    LOG((2, "pio_get_file_from_id2 ncid = %d", ncid));
+    LOG((2, "pio_get_file ncid = %d", ncid));
 
     /* Caller must provide this. */
     if (!cfile1)
@@ -75,13 +64,11 @@ int pio_get_file(int ncid, file_desc_t **cfile1)
 	cfile = current_file;
     else
 	for (cfile = pio_file_list; cfile; cfile=cfile->next)
-	{
 	    if (cfile->pio_ncid == ncid)
 	    {
 		current_file = cfile;
 		break;
 	    }
-	}
 
     /* If not found, return error. */
     if (!cfile)
@@ -90,8 +77,6 @@ int pio_get_file(int ncid, file_desc_t **cfile1)
     /* We depend on every file having a pointer to the iosystem. */
     if (!cfile->iosystem)
 	return PIO_EINVAL;
-
-    LOG((3, "file found!"));
 
     /* Copy pointer to file info. */
     *cfile1 = cfile;
