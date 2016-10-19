@@ -72,9 +72,9 @@ int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
     if (!buf)
 	return PIO_EINVAL;
 
-    /* Find the info about this file. */
-    if (!(file = pio_get_file_from_id(ncid)))
-	return PIO_EBADID;
+    /* Get file info. */
+    if ((ierr = pio_get_file(ncid, &file)))
+	return ierr;
     ios = file->iosystem;
 
     /* Run these on all tasks if async is not in use, but only on
@@ -711,10 +711,11 @@ int PIOc_put_var(int ncid, int varid, const void *buf, PIO_Offset bufcount,
 
     ierr = PIO_NOERR;
 
-    file = pio_get_file_from_id(ncid);
-    if(file == NULL)
-	return PIO_EBADID;
+    /* Get file info. */
+    if ((ierr = pio_get_file(ncid, &file)))
+	return ierr;
     ios = file->iosystem;
+    
     msg = PIO_MSG_PUT_VAR;
 
     if(ios->async_interface && ! ios->ioproc){
@@ -793,10 +794,11 @@ int PIOc_put_vars(int ncid, int varid, const PIO_Offset *start, const PIO_Offset
 
     ierr = PIO_NOERR;
 
-    file = pio_get_file_from_id(ncid);
-    if(file == NULL)
-	return PIO_EBADID;
+    /* Get file info. */
+    if ((ierr = pio_get_file(ncid, &file)))
+	return ierr;
     ios = file->iosystem;
+    
     msg = PIO_MSG_PUT_VARS;
 
     if(ios->async_interface && ! ios->ioproc){
@@ -868,10 +870,11 @@ int PIOc_put_var1(int ncid, int varid, const PIO_Offset *index, const void *buf,
 
     ierr = PIO_NOERR;
 
-    file = pio_get_file_from_id(ncid);
-    if(file == NULL)
-	return PIO_EBADID;
+    /* Get file info. */
+    if ((ierr = pio_get_file(ncid, &file)))
+	return ierr;
     ios = file->iosystem;
+    
     msg = PIO_MSG_PUT_VAR1;
 
     if(ios->async_interface && ! ios->ioproc){
@@ -941,10 +944,11 @@ int PIOc_put_vara(int ncid, int varid, const PIO_Offset *start, const PIO_Offset
 
     ierr = PIO_NOERR;
 
-    file = pio_get_file_from_id(ncid);
-    if(file == NULL)
-	return PIO_EBADID;
+    /* Get file info. */
+    if ((ierr = pio_get_file(ncid, &file)))
+	return ierr;
     ios = file->iosystem;
+    
     msg = PIO_MSG_PUT_VARA;
 
     if(ios->async_interface && ! ios->ioproc){

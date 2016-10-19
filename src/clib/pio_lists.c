@@ -60,8 +60,7 @@ file_desc_t *pio_get_file_from_id(int ncid)
 }
 
 /** Get a pointer to the file_desc_t using the ncid. */
-int
-pio_get_file(int ncid, file_desc_t **cfile1)
+int pio_get_file(int ncid, file_desc_t **cfile1)
 {
     file_desc_t *cfile = NULL;
 
