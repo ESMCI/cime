@@ -81,11 +81,10 @@ main(int argc, char **argv)
 	    char dimname[NC_MAX_NAME + 1];
 	    char filename[NUM_SAMPLES][NC_MAX_NAME + 1]; /* Test filename. */
 	    int sample_ncid[NUM_SAMPLES];
+	    char iotype_name[NC_MAX_NAME + 1];
 
 	    for (int sample = 0; sample < NUM_SAMPLES; sample++)
 	    {
-		char iotype_name[NC_MAX_NAME + 1];
-		
 		/* Create a filename. */
 		if ((ret = get_iotype_name(flavor[flv], iotype_name)))
 		    return ret;

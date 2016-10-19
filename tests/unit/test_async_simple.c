@@ -66,17 +66,13 @@ main(int argc, char **argv)
 	{
 	    for (int flv = 0; flv < num_flavors; flv++)
 	    {
+		char filename[NC_MAX_NAME + 1]; /* Test filename. */
 		int my_comp_idx = my_rank - 1; /* Index in iosysid array. */
 
 		for (int sample = 0; sample < NUM_SAMPLES; sample++)
 		{
-		    char filename[NC_MAX_NAME + 1]; /* Test filename. */
-		    char iotype_name[NC_MAX_NAME + 1];
-	    
 		    /* Create a filename. */
-		    if ((ret = get_iotype_name(flavor[flv], iotype_name)))
-			return ret;
-		    sprintf(filename, "%s_%s_%d_%d.nc", TEST_NAME, iotype_name, sample, my_comp_idx);
+		    sprintf(filename, "%s_%s_%d_%d.nc", TEST_NAME, flavor_name(flv), sample, my_comp_idx);
 
 		    /* Create sample file. */
 		    printf("%d %s creating file %s\n", my_rank, TEST_NAME, filename);

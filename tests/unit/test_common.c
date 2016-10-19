@@ -75,6 +75,20 @@ get_iotypes(int *num_flavors, int *flavors)
     return PIO_NOERR;
 }
 
+/* Name of each flavor. */
+char *
+flavor_name(int flavor)
+{
+    char *ans = NULL;
+    char flavor_name[NUM_FLAVORS][NC_MAX_NAME + 1] = {"pnetcdf", "classic",
+						      "serial4", "parallel4"};
+
+    if (flavor < NUM_FLAVORS)
+	ans = flavor_name[flavor];
+
+    return ans;
+}
+
 /* Name of each flavor. 
 *
 * @param iotype the IO type
