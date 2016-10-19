@@ -68,12 +68,15 @@ MODULE pio_tutil
   PRIVATE :: PIO_TF_Check_int_arr_arr_
   PRIVATE :: PIO_TF_Check_int_arr_val, PIO_TF_Check_int_arr_arr
   PRIVATE :: PIO_TF_Check_int_arr_arr_tol
+  PRIVATE :: PIO_TF_Check_2d_int_arr_arr
   PRIVATE :: PIO_TF_Check_real_arr_val, PIO_TF_Check_real_arr_arr
   PRIVATE :: PIO_TF_Check_real_arr_arr_tol_
   PRIVATE :: PIO_TF_Check_real_arr_arr_tol
+  PRIVATE :: PIO_TF_Check_2d_real_arr_arr
   PRIVATE :: PIO_TF_Check_double_arr_val, PIO_TF_Check_double_arr_arr
   PRIVATE :: PIO_TF_Check_double_arr_arr_tol_
   PRIVATE :: PIO_TF_Check_double_arr_arr_tol
+  PRIVATE :: PIO_TF_Check_2d_double_arr_arr
   PRIVATE :: PIO_TF_Check_char_str_str
   PRIVATE :: PIO_TF_Get_idx_from_1d_idx
 
@@ -629,6 +632,25 @@ CONTAINS
     DEALLOCATE(arr_val)
   END FUNCTION
 
+  LOGICAL FUNCTION PIO_TF_Check_2d_int_arr_arr(arr, exp_arr)
+    INTEGER, DIMENSION(:,:), INTENT(IN) :: arr
+    INTEGER, DIMENSION(:,:), INTENT(IN) :: exp_arr
+
+    INTEGER, DIMENSION(:), ALLOCATABLE :: arr_val
+    INTEGER, DIMENSION(:), ALLOCATABLE :: exp_arr_val
+    INTEGER, PARAMETER :: NDIMS = 2
+
+    ALLOCATE(arr_val(SIZE(arr)))
+    ALLOCATE(exp_arr_val(SIZE(exp_arr)))
+    arr_val = RESHAPE(arr,(/SIZE(arr)/))
+    exp_arr_val = RESHAPE(exp_arr,(/SIZE(exp_arr)/))
+
+    PIO_TF_Check_2d_int_arr_arr = PIO_TF_Check_int_arr_arr_(arr_val, exp_arr_val,&
+                                    SHAPE(arr_val))
+    DEALLOCATE(arr_val)
+    DEALLOCATE(exp_arr_val)
+  END FUNCTION
+
   LOGICAL FUNCTION PIO_TF_Check_real_arr_arr_tol_(arr, exp_arr, arr_shape, tol)
 #ifndef NO_MPIMOD
     USE mpi
@@ -719,6 +741,24 @@ CONTAINS
     arr_val = val
     PIO_TF_Check_real_arr_val = PIO_TF_Check_real_arr_arr(arr, arr_val)
     DEALLOCATE(arr_val)
+  END FUNCTION
+
+  LOGICAL FUNCTION PIO_TF_Check_2d_real_arr_arr(arr, exp_arr)
+    REAL(KIND=fc_real), DIMENSION(:,:), INTENT(IN) :: arr
+    REAL(KIND=fc_real), DIMENSION(:,:), INTENT(IN) :: exp_arr
+
+    REAL(KIND=fc_real), DIMENSION(:), ALLOCATABLE :: arr_val
+    REAL(KIND=fc_real), DIMENSION(:), ALLOCATABLE :: exp_arr_val
+    INTEGER, PARAMETER :: NDIMS = 2
+
+    ALLOCATE(arr_val(SIZE(arr)))
+    ALLOCATE(exp_arr_val(SIZE(exp_arr)))
+    arr_val = RESHAPE(arr,(/SIZE(arr)/))
+    exp_arr_val = RESHAPE(exp_arr,(/SIZE(exp_arr)/))
+
+    PIO_TF_Check_2d_real_arr_arr = PIO_TF_Check_real_arr_arr(arr_val, exp_arr_val)
+    DEALLOCATE(arr_val)
+    DEALLOCATE(exp_arr_val)
   END FUNCTION
 
   LOGICAL FUNCTION PIO_TF_Check_double_arr_arr_tol_(arr, exp_arr, arr_shape, tol)
@@ -817,6 +857,24 @@ CONTAINS
     arr_val = val
     PIO_TF_Check_double_arr_val = PIO_TF_Check_double_arr_arr(arr, arr_val)
     DEALLOCATE(arr_val)
+  END FUNCTION
+
+  LOGICAL FUNCTION PIO_TF_Check_2d_double_arr_arr(arr, exp_arr)
+    REAL(KIND=fc_double), DIMENSION(:,:), INTENT(IN) :: arr
+    REAL(KIND=fc_double), DIMENSION(:,:), INTENT(IN) :: exp_arr
+
+    REAL(KIND=fc_double), DIMENSION(:), ALLOCATABLE :: arr_val
+    REAL(KIND=fc_double), DIMENSION(:), ALLOCATABLE :: exp_arr_val
+    INTEGER, PARAMETER :: NDIMS = 2
+
+    ALLOCATE(arr_val(SIZE(arr)))
+    ALLOCATE(exp_arr_val(SIZE(exp_arr)))
+    arr_val = RESHAPE(arr,(/SIZE(arr)/))
+    exp_arr_val = RESHAPE(exp_arr,(/SIZE(exp_arr)/))
+
+    PIO_TF_Check_2d_double_arr_arr = PIO_TF_Check_double_arr_arr(arr_val, exp_arr_val)
+    DEALLOCATE(arr_val)
+    DEALLOCATE(exp_arr_val)
   END FUNCTION
 
   LOGICAL FUNCTION PIO_TF_Check_char_str_str(str1, str2)
