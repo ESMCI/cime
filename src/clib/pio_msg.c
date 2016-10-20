@@ -204,6 +204,7 @@ int inq_handler(iosystem_desc_t *ios)
     int ret;
 
     LOG((1, "inq_handler"));
+    assert(ios);
 
     /* Get the parameters for this function that the the comp master
      * task is broadcasting. */
@@ -262,6 +263,7 @@ int inq_dim_handler(iosystem_desc_t *ios, int msg)
     int ret;
 
     LOG((1, "inq_dim_handler"));
+    assert(ios);
 
     /* Get the parameters for this function that the the comp master
      * task is broadcasting. */
@@ -308,6 +310,7 @@ int inq_dimid_handler(iosystem_desc_t *ios)
     char *name;
 
     LOG((1, "inq_dimid_handler"));
+    assert(ios);
 
     /* Get the parameters for this function that the the comp master
      * task is broadcasting. */
@@ -361,6 +364,7 @@ int inq_att_handler(iosystem_desc_t *ios)
     char xtype_present, len_present;
 
     LOG((1, "inq_att_handler"));
+    assert(ios);
 
     /* Get the parameters for this function that the the comp master
      * task is broadcasting. */
@@ -416,6 +420,7 @@ int inq_attname_handler(iosystem_desc_t *ios)
     int ret;
 
     LOG((1, "inq_att_name_handler"));
+    assert(ios);
 
     /* Get the parameters for this function that the the comp master
      * task is broadcasting. */
@@ -463,6 +468,7 @@ int inq_attid_handler(iosystem_desc_t *ios)
     int ret;
 
     LOG((1, "inq_attid_handler"));
+    assert(ios);
 
     /* Get the parameters for this function that the the comp master
      * task is broadcasting. */
@@ -517,6 +523,7 @@ int att_put_handler(iosystem_desc_t *ios)
     int iotype;
 
     LOG((1, "att_put_handler"));
+    assert(ios);
 
     /* Get the parameters for this function that the the comp master
      * task is broadcasting. */
@@ -578,6 +585,7 @@ int att_get_handler(iosystem_desc_t *ios)
     int iotype;
 
     LOG((1, "att_get_handler"));
+    assert(ios);
 
     /* Get the parameters for this function that the the comp master
      * task is broadcasting. */
@@ -641,6 +649,7 @@ int put_vars_handler(iosystem_desc_t *ios)
     PIO_Offset num_elem; /** Number of data elements in the buffer. */
 
     LOG((1, "put_vars_handler"));
+    assert(ios);
 
     /* Get the parameters for this function that the the comp master
      * task is broadcasting. */
@@ -796,6 +805,7 @@ int get_vars_handler(iosystem_desc_t *ios)
     PIO_Offset num_elem; /** Number of data elements in the buffer. */
 
     LOG((1, "get_vars_handler"));
+    assert(ios);
 
     /* Get the parameters for this function that the the comp master
      * task is broadcasting. */
@@ -945,6 +955,7 @@ int inq_var_handler(iosystem_desc_t *ios)
     int ret;
 
     LOG((1, "inq_var_handler"));
+    assert(ios);
 
     /* Get the parameters for this function that the the comp master
      * task is broadcasting. */
@@ -1005,6 +1016,8 @@ int inq_varid_handler(iosystem_desc_t *ios)
     int namelen;
     char *name;
 
+    assert(ios);
+    
     /* Get the parameters for this function that the the comp master
      * task is broadcasting. */
     if ((mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm)))
@@ -1040,6 +1053,7 @@ int sync_file_handler(iosystem_desc_t *ios)
     int ret;
 
     LOG((1, "sync_file_handler"));
+    assert(ios);
 
     /* Get the parameters for this function that the comp master
      * task is broadcasting. */
@@ -1069,6 +1083,7 @@ int change_def_file_handler(iosystem_desc_t *ios, int msg)
     int ret;
 
     LOG((1, "change_def_file_handler"));
+    assert(ios);
 
     /* Get the parameters for this function that the comp master
      * task is broadcasting. */
@@ -1105,6 +1120,7 @@ int def_var_handler(iosystem_desc_t *ios)
     int *dimids;
 
     LOG((1, "def_var_handler comproot = %d", ios->comproot));
+    assert(ios);
 
     /* Get the parameters for this function that the he comp master
      * task is broadcasting. */
@@ -1160,6 +1176,7 @@ int def_dim_handler(iosystem_desc_t *ios)
     int dimid;
 
     LOG((1, "def_dim_handler comproot = %d", ios->comproot));
+    assert(ios);
 
     /* Get the parameters for this function that the he comp master
      * task is broadcasting. */
@@ -1209,6 +1226,7 @@ int rename_dim_handler(iosystem_desc_t *ios)
     char name1[NC_MAX_NAME + 1];
 
     LOG((1, "rename_dim_handler"));
+    assert(ios);
 
     /* Get the parameters for this function that the he comp master
      * task is broadcasting. */
@@ -1257,6 +1275,7 @@ int rename_var_handler(iosystem_desc_t *ios)
     char name1[NC_MAX_NAME + 1];
 
     LOG((1, "rename_var_handler"));
+    assert(ios);
 
     /* Get the parameters for this function that the he comp master
      * task is broadcasting. */
@@ -1302,6 +1321,7 @@ int rename_att_handler(iosystem_desc_t *ios)
     int ret;
 
     LOG((1, "rename_att_handler"));
+    assert(ios);
 
     /* Get the parameters for this function that the he comp master
      * task is broadcasting. */
@@ -1354,6 +1374,7 @@ int delete_att_handler(iosystem_desc_t *ios)
     int ret;
 
     LOG((1, "delete_att_handler"));
+    assert(ios);
 
     /* Get the parameters for this function that the he comp master
      * task is broadcasting. */
@@ -1400,6 +1421,7 @@ int open_file_handler(iosystem_desc_t *ios)
     int ret;
 
     LOG((1, "open_file_handler comproot = %d", ios->comproot));
+    assert(ios);
 
     /* Get the parameters for this function that the he comp master
      * task is broadcasting. */
@@ -1446,6 +1468,7 @@ int delete_file_handler(iosystem_desc_t *ios)
     int ret;
 
     LOG((1, "delete_file_handler comproot = %d", ios->comproot));
+    assert(ios);
 
     /* Get the parameters for this function that the he comp master
      * task is broadcasting. */
@@ -1481,6 +1504,7 @@ int delete_file_handler(iosystem_desc_t *ios)
  */
 int initdecomp_dof_handler(iosystem_desc_t *ios)
 {
+    assert(ios);
     return PIO_NOERR;
 }
 
@@ -1495,6 +1519,7 @@ int initdecomp_dof_handler(iosystem_desc_t *ios)
  */
 int writedarray_handler(iosystem_desc_t *ios)
 {
+    assert(ios);
     return PIO_NOERR;
 }
 
@@ -1509,6 +1534,7 @@ int writedarray_handler(iosystem_desc_t *ios)
  */
 int readdarray_handler(iosystem_desc_t *ios)
 {
+    assert(ios);
     return PIO_NOERR;
 }
 
@@ -1523,6 +1549,7 @@ int readdarray_handler(iosystem_desc_t *ios)
  */
 int seterrorhandling_handler(iosystem_desc_t *ios)
 {
+    assert(ios);
     return PIO_NOERR;
 }
 
@@ -1537,6 +1564,7 @@ int seterrorhandling_handler(iosystem_desc_t *ios)
  */
 int var_handler(iosystem_desc_t *ios, int msg)
 {
+    assert(ios);
     return PIO_NOERR;
 }
 
@@ -1569,6 +1597,7 @@ int finalize_handler(iosystem_desc_t *ios, int index)
     int ret;
 
     LOG((1, "finalize_handler called index = %d", index));
+    assert(ios);
 
     /* Get the parameters for this function that the the comp master
      * task is broadcasting. */
@@ -1595,6 +1624,7 @@ int finalize_handler(iosystem_desc_t *ios, int index)
  */
 int pio_callback_handler(iosystem_desc_t *ios, int msg)
 {
+    assert(ios);
     return PIO_NOERR;
 }
 
@@ -1620,6 +1650,7 @@ int pio_msg_handler2(int io_rank, int component_count, iosystem_desc_t **iosys,
     int open_components = component_count;
 
     LOG((1, "pio_msg_handler2 called"));
+    assert(iosys);
 
     /* Have IO comm rank 0 (the ioroot) register to receive
      * (non-blocking) for a message from each of the comproots. */
