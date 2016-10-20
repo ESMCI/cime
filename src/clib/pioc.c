@@ -18,17 +18,17 @@ static int counter=0;
  */
 int PIOc_iosystem_is_active(const int iosysid, bool *active)
 {
-    iosystem_desc_t *ios;
-    ios = pio_get_iosystem_from_id(iosysid);
-    if(ios == NULL)
-        return PIO_EBADID;
+  iosystem_desc_t *ios;
+  ios = pio_get_iosystem_from_id(iosysid);
+  if(ios == NULL)
+    return PIO_EBADID;
 
-    if(ios->comp_comm == MPI_COMM_NULL && ios->io_comm == MPI_COMM_NULL){
-        *active = false;
-    }else{
-        *active = true;
-    }
-    return PIO_NOERR;
+  if(ios->comp_comm == MPI_COMM_NULL && ios->io_comm == MPI_COMM_NULL){
+    *active = false;
+  }else{
+    *active = true;
+  }
+  return PIO_NOERR;
 }
 /**
  ** @brief Check to see if PIO file is open.
@@ -40,9 +40,9 @@ int PIOc_File_is_Open(int ncid)
 
     /* If get file returns non-zero, then this file is not open. */
     if (pio_get_file(ncid, &file))
-        return 0;
+	return 0;
     else
-        return 1;
+	return 1;
 }
 
 /**
@@ -51,17 +51,17 @@ int PIOc_File_is_Open(int ncid)
  */
 int PIOc_Set_File_Error_Handling(int ncid, int method)
 {
-    file_desc_t *file;
-    int oldmethod;
-    int ret;
+  file_desc_t *file;
+  int oldmethod;
+  int ret;
 
-    /* Find info for this file. */
-    if ((ret = pio_get_file(ncid, &file)))
-        return ret;
-
-    oldmethod = file->iosystem->error_handler;
-    file->iosystem->error_handler = method;
-    return oldmethod;
+  /* Find info for this file. */
+  if ((ret = pio_get_file(ncid, &file)))
+      return ret;
+  
+  oldmethod = file->iosystem->error_handler;
+  file->iosystem->error_handler = method;
+  return oldmethod;
 }
 
 /**
@@ -69,16 +69,16 @@ int PIOc_Set_File_Error_Handling(int ncid, int method)
  */
 int PIOc_advanceframe(int ncid, int varid)
 {
-    file_desc_t *file;
-    int ret;
+  file_desc_t *file;
+  int ret;
 
-    /* Get the file info. */
-    if ((ret = pio_get_file(ncid, &file)))
-        return ret;
+  /* Get the file info. */
+  if ((ret = pio_get_file(ncid, &file)))
+      return ret;
+      
+  file->varlist[varid].record++;
 
-    file->varlist[varid].record++;
-
-    return(PIO_NOERR);
+  return(PIO_NOERR);
 }
 
 /**
@@ -94,20 +94,20 @@ int PIOc_advanceframe(int ncid, int varid)
  */
 int PIOc_setframe(const int ncid, const int varid, const int frame)
 {
-    file_desc_t *file;
-    int ret;
+  file_desc_t *file;
+  int ret;
 
-    /* Check inputs. */
-    if (varid < 0 || varid >= PIO_MAX_VARS)
-        return PIO_EINVAL;
+  /* Check inputs. */
+  if (varid < 0 || varid >= PIO_MAX_VARS)
+    return PIO_EINVAL;
+  
+  /* Get file info. */
+  if ((ret = pio_get_file(ncid, &file)))
+      return ret;
 
-    /* Get file info. */
-    if ((ret = pio_get_file(ncid, &file)))
-        return ret;
+  file->varlist[varid].record = frame;
 
-    file->varlist[varid].record = frame;
-
-    return PIO_NOERR;
+  return PIO_NOERR;
 }
 
 /**
@@ -115,14 +115,14 @@ int PIOc_setframe(const int ncid, const int varid, const int frame)
  */
 int PIOc_get_numiotasks(int iosysid, int *numiotasks)
 {
-    iosystem_desc_t *ios;
-    ios = pio_get_iosystem_from_id(iosysid);
-    if(ios == NULL)
-        return PIO_EBADID;
+  iosystem_desc_t *ios;
+  ios = pio_get_iosystem_from_id(iosysid);
+  if(ios == NULL)
+    return PIO_EBADID;
 
-    *numiotasks = ios->num_iotasks;
+  *numiotasks = ios->num_iotasks;
 
-    return PIO_NOERR;
+  return PIO_NOERR;
 
 }
 
@@ -132,14 +132,14 @@ int PIOc_get_numiotasks(int iosysid, int *numiotasks)
  */
 int PIOc_get_iorank(int iosysid, int *iorank)
 {
-    iosystem_desc_t *ios;
-    ios = pio_get_iosystem_from_id(iosysid);
-    if(ios == NULL)
-        return PIO_EBADID;
+  iosystem_desc_t *ios;
+  ios = pio_get_iosystem_from_id(iosysid);
+  if(ios == NULL)
+    return PIO_EBADID;
 
-    *iorank = ios->io_rank;
+  *iorank = ios->io_rank;
 
-    return PIO_NOERR;
+  return PIO_NOERR;
 
 }
 
@@ -149,9 +149,9 @@ int PIOc_get_iorank(int iosysid, int *iorank)
 
 int PIOc_get_local_array_size(int ioid)
 {
-    io_desc_t *iodesc;
-    iodesc = pio_get_iodesc_from_id(ioid);
-    return(iodesc->ndof);
+  io_desc_t *iodesc;
+  iodesc = pio_get_iodesc_from_id(ioid);
+  return(iodesc->ndof);
 }
 
 /**
@@ -160,24 +160,24 @@ int PIOc_get_local_array_size(int ioid)
  */
 int PIOc_Set_IOSystem_Error_Handling(int iosysid, int method)
 {
-    iosystem_desc_t *ios;
-    int oldmethod;
+  iosystem_desc_t *ios;
+  int oldmethod;
 
-    /* Find info about this iosystem. */
-    if (!(ios = pio_get_iosystem_from_id(iosysid)))
-    {
-        fprintf(stderr,"%s %d Error setting eh method\n",__FILE__,__LINE__);
-        print_trace(stderr);
-        return PIO_EBADID;
-    }
+  /* Find info about this iosystem. */
+  if (!(ios = pio_get_iosystem_from_id(iosysid)))
+  {
+      fprintf(stderr,"%s %d Error setting eh method\n",__FILE__,__LINE__);
+      print_trace(stderr);
+      return PIO_EBADID;
+  }
 
-    /* Remember old method setting. */
-    oldmethod = ios->error_handler;
+  /* Remember old method setting. */
+  oldmethod = ios->error_handler;
 
-    /* Set new error handler. */
-    ios->error_handler = method;
-
-    return oldmethod;
+  /* Set new error handler. */
+  ios->error_handler = method;
+  
+  return oldmethod;
 }
 
 /**
@@ -195,98 +195,98 @@ int PIOc_Set_IOSystem_Error_Handling(int iosysid, int method)
  ** @param iocount An optional array of count values for block cyclic decompositions  (optional input)
  */
 int PIOc_InitDecomp(const int iosysid, const int basetype,const int ndims, const int dims[],
-                    const int maplen, const PIO_Offset *compmap, int *ioidp,const int *rearranger,
-                    const PIO_Offset *iostart,const PIO_Offset *iocount)
+		    const int maplen, const PIO_Offset *compmap, int *ioidp,const int *rearranger,
+		    const PIO_Offset *iostart,const PIO_Offset *iocount)
 {
-    iosystem_desc_t *ios;
-    io_desc_t *iodesc;
-    int mpierr;
-    int ierr;
-    int iosize;
-    int ndisp;
+  iosystem_desc_t *ios;
+  io_desc_t *iodesc;
+  int mpierr;
+  int ierr;
+  int iosize;
+  int ndisp;
 
-    for(int i=0;i<ndims;i++){
-        if(dims[i]<=0){
-            piodie("Invalid dims argument",__FILE__,__LINE__);
-        }
+  for(int i=0;i<ndims;i++){
+    if(dims[i]<=0){
+      piodie("Invalid dims argument",__FILE__,__LINE__);
     }
-    ios = pio_get_iosystem_from_id(iosysid);
-    if(ios == NULL)
-        return PIO_EBADID;
+  }
+  ios = pio_get_iosystem_from_id(iosysid);
+  if(ios == NULL)
+    return PIO_EBADID;
 
 
-    if(PIO_Save_Decomps){
-        char filename[30];
-        if(ios->num_comptasks < 100) {
-            sprintf(filename, "piodecomp%2.2dtasks%2.2ddims%2.2d.dat",ios->num_comptasks,ndims,counter);
-        }else if(ios->num_comptasks < 10000) {
-            sprintf(filename, "piodecomp%4.4dtasks%2.2ddims%2.2d.dat",ios->num_comptasks,ndims,counter);
-        }else{
-            sprintf(filename, "piodecomp%6.6dtasks%2.2ddims%2.2d.dat",ios->num_comptasks,ndims,counter);
-        }
-        PIOc_writemap(filename,ndims,dims,maplen, (PIO_Offset *)compmap,ios->comp_comm);
-        counter++;
-    }
-
-
-    iodesc = malloc_iodesc(basetype, ndims);
-    if(rearranger == NULL)
-        iodesc->rearranger = ios->default_rearranger;
-    else
-        iodesc->rearranger = *rearranger;
-
-    if(iodesc->rearranger==PIO_REARR_SUBSET){
-        if((iostart != NULL) && (iocount != NULL)){
-            fprintf(stderr,"%s %s\n","Iostart and iocount arguments to PIOc_InitDecomp",
-                    "are incompatable with subset rearrange method and will be ignored");
-        }
-        iodesc->num_aiotasks = ios->num_iotasks;
-        ierr = subset_rearrange_create( *ios, maplen, compmap, dims, ndims, iodesc);
+  if(PIO_Save_Decomps){
+    char filename[30];
+    if(ios->num_comptasks < 100) {
+      sprintf(filename, "piodecomp%2.2dtasks%2.2ddims%2.2d.dat",ios->num_comptasks,ndims,counter);
+    }else if(ios->num_comptasks < 10000) {
+      sprintf(filename, "piodecomp%4.4dtasks%2.2ddims%2.2d.dat",ios->num_comptasks,ndims,counter);
     }else{
-        if(ios->ioproc){
-            //  Unless the user specifies the start and count for each IO task compute it.
-            if((iostart != NULL) && (iocount != NULL)){
-                //        printf("iocount[0] = %ld %ld\n",iocount[0], iocount);
-                iodesc->maxiobuflen=1;
-                for(int i=0;i<ndims;i++){
-                    iodesc->firstregion->start[i] = iostart[i];
-                    iodesc->firstregion->count[i] = iocount[i];
-                    compute_maxIObuffersize(ios->io_comm, iodesc);
-
-                }
-                iodesc->num_aiotasks = ios->num_iotasks;
-            }else{
-                iodesc->num_aiotasks = CalcStartandCount(basetype, ndims, dims,
-                                                         ios->num_iotasks, ios->io_rank,
-                                                         iodesc->firstregion->start, iodesc->firstregion->count);
-            }
-            compute_maxIObuffersize(ios->io_comm, iodesc);
-
-        }
-        // Depending on array size and io-blocksize the actual number of io tasks used may vary
-        CheckMPIReturn(MPI_Bcast(&(iodesc->num_aiotasks), 1, MPI_INT, ios->ioroot,
-                                 ios->my_comm),__FILE__,__LINE__);
-        // Compute the communications pattern for this decomposition
-        if(iodesc->rearranger==PIO_REARR_BOX){
-            ierr = box_rearrange_create( *ios, maplen, compmap, dims, ndims, iodesc);
-        }
-        /*
-          if(ios->ioproc){
-          io_region *ioregion = iodesc->firstregion;
-          while(ioregion != NULL){
-          for(int i=0;i<ndims;i++)
-          printf("%s %d i %d dim %d start %ld count %ld\n",__FILE__,__LINE__,i,dims[i],ioregion->start[i],ioregion->count[i]);
-          ioregion = ioregion->next;
-          }
-          }
-        */
+      sprintf(filename, "piodecomp%6.6dtasks%2.2ddims%2.2d.dat",ios->num_comptasks,ndims,counter);
     }
+    PIOc_writemap(filename,ndims,dims,maplen, (PIO_Offset *)compmap,ios->comp_comm);
+    counter++;
+  }
 
-    *ioidp = pio_add_to_iodesc_list(iodesc);
 
-    performance_tune_rearranger(*ios, iodesc);
+  iodesc = malloc_iodesc(basetype, ndims);
+  if(rearranger == NULL)
+    iodesc->rearranger = ios->default_rearranger;
+  else
+    iodesc->rearranger = *rearranger;
 
-    return PIO_NOERR;
+  if(iodesc->rearranger==PIO_REARR_SUBSET){
+    if((iostart != NULL) && (iocount != NULL)){
+      fprintf(stderr,"%s %s\n","Iostart and iocount arguments to PIOc_InitDecomp",
+	      "are incompatable with subset rearrange method and will be ignored");
+    }
+    iodesc->num_aiotasks = ios->num_iotasks;
+    ierr = subset_rearrange_create( *ios, maplen, compmap, dims, ndims, iodesc);
+  }else{
+      if(ios->ioproc){
+      //  Unless the user specifies the start and count for each IO task compute it.
+	if((iostart != NULL) && (iocount != NULL)){
+	  //	  printf("iocount[0] = %ld %ld\n",iocount[0], iocount);
+	  iodesc->maxiobuflen=1;
+	  for(int i=0;i<ndims;i++){
+	    iodesc->firstregion->start[i] = iostart[i];
+	    iodesc->firstregion->count[i] = iocount[i];
+	    compute_maxIObuffersize(ios->io_comm, iodesc);
+
+	  }
+	  iodesc->num_aiotasks = ios->num_iotasks;
+	}else{
+	  iodesc->num_aiotasks = CalcStartandCount(basetype, ndims, dims,
+						   ios->num_iotasks, ios->io_rank,
+						   iodesc->firstregion->start, iodesc->firstregion->count);
+      }
+      compute_maxIObuffersize(ios->io_comm, iodesc);
+
+    }
+    // Depending on array size and io-blocksize the actual number of io tasks used may vary
+    CheckMPIReturn(MPI_Bcast(&(iodesc->num_aiotasks), 1, MPI_INT, ios->ioroot,
+			     ios->my_comm),__FILE__,__LINE__);
+    // Compute the communications pattern for this decomposition
+    if(iodesc->rearranger==PIO_REARR_BOX){
+      ierr = box_rearrange_create( *ios, maplen, compmap, dims, ndims, iodesc);
+    }
+    /*
+    if(ios->ioproc){
+      io_region *ioregion = iodesc->firstregion;
+      while(ioregion != NULL){
+	for(int i=0;i<ndims;i++)
+	  printf("%s %d i %d dim %d start %ld count %ld\n",__FILE__,__LINE__,i,dims[i],ioregion->start[i],ioregion->count[i]);
+	ioregion = ioregion->next;
+      }
+    }
+    */
+  }
+
+  *ioidp = pio_add_to_iodesc_list(iodesc);
+
+  performance_tune_rearranger(*ios, iodesc);
+
+  return PIO_NOERR;
 }
 
 /**
@@ -296,60 +296,60 @@ int PIOc_InitDecomp(const int iosysid, const int basetype,const int ndims, const
  ** in this case we compute the compdof and use the subset rearranger
  */
 int PIOc_InitDecomp_bc(const int iosysid, const int basetype,const int ndims, const int dims[],
-                       const long int start[], const long int count[], int *ioidp)
+		       const long int start[], const long int count[], int *ioidp)
 
 {
-    iosystem_desc_t *ios;
-    io_desc_t *iodesc;
-    int mpierr;
-    int ierr;
-    int iosize;
-    int ndisp;
+  iosystem_desc_t *ios;
+  io_desc_t *iodesc;
+  int mpierr;
+  int ierr;
+  int iosize;
+  int ndisp;
 
 
-    for(int i=0;i<ndims;i++){
-        if(dims[i]<=0){
-            piodie("Invalid dims argument",__FILE__,__LINE__);
-        }
-        if(start[i]<0 || count[i]< 0 || (start[i]+count[i])>dims[i]){
-            piodie("Invalid start or count argument ",__FILE__,__LINE__);
-        }
+  for(int i=0;i<ndims;i++){
+    if(dims[i]<=0){
+      piodie("Invalid dims argument",__FILE__,__LINE__);
     }
-    ios = pio_get_iosystem_from_id(iosysid);
-    if(ios == NULL)
-        return PIO_EBADID;
-
-    int n, i, maplen=1;
-
-    for( i=0;i<ndims;i++){
-        maplen*=count[i];
+    if(start[i]<0 || count[i]< 0 || (start[i]+count[i])>dims[i]){
+      piodie("Invalid start or count argument ",__FILE__,__LINE__);
     }
-    PIO_Offset compmap[maplen], prod[ndims], loc[ndims];
+  }
+  ios = pio_get_iosystem_from_id(iosysid);
+  if(ios == NULL)
+    return PIO_EBADID;
 
-    prod[ndims-1]=1;
-    loc[ndims-1]=0;
-    for(n=ndims-2;n>=0;n--){
-        prod[n]=prod[n+1]*dims[n+1];
-        loc[n]=0;
+  int n, i, maplen=1;
+
+  for( i=0;i<ndims;i++){
+    maplen*=count[i];
+  }
+  PIO_Offset compmap[maplen], prod[ndims], loc[ndims];
+
+  prod[ndims-1]=1;
+  loc[ndims-1]=0;
+  for(n=ndims-2;n>=0;n--){
+    prod[n]=prod[n+1]*dims[n+1];
+    loc[n]=0;
+  }
+  for(i=0;i<maplen;i++){
+    compmap[i]=0;
+    for(n=ndims-1;n>=0;n--){
+      compmap[i]+=(start[n]+loc[n])*prod[n];
     }
-    for(i=0;i<maplen;i++){
-        compmap[i]=0;
-        for(n=ndims-1;n>=0;n--){
-            compmap[i]+=(start[n]+loc[n])*prod[n];
-        }
-        n=ndims-1;
-        loc[n]=(loc[n]+1)%count[n];
-        while(loc[n]==0 && n>0){
-            n--;
-            loc[n]=(loc[n]+1)%count[n];
-        }
+    n=ndims-1;
+    loc[n]=(loc[n]+1)%count[n];
+    while(loc[n]==0 && n>0){
+      n--;
+      loc[n]=(loc[n]+1)%count[n];
     }
-    int rearr = PIO_REARR_SUBSET;
-    PIOc_InitDecomp( iosysid, basetype,ndims, dims,
-                     maplen,  compmap, ioidp, &rearr, NULL, NULL);
+  }
+  int rearr = PIO_REARR_SUBSET;
+  PIOc_InitDecomp( iosysid, basetype,ndims, dims,
+		   maplen,  compmap, ioidp, &rearr, NULL, NULL);
 
 
-    return PIO_NOERR;
+  return PIO_NOERR;
 }
 
 /* @ingroup PIO_init
@@ -379,124 +379,124 @@ int PIOc_InitDecomp_bc(const int iosysid, const int basetype,const int ndims, co
  * @return 0 on success, otherwise a PIO error code.
  */
 int PIOc_Init_Intracomm(const MPI_Comm comp_comm, const int num_iotasks,
-                        const int stride, const int base, const int rearr,
-                        int *iosysidp)
+			const int stride, const int base, const int rearr,
+			int *iosysidp)
 {
-    iosystem_desc_t *iosys;
-    int ierr = PIO_NOERR;
-    int ustride;
-    int lbase;
-    int mpierr;
+  iosystem_desc_t *iosys;
+  int ierr = PIO_NOERR;
+  int ustride;
+  int lbase;
+  int mpierr;
 
-    LOG((1, "PIOc_Init_Intracomm comp_comm = %d num_iotasks = %d stride = %d base = %d "
-         "rearr = %d", comp_comm, num_iotasks, stride, base, rearr));
+  LOG((1, "PIOc_Init_Intracomm comp_comm = %d num_iotasks = %d stride = %d base = %d "
+       "rearr = %d", comp_comm, num_iotasks, stride, base, rearr));
+  
+  iosys = (iosystem_desc_t *) malloc(sizeof(iosystem_desc_t));
 
-    iosys = (iosystem_desc_t *) malloc(sizeof(iosystem_desc_t));
+  /* Copy the computation communicator into union_comm. */
+  mpierr = MPI_Comm_dup(comp_comm, &iosys->union_comm);
+  CheckMPIReturn(mpierr, __FILE__, __LINE__);
+  if (mpierr)
+      ierr = PIO_EIO;
 
-    /* Copy the computation communicator into union_comm. */
-    mpierr = MPI_Comm_dup(comp_comm, &iosys->union_comm);
-    CheckMPIReturn(mpierr, __FILE__, __LINE__);
-    if (mpierr)
-        ierr = PIO_EIO;
+  /* Copy the computation communicator into comp_comm. */
+  if (!ierr)
+  {
+      mpierr = MPI_Comm_dup(comp_comm, &iosys->comp_comm);
+      CheckMPIReturn(mpierr, __FILE__, __LINE__);
+      if (mpierr)
+	  ierr = PIO_EIO;
+  }
+  LOG((2, "union_comm = %d comp_comm = %d", iosys->union_comm, iosys->comp_comm));
 
-    /* Copy the computation communicator into comp_comm. */
-    if (!ierr)
-    {
-        mpierr = MPI_Comm_dup(comp_comm, &iosys->comp_comm);
-        CheckMPIReturn(mpierr, __FILE__, __LINE__);
-        if (mpierr)
-            ierr = PIO_EIO;
-    }
-    LOG((2, "union_comm = %d comp_comm = %d", iosys->union_comm, iosys->comp_comm));
+  if (!ierr)
+  {
+      iosys->my_comm = iosys->comp_comm;
+      iosys->io_comm = MPI_COMM_NULL;
+      iosys->intercomm = MPI_COMM_NULL;
+      iosys->error_handler = PIO_INTERNAL_ERROR;
+      iosys->async_interface= false;
+      iosys->compmaster = 0;
+      iosys->iomaster = 0;
+      iosys->ioproc = false;
+      iosys->default_rearranger = rearr;
+      iosys->num_iotasks = num_iotasks;
 
-    if (!ierr)
-    {
-        iosys->my_comm = iosys->comp_comm;
-        iosys->io_comm = MPI_COMM_NULL;
-        iosys->intercomm = MPI_COMM_NULL;
-        iosys->error_handler = PIO_INTERNAL_ERROR;
-        iosys->async_interface= false;
-        iosys->compmaster = 0;
-        iosys->iomaster = 0;
-        iosys->ioproc = false;
-        iosys->default_rearranger = rearr;
-        iosys->num_iotasks = num_iotasks;
+      ustride = stride;
 
-        ustride = stride;
+      /* Find MPI rank and number of tasks in comp_comm communicator. */
+      CheckMPIReturn(MPI_Comm_rank(iosys->comp_comm, &(iosys->comp_rank)),__FILE__,__LINE__);
+      CheckMPIReturn(MPI_Comm_size(iosys->comp_comm, &(iosys->num_comptasks)),__FILE__,__LINE__);
+      if(iosys->comp_rank==0)
+	  iosys->compmaster = MPI_ROOT;
+      LOG((2, "comp_rank = %d num_comptasks = %d", iosys->comp_rank, iosys->num_comptasks));
 
-        /* Find MPI rank and number of tasks in comp_comm communicator. */
-        CheckMPIReturn(MPI_Comm_rank(iosys->comp_comm, &(iosys->comp_rank)),__FILE__,__LINE__);
-        CheckMPIReturn(MPI_Comm_size(iosys->comp_comm, &(iosys->num_comptasks)),__FILE__,__LINE__);
-        if(iosys->comp_rank==0)
-            iosys->compmaster = MPI_ROOT;
-        LOG((2, "comp_rank = %d num_comptasks = %d", iosys->comp_rank, iosys->num_comptasks));
+      /* Ensure that settings for number of computation tasks, number
+       * of IO tasks, and the stride are reasonable. */
+      if((iosys->num_comptasks == 1) && (num_iotasks*ustride > 1)) {
+	  // This is a serial run with a bad configuration. Set up a single task.
+	  fprintf(stderr, "PIO_TP PIOc_Init_Intracomm reset stride and tasks.\n");
+	  iosys->num_iotasks = 1;
+	  ustride = 1;
+      }
+      if((iosys->num_iotasks < 1) || ((iosys->num_iotasks*ustride) > iosys->num_comptasks)){
+	  fprintf(stderr, "PIO_TP PIOc_Init_Intracomm error\n");
+	  fprintf(stderr, "num_iotasks=%d, ustride=%d, num_comptasks=%d\n", num_iotasks, ustride, iosys->num_comptasks);
+	  return PIO_EBADID;
+      }
 
-        /* Ensure that settings for number of computation tasks, number
-         * of IO tasks, and the stride are reasonable. */
-        if((iosys->num_comptasks == 1) && (num_iotasks*ustride > 1)) {
-            // This is a serial run with a bad configuration. Set up a single task.
-            fprintf(stderr, "PIO_TP PIOc_Init_Intracomm reset stride and tasks.\n");
-            iosys->num_iotasks = 1;
-            ustride = 1;
-        }
-        if((iosys->num_iotasks < 1) || ((iosys->num_iotasks*ustride) > iosys->num_comptasks)){
-            fprintf(stderr, "PIO_TP PIOc_Init_Intracomm error\n");
-            fprintf(stderr, "num_iotasks=%d, ustride=%d, num_comptasks=%d\n", num_iotasks, ustride, iosys->num_comptasks);
-            return PIO_EBADID;
-        }
+      /* Create an array that holds the ranks of the tasks to be used for IO. */
+      iosys->ioranks = (int *) calloc(sizeof(int), iosys->num_iotasks);
+      for(int i=0;i< iosys->num_iotasks; i++){
+	  iosys->ioranks[i] = (base + i*ustride) % iosys->num_comptasks;
+	  if(iosys->ioranks[i] == iosys->comp_rank)
+	      iosys->ioproc = true;
+      }
+      iosys->ioroot = iosys->ioranks[0];
 
-        /* Create an array that holds the ranks of the tasks to be used for IO. */
-        iosys->ioranks = (int *) calloc(sizeof(int), iosys->num_iotasks);
-        for(int i=0;i< iosys->num_iotasks; i++){
-            iosys->ioranks[i] = (base + i*ustride) % iosys->num_comptasks;
-            if(iosys->ioranks[i] == iosys->comp_rank)
-                iosys->ioproc = true;
-        }
-        iosys->ioroot = iosys->ioranks[0];
+      for(int i = 0; i < iosys->num_iotasks; i++)
+	  LOG((3, "iosys->ioranks[%d] = %d", i, iosys->ioranks[i]));
 
-        for(int i = 0; i < iosys->num_iotasks; i++)
-            LOG((3, "iosys->ioranks[%d] = %d", i, iosys->ioranks[i]));
+      /* Create an MPI info object. */
+      CheckMPIReturn(MPI_Info_create(&(iosys->info)),__FILE__,__LINE__);
+      iosys->info = MPI_INFO_NULL;
 
-        /* Create an MPI info object. */
-        CheckMPIReturn(MPI_Info_create(&(iosys->info)),__FILE__,__LINE__);
-        iosys->info = MPI_INFO_NULL;
+      if(iosys->comp_rank == iosys->ioranks[0])
+	  iosys->iomaster = MPI_ROOT;
 
-        if(iosys->comp_rank == iosys->ioranks[0])
-            iosys->iomaster = MPI_ROOT;
+      /* Create a group for the computation tasks. */
+      CheckMPIReturn(MPI_Comm_group(iosys->comp_comm, &(iosys->compgroup)),__FILE__,__LINE__);
 
-        /* Create a group for the computation tasks. */
-        CheckMPIReturn(MPI_Comm_group(iosys->comp_comm, &(iosys->compgroup)),__FILE__,__LINE__);
+      /* Create a group for the IO tasks. */
+      CheckMPIReturn(MPI_Group_incl(iosys->compgroup, iosys->num_iotasks, iosys->ioranks,
+				    &(iosys->iogroup)),__FILE__,__LINE__);
 
-        /* Create a group for the IO tasks. */
-        CheckMPIReturn(MPI_Group_incl(iosys->compgroup, iosys->num_iotasks, iosys->ioranks,
-                                      &(iosys->iogroup)),__FILE__,__LINE__);
+      /* Create an MPI communicator for the IO tasks. */
+      CheckMPIReturn(MPI_Comm_create(iosys->comp_comm, iosys->iogroup, &(iosys->io_comm))
+		     ,__FILE__,__LINE__);
 
-        /* Create an MPI communicator for the IO tasks. */
-        CheckMPIReturn(MPI_Comm_create(iosys->comp_comm, iosys->iogroup, &(iosys->io_comm))
-                       ,__FILE__,__LINE__);
+      /* For the tasks that are doing IO, get their rank. */
+      if (iosys->ioproc)
+	  CheckMPIReturn(MPI_Comm_rank(iosys->io_comm, &(iosys->io_rank)),__FILE__,__LINE__);
+      else
+	  iosys->io_rank = -1;
+      LOG((3, "iosys->io_comm = %d iosys->io_rank = %d", iosys->io_comm, iosys->io_rank));
 
-        /* For the tasks that are doing IO, get their rank. */
-        if (iosys->ioproc)
-            CheckMPIReturn(MPI_Comm_rank(iosys->io_comm, &(iosys->io_rank)),__FILE__,__LINE__);
-        else
-            iosys->io_rank = -1;
-        LOG((3, "iosys->io_comm = %d iosys->io_rank = %d", iosys->io_comm, iosys->io_rank));
+      iosys->union_rank = iosys->comp_rank;
 
-        iosys->union_rank = iosys->comp_rank;
+      /* Add this iosys struct to the list in the PIO library. */
+      *iosysidp = pio_add_to_iosystem_list(iosys);
 
-        /* Add this iosys struct to the list in the PIO library. */
-        *iosysidp = pio_add_to_iosystem_list(iosys);
+      /* Get some info from the environment. */
+      pio_get_env();
 
-        /* Get some info from the environment. */
-        pio_get_env();
+      /* Allocate buffer space for compute nodes. */
+      compute_buffer_init(*iosys);
+      
+      LOG((2, "Init_Intracomm complete iosysid = %d", *iosysidp));
+  }
 
-        /* Allocate buffer space for compute nodes. */
-        compute_buffer_init(*iosys);
-
-        LOG((2, "Init_Intracomm complete iosysid = %d", *iosysidp));
-    }
-
-    return ierr;
+  return ierr;
 }
 
 /**
@@ -505,9 +505,9 @@ int PIOc_Init_Intracomm(const MPI_Comm comp_comm, const int num_iotasks,
  ** @endinternal
  */
 int PIOc_Init_Intracomm_from_F90(int f90_comp_comm,
-                                 const int num_iotasks, const int stride,
-                                 const int base, const int rearr, int *iosysidp){
-    return PIOc_Init_Intracomm(MPI_Comm_f2c(f90_comp_comm), num_iotasks, stride,base,rearr, iosysidp);
+			const int num_iotasks, const int stride,
+				 const int base, const int rearr, int *iosysidp){
+  return PIOc_Init_Intracomm(MPI_Comm_f2c(f90_comp_comm), num_iotasks, stride,base,rearr, iosysidp);
 }
 
 /**
@@ -516,15 +516,15 @@ int PIOc_Init_Intracomm_from_F90(int f90_comp_comm,
  */
 int PIOc_set_hint(const int iosysid, char hint[], const char hintval[])
 {
-    iosystem_desc_t *ios;
+  iosystem_desc_t *ios;
 
-    ios = pio_get_iosystem_from_id(iosysid);
-    if(ios == NULL)
-        return PIO_EBADID;
-    if(ios->ioproc)
-        CheckMPIReturn( MPI_Info_set(ios->info, hint, hintval), __FILE__,__LINE__);
+  ios = pio_get_iosystem_from_id(iosysid);
+  if(ios == NULL)
+    return PIO_EBADID;
+  if(ios->ioproc)
+    CheckMPIReturn( MPI_Info_set(ios->info, hint, hintval), __FILE__,__LINE__);
 
-    return PIO_NOERR;
+  return PIO_NOERR;
 
 }
 
@@ -543,13 +543,13 @@ int PIOc_finalize(const int iosysid)
     int ierr = PIO_NOERR;
 
     LOG((1, "PIOc_finalize iosysid = %d MPI_COMM_NULL = %d", iosysid,
-         MPI_COMM_NULL));
+	 MPI_COMM_NULL));
 
     /* Find the IO system information. */
     if (!(ios = pio_get_iosystem_from_id(iosysid)))
-        return PIO_EBADID;
+	return PIO_EBADID;
     LOG((3, "found iosystem info comproot = %d union_comm = %d comp_idx = %d",
-         ios->comproot, ios->union_comm, ios->comp_idx));
+	 ios->comproot, ios->union_comm, ios->comp_idx));
 
     /* If asynch IO is in use, send the PIO_MSG_EXIT message from the
      * comp master to the IO processes. This may be called by
@@ -557,60 +557,60 @@ int PIOc_finalize(const int iosysid)
      * there is a valid union_comm. */
     if (ios->async_interface && ios->union_comm != MPI_COMM_NULL)
     {
-        int msg = PIO_MSG_EXIT;
-        LOG((3, "async"));
-
-        if (!ios->ioproc)
-        {
-            LOG((2, "sending msg = %d ioroot = %d union_comm = %d", msg,
-                 ios->ioroot, ios->union_comm));
-
-            /* Send the message to the message handler. */
-            if (ios->compmaster)
-                mpierr = MPI_Send(&msg, 1, MPI_INT, ios->ioroot, 1, ios->union_comm);
-
-            LOG((2, "sending iosysid = %d", iosysid));
-
-            /* Send the parameters of the function call. */
-            if (!mpierr)
-                mpierr = MPI_Bcast((int *)&iosysid, 1, MPI_INT, ios->compmaster, ios->intercomm);
-        }
-
-        /* Handle MPI errors. */
-        LOG((3, "handling async errors mpierr = %d my_comm = %d", mpierr, ios->my_comm));
-        if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
-            return check_mpi(NULL, mpierr2, __FILE__, __LINE__);
-        if (mpierr)
-            return check_mpi(NULL, mpierr, __FILE__, __LINE__);
-        LOG((3, "async errors bcast"));
+	int msg = PIO_MSG_EXIT;
+	LOG((3, "async"));
+	
+	if (!ios->ioproc)
+	{
+	    LOG((2, "sending msg = %d ioroot = %d union_comm = %d", msg,
+		 ios->ioroot, ios->union_comm));
+	    
+	    /* Send the message to the message handler. */
+	    if (ios->compmaster)
+		mpierr = MPI_Send(&msg, 1, MPI_INT, ios->ioroot, 1, ios->union_comm);
+	    
+	    LOG((2, "sending iosysid = %d", iosysid));
+	    
+	    /* Send the parameters of the function call. */
+	    if (!mpierr)
+		mpierr = MPI_Bcast((int *)&iosysid, 1, MPI_INT, ios->compmaster, ios->intercomm);
+	}
+	    
+	/* Handle MPI errors. */
+	LOG((3, "handling async errors mpierr = %d my_comm = %d", mpierr, ios->my_comm));
+	if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
+	    return check_mpi(NULL, mpierr2, __FILE__, __LINE__);
+	if (mpierr)
+	    return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+	LOG((3, "async errors bcast"));
     }
 
     /* Free this memory that was allocated in init_intracomm. */
     if (ios->ioranks)
-        free(ios->ioranks);
+    	free(ios->ioranks);
     LOG((3, "Freed ioranks."));
 
     /* Free the buffer pool. */
     int niosysid;
     if ((ierr = pio_num_iosystem(&niosysid)))
-        return ierr;
+	return ierr;
     LOG((2, "%d iosystems are still open.", niosysid));
 
     /* Only free the buffer pool if this is the last open iosysid. */
     if (niosysid == 1)
     {
-        free_cn_buffer_pool(*ios);
-        LOG((2, "Freed buffer pool."));
+	free_cn_buffer_pool(*ios);
+	LOG((2, "Freed buffer pool."));
     }
 
     /* Free the MPI groups. */
     if (ios->compgroup != MPI_GROUP_NULL)
-        MPI_Group_free(&ios->compgroup);
+    	MPI_Group_free(&ios->compgroup);
 
     if (ios->iogroup != MPI_GROUP_NULL)
     {
-        MPI_Group_free(&(ios->iogroup));
-        LOG((2, "Freed MPI groups."));
+    	MPI_Group_free(&(ios->iogroup));
+    	LOG((2, "Freed MPI groups."));
     }
 
     /* Free the MPI communicators. my_comm is just a copy (but not an
@@ -619,26 +619,26 @@ int PIOc_finalize(const int iosysid)
      * handed into init_intercomm. So they need to be freed by MPI. */
     if (ios->intercomm != MPI_COMM_NULL)
     {
-        LOG((3, "freeing intercomm %d", ios->intercomm));
-        MPI_Comm_free(&ios->intercomm);
+    	LOG((3, "freeing intercomm %d", ios->intercomm));
+    	MPI_Comm_free(&ios->intercomm);
     }
     if (ios->union_comm != MPI_COMM_NULL)
     {
-        LOG((3, "freeing union_comm %d", ios->union_comm));
-        MPI_Comm_free(&ios->union_comm);
+    	LOG((3, "freeing union_comm %d", ios->union_comm));
+    	MPI_Comm_free(&ios->union_comm);
     }
     if (ios->io_comm != MPI_COMM_NULL)
     {
-        LOG((3, "freeing io_comm %d", ios->io_comm));
-        MPI_Comm_free(&ios->io_comm);
+    	LOG((3, "freeing io_comm %d", ios->io_comm));
+    	MPI_Comm_free(&ios->io_comm);
     }
     if (ios->comp_comm != MPI_COMM_NULL)
     {
-        LOG((3, "freeing comp_comm %d", ios->comp_comm));
-        MPI_Comm_free(&ios->comp_comm);
+    	LOG((3, "freeing comp_comm %d", ios->comp_comm));
+    	MPI_Comm_free(&ios->comp_comm);
     }
     if (ios->my_comm != MPI_COMM_NULL)
-        ios->my_comm = MPI_COMM_NULL;
+    	ios->my_comm = MPI_COMM_NULL;
 
     /* Delete the iosystem_desc_t data associated with this id. */
     LOG((2, "About to delete iosysid %d.", iosysid));
@@ -654,13 +654,13 @@ int PIOc_finalize(const int iosysid)
  */
 int PIOc_iam_iotask(const int iosysid, bool *ioproc)
 {
-    iosystem_desc_t *ios;
-    ios = pio_get_iosystem_from_id(iosysid);
-    if(ios == NULL)
-        return PIO_EBADID;
+  iosystem_desc_t *ios;
+  ios = pio_get_iosystem_from_id(iosysid);
+  if(ios == NULL)
+    return PIO_EBADID;
 
-    *ioproc = ios->ioproc;
-    return PIO_NOERR;
+  *ioproc = ios->ioproc;
+  return PIO_NOERR;
 }
 
 /**
@@ -669,14 +669,14 @@ int PIOc_iam_iotask(const int iosysid, bool *ioproc)
  */
 int PIOc_iotask_rank(const int iosysid, int *iorank)
 {
-    iosystem_desc_t *ios;
-    ios = pio_get_iosystem_from_id(iosysid);
-    if(ios == NULL)
-        return PIO_EBADID;
+  iosystem_desc_t *ios;
+  ios = pio_get_iosystem_from_id(iosysid);
+  if(ios == NULL)
+    return PIO_EBADID;
 
-    *iorank = ios->io_rank;
+  *iorank = ios->io_rank;
 
-    return PIO_NOERR;
+  return PIO_NOERR;
 
 }
 
@@ -687,23 +687,23 @@ int PIOc_iotask_rank(const int iosysid, int *iorank)
 int PIOc_iotype_available(const int iotype)
 {
 
-    switch(iotype){
+  switch(iotype){
 #ifdef _NETCDF
 #ifdef _NETCDF4
     case PIO_IOTYPE_NETCDF4P:
     case PIO_IOTYPE_NETCDF4C:
-        return(1);
+      return(1);
 #endif
     case PIO_IOTYPE_NETCDF:
-        return(1);
+      return(1);
 #endif
 #ifdef _PNETCDF
     case PIO_IOTYPE_PNETCDF:
-        return(1);
-        break;
+      return(1);
+      break;
 #endif
     default:
-        return(0);
+      return(0);
     }
 
 }
