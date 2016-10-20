@@ -1,9 +1,9 @@
 /**
- * @file 
+ * @file
  * Private headers and defines for the PIO C interface.
  * @author Jim Edwards
  * @date  2014
- * 
+ *
  * @see http://code.google.com/p/parallelio/
  */
 
@@ -36,15 +36,15 @@ void pio_log(int severity, const char *fmt, ...);
 #define LOG(e)
 #endif /* PIO_ENABLE_LOGGING */
 
-#define max(a,b)				\
-    ({ __typeof__ (a) _a = (a);			\
-	__typeof__ (b) _b = (b);		\
-	_a > _b ? _a : _b; })
+#define max(a,b)                                \
+    ({ __typeof__ (a) _a = (a);                 \
+        __typeof__ (b) _b = (b);                \
+        _a > _b ? _a : _b; })
 
-#define min(a,b)				\
-    ({ __typeof__ (a) _a = (a);			\
-	__typeof__ (b) _b = (b);		\
-	_a < _b ? _a : _b; })
+#define min(a,b)                                \
+    ({ __typeof__ (a) _a = (a);                 \
+        __typeof__ (b) _b = (b);                \
+        _a < _b ? _a : _b; })
 
 #define MAX_GATHER_BLOCK_SIZE 0
 #define PIO_REQUEST_ALLOC_CHUNK 16
@@ -59,17 +59,17 @@ extern "C" {
     /** Used to sort map points in the subset rearranger. */
     typedef struct mapsort
     {
-	int rfrom;
-	PIO_Offset soffset;
-	PIO_Offset iomap;
+        int rfrom;
+        PIO_Offset soffset;
+        PIO_Offset iomap;
     } mapsort;
 
     /** swapm defaults. */
     typedef struct pio_swapm_defaults
     {
-	int nreqs;
-	bool handshake;
-	bool isend;
+        int nreqs;
+        bool handshake;
+        bool isend;
     } pio_swapm_defaults;
 
     void pio_get_env(void);
@@ -85,55 +85,55 @@ extern "C" {
 
     iosystem_desc_t *pio_get_iosystem_from_id(int iosysid);
     int pio_add_to_iosystem_list(iosystem_desc_t *ios);
-  
+
     int check_netcdf(file_desc_t *file,const int status, const char *fname, const int line);
     int iotype_error(const int iotype, const char *fname, const int line);
     void piodie(const char *msg,const char *fname, const int line);
     void pioassert(bool exp, const char *msg,const char *fname, const int line);
     int CalcStartandCount(const int basetype, const int ndims, const int *gdims, const int num_io_procs,
-			  const int myiorank, PIO_Offset *start, PIO_Offset *kount);
+                          const int myiorank, PIO_Offset *start, PIO_Offset *kount);
     void CheckMPIReturn(const int ierr,const char file[],const int line);
     int pio_fc_gather( void *sendbuf, const int sendcnt, const MPI_Datatype sendtype,
-		       void *recvbuf, const int recvcnt, const MPI_Datatype recvtype, const int root, 
-		       MPI_Comm comm, const int flow_cntl);
+                       void *recvbuf, const int recvcnt, const MPI_Datatype recvtype, const int root,
+                       MPI_Comm comm, const int flow_cntl);
     int pio_fc_gatherv( void *sendbuf, const int sendcnt, const MPI_Datatype sendtype,
-			void *recvbuf, const int recvcnts[], const int recvdispl[], const MPI_Datatype recvtype, const int root, 
-			MPI_Comm comm, const int flow_cntl);
-  
+                        void *recvbuf, const int recvcnts[], const int recvdispl[], const MPI_Datatype recvtype, const int root,
+                        MPI_Comm comm, const int flow_cntl);
+
     int pio_fc_gatherv( void *sendbuf, const int sendcnt, const MPI_Datatype sendtype,
-			void *recvbuf, const int recvcnts[], const int rdispls[], const MPI_Datatype recvtype, const int root, 
-			MPI_Comm comm, const int flow_cntl);
-  
-    int pio_swapm(void *sndbuf, int sndlths[], int sdispls[], MPI_Datatype stypes[], 
-		  void *rcvbuf, int rcvlths[], int rdispls[], MPI_Datatype rtypes[], 
-		  MPI_Comm comm, const bool handshake, bool isend, const int max_requests);
-  
+                        void *recvbuf, const int recvcnts[], const int rdispls[], const MPI_Datatype recvtype, const int root,
+                        MPI_Comm comm, const int flow_cntl);
+
+    int pio_swapm(void *sndbuf, int sndlths[], int sdispls[], MPI_Datatype stypes[],
+                  void *rcvbuf, int rcvlths[], int rdispls[], MPI_Datatype rtypes[],
+                  MPI_Comm comm, const bool handshake, bool isend, const int max_requests);
+
     long long lgcd_array(int nain, long long*ain);
-  
+
     void PIO_Offset_size(MPI_Datatype *dtype, int *tsize);
     PIO_Offset GCDblocksize(const int arrlen, const PIO_Offset arr_in[]);
-  
+
     int subset_rearrange_create(const iosystem_desc_t ios,const int maplen, PIO_Offset compmap[], const int gsize[],
-				const int ndim, io_desc_t *iodesc);
-  
+                                const int ndim, io_desc_t *iodesc);
+
 
     int box_rearrange_create(const iosystem_desc_t ios,const int maplen, const PIO_Offset compmap[], const int gsize[],
-			     const int ndim, io_desc_t *iodesc);
-  
+                             const int ndim, io_desc_t *iodesc);
+
 
     int rearrange_io2comp(const iosystem_desc_t ios, io_desc_t *iodesc, void *sbuf,
-			  void *rbuf);
+                          void *rbuf);
     int rearrange_comp2io(const iosystem_desc_t ios, io_desc_t *iodesc, void *sbuf,
-			  void *rbuf, const int nvars);
+                          void *rbuf, const int nvars);
     int calcdisplace(const int bsize, const int numblocks,const PIO_Offset map[],int displace[]);
     io_desc_t *malloc_iodesc(const int piotype, const int ndims);
     void performance_tune_rearranger(iosystem_desc_t ios, io_desc_t *iodesc);
-  
+
     int flush_output_buffer(file_desc_t *file, bool force, PIO_Offset addsize);
     void compute_maxIObuffersize(MPI_Comm io_comm, io_desc_t *iodesc);
     io_region *alloc_region(const int ndims);
     int pio_delete_iosystem_from_list(int piosysid);
-    int gcd(int a, int b); 
+    int gcd(int a, int b);
     long long lgcd (long long a,long long b );
     int gcd_array(int nain, int *ain);
     void free_region_list(io_region *top);
@@ -144,12 +144,12 @@ extern "C" {
     int pair(const int np, const int p, const int k);
     int define_iodesc_datatypes(const iosystem_desc_t ios, io_desc_t *iodesc);
 
-    int create_mpi_datatypes(const MPI_Datatype basetype,const int msgcnt,const PIO_Offset dlen, 
-			     const PIO_Offset mindex[],const int mcount[],int *mfrom, MPI_Datatype mtype[]);
+    int create_mpi_datatypes(const MPI_Datatype basetype,const int msgcnt,const PIO_Offset dlen,
+                             const PIO_Offset mindex[],const int mcount[],int *mfrom, MPI_Datatype mtype[]);
     int compare_offsets(const void *a,const void *b) ;
 
-    int subset_rearrange_create(const iosystem_desc_t ios, int maplen, PIO_Offset compmap[], 
-				const int gsize[], const int ndims, io_desc_t *iodesc);
+    int subset_rearrange_create(const iosystem_desc_t ios, int maplen, PIO_Offset compmap[],
+                                const int gsize[], const int ndims, io_desc_t *iodesc);
     void print_trace (FILE *fp);
     void cn_buffer_report(iosystem_desc_t ios, bool collective);
     void compute_buffer_init(iosystem_desc_t ios);
@@ -158,12 +158,12 @@ extern "C" {
     void piomemerror(iosystem_desc_t ios, size_t req, char *fname, const int line);
     void compute_maxaggregate_bytes(const iosystem_desc_t ios, io_desc_t *iodesc);
     int check_mpi(file_desc_t *file, const int mpierr, const char *filename,
-		  const int line);
+                  const int line);
 
 #ifdef BGQ
     void identity(MPI_Comm comm, int *iotask);
-    void determineiotasks(const MPI_Comm comm, int *numiotasks,int *base, int *stride, int *rearr, 
-			  bool *iamIOtask);
+    void determineiotasks(const MPI_Comm comm, int *numiotasks,int *base, int *stride, int *rearr,
+                          bool *iamIOtask);
 
 #endif
 
