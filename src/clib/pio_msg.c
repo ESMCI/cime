@@ -18,7 +18,13 @@ extern int pio_log_level;
 #endif /* PIO_ENABLE_LOGGING */
 
 /** This function is run on the IO tasks to handle nc_inq_type*()
- * functions. */
+ * functions. 
+ *
+ * @param ios pointer to the iosystem info.
+ * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
+ * from netCDF base function. 
+ * @internal
+ */
 int inq_type_handler(iosystem_desc_t *ios)
 {
     int ncid;
@@ -30,6 +36,7 @@ int inq_type_handler(iosystem_desc_t *ios)
     int ret;
 
     LOG((1, "inq_type_handler"));
+    assert(ios);
 
     /* Get the parameters for this function that the the comp master
      * task is broadcasting. */
@@ -57,7 +64,13 @@ int inq_type_handler(iosystem_desc_t *ios)
 }
 
 /** This function is run on the IO tasks to find netCDF file
- * format. */
+ * format. 
+ *
+ * @param ios pointer to the iosystem info.
+ * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
+ * from netCDF base function. 
+ * @internal
+ */
 int inq_format_handler(iosystem_desc_t *ios)
 {
     int ncid;
@@ -92,7 +105,13 @@ int inq_format_handler(iosystem_desc_t *ios)
     return PIO_NOERR;
 }
 
-/** This function is run on the IO tasks to create a netCDF file. */
+/** This function is run on the IO tasks to create a netCDF file. 
+ *
+ * @param ios pointer to the iosystem info.
+ * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
+ * from netCDF base function. 
+ * @internal
+ */
 int create_file_handler(iosystem_desc_t *ios)
 {
     int ncid;
@@ -138,7 +157,9 @@ int create_file_handler(iosystem_desc_t *ios)
  * only ever run on the IO tasks.
  *
  * @param ios pointer to the iosystem_desc_t.
- * @return PIO_NOERR for success, error code otherwise.
+ * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
+ * from netCDF base function. 
+ * @internal
  */
 int close_file_handler(iosystem_desc_t *ios)
 {
@@ -168,7 +189,9 @@ int close_file_handler(iosystem_desc_t *ios)
  * only ever run on the IO tasks.
  *
  * @param ios pointer to the iosystem_desc_t.
- * @return PIO_NOERR for success, error code otherwise.
+ * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
+ * from netCDF base function. 
+ * @internal
  */
 int inq_handler(iosystem_desc_t *ios)
 {
@@ -222,7 +245,9 @@ int inq_handler(iosystem_desc_t *ios)
  *
  * @param ios pointer to the iosystem_desc_t.
  * @param msg the message sent my the comp root task.
- * @return PIO_NOERR for success, error code otherwise.
+ * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
+ * from netCDF base function. 
+ * @internal
  */
 int inq_dim_handler(iosystem_desc_t *ios, int msg)
 {
@@ -269,7 +294,9 @@ int inq_dim_handler(iosystem_desc_t *ios, int msg)
  * run on IO tasks.
  *
  * @param ios pointer to the iosystem_desc_t.
- * @return PIO_NOERR for success, error code otherwise.
+ * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
+ * from netCDF base function. 
+ * @internal
  */
 int inq_dimid_handler(iosystem_desc_t *ios)
 {
@@ -317,7 +344,9 @@ int inq_dimid_handler(iosystem_desc_t *ios)
  *
  * @param ios pointer to the iosystem_desc_t.
  * @param msg the message sent my the comp root task.
- * @return PIO_NOERR for success, error code otherwise.
+ * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
+ * from netCDF base function. 
+ * @internal
  */
 int inq_att_handler(iosystem_desc_t *ios)
 {
@@ -373,7 +402,9 @@ int inq_att_handler(iosystem_desc_t *ios)
  *
  * @param ios pointer to the iosystem_desc_t.
  * @param msg the message sent my the comp root task.
- * @return PIO_NOERR for success, error code otherwise.
+ * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
+ * from netCDF base function. 
+ * @internal
  */
 int inq_attname_handler(iosystem_desc_t *ios)
 {
@@ -416,7 +447,9 @@ int inq_attname_handler(iosystem_desc_t *ios)
  *
  * @param ios pointer to the iosystem_desc_t.
  * @param msg the message sent my the comp root task.
- * @return PIO_NOERR for success, error code otherwise.
+ * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
+ * from netCDF base function. 
+ * @internal
  */
 int inq_attid_handler(iosystem_desc_t *ios)
 {
@@ -467,7 +500,9 @@ int inq_attid_handler(iosystem_desc_t *ios)
  *
  * @param ios pointer to the iosystem_desc_t.
  * @param msg the message sent my the comp root task.
- * @return PIO_NOERR for success, error code otherwise.
+ * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
+ * from netCDF base function. 
+ * @internal
  */
 int att_put_handler(iosystem_desc_t *ios)
 {
@@ -526,7 +561,9 @@ int att_put_handler(iosystem_desc_t *ios)
  *
  * @param ios pointer to the iosystem_desc_t.
  * @param msg the message sent my the comp root task.
- * @return PIO_NOERR for success, error code otherwise.
+ * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
+ * from netCDF base function. 
+ * @internal
  */
 int att_get_handler(iosystem_desc_t *ios)
 {
@@ -584,7 +621,9 @@ int att_get_handler(iosystem_desc_t *ios)
 /** Handle var put operations. This code only runs on IO tasks.
  *
  * @param ios pointer to the iosystem_desc_t.
- * @return PIO_NOERR for success, error code otherwise.
+ * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
+ * from netCDF base function. 
+ * @internal
  */
 int put_vars_handler(iosystem_desc_t *ios)
 {
@@ -737,7 +776,9 @@ int put_vars_handler(iosystem_desc_t *ios)
 /** Handle var get operations. This code only runs on IO tasks.
  *
  * @param ios pointer to the iosystem_desc_t.
- * @return PIO_NOERR for success, error code otherwise.
+ * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
+ * from netCDF base function. 
+ * @internal
  */
 int get_vars_handler(iosystem_desc_t *ios)
 {
@@ -888,7 +929,9 @@ int get_vars_handler(iosystem_desc_t *ios)
  *
  * @param ios pointer to the iosystem_desc_t.
  * @param msg the message sent my the comp root task.
- * @return PIO_NOERR for success, error code otherwise.
+ * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
+ * from netCDF base function. 
+ * @internal
  */
 int inq_var_handler(iosystem_desc_t *ios)
 {
@@ -950,7 +993,9 @@ int inq_var_handler(iosystem_desc_t *ios)
  * run on IO tasks.
  *
  * @param ios pointer to the iosystem_desc_t.
- * @return PIO_NOERR for success, error code otherwise.
+ * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
+ * from netCDF base function. 
+ * @internal
  */
 int inq_varid_handler(iosystem_desc_t *ios)
 {
@@ -985,7 +1030,9 @@ int inq_varid_handler(iosystem_desc_t *ios)
 /** This function is run on the IO tasks to sync a netCDF file.
  *
  * @param ios pointer to the iosystem_desc_t.
- * @return PIO_NOERR for success, error code otherwise.
+ * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
+ * from netCDF base function. 
+ * @internal
  */
 int sync_file_handler(iosystem_desc_t *ios)
 {
@@ -1012,7 +1059,9 @@ int sync_file_handler(iosystem_desc_t *ios)
 /** This function is run on the IO tasks to enddef a netCDF file.
  *
  * @param ios pointer to the iosystem_desc_t.
- * @return PIO_NOERR for success, error code otherwise.
+ * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
+ * from netCDF base function. 
+ * @internal
  */
 int change_def_file_handler(iosystem_desc_t *ios, int msg)
 {
@@ -1035,7 +1084,13 @@ int change_def_file_handler(iosystem_desc_t *ios, int msg)
 }
 
 /** This function is run on the IO tasks to define a netCDF
- *  variable. */
+ *  variable. 
+ *
+ * @param ios pointer to the iosystem_desc_t.
+ * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
+ * from netCDF base function. 
+ * @internal
+*/
 int def_var_handler(iosystem_desc_t *ios)
 {
     int ncid;
@@ -1089,7 +1144,13 @@ int def_var_handler(iosystem_desc_t *ios)
 }
 
 /** This function is run on the IO tasks to define a netCDF
- * dimension. */
+ * dimension. 
+ *
+ * @param ios pointer to the iosystem_desc_t.
+ * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
+ * from netCDF base function. 
+ * @internal
+*/
 int def_dim_handler(iosystem_desc_t *ios)
 {
     int ncid;
@@ -1133,7 +1194,13 @@ int def_dim_handler(iosystem_desc_t *ios)
 }
 
 /** This function is run on the IO tasks to rename a netCDF
- * dimension. */
+ * dimension. 
+ *
+ * @param ios pointer to the iosystem_desc_t.
+ * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
+ * from netCDF base function. 
+ * @internal
+*/
 int rename_dim_handler(iosystem_desc_t *ios)
 {
     int ncid;
@@ -1175,7 +1242,13 @@ int rename_dim_handler(iosystem_desc_t *ios)
 }
 
 /** This function is run on the IO tasks to rename a netCDF
- * dimension. */
+ * dimension. 
+ *
+ * @param ios pointer to the iosystem_desc_t.
+ * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
+ * from netCDF base function. 
+ * @internal
+*/
 int rename_var_handler(iosystem_desc_t *ios)
 {
     int ncid;
@@ -1217,7 +1290,13 @@ int rename_var_handler(iosystem_desc_t *ios)
 }
 
 /** This function is run on the IO tasks to rename a netCDF
- * attribute. */
+ * attribute. 
+ *
+ * @param ios pointer to the iosystem_desc_t.
+ * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
+ * from netCDF base function. 
+ * @internal
+*/
 int rename_att_handler(iosystem_desc_t *ios)
 {
     int ncid;
@@ -1263,7 +1342,13 @@ int rename_att_handler(iosystem_desc_t *ios)
 }
 
 /** This function is run on the IO tasks to delete a netCDF
- * attribute. */
+ * attribute. 
+ *
+ * @param ios pointer to the iosystem_desc_t.
+ * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
+ * from netCDF base function. 
+ * @internal
+*/
 int delete_att_handler(iosystem_desc_t *ios)
 {
     int ncid;
@@ -1303,9 +1388,12 @@ int delete_att_handler(iosystem_desc_t *ios)
 
 /** This function is run on the IO tasks to open a netCDF file.
  *
- * @param ios pointer to the iosystem_desc_t data.
  *
- * @return PIO_NOERR for success, error code otherwise. */
+ * @param ios pointer to the iosystem_desc_t.
+ * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
+ * from netCDF base function. 
+ * @internal
+ */
 int open_file_handler(iosystem_desc_t *ios)
 {
     int ncid;
@@ -1352,7 +1440,10 @@ int open_file_handler(iosystem_desc_t *ios)
  *
  * @param ios pointer to the iosystem_desc_t data.
  *
- * @return PIO_NOERR for success, error code otherwise. */
+ * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
+ * from netCDF base function. 
+ * @internal
+ */
 int delete_file_handler(iosystem_desc_t *ios)
 {
     int ncid;
