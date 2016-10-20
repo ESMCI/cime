@@ -1479,44 +1479,104 @@ int delete_file_handler(iosystem_desc_t *ios)
     return PIO_NOERR;
 }
 
+/** This function is run on the IO tasks to...
+ * NOTE: not yet implemented
+ *
+ * @param ios pointer to the iosystem_desc_t data.
+ *
+ * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
+ * from netCDF base function. 
+ * @internal
+ */
 int initdecomp_dof_handler(iosystem_desc_t *ios)
 {
     return PIO_NOERR;
 }
 
+/** This function is run on the IO tasks to...
+ * NOTE: not yet implemented
+ *
+ * @param ios pointer to the iosystem_desc_t data.
+ *
+ * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
+ * from netCDF base function. 
+ * @internal
+ */
 int writedarray_handler(iosystem_desc_t *ios)
 {
     return PIO_NOERR;
 }
 
+/** This function is run on the IO tasks to...
+ * NOTE: not yet implemented
+ *
+ * @param ios pointer to the iosystem_desc_t data.
+ *
+ * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
+ * from netCDF base function. 
+ * @internal
+ */
 int readdarray_handler(iosystem_desc_t *ios)
 {
     return PIO_NOERR;
 }
 
+/** This function is run on the IO tasks to set the error handler.
+ * NOTE: not yet implemented
+ *
+ * @param ios pointer to the iosystem_desc_t data.
+ *
+ * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
+ * from netCDF base function. 
+ * @internal
+ */
 int seterrorhandling_handler(iosystem_desc_t *ios)
 {
     return PIO_NOERR;
 }
 
+/** This function is run on the IO tasks to...
+ * NOTE: not yet implemented
+ *
+ * @param ios pointer to the iosystem_desc_t data.
+ *
+ * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
+ * from netCDF base function. 
+ * @internal
+ */
 int var_handler(iosystem_desc_t *ios, int msg)
 {
     return PIO_NOERR;
 }
 
+/** This function is run on the IO tasks to free the decomp hanlder.
+ * NOTE: not yet implemented
+ *
+ * @param ios pointer to the iosystem_desc_t data.
+ *
+ * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
+ * from netCDF base function. 
+ * @internal
+ */
 int freedecomp_handler(iosystem_desc_t *ios)
 {
     return PIO_NOERR;
 }
 
+/** Handle the finalize call.
+ *
+ * @param ios pointer to the iosystem info
+ * @param index
+ * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
+ * from netCDF base function. 
+ * @internal
+ */
 int finalize_handler(iosystem_desc_t *ios, int index)
 {
     int iosysid;
     int mpierr;
     int ret;
 
-    int my_rank;
-    MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
     LOG((1, "finalize_handler called index = %d", index));
 
     /* Get the parameters for this function that the the comp master
