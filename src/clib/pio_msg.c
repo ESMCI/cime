@@ -80,7 +80,8 @@ int inq_format_handler(iosystem_desc_t *ios)
     int ret;
 
     LOG((1, "inq_format_handler"));
-
+    assert(ios);
+    
     /* Get the parameters for this function that the the comp master
      * task is broadcasting. */
     if ((mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm)))
@@ -123,6 +124,7 @@ int create_file_handler(iosystem_desc_t *ios)
     int ret;
 
     LOG((1, "create_file_handler comproot = %d\n", ios->comproot));
+    assert(ios);    
 
     /* Get the parameters for this function that the he comp master
      * task is broadcasting. */
@@ -167,9 +169,8 @@ int close_file_handler(iosystem_desc_t *ios)
     int mpierr;
     int ret;
 
-    int my_rank;
-    MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
     LOG((1, "close_file_handler"));
+    assert(ios);    
 
     /* Get the parameters for this function that the the comp master
      * task is broadcasting. */
@@ -202,8 +203,6 @@ int inq_handler(iosystem_desc_t *ios)
     int mpierr;
     int ret;
 
-    int my_rank;
-    MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
     LOG((1, "inq_handler"));
 
     /* Get the parameters for this function that the the comp master
@@ -1105,8 +1104,6 @@ int def_var_handler(iosystem_desc_t *ios)
     int ndims;
     int *dimids;
 
-    int my_rank;
-    MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
     LOG((1, "def_var_handler comproot = %d", ios->comproot));
 
     /* Get the parameters for this function that the he comp master
@@ -1162,8 +1159,6 @@ int def_dim_handler(iosystem_desc_t *ios)
     int ret;
     int dimid;
 
-    int my_rank;
-    MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
     LOG((1, "def_dim_handler comproot = %d", ios->comproot));
 
     /* Get the parameters for this function that the he comp master
@@ -1404,8 +1399,6 @@ int open_file_handler(iosystem_desc_t *ios)
     int mpierr;
     int ret;
 
-    int my_rank;
-    MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
     LOG((1, "open_file_handler comproot = %d", ios->comproot));
 
     /* Get the parameters for this function that the he comp master
@@ -1452,8 +1445,6 @@ int delete_file_handler(iosystem_desc_t *ios)
     int mpierr;
     int ret;
 
-    int my_rank;
-    MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
     LOG((1, "delete_file_handler comproot = %d", ios->comproot));
 
     /* Get the parameters for this function that the he comp master
@@ -1628,8 +1619,6 @@ int pio_msg_handler2(int io_rank, int component_count, iosystem_desc_t **iosys,
     int ret = PIO_NOERR;
     int open_components = component_count;
 
-    int my_rank;
-    MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
     LOG((1, "pio_msg_handler2 called"));
 
     /* Have IO comm rank 0 (the ioroot) register to receive
