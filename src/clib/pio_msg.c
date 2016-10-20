@@ -1509,58 +1509,6 @@ int freedecomp_handler(iosystem_desc_t *ios)
     return PIO_NOERR;
 }
 
-int PIOc_noop_finalize(const int iosysid)
-{
-    iosystem_desc_t *ios, *nios;
-    int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
-    int ierr = PIO_NOERR;
-
-    LOG((1, "PIOc_noop_finalize iosysid = %d MPI_COMM_NULL = %d", iosysid, MPI_COMM_NULL));
-
-    /* Find the IO system information. */
-    if (!(ios = pio_get_iosystem_from_id(iosysid)))
-        return PIO_EBADID;
-    LOG((3, "found iosystem info comproot = %d union_comm = %d", ios->comproot,
-         ios->union_comm));
-
-    /* If asynch IO is in use, send the PIO_MSG_EXIT message from the
-     * comp master to the IO processes. This may be called by
-     * componets for other components iosysid. So don't send unless
-     * there is a valid union_comm. */
-    if (ios->async_interface)
-    {
-        int msg = PIO_MSG_EXIT;
-        LOG((3, "async"));
-
-        if (!ios->ioproc)
-        {
-            LOG((2, "sending msg = %d ioroot = %d union_comm = %d", msg,
-                 ios->ioroot, ios->union_comm));
-
-            /* Send the message to the message handler. */
-            if (ios->compmaster)
-                mpierr = MPI_Send(&msg, 1, MPI_INT, ios->ioroot, 1, ios->union_comm);
-
-            LOG((2, "sending iosysid = %d", iosysid));
-
-            /* Send the parameters of the function call. */
-            if (!mpierr)
-                mpierr = MPI_Bcast((int *)&iosysid, 1, MPI_INT, ios->compmaster, ios->intercomm);
-        }
-
-        /* Handle MPI errors. */
-        LOG((3, "handling async errors mpierr = %d my_comm = %d", mpierr, ios->my_comm));
-        if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
-            return check_mpi(NULL, mpierr2, __FILE__, __LINE__);
-        if (mpierr)
-            return check_mpi(NULL, mpierr, __FILE__, __LINE__);
-        LOG((3, "async errors bcast"));
-    }
-
-    return ierr;
-}
-
-
 int finalize_handler(iosystem_desc_t *ios, int index)
 {
     int iosysid;
