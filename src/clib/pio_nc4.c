@@ -29,7 +29,7 @@
  * @return PIO_NOERR for success, otherwise an error code.
  */
 int PIOc_def_var_deflate(int ncid, int varid, int shuffle, int deflate,
-			 int deflate_level)
+                         int deflate_level)
 {
     int ierr;
     int msg;
@@ -43,55 +43,55 @@ int PIOc_def_var_deflate(int ncid, int varid, int shuffle, int deflate,
 
     /* Get the file info. */
     if ((ierr = pio_get_file(ncid, &file)))
-	return ierr;
+        return ierr;
     ios = file->iosystem;
     msg = PIO_MSG_DEF_VAR_DEFLATE;
 
     if (ios->async_interface && ! ios->ioproc)
     {
-	if (ios->compmaster)
-	    mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
-	mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
+        if (ios->compmaster)
+            mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
+        mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
     }
 
     if (ios->ioproc)
     {
-	switch (file->iotype)
-	{
+        switch (file->iotype)
+        {
 #ifdef _NETCDF
 #ifdef _NETCDF4
-	case PIO_IOTYPE_NETCDF4P:
-	    /* Versions of netCDF 4.4 and earlier do not return an
-	     * error when attempting to turn on deflation with
-	     * parallel I.O. But this is not allowed by HDF5. So
-	     * return the correct error code. */
-	    ierr = NC_EINVAL;
-	    //ierr = nc_def_var_deflate(file->fh, varid, shuffle, deflate, deflate_level);
-	    break;
-	case PIO_IOTYPE_NETCDF4C:
-	    if (!ios->io_rank)
-		ierr = nc_def_var_deflate(file->fh, varid, shuffle, deflate, deflate_level);
-	    break;
+        case PIO_IOTYPE_NETCDF4P:
+            /* Versions of netCDF 4.4 and earlier do not return an
+             * error when attempting to turn on deflation with
+             * parallel I.O. But this is not allowed by HDF5. So
+             * return the correct error code. */
+            ierr = NC_EINVAL;
+            //ierr = nc_def_var_deflate(file->fh, varid, shuffle, deflate, deflate_level);
+            break;
+        case PIO_IOTYPE_NETCDF4C:
+            if (!ios->io_rank)
+                ierr = nc_def_var_deflate(file->fh, varid, shuffle, deflate, deflate_level);
+            break;
 #endif
-	case PIO_IOTYPE_NETCDF:
-	    ierr = PIO_ENOTNC4;
-	    break;
+        case PIO_IOTYPE_NETCDF:
+            ierr = PIO_ENOTNC4;
+            break;
 #endif
 #ifdef _PNETCDF
-	case PIO_IOTYPE_PNETCDF:
-	    ierr = PIO_ENOTNC4;
-	    break;
+        case PIO_IOTYPE_PNETCDF:
+            ierr = PIO_ENOTNC4;
+            break;
 #endif
-	default:
-	    ierr = iotype_error(file->iotype,__FILE__,__LINE__);
-	}
+        default:
+            ierr = iotype_error(file->iotype,__FILE__,__LINE__);
+        }
     }
 
     /* If there is an error, allocate space for the error string. */
     if (ierr != PIO_NOERR)
     {
-	errstr = (char *) malloc((strlen(__FILE__) + 20)* sizeof(char));
-	sprintf(errstr,"in file %s",__FILE__);
+        errstr = (char *) malloc((strlen(__FILE__) + 20)* sizeof(char));
+        sprintf(errstr,"in file %s",__FILE__);
     }
 
     /* Check the netCDF return code, and broadcast it to all tasks. */
@@ -99,7 +99,7 @@ int PIOc_def_var_deflate(int ncid, int varid, int shuffle, int deflate,
 
     /* Free the error string if it was allocated. */
     if (errstr != NULL)
-	free(errstr);
+        free(errstr);
 
     return ierr;
 }
@@ -129,7 +129,7 @@ int PIOc_def_var_deflate(int ncid, int varid, int shuffle, int deflate,
  * @return PIO_NOERR for success, otherwise an error code.
  */
 int PIOc_inq_var_deflate(int ncid, int varid, int *shufflep,
-			 int *deflatep, int *deflate_levelp)
+                         int *deflatep, int *deflate_levelp)
 {
     int ierr;
     int msg;
@@ -144,50 +144,50 @@ int PIOc_inq_var_deflate(int ncid, int varid, int *shufflep,
 
     /* Get the file info. */
     if ((ierr = pio_get_file(ncid, &file)))
-	return ierr;
+        return ierr;
     ios = file->iosystem;
     msg = PIO_MSG_INQ_VAR_DEFLATE;
 
     if (ios->async_interface && ! ios->ioproc)
     {
-	if (ios->compmaster)
-	    mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
-	mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
+        if (ios->compmaster)
+            mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
+        mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
     }
 
     if (ios->ioproc)
     {
-	switch (file->iotype)
-	{
+        switch (file->iotype)
+        {
 #ifdef _NETCDF
 #ifdef _NETCDF4
-	case PIO_IOTYPE_NETCDF4P:
-	    ierr = nc_inq_var_deflate(file->fh, varid, shufflep, deflatep, deflate_levelp);
-	    break;
-	case PIO_IOTYPE_NETCDF4C:
-	    if (ios->io_rank == 0)
-		ierr = nc_inq_var_deflate(file->fh, varid, shufflep, deflatep, deflate_levelp);
-	    break;
+        case PIO_IOTYPE_NETCDF4P:
+            ierr = nc_inq_var_deflate(file->fh, varid, shufflep, deflatep, deflate_levelp);
+            break;
+        case PIO_IOTYPE_NETCDF4C:
+            if (ios->io_rank == 0)
+                ierr = nc_inq_var_deflate(file->fh, varid, shufflep, deflatep, deflate_levelp);
+            break;
 #endif
-	case PIO_IOTYPE_NETCDF:
-	    ierr = PIO_ENOTNC4;
-	    break;
+        case PIO_IOTYPE_NETCDF:
+            ierr = PIO_ENOTNC4;
+            break;
 #endif
 #ifdef _PNETCDF
-	case PIO_IOTYPE_PNETCDF:
-	    ierr = PIO_ENOTNC4;
-	    break;
+        case PIO_IOTYPE_PNETCDF:
+            ierr = PIO_ENOTNC4;
+            break;
 #endif
-	default:
-	    ierr = iotype_error(file->iotype,__FILE__,__LINE__);
-	}
+        default:
+            ierr = iotype_error(file->iotype,__FILE__,__LINE__);
+        }
     }
 
     /* If there is an error, allocate space for the error string. */
     if (ierr != PIO_NOERR)
     {
-	errstr = (char *) malloc((strlen(__FILE__) + 20)* sizeof(char));
-	sprintf(errstr,"in file %s",__FILE__);
+        errstr = (char *) malloc((strlen(__FILE__) + 20)* sizeof(char));
+        sprintf(errstr,"in file %s",__FILE__);
     }
 
     /* Check the netCDF return code, and broadcast it to all tasks. */
@@ -195,17 +195,17 @@ int PIOc_inq_var_deflate(int ncid, int varid, int *shufflep,
 
     /* Free the error string if it was allocated. */
     if (errstr != NULL)
-	free(errstr);
+        free(errstr);
 
     /* Broadcast results to all tasks. */
     if (ierr == PIO_NOERR)
     {
-	if (shufflep)
-	    ierr = MPI_Bcast(shufflep, 1, MPI_INT, ios->ioroot, ios->my_comm);
-	if (deflatep)
-	    ierr = MPI_Bcast(deflatep, 1, MPI_INT, ios->ioroot, ios->my_comm);
-	if (deflate_levelp)
-	    ierr = MPI_Bcast(deflate_levelp, 1, MPI_INT, ios->ioroot, ios->my_comm);
+        if (shufflep)
+            ierr = MPI_Bcast(shufflep, 1, MPI_INT, ios->ioroot, ios->my_comm);
+        if (deflatep)
+            ierr = MPI_Bcast(deflatep, 1, MPI_INT, ios->ioroot, ios->my_comm);
+        if (deflate_levelp)
+            ierr = MPI_Bcast(deflate_levelp, 1, MPI_INT, ios->ioroot, ios->my_comm);
     }
     return ierr;
 }
@@ -235,7 +235,7 @@ int PIOc_inq_var_deflate(int ncid, int varid, int *shufflep,
  * @return PIO_NOERR for success, otherwise an error code.
  */
 int PIOc_def_var_chunking(int ncid, int varid, int storage,
-			  const PIO_Offset *chunksizesp)
+                          const PIO_Offset *chunksizesp)
 {
     iosystem_desc_t *ios;  /** Pointer to io system information. */
     file_desc_t *file;     /** Pointer to file information. */
@@ -246,66 +246,66 @@ int PIOc_def_var_chunking(int ncid, int varid, int storage,
 
     /* Find the info about this file. */
     if ((ierr = pio_get_file(ncid, &file)))
-	return ierr;
+        return ierr;
     ios = file->iosystem;
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
     if (ios->async_interface)
     {
-	if (!ios->ioproc)
-	{
-	    int msg = PIO_MSG_DEF_VAR_CHUNKING;
+        if (!ios->ioproc)
+        {
+            int msg = PIO_MSG_DEF_VAR_CHUNKING;
 
-	    if (ios->compmaster)
-		mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
+            if (ios->compmaster)
+                mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
 
-	    if (!mpierr)
-		mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
-	}
+            if (!mpierr)
+                mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
+        }
 
         /* Handle MPI errors. */
         if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
             return check_mpi(file, mpierr2, __FILE__, __LINE__);
-	if (mpierr)
-	    return check_mpi(file, mpierr, __FILE__, __LINE__);
+        if (mpierr)
+            return check_mpi(file, mpierr, __FILE__, __LINE__);
     }
 
     /* If this is an IO task, then call the netCDF function. */
     if (ios->ioproc)
     {
-	switch (file->iotype)
-	{
+        switch (file->iotype)
+        {
 #ifdef _NETCDF
 #ifdef _NETCDF4
-	case PIO_IOTYPE_NETCDF4P:
-	    ierr = nc_def_var_chunking(file->fh, varid, storage, chunksizesp);
-	    break;
-	case PIO_IOTYPE_NETCDF4C:
-	    if (ios->io_rank==0)
-	    {
-		ierr = nc_def_var_chunking(file->fh, varid, storage, chunksizesp);
-	    }
-	    break;
+        case PIO_IOTYPE_NETCDF4P:
+            ierr = nc_def_var_chunking(file->fh, varid, storage, chunksizesp);
+            break;
+        case PIO_IOTYPE_NETCDF4C:
+            if (ios->io_rank==0)
+            {
+                ierr = nc_def_var_chunking(file->fh, varid, storage, chunksizesp);
+            }
+            break;
 #endif
-	case PIO_IOTYPE_NETCDF:
-	    return PIO_ENOTNC4;
-	    break;
+        case PIO_IOTYPE_NETCDF:
+            return PIO_ENOTNC4;
+            break;
 #endif
 #ifdef _PNETCDF
-	case PIO_IOTYPE_PNETCDF:
-	    return PIO_ENOTNC4;
-	    break;
+        case PIO_IOTYPE_PNETCDF:
+            return PIO_ENOTNC4;
+            break;
 #endif
-	default:
-	    ierr = iotype_error(file->iotype,__FILE__,__LINE__);
-	}
+        default:
+            ierr = iotype_error(file->iotype,__FILE__,__LINE__);
+        }
     }
 
     /* Broadcast and check the return code. */
     if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
         return check_mpi(file, mpierr, __FILE__, __LINE__);
     if (ierr)
-	return check_netcdf(file, ierr, __FILE__, __LINE__);
+        return check_netcdf(file, ierr, __FILE__, __LINE__);
 
     return ierr;
 }
@@ -346,55 +346,55 @@ int PIOc_inq_var_chunking(int ncid, int varid, int *storagep, PIO_Offset *chunks
     ierr = PIO_NOERR;
 
     if ((ierr = pio_get_file(ncid, &file)))
-	return ierr;
+        return ierr;
     ios = file->iosystem;
     msg = PIO_MSG_INQ_VAR_CHUNKING;
 
     if (ios->async_interface && ! ios->ioproc)
     {
-	if (ios->compmaster)
-	    mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
-	mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
+        if (ios->compmaster)
+            mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
+        mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
     }
 
     if (ios->ioproc)
     {
-	switch (file->iotype)
-	{
+        switch (file->iotype)
+        {
 #ifdef _NETCDF
 #ifdef _NETCDF4
-	case PIO_IOTYPE_NETCDF4P:
-	    ierr = nc_inq_var_chunking(file->fh, varid, storagep, chunksizesp);
-	    break;
-	case PIO_IOTYPE_NETCDF4C:
-	    if (ios->io_rank == 0)
-	    {
-		if ((ierr = nc_inq_var_chunking(file->fh, varid, storagep, chunksizesp)))
-		    return ierr;
-		if ((ierr = nc_inq_varndims(file->fh, varid, &ndims)))
-		    return ierr;
-	    }
-	    break;
+        case PIO_IOTYPE_NETCDF4P:
+            ierr = nc_inq_var_chunking(file->fh, varid, storagep, chunksizesp);
+            break;
+        case PIO_IOTYPE_NETCDF4C:
+            if (ios->io_rank == 0)
+            {
+                if ((ierr = nc_inq_var_chunking(file->fh, varid, storagep, chunksizesp)))
+                    return ierr;
+                if ((ierr = nc_inq_varndims(file->fh, varid, &ndims)))
+                    return ierr;
+            }
+            break;
 #endif
-	case PIO_IOTYPE_NETCDF:
-	    return PIO_ENOTNC4;
-	    break;
+        case PIO_IOTYPE_NETCDF:
+            return PIO_ENOTNC4;
+            break;
 #endif
 #ifdef _PNETCDF
-	case PIO_IOTYPE_PNETCDF:
-	    return PIO_ENOTNC4;
-	    break;
+        case PIO_IOTYPE_PNETCDF:
+            return PIO_ENOTNC4;
+            break;
 #endif
-	default:
-	    ierr = iotype_error(file->iotype,__FILE__,__LINE__);
-	}
+        default:
+            ierr = iotype_error(file->iotype,__FILE__,__LINE__);
+        }
     }
 
     /* If there is an error, allocate space for the error string. */
     if (ierr != PIO_NOERR)
     {
-	errstr = (char *) malloc((strlen(__FILE__) + 20)* sizeof(char));
-	sprintf(errstr,"in file %s",__FILE__);
+        errstr = (char *) malloc((strlen(__FILE__) + 20)* sizeof(char));
+        sprintf(errstr,"in file %s",__FILE__);
     }
 
     /* Check the netCDF return code, and broadcast it to all tasks. */
@@ -402,14 +402,14 @@ int PIOc_inq_var_chunking(int ncid, int varid, int *storagep, PIO_Offset *chunks
 
     /* Free the error stringif it was allocated. */
     if (errstr != NULL)
-	free(errstr);
+        free(errstr);
 
     /* Broadcast results to all tasks. */
     ierr = MPI_Bcast(&ndims, 1, MPI_INT, ios->ioroot, ios->my_comm);
     if (storagep)
-	ierr = MPI_Bcast(storagep, 1, MPI_INT, ios->ioroot, ios->my_comm);
+        ierr = MPI_Bcast(storagep, 1, MPI_INT, ios->ioroot, ios->my_comm);
     if (chunksizesp)
-	ierr = MPI_Bcast(chunksizesp, ndims, MPI_OFFSET, ios->ioroot, ios->my_comm);
+        ierr = MPI_Bcast(chunksizesp, ndims, MPI_OFFSET, ios->ioroot, ios->my_comm);
 
     return ierr;
 }
@@ -451,52 +451,52 @@ int PIOc_def_var_fill(int ncid, int varid, int no_fill, const void *fill_value)
     ierr = PIO_NOERR;
 
     if ((ierr = pio_get_file(ncid, &file)))
-	return ierr;
+        return ierr;
     ios = file->iosystem;
     msg = PIO_MSG_SET_FILL;
 
     if (ios->async_interface && ! ios->ioproc)
     {
-	if (ios->compmaster)
-	    mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
-	mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
+        if (ios->compmaster)
+            mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
+        mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
     }
 
     if (ios->ioproc)
     {
-	switch (file->iotype)
-	{
+        switch (file->iotype)
+        {
 #ifdef _NETCDF
 #ifdef _NETCDF4
-	case PIO_IOTYPE_NETCDF4P:
-	    ierr = nc_def_var_fill(file->fh, varid, no_fill, fill_value);
-	    break;
-	case PIO_IOTYPE_NETCDF4C:
-	    if (ios->io_rank==0)
-	    {
-		ierr = nc_def_var_fill(file->fh, varid, no_fill, fill_value);
-	    }
-	    break;
+        case PIO_IOTYPE_NETCDF4P:
+            ierr = nc_def_var_fill(file->fh, varid, no_fill, fill_value);
+            break;
+        case PIO_IOTYPE_NETCDF4C:
+            if (ios->io_rank==0)
+            {
+                ierr = nc_def_var_fill(file->fh, varid, no_fill, fill_value);
+            }
+            break;
 #endif
-	case PIO_IOTYPE_NETCDF:
-	    return PIO_ENOTNC4;
-	    break;
+        case PIO_IOTYPE_NETCDF:
+            return PIO_ENOTNC4;
+            break;
 #endif
 #ifdef _PNETCDF
-	case PIO_IOTYPE_PNETCDF:
-	    return PIO_ENOTNC4;
-	    break;
+        case PIO_IOTYPE_PNETCDF:
+            return PIO_ENOTNC4;
+            break;
 #endif
-	default:
-	    ierr = iotype_error(file->iotype,__FILE__,__LINE__);
-	}
+        default:
+            ierr = iotype_error(file->iotype,__FILE__,__LINE__);
+        }
     }
 
     /* Allocate an error string if needed. */
     if (ierr != PIO_NOERR)
     {
-	errstr = (char *) malloc((strlen(__FILE__) + 20)* sizeof(char));
-	sprintf(errstr,"in file %s",__FILE__);
+        errstr = (char *) malloc((strlen(__FILE__) + 20)* sizeof(char));
+        sprintf(errstr,"in file %s",__FILE__);
     }
 
     /* Check for netCDF error. */
@@ -504,7 +504,7 @@ int PIOc_def_var_fill(int ncid, int varid, int no_fill, const void *fill_value)
 
     /* Free the error string if it was allocated. */
     if (errstr != NULL)
-	free(errstr);
+        free(errstr);
 
     return ierr;
 }
@@ -546,52 +546,52 @@ int PIOc_def_var_endian(int ncid, int varid, int endian)
     ierr = PIO_NOERR;
 
     if ((ierr = pio_get_file(ncid, &file)))
-	return ierr;
+        return ierr;
     ios = file->iosystem;
     msg = PIO_MSG_DEF_VAR_ENDIAN;
 
     if (ios->async_interface && ! ios->ioproc)
     {
-	if (ios->compmaster)
-	    mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
-	mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
+        if (ios->compmaster)
+            mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
+        mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
     }
 
     if (ios->ioproc)
     {
-	switch (file->iotype)
-	{
+        switch (file->iotype)
+        {
 #ifdef _NETCDF
 #ifdef _NETCDF4
-	case PIO_IOTYPE_NETCDF4P:
-	    ierr = nc_def_var_endian(file->fh, varid, endian);
-	    break;
-	case PIO_IOTYPE_NETCDF4C:
-	    if (ios->io_rank==0)
-	    {
-		ierr = nc_def_var_endian(file->fh, varid, endian);
-	    }
-	    break;
+        case PIO_IOTYPE_NETCDF4P:
+            ierr = nc_def_var_endian(file->fh, varid, endian);
+            break;
+        case PIO_IOTYPE_NETCDF4C:
+            if (ios->io_rank==0)
+            {
+                ierr = nc_def_var_endian(file->fh, varid, endian);
+            }
+            break;
 #endif
-	case PIO_IOTYPE_NETCDF:
-	    ierr = PIO_ENOTNC4;
-	    break;
+        case PIO_IOTYPE_NETCDF:
+            ierr = PIO_ENOTNC4;
+            break;
 #endif
 #ifdef _PNETCDF
-	case PIO_IOTYPE_PNETCDF:
-	    ierr = PIO_ENOTNC4;
-	    break;
+        case PIO_IOTYPE_PNETCDF:
+            ierr = PIO_ENOTNC4;
+            break;
 #endif
-	default:
-	    ierr = iotype_error(file->iotype,__FILE__,__LINE__);
-	}
+        default:
+            ierr = iotype_error(file->iotype,__FILE__,__LINE__);
+        }
     }
 
     /* Allocate an error string if needed. */
     if (ierr != PIO_NOERR)
     {
-	errstr = (char *) malloc((strlen(__FILE__) + 20)* sizeof(char));
-	sprintf(errstr,"in file %s",__FILE__);
+        errstr = (char *) malloc((strlen(__FILE__) + 20)* sizeof(char));
+        sprintf(errstr,"in file %s",__FILE__);
     }
 
     /* Check for netCDF error. */
@@ -599,7 +599,7 @@ int PIOc_def_var_endian(int ncid, int varid, int endian)
 
     /* Free the error string if it was allocated. */
     if (errstr != NULL)
-	free(errstr);
+        free(errstr);
 
     return ierr;
 }
@@ -639,50 +639,50 @@ int PIOc_inq_var_endian(int ncid, int varid, int *endianp)
     ierr = PIO_NOERR;
 
     if ((ierr = pio_get_file(ncid, &file)))
-	return ierr;
+        return ierr;
     ios = file->iosystem;
     msg = PIO_MSG_INQ_VAR_CHUNKING;
 
     if (ios->async_interface && ! ios->ioproc)
     {
-	if (ios->compmaster)
-	    mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
-	mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
+        if (ios->compmaster)
+            mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
+        mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
     }
 
     if (ios->ioproc)
     {
-	switch (file->iotype)
-	{
+        switch (file->iotype)
+        {
 #ifdef _NETCDF
 #ifdef _NETCDF4
-	case PIO_IOTYPE_NETCDF4P:
-	    ierr = nc_inq_var_endian(file->fh, varid, endianp);
-	    break;
-	case PIO_IOTYPE_NETCDF4C:
-	    if (!ios->io_rank)
-		ierr = nc_inq_var_endian(file->fh, varid, endianp);
-	    break;
+        case PIO_IOTYPE_NETCDF4P:
+            ierr = nc_inq_var_endian(file->fh, varid, endianp);
+            break;
+        case PIO_IOTYPE_NETCDF4C:
+            if (!ios->io_rank)
+                ierr = nc_inq_var_endian(file->fh, varid, endianp);
+            break;
 #endif
-	case PIO_IOTYPE_NETCDF:
-	    ierr = PIO_ENOTNC4;
-	    break;
+        case PIO_IOTYPE_NETCDF:
+            ierr = PIO_ENOTNC4;
+            break;
 #endif
 #ifdef _PNETCDF
-	case PIO_IOTYPE_PNETCDF:
-	    ierr = PIO_ENOTNC4;
-	    break;
+        case PIO_IOTYPE_PNETCDF:
+            ierr = PIO_ENOTNC4;
+            break;
 #endif
-	default:
-	    ierr = iotype_error(file->iotype,__FILE__,__LINE__);
-	}
+        default:
+            ierr = iotype_error(file->iotype,__FILE__,__LINE__);
+        }
     }
 
     /* If there is an error, allocate space for the error string. */
     if (ierr != PIO_NOERR)
     {
-	errstr = (char *) malloc((strlen(__FILE__) + 20)* sizeof(char));
-	sprintf(errstr,"in file %s",__FILE__);
+        errstr = (char *) malloc((strlen(__FILE__) + 20)* sizeof(char));
+        sprintf(errstr,"in file %s",__FILE__);
     }
 
     /* Check the netCDF return code, and broadcast it to all tasks. */
@@ -690,11 +690,11 @@ int PIOc_inq_var_endian(int ncid, int varid, int *endianp)
 
     /* Free the error string if it was allocated. */
     if (errstr != NULL)
-	free(errstr);
+        free(errstr);
 
     /* Broadcast results to all tasks. */
     if (endianp)
-	ierr = MPI_Bcast(endianp, 1, MPI_INT, ios->ioroot, ios->my_comm);
+        ierr = MPI_Bcast(endianp, 1, MPI_INT, ios->ioroot, ios->my_comm);
 
     return ierr;
 }
@@ -726,7 +726,7 @@ int PIOc_inq_var_endian(int ncid, int varid, int *endianp)
  * @return PIO_NOERR for success, otherwise an error code.
  */
 int PIOc_set_chunk_cache(int iosysid, int iotype, PIO_Offset size,
-			 PIO_Offset nelems, float preemption)
+                         PIO_Offset nelems, float preemption)
 {
     int ierr;
     int msg;
@@ -741,12 +741,12 @@ int PIOc_set_chunk_cache(int iosysid, int iotype, PIO_Offset size,
 
     ios = pio_get_iosystem_from_id(iosysid);
     if(ios == NULL)
-	return PIO_EBADID;
+        return PIO_EBADID;
 
-  /* if (ios->async_interface && ! ios->ioproc){ */
-    /* 	if (ios->compmaster) */
-    /* 	    mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm); */
-    /* 	mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm); */
+    /* if (ios->async_interface && ! ios->ioproc){ */
+    /*  if (ios->compmaster) */
+    /*      mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm); */
+    /*  mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm); */
     /* } */
 
     switch (iotype)
@@ -754,24 +754,24 @@ int PIOc_set_chunk_cache(int iosysid, int iotype, PIO_Offset size,
 #ifdef _NETCDF
 #ifdef _NETCDF4
     case PIO_IOTYPE_NETCDF4P:
-	ierr = nc_set_chunk_cache(size, nelems, preemption);
-	break;
+        ierr = nc_set_chunk_cache(size, nelems, preemption);
+        break;
     case PIO_IOTYPE_NETCDF4C:
-	if (!ios->io_rank)
-	    ierr = nc_set_chunk_cache(size, nelems, preemption);
-	break;
+        if (!ios->io_rank)
+            ierr = nc_set_chunk_cache(size, nelems, preemption);
+        break;
 #endif
     case PIO_IOTYPE_NETCDF:
-	ierr = PIO_ENOTNC4;
-	break;
+        ierr = PIO_ENOTNC4;
+        break;
 #endif
 #ifdef _PNETCDF
     case PIO_IOTYPE_PNETCDF:
-	ierr = PIO_ENOTNC4;
-	break;
+        ierr = PIO_ENOTNC4;
+        break;
 #endif
     default:
-	ierr = iotype_error(file->iotype,__FILE__,__LINE__);
+        ierr = iotype_error(file->iotype,__FILE__,__LINE__);
     }
 
     /* Propogate error code to all processes. */
@@ -811,7 +811,7 @@ int PIOc_set_chunk_cache(int iosysid, int iotype, PIO_Offset size,
  * @return PIO_NOERR for success, otherwise an error code.
  */
 int PIOc_get_chunk_cache(int iosysid, int iotype, PIO_Offset *sizep,
-			 PIO_Offset *nelemsp, float *preemptionp)
+                         PIO_Offset *nelemsp, float *preemptionp)
 {
     int ierr;
     int msg;
@@ -824,7 +824,7 @@ int PIOc_get_chunk_cache(int iosysid, int iotype, PIO_Offset *sizep,
 
     ios = pio_get_iosystem_from_id(iosysid);
     if(ios == NULL)
-	return PIO_EBADID;
+        return PIO_EBADID;
 
     /* Since this is a property of the running HDF5 instance, not the
      * file, it's not clear if this message passing will apply. For
@@ -832,9 +832,9 @@ int PIOc_get_chunk_cache(int iosysid, int iotype, PIO_Offset *sizep,
     /* msg = PIO_MSG_INQ_VAR_FLETCHER32; */
 
     /* if (ios->async_interface && ! ios->ioproc){ */
-    /* 	if (ios->compmaster)  */
-    /* 	    mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm); */
-    /* 	mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm); */
+    /*  if (ios->compmaster)  */
+    /*      mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm); */
+    /*  mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm); */
     /* } */
 
     switch (iotype)
@@ -842,24 +842,24 @@ int PIOc_get_chunk_cache(int iosysid, int iotype, PIO_Offset *sizep,
 #ifdef _NETCDF
 #ifdef _NETCDF4
     case PIO_IOTYPE_NETCDF4P:
-	ierr = nc_get_chunk_cache((size_t *)sizep, (size_t *)nelemsp, preemptionp);
-	break;
+        ierr = nc_get_chunk_cache((size_t *)sizep, (size_t *)nelemsp, preemptionp);
+        break;
     case PIO_IOTYPE_NETCDF4C:
-	if (!ios->io_rank)
-	    ierr = nc_get_chunk_cache((size_t *)sizep, (size_t *)nelemsp, preemptionp);
-	break;
+        if (!ios->io_rank)
+            ierr = nc_get_chunk_cache((size_t *)sizep, (size_t *)nelemsp, preemptionp);
+        break;
 #endif
     case PIO_IOTYPE_NETCDF:
-	ierr = PIO_ENOTNC4;
-	break;
+        ierr = PIO_ENOTNC4;
+        break;
 #endif
 #ifdef _PNETCDF
     case PIO_IOTYPE_PNETCDF:
-	ierr = PIO_ENOTNC4;
-	break;
+        ierr = PIO_ENOTNC4;
+        break;
 #endif
     default:
-	ierr = iotype_error(iotype,__FILE__,__LINE__);
+        ierr = iotype_error(iotype,__FILE__,__LINE__);
     }
 
 
@@ -867,15 +867,15 @@ int PIOc_get_chunk_cache(int iosysid, int iotype, PIO_Offset *sizep,
     MPI_Bcast(&ierr, 1, MPI_INTEGER, ios->ioroot, ios->my_comm);
     if (!ierr)
     {
-	if (sizep)
-	    if ((ierr = MPI_Bcast(sizep, 1, MPI_OFFSET, ios->ioroot, ios->my_comm)))
-		ierr = PIO_EIO;
-	if (nelemsp && !ierr)
-	    if ((ierr = MPI_Bcast(nelemsp, 1, MPI_OFFSET, ios->ioroot, ios->my_comm)))
-		ierr = PIO_EIO;
-	if (preemptionp && !ierr)
-	    if ((ierr = MPI_Bcast(preemptionp, 1, MPI_FLOAT, ios->ioroot, ios->my_comm)))
-		ierr = PIO_EIO;
+        if (sizep)
+            if ((ierr = MPI_Bcast(sizep, 1, MPI_OFFSET, ios->ioroot, ios->my_comm)))
+                ierr = PIO_EIO;
+        if (nelemsp && !ierr)
+            if ((ierr = MPI_Bcast(nelemsp, 1, MPI_OFFSET, ios->ioroot, ios->my_comm)))
+                ierr = PIO_EIO;
+        if (preemptionp && !ierr)
+            if ((ierr = MPI_Bcast(preemptionp, 1, MPI_FLOAT, ios->ioroot, ios->my_comm)))
+                ierr = PIO_EIO;
     }
 
     return ierr;
@@ -906,7 +906,7 @@ int PIOc_get_chunk_cache(int iosysid, int iotype, PIO_Offset *sizep,
  * @return PIO_NOERR for success, otherwise an error code.
  */
 int PIOc_set_var_chunk_cache(int ncid, int varid, PIO_Offset size, PIO_Offset nelems,
-			     float preemption)
+                             float preemption)
 {
     int ierr;
     int msg;
@@ -919,50 +919,50 @@ int PIOc_set_var_chunk_cache(int ncid, int varid, PIO_Offset size, PIO_Offset ne
     ierr = PIO_NOERR;
 
     if ((ierr = pio_get_file(ncid, &file)))
-	return ierr;
+        return ierr;
     ios = file->iosystem;
     msg = PIO_MSG_SET_VAR_CHUNK_CACHE;
 
     if (ios->async_interface && ! ios->ioproc)
     {
-	if (ios->compmaster)
-	    mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
-	mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
+        if (ios->compmaster)
+            mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
+        mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
     }
 
     if (ios->ioproc)
     {
-	switch (file->iotype)
-	{
+        switch (file->iotype)
+        {
 #ifdef _NETCDF
 #ifdef _NETCDF4
-	case PIO_IOTYPE_NETCDF4P:
-	    ierr = nc_set_var_chunk_cache(file->fh, varid, size, nelems, preemption);
-	    break;
-	case PIO_IOTYPE_NETCDF4C:
-	    if (!ios->io_rank)
-		ierr = nc_set_var_chunk_cache(file->fh, varid, size, nelems, preemption);
-	    break;
+        case PIO_IOTYPE_NETCDF4P:
+            ierr = nc_set_var_chunk_cache(file->fh, varid, size, nelems, preemption);
+            break;
+        case PIO_IOTYPE_NETCDF4C:
+            if (!ios->io_rank)
+                ierr = nc_set_var_chunk_cache(file->fh, varid, size, nelems, preemption);
+            break;
 #endif
-	case PIO_IOTYPE_NETCDF:
-	    ierr = PIO_ENOTNC4;
-	    break;
+        case PIO_IOTYPE_NETCDF:
+            ierr = PIO_ENOTNC4;
+            break;
 #endif
 #ifdef _PNETCDF
-	case PIO_IOTYPE_PNETCDF:
-	    ierr = PIO_ENOTNC4;
-	    break;
+        case PIO_IOTYPE_PNETCDF:
+            ierr = PIO_ENOTNC4;
+            break;
 #endif
-	default:
-	    ierr = iotype_error(file->iotype,__FILE__,__LINE__);
-	}
+        default:
+            ierr = iotype_error(file->iotype,__FILE__,__LINE__);
+        }
     }
 
     /* Allocate an error string if needed. */
     if (ierr != PIO_NOERR)
     {
-	errstr = (char *) malloc((strlen(__FILE__) + 20)* sizeof(char));
-	sprintf(errstr,"in file %s",__FILE__);
+        errstr = (char *) malloc((strlen(__FILE__) + 20)* sizeof(char));
+        sprintf(errstr,"in file %s",__FILE__);
     }
 
     /* Check for netCDF error. */
@@ -970,7 +970,7 @@ int PIOc_set_var_chunk_cache(int ncid, int varid, PIO_Offset size, PIO_Offset ne
 
     /* Free the error string if it was allocated. */
     if (errstr != NULL)
-	free(errstr);
+        free(errstr);
 
     return ierr;
 }
@@ -999,7 +999,7 @@ int PIOc_set_var_chunk_cache(int ncid, int varid, PIO_Offset size, PIO_Offset ne
  * @return PIO_NOERR for success, otherwise an error code.
  */
 int PIOc_get_var_chunk_cache(int ncid, int varid, PIO_Offset *sizep, PIO_Offset *nelemsp,
-			     float *preemptionp)
+                             float *preemptionp)
 {
     int ierr;
     int msg;
@@ -1012,7 +1012,7 @@ int PIOc_get_var_chunk_cache(int ncid, int varid, PIO_Offset *sizep, PIO_Offset 
     ierr = PIO_NOERR;
 
     if ((ierr = pio_get_file(ncid, &file)))
-	return ierr;
+        return ierr;
     ios = file->iosystem;
 
     /* Since this is a property of the running HDF5 instance, not the
@@ -1021,46 +1021,46 @@ int PIOc_get_var_chunk_cache(int ncid, int varid, PIO_Offset *sizep, PIO_Offset 
     /* msg = PIO_MSG_INQ_VAR_FLETCHER32; */
 
     /* if (ios->async_interface && ! ios->ioproc){ */
-    /* 	if (ios->compmaster)  */
-    /* 	    mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm); */
-    /* 	mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm); */
+    /*  if (ios->compmaster)  */
+    /*      mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm); */
+    /*  mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm); */
     /* } */
 
     if (ios->ioproc)
     {
-	switch (file->iotype)
-	{
+        switch (file->iotype)
+        {
 #ifdef _NETCDF
 #ifdef _NETCDF4
-	case PIO_IOTYPE_NETCDF4P:
-	    ierr = nc_get_var_chunk_cache(file->fh, varid,  (size_t *)sizep, (size_t *)nelemsp,
-					  preemptionp);
-	    break;
-	case PIO_IOTYPE_NETCDF4C:
-	    if (ios->io_rank == 0)
-		ierr = nc_get_var_chunk_cache(file->fh, varid,  (size_t *)sizep, (size_t *)nelemsp,
-					      preemptionp);
-	    break;
+        case PIO_IOTYPE_NETCDF4P:
+            ierr = nc_get_var_chunk_cache(file->fh, varid,  (size_t *)sizep, (size_t *)nelemsp,
+                                          preemptionp);
+            break;
+        case PIO_IOTYPE_NETCDF4C:
+            if (ios->io_rank == 0)
+                ierr = nc_get_var_chunk_cache(file->fh, varid,  (size_t *)sizep, (size_t *)nelemsp,
+                                              preemptionp);
+            break;
 #endif
-	case PIO_IOTYPE_NETCDF:
-	    ierr = PIO_ENOTNC4;
-	    break;
+        case PIO_IOTYPE_NETCDF:
+            ierr = PIO_ENOTNC4;
+            break;
 #endif
 #ifdef _PNETCDF
-	case PIO_IOTYPE_PNETCDF:
-	    ierr = PIO_ENOTNC4;
-	    break;
+        case PIO_IOTYPE_PNETCDF:
+            ierr = PIO_ENOTNC4;
+            break;
 #endif
-	default:
-	    ierr = iotype_error(file->iotype,__FILE__,__LINE__);
-	}
+        default:
+            ierr = iotype_error(file->iotype,__FILE__,__LINE__);
+        }
     }
 
     /* If there is an error, allocate space for the error string. */
     if (ierr != PIO_NOERR)
     {
-	errstr = (char *) malloc((strlen(__FILE__) + 20)* sizeof(char));
-	sprintf(errstr,"in file %s",__FILE__);
+        errstr = (char *) malloc((strlen(__FILE__) + 20)* sizeof(char));
+        sprintf(errstr,"in file %s",__FILE__);
     }
 
     /* Check the netCDF return code, and broadcast it to all tasks. */
@@ -1068,15 +1068,15 @@ int PIOc_get_var_chunk_cache(int ncid, int varid, PIO_Offset *sizep, PIO_Offset 
 
     /* Free the error string if it was allocated. */
     if (errstr != NULL)
-	free(errstr);
+        free(errstr);
 
     /* Broadcast results to all tasks. */
     if (sizep && !ierr)
-	ierr = MPI_Bcast(sizep, 1, MPI_OFFSET, ios->ioroot, ios->my_comm);
+        ierr = MPI_Bcast(sizep, 1, MPI_OFFSET, ios->ioroot, ios->my_comm);
     if (nelemsp && !ierr)
-    	ierr = MPI_Bcast(nelemsp, 1, MPI_OFFSET, ios->ioroot, ios->my_comm);
+        ierr = MPI_Bcast(nelemsp, 1, MPI_OFFSET, ios->ioroot, ios->my_comm);
     if (preemptionp && !ierr)
-    	ierr = MPI_Bcast(preemptionp, 1, MPI_FLOAT, ios->ioroot, ios->my_comm);
+        ierr = MPI_Bcast(preemptionp, 1, MPI_FLOAT, ios->ioroot, ios->my_comm);
 
     return ierr;
 }
