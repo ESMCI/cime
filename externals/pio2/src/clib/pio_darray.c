@@ -800,6 +800,8 @@ int PIOc_write_darray_multi(const int ncid, const int vid[], const int ioid, con
    if(iodesc->rearranger>0){
      if(rlen>0){
        MPI_Type_size(iodesc->basetype, &vsize);
+       //printf("rlen*vsize = %ld\n",rlen*vsize);
+
        vdesc0->iobuf = bget((size_t) vsize* (size_t) rlen);
        if(vdesc0->iobuf==NULL){
 	 printf("%s %d %d %ld\n",__FILE__,__LINE__,nvars,vsize*rlen);
@@ -1509,6 +1511,7 @@ int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc, const int vi
 	  if(ierr != PIO_NOERR){
 	    for(int i=0;i<fndims;i++)
 	      fprintf(stderr,"vid %d dim %d start %ld count %ld err %d\n",vid,i,start[i],count[i],ierr);
+
 	  }
 
 #endif

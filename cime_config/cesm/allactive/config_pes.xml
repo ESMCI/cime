@@ -152,7 +152,7 @@
   </grid>
   <grid name="a%ne16.+l%ne16.+oi%gx3.+r%r05.+g%null_w%null" >
     <mach name="yellowstone">
-      <pes pesize="any" compset="2000_CAM5_CLM40%SP_CICE_POP2_RTM_SGLC_SWAV">
+      <pes pesize="any" compset="2000_CAM.*_CLM40%SP_CICE_POP2_RTM_SGLC_SWAV">
 	<comment>js 16 sep 2014 ne16_g37 bc5 yellowstone-specific pe layout used for low res ensemble</comment>
 	<ntasks>
 	  <ntasks_atm>96</ntasks_atm>
@@ -235,7 +235,7 @@
 	  <ntasks_ice>-16</ntasks_ice>
 	  <ntasks_ocn>-16</ntasks_ocn>
 	  <ntasks_glc>-16</ntasks_glc>
-	  <ntasks_wav>-16</ntasks_wav>
+	  <ntasks_wav>-10</ntasks_wav>
 	  <ntasks_cpl>-16</ntasks_cpl>
 	</ntasks>
 	<nthrds>
@@ -272,7 +272,7 @@
 	  <ntasks_ice>2456</ntasks_ice>
 	  <ntasks_ocn>192</ntasks_ocn>
 	  <ntasks_glc>1</ntasks_glc>
-	  <ntasks_wav>192</ntasks_wav>
+	  <ntasks_wav>160</ntasks_wav>
 	  <ntasks_cpl>2600</ntasks_cpl>
 	</ntasks>
 	<nthrds>
@@ -292,7 +292,7 @@
 	  <rootpe_rof>0</rootpe_rof>
 	  <rootpe_ocn>2600</rootpe_ocn>
 	  <rootpe_glc>0</rootpe_glc>
-	  <rootpe_wav>2600</rootpe_wav>
+	  <rootpe_wav>0</rootpe_wav>
 	  <rootpe_cpl>0</rootpe_cpl>
 	</rootpe>
       </pes>
@@ -309,7 +309,7 @@
 	  <ntasks_ice>912</ntasks_ice>
 	  <ntasks_ocn>48</ntasks_ocn>
 	  <ntasks_glc>1</ntasks_glc>
-	  <ntasks_wav>960</ntasks_wav>
+	  <ntasks_wav>160</ntasks_wav>
 	  <ntasks_cpl>960</ntasks_cpl>
 	</ntasks>
 	<nthrds>
@@ -346,7 +346,7 @@
 	  <ntasks_ice>600</ntasks_ice>
 	  <ntasks_ocn>60</ntasks_ocn>
 	  <ntasks_glc>900</ntasks_glc>
-	  <ntasks_wav>900</ntasks_wav>
+	  <ntasks_wav>160</ntasks_wav>
 	  <ntasks_cpl>900</ntasks_cpl>
 	</ntasks>
 	<nthrds>
@@ -383,7 +383,7 @@
 	  <ntasks_ice>1024</ntasks_ice>
 	  <ntasks_ocn>1024</ntasks_ocn>
 	  <ntasks_glc>1024</ntasks_glc>
-	  <ntasks_wav>1024</ntasks_wav>
+	  <ntasks_wav>160</ntasks_wav>
 	  <ntasks_cpl>1024</ntasks_cpl>
 	</ntasks>
 	<nthrds>
@@ -420,7 +420,7 @@
 	  <ntasks_ice>12288</ntasks_ice>
 	  <ntasks_ocn>4000</ntasks_ocn>
 	  <ntasks_glc>1</ntasks_glc>
-	  <ntasks_wav>4000</ntasks_wav>
+	  <ntasks_wav>160</ntasks_wav>
 	  <ntasks_cpl>12384</ntasks_cpl>
 	</ntasks>
 	<nthrds>
@@ -457,7 +457,7 @@
 	  <ntasks_ice>512</ntasks_ice>
 	  <ntasks_ocn>2048</ntasks_ocn>
 	  <ntasks_glc>1440</ntasks_glc>
-	  <ntasks_wav>1440</ntasks_wav>
+	  <ntasks_wav>160</ntasks_wav>
 	  <ntasks_cpl>1440</ntasks_cpl>
 	</ntasks>
 	<nthrds>
@@ -494,7 +494,7 @@
 	  <ntasks_ice>2048</ntasks_ice>
 	  <ntasks_ocn>512</ntasks_ocn>
 	  <ntasks_glc>4096</ntasks_glc>
-	  <ntasks_wav>4096</ntasks_wav>
+	  <ntasks_wav>160</ntasks_wav>
 	  <ntasks_cpl>4096</ntasks_cpl>
 	</ntasks>
 	<nthrds>
@@ -531,7 +531,7 @@
 	  <ntasks_ice>2048</ntasks_ice>
 	  <ntasks_ocn>512</ntasks_ocn>
 	  <ntasks_glc>4096</ntasks_glc>
-	  <ntasks_wav>4096</ntasks_wav>
+	  <ntasks_wav>160</ntasks_wav>
 	  <ntasks_cpl>4096</ntasks_cpl>
 	</ntasks>
 	<nthrds>
@@ -568,7 +568,7 @@
 	  <ntasks_ice>960</ntasks_ice>
 	  <ntasks_ocn>960</ntasks_ocn>
 	  <ntasks_glc>960</ntasks_glc>
-	  <ntasks_wav>960</ntasks_wav>
+	  <ntasks_wav>160</ntasks_wav>
 	  <ntasks_cpl>960</ntasks_cpl>
 	</ntasks>
 	<nthrds>
@@ -750,7 +750,7 @@
 	  <ntasks_ice>120</ntasks_ice>
 	  <ntasks_ocn>24</ntasks_ocn>
 	  <ntasks_glc>192</ntasks_glc>
-	  <ntasks_wav>192</ntasks_wav>
+	  <ntasks_wav>160</ntasks_wav>
 	  <ntasks_cpl>192</ntasks_cpl>
 	</ntasks>
 	<nthrds>
@@ -787,7 +787,7 @@
 	  <ntasks_ice>192</ntasks_ice>
 	  <ntasks_ocn>16</ntasks_ocn>
 	  <ntasks_glc>256</ntasks_glc>
-	  <ntasks_wav>256</ntasks_wav>
+	  <ntasks_wav>160</ntasks_wav>
 	  <ntasks_cpl>256</ntasks_cpl>
 	</ntasks>
 	<nthrds>
@@ -824,7 +824,7 @@
 	  <ntasks_ice>200</ntasks_ice>
 	  <ntasks_ocn>20</ntasks_ocn>
 	  <ntasks_glc>240</ntasks_glc>
-	  <ntasks_wav>240</ntasks_wav>
+	  <ntasks_wav>160</ntasks_wav>
 	  <ntasks_cpl>240</ntasks_cpl>
 	</ntasks>
 	<nthrds>
@@ -965,24 +965,24 @@
       <pes pesize="any" compset="CAM.+WISO.+CLM.+CICE.+POP">
 	<comment>none</comment>
 	<ntasks>
-	  <ntasks_atm>640</ntasks_atm> 
-	  <ntasks_lnd>96</ntasks_lnd> 
-	  <ntasks_rof>96</ntasks_rof> 
-	  <ntasks_ice>544</ntasks_ice> 
-	  <ntasks_ocn>96</ntasks_ocn> 
-	  <ntasks_glc>180</ntasks_glc> 
-	  <ntasks_wav>180</ntasks_wav> 
-	  <ntasks_cpl>640</ntasks_cpl> 
+	  <ntasks_atm>640</ntasks_atm>
+	  <ntasks_lnd>96</ntasks_lnd>
+	  <ntasks_rof>96</ntasks_rof>
+	  <ntasks_ice>544</ntasks_ice>
+	  <ntasks_ocn>96</ntasks_ocn>
+	  <ntasks_glc>180</ntasks_glc>
+	  <ntasks_wav>160</ntasks_wav>
+	  <ntasks_cpl>640</ntasks_cpl>
 	</ntasks>
 	<nthrds>
-	  <nthrds_atm>2</nthrds_atm> 
-	  <nthrds_lnd>1</nthrds_lnd> 
-	  <nthrds_rof>1</nthrds_rof> 
-	  <nthrds_ice>2</nthrds_ice> 
-	  <nthrds_ocn>1</nthrds_ocn> 
-	  <nthrds_glc>2</nthrds_glc> 
-	  <nthrds_wav>2</nthrds_wav> 
-	  <nthrds_cpl>2</nthrds_cpl> 
+	  <nthrds_atm>2</nthrds_atm>
+	  <nthrds_lnd>1</nthrds_lnd>
+	  <nthrds_rof>1</nthrds_rof>
+	  <nthrds_ice>2</nthrds_ice>
+	  <nthrds_ocn>1</nthrds_ocn>
+	  <nthrds_glc>2</nthrds_glc>
+	  <nthrds_wav>2</nthrds_wav>
+	  <nthrds_cpl>2</nthrds_cpl>
 	</nthrds>
 	<rootpe>
 	  <rootpe_atm>0</rootpe_atm>
@@ -1045,7 +1045,7 @@
 	  <ntasks_ice>180</ntasks_ice>
 	  <ntasks_ocn>180</ntasks_ocn>
 	  <ntasks_glc>180</ntasks_glc>
-	  <ntasks_wav>180</ntasks_wav>
+	  <ntasks_wav>160</ntasks_wav>
 	  <ntasks_cpl>180</ntasks_cpl>
 	</ntasks>
 	<nthrds>
@@ -1260,80 +1260,6 @@
     </mach>
   </grid>
   <grid name="a%0.9x1.25.+l%0.9x1.25.+oi%gx1" >
-    <mach name='any'>
-      <pes pesize="any" compset="any">
-	<comment>none</comment>
-	<ntasks>
-	  <ntasks_atm>256</ntasks_atm>
-	  <ntasks_lnd>256</ntasks_lnd>
-	  <ntasks_rof>256</ntasks_rof>
-	  <ntasks_ice>256</ntasks_ice>
-	  <ntasks_ocn>256</ntasks_ocn>
-	  <ntasks_glc>256</ntasks_glc>
-	  <ntasks_wav>256</ntasks_wav>
-	  <ntasks_cpl>256</ntasks_cpl>
-	</ntasks>
-	<nthrds>
-	  <nthrds_atm>1</nthrds_atm>
-	  <nthrds_lnd>1</nthrds_lnd>
-	  <nthrds_rof>1</nthrds_rof>
-	  <nthrds_ice>1</nthrds_ice>
-	  <nthrds_ocn>1</nthrds_ocn>
-	  <nthrds_glc>1</nthrds_glc>
-	  <nthrds_wav>1</nthrds_wav>
-	  <nthrds_cpl>1</nthrds_cpl>
-	</nthrds>
-	<rootpe>
-	  <rootpe_atm>0</rootpe_atm>
-	  <rootpe_lnd>0</rootpe_lnd>
-	  <rootpe_rof>0</rootpe_rof>
-	  <rootpe_ice>0</rootpe_ice>
-	  <rootpe_ocn>0</rootpe_ocn>
-	  <rootpe_glc>0</rootpe_glc>
-	  <rootpe_wav>0</rootpe_wav>
-	  <rootpe_cpl>0</rootpe_cpl>
-	</rootpe>
-      </pes>
-    </mach>
-  </grid>
-  <grid name="a%0.9x1.25.+l%0.9x1.25.+oi%gx1" >
-    <mach name="yellowstone">
-      <pes pesize="any" compset="CAM.+CLM.+CICE.+DOCN%SOM">
-	<comment>none</comment>
-	<ntasks>
-	  <ntasks_atm>240</ntasks_atm>
-	  <ntasks_lnd>240</ntasks_lnd>
-	  <ntasks_rof>240</ntasks_rof>
-	  <ntasks_ice>240</ntasks_ice>
-	  <ntasks_ocn>240</ntasks_ocn>
-	  <ntasks_glc>240</ntasks_glc>
-	  <ntasks_wav>240</ntasks_wav>
-	  <ntasks_cpl>240</ntasks_cpl>
-	</ntasks>
-	<nthrds>
-	  <nthrds_atm>2</nthrds_atm>
-	  <nthrds_lnd>2</nthrds_lnd>
-	  <nthrds_rof>2</nthrds_rof>
-	  <nthrds_ice>2</nthrds_ice>
-	  <nthrds_ocn>2</nthrds_ocn>
-	  <nthrds_cpl>2</nthrds_cpl>
-	  <nthrds_glc>2</nthrds_glc>
-	  <nthrds_wav>2</nthrds_wav>
-	</nthrds>
-	<rootpe>
-	  <rootpe_atm>0</rootpe_atm>
-	  <rootpe_lnd>0</rootpe_lnd>
-	  <rootpe_rof>0</rootpe_rof>
-	  <rootpe_ice>0</rootpe_ice>
-	  <rootpe_ocn>0</rootpe_ocn>
-	  <rootpe_cpl>0</rootpe_cpl>
-	  <rootpe_glc>0</rootpe_glc>
-	  <rootpe_wav>0</rootpe_wav>
-	</rootpe>
-      </pes>
-    </mach>
-  </grid>
-  <grid name="a%0.9x1.25.+l%0.9x1.25.+oi%gx1" >
     <mach name="edison|eos">
       <pes pesize="any" compset="any">
 	<comment>none</comment>
@@ -1344,7 +1270,7 @@
 	  <ntasks_ice>912</ntasks_ice>
 	  <ntasks_ocn>48</ntasks_ocn>
 	  <ntasks_glc>1</ntasks_glc>
-	  <ntasks_wav>960</ntasks_wav>
+	  <ntasks_wav>160</ntasks_wav>
 	  <ntasks_cpl>960</ntasks_cpl>
 	</ntasks>
 	<nthrds>
@@ -1381,7 +1307,7 @@
 	  <ntasks_ice>320</ntasks_ice>
 	  <ntasks_ocn>32</ntasks_ocn>
 	  <ntasks_glc>384</ntasks_glc>
-	  <ntasks_wav>384</ntasks_wav>
+	  <ntasks_wav>160</ntasks_wav>
 	  <ntasks_cpl>64</ntasks_cpl>
 	</ntasks>
 	<nthrds>
@@ -1418,7 +1344,7 @@
 	  <ntasks_ice>210</ntasks_ice>
 	  <ntasks_ocn>60</ntasks_ocn>
 	  <ntasks_glc>300</ntasks_glc>
-	  <ntasks_wav>300</ntasks_wav>
+	  <ntasks_wav>160</ntasks_wav>
 	  <ntasks_cpl>300</ntasks_cpl>
 	</ntasks>
 	<nthrds>
@@ -1446,7 +1372,44 @@
   </grid>
   <grid name="a%0.9x1.25.+l%0.9x1.25.+oi%gx1" >
     <mach name="yellowstone">
-      <pes pesize="any" compset="CAM5.+CLM.+CICE.+POP.+WW3.+">
+      <pes pesize="any" compset="CAM.+CLM.+CICE.+POP.+SWAV">
+	<comment>none</comment>
+	<ntasks>
+	  <ntasks_atm>-40</ntasks_atm>
+	  <ntasks_lnd>-24</ntasks_lnd>
+	  <ntasks_rof>-24</ntasks_rof>
+	  <ntasks_ice>-16</ntasks_ice>
+	  <ntasks_ocn>-6</ntasks_ocn>
+	  <ntasks_glc>-40</ntasks_glc>
+	  <ntasks_wav>-10</ntasks_wav>
+	  <ntasks_cpl>-40</ntasks_cpl>
+	</ntasks>
+	<nthrds>
+	  <nthrds_atm>2</nthrds_atm>
+	  <nthrds_lnd>2</nthrds_lnd>
+	  <nthrds_rof>2</nthrds_rof>
+	  <nthrds_ice>2</nthrds_ice>
+	  <nthrds_ocn>2</nthrds_ocn>
+	  <nthrds_glc>2</nthrds_glc>
+	  <nthrds_wav>2</nthrds_wav>
+	  <nthrds_cpl>2</nthrds_cpl>
+	</nthrds>
+	<rootpe>
+	  <rootpe_atm>0</rootpe_atm>
+	  <rootpe_lnd>0</rootpe_lnd>
+	  <rootpe_rof>0</rootpe_rof>
+	  <rootpe_ice>-24</rootpe_ice>
+	  <rootpe_ocn>-40</rootpe_ocn>
+	  <rootpe_glc>0</rootpe_glc>
+	  <rootpe_wav>0</rootpe_wav>
+	  <rootpe_cpl>0</rootpe_cpl>
+	</rootpe>
+      </pes>
+    </mach>
+  </grid>
+  <grid name="a%0.9x1.25.+l%0.9x1.25.+oi%gx1" >
+    <mach name="yellowstone">
+      <pes pesize="any" compset="CAM.+CLM.+CICE.+POP.+WW3.+">
 	<comment>none</comment>
 	<ntasks>
 	  <ntasks_atm>-40</ntasks_atm>
@@ -1483,7 +1446,7 @@
   </grid>
   <grid name="a%0.9x1.25.+l%0.9x1.25.+oi%gx1" >
     <mach name="yellowstone">
-      <pes pesize="any" compset="CAM5.+CLM.+CICE.+POP.+">
+      <pes pesize="any" compset="CAM.+CLM.+CICE.+POP.+DWAV">
 	<comment>none</comment>
 	<ntasks>
 	  <ntasks_atm>-40</ntasks_atm>
@@ -1492,7 +1455,7 @@
 	  <ntasks_ice>-16</ntasks_ice>
 	  <ntasks_ocn>-6</ntasks_ocn>
 	  <ntasks_glc>-40</ntasks_glc>
-	  <ntasks_wav>-40</ntasks_wav>
+	  <ntasks_wav>-10</ntasks_wav>
 	  <ntasks_cpl>-40</ntasks_cpl>
 	</ntasks>
 	<nthrds>
@@ -1519,8 +1482,46 @@
     </mach>
   </grid>
   <grid name="a%0.9x1.25.+l%0.9x1.25.+oi%gx1" >
+    <mach name="laramie">
+      <pes pesize="M" compset="CAM.+CLM.+CICE.+POP.+">
+	<comment>none</comment>
+	<ntasks>
+	  <ntasks_atm>-8</ntasks_atm>
+	  <ntasks_lnd>-6</ntasks_lnd>
+	  <ntasks_rof>-6</ntasks_rof>
+	  <ntasks_ice>-2</ntasks_ice>
+	  <ntasks_ocn>-2</ntasks_ocn>
+	  <ntasks_glc>1</ntasks_glc>
+	  <ntasks_wav>-4</ntasks_wav>
+	  <ntasks_cpl>-8</ntasks_cpl>
+	</ntasks>
+	<nthrds>
+	  <nthrds_atm>2</nthrds_atm>
+	  <nthrds_lnd>2</nthrds_lnd>
+	  <nthrds_rof>2</nthrds_rof>
+	  <nthrds_ice>2</nthrds_ice>
+	  <nthrds_ocn>2</nthrds_ocn>
+	  <nthrds_glc>2</nthrds_glc>
+	  <nthrds_wav>2</nthrds_wav>
+	  <nthrds_cpl>2</nthrds_cpl>
+	</nthrds>
+	<rootpe>
+	  <rootpe_atm>0</rootpe_atm>
+	  <rootpe_lnd>0</rootpe_lnd>
+	  <rootpe_rof>0</rootpe_rof>
+	  <rootpe_ice>-6</rootpe_ice>
+	  <rootpe_ocn>-8</rootpe_ocn>
+	  <rootpe_glc>0</rootpe_glc>
+	  <rootpe_wav>0</rootpe_wav>
+	  <rootpe_cpl>0</rootpe_cpl>
+	</rootpe>
+      </pes>
+    </mach>
+  </grid>
+
+  <grid name="a%0.9x1.25.+l%0.9x1.25.+oi%gx1" >
     <mach name="yellowstone">
-      <pes pesize="X" compset="CAM5.+CLM.+CICE.+POP.+">
+      <pes pesize="X2" compset="CAM.+CLM.+CICE.+POP.+">
 	<PES_PER_NODE>16</PES_PER_NODE>
 	<MAX_TASKS_PER_NODE>16</MAX_TASKS_PER_NODE>
 	<comment>none</comment>
@@ -1555,11 +1556,46 @@
 	  <rootpe_cpl>0</rootpe_cpl>
 	</rootpe>
       </pes>
+      <pes pesize="X1" compset="CAM.+CLM.+CICE.+POP.+">
+	<PES_PER_NODE>16</PES_PER_NODE>
+	<MAX_TASKS_PER_NODE>16</MAX_TASKS_PER_NODE>
+	<comment>none</comment>
+	<ntasks>
+	  <ntasks_atm>-54</ntasks_atm>
+	  <ntasks_lnd>-37</ntasks_lnd>
+	  <ntasks_rof>-37</ntasks_rof>
+	  <ntasks_ice>-17</ntasks_ice>
+	  <ntasks_ocn>-10</ntasks_ocn>
+	  <ntasks_glc>1</ntasks_glc>
+	  <ntasks_wav>-10</ntasks_wav>
+	  <ntasks_cpl>-54</ntasks_cpl>
+	</ntasks>
+	<nthrds>
+	  <nthrds_atm>2</nthrds_atm>
+	  <nthrds_lnd>2</nthrds_lnd>
+	  <nthrds_rof>2</nthrds_rof>
+	  <nthrds_ice>2</nthrds_ice>
+	  <nthrds_ocn>2</nthrds_ocn>
+	  <nthrds_glc>2</nthrds_glc>
+	  <nthrds_wav>2</nthrds_wav>
+	  <nthrds_cpl>2</nthrds_cpl>
+	</nthrds>
+	<rootpe>
+	  <rootpe_atm>0</rootpe_atm>
+	  <rootpe_lnd>0</rootpe_lnd>
+	  <rootpe_rof>0</rootpe_rof>
+	  <rootpe_ice>-37</rootpe_ice>
+	  <rootpe_ocn>-54</rootpe_ocn>
+	  <rootpe_glc>0</rootpe_glc>
+	  <rootpe_wav>0</rootpe_wav>
+	  <rootpe_cpl>0</rootpe_cpl>
+	</rootpe>
+      </pes>
     </mach>
   </grid>
   <grid name="a%0.9x1.25.+l%0.9x1.25.+oi%gx1" >
     <mach name="yellowstone">
-      <pes pesize="L" compset="CAM5">
+      <pes pesize="L" compset="CAM.*">
 	<comment>none</comment>
 	<ntasks>
 	  <ntasks_atm>900</ntasks_atm>
@@ -1568,7 +1604,7 @@
 	  <ntasks_ice>600</ntasks_ice>
 	  <ntasks_ocn>90</ntasks_ocn>
 	  <ntasks_glc>900</ntasks_glc>
-	  <ntasks_wav>900</ntasks_wav>
+	  <ntasks_wav>160</ntasks_wav>
 	  <ntasks_cpl>900</ntasks_cpl>
 	</ntasks>
 	<nthrds>
@@ -1596,43 +1632,6 @@
   </grid>
   <grid name="a%0.9x1.25.+l%0.9x1.25.+oi%gx1" >
     <mach name="yellowstone">
-      <pes pesize="any" compset="CAM.+CLM.+CICE.+POP.+BGC">
-	<comment>none</comment>
-	<ntasks>
-	  <ntasks_atm>300</ntasks_atm>
-	  <ntasks_lnd>120</ntasks_lnd>
-	  <ntasks_rof>120</ntasks_rof>
-	  <ntasks_ice>180</ntasks_ice>
-	  <ntasks_ocn>180</ntasks_ocn>
-	  <ntasks_glc>300</ntasks_glc>
-	  <ntasks_wav>300</ntasks_wav>
-	  <ntasks_cpl>300</ntasks_cpl>
-	</ntasks>
-	<nthrds>
-	  <nthrds_atm>2</nthrds_atm>
-	  <nthrds_lnd>2</nthrds_lnd>
-	  <nthrds_rof>2</nthrds_rof>
-	  <nthrds_ice>2</nthrds_ice>
-	  <nthrds_ocn>2</nthrds_ocn>
-	  <nthrds_glc>2</nthrds_glc>
-	  <nthrds_wav>2</nthrds_wav>
-	  <nthrds_cpl>2</nthrds_cpl>
-	</nthrds>
-	<rootpe>
-	  <rootpe_atm>0</rootpe_atm>
-	  <rootpe_lnd>0</rootpe_lnd>
-	  <rootpe_rof>0</rootpe_rof>
-	  <rootpe_ice>120</rootpe_ice>
-	  <rootpe_ocn>300</rootpe_ocn>
-	  <rootpe_glc>0</rootpe_glc>
-	  <rootpe_wav>0</rootpe_wav>
-	  <rootpe_cpl>0</rootpe_cpl>
-	</rootpe>
-      </pes>
-    </mach>
-  </grid>
-  <grid name="a%0.9x1.25.+l%0.9x1.25.+oi%gx1" >
-    <mach name="yellowstone">
       <pes pesize="any" compset="POP2%ECO.+BGC%BPRP">
 	<comment>none</comment>
 	<ntasks>
@@ -1642,7 +1641,7 @@
 	  <ntasks_ice>390</ntasks_ice>
 	  <ntasks_ocn>120</ntasks_ocn>
 	  <ntasks_glc>600</ntasks_glc>
-	  <ntasks_wav>600</ntasks_wav>
+	  <ntasks_wav>160</ntasks_wav>
 	  <ntasks_cpl>600</ntasks_cpl>
 	</ntasks>
 	<nthrds>
@@ -1679,7 +1678,7 @@
 	  <ntasks_ice>192</ntasks_ice>
 	  <ntasks_ocn>192</ntasks_ocn>
 	  <ntasks_glc>192</ntasks_glc>
-	  <ntasks_wav>192</ntasks_wav>
+	  <ntasks_wav>160</ntasks_wav>
 	  <ntasks_cpl>192</ntasks_cpl>
 	</ntasks>
 	<nthrds>
@@ -1716,7 +1715,7 @@
 	  <ntasks_ice>1024</ntasks_ice>
 	  <ntasks_ocn>1024</ntasks_ocn>
 	  <ntasks_glc>1024</ntasks_glc>
-	  <ntasks_wav>1024</ntasks_wav>
+	  <ntasks_wav>160</ntasks_wav>
 	  <ntasks_cpl>1024</ntasks_cpl>
 	</ntasks>
 	<nthrds>
@@ -1753,7 +1752,7 @@
 	  <ntasks_ice>10215</ntasks_ice>
 	  <ntasks_ocn>30</ntasks_ocn>
 	  <ntasks_glc>15330</ntasks_glc>
-	  <ntasks_wav>15330</ntasks_wav>
+	  <ntasks_wav>160</ntasks_wav>
 	  <ntasks_cpl>15330</ntasks_cpl>
 	</ntasks>
 	<nthrds>
@@ -1790,7 +1789,7 @@
 	  <ntasks_ice>1600</ntasks_ice>
 	  <ntasks_ocn>32</ntasks_ocn>
 	  <ntasks_glc>3200</ntasks_glc>
-	  <ntasks_wav>3200</ntasks_wav>
+	  <ntasks_wav>160</ntasks_wav>
 	  <ntasks_cpl>3200</ntasks_cpl>
 	</ntasks>
 	<nthrds>

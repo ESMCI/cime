@@ -2,20 +2,20 @@
 
 <entries>
 
-  <!--- uncomment and fill in relevant sections 
-  <entry id="PIO_CONFIG_OPTS"> 
+  <!--- uncomment and fill in relevant sections
+  <entry id="PIO_CONFIG_OPTS">
     <values>
       <value></value>
     </values>
   </entry>
   -->
 
-  <!--- uncomment and fill in relevant sections 
+  <!--- uncomment and fill in relevant sections
   <entry id="PIO_ASYNC_INTERFACE">
     <values>
       <value></value>
     </values>
-  </entry> 
+  </entry>
   -->
 
   <entry id="PIO_STRIDE">
@@ -24,8 +24,8 @@
       <value mach="yellowstone" grid="a%ne120.+oi%gx1">60</value>
     </values>
   </entry>
-  
-  <!--- uncomment and fill in relevant sections 
+
+  <!--- uncomment and fill in relevant sections
   <entry id="PIO_ROOT">
     <values>
       <value></value>
@@ -33,7 +33,7 @@
   </entry>
   -->
 
-  <!--- uncomment and fill in relevant sections 
+  <!--- uncomment and fill in relevant sections
   <entry id="PIO_NUMTASKS">
     <values>
       <value></value>
@@ -45,12 +45,14 @@
     <values>
       <value>pnetcdf</value>
       <value mach="userdefined">netcdf</value>
+      <value mach="laramie">netcdf</value>
       <value mach="eastwind">netcdf</value>
       <value mach="constance">netcdf</value>
       <value mach="pleiades.*">netcdf</value>
       <value mach="vilje">netcdf</value>
       <value mach="hexagon">netcdf</value>
       <value mach="hobart" compiler="pgi">netcdf</value>
+      <value mach="hobart" compiler="nag">netcdf</value>
       <value mpilib="mpi-serial">netcdf</value>
     </values>
   </entry>
@@ -61,9 +63,7 @@
     </values>
   </entry>
 
-
-
-  <!--- uncomment and fill in relevant sections 
+  <!--- uncomment and fill in relevant sections
   <entry id="PIO_DEBUG_LEVEL">
     <values>
       <value></value>
@@ -71,7 +71,7 @@
   </entry>
   -->
 
-  <!--- uncomment and fill in relevant sections 
+  <!--- uncomment and fill in relevant sections
   <entry id="PIO_BLOCKSIZE">
     <values>
       <value></value>
@@ -79,7 +79,7 @@
   </entry>
   -->
 
-  <!--- uncomment and fill in relevant sections 
+  <!--- uncomment and fill in relevant sections
   <entry id="PIO_BUFFER_SIZE_LIMIT">
     <values>
       <value></value>
@@ -87,7 +87,7 @@
   </entry>
   -->
 
-  <!--- uncomment and fill in relevant sections 
+  <!--- uncomment and fill in relevant sections
   <entry id="OCN_PIO_STRIDE">
     <values>
       <value grid="a%ne120.+oi%gx1">60</value>
@@ -95,7 +95,7 @@
   </entry>
   -->
 
-  <!--- uncomment and fill in relevant sections 
+  <!--- uncomment and fill in relevant sections
   <entry id="OCN_PIO_ROOT">
     <values>
       <value></value>
@@ -103,7 +103,7 @@
   </entry>
   -->
 
-  <!--- uncomment and fill in relevant sections 
+  <!--- uncomment and fill in relevant sections
   <entry id="OCN_PIO_NUMTASKS">
     <values>
       <value></value>
@@ -111,15 +111,22 @@
   </entry>
   -->
 
-  <!--- uncomment and fill in relevant sections 
+  <!--- uncomment and fill in relevant sections
   <entry id="OCN_PIO_TYPENAME">
     <values>
       <value></value>
     </values>
-  </entry> 
+  </entry>
   -->
+  <entry id="LND_PIO_REARRANGER">
+    <values>
+      <value compset="_CLM40" >2</value>
+      <value compset="_CLM45" >1</value>
+      <value compset="_CLM50" >1</value>
+    </values>
+  </entry>
 
-  <!--- uncomment and fill in relevant sections 
+  <!--- uncomment and fill in relevant sections
   <entry id="LND_PIO_STRIDE">
     <values>
       <value></value>
@@ -127,7 +134,7 @@
   </entry>
   -->
 
-  <!--- uncomment and fill in relevant sections 
+  <!--- uncomment and fill in relevant sections
   <entry id="LND_PIO_ROOT">
     <values>
       <value></value>
@@ -135,7 +142,7 @@
   </entry>
   -->
 
-  <!--- uncomment and fill in relevant sections 
+  <!--- uncomment and fill in relevant sections
   <entry id="LND_PIO_NUMTASKS">
     <values>
       <value></value>
@@ -143,15 +150,15 @@
   </entry>
   -->
 
-  <!--- uncomment and fill in relevant sections 
+  <!--- uncomment and fill in relevant sections
   <entry id="LND_PIO_TYPENAME">
     <values>
       <value></value>
     </values>
-  </entry> 
+  </entry>
   -->
 
-  <!--- uncomment and fill in relevant sections 
+  <!--- uncomment and fill in relevant sections
   <entry id="ROF_PIO_STRIDE">
     <values>
       <value></value>
@@ -159,7 +166,7 @@
   </entry>
   -->
 
-  <!--- uncomment and fill in relevant sections 
+  <!--- uncomment and fill in relevant sections
   <entry id="ROF_PIO_ROOT">
     <values>
       <value></value>
@@ -167,7 +174,7 @@
   </entry>
   -->
 
-  <!--- uncomment and fill in relevant sections 
+  <!--- uncomment and fill in relevant sections
   <entry id="ROF_PIO_NUMTASKS">
     <values>
       <value></value>
@@ -175,15 +182,15 @@
   </entry>
   -->
 
-  <!--- uncomment and fill in relevant sections 
+  <!--- uncomment and fill in relevant sections
   <entry id="ROF_PIO_TYPENAME">
     <values>
       <value></value>
     </values>
-  </entry> 
+  </entry>
   -->
 
-  <!--- uncomment and fill in relevant sections 
+  <!--- uncomment and fill in relevant sections
   <entry id="ICE_PIO_STRIDE">
     <values>
       <value></value>
@@ -191,7 +198,7 @@
   </entry>
   -->
 
-  <!--- uncomment and fill in relevant sections 
+  <!--- uncomment and fill in relevant sections
   <entry id="ICE_PIO_ROOT">
     <values>
       <value></value>
@@ -199,7 +206,7 @@
   </entry>
   -->
 
-  <!--- uncomment and fill in relevant sections 
+  <!--- uncomment and fill in relevant sections
   <entry id="ICE_PIO_NUMTASKS">
     <values>
       <value></value>
@@ -207,15 +214,15 @@
   </entry>
   -->
 
-  <!--- uncomment and fill in relevant sections 
+  <!--- uncomment and fill in relevant sections
   <entry id="ICE_PIO_TYPENAME">
     <values>
       <value></value>
     </values>
-  </entry> 
+  </entry>
   -->
 
-  <!--- uncomment and fill in relevant sections 
+  <!--- uncomment and fill in relevant sections
   <entry id="ATM_PIO_STRIDE">
     <values>
       <value></value>
@@ -223,7 +230,7 @@
   </entry>
   -->
 
-  <!--- uncomment and fill in relevant sections 
+  <!--- uncomment and fill in relevant sections
   <entry id="ATM_PIO_ROOT">
     <values>
       <value></value>
@@ -231,7 +238,7 @@
   </entry>
   -->
 
-  <!--- uncomment and fill in relevant sections 
+  <!--- uncomment and fill in relevant sections
   <entry id="ATM_PIO_NUMTASKS">
     <values>
       <value></value>
@@ -239,15 +246,15 @@
   </entry>
   -->
 
-  <!--- uncomment and fill in relevant sections 
+
   <entry id="ATM_PIO_TYPENAME">
     <values>
-      <value></value>
+      <value compset="DATM">netcdf</value>
     </values>
-  </entry> 
-  -->
+  </entry>
 
-  <!--- uncomment and fill in relevant sections 
+
+  <!--- uncomment and fill in relevant sections
   <entry id="CPL_PIO_STRIDE">
     <values>
       <value></value>
@@ -255,7 +262,7 @@
   </entry>
   -->
 
-  <!--- uncomment and fill in relevant sections 
+  <!--- uncomment and fill in relevant sections
   <entry id="CPL_PIO_ROOT">
     <values>
       <value></value>
@@ -263,7 +270,7 @@
   </entry>
   -->
 
-  <!--- uncomment and fill in relevant sections 
+  <!--- uncomment and fill in relevant sections
   <entry id="CPL_PIO_NUMTASKS">
     <values>
       <value></value>
@@ -271,15 +278,15 @@
   </entry>
   -->
 
-  <!--- uncomment and fill in relevant sections 
+  <!--- uncomment and fill in relevant sections
   <entry id="CPL_PIO_TYPENAME">
     <values>
       <value></value>
     </values>
-  </entry> 
+  </entry>
   -->
 
-  <!--- uncomment and fill in relevant sections 
+  <!--- uncomment and fill in relevant sections
   <entry id="GLC_PIO_STRIDE">
     <values>
       <value></value>
@@ -287,7 +294,7 @@
   </entry>
   -->
 
-  <!--- uncomment and fill in relevant sections 
+  <!--- uncomment and fill in relevant sections
   <entry id="GLC_PIO_ROOT">
     <values>
       <value></value>
@@ -295,7 +302,7 @@
   </entry>
   -->
 
-  <!--- uncomment and fill in relevant sections 
+  <!--- uncomment and fill in relevant sections
   <entry id="GLC_PIO_NUMTASKS">
     <values>
       <value></value>
@@ -303,15 +310,15 @@
   </entry>
   -->
 
-  <!--- uncomment and fill in relevant sections 
+  <!--- uncomment and fill in relevant sections
   <entry id="GLC_PIO_TYPENAME">
     <values>
       <value></value>
     </values>
-  </entry> 
+  </entry>
   -->
 
-  <!--- uncomment and fill in relevant sections 
+  <!--- uncomment and fill in relevant sections
   <entry id="WAV_PIO_STRIDE">
     <values>
       <value></value>
@@ -319,7 +326,7 @@
   </entry>
   -->
 
-  <!--- uncomment and fill in relevant sections 
+  <!--- uncomment and fill in relevant sections
   <entry id="WAV_PIO_ROOT">
     <values>
       <value></value>
@@ -327,7 +334,7 @@
   </entry>
   -->
 
-  <!--- uncomment and fill in relevant sections 
+  <!--- uncomment and fill in relevant sections
   <entry id="WAV_PIO_NUMTASKS">
     <values>
       <value></value>
@@ -335,7 +342,7 @@
   </entry>
   -->
 
-  <!--- uncomment and fill in relevant sections 
+  <!--- uncomment and fill in relevant sections
   <entry id="WAV_PIO_TYPENAME">
     <values>
       <value></value>

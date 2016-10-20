@@ -28,7 +28,7 @@ my $NINST_ROF		= `./xmlquery NINST_ROF		-value`;
 my $NINST_WAV		= `./xmlquery NINST_WAV		-value`;
 my $NINST_ESP		= `./xmlquery NINST_ESP		-value`;
 my $NINST_VALUE		= `./xmlquery NINST_VALUE	-value`;
-
+$ENV{PIO_VERSION}  	= `./xmlquery PIO_VERSION	-value`;
 #--------------------------------------------------------------------
 # Filepath: list of source code directories (in order of importance).
 #--------------------------------------------------------------------
@@ -57,9 +57,9 @@ if($useesmf eq "noesmf"){
     push(@filepath,"$CIMEROOT/share/esmf_wrf_timemgr");
 }else{
     push(@filepath,"$CIMEROOT/driver_cpl/shr_esmf");
-} 
+}
 
-my @fp;    
+my @fp;
 if (-e "Filepath"){
     open(F,"Filepath");
     @fp = <F>;
@@ -76,8 +76,8 @@ if($#fp != $#filepath){
 my $multiinst_cppdefs = "";
 $multiinst_cppdefs = "$multiinst_cppdefs -DNUM_COMP_INST_ATM=$NINST_ATM";
 $multiinst_cppdefs = "$multiinst_cppdefs -DNUM_COMP_INST_LND=$NINST_LND";
-$multiinst_cppdefs = "$multiinst_cppdefs -DNUM_COMP_INST_OCN=$NINST_OCN"; 
-$multiinst_cppdefs = "$multiinst_cppdefs -DNUM_COMP_INST_ICE=$NINST_ICE"; 
+$multiinst_cppdefs = "$multiinst_cppdefs -DNUM_COMP_INST_OCN=$NINST_OCN";
+$multiinst_cppdefs = "$multiinst_cppdefs -DNUM_COMP_INST_ICE=$NINST_ICE";
 $multiinst_cppdefs = "$multiinst_cppdefs -DNUM_COMP_INST_GLC=$NINST_GLC";
 $multiinst_cppdefs = "$multiinst_cppdefs -DNUM_COMP_INST_WAV=$NINST_WAV";
 $multiinst_cppdefs = "$multiinst_cppdefs -DNUM_COMP_INST_ROF=$NINST_ROF";
@@ -98,7 +98,7 @@ if ($rc==0xff00){
 	print "coredump from ";
     }
     die "signal $rc\n";
-}  
+}
 
 #system("cp -p -f libcsm_share.a $sharedlibroot/lib");
 #system("cp -p -f *.mod $sharedlibroot/include/");
