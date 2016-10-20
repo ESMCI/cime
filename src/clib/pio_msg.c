@@ -1595,14 +1595,29 @@ int finalize_handler(iosystem_desc_t *ios, int index)
     return PIO_NOERR;
 }
 
+/** This function is called if no other handler exists. I'm not
+ * actually sure this function should exist.
+ *
+ * @param ios pointer to the iosystem info
+ * @param msg the unhandled message
+ * @returns always returns 0
+ */
 int pio_callback_handler(iosystem_desc_t *ios, int msg)
 {
     return PIO_NOERR;
 }
 
 /** This function is called by the IO tasks.  This function will not
-    return, unless there is an error. */
-int pio_msg_handler2(int io_rank, int component_count, iosystem_desc_t **iosys, MPI_Comm io_comm)
+ * return, unless there is an error. 
+ *
+ * @param io_rank
+ * @param component_count number of computation components
+ * @param iosys pointer to pointer to iosystem info
+ * @param io_comm MPI communicator for IO
+ * @returns 0 for success, error code otherwise.
+*/
+int pio_msg_handler2(int io_rank, int component_count, iosystem_desc_t **iosys,
+		     MPI_Comm io_comm)
 {
     iosystem_desc_t *my_iosys;
     int msg = 0;
