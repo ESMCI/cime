@@ -22,12 +22,14 @@
 #ifndef MPI_Offset
 #define MPI_Offset long long
 #endif
+
 #include <bget.h>
 #include <limits.h>
 #include <math.h>
 #ifdef TIMING
 #include <gptl.h>
 #endif
+#include <assert.h>
 
 #if PIO_ENABLE_LOGGING
 void pio_log(int severity, const char *fmt, ...);

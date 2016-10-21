@@ -18,7 +18,13 @@ extern int pio_log_level;
 #endif /* PIO_ENABLE_LOGGING */
 
 /** This function is run on the IO tasks to handle nc_inq_type*()
- * functions. */
+ * functions. 
+ *
+ * @param ios pointer to the iosystem info.
+ * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
+ * from netCDF base function. 
+ * @internal
+ */
 int inq_type_handler(iosystem_desc_t *ios)
 {
     int ncid;
@@ -30,6 +36,7 @@ int inq_type_handler(iosystem_desc_t *ios)
     int ret;
 
     LOG((1, "inq_type_handler"));
+    assert(ios);
 
     /* Get the parameters for this function that the the comp master
      * task is broadcasting. */
@@ -57,7 +64,13 @@ int inq_type_handler(iosystem_desc_t *ios)
 }
 
 /** This function is run on the IO tasks to find netCDF file
- * format. */
+ * format. 
+ *
+ * @param ios pointer to the iosystem info.
+ * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
+ * from netCDF base function. 
+ * @internal
+ */
 int inq_format_handler(iosystem_desc_t *ios)
 {
     int ncid;
@@ -67,7 +80,8 @@ int inq_format_handler(iosystem_desc_t *ios)
     int ret;
 
     LOG((1, "inq_format_handler"));
-
+    assert(ios);
+    
     /* Get the parameters for this function that the the comp master
      * task is broadcasting. */
     if ((mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm)))
@@ -92,7 +106,13 @@ int inq_format_handler(iosystem_desc_t *ios)
     return PIO_NOERR;
 }
 
-/** This function is run on the IO tasks to create a netCDF file. */
+/** This function is run on the IO tasks to create a netCDF file. 
+ *
+ * @param ios pointer to the iosystem info.
+ * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
+ * from netCDF base function. 
+ * @internal
+ */
 int create_file_handler(iosystem_desc_t *ios)
 {
     int ncid;
@@ -104,6 +124,7 @@ int create_file_handler(iosystem_desc_t *ios)
     int ret;
 
     LOG((1, "create_file_handler comproot = %d\n", ios->comproot));
+    assert(ios);    
 
     /* Get the parameters for this function that the he comp master
      * task is broadcasting. */
@@ -138,7 +159,9 @@ int create_file_handler(iosystem_desc_t *ios)
  * only ever run on the IO tasks.
  *
  * @param ios pointer to the iosystem_desc_t.
- * @return PIO_NOERR for success, error code otherwise.
+ * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
+ * from netCDF base function. 
+ * @internal
  */
 int close_file_handler(iosystem_desc_t *ios)
 {
@@ -146,9 +169,8 @@ int close_file_handler(iosystem_desc_t *ios)
     int mpierr;
     int ret;
 
-    int my_rank;
-    MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
     LOG((1, "close_file_handler"));
+    assert(ios);    
 
     /* Get the parameters for this function that the the comp master
      * task is broadcasting. */
@@ -168,7 +190,9 @@ int close_file_handler(iosystem_desc_t *ios)
  * only ever run on the IO tasks.
  *
  * @param ios pointer to the iosystem_desc_t.
- * @return PIO_NOERR for success, error code otherwise.
+ * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
+ * from netCDF base function. 
+ * @internal
  */
 int inq_handler(iosystem_desc_t *ios)
 {
@@ -179,9 +203,8 @@ int inq_handler(iosystem_desc_t *ios)
     int mpierr;
     int ret;
 
-    int my_rank;
-    MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
     LOG((1, "inq_handler"));
+    assert(ios);
 
     /* Get the parameters for this function that the the comp master
      * task is broadcasting. */
@@ -222,7 +245,9 @@ int inq_handler(iosystem_desc_t *ios)
  *
  * @param ios pointer to the iosystem_desc_t.
  * @param msg the message sent my the comp root task.
- * @return PIO_NOERR for success, error code otherwise.
+ * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
+ * from netCDF base function. 
+ * @internal
  */
 int inq_dim_handler(iosystem_desc_t *ios, int msg)
 {
@@ -238,6 +263,7 @@ int inq_dim_handler(iosystem_desc_t *ios, int msg)
     int ret;
 
     LOG((1, "inq_dim_handler"));
+    assert(ios);
 
     /* Get the parameters for this function that the the comp master
      * task is broadcasting. */
@@ -269,7 +295,9 @@ int inq_dim_handler(iosystem_desc_t *ios, int msg)
  * run on IO tasks.
  *
  * @param ios pointer to the iosystem_desc_t.
- * @return PIO_NOERR for success, error code otherwise.
+ * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
+ * from netCDF base function. 
+ * @internal
  */
 int inq_dimid_handler(iosystem_desc_t *ios)
 {
@@ -282,6 +310,7 @@ int inq_dimid_handler(iosystem_desc_t *ios)
     char *name;
 
     LOG((1, "inq_dimid_handler"));
+    assert(ios);
 
     /* Get the parameters for this function that the the comp master
      * task is broadcasting. */
@@ -317,7 +346,9 @@ int inq_dimid_handler(iosystem_desc_t *ios)
  *
  * @param ios pointer to the iosystem_desc_t.
  * @param msg the message sent my the comp root task.
- * @return PIO_NOERR for success, error code otherwise.
+ * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
+ * from netCDF base function. 
+ * @internal
  */
 int inq_att_handler(iosystem_desc_t *ios)
 {
@@ -333,6 +364,7 @@ int inq_att_handler(iosystem_desc_t *ios)
     char xtype_present, len_present;
 
     LOG((1, "inq_att_handler"));
+    assert(ios);
 
     /* Get the parameters for this function that the the comp master
      * task is broadcasting. */
@@ -373,7 +405,9 @@ int inq_att_handler(iosystem_desc_t *ios)
  *
  * @param ios pointer to the iosystem_desc_t.
  * @param msg the message sent my the comp root task.
- * @return PIO_NOERR for success, error code otherwise.
+ * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
+ * from netCDF base function. 
+ * @internal
  */
 int inq_attname_handler(iosystem_desc_t *ios)
 {
@@ -386,6 +420,7 @@ int inq_attname_handler(iosystem_desc_t *ios)
     int ret;
 
     LOG((1, "inq_att_name_handler"));
+    assert(ios);
 
     /* Get the parameters for this function that the the comp master
      * task is broadcasting. */
@@ -416,7 +451,9 @@ int inq_attname_handler(iosystem_desc_t *ios)
  *
  * @param ios pointer to the iosystem_desc_t.
  * @param msg the message sent my the comp root task.
- * @return PIO_NOERR for success, error code otherwise.
+ * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
+ * from netCDF base function. 
+ * @internal
  */
 int inq_attid_handler(iosystem_desc_t *ios)
 {
@@ -431,6 +468,7 @@ int inq_attid_handler(iosystem_desc_t *ios)
     int ret;
 
     LOG((1, "inq_attid_handler"));
+    assert(ios);
 
     /* Get the parameters for this function that the the comp master
      * task is broadcasting. */
@@ -467,7 +505,9 @@ int inq_attid_handler(iosystem_desc_t *ios)
  *
  * @param ios pointer to the iosystem_desc_t.
  * @param msg the message sent my the comp root task.
- * @return PIO_NOERR for success, error code otherwise.
+ * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
+ * from netCDF base function. 
+ * @internal
  */
 int att_put_handler(iosystem_desc_t *ios)
 {
@@ -483,6 +523,7 @@ int att_put_handler(iosystem_desc_t *ios)
     int iotype;
 
     LOG((1, "att_put_handler"));
+    assert(ios);
 
     /* Get the parameters for this function that the the comp master
      * task is broadcasting. */
@@ -526,7 +567,9 @@ int att_put_handler(iosystem_desc_t *ios)
  *
  * @param ios pointer to the iosystem_desc_t.
  * @param msg the message sent my the comp root task.
- * @return PIO_NOERR for success, error code otherwise.
+ * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
+ * from netCDF base function. 
+ * @internal
  */
 int att_get_handler(iosystem_desc_t *ios)
 {
@@ -542,6 +585,7 @@ int att_get_handler(iosystem_desc_t *ios)
     int iotype;
 
     LOG((1, "att_get_handler"));
+    assert(ios);
 
     /* Get the parameters for this function that the the comp master
      * task is broadcasting. */
@@ -584,7 +628,9 @@ int att_get_handler(iosystem_desc_t *ios)
 /** Handle var put operations. This code only runs on IO tasks.
  *
  * @param ios pointer to the iosystem_desc_t.
- * @return PIO_NOERR for success, error code otherwise.
+ * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
+ * from netCDF base function. 
+ * @internal
  */
 int put_vars_handler(iosystem_desc_t *ios)
 {
@@ -603,6 +649,7 @@ int put_vars_handler(iosystem_desc_t *ios)
     PIO_Offset num_elem; /** Number of data elements in the buffer. */
 
     LOG((1, "put_vars_handler"));
+    assert(ios);
 
     /* Get the parameters for this function that the the comp master
      * task is broadcasting. */
@@ -737,7 +784,9 @@ int put_vars_handler(iosystem_desc_t *ios)
 /** Handle var get operations. This code only runs on IO tasks.
  *
  * @param ios pointer to the iosystem_desc_t.
- * @return PIO_NOERR for success, error code otherwise.
+ * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
+ * from netCDF base function. 
+ * @internal
  */
 int get_vars_handler(iosystem_desc_t *ios)
 {
@@ -756,6 +805,7 @@ int get_vars_handler(iosystem_desc_t *ios)
     PIO_Offset num_elem; /** Number of data elements in the buffer. */
 
     LOG((1, "get_vars_handler"));
+    assert(ios);
 
     /* Get the parameters for this function that the the comp master
      * task is broadcasting. */
@@ -888,7 +938,9 @@ int get_vars_handler(iosystem_desc_t *ios)
  *
  * @param ios pointer to the iosystem_desc_t.
  * @param msg the message sent my the comp root task.
- * @return PIO_NOERR for success, error code otherwise.
+ * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
+ * from netCDF base function. 
+ * @internal
  */
 int inq_var_handler(iosystem_desc_t *ios)
 {
@@ -903,6 +955,7 @@ int inq_var_handler(iosystem_desc_t *ios)
     int ret;
 
     LOG((1, "inq_var_handler"));
+    assert(ios);
 
     /* Get the parameters for this function that the the comp master
      * task is broadcasting. */
@@ -950,7 +1003,9 @@ int inq_var_handler(iosystem_desc_t *ios)
  * run on IO tasks.
  *
  * @param ios pointer to the iosystem_desc_t.
- * @return PIO_NOERR for success, error code otherwise.
+ * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
+ * from netCDF base function. 
+ * @internal
  */
 int inq_varid_handler(iosystem_desc_t *ios)
 {
@@ -961,6 +1016,8 @@ int inq_varid_handler(iosystem_desc_t *ios)
     int namelen;
     char *name;
 
+    assert(ios);
+    
     /* Get the parameters for this function that the the comp master
      * task is broadcasting. */
     if ((mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm)))
@@ -985,7 +1042,9 @@ int inq_varid_handler(iosystem_desc_t *ios)
 /** This function is run on the IO tasks to sync a netCDF file.
  *
  * @param ios pointer to the iosystem_desc_t.
- * @return PIO_NOERR for success, error code otherwise.
+ * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
+ * from netCDF base function. 
+ * @internal
  */
 int sync_file_handler(iosystem_desc_t *ios)
 {
@@ -994,6 +1053,7 @@ int sync_file_handler(iosystem_desc_t *ios)
     int ret;
 
     LOG((1, "sync_file_handler"));
+    assert(ios);
 
     /* Get the parameters for this function that the comp master
      * task is broadcasting. */
@@ -1012,7 +1072,9 @@ int sync_file_handler(iosystem_desc_t *ios)
 /** This function is run on the IO tasks to enddef a netCDF file.
  *
  * @param ios pointer to the iosystem_desc_t.
- * @return PIO_NOERR for success, error code otherwise.
+ * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
+ * from netCDF base function. 
+ * @internal
  */
 int change_def_file_handler(iosystem_desc_t *ios, int msg)
 {
@@ -1021,6 +1083,7 @@ int change_def_file_handler(iosystem_desc_t *ios, int msg)
     int ret;
 
     LOG((1, "change_def_file_handler"));
+    assert(ios);
 
     /* Get the parameters for this function that the comp master
      * task is broadcasting. */
@@ -1035,7 +1098,13 @@ int change_def_file_handler(iosystem_desc_t *ios, int msg)
 }
 
 /** This function is run on the IO tasks to define a netCDF
- *  variable. */
+ *  variable. 
+ *
+ * @param ios pointer to the iosystem_desc_t.
+ * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
+ * from netCDF base function. 
+ * @internal
+*/
 int def_var_handler(iosystem_desc_t *ios)
 {
     int ncid;
@@ -1050,9 +1119,8 @@ int def_var_handler(iosystem_desc_t *ios)
     int ndims;
     int *dimids;
 
-    int my_rank;
-    MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
     LOG((1, "def_var_handler comproot = %d", ios->comproot));
+    assert(ios);
 
     /* Get the parameters for this function that the he comp master
      * task is broadcasting. */
@@ -1089,7 +1157,13 @@ int def_var_handler(iosystem_desc_t *ios)
 }
 
 /** This function is run on the IO tasks to define a netCDF
- * dimension. */
+ * dimension. 
+ *
+ * @param ios pointer to the iosystem_desc_t.
+ * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
+ * from netCDF base function. 
+ * @internal
+*/
 int def_dim_handler(iosystem_desc_t *ios)
 {
     int ncid;
@@ -1101,9 +1175,8 @@ int def_dim_handler(iosystem_desc_t *ios)
     int ret;
     int dimid;
 
-    int my_rank;
-    MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
     LOG((1, "def_dim_handler comproot = %d", ios->comproot));
+    assert(ios);
 
     /* Get the parameters for this function that the he comp master
      * task is broadcasting. */
@@ -1133,7 +1206,13 @@ int def_dim_handler(iosystem_desc_t *ios)
 }
 
 /** This function is run on the IO tasks to rename a netCDF
- * dimension. */
+ * dimension. 
+ *
+ * @param ios pointer to the iosystem_desc_t.
+ * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
+ * from netCDF base function. 
+ * @internal
+*/
 int rename_dim_handler(iosystem_desc_t *ios)
 {
     int ncid;
@@ -1147,6 +1226,7 @@ int rename_dim_handler(iosystem_desc_t *ios)
     char name1[NC_MAX_NAME + 1];
 
     LOG((1, "rename_dim_handler"));
+    assert(ios);
 
     /* Get the parameters for this function that the he comp master
      * task is broadcasting. */
@@ -1175,7 +1255,13 @@ int rename_dim_handler(iosystem_desc_t *ios)
 }
 
 /** This function is run on the IO tasks to rename a netCDF
- * dimension. */
+ * dimension. 
+ *
+ * @param ios pointer to the iosystem_desc_t.
+ * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
+ * from netCDF base function. 
+ * @internal
+*/
 int rename_var_handler(iosystem_desc_t *ios)
 {
     int ncid;
@@ -1189,6 +1275,7 @@ int rename_var_handler(iosystem_desc_t *ios)
     char name1[NC_MAX_NAME + 1];
 
     LOG((1, "rename_var_handler"));
+    assert(ios);
 
     /* Get the parameters for this function that the he comp master
      * task is broadcasting. */
@@ -1217,7 +1304,13 @@ int rename_var_handler(iosystem_desc_t *ios)
 }
 
 /** This function is run on the IO tasks to rename a netCDF
- * attribute. */
+ * attribute. 
+ *
+ * @param ios pointer to the iosystem_desc_t.
+ * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
+ * from netCDF base function. 
+ * @internal
+*/
 int rename_att_handler(iosystem_desc_t *ios)
 {
     int ncid;
@@ -1228,6 +1321,7 @@ int rename_att_handler(iosystem_desc_t *ios)
     int ret;
 
     LOG((1, "rename_att_handler"));
+    assert(ios);
 
     /* Get the parameters for this function that the he comp master
      * task is broadcasting. */
@@ -1263,7 +1357,13 @@ int rename_att_handler(iosystem_desc_t *ios)
 }
 
 /** This function is run on the IO tasks to delete a netCDF
- * attribute. */
+ * attribute. 
+ *
+ * @param ios pointer to the iosystem_desc_t.
+ * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
+ * from netCDF base function. 
+ * @internal
+*/
 int delete_att_handler(iosystem_desc_t *ios)
 {
     int ncid;
@@ -1274,6 +1374,7 @@ int delete_att_handler(iosystem_desc_t *ios)
     int ret;
 
     LOG((1, "delete_att_handler"));
+    assert(ios);
 
     /* Get the parameters for this function that the he comp master
      * task is broadcasting. */
@@ -1303,9 +1404,12 @@ int delete_att_handler(iosystem_desc_t *ios)
 
 /** This function is run on the IO tasks to open a netCDF file.
  *
- * @param ios pointer to the iosystem_desc_t data.
  *
- * @return PIO_NOERR for success, error code otherwise. */
+ * @param ios pointer to the iosystem_desc_t.
+ * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
+ * from netCDF base function. 
+ * @internal
+ */
 int open_file_handler(iosystem_desc_t *ios)
 {
     int ncid;
@@ -1316,9 +1420,8 @@ int open_file_handler(iosystem_desc_t *ios)
     int mpierr;
     int ret;
 
-    int my_rank;
-    MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
     LOG((1, "open_file_handler comproot = %d", ios->comproot));
+    assert(ios);
 
     /* Get the parameters for this function that the he comp master
      * task is broadcasting. */
@@ -1352,7 +1455,10 @@ int open_file_handler(iosystem_desc_t *ios)
  *
  * @param ios pointer to the iosystem_desc_t data.
  *
- * @return PIO_NOERR for success, error code otherwise. */
+ * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
+ * from netCDF base function. 
+ * @internal
+ */
 int delete_file_handler(iosystem_desc_t *ios)
 {
     int ncid;
@@ -1361,9 +1467,8 @@ int delete_file_handler(iosystem_desc_t *ios)
     int mpierr;
     int ret;
 
-    int my_rank;
-    MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
     LOG((1, "delete_file_handler comproot = %d", ios->comproot));
+    assert(ios);
 
     /* Get the parameters for this function that the he comp master
      * task is broadcasting. */
@@ -1388,97 +1493,111 @@ int delete_file_handler(iosystem_desc_t *ios)
     return PIO_NOERR;
 }
 
+/** This function is run on the IO tasks to...
+ * NOTE: not yet implemented
+ *
+ * @param ios pointer to the iosystem_desc_t data.
+ *
+ * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
+ * from netCDF base function. 
+ * @internal
+ */
 int initdecomp_dof_handler(iosystem_desc_t *ios)
 {
+    assert(ios);
     return PIO_NOERR;
 }
 
+/** This function is run on the IO tasks to...
+ * NOTE: not yet implemented
+ *
+ * @param ios pointer to the iosystem_desc_t data.
+ *
+ * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
+ * from netCDF base function. 
+ * @internal
+ */
 int writedarray_handler(iosystem_desc_t *ios)
 {
+    assert(ios);
     return PIO_NOERR;
 }
 
+/** This function is run on the IO tasks to...
+ * NOTE: not yet implemented
+ *
+ * @param ios pointer to the iosystem_desc_t data.
+ *
+ * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
+ * from netCDF base function. 
+ * @internal
+ */
 int readdarray_handler(iosystem_desc_t *ios)
 {
+    assert(ios);
     return PIO_NOERR;
 }
 
+/** This function is run on the IO tasks to set the error handler.
+ * NOTE: not yet implemented
+ *
+ * @param ios pointer to the iosystem_desc_t data.
+ *
+ * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
+ * from netCDF base function. 
+ * @internal
+ */
 int seterrorhandling_handler(iosystem_desc_t *ios)
 {
+    assert(ios);
     return PIO_NOERR;
 }
 
+/** This function is run on the IO tasks to...
+ * NOTE: not yet implemented
+ *
+ * @param ios pointer to the iosystem_desc_t data.
+ *
+ * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
+ * from netCDF base function. 
+ * @internal
+ */
 int var_handler(iosystem_desc_t *ios, int msg)
 {
+    assert(ios);
     return PIO_NOERR;
 }
 
+/** This function is run on the IO tasks to free the decomp hanlder.
+ * NOTE: not yet implemented
+ *
+ * @param ios pointer to the iosystem_desc_t data.
+ *
+ * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
+ * from netCDF base function. 
+ * @internal
+ */
 int freedecomp_handler(iosystem_desc_t *ios)
 {
     return PIO_NOERR;
 }
 
-int PIOc_noop_finalize(const int iosysid)
-{
-    iosystem_desc_t *ios, *nios;
-    int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
-    int ierr = PIO_NOERR;
-
-    LOG((1, "PIOc_noop_finalize iosysid = %d MPI_COMM_NULL = %d", iosysid, MPI_COMM_NULL));
-
-    /* Find the IO system information. */
-    if (!(ios = pio_get_iosystem_from_id(iosysid)))
-        return PIO_EBADID;
-    LOG((3, "found iosystem info comproot = %d union_comm = %d", ios->comproot,
-         ios->union_comm));
-
-    /* If asynch IO is in use, send the PIO_MSG_EXIT message from the
-     * comp master to the IO processes. This may be called by
-     * componets for other components iosysid. So don't send unless
-     * there is a valid union_comm. */
-    if (ios->async_interface)
-    {
-        int msg = PIO_MSG_EXIT;
-        LOG((3, "async"));
-
-        if (!ios->ioproc)
-        {
-            LOG((2, "sending msg = %d ioroot = %d union_comm = %d", msg,
-                 ios->ioroot, ios->union_comm));
-
-            /* Send the message to the message handler. */
-            if (ios->compmaster)
-                mpierr = MPI_Send(&msg, 1, MPI_INT, ios->ioroot, 1, ios->union_comm);
-
-            LOG((2, "sending iosysid = %d", iosysid));
-
-            /* Send the parameters of the function call. */
-            if (!mpierr)
-                mpierr = MPI_Bcast((int *)&iosysid, 1, MPI_INT, ios->compmaster, ios->intercomm);
-        }
-
-        /* Handle MPI errors. */
-        LOG((3, "handling async errors mpierr = %d my_comm = %d", mpierr, ios->my_comm));
-        if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
-            return check_mpi(NULL, mpierr2, __FILE__, __LINE__);
-        if (mpierr)
-            return check_mpi(NULL, mpierr, __FILE__, __LINE__);
-        LOG((3, "async errors bcast"));
-    }
-
-    return ierr;
-}
-
-
+/** Handle the finalize call.
+ *
+ * @param ios pointer to the iosystem info
+ * @param index
+ * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
+ * from netCDF base function. 
+ * @internal
+ */
 int finalize_handler(iosystem_desc_t *ios, int index)
 {
     int iosysid;
     int mpierr;
     int ret;
 
-    int my_rank;
-    MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
     LOG((1, "finalize_handler called index = %d", index));
+    assert(ios);
 
     /* Get the parameters for this function that the the comp master
      * task is broadcasting. */
@@ -1496,14 +1615,30 @@ int finalize_handler(iosystem_desc_t *ios, int index)
     return PIO_NOERR;
 }
 
+/** This function is called if no other handler exists. I'm not
+ * actually sure this function should exist.
+ *
+ * @param ios pointer to the iosystem info
+ * @param msg the unhandled message
+ * @returns always returns 0
+ */
 int pio_callback_handler(iosystem_desc_t *ios, int msg)
 {
+    assert(ios);
     return PIO_NOERR;
 }
 
 /** This function is called by the IO tasks.  This function will not
-    return, unless there is an error. */
-int pio_msg_handler2(int io_rank, int component_count, iosystem_desc_t **iosys, MPI_Comm io_comm)
+ * return, unless there is an error. 
+ *
+ * @param io_rank
+ * @param component_count number of computation components
+ * @param iosys pointer to pointer to iosystem info
+ * @param io_comm MPI communicator for IO
+ * @returns 0 for success, error code otherwise.
+*/
+int pio_msg_handler2(int io_rank, int component_count, iosystem_desc_t **iosys,
+		     MPI_Comm io_comm)
 {
     iosystem_desc_t *my_iosys;
     int msg = 0;
@@ -1514,9 +1649,8 @@ int pio_msg_handler2(int io_rank, int component_count, iosystem_desc_t **iosys, 
     int ret = PIO_NOERR;
     int open_components = component_count;
 
-    int my_rank;
-    MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
     LOG((1, "pio_msg_handler2 called"));
+    assert(iosys);
 
     /* Have IO comm rank 0 (the ioroot) register to receive
      * (non-blocking) for a message from each of the comproots. */
