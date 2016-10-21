@@ -1625,14 +1625,18 @@ void performance_tune_rearranger(iosystem_desc_t ios, io_desc_t *iodesc)
     int tsize;
     int myrank;
 
+    assert(iodesc);
+
     MPI_Type_size(iodesc->basetype, &tsize);
     cbuf = NULL;
     ibuf = NULL;
     if(iodesc->ndof>0){
-        cbuf = bget( iodesc->ndof * tsize );
+        if (!(cbuf = bget(iodesc->ndof * tsize)))
+	    piomemerror(ios, iodesc->ndof * tsize, __FILE__, __LINE__);
     }
     if(iodesc->llen>0){
-        ibuf = bget( iodesc->llen * tsize );
+        if (!(ibuf = bget(iodesc->llen * tsize)))
+	    piomemerror(ios, iodesc->llen * tsize, __FILE__, __LINE__);
     }
 
     if(iodesc->rearranger == PIO_REARR_BOX){
@@ -1645,7 +1649,8 @@ void performance_tune_rearranger(iosystem_desc_t ios, io_desc_t *iodesc)
     MPI_Comm_rank(mycomm, &myrank);
 
     int log2 = log(nprocs) / log(2) + 1;
-    wall = bget(2*4*log2*sizeof(double));
+    if (!(wall = bget(2 * 4 * log2 * sizeof(double))))
+	piomemerror(ios, 2 * 4 *log2 * sizeof(double), __FILE__, __LINE__);
     double mintime;
     int k=0;
 
