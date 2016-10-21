@@ -516,6 +516,12 @@ GPTLLIB = $(GPTL_LIBDIR)/libgptl.a
 
 ULIBS += -L$(SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/$(NINST_VALUE)/csm_share -lcsm_share -L$(SHAREDPATH)/lib $(PIOLIBNAME) -lgptl -lmct -lmpeu
 
+ifeq ($(MODEL), micom)
+ifdef PNETCDF_PATH
+  FFLAGS += -DPNETCDF
+endif
+endif
+
 #------------------------------------------------------------------------------
 # Drive cmake script for cism and pio
 #------------------------------------------------------------------------------

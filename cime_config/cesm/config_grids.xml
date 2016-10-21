@@ -1058,6 +1058,7 @@
       <file lnd_mask="gx1v6">domain.lnd.fv1.9x2.5_gx1v6.090206.nc</file>
       <file ocn_mask="gx1v6">domain.ocn.1.9x2.5_gx1v6_090403.nc</file>
       <file lnd_mask="tx1v1">domain.lnd.fv1.9x2.5_tx1v1_090713.nc</file>
+      <file lnd_mask="tnx1v1">domain.lnd.fv1.9x2.5_tnx1v1.120120.nc</file>
       <desc>1.9x2.5 is FV 2-deg grid:</desc>
     </domain>
 
@@ -1373,6 +1374,14 @@
       <ATM2OCN_VMAPNAME>cpl/cpl6/map_fv0.9x1.25_to_tnx1v1_patch_150512.nc</ATM2OCN_VMAPNAME>
       <OCN2ATM_FMAPNAME>cpl/cpl6/map_tnx1v1_to_fv0.9x1.25_aave_da_150512.nc</OCN2ATM_FMAPNAME>
       <OCN2ATM_SMAPNAME>cpl/cpl6/map_tnx1v1_to_fv0.9x1.25_aave_da_150512.nc</OCN2ATM_SMAPNAME>
+    </gridmap>
+
+   <gridmap atm_grid="1.9x2.5" ocn_grid="tnx1v1">
+      <ATM2OCN_FMAPNAME>cpl/cpl6/map_fv1.9x2.5_to_tnx1v1_aave_da_120120.nc</ATM2OCN_FMAPNAME>
+      <ATM2OCN_SMAPNAME>cpl/cpl6/map_fv1.9x2.5_to_tnx1v1_patch_120120.nc</ATM2OCN_SMAPNAME>
+      <ATM2OCN_VMAPNAME>cpl/cpl6/map_fv1.9x2.5_to_tnx1v1_patch_120120.nc</ATM2OCN_VMAPNAME>
+      <OCN2ATM_FMAPNAME>cpl/cpl6/map_tnx1v1_to_fv1.9x2.5_aave_da_120120.nc</OCN2ATM_FMAPNAME>
+      <OCN2ATM_SMAPNAME>cpl/cpl6/map_tnx1v1_to_fv1.9x2.5_aave_da_120120.nc</OCN2ATM_SMAPNAME>
     </gridmap>
 
     <gridmap atm_grid="4x5" ocn_grid="gx3v7">
