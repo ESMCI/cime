@@ -225,18 +225,15 @@ int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
             LOG((2, "PIOc_put_vars_tc calling pnetcdf function"));
             vdesc = file->varlist + varid;
             if (vdesc->nreqs % PIO_REQUEST_ALLOC_CHUNK == 0)
-                vdesc->request = realloc(vdesc->request,
-                                         sizeof(int) * (vdesc->nreqs + PIO_REQUEST_ALLOC_CHUNK));
+                if (!(vdesc->request = realloc(vdesc->request,
+					       sizeof(int) * (vdesc->nreqs + PIO_REQUEST_ALLOC_CHUNK))))
+		    return PIO_ENOMEM;
             request = vdesc->request + vdesc->nreqs;
             LOG((2, "PIOc_put_vars_tc request = %d", vdesc->request));
 
             /* Only the IO master actually does the call. */
             if (ios->iomaster)
             {
-/*              LOG((2, "PIOc_put_vars_tc ncid = %d varid = %d start[0] = %d count[0] = %d fake_stride[0] = %d",
-                ncid, varid, start[0], count[0], fake_stride[0]));*/
-                /* for (int d = 0; d < ndims; d++) */
-                /*     LOG((2, "start[%d] = %d count[%d] = %d stride[%d] = %d", d, start[d], d, count[d], d, stride[d])); */
                 switch(xtype)
                 {
                 case NC_BYTE:
@@ -249,9 +246,7 @@ int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
                     ierr = ncmpi_bput_vars_short(file->fh, varid, start, count, fake_stride, buf, request);
                     break;
                 case NC_INT:
-                    LOG((2, "PIOc_put_vars_tc io_rank 0 doing pnetcdf for int"));
                     ierr = ncmpi_bput_vars_int(file->fh, varid, start, count, fake_stride, buf, request);
-                    LOG((2, "PIOc_put_vars_tc io_rank 0 done with pnetcdf call for int ierr = %d", ierr));
                     break;
                 case NC_FLOAT:
                     ierr = ncmpi_bput_vars_float(file->fh, varid, start, count, fake_stride, buf, request);
@@ -271,7 +266,6 @@ int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
                 *request = PIO_REQ_NULL;
 
             vdesc->nreqs++;
-            LOG((2, "PIOc_put_vars_tc flushing output buffer"));
             flush_output_buffer(file, false, 0);
             LOG((2, "PIOc_put_vars_tc flushed output buffer"));
 
@@ -346,7 +340,6 @@ int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
     }
 
     /* Broadcast and check the return code. */
-    LOG((2, "PIOc_put_vars_tc bcasting netcdf return code %d", ierr));
     if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
         return check_mpi(file, mpierr, __FILE__, __LINE__);
     if (ierr)
@@ -746,8 +739,9 @@ int PIOc_put_var(int ncid, int varid, const void *buf, PIO_Offset bufcount,
             vdesc = file->varlist + varid;
 
             if(vdesc->nreqs%PIO_REQUEST_ALLOC_CHUNK == 0 ){
-                vdesc->request = realloc(vdesc->request,
-                                         sizeof(int)*(vdesc->nreqs+PIO_REQUEST_ALLOC_CHUNK));
+                if (!(vdesc->request = realloc(vdesc->request,
+					       sizeof(int) * (vdesc->nreqs + PIO_REQUEST_ALLOC_CHUNK))))
+		    return PIO_ENOMEM;
             }
             request = vdesc->request+vdesc->nreqs;
 
@@ -830,8 +824,9 @@ int PIOc_put_vars(int ncid, int varid, const PIO_Offset *start, const PIO_Offset
             vdesc = file->varlist + varid;
 
             if(vdesc->nreqs%PIO_REQUEST_ALLOC_CHUNK == 0 ){
-                vdesc->request = realloc(vdesc->request,
-                                         sizeof(int)*(vdesc->nreqs+PIO_REQUEST_ALLOC_CHUNK));
+                if (!(vdesc->request = realloc(vdesc->request,
+					       sizeof(int) * (vdesc->nreqs + PIO_REQUEST_ALLOC_CHUNK))))
+		    return PIO_ENOMEM;
             }
             request = vdesc->request+vdesc->nreqs;
 
@@ -905,8 +900,9 @@ int PIOc_put_var1(int ncid, int varid, const PIO_Offset *index, const void *buf,
             vdesc = file->varlist + varid;
 
             if(vdesc->nreqs%PIO_REQUEST_ALLOC_CHUNK == 0 ){
-                vdesc->request = realloc(vdesc->request,
-                                         sizeof(int)*(vdesc->nreqs+PIO_REQUEST_ALLOC_CHUNK));
+                if (!(vdesc->request = realloc(vdesc->request,
+					       sizeof(int) * (vdesc->nreqs + PIO_REQUEST_ALLOC_CHUNK))))
+		    return PIO_ENOMEM;
             }
             request = vdesc->request+vdesc->nreqs;
 
@@ -979,8 +975,9 @@ int PIOc_put_vara(int ncid, int varid, const PIO_Offset *start, const PIO_Offset
             vdesc = file->varlist + varid;
 
             if(vdesc->nreqs%PIO_REQUEST_ALLOC_CHUNK == 0 ){
-                vdesc->request = realloc(vdesc->request,
-                                         sizeof(int)*(vdesc->nreqs+PIO_REQUEST_ALLOC_CHUNK));
+                if (!(vdesc->request = realloc(vdesc->request,
+					       sizeof(int) * (vdesc->nreqs + PIO_REQUEST_ALLOC_CHUNK))))
+		    return PIO_ENOMEM;
             }
             request = vdesc->request+vdesc->nreqs;
 
