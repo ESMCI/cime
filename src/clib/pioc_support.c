@@ -175,7 +175,7 @@ void pio_log(int severity, const char *fmt, ...)
 static pio_swapm_defaults swapm_defaults;
 bool PIO_Save_Decomps=false;
 
-/* Get PIO environment variables.
+/** Get PIO environment variables.
  */
 void pio_get_env(void)
 {
