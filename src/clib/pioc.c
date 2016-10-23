@@ -2,7 +2,7 @@
  * @file
  * @author Jim Edwards
  * @date  2014
- * @brief PIO C interface
+ * PIO C interface
  *
  * @see http://code.google.com/p/parallelio/
  */
@@ -11,29 +11,36 @@
 #include <pio.h>
 #include <pio_internal.h>
 
-static int counter=0;
+static int counter = 0;
 
-/**
- ** @brief Check to see if PIO has been initialized.
+/** Check to see if PIO has been initialized.
+ *
+ * @param iosysid the IO system ID
+ * @param active pointer that gets true if IO system is active, false
+ * otherwise.
+ * @returns 0 on success, error code otherwise
  */
 int PIOc_iosystem_is_active(const int iosysid, bool *active)
 {
     iosystem_desc_t *ios;
-    ios = pio_get_iosystem_from_id(iosysid);
-    if(ios == NULL)
+    
+    if (!(ios = pio_get_iosystem_from_id(iosysid)))
         return PIO_EBADID;
 
-    if(ios->comp_comm == MPI_COMM_NULL && ios->io_comm == MPI_COMM_NULL){
-        *active = false;
-    }else{
-        *active = true;
-    }
+    if (active)
+	if (ios->comp_comm == MPI_COMM_NULL && ios->io_comm == MPI_COMM_NULL)
+	    *active = false;
+	else
+	    *active = true;
+
     return PIO_NOERR;
 }
-/**
- ** @brief Check to see if PIO file is open.
- */
 
+/** Check to see if PIO file is open.
+ *
+ * @param ncid the ncid of an open file
+ * @returns 1 if file is open, 0 otherwise.
+ */
 int PIOc_File_is_Open(int ncid)
 {
     file_desc_t *file;
@@ -45,9 +52,12 @@ int PIOc_File_is_Open(int ncid)
         return 1;
 }
 
-/**
- ** Set the error handling method to be used for subsequent
- ** pio library calls, returns the previous method setting
+/** Set the error handling method to be used for subsequent pio
+ * library calls, returns the previous method setting.
+ *
+ * @param ncid the ncid of an open file
+ * @param method the error handling method
+ * @returns 0 on success, error code otherwise
  */
 int PIOc_Set_File_Error_Handling(int ncid, int method)
 {
@@ -64,8 +74,11 @@ int PIOc_Set_File_Error_Handling(int ncid, int method)
     return oldmethod;
 }
 
-/**
- ** @brief Increment the unlimited dimension of the given variable
+/** Increment the unlimited dimension of the given variable.
+ *
+ * @param ncid the ncid of the open file
+ * @param varid the variable ID
+ * @returns 0 on success, error code otherwise
  */
 int PIOc_advanceframe(int ncid, int varid)
 {
@@ -81,9 +94,8 @@ int PIOc_advanceframe(int ncid, int varid)
     return(PIO_NOERR);
 }
 
-/**
- * @ingroup PIO_setframe
- * @brief Set the unlimited dimension of the given variable
+/** @ingroup PIO_setframe
+ * Set the unlimited dimension of the given variable
  *
  * @param ncid the ncid of the file.
  * @param varid the varid of the variable
@@ -110,8 +122,12 @@ int PIOc_setframe(const int ncid, const int varid, const int frame)
     return PIO_NOERR;
 }
 
-/**
- ** @brief Get the number of IO tasks set.
+/** Get the number of IO tasks set.
+ *
+ * @param iosysid the IO system ID
+ * @param numiotasks a pointer taht gets the number of IO
+ * tasks. Ignored if NULL.
+ * @returns 0 on success, error code otherwise
  */
 int PIOc_get_numiotasks(int iosysid, int *numiotasks)
 {
@@ -120,15 +136,18 @@ int PIOc_get_numiotasks(int iosysid, int *numiotasks)
     if(ios == NULL)
         return PIO_EBADID;
 
-    *numiotasks = ios->num_iotasks;
+    if (numiotasks)
+	*numiotasks = ios->num_iotasks;
 
     return PIO_NOERR;
-
 }
 
-
-/**
- ** @brief Get the IO rank on the current task
+/** Get the IO rank on the current task.
+ *
+ * @param iosysid the IO system ID
+ * @param iorank a pointer that gets the IO rank of the current task,
+ * or -1 if it is not an IO task. Ignored if NULL.
+ * @returns 0 on success, error code otherwise
  */
 int PIOc_get_iorank(int iosysid, int *iorank)
 {
@@ -137,16 +156,17 @@ int PIOc_get_iorank(int iosysid, int *iorank)
     if(ios == NULL)
         return PIO_EBADID;
 
-    *iorank = ios->io_rank;
+    if (iorank)
+	*iorank = ios->io_rank;
 
     return PIO_NOERR;
-
 }
 
-/**
- ** @brief Get the local size of the variable
+/** Get the local size of the variable.
+ *
+ * @param ioid
+ * @returns 0 on success, error code otherwise
  */
-
 int PIOc_get_local_array_size(int ioid)
 {
     io_desc_t *iodesc;
@@ -154,9 +174,12 @@ int PIOc_get_local_array_size(int ioid)
     return(iodesc->ndof);
 }
 
-/**
- * @ingroup PIO_error_method
+/** @ingroup PIO_error_method
  * Set the error handling method used for subsequent calls.
+ * 
+ * @param iosysid the IO system ID
+ * @param method the error handling method
+ * @returns 0 on success, error code otherwise
  */
 int PIOc_Set_IOSystem_Error_Handling(int iosysid, int method)
 {
@@ -165,11 +188,7 @@ int PIOc_Set_IOSystem_Error_Handling(int iosysid, int method)
 
     /* Find info about this iosystem. */
     if (!(ios = pio_get_iosystem_from_id(iosysid)))
-    {
-        fprintf(stderr,"%s %d Error setting eh method\n",__FILE__,__LINE__);
-        print_trace(stderr);
         return PIO_EBADID;
-    }
 
     /* Remember old method setting. */
     oldmethod = ios->error_handler;
@@ -180,19 +199,25 @@ int PIOc_Set_IOSystem_Error_Handling(int iosysid, int method)
     return oldmethod;
 }
 
-/**
- ** @ingroup PIO_initdecomp
- ** @brief C interface to the initdecomp
- ** @param  iosysid @copydoc iosystem_desc_t (input)
- ** @param  basetype the basic PIO data type used (input)
- ** @param  ndims the number of dimensions in the variable (input)
- ** @param  dims[] the global size of each dimension (input)
- ** @param  maplen the local length of the compmap array (input)
- ** @param  compmap[] a 1 based array of offsets into the array record on file.  A 0 in this array indicates a value which should not be transfered. (input)
- ** @param ioidp  the io description pointer (output)
- ** @param rearranger the rearranger to be used for this decomp or NULL to use the default (optional input)
- ** @param iostart An optional array of start values for block cyclic decompositions  (optional input)
- ** @param iocount An optional array of count values for block cyclic decompositions  (optional input)
+/** @ingroup PIO_initdecomp
+ * C interface to the initdecomp.
+ *
+ * @param  iosysid @copydoc iosystem_desc_t (input)
+ * @param  basetype the basic PIO data type used (input)
+ * @param  ndims the number of dimensions in the variable (input)
+ * @param  dims[] the global size of each dimension (input)
+ * @param  maplen the local length of the compmap array (input)
+ * @param compmap[] a 1 based array of offsets into the array record
+ * on file.  A 0 in this array indicates a value which should not be
+ * transfered. (input)
+ * @param ioidp  the io description pointer (output)
+ * @param rearranger the rearranger to be used for this decomp or NULL
+ * to use the default (optional input)
+ * @param iostart An optional array of start values for block cyclic
+ * decompositions (optional input)
+ * @param iocount An optional array of count values for block cyclic
+ * decompositions (optional input)
+ * @returns 0 on success, error code otherwise
  */
 int PIOc_InitDecomp(const int iosysid, const int basetype,const int ndims, const int dims[],
                     const int maplen, const PIO_Offset *compmap, int *ioidp,const int *rearranger,
@@ -289,13 +314,22 @@ int PIOc_InitDecomp(const int iosysid, const int basetype,const int ndims, const
     return PIO_NOERR;
 }
 
-/**
- ** @ingroup PIO_initdecomp
- ** This is a simplified initdecomp which can be used if the memory order of the data can be
- ** expressed in terms of start and count on the file.
- ** in this case we compute the compdof and use the subset rearranger
+/** @ingroup PIO_initdecomp
+ * This is a simplified initdecomp which can be used if the memory
+ * order of the data can be expressed in terms of start and count on
+ * the file.  In this case we compute the compdof and use the subset
+ * rearranger.
+ *
+ * @param iosysid the IO system ID
+ * @param basetype
+ * @param ndims the number of dimensions
+ * @param dims array of dimensions
+ * @param start start array
+ * @param count count array
+ * @param pointer that gets the IO ID.
+ * @returns 0 for success, error code otherwise
  */
-int PIOc_InitDecomp_bc(const int iosysid, const int basetype,const int ndims, const int dims[],
+int PIOc_InitDecomp_bc(const int iosysid, const int basetype, const int ndims, const int dims[],
                        const long int start[], const long int count[], int *ioidp)
 
 {
@@ -500,9 +534,17 @@ int PIOc_Init_Intracomm(const MPI_Comm comp_comm, const int num_iotasks,
 }
 
 /**
- ** @internal
- ** interface to call from pio_init from fortran
- ** @endinternal
+ * @internal
+ * Interface to call from pio_init from fortran.
+ *
+ * @param f90_comp_comm
+ * @param num_iotasks the number of IO tasks
+ * @param stride the stride to use assigning tasks
+ * @param base the starting point when assigning tasks
+ * @param rearr the rearranger
+ * @param iosysidp a pointer that gets the IO system ID
+ * @returns 0 for success, error code otherwise
+ * @endinternal
  */
 int PIOc_Init_Intracomm_from_F90(int f90_comp_comm,
                                  const int num_iotasks, const int stride,
@@ -510,9 +552,12 @@ int PIOc_Init_Intracomm_from_F90(int f90_comp_comm,
     return PIOc_Init_Intracomm(MPI_Comm_f2c(f90_comp_comm), num_iotasks, stride,base,rearr, iosysidp);
 }
 
-/**
- ** @brief Send a hint to the MPI-IO library
- **
+/** Send a hint to the MPI-IO library.
+ *
+ * @param iosysid the IO system ID
+ * @param hint the hint for MPI
+ * @param hintval the value of the hint
+ * @returns 0 for success, or PIO_BADID if iosysid can't be found. 
  */
 int PIOc_set_hint(const int iosysid, char hint[], const char hintval[])
 {
@@ -533,7 +578,6 @@ int PIOc_set_hint(const int iosysid, char hint[], const char hintval[])
  * pio library.
  *
  * @param iosysid: the io system ID provided by PIOc_Init_Intracomm().
- *
  * @returns 0 for success or non-zero for error.
  */
 int PIOc_finalize(const int iosysid)
@@ -558,7 +602,6 @@ int PIOc_finalize(const int iosysid)
     if (ios->async_interface && ios->union_comm != MPI_COMM_NULL)
     {
         int msg = PIO_MSG_EXIT;
-        LOG((3, "async"));
 
         if (!ios->ioproc)
         {
@@ -568,8 +611,6 @@ int PIOc_finalize(const int iosysid)
             /* Send the message to the message handler. */
             if (ios->compmaster)
                 mpierr = MPI_Send(&msg, 1, MPI_INT, ios->ioroot, 1, ios->union_comm);
-
-            LOG((2, "sending iosysid = %d", iosysid));
 
             /* Send the parameters of the function call. */
             if (!mpierr)
@@ -608,102 +649,98 @@ int PIOc_finalize(const int iosysid)
         MPI_Group_free(&ios->compgroup);
 
     if (ios->iogroup != MPI_GROUP_NULL)
-    {
         MPI_Group_free(&(ios->iogroup));
-        LOG((2, "Freed MPI groups."));
-    }
 
     /* Free the MPI communicators. my_comm is just a copy (but not an
      * MPI copy), so does not have to have an MPI_Comm_free()
      * call. comp_comm and io_comm are MPI duplicates of the comms
      * handed into init_intercomm. So they need to be freed by MPI. */
     if (ios->intercomm != MPI_COMM_NULL)
-    {
-        LOG((3, "freeing intercomm %d", ios->intercomm));
         MPI_Comm_free(&ios->intercomm);
-    }
     if (ios->union_comm != MPI_COMM_NULL)
-    {
-        LOG((3, "freeing union_comm %d", ios->union_comm));
         MPI_Comm_free(&ios->union_comm);
-    }
     if (ios->io_comm != MPI_COMM_NULL)
-    {
-        LOG((3, "freeing io_comm %d", ios->io_comm));
         MPI_Comm_free(&ios->io_comm);
-    }
     if (ios->comp_comm != MPI_COMM_NULL)
-    {
-        LOG((3, "freeing comp_comm %d", ios->comp_comm));
         MPI_Comm_free(&ios->comp_comm);
-    }
     if (ios->my_comm != MPI_COMM_NULL)
         ios->my_comm = MPI_COMM_NULL;
 
     /* Delete the iosystem_desc_t data associated with this id. */
     LOG((2, "About to delete iosysid %d.", iosysid));
     ierr = pio_delete_iosystem_from_list(iosysid);
-    LOG((2, "Deleted iosysid %d ierr = %d", iosysid, ierr));
     LOG((2, "PIOc_finalize completed successfully"));
 
     return ierr;
 }
 
-/**
- ** @brief return a logical indicating whether this task is an iotask
+/** Return a logical indicating whether this task is an IO task.
+ *
+ * @param iosysid the io system ID
+ * @param ioproc a pointer that gets 1 if task is an IO task, 0
+ * otherwise. Ignored if NULL.
+ * @returns 0 for success, or PIO_BADID if iosysid can't be found. 
  */
 int PIOc_iam_iotask(const int iosysid, bool *ioproc)
 {
     iosystem_desc_t *ios;
-    ios = pio_get_iosystem_from_id(iosysid);
-    if(ios == NULL)
+    
+    if (!(ios = pio_get_iosystem_from_id(iosysid)))
         return PIO_EBADID;
 
-    *ioproc = ios->ioproc;
+    if (ioproc)
+	*ioproc = ios->ioproc;
+    
     return PIO_NOERR;
 }
 
-/**
- ** @brief return the rank of this task in the io comm or
- ** -1 if this task is not in the comm
+/** Return the rank of this task in the IO communicator or -1 if this
+ * task is not in the communicator.
+ *
+ * @param iosysid the io system ID
+ * @param iorank a pointer that gets the io rank, or -1 if task is not
+ * in the IO communicator. Ignored if NULL.
+ * @returns 0 for success, or PIO_BADID if iosysid can't be found.
  */
 int PIOc_iotask_rank(const int iosysid, int *iorank)
 {
     iosystem_desc_t *ios;
-    ios = pio_get_iosystem_from_id(iosysid);
-    if(ios == NULL)
+    
+    if (!(ios = pio_get_iosystem_from_id(iosysid)))
         return PIO_EBADID;
 
-    *iorank = ios->io_rank;
+    if (iorank)
+	*iorank = ios->io_rank;
 
     return PIO_NOERR;
-
 }
 
-/**
- ** @brief return true if this iotype is supported in the build, 0 otherwise
+/** Return true if this iotype is supported in the build, 0 otherwise.
+ *
+ * @param iotype the io type to check
+ * @returns 1 if iotype is in build, 0 if not.
  */
 
 int PIOc_iotype_available(const int iotype)
 {
 
-    switch(iotype){
+    switch(iotype)
+    {
 #ifdef _NETCDF
 #ifdef _NETCDF4
     case PIO_IOTYPE_NETCDF4P:
     case PIO_IOTYPE_NETCDF4C:
-        return(1);
+        return 1;
 #endif
     case PIO_IOTYPE_NETCDF:
-        return(1);
+        return 1;
 #endif
 #ifdef _PNETCDF
     case PIO_IOTYPE_PNETCDF:
-        return(1);
+        return 1;
         break;
 #endif
     default:
-        return(0);
+        return 0;
     }
-
 }

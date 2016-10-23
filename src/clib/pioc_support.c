@@ -10,8 +10,10 @@
 #include <pio_internal.h>
 
 #include <execinfo.h>
+
 #define versno 2001
 
+/* Some logging constants. */
 #if PIO_ENABLE_LOGGING
 #define MAX_LOG_MSG 1024
 #define MAX_RANK_STR 12
@@ -32,7 +34,6 @@ FILE *LOG_FILE;
  */
 int PIOc_strerror(int pioerr, char *errmsg)
 {
-
     /* System error? */
     if(pioerr > 0)
     {
@@ -57,7 +58,8 @@ int PIOc_strerror(int pioerr, char *errmsg)
     else
     {
         /* Handle PIO errors. */
-        switch(pioerr) {
+        switch(pioerr)
+	{
         case PIO_EBADIOTYPE:
             strcpy(errmsg, "Bad IO type");
             break;
@@ -69,10 +71,21 @@ int PIOc_strerror(int pioerr, char *errmsg)
     return PIO_NOERR;
 }
 
-/** Set the logging level. Set to -1 for nothing, 0 for errors only, 1
- * for important logging, and so on. Log levels below 1 are only
- * printed on the io/component root. If the library is not built with
- * logging, this function does nothing. */
+/** Set the logging level if PIO was built with
+ * PIO_ENABLE_LOGGING. Set to -1 for nothing, 0 for errors only, 1 for
+ * important logging, and so on. Log levels below 1 are only printed
+ * on the io/component root.
+ *
+ * A log file is also produced for each task. The file is called
+ * pio_log_X.txt, where X is the (0-based) task number.
+ *
+ * If the library is not built with logging, this function does
+ * nothing.
+ *
+ * @param level the logging level, 0 for errors only, 5 for max
+ * verbosity. 
+ * @returns 0 on success, error code otherwise. 
+ */
 int PIOc_set_log_level(int level)
 {
 #if PIO_ENABLE_LOGGING
@@ -89,15 +102,22 @@ int PIOc_set_log_level(int level)
 
 #if PIO_ENABLE_LOGGING
 /** This function prints out a message, if the severity of the message
-    is lower than the global pio_log_level. To use it, do something
-    like this:
-
-    pio_log(0, "this computer will explode in %d seconds", i);
-
-    After the first arg (the severity), use the rest like a normal
-    printf statement. Output will appear on stdout.
-    This function is heavily based on the function in section 15.5 of
-    the C FAQ.
+ * is lower than the global pio_log_level. To use it, do something
+ * like this:
+ *
+ * pio_log(0, "this computer will explode in %d seconds", i);
+ *
+ * After the first arg (the severity), use the rest like a normal
+ * printf statement. Output will appear on stdout.
+ * This function is heavily based on the function in section 15.5 of
+ * the C FAQ.
+ *
+ * In code this functions should be wrapped in the LOG(()) macro.
+ *
+ * @param severity the severity of the message, 0 for error messages,
+ * then increasing levels of verbosity.
+ * @param fmt the format string.
+ * @param ... the arguments used in format string.
 */
 void pio_log(int severity, const char *fmt, ...)
 {
@@ -154,10 +174,9 @@ void pio_log(int severity, const char *fmt, ...)
 
 static pio_swapm_defaults swapm_defaults;
 bool PIO_Save_Decomps=false;
-/**
- ** @brief Get PIO environment variables
- **
- **/
+
+/* Get PIO environment variables.
+ */
 void pio_get_env(void)
 {
     char *envptr;
