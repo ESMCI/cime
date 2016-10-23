@@ -579,7 +579,6 @@ int PIOc_set_hint(const int iosysid, char hint[], const char hintval[])
         CheckMPIReturn(MPI_Info_set(ios->info, hint, hintval), __FILE__,__LINE__);
 
     return PIO_NOERR;
-
 }
 
 /**
