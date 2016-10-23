@@ -653,7 +653,7 @@ CONTAINS
     exp_arr_val = RESHAPE(exp_arr,(/SIZE(exp_arr)/))
 
     PIO_TF_Check_2d_int_arr_arr = PIO_TF_Check_int_arr_arr_(arr_val, exp_arr_val,&
-                                    SHAPE(arr_val))
+                                    SHAPE(arr))
     DEALLOCATE(arr_val)
     DEALLOCATE(exp_arr_val)
   END FUNCTION
@@ -763,7 +763,8 @@ CONTAINS
     arr_val = RESHAPE(arr,(/SIZE(arr)/))
     exp_arr_val = RESHAPE(exp_arr,(/SIZE(exp_arr)/))
 
-    PIO_TF_Check_2d_real_arr_arr = PIO_TF_Check_real_arr_arr(arr_val, exp_arr_val)
+    PIO_TF_Check_2d_real_arr_arr = PIO_TF_Check_real_arr_arr_tol_(arr_val,&
+                                      exp_arr_val, SHAPE(arr), 0.0)
     DEALLOCATE(arr_val)
     DEALLOCATE(exp_arr_val)
   END FUNCTION
@@ -879,7 +880,8 @@ CONTAINS
     arr_val = RESHAPE(arr,(/SIZE(arr)/))
     exp_arr_val = RESHAPE(exp_arr,(/SIZE(exp_arr)/))
 
-    PIO_TF_Check_2d_double_arr_arr = PIO_TF_Check_double_arr_arr(arr_val, exp_arr_val)
+    PIO_TF_Check_2d_double_arr_arr = PIO_TF_Check_double_arr_arr_tol_(arr_val,&
+                                      exp_arr_val, SHAPE(arr), 0.0)
     DEALLOCATE(arr_val)
     DEALLOCATE(exp_arr_val)
   END FUNCTION
