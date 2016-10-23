@@ -1,5 +1,5 @@
-/** 
- * @file 
+/**
+ * @file
  * Some initialization and support functions.
  * @author Jim Edwards
  * @date  2014
@@ -13,7 +13,7 @@
 
 static int counter = 0;
 
-/** 
+/**
  * Check to see if PIO has been initialized.
  *
  * @param iosysid the IO system ID
@@ -24,7 +24,7 @@ static int counter = 0;
 int PIOc_iosystem_is_active(const int iosysid, bool *active)
 {
     iosystem_desc_t *ios;
-    
+
     if (!(ios = pio_get_iosystem_from_id(iosysid)))
         return PIO_EBADID;
 
@@ -37,7 +37,7 @@ int PIOc_iosystem_is_active(const int iosysid, bool *active)
     return PIO_NOERR;
 }
 
-/** 
+/**
  * Check to see if PIO file is open.
  *
  * @param ncid the ncid of an open file
@@ -54,7 +54,7 @@ int PIOc_File_is_Open(int ncid)
         return 1;
 }
 
-/** 
+/**
  * Set the error handling method to be used for subsequent pio
  * library calls, returns the previous method setting.
  *
@@ -77,7 +77,7 @@ int PIOc_Set_File_Error_Handling(int ncid, int method)
     return oldmethod;
 }
 
-/** 
+/**
  * Increment the unlimited dimension of the given variable.
  *
  * @param ncid the ncid of the open file
@@ -98,7 +98,7 @@ int PIOc_advanceframe(int ncid, int varid)
     return(PIO_NOERR);
 }
 
-/** 
+/**
  * @ingroup PIO_setframe
  * Set the unlimited dimension of the given variable
  *
@@ -127,7 +127,7 @@ int PIOc_setframe(const int ncid, const int varid, const int frame)
     return PIO_NOERR;
 }
 
-/** 
+/**
  * Get the number of IO tasks set.
  *
  * @param iosysid the IO system ID
@@ -148,7 +148,7 @@ int PIOc_get_numiotasks(int iosysid, int *numiotasks)
     return PIO_NOERR;
 }
 
-/** 
+/**
  * Get the IO rank on the current task.
  *
  * @param iosysid the IO system ID
@@ -169,7 +169,7 @@ int PIOc_get_iorank(int iosysid, int *iorank)
     return PIO_NOERR;
 }
 
-/** 
+/**
  * Get the local size of the variable.
  *
  * @param ioid
@@ -178,16 +178,16 @@ int PIOc_get_iorank(int iosysid, int *iorank)
 int PIOc_get_local_array_size(int ioid)
 {
     io_desc_t *iodesc;
-    
+
     iodesc = pio_get_iodesc_from_id(ioid);
-	    
+
     return iodesc->ndof;
 }
 
-/** 
+/**
  * @ingroup PIO_error_method
  * Set the error handling method used for subsequent calls.
- * 
+ *
  * @param iosysid the IO system ID
  * @param method the error handling method
  * @returns 0 on success, error code otherwise
@@ -210,7 +210,7 @@ int PIOc_Set_IOSystem_Error_Handling(int iosysid, int method)
     return oldmethod;
 }
 
-/** 
+/**
  * @ingroup PIO_initdecomp
  * C interface to the initdecomp.
  *
@@ -326,7 +326,7 @@ int PIOc_InitDecomp(const int iosysid, const int basetype,const int ndims, const
     return PIO_NOERR;
 }
 
-/** 
+/**
  * @ingroup PIO_initdecomp
  * This is a simplified initdecomp which can be used if the memory
  * order of the data can be expressed in terms of start and count on
@@ -398,7 +398,7 @@ int PIOc_InitDecomp_bc(const int iosysid, const int basetype, const int ndims, c
     return PIO_NOERR;
 }
 
-/** 
+/**
  * @ingroup PIO_init
  * Library initialization used when IO tasks are a subset of compute
  * tasks.
@@ -559,13 +559,13 @@ int PIOc_Init_Intracomm_from_F90(int f90_comp_comm,
 			       iosysidp);
 }
 
-/** 
+/**
  * Send a hint to the MPI-IO library.
  *
  * @param iosysid the IO system ID
  * @param hint the hint for MPI
  * @param hintval the value of the hint
- * @returns 0 for success, or PIO_BADID if iosysid can't be found. 
+ * @returns 0 for success, or PIO_BADID if iosysid can't be found.
  */
 int PIOc_set_hint(const int iosysid, char hint[], const char hintval[])
 {
@@ -582,7 +582,7 @@ int PIOc_set_hint(const int iosysid, char hint[], const char hintval[])
 
 }
 
-/** 
+/**
  * @ingroup PIO_finalize
  * Clean up internal data structures, free MPI resources, and exit the
  * pio library.
@@ -684,28 +684,28 @@ int PIOc_finalize(const int iosysid)
     return ierr;
 }
 
-/** 
+/**
  * Return a logical indicating whether this task is an IO task.
  *
  * @param iosysid the io system ID
  * @param ioproc a pointer that gets 1 if task is an IO task, 0
  * otherwise. Ignored if NULL.
- * @returns 0 for success, or PIO_BADID if iosysid can't be found. 
+ * @returns 0 for success, or PIO_BADID if iosysid can't be found.
  */
 int PIOc_iam_iotask(const int iosysid, bool *ioproc)
 {
     iosystem_desc_t *ios;
-    
+
     if (!(ios = pio_get_iosystem_from_id(iosysid)))
         return PIO_EBADID;
 
     if (ioproc)
 	*ioproc = ios->ioproc;
-    
+
     return PIO_NOERR;
 }
 
-/** 
+/**
  * Return the rank of this task in the IO communicator or -1 if this
  * task is not in the communicator.
  *
@@ -717,7 +717,7 @@ int PIOc_iam_iotask(const int iosysid, bool *ioproc)
 int PIOc_iotask_rank(const int iosysid, int *iorank)
 {
     iosystem_desc_t *ios;
-    
+
     if (!(ios = pio_get_iosystem_from_id(iosysid)))
         return PIO_EBADID;
 
@@ -727,7 +727,7 @@ int PIOc_iotask_rank(const int iosysid, int *iorank)
     return PIO_NOERR;
 }
 
-/** 
+/**
  * Return true if this iotype is supported in the build, 0 otherwise.
  *
  * @param iotype the io type to check
