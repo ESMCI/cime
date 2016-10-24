@@ -744,36 +744,27 @@ int pio_write_darray_multi_nc_serial(file_desc_t *file, const int nvars, const i
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     var_desc_t *vdesc;
-    int ierr;
+    int ierr = PIO_NOERR;
     int i;
     int mpierr = MPI_SUCCESS;  /* Return code from MPI function codes. */
     int dsize;
     MPI_Status status;
     PIO_Offset usage;
     int fndims;
-    PIO_Offset tdsize;
+    PIO_Offset tdsize = 0;
     int tsize;
     int ncid;
-    tdsize=0;
-    ierr = PIO_NOERR;
+
 #ifdef TIMING
     /* Start timing this function. */
     GPTLstart("PIO:write_darray_multi_nc_serial");
 #endif
 
     if (!(ios = file->iosystem))
-    {
-        fprintf(stderr,"Failed to find iosystem handle \n");
         return PIO_EBADID;
-    }
-
-    ncid = file->fh;
-
     if (!(vdesc = (file->varlist) + vid[0]))
-    {
-        fprintf(stderr,"Failed to find variable handle %d\n",vid[0]);
         return PIO_EBADID;
-    }
+    ncid = file->fh;
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
     if (ios->async_interface)
@@ -790,7 +781,8 @@ int pio_write_darray_multi_nc_serial(file_desc_t *file, const int nvars, const i
         }
     }
 
-    ierr = PIOc_inq_varndims(file->pio_ncid, vid[0], &fndims);
+    if ((ierr = PIOc_inq_varndims(file->pio_ncid, vid[0], &fndims)))
+	return ierr;
     MPI_Type_size(basetype, &tsize);
 
     if (ios->ioproc)
@@ -807,7 +799,6 @@ int pio_write_darray_multi_nc_serial(file_desc_t *file, const int nvars, const i
 
         ncid = file->fh;
         region = firstregion;
-
 
         rrcnt = 0;
         for (regioncnt = 0; regioncnt < maxregions; regioncnt++)
@@ -987,28 +978,18 @@ int PIOc_write_darray_multi(const int ncid, const int *vid, const int ioid,
     io_desc_t *iodesc;
 
     int vsize, rlen;
-    int ierr;
+    int ierr = PIO_NOERR;
     var_desc_t *vdesc0;
-
-    ierr = PIO_NOERR;
 
     /* Get the file info. */
     if ((ierr = pio_get_file(ncid, &file)))
         return ierr;
 
     if (! (file->mode & PIO_WRITE))
-    {
-        fprintf(stderr,"ERROR:  Attempt to write to read-only file\n");
         return PIO_EPERM;
-    }
 
-    iodesc = pio_get_iodesc_from_id(ioid);
-    if (iodesc == NULL)
-    {
-        //     print_trace(NULL);
-        //fprintf(stderr,"iodesc handle not found %d %d\n",ioid,__LINE__);
+    if (!(iodesc = pio_get_iodesc_from_id(ioid)))
         return PIO_EBADID;
-    }
 
     vdesc0 = file->varlist+vid[0];
 
@@ -1205,22 +1186,14 @@ int PIOc_write_darray(const int ncid, const int vid, const int ioid,
     if ((ierr = pio_get_file(ncid, &file)))
         return ierr;
 
-    if (! (file->mode & PIO_WRITE))
-    {
-        fprintf(stderr,"ERROR:  Attempt to write to read-only file\n");
+    if (!(file->mode & PIO_WRITE))
         return PIO_EPERM;
-    }
 
-    iodesc = pio_get_iodesc_from_id(ioid);
-    if (iodesc == NULL)
-    {
-        fprintf(stderr,"iodesc handle not found %d %d\n",ioid,__LINE__);
+    if (!(iodesc = pio_get_iodesc_from_id(ioid)))
         return PIO_EBADID;
-    }
     ios = file->iosystem;
 
-    vdesc = (file->varlist)+vid;
-    if (vdesc == NULL)
+    if (!(vdesc = file->varlist + vid))
         return PIO_EBADID;
 
     /* Is this a record variable? */
