@@ -499,7 +499,8 @@ int pio_write_darray_multi_nc(file_desc_t *file, const int nvars, const int *vid
         }
     }
 
-    ierr = PIOc_inq_varndims(file->pio_ncid, vid[0], &fndims);
+    if ((ierr = PIOc_inq_varndims(file->pio_ncid, vid[0], &fndims)))
+	return ierr;
     MPI_Type_size(basetype, &tsize);
 
     if (ios->ioproc)
