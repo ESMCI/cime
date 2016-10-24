@@ -23,6 +23,8 @@ int my_rank;
 FILE *LOG_FILE;
 #endif /* PIO_ENABLE_LOGGING */
 
+extern int pio_next_ncid;
+
 /** Return a string description of an error code. If zero is passed, a
  * null is returned.
  *
