@@ -645,26 +645,21 @@ int pio_write_darray_multi_nc(file_desc_t *file, const int nvars, const int *vid
                         }
                         bufptr = (void *)((char *) IOBUF + nv*tsize*llen);
 
-                        int reqn=0;
-                        if (vdesc->nreqs%PIO_REQUEST_ALLOC_CHUNK == 0 )
+                        int reqn = 0;
+                        if (vdesc->nreqs % PIO_REQUEST_ALLOC_CHUNK == 0 )
                         {
                             if (!(vdesc->request = realloc(vdesc->request,
 							   sizeof(int)*(vdesc->nreqs+PIO_REQUEST_ALLOC_CHUNK))))
 				return PIO_ENOMEM;
 
-                            for (int i=vdesc->nreqs;i<vdesc->nreqs+PIO_REQUEST_ALLOC_CHUNK;i++)
-                            {
+                            for (int i = vdesc->nreqs; i < vdesc->nreqs + PIO_REQUEST_ALLOC_CHUNK; i++)
                                 vdesc->request[i]=NC_REQ_NULL;
-                            }
                             reqn = vdesc->nreqs;
                         }
                         else
-                        {
                             while(vdesc->request[reqn] != NC_REQ_NULL)
-                            {
                                 reqn++;
-                            }
-                        }
+
                         ierr = ncmpi_iput_varn(ncid, vid[nv], rrcnt, startlist, countlist,
                                                bufptr, llen, basetype, vdesc->request+reqn);
                         /*
