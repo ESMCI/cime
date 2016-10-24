@@ -2,7 +2,7 @@
  * @file
  * @author Jim Edwards
  * @date  2014
- * @brief PIO C interface
+ * PIO C interface
  *
  * @see http://code.google.com/p/parallelio/
  */
@@ -14,11 +14,14 @@
 static int counter=0;
 
 /**
- ** @brief Check to see if PIO has been initialized.
+ ** Check to see if PIO has been initialized.
  */
 int PIOc_iosystem_is_active(const int iosysid, bool *active)
 {
     iosystem_desc_t *ios;
+
+    assert(active);
+    
     ios = pio_get_iosystem_from_id(iosysid);
     if(ios == NULL)
         return PIO_EBADID;
@@ -31,9 +34,8 @@ int PIOc_iosystem_is_active(const int iosysid, bool *active)
     return PIO_NOERR;
 }
 /**
- ** @brief Check to see if PIO file is open.
+ ** Check to see if PIO file is open.
  */
-
 int PIOc_File_is_Open(int ncid)
 {
     file_desc_t *file;
@@ -65,13 +67,17 @@ int PIOc_Set_File_Error_Handling(int ncid, int method)
 }
 
 /**
- ** @brief Increment the unlimited dimension of the given variable
+ ** Increment the unlimited dimension of the given variable
  */
 int PIOc_advanceframe(int ncid, int varid)
 {
     file_desc_t *file;
     int ret;
 
+    /* Check inputs. */
+    if (varid < 0 || varid > PIO_MAX_VARS)
+	return PIO_EBADID;
+    
     /* Get the file info. */
     if ((ret = pio_get_file(ncid, &file)))
         return ret;
@@ -83,7 +89,7 @@ int PIOc_advanceframe(int ncid, int varid)
 
 /**
  * @ingroup PIO_setframe
- * @brief Set the unlimited dimension of the given variable
+ * Set the unlimited dimension of the given variable
  *
  * @param ncid the ncid of the file.
  * @param varid the varid of the variable
@@ -111,47 +117,48 @@ int PIOc_setframe(const int ncid, const int varid, const int frame)
 }
 
 /**
- ** @brief Get the number of IO tasks set.
+ ** Get the number of IO tasks set.
  */
 int PIOc_get_numiotasks(int iosysid, int *numiotasks)
 {
     iosystem_desc_t *ios;
-    ios = pio_get_iosystem_from_id(iosysid);
-    if(ios == NULL)
+
+    if (!(ios = pio_get_iosystem_from_id(iosysid)))
         return PIO_EBADID;
 
-    *numiotasks = ios->num_iotasks;
+    if (numiotasks)
+	*numiotasks = ios->num_iotasks;
 
     return PIO_NOERR;
-
 }
 
-
 /**
- ** @brief Get the IO rank on the current task
+ ** Get the IO rank on the current task
  */
 int PIOc_get_iorank(int iosysid, int *iorank)
 {
     iosystem_desc_t *ios;
-    ios = pio_get_iosystem_from_id(iosysid);
-    if(ios == NULL)
+
+    if (!(ios = pio_get_iosystem_from_id(iosysid)))
         return PIO_EBADID;
 
-    *iorank = ios->io_rank;
+    if (iorank)
+	*iorank = ios->io_rank;
 
     return PIO_NOERR;
-
 }
 
 /**
- ** @brief Get the local size of the variable
+ ** Get the local size of the variable
  */
-
 int PIOc_get_local_array_size(int ioid)
 {
     io_desc_t *iodesc;
-    iodesc = pio_get_iodesc_from_id(ioid);
-    return(iodesc->ndof);
+    
+    if (!(iodesc = pio_get_iodesc_from_id(ioid)))
+	return PIO_EBADID;
+    
+    return iodesc->ndof;
 }
 
 /**
@@ -168,7 +175,7 @@ int PIOc_Set_IOSystem_Error_Handling(int iosysid, int method)
     {
         fprintf(stderr,"%s %d Error setting eh method\n",__FILE__,__LINE__);
         print_trace(stderr);
-        return PIO_EBADID;
+        return PIO_INTERNAL_ERROR;
     }
 
     /* Remember old method setting. */
@@ -182,7 +189,7 @@ int PIOc_Set_IOSystem_Error_Handling(int iosysid, int method)
 
 /**
  ** @ingroup PIO_initdecomp
- ** @brief C interface to the initdecomp
+ ** C interface to the initdecomp
  ** @param  iosysid @copydoc iosystem_desc_t (input)
  ** @param  basetype the basic PIO data type used (input)
  ** @param  ndims the number of dimensions in the variable (input)
@@ -204,6 +211,10 @@ int PIOc_InitDecomp(const int iosysid, const int basetype,const int ndims, const
     int ierr;
     int iosize;
     int ndisp;
+
+    /* Check inputs. */
+    if (!ioidp)
+	return PIO_EINVAL;
 
     for(int i=0;i<ndims;i++){
         if(dims[i]<=0){
@@ -306,6 +317,9 @@ int PIOc_InitDecomp_bc(const int iosysid, const int basetype,const int ndims, co
     int iosize;
     int ndisp;
 
+    /* Check inputs. */
+    if (!ioidp)
+	return PIO_EINVAL;
 
     for(int i=0;i<ndims;i++){
         if(dims[i]<=0){
@@ -388,10 +402,14 @@ int PIOc_Init_Intracomm(const MPI_Comm comp_comm, const int num_iotasks,
     int lbase;
     int mpierr;
 
+    if (!iosysidp)
+	return PIO_EINVAL;
+    
     LOG((1, "PIOc_Init_Intracomm comp_comm = %d num_iotasks = %d stride = %d base = %d "
          "rearr = %d", comp_comm, num_iotasks, stride, base, rearr));
 
-    iosys = (iosystem_desc_t *) malloc(sizeof(iosystem_desc_t));
+    if (!(iosys = malloc(sizeof(iosystem_desc_t))))
+	return PIO_ENOMEM;
 
     /* Copy the computation communicator into union_comm. */
     mpierr = MPI_Comm_dup(comp_comm, &iosys->union_comm);
@@ -511,7 +529,7 @@ int PIOc_Init_Intracomm_from_F90(int f90_comp_comm,
 }
 
 /**
- ** @brief Send a hint to the MPI-IO library
+ ** Send a hint to the MPI-IO library
  **
  */
 int PIOc_set_hint(const int iosysid, char hint[], const char hintval[])
@@ -650,40 +668,41 @@ int PIOc_finalize(const int iosysid)
 }
 
 /**
- ** @brief return a logical indicating whether this task is an iotask
+ ** return a logical indicating whether this task is an iotask
  */
 int PIOc_iam_iotask(const int iosysid, bool *ioproc)
 {
     iosystem_desc_t *ios;
-    ios = pio_get_iosystem_from_id(iosysid);
-    if(ios == NULL)
+    
+    if (!(ios = pio_get_iosystem_from_id(iosysid)))
         return PIO_EBADID;
 
-    *ioproc = ios->ioproc;
+    if (ioproc)
+	*ioproc = ios->ioproc;
+    
     return PIO_NOERR;
 }
 
 /**
- ** @brief return the rank of this task in the io comm or
+ ** return the rank of this task in the io comm or
  ** -1 if this task is not in the comm
  */
 int PIOc_iotask_rank(const int iosysid, int *iorank)
 {
     iosystem_desc_t *ios;
-    ios = pio_get_iosystem_from_id(iosysid);
-    if(ios == NULL)
+    
+    if (!(ios = pio_get_iosystem_from_id(iosysid)))
         return PIO_EBADID;
 
-    *iorank = ios->io_rank;
+    if (iorank)
+	*iorank = ios->io_rank;
 
     return PIO_NOERR;
-
 }
 
 /**
- ** @brief return true if this iotype is supported in the build, 0 otherwise
+ ** return true if this iotype is supported in the build, 0 otherwise
  */
-
 int PIOc_iotype_available(const int iotype)
 {
 

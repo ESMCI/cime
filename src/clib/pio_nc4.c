@@ -90,7 +90,8 @@ int PIOc_def_var_deflate(int ncid, int varid, int shuffle, int deflate,
     /* If there is an error, allocate space for the error string. */
     if (ierr != PIO_NOERR)
     {
-        errstr = (char *) malloc((strlen(__FILE__) + 20)* sizeof(char));
+        if (!(errstr = malloc((strlen(__FILE__) + 20) * sizeof(char))))
+	    return PIO_ENOMEM;
         sprintf(errstr,"in file %s",__FILE__);
     }
 
@@ -186,7 +187,8 @@ int PIOc_inq_var_deflate(int ncid, int varid, int *shufflep,
     /* If there is an error, allocate space for the error string. */
     if (ierr != PIO_NOERR)
     {
-        errstr = (char *) malloc((strlen(__FILE__) + 20)* sizeof(char));
+        if (!(errstr = malloc((strlen(__FILE__) + 20) * sizeof(char))))
+	    return PIO_ENOMEM;
         sprintf(errstr,"in file %s",__FILE__);
     }
 
@@ -393,7 +395,8 @@ int PIOc_inq_var_chunking(int ncid, int varid, int *storagep, PIO_Offset *chunks
     /* If there is an error, allocate space for the error string. */
     if (ierr != PIO_NOERR)
     {
-        errstr = (char *) malloc((strlen(__FILE__) + 20)* sizeof(char));
+        if (!(errstr = malloc((strlen(__FILE__) + 20) * sizeof(char))))
+	    return PIO_ENOMEM;
         sprintf(errstr,"in file %s",__FILE__);
     }
 
@@ -495,7 +498,8 @@ int PIOc_def_var_fill(int ncid, int varid, int no_fill, const void *fill_value)
     /* Allocate an error string if needed. */
     if (ierr != PIO_NOERR)
     {
-        errstr = (char *) malloc((strlen(__FILE__) + 20)* sizeof(char));
+        if (!(errstr = malloc((strlen(__FILE__) + 20) * sizeof(char))))
+	    return PIO_ENOMEM;
         sprintf(errstr,"in file %s",__FILE__);
     }
 
@@ -590,7 +594,8 @@ int PIOc_def_var_endian(int ncid, int varid, int endian)
     /* Allocate an error string if needed. */
     if (ierr != PIO_NOERR)
     {
-        errstr = (char *) malloc((strlen(__FILE__) + 20)* sizeof(char));
+        if (!(errstr = malloc((strlen(__FILE__) + 20) * sizeof(char))))
+	    return PIO_ENOMEM;
         sprintf(errstr,"in file %s",__FILE__);
     }
 
@@ -681,7 +686,8 @@ int PIOc_inq_var_endian(int ncid, int varid, int *endianp)
     /* If there is an error, allocate space for the error string. */
     if (ierr != PIO_NOERR)
     {
-        errstr = (char *) malloc((strlen(__FILE__) + 20)* sizeof(char));
+        if (!(errstr = malloc((strlen(__FILE__) + 20) * sizeof(char))))
+	    return PIO_ENOMEM;
         sprintf(errstr,"in file %s",__FILE__);
     }
 
@@ -961,7 +967,8 @@ int PIOc_set_var_chunk_cache(int ncid, int varid, PIO_Offset size, PIO_Offset ne
     /* Allocate an error string if needed. */
     if (ierr != PIO_NOERR)
     {
-        errstr = (char *) malloc((strlen(__FILE__) + 20)* sizeof(char));
+        if (!(errstr = malloc((strlen(__FILE__) + 20) * sizeof(char))))
+	    return PIO_ENOMEM;
         sprintf(errstr,"in file %s",__FILE__);
     }
 
@@ -1059,7 +1066,8 @@ int PIOc_get_var_chunk_cache(int ncid, int varid, PIO_Offset *sizep, PIO_Offset 
     /* If there is an error, allocate space for the error string. */
     if (ierr != PIO_NOERR)
     {
-        errstr = (char *) malloc((strlen(__FILE__) + 20)* sizeof(char));
+        if (!(errstr = malloc((strlen(__FILE__) + 20) * sizeof(char))))
+	    return PIO_ENOMEM;
         sprintf(errstr,"in file %s",__FILE__);
     }
 
