@@ -648,8 +648,9 @@ int pio_write_darray_multi_nc(file_desc_t *file, const int nvars, const int *vid
                         int reqn=0;
                         if (vdesc->nreqs%PIO_REQUEST_ALLOC_CHUNK == 0 )
                         {
-                            vdesc->request = realloc(vdesc->request,
-                                                     sizeof(int)*(vdesc->nreqs+PIO_REQUEST_ALLOC_CHUNK));
+                            if (!(vdesc->request = realloc(vdesc->request,
+							   sizeof(int)*(vdesc->nreqs+PIO_REQUEST_ALLOC_CHUNK))))
+				return PIO_ENOMEM;
 
                             for (int i=vdesc->nreqs;i<vdesc->nreqs+PIO_REQUEST_ALLOC_CHUNK;i++)
                             {
@@ -2056,12 +2057,9 @@ void free_cn_buffer_pool(iosystem_desc_t ios)
     LOG((2, "free_cn_buffer_pool CN_bpool = %d", CN_bpool));
     if (CN_bpool)
     {
-        LOG((2, "free_cn_buffer_pool about to call cn_buffer_report"));
         cn_buffer_report(ios, true);
-        LOG((2, "free_cn_buffer_pool about to call bpoolrelease"));
         bpoolrelease(CN_bpool);
         LOG((2, "free_cn_buffer_pool done!"));
-        //    free(CN_bpool);
         CN_bpool = NULL;
     }
 #endif /* !PIO_USE_MALLOC */
