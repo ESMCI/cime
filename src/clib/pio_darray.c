@@ -15,10 +15,10 @@
 #include <pio_internal.h>
 
 /* 10MB default limit. */
-PIO_Offset PIO_BUFFER_SIZE_LIMIT = 10485760;
+PIO_Offset pio_buffer_size_limit = 10485760;
 
 /* Initial size of compute buffer. */
-bufsize PIO_CNBUFFER_LIMIT = 33554432;
+bufsize pio_cnbuffer_limit = 33554432;
 
 /* Global buffer pool pointer. */
 static void *CN_bpool = NULL;
@@ -39,13 +39,13 @@ static PIO_Offset maxusage = 0;
 PIO_Offset PIOc_set_buffer_size_limit(const PIO_Offset limit)
 {
     PIO_Offset oldsize;
-    oldsize = PIO_BUFFER_SIZE_LIMIT;
+    oldsize = pio_buffer_size_limit;
     if (limit > 0)
-        PIO_BUFFER_SIZE_LIMIT = limit;
+        pio_buffer_size_limit = limit;
     return oldsize;
 }
 
-/** Initialize the compute buffer to size PIO_CNBUFFER_LIMIT.
+/** Initialize the compute buffer to size pio_cnbuffer_limit.
  *
  * This routine initializes the compute buffer pool if the bget memory
  * management is used. If malloc is used (that is, PIO_USE_MALLOC is
@@ -59,24 +59,24 @@ void compute_buffer_init(iosystem_desc_t ios)
 
     if (!CN_bpool)
     {
-        if (!(CN_bpool = malloc(PIO_CNBUFFER_LIMIT)))
+        if (!(CN_bpool = malloc(pio_cnbuffer_limit)))
         {
             char errmsg[180];
             sprintf(errmsg,"Unable to allocate a buffer pool of size %d on task %d:"
-                    " try reducing PIO_CNBUFFER_LIMIT\n", PIO_CNBUFFER_LIMIT, ios.comp_rank);
+                    " try reducing pio_cnbuffer_limit\n", pio_cnbuffer_limit, ios.comp_rank);
             piodie(errmsg, __FILE__, __LINE__);
         }
 
-        bpool(CN_bpool, PIO_CNBUFFER_LIMIT);
+        bpool(CN_bpool, pio_cnbuffer_limit);
         if (!CN_bpool)
         {
             char errmsg[180];
             sprintf(errmsg,"Unable to allocate a buffer pool of size %d on task %d:"
-                    " try reducing PIO_CNBUFFER_LIMIT\n", PIO_CNBUFFER_LIMIT, ios.comp_rank);
+                    " try reducing pio_cnbuffer_limit\n", pio_cnbuffer_limit, ios.comp_rank);
             piodie(errmsg, __FILE__, __LINE__);
         }
 
-        bectl(NULL, malloc, free, PIO_CNBUFFER_LIMIT);
+        bectl(NULL, malloc, free, pio_cnbuffer_limit);
     }
 #endif
     LOG((2, "compute_buffer_init CN_bpool = %d", CN_bpool));
@@ -1933,7 +1933,7 @@ int flush_output_buffer(file_desc_t *file, bool force, PIO_Offset addsize)
 
     /* If the user forces it, or the buffer has exceeded the size
      * limit, then flush to disk. */
-    if (force || usage >= PIO_BUFFER_SIZE_LIMIT)
+    if (force || usage >= pio_buffer_size_limit)
     {
         int rcnt;
         bool prev_dist=false;
@@ -2147,10 +2147,10 @@ void compute_maxaggregate_bytes(const iosystem_desc_t ios, io_desc_t *iodesc)
     // printf("%s %d %d %d\n",__FILE__,__LINE__,iodesc->maxiobuflen, iodesc->ndof);
 
     if (ios.ioproc && iodesc->maxiobuflen > 0)
-        maxbytesoniotask = PIO_BUFFER_SIZE_LIMIT / iodesc->maxiobuflen;
+        maxbytesoniotask = pio_buffer_size_limit / iodesc->maxiobuflen;
 
     if (ios.comp_rank >= 0 && iodesc->ndof > 0)
-        maxbytesoncomputetask = PIO_CNBUFFER_LIMIT / iodesc->ndof;
+        maxbytesoncomputetask = pio_cnbuffer_limit / iodesc->ndof;
 
     maxbytes = min(maxbytesoniotask, maxbytesoncomputetask);
 

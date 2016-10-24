@@ -208,7 +208,7 @@ int PIOc_createfile(const int iosysid, int *ncidp, int *iotype,
             LOG((2, "Calling ncmpi_create mode = %d", file->mode));
             ierr = ncmpi_create(ios->io_comm, filename, file->mode, ios->info, &file->fh);
             if (!ierr)
-                ierr = ncmpi_buffer_attach(file->fh, PIO_BUFFER_SIZE_LIMIT);
+                ierr = ncmpi_buffer_attach(file->fh, pio_buffer_size_limit);
             break;
 #endif
         default:

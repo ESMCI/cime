@@ -23,6 +23,8 @@ int my_rank;
 FILE *LOG_FILE;
 #endif /* PIO_ENABLE_LOGGING */
 
+extern int pio_next_ncid;
+
 /** Return a string description of an error code. If zero is passed, a
  * null is returned.
  *
@@ -180,7 +182,7 @@ bool PIO_Save_Decomps=false;
 void pio_get_env(void)
 {
     char *envptr;
-    extern bufsize PIO_CNBUFFER_LIMIT;
+    extern bufsize pio_cnbuffer_limit;
     envptr = getenv("PIO_Save_Decomps");
 
     if(envptr != NULL && (strcmp(envptr,"true")==0)){
@@ -216,15 +218,9 @@ void pio_get_env(void)
         }else if(strchr(envptr,"K") != NULL){
             mult = 1000;
         }
-        PIO_CNBUFFER_LIMIT=(bufsize) atoll(envptr)*mult;
-
+        pio_cnbuffer_limit = (bufsize) atoll(envptr) * mult;
     }
-
-
-
 }
-
-
 
 /* Obtain a backtrace and print it to stderr. */
 void print_trace (FILE *fp)
@@ -834,8 +830,8 @@ int PIOc_openfile_retry(const int iosysid, int *ncidp, int *iotype,
             if (ierr == PIO_NOERR && (file->mode & PIO_WRITE))
             {
                 if (ios->iomaster)
-                    LOG((2, "%d Setting IO buffer %ld", __LINE__, PIO_BUFFER_SIZE_LIMIT));
-                ierr = ncmpi_buffer_attach(file->fh, PIO_BUFFER_SIZE_LIMIT);
+                    LOG((2, "%d Setting IO buffer %ld", __LINE__, pio_buffer_size_limit));
+                ierr = ncmpi_buffer_attach(file->fh, pio_buffer_size_limit);
             }
             LOG((2, "ncmpi_open(%s) : fd = %d", filename, file->fh));
             break;
