@@ -58,7 +58,8 @@ add to it, carefully.
 
 <ul>
 <li>Every function must be documented using doxygen.
-<li>Use the doxygen \@internal to mark internal functions.
+<li>Keep internal functions in separate code files, so that Doxygen
+can easily build user and development builds of the documentation.
 <li>Use the doxygen \@ingroup to put public functions in the correct
 group.
 <li>Code must be reasonably documented as to intention.
