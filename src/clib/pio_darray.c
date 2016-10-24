@@ -478,20 +478,12 @@ int pio_write_darray_multi_nc(file_desc_t *file, const int nvars, const int *vid
     GPTLstart("PIO:write_darray_multi_nc");
 #endif
 
-    ios = file->iosystem;
-    if (ios == NULL)
-    {
-        fprintf(stderr,"Failed to find iosystem handle \n");
+    /* Get file and variable info. */
+    if (!(ios = file->iosystem))
         return PIO_EBADID;
-    }
-    vdesc = (file->varlist)+vid[0];
+    if (!(vdesc = file->varlist + vid[0]))
+        return PIO_EBADID;
     ncid = file->fh;
-
-    if (vdesc == NULL)
-    {
-        fprintf(stderr,"Failed to find variable handle %d\n",vid[0]);
-        return PIO_EBADID;
-    }
 
     /* If async is in use, send message to IO master task. */
     if (ios->async_interface)
