@@ -55,7 +55,7 @@ void pio_log(int severity, const char *fmt, ...);
 extern "C" {
 #endif
 
-    extern PIO_Offset PIO_BUFFER_SIZE_LIMIT;
+    extern PIO_Offset pio_buffer_size_limit;
     extern bool PIO_Save_Decomps;
 
     /** Used to sort map points in the subset rearranger. */
@@ -85,6 +85,9 @@ extern "C" {
     void pio_add_to_file_list(file_desc_t *file);
     void pio_push_request(file_desc_t *file, int request);
 
+    int PIOc_openfile_retry(const int iosysid, int *ncidp, int *iotype,
+			    const char *filename, const int mode, int retry);
+    
     iosystem_desc_t *pio_get_iosystem_from_id(int iosysid);
     int pio_add_to_iosystem_list(iosystem_desc_t *ios);
 
