@@ -1,5 +1,6 @@
 cmake_minimum_required (VERSION 2.8.12)
 project (PIO C Fortran)
+cmake_policy(VERSION 3.5.2)
 
 # The project version number.
 set(VERSION_MAJOR   2   CACHE STRING "Project major version number.")
@@ -15,6 +16,7 @@ mark_as_advanced(VERSION_MAJOR VERSION_MINOR VERSION_PATCH)
 option (PIO_ENABLE_FORTRAN   "Enable the Fortran library builds"            ON)
 option (PIO_ENABLE_TIMING    "Enable the use of the GPTL timing library"    ON)
 option (PIO_ENABLE_LOGGING   "Enable debug logging (large output possible)" OFF)
+option (PIO_INTERNAL_DOC     "Enable PIO developer documentation"           OFF)
 option (PIO_TEST_BIG_ENDIAN  "Enable test to see if machine is big endian"  ON)
 option (PIO_USE_MPIIO        "Enable support for MPI-IO auto detect"        ON)
 option (PIO_USE_MPISERIAL    "Enable mpi-serial support (instead of MPI)"   OFF)
