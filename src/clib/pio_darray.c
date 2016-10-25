@@ -345,63 +345,64 @@ int PIOc_write_darray(const int ncid, const int vid, const int ioid,
         flush_buffer(ncid, wmb, needsflush == 2);  
     }
 
+    /* Get memory for data. */
     if (arraylen > 0)
         if (!(wmb->data = bgetr(wmb->data, (1+wmb->validvars)*arraylen*tsize)))
-            piomemerror(*ios, (1+wmb->validvars)*arraylen*tsize, __FILE__, __LINE__);
+            piomemerror(*ios, (1 + wmb->validvars) * arraylen * tsize, __FILE__, __LINE__);
 
-    if (!(wmb->vid = (int *) bgetr(wmb->vid,sizeof(int)*(1+wmb->validvars))))
-        piomemerror(*ios, (1+wmb->validvars)*sizeof(int), __FILE__, __LINE__);
+    /* Get memory for ??? */
+    if (!(wmb->vid = (int *)bgetr(wmb->vid, sizeof(int) * (1 + wmb->validvars))))
+        piomemerror(*ios, (1 + wmb->validvars) * sizeof(int), __FILE__, __LINE__);
 
     if (vdesc->record >= 0)
         if (!(wmb->frame = (int *)bgetr(wmb->frame, sizeof(int) * (1 + wmb->validvars))))
-            piomemerror(*ios, (1+wmb->validvars)*sizeof(int), __FILE__, __LINE__);
+            piomemerror(*ios, (1 + wmb->validvars) * sizeof(int), __FILE__, __LINE__);
 
     if (iodesc->needsfill)
-        if (!(wmb->fillvalue = bgetr(wmb->fillvalue,tsize*(1+wmb->validvars))))
-            piomemerror(*ios, (1+wmb->validvars)*tsize  , __FILE__,__LINE__);
+        if (!(wmb->fillvalue = bgetr(wmb->fillvalue, tsize * (1 + wmb->validvars))))
+            piomemerror(*ios, (1 + wmb->validvars) * tsize, __FILE__, __LINE__);
 
     if (iodesc->needsfill)
     {
         if (fillvalue)
         {
-            memcpy((char *) wmb->fillvalue+tsize*wmb->validvars,fillvalue, tsize);
+            memcpy((char *)wmb->fillvalue + tsize * wmb->validvars, fillvalue, tsize);
         }
         else
         {
-            vtype = (MPI_Datatype) iodesc->basetype;
+            vtype = (MPI_Datatype)iodesc->basetype;
             if (vtype == MPI_INTEGER)
             {
                 int fill = PIO_FILL_INT;
-                memcpy((char *) wmb->fillvalue+tsize*wmb->validvars, &fill, tsize);
+                memcpy((char *)wmb->fillvalue+tsize*wmb->validvars, &fill, tsize);
             }
             else if (vtype == MPI_FLOAT || vtype == MPI_REAL4)
             {
                 float fill = PIO_FILL_FLOAT;
-                memcpy((char *) wmb->fillvalue+tsize*wmb->validvars, &fill, tsize);
+                memcpy((char *)wmb->fillvalue + tsize * wmb->validvars, &fill, tsize);
             }
             else if (vtype == MPI_DOUBLE || vtype == MPI_REAL8)
             {
                 double fill = PIO_FILL_DOUBLE;
-                memcpy((char *) wmb->fillvalue+tsize*wmb->validvars, &fill, tsize);
+                memcpy((char *)wmb->fillvalue + tsize * wmb->validvars, &fill, tsize);
             }
             else if (vtype == MPI_CHARACTER)
             {
                 char fill = PIO_FILL_CHAR;
-                memcpy((char *) wmb->fillvalue+tsize*wmb->validvars, &fill, tsize);
+                memcpy((char *)wmb->fillvalue + tsize * wmb->validvars, &fill, tsize);
             }
             else
             {
                 fprintf(stderr,"Type not recognized %d in pioc_write_darray\n",vtype);
             }
         }
-
     }
 
     wmb->arraylen = arraylen;
-    wmb->vid[wmb->validvars]=vid;
-    bufptr = (void *)((char *) wmb->data + arraylen*tsize*wmb->validvars);
-    if (arraylen>0)
-        memcpy(bufptr, array, arraylen*tsize);
+    wmb->vid[wmb->validvars] = vid;
+    bufptr = (void *)((char *)wmb->data + arraylen * tsize * wmb->validvars);
+    if (arraylen > 0)
+        memcpy(bufptr, array, arraylen * tsize);
     /*
       if (tsize==8){
       double asum=0.0;
@@ -413,14 +414,14 @@ int PIOc_write_darray(const int ncid, const int vid, const int ioid,
       }
     */
 
-    //   printf("%s %d %d %d %d %X\n",__FILE__,__LINE__,wmb->validvars,wmb->ioid,vid,bufptr);
-
-    if (wmb->frame!=NULL)
-        wmb->frame[wmb->validvars]=vdesc->record;
+    if (wmb->frame)
+        wmb->frame[wmb->validvars] = vdesc->record;
     wmb->validvars++;
 
-    //   printf("%s %d %d %d %d %d\n",__FILE__,__LINE__,wmb->validvars,iodesc->maxbytes/tsize, iodesc->ndof, iodesc->llen);
-    if (wmb->validvars >= iodesc->maxbytes/tsize)
+    LOG((2, "%d %d %d %d", wmb->validvars, iodesc->maxbytes / tsize, iodesc->ndof, iodesc->llen));
+
+    /* Call the sync when ??? */
+    if (wmb->validvars >= iodesc->maxbytes / tsize)
         PIOc_sync(ncid);
 
     return ierr;
