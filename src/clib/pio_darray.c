@@ -450,39 +450,33 @@ int PIOc_read_darray(const int ncid, const int vid, const int ioid,
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;
     io_desc_t *iodesc;
-    void *iobuf=NULL;
-    size_t rlen=0;
+    void *iobuf = NULL;
+    size_t rlen = 0;
     int ierr, tsize;
     MPI_Datatype vtype;
 
     /* Get the file info. */
     if ((ierr = pio_get_file(ncid, &file)))
         return ierr;
-    assert(file);
+    ios = file->iosystem;
 
+    /* Get the iodesc. */
     if (!(iodesc = pio_get_iodesc_from_id(ioid)))
         return PIO_EBADID;
 
-    ios = file->iosystem;
     if (ios->iomaster)
-    {
         rlen = iodesc->maxiobuflen;
-    }
     else
-    {
         rlen = iodesc->llen;
-    }
 
     if (iodesc->rearranger > 0)
     {
-        if (ios->ioproc && rlen>0)
+        if (ios->ioproc && rlen > 0)
         {
             MPI_Type_size(iodesc->basetype, &tsize);
             iobuf = bget(((size_t) tsize)*rlen);
-            if (iobuf==NULL)
-            {
+            if (!iobuf)
                 piomemerror(*ios,rlen*((size_t) tsize), __FILE__,__LINE__);
-            }
         }
     }
     else
@@ -490,6 +484,7 @@ int PIOc_read_darray(const int ncid, const int vid, const int ioid,
         iobuf = array;
     }
 
+    /* Call the correct darray read function based on iotype. */
     switch(file->iotype)
     {
     case PIO_IOTYPE_NETCDF:
@@ -503,11 +498,14 @@ int PIOc_read_darray(const int ncid, const int vid, const int ioid,
     default:
         ierr = iotype_error(file->iotype,__FILE__,__LINE__);
     }
+
+    /* If a rearranger was specified, rearrange the data. */
     if (iodesc->rearranger > 0)
     {
         ierr = rearrange_io2comp(*ios, iodesc, iobuf, array);
 
-        if (rlen>0)
+	/* Free the buffer. */
+        if (rlen > 0)
             brel(iobuf);
     }
 
