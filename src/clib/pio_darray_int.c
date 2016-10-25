@@ -920,12 +920,11 @@ int pio_write_darray_multi_nc_serial(file_desc_t *file, const int nvars, const i
                             tsize *= count[i];
 
                         loffset += tsize;
-                    }//    for (regioncnt=0;regioncnt<iodesc->maxregions;regioncnt++){
-                } // if (rlen>0)
-            } //        for (int rtask=0; rtask<ios->num_iotasks; rtask++){
-
+                    } /* next regioncnt */
+                } /* endif (rlen > 0) */
+            } /* next rtask */
         }
-    } // if (ios->ioproc)
+    } 
 
     ierr = check_netcdf(file, ierr, __FILE__,__LINE__);
 
@@ -962,6 +961,11 @@ int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, const int vid,
     /* Start timing this function. */
     GPTLstart("PIO:read_darray_nc");
 #endif
+    
+    /* Check inputs. */
+    if (!file || !iodesc)
+	return PIO_EINVAL;
+
     if (!(ios = file->iosystem))
         return PIO_EBADID;
 
@@ -969,9 +973,12 @@ int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, const int vid,
         return PIO_EBADID;
 
     ndims = iodesc->ndims;
+
+    /* Get the number of dims for this var. */
     if ((ierr = PIOc_inq_varndims(file->pio_ncid, vid, &fndims)))
 	return ierr;
 
+    /* Is this a record var? */
     if (fndims == ndims)
         vdesc->record = -1;
 
@@ -987,7 +994,7 @@ int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, const int vid,
         void *bufptr;
         int tsize;
 
-        int rrlen=0;
+        int rrlen = 0;
         PIO_Offset *startlist[iodesc->maxregions];
         PIO_Offset *countlist[iodesc->maxregions];
 
@@ -997,42 +1004,42 @@ int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, const int vid,
         // calling program to change the basetype.
         region = iodesc->firstregion;
         MPI_Type_size(iodesc->basetype, &tsize);
+	
         if (fndims>ndims)
         {
             ndims++;
-            if (vdesc->record<0)
-                vdesc->record=0;
+            if (vdesc->record < 0)
+                vdesc->record = 0;
         }
-        for (regioncnt=0;regioncnt<iodesc->maxregions;regioncnt++)
+        for (regioncnt = 0; regioncnt < iodesc->maxregions; regioncnt++)
         {
             //         printf("%s %d %d %ld %d %d\n",__FILE__,__LINE__,regioncnt,region,fndims,ndims);
-            tmp_bufsize=1;
-            if (region==NULL || iodesc->llen==0)
+            tmp_bufsize = 1;
+            if (region == NULL || iodesc->llen == 0)
             {
-                for (i=0;i<fndims;i++)
+                for (i = 0; i < fndims; i++)
                 {
                     start[i] = 0;
                     count[i] = 0;
                 }
-                bufptr=NULL;
+                bufptr = NULL;
             }
             else
             {
-                if (regioncnt==0 || region==NULL)
+                if (regioncnt == 0 || region == NULL)
                     bufptr = IOBUF;
                 else
-                    bufptr=(void *)((char *) IOBUF + tsize*region->loffset);
+                    bufptr=(void *)((char *)IOBUF + tsize * region->loffset);
 
-                //              printf("%s %d %d %d %d\n",__FILE__,__LINE__,iodesc->llen - region->loffset, iodesc->llen, region->loffset);
+                LOG((2, "%d %d %d", iodesc->llen - region->loffset, iodesc->llen, region->loffset));
 
-                if (vdesc->record >= 0 && fndims>1)
+                if (vdesc->record >= 0 && fndims > 1)
                 {
                     start[0] = vdesc->record;
-                    for (i=1;i<ndims;i++)
+                    for (i = 1; i < ndims; i++)
                     {
                         start[i] = region->start[i-1];
                         count[i] = region->count[i-1];
-                        //          printf("%s %d %d %ld %ld\n",__FILE__,__LINE__,i,start[i],count[i]);
                     }
                     if (count[1] > 0)
                         count[0] = 1;
@@ -1040,11 +1047,10 @@ int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, const int vid,
                 else
                 {
                     // Non-time dependent array
-                    for (i=0;i<ndims;i++)
+                    for (i = 0; i < ndims; i++)
                     {
                         start[i] = region->start[i];
                         count[i] = region->count[i];
-                        // printf("%s %d %d %ld %ld\n",__FILE__,__LINE__,i,start[i],count[i]);
                     }
                 }
             }
@@ -1054,49 +1060,44 @@ int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, const int vid,
 #ifdef _NETCDF4
             case PIO_IOTYPE_NETCDF4P:
                 if (iodesc->basetype == MPI_DOUBLE || iodesc->basetype == MPI_REAL8)
-                {
-                    ierr = nc_get_vara_double(file->fh, vid,start,count, bufptr);
-                }
+                    ierr = nc_get_vara_double(file->fh, vid, start, count, bufptr);
                 else if (iodesc->basetype == MPI_INTEGER)
-                {
-                    ierr = nc_get_vara_int(file->fh, vid, start, count,  bufptr);
-                }
+                    ierr = nc_get_vara_int(file->fh, vid, start, count, bufptr);
                 else if (iodesc->basetype == MPI_FLOAT || iodesc->basetype == MPI_REAL4)
-                {
-                    ierr = nc_get_vara_float(file->fh, vid, start,  count,  bufptr);
-                }
+                    ierr = nc_get_vara_float(file->fh, vid, start, count, bufptr);
                 else
-                {
-                    fprintf(stderr,"Type not recognized %d in pioc_read_darray\n",(int) iodesc->basetype);
-                }
+                    fprintf(stderr, "Type not recognized %d in pioc_read_darray\n",
+			    (int)iodesc->basetype);
                 break;
 #endif
 #ifdef _PNETCDF
             case PIO_IOTYPE_PNETCDF:
             {
-                tmp_bufsize=1;
+                tmp_bufsize = 1;
                 for (int j = 0; j < fndims; j++)
                     tmp_bufsize *= count[j];
 
                 if (tmp_bufsize > 0)
                 {
-                    startlist[rrlen] = (PIO_Offset *) bget(fndims * sizeof(PIO_Offset));
-                    countlist[rrlen] = (PIO_Offset *) bget(fndims * sizeof(PIO_Offset));
+                    startlist[rrlen] = (PIO_Offset *)bget(fndims * sizeof(PIO_Offset));
+                    countlist[rrlen] = (PIO_Offset *)bget(fndims * sizeof(PIO_Offset));
 
                     for (int j = 0; j < fndims; j++)
                     {
                         startlist[rrlen][j] = start[j];
                         countlist[rrlen][j] = count[j];
-                        /*            printf("%s %d %d %d %d %ld %ld %ld\n",__FILE__,__LINE__,realregioncnt,
-                                      iodesc->maxregions, j,start[j],count[j],tmp_bufsize);*/
                     }
                     rrlen++;
                 }
-                if (regioncnt==iodesc->maxregions-1)
+
+		/* Is this is the last region to process? */
+                if (regioncnt == iodesc->maxregions - 1)
                 {
                     ierr = ncmpi_get_varn_all(file->fh, vid, rrlen, startlist,
                                               countlist, IOBUF, iodesc->llen, iodesc->basetype);
-                    for (i=0;i<rrlen;i++)
+
+		    /* Release the start and count arrays. */
+                    for (i = 0; i < rrlen; i++)
                     {
                         brel(startlist[i]);
                         brel(countlist[i]);
