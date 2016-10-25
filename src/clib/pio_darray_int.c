@@ -455,7 +455,7 @@ int pio_write_darray_multi_nc(file_desc_t *file, const int nvars, const int *vid
     var_desc_t *vdesc;
     int ierr;
     int i;
-    int mpierr = MPI_SUCCESS;  /* Return code from MPI function codes. */
+    int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
     int dsize;
     MPI_Status status;
     PIO_Offset usage;
@@ -490,6 +490,12 @@ int pio_write_darray_multi_nc(file_desc_t *file, const int nvars, const int *vid
             if (!mpierr)
                 mpierr = MPI_Bcast(&file->pio_ncid, 1, MPI_INT, ios->compmaster, ios->intercomm);
         }
+
+        /* Handle MPI errors. */
+        if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
+            return check_mpi(file, mpierr2, __FILE__, __LINE__);
+        if (mpierr)
+            return check_mpi(file, mpierr, __FILE__, __LINE__);
     }
 
     if ((ierr = PIOc_inq_varndims(file->pio_ncid, vid[0], &fndims)))
@@ -737,7 +743,7 @@ int pio_write_darray_multi_nc_serial(file_desc_t *file, const int nvars, const i
     var_desc_t *vdesc;
     int ierr = PIO_NOERR;
     int i;
-    int mpierr = MPI_SUCCESS;  /* Return code from MPI function codes. */
+    int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
     int dsize;
     MPI_Status status;
     PIO_Offset usage;
@@ -770,6 +776,12 @@ int pio_write_darray_multi_nc_serial(file_desc_t *file, const int nvars, const i
             if (!mpierr)
                 mpierr = MPI_Bcast(&file->pio_ncid, 1, MPI_INT, ios->compmaster, ios->intercomm);
         }
+
+        /* Handle MPI errors. */
+        if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
+            return check_mpi(file, mpierr2, __FILE__, __LINE__);
+        if (mpierr)
+            return check_mpi(file, mpierr, __FILE__, __LINE__);
     }
 
     if ((ierr = PIOc_inq_varndims(file->pio_ncid, vid[0], &fndims)))
