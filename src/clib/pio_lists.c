@@ -66,7 +66,7 @@ int pio_get_file(int ncid, file_desc_t **cfile1)
     if (current_file && current_file->pio_ncid == ncid)
         cfile = current_file;
     else
-        for (cfile = pio_file_list; cfile; cfile=cfile->next)
+        for (cfile = pio_file_list; cfile; cfile = cfile->next)
             if (cfile->pio_ncid == ncid)
             {
                 current_file = cfile;
