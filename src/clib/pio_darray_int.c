@@ -746,14 +746,16 @@ int pio_write_darray_multi_nc_serial(file_desc_t *file, const int nvars, const i
     /* Get the file info. */
     if (!(ios = file->iosystem))
         return PIO_EBADID;
+    ncid = file->fh;
+
+    /* Get the var info. */
     if (!(vdesc = (file->varlist) + vid[0]))
         return PIO_EBADID;
-    ncid = file->fh;
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
     if (ios->async_interface)
     {
-        if (! ios->ioproc)
+        if (!ios->ioproc)
         {
             int msg = 0;
 
@@ -771,6 +773,7 @@ int pio_write_darray_multi_nc_serial(file_desc_t *file, const int nvars, const i
             return check_mpi(file, mpierr, __FILE__, __LINE__);
     }
 
+    /* Get the number of dimensions. */
     if ((ierr = PIOc_inq_varndims(file->pio_ncid, vid[0], &fndims)))
 	return ierr;
     MPI_Type_size(basetype, &tsize);
@@ -784,7 +787,6 @@ int pio_write_darray_multi_nc_serial(file_desc_t *file, const int nvars, const i
         int buflen, j;
         size_t tmp_start[fndims*maxregions];
         size_t tmp_count[fndims*maxregions];
-
         int ndims = iodesc_ndims;
 
         ncid = file->fh;
@@ -821,9 +823,11 @@ int pio_write_darray_multi_nc_serial(file_desc_t *file, const int nvars, const i
                 region = region->next;
             }
         }
+
         if (ios->io_rank > 0)
         {
-            mpierr = MPI_Recv(&ierr, 1, MPI_INT, 0, 0, ios->io_comm, &status);  // task0 is ready to recieve
+	    /* task0 is ready to recieve */
+            mpierr = MPI_Recv(&ierr, 1, MPI_INT, 0, 0, ios->io_comm, &status);  
             MPI_Send(&llen, 1, MPI_OFFSET, 0, ios->io_rank, ios->io_comm);
             if (llen>0)
             {
@@ -842,13 +846,16 @@ int pio_write_darray_multi_nc_serial(file_desc_t *file, const int nvars, const i
             size_t loffset;
             mpierr = MPI_Type_size(basetype, &dsize);
 
-            for (int rtask=0; rtask<ios->num_iotasks; rtask++)
+            for (int rtask = 0; rtask < ios->num_iotasks; rtask++)
             {
-                if (rtask>0)
+                if (rtask > 0)
                 {
-                    mpierr = MPI_Send(&ierr, 1, MPI_INT, rtask, 0, ios->io_comm);  // handshake - tell the sending task I'm ready
+		    /* handshake - tell the sending task I'm ready */
+                    mpierr = MPI_Send(&ierr, 1, MPI_INT, rtask, 0, ios->io_comm);  
                     MPI_Recv(&rlen, 1, MPI_OFFSET, rtask, rtask, ios->io_comm, &status);
-                    if (rlen>0){
+		    
+                    if (rlen > 0)
+		    {
                         MPI_Recv(&rregions, 1, MPI_INT, rtask, rtask+ios->num_iotasks, ios->io_comm, &status);
                         MPI_Recv(tmp_start, rregions*fndims, MPI_OFFSET, rtask, rtask+2*ios->num_iotasks, ios->io_comm, &status);
                         MPI_Recv(tmp_count, rregions*fndims, MPI_OFFSET, rtask, rtask+3*ios->num_iotasks, ios->io_comm, &status);
@@ -861,24 +868,24 @@ int pio_write_darray_multi_nc_serial(file_desc_t *file, const int nvars, const i
                     rlen = llen;
                     rregions = maxregions;
                 }
-                if (rlen>0)
+                if (rlen > 0)
                 {
                     loffset = 0;
-                    for (regioncnt=0;regioncnt<rregions;regioncnt++)
+                    for (regioncnt = 0; regioncnt < rregions; regioncnt++)
                     {
-                        for (int i=0;i<fndims;i++)
+                        for (int i = 0; i < fndims; i++)
                         {
-                            start[i] = tmp_start[i+regioncnt*fndims];
-                            count[i] = tmp_count[i+regioncnt*fndims];
+                            start[i] = tmp_start[i + regioncnt * fndims];
+                            count[i] = tmp_count[i + regioncnt * fndims];
                         }
 
-                        for (int nv=0; nv < nvars; nv++)
+                        for (int nv = 0; nv < nvars; nv++)
                         {
-                            bufptr = (void *)((char *) IOBUF+ tsize * (nv * rlen + loffset));
+                            bufptr = (void *)((char *)IOBUF+ tsize * (nv * rlen + loffset));
 
                             if (vdesc->record >= 0)
                             {
-                                if (fndims>1 && ndims < fndims && count[1] > 0)
+                                if (fndims > 1 && ndims < fndims && count[1] > 0)
                                 {
                                     count[0] = 1;
                                     start[0] = frame[nv];
