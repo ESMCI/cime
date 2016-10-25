@@ -1,6 +1,6 @@
 cmake_minimum_required (VERSION 2.8.12)
 project (PIO C Fortran)
-cmake_policy(VERSION 3.5.2)
+#cmake_policy(VERSION 3.5.2)
 
 # The project version number.
 set(VERSION_MAJOR   2   CACHE STRING "Project major version number.")

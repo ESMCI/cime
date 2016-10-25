@@ -6,12 +6,13 @@
 
 find_package(Doxygen)
 
-# This supports the build with/witout internal documentation.
-if (PIO_INTERNAL_DOC)
-  SET(C_SRC_FILES "${CMAKE_CURRENT_SOURCE_DIR}/../src/clib")
-else () 
-  SET(C_SRC_FILES
-    "${CMAKE_CURRENT_SOURCE_DIR}/../src/clib/pioc.c \\
+if(DOXYGEN_FOUND)
+  # This supports the build with/witout internal documentation.
+  if (PIO_INTERNAL_DOC)
+    SET(C_SRC_FILES "${CMAKE_CURRENT_SOURCE_DIR}/../src/clib")
+  else () 
+    SET(C_SRC_FILES
+      "${CMAKE_CURRENT_SOURCE_DIR}/../src/clib/pioc.c \\
 ${CMAKE_CURRENT_SOURCE_DIR}/../src/clib/pio_nc4.c \\
 ${CMAKE_CURRENT_SOURCE_DIR}/../src/clib/pio_spmd.c \\
 ${CMAKE_CURRENT_SOURCE_DIR}/../src/clib/pio_darray.c \\
@@ -24,9 +25,8 @@ ${CMAKE_CURRENT_SOURCE_DIR}/../src/clib/pio_nc.c \\
 ${CMAKE_CURRENT_SOURCE_DIR}/../src/clib/pio_rearrange.c \\
 ${CMAKE_CURRENT_SOURCE_DIR}/../src/clib/topology.c \\
 ${CMAKE_CURRENT_SOURCE_DIR}/../src/clib/pioc_sc.c" )
-endif ()
+  endif ()
 
-if(DOXYGEN_FOUND)
   # Process the Doxyfile using options set during configure.
   configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in 
     ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
