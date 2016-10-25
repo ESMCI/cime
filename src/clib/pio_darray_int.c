@@ -567,78 +567,62 @@ int pio_write_darray_multi_nc(file_desc_t *file, const int nvars, const int *vid
                 for (int nv = 0; nv < nvars; nv++)
                 {
                     if (vdesc->record >= 0 && ndims < fndims)
-                    {
                         start[0] = frame[nv];
-                    }
+
                     if (region)
-                    {
-                        bufptr = (void *)((char *) IOBUF + tsize*(nv*llen + region->loffset));
-                    }
+                        bufptr = (void *)((char *)IOBUF + tsize * (nv * llen + region->loffset));
+
                     ierr = nc_var_par_access(ncid, vid[nv], NC_COLLECTIVE);
 
-                    if (basetype == MPI_DOUBLE ||basetype == MPI_REAL8)
-                    {
-                        ierr = nc_put_vara_double (ncid, vid[nv],(size_t *) start,(size_t *) count,
-                                                   (const double *)bufptr);
-                    }
+                    if (basetype == MPI_DOUBLE || basetype == MPI_REAL8)
+                        ierr = nc_put_vara_double(ncid, vid[nv], (size_t *)start, (size_t *)count,
+						  (const double *)bufptr);
                     else if (basetype == MPI_INTEGER)
-                    {
-                        ierr = nc_put_vara_int (ncid, vid[nv], (size_t *) start, (size_t *) count,
-                                                (const int *)bufptr);
-                    }
+                        ierr = nc_put_vara_int(ncid, vid[nv], (size_t *)start, (size_t *)count,
+					       (const int *)bufptr);
                     else if (basetype == MPI_FLOAT || basetype == MPI_REAL4)
-                    {
-                        ierr = nc_put_vara_float (ncid, vid[nv], (size_t *) start, (size_t *) count,
-                                                  (const float *)bufptr);
-                    }
+                        ierr = nc_put_vara_float(ncid, vid[nv], (size_t *)start, (size_t *)count,
+						 (const float *)bufptr);
                     else
-                    {
                         fprintf(stderr,"Type not recognized %d in pioc_write_darray\n",
                                 (int)basetype);
-                    }
                 }
                 break;
 #endif
 #ifdef _PNETCDF
             case PIO_IOTYPE_PNETCDF:
                 for (i = 0, dsize = 1; i < fndims; i++)
-                {
                     dsize *= count[i];
-                }
                 tdsize += dsize;
 
-                if (dsize>0)
+                if (dsize > 0)
                 {
-                    //     printf("%s %d %d %d\n",__FILE__,__LINE__,ios->io_rank,dsize);
                     if (!(startlist[rrcnt] = calloc(fndims, sizeof(PIO_Offset))))
 			return PIO_ENOMEM;
                     if (!(countlist[rrcnt] = calloc(fndims, sizeof(PIO_Offset))))
 			return PIO_ENOMEM;
                     for (i = 0; i < fndims; i++)
                     {
-                        startlist[rrcnt][i]=start[i];
-                        countlist[rrcnt][i]=count[i];
+                        startlist[rrcnt][i] = start[i];
+                        countlist[rrcnt][i] = count[i];
                     }
                     rrcnt++;
                 }
-                if (regioncnt==maxregions-1)
+                if (regioncnt == maxregions - 1)
                 {
                     //printf("%s %d %d %ld %ld\n",__FILE__,__LINE__,ios->io_rank,iodesc->llen, tdsize);
                     //     ierr = ncmpi_put_varn_all(ncid, vid, iodesc->maxregions, startlist, countlist,
                     //                       IOBUF, iodesc->llen, iodesc->basetype);
 
                     //printf("%s %d %ld \n",__FILE__,__LINE__,IOBUF);
-                    for (int nv=0; nv<nvars; nv++)
+                    for (int nv = 0; nv < nvars; nv++)
                     {
-                        vdesc = (file->varlist)+vid[nv];
+                        vdesc = (file->varlist) + vid[nv];
                         if (vdesc->record >= 0 && ndims<fndims)
-                        {
-                            for (int rc=0;rc<rrcnt;rc++)
-                            {
+                            for (int rc = 0; rc < rrcnt; rc++)
                                 startlist[rc][0] = frame[nv];
-                            }
-                        }
-                        bufptr = (void *)((char *) IOBUF + nv*tsize*llen);
+
+                        bufptr = (void *)((char *)IOBUF + nv * tsize * llen);
 
                         int reqn = 0;
                         if (vdesc->nreqs % PIO_REQUEST_ALLOC_CHUNK == 0 )
