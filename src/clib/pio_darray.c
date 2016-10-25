@@ -72,36 +72,37 @@ int PIOc_write_darray_multi(const int ncid, const int *vid, const int ioid,
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;
     io_desc_t *iodesc;
-
     int vsize, rlen;
     int ierr = PIO_NOERR;
     var_desc_t *vdesc0;
 
+    /* Check inputs. */
+    if (nvars <= 0)
+	return PIO_EINVAL;
+
     /* Get the file info. */
     if ((ierr = pio_get_file(ncid, &file)))
         return ierr;
+    ios = file->iosystem;
 
+    /* Check that we can write to this file. */
     if (! (file->mode & PIO_WRITE))
         return PIO_EPERM;
 
+    /* Get iodesc. */
     if (!(iodesc = pio_get_iodesc_from_id(ioid)))
         return PIO_EBADID;
 
-    vdesc0 = file->varlist+vid[0];
+    vdesc0 = file->varlist + vid[0];
 
-    pioassert(nvars>0,"nvars <= 0",__FILE__,__LINE__);
-
-    ios = file->iosystem;
     //   rlen = iodesc->llen*nvars;
     rlen=0;
-    if (iodesc->llen>0)
-    {
+    if (iodesc->llen > 0)
         rlen = iodesc->maxiobuflen*nvars;
-    }
+
     if (vdesc0->iobuf)
-    {
         piodie("Attempt to overwrite existing io buffer",__FILE__,__LINE__);
-    }
+
     if (iodesc->rearranger>0)
     {
         if (rlen>0)
@@ -110,33 +111,19 @@ int PIOc_write_darray_multi(const int ncid, const int *vid, const int ioid,
             //printf("rlen*vsize = %ld\n",rlen*vsize);
 
             vdesc0->iobuf = bget((size_t) vsize* (size_t) rlen);
-            if (vdesc0->iobuf==NULL)
-            {
-                printf("%s %d %d %ld\n",__FILE__,__LINE__,nvars,vsize*rlen);
+            if (!vdesc0->iobuf)
                 piomemerror(*ios,(size_t) rlen*(size_t) vsize, __FILE__,__LINE__);
-            }
-            if (iodesc->needsfill && iodesc->rearranger==PIO_REARR_BOX)
+
+            if (iodesc->needsfill && iodesc->rearranger == PIO_REARR_BOX)
             {
-                if (vsize==4)
-                {
-                    for (int nv=0;nv < nvars; nv++)
-                    {
-                        for (int i=0;i<iodesc->maxiobuflen;i++)
-                        {
-                            ((float *) vdesc0->iobuf)[i+nv*(iodesc->maxiobuflen)] = ((float *)fillvalue)[nv];
-                        }
-                    }
-                }
-                else if (vsize==8)
-                {
-                    for (int nv=0;nv < nvars; nv++)
-                    {
-                        for (int i=0;i<iodesc->maxiobuflen;i++)
-                        {
+                if (vsize == 4)
+                    for (int nv = 0; nv < nvars; nv++)
+                        for (int i = 0; i < iodesc->maxiobuflen; i++)
+                            ((float *) vdesc0->iobuf)[i + nv * (iodesc->maxiobuflen)] = ((float *)fillvalue)[nv];
+                else if (vsize == 8)
+                    for (int nv = 0; nv < nvars; nv++)
+                        for (int i = 0; i < iodesc->maxiobuflen; i++)
                             ((double *)vdesc0->iobuf)[i+nv*(iodesc->maxiobuflen)] = ((double *)fillvalue)[nv];
-                        }
-                    }
-                }
             }
         }
 
