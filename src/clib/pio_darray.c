@@ -8,7 +8,6 @@
  *
  * @author Jim Edwards
  */
-
 #include <config.h>
 #include <pio.h>
 #include <pio_internal.h>
@@ -108,7 +107,6 @@ int PIOc_write_darray_multi(const int ncid, const int *vid, const int ioid,
         if (rlen > 0)
         {
             MPI_Type_size(iodesc->basetype, &vsize);
-            //printf("rlen*vsize = %ld\n",rlen*vsize);
 
             vdesc0->iobuf = bget((size_t)vsize * (size_t)rlen);
             if (!vdesc0->iobuf)
@@ -132,6 +130,8 @@ int PIOc_write_darray_multi(const int ncid, const int *vid, const int ioid,
          else{
          vdesc0->iobuf = array;
          } */
+
+    /* Write the darray based on the iotype. */
     switch(file->iotype)
     {
     case PIO_IOTYPE_NETCDF4P:
@@ -149,13 +149,14 @@ int PIOc_write_darray_multi(const int ncid, const int *vid, const int ioid,
                                                 iodesc->maxregions, iodesc->firstregion, iodesc->llen,
                                                 iodesc->maxiobuflen, iodesc->num_aiotasks,
                                                 vdesc0->iobuf, frame);
+
+	/* Release resources. */
         if (vdesc0->iobuf)
         {
             brel(vdesc0->iobuf);
             vdesc0->iobuf = NULL;
         }
         break;
-
     }
 
     if (iodesc->rearranger == PIO_REARR_SUBSET && iodesc->needsfill &&
@@ -164,6 +165,7 @@ int PIOc_write_darray_multi(const int ncid, const int *vid, const int ioid,
         if (vdesc0->fillbuf)
             piodie("Attempt to overwrite existing buffer",__FILE__,__LINE__);
 
+	/* Get a buffer. */
         vdesc0->fillbuf = bget(iodesc->holegridsize * vsize * nvars);
 
         if (vsize == 4)
@@ -174,7 +176,8 @@ int PIOc_write_darray_multi(const int ncid, const int *vid, const int ioid,
             for (int nv = 0; nv < nvars; nv++)
                 for (int i = 0; i < iodesc->holegridsize; i++)
                     ((double *)vdesc0->fillbuf)[i + nv * iodesc->holegridsize] = ((double *)fillvalue)[nv];
-	
+
+	/* Write the darray based on the iotype. */	
         switch(file->iotype)
         {
         case PIO_IOTYPE_PNETCDF:
@@ -203,6 +206,7 @@ int PIOc_write_darray_multi(const int ncid, const int *vid, const int ioid,
         }
     }
 
+    /* Flush data to disk. */
     flush_output_buffer(file, flushtodisk, 0);
 
     return ierr;
@@ -241,14 +245,14 @@ int PIOc_write_darray(const int ncid, const int vid, const int ioid,
     size_t rlen;
     MPI_Datatype vtype;
     wmulti_buffer *wmb;
-    int tsize;
+    int tsize; /* Total size. */
     int *tptr;
     void *bptr;
     void *fptr;
-    bool recordvar;
-    int needsflush = 0;
+    bool recordvar; /* True if this is a record variable. */
+    int needsflush = 0; /* True if we need to flush buffer. */
     bufsize totfree, maxfree;
-    int ierr = PIO_NOERR;
+    int ierr = PIO_NOERR; /* Return code. */
 
     /* Get the file info. */
     if ((ierr = pio_get_file(ncid, &file)))
@@ -283,7 +287,7 @@ int PIOc_write_darray(const int ncid, const int vid, const int ioid,
     }
     else
     {
-        // separate record and non-record variables
+        /* separate record and non-record variables */
         if (recordvar)
         {
             while(wmb->next && wmb->ioid != ioid)
@@ -291,10 +295,10 @@ int PIOc_write_darray(const int ncid, const int vid, const int ioid,
                     wmb = wmb->next;
 #ifdef _PNETCDF
             /* flush the previous record before starting a new one. this is collective */
-            //       if (vdesc->request != NULL && (vdesc->request[0] != NC_REQ_NULL) ||
-            //    (wmb->frame != NULL && vdesc->record != wmb->frame[0])){
-            //   needsflush = 2;  // flush to disk
-            //  }
+            /*       if (vdesc->request != NULL && (vdesc->request[0] != NC_REQ_NULL) ||
+                (wmb->frame != NULL && vdesc->record != wmb->frame[0])){
+               needsflush = 2;  // flush to disk
+	       } */
 #endif
         }
         else
@@ -326,10 +330,11 @@ int PIOc_write_darray(const int ncid, const int vid, const int ioid,
     }
 
     MPI_Type_size(iodesc->basetype, &tsize);
+
+    LOG((2, "%d %d %d\n", wmb->data, wmb->validvars, arraylen,tsize));
+
     /* At this point wmb should be pointing to a new or existing buffer
        so we can add the data */
-    LOG((2, "%d %d %d\n", wmb->data, wmb->validvars, arraylen,tsize));
-    //    cn_buffer_report(*ios, true);
     bfreespace(&totfree, &maxfree);
     if (needsflush == 0)
         needsflush = (maxfree <= 1.1 * (1 + wmb->validvars) * arraylen * tsize);
