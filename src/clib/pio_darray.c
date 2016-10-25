@@ -458,8 +458,9 @@ int PIOc_read_darray(const int ncid, const int vid, const int ioid,
     io_desc_t *iodesc;
     void *iobuf = NULL;
     size_t rlen = 0;
-    int ierr, tsize;
-    MPI_Datatype vtype;
+    int tsize; /* Total size. */
+    MPI_Datatype vtype; /* MPI type of this var. */
+    int ierr; /* Return code. */
 
     /* Get the file info. */
     if ((ierr = pio_get_file(ncid, &file)))
@@ -475,14 +476,17 @@ int PIOc_read_darray(const int ncid, const int vid, const int ioid,
     else
         rlen = iodesc->llen;
 
+    /* Is a rearranger in use? */
     if (iodesc->rearranger > 0)
     {
         if (ios->ioproc && rlen > 0)
         {
+	    /* Get the MPI type size. */
             MPI_Type_size(iodesc->basetype, &tsize);
-            iobuf = bget(((size_t) tsize)*rlen);
-            if (!iobuf)
-                piomemerror(*ios,rlen*((size_t) tsize), __FILE__,__LINE__);
+
+	    /* Allocate a buffer for one record. */
+            if (!(iobuf = bget((size_t)tsize * rlen)))
+                piomemerror(*ios, rlen * (size_t)tsize, __FILE__, __LINE__);
         }
     }
     else
