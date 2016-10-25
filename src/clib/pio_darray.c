@@ -238,7 +238,6 @@ int PIOc_write_darray(const int ncid, const int vid, const int ioid,
     var_desc_t *vdesc;
     void *bufptr;
     size_t rlen;
-    int ierr;
     MPI_Datatype vtype;
     wmulti_buffer *wmb;
     int tsize;
@@ -246,23 +245,24 @@ int PIOc_write_darray(const int ncid, const int vid, const int ioid,
     void *bptr;
     void *fptr;
     bool recordvar;
-    int needsflush;
+    int needsflush = 0;
     bufsize totfree, maxfree;
-
-    ierr = PIO_NOERR;
-    needsflush = 0; // false
+    int ierr = PIO_NOERR;
 
     /* Get the file info. */
     if ((ierr = pio_get_file(ncid, &file)))
         return ierr;
 
+    /* Can we write to this file? */
     if (!(file->mode & PIO_WRITE))
         return PIO_EPERM;
 
+    /* Get iodesc. */
     if (!(iodesc = pio_get_iodesc_from_id(ioid)))
         return PIO_EBADID;
     ios = file->iosystem;
 
+    /* Get var description. */
     if (!(vdesc = file->varlist + vid))
         return PIO_EBADID;
 
@@ -270,11 +270,9 @@ int PIOc_write_darray(const int ncid, const int vid, const int ioid,
     recordvar = vdesc->record >= 0 ? true : false;
 
     if (iodesc->ndof != arraylen)
-    {
-        fprintf(stderr,"ndof=%ld, arraylen=%ld\n",iodesc->ndof,arraylen);
         piodie("ndof != arraylen",__FILE__,__LINE__);
-    }
-    wmb = &(file->buffer);
+
+    wmb = &file->buffer;
     if (wmb->ioid == -1)
     {
         if (recordvar)
@@ -287,8 +285,8 @@ int PIOc_write_darray(const int ncid, const int vid, const int ioid,
         // separate record and non-record variables
         if (recordvar)
         {
-            while(wmb->next && wmb->ioid!=ioid)
-                if (wmb->next!=NULL)
+            while(wmb->next && wmb->ioid != ioid)
+                if (wmb->next)
                     wmb = wmb->next;
 #ifdef _PNETCDF
             /* flush the previous record before starting a new one. this is collective */
@@ -300,30 +298,30 @@ int PIOc_write_darray(const int ncid, const int vid, const int ioid,
         }
         else
         {
-            while(wmb->next && wmb->ioid!= -(ioid))
-            {
-                if (wmb->next!=NULL)
+            while(wmb->next && wmb->ioid != -(ioid))
+                if (wmb->next)
                     wmb = wmb->next;
-            }
         }
     }
+    
     if ((recordvar && wmb->ioid != ioid) || (!recordvar && wmb->ioid != -(ioid)))
     {
-        wmb->next = (wmulti_buffer *) bget((bufsize) sizeof(wmulti_buffer));
-        if (wmb->next == NULL)
+        wmb->next = (wmulti_buffer *)bget((bufsize) sizeof(wmulti_buffer));
+        if (!wmb->next)
             piomemerror(*ios,sizeof(wmulti_buffer), __FILE__,__LINE__);
-        wmb=wmb->next;
-        wmb->next=NULL;
+	
+        wmb = wmb->next;
+        wmb->next = NULL;
         if (recordvar)
             wmb->ioid = ioid;
         else
             wmb->ioid = -(ioid);
-        wmb->validvars=0;
-        wmb->arraylen=arraylen;
-        wmb->vid=NULL;
-        wmb->data=NULL;
-        wmb->frame=NULL;
-        wmb->fillvalue=NULL;
+        wmb->validvars = 0;
+        wmb->arraylen = arraylen;
+        wmb->vid = NULL;
+        wmb->data = NULL;
+        wmb->frame = NULL;
+        wmb->fillvalue = NULL;
     }
 
     MPI_Type_size(iodesc->basetype, &tsize);
@@ -333,7 +331,7 @@ int PIOc_write_darray(const int ncid, const int vid, const int ioid,
     //    cn_buffer_report(*ios, true);
     bfreespace(&totfree, &maxfree);
     if (needsflush == 0)
-        needsflush = (maxfree <= 1.1*(1+wmb->validvars)*arraylen*tsize );
+        needsflush = (maxfree <= 1.1 * (1 + wmb->validvars) * arraylen * tsize);
     MPI_Allreduce(MPI_IN_PLACE, &needsflush, 1,  MPI_INT,  MPI_MAX, ios->comp_comm);
 
     if (needsflush > 0 )
