@@ -1352,7 +1352,6 @@ int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc,
  * @param addsize additional size to add to buffer (in bytes)
  *
  * @return 0 for success, error code otherwise.
- * @private
  * @ingroup PIO_write_darray
  */
 int flush_output_buffer(file_desc_t *file, bool force, PIO_Offset addsize)
@@ -1463,8 +1462,6 @@ int flush_output_buffer(file_desc_t *file, bool force, PIO_Offset addsize)
  *
  * @param ios the IO system structure
  * @param collective true if collective report is desired
- *
- * @private
  * @ingroup PIO_write_darray
  */
 void cn_buffer_report(iosystem_desc_t ios, bool collective)
@@ -1520,8 +1517,6 @@ void cn_buffer_report(iosystem_desc_t ios, bool collective)
  * non zero), this function does nothing.
  *
  * @param ios the IO system structure
- *
- * @private
  * @ingroup PIO_write_darray
  */
 void free_cn_buffer_pool(iosystem_desc_t ios)
@@ -1543,8 +1538,6 @@ void free_cn_buffer_pool(iosystem_desc_t ios)
  * @param ncid identifies the netCDF file
  * @param wmb
  * @param flushtodisk
- *
- * @private
  * @ingroup PIO_write_darray
  */
 void flush_buffer(int ncid, wmulti_buffer *wmb, bool flushtodisk)
@@ -1576,9 +1569,6 @@ void flush_buffer(int ncid, wmulti_buffer *wmb, bool flushtodisk)
  *
  * @param ios the IO system structure
  * @param iodesc a pointer to the defined iodescriptor for the buffer
- *
- * @private
- * @ingroup PIO_write_darray
  */
 void compute_maxaggregate_bytes(const iosystem_desc_t ios, io_desc_t *iodesc)
 {
