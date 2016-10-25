@@ -159,35 +159,22 @@ int PIOc_write_darray_multi(const int ncid, const int *vid, const int ioid,
     }
 
     if (iodesc->rearranger == PIO_REARR_SUBSET && iodesc->needsfill &&
-        iodesc->holegridsize>0)
+        iodesc->holegridsize > 0)
     {
         if (vdesc0->fillbuf)
-        {
             piodie("Attempt to overwrite existing buffer",__FILE__,__LINE__);
-        }
 
         vdesc0->fillbuf = bget(iodesc->holegridsize*vsize*nvars);
-        //printf("%s %d %x\n",__FILE__,__LINE__,vdesc0->fillbuf);
+
         if (vsize==4)
-        {
-            for (int nv=0;nv<nvars;nv++)
-            {
-                for (int i=0;i<iodesc->holegridsize;i++)
-                {
-                    ((float *) vdesc0->fillbuf)[i+nv*iodesc->holegridsize] = ((float *) fillvalue)[nv];
-                }
-            }
-        }
+            for (int nv = 0; nv < nvars; nv++)
+                for (int i = 0; i < iodesc->holegridsize; i++)
+                    ((float *)vdesc0->fillbuf)[i + nv * iodesc->holegridsize] = ((float *)fillvalue)[nv];
         else if (vsize==8)
-        {
             for (int nv=0;nv<nvars;nv++)
-            {
                 for (int i=0;i<iodesc->holegridsize;i++)
-                {
-                    ((double *) vdesc0->fillbuf)[i+nv*iodesc->holegridsize] = ((double *) fillvalue)[nv];
-                }
-            }
-        }
+                    ((double *)vdesc0->fillbuf)[i + nv * iodesc->holegridsize] = ((double *)fillvalue)[nv];
+	
         switch(file->iotype)
         {
         case PIO_IOTYPE_PNETCDF:
@@ -208,11 +195,11 @@ int PIOc_write_darray_multi(const int ncid, const int *vid, const int ioid,
             break;
         }
 
-        if (vdesc0->fillbuf != NULL){
+        if (vdesc0->fillbuf)
+	{
             brel(vdesc0->fillbuf);
             vdesc0->fillbuf = NULL;
         }
-
     }
 
     flush_output_buffer(file, flushtodisk, 0);
