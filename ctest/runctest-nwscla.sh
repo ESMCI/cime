@@ -25,11 +25,11 @@ echo "\$CTESTCMD -S ${scrdir}/CTestScript-Test.cmake,${model} -V" >> runctest.sh
 chmod +x runctest.sh
 
 # Submit the job to the queue
-jobid=`/usr/local/bin/qsub -l walltime=01:00:00 select=1:ncpus=8:mpiprocs=8 runctest.sh -q short`
+jobid=`qsub -l walltime=01:00:00 select=1:ncpus=8:mpiprocs=8 runctest.sh -q short`
 
 # Wait for the job to complete before exiting
 while true; do
-	status=`/usr/local/bin/qstat $jobid`
+	status=`qstat $jobid`
 	echo $status
 	if [ "$status" == "" ]; then
 		break
