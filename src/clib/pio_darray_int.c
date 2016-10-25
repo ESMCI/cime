@@ -1396,8 +1396,8 @@ int flush_output_buffer(file_desc_t *file, bool force, PIO_Offset addsize)
         int  maxreq;
         int reqcnt;
         maxreq = 0;
-        reqcnt=0;
-        rcnt=0;
+        reqcnt = 0;
+        rcnt = 0;
         for (int i = 0; i < PIO_MAX_VARS; i++)
         {
             vdesc = file->varlist + i;
@@ -1414,58 +1414,45 @@ int flush_output_buffer(file_desc_t *file, bool force, PIO_Offset addsize)
 #ifdef MPIO_ONESIDED
             /*onesided optimization requires that all of the requests in a wait_all call represent
               a contiguous block of data in the file */
-            if (rcnt>0 && (prev_record != vdesc->record || vdesc->nreqs==0))
+            if (rcnt > 0 && (prev_record != vdesc->record || vdesc->nreqs==0))
             {
-                ierr = ncmpi_wait_all(file->fh, rcnt,  request,status);
-                rcnt=0;
+                ierr = ncmpi_wait_all(file->fh, rcnt, request, status);
+                rcnt = 0;
             }
             prev_record = vdesc->record;
 #endif
-            //      printf("%s %d %d %d %d \n",__FILE__,__LINE__,i,vdesc->nreqs,vdesc->request);
-            for (reqcnt=0;reqcnt<vdesc->nreqs;reqcnt++)
-            {
-                request[rcnt++] = max(vdesc->request[reqcnt],NC_REQ_NULL);
-            }
+            for (reqcnt = 0; reqcnt < vdesc->nreqs; reqcnt++)
+                request[rcnt++] = max(vdesc->request[reqcnt], NC_REQ_NULL);
+
             if (vdesc->request != NULL)
                 free(vdesc->request);
             vdesc->request = NULL;
             vdesc->nreqs = 0;
-            //      if (file->iosystem->io_rank < 2) printf("%s %d varid=%d\n",__FILE__,__LINE__,i);
+
 #ifdef FLUSH_EVERY_VAR
             ierr = ncmpi_wait_all(file->fh, rcnt, request, status);
             rcnt = 0;
 #endif
         }
-        //    if (file->iosystem->io_rank==0){
-        //   printf("%s %d %d\n",__FILE__,__LINE__,rcnt);
-        // }
+
         if (rcnt > 0)
-        {
-            /*
-              if (file->iosystem->io_rank==0){
-              printf("%s %d %d ",__FILE__,__LINE__,rcnt);
-              for (int i=0; i<rcnt; i++){
-              printf("%d ",request[i]);
-              }
-              printf("\n");
-              }*/
             ierr = ncmpi_wait_all(file->fh, rcnt, request, status);
-        }
+
+	/* Release resources. */
         for (int i = 0; i < PIO_MAX_VARS; i++)
         {
             vdesc = file->varlist + i;
             if (vdesc->iobuf)
             {
                 brel(vdesc->iobuf);
-                vdesc->iobuf=NULL;
+                vdesc->iobuf = NULL;
             }
             if (vdesc->fillbuf)
             {
                 brel(vdesc->fillbuf);
-                vdesc->fillbuf=NULL;
+                vdesc->fillbuf = NULL;
             }
         }
-
     }
 
 #endif /* _PNETCDF */
