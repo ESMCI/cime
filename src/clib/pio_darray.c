@@ -103,16 +103,16 @@ int PIOc_write_darray_multi(const int ncid, const int *vid, const int ioid,
     if (vdesc0->iobuf)
         piodie("Attempt to overwrite existing io buffer",__FILE__,__LINE__);
 
-    if (iodesc->rearranger>0)
+    if (iodesc->rearranger > 0)
     {
-        if (rlen>0)
+        if (rlen > 0)
         {
             MPI_Type_size(iodesc->basetype, &vsize);
             //printf("rlen*vsize = %ld\n",rlen*vsize);
 
-            vdesc0->iobuf = bget((size_t) vsize* (size_t) rlen);
+            vdesc0->iobuf = bget((size_t)vsize * (size_t)rlen);
             if (!vdesc0->iobuf)
-                piomemerror(*ios,(size_t) rlen*(size_t) vsize, __FILE__,__LINE__);
+                piomemerror(*ios, (size_t)rlen * (size_t)vsize, __FILE__, __LINE__);
 
             if (iodesc->needsfill && iodesc->rearranger == PIO_REARR_BOX)
             {
@@ -164,15 +164,15 @@ int PIOc_write_darray_multi(const int ncid, const int *vid, const int ioid,
         if (vdesc0->fillbuf)
             piodie("Attempt to overwrite existing buffer",__FILE__,__LINE__);
 
-        vdesc0->fillbuf = bget(iodesc->holegridsize*vsize*nvars);
+        vdesc0->fillbuf = bget(iodesc->holegridsize * vsize * nvars);
 
-        if (vsize==4)
+        if (vsize == 4)
             for (int nv = 0; nv < nvars; nv++)
                 for (int i = 0; i < iodesc->holegridsize; i++)
                     ((float *)vdesc0->fillbuf)[i + nv * iodesc->holegridsize] = ((float *)fillvalue)[nv];
-        else if (vsize==8)
-            for (int nv=0;nv<nvars;nv++)
-                for (int i=0;i<iodesc->holegridsize;i++)
+        else if (vsize == 8)
+            for (int nv = 0; nv < nvars; nv++)
+                for (int i = 0; i < iodesc->holegridsize; i++)
                     ((double *)vdesc0->fillbuf)[i + nv * iodesc->holegridsize] = ((double *)fillvalue)[nv];
 	
         switch(file->iotype)
@@ -195,6 +195,7 @@ int PIOc_write_darray_multi(const int ncid, const int *vid, const int ioid,
             break;
         }
 
+	/* Free resources. */
         if (vdesc0->fillbuf)
 	{
             brel(vdesc0->fillbuf);
@@ -252,6 +253,7 @@ int PIOc_write_darray(const int ncid, const int vid, const int ioid,
     /* Get the file info. */
     if ((ierr = pio_get_file(ncid, &file)))
         return ierr;
+    ios = file->iosystem;
 
     /* Can we write to this file? */
     if (!(file->mode & PIO_WRITE))
@@ -260,7 +262,6 @@ int PIOc_write_darray(const int ncid, const int vid, const int ioid,
     /* Get iodesc. */
     if (!(iodesc = pio_get_iodesc_from_id(ioid)))
         return PIO_EBADID;
-    ios = file->iosystem;
 
     /* Get var description. */
     if (!(vdesc = file->varlist + vid))
