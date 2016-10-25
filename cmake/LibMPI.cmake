@@ -20,6 +20,11 @@ function (platform_name RETURN_VARIABLE)
         SITENAME MATCHES "^caldera")
         
         set (${RETURN_VARIABLE} "nwsc" PARENT_SCOPE)
+
+    # New NWSC SGI machine
+    elseif (SITENAME MATCHES "^laramie")
+        
+	set (${RETURN_VARIABLE} "nwscla" PARENT_SCOPE)
         
     # ALCF/Argonne Machines
     elseif (SITENAME MATCHES "^mira" OR
