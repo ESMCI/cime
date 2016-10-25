@@ -632,7 +632,7 @@ int pio_write_darray_multi_nc(file_desc_t *file, const int nvars, const int *vid
 				return PIO_ENOMEM;
 
                             for (int i = vdesc->nreqs; i < vdesc->nreqs + PIO_REQUEST_ALLOC_CHUNK; i++)
-                                vdesc->request[i]=NC_REQ_NULL;
+                                vdesc->request[i] = NC_REQ_NULL;
                             reqn = vdesc->nreqs;
                         }
                         else
@@ -645,21 +645,21 @@ int pio_write_darray_multi_nc(file_desc_t *file, const int nvars, const int *vid
                           ierr = ncmpi_bput_varn(ncid, vid[nv], rrcnt, startlist, countlist,
                           bufptr, llen, basetype, &(vdesc->request));
                         */
+			/* keeps wait calls in sync */
                         if (vdesc->request[reqn] == NC_REQ_NULL)
-                        {
-                            vdesc->request[reqn] = PIO_REQ_NULL;  //keeps wait calls in sync
-                        }
+                            vdesc->request[reqn] = PIO_REQ_NULL;  
+
                         vdesc->nreqs += reqn+1;
 
-                        //           printf("%s %d %d %d\n",__FILE__,__LINE__,vdesc->nreqs,vdesc->request[reqn]);
                     }
-                    for (i=0;i<rrcnt;i++)
+                    for (i = 0; i < rrcnt; i++)
                     {
                         if (ierr != PIO_NOERR)
                         {
-                            for (j=0;j<fndims;j++)
+                            for (j = 0; j < fndims; j++)
                             {
-                                printf("pio_darray: %d %d %d %ld %ld \n",__LINE__,i,j,startlist[i][j],countlist[i][j]);
+                                LOG((2, "pio_darray: %d %d %ld %ld \n", i, j, startlist[i][j],
+				     countlist[i][j]));
                             }
                         }
                         free(startlist[i]);
@@ -671,6 +671,8 @@ int pio_write_darray_multi_nc(file_desc_t *file, const int nvars, const int *vid
             default:
                 ierr = iotype_error(file->iotype,__FILE__,__LINE__);
             }
+
+	    /* Go to next region. */
             if (region)
                 region = region->next;
         } //    for (regioncnt=0;regioncnt<iodesc->maxregions;regioncnt++){
@@ -741,6 +743,7 @@ int pio_write_darray_multi_nc_serial(file_desc_t *file, const int nvars, const i
     GPTLstart("PIO:write_darray_multi_nc_serial");
 #endif
 
+    /* Get the file info. */
     if (!(ios = file->iosystem))
         return PIO_EBADID;
     if (!(vdesc = (file->varlist) + vid[0]))
