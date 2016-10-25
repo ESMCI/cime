@@ -17,7 +17,7 @@
 extern PIO_Offset pio_buffer_size_limit;
 
 /* Initial size of compute buffer. */
-extern bufsize pio_cnbuffer_limit;
+bufsize pio_cnbuffer_limit = 33554432;
 
 /* Global buffer pool pointer. */
 extern void *CN_bpool;
@@ -84,7 +84,7 @@ int pio_write_darray_nc(file_desc_t *file, io_desc_t *iodesc, const int vid,
     int ndims;             /* Number of dimensions according to iodesc. */
     int ierr = PIO_NOERR;  /* Return code from function calls. */
     int i;                 /* Loop counter. */
-    int mpierr = MPI_SUCCESS;  /* Return code from MPI function codes. */
+    int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
     int dsize;             /* Size of the type. */
     MPI_Status status;     /* Status from MPI_Recv calls. */
     PIO_Offset usage;      /* Size of current buffer. */
@@ -124,6 +124,12 @@ int pio_write_darray_nc(file_desc_t *file, io_desc_t *iodesc, const int vid,
             if (!mpierr)
                 mpierr = MPI_Bcast(&file->pio_ncid, 1, MPI_INT, ios->compmaster, ios->intercomm);
         }
+
+        /* Handle MPI errors. */
+        if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
+            return check_mpi(file, mpierr2, __FILE__, __LINE__);
+        if (mpierr)
+            return check_mpi(file, mpierr, __FILE__, __LINE__);
     }
 
     /* If this is an IO task, write the data. */
@@ -395,8 +401,11 @@ int pio_write_darray_nc(file_desc_t *file, io_desc_t *iodesc, const int vid,
         } //    for (regioncnt=0;regioncnt<iodesc->maxregions;regioncnt++){
     } // if (ios->ioproc)
 
-    /* Check the error code returned by netCDF. */
-    ierr = check_netcdf(file, ierr, __FILE__,__LINE__);
+    /* Broadcast and check the return code. */
+    if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
+        return check_mpi(file, mpierr, __FILE__, __LINE__);
+    if (ierr)
+        return check_netcdf(file, ierr, __FILE__, __LINE__);
 
 #ifdef TIMING
     /* Stop timing this function. */
