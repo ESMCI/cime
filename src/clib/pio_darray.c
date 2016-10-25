@@ -21,8 +21,7 @@ void *CN_bpool = NULL;
 /* Maximum buffer usage. */
 PIO_Offset maxusage = 0;
 
-/** Set the pio buffer size limit. This is the size of the data buffer
- * on the IO nodes.
+/** Set the PIO IO node data buffer size limit. 
  *
  * The pio_buffer_size_limit will only apply to files opened after
  * the setting is changed.

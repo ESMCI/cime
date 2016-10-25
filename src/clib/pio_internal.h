@@ -176,8 +176,8 @@ extern "C" {
 					 const int maxregions, io_region *firstregion, const PIO_Offset llen,
 					 const int maxiobuflen, const int num_aiotasks,
 					 void *IOBUF, const int *frame);
-    int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc,
-				  const int vid, void *IOBUF);
+    int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, const int vid, void *IOBUF);
+    int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc, const int vid, void *IOBUF);
 
 #if defined(__cplusplus)
 }

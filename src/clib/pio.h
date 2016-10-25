@@ -544,6 +544,7 @@ extern "C" {
                           void *array, void *fillvalue);
     int PIOc_write_darray_multi(const int ncid, const int vid[], const int ioid, const int nvars, const PIO_Offset arraylen,
                                 void *array, const int frame[], void *fillvalue[], bool flushtodisk);
+    int PIOc_read_darray(const int ncid, const int vid, const int ioid, const PIO_Offset arraylen, void *array);
 
     int PIOc_get_att_ubyte(int ncid, int varid, const char *name, unsigned char *ip);
     int PIOc_put_att_ubyte(int ncid, int varid, const char *name, nc_type xtype, PIO_Offset len, const unsigned char *op) ;
@@ -572,11 +573,9 @@ extern "C" {
     int PIOc_put_vars_uchar(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[], const PIO_Offset stride[], const unsigned char *op) ;
     int PIOc_get_var1_schar(int ncid, int varid, const PIO_Offset index[], signed char *buf) ;
     int PIOc_put_vars_ushort(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[], const PIO_Offset stride[], const unsigned short *op) ;
-    int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, const int vid, void *IOBUF);
     int PIOc_put_vars_ulonglong(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[], const PIO_Offset stride[], const unsigned long long *op) ;
     int PIOc_get_vars_ulonglong(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[], const PIO_Offset stride[], unsigned long long *buf) ;
     int PIOc_put_varm(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[], const PIO_Offset stride[], const PIO_Offset imap[], const void *buf, PIO_Offset bufcount, MPI_Datatype buftype)  ;
-    int PIOc_read_darray(const int ncid, const int vid, const int ioid, const PIO_Offset arraylen, void *array);
     int PIOc_put_vars_uint(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[], const PIO_Offset stride[], const unsigned int *op) ;
     int PIOc_get_varm_schar(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[], const PIO_Offset stride[], const PIO_Offset imap[], signed char *buf)  ;
     int PIOc_put_varm_uchar(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[], const PIO_Offset stride[], const PIO_Offset imap[], const unsigned char *op) ;
