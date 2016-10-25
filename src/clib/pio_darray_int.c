@@ -885,51 +885,46 @@ int pio_write_darray_multi_nc_serial(file_desc_t *file, const int nvars, const i
                             count[i] = tmp_count[i+regioncnt*fndims];
                         }
 
-                        for (int nv=0; nv<nvars; nv++)
+                        for (int nv=0; nv < nvars; nv++)
                         {
-                            bufptr = (void *)((char *) IOBUF+ tsize*(nv*rlen + loffset));
+                            bufptr = (void *)((char *) IOBUF+ tsize * (nv * rlen + loffset));
 
-                            if (vdesc->record>=0)
+                            if (vdesc->record >= 0)
                             {
-                                if (fndims>1 && ndims<fndims && count[1]>0)
+                                if (fndims>1 && ndims < fndims && count[1] > 0)
                                 {
                                     count[0] = 1;
                                     start[0] = frame[nv];
                                 }
-                                else if (fndims==ndims)
+                                else if (fndims == ndims)
                                 {
-                                    start[0]+=vdesc->record;
+                                    start[0] += vdesc->record;
                                 }
                             }
 
                             if (basetype == MPI_INTEGER)
-                            {
-                                ierr = nc_put_vara_int (ncid, vid[nv], start, count, (const int *) bufptr);
-                            }
+                                ierr = nc_put_vara_int(ncid, vid[nv], start, count, (const int *)bufptr);
                             else if (basetype == MPI_DOUBLE || basetype == MPI_REAL8)
-                            {
-                                ierr = nc_put_vara_double (ncid, vid[nv], start, count, (const double *) bufptr);
-                            }
+                                ierr = nc_put_vara_double(ncid, vid[nv], start, count, (const double *)bufptr);
                             else if (basetype == MPI_FLOAT || basetype == MPI_REAL4)
-                            {
-                                ierr = nc_put_vara_float (ncid,vid[nv], start, count, (const float *) bufptr);
-                            }
+                                ierr = nc_put_vara_float(ncid,vid[nv], start, count, (const float *)bufptr);
                             else
-                            {
-                                fprintf(stderr,"Type not recognized %d in pioc_write_darray\n",(int) basetype);
-                            }
+                                fprintf(stderr, "Type not recognized %d in pioc_write_darray\n", (int)basetype);
 
-                            if (ierr != PIO_NOERR){
-                                for (i=0;i<fndims;i++)
-                                    fprintf(stderr,"vid %d dim %d start %ld count %ld \n",vid[nv],i,start[i],count[i]);
+                            if (ierr != PIO_NOERR)
+			    {
+                                for (i = 0; i < fndims; i++)
+                                    fprintf(stderr, "vid %d dim %d start %ld count %ld \n", vid[nv], i,
+					    start[i], count[i]);
                             }
                         }
                         size_t tsize;
                         tsize = 1;
-                        for (int i=0;i<fndims;i++)
-                        {
-                            tsize*=count[i];
-                        }
+
+			/* Calculate the total size. */
+                        for (int i = 0; i < fndims; i++)
+                            tsize *= count[i];
+
                         loffset += tsize;
                     }//    for (regioncnt=0;regioncnt<iodesc->maxregions;regioncnt++){
                 } // if (rlen>0)
