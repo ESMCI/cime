@@ -325,22 +325,24 @@ int PIOc_write_darray(const int ncid, const int vid, const int ioid,
     }
 
     MPI_Type_size(iodesc->basetype, &tsize);
-    // At this point wmb should be pointing to a new or existing buffer
-    // so we can add the data
-    //     printf("%s %d %X %d %d %d\n",__FILE__,__LINE__,wmb->data,wmb->validvars,arraylen,tsize);
+    /* At this point wmb should be pointing to a new or existing buffer
+       so we can add the data */
+    LOG((2, "%d %d %d\n", wmb->data, wmb->validvars, arraylen,tsize));
     //    cn_buffer_report(*ios, true);
     bfreespace(&totfree, &maxfree);
     if (needsflush == 0)
         needsflush = (maxfree <= 1.1 * (1 + wmb->validvars) * arraylen * tsize);
     MPI_Allreduce(MPI_IN_PLACE, &needsflush, 1,  MPI_INT,  MPI_MAX, ios->comp_comm);
 
-    if (needsflush > 0 )
+    if (needsflush > 0)
     {
-        // need to flush first
-        //      printf("%s %d %ld %d %ld %ld\n",__FILE__,__LINE__,maxfree, wmb->validvars, (1+wmb->validvars)*arraylen*tsize,totfree);
+        /* need to flush first */
+        LOG((2, "%ld %d %ld %ld\n", maxfree, wmb->validvars,
+	     (1 + wmb->validvars) * arraylen * tsize, totfree));
         cn_buffer_report(*ios, true);
-
-        flush_buffer(ncid, wmb, needsflush == 2);  // if needsflush == 2 flush to disk otherwise just flush to io node
+	
+	/* If needsflush == 2 flush to disk otherwise just flush to io node. */
+        flush_buffer(ncid, wmb, needsflush == 2);  
     }
 
     if (arraylen > 0)
