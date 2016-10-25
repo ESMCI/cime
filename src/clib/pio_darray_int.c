@@ -1157,11 +1157,14 @@ int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc,
         return PIO_EBADID;
 
     ndims = iodesc->ndims;
+
+    /* Get number of dims for this var. */
     if ((ierr = PIOc_inq_varndims(file->pio_ncid, vid, &fndims)))
 	return ierr;
 
-    if (fndims==ndims)
-        vdesc->record=-1;
+    /* Is this a record var? */
+    if (fndims == ndims)
+        vdesc->record = -1;
 
     if (ios->ioproc)
     {
@@ -1174,40 +1177,42 @@ int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc,
         int regioncnt;
         void *bufptr;
         int tsize;
-
         int rrlen = 0;
 
-        // buffer is incremented by byte and loffset is in terms of the iodessc->basetype
-        // so we need to multiply by the size of the basetype
-        // We can potentially allow for one iodesc to have multiple datatypes by allowing the
-        // calling program to change the basetype.
+        /* buffer is incremented by byte and loffset is in terms of
+         the iodessc->basetype so we need to multiply by the size of
+         the basetype We can potentially allow for one iodesc to have
+         multiple datatypes by allowing the calling program to change
+         the basetype. */
         region = iodesc->firstregion;
         MPI_Type_size(iodesc->basetype, &tsize);
+	
         if (fndims>ndims)
         {
             if (vdesc->record < 0)
                 vdesc->record = 0;
         }
-        for (regioncnt=0;regioncnt<iodesc->maxregions;regioncnt++)
+	
+        for (regioncnt = 0; regioncnt < iodesc->maxregions; regioncnt++)
         {
-            if (region==NULL || iodesc->llen==0)
+            if (!region || iodesc->llen == 0)
             {
                 for (i = 0; i < fndims; i++)
                 {
                     tmp_start[i + regioncnt * fndims] = 0;
                     tmp_count[i + regioncnt * fndims] = 0;
                 }
-                bufptr=NULL;
+                bufptr = NULL;
             }
             else
             {
-                if (vdesc->record >= 0 && fndims>1)
+                if (vdesc->record >= 0 && fndims > 1)
                 {
                     tmp_start[regioncnt*fndims] = vdesc->record;
-                    for (i=1;i<fndims;i++)
+                    for (i = 1; i < fndims; i++)
                     {
-                        tmp_start[i+regioncnt*fndims] = region->start[i-1];
-                        tmp_count[i+regioncnt*fndims] = region->count[i-1];
+                        tmp_start[i+regioncnt * fndims] = region->start[i - 1];
+                        tmp_count[i+regioncnt * fndims] = region->count[i - 1];
                     }
                     if (tmp_count[1 + regioncnt * fndims] > 0)
                         tmp_count[regioncnt * fndims] = 1;
@@ -1229,11 +1234,12 @@ int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc,
             }
             if (region)
                 region = region->next;
-        } // for (regioncnt=0;...)
+        } /* next regioncnt */
 
-        if (ios->io_rank>0)
+        if (ios->io_rank > 0)
         {
-            MPI_Send(&(iodesc->llen), 1, MPI_OFFSET, 0, ios->io_rank, ios->io_comm);
+            MPI_Send(&iodesc->llen, 1, MPI_OFFSET, 0, ios->io_rank, ios->io_comm);
+	    
             if (iodesc->llen > 0)
             {
                 MPI_Send(&(iodesc->maxregions), 1, MPI_INT, 0,
@@ -1248,17 +1254,18 @@ int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc,
         }
         else if (ios->io_rank == 0)
         {
-            int maxregions=0;
+            int maxregions = 0;
             size_t loffset, regionsize;
             size_t this_start[fndims*iodesc->maxregions];
             size_t this_count[fndims*iodesc->maxregions];
-            //      for (i=ios->num_iotasks-1; i>=0; i--){
+
             for (int rtask = 1; rtask <= ios->num_iotasks; rtask++)
             {
-                if (rtask<ios->num_iotasks)
+                if (rtask < ios->num_iotasks)
                 {
                     MPI_Recv(&tmp_bufsize, 1, MPI_OFFSET, rtask, rtask, ios->io_comm, &status);
-                    if (tmp_bufsize>0)
+		    
+                    if (tmp_bufsize > 0)
                     {
                         MPI_Recv(&maxregions, 1, MPI_INT, rtask, ios->num_iotasks+rtask,
                                  ios->io_comm, &status);
@@ -1270,21 +1277,24 @@ int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc,
                 }
                 else
                 {
-                    maxregions=iodesc->maxregions;
-                    tmp_bufsize=iodesc->llen;
+                    maxregions = iodesc->maxregions;
+                    tmp_bufsize = iodesc->llen;
                 }
+		
                 loffset = 0;
-                for (regioncnt=0;regioncnt<maxregions;regioncnt++)
+		
+                for (regioncnt = 0; regioncnt < maxregions; regioncnt++)
                 {
-                    bufptr=(void *)((char *) IOBUF + tsize*loffset);
-                    regionsize=1;
-                    if (rtask<ios->num_iotasks)
+                    bufptr=(void *)((char *)IOBUF + tsize * loffset);
+                    regionsize = 1;
+		    
+                    if (rtask < ios->num_iotasks)
                     {
-                        for (int m=0; m<fndims; m++)
+                        for (int m = 0; m < fndims; m++)
                         {
-                            start[m] = this_start[m+regioncnt*fndims];
-                            count[m] = this_count[m+regioncnt*fndims];
-                            regionsize*=count[m];
+                            start[m] = this_start[m + regioncnt * fndims];
+                            count[m] = this_count[m + regioncnt * fndims];
+                            regionsize *= count[m];
                         }
                     }
                     else
@@ -1296,36 +1306,24 @@ int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc,
                             regionsize *= count[m];
                         }
                     }
-                    loffset+=regionsize;
+                    loffset += regionsize;
 
 #ifdef _NETCDF
-                    // Cant use switch here because MPI_DATATYPE may not be simple (openmpi)
+                    /* Cant use switch here because MPI_DATATYPE may not be simple (openmpi). */
                     if (iodesc->basetype == MPI_DOUBLE || iodesc->basetype == MPI_REAL8)
-                    {
                         ierr = nc_get_vara_double(file->fh, vid,start, count, bufptr);
-                    }
                     else if (iodesc->basetype == MPI_INTEGER)
-                    {
                         ierr = nc_get_vara_int(file->fh, vid, start, count,  bufptr);
-                    }
                     else if (iodesc->basetype == MPI_FLOAT || iodesc->basetype == MPI_REAL4)
-                    {
                         ierr = nc_get_vara_float(file->fh, vid, start, count,  bufptr);
-                    }
                     else
-                    {
                         fprintf(stderr,"Type not recognized %d in pioc_write_darray_nc_serial\n",
                                 (int)iodesc->basetype);
-                    }
 
-                    if (ierr != PIO_NOERR)
-                    {
+                    if (ierr)
                         for (int i = 0; i < fndims; i++)
                             fprintf(stderr,"vid %d dim %d start %ld count %ld err %d\n",
                                     vid, i, start[i], count[i], ierr);
-
-                    }
-
 #endif
                 }
                 if (rtask < ios->num_iotasks)
