@@ -12,7 +12,7 @@ def case_lt_archive(case):
     caseroot = case.get_value("CASEROOT")
 
     # max number of threads needed by scripts
-    os.environ["maxthrds"] = 1
+    os.environ["maxthrds"] = "1"
 
     # document start
     append_status("lt_archive starting",caseroot=caseroot,sfile="CaseStatus")
