@@ -19,6 +19,7 @@ model=$2
 echo "#!/bin/sh" > runctest.sh
 echo "#PBS -l walltime=01:00:00" >> runctest.sh
 echo "#PBS -l select=1:ncpus=8:mpiprocs=8" >> runctest.sh
+echo "#PBS -A SCSG0002" >> runctest.sh
 echo "export PIO_DASHBOARD_SITE=nwscla-${HOSTNAME}" >> runctest.sh
 echo "CTESTCMD=`which ctest`" >> runctest.sh
 echo "\$CTESTCMD -S ${scrdir}/CTestScript-Test.cmake,${model} -V" >> runctest.sh
