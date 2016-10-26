@@ -17,6 +17,8 @@ model=$2
 
 # Write QSUB submission script with the test execution command
 echo "#!/bin/sh" > runctest.sh
+echo "#PBS -l walltime=01:00:00" >> runctest.sh
+echo "#PBS -l select=1:ncpus=8:mpiprocs=8" >> runctest.sh
 echo "export PIO_DASHBOARD_SITE=nwscla-${HOSTNAME}" >> runctest.sh
 echo "CTESTCMD=`which ctest`" >> runctest.sh
 echo "\$CTESTCMD -S ${scrdir}/CTestScript-Test.cmake,${model} -V" >> runctest.sh
@@ -25,7 +27,7 @@ echo "\$CTESTCMD -S ${scrdir}/CTestScript-Test.cmake,${model} -V" >> runctest.sh
 chmod +x runctest.sh
 
 # Submit the job to the queue
-jobid=`qsub -l walltime=01:00:00 select=1:ncpus=8:mpiprocs=8 runctest.sh -q short`
+jobid=`qsub runctest.sh`
 
 # Wait for the job to complete before exiting
 while true; do
