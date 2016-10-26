@@ -772,7 +772,6 @@ INPUT                  = @CMAKE_CURRENT_SOURCE_DIR@/source \
                          @CMAKE_CURRENT_SOURCE_DIR@/../src/flib \
                          @CMAKE_CURRENT_SOURCE_DIR@/../examples/c \
                          @CMAKE_CURRENT_SOURCE_DIR@/../examples/f03 \
-                         @CMAKE_BINARY_DIR@/src/clib \
                          @CMAKE_BINARY_DIR@/src/flib \
 			 @C_SRC_FILES@
 
