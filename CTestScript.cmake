@@ -40,6 +40,7 @@ execute_process (COMMAND ${HOSTNAME_CMD}
                  OUTPUT_STRIP_TRAILING_WHITESPACE)
 
 ## -- Set hostname ID (e.g., alcf, nwsc, nersc, ...)
+message ("hostname is ${HOSTNAME}")
 
 # UCAR/NWSC Machines
 if (HOSTNAME MATCHES "^yslogin" OR
@@ -47,6 +48,9 @@ if (HOSTNAME MATCHES "^yslogin" OR
     HOSTNAME MATCHES "^caldera" OR
     HOSTNAME MATCHES "^pronghorn")
     set (HOSTNAME_ID "nwsc")
+# New UCAR/NWSC SGI Machines
+elseif (HOSTNAME MATCHES "^laramie")
+   set (HOSTNAME_ID "nwscla")
 # ALCF/Argonne Machines
 elseif (HOSTNAME MATCHES "^mira" OR
         HOSTNAME MATCHES "^cetus" OR
