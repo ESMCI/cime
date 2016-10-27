@@ -165,19 +165,18 @@ extern "C" {
     int check_mpi(file_desc_t *file, const int mpierr, const char *filename,
                   const int line);
 
-    /* Darray support functions. */
-    int pio_write_darray_multi_nc(file_desc_t *file, const int nvars, const int *vid,
-				  const int iodesc_ndims, MPI_Datatype basetype, const PIO_Offset *gsize,
-				  const int maxregions, io_region *firstregion, const PIO_Offset llen,
-				  const int maxiobuflen, const int num_aiotasks,
-				  void *IOBUF, const int *frame);
-    int pio_write_darray_multi_nc_serial(file_desc_t *file, const int nvars, const int *vid,
-					 const int iodesc_ndims, MPI_Datatype basetype, const PIO_Offset *gsize,
-					 const int maxregions, io_region *firstregion, const PIO_Offset llen,
-					 const int maxiobuflen, const int num_aiotasks,
-					 void *IOBUF, const int *frame);
-    int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, const int vid, void *IOBUF);
-    int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc, const int vid, void *IOBUF);
+    /* Generalized get functions. */
+    int PIOc_get_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Offset *count,
+			 const PIO_Offset *stride, nc_type xtype, void *buf);
+    int PIOc_get_var1_tc(int ncid, int varid, const PIO_Offset *index, nc_type xtype,
+			 void *buf);
+
+#ifdef BGQ
+    void identity(MPI_Comm comm, int *iotask);
+    void determineiotasks(const MPI_Comm comm, int *numiotasks,int *base, int *stride, int *rearr,
+                          bool *iamIOtask);
+
+#endif
 
 #if defined(__cplusplus)
 }
