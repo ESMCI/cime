@@ -393,7 +393,6 @@ int PIOc_get_var1_tc(int ncid, int varid, const PIO_Offset *index, nc_type xtype
  * @param buf pointer to the data to be written.
  *
  * @return PIO_NOERR on success, error code otherwise.
- * @private
  */
 int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Offset *count,
                      const PIO_Offset *stride, nc_type xtype, const void *buf)
