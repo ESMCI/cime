@@ -184,6 +184,13 @@ extern "C" {
 			 const PIO_Offset *stride, nc_type xtype, void *buf);
     int PIOc_get_var1_tc(int ncid, int varid, const PIO_Offset *index, nc_type xtype,
 			 void *buf);
+
+    /* Generalized put functions. */
+    int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Offset *count,
+			 const PIO_Offset *stride, nc_type xtype, const void *buf);
+    int PIOc_put_var1_tc(int ncid, int varid, const PIO_Offset *index, nc_type xtype,
+			 const void *op);
+    
 #if defined(__cplusplus)
 }
 #endif
