@@ -179,6 +179,11 @@ extern "C" {
     int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, const int vid, void *IOBUF);
     int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc, const int vid, void *IOBUF);
 
+    /* Generalized get functions. */
+    int PIOc_get_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Offset *count,
+			 const PIO_Offset *stride, nc_type xtype, void *buf);
+    int PIOc_get_var1_tc(int ncid, int varid, const PIO_Offset *index, nc_type xtype,
+			 void *buf);
 #if defined(__cplusplus)
 }
 #endif
