@@ -183,7 +183,7 @@ extern "C" {
     int PIOc_get_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Offset *count,
 			 const PIO_Offset *stride, nc_type xtype, void *buf);
     int PIOc_get_var1_tc(int ncid, int varid, const PIO_Offset *index, nc_type xtype,
-			 void *buf)
+			 void *buf);
 #if defined(__cplusplus)
 }
 #endif
