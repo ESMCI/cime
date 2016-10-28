@@ -7,6 +7,8 @@ else
 	model=$1
 fi
 
+source /etc/profile.d/modules.sh
+
 module reset
 module unload netcdf
 module swap intel intel/16.0.3
