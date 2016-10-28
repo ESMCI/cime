@@ -14,6 +14,8 @@ module load git/2.10.0
 module load cmake/3.6.2
 module load netcdf-mpi/4.4.1
 module load pnetcdf/1.7.0
+echo "MODULE LIST..."
+module list
 
 export CC=mpicc
 export FC=mpif90
