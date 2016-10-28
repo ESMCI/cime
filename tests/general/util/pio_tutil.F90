@@ -107,7 +107,7 @@ MODULE pio_tutil
 
 CONTAINS
   ! Initialize Testing framework - Internal (Not directly used by unit tests)
-  SUBROUTINE  PIO_TF_Init_
+  SUBROUTINE  PIO_TF_Init_(rearr)
 #ifdef TIMING
    use perf_mod
 #endif
@@ -116,6 +116,7 @@ CONTAINS
 #else
     include 'mpif.h'
 #endif
+    INTEGER, INTENT(IN) :: rearr
     INTEGER ierr
 
     CALL MPI_COMM_DUP(MPI_COMM_WORLD, pio_tf_comm_, ierr);
@@ -159,7 +160,7 @@ CONTAINS
           pio_tf_num_io_tasks_,       &
           pio_tf_num_aggregators_,    &
           pio_tf_stride_,             &
-          PIO_rearr_subset,              &
+          rearr,                      &
           pio_tf_iosystem_,           &
           base=0)
 
