@@ -161,7 +161,7 @@ pio_test_init(int argc, char **argv, int *my_rank, int *ntasks,
 int
 pio_test_finalize()
 {
-    int ret; /* Return value. */
+    int ret = PIO_NOERR; /* Return value. */
 
     /* Finalize MPI. */
     MPI_Finalize();
@@ -172,6 +172,7 @@ pio_test_finalize()
 	return ret;
 #endif
 
+    return ret;
 }
 
 /** Test the inq_format function. */

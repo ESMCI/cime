@@ -41,57 +41,57 @@ main(int argc, char **argv)
 	ERR(ERR_INIT);
     if(my_rank < TARGET_NTASKS)
     {
-      /* Figure out iotypes. */
-      if ((ret = get_iotypes(&num_flavors, flavor)))
-	ERR(ret);
+	/* Figure out iotypes. */
+	if ((ret = get_iotypes(&num_flavors, flavor)))
+	    ERR(ret);
 
-      /* Initialize PIO system on world. */
-      if ((ret = PIOc_Init_Intracomm(test_comm, NUM_IO4, STRIDE1, BASE0, REARRANGER, &iosysid_world)))
-    	ERR(ret);
+	/* Initialize PIO system on world. */
+	if ((ret = PIOc_Init_Intracomm(test_comm, NUM_IO4, STRIDE1, BASE0, REARRANGER, &iosysid_world)))
+	    ERR(ret);
 
-      for (int i = 0; i < num_flavors; i++)
-      {
-	/* Create the file. */
-	sprintf(fname0, "test_iosystem3_simple2_%d.nc", i);
-	if ((ret = PIOc_createfile(iosysid_world, &ncid, &flavor[i], fname0, NC_CLOBBER)))
-	    return ret;
+	for (int i = 0; i < num_flavors; i++)
+	{
+	    /* Create the file. */
+	    sprintf(fname0, "test_iosystem3_simple2_%d.nc", i);
+	    if ((ret = PIOc_createfile(iosysid_world, &ncid, &flavor[i], fname0, NC_CLOBBER)))
+		return ret;
 
-	/* End define mode. */
-	if ((ret = PIOc_enddef(ncid)))
-	    return ret;
+	    /* End define mode. */
+	    if ((ret = PIOc_enddef(ncid)))
+		return ret;
 
-	/* Close the file. */
-	if ((ret = PIOc_closefile(ncid)))
-	    return ret;
+	    /* Close the file. */
+	    if ((ret = PIOc_closefile(ncid)))
+		return ret;
 
-    	/* Now check the first file from WORLD communicator. */
-	int mode = PIO_WRITE;
+	    /* Now check the first file from WORLD communicator. */
+	    int mode = PIO_WRITE;
 
-	/* Open the file. */
-	if ((ret = PIOc_openfile(iosysid_world, &ncid, &flavor[i], fname0, mode)))
-	    return ret;
+	    /* Open the file. */
+	    if ((ret = PIOc_openfile(iosysid_world, &ncid, &flavor[i], fname0, mode)))
+		return ret;
 
-	/* Check the file. */
-	int ndims;
-	if ((ret = PIOc_inq(ncid, &ndims, NULL, NULL, NULL)))
-	    return ret;
+	    /* Check the file. */
+	    int ndims;
+	    if ((ret = PIOc_inq(ncid, &ndims, NULL, NULL, NULL)))
+		return ret;
 
-	/* Close the file. */
-	if ((ret = PIOc_closefile(ncid)))
-	    return ret;
+	    /* Close the file. */
+	    if ((ret = PIOc_closefile(ncid)))
+		return ret;
 
-      } /* next iotype */
-      /* Finalize PIO systems. */
-      printf("%d pio finalizing\n", my_rank);
-      if ((ret = PIOc_finalize(iosysid_world)))
-    	ERR(ret);
+	} /* next iotype */
+	/* Finalize PIO systems. */
+	printf("%d pio finalizing\n", my_rank);
+	if ((ret = PIOc_finalize(iosysid_world)))
+	    ERR(ret);
     } /* my_rank < TARGET_NTASKS */
     MPI_Barrier(MPI_COMM_WORLD);
 
     /* Finalize test. */
     printf("%d %s finalizing...\n", my_rank, TEST_NAME);
     if ((ret = pio_test_finalize()))
-	ERR(ERR_AWFUL);
+	return ERR_AWFUL;
 
     printf("%d %s SUCCESS!!\n", my_rank, TEST_NAME);
 

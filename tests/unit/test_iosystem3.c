@@ -118,7 +118,7 @@ check_file(MPI_Comm comm, int iosysid, int format, int ncid, char *filename,
 
 /** This opens and checks a netCDF file. */
 int open_and_check_file(MPI_Comm comm, int iosysid, int iotype, int *ncid, char *fname,
-		    char *attname, char *dimname, int disable_close, int my_rank)
+			char *attname, char *dimname, int disable_close, int my_rank)
 {
     int mode = PIO_WRITE;
     int ret;
@@ -166,177 +166,177 @@ main(int argc, char **argv)
 	ERR(ERR_INIT);
     if (my_rank < TARGET_NTASKS)
     {
-      /* Figure out iotypes. */
-      if ((ret = get_iotypes(&num_flavors, flavor)))
-	ERR(ret);
+	/* Figure out iotypes. */
+	if ((ret = get_iotypes(&num_flavors, flavor)))
+	    ERR(ret);
 
-      /* Initialize PIO system on world. */
-      if ((ret = PIOc_Init_Intracomm(test_comm, NUM_IO4, STRIDE1, BASE0, REARRANGER, &iosysid_world)))
-    	ERR(ret);
-
-      /* Set the error handler. */
-      PIOc_Set_IOSystem_Error_Handling(iosysid_world, PIO_BCAST_ERROR);
-
-      /* Get MPI_Group of world comm. */
-      if ((ret = MPI_Comm_group(test_comm, &world_group)))
-	ERR(ret);
-
-      /* Create a group with tasks 0 and 2. */
-      int even_ranges[EVEN_NUM_RANGES][3] = {0, 2, 2};
-      if ((ret = MPI_Group_range_incl(world_group, EVEN_NUM_RANGES, even_ranges, &even_group)))
-	ERR(ret);
-
-      /* Create a communicator from the even_group. */
-      if ((ret = MPI_Comm_create(test_comm, even_group, &even_comm)))
-	ERR(ret);
-
-      /* Learn my rank and the total number of processors in even group. */
-      if (even_comm != MPI_COMM_NULL)
-      {
-	if ((ret = MPI_Comm_rank(even_comm, &even_rank)))
-	    MPIERR(ret);
-	if ((ret = MPI_Comm_size(even_comm, &even_size)))
-	    MPIERR(ret);
-      }
-      printf("%d even_comm = %d even_rank = %d even_size = %d\n", my_rank,
-	   even_comm, even_rank, even_size);
-
-      /* Create a group with tasks 0, 1, and 3. */
-      int overlap_ranges[OVERLAP_NUM_RANGES][3] = {{0, 0, 1}, {1, 3, 2}};
-      if ((ret = MPI_Group_range_incl(world_group, OVERLAP_NUM_RANGES,
-				    overlap_ranges, &overlap_group)))
-	ERR(ret);
-
-      /* Create a communicator from the overlap_group. */
-      if ((ret = MPI_Comm_create(test_comm, overlap_group, &overlap_comm)))
-	ERR(ret);
-
-      /* Learn my rank and the total number of processors in overlap
-       * group. */
-      if (overlap_comm != MPI_COMM_NULL)
-      {
-	if ((ret = MPI_Comm_rank(overlap_comm, &overlap_rank)))
-	    MPIERR(ret);
-	if ((ret = MPI_Comm_size(overlap_comm, &overlap_size)))
-	    MPIERR(ret);
-      }
-      printf("%d overlap_comm = %d overlap_rank = %d overlap_size = %d\n", my_rank,
-	   overlap_comm, overlap_rank, overlap_size);
-
-      /* Initialize PIO system for even. */
-      if (even_comm != MPI_COMM_NULL)
-      {
-    	if ((ret = PIOc_Init_Intracomm(even_comm, NUM_IO1, STRIDE1, BASE1, REARRANGER, &even_iosysid)))
-    	    ERR(ret);
-
-	/* Set the error handler. */
-	PIOc_Set_IOSystem_Error_Handling(even_iosysid, PIO_BCAST_ERROR);
-      }
-
-      /* Initialize PIO system for overlap comm. */
-      if (overlap_comm != MPI_COMM_NULL)
-      {
-	if ((ret = PIOc_Init_Intracomm(overlap_comm, NUM_IO2, STRIDE1, BASE1, REARRANGER, &overlap_iosysid)))
+	/* Initialize PIO system on world. */
+	if ((ret = PIOc_Init_Intracomm(test_comm, NUM_IO4, STRIDE1, BASE0, REARRANGER, &iosysid_world)))
 	    ERR(ret);
 
 	/* Set the error handler. */
-	PIOc_Set_IOSystem_Error_Handling(overlap_iosysid, PIO_BCAST_ERROR);
-      }
+	PIOc_Set_IOSystem_Error_Handling(iosysid_world, PIO_BCAST_ERROR);
 
-      for (int i = 0; i < num_flavors; i++)
-      {
-    	char fname0[] = "pio_iosys_test_file0.nc";
-    	char fname1[] = "pio_iosys_test_file1.nc";
-    	char fname2[] = "pio_iosys_test_file2.nc";
-    	printf("\n\n%d i = %d\n", my_rank, i);
+	/* Get MPI_Group of world comm. */
+	if ((ret = MPI_Comm_group(test_comm, &world_group)))
+	    ERR(ret);
 
-    	if ((ret = create_file(test_comm, iosysid_world, flavor[i], fname0, ATTNAME,
-    			       DIMNAME, my_rank)))
-    	    ERR(ret);
+	/* Create a group with tasks 0 and 2. */
+	int even_ranges[EVEN_NUM_RANGES][3] = {0, 2, 2};
+	if ((ret = MPI_Group_range_incl(world_group, EVEN_NUM_RANGES, even_ranges, &even_group)))
+	    ERR(ret);
 
-    	if ((ret = create_file(test_comm, iosysid_world, flavor[i], fname1, ATTNAME,
-    			       DIMNAME, my_rank)))
-    	    ERR(ret);
+	/* Create a communicator from the even_group. */
+	if ((ret = MPI_Comm_create(test_comm, even_group, &even_comm)))
+	    ERR(ret);
 
-    	if ((ret = create_file(test_comm, iosysid_world, flavor[i], fname2, ATTNAME,
-    			       DIMNAME, my_rank)))
-    	    ERR(ret);
-
-    	/* Now check the first file from WORLD communicator. */
-    	int ncid;
-    	if ((ret = open_and_check_file(test_comm, iosysid_world, flavor[i], &ncid, fname0,
-    				       ATTNAME, DIMNAME, 1, my_rank)))
-    	    ERR(ret);
-
-    	/* Now have the even communicators check the files. */
-    	int ncid2;
-    	if (even_comm != MPI_COMM_NULL)
+	/* Learn my rank and the total number of processors in even group. */
+	if (even_comm != MPI_COMM_NULL)
 	{
-	    printf("\n***\n%d Checking file for even_comm\n", my_rank);
-	    if ((ret = open_and_check_file(even_comm, even_iosysid, flavor[i], &ncid2, fname2,
+	    if ((ret = MPI_Comm_rank(even_comm, &even_rank)))
+		MPIERR(ret);
+	    if ((ret = MPI_Comm_size(even_comm, &even_size)))
+		MPIERR(ret);
+	}
+	printf("%d even_comm = %d even_rank = %d even_size = %d\n", my_rank,
+	       even_comm, even_rank, even_size);
+
+	/* Create a group with tasks 0, 1, and 3. */
+	int overlap_ranges[OVERLAP_NUM_RANGES][3] = {{0, 0, 1}, {1, 3, 2}};
+	if ((ret = MPI_Group_range_incl(world_group, OVERLAP_NUM_RANGES,
+					overlap_ranges, &overlap_group)))
+	    ERR(ret);
+
+	/* Create a communicator from the overlap_group. */
+	if ((ret = MPI_Comm_create(test_comm, overlap_group, &overlap_comm)))
+	    ERR(ret);
+
+	/* Learn my rank and the total number of processors in overlap
+	 * group. */
+	if (overlap_comm != MPI_COMM_NULL)
+	{
+	    if ((ret = MPI_Comm_rank(overlap_comm, &overlap_rank)))
+		MPIERR(ret);
+	    if ((ret = MPI_Comm_size(overlap_comm, &overlap_size)))
+		MPIERR(ret);
+	}
+	printf("%d overlap_comm = %d overlap_rank = %d overlap_size = %d\n", my_rank,
+	       overlap_comm, overlap_rank, overlap_size);
+
+	/* Initialize PIO system for even. */
+	if (even_comm != MPI_COMM_NULL)
+	{
+	    if ((ret = PIOc_Init_Intracomm(even_comm, NUM_IO1, STRIDE1, BASE1, REARRANGER, &even_iosysid)))
+		ERR(ret);
+
+	    /* Set the error handler. */
+	    PIOc_Set_IOSystem_Error_Handling(even_iosysid, PIO_BCAST_ERROR);
+	}
+
+	/* Initialize PIO system for overlap comm. */
+	if (overlap_comm != MPI_COMM_NULL)
+	{
+	    if ((ret = PIOc_Init_Intracomm(overlap_comm, NUM_IO2, STRIDE1, BASE1, REARRANGER, &overlap_iosysid)))
+		ERR(ret);
+
+	    /* Set the error handler. */
+	    PIOc_Set_IOSystem_Error_Handling(overlap_iosysid, PIO_BCAST_ERROR);
+	}
+
+	for (int i = 0; i < num_flavors; i++)
+	{
+	    char fname0[] = "pio_iosys_test_file0.nc";
+	    char fname1[] = "pio_iosys_test_file1.nc";
+	    char fname2[] = "pio_iosys_test_file2.nc";
+	    printf("\n\n%d i = %d\n", my_rank, i);
+
+	    if ((ret = create_file(test_comm, iosysid_world, flavor[i], fname0, ATTNAME,
+				   DIMNAME, my_rank)))
+		ERR(ret);
+
+	    if ((ret = create_file(test_comm, iosysid_world, flavor[i], fname1, ATTNAME,
+				   DIMNAME, my_rank)))
+		ERR(ret);
+
+	    if ((ret = create_file(test_comm, iosysid_world, flavor[i], fname2, ATTNAME,
+				   DIMNAME, my_rank)))
+		ERR(ret);
+
+	    /* Now check the first file from WORLD communicator. */
+	    int ncid;
+	    if ((ret = open_and_check_file(test_comm, iosysid_world, flavor[i], &ncid, fname0,
 					   ATTNAME, DIMNAME, 1, my_rank)))
 		ERR(ret);
-	    if ((ret = check_file(even_comm, even_iosysid, flavor[i], ncid2, fname2,
-				  ATTNAME, DIMNAME, my_rank)))
-		ERR(ret);
-	}
 
-    	/* Now have the overlap communicators check the files. */
-    	int ncid3;
-    	if (overlap_comm != MPI_COMM_NULL)
-	{
-	    printf("\n***%d Checking file for overlap_comm\n", my_rank);
-	    if ((ret = open_and_check_file(overlap_comm, overlap_iosysid, flavor[i], &ncid3, fname1,
-					   ATTNAME, DIMNAME, 1, my_rank)))
-		ERR(ret);
-	    if ((ret = check_file(overlap_comm, overlap_iosysid, flavor[i], ncid3, fname1,
-				  ATTNAME, DIMNAME, my_rank)))
-		ERR(ret);
-	}
+	    /* Now have the even communicators check the files. */
+	    int ncid2;
+	    if (even_comm != MPI_COMM_NULL)
+	    {
+		printf("\n***\n%d Checking file for even_comm\n", my_rank);
+		if ((ret = open_and_check_file(even_comm, even_iosysid, flavor[i], &ncid2, fname2,
+					       ATTNAME, DIMNAME, 1, my_rank)))
+		    ERR(ret);
+		if ((ret = check_file(even_comm, even_iosysid, flavor[i], ncid2, fname2,
+				      ATTNAME, DIMNAME, my_rank)))
+		    ERR(ret);
+	    }
 
-    	/* Close the still-open files. */
-    	if ((ret = PIOc_closefile(ncid)))
-    	    ERR(ret);
-    	if (even_comm != MPI_COMM_NULL)
+	    /* Now have the overlap communicators check the files. */
+	    int ncid3;
+	    if (overlap_comm != MPI_COMM_NULL)
+	    {
+		printf("\n***%d Checking file for overlap_comm\n", my_rank);
+		if ((ret = open_and_check_file(overlap_comm, overlap_iosysid, flavor[i], &ncid3, fname1,
+					       ATTNAME, DIMNAME, 1, my_rank)))
+		    ERR(ret);
+		if ((ret = check_file(overlap_comm, overlap_iosysid, flavor[i], ncid3, fname1,
+				      ATTNAME, DIMNAME, my_rank)))
+		    ERR(ret);
+	    }
+
+	    /* Close the still-open files. */
+	    if ((ret = PIOc_closefile(ncid)))
+		ERR(ret);
+	    if (even_comm != MPI_COMM_NULL)
+	    {
+		if ((ret = PIOc_closefile(ncid2)))
+		    ERR(ret);
+	    }
+	    if (overlap_comm != MPI_COMM_NULL)
+	    {
+		if ((ret = PIOc_closefile(ncid3)))
+		    ERR(ret);
+	    }
+	} /* next iotype */
+	/* Finalize PIO systems. */
+	printf("%d pio finalizing %d\n", my_rank, even_iosysid);
+	if (even_comm != MPI_COMM_NULL)
+	    if ((ret = PIOc_finalize(even_iosysid)))
+		ERR(ret);
+	printf("%d pio finalizing %d\n", my_rank, overlap_iosysid);
+	if (overlap_comm != MPI_COMM_NULL)
 	{
-	    if ((ret = PIOc_closefile(ncid2)))
+	    printf("%d calling PIOc_finalize with iosysid = %d\n", my_rank, overlap_iosysid);
+	    if ((ret = PIOc_finalize(overlap_iosysid)))
 		ERR(ret);
 	}
-    	if (overlap_comm != MPI_COMM_NULL)
-	{
-	    if ((ret = PIOc_closefile(ncid3)))
-		ERR(ret);
-	}
-      } /* next iotype */
-      /* Finalize PIO systems. */
-      printf("%d pio finalizing %d\n", my_rank, even_iosysid);
-      if (even_comm != MPI_COMM_NULL)
-    	if ((ret = PIOc_finalize(even_iosysid)))
-    	    ERR(ret);
-      printf("%d pio finalizing %d\n", my_rank, overlap_iosysid);
-      if (overlap_comm != MPI_COMM_NULL)
-      {
-	printf("%d calling PIOc_finalize with iosysid = %d\n", my_rank, overlap_iosysid);
-	if ((ret = PIOc_finalize(overlap_iosysid)))
+	printf("%d pio finalized\n", my_rank);
+	if ((ret = PIOc_finalize(iosysid_world)))
 	    ERR(ret);
-      }
-      printf("%d pio finalized\n", my_rank);
-      if ((ret = PIOc_finalize(iosysid_world)))
-    	ERR(ret);
 
-      /* Free MPI resources used by test. */
-      if ((ret = MPI_Group_free(&overlap_group)))
-	ERR(ret);
-      if ((ret = MPI_Group_free(&even_group)))
-	ERR(ret);
-      if ((ret = MPI_Group_free(&world_group)))
-	ERR(ret);
-      if (overlap_comm != MPI_COMM_NULL)
-	if ((ret = MPI_Comm_free(&overlap_comm)))
+	/* Free MPI resources used by test. */
+	if ((ret = MPI_Group_free(&overlap_group)))
 	    ERR(ret);
-      if (even_comm != MPI_COMM_NULL)
-    	if ((ret = MPI_Comm_free(&even_comm)))
-	  ERR(ret);
+	if ((ret = MPI_Group_free(&even_group)))
+	    ERR(ret);
+	if ((ret = MPI_Group_free(&world_group)))
+	    ERR(ret);
+	if (overlap_comm != MPI_COMM_NULL)
+	    if ((ret = MPI_Comm_free(&overlap_comm)))
+		ERR(ret);
+	if (even_comm != MPI_COMM_NULL)
+	    if ((ret = MPI_Comm_free(&even_comm)))
+		ERR(ret);
 
     } /* my_rank < TARGET_NTASKS */
     MPI_Barrier(MPI_COMM_WORLD);
@@ -344,7 +344,7 @@ main(int argc, char **argv)
     /* Finalize test. */
     printf("%d %s finalizing...\n", my_rank, TEST_NAME);
     if ((ret = pio_test_finalize()))
-	ERR(ERR_AWFUL);
+	return ERR_AWFUL;
 
     printf("%d %s SUCCESS!!\n", my_rank, TEST_NAME);
 
