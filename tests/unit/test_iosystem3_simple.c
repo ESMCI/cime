@@ -41,78 +41,77 @@ main(int argc, char **argv)
 
     /* Initialize test. */
     if ((ret = pio_test_init(argc, argv, &my_rank, &ntasks, TARGET_NTASKS, &test_comm)))
-	ERR(ERR_INIT);
+        ERR(ERR_INIT);
     if (my_rank < TARGET_NTASKS)
     {
 
-      /* Turn on logging. */
-      if ((ret = PIOc_set_log_level(3)))
-	return ret;
+        /* Turn on logging. */
+        if ((ret = PIOc_set_log_level(3)))
+            return ret;
 
-      /* Initialize PIO system on world. */
-      if ((ret = PIOc_Init_Intracomm(test_comm, 4, 1, 0, 1, &iosysid_world)))
-    	ERR(ret);
+        /* Initialize PIO system on world. */
+        if ((ret = PIOc_Init_Intracomm(test_comm, 4, 1, 0, 1, &iosysid_world)))
+            ERR(ret);
 
-      /* Get MPI_Group of world comm. */
-      if ((ret = MPI_Comm_group(test_comm, &world_group)))
-	ERR(ret);
+        /* Get MPI_Group of world comm. */
+        if ((ret = MPI_Comm_group(test_comm, &world_group)))
+            ERR(ret);
 
-      /* Create a group with tasks 0, 1, 3. */
-      int overlap_ranges[OVERLAP_NUM_RANGES][3] = {{0, 0, 1}, {1, 3, 2}};
-      if ((ret = MPI_Group_range_incl(world_group, OVERLAP_NUM_RANGES,
-				    overlap_ranges, &overlap_group)))
-	ERR(ret);
+        /* Create a group with tasks 0, 1, 3. */
+        int overlap_ranges[OVERLAP_NUM_RANGES][3] = {{0, 0, 1}, {1, 3, 2}};
+        if ((ret = MPI_Group_range_incl(world_group, OVERLAP_NUM_RANGES,
+                                        overlap_ranges, &overlap_group)))
+            ERR(ret);
 
-      /* Create a communicator from the overlap_group. */
-      if ((ret = MPI_Comm_create(test_comm, overlap_group, &overlap_comm)))
-	ERR(ret);
+        /* Create a communicator from the overlap_group. */
+        if ((ret = MPI_Comm_create(test_comm, overlap_group, &overlap_comm)))
+            ERR(ret);
 
-      /* Learn my rank and the total number of processors in overlap
-       * group. */
-      if (overlap_comm != MPI_COMM_NULL)
-      {
-	if ((ret = MPI_Comm_rank(overlap_comm, &overlap_rank)))
-	  MPIERR(ret);
-	if ((ret = MPI_Comm_size(overlap_comm, &overlap_size)))
-	  MPIERR(ret);
-      }
-      printf("%d overlap_comm = %d overlap_rank = %d overlap_size = %d\n", my_rank,
-	   overlap_comm, overlap_rank, overlap_size);
+        /* Learn my rank and the total number of processors in overlap
+         * group. */
+        if (overlap_comm != MPI_COMM_NULL)
+        {
+            if ((ret = MPI_Comm_rank(overlap_comm, &overlap_rank)))
+                MPIERR(ret);
+            if ((ret = MPI_Comm_size(overlap_comm, &overlap_size)))
+                MPIERR(ret);
+        }
+        printf("%d overlap_comm = %d overlap_rank = %d overlap_size = %d\n", my_rank,
+               overlap_comm, overlap_rank, overlap_size);
 
-      /* Initialize PIO system for overlap comm. */
-      if (overlap_comm != MPI_COMM_NULL)
-      {
-	if ((ret = PIOc_Init_Intracomm(overlap_comm, 1, 1, 0, 1, &overlap_iosysid)))
-	  ERR(ret);
-      }
+        /* Initialize PIO system for overlap comm. */
+        if (overlap_comm != MPI_COMM_NULL)
+        {
+            if ((ret = PIOc_Init_Intracomm(overlap_comm, 1, 1, 0, 1, &overlap_iosysid)))
+                ERR(ret);
+        }
 
-      printf("%d pio finalizing %d\n", my_rank, overlap_iosysid);
-      /* Finalize PIO system. */
-      if (overlap_comm != MPI_COMM_NULL)
-      {
-	printf("%d calling PIOc_finalize with iosysid = %d\n", my_rank, overlap_iosysid);
-	if ((ret = PIOc_finalize(overlap_iosysid)))
-	    ERR(ret);
-      }
-      if ((ret = PIOc_finalize(iosysid_world)))
-    	ERR(ret);
-      printf("%d pio finalized\n", my_rank);
+        printf("%d pio finalizing %d\n", my_rank, overlap_iosysid);
+        /* Finalize PIO system. */
+        if (overlap_comm != MPI_COMM_NULL)
+        {
+            printf("%d calling PIOc_finalize with iosysid = %d\n", my_rank, overlap_iosysid);
+            if ((ret = PIOc_finalize(overlap_iosysid)))
+                ERR(ret);
+        }
+        if ((ret = PIOc_finalize(iosysid_world)))
+            ERR(ret);
+        printf("%d pio finalized\n", my_rank);
 
-      /* Free MPI resources used by test. */
-      if ((ret = MPI_Group_free(&overlap_group)))
-	ERR(ret);
-      if ((ret = MPI_Group_free(&world_group)))
-	ERR(ret);
-      if (overlap_comm != MPI_COMM_NULL)
-	if ((ret = MPI_Comm_free(&overlap_comm)))
-	    ERR(ret);
-      printf("%d %s SUCCESS!!\n", my_rank, TEST_NAME);
+        /* Free MPI resources used by test. */
+        if ((ret = MPI_Group_free(&overlap_group)))
+            ERR(ret);
+        if ((ret = MPI_Group_free(&world_group)))
+            ERR(ret);
+        if (overlap_comm != MPI_COMM_NULL)
+            if ((ret = MPI_Comm_free(&overlap_comm)))
+                ERR(ret);
+        printf("%d %s SUCCESS!!\n", my_rank, TEST_NAME);
     }
     MPI_Barrier(MPI_COMM_WORLD);
 
     if ((ret = pio_test_finalize()))
-      ERR(ret);
-
+        return ERR_AWFUL;
 
     return 0;
 }

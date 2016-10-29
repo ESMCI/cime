@@ -124,7 +124,7 @@ main(int argc, char **argv)
     /* Finalize the MPI library. */
     printf("%d %s Finalizing...\n", my_rank, TEST_NAME);
     if ((ret = pio_test_finalize()))
-	ERR(ERR_AWFUL);
+	return ERR_AWFUL;
 
     printf("%d %s SUCCESS!!\n", my_rank, TEST_NAME);
 
