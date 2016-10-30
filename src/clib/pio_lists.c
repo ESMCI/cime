@@ -87,7 +87,7 @@ int pio_get_file(int ncid, file_desc_t **cfile1)
     return PIO_NOERR;
 }
 
-/** Delete a file from the list of open files. 
+/** Delete a file from the list of open files.
  *
  * @param ncid ID of file to delete from list
  * @returns 0 for success, error code otherwise
@@ -122,7 +122,7 @@ int pio_delete_file_from_list(int ncid)
     return PIO_EBADID;
 }
 
-/** Delete iosystem info from list. 
+/** Delete iosystem info from list.
  *
  * @param piosysid the iosysid to delete
  * @returns 0 on success, error code otherwise
@@ -133,7 +133,7 @@ int pio_delete_iosystem_from_list(int piosysid)
     iosystem_desc_t *ciosystem, *piosystem = NULL;
 
     LOG((1, "pio_delete_iosystem_from_list piosysid = %d", piosysid));
-    
+
     for (ciosystem = pio_iosystem_list; ciosystem; ciosystem = ciosystem->next)
     {
         if (ciosystem->iosysid == piosysid)
@@ -150,7 +150,7 @@ int pio_delete_iosystem_from_list(int piosysid)
     return PIO_EBADID;
 }
 
-/** Add iosystem info to list. 
+/** Add iosystem info to list.
  *
  * @param ios pointer to the iosystem_desc_t info to add.
  * @returns 0 on success, error code otherwise
@@ -162,7 +162,7 @@ int pio_add_to_iosystem_list(iosystem_desc_t *ios)
     int i = 1;
 
     assert(ios);
-    
+
     ios->next = NULL;
     cios = pio_iosystem_list;
     if (!cios)
@@ -171,7 +171,7 @@ int pio_add_to_iosystem_list(iosystem_desc_t *ios)
     {
         i++;
         while (cios->next)
-	{
+        {
             cios = cios->next;
             i++;
         }
@@ -183,7 +183,7 @@ int pio_add_to_iosystem_list(iosystem_desc_t *ios)
     return ios->iosysid;
 }
 
-/** Get iosystem info from list. 
+/** Get iosystem info from list.
  *
  * @param iosysid id of the iosystem
  * @returns pointer to iosystem_desc_t, or NULL if not found.
@@ -202,7 +202,7 @@ iosystem_desc_t *pio_get_iosystem_from_id(int iosysid)
     return NULL;
 }
 
-/** Count the number of open iosystems. 
+/** Count the number of open iosystems.
  *
  * @param niosysid pointer that will get the number of open iosystems.
  * @internal
@@ -262,7 +262,7 @@ io_desc_t *pio_get_iodesc_from_id(int ioid)
     for(ciodesc = pio_iodesc_list; ciodesc != NULL; ciodesc = ciodesc->next)
     {
         if(ciodesc->ioid == abs(ioid))
-	{
+        {
             current_iodesc = ciodesc;
             break;
         }
@@ -286,10 +286,10 @@ int pio_delete_iodesc_from_list(int ioid)
     for (ciodesc = pio_iodesc_list; ciodesc != NULL; ciodesc = ciodesc->next)
     {
         if (ciodesc->ioid == ioid)
-	{
+        {
             if (piodesc == NULL)
                 pio_iodesc_list = ciodesc->next;
-	    else
+            else
                 piodesc->next = ciodesc->next;
 
             if (current_iodesc == ciodesc)

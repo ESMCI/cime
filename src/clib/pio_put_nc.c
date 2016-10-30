@@ -1156,8 +1156,8 @@ int PIOc_put_var(int ncid, int varid, const void *buf, PIO_Offset bufcount,
 
             if(vdesc->nreqs%PIO_REQUEST_ALLOC_CHUNK == 0 ){
                 if (!(vdesc->request = realloc(vdesc->request,
-					       sizeof(int) * (vdesc->nreqs + PIO_REQUEST_ALLOC_CHUNK))))
-		    return PIO_ENOMEM;
+                                               sizeof(int) * (vdesc->nreqs + PIO_REQUEST_ALLOC_CHUNK))))
+                    return PIO_ENOMEM;
             }
             request = vdesc->request+vdesc->nreqs;
 
@@ -1241,8 +1241,8 @@ int PIOc_put_vars(int ncid, int varid, const PIO_Offset *start, const PIO_Offset
 
             if(vdesc->nreqs%PIO_REQUEST_ALLOC_CHUNK == 0 ){
                 if (!(vdesc->request = realloc(vdesc->request,
-					       sizeof(int) * (vdesc->nreqs + PIO_REQUEST_ALLOC_CHUNK))))
-		    return PIO_ENOMEM;
+                                               sizeof(int) * (vdesc->nreqs + PIO_REQUEST_ALLOC_CHUNK))))
+                    return PIO_ENOMEM;
             }
             request = vdesc->request+vdesc->nreqs;
 
@@ -1317,8 +1317,8 @@ int PIOc_put_var1(int ncid, int varid, const PIO_Offset *index, const void *buf,
 
             if(vdesc->nreqs%PIO_REQUEST_ALLOC_CHUNK == 0 ){
                 if (!(vdesc->request = realloc(vdesc->request,
-					       sizeof(int) * (vdesc->nreqs + PIO_REQUEST_ALLOC_CHUNK))))
-		    return PIO_ENOMEM;
+                                               sizeof(int) * (vdesc->nreqs + PIO_REQUEST_ALLOC_CHUNK))))
+                    return PIO_ENOMEM;
             }
             request = vdesc->request+vdesc->nreqs;
 
@@ -1392,8 +1392,8 @@ int PIOc_put_vara(int ncid, int varid, const PIO_Offset *start, const PIO_Offset
 
             if(vdesc->nreqs%PIO_REQUEST_ALLOC_CHUNK == 0 ){
                 if (!(vdesc->request = realloc(vdesc->request,
-					       sizeof(int) * (vdesc->nreqs + PIO_REQUEST_ALLOC_CHUNK))))
-		    return PIO_ENOMEM;
+                                               sizeof(int) * (vdesc->nreqs + PIO_REQUEST_ALLOC_CHUNK))))
+                    return PIO_ENOMEM;
             }
             request = vdesc->request+vdesc->nreqs;
 

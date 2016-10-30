@@ -83,18 +83,18 @@ void determineiotasks(const MPI_Comm comm, int *numiotasks,int *base, int *strid
 
 /*
 
-    Returns the correct numiotasks and the flag iamIOtask
+  Returns the correct numiotasks and the flag iamIOtask
 
-    Some concepts:
+  Some concepts:
 
-    processor set:     A group of processors on the Blue Gene system which have
-    one or more IO processor (Pset)
+  processor set:     A group of processors on the Blue Gene system which have
+  one or more IO processor (Pset)
 
-    IO-node:           A special Blue Gene node dedicated to performing IO.  There
-    are one or more per processor set
+  IO-node:           A special Blue Gene node dedicated to performing IO.  There
+  are one or more per processor set
 
-    IO-client:         This is software concept.  This refers to the MPI task
-    which performs IO for the PIO library
+  IO-client:         This is software concept.  This refers to the MPI task
+  which performs IO for the PIO library
 */
     int psetNum;
     int coreId;

@@ -61,7 +61,7 @@ int PIOc_strerror(int pioerr, char *errmsg)
     {
         /* Handle PIO errors. */
         switch(pioerr)
-	{
+        {
         case PIO_EBADIOTYPE:
             strcpy(errmsg, "Bad IO type");
             break;
@@ -85,8 +85,8 @@ int PIOc_strerror(int pioerr, char *errmsg)
  * nothing.
  *
  * @param level the logging level, 0 for errors only, 5 for max
- * verbosity. 
- * @returns 0 on success, error code otherwise. 
+ * verbosity.
+ * @returns 0 on success, error code otherwise.
  */
 int PIOc_set_log_level(int level)
 {
@@ -120,7 +120,7 @@ int PIOc_set_log_level(int level)
  * then increasing levels of verbosity.
  * @param fmt the format string.
  * @param ... the arguments used in format string.
-*/
+ */
 void pio_log(int severity, const char *fmt, ...)
 {
     va_list argp;
@@ -255,7 +255,7 @@ void piomemerror(iosystem_desc_t ios, size_t req, char *fname, const int line){
 void piodie(const char *msg, const char *fname, const int line)
 {
     fprintf(stderr,"Abort with message %s in file %s at line %d\n",
-	    msg ? msg : "_", fname ? fname : "_", line);
+            msg ? msg : "_", fname ? fname : "_", line);
 
     print_trace(stderr);
 #ifdef MPI_SERIAL
@@ -324,7 +324,7 @@ int check_netcdf(file_desc_t *file, int status, const char *fname, const int lin
 
     /* Check inputs. */
     assert(file);
-    
+
     ios = file->iosystem;
     ierr = PIO_NOERR;
 
@@ -369,7 +369,7 @@ int check_netcdf(file_desc_t *file, int status, const char *fname, const int lin
 int iotype_error(const int iotype, const char *fname, const int line)
 {
     fprintf(stderr, "ERROR: iotype %d not defined in build %s %d\n",
-	    iotype, fname ? fname : "_", line);
+            iotype, fname ? fname : "_", line);
     return PIO_EBADIOTYPE;
 }
 
@@ -378,17 +378,17 @@ io_region *alloc_region(const int ndims)
     io_region *region;
 
     if (!(region = (io_region *) bget(sizeof(io_region))))
-	return NULL;
+        return NULL;
     if (!(region->start = (PIO_Offset *) bget(ndims* sizeof(PIO_Offset))))
     {
-	brel(region);
-	return NULL;
+        brel(region);
+        return NULL;
     }
     if (!(region->count = (PIO_Offset *) bget(ndims* sizeof(PIO_Offset))))
     {
-	brel(region);
-	brel(region->start);
-	return NULL;
+        brel(region);
+        brel(region->start);
+        return NULL;
     }
     region->loffset = 0;
     region->next=NULL;
@@ -404,7 +404,7 @@ io_desc_t *malloc_iodesc(const int piotype, const int ndims)
     io_desc_t *iodesc;
 
     if (!(iodesc = (io_desc_t *) bget(sizeof(io_desc_t))))
-	return NULL;
+        return NULL;
 
     switch(piotype){
     case PIO_REAL:
@@ -531,8 +531,8 @@ int PIOc_readmap(const char file[], int *ndims, int *gdims[], PIO_Offset *fmaple
 
     /* Check inputs. */
     if (!ndims || !gdims || !fmaplen || !map)
-	piodie("Invalid arg ",  __FILE__, __LINE__);
-    
+        piodie("Invalid arg ",  __FILE__, __LINE__);
+
     MPI_Comm_size(comm, &npes);
     MPI_Comm_rank(comm, &myrank);
 
@@ -552,7 +552,7 @@ int PIOc_readmap(const char file[], int *ndims, int *gdims[], PIO_Offset *fmaple
         MPI_Bcast(&rnpes, 1, MPI_INT, 0, comm);
         MPI_Bcast(ndims, 1, MPI_INT, 0, comm);
         if (!(tdims = (int *) calloc((*ndims), sizeof(int))))
-	    piodie("Memory allocation error ", __FILE__, __LINE__);
+            piodie("Memory allocation error ", __FILE__, __LINE__);
         for(int i=0;i<(*ndims);i++)
             fscanf(fp,"%d ",tdims+i);
 
@@ -564,7 +564,7 @@ int PIOc_readmap(const char file[], int *ndims, int *gdims[], PIO_Offset *fmaple
                 piodie("Incomprehensable error reading map file ",__FILE__,__LINE__);
 
             if (!(tmap = malloc(maplen * sizeof(PIO_Offset))))
-		piodie("Memory allocation error ", __FILE__, __LINE__);
+                piodie("Memory allocation error ", __FILE__, __LINE__);
             for(j=0;j<maplen;j++)
                 fscanf(fp,"%ld ",tmap+j);
 
@@ -587,7 +587,7 @@ int PIOc_readmap(const char file[], int *ndims, int *gdims[], PIO_Offset *fmaple
         if(myrank<rnpes){
             MPI_Recv(&maplen, 1, PIO_OFFSET, 0, myrank+npes, comm, &status);
             if (!(tmap = malloc(maplen*sizeof(PIO_Offset))))
-		piodie("Memory allocation error ", __FILE__, __LINE__);
+                piodie("Memory allocation error ", __FILE__, __LINE__);
             MPI_Recv(tmap, maplen, PIO_OFFSET, 0, myrank, comm, &status);
             *map = tmap;
         }else{
@@ -624,7 +624,7 @@ int PIOc_writemap(const char file[], const int ndims, const int gdims[], PIO_Off
     /* Allocate memory for the nmaplen. */
     if (myrank == 0)
         if (!(nmaplen = malloc(npes * sizeof(PIO_Offset))))
-	    piodie("Memory allocation error ", __FILE__, __LINE__);
+            piodie("Memory allocation error ", __FILE__, __LINE__);
 
     MPI_Gather(&maplen, 1, PIO_OFFSET, nmaplen, 1, PIO_OFFSET, 0, comm);
 
@@ -901,4 +901,3 @@ int PIOc_openfile_retry(const int iosysid, int *ncidp, int *iotype,
 
     return ierr;
 }
-

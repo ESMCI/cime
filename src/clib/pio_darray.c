@@ -21,7 +21,7 @@ void *CN_bpool = NULL;
 /* Maximum buffer usage. */
 PIO_Offset maxusage = 0;
 
-/** Set the PIO IO node data buffer size limit. 
+/** Set the PIO IO node data buffer size limit.
  *
  * The pio_buffer_size_limit will only apply to files opened after
  * the setting is changed.
@@ -76,7 +76,7 @@ int PIOc_write_darray_multi(const int ncid, const int *vid, const int ioid,
 
     /* Check inputs. */
     if (nvars <= 0)
-	return PIO_EINVAL;
+        return PIO_EINVAL;
 
     /* Get the file info. */
     if ((ierr = pio_get_file(ncid, &file)))
@@ -149,7 +149,7 @@ int PIOc_write_darray_multi(const int ncid, const int *vid, const int ioid,
                                                 iodesc->maxiobuflen, iodesc->num_aiotasks,
                                                 vdesc0->iobuf, frame);
 
-	/* Release resources. */
+        /* Release resources. */
         if (vdesc0->iobuf)
         {
             brel(vdesc0->iobuf);
@@ -164,7 +164,7 @@ int PIOc_write_darray_multi(const int ncid, const int *vid, const int ioid,
         if (vdesc0->fillbuf)
             piodie("Attempt to overwrite existing buffer",__FILE__,__LINE__);
 
-	/* Get a buffer. */
+        /* Get a buffer. */
         vdesc0->fillbuf = bget(iodesc->holegridsize * vsize * nvars);
 
         if (vsize == 4)
@@ -176,7 +176,7 @@ int PIOc_write_darray_multi(const int ncid, const int *vid, const int ioid,
                 for (int i = 0; i < iodesc->holegridsize; i++)
                     ((double *)vdesc0->fillbuf)[i + nv * iodesc->holegridsize] = ((double *)fillvalue)[nv];
 
-	/* Write the darray based on the iotype. */	
+        /* Write the darray based on the iotype. */
         switch(file->iotype)
         {
         case PIO_IOTYPE_PNETCDF:
@@ -197,9 +197,9 @@ int PIOc_write_darray_multi(const int ncid, const int *vid, const int ioid,
             break;
         }
 
-	/* Free resources. */
+        /* Free resources. */
         if (vdesc0->fillbuf)
-	{
+        {
             brel(vdesc0->fillbuf);
             vdesc0->fillbuf = NULL;
         }
@@ -295,9 +295,9 @@ int PIOc_write_darray(const int ncid, const int vid, const int ioid,
 #ifdef _PNETCDF
             /* flush the previous record before starting a new one. this is collective */
             /*       if (vdesc->request != NULL && (vdesc->request[0] != NC_REQ_NULL) ||
-                (wmb->frame != NULL && vdesc->record != wmb->frame[0])){
-               needsflush = 2;  // flush to disk
-	       } */
+                     (wmb->frame != NULL && vdesc->record != wmb->frame[0])){
+                     needsflush = 2;  // flush to disk
+                     } */
 #endif
         }
         else
@@ -307,13 +307,13 @@ int PIOc_write_darray(const int ncid, const int vid, const int ioid,
                     wmb = wmb->next;
         }
     }
-    
+
     if ((recordvar && wmb->ioid != ioid) || (!recordvar && wmb->ioid != -(ioid)))
     {
         wmb->next = (wmulti_buffer *)bget((bufsize) sizeof(wmulti_buffer));
         if (!wmb->next)
             piomemerror(*ios,sizeof(wmulti_buffer), __FILE__,__LINE__);
-	
+
         wmb = wmb->next;
         wmb->next = NULL;
         if (recordvar)
@@ -343,11 +343,11 @@ int PIOc_write_darray(const int ncid, const int vid, const int ioid,
     {
         /* need to flush first */
         LOG((2, "%ld %d %ld %ld\n", maxfree, wmb->validvars,
-	     (1 + wmb->validvars) * arraylen * tsize, totfree));
+             (1 + wmb->validvars) * arraylen * tsize, totfree));
         cn_buffer_report(*ios, true);
-	
-	/* If needsflush == 2 flush to disk otherwise just flush to io node. */
-        flush_buffer(ncid, wmb, needsflush == 2);  
+
+        /* If needsflush == 2 flush to disk otherwise just flush to io node. */
+        flush_buffer(ncid, wmb, needsflush == 2);
     }
 
     /* Get memory for data. */
@@ -480,10 +480,10 @@ int PIOc_read_darray(const int ncid, const int vid, const int ioid,
     {
         if (ios->ioproc && rlen > 0)
         {
-	    /* Get the MPI type size. */
+            /* Get the MPI type size. */
             MPI_Type_size(iodesc->basetype, &tsize);
 
-	    /* Allocate a buffer for one record. */
+            /* Allocate a buffer for one record. */
             if (!(iobuf = bget((size_t)tsize * rlen)))
                 piomemerror(*ios, rlen * (size_t)tsize, __FILE__, __LINE__);
         }
@@ -513,7 +513,7 @@ int PIOc_read_darray(const int ncid, const int vid, const int ioid,
     {
         ierr = rearrange_io2comp(*ios, iodesc, iobuf, array);
 
-	/* Free the buffer. */
+        /* Free the buffer. */
         if (rlen > 0)
             brel(iobuf);
     }

@@ -91,7 +91,7 @@ int PIOc_def_var_deflate(int ncid, int varid, int shuffle, int deflate,
     if (ierr != PIO_NOERR)
     {
         if (!(errstr = malloc((strlen(__FILE__) + 20) * sizeof(char))))
-	    return PIO_ENOMEM;
+            return PIO_ENOMEM;
         sprintf(errstr,"in file %s",__FILE__);
     }
 
@@ -188,7 +188,7 @@ int PIOc_inq_var_deflate(int ncid, int varid, int *shufflep,
     if (ierr != PIO_NOERR)
     {
         if (!(errstr = malloc((strlen(__FILE__) + 20) * sizeof(char))))
-	    return PIO_ENOMEM;
+            return PIO_ENOMEM;
         sprintf(errstr,"in file %s",__FILE__);
     }
 
@@ -396,7 +396,7 @@ int PIOc_inq_var_chunking(int ncid, int varid, int *storagep, PIO_Offset *chunks
     if (ierr != PIO_NOERR)
     {
         if (!(errstr = malloc((strlen(__FILE__) + 20) * sizeof(char))))
-	    return PIO_ENOMEM;
+            return PIO_ENOMEM;
         sprintf(errstr,"in file %s",__FILE__);
     }
 
@@ -499,7 +499,7 @@ int PIOc_def_var_fill(int ncid, int varid, int no_fill, const void *fill_value)
     if (ierr != PIO_NOERR)
     {
         if (!(errstr = malloc((strlen(__FILE__) + 20) * sizeof(char))))
-	    return PIO_ENOMEM;
+            return PIO_ENOMEM;
         sprintf(errstr,"in file %s",__FILE__);
     }
 
@@ -595,7 +595,7 @@ int PIOc_def_var_endian(int ncid, int varid, int endian)
     if (ierr != PIO_NOERR)
     {
         if (!(errstr = malloc((strlen(__FILE__) + 20) * sizeof(char))))
-	    return PIO_ENOMEM;
+            return PIO_ENOMEM;
         sprintf(errstr,"in file %s",__FILE__);
     }
 
@@ -687,7 +687,7 @@ int PIOc_inq_var_endian(int ncid, int varid, int *endianp)
     if (ierr != PIO_NOERR)
     {
         if (!(errstr = malloc((strlen(__FILE__) + 20) * sizeof(char))))
-	    return PIO_ENOMEM;
+            return PIO_ENOMEM;
         sprintf(errstr,"in file %s",__FILE__);
     }
 
@@ -968,7 +968,7 @@ int PIOc_set_var_chunk_cache(int ncid, int varid, PIO_Offset size, PIO_Offset ne
     if (ierr != PIO_NOERR)
     {
         if (!(errstr = malloc((strlen(__FILE__) + 20) * sizeof(char))))
-	    return PIO_ENOMEM;
+            return PIO_ENOMEM;
         sprintf(errstr,"in file %s",__FILE__);
     }
 
@@ -1067,7 +1067,7 @@ int PIOc_get_var_chunk_cache(int ncid, int varid, PIO_Offset *sizep, PIO_Offset 
     if (ierr != PIO_NOERR)
     {
         if (!(errstr = malloc((strlen(__FILE__) + 20) * sizeof(char))))
-	    return PIO_ENOMEM;
+            return PIO_ENOMEM;
         sprintf(errstr,"in file %s",__FILE__);
     }
 

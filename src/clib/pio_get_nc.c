@@ -249,7 +249,7 @@ int PIOc_get_vars_float(int ncid, int varid, const PIO_Offset *start,
 
 /**
  * Get strided, muti-dimensional subset of a 64-bit floating point
- * variable.  
+ * variable.
  *
  * This routine is called collectively by all tasks in the
  * communicator ios.union_comm.
@@ -276,7 +276,7 @@ int PIOc_get_vars_double(int ncid, int varid, const PIO_Offset *start,
 
 /**
  * Get strided, muti-dimensional subset of an unsigned 64-bit int
- * variable.  
+ * variable.
  *
  * This routine is called collectively by all tasks in the
  * communicator ios.union_comm.
