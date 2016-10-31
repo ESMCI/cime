@@ -33,7 +33,7 @@ def case_lt_archive(case):
         lt_archive = LTArchive(case.get_value("MACH"))
         lt_archive_args = lt_archive.get_lt_archive_args()
         cmd = os.path.join(caseroot, "Tools","lt_archive.sh") \
-            + " " + lt_archive_args " " + "ltArchiveStatus." + lid + " 2>&1"
+            + " " + lt_archive_args + " " + "ltArchiveStatus." + lid + " 2>&1"
         run_cmd_no_fail(cmd, from_dir=caseroot)
     else:
         expect(False,
