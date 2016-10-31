@@ -14,7 +14,6 @@ if(DOXYGEN_FOUND)
     SET(C_SRC_FILES
       "${CMAKE_CURRENT_SOURCE_DIR}/../src/clib/pioc.c \\
 ${CMAKE_CURRENT_SOURCE_DIR}/../src/clib/pio_nc4.c \\
-${CMAKE_CURRENT_SOURCE_DIR}/../src/clib/pio_spmd.c \\
 ${CMAKE_CURRENT_SOURCE_DIR}/../src/clib/pio_darray.c \\
 ${CMAKE_CURRENT_SOURCE_DIR}/../src/clib/pio_get_nc.c \\
 ${CMAKE_CURRENT_SOURCE_DIR}/../src/clib/pio_put_nc.c \\
@@ -22,7 +21,6 @@ ${CMAKE_CURRENT_SOURCE_DIR}/../src/clib/pio_varm.c \\
 ${CMAKE_CURRENT_SOURCE_DIR}/../src/clib/pio_file.c \\
 ${CMAKE_CURRENT_SOURCE_DIR}/../src/clib/pio.h \\
 ${CMAKE_CURRENT_SOURCE_DIR}/../src/clib/pio_nc.c \\
-${CMAKE_CURRENT_SOURCE_DIR}/../src/clib/pio_rearrange.c \\
 ${CMAKE_CURRENT_SOURCE_DIR}/../src/clib/topology.c \\
 ${CMAKE_CURRENT_SOURCE_DIR}/../src/clib/pioc_sc.c" )
   endif ()
