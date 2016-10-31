@@ -20,7 +20,7 @@
 #include <pio_internal.h>
 
 /**
- * @ingroup PIOc_inq
+ * @ingroup PIO_inq
  * The PIO-C interface for the NetCDF function nc_inq.
  *
  * This routine is called collectively by all tasks in the
@@ -160,18 +160,26 @@ int PIOc_inq(int ncid, int *ndimsp, int *nvarsp, int *ngattsp, int *unlimdimidp)
 }
 
 /**
- * @ingroup PIOc_inq_ndims
- * The PIO-C interface for the NetCDF function nc_inq_ndims.
+ * @ingroup PIO_inq_ndims
+ * Find out how many dimensions are defined in the file.
+ *
+ * @param ncid the ncid of the open file.
+ * @param ndimsp a pointer that will get the number of dimensions.
+ * @returns 0 for success, error code otherwise.
  */
-int PIOc_inq_ndims (int ncid, int *ndimsp)
+int PIOc_inq_ndims(int ncid, int *ndimsp)
 {
     LOG((1, "PIOc_inq_ndims"));
     return PIOc_inq(ncid, ndimsp, NULL, NULL, NULL);
 }
 
 /**
- * @ingroup PIOc_inq_nvars
- * The PIO-C interface for the NetCDF function nc_inq_nvars.
+ * @ingroup PIO_inq_nvars
+ * Find out how many variables are defined in a file.
+ *
+ * @param ncid the ncid of the open file.
+ * @param nvarsp a pointer that will get the number of variables.
+ * @returns 0 for success, error code otherwise.
  */
 int PIOc_inq_nvars(int ncid, int *nvarsp)
 {
@@ -179,8 +187,12 @@ int PIOc_inq_nvars(int ncid, int *nvarsp)
 }
 
 /**
- * @ingroup PIOc_inq_natts
- * The PIO-C interface for the NetCDF function nc_inq_natts.
+ * @ingroup PIO_inq_natts
+ * Find out how many global attributes are defined in a file.
+ *
+ * @param ncid the ncid of the open file.
+ * @param nattsp a pointer that will get the number of attributes.
+ * @returns 0 for success, error code otherwise.
  */
 int PIOc_inq_natts(int ncid, int *ngattsp)
 {
@@ -188,8 +200,13 @@ int PIOc_inq_natts(int ncid, int *ngattsp)
 }
 
 /**
- * @ingroup PIOc_inq_unlimdim
- * The PIO-C interface for the NetCDF function nc_inq_unlimdim.
+ * @ingroup PIO_inq_unlimdim
+ * Find out the dimension ids of any unlimited dimensions.
+ *
+ * @param ncid the ncid of the open file.
+ * @param nattsp a pointer that will get an array of unlimited
+ * dimension IDs.
+ * @returns 0 for success, error code otherwise.
  */
 int PIOc_inq_unlimdim(int ncid, int *unlimdimidp)
 {
@@ -198,8 +215,14 @@ int PIOc_inq_unlimdim(int ncid, int *unlimdimidp)
 }
 
 /**
- * @ingroup PIOc_typelen
- * The PIO-C interface for the NetCDF function nctypelen.
+ * @ingroup PIO_typelen
+ * Learn the name and size of a type.
+ *
+ * @param ncid the ncid of the open file.
+ * @param xtype the type to learn about
+ * @param name pointer that will get the name of the type.
+ * @param sizep pointer that will get the size of the type in bytes.
+ * @returns 0 for success, error code otherwise.
  */
 int PIOc_inq_type(int ncid, nc_type xtype, char *name, PIO_Offset *sizep)
 {
@@ -287,10 +310,14 @@ int PIOc_inq_type(int ncid, nc_type xtype, char *name, PIO_Offset *sizep)
 }
 
 /**
- * @ingroup PIOc_inq_format
- * The PIO-C interface for the NetCDF function nc_inq_format.
+ * @ingroup PIO_inq_format
+ * Learn the netCDF format of an open file.
+ *
+ * @param ncid the ncid of an open file.
+ * @param formatp a pointer that will get the format.
+ * @returns 0 for success, error code otherwise.
  */
-int PIOc_inq_format (int ncid, int *formatp)
+int PIOc_inq_format(int ncid, int *formatp)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Pointer to file information. */
@@ -359,7 +386,7 @@ int PIOc_inq_format (int ncid, int *formatp)
 }
 
 /**
- * @ingroup PIOc_inq_dim
+ * @ingroup PIO_inq_dim
  * The PIO-C interface for the NetCDF function nc_inq_dim.
  *
  * This routine is called collectively by all tasks in the communicator
@@ -467,8 +494,14 @@ int PIOc_inq_dim(int ncid, int dimid, char *name, PIO_Offset *lenp)
 }
 
 /**
- * @ingroup PIOc_inq_dimname
- * The PIO-C interface for the NetCDF function nc_inq_dimname.
+ * @ingroup PIO_inq_dimname
+ * Find the name of a dimension.
+ *
+ * @param ncid the ncid of an open file.
+ * @param dimid the dimension ID.
+ * @param name a pointer that gets the name of the dimension. Igorned
+ * if NULL.
+ * @returns 0 for success, error code otherwise.
  */
 int PIOc_inq_dimname(int ncid, int dimid, char *name)
 {
@@ -477,8 +510,14 @@ int PIOc_inq_dimname(int ncid, int dimid, char *name)
 }
 
 /**
- * @ingroup PIOc_inq_dimlen
- * The PIO-C interface for the NetCDF function nc_inq_dimlen.
+ * @ingroup PIO_inq_dimlen
+ * Find the length of a dimension.
+ *
+ * @param ncid the ncid of an open file.
+ * @param dimid the dimension ID.
+ * @param lenp a pointer that gets the length of the dimension. Igorned
+ * if NULL.
+ * @returns 0 for success, error code otherwise.
  */
 int PIOc_inq_dimlen(int ncid, int dimid, PIO_Offset *lenp)
 {
@@ -486,7 +525,7 @@ int PIOc_inq_dimlen(int ncid, int dimid, PIO_Offset *lenp)
 }
 
 /**
- * @ingroup PIOc_inq_dimid
+ * @ingroup PIO_inq_dimid
  * The PIO-C interface for the NetCDF function nc_inq_dimid.
  *
  * This routine is called collectively by all tasks in the communicator
@@ -577,7 +616,7 @@ int PIOc_inq_dimid(int ncid, const char *name, int *idp)
 }
 
 /**
- * @ingroup PIOc_inq_var
+ * @ingroup PIO_inq_var
  * The PIO-C interface for the NetCDF function nc_inq_var.
  *
  * This routine is called collectively by all tasks in the communicator
@@ -590,7 +629,7 @@ int PIOc_inq_dimid(int ncid, const char *name, int *idp)
  * @param varid the variable ID.
  * @param xtypep a pointer that will get the type of the attribute.
  * @param nattsp a pointer that will get the number of attributes
- * @return PIO_NOERR for success, error code otherwise.  See PIOc_Set_File_Error_Handling
+ * @return PIO_NOERR for success, error code otherwise.
  */
 int PIOc_inq_var(int ncid, int varid, char *name, nc_type *xtypep, int *ndimsp,
                  int *dimidsp, int *nattsp)
@@ -740,35 +779,58 @@ int PIOc_inq_var(int ncid, int varid, char *name, nc_type *xtypep, int *ndimsp,
 }
 
 /**
- * @ingroup PIOc_inq_varname
- * The PIO-C interface for the NetCDF function nc_inq_varname.
+ * @ingroup PIO_inq_varname
+ * Get the name of a variable.
+ *
+ * @param ncid the ncid of the open file.
+ * @param varid the variable ID.
+ * @param name a pointer that will get the variable name.
+ * @return PIO_NOERR for success, error code otherwise.
  */
-int PIOc_inq_varname (int ncid, int varid, char *name)
+int PIOc_inq_varname(int ncid, int varid, char *name)
 {
     return PIOc_inq_var(ncid, varid, name, NULL, NULL, NULL, NULL);
 }
 
 /**
- * @ingroup PIOc_inq_vartype
- * The PIO-C interface for the NetCDF function nc_inq_vartype.
+ * @ingroup PIO_inq_vartype
+ * Find the type of a variable.
+ *
+ * @param ncid the ncid of the open file.
+ * @param varid the variable ID.
+ * @param xtypep a pointer that will get the type of the
+ * attribute. Ignored if NULL.
+ * @return PIO_NOERR for success, error code otherwise.
  */
-int PIOc_inq_vartype (int ncid, int varid, nc_type *xtypep)
+int PIOc_inq_vartype(int ncid, int varid, nc_type *xtypep)
 {
     return PIOc_inq_var(ncid, varid, NULL, xtypep, NULL, NULL, NULL);
 }
 
 /**
- * @ingroup PIOc_inq_varndims
- * The PIO-C interface for the NetCDF function nc_inq_varndims.
+ * @ingroup PIO_inq_varndims
+ * Find the number of dimensions of a variable.
+ *
+ * @param ncid the ncid of the open file.
+ * @param varid the variable ID.
+ * @param ndimsp a pointer that will get the number of
+ * dimensions. Ignored if NULL.
+ * @return PIO_NOERR for success, error code otherwise.
  */
-int PIOc_inq_varndims (int ncid, int varid, int *ndimsp)
+int PIOc_inq_varndims(int ncid, int varid, int *ndimsp)
 {
     return PIOc_inq_var(ncid, varid, NULL, NULL, ndimsp, NULL, NULL);
 }
 
 /**
- * @ingroup PIOc_inq_vardimid
- * The PIO-C interface for the NetCDF function nc_inq_vardimid.
+ * @ingroup PIO_inq_vardimid
+ * Find the dimension IDs associated with a variable.
+ *
+ * @param ncid the ncid of the open file.
+ * @param varid the variable ID.
+ * @param dimidsp a pointer that will get an array of dimids. Ignored
+ * if NULL.
+ * @return PIO_NOERR for success, error code otherwise.
  */
 int PIOc_inq_vardimid(int ncid, int varid, int *dimidsp)
 {
@@ -776,16 +838,22 @@ int PIOc_inq_vardimid(int ncid, int varid, int *dimidsp)
 }
 
 /**
- * @ingroup PIOc_inq_varnatts
- * The PIO-C interface for the NetCDF function nc_inq_varnatts.
+ * @ingroup PIO_inq_varnatts
+ * Find the number of attributes associated with a variable.
+ *
+ * @param ncid the ncid of the open file.
+ * @param varid the variable ID.
+ * @param nattsp a pointer that will get the number of attriburtes. Ignored
+ * if NULL.
+ * @return PIO_NOERR for success, error code otherwise.
  */
-int PIOc_inq_varnatts (int ncid, int varid, int *nattsp)
+int PIOc_inq_varnatts(int ncid, int varid, int *nattsp)
 {
     return PIOc_inq_var(ncid, varid, NULL, NULL, NULL, NULL, nattsp);
 }
 
 /**
- * @ingroup PIOc_inq_varid
+ * @ingroup PIO_inq_varid
  * The PIO-C interface for the NetCDF function nc_inq_varid.
  *
  * This routine is called collectively by all tasks in the communicator
@@ -799,7 +867,7 @@ int PIOc_inq_varnatts (int ncid, int varid, int *nattsp)
  * @param varidp a pointer that will get the variable id
  * @return PIO_NOERR for success, error code otherwise.  See PIOc_Set_File_Error_Handling
  */
-int PIOc_inq_varid (int ncid, const char *name, int *varidp)
+int PIOc_inq_varid(int ncid, const char *name, int *varidp)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Pointer to file information. */
@@ -873,7 +941,7 @@ int PIOc_inq_varid (int ncid, const char *name, int *varidp)
 }
 
 /**
- * @ingroup PIOc_inq_att
+ * @ingroup PIO_inq_att
  * The PIO-C interface for the NetCDF function nc_inq_att.
  *
  * This routine is called collectively by all tasks in the communicator
@@ -886,7 +954,7 @@ int PIOc_inq_varid (int ncid, const char *name, int *varidp)
  * @param varid the variable ID.
  * @param xtypep a pointer that will get the type of the attribute.
  * @param lenp a pointer that will get the number of values
- * @return PIO_NOERR for success, error code otherwise.  See PIOc_Set_File_Error_Handling
+ * @return PIO_NOERR for success, error code otherwise.
  */
 int PIOc_inq_att(int ncid, int varid, const char *name, nc_type *xtypep,
                  PIO_Offset *lenp)
@@ -979,17 +1047,31 @@ int PIOc_inq_att(int ncid, int varid, const char *name, nc_type *xtypep,
 }
 
 /**
- * @ingroup PIOc_inq_attlen
- * The PIO-C interface for the NetCDF function nc_inq_attlen.
+ * @ingroup PIO_inq_attlen
+ * Get the length of an attribute.
+ *
+ * @param ncid the ID of an open file.
+ * @param varid the variable ID, or NC_GLOBAL for global attributes.
+ * @param name the name of the attribute.
+ * @param lenp a pointer that gets the lenght of the attribute
+ * array. Ignored if NULL.
+ * @return PIO_NOERR for success, error code otherwise.
  */
-int PIOc_inq_attlen (int ncid, int varid, const char *name, PIO_Offset *lenp)
+int PIOc_inq_attlen(int ncid, int varid, const char *name, PIO_Offset *lenp)
 {
     return PIOc_inq_att(ncid, varid, name, NULL, lenp);
 }
 
 /**
- * @ingroup PIOc_inq_atttype
- * The PIO-C interface for the NetCDF function nc_inq_atttype.
+ * @ingroup PIO_inq_atttype
+ * Get the type of an attribute.
+ *
+ * @param ncid the ID of an open file.
+ * @param varid the variable ID, or NC_GLOBAL for global attributes.
+ * @param name the name of the attribute.
+ * @param xtypep a pointer that gets the type of the
+ * attribute. Ignored if NULL.
+ * @return PIO_NOERR for success, error code otherwise.
  */
 int PIOc_inq_atttype(int ncid, int varid, const char *name, nc_type *xtypep)
 {
@@ -997,7 +1079,7 @@ int PIOc_inq_atttype(int ncid, int varid, const char *name, nc_type *xtypep)
 }
 
 /**
- * @ingroup PIOc_inq_attname
+ * @ingroup PIO_inq_attname
  * The PIO-C interface for the NetCDF function nc_inq_attname.
  *
  * This routine is called collectively by all tasks in the communicator
@@ -1092,7 +1174,7 @@ int PIOc_inq_attname(int ncid, int varid, int attnum, char *name)
 }
 
 /**
- * @ingroup PIOc_inq_attid
+ * @ingroup PIO_inq_attid
  * The PIO-C interface for the NetCDF function nc_inq_attid.
  *
  * This routine is called collectively by all tasks in the communicator
@@ -1189,7 +1271,7 @@ int PIOc_inq_attid(int ncid, int varid, const char *name, int *idp)
 }
 
 /**
- * @ingroup PIOc_rename_dim
+ * @ingroup PIO_rename_dim
  * The PIO-C interface for the NetCDF function nc_rename_dim.
  *
  * This routine is called collectively by all tasks in the communicator
@@ -1276,7 +1358,7 @@ int PIOc_rename_dim(int ncid, int dimid, const char *name)
 }
 
 /**
- * @ingroup PIOc_rename_var
+ * @ingroup PIO_rename_var
  * The PIO-C interface for the NetCDF function nc_rename_var.
  *
  * This routine is called collectively by all tasks in the communicator
@@ -1364,7 +1446,7 @@ int PIOc_rename_var(int ncid, int varid, const char *name)
 }
 
 /**
- * @ingroup PIOc_rename_att
+ * @ingroup PIO_rename_att
  * The PIO-C interface for the NetCDF function nc_rename_att.
  *
  * This routine is called collectively by all tasks in the communicator
@@ -1378,8 +1460,8 @@ int PIOc_rename_var(int ncid, int varid, const char *name)
  * @return PIO_NOERR for success, error code otherwise.  See
  * PIOc_Set_File_Error_Handling
  */
-int PIOc_rename_att (int ncid, int varid, const char *name,
-                     const char *newname)
+int PIOc_rename_att(int ncid, int varid, const char *name,
+		    const char *newname)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Pointer to file information. */
@@ -1458,7 +1540,7 @@ int PIOc_rename_att (int ncid, int varid, const char *name,
 }
 
 /**
- * @ingroup PIOc_del_att
+ * @ingroup PIO_del_att
  * The PIO-C interface for the NetCDF function nc_del_att.
  *
  * This routine is called collectively by all tasks in the communicator
@@ -1469,7 +1551,8 @@ int PIOc_rename_att (int ncid, int varid, const char *name,
  * @param ncid the ncid of the open file, obtained from
  * PIOc_openfile() or PIOc_createfile().
  * @param varid the variable ID.
- * @return PIO_NOERR for success, error code otherwise.  See PIOc_Set_File_Error_Handling
+ * @param name of the attribute to delete.
+ * @return PIO_NOERR for success, error code otherwise.
  */
 int PIOc_del_att(int ncid, int varid, const char *name)
 {
@@ -1543,7 +1626,7 @@ int PIOc_del_att(int ncid, int varid, const char *name)
 }
 
 /**
- * @ingroup PIOc_set_fill
+ * @ingroup PIO_set_fill
  * The PIO-C interface for the NetCDF function nc_set_fill.
  *
  * This routine is called collectively by all tasks in the communicator
@@ -1553,9 +1636,9 @@ int PIOc_del_att(int ncid, int varid, const char *name)
  *
  * @param ncid the ncid of the open file, obtained from
  * PIOc_openfile() or PIOc_createfile().
- * @return PIO_NOERR for success, error code otherwise.  See PIOc_Set_File_Error_Handling
+ * @return PIO_NOERR for success, error code otherwise.
  */
-int PIOc_set_fill (int ncid, int fillmode, int *old_modep)
+int PIOc_set_fill(int ncid, int fillmode, int *old_modep)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Pointer to file information. */
@@ -1618,7 +1701,7 @@ int PIOc_set_fill (int ncid, int fillmode, int *old_modep)
 }
 
 /**
- * @ingroup PIOc_enddef
+ * @ingroup PIO_enddef
  * The PIO-C interface for the NetCDF function nc_enddef.
  *
  * This routine is called collectively by all tasks in the communicator
@@ -1628,7 +1711,7 @@ int PIOc_set_fill (int ncid, int fillmode, int *old_modep)
  *
  * @param ncid the ncid of the open file, obtained from
  * PIOc_openfile() or PIOc_createfile().
- * @return PIO_NOERR for success, error code otherwise.  See PIOc_Set_File_Error_Handling
+ * @return PIO_NOERR for success, error code otherwise.
  */
 int PIOc_enddef(int ncid)
 {
@@ -1636,7 +1719,7 @@ int PIOc_enddef(int ncid)
 }
 
 /**
- * @ingroup PIOc_redef
+ * @ingroup PIO_redef
  * The PIO-C interface for the NetCDF function nc_redef.
  *
  * This routine is called collectively by all tasks in the communicator
@@ -1646,7 +1729,7 @@ int PIOc_enddef(int ncid)
  *
  * @param ncid the ncid of the open file, obtained from
  * PIOc_openfile() or PIOc_createfile().
- * @return PIO_NOERR for success, error code otherwise.  See PIOc_Set_File_Error_Handling
+ * @return PIO_NOERR for success, error code otherwise.
  */
 int PIOc_redef(int ncid)
 {
@@ -1654,7 +1737,7 @@ int PIOc_redef(int ncid)
 }
 
 /**
- * @ingroup PIOc_def_dim
+ * @ingroup PIO_def_dim
  * The PIO-C interface for the NetCDF function nc_def_dim.
  *
  * This routine is called collectively by all tasks in the communicator
@@ -1665,9 +1748,9 @@ int PIOc_redef(int ncid)
  * @param ncid the ncid of the open file, obtained from
  * PIOc_openfile() or PIOc_createfile().
  * @param idp a pointer that will get the id of the variable or attribute.
- * @return PIO_NOERR for success, error code otherwise.  See PIOc_Set_File_Error_Handling
+ * @return PIO_NOERR for success, error code otherwise.
  */
-int PIOc_def_dim (int ncid, const char *name, PIO_Offset len, int *idp)
+int PIOc_def_dim(int ncid, const char *name, PIO_Offset len, int *idp)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Pointer to file information. */
@@ -1746,7 +1829,7 @@ int PIOc_def_dim (int ncid, const char *name, PIO_Offset len, int *idp)
 }
 
 /**
- * @ingroup PIOc_def_var
+ * @ingroup PIO_def_var
  * The PIO-C interface for the NetCDF function nc_def_var.
  *
  * This routine is called collectively by all tasks in the communicator
@@ -1758,11 +1841,10 @@ int PIOc_def_dim (int ncid, const char *name, PIO_Offset len, int *idp)
  * PIOc_openfile() or PIOc_createfile().
  * @param varid the variable ID.
  * @param varidp a pointer that will get the variable id
- * @return PIO_NOERR for success, error code otherwise. See
- * PIOc_Set_File_Error_Handling
+ * @return PIO_NOERR for success, error code otherwise.
  */
-int PIOc_def_var (int ncid, const char *name, nc_type xtype, int ndims,
-                  const int *dimidsp, int *varidp)
+int PIOc_def_var(int ncid, const char *name, nc_type xtype, int ndims,
+		 const int *dimidsp, int *varidp)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Pointer to file information. */
@@ -1853,7 +1935,7 @@ int PIOc_def_var (int ncid, const char *name, nc_type xtype, int ndims,
 }
 
 /**
- * @ingroup PIOc_inq_var_fill
+ * @ingroup PIO_inq_var_fill
  * The PIO-C interface for the NetCDF function nc_inq_var_fill.
  *
  * This routine is called collectively by all tasks in the communicator
@@ -1936,7 +2018,7 @@ int PIOc_inq_var_fill(int ncid, int varid, int *no_fill, void *fill_valuep)
  * Get the value of an attribute of any type.
  *
  * This routine is called collectively by all tasks in the communicator
- * ios.union_comm. 
+ * ios.union_comm.
  *
  * @param ncid the ncid of the open file, obtained from
  * PIOc_openfile() or PIOc_createfile().
@@ -2188,7 +2270,7 @@ int PIOc_put_att(int ncid, int varid, const char *name, nc_type xtype,
  * Get the value of an 64-bit floating point array attribute.
  *
  * This routine is called collectively by all tasks in the communicator
- * ios.union_comm. 
+ * ios.union_comm.
  *
  * @param ncid the ncid of the open file, obtained from
  * PIOc_openfile() or PIOc_createfile().
@@ -2207,7 +2289,7 @@ int PIOc_get_att_double(int ncid, int varid, const char *name, double *ip)
  * Get the value of an 8-bit unsigned char array attribute.
  *
  * This routine is called collectively by all tasks in the communicator
- * ios.union_comm. 
+ * ios.union_comm.
  *
  * @param ncid the ncid of the open file, obtained from
  * PIOc_openfile() or PIOc_createfile().
@@ -2226,7 +2308,7 @@ int PIOc_get_att_uchar(int ncid, int varid, const char *name, unsigned char *ip)
  * Get the value of an 16-bit unsigned integer array attribute.
  *
  * This routine is called collectively by all tasks in the communicator
- * ios.union_comm. 
+ * ios.union_comm.
  *
  * @param ncid the ncid of the open file, obtained from
  * PIOc_openfile() or PIOc_createfile().
@@ -2245,7 +2327,7 @@ int PIOc_get_att_ushort(int ncid, int varid, const char *name, unsigned short *i
  * Get the value of an 32-bit unsigned integer array attribute.
  *
  * This routine is called collectively by all tasks in the communicator
- * ios.union_comm. 
+ * ios.union_comm.
  *
  * @param ncid the ncid of the open file, obtained from
  * PIOc_openfile() or PIOc_createfile().
@@ -2264,7 +2346,7 @@ int PIOc_get_att_uint(int ncid, int varid, const char *name, unsigned int *ip)
  * Get the value of an 32-bit ingeger array attribute.
  *
  * This routine is called collectively by all tasks in the communicator
- * ios.union_comm. 
+ * ios.union_comm.
  *
  * @param ncid the ncid of the open file, obtained from
  * PIOc_openfile() or PIOc_createfile().
@@ -2283,7 +2365,7 @@ int PIOc_get_att_long(int ncid, int varid, const char *name, long *ip)
  * Get the value of an 8-bit unsigned byte array attribute.
  *
  * This routine is called collectively by all tasks in the communicator
- * ios.union_comm. 
+ * ios.union_comm.
  *
  * @param ncid the ncid of the open file, obtained from
  * PIOc_openfile() or PIOc_createfile().
@@ -2302,7 +2384,7 @@ int PIOc_get_att_ubyte(int ncid, int varid, const char *name, unsigned char *ip)
  * Get the value of an text attribute.
  *
  * This routine is called collectively by all tasks in the communicator
- * ios.union_comm. 
+ * ios.union_comm.
  *
  * @param ncid the ncid of the open file, obtained from
  * PIOc_openfile() or PIOc_createfile().
@@ -2321,7 +2403,7 @@ int PIOc_get_att_text(int ncid, int varid, const char *name, char *ip)
  * Get the value of an 8-bit signed char array attribute.
  *
  * This routine is called collectively by all tasks in the communicator
- * ios.union_comm. 
+ * ios.union_comm.
  *
  * @param ncid the ncid of the open file, obtained from
  * PIOc_openfile() or PIOc_createfile().
@@ -2340,7 +2422,7 @@ int PIOc_get_att_schar(int ncid, int varid, const char *name, signed char *ip)
  * Get the value of an 64-bit unsigned integer array attribute.
  *
  * This routine is called collectively by all tasks in the communicator
- * ios.union_comm. 
+ * ios.union_comm.
  *
  * @param ncid the ncid of the open file, obtained from
  * PIOc_openfile() or PIOc_createfile().
@@ -2359,7 +2441,7 @@ int PIOc_get_att_ulonglong(int ncid, int varid, const char *name, unsigned long 
  * Get the value of an 16-bit integer array attribute.
  *
  * This routine is called collectively by all tasks in the communicator
- * ios.union_comm. 
+ * ios.union_comm.
  *
  * @param ncid the ncid of the open file, obtained from
  * PIOc_openfile() or PIOc_createfile().
@@ -2378,7 +2460,7 @@ int PIOc_get_att_short(int ncid, int varid, const char *name, short *ip)
  * Get the value of an 32-bit integer array attribute.
  *
  * This routine is called collectively by all tasks in the communicator
- * ios.union_comm. 
+ * ios.union_comm.
  *
  * @param ncid the ncid of the open file, obtained from
  * PIOc_openfile() or PIOc_createfile().
@@ -2397,7 +2479,7 @@ int PIOc_get_att_int(int ncid, int varid, const char *name, int *ip)
  * Get the value of an 64-bit integer array attribute.
  *
  * This routine is called collectively by all tasks in the communicator
- * ios.union_comm. 
+ * ios.union_comm.
  *
  * @param ncid the ncid of the open file, obtained from
  * PIOc_openfile() or PIOc_createfile().
@@ -2416,7 +2498,7 @@ int PIOc_get_att_longlong(int ncid, int varid, const char *name, long long *ip)
  * Get the value of an 32-bit floating point array attribute.
  *
  * This routine is called collectively by all tasks in the communicator
- * ios.union_comm. 
+ * ios.union_comm.
  *
  * @param ncid the ncid of the open file, obtained from
  * PIOc_openfile() or PIOc_createfile().
