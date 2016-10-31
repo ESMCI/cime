@@ -86,8 +86,8 @@ extern "C" {
     void pio_push_request(file_desc_t *file, int request);
 
     int PIOc_openfile_retry(const int iosysid, int *ncidp, int *iotype,
-			    const char *filename, const int mode, int retry);
-    
+                            const char *filename, const int mode, int retry);
+
     iosystem_desc_t *pio_get_iosystem_from_id(int iosysid);
     int pio_add_to_iosystem_list(iosystem_desc_t *ios);
 
@@ -167,30 +167,30 @@ extern "C" {
 
     /* Darray support functions. */
     int pio_write_darray_multi_nc(file_desc_t *file, const int nvars, const int *vid,
-				  const int iodesc_ndims, MPI_Datatype basetype, const PIO_Offset *gsize,
-				  const int maxregions, io_region *firstregion, const PIO_Offset llen,
-				  const int maxiobuflen, const int num_aiotasks,
-				  void *IOBUF, const int *frame);
+                                  const int iodesc_ndims, MPI_Datatype basetype, const PIO_Offset *gsize,
+                                  const int maxregions, io_region *firstregion, const PIO_Offset llen,
+                                  const int maxiobuflen, const int num_aiotasks,
+                                  void *IOBUF, const int *frame);
     int pio_write_darray_multi_nc_serial(file_desc_t *file, const int nvars, const int *vid,
-					 const int iodesc_ndims, MPI_Datatype basetype, const PIO_Offset *gsize,
-					 const int maxregions, io_region *firstregion, const PIO_Offset llen,
-					 const int maxiobuflen, const int num_aiotasks,
-					 void *IOBUF, const int *frame);
+                                         const int iodesc_ndims, MPI_Datatype basetype, const PIO_Offset *gsize,
+                                         const int maxregions, io_region *firstregion, const PIO_Offset llen,
+                                         const int maxiobuflen, const int num_aiotasks,
+                                         void *IOBUF, const int *frame);
     int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, const int vid, void *IOBUF);
     int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc, const int vid, void *IOBUF);
 
     /* Generalized get functions. */
     int PIOc_get_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Offset *count,
-			 const PIO_Offset *stride, nc_type xtype, void *buf);
+                         const PIO_Offset *stride, nc_type xtype, void *buf);
     int PIOc_get_var1_tc(int ncid, int varid, const PIO_Offset *index, nc_type xtype,
-			 void *buf);
+                         void *buf);
 
     /* Generalized put functions. */
     int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Offset *count,
-			 const PIO_Offset *stride, nc_type xtype, const void *buf);
+                         const PIO_Offset *stride, nc_type xtype, const void *buf);
     int PIOc_put_var1_tc(int ncid, int varid, const PIO_Offset *index, nc_type xtype,
-			 const void *op);
-    
+                         const void *op);
+
 #if defined(__cplusplus)
 }
 #endif

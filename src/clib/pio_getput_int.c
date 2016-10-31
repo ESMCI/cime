@@ -574,8 +574,8 @@ int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
             vdesc = file->varlist + varid;
             if (vdesc->nreqs % PIO_REQUEST_ALLOC_CHUNK == 0)
                 if (!(vdesc->request = realloc(vdesc->request,
-					       sizeof(int) * (vdesc->nreqs + PIO_REQUEST_ALLOC_CHUNK))))
-		    return PIO_ENOMEM;
+                                               sizeof(int) * (vdesc->nreqs + PIO_REQUEST_ALLOC_CHUNK))))
+                    return PIO_ENOMEM;
             request = vdesc->request + vdesc->nreqs;
             LOG((2, "PIOc_put_vars_tc request = %d", vdesc->request));
 
@@ -715,4 +715,3 @@ int PIOc_put_var1_tc(int ncid, int varid, const PIO_Offset *index, nc_type xtype
 
     return PIOc_put_vars_tc(ncid, varid, index, count, NULL, xtype, op);
 }
-

@@ -41,108 +41,108 @@ main(int argc, char **argv)
 
     /* Initialize test. */
     if ((ret = pio_test_init(argc, argv, &my_rank, &ntasks, TARGET_NTASKS, &test_comm)))
-	ERR(ERR_INIT);
+        ERR(ERR_INIT);
     if(my_rank < TARGET_NTASKS)
     {
-      /* Figure out iotypes. */
-      if ((ret = get_iotypes(&num_flavors, flavor)))
-	ERR(ret);
+        /* Figure out iotypes. */
+        if ((ret = get_iotypes(&num_flavors, flavor)))
+            ERR(ret);
 
-      /* Split world into odd and even. */
-      MPI_Comm newcomm;
-      int even = my_rank % 2 ? 0 : 1;
-      if ((ret = MPI_Comm_split(test_comm, even, 0, &newcomm)))
-	MPIERR(ret);
-      printf("%d newcomm = %d even = %d\n", my_rank, newcomm, even);
+        /* Split world into odd and even. */
+        MPI_Comm newcomm;
+        int even = my_rank % 2 ? 0 : 1;
+        if ((ret = MPI_Comm_split(test_comm, even, 0, &newcomm)))
+            MPIERR(ret);
+        printf("%d newcomm = %d even = %d\n", my_rank, newcomm, even);
 
-      /* Get size of new communicator. */
-      int new_size;
-      if ((ret = MPI_Comm_size(newcomm, &new_size)))
-	MPIERR(ret);
+        /* Get size of new communicator. */
+        int new_size;
+        if ((ret = MPI_Comm_size(newcomm, &new_size)))
+            MPIERR(ret);
 
-    /* Initialize an intracomm for evens/odds. */
-      if ((ret = PIOc_Init_Intracomm(newcomm, new_size, STRIDE, BASE, REARRANGER, &iosysid)))
-	ERR(ret);
+        /* Initialize an intracomm for evens/odds. */
+        if ((ret = PIOc_Init_Intracomm(newcomm, new_size, STRIDE, BASE, REARRANGER, &iosysid)))
+            ERR(ret);
 
-      /* Initialize an intracomm for all processes. */
-      if ((ret = PIOc_Init_Intracomm(test_comm, TARGET_NTASKS, STRIDE, BASE, REARRANGER,
-				   &iosysid_world)))
-	ERR(ret);
+        /* Initialize an intracomm for all processes. */
+        if ((ret = PIOc_Init_Intracomm(test_comm, TARGET_NTASKS, STRIDE, BASE, REARRANGER,
+                                       &iosysid_world)))
+            ERR(ret);
 
-      int ncid;
-      int ncid2;
-      for (int i = 0; i < num_flavors; i++)
-      {
-	char fn[NUM_FILES][NC_MAX_NAME + 1];
-	char dimname[NUM_FILES][NC_MAX_NAME + 1];
+        int ncid;
+        int ncid2;
+        for (int i = 0; i < num_flavors; i++)
+        {
+            char fn[NUM_FILES][NC_MAX_NAME + 1];
+            char dimname[NUM_FILES][NC_MAX_NAME + 1];
 
-	/* Create the test files. */
-	for (int f = 0; f < NUM_FILES; f++)
-	{
-	    int lncid, dimid;
+            /* Create the test files. */
+            for (int f = 0; f < NUM_FILES; f++)
+            {
+                int lncid, dimid;
 
-	    /* Creat file and dimension name. */
-	    sprintf(fn[f], "pio_iosys_test_file%d.nc", f);
-	    sprintf(dimname[f], "dim_%d", f);
+                /* Creat file and dimension name. */
+                sprintf(fn[f], "pio_iosys_test_file%d.nc", f);
+                sprintf(dimname[f], "dim_%d", f);
 
-	    if ((ret = PIOc_createfile(iosysid_world, &lncid, &flavor[i], fn[f], NC_CLOBBER)))
-		return ret;
-	    /* Define a dimension. */
-	    if ((ret = PIOc_def_dim(lncid, dimname[f], DIMLEN, &dimid)))
-		return ret;
-	    if ((ret = PIOc_enddef(lncid)))
-		return ret;
-	    if ((ret = PIOc_closefile(lncid)))
-		return ret;
-	}
+                if ((ret = PIOc_createfile(iosysid_world, &lncid, &flavor[i], fn[f], NC_CLOBBER)))
+                    return ret;
+                /* Define a dimension. */
+                if ((ret = PIOc_def_dim(lncid, dimname[f], DIMLEN, &dimid)))
+                    return ret;
+                if ((ret = PIOc_enddef(lncid)))
+                    return ret;
+                if ((ret = PIOc_closefile(lncid)))
+                    return ret;
+            }
 
-	/* Open the first file with world iosystem. */
-	if ((ret = PIOc_openfile(iosysid_world, &ncid, &flavor[i], fn[0], PIO_WRITE)))
-	    return ret;
+            /* Open the first file with world iosystem. */
+            if ((ret = PIOc_openfile(iosysid_world, &ncid, &flavor[i], fn[0], PIO_WRITE)))
+                return ret;
 
-	/* Check the first file. */
-	char dimname_in[NC_MAX_NAME + 1];
-	if ((ret = PIOc_inq_dimname(ncid, 0, dimname_in)))
-	    return ret;
-	printf("%d ncid dimname_in = %s should be %s\n", my_rank, dimname_in, dimname[0]);
-	if (strcmp(dimname_in, dimname[0]))
-	    return ERR_WRONG;
+            /* Check the first file. */
+            char dimname_in[NC_MAX_NAME + 1];
+            if ((ret = PIOc_inq_dimname(ncid, 0, dimname_in)))
+                return ret;
+            printf("%d ncid dimname_in = %s should be %s\n", my_rank, dimname_in, dimname[0]);
+            if (strcmp(dimname_in, dimname[0]))
+                return ERR_WRONG;
 
-	/* Check the other file with the other IO. */
-	if (even)
-	{
-	    if ((ret = PIOc_openfile(iosysid, &ncid2, &flavor[i], fn[1], PIO_WRITE)))
-		return ret;
-	    if ((ret = PIOc_inq_dimname(ncid2, 0, dimname_in)))
-		return ret;
-	    printf("%d ncid2 dimname_in = %s should be %s\n", my_rank, dimname_in, dimname[1]);
-	    if (strcmp(dimname_in, dimname[1]))
-		return ERR_WRONG;
-	}
+            /* Check the other file with the other IO. */
+            if (even)
+            {
+                if ((ret = PIOc_openfile(iosysid, &ncid2, &flavor[i], fn[1], PIO_WRITE)))
+                    return ret;
+                if ((ret = PIOc_inq_dimname(ncid2, 0, dimname_in)))
+                    return ret;
+                printf("%d ncid2 dimname_in = %s should be %s\n", my_rank, dimname_in, dimname[1]);
+                if (strcmp(dimname_in, dimname[1]))
+                    return ERR_WRONG;
+            }
 
-	/* Close the still-open files. */
-	if ((ret = PIOc_closefile(ncid)))
-	    ERR(ret);
-	if (even)
-	    if ((ret = PIOc_closefile(ncid2)))
-		ERR(ret);
-      } /* next iotype */
+            /* Close the still-open files. */
+            if ((ret = PIOc_closefile(ncid)))
+                ERR(ret);
+            if (even)
+                if ((ret = PIOc_closefile(ncid2)))
+                    ERR(ret);
+        } /* next iotype */
 
-      /* Finalize PIO odd/even intracomm. */
-      if ((ret = PIOc_finalize(iosysid)))
-	ERR(ret);
+        /* Finalize PIO odd/even intracomm. */
+        if ((ret = PIOc_finalize(iosysid)))
+            ERR(ret);
 
 
-      /* Finalize PIO world intracomm. */
-      if ((ret = PIOc_finalize(iosysid_world)))
-	ERR(ret);
+        /* Finalize PIO world intracomm. */
+        if ((ret = PIOc_finalize(iosysid_world)))
+            ERR(ret);
     }/* my_rank < TARGET_NTASKS */
     MPI_Barrier(MPI_COMM_WORLD);
 
     /* Finalize test. */
     printf("%d %s finalizing...\n", my_rank, TEST_NAME);
     if ((ret = pio_test_finalize()))
-	return ERR_AWFUL;
+        return ERR_AWFUL;
 
     printf("%d %s SUCCESS!!\n", my_rank, TEST_NAME);
 

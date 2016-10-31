@@ -42,77 +42,77 @@ main(int argc, char **argv)
 
     /* Initialize test. */
     if ((ret = pio_test_init(argc, argv, &my_rank, &ntasks, TARGET_NTASKS, &test_comm)))
-	ERR(ERR_INIT);
+        ERR(ERR_INIT);
     if (my_rank < TARGET_NTASKS)
     {
-      /* Figure out iotypes. */
-      if ((ret = get_iotypes(&num_flavors, flavor)))
-	ERR(ret);
+        /* Figure out iotypes. */
+        if ((ret = get_iotypes(&num_flavors, flavor)))
+            ERR(ret);
 
-      for (int combo = 0; combo < NUM_COMBOS; combo++)
-      {
-	/* Is the current process a computation task? */
-	int comp_task = my_rank < num_io_procs[combo] ? 0 : 1;
+        for (int combo = 0; combo < NUM_COMBOS; combo++)
+        {
+            /* Is the current process a computation task? */
+            int comp_task = my_rank < num_io_procs[combo] ? 0 : 1;
 
-	/* Initialize the IO system. */
-	if ((ret = PIOc_Init_Async(test_comm, num_io_procs[combo], NULL, COMPONENT_COUNT,
-				   num_procs[combo], NULL, iosysid)))
-	    ERR(ERR_INIT);
+            /* Initialize the IO system. */
+            if ((ret = PIOc_Init_Async(test_comm, num_io_procs[combo], NULL, COMPONENT_COUNT,
+                                       num_procs[combo], NULL, iosysid)))
+                ERR(ERR_INIT);
 
-	for (int c = 0; c < COMPONENT_COUNT; c++)
-	    printf("%d iosysid[%d] = %d\n", my_rank, c, iosysid[c]);
+            for (int c = 0; c < COMPONENT_COUNT; c++)
+                printf("%d iosysid[%d] = %d\n", my_rank, c, iosysid[c]);
 
-	/* All the netCDF calls are only executed on the computation
-	 * tasks. The IO tasks have not returned from PIOc_Init_Intercomm,
-	 * and when the do, they should go straight to finalize. */
-	if (comp_task)
-	{
-	    for (int flv = 0; flv < num_flavors; flv++)
-	    {
-		char filename[NC_MAX_NAME + 1]; /* Test filename. */
-		int my_comp_idx = 0; /* Index in iosysid array. */
+            /* All the netCDF calls are only executed on the computation
+             * tasks. The IO tasks have not returned from PIOc_Init_Intercomm,
+             * and when the do, they should go straight to finalize. */
+            if (comp_task)
+            {
+                for (int flv = 0; flv < num_flavors; flv++)
+                {
+                    char filename[NC_MAX_NAME + 1]; /* Test filename. */
+                    int my_comp_idx = 0; /* Index in iosysid array. */
 
-		for (int sample = 0; sample < NUM_SAMPLES; sample++)
-		{
-		    char iotype_name[NC_MAX_NAME + 1];
-		    
-		    /* Create a filename. */
-		    if ((ret = get_iotype_name(flavor[flv], iotype_name)))
-			return ret;
-		    sprintf(filename, "%s_%s_%d_%d.nc", TEST_NAME, iotype_name, sample, my_comp_idx);
+                    for (int sample = 0; sample < NUM_SAMPLES; sample++)
+                    {
+                        char iotype_name[NC_MAX_NAME + 1];
 
-		    /* Create sample file. */
-		    printf("%d %s creating file %s\n", my_rank, TEST_NAME, filename);
-		    if ((ret = create_nc_sample(sample, iosysid[my_comp_idx], flavor[flv], filename, my_rank, NULL)))
-			ERR(ret);
+                        /* Create a filename. */
+                        if ((ret = get_iotype_name(flavor[flv], iotype_name)))
+                            return ret;
+                        sprintf(filename, "%s_%s_%d_%d.nc", TEST_NAME, iotype_name, sample, my_comp_idx);
 
-		    /* Check the file for correctness. */
-		    if ((ret = check_nc_sample(sample, iosysid[my_comp_idx], flavor[flv], filename, my_rank, NULL)))
-			ERR(ret);
-		}
-	    } /* next netcdf flavor */
+                        /* Create sample file. */
+                        printf("%d %s creating file %s\n", my_rank, TEST_NAME, filename);
+                        if ((ret = create_nc_sample(sample, iosysid[my_comp_idx], flavor[flv], filename, my_rank, NULL)))
+                            ERR(ret);
 
-	    /* Finalize the IO system. Only call this from the computation tasks. */
-	    printf("%d %s Freeing PIO resources\n", my_rank, TEST_NAME);
-	    for (int c = 0; c < COMPONENT_COUNT; c++)
-	    {
-		if ((ret = PIOc_finalize(iosysid[c])))
-		    ERR(ret);
-		printf("%d %s PIOc_finalize completed for iosysid = %d\n", my_rank, TEST_NAME,
-		       iosysid[c]);
-	    }
-	} /* endif comp_task */
+                        /* Check the file for correctness. */
+                        if ((ret = check_nc_sample(sample, iosysid[my_comp_idx], flavor[flv], filename, my_rank, NULL)))
+                            ERR(ret);
+                    }
+                } /* next netcdf flavor */
 
-	/* Wait for everyone to catch up. */
-	printf("%d %s waiting for all processes!\n", my_rank, TEST_NAME);
-	MPI_Barrier(test_comm);
-      } /* next combo */
+                /* Finalize the IO system. Only call this from the computation tasks. */
+                printf("%d %s Freeing PIO resources\n", my_rank, TEST_NAME);
+                for (int c = 0; c < COMPONENT_COUNT; c++)
+                {
+                    if ((ret = PIOc_finalize(iosysid[c])))
+                        ERR(ret);
+                    printf("%d %s PIOc_finalize completed for iosysid = %d\n", my_rank, TEST_NAME,
+                           iosysid[c]);
+                }
+            } /* endif comp_task */
+
+            /* Wait for everyone to catch up. */
+            printf("%d %s waiting for all processes!\n", my_rank, TEST_NAME);
+            MPI_Barrier(test_comm);
+        } /* next combo */
     }/* my_rank < TARGET_NTASKS */
     MPI_Barrier(MPI_COMM_WORLD);
     /* Finalize test. */
     printf("%d %s finalizing...\n", my_rank, TEST_NAME);
     if ((ret = pio_test_finalize()))
-	return ERR_AWFUL;
+        return ERR_AWFUL;
 
     printf("%d %s SUCCESS!!\n", my_rank, TEST_NAME);
 

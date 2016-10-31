@@ -29,10 +29,10 @@ int PIOc_iosystem_is_active(const int iosysid, bool *active)
         return PIO_EBADID;
 
     if (active)
-	if (ios->comp_comm == MPI_COMM_NULL && ios->io_comm == MPI_COMM_NULL)
-	    *active = false;
-	else
-	    *active = true;
+        if (ios->comp_comm == MPI_COMM_NULL && ios->io_comm == MPI_COMM_NULL)
+            *active = false;
+        else
+            *active = true;
 
     return PIO_NOERR;
 }
@@ -143,7 +143,7 @@ int PIOc_get_numiotasks(int iosysid, int *numiotasks)
         return PIO_EBADID;
 
     if (numiotasks)
-	*numiotasks = ios->num_iotasks;
+        *numiotasks = ios->num_iotasks;
 
     return PIO_NOERR;
 }
@@ -164,7 +164,7 @@ int PIOc_get_iorank(int iosysid, int *iorank)
         return PIO_EBADID;
 
     if (iorank)
-	*iorank = ios->io_rank;
+        *iorank = ios->io_rank;
 
     return PIO_NOERR;
 }
@@ -432,7 +432,7 @@ int PIOc_Init_Intracomm(const MPI_Comm comp_comm, const int num_iotasks,
          "rearr = %d", comp_comm, num_iotasks, stride, base, rearr));
 
     if (!(iosys = malloc(sizeof(iosystem_desc_t))))
-	return PIO_ENOMEM;
+        return PIO_ENOMEM;
 
     /* Copy the computation communicator into union_comm. */
     mpierr = MPI_Comm_dup(comp_comm, &iosys->union_comm);
@@ -556,7 +556,7 @@ int PIOc_Init_Intracomm_from_F90(int f90_comp_comm,
                                  const int base, const int rearr, int *iosysidp)
 {
     return PIOc_Init_Intracomm(MPI_Comm_f2c(f90_comp_comm), num_iotasks, stride, base, rearr,
-			       iosysidp);
+                               iosysidp);
 }
 
 /**
@@ -699,7 +699,7 @@ int PIOc_iam_iotask(const int iosysid, bool *ioproc)
         return PIO_EBADID;
 
     if (ioproc)
-	*ioproc = ios->ioproc;
+        *ioproc = ios->ioproc;
 
     return PIO_NOERR;
 }
@@ -721,7 +721,7 @@ int PIOc_iotask_rank(const int iosysid, int *iorank)
         return PIO_EBADID;
 
     if (iorank)
-	*iorank = ios->io_rank;
+        *iorank = ios->io_rank;
 
     return PIO_NOERR;
 }

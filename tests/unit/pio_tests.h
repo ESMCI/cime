@@ -32,18 +32,18 @@
 /** Handle MPI errors. This should only be used with MPI library
  * function calls. */
 #define MPIERR(e) do {                                                  \
-	MPI_Error_string(e, err_buffer, &resultlen);			\
-	fprintf(stderr, "MPI error, line %d, file %s: %s\n", __LINE__, __FILE__, err_buffer); \
-	MPI_Finalize();							\
-	return ERR_AWFUL;							\
+        MPI_Error_string(e, err_buffer, &resultlen);                    \
+        fprintf(stderr, "MPI error, line %d, file %s: %s\n", __LINE__, __FILE__, err_buffer); \
+        MPI_Finalize();                                                 \
+        return ERR_AWFUL;                                               \
     } while (0)
 
 /** Handle non-MPI errors by finalizing the MPI library and exiting
  * with an exit code. */
-#define ERR(e) do {				\
+#define ERR(e) do {                                                     \
         fprintf(stderr, "%d Error %d in %s, line %d\n", my_rank, e, __FILE__, __LINE__); \
-	MPI_Finalize();				\
-	return e;				\
+        MPI_Finalize();                                                 \
+        return e;                                                       \
     } while (0)
 
 /** Global err buffer for MPI. When there is an MPI error, this buffer

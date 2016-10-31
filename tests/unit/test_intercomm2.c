@@ -87,107 +87,107 @@ check_file(int iosysid, int format, char *filename, int my_rank, int verbose)
 
     /* Re-open the file to check it. */
     if (verbose)
-	printf("%d test_intercomm2 opening file %s format %d\n", my_rank, filename, format);
+        printf("%d test_intercomm2 opening file %s format %d\n", my_rank, filename, format);
     if ((ret = PIOc_openfile(iosysid, &ncid, &format, filename,
-			     NC_NOWRITE)))
-	ERR(ret);
+                             NC_NOWRITE)))
+        ERR(ret);
 
     /* Try to read the data. */
     PIO_Offset start[NDIM] = {0}, count[NDIM] = {DIM_LEN};
     int data_in[DIM_LEN];
     if ((ret = PIOc_get_vars_tc(ncid, 0, start, count, NULL, NC_INT, data_in)))
-	ERR(ret);
+        ERR(ret);
     for (int i = 0; i < DIM_LEN; i++)
     {
-	if (verbose)
-	    printf("%d test_intercomm2 read data_in[%d] = %d\n", my_rank, i, data_in[i]);
-	if (data_in[i] != i)
-	    ERR(ERR_AWFUL);
+        if (verbose)
+            printf("%d test_intercomm2 read data_in[%d] = %d\n", my_rank, i, data_in[i]);
+        if (data_in[i] != i)
+            ERR(ERR_AWFUL);
     }
 
     /* Find the number of dimensions, variables, and global attributes.*/
     if ((ret = PIOc_inq(ncid, &ndims, &nvars, &ngatts, &unlimdimid)))
-    	ERR(ret);
+        ERR(ret);
     if (ndims != 1 || nvars != 1 || ngatts != 4 || unlimdimid != -1)
-    	ERR(ERR_WRONG);
+        ERR(ERR_WRONG);
 
     /* This should return PIO_NOERR. */
     if ((ret = PIOc_inq(ncid, NULL, NULL, NULL, NULL)))
-    	ERR(ret);
+        ERR(ret);
 
     /* Check the other functions that get these values. */
     if ((ret = PIOc_inq_ndims(ncid, &ndims2)))
-    	ERR(ret);
+        ERR(ret);
     if (ndims2 != 1)
-    	ERR(ERR_WRONG);
+        ERR(ERR_WRONG);
     if ((ret = PIOc_inq_nvars(ncid, &nvars2)))
-    	ERR(ret);
+        ERR(ret);
     if (nvars2 != 1)
-    	ERR(ERR_WRONG);
+        ERR(ERR_WRONG);
     if ((ret = PIOc_inq_natts(ncid, &ngatts2)))
-    	ERR(ret);
+        ERR(ret);
     if (ngatts2 != 4)
-    	ERR(ERR_WRONG);
+        ERR(ERR_WRONG);
     if ((ret = PIOc_inq_unlimdim(ncid, &unlimdimid2)))
-    	ERR(ret);
+        ERR(ret);
     if (unlimdimid != -1)
-    	ERR(ERR_WRONG);
+        ERR(ERR_WRONG);
     /* Should succeed, do nothing. */
     if ((ret = PIOc_inq_unlimdim(ncid, NULL)))
-    	ERR(ret);
+        ERR(ret);
 
     /* Check out the dimension. */
     if ((ret = PIOc_inq_dim(ncid, 0, dimname, &dimlen)))
-    	ERR(ret);
+        ERR(ret);
     if (strcmp(dimname, DIM_NAME) || dimlen != DIM_LEN)
-    	ERR(ERR_WRONG);
+        ERR(ERR_WRONG);
 
     /* Check the other functions that get these values. */
     if ((ret = PIOc_inq_dimname(ncid, 0, dimname2)))
-    	ERR(ret);
+        ERR(ret);
     if (strcmp(dimname2, DIM_NAME))
-    	ERR(ERR_WRONG);
+        ERR(ERR_WRONG);
     if ((ret = PIOc_inq_dimlen(ncid, 0, &dimlen2)))
-    	ERR(ret);
+        ERR(ret);
     if (dimlen2 != DIM_LEN)
-    	ERR(ERR_WRONG);
+        ERR(ERR_WRONG);
     if ((ret = PIOc_inq_dimid(ncid, DIM_NAME, &dimid2)))
-    	ERR(ret);
+        ERR(ret);
     if (dimid2 != 0)
-    	ERR(ERR_WRONG);
+        ERR(ERR_WRONG);
 
     /* Check out the variable. */
     if ((ret = PIOc_inq_var(ncid, 0, varname, &vartype, &varndims, &vardimids, &varnatts)))
-    	ERR(ret);
+        ERR(ret);
     if (strcmp(varname, VAR_NAME) || vartype != NC_INT || varndims != NDIM ||
-    	vardimids != 0 || varnatts != 0)
-    	ERR(ERR_WRONG);
+        vardimids != 0 || varnatts != 0)
+        ERR(ERR_WRONG);
 
     /* Check the other functions that get these values. */
     if ((ret = PIOc_inq_varname(ncid, 0, varname2)))
-    	ERR(ret);
+        ERR(ret);
     if (strcmp(varname2, VAR_NAME))
-    	ERR(ERR_WRONG);
+        ERR(ERR_WRONG);
     if ((ret = PIOc_inq_vartype(ncid, 0, &vartype2)))
-    	ERR(ret);
+        ERR(ret);
     if (vartype2 != NC_INT)
-    	ERR(ERR_WRONG);
+        ERR(ERR_WRONG);
     if ((ret = PIOc_inq_varndims(ncid, 0, &varndims2)))
-    	ERR(ret);
+        ERR(ret);
     if (varndims2 != NDIM)
-    	ERR(ERR_WRONG);
+        ERR(ERR_WRONG);
     if ((ret = PIOc_inq_vardimid(ncid, 0, &vardimids2)))
-    	ERR(ret);
+        ERR(ret);
     if (vardimids2 != 0)
-    	ERR(ERR_WRONG);
+        ERR(ERR_WRONG);
     if ((ret = PIOc_inq_varnatts(ncid, 0, &varnatts2)))
-    	ERR(ret);
+        ERR(ret);
     if (varnatts2 != 0)
-    	ERR(ERR_WRONG);
+        ERR(ERR_WRONG);
     if ((ret = PIOc_inq_varid(ncid, VAR_NAME, &varid2)))
-    	ERR(ret);
+        ERR(ret);
     if (varid2 != 0)
-    	ERR(ERR_WRONG);
+        ERR(ERR_WRONG);
 
     /* Check out the global attributes. */
     nc_type atttype;
@@ -195,50 +195,50 @@ check_file(int iosysid, int format, char *filename, int my_rank, int verbose)
     char myattname[NC_MAX_NAME + 1];
     int myid;
     if ((ret = PIOc_inq_att(ncid, NC_GLOBAL, ATT_NAME, &atttype, &attlen)))
-    	ERR(ret);
+        ERR(ret);
     if (atttype != NC_INT || attlen != 1)
-    	ERR(ERR_WRONG);
+        ERR(ERR_WRONG);
     if ((ret = PIOc_inq_attlen(ncid, NC_GLOBAL, ATT_NAME, &attlen)))
-    	ERR(ret);
+        ERR(ret);
     if (attlen != 1)
-    	ERR(ERR_WRONG);
+        ERR(ERR_WRONG);
     if ((ret = PIOc_inq_attname(ncid, NC_GLOBAL, 0, myattname)))
-    	ERR(ret);
+        ERR(ret);
     if (strcmp(ATT_NAME, myattname))
-    	ERR(ERR_WRONG);
+        ERR(ERR_WRONG);
     if ((ret = PIOc_inq_attid(ncid, NC_GLOBAL, ATT_NAME, &myid)))
-    	ERR(ret);
+        ERR(ret);
     if (myid != 0)
-    	ERR(ERR_WRONG);
+        ERR(ERR_WRONG);
     if ((ret = PIOc_get_att_int(ncid, NC_GLOBAL, ATT_NAME, &att_data)))
-    	ERR(ret);
+        ERR(ret);
     if (verbose)
-    	printf("%d test_intercomm2 att_data = %d\n", my_rank, att_data);
+        printf("%d test_intercomm2 att_data = %d\n", my_rank, att_data);
     if (att_data != ATT_VALUE)
-    	ERR(ERR_WRONG);
+        ERR(ERR_WRONG);
     if ((ret = PIOc_inq_att(ncid, NC_GLOBAL, SHORT_ATT_NAME, &atttype, &attlen)))
-    	ERR(ret);
+        ERR(ret);
     if (atttype != NC_SHORT || attlen != 1)
-    	ERR(ERR_WRONG);
+        ERR(ERR_WRONG);
     if ((ret = PIOc_get_att_short(ncid, NC_GLOBAL, SHORT_ATT_NAME, &short_att_data)))
-    	ERR(ret);
+        ERR(ret);
     if (short_att_data != ATT_VALUE)
-    	ERR(ERR_WRONG);
+        ERR(ERR_WRONG);
     if ((ret = PIOc_get_att_float(ncid, NC_GLOBAL, FLOAT_ATT_NAME, &float_att_data)))
-    	ERR(ret);
+        ERR(ret);
     if (float_att_data != ATT_VALUE)
-    	ERR(ERR_WRONG);
+        ERR(ERR_WRONG);
     if ((ret = PIOc_get_att_double(ncid, NC_GLOBAL, DOUBLE_ATT_NAME, &double_att_data)))
-    	ERR(ret);
+        ERR(ret);
     if (double_att_data != ATT_VALUE)
-    	ERR(ERR_WRONG);
+        ERR(ERR_WRONG);
 
 
     /* Close the file. */
     if (verbose)
-	printf("%d test_intercomm2 closing file (again) ncid = %d\n", my_rank, ncid);
+        printf("%d test_intercomm2 closing file (again) ncid = %d\n", my_rank, ncid);
     if ((ret = PIOc_closefile(ncid)))
-	ERR(ret);
+        ERR(ret);
 
     return 0;
 }
@@ -283,217 +283,217 @@ main(int argc, char **argv)
     MPI_Comm test_comm;
 
     if ((ret = pio_test_init(argc, argv, &my_rank, &ntasks, TARGET_NTASKS, &test_comm)))
-	ERR(ERR_INIT);
+        ERR(ERR_INIT);
 
     /* Figure out iotypes. */
     if ((ret = get_iotypes(&num_flavors, flavor)))
-      ERR(ret);
+        ERR(ret);
 
     if(my_rank < TARGET_NTASKS)
     {
-      if (verbose)
-	printf("%d: test_intercomm2 ParallelIO Library test_intercomm2 running on %d processors.\n",
-	       my_rank, ntasks);
+        if (verbose)
+            printf("%d: test_intercomm2 ParallelIO Library test_intercomm2 running on %d processors.\n",
+                   my_rank, ntasks);
 
-      /* Initialize the PIO IO system. This specifies how many and which
-       * processors are involved in I/O. */
+        /* Initialize the PIO IO system. This specifies how many and which
+         * processors are involved in I/O. */
 
-      /* Turn on logging. */
-      if ((ret = PIOc_set_log_level(3)))
-	ERR(ret);
+        /* Turn on logging. */
+        if ((ret = PIOc_set_log_level(3)))
+            ERR(ret);
 
-      /* How many processors will be used for our IO and 2 computation components. */
-      int num_procs[COMPONENT_COUNT + 1] = {2, 2};
+        /* How many processors will be used for our IO and 2 computation components. */
+        int num_procs[COMPONENT_COUNT + 1] = {2, 2};
 
-      /* Is the current process a computation task? */
-      int comp_task = my_rank < 2 ? 0 : 1;
+        /* Is the current process a computation task? */
+        int comp_task = my_rank < 2 ? 0 : 1;
 
-      /* Index of computation task in iosysid array. Varies by rank and
-     * does not apply to IO component processes. */
-      int my_comp_idx = comp_task ? 0 : -1;
+        /* Index of computation task in iosysid array. Varies by rank and
+         * does not apply to IO component processes. */
+        int my_comp_idx = comp_task ? 0 : -1;
 
-      /* Initialize the IO system. */
-      if ((ret = PIOc_Init_Async(test_comm, NUM_IO_PROCS, NULL, COMPONENT_COUNT,
-			       num_procs, NULL, iosysid)))
-	ERR(ERR_AWFUL);
+        /* Initialize the IO system. */
+        if ((ret = PIOc_Init_Async(test_comm, NUM_IO_PROCS, NULL, COMPONENT_COUNT,
+                                   num_procs, NULL, iosysid)))
+            ERR(ERR_AWFUL);
 
-      if (verbose)
-	printf("%d: test_intercomm2 ParallelIO Library test_intercomm2 comp task returned.\n",
-	       my_rank);
+        if (verbose)
+            printf("%d: test_intercomm2 ParallelIO Library test_intercomm2 comp task returned.\n",
+                   my_rank);
 
 
 
-      /* All the netCDF calls are only executed on the computation
-       * tasks. The IO tasks have not returned from PIOc_Init_Intercomm,
-       * and when the do, they should go straight to finalize. */
-      if (comp_task)
-      {
-    	for (int fmt = 1; fmt < num_flavors; fmt++)
-    	{
-    	    int ncid, varid, dimid;
-    	    PIO_Offset start[NDIM], count[NDIM] = {0};
-    	    int data[DIM_LEN];
+        /* All the netCDF calls are only executed on the computation
+         * tasks. The IO tasks have not returned from PIOc_Init_Intercomm,
+         * and when the do, they should go straight to finalize. */
+        if (comp_task)
+        {
+            for (int fmt = 1; fmt < num_flavors; fmt++)
+            {
+                int ncid, varid, dimid;
+                PIO_Offset start[NDIM], count[NDIM] = {0};
+                int data[DIM_LEN];
 
-	    /* Create the filename for this flavor. */
-	    sprintf(filename[fmt], "test_intercomm2_%d.nc", flavor[fmt]);
+                /* Create the filename for this flavor. */
+                sprintf(filename[fmt], "test_intercomm2_%d.nc", flavor[fmt]);
 
-    	    /* Create a netCDF file with one dimension and one variable. */
-    	    if (verbose)
-    	    	printf("%d test_intercomm2 creating file %s\n", my_rank, filename[fmt]);
-    	    if ((ret = PIOc_createfile(iosysid[my_comp_idx], &ncid, &flavor[fmt], filename[fmt],
-    	    			       NC_CLOBBER)))
-    	    	ERR(ret);
-    	    if (verbose)
-    	    	printf("%d test_intercomm2 file created ncid = %d\n", my_rank, ncid);
+                /* Create a netCDF file with one dimension and one variable. */
+                if (verbose)
+                    printf("%d test_intercomm2 creating file %s\n", my_rank, filename[fmt]);
+                if ((ret = PIOc_createfile(iosysid[my_comp_idx], &ncid, &flavor[fmt], filename[fmt],
+                                           NC_CLOBBER)))
+                    ERR(ret);
+                if (verbose)
+                    printf("%d test_intercomm2 file created ncid = %d\n", my_rank, ncid);
 
-    	    /* End define mode, then re-enter it. */
-    	    if ((ret = PIOc_enddef(ncid)))
-    	    	ERR(ret);
-    	    if (verbose)
-    	    	printf("%d test_intercomm2 calling redef\n", my_rank);
-    	    if ((ret = PIOc_redef(ncid)))
-    	    	ERR(ret);
+                /* End define mode, then re-enter it. */
+                if ((ret = PIOc_enddef(ncid)))
+                    ERR(ret);
+                if (verbose)
+                    printf("%d test_intercomm2 calling redef\n", my_rank);
+                if ((ret = PIOc_redef(ncid)))
+                    ERR(ret);
 
-    	    /* Test the inq_format function. */
-    	    int myformat;
-    	    if ((ret = PIOc_inq_format(ncid, &myformat)))
-    	    	ERR(ret);
-    	    if ((flavor[fmt] == PIO_IOTYPE_PNETCDF || flavor[fmt] == PIO_IOTYPE_NETCDF) &&
-    	    	myformat != 1)
-    	    	ERR(ERR_AWFUL);
-    	    else if ((flavor[fmt] == PIO_IOTYPE_NETCDF4C || flavor[fmt] == PIO_IOTYPE_NETCDF4P) &&
-    	    	     myformat != 3)
-    	    	ERR(ERR_AWFUL);
+                /* Test the inq_format function. */
+                int myformat;
+                if ((ret = PIOc_inq_format(ncid, &myformat)))
+                    ERR(ret);
+                if ((flavor[fmt] == PIO_IOTYPE_PNETCDF || flavor[fmt] == PIO_IOTYPE_NETCDF) &&
+                    myformat != 1)
+                    ERR(ERR_AWFUL);
+                else if ((flavor[fmt] == PIO_IOTYPE_NETCDF4C || flavor[fmt] == PIO_IOTYPE_NETCDF4P) &&
+                         myformat != 3)
+                    ERR(ERR_AWFUL);
 
-    	    /* Test the inq_type function for atomic types. */
-    	    char type_name[NC_MAX_NAME + 1];
-    	    PIO_Offset type_size;
-    	    #define NUM_TYPES 11
-    	    nc_type xtype[NUM_TYPES] = {NC_CHAR, NC_BYTE, NC_SHORT, NC_INT, NC_FLOAT, NC_DOUBLE,
-    	    				NC_UBYTE, NC_USHORT, NC_UINT, NC_INT64, NC_UINT64};
-    	    int type_len[NUM_TYPES] = {1, 1, 2, 4, 4, 8, 1, 2, 4, 8, 8};
-    	    int max_type = flavor[fmt] == PIO_IOTYPE_NETCDF ? NC_DOUBLE : NC_UINT64;
-    	    for (int i = 0; i < max_type; i++)
-    	    {
-    	    	if ((ret = PIOc_inq_type(ncid, xtype[i], type_name, &type_size)))
-    	    	    ERR(ret);
-    	    	if (type_size != type_len[i])
-    	    	    ERR(ERR_AWFUL);
-    	    }
+                /* Test the inq_type function for atomic types. */
+                char type_name[NC_MAX_NAME + 1];
+                PIO_Offset type_size;
+#define NUM_TYPES 11
+                nc_type xtype[NUM_TYPES] = {NC_CHAR, NC_BYTE, NC_SHORT, NC_INT, NC_FLOAT, NC_DOUBLE,
+                                            NC_UBYTE, NC_USHORT, NC_UINT, NC_INT64, NC_UINT64};
+                int type_len[NUM_TYPES] = {1, 1, 2, 4, 4, 8, 1, 2, 4, 8, 8};
+                int max_type = flavor[fmt] == PIO_IOTYPE_NETCDF ? NC_DOUBLE : NC_UINT64;
+                for (int i = 0; i < max_type; i++)
+                {
+                    if ((ret = PIOc_inq_type(ncid, xtype[i], type_name, &type_size)))
+                        ERR(ret);
+                    if (type_size != type_len[i])
+                        ERR(ERR_AWFUL);
+                }
 
-    	    /* Define a dimension. */
-    	    char dimname2[NC_MAX_NAME + 1];
-    	    if (verbose)
-    	    	printf("%d test_intercomm2 defining dimension %s\n", my_rank, DIM_NAME);
-    	    if ((ret = PIOc_def_dim(ncid, FIRST_DIM_NAME, DIM_LEN, &dimid)))
-    	    	ERR(ret);
-    	    if ((ret = PIOc_inq_dimname(ncid, 0, dimname2)))
-    	    	ERR(ret);
-    	    if (strcmp(dimname2, FIRST_DIM_NAME))
-    	    	ERR(ERR_WRONG);
-    	    if ((ret = PIOc_rename_dim(ncid, 0, DIM_NAME)))
-    	    	ERR(ret);
+                /* Define a dimension. */
+                char dimname2[NC_MAX_NAME + 1];
+                if (verbose)
+                    printf("%d test_intercomm2 defining dimension %s\n", my_rank, DIM_NAME);
+                if ((ret = PIOc_def_dim(ncid, FIRST_DIM_NAME, DIM_LEN, &dimid)))
+                    ERR(ret);
+                if ((ret = PIOc_inq_dimname(ncid, 0, dimname2)))
+                    ERR(ret);
+                if (strcmp(dimname2, FIRST_DIM_NAME))
+                    ERR(ERR_WRONG);
+                if ((ret = PIOc_rename_dim(ncid, 0, DIM_NAME)))
+                    ERR(ret);
 
-    	    /* Define a 1-D variable. */
-    	    char varname2[NC_MAX_NAME + 1];
-    	    if (verbose)
-    	    	printf("%d test_intercomm2 defining variable %s\n", my_rank, VAR_NAME);
-    	    if ((ret = PIOc_def_var(ncid, FIRST_VAR_NAME, NC_INT, NDIM, &dimid, &varid)))
-    	    	ERR(ret);
-    	    if ((ret = PIOc_inq_varname(ncid, 0, varname2)))
-    	    	ERR(ret);
-    	    if (strcmp(varname2, FIRST_VAR_NAME))
-    	    	ERR(ERR_WRONG);
-    	    if ((ret = PIOc_rename_var(ncid, 0, VAR_NAME)))
-    	    	ERR(ret);
+                /* Define a 1-D variable. */
+                char varname2[NC_MAX_NAME + 1];
+                if (verbose)
+                    printf("%d test_intercomm2 defining variable %s\n", my_rank, VAR_NAME);
+                if ((ret = PIOc_def_var(ncid, FIRST_VAR_NAME, NC_INT, NDIM, &dimid, &varid)))
+                    ERR(ret);
+                if ((ret = PIOc_inq_varname(ncid, 0, varname2)))
+                    ERR(ret);
+                if (strcmp(varname2, FIRST_VAR_NAME))
+                    ERR(ERR_WRONG);
+                if ((ret = PIOc_rename_var(ncid, 0, VAR_NAME)))
+                    ERR(ret);
 
-    	    char *buf111 = malloc(19999);
+                char *buf111 = malloc(19999);
 
-    	    /* Add a global attribute. */
-    	    if (verbose)
-    	    	printf("%d test_intercomm2 writing attributes %s\n", my_rank, ATT_NAME);
-    	    int att_data = ATT_VALUE;
-    	    short short_att_data = ATT_VALUE;
-    	    float float_att_data = ATT_VALUE;
-    	    double double_att_data = ATT_VALUE;
-    	    char attname2[NC_MAX_NAME + 1];
-    	    /* Write an att and rename it. */
-    	    if ((ret = PIOc_put_att_int(ncid, NC_GLOBAL, FIRST_ATT_NAME, NC_INT, 1, &att_data)))
-    	    	ERR(ret);
-    	    if ((ret = PIOc_inq_attname(ncid, NC_GLOBAL, 0, attname2)))
-    	    	ERR(ret);
-    	    if (strcmp(attname2, FIRST_ATT_NAME))
-    	    	ERR(ERR_WRONG);
-    	    if ((ret = PIOc_rename_att(ncid, NC_GLOBAL, FIRST_ATT_NAME, ATT_NAME)))
-    	    	ERR(ret);
+                /* Add a global attribute. */
+                if (verbose)
+                    printf("%d test_intercomm2 writing attributes %s\n", my_rank, ATT_NAME);
+                int att_data = ATT_VALUE;
+                short short_att_data = ATT_VALUE;
+                float float_att_data = ATT_VALUE;
+                double double_att_data = ATT_VALUE;
+                char attname2[NC_MAX_NAME + 1];
+                /* Write an att and rename it. */
+                if ((ret = PIOc_put_att_int(ncid, NC_GLOBAL, FIRST_ATT_NAME, NC_INT, 1, &att_data)))
+                    ERR(ret);
+                if ((ret = PIOc_inq_attname(ncid, NC_GLOBAL, 0, attname2)))
+                    ERR(ret);
+                if (strcmp(attname2, FIRST_ATT_NAME))
+                    ERR(ERR_WRONG);
+                if ((ret = PIOc_rename_att(ncid, NC_GLOBAL, FIRST_ATT_NAME, ATT_NAME)))
+                    ERR(ret);
 
-    	    /* Write an att and delete it. */
-    	    nc_type myatttype;
-    	    if ((ret = PIOc_put_att_int(ncid, NC_GLOBAL, FIRST_ATT_NAME, NC_INT, 1, &att_data)))
-    	    	ERR(ret);
-    	    if ((ret = PIOc_del_att(ncid, NC_GLOBAL, FIRST_ATT_NAME)))
-    	    	ERR(ret);
-    	    /* if ((ret = PIOc_inq_att(ncid, NC_GLOBAL, FIRST_ATT_NAME, NULL, NULL)) != PIO_ENOTATT) */
-    	    /* { */
-    	    /* 	printf("ret = %d\n", ret); */
-    	    /* 	ERR(ERR_AWFUL); */
-    	    /* } */
+                /* Write an att and delete it. */
+                nc_type myatttype;
+                if ((ret = PIOc_put_att_int(ncid, NC_GLOBAL, FIRST_ATT_NAME, NC_INT, 1, &att_data)))
+                    ERR(ret);
+                if ((ret = PIOc_del_att(ncid, NC_GLOBAL, FIRST_ATT_NAME)))
+                    ERR(ret);
+                /* if ((ret = PIOc_inq_att(ncid, NC_GLOBAL, FIRST_ATT_NAME, NULL, NULL)) != PIO_ENOTATT) */
+                /* { */
+                /*      printf("ret = %d\n", ret); */
+                /*      ERR(ERR_AWFUL); */
+                /* } */
 
-    	    /* Write some atts of different types. */
-    	    if ((ret = PIOc_put_att_short(ncid, NC_GLOBAL, SHORT_ATT_NAME, NC_SHORT, 1, &short_att_data)))
-    	    	ERR(ret);
-    	    if ((ret = PIOc_put_att_float(ncid, NC_GLOBAL, FLOAT_ATT_NAME, NC_FLOAT, 1, &float_att_data)))
-    	    	ERR(ret);
-    	    if ((ret = PIOc_put_att_double(ncid, NC_GLOBAL, DOUBLE_ATT_NAME, NC_DOUBLE, 1, &double_att_data)))
-    	    	ERR(ret);
+                /* Write some atts of different types. */
+                if ((ret = PIOc_put_att_short(ncid, NC_GLOBAL, SHORT_ATT_NAME, NC_SHORT, 1, &short_att_data)))
+                    ERR(ret);
+                if ((ret = PIOc_put_att_float(ncid, NC_GLOBAL, FLOAT_ATT_NAME, NC_FLOAT, 1, &float_att_data)))
+                    ERR(ret);
+                if ((ret = PIOc_put_att_double(ncid, NC_GLOBAL, DOUBLE_ATT_NAME, NC_DOUBLE, 1, &double_att_data)))
+                    ERR(ret);
 
-    	    /* End define mode. */
-    	    if (verbose)
-    	    	printf("%d test_intercomm2 ending define mode ncid = %d\n", my_rank, ncid);
-    	    if ((ret = PIOc_enddef(ncid)))
-    	    	ERR(ret);
+                /* End define mode. */
+                if (verbose)
+                    printf("%d test_intercomm2 ending define mode ncid = %d\n", my_rank, ncid);
+                if ((ret = PIOc_enddef(ncid)))
+                    ERR(ret);
 
-    	    /* Write some data. For the PIOc_put/get functions, all
-    	     * data must be on compmaster before the function is
-    	     * called. Only compmaster's arguments are passed to the
-    	     * async msg handler. All other computation tasks are
-    	     * ignored. */
-    	    for (int i = 0; i < DIM_LEN; i++)
-    	    	data[i] = i;
-    	    if (verbose)
-    	    	printf("%d test_intercomm2 writing data\n", my_rank);
-    	    if (verbose)
-    	    	printf("%d test_intercomm2 writing data\n", my_rank);
-    	    start[0] = 0;
-    	    count[0] = DIM_LEN;
-    	    if ((ret = PIOc_put_vars_tc(ncid, varid, start, count, NULL, NC_INT, data)))
-    	    	ERR(ret);
+                /* Write some data. For the PIOc_put/get functions, all
+                 * data must be on compmaster before the function is
+                 * called. Only compmaster's arguments are passed to the
+                 * async msg handler. All other computation tasks are
+                 * ignored. */
+                for (int i = 0; i < DIM_LEN; i++)
+                    data[i] = i;
+                if (verbose)
+                    printf("%d test_intercomm2 writing data\n", my_rank);
+                if (verbose)
+                    printf("%d test_intercomm2 writing data\n", my_rank);
+                start[0] = 0;
+                count[0] = DIM_LEN;
+                if ((ret = PIOc_put_vars_tc(ncid, varid, start, count, NULL, NC_INT, data)))
+                    ERR(ret);
 
-    	    /* Close the file. */
-    	    if (verbose)
-    	    	printf("%d test_intercomm2 closing file ncid = %d\n", my_rank, ncid);
-    	    if ((ret = PIOc_closefile(ncid)))
-    	    	ERR(ret);
+                /* Close the file. */
+                if (verbose)
+                    printf("%d test_intercomm2 closing file ncid = %d\n", my_rank, ncid);
+                if ((ret = PIOc_closefile(ncid)))
+                    ERR(ret);
 
-    	    /* Check the file for correctness. */
-    	    if ((ret = check_file(iosysid[my_comp_idx], flavor[fmt], filename[fmt], my_rank, verbose)))
-    	    	ERR(ret);
+                /* Check the file for correctness. */
+                if ((ret = check_file(iosysid[my_comp_idx], flavor[fmt], filename[fmt], my_rank, verbose)))
+                    ERR(ret);
 
-    	    /* Now delete the file. */
-    	    /* if ((ret = PIOc_deletefile(iosysid, filename[fmt]))) */
-    	    /* 	ERR(ret); */
-    	    /* if ((ret = PIOc_openfile(iosysid, &ncid, &flavor[fmt], filename[fmt], */
-    	    /* 			     NC_NOWRITE)) != PIO_ENFILE) */
-    	    /* 	ERR(ERR_AWFUL); */
+                /* Now delete the file. */
+                /* if ((ret = PIOc_deletefile(iosysid, filename[fmt]))) */
+                /*      ERR(ret); */
+                /* if ((ret = PIOc_openfile(iosysid, &ncid, &flavor[fmt], filename[fmt], */
+                /*                           NC_NOWRITE)) != PIO_ENFILE) */
+                /*      ERR(ERR_AWFUL); */
 
-    	} /* next netcdf flavor */
+            } /* next netcdf flavor */
 
-	/* Finalize the IO system. Only call this from the computation tasks. */
-	if (verbose)
-	    printf("%d test_intercomm2 Freeing PIO resources\n", my_rank);
-	if ((ret = PIOc_finalize(iosysid[my_comp_idx])))
-	    ERR(ret);
-      }
+            /* Finalize the IO system. Only call this from the computation tasks. */
+            if (verbose)
+                printf("%d test_intercomm2 Freeing PIO resources\n", my_rank);
+            if ((ret = PIOc_finalize(iosysid[my_comp_idx])))
+                ERR(ret);
+        }
 
     } /* my_rank < TARGET_NTASKS */
     MPI_Barrier(MPI_COMM_WORLD);
@@ -504,11 +504,11 @@ main(int argc, char **argv)
 #ifdef TIMING
     /* Finalize the GPTL timing library. */
     if ((ret = GPTLfinalize()))
-	return ret;
+        return ret;
 #endif
 
     if (verbose)
-	printf("%d test_intercomm2 SUCCESS!!\n", my_rank);
+        printf("%d test_intercomm2 SUCCESS!!\n", my_rank);
 
 
     return 0;
