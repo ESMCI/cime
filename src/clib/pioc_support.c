@@ -901,3 +901,130 @@ int PIOc_openfile_retry(const int iosysid, int *ncidp, int *iotype,
 
     return ierr;
 }
+
+/** Internal function to provide inq_type function for pnetcdf. 
+ *
+ * @param ncid ignored because pnetcdf does not have user-defined
+ * types.
+ * @param xtype type to learn about.
+ * @param name pointer that gets name of type. Ignored if NULL.
+ * @param sizep pointer that gets size of type. Ignored if NULL.
+ * @returns 0 on success, error code otherwise.
+ */
+int pioc_pnetcdf_inq_type(int ncid, nc_type xtype, char *name,
+                          PIO_Offset *sizep)
+{
+    int typelen;
+    char typename[NC_MAX_NAME + 1];
+
+    switch (xtype)
+    {
+    case NC_UBYTE:
+    case NC_BYTE:
+    case NC_CHAR:
+        typelen = 1;
+        break;
+    case NC_SHORT:
+    case NC_USHORT:
+        typelen = 2;
+        break;
+    case NC_UINT:
+    case NC_INT:
+    case NC_FLOAT:
+        typelen = 4;
+        break;
+    case NC_UINT64:
+    case NC_INT64:
+    case NC_DOUBLE:
+        typelen = 8;
+        break;
+    default:
+	return PIO_EBADTYPE;
+    }
+
+    /* If pointers were supplied, copy results. */
+    if (sizep)
+        *sizep = typelen;
+    if (name)
+        strcpy(name, "some type");
+
+    return PIO_NOERR;
+}
+
+/** This is an internal function that handles both PIOc_enddef and
+ * PIOc_redef.
+ * @param ncid the ncid of the file to enddef or redef
+ * @param is_enddef set to non-zero for enddef, 0 for redef.
+ * @returns PIO_NOERR on success, error code on failure. */
+int pioc_change_def(int ncid, int is_enddef)
+{
+    iosystem_desc_t *ios;  /* Pointer to io system information. */
+    file_desc_t *file;     /* Pointer to file information. */
+    int ierr = PIO_NOERR;  /* Return code from function calls. */
+    int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI functions. */
+
+    LOG((2, "pioc_change_def ncid = %d is_enddef = %d", ncid, is_enddef));
+
+    /* Find the info about this file. */
+    if ((ierr = pio_get_file(ncid, &file)))
+        return ierr;
+    ios = file->iosystem;
+
+    /* If async is in use, and this is not an IO task, bcast the parameters. */
+    if (ios->async_interface)
+    {
+        if (!ios->ioproc)
+        {
+            int msg = is_enddef ? PIO_MSG_ENDDEF : PIO_MSG_REDEF;
+            if(ios->compmaster)
+                mpierr = MPI_Send(&msg, 1, MPI_INT, ios->ioroot, 1, ios->union_comm);
+
+            if (!mpierr)
+                mpierr = MPI_Bcast(&ncid, 1, MPI_INT, ios->compmaster, ios->intercomm);
+            LOG((3, "pioc_change_def ncid = %d mpierr = %d", ncid, mpierr));
+        }
+
+        /* Handle MPI errors. */
+        LOG((3, "pioc_change_def handling MPI errors"));
+        if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
+            check_mpi(file, mpierr2, __FILE__, __LINE__);
+        if (mpierr)
+            return check_mpi(file, mpierr, __FILE__, __LINE__);
+    }
+
+    /* If this is an IO task, then call the netCDF function. */
+    LOG((3, "pioc_change_def ios->ioproc = %d", ios->ioproc));
+    if (ios->ioproc)
+    {
+        LOG((3, "pioc_change_def calling netcdf function file->fh = %d file->do_io = %d",
+             file->fh, file->do_io));
+#ifdef _PNETCDF
+        if (file->iotype == PIO_IOTYPE_PNETCDF)
+            if (is_enddef)
+                ierr = ncmpi_enddef(file->fh);
+            else
+                ierr = ncmpi_redef(file->fh);
+#endif /* _PNETCDF */
+#ifdef _NETCDF
+        if (file->iotype != PIO_IOTYPE_PNETCDF && file->do_io)
+            if (is_enddef)
+            {
+                LOG((3, "pioc_change_def calling nc_enddef file->fh = %d", file->fh));
+                ierr = nc_enddef(file->fh);
+            }
+            else
+                ierr = nc_redef(file->fh);
+#endif /* _NETCDF */
+    }
+
+    /* Broadcast and check the return code. */
+    LOG((3, "pioc_change_def bcasting return code ierr = %d", ierr));
+    if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
+        return check_mpi(file, mpierr, __FILE__, __LINE__);
+    if (ierr)
+        return check_netcdf(file, ierr, __FILE__, __LINE__);
+    LOG((3, "pioc_change_def succeeded"));
+
+    return ierr;
+}
+

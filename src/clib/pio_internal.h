@@ -191,6 +191,14 @@ extern "C" {
     int PIOc_put_var1_tc(int ncid, int varid, const PIO_Offset *index, nc_type xtype,
                          const void *op);
 
+    /* An internal replacement for a function pnetcdf does not
+     * have. */
+    int pioc_pnetcdf_inq_type(int ncid, nc_type xtype, char *name,
+			      PIO_Offset *sizep);
+
+    /* Handle end and re-defs. */
+    int pioc_change_def(int ncid, int is_enddef);    
+
 #if defined(__cplusplus)
 }
 #endif
