@@ -33,6 +33,7 @@
 * PIO Stride : Set via "--pio-tf-stride" command line option
 * Number of PIO I/O tasks : Set via "--pio-tf-num-io-tasks" command line option
 * Number of PIO aggregators : Set via "--pio-tf-num-aggregators" command line option
+* PIO logging level : Set via "--pio-tf-log-level" command line option
 
  The above options allow us to run the same test with different PIO parameters.
 
@@ -137,5 +138,5 @@
 
 # Debugging failed tests
  
-* Run the test suite using ctest with the "--verbose" option. This outputs a lot of information from the testing framework (to stdout), including the various tests run and the reason for failure. All information in the output from the PIO testing framework is prepended with the `PIO_TF: ` tag.
-* Run the failing test manually (using the MPI job launcher) and debug it.
+* Run the test suite using ctest with the "--verbose" option. This outputs a lot of information from the testing framework (to stdout), including the various tests run and the reason for failure. All information in the output from the PIO testing framework is prepended with the `PIO_TF: ` tag. To run a single failing test use the "-R" option available with ctest (e.g. To only run "pio_iosystem_tests3", ctest --verbose -R pio_iosystem_tests3).
+* Run the failing test manually (using the MPI job launcher) and debug it. Also consider running the test with PIO log level > 0 (mpiexec -n 4 ./tests/general/pio_iosystem_tests3 --pio-tf-log-level=6)
