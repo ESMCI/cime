@@ -13,9 +13,10 @@ MODULE pio_tutil
     ENUMERATOR  ::  IARG_STRIDE_SIDX = 1
     ENUMERATOR  ::  IARG_NUM_IO_TASKS_SIDX
     ENUMERATOR  ::  IARG_NUM_AGGREGATORS_SIDX
+    ENUMERATOR  ::  IARG_LOG_LEVEL_SIDX
     ! Unfortunately since fortran starts with index 1 we need the
     ! hack below. Don't forget to update when adding more argvs
-    ENUMERATOR  ::  NUM_IARGS = IARG_NUM_AGGREGATORS_SIDX
+    ENUMERATOR  ::  NUM_IARGS = IARG_LOG_LEVEL_SIDX
     ENUMERATOR  ::  IARG_MAX_SIDX = NUM_IARGS
   END ENUM
 
@@ -166,6 +167,12 @@ CONTAINS
 
     ! Set PIO to bcast error
     CALL PIO_seterrorhandling(pio_tf_iosystem_, PIO_BCAST_ERROR)
+
+    ! Set PIO logging level
+    ierr = PIO_set_log_level(pio_tf_log_level_)
+    if(ierr /= PIO_NOERR) then
+      PRINT *, "PIO_TF: Error setting PIO logging level"
+    end if
   END SUBROUTINE PIO_TF_Init_
 
   ! Finalize Testing framework - Internal (Not directly used by unit tests)
@@ -978,6 +985,8 @@ CONTAINS
         READ(argv(pos+1:), *) pio_tf_num_aggregators_
       ELSE IF (argv(:pos) == "--pio-tf-stride=") THEN
         READ(argv(pos+1:), *) pio_tf_stride_
+      ELSE IF (argv(:pos) == "--pio-tf-log-level=") THEN
+        READ(argv(pos+1:), *) pio_tf_log_level_
       ELSE IF (argv(:pos) == "--pio-tf-input-file=") THEN
         PRINT *, "This option is not implemented yet"
       END IF
@@ -1008,12 +1017,14 @@ CONTAINS
       send_buf(IARG_STRIDE_SIDX) = pio_tf_stride_
       send_buf(IARG_NUM_IO_TASKS_SIDX) = pio_tf_num_io_tasks_
       send_buf(IARG_NUM_AGGREGATORS_SIDX) = pio_tf_num_aggregators_
+      send_buf(IARG_LOG_LEVEL_SIDX) = pio_tf_log_level_
     END IF
     ! Make sure all processes get the input args
     CALL MPI_BCAST(send_buf, NUM_IARGS, MPI_INTEGER, 0, pio_tf_comm_, ierr)
     pio_tf_stride_ = send_buf(IARG_STRIDE_SIDX)
     pio_tf_num_io_tasks_ = send_buf(IARG_NUM_IO_TASKS_SIDX)
     pio_tf_num_aggregators_ = send_buf(IARG_NUM_AGGREGATORS_SIDX)
+    pio_tf_log_level_ = send_buf(IARG_LOG_LEVEL_SIDX)
 
   END SUBROUTINE Read_input
 END MODULE pio_tutil
