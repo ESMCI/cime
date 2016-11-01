@@ -528,9 +528,6 @@ int PIOc_Init_Intracomm(const MPI_Comm comp_comm, const int num_iotasks,
         /* Add this iosys struct to the list in the PIO library. */
         *iosysidp = pio_add_to_iosystem_list(iosys);
 
-        /* Get some info from the environment. */
-        pio_get_env();
-
         /* Allocate buffer space for compute nodes. */
         compute_buffer_init(*iosys);
 
