@@ -4,9 +4,13 @@
  *
  */
 #include <pio.h>
-#ifdef TIMING
-#include <gptl.h>
-#endif
+#include <pio_tests.h>
+
+/* The number of tasks this test should run on. */
+#define TARGET_NTASKS 4
+
+/* The name of this test. */
+#define TEST_NAME "test_darray"
 
 #define NUM_NETCDF_FLAVORS 4
 #define NDIM 3
@@ -28,14 +32,6 @@
         fprintf(stderr, "MPI error, line %d, file %s: %s\n", __LINE__, __FILE__, err_buffer); \
         MPI_Finalize();                                                 \
         return ERR_AWFUL;                                               \
-    } while (0)
-
-/** Handle non-MPI errors by finalizing the MPI library and exiting
- * with an exit code. */
-#define ERR(e) do {                                                     \
-        fprintf(stderr, "Error %d in %s, line %d\n", e, __FILE__, __LINE__); \
-        MPI_Finalize();                                                 \
-        return e;                                                       \
     } while (0)
 
 /** Global err buffer for MPI. */
