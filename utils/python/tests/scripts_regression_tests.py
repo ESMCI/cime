@@ -27,7 +27,7 @@ MACHINE     = Machines()
 FAST_ONLY   = False
 NO_BATCH    = False
 
-os.environ["CIME_GLOBAL_WALLTIME"] = "0:05:00"
+os.environ["CIME_GLOBAL_WALLTIME"] = "00:05:00"
 
 # pragma pylint: disable=protected-access
 ###############################################################################
