@@ -94,7 +94,7 @@ SUBROUTINE create_file(comm, iosys, iotype, fname, attname, dimname, ret)
     call PIO_closefile(pio_file)
 END SUBROUTINE create_file
 
-! Check the contents of file : Check the 
+! Check the contents of file : Check the
 ! global attribute 'filename' (should be equal to the
 ! name of the file, fname)
 SUBROUTINE check_file(comm, iosys, iotype, pio_file, fname, attname, dimname, ret)
@@ -127,7 +127,7 @@ SUBROUTINE check_file(comm, iosys, iotype, pio_file, fname, attname, dimname, re
     PIO_TF_PASSERT(val .eq. fname, comm, "Attribute value is not the expected value")
 END SUBROUTINE check_file
 
-! Open and check the contents of file : open it and check the 
+! Open and check the contents of file : open it and check the
 ! global attribute 'filename' (should be equal to the
 ! name of the file, fname)
 SUBROUTINE open_and_check_file(comm, iosys, iotype, pio_file, fname, &
@@ -156,7 +156,7 @@ SUBROUTINE open_and_check_file(comm, iosys, iotype, pio_file, fname, &
     end if
 END SUBROUTINE open_and_check_file
 
-! Create three files with one iosystem - with all procs, and open/read with 
+! Create three files with one iosystem - with all procs, and open/read with
 ! another iosystem - subset (odd/even) of procs
 PIO_TF_AUTO_TEST_SUB_BEGIN three_files_two_iosystems_odd_even
   implicit none
