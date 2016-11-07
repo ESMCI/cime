@@ -34,7 +34,7 @@ function (platform_name RETURN_VARIABLE)
         
         set (${RETURN_VARIABLE} "alcf" PARENT_SCOPE)
         
-    # ALCF/Argonne Machines
+    # NERSC Machines
     elseif (SITENAME MATCHES "^edison" OR
         SITENAME MATCHES "^cori")
         

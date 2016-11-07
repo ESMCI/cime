@@ -1,8 +1,8 @@
 #!/bin/sh
 #==============================================================================
 #
-#  This script defines how to run CTest on the Argonne Leadership Computing
-#  Facility systems (mira/cetus/vesta/cooley).
+#  This script defines how to run CTest on the NCAR CGD local cluster
+#  Hobart.
 #
 #  This assumes the CTest model name (e.g., "Nightly") is passed to it when
 #  run.
