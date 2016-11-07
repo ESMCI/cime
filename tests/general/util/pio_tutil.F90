@@ -41,11 +41,11 @@ MODULE pio_tutil
   ! PIO_TF_TEST_RES_FMT is used for formatted test result output
   ! -- Useful for writes like
   ! HEADER_STRING, TEST_DESC, FOOTER_STRING, TEST_STATUS
-  ! "PIO_TF: Test no: 12", "Test name, desc etc", "-----", "PASSED" 
+  ! "PIO_TF: Test no: 12", "Test name, desc etc", "-----", "PASSED"
   CHARACTER(LEN=*), PARAMETER :: PIO_TF_TEST_RES_FMT = "(A20,T22,A40,T64,A6,T72,A6)"
   ! -- Useful for writes like
   ! HEADER_STRING, NUMBER_OF_TESTS, FOOTER_STRING, TEST_STATUS
-  ! "PIO_TF: [", 3, "] -----", "FAILED" 
+  ! "PIO_TF: [", 3, "] -----", "FAILED"
   CHARACTER(LEN=*), PARAMETER :: PIO_TF_TEST_RES_FMT2 = "(A20,T22,I5,T28,A10,T62,A16)"
   CHARACTER(LEN=PIO_TF_MAX_STR_LEN) :: pio_tf_tmp_log_str_
 
@@ -519,7 +519,7 @@ CONTAINS
   ! Get original (multi-d) index string from 1d (reshaped) index
   SUBROUTINE PIO_TF_Get_idx_from_1d_idx(idx_1d, arr_shape, idx_str)
     INTEGER, INTENT(IN) :: idx_1d
-    INTEGER, DIMENSION(:), INTENT(IN) :: arr_shape 
+    INTEGER, DIMENSION(:), INTENT(IN) :: arr_shape
     CHARACTER(LEN=*), INTENT(OUT) :: idx_str
 
     CHARACTER(LEN=PIO_TF_MAX_STR_LEN) :: fmt_str
@@ -538,7 +538,7 @@ CONTAINS
     ! Assign place weights = num of elems in that dim in "1D view"
     dim_wgt = 1
     DO i=2,sz
-      dim_wgt(i) = dim_wgt(i-1) * arr_shape(i-1) 
+      dim_wgt(i) = dim_wgt(i-1) * arr_shape(i-1)
     END DO
 
     ! Convert 1d reshaped index to original multi-d index
@@ -546,7 +546,7 @@ CONTAINS
     idx_md = 0
     DO i=sz,1,-1
       idx_md(i) = tmp_idx / dim_wgt(i) + 1
-      tmp_idx = MOD(tmp_idx, dim_wgt(i)) 
+      tmp_idx = MOD(tmp_idx, dim_wgt(i))
     END DO
 
     IF(sz == 1) THEN

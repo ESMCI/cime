@@ -865,8 +865,8 @@ sub print_usage_and_exit()
 # Read input args
 GetOptions(
   # Annotate generated source with template line numbers etc
-  "annotate-source"		=>	\$annotate_source,
-  "out=s"				      =>	\$output_fname,
+  "annotate-source"             =>      \$annotate_source,
+  "out=s"                                     =>        \$output_fname,
   "verbose"           =>  \$verbose
 );
 
@@ -889,4 +889,3 @@ if(!stat($template_fname)){
 
 if($verbose){ print "Reading input args complete\n" }
 &process_template_file($template_fname, $output_fname);
-
