@@ -487,7 +487,8 @@ int PIOc_sync(int ncid)
                 brel(twmb);
             }
         }
-        flush_output_buffer(file, true, 0);
+        if(file->iotype == PIO_IOTYPE_PNETCDF)
+            flush_output_buffer(file, true, 0);
 
         if (ios->ioproc){
             switch(file->iotype){

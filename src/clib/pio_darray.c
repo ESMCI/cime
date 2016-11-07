@@ -149,13 +149,17 @@ int PIOc_write_darray_multi(const int ncid, const int *vid, const int ioid,
                                                 iodesc->maxiobuflen, iodesc->num_aiotasks,
                                                 vdesc0->iobuf, frame);
 
+        break;
+    }
+    /* For PNETCDF the iobuf is freed in flush_output_buffer() */
+    if (file->iotype != PIO_IOTYPE_PNETCDF)
+    {
         /* Release resources. */
         if (vdesc0->iobuf)
         {
             brel(vdesc0->iobuf);
             vdesc0->iobuf = NULL;
         }
-        break;
     }
 
     if (iodesc->rearranger == PIO_REARR_SUBSET && iodesc->needsfill &&
@@ -197,16 +201,21 @@ int PIOc_write_darray_multi(const int ncid, const int *vid, const int ioid,
             break;
         }
 
-        /* Free resources. */
-        if (vdesc0->fillbuf)
+        /* For PNETCDF fillbuf is freed in flush_output_buffer() */
+        if (file->iotype != PIO_IOTYPE_PNETCDF)
         {
-            brel(vdesc0->fillbuf);
-            vdesc0->fillbuf = NULL;
+            /* Free resources. */
+            if (vdesc0->fillbuf)
+            {
+                brel(vdesc0->fillbuf);
+                vdesc0->fillbuf = NULL;
+            }
         }
     }
 
     /* Flush data to disk. */
-    flush_output_buffer(file, flushtodisk, 0);
+    if(file->iotype == PIO_IOTYPE_PNETCDF)
+        flush_output_buffer(file, flushtodisk, 0);
 
     return ierr;
 }
