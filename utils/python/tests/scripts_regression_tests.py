@@ -27,7 +27,7 @@ MACHINE     = Machines()
 FAST_ONLY   = False
 NO_BATCH    = False
 
-os.environ["CIME_GLOBAL_WALLTIME"] = "0:05:00"
+os.environ["CIME_GLOBAL_WALLTIME"] = "00:05:00"
 
 # pragma pylint: disable=protected-access
 ###############################################################################
@@ -1347,7 +1347,13 @@ file(WRITE query.out "${{{}}}")
 
         environment = os.environ.copy()
         environment.update(env)
-        run_cmd_assert_result(self.parent, "cmake . 2>&1", from_dir=temp_dir, env=environment)
+        os_ = MACHINE.get_value("OS")
+        # cmake will not work on cray systems without this flag
+        if os_ == "CNL":
+            cmake_args = "-DCMAKE_SYSTEM_NAME=Catamount"
+        else:
+            cmake_args = ""
+        run_cmd_assert_result(self.parent, "cmake %s . 2>&1"%cmake_args, from_dir=temp_dir, env=environment)
 
         with open(output_name, "r") as output:
             query_result = output.read().strip()
