@@ -419,6 +419,7 @@ class Case(object):
             self.set_value(node_name, comp_config_file)
             comp_config_file = self.get_resolved_value(comp_config_file)
             expect(comp_config_file is not None,"No config file for component %s"%comp_name)
+            print "comp_config_file %s" % comp_config_file 
             compobj = Component(comp_config_file)
             for env_file in self._env_entryid_files:
                 env_file.add_elements_by_group(compobj, attributes=attlist)

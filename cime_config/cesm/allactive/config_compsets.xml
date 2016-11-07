@@ -58,6 +58,20 @@
   </compset>
 
   <compset>
+    <alias>B1850N</alias>
+    <lname>1850_CAM60_CLM50%BGC_CICE_POP2%ECO_MOSART_SGLC_SWAV</lname>
+  </compset>
+
+  <compset>
+    <alias>N1850</alias>
+    <lname>1850_CAM60_CLM50%BGC_CICE_MICOM_MOSART_SGLC_SWAV</lname>
+  </compset>
+
+  <compset>
+    <alias>N1850CwWs</alias>
+    <lname>1850_CAM60%WTSM_CLM50%BGC_CICE_MICOM_MOSART_SGLC_SWAV</lname>
+  </compset>
+  <compset>
     <alias>B1850Cw</alias>
     <lname>1850_CAM60%WTSM_CLM50%BGC_CICE_POP2%ECO_MOSART_SGLC_WW3</lname>
   </compset>
