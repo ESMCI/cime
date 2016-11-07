@@ -57,7 +57,7 @@ elseif (HOSTNAME MATCHES "^mira" OR
         HOSTNAME MATCHES "^vesta" OR
         HOSTNAME MATCHES "^cooley")
     set (HOSTNAME_ID "alcf")
-# ALCF/Argonne Machines
+# NERSC Machines
 elseif (HOSTNAME MATCHES "^edison" OR
         HOSTNAME MATCHES "^cori" OR
         HOSTNAME MATCHES "^nid")
