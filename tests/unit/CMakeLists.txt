@@ -79,7 +79,7 @@ if (NOT PIO_USE_MPI_SERIAL)
   add_executable (test_iosystem3 EXCLUDE_FROM_ALL test_iosystem3.c test_common.c)
   target_link_libraries (test_iosystem3 pioc)
   add_dependencies (tests test_iosystem3)
-  add_executable (test_darray_async EXCLUDE_FROM_ALL test_darray_async.c)
+  add_executable (test_darray_async EXCLUDE_FROM_ALL test_darray_async.c test_common.c)
   target_link_libraries (test_darray_async pioc)
   add_dependencies (tests test_darray_async)
   add_executable (test_file EXCLUDE_FROM_ALL test_file.c)
@@ -90,7 +90,7 @@ add_executable (test_names EXCLUDE_FROM_ALL test_names.c)
 target_link_libraries (test_names pioc)
 add_executable (test_nc4 EXCLUDE_FROM_ALL test_nc4.c)
 target_link_libraries (test_nc4 pioc)
-add_executable (test_darray EXCLUDE_FROM_ALL test_darray.c)
+add_executable (test_darray EXCLUDE_FROM_ALL test_darray.c test_common.c)
 target_link_libraries (test_darray pioc)
 
 if (CMAKE_Fortran_COMPILER_ID STREQUAL "NAG")
@@ -119,6 +119,10 @@ if (PIO_USE_MPISERIAL)
 else ()
     add_mpi_test(test_darray
         EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_darray
+        NUMPROCS 4
+        TIMEOUT ${DEFAULT_TEST_TIMEOUT})
+    add_mpi_test(test_darray_async
+        EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_darray_async
         NUMPROCS 4
         TIMEOUT ${DEFAULT_TEST_TIMEOUT})
     add_mpi_test(test_file

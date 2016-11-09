@@ -5,43 +5,13 @@
  *
  */
 #include <pio.h>
-#ifdef TIMING
-#include <gptl.h>
-#endif
+#include <pio_tests.h>
 
 #define NUM_NETCDF_FLAVORS 4
 #define NDIM 3
 #define X_DIM_LEN 400
 #define Y_DIM_LEN 400
-#define NUM_TIMESTEPS 6
 #define VAR_NAME "foo"
-#define ATT_NAME "bar"
-#define START_DATA_VAL 42
-#define ERR_AWFUL 1111
-#define VAR_CACHE_SIZE (1024 * 1024)
-#define VAR_CACHE_NELEMS 10
-#define VAR_CACHE_PREEMPTION 0.5
-
-/** Handle MPI errors. This should only be used with MPI library
- * function calls. */
-#define MPIERR(e) do {                                                  \
-        MPI_Error_string(e, err_buffer, &resultlen);                    \
-        fprintf(stderr, "MPI error, line %d, file %s: %s\n", __LINE__, __FILE__, err_buffer); \
-        MPI_Finalize();                                                 \
-        return ERR_AWFUL;                                               \
-    } while (0)
-
-/** Handle non-MPI errors by finalizing the MPI library and exiting
- * with an exit code. */
-#define ERR(e) do {                                                     \
-        fprintf(stderr, "Error %d in %s, line %d\n", e, __FILE__, __LINE__); \
-        MPI_Finalize();                                                 \
-        return e;                                                       \
-    } while (0)
-
-/** Global err buffer for MPI. */
-char err_buffer[MPI_MAX_ERROR_STRING];
-int resultlen;
 
 /** The dimension names. */
 char dim_name[NDIM][NC_MAX_NAME + 1] = {"timestep", "x", "y"};
