@@ -11,7 +11,6 @@ from CIME.XML.env_base import EnvBase
 from CIME.utils import transform_vars, get_cime_root
 from copy import deepcopy
 
-
 logger = logging.getLogger(__name__)
 
 # pragma pylint: disable=attribute-defined-outside-init
@@ -25,14 +24,19 @@ class EnvBatch(EnvBase):
         EnvBase.__init__(self, case_root, infile)
         self.prereq_jobid = None
         self.batchtype = None
+        # This arbitrary setting should always be overwritten
+        self._default_walltime = "00:20:00"
 
     def set_value(self, item, value, subgroup=None, ignore_type=False):
+        """
+        Override the entry_id set_value function with some special cases for this class
+        """
         val = None
         if item == "JOB_WALLCLOCK_TIME":
-            # Most systems use %H:%M:%S format for wallclock but LSF
-            # uses %H:%M this code corrects the value passed in to be
-            # the correct format - if we find we have more exceptions
-            # than this we may need to generalize this further
+            #Most systems use %H:%M:%S format for wallclock but LSF
+            #uses %H:%M this code corrects the value passed in to be
+            #the correct format - if we find we have more exceptions
+            #than this we may need to generalize this further
             walltime_format = self.get_value("walltime_format", subgroup=None)
             if walltime_format is not None and walltime_format.count(":") != value.count(":"): # pylint: disable=maybe-no-member
                 if value.count(":") == 1:
@@ -77,7 +81,9 @@ class EnvBatch(EnvBase):
             if job_node is not None:
                 node = self.get_optional_node("entry", {"id":item}, root=job_node)
                 if node is not None:
-                    value = self.get_resolved_value(node.get("value"))
+                    value = node.get("value")
+                    if resolved:
+                        value = self.get_resolved_value(value)
 
                     # Return value as right type if we were able to fully resolve
                     # otherwise, we have to leave as string.
@@ -86,11 +92,11 @@ class EnvBatch(EnvBase):
                         value = convert_to_type(value, type_str, item)
         return value
 
-    def get_values(self, item, attribute=None, resolved=True, subgroup=None):
+    def get_full_records(self, item, attribute=None, resolved=True, subgroup=None):
         """Returns the value as a string of the first xml element with item as attribute value.
         <elememt_name attribute='attribute_value>value</element_name>"""
 
-        logger.debug("(get_values) Input values: %s , %s , %s , %s , %s" , self.__class__.__name__ , item, attribute, resolved, subgroup)
+        logger.debug("(get_full_records) Input values: %s , %s , %s , %s , %s" , self.__class__.__name__ , item, attribute, resolved, subgroup)
 
         nodes   = [] # List of identified xml elements
         results = [] # List of identified parameters
@@ -136,18 +142,18 @@ class EnvBatch(EnvBase):
                         group_name = root.get('id')
 
                     val             = node.get('value')
-                    attribute_type  = self._get_type(node)
+                    attribute_type  = self._get_type_info(node)
                     desc            = self._get_description(node)
                     default         = super(EnvBatch , self)._get_default(node)
                     filename        = self.filename
 
                     tmp = { 'group' : group_name , 'attribute' : attr , 'value' : val , 'type' : attribute_type , 'description' : desc , 'default' : default , 'file' : filename}
-                    logger.debug("Found node with value for %s = %s" , item , tmp )
+                    logger.debug("(get_full_records) Found node with value for %s = %s" , item , tmp )
 
                     # add single result to list
                     results.append(tmp)
 
-        logger.debug("(get_values) Return value:  %s" , results )
+        logger.debug("(get_full_records) Return value:  %s" , results )
 
         return results
 
@@ -266,7 +272,11 @@ class EnvBatch(EnvBase):
             walltime = self.get_max_walltime(queue) if walltime is None else walltime
             if walltime is None:
                 logger.warn("Could not find a queue matching task count %d, falling back to depreciated default walltime parameter"%task_count)
-                walltime = self.get_default_walltime()
+                #if the user names a queue which is not defined in config_batch.xml and does not set a
+                #walltime, fall back to the max walltime in the default queue
+                if force_queue:
+                    self.get_default_queue()
+                walltime = self._default_walltime
 
             self.set_value( "JOB_WALLCLOCK_TIME", walltime , subgroup=job)
             logger.info("Job %s queue %s walltime %s"%(job, queue, walltime))
@@ -348,8 +358,12 @@ class EnvBatch(EnvBase):
             if index < startindex:
                 continue
             try:
-                prereq = case.get_resolved_value(self.get_value('prereq', subgroup=job))
-                prereq = eval(prereq)
+                prereq = self.get_value('prereq', subgroup=job, resolved=False)
+                if prereq is None:
+                    prereq = True
+                else:
+                    prereq = case.get_resolved_value(prereq)
+                    prereq = eval(prereq)
             except:
                 expect(False,"Unable to evaluate prereq expression '%s' for job '%s'"%(self.get_value('prereq',subgroup=job), job))
             if prereq:
@@ -473,13 +487,10 @@ class EnvBatch(EnvBase):
             if queue_node.text == queue:
                 return queue_node.get("walltimemax")
 
-    def get_default_walltime(self):
-        walltime = self.get_value("walltime", attribute={"default" : "true"}, subgroup=None)
-        expect(walltime is not None,"Could not find walltime setting in config_batch.xml")
-        return walltime
-
     def get_default_queue(self):
-        return self.get_optional_node("queue", attributes={"default" : "true"})
+        node = self.get_optional_node("queue", attributes={"default" : "true"})
+        self._default_walltime = node.get("walltimemax")
+        return(node)
 
     def get_all_queues(self):
         return self.get_nodes("queue")

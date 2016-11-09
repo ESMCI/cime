@@ -16,7 +16,7 @@ from CIME.utils import expect, convert_to_seconds, compute_total_time, convert_t
 from CIME.XML.machines import Machines
 from CIME.case import Case
 
-import argparse, math, glob, random
+import argparse, math, glob
 
 logger = logging.getLogger(__name__)
 
@@ -84,7 +84,7 @@ OR
                         help="Do not setup generated tests, implies --no-build and --no-run")
 
     parser.add_argument("-u", "--use-existing", action="store_true",
-                        help="Use pre-existing case directories. Requires test-id")
+                        help="Use pre-existing case directories they will pick up at the latest PEND state or re-run the first failed state. Requires test-id")
 
     parser.add_argument("--save-timing", action="store_true",
                         help="Enable archiving of performance data.")
@@ -257,7 +257,7 @@ OR
         args.no_batch = True
 
     if args.test_id is None:
-        args.test_id = "%s.%s"%(CIME.utils.get_timestamp(), CIME.utils.id_generator())
+        args.test_id = "%s_%s"%(CIME.utils.get_timestamp(), CIME.utils.id_generator())
 
     if args.testfile is not None:
         with open(args.testfile, "r") as fd:
@@ -285,6 +285,11 @@ OR
             test_names = update_acme_tests.get_full_test_names(args.testargs,
                                                                mach_obj.get_machine_name(), args.compiler)
         else:
+            expect(not (args.xml_machine is None and args.xml_compiler
+                        is  None and args.xml_category is None and args.xml_testlist is None),
+                   "At least one of --xml-machine, --xml-testlist, "
+                   "--xml-compiler, --xml-category or a valid test name must be provided.")
+
             test_data = CIME.test_utils.get_tests_from_xml(args.xml_machine, args.xml_category,
                                                            args.xml_compiler, args.xml_testlist,
                                                            machine_name, args.compiler)
@@ -425,6 +430,7 @@ def single_submit_impl(machine_name, test_id, proc_pool, project, args, job_cost
     run_cmd_no_fail(submit_cmd, input_str=script, arg_stdout=None, arg_stderr=None, verbose=True)
 
 ###############################################################################
+# pragma pylint: disable=protected-access
 def create_test(test_names, test_data, compiler, machine_name, no_run, no_build, no_setup, no_batch, test_root,
                 baseline_root, clean, baseline_cmp_name, baseline_gen_name, namelists_only, project, test_id, parallel_jobs,
                 walltime, single_submit, proc_pool, use_existing, save_timing, queue, allow_baseline_overwrite):

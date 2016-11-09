@@ -75,7 +75,7 @@
 	<arg name="num_tasks"> -n $TOTALPES</arg>
 	<!-- <arg name="tasks_per_numa"> -S {{ tasks_per_numa }}</arg> -->
 	<arg name="tasks_per_node"> -N $PES_PER_NODE</arg>
-	<arg name="thread_count"> -d {{ thread_count }}</arg>
+	<arg name="thread_count"> -d $ENV{OMP_NUM_THREADS}</arg>
       </arguments>
     </mpirun>
     <module_system type="module">
@@ -323,7 +323,7 @@
       <arguments>
 	<arg name="label"> --label</arg>
 	<arg name="num_tasks" > -n $TOTALPES</arg>
-	<arg name="thread_count" > -c {{ thread_count }}</arg>
+	<arg name="thread_count" > -c $ENV{OMP_NUM_THREADS}</arg>
       </arguments>
     </mpirun>
     <module_system type="module">
@@ -489,7 +489,7 @@
       <arguments>
 	<arg name="label"> --label</arg>
 	<arg name="num_tasks" > -n $TOTALPES</arg>
-     	<arg name="thread_count" > -c {{ thread_count }}</arg>
+     	<arg name="thread_count" > -c $ENV{OMP_NUM_THREADS}</arg>
       </arguments>
     </mpirun>
     <module_system type="module">
@@ -630,16 +630,12 @@
       <modules compiler="nag">
 	<command name="load">compiler/nag/6.1</command>
       </modules>
-<!--      <modules compiler="nag" mpilib="mvapich2">
-	  <command name="load">  tool/parallel-netcdf/1.7.0/nag/mvapich2 </command>
-      </modules> -->
       <modules compiler="gnu">
 	<command name="load">compiler/gnu/4.8.5</command>
       </modules>
     </module_system>
     <environment_variables>
       <env name="OMP_STACKSIZE">64M</env>
-      <env name="PATH">$PATH:/usr/local/bin</env>
     </environment_variables>
   </machine>
 
@@ -669,7 +665,7 @@
 	<arg name="num_tasks" > -n $TOTALPES</arg>
 	<arg name="tasks_per_numa" > -S {{ tasks_per_numa }}</arg>
 	<arg name="tasks_per_node" > -N $PES_PER_NODE</arg>
-	<arg name="thread_count" > -d {{ thread_count }}</arg>
+	<arg name="thread_count" > -d $ENV{OMP_NUM_THREADS}</arg>
       </arguments>
     </mpirun>
     <mpirun mpilib="mpi-serial">
@@ -863,7 +859,7 @@
 	<arg name="locargs">--block $COBALT_PARTNAME --envs OMP_WAIT_POLICY=active --envs BG_SMP_FAST_WAKEUP=yes $LOCARGS</arg>
 	<arg name="bg_threadlayout"> --envs BG_THREADLAYOUT=1</arg>
 	<arg name="omp_stacksize"> --envs OMP_STACKSIZE=32M</arg>
-	<arg name="thread_count"> --envs OMP_NUM_THREADS={{ thread_count }}</arg>
+	<arg name="thread_count"> --envs OMP_NUM_THREADS=$ENV{OMP_NUM_THREADS}</arg>
       </arguments>
     </mpirun>
     <module_system type="soft">
@@ -1174,7 +1170,7 @@
       <arguments>
         <arg name="num_tasks"> -n $TOTALPES</arg>
         <arg name="tasks_per_node"> -N $PES_PER_NODE</arg>
-        <arg name="thread_count"> -d {{ thread_count }}</arg>
+        <arg name="thread_count"> -d $ENV{OMP_NUM_THREADS}</arg>
       </arguments>
     </mpirun>
     <module_system type="module">
@@ -1249,7 +1245,7 @@
       <arguments>
 	<arg name="label"> --label</arg>
 	<arg name="num_tasks" > -n $TOTALPES</arg>
-     	<arg name="thread_count" > -c {{ thread_count }}</arg>
+     	<arg name="thread_count" > -c $ENV{OMP_NUM_THREADS}</arg>
       </arguments>
     </mpirun>
     <mpirun mpilib="mvapich2">
@@ -1257,7 +1253,7 @@
       <arguments>
 	<arg name="label"> --label</arg>
 	<arg name="num_tasks" > -n $TOTALPES</arg>
-     	<arg name="thread_count" > -c {{ thread_count }}</arg>
+     	<arg name="thread_count" > -c $ENV{OMP_NUM_THREADS}</arg>
       </arguments>
     </mpirun>
     <mpirun mpilib="mpi-serial">
@@ -1354,6 +1350,7 @@
 	<command name="load">gmake/4.1</command>
 	<command name="load">python</command>
 	<command name="load">all-python-libs</command>
+	<command name="load">git</command>
       </modules>
       <modules compiler="intel">
 	<command name="load">intel/15.0.3</command>
@@ -1403,6 +1400,9 @@
     </environment_variables>
     <environment_variables debug="true">
       <env name="MP_EAGER_LIMIT">0</env>
+    </environment_variables>
+    <environment_variables mpilib="!mpi-serial">
+      <env name="MP_MPILIB">$MPILIB</env>
     </environment_variables>
   </machine>
 
@@ -1517,6 +1517,8 @@
       <env name="decfort_dump_flag">Y</env>
     </environment_variables>
 </machine>
+
+
 <default_run_suffix>
   <default_run_exe>${EXEROOT}/cesm.exe </default_run_exe>
   <default_run_misc_suffix> >> cesm.log.$LID 2>&amp;1 </default_run_misc_suffix>

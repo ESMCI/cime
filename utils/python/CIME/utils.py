@@ -20,9 +20,9 @@ def expect(condition, error_msg, exc_type=SystemExit):
     SystemExit: ERROR: error2
     """
     if (not condition):
-        # Uncomment these to bring up a debugger when an expect fails
-        #import pdb
-        #pdb.set_trace()
+        if logger.isEnabledFor(logging.DEBUG):
+            import pdb
+            pdb.set_trace()
         raise exc_type("ERROR: %s" % error_msg)
 
 def id_generator(size=6, chars=string.ascii_lowercase + string.digits):
@@ -33,7 +33,6 @@ def _read_cime_config_file():
     """
     READ the config file in ~/.cime, this file may contain
     [main]
-    CIMEROOT=/path/to/cime
     CIME_MODEL=acme,cesm
     PROJECT=someprojectnumber
     """
@@ -71,24 +70,21 @@ def get_python_libs_location_within_cime():
     """
     return os.path.join("utils", "python")
 
-def get_cime_root():
+def get_cime_root(case=None):
     """
     Return the absolute path to the root of CIME that contains this script
 
     >>> os.path.isdir(os.path.join(get_cime_root(), get_scripts_location_within_cime()))
     True
     """
-    cime_config = get_cime_config()
-    if(cime_config.has_option('main','CIMEROOT')):
-        cimeroot = cime_config.get('main','CIMEROOT')
-    else:
-        if "CIMEROOT" in os.environ:
-            cimeroot = os.environ["CIMEROOT"]
-        else:
-            script_absdir = os.path.abspath(os.path.join(os.path.dirname(__file__),".."))
-            assert script_absdir.endswith(get_python_libs_location_within_cime()), script_absdir
-            cimeroot = os.path.abspath(os.path.join(script_absdir,"..",".."))
-        cime_config.set('main','CIMEROOT',cimeroot)
+    script_absdir = os.path.abspath(os.path.join(os.path.dirname(__file__),".."))
+    assert script_absdir.endswith(get_python_libs_location_within_cime()), script_absdir
+    cimeroot = os.path.abspath(os.path.join(script_absdir,"..",".."))
+
+    if case is not None:
+        case_cimeroot = os.path.abspath(case.get_value("CIMEROOT"))
+        cimeroot = os.path.abspath(cimeroot)
+        expect(cimeroot == case_cimeroot, "Inconsistent CIMEROOT variable: case -> '%s', file location -> '%s'" % (case_cimeroot, cimeroot))
 
     logger.debug( "CIMEROOT is " + cimeroot)
     return cimeroot
@@ -160,7 +156,7 @@ def run_cmd(cmd, input_str=None, from_dir=None, verbose=None,
     if (arg_stderr is _hack):
         arg_stderr = subprocess.PIPE
 
-    if (verbose or logger.isEnabledFor(logging.DEBUG)):
+    if (verbose != False and (verbose or logger.isEnabledFor(logging.DEBUG))):
         logger.info("RUN: %s" % cmd)
 
     if (input_str is not None):
@@ -181,7 +177,7 @@ def run_cmd(cmd, input_str=None, from_dir=None, verbose=None,
     errput = errput.strip() if errput is not None else errput
     stat = proc.wait()
 
-    if (verbose or logger.isEnabledFor(logging.DEBUG)):
+    if (verbose != False and (verbose or logger.isEnabledFor(logging.DEBUG))):
         if stat != 0:
             logger.info("  stat: %d\n" % stat)
         if output:
@@ -370,8 +366,11 @@ def get_current_commit(short=False, repo=None):
     >>> get_current_commit() is not None
     True
     """
-    output = run_cmd_no_fail("git rev-parse %s HEAD" % ("--short" if short else ""), from_dir=repo)
-    return output
+    rc, output, _ = run_cmd("git rev-parse %s HEAD" % ("--short" if short else ""), from_dir=repo)
+    if rc == 0:
+        return output
+    else:
+        return 'unknown'
 
 def get_scripts_location_within_cime():
     """
@@ -848,7 +847,7 @@ def get_build_threaded(case):
     force_threaded = case.get_value("BUILD_THREADED")
     if force_threaded:
         return True
-    comp_classes = case.get_value("COMP_CLASSES").split(',')
+    comp_classes = case.get_values("COMP_CLASSES")
     for comp_class in comp_classes:
         if comp_class == "DRV":
             comp_class = "CPL"
@@ -950,3 +949,8 @@ def get_lids(case):
     model = case.get_value("MODEL")
     rundir = case.get_value("RUNDIR")
     return _get_most_recent_lid_impl(glob.glob("%s/%s.log*" % (rundir, model)))
+
+def new_lid():
+    lid = time.strftime("%y%m%d-%H%M%S")
+    os.environ["LID"] = lid
+    return lid

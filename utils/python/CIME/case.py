@@ -10,7 +10,7 @@ from CIME.XML.standard_module_setup import *
 
 from CIME.utils                     import expect, get_cime_root, append_status
 from CIME.utils                     import convert_to_type, get_model, get_project
-from CIME.utils                     import get_build_threaded
+from CIME.utils                     import get_build_threaded, get_current_commit
 from CIME.XML.build                 import Build
 from CIME.XML.machines              import Machines
 from CIME.XML.pes                   import Pes
@@ -93,6 +93,8 @@ class Case(object):
         self._components = []
         self._component_classes = []
 
+        self._is_env_loaded = False
+
     # Define __enter__ and __exit__ so that we can use this as a context manager
     # and force a flush on exit.
     def __enter__(self):
@@ -131,6 +133,10 @@ class Case(object):
         self._env_generic_files.append(EnvArchive(self._caseroot))
         self._files = self._env_entryid_files + self._env_generic_files
 
+    def get_case_root(self):
+        """Returns the root directory for this case."""
+        return self._caseroot
+
     def get_env(self, short_name):
         full_name = "env_%s.xml" % (short_name)
         for env_file in self._files:
@@ -168,11 +174,45 @@ class Case(object):
             env_file.write()
         self._env_files_that_need_rewrite = set()
 
+    def get_values(self, item, attribute=None, resolved=True, subgroup=None):
+        results = []
+        for env_file in self._env_entryid_files:
+            # Wait and resolve in self rather than in env_file
+            results = env_file.get_values(item, attribute, resolved=False, subgroup=subgroup)
+
+            if len(results) > 0:
+                new_results = []
+                vtype = env_file.get_type_info(item)
+                if resolved:
+                    for result in results:
+                        if type(result) is str:
+                            result = self.get_resolved_value(result)
+                            new_results.append(convert_to_type(result, vtype, item))
+                        else:
+                            new_results.append(result)
+                else:
+                    new_results = results
+                return new_results
+
+        for env_file in self._env_generic_files:
+            results = env_file.get_values(item, attribute, resolved=False, subgroup=subgroup)
+            if len(results) > 0:
+                if resolved:
+                    for result in results:
+                        if type(result) is str:
+                            new_results.append(self.get_resolved_value(result))
+                        else:
+                            new_results.append(result)
+                else:
+                    new_results = results
+                return new_results
+        # Return empty result
+        return results
+
     def get_value(self, item, attribute=None, resolved=True, subgroup=None):
         result = None
         for env_file in self._env_entryid_files:
             # Wait and resolve in self rather than in env_file
-
             result = env_file.get_value(item, attribute, resolved=False, subgroup=subgroup)
 
             if result is not None:
@@ -195,37 +235,37 @@ class Case(object):
         return result
 
 
-    def get_values(self, item=None, attribute=None, resolved=True, subgroup=None):
+    def get_full_records(self, item=None, attribute=None, resolved=True, subgroup=None):
 
         """
         Return info object for given item, return all info for all item if item is empty.
         """
 
-        logger.debug("(get_values) Input values: %s , %s , %s , %s , %s" , self.__class__.__name__ , item, attribute, resolved, subgroup)
+        logger.debug("(get_full_records) Input values: %s , %s , %s , %s , %s" , self.__class__.__name__ , item, attribute, resolved, subgroup)
 
         # Empty result list
         results = []
 
         for env_file in self._env_entryid_files:
             # Wait and resolve in self rather than in env_file
-            logger.debug("Searching in %s" , env_file.__class__.__name__)
+            logger.debug("(get_full_records) Searching in %s" , env_file.__class__.__name__)
             result = None
 
             try:
-                # env_batch has its own implementation of get_values otherwise in entry_id
-                result = env_file.get_values(item, attribute, resolved=False, subgroup=subgroup)
+                # env_batch has its own implementation of get_full_records otherwise in entry_id
+                result = env_file.get_full_records(item, attribute, resolved=False, subgroup=subgroup)
                 # Method exists, and was used.
             except AttributeError:
                 # Method does not exist.  What now?
                 traceback.print_exc()
-                logger.debug("No get_values method for class %s (%s)" , env_file.__class__.__name__ , AttributeError)
+                logger.debug("(get_full_records) No get_full_records method for class %s (%s)" , env_file.__class__.__name__ , AttributeError)
 
             if result is not None and (len(result) >= 1):
 
                 if resolved :
                     for r in result :
                         if type(r['value']) is str:
-                            logger.debug("Resolving %s" , r['value'])
+                            logger.debug("(get_full_records) Resolving %s" , r['value'])
                             r['value'] = self.get_resolved_value(r['value'])
 
                 if subgroup :
@@ -237,7 +277,7 @@ class Case(object):
                 else:
                     results = results + result
 
-        logger.debug("(get_values) Return value:  %s" , results )
+        logger.debug("(get_full_records) Return value:  %s" , results )
         return results
 
     def get_type_info(self, item):
@@ -279,10 +319,6 @@ class Case(object):
 
     def set_value(self, item, value, subgroup=None, ignore_type=False):
         """
-        If a file has not been defined, set an id/value pair in the
-        case dictionary, this will be used later. Note that in
-        create_newcase, when this is called and are setting the
-        command line options none of these files have been defined
         If a file has been defined, and the variable is in the file,
         then that value will be set in the file object and the file
         name is returned
@@ -292,6 +328,18 @@ class Case(object):
         result = None
         for env_file in self._env_entryid_files:
             result = env_file.set_value(item, value, subgroup, ignore_type)
+            if (result is not None):
+                logger.debug("Will rewrite file %s %s",env_file.filename, item)
+                self._env_files_that_need_rewrite.add(env_file)
+                return result
+
+    def set_valid_values(self, item, valid_values):
+        """
+        Update or create a valid_values entry for item and populate it
+        """
+        result = None
+        for env_file in self._env_entryid_files:
+            result = env_file.set_valid_values(item, valid_values)
             if (result is not None):
                 logger.debug("Will rewrite file %s %s",env_file.filename, item)
                 self._env_files_that_need_rewrite.add(env_file)
@@ -654,9 +702,11 @@ class Case(object):
 
         # Turn on short term archiving as cesm default setting
         model = get_model()
+        self.set_model_version(model)
         if model == "cesm" and not test:
             self.set_value("DOUT_S",True)
-
+        if test:
+            self.set_value("TEST",True)
 
 
     def get_compset_var_settings(self):
@@ -693,6 +743,7 @@ class Case(object):
         exefiles = (os.path.join(toolsdir, "case.setup"),
                     os.path.join(toolsdir, "case.build"),
                     os.path.join(toolsdir, "case.submit"),
+                    os.path.join(toolsdir, "case.cmpgen_namelists"),
                     os.path.join(toolsdir, "preview_namelists"),
                     os.path.join(toolsdir, "check_input_data"),
                     os.path.join(toolsdir, "check_case"),
@@ -944,3 +995,32 @@ class Case(object):
             mpi_arg_string += " : "
 
         return "%s %s %s" % (executable if executable is not None else "", mpi_arg_string, run_suffix)
+
+    def set_model_version(self, model):
+        version = "unknown"
+        srcroot = self.get_value("SRCROOT")
+        if model == "cesm":
+            changelog = os.path.join(srcroot,"ChangeLog")
+            if os.path.isfile(changelog):
+                for line in open(changelog, "r"):
+                    m = re.search("Tag name: (cesm.*)$", line)
+                    if m is not None:
+                        version = m.group(1)
+                        break
+        elif model == "acme":
+            version = get_current_commit(True, srcroot)
+        self.set_value("MODEL_VERSION", version)
+
+        if version != "unknown":
+            logger.info("%s model version found: %s"%(model, version))
+        else:
+            logger.warn("WARNING: No %s Model version found."%(model))
+
+    def load_env(self):
+        if not self._is_env_loaded:
+            compiler = self.get_value("COMPILER")
+            debug=self.get_value("DEBUG"),
+            mpilib=self.get_value("MPILIB")
+            env_module = self.get_env("mach_specific")
+            env_module.load_env(compiler=compiler,debug=debug, mpilib=mpilib)
+            self._is_env_loaded = True

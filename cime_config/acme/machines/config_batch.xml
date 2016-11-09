@@ -48,7 +48,6 @@
        <arg flag="-n" name=" $TOTALPES/$PES_PER_NODE"/>
        <arg flag="-q" name="JOB_QUEUE"/>
        <arg flag="--mode script"/>
-       <arg flag="--env" name='"CIMEROOT=$CIMEROOT"'/>
      </submit_args>
    </batch_system>
 
@@ -143,7 +142,7 @@
         <directive>-l nodes={{ num_nodes }}:ppn={{ tasks_per_node }}</directive>
       </directives>
       <queues>
-	<queue>shared</queue>
+	<queue walltimemax="01:00:00" jobmin="1" jobmax="4096" default="true">shared</queue>
       </queues>
     </batch_system>
 
@@ -176,13 +175,13 @@
 
     <batch_system MACH="mira" type="cobalt">
       <queues>
-        <queue walltimemin="0" walltimemax="360" jobmin="1" jobmax="786432" default="true">default</queue>
+        <queue walltimemax="06:00:00" jobmin="1" jobmax="786432" default="true">default</queue>
       </queues>
     </batch_system>
 
     <batch_system MACH="cetus" type="cobalt">
       <queues>
-        <queue walltimemin="5" walltimemax="59" jobmin="1" jobmax="4096" default="true">default</queue>
+        <queue walltimemax="00:59:00" jobmin="1" jobmax="4096" default="true">default</queue>
       </queues>
     </batch_system>
 
