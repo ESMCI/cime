@@ -3,16 +3,17 @@
 <!--
 
 The following are the test functionality categories:
-  1) smoke tests
-  2) basic reproducibility tests
-  3) restart tests
-  4) threading/pe-count modification tests
-  5) sequencing (layout) modification tests
-  6) multi-instance tests
-  7) archiving (short-term and long-term) tests
-  8) performance tests
-  9) spinup tests
-  10) other component-specific tests
+   1) smoke tests
+   2) basic reproducibility tests
+   3) restart tests
+   4) threading/pe-count modification tests
+   5) sequencing (layout) modification tests
+   6) multi-instance tests
+   7) archiving (short-term and long-term) tests
+   8) performance tests
+   9) spinup tests
+  10) data assimilation tests
+  11) other component-specific tests
 
 NOTES:
 - unless otherwise noted everything is run in one executable directory
@@ -152,6 +153,12 @@ SPO    smoke spinup-ocean test
 LAR    long term archive test
 
 ======================================================================
+    Data Assimilation Tests
+======================================================================
+
+DAE    data assimilation test: non answer changing
+
+======================================================================
     Other component-specific tests
 ======================================================================
 
@@ -162,12 +169,22 @@ LII    CLM initial condition interpolation test
 
 <config_test>
 
+  <test NAME="DAE">
+    <DESC>data assimilation test, default 1 day, two DA cycles, no data modification</DESC>
+    <INFO_DBUG>1</INFO_DBUG>
+    <STOP_OPTION>ndays</STOP_OPTION>
+    <STOP_N>4</STOP_N>
+    <HIST_OPTION>ndays</HIST_OPTION>
+    <HIST_N>1</HIST_N>
+    <DOUT_S>FALSE</DOUT_S>
+    <BUILD_THREADED>TRUE</BUILD_THREADED>
+  </test>
+
   <test NAME="ERI">
     <DESC>hybrid/branch/exact restart test, default 3+19/10+9/5+4 days</DESC>
     <INFO_DBUG>1</INFO_DBUG>
     <STOP_OPTION>ndays</STOP_OPTION>
     <STOP_N>22</STOP_N>
-    <CCSM_TCOST>0</CCSM_TCOST>
     <DOUT_S>FALSE</DOUT_S>
   </test>
 
@@ -175,7 +192,6 @@ LII    CLM initial condition interpolation test
     <DESC>pes counts hybrid (open-MP/MPI) restart bfb test from startup, default 6 days + 5 days</DESC>
     <INFO_DBUG>1</INFO_DBUG>
     <BFBFLAG>TRUE</BFBFLAG>
-    <CCSM_TCOST>1</CCSM_TCOST>
     <STOP_OPTION>ndays</STOP_OPTION>
     <STOP_N>11</STOP_N>
     <DOUT_S>FALSE</DOUT_S>
@@ -184,7 +200,6 @@ LII    CLM initial condition interpolation test
   <test NAME="ERS">
     <DESC>exact restart from startup, default 6 days + 5 days</DESC>
     <INFO_DBUG>1</INFO_DBUG>
-    <CCSM_TCOST>0</CCSM_TCOST>
     <STOP_OPTION>ndays</STOP_OPTION>
     <STOP_N>11</STOP_N>
     <DOUT_S>FALSE</DOUT_S>
@@ -194,7 +209,6 @@ LII    CLM initial condition interpolation test
   <test NAME="ERR">
     <DESC>exact restart from startup with resubmit, default 4 days + 3 days</DESC>
     <INFO_DBUG>1</INFO_DBUG>
-    <CCSM_TCOST>0</CCSM_TCOST>
     <STOP_OPTION>ndays</STOP_OPTION>
     <STOP_N>7</STOP_N>
     <DOUT_S>TRUE</DOUT_S>
@@ -204,7 +218,6 @@ LII    CLM initial condition interpolation test
   <test NAME="ERT">
     <DESC>exact restart from startup, default 2 month + 1 month (ERS with info dbug = 1)</DESC>
     <INFO_DBUG>1</INFO_DBUG>
-    <CCSM_TCOST>0</CCSM_TCOST>
     <STOP_OPTION>nmonths</STOP_OPTION>
     <STOP_N></STOP_N>
     <AVGHIST_OPTION>nmonths</AVGHIST_OPTION>
@@ -215,7 +228,6 @@ LII    CLM initial condition interpolation test
   <test NAME="HOMME">
     <DESC>Run homme tests.</DESC>
     <INFO_DBUG>1</INFO_DBUG>
-    <CCSM_TCOST>0</CCSM_TCOST>
     <STOP_OPTION>ndays</STOP_OPTION>
     <STOP_N>11</STOP_N>
     <CHECK_TIMING>FALSE</CHECK_TIMING>
@@ -225,7 +237,6 @@ LII    CLM initial condition interpolation test
   <test NAME="TESTBUILDFAIL">
     <DESC>For testing infra only. Insta-fail build step.</DESC>
     <INFO_DBUG>1</INFO_DBUG>
-    <CCSM_TCOST>0</CCSM_TCOST>
     <STOP_OPTION>ndays</STOP_OPTION>
     <STOP_N>11</STOP_N>
     <CHECK_TIMING>FALSE</CHECK_TIMING>
@@ -235,7 +246,6 @@ LII    CLM initial condition interpolation test
   <test NAME="TESTBUILDFAILEXC">
     <DESC>For testing infra only. Insta-fail build step by failing to init.</DESC>
     <INFO_DBUG>1</INFO_DBUG>
-    <CCSM_TCOST>0</CCSM_TCOST>
     <STOP_OPTION>ndays</STOP_OPTION>
     <STOP_N>11</STOP_N>
     <CHECK_TIMING>FALSE</CHECK_TIMING>
@@ -245,7 +255,6 @@ LII    CLM initial condition interpolation test
   <test NAME="TESTRUNFAIL">
     <DESC>For testing infra only. Insta-fail run step.</DESC>
     <INFO_DBUG>1</INFO_DBUG>
-    <CCSM_TCOST>0</CCSM_TCOST>
     <STOP_OPTION>ndays</STOP_OPTION>
     <STOP_N>11</STOP_N>
     <CHECK_TIMING>FALSE</CHECK_TIMING>
@@ -255,7 +264,6 @@ LII    CLM initial condition interpolation test
   <test NAME="TESTRUNFAILEXC">
     <DESC>For testing infra only. Insta-fail run step via exception.</DESC>
     <INFO_DBUG>1</INFO_DBUG>
-    <CCSM_TCOST>0</CCSM_TCOST>
     <STOP_OPTION>ndays</STOP_OPTION>
     <STOP_N>11</STOP_N>
     <CHECK_TIMING>FALSE</CHECK_TIMING>
@@ -265,7 +273,6 @@ LII    CLM initial condition interpolation test
   <test NAME="TESTRUNPASS">
     <DESC>For testing infra only. Insta-pass run step.</DESC>
     <INFO_DBUG>1</INFO_DBUG>
-    <CCSM_TCOST>0</CCSM_TCOST>
     <STOP_OPTION>ndays</STOP_OPTION>
     <STOP_N>11</STOP_N>
     <CHECK_TIMING>FALSE</CHECK_TIMING>
@@ -275,7 +282,6 @@ LII    CLM initial condition interpolation test
   <test NAME="TESTMEMLEAKFAIL">
     <DESC>For testing infra only. Insta-fail memleak step.</DESC>
     <INFO_DBUG>1</INFO_DBUG>
-    <CCSM_TCOST>0</CCSM_TCOST>
     <STOP_OPTION>ndays</STOP_OPTION>
     <STOP_N>11</STOP_N>
     <CHECK_TIMING>FALSE</CHECK_TIMING>
@@ -285,7 +291,6 @@ LII    CLM initial condition interpolation test
   <test NAME="TESTMEMLEAKPASS">
     <DESC>For testing infra only. Insta-pass memleak step.</DESC>
     <INFO_DBUG>1</INFO_DBUG>
-    <CCSM_TCOST>0</CCSM_TCOST>
     <STOP_OPTION>ndays</STOP_OPTION>
     <STOP_N>11</STOP_N>
     <CHECK_TIMING>FALSE</CHECK_TIMING>
@@ -295,7 +300,6 @@ LII    CLM initial condition interpolation test
   <test NAME="TESTRUNDIFF">
     <DESC>For testing infra only. Produces a canned hist file.</DESC>
     <INFO_DBUG>1</INFO_DBUG>
-    <CCSM_TCOST>0</CCSM_TCOST>
     <STOP_OPTION>ndays</STOP_OPTION>
     <STOP_N>11</STOP_N>
     <CHECK_TIMING>FALSE</CHECK_TIMING>
@@ -305,7 +309,6 @@ LII    CLM initial condition interpolation test
   <test NAME="TESTRUNSLOWPASS">
     <DESC>For testing infra only. After 5 minutes of sleep, pass run step.</DESC>
     <INFO_DBUG>1</INFO_DBUG>
-    <CCSM_TCOST>0</CCSM_TCOST>
     <STOP_OPTION>ndays</STOP_OPTION>
     <STOP_N>11</STOP_N>
     <CHECK_TIMING>FALSE</CHECK_TIMING>
@@ -320,7 +323,6 @@ LII    CLM initial condition interpolation test
     <REST_OPTION>none</REST_OPTION>
     <COMP_RUN_BARRIERS>TRUE</COMP_RUN_BARRIERS>
     <TIMER_LEVEL>12</TIMER_LEVEL>
-    <CCSM_TCOST>4</CCSM_TCOST>
     <DOUT_S>FALSE</DOUT_S>
   </test>
 
@@ -329,7 +331,6 @@ LII    CLM initial condition interpolation test
     <INFO_DBUG>1</INFO_DBUG>
     <STOP_OPTION>nmonths</STOP_OPTION>
     <STOP_N></STOP_N>
-    <CCSM_TCOST>4</CCSM_TCOST>
     <DOUT_L_MS>TRUE</DOUT_L_MS>
     <DOUT_S>TRUE</DOUT_S>
   </test>
@@ -337,7 +338,6 @@ LII    CLM initial condition interpolation test
   <test NAME="LII">
     <DESC>CLM initial condition interpolation test (requires configuration with non-blank finidat)</DESC>
     <INFO_DBUG>1</INFO_DBUG>
-    <CCSM_TCOST>0</CCSM_TCOST>
     <DOUT_S>FALSE</DOUT_S>
     <CONTINUE_RUN>FALSE</CONTINUE_RUN>
     <REST_OPTION>never</REST_OPTION>
@@ -348,7 +348,6 @@ LII    CLM initial condition interpolation test
   <test NAME="PEA">
     <DESC>single pe bfb test (default length)</DESC>
     <INFO_DBUG>1</INFO_DBUG>
-    <CCSM_TCOST>1</CCSM_TCOST>
     <DOUT_S>FALSE</DOUT_S>
     <CONTINUE_RUN>FALSE</CONTINUE_RUN>
     <REST_OPTION>never</REST_OPTION>
@@ -361,7 +360,6 @@ LII    CLM initial condition interpolation test
     <INFO_DBUG>1</INFO_DBUG>
     <BFBFLAG>TRUE</BFBFLAG>
     <REST_OPTION>never</REST_OPTION>
-    <CCSM_TCOST>1</CCSM_TCOST>
     <DOUT_S>FALSE</DOUT_S>
   </test>
 
@@ -373,7 +371,6 @@ LII    CLM initial condition interpolation test
     <REST_OPTION>none</REST_OPTION>
     <HIST_OPTION>$STOP_OPTION</HIST_OPTION>
     <HIST_N>$STOP_N</HIST_N>
-    <CCSM_TCOST>1</CCSM_TCOST>
     <DOUT_S>FALSE</DOUT_S>
   </test>
 
@@ -383,7 +380,6 @@ LII    CLM initial condition interpolation test
     <STOP_OPTION>ndays</STOP_OPTION>
     <STOP_N>20</STOP_N>
     <REST_OPTION>none</REST_OPTION>
-    <CCSM_TCOST>0</CCSM_TCOST>
     <DOUT_S>FALSE</DOUT_S>
     <CONTINUE_RUN>FALSE</CONTINUE_RUN>
   </test>
@@ -391,7 +387,6 @@ LII    CLM initial condition interpolation test
   <test NAME="NCK">
     <DESC>multi-instance validation vs single instance (default length)</DESC>
     <INFO_DBUG>1</INFO_DBUG>
-    <CCSM_TCOST>-1</CCSM_TCOST>
     <DOUT_S>FALSE</DOUT_S>
     <CONTINUE_RUN>FALSE</CONTINUE_RUN>
     <REST_OPTION>none</REST_OPTION>
@@ -402,14 +397,12 @@ LII    CLM initial condition interpolation test
   <test NAME="NCR">
     <DESC>multi-instance validation sequential vs concurrent (default length)</DESC>
     <INFO_DBUG>1</INFO_DBUG>
-    <CCSM_TCOST>-1</CCSM_TCOST>
     <DOUT_S>FALSE</DOUT_S>
   </test>
 
   <test NAME="NOC">
     <DESC>multi-instance validation for single instance ocean (default length)</DESC>
     <INFO_DBUG>1</INFO_DBUG>
-    <CCSM_TCOST>-1</CCSM_TCOST>
     <DOUT_S>FALSE</DOUT_S>
   </test>
 
@@ -421,13 +414,11 @@ LII    CLM initial condition interpolation test
     <REST_OPTION>none</REST_OPTION>
     <COMP_RUN_BARRIERS>TRUE</COMP_RUN_BARRIERS>
     <TIMER_LEVEL>12</TIMER_LEVEL>
-    <CCSM_TCOST>4</CCSM_TCOST>
     <DOUT_S>FALSE</DOUT_S>
   </test>
 
   <test NAME="REP">
     <DESC>reproducibility test: do two runs give the same answers?</DESC>
-    <CCSM_TCOST>0</CCSM_TCOST>
     <INFO_DBUG>1</INFO_DBUG>
     <DOUT_S>FALSE</DOUT_S>
     <CONTINUE_RUN>FALSE</CONTINUE_RUN>
@@ -439,7 +430,6 @@ LII    CLM initial condition interpolation test
   <test NAME="SBN">
     <DESC>smoke build-namelist test (just run preview_namelist and check_input_data)</DESC>
     <INFO_DBUG>1</INFO_DBUG>
-    <CCSM_TCOST>-1</CCSM_TCOST>
     <DOUT_S>FALSE</DOUT_S>
   </test>
 
@@ -450,7 +440,6 @@ LII    CLM initial condition interpolation test
     <STOP_OPTION>ndays</STOP_OPTION>
     <STOP_N>10</STOP_N>
     <REST_OPTION>never</REST_OPTION>
-    <CCSM_TCOST>0</CCSM_TCOST>
     <DOUT_S>FALSE</DOUT_S>
     <CONTINUE_RUN>FALSE</CONTINUE_RUN>
     <HIST_OPTION>$STOP_OPTION</HIST_OPTION>
@@ -460,7 +449,6 @@ LII    CLM initial condition interpolation test
   <test NAME="SMS">
     <DESC>smoke startup test (default length)</DESC>
     <INFO_DBUG>1</INFO_DBUG>
-    <CCSM_TCOST>-1</CCSM_TCOST>
     <DOUT_S>FALSE</DOUT_S>
     <CONTINUE_RUN>FALSE</CONTINUE_RUN>
     <REST_OPTION>none</REST_OPTION>
@@ -471,7 +459,6 @@ LII    CLM initial condition interpolation test
   <test NAME="SSP">
     <DESC>smoke CLM spinup test (only valid for CLM45 or CLM50 compsets)</DESC>
     <INFO_DBUG>1</INFO_DBUG>
-    <CCSM_TCOST>-1</CCSM_TCOST>
     <STOP_OPTION>ndays</STOP_OPTION>
     <RUN_TYPE>startup</RUN_TYPE>
     <STOP_N>4</STOP_N>
