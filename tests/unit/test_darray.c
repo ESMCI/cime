@@ -92,7 +92,7 @@ main(int argc, char **argv)
 	for (fmt = 0; fmt < num_flavors; fmt++)
 	{
 	    /* Create the filename. */
-	    sprintf(filename, "%s_%d", TEST_NAME, flavor[fmt]);
+	    sprintf(filename, "%s_%d.nc", TEST_NAME, flavor[fmt]);
 	    
 	    /* Create the netCDF output file. */
 	    printf("rank: %d Creating sample file %s with format %d...\n", my_rank, filename,
