@@ -113,8 +113,19 @@ main(int argc, char **argv)
 	    if ((ret = PIOc_def_var(ncid, VAR_NAME, PIO_FLOAT, NDIM, dimids, &varid)))
 		ERR(ret);
 
+	    /* End define mode. */
 	    if ((ret = PIOc_enddef(ncid)))
 		ERR(ret);
+
+	    /* Write some data. */
+	    float fillvalue = 0.0;
+	    PIO_Offset arraylen = 4;
+	    float test_data[arraylen];
+	    for (int f = 0; f < arraylen; f++)
+		test_data[f] = my_rank * 10 + f;
+	    /* if ((ret = PIOc_write_darray(ncid, varid, iosysid, arraylen, test_data, */
+	    /* 				 &fillvalue))) */
+	    /* 	ERR(ret); */
 
 	    /* Close the netCDF file. */
 	    printf("rank: %d Closing the sample data file...\n", my_rank);
