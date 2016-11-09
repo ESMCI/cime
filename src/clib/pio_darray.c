@@ -262,6 +262,9 @@ int PIOc_write_darray(const int ncid, const int vid, const int ioid,
     bufsize totfree, maxfree;
     int ierr = PIO_NOERR; /* Return code. */
 
+    LOG((1, "PIOc_write_darray ncid = %d vid = %d ioid = %d arraylen = %d",
+	 ncid, vid, ioid, arraylen));
+
     /* Get the file info. */
     if ((ierr = pio_get_file(ncid, &file)))
         return ierr;
@@ -339,7 +342,8 @@ int PIOc_write_darray(const int ncid, const int vid, const int ioid,
 
     MPI_Type_size(iodesc->basetype, &tsize);
 
-    LOG((2, "%d %d %d\n", wmb->data, wmb->validvars, arraylen,tsize));
+    LOG((2, "wmb->validvars = %d arraylen = %d tsize = %d\n", wmb->validvars,
+	 arraylen, tsize));
 
     /* At this point wmb should be pointing to a new or existing buffer
        so we can add the data */
@@ -361,23 +365,28 @@ int PIOc_write_darray(const int ncid, const int vid, const int ioid,
 
     /* Get memory for data. */
     if (arraylen > 0)
-        if (!(wmb->data = bgetr(wmb->data, (1+wmb->validvars)*arraylen*tsize)))
+        if (!(wmb->data = bgetr(wmb->data, (1 + wmb->validvars) * arraylen * tsize)))
             piomemerror(*ios, (1 + wmb->validvars) * arraylen * tsize, __FILE__, __LINE__);
 
     /* Get memory for ??? */
     if (!(wmb->vid = (int *)bgetr(wmb->vid, sizeof(int) * (1 + wmb->validvars))))
         piomemerror(*ios, (1 + wmb->validvars) * sizeof(int), __FILE__, __LINE__);
 
+    /* Get memory for ??? */
     if (vdesc->record >= 0)
         if (!(wmb->frame = (int *)bgetr(wmb->frame, sizeof(int) * (1 + wmb->validvars))))
             piomemerror(*ios, (1 + wmb->validvars) * sizeof(int), __FILE__, __LINE__);
 
+    /* Get memory to hold fill value. */
     if (iodesc->needsfill)
         if (!(wmb->fillvalue = bgetr(wmb->fillvalue, tsize * (1 + wmb->validvars))))
             piomemerror(*ios, (1 + wmb->validvars) * tsize, __FILE__, __LINE__);
 
     if (iodesc->needsfill)
     {
+	/* If the user passed a fill value, use that, otherwise use
+	 * the default fill value of the netCDF type. Copy the fill
+	 * value to the buffer. */
         if (fillvalue)
         {
             memcpy((char *)wmb->fillvalue + tsize * wmb->validvars, fillvalue, tsize);
@@ -412,6 +421,7 @@ int PIOc_write_darray(const int ncid, const int vid, const int ioid,
         }
     }
 
+    /* Copy the user-provided data to the buffer. */
     wmb->arraylen = arraylen;
     wmb->vid[wmb->validvars] = vid;
     bufptr = (void *)((char *)wmb->data + arraylen * tsize * wmb->validvars);
@@ -428,11 +438,13 @@ int PIOc_write_darray(const int ncid, const int vid, const int ioid,
       }
     */
 
+    /* ??? */
     if (wmb->frame)
         wmb->frame[wmb->validvars] = vdesc->record;
     wmb->validvars++;
 
-    LOG((2, "%d %d %d %d", wmb->validvars, iodesc->maxbytes / tsize, iodesc->ndof, iodesc->llen));
+    LOG((2, "wmb->validvars = %d iodesc->maxbytes / tsize = %d iodesc->ndof = %d iodesc->llen = %d",
+	 wmb->validvars, iodesc->maxbytes / tsize, iodesc->ndof, iodesc->llen));
 
     /* Call the sync when ??? */
     if (wmb->validvars >= iodesc->maxbytes / tsize)
