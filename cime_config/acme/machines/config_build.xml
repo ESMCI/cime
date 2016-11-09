@@ -211,7 +211,7 @@ for mct, etc.
 <compiler COMPILER="intel">
   <CFLAGS>
     <base> -O2 -fp-model precise -std=gnu99 </base>
-    <append compile_threaded="true"> -openmp </append>
+    <append compile_threaded="true"> -qopenmp </append>
     <append DEBUG="FALSE"> -O2 -debug minimal </append>
     <append DEBUG="TRUE"> -O0 -g </append>
   </CFLAGS>
@@ -228,7 +228,7 @@ for mct, etc.
   </FC_AUTO_R8>
   <FFLAGS>
     <base>  -convert big_endian -assume byterecl -ftz -traceback -assume realloc_lhs -fp-model source </base>
-    <append compile_threaded="true"> -openmp </append>
+    <append compile_threaded="true"> -qopenmp </append>
     <!-- WJS (8-11-14): For some reason, yellowstone-intel has starting giving lots of
        messages about array temporaries, leading to a ton of standard output, and
        sometimes causing runs to die. Adding '-check noarg_temp_created' to suppress these
@@ -240,7 +240,7 @@ for mct, etc.
   </FFLAGS>
   <FFLAGS_NOOPT>
     <base> -O0 </base>
-    <append compile_threaded="true"> -openmp </append>
+    <append compile_threaded="true"> -qopenmp </append>
   </FFLAGS_NOOPT>
   <FIXEDFLAGS>
     <base> -fixed -132 </base>
@@ -250,7 +250,7 @@ for mct, etc.
   </FREEFLAGS>
   <HAS_F2008_CONTIGUOUS>TRUE</HAS_F2008_CONTIGUOUS>
   <LDFLAGS>
-    <append compile_threaded="true"> -openmp </append>
+    <append compile_threaded="true"> -qopenmp </append>
   </LDFLAGS>
   <MPICC> mpicc  </MPICC>
   <MPICXX> mpicxx </MPICXX>
@@ -1025,27 +1025,61 @@ for mct, etc.
   </SLIBS>
 </compiler>
 
-<compiler MACH="corip1" COMPILER="intel">
-  <ALBANY_PATH>/global/project/projectdirs/acme/software/AlbanyTrilinos/Albany/build/install</ALBANY_PATH>
+<compiler MACH="cori-haswell" COMPILER="intel">
   <CFLAGS>
+    <append> -xCORE-AVX2 </append>
     <append DEBUG="FALSE"> -O2  </append>
   </CFLAGS>
   <CONFIG_ARGS>
     <base> --host=Linux </base>
   </CONFIG_ARGS>
   <CPPDEFS>
+    <append> -DHAVE_SLASHPROC </append>
     <append MODEL="gptl"> -DHAVE_PAPI </append>
   </CPPDEFS>
   <FFLAGS>
-    <append DEBUG="FALSE"> -O2  </append>
+    <append> -xCORE-AVX2 </append>
+    <append DEBUG="FALSE"> -O2  -qno-opt-dynamic-align </append>
   </FFLAGS>
   <MPICC> cc </MPICC>
   <MPICXX> CC </MPICXX>
   <MPIFC> ftn </MPIFC>
+  <SFC> ifort </SFC>
+  <SCC> icc </SCC>
+  <SCXX> icpc </SCXX>
   <PETSC_PATH><env>PETSC_DIR</env></PETSC_PATH>
   <SLIBS>
     <append> -L<env>NETCDF_DIR</env> -lnetcdff -Wl,--as-needed,-L<env>NETCDF_DIR</env>/lib -lnetcdff -lnetcdf </append>
-    <append> <env>MKLROOT</env>/lib/intel64/libmkl_scalapack_lp64.a -Wl,--start-group <env>MKLROOT</env>/lib/intel64/libmkl_intel_lp64.a <env>MKLROOT</env>/lib/intel64/libmkl_core.a <env>MKLROOT</env>/lib/intel64/libmkl_sequential.a -Wl,--end-group <env>MKLROOT</env>/lib/intel64/libmkl_blacs_intelmpi_lp64.a -lpthread -lm </append>
+    <append> -mkl -lpthread -lm </append>
+  </SLIBS>
+</compiler>
+
+<compiler MACH="cori-knl" COMPILER="intel">
+  <CFLAGS>
+    <append> -xMIC-AVX512 </append>
+    <append DEBUG="FALSE"> -O2  </append>
+  </CFLAGS>
+  <CONFIG_ARGS>
+    <base> --host=Linux </base>
+  </CONFIG_ARGS>
+  <CPPDEFS>
+    <append> -DHAVE_SLASHPROC </append>
+    <append MODEL="gptl"> -DHAVE_PAPI </append>
+  </CPPDEFS>
+  <FFLAGS>
+    <append> -xMIC-AVX512 </append>
+    <append DEBUG="FALSE"> -O2  -qno-opt-dynamic-align </append>
+  </FFLAGS>
+  <MPICC> cc </MPICC>
+  <MPICXX> CC </MPICXX>
+  <MPIFC> ftn </MPIFC>
+  <SFC> ifort </SFC>
+  <SCC> icc </SCC>
+  <SCXX> icpc </SCXX>
+  <PETSC_PATH><env>PETSC_DIR</env></PETSC_PATH>
+  <SLIBS>
+    <append> -L<env>NETCDF_DIR</env> -lnetcdff -Wl,--as-needed,-L<env>NETCDF_DIR</env>/lib -lnetcdff -lnetcdf </append>
+    <append> -mkl -lpthread -lm </append>
   </SLIBS>
 </compiler>
 
@@ -1113,39 +1147,6 @@ for mct, etc.
     <append> -L<env>NETCDF_DIR</env> -lnetcdff -Wl,--as-needed,-L<env>NETCDF_DIR</env>/lib -lnetcdff -lnetcdf </append>
     <append> <env>MKLROOT</env>/lib/intel64/libmkl_scalapack_lp64.a -Wl,--start-group <env>MKLROOT</env>/lib/intel64/libmkl_intel_lp64.a <env>MKLROOT</env>/lib/intel64/libmkl_core.a <env>MKLROOT</env>/lib/intel64/libmkl_sequential.a -Wl,--end-group <env>MKLROOT</env>/lib/intel64/libmkl_blacs_intelmpi_lp64.a -lpthread -lm </append>
   </SLIBS>
-</compiler>
-
-<compiler MACH="hopper" COMPILER="gnu">
-  <TRILINOS_PATH>/project/projectdirs/ccsm1/Trilinos/trilinos-10.12.2/hopper-gnu/install</TRILINOS_PATH>
-</compiler>
-
-<compiler MACH="hopper" COMPILER="intel">
-  <ESMF_LIBDIR DEBUG="FALSE">/project/projectdirs/ccsm1/esmf/ESMF_5_3_0_intel12.1.5/lib/libO/Unicos.intel.64.mpi.default/</ESMF_LIBDIR>
-  <ESMF_LIBDIR DEBUG="TRUE">/project/projectdirs/ccsm1/esmf/ESMF_5_3_0_intel12.1.5/lib/libg/Unicos.intel.64.mpi.default/</ESMF_LIBDIR>
-  <SLIBS>
-    <append><shell><var>NETCDF_PATH</var>/bin/nf-config --flibs</shell></append>
-    <append MPILIB="mpich"> -mkl=cluster </append>
-    <append MPILIB="mpich2"> -mkl=cluster </append>
-    <append MPILIB="mpt"> -mkl=cluster </append>
-    <append MPILIB="openmpi"> -mkl=cluster </append>
-    <append MPILIB="mvapich"> -mkl=cluster </append>
-    <append MPILIB="impi"> -mkl=cluster </append>
-    <append MPILIB="mpi-serial"> -mkl </append>
-  </SLIBS>
-</compiler>
-
-<compiler MACH="hopper" COMPILER="pgi">
-  <CFLAGS>
-    <append DEBUG="FALSE"> -O2 </append>
-  </CFLAGS>
-  <CXX_LIBS>
-    <base> -lmpichf90_pgi <env>PGI_PATH</env>/linux86-64/<env>PGI_VERSION</env>/lib/f90main.o </base>
-  </CXX_LIBS>
-  <FFLAGS>
-    <append DEBUG="FALSE"> -O2 </append>
-  </FFLAGS>
-  <SUPPORTS_CXX>TRUE</SUPPORTS_CXX>
-  <TRILINOS_PATH>/project/projectdirs/ccsm1/Trilinos/trilinos-10.12.2/hopper-pgi/install</TRILINOS_PATH>
 </compiler>
 
 <compiler MACH="lawrencium-lr2" COMPILER="intel">
