@@ -355,18 +355,34 @@ with: <pre>tar zxf parallel-netcdf-1.6.1.tar.gz</pre>
 
 
 <p>Build with:
-<pre>cd parallel-netcdf-1.6.1
+<pre>cd parallel-netcdf-1.7.0
 FC=mpifort CC=mpicc CFLAGS=-fPIC ./configure --prefix=/usr/local
 make all check
 sudo make install </pre>
+
+(This was also tested with version 1.6.1.)
 
 <li>Installing HDF5
 
 <p>Download HDF5 from the <a
 href="https://www.hdfgroup.org/HDF5/release/obtain5.html">HDF5 download
-page</a>. (These instructions were tested using version 1.8.15-patch1). Untar
-with: <pre>tar zxf hdf5-1.8.15-patch1.tar.gz</pre>
+page</a>.
 
+<h3>1.8.17</h3>
+
+<p>These instructions were tested using version 1.8.17. Untar
+with: <pre>tar zxf hdf5-1.8.17.tar.gz</pre>
+
+<p>Build with:
+<pre>cd hdf5-1.8.17
+CC=mpicc ./configure --with-zlib=/usr/local --prefix=/usr/local --with-szlib=/usr/local --enable-parallel
+make all check
+sudo make install </pre>
+
+<h3>1.8.15-patch1</h3>
+
+<p>These instructions were tested using version 1.8.15-patch1. Untar
+with: <pre>tar zxf hdf5-1.8.15-patch1.tar.gz</pre>
 
 <p>Build with:
 <pre>cd hdf5-1.8.15-patch1
@@ -383,10 +399,14 @@ with: <pre>tar zxf netcdf-c-4.4.0.tar.gz</pre>
 
 
 <p>Build with:
-<pre>cd netcdf-c-4.4.0
+<pre>cd netcdf-c-4.4.1
 CC=mpicc ./configure --with-zlib=/usr/local --prefix=/usr/local --with-szlib=/usr/local --with-hdf5=/usr/local --enable-pnetcdf --enable-parallel-tests --enable-logging
 make all check
 sudo make install </pre>
+
+<p>(Note that one one system I got some failures on the nc_test type
+conversion tests. These are under investigation. Meanwhile I ignored
+the results and did a make install.)
 
 <li>Installing NetCDF-4 Fortran Library
 
