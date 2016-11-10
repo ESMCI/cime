@@ -788,6 +788,10 @@ def transform_vars(text, case=None, subgroup=None, check_members=None, default=N
     'I say hi'
     """
     directive_re = re.compile(r"{{ (\w+) }}", flags=re.M)
+
+    if check_members is None and case is not None:
+        check_members = case
+
     # loop through directive text, replacing each string enclosed with
     # template characters with the necessary values.
     while directive_re.search(text):
