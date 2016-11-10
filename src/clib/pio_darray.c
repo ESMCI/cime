@@ -283,8 +283,8 @@ int PIOc_write_darray(const int ncid, const int vid, const int ioid,
     /* Is this a record variable? */
     recordvar = vdesc->record >= 0 ? true : false;
 
-    /* Check that ??? is not the same as length of data being
-     * written? */
+    /* Check that the local size of the variable passed in matches the
+     * size expected by the io descriptor. */
     if (iodesc->ndof != arraylen)
         piodie("ndof != arraylen",__FILE__,__LINE__);
 
@@ -305,7 +305,10 @@ int PIOc_write_darray(const int ncid, const int vid, const int ioid,
         /* separate record and non-record variables */
         if (recordvar)
         {
-	    /* What is going on here?? */
+	    /* wmb is write multi buffer and is a pointer to one or
+	     * more variables that fit the same description. We are
+	     * moving to the end of the wmb linked list to add the
+	     * current variable. */
             while(wmb->next && wmb->ioid != ioid)
                 if (wmb->next)
                     wmb = wmb->next;
@@ -385,11 +388,14 @@ int PIOc_write_darray(const int ncid, const int vid, const int ioid,
         if (!(wmb->data = bgetr(wmb->data, (1 + wmb->validvars) * arraylen * tsize)))
             piomemerror(*ios, (1 + wmb->validvars) * arraylen * tsize, __FILE__, __LINE__);
 
-    /* Get memory for ??? */
+    /* vid is an array of variable ids in the wmb list, grow the list
+     * and add the new entry. */
     if (!(wmb->vid = (int *)bgetr(wmb->vid, sizeof(int) * (1 + wmb->validvars))))
         piomemerror(*ios, (1 + wmb->validvars) * sizeof(int), __FILE__, __LINE__);
 
-    /* Get memory for ??? */
+    /* wmb->frame is the record number, we assume that the variables
+     * in the wmb list may not all have the same unlimited dimension
+     * value although they usually do. */
     if (vdesc->record >= 0)
         if (!(wmb->frame = (int *)bgetr(wmb->frame, sizeof(int) * (1 + wmb->validvars))))
             piomemerror(*ios, (1 + wmb->validvars) * sizeof(int), __FILE__, __LINE__);
@@ -446,7 +452,8 @@ int PIOc_write_darray(const int ncid, const int vid, const int ioid,
     if (arraylen > 0)
         memcpy(bufptr, array, arraylen * tsize);
 
-    /* ??? */
+    /* Add the unlimited dimension value of this variable to the frame
+     * array in wmb. */
     if (wmb->frame)
         wmb->frame[wmb->validvars] = vdesc->record;
     wmb->validvars++;
