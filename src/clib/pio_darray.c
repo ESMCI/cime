@@ -246,22 +246,20 @@ int PIOc_write_darray(const int ncid, const int vid, const int ioid,
                       const PIO_Offset arraylen, void *array, void *fillvalue)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
-    file_desc_t *file;
-    io_desc_t *iodesc;
-    var_desc_t *vdesc;
-    void *bufptr;
-    size_t rlen;
-    MPI_Datatype vtype;
-    wmulti_buffer *wmb;
-    int tsize; /* Total size. */
-    int *tptr;
-    void *bptr;
-    void *fptr;
-    bool recordvar; /* True if this is a record variable. */
+    file_desc_t *file;  /* Info about file we are writing to. */
+    io_desc_t *iodesc;  /* The IO description. */
+    var_desc_t *vdesc;  /* Info about the var being written. */
+    void *bufptr;       /* A data buffer. */
+    MPI_Datatype vtype; /* The MPI type of the variable. */
+    wmulti_buffer *wmb; /* A data buffer. */
+    int tsize;          /* Size of MPI type. */
+    bool recordvar;     /* True if this is a record variable. */
     int needsflush = 0; /* True if we need to flush buffer. */
-    bufsize totfree, maxfree;
+    bufsize totfree;    /* Amount of free space in the buffer. */
+    bufsize maxfree;    /* Max amount of free space in buffer. */
     int ierr = PIO_NOERR; /* Return code. */
-
+    int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
+    
     LOG((1, "PIOc_write_darray ncid = %d vid = %d ioid = %d arraylen = %d",
 	 ncid, vid, ioid, arraylen));
 
@@ -285,10 +283,16 @@ int PIOc_write_darray(const int ncid, const int vid, const int ioid,
     /* Is this a record variable? */
     recordvar = vdesc->record >= 0 ? true : false;
 
+    /* Check that ??? is not the same as length of data being
+     * written? */
     if (iodesc->ndof != arraylen)
         piodie("ndof != arraylen",__FILE__,__LINE__);
 
+    /* Get a pointer to the buffer space for this file. */
     wmb = &file->buffer;
+
+    /* If the ioid is not initialized, set it. For non record vars,
+     * use the negative?? */
     if (wmb->ioid == -1)
     {
         if (recordvar)
@@ -301,6 +305,7 @@ int PIOc_write_darray(const int ncid, const int vid, const int ioid,
         /* separate record and non-record variables */
         if (recordvar)
         {
+	    /* What is going on here?? */
             while(wmb->next && wmb->ioid != ioid)
                 if (wmb->next)
                     wmb = wmb->next;
@@ -320,12 +325,14 @@ int PIOc_write_darray(const int ncid, const int vid, const int ioid,
         }
     }
 
+    /* ?? */
     if ((recordvar && wmb->ioid != ioid) || (!recordvar && wmb->ioid != -(ioid)))
     {
-        wmb->next = (wmulti_buffer *)bget((bufsize) sizeof(wmulti_buffer));
-        if (!wmb->next)
+	/* Allocate a buffer. */
+        if (!(wmb->next = (wmulti_buffer *)bget((bufsize)sizeof(wmulti_buffer))))
             piomemerror(*ios,sizeof(wmulti_buffer), __FILE__,__LINE__);
 
+	/* Set pointer to newly allocated buffer and initialize.*/
         wmb = wmb->next;
         wmb->next = NULL;
         if (recordvar)
@@ -340,23 +347,33 @@ int PIOc_write_darray(const int ncid, const int vid, const int ioid,
         wmb->fillvalue = NULL;
     }
 
-    MPI_Type_size(iodesc->basetype, &tsize);
+    /* Get the size of the MPI type. */
+    if ((mpierr = MPI_Type_size(iodesc->basetype, &tsize)))
+        return check_mpi(file, mpierr, __FILE__, __LINE__);	
 
     LOG((2, "wmb->validvars = %d arraylen = %d tsize = %d\n", wmb->validvars,
 	 arraylen, tsize));
 
     /* At this point wmb should be pointing to a new or existing buffer
-       so we can add the data */
+       so we can add the data. */
     bfreespace(&totfree, &maxfree);
+
+    /* ??? */
     if (needsflush == 0)
         needsflush = (maxfree <= 1.1 * (1 + wmb->validvars) * arraylen * tsize);
-    MPI_Allreduce(MPI_IN_PLACE, &needsflush, 1,  MPI_INT,  MPI_MAX, ios->comp_comm);
 
+    /* Tell all tests on the computation communicator whether we need
+     * to flush data. */
+    if ((mpierr = MPI_Allreduce(MPI_IN_PLACE, &needsflush, 1,  MPI_INT,  MPI_MAX, ios->comp_comm)))
+        return check_mpi(file, mpierr, __FILE__, __LINE__);	
+
+    /* Flush data if needed. */
     if (needsflush > 0)
     {
-        /* need to flush first */
-        LOG((2, "%ld %d %ld %ld\n", maxfree, wmb->validvars,
-             (1 + wmb->validvars) * arraylen * tsize, totfree));
+        LOG((2, "maxfree = %ld wmb->validvars = %d (1 + wmb->validvars) * arraylen * tsize = %ld totfree = %ld\n",
+	     maxfree, wmb->validvars, (1 + wmb->validvars) * arraylen * tsize, totfree));
+
+	/* Collect a debug report about buffer. (Shouldn't we be able to turn this off??) */
         cn_buffer_report(*ios, true);
 
         /* If needsflush == 2 flush to disk otherwise just flush to io node. */
@@ -382,22 +399,21 @@ int PIOc_write_darray(const int ncid, const int vid, const int ioid,
         if (!(wmb->fillvalue = bgetr(wmb->fillvalue, tsize * (1 + wmb->validvars))))
             piomemerror(*ios, (1 + wmb->validvars) * tsize, __FILE__, __LINE__);
 
+    /* If we need a fill value, get it. */
     if (iodesc->needsfill)
     {
 	/* If the user passed a fill value, use that, otherwise use
 	 * the default fill value of the netCDF type. Copy the fill
 	 * value to the buffer. */
         if (fillvalue)
-        {
             memcpy((char *)wmb->fillvalue + tsize * wmb->validvars, fillvalue, tsize);
-        }
         else
         {
             vtype = (MPI_Datatype)iodesc->basetype;
             if (vtype == MPI_INTEGER)
             {
                 int fill = PIO_FILL_INT;
-                memcpy((char *)wmb->fillvalue+tsize*wmb->validvars, &fill, tsize);
+                memcpy((char *)wmb->fillvalue + tsize * wmb->validvars, &fill, tsize);
             }
             else if (vtype == MPI_FLOAT || vtype == MPI_REAL4)
             {
@@ -416,27 +432,19 @@ int PIOc_write_darray(const int ncid, const int vid, const int ioid,
             }
             else
             {
-                fprintf(stderr,"Type not recognized %d in pioc_write_darray\n",vtype);
+		return PIO_EBADTYPE;
             }
         }
     }
 
-    /* Copy the user-provided data to the buffer. */
+    /* Tell the buffer about the data it is getting. */
     wmb->arraylen = arraylen;
     wmb->vid[wmb->validvars] = vid;
+
+    /* Copy the user-provided data to the buffer. */
     bufptr = (void *)((char *)wmb->data + arraylen * tsize * wmb->validvars);
     if (arraylen > 0)
         memcpy(bufptr, array, arraylen * tsize);
-    /*
-      if (tsize==8){
-      double asum=0.0;
-      printf("%s %d %d %d %d\n",__FILE__,__LINE__,vid,arraylen,iodesc->ndof);
-      for (int k=0;k<arraylen;k++){
-      asum += ((double *) array)[k];
-      }
-      printf("%s %d %d %g\n",__FILE__,__LINE__,vid,asum);
-      }
-    */
 
     /* ??? */
     if (wmb->frame)
