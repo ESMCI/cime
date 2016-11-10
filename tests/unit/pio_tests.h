@@ -8,8 +8,8 @@
 #ifndef _PIO_TESTS_H
 #define _PIO_TESTS_H
 
-/* Include this for the sleep function. */
-#include <unistd.h>
+#include <unistd.h> /* Include this for the sleep function. */
+#include <assert.h>
 
 /* Timing header may need to be included. */
 #ifdef TIMING
