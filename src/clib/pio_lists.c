@@ -251,22 +251,21 @@ int pio_add_to_iodesc_list(io_desc_t *iodesc)
 /** Get an iodesc.
  *
  * @param ioid ID of iodesc to get.
- * @internal
+ * @returns pointer to the iodesc struc.
  */
 io_desc_t *pio_get_iodesc_from_id(int ioid)
 {
     io_desc_t *ciodesc = NULL;
 
-    if(current_iodesc != NULL && current_iodesc->ioid == abs(ioid))
+    if (current_iodesc != NULL && current_iodesc->ioid == abs(ioid))
         ciodesc = current_iodesc;
-    for(ciodesc = pio_iodesc_list; ciodesc != NULL; ciodesc = ciodesc->next)
-    {
-        if(ciodesc->ioid == abs(ioid))
-        {
-            current_iodesc = ciodesc;
-            break;
-        }
-    }
+    else
+	for (ciodesc = pio_iodesc_list; ciodesc; ciodesc = ciodesc->next)
+	    if (ciodesc->ioid == abs(ioid))
+	    {
+		current_iodesc = ciodesc;
+		break;
+	    }
 
     return ciodesc;
 }
@@ -278,7 +277,6 @@ io_desc_t *pio_get_iodesc_from_id(int ioid)
  */
 int pio_delete_iodesc_from_list(int ioid)
 {
-
     io_desc_t *ciodesc, *piodesc;
 
     piodesc = NULL;
