@@ -1,7 +1,5 @@
-/**
- * @file
+/*
  * Tests for darray functions.
- *
  */
 #include <pio.h>
 #include <pio_tests.h>
@@ -12,24 +10,18 @@
 /* The name of this test. */
 #define TEST_NAME "test_darray"
 
-#define NDIM 3
-#define X_DIM_LEN 400
-#define Y_DIM_LEN 400
+#define NDIM 1
+#define DIM_LEN 4
 #define VAR_NAME "foo"
 
-/** The dimension names. */
-char dim_name[NDIM][NC_MAX_NAME + 1] = {"timestep", "x", "y"};
+/* The dimension names. */
+char dim_name[NC_MAX_NAME + 1] = "dim";
 
-/** Length of the dimensions in the sample data. */
-int dim_len[NDIM] = {NC_UNLIMITED, X_DIM_LEN, Y_DIM_LEN};
+/* Length of the dimensions in the sample data. */
+int dim_len[NDIM] = {DIM_LEN};
 
-/** Run Tests for darray Functions.
- *
- * @param argc argument count
- * @param argv array of arguments
- */
-int
-main(int argc, char **argv)
+/* Run Tests for darray Functions. */
+int main(int argc, char **argv)
 {
     int my_rank;     /* Zero-based rank of processor. */
     int ntasks;      /* Number of processors involved in current execution. */
@@ -48,7 +40,7 @@ main(int argc, char **argv)
     float *buffer; /* A buffer for sample data. */
     int *read_buffer;     /* A buffer for reading data back from the file. */
     PIO_Offset *compdof;  /* The decomposition mapping. */
-    int fmt, d, d1, i;    /* Index for loops. */
+    int fmt, d, d1;    /* Index for loops. */
     MPI_Comm test_comm;   /* Contains all tasks running test. */
     int num_flavors;      /* Number of PIO netCDF flavors in this build. */
     int flavor[NUM_FLAVORS]; /* iotypes for the supported netCDF IO flavors. */
@@ -73,16 +65,15 @@ main(int argc, char **argv)
 	    ERR(ret);
 
 	/* Describe the decomposition. This is a 1-based array, so add 1! */
-	elements_per_pe = X_DIM_LEN * Y_DIM_LEN / ntasks;
+	elements_per_pe = DIM_LEN / ntasks;
 	if (!(compdof = malloc(elements_per_pe * sizeof(PIO_Offset))))
 	    return PIO_ENOMEM;
-	for (i = 0; i < elements_per_pe; i++) {
+	for (int i = 0; i < elements_per_pe; i++) 
 	    compdof[i] = my_rank * elements_per_pe + i + 1;
-	}
 
 	/* Create the PIO decomposition for this test. */
 	printf("rank: %d Creating decomposition...\n", my_rank);
-	if ((ret = PIOc_InitDecomp(iosysid, PIO_FLOAT, 2, &dim_len[1], (PIO_Offset)elements_per_pe,
+	if ((ret = PIOc_InitDecomp(iosysid, PIO_FLOAT, NDIM, &dim_len, (PIO_Offset)elements_per_pe,
 				   compdof, &ioid, NULL, NULL, NULL)))
 	    ERR(ret);
 	free(compdof);
@@ -102,12 +93,8 @@ main(int argc, char **argv)
 
 	    /* Define netCDF dimensions and variable. */
 	    printf("rank: %d Defining netCDF metadata...\n", my_rank);
-	    for (d = 0; d < NDIM; d++) {
-		printf("rank: %d Defining netCDF dimension %s, length %d\n", my_rank,
-		       dim_name[d], dim_len[d]);
-		if ((ret = PIOc_def_dim(ncid, dim_name[d], (PIO_Offset)dim_len[d], &dimids[d])))
-		    ERR(ret);
-	    }
+	    if ((ret = PIOc_def_dim(ncid, dim_name, (PIO_Offset)dim_len[0], &dimids[0])))
+		ERR(ret);
 
 	    /* Define a variable. */
 	    if ((ret = PIOc_def_var(ncid, VAR_NAME, PIO_FLOAT, NDIM, dimids, &varid)))
@@ -119,7 +106,7 @@ main(int argc, char **argv)
 
 	    /* Write some data. */
 	    float fillvalue = 0.0;
-	    PIO_Offset arraylen = 4;
+	    PIO_Offset arraylen = 1;
 	    float test_data[arraylen];
 	    for (int f = 0; f < arraylen; f++)
 		test_data[f] = my_rank * 10 + f;
