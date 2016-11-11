@@ -371,48 +371,51 @@ int PIOc_InitDecomp_bc(const int iosysid, const int basetype, const int ndims, c
     int ierr;
     int iosize;
     int ndisp;
-
-    for (int i=0;i<ndims;i++){
-        if (dims[i]<=0){
+    int n, i, maplen = 1;
+    int rearr = PIO_REARR_SUBSET;
+    
+    for (int i = 0; i < ndims; i++)
+    {
+        if (dims[i] <= 0)
             piodie("Invalid dims argument",__FILE__,__LINE__);
-        }
-        if (start[i]<0 || count[i]< 0 || (start[i]+count[i])>dims[i]){
+
+        if (start[i] < 0 || count[i] < 0 || (start[i] + count[i]) > dims[i])
             piodie("Invalid start or count argument ",__FILE__,__LINE__);
-        }
     }
-    ios = pio_get_iosystem_from_id(iosysid);
-    if (ios == NULL)
+
+    /* Get the info about the io system. */
+    if (!(ios = pio_get_iosystem_from_id(iosysid)))
         return PIO_EBADID;
 
-    int n, i, maplen=1;
+    for (i = 0; i < ndims; i++)
+        maplen *= count[i];
 
-    for ( i=0;i<ndims;i++){
-        maplen*=count[i];
-    }
     PIO_Offset compmap[maplen], prod[ndims], loc[ndims];
 
-    prod[ndims-1]=1;
-    loc[ndims-1]=0;
-    for (n=ndims-2;n>=0;n--){
-        prod[n]=prod[n+1]*dims[n+1];
-        loc[n]=0;
+    prod[ndims - 1] = 1;
+    loc[ndims - 1] = 0;
+    for (n = ndims - 2; n >= 0; n--)
+    {
+        prod[n] = prod[n + 1] * dims[n + 1];
+        loc[n] = 0;
     }
-    for (i=0;i<maplen;i++){
-        compmap[i]=0;
-        for (n=ndims-1;n>=0;n--){
+    for (i = 0; i < maplen; i++)
+    {
+        compmap[i] = 0;
+        for (n = ndims - 1; n >= 0; n--)
             compmap[i]+=(start[n]+loc[n])*prod[n];
-        }
-        n=ndims-1;
-        loc[n]=(loc[n]+1)%count[n];
-        while(loc[n]==0 && n>0){
+
+        n = ndims - 1;
+        loc[n] = (loc[n] + 1) % count[n];
+        while (loc[n] == 0 && n > 0)
+	{
             n--;
-            loc[n]=(loc[n]+1)%count[n];
+            loc[n] = (loc[n] + 1) % count[n];
         }
     }
-    int rearr = PIO_REARR_SUBSET;
+
     PIOc_InitDecomp( iosysid, basetype,ndims, dims,
                      maplen,  compmap, ioidp, &rearr, NULL, NULL);
-
 
     return PIO_NOERR;
 }
