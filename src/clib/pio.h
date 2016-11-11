@@ -560,12 +560,12 @@ extern "C" {
     int PIOc_Init_Intercomm(int component_count, MPI_Comm peer_comm, MPI_Comm *comp_comms,
                             MPI_Comm io_comm, int *iosysidp);
     int PIOc_get_numiotasks(int iosysid, int *numiotasks);
-    int PIOc_get_iorank(int iosysid, int *iorank);
-    int PIOc_Set_IOSystem_Error_Handling(int iosysid, int method);
     int PIOc_Init_Intracomm(const MPI_Comm comp_comm,
                             const int num_iotasks, const int stride,
                             const int base,const int rearr, int *iosysidp);
     int PIOc_finalize(const int iosysid);
+    int PIOc_get_iorank(int iosysid, int *iorank);
+    int PIOc_Set_IOSystem_Error_Handling(int iosysid, int method);
     int PIOc_iam_iotask(const int iosysid, bool *ioproc);
     int PIOc_iotask_rank(const int iosysid, int *iorank);
     int PIOc_iosystem_is_active(const int iosysid, bool *active);
@@ -584,48 +584,58 @@ extern "C" {
     int PIOc_get_local_array_size(int ioid);    
 
     /* Handling files. */
-    int PIOc_closefile(int ncid);
+    int PIOc_redef(int ncid);
+    int PIOc_enddef(int ncid);
+    int PIOc_sync(int ncid);
+    int PIOc_deletefile(const int iosysid, const char filename[]);
     int PIOc_createfile(const int iosysid, int *ncidp,  int *iotype,
                         const char *fname, const int mode);
     int PIOc_create(int iosysid, const char *path, int cmode, int *ncidp);
     int PIOc_openfile(const int iosysid, int *ncidp, int *iotype,
                       const char *fname, const int mode);
     int PIOc_open(const int iosysid, const char *path, int mode, int *ncidp);
-    
+    int PIOc_closefile(int ncid);
     int PIOc_inq_format(int ncid, int *formatp);
+    int PIOc_inq(int ncid, int *ndimsp, int *nvarsp, int *ngattsp, int *unlimdimidp);
+    int PIOc_inq_ndims(int ncid, int *ndimsp);    
+    int PIOc_inq_nvars(int ncid, int *nvarsp);
+    int PIOc_inq_natts(int ncid, int *ngattsp);
+    int PIOc_inq_unlimdim(int ncid, int *unlimdimidp);
+    int PIOc_inq_type(int ncid, nc_type xtype, char *name, PIO_Offset *sizep);
+    int PIOc_set_blocksize(const int newblocksize);
+    int PIOc_File_is_Open(int ncid);
+    int PIOc_Set_File_Error_Handling(int ncid, int method);
+    int PIOc_set_hint(const int iosysid, char hint[], const char hintval[]);
     int PIOc_set_chunk_cache(int iosysid, int iotype, PIO_Offset size, PIO_Offset nelems,
 			     float preemption);
     int PIOc_get_chunk_cache(int iosysid, int iotype, PIO_Offset *sizep, PIO_Offset *nelemsp,
 			     float *preemptionp);
-    int PIOc_inq(int ncid, int *ndimsp, int *nvarsp, int *ngattsp, int *unlimdimidp);
-    int PIOc_inq_ndims(int ncid, int *ndimsp);    
-    int PIOc_inq_unlimdim(int ncid, int *unlimdimidp);
-    int PIOc_redef(int ncid);
-    int PIOc_enddef(int ncid);
-    int PIOc_inq_nvars(int ncid, int *nvarsp);
-    int PIOc_sync(int ncid);
-    int PIOc_set_blocksize(const int newblocksize);
-    int PIOc_deletefile(const int iosysid, const char filename[]);
-    int PIOc_File_is_Open(int ncid);
-    int PIOc_Set_File_Error_Handling(int ncid, int method);
-    int PIOc_set_hint(const int iosysid, char hint[], const char hintval[]);
-    int PIOc_inq_type(int ncid, nc_type xtype, char *name, PIO_Offset *sizep);
     
     /* Dimensions. */
-    int PIOc_def_dim(int ncid, const char *name, PIO_Offset len, int *idp);
-    int PIOc_inq_dimlen(int ncid, int dimid, PIO_Offset *lenp);
-    int PIOc_inq_dimname(int ncid, int dimid, char *name);
     int PIOc_inq_dim(int ncid, int dimid, char *name, PIO_Offset *lenp);
     int PIOc_inq_dimid(int ncid, const char *name, int *idp);
+    int PIOc_inq_dimname(int ncid, int dimid, char *name);
+    int PIOc_inq_dimlen(int ncid, int dimid, PIO_Offset *lenp);
     int PIOc_rename_dim(int ncid, int dimid, const char *name);
+    int PIOc_def_dim(int ncid, const char *name, PIO_Offset len, int *idp);
     
     /* Variables. */
     int PIOc_inq_varid(int ncid, const char *name, int *varidp);
-    int PIOc_inq_varnatts(int ncid, int varid, int *nattsp);
-    int PIOc_inq_vardimid(int ncid, int varid, int *dimidsp);
+    int PIOc_inq_var(int ncid, int varid, char *name, nc_type *xtypep, int *ndimsp, int *dimidsp,
+		     int *nattsp);
+    int PIOc_inq_varname(int ncid, int varid, char *name);
     int PIOc_inq_vartype(int ncid, int varid, nc_type *xtypep);
+    int PIOc_inq_varndims(int ncid, int varid, int *ndimsp);
+    int PIOc_inq_vardimid(int ncid, int varid, int *dimidsp);
+    int PIOc_inq_varnatts(int ncid, int varid, int *nattsp);
     int PIOc_def_var(int ncid, const char *name, nc_type xtype,  int ndims,
 		     const int *dimidsp, int *varidp);
+    int PIOc_set_fill(int ncid, int fillmode, int *old_modep);
+    int PIOc_def_var_fill(int ncid, int varid, int no_fill, const void *fill_value);
+    int PIOc_inq_var_fill(int ncid, int varid, int *no_fill, void *fill_valuep);
+    int PIOc_rename_var(int ncid, int varid, const char *name);
+
+    /* These variable settings only apply to netCDF-4 files. */
     int PIOc_def_var_deflate(int ncid, int varid, int shuffle, int deflate,
                              int deflate_level);
     int PIOc_inq_var_deflate(int ncid, int varid, int *shufflep, int *deflatep,
@@ -633,36 +643,28 @@ extern "C" {
     int PIOc_inq_var_szip(int ncid, int varid, int *options_maskp, int *pixels_per_blockp);
     int PIOc_def_var_chunking(int ncid, int varid, int storage, const PIO_Offset *chunksizesp);
     int PIOc_inq_var_chunking(int ncid, int varid, int *storagep, PIO_Offset *chunksizesp);
-    int PIOc_def_var_fill(int ncid, int varid, int no_fill, const void *fill_value);
-    int PIOc_inq_var_fill(int ncid, int varid, int *no_fill, void *fill_valuep);
     int PIOc_def_var_endian(int ncid, int varid, int endian);
     int PIOc_inq_var_endian(int ncid, int varid, int *endianp);
     int PIOc_set_var_chunk_cache(int ncid, int varid, PIO_Offset size, PIO_Offset nelems,
                                  float preemption);
     int PIOc_get_var_chunk_cache(int ncid, int varid, PIO_Offset *sizep, PIO_Offset *nelemsp,
                                  float *preemptionp);
-    int PIOc_inq_var(int ncid, int varid, char *name, nc_type *xtypep, int *ndimsp, int *dimidsp,
-		     int *nattsp);
-    int PIOc_inq_varname(int ncid, int varid, char *name);
-    int PIOc_set_fill(int ncid, int fillmode, int *old_modep);
-    int PIOc_rename_var(int ncid, int varid, const char *name);
-    int PIOc_inq_varndims(int ncid, int varid, int *ndimsp);
 
     /* Attributes. */
+    int PIOc_rename_att(int ncid, int varid, const char *name, const char *newname);
+    int PIOc_del_att(int ncid, int varid, const char *name);
     int PIOc_inq_att(int ncid, int varid, const char *name, nc_type *xtypep,
 		     PIO_Offset *lenp);
     int PIOc_inq_attid(int ncid, int varid, const char *name, int *idp);
     int PIOc_inq_attlen(int ncid, int varid, const char *name, PIO_Offset *lenp);
     int PIOc_inq_atttype(int ncid, int varid, const char *name, nc_type *xtypep);
+    int PIOc_inq_attname(int ncid, int varid, int attnum, char *name);
     int PIOc_put_att(int ncid, int varid, const char *name, nc_type xtype, PIO_Offset len, const void *op);
     int PIOc_get_att(int ncid, int varid, const char *name, void *ip);
     int PIOc_put_att_double(int ncid, int varid, const char *name, nc_type xtype, PIO_Offset len,
 			    const double *op);
     int PIOc_put_att_int(int ncid, int varid, const char *name, nc_type xtype, PIO_Offset len,
 			 const int *op);
-    int PIOc_rename_att(int ncid, int varid, const char *name, const char *newname);
-    int PIOc_del_att(int ncid, int varid, const char *name);
-    int PIOc_inq_natts(int ncid, int *ngattsp);
     int PIOc_get_att_text(int ncid, int varid, const char *name, char *ip);
     int PIOc_get_att_short(int ncid, int varid, const char *name, short *ip);
     int PIOc_put_att_long(int ncid, int varid, const char *name, nc_type xtype, PIO_Offset len,
@@ -670,7 +672,6 @@ extern "C" {
     int PIOc_put_att_short(int ncid, int varid, const char *name, nc_type xtype, PIO_Offset len,
 			   const short *op);
     int PIOc_put_att_text(int ncid, int varid, const char *name, PIO_Offset len, const char *op);
-    int PIOc_inq_attname(int ncid, int varid, int attnum, char *name);
     int PIOc_get_att_ulonglong(int ncid, int varid, const char *name, unsigned long long *ip);
     int PIOc_get_att_ushort(int ncid, int varid, const char *name, unsigned short *ip);
     int PIOc_put_att_ulonglong(int ncid, int varid, const char *name, nc_type xtype,
