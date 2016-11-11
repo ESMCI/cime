@@ -533,11 +533,55 @@ enum PIO_ERROR_HANDLERS
 #if defined(__cplusplus)
 extern "C" {
 #endif
+    /* Error handling. */
     int PIOc_strerror(int pioerr, char *errstr);
+
+    /* Decomposition. */
     int PIOc_freedecomp(int iosysid, int ioid);
+
+    /* Handling files. */
+    int PIOc_inq_format(int ncid, int *formatp);
+    int PIOc_set_chunk_cache(int iosysid, int iotype, PIO_Offset size, PIO_Offset nelems,
+			     float preemption);
+    int PIOc_get_chunk_cache(int iosysid, int iotype, PIO_Offset *sizep, PIO_Offset *nelemsp,
+			     float *preemptionp);
+    int PIOc_inq(int ncid, int *ndimsp, int *nvarsp, int *ngattsp, int *unlimdimidp);
+    int PIOc_redef(int ncid);
+    int PIOc_enddef(int ncid);
+    
+    /* Attributes. */
     int PIOc_inq_att(int ncid, int varid, const char *name, nc_type *xtypep,
 		     PIO_Offset *lenp);
-    int PIOc_inq_format(int ncid, int *formatp);
+    int PIOc_put_att_double(int ncid, int varid, const char *name, nc_type xtype, PIO_Offset len,
+			    const double *op);
+    int PIOc_put_att_int(int ncid, int varid, const char *name, nc_type xtype, PIO_Offset len,
+			 const int *op);
+    int PIOc_rename_att(int ncid, int varid, const char *name, const char *newname);
+    int PIOc_del_att(int ncid, int varid, const char *name);
+    int PIOc_inq_natts(int ncid, int *ngattsp);
+    int PIOc_get_att_text(int ncid, int varid, const char *name, char *ip);
+    int PIOc_get_att_short(int ncid, int varid, const char *name, short *ip);
+    int PIOc_put_att_long(int ncid, int varid, const char *name, nc_type xtype, PIO_Offset len,
+			  const long *op);
+    int PIOc_put_att_short(int ncid, int varid, const char *name, nc_type xtype, PIO_Offset len,
+			   const short *op);
+    int PIOc_put_att_text(int ncid, int varid, const char *name, PIO_Offset len, const char *op);
+    int PIOc_inq_attname(int ncid, int varid, int attnum, char *name);
+    int PIOc_get_att_ulonglong(int ncid, int varid, const char *name, unsigned long long *ip);
+    int PIOc_get_att_ushort(int ncid, int varid, const char *name, unsigned short *ip);
+    int PIOc_put_att_ulonglong(int ncid, int varid, const char *name, nc_type xtype,
+			       PIO_Offset len, const unsigned long long *op);
+    int PIOc_get_att_uint(int ncid, int varid, const char *name, unsigned int *ip);
+    int PIOc_get_att_longlong(int ncid, int varid, const char *name, long long *ip);
+    int PIOc_put_att_schar(int ncid, int varid, const char *name, nc_type xtype, PIO_Offset len,
+			   const signed char *op);
+    int PIOc_put_att_float(int ncid, int varid, const char *name, nc_type xtype, PIO_Offset len,
+			   const float *op);
+
+    /* Dimensions. */
+    int PIOc_inq_dimlen(int ncid, int dimid, PIO_Offset *lenp);
+    
+    /* Variables. */
     int PIOc_inq_varid(int ncid, const char *name, int *varidp);
     int PIOc_inq_varnatts(int ncid, int varid, int *nattsp);
     int PIOc_def_var(int ncid, const char *name, nc_type xtype,  int ndims,
@@ -553,10 +597,6 @@ extern "C" {
     int PIOc_inq_var_fill(int ncid, int varid, int *no_fill, void *fill_valuep);
     int PIOc_def_var_endian(int ncid, int varid, int endian);
     int PIOc_inq_var_endian(int ncid, int varid, int *endianp);
-    int PIOc_set_chunk_cache(int iosysid, int iotype, PIO_Offset size, PIO_Offset nelems,
-			     float preemption);
-    int PIOc_get_chunk_cache(int iosysid, int iotype, PIO_Offset *sizep, PIO_Offset *nelemsp,
-			     float *preemptionp);
     int PIOc_set_var_chunk_cache(int ncid, int varid, PIO_Offset size, PIO_Offset nelems,
                                  float preemption);
     int PIOc_get_var_chunk_cache(int ncid, int varid, PIO_Offset *sizep, PIO_Offset *nelemsp,
@@ -564,37 +604,9 @@ extern "C" {
     int PIOc_inq_var(int ncid, int varid, char *name, nc_type *xtypep, int *ndimsp, int *dimidsp,
 		     int *nattsp);
     int PIOc_inq_varname(int ncid, int varid, char *name);
-    int PIOc_put_att_double(int ncid, int varid, const char *name, nc_type xtype, PIO_Offset len,
-			    const double *op);
-    int PIOc_put_att_int(int ncid, int varid, const char *name, nc_type xtype, PIO_Offset len,
-			 const int *op);
-    int PIOc_rename_att(int ncid, int varid, const char *name, const char *newname);
-    int PIOc_del_att(int ncid, int varid, const char *name);
-    int PIOc_inq_natts(int ncid, int *ngattsp);
-    int PIOc_inq(int ncid, int *ndimsp, int *nvarsp, int *ngattsp, int *unlimdimidp);
-    int PIOc_get_att_text(int ncid, int varid, const char *name, char *ip);
-    int PIOc_get_att_short(int ncid, int varid, const char *name, short *ip);
-    int PIOc_put_att_long(int ncid, int varid, const char *name, nc_type xtype, PIO_Offset len,
-			  const long *op);
-    int PIOc_redef(int ncid);
     int PIOc_set_fill(int ncid, int fillmode, int *old_modep);
-    int PIOc_enddef(int ncid);
     int PIOc_rename_var(int ncid, int varid, const char *name);
-    int PIOc_put_att_short(int ncid, int varid, const char *name, nc_type xtype, PIO_Offset len,
-			   const short *op);
-    int PIOc_put_att_text(int ncid, int varid, const char *name, PIO_Offset len, const char *op);
-    int PIOc_inq_attname(int ncid, int varid, int attnum, char *name);
-    int PIOc_get_att_ulonglong(int ncid, int varid, const char *name, unsigned long long *ip);
-    int PIOc_get_att_ushort(int ncid, int varid, const char *name, unsigned short *ip);
-    int PIOc_put_att_ulonglong(int ncid, int varid, const char *name, nc_type xtype,
-			       PIO_Offset len, const unsigned long long *op);
-    int PIOc_inq_dimlen(int ncid, int dimid, PIO_Offset *lenp);
-    int PIOc_get_att_uint(int ncid, int varid, const char *name, unsigned int *ip);
-    int PIOc_get_att_longlong(int ncid, int varid, const char *name, long long *ip);
-    int PIOc_put_att_schar(int ncid, int varid, const char *name, nc_type xtype, PIO_Offset len,
-			   const signed char *op);
-    int PIOc_put_att_float(int ncid, int varid, const char *name, nc_type xtype, PIO_Offset len,
-			   const float *op);
+
     int PIOc_inq_nvars(int ncid, int *nvarsp);
     int PIOc_rename_dim(int ncid, int dimid, const char *name);
     int PIOc_inq_varndims(int ncid, int varid, int *ndimsp);
@@ -761,94 +773,151 @@ extern "C" {
 			    const PIO_Offset count[], const float *op);
     int PIOc_put_var1_float(int ncid, int varid, const PIO_Offset index[], const float *op);
     int PIOc_put_varm_float(int ncid, int varid, const PIO_Offset start[],
-			    const PIO_Offset count[], const PIO_Offset stride[], const PIO_Offset imap[], const float *op);
+			    const PIO_Offset count[], const PIO_Offset stride[],
+			    const PIO_Offset imap[], const float *op);
     int PIOc_put_var1_text(int ncid, int varid, const PIO_Offset index[], const char *op);
     int PIOc_put_vars_text(int ncid, int varid, const PIO_Offset start[],
 			   const PIO_Offset count[], const PIO_Offset stride[], const char *op);
     int PIOc_put_varm_long(int ncid, int varid, const PIO_Offset start[],
-			   const PIO_Offset count[], const PIO_Offset stride[], const PIO_Offset imap[], const long *op);
-    int PIOc_put_vars_double(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[], const PIO_Offset stride[], const double *op);
-    int PIOc_put_vara_longlong(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[], const long long *op);
+			   const PIO_Offset count[], const PIO_Offset stride[],
+			   const PIO_Offset imap[], const long *op);
+    int PIOc_put_vars_double(int ncid, int varid, const PIO_Offset start[],
+			     const PIO_Offset count[], const PIO_Offset stride[], const double *op);
+    int PIOc_put_vara_longlong(int ncid, int varid, const PIO_Offset start[],
+			       const PIO_Offset count[], const long long *op);
     int PIOc_put_var_double(int ncid, int varid, const double *op);
     int PIOc_put_var_float(int ncid, int varid, const float *op);
-    int PIOc_put_var1_ulonglong(int ncid, int varid, const PIO_Offset index[], const unsigned long long *op);
-    int PIOc_put_varm_uint(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[], const PIO_Offset stride[], const PIO_Offset imap[], const unsigned int *op);
-    int PIOc_put_var1_uint(int ncid, int varid, const PIO_Offset index[], const unsigned int *op);
+    int PIOc_put_var1_ulonglong(int ncid, int varid, const PIO_Offset index[],
+				const unsigned long long *op);
+    int PIOc_put_varm_uint(int ncid, int varid, const PIO_Offset start[],
+			   const PIO_Offset count[], const PIO_Offset stride[],
+			   const PIO_Offset imap[], const unsigned int *op);
+    int PIOc_put_var1_uint(int ncid, int varid, const PIO_Offset index[],
+			   const unsigned int *op);
     int PIOc_put_var1_int(int ncid, int varid, const PIO_Offset index[], const int *op);
-    int PIOc_put_vars_float(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[], const PIO_Offset stride[], const float *op);
-    int PIOc_put_vara_short(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[], const short *op);
+    int PIOc_put_vars_float(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[],
+			    const PIO_Offset stride[], const float *op);
+    int PIOc_put_vara_short(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[],
+			    const short *op);
     int PIOc_put_var1_schar(int ncid, int varid, const PIO_Offset index[], const signed char *op);
-    int PIOc_put_vara_ulonglong(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[], const unsigned long long *op);
-    int PIOc_put_varm_double(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[], const PIO_Offset stride[], const PIO_Offset imap[], const double *op);
-    int PIOc_put_vara(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[], const void *buf, PIO_Offset bufcount, MPI_Datatype buftype);
-    int PIOc_put_vara_long(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[], const long *op);
+    int PIOc_put_vara_ulonglong(int ncid, int varid, const PIO_Offset start[],
+				const PIO_Offset count[], const unsigned long long *op);
+    int PIOc_put_varm_double(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[],
+			     const PIO_Offset stride[], const PIO_Offset imap[], const double *op);
+    int PIOc_put_vara(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[],
+		      const void *buf, PIO_Offset bufcount, MPI_Datatype buftype);
+    int PIOc_put_vara_long(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[],
+			   const long *op);
     int PIOc_put_var1_double(int ncid, int varid, const PIO_Offset index[], const double *op);
-    int PIOc_put_varm_schar(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[], const PIO_Offset stride[], const PIO_Offset imap[], const signed char *op);
+    int PIOc_put_varm_schar(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[],
+			    const PIO_Offset stride[], const PIO_Offset imap[], const signed char *op);
     int PIOc_put_var_text(int ncid, int varid, const char *op);
-    int PIOc_put_vars_int(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[], const PIO_Offset stride[], const int *op);
+    int PIOc_put_vars_int(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[],
+			  const PIO_Offset stride[], const int *op);
     int PIOc_put_var1_short(int ncid, int varid, const PIO_Offset index[], const short *op);
-    int PIOc_put_vars_longlong(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[], const PIO_Offset stride[], const long long *op);
-    int PIOc_put_vara_double(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[], const double *op);
-    int PIOc_put_vars(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[], const PIO_Offset stride[], const void *buf, PIO_Offset bufcount, MPI_Datatype buftype);
-    int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[], const PIO_Offset stride[], nc_type xtype, const void *buf);
+    int PIOc_put_vars_longlong(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[],
+			       const PIO_Offset stride[], const long long *op);
+    int PIOc_put_vara_double(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[],
+			     const double *op);
+    int PIOc_put_vars(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[],
+		      const PIO_Offset stride[], const void *buf, PIO_Offset bufcount, MPI_Datatype buftype);
+    int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[],
+			 const PIO_Offset stride[], nc_type xtype, const void *buf);
     int PIOc_put_var_uchar(int ncid, int varid, const unsigned char *op);
     int PIOc_put_var_long(int ncid, int varid, const long *op);
-    int PIOc_put_varm_longlong(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[], const PIO_Offset stride[], const PIO_Offset imap[], const long long *op);
-    int PIOc_get_vara_int(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[], int *buf);
+    int PIOc_put_varm_longlong(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[],
+			       const PIO_Offset stride[], const PIO_Offset imap[], const long long *op);
+    int PIOc_get_vara_int(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[],
+			  int *buf);
     int PIOc_get_var1_float(int ncid, int varid, const PIO_Offset index[], float *buf);
     int PIOc_get_var1_short(int ncid, int varid, const PIO_Offset index[], short *buf);
-    int PIOc_get_vars_int(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[], const PIO_Offset stride[], int *buf);
+    int PIOc_get_vars_int(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[],
+			  const PIO_Offset stride[], int *buf);
     int PIOc_get_var_text(int ncid, int varid, char *buf);
-    int PIOc_get_varm_double(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[], const PIO_Offset stride[], const PIO_Offset imap[], double *buf);
-    int PIOc_get_vars_schar(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[], const PIO_Offset stride[], signed char *buf);
-    int PIOc_get_vara_ushort(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[], unsigned short *buf);
+    int PIOc_get_varm_double(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[],
+			     const PIO_Offset stride[], const PIO_Offset imap[], double *buf);
+    int PIOc_get_vars_schar(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[],
+			    const PIO_Offset stride[], signed char *buf);
+    int PIOc_get_vara_ushort(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[],
+			     unsigned short *buf);
     int PIOc_get_var1_ushort(int ncid, int varid, const PIO_Offset index[], unsigned short *buf);
     int PIOc_get_var_float(int ncid, int varid, float *buf);
-    int PIOc_get_vars_uchar(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[], const PIO_Offset stride[], unsigned char *buf);
+    int PIOc_get_vars_uchar(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[],
+			    const PIO_Offset stride[], unsigned char *buf);
     int PIOc_get_var(int ncid, int varid, void *buf, PIO_Offset bufcount, MPI_Datatype buftype);
     int PIOc_get_var1_longlong(int ncid, int varid, const PIO_Offset index[], long long *buf);
-    int PIOc_get_vars_ushort(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[], const PIO_Offset stride[], unsigned short *buf);
+    int PIOc_get_vars_ushort(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[],
+			     const PIO_Offset stride[], unsigned short *buf);
     int PIOc_get_var_long(int ncid, int varid, long *buf);
     int PIOc_get_var1_double(int ncid, int varid, const PIO_Offset index[], double *buf);
-    int PIOc_get_vara_uint(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[], unsigned int *buf);
-    int PIOc_get_vars_longlong(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[], const PIO_Offset stride[], long long *buf);
+    int PIOc_get_vara_uint(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[],
+			   unsigned int *buf);
+    int PIOc_get_vars_longlong(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[],
+			       const PIO_Offset stride[], long long *buf);
     int PIOc_get_var_longlong(int ncid, int varid, long long *buf);
-    int PIOc_get_vara_short(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[], short *buf);
-    int PIOc_get_vara_long(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[], long *buf);
+    int PIOc_get_vara_short(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[],
+			    short *buf);
+    int PIOc_get_vara_long(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[],
+			   long *buf);
     int PIOc_get_var1_int(int ncid, int varid, const PIO_Offset index[], int *buf);
     int PIOc_get_var1_ulonglong(int ncid, int varid, const PIO_Offset index[], unsigned long long *buf);
     int PIOc_get_var_uchar(int ncid, int varid, unsigned char *buf);
-    int PIOc_get_vara_uchar(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[], unsigned char *buf);
-    int PIOc_get_vars_float(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[], const PIO_Offset stride[], float *buf);
-    int PIOc_get_vars_long(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[], const PIO_Offset stride[], long *buf);
-    int PIOc_get_var1(int ncid, int varid, const PIO_Offset index[], void *buf, PIO_Offset bufcount, MPI_Datatype buftype);
+    int PIOc_get_vara_uchar(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[],
+			    unsigned char *buf);
+    int PIOc_get_vars_float(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[],
+			    const PIO_Offset stride[], float *buf);
+    int PIOc_get_vars_long(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[],
+			   const PIO_Offset stride[], long *buf);
+    int PIOc_get_var1(int ncid, int varid, const PIO_Offset index[], void *buf, PIO_Offset bufcount,
+		      MPI_Datatype buftype);
     int PIOc_get_var_uint(int ncid, int varid, unsigned int *buf);
-    int PIOc_get_vara(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[], void *buf, PIO_Offset bufcount, MPI_Datatype buftype);
-    int PIOc_get_vara_schar(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[], signed char *buf);
+    int PIOc_get_vara(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[], void *buf,
+		      PIO_Offset bufcount, MPI_Datatype buftype);
+    int PIOc_get_vara_schar(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[],
+			    signed char *buf);
     int PIOc_get_var1_uint(int ncid, int varid, const PIO_Offset index[], unsigned int *buf);
-    int PIOc_get_vars_uint(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[], const PIO_Offset stride[], unsigned int *buf);
-    int PIOc_get_vara_float(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[], float *buf);
-    int PIOc_get_varm_text(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[], const PIO_Offset stride[], const PIO_Offset imap[], char *buf);
+    int PIOc_get_vars_uint(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[],
+			   const PIO_Offset stride[], unsigned int *buf);
+    int PIOc_get_vara_float(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[],
+			    float *buf);
+    int PIOc_get_varm_text(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[],
+			   const PIO_Offset stride[], const PIO_Offset imap[], char *buf);
     int PIOc_get_var1_text(int ncid, int varid, const PIO_Offset index[], char *buf);
-    int PIOc_get_varm_int(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[], const PIO_Offset stride[], const PIO_Offset imap[], int *buf);
-    int PIOc_get_varm_uint(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[], const PIO_Offset stride[], const PIO_Offset imap[], unsigned int *buf);
-    int PIOc_get_varm(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[], const PIO_Offset stride[], const PIO_Offset imap[], void *buf, PIO_Offset bufcount, MPI_Datatype buftype);
-    int PIOc_get_vars_double(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[], const PIO_Offset stride[], double *buf);
-    int PIOc_get_vara_longlong(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[], long long *buf);
+    int PIOc_get_varm_int(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[],
+			  const PIO_Offset stride[], const PIO_Offset imap[], int *buf);
+    int PIOc_get_varm_uint(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[],
+			   const PIO_Offset stride[], const PIO_Offset imap[], unsigned int *buf);
+    int PIOc_get_varm(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[],
+		      const PIO_Offset stride[], const PIO_Offset imap[], void *buf,
+		      PIO_Offset bufcount, MPI_Datatype buftype);
+    int PIOc_get_vars_double(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[],
+			     const PIO_Offset stride[], double *buf);
+    int PIOc_get_vara_longlong(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[],
+			       long long *buf);
     int PIOc_get_var_ulonglong(int ncid, int varid, unsigned long long *buf);
-    int PIOc_get_vara_ulonglong(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[], unsigned long long *buf);
+    int PIOc_get_vara_ulonglong(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[],
+				unsigned long long *buf);
     int PIOc_get_var_short(int ncid, int varid, short *buf);
-    int PIOc_get_varm_float(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[], const PIO_Offset stride[], const PIO_Offset imap[], float *buf);
+    int PIOc_get_varm_float(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[],
+			    const PIO_Offset stride[], const PIO_Offset imap[], float *buf);
     int PIOc_get_var1_long(int ncid, int varid, const PIO_Offset index[], long *buf);
-    int PIOc_get_varm_long(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[], const PIO_Offset stride[], const PIO_Offset imap[], long *buf);
-    int PIOc_get_varm_ushort(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[], const PIO_Offset stride[], const PIO_Offset imap[], unsigned short *buf);
-    int PIOc_get_varm_longlong(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[], const PIO_Offset stride[], const PIO_Offset imap[], long long *buf);
-    int PIOc_get_vars_text(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[], const PIO_Offset stride[], char *buf);
+    int PIOc_get_varm_long(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[],
+			   const PIO_Offset stride[], const PIO_Offset imap[], long *buf);
+    int PIOc_get_varm_ushort(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[],
+			     const PIO_Offset stride[], const PIO_Offset imap[], unsigned short *buf);
+    int PIOc_get_varm_longlong(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[],
+			       const PIO_Offset stride[], const PIO_Offset imap[], long long *buf);
+    int PIOc_get_vars_text(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[],
+			   const PIO_Offset stride[], char *buf);
     int PIOc_get_var1_uchar(int ncid, int varid, const PIO_Offset index[], unsigned char *buf);
-    int PIOc_get_vars(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[], const PIO_Offset stride[], void *buf, PIO_Offset bufcount, MPI_Datatype buftype);
-    int PIOc_get_vars_tc(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[], const PIO_Offset stride[], nc_type xtype, void *buf);
-    int PIOc_get_varm_short(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[], const PIO_Offset stride[], const PIO_Offset imap[], short *buf);
-    int PIOc_get_varm_ulonglong(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[], const PIO_Offset stride[], const PIO_Offset imap[], unsigned long long *buf);
+    int PIOc_get_vars(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[],
+		      const PIO_Offset stride[], void *buf, PIO_Offset bufcount, MPI_Datatype buftype);
+    int PIOc_get_vars_tc(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[],
+			 const PIO_Offset stride[], nc_type xtype, void *buf);
+    int PIOc_get_varm_short(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[],
+			    const PIO_Offset stride[], const PIO_Offset imap[], short *buf);
+    int PIOc_get_varm_ulonglong(int ncid, int varid, const PIO_Offset start[], const PIO_Offset count[],
+				const PIO_Offset stride[], const PIO_Offset imap[], unsigned long long *buf);
     int PIOc_get_var_schar(int ncid, int varid, signed char *buf);
     int PIOc_iotype_available(const int iotype);
     int PIOc_set_log_level(int level);
