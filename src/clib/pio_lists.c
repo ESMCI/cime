@@ -13,7 +13,6 @@ static file_desc_t *current_file=NULL;
 /** Add a new entry to the global list of open files.
  *
  * @param file pointer to the file_desc_t struct for the new file.
- * @internal
  */
 void pio_add_to_file_list(file_desc_t *file)
 {
@@ -50,7 +49,6 @@ void pio_add_to_file_list(file_desc_t *file)
  * will get a copy of the pointer to the file info.
  *
  * @returns 0 for success, error code otherwise.
- * @internal
  */
 int pio_get_file(int ncid, file_desc_t **cfile1)
 {
@@ -91,7 +89,6 @@ int pio_get_file(int ncid, file_desc_t **cfile1)
  *
  * @param ncid ID of file to delete from list
  * @returns 0 for success, error code otherwise
- * @internal
  */
 int pio_delete_file_from_list(int ncid)
 {
@@ -126,7 +123,6 @@ int pio_delete_file_from_list(int ncid)
  *
  * @param piosysid the iosysid to delete
  * @returns 0 on success, error code otherwise
- * @internal
  */
 int pio_delete_iosystem_from_list(int piosysid)
 {
@@ -154,7 +150,6 @@ int pio_delete_iosystem_from_list(int piosysid)
  *
  * @param ios pointer to the iosystem_desc_t info to add.
  * @returns 0 on success, error code otherwise
- * @internal
  */
 int pio_add_to_iosystem_list(iosystem_desc_t *ios)
 {
@@ -187,7 +182,6 @@ int pio_add_to_iosystem_list(iosystem_desc_t *ios)
  *
  * @param iosysid id of the iosystem
  * @returns pointer to iosystem_desc_t, or NULL if not found.
- * @internal
  */
 iosystem_desc_t *pio_get_iosystem_from_id(int iosysid)
 {
@@ -205,7 +199,7 @@ iosystem_desc_t *pio_get_iosystem_from_id(int iosysid)
 /** Count the number of open iosystems.
  *
  * @param niosysid pointer that will get the number of open iosystems.
- * @internal
+ * @returns 0 for success.
  */
 int
 pio_num_iosystem(int *niosysid)
@@ -226,27 +220,26 @@ pio_num_iosystem(int *niosysid)
 /** Add an iodesc.
  *
  * @param io_desc_t pointer to data to add to list.
- * @internal
+ * @returns the ioid of the newly added iodesc.
  */
 int pio_add_to_iodesc_list(io_desc_t *iodesc)
 {
     io_desc_t *ciodesc;
-    int imax=512;
+    int imax = 512;
 
     iodesc->next = NULL;
-    if(pio_iodesc_list == NULL)
+    if (pio_iodesc_list == NULL)
         pio_iodesc_list = iodesc;
     else{
         imax++;
-        for(ciodesc = pio_iodesc_list; ciodesc->next != NULL; ciodesc=ciodesc->next, imax=ciodesc->ioid+1);
+        for (ciodesc = pio_iodesc_list; ciodesc->next; ciodesc=ciodesc->next, imax=ciodesc->ioid + 1);
         ciodesc->next = iodesc;
     }
     iodesc->ioid = imax;
     current_iodesc = iodesc;
-    //  printf("In add to list %d\n",iodesc->ioid);
+
     return iodesc->ioid;
 }
-
 
 /** Get an iodesc.
  *
@@ -273,15 +266,13 @@ io_desc_t *pio_get_iodesc_from_id(int ioid)
 /** Delete an iodesc.
  *
  * @param ioid ID of iodesc to delete.
- * @internal
+ * @returns 0 on success, error code otherwise.
  */
 int pio_delete_iodesc_from_list(int ioid)
 {
-    io_desc_t *ciodesc, *piodesc;
+    io_desc_t *ciodesc, *piodesc = NULL;
 
-    piodesc = NULL;
-
-    for (ciodesc = pio_iodesc_list; ciodesc != NULL; ciodesc = ciodesc->next)
+    for (ciodesc = pio_iodesc_list; ciodesc; ciodesc = ciodesc->next)
     {
         if (ciodesc->ioid == ioid)
         {
