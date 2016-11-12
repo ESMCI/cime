@@ -1608,17 +1608,17 @@ int subset_rearrange_create(const iosystem_desc_t ios, const int maplen, PIO_Off
                            nio, ios.io_comm, maxreq);
         }
         PIO_Offset grid[thisgridsize[ios.io_rank]];
-        for (i = 0;i<thisgridsize[ios.io_rank];i++){
+        for (i = 0; i < thisgridsize[ios.io_rank]; i++)
             grid[i]=0;
-        }
-        int cnt=0;
-        for (i = 0;i<thisgridsize[ios.io_rank];i++){
-            int j = myusegrid[i] - thisgridmin[ios.io_rank];
-            //      printf("%s %d %d %d %d %d\n",__FILE__,__LINE__,i,j,thisgridmin[ios.io_rank],myusegrid[i]);
 
-            pioassert(j<thisgridsize[ios.io_rank] ,"out of bounds array index",__FILE__,__LINE__);
-            if (j>=0){
-                grid[j]=1;
+        int cnt = 0;
+        for (i = 0; i < thisgridsize[ios.io_rank]; i++)
+	{
+            int j = myusegrid[i] - thisgridmin[ios.io_rank];
+            pioassert(j < thisgridsize[ios.io_rank], "out of bounds array index", __FILE__, __LINE__);
+            if (j >= 0)
+	    {
+                grid[j] = 1;
                 cnt++;
             }
         }
