@@ -1659,44 +1659,34 @@ int subset_rearrange_create(const iosystem_desc_t ios, const int maplen, PIO_Off
         iodesc->maxfillregions = maxregions;
     }
 
-    CheckMPIReturn(MPI_Scatterv((void *) srcindex, recvlths, rdispls, PIO_OFFSET,
-                                (void *) iodesc->sindex, iodesc->scount[0],  PIO_OFFSET,
-                                0, iodesc->subset_comm),__FILE__,__LINE__);
+    CheckMPIReturn(MPI_Scatterv((void *)srcindex, recvlths, rdispls, PIO_OFFSET, (void *)iodesc->sindex,
+				iodesc->scount[0],  PIO_OFFSET, 0, iodesc->subset_comm), __FILE__, __LINE__);
 
-
-
-    if (ios.ioproc){
-
-        /*
-          printf("%s %d %d\n",__FILE__,__LINE__,ios.io_rank);
-          for (i = 0;i<iodesc->llen;i++)
-          printf("%d ",iomap[i]);
-          printf("\n");
-        */
+    if (ios.ioproc)
+    {
         iodesc->maxregions = 0;
         get_start_and_count_regions(iodesc->ndims,gsize,iodesc->llen, iomap,&(iodesc->maxregions),
                                     iodesc->firstregion);
         maxregions = iodesc->maxregions;
-        MPI_Allreduce(MPI_IN_PLACE,&maxregions,1, MPI_INT, MPI_MAX, ios.io_comm);
+        MPI_Allreduce(MPI_IN_PLACE, &maxregions,1, MPI_INT, MPI_MAX, ios.io_comm);
         iodesc->maxregions = maxregions;
-        if (iomap != NULL)
+        if (iomap)
             brel(iomap);
 
-
-        if (map != NULL)
+        if (map)
             brel(map);
 
-        if (srcindex != NULL)
+        if (srcindex)
             brel(srcindex);
 
         compute_maxIObuffersize(ios.io_comm, iodesc);
 
-        iodesc->nrecvs=ntasks;
+        iodesc->nrecvs = ntasks;
 #ifdef DEBUG
         iodesc_dump(iodesc);
 #endif
-
     }
+
     /* using maxiobuflen compute the maximum number of vars of this type that the io
        task buffer can handle */
     compute_maxaggregate_bytes(ios, iodesc);
