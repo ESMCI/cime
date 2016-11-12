@@ -1622,17 +1622,17 @@ int subset_rearrange_create(const iosystem_desc_t ios, const int maplen, PIO_Off
                 cnt++;
             }
         }
-        if (myusegrid!=NULL){
+        if (myusegrid)
             brel(myusegrid);
-        }
-        iodesc->holegridsize=thisgridsize[ios.io_rank]-cnt;
-        if (iodesc->holegridsize>0){
-            if (!(myfillgrid = (PIO_Offset *) bget(iodesc->holegridsize * sizeof(PIO_Offset))))
+
+        iodesc->holegridsize=thisgridsize[ios.io_rank] - cnt;
+        if (iodesc->holegridsize > 0)
+	{
+            if (!(myfillgrid = (PIO_Offset *)bget(iodesc->holegridsize * sizeof(PIO_Offset))))
                 piomemerror(ios, iodesc->holegridsize * sizeof(PIO_Offset), __FILE__, __LINE__);
         }
-        for (i = 0;i<iodesc->holegridsize;i++){
-            myfillgrid[i]=-1;
-        }
+        for (i = 0; i < iodesc->holegridsize; i++)
+            myfillgrid[i] = -1;
 
         j = 0;
         for (i = 0;i<thisgridsize[ios.io_rank];i++){
