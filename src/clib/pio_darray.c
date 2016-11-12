@@ -251,7 +251,7 @@ int PIOc_write_darray(const int ncid, const int vid, const int ioid,
     var_desc_t *vdesc;  /* Info about the var being written. */
     void *bufptr;       /* A data buffer. */
     MPI_Datatype vtype; /* The MPI type of the variable. */
-    wmulti_buffer *wmb; /* A data buffer. */
+    wmulti_buffer *wmb; /* The write multi buffer for one or more vars. */
     int tsize;          /* Size of MPI type. */
     bool recordvar;     /* True if this is a record variable. */
     int needsflush = 0; /* True if we need to flush buffer. */
@@ -259,7 +259,7 @@ int PIOc_write_darray(const int ncid, const int vid, const int ioid,
     bufsize maxfree;    /* Max amount of free space in buffer. */
     int ierr = PIO_NOERR; /* Return code. */
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
-    
+
     LOG((1, "PIOc_write_darray ncid = %d vid = %d ioid = %d arraylen = %d",
 	 ncid, vid, ioid, arraylen));
 
@@ -282,13 +282,16 @@ int PIOc_write_darray(const int ncid, const int vid, const int ioid,
 
     /* Is this a record variable? */
     recordvar = vdesc->record >= 0 ? true : false;
+    LOG((3, "recordvar = %d", recordvar));
 
     /* Check that the local size of the variable passed in matches the
      * size expected by the io descriptor. */
     if (iodesc->ndof != arraylen)
         piodie("ndof != arraylen",__FILE__,__LINE__);
 
-    /* Get a pointer to the buffer space for this file. */
+    /* Get a pointer to the buffer space for this file. It will hold
+     * data from one or more variables that fit the same
+     * description. */
     wmb = &file->buffer;
 
     /* If the ioid is not initialized, set it. For non record vars,
@@ -302,12 +305,10 @@ int PIOc_write_darray(const int ncid, const int vid, const int ioid,
     }
     else
     {
-        /* separate record and non-record variables */
+        /* Handle record and non-record variables differently. */
         if (recordvar)
         {
-	    /* wmb is write multi buffer and is a pointer to one or
-	     * more variables that fit the same description. We are
-	     * moving to the end of the wmb linked list to add the
+	    /* Moving to the end of the wmb linked list to add the
 	     * current variable. */
             while(wmb->next && wmb->ioid != ioid)
                 if (wmb->next)
@@ -352,7 +353,7 @@ int PIOc_write_darray(const int ncid, const int vid, const int ioid,
 
     /* Get the size of the MPI type. */
     if ((mpierr = MPI_Type_size(iodesc->basetype, &tsize)))
-        return check_mpi(file, mpierr, __FILE__, __LINE__);	
+        return check_mpi(file, mpierr, __FILE__, __LINE__);
 
     LOG((2, "wmb->validvars = %d arraylen = %d tsize = %d\n", wmb->validvars,
 	 arraylen, tsize));
@@ -368,7 +369,7 @@ int PIOc_write_darray(const int ncid, const int vid, const int ioid,
     /* Tell all tests on the computation communicator whether we need
      * to flush data. */
     if ((mpierr = MPI_Allreduce(MPI_IN_PLACE, &needsflush, 1,  MPI_INT,  MPI_MAX, ios->comp_comm)))
-        return check_mpi(file, mpierr, __FILE__, __LINE__);	
+        return check_mpi(file, mpierr, __FILE__, __LINE__);
 
     /* Flush data if needed. */
     if (needsflush > 0)

@@ -217,7 +217,7 @@ int PIOc_Set_IOSystem_Error_Handling(int iosysid, int method)
  * @param  iosysid @copydoc iosystem_desc_t (input)
  * @param  basetype the basic PIO data type used (input)
  * @param  ndims the number of dimensions in the variable (input)
- * @param  dims[] the global size of each dimension (input)
+ * @param  dims an array of global size of each dimension.
  * @param  maplen the local length of the compmap array (input)
  * @param compmap[] a 1 based array of offsets into the array record
  * on file.  A 0 in this array indicates a value which should not be
@@ -231,82 +231,100 @@ int PIOc_Set_IOSystem_Error_Handling(int iosysid, int method)
  * decompositions (optional input)
  * @returns 0 on success, error code otherwise
  */
-int PIOc_InitDecomp(const int iosysid, const int basetype,const int ndims, const int dims[],
-                    const int maplen, const PIO_Offset *compmap, int *ioidp,const int *rearranger,
-                    const PIO_Offset *iostart,const PIO_Offset *iocount)
+int PIOc_InitDecomp(const int iosysid, const int basetype, const int ndims, const int *dims,
+                    const int maplen, const PIO_Offset *compmap, int *ioidp, const int *rearranger,
+                    const PIO_Offset *iostart, const PIO_Offset *iocount)
 {
     iosystem_desc_t *ios;
     io_desc_t *iodesc;
-    int mpierr;
-    int ierr;
     int iosize;
     int ndisp;
+    int mpierr; /* Return code from MPI calls. */
+    int ierr;   /* Return code. */
 
-    for (int i=0;i<ndims;i++){
-        if (dims[i]<=0){
+    LOG((1, "PIOc_InitDecomp iosysid = %d basetype = %d ndims = %d maplen = %d",
+         iosysid, basetype, ndims, maplen));
+
+    /* Check the dim lengths. */
+    for (int i = 0; i < ndims; i++)
+        if (dims[i] <= 0)
             piodie("Invalid dims argument",__FILE__,__LINE__);
-        }
-    }
-    ios = pio_get_iosystem_from_id(iosysid);
-    if (ios == NULL)
+
+    /* Get IO system info. */
+    if (!(ios = pio_get_iosystem_from_id(iosysid)))
         return PIO_EBADID;
 
-
-    if (PIO_Save_Decomps){
+    /* If desired, save the computed decompositions to files. */
+    if (PIO_Save_Decomps)
+    {
         char filename[30];
-        if (ios->num_comptasks < 100) {
-            sprintf(filename, "piodecomp%2.2dtasks%2.2ddims%2.2d.dat",ios->num_comptasks,ndims,counter);
-        }else if (ios->num_comptasks < 10000) {
-            sprintf(filename, "piodecomp%4.4dtasks%2.2ddims%2.2d.dat",ios->num_comptasks,ndims,counter);
-        }else{
-            sprintf(filename, "piodecomp%6.6dtasks%2.2ddims%2.2d.dat",ios->num_comptasks,ndims,counter);
-        }
-        PIOc_writemap(filename,ndims,dims,maplen, (PIO_Offset *)compmap,ios->comp_comm);
+        if (ios->num_comptasks < 100)
+            sprintf(filename, "piodecomp%2.2dtasks%2.2ddims%2.2d.dat", ios->num_comptasks, ndims, counter);
+        else if (ios->num_comptasks < 10000)
+            sprintf(filename, "piodecomp%4.4dtasks%2.2ddims%2.2d.dat", ios->num_comptasks, ndims, counter);
+        else
+            sprintf(filename, "piodecomp%6.6dtasks%2.2ddims%2.2d.dat", ios->num_comptasks, ndims, counter);
+
+        PIOc_writemap(filename, ndims, dims, maplen, (PIO_Offset *)compmap, ios->comp_comm);
         counter++;
     }
 
-
+    /* Allocate space for the iodesc info. */
     iodesc = malloc_iodesc(basetype, ndims);
+
+    /* Set the rearranger. */
     if (rearranger == NULL)
         iodesc->rearranger = ios->default_rearranger;
     else
         iodesc->rearranger = *rearranger;
 
-    if (iodesc->rearranger==PIO_REARR_SUBSET){
-        if ((iostart != NULL) && (iocount != NULL)){
+    if (iodesc->rearranger == PIO_REARR_SUBSET)
+    {
+        if (iostart && iocount)
+        {
             fprintf(stderr,"%s %s\n","Iostart and iocount arguments to PIOc_InitDecomp",
                     "are incompatable with subset rearrange method and will be ignored");
         }
         iodesc->num_aiotasks = ios->num_iotasks;
-        ierr = subset_rearrange_create( *ios, maplen, compmap, dims, ndims, iodesc);
-    }else{
-        if (ios->ioproc){
-            //  Unless the user specifies the start and count for each IO task compute it.
-            if ((iostart != NULL) && (iocount != NULL)){
-                //        printf("iocount[0] = %ld %ld\n",iocount[0], iocount);
+        ierr = subset_rearrange_create(*ios, maplen, (PIO_Offset *)compmap, dims,
+                                       ndims, iodesc);
+    }
+    else
+    {
+        if (ios->ioproc)
+        {
+            /*  Unless the user specifies the start and count for each
+             *  IO task compute it. */
+            if (iostart && iocount)
+            {
                 iodesc->maxiobuflen=1;
-                for (int i=0;i<ndims;i++){
+                for (int i = 0; i < ndims; i++)
+                {
                     iodesc->firstregion->start[i] = iostart[i];
                     iodesc->firstregion->count[i] = iocount[i];
                     compute_maxIObuffersize(ios->io_comm, iodesc);
 
                 }
                 iodesc->num_aiotasks = ios->num_iotasks;
-            }else{
+            }
+            else
+            {
                 iodesc->num_aiotasks = CalcStartandCount(basetype, ndims, dims,
                                                          ios->num_iotasks, ios->io_rank,
                                                          iodesc->firstregion->start, iodesc->firstregion->count);
             }
             compute_maxIObuffersize(ios->io_comm, iodesc);
-
         }
-        // Depending on array size and io-blocksize the actual number of io tasks used may vary
+
+        /* Depending on array size and io-blocksize the actual number
+         * of io tasks used may vary. */
         CheckMPIReturn(MPI_Bcast(&(iodesc->num_aiotasks), 1, MPI_INT, ios->ioroot,
                                  ios->my_comm),__FILE__,__LINE__);
-        // Compute the communications pattern for this decomposition
-        if (iodesc->rearranger==PIO_REARR_BOX){
+
+        /* Compute the communications pattern for this decomposition. */
+        if (iodesc->rearranger == PIO_REARR_BOX)
             ierr = box_rearrange_create( *ios, maplen, compmap, dims, ndims, iodesc);
-        }
+
         /*
           if (ios->ioproc){
           io_region *ioregion = iodesc->firstregion;
@@ -319,6 +337,7 @@ int PIOc_InitDecomp(const int iosysid, const int basetype,const int ndims, const
         */
     }
 
+    /* Add this IO description to the list. */
     *ioidp = pio_add_to_iodesc_list(iodesc);
 
     performance_tune_rearranger(*ios, iodesc);
@@ -352,48 +371,51 @@ int PIOc_InitDecomp_bc(const int iosysid, const int basetype, const int ndims, c
     int ierr;
     int iosize;
     int ndisp;
-
-    for (int i=0;i<ndims;i++){
-        if (dims[i]<=0){
+    int n, i, maplen = 1;
+    int rearr = PIO_REARR_SUBSET;
+    
+    for (int i = 0; i < ndims; i++)
+    {
+        if (dims[i] <= 0)
             piodie("Invalid dims argument",__FILE__,__LINE__);
-        }
-        if (start[i]<0 || count[i]< 0 || (start[i]+count[i])>dims[i]){
+
+        if (start[i] < 0 || count[i] < 0 || (start[i] + count[i]) > dims[i])
             piodie("Invalid start or count argument ",__FILE__,__LINE__);
-        }
     }
-    ios = pio_get_iosystem_from_id(iosysid);
-    if (ios == NULL)
+
+    /* Get the info about the io system. */
+    if (!(ios = pio_get_iosystem_from_id(iosysid)))
         return PIO_EBADID;
 
-    int n, i, maplen=1;
+    for (i = 0; i < ndims; i++)
+        maplen *= count[i];
 
-    for ( i=0;i<ndims;i++){
-        maplen*=count[i];
-    }
     PIO_Offset compmap[maplen], prod[ndims], loc[ndims];
 
-    prod[ndims-1]=1;
-    loc[ndims-1]=0;
-    for (n=ndims-2;n>=0;n--){
-        prod[n]=prod[n+1]*dims[n+1];
-        loc[n]=0;
+    prod[ndims - 1] = 1;
+    loc[ndims - 1] = 0;
+    for (n = ndims - 2; n >= 0; n--)
+    {
+        prod[n] = prod[n + 1] * dims[n + 1];
+        loc[n] = 0;
     }
-    for (i=0;i<maplen;i++){
-        compmap[i]=0;
-        for (n=ndims-1;n>=0;n--){
+    for (i = 0; i < maplen; i++)
+    {
+        compmap[i] = 0;
+        for (n = ndims - 1; n >= 0; n--)
             compmap[i]+=(start[n]+loc[n])*prod[n];
-        }
-        n=ndims-1;
-        loc[n]=(loc[n]+1)%count[n];
-        while(loc[n]==0 && n>0){
+
+        n = ndims - 1;
+        loc[n] = (loc[n] + 1) % count[n];
+        while (loc[n] == 0 && n > 0)
+	{
             n--;
-            loc[n]=(loc[n]+1)%count[n];
+            loc[n] = (loc[n] + 1) % count[n];
         }
     }
-    int rearr = PIO_REARR_SUBSET;
+
     PIOc_InitDecomp( iosysid, basetype,ndims, dims,
                      maplen,  compmap, ioidp, &rearr, NULL, NULL);
-
 
     return PIO_NOERR;
 }
