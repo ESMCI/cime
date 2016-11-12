@@ -1720,20 +1720,18 @@ void performance_tune_rearranger(iosystem_desc_t ios, io_desc_t *iodesc)
     MPI_Type_size(iodesc->basetype, &tsize);
     cbuf = NULL;
     ibuf = NULL;
-    if (iodesc->ndof>0){
+    if (iodesc->ndof > 0)
         if (!(cbuf = bget(iodesc->ndof * tsize)))
             piomemerror(ios, iodesc->ndof * tsize, __FILE__, __LINE__);
-    }
-    if (iodesc->llen>0){
+
+    if (iodesc->llen>0)
         if (!(ibuf = bget(iodesc->llen * tsize)))
             piomemerror(ios, iodesc->llen * tsize, __FILE__, __LINE__);
-    }
 
-    if (iodesc->rearranger == PIO_REARR_BOX){
+    if (iodesc->rearranger == PIO_REARR_BOX)
         mycomm = ios.union_comm;
-    }else{
+    else
         mycomm = iodesc->subset_comm;
-    }
 
     MPI_Comm_size(mycomm, &nprocs);
     MPI_Comm_rank(mycomm, &myrank);
@@ -1742,13 +1740,13 @@ void performance_tune_rearranger(iosystem_desc_t ios, io_desc_t *iodesc)
     if (!(wall = bget(2 * 4 * log2 * sizeof(double))))
         piomemerror(ios, 2 * 4 *log2 * sizeof(double), __FILE__, __LINE__);
     double mintime;
-    int k=0;
+    int k = 0;
 
     MPI_Barrier(mycomm);
-    GPTLstamp( &wall[0], &usr[0], &sys[0]);
+    GPTLstamp(&wall[0], &usr[0], &sys[0]);
     rearrange_comp2io(ios, iodesc, cbuf, ibuf, 1);
     rearrange_io2comp(ios, iodesc, ibuf, cbuf);
-    GPTLstamp( &wall[1], &usr[1], &sys[1]);
+    GPTLstamp(&wall[1], &usr[1], &sys[1]);
     mintime = wall[1]-wall[0];
     MPI_Allreduce(MPI_IN_PLACE, &mintime, 1, MPI_DOUBLE, MPI_MAX, mycomm);
 
@@ -1756,7 +1754,8 @@ void performance_tune_rearranger(iosystem_desc_t ios, io_desc_t *iodesc)
     isend = iodesc->isend;
     maxreqs = iodesc->max_requests;
 
-    for (int i = 0; i < 2; i++){
+    for (int i = 0; i < 2; i++)
+    {
         if (i == 0)
             iodesc->handshake = false;
 	else
@@ -1774,19 +1773,15 @@ void performance_tune_rearranger(iosystem_desc_t ios, io_desc_t *iodesc)
             for (nreqs = nprocs; nreqs >= 2; nreqs /= 2)
 	    {
                 iodesc->max_requests = nreqs;
-
-                //      if (myrank==0){
-                //        printf("%s %d %d %d %d %f\n",__FILE__,__LINE__,nreqs,handshake,isend,mintime);
-                //      }
                 MPI_Barrier(mycomm);
-                GPTLstamp( wall, usr, sys);
+                GPTLstamp(wall, usr, sys);
                 rearrange_comp2io(ios, iodesc, cbuf, ibuf, 1);
                 rearrange_io2comp(ios, iodesc, ibuf, cbuf);
-                GPTLstamp( wall+1, usr, sys);
-                wall[1]-=wall[0];
-                MPI_Allreduce(MPI_IN_PLACE, wall+1,1,MPI_DOUBLE, MPI_MAX, mycomm);
+                GPTLstamp(wall+1, usr, sys);
+                wall[1] -= wall[0];
+                MPI_Allreduce(MPI_IN_PLACE, wall + 1, 1, MPI_DOUBLE, MPI_MAX, mycomm);
 
-                if (wall[1] < mintime*0.95)
+                if (wall[1] < mintime * 0.95)
 		{
                     handshake = iodesc->handshake;
                     isend = iodesc->isend;
