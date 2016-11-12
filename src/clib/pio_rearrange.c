@@ -1635,26 +1635,27 @@ int subset_rearrange_create(const iosystem_desc_t ios, const int maplen, PIO_Off
             myfillgrid[i] = -1;
 
         j = 0;
-        for (i = 0;i<thisgridsize[ios.io_rank];i++){
-            if (grid[i]==0 ){
-                if (myfillgrid[j] == -1){
+        for (i = 0; i < thisgridsize[ios.io_rank]; i++)
+	{
+            if (grid[i] == 0)
+	    {
+                if (myfillgrid[j] == -1)
                     myfillgrid[j++]=thisgridmin[ios.io_rank]+i;
-                }else{
+		else
                     piodie("something wrong",__FILE__,__LINE__);
-                    // printf("%s %d %d %d %d\n",__FILE__,__LINE__,i,j,myfillgrid[j]);
-                }
             }
         }
         maxregions = 0;
-        iodesc->maxfillregions=0;
-        if (myfillgrid!=NULL){
+        iodesc->maxfillregions = 0;
+        if (myfillgrid)
+	{
             iodesc->fillregion = alloc_region(iodesc->ndims);
             get_start_and_count_regions(iodesc->ndims,gsize,iodesc->holegridsize, myfillgrid,&(iodesc->maxfillregions),
                                         iodesc->fillregion);
             brel(myfillgrid);
             maxregions = iodesc->maxfillregions;
         }
-        MPI_Allreduce(MPI_IN_PLACE,&maxregions,1, MPI_INT, MPI_MAX, ios.io_comm);
+        MPI_Allreduce(MPI_IN_PLACE,&maxregions, 1, MPI_INT, MPI_MAX, ios.io_comm);
         iodesc->maxfillregions = maxregions;
     }
 
