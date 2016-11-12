@@ -3,13 +3,15 @@
  *
  * @author Jim Edwards
  */
+#include <config.h>
 #include <pio.h>
 #include <pio_internal.h>
 
 /** internal variable used for debugging */
-int tmpioproc=-1;
+int tmpioproc = -1;
 
-/** Convert an index into a list of dimensions. E.g., for index 4 into a
+/** 
+ * Convert an index into a list of dimensions. E.g., for index 4 into a
  * array defined as a[3][2], will return 1 1.
  *
  * @param ndims number of dimensions
@@ -1334,8 +1336,8 @@ void default_subset_partition(const iosystem_desc_t ios, io_desc_t *iodesc)
  * @param iodesc a pointer to the io_desc_t struct.
  * @returns 0 on success, error code otherwise.
  */
-int subset_rearrange_create(const iosystem_desc_t ios, const int maplen, PIO_Offset compmap[],
-                            const int gsize[], const int ndims, io_desc_t *iodesc)
+int subset_rearrange_create(const iosystem_desc_t ios, const int maplen, PIO_Offset *compmap,
+                            const int *gsize, const int ndims, io_desc_t *iodesc)
 {
     int taskratio;
     int i, j, jlast;
@@ -1354,6 +1356,8 @@ int subset_rearrange_create(const iosystem_desc_t ios, const int maplen, PIO_Off
 
     assert(iodesc);
 
+    LOG((2, "subset_rearrange_create maplen = %d ndims = %d", maplen, ndims));
+
     tmpioproc = ios.io_rank;
 
     /* subset partitions each have exactly 1 io task which is task 0 of that subset_comm */
@@ -1364,35 +1368,34 @@ int subset_rearrange_create(const iosystem_desc_t ios, const int maplen, PIO_Off
     MPI_Comm_rank(iodesc->subset_comm, &rank);
     MPI_Comm_size(iodesc->subset_comm, &ntasks);
 
-    if (ios.ioproc){
+    if (ios.ioproc)
         pioassert(rank==0,"Bad io rank in subset create",__FILE__,__LINE__);
-    }else{
+    else
         pioassert(rank>0 && rank<ntasks,"Bad comp rank in subset create",__FILE__,__LINE__);
-    }
+
     rcnt = 0;
     iodesc->ndof = maplen;
-    if (ios.ioproc){
-        iodesc->rcount = (int *) bget(ntasks *sizeof(int));
-        if (iodesc->rcount == NULL){
+    if (ios.ioproc)
+    {
+        if (!(iodesc->rcount = (int *)bget(ntasks * sizeof(int))))
             piomemerror(ios,ntasks * sizeof(int), __FILE__,__LINE__);
-        }
+
         rcnt = 1;
     }
-    iodesc->scount = (int *) bget(sizeof(int));
-    if (iodesc->scount == NULL){
+
+    if (!(iodesc->scount = (int *) bget(sizeof(int))))
         piomemerror(ios,sizeof(int), __FILE__,__LINE__);
-    }
-    iodesc->scount[0]=0;
-    totalgridsize=1;
-    for (i = 0;i<ndims;i++)
+
+    iodesc->scount[0] = 0;
+    totalgridsize = 1;
+    for (i = 0;i < ndims; i++)
         totalgridsize *= gsize[i];
 
-    for (i = 0;i < maplen; i++)
+    for (i = 0; i < maplen; i++)
     {
         /*  turns out this can be allowed in some cases
             pioassert(compmap[i]>=0 && compmap[i]<=totalgridsize, "Compmap value out of bounds",
 	    __FILE__,__LINE__); */
-
         if (compmap[i] > 0)
             (iodesc->scount[0])++;
     }
@@ -1412,11 +1415,10 @@ int subset_rearrange_create(const iosystem_desc_t ios, const int maplen, PIO_Off
         if (compmap[i] > 0)
             iodesc->sindex[j++]=i;
 
-    // Pass the reduced maplen (without holes) from each compute task to its associated IO task
-    //  printf("%s %d %ld\n",__FILE__,__LINE__,iodesc->scount);
+    /* Pass the reduced maplen (without holes) from each compute task to its associated IO task
+       printf("%s %d %ld\n",__FILE__,__LINE__,iodesc->scount); */
 
-    pio_fc_gather((void *) iodesc->scount, 1, MPI_INT,
-		  (void *) iodesc->rcount, rcnt, MPI_INT,
+    pio_fc_gather((void *)iodesc->scount, 1, MPI_INT, (void *)iodesc->rcount, rcnt, MPI_INT,
 		  0, iodesc->subset_comm, maxreq);
 
     iodesc->llen = 0;
@@ -1426,24 +1428,22 @@ int subset_rearrange_create(const iosystem_desc_t ios, const int maplen, PIO_Off
 
     if (ios.ioproc)
     {
-        for (i = 0;i<ntasks;i++)
+        for (i = 0;i < ntasks; i++)
 	{
-            iodesc->llen+=iodesc->rcount[i];
-            rdispls[i]=0;
-            recvlths[i]= iodesc->rcount[ i ];
-            if (i>0)
-                rdispls[i] = rdispls[i-1]+ iodesc->rcount[ i-1 ];
+            iodesc->llen += iodesc->rcount[i];
+            rdispls[i] = 0;
+            recvlths[i] = iodesc->rcount[i];
+            if (i > 0)
+                rdispls[i] = rdispls[i - 1] + iodesc->rcount[i - 1];
         }
-        //    printf("%s %d %ld %d %d\n",__FILE__,__LINE__,iodesc,iodesc->llen,maplen);
 
-        if (iodesc->llen>0)
+        if (iodesc->llen > 0)
 	{
-            srcindex = (PIO_Offset *) bget(iodesc->llen*pio_offset_size);
-            if (srcindex == NULL){
+            if (!(srcindex = (PIO_Offset *)bget(iodesc->llen*pio_offset_size)))
                 piomemerror(ios,iodesc->llen * pio_offset_size, __FILE__,__LINE__);
-            }
-            for (i = 0;i < iodesc->llen; i++)
-                srcindex[i]=0;
+
+            for (i = 0; i < iodesc->llen; i++)
+                srcindex[i] = 0;
         }
     }
     else
@@ -1456,107 +1456,109 @@ int subset_rearrange_create(const iosystem_desc_t ios, const int maplen, PIO_Off
     }
     determine_fill(ios, iodesc, gsize, compmap);
 
-    // Pass the sindex from each compute task to its associated IO task
-
+    /* Pass the sindex from each compute task to its associated IO task. */
     pio_fc_gatherv((void *) iodesc->sindex, iodesc->scount[0], PIO_OFFSET,
                    (void *) srcindex, recvlths, rdispls, PIO_OFFSET,
                    0, iodesc->subset_comm, maxreq);
 
     if (ios.ioproc && iodesc->llen>0)
     {
-        map = (mapsort *)bget(iodesc->llen * sizeof(mapsort));
-        if (!map)
+        if (!(map = (mapsort *)bget(iodesc->llen * sizeof(mapsort))))
             piomemerror(ios,iodesc->llen * sizeof(mapsort), __FILE__,__LINE__);
 
-        iomap = (PIO_Offset *)bget(iodesc->llen*pio_offset_size);
-        if (!iomap)
+        if (!(iomap = (PIO_Offset *)bget(iodesc->llen*pio_offset_size)))
             piomemerror(ios,iodesc->llen * pio_offset_size, __FILE__,__LINE__);
 
         for (i = 0; i < iodesc->llen; i++)
             iomap[i] = 0;
     }
 
-    // Now pass the compmap, skipping the holes
-
+    /* Now pass the compmap, skipping the holes. */
     PIO_Offset *shrtmap;
-    if (maplen>iodesc->scount[0] && iodesc->scount[0]>0){
-        shrtmap = (PIO_Offset *) bget(iodesc->scount[0]*pio_offset_size);
-        if (shrtmap == NULL){
+    if (maplen>iodesc->scount[0] && iodesc->scount[0] > 0)
+    {
+        if (!(shrtmap = (PIO_Offset *)bget(iodesc->scount[0]*pio_offset_size)))
             piomemerror(ios,iodesc->scount[0] * pio_offset_size, __FILE__,__LINE__);
-        }
-        for (i = 0;i<iodesc->scount[0];i++)
-            shrtmap[i]=0;
+
+        for (i = 0; i < iodesc->scount[0]; i++)
+            shrtmap[i] = 0;
 
         j = 0;
-        for (i = 0;i<maplen;i++)
-            if (compmap[i]>0)
-                shrtmap[j++]=compmap[i];
-    }else{
+        for (i = 0;i < maplen; i++)
+            if (compmap[i] > 0)
+                shrtmap[j++] = compmap[i];
+    }
+    else
+    {
         shrtmap = compmap;
     }
 
-    pio_fc_gatherv((void *) shrtmap, iodesc->scount[0], PIO_OFFSET,
-                   (void *) iomap, recvlths, rdispls, PIO_OFFSET,
-                   0, iodesc->subset_comm, maxreq);
-
+    pio_fc_gatherv((void *)shrtmap, iodesc->scount[0], PIO_OFFSET, (void *)iomap, recvlths, rdispls,
+		   PIO_OFFSET, 0, iodesc->subset_comm, maxreq);
 
     if (shrtmap != compmap)
         brel(shrtmap);
 
-    if (ios.ioproc && iodesc->llen>0){
-        int pos=0;
-        int k=0;
+    if (ios.ioproc && iodesc->llen > 0)
+    {
+        int pos = 0;
+        int k = 0;
         mapsort *mptr;
-        for (i = 0;i<ntasks;i++){
-            for (j = 0;j<iodesc->rcount[i];j++){
-                mptr = map+k;
+        for (i = 0; i < ntasks; i++)
+	{
+            for (j = 0; j < iodesc->rcount[i]; j++)
+	    {
+                mptr = map + k;
                 mptr->rfrom = i;
-                mptr->soffset = srcindex[pos+j];
-                mptr->iomap = iomap[pos+j];
+                mptr->soffset = srcindex[pos + j];
+                mptr->iomap = iomap[pos + j];
                 k++;
             }
             pos += iodesc->rcount[i];
         }
-        // sort the mapping, this will transpose the data into IO order
+        /* sort the mapping, this will transpose the data into IO order */
         qsort(map, iodesc->llen, sizeof(mapsort), compare_offsets);
 
-        iodesc->rindex = (PIO_Offset *) bget(iodesc->llen*pio_offset_size);
-        if (iodesc->rindex == NULL){
+        if (!(iodesc->rindex = (PIO_Offset *) bget(iodesc->llen*pio_offset_size)))
             piomemerror(ios,iodesc->llen * pio_offset_size, __FILE__,__LINE__);
-        }
-        iodesc->rfrom = (int *) bget(iodesc->llen*sizeof(int));
-        if (iodesc->rfrom == NULL){
+
+        if (!(iodesc->rfrom = (int *) bget(iodesc->llen*sizeof(int))))
             piomemerror(ios,iodesc->llen * sizeof(int), __FILE__,__LINE__);
-        }
-        for (i = 0;i<iodesc->llen;i++){
-            iodesc->rindex[i]=0;
-            iodesc->rfrom[i]=0;
+
+        for (i = 0; i < iodesc->llen; i++)
+	{
+            iodesc->rindex[i] = 0;
+            iodesc->rfrom[i] = 0;
         }
     }
+    
     int cnt[ntasks];
     int sndlths[ntasks];
     int sdispls[ntasks];
     MPI_Datatype dtypes[ntasks];
-    for (i = 0;i<ntasks;i++){
-        cnt[i]=rdispls[i];
+    for (i = 0; i < ntasks; i++)
+    {
+        cnt[i] = rdispls[i];
 
         /* offsets to swapm are in bytes */
-        //    rdispls[i]*=pio_offset_size;
-        sdispls[i]=0;
-        sndlths[i]=0;
-        dtypes[i]=PIO_OFFSET;
+        /*    rdispls[i]*=pio_offset_size; */
+        sdispls[i] = 0;
+        sndlths[i] = 0;
+        dtypes[i] = PIO_OFFSET;
     }
-    sndlths[0]=iodesc->scount[0];
+    sndlths[0] = iodesc->scount[0];
     mapsort *mptr;
-    for (i = 0;i<iodesc->llen;i++){
+    for (i = 0; i < iodesc->llen; i++)
+    {
         mptr = map+i;
         iodesc->rfrom[i] = mptr->rfrom;
-        iodesc->rindex[i]=i;
+        iodesc->rindex[i] = i;
         iomap[i] = mptr->iomap;
-        srcindex[ (cnt[iodesc->rfrom[i]])++   ]=mptr->soffset;
+        srcindex[(cnt[iodesc->rfrom[i]])++] = mptr->soffset;
     }
 
-    if (ios.ioproc && iodesc->needsfill){
+    if (ios.ioproc && iodesc->needsfill)
+    {
         /* we need the list of offsets which are not in the union of iomap */
         PIO_Offset thisgridsize[ios.num_iotasks];
         PIO_Offset thisgridmin[ios.num_iotasks], thisgridmax[ios.num_iotasks];
@@ -1566,9 +1568,9 @@ int subset_rearrange_create(const iosystem_desc_t ios, const int maplen, PIO_Off
         int displs[ios.num_iotasks];
 
         thisgridmin[0] = 1;
-        thisgridsize[0] =  totalgridsize/ios.num_iotasks;
+        thisgridsize[0] =  totalgridsize / ios.num_iotasks;
         thisgridmax[0] = thisgridsize[0];
-        int xtra = totalgridsize - thisgridsize[0]*ios.num_iotasks;
+        int xtra = totalgridsize - thisgridsize[0] * ios.num_iotasks;
 
         for (nio=0;nio<ios.num_iotasks;nio++){
             int cnt=0;

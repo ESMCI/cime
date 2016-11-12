@@ -23,6 +23,8 @@ int my_rank;
 FILE *LOG_FILE;
 #endif /* PIO_ENABLE_LOGGING */
 
+/** The PIO library maintains its own set of ncids. This is the next
+ * ncid number that will be assigned. */
 extern int pio_next_ncid;
 
 /** Return a string description of an error code. If zero is passed, a
@@ -37,7 +39,7 @@ extern int pio_next_ncid;
 int PIOc_strerror(int pioerr, char *errmsg)
 {
     /* System error? */
-    if(pioerr > 0)
+    if (pioerr > 0)
     {
         const char *cp = (const char *)strerror(pioerr);
         if (cp)
@@ -93,10 +95,14 @@ int PIOc_set_log_level(int level)
 #if PIO_ENABLE_LOGGING
     char log_filename[NC_MAX_NAME];
 
-    printf("setting log level to %d\n", level);
+    /* Set the log level. */
     pio_log_level = level;
+
+    /* Create a filename with the rank in it. */
     MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
     sprintf(log_filename, "pio_log_%d.txt", my_rank);
+
+    /* Open a file for this rank to log messages. */
     LOG_FILE = fopen(log_filename, "w");
 #endif /* PIO_ENABLE_LOGGING */
     return PIO_NOERR;
@@ -174,39 +180,63 @@ void pio_log(int severity, const char *fmt, ...)
 }
 #endif /* PIO_ENABLE_LOGGING */
 
+/** Default settings for swap memory. */
 static pio_swapm_defaults swapm_defaults;
-bool PIO_Save_Decomps=false;
 
-/* Obtain a backtrace and print it to stderr. */
-void print_trace (FILE *fp)
+/** If this is set to true, then InitDecomp() will save the
+ * decomposition to file. */
+bool PIO_Save_Decomps = false;
+
+/**
+ * Obtain a backtrace and print it to stderr.
+ *
+ * @param fp file pointer to send output to
+ */
+void print_trace(FILE *fp)
 {
     void *array[10];
     size_t size;
     char **strings;
     size_t i;
 
-    if(fp==NULL)
+    /* Note that this won't actually work. */
+    if (fp == NULL)
         fp = stderr;
 
-    size = backtrace (array, 10);
-    strings = backtrace_symbols (array, size);
+    size = backtrace(array, 10);
+    strings = backtrace_symbols(array, size);
 
-    fprintf (fp,"Obtained %zd stack frames.\n", size);
+    fprintf(fp,"Obtained %zd stack frames.\n", size);
 
     for (i = 0; i < size; i++)
-        fprintf (fp,"%s\n", strings[i]);
+        fprintf(fp,"%s\n", strings[i]);
 
-    free (strings);
+    free(strings);
 }
 
-void piomemerror(iosystem_desc_t ios, size_t req, char *fname, const int line){
+/**
+ * Exit due to lack of memory.
+ *
+ * @param ios the iosystem description struct
+ * @param req amount of memory that was being requested
+ * @param fname name of code file where error occured
+ * @param line the line of code where the error occurred.
+ */
+void piomemerror(iosystem_desc_t ios, size_t req, char *fname, const int line)
+{
     char msg[80];
-    sprintf(msg,"out of memory requesting: %ld",req);
-    cn_buffer_report(ios,false);
-    piodie(msg,fname,line);
+    sprintf(msg, "out of memory requesting: %ld", req);
+    cn_buffer_report(ios, false);
+    piodie(msg, fname, line);
 }
 
-
+/**
+ * Abort program and call MPI_Abort().
+ *
+ * @param msg an error message
+ * @param fname name of code file where error occured
+ * @param line the line of code where the error occurred.
+ */
 void piodie(const char *msg, const char *fname, const int line)
 {
     fprintf(stderr,"Abort with message %s in file %s at line %d\n",
@@ -220,26 +250,33 @@ void piodie(const char *msg, const char *fname, const int line)
 #endif
 }
 
-
+/**
+ * Perform an assert. Note that this function does nothing if NDEBUG
+ * is defined.
+ *
+ * @param expression the expression to be evaluated
+ * @param msg an error message
+ * @param fname name of code file where error occured
+ * @param line the line of code where the error occurred.
+ */
 void pioassert(_Bool expression, const char *msg, const char *fname, const int line)
 {
 #ifndef NDEBUG
-    if(! expression){
-        piodie(msg,fname,line);
-    }
+    if (!expression)
+        piodie(msg, fname, line);
 #endif
-
 }
 
-/** Handle MPI errors. An error message is sent to stderr, then the
-    check_netcdf() function is called with PIO_EIO.
+/**
+ * Handle MPI errors. An error message is sent to stderr, then the
+ * check_netcdf() function is called with PIO_EIO.
 
-    @param file pointer to the file_desc_t info. May be NULL, in which
-    case check_netcdf() is not called.
-    @param mpierr the MPI return code to handle
-    @param filename the name of the code file where error occured.
-    @param line the line of code where error occured.
-    @return PIO_NOERR for no error, otherwise PIO_EIO.
+ * @param file pointer to the file_desc_t info. May be NULL, in which
+ * case check_netcdf() is not called.
+ * @param mpierr the MPI return code to handle
+ * @param filename the name of the code file where error occured.
+ * @param line the line of code where error occured.
+ * @return PIO_NOERR for no error, otherwise PIO_EIO.
 */
 int check_mpi(file_desc_t *file, const int mpierr, const char *filename,
               const int line)
@@ -262,13 +299,13 @@ int check_mpi(file_desc_t *file, const int mpierr, const char *filename,
     return PIO_NOERR;
 }
 
-/** Check the result of a netCDF API call.
+/**
+ * Check the result of a netCDF API call.
  *
  * @param file pointer to the PIO structure describing this file.
  * @param status the return value from the netCDF call.
  * @param fname the name of the code file.
  * @param line the line number of the netCDF call in the code.
- *
  * @return the error code
  */
 int check_netcdf(file_desc_t *file, int status, const char *fname, const int line)
@@ -283,36 +320,38 @@ int check_netcdf(file_desc_t *file, int status, const char *fname, const int lin
     ios = file->iosystem;
     ierr = PIO_NOERR;
 
-    switch(file->iotype){
+    switch(file->iotype)
+    {
 #ifdef _NETCDF
 #ifdef _NETCDF4
     case PIO_IOTYPE_NETCDF4P:
     case PIO_IOTYPE_NETCDF4C:
 #endif
     case PIO_IOTYPE_NETCDF:
-        if(ios->iomaster){
-            if(status != NC_NOERR && (ios->error_handler == PIO_INTERNAL_ERROR))
+        if (ios->iomaster)
+	{
+            if (status != NC_NOERR && (ios->error_handler == PIO_INTERNAL_ERROR))
                 piodie(nc_strerror(status),fname,line);
-//      fprintf(stderr,"NETCDF ERROR: %s %s %d\n",nc_strerror(status),fname,line);
         }
-        if(ios->error_handler == PIO_INTERNAL_ERROR){
-            if(status != NC_NOERR)
+        if (ios->error_handler == PIO_INTERNAL_ERROR)
+	{
+            if (status != NC_NOERR)
                 MPI_Abort(MPI_COMM_WORLD,status);
-            // abort
-        }else if(ios->error_handler==PIO_BCAST_ERROR){
-            ierr =MPI_Bcast(&status, 1, MPI_INTEGER, ios->ioroot, ios->my_comm);
+        }
+	else if (ios->error_handler == PIO_BCAST_ERROR)
+	{
+            ierr = MPI_Bcast(&status, 1, MPI_INTEGER, ios->ioroot, ios->my_comm);
         }
         break;
 #endif
 #ifdef _PNETCDF
     case PIO_IOTYPE_PNETCDF:
-        if(status != NC_NOERR && (ios->error_handler == PIO_INTERNAL_ERROR)) {
-            //    fprintf(stderr,"PNETCDF ERROR: %s %s %d\n",ncmpi_strerror(status),fname,line);
+        if (status != NC_NOERR && (ios->error_handler == PIO_INTERNAL_ERROR)) 
             piodie(ncmpi_strerror(status),fname,line);
-        }
-        if(ios->error_handler==PIO_BCAST_ERROR){
+
+        if (ios->error_handler == PIO_BCAST_ERROR)
             ierr = MPI_Bcast(&status, 1, MPI_INTEGER, ios->ioroot, ios->my_comm);
-        }
+
         break;
 #endif
     default:
@@ -321,6 +360,14 @@ int check_netcdf(file_desc_t *file, int status, const char *fname, const int lin
     return status;
 }
 
+/**
+ * Handle IO type error. 
+ *
+ * @param iotype the undefined IO type
+ * @param fname name of code file where error occured
+ * @param line the line of code where the error occurred.
+ * @returns PIO_EBADIOTYPE
+ */
 int iotype_error(const int iotype, const char *fname, const int line)
 {
     fprintf(stderr, "ERROR: iotype %d not defined in build %s %d\n",
@@ -328,56 +375,84 @@ int iotype_error(const int iotype, const char *fname, const int line)
     return PIO_EBADIOTYPE;
 }
 
+/**
+ * Allocate an region.
+ *
+ * ndims the number of dimensions for the data in this region.
+ * @returns a pointer to the newly allocated io_region struct.
+ */
 io_region *alloc_region(const int ndims)
 {
     io_region *region;
 
-    if (!(region = (io_region *) bget(sizeof(io_region))))
+    /* Allocate memory for the io_region struct. */
+    if (!(region = (io_region *)bget(sizeof(io_region))))
         return NULL;
-    if (!(region->start = (PIO_Offset *) bget(ndims* sizeof(PIO_Offset))))
+
+    /* Allocate memory for the array of start indicies. */
+    if (!(region->start = (PIO_Offset *)bget(ndims * sizeof(PIO_Offset))))
     {
         brel(region);
         return NULL;
     }
-    if (!(region->count = (PIO_Offset *) bget(ndims* sizeof(PIO_Offset))))
+
+    /* Allocate memory for the array of counts. */
+    if (!(region->count = (PIO_Offset *)bget(ndims * sizeof(PIO_Offset))))
     {
         brel(region);
         brel(region->start);
         return NULL;
     }
+    
     region->loffset = 0;
-    region->next=NULL;
-    for(int i=0;i< ndims; i++){
+    region->next = NULL;
+
+    /* Initialize start and count arrays to zero. */
+    for (int i = 0; i < ndims; i++)
+    {
         region->start[i] = 0;
         region->count[i] = 0;
     }
+    
     return region;
 }
 
+/**
+ * Allocate space for an IO description struct.
+ *
+ * @param piotype
+ * @param ndims the number of dimensions
+ * @returns pointer to the newly allocated io_desc_t.
+ */
 io_desc_t *malloc_iodesc(const int piotype, const int ndims)
 {
     io_desc_t *iodesc;
 
-    if (!(iodesc = (io_desc_t *) bget(sizeof(io_desc_t))))
+    /* Allocate space for the io_desc_t struct. */
+    if (!(iodesc = (io_desc_t *)bget(sizeof(io_desc_t))))
         return NULL;
 
-    switch(piotype){
+    /* Decide on the base type. */
+    switch(piotype)
+    {
     case PIO_REAL:
-        iodesc->basetype=MPI_FLOAT;
+        iodesc->basetype = MPI_FLOAT;
         break;
     case PIO_DOUBLE:
-        iodesc->basetype=MPI_DOUBLE;
+        iodesc->basetype = MPI_DOUBLE;
         break;
     case PIO_CHAR:
-        iodesc->basetype=MPI_CHAR;
+        iodesc->basetype = MPI_CHAR;
         break;
     case PIO_INT:
     default:
         iodesc->basetype = MPI_INTEGER;
         break;
     }
+
+    /* Initialize some values in the struct. */
     iodesc->rearranger = 0;
-    iodesc->maxregions=1;
+    iodesc->maxregions = 1;
     iodesc->rfrom = NULL;
     iodesc->scount = NULL;
     iodesc->rtype = NULL;
@@ -386,95 +461,113 @@ io_desc_t *malloc_iodesc(const int piotype, const int ndims)
     iodesc->sindex = NULL;
     iodesc->rindex = NULL;
     iodesc->rcount = NULL;
-    iodesc->ioid=-1;
-    iodesc->llen=0;
-    iodesc->maxiobuflen=0;
-    iodesc->holegridsize=0;
-    iodesc->maxbytes=0;
+    iodesc->ioid = -1;
+    iodesc->llen = 0;
+    iodesc->maxiobuflen = 0;
+    iodesc->holegridsize = 0;
+    iodesc->maxbytes = 0;
     iodesc->ndims = ndims;
     iodesc->firstregion = alloc_region(ndims);
     iodesc->fillregion = NULL;
 
-    iodesc->handshake=swapm_defaults.handshake;
-    iodesc->isend=swapm_defaults.isend;
-    iodesc->max_requests=swapm_defaults.nreqs;
+    /* Set the swap memory settings to defaults. */
+    iodesc->handshake = swapm_defaults.handshake;
+    iodesc->isend = swapm_defaults.isend;
+    iodesc->max_requests = swapm_defaults.nreqs;
 
     return iodesc;
 }
 
+/**
+ * Free a region list.
+ *
+ * top a pointer to the start of the list to free.
+ */
 void free_region_list(io_region *top)
 {
     io_region *ptr, *tptr;
 
     ptr = top;
-    while(ptr != NULL) {
-        if(ptr->start != NULL)
+    while (ptr)
+    {
+        if (ptr->start)
             brel(ptr->start);
-        if(ptr->count != NULL)
+        if (ptr->count)
             brel(ptr->count);
-        tptr=ptr;
-        ptr=ptr->next;
+        tptr = ptr;
+        ptr = ptr->next;
         brel(tptr);
     }
-
 }
 
+/**
+ * Free a decomposition map.
+ *
+ * @param iosysid the IO system ID.
+ * @param ioid the ID of the decomposition map to free.
+ * @returns 0 for success, error code otherwise.
+ */
 int PIOc_freedecomp(int iosysid, int ioid)
 {
     iosystem_desc_t *ios;
     io_desc_t *iodesc;
     int i;
 
-    ios = pio_get_iosystem_from_id(iosysid);
-    if(ios == NULL)
+    if (!(ios = pio_get_iosystem_from_id(iosysid)))
         return PIO_EBADID;
 
-    iodesc = pio_get_iodesc_from_id(ioid);
-    if(iodesc == NULL)
+    if (!(iodesc = pio_get_iodesc_from_id(ioid)))
         return PIO_EBADID;
 
-    if(iodesc->rfrom != NULL)
+    if (iodesc->rfrom)
         brel(iodesc->rfrom);
-    if(iodesc->rtype != NULL){
-        for(i=0; i<iodesc->nrecvs; i++){
-            if(iodesc->rtype[i] != MPI_DATATYPE_NULL){
-                MPI_Type_free(iodesc->rtype+i);
-            }
-        }
+    
+    if (iodesc->rtype)
+    {
+        for (i = 0; i < iodesc->nrecvs; i++)
+            if (iodesc->rtype[i] != MPI_DATATYPE_NULL)
+                MPI_Type_free(iodesc->rtype + i);
         brel(iodesc->rtype);
     }
-    if(iodesc->stype != NULL){
-        for(i=0; i<iodesc->num_stypes; i++){
-            if(iodesc->stype[i] != MPI_DATATYPE_NULL){
-                MPI_Type_free(iodesc->stype+i);
-            }
-        }
+    
+    if (iodesc->stype)
+    {
+        for (i = 0; i < iodesc->num_stypes; i++)
+            if (iodesc->stype[i] != MPI_DATATYPE_NULL)
+                MPI_Type_free(iodesc->stype + i);
+
         iodesc->num_stypes = 0;
         brel(iodesc->stype);
     }
-    if(iodesc->scount != NULL)
+    
+    if (iodesc->scount)
         brel(iodesc->scount);
-    if(iodesc->rcount != NULL)
+    
+    if (iodesc->rcount)
         brel(iodesc->rcount);
-    if(iodesc->sindex != NULL)
+    
+    if (iodesc->sindex)
         brel(iodesc->sindex);
-    if(iodesc->rindex != NULL)
+    
+    if (iodesc->rindex)
         brel(iodesc->rindex);
 
-
-    if(iodesc->firstregion != NULL)
+    if (iodesc->firstregion)
         free_region_list(iodesc->firstregion);
 
-    if(iodesc->rearranger == PIO_REARR_SUBSET){
+    if (iodesc->rearranger == PIO_REARR_SUBSET)
         MPI_Comm_free(&(iodesc->subset_comm));
-    }
 
     return pio_delete_iodesc_from_list(ioid);
-
-
 }
 
-int PIOc_readmap(const char file[], int *ndims, int *gdims[], PIO_Offset *fmaplen, PIO_Offset *map[], const MPI_Comm comm)
+/**
+ * Read a decomposition map.
+ *
+ * @param file the filename
+ */
+int PIOc_readmap(const char *file, int *ndims, int *gdims[], PIO_Offset *fmaplen,
+		 PIO_Offset *map[], const MPI_Comm comm)
 {
     int npes, myrank;
     int rnpes, rversno;
@@ -491,63 +584,73 @@ int PIOc_readmap(const char file[], int *ndims, int *gdims[], PIO_Offset *fmaple
     MPI_Comm_size(comm, &npes);
     MPI_Comm_rank(comm, &myrank);
 
-    if(myrank == 0) {
+    if (myrank == 0)
+    {
         FILE *fp = fopen(file, "r");
-        if(fp==NULL)
+        if (!fp)
             piodie("Failed to open dof file",__FILE__,__LINE__);
 
-        fscanf(fp,"version %d npes %d ndims %d\n",&rversno, &rnpes,ndims);
+        fscanf(fp,"version %d npes %d ndims %d\n",&rversno, &rnpes, ndims);
 
-        if(rversno != versno)
-            piodie("Attempt to read incompatable map file version",__FILE__,__LINE__);
+        if (rversno != versno)
+            piodie("Attempt to read incompatable map file version", __FILE__, __LINE__);
 
-        if(rnpes < 1 || rnpes > npes)
-            piodie("Incompatable pe count in map file ",__FILE__,__LINE__);
+        if (rnpes < 1 || rnpes > npes)
+            piodie("Incompatable pe count in map file ", __FILE__, __LINE__);
 
         MPI_Bcast(&rnpes, 1, MPI_INT, 0, comm);
         MPI_Bcast(ndims, 1, MPI_INT, 0, comm);
-        if (!(tdims = (int *) calloc((*ndims), sizeof(int))))
+        if (!(tdims = (int *)calloc((*ndims), sizeof(int))))
             piodie("Memory allocation error ", __FILE__, __LINE__);
-        for(int i=0;i<(*ndims);i++)
+        for (int i = 0; i < *ndims; i++)
             fscanf(fp,"%d ",tdims+i);
 
-        MPI_Bcast(tdims, (*ndims), MPI_INT, 0, comm);
+        MPI_Bcast(tdims, *ndims, MPI_INT, 0, comm);
 
-        for(int i=0; i< rnpes; i++){
-            fscanf(fp,"%d %ld",&j,&maplen);
-            if( j != i)  // Not sure how this could be possible
-                piodie("Incomprehensable error reading map file ",__FILE__,__LINE__);
+        for (int i = 0; i < rnpes; i++)
+	{
+            fscanf(fp, "%d %ld", &j, &maplen);
+            if (j != i)  // Not sure how this could be possible
+                piodie("Incomprehensable error reading map file ", __FILE__, __LINE__);
 
             if (!(tmap = malloc(maplen * sizeof(PIO_Offset))))
                 piodie("Memory allocation error ", __FILE__, __LINE__);
-            for(j=0;j<maplen;j++)
-                fscanf(fp,"%ld ",tmap+j);
+            for (j = 0; j < maplen; j++)
+                fscanf(fp, "%ld ", tmap+j);
 
-            if(i>0){
-                MPI_Send(&maplen, 1, PIO_OFFSET, i, i+npes, comm);
+            if (i > 0)
+	    {
+                MPI_Send(&maplen, 1, PIO_OFFSET, i, i + npes, comm);
                 MPI_Send(tmap, maplen, PIO_OFFSET, i, i, comm);
                 free(tmap);
-            }else{
+            }
+	    else
+	    {
                 *map = tmap;
                 *fmaplen = maplen;
             }
         }
         fclose(fp);
-    }else{
+    }
+    else
+    {
         MPI_Bcast(&rnpes, 1, MPI_INT, 0, comm);
         MPI_Bcast(ndims, 1, MPI_INT, 0, comm);
-        tdims = (int *) calloc((*ndims), sizeof(int));
-        MPI_Bcast(tdims, (*ndims), MPI_INT, 0, comm);
+        tdims = (int *)calloc((*ndims), sizeof(int));
+        MPI_Bcast(tdims, *ndims, MPI_INT, 0, comm);
 
-        if(myrank<rnpes){
+        if (myrank<rnpes)
+	{
             MPI_Recv(&maplen, 1, PIO_OFFSET, 0, myrank+npes, comm, &status);
-            if (!(tmap = malloc(maplen*sizeof(PIO_Offset))))
+            if (!(tmap = malloc(maplen * sizeof(PIO_Offset))))
                 piodie("Memory allocation error ", __FILE__, __LINE__);
             MPI_Recv(tmap, maplen, PIO_OFFSET, 0, myrank, comm, &status);
             *map = tmap;
-        }else{
-            tmap=NULL;
-            maplen=0;
+        }
+	else
+	{
+            tmap = NULL;
+            maplen = 0;
         }
         *fmaplen = maplen;
     }
@@ -555,17 +658,36 @@ int PIOc_readmap(const char file[], int *ndims, int *gdims[], PIO_Offset *fmaple
     return PIO_NOERR;
 }
 
-int PIOc_readmap_from_f90(const char file[],int *ndims, int *gdims[], PIO_Offset *maplen, PIO_Offset *map[], const int f90_comm)
+/**
+ * Read a decomposition map from file.
+ *
+ * @param file the filename
+ * @param ndims pointer to the number of dimensions
+ * @param gdims
+ * @param maplen pointer to the length of the map
+ * @param map pointer to the map array
+ * @param f90_comm
+ * @returns 0 for success, error code otherwise.
+ */
+int PIOc_readmap_from_f90(const char *file, int *ndims, int *gdims[], PIO_Offset *maplen,
+			  PIO_Offset *map[], const int f90_comm)
 {
-    int ierr;
-
-    ierr = PIOc_readmap(file, ndims, gdims, maplen, map, MPI_Comm_f2c(f90_comm));
-
-    return(ierr);
+    return PIOc_readmap(file, ndims, gdims, maplen, map, MPI_Comm_f2c(f90_comm));
 }
 
-
-int PIOc_writemap(const char file[], const int ndims, const int gdims[], PIO_Offset maplen, PIO_Offset map[], const MPI_Comm comm)
+/**
+ * Write the decomposition map to a file.
+ *
+ * @param file the filename
+ * @param ndims the number of dimensions
+ * @param gdims array of ???
+ * @param maplen the length of the map
+ * @param map the map array
+ * @param comm an MPI communicator.
+ * @returns 0 for success, error code otherwise.
+ */
+int PIOc_writemap(const char *file, const int ndims, const int *gdims, PIO_Offset maplen,
+		  PIO_Offset *map, const MPI_Comm comm)
 {
     int npes, myrank;
     PIO_Offset *nmaplen = NULL;
@@ -583,55 +705,71 @@ int PIOc_writemap(const char file[], const int ndims, const int gdims[], PIO_Off
 
     MPI_Gather(&maplen, 1, PIO_OFFSET, nmaplen, 1, PIO_OFFSET, 0, comm);
 
-    if(myrank==0){
+    /* Only rank 0 writes the file. */
+    if (myrank == 0)
+    {
         FILE *fp;
 
-
-        fp = fopen( file, "w");
-        if(fp==NULL){
-            fprintf(stderr,"Failed to open file %s to write\n",file);
+	/* Open the file to write. */
+        if (!(fp = fopen(file, "w")))
             return PIO_EIO;
-        }
-        fprintf(fp,"version %d npes %d ndims %d \n",versno, npes,ndims);
-        for(i=0;i<ndims;i++){
-            fprintf(fp,"%d ",gdims[i]);
-        }
-        fprintf(fp,"\n");
-        fprintf(fp,"0 %ld\n",nmaplen[0]);
-        for( i=0;i<nmaplen[0];i++)
-            fprintf(fp,"%ld ",map[i]);
-        fprintf(fp,"\n");
-        for( i=1; i<npes;i++){
-            nmap = (PIO_Offset *) malloc(nmaplen[i] * sizeof(PIO_Offset));
 
-            MPI_Send(&i, 1, MPI_INT, i, npes+i, comm);
+	/* Write the version and dimension info. */
+        fprintf(fp,"version %d npes %d ndims %d \n", versno, npes, ndims);
+        for (i = 0; i < ndims; i++)
+            fprintf(fp, "%d ", gdims[i]);
+        fprintf(fp, "\n");
+
+	/* Write the map. */
+        fprintf(fp, "0 %ld\n", nmaplen[0]);
+        for (i = 0; i < nmaplen[0]; i++)
+            fprintf(fp, "%ld ", map[i]);
+        fprintf(fp,"\n");
+	
+        for (i = 1; i < npes; i++)
+	{
+            nmap = (PIO_Offset *)malloc(nmaplen[i] * sizeof(PIO_Offset));
+
+            MPI_Send(&i, 1, MPI_INT, i, npes + i, comm);
             MPI_Recv(nmap, nmaplen[i], PIO_OFFSET, i, i, comm, &status);
 
-            fprintf(fp,"%d %ld\n",i,nmaplen[i]);
-            for(int j=0;j<nmaplen[i];j++)
-                fprintf(fp,"%ld ",nmap[j]);
-            fprintf(fp,"\n");
+            fprintf(fp, "%d %ld\n", i, nmaplen[i]);
+            for (int j = 0; j < nmaplen[i]; j++)
+                fprintf(fp, "%ld ", nmap[j]);
+            fprintf(fp, "\n");
 
             free(nmap);
-
         }
-
-        fprintf(fp,"\n");
+        fprintf(fp, "\n");
         print_trace(fp);
 
+	/* Close the file. */
         fclose(fp);
-    }else{
+    }
+    else
+    {
         MPI_Recv(&i, 1, MPI_INT, 0, npes+myrank, comm, &status);
         MPI_Send(map, maplen, PIO_OFFSET, 0, myrank, comm);
     }
     return PIO_NOERR;
 }
 
-int PIOc_writemap_from_f90(const char file[], const int ndims, const int gdims[],
-                           const PIO_Offset maplen, const PIO_Offset map[], const int f90_comm)
+/**
+ * Write the decomposition map to a file for F90.
+ *
+ * @param file the filename
+ * @param ndims the number of dimensions
+ * @param gdims array of ???
+ * @param maplen the length of the map
+ * @param map the map array
+ * @param comm an MPI communicator.
+ * @returns 0 for success, error code otherwise.
+ */
+int PIOc_writemap_from_f90(const char *file, const int ndims, const int *gdims,
+                           const PIO_Offset maplen, const PIO_Offset *map, const int f90_comm)
 {
-    // printf("%s %d %s %ld\n",__FILE__,__LINE__,file,maplen);
-    return(PIOc_writemap(file, ndims, gdims, maplen, map, MPI_Comm_f2c(f90_comm)));
+    return PIOc_writemap(file, ndims, gdims, maplen, (PIO_Offset *)map,
+			 MPI_Comm_f2c(f90_comm));
 }
 
 /** Open an existing file using PIO library. This is an internal
@@ -857,7 +995,7 @@ int PIOc_openfile_retry(const int iosysid, int *ncidp, int *iotype,
     return ierr;
 }
 
-/** Internal function to provide inq_type function for pnetcdf. 
+/** Internal function to provide inq_type function for pnetcdf.
  *
  * @param ncid ignored because pnetcdf does not have user-defined
  * types.
@@ -908,6 +1046,7 @@ int pioc_pnetcdf_inq_type(int ncid, nc_type xtype, char *name,
 
 /** This is an internal function that handles both PIOc_enddef and
  * PIOc_redef.
+ *
  * @param ncid the ncid of the file to enddef or redef
  * @param is_enddef set to non-zero for enddef, 0 for redef.
  * @returns PIO_NOERR on success, error code on failure. */
@@ -931,7 +1070,7 @@ int pioc_change_def(int ncid, int is_enddef)
         if (!ios->ioproc)
         {
             int msg = is_enddef ? PIO_MSG_ENDDEF : PIO_MSG_REDEF;
-            if(ios->compmaster)
+            if (ios->compmaster)
                 mpierr = MPI_Send(&msg, 1, MPI_INT, ios->ioroot, 1, ios->union_comm);
 
             if (!mpierr)
@@ -982,4 +1121,3 @@ int pioc_change_def(int ncid, int is_enddef)
 
     return ierr;
 }
-

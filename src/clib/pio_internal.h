@@ -56,6 +56,9 @@ extern "C" {
 #endif
 
     extern PIO_Offset pio_buffer_size_limit;
+
+    /** If this is true, then InitDecomp() will save decompositions to
+     * a file. */
     extern bool PIO_Save_Decomps;
 
     /** Used to sort map points in the subset rearranger. */
