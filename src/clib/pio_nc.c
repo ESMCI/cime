@@ -14,7 +14,6 @@
  * @author Jim Edwards (jedwards@ucar.edu), Ed Hartnett
  * @date     Feburary 2014, April 2016
  */
-
 #include <config.h>
 #include <pio.h>
 #include <pio_internal.h>
@@ -1825,6 +1824,7 @@ int PIOc_def_dim(int ncid, const char *name, PIO_Offset len, int *idp)
             if ((mpierr = MPI_Bcast(idp , 1, MPI_INT, ios->ioroot, ios->my_comm)))
                 check_mpi(file, mpierr, __FILE__, __LINE__);
 
+    LOG((2, "def_dim ierr = %d", ierr));
     return ierr;
 }
 
@@ -1857,6 +1857,9 @@ int PIOc_def_var(int ncid, const char *name, nc_type xtype, int ndims,
         check_netcdf(file, PIO_EINVAL, __FILE__, __LINE__);
         return PIO_EINVAL;
     }
+
+    LOG((1, "PIOc_def_var ncid = %d name = %s xtype = %d ndims = %d", ncid, name,
+	 xtype, ndims));
 
     /* Get the file information. */
     if ((ierr = pio_get_file(ncid, &file)))

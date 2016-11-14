@@ -14,6 +14,9 @@
 #include <gptl.h>
 #endif
 
+/* The name of this test. */
+#define TEST_NAME "test_nc4"
+
 /** The number of possible output netCDF output flavors available to
  * the ParallelIO library. */
 #define NUM_NETCDF_FLAVORS 4
@@ -366,7 +369,7 @@ main(int argc, char **argv)
         if ((ret = PIOc_def_var(ncid, VAR_NAME, PIO_FLOAT, NDIM, dimids, &varid)))
             ERR(ret);
 
-        /* For netCDF-4 files, set the chunksize to improve performance. */
+	/* For netCDF-4 files, set the chunksize to improve performance. */
         if (format[fmt] == PIO_IOTYPE_NETCDF4C || format[fmt] == PIO_IOTYPE_NETCDF4P)
         {
             if (verbose)
@@ -383,27 +386,29 @@ main(int argc, char **argv)
             /** Check that the inq_var_chunking function works. */
             if (verbose)
                 printf("rank: %d Checking chunksizes\n", my_rank);
-            /* if ((ret = PIOc_inq_var_chunking(ncid, 0, &storage, my_chunksize))) */
-            /*     ERR(ret); */
-            /* if (verbose) */
-            /* { */
-            /*     printf("rank: %d ret: %d storage: %d\n", my_rank, ret, storage); */
-            /*     for (d1 = 0; d1 < NDIM; d1++) */
-            /*     { */
-            /*         printf("chunksize[%d]=%d\n", d1, my_chunksize[d1]); */
-            /*     } */
-            /* } */
+            ret = PIOc_inq_var_chunking(ncid, 0, &storage, my_chunksize);
+
+            if ((ret = PIOc_inq_var_chunking(ncid, 0, &storage, my_chunksize)))
+                ERR(ret);
+            if (verbose)
+            {
+                printf("rank: %d ret: %d storage: %d\n", my_rank, ret, storage);
+                for (d1 = 0; d1 < NDIM; d1++)
+                {
+                    printf("chunksize[%d]=%d\n", d1, my_chunksize[d1]);
+                }
+            }
 
             /** Check the answers. */
-            /* if (format[fmt] == PIO_IOTYPE_NETCDF4C || */
-            /*     format[fmt] == PIO_IOTYPE_NETCDF4P) */
-            /* { */
-            /*     if (storage != NC_CHUNKED) */
-            /*         ERR(ERR_AWFUL); */
-            /*     for (d1 = 0; d1 < NDIM; d1++) */
-            /*         if (my_chunksize[d1] != chunksize[d1]) */
-            /*             ERR(ERR_AWFUL); */
-            /* } */
+            if (format[fmt] == PIO_IOTYPE_NETCDF4C ||
+                format[fmt] == PIO_IOTYPE_NETCDF4P)
+            {
+                if (storage != NC_CHUNKED)
+                    ERR(ERR_AWFUL);
+                for (d1 = 0; d1 < NDIM; d1++)
+                    if (my_chunksize[d1] != chunksize[d1])
+                        ERR(ERR_AWFUL);
+            }
 
             /* Check that the inq_var_deflate functions works. */
             if ((ret = PIOc_inq_var_deflate(ncid, 0, &shuffle, &deflate, &deflate_level)))
@@ -453,21 +458,21 @@ main(int argc, char **argv)
                 != PIO_ENOTNC4)
                 ERR(ret);
             if ((ret = PIOc_def_var_endian(ncid, 0, 1)) != PIO_ENOTNC4)
+                ERR(ERR_AWFUL);
+            if ((ret = PIOc_inq_var_endian(ncid, 0, &endianness)) != PIO_ENOTNC4)
+                ERR(ERR_AWFUL);
+            if ((ret = PIOc_set_var_chunk_cache(ncid, 0, VAR_CACHE_SIZE, VAR_CACHE_NELEMS,
+                                                VAR_CACHE_PREEMPTION)) != PIO_ENOTNC4)
                 ERR(ret);
-            /* if ((ret = PIOc_inq_var_endian(ncid, 0, &endianness)) != PIO_ENOTNC4) */
-            /*     ERR(ret); */
-            /* if ((ret = PIOc_set_var_chunk_cache(ncid, 0, VAR_CACHE_SIZE, VAR_CACHE_NELEMS, */
-            /*                                     VAR_CACHE_PREEMPTION)) != PIO_ENOTNC4) */
-            /*     ERR(ret); */
-            /* if ((ret = PIOc_get_var_chunk_cache(ncid, 0, &var_cache_size, &var_cache_nelems, */
-            /*                                     &var_cache_preemption)) != PIO_ENOTNC4) */
-            /*     ERR(ret); */
-            /* if ((ret = PIOc_set_chunk_cache(iosysid, format[fmt], chunk_cache_size, chunk_cache_nelems, */
-            /*                                 chunk_cache_preemption)) != PIO_ENOTNC4) */
-            /*     ERR(ret); */
-            /* if ((ret = PIOc_get_chunk_cache(iosysid, format[fmt], &chunk_cache_size, */
-            /*                                 &chunk_cache_nelems, &chunk_cache_preemption)) != PIO_ENOTNC4) */
-            /*     ERR(ret); */
+            if ((ret = PIOc_get_var_chunk_cache(ncid, 0, &var_cache_size, &var_cache_nelems,
+                                                &var_cache_preemption)) != PIO_ENOTNC4)
+                ERR(ret);
+            if ((ret = PIOc_set_chunk_cache(iosysid, format[fmt], chunk_cache_size, chunk_cache_nelems,
+                                            chunk_cache_preemption)) != PIO_ENOTNC4)
+                ERR(ret);
+            if ((ret = PIOc_get_chunk_cache(iosysid, format[fmt], &chunk_cache_size,
+                                            &chunk_cache_nelems, &chunk_cache_preemption)) != PIO_ENOTNC4)
+                ERR(ret);
         }
 
         if ((ret = PIOc_enddef(ncid)))
@@ -485,6 +490,9 @@ main(int argc, char **argv)
         printf("rank: %d Freeing PIO decomposition...\n", my_rank);
     if ((ret = PIOc_freedecomp(iosysid, ioid)))
         ERR(ret);
+
+    printf("%d %s waiting for all processes!\n", my_rank, TEST_NAME);
+    MPI_Barrier(MPI_COMM_WORLD);
 
     /* Finalize the IO system. */
     if (verbose)

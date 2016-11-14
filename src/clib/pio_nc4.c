@@ -244,8 +244,6 @@ int PIOc_def_var_chunking(int ncid, int varid, int storage,
     file_desc_t *file;     /** Pointer to file information. */
     int ierr = PIO_NOERR;  /** Return code from function calls. */
     int mpierr = MPI_SUCCESS, mpierr2;  /** Return code from MPI function codes. */
-    char *errstr;
-    errstr = NULL;
 
     /* Find the info about this file. */
     if ((ierr = pio_get_file(ncid, &file)))
@@ -337,16 +335,11 @@ int PIOc_def_var_chunking(int ncid, int varid, int storage,
  */
 int PIOc_inq_var_chunking(int ncid, int varid, int *storagep, PIO_Offset *chunksizesp)
 {
-    int ierr;
-    int msg;
-    int mpierr;
-    iosystem_desc_t *ios;
-    file_desc_t *file;
-    char *errstr;
-    int ndims;
-
-    errstr = NULL;
-    ierr = PIO_NOERR;
+    iosystem_desc_t *ios;  /* Pointer to io system information. */
+    file_desc_t *file;     /* Pointer to file information. */
+    int ierr = PIO_NOERR;  /* Return code from function calls. */
+    int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
+    int ndims; /* The number of dimensions in the variable. */
 
     LOG((1, "PIOc_inq_var_chunking ncid = %d varid = %d"));
 
@@ -354,25 +347,43 @@ int PIOc_inq_var_chunking(int ncid, int varid, int *storagep, PIO_Offset *chunks
     if ((ierr = pio_get_file(ncid, &file)))
         return ierr;
     ios = file->iosystem;
-    msg = PIO_MSG_INQ_VAR_CHUNKING;
 
     /* Run these on all tasks if async is not in use, but only on
      * non-IO tasks if async is in use. */
     if (!ios->async_interface || !ios->ioproc)
     {
 	/* Find the number of dimensions of this variable. */
-	if ((ierr = nc_inq_varndims(file->fh, varid, &ndims)))
+	if ((ierr = PIOc_inq_varndims(ncid, varid, &ndims)))
 	    return ierr;
+	LOG((2, "ndims = %d", ndims));
     }
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
-    if (ios->async_interface && ! ios->ioproc)
+    if (ios->async_interface)
     {
-        if (ios->compmaster)
-            mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
-        mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
+        if (!ios->ioproc)
+        {
+	    int msg = PIO_MSG_INQ_VAR_CHUNKING;
+
+	    if (ios->compmaster)
+		mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
+
+	    if (!mpierr)
+		mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
+	}
+
+        /* Handle MPI errors. */
+        if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
+            return check_mpi(file, mpierr2, __FILE__, __LINE__);
+        if (mpierr)
+            return check_mpi(file, mpierr, __FILE__, __LINE__);
+
+        /* Broadcast values currently only known on computation tasks to IO tasks. */
+        if ((mpierr = MPI_Bcast(&ndims, 1, MPI_INT, ios->comproot, ios->my_comm)))
+            check_mpi(file, mpierr, __FILE__, __LINE__);
     }
 
+    /* If this is an IO task, then call the netCDF function. */
     if (ios->ioproc)
     {
         switch (file->iotype)
@@ -386,7 +397,7 @@ int PIOc_inq_var_chunking(int ncid, int varid, int *storagep, PIO_Offset *chunks
             if (ios->io_rank == 0)
             {
                 if ((ierr = nc_inq_var_chunking(file->fh, varid, storagep, chunksizesp)))
-                    return ierr;
+		    return ierr;
             }
             break;
 #endif
@@ -405,21 +416,12 @@ int PIOc_inq_var_chunking(int ncid, int varid, int *storagep, PIO_Offset *chunks
 	LOG((2, "ierr = %d", ierr));
     }
 
-    /* If there is an error, allocate space for the error string. */
-    if (ierr != PIO_NOERR)
-    {
-        if (!(errstr = malloc((strlen(__FILE__) + 20) * sizeof(char))))
-            return PIO_ENOMEM;
-        sprintf(errstr,"in file %s",__FILE__);
-    }
-
-    /* Check the netCDF return code, and broadcast it to all tasks. */
-    ierr = check_netcdf(file, ierr, errstr,__LINE__);
-
-    /* Free the error stringif it was allocated. */
-    if (errstr != NULL)
-        free(errstr);
-
+    /* Broadcast and check the return code. */
+    if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
+        return check_mpi(file, mpierr, __FILE__, __LINE__);
+    if (ierr)
+        return check_netcdf(file, ierr, __FILE__, __LINE__);
+    
     /* Broadcast results to all tasks. */
     ierr = MPI_Bcast(&ndims, 1, MPI_INT, ios->ioroot, ios->my_comm);
     if (storagep)
@@ -636,38 +638,46 @@ int PIOc_def_var_endian(int ncid, int varid, int endian)
  *
  * @param ncid the ncid of the open file.
  * @param varid the ID of the variable to set chunksizes for.
- * @param storagep pointer to int which will be set to either
- * NC_CONTIGUOUS or NC_CHUNKED.
- * @param chunksizep pointer to memory where chunksizes will be
- * set. There are the same number of chunksizes as there are
- * dimensions.
- *
+ * @param endianp pointer to int which will be set to
+ * endianness. Ignored if NULL.
  * @return PIO_NOERR for success, otherwise an error code.
  */
 int PIOc_inq_var_endian(int ncid, int varid, int *endianp)
 {
-    int ierr;
-    int msg;
-    int mpierr;
-    iosystem_desc_t *ios;
-    file_desc_t *file;
-    char *errstr;
+    iosystem_desc_t *ios;  /** Pointer to io system information. */
+    file_desc_t *file;     /** Pointer to file information. */
+    int ierr = PIO_NOERR;  /** Return code from function calls. */
+    int mpierr = MPI_SUCCESS, mpierr2;  /** Return code from MPI function codes. */
 
-    errstr = NULL;
-    ierr = PIO_NOERR;
+    LOG((1, "PIOc_inq_var_endian ncid = %d varid = %d"));
 
+    /* Get the file info. */
     if ((ierr = pio_get_file(ncid, &file)))
         return ierr;
     ios = file->iosystem;
-    msg = PIO_MSG_INQ_VAR_CHUNKING;
 
-    if (ios->async_interface && ! ios->ioproc)
+    /* If async is in use, and this is not an IO task, bcast the parameters. */
+    if (ios->async_interface)
     {
-        if (ios->compmaster)
-            mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
-        mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
+        if (!ios->ioproc)
+        {
+	    int msg = PIO_MSG_INQ_VAR_CHUNKING;
+
+	    if (ios->compmaster)
+		mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
+
+	    if (!mpierr)
+		mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
+	}
+
+        /* Handle MPI errors. */
+        if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
+            return check_mpi(file, mpierr2, __FILE__, __LINE__);
+        if (mpierr)
+            return check_mpi(file, mpierr, __FILE__, __LINE__);
     }
 
+    /* If this is an IO task, then call the netCDF function. */
     if (ios->ioproc)
     {
         switch (file->iotype)
@@ -696,20 +706,11 @@ int PIOc_inq_var_endian(int ncid, int varid, int *endianp)
         }
     }
 
-    /* If there is an error, allocate space for the error string. */
-    if (ierr != PIO_NOERR)
-    {
-        if (!(errstr = malloc((strlen(__FILE__) + 20) * sizeof(char))))
-            return PIO_ENOMEM;
-        sprintf(errstr,"in file %s",__FILE__);
-    }
-
-    /* Check the netCDF return code, and broadcast it to all tasks. */
-    ierr = check_netcdf(file, ierr, errstr,__LINE__);
-
-    /* Free the error string if it was allocated. */
-    if (errstr != NULL)
-        free(errstr);
+    /* Broadcast and check the return code. */
+    if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
+        return check_mpi(file, mpierr, __FILE__, __LINE__);
+    if (ierr)
+        return check_netcdf(file, ierr, __FILE__, __LINE__);
 
     /* Broadcast results to all tasks. */
     if (endianp)
@@ -1012,10 +1013,9 @@ int PIOc_set_var_chunk_cache(int ncid, int varid, PIO_Offset size, PIO_Offset ne
  *
  * @param ncid the ncid of the open file.
  * @param varid the ID of the variable to set chunksizes for.
- * @param sizep will get the size of the cache in bytes.
- * @param nelemsp will get the number of elements in the cache.
- * @param preemptionp will get the cache preemption value.
- *
+ * @param sizep will get the size of the cache in bytes. Ignored if NULL.
+ * @param nelemsp will get the number of elements in the cache. Ignored if NULL.
+ * @param preemptionp will get the cache preemption value. Ignored if NULL.
  * @return PIO_NOERR for success, otherwise an error code.
  */
 int PIOc_get_var_chunk_cache(int ncid, int varid, PIO_Offset *sizep, PIO_Offset *nelemsp,
@@ -1027,6 +1027,8 @@ int PIOc_get_var_chunk_cache(int ncid, int varid, PIO_Offset *sizep, PIO_Offset 
     iosystem_desc_t *ios;
     file_desc_t *file;
     char *errstr;
+
+    LOG((1, "PIOc_get_var_chunk_cache ncid = %d varid = %d"));
 
     errstr = NULL;
     ierr = PIO_NOERR;
@@ -1053,13 +1055,13 @@ int PIOc_get_var_chunk_cache(int ncid, int varid, PIO_Offset *sizep, PIO_Offset 
 #ifdef _NETCDF
 #ifdef _NETCDF4
         case PIO_IOTYPE_NETCDF4P:
-            ierr = nc_get_var_chunk_cache(file->fh, varid,  (size_t *)sizep, (size_t *)nelemsp,
-                                          preemptionp);
-            break;
         case PIO_IOTYPE_NETCDF4C:
-            if (ios->io_rank == 0)
-                ierr = nc_get_var_chunk_cache(file->fh, varid,  (size_t *)sizep, (size_t *)nelemsp,
+            if (file->do_io)
+	    {
+		LOG((2, "calling nc_get_var_chunk_cache file->fh = %d varid = %d", file->fh, varid));
+                ierr = nc_get_var_chunk_cache(file->fh, varid, (size_t *)sizep, (size_t *)nelemsp,
                                               preemptionp);
+	    }
             break;
 #endif
         case PIO_IOTYPE_NETCDF:
