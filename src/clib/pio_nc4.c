@@ -1,6 +1,7 @@
 /** @file
  *
  * Functions to wrap netCDF-4 functions for PIO.
+ * @author Ed Hartnett
  **/
 #include <config.h>
 #include <pio.h>
@@ -26,7 +27,6 @@
  * variable.
  * @param deflate_level 1 to 9, with 1 being faster and 9 being more
  * compressed.
- *
  * @return PIO_NOERR for success, otherwise an error code.
  */
 int PIOc_def_var_deflate(int ncid, int varid, int shuffle, int deflate,
@@ -36,20 +36,20 @@ int PIOc_def_var_deflate(int ncid, int varid, int shuffle, int deflate,
     file_desc_t *file;     /** Pointer to file information. */
     int ierr = PIO_NOERR;  /** Return code from function calls. */
     int mpierr = MPI_SUCCESS, mpierr2;  /** Return code from MPI function codes. */
-    int msg;
-    char *errstr;
-
-    errstr = NULL;
-    ierr = PIO_NOERR;
 
     /* Get the file info. */
     if ((ierr = pio_get_file(ncid, &file)))
         return ierr;
     ios = file->iosystem;
-    msg = PIO_MSG_DEF_VAR_DEFLATE;
+
+    /* Only netCDF-4 files can use this feature. */
+    if (file->iotype != PIO_IOTYPE_NETCDF4P && file->iotype != PIO_IOTYPE_NETCDF4C)
+	return PIO_ENOTNC4;
 
     if (ios->async_interface && ! ios->ioproc)
     {
+	int msg = PIO_MSG_DEF_VAR_DEFLATE;
+
         if (ios->compmaster)
             mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
         mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
@@ -88,20 +88,11 @@ int PIOc_def_var_deflate(int ncid, int varid, int shuffle, int deflate,
         }
     }
 
-    /* If there is an error, allocate space for the error string. */
-    if (ierr != PIO_NOERR)
-    {
-        if (!(errstr = malloc((strlen(__FILE__) + 20) * sizeof(char))))
-            return PIO_ENOMEM;
-        sprintf(errstr,"in file %s",__FILE__);
-    }
-
-    /* Check the netCDF return code, and broadcast it to all tasks. */
-    ierr = check_netcdf(file, ierr, errstr,__LINE__);
-
-    /* Free the error string if it was allocated. */
-    if (errstr != NULL)
-        free(errstr);
+    /* Broadcast and check the return code. */
+    if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
+        return check_mpi(file, mpierr, __FILE__, __LINE__);
+    if (ierr)
+        return check_netcdf(file, ierr, __FILE__, __LINE__);
 
     return ierr;
 }
@@ -127,7 +118,6 @@ int PIOc_def_var_deflate(int ncid, int varid, int shuffle, int deflate,
  * deflation is in use for this variable.
  * @param deflate_levelp pointer to an int that will get the deflation
  * level (from 1-9) if deflation is in use for this variable.
- *
  * @return PIO_NOERR for success, otherwise an error code.
  */
 int PIOc_inq_var_deflate(int ncid, int varid, int *shufflep,
@@ -141,13 +131,15 @@ int PIOc_inq_var_deflate(int ncid, int varid, int *shufflep,
     char *errstr;
     int ret;
 
-    errstr = NULL;
-    ierr = PIO_NOERR;
-
     /* Get the file info. */
     if ((ierr = pio_get_file(ncid, &file)))
         return ierr;
     ios = file->iosystem;
+
+    /* Only netCDF-4 files can use this feature. */
+    if (file->iotype != PIO_IOTYPE_NETCDF4P && file->iotype != PIO_IOTYPE_NETCDF4C)
+	return PIO_ENOTNC4;
+
     msg = PIO_MSG_INQ_VAR_DEFLATE;
 
     if (ios->async_interface && ! ios->ioproc)
@@ -185,20 +177,11 @@ int PIOc_inq_var_deflate(int ncid, int varid, int *shufflep,
         }
     }
 
-    /* If there is an error, allocate space for the error string. */
-    if (ierr != PIO_NOERR)
-    {
-        if (!(errstr = malloc((strlen(__FILE__) + 20) * sizeof(char))))
-            return PIO_ENOMEM;
-        sprintf(errstr,"in file %s",__FILE__);
-    }
-
-    /* Check the netCDF return code, and broadcast it to all tasks. */
-    ierr = check_netcdf(file, ierr, errstr, __LINE__);
-
-    /* Free the error string if it was allocated. */
-    if (errstr != NULL)
-        free(errstr);
+    /* Broadcast and check the return code. */
+    if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
+        return check_mpi(file, mpierr, __FILE__, __LINE__);
+    if (ierr)
+        return check_netcdf(file, ierr, __FILE__, __LINE__);
 
     /* Broadcast results to all tasks. */
     if (ierr == PIO_NOERR)
@@ -234,7 +217,6 @@ int PIOc_inq_var_deflate(int ncid, int varid, int *shufflep,
  * @param storage NC_CONTIGUOUS or NC_CHUNKED.
  * @param chunksizep an array of chunksizes. Must have a chunksize for
  * every variable dimension.
- *
  * @return PIO_NOERR for success, otherwise an error code.
  */
 int PIOc_def_var_chunking(int ncid, int varid, int storage,
@@ -249,6 +231,10 @@ int PIOc_def_var_chunking(int ncid, int varid, int storage,
     if ((ierr = pio_get_file(ncid, &file)))
         return ierr;
     ios = file->iosystem;
+
+    /* Only netCDF-4 files can use this feature. */
+    if (file->iotype != PIO_IOTYPE_NETCDF4P && file->iotype != PIO_IOTYPE_NETCDF4C)
+	return PIO_ENOTNC4;
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
     if (ios->async_interface)
@@ -330,7 +316,6 @@ int PIOc_def_var_chunking(int ncid, int varid, int storage,
  * @param chunksizep pointer to memory where chunksizes will be
  * set. There are the same number of chunksizes as there are
  * dimensions.
- *
  * @return PIO_NOERR for success, otherwise an error code.
  */
 int PIOc_inq_var_chunking(int ncid, int varid, int *storagep, PIO_Offset *chunksizesp)
@@ -347,6 +332,10 @@ int PIOc_inq_var_chunking(int ncid, int varid, int *storagep, PIO_Offset *chunks
     if ((ierr = pio_get_file(ncid, &file)))
         return ierr;
     ios = file->iosystem;
+
+    /* Only netCDF-4 files can use this feature. */
+    if (file->iotype != PIO_IOTYPE_NETCDF4P && file->iotype != PIO_IOTYPE_NETCDF4C)
+	return PIO_ENOTNC4;
 
     /* Run these on all tasks if async is not in use, but only on
      * non-IO tasks if async is in use. */
@@ -421,7 +410,7 @@ int PIOc_inq_var_chunking(int ncid, int varid, int *storagep, PIO_Offset *chunks
         return check_mpi(file, mpierr, __FILE__, __LINE__);
     if (ierr)
         return check_netcdf(file, ierr, __FILE__, __LINE__);
-    
+
     /* Broadcast results to all tasks. */
     ierr = MPI_Bcast(&ndims, 1, MPI_INT, ios->ioroot, ios->my_comm);
     if (storagep)
@@ -453,7 +442,6 @@ int PIOc_inq_var_chunking(int ncid, int varid, int *storagep, PIO_Offset *chunks
  * @param storage NC_CONTIGUOUS or NC_CHUNKED.
  * @param chunksizep an array of chunksizes. Must have a chunksize for
  * every variable dimension.
- *
  * @return PIO_NOERR for success, otherwise an error code.
  */
 int PIOc_def_var_fill(int ncid, int varid, int no_fill, const void *fill_value)
@@ -463,14 +451,15 @@ int PIOc_def_var_fill(int ncid, int varid, int no_fill, const void *fill_value)
     int ierr = PIO_NOERR;  /** Return code from function calls. */
     int mpierr = MPI_SUCCESS, mpierr2;  /** Return code from MPI function codes. */
     int msg;
-    char *errstr;
-
-    errstr = NULL;
-    ierr = PIO_NOERR;
 
     if ((ierr = pio_get_file(ncid, &file)))
         return ierr;
     ios = file->iosystem;
+
+    /* Only netCDF-4 files can use this feature. */
+    if (file->iotype != PIO_IOTYPE_NETCDF4P && file->iotype != PIO_IOTYPE_NETCDF4C)
+	return PIO_ENOTNC4;
+
     msg = PIO_MSG_SET_FILL;
 
     if (ios->async_interface && ! ios->ioproc)
@@ -510,20 +499,11 @@ int PIOc_def_var_fill(int ncid, int varid, int no_fill, const void *fill_value)
         }
     }
 
-    /* Allocate an error string if needed. */
-    if (ierr != PIO_NOERR)
-    {
-        if (!(errstr = malloc((strlen(__FILE__) + 20) * sizeof(char))))
-            return PIO_ENOMEM;
-        sprintf(errstr,"in file %s",__FILE__);
-    }
-
-    /* Check for netCDF error. */
-    ierr = check_netcdf(file, ierr, errstr,__LINE__);
-
-    /* Free the error string if it was allocated. */
-    if (errstr != NULL)
-        free(errstr);
+    /* Broadcast and check the return code. */
+    if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
+        return check_mpi(file, mpierr, __FILE__, __LINE__);
+    if (ierr)
+        return check_netcdf(file, ierr, __FILE__, __LINE__);
 
     return ierr;
 }
@@ -549,7 +529,6 @@ int PIOc_def_var_fill(int ncid, int varid, int no_fill, const void *fill_value)
  * @param storage NC_CONTIGUOUS or NC_CHUNKED.
  * @param chunksizep an array of chunksizes. Must have a chunksize for
  * every variable dimension.
- *
  * @return PIO_NOERR for success, otherwise an error code.
  */
 int PIOc_def_var_endian(int ncid, int varid, int endian)
@@ -558,19 +537,19 @@ int PIOc_def_var_endian(int ncid, int varid, int endian)
     file_desc_t *file;     /** Pointer to file information. */
     int ierr = PIO_NOERR;  /** Return code from function calls. */
     int mpierr = MPI_SUCCESS, mpierr2;  /** Return code from MPI function codes. */
-    int msg;
-    char *errstr;
 
-    errstr = NULL;
-    ierr = PIO_NOERR;
-
+    /* Get the file info. */
     if ((ierr = pio_get_file(ncid, &file)))
         return ierr;
     ios = file->iosystem;
-    msg = PIO_MSG_DEF_VAR_ENDIAN;
+
+    /* Only netCDF-4 files can use this feature. */
+    if (file->iotype != PIO_IOTYPE_NETCDF4P && file->iotype != PIO_IOTYPE_NETCDF4C)
+	return PIO_ENOTNC4;
 
     if (ios->async_interface && ! ios->ioproc)
     {
+	int msg = PIO_MSG_DEF_VAR_ENDIAN;
         if (ios->compmaster)
             mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
         mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
@@ -606,20 +585,11 @@ int PIOc_def_var_endian(int ncid, int varid, int endian)
         }
     }
 
-    /* Allocate an error string if needed. */
-    if (ierr != PIO_NOERR)
-    {
-        if (!(errstr = malloc((strlen(__FILE__) + 20) * sizeof(char))))
-            return PIO_ENOMEM;
-        sprintf(errstr,"in file %s",__FILE__);
-    }
-
-    /* Check for netCDF error. */
-    ierr = check_netcdf(file, ierr, errstr,__LINE__);
-
-    /* Free the error string if it was allocated. */
-    if (errstr != NULL)
-        free(errstr);
+    /* Broadcast and check the return code. */
+    if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
+        return check_mpi(file, mpierr, __FILE__, __LINE__);
+    if (ierr)
+        return check_netcdf(file, ierr, __FILE__, __LINE__);
 
     return ierr;
 }
@@ -655,6 +625,10 @@ int PIOc_inq_var_endian(int ncid, int varid, int *endianp)
     if ((ierr = pio_get_file(ncid, &file)))
         return ierr;
     ios = file->iosystem;
+
+    /* Only netCDF-4 files can use this feature. */
+    if (file->iotype != PIO_IOTYPE_NETCDF4P && file->iotype != PIO_IOTYPE_NETCDF4C)
+	return PIO_ENOTNC4;
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
     if (ios->async_interface)
@@ -752,17 +726,17 @@ int PIOc_set_chunk_cache(int iosysid, int iotype, PIO_Offset size,
     file_desc_t *file;     /** Pointer to file information. */
     int ierr = PIO_NOERR;  /** Return code from function calls. */
     int mpierr = MPI_SUCCESS, mpierr2;  /** Return code from MPI function codes. */
-    int msg;
-    char *errstr;
-
-    errstr = NULL;
-    ierr = PIO_NOERR;
-    msg = PIO_MSG_SET_CHUNK_CACHE;
 
     ios = pio_get_iosystem_from_id(iosysid);
     if(ios == NULL)
         return PIO_EBADID;
 
+    /* Only netCDF-4 files can use this feature. */
+    if (iotype != PIO_IOTYPE_NETCDF4P && iotype != PIO_IOTYPE_NETCDF4C)
+	return PIO_ENOTNC4;
+
+    int msg;
+    msg = PIO_MSG_SET_CHUNK_CACHE;
     /* if (ios->async_interface && ! ios->ioproc){ */
     /*  if (ios->compmaster) */
     /*      mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm); */
@@ -794,8 +768,9 @@ int PIOc_set_chunk_cache(int iosysid, int iotype, PIO_Offset size,
         ierr = iotype_error(file->iotype,__FILE__,__LINE__);
     }
 
-    /* Propogate error code to all processes. */
-    MPI_Bcast(&ierr, 1, MPI_INTEGER, ios->ioroot, ios->my_comm);
+    /* Broadcast and check the return code. */
+    if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
+        return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 
     return ierr;
 }
@@ -837,14 +812,14 @@ int PIOc_get_chunk_cache(int iosysid, int iotype, PIO_Offset *sizep,
     int ierr = PIO_NOERR;  /** Return code from function calls. */
     int mpierr = MPI_SUCCESS, mpierr2;  /** Return code from MPI function codes. */
     int msg;
-    char *errstr;
 
-    errstr = NULL;
-    ierr = PIO_NOERR;
-
-    ios = pio_get_iosystem_from_id(iosysid);
-    if(ios == NULL)
+    /* Get the io system info. */
+    if (!(ios = pio_get_iosystem_from_id(iosysid)))
         return PIO_EBADID;
+
+    /* Only netCDF-4 files can use this feature. */
+    if (iotype != PIO_IOTYPE_NETCDF4P && iotype != PIO_IOTYPE_NETCDF4C)
+	return PIO_ENOTNC4;
 
     /* Since this is a property of the running HDF5 instance, not the
      * file, it's not clear if this message passing will apply. For
@@ -882,9 +857,10 @@ int PIOc_get_chunk_cache(int iosysid, int iotype, PIO_Offset *sizep,
         ierr = iotype_error(iotype,__FILE__,__LINE__);
     }
 
+    /* Broadcast and check the return code. */
+    if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
+        return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 
-    /* Check for netCDF error. */
-    MPI_Bcast(&ierr, 1, MPI_INTEGER, ios->ioroot, ios->my_comm);
     if (!ierr)
     {
         if (sizep)
@@ -932,19 +908,19 @@ int PIOc_set_var_chunk_cache(int ncid, int varid, PIO_Offset size, PIO_Offset ne
     file_desc_t *file;     /** Pointer to file information. */
     int ierr = PIO_NOERR;  /** Return code from function calls. */
     int mpierr = MPI_SUCCESS, mpierr2;  /** Return code from MPI function codes. */
-    int msg;
-    char *errstr;
 
-    errstr = NULL;
-    ierr = PIO_NOERR;
-
+    /* Get the file info. */
     if ((ierr = pio_get_file(ncid, &file)))
         return ierr;
     ios = file->iosystem;
-    msg = PIO_MSG_SET_VAR_CHUNK_CACHE;
+
+    /* Only netCDF-4 files can use this feature. */
+    if (file->iotype != PIO_IOTYPE_NETCDF4P && file->iotype != PIO_IOTYPE_NETCDF4C)
+	return PIO_ENOTNC4;
 
     if (ios->async_interface && ! ios->ioproc)
     {
+	int msg = PIO_MSG_SET_VAR_CHUNK_CACHE;
         if (ios->compmaster)
             mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
         mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
@@ -978,20 +954,11 @@ int PIOc_set_var_chunk_cache(int ncid, int varid, PIO_Offset size, PIO_Offset ne
         }
     }
 
-    /* Allocate an error string if needed. */
-    if (ierr != PIO_NOERR)
-    {
-        if (!(errstr = malloc((strlen(__FILE__) + 20) * sizeof(char))))
-            return PIO_ENOMEM;
-        sprintf(errstr,"in file %s",__FILE__);
-    }
-
-    /* Check for netCDF error. */
-    ierr = check_netcdf(file, ierr, errstr,__LINE__);
-
-    /* Free the error string if it was allocated. */
-    if (errstr != NULL)
-        free(errstr);
+    /* Broadcast and check the return code. */
+    if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
+        return check_mpi(file, mpierr, __FILE__, __LINE__);
+    if (ierr)
+        return check_netcdf(file, ierr, __FILE__, __LINE__);
 
     return ierr;
 }
@@ -1026,16 +993,17 @@ int PIOc_get_var_chunk_cache(int ncid, int varid, PIO_Offset *sizep, PIO_Offset 
     int ierr = PIO_NOERR;  /** Return code from function calls. */
     int mpierr = MPI_SUCCESS, mpierr2;  /** Return code from MPI function codes. */
     int msg;
-    char *errstr;
 
     LOG((1, "PIOc_get_var_chunk_cache ncid = %d varid = %d"));
 
-    errstr = NULL;
-    ierr = PIO_NOERR;
-
+    /* Get the file info. */
     if ((ierr = pio_get_file(ncid, &file)))
         return ierr;
     ios = file->iosystem;
+
+    /* Only netCDF-4 files can use this feature. */
+    if (file->iotype != PIO_IOTYPE_NETCDF4P && file->iotype != PIO_IOTYPE_NETCDF4C)
+	return PIO_ENOTNC4;
 
     /* Since this is a property of the running HDF5 instance, not the
      * file, it's not clear if this message passing will apply. For
@@ -1078,28 +1046,22 @@ int PIOc_get_var_chunk_cache(int ncid, int varid, PIO_Offset *sizep, PIO_Offset 
         }
     }
 
-    /* If there is an error, allocate space for the error string. */
-    if (ierr != PIO_NOERR)
-    {
-        if (!(errstr = malloc((strlen(__FILE__) + 20) * sizeof(char))))
-            return PIO_ENOMEM;
-        sprintf(errstr,"in file %s",__FILE__);
-    }
-
-    /* Check the netCDF return code, and broadcast it to all tasks. */
-    ierr = check_netcdf(file, ierr, errstr,__LINE__);
-
-    /* Free the error string if it was allocated. */
-    if (errstr != NULL)
-        free(errstr);
+    /* Broadcast and check the return code. */
+    if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
+        return check_mpi(file, mpierr, __FILE__, __LINE__);
+    if (ierr)
+        return check_netcdf(file, ierr, __FILE__, __LINE__);
 
     /* Broadcast results to all tasks. */
-    if (sizep && !ierr)
-        ierr = MPI_Bcast(sizep, 1, MPI_OFFSET, ios->ioroot, ios->my_comm);
-    if (nelemsp && !ierr)
-        ierr = MPI_Bcast(nelemsp, 1, MPI_OFFSET, ios->ioroot, ios->my_comm);
-    if (preemptionp && !ierr)
-        ierr = MPI_Bcast(preemptionp, 1, MPI_FLOAT, ios->ioroot, ios->my_comm);
+    if (!ierr)
+    {
+	if (sizep && !ierr)
+	    ierr = MPI_Bcast(sizep, 1, MPI_OFFSET, ios->ioroot, ios->my_comm);
+	if (nelemsp && !ierr)
+	    ierr = MPI_Bcast(nelemsp, 1, MPI_OFFSET, ios->ioroot, ios->my_comm);
+	if (preemptionp && !ierr)
+	    ierr = MPI_Bcast(preemptionp, 1, MPI_FLOAT, ios->ioroot, ios->my_comm);
+    }
 
     return ierr;
 }
