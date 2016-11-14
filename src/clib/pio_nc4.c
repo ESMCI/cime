@@ -591,30 +591,13 @@ int PIOc_set_chunk_cache(int iosysid, int iotype, PIO_Offset size,
     /*  mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm); */
     /* } */
 
-    switch (iotype)
-    {
-#ifdef _NETCDF
 #ifdef _NETCDF4
-    case PIO_IOTYPE_NETCDF4P:
+    if (iotype == PIO_IOTYPE_NETCDF4P)
         ierr = nc_set_chunk_cache(size, nelems, preemption);
-        break;
-    case PIO_IOTYPE_NETCDF4C:
+    else
         if (!ios->io_rank)
             ierr = nc_set_chunk_cache(size, nelems, preemption);
-        break;
 #endif
-    case PIO_IOTYPE_NETCDF:
-        ierr = PIO_ENOTNC4;
-        break;
-#endif
-#ifdef _PNETCDF
-    case PIO_IOTYPE_PNETCDF:
-        ierr = PIO_ENOTNC4;
-        break;
-#endif
-    default:
-        ierr = iotype_error(file->iotype,__FILE__,__LINE__);
-    }
 
     /* Broadcast and check the return code. */
     if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
@@ -680,30 +663,13 @@ int PIOc_get_chunk_cache(int iosysid, int iotype, PIO_Offset *sizep,
     /*  mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm); */
     /* } */
 
-    switch (iotype)
-    {
-#ifdef _NETCDF
 #ifdef _NETCDF4
-    case PIO_IOTYPE_NETCDF4P:
+    if (iotype == PIO_IOTYPE_NETCDF4P)
         ierr = nc_get_chunk_cache((size_t *)sizep, (size_t *)nelemsp, preemptionp);
-        break;
-    case PIO_IOTYPE_NETCDF4C:
+    else
         if (!ios->io_rank)
             ierr = nc_get_chunk_cache((size_t *)sizep, (size_t *)nelemsp, preemptionp);
-        break;
 #endif
-    case PIO_IOTYPE_NETCDF:
-        ierr = PIO_ENOTNC4;
-        break;
-#endif
-#ifdef _PNETCDF
-    case PIO_IOTYPE_PNETCDF:
-        ierr = PIO_ENOTNC4;
-        break;
-#endif
-    default:
-        ierr = iotype_error(iotype,__FILE__,__LINE__);
-    }
 
     /* Broadcast and check the return code. */
     if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
@@ -746,7 +712,6 @@ int PIOc_get_chunk_cache(int iosysid, int iotype, PIO_Offset *sizep,
  * @param storage NC_CONTIGUOUS or NC_CHUNKED.
  * @param chunksizep an array of chunksizes. Must have a chunksize for
  * every variable dimension.
- *
  * @return PIO_NOERR for success, otherwise an error code.
  */
 int PIOc_set_var_chunk_cache(int ncid, int varid, PIO_Offset size, PIO_Offset nelems,
@@ -776,30 +741,10 @@ int PIOc_set_var_chunk_cache(int ncid, int varid, PIO_Offset size, PIO_Offset ne
 
     if (ios->ioproc)
     {
-        switch (file->iotype)
-        {
-#ifdef _NETCDF
 #ifdef _NETCDF4
-        case PIO_IOTYPE_NETCDF4P:
-            ierr = nc_set_var_chunk_cache(file->fh, varid, size, nelems, preemption);
-            break;
-        case PIO_IOTYPE_NETCDF4C:
-            if (!ios->io_rank)
-                ierr = nc_set_var_chunk_cache(file->fh, varid, size, nelems, preemption);
-            break;
+	if (file->do_io)
+	    ierr = nc_set_var_chunk_cache(file->fh, varid, size, nelems, preemption);
 #endif
-        case PIO_IOTYPE_NETCDF:
-            ierr = PIO_ENOTNC4;
-            break;
-#endif
-#ifdef _PNETCDF
-        case PIO_IOTYPE_PNETCDF:
-            ierr = PIO_ENOTNC4;
-            break;
-#endif
-        default:
-            ierr = iotype_error(file->iotype,__FILE__,__LINE__);
-        }
     }
 
     /* Broadcast and check the return code. */
