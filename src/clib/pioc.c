@@ -257,14 +257,18 @@ int PIOc_InitDecomp(const int iosysid, const int basetype, const int ndims, cons
     /* If desired, save the computed decompositions to files. */
     if (PIO_Save_Decomps)
     {
-        char filename[30];
+        char filename[NC_MAX_NAME];
         if (ios->num_comptasks < 100)
-            sprintf(filename, "piodecomp%2.2dtasks%2.2ddims%2.2d.dat", ios->num_comptasks, ndims, counter);
+            sprintf(filename, "piodecomp%2.2dtasks%2.2ddims%2.2d.dat", ios->num_comptasks,
+		    ndims, counter);
         else if (ios->num_comptasks < 10000)
-            sprintf(filename, "piodecomp%4.4dtasks%2.2ddims%2.2d.dat", ios->num_comptasks, ndims, counter);
+            sprintf(filename, "piodecomp%4.4dtasks%2.2ddims%2.2d.dat", ios->num_comptasks,
+		    ndims, counter);
         else
-            sprintf(filename, "piodecomp%6.6dtasks%2.2ddims%2.2d.dat", ios->num_comptasks, ndims, counter);
+            sprintf(filename, "piodecomp%6.6dtasks%2.2ddims%2.2d.dat", ios->num_comptasks,
+		    ndims, counter);
 
+	LOG((2, "saving decomp map to %s", filename));
         PIOc_writemap(filename, ndims, dims, maplen, (PIO_Offset *)compmap, ios->comp_comm);
         counter++;
     }
@@ -277,14 +281,13 @@ int PIOc_InitDecomp(const int iosysid, const int basetype, const int ndims, cons
         iodesc->rearranger = ios->default_rearranger;
     else
         iodesc->rearranger = *rearranger;
-
+    LOG((2, "iodesc->rearranger = %d", iodesc->rearranger));
+    
     if (iodesc->rearranger == PIO_REARR_SUBSET)
     {
         if (iostart && iocount)
-        {
             fprintf(stderr,"%s %s\n","Iostart and iocount arguments to PIOc_InitDecomp",
                     "are incompatable with subset rearrange method and will be ignored");
-        }
         iodesc->num_aiotasks = ios->num_iotasks;
         ierr = subset_rearrange_create(*ios, maplen, (PIO_Offset *)compmap, dims,
                                        ndims, iodesc);
