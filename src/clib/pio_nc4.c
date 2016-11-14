@@ -32,11 +32,11 @@
 int PIOc_def_var_deflate(int ncid, int varid, int shuffle, int deflate,
                          int deflate_level)
 {
-    int ierr;
+    iosystem_desc_t *ios;  /** Pointer to io system information. */
+    file_desc_t *file;     /** Pointer to file information. */
+    int ierr = PIO_NOERR;  /** Return code from function calls. */
+    int mpierr = MPI_SUCCESS, mpierr2;  /** Return code from MPI function codes. */
     int msg;
-    int mpierr;
-    iosystem_desc_t *ios;
-    file_desc_t *file;
     char *errstr;
 
     errstr = NULL;
@@ -133,11 +133,11 @@ int PIOc_def_var_deflate(int ncid, int varid, int shuffle, int deflate,
 int PIOc_inq_var_deflate(int ncid, int varid, int *shufflep,
                          int *deflatep, int *deflate_levelp)
 {
-    int ierr;
+    iosystem_desc_t *ios;  /** Pointer to io system information. */
+    file_desc_t *file;     /** Pointer to file information. */
+    int ierr = PIO_NOERR;  /** Return code from function calls. */
+    int mpierr = MPI_SUCCESS, mpierr2;  /** Return code from MPI function codes. */
     int msg;
-    int mpierr;
-    iosystem_desc_t *ios;
-    file_desc_t *file;
     char *errstr;
     int ret;
 
@@ -458,11 +458,11 @@ int PIOc_inq_var_chunking(int ncid, int varid, int *storagep, PIO_Offset *chunks
  */
 int PIOc_def_var_fill(int ncid, int varid, int no_fill, const void *fill_value)
 {
-    int ierr;
+    iosystem_desc_t *ios;  /** Pointer to io system information. */
+    file_desc_t *file;     /** Pointer to file information. */
+    int ierr = PIO_NOERR;  /** Return code from function calls. */
+    int mpierr = MPI_SUCCESS, mpierr2;  /** Return code from MPI function codes. */
     int msg;
-    int mpierr;
-    iosystem_desc_t *ios;
-    file_desc_t *file;
     char *errstr;
 
     errstr = NULL;
@@ -554,11 +554,11 @@ int PIOc_def_var_fill(int ncid, int varid, int no_fill, const void *fill_value)
  */
 int PIOc_def_var_endian(int ncid, int varid, int endian)
 {
-    int ierr;
+    iosystem_desc_t *ios;  /** Pointer to io system information. */
+    file_desc_t *file;     /** Pointer to file information. */
+    int ierr = PIO_NOERR;  /** Return code from function calls. */
+    int mpierr = MPI_SUCCESS, mpierr2;  /** Return code from MPI function codes. */
     int msg;
-    int mpierr;
-    iosystem_desc_t *ios;
-    file_desc_t *file;
     char *errstr;
 
     errstr = NULL;
@@ -748,11 +748,11 @@ int PIOc_inq_var_endian(int ncid, int varid, int *endianp)
 int PIOc_set_chunk_cache(int iosysid, int iotype, PIO_Offset size,
                          PIO_Offset nelems, float preemption)
 {
-    int ierr;
+    iosystem_desc_t *ios;  /** Pointer to io system information. */
+    file_desc_t *file;     /** Pointer to file information. */
+    int ierr = PIO_NOERR;  /** Return code from function calls. */
+    int mpierr = MPI_SUCCESS, mpierr2;  /** Return code from MPI function codes. */
     int msg;
-    int mpierr;
-    iosystem_desc_t *ios;
-    file_desc_t *file;
     char *errstr;
 
     errstr = NULL;
@@ -833,10 +833,10 @@ int PIOc_set_chunk_cache(int iosysid, int iotype, PIO_Offset size,
 int PIOc_get_chunk_cache(int iosysid, int iotype, PIO_Offset *sizep,
                          PIO_Offset *nelemsp, float *preemptionp)
 {
-    int ierr;
+    iosystem_desc_t *ios;  /** Pointer to io system information. */
+    int ierr = PIO_NOERR;  /** Return code from function calls. */
+    int mpierr = MPI_SUCCESS, mpierr2;  /** Return code from MPI function codes. */
     int msg;
-    int mpierr;
-    iosystem_desc_t *ios;
     char *errstr;
 
     errstr = NULL;
@@ -928,11 +928,11 @@ int PIOc_get_chunk_cache(int iosysid, int iotype, PIO_Offset *sizep,
 int PIOc_set_var_chunk_cache(int ncid, int varid, PIO_Offset size, PIO_Offset nelems,
                              float preemption)
 {
-    int ierr;
+    iosystem_desc_t *ios;  /** Pointer to io system information. */
+    file_desc_t *file;     /** Pointer to file information. */
+    int ierr = PIO_NOERR;  /** Return code from function calls. */
+    int mpierr = MPI_SUCCESS, mpierr2;  /** Return code from MPI function codes. */
     int msg;
-    int mpierr;
-    iosystem_desc_t *ios;
-    file_desc_t *file;
     char *errstr;
 
     errstr = NULL;
@@ -1021,11 +1021,11 @@ int PIOc_set_var_chunk_cache(int ncid, int varid, PIO_Offset size, PIO_Offset ne
 int PIOc_get_var_chunk_cache(int ncid, int varid, PIO_Offset *sizep, PIO_Offset *nelemsp,
                              float *preemptionp)
 {
-    int ierr;
+    iosystem_desc_t *ios;  /** Pointer to io system information. */
+    file_desc_t *file;     /** Pointer to file information. */
+    int ierr = PIO_NOERR;  /** Return code from function calls. */
+    int mpierr = MPI_SUCCESS, mpierr2;  /** Return code from MPI function codes. */
     int msg;
-    int mpierr;
-    iosystem_desc_t *ios;
-    file_desc_t *file;
     char *errstr;
 
     LOG((1, "PIOc_get_var_chunk_cache ncid = %d varid = %d"));
