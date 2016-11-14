@@ -1,8 +1,9 @@
 /** @file
  *
  * Functions to wrap netCDF-4 functions for PIO.
+ *
  * @author Ed Hartnett
- **/
+ */
 #include <config.h>
 #include <pio.h>
 #include <pio_internal.h>
@@ -46,13 +47,25 @@ int PIOc_def_var_deflate(int ncid, int varid, int shuffle, int deflate,
     if (file->iotype != PIO_IOTYPE_NETCDF4P && file->iotype != PIO_IOTYPE_NETCDF4C)
 	return PIO_ENOTNC4;
 
-    if (ios->async_interface && ! ios->ioproc)
+    /* If async is in use, and this is not an IO task, bcast the parameters. */
+    if (ios->async_interface)
     {
-	int msg = PIO_MSG_DEF_VAR_DEFLATE;
+        if (!ios->ioproc)
+        {
+	    int msg = PIO_MSG_DEF_VAR_DEFLATE;
 
-        if (ios->compmaster)
-            mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
-        mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
+	    if (ios->compmaster)
+		mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
+
+	    if (!mpierr)
+		mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
+	}
+
+        /* Handle MPI errors. */
+        if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
+            return check_mpi(file, mpierr2, __FILE__, __LINE__);
+        if (mpierr)
+            return check_mpi(file, mpierr, __FILE__, __LINE__);
     }
 
     if (ios->ioproc)
@@ -120,11 +133,24 @@ int PIOc_inq_var_deflate(int ncid, int varid, int *shufflep,
 
     msg = PIO_MSG_INQ_VAR_DEFLATE;
 
-    if (ios->async_interface && ! ios->ioproc)
+    /* If async is in use, and this is not an IO task, bcast the parameters. */
+    if (ios->async_interface)
     {
-        if (ios->compmaster)
-            mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
-        mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
+        if (!ios->ioproc)
+        {
+
+	    if (ios->compmaster)
+		mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
+
+	    if (!mpierr)
+		mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
+	}
+
+        /* Handle MPI errors. */
+        if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
+            return check_mpi(file, mpierr2, __FILE__, __LINE__);
+        if (mpierr)
+            return check_mpi(file, mpierr, __FILE__, __LINE__);
     }
 
     if (ios->ioproc)
@@ -363,8 +389,8 @@ int PIOc_def_var_fill(int ncid, int varid, int no_fill, const void *fill_value)
     file_desc_t *file;     /** Pointer to file information. */
     int ierr = PIO_NOERR;  /** Return code from function calls. */
     int mpierr = MPI_SUCCESS, mpierr2;  /** Return code from MPI function codes. */
-    int msg;
 
+    /* Get the file info. */
     if ((ierr = pio_get_file(ncid, &file)))
         return ierr;
     ios = file->iosystem;
@@ -373,13 +399,25 @@ int PIOc_def_var_fill(int ncid, int varid, int no_fill, const void *fill_value)
     if (file->iotype != PIO_IOTYPE_NETCDF4P && file->iotype != PIO_IOTYPE_NETCDF4C)
 	return PIO_ENOTNC4;
 
-    msg = PIO_MSG_SET_FILL;
-
-    if (ios->async_interface && ! ios->ioproc)
+    /* If async is in use, and this is not an IO task, bcast the parameters. */
+    if (ios->async_interface)
     {
-        if (ios->compmaster)
-            mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
-        mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
+        if (!ios->ioproc)
+        {
+	    int msg = PIO_MSG_SET_FILL;
+
+	    if (ios->compmaster)
+		mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
+
+	    if (!mpierr)
+		mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
+	}
+
+        /* Handle MPI errors. */
+        if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
+            return check_mpi(file, mpierr2, __FILE__, __LINE__);
+        if (mpierr)
+            return check_mpi(file, mpierr, __FILE__, __LINE__);
     }
 
     if (ios->ioproc)
@@ -438,12 +476,24 @@ int PIOc_def_var_endian(int ncid, int varid, int endian)
     if (file->iotype != PIO_IOTYPE_NETCDF4P && file->iotype != PIO_IOTYPE_NETCDF4C)
 	return PIO_ENOTNC4;
 
-    if (ios->async_interface && ! ios->ioproc)
+    /* If async is in use, and this is not an IO task, bcast the parameters. */
+    if (ios->async_interface)
     {
-	int msg = PIO_MSG_DEF_VAR_ENDIAN;
-        if (ios->compmaster)
-            mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
-        mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
+        if (!ios->ioproc)
+        {
+	    int msg = PIO_MSG_DEF_VAR_ENDIAN;
+	    if (ios->compmaster)
+		mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
+
+	    if (!mpierr)
+		mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
+	}
+
+        /* Handle MPI errors. */
+        if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
+            return check_mpi(file, mpierr2, __FILE__, __LINE__);
+        if (mpierr)
+            return check_mpi(file, mpierr, __FILE__, __LINE__);
     }
 
     if (ios->ioproc)
@@ -811,32 +861,11 @@ int PIOc_get_var_chunk_cache(int ncid, int varid, PIO_Offset *sizep, PIO_Offset 
 
     if (ios->ioproc)
     {
-        switch (file->iotype)
-        {
-#ifdef _NETCDF
 #ifdef _NETCDF4
-        case PIO_IOTYPE_NETCDF4P:
-        case PIO_IOTYPE_NETCDF4C:
-            if (file->do_io)
-	    {
-		LOG((2, "calling nc_get_var_chunk_cache file->fh = %d varid = %d", file->fh, varid));
-                ierr = nc_get_var_chunk_cache(file->fh, varid, (size_t *)sizep, (size_t *)nelemsp,
-                                              preemptionp);
-	    }
-            break;
+	if (file->do_io)
+	    ierr = nc_get_var_chunk_cache(file->fh, varid, (size_t *)sizep, (size_t *)nelemsp,
+					  preemptionp);
 #endif
-        case PIO_IOTYPE_NETCDF:
-            ierr = PIO_ENOTNC4;
-            break;
-#endif
-#ifdef _PNETCDF
-        case PIO_IOTYPE_PNETCDF:
-            ierr = PIO_ENOTNC4;
-            break;
-#endif
-        default:
-            ierr = iotype_error(file->iotype,__FILE__,__LINE__);
-        }
     }
 
     /* Broadcast and check the return code. */
