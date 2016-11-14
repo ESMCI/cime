@@ -625,6 +625,7 @@ int PIOc_set_chunk_cache(int iosysid, int iotype, PIO_Offset size,
     int ierr = PIO_NOERR;  /** Return code from function calls. */
     int mpierr = MPI_SUCCESS, mpierr2;  /** Return code from MPI function codes. */
 
+    /* Get the IO system info. */
     ios = pio_get_iosystem_from_id(iosysid);
     if(ios == NULL)
         return PIO_EBADID;
@@ -683,7 +684,6 @@ int PIOc_set_chunk_cache(int iosysid, int iotype, PIO_Offset size,
  * @param sizep gets the size of file cache.
  * @param nelemsp gets the number of elements in file cache.
  * @param preemptionp gets the preemption setting for file cache.
- *
  * @return PIO_NOERR for success, otherwise an error code.
  */
 int PIOc_get_chunk_cache(int iosysid, int iotype, PIO_Offset *sizep,
@@ -781,12 +781,25 @@ int PIOc_set_var_chunk_cache(int ncid, int varid, PIO_Offset size, PIO_Offset ne
     if (file->iotype != PIO_IOTYPE_NETCDF4P && file->iotype != PIO_IOTYPE_NETCDF4C)
 	return PIO_ENOTNC4;
 
-    if (ios->async_interface && ! ios->ioproc)
+    /* If async is in use, and this is not an IO task, bcast the parameters. */
+    if (ios->async_interface)
     {
-	int msg = PIO_MSG_SET_VAR_CHUNK_CACHE;
-        if (ios->compmaster)
-            mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
-        mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
+        if (!ios->ioproc)
+        {
+	    int msg = PIO_MSG_SET_VAR_CHUNK_CACHE;
+
+	    if (ios->compmaster)
+		mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
+
+	    if (!mpierr)
+		mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
+	}
+
+        /* Handle MPI errors. */
+        if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
+            return check_mpi(file, mpierr2, __FILE__, __LINE__);
+        if (mpierr)
+            return check_mpi(file, mpierr, __FILE__, __LINE__);
     }
 
     if (ios->ioproc)
