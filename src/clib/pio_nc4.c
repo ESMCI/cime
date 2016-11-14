@@ -2,6 +2,7 @@
  *
  * Functions to wrap netCDF-4 functions for PIO.
  **/
+#include <config.h>
 #include <pio.h>
 #include <pio_internal.h>
 
@@ -347,11 +348,24 @@ int PIOc_inq_var_chunking(int ncid, int varid, int *storagep, PIO_Offset *chunks
     errstr = NULL;
     ierr = PIO_NOERR;
 
+    LOG((1, "PIOc_inq_var_chunking ncid = %d varid = %d"));
+
+    /* Get the file info. */
     if ((ierr = pio_get_file(ncid, &file)))
         return ierr;
     ios = file->iosystem;
     msg = PIO_MSG_INQ_VAR_CHUNKING;
 
+    /* Run these on all tasks if async is not in use, but only on
+     * non-IO tasks if async is in use. */
+    if (!ios->async_interface || !ios->ioproc)
+    {
+	/* Find the number of dimensions of this variable. */
+	if ((ierr = nc_inq_varndims(file->fh, varid, &ndims)))
+	    return ierr;
+    }
+
+    /* If async is in use, and this is not an IO task, bcast the parameters. */
     if (ios->async_interface && ! ios->ioproc)
     {
         if (ios->compmaster)
@@ -373,8 +387,6 @@ int PIOc_inq_var_chunking(int ncid, int varid, int *storagep, PIO_Offset *chunks
             {
                 if ((ierr = nc_inq_var_chunking(file->fh, varid, storagep, chunksizesp)))
                     return ierr;
-                if ((ierr = nc_inq_varndims(file->fh, varid, &ndims)))
-                    return ierr;
             }
             break;
 #endif
@@ -390,6 +402,7 @@ int PIOc_inq_var_chunking(int ncid, int varid, int *storagep, PIO_Offset *chunks
         default:
             ierr = iotype_error(file->iotype,__FILE__,__LINE__);
         }
+	LOG((2, "ierr = %d", ierr));
     }
 
     /* If there is an error, allocate space for the error string. */
