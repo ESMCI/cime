@@ -44,6 +44,12 @@ function (platform_name RETURN_VARIABLE)
     elseif (SITENAME MATCHES "^h2ologin")
 
         set (${RETURN_VARIABLE} "ncsa" PARENT_SCOPE)
+
+    # OLCF/Oak Ridge Machines
+    elseif (SITENAME MATCHES "^eos" OR
+            SITENAME MATCHES "^titan")
+
+        set (${RETURN_VARIABLE} "olcf" PARENT_SCOPE)
         
     else ()
 
