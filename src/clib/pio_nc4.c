@@ -57,35 +57,13 @@ int PIOc_def_var_deflate(int ncid, int varid, int shuffle, int deflate,
 
     if (ios->ioproc)
     {
-        switch (file->iotype)
-        {
-#ifdef _NETCDF
-#ifdef _NETCDF4
-        case PIO_IOTYPE_NETCDF4P:
-            /* Versions of netCDF 4.4 and earlier do not return an
-             * error when attempting to turn on deflation with
-             * parallel I.O. But this is not allowed by HDF5. So
-             * return the correct error code. */
+#ifdef _NETCDF4	
+	if (file->iotype == PIO_IOTYPE_NETCDF4P)
             ierr = NC_EINVAL;
-            //ierr = nc_def_var_deflate(file->fh, varid, shuffle, deflate, deflate_level);
-            break;
-        case PIO_IOTYPE_NETCDF4C:
-            if (!ios->io_rank)
+	else
+	    if (file->do_io)
                 ierr = nc_def_var_deflate(file->fh, varid, shuffle, deflate, deflate_level);
-            break;
 #endif
-        case PIO_IOTYPE_NETCDF:
-            ierr = PIO_ENOTNC4;
-            break;
-#endif
-#ifdef _PNETCDF
-        case PIO_IOTYPE_PNETCDF:
-            ierr = PIO_ENOTNC4;
-            break;
-#endif
-        default:
-            ierr = iotype_error(file->iotype,__FILE__,__LINE__);
-        }
     }
 
     /* Broadcast and check the return code. */
@@ -151,30 +129,10 @@ int PIOc_inq_var_deflate(int ncid, int varid, int *shufflep,
 
     if (ios->ioproc)
     {
-        switch (file->iotype)
-        {
-#ifdef _NETCDF
 #ifdef _NETCDF4
-        case PIO_IOTYPE_NETCDF4P:
+	if (file->do_io)
             ierr = nc_inq_var_deflate(file->fh, varid, shufflep, deflatep, deflate_levelp);
-            break;
-        case PIO_IOTYPE_NETCDF4C:
-            if (ios->io_rank == 0)
-                ierr = nc_inq_var_deflate(file->fh, varid, shufflep, deflatep, deflate_levelp);
-            break;
 #endif
-        case PIO_IOTYPE_NETCDF:
-            ierr = PIO_ENOTNC4;
-            break;
-#endif
-#ifdef _PNETCDF
-        case PIO_IOTYPE_PNETCDF:
-            ierr = PIO_ENOTNC4;
-            break;
-#endif
-        default:
-            ierr = iotype_error(file->iotype,__FILE__,__LINE__);
-        }
     }
 
     /* Broadcast and check the return code. */
@@ -260,32 +218,10 @@ int PIOc_def_var_chunking(int ncid, int varid, int storage,
     /* If this is an IO task, then call the netCDF function. */
     if (ios->ioproc)
     {
-        switch (file->iotype)
-        {
-#ifdef _NETCDF
 #ifdef _NETCDF4
-        case PIO_IOTYPE_NETCDF4P:
+	if (file->do_io)
             ierr = nc_def_var_chunking(file->fh, varid, storage, chunksizesp);
-            break;
-        case PIO_IOTYPE_NETCDF4C:
-            if (ios->io_rank==0)
-            {
-                ierr = nc_def_var_chunking(file->fh, varid, storage, chunksizesp);
-            }
-            break;
 #endif
-        case PIO_IOTYPE_NETCDF:
-            return PIO_ENOTNC4;
-            break;
-#endif
-#ifdef _PNETCDF
-        case PIO_IOTYPE_PNETCDF:
-            return PIO_ENOTNC4;
-            break;
-#endif
-        default:
-            ierr = iotype_error(file->iotype,__FILE__,__LINE__);
-        }
     }
 
     /* Broadcast and check the return code. */
@@ -375,33 +311,10 @@ int PIOc_inq_var_chunking(int ncid, int varid, int *storagep, PIO_Offset *chunks
     /* If this is an IO task, then call the netCDF function. */
     if (ios->ioproc)
     {
-        switch (file->iotype)
-        {
-#ifdef _NETCDF
 #ifdef _NETCDF4
-        case PIO_IOTYPE_NETCDF4P:
-            ierr = nc_inq_var_chunking(file->fh, varid, storagep, chunksizesp);
-            break;
-        case PIO_IOTYPE_NETCDF4C:
-            if (ios->io_rank == 0)
-            {
-                if ((ierr = nc_inq_var_chunking(file->fh, varid, storagep, chunksizesp)))
-		    return ierr;
-            }
-            break;
+	if (file->do_io)
+	    ierr = nc_inq_var_chunking(file->fh, varid, storagep, chunksizesp);
 #endif
-        case PIO_IOTYPE_NETCDF:
-            return PIO_ENOTNC4;
-            break;
-#endif
-#ifdef _PNETCDF
-        case PIO_IOTYPE_PNETCDF:
-            return PIO_ENOTNC4;
-            break;
-#endif
-        default:
-            ierr = iotype_error(file->iotype,__FILE__,__LINE__);
-        }
 	LOG((2, "ierr = %d", ierr));
     }
 
@@ -471,32 +384,10 @@ int PIOc_def_var_fill(int ncid, int varid, int no_fill, const void *fill_value)
 
     if (ios->ioproc)
     {
-        switch (file->iotype)
-        {
-#ifdef _NETCDF
 #ifdef _NETCDF4
-        case PIO_IOTYPE_NETCDF4P:
-            ierr = nc_def_var_fill(file->fh, varid, no_fill, fill_value);
-            break;
-        case PIO_IOTYPE_NETCDF4C:
-            if (ios->io_rank==0)
-            {
-                ierr = nc_def_var_fill(file->fh, varid, no_fill, fill_value);
-            }
-            break;
+	if (file->do_io)
+	    ierr = nc_def_var_fill(file->fh, varid, no_fill, fill_value);
 #endif
-        case PIO_IOTYPE_NETCDF:
-            return PIO_ENOTNC4;
-            break;
-#endif
-#ifdef _PNETCDF
-        case PIO_IOTYPE_PNETCDF:
-            return PIO_ENOTNC4;
-            break;
-#endif
-        default:
-            ierr = iotype_error(file->iotype,__FILE__,__LINE__);
-        }
     }
 
     /* Broadcast and check the return code. */
@@ -557,32 +448,10 @@ int PIOc_def_var_endian(int ncid, int varid, int endian)
 
     if (ios->ioproc)
     {
-        switch (file->iotype)
-        {
-#ifdef _NETCDF
 #ifdef _NETCDF4
-        case PIO_IOTYPE_NETCDF4P:
-            ierr = nc_def_var_endian(file->fh, varid, endian);
-            break;
-        case PIO_IOTYPE_NETCDF4C:
-            if (ios->io_rank==0)
-            {
-                ierr = nc_def_var_endian(file->fh, varid, endian);
-            }
-            break;
+	if (file->do_io)
+	    ierr = nc_def_var_endian(file->fh, varid, endian);
 #endif
-        case PIO_IOTYPE_NETCDF:
-            ierr = PIO_ENOTNC4;
-            break;
-#endif
-#ifdef _PNETCDF
-        case PIO_IOTYPE_PNETCDF:
-            ierr = PIO_ENOTNC4;
-            break;
-#endif
-        default:
-            ierr = iotype_error(file->iotype,__FILE__,__LINE__);
-        }
     }
 
     /* Broadcast and check the return code. */
@@ -654,30 +523,10 @@ int PIOc_inq_var_endian(int ncid, int varid, int *endianp)
     /* If this is an IO task, then call the netCDF function. */
     if (ios->ioproc)
     {
-        switch (file->iotype)
-        {
-#ifdef _NETCDF
 #ifdef _NETCDF4
-        case PIO_IOTYPE_NETCDF4P:
-            ierr = nc_inq_var_endian(file->fh, varid, endianp);
-            break;
-        case PIO_IOTYPE_NETCDF4C:
-            if (!ios->io_rank)
-                ierr = nc_inq_var_endian(file->fh, varid, endianp);
-            break;
+	if (file->do_io)
+	    ierr = nc_inq_var_endian(file->fh, varid, endianp);
 #endif
-        case PIO_IOTYPE_NETCDF:
-            ierr = PIO_ENOTNC4;
-            break;
-#endif
-#ifdef _PNETCDF
-        case PIO_IOTYPE_PNETCDF:
-            ierr = PIO_ENOTNC4;
-            break;
-#endif
-        default:
-            ierr = iotype_error(file->iotype,__FILE__,__LINE__);
-        }
     }
 
     /* Broadcast and check the return code. */
@@ -716,7 +565,6 @@ int PIOc_inq_var_endian(int ncid, int varid, int *endianp)
  * @param size size of file cache.
  * @param nelems number of elements in file cache.
  * @param preemption preemption setting for file cache.
- *
  * @return PIO_NOERR for success, otherwise an error code.
  */
 int PIOc_set_chunk_cache(int iosysid, int iotype, PIO_Offset size,
