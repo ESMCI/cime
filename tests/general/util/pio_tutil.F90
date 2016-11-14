@@ -961,7 +961,11 @@ CONTAINS
     CHARACTER(LEN=*), INTENT(IN)  :: str1
     CHARACTER(LEN=*), INTENT(IN)  :: str2
 
-    PIO_TF_Check_char_str_str = .TRUE.
+    IF (str1 == str2) THEN
+      PIO_TF_Check_char_str_str = .TRUE.
+    ELSE
+      PIO_TF_Check_char_str_str = .FALSE.
+    END IF
   END FUNCTION
 
   ! Parse and process input arguments like "--pio-tf-stride=2" passed
