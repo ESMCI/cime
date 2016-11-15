@@ -147,9 +147,9 @@ class Grids(GenericXML):
                             logger.debug(" %s: %s" %gridmap)
 
         if atmnlev is not None:
-            grids[0] += "z"+atmnlev
+            grids[0] += "z"+atmnlev,
         if lndnlev is not None:
-            grids[1] += "z"+lndnlev
+            grids[1] += "z"+lndnlev,
 
         return gridmaps
 
