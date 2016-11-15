@@ -283,8 +283,10 @@ int PIOc_InitDecomp(const int iosysid, const int basetype, const int ndims, cons
         iodesc->rearranger = *rearranger;
     LOG((2, "iodesc->rearranger = %d", iodesc->rearranger));
     
+    /* Is this the subset rearranger? */
     if (iodesc->rearranger == PIO_REARR_SUBSET)
     {
+	LOG((2, "Handling subset rearranger."));
         if (iostart && iocount)
             fprintf(stderr,"%s %s\n","Iostart and iocount arguments to PIOc_InitDecomp",
                     "are incompatable with subset rearrange method and will be ignored");
@@ -294,13 +296,14 @@ int PIOc_InitDecomp(const int iosysid, const int basetype, const int ndims, cons
     }
     else
     {
+	LOG((2, "Handling not the subset rearranger."));
         if (ios->ioproc)
         {
             /*  Unless the user specifies the start and count for each
              *  IO task compute it. */
             if (iostart && iocount)
             {
-                iodesc->maxiobuflen=1;
+                iodesc->maxiobuflen = 1;
                 for (int i = 0; i < ndims; i++)
                 {
                     iodesc->firstregion->start[i] = iostart[i];
@@ -323,10 +326,11 @@ int PIOc_InitDecomp(const int iosysid, const int basetype, const int ndims, cons
          * of io tasks used may vary. */
         CheckMPIReturn(MPI_Bcast(&(iodesc->num_aiotasks), 1, MPI_INT, ios->ioroot,
                                  ios->my_comm),__FILE__,__LINE__);
+	LOG((3, "iodesc->num_aiotasks = %d", iodesc->num_aiotasks));
 
         /* Compute the communications pattern for this decomposition. */
         if (iodesc->rearranger == PIO_REARR_BOX)
-            ierr = box_rearrange_create( *ios, maplen, compmap, dims, ndims, iodesc);
+            ierr = box_rearrange_create(*ios, maplen, compmap, dims, ndims, iodesc);
 
         /*
           if (ios->ioproc){
@@ -343,6 +347,7 @@ int PIOc_InitDecomp(const int iosysid, const int basetype, const int ndims, cons
     /* Add this IO description to the list. */
     *ioidp = pio_add_to_iodesc_list(iodesc);
 
+    LOG((3, "About to tune rearranger..."));
     performance_tune_rearranger(*ios, iodesc);
 
     return PIO_NOERR;
