@@ -17,6 +17,7 @@ option (PIO_ENABLE_FORTRAN   "Enable the Fortran library builds"            ON)
 option (PIO_ENABLE_TIMING    "Enable the use of the GPTL timing library"    ON)
 option (PIO_ENABLE_LOGGING   "Enable debug logging (large output possible)" OFF)
 option (PIO_ENABLE_DOC       "Enable building PIO documentation"            ON)
+option (PIO_ENABLE_COVERAGE  "Enable code coverage"                         OFF)
 option (PIO_INTERNAL_DOC     "Enable PIO developer documentation"           OFF)
 option (PIO_TEST_BIG_ENDIAN  "Enable test to see if machine is big endian"  ON)
 option (PIO_USE_MPIIO        "Enable support for MPI-IO auto detect"        ON)
@@ -126,6 +127,24 @@ configure_file (
   "${PROJECT_SOURCE_DIR}/src/clib/config.h.in"
   "${PROJECT_BINARY_DIR}/src/clib/config.h"
   )
+
+#==============================================================================
+#  SET CODE COVERAGE COMPILER FLAGS
+#==============================================================================
+
+# Only support GNU compilers at this time
+if (PIO_ENABLE_COVERAGE)
+    if (CMAKE_C_COMPILER_NAME STREQUAL "GNU")
+        set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fprofile-arcs -ftest-coverage")
+    else ()
+        message (WARNING "The C compiler is non-GNU: coverage of C code could NOT be enabled")
+    endif ()
+    if (CMAKE_Fortran_COMPILER_NAME STREQUAL "GNU")
+        set (CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -fprofile-arcs -ftest-coverage")
+    else ()
+        message (WARNING "The Fortran compiler is non-GNU: coverage of Fortran code could NOT be enabled")
+    endif ()
+endif ()
 
 #==============================================================================
 #  INCLUDE SOURCE DIRECTORIES
