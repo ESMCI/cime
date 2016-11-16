@@ -75,7 +75,7 @@ typedef struct var_desc_t
  */
 typedef struct io_region
 {
-    /** ??? */
+    /** ???  */
     int loffset;
 
     /** ??? */
