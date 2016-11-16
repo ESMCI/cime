@@ -347,6 +347,7 @@ sub setBatchDirectives()
 	    {
 		$dvalue = '';
 	    }
+	    print "directiveline is $dvalue <>$actualValue\n";
 	}
 	# If we have data in the dvalue for the directive, add the directive 
         # to our batchdirectives instance data. 
@@ -374,6 +375,7 @@ sub setTaskInfo()
     $self->{'sumpes'} = $taskmaker->sumPES();
     $self->{'tasks_per_node'} = $taskmaker->taskPerNode();
     $self->{'MAX_TASKS_PER_NODE'} = $taskmaker->maxTasksPerNode();
+    $self->{'max_tasks_per_node'} = $taskmaker->maxTasksPerNode();
     $self->{'tasks_per_numa'} = $taskmaker->taskPerNuma();
     $self->{'fullsum'} = $taskmaker->sumOnly();
     $self->{'task_count'} = $taskmaker->sumOnly();
@@ -894,6 +896,7 @@ sub _test()
 }
 
 #==============================================================================
+
 #==============================================================================
 package Batch::BatchMaker_slurm;
 use base qw (Batch::BatchMaker);

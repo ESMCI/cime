@@ -118,6 +118,13 @@
     </directives>
   </batch_system>
 
+  <batch_system MACH="laramie" version="x.y">
+    <directives>
+      <directive> -l select={{ num_nodes }}:ncpus={{ max_tasks_per_node }}:mpiprocs={{ tasks_per_node }}:ompthreads={{ thread_count }}</directive>
+      <directive default="/bin/bash" > -S {{ shell }}  </directive>
+    </directives>
+  </batch_system>
+
   <!-- babbageKnc is PBS -->
   <batch_system MACH="babbageKnc" version="x.y">
     <directives>
