@@ -194,6 +194,7 @@ LII    CLM initial condition interpolation test
     <STOP_OPTION>ndays</STOP_OPTION>
     <STOP_N>11</STOP_N>
     <DOUT_S>FALSE</DOUT_S>
+    <SMP_BUILD>0</SMP_BUILD>
   </test>
 
   <test NAME="ERS">
