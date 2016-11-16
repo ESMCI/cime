@@ -347,7 +347,6 @@ sub setBatchDirectives()
 	    {
 		$dvalue = '';
 	    }
-	    print "directiveline is $dvalue <>$actualValue\n";
 	}
 	# If we have data in the dvalue for the directive, add the directive 
         # to our batchdirectives instance data. 
