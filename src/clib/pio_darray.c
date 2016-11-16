@@ -73,9 +73,9 @@ int PIOc_write_darray_multi(const int ncid, const int *vid, const int ioid,
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Pointer to file information. */
     io_desc_t *iodesc;     /* Pointer to IO description information. */
-    int vsize;             /* ??? */
-    int rlen;              /* ??? */
-    var_desc_t *vdesc0;    /* ??? */
+    int vsize;             /* size in bytes of the given data. */
+    int rlen;              /* total data buffer size. */
+    var_desc_t *vdesc0;    /* pointer to var_desc structure for each var. */
     int ierr = PIO_NOERR;  /* Return code. */
 
     /* Check inputs. */
@@ -95,7 +95,11 @@ int PIOc_write_darray_multi(const int ncid, const int *vid, const int ioid,
     if (!(iodesc = pio_get_iodesc_from_id(ioid)))
         return PIO_EBADID;
 
-    /* ??? */
+    /* For netcdf serial writes we collect the data on io nodes and
+     * then move that data one node at a time to the io master node
+     * and write (or read). The buffer size on io task 0 must be as
+     * large as the largest used to accommodate this serial io
+     * method. */
     vdesc0 = file->varlist + vid[0];
 
     /* ??? */
@@ -107,7 +111,8 @@ int PIOc_write_darray_multi(const int ncid, const int *vid, const int ioid,
     if (vdesc0->iobuf)
         piodie("Attempt to overwrite existing io buffer",__FILE__,__LINE__);
 
-    /* ??? */
+    /* Currently there are two rearrangers box=1 and subset=2. There
+     * is never a case where rearranger==0. */
     if (iodesc->rearranger > 0)
     {
         if (rlen > 0)
@@ -170,7 +175,16 @@ int PIOc_write_darray_multi(const int ncid, const int *vid, const int ioid,
         }
     }
 
-    /* ??? */
+    /* The box rearranger will always have data (it could be fill
+     * data) to fill the entire array - that is the aggregate start
+     * and count values will completely describe one unlimited
+     * dimension unit of the array. For the subset method this is not
+     * necessarily the case, areas of missing data may never be
+     * written. In order to make sure that these areas are given the
+     * missing value a 'holegrid' is used to describe the missing
+     * points. This is generally faster than the netcdf method of
+     * filling the entire array with missing values before overwriting
+     * those values later. */
     if (iodesc->rearranger == PIO_REARR_SUBSET && iodesc->needsfill &&
         iodesc->holegridsize > 0)
     {
@@ -180,7 +194,9 @@ int PIOc_write_darray_multi(const int ncid, const int *vid, const int ioid,
         /* Get a buffer. */
         vdesc0->fillbuf = bget(iodesc->holegridsize * vsize * nvars);
 
-	/* ??? */
+	/* copying the fill value into the data buffer for the box
+	 * rearranger. This will be overwritten with data where
+	 * provided. */
         if (vsize == 4)
             for (int nv = 0; nv < nvars; nv++)
                 for (int i = 0; i < iodesc->holegridsize; i++)
@@ -340,7 +356,14 @@ int PIOc_write_darray(const int ncid, const int vid, const int ioid,
         }
     }
 
-    /* ??? */
+    /* the write multi buffer wmulti_buffer is the cache on compute
+       nodes that will collect and store multiple variables before
+       sending them to the io nodes. Aggregating variables in this way
+       leads to a considerable savings in communication
+       expense. Variables in the wmb array must have the same
+       decomposition and base data size and we also need to keep track
+       of whether each is a recordvar (has an unlimited dimension) or
+       not. */
     if ((recordvar && wmb->ioid != ioid) || (!recordvar && wmb->ioid != -(ioid)))
     {
 	/* Allocate a buffer. */
@@ -502,8 +525,8 @@ int PIOc_read_darray(const int ncid, const int vid, const int ioid,
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Pointer to file information. */
     io_desc_t *iodesc;     /* Pointer to IO description information. */
-    void *iobuf = NULL;    /* ??? */
-    size_t rlen = 0;       /* ??? */
+    void *iobuf = NULL;    /* holds the data as read on the io node. */
+    size_t rlen = 0;       /* the length of data in iobuf. */
     int tsize;          /* Total size. */
     MPI_Datatype vtype; /* MPI type of this var. */
     int ierr;           /* Return code. */
