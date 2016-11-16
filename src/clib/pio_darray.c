@@ -21,25 +21,29 @@ void *CN_bpool = NULL;
 /* Maximum buffer usage. */
 PIO_Offset maxusage = 0;
 
-/** Set the PIO IO node data buffer size limit.
+/** 
+ * Set the PIO IO node data buffer size limit.
  *
  * The pio_buffer_size_limit will only apply to files opened after
  * the setting is changed.
  *
  * @param limit the size of the buffer on the IO nodes
- *
  * @return The previous limit setting.
  */
 PIO_Offset PIOc_set_buffer_size_limit(const PIO_Offset limit)
 {
-    PIO_Offset oldsize;
-    oldsize = pio_buffer_size_limit;
+    PIO_Offset oldsize = pio_buffer_size_limit;
+
+    /* If the user passed a valid size, use it. */
     if (limit > 0)
         pio_buffer_size_limit = limit;
+    
     return oldsize;
 }
 
-/** Write one or more arrays with the same IO decomposition to the file.
+/** 
+ * Write one or more arrays with the same IO decomposition to the
+ * file.
  *
  * @param ncid identifies the netCDF file
  * @param vid: an array of the variable ids to be written
@@ -58,7 +62,6 @@ PIO_Offset PIOc_set_buffer_size_limit(const PIO_Offset limit)
  * @param fillvalue: pointer to the fill value to be used for
  * missing data.
  * @param flushtodisk
- *
  * @return 0 for success, error code otherwise.
  * @ingroup PIO_write_darray
  */
@@ -68,11 +71,12 @@ int PIOc_write_darray_multi(const int ncid, const int *vid, const int ioid,
                             bool flushtodisk)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
-    file_desc_t *file;
-    io_desc_t *iodesc;
-    int vsize, rlen;
-    int ierr = PIO_NOERR;
-    var_desc_t *vdesc0;
+    file_desc_t *file;     /* Pointer to file information. */
+    io_desc_t *iodesc;     /* Pointer to IO description information. */
+    int vsize;             /* ??? */
+    int rlen;              /* ??? */
+    var_desc_t *vdesc0;    /* ??? */
+    int ierr = PIO_NOERR;  /* Return code. */
 
     /* Check inputs. */
     if (nvars <= 0)
@@ -91,9 +95,11 @@ int PIOc_write_darray_multi(const int ncid, const int *vid, const int ioid,
     if (!(iodesc = pio_get_iodesc_from_id(ioid)))
         return PIO_EBADID;
 
+    /* ??? */
     vdesc0 = file->varlist + vid[0];
 
-    //   rlen = iodesc->llen*nvars;
+    /* ??? */
+    /*   rlen = iodesc->llen*nvars; */
     rlen=0;
     if (iodesc->llen > 0)
         rlen = iodesc->maxiobuflen*nvars;
@@ -101,6 +107,7 @@ int PIOc_write_darray_multi(const int ncid, const int *vid, const int ioid,
     if (vdesc0->iobuf)
         piodie("Attempt to overwrite existing io buffer",__FILE__,__LINE__);
 
+    /* ??? */
     if (iodesc->rearranger > 0)
     {
         if (rlen > 0)
@@ -151,6 +158,7 @@ int PIOc_write_darray_multi(const int ncid, const int *vid, const int ioid,
 
         break;
     }
+    
     /* For PNETCDF the iobuf is freed in flush_output_buffer() */
     if (file->iotype != PIO_IOTYPE_PNETCDF)
     {
@@ -162,6 +170,7 @@ int PIOc_write_darray_multi(const int ncid, const int *vid, const int ioid,
         }
     }
 
+    /* ??? */
     if (iodesc->rearranger == PIO_REARR_SUBSET && iodesc->needsfill &&
         iodesc->holegridsize > 0)
     {
@@ -171,6 +180,7 @@ int PIOc_write_darray_multi(const int ncid, const int *vid, const int ioid,
         /* Get a buffer. */
         vdesc0->fillbuf = bget(iodesc->holegridsize * vsize * nvars);
 
+	/* ??? */
         if (vsize == 4)
             for (int nv = 0; nv < nvars; nv++)
                 for (int i = 0; i < iodesc->holegridsize; i++)
@@ -220,7 +230,8 @@ int PIOc_write_darray_multi(const int ncid, const int *vid, const int ioid,
     return ierr;
 }
 
-/** Write a distributed array to the output file.
+/** 
+ * Write a distributed array to the output file.
  *
  * This routine aggregates output on the compute nodes and only sends
  * it to the IO nodes when the compute buffer is full or when a flush
@@ -238,7 +249,6 @@ int PIOc_write_darray_multi(const int ncid, const int *vid, const int ioid,
  * processor.
  * @param fillvalue: pointer to the fill value to be used for
  * missing data.
- *
  * @returns 0 for success, non-zero error code for failure.
  * @ingroup PIO_write_darray
  */
@@ -323,13 +333,14 @@ int PIOc_write_darray(const int ncid, const int vid, const int ioid,
         }
         else
         {
+	    /* Move to end of list. */
             while(wmb->next && wmb->ioid != -(ioid))
                 if (wmb->next)
                     wmb = wmb->next;
         }
     }
 
-    /* ?? */
+    /* ??? */
     if ((recordvar && wmb->ioid != ioid) || (!recordvar && wmb->ioid != -(ioid)))
     {
 	/* Allocate a buffer. */
@@ -469,8 +480,8 @@ int PIOc_write_darray(const int ncid, const int vid, const int ioid,
     return ierr;
 }
 
-/** Read a field from a file to the IO library.
- * @ingroup PIO_read_darray
+/** 
+ * Read a field from a file to the IO library.
  *
  * @param ncid identifies the netCDF file
  * @param vid the variable ID to be read
@@ -482,7 +493,6 @@ int PIOc_write_darray(const int ncid, const int vid, const int ioid,
  * @param array: pointer to the data to be read. This is a
  * pointer to the distributed portion of the array that is on this
  * processor.
- *
  * @return 0 for success, error code otherwise.
  * @ingroup PIO_read_darray
  */
@@ -490,13 +500,13 @@ int PIOc_read_darray(const int ncid, const int vid, const int ioid,
                      const PIO_Offset arraylen, void *array)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
-    file_desc_t *file;
-    io_desc_t *iodesc;
-    void *iobuf = NULL;
-    size_t rlen = 0;
-    int tsize; /* Total size. */
+    file_desc_t *file;     /* Pointer to file information. */
+    io_desc_t *iodesc;     /* Pointer to IO description information. */
+    void *iobuf = NULL;    /* ??? */
+    size_t rlen = 0;       /* ??? */
+    int tsize;          /* Total size. */
     MPI_Datatype vtype; /* MPI type of this var. */
-    int ierr; /* Return code. */
+    int ierr;           /* Return code. */
 
     /* Get the file info. */
     if ((ierr = pio_get_file(ncid, &file)))
@@ -507,6 +517,7 @@ int PIOc_read_darray(const int ncid, const int vid, const int ioid,
     if (!(iodesc = pio_get_iodesc_from_id(ioid)))
         return PIO_EBADID;
 
+    /* ??? */
     if (ios->iomaster)
         rlen = iodesc->maxiobuflen;
     else
