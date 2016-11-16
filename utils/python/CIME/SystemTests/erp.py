@@ -22,7 +22,7 @@ class ERP(SystemTestsCompareTwo):
         """
         initialize a test object
         """
-        SystemTestsCompareTwo.__init__(self, case, run_one_st_archive = True)
+        SystemTestsCompareTwo.__init__(self, case, True, run_one_st_archive = False)
 
     def _case_one_setup(self):
         pass
@@ -36,7 +36,7 @@ class ERP(SystemTestsCompareTwo):
             if ntasks > 1:
                 rootpe = self._case.get_value("ROOTPE_%s"%comp)
                 self._case.set_value("NTASKS_%s"%comp, ntasks // 2)
-                self._case.set_value("NTASKS_%s"%comp, rootpe // 2)
+                self._case.set_value("ROOTPE_%s"%comp, rootpe // 2)
             nthreads = self._case.get_value("NTHRDS_%s"%comp)
             if nthreads > 1:
                 self._case.set_value("BUILD_THREADED", True)
