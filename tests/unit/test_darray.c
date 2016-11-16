@@ -35,11 +35,17 @@ int create_decomposition(int ntasks, int my_rank, int iosysid, int *ioid)
 	compdof[i] = my_rank * elements_per_pe + i + 1;
 
     /* Create the PIO decomposition for this test. */
-    printf("rank: %d Creating decomposition...\n", my_rank);
+    printf("%d Creating decomposition elements_per_pe = %d\n", my_rank, elements_per_pe);
     if ((ret = PIOc_InitDecomp(iosysid, PIO_FLOAT, NDIM, dim_len, (PIO_Offset)elements_per_pe,
 			       compdof, ioid, NULL, NULL, NULL)))
 	ERR(ret);
+
+    printf("%d decomposition initialized.", my_rank);
+
+    /* Free the mapping. */
     free(compdof);
+
+    return 0;
 }
 
 /* Check the contents of the test file. */
@@ -71,14 +77,16 @@ int check_file(int iosysid, int ntasks, int my_rank, char *filename)
 	return ERR_WRONG;
 
     /* Decompose the data over the tasks. */
-    /* if ((ret = create_decomposition(ntasks, my_rank, iosysid, &ioid))) */
-    /* 	return ret; */
+    if ((ret = create_decomposition(ntasks, my_rank, iosysid, &ioid)))
+    	return ret;
 
     /* Read data. */
-    /* if ((ret = PIOc_read_darray(ncid, 0, ioid, arraylen, &data_in))) */
-    /* 	return ret; */
+    if ((ret = PIOc_read_darray(ncid, 0, ioid, arraylen, &data_in)))
+    	return ret;
 
     /* Check data. */
+    if (data_in != my_rank * 10)
+	return ERR_WRONG;
 
     /* Close the file. */
     if ((ret = PIOc_closefile(ncid)))

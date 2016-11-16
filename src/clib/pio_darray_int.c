@@ -1580,7 +1580,8 @@ void compute_maxaggregate_bytes(const iosystem_desc_t ios, io_desc_t *iodesc)
     if (!iodesc)
         return;
 
-    LOG((2, "compute_maxaggregate_bytes %d %d\n", iodesc->maxiobuflen, iodesc->ndof));
+    LOG((2, "compute_maxaggregate_bytes iodesc->maxiobuflen = %d iodesc->ndof = %d",
+	 iodesc->maxiobuflen, iodesc->ndof));
 
     if (ios.ioproc && iodesc->maxiobuflen > 0)
         maxbytesoniotask = pio_buffer_size_limit / iodesc->maxiobuflen;
@@ -1589,7 +1590,8 @@ void compute_maxaggregate_bytes(const iosystem_desc_t ios, io_desc_t *iodesc)
         maxbytesoncomputetask = pio_cnbuffer_limit / iodesc->ndof;
 
     maxbytes = min(maxbytesoniotask, maxbytesoncomputetask);
-    LOG((2, "compute_maxaggregate_bytes %d %d\n", maxbytesoniotask, maxbytesoncomputetask));
+    LOG((2, "compute_maxaggregate_bytes maxbytesoniotask = %d maxbytesoncomputetask = %d",
+	 maxbytesoniotask, maxbytesoncomputetask));
 
     MPI_Allreduce(MPI_IN_PLACE, &maxbytes, 1, MPI_INT, MPI_MIN, ios.union_comm);
     iodesc->maxbytes = maxbytes;
