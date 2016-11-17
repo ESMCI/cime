@@ -72,10 +72,15 @@ typedef struct var_desc_t
  * arrays. Each IO task may in general have multiple io regions per variable.  The
  * box rearranger will have at most one io region per variable.
  *
+ * The write from a particular IO task is divided into 1 or more
+ * regions each of which can be described using start and count. The
+ * io_region typedef is a linked list of those regions. loffset is the
+ * offset from the beginning of the data buffer to the beginning of
+ * this region.
  */
 typedef struct io_region
 {
-    /** ??? */
+    /** ???  */
     int loffset;
 
     /** ??? */
