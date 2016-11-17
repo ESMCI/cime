@@ -162,6 +162,8 @@ PIO_TF_AUTO_TEST_SUB_BEGIN test_put_get_1dvar
     ret = PIO_put_var(pio_file, pio_cvar, pcval);
     PIO_TF_CHECK_ERR(ret, "Failed to put char var:" // trim(filename))
 
+    call PIO_syncfile(pio_file)
+
     ret = PIO_get_var(pio_file, pio_var, gval);
     PIO_TF_CHECK_ERR(ret, "Failed to get var:" // trim(filename))
 
