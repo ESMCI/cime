@@ -61,32 +61,32 @@ typedef struct var_desc_t
     /** Buffer that contains the fill value for this variable. */
     void *fillbuf;
 
-    /** ??? */
+    /** Data buffer for this variable. */
     void *iobuf;
 } var_desc_t;
 
 /**
  * IO region structure.
  *
- * Each IO region is a unit of data which can be described using start and count
- * arrays. Each IO task may in general have multiple io regions per variable.  The
- * box rearranger will have at most one io region per variable.
+ * Each IO region is a unit of data which can be described using start
+ * and count arrays. Each IO task may in general have multiple io
+ * regions per variable.  The box rearranger will have at most one io
+ * region per variable.
  *
  * The write from a particular IO task is divided into 1 or more
  * regions each of which can be described using start and count. The
- * io_region typedef is a linked list of those regions. loffset is the
- * offset from the beginning of the data buffer to the beginning of
- * this region.
+ * io_region typedef is a linked list of those regions.
  */
 typedef struct io_region
 {
-    /** ???  */
+    /** The offset from the beginning of the data buffer to the
+     * beginning of this region.  */
     int loffset;
 
-    /** ??? */
+    /** Start array for this region. */
     PIO_Offset *start;
 
-    /** ??? */
+    /** Count array for this region. */
     PIO_Offset *count;
 
     /** Pointer to the next io_region in the list. */
@@ -104,19 +104,21 @@ typedef struct io_desc_t
     /** The ID of this io_desc_t. */
     int ioid;
 
-    /** ??? */
-    int async_id;
+    /** Not used... */
+    /*int async_id;*/
 
-    /** ??? */
+    /** Number of tasks involved in the communication between comp and
+     * io tasks. */
     int nrecvs;
 
-    /** ??? */
+    /** Local size of the decomposition array. */
     int ndof;
 
-    /** ??? */
+    /** All vars included in this io_desc_t have the same number of
+     * dimensions. */
     int ndims;
 
-    /** ??? */
+    /** The actual number of IO tasks participating. */
     int num_aiotasks;
 
     /** The rearranger in use for this variable. */
@@ -135,61 +137,70 @@ typedef struct io_desc_t
     /** The MPI type of the data. */
     MPI_Datatype basetype;
     
-    /** ??? */
+    /** Length of the iobuffer on this task for a single field */
     PIO_Offset llen;
 
-    /** ??? */
+    /** Maximum llen participating. */
     int maxiobuflen;
 
-    /** ??? */
+    /** Array of the global size of each dimension. */
     PIO_Offset *gsize;
 
-    /** ??? */
+    /** Array of tasks received from in pio_swapm(). */
     int *rfrom;
 
-    /** ??? */
+    /** Array of counts of data to be received from each task in
+     * pio_swapm(). */
     int *rcount;
 
-    /** ??? */
+    /** Array of data count to send to each task in the communication
+     * in pio_swapm(). */
     int *scount;
 
-    /** ??? */
+    /** Send index. */
     PIO_Offset *sindex;
 
-    /** ??? */
+    /** Receive index. */
     PIO_Offset *rindex;
 
-    /** ??? */
+    /** Array of receive MPI types in pio_swapm() call. */
     MPI_Datatype *rtype;
 
-    /** ??? */
+    /** Array of send MPI types in pio_swapm() call. */
     MPI_Datatype *stype;
 
-    /** ??? */
+    /** Number of send MPI types in pio_swapm() call. */
     int num_stypes;
 
-    /** ??? */
+    /** Used when writing fill data. */
     int holegridsize;
 
-    /** ??? */
+    /** Used when writing fill data. */
     int maxfillregions;
 
-    /** ??? */
+    /** Linked list of regions. */
     io_region *firstregion;
 
-    /** ??? */
+    /** Used when writing fill data. */
     io_region *fillregion;
 
-    /** ??? */
+    /** If true, then handshaking will be used in pio_swapm() calls
+     * (which add flow control to MPI_Alltoallw). */
     bool handshake;
 
-    /** ??? */
+    /** If true, use non-blocking ready send, otherwise use blocking
+     * send in pio_swapm(). */
     bool isend;
 
-    /** ??? */
+    /** This is the number of messages allowed to be in flight at one
+     * time. On some systems posting all messages at once creates a
+     * significant bottleneck in communications and throttling in this
+     * manner improves overall performance. */
     int max_requests;
 
-    /** ??? */
+    /** In the subset communicator each io task is associated with a
+     * unique group of comp tasks this is the communicator for that
+     * group. */
     MPI_Comm subset_comm;
 
     /** Pointer to the next io_desc_t in the list. */
