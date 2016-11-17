@@ -119,20 +119,21 @@ int PIOc_write_darray_multi(const int ncid, const int *vid, const int ioid,
         {
             MPI_Type_size(iodesc->basetype, &vsize);
 
-            vdesc0->iobuf = bget((size_t)vsize * (size_t)rlen);
-            if (!vdesc0->iobuf)
+	    /* Allocate memory for the variable buffer. */
+            if (!(vdesc0->iobuf = bget((size_t)vsize * (size_t)rlen)))
                 piomemerror(*ios, (size_t)rlen * (size_t)vsize, __FILE__, __LINE__);
 
+	    /* If data are missing for the BOX rearranger, insert fill values. */
             if (iodesc->needsfill && iodesc->rearranger == PIO_REARR_BOX)
             {
                 if (vsize == 4)
                     for (int nv = 0; nv < nvars; nv++)
                         for (int i = 0; i < iodesc->maxiobuflen; i++)
-                            ((float *) vdesc0->iobuf)[i + nv * (iodesc->maxiobuflen)] = ((float *)fillvalue)[nv];
+                            ((float *)vdesc0->iobuf)[i + nv * iodesc->maxiobuflen] = ((float *)fillvalue)[nv];
                 else if (vsize == 8)
                     for (int nv = 0; nv < nvars; nv++)
                         for (int i = 0; i < iodesc->maxiobuflen; i++)
-                            ((double *)vdesc0->iobuf)[i+nv*(iodesc->maxiobuflen)] = ((double *)fillvalue)[nv];
+                            ((double *)vdesc0->iobuf)[i + nv * iodesc->maxiobuflen] = ((double *)fillvalue)[nv];
             }
         }
 
