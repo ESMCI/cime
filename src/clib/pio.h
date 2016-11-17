@@ -148,46 +148,48 @@ typedef struct io_desc_t
     /** ??? */
     int *rfrom;
 
-    /** ??? */
+    /** Count of data to be received in pio_swapm(). */
     int *rcount;
 
-    /** ??? */
+    /** Count of data to be sent in pio_swapm(). */
     int *scount;
 
-    /** ??? */
+    /** Send index. */
     PIO_Offset *sindex;
 
-    /** ??? */
+    /** Receive index. */
     PIO_Offset *rindex;
 
-    /** ??? */
+    /** Array of receive MPI types in pio_swapm() call. */
     MPI_Datatype *rtype;
 
-    /** ??? */
+    /** Array of send MPI types in pio_swapm() call. */
     MPI_Datatype *stype;
 
-    /** ??? */
+    /** Number of send MPI types in pio_swapm() call. */
     int num_stypes;
 
-    /** ??? */
+    /** Used when writing fill data. */
     int holegridsize;
 
-    /** ??? */
+    /** Used when writing fill data. */
     int maxfillregions;
 
     /** ??? */
     io_region *firstregion;
 
-    /** ??? */
+    /** Used when writing fill data. */
     io_region *fillregion;
 
-    /** ??? */
+    /** If true, then handshaking will be used in pio_swapm() calls
+     * (which add flow control to MPI_Alltoallw). */
     bool handshake;
 
-    /** ??? */
+    /** If true, use non-blocking ready send, otherwise use blocking
+     * send in pio_swapm(). */
     bool isend;
 
-    /** ??? */
+    /** Something to do with flow control ??? */
     int max_requests;
 
     /** MPI communicator that holds one IO task. */

@@ -426,7 +426,7 @@ int pio_write_darray_nc(file_desc_t *file, io_desc_t *iodesc, const int vid,
  * @param iodesc_ndims: the number of dimensions explicitly in the
  * iodesc
  * @param basetype the basic type of the minimal data unit
- * @param gsize array of the global dimensions of the field to
+ * @param gsize array of the size of all dimensions of the field to
  * be written
  * @param maxregions max number of blocks to be written from
  * this iotask
@@ -688,7 +688,8 @@ int pio_write_darray_multi_nc(file_desc_t *file, const int nvars, const int *vid
     return ierr;
 }
 
-/** Write a set of one or more aggregated arrays to output file in
+/** 
+ * Write a set of one or more aggregated arrays to output file in
  * serial mode.
  *
  * This routine is used if aggregation is enabled, data is already on the
@@ -715,7 +716,6 @@ int pio_write_darray_multi_nc(file_desc_t *file, const int nvars, const int *vid
  * @param IOBUF: the buffer to be written from this mpi task
  * @param frame : the frame or record dimension for each of the
  * nvars variables in IOBUF
- *
  * @return 0 for success, error code otherwise.
  * @ingroup PIO_write_darray
  */

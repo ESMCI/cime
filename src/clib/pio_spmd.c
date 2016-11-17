@@ -420,7 +420,7 @@ int pio_swapm(void *sndbuf, int *sndlths, int *sdispls, MPI_Datatype *stypes,
             maxreq = max_requests;
             maxreqh = maxreq / 2;
         }
-	else if (max_requests>=steps)
+	else if (max_requests >= steps)
 	{
             maxreq = steps;
             maxreqh = steps;
@@ -431,10 +431,13 @@ int pio_swapm(void *sndbuf, int *sndlths, int *sdispls, MPI_Datatype *stypes,
             maxreqh = 1;
         }
     }
+
+    /* If handshaking is in use, do a nonblocking recieve to listen
+     * for it. */
     if (handshake)
     {
         hs = 1;
-        for (istep=0; istep < maxreq; istep++)
+        for (istep = 0; istep < maxreq; istep++)
 	{
             p = swapids[istep];
             if (sndlths[p] > 0)
@@ -445,6 +448,7 @@ int pio_swapm(void *sndbuf, int *sndlths, int *sdispls, MPI_Datatype *stypes,
             }
         }
     }
+    
     for (istep = 0; istep < maxreq; istep++)
     {
         p = swapids[istep];
@@ -453,15 +457,15 @@ int pio_swapm(void *sndbuf, int *sndlths, int *sdispls, MPI_Datatype *stypes,
             tag = p + offset_t;
             ptr = (void *)((char *)rcvbuf + rdispls[p]);
 
-            //    printf("%s %d %d %d\n",__FILE__,__LINE__,p,(int) rtypes[p]);
-            CheckMPIReturn(MPI_Irecv( ptr, rcvlths[p], rtypes[p], p, tag, comm, rcvids+istep),
+            CheckMPIReturn(MPI_Irecv(ptr, rcvlths[p], rtypes[p], p, tag, comm, rcvids+istep),
 			   __FILE__,__LINE__);
 
             if (handshake)
-                CheckMPIReturn(MPI_Send( &hs, 1, MPI_INT, p, tag, comm), __FILE__,__LINE__);
+                CheckMPIReturn(MPI_Send(&hs, 1, MPI_INT, p, tag, comm), __FILE__,__LINE__);
         }
     }
 
+    /* ??? */
     rstep = maxreq;
     for (istep = 0; istep < steps; istep++)
     {
@@ -474,14 +478,16 @@ int pio_swapm(void *sndbuf, int *sndlths, int *sdispls, MPI_Datatype *stypes,
                 CheckMPIReturn(MPI_Wait(hs_rcvids+istep, &status), __FILE__,__LINE__);
                 hs_rcvids[istep] = MPI_REQUEST_NULL;
             }
-            ptr = (void *)((char *) sndbuf + sdispls[p]);
+            ptr = (void *)((char *)sndbuf + sdispls[p]);
 
             if (isend)
-                CheckMPIReturn(MPI_Irsend(ptr, sndlths[p], stypes[p], p, tag, comm,sndids+istep),
+                CheckMPIReturn(MPI_Irsend(ptr, sndlths[p], stypes[p], p, tag, comm, sndids + istep),
 			       __FILE__,__LINE__);
 	    else
                 CheckMPIReturn(MPI_Send(ptr, sndlths[p], stypes[p], p, tag, comm), __FILE__,__LINE__);
         }
+
+	/* ??? */
         if (istep > maxreqh)
 	{
             p = istep - maxreqh;
@@ -513,6 +519,7 @@ int pio_swapm(void *sndbuf, int *sndlths, int *sdispls, MPI_Datatype *stypes,
         }
     }
 
+    /* ??? */
     if (steps > 0)
     {
         CheckMPIReturn(MPI_Waitall(steps, rcvids, MPI_STATUSES_IGNORE), __FILE__,__LINE__);

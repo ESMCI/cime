@@ -804,18 +804,15 @@ int rearrange_io2comp(const iosystem_desc_t ios, io_desc_t *iodesc, void *sbuf,
 {
     //  int maxreq = 0;
     MPI_Comm mycomm;
-
     int ntasks;
     int niotasks;
     int *scount = iodesc->scount;
-
     int *sendcounts;
     int *recvcounts;
     int *sdispls;
     int *rdispls;
     MPI_Datatype *sendtypes;
     MPI_Datatype *recvtypes;
-
     int i, tsize;
 
     assert(iodesc);
@@ -1336,31 +1333,37 @@ int subset_rearrange_create(const iosystem_desc_t ios, const int maplen, PIO_Off
 
     tmpioproc = ios.io_rank;
 
-    /* subset partitions each have exactly 1 io task which is task 0 of that subset_comm */
+    /* subset partitions each have exactly 1 io task which is task 0
+     * of that subset_comm */
     /* TODO: introduce a mechanism for users to define partitions */
     default_subset_partition(ios, iodesc);
     iodesc->rearranger = PIO_REARR_SUBSET;
 
+    /* Get size of this subset communicator, and rank in it. */
     MPI_Comm_rank(iodesc->subset_comm, &rank);
     MPI_Comm_size(iodesc->subset_comm, &ntasks);
 
+    /* Check rank for correctness. */
     if (ios.ioproc)
-        pioassert(rank==0,"Bad io rank in subset create",__FILE__,__LINE__);
+        pioassert(rank == 0, "Bad io rank in subset create", __FILE__, __LINE__);
     else
-        pioassert(rank>0 && rank<ntasks,"Bad comp rank in subset create",__FILE__,__LINE__);
+        pioassert(rank > 0 && rank < ntasks, "Bad comp rank in subset create",
+		  __FILE__, __LINE__);
 
     rcnt = 0;
     iodesc->ndof = maplen;
     if (ios.ioproc)
     {
-        if (!(iodesc->rcount = (int *)bget(ntasks * sizeof(int))))
-            piomemerror(ios,ntasks * sizeof(int), __FILE__,__LINE__);
+	/* Allocate space to hold count of data to be received in pio_swapm(). */
+        if (!(iodesc->rcount = bget(ntasks * sizeof(int))))
+            piomemerror(ios,ntasks * sizeof(int), __FILE__, __LINE__);
 
         rcnt = 1;
     }
 
-    if (!(iodesc->scount = (int *) bget(sizeof(int))))
-        piomemerror(ios,sizeof(int), __FILE__,__LINE__);
+    /* Allocate space to hold count of data to be sent in pio_swapm(). */
+    if (!(iodesc->scount = bget(sizeof(int))))
+        piomemerror(ios,sizeof(int), __FILE__, __LINE__);
 
     iodesc->scount[0] = 0;
     totalgridsize = 1;
@@ -1378,9 +1381,8 @@ int subset_rearrange_create(const iosystem_desc_t ios, const int maplen, PIO_Off
 
     if (iodesc->scount[0] > 0)
     {
-        iodesc->sindex = (PIO_Offset *) bget(iodesc->scount[0]*pio_offset_size);
-        if (!iodesc->sindex)
-            piomemerror(ios,iodesc->scount[0]*pio_offset_size, __FILE__,__LINE__);
+        if (!(iodesc->sindex = bget(iodesc->scount[0] * pio_offset_size)))
+            piomemerror(ios, iodesc->scount[0] * pio_offset_size, __FILE__, __LINE__);
 
         for (i = 0; i < iodesc->scount[0]; i++)
             iodesc->sindex[i] = 0;
@@ -1415,7 +1417,7 @@ int subset_rearrange_create(const iosystem_desc_t ios, const int maplen, PIO_Off
 
         if (iodesc->llen > 0)
 	{
-            if (!(srcindex = (PIO_Offset *)bget(iodesc->llen*pio_offset_size)))
+            if (!(srcindex = bget(iodesc->llen*pio_offset_size)))
                 piomemerror(ios,iodesc->llen * pio_offset_size, __FILE__,__LINE__);
 
             for (i = 0; i < iodesc->llen; i++)
@@ -1439,10 +1441,10 @@ int subset_rearrange_create(const iosystem_desc_t ios, const int maplen, PIO_Off
 
     if (ios.ioproc && iodesc->llen>0)
     {
-        if (!(map = (mapsort *)bget(iodesc->llen * sizeof(mapsort))))
+        if (!(map = bget(iodesc->llen * sizeof(mapsort))))
             piomemerror(ios,iodesc->llen * sizeof(mapsort), __FILE__,__LINE__);
 
-        if (!(iomap = (PIO_Offset *)bget(iodesc->llen*pio_offset_size)))
+        if (!(iomap = bget(iodesc->llen*pio_offset_size)))
             piomemerror(ios,iodesc->llen * pio_offset_size, __FILE__,__LINE__);
 
         for (i = 0; i < iodesc->llen; i++)
@@ -1453,7 +1455,7 @@ int subset_rearrange_create(const iosystem_desc_t ios, const int maplen, PIO_Off
     PIO_Offset *shrtmap;
     if (maplen>iodesc->scount[0] && iodesc->scount[0] > 0)
     {
-        if (!(shrtmap = (PIO_Offset *)bget(iodesc->scount[0]*pio_offset_size)))
+        if (!(shrtmap = bget(iodesc->scount[0]*pio_offset_size)))
             piomemerror(ios,iodesc->scount[0] * pio_offset_size, __FILE__,__LINE__);
 
         for (i = 0; i < iodesc->scount[0]; i++)
