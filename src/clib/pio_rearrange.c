@@ -493,9 +493,11 @@ int compute_counts(const iosystem_desc_t ios, io_desc_t *iodesc, const int maple
             if (recv_buf[i] != 0)
                 nrecvs++;
 
+	/* Get memory to hold the count of data receives ??? */
         if (!(iodesc->rcount = bget(max(1, nrecvs) * sizeof(int))))
             piomemerror(ios,max(1,nrecvs) * sizeof(int), __FILE__,__LINE__);
 
+	/* Get memory to hold the list of task data was from. */
         if (!(iodesc->rfrom = bget(max(1, nrecvs) * sizeof(int))))
             piomemerror(ios,max(1,nrecvs) * sizeof(int), __FILE__,__LINE__);
 

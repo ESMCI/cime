@@ -1079,8 +1079,8 @@ int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, const int vid,
 
                 if (tmp_bufsize > 0)
                 {
-                    startlist[rrlen] = (PIO_Offset *)bget(fndims * sizeof(PIO_Offset));
-                    countlist[rrlen] = (PIO_Offset *)bget(fndims * sizeof(PIO_Offset));
+                    startlist[rrlen] = bget(fndims * sizeof(PIO_Offset));
+                    countlist[rrlen] = bget(fndims * sizeof(PIO_Offset));
 
                     for (int j = 0; j < fndims; j++)
                     {

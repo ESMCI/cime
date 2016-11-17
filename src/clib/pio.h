@@ -145,7 +145,7 @@ typedef struct io_desc_t
     /** Array of the size of each dimension. */
     PIO_Offset *gsize;
 
-    /** ??? */
+    /** Array of tasks received from in pio_swapm(). */
     int *rfrom;
 
     /** Count of data to be received in pio_swapm(). */
@@ -175,7 +175,7 @@ typedef struct io_desc_t
     /** Used when writing fill data. */
     int maxfillregions;
 
-    /** ??? */
+    /** Linked list of regions. */
     io_region *firstregion;
 
     /** Used when writing fill data. */
