@@ -190,7 +190,7 @@ typedef struct io_desc_t
     /** ??? */
     int max_requests;
 
-    /** ??? */
+    /** MPI communicator that holds one IO task. */
     MPI_Comm subset_comm;
 
     /** Pointer to the next io_desc_t in the list. */

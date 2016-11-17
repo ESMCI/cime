@@ -1292,7 +1292,7 @@ void default_subset_partition(const iosystem_desc_t ios, io_desc_t *iodesc)
     }
     else
     {
-        key=max(1, ios.comp_rank % taskratio + 1);
+        key = max(1, ios.comp_rank % taskratio + 1);
         color = min(ios.num_iotasks - 1, ios.comp_rank / taskratio);
     }
 
