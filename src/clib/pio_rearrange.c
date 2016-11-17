@@ -27,7 +27,7 @@ void idx_to_dim_list(const int ndims, const int gdims[], const PIO_Offset idx,
     curr_idx = idx;
 
     /* Easiest to start from the right and move left. */
-    for (i = ndims-1; i >= 0; --i)
+    for (i = ndims - 1; i >= 0; --i)
     {
         /* This way of doing div/mod is slightly faster than using "/"
 	 * and "%". */
@@ -82,10 +82,11 @@ void expand_region(const int dim, const int gdims[], const int maplen,
 	   region does not necessarily comprise contiguous values. */
         for (j = 0; j < region_size; ++j)
 	{
-            test_idx = j + i*region_size;
+            test_idx = j + i * region_size;
+
             /* If we have exhausted the map, or the map no longer matches,
 	       we are done, break out of both loops. */
-            if (test_idx >= maplen || map[test_idx] != map[j] + i*region_stride)
+            if (test_idx >= maplen || map[test_idx] != map[j] + i * region_stride)
 	    {
                 expansion_done = 1;
                 break;
@@ -98,8 +99,8 @@ void expand_region(const int dim, const int gdims[], const int maplen,
     /* Move on to next outermost dimension if there are more left,
      * else return. */
     if (dim > 0)
-        expand_region(dim-1, gdims, maplen, map, region_size*count[dim],
-                      region_stride*gdims[dim], max_size, count);
+        expand_region(dim-1, gdims, maplen, map, region_size * count[dim],
+                      region_stride * gdims[dim], max_size, count);
 }
 
 /**
@@ -126,7 +127,7 @@ PIO_Offset find_region(const int ndims, const int gdims[],
        maplen is > 0
        all elements of map are inside the bounds specified by gdims
        The map array is 1 based, but calculations are 0 based */
-    idx_to_dim_list(ndims, gdims, map[0]-1, start);
+    idx_to_dim_list(ndims, gdims, map[0] - 1, start);
 
     /* Can't expand beyond the array edge.*/
     for (dim = 0; dim < ndims; ++dim)
@@ -137,7 +138,7 @@ PIO_Offset find_region(const int ndims, const int gdims[],
 
        Start with the innermost dimension (ndims-1), and it will recurse
        through to the outermost dimensions. */
-    expand_region(ndims-1, gdims, maplen, map, 1, 1, max_size, count);
+    expand_region(ndims - 1, gdims, maplen, map, 1, 1, max_size, count);
 
     for (dim = 0; dim < ndims; dim++)
         regionlen *= count[dim];
@@ -200,10 +201,11 @@ void compute_maxIObuffersize(MPI_Comm io_comm, io_desc_t *iodesc)
     /* Share the max io buffer size with all io tasks. */
     CheckMPIReturn(MPI_Allreduce(MPI_IN_PLACE, &totiosize, 1, MPI_OFFSET, MPI_MAX, io_comm),
 		   __FILE__, __LINE__);
+
     iodesc->maxiobuflen = totiosize;
     if (iodesc->maxiobuflen <= 0)
     {
-        fprintf(stderr,"%s %d %ld %ld %d %d %d\n",__FILE__,__LINE__, iodesc->maxiobuflen,
+        fprintf(stderr, "%s %d %ld %ld %d %d %d\n", __FILE__,__LINE__, iodesc->maxiobuflen,
 		totiosize, MPI_OFFSET, MPI_MAX, io_comm);
         piodie("ERROR: maxiobuflen<=0", __FILE__, __LINE__);
     }
@@ -269,7 +271,7 @@ int create_mpi_datatypes(const MPI_Datatype basetype, const int msgcnt,
                     pos += mcount[i];
                 }
             }
-            blocksize = (int) lgcd_array(ii ,bsizeT);
+            blocksize = (int)lgcd_array(ii ,bsizeT);
         }
 	else
 	{
@@ -278,7 +280,7 @@ int create_mpi_datatypes(const MPI_Datatype basetype, const int msgcnt,
 
 	/* pos is an index to the start of each message block. */
         pos = 0;
-        for (int i = 0;i< msgcnt; i++)
+        for (int i = 0; i < msgcnt; i++)
 	{
             if (mcount[i] > 0)
 	    {
@@ -428,6 +430,7 @@ int compute_counts(const iosystem_desc_t ios, io_desc_t *iodesc, const int maple
     int rank;
     int ntasks;
 
+    /* Find size of communicator, and task rank. */
     MPI_Comm_rank(mycomm, &rank);
     MPI_Comm_size(mycomm, &ntasks);
 
@@ -448,14 +451,15 @@ int compute_counts(const iosystem_desc_t ios, io_desc_t *iodesc, const int maple
 
     assert(iodesc);
 
-    if (iodesc->rearranger==PIO_REARR_BOX)
+    /* Subset rearranger always gets 1 IO task. */
+    if (iodesc->rearranger == PIO_REARR_BOX)
         numiotasks = ios.num_iotasks;
     else
-        numiotasks=1;
+        numiotasks = 1;
 
     /* Allocate memory for the array of counts. */
     if (!(iodesc->scount = bget(numiotasks * sizeof(int))))
-        piomemerror(ios,numiotasks * sizeof(int), __FILE__, __LINE__);
+        piomemerror(ios, numiotasks * sizeof(int), __FILE__, __LINE__);
 
     /* Initialize counts to zero. */
     for (i = 0; i < numiotasks; i++)
@@ -477,6 +481,7 @@ int compute_counts(const iosystem_desc_t ios, io_desc_t *iodesc, const int maple
         sr_types[i] = MPI_INT;
     }
 
+    /* ??? */
     for (i = 0; i < numiotasks; i++)
     {
         int io_comprank;
@@ -488,6 +493,7 @@ int compute_counts(const iosystem_desc_t ios, io_desc_t *iodesc, const int maple
         send_displs[io_comprank] = i * sizeof(int);
     }
 
+    /* ??? */
     if (ios.ioproc)
     {
 	/* Allocate memory to hold array of tasks that have recieved
@@ -509,6 +515,7 @@ int compute_counts(const iosystem_desc_t ios, io_desc_t *iodesc, const int maple
 		     recv_buf, recv_counts, recv_displs, sr_types,
 		     mycomm, false, false, maxreq);
 
+    /* ??? */
     nrecvs = 0;
     if (ios.ioproc)
     {
@@ -543,11 +550,12 @@ int compute_counts(const iosystem_desc_t ios, io_desc_t *iodesc, const int maple
         brel(recv_buf);
     }
 
+    /* ??? */
     iodesc->nrecvs = nrecvs;
     if (iodesc->sindex == NULL && iodesc->ndof > 0)
     {
         if (!(iodesc->sindex = bget(iodesc->ndof * sizeof(PIO_Offset))))
-            piomemerror(ios,iodesc->ndof * sizeof(PIO_Offset), __FILE__,__LINE__);
+            piomemerror(ios, iodesc->ndof * sizeof(PIO_Offset), __FILE__, __LINE__);
 
         for (i = 0; i < iodesc->ndof; i++)
             iodesc->sindex[i] = 0;
@@ -556,6 +564,7 @@ int compute_counts(const iosystem_desc_t ios, io_desc_t *iodesc, const int maple
     int tempcount[numiotasks];
     int spos[numiotasks];
 
+    /* ??? */
     spos[0] = 0;
     tempcount[0] = 0;
     for (i = 1; i < numiotasks; i++)
@@ -579,6 +588,7 @@ int compute_counts(const iosystem_desc_t ios, io_desc_t *iodesc, const int maple
         }
     }
 
+    /* Initialize arrays to zeros. */
     for (i = 0; i < ntasks; i++)
     {
         send_counts[i] = 0;
@@ -739,7 +749,8 @@ int rearrange_comp2io(const iosystem_desc_t ios, io_desc_t *iodesc, void *sbuf,
                     recvcounts[ i ] = 1;
 		    
                     /*  The stride here is the length of the collected array (llen) */
-                    MPI_Type_hvector(nvars, 1, (MPI_Aint) iodesc->llen*tsize, iodesc->rtype[i], recvtypes+i);
+                    MPI_Type_hvector(nvars, 1, (MPI_Aint) iodesc->llen * tsize, iodesc->rtype[i],
+				     recvtypes + i);
 		    
                     if (recvtypes[i] == MPI_DATATYPE_NULL)
                         piodie("Unexpected NULL MPI DATATYPE",__FILE__,__LINE__);
@@ -751,7 +762,8 @@ int rearrange_comp2io(const iosystem_desc_t ios, io_desc_t *iodesc, void *sbuf,
 		{
                     recvcounts[iodesc->rfrom[i]] = 1;
 		    
-                    MPI_Type_hvector(nvars, 1, (MPI_Aint)iodesc->llen * tsize, iodesc->rtype[i], recvtypes + iodesc->rfrom[i]);
+                    MPI_Type_hvector(nvars, 1, (MPI_Aint)iodesc->llen * tsize, iodesc->rtype[i],
+				     recvtypes + iodesc->rfrom[i]);
 		    
                     if (recvtypes[iodesc->rfrom[i]] == MPI_DATATYPE_NULL)
                         piodie("Unexpected NULL MPI DATATYPE", __FILE__, __LINE__);
