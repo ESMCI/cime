@@ -22,7 +22,7 @@ class ERP(SystemTestsCompareTwo):
         """
         initialize a test object
         """
-        SystemTestsCompareTwo.__init__(self, case, True, run_one_st_archive = False)
+        SystemTestsCompareTwo.__init__(self, case, True, run_one_st_archive = True)
 
     def _case_one_setup(self):
         pass
@@ -41,7 +41,21 @@ class ERP(SystemTestsCompareTwo):
             if nthreads > 1:
                 self._case.set_value("BUILD_THREADED", True)
                 self._case.set_value("NTHRDS_%s"%comp, nthreads // 2)
+
+        rest_n = self._case.get_value("STOP_N") // 2 + 1
+        self._case.set_value("REST_N", rest_n)
+        self._case.set_value("REST_OPTION", self._case.get_value("STOP_OPTION"))
+
         case_setup(self._case, test_mode=True, reset=True)
 
-    def _pre_run_hook(self):
-        pass
+    def _pre_run_one_hook(self):
+        self._st_archive_dir_one = self._case.get_value("DOUT_S_ROOT")
+
+    def _pre_run_two_hook(self):
+        restdir = os.path.join(self._st_archive_dir_one, "rest")
+        rundir = self._case.get_value("RUNDIR")
+        for root, subdir, files in os.walk(restdir):
+            for f in files:
+                fpath_in = os.path.join(root, f)
+                fpath_out = os.path.join(rundir, f)
+                shutil.copy(fpath_in, fpath_out)

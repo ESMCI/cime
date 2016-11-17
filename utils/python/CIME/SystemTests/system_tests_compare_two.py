@@ -63,6 +63,7 @@ class SystemTestsCompareTwo(SystemTestsCommon):
         self._separate_builds = separate_builds
 
         self._run_one_st_archive = run_one_st_archive
+        self._run_two_st_archive = run_two_st_archive
 
         # run_one_suffix is just used as the suffix for the netcdf files
         # produced by the first case; we may eventually remove this, but for now
@@ -135,9 +136,15 @@ class SystemTestsCompareTwo(SystemTestsCommon):
         """
         pass
 
-    def _pre_run_hook(self):
+    def _pre_run_one_hook(self):
         """
-        This method will be called between the case1 and case2 runs
+        This method will be called before running case1
+        """
+        pass
+
+    def _pre_run_two_hook(self):
+        """
+        This method will be called before running case2
         """
         pass
 
@@ -167,15 +174,14 @@ class SystemTestsCompareTwo(SystemTestsCommon):
         # First run
         logger.info('Doing first run: ' + self._run_one_description)
         self._activate_case1()
+        self._pre_run_one_hook()
         self.run_indv(suffix = self._run_one_suffix,
                       st_archive = self._run_one_st_archive)
-
-        # Prepare for case 2
-        self._pre_run_hook()
 
         # Second run
         logger.info('Doing second run: ' + self._run_two_description)
         self._activate_case2()
+        self._pre_run_two_hook()
         self._force_case2_settings()
         self.run_indv(suffix = self._run_two_suffix,
                       st_archive = self._run_two_st_archive)
