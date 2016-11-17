@@ -386,18 +386,18 @@ io_region *alloc_region(const int ndims)
     io_region *region;
 
     /* Allocate memory for the io_region struct. */
-    if (!(region = (io_region *)bget(sizeof(io_region))))
+    if (!(region = bget(sizeof(io_region))))
         return NULL;
 
     /* Allocate memory for the array of start indicies. */
-    if (!(region->start = (PIO_Offset *)bget(ndims * sizeof(PIO_Offset))))
+    if (!(region->start = bget(ndims * sizeof(PIO_Offset))))
     {
         brel(region);
         return NULL;
     }
 
     /* Allocate memory for the array of counts. */
-    if (!(region->count = (PIO_Offset *)bget(ndims * sizeof(PIO_Offset))))
+    if (!(region->count = bget(ndims * sizeof(PIO_Offset))))
     {
         brel(region);
         brel(region->start);
@@ -429,7 +429,7 @@ io_desc_t *malloc_iodesc(const int piotype, const int ndims)
     io_desc_t *iodesc;
 
     /* Allocate space for the io_desc_t struct. */
-    if (!(iodesc = (io_desc_t *)bget(sizeof(io_desc_t))))
+    if (!(iodesc = bget(sizeof(io_desc_t))))
         return NULL;
 
     /* Decide on the base type. */

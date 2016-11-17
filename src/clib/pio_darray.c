@@ -368,7 +368,7 @@ int PIOc_write_darray(const int ncid, const int vid, const int ioid,
     if ((recordvar && wmb->ioid != ioid) || (!recordvar && wmb->ioid != -(ioid)))
     {
 	/* Allocate a buffer. */
-        if (!(wmb->next = (wmulti_buffer *)bget((bufsize)sizeof(wmulti_buffer))))
+        if (!(wmb->next = bget((bufsize)sizeof(wmulti_buffer))))
             piomemerror(*ios,sizeof(wmulti_buffer), __FILE__,__LINE__);
 
 	/* Set pointer to newly allocated buffer and initialize.*/
@@ -426,14 +426,14 @@ int PIOc_write_darray(const int ncid, const int vid, const int ioid,
 
     /* vid is an array of variable ids in the wmb list, grow the list
      * and add the new entry. */
-    if (!(wmb->vid = (int *)bgetr(wmb->vid, sizeof(int) * (1 + wmb->validvars))))
+    if (!(wmb->vid = bgetr(wmb->vid, sizeof(int) * (1 + wmb->validvars))))
         piomemerror(*ios, (1 + wmb->validvars) * sizeof(int), __FILE__, __LINE__);
 
     /* wmb->frame is the record number, we assume that the variables
      * in the wmb list may not all have the same unlimited dimension
      * value although they usually do. */
     if (vdesc->record >= 0)
-        if (!(wmb->frame = (int *)bgetr(wmb->frame, sizeof(int) * (1 + wmb->validvars))))
+        if (!(wmb->frame = bgetr(wmb->frame, sizeof(int) * (1 + wmb->validvars))))
             piomemerror(*ios, (1 + wmb->validvars) * sizeof(int), __FILE__, __LINE__);
 
     /* Get memory to hold fill value. */
