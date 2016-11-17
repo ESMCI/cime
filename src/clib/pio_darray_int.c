@@ -426,8 +426,8 @@ int pio_write_darray_nc(file_desc_t *file, io_desc_t *iodesc, const int vid,
  * @param iodesc_ndims: the number of dimensions explicitly in the
  * iodesc
  * @param basetype the basic type of the minimal data unit
- * @param gsize array of the size of all dimensions of the field to
- * be written
+ * @param gsize array of the global sizes of all dimensions of the
+ * field to be written
  * @param maxregions max number of blocks to be written from
  * this iotask
  * @param firstregion pointer to the first element of a linked

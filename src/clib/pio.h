@@ -107,10 +107,11 @@ typedef struct io_desc_t
     /** Not used... */
     /*int async_id;*/
 
-    /** ??? */
+    /** Number of tasks involved in the communication between comp and
+     * io tasks. */
     int nrecvs;
 
-    /** ??? */
+    /** Local size of the decomposition array. */
     int ndof;
 
     /** All vars included in this io_desc_t have the same number of
@@ -142,16 +143,18 @@ typedef struct io_desc_t
     /** Maximum llen participating. */
     int maxiobuflen;
 
-    /** Array of the size of each dimension. */
+    /** Array of the global size of each dimension. */
     PIO_Offset *gsize;
 
     /** Array of tasks received from in pio_swapm(). */
     int *rfrom;
 
-    /** Count of data to be received in pio_swapm(). */
+    /** Array of counts of data to be received from each task in
+     * pio_swapm(). */
     int *rcount;
 
-    /** Count of data to be sent in pio_swapm(). */
+    /** Array of data count to send to each task in the communication
+     * in pio_swapm(). */
     int *scount;
 
     /** Send index. */
@@ -189,10 +192,15 @@ typedef struct io_desc_t
      * send in pio_swapm(). */
     bool isend;
 
-    /** Something to do with flow control ??? */
+    /** This is the number of messages allowed to be in flight at one
+     * time. On some systems posting all messages at once creates a
+     * significant bottleneck in communications and throttling in this
+     * manner improves overall performance. */
     int max_requests;
 
-    /** MPI communicator that holds one IO task. */
+    /** In the subset communicator each io task is associated with a
+     * unique group of comp tasks this is the communicator for that
+     * group. */
     MPI_Comm subset_comm;
 
     /** Pointer to the next io_desc_t in the list. */

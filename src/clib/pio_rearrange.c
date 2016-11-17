@@ -255,7 +255,7 @@ int create_mpi_datatypes(const MPI_Datatype basetype, const int msgcnt,
     int pos = 0;
     int ii = 0;
 
-    /* ??? */
+    /* If there are no messages don't need to create any datatypes. */
     if (msgcnt > 0)
     {
         if (mfrom == NULL)
@@ -276,7 +276,7 @@ int create_mpi_datatypes(const MPI_Datatype basetype, const int msgcnt,
             blocksize=1;
         }
 
-	/* ??? */
+	/* pos is an index to the start of each message block. */
         pos = 0;
         for (int i = 0;i< msgcnt; i++)
 	{
@@ -337,6 +337,14 @@ int create_mpi_datatypes(const MPI_Datatype basetype, const int msgcnt,
 int define_iodesc_datatypes(const iosystem_desc_t ios, io_desc_t *iodesc)
 {
     int i;
+
+    /* NOTE from Jim: I am always oriented toward write so recieve
+     * always means io tasks and send always means comp tasks. The
+     * opposite relationship is actually the case for reading. I've
+     * played with different ways of referring to things to get rid of
+     * this orientation bias in the documentation as well as in
+     * variable names, but I haven't found anything that I found more
+     * satisfactory. */
 
     /* Only IO tasks get receive types ??? */
     if (ios.ioproc)
@@ -508,7 +516,7 @@ int compute_counts(const iosystem_desc_t ios, io_desc_t *iodesc, const int maple
             if (recv_buf[i] != 0)
                 nrecvs++;
 
-	/* Get memory to hold the count of data receives ??? */
+	/* Get memory to hold the count of data receives. */
         if (!(iodesc->rcount = bget(max(1, nrecvs) * sizeof(int))))
             piomemerror(ios,max(1,nrecvs) * sizeof(int), __FILE__,__LINE__);
 
@@ -905,7 +913,10 @@ int rearrange_io2comp(const iosystem_desc_t ios, io_desc_t *iodesc, void *sbuf,
                     sendtypes[iodesc->rfrom[i]] = iodesc->rtype[i];
                 }
 
-    /* ??? */
+    /* In the box rearranger each comp task may communicate with
+     * multiple IO tasks here we are setting the count and data type
+     * of the communication of a given compute task with each io
+     * task. */
     for (i = 0; i < niotasks; i++)
     {
         int io_comprank = ios.ioranks[i];
@@ -968,7 +979,8 @@ void determine_fill(iosystem_desc_t ios, io_desc_t *iodesc, const int gsize[],
 
     MPI_Allreduce(MPI_IN_PLACE, &totalllen, 1, PIO_OFFSET, MPI_SUM, ios.union_comm);
 
-    /* ??? */
+    /* If the total size of the data provided to be written is < the
+     * total data size then we need fill values. */
     if (totalllen < totalgridsize)
     {
         iodesc->needsfill = true;

@@ -298,6 +298,8 @@ int pio_swapm(void *sndbuf, int *sndlths, int *sdispls, MPI_Datatype *stypes,
     CheckMPIReturn(MPI_Comm_size(comm, &nprocs),__FILE__,__LINE__);
     CheckMPIReturn(MPI_Comm_rank(comm, &mytask),__FILE__,__LINE__);
 
+    /* If max_requests == 0 no throttling is requested and the default
+     * mpi_alltoallw function is used. */
     if (max_requests == 0)
     {
 #ifdef DEBUG
@@ -487,7 +489,8 @@ int pio_swapm(void *sndbuf, int *sndlths, int *sdispls, MPI_Datatype *stypes,
                 CheckMPIReturn(MPI_Send(ptr, sndlths[p], stypes[p], p, tag, comm), __FILE__,__LINE__);
         }
 
-	/* ??? */
+	/* We did comms in sets of size max_reqs, if istep > maxreqh
+	 * then there is a remainder that must be handled. */
         if (istep > maxreqh)
 	{
             p = istep - maxreqh;
