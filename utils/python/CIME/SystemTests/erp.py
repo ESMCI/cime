@@ -43,6 +43,7 @@ class ERP(SystemTestsCompareTwo):
                 self._case.set_value("NTHRDS_%s"%comp, nthreads // 2)
 
         rest_n = self._case.get_value("STOP_N") // 2 + 1
+        expect(rest_n > 0 , "STOP_N value too small for test")
         self._case.set_value("REST_N", rest_n)
         self._case.set_value("REST_OPTION", self._case.get_value("STOP_OPTION"))
 
