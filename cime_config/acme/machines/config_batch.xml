@@ -190,17 +190,31 @@
     </walltimes>
    </batch_system>
 
-    <batch_system MACH="corip1" type="slurm" version="x.y">
+    <batch_system MACH="cori-haswell" type="slurm" version="x.y">
+      <directives>
+        <directive>--constraint=haswell</directive>
+      </directives>
       <queues>
-        <queue walltimemax="24:00:00" jobmin="1" jobmax="16384" default="true">regular</queue>
-        <queue walltimemax="12:00:00" jobmin="16385" jobmax="45440">regular</queue>
-	<queue walltimemax="00:30:00" jobmin="1" jobmax="4096">debug</queue>
+        <queue walltimemax="00:30:00" jobmin="1" jobmax="100" default="true">regular</queue>
+        <!--queue walltimemax="12:00:00" jobmin="16385" jobmax="45440">regular</queue!-->
+	<!--queue walltimemax="00:30:00" jobmin="1" jobmax="4096">debug</queue!-->
       </queues>
       <walltimes>
         <walltime default="true">01:15:00</walltime>
         <walltime ccsm_estcost="1">01:50:00</walltime>
         <walltime ccsm_estcost="3">05:00:00</walltime>
       </walltimes>
+    </batch_system>
+
+    <batch_system MACH="cori-knl" type="slurm" version="x.y">
+      <directives>
+        <directive>--constraint=knl</directive>
+      </directives>
+      <queues>
+        <queue walltimemax="24:00:00" jobmin="1" jobmax="16384" default="true">regular</queue>
+        <queue walltimemax="12:00:00" jobmin="16385" jobmax="45440">regular</queue>
+	<queue walltimemax="00:30:00" jobmin="1" jobmax="4096">debug</queue>
+      </queues>
     </batch_system>
 
     <batch_system MACH="mira" type="cobalt">
