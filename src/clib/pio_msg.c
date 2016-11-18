@@ -2200,7 +2200,7 @@ PIOc_Init_Async(MPI_Comm world, int num_io_procs, int *io_proc_list,
                     LOG((3, "about to create intercomm for IO component to cmp = %d "
                          "my_iosys->io_comm = %d", cmp, my_iosys->io_comm));
                     if ((ret = MPI_Intercomm_create(my_iosys->io_comm, 0, my_iosys->union_comm,
-                                                    num_procs_per_comp[0], my_rank,
+                                                    my_proc_list[cmp][0], 0,
                                                     &my_iosys->intercomm)))
                         return check_mpi(NULL, ret, __FILE__, __LINE__);
                 }
@@ -2209,8 +2209,9 @@ PIOc_Init_Async(MPI_Comm world, int num_io_procs, int *io_proc_list,
                     /* Create the intercomm from computation component to IO component. */
                     LOG((3, "about to create intercomm for cmp = %d my_iosys->comp_comm = %d", cmp,
                          my_iosys->comp_comm));
-                    if ((ret = MPI_Intercomm_create(my_iosys->comp_comm, 0, my_iosys->union_comm, 0,
-                                                    my_rank, &my_iosys->intercomm)))
+                    if ((ret = MPI_Intercomm_create(my_iosys->comp_comm, 0, my_iosys->union_comm,
+                                                    my_proc_list[0][0], 0, 
+						    &my_iosys->intercomm)))
                         return check_mpi(NULL, ret, __FILE__, __LINE__);
                 }
                 LOG((3, "intercomm created for cmp = %d", cmp));
