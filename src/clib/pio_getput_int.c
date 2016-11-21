@@ -281,7 +281,7 @@ int PIOc_get_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
                                          (ptrdiff_t *)stride, buf);
                 break;
             case NC_CHAR:
-                ierr = nc_get_vars_schar(file->fh, varid, (size_t *)start, (size_t *)count,
+                ierr = nc_get_vars_text(file->fh, varid, (size_t *)start, (size_t *)count,
                                          (ptrdiff_t *)stride, buf);
                 break;
             case NC_SHORT:
@@ -676,7 +676,7 @@ int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
                                          (ptrdiff_t *)stride, buf);
                 break;
             case NC_CHAR:
-                ierr = nc_put_vars_schar(file->fh, varid, (size_t *)start, (size_t *)count,
+                ierr = nc_put_vars_text(file->fh, varid, (size_t *)start, (size_t *)count,
                                          (ptrdiff_t *)stride, buf);
                 break;
             case NC_SHORT:
