@@ -11,7 +11,6 @@ count are modified on retart.
 import shutil
 from CIME.XML.standard_module_setup import *
 from CIME.case_setup import case_setup
-import CIME.utils
 from CIME.SystemTests.system_tests_compare_two import SystemTestsCompareTwo
 
 logger = logging.getLogger(__name__)
@@ -22,10 +21,20 @@ class ERP(SystemTestsCompareTwo):
         """
         initialize a test object
         """
-        SystemTestsCompareTwo.__init__(self, case, True, run_one_st_archive = True)
+        SystemTestsCompareTwo.__init__(self, case,
+                                       separate_builds = True,
+                                       run_two_suffix = "BFBResetTest",
+                                       run_one_st_archive = True,
+                                       run_one_description = "Baseline run from day 0 to STOP_N",
+                                       run_two_description = ("Test run starting from run one's " +
+                                                              "state at STOP_N // 2 + 1 to STOP_N"))
 
     def _case_one_setup(self):
-        pass
+        stop_n = self._case.get_value("STOP_N")
+        rest_n = stop_n // 2 + 1
+        expect(stop_n > rest_n , "STOP_N value too small for test")
+        self._case.set_value("REST_N", rest_n)
+        self._case.set_value("REST_OPTION", self._case.get_value("STOP_OPTION"))
 
     def _case_two_setup(self):
         """ Case two uses half the number of threads and tasks as the defaults and case one. """
@@ -41,21 +50,13 @@ class ERP(SystemTestsCompareTwo):
             if nthreads > 1:
                 self._case.set_value("BUILD_THREADED", True)
                 self._case.set_value("NTHRDS_%s"%comp, nthreads // 2)
-
-        rest_n = self._case.get_value("STOP_N") // 2 + 1
-        expect(rest_n > 0 , "STOP_N value too small for test")
-        self._case.set_value("REST_N", rest_n)
-        self._case.set_value("REST_OPTION", self._case.get_value("STOP_OPTION"))
-
         case_setup(self._case, test_mode=True, reset=True)
 
-    def _pre_run_one_hook(self):
-        self._st_archive_dir_one = self._case.get_value("DOUT_S_ROOT")
-
-    def _pre_run_two_hook(self):
+    def _inter_run_hook(self):
+        st_archive_dir_one = self._case1.get_value("DOUT_S_ROOT")
         restdir = os.path.join(self._st_archive_dir_one, "rest")
-        rundir = self._case.get_value("RUNDIR")
-        for root, subdir, files in os.walk(restdir):
+        rundir = self._case2.get_value("RUNDIR")
+        for root, _, files in os.walk(restdir):
             for f in files:
                 fpath_in = os.path.join(root, f)
                 fpath_out = os.path.join(rundir, f)
