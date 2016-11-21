@@ -98,7 +98,18 @@ int get_iotype_name(int iotype, char *name)
     return PIO_NOERR;
 }
 
-/* Initalize the test system. */
+/* Initalize the test system. 
+ *
+ * @param argc argument count from main().
+ * @param argv argument array from main().
+ * @param my_rank pointer that gets this tasks rank.
+ * @param ntasks pointer that gets the number of tasks in WORLD
+ * communicator.
+ * @param target_ntasks the number of tasks this test needs to run.
+ * @param comm a pointer to an MPI communicator that will be created
+ * for this test and contain target_ntasks tasks from WORLD.
+ * @returns 0 for success, error code otherwise.
+*/
 int
 pio_test_init(int argc, char **argv, int *my_rank, int *ntasks,
               int target_ntasks, MPI_Comm *comm)
@@ -108,7 +119,7 @@ pio_test_init(int argc, char **argv, int *my_rank, int *ntasks,
 #ifdef TIMING
     /* Initialize the GPTL timing library. */
     if ((ret = GPTLinitialize()))
-        return ret;
+        return ERR_GPTL;
 #endif
 
     /* Initialize MPI. */
@@ -130,11 +141,14 @@ pio_test_init(int argc, char **argv, int *my_rank, int *ntasks,
     }
     else if (*ntasks > target_ntasks)
     {
+	/* If more tasks are available than we need for this test,
+	 * create a communicator with exactly the number of tasks we
+	 * need. */
         int color, key;
-        if(*my_rank < target_ntasks)
+        if (*my_rank < target_ntasks)
         {
             color = 0;
-            key = *my_rank;
+	    key = *my_rank;
         }
         else
         {

@@ -27,7 +27,8 @@
 #define ERR_CHECK 1109
 #define ERR_INIT 1110
 #define ERR_AWFUL 1111
-#define ERR_WRONG 2222
+#define ERR_WRONG 1112
+#define ERR_GPTL 1113
 
 /** Handle MPI errors. This should only be used with MPI library
  * function calls. */

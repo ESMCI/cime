@@ -313,13 +313,15 @@ typedef struct iosystem_desc_t
  */
 typedef struct wmulti_buffer
 {
-    /** ??? */
+    /** The ID that describes the decomposition, as returned from
+     * PIOc_Init_Decomp().  */
     int ioid;
 
     /** ??? */
     int validvars;
 
-    /** ??? */
+    /** Size of this variables data on local task. All vars in the
+     * multi-buffer have the same size. */
     int arraylen;
 
     /** Array of varids. */
