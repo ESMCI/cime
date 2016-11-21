@@ -240,7 +240,6 @@ int PIOc_InitDecomp(const int iosysid, const int basetype, const int ndims,
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     io_desc_t *iodesc;     /* The IO description. */
-    int iosize;
     int mpierr;            /* Return code from MPI calls. */
     int ierr;              /* Return code. */
 
@@ -258,7 +257,8 @@ int PIOc_InitDecomp(const int iosysid, const int basetype, const int ndims,
 
     /* If desired, save the computed decompositions to
      * files. PIO_Save_Decomps is a global var set in
-     * pioc_support.c. This is always false. */
+     * pioc_support.c. This used to be set by environment variable and
+     * needs to be settable for debug purposes. */
     if (PIO_Save_Decomps)
     {
         char filename[NC_MAX_NAME];
@@ -382,7 +382,6 @@ int PIOc_InitDecomp_bc(const int iosysid, const int basetype, const int ndims, c
     io_desc_t *iodesc;
     int mpierr;
     int ierr;
-    int iosize;
     int n, i, maplen = 1;
     int rearr = PIO_REARR_SUBSET;
     

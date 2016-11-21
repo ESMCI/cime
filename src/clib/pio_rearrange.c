@@ -332,44 +332,47 @@ int create_mpi_datatypes(const MPI_Datatype basetype, const int msgcnt,
  * Create the derived MPI datatypes used for comp2io and io2comp
  * transfers.
  *
+ * NOTE from Jim: I am always oriented toward write so recieve
+ * always means io tasks and send always means comp tasks. The
+ * opposite relationship is actually the case for reading. I've
+ * played with different ways of referring to things to get rid of
+ * this orientation bias in the documentation as well as in
+ * variable names, but I haven't found anything that I found more
+ * satisfactory.
+ *
  * @param ios the iosystem_desc_t struct
  * @param iodesc a pointer to the io_desc_t struct.
  * @returns 0 on success, error code otherwise.
  */
 int define_iodesc_datatypes(const iosystem_desc_t ios, io_desc_t *iodesc)
 {
+    int ret; /* Return value. */
     int i;
 
-    /* NOTE from Jim: I am always oriented toward write so recieve
-     * always means io tasks and send always means comp tasks. The
-     * opposite relationship is actually the case for reading. I've
-     * played with different ways of referring to things to get rid of
-     * this orientation bias in the documentation as well as in
-     * variable names, but I haven't found anything that I found more
-     * satisfactory. */
-
-    /* Only IO tasks get receive types ??? */
+    /* Set up the to transfer data to and from the IO tasks. */
     if (ios.ioproc)
     {
         if (!iodesc->rtype)
 	{
             if (iodesc->nrecvs > 0)
 	    {
-		/* Allocate memory for array of receive types. */
+		/* Allocate memory for array of data. */
                 if (!(iodesc->rtype = bget(iodesc->nrecvs * sizeof(MPI_Datatype))))
-                    piomemerror(ios, iodesc->nrecvs * sizeof(MPI_Datatype), __FILE__,__LINE__);
+                    piomemerror(ios, iodesc->nrecvs * sizeof(MPI_Datatype), __FILE__, __LINE__);
 
-		/* Initialize receive types to NULL. */
-                for (i = 0; i < iodesc->nrecvs; i++)
+		/* Initialize data types to NULL. */
+                for (int i = 0; i < iodesc->nrecvs; i++)
                     iodesc->rtype[i] = MPI_DATATYPE_NULL;
 
-		/* Create the receieve datatypes. */
+		/* Create the datatypes, which will be used both to
+		 * receive and to send data. */
                 if (iodesc->rearranger == PIO_REARR_SUBSET)
-                    create_mpi_datatypes(iodesc->basetype, iodesc->nrecvs, iodesc->llen, iodesc->rindex,
-					 iodesc->rcount, iodesc->rfrom, iodesc->rtype);
+                    create_mpi_datatypes(iodesc->basetype, iodesc->nrecvs, iodesc->llen,
+					 iodesc->rindex, iodesc->rcount, iodesc->rfrom,
+					 iodesc->rtype);
 		else
-                    create_mpi_datatypes(iodesc->basetype, iodesc->nrecvs, iodesc->llen, iodesc->rindex,
-					 iodesc->rcount, NULL, iodesc->rtype);
+                    create_mpi_datatypes(iodesc->basetype, iodesc->nrecvs, iodesc->llen,
+					 iodesc->rindex, iodesc->rcount, NULL, iodesc->rtype);
             }
         }
     }
@@ -395,10 +398,10 @@ int define_iodesc_datatypes(const iosystem_desc_t ios, io_desc_t *iodesc)
 
 	/* Allocate memory for array of send types. */
         if (!(iodesc->stype = bget(ntypes * sizeof(MPI_Datatype))))
-            piomemerror(ios,ntypes * sizeof(MPI_Datatype), __FILE__,__LINE__);
+            piomemerror(ios, ntypes * sizeof(MPI_Datatype), __FILE__, __LINE__);
 
 	/* Initialize send types to NULL. */
-        for (i = 0; i < ntypes; i++)
+        for (int i = 0; i < ntypes; i++)
             iodesc->stype[i] = MPI_DATATYPE_NULL;
 
         iodesc->num_stypes = ntypes;
@@ -684,13 +687,13 @@ int rearrange_comp2io(const iosystem_desc_t ios, io_desc_t *iodesc, void *sbuf,
     MPI_Datatype *recvtypes;
     MPI_Comm mycomm;
 
-    //  maxreq = 0;
-    //  printf("%s %d %d %d\n",__FILE__,__LINE__,nvars,iodesc->ndof);
 #ifdef TIMING
     GPTLstart("PIO:rearrange_comp2io");
 #endif
 
+    /* Caller must provide this. */
     assert(iodesc);
+    pioassert(nvars > 0, "nvars must be > 0", __FILE__, __LINE__);
 
     if (iodesc->rearranger == PIO_REARR_BOX)
     {
@@ -702,13 +705,18 @@ int rearrange_comp2io(const iosystem_desc_t ios, io_desc_t *iodesc, void *sbuf,
         mycomm = iodesc->subset_comm;
         niotasks = 1;
     }
+
+    /* Get the number of tasks. */
     MPI_Comm_size(mycomm, &ntasks);
 
-    pioassert(nvars > 0, "nvars must be > 0", __FILE__, __LINE__);
+    /* Get the size of the MPI type. */
     MPI_Type_size(iodesc->basetype, &tsize);
 
+    /* Define the MPI data types that will be used for this
+     * io_desc_t. */
     define_iodesc_datatypes(ios, iodesc);
 
+    /* Allocate arrays needed by the pio_swapm() function. */
     if (!(sendcounts = bget(ntasks*sizeof(int))))
         piomemerror(ios, ntasks * sizeof(int), __FILE__, __LINE__);
 
@@ -738,6 +746,7 @@ int rearrange_comp2io(const iosystem_desc_t ios, io_desc_t *iodesc, void *sbuf,
         sendtypes[i] =  MPI_DATATYPE_NULL;
     }
 
+    /* ??? */
     if (ios.ioproc && iodesc->nrecvs > 0)
     {
         for (i = 0; i < iodesc->nrecvs; i++)
@@ -747,11 +756,11 @@ int rearrange_comp2io(const iosystem_desc_t ios, io_desc_t *iodesc, void *sbuf,
                 if (iodesc->rearranger == PIO_REARR_SUBSET)
 		{
                     recvcounts[ i ] = 1;
-		    
+
                     /*  The stride here is the length of the collected array (llen) */
                     MPI_Type_hvector(nvars, 1, (MPI_Aint) iodesc->llen * tsize, iodesc->rtype[i],
 				     recvtypes + i);
-		    
+
                     if (recvtypes[i] == MPI_DATATYPE_NULL)
                         piodie("Unexpected NULL MPI DATATYPE",__FILE__,__LINE__);
 
@@ -761,10 +770,10 @@ int rearrange_comp2io(const iosystem_desc_t ios, io_desc_t *iodesc, void *sbuf,
 		else
 		{
                     recvcounts[iodesc->rfrom[i]] = 1;
-		    
+
                     MPI_Type_hvector(nvars, 1, (MPI_Aint)iodesc->llen * tsize, iodesc->rtype[i],
 				     recvtypes + iodesc->rfrom[i]);
-		    
+
                     if (recvtypes[iodesc->rfrom[i]] == MPI_DATATYPE_NULL)
                         piodie("Unexpected NULL MPI DATATYPE", __FILE__, __LINE__);
 
@@ -776,6 +785,7 @@ int rearrange_comp2io(const iosystem_desc_t ios, io_desc_t *iodesc, void *sbuf,
         }
     }
 
+    /* ??? */
     for (i = 0; i < niotasks; i++)
     {
         int io_comprank = ios.ioranks[i];
@@ -801,22 +811,21 @@ int rearrange_comp2io(const iosystem_desc_t ios, io_desc_t *iodesc, void *sbuf,
     pio_swapm( sbuf,  sendcounts, sdispls, sendtypes, rbuf, recvcounts, rdispls, recvtypes,
                mycomm, iodesc->handshake, iodesc->isend, iodesc->max_requests);
 
+    /* Free the MPI types. */
+    for (i = 0; i < ntasks; i++)
+    {
+        if (sendtypes[i] != MPI_DATATYPE_NULL)
+            MPI_Type_free(sendtypes + i);
+
+        if (recvtypes[i] != MPI_DATATYPE_NULL)
+            MPI_Type_free(recvtypes + i);
+    }
+
     /* Free memory. */
     brel(sendcounts);
     brel(recvcounts);
     brel(sdispls);
     brel(rdispls);
-    
-    /* Free the MPI types. */
-    for (i = 0; i < ntasks; i++)
-    {
-        if (sendtypes[i] != MPI_DATATYPE_NULL)
-            MPI_Type_free(sendtypes+i);
-
-        if (recvtypes[i] != MPI_DATATYPE_NULL)
-            MPI_Type_free(recvtypes+i);
-    }
-
     brel(sendtypes);
     brel(recvtypes);
 
@@ -979,10 +988,10 @@ void determine_fill(iosystem_desc_t ios, io_desc_t *iodesc, const int gsize[],
 
     assert(iodesc);
 
-    for (i = 0;i<iodesc->ndims;i++)
+    for (i = 0; i < iodesc->ndims; i++)
         totalgridsize *= gsize[i];
 
-    if (iodesc->rearranger==PIO_REARR_SUBSET)
+    if (iodesc->rearranger == PIO_REARR_SUBSET)
         totalllen=iodesc->llen;
     else
         for (i = 0; i<iodesc->ndof; i++)
@@ -1002,14 +1011,14 @@ void determine_fill(iosystem_desc_t ios, io_desc_t *iodesc, const int gsize[],
         iodesc->needsfill = false;
         iodesc->gsize = NULL;
     }
-    
+
     /*  TURN OFF FILL for timing test
 	iodesc->needsfill=false; */
 
     if (iodesc->needsfill)
     {
 	/* Allocate memory to hold dimension sizes. */
-        if (!(iodesc->gsize = (PIO_Offset *)bget(iodesc->ndims * sizeof(PIO_Offset))))
+        if (!(iodesc->gsize = bget(iodesc->ndims * sizeof(PIO_Offset))))
             piomemerror(ios,iodesc->ndims * sizeof(MPI_Datatype), __FILE__,__LINE__);
 
 	/* Save the dimension sizes. */
@@ -1216,6 +1225,8 @@ int box_rearrange_create(const iosystem_desc_t ios, const int maplen, const PIO_
     if (ios.ioproc)
         compute_maxIObuffersize(ios.io_comm, iodesc);
 
+    /* Using maxiobuflen compute the maximum number of vars of this type that the io
+       task buffer can handle. */
     compute_maxaggregate_bytes(ios, iodesc);
 
 #ifdef DEBUG
@@ -1292,7 +1303,7 @@ void get_start_and_count_regions(const int ndims, const int gdims[],const int ma
         pioassert(region->start[0] >= 0, "failed to find region", __FILE__, __LINE__);
 
         nmaplen = nmaplen + regionlen;
-	
+
         if (region->next == NULL && nmaplen < maplen)
 	{
             region->next = alloc_region(ndims);
@@ -1300,7 +1311,7 @@ void get_start_and_count_regions(const int ndims, const int gdims[],const int ma
 	     * the sizes of all of the previous regions (loffset) */
             region = region->next;
             region->loffset = nmaplen;
-	    
+
             /* The calls to the io library are collective and so we
 	       must have the same number of regions on each io task
 	       maxregions will be the total number of regions on this
@@ -1557,7 +1568,7 @@ int subset_rearrange_create(const iosystem_desc_t ios, const int maplen, PIO_Off
             iodesc->rfrom[i] = 0;
         }
     }
-    
+
     int cnt[ntasks];
     int sndlths[ntasks];
     int sdispls[ntasks];
@@ -1598,23 +1609,28 @@ int subset_rearrange_create(const iosystem_desc_t ios, const int maplen, PIO_Off
         thisgridmax[0] = thisgridsize[0];
         int xtra = totalgridsize - thisgridsize[0] * ios.num_iotasks;
 
-        for (nio=0;nio<ios.num_iotasks;nio++){
-            int cnt=0;
-            int imin=0;
-            if (nio>0){
-                thisgridsize[nio] =  totalgridsize/ios.num_iotasks;
-                if (nio>=ios.num_iotasks-xtra) thisgridsize[nio]++;
-                thisgridmin[nio]=thisgridmax[nio-1]+1;
-                thisgridmax[nio]= thisgridmin[nio] + thisgridsize[nio]-1;
+        for (nio = 0; nio < ios.num_iotasks; nio++)
+	{
+            int cnt = 0;
+            int imin = 0;
+            if (nio > 0)
+	    {
+                thisgridsize[nio] =  totalgridsize / ios.num_iotasks;
+                if (nio >= ios.num_iotasks - xtra)
+		    thisgridsize[nio]++;
+                thisgridmin[nio] = thisgridmax[nio - 1] + 1;
+                thisgridmax[nio]= thisgridmin[nio] + thisgridsize[nio] - 1;
             }
-            for (int i = 0;i<iodesc->llen;i++){
-                //      printf("%s %d %d %d %ld %d %d\n",__FILE__,__LINE__,i,nio,iomap[i],thisgridmin[nio],thisgridmax[nio]);
-                if (iomap[i]>=thisgridmin[nio] && iomap[i]<=thisgridmax[nio]){
+            for (int i = 0; i < iodesc->llen; i++)
+	    {
+                if (iomap[i] >= thisgridmin[nio] && iomap[i] <= thisgridmax[nio])
+		{
                     cnt++;
-                    if (cnt==1) imin=i;
+                    if (cnt == 1)
+			imin = i;
                 }
             }
-            //      printf("%s %d %d %d %d\n",__FILE__,__LINE__,nio,cnt,imin);
+
             MPI_Gather(&cnt, 1, MPI_INT, gcnt, 1, MPI_INT, nio, ios.io_comm);
             if (nio == ios.io_rank)
 	    {
@@ -1630,11 +1646,11 @@ int subset_rearrange_create(const iosystem_desc_t ios, const int maplen, PIO_Off
                 for (i = 0; i < thisgridsize[nio]; i++)
                     myusegrid[i] = -1;
             }
-	    
+
             pio_fc_gatherv((void *)(iomap + imin), cnt, PIO_OFFSET, (void *)myusegrid, gcnt,
 			   displs, PIO_OFFSET, nio, ios.io_comm, maxreq);
         }
-	
+
         PIO_Offset grid[thisgridsize[ios.io_rank]];
         for (i = 0; i < thisgridsize[ios.io_rank]; i++)
             grid[i] = 0;
@@ -1718,8 +1734,8 @@ int subset_rearrange_create(const iosystem_desc_t ios, const int maplen, PIO_Off
 #endif
     }
 
-    /* using maxiobuflen compute the maximum number of vars of this type that the io
-       task buffer can handle */
+    /* Using maxiobuflen compute the maximum number of vars of this type that the io
+       task buffer can handle. */
     compute_maxaggregate_bytes(ios, iodesc);
 
     return ierr;
@@ -1830,7 +1846,7 @@ void performance_tune_rearranger(iosystem_desc_t ios, io_desc_t *iodesc)
     iodesc->handshake = handshake;
     iodesc->isend = isend;
     iodesc->max_requests = maxreqs;
-    
+
     LOG((1, "spmd optimization: maxreqs: %d handshake:%d isend:%d mintime=%f\n",
 	 maxreqs,handshake,isend,mintime));
 
