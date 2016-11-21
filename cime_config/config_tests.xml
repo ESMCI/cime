@@ -197,7 +197,6 @@ LII    CLM initial condition interpolation test
     <HIST_N>$STOP_N</HIST_N>
     <CONTINUE_RUN>FALSE</CONTINUE_RUN>
     <DOUT_S>FALSE</DOUT_S>
-    <SMP_BUILD>0</SMP_BUILD>
   </test>
 
   <test NAME="ERS">
