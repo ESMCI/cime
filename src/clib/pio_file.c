@@ -117,7 +117,7 @@ int PIOc_createfile(const int iosysid, int *ncidp, int *iotype,
     file->buffer.data = NULL;
     file->buffer.next = NULL;
     file->buffer.vid = NULL;
-    file->buffer.ioid = 0;
+    file->buffer.ioid = -1;
     file->buffer.frame = NULL;
     file->buffer.fillvalue = NULL;
 
