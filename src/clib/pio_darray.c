@@ -254,17 +254,18 @@ int PIOc_write_darray_multi(const int ncid, const int *vid, const int ioid,
  * it to the IO nodes when the compute buffer is full or when a flush
  * is triggered.
  *
- * @param ncid: the ncid of the open netCDF file.
- * @param vid: the variable ID returned by PIOc_def_var().
- * @param ioid: the I/O description ID as passed back by
+ * @param ncid the ncid of the open netCDF file.
+ * @param vid the ID of the variable that these data will be written
+ * to.
+ * @param ioid the I/O description ID as passed back by
  * PIOc_InitDecomp().
- * @param arraylen: the length of the array to be written. This
- * is the length of the distrubited array. That is, the length of
- * the portion of the data that is on the processor.
- * @param array: pointer to the data to be written. This is a
+ * @param arraylen the length of the array to be written. This is the
+ * length of the local component of the distrubited array. That is,
+ * the length of the portion of the data that is on the processor.
+ * @param array pointer to the data to be written. This is a
  * pointer to the distributed portion of the array that is on this
  * processor.
- * @param fillvalue: pointer to the fill value to be used for
+ * @param fillvalue pointer to the fill value to be used for
  * missing data.
  * @returns 0 for success, non-zero error code for failure.
  * @ingroup PIO_write_darray

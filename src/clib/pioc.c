@@ -211,36 +211,38 @@ int PIOc_Set_IOSystem_Error_Handling(int iosysid, int method)
 }
 
 /**
- * @ingroup PIO_initdecomp
- * C interface to the initdecomp.
+ * Initialize the decomposition used with distributed arrays. The
+ * decomposition describes how the data will be distributed between
+ * tasks.
  *
- * @param  iosysid @copydoc iosystem_desc_t (input)
- * @param  basetype the basic PIO data type used (input)
- * @param  ndims the number of dimensions in the variable (input)
- * @param  dims an array of global size of each dimension.
- * @param  maplen the local length of the compmap array (input)
- * @param compmap[] a 1 based array of offsets into the array record
- * on file.  A 0 in this array indicates a value which should not be
- * transfered. (input)
- * @param ioidp  the io description pointer (output)
- * @param rearranger the rearranger to be used for this decomp or NULL
- * to use the default (optional input)
- * @param iostart An optional array of start values for block cyclic
- * decompositions (optional input)
- * @param iocount An optional array of count values for block cyclic
- * decompositions (optional input)
+ * @param iosysid the IO system ID.
+ * @param basetype the basic PIO data type used.
+ * @param ndims the number of dimensions in the variable.
+ * @param dims an array of global size of each dimension.
+ * @param maplen the local length of the compmap array.
+ * @param compmap a 1 based array of offsets into the array record on
+ * file. A 0 in this array indicates a value which should not be
+ * transfered.
+ * @param ioidp pointer that will get the io description ID.
+ * @param rearranger pointer to the rearranger to be used for this
+ * decomp or NULL to use the default.
+ * @param iostart An array of start values for block cyclic
+ * decompositions. If NULL ???
+ * @param iocount An array of count values for block cyclic
+ * decompositions. If NULL ???
  * @returns 0 on success, error code otherwise
+ * @ingroup PIO_initdecomp
  */
-int PIOc_InitDecomp(const int iosysid, const int basetype, const int ndims, const int *dims,
-                    const int maplen, const PIO_Offset *compmap, int *ioidp, const int *rearranger,
-                    const PIO_Offset *iostart, const PIO_Offset *iocount)
+int PIOc_InitDecomp(const int iosysid, const int basetype, const int ndims,
+		    const int *dims, const int maplen, const PIO_Offset *compmap,
+		    int *ioidp, const int *rearranger, const PIO_Offset *iostart,
+		    const PIO_Offset *iocount)
 {
-    iosystem_desc_t *ios;
-    io_desc_t *iodesc;
+    iosystem_desc_t *ios;  /* Pointer to io system information. */
+    io_desc_t *iodesc;     /* The IO description. */
     int iosize;
-    int ndisp;
-    int mpierr; /* Return code from MPI calls. */
-    int ierr;   /* Return code. */
+    int mpierr;            /* Return code from MPI calls. */
+    int ierr;              /* Return code. */
 
     LOG((1, "PIOc_InitDecomp iosysid = %d basetype = %d ndims = %d maplen = %d",
          iosysid, basetype, ndims, maplen));
@@ -254,7 +256,9 @@ int PIOc_InitDecomp(const int iosysid, const int basetype, const int ndims, cons
     if (!(ios = pio_get_iosystem_from_id(iosysid)))
         return PIO_EBADID;
 
-    /* If desired, save the computed decompositions to files. */
+    /* If desired, save the computed decompositions to
+     * files. PIO_Save_Decomps is a global var set in
+     * pioc_support.c. This is always false. */
     if (PIO_Save_Decomps)
     {
         char filename[NC_MAX_NAME];
@@ -274,10 +278,11 @@ int PIOc_InitDecomp(const int iosysid, const int basetype, const int ndims, cons
     }
 
     /* Allocate space for the iodesc info. */
-    iodesc = malloc_iodesc(basetype, ndims);
-
+    if (!(iodesc = malloc_iodesc(basetype, ndims)))
+	piodie("Out of memory", __FILE__, __LINE__);
+    
     /* Set the rearranger. */
-    if (rearranger == NULL)
+    if (!rearranger)
         iodesc->rearranger = ios->default_rearranger;
     else
         iodesc->rearranger = *rearranger;
@@ -378,7 +383,6 @@ int PIOc_InitDecomp_bc(const int iosysid, const int basetype, const int ndims, c
     int mpierr;
     int ierr;
     int iosize;
-    int ndisp;
     int n, i, maplen = 1;
     int rearr = PIO_REARR_SUBSET;
     
