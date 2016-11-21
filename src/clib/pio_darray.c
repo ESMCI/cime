@@ -21,7 +21,7 @@ void *CN_bpool = NULL;
 /* Maximum buffer usage. */
 PIO_Offset maxusage = 0;
 
-/** 
+/**
  * Set the PIO IO node data buffer size limit.
  *
  * The pio_buffer_size_limit will only apply to files opened after
@@ -37,11 +37,11 @@ PIO_Offset PIOc_set_buffer_size_limit(const PIO_Offset limit)
     /* If the user passed a valid size, use it. */
     if (limit > 0)
         pio_buffer_size_limit = limit;
-    
+
     return oldsize;
 }
 
-/** 
+/**
  * Write one or more arrays with the same IO decomposition to the
  * file.
  *
@@ -164,7 +164,7 @@ int PIOc_write_darray_multi(const int ncid, const int *vid, const int ioid,
 
         break;
     }
-    
+
     /* For PNETCDF the iobuf is freed in flush_output_buffer() */
     if (file->iotype != PIO_IOTYPE_PNETCDF)
     {
@@ -247,7 +247,7 @@ int PIOc_write_darray_multi(const int ncid, const int *vid, const int ioid,
     return ierr;
 }
 
-/** 
+/**
  * Write a distributed array to the output file.
  *
  * This routine aggregates output on the compute nodes and only sends
@@ -325,12 +325,7 @@ int PIOc_write_darray(const int ncid, const int vid, const int ioid,
     /* If the ioid is not initialized, set it. For non record vars,
      * use the negative ??? */
     if (wmb->ioid == -1)
-    {
-        if (recordvar)
-            wmb->ioid = ioid;
-        else
-            wmb->ioid = -(ioid);
-    }
+	wmb->ioid = recordvar ? ioid : -ioid;
     else
     {
         /* Handle record and non-record variables differently. */
@@ -380,10 +375,7 @@ int PIOc_write_darray(const int ncid, const int vid, const int ioid,
 	/* Set pointer to newly allocated buffer and initialize.*/
         wmb = wmb->next;
         wmb->next = NULL;
-        if (recordvar)
-            wmb->ioid = ioid;
-        else
-            wmb->ioid = -(ioid);
+	wmb->ioid = recordvar ? ioid : -ioid;
         wmb->validvars = 0;
         wmb->arraylen = arraylen;
         wmb->vid = NULL;
@@ -510,7 +502,7 @@ int PIOc_write_darray(const int ncid, const int vid, const int ioid,
     return ierr;
 }
 
-/** 
+/**
  * Read a field from a file to the IO library.
  *
  * @param ncid identifies the netCDF file
