@@ -642,7 +642,7 @@ int put_vars_handler(iosystem_desc_t *ios)
     int namelen;
     PIO_Offset typelen; /** Length (in bytes) of this type. */
     nc_type xtype; /** Type of the data being written. */
-    char start_present, count_present, stride_present;
+    char stride_present;
     PIO_Offset *startp = NULL, *countp = NULL, *stridep = NULL;
     int ndims; /** Number of dimensions. */
     void *buf; /** Buffer for data storage. */
@@ -663,17 +663,13 @@ int put_vars_handler(iosystem_desc_t *ios)
     /* Now we know how big to make these arrays. */
     PIO_Offset start[ndims], count[ndims], stride[ndims];
 
-    if ((mpierr = MPI_Bcast(&start_present, 1, MPI_CHAR, 0, ios->intercomm)))
-        return PIO_EIO;
-    if (!mpierr && start_present)
+    if (!mpierr)
     {
         if ((mpierr = MPI_Bcast(start, ndims, MPI_OFFSET, 0, ios->intercomm)))
             return PIO_EIO;
         LOG((1, "put_vars_handler getting start[0] = %d ndims = %d", start[0], ndims));
     }
-    if ((mpierr = MPI_Bcast(&count_present, 1, MPI_CHAR, 0, ios->intercomm)))
-        return PIO_EIO;
-    if (!mpierr && count_present)
+    if (!mpierr)
         if ((mpierr = MPI_Bcast(count, ndims, MPI_OFFSET, 0, ios->intercomm)))
             return PIO_EIO;
     if ((mpierr = MPI_Bcast(&stride_present, 1, MPI_CHAR, 0, ios->intercomm)))
@@ -687,17 +683,15 @@ int put_vars_handler(iosystem_desc_t *ios)
         return PIO_EIO;
     if ((mpierr = MPI_Bcast(&typelen, 1, MPI_OFFSET, 0, ios->intercomm)))
         return PIO_EIO;
-    LOG((1, "put_vars_handler ncid = %d varid = %d ndims = %d start_present = %d "
-         "count_present = %d stride_present = %d xtype = %d num_elem = %d typelen = %d",
-         ncid, varid, ndims, start_present, count_present, stride_present, xtype,
+    LOG((1, "put_vars_handler ncid = %d varid = %d ndims = %d "
+         "stride_present = %d xtype = %d num_elem = %d typelen = %d",
+         ncid, varid, ndims, stride_present, xtype,
          num_elem, typelen));
 
     for (int d = 0; d < ndims; d++)
     {
-        if (start_present)
-            LOG((2, "start[%d] = %d\n", d, start[d]));
-        if (count_present)
-            LOG((2, "count[%d] = %d\n", d, count[d]));
+        LOG((2, "start[%d] = %d\n", d, start[d]));
+        LOG((2, "count[%d] = %d\n", d, count[d]));
         if (stride_present)
             LOG((2, "stride[%d] = %d\n", d, stride[d]));
     }
@@ -714,10 +708,8 @@ int put_vars_handler(iosystem_desc_t *ios)
     /*  LOG((2, "element %d = %d", e, ((int *)buf)[e])); */
 
     /* Set the non-NULL pointers. */
-    if (start_present)
-        startp = start;
-    if (count_present)
-        countp = count;
+    startp = start;
+    countp = count;
     if (stride_present)
         stridep = stride;
 
@@ -798,7 +790,7 @@ int get_vars_handler(iosystem_desc_t *ios)
     int namelen;
     PIO_Offset typelen; /** Length (in bytes) of this type. */
     nc_type xtype; /** Type of the data being written. */
-    char start_present, count_present, stride_present;
+    char stride_present;
     PIO_Offset *startp = NULL, *countp = NULL, *stridep = NULL;
     int ndims; /** Number of dimensions. */
     void *buf; /** Buffer for data storage. */
@@ -819,17 +811,13 @@ int get_vars_handler(iosystem_desc_t *ios)
     /* Now we know how big to make these arrays. */
     PIO_Offset start[ndims], count[ndims], stride[ndims];
 
-    if ((mpierr = MPI_Bcast(&start_present, 1, MPI_CHAR, 0, ios->intercomm)))
-        return PIO_EIO;
-    if (!mpierr && start_present)
+    if (!mpierr)
     {
         if ((mpierr = MPI_Bcast(start, ndims, MPI_OFFSET, 0, ios->intercomm)))
             return PIO_EIO;
         LOG((1, "put_vars_handler getting start[0] = %d ndims = %d", start[0], ndims));
     }
-    if ((mpierr = MPI_Bcast(&count_present, 1, MPI_CHAR, 0, ios->intercomm)))
-        return PIO_EIO;
-    if (!mpierr && count_present)
+    if (!mpierr)
         if ((mpierr = MPI_Bcast(count, ndims, MPI_OFFSET, 0, ios->intercomm)))
             return PIO_EIO;
     if ((mpierr = MPI_Bcast(&stride_present, 1, MPI_CHAR, 0, ios->intercomm)))
@@ -843,17 +831,15 @@ int get_vars_handler(iosystem_desc_t *ios)
         return PIO_EIO;
     if ((mpierr = MPI_Bcast(&typelen, 1, MPI_OFFSET, 0, ios->intercomm)))
         return PIO_EIO;
-    LOG((1, "get_vars_handler ncid = %d varid = %d ndims = %d start_present = %d "
-         "count_present = %d stride_present = %d xtype = %d num_elem = %d typelen = %d",
-         ncid, varid, ndims, start_present, count_present, stride_present, xtype,
+    LOG((1, "get_vars_handler ncid = %d varid = %d ndims = %d "
+         "stride_present = %d xtype = %d num_elem = %d typelen = %d",
+         ncid, varid, ndims, stride_present, xtype,
          num_elem, typelen));
 
     for (int d = 0; d < ndims; d++)
     {
-        if (start_present)
-            LOG((2, "start[%d] = %d\n", d, start[d]));
-        if (count_present)
-            LOG((2, "count[%d] = %d\n", d, count[d]));
+        LOG((2, "start[%d] = %d\n", d, start[d]));
+        LOG((2, "count[%d] = %d\n", d, count[d]));
         if (stride_present)
             LOG((2, "stride[%d] = %d\n", d, stride[d]));
     }
@@ -863,10 +849,8 @@ int get_vars_handler(iosystem_desc_t *ios)
         return PIO_ENOMEM;
 
     /* Set the non-NULL pointers. */
-    if (start_present)
-        startp = start;
-    if (count_present)
-        countp = count;
+    startp = start;
+    countp = count;
     if (stride_present)
         stridep = stride;
 
