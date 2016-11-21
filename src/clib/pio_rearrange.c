@@ -10,7 +10,7 @@
 /** internal variable used for debugging */
 int tmpioproc = -1;
 
-/** 
+/**
  * Convert an index into a list of dimensions. E.g., for index 4 into a
  * array defined as a[3][2], will return 1 1.
  *
@@ -382,7 +382,7 @@ int define_iodesc_datatypes(const iosystem_desc_t ios, io_desc_t *iodesc)
     {
         int ntypes;
         int ncnt;
-	
+
         if (iodesc->rearranger == PIO_REARR_SUBSET)
 	{
 	    /* Subset rearranger gets one type. */
@@ -410,7 +410,7 @@ int define_iodesc_datatypes(const iosystem_desc_t ios, io_desc_t *iodesc)
         create_mpi_datatypes(iodesc->basetype, ntypes, ncnt, iodesc->sindex,
 			     iodesc->scount, NULL, iodesc->stype);
     }
-    
+
     return PIO_NOERR;
 }
 
