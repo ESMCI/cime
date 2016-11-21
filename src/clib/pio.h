@@ -317,7 +317,7 @@ typedef struct wmulti_buffer
      * PIOc_Init_Decomp().  */
     int ioid;
 
-    /** ??? */
+    /** Number of variables in this multi variable buffer. */
     int validvars;
 
     /** Size of this variables data on local task. All vars in the

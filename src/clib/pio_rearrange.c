@@ -746,7 +746,8 @@ int rearrange_comp2io(const iosystem_desc_t ios, io_desc_t *iodesc, void *sbuf,
         sendtypes[i] =  MPI_DATATYPE_NULL;
     }
 
-    /* ??? */
+    /* If this io proc will exchange data with compute tasks create a
+     * MPI DataType for that exchange. */
     if (ios.ioproc && iodesc->nrecvs > 0)
     {
         for (i = 0; i < iodesc->nrecvs; i++)
@@ -785,7 +786,8 @@ int rearrange_comp2io(const iosystem_desc_t ios, io_desc_t *iodesc, void *sbuf,
         }
     }
 
-    /* ??? */
+    /* On compute tasks loop over iotasks and create a data type for
+     * each exchange.  */
     for (i = 0; i < niotasks; i++)
     {
         int io_comprank = ios.ioranks[i];
