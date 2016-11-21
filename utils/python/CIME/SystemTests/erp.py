@@ -23,11 +23,13 @@ class ERP(SystemTestsCompareTwo):
         """
         SystemTestsCompareTwo.__init__(self, case,
                                        separate_builds = True,
-                                       run_two_suffix = "BFBResetTest",
+                                       run_two_suffix = "BFBRestTest",
                                        run_one_st_archive = True,
                                        run_one_description = "Baseline run from day 0 to STOP_N",
                                        run_two_description = ("Test run starting from run one's " +
-                                                              "state at STOP_N // 2 + 1 to STOP_N"))
+                                                              "state at STOP_N // 2 + 1 to STOP_N.\n" +
+                                                              "Run 2 is done with half of the " +
+                                                              "number of tasks and threads as run 1"))
 
     def _case_one_setup(self):
         stop_n = self._case.get_value("STOP_N")
@@ -38,6 +40,13 @@ class ERP(SystemTestsCompareTwo):
 
     def _case_two_setup(self):
         """ Case two uses half the number of threads and tasks as the defaults and case one. """
+        self._case.set_value("REST_OPTION", "never")
+
+        stop_n_1 = self._case1.get_value("STOP_N")
+        stop_n = stop_n_1 - stop_n_1 // 2 - 1
+        expect(stop_n > 0, "STOP_N value too small for test")
+        self._case.set_value("STOP_N", stop_n)
+
         for comp in self._case.get_values("COMP_CLASSES"):
             if comp == "DRV":
                 comp = "CPL"
@@ -54,10 +63,27 @@ class ERP(SystemTestsCompareTwo):
 
     def _inter_run_hook(self):
         st_archive_dir_one = self._case1.get_value("DOUT_S_ROOT")
-        restdir = os.path.join(self._st_archive_dir_one, "rest")
+        restdir_name = "rest"
+        restdir = os.path.join(st_archive_dir_one, restdir_name)
         rundir = self._case2.get_value("RUNDIR")
+        path_1 = None
         for root, _, files in os.walk(restdir):
             for f in files:
+                if path_1 == None:
+                    path_1 = root
                 fpath_in = os.path.join(root, f)
                 fpath_out = os.path.join(rundir, f)
                 shutil.copy(fpath_in, fpath_out)
+
+        ref_case = self._case1.get_value("CASE") + ".ref1"
+        self._case2.set_value("REF_CASE", ref_case)
+
+        # Ugly - do this better!
+        # Discard everything before the folder in the rest directory
+        # Discard everything after and including the last path separator
+        date_tail = path_1[path_1.rfind(restdir_name) + len(restdir_name) + len(os.path.sep):
+                           path_1.rfind(os.path.sep)]
+        # Discard the seconds and the separating hyphen
+        date = date_tail[:date_tail.rfind('-')]
+        logger.info("RUN_REFDATE found as %s" % date)
+        self._case2.set_value("RUN_REFDATE", date)
