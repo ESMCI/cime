@@ -261,10 +261,10 @@ int PIOc_write_darray_multi(const int ncid, const int *vid, const int ioid,
  * PIOc_InitDecomp().
  * @param arraylen the length of the array to be written. This is the
  * length of the local component of the distrubited array. That is,
- * the length of the portion of the data that is on the processor.
+ * the length of the portion of the data that is on this task.
  * @param array pointer to the data to be written. This is a
  * pointer to the distributed portion of the array that is on this
- * processor.
+ * task.
  * @param fillvalue pointer to the fill value to be used for
  * missing data.
  * @returns 0 for success, non-zero error code for failure.
@@ -274,18 +274,18 @@ int PIOc_write_darray(const int ncid, const int vid, const int ioid,
                       const PIO_Offset arraylen, void *array, void *fillvalue)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
-    file_desc_t *file;  /* Info about file we are writing to. */
-    io_desc_t *iodesc;  /* The IO description. */
-    var_desc_t *vdesc;  /* Info about the var being written. */
-    void *bufptr;       /* A data buffer. */
-    MPI_Datatype vtype; /* The MPI type of the variable. */
-    wmulti_buffer *wmb; /* The write multi buffer for one or more vars. */
-    int tsize;          /* Size of MPI type. */
-    bool recordvar;     /* True if this is a record variable. */
-    int needsflush = 0; /* True if we need to flush buffer. */
-    bufsize totfree;    /* Amount of free space in the buffer. */
-    bufsize maxfree;    /* Max amount of free space in buffer. */
-    int ierr = PIO_NOERR; /* Return code. */
+    file_desc_t *file;     /* Info about file we are writing to. */
+    io_desc_t *iodesc;     /* The IO description. */
+    var_desc_t *vdesc;     /* Info about the var being written. */
+    void *bufptr;          /* A data buffer. */
+    MPI_Datatype vtype;    /* The MPI type of the variable. */
+    wmulti_buffer *wmb;    /* The write multi buffer for one or more vars. */
+    int tsize;             /* Size of MPI type. */
+    bool recordvar;        /* True if this is a record variable. */
+    int needsflush = 0;    /* True if we need to flush buffer. */
+    bufsize totfree;       /* Amount of free space in the buffer. */
+    bufsize maxfree;       /* Max amount of free space in buffer. */
+    int ierr = PIO_NOERR;  /* Return code. */
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
 
     LOG((1, "PIOc_write_darray ncid = %d vid = %d ioid = %d arraylen = %d",
@@ -323,7 +323,7 @@ int PIOc_write_darray(const int ncid, const int vid, const int ioid,
     wmb = &file->buffer;
 
     /* If the ioid is not initialized, set it. For non record vars,
-     * use the negative?? */
+     * use the negative ??? */
     if (wmb->ioid == -1)
     {
         if (recordvar)
@@ -337,11 +337,16 @@ int PIOc_write_darray(const int ncid, const int vid, const int ioid,
         if (recordvar)
         {
 	    /* Moving to the end of the wmb linked list to add the
-	     * current variable. */
+	     * current variable. Why are we checking the ioid here?
+	     * Don't all variables in the wmb have to have the same
+	     * decomposition? So ioid will always be set to the same
+	     * thing, and does not need to be checked when moving to
+	     * the end of the list. ??? */
             while(wmb->next && wmb->ioid != ioid)
                 if (wmb->next)
                     wmb = wmb->next;
 #ifdef _PNETCDF
+	    /* Do we still need the commented code below? ??? */
             /* flush the previous record before starting a new one. this is collective */
             /*       if (vdesc->request != NULL && (vdesc->request[0] != NC_REQ_NULL) ||
                      (wmb->frame != NULL && vdesc->record != wmb->frame[0])){
@@ -358,7 +363,7 @@ int PIOc_write_darray(const int ncid, const int vid, const int ioid,
         }
     }
 
-    /* the write multi buffer wmulti_buffer is the cache on compute
+    /* The write multi buffer wmulti_buffer is the cache on compute
        nodes that will collect and store multiple variables before
        sending them to the io nodes. Aggregating variables in this way
        leads to a considerable savings in communication
