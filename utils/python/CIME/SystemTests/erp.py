@@ -15,6 +15,9 @@ from CIME.SystemTests.system_tests_compare_two import SystemTestsCompareTwo
 
 logger = logging.getLogger(__name__)
 
+def _compute_rest_n(stop_n):
+    return stop_n // 2 + 1
+
 class ERP(SystemTestsCompareTwo):
 
     def __init__(self, case):
@@ -33,7 +36,7 @@ class ERP(SystemTestsCompareTwo):
 
     def _case_one_setup(self):
         stop_n = self._case.get_value("STOP_N")
-        rest_n = stop_n // 2 + 1
+        rest_n = _compute_rest_n(stop_n)
         expect(stop_n > rest_n , "STOP_N value too small for test")
         self._case.set_value("REST_N", rest_n)
         self._case.set_value("REST_OPTION", self._case.get_value("STOP_OPTION"))
@@ -43,7 +46,7 @@ class ERP(SystemTestsCompareTwo):
         self._case.set_value("REST_OPTION", "never")
 
         stop_n_1 = self._case1.get_value("STOP_N")
-        stop_n = stop_n_1 - stop_n_1 // 2 - 1
+        stop_n = stop_n_1 - _compute_rest_n(stop_n_1)
         expect(stop_n > 0, "STOP_N value too small for test")
         self._case.set_value("STOP_N", stop_n)
 
@@ -87,3 +90,4 @@ class ERP(SystemTestsCompareTwo):
         date = date_tail[:date_tail.rfind('-')]
         logger.info("RUN_REFDATE found as %s" % date)
         self._case2.set_value("RUN_REFDATE", date)
+
