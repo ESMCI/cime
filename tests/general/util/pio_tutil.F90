@@ -191,6 +191,7 @@ CONTAINS
 
     ! Finalize PIO
     CALL PIO_finalize(pio_tf_iosystem_, ierr);
+    CALL MPI_COMM_FREE(pio_tf_comm_, ierr);
   END SUBROUTINE PIO_TF_Finalize_
 
   ! Collective assert - Internal (Not directly used by unit tests)
