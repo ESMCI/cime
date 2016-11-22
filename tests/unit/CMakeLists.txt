@@ -106,6 +106,10 @@ add_dependencies (tests pio_unit_test)
 
 # Test Timeout in seconds.
 set (DEFAULT_TEST_TIMEOUT 60)
+
+# All tests need a certain number of tasks, but they should be able to
+# run successfully with more than they need. Test this by providing an
+# extra processor for each C test.
 set (AT_LEAST_TWO_TASKS 3)
 set (AT_LEAST_THREE_TASKS 4)
 set (AT_LEAST_FOUR_TASKS 5)
@@ -166,15 +170,15 @@ else ()
         TIMEOUT ${DEFAULT_TEST_TIMEOUT})
     add_mpi_test(test_iosystem3_simple
         EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_iosystem3_simple
-        NUMPROCS 4
+        NUMPROCS ${AT_LEAST_FOUR_TASKS}
         TIMEOUT ${DEFAULT_TEST_TIMEOUT})
     add_mpi_test(test_iosystem3_simple2
         EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_iosystem3_simple2
-        NUMPROCS 4
+        NUMPROCS ${AT_LEAST_FOUR_TASKS}
         TIMEOUT ${DEFAULT_TEST_TIMEOUT})
     add_mpi_test(test_iosystem3
         EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_iosystem3
-        NUMPROCS 4
+        NUMPROCS ${AT_LEAST_FOUR_TASKS}
         TIMEOUT ${DEFAULT_TEST_TIMEOUT})
    add_mpi_test(test_names
         EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_names
@@ -182,7 +186,7 @@ else ()
         TIMEOUT ${DEFAULT_TEST_TIMEOUT})
     add_mpi_test(test_nc4
         EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_nc4
-        NUMPROCS 4
+        NUMPROCS ${AT_LEAST_FOUR_TASKS}
         TIMEOUT ${DEFAULT_TEST_TIMEOUT})
     add_mpi_test(pio_unit_test
         EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/pio_unit_test

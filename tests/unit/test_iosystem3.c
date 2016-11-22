@@ -1,11 +1,11 @@
-/**
- * @file Tests the PIO library with multiple iosysids in use at the
+/*
+ * Tests the PIO library with multiple iosysids in use at the
  * same time.
  *
  * This is a simplified, C version of the fortran
  * pio_iosystem_tests3.F90.
  *
- * @author Ed Hartnett
+ * Ed Hartnett
  */
 #include <pio.h>
 #include <pio_tests.h>
@@ -35,11 +35,10 @@
 #define NUM_IO4 4
 #define REARRANGER 2
 
-/** This creates a netCDF file in the specified format, with some
+/* This creates a netCDF file in the specified format, with some
  * sample values. */
-int
-create_file(MPI_Comm comm, int iosysid, int format, char *filename,
-            char *attname, char *dimname, int my_rank)
+int create_file(MPI_Comm comm, int iosysid, int format, char *filename,
+                char *attname, char *dimname, int my_rank)
 {
     int ncid, varid, dimid;
     int ret;
@@ -79,10 +78,9 @@ create_file(MPI_Comm comm, int iosysid, int format, char *filename,
     return PIO_NOERR;
 }
 
-/** This checks an already-open netCDF file. */
-int
-check_file(MPI_Comm comm, int iosysid, int format, int ncid, char *filename,
-           char *attname, char *dimname, int my_rank)
+/* This checks an already-open netCDF file. */
+int check_file(MPI_Comm comm, int iosysid, int format, int ncid, char *filename,
+               char *attname, char *dimname, int my_rank)
 {
     int dimid;
     int varid;
@@ -116,7 +114,7 @@ check_file(MPI_Comm comm, int iosysid, int format, int ncid, char *filename,
     return PIO_NOERR;
 }
 
-/** This opens and checks a netCDF file. */
+/* This opens and checks a netCDF file. */
 int open_and_check_file(MPI_Comm comm, int iosysid, int iotype, int *ncid, char *fname,
                         char *attname, char *dimname, int disable_close, int my_rank)
 {
@@ -139,9 +137,8 @@ int open_and_check_file(MPI_Comm comm, int iosysid, int iotype, int *ncid, char 
     return PIO_NOERR;
 }
 
-/** Run async tests. */
-int
-main(int argc, char **argv)
+/* Run async tests. */
+int main(int argc, char **argv)
 {
     int my_rank; /* Zero-based rank of processor. */
     int ntasks; /* Number of processors involved in current execution. */
@@ -162,8 +159,12 @@ main(int argc, char **argv)
     MPI_Comm test_comm;
 
     /* Initialize test. */
-    if ((ret = pio_test_init(argc, argv, &my_rank, &ntasks, TARGET_NTASKS, &test_comm)))
+    if ((ret = pio_test_init(argc, argv, &my_rank, &ntasks, TARGET_NTASKS,
+                             &test_comm)))
         ERR(ERR_INIT);
+
+    /* Test code runs on TARGET_NTASKS tasks. The left over tasks do
+     * nothing. */
     if (my_rank < TARGET_NTASKS)
     {
         /* Figure out iotypes. */
@@ -236,7 +237,8 @@ main(int argc, char **argv)
         /* Initialize PIO system for overlap comm. */
         if (overlap_comm != MPI_COMM_NULL)
         {
-            if ((ret = PIOc_Init_Intracomm(overlap_comm, NUM_IO2, STRIDE1, BASE1, REARRANGER, &overlap_iosysid)))
+            if ((ret = PIOc_Init_Intracomm(overlap_comm, NUM_IO2, STRIDE1, BASE1, REARRANGER,
+                                           &overlap_iosysid)))
                 ERR(ret);
 
             /* Set the error handler. */
@@ -339,7 +341,6 @@ main(int argc, char **argv)
                 ERR(ret);
 
     } /* my_rank < TARGET_NTASKS */
-    MPI_Barrier(MPI_COMM_WORLD);
 
     /* Finalize test. */
     printf("%d %s finalizing...\n", my_rank, TEST_NAME);
