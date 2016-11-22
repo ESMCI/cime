@@ -170,7 +170,6 @@ class SystemTestsCompareTwo(SystemTestsCommon):
         # First run
         logger.info('Doing first run: ' + self._run_one_description)
         self._activate_case1()
-        self._pre_run_one_hook()
         self.run_indv(suffix = self._run_one_suffix,
                       st_archive = self._run_one_st_archive)
 

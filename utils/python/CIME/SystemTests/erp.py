@@ -50,6 +50,8 @@ class ERP(SystemTestsCompareTwo):
         expect(stop_n > 0, "STOP_N value too small for test")
         self._case.set_value("STOP_N", stop_n)
 
+        self._case.set_value("CONTINUE_RUN", True)
+
         for comp in self._case.get_values("COMP_CLASSES"):
             if comp == "DRV":
                 comp = "CPL"
@@ -76,18 +78,15 @@ class ERP(SystemTestsCompareTwo):
                     path_1 = root
                 fpath_in = os.path.join(root, f)
                 fpath_out = os.path.join(rundir, f)
-                shutil.copy(fpath_in, fpath_out)
+                os.symlink(fpath_in, fpath_out)
 
         ref_case = self._case1.get_value("CASE") + ".ref1"
         self._case2.set_value("REF_CASE", ref_case)
 
-        # Ugly - do this better!
-        # Discard everything before the folder in the rest directory
-        # Discard everything after and including the last path separator
-        date_tail = path_1[path_1.rfind(restdir_name) + len(restdir_name) + len(os.path.sep):
-                           path_1.rfind(os.path.sep)]
+        # Discard everything before the final path separator
+        date_tail = path_1[path_1.rfind(os.path.sep) + len(os.path.sep):]
         # Discard the seconds and the separating hyphen
         date = date_tail[:date_tail.rfind('-')]
-        logger.info("RUN_REFDATE found as %s" % date)
+        logger.info("RUN_REFDATE found as %s -> %s - > %s" % (path_1, date_tail, date))
         self._case2.set_value("RUN_REFDATE", date)
 
