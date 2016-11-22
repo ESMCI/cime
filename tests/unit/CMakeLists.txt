@@ -124,15 +124,15 @@ else ()
         TIMEOUT ${DEFAULT_TEST_TIMEOUT})
     add_mpi_test(test_darray_async
         EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_darray_async
-        NUMPROCS 4
+        NUMPROCS ${AT_LEAST_FOUR_TASKS}
         TIMEOUT ${DEFAULT_TEST_TIMEOUT})
     add_mpi_test(test_file
         EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_file
-        NUMPROCS 4
+        NUMPROCS ${AT_LEAST_FOUR_TASKS}
         TIMEOUT ${DEFAULT_TEST_TIMEOUT})
     add_mpi_test(test_intercomm2
         EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_intercomm2
-        NUMPROCS 4
+        NUMPROCS ${AT_LEAST_FOUR_TASKS}
         TIMEOUT ${DEFAULT_TEST_TIMEOUT})
     add_mpi_test(test_async_simple
         EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_async_simple

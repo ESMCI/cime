@@ -123,8 +123,12 @@ int main(int argc, char **argv)
     int dim_len[NDIM] = {DIM_LEN}; /* Length of the dimensions in the sample data. */
 
     /* Initialize test. */
-    if ((ret = pio_test_init(argc, argv, &my_rank, &ntasks, TARGET_NTASKS, &test_comm)))
+    if ((ret = pio_test_init(argc, argv, &my_rank, &ntasks, TARGET_NTASKS,
+			     &test_comm)))
         ERR(ERR_INIT);
+
+    /* Test code runs on TARGET_NTASKS tasks. The left over tasks do
+     * nothing. */
     if (my_rank < TARGET_NTASKS)
     {
         /* Figure out iotypes. */
@@ -207,7 +211,6 @@ int main(int argc, char **argv)
 	printf("rank: %d Freeing PIO decomposition...\n", my_rank);
 	if ((ret = PIOc_freedecomp(iosysid, ioid)))
 	    ERR(ret);
-
     } /* my_rank < TARGET_NTASKS */
 
     /* Finalize test. */

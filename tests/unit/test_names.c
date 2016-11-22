@@ -221,12 +221,12 @@ main(int argc, char **argv)
     MPI_Comm test_comm; /* A communicator for this test. */
 
     /* Initialize test. */
-    if ((ret = pio_test_init(argc, argv, &my_rank, &ntasks, TARGET_NTASKS, &test_comm)))
+    if ((ret = pio_test_init(argc, argv, &my_rank, &ntasks, TARGET_NTASKS,
+			     &test_comm)))
         ERR(ERR_INIT);
 
-    printf("%d test initialized\n", my_rank);
-
-    /* Only do something on TARGET_NTASKS tasks. */
+    /* Test code runs on TARGET_NTASKS tasks. The left over tasks do
+     * nothing. */
     if (my_rank < TARGET_NTASKS)
     {
 	printf("%d running test code\n", my_rank);
@@ -234,12 +234,10 @@ main(int argc, char **argv)
         /* Figure out iotypes. */
         if ((ret = get_iotypes(&num_flavors, flavor)))
             ERR(ret);
-	printf("%d got iotypes\n", my_rank);
 
 	/* Check the error string function. */
 	if ((ret = check_strerror(my_rank)))
 	    ERR(ret);
-	printf("%d checked strerror\n", my_rank);
 
 	/* keep things simple - 1 iotask per MPI process */
 	niotasks = TARGET_NTASKS;

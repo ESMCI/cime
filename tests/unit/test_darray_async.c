@@ -50,8 +50,12 @@ int main(int argc, char **argv)
     int ret;     /* Return code. */
 
     /* Initialize test. */
-    if ((ret = pio_test_init(argc, argv, &my_rank, &ntasks, TARGET_NTASKS, &test_comm)))
+    if ((ret = pio_test_init(argc, argv, &my_rank, &ntasks, TARGET_NTASKS,
+			     &test_comm)))
         ERR(ERR_INIT);
+
+    /* Test code runs on TARGET_NTASKS tasks. The left over tasks do
+     * nothing. */
     if (my_rank < TARGET_NTASKS)
     {
         /* Figure out iotypes. */
@@ -59,7 +63,7 @@ int main(int argc, char **argv)
             ERR(ret);
 
 	/* keep things simple - 1 iotask per MPI process */
-	niotasks = ntasks;
+	niotasks = TARGET_NTASKS;
 
 	/* Initialize the PIO IO system. This specifies how
 	 * many and which processors are involved in I/O. */
@@ -68,7 +72,7 @@ int main(int argc, char **argv)
 	    ERR(ret);
 
 	/* Describe the decomposition. This is a 1-based array, so add 1! */
-	elements_per_pe = X_DIM_LEN * Y_DIM_LEN / ntasks;
+	elements_per_pe = X_DIM_LEN * Y_DIM_LEN / TARGET_NTASKS;
 	if (!(compdof = malloc(elements_per_pe * sizeof(PIO_Offset))))
 	    return PIO_ENOMEM;
 	for (i = 0; i < elements_per_pe; i++) {
@@ -118,9 +122,8 @@ int main(int argc, char **argv)
 		ERR(ret);
 
 	    /* Put a barrier here to make verbose output look better. */
-	    if ((ret = MPI_Barrier(MPI_COMM_WORLD)))
+	    if ((ret = MPI_Barrier(test_comm)))
 		MPIERR(ret);
-
 	}
 
 	/* Free the PIO decomposition. */
