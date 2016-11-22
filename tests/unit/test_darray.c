@@ -132,16 +132,16 @@ int main(int argc, char **argv)
             ERR(ret);
 
 	/* keep things simple - 1 iotask per MPI process */
-	niotasks = ntasks;
+	niotasks = TARGET_NTASKS;
 
 	/* Initialize the PIO IO system. This specifies how
 	 * many and which processors are involved in I/O. */
-	if ((ret = PIOc_Init_Intracomm(MPI_COMM_WORLD, niotasks, ioproc_stride,
+	if ((ret = PIOc_Init_Intracomm(test_comm, niotasks, ioproc_stride,
 				       ioproc_start, PIO_REARR_SUBSET, &iosysid)))
 	    ERR(ret);
 
 	/* Describe the decomposition. This is a 1-based array, so add 1! */
-	elements_per_pe = DIM_LEN / ntasks;
+	elements_per_pe = DIM_LEN / TARGET_NTASKS;
 	if (!(compdof = malloc(elements_per_pe * sizeof(PIO_Offset))))
 	    return PIO_ENOMEM;
 	for (int i = 0; i < elements_per_pe; i++)
@@ -195,11 +195,11 @@ int main(int argc, char **argv)
 		ERR(ret);
 
 	    /* Put a barrier here to make output look better. */
-	    if ((ret = MPI_Barrier(MPI_COMM_WORLD)))
+	    if ((ret = MPI_Barrier(test_comm)))
 		MPIERR(ret);
 
 	    /* Check the file contents. */
-	    if ((ret = check_file(iosysid, ntasks, my_rank, filename)))
+	    if ((ret = check_file(iosysid, TARGET_NTASKS, my_rank, filename)))
 		ERR(ret);
 	}
 
