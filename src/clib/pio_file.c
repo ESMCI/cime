@@ -34,7 +34,7 @@ int PIOc_openfile(const int iosysid, int *ncidp, int *iotype,
     return PIOc_openfile_retry(iosysid, ncidp, iotype, filename, mode, 1);
 }
 
-/** 
+/**
  * Open an existing file using PIO library.
  *
  * Input parameters are read on comp task 0 and ignored elsewhere.
@@ -74,7 +74,7 @@ int PIOc_open(int iosysid, const char *path, int mode, int *ncidp)
     return PIOc_openfile_retry(iosysid, ncidp, &iotype, path, mode, 0);
 }
 
-/** 
+/**
  * Create a new file using pio. Input parameters are read on comp task
  * 0 and ignored elsewhere.
  *

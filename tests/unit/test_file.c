@@ -148,19 +148,19 @@ int main(int argc, char **argv)
             /* Overwrite existing test file. */
             int mode = PIO_CLOBBER;
 
-	    /* If this is netCDF-4, add the netCDF4 flag. */
+            /* If this is netCDF-4, add the netCDF4 flag. */
             if (flavor[fmt] == PIO_IOTYPE_NETCDF4C || flavor[fmt] == PIO_IOTYPE_NETCDF4P)
-	    {
-		printf("%d adding NC_NETCDF4 flag\n", my_rank);
+            {
+                printf("%d adding NC_NETCDF4 flag\n", my_rank);
                 mode |= NC_NETCDF4;
-	    }
+            }
 
-	    /* If this is pnetcdf or netCDF-4 parallel, add the MPIIO flag. */
-	    if (flavor[fmt] == PIO_IOTYPE_PNETCDF || flavor[fmt] == PIO_IOTYPE_NETCDF4P)
-	    {
-		printf("%d adding NC_MPIIO flag\n", my_rank);
+            /* If this is pnetcdf or netCDF-4 parallel, add the MPIIO flag. */
+            if (flavor[fmt] == PIO_IOTYPE_PNETCDF || flavor[fmt] == PIO_IOTYPE_NETCDF4P)
+            {
+                printf("%d adding NC_MPIIO flag\n", my_rank);
                 mode |= NC_MPIIO;
-	    }
+            }
 
             /* Create a filename. */
             if ((ret = get_iotype_name(flavor[fmt], iotype_name)))
