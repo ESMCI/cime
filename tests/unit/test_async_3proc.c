@@ -1,6 +1,5 @@
-/**
- * @file Tests for PIOc_Intercomm. This tests basic asynch I/O capability.
- * @author Ed Hartnett
+/*
+ * Tests for PIOc_Intercomm. This tests basic asynch I/O capability.
  *
  * This very simple test runs on 32 ranks. Eight are used for IO, the
  * other 24 for computation. The netCDF sample files are created and
@@ -10,9 +9,16 @@
  * <pre>mpiexec -n 4 valgrind -v --leak-check=full --suppressions=../../../tests/unit/valsupp_test.supp
  * --error-exitcode=99 --track-origins=yes ./test_async_8io_24comp</pre>
  *
+ * Ed Hartnett
  */
 #include <pio.h>
 #include <pio_tests.h>
+
+/* The number of tasks this test should run on. */
+#define TARGET_NTASKS 3
+
+/* The name of this test. */
+#define TEST_NAME "test_async_3proc"
 
 /* Number of different combonations of IO and computation processor
  * numbers we will try in this test. */
@@ -21,15 +27,8 @@
 /* Number of computational components to create. */
 #define COMPONENT_COUNT 1
 
-/* The number of tasks this test should run on. */
-#define TARGET_NTASKS 3
-
-/* The name of this test. */
-#define TEST_NAME "test_async_3proc"
-
-/** Run async tests. */
-int
-main(int argc, char **argv)
+/* Run async tests. */
+int main(int argc, char **argv)
 {
     int my_rank; /* Zero-based rank of processor. */
     int ntasks; /* Number of processors involved in current execution. */
@@ -47,8 +46,12 @@ main(int argc, char **argv)
     int num_io_procs[NUM_COMBOS] = {2, 1};
 
     /* Initialize test. */
-    if ((ret = pio_test_init(argc, argv, &my_rank, &ntasks, TARGET_NTASKS, &test_comm)))
+    if ((ret = pio_test_init(argc, argv, &my_rank, &ntasks, TARGET_NTASKS,
+			     &test_comm)))
         ERR(ERR_INIT);
+
+    /* Test code runs on TARGET_NTASKS tasks. The left over tasks do
+     * nothing. */
     if (my_rank < TARGET_NTASKS)
     {
         /* Figure out iotypes. */
@@ -108,13 +111,12 @@ main(int argc, char **argv)
                            iosysid[c]);
                 }
             } /* endif comp_task */
+
             /* Wait for everyone to catch up. */
             printf("%d %s waiting for all processes!\n", my_rank, TEST_NAME);
             MPI_Barrier(test_comm);
         } /* next combo */
     } /* endif my_rank < TARGET_NTASKS */
-
-    MPI_Barrier(MPI_COMM_WORLD);
 
     /* Finalize test. */
     printf("%d %s finalizing...\n", my_rank, TEST_NAME);

@@ -129,7 +129,7 @@ main(int argc, char **argv)
 
 	/* Initialize the PIO IO system. This specifies how
 	 * many and which processors are involved in I/O. */
-	if ((ret = PIOc_Init_Intracomm(MPI_COMM_WORLD, niotasks, ioproc_stride,
+	if ((ret = PIOc_Init_Intracomm(test_comm, niotasks, ioproc_stride,
 				       ioproc_start, PIO_REARR_SUBSET, &iosysid)))
 	    ERR(ret);
 

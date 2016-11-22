@@ -7,11 +7,8 @@
  * --error-exitcode=99 --track-origins=yes ./test_intercomm2</pre>
  *
  */
-#define LOGGING 1
 #include <pio.h>
 #include <pio_tests.h>
-#include <netcdf.h>
-#include <unistd.h>
 
 /* The number of tasks this test should run on. */
 #define TARGET_NTASKS 4
@@ -31,7 +28,9 @@
 /* The length of our test data. */
 #define DIM_LEN 4
 
-#define TARGET_NTASKS 4
+/* Number of netCDF atomic types. */
+#define NUM_TYPES 11
+
 /* The name of the dimension in the netCDF output file. */
 #define FIRST_DIM_NAME "jojo"
 #define DIM_NAME "dim_test_intercomm2"
@@ -228,13 +227,8 @@ int check_file(int iosysid, int format, char *filename, int my_rank)
     return 0;
 }
 
-/* Run Tests for Init_Intercomm
- *
- * @param argc argument count
- * @param argv array of arguments
- */
-int
-main(int argc, char **argv)
+/* Run Tests for Init_Intercomm. */
+int main(int argc, char **argv)
 {
     /* Zero-based rank of processor. */
     int my_rank;
@@ -346,7 +340,6 @@ main(int argc, char **argv)
                 /* Test the inq_type function for atomic types. */
                 char type_name[NC_MAX_NAME + 1];
                 PIO_Offset type_size;
-#define NUM_TYPES 11
                 nc_type xtype[NUM_TYPES] = {NC_CHAR, NC_BYTE, NC_SHORT, NC_INT, NC_FLOAT, NC_DOUBLE,
                                             NC_UBYTE, NC_USHORT, NC_UINT, NC_INT64, NC_UINT64};
                 int type_len[NUM_TYPES] = {1, 1, 2, 4, 4, 8, 1, 2, 4, 8, 8};

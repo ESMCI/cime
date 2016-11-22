@@ -106,6 +106,8 @@ add_dependencies (tests pio_unit_test)
 
 # Test Timeout in seconds.
 set (DEFAULT_TEST_TIMEOUT 60)
+set (AT_LEAST_TWO_TASKS 3)
+set (AT_LEAST_THREE_TASKS 4)
 set (AT_LEAST_FOUR_TASKS 5)
 
 if (PIO_USE_MPISERIAL)
@@ -136,7 +138,7 @@ else ()
         TIMEOUT ${DEFAULT_TEST_TIMEOUT})
     add_mpi_test(test_async_simple
         EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_async_simple
-        NUMPROCS 2
+        NUMPROCS ${AT_LEAST_TWO_TASKS}
         TIMEOUT ${DEFAULT_TEST_TIMEOUT})
     # add_mpi_test(test_async_2comp
     #     EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_async_2comp
@@ -144,7 +146,7 @@ else ()
     #     TIMEOUT ${DEFAULT_TEST_TIMEOUT})
     add_mpi_test(test_async_3proc
         EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_async_3proc
-        NUMPROCS 3
+        NUMPROCS ${AT_LEAST_THREE_TASKS}
         TIMEOUT ${DEFAULT_TEST_TIMEOUT})
     add_mpi_test(test_async_4proc
         EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_async_4proc
