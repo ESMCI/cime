@@ -45,6 +45,7 @@ if ("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
         PRIVATE -ffree-line-length-none)
 endif()
 
+# Don't run these tests if we are using MPI SERIAL.
 if (NOT PIO_USE_MPISERIAL)
   add_executable (test_intercomm2 EXCLUDE_FROM_ALL test_intercomm2.c test_common.c)
   target_link_libraries (test_intercomm2 pioc)
