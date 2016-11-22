@@ -51,6 +51,7 @@ set (PIO_FILESYSTEM_HINTS IGNORE CACHE STRING "Filesystem hints (lustre or gpfs)
 #===== Testing Options =====
 option (PIO_ENABLE_TESTS  "Enable the testing builds"                           ON)
 option (PIO_HDF5_LOGGING  "Enable hdf5 logging (requires instrumented netcdf4)" OFF)
+option (PIO_VALGRIND_CHECK  "Enable memory leak check using valgrind"           OFF)
 
 #==============================================================================
 #  BACKWARDS COMPATIBILITY
