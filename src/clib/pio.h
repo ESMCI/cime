@@ -554,7 +554,6 @@ extern "C" {
     /* Error handling. */
     int PIOc_strerror(int pioerr, char *errstr);
     int PIOc_set_log_level(int level);
-    int PIOc_set_log_level2(MPI_Comm comm, int level);
 
     /* Decomposition. */
     int PIOc_InitDecomp(const int iosysid, const int basetype, const int ndims, const int *dims,
