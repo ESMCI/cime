@@ -45,12 +45,10 @@ class ERP(SystemTestsCompareTwo):
         """ Case two uses half the number of threads and tasks as the defaults and case one. """
         self._case.set_value("REST_OPTION", "never")
 
-        stop_n_1 = self._case1.get_value("STOP_N")
-        stop_n = stop_n_1 - _compute_rest_n(stop_n_1)
+        stop_n_tot = self._case.get_value("STOP_N")
+        stop_n = stop_n_tot - _compute_rest_n(stop_n_tot)
         expect(stop_n > 0, "STOP_N value too small for test")
         self._case.set_value("STOP_N", stop_n)
-
-        self._case.set_value("CONTINUE_RUN", True)
 
         for comp in self._case.get_values("COMP_CLASSES"):
             if comp == "DRV":
@@ -64,6 +62,11 @@ class ERP(SystemTestsCompareTwo):
             if nthreads > 1:
                 self._case.set_value("BUILD_THREADED", True)
                 self._case.set_value("NTHRDS_%s"%comp, nthreads // 2)
+
+        ref_case = self._case1.get_value("CASE")
+        self._case.set_value("RUN_REFCASE", ref_case)
+        self._case.set_value("RUN_TYPE", "branch")
+
         case_setup(self._case, test_mode=True, reset=True)
 
     def _inter_run_hook(self):
@@ -71,22 +74,19 @@ class ERP(SystemTestsCompareTwo):
         restdir_name = "rest"
         restdir = os.path.join(st_archive_dir_one, restdir_name)
         rundir = self._case2.get_value("RUNDIR")
-        path_1 = None
-        for root, _, files in os.walk(restdir):
-            for f in files:
-                if path_1 == None:
-                    path_1 = root
-                fpath_in = os.path.join(root, f)
-                fpath_out = os.path.join(rundir, f)
-                os.symlink(fpath_in, fpath_out)
+        rest_points = os.listdir(restdir)
+        expect(len(rest_points) == 1, "Cannot determine the rest point to use")
 
-        ref_case = self._case1.get_value("CASE") + ".ref1"
-        self._case2.set_value("REF_CASE", ref_case)
-
-        # Discard everything before the final path separator
-        date_tail = path_1[path_1.rfind(os.path.sep) + len(os.path.sep):]
-        # Discard the seconds and the separating hyphen
-        date = date_tail[:date_tail.rfind('-')]
-        logger.info("RUN_REFDATE found as %s -> %s - > %s" % (path_1, date_tail, date))
+        rest_time = rest_points[0]
+        date = rest_time[:rest_time.rfind('-')]
         self._case2.set_value("RUN_REFDATE", date)
+        time_of_day = rest_time[rest_time.rfind('-') + len('-'):]
+        self._case2.set_value("RUN_REFTOD", time_of_day)
 
+        rtime_dir = os.path.join(restdir, rest_time)
+        files = os.listdir(rtime_dir)
+        expect(len(files) > 0: "No rest files found")
+        for f in files:
+            fpath_in = os.path.join(rtime_dir, f)
+            fpath_out = os.path.join(rundir, f)
+            shutil.copy(fpath_in, fpath_out)
