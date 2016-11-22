@@ -108,6 +108,13 @@ add_dependencies (tests pio_unit_test)
 # Test Timeout in seconds.
 set (DEFAULT_TEST_TIMEOUT 60)
 
+# All tests need a certain number of tasks, but they should be able to
+# run successfully with more than they need. Test this by providing an
+# extra processor for each C test.
+set (AT_LEAST_TWO_TASKS 3)
+set (AT_LEAST_THREE_TASKS 4)
+set (AT_LEAST_FOUR_TASKS 5)
+
 if (PIO_USE_MPISERIAL)
     add_test(NAME test_names
         COMMAND test_names)
@@ -120,23 +127,23 @@ if (PIO_USE_MPISERIAL)
 else ()
     add_mpi_test(test_darray
         EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_darray
-        NUMPROCS 4
+        NUMPROCS ${AT_LEAST_FOUR_TASKS}
         TIMEOUT ${DEFAULT_TEST_TIMEOUT})
     add_mpi_test(test_darray_async
         EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_darray_async
-        NUMPROCS 4
+        NUMPROCS ${AT_LEAST_FOUR_TASKS}
         TIMEOUT ${DEFAULT_TEST_TIMEOUT})
     add_mpi_test(test_file
         EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_file
-        NUMPROCS 4
+        NUMPROCS ${AT_LEAST_FOUR_TASKS}
         TIMEOUT ${DEFAULT_TEST_TIMEOUT})
     add_mpi_test(test_intercomm2
         EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_intercomm2
-        NUMPROCS 4
+        NUMPROCS ${AT_LEAST_FOUR_TASKS}
         TIMEOUT ${DEFAULT_TEST_TIMEOUT})
     add_mpi_test(test_async_simple
         EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_async_simple
-        NUMPROCS 2
+        NUMPROCS ${AT_LEAST_TWO_TASKS}
         TIMEOUT ${DEFAULT_TEST_TIMEOUT})
     # add_mpi_test(test_async_2comp
     #     EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_async_2comp
@@ -144,43 +151,43 @@ else ()
     #     TIMEOUT ${DEFAULT_TEST_TIMEOUT})
     add_mpi_test(test_async_3proc
         EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_async_3proc
-        NUMPROCS 3
+        NUMPROCS ${AT_LEAST_THREE_TASKS}
         TIMEOUT ${DEFAULT_TEST_TIMEOUT})
     add_mpi_test(test_async_4proc
         EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_async_4proc
-        NUMPROCS 4
+        NUMPROCS ${AT_LEAST_FOUR_TASKS}
         TIMEOUT ${DEFAULT_TEST_TIMEOUT})
     add_mpi_test(test_iosystem2_simple
         EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_iosystem2_simple
-        NUMPROCS 2
+        NUMPROCS ${AT_LEAST_TWO_TASKS}
         TIMEOUT ${DEFAULT_TEST_TIMEOUT})
     add_mpi_test(test_iosystem2_simple2
         EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_iosystem2_simple2
-        NUMPROCS 4
+        NUMPROCS ${AT_LEAST_FOUR_TASKS}
         TIMEOUT ${DEFAULT_TEST_TIMEOUT})
     add_mpi_test(test_iosystem2
         EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_iosystem2
-        NUMPROCS 4
+        NUMPROCS ${AT_LEAST_FOUR_TASKS}
         TIMEOUT ${DEFAULT_TEST_TIMEOUT})
     add_mpi_test(test_iosystem3_simple
         EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_iosystem3_simple
-        NUMPROCS 4
+        NUMPROCS ${AT_LEAST_FOUR_TASKS}
         TIMEOUT ${DEFAULT_TEST_TIMEOUT})
     add_mpi_test(test_iosystem3_simple2
         EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_iosystem3_simple2
-        NUMPROCS 4
+        NUMPROCS ${AT_LEAST_FOUR_TASKS}
         TIMEOUT ${DEFAULT_TEST_TIMEOUT})
     add_mpi_test(test_iosystem3
         EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_iosystem3
-        NUMPROCS 4
+        NUMPROCS ${AT_LEAST_FOUR_TASKS}
         TIMEOUT ${DEFAULT_TEST_TIMEOUT})
    add_mpi_test(test_names
         EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_names
-        NUMPROCS 4
+        NUMPROCS ${AT_LEAST_FOUR_TASKS}
         TIMEOUT ${DEFAULT_TEST_TIMEOUT})
     add_mpi_test(test_nc4
         EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_nc4
-        NUMPROCS 4
+        NUMPROCS ${AT_LEAST_FOUR_TASKS}
         TIMEOUT ${DEFAULT_TEST_TIMEOUT})
     add_mpi_test(pio_unit_test
         EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/pio_unit_test

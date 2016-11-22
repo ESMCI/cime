@@ -92,70 +92,29 @@ check_metadata(int ncid, int my_rank)
 int
 main(int argc, char **argv)
 {
-    int verbose = 1;
-
-    /* Zero-based rank of processor. */
-    int my_rank;
-
-    /* Number of processors involved in current execution. */
-    int ntasks;
-
-    /* Specifies the flavor of netCDF output format. */
-    int iotype;
-
-    /* Number of processors that will do IO. In this test we
-     * will do IO from all processors. */
-    int niotasks;
-
-    /* Stride in the mpi rank between io tasks. Always 1 in this
-     * test. */
-    int ioproc_stride = 1;
-
-    /* Number of the aggregator? Always 0 in this test. */
-    int numAggregator = 0;
-
-    /* Zero based rank of first processor to be used for I/O. */
-    int ioproc_start = 0;
-
-    /* The dimension IDs. */
-    int dimids[NDIM];
-
-    /* Array index per processing unit. */
-    PIO_Offset elements_per_pe;
-
-    /* The ID for the parallel I/O system. */
-    int iosysid;
-
-    /* The ncid of the netCDF file. */
-    int ncid = 0;
-
-    /* The ID of the netCDF varable. */
-    int varid;
-
-    /* The I/O description ID. */
-    int ioid;
-
-    /* A buffer for sample data. */
-    float *buffer;
-
-    /* A buffer for reading data back from the file. */
-    int *read_buffer;
-
-    /* The decomposition mapping. */
-    PIO_Offset *compdof;
-
-    /* Return code. */
-    int ret;
-
-    /* Index for loops. */
-    int fmt, d, d1, i;
-    int num_flavors; /* Number of PIO netCDF flavors in this build. */
+    int my_rank;    /* Zero-based rank of processor. */
+    int ntasks;     /* Number of processors involved in current execution. */
+    int iotype;     /* Specifies the flavor of netCDF output format. */
+    int niotasks;   /* Number of processors that will do IO. */
+    int ioproc_stride = 1;    /* Stride in the mpi rank between io tasks. */
+    int numAggregator = 0;    /* Number of the aggregator? Always 0 in this test. */
+    int ioproc_start = 0;     /* Zero based rank of first processor to be used for I/O. */
+    int dimids[NDIM];         /* The dimension IDs. */
+    PIO_Offset elements_per_pe;  /* Array index per processing unit. */
+    int iosysid;    /* The ID for the parallel I/O system. */
+    int ncid;       /* The ncid of the netCDF file. */
+    int varid;      /* The ID of the netCDF varable. */
+    int ioid;       /* The I/O description ID. */
+    PIO_Offset *compdof;  /* The decomposition mapping. */
+    int ret;        /* Return code. */
+    int fmt, d, d1, i;    /* Index for loops. */
+    int num_flavors;      /* Number of PIO netCDF flavors in this build. */
     int flavor[NUM_FLAVORS]; /* iotypes for the supported netCDF IO flavors. */
-
-    MPI_Comm test_comm; /* A communicator for this test. */
+    MPI_Comm test_comm;   /* A communicator for this test. */
 
     /* Initialize test. */
-    if ((ret = pio_test_init(argc, argv, &my_rank, &ntasks, TARGET_NTASKS, &test_comm)))
+    if ((ret = pio_test_init(argc, argv, &my_rank, &ntasks, TARGET_NTASKS,
+			     &test_comm)))
         ERR(ERR_INIT);
 
     /* Only do something on TARGET_NTASKS tasks. */
@@ -166,16 +125,16 @@ main(int argc, char **argv)
             ERR(ret);
 
 	/* keep things simple - 1 iotask per MPI process */
-	niotasks = ntasks;
+	niotasks = TARGET_NTASKS;
 
 	/* Initialize the PIO IO system. This specifies how
 	 * many and which processors are involved in I/O. */
-	if ((ret = PIOc_Init_Intracomm(MPI_COMM_WORLD, niotasks, ioproc_stride,
+	if ((ret = PIOc_Init_Intracomm(test_comm, niotasks, ioproc_stride,
 				       ioproc_start, PIO_REARR_SUBSET, &iosysid)))
 	    ERR(ret);
 
 	/* Describe the decomposition. This is a 1-based array, so add 1! */
-	elements_per_pe = X_DIM_LEN * Y_DIM_LEN / ntasks;
+	elements_per_pe = X_DIM_LEN * Y_DIM_LEN / TARGET_NTASKS;
 	if (!(compdof = malloc(elements_per_pe * sizeof(PIO_Offset))))
 	    return PIO_ENOMEM;
 	for (i = 0; i < elements_per_pe; i++)
@@ -184,7 +143,6 @@ main(int argc, char **argv)
 	}
 
 	/* Create the PIO decomposition for this test. */
-	if (verbose)
 	    printf("rank: %d Creating decomposition...\n", my_rank);
 	if ((ret = PIOc_InitDecomp(iosysid, PIO_FLOAT, 2, &dim_len[1], (PIO_Offset)elements_per_pe,
 				   compdof, &ioid, NULL, NULL, NULL)))
@@ -211,7 +169,6 @@ main(int argc, char **argv)
 	    sprintf(filename, "%s_%s.nc", TEST_NAME, iotype_name);
 
 	    /* Create the netCDF output file. */
-	    if (verbose)
 		printf("rank: %d Creating sample file %s with format %d...\n",
 		       my_rank, filename, flavor[fmt]);
 	    if ((ret = PIOc_create(iosysid, filename, mode, &ncid)))
@@ -226,13 +183,11 @@ main(int argc, char **argv)
 		ERR(ret);
 
 	    /* Close the netCDF file. */
-	    if (verbose)
 		printf("rank: %d Closing the sample data file...\n", my_rank);
 	    if ((ret = PIOc_closefile(ncid)))
 		ERR(ret);
 
 	    /* Reopen the test file. */
-	    if (verbose)
 		printf("rank: %d Re-opening sample file %s with format %d...\n",
 		       my_rank, filename, flavor[fmt]);
 	    if ((ret = PIOc_open(iosysid, filename, mode, &ncid)))
@@ -243,19 +198,17 @@ main(int argc, char **argv)
 		ERR(ret);
 
 	    /* Close the netCDF file. */
-	    if (verbose)
 		printf("rank: %d Closing the sample data file...\n", my_rank);
 	    if ((ret = PIOc_closefile(ncid)))
 		ERR(ret);
 
-	    /* Put a barrier here to make verbose output look better. */
-	    if ((ret = MPI_Barrier(MPI_COMM_WORLD)))
+	    /* Put a barrier here to make output look better. */
+	    if ((ret = MPI_Barrier(test_comm)))
 		MPIERR(ret);
 
 	}
 
 	/* Free the PIO decomposition. */
-	if (verbose)
 	    printf("rank: %d Freeing PIO decomposition...\n", my_rank);
 	if ((ret = PIOc_freedecomp(iosysid, ioid)))
 	    ERR(ret);

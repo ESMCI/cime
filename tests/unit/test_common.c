@@ -110,9 +110,8 @@ int get_iotype_name(int iotype, char *name)
  * for this test and contain target_ntasks tasks from WORLD.
  * @returns 0 for success, error code otherwise.
 */
-int
-pio_test_init(int argc, char **argv, int *my_rank, int *ntasks,
-              int target_ntasks, MPI_Comm *comm)
+int pio_test_init(int argc, char **argv, int *my_rank, int *ntasks,
+		  int target_ntasks, MPI_Comm *comm)
 {
     int ret; /* Return value. */
 
@@ -131,6 +130,7 @@ pio_test_init(int argc, char **argv, int *my_rank, int *ntasks,
         MPIERR(ret);
     if ((ret = MPI_Comm_size(MPI_COMM_WORLD, ntasks)))
         MPIERR(ret);
+    printf("%d has %d tasks\n", *my_rank, *ntasks);
 
     /* Check that a valid number of processors was specified. */
     if (*ntasks < target_ntasks)
@@ -155,25 +155,28 @@ pio_test_init(int argc, char **argv, int *my_rank, int *ntasks,
             color = 1;
             key = *my_rank - target_ntasks;
         }
+	printf("%d splitting comm for test color = %d key = %d\n", *my_rank, color, key);
         if ((ret = MPI_Comm_split(MPI_COMM_WORLD, color, key, comm)))
             MPIERR(ret);
     }
     else
     {
+	printf("%d using whole comm for test\n", *my_rank);
         if ((ret = MPI_Comm_dup(MPI_COMM_WORLD, comm)))
             MPIERR(ret);
     }
 
     /* Turn on logging. */
+    printf("%d setting log level\n", *my_rank);    
     if ((ret = PIOc_set_log_level(3)))
         return ret;
+    printf("%d done setting log level\n", *my_rank);    
 
     return PIO_NOERR;
 }
 
 /* Finalize a test. */
-int
-pio_test_finalize()
+int pio_test_finalize()
 {
     int ret = PIO_NOERR; /* Return value. */
 

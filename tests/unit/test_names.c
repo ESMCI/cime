@@ -148,15 +148,6 @@ int check_strerror(int my_rank)
         /* Check that it was as expected. */
         if (strcmp(errstr, expected[try]))
             ret = ERR_AWFUL;
-
-        /* Print some output to stdout if required. */
-        {
-            printf("%d: PIO strerror(%d) = %s\n", my_rank, errcode[try],
-                   errstr);
-            strcpy(errstr, nc_strerror(errcode[try]));
-            printf("%d: netCDF strerror(%d) = %s\n", my_rank, errcode[try],
-                   errstr);
-        }
     }
 
     return ret;
@@ -230,12 +221,16 @@ main(int argc, char **argv)
     MPI_Comm test_comm; /* A communicator for this test. */
 
     /* Initialize test. */
-    if ((ret = pio_test_init(argc, argv, &my_rank, &ntasks, TARGET_NTASKS, &test_comm)))
+    if ((ret = pio_test_init(argc, argv, &my_rank, &ntasks, TARGET_NTASKS,
+			     &test_comm)))
         ERR(ERR_INIT);
 
-    /* Only do something on TARGET_NTASKS tasks. */
+    /* Test code runs on TARGET_NTASKS tasks. The left over tasks do
+     * nothing. */
     if (my_rank < TARGET_NTASKS)
     {
+	printf("%d running test code\n", my_rank);
+	
         /* Figure out iotypes. */
         if ((ret = get_iotypes(&num_flavors, flavor)))
             ERR(ret);
@@ -245,13 +240,14 @@ main(int argc, char **argv)
 	    ERR(ret);
 
 	/* keep things simple - 1 iotask per MPI process */
-	niotasks = ntasks;
+	niotasks = TARGET_NTASKS;
 
 	/* Initialize the PIO IO system. This specifies how
 	 * many and which processors are involved in I/O. */
-	if ((ret = PIOc_Init_Intracomm(MPI_COMM_WORLD, niotasks, ioproc_stride,
+	if ((ret = PIOc_Init_Intracomm(test_comm, niotasks, ioproc_stride,
 				       ioproc_start, PIO_REARR_SUBSET, &iosysid)))
 	    ERR(ret);
+	printf("%d inited intracomm\n", my_rank);	
 
 	/* Describe the decomposition. This is a 1-based array, so add 1! */
 	elements_per_pe = X_DIM_LEN * Y_DIM_LEN / ntasks;
@@ -267,6 +263,7 @@ main(int argc, char **argv)
 				   compdof, &ioid, NULL, NULL, NULL)))
 	    ERR(ret);
 	free(compdof);
+	printf("%d inited decomp\n", my_rank);		
 
 	/* Use PIO to create the example file in each of the four
 	 * available ways. */
@@ -326,9 +323,8 @@ main(int argc, char **argv)
 		ERR(ret);
 
 	    /* Put a barrier here to make output look better. */
-	    if ((ret = MPI_Barrier(MPI_COMM_WORLD)))
+	    if ((ret = MPI_Barrier(test_comm)))
 		MPIERR(ret);
-
 	}
 
 	/* Free the PIO decomposition. */

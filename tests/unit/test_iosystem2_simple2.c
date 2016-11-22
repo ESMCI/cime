@@ -1,10 +1,10 @@
-/**
- * @file Tests the PIO library with multiple iosysids in use at the
+/*
+ * Tests the PIO library with multiple iosysids in use at the
  * same time.
  *
  * This is a simplified, C version of the fortran pio_iosystem_tests2.F90.
  *
- * @author Ed Hartnett
+ * Ed Hartnett
  */
 #include <pio.h>
 #include <pio_tests.h>
@@ -28,9 +28,8 @@
 #define BASE 0
 #define REARRANGER 1
 
-/** Run test. */
-int
-main(int argc, char **argv)
+/* Run test. */
+int main(int argc, char **argv)
 {
     int my_rank; /* Zero-based rank of processor. */
     int ntasks; /* Number of processors involved in current execution. */
@@ -42,16 +41,17 @@ main(int argc, char **argv)
     MPI_Comm test_comm;
 
     /* Initialize test. */
-    if ((ret = pio_test_init(argc, argv, &my_rank, &ntasks, TARGET_NTASKS, &test_comm)))
+    if ((ret = pio_test_init(argc, argv, &my_rank, &ntasks, TARGET_NTASKS,
+			     &test_comm)))
         ERR(ERR_INIT);
-
-    /* Figure out iotypes. */
-    if ((ret = get_iotypes(&num_flavors, flavor)))
-        ERR(ret);
 
     /* Only do something on the first TARGET_NTASKS tasks. */
     if (my_rank < TARGET_NTASKS)
     {
+	/* Figure out iotypes. */
+	if ((ret = get_iotypes(&num_flavors, flavor)))
+	    ERR(ret);
+
         /* Split world into odd and even. */
         MPI_Comm newcomm;
         int even = my_rank % 2 ? 0 : 1;
@@ -93,11 +93,13 @@ main(int argc, char **argv)
 
                 /* Create sample file. */
                 printf("%d %s creating file %s\n", my_rank, TEST_NAME, filename[sample]);
-                if ((ret = create_nc_sample(sample, iosysid_world, flavor[flv], filename[sample], my_rank, NULL)))
+                if ((ret = create_nc_sample(sample, iosysid_world, flavor[flv], filename[sample],
+					    my_rank, NULL)))
                     ERR(ret);
 
                 /* Check the file for correctness. */
-                if ((ret = check_nc_sample(sample, iosysid_world, flavor[flv], filename[sample], my_rank, &sample_ncid[sample])))
+                if ((ret = check_nc_sample(sample, iosysid_world, flavor[flv], filename[sample],
+					   my_rank, &sample_ncid[sample])))
                     ERR(ret);
 
             }
@@ -117,7 +119,6 @@ main(int argc, char **argv)
 
             if ((ret = PIOc_closefile(ncid2)))
                 ERR(ret);
-
         } /* next iotype */
 
         /* Finalize PIO odd/even intracomm. */
@@ -127,7 +128,6 @@ main(int argc, char **argv)
         /* Finalize PIO world intracomm. */
         if ((ret = PIOc_finalize(iosysid_world)))
             ERR(ret);
-
     }  /* my_rank < TARGET_NTASKS */
 
     /* Wait for all task before finalizing. */
