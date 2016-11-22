@@ -85,7 +85,7 @@ class ERP(SystemTestsCompareTwo):
 
         rtime_dir = os.path.join(restdir, rest_time)
         files = os.listdir(rtime_dir)
-        expect(len(files) > 0: "No rest files found")
+        expect(len(files) > 0, "No rest files found")
         for f in files:
             fpath_in = os.path.join(rtime_dir, f)
             fpath_out = os.path.join(rundir, f)
