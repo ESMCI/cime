@@ -1,6 +1,8 @@
 /*
  * Tests for the file functions PIOc_create, PIOc_open, and
  * PIOc_close.
+ *
+ * Ed Hartnett
  */
 #include <pio.h>
 #include <pio_tests.h>
@@ -15,14 +17,8 @@
 #define NDIM 3
 #define X_DIM_LEN 400
 #define Y_DIM_LEN 400
-#define NUM_TIMESTEPS 6
 #define VAR_NAME "foo"
 #define ATT_NAME "bar"
-#define START_DATA_VAL 42
-#define ERR_AWFUL 1111
-#define VAR_CACHE_SIZE (1024 * 1024)
-#define VAR_CACHE_NELEMS 10
-#define VAR_CACHE_PREEMPTION 0.5
 
 /* The dimension names. */
 char dim_name[NDIM][NC_MAX_NAME + 1] = {"timestep", "x", "y"};
@@ -84,13 +80,8 @@ check_metadata(int ncid, int my_rank)
     return PIO_NOERR;
 }
 
-/* Run Tests for PIO file operations.
- *
- * @param argc argument count
- * @param argv array of arguments
- */
-int
-main(int argc, char **argv)
+/* Run Tests for PIO file operations. */
+int main(int argc, char **argv)
 {
     int my_rank;    /* Zero-based rank of processor. */
     int ntasks;     /* Number of processors involved in current execution. */
@@ -114,7 +105,7 @@ main(int argc, char **argv)
 
     /* Initialize test. */
     if ((ret = pio_test_init(argc, argv, &my_rank, &ntasks, TARGET_NTASKS,
-			     &test_comm)))
+                             &test_comm)))
         ERR(ERR_INIT);
 
     /* Only do something on TARGET_NTASKS tasks. */
@@ -124,97 +115,104 @@ main(int argc, char **argv)
         if ((ret = get_iotypes(&num_flavors, flavor)))
             ERR(ret);
 
-	/* keep things simple - 1 iotask per MPI process */
-	niotasks = TARGET_NTASKS;
+        /* keep things simple - 1 iotask per MPI process */
+        niotasks = TARGET_NTASKS;
 
-	/* Initialize the PIO IO system. This specifies how
-	 * many and which processors are involved in I/O. */
-	if ((ret = PIOc_Init_Intracomm(test_comm, niotasks, ioproc_stride,
-				       ioproc_start, PIO_REARR_SUBSET, &iosysid)))
-	    ERR(ret);
+        /* Initialize the PIO IO system. This specifies how
+         * many and which processors are involved in I/O. */
+        if ((ret = PIOc_Init_Intracomm(test_comm, niotasks, ioproc_stride,
+                                       ioproc_start, PIO_REARR_SUBSET, &iosysid)))
+            ERR(ret);
 
-	/* Describe the decomposition. This is a 1-based array, so add 1! */
-	elements_per_pe = X_DIM_LEN * Y_DIM_LEN / TARGET_NTASKS;
-	if (!(compdof = malloc(elements_per_pe * sizeof(PIO_Offset))))
-	    return PIO_ENOMEM;
-	for (i = 0; i < elements_per_pe; i++)
-	{
-	    compdof[i] = my_rank * elements_per_pe + i + 1;
-	}
+        /* Describe the decomposition. This is a 1-based array, so add 1! */
+        elements_per_pe = X_DIM_LEN * Y_DIM_LEN / TARGET_NTASKS;
+        if (!(compdof = malloc(elements_per_pe * sizeof(PIO_Offset))))
+            return PIO_ENOMEM;
+        for (i = 0; i < elements_per_pe; i++)
+            compdof[i] = my_rank * elements_per_pe + i + 1;
 
-	/* Create the PIO decomposition for this test. */
-	    printf("rank: %d Creating decomposition...\n", my_rank);
-	if ((ret = PIOc_InitDecomp(iosysid, PIO_FLOAT, 2, &dim_len[1], (PIO_Offset)elements_per_pe,
-				   compdof, &ioid, NULL, NULL, NULL)))
-	    ERR(ret);
-	free(compdof);
+        /* Create the PIO decomposition for this test. */
+        printf("rank: %d Creating decomposition...\n", my_rank);
+        if ((ret = PIOc_InitDecomp(iosysid, PIO_FLOAT, 2, &dim_len[1], (PIO_Offset)elements_per_pe,
+                                   compdof, &ioid, NULL, NULL, NULL)))
+            ERR(ret);
+        free(compdof);
 
-	/* Use PIO to create the example file in each of the four
-	 * available ways. */
-	for (fmt = 0; fmt < num_flavors; fmt++)
-	{
-	    char filename[NC_MAX_NAME + 1]; /* Test filename. */
-	    char iotype_name[NC_MAX_NAME + 1];
+        /* Use PIO to create the example file in each of the four
+         * available ways. */
+        for (fmt = 0; fmt < num_flavors; fmt++)
+        {
+            char filename[NC_MAX_NAME + 1]; /* Test filename. */
+            char iotype_name[NC_MAX_NAME + 1];
 
-	    /* Figure out the mode. */
-	    int mode = PIO_CLOBBER;
-	    if (flavor[fmt] == PIO_IOTYPE_NETCDF4C || flavor[fmt] == PIO_IOTYPE_NETCDF4P)
-		mode |= NC_NETCDF4;
-	    else if (flavor[fmt] == PIO_IOTYPE_PNETCDF || flavor[fmt] == PIO_IOTYPE_NETCDF4P)
-		mode |= NC_MPIIO;
+            /* Overwrite existing test file. */
+            int mode = PIO_CLOBBER;
 
-	    /* Create a filename. */
-	    if ((ret = get_iotype_name(flavor[fmt], iotype_name)))
-		return ret;
-	    sprintf(filename, "%s_%s.nc", TEST_NAME, iotype_name);
+	    /* If this is netCDF-4, add the netCDF4 flag. */
+            if (flavor[fmt] == PIO_IOTYPE_NETCDF4C || flavor[fmt] == PIO_IOTYPE_NETCDF4P)
+	    {
+		printf("%d adding NC_NETCDF4 flag\n", my_rank);
+                mode |= NC_NETCDF4;
+	    }
 
-	    /* Create the netCDF output file. */
-		printf("rank: %d Creating sample file %s with format %d...\n",
-		       my_rank, filename, flavor[fmt]);
-	    if ((ret = PIOc_create(iosysid, filename, mode, &ncid)))
-		ERR(ret);
+	    /* If this is pnetcdf or netCDF-4 parallel, add the MPIIO flag. */
+	    if (flavor[fmt] == PIO_IOTYPE_PNETCDF || flavor[fmt] == PIO_IOTYPE_NETCDF4P)
+	    {
+		printf("%d adding NC_MPIIO flag\n", my_rank);
+                mode |= NC_MPIIO;
+	    }
 
-	    /* Define the test file metadata. */
-	    if ((ret = define_metadata(ncid, my_rank)))
-		ERR(ret);
+            /* Create a filename. */
+            if ((ret = get_iotype_name(flavor[fmt], iotype_name)))
+                return ret;
+            sprintf(filename, "%s_%s.nc", TEST_NAME, iotype_name);
 
-	    /* End define mode. */
-	    if ((ret = PIOc_enddef(ncid)))
-		ERR(ret);
+            /* Create the netCDF output file. */
+            printf("rank: %d Creating sample file %s with format %d...\n",
+                   my_rank, filename, flavor[fmt]);
+            if ((ret = PIOc_create(iosysid, filename, mode, &ncid)))
+                ERR(ret);
 
-	    /* Close the netCDF file. */
-		printf("rank: %d Closing the sample data file...\n", my_rank);
-	    if ((ret = PIOc_closefile(ncid)))
-		ERR(ret);
+            /* Define the test file metadata. */
+            if ((ret = define_metadata(ncid, my_rank)))
+                ERR(ret);
 
-	    /* Reopen the test file. */
-		printf("rank: %d Re-opening sample file %s with format %d...\n",
-		       my_rank, filename, flavor[fmt]);
-	    if ((ret = PIOc_open(iosysid, filename, mode, &ncid)))
-		ERR(ret);
+            /* End define mode. */
+            if ((ret = PIOc_enddef(ncid)))
+                ERR(ret);
 
-	    /* Check the test file metadata. */
-	    if ((ret = check_metadata(ncid, my_rank)))
-		ERR(ret);
+            /* Close the netCDF file. */
+            printf("rank: %d Closing the sample data file...\n", my_rank);
+            if ((ret = PIOc_closefile(ncid)))
+                ERR(ret);
 
-	    /* Close the netCDF file. */
-		printf("rank: %d Closing the sample data file...\n", my_rank);
-	    if ((ret = PIOc_closefile(ncid)))
-		ERR(ret);
+            /* Reopen the test file. */
+            printf("rank: %d Re-opening sample file %s with format %d...\n",
+                   my_rank, filename, flavor[fmt]);
+            if ((ret = PIOc_open(iosysid, filename, mode, &ncid)))
+                ERR(ret);
 
-	    /* Put a barrier here to make output look better. */
-	    if ((ret = MPI_Barrier(test_comm)))
-		MPIERR(ret);
+            /* Check the test file metadata. */
+            if ((ret = check_metadata(ncid, my_rank)))
+                ERR(ret);
 
-	}
+            /* Close the netCDF file. */
+            printf("rank: %d Closing the sample data file...\n", my_rank);
+            if ((ret = PIOc_closefile(ncid)))
+                ERR(ret);
 
-	/* Free the PIO decomposition. */
-	    printf("rank: %d Freeing PIO decomposition...\n", my_rank);
-	if ((ret = PIOc_freedecomp(iosysid, ioid)))
-	    ERR(ret);
+            /* Put a barrier here to make output look better. */
+            if ((ret = MPI_Barrier(test_comm)))
+                MPIERR(ret);
 
+        }
+
+        /* Free the PIO decomposition. */
+        printf("rank: %d Freeing PIO decomposition...\n", my_rank);
+        if ((ret = PIOc_freedecomp(iosysid, ioid)))
+            ERR(ret);
     } /* endif my_rank < TARGET_NTASKS */
-    
+
     /* Wait for everyone to catch up. */
     printf("%d %s waiting for all processes!\n", my_rank, TEST_NAME);
     MPI_Barrier(test_comm);
