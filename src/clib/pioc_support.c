@@ -75,11 +75,10 @@ int PIOc_strerror(int pioerr, char *errmsg)
     return PIO_NOERR;
 }
 
-/** 
- * Set the logging level if PIO was built with PIO_ENABLE_LOGGING. Set
- * to -1 for nothing, 0 for errors only, 1 for important logging, and
- * so on. Log levels below 1 are only printed on the io/component
- * root.
+/** Set the logging level if PIO was built with
+ * PIO_ENABLE_LOGGING. Set to -1 for nothing, 0 for errors only, 1 for
+ * important logging, and so on. Log levels below 1 are only printed
+ * on the io/component root.
  *
  * A log file is also produced for each task. The file is called
  * pio_log_X.txt, where X is the (0-based) task number.
