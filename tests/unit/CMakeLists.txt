@@ -150,19 +150,19 @@ else ()
         TIMEOUT ${DEFAULT_TEST_TIMEOUT})
     add_mpi_test(test_async_4proc
         EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_async_4proc
-        NUMPROCS 4
+        NUMPROCS ${AT_LEAST_FOUR_TASKS}
         TIMEOUT ${DEFAULT_TEST_TIMEOUT})
     add_mpi_test(test_iosystem2_simple
         EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_iosystem2_simple
-        NUMPROCS 2
+        NUMPROCS ${AT_LEAST_TWO_TASKS}
         TIMEOUT ${DEFAULT_TEST_TIMEOUT})
     add_mpi_test(test_iosystem2_simple2
         EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_iosystem2_simple2
-        NUMPROCS 4
+        NUMPROCS ${AT_LEAST_FOUR_TASKS}
         TIMEOUT ${DEFAULT_TEST_TIMEOUT})
     add_mpi_test(test_iosystem2
         EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_iosystem2
-        NUMPROCS 4
+        NUMPROCS ${AT_LEAST_FOUR_TASKS}
         TIMEOUT ${DEFAULT_TEST_TIMEOUT})
     add_mpi_test(test_iosystem3_simple
         EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_iosystem3_simple

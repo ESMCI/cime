@@ -1,5 +1,6 @@
-/*
- * Tests for darray functions.
+/* Tests for darray functions.
+ *
+ * Ed Hartnett
  */
 #include <pio.h>
 #include <pio_tests.h>
@@ -28,17 +29,17 @@ int create_decomposition(int ntasks, int my_rank, int iosysid, int *ioid)
 
     /* Allocate space for the decomposition array. */
     if (!(compdof = malloc(elements_per_pe * sizeof(PIO_Offset))))
-	return PIO_ENOMEM;
+        return PIO_ENOMEM;
 
     /* Describe the decomposition. This is a 1-based array, so add 1! */
     for (int i = 0; i < elements_per_pe; i++)
-	compdof[i] = my_rank * elements_per_pe + i + 1;
+        compdof[i] = my_rank * elements_per_pe + i + 1;
 
     /* Create the PIO decomposition for this test. */
     printf("%d Creating decomposition elements_per_pe = %d\n", my_rank, elements_per_pe);
     if ((ret = PIOc_InitDecomp(iosysid, PIO_FLOAT, NDIM, dim_len, (PIO_Offset)elements_per_pe,
-			       compdof, ioid, NULL, NULL, NULL)))
-	ERR(ret);
+                               compdof, ioid, NULL, NULL, NULL)))
+        ERR(ret);
 
     printf("%d decomposition initialized.", my_rank);
 
@@ -64,33 +65,33 @@ int check_file(int iosysid, int ntasks, int my_rank, char *filename)
 
     /* Open the file. */
     if ((ret = PIOc_open(iosysid, filename, NC_NOWRITE, &ncid)))
-	return ret;
+        return ret;
 
     /* Check metadata. */
     if ((ret = PIOc_inq(ncid, &ndims, &nvars, &ngatts, &unlimdimid)))
-	return ret;
+        return ret;
     if (ndims != 1 || nvars != 1 || ngatts != 0 || unlimdimid != -1)
-	return ERR_WRONG;
+        return ERR_WRONG;
     if ((ret = PIOc_inq_dim(ncid, 0, dim_name_in, &dim_len_in)))
-	return ret;
+        return ret;
     if (strcmp(dim_name_in, DIM_NAME) || dim_len_in != DIM_LEN)
-	return ERR_WRONG;
+        return ERR_WRONG;
 
     /* Decompose the data over the tasks. */
     if ((ret = create_decomposition(ntasks, my_rank, iosysid, &ioid)))
-    	return ret;
+        return ret;
 
     /* Read data. */
     if ((ret = PIOc_read_darray(ncid, 0, ioid, arraylen, &data_in)))
-    	return ret;
+        return ret;
 
     /* Check data. */
     if (data_in != my_rank * 10)
-	return ERR_WRONG;
+        return ERR_WRONG;
 
     /* Close the file. */
     if ((ret = PIOc_closefile(ncid)))
-	return ret;
+        return ret;
 
     return PIO_NOERR;
 }
@@ -124,7 +125,7 @@ int main(int argc, char **argv)
 
     /* Initialize test. */
     if ((ret = pio_test_init(argc, argv, &my_rank, &ntasks, TARGET_NTASKS,
-			     &test_comm)))
+                             &test_comm)))
         ERR(ERR_INIT);
 
     /* Test code runs on TARGET_NTASKS tasks. The left over tasks do
@@ -135,82 +136,82 @@ int main(int argc, char **argv)
         if ((ret = get_iotypes(&num_flavors, flavor)))
             ERR(ret);
 
-	/* keep things simple - 1 iotask per MPI process */
-	niotasks = TARGET_NTASKS;
+        /* keep things simple - 1 iotask per MPI process */
+        niotasks = TARGET_NTASKS;
 
-	/* Initialize the PIO IO system. This specifies how
-	 * many and which processors are involved in I/O. */
-	if ((ret = PIOc_Init_Intracomm(test_comm, niotasks, ioproc_stride,
-				       ioproc_start, PIO_REARR_SUBSET, &iosysid)))
-	    ERR(ret);
+        /* Initialize the PIO IO system. This specifies how
+         * many and which processors are involved in I/O. */
+        if ((ret = PIOc_Init_Intracomm(test_comm, niotasks, ioproc_stride,
+                                       ioproc_start, PIO_REARR_SUBSET, &iosysid)))
+            ERR(ret);
 
-	/* Describe the decomposition. This is a 1-based array, so add 1! */
-	elements_per_pe = DIM_LEN / TARGET_NTASKS;
-	if (!(compdof = malloc(elements_per_pe * sizeof(PIO_Offset))))
-	    return PIO_ENOMEM;
-	for (int i = 0; i < elements_per_pe; i++)
-	    compdof[i] = my_rank * elements_per_pe + i + 1;
+        /* Describe the decomposition. This is a 1-based array, so add 1! */
+        elements_per_pe = DIM_LEN / TARGET_NTASKS;
+        if (!(compdof = malloc(elements_per_pe * sizeof(PIO_Offset))))
+            return PIO_ENOMEM;
+        for (int i = 0; i < elements_per_pe; i++)
+            compdof[i] = my_rank * elements_per_pe + i + 1;
 
-	/* Create the PIO decomposition for this test. */
-	printf("rank: %d Creating decomposition...\n", my_rank);
-	if ((ret = PIOc_InitDecomp(iosysid, PIO_FLOAT, NDIM, dim_len, (PIO_Offset)elements_per_pe,
-				   compdof, &ioid, NULL, NULL, NULL)))
-	    ERR(ret);
-	free(compdof);
+        /* Create the PIO decomposition for this test. */
+        printf("rank: %d Creating decomposition...\n", my_rank);
+        if ((ret = PIOc_InitDecomp(iosysid, PIO_FLOAT, NDIM, dim_len, (PIO_Offset)elements_per_pe,
+                                   compdof, &ioid, NULL, NULL, NULL)))
+            ERR(ret);
+        free(compdof);
 
-	/* Use PIO to create the example file in each of the four
-	 * available ways. */
-	for (fmt = 0; fmt < num_flavors; fmt++)
-	{
-	    /* Create the filename. */
-	    sprintf(filename, "%s_%d.nc", TEST_NAME, flavor[fmt]);
+        /* Use PIO to create the example file in each of the four
+         * available ways. */
+        for (fmt = 0; fmt < num_flavors; fmt++)
+        {
+            /* Create the filename. */
+            sprintf(filename, "%s_%d.nc", TEST_NAME, flavor[fmt]);
 
-	    /* Create the netCDF output file. */
-	    printf("rank: %d Creating sample file %s with format %d...\n", my_rank, filename,
-		   flavor[fmt]);
-	    if ((ret = PIOc_createfile(iosysid, &ncid, &(flavor[fmt]), filename, PIO_CLOBBER)))
-		ERR(ret);
+            /* Create the netCDF output file. */
+            printf("rank: %d Creating sample file %s with format %d...\n", my_rank, filename,
+                   flavor[fmt]);
+            if ((ret = PIOc_createfile(iosysid, &ncid, &(flavor[fmt]), filename, PIO_CLOBBER)))
+                ERR(ret);
 
-	    /* Define netCDF dimensions and variable. */
-	    printf("rank: %d Defining netCDF metadata...\n", my_rank);
-	    if ((ret = PIOc_def_dim(ncid, DIM_NAME, (PIO_Offset)dim_len[0], &dimids[0])))
-		ERR(ret);
+            /* Define netCDF dimensions and variable. */
+            printf("rank: %d Defining netCDF metadata...\n", my_rank);
+            if ((ret = PIOc_def_dim(ncid, DIM_NAME, (PIO_Offset)dim_len[0], &dimids[0])))
+                ERR(ret);
 
-	    /* Define a variable. */
-	    if ((ret = PIOc_def_var(ncid, VAR_NAME, PIO_FLOAT, NDIM, dimids, &varid)))
-		ERR(ret);
+            /* Define a variable. */
+            if ((ret = PIOc_def_var(ncid, VAR_NAME, PIO_FLOAT, NDIM, dimids, &varid)))
+                ERR(ret);
 
-	    /* End define mode. */
-	    if ((ret = PIOc_enddef(ncid)))
-		ERR(ret);
+            /* End define mode. */
+            if ((ret = PIOc_enddef(ncid)))
+                ERR(ret);
 
-	    /* Write some data. */
-	    float fillvalue = 0.0;
-	    PIO_Offset arraylen = 1;
-	    float test_data[arraylen];
-	    for (int f = 0; f < arraylen; f++)
-		test_data[f] = my_rank * 10 + f;
-	    if ((ret = PIOc_write_darray(ncid, varid, ioid, arraylen, test_data, &fillvalue)))
-	    	ERR(ret);
+            /* Write some data. */
+            float fillvalue = 0.0;
+            PIO_Offset arraylen = 1;
+            float test_data[arraylen];
+            for (int f = 0; f < arraylen; f++)
+                test_data[f] = my_rank * 10 + f;
+            if ((ret = PIOc_write_darray(ncid, varid, ioid, arraylen, test_data, &fillvalue)))
+                ERR(ret);
 
-	    /* Close the netCDF file. */
-	    printf("rank: %d Closing the sample data file...\n", my_rank);
-	    if ((ret = PIOc_closefile(ncid)))
-		ERR(ret);
+            /* Close the netCDF file. */
+            printf("rank: %d Closing the sample data file...\n", my_rank);
+            if ((ret = PIOc_closefile(ncid)))
+                ERR(ret);
 
-	    /* Put a barrier here to make output look better. */
-	    if ((ret = MPI_Barrier(test_comm)))
-		MPIERR(ret);
+            /* Put a barrier here to make output look better. */
+            if ((ret = MPI_Barrier(test_comm)))
+                MPIERR(ret);
 
-	    /* Check the file contents. */
-	    if ((ret = check_file(iosysid, TARGET_NTASKS, my_rank, filename)))
-		ERR(ret);
-	}
+            /* Check the file contents. */
+            if ((ret = check_file(iosysid, TARGET_NTASKS, my_rank, filename)))
+                ERR(ret);
+        }
 
-	/* Free the PIO decomposition. */
-	printf("rank: %d Freeing PIO decomposition...\n", my_rank);
-	if ((ret = PIOc_freedecomp(iosysid, ioid)))
-	    ERR(ret);
+        /* Free the PIO decomposition. */
+        printf("rank: %d Freeing PIO decomposition...\n", my_rank);
+        if ((ret = PIOc_freedecomp(iosysid, ioid)))
+            ERR(ret);
     } /* my_rank < TARGET_NTASKS */
 
     /* Finalize test. */
