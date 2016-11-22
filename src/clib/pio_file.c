@@ -34,22 +34,24 @@ int PIOc_openfile(const int iosysid, int *ncidp, int *iotype,
     return PIOc_openfile_retry(iosysid, ncidp, iotype, filename, mode, 1);
 }
 
-/** Open an existing file using PIO library.
+/**
+ * Open an existing file using PIO library.
  *
  * Input parameters are read on comp task 0 and ignored elsewhere.
  *
- * @param iosysid: A defined pio system descriptor
- * @param path: The filename to open
- * @param mode: The netcdf mode for the open operation
- * @param ncidp: pointer to int where ncid will go
+ * @param iosysid A defined pio system descriptor
+ * @param path The filename to open
+ * @param mode The netcdf mode for the open operation
+ * @param ncidp pointer to int where ncid will go
  *
  * @return 0 for success, error code otherwise.
  * @ingroup PIO_openfile
  */
-int
-PIOc_open(int iosysid, const char *path, int mode, int *ncidp)
+int PIOc_open(int iosysid, const char *path, int mode, int *ncidp)
 {
     int iotype;
+
+    LOG((1, "PIOc_open iosysid = %d path = %s mode = %x", iosysid, path, mode));
 
     /* Figure out the iotype. */
     if (mode & NC_NETCDF4)
@@ -72,21 +74,20 @@ PIOc_open(int iosysid, const char *path, int mode, int *ncidp)
     return PIOc_openfile_retry(iosysid, ncidp, &iotype, path, mode, 0);
 }
 
-/** Create a new file using pio. Input parameters are read on comp task
+/**
+ * Create a new file using pio. Input parameters are read on comp task
  * 0 and ignored elsewhere.
  *
- * @public
+ * @param iosysid A defined pio system descriptor (input)
+ * @param ncidp A pio file descriptor (output)
+ * @param iotype A pio output format (input)
+ * @param filename The filename to open
+ * @param mode The netcdf mode for the open operation
+ * @returns 0 for success, error code otherwise.
  * @ingroup PIO_createfile
- *
- * @param iosysid : A defined pio system descriptor (input)
- * @param ncidp : A pio file descriptor (output)
- * @param iotype : A pio output format (input)
- * @param filename : The filename to open
- * @param mode : The netcdf mode for the open operation
  */
-
 int PIOc_createfile(const int iosysid, int *ncidp, int *iotype,
-                    const char filename[], const int mode)
+                    const char *filename, const int mode)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Pointer to file information. */
