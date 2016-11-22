@@ -58,6 +58,10 @@ int PIOc_get_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
     PIO_Offset typelen; /* Size (in bytes) of the data type of data in buf. */
     PIO_Offset num_elem = 1; /* Number of data elements in the buffer. */
     int bcast = false;
+    char start_present = start ? true : false;
+    char count_present = count ? true : false;
+    char stride_present = stride ? true : false;
+    PIO_Offset *rstart = NULL, *rcount = NULL;
 
     LOG((1, "PIOc_get_vars_tc ncid = %d varid = %d start = %d count = %d "
          "stride = %d xtype = %d", ncid, varid, start, count, stride, xtype));
@@ -104,7 +108,13 @@ int PIOc_get_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
 
         /* Figure out the real start, count, and stride arrays. (The
          * user may have passed in NULLs.) */
-        PIO_Offset rstart[ndims], rcount[ndims], rstride[ndims];
+        /* Allocate memory for these arrays, now that we know ndims. */
+        if (!(rstart = malloc(ndims * sizeof(PIO_Offset))))
+            return check_netcdf(file, PIO_ENOMEM, __FILE__, __LINE__);
+        if (!(rcount = malloc(ndims * sizeof(PIO_Offset))))
+            return check_netcdf(file, PIO_ENOMEM, __FILE__, __LINE__);
+
+        PIO_Offset rstride[ndims];
         for (int vd = 0; vd < ndims; vd++)
         {
             rstart[vd] = start ? start[vd] : 0;
@@ -116,6 +126,24 @@ int PIOc_get_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
         for (int vd = 0; vd < ndims; vd++)
             num_elem *= (rcount[vd] - rstart[vd])/rstride[vd];
         LOG((2, "PIOc_get_vars_tc num_elem = %d", num_elem));
+
+        /* Free tmp resources. */
+        if (start_present)
+        {
+            free(rstart);
+        }
+        else
+        {
+            start = rstart;
+        }
+        if (count_present)
+        {
+            free(rcount);
+        }
+        else
+        {
+            count = rcount;
+        }
     }
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
@@ -124,9 +152,6 @@ int PIOc_get_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
         if (!ios->ioproc)
         {
             int msg = PIO_MSG_GET_VARS;
-            char start_present = start ? true : false;
-            char count_present = count ? true : false;
-            char stride_present = stride ? true : false;
 
             if(ios->compmaster)
                 mpierr = MPI_Send(&msg, 1, MPI_INT, ios->ioroot, 1, ios->union_comm);
@@ -140,12 +165,8 @@ int PIOc_get_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
             if (!mpierr)
                 mpierr = MPI_Bcast(&ndims, 1, MPI_INT, ios->compmaster, ios->intercomm);
             if (!mpierr)
-                mpierr = MPI_Bcast(&start_present, 1, MPI_CHAR, ios->compmaster, ios->intercomm);
-            if (!mpierr && start_present)
                 mpierr = MPI_Bcast((PIO_Offset *)start, ndims, MPI_OFFSET, ios->compmaster, ios->intercomm);
             if (!mpierr)
-                mpierr = MPI_Bcast(&count_present, 1, MPI_CHAR, ios->compmaster, ios->intercomm);
-            if (!mpierr && count_present)
                 mpierr = MPI_Bcast((PIO_Offset *)count, ndims, MPI_OFFSET, ios->compmaster, ios->intercomm);
             if (!mpierr)
                 mpierr = MPI_Bcast(&stride_present, 1, MPI_CHAR, ios->compmaster, ios->intercomm);
@@ -157,9 +178,9 @@ int PIOc_get_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
                 mpierr = MPI_Bcast(&num_elem, 1, MPI_OFFSET, ios->compmaster, ios->intercomm);
             if (!mpierr)
                 mpierr = MPI_Bcast(&typelen, 1, MPI_OFFSET, ios->compmaster, ios->intercomm);
-            LOG((2, "PIOc_get_vars_tc ncid = %d varid = %d ndims = %d start_present = %d "
-                 "count_present = %d stride_present = %d xtype = %d num_elem = %d", ncid, varid,
-                 ndims, start_present, count_present, stride_present, xtype, num_elem));
+            LOG((2, "PIOc_get_vars_tc ncid = %d varid = %d ndims = %d "
+                 "stride_present = %d xtype = %d num_elem = %d", ncid, varid,
+                 ndims, stride_present, xtype, num_elem));
         }
 
         /* Handle MPI errors. */
@@ -260,7 +281,7 @@ int PIOc_get_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
                                          (ptrdiff_t *)stride, buf);
                 break;
             case NC_CHAR:
-                ierr = nc_get_vars_schar(file->fh, varid, (size_t *)start, (size_t *)count,
+                ierr = nc_get_vars_text(file->fh, varid, (size_t *)start, (size_t *)count,
                                          (ptrdiff_t *)stride, buf);
                 break;
             case NC_SHORT:
@@ -310,6 +331,15 @@ int PIOc_get_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
 #endif /* _NETCDF4 */
             }
 #endif /* _NETCDF */
+    }
+
+    if (!ios->async_interface || !ios->ioproc)
+    {
+        /* Free tmp start/count allocated to account for NULL start/counts */
+        if (!start_present)
+            free(rstart);
+        if (!count_present)
+            free(rcount);
     }
 
     /* Broadcast and check the return code. */
@@ -485,9 +515,25 @@ int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
             num_elem *= (rcount[vd] - rstart[vd])/rstride[vd];
         LOG((2, "PIOc_put_vars_tc num_elem = %d", num_elem));
 
-        /* Free resources. */
-        free(rstart);
-        free(rcount);
+        /* Free tmp resources. */
+        if (start_present)
+        {
+            free(rstart);
+        }
+        else
+        {
+            start = rstart;
+        }
+        if (count_present)
+        {
+            free(rcount);
+        }
+        else
+        {
+            count = rcount;
+        }
+
+        /* Only PNETCDF requires a non-NULL stride, realocate it later if needed */
         free(rstride);
     }
 
@@ -510,12 +556,8 @@ int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
             if (!mpierr)
                 mpierr = MPI_Bcast(&ndims, 1, MPI_INT, ios->compmaster, ios->intercomm);
             if (!mpierr)
-                mpierr = MPI_Bcast(&start_present, 1, MPI_CHAR, ios->compmaster, ios->intercomm);
-            if (!mpierr && start_present)
                 mpierr = MPI_Bcast((PIO_Offset *)start, ndims, MPI_OFFSET, ios->compmaster, ios->intercomm);
             if (!mpierr)
-                mpierr = MPI_Bcast(&count_present, 1, MPI_CHAR, ios->compmaster, ios->intercomm);
-            if (!mpierr && count_present)
                 mpierr = MPI_Bcast((PIO_Offset *)count, ndims, MPI_OFFSET, ios->compmaster, ios->intercomm);
             if (!mpierr)
                 mpierr = MPI_Bcast(&stride_present, 1, MPI_CHAR, ios->compmaster, ios->intercomm);
@@ -608,7 +650,7 @@ int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
                 default:
                     LOG((0, "Unknown type for pnetcdf file! xtype = %d", xtype));
                 }
-                LOG((2, "PIOc_put_vars_tc io_rank 0 done with pnetcdf call"));
+                LOG((2, "PIOc_put_vars_tc io_rank 0 done with pnetcdf call, ierr=%d", ierr));
             }
             else
                 *request = PIO_REQ_NULL;
@@ -634,7 +676,7 @@ int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
                                          (ptrdiff_t *)stride, buf);
                 break;
             case NC_CHAR:
-                ierr = nc_put_vars_schar(file->fh, varid, (size_t *)start, (size_t *)count,
+                ierr = nc_put_vars_text(file->fh, varid, (size_t *)start, (size_t *)count,
                                          (ptrdiff_t *)stride, buf);
                 break;
             case NC_SHORT:
@@ -683,8 +725,17 @@ int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
                                    (ptrdiff_t *)stride, buf);
 #endif /* _NETCDF4 */
             }
+            LOG((2, "PIOc_put_vars_tc io_rank 0 done with netcdf call, ierr=%d", ierr));
         }
 #endif /* _NETCDF */
+    }
+    if (!ios->async_interface || !ios->ioproc)
+    {
+        /* Free tmp start/count allocated to account for NULL start/counts */
+        if (!start_present)
+            free(rstart);
+        if (!count_present)
+            free(rcount);
     }
 
     /* Broadcast and check the return code. */
