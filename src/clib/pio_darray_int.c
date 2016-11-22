@@ -318,7 +318,7 @@ int pio_write_darray_nc(file_desc_t *file, io_desc_t *iodesc, const int vid,
                              tstart[1],tcount[0],tcount[1],buflen,ndims,fndims);*/
 
 		    /* task0 is ready to recieve */
-                    mpierr = MPI_Recv(&ierr, 1, MPI_INT, 0, 0, ios->io_comm, &status);  
+                    mpierr = MPI_Recv(&ierr, 1, MPI_INT, 0, 0, ios->io_comm, &status);
                     mpierr = MPI_Rsend(&buflen, 1, MPI_INT, 0, 1, ios->io_comm);
                     if (buflen > 0)
                     {
@@ -688,7 +688,7 @@ int pio_write_darray_multi_nc(file_desc_t *file, const int nvars, const int *vid
     return ierr;
 }
 
-/** 
+/**
  * Write a set of one or more aggregated arrays to output file in
  * serial mode.
  *

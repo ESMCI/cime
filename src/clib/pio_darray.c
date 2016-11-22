@@ -21,7 +21,7 @@ void *CN_bpool = NULL;
 /* Maximum buffer usage. */
 PIO_Offset maxusage = 0;
 
-/** 
+/**
  * Set the PIO IO node data buffer size limit.
  *
  * The pio_buffer_size_limit will only apply to files opened after
@@ -37,11 +37,11 @@ PIO_Offset PIOc_set_buffer_size_limit(const PIO_Offset limit)
     /* If the user passed a valid size, use it. */
     if (limit > 0)
         pio_buffer_size_limit = limit;
-    
+
     return oldsize;
 }
 
-/** 
+/**
  * Write one or more arrays with the same IO decomposition to the
  * file.
  *
@@ -164,7 +164,7 @@ int PIOc_write_darray_multi(const int ncid, const int *vid, const int ioid,
 
         break;
     }
-    
+
     /* For PNETCDF the iobuf is freed in flush_output_buffer() */
     if (file->iotype != PIO_IOTYPE_PNETCDF)
     {
@@ -247,24 +247,25 @@ int PIOc_write_darray_multi(const int ncid, const int *vid, const int ioid,
     return ierr;
 }
 
-/** 
+/**
  * Write a distributed array to the output file.
  *
  * This routine aggregates output on the compute nodes and only sends
  * it to the IO nodes when the compute buffer is full or when a flush
  * is triggered.
  *
- * @param ncid: the ncid of the open netCDF file.
- * @param vid: the variable ID returned by PIOc_def_var().
- * @param ioid: the I/O description ID as passed back by
+ * @param ncid the ncid of the open netCDF file.
+ * @param vid the ID of the variable that these data will be written
+ * to.
+ * @param ioid the I/O description ID as passed back by
  * PIOc_InitDecomp().
- * @param arraylen: the length of the array to be written. This
- * is the length of the distrubited array. That is, the length of
- * the portion of the data that is on the processor.
- * @param array: pointer to the data to be written. This is a
+ * @param arraylen the length of the array to be written. This is the
+ * length of the local component of the distrubited array. That is,
+ * the length of the portion of the data that is on this task.
+ * @param array pointer to the data to be written. This is a
  * pointer to the distributed portion of the array that is on this
- * processor.
- * @param fillvalue: pointer to the fill value to be used for
+ * task.
+ * @param fillvalue pointer to the fill value to be used for
  * missing data.
  * @returns 0 for success, non-zero error code for failure.
  * @ingroup PIO_write_darray
@@ -273,18 +274,18 @@ int PIOc_write_darray(const int ncid, const int vid, const int ioid,
                       const PIO_Offset arraylen, void *array, void *fillvalue)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
-    file_desc_t *file;  /* Info about file we are writing to. */
-    io_desc_t *iodesc;  /* The IO description. */
-    var_desc_t *vdesc;  /* Info about the var being written. */
-    void *bufptr;       /* A data buffer. */
-    MPI_Datatype vtype; /* The MPI type of the variable. */
-    wmulti_buffer *wmb; /* The write multi buffer for one or more vars. */
-    int tsize;          /* Size of MPI type. */
-    bool recordvar;     /* True if this is a record variable. */
-    int needsflush = 0; /* True if we need to flush buffer. */
-    bufsize totfree;    /* Amount of free space in the buffer. */
-    bufsize maxfree;    /* Max amount of free space in buffer. */
-    int ierr = PIO_NOERR; /* Return code. */
+    file_desc_t *file;     /* Info about file we are writing to. */
+    io_desc_t *iodesc;     /* The IO description. */
+    var_desc_t *vdesc;     /* Info about the var being written. */
+    void *bufptr;          /* A data buffer. */
+    MPI_Datatype vtype;    /* The MPI type of the variable. */
+    wmulti_buffer *wmb;    /* The write multi buffer for one or more vars. */
+    int tsize;             /* Size of MPI type. */
+    bool recordvar;        /* True if this is a record variable. */
+    int needsflush = 0;    /* True if we need to flush buffer. */
+    bufsize totfree;       /* Amount of free space in the buffer. */
+    bufsize maxfree;       /* Max amount of free space in buffer. */
+    int ierr = PIO_NOERR;  /* Return code. */
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
 
     LOG((1, "PIOc_write_darray ncid = %d vid = %d ioid = %d arraylen = %d",
@@ -322,25 +323,25 @@ int PIOc_write_darray(const int ncid, const int vid, const int ioid,
     wmb = &file->buffer;
 
     /* If the ioid is not initialized, set it. For non record vars,
-     * use the negative?? */
+     * use the negative ??? */
     if (wmb->ioid == -1)
-    {
-        if (recordvar)
-            wmb->ioid = ioid;
-        else
-            wmb->ioid = -(ioid);
-    }
+	wmb->ioid = recordvar ? ioid : -ioid;
     else
     {
         /* Handle record and non-record variables differently. */
         if (recordvar)
         {
 	    /* Moving to the end of the wmb linked list to add the
-	     * current variable. */
+	     * current variable. Why are we checking the ioid here?
+	     * Don't all variables in the wmb have to have the same
+	     * decomposition? So ioid will always be set to the same
+	     * thing, and does not need to be checked when moving to
+	     * the end of the list. ??? */
             while(wmb->next && wmb->ioid != ioid)
                 if (wmb->next)
                     wmb = wmb->next;
 #ifdef _PNETCDF
+	    /* Do we still need the commented code below? ??? */
             /* flush the previous record before starting a new one. this is collective */
             /*       if (vdesc->request != NULL && (vdesc->request[0] != NC_REQ_NULL) ||
                      (wmb->frame != NULL && vdesc->record != wmb->frame[0])){
@@ -357,7 +358,7 @@ int PIOc_write_darray(const int ncid, const int vid, const int ioid,
         }
     }
 
-    /* the write multi buffer wmulti_buffer is the cache on compute
+    /* The write multi buffer wmulti_buffer is the cache on compute
        nodes that will collect and store multiple variables before
        sending them to the io nodes. Aggregating variables in this way
        leads to a considerable savings in communication
@@ -374,10 +375,7 @@ int PIOc_write_darray(const int ncid, const int vid, const int ioid,
 	/* Set pointer to newly allocated buffer and initialize.*/
         wmb = wmb->next;
         wmb->next = NULL;
-        if (recordvar)
-            wmb->ioid = ioid;
-        else
-            wmb->ioid = -(ioid);
+	wmb->ioid = recordvar ? ioid : -ioid;
         wmb->validvars = 0;
         wmb->arraylen = arraylen;
         wmb->vid = NULL;
@@ -504,7 +502,7 @@ int PIOc_write_darray(const int ncid, const int vid, const int ioid,
     return ierr;
 }
 
-/** 
+/**
  * Read a field from a file to the IO library.
  *
  * @param ncid identifies the netCDF file

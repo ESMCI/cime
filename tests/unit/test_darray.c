@@ -120,9 +120,7 @@ int main(int argc, char **argv)
     int num_flavors;      /* Number of PIO netCDF flavors in this build. */
     int flavor[NUM_FLAVORS]; /* iotypes for the supported netCDF IO flavors. */
     int ret;              /* Return code. */
-
-    /* Length of the dimensions in the sample data. */
-    int dim_len[NDIM] = {DIM_LEN};
+    int dim_len[NDIM] = {DIM_LEN}; /* Length of the dimensions in the sample data. */
 
     /* Initialize test. */
     if ((ret = pio_test_init(argc, argv, &my_rank, &ntasks, TARGET_NTASKS, &test_comm)))
