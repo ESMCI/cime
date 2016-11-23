@@ -1,11 +1,13 @@
-/**
- * @file Algorithms modeled after spmd_utils in the Community
+/** 
+ * @file 
+ * Algorithms modeled after spmd_utils in the Community
  * Atmosphere Model; C translation. This includes MPI_Gather,
  * MPI_Gatherv, and MPI_Alltoallw with flow control options.
  *
  * @author Jim Edwards
  * @date 2014
  */
+#include <config.h>
 #include <pio.h>
 #include <pio_internal.h>
 
@@ -43,55 +45,53 @@ void CheckMPIReturn(const int ierr, const char *file, const int line)
  * at root).
  * @param root rank of receiving process.
  * @param comm communicator.
- * @param flow_cntl if non-zero, flow control will be used.
+ * @param flow_cntl if non-zero, flow control will be used, and the
+ * block size will be the min of flow_cntl and MAX_GATHER_BLOCK_SIZE.
  * @returns 0 for success, error code otherwise.
  */
 int pio_fc_gather(void *sendbuf, const int sendcnt, const MPI_Datatype sendtype,
                   void *recvbuf, const int recvcnt, const MPI_Datatype recvtype,
                   const int root, const MPI_Comm comm, const int flow_cntl)
 {
-    bool fc_gather;
-    int gather_block_size;
-    int mytask, nprocs;
+    int gather_block_size; /* Block size used for flow control. */
+    int mytask, nprocs;    /* Task rank and number of tasks. */
     int mtag;
     MPI_Status status;
-    int ierr;
-    int hs;
-    int displs;
-    int dsize;
+    int hs = 1;   /* Used for handshaking between root and other tasks. */
+    int displs; /* Displacement within receive array. */
+    int dsize; /* Size of the receive type. */
+    int ierr; /* Return code. */
 
+    LOG((2, "pio_fc_gather sendcnt = %d sendtype = %d recvcnt = %d recvtype = %d "
+         "root = %d flow_cntl = %d", sendcnt, sendtype, recvcnt, recvtype, root, flow_cntl));
+
+    /* If using flow control, determine the block size. */
     if (flow_cntl > 0)
     {
-        fc_gather = true;
+        /* Determine the block size. */
         gather_block_size = min(flow_cntl, MAX_GATHER_BLOCK_SIZE);
-    }
-    else
-    {
-        fc_gather = false;
-    }
-
-    if (fc_gather)
-    {
-        CheckMPIReturn(MPI_Comm_rank (comm, &mytask), __FILE__, __LINE__);
-        CheckMPIReturn(MPI_Comm_size (comm, &nprocs), __FILE__, __LINE__);
+        
+        /* Find rank and the number of tasks. */
+        CheckMPIReturn(MPI_Comm_rank(comm, &mytask), __FILE__, __LINE__);
+        CheckMPIReturn(MPI_Comm_size(comm, &nprocs), __FILE__, __LINE__);
 
         mtag = 2 * nprocs;
-        hs = 1;
 
         if (mytask == root)
         {
+            /* Only do this on the root task. */
             int preposts = min(nprocs - 1, gather_block_size);
             int head = 0;
             int count = 0;
             int tail = 0;
             MPI_Request rcvid[gather_block_size];
 
+            /* Find the size of the receive type. */
             CheckMPIReturn(MPI_Type_size(recvtype, &dsize), __FILE__, __LINE__);
 
+            /* Receive from all non-root tasks. */
             for (int p = 0; p < nprocs; p++)
-            {
                 if (p != root)
-                {
                     if (recvcnt > 0)
                     {
                         count++;
@@ -100,35 +100,44 @@ int pio_fc_gather(void *sendbuf, const int sendcnt, const MPI_Datatype sendtype,
                             CheckMPIReturn(MPI_Wait(rcvid + tail, &status), __FILE__, __LINE__);
                             tail = (tail + 1) % preposts;
                         }
-                        displs = p * recvcnt * dsize;
 
+                        /* Determine the pointer to the correct part of the receive array. */
+                        displs = p * recvcnt * dsize;
                         char *ptr = (char *)recvbuf + displs;
 
+                        /* Receive */
                         CheckMPIReturn(MPI_Irecv(ptr, recvcnt, recvtype, p, mtag, comm, rcvid + head),
                                        __FILE__, __LINE__);
+
+                        /* ??? */
                         head = (head + 1) % preposts;
+
+                        /* Send handshaking. */
                         CheckMPIReturn(MPI_Send(&hs, 1, MPI_INT, p, mtag, comm), __FILE__, __LINE__);
                     }
-                }
-            }
 
-            /* copy local data */
+            /* Get the size of the send type. */
             CheckMPIReturn(MPI_Type_size(sendtype, &dsize), __FILE__, __LINE__);
+
+            /* Copy local data. (Seems like this disregards any
+             * difference in send and receive types ???) */
             memcpy(recvbuf, sendbuf, sendcnt * dsize );
 
             count = min(count, preposts);
 
-            if (count>0)
-            {
-                CheckMPIReturn(MPI_Waitall( count, rcvid, MPI_STATUSES_IGNORE),__FILE__, __LINE__);
-            }
+            if (count > 0)
+                CheckMPIReturn(MPI_Waitall(count, rcvid, MPI_STATUSES_IGNORE), __FILE__, __LINE__);
         }
         else
         {
+            /* Do this on all non-root tasks. */
             if (sendcnt > 0)
             {
+                /* Receive handshaking. */
                 CheckMPIReturn(MPI_Recv(&hs, 1, MPI_INT, root, mtag, comm, &status),
                                __FILE__, __LINE__);
+
+                /* Perform blocking send to root with data. */
                 CheckMPIReturn(MPI_Send(sendbuf, sendcnt, sendtype, root, mtag, comm),
                                __FILE__, __LINE__);
             }
@@ -136,7 +145,7 @@ int pio_fc_gather(void *sendbuf, const int sendcnt, const MPI_Datatype sendtype,
     }
     else
     {
-        /*  printf("%s %d %ld %d %ld %d %d\n",__FILE__,__LINE__,sendbuf,sendcnt,recvbuf,recvcnt,root); */
+        /* No flow control is required, so just call MPI_Gather. */
         CheckMPIReturn(MPI_Gather(sendbuf, sendcnt, sendtype, recvbuf, recvcnt, recvtype,
                                   root, comm), __FILE__, __LINE__);
     }

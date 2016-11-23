@@ -210,6 +210,82 @@ int old_main(int argc, char **argv)
     return 0;
 }
 
+/* The actual tests are here. */
+int run_spmd_tests(MPI_Comm test_comm)
+{
+    int my_rank; /* 0-based rank in test_comm. */
+    int ntasks;  /* Number of tasks in test_comm. */
+    int num_elem; /* Number of elements in buffers. */
+    int *sbuf;    /* The send buffer. */
+    int *rbuf;    /* The receive buffer. */
+    struct timeval t1, t2; /* For timing. */    
+    int mpiret;   /* Return value from MPI calls. */
+    int ret;      /* Return value. */
+
+    /* Learn rank and size. */
+    if ((mpiret = MPI_Comm_size(test_comm, &ntasks)))
+        MPIERR(mpiret);
+    if ((mpiret = MPI_Comm_rank(test_comm, &my_rank)))
+        MPIERR(mpiret);
+
+    /* Determine size of buffers. */
+    num_elem = ntasks * ntasks;
+        
+    /* Allocatte the buffers. */
+    if (!(sbuf = malloc(num_elem * sizeof(int))))
+        return PIO_ENOMEM;
+    if (!(rbuf = malloc(num_elem * sizeof(int))))
+        return PIO_ENOMEM;
+
+    /* Test pio_fc_gather. In fact it does not work for msg_cnt > 0. */
+    /* for (int msg_cnt = 0; msg_cnt <= TEST_MAX_GATHER_BLOCK_SIZE; */
+    /*      msg_cnt = msg_cnt ? msg_cnt * 2 : 1) */
+    int msg_cnt = 0;
+    {
+        /* Load up the buffers */
+        for (int i = 0; i < num_elem; i++)
+        {
+            sbuf[i] = i + 100 * my_rank;
+            rbuf[i] = -i;
+        }
+
+        printf("%d Testing pio_fc_gather with msg_cnt = %d\n", my_rank, msg_cnt);
+
+        /* Start timeer. */
+        if (!my_rank)
+            gettimeofday(&t1, NULL);
+
+        /* Run the gather function. */
+        if ((ret = pio_fc_gather(sbuf, ntasks, MPI_INT, rbuf, ntasks, MPI_INT, 0, test_comm,
+                                 msg_cnt)))
+            return ret;
+
+        /* Only check results on task 0. */
+        if (!my_rank)
+        {
+            /* Stop timer. */
+            gettimeofday(&t2, NULL);
+            printf("Time in microseconds: %ld microseconds\n",
+                   ((t2.tv_sec - t1.tv_sec) * 1000000L + t2.tv_usec) - t1.tv_usec);
+
+            /* Check results. */
+            for (int j = 0; j < ntasks; j++)
+                for (int i = 0; i < ntasks; i++)
+                    if (rbuf[i + j * ntasks] != i + 100 * j)
+                        printf("got %d expected %d\n", rbuf[i + j * ntasks], i + 100 * j);
+        }
+        
+
+        /* Wait for all test tasks. */
+        MPI_Barrier(test_comm);
+    }
+
+    /* Free resourses. */
+    free(sbuf);
+    free(rbuf);
+    
+    return 0;
+}
 
 /* Run Tests for pio_spmd.c functions. */
 int main(int argc, char **argv)
@@ -229,7 +305,8 @@ int main(int argc, char **argv)
     if (my_rank < TARGET_NTASKS)
     {
 	printf("%d running test code\n", my_rank);
-	
+        if ((ret = run_spmd_tests(test_comm)))
+            return ret;
 
     } /* endif my_rank < TARGET_NTASKS */
 
