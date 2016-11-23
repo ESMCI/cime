@@ -19,8 +19,9 @@
 #define MAX_RANK_STR 12
 #define ERROR_PREFIX "ERROR: "
 int pio_log_level = 0;
+int pio_log_ref_cnt = 0;
 int my_rank;
-FILE *LOG_FILE;
+FILE *LOG_FILE = NULL;
 #endif /* PIO_ENABLE_LOGGING */
 
 /** The PIO library maintains its own set of ncids. This is the next
@@ -93,19 +94,57 @@ int PIOc_strerror(int pioerr, char *errmsg)
 int PIOc_set_log_level(int level)
 {
 #if PIO_ENABLE_LOGGING
-    char log_filename[NC_MAX_NAME];
-
     /* Set the log level. */
     pio_log_level = level;
-
-    /* Create a filename with the rank in it. */
-    MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
-    sprintf(log_filename, "pio_log_%d.txt", my_rank);
-
-    /* Open a file for this rank to log messages. */
-    LOG_FILE = fopen(log_filename, "w");
 #endif /* PIO_ENABLE_LOGGING */
     return PIO_NOERR;
+}
+
+/** Initialize logging
+ * Open log file, if not opened yet, or
+ * increment ref count if already open
+ */
+void pio_init_logging(void )
+{
+#if PIO_ENABLE_LOGGING
+    char log_filename[NC_MAX_NAME];
+
+    if (!LOG_FILE)
+    {
+        /* Create a filename with the rank in it. */
+        MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
+        sprintf(log_filename, "pio_log_%d.txt", my_rank);
+
+        /* Open a file for this rank to log messages. */
+        LOG_FILE = fopen(log_filename, "w");
+
+        pio_log_ref_cnt = 1;
+    }
+    else
+    {
+        pio_log_ref_cnt++;
+    }
+#endif /* PIO_ENABLE_LOGGING */
+}
+
+/** Finalize logging - close log file, if open 
+ */
+void pio_finalize_logging(void )
+{
+#if PIO_ENABLE_LOGGING
+    pio_log_ref_cnt -= 1;
+    if (LOG_FILE)
+        if (pio_log_ref_cnt == 0)
+        {
+            fclose(LOG_FILE);
+            LOG_FILE = NULL;
+        }
+        else
+        {
+            LOG((2, "pio_finalize_logging, postpone close, ref_cnt = %d",
+                pio_log_ref_cnt));
+        }
+#endif /* PIO_ENABLE_LOGGING */
 }
 
 #if PIO_ENABLE_LOGGING
@@ -172,11 +211,13 @@ void pio_log(int severity, const char *fmt, ...)
     fprintf(stdout, "%s", msg);
 
     /* Send message to log file. */
-    fprintf(LOG_FILE, "%s", msg);
+    if (LOG_FILE)
+        fprintf(LOG_FILE, "%s", msg);
 
     /* Ensure an immediate flush of stdout. */
     fflush(stdout);
-    fflush(LOG_FILE);
+    if (LOG_FILE)
+        fflush(LOG_FILE);
 }
 #endif /* PIO_ENABLE_LOGGING */
 

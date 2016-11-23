@@ -461,6 +461,8 @@ int PIOc_Init_Intracomm(const MPI_Comm comp_comm, const int num_iotasks,
     int lbase;
     int mpierr;
 
+    pio_init_logging();
+
     LOG((1, "PIOc_Init_Intracomm comp_comm = %d num_iotasks = %d stride = %d base = %d "
          "rearr = %d", comp_comm, num_iotasks, stride, base, rearr));
 
@@ -709,6 +711,8 @@ int PIOc_finalize(const int iosysid)
     LOG((2, "About to delete iosysid %d.", iosysid));
     ierr = pio_delete_iosystem_from_list(iosysid);
     LOG((2, "PIOc_finalize completed successfully"));
+    LOG((2, "About to finalize logging"));
+    pio_finalize_logging();
 
     return ierr;
 }
