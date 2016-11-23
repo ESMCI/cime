@@ -26,6 +26,7 @@ TOOLS_DIR   = os.path.join(SCRIPT_DIR,"Tools")
 MACHINE     = Machines()
 FAST_ONLY   = False
 NO_BATCH    = False
+NO_CMAKE    = False
 
 os.environ["CIME_GLOBAL_WALLTIME"] = "0:05:00"
 
@@ -170,7 +171,7 @@ def setup_proxy():
 class J_TestCreateNewcase(unittest.TestCase):
 ###############################################################################
     def setUp(self):
-        self._testroot = MACHINE.get_value("CESMSCRATCHROOT")
+        self._testroot = MACHINE.get_value("CIME_OUTPUT_ROOT")
         self._testdirs = []
         self._do_teardown = []
 
@@ -223,7 +224,7 @@ class M_TestWaitForTests(unittest.TestCase):
     ###########################################################################
     def setUp(self):
     ###########################################################################
-        self._testroot = MACHINE.get_value("CESMSCRATCHROOT")
+        self._testroot = MACHINE.get_value("CIME_OUTPUT_ROOT")
         self._testdir_all_pass    = os.path.join(self._testroot, 'scripts_regression_tests.testdir_all_pass.%s'% CIME.utils.get_timestamp())
         self._testdir_with_fail   = os.path.join(self._testroot, 'scripts_regression_tests.testdir_with_fail.%s'% CIME.utils.get_timestamp())
         self._testdir_unfinished  = os.path.join(self._testroot, 'scripts_regression_tests.testdir_unfinished.%s'% CIME.utils.get_timestamp())
@@ -431,7 +432,7 @@ class TestCreateTestCommon(unittest.TestCase):
         self._baseline_name     = "fake_testing_only_%s" % CIME.utils.get_timestamp()
         self._machine           = MACHINE.get_machine_name()
         self._baseline_area     = MACHINE.get_value("CCSM_BASELINE")
-        self._testroot          = MACHINE.get_value("CESMSCRATCHROOT")
+        self._testroot          = MACHINE.get_value("CIME_OUTPUT_ROOT")
         self._compiler          = MACHINE.get_default_compiler()
         self._hasbatch          = MACHINE.has_batch_system() and not NO_BATCH
         self._do_teardown       = True # Will never do teardown if test failed
@@ -527,16 +528,16 @@ class N_TestCreateTest(TestCreateTestCommon):
 
         # Basic namelist compare should now fail
         test_id = "%s-%s" % (self._baseline_name, CIME.utils.get_timestamp())
-        self.simple_test(True, "%s -n -t %s" % (comparg, test_id))
+        self.simple_test(False, "%s -n -t %s" % (comparg, test_id))
         casedir = os.path.join(self._testroot,
                                "%s.C.%s" % (CIME.utils.get_full_test_name("TESTRUNPASS_P1.f19_g16_rx1.A", machine=self._machine, compiler=self._compiler), test_id))
-        run_cmd_assert_result(self, "./case.cmpgen_namelists", from_dir=casedir, expected_stat=1)
+        run_cmd_assert_result(self, "./case.cmpgen_namelists", from_dir=casedir, expected_stat=100)
 
         # preview namelists should work
         run_cmd_assert_result(self, "./preview_namelists", from_dir=casedir)
 
         # This should still fail
-        run_cmd_assert_result(self, "./case.cmpgen_namelists", from_dir=casedir, expected_stat=1)
+        run_cmd_assert_result(self, "./case.cmpgen_namelists", from_dir=casedir, expected_stat=100)
 
         # Regen
         self.simple_test(True, "%s -n -t %s-%s" % (genarg, self._baseline_name, CIME.utils.get_timestamp()))
@@ -886,10 +887,10 @@ class Q_TestBlessTestResults(TestCreateTestCommon):
 
         # compare_test_results should detect the fail
         cpr_cmd = "%s/compare_test_results -b %s -t %s 2>&1" % (TOOLS_DIR, self._baseline_name, test_id)
-        output = run_cmd_assert_result(self, cpr_cmd, expected_stat=1)
+        output = run_cmd_assert_result(self, cpr_cmd, expected_stat=CIME.utils.TESTS_FAILED_ERR_CODE)
 
         # use regex
-        expected_pattern = re.compile(r'COMPARE FAILED FOR TEST: %s[^\s]* reason Diff' % self._test_name)
+        expected_pattern = re.compile(r'FAIL %s[^\s]* BASELINE' % self._test_name)
         the_match = expected_pattern.search(output)
         self.assertNotEqual(the_match, None,
                             msg="Cmd '%s' failed to display failed test in output:\n%s" % (cpr_cmd, output))
@@ -1126,7 +1127,7 @@ class C_TestXMLQuery(unittest.TestCase):
 
     def setUp(self):
         # Create case directory
-        self._testroot = MACHINE.get_value("CESMSCRATCHROOT")  # "/tmp/"
+        self._testroot = MACHINE.get_value("CIME_OUTPUT_ROOT")  # "/tmp/"
         self._testdirs = []
         self._do_teardown = []
 
@@ -1421,6 +1422,13 @@ file(WRITE query.out "${{{}}}")
 
         environment = os.environ.copy()
         environment.update(env)
+        os_ = MACHINE.get_value("OS")
+        # cmake will not work on cray systems without this flag
+        if os_ == "CNL":
+            cmake_args = "-DCMAKE_SYSTEM_NAME=Catamount"
+        else:
+            cmake_args = ""
+
         run_cmd_assert_result(self.parent, "cmake . 2>&1", from_dir=temp_dir, env=environment)
 
         with open(output_name, "r") as output:
@@ -1777,7 +1785,10 @@ class I_TestCMakeMacros(H_TestMakeMacros):
     def xml_to_tester(self, xml_string):
         """Helper that directly converts an XML string to a MakefileTester."""
         test_xml = _wrap_config_build_xml(xml_string)
-        return CMakeTester(self, get_macros(self._maker, test_xml, "CMake"))
+        if (NO_CMAKE):
+            self.skipTest("Skipping cmake test")
+        else:
+            return CMakeTester(self, get_macros(self._maker, test_xml, "CMake"))
 
 ###############################################################################
 class S_TestManageAndQuery(unittest.TestCase):
@@ -1848,6 +1859,11 @@ def _main_func():
         sys.argv.remove("--no-batch")
         global NO_BATCH
         NO_BATCH = True
+
+    if "--no-cmake" in sys.argv:
+        sys.argv.remove("--no-cmake")
+        global NO_CMAKE
+        NO_CMAKE = True
 
     args = lambda: None # just something to set attrs on
     for log_param in ["debug", "silent", "verbose"]:

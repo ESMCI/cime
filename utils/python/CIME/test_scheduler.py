@@ -8,11 +8,11 @@ phases. All other phases need to handle their own status because
 they can be run outside the context of TestScheduler.
 """
 
-import shutil, traceback, stat, threading, time
+import shutil, traceback, stat, threading, time, glob
 from CIME.XML.standard_module_setup import *
 import CIME.compare_namelists
 import CIME.utils
-from CIME.utils import append_status
+from CIME.utils import append_status, TESTS_FAILED_ERR_CODE
 from CIME.test_status import *
 from CIME.XML.machines import Machines
 from CIME.XML.env_test import EnvTest
@@ -20,6 +20,7 @@ from CIME.XML.files import Files
 from CIME.XML.component import Component
 from CIME.XML.tests import Tests
 from CIME.case import Case
+from CIME.wait_for_tests import wait_for_tests
 import CIME.test_utils
 
 logger = logging.getLogger(__name__)
@@ -42,7 +43,8 @@ class TestScheduler(object):
                  clean=False, namelists_only=False,
                  project=None, parallel_jobs=None,
                  walltime=None, proc_pool=None,
-                 use_existing=False, save_timing=False, queue=None, allow_baseline_overwrite=False):
+                 use_existing=False, save_timing=False, queue=None,
+                 allow_baseline_overwrite=False, output_root=None):
     ###########################################################################
         self._cime_root  = CIME.utils.get_cime_root()
         self._cime_model = CIME.utils.get_model()
@@ -56,7 +58,7 @@ class TestScheduler(object):
         self._no_setup = no_setup
         self._no_build = no_build or no_setup or namelists_only
         self._no_run   = no_run or self._no_build
-
+        self._output_root = output_root
         # Figure out what project to use
         if project is None:
             self._project = CIME.utils.get_project()
@@ -72,7 +74,13 @@ class TestScheduler(object):
                "Does not make sense to request a queue without batch system")
 
         # Determine and resolve test_root
-        self._test_root = self._machobj.get_value("CESMSCRATCHROOT") if test_root is None else test_root
+        if test_root is not None:
+            self._test_root = test_root
+        elif self._output_root is not None:
+            self._test_root = self._output_root
+        else:
+            self._test_root = self._machobj.get_value("CIME_OUTPUT_ROOT")
+
         if self._project is not None:
             self._test_root = self._test_root.replace("$PROJECT", self._project)
 
@@ -301,6 +309,9 @@ class TestScheduler(object):
                                test_dir, grid, machine, compiler, compset)
         if self._project is not None:
             create_newcase_cmd += " --project %s " % self._project
+        if self._output_root is not None:
+            create_newcase_cmd += " --output-root %s " % self._output_root
+
 
         if test_mods is not None:
             files = Files()
@@ -464,7 +475,9 @@ class TestScheduler(object):
         # A little subtle. If namelists_only, the RUN phase, when the namelists would normally
         # be handled, is not going to happen, so we have to do it here.
         if self._namelists_only:
-            run_cmd_no_fail("./case.cmpgen_namelists", from_dir=test_dir)
+            # It's OK for this command to fail with baseline diffs but not catastrophically
+            cmdstat, output, errput = run_cmd("./case.cmpgen_namelists", from_dir=test_dir)
+            expect(cmdstat in [0, TESTS_FAILED_ERR_CODE], "Fatal error in case.cmpgen_namelists: %s" % (output + "\n" + errput))
 
         return rv
 
@@ -682,7 +695,7 @@ class TestScheduler(object):
             logger.warning("FAILED to set up cs files: %s" % str(e))
 
     ###########################################################################
-    def run_tests(self):
+    def run_tests(self, wait=False):
     ###########################################################################
         """
         Main API for this class.
@@ -696,8 +709,6 @@ class TestScheduler(object):
         for test in self._tests:
             logger.info( "  %s"% test)
 
-        # TODO - documentation
-
         self._producer()
 
         expect(threading.active_count() == 1, "Leftover threads?")
@@ -705,21 +716,48 @@ class TestScheduler(object):
         # Setup cs files
         self._setup_cs_files()
 
-        # Return True if all tests passed from our point of view
-        logger.info( "At test-scheduler close, state is:")
-        rv = True
-        for test in self._tests:
-            phase, status = self._get_test_data(test)
-
-            if status not in [TEST_PASS_STATUS, TEST_PEND_STATUS]:
-                logger.info( "%s %s (phase %s)" % (status, test, phase))
-                rv = False
-
+        wait_handles_report = False
+        if not self._no_run and not self._no_batch:
+            if wait:
+                logger.info("Waiting for tests to finish")
+                rv = wait_for_tests(glob.glob(os.path.join(self._test_root, "*%s/TestStatus" % self._test_id)))
+                wait_handles_report = True
             else:
-                logger.info("%s %s %s" % (status, test, phase))
+                logger.info("Due to presence of batch system, create_test will exit before tests are complete.\n" \
+                            "To force create_test to wait for full completion, use --wait")
 
-            logger.info( "    Case dir: %s" % self._get_test_dir(test))
+        # Return True if all tests passed from our point of view
+        if not wait_handles_report:
+            logger.info( "At test-scheduler close, state is:")
+            rv = True
+            for test in self._tests:
+                phase, status = self._get_test_data(test)
 
-        logger.info( "test-scheduler took %s seconds"% (time.time() - start_time))
+                # Give highest priority to fails in test schduler
+                if status not in [TEST_PASS_STATUS, TEST_PEND_STATUS]:
+                    logger.info( "%s %s (phase %s)" % (status, test, phase))
+                    rv = False
+
+                else:
+                    # Be cautious about telling the user that the test passed. This
+                    # status should match what they would see on the dashboard. Our
+                    # self._test_states does not include comparison fail information,
+                    # so we need to parse test status.
+                    ts = TestStatus(self._get_test_dir(test))
+                    nlfail = ts.get_status(NAMELIST_PHASE) == TEST_FAIL_STATUS
+                    ts_status = ts.get_overall_test_status(ignore_namelists=True)
+
+                    if ts_status not in [TEST_PASS_STATUS, TEST_PEND_STATUS]:
+                        logger.info( "%s %s (phase %s)" % (status, test, phase))
+                        rv = False
+                    elif nlfail:
+                        logger.info( "%s %s (but otherwise OK) %s" % (NAMELIST_FAIL_STATUS, test, phase))
+                        rv = False
+                    else:
+                        logger.info("%s %s %s" % (status, test, phase))
+
+                logger.info( "    Case dir: %s" % self._get_test_dir(test))
+
+            logger.info( "test-scheduler took %s seconds"% (time.time() - start_time))
 
         return rv

@@ -336,6 +336,9 @@ class EnvBatch(EnvBase):
                         rval = eval(val)
                     except:
                         rval = val
+                    # need a correction for tasks per node 
+                    if flag == "-n" and rval<= 0:
+                        rval = 1
 
                     if flag.rfind("=", len(flag)-1, len(flag)) >= 0 or\
                        flag.rfind(":", len(flag)-1, len(flag)) >= 0:
@@ -489,6 +492,9 @@ class EnvBatch(EnvBase):
 
     def get_default_queue(self):
         node = self.get_optional_node("queue", attributes={"default" : "true"})
+        if node is None:
+            node = self.get_optional_node("queue")
+        expect(node is not None, "No queues found")
         self._default_walltime = node.get("walltimemax")
         return(node)
 

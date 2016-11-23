@@ -792,6 +792,8 @@ def transform_vars(text, case=None, subgroup=None, check_members=None, default=N
     directive_re = re.compile(r"{{ (\w+) }}", flags=re.M)
     # loop through directive text, replacing each string enclosed with
     # template characters with the necessary values.
+    if check_members is None and case is not None:
+        check_members = case
     while directive_re.search(text):
         m = directive_re.search(text)
         variable = m.groups()[0]
@@ -954,3 +956,33 @@ def new_lid():
     lid = time.strftime("%y%m%d-%H%M%S")
     os.environ["LID"] = lid
     return lid
+
+def analyze_build_log(comp, log, compiler):
+    """
+    Capture and report warning count,
+    capture and report errors and undefined references.
+    """
+    warncnt = 0
+    if "intel" in compiler:
+        warn_re = re.compile(r" warning #")
+        error_re = re.compile(r" error #")
+        undefined_re = re.compile(r" undefined reference to ")
+    elif "gnu" in compiler or "nag" in compiler:
+        warn_re = re.compile(r"^Warning: ")
+        error_re = re.compile(r"^Error: ")
+        undefined_re = re.compile(r" undefined reference to ")
+    else:
+        # don't know enough about this compiler
+        return
+
+    with open(log,"r") as fd:
+        for line in fd:
+            if re.search(warn_re, line):
+                warncnt += 1
+            if re.search(error_re, line):
+                logger.warn(line)
+            if re.search(undefined_re, line):
+                logger.warn(line)
+
+    if warncnt > 0:
+        logger.info("Component %s build complete with %s warnings"%(comp,warncnt))

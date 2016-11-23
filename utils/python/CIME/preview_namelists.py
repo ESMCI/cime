@@ -35,6 +35,11 @@ def create_dirs(case):
             except OSError as e:
                 expect(False, "Could not make directory '%s', error: %s" % (dir_to_make, e))
 
+    # As a convenience write the location of the case directory in the bld and run directories
+    for dir_ in (exeroot, rundir):
+        with open(os.path.join(dir_,"CASEROOT"),"w+") as fd:
+            fd.write(caseroot+"\n")
+
 def create_namelists(case):
 
     case.flush()
