@@ -25,6 +25,11 @@ contributes to code quality.
 
 # C Code #
 
+## Warnings ##
+
+<p>The C library compiles under GNU gcc without warnings. No code will
+be merged with the C library which causes warnings during compile.
+
 ## Backward Compatibility ##
 
 <p>We cannot remove or change a function in the public C API. We can
