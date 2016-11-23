@@ -47,6 +47,9 @@ endif()
 
 # Don't run these tests if we are using MPI SERIAL.
 if (NOT PIO_USE_MPISERIAL)
+  add_executable (test_spmd EXCLUDE_FROM_ALL test_spmd.c test_common.c)
+  target_link_libraries (test_spmd pioc)
+  add_dependencies (tests test_spmd)
   add_executable (test_intercomm2 EXCLUDE_FROM_ALL test_intercomm2.c test_common.c)
   target_link_libraries (test_intercomm2 pioc)
   add_dependencies (tests test_intercomm2)
@@ -135,6 +138,10 @@ else ()
         TIMEOUT ${DEFAULT_TEST_TIMEOUT})
     add_mpi_test(test_file
         EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_file
+        NUMPROCS ${AT_LEAST_FOUR_TASKS}
+        TIMEOUT ${DEFAULT_TEST_TIMEOUT})
+    add_mpi_test(test_spmd
+        EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_spmd
         NUMPROCS ${AT_LEAST_FOUR_TASKS}
         TIMEOUT ${DEFAULT_TEST_TIMEOUT})
     add_mpi_test(test_intercomm2
