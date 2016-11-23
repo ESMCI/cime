@@ -179,24 +179,24 @@ int pair(const int np, const int p, const int k)
 /**
  * Provides the functionality of MPI_Alltoallw with flow control
  * options. Generalized all-to-all communication allowing different
- * datatypes, counts, and dis‐ placements for each partner
+ * datatypes, counts, and displacements for each partner
  *
  * @param sndbuf starting address of send buffer
  * @param sndlths integer array equal to the group size specifying the
  * number of elements to send to each processor
  * @param sdispls integer array (of length group size). Entry j
  * specifies the displacement in bytes (relative to sendbuf) from
- * which to take the outgoing data destined for process j
+ * which to take the outgoing data destined for process j.
  * @param stypes array of datatypes (of length group size). Entry j
- * specifies the type of data to send to process j
- * @param rcvbuf address of receive buffer
+ * specifies the type of data to send to process j.
+ * @param rcvbuf address of receive buffer.
  * @param rcvlths integer array equal to the group size specifying the
- * number of elements that can be received from each processor
+ * number of elements that can be received from each processor.
  * @param rdispls integer array (of length group size). Entry i
  * specifies the displacement in bytes (relative to recvbuf) at which
- * to place the incoming data from process i
+ * to place the incoming data from process i.
  * @param rtypes array of datatypes (of length group size). Entry i
- * specifies the type of data received from process i
+ * specifies the type of data received from process i.
  * @param comm MPI communicator for the MPI_Alltoallw call.
  * @param handshake
  * @param isend
