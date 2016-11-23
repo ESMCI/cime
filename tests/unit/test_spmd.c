@@ -237,52 +237,153 @@ int run_spmd_tests(MPI_Comm test_comm)
     if (!(rbuf = malloc(num_elem * sizeof(int))))
         return PIO_ENOMEM;
 
+    int *sendcounts;
+    int *recvcounts;
+    int *rdispls;
+    int *sdispls;
+    MPI_Datatype *sendtypes;
+    MPI_Datatype *recvtypes;
+    
+    /* Test pio_swapm Create and load the arguments to alltoallv */
+    if (!(sendcounts = malloc(ntasks * sizeof(int))))
+        return PIO_ENOMEM;
+    if (!(recvcounts = malloc(ntasks * sizeof(int))))
+        return PIO_ENOMEM;
+    if (!(rdispls = malloc(ntasks * sizeof(int))))
+        return PIO_ENOMEM;
+    if (!(sdispls = malloc(ntasks * sizeof(int))))
+        return PIO_ENOMEM;
+    if (!(sendtypes = malloc(ntasks * sizeof(MPI_Datatype))))
+        return PIO_ENOMEM;
+    if (!(recvtypes = malloc(ntasks * sizeof(MPI_Datatype))))
+        return PIO_ENOMEM;
+
+    /* Free memory. */
+    free(sendcounts);
+    free(recvcounts);
+    free(rdispls);
+    free(sdispls);
+    free(sendtypes);
+    free(recvtypes);
+
+/*     for (i = 0; i<size; i++) { */
+/*         sendcounts[i] = i + 1; */
+/*         recvcounts[i] = rank +1; */
+/*         rdispls[i] = i * (rank+1) * sizeof(int) ; */
+/*         sdispls[i] = (((i+1) * (i))/2) * sizeof(int) ; */
+/*         sendtypes[i] = recvtypes[i] = MPI_INT; */
+/*     } */
+
+/*     //    for (int msg_cnt=4; msg_cnt<size; msg_cnt*=2){ */
+/*     //   if (rank==0) printf("message count %d\n",msg_cnt); */
+/*     msg_cnt = 0; */
+/*     for (int itest=0;itest<5; itest++){ */
+/*         bool hs=false; */
+/*         bool isend=false; */
+/*         /\* Load up the buffers *\/ */
+/*         for (i = 0; i<size*size; i++) { */
+/*             sbuf[i] = i + 100*rank; */
+/*             rbuf[i] = -i; */
+/*         } */
+/*         MPI_Barrier(comm); */
+
+/*         if (rank==0) printf("Start itest %d\n",itest); */
+/*         if (rank == 0) gettimeofday(&t1, NULL); */
+
+/*         if (itest==0){ */
+/*             err = pio_swapm( size, rank, sbuf,  sendcounts, sdispls, sendtypes, */
+/*                              rbuf,  recvcounts, rdispls, recvtypes, comm, hs, isend, 0); */
+/*         }else if (itest==1){ */
+/*             hs = true; */
+/*             isend = true; */
+/*             err = pio_swapm( size, rank, sbuf,  sendcounts, sdispls, sendtypes, */
+/*                              rbuf,  recvcounts, rdispls, recvtypes, comm, hs, isend, msg_cnt); */
+/*         }else if (itest==2){ */
+/*             hs = false; */
+/*             isend = true; */
+/*             err = pio_swapm( size, rank, sbuf, sendcounts, sdispls, sendtypes, */
+/*                              rbuf, recvcounts, rdispls, recvtypes, comm, hs, isend, msg_cnt); */
+
+/*         }else if (itest==3){ */
+/*             hs = false; */
+/*             isend = false; */
+/*             err = pio_swapm( size, rank, sbuf, sendcounts, sdispls, sendtypes, */
+/*                              rbuf, recvcounts, rdispls, recvtypes, comm, hs, isend, msg_cnt); */
+
+/*         }else if (itest==4){ */
+/*             hs = true; */
+/*             isend = false; */
+/*             err = pio_swapm( size, rank, sbuf,  sendcounts, sdispls, sendtypes, */
+/*                              rbuf,  recvcounts, rdispls, recvtypes, comm, hs, isend, msg_cnt); */
+
+/*         } */
+
+/*         if (rank == 0){ */
+/*             gettimeofday(&t2, NULL); */
+/*             printf("itest = %d time = %f\n",itest,t2.tv_sec - t1.tv_sec + 1.e-6*( t2.tv_usec - t1.tv_usec)); */
+/*         } */
+/*         /\* */
+/*           printf("scnt: %d %d %d %d\n",sendcounts[0],sendcounts[1],sendcounts[2],sendcounts[3]); */
+/*           printf("sdispls: %d %d %d %d\n",sdispls[0],sdispls[1],sdispls[2],sdispls[3]); */
+/*           printf("rcnt: %d %d %d %d\n",recvcounts[0],recvcounts[1],recvcounts[2],recvcounts[3]); */
+/*           printf("rdispls: %d %d %d %d\n",rdispls[0],rdispls[1],rdispls[2],rdispls[3]); */
+
+/*           printf("send: "); */
+/*           for (i = 0;i<size*size;i++) */
+/*           printf("%d ",sbuf[i]); */
+/*           printf("\n"); */
+/*           printf("recv: "); */
+/*           for (i = 0;i<size*size;i++) */
+/*           printf("%d ",rbuf[i]); */
+/*           printf("\n"); */
+/*         *\/ */
+
     /* Test pio_fc_gather. In fact it does not work for msg_cnt > 0. */
     /* for (int msg_cnt = 0; msg_cnt <= TEST_MAX_GATHER_BLOCK_SIZE; */
     /*      msg_cnt = msg_cnt ? msg_cnt * 2 : 1) */
-    int msg_cnt = 0;
-    {
-        /* Load up the buffers */
-        for (int i = 0; i < num_elem; i++)
-        {
-            sbuf[i] = i + 100 * my_rank;
-            rbuf[i] = -i;
-        }
+    /* int msg_cnt = 0; */
+    /* { */
+    /*     /\* Load up the buffers *\/ */
+    /*     for (int i = 0; i < num_elem; i++) */
+    /*     { */
+    /*         sbuf[i] = i + 100 * my_rank; */
+    /*         rbuf[i] = -i; */
+    /*     } */
 
-        printf("%d Testing pio_fc_gather with msg_cnt = %d\n", my_rank, msg_cnt);
+    /*     printf("%d Testing pio_fc_gather with msg_cnt = %d\n", my_rank, msg_cnt); */
 
-        /* Start timeer. */
-        if (!my_rank)
-            gettimeofday(&t1, NULL);
+    /*     /\* Start timeer. *\/ */
+    /*     if (!my_rank) */
+    /*         gettimeofday(&t1, NULL); */
 
-        /* Run the gather function. */
-        if ((ret = pio_fc_gather(sbuf, ntasks, MPI_INT, rbuf, ntasks, MPI_INT, 0, test_comm,
-                                 msg_cnt)))
-            return ret;
+    /*     /\* Run the gather function. *\/ */
+    /*     /\* if ((ret = pio_fc_gather(sbuf, ntasks, MPI_INT, rbuf, ntasks, MPI_INT, 0, test_comm, *\/ */
+    /*     /\*                          msg_cnt))) *\/ */
+    /*     /\*     return ret; *\/ */
 
-        /* Only check results on task 0. */
-        if (!my_rank)
-        {
-            /* Stop timer. */
-            gettimeofday(&t2, NULL);
-            printf("Time in microseconds: %ld microseconds\n",
-                   ((t2.tv_sec - t1.tv_sec) * 1000000L + t2.tv_usec) - t1.tv_usec);
+    /*     /\* Only check results on task 0. *\/ */
+    /*     if (!my_rank) */
+    /*     { */
+    /*         /\* Stop timer. *\/ */
+    /*         gettimeofday(&t2, NULL); */
+    /*         printf("Time in microseconds: %ld microseconds\n", */
+    /*                ((t2.tv_sec - t1.tv_sec) * 1000000L + t2.tv_usec) - t1.tv_usec); */
 
-            /* Check results. */
-            for (int j = 0; j < ntasks; j++)
-                for (int i = 0; i < ntasks; i++)
-                    if (rbuf[i + j * ntasks] != i + 100 * j)
-                        printf("got %d expected %d\n", rbuf[i + j * ntasks], i + 100 * j);
-        }
+    /*         /\* Check results. *\/ */
+    /*         for (int j = 0; j < ntasks; j++) */
+    /*             for (int i = 0; i < ntasks; i++) */
+    /*                 if (rbuf[i + j * ntasks] != i + 100 * j) */
+    /*                     printf("got %d expected %d\n", rbuf[i + j * ntasks], i + 100 * j); */
+    /*     } */
         
 
-        /* Wait for all test tasks. */
-        MPI_Barrier(test_comm);
-    }
+    /*     /\* Wait for all test tasks. *\/ */
+    /*     MPI_Barrier(test_comm); */
+    /* } */
 
-    /* Free resourses. */
-    free(sbuf);
-    free(rbuf);
+    /* /\* Free resourses. *\/ */
+    /* free(sbuf); */
+    /* free(rbuf); */
     
     return 0;
 }
@@ -305,8 +406,8 @@ int main(int argc, char **argv)
     if (my_rank < TARGET_NTASKS)
     {
 	printf("%d running test code\n", my_rank);
-        if ((ret = run_spmd_tests(test_comm)))
-            return ret;
+        /* if ((ret = run_spmd_tests(test_comm))) */
+        /*     return ret; */
 
     } /* endif my_rank < TARGET_NTASKS */
 

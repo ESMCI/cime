@@ -100,17 +100,15 @@ extern "C" {
     void pioassert(bool exp, const char *msg,const char *fname, const int line);
     int CalcStartandCount(const int basetype, const int ndims, const int *gdims, const int num_io_procs,
                           const int myiorank, PIO_Offset *start, PIO_Offset *kount);
-    void CheckMPIReturn(const int ierr,const char file[],const int line);
-    int pio_fc_gather( void *sendbuf, const int sendcnt, const MPI_Datatype sendtype,
-                       void *recvbuf, const int recvcnt, const MPI_Datatype recvtype, const int root,
-                       MPI_Comm comm, const int flow_cntl);
-    int pio_fc_gatherv( void *sendbuf, const int sendcnt, const MPI_Datatype sendtype,
-                        void *recvbuf, const int recvcnts[], const int recvdispl[], const MPI_Datatype recvtype, const int root,
-                        MPI_Comm comm, const int flow_cntl);
 
-    int pio_fc_gatherv( void *sendbuf, const int sendcnt, const MPI_Datatype sendtype,
-                        void *recvbuf, const int recvcnts[], const int rdispls[], const MPI_Datatype recvtype, const int root,
-                        MPI_Comm comm, const int flow_cntl);
+    /* Check return from MPI function and print error message. */
+    void CheckMPIReturn(const int ierr, const char *file, const int line);
+
+    /* Like MPI_Gatherv(), but with flow control. */
+    int pio_fc_gatherv(void *sendbuf, const int sendcnt, const MPI_Datatype sendtype,
+                       void *recvbuf, const int *recvcnts, const int *recvdispl,
+                       const MPI_Datatype recvtype, const int root, MPI_Comm comm,
+                       const int flow_cntl);
 
     int pio_swapm(void *sndbuf, int sndlths[], int sdispls[], MPI_Datatype stypes[],
                   void *rcvbuf, int rcvlths[], int rdispls[], MPI_Datatype rtypes[],
