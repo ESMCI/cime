@@ -338,10 +338,6 @@ else
   endif
 endif
 
-ifeq ($(COMP_OCN), pop)
-  INCLDIR += -I$(EXEROOT)/ocn/cvmix
-endif
-
 ifndef MCT_LIBDIR
   MCT_LIBDIR=$(SHAREDPATH)/mct
 endif
@@ -656,9 +652,6 @@ ifeq ($(ULIBDEP),$(null))
      ULIBDEP += $(LIBROOT)/libice.a
      ULIBDEP += $(LNDLIBDIR)/$(LNDLIB)
      ULIBDEP += $(LIBROOT)/libocn.a
-     ifeq ($(COMP_OCN), pop)
-       ULIBDEP += $(LIBROOT)/libcvmix.a
-     endif
      ULIBDEP += $(LIBROOT)/librof.a
      ULIBDEP += $(LIBROOT)/libglc.a
      ULIBDEP += $(LIBROOT)/libwav.a
@@ -724,9 +717,6 @@ $(EXEC_SE): $(OBJS) $(ULIBDEP) $(CSMSHARELIB) $(MCTLIBS) $(PIOLIB) $(GPTLLIB)
 $(COMPLIB): $(OBJS)
 	$(AR) -r $(COMPLIB) $(OBJS)
 
-$(LIBROOT)/libcvmix.a:
-	$(MAKE) -f $(CIMEROOT)/../components/pop/source/cvmix/Makefile SRC_DIR=$(CIMEROOT)/../components/pop/source/cvmix FC=$(SFC) FCFLAGS="$(FFLAGS) $(FREEFLAGS)" LIB_DIR=$(LIBROOT)
-
 .c.o:
 	$(CC) -c $(INCLDIR) $(INCS) $(CFLAGS)  $<
 .F.o:
@@ -751,7 +741,7 @@ cleancpl:
 	cd $(EXEROOT)/cpl/obj;  $(RM) -f *.o *.mod
 
 cleanocn:
-	$(RM) -f $(LIBROOT)/libocn.a $(LIBROOT)/libcvmix.a
+	$(RM) -f $(LIBROOT)/libocn.a
 	cd $(EXEROOT)/ocn/obj ; $(RM) -f *.o *.mod
 
 cleanwav:
