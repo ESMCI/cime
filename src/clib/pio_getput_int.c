@@ -129,21 +129,14 @@ int PIOc_get_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
 
         /* Free tmp resources. */
         if (start_present)
-        {
             free(rstart);
-        }
         else
-        {
             start = rstart;
-        }
+
         if (count_present)
-        {
             free(rcount);
-        }
         else
-        {
             count = rcount;
-        }
     }
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
@@ -282,7 +275,7 @@ int PIOc_get_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
                 break;
             case NC_CHAR:
                 ierr = nc_get_vars_text(file->fh, varid, (size_t *)start, (size_t *)count,
-                                         (ptrdiff_t *)stride, buf);
+                                        (ptrdiff_t *)stride, buf);
                 break;
             case NC_SHORT:
                 ierr = nc_get_vars_short(file->fh, varid, (size_t *)start, (size_t *)count,
@@ -677,7 +670,7 @@ int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
                 break;
             case NC_CHAR:
                 ierr = nc_put_vars_text(file->fh, varid, (size_t *)start, (size_t *)count,
-                                         (ptrdiff_t *)stride, buf);
+                                        (ptrdiff_t *)stride, buf);
                 break;
             case NC_SHORT:
                 ierr = nc_put_vars_short(file->fh, varid, (size_t *)start, (size_t *)count,

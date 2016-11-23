@@ -9,7 +9,6 @@
 #include <pio_internal.h>
 
 /**
- * @ingroup PIO_def_var
  * Set deflate (zlib) settings for a variable.
  *
  * This function only applies to netCDF-4 files. When used with netCDF
@@ -29,6 +28,7 @@
  * @param deflate_level 1 to 9, with 1 being faster and 9 being more
  * compressed.
  * @return PIO_NOERR for success, otherwise an error code.
+ * @ingroup PIO_def_var
  */
 int PIOc_def_var_deflate(int ncid, int varid, int shuffle, int deflate,
                          int deflate_level)
@@ -45,21 +45,21 @@ int PIOc_def_var_deflate(int ncid, int varid, int shuffle, int deflate,
 
     /* Only netCDF-4 files can use this feature. */
     if (file->iotype != PIO_IOTYPE_NETCDF4P && file->iotype != PIO_IOTYPE_NETCDF4C)
-	return PIO_ENOTNC4;
+        return PIO_ENOTNC4;
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
     if (ios->async_interface)
     {
         if (!ios->ioproc)
         {
-	    int msg = PIO_MSG_DEF_VAR_DEFLATE;
+            int msg = PIO_MSG_DEF_VAR_DEFLATE;
 
-	    if (ios->compmaster)
-		mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
+            if (ios->compmaster)
+                mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
 
-	    if (!mpierr)
-		mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
-	}
+            if (!mpierr)
+                mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
+        }
 
         /* Handle MPI errors. */
         if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
@@ -70,11 +70,11 @@ int PIOc_def_var_deflate(int ncid, int varid, int shuffle, int deflate,
 
     if (ios->ioproc)
     {
-#ifdef _NETCDF4	
-	if (file->iotype == PIO_IOTYPE_NETCDF4P)
+#ifdef _NETCDF4
+        if (file->iotype == PIO_IOTYPE_NETCDF4P)
             ierr = NC_EINVAL;
-	else
-	    if (file->do_io)
+        else
+            if (file->do_io)
                 ierr = nc_def_var_deflate(file->fh, varid, shuffle, deflate, deflate_level);
 #endif
     }
@@ -129,7 +129,7 @@ int PIOc_inq_var_deflate(int ncid, int varid, int *shufflep,
 
     /* Only netCDF-4 files can use this feature. */
     if (file->iotype != PIO_IOTYPE_NETCDF4P && file->iotype != PIO_IOTYPE_NETCDF4C)
-	return PIO_ENOTNC4;
+        return PIO_ENOTNC4;
 
     msg = PIO_MSG_INQ_VAR_DEFLATE;
 
@@ -139,12 +139,12 @@ int PIOc_inq_var_deflate(int ncid, int varid, int *shufflep,
         if (!ios->ioproc)
         {
 
-	    if (ios->compmaster)
-		mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
+            if (ios->compmaster)
+                mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
 
-	    if (!mpierr)
-		mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
-	}
+            if (!mpierr)
+                mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
+        }
 
         /* Handle MPI errors. */
         if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
@@ -156,7 +156,7 @@ int PIOc_inq_var_deflate(int ncid, int varid, int *shufflep,
     if (ios->ioproc)
     {
 #ifdef _NETCDF4
-	if (file->do_io)
+        if (file->do_io)
             ierr = nc_inq_var_deflate(file->fh, varid, shufflep, deflatep, deflate_levelp);
 #endif
     }
@@ -208,6 +208,7 @@ int PIOc_def_var_chunking(int ncid, int varid, int storage,
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Pointer to file information. */
+    int ndims;             /* The number of dimensions for this var. */
     int ierr = PIO_NOERR;  /* Return code from function calls. */
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
 
@@ -218,7 +219,14 @@ int PIOc_def_var_chunking(int ncid, int varid, int storage,
 
     /* Only netCDF-4 files can use this feature. */
     if (file->iotype != PIO_IOTYPE_NETCDF4P && file->iotype != PIO_IOTYPE_NETCDF4C)
-	return PIO_ENOTNC4;
+        return PIO_ENOTNC4;
+
+    /* Run this on all tasks if async is not in use, but only on
+     * non-IO tasks if async is in use. Get the number of
+     * dimensions. */
+    if (!ios->async_interface || !ios->ioproc)
+        if ((ierr = PIOc_inq_varndims(ncid, varid, &ndims)))
+            return check_netcdf(file, ierr, __FILE__, __LINE__);
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
     if (ios->async_interface)
@@ -239,14 +247,31 @@ int PIOc_def_var_chunking(int ncid, int varid, int storage,
             return check_mpi(file, mpierr2, __FILE__, __LINE__);
         if (mpierr)
             return check_mpi(file, mpierr, __FILE__, __LINE__);
+
+        /* Broadcast values currently only known on computation tasks to IO tasks. */
+        if ((mpierr = MPI_Bcast(&ndims, 1, MPI_INT, ios->comproot, ios->my_comm)))
+            check_mpi(file, mpierr, __FILE__, __LINE__);
     }
 
     /* If this is an IO task, then call the netCDF function. */
     if (ios->ioproc)
     {
 #ifdef _NETCDF4
-	if (file->do_io)
-            ierr = nc_def_var_chunking(file->fh, varid, storage, chunksizesp);
+        if (file->do_io)
+	{
+	    size_t chunksizes_sizet[ndims];
+	    for (int d = 0; d < ndims; d++)
+	    {
+		if (chunksizesp[d] < 0)
+		{
+		    ierr = PIO_ERANGE;
+		    break;
+		}
+		chunksizes_sizet[d] = chunksizesp[d];
+	    }
+	    if (!ierr)
+		ierr = nc_def_var_chunking(file->fh, varid, storage, chunksizes_sizet);
+	}
 #endif
     }
 
@@ -260,7 +285,6 @@ int PIOc_def_var_chunking(int ncid, int varid, int storage,
 }
 
 /**
- * @ingroup PIO_inq_var
  * Inquire about chunksizes for a variable.
  *
  * This function only applies to netCDF-4 files. When used with netCDF
@@ -279,6 +303,7 @@ int PIOc_def_var_chunking(int ncid, int varid, int storage,
  * set. There are the same number of chunksizes as there are
  * dimensions.
  * @return PIO_NOERR for success, otherwise an error code.
+ * @ingroup PIO_inq_var
  */
 int PIOc_inq_var_chunking(int ncid, int varid, int *storagep, PIO_Offset *chunksizesp)
 {
@@ -297,16 +322,16 @@ int PIOc_inq_var_chunking(int ncid, int varid, int *storagep, PIO_Offset *chunks
 
     /* Only netCDF-4 files can use this feature. */
     if (file->iotype != PIO_IOTYPE_NETCDF4P && file->iotype != PIO_IOTYPE_NETCDF4C)
-	return PIO_ENOTNC4;
+        return PIO_ENOTNC4;
 
     /* Run these on all tasks if async is not in use, but only on
      * non-IO tasks if async is in use. */
     if (!ios->async_interface || !ios->ioproc)
     {
-	/* Find the number of dimensions of this variable. */
-	if ((ierr = PIOc_inq_varndims(ncid, varid, &ndims)))
-	    return ierr;
-	LOG((2, "ndims = %d", ndims));
+        /* Find the number of dimensions of this variable. */
+        if ((ierr = PIOc_inq_varndims(ncid, varid, &ndims)))
+            return ierr;
+        LOG((2, "ndims = %d", ndims));
     }
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
@@ -314,14 +339,14 @@ int PIOc_inq_var_chunking(int ncid, int varid, int *storagep, PIO_Offset *chunks
     {
         if (!ios->ioproc)
         {
-	    int msg = PIO_MSG_INQ_VAR_CHUNKING;
+            int msg = PIO_MSG_INQ_VAR_CHUNKING;
 
-	    if (ios->compmaster)
-		mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
+            if (ios->compmaster)
+                mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
 
-	    if (!mpierr)
-		mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
-	}
+            if (!mpierr)
+                mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
+        }
 
         /* Handle MPI errors. */
         if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
@@ -338,10 +363,23 @@ int PIOc_inq_var_chunking(int ncid, int varid, int *storagep, PIO_Offset *chunks
     if (ios->ioproc)
     {
 #ifdef _NETCDF4
-	if (file->do_io)
-	    ierr = nc_inq_var_chunking(file->fh, varid, storagep, chunksizesp);
+        if (file->do_io)
+	{
+	    size_t chunksizes_sizet[ndims];
+	    ierr = nc_inq_var_chunking(file->fh, varid, storagep, chunksizes_sizet);
+	    if (!ierr)
+		for (int d = 0; d < ndims; d++)
+		{
+		    if (chunksizes_sizet[d] > NC_MAX_INT64)
+		    {
+			ierr = PIO_ERANGE;
+			break;
+		    }
+		    chunksizesp[d] = chunksizes_sizet[d];
+		}
+	}
 #endif
-	LOG((2, "ierr = %d", ierr));
+        LOG((2, "ierr = %d", ierr));
     }
 
     /* Broadcast and check the return code. */
@@ -397,21 +435,21 @@ int PIOc_def_var_fill(int ncid, int varid, int no_fill, const void *fill_value)
 
     /* Only netCDF-4 files can use this feature. */
     if (file->iotype != PIO_IOTYPE_NETCDF4P && file->iotype != PIO_IOTYPE_NETCDF4C)
-	return PIO_ENOTNC4;
+        return PIO_ENOTNC4;
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
     if (ios->async_interface)
     {
         if (!ios->ioproc)
         {
-	    int msg = PIO_MSG_SET_FILL;
+            int msg = PIO_MSG_SET_FILL;
 
-	    if (ios->compmaster)
-		mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
+            if (ios->compmaster)
+                mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
 
-	    if (!mpierr)
-		mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
-	}
+            if (!mpierr)
+                mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
+        }
 
         /* Handle MPI errors. */
         if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
@@ -423,8 +461,8 @@ int PIOc_def_var_fill(int ncid, int varid, int no_fill, const void *fill_value)
     if (ios->ioproc)
     {
 #ifdef _NETCDF4
-	if (file->do_io)
-	    ierr = nc_def_var_fill(file->fh, varid, no_fill, fill_value);
+        if (file->do_io)
+            ierr = nc_def_var_fill(file->fh, varid, no_fill, fill_value);
 #endif
     }
 
@@ -474,20 +512,20 @@ int PIOc_def_var_endian(int ncid, int varid, int endian)
 
     /* Only netCDF-4 files can use this feature. */
     if (file->iotype != PIO_IOTYPE_NETCDF4P && file->iotype != PIO_IOTYPE_NETCDF4C)
-	return PIO_ENOTNC4;
+        return PIO_ENOTNC4;
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
     if (ios->async_interface)
     {
         if (!ios->ioproc)
         {
-	    int msg = PIO_MSG_DEF_VAR_ENDIAN;
-	    if (ios->compmaster)
-		mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
+            int msg = PIO_MSG_DEF_VAR_ENDIAN;
+            if (ios->compmaster)
+                mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
 
-	    if (!mpierr)
-		mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
-	}
+            if (!mpierr)
+                mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
+        }
 
         /* Handle MPI errors. */
         if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
@@ -499,8 +537,8 @@ int PIOc_def_var_endian(int ncid, int varid, int endian)
     if (ios->ioproc)
     {
 #ifdef _NETCDF4
-	if (file->do_io)
-	    ierr = nc_def_var_endian(file->fh, varid, endian);
+        if (file->do_io)
+            ierr = nc_def_var_endian(file->fh, varid, endian);
 #endif
     }
 
@@ -547,21 +585,21 @@ int PIOc_inq_var_endian(int ncid, int varid, int *endianp)
 
     /* Only netCDF-4 files can use this feature. */
     if (file->iotype != PIO_IOTYPE_NETCDF4P && file->iotype != PIO_IOTYPE_NETCDF4C)
-	return PIO_ENOTNC4;
+        return PIO_ENOTNC4;
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
     if (ios->async_interface)
     {
         if (!ios->ioproc)
         {
-	    int msg = PIO_MSG_INQ_VAR_CHUNKING;
+            int msg = PIO_MSG_INQ_VAR_CHUNKING;
 
-	    if (ios->compmaster)
-		mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
+            if (ios->compmaster)
+                mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
 
-	    if (!mpierr)
-		mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
-	}
+            if (!mpierr)
+                mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
+        }
 
         /* Handle MPI errors. */
         if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
@@ -574,8 +612,8 @@ int PIOc_inq_var_endian(int ncid, int varid, int *endianp)
     if (ios->ioproc)
     {
 #ifdef _NETCDF4
-	if (file->do_io)
-	    ierr = nc_inq_var_endian(file->fh, varid, endianp);
+        if (file->do_io)
+            ierr = nc_inq_var_endian(file->fh, varid, endianp);
 #endif
     }
 
@@ -632,7 +670,7 @@ int PIOc_set_chunk_cache(int iosysid, int iotype, PIO_Offset size,
 
     /* Only netCDF-4 files can use this feature. */
     if (iotype != PIO_IOTYPE_NETCDF4P && iotype != PIO_IOTYPE_NETCDF4C)
-	return PIO_ENOTNC4;
+        return PIO_ENOTNC4;
 
     int msg;
     msg = PIO_MSG_SET_CHUNK_CACHE;
@@ -700,7 +738,7 @@ int PIOc_get_chunk_cache(int iosysid, int iotype, PIO_Offset *sizep,
 
     /* Only netCDF-4 files can use this feature. */
     if (iotype != PIO_IOTYPE_NETCDF4P && iotype != PIO_IOTYPE_NETCDF4C)
-	return PIO_ENOTNC4;
+        return PIO_ENOTNC4;
 
     /* Since this is a property of the running HDF5 instance, not the
      * file, it's not clear if this message passing will apply. For
@@ -779,21 +817,21 @@ int PIOc_set_var_chunk_cache(int ncid, int varid, PIO_Offset size, PIO_Offset ne
 
     /* Only netCDF-4 files can use this feature. */
     if (file->iotype != PIO_IOTYPE_NETCDF4P && file->iotype != PIO_IOTYPE_NETCDF4C)
-	return PIO_ENOTNC4;
+        return PIO_ENOTNC4;
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
     if (ios->async_interface)
     {
         if (!ios->ioproc)
         {
-	    int msg = PIO_MSG_SET_VAR_CHUNK_CACHE;
+            int msg = PIO_MSG_SET_VAR_CHUNK_CACHE;
 
-	    if (ios->compmaster)
-		mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
+            if (ios->compmaster)
+                mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
 
-	    if (!mpierr)
-		mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
-	}
+            if (!mpierr)
+                mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
+        }
 
         /* Handle MPI errors. */
         if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
@@ -805,8 +843,8 @@ int PIOc_set_var_chunk_cache(int ncid, int varid, PIO_Offset size, PIO_Offset ne
     if (ios->ioproc)
     {
 #ifdef _NETCDF4
-	if (file->do_io)
-	    ierr = nc_set_var_chunk_cache(file->fh, varid, size, nelems, preemption);
+        if (file->do_io)
+            ierr = nc_set_var_chunk_cache(file->fh, varid, size, nelems, preemption);
 #endif
     }
 
@@ -859,7 +897,7 @@ int PIOc_get_var_chunk_cache(int ncid, int varid, PIO_Offset *sizep, PIO_Offset 
 
     /* Only netCDF-4 files can use this feature. */
     if (file->iotype != PIO_IOTYPE_NETCDF4P && file->iotype != PIO_IOTYPE_NETCDF4C)
-	return PIO_ENOTNC4;
+        return PIO_ENOTNC4;
 
     /* Since this is a property of the running HDF5 instance, not the
      * file, it's not clear if this message passing will apply. For
@@ -875,9 +913,9 @@ int PIOc_get_var_chunk_cache(int ncid, int varid, PIO_Offset *sizep, PIO_Offset 
     if (ios->ioproc)
     {
 #ifdef _NETCDF4
-	if (file->do_io)
-	    ierr = nc_get_var_chunk_cache(file->fh, varid, (size_t *)sizep, (size_t *)nelemsp,
-					  preemptionp);
+        if (file->do_io)
+            ierr = nc_get_var_chunk_cache(file->fh, varid, (size_t *)sizep, (size_t *)nelemsp,
+                                          preemptionp);
 #endif
     }
 
@@ -890,12 +928,12 @@ int PIOc_get_var_chunk_cache(int ncid, int varid, PIO_Offset *sizep, PIO_Offset 
     /* Broadcast results to all tasks. */
     if (!ierr)
     {
-	if (sizep && !ierr)
-	    ierr = MPI_Bcast(sizep, 1, MPI_OFFSET, ios->ioroot, ios->my_comm);
-	if (nelemsp && !ierr)
-	    ierr = MPI_Bcast(nelemsp, 1, MPI_OFFSET, ios->ioroot, ios->my_comm);
-	if (preemptionp && !ierr)
-	    ierr = MPI_Bcast(preemptionp, 1, MPI_FLOAT, ios->ioroot, ios->my_comm);
+        if (sizep && !ierr)
+            ierr = MPI_Bcast(sizep, 1, MPI_OFFSET, ios->ioroot, ios->my_comm);
+        if (nelemsp && !ierr)
+            ierr = MPI_Bcast(nelemsp, 1, MPI_OFFSET, ios->ioroot, ios->my_comm);
+        if (preemptionp && !ierr)
+            ierr = MPI_Bcast(preemptionp, 1, MPI_FLOAT, ios->ioroot, ios->my_comm);
     }
 
     return ierr;
