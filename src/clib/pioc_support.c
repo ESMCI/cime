@@ -170,6 +170,7 @@ void pio_log(int severity, const char *fmt, ...)
 {
     va_list argp;
     int t;
+    int rem_len = MAX_LOG_MSG;
     char msg[MAX_LOG_MSG];
     char *ptr = msg;
     char rank_str[MAX_RANK_STR];
@@ -187,25 +188,31 @@ void pio_log(int severity, const char *fmt, ...)
        many tabs before the message. */
     if (!severity)
     {
-        strcpy(ptr, ERROR_PREFIX);
+        strncpy(ptr, ERROR_PREFIX, (rem_len > 0) ? rem_len : 0);
         ptr += strlen(ERROR_PREFIX);
+        rem_len -= strlen(ERROR_PREFIX);
     }
     for (t = 0; t < severity; t++)
-        strcpy(ptr++, "\t");
+    {
+        strncpy(ptr++, "\t", (rem_len > 0) ? rem_len : 0);
+        rem_len--;
+    }
 
     /* Show the rank. */
-    sprintf(rank_str, "%d ", my_rank);
-    strcpy(ptr, rank_str);
+    snprintf(rank_str, MAX_RANK_STR, "%d ", my_rank);
+    strncpy(ptr, rank_str, (rem_len > 0) ? rem_len : 0);
     ptr += strlen(rank_str);
+    rem_len -= strlen(rank_str);
 
     /* Print out the variable list of args with vprintf. */
     va_start(argp, fmt);
-    vsprintf(ptr, fmt, argp);
+    vsnprintf(ptr, ((rem_len > 0) ? rem_len : 0), fmt, argp);
     va_end(argp);
 
     /* Put on a final linefeed. */
     ptr = msg + strlen(msg);
-    strcpy(ptr, "\n\0");
+    rem_len = MAX_LOG_MSG - strlen(msg);
+    strncpy(ptr, "\n\0", (rem_len > 0) ? rem_len : 0);
 
     /* Send message to stdout. */
     fprintf(stdout, "%s", msg);
