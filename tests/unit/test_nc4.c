@@ -6,6 +6,7 @@
  * functions are called on non-netCDF-4 files, and that is tested in
  * this code as well.
  *
+ * Ed Hartnett
  */
 #include <pio.h>
 #include <pio_tests.h>
