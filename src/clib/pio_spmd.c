@@ -1,5 +1,5 @@
-/** 
- * @file 
+/**
+ * @file
  * Algorithms modeled after spmd_utils in the Community
  * Atmosphere Model; C translation. This includes MPI_Gather,
  * MPI_Gatherv, and MPI_Alltoallw with flow control options.
@@ -181,39 +181,68 @@ int pair(const int np, const int p, const int k)
  * options. Generalized all-to-all communication allowing different
  * datatypes, counts, and displacements for each partner
  *
- * @param sndbuf starting address of send buffer
- * @param sndlths integer array equal to the group size specifying the
- * number of elements to send to each processor
- * @param sdispls integer array (of length group size). Entry j
+ * @param sendbuf starting address of send buffer
+ * @param sendcounts integer array equal to the number of tasks in
+ * communicator comm (ntasks). It specifies the number of elements to
+ * send to each processor
+ * @param sdispls integer array (of length ntasks). Entry j
  * specifies the displacement in bytes (relative to sendbuf) from
  * which to take the outgoing data destined for process j.
- * @param stypes array of datatypes (of length group size). Entry j
+ * @param sendtypes array of datatypes (of length ntasks). Entry j
  * specifies the type of data to send to process j.
- * @param rcvbuf address of receive buffer.
- * @param rcvlths integer array equal to the group size specifying the
+ * @param recvbuf address of receive buffer.
+ * @param recvcounts integer array (of length ntasks) specifying the
  * number of elements that can be received from each processor.
- * @param rdispls integer array (of length group size). Entry i
+ * @param rdispls integer array (of length ntasks). Entry i
  * specifies the displacement in bytes (relative to recvbuf) at which
  * to place the incoming data from process i.
- * @param rtypes array of datatypes (of length group size). Entry i
+ * @param recvtypes array of datatypes (of length ntasks). Entry i
  * specifies the type of data received from process i.
  * @param comm MPI communicator for the MPI_Alltoallw call.
- * @param handshake
- * @param isend
- * @param max_requests
+ * @param handshake if true, use handshaking.
+ * @param isend ???
+ * @param max_requests If 0, no flow control is used.
  * @returns 0 for success, error code otherwise.
  */
-int pio_swapm(void *sndbuf, int *sndlths, int *sdispls, MPI_Datatype *stypes,
-              void *rcvbuf, int *rcvlths, int *rdispls, MPI_Datatype *rtypes,
+int pio_swapm(void *sendbuf, int *sendcounts, int *sdispls, MPI_Datatype *sendtypes,
+              void *recvbuf, int *recvcounts, int *rdispls, MPI_Datatype *recvtypes,
               MPI_Comm comm, const bool handshake, bool isend, const int max_requests)
 {
-    int nprocs;
-    int mytask;
+    int ntasks;  /* Number of tasks in communicator comm. */
+    int my_rank; /* Rank of this task in comm. */
     int maxsend = 0;
     int maxrecv = 0;
+    int tag;
+    int offset_t;
+    int steps;
+    int istep;
+    int rstep;
+    int p;
+    int maxreq;
+    int maxreqh;
+    int hs = 1; /* Used for handshaking. */
+    int cnt;
+    void *ptr;
+    MPI_Status status; /* Not actually used - replace with MPI_STATUSES_IGNORE. */
+    int ierr;  /* Return value. */
 
-    CheckMPIReturn(MPI_Comm_size(comm, &nprocs),__FILE__, __LINE__);
-    CheckMPIReturn(MPI_Comm_rank(comm, &mytask),__FILE__, __LINE__);
+    LOG((2, "pio_swapm handshake = %d isend = %d max_requests = %d", handshake,
+         isend, max_requests));
+    /* Get my rank and size of communicator. */
+    CheckMPIReturn(MPI_Comm_size(comm, &ntasks), __FILE__, __LINE__);
+    CheckMPIReturn(MPI_Comm_rank(comm, &my_rank), __FILE__, __LINE__);
+
+    /* Now we know the size of these arrays. */
+    int swapids[ntasks];
+    MPI_Request rcvids[ntasks];
+    MPI_Request sndids[ntasks];
+    MPI_Request hs_rcvids[ntasks];
+
+    /* Print some debugging info, if logging is enabled. */
+#if PIO_ENABLE_LOGGING
+    for (int p = 0; p < ntasks; p++)
+        LOG((3, ""));
+#endif /* PIO_ENABLE_LOGGING */
 
     /* If max_requests == 0 no throttling is requested and the default
      * mpi_alltoallw function is used. */
@@ -222,109 +251,97 @@ int pio_swapm(void *sndbuf, int *sndlths, int *sdispls, MPI_Datatype *stypes,
 #ifdef DEBUG
         int totalrecv = 0;
         int totalsend = 0;
-        for (int i = 0; i < nprocs; i++)
+        for (int i = 0; i < ntasks; i++)
         {
-            totalsend += sndlths[i];
-            totalrecv += rcvlths[i];
+            totalsend += sendcounts[i];
+            totalrecv += recvcounts[i];
         }
         printf("%s %d totalsend %d totalrecv %d \n", __FILE__, __LINE__, totalsend,
                totalrecv);
 #endif
 #ifdef OPEN_MPI
-        for (int i = 0; i < nprocs; i++)
+        /* For some reason OPEN_MPI has problems with MPI_CHAR ??? */
+        for (int i = 0; i < ntasks; i++)
         {
-            if (stypes[i] == MPI_DATATYPE_NULL)
-                stypes[i] = MPI_CHAR;
-            if (rtypes[i] == MPI_DATATYPE_NULL)
-                rtypes[i] = MPI_CHAR;
+            if (sendtypes[i] == MPI_DATATYPE_NULL)
+                sendtypes[i] = MPI_CHAR;
+            if (recvtypes[i] == MPI_DATATYPE_NULL)
+                recvtypes[i] = MPI_CHAR;
         }
 #endif
-        CheckMPIReturn(MPI_Alltoallw(sndbuf, sndlths, sdispls, stypes, rcvbuf,
-                                     rcvlths, rdispls, rtypes, comm), __FILE__, __LINE__);
+
+        /* Call the MPI alltoall without flow control. */
+        CheckMPIReturn(MPI_Alltoallw(sendbuf, sendcounts, sdispls, sendtypes, recvbuf,
+                                     recvcounts, rdispls, recvtypes, comm), __FILE__, __LINE__);
 
 #ifdef OPEN_MPI
-        for (int i = 0; i < nprocs; i++)
+        /* For some reason OPEN_MPI has problems with MPI_CHAR ??? */
+        for (int i = 0; i < ntasks; i++)
         {
-            if (stypes[i] == MPI_CHAR)
-                stypes[i] = MPI_DATATYPE_NULL;
-            if (rtypes[i] == MPI_CHAR)
-                rtypes[i] = MPI_DATATYPE_NULL;
+            if (sendtypes[i] == MPI_CHAR)
+                sendtypes[i] = MPI_DATATYPE_NULL;
+            if (recvtypes[i] == MPI_CHAR)
+                recvtypes[i] = MPI_DATATYPE_NULL;
         }
 #endif
         return PIO_NOERR;
     }
 
-    int tag;
-    int offset_t;
-    int ierr;
-    MPI_Status status;
-    int steps;
-    int istep;
-    int rstep;
-    int p;
-    int maxreq;
-    int maxreqh;
-    int hs;
-    int cnt;
-    void *ptr;
-    MPI_Request rcvids[nprocs];
+    /* ??? */
+    offset_t = ntasks;
 
-    offset_t = nprocs;
-    /* send to self */
-    if (sndlths[mytask] > 0)
+    /* Send to self. */
+    if (sendcounts[my_rank] > 0)
     {
         void *sptr, *rptr;
         int extent, lb;
-        tag = mytask + offset_t;
-        sptr = (void *)((char *) sndbuf + sdispls[mytask]);
-        rptr = (void *)((char *) rcvbuf + rdispls[mytask]);
+        tag = my_rank + offset_t;
+        sptr = (char *)sendbuf + sdispls[my_rank];
+        rptr = (char *)recvbuf + rdispls[my_rank];
 
         /*
-          MPI_Type_get_extent(stypes[mytask], &lb, &extent);
+          MPI_Type_get_extent(sendtypes[my_rank], &lb, &extent);
           printf("%s %d %d %d\n",__FILE__,__LINE__,extent, lb);
-          MPI_Type_get_extent(rtypes[mytask], &lb, &extent);
+          MPI_Type_get_extent(recvtypes[my_rank], &lb, &extent);
           printf("%s %d %d %d\n",__FILE__,__LINE__,extent, lb);
         */
-#ifdef ONEWAY
-        CheckMPIReturn(MPI_Sendrecv(sptr, sndlths[mytask],stypes[mytask],
-                                    mytask, tag, rptr, rcvlths[mytask], rtypes[mytask],
-                                    mytask, tag, comm, &status), __FILE__, __LINE__);
+#ifdef ONEWAY /* ??? */
+        CheckMPIReturn(MPI_Sendrecv(sptr, sendcounts[my_rank],sendtypes[my_rank],
+                                    my_rank, tag, rptr, recvcounts[my_rank], recvtypes[my_rank],
+                                    my_rank, tag, comm, &status), __FILE__, __LINE__);
 #else
-        CheckMPIReturn(MPI_Irecv(rptr, rcvlths[mytask], rtypes[mytask],
-                                 mytask, tag, comm, rcvids), __FILE__, __LINE__);
-        CheckMPIReturn(MPI_Send(sptr, sndlths[mytask], stypes[mytask],
-                                mytask, tag, comm), __FILE__, __LINE__);
+        CheckMPIReturn(MPI_Irecv(rptr, recvcounts[my_rank], recvtypes[my_rank],
+                                 my_rank, tag, comm, rcvids), __FILE__, __LINE__);
+        CheckMPIReturn(MPI_Send(sptr, sendcounts[my_rank], sendtypes[my_rank],
+                                my_rank, tag, comm), __FILE__, __LINE__);
 
         CheckMPIReturn(MPI_Wait(rcvids, &status), __FILE__, __LINE__);
 #endif
     }
 
-    if (nprocs == 1)
+    /* ??? */
+    if (ntasks == 1)
         return PIO_NOERR;
 
-    int swapids[nprocs];
-    MPI_Request sndids[nprocs];
-    MPI_Request hs_rcvids[nprocs];
-
-    for (int i = 0; i < nprocs; i++)
+    for (int i = 0; i < ntasks; i++)
     {
         rcvids[i] = MPI_REQUEST_NULL;
         swapids[i] = 0;
     }
 
     if (isend)
-        for (int i = 0; i < nprocs; i++)
+        for (int i = 0; i < ntasks; i++)
             sndids[i] = MPI_REQUEST_NULL;
 
     if (handshake)
-        for (int i = 0; i < nprocs; i++)
+        for (int i = 0; i < ntasks; i++)
             hs_rcvids[i] = MPI_REQUEST_NULL;
 
     steps = 0;
-    for (istep = 0; istep < ceil2(nprocs) - 1; istep++)
+    for (istep = 0; istep < ceil2(ntasks) - 1; istep++)
     {
-        p = pair(nprocs, istep, mytask);
-        if (p >= 0 && (sndlths[p] > 0 || rcvlths[p] > 0))
+        p = pair(ntasks, istep, my_rank);
+        if (p >= 0 && (sendcounts[p] > 0 || recvcounts[p] > 0))
             swapids[steps++] = p;
     }
 
@@ -356,28 +373,28 @@ int pio_swapm(void *sndbuf, int *sndlths, int *sdispls, MPI_Datatype *stypes,
      * for it. */
     if (handshake)
     {
-        hs = 1;
         for (istep = 0; istep < maxreq; istep++)
         {
             p = swapids[istep];
-            if (sndlths[p] > 0)
+            if (sendcounts[p] > 0)
             {
-                tag = mytask + offset_t;
+                tag = my_rank + offset_t;
                 CheckMPIReturn(MPI_Irecv(&hs, 1, MPI_INT, p, tag, comm, hs_rcvids + istep),
                                __FILE__, __LINE__);
             }
         }
     }
 
+    /* ??? */
     for (istep = 0; istep < maxreq; istep++)
     {
         p = swapids[istep];
-        if (rcvlths[p] > 0)
+        if (recvcounts[p] > 0)
         {
             tag = p + offset_t;
-            ptr = (void *)((char *)rcvbuf + rdispls[p]);
+            ptr = (char *)recvbuf + rdispls[p];
 
-            CheckMPIReturn(MPI_Irecv(ptr, rcvlths[p], rtypes[p], p, tag, comm, rcvids + istep),
+            CheckMPIReturn(MPI_Irecv(ptr, recvcounts[p], recvtypes[p], p, tag, comm, rcvids + istep),
                            __FILE__, __LINE__);
 
             if (handshake)
@@ -390,21 +407,21 @@ int pio_swapm(void *sndbuf, int *sndlths, int *sdispls, MPI_Datatype *stypes,
     for (istep = 0; istep < steps; istep++)
     {
         p = swapids[istep];
-        if (sndlths[p] > 0)
+        if (sendcounts[p] > 0)
         {
-            tag = mytask + offset_t;
+            tag = my_rank + offset_t;
             if (handshake)
             {
                 CheckMPIReturn(MPI_Wait(hs_rcvids + istep, &status), __FILE__, __LINE__);
                 hs_rcvids[istep] = MPI_REQUEST_NULL;
             }
-            ptr = (void *)((char *)sndbuf + sdispls[p]);
+            ptr = (char *)sendbuf + sdispls[p];
 
             if (isend)
-                CheckMPIReturn(MPI_Irsend(ptr, sndlths[p], stypes[p], p, tag, comm, sndids + istep),
+                CheckMPIReturn(MPI_Irsend(ptr, sendcounts[p], sendtypes[p], p, tag, comm, sndids + istep),
                                __FILE__, __LINE__);
             else
-                CheckMPIReturn(MPI_Send(ptr, sndlths[p], stypes[p], p, tag, comm), __FILE__, __LINE__);
+                CheckMPIReturn(MPI_Send(ptr, sendcounts[p], sendtypes[p], p, tag, comm), __FILE__, __LINE__);
         }
 
         /* We did comms in sets of size max_reqs, if istep > maxreqh
@@ -414,26 +431,26 @@ int pio_swapm(void *sndbuf, int *sndlths, int *sdispls, MPI_Datatype *stypes,
             p = istep - maxreqh;
             if (rcvids[p] != MPI_REQUEST_NULL)
             {
-                CheckMPIReturn(MPI_Wait(rcvids+p, &status), __FILE__, __LINE__);
+                CheckMPIReturn(MPI_Wait(rcvids + p, &status), __FILE__, __LINE__);
                 rcvids[p] = MPI_REQUEST_NULL;
             }
             if (rstep < steps)
             {
                 p = swapids[rstep];
-                if (handshake && sndlths[p] > 0)
+                if (handshake && sendcounts[p] > 0)
                 {
-                    tag = mytask + offset_t;
-                    CheckMPIReturn(MPI_Irecv( &hs, 1, MPI_INT, p, tag, comm, hs_rcvids+rstep), __FILE__, __LINE__);
+                    tag = my_rank + offset_t;
+                    CheckMPIReturn(MPI_Irecv(&hs, 1, MPI_INT, p, tag, comm, hs_rcvids+rstep), __FILE__, __LINE__);
                 }
-                if (rcvlths[p] > 0)
+                if (recvcounts[p] > 0)
                 {
                     tag = p + offset_t;
 
-                    ptr = (void *)((char *) rcvbuf + rdispls[p]);
-                    CheckMPIReturn(MPI_Irecv( ptr, rcvlths[p], rtypes[p], p, tag, comm, rcvids+rstep),
+                    ptr = (char *)recvbuf + rdispls[p];
+                    CheckMPIReturn(MPI_Irecv(ptr, recvcounts[p], recvtypes[p], p, tag, comm, rcvids + rstep),
                                    __FILE__, __LINE__);
                     if (handshake)
-                        CheckMPIReturn(MPI_Send( &hs, 1, MPI_INT, p, tag, comm), __FILE__, __LINE__);
+                        CheckMPIReturn(MPI_Send(&hs, 1, MPI_INT, p, tag, comm), __FILE__, __LINE__);
                 }
                 rstep++;
             }
