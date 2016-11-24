@@ -1384,7 +1384,6 @@ int subset_rearrange_create(const iosystem_desc_t ios, const int maplen, PIO_Off
     PIO_Offset *srcindex = NULL;
     PIO_Offset *myfillgrid = NULL;
     int maxregions;
-    int maxreq = MAX_GATHER_BLOCK_SIZE;
     int rank, ntasks, rcnt;
     size_t pio_offset_size = sizeof(PIO_Offset);
 
