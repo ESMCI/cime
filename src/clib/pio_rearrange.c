@@ -1386,6 +1386,7 @@ int subset_rearrange_create(const iosystem_desc_t ios, const int maplen, PIO_Off
     int maxregions;
     int rank, ntasks, rcnt;
     size_t pio_offset_size = sizeof(PIO_Offset);
+    int maxreq = MAX_GATHER_BLOCK_SIZE;
 
     assert(iodesc);
 

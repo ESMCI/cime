@@ -200,7 +200,12 @@ int pair(const int np, const int p, const int k)
  * specifies the type of data received from process i.
  * @param comm MPI communicator for the MPI_Alltoallw call.
  * @param handshake if true, use handshaking.
- * @param isend ???
+ * @param isend the isend bool indicates whether sends should be
+ * posted using mpi_irsend which can be faster than blocking
+ * sends. When flow control is used max_requests > 0 and the number of
+ * irecvs posted from a given task will not exceed this value. On some
+ * networks too many outstanding irecvs will cause a communications
+ * bottleneck.
  * @param max_requests If 0, no flow control is used.
  * @returns 0 for success, error code otherwise.
  */
@@ -260,7 +265,12 @@ int pio_swapm(void *sendbuf, int *sendcounts, int *sdispls, MPI_Datatype *sendty
                totalrecv);
 #endif
 #ifdef OPEN_MPI
-        /* For some reason OPEN_MPI has problems with MPI_CHAR ??? */
+        /* OPEN_MPI developers determined that MPI_DATATYPE_NULL was
+           not a valid argument to MPI_Alltoallw according to the
+           standard. The standard is a little vague on this issue and
+           other mpi vendors disagree. In my opinion it just makes
+           sense that if an argument expects an mpi datatype then
+           MPI_DATATYPE_NULL should be valid. */
         for (int i = 0; i < ntasks; i++)
         {
             if (sendtypes[i] == MPI_DATATYPE_NULL)
@@ -275,7 +285,7 @@ int pio_swapm(void *sendbuf, int *sendcounts, int *sdispls, MPI_Datatype *sendty
                                      recvcounts, rdispls, recvtypes, comm), __FILE__, __LINE__);
 
 #ifdef OPEN_MPI
-        /* For some reason OPEN_MPI has problems with MPI_CHAR ??? */
+        /* OPEN_MPI has problems with MPI_DATATYPE_NULL. */
         for (int i = 0; i < ntasks; i++)
         {
             if (sendtypes[i] == MPI_CHAR)
@@ -287,7 +297,7 @@ int pio_swapm(void *sendbuf, int *sendcounts, int *sdispls, MPI_Datatype *sendty
         return PIO_NOERR;
     }
 
-    /* ??? */
+    /* an index for communications tags */
     offset_t = ntasks;
 
     /* Send to self. */
@@ -305,7 +315,10 @@ int pio_swapm(void *sendbuf, int *sendcounts, int *sdispls, MPI_Datatype *sendty
           MPI_Type_get_extent(recvtypes[my_rank], &lb, &extent);
           printf("%s %d %d %d\n",__FILE__,__LINE__,extent, lb);
         */
-#ifdef ONEWAY /* ??? */
+        
+#ifdef ONEWAY
+        /* If ONEWAY is true we will post mpi_sendrecv comms instead
+         * of irecv/send. */        
         CheckMPIReturn(MPI_Sendrecv(sptr, sendcounts[my_rank],sendtypes[my_rank],
                                     my_rank, tag, rptr, recvcounts[my_rank], recvtypes[my_rank],
                                     my_rank, tag, comm, &status), __FILE__, __LINE__);
@@ -319,7 +332,8 @@ int pio_swapm(void *sendbuf, int *sendcounts, int *sdispls, MPI_Datatype *sendty
 #endif
     }
 
-    /* ??? */
+    /* When send to self is complete there is nothing left to do if
+     * ntasks==1. */
     if (ntasks == 1)
         return PIO_NOERR;
 
@@ -385,7 +399,7 @@ int pio_swapm(void *sendbuf, int *sendcounts, int *sdispls, MPI_Datatype *sendty
         }
     }
 
-    /* ??? */
+    /* Post up to maxreq irecv's. */
     for (istep = 0; istep < maxreq; istep++)
     {
         p = swapids[istep];
@@ -402,7 +416,7 @@ int pio_swapm(void *sendbuf, int *sendcounts, int *sdispls, MPI_Datatype *sendty
         }
     }
 
-    /* ??? */
+    /* Tell the paired task that this tasks' has posted it's irecvs'. */
     rstep = maxreq;
     for (istep = 0; istep < steps; istep++)
     {
@@ -410,6 +424,8 @@ int pio_swapm(void *sendbuf, int *sendcounts, int *sdispls, MPI_Datatype *sendty
         if (sendcounts[p] > 0)
         {
             tag = my_rank + offset_t;
+            /* If handshake is enabled don't post sends until the
+             * receiving task has posted recvs. */
             if (handshake)
             {
                 CheckMPIReturn(MPI_Wait(hs_rcvids + istep, &status), __FILE__, __LINE__);
@@ -457,7 +473,8 @@ int pio_swapm(void *sendbuf, int *sendcounts, int *sdispls, MPI_Datatype *sendty
         }
     }
 
-    /* ??? */
+    /* If steps > 0 there are still outstanding messages, wait for
+     * them here. */
     if (steps > 0)
     {
         CheckMPIReturn(MPI_Waitall(steps, rcvids, MPI_STATUSES_IGNORE), __FILE__, __LINE__);
