@@ -1384,9 +1384,9 @@ int subset_rearrange_create(const iosystem_desc_t ios, const int maplen, PIO_Off
     PIO_Offset *srcindex = NULL;
     PIO_Offset *myfillgrid = NULL;
     int maxregions;
-    int maxreq = MAX_GATHER_BLOCK_SIZE;
     int rank, ntasks, rcnt;
     size_t pio_offset_size = sizeof(PIO_Offset);
+    int maxreq = MAX_GATHER_BLOCK_SIZE;
 
     assert(iodesc);
 
@@ -1456,9 +1456,8 @@ int subset_rearrange_create(const iosystem_desc_t ios, const int maplen, PIO_Off
 
     /* Pass the reduced maplen (without holes) from each compute task to its associated IO task
        printf("%s %d %ld\n",__FILE__,__LINE__,iodesc->scount); */
-
-    pio_fc_gather((void *)iodesc->scount, 1, MPI_INT, (void *)iodesc->rcount, rcnt, MPI_INT,
-		  0, iodesc->subset_comm, maxreq);
+    MPI_Gather(iodesc->scount, 1, MPI_INT, iodesc->rcount, rcnt, MPI_INT,
+               0, iodesc->subset_comm);
 
     iodesc->llen = 0;
 
