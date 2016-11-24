@@ -305,8 +305,8 @@ int run_spmd_tests(MPI_Comm test_comm)
         }
 
         if (itest == 0)
-            ret = pio_swapm(sbuf, sendcounts, sdispls, sendtypes, rbuf, recvcounts, rdispls, recvtypes,
-                            test_comm, hs, isend, 0);
+            ret = pio_swapm(sbuf, sendcounts, sdispls, sendtypes, rbuf, recvcounts,
+                            rdispls, recvtypes, test_comm, hs, isend, 0);
         /* else if (itest == 1) */
         /* { */
         /*     hs = true; */
