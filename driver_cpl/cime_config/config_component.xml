@@ -2537,7 +2537,7 @@
   <entry id="OCN_PIO_TYPENAME">
     <type>char</type>
     <valid_values>nothing,netcdf,pnetcdf,netcdf4p,netcdf4c</valid_values>
-    <default_value>nothing</default_value>
+    <default_value>pnetcdf</default_value>
     <group>run_pio</group>
     <file>env_run.xml</file>
     <desc>pio io type</desc>
@@ -2578,7 +2578,7 @@
   <entry id="LND_PIO_TYPENAME">
     <type>char</type>
     <valid_values>nothing,netcdf,pnetcdf,netcdf4p,netcdf4c</valid_values>
-    <default_value>nothing</default_value>
+    <default_value>pnetcdf</default_value>
     <group>run_pio</group>
     <file>env_run.xml</file>
     <desc>pio io type</desc>
@@ -2619,7 +2619,7 @@
   <entry id="ROF_PIO_TYPENAME">
     <type>char</type>
     <valid_values>nothing,netcdf,pnetcdf,netcdf4p,netcdf4c</valid_values>
-    <default_value>nothing</default_value>
+    <default_value>pnetcdf</default_value>
     <group>run_pio</group>
     <file>env_run.xml</file>
     <desc>pio io type</desc>
@@ -2660,7 +2660,7 @@
   <entry id="ICE_PIO_TYPENAME">
     <type>char</type>
     <valid_values>nothing,netcdf,pnetcdf,netcdf4p,netcdf4c</valid_values>
-    <default_value>nothing</default_value>
+    <default_value>pnetcdf</default_value>
     <group>run_pio</group>
     <file>env_run.xml</file>
     <desc>pio io type</desc>
@@ -2701,7 +2701,7 @@
   <entry id="ATM_PIO_TYPENAME">
     <type>char</type>
     <valid_values>nothing,netcdf,pnetcdf,netcdf4p,netcdf4c</valid_values>
-    <default_value>nothing</default_value>
+    <default_value>pnetcdf</default_value>
     <group>run_pio</group>
     <file>env_run.xml</file>
     <desc>pio io type</desc>
@@ -2742,7 +2742,7 @@
   <entry id="CPL_PIO_TYPENAME">
     <type>char</type>
     <valid_values>nothing,netcdf,pnetcdf,netcdf4p,netcdf4c</valid_values>
-    <default_value>nothing</default_value>
+    <default_value>pnetcdf</default_value>
     <group>run_pio</group>
     <file>env_run.xml</file>
     <desc>pio io type</desc>
@@ -2783,7 +2783,7 @@
   <entry id="GLC_PIO_TYPENAME">
     <type>char</type>
     <valid_values>nothing,netcdf,pnetcdf,netcdf4p,netcdf4c</valid_values>
-    <default_value>nothing</default_value>
+    <default_value>pnetcdf</default_value>
     <group>run_pio</group>
     <file>env_run.xml</file>
     <desc>pio io type</desc>
@@ -2824,7 +2824,7 @@
   <entry id="WAV_PIO_TYPENAME">
     <type>char</type>
     <valid_values>nothing,netcdf,pnetcdf,netcdf4p,netcdf4c</valid_values>
-    <default_value>nothing</default_value>
+    <default_value>pnetcdf</default_value>
     <group>run_pio</group>
     <file>env_run.xml</file>
     <desc>pio io type</desc>
