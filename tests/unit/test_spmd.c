@@ -78,14 +78,14 @@ int run_spmd_tests(MPI_Comm test_comm)
         sendcounts[i] = i + 1;
         recvcounts[i] = my_rank + 1;
         rdispls[i] = i * (my_rank + 1) * sizeof(int);
-        sdispls[i] = (((i+1) * (i))/2) * sizeof(int);
+        sdispls[i] = (((i+1) * (i)) / 2) * sizeof(int);
         sendtypes[i] = recvtypes[i] = MPI_INT;
     }
 
     //    for (int msg_cnt=4; msg_cnt<size; msg_cnt*=2){
     //   if (rank==0) printf("message count %d\n",msg_cnt);
     int msg_cnt = 0;
-    for (int itest = 0; itest < 5; itest++)
+    for (int itest = 0; itest < 1; itest++)
     {
         bool hs = false;
         bool isend = false;
@@ -150,9 +150,9 @@ int run_spmd_tests(MPI_Comm test_comm)
         if (!my_rank)
         {
             for (int e = 0; e < num_elem; e++)
-                printf("sbuf[%d] = %d", e, sbuf[e]);
+                printf("sbuf[%d] = %d\n", e, sbuf[e]);
             for (int e = 0; e < num_elem; e++)
-                printf("rbuf[%d] = %d", e, rbuf[e]);
+                printf("rbuf[%d] = %d\n", e, rbuf[e]);
         }
     }
 
