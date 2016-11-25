@@ -2,6 +2,7 @@
  * Tests for names of vars, atts, and dims. Also test the
  * PIOc_strerror() function.
  *
+ * Ed Hartnett
  */
 #include <pio.h>
 #include <pio_tests.h>
