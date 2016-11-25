@@ -93,10 +93,8 @@ int run_spmd_tests(MPI_Comm test_comm)
 
             /* Print results. */
             if (!my_rank)
-            {
                 for (int e = 0; e < num_elem; e++)
                     printf("sbuf[%d] = %d\n", e, sbuf[e]);
-            }
 
             /* Set the parameters different for each test case. */
             if (itest == 1)
@@ -133,7 +131,7 @@ int run_spmd_tests(MPI_Comm test_comm)
             /* for (int e = 0; e < num_elem; e++) */
             /*     printf("%d rbuf[%d] = %d\n", my_rank, e, rbuf[e]); */
 
-            /* Check results. */
+            /* Check that rbuf has 0, 1, ..., ntasks-1. */
             for (int e = 0; e < num_elem; e++)
                 if (((int *)rbuf)[e] != e)
                     return ERR_WRONG;
