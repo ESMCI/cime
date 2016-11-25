@@ -1495,10 +1495,6 @@ int subset_rearrange_create(const iosystem_desc_t ios, const int maplen, PIO_Off
                               iodesc->subset_comm)))
         return check_mpi(NULL, mpierr, __FILE__, __LINE__);
     
-    /* pio_fc_gatherv((void *) iodesc->sindex, iodesc->scount[0], PIO_OFFSET, */
-    /*                (void *) srcindex, recvlths, rdispls, PIO_OFFSET, */
-    /*                0, iodesc->subset_comm, maxreq); */
-
     if (ios.ioproc && iodesc->llen>0)
     {
         if (!(map = bget(iodesc->llen * sizeof(mapsort))))
@@ -1534,8 +1530,6 @@ int subset_rearrange_create(const iosystem_desc_t ios, const int maplen, PIO_Off
     if ((mpierr = MPI_Gatherv(shrtmap, iodesc->scount[0], PIO_OFFSET, iomap, recvlths, rdispls, 
                               PIO_OFFSET, 0, iodesc->subset_comm)))
         return check_mpi(NULL, mpierr, __FILE__, __LINE__);
-    /* pio_fc_gatherv((void *)shrtmap, iodesc->scount[0], PIO_OFFSET, (void *)iomap, recvlths, rdispls, */
-    /*     	   PIO_OFFSET, 0, iodesc->subset_comm, maxreq); */
 
     if (shrtmap != compmap)
         brel(shrtmap);
@@ -1654,9 +1648,6 @@ int subset_rearrange_create(const iosystem_desc_t ios, const int maplen, PIO_Off
             if ((mpierr = MPI_Gatherv((iomap + imin), cnt, PIO_OFFSET, myusegrid, gcnt,
                                       displs, PIO_OFFSET, nio, ios.io_comm)))
                 return check_mpi(NULL, mpierr, __FILE__, __LINE__);
-
-            /* pio_fc_gatherv((void *)(iomap + imin), cnt, PIO_OFFSET, (void *)myusegrid, gcnt, */
-	    /*     	   displs, PIO_OFFSET, nio, ios.io_comm, maxreq); */
         }
 
         PIO_Offset grid[thisgridsize[ios.io_rank]];
