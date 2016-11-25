@@ -25,17 +25,16 @@ int run_spmd_tests(MPI_Comm test_comm)
     int my_rank;  /* 0-based rank in test_comm. */
     int ntasks;   /* Number of tasks in test_comm. */
     int num_elem; /* Number of elements in buffers. */
+    int type_size; /* Size in bytes of an element. */
     struct timeval t1, t2; /* For timing. */
-
-
-    int mpiret;   /* Return value from MPI calls. */
+    int mpierr;   /* Return value from MPI calls. */
     int ret;      /* Return value. */
 
     /* Learn rank and size. */
-    if ((mpiret = MPI_Comm_size(test_comm, &ntasks)))
-        MPIERR(mpiret);
-    if ((mpiret = MPI_Comm_rank(test_comm, &my_rank)))
-        MPIERR(mpiret);
+    if ((mpierr = MPI_Comm_size(test_comm, &ntasks)))
+        MPIERR(mpierr);
+    if ((mpierr = MPI_Comm_rank(test_comm, &my_rank)))
+        MPIERR(mpierr);
 
     /* Determine size of buffers. */
     num_elem = ntasks;
@@ -57,6 +56,11 @@ int run_spmd_tests(MPI_Comm test_comm)
     for (int i = 0; i < num_elem; i++)
         rbuf[i] = -999;
 
+    /* Get the size of the int type for MPI. (Should always be 4.) */
+    if ((mpierr = MPI_Type_size(MPI_INT, &type_size)))
+        return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+    assert(type_size == sizeof(int));
+
     /* Initialize the arrays. */
     for (int i = 0; i < ntasks; i++)
     {
@@ -64,7 +68,7 @@ int run_spmd_tests(MPI_Comm test_comm)
         sdispls[i] = 0;
         sendtypes[i] = MPI_INT;
         recvcounts[i] = 1;
-        rdispls[i] = i;
+        rdispls[i] = i * type_size;
         recvtypes[i] = MPI_INT;
     }
 
