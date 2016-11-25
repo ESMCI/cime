@@ -17,11 +17,6 @@
 /* The name of this test. */
 #define TEST_NAME "test_spmd"
 
-#define min(a,b)                                \
-    ({ __typeof__ (a) _a = (a);                 \
-        __typeof__ (b) _b = (b);                \
-        _a < _b ? _a : _b; })
-
 #define TEST_MAX_GATHER_BLOCK_SIZE 32
 
 /* The actual tests are here. */
@@ -86,15 +81,6 @@ int run_spmd_tests(MPI_Comm test_comm)
         sdispls[i] = (((i+1) * (i))/2) * sizeof(int);
         sendtypes[i] = recvtypes[i] = MPI_INT;
     }
-
-    /* Free memory. */
-    free(sendcounts);
-    free(recvcounts);
-    free(rdispls);
-    free(sdispls);
-    free(sendtypes);
-    free(recvtypes);
-
 
     //    for (int msg_cnt=4; msg_cnt<size; msg_cnt*=2){
     //   if (rank==0) printf("message count %d\n",msg_cnt);
@@ -170,6 +156,7 @@ int run_spmd_tests(MPI_Comm test_comm)
         }
     }
 
+
     /* Test pio_fc_gather. In fact it does not work for msg_cnt > 0. */
     /* for (int msg_cnt = 0; msg_cnt <= TEST_MAX_GATHER_BLOCK_SIZE; */
     /*      msg_cnt = msg_cnt ? msg_cnt * 2 : 1) */
@@ -217,6 +204,14 @@ int run_spmd_tests(MPI_Comm test_comm)
     /* free(sbuf); */
     /* free(rbuf); */
 
+    /* Free memory. */
+    free(sendcounts);
+    free(recvcounts);
+    free(rdispls);
+    free(sdispls);
+    free(sendtypes);
+    free(recvtypes);
+
     return 0;
 }
 
@@ -238,8 +233,8 @@ int main(int argc, char **argv)
     if (my_rank < TARGET_NTASKS)
     {
         printf("%d running test code\n", my_rank);
-        /* if ((ret = run_spmd_tests(test_comm))) */
-        /*     return ret; */
+        if ((ret = run_spmd_tests(test_comm)))
+            return ret;
 
     } /* endif my_rank < TARGET_NTASKS */
 

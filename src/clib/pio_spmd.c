@@ -233,9 +233,12 @@ int pio_swapm(void *sendbuf, int *sendcounts, int *sdispls, MPI_Datatype *sendty
 
     LOG((2, "pio_swapm handshake = %d isend = %d max_requests = %d", handshake,
          isend, max_requests));
+
     /* Get my rank and size of communicator. */
     CheckMPIReturn(MPI_Comm_size(comm, &ntasks), __FILE__, __LINE__);
     CheckMPIReturn(MPI_Comm_rank(comm, &my_rank), __FILE__, __LINE__);
+
+    LOG((2, "ntasks = %d my_rank = %d", ntasks, my_rank));
 
     /* Now we know the size of these arrays. */
     int swapids[ntasks];
@@ -244,10 +247,20 @@ int pio_swapm(void *sendbuf, int *sendcounts, int *sdispls, MPI_Datatype *sendty
     MPI_Request hs_rcvids[ntasks];
 
     /* Print some debugging info, if logging is enabled. */
-#if PIO_ENABLE_LOGGING
-    for (int p = 0; p < ntasks; p++)
-        LOG((3, ""));
-#endif /* PIO_ENABLE_LOGGING */
+/* #if PIO_ENABLE_LOGGING */
+/*     for (int p = 0; p < ntasks; p++) */
+/*         LOG((3, "sendcounts[%d] = %d", p, sendcounts[p])); */
+/*     for (int p = 0; p < ntasks; p++) */
+/*         LOG((3, "sdispls[%d] = %d", p, sdispls[p])); */
+/*     for (int p = 0; p < ntasks; p++) */
+/*         LOG((3, "sendtypes[%d] = %d", p, sendtypes[p])); */
+/*     for (int p = 0; p < ntasks; p++) */
+/*         LOG((3, "recvcounts[%d] = %d", p, recvcounts[p])); */
+/*     for (int p = 0; p < ntasks; p++) */
+/*         LOG((3, "rdispls[%d] = %d", p, rdispls[p])); */
+/*     for (int p = 0; p < ntasks; p++) */
+/*         LOG((3, "recvtypes[%d] = %d", p, recvtypes[p])); */
+/* #endif /\* PIO_ENABLE_LOGGING *\/ */
 
     /* If max_requests == 0 no throttling is requested and the default
      * mpi_alltoallw function is used. */
