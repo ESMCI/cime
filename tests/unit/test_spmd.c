@@ -9,7 +9,6 @@
 #include <pio.h>
 #include <pio_tests.h>
 #include <pio_internal.h>
-#include <sys/time.h>
 
 /* The number of tasks this test should run on. */
 #define TARGET_NTASKS 4
@@ -32,7 +31,6 @@ int run_spmd_tests(MPI_Comm test_comm)
     int ntasks;   /* Number of tasks in test_comm. */
     int num_elem; /* Number of elements in buffers. */
     int type_size; /* Size in bytes of an element. */
-    struct timeval t1, t2; /* For timing. */
     int mpierr;   /* Return value from MPI calls. */
     int ret;      /* Return value. */
 
@@ -78,11 +76,13 @@ int run_spmd_tests(MPI_Comm test_comm)
         recvtypes[i] = MPI_INT;
     }
 
-    /* Perform tests for different values of msg_cnt. */
+    /* Perform tests for different values of msg_cnt. (BTW it hangs
+     * with msg_cnt = 1!). */
     for (int msg_cnt = 0; msg_cnt < TARGET_NTASKS; msg_cnt = msg_cnt ? msg_cnt * 2 : 4)
     {
         if (!my_rank)
             printf("message count %d\n",msg_cnt);
+
         for (int itest = 0; itest < NUM_TEST_CASES; itest++)
         {
             bool hs = false;
@@ -90,12 +90,6 @@ int run_spmd_tests(MPI_Comm test_comm)
 
             /* Wait for all tasks. */
             MPI_Barrier(test_comm);
-
-            if (!my_rank)
-            {
-                printf("Start itest %d\n", itest);
-                gettimeofday(&t1, NULL);
-            }
 
             /* Print results. */
             if (!my_rank)
@@ -131,13 +125,6 @@ int run_spmd_tests(MPI_Comm test_comm)
                                  rdispls, recvtypes, test_comm, hs, isend, msg_cnt)))
                 return ret;
         
-            if (!my_rank)
-            {
-                gettimeofday(&t2, NULL);
-                printf("itest = %d Time in microseconds: %ld microseconds\n", itest,
-                       ((t2.tv_sec - t1.tv_sec) * 1000000L + t2.tv_usec) - t1.tv_usec);
-            }
-
             /* Print results. */
             /* MPI_Barrier(test_comm); */
             /* for (int e = 0; e < num_elem; e++) */
