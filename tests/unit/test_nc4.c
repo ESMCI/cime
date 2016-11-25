@@ -96,8 +96,8 @@ int main(int argc, char **argv)
     MPI_Comm test_comm; /* A communicator for this test. */
 
     /* Initialize test. */
-    if ((ret = pio_test_init(argc, argv, &my_rank, &ntasks, TARGET_NTASKS,
-                             &test_comm)))
+    if ((ret = pio_test_init2(argc, argv, &my_rank, &ntasks, 1, TARGET_NTASKS,
+                              &test_comm)))
         ERR(ERR_INIT);
 
     /* Only do something on TARGET_NTASKS tasks. */
