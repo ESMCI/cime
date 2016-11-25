@@ -114,6 +114,25 @@ int get_iotype_name(int iotype, char *name)
 int pio_test_init(int argc, char **argv, int *my_rank, int *ntasks,
 		  int target_ntasks, MPI_Comm *comm)
 {
+    return pio_test_init2(argc,argv, my_rank, ntasks, target_ntasks,
+                          target_ntasks, comm);
+}
+
+/* Initalize the test system. 
+ *
+ * @param argc argument count from main().
+ * @param argv argument array from main().
+ * @param my_rank pointer that gets this tasks rank.
+ * @param ntasks pointer that gets the number of tasks in WORLD
+ * communicator.
+ * @param target_ntasks the number of tasks this test needs to run.
+ * @param comm a pointer to an MPI communicator that will be created
+ * for this test and contain target_ntasks tasks from WORLD.
+ * @returns 0 for success, error code otherwise.
+*/
+int pio_test_init2(int argc, char **argv, int *my_rank, int *ntasks,
+                   int min_ntasks, int max_ntasks, MPI_Comm *comm)
+{
     int ret; /* Return value. */
 
 #ifdef TIMING
@@ -134,19 +153,19 @@ int pio_test_init(int argc, char **argv, int *my_rank, int *ntasks,
     printf("%d has %d tasks\n", *my_rank, *ntasks);
 
     /* Check that a valid number of processors was specified. */
-    if (*ntasks < target_ntasks)
+    if (*ntasks < min_ntasks)
     {
         fprintf(stderr, "ERROR: Number of processors must be at least %d for this test!\n",
-                target_ntasks);
+                min_ntasks);
         return ERR_AWFUL;
     }
-    else if (*ntasks > target_ntasks)
+    else if (*ntasks > max_ntasks)
     {
 	/* If more tasks are available than we need for this test,
 	 * create a communicator with exactly the number of tasks we
 	 * need. */
         int color, key;
-        if (*my_rank < target_ntasks)
+        if (*my_rank < max_ntasks)
         {
             color = 0;
 	    key = *my_rank;
@@ -154,7 +173,7 @@ int pio_test_init(int argc, char **argv, int *my_rank, int *ntasks,
         else
         {
             color = 1;
-            key = *my_rank - target_ntasks;
+            key = *my_rank - max_ntasks;
         }
 	printf("%d splitting comm for test color = %d key = %d\n", *my_rank, color, key);
         if ((ret = MPI_Comm_split(MPI_COMM_WORLD, color, key, comm)))
