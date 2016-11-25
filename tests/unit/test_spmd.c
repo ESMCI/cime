@@ -20,6 +20,9 @@
 /* The name of this test. */
 #define TEST_NAME "test_spmd"
 
+/* Number of test cases in inner loop of test. */
+#define NUM_TEST_CASES 5
+
 #define TEST_MAX_GATHER_BLOCK_SIZE 32
 
 /* The actual tests are here. */
@@ -75,88 +78,81 @@ int run_spmd_tests(MPI_Comm test_comm)
         recvtypes[i] = MPI_INT;
     }
 
-    //    for (int msg_cnt=4; msg_cnt<size; msg_cnt*=2){
-    //   if (rank==0) printf("message count %d\n",msg_cnt);
-    int msg_cnt = 0;
-    for (int itest = 0; itest < 2; itest++)
+    /* Perform tests for different values of msg_cnt. */
+    for (int msg_cnt = 0; msg_cnt < TARGET_NTASKS; msg_cnt = msg_cnt ? msg_cnt * 2 : 4)
     {
-        bool hs = false;
-        bool isend = false;
-
-        /* Wait for all tasks. */
-        MPI_Barrier(test_comm);
-
         if (!my_rank)
+            printf("message count %d\n",msg_cnt);
+        for (int itest = 0; itest < NUM_TEST_CASES; itest++)
         {
-            printf("Start itest %d\n", itest);
-            gettimeofday(&t1, NULL);
-        }
+            bool hs = false;
+            bool isend = false;
 
-        /* Print results. */
-        if (!my_rank)
-        {
-            for (int e = 0; e < num_elem; e++)
-                printf("sbuf[%d] = %d\n", e, sbuf[e]);
-        }
+            /* Wait for all tasks. */
+            MPI_Barrier(test_comm);
 
-        if (itest == 0)
-            if ((ret = pio_swapm(sbuf, sendcounts, sdispls, sendtypes, rbuf, recvcounts,
-                                 rdispls, recvtypes, test_comm, hs, isend, 0)))
-                return ret;
-        else if (itest == 1)
-        {
-            hs = true;
-            isend = true;
+            if (!my_rank)
+            {
+                printf("Start itest %d\n", itest);
+                gettimeofday(&t1, NULL);
+            }
+
+            /* Print results. */
+            if (!my_rank)
+            {
+                for (int e = 0; e < num_elem; e++)
+                    printf("sbuf[%d] = %d\n", e, sbuf[e]);
+            }
+
+            /* Set the parameters different for each test case. */
+            if (itest == 1)
+            {
+                hs = true;
+                isend = true;
+            }
+            else if (itest == 2)
+            {
+                hs = false;
+                isend = true;
+            }
+            else if (itest == 3)
+            {
+                hs = false;
+                isend = false;
+            }
+            else if (itest == 4)
+            {
+                hs = true;
+                isend = false;
+            }
+
+            /* Run the swapm function. */
             if ((ret = pio_swapm(sbuf, sendcounts, sdispls, sendtypes, rbuf, recvcounts,
                                  rdispls, recvtypes, test_comm, hs, isend, msg_cnt)))
                 return ret;
+        
+            if (!my_rank)
+            {
+                gettimeofday(&t2, NULL);
+                printf("itest = %d Time in microseconds: %ld microseconds\n", itest,
+                       ((t2.tv_sec - t1.tv_sec) * 1000000L + t2.tv_usec) - t1.tv_usec);
+            }
+
+            /* Print results. */
+            /* MPI_Barrier(test_comm); */
+            /* for (int e = 0; e < num_elem; e++) */
+            /*     printf("%d sbuf[%d] = %d\n", my_rank, e, sbuf[e]); */
+            /* MPI_Barrier(test_comm); */
+            /* for (int e = 0; e < num_elem; e++) */
+            /*     printf("%d rbuf[%d] = %d\n", my_rank, e, rbuf[e]); */
+
+            /* Check results. */
+            for (int e = 0; e < num_elem; e++)
+                if (((int *)rbuf)[e] != e)
+                    return ERR_WRONG;
         }
-        /* else if (itest == 2) */
-        /* { */
-        /*     hs = false; */
-        /*     isend = true; */
-        /*     ret = pio_swapm(ntasks, my_rank, sbuf, sendcounts, sdispls, sendtypes, */
-        /*                     rbuf, recvcounts, rdispls, recvtypes, test_comm, hs, isend, msg_cnt); */
-
-        /* } */
-        /* else if (itest == 3) */
-        /* { */
-        /*     hs = false; */
-        /*     isend = false; */
-        /*     ret = pio_swapm(ntasks, my_rank, sbuf, sendcounts, sdispls, sendtypes, */
-        /*                     rbuf, recvcounts, rdispls, recvtypes, test_comm, hs, isend, msg_cnt); */
-
-        /* } */
-        /* else if (itest == 4) */
-        /* { */
-        /*     hs = true; */
-        /*     isend = false; */
-        /*     ret = pio_swapm(ntasks, my_rank, sbuf,  sendcounts, sdispls, sendtypes, */
-        /*                     rbuf,  recvcounts, rdispls, recvtypes, test_comm, hs, isend, msg_cnt); */
-
-        /* } */
-
-        if (!my_rank)
-        {
-            gettimeofday(&t2, NULL);
-            printf("itest = %d Time in microseconds: %ld microseconds\n", itest,
-                   ((t2.tv_sec - t1.tv_sec) * 1000000L + t2.tv_usec) - t1.tv_usec);
-        }
-
-        /* Print results. */
-        MPI_Barrier(test_comm);
-        for (int e = 0; e < num_elem; e++)
-            printf("%d sbuf[%d] = %d\n", my_rank, e, sbuf[e]);
-        MPI_Barrier(test_comm);
-        for (int e = 0; e < num_elem; e++)
-            printf("%d rbuf[%d] = %d\n", my_rank, e, rbuf[e]);
-
-        /* Check results. */
-        for (int e = 0; e < num_elem; e++)
-            if (((int *)rbuf)[e] != e)
-                return ERR_WRONG;
     }
-
+    
     /* Test pio_fc_gather. In fact it does not work for msg_cnt > 0. */
     /* for (int msg_cnt = 0; msg_cnt <= TEST_MAX_GATHER_BLOCK_SIZE; */
     /*      msg_cnt = msg_cnt ? msg_cnt * 2 : 1) */
