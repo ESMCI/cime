@@ -1,46 +1,47 @@
-/**
- * @file Common test code for some PIO tests.
+/*
+ * Common test code for PIO C tests.
  *
+ * Ed Hartnett
  */
 #include <pio.h>
 #include <pio_tests.h>
 
-/** The number of dimensions in the test data. */
+/* The number of dimensions in the test data. */
 #define NDIM_S1 1
 
-/** The length of our test data. */
+/* The length of our test data. */
 #define DIM_LEN_S1 4
 
-/** The name of the dimension in the netCDF output file. */
+/* The name of the dimension in the netCDF output file. */
 #define FIRST_DIM_NAME_S1 "jojo"
 #define DIM_NAME_S1 "dim_sample_s1"
 
-/** The name of the variable in the netCDF output file. */
+/* The name of the variable in the netCDF output file. */
 #define FIRST_VAR_NAME_S1 "bill"
 #define VAR_NAME_S1 "var_sample_s1"
 
-/** The number of dimensions in the sample 2 test data. */
+/* The number of dimensions in the sample 2 test data. */
 #define NDIM_S2 1
 
-/** The length of our sample 2 test data. */
+/* The length of our sample 2 test data. */
 #define DIM_LEN_S2 4
 
-/** The name of the dimension in the sample 2 output file. */
+/* The name of the dimension in the sample 2 output file. */
 #define FIRST_DIM_NAME_S2 "jojo"
 #define DIM_NAME_S2 "dim_sample_s2"
 
-/** The name of the variable in the sample 2 output file. */
+/* The name of the variable in the sample 2 output file. */
 #define FIRST_VAR_NAME_S2 "bill"
 #define VAR_NAME_S2 "var_sample_s2"
 
-/** The name of the global attribute in the sample 2 output file. */
+/* The name of the global attribute in the sample 2 output file. */
 #define FIRST_ATT_NAME_S2 "willy_gatt_sample s2"
 #define ATT_NAME_S2 "gatt_sample s2"
 #define SHORT_ATT_NAME_S2 "short_gatt_sample s2"
 #define FLOAT_ATT_NAME_S2 "float_gatt_sample s2"
 #define DOUBLE_ATT_NAME_S2 "double_gatt_sample s2"
 
-/** The value of the global attribute in the sample 2 output file. */
+/* The value of the global attribute in the sample 2 output file. */
 #define ATT_VALUE_S2 42
 
 /* How many flavors of netCDF are available? */
@@ -175,10 +176,18 @@ int pio_test_init(int argc, char **argv, int *my_rank, int *ntasks,
     return PIO_NOERR;
 }
 
-/* Finalize a test. */
-int pio_test_finalize()
+/* Finalize a PIO C test. 
+*
+* @param test_comm pointer to the test communicator.
+* @returns 0 for success, error code otherwise.
+*/
+int pio_test_finalize(MPI_Comm *test_comm)
 {
     int ret = PIO_NOERR; /* Return value. */
+
+    /* Free communicator. */
+    if (MPI_Comm_free(test_comm))
+        return ERR_MPI;
 
     /* Finalize MPI. */
     MPI_Finalize();
@@ -192,7 +201,7 @@ int pio_test_finalize()
     return ret;
 }
 
-/** Test the inq_format function. */
+/* Test the inq_format function. */
 int
 test_inq_format(int ncid, int format)
 {
@@ -213,7 +222,7 @@ test_inq_format(int ncid, int format)
     return PIO_NOERR;
 }
 
-/** Test the inq_type function for atomic types. */
+/* Test the inq_type function for atomic types. */
 int
 test_inq_type(int ncid, int format)
 {
@@ -238,7 +247,7 @@ test_inq_type(int ncid, int format)
     return PIO_NOERR;
 }
 
-/** This creates a netCDF sample file in the specified format. */
+/* This creates a netCDF sample file in the specified format. */
 int
 create_nc_sample(int sample, int iosysid, int format, char *filename, int my_rank, int *ncid)
 {
@@ -257,7 +266,7 @@ create_nc_sample(int sample, int iosysid, int format, char *filename, int my_ran
     return PIO_EINVAL;
 }
 
-/** This checks a netCDF sample file in the specified format. */
+/* This checks a netCDF sample file in the specified format. */
 int
 check_nc_sample(int sample, int iosysid, int format, char *filename, int my_rank, int *ncid)
 {
@@ -276,7 +285,7 @@ check_nc_sample(int sample, int iosysid, int format, char *filename, int my_rank
     return PIO_EINVAL;
 }
 
-/** This creates an empty netCDF file in the specified format. */
+/* This creates an empty netCDF file in the specified format. */
 int
 create_nc_sample_0(int iosysid, int format, char *filename, int my_rank, int *ncidp)
 {
@@ -366,7 +375,7 @@ check_nc_sample_0(int iosysid, int format, char *filename, int my_rank, int *nci
     return 0;
 }
 
-/** This creates a netCDF file in the specified format, with some
+/* This creates a netCDF file in the specified format, with some
  * sample values. */
 int
 create_nc_sample_1(int iosysid, int format, char *filename, int my_rank, int *ncidp)
@@ -550,7 +559,7 @@ check_nc_sample_1(int iosysid, int format, char *filename, int my_rank, int *nci
     return 0;
 }
 
-/** This creates a netCDF file in the specified format, with some
+/* This creates a netCDF file in the specified format, with some
  * sample values. */
 int
 create_nc_sample_2(int iosysid, int format, char *filename, int my_rank, int *ncidp)
