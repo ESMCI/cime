@@ -12,7 +12,7 @@
 #include <sys/time.h>
 
 /* The number of tasks this test should run on. */
-#define TARGET_NTASKS 4
+#define TARGET_NTASKS 2
 
 /* The name of this test. */
 #define TEST_NAME "test_spmd"
@@ -25,17 +25,8 @@ int run_spmd_tests(MPI_Comm test_comm)
     int my_rank;  /* 0-based rank in test_comm. */
     int ntasks;   /* Number of tasks in test_comm. */
     int num_elem; /* Number of elements in buffers. */
-    int *sbuf;    /* The send buffer. */
-    int *rbuf;    /* The receive buffer. */
     struct timeval t1, t2; /* For timing. */
 
-    /* Used for testing pio_swapm. */
-    int *sendcounts;
-    int *recvcounts;
-    int *rdispls;
-    int *sdispls;
-    MPI_Datatype *sendtypes;
-    MPI_Datatype *recvtypes;
 
     int mpiret;   /* Return value from MPI calls. */
     int ret;      /* Return value. */
@@ -47,39 +38,34 @@ int run_spmd_tests(MPI_Comm test_comm)
         MPIERR(mpiret);
 
     /* Determine size of buffers. */
-    num_elem = ntasks * ntasks;
+    num_elem = ntasks;
 
-    /* Allocatte the buffers. */
-    if (!(sbuf = malloc(num_elem * sizeof(int))))
-        return PIO_ENOMEM;
-    if (!(rbuf = malloc(num_elem * sizeof(int))))
-        return PIO_ENOMEM;
+    int sbuf[ntasks];    /* The send buffer. */
+    int rbuf[ntasks];    /* The receive buffer. */
+    int sendcounts[ntasks]; /* Number of elements of data being sent from each task. */ 
+    int recvcounts[ntasks]; /* Number of elements of data being sent from each task. */
+    int sdispls[ntasks]; /* Displacements for sending data. */
+    int rdispls[ntasks]; /* Displacements for receiving data. */
+    MPI_Datatype sendtypes[ntasks]; /* MPI types of data being sent. */
+    MPI_Datatype recvtypes[ntasks]; /* MPI types of data being received. */
 
-    /* Test pio_swapm Create and load the arguments to alltoallv */
+    /* Load up the send buffer. */
+    for (int i = 0; i < num_elem; i++)
+        sbuf[i] = my_rank;
 
-    /* Allocate memory for the arrays that are agruments to the
-     * alltoallv. */
-    if (!(sendcounts = malloc(ntasks * sizeof(int))))
-        return PIO_ENOMEM;
-    if (!(recvcounts = malloc(ntasks * sizeof(int))))
-        return PIO_ENOMEM;
-    if (!(rdispls = malloc(ntasks * sizeof(int))))
-        return PIO_ENOMEM;
-    if (!(sdispls = malloc(ntasks * sizeof(int))))
-        return PIO_ENOMEM;
-    if (!(sendtypes = malloc(ntasks * sizeof(MPI_Datatype))))
-        return PIO_ENOMEM;
-    if (!(recvtypes = malloc(ntasks * sizeof(MPI_Datatype))))
-        return PIO_ENOMEM;
+    /* Load up the receive buffer to make debugging easier. */
+    for (int i = 0; i < num_elem; i++)
+        rbuf[i] = -999;
 
     /* Initialize the arrays. */
     for (int i = 0; i < ntasks; i++)
     {
-        sendcounts[i] = i + 1;
-        recvcounts[i] = my_rank + 1;
-        rdispls[i] = i * (my_rank + 1) * sizeof(int);
-        sdispls[i] = (((i+1) * (i)) / 2) * sizeof(int);
-        sendtypes[i] = recvtypes[i] = MPI_INT;
+        sendcounts[i] = 1;
+        sdispls[i] = 0;
+        sendtypes[i] = MPI_INT;
+        recvcounts[i] = 1;
+        rdispls[i] = i;
+        recvtypes[i] = MPI_INT;
     }
 
     //    for (int msg_cnt=4; msg_cnt<size; msg_cnt*=2){
@@ -90,18 +76,20 @@ int run_spmd_tests(MPI_Comm test_comm)
         bool hs = false;
         bool isend = false;
 
-        /* Load up the buffers */
-        for (int i = 0; i < num_elem; i++)
-        {
-            sbuf[i] = i + 100 * my_rank;
-            rbuf[i] = -i;
-        }
+        /* Wait for all tasks. */
         MPI_Barrier(test_comm);
 
         if (!my_rank)
         {
             printf("Start itest %d\n", itest);
             gettimeofday(&t1, NULL);
+        }
+
+        /* Print results. */
+        if (!my_rank)
+        {
+            for (int e = 0; e < num_elem; e++)
+                printf("sbuf[%d] = %d\n", e, sbuf[e]);
         }
 
         if (itest == 0)
@@ -147,15 +135,13 @@ int run_spmd_tests(MPI_Comm test_comm)
         }
 
         /* Print results. */
-        if (!my_rank)
-        {
-            for (int e = 0; e < num_elem; e++)
-                printf("sbuf[%d] = %d\n", e, sbuf[e]);
-            for (int e = 0; e < num_elem; e++)
-                printf("rbuf[%d] = %d\n", e, rbuf[e]);
-        }
+        MPI_Barrier(test_comm);
+        for (int e = 0; e < num_elem; e++)
+            printf("%d sbuf[%d] = %d\n", my_rank, e, sbuf[e]);
+        MPI_Barrier(test_comm);
+        for (int e = 0; e < num_elem; e++)
+            printf("%d rbuf[%d] = %d\n", my_rank, e, rbuf[e]);
     }
-
 
     /* Test pio_fc_gather. In fact it does not work for msg_cnt > 0. */
     /* for (int msg_cnt = 0; msg_cnt <= TEST_MAX_GATHER_BLOCK_SIZE; */
@@ -199,18 +185,6 @@ int run_spmd_tests(MPI_Comm test_comm)
     /*     /\* Wait for all test tasks. *\/ */
     /*     MPI_Barrier(test_comm); */
     /* } */
-
-    /* /\* Free resourses. *\/ */
-    /* free(sbuf); */
-    /* free(rbuf); */
-
-    /* Free memory. */
-    free(sendcounts);
-    free(recvcounts);
-    free(rdispls);
-    free(sdispls);
-    free(sendtypes);
-    free(recvtypes);
 
     return 0;
 }
