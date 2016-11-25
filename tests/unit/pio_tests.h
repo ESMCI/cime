@@ -59,6 +59,8 @@ int resultlen;
 
 /* Function prototypes. */
 int pio_test_init(int argc, char **argv, int *my_rank, int *ntasks, int target_ntasks, MPI_Comm *test_comm);
+int pio_test_init2(int argc, char **argv, int *my_rank, int *ntasks, int min_ntasks,
+                   int max_ntasks, MPI_Comm *test_comm);
 int create_nc_sample(int sample, int iosysid, int format, char *filename, int my_rank, int *ncid);
 int check_nc_sample(int sample, int iosysid, int format, char *filename, int my_rank, int *ncid);
 int create_nc_sample_0(int iosysid, int format, char *filename, int my_rank, int *ncid);

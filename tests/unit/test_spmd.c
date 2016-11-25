@@ -14,6 +14,9 @@
 /* The number of tasks this test should run on. */
 #define TARGET_NTASKS 2
 
+/* The minimum number of tasks this test should run on. */
+#define MIN_NTASKS 1
+
 /* The name of this test. */
 #define TEST_NAME "test_spmd"
 
@@ -145,6 +148,11 @@ int run_spmd_tests(MPI_Comm test_comm)
         MPI_Barrier(test_comm);
         for (int e = 0; e < num_elem; e++)
             printf("%d rbuf[%d] = %d\n", my_rank, e, rbuf[e]);
+
+        /* Check results. */
+        for (int e = 0; e < num_elem; e++)
+            if (((int *)rbuf)[e] != e)
+                return ERR_WRONG;
     }
 
     /* Test pio_fc_gather. In fact it does not work for msg_cnt > 0. */
@@ -202,8 +210,8 @@ int main(int argc, char **argv)
     MPI_Comm test_comm; /* A communicator for this test. */
 
     /* Initialize test. */
-    if ((ret = pio_test_init(argc, argv, &my_rank, &ntasks, TARGET_NTASKS,
-                             &test_comm)))
+    if ((ret = pio_test_init2(argc, argv, &my_rank, &ntasks, MIN_NTASKS,
+                              TARGET_NTASKS, &test_comm)))
         ERR(ERR_INIT);
 
     /* Test code runs on TARGET_NTASKS tasks. The left over tasks do
