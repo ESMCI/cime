@@ -138,49 +138,6 @@ int run_spmd_tests(MPI_Comm test_comm)
         }
     }
     
-    /* Test pio_fc_gather. In fact it does not work for msg_cnt > 0. */
-    /* for (int msg_cnt = 0; msg_cnt <= TEST_MAX_GATHER_BLOCK_SIZE; */
-    /*      msg_cnt = msg_cnt ? msg_cnt * 2 : 1) */
-    /* int msg_cnt = 0; */
-    /* { */
-    /*     /\* Load up the buffers *\/ */
-    /*     for (int i = 0; i < num_elem; i++) */
-    /*     { */
-    /*         sbuf[i] = i + 100 * my_rank; */
-    /*         rbuf[i] = -i; */
-    /*     } */
-
-    /*     printf("%d Testing pio_fc_gather with msg_cnt = %d\n", my_rank, msg_cnt); */
-
-    /*     /\* Start timeer. *\/ */
-    /*     if (!my_rank) */
-    /*         gettimeofday(&t1, NULL); */
-
-    /*     /\* Run the gather function. *\/ */
-    /*     /\* if ((ret = pio_fc_gather(sbuf, ntasks, MPI_INT, rbuf, ntasks, MPI_INT, 0, test_comm, *\/ */
-    /*     /\*                          msg_cnt))) *\/ */
-    /*     /\*     return ret; *\/ */
-
-    /*     /\* Only check results on task 0. *\/ */
-    /*     if (!my_rank) */
-    /*     { */
-    /*         /\* Stop timer. *\/ */
-    /*         gettimeofday(&t2, NULL); */
-    /*         printf("Time in microseconds: %ld microseconds\n", */
-    /*                ((t2.tv_sec - t1.tv_sec) * 1000000L + t2.tv_usec) - t1.tv_usec); */
-
-    /*         /\* Check results. *\/ */
-    /*         for (int j = 0; j < ntasks; j++) */
-    /*             for (int i = 0; i < ntasks; i++) */
-    /*                 if (rbuf[i + j * ntasks] != i + 100 * j) */
-    /*                     printf("got %d expected %d\n", rbuf[i + j * ntasks], i + 100 * j); */
-    /*     } */
-
-
-    /*     /\* Wait for all test tasks. *\/ */
-    /*     MPI_Barrier(test_comm); */
-    /* } */
-
     return 0;
 }
 

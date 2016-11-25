@@ -104,12 +104,7 @@ extern "C" {
     /* Check return from MPI function and print error message. */
     void CheckMPIReturn(const int ierr, const char *file, const int line);
 
-    /* Like MPI_Gatherv(), but with flow control. */
-    int pio_fc_gatherv(void *sendbuf, const int sendcnt, const MPI_Datatype sendtype,
-                       void *recvbuf, const int *recvcnts, const int *recvdispl,
-                       const MPI_Datatype recvtype, const int root, MPI_Comm comm,
-                       const int flow_cntl);
-
+    /* Like MPI_Alltoallw(), but with flow control. */
     int pio_swapm(void *sndbuf, int sndlths[], int sdispls[], MPI_Datatype stypes[],
                   void *rcvbuf, int rcvlths[], int rdispls[], MPI_Datatype rtypes[],
                   MPI_Comm comm, const bool handshake, bool isend, const int max_requests);
