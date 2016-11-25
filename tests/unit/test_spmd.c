@@ -12,7 +12,7 @@
 #include <sys/time.h>
 
 /* The number of tasks this test should run on. */
-#define TARGET_NTASKS 2
+#define TARGET_NTASKS 4
 
 /* The minimum number of tasks this test should run on. */
 #define MIN_NTASKS 1
@@ -78,7 +78,7 @@ int run_spmd_tests(MPI_Comm test_comm)
     //    for (int msg_cnt=4; msg_cnt<size; msg_cnt*=2){
     //   if (rank==0) printf("message count %d\n",msg_cnt);
     int msg_cnt = 0;
-    for (int itest = 0; itest < 1; itest++)
+    for (int itest = 0; itest < 2; itest++)
     {
         bool hs = false;
         bool isend = false;
@@ -100,15 +100,17 @@ int run_spmd_tests(MPI_Comm test_comm)
         }
 
         if (itest == 0)
-            ret = pio_swapm(sbuf, sendcounts, sdispls, sendtypes, rbuf, recvcounts,
-                            rdispls, recvtypes, test_comm, hs, isend, 0);
-        /* else if (itest == 1) */
-        /* { */
-        /*     hs = true; */
-        /*     isend = true; */
-        /*     ret = pio_swapm(ntasks, my_rank, sbuf,  sendcounts, sdispls, sendtypes, */
-        /*                     rbuf,  recvcounts, rdispls, recvtypes, test_comm, hs, isend, msg_cnt); */
-        /* } */
+            if ((ret = pio_swapm(sbuf, sendcounts, sdispls, sendtypes, rbuf, recvcounts,
+                                 rdispls, recvtypes, test_comm, hs, isend, 0)))
+                return ret;
+        else if (itest == 1)
+        {
+            hs = true;
+            isend = true;
+            if ((ret = pio_swapm(sbuf, sendcounts, sdispls, sendtypes, rbuf, recvcounts,
+                                 rdispls, recvtypes, test_comm, hs, isend, msg_cnt)))
+                return ret;
+        }
         /* else if (itest == 2) */
         /* { */
         /*     hs = false; */
