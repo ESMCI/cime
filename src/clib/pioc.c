@@ -530,8 +530,11 @@ int PIOc_Init_Intracomm(const MPI_Comm comp_comm, const int num_iotasks,
     for (int i = 0; i < iosys->num_iotasks; i++)
         LOG((3, "iosys->ioranks[%d] = %d", i, iosys->ioranks[i]));
 
-    /* Create an MPI info object. */
-    CheckMPIReturn(MPI_Info_create(&iosys->info),__FILE__,__LINE__);
+    /* Create an MPI info object. Actually we don't want to do
+     * that. We immediately overwrite the handle with MPI_INFO_NULL,
+     * and lose the chance to ever do a free on the created info
+     * object.*/
+    /* CheckMPIReturn(MPI_Info_create(&iosys->info),__FILE__,__LINE__); */
     iosys->info = MPI_INFO_NULL;
 
     if (iosys->comp_rank == iosys->ioranks[0])
