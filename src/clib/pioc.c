@@ -490,21 +490,26 @@ int PIOc_Init_Intracomm(const MPI_Comm comp_comm, const int num_iotasks,
     ustride = stride;
 
     /* Find MPI rank and number of tasks in comp_comm communicator. */
-    CheckMPIReturn(MPI_Comm_rank(iosys->comp_comm, &iosys->comp_rank),__FILE__,__LINE__);
-    CheckMPIReturn(MPI_Comm_size(iosys->comp_comm, &iosys->num_comptasks),__FILE__,__LINE__);
-    if (iosys->comp_rank==0)
+    if ((mpierr = MPI_Comm_rank(iosys->comp_comm, &iosys->comp_rank)))
+        return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+    if ((mpierr = MPI_Comm_size(iosys->comp_comm, &iosys->num_comptasks)))
+        return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+    
+    if (iosys->comp_rank == 0)
         iosys->compmaster = MPI_ROOT;
     LOG((2, "comp_rank = %d num_comptasks = %d", iosys->comp_rank, iosys->num_comptasks));
 
     /* Ensure that settings for number of computation tasks, number
      * of IO tasks, and the stride are reasonable. */
-    if ((iosys->num_comptasks == 1) && (num_iotasks*ustride > 1)) {
+    if (iosys->num_comptasks == 1 && num_iotasks * ustride > 1)
+    {
         // This is a serial run with a bad configuration. Set up a single task.
         fprintf(stderr, "PIO_TP PIOc_Init_Intracomm reset stride and tasks.\n");
         iosys->num_iotasks = 1;
         ustride = 1;
     }
-    if ((iosys->num_iotasks < 1) || ((iosys->num_iotasks * ustride) > iosys->num_comptasks))
+    
+    if (iosys->num_iotasks < 1 || iosys->num_iotasks * ustride > iosys->num_comptasks)
     {
         fprintf(stderr, "PIO_TP PIOc_Init_Intracomm error\n");
         fprintf(stderr, "num_iotasks=%d, ustride=%d, num_comptasks=%d\n", num_iotasks,
