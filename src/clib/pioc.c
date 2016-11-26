@@ -518,7 +518,8 @@ int PIOc_Init_Intracomm(const MPI_Comm comp_comm, const int num_iotasks,
     }
 
     /* Create an array that holds the ranks of the tasks to be used for IO. */
-    iosys->ioranks = calloc(sizeof(int), iosys->num_iotasks);
+    if (!(iosys->ioranks = calloc(sizeof(int), iosys->num_iotasks)))
+        return PIO_ENOMEM;
     for (int i = 0; i < iosys->num_iotasks; i++)
     {
         iosys->ioranks[i] = (base + i * ustride) % iosys->num_comptasks;
@@ -537,6 +538,8 @@ int PIOc_Init_Intracomm(const MPI_Comm comp_comm, const int num_iotasks,
     /* CheckMPIReturn(MPI_Info_create(&iosys->info),__FILE__,__LINE__); */
     iosys->info = MPI_INFO_NULL;
 
+    /* The task that has an iomaster value of MPI_ROOT will be the
+     * root of the IO communicator. */
     if (iosys->comp_rank == iosys->ioranks[0])
         iosys->iomaster = MPI_ROOT;
 
@@ -550,10 +553,10 @@ int PIOc_Init_Intracomm(const MPI_Comm comp_comm, const int num_iotasks,
         return check_mpi(NULL, mpierr, __FILE__, __LINE__);        
 
     /* Create an MPI communicator for the IO tasks. */
-    CheckMPIReturn(MPI_Comm_create(iosys->comp_comm, iosys->iogroup, &iosys->io_comm)
-                   ,__FILE__,__LINE__);
+    if ((mpierr = MPI_Comm_create(iosys->comp_comm, iosys->iogroup, &iosys->io_comm)))
+        return check_mpi(NULL, mpierr, __FILE__, __LINE__);                
 
-    /* For the tasks that are doing IO, get their rank. */
+    /* For the tasks that are doing IO, get their rank within the IO communicator. */
     if (iosys->ioproc)
         CheckMPIReturn(MPI_Comm_rank(iosys->io_comm, &iosys->io_rank),__FILE__,__LINE__);
     else
