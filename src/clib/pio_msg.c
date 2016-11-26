@@ -1644,9 +1644,9 @@ int pio_msg_handler2(int io_rank, int component_count, iosystem_desc_t **iosys,
         {
             my_iosys = iosys[cmp];
             LOG((1, "about to call MPI_Irecv union_comm = %d", my_iosys->union_comm));
-            mpierr = MPI_Irecv(&msg, 1, MPI_INT, my_iosys->comproot, MPI_ANY_TAG,
-                               my_iosys->union_comm, &req[cmp]);
-            CheckMPIReturn(mpierr, __FILE__, __LINE__);
+            if ((mpierr = MPI_Irecv(&msg, 1, MPI_INT, my_iosys->comproot, MPI_ANY_TAG,
+                                    my_iosys->union_comm, &req[cmp])))
+                return check_mpi(NULL, mpierr, __FILE__, __LINE__);
             LOG((1, "MPI_Irecv req[%d] = %d", cmp, req[cmp]));
         }
     }
@@ -1665,16 +1665,16 @@ int pio_msg_handler2(int io_rank, int component_count, iosystem_desc_t **iosys,
                  req[0], MPI_REQUEST_NULL));
             for (int c = 0; c < component_count; c++)
                 LOG((2, "req[%d] = %d", c, req[c]));
-            mpierr = MPI_Waitany(component_count, req, &index, &status);
-            CheckMPIReturn(mpierr, __FILE__, __LINE__);
+            if ((mpierr = MPI_Waitany(component_count, req, &index, &status)))
+                return check_mpi(NULL, mpierr, __FILE__, __LINE__);
             LOG((3, "Waitany returned index = %d req[%d] = %d", index, index, req[index]));
         }
 
         /* Broadcast the index of the computational component that
          * originated the request to the rest of the IO tasks. */
         LOG((3, "About to do Bcast of index = %d io_comm = %d", index, io_comm));
-        mpierr = MPI_Bcast(&index, 1, MPI_INT, 0, io_comm);
-        CheckMPIReturn(mpierr, __FILE__, __LINE__);
+        if ((mpierr = MPI_Bcast(&index, 1, MPI_INT, 0, io_comm)))
+            return check_mpi(NULL, mpierr, __FILE__, __LINE__);
         LOG((3, "index MPI_Bcast complete index = %d", index));
 
         /* Set the correct iosys depending on the index. */
@@ -1682,8 +1682,8 @@ int pio_msg_handler2(int io_rank, int component_count, iosystem_desc_t **iosys,
 
         /* Broadcast the msg value to the rest of the IO tasks. */
         LOG((3, "about to call msg MPI_Bcast my_iosys->io_comm = %d", my_iosys->io_comm));
-        mpierr = MPI_Bcast(&msg, 1, MPI_INT, 0, my_iosys->io_comm);
-        CheckMPIReturn(mpierr, __FILE__, __LINE__);
+        if ((mpierr = MPI_Bcast(&msg, 1, MPI_INT, 0, my_iosys->io_comm)))
+            return check_mpi(NULL, mpierr, __FILE__, __LINE__);
         LOG((1, "pio_msg_handler2 msg MPI_Bcast complete msg = %d", msg));
 
         /* Handle the message. This code is run on all IO tasks. */
@@ -1808,10 +1808,10 @@ int pio_msg_handler2(int io_rank, int component_count, iosystem_desc_t **iosys,
             my_iosys = iosys[index];
             LOG((3, "pio_msg_handler2 about to Irecv index = %d comproot = %d union_comm = %d",
                  index, my_iosys->comproot, my_iosys->union_comm));
-            mpierr = MPI_Irecv(&msg, 1, MPI_INT, my_iosys->comproot, MPI_ANY_TAG, my_iosys->union_comm,
-                               &req[index]);
+            if ((mpierr = MPI_Irecv(&msg, 1, MPI_INT, my_iosys->comproot, MPI_ANY_TAG, my_iosys->union_comm,
+                                    &req[index])))
+                return check_mpi(NULL, mpierr, __FILE__, __LINE__);
             LOG((3, "pio_msg_handler2 called MPI_Irecv req[%d] = %d\n", index, req[index]));
-            CheckMPIReturn(mpierr, __FILE__, __LINE__);
         }
 
         LOG((3, "pio_msg_handler2 done msg = %d open_components = %d",
