@@ -541,11 +541,13 @@ int PIOc_Init_Intracomm(const MPI_Comm comp_comm, const int num_iotasks,
         iosys->iomaster = MPI_ROOT;
 
     /* Create a group for the computation tasks. */
-    CheckMPIReturn(MPI_Comm_group(iosys->comp_comm, &iosys->compgroup),__FILE__,__LINE__);
+    if ((mpierr = MPI_Comm_group(iosys->comp_comm, &iosys->compgroup)))
+        return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 
     /* Create a group for the IO tasks. */
-    CheckMPIReturn(MPI_Group_incl(iosys->compgroup, iosys->num_iotasks, iosys->ioranks,
-                                  &iosys->iogroup),__FILE__,__LINE__);
+    if ((mpierr = MPI_Group_incl(iosys->compgroup, iosys->num_iotasks, iosys->ioranks,
+                                 &iosys->iogroup)))
+        return check_mpi(NULL, mpierr, __FILE__, __LINE__);        
 
     /* Create an MPI communicator for the IO tasks. */
     CheckMPIReturn(MPI_Comm_create(iosys->comp_comm, iosys->iogroup, &iosys->io_comm)
