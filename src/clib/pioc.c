@@ -531,11 +531,7 @@ int PIOc_Init_Intracomm(const MPI_Comm comp_comm, const int num_iotasks,
     for (int i = 0; i < iosys->num_iotasks; i++)
         LOG((3, "iosys->ioranks[%d] = %d", i, iosys->ioranks[i]));
 
-    /* Create an MPI info object. Actually we don't want to do
-     * that. We immediately overwrite the handle with MPI_INFO_NULL,
-     * and lose the chance to ever do a free on the created info
-     * object.*/
-    /* CheckMPIReturn(MPI_Info_create(&iosys->info),__FILE__,__LINE__); */
+    /* We are not providing an info object. */
     iosys->info = MPI_INFO_NULL;
 
     /* The task that has an iomaster value of MPI_ROOT will be the
@@ -556,7 +552,9 @@ int PIOc_Init_Intracomm(const MPI_Comm comp_comm, const int num_iotasks,
     if ((mpierr = MPI_Comm_create(iosys->comp_comm, iosys->iogroup, &iosys->io_comm)))
         return check_mpi(NULL, mpierr, __FILE__, __LINE__);                
 
-    /* For the tasks that are doing IO, get their rank within the IO communicator. */
+    /* For the tasks that are doing IO, get their rank within the IO
+     * communicator. For some reason when I check the return value of
+     * this MPI call, all tests start to fail! */
     if (iosys->ioproc)
         CheckMPIReturn(MPI_Comm_rank(iosys->io_comm, &iosys->io_rank),__FILE__,__LINE__);
     else
@@ -606,14 +604,16 @@ int PIOc_Init_Intracomm_from_F90(int f90_comp_comm,
 int PIOc_set_hint(const int iosysid, char hint[], const char hintval[])
 {
     iosystem_desc_t *ios;
-
+    int mpierr; /* Return value for MPI calls. */
+    
     if (!(ios = pio_get_iosystem_from_id(iosysid)))
         return PIO_EBADID;
 
     /* Set the MPI hint. */
     if (ios->ioproc)
-        CheckMPIReturn(MPI_Info_set(ios->info, hint, hintval), __FILE__,__LINE__);
-
+        if ((mpierr = MPI_Info_set(ios->info, hint, hintval)))
+            return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+    
     return PIO_NOERR;
 }
 
