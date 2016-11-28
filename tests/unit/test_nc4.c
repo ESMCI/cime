@@ -15,7 +15,7 @@
 #define TARGET_NTASKS 4
 
 /* The minimum number of tasks this test should run on. */
-#define MIN_NTASKS 1
+#define MIN_NTASKS 4
 
 /* The name of this test. */
 #define TEST_NAME "test_nc4"
@@ -360,31 +360,37 @@ int test_no_async(int my_rank, int num_flavors, int *flavor, MPI_Comm test_comm)
  * @param test_comm communicator with all test tasks.
  * @returns 0 for success error code otherwise.
  */
-int test_async(int my_rank, int nprocs, int num_flavors, int *flavor, MPI_Comm test_comm)
+int test_async(int my_rank, int nprocs, int num_flavors, int *flavor,
+               MPI_Comm test_comm)
 {
     int niotasks;            /* Number of processors that will do IO. */
     int ioproc_stride = 1;   /* Stride in the mpi rank between io tasks. */
-    int ioproc_start = 0;    /* Zero based rank of first processor to be used for I/O. */
+    int ioproc_start = 0;    /* 0 based rank of first task to be used for I/O. */
     PIO_Offset elements_per_pe;    /* Array index per processing unit. */
     int iosysid[COMPONENT_COUNT];  /* The ID for the parallel I/O system. */
     int ioid;                      /* The I/O description ID. */
     PIO_Offset *compdof;           /* The decomposition mapping. */
-    int num_procs[COMPONENT_COUNT] = {nprocs}; /* Num procs in each component. */
+    int num_procs[COMPONENT_COUNT + 1] = {1, nprocs - 1}; /* Num procs in each component. */
+    int mpierr;  /* Return code from MPI functions. */
     int ret;     /* Return code. */
 
     /* Is the current process a computation task? */
     int comp_task = my_rank < NUM_IO_PROCS ? 0 : 1;
+    printf("%d comp_task = %d\n", my_rank, comp_task);
 
-    /* /\* Initialize the IO system. *\/ */
-    /* if ((ret = PIOc_Init_Async(test_comm, NUM_IO_PROCS, NULL, COMPONENT_COUNT, */
-    /*                            num_procs, NULL, iosysid))) */
-    /*     ERR(ERR_INIT); */
+    /* Initialize the IO system. */
+    if ((ret = PIOc_Init_Async(test_comm, NUM_IO_PROCS, NULL, COMPONENT_COUNT,
+                               num_procs, NULL, iosysid)))
+        ERR(ERR_INIT);
+    for (int c = 0; c < COMPONENT_COUNT; c++)
+        printf("%d iosysid[%d] = %d\n", my_rank, c, iosysid[c]);
 
-    /* /\* All the netCDF calls are only executed on the computation */
-    /*  * tasks. The IO tasks have not returned from PIOc_Init_Intercomm, */
-    /*  * and when the do, they should go straight to finalize. *\/ */
-    /* if (comp_task) */
-    /* { */
+    /* All the netCDF calls are only executed on the computation
+     * tasks. The IO tasks have not returned from PIOc_Init_Intercomm,
+     * and when the do, they should go straight to finalize. */
+    if (comp_task)
+    {
+        sleep(4);
         /* for (int flv = 0; flv < num_flavors; flv++) */
         /* { */
         /*     int my_comp_idx = my_rank - 1; /\* Index in iosysid array. *\/ */
@@ -411,15 +417,15 @@ int test_async(int my_rank, int nprocs, int num_flavors, int *flavor, MPI_Comm t
         /* } /\* next netcdf flavor *\/ */
 
         /* Finalize the IO system. Only call this from the computation tasks. */
-        /* printf("%d %s Freeing PIO resources\n", my_rank, TEST_NAME); */
-        /* for (int c = 0; c < COMPONENT_COUNT; c++) */
-        /* { */
-        /*     if ((ret = PIOc_finalize(iosysid[c]))) */
-        /*         ERR(ret); */
-        /*     printf("%d %s PIOc_finalize completed for iosysid = %d\n", my_rank, TEST_NAME, */
-        /*            iosysid[c]); */
-        /* } */
-    /* } /\* endif comp_task *\/ */
+        printf("%d %s Freeing PIO resources\n", my_rank, TEST_NAME);
+        for (int c = 0; c < COMPONENT_COUNT; c++)
+        {
+            if ((ret = PIOc_finalize(iosysid[c])))
+                ERR(ret);
+            printf("%d %s PIOc_finalize completed for iosysid = %d\n", my_rank, TEST_NAME,
+                   iosysid[c]);
+        }
+    } /* endif comp_task */
 
     return PIO_NOERR;
 }
@@ -452,8 +458,8 @@ int main(int argc, char **argv)
             return ret;
 
         /* Run tests with async. */
-        if ((ret = test_async(my_rank, ntasks, num_flavors, flavor, test_comm)))
-            return ret;
+        /* if ((ret = test_async(my_rank, ntasks, num_flavors, flavor, test_comm))) */
+        /*     return ret; */
 
     } /* endif my_rank < TARGET_NTASKS */
 
