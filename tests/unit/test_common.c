@@ -204,6 +204,10 @@ int pio_test_finalize(MPI_Comm *test_comm)
 {
     int ret = PIO_NOERR; /* Return value. */
 
+    /* Wait for all processes to arrive here. */
+    if (MPI_Barrier(*test_comm))
+        return ERR_MPI;        
+
     /* Free communicator. */
     if (MPI_Comm_free(test_comm))
         return ERR_MPI;

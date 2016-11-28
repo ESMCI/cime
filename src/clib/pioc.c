@@ -480,7 +480,7 @@ int PIOc_Init_Intracomm(const MPI_Comm comp_comm, const int num_iotasks,
     iosys->io_comm = MPI_COMM_NULL;
     iosys->intercomm = MPI_COMM_NULL;
     iosys->error_handler = PIO_INTERNAL_ERROR;
-    iosys->async_interface= false;
+    iosys->async_interface = false;
     iosys->compmaster = 0;
     iosys->iomaster = 0;
     iosys->ioproc = false;
@@ -618,12 +618,12 @@ int PIOc_set_hint(const int iosysid, char hint[], const char hintval[])
 }
 
 /**
- * @ingroup PIO_finalize
  * Clean up internal data structures, free MPI resources, and exit the
  * pio library.
  *
  * @param iosysid: the io system ID provided by PIOc_Init_Intracomm().
  * @returns 0 for success or non-zero for error.
+ * @ingroup PIO_finalize
  */
 int PIOc_finalize(const int iosysid)
 {
@@ -713,10 +713,12 @@ int PIOc_finalize(const int iosysid)
 
     /* Delete the iosystem_desc_t data associated with this id. */
     LOG((2, "About to delete iosysid %d.", iosysid));
-    ierr = pio_delete_iosystem_from_list(iosysid);
+    if ((ierr = pio_delete_iosystem_from_list(iosysid)))
+        return ierr;
+    
     LOG((2, "PIOc_finalize completed successfully"));
 
-    return ierr;
+    return PIO_NOERR;
 }
 
 /**

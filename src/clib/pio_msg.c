@@ -2211,15 +2211,19 @@ PIOc_Init_Async(MPI_Comm world, int num_io_procs, int *io_proc_list,
      * until the PIO_MSG_EXIT message is sent. This will handle all
      * components. */
     if (in_io)
+    {
+        LOG((2, "Starting message handler io_rank = %d component_count = %d",
+             io_rank, component_count));
         if ((ret = pio_msg_handler2(io_rank, component_count, iosys, io_comm)))
             return ret;
+        LOG((2, "Returned from pio_msg_handler2() ret = %d", ret));
+    }
 
     /* Free resources if needed. */
-    LOG((2, "about to free io_proc_list"));
+    LOG((2, "PIOc_Init_Async starting to free resources"));    
     if (!io_proc_list)
         free(my_io_proc_list);
 
-    LOG((2, "about to free proc_list"));
     if (!proc_list)
     {
         for (int cmp = 0; cmp < component_count + 1; cmp++)
@@ -2228,7 +2232,6 @@ PIOc_Init_Async(MPI_Comm world, int num_io_procs, int *io_proc_list,
     }
 
     /* Free MPI groups. */
-    LOG((2, "about to free MPI groups"));
     if ((ret = MPI_Group_free(&io_group)))
         return check_mpi(NULL, ret, __FILE__, __LINE__);
 
