@@ -20,6 +20,12 @@
 /* The name of this test. */
 #define TEST_NAME "test_nc4"
 
+/* Number of processors that will do IO. */
+#define NUM_IO_PROCS 1
+
+/* Number of computational components to create. */
+#define COMPONENT_COUNT 1
+
 /* The number of dimensions in the example data. In this test, we
  * are using three-dimensional data. */
 #define NDIM 3
@@ -252,7 +258,9 @@ int test_nc4(int iosysid, int num_flavors, int *flavor, int my_rank)
                 ERR(ERR_AWFUL);
             if (var_cache_preemption != VAR_CACHE_PREEMPTION)
                 ERR(ERR_AWFUL);
-        } else {
+        }
+        else
+        {
             /* Trying to set or inq netCDF-4 settings for non-netCDF-4
              * files results in the PIO_ENOTNC4 error. */
             if ((ret = PIOc_def_var_chunking(ncid, 0, NC_CHUNKED, chunksize)) != PIO_ENOTNC4)
@@ -280,6 +288,7 @@ int test_nc4(int iosysid, int num_flavors, int *flavor, int my_rank)
                 ERR(ret);
         }
 
+        /* End define mode. */
         if ((ret = PIOc_enddef(ncid)))
             ERR(ret);
 
@@ -344,56 +353,69 @@ int test_no_async(int my_rank, int num_flavors, int *flavor, MPI_Comm test_comm)
     return PIO_NOERR;
 }
 
-/* Test without async. 
+/* Test with async. 
  */
-int test_async(int my_rank, int num_flavors, int *flavor, MPI_Comm test_comm)
+int test_async(int my_rank, int nprocs, int num_flavors, int *flavor, MPI_Comm test_comm)
 {
-    int niotasks;    /* Number of processors that will do IO. */
-    int ioproc_stride = 1;    /* Stride in the mpi rank between io tasks. */
-    int numAggregator = 0;    /* Number of the aggregator? Always 0 in this test. */
+    int niotasks;            /* Number of processors that will do IO. */
+    int ioproc_stride = 1;   /* Stride in the mpi rank between io tasks. */
     int ioproc_start = 0;    /* Zero based rank of first processor to be used for I/O. */
     PIO_Offset elements_per_pe;    /* Array index per processing unit. */
-    int iosysid;    /* The ID for the parallel I/O system. */
-    int ioid; /* The I/O description ID. */
-    PIO_Offset *compdof; /* The decomposition mapping. */
-    int ret; /* Return code. */
+    int iosysid[COMPONENT_COUNT];  /* The ID for the parallel I/O system. */
+    int ioid;                      /* The I/O description ID. */
+    PIO_Offset *compdof;           /* The decomposition mapping. */
+    int num_procs[COMPONENT_COUNT] = {nprocs}; /* Num procs in each component. */
+    int ret;     /* Return code. */
 
-    /* keep things simple - 1 iotask per MPI process */
-    niotasks = TARGET_NTASKS;
+    /* Is the current process a computation task? */
+    int comp_task = my_rank < NUM_IO_PROCS ? 0 : 1;
 
-    /* Initialize the PIO IO system. This specifies how
-     * many and which processors are involved in I/O. */
-    if ((ret = PIOc_Init_Intracomm(test_comm, niotasks, ioproc_stride,
-                                   ioproc_start, PIO_REARR_SUBSET, &iosysid)))
-        ERR(ret);
+    /* Initialize the IO system. */
+    if ((ret = PIOc_Init_Async(test_comm, NUM_IO_PROCS, NULL, COMPONENT_COUNT,
+                               num_procs, NULL, iosysid)))
+        ERR(ERR_INIT);
 
-    /* Describe the decomposition. This is a 1-based array, so add 1! */
-    elements_per_pe = X_DIM_LEN * Y_DIM_LEN / TARGET_NTASKS;
-    if (!(compdof = malloc(elements_per_pe * sizeof(PIO_Offset))))
-        return PIO_ENOMEM;
-    for (int i = 0; i < elements_per_pe; i++)
-        compdof[i] = my_rank * elements_per_pe + i + 1;
+    /* All the netCDF calls are only executed on the computation
+     * tasks. The IO tasks have not returned from PIOc_Init_Intercomm,
+     * and when the do, they should go straight to finalize. */
+    if (comp_task)
+    {
+        /* for (int flv = 0; flv < num_flavors; flv++) */
+        /* { */
+        /*     int my_comp_idx = my_rank - 1; /\* Index in iosysid array. *\/ */
 
-    /* Create the PIO decomposition for this test. */
-    printf("rank: %d Creating decomposition...\n", my_rank);
-    if ((ret = PIOc_InitDecomp(iosysid, PIO_FLOAT, 2, &dim_len[1], (PIO_Offset)elements_per_pe,
-                               compdof, &ioid, NULL, NULL, NULL)))
-        ERR(ret);
-    free(compdof);
+        /*     for (int sample = 0; sample < NUM_SAMPLES; sample++) */
+        /*     { */
+        /*         char filename[NC_MAX_NAME + 1]; /\* Test filename. *\/ */
+        /*         char iotype_name[NC_MAX_NAME + 1]; */
 
-#ifdef HAVE_MPE
-    /* Log with MPE that we are done with INIT. */
-    if ((ret = MPE_Log_event(event_num[END][INIT], 0, "end init")))
-        MPIERR(ret);
-#endif /* HAVE_MPE */
+        /*         /\* Create a filename. *\/ */
+        /*         if ((ret = get_iotype_name(flavor[flv], iotype_name))) */
+        /*             return ret; */
+        /*         sprintf(filename, "%s_%s_%d_%d.nc", TEST_NAME, iotype_name, sample, my_comp_idx); */
 
-    if ((ret = test_nc4(iosysid, num_flavors, flavor, my_rank)))
-        return ret;
+        /*         /\* Create sample file. *\/ */
+        /*         printf("%d %s creating file %s\n", my_rank, TEST_NAME, filename); */
+        /*         if ((ret = create_nc_sample(sample, iosysid[my_comp_idx], flavor[flv], filename, my_rank, NULL))) */
+        /*             ERR(ret); */
 
-    /* Free the PIO decomposition. */
-    printf("rank: %d Freeing PIO decomposition...\n", my_rank);
-    if ((ret = PIOc_freedecomp(iosysid, ioid)))
-        ERR(ret);
+        /*         /\* Check the file for correctness. *\/ */
+        /*         if ((ret = check_nc_sample(sample, iosysid[my_comp_idx], flavor[flv], filename, my_rank, NULL))) */
+        /*             ERR(ret); */
+        /*     } */
+        /* } /\* next netcdf flavor *\/ */
+
+        /* Finalize the IO system. Only call this from the computation tasks. */
+        printf("%d %s Freeing PIO resources\n", my_rank, TEST_NAME);
+        for (int c = 0; c < COMPONENT_COUNT; c++)
+        {
+            if ((ret = PIOc_finalize(iosysid[c])))
+                ERR(ret);
+            printf("%d %s PIOc_finalize completed for iosysid = %d\n", my_rank, TEST_NAME,
+                   iosysid[c]);
+        }
+    } /* endif comp_task */
+
     return PIO_NOERR;
 }
 
@@ -425,8 +447,8 @@ int main(int argc, char **argv)
             return ret;
 
         /* Run tests with async. */
-        if ((ret = test_async(my_rank, num_flavors, flavor, test_comm)))
-            return ret;
+        /* if ((ret = test_async(my_rank, ntasks, num_flavors, flavor, test_comm))) */
+        /*     return ret; */
 
     } /* endif my_rank < TARGET_NTASKS */
 
