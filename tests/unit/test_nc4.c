@@ -293,6 +293,12 @@ int test_nc4(int iosysid, int num_flavors, int *flavor, int my_rank)
 }
 
 /* Test without async.
+ *
+ * @param my_rank rank of the task.
+ * @param num_flavors the number of PIO IO types that will be tested.
+ * @param flavors array of the PIO IO types that will be tested.
+ * @param test_comm communicator with all test tasks.
+ * @returns 0 for success error code otherwise.
  */
 int test_no_async(int my_rank, int num_flavors, int *flavor, MPI_Comm test_comm)
 {
@@ -346,6 +352,13 @@ int test_no_async(int my_rank, int num_flavors, int *flavor, MPI_Comm test_comm)
 }
 
 /* Test with async.
+ *
+ * @param my_rank rank of the task.
+ * @param nprocs the size of the communicator.
+ * @param num_flavors the number of PIO IO types that will be tested.
+ * @param flavors array of the PIO IO types that will be tested.
+ * @param test_comm communicator with all test tasks.
+ * @returns 0 for success error code otherwise.
  */
 int test_async(int my_rank, int nprocs, int num_flavors, int *flavor, MPI_Comm test_comm)
 {
