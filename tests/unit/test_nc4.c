@@ -62,7 +62,7 @@ int test_nc4(int iosysid, int num_flavors, int *flavor, int my_rank)
     int ncid;    /* The ncid of the netCDF file. */
     int dimids[NDIM];    /* The dimension IDs. */
     int varid;    /* The ID of the netCDF varable. */
-    
+
     /* For setting the chunk cache. */
     PIO_Offset chunk_cache_size = 1024*1024;
     PIO_Offset chunk_cache_nelems = 1024;
@@ -84,10 +84,10 @@ int test_nc4(int iosysid, int num_flavors, int *flavor, int my_rank)
     float var_cache_preemption;     /* Var cache preemption. */
 
     char varname[15];
-    
+
     int fmt;
     int ret;    /* Return code. */
-    
+
     /* Use PIO to create the example file in each of the four
      * available ways. */
     for (fmt = 0; fmt < num_flavors; fmt++)
@@ -298,9 +298,9 @@ int test_nc4(int iosysid, int num_flavors, int *flavor, int my_rank)
             ERR(ret);
     }
     return PIO_NOERR;
-}    
+}
 
-/* Test without async. 
+/* Test without async.
  */
 int test_no_async(int my_rank, int num_flavors, int *flavor, MPI_Comm test_comm)
 {
@@ -353,7 +353,7 @@ int test_no_async(int my_rank, int num_flavors, int *flavor, MPI_Comm test_comm)
     return PIO_NOERR;
 }
 
-/* Test with async. 
+/* Test with async.
  */
 int test_async(int my_rank, int nprocs, int num_flavors, int *flavor, MPI_Comm test_comm)
 {
