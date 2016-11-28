@@ -152,10 +152,8 @@ int test_nc4(int iosysid, int num_flavors, int *flavor, int my_rank)
                 ERR(ERR_AWFUL);
         }
         else
-        {
             if (ret != PIO_ENOTNC4)
                 ERR(ERR_AWFUL);
-        }
 
         /* Create the netCDF output file. */
         printf("rank: %d Creating sample file %s with format %d...\n",
