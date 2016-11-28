@@ -82,10 +82,9 @@ int test_nc4(int iosysid, int num_flavors, int *flavor, int my_rank)
     PIO_Offset var_cache_size;    /* Size of the var chunk cache. */
     PIO_Offset var_cache_nelems; /* Number of elements in var cache. */
     float var_cache_preemption;     /* Var cache preemption. */
-
-    char varname[15];
-
+    char varname_in[NC_MAX_NAME];
     int fmt;
+    int expected_ret; /* The return code we expect to get. */
     int ret;    /* Return code. */
 
     /* Use PIO to create the example file in each of the four
@@ -113,33 +112,28 @@ int test_nc4(int iosysid, int num_flavors, int *flavor, int my_rank)
         chunk_cache_preemption = 50.0;
         ret = PIOc_set_chunk_cache(iosysid, flavor[fmt], chunk_cache_size,
                                    chunk_cache_nelems, chunk_cache_preemption);
-        if (flavor[fmt] == PIO_IOTYPE_NETCDF4C || flavor[fmt] == PIO_IOTYPE_NETCDF4P)
-        {
-            if (ret != NC_EINVAL)
-                ERR(ERR_AWFUL);
-        }
-        else
-        {
-            if (ret != NC_ENOTNC4)
-                ERR(ERR_AWFUL);
-        }
+
+        /* What result did we expect to get? */
+        expected_ret = flavor[fmt] == PIO_IOTYPE_NETCDF4C || flavor[fmt] == PIO_IOTYPE_NETCDF4P ?
+            NC_EINVAL : NC_ENOTNC4;
+        
+        /* Check the result. */
+        if (ret != expected_ret)
+            ERR(ERR_AWFUL);
 
         /* Try to set the chunk cache. */
         chunk_cache_preemption = 0.5;
         ret = PIOc_set_chunk_cache(iosysid, flavor[fmt], chunk_cache_size,
                                    chunk_cache_nelems, chunk_cache_preemption);
 
-        /* Should only have worked for netCDF-4 iotypes. */
-        if (flavor[fmt] == PIO_IOTYPE_NETCDF4C || flavor[fmt] == PIO_IOTYPE_NETCDF4P)
-        {
-            if (ret != PIO_NOERR)
-                ERR(ret);
-        }
-        else
-        {
-            if (ret != PIO_ENOTNC4)
-                ERR(ERR_AWFUL);
-        }
+        /* What result did we expect to get? Should only have worked
+         * for netCDF-4 iotypes. */
+        expected_ret = flavor[fmt] == PIO_IOTYPE_NETCDF4C || flavor[fmt] == PIO_IOTYPE_NETCDF4P ?
+            NC_NOERR : NC_ENOTNC4;
+
+        /* Check the result. */
+        if (ret != expected_ret)
+            ERR(ERR_AWFUL);
 
         /* Now check the chunk cache. */
         ret = PIOc_get_chunk_cache(iosysid, flavor[fmt], &chunk_cache_size_in,
@@ -195,8 +189,8 @@ int test_nc4(int iosysid, int num_flavors, int *flavor, int my_rank)
 
             /* Check that the inq_varname function works. */
             printf("rank: %d Checking varname\n", my_rank);
-            ret = PIOc_inq_varname(ncid, 0, varname);
-            printf("rank: %d ret: %d varname: %s\n", my_rank, ret, varname);
+            ret = PIOc_inq_varname(ncid, 0, varname_in);
+            printf("rank: %d ret: %d varname_in: %s\n", my_rank, ret, varname_in);
 
             /* Check that the inq_var_chunking function works. */
             printf("rank: %d Checking chunksizes\n", my_rank);
@@ -370,16 +364,16 @@ int test_async(int my_rank, int nprocs, int num_flavors, int *flavor, MPI_Comm t
     /* Is the current process a computation task? */
     int comp_task = my_rank < NUM_IO_PROCS ? 0 : 1;
 
-    /* Initialize the IO system. */
-    if ((ret = PIOc_Init_Async(test_comm, NUM_IO_PROCS, NULL, COMPONENT_COUNT,
-                               num_procs, NULL, iosysid)))
-        ERR(ERR_INIT);
+    /* /\* Initialize the IO system. *\/ */
+    /* if ((ret = PIOc_Init_Async(test_comm, NUM_IO_PROCS, NULL, COMPONENT_COUNT, */
+    /*                            num_procs, NULL, iosysid))) */
+    /*     ERR(ERR_INIT); */
 
-    /* All the netCDF calls are only executed on the computation
-     * tasks. The IO tasks have not returned from PIOc_Init_Intercomm,
-     * and when the do, they should go straight to finalize. */
-    if (comp_task)
-    {
+    /* /\* All the netCDF calls are only executed on the computation */
+    /*  * tasks. The IO tasks have not returned from PIOc_Init_Intercomm, */
+    /*  * and when the do, they should go straight to finalize. *\/ */
+    /* if (comp_task) */
+    /* { */
         /* for (int flv = 0; flv < num_flavors; flv++) */
         /* { */
         /*     int my_comp_idx = my_rank - 1; /\* Index in iosysid array. *\/ */
@@ -406,15 +400,15 @@ int test_async(int my_rank, int nprocs, int num_flavors, int *flavor, MPI_Comm t
         /* } /\* next netcdf flavor *\/ */
 
         /* Finalize the IO system. Only call this from the computation tasks. */
-        printf("%d %s Freeing PIO resources\n", my_rank, TEST_NAME);
-        for (int c = 0; c < COMPONENT_COUNT; c++)
-        {
-            if ((ret = PIOc_finalize(iosysid[c])))
-                ERR(ret);
-            printf("%d %s PIOc_finalize completed for iosysid = %d\n", my_rank, TEST_NAME,
-                   iosysid[c]);
-        }
-    } /* endif comp_task */
+        /* printf("%d %s Freeing PIO resources\n", my_rank, TEST_NAME); */
+        /* for (int c = 0; c < COMPONENT_COUNT; c++) */
+        /* { */
+        /*     if ((ret = PIOc_finalize(iosysid[c]))) */
+        /*         ERR(ret); */
+        /*     printf("%d %s PIOc_finalize completed for iosysid = %d\n", my_rank, TEST_NAME, */
+        /*            iosysid[c]); */
+        /* } */
+    /* } /\* endif comp_task *\/ */
 
     return PIO_NOERR;
 }
@@ -447,8 +441,8 @@ int main(int argc, char **argv)
             return ret;
 
         /* Run tests with async. */
-        /* if ((ret = test_async(my_rank, ntasks, num_flavors, flavor, test_comm))) */
-        /*     return ret; */
+        if ((ret = test_async(my_rank, ntasks, num_flavors, flavor, test_comm)))
+            return ret;
 
     } /* endif my_rank < TARGET_NTASKS */
 
