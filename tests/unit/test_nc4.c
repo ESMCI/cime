@@ -350,13 +350,9 @@ int main(int argc, char **argv)
 {
     int my_rank; /* Zero-based rank of processor. */
     int ntasks; /* Number of processors involved in current execution. */
-    int iotype; /* Specifies the flavor of netCDF output format. */
     int num_flavors; /* Number of PIO netCDF flavors in this build. */
     int flavor[NUM_FLAVORS]; /* iotypes for the supported netCDF IO flavors. */
     int ret;    /* Return code. */
-
-    /* Index for loops. */
-    int d, d1, i;
 
     MPI_Comm test_comm; /* A communicator for this test. */
 
