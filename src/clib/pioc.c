@@ -633,8 +633,6 @@ int PIOc_finalize(const int iosysid)
     /* Find the IO system information. */
     if (!(ios = pio_get_iosystem_from_id(iosysid)))
         return PIO_EBADID;
-    LOG((3, "found iosystem info comproot = %d union_comm = %d comp_idx = %d",
-         ios->comproot, ios->union_comm, ios->comp_idx));
 
     /* If asynch IO is in use, send the PIO_MSG_EXIT message from the
      * comp master to the IO processes. This may be called by
@@ -644,6 +642,8 @@ int PIOc_finalize(const int iosysid)
     {
         int msg = PIO_MSG_EXIT;
 
+        LOG((3, "found iosystem info comproot = %d union_comm = %d comp_idx = %d",
+             ios->comproot, ios->union_comm, ios->comp_idx));
         if (!ios->ioproc)
         {
             LOG((2, "sending msg = %d ioroot = %d union_comm = %d", msg,
