@@ -390,7 +390,6 @@ int test_async(int my_rank, int nprocs, int num_flavors, int *flavor,
      * and when the do, they should go straight to finalize. */
     if (comp_task)
     {
-        sleep(4);
         /* for (int flv = 0; flv < num_flavors; flv++) */
         /* { */
         /*     int my_comp_idx = my_rank - 1; /\* Index in iosysid array. *\/ */
@@ -458,8 +457,8 @@ int main(int argc, char **argv)
             return ret;
 
         /* Run tests with async. */
-        /* if ((ret = test_async(my_rank, ntasks, num_flavors, flavor, test_comm))) */
-        /*     return ret; */
+        if ((ret = test_async(my_rank, ntasks, num_flavors, flavor, test_comm)))
+            return ret;
 
     } /* endif my_rank < TARGET_NTASKS */
 
