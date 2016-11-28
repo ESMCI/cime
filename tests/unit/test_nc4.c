@@ -291,14 +291,10 @@ int test_nc4(int iosysid, int num_flavors, int *flavor, int my_rank)
     return PIO_NOERR;
 }    
 
-/* Run Tests for NetCDF-4 Functions. */
-int main(int argc, char **argv)
+/* Test without async. 
+ */
+int test_no_async(int my_rank, int num_flavors, int *flavor, MPI_Comm test_comm)
 {
-    int my_rank; /* Zero-based rank of processor. */
-    int ntasks; /* Number of processors involved in current execution. */
-    int iotype; /* Specifies the flavor of netCDF output format. */
-    int num_flavors; /* Number of PIO netCDF flavors in this build. */
-    int flavor[NUM_FLAVORS]; /* iotypes for the supported netCDF IO flavors. */
     int niotasks;    /* Number of processors that will do IO. */
     int ioproc_stride = 1;    /* Stride in the mpi rank between io tasks. */
     int numAggregator = 0;    /* Number of the aggregator? Always 0 in this test. */
@@ -307,6 +303,56 @@ int main(int argc, char **argv)
     int iosysid;    /* The ID for the parallel I/O system. */
     int ioid; /* The I/O description ID. */
     PIO_Offset *compdof; /* The decomposition mapping. */
+    int ret; /* Return code. */
+
+    /* keep things simple - 1 iotask per MPI process */
+    niotasks = TARGET_NTASKS;
+
+    /* Initialize the PIO IO system. This specifies how
+     * many and which processors are involved in I/O. */
+    if ((ret = PIOc_Init_Intracomm(test_comm, niotasks, ioproc_stride,
+                                   ioproc_start, PIO_REARR_SUBSET, &iosysid)))
+        ERR(ret);
+
+    /* Describe the decomposition. This is a 1-based array, so add 1! */
+    elements_per_pe = X_DIM_LEN * Y_DIM_LEN / TARGET_NTASKS;
+    if (!(compdof = malloc(elements_per_pe * sizeof(PIO_Offset))))
+        return PIO_ENOMEM;
+    for (int i = 0; i < elements_per_pe; i++)
+        compdof[i] = my_rank * elements_per_pe + i + 1;
+
+    /* Create the PIO decomposition for this test. */
+    printf("rank: %d Creating decomposition...\n", my_rank);
+    if ((ret = PIOc_InitDecomp(iosysid, PIO_FLOAT, 2, &dim_len[1], (PIO_Offset)elements_per_pe,
+                               compdof, &ioid, NULL, NULL, NULL)))
+        ERR(ret);
+    free(compdof);
+
+#ifdef HAVE_MPE
+    /* Log with MPE that we are done with INIT. */
+    if ((ret = MPE_Log_event(event_num[END][INIT], 0, "end init")))
+        MPIERR(ret);
+#endif /* HAVE_MPE */
+
+    if ((ret = test_nc4(iosysid, num_flavors, flavor, my_rank)))
+        return ret;
+
+    /* Free the PIO decomposition. */
+    printf("rank: %d Freeing PIO decomposition...\n", my_rank);
+    if ((ret = PIOc_freedecomp(iosysid, ioid)))
+        ERR(ret);
+    return PIO_NOERR;
+}
+
+
+/* Run Tests for NetCDF-4 Functions. */
+int main(int argc, char **argv)
+{
+    int my_rank; /* Zero-based rank of processor. */
+    int ntasks; /* Number of processors involved in current execution. */
+    int iotype; /* Specifies the flavor of netCDF output format. */
+    int num_flavors; /* Number of PIO netCDF flavors in this build. */
+    int flavor[NUM_FLAVORS]; /* iotypes for the supported netCDF IO flavors. */
     int ret;    /* Return code. */
 
     /* Index for loops. */
@@ -326,42 +372,9 @@ int main(int argc, char **argv)
         if ((ret = get_iotypes(&num_flavors, flavor)))
             ERR(ret);
 
-        /* keep things simple - 1 iotask per MPI process */
-        niotasks = TARGET_NTASKS;
-
-        /* Initialize the PIO IO system. This specifies how
-         * many and which processors are involved in I/O. */
-        if ((ret = PIOc_Init_Intracomm(test_comm, niotasks, ioproc_stride,
-                                       ioproc_start, PIO_REARR_SUBSET, &iosysid)))
-            ERR(ret);
-
-        /* Describe the decomposition. This is a 1-based array, so add 1! */
-        elements_per_pe = X_DIM_LEN * Y_DIM_LEN / TARGET_NTASKS;
-        if (!(compdof = malloc(elements_per_pe * sizeof(PIO_Offset))))
-            return PIO_ENOMEM;
-        for (i = 0; i < elements_per_pe; i++)
-            compdof[i] = my_rank * elements_per_pe + i + 1;
-
-        /* Create the PIO decomposition for this test. */
-        printf("rank: %d Creating decomposition...\n", my_rank);
-        if ((ret = PIOc_InitDecomp(iosysid, PIO_FLOAT, 2, &dim_len[1], (PIO_Offset)elements_per_pe,
-                                   compdof, &ioid, NULL, NULL, NULL)))
-            ERR(ret);
-        free(compdof);
-
-#ifdef HAVE_MPE
-        /* Log with MPE that we are done with INIT. */
-        if ((ret = MPE_Log_event(event_num[END][INIT], 0, "end init")))
-            MPIERR(ret);
-#endif /* HAVE_MPE */
-
-        if ((ret = test_nc4(iosysid, num_flavors, flavor, my_rank)))
+        if ((ret = test_no_async(my_rank, num_flavors, flavor, test_comm)))
             return ret;
 
-        /* Free the PIO decomposition. */
-        printf("rank: %d Freeing PIO decomposition...\n", my_rank);
-        if ((ret = PIOc_freedecomp(iosysid, ioid)))
-            ERR(ret);
     } /* endif my_rank < TARGET_NTASKS */
 
     /* Finalize the MPI library. */
