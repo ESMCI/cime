@@ -7,9 +7,6 @@
 #include <pio.h>
 #include <pio_internal.h>
 
-/** internal variable used for debugging */
-int tmpioproc = -1;
-
 /**
  * Convert an index into a list of dimensions. E.g., for index 4 into a
  * array defined as a[3][2], will return 1 1.
@@ -1386,13 +1383,11 @@ int subset_rearrange_create(const iosystem_desc_t ios, const int maplen, PIO_Off
     int maxregions;
     int rank, ntasks, rcnt;
     size_t pio_offset_size = sizeof(PIO_Offset);
-    int maxreq = MAX_GATHER_BLOCK_SIZE;
+    int mpierr; /* Return call from MPI function calls. */
 
     assert(iodesc);
 
     LOG((2, "subset_rearrange_create maplen = %d ndims = %d", maplen, ndims));
-
-    tmpioproc = ios.io_rank;
 
     /* subset partitions each have exactly 1 io task which is task 0
      * of that subset_comm */
@@ -1428,7 +1423,7 @@ int subset_rearrange_create(const iosystem_desc_t ios, const int maplen, PIO_Off
 
     iodesc->scount[0] = 0;
     totalgridsize = 1;
-    for (i = 0;i < ndims; i++)
+    for (i = 0; i < ndims; i++)
         totalgridsize *= gsize[i];
 
     for (i = 0; i < maplen; i++)
@@ -1452,7 +1447,7 @@ int subset_rearrange_create(const iosystem_desc_t ios, const int maplen, PIO_Off
     j = 0;
     for (i = 0; i < maplen; i++)
         if (compmap[i] > 0)
-            iodesc->sindex[j++]=i;
+            iodesc->sindex[j++] = i;
 
     /* Pass the reduced maplen (without holes) from each compute task to its associated IO task
        printf("%s %d %ld\n",__FILE__,__LINE__,iodesc->scount); */
@@ -1477,8 +1472,8 @@ int subset_rearrange_create(const iosystem_desc_t ios, const int maplen, PIO_Off
 
         if (iodesc->llen > 0)
 	{
-            if (!(srcindex = bget(iodesc->llen*pio_offset_size)))
-                piomemerror(ios,iodesc->llen * pio_offset_size, __FILE__,__LINE__);
+            if (!(srcindex = bget(iodesc->llen * pio_offset_size)))
+                piomemerror(ios, iodesc->llen * pio_offset_size, __FILE__, __LINE__);
 
             for (i = 0; i < iodesc->llen; i++)
                 srcindex[i] = 0;
@@ -1495,10 +1490,11 @@ int subset_rearrange_create(const iosystem_desc_t ios, const int maplen, PIO_Off
     determine_fill(ios, iodesc, gsize, compmap);
 
     /* Pass the sindex from each compute task to its associated IO task. */
-    pio_fc_gatherv((void *) iodesc->sindex, iodesc->scount[0], PIO_OFFSET,
-                   (void *) srcindex, recvlths, rdispls, PIO_OFFSET,
-                   0, iodesc->subset_comm, maxreq);
-
+    if ((mpierr = MPI_Gatherv(iodesc->sindex, iodesc->scount[0], PIO_OFFSET,
+                              srcindex, recvlths, rdispls, PIO_OFFSET, 0,
+                              iodesc->subset_comm)))
+        return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+    
     if (ios.ioproc && iodesc->llen>0)
     {
         if (!(map = bget(iodesc->llen * sizeof(mapsort))))
@@ -1531,8 +1527,9 @@ int subset_rearrange_create(const iosystem_desc_t ios, const int maplen, PIO_Off
         shrtmap = compmap;
     }
 
-    pio_fc_gatherv((void *)shrtmap, iodesc->scount[0], PIO_OFFSET, (void *)iomap, recvlths, rdispls,
-		   PIO_OFFSET, 0, iodesc->subset_comm, maxreq);
+    if ((mpierr = MPI_Gatherv(shrtmap, iodesc->scount[0], PIO_OFFSET, iomap, recvlths, rdispls, 
+                              PIO_OFFSET, 0, iodesc->subset_comm)))
+        return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 
     if (shrtmap != compmap)
         brel(shrtmap);
@@ -1648,8 +1645,9 @@ int subset_rearrange_create(const iosystem_desc_t ios, const int maplen, PIO_Off
                     myusegrid[i] = -1;
             }
 
-            pio_fc_gatherv((void *)(iomap + imin), cnt, PIO_OFFSET, (void *)myusegrid, gcnt,
-			   displs, PIO_OFFSET, nio, ios.io_comm, maxreq);
+            if ((mpierr = MPI_Gatherv((iomap + imin), cnt, PIO_OFFSET, myusegrid, gcnt,
+                                      displs, PIO_OFFSET, nio, ios.io_comm)))
+                return check_mpi(NULL, mpierr, __FILE__, __LINE__);
         }
 
         PIO_Offset grid[thisgridsize[ios.io_rank]];
