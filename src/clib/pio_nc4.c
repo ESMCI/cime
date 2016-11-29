@@ -145,6 +145,8 @@ int PIOc_inq_var_deflate(int ncid, int varid, int *shufflep, int *deflatep,
             if (!mpierr)
                 mpierr = MPI_Bcast(&ncid, 1, MPI_INT, ios->compmaster, ios->intercomm);
             if (!mpierr)
+                mpierr = MPI_Bcast(&varid, 1, MPI_INT, ios->compmaster, ios->intercomm);
+            if (!mpierr)
                 mpierr = MPI_Bcast(&shuffle_present, 1, MPI_CHAR, ios->compmaster, ios->intercomm);
             if (shuffle_present && !mpierr)
                 mpierr = MPI_Bcast(shufflep, 1, MPI_INT, ios->compmaster, ios->intercomm);
@@ -156,6 +158,9 @@ int PIOc_inq_var_deflate(int ncid, int varid, int *shufflep, int *deflatep,
                 mpierr = MPI_Bcast(&deflate_level_present, 1, MPI_CHAR, ios->compmaster, ios->intercomm);
             if (deflate_level_present && !mpierr)
                 mpierr = MPI_Bcast(deflate_levelp, 1, MPI_INT, ios->compmaster, ios->intercomm);
+            LOG((2, "PIOc_inq_var_deflate ncid = %d varid = %d shuffle_present = %d deflate_present = %d "
+                 "deflate_level_present = %d", ncid, varid, shuffle_present, deflate_present,
+                 deflate_level_present));
         }
 
         /* Handle MPI errors. */

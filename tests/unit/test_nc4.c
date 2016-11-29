@@ -194,19 +194,19 @@ int test_nc4(int iosysid, int num_flavors, int *flavor, int my_rank)
                 if (my_chunksize[d1] != chunksize[d1])
                     ERR(ERR_AWFUL);
 
-    /*         /\* Check that the inq_var_deflate functions works. *\/ */
-    /*         if ((ret = PIOc_inq_var_deflate(ncid, 0, &shuffle, &deflate, &deflate_level))) */
-    /*             ERR(ret); */
+            /* Check that the inq_var_deflate functions works. */
+            if ((ret = PIOc_inq_var_deflate(ncid, 0, &shuffle, &deflate, &deflate_level)))
+                ERR(ret);
 
-    /*         /\* For serial netCDF-4 deflate is turned on by default *\/ */
-    /*         if (flavor[fmt] == PIO_IOTYPE_NETCDF4C) */
-    /*             if (shuffle || !deflate || deflate_level != 1) */
-    /*                 ERR(ERR_AWFUL); */
+            /* For serial netCDF-4 deflate is turned on by default */
+            if (flavor[fmt] == PIO_IOTYPE_NETCDF4C)
+                if (shuffle || !deflate || deflate_level != 1)
+                    ERR(ERR_AWFUL);
 
-    /*         /\* For parallel netCDF-4, no compression available. :-( *\/ */
-    /*         if (flavor[fmt] == PIO_IOTYPE_NETCDF4P) */
-    /*             if (shuffle || deflate) */
-    /*                 ERR(ERR_AWFUL); */
+            /* For parallel netCDF-4, no compression available. :-( */
+            if (flavor[fmt] == PIO_IOTYPE_NETCDF4P)
+                if (shuffle || deflate)
+                    ERR(ERR_AWFUL);
 
     /*         /\* Check setting the chunk cache for the variable. *\/ */
     /*         printf("%d PIOc_set_var_chunk_cache...\n", my_rank); */

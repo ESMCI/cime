@@ -1071,8 +1071,9 @@ int inq_var_deflate_handler(iosystem_desc_t *ios)
     if (deflate_level_present && !mpierr)
         if ((mpierr = MPI_Bcast(&deflate_level, 1, MPI_INT, 0, ios->intercomm)))
             return PIO_EIO;
-    LOG((2,"inq_var_handler ncid = %d varid = %d shuffle_present = %d deflate_present = %d deflate_level_present = %d",
-         ncid, varid, shuffle_present, deflate_present, deflate_level_present));
+    LOG((2, "inq_var_handler ncid = %d varid = %d shuffle_present = %d deflate_present = %d "
+         "deflate_level_present = %d", ncid, varid, shuffle_present, deflate_present,
+         deflate_level_present));
 
     /* Set the non-NULL pointers. */
     if (shuffle_present)
@@ -1992,6 +1993,9 @@ int pio_msg_handler2(int io_rank, int component_count, iosystem_desc_t **iosys,
             break;
         case PIO_MSG_INQ_VAR_CHUNKING:
             inq_var_chunking_handler(my_iosys);
+            break;
+        case PIO_MSG_INQ_VAR_DEFLATE:
+            inq_var_deflate_handler(my_iosys);
             break;
         case PIO_MSG_GET_ATT:
             ret = att_get_handler(my_iosys);
