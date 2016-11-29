@@ -1299,6 +1299,43 @@ int def_var_chunking_handler(iosystem_desc_t *ios)
 }
 
 /** 
+ * This function is run on the IO tasks to define endianness for a
+ * netCDF variable.
+ *
+ * @param ios pointer to the iosystem_desc_t.
+ * @returns 0 for success, error code otherwise.
+ */
+int def_var_endian_handler(iosystem_desc_t *ios)
+{
+    int ncid;
+    int varid;
+    int endian;
+    int mpierr;
+    int ret;
+
+    assert(ios);
+    LOG((1, "def_var_endian_handler comproot = %d", ios->comproot));
+
+    /* Get the parameters for this function that the he comp master
+     * task is broadcasting. */
+    if ((mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm)))
+        return PIO_EIO;
+    if ((mpierr = MPI_Bcast(&varid, 1, MPI_INT, 0, ios->intercomm)))
+        return PIO_EIO;
+    if ((mpierr = MPI_Bcast(&endian, 1, MPI_INT, 0, ios->intercomm)))
+        return PIO_EIO;
+    LOG((1, "def_var_endian_handler got parameters ncid = %d varid = %d endain = %d ",
+         ncid, varid, endian));
+
+    /* Call the function. */
+    if ((ret = PIOc_def_var_endian(ncid, varid, endian)))
+        return ret;
+
+    LOG((1, "def_var_chunking_handler succeeded!"));
+    return PIO_NOERR;
+}
+
+/** 
  * This function is run on the IO tasks to define chunk cache settings
  * for a netCDF variable.
  *
@@ -2075,6 +2112,9 @@ int pio_msg_handler2(int io_rank, int component_count, iosystem_desc_t **iosys,
             break;
         case PIO_MSG_DEF_VAR_CHUNKING:
             def_var_chunking_handler(my_iosys);
+            break;
+        case PIO_MSG_DEF_VAR_ENDIAN:
+            def_var_endian_handler(my_iosys);
             break;
         case PIO_MSG_SET_VAR_CHUNK_CACHE:
             set_var_chunk_cache_handler(my_iosys);

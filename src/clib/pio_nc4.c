@@ -524,7 +524,6 @@ int PIOc_def_var_fill(int ncid, int varid, int no_fill, const void *fill_value)
 }
 
 /**
- * @ingroup PIO_def_var
  * Set chunksizes for a variable.
  *
  * This function only applies to netCDF-4 files. When used with netCDF
@@ -545,6 +544,7 @@ int PIOc_def_var_fill(int ncid, int varid, int no_fill, const void *fill_value)
  * @param chunksizep an array of chunksizes. Must have a chunksize for
  * every variable dimension.
  * @return PIO_NOERR for success, otherwise an error code.
+ * @ingroup PIO_def_var
  */
 int PIOc_def_var_endian(int ncid, int varid, int endian)
 {
@@ -573,6 +573,10 @@ int PIOc_def_var_endian(int ncid, int varid, int endian)
 
             if (!mpierr)
                 mpierr = MPI_Bcast(&ncid, 1, MPI_INT, ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast(&varid, 1, MPI_INT, ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast(&endian, 1, MPI_INT, ios->compmaster, ios->intercomm);
         }
 
         /* Handle MPI errors. */

@@ -228,6 +228,12 @@ int test_nc4(int iosysid, int num_flavors, int *flavor, int my_rank)
                 ERR(ERR_AWFUL);
             if (var_cache_preemption != VAR_CACHE_PREEMPTION)
                 ERR(ERR_AWFUL);
+
+            if ((ret = PIOc_def_var_endian(ncid, 0, 1)))
+                ERR(ERR_AWFUL);
+    /*         if ((ret = PIOc_inq_var_endian(ncid, 0, &endianness)) != PIO_ENOTNC4) */
+    /*             ERR(ERR_AWFUL); */
+            
     /*     } */
     /*     else */
     /*     { */
