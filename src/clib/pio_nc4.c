@@ -631,8 +631,6 @@ int PIOc_inq_var_endian(int ncid, int varid, int *endianp)
 }
 
 /**
- * @ingroup PIO_def_var
- *
  * Set chunk cache netCDF files to be opened/created.
  *
  * This function only applies to netCDF-4 files. When used with netCDF
@@ -654,44 +652,84 @@ int PIOc_inq_var_endian(int ncid, int varid, int *endianp)
  * @param nelems number of elements in file cache.
  * @param preemption preemption setting for file cache.
  * @return PIO_NOERR for success, otherwise an error code.
+ * @ingroup PIO_def_var
  */
-int PIOc_set_chunk_cache(int iosysid, int iotype, PIO_Offset size,
-                         PIO_Offset nelems, float preemption)
+int PIOc_set_chunk_cache(int iosysid, int iotype, PIO_Offset size, PIO_Offset nelems,
+                         float preemption)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Pointer to file information. */
     int ierr = PIO_NOERR;  /* Return code from function calls. */
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
 
+    LOG((1, "PIOc_set_chunk_cache iosysid = %d iotype = %d size = %d nelems = %d preemption = %g",
+         iosysid, iotype, size, nelems, preemption));
+
     /* Get the IO system info. */
-    ios = pio_get_iosystem_from_id(iosysid);
-    if(ios == NULL)
+    if (!(ios = pio_get_iosystem_from_id(iosysid)))
         return PIO_EBADID;
 
     /* Only netCDF-4 files can use this feature. */
     if (iotype != PIO_IOTYPE_NETCDF4P && iotype != PIO_IOTYPE_NETCDF4C)
         return PIO_ENOTNC4;
 
-    int msg;
-    msg = PIO_MSG_SET_CHUNK_CACHE;
-    /* if (ios->async_interface && ! ios->ioproc){ */
-    /*  if (ios->compmaster) */
-    /*      mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm); */
-    /*  mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm); */
-    /* } */
+    /* If async is in use, and this is not an IO task, bcast the parameters. */
+    if (ios->async_interface)
+    {
+        if (!ios->ioproc)
+        {
+            int msg = PIO_MSG_SET_CHUNK_CACHE; /* Message for async notification. */
 
+            if (ios->compmaster)
+                mpierr = MPI_Send(&msg, 1, MPI_INT, ios->ioroot, 1, ios->union_comm);
+
+            if (!mpierr)
+                mpierr = MPI_Bcast(&iosysid, 1, MPI_INT, ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast(&iotype, 1, MPI_INT, ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast(&size, 1, MPI_OFFSET, ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast(&nelems, 1, MPI_OFFSET, ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast(&preemption, 1, MPI_FLOAT, ios->compmaster, ios->intercomm);
+            LOG((2, "finished BCast"));
+        }
+
+        /* Handle MPI errors. */
+        if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
+            return check_mpi(file, mpierr2, __FILE__, __LINE__);
+        if (mpierr)
+            return check_mpi(file, mpierr, __FILE__, __LINE__);
+    }
+
+    /* If this is an IO task, then call the netCDF function. */
+    if (ios->ioproc)
+    {
 #ifdef _NETCDF4
-    if (iotype == PIO_IOTYPE_NETCDF4P)
-        ierr = nc_set_chunk_cache(size, nelems, preemption);
-    else
-        if (!ios->io_rank)
+        LOG((2, "calling nc_chunk_cache"));
+        if (iotype == PIO_IOTYPE_NETCDF4P)
             ierr = nc_set_chunk_cache(size, nelems, preemption);
+        else
+            if (!ios->io_rank)
+                ierr = nc_set_chunk_cache(size, nelems, preemption);
+        LOG((2, "nc_chunk_cache ierr = %d", ierr));
 #endif
+    }
 
+    LOG((2, "PIOc_set_chunk_cache bcasting return code."));
     /* Broadcast and check the return code. */
     if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
-        return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+        return check_mpi(file, mpierr, __FILE__, __LINE__);
+    if (ierr)
+    {
+        LOG((2, "PIOc_set_chunk_cache calling check_netcdf."));
+        int i = check_netcdf(file, ierr, __FILE__, __LINE__);
+        LOG((2, "PIOc_set_chunk_cache check_netcdf i = %d", i));
+        return i;
+    }
 
+    LOG((2, "PIOc_set_chunk_cache complete!"));
     return ierr;
 }
 
