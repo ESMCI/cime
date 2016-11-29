@@ -89,7 +89,7 @@ int test_nc4(int iosysid, int num_flavors, int *flavor, int my_rank)
 
     /* Use PIO to create the example file in each of the four
      * available ways. */
-    for (fmt = 2; fmt < 3; fmt++)
+    for (fmt = 0; fmt < num_flavors; fmt++)
     {
         char filename[NC_MAX_NAME + 1]; /* Test filename. */
         char iotype_name[NC_MAX_NAME + 1];
@@ -418,8 +418,8 @@ int main(int argc, char **argv)
             ERR(ret);
 
         /* Run tests without async feature. */
-        /* if ((ret = test_no_async(my_rank, num_flavors, flavor, test_comm))) */
-        /*     return ret; */
+        if ((ret = test_no_async(my_rank, num_flavors, flavor, test_comm)))
+            return ret;
 
         /* Run tests with async. */
         if ((ret = test_async(my_rank, ntasks, num_flavors, flavor, test_comm)))
