@@ -604,7 +604,6 @@ int PIOc_def_var_endian(int ncid, int varid, int endian)
 }
 
 /**
- * @ingroup PIO_inq_var
  * Inquire about chunksizes for a variable.
  *
  * This function only applies to netCDF-4 files. When used with netCDF
@@ -620,6 +619,7 @@ int PIOc_def_var_endian(int ncid, int varid, int endian)
  * @param endianp pointer to int which will be set to
  * endianness. Ignored if NULL.
  * @return PIO_NOERR for success, otherwise an error code.
+ * @ingroup PIO_inq_var
  */
 int PIOc_inq_var_endian(int ncid, int varid, int *endianp)
 {
@@ -644,13 +644,18 @@ int PIOc_inq_var_endian(int ncid, int varid, int *endianp)
     {
         if (!ios->ioproc)
         {
-            int msg = PIO_MSG_INQ_VAR_CHUNKING;
+            int msg = PIO_MSG_INQ_VAR_ENDIAN;
+            char endian_present = endianp ? true : false;
 
             if (ios->compmaster)
                 mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
 
             if (!mpierr)
                 mpierr = MPI_Bcast(&ncid, 1, MPI_INT, ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast(&varid, 1, MPI_INT, ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast(&endian_present, 1, MPI_CHAR, ios->compmaster, ios->intercomm);
         }
 
         /* Handle MPI errors. */

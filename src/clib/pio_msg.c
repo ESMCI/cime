@@ -1028,6 +1028,47 @@ int inq_var_chunking_handler(iosystem_desc_t *ios)
 }
 
 /** 
+ * Do an inq_var_endian on a netCDF variable. This function is only
+ * run on IO tasks.
+ *
+ * @param ios pointer to the iosystem_desc_t.
+ * @returns 0 for success, error code otherwise.
+ */
+int inq_var_endian_handler(iosystem_desc_t *ios)
+{
+    int ncid;
+    int varid;
+    char endian_present;
+    int endian, *endianp = NULL;
+    int mpierr;
+    int ret;
+
+    assert(ios);
+    LOG((1, "inq_var_endian_handler"));
+
+    /* Get the parameters for this function that the the comp master
+     * task is broadcasting. */
+    if ((mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm)))
+        return PIO_EIO;
+    if ((mpierr = MPI_Bcast(&varid, 1, MPI_INT, 0, ios->intercomm)))
+        return PIO_EIO;
+    if ((mpierr = MPI_Bcast(&endian_present, 1, MPI_CHAR, 0, ios->intercomm)))
+        return PIO_EIO;
+    LOG((2,"inq_var_endian_handler ncid = %d varid = %d endian_present = %d", ncid, varid,
+         endian_present));
+
+    /* Set the non-NULL pointers. */
+    if (endian_present)
+        endianp = &endian;
+
+    /* Call the inq function to get the values. */
+    if ((ret = PIOc_inq_var_endian(ncid, varid, endianp)))
+        return ret;
+
+    return PIO_NOERR;
+}
+
+/** 
  * Do an inq_var_deflate on a netCDF variable. This function is only
  * run on IO tasks.
  *
@@ -2115,6 +2156,9 @@ int pio_msg_handler2(int io_rank, int component_count, iosystem_desc_t **iosys,
             break;
         case PIO_MSG_DEF_VAR_ENDIAN:
             def_var_endian_handler(my_iosys);
+            break;
+        case PIO_MSG_INQ_VAR_ENDIAN:
+            inq_var_endian_handler(my_iosys);
             break;
         case PIO_MSG_SET_VAR_CHUNK_CACHE:
             set_var_chunk_cache_handler(my_iosys);
