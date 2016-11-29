@@ -103,8 +103,59 @@ int check_file(int iosysid, int ntasks, int my_rank, char *filename)
 }
 
 /* Test the darray functionality. */
-int test_darray(int iosysid, int num_flavors, int *flavor, int my_rank)
+int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank)
 {
+    char filename[NC_MAX_NAME + 1]; /* Name for the output files. */
+    int dim_len[NDIM] = {DIM_LEN}; /* Length of the dimensions in the sample data. */
+    int dimids[NDIM];      /* The dimension IDs. */
+    int ncid;      /* The ncid of the netCDF file. */
+    int varid;     /* The ID of the netCDF varable. */
+    int ret;       /* Return code. */
+    
+    /* Use PIO to create the example file in each of the four
+     * available ways. */
+    for (int fmt = 0; fmt < num_flavors; fmt++)
+    {
+        /* Create the filename. */
+        sprintf(filename, "%s_%d.nc", TEST_NAME, flavor[fmt]);
+
+        /* Create the netCDF output file. */
+        printf("rank: %d Creating sample file %s with format %d...\n", my_rank, filename,
+               flavor[fmt]);
+        if ((ret = PIOc_createfile(iosysid, &ncid, &(flavor[fmt]), filename, PIO_CLOBBER)))
+            ERR(ret);
+
+        /* Define netCDF dimensions and variable. */
+        printf("rank: %d Defining netCDF metadata...\n", my_rank);
+        if ((ret = PIOc_def_dim(ncid, DIM_NAME, (PIO_Offset)dim_len[0], &dimids[0])))
+            ERR(ret);
+
+        /* Define a variable. */
+        if ((ret = PIOc_def_var(ncid, VAR_NAME, PIO_FLOAT, NDIM, dimids, &varid)))
+            ERR(ret);
+
+        /* End define mode. */
+        if ((ret = PIOc_enddef(ncid)))
+            ERR(ret);
+
+        /* Write some data. */
+        float fillvalue = 0.0;
+        PIO_Offset arraylen = 1;
+        float test_data[arraylen];
+        for (int f = 0; f < arraylen; f++)
+            test_data[f] = my_rank * 10 + f;
+        if ((ret = PIOc_write_darray(ncid, varid, ioid, arraylen, test_data, &fillvalue)))
+            ERR(ret);
+
+        /* Close the netCDF file. */
+        printf("rank: %d Closing the sample data file...\n", my_rank);
+        if ((ret = PIOc_closefile(ncid)))
+            ERR(ret);
+
+        /* Check the file contents. */
+        if ((ret = check_file(iosysid, TARGET_NTASKS, my_rank, filename)))
+            ERR(ret);
+    }
     return PIO_NOERR;
 }
 
@@ -116,7 +167,7 @@ int test_darray(int iosysid, int num_flavors, int *flavor, int my_rank)
  * @param test_comm communicator with all test tasks.
  * @returns 0 for success error code otherwise.
  */
-int test_no_async(int my_rank, int num_flavors, int *flavor, MPI_Comm test_comm)
+int test_no_async(int my_rank, int ntasks, int num_flavors, int *flavor, MPI_Comm test_comm)
 {
     int niotasks;    /* Number of processors that will do IO. */
     int ioproc_stride = 1;    /* Stride in the mpi rank between io tasks. */
@@ -152,13 +203,7 @@ int test_no_async(int my_rank, int num_flavors, int *flavor, MPI_Comm test_comm)
         ERR(ret);
     free(compdof);
 
-#ifdef HAVE_MPE
-    /* Log with MPE that we are done with INIT. */
-    if ((ret = MPE_Log_event(event_num[END][INIT], 0, "end init")))
-        MPIERR(ret);
-#endif /* HAVE_MPE */
-
-    if ((ret = test_darray(iosysid, num_flavors, flavor, my_rank)))
+    if ((ret = test_darray(iosysid, ioid, num_flavors, flavor, my_rank)))
         return ret;
 
     /* Free the PIO decomposition. */
@@ -187,7 +232,7 @@ int test_async(int my_rank, int nprocs, int num_flavors, int *flavor,
     int iosysid[COMPONENT_COUNT];  /* The ID for the parallel I/O system. */
     int ioid;                      /* The I/O description ID. */
     PIO_Offset *compdof;           /* The decomposition mapping. */
-    int num_procs[COMPONENT_COUNT + 1] = {1, nprocs - 1}; /* Num procs in each component. */
+    int num_procs[COMPONENT_COUNT + 1] = {1, TARGET_NTASKS - 1}; /* Num procs in each component. */
     int mpierr;  /* Return code from MPI functions. */
     int ret;     /* Return code. */
 
@@ -208,8 +253,8 @@ int test_async(int my_rank, int nprocs, int num_flavors, int *flavor,
     if (comp_task)
     {
         /* Test the netCDF-4 functions. */
-        if ((ret = test_darray(iosysid[0], num_flavors, flavor, my_rank)))
-            return ret;
+        /* if ((ret = test_darray(iosysid[0], ioid, num_flavors, flavor, my_rank))) */
+        /*     return ret; */
 
         /* Finalize the IO system. Only call this from the computation tasks. */
         printf("%d %s Freeing PIO resources\n", my_rank, TEST_NAME);
@@ -231,14 +276,14 @@ int main(int argc, char **argv)
     int my_rank;     /* Zero-based rank of processor. */
     int ntasks;      /* Number of processors involved in current execution. */
     int iotype;      /* Specifies the flavor of netCDF output format. */
-    char filename[NC_MAX_NAME + 1]; /* Name for the output files. */
     int niotasks;    /* Number of processors that will do IO. */
     int ioproc_stride = 1; /* Stride in the mpi rank between io tasks. */
     int numAggregator = 0; /* Number of the aggregator? */
     int ioproc_start = 0;  /* Zero based rank of first I/O processor. */
-    int dimids[NDIM];      /* The dimension IDs. */
     PIO_Offset elements_per_pe;     /* Array index per processing unit. */
     int iosysid;   /* The ID for the parallel I/O system. */
+    char filename[NC_MAX_NAME + 1]; /* Name for the output files. */
+    int dimids[NDIM];      /* The dimension IDs. */
     int ncid;      /* The ncid of the netCDF file. */
     int varid;     /* The ID of the netCDF varable. */
     int ioid;      /* The I/O description ID. */
@@ -266,7 +311,7 @@ int main(int argc, char **argv)
             ERR(ret);
 
         /* Run tests without async feature. */
-        if ((ret = test_no_async(my_rank, num_flavors, flavor, test_comm)))
+        if ((ret = test_no_async(my_rank, ntasks, num_flavors, flavor, test_comm)))
             return ret;
 
         /* Run tests with async. */

@@ -80,9 +80,6 @@ if (NOT PIO_USE_MPISERIAL)
   add_executable (test_iosystem3 EXCLUDE_FROM_ALL test_iosystem3.c test_common.c)
   target_link_libraries (test_iosystem3 pioc)
   add_dependencies (tests test_iosystem3)
-  add_executable (test_darray_async EXCLUDE_FROM_ALL test_darray_async.c test_common.c)
-  target_link_libraries (test_darray_async pioc)
-  add_dependencies (tests test_darray_async)
   add_executable (test_file EXCLUDE_FROM_ALL test_file.c test_common.c)
   target_link_libraries (test_file pioc)
   add_dependencies (tests test_file)
@@ -130,10 +127,6 @@ if (PIO_USE_MPISERIAL)
 else ()
     add_mpi_test(test_darray
         EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_darray
-        NUMPROCS ${AT_LEAST_FOUR_TASKS}
-        TIMEOUT ${DEFAULT_TEST_TIMEOUT})
-    add_mpi_test(test_darray_async
-        EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_darray_async
         NUMPROCS ${AT_LEAST_FOUR_TASKS}
         TIMEOUT ${DEFAULT_TEST_TIMEOUT})
     add_mpi_test(test_file
