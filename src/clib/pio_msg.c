@@ -1537,13 +1537,13 @@ int seterrorhandling_handler(iosystem_desc_t *ios)
     return PIO_NOERR;
 }
 
-/** This function is run on the IO tasks to set the chunk cache
+/** 
+ * This function is run on the IO tasks to set the chunk cache
  * parameters for netCDF-4.
  *
  * @param ios pointer to the iosystem_desc_t data.
  * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
  * from netCDF base function.
- * @internal
  */
 int set_chunk_cache_handler(iosystem_desc_t *ios)
 {
@@ -1577,7 +1577,61 @@ int set_chunk_cache_handler(iosystem_desc_t *ios)
     if ((ret = PIOc_set_chunk_cache(iosysid, iotype, size, nelems, preemption)))
         return ret;
     
-    LOG((1, "finalize_handler succeeded!"));
+    LOG((1, "set_chunk_cache_handler succeeded!"));
+    return PIO_NOERR;
+}
+
+/** 
+ * This function is run on the IO tasks to get the chunk cache
+ * parameters for netCDF-4.
+ *
+ * @param ios pointer to the iosystem_desc_t data.
+ * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
+ * from netCDF base function.
+ */
+int get_chunk_cache_handler(iosystem_desc_t *ios)
+{
+    int iosysid;
+    int iotype;
+    char size_present, nelems_present, preemption_present;    
+    PIO_Offset size, *sizep;
+    PIO_Offset nelems, *nelemsp;
+    float preemption, *preemptionp;
+    int mpierr = MPI_SUCCESS;  /* Return code from MPI function codes. */
+    int ret; /* Return code. */
+    
+    LOG((1, "get_chunk_cache_handler called"));    
+    assert(ios);
+
+    /* Get the parameters for this function that the the comp master
+     * task is broadcasting. */
+    if ((mpierr = MPI_Bcast(&iosysid, 1, MPI_INT, 0, ios->intercomm)))
+        return PIO_EIO;
+    if ((mpierr = MPI_Bcast(&iotype, 1, MPI_INT, 0, ios->intercomm)))
+        return PIO_EIO;
+    if ((mpierr = MPI_Bcast(&size_present, 1, MPI_CHAR, 0, ios->intercomm)))
+        return PIO_EIO;    
+    if ((mpierr = MPI_Bcast(&nelems_present, 1, MPI_CHAR, 0, ios->intercomm)))
+        return PIO_EIO;    
+    if ((mpierr = MPI_Bcast(&preemption_present, 1, MPI_CHAR, 0, ios->intercomm)))
+        return PIO_EIO;    
+    LOG((1, "get_chunk_cache_handler got params iosysid = %d iotype = %d size_present = %d "
+         "nelems_present = %d preemption_present = %g", iosysid, iotype, size_present,
+         nelems_present, preemption_present));
+
+    /* Set the non-NULL pointers. */
+    if (size_present)
+        sizep = &size;
+    if (nelems_present)
+        nelemsp = &nelems;
+    if (preemption_present)
+        preemptionp = &preemption;
+
+    /* Call the function. */
+    if ((ret = PIOc_get_chunk_cache(iosysid, iotype, sizep, nelemsp, preemptionp)))
+        return ret;
+    
+    LOG((1, "get_chunk_cache_handler succeeded!"));
     return PIO_NOERR;
 }
 
@@ -1814,6 +1868,9 @@ int pio_msg_handler2(int io_rank, int component_count, iosystem_desc_t **iosys,
             break;
         case PIO_MSG_SET_CHUNK_CACHE:
             set_chunk_cache_handler(my_iosys);
+            break;
+        case PIO_MSG_GET_CHUNK_CACHE:
+            get_chunk_cache_handler(my_iosys);
             break;
         case PIO_MSG_FREEDECOMP:
             freedecomp_handler(my_iosys);

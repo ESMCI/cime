@@ -132,29 +132,18 @@ int test_nc4(int iosysid, int num_flavors, int *flavor, int my_rank)
                                             chunk_cache_nelems, chunk_cache_preemption)))
                 ERR(ERR_AWFUL);
 
-    /*     /\* Check the result. *\/ */
-    /*     if (ret != expected_ret) */
-    /*         ERR(ERR_AWFUL); */
+        /* Now check the chunk cache. */
+        if (flavor[fmt] == PIO_IOTYPE_NETCDF4C || flavor[fmt] == PIO_IOTYPE_NETCDF4P)
+        {
+            if ((ret = PIOc_get_chunk_cache(iosysid, flavor[fmt], &chunk_cache_size_in,
+                                            &chunk_cache_nelems_in, &chunk_cache_preemption_in)))
+                ERR(ERR_AWFUL);
 
-    /*     /\* Now check the chunk cache. *\/ */
-    /*     ret = PIOc_get_chunk_cache(iosysid, flavor[fmt], &chunk_cache_size_in, */
-    /*                                &chunk_cache_nelems_in, &chunk_cache_preemption_in); */
-
-    /*     /\* Should only have worked for netCDF-4 iotypes. *\/ */
-    /*     if (flavor[fmt] == PIO_IOTYPE_NETCDF4C || flavor[fmt] == PIO_IOTYPE_NETCDF4P) */
-    /*     { */
-    /*         /\* Check that there was no error. *\/ */
-    /*         if (ret != PIO_NOERR) */
-    /*             ERR(ret); */
-
-    /*         /\* Check that we got the correct values. *\/ */
-    /*         if (chunk_cache_size_in != chunk_cache_size || chunk_cache_nelems_in != chunk_cache_nelems || */
-    /*             chunk_cache_preemption_in != chunk_cache_preemption) */
-    /*             ERR(ERR_AWFUL); */
-    /*     } */
-    /*     else */
-    /*         if (ret != PIO_ENOTNC4) */
-    /*             ERR(ERR_AWFUL); */
+            /* Check that we got the correct values. */
+            if (chunk_cache_size_in != chunk_cache_size || chunk_cache_nelems_in != chunk_cache_nelems ||
+                chunk_cache_preemption_in != chunk_cache_preemption)
+                ERR(ERR_AWFUL);
+        }
 
     /*     /\* Create the netCDF output file. *\/ */
     /*     printf("%d Creating sample file %s with format %d...\n", */
