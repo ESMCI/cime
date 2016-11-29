@@ -292,7 +292,9 @@ int check_mpi(file_desc_t *file, const int mpierr, const char *filename,
                     errstring, filename ? filename : "_", line);
 
         /* Handle all MPI errors as PIO_EIO. */
-        return check_netcdf(file, PIO_EIO, filename, line);
+        if (file)
+            check_netcdf(file, PIO_EIO, filename, line);
+        return PIO_EIO;
     }
     return PIO_NOERR;
 }
@@ -300,8 +302,7 @@ int check_mpi(file_desc_t *file, const int mpierr, const char *filename,
 /**
  * Check the result of a netCDF API call.
  *
- * @param file pointer to the PIO structure describing this file. May
- * be NULL if error occured before a file was opened.
+ * @param file pointer to the PIO structure describing this file.
  * @param status the return value from the netCDF call.
  * @param fname the name of the code file.
  * @param line the line number of the netCDF call in the code.
@@ -309,15 +310,15 @@ int check_mpi(file_desc_t *file, const int mpierr, const char *filename,
  */
 int check_netcdf(file_desc_t *file, int status, const char *fname, const int line)
 {
-    iosystem_desc_t *ios = file->iosystem;
-    int ierr = PIO_NOERR;
+    iosystem_desc_t *ios;
+    int ierr;
+    char errstr[160];
 
     /* Check inputs. */
-    assert(fname);
+    assert(file);
 
-    /* Log an error message. */
-    if (status)
-        LOG((0, "check_netcdf status = %d fname = %s line = %d", status, fname, line));
+    ios = file->iosystem;
+    ierr = PIO_NOERR;
 
     switch(file->iotype)
     {
@@ -327,17 +328,15 @@ int check_netcdf(file_desc_t *file, int status, const char *fname, const int lin
     case PIO_IOTYPE_NETCDF4C:
 #endif
     case PIO_IOTYPE_NETCDF:
-        if (status)
-            LOG((0, "netCDF error message: %s", nc_strerror(status)));
         if (ios->iomaster)
 	{
-            if (status != NC_NOERR && ios->error_handler == PIO_INTERNAL_ERROR)
-                piodie(nc_strerror(status), fname, line);
+            if (status != NC_NOERR && (ios->error_handler == PIO_INTERNAL_ERROR))
+                piodie(nc_strerror(status),fname,line);
         }
         if (ios->error_handler == PIO_INTERNAL_ERROR)
 	{
             if (status != NC_NOERR)
-                MPI_Abort(MPI_COMM_WORLD, status);
+                MPI_Abort(MPI_COMM_WORLD,status);
         }
 	else if (ios->error_handler == PIO_BCAST_ERROR)
 	{
@@ -347,8 +346,8 @@ int check_netcdf(file_desc_t *file, int status, const char *fname, const int lin
 #endif
 #ifdef _PNETCDF
     case PIO_IOTYPE_PNETCDF:
-        if (status != NC_NOERR && ios->error_handler == PIO_INTERNAL_ERROR) 
-            piodie(ncmpi_strerror(status), fname, line);
+        if (status != NC_NOERR && (ios->error_handler == PIO_INTERNAL_ERROR)) 
+            piodie(ncmpi_strerror(status),fname,line);
 
         if (ios->error_handler == PIO_BCAST_ERROR)
             ierr = MPI_Bcast(&status, 1, MPI_INTEGER, ios->ioroot, ios->my_comm);

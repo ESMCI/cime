@@ -917,12 +917,14 @@ int get_vars_handler(iosystem_desc_t *ios)
     return PIO_NOERR;
 }
 
-/** 
- * Do an inq_var on a netCDF variable. This function is only run on
+/** Do an inq_var on a netCDF variable. This function is only run on
  * IO tasks.
  *
  * @param ios pointer to the iosystem_desc_t.
- * @returns 0 for success, error code otherwise.
+ * @param msg the message sent my the comp root task.
+ * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
+ * from netCDF base function.
+ * @internal
  */
 int inq_var_handler(iosystem_desc_t *ios)
 {
@@ -977,156 +979,6 @@ int inq_var_handler(iosystem_desc_t *ios)
 
     if (ndims_present)
         LOG((2, "inq_var_handler ndims = %d", ndims));
-
-    return PIO_NOERR;
-}
-
-/** 
- * Do an inq_var_chunking on a netCDF variable. This function is only
- * run on IO tasks.
- *
- * @param ios pointer to the iosystem_desc_t.
- * @returns 0 for success, error code otherwise.
- */
-int inq_var_chunking_handler(iosystem_desc_t *ios)
-{
-    int ncid;
-    int varid;
-    char storage_present, chunksizes_present;
-    int storage, *storagep;
-    PIO_Offset chunksizes[NC_MAX_DIMS], *chunksizesp = NULL;
-    int mpierr;
-    int ret;
-
-    assert(ios);
-    LOG((1, "inq_var_chunking_handler"));
-
-    /* Get the parameters for this function that the the comp master
-     * task is broadcasting. */
-    if ((mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
-    if ((mpierr = MPI_Bcast(&varid, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
-    if ((mpierr = MPI_Bcast(&storage_present, 1, MPI_CHAR, 0, ios->intercomm)))
-        return PIO_EIO;
-    if ((mpierr = MPI_Bcast(&chunksizes_present, 1, MPI_CHAR, 0, ios->intercomm)))
-        return PIO_EIO;
-    LOG((2,"inq_var_handler ncid = %d varid = %d storage_present = %d chunksizes_present = %d",
-         ncid, varid, storage_present, chunksizes_present));
-
-    /* Set the non-NULL pointers. */
-    if (storage_present)
-        storagep = &storage;
-    if (chunksizes_present)
-        chunksizesp = chunksizes;
-
-    /* Call the inq function to get the values. */
-    if ((ret = PIOc_inq_var_chunking(ncid, varid, storagep, chunksizesp)))
-        return ret;
-
-    return PIO_NOERR;
-}
-
-/** 
- * Do an inq_var_endian on a netCDF variable. This function is only
- * run on IO tasks.
- *
- * @param ios pointer to the iosystem_desc_t.
- * @returns 0 for success, error code otherwise.
- */
-int inq_var_endian_handler(iosystem_desc_t *ios)
-{
-    int ncid;
-    int varid;
-    char endian_present;
-    int endian, *endianp = NULL;
-    int mpierr;
-    int ret;
-
-    assert(ios);
-    LOG((1, "inq_var_endian_handler"));
-
-    /* Get the parameters for this function that the the comp master
-     * task is broadcasting. */
-    if ((mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
-    if ((mpierr = MPI_Bcast(&varid, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
-    if ((mpierr = MPI_Bcast(&endian_present, 1, MPI_CHAR, 0, ios->intercomm)))
-        return PIO_EIO;
-    LOG((2,"inq_var_endian_handler ncid = %d varid = %d endian_present = %d", ncid, varid,
-         endian_present));
-
-    /* Set the non-NULL pointers. */
-    if (endian_present)
-        endianp = &endian;
-
-    /* Call the inq function to get the values. */
-    if ((ret = PIOc_inq_var_endian(ncid, varid, endianp)))
-        return ret;
-
-    return PIO_NOERR;
-}
-
-/** 
- * Do an inq_var_deflate on a netCDF variable. This function is only
- * run on IO tasks.
- *
- * @param ios pointer to the iosystem_desc_t.
- * @returns 0 for success, error code otherwise.
- */
-int inq_var_deflate_handler(iosystem_desc_t *ios)
-{
-    int ncid;
-    int varid;
-    char shuffle_present;
-    char deflate_present;
-    char deflate_level_present;
-    int shuffle, *shufflep;
-    int deflate, *deflatep;
-    int deflate_level, *deflate_levelp;
-    int mpierr;
-    int ret;
-
-    assert(ios);
-    LOG((1, "inq_var_deflate_handler"));
-
-    /* Get the parameters for this function that the the comp master
-     * task is broadcasting. */
-    if ((mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
-    if ((mpierr = MPI_Bcast(&varid, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
-    if ((mpierr = MPI_Bcast(&shuffle_present, 1, MPI_CHAR, 0, ios->intercomm)))
-        return PIO_EIO;
-    if (shuffle_present && !mpierr)
-        if ((mpierr = MPI_Bcast(&shuffle, 1, MPI_INT, 0, ios->intercomm)))
-            return PIO_EIO;
-    if ((mpierr = MPI_Bcast(&deflate_present, 1, MPI_CHAR, 0, ios->intercomm)))
-        return PIO_EIO;
-    if (deflate_present && !mpierr)
-        if ((mpierr = MPI_Bcast(&deflate, 1, MPI_INT, 0, ios->intercomm)))
-            return PIO_EIO;
-    if ((mpierr = MPI_Bcast(&deflate_level_present, 1, MPI_CHAR, 0, ios->intercomm)))
-        return PIO_EIO;
-    if (deflate_level_present && !mpierr)
-        if ((mpierr = MPI_Bcast(&deflate_level, 1, MPI_INT, 0, ios->intercomm)))
-            return PIO_EIO;
-    LOG((2, "inq_var_handler ncid = %d varid = %d shuffle_present = %d deflate_present = %d "
-         "deflate_level_present = %d", ncid, varid, shuffle_present, deflate_present,
-         deflate_level_present));
-
-    /* Set the non-NULL pointers. */
-    if (shuffle_present)
-        shufflep = &shuffle;
-    if (deflate_present)
-        deflatep = &deflate;
-    if (deflate_level_present)
-        deflate_levelp = &deflate_level;
-
-    /* Call the inq function to get the values. */
-    if ((ret = PIOc_inq_var_deflate(ncid, varid, shufflep, deflatep, deflate_levelp)))
-        return ret;
 
     return PIO_NOERR;
 }
@@ -1285,137 +1137,6 @@ int def_var_handler(iosystem_desc_t *ios)
     free(dimids);
 
     LOG((1, "def_var_handler succeeded!"));
-    return PIO_NOERR;
-}
-
-/** 
- * This function is run on the IO tasks to define chunking for a
- *  netCDF variable.
- *
- * @param ios pointer to the iosystem_desc_t.
- * @returns 0 for success, error code otherwise.
- */
-int def_var_chunking_handler(iosystem_desc_t *ios)
-{
-    int ncid;
-    int varid;
-    int ndims;
-    int storage;
-    char chunksizes_present;
-    PIO_Offset chunksizes[NC_MAX_DIMS], *chunksizesp = NULL;
-    int mpierr;
-    int ret;
-
-    assert(ios);
-    LOG((1, "def_var_chunking_handler comproot = %d", ios->comproot));
-
-    /* Get the parameters for this function that the he comp master
-     * task is broadcasting. */
-    if ((mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
-    if ((mpierr = MPI_Bcast(&varid, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
-    if ((mpierr = MPI_Bcast(&storage, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
-    if ((mpierr = MPI_Bcast(&ndims, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
-    if ((mpierr = MPI_Bcast(&chunksizes_present, 1, MPI_CHAR, 0, ios->intercomm)))
-        return PIO_EIO;
-    if (chunksizes_present)
-        if ((mpierr = MPI_Bcast(chunksizes, ndims, MPI_OFFSET, 0, ios->intercomm)))
-            return PIO_EIO;
-    LOG((1, "def_var_chunking_handler got parameters ncid = %d varid = %d storage = %d "
-         "ndims = %d chunksizes_present = %d", ncid, varid, storage, ndims, chunksizes_present));
-
-    /* Set the non-NULL pointers. */
-    if (chunksizes_present)
-        chunksizesp = chunksizes;
-
-    /* Call the create file function. */
-    if ((ret = PIOc_def_var_chunking(ncid, varid, storage, chunksizesp)))
-        return ret;
-
-    LOG((1, "def_var_chunking_handler succeeded!"));
-    return PIO_NOERR;
-}
-
-/** 
- * This function is run on the IO tasks to define endianness for a
- * netCDF variable.
- *
- * @param ios pointer to the iosystem_desc_t.
- * @returns 0 for success, error code otherwise.
- */
-int def_var_endian_handler(iosystem_desc_t *ios)
-{
-    int ncid;
-    int varid;
-    int endian;
-    int mpierr;
-    int ret;
-
-    assert(ios);
-    LOG((1, "def_var_endian_handler comproot = %d", ios->comproot));
-
-    /* Get the parameters for this function that the he comp master
-     * task is broadcasting. */
-    if ((mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
-    if ((mpierr = MPI_Bcast(&varid, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
-    if ((mpierr = MPI_Bcast(&endian, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
-    LOG((1, "def_var_endian_handler got parameters ncid = %d varid = %d endain = %d ",
-         ncid, varid, endian));
-
-    /* Call the function. */
-    if ((ret = PIOc_def_var_endian(ncid, varid, endian)))
-        return ret;
-
-    LOG((1, "def_var_chunking_handler succeeded!"));
-    return PIO_NOERR;
-}
-
-/** 
- * This function is run on the IO tasks to define chunk cache settings
- * for a netCDF variable.
- *
- * @param ios pointer to the iosystem_desc_t.
- * @returns 0 for success, error code otherwise.
- */
-int set_var_chunk_cache_handler(iosystem_desc_t *ios)
-{
-    int ncid;
-    int varid;
-    PIO_Offset size;
-    PIO_Offset nelems;
-    float preemption;
-    int mpierr = MPI_SUCCESS;  /* Return code from MPI function codes. */
-    int ret; /* Return code. */
-
-    assert(ios);
-    LOG((1, "set_var_chunk_cache_handler comproot = %d", ios->comproot));
-
-    /* Get the parameters for this function that the he comp master
-     * task is broadcasting. */
-    if ((mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
-    if ((mpierr = MPI_Bcast(&varid, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
-    if ((mpierr = MPI_Bcast(&size, 1, MPI_OFFSET, 0, ios->intercomm)))
-        return PIO_EIO;
-    if ((mpierr = MPI_Bcast(&nelems, 1, MPI_OFFSET, 0, ios->intercomm)))
-        return PIO_EIO;
-    if ((mpierr = MPI_Bcast(&preemption, 1, MPI_FLOAT, 0, ios->intercomm)))
-        return PIO_EIO;
-    LOG((1, "set_var_chunk_cache_handler got params ncid = %d varid = %d size = %d "
-         "nelems = %d preemption = %g", ncid, varid, size, nelems, preemption));
-
-    /* Call the create file function. */
-    if ((ret = PIOc_set_var_chunk_cache(ncid, varid, size, nelems, preemption)))
-        return ret;
-
-    LOG((1, "def_var_chunk_cache_handler succeeded!"));
     return PIO_NOERR;
 }
 
@@ -1816,155 +1537,18 @@ int seterrorhandling_handler(iosystem_desc_t *ios)
     return PIO_NOERR;
 }
 
-/** 
- * This function is run on the IO tasks to set the chunk cache
- * parameters for netCDF-4.
+/** This function is run on the IO tasks to...
+ * NOTE: not yet implemented
  *
  * @param ios pointer to the iosystem_desc_t data.
- * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
- * from netCDF base function.
- */
-int set_chunk_cache_handler(iosystem_desc_t *ios)
-{
-    int iosysid;
-    int iotype;
-    PIO_Offset size;
-    PIO_Offset nelems;
-    float preemption;
-    int mpierr = MPI_SUCCESS;  /* Return code from MPI function codes. */
-    int ret; /* Return code. */
-    
-    LOG((1, "set_chunk_cache_handler called"));    
-    assert(ios);
-
-    /* Get the parameters for this function that the the comp master
-     * task is broadcasting. */
-    if ((mpierr = MPI_Bcast(&iosysid, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
-    if ((mpierr = MPI_Bcast(&iotype, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
-    if ((mpierr = MPI_Bcast(&size, 1, MPI_OFFSET, 0, ios->intercomm)))
-        return PIO_EIO;
-    if ((mpierr = MPI_Bcast(&nelems, 1, MPI_OFFSET, 0, ios->intercomm)))
-        return PIO_EIO;
-    if ((mpierr = MPI_Bcast(&preemption, 1, MPI_FLOAT, 0, ios->intercomm)))
-        return PIO_EIO;
-    LOG((1, "set_chunk_cache_handler got params iosysid = %d iotype = %d size = %d "
-         "nelems = %d preemption = %g", iosysid, iotype, size, nelems, preemption));
-
-    /* Call the function. */
-    if ((ret = PIOc_set_chunk_cache(iosysid, iotype, size, nelems, preemption)))
-        return ret;
-    
-    LOG((1, "set_chunk_cache_handler succeeded!"));
-    return PIO_NOERR;
-}
-
-/** 
- * This function is run on the IO tasks to get the chunk cache
- * parameters for netCDF-4.
  *
- * @param ios pointer to the iosystem_desc_t data.
  * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
  * from netCDF base function.
+ * @internal
  */
-int get_chunk_cache_handler(iosystem_desc_t *ios)
+int var_handler(iosystem_desc_t *ios, int msg)
 {
-    int iosysid;
-    int iotype;
-    char size_present, nelems_present, preemption_present;    
-    PIO_Offset size, *sizep;
-    PIO_Offset nelems, *nelemsp;
-    float preemption, *preemptionp;
-    int mpierr = MPI_SUCCESS;  /* Return code from MPI function codes. */
-    int ret; /* Return code. */
-    
-    LOG((1, "get_chunk_cache_handler called"));    
     assert(ios);
-
-    /* Get the parameters for this function that the the comp master
-     * task is broadcasting. */
-    if ((mpierr = MPI_Bcast(&iosysid, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
-    if ((mpierr = MPI_Bcast(&iotype, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
-    if ((mpierr = MPI_Bcast(&size_present, 1, MPI_CHAR, 0, ios->intercomm)))
-        return PIO_EIO;    
-    if ((mpierr = MPI_Bcast(&nelems_present, 1, MPI_CHAR, 0, ios->intercomm)))
-        return PIO_EIO;    
-    if ((mpierr = MPI_Bcast(&preemption_present, 1, MPI_CHAR, 0, ios->intercomm)))
-        return PIO_EIO;    
-    LOG((1, "get_chunk_cache_handler got params iosysid = %d iotype = %d size_present = %d "
-         "nelems_present = %d preemption_present = %g", iosysid, iotype, size_present,
-         nelems_present, preemption_present));
-
-    /* Set the non-NULL pointers. */
-    if (size_present)
-        sizep = &size;
-    if (nelems_present)
-        nelemsp = &nelems;
-    if (preemption_present)
-        preemptionp = &preemption;
-
-    /* Call the function. */
-    if ((ret = PIOc_get_chunk_cache(iosysid, iotype, sizep, nelemsp, preemptionp)))
-        return ret;
-    
-    LOG((1, "get_chunk_cache_handler succeeded!"));
-    return PIO_NOERR;
-}
-
-/** 
- * This function is run on the IO tasks to get the variable chunk
- * cache parameters for netCDF-4.
- *
- * @param ios pointer to the iosystem_desc_t data.
- * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
- * from netCDF base function.
- */
-int get_var_chunk_cache_handler(iosystem_desc_t *ios)
-{
-    int ncid;
-    int varid;
-    char size_present, nelems_present, preemption_present;    
-    PIO_Offset size, *sizep;
-    PIO_Offset nelems, *nelemsp;
-    float preemption, *preemptionp;
-    int mpierr = MPI_SUCCESS;  /* Return code from MPI function codes. */
-    int ret; /* Return code. */
-    
-    LOG((1, "get_var_chunk_cache_handler called"));    
-    assert(ios);
-
-    /* Get the parameters for this function that the the comp master
-     * task is broadcasting. */
-    if ((mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
-    if ((mpierr = MPI_Bcast(&varid, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
-    if ((mpierr = MPI_Bcast(&size_present, 1, MPI_CHAR, 0, ios->intercomm)))
-        return PIO_EIO;    
-    if ((mpierr = MPI_Bcast(&nelems_present, 1, MPI_CHAR, 0, ios->intercomm)))
-        return PIO_EIO;    
-    if ((mpierr = MPI_Bcast(&preemption_present, 1, MPI_CHAR, 0, ios->intercomm)))
-        return PIO_EIO;    
-    LOG((1, "get_var_chunk_cache_handler got params ncid = %d varid = %d size_present = %d "
-         "nelems_present = %d preemption_present = %g", ncid, varid, size_present,
-         nelems_present, preemption_present));
-
-    /* Set the non-NULL pointers. */
-    if (size_present)
-        sizep = &size;
-    if (nelems_present)
-        nelemsp = &nelems;
-    if (preemption_present)
-        preemptionp = &preemption;
-
-    /* Call the function. */
-    if ((ret = PIOc_get_var_chunk_cache(ncid, varid, sizep, nelemsp, preemptionp)))
-        return ret;
-    
-    LOG((1, "get_var_chunk_cache_handler succeeded!"));
     return PIO_NOERR;
 }
 
@@ -2151,21 +1735,6 @@ int pio_msg_handler2(int io_rank, int component_count, iosystem_desc_t **iosys,
         case PIO_MSG_DEF_VAR:
             def_var_handler(my_iosys);
             break;
-        case PIO_MSG_DEF_VAR_CHUNKING:
-            def_var_chunking_handler(my_iosys);
-            break;
-        case PIO_MSG_DEF_VAR_ENDIAN:
-            def_var_endian_handler(my_iosys);
-            break;
-        case PIO_MSG_INQ_VAR_ENDIAN:
-            inq_var_endian_handler(my_iosys);
-            break;
-        case PIO_MSG_SET_VAR_CHUNK_CACHE:
-            set_var_chunk_cache_handler(my_iosys);
-            break;
-        case PIO_MSG_GET_VAR_CHUNK_CACHE:
-            get_var_chunk_cache_handler(my_iosys);
-            break;
         case PIO_MSG_INQ:
             inq_handler(my_iosys);
             break;
@@ -2177,12 +1746,6 @@ int pio_msg_handler2(int io_rank, int component_count, iosystem_desc_t **iosys,
             break;
         case PIO_MSG_INQ_VAR:
             inq_var_handler(my_iosys);
-            break;
-        case PIO_MSG_INQ_VAR_CHUNKING:
-            inq_var_chunking_handler(my_iosys);
-            break;
-        case PIO_MSG_INQ_VAR_DEFLATE:
-            inq_var_deflate_handler(my_iosys);
             break;
         case PIO_MSG_GET_ATT:
             ret = att_get_handler(my_iosys);
@@ -2219,12 +1782,6 @@ int pio_msg_handler2(int io_rank, int component_count, iosystem_desc_t **iosys,
             break;
         case PIO_MSG_SETERRORHANDLING:
             seterrorhandling_handler(my_iosys);
-            break;
-        case PIO_MSG_SET_CHUNK_CACHE:
-            set_chunk_cache_handler(my_iosys);
-            break;
-        case PIO_MSG_GET_CHUNK_CACHE:
-            get_chunk_cache_handler(my_iosys);
             break;
         case PIO_MSG_FREEDECOMP:
             freedecomp_handler(my_iosys);
