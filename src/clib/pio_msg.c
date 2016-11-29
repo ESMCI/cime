@@ -1836,6 +1836,60 @@ int get_chunk_cache_handler(iosystem_desc_t *ios)
     return PIO_NOERR;
 }
 
+/** 
+ * This function is run on the IO tasks to get the variable chunk
+ * cache parameters for netCDF-4.
+ *
+ * @param ios pointer to the iosystem_desc_t data.
+ * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
+ * from netCDF base function.
+ */
+int get_var_chunk_cache_handler(iosystem_desc_t *ios)
+{
+    int ncid;
+    int varid;
+    char size_present, nelems_present, preemption_present;    
+    PIO_Offset size, *sizep;
+    PIO_Offset nelems, *nelemsp;
+    float preemption, *preemptionp;
+    int mpierr = MPI_SUCCESS;  /* Return code from MPI function codes. */
+    int ret; /* Return code. */
+    
+    LOG((1, "get_var_chunk_cache_handler called"));    
+    assert(ios);
+
+    /* Get the parameters for this function that the the comp master
+     * task is broadcasting. */
+    if ((mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm)))
+        return PIO_EIO;
+    if ((mpierr = MPI_Bcast(&varid, 1, MPI_INT, 0, ios->intercomm)))
+        return PIO_EIO;
+    if ((mpierr = MPI_Bcast(&size_present, 1, MPI_CHAR, 0, ios->intercomm)))
+        return PIO_EIO;    
+    if ((mpierr = MPI_Bcast(&nelems_present, 1, MPI_CHAR, 0, ios->intercomm)))
+        return PIO_EIO;    
+    if ((mpierr = MPI_Bcast(&preemption_present, 1, MPI_CHAR, 0, ios->intercomm)))
+        return PIO_EIO;    
+    LOG((1, "get_var_chunk_cache_handler got params ncid = %d varid = %d size_present = %d "
+         "nelems_present = %d preemption_present = %g", ncid, varid, size_present,
+         nelems_present, preemption_present));
+
+    /* Set the non-NULL pointers. */
+    if (size_present)
+        sizep = &size;
+    if (nelems_present)
+        nelemsp = &nelems;
+    if (preemption_present)
+        preemptionp = &preemption;
+
+    /* Call the function. */
+    if ((ret = PIOc_get_var_chunk_cache(ncid, varid, sizep, nelemsp, preemptionp)))
+        return ret;
+    
+    LOG((1, "get_var_chunk_cache_handler succeeded!"));
+    return PIO_NOERR;
+}
+
 /** This function is run on the IO tasks to free the decomp hanlder.
  * NOTE: not yet implemented
  *
@@ -2024,6 +2078,9 @@ int pio_msg_handler2(int io_rank, int component_count, iosystem_desc_t **iosys,
             break;
         case PIO_MSG_SET_VAR_CHUNK_CACHE:
             set_var_chunk_cache_handler(my_iosys);
+            break;
+        case PIO_MSG_GET_VAR_CHUNK_CACHE:
+            get_var_chunk_cache_handler(my_iosys);
             break;
         case PIO_MSG_INQ:
             inq_handler(my_iosys);

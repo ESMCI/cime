@@ -214,23 +214,20 @@ int test_nc4(int iosysid, int num_flavors, int *flavor, int my_rank)
                                                 VAR_CACHE_PREEMPTION)))
                 ERR(ret);
 
-    /*         /\* Check getting the chunk cache values for the variable. *\/ */
-    /*         printf("%d PIOc_get_var_chunk_cache...\n", my_rank); */
-    /*         if ((ret = PIOc_get_var_chunk_cache(ncid, 0, &var_cache_size, &var_cache_nelems, */
-    /*                                             &var_cache_preemption))) */
-    /*             ERR(ret); */
-    /*         PIO_Offset len; */
-    /*         if ((ret = PIOc_inq_dimlen(ncid, 0, &len))) */
-    /*             ERR(ret); */
+            /* Check getting the chunk cache values for the variable. */
+            printf("%d PIOc_get_var_chunk_cache...\n", my_rank);
+            if ((ret = PIOc_get_var_chunk_cache(ncid, 0, &var_cache_size, &var_cache_nelems,
+                                                &var_cache_preemption)))
+                ERR(ret);
 
-    /*         /\* Check that we got expected values. *\/ */
-    /*         printf("%d var_cache_size = %d\n", my_rank, var_cache_size); */
-    /*         if (var_cache_size != VAR_CACHE_SIZE) */
-    /*             ERR(ERR_AWFUL); */
-    /*         if (var_cache_nelems != VAR_CACHE_NELEMS) */
-    /*             ERR(ERR_AWFUL); */
-    /*         if (var_cache_preemption != VAR_CACHE_PREEMPTION) */
-    /*             ERR(ERR_AWFUL); */
+            /* Check that we got expected values. */
+            printf("%d var_cache_size = %d\n", my_rank, var_cache_size);
+            if (var_cache_size != VAR_CACHE_SIZE)
+                ERR(ERR_AWFUL);
+            if (var_cache_nelems != VAR_CACHE_NELEMS)
+                ERR(ERR_AWFUL);
+            if (var_cache_preemption != VAR_CACHE_PREEMPTION)
+                ERR(ERR_AWFUL);
     /*     } */
     /*     else */
     /*     { */

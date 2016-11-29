@@ -1026,17 +1026,42 @@ int PIOc_get_var_chunk_cache(int ncid, int varid, PIO_Offset *sizep, PIO_Offset 
     if (file->iotype != PIO_IOTYPE_NETCDF4P && file->iotype != PIO_IOTYPE_NETCDF4C)
         return PIO_ENOTNC4;
 
-    /* Since this is a property of the running HDF5 instance, not the
-     * file, it's not clear if this message passing will apply. For
-     * now, comment it out. EJH */
-    /* msg = PIO_MSG_INQ_VAR_FLETCHER32; */
+    /* If async is in use, and this is not an IO task, bcast the parameters. */
+    if (ios->async_interface)
+    {
+        if (!ios->ioproc)
+        {
+            int msg = PIO_MSG_GET_VAR_CHUNK_CACHE; /* Message for async notification. */
+            char size_present = sizep ? true : false;
+            char nelems_present = nelemsp ? true : false;
+            char preemption_present = preemptionp ? true : false;
+            
+            if (ios->compmaster)
+                mpierr = MPI_Send(&msg, 1, MPI_INT, ios->ioroot, 1, ios->union_comm);
 
-    /* if (ios->async_interface && ! ios->ioproc){ */
-    /*  if (ios->compmaster)  */
-    /*      mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm); */
-    /*  mpierr = MPI_Bcast(&ncid, 1, MPI_INT, ios->compmaster, ios->intercomm); */
-    /* } */
+            if (!mpierr)
+                mpierr = MPI_Bcast(&ncid, 1, MPI_INT, ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast(&varid, 1, MPI_INT, ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast(&size_present, 1, MPI_CHAR, ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast(&nelems_present, 1, MPI_CHAR, ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast(&preemption_present, 1, MPI_CHAR, ios->compmaster,
+                                   ios->intercomm);
+            LOG((2, "PIOc_get_var_chunk_cache size_present = %d nelems_present = %d "
+                 "preemption_present = %d ", size_present, nelems_present, preemption_present));
+        }
 
+        /* Handle MPI errors. */
+        if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
+            return check_mpi(NULL, mpierr2, __FILE__, __LINE__);
+        if (mpierr)
+            return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+    }
+
+    /* If this is an IO task, then call the netCDF function. */
     if (ios->ioproc)
     {
 #ifdef _NETCDF4
