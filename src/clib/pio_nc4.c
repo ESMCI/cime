@@ -89,8 +89,6 @@ int PIOc_def_var_deflate(int ncid, int varid, int shuffle, int deflate,
 }
 
 /**
- * @ingroup PIO_inq_var
- *
  * This function only applies to netCDF-4 files. When used with netCDF
  * classic files, the error PIO_ENOTNC4 will be returned.
  *
@@ -104,22 +102,22 @@ int PIOc_def_var_deflate(int ncid, int varid, int shuffle, int deflate,
  * @param ncid the ncid of the open file.
  * @param varid the ID of the variable to set chunksizes for.
  * @param shufflep pointer to an int that will get the status of the
- * shuffle filter.
+ * shuffle filter. Ignored if NULL.
  * @param deflatep pointer to an int that will be set to non-zero if
- * deflation is in use for this variable.
+ * deflation is in use for this variable. Ignored if NULL.
  * @param deflate_levelp pointer to an int that will get the deflation
- * level (from 1-9) if deflation is in use for this variable.
+ * level (from 1-9) if deflation is in use for this variable.  Ignored
+ * if NULL.
  * @return PIO_NOERR for success, otherwise an error code.
+ * @ingroup PIO_inq_var
  */
-int PIOc_inq_var_deflate(int ncid, int varid, int *shufflep,
-                         int *deflatep, int *deflate_levelp)
+int PIOc_inq_var_deflate(int ncid, int varid, int *shufflep, int *deflatep,
+                         int *deflate_levelp)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Pointer to file information. */
     int ierr = PIO_NOERR;  /* Return code from function calls. */
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
-    int msg;
-    char *errstr;
     int ret;
 
     /* Get the file info. */
@@ -131,19 +129,33 @@ int PIOc_inq_var_deflate(int ncid, int varid, int *shufflep,
     if (file->iotype != PIO_IOTYPE_NETCDF4P && file->iotype != PIO_IOTYPE_NETCDF4C)
         return PIO_ENOTNC4;
 
-    msg = PIO_MSG_INQ_VAR_DEFLATE;
-
     /* If async is in use, and this is not an IO task, bcast the parameters. */
     if (ios->async_interface)
     {
         if (!ios->ioproc)
         {
+            int msg = PIO_MSG_INQ_VAR_DEFLATE;
+            char shuffle_present = shufflep ? true : false;
+            char deflate_present = deflatep ? true : false;
+            char deflate_level_present = deflate_levelp ? true : false;
 
             if (ios->compmaster)
                 mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
 
             if (!mpierr)
                 mpierr = MPI_Bcast(&ncid, 1, MPI_INT, ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast(&shuffle_present, 1, MPI_CHAR, ios->compmaster, ios->intercomm);
+            if (shuffle_present && !mpierr)
+                mpierr = MPI_Bcast(shufflep, 1, MPI_INT, ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast(&deflate_present, 1, MPI_CHAR, ios->compmaster, ios->intercomm);
+            if (deflate_present && !mpierr)
+                mpierr = MPI_Bcast(deflatep, 1, MPI_INT, ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast(&deflate_level_present, 1, MPI_CHAR, ios->compmaster, ios->intercomm);
+            if (deflate_level_present && !mpierr)
+                mpierr = MPI_Bcast(deflate_levelp, 1, MPI_INT, ios->compmaster, ios->intercomm);
         }
 
         /* Handle MPI errors. */

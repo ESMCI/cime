@@ -1027,6 +1027,68 @@ int inq_var_chunking_handler(iosystem_desc_t *ios)
     return PIO_NOERR;
 }
 
+/** 
+ * Do an inq_var_deflate on a netCDF variable. This function is only
+ * run on IO tasks.
+ *
+ * @param ios pointer to the iosystem_desc_t.
+ * @returns 0 for success, error code otherwise.
+ */
+int inq_var_deflate_handler(iosystem_desc_t *ios)
+{
+    int ncid;
+    int varid;
+    char shuffle_present;
+    char deflate_present;
+    char deflate_level_present;
+    int shuffle, *shufflep;
+    int deflate, *deflatep;
+    int deflate_level, *deflate_levelp;
+    int mpierr;
+    int ret;
+
+    assert(ios);
+    LOG((1, "inq_var_deflate_handler"));
+
+    /* Get the parameters for this function that the the comp master
+     * task is broadcasting. */
+    if ((mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm)))
+        return PIO_EIO;
+    if ((mpierr = MPI_Bcast(&varid, 1, MPI_INT, 0, ios->intercomm)))
+        return PIO_EIO;
+    if ((mpierr = MPI_Bcast(&shuffle_present, 1, MPI_CHAR, 0, ios->intercomm)))
+        return PIO_EIO;
+    if (shuffle_present && !mpierr)
+        if ((mpierr = MPI_Bcast(&shuffle, 1, MPI_INT, 0, ios->intercomm)))
+            return PIO_EIO;
+    if ((mpierr = MPI_Bcast(&deflate_present, 1, MPI_CHAR, 0, ios->intercomm)))
+        return PIO_EIO;
+    if (deflate_present && !mpierr)
+        if ((mpierr = MPI_Bcast(&deflate, 1, MPI_INT, 0, ios->intercomm)))
+            return PIO_EIO;
+    if ((mpierr = MPI_Bcast(&deflate_level_present, 1, MPI_CHAR, 0, ios->intercomm)))
+        return PIO_EIO;
+    if (deflate_level_present && !mpierr)
+        if ((mpierr = MPI_Bcast(&deflate_level, 1, MPI_INT, 0, ios->intercomm)))
+            return PIO_EIO;
+    LOG((2,"inq_var_handler ncid = %d varid = %d shuffle_present = %d deflate_present = %d deflate_level_present = %d",
+         ncid, varid, shuffle_present, deflate_present, deflate_level_present));
+
+    /* Set the non-NULL pointers. */
+    if (shuffle_present)
+        shufflep = &shuffle;
+    if (deflate_present)
+        deflatep = &deflate;
+    if (deflate_level_present)
+        deflate_levelp = &deflate_level;
+
+    /* Call the inq function to get the values. */
+    if ((ret = PIOc_inq_var_deflate(ncid, varid, shufflep, deflatep, deflate_levelp)))
+        return ret;
+
+    return PIO_NOERR;
+}
+
 /** Do an inq_varid on a netCDF variable name. This function is only
  * run on IO tasks.
  *

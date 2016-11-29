@@ -187,16 +187,12 @@ int test_nc4(int iosysid, int num_flavors, int *flavor, int my_rank)
             for (int d1 = 0; d1 < NDIM; d1++)
                 printf("chunksize[%d] = %d\n", d1, my_chunksize[d1]);
 
-    /*         /\* Check the answers. *\/ */
-    /*         if (flavor[fmt] == PIO_IOTYPE_NETCDF4C || */
-    /*             flavor[fmt] == PIO_IOTYPE_NETCDF4P) */
-    /*         { */
-    /*             if (storage != NC_CHUNKED) */
-    /*                 ERR(ERR_AWFUL); */
-    /*             for (int d1 = 0; d1 < NDIM; d1++) */
-    /*                 if (my_chunksize[d1] != chunksize[d1]) */
-    /*                     ERR(ERR_AWFUL); */
-    /*         } */
+            /* Check the answers. */
+            if (storage != NC_CHUNKED)
+                ERR(ERR_AWFUL);
+            for (int d1 = 0; d1 < NDIM; d1++)
+                if (my_chunksize[d1] != chunksize[d1])
+                    ERR(ERR_AWFUL);
 
     /*         /\* Check that the inq_var_deflate functions works. *\/ */
     /*         if ((ret = PIOc_inq_var_deflate(ncid, 0, &shuffle, &deflate, &deflate_level))) */
