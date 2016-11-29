@@ -208,11 +208,11 @@ int test_nc4(int iosysid, int num_flavors, int *flavor, int my_rank)
                 if (shuffle || deflate)
                     ERR(ERR_AWFUL);
 
-    /*         /\* Check setting the chunk cache for the variable. *\/ */
-    /*         printf("%d PIOc_set_var_chunk_cache...\n", my_rank); */
-    /*         if ((ret = PIOc_set_var_chunk_cache(ncid, 0, VAR_CACHE_SIZE, VAR_CACHE_NELEMS, */
-    /*                                             VAR_CACHE_PREEMPTION))) */
-    /*             ERR(ret); */
+            /* Check setting the chunk cache for the variable. */
+            printf("%d PIOc_set_var_chunk_cache...\n", my_rank);
+            if ((ret = PIOc_set_var_chunk_cache(ncid, 0, VAR_CACHE_SIZE, VAR_CACHE_NELEMS,
+                                                VAR_CACHE_PREEMPTION)))
+                ERR(ret);
 
     /*         /\* Check getting the chunk cache values for the variable. *\/ */
     /*         printf("%d PIOc_get_var_chunk_cache...\n", my_rank); */

@@ -1298,6 +1298,49 @@ int def_var_chunking_handler(iosystem_desc_t *ios)
     return PIO_NOERR;
 }
 
+/** 
+ * This function is run on the IO tasks to define chunk cache settings
+ * for a netCDF variable.
+ *
+ * @param ios pointer to the iosystem_desc_t.
+ * @returns 0 for success, error code otherwise.
+ */
+int set_var_chunk_cache_handler(iosystem_desc_t *ios)
+{
+    int ncid;
+    int varid;
+    PIO_Offset size;
+    PIO_Offset nelems;
+    float preemption;
+    int mpierr = MPI_SUCCESS;  /* Return code from MPI function codes. */
+    int ret; /* Return code. */
+
+    assert(ios);
+    LOG((1, "set_var_chunk_cache_handler comproot = %d", ios->comproot));
+
+    /* Get the parameters for this function that the he comp master
+     * task is broadcasting. */
+    if ((mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm)))
+        return PIO_EIO;
+    if ((mpierr = MPI_Bcast(&varid, 1, MPI_INT, 0, ios->intercomm)))
+        return PIO_EIO;
+    if ((mpierr = MPI_Bcast(&size, 1, MPI_OFFSET, 0, ios->intercomm)))
+        return PIO_EIO;
+    if ((mpierr = MPI_Bcast(&nelems, 1, MPI_OFFSET, 0, ios->intercomm)))
+        return PIO_EIO;
+    if ((mpierr = MPI_Bcast(&preemption, 1, MPI_FLOAT, 0, ios->intercomm)))
+        return PIO_EIO;
+    LOG((1, "set_var_chunk_cache_handler got params ncid = %d varid = %d size = %d "
+         "nelems = %d preemption = %g", ncid, varid, size, nelems, preemption));
+
+    /* Call the create file function. */
+    if ((ret = PIOc_set_var_chunk_cache(ncid, varid, size, nelems, preemption)))
+        return ret;
+
+    LOG((1, "def_var_chunk_cache_handler succeeded!"));
+    return PIO_NOERR;
+}
+
 /** This function is run on the IO tasks to define a netCDF
  * dimension.
  *
@@ -1978,6 +2021,9 @@ int pio_msg_handler2(int io_rank, int component_count, iosystem_desc_t **iosys,
             break;
         case PIO_MSG_DEF_VAR_CHUNKING:
             def_var_chunking_handler(my_iosys);
+            break;
+        case PIO_MSG_SET_VAR_CHUNK_CACHE:
+            set_var_chunk_cache_handler(my_iosys);
             break;
         case PIO_MSG_INQ:
             inq_handler(my_iosys);
