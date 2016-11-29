@@ -360,12 +360,23 @@ int PIOc_inq_var_chunking(int ncid, int varid, int *storagep, PIO_Offset *chunks
         if (!ios->ioproc)
         {
             int msg = PIO_MSG_INQ_VAR_CHUNKING;
-
+            char storage_present = storagep ? true : false;
+            char chunksizes_present = chunksizesp ? true : false;
+            
             if (ios->compmaster)
                 mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
 
             if (!mpierr)
                 mpierr = MPI_Bcast(&ncid, 1, MPI_INT, ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast(&varid, 1, MPI_INT, ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast(&storage_present, 1, MPI_CHAR, ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast(&chunksizes_present, 1, MPI_CHAR, ios->compmaster, ios->intercomm);
+            LOG((2, "PIOc_inq_var_chunking ncid = %d varid = %d storage_present = %d chunksizes_present = %d",
+                 ncid, varid, storage_present, chunksizes_present));
+            
         }
 
         /* Handle MPI errors. */

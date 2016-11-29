@@ -74,7 +74,7 @@ int test_nc4(int iosysid, int num_flavors, int *flavor, int my_rank)
     float chunk_cache_preemption_in;
 
     int storage = NC_CHUNKED; /* Storage of netCDF-4 files (contiguous vs. chunked). */
-    PIO_Offset my_chunksize[NDIM] = {1, 1, 1}; /* Chunksizes to set. */
+    PIO_Offset my_chunksize[NDIM]; /* Chunksizes we get from file. */
     int shuffle;    /* The shuffle filter setting in the netCDF-4 test file. */
     int deflate;    /* Non-zero if deflate set for the variable in the netCDF-4 test file. */
     int deflate_level;    /* The deflate level set for the variable in the netCDF-4 test file. */
@@ -171,7 +171,7 @@ int test_nc4(int iosysid, int num_flavors, int *flavor, int my_rank)
         if (flavor[fmt] == PIO_IOTYPE_NETCDF4C || flavor[fmt] == PIO_IOTYPE_NETCDF4P)
         {
             printf("%d Defining chunksizes\n", my_rank);
-            if ((ret = PIOc_def_var_chunking(ncid, 0, NC_CHUNKED, my_chunksize)))
+            if ((ret = PIOc_def_var_chunking(ncid, 0, NC_CHUNKED, chunksize)))
                 ERR(ret);
 
             /* Check that the inq_varname function works. */
@@ -179,17 +179,13 @@ int test_nc4(int iosysid, int num_flavors, int *flavor, int my_rank)
             ret = PIOc_inq_varname(ncid, 0, varname_in);
             printf("%d ret: %d varname_in: %s\n", my_rank, ret, varname_in);
 
-    /*         /\* Check that the inq_var_chunking function works. *\/ */
-    /*         printf("%d Checking chunksizes\n", my_rank); */
-    /*         ret = PIOc_inq_var_chunking(ncid, 0, &storage, my_chunksize); */
-
-    /*         if ((ret = PIOc_inq_var_chunking(ncid, 0, &storage, my_chunksize))) */
-    /*             ERR(ret); */
-    /*         { */
-    /*             printf("%d ret: %d storage: %d\n", my_rank, ret, storage); */
-    /*             for (int d1 = 0; d1 < NDIM; d1++) */
-    /*                 printf("chunksize[%d]=%d\n", d1, my_chunksize[d1]); */
-    /*         } */
+            /* Check that the inq_var_chunking function works. */
+            printf("%d Checking chunksizes\n", my_rank);
+            if ((ret = PIOc_inq_var_chunking(ncid, 0, &storage, my_chunksize)))
+                ERR(ret);
+            printf("%d ret: %d storage: %d\n", my_rank, ret, storage);
+            for (int d1 = 0; d1 < NDIM; d1++)
+                printf("chunksize[%d] = %d\n", d1, my_chunksize[d1]);
 
     /*         /\* Check the answers. *\/ */
     /*         if (flavor[fmt] == PIO_IOTYPE_NETCDF4C || */

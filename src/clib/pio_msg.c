@@ -917,14 +917,12 @@ int get_vars_handler(iosystem_desc_t *ios)
     return PIO_NOERR;
 }
 
-/** Do an inq_var on a netCDF variable. This function is only run on
+/** 
+ * Do an inq_var on a netCDF variable. This function is only run on
  * IO tasks.
  *
  * @param ios pointer to the iosystem_desc_t.
- * @param msg the message sent my the comp root task.
- * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
- * from netCDF base function.
- * @internal
+ * @returns 0 for success, error code otherwise.
  */
 int inq_var_handler(iosystem_desc_t *ios)
 {
@@ -979,6 +977,52 @@ int inq_var_handler(iosystem_desc_t *ios)
 
     if (ndims_present)
         LOG((2, "inq_var_handler ndims = %d", ndims));
+
+    return PIO_NOERR;
+}
+
+/** 
+ * Do an inq_var_chunking on a netCDF variable. This function is only
+ * run on IO tasks.
+ *
+ * @param ios pointer to the iosystem_desc_t.
+ * @returns 0 for success, error code otherwise.
+ */
+int inq_var_chunking_handler(iosystem_desc_t *ios)
+{
+    int ncid;
+    int varid;
+    char storage_present, chunksizes_present;
+    int storage, *storagep;
+    PIO_Offset chunksizes[NC_MAX_DIMS], *chunksizesp = NULL;
+    int mpierr;
+    int ret;
+
+    assert(ios);
+    LOG((1, "inq_var_chunking_handler"));
+
+    /* Get the parameters for this function that the the comp master
+     * task is broadcasting. */
+    if ((mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm)))
+        return PIO_EIO;
+    if ((mpierr = MPI_Bcast(&varid, 1, MPI_INT, 0, ios->intercomm)))
+        return PIO_EIO;
+    if ((mpierr = MPI_Bcast(&storage_present, 1, MPI_CHAR, 0, ios->intercomm)))
+        return PIO_EIO;
+    if ((mpierr = MPI_Bcast(&chunksizes_present, 1, MPI_CHAR, 0, ios->intercomm)))
+        return PIO_EIO;
+    LOG((2,"inq_var_handler ncid = %d varid = %d storage_present = %d chunksizes_present = %d",
+         ncid, varid, storage_present, chunksizes_present));
+
+    /* Set the non-NULL pointers. */
+    if (storage_present)
+        storagep = &storage;
+    if (chunksizes_present)
+        chunksizesp = chunksizes;
+
+    /* Call the inq function to get the values. */
+    if ((ret = PIOc_inq_var_chunking(ncid, varid, storagep, chunksizesp)))
+        return ret;
 
     return PIO_NOERR;
 }
@@ -1883,6 +1927,9 @@ int pio_msg_handler2(int io_rank, int component_count, iosystem_desc_t **iosys,
             break;
         case PIO_MSG_INQ_VAR:
             inq_var_handler(my_iosys);
+            break;
+        case PIO_MSG_INQ_VAR_CHUNKING:
+            inq_var_chunking_handler(my_iosys);
             break;
         case PIO_MSG_GET_ATT:
             ret = att_get_handler(my_iosys);
