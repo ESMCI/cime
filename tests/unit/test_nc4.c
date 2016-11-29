@@ -370,7 +370,7 @@ int test_async(int my_rank, int nprocs, int num_flavors, int *flavor,
     int iosysid[COMPONENT_COUNT];  /* The ID for the parallel I/O system. */
     int ioid;                      /* The I/O description ID. */
     PIO_Offset *compdof;           /* The decomposition mapping. */
-    int num_procs[COMPONENT_COUNT + 1] = {1, nprocs - 1}; /* Num procs in each component. */
+    int num_procs[COMPONENT_COUNT + 1] = {1, TARGET_NTASKS - 1}; /* Num procs in each component. */
     int mpierr;  /* Return code from MPI functions. */
     int ret;     /* Return code. */
 
