@@ -46,6 +46,7 @@ class ERP(SystemTestsCompareTwo):
         self._case.set_value("REST_OPTION", "never")
 
         stop_n_tot = self._case.get_value("STOP_N")
+        self._case.set_value("HIST_N", stop_n_tot)
         stop_n = stop_n_tot - _compute_rest_n(stop_n_tot)
         expect(stop_n > 0, "STOP_N value too small for test")
         self._case.set_value("STOP_N", stop_n)
@@ -66,6 +67,7 @@ class ERP(SystemTestsCompareTwo):
         ref_case = self._case1.get_value("CASE")
         self._case.set_value("RUN_REFCASE", ref_case)
         self._case.set_value("RUN_TYPE", "branch")
+        self._case.flush()
 
         case_setup(self._case, test_mode=True, reset=True)
 
