@@ -167,7 +167,8 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
  * @param test_comm communicator with all test tasks.
  * @returns 0 for success error code otherwise.
  */
-int test_no_async(int my_rank, int ntasks, int num_flavors, int *flavor, MPI_Comm test_comm)
+int test_no_async(int my_rank, int ntasks, int num_flavors, int *flavor,
+                  MPI_Comm test_comm)
 {
     int niotasks;    /* Number of processors that will do IO. */
     int ioproc_stride = 1;    /* Stride in the mpi rank between io tasks. */
