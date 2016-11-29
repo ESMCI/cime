@@ -73,8 +73,8 @@ int test_nc4(int iosysid, int num_flavors, int *flavor, int my_rank)
     PIO_Offset chunk_cache_nelems_in;
     float chunk_cache_preemption_in;
 
-    int storage;    /* Storage of netCDF-4 files (contiguous vs. chunked). */
-    PIO_Offset my_chunksize[NDIM];    /* Chunksizes set in the file. */
+    int storage = NC_CHUNKED; /* Storage of netCDF-4 files (contiguous vs. chunked). */
+    PIO_Offset my_chunksize[NDIM] = {1, 1, 1}; /* Chunksizes to set. */
     int shuffle;    /* The shuffle filter setting in the netCDF-4 test file. */
     int deflate;    /* Non-zero if deflate set for the variable in the netCDF-4 test file. */
     int deflate_level;    /* The deflate level set for the variable in the netCDF-4 test file. */
@@ -145,40 +145,39 @@ int test_nc4(int iosysid, int num_flavors, int *flavor, int my_rank)
                 ERR(ERR_AWFUL);
         }
 
-    /*     /\* Create the netCDF output file. *\/ */
-    /*     printf("%d Creating sample file %s with format %d...\n", */
-    /*            my_rank, filename, flavor[fmt]); */
-    /*     if ((ret = PIOc_createfile(iosysid, &ncid, &(flavor[fmt]), filename, */
-    /*                                PIO_CLOBBER))) */
-    /*         ERR(ret); */
+        /* Create the netCDF output file. */
+        printf("%d Creating sample file %s with format %d...\n",
+               my_rank, filename, flavor[fmt]);
+        if ((ret = PIOc_createfile(iosysid, &ncid, &(flavor[fmt]), filename, PIO_CLOBBER)))
+            ERR(ret);
 
-    /*     /\* Set error handling. *\/ */
-    /*     PIOc_Set_File_Error_Handling(ncid, PIO_BCAST_ERROR); */
+        /* Set error handling. */
+        /* PIOc_Set_File_Error_Handling(ncid, PIO_BCAST_ERROR); */
 
-    /*     /\* Define netCDF dimensions and variable. *\/ */
-    /*     printf("%d Defining netCDF metadata...\n", my_rank); */
-    /*     for (int d = 0; d < NDIM; d++) */
-    /*     { */
-    /*         printf("%d Defining netCDF dimension %s, length %d\n", my_rank, */
-    /*                dim_name[d], dim_len[d]); */
-    /*         if ((ret = PIOc_def_dim(ncid, dim_name[d], (PIO_Offset)dim_len[d], &dimids[d]))) */
-    /*             ERR(ret); */
-    /*     } */
-    /*     printf("%d Defining netCDF variable %s, ndims %d\n", my_rank, VAR_NAME, NDIM); */
-    /*     if ((ret = PIOc_def_var(ncid, VAR_NAME, PIO_FLOAT, NDIM, dimids, &varid))) */
-    /*         ERR(ret); */
+        /* Define netCDF dimensions and variable. */
+        printf("%d Defining netCDF metadata...\n", my_rank);
+        for (int d = 0; d < NDIM; d++)
+        {
+            printf("%d Defining netCDF dimension %s, length %d\n", my_rank,
+                   dim_name[d], dim_len[d]);
+            if ((ret = PIOc_def_dim(ncid, dim_name[d], (PIO_Offset)dim_len[d], &dimids[d])))
+                ERR(ret);
+        }
+        printf("%d Defining netCDF variable %s, ndims %d\n", my_rank, VAR_NAME, NDIM);
+        if ((ret = PIOc_def_var(ncid, VAR_NAME, PIO_FLOAT, NDIM, dimids, &varid)))
+            ERR(ret);
 
-    /*     /\* For netCDF-4 files, set the chunksize to improve performance. *\/ */
-    /*     if (flavor[fmt] == PIO_IOTYPE_NETCDF4C || flavor[fmt] == PIO_IOTYPE_NETCDF4P) */
-    /*     { */
-    /*         printf("%d Defining chunksizes\n", my_rank); */
-    /*         if ((ret = PIOc_def_var_chunking(ncid, 0, NC_CHUNKED, chunksize))) */
-    /*             ERR(ret); */
+        /* For netCDF-4 files, set the chunksize to improve performance. */
+        if (flavor[fmt] == PIO_IOTYPE_NETCDF4C || flavor[fmt] == PIO_IOTYPE_NETCDF4P)
+        {
+            printf("%d Defining chunksizes\n", my_rank);
+            if ((ret = PIOc_def_var_chunking(ncid, 0, NC_CHUNKED, my_chunksize)))
+                ERR(ret);
 
-    /*         /\* Check that the inq_varname function works. *\/ */
-    /*         printf("%d Checking varname\n", my_rank); */
-    /*         ret = PIOc_inq_varname(ncid, 0, varname_in); */
-    /*         printf("%d ret: %d varname_in: %s\n", my_rank, ret, varname_in); */
+            /* Check that the inq_varname function works. */
+            printf("%d Checking varname\n", my_rank);
+            ret = PIOc_inq_varname(ncid, 0, varname_in);
+            printf("%d ret: %d varname_in: %s\n", my_rank, ret, varname_in);
 
     /*         /\* Check that the inq_var_chunking function works. *\/ */
     /*         printf("%d Checking chunksizes\n", my_rank); */
@@ -268,16 +267,16 @@ int test_nc4(int iosysid, int num_flavors, int *flavor, int my_rank)
     /*         if ((ret = PIOc_get_chunk_cache(iosysid, flavor[fmt], &chunk_cache_size, */
     /*                                         &chunk_cache_nelems, &chunk_cache_preemption)) != PIO_ENOTNC4) */
     /*             ERR(ret); */
-    /*     } */
+        }
 
-    /*     /\* End define mode. *\/ */
-    /*     if ((ret = PIOc_enddef(ncid))) */
-    /*         ERR(ret); */
+        /* End define mode. */
+        if ((ret = PIOc_enddef(ncid)))
+            ERR(ret);
 
-    /*     /\* Close the netCDF file. *\/ */
-    /*     printf("%d Closing the sample data file...\n", my_rank); */
-    /*     if ((ret = PIOc_closefile(ncid))) */
-    /*         ERR(ret); */
+        /* Close the netCDF file. */
+        printf("%d Closing the sample data file...\n", my_rank);
+        if ((ret = PIOc_closefile(ncid)))
+            ERR(ret);
     }
     return PIO_NOERR;
 }

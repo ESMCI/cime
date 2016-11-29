@@ -292,9 +292,7 @@ int check_mpi(file_desc_t *file, const int mpierr, const char *filename,
                     errstring, filename ? filename : "_", line);
 
         /* Handle all MPI errors as PIO_EIO. */
-        if (file)
-            check_netcdf(file, PIO_EIO, filename, line);
-        return PIO_EIO;
+        return check_netcdf(file, PIO_EIO, filename, line);
     }
     return PIO_NOERR;
 }
@@ -318,7 +316,8 @@ int check_netcdf(file_desc_t *file, int status, const char *fname, const int lin
     assert(fname);
 
     /* Log an error message. */
-    LOG((0, "check_netcdf status = %d fname = %s line = %d", status, fname, line));
+    if (status)
+        LOG((0, "check_netcdf status = %d fname = %s line = %d", status, fname, line));
 
     switch(file->iotype)
     {
@@ -328,6 +327,8 @@ int check_netcdf(file_desc_t *file, int status, const char *fname, const int lin
     case PIO_IOTYPE_NETCDF4C:
 #endif
     case PIO_IOTYPE_NETCDF:
+        if (status)
+            LOG((0, "netCDF error message: %s", nc_strerror(status)));
         if (ios->iomaster)
 	{
             if (status != NC_NOERR && ios->error_handler == PIO_INTERNAL_ERROR)

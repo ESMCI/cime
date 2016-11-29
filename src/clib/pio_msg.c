@@ -1140,6 +1140,57 @@ int def_var_handler(iosystem_desc_t *ios)
     return PIO_NOERR;
 }
 
+/** 
+ * This function is run on the IO tasks to define chunking for a
+ *  netCDF variable.
+ *
+ * @param ios pointer to the iosystem_desc_t.
+ * @returns 0 for success, error code otherwise.
+ */
+int def_var_chunking_handler(iosystem_desc_t *ios)
+{
+    int ncid;
+    int varid;
+    int ndims;
+    int storage;
+    char chunksizes_present;
+    PIO_Offset chunksizes[NC_MAX_DIMS], *chunksizesp = NULL;
+    int mpierr;
+    int ret;
+
+    assert(ios);
+    LOG((1, "def_var_chunking_handler comproot = %d", ios->comproot));
+
+    /* Get the parameters for this function that the he comp master
+     * task is broadcasting. */
+    if ((mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm)))
+        return PIO_EIO;
+    if ((mpierr = MPI_Bcast(&varid, 1, MPI_INT, 0, ios->intercomm)))
+        return PIO_EIO;
+    if ((mpierr = MPI_Bcast(&storage, 1, MPI_INT, 0, ios->intercomm)))
+        return PIO_EIO;
+    if ((mpierr = MPI_Bcast(&ndims, 1, MPI_INT, 0, ios->intercomm)))
+        return PIO_EIO;
+    if ((mpierr = MPI_Bcast(&chunksizes_present, 1, MPI_CHAR, 0, ios->intercomm)))
+        return PIO_EIO;
+    if (chunksizes_present)
+        if ((mpierr = MPI_Bcast(chunksizes, ndims, MPI_OFFSET, 0, ios->intercomm)))
+            return PIO_EIO;
+    LOG((1, "def_var_chunking_handler got parameters ncid = %d varid = %d storage = %d "
+         "ndims = %d chunksizes_present = %d", ncid, varid, storage, ndims, chunksizes_present));
+
+    /* Set the non-NULL pointers. */
+    if (chunksizes_present)
+        chunksizesp = chunksizes;
+
+    /* Call the create file function. */
+    if ((ret = PIOc_def_var_chunking(ncid, varid, storage, chunksizesp)))
+        return ret;
+
+    LOG((1, "def_var_chunking_handler succeeded!"));
+    return PIO_NOERR;
+}
+
 /** This function is run on the IO tasks to define a netCDF
  * dimension.
  *
@@ -1817,6 +1868,9 @@ int pio_msg_handler2(int io_rank, int component_count, iosystem_desc_t **iosys,
             break;
         case PIO_MSG_DEF_VAR:
             def_var_handler(my_iosys);
+            break;
+        case PIO_MSG_DEF_VAR_CHUNKING:
+            def_var_chunking_handler(my_iosys);
             break;
         case PIO_MSG_INQ:
             inq_handler(my_iosys);

@@ -58,7 +58,7 @@ int PIOc_def_var_deflate(int ncid, int varid, int shuffle, int deflate,
                 mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
 
             if (!mpierr)
-                mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
+                mpierr = MPI_Bcast(&ncid, 1, MPI_INT, ios->compmaster, ios->intercomm);
         }
 
         /* Handle MPI errors. */
@@ -143,7 +143,7 @@ int PIOc_inq_var_deflate(int ncid, int varid, int *shufflep,
                 mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
 
             if (!mpierr)
-                mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
+                mpierr = MPI_Bcast(&ncid, 1, MPI_INT, ios->compmaster, ios->intercomm);
         }
 
         /* Handle MPI errors. */
@@ -212,6 +212,9 @@ int PIOc_def_var_chunking(int ncid, int varid, int storage,
     int ierr = PIO_NOERR;  /* Return code from function calls. */
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
 
+    LOG((1, "PIOc_def_var_chunking ncid = %d varid = %d storage = %d", ncid,
+         varid, storage));
+    
     /* Find the info about this file. */
     if ((ierr = pio_get_file(ncid, &file)))
         return ierr;
@@ -227,6 +230,7 @@ int PIOc_def_var_chunking(int ncid, int varid, int storage,
     if (!ios->async_interface || !ios->ioproc)
         if ((ierr = PIOc_inq_varndims(ncid, varid, &ndims)))
             return check_netcdf(file, ierr, __FILE__, __LINE__);
+    LOG((2, "PIOc_def_var_chunking first ndims = %d", ndims));
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
     if (ios->async_interface)
@@ -234,12 +238,26 @@ int PIOc_def_var_chunking(int ncid, int varid, int storage,
         if (!ios->ioproc)
         {
             int msg = PIO_MSG_DEF_VAR_CHUNKING;
+            char chunksizes_present = chunksizesp ? true : false;
 
             if (ios->compmaster)
                 mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
 
             if (!mpierr)
-                mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
+                mpierr = MPI_Bcast(&ncid, 1, MPI_INT, ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast(&varid, 1, MPI_INT, ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast(&storage, 1, MPI_INT, ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast(&ndims, 1, MPI_INT, ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast(&chunksizes_present, 1, MPI_CHAR, ios->compmaster, ios->intercomm);
+            if (!mpierr && chunksizes_present)
+                mpierr = MPI_Bcast((PIO_Offset *)chunksizesp, ndims, MPI_OFFSET, ios->compmaster,
+                                   ios->intercomm);
+            LOG((2, "PIOc_def_var_chunking ncid = %d varid = %d storage = %d ndims = %d chunksizes_present = %d",
+                 ncid, varid, storage, ndims, chunksizes_present));
         }
 
         /* Handle MPI errors. */
@@ -253,6 +271,8 @@ int PIOc_def_var_chunking(int ncid, int varid, int storage,
             check_mpi(file, mpierr, __FILE__, __LINE__);
     }
 
+    LOG((2, "PIOc_def_var_chunking ndims = %d", ndims));
+    
     /* If this is an IO task, then call the netCDF function. */
     if (ios->ioproc)
     {
@@ -345,7 +365,7 @@ int PIOc_inq_var_chunking(int ncid, int varid, int *storagep, PIO_Offset *chunks
                 mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
 
             if (!mpierr)
-                mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
+                mpierr = MPI_Bcast(&ncid, 1, MPI_INT, ios->compmaster, ios->intercomm);
         }
 
         /* Handle MPI errors. */
@@ -448,7 +468,7 @@ int PIOc_def_var_fill(int ncid, int varid, int no_fill, const void *fill_value)
                 mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
 
             if (!mpierr)
-                mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
+                mpierr = MPI_Bcast(&ncid, 1, MPI_INT, ios->compmaster, ios->intercomm);
         }
 
         /* Handle MPI errors. */
@@ -524,7 +544,7 @@ int PIOc_def_var_endian(int ncid, int varid, int endian)
                 mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
 
             if (!mpierr)
-                mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
+                mpierr = MPI_Bcast(&ncid, 1, MPI_INT, ios->compmaster, ios->intercomm);
         }
 
         /* Handle MPI errors. */
@@ -598,7 +618,7 @@ int PIOc_inq_var_endian(int ncid, int varid, int *endianp)
                 mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
 
             if (!mpierr)
-                mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
+                mpierr = MPI_Bcast(&ncid, 1, MPI_INT, ios->compmaster, ios->intercomm);
         }
 
         /* Handle MPI errors. */
@@ -901,7 +921,7 @@ int PIOc_set_var_chunk_cache(int ncid, int varid, PIO_Offset size, PIO_Offset ne
                 mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
 
             if (!mpierr)
-                mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
+                mpierr = MPI_Bcast(&ncid, 1, MPI_INT, ios->compmaster, ios->intercomm);
         }
 
         /* Handle MPI errors. */
@@ -978,7 +998,7 @@ int PIOc_get_var_chunk_cache(int ncid, int varid, PIO_Offset *sizep, PIO_Offset 
     /* if (ios->async_interface && ! ios->ioproc){ */
     /*  if (ios->compmaster)  */
     /*      mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm); */
-    /*  mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm); */
+    /*  mpierr = MPI_Bcast(&ncid, 1, MPI_INT, ios->compmaster, ios->intercomm); */
     /* } */
 
     if (ios->ioproc)
