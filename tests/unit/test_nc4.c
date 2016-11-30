@@ -73,8 +73,8 @@ int test_nc4(int iosysid, int num_flavors, int *flavor, int my_rank)
     PIO_Offset chunk_cache_nelems_in;
     float chunk_cache_preemption_in;
 
-    int storage;    /* Storage of netCDF-4 files (contiguous vs. chunked). */
-    PIO_Offset my_chunksize[NDIM];    /* Chunksizes set in the file. */
+    int storage = NC_CHUNKED; /* Storage of netCDF-4 files (contiguous vs. chunked). */
+    PIO_Offset my_chunksize[NDIM]; /* Chunksizes we get from file. */
     int shuffle;    /* The shuffle filter setting in the netCDF-4 test file. */
     int deflate;    /* Non-zero if deflate set for the variable in the netCDF-4 test file. */
     int deflate_level;    /* The deflate level set for the variable in the netCDF-4 test file. */
@@ -105,113 +105,94 @@ int test_nc4(int iosysid, int num_flavors, int *flavor, int my_rank)
             return ret;
         sprintf(filename, "%s_%s.nc", TEST_NAME, iotype_name);
 
-        printf("rank: %d Setting chunk cache for file %s with format %d...\n",
+        printf("%d Setting chunk cache for file %s with format %d...\n",
                my_rank, filename, flavor[fmt]);
 
-        /* Try to set the chunk cache with invalid preemption to check error handling. */
-        chunk_cache_preemption = 50.0;
-        ret = PIOc_set_chunk_cache(iosysid, flavor[fmt], chunk_cache_size,
-                                   chunk_cache_nelems, chunk_cache_preemption);
-
-        /* What result did we expect to get? */
-        expected_ret = flavor[fmt] == PIO_IOTYPE_NETCDF4C || flavor[fmt] == PIO_IOTYPE_NETCDF4P ?
-            NC_EINVAL : NC_ENOTNC4;
+        /* Try to set the chunk cache with invalid preemption to check
+         * error handling. Can't do this because correct bahavior is
+         * to MPI_Abort, and code now does that. But how to test? */
+        /* chunk_cache_preemption = 50.0; */
+        /* ret = PIOc_set_chunk_cache(iosysid, flavor[fmt], chunk_cache_size, */
+        /*                            chunk_cache_nelems, chunk_cache_preemption); */
         
-        /* Check the result. */
-        if (ret != expected_ret)
-            ERR(ERR_AWFUL);
+        /* printf("%d Set chunk cache ret = %d.\n", my_rank, ret); */
 
-        /* Try to set the chunk cache. */
+        /* /\* What result did we expect to get? *\/ */
+        /* expected_ret = flavor[fmt] == PIO_IOTYPE_NETCDF4C || flavor[fmt] == PIO_IOTYPE_NETCDF4P ? */
+        /*     NC_EINVAL : NC_ENOTNC4; */
+        
+        /* /\* Check the result. *\/ */
+        /* if (ret != expected_ret) */
+        /*     ERR(ERR_AWFUL); */
+
+        /* Try to set the chunk cache for netCDF-4 iotypes. */
         chunk_cache_preemption = 0.5;
-        ret = PIOc_set_chunk_cache(iosysid, flavor[fmt], chunk_cache_size,
-                                   chunk_cache_nelems, chunk_cache_preemption);
-
-        /* What result did we expect to get? Should only have worked
-         * for netCDF-4 iotypes. */
-        expected_ret = flavor[fmt] == PIO_IOTYPE_NETCDF4C || flavor[fmt] == PIO_IOTYPE_NETCDF4P ?
-            NC_NOERR : NC_ENOTNC4;
-
-        /* Check the result. */
-        if (ret != expected_ret)
-            ERR(ERR_AWFUL);
+        if (flavor[fmt] == PIO_IOTYPE_NETCDF4C || flavor[fmt] == PIO_IOTYPE_NETCDF4P)
+            if ((ret = PIOc_set_chunk_cache(iosysid, flavor[fmt], chunk_cache_size,
+                                            chunk_cache_nelems, chunk_cache_preemption)))
+                ERR(ERR_AWFUL);
 
         /* Now check the chunk cache. */
-        ret = PIOc_get_chunk_cache(iosysid, flavor[fmt], &chunk_cache_size_in,
-                                   &chunk_cache_nelems_in, &chunk_cache_preemption_in);
-
-        /* Should only have worked for netCDF-4 iotypes. */
         if (flavor[fmt] == PIO_IOTYPE_NETCDF4C || flavor[fmt] == PIO_IOTYPE_NETCDF4P)
         {
-            /* Check that there was no error. */
-            if (ret != PIO_NOERR)
-                ERR(ret);
+            if ((ret = PIOc_get_chunk_cache(iosysid, flavor[fmt], &chunk_cache_size_in,
+                                            &chunk_cache_nelems_in, &chunk_cache_preemption_in)))
+                ERR(ERR_AWFUL);
 
             /* Check that we got the correct values. */
             if (chunk_cache_size_in != chunk_cache_size || chunk_cache_nelems_in != chunk_cache_nelems ||
                 chunk_cache_preemption_in != chunk_cache_preemption)
                 ERR(ERR_AWFUL);
         }
-        else
-            if (ret != PIO_ENOTNC4)
-                ERR(ERR_AWFUL);
 
         /* Create the netCDF output file. */
-        printf("rank: %d Creating sample file %s with format %d...\n",
+        printf("%d Creating sample file %s with format %d...\n",
                my_rank, filename, flavor[fmt]);
-        if ((ret = PIOc_createfile(iosysid, &ncid, &(flavor[fmt]), filename,
-                                   PIO_CLOBBER)))
+        if ((ret = PIOc_createfile(iosysid, &ncid, &(flavor[fmt]), filename, PIO_CLOBBER)))
             ERR(ret);
 
         /* Set error handling. */
-        PIOc_Set_File_Error_Handling(ncid, PIO_BCAST_ERROR);
+        /* PIOc_Set_File_Error_Handling(ncid, PIO_BCAST_ERROR); */
 
         /* Define netCDF dimensions and variable. */
-        printf("rank: %d Defining netCDF metadata...\n", my_rank);
+        printf("%d Defining netCDF metadata...\n", my_rank);
         for (int d = 0; d < NDIM; d++)
         {
-            printf("rank: %d Defining netCDF dimension %s, length %d\n", my_rank,
+            printf("%d Defining netCDF dimension %s, length %d\n", my_rank,
                    dim_name[d], dim_len[d]);
             if ((ret = PIOc_def_dim(ncid, dim_name[d], (PIO_Offset)dim_len[d], &dimids[d])))
                 ERR(ret);
         }
-        printf("rank: %d Defining netCDF variable %s, ndims %d\n", my_rank, VAR_NAME, NDIM);
+        printf("%d Defining netCDF variable %s, ndims %d\n", my_rank, VAR_NAME, NDIM);
         if ((ret = PIOc_def_var(ncid, VAR_NAME, PIO_FLOAT, NDIM, dimids, &varid)))
             ERR(ret);
 
         /* For netCDF-4 files, set the chunksize to improve performance. */
         if (flavor[fmt] == PIO_IOTYPE_NETCDF4C || flavor[fmt] == PIO_IOTYPE_NETCDF4P)
         {
-            printf("rank: %d Defining chunksizes\n", my_rank);
+            printf("%d Defining chunksizes\n", my_rank);
             if ((ret = PIOc_def_var_chunking(ncid, 0, NC_CHUNKED, chunksize)))
                 ERR(ret);
 
             /* Check that the inq_varname function works. */
-            printf("rank: %d Checking varname\n", my_rank);
+            printf("%d Checking varname\n", my_rank);
             ret = PIOc_inq_varname(ncid, 0, varname_in);
-            printf("rank: %d ret: %d varname_in: %s\n", my_rank, ret, varname_in);
+            printf("%d ret: %d varname_in: %s\n", my_rank, ret, varname_in);
 
             /* Check that the inq_var_chunking function works. */
-            printf("rank: %d Checking chunksizes\n", my_rank);
-            ret = PIOc_inq_var_chunking(ncid, 0, &storage, my_chunksize);
-
+            printf("%d Checking chunksizes\n", my_rank);
             if ((ret = PIOc_inq_var_chunking(ncid, 0, &storage, my_chunksize)))
                 ERR(ret);
-            {
-                printf("rank: %d ret: %d storage: %d\n", my_rank, ret, storage);
-                for (int d1 = 0; d1 < NDIM; d1++)
-                    printf("chunksize[%d]=%d\n", d1, my_chunksize[d1]);
-            }
+            printf("%d ret: %d storage: %d\n", my_rank, ret, storage);
+            for (int d1 = 0; d1 < NDIM; d1++)
+                printf("chunksize[%d] = %d\n", d1, my_chunksize[d1]);
 
             /* Check the answers. */
-            if (flavor[fmt] == PIO_IOTYPE_NETCDF4C ||
-                flavor[fmt] == PIO_IOTYPE_NETCDF4P)
-            {
-                if (storage != NC_CHUNKED)
+            if (storage != NC_CHUNKED)
+                ERR(ERR_AWFUL);
+            for (int d1 = 0; d1 < NDIM; d1++)
+                if (my_chunksize[d1] != chunksize[d1])
                     ERR(ERR_AWFUL);
-                for (int d1 = 0; d1 < NDIM; d1++)
-                    if (my_chunksize[d1] != chunksize[d1])
-                        ERR(ERR_AWFUL);
-            }
 
             /* Check that the inq_var_deflate functions works. */
             if ((ret = PIOc_inq_var_deflate(ncid, 0, &shuffle, &deflate, &deflate_level)))
@@ -228,56 +209,61 @@ int test_nc4(int iosysid, int num_flavors, int *flavor, int my_rank)
                     ERR(ERR_AWFUL);
 
             /* Check setting the chunk cache for the variable. */
-            printf("rank: %d PIOc_set_var_chunk_cache...\n", my_rank);
+            printf("%d PIOc_set_var_chunk_cache...\n", my_rank);
             if ((ret = PIOc_set_var_chunk_cache(ncid, 0, VAR_CACHE_SIZE, VAR_CACHE_NELEMS,
                                                 VAR_CACHE_PREEMPTION)))
                 ERR(ret);
 
             /* Check getting the chunk cache values for the variable. */
-            printf("rank: %d PIOc_get_var_chunk_cache...\n", my_rank);
+            printf("%d PIOc_get_var_chunk_cache...\n", my_rank);
             if ((ret = PIOc_get_var_chunk_cache(ncid, 0, &var_cache_size, &var_cache_nelems,
                                                 &var_cache_preemption)))
                 ERR(ret);
-            PIO_Offset len;
-            if ((ret = PIOc_inq_dimlen(ncid, 0, &len)))
-                ERR(ret);
 
             /* Check that we got expected values. */
-            printf("rank: %d var_cache_size = %d\n", my_rank, var_cache_size);
+            printf("%d var_cache_size = %d\n", my_rank, var_cache_size);
             if (var_cache_size != VAR_CACHE_SIZE)
                 ERR(ERR_AWFUL);
             if (var_cache_nelems != VAR_CACHE_NELEMS)
                 ERR(ERR_AWFUL);
             if (var_cache_preemption != VAR_CACHE_PREEMPTION)
                 ERR(ERR_AWFUL);
-        }
-        else
-        {
-            /* Trying to set or inq netCDF-4 settings for non-netCDF-4
-             * files results in the PIO_ENOTNC4 error. */
-            if ((ret = PIOc_def_var_chunking(ncid, 0, NC_CHUNKED, chunksize)) != PIO_ENOTNC4)
+
+            if ((ret = PIOc_def_var_endian(ncid, 0, 1)))
                 ERR(ERR_AWFUL);
-            /* if ((ret = PIOc_inq_var_chunking(ncid, 0, &storage, my_chunksize)) != PIO_ENOTNC4) */
-            /*     ERR(ERR_AWFUL); */
-            if ((ret = PIOc_inq_var_deflate(ncid, 0, &shuffle, &deflate, &deflate_level))
-                != PIO_ENOTNC4)
-                ERR(ret);
-            if ((ret = PIOc_def_var_endian(ncid, 0, 1)) != PIO_ENOTNC4)
+            if ((ret = PIOc_inq_var_endian(ncid, 0, &endianness)))
                 ERR(ERR_AWFUL);
-            if ((ret = PIOc_inq_var_endian(ncid, 0, &endianness)) != PIO_ENOTNC4)
-                ERR(ERR_AWFUL);
-            if ((ret = PIOc_set_var_chunk_cache(ncid, 0, VAR_CACHE_SIZE, VAR_CACHE_NELEMS,
-                                                VAR_CACHE_PREEMPTION)) != PIO_ENOTNC4)
-                ERR(ret);
-            if ((ret = PIOc_get_var_chunk_cache(ncid, 0, &var_cache_size, &var_cache_nelems,
-                                                &var_cache_preemption)) != PIO_ENOTNC4)
-                ERR(ret);
-            if ((ret = PIOc_set_chunk_cache(iosysid, flavor[fmt], chunk_cache_size, chunk_cache_nelems,
-                                            chunk_cache_preemption)) != PIO_ENOTNC4)
-                ERR(ret);
-            if ((ret = PIOc_get_chunk_cache(iosysid, flavor[fmt], &chunk_cache_size,
-                                            &chunk_cache_nelems, &chunk_cache_preemption)) != PIO_ENOTNC4)
-                ERR(ret);
+            if (endianness != 1)
+                ERR(ERR_WRONG);
+            
+    /*     } */
+    /*     else */
+    /*     { */
+    /*         /\* Trying to set or inq netCDF-4 settings for non-netCDF-4 */
+    /*          * files results in the PIO_ENOTNC4 error. *\/ */
+    /*         if ((ret = PIOc_def_var_chunking(ncid, 0, NC_CHUNKED, chunksize)) != PIO_ENOTNC4) */
+    /*             ERR(ERR_AWFUL); */
+    /*         /\* if ((ret = PIOc_inq_var_chunking(ncid, 0, &storage, my_chunksize)) != PIO_ENOTNC4) *\/ */
+    /*         /\*     ERR(ERR_AWFUL); *\/ */
+    /*         if ((ret = PIOc_inq_var_deflate(ncid, 0, &shuffle, &deflate, &deflate_level)) */
+    /*             != PIO_ENOTNC4) */
+    /*             ERR(ret); */
+    /*         if ((ret = PIOc_def_var_endian(ncid, 0, 1)) != PIO_ENOTNC4) */
+    /*             ERR(ERR_AWFUL); */
+    /*         if ((ret = PIOc_inq_var_endian(ncid, 0, &endianness)) != PIO_ENOTNC4) */
+    /*             ERR(ERR_AWFUL); */
+    /*         if ((ret = PIOc_set_var_chunk_cache(ncid, 0, VAR_CACHE_SIZE, VAR_CACHE_NELEMS, */
+    /*                                             VAR_CACHE_PREEMPTION)) != PIO_ENOTNC4) */
+    /*             ERR(ret); */
+    /*         if ((ret = PIOc_get_var_chunk_cache(ncid, 0, &var_cache_size, &var_cache_nelems, */
+    /*                                             &var_cache_preemption)) != PIO_ENOTNC4) */
+    /*             ERR(ret); */
+    /*         if ((ret = PIOc_set_chunk_cache(iosysid, flavor[fmt], chunk_cache_size, chunk_cache_nelems, */
+    /*                                         chunk_cache_preemption)) != PIO_ENOTNC4) */
+    /*             ERR(ret); */
+    /*         if ((ret = PIOc_get_chunk_cache(iosysid, flavor[fmt], &chunk_cache_size, */
+    /*                                         &chunk_cache_nelems, &chunk_cache_preemption)) != PIO_ENOTNC4) */
+    /*             ERR(ret); */
         }
 
         /* End define mode. */
@@ -285,7 +271,7 @@ int test_nc4(int iosysid, int num_flavors, int *flavor, int my_rank)
             ERR(ret);
 
         /* Close the netCDF file. */
-        printf("rank: %d Closing the sample data file...\n", my_rank);
+        printf("%d Closing the sample data file...\n", my_rank);
         if ((ret = PIOc_closefile(ncid)))
             ERR(ret);
     }
@@ -305,12 +291,12 @@ int test_no_async(int my_rank, int num_flavors, int *flavor, MPI_Comm test_comm)
     int niotasks;    /* Number of processors that will do IO. */
     int ioproc_stride = 1;    /* Stride in the mpi rank between io tasks. */
     int numAggregator = 0;    /* Number of the aggregator? Always 0 in this test. */
-    int ioproc_start = 0;    /* Zero based rank of first processor to be used for I/O. */
-    PIO_Offset elements_per_pe;    /* Array index per processing unit. */
-    int iosysid;    /* The ID for the parallel I/O system. */
-    int ioid; /* The I/O description ID. */
+    int ioproc_start = 0;     /* Zero based rank of first processor to be used for I/O. */
+    PIO_Offset elements_per_pe; /* Array index per processing unit. */
+    int iosysid;  /* The ID for the parallel I/O system. */
+    int ioid;     /* The I/O description ID. */
     PIO_Offset *compdof; /* The decomposition mapping. */
-    int ret; /* Return code. */
+    int ret;      /* Return code. */
 
     /* keep things simple - 1 iotask per MPI process */
     niotasks = TARGET_NTASKS;
@@ -329,7 +315,7 @@ int test_no_async(int my_rank, int num_flavors, int *flavor, MPI_Comm test_comm)
         compdof[i] = my_rank * elements_per_pe + i + 1;
 
     /* Create the PIO decomposition for this test. */
-    printf("rank: %d Creating decomposition...\n", my_rank);
+    printf("%d Creating decomposition...\n", my_rank);
     if ((ret = PIOc_InitDecomp(iosysid, PIO_FLOAT, 2, &dim_len[1], (PIO_Offset)elements_per_pe,
                                compdof, &ioid, NULL, NULL, NULL)))
         ERR(ret);
@@ -345,7 +331,7 @@ int test_no_async(int my_rank, int num_flavors, int *flavor, MPI_Comm test_comm)
         return ret;
 
     /* Free the PIO decomposition. */
-    printf("rank: %d Freeing PIO decomposition...\n", my_rank);
+    printf("%d Freeing PIO decomposition...\n", my_rank);
     if ((ret = PIOc_freedecomp(iosysid, ioid)))
         ERR(ret);
     return PIO_NOERR;
@@ -360,8 +346,7 @@ int test_no_async(int my_rank, int num_flavors, int *flavor, MPI_Comm test_comm)
  * @param test_comm communicator with all test tasks.
  * @returns 0 for success error code otherwise.
  */
-int test_async(int my_rank, int nprocs, int num_flavors, int *flavor,
-               MPI_Comm test_comm)
+int test_async(int my_rank, int num_flavors, int *flavor, MPI_Comm test_comm)
 {
     int niotasks;            /* Number of processors that will do IO. */
     int ioproc_stride = 1;   /* Stride in the mpi rank between io tasks. */
@@ -370,7 +355,7 @@ int test_async(int my_rank, int nprocs, int num_flavors, int *flavor,
     int iosysid[COMPONENT_COUNT];  /* The ID for the parallel I/O system. */
     int ioid;                      /* The I/O description ID. */
     PIO_Offset *compdof;           /* The decomposition mapping. */
-    int num_procs[COMPONENT_COUNT + 1] = {1, nprocs - 1}; /* Num procs in each component. */
+    int num_procs[COMPONENT_COUNT + 1] = {1, TARGET_NTASKS - 1}; /* Num procs in each component. */
     int mpierr;  /* Return code from MPI functions. */
     int ret;     /* Return code. */
 
@@ -390,30 +375,9 @@ int test_async(int my_rank, int nprocs, int num_flavors, int *flavor,
      * and when the do, they should go straight to finalize. */
     if (comp_task)
     {
-        /* for (int flv = 0; flv < num_flavors; flv++) */
-        /* { */
-        /*     int my_comp_idx = my_rank - 1; /\* Index in iosysid array. *\/ */
-
-        /*     for (int sample = 0; sample < NUM_SAMPLES; sample++) */
-        /*     { */
-        /*         char filename[NC_MAX_NAME + 1]; /\* Test filename. *\/ */
-        /*         char iotype_name[NC_MAX_NAME + 1]; */
-
-        /*         /\* Create a filename. *\/ */
-        /*         if ((ret = get_iotype_name(flavor[flv], iotype_name))) */
-        /*             return ret; */
-        /*         sprintf(filename, "%s_%s_%d_%d.nc", TEST_NAME, iotype_name, sample, my_comp_idx); */
-
-        /*         /\* Create sample file. *\/ */
-        /*         printf("%d %s creating file %s\n", my_rank, TEST_NAME, filename); */
-        /*         if ((ret = create_nc_sample(sample, iosysid[my_comp_idx], flavor[flv], filename, my_rank, NULL))) */
-        /*             ERR(ret); */
-
-        /*         /\* Check the file for correctness. *\/ */
-        /*         if ((ret = check_nc_sample(sample, iosysid[my_comp_idx], flavor[flv], filename, my_rank, NULL))) */
-        /*             ERR(ret); */
-        /*     } */
-        /* } /\* next netcdf flavor *\/ */
+        /* Test the netCDF-4 functions. */
+        if ((ret = test_nc4(iosysid[0], num_flavors, flavor, my_rank)))
+            return ret;
 
         /* Finalize the IO system. Only call this from the computation tasks. */
         printf("%d %s Freeing PIO resources\n", my_rank, TEST_NAME);
@@ -457,7 +421,7 @@ int main(int argc, char **argv)
             return ret;
 
         /* Run tests with async. */
-        if ((ret = test_async(my_rank, ntasks, num_flavors, flavor, test_comm)))
+        if ((ret = test_async(my_rank, num_flavors, flavor, test_comm)))
             return ret;
 
     } /* endif my_rank < TARGET_NTASKS */
