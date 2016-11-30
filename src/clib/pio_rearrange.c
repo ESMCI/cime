@@ -176,6 +176,7 @@ void compute_maxIObuffersize(MPI_Comm io_comm, io_desc_t *iodesc)
     PIO_Offset iosize, totiosize;
     int i;
     io_region *region;
+    int mpierr; /* Return code from MPI calls. */
 
     assert(iodesc);
 
@@ -196,8 +197,8 @@ void compute_maxIObuffersize(MPI_Comm io_comm, io_desc_t *iodesc)
     }
 
     /* Share the max io buffer size with all io tasks. */
-    CheckMPIReturn(MPI_Allreduce(MPI_IN_PLACE, &totiosize, 1, MPI_OFFSET, MPI_MAX, io_comm),
-		   __FILE__, __LINE__);
+    if ((mpierr = MPI_Allreduce(MPI_IN_PLACE, &totiosize, 1, MPI_OFFSET, MPI_MAX, io_comm)))
+        check_mpi(NULL, mpierr, __FILE__, __LINE__);
 
     iodesc->maxiobuflen = totiosize;
     if (iodesc->maxiobuflen <= 0)
@@ -231,10 +232,10 @@ int create_mpi_datatypes(const MPI_Datatype basetype, const int msgcnt,
 {
     PIO_Offset bsizeT[msgcnt];
     int blocksize;
-    int numinds;
+    int numinds = 0;
     PIO_Offset *lindex = NULL;
+    int mpierr; /* Return code from MPI functions. */
 
-    numinds = 0;
     for (int j = 0; j < msgcnt; j++)
         numinds += mcount[j];
 
@@ -308,13 +309,15 @@ int create_mpi_datatypes(const MPI_Datatype basetype, const int msgcnt,
                         displace[j] = ((lindex + pos)[j * blocksize] - 1);
                 }
 
-                CheckMPIReturn(MPI_Type_create_indexed_block(len, blocksize, displace, basetype, mtype + i),
-			       __FILE__,__LINE__);
+                if ((mpierr = MPI_Type_create_indexed_block(len, blocksize, displace, basetype, mtype + i)))
+                    return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 
                 if (mtype[i] == MPI_DATATYPE_NULL)
                     piodie("Unexpected NULL MPI DATATYPE", __FILE__, __LINE__);
 
-                CheckMPIReturn(MPI_Type_commit(mtype+i), __FILE__, __LINE__);
+                /* Commit the MPI data type. */
+                if ((mpierr = MPI_Type_commit(mtype + i)))
+                    return check_mpi(NULL, mpierr, __FILE__, __LINE__);
                 pos += mcount[i];
             }
         }
@@ -429,10 +432,13 @@ int compute_counts(const iosystem_desc_t ios, io_desc_t *iodesc, const int maple
     int iorank;
     int rank;
     int ntasks;
+    int mpierr; /* Return call from MPI functions. */
 
     /* Find size of communicator, and task rank. */
-    MPI_Comm_rank(mycomm, &rank);
-    MPI_Comm_size(mycomm, &ntasks);
+    if ((mpierr = MPI_Comm_rank(mycomm, &rank)))
+        return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+    if ((mpierr = MPI_Comm_size(mycomm, &ntasks)))
+        return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 
     MPI_Datatype sr_types[ntasks];
     int send_counts[ntasks];
@@ -598,7 +604,8 @@ int compute_counts(const iosystem_desc_t ios, io_desc_t *iodesc, const int maple
     }
 
     /* Find the size of the offset type. */
-    MPI_Type_size(MPI_OFFSET, &tsize);
+    if ((mpierr = MPI_Type_size(MPI_OFFSET, &tsize)))
+        return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 
     for (i = 0; i < ntasks; i++)
         sr_types[i] = MPI_OFFSET;
@@ -683,6 +690,7 @@ int rearrange_comp2io(const iosystem_desc_t ios, io_desc_t *iodesc, void *sbuf,
     MPI_Datatype *sendtypes;
     MPI_Datatype *recvtypes;
     MPI_Comm mycomm;
+    int mpierr; /* Return code from MPI calls. */
 
 #ifdef TIMING
     GPTLstart("PIO:rearrange_comp2io");
@@ -756,26 +764,33 @@ int rearrange_comp2io(const iosystem_desc_t ios, io_desc_t *iodesc, void *sbuf,
                     recvcounts[ i ] = 1;
 
                     /*  The stride here is the length of the collected array (llen) */
-                    MPI_Type_hvector(nvars, 1, (MPI_Aint) iodesc->llen * tsize, iodesc->rtype[i],
-				     recvtypes + i);
+
+                    if ((mpierr = MPI_Type_hvector(nvars, 1, (MPI_Aint) iodesc->llen * tsize, iodesc->rtype[i],
+                                                   recvtypes + i)))
+                        return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 
                     if (recvtypes[i] == MPI_DATATYPE_NULL)
-                        piodie("Unexpected NULL MPI DATATYPE",__FILE__,__LINE__);
+                        piodie("Unexpected NULL MPI DATATYPE", __FILE__, __LINE__);
 
-                    MPI_Type_commit(recvtypes+i);
+                    if ((mpierr = MPI_Type_commit(recvtypes + i)))
+                        return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+
                     /*recvtypes[ i ] = iodesc->rtype[i]; */
                 }
 		else
 		{
                     recvcounts[iodesc->rfrom[i]] = 1;
 
-                    MPI_Type_hvector(nvars, 1, (MPI_Aint)iodesc->llen * tsize, iodesc->rtype[i],
-				     recvtypes + iodesc->rfrom[i]);
+                    if ((mpierr = MPI_Type_hvector(nvars, 1, (MPI_Aint)iodesc->llen * tsize, iodesc->rtype[i],
+                                                   recvtypes + iodesc->rfrom[i])))
+                        return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 
                     if (recvtypes[iodesc->rfrom[i]] == MPI_DATATYPE_NULL)
                         piodie("Unexpected NULL MPI DATATYPE", __FILE__, __LINE__);
 
-                    MPI_Type_commit(recvtypes+iodesc->rfrom[i]);
+                    if ((mpierr = MPI_Type_commit(recvtypes+iodesc->rfrom[i])))
+                        return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+
                     /* recvtypes[ iodesc->rfrom[i] ] = iodesc->rtype[i]; */
                     rdispls[iodesc->rfrom[i]] = 0;
                 }
@@ -794,11 +809,15 @@ int rearrange_comp2io(const iosystem_desc_t ios, io_desc_t *iodesc, void *sbuf,
         if (scount[i] > 0 && sbuf != NULL)
 	{
             sendcounts[io_comprank] = 1;
-            MPI_Type_hvector(nvars, 1, (MPI_Aint)iodesc->ndof * tsize, iodesc->stype[i], sendtypes + io_comprank);
+            if ((mpierr = MPI_Type_hvector(nvars, 1, (MPI_Aint)iodesc->ndof * tsize, iodesc->stype[i],
+                                           sendtypes + io_comprank)))
+                return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+
             if (sendtypes[io_comprank] == MPI_DATATYPE_NULL)
                 piodie("Unexpected NULL MPI DATATYPE",__FILE__,__LINE__);
 
-            MPI_Type_commit(sendtypes + io_comprank);
+            if ((mpierr = MPI_Type_commit(sendtypes + io_comprank)))
+                return check_mpi(NULL, mpierr, __FILE__, __LINE__);
         }
 	else
 	{
@@ -807,17 +826,19 @@ int rearrange_comp2io(const iosystem_desc_t ios, io_desc_t *iodesc, void *sbuf,
     }
 
     /* Data in sbuf on the compute nodes is sent to rbuf on the ionodes */
-    pio_swapm( sbuf,  sendcounts, sdispls, sendtypes, rbuf, recvcounts, rdispls, recvtypes,
-               mycomm, iodesc->handshake, iodesc->isend, iodesc->max_requests);
+    pio_swapm(sbuf, sendcounts, sdispls, sendtypes, rbuf, recvcounts, rdispls, recvtypes,
+              mycomm, iodesc->handshake, iodesc->isend, iodesc->max_requests);
 
     /* Free the MPI types. */
     for (i = 0; i < ntasks; i++)
     {
         if (sendtypes[i] != MPI_DATATYPE_NULL)
-            MPI_Type_free(sendtypes + i);
+            if ((mpierr = MPI_Type_free(sendtypes + i)))
+                return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 
         if (recvtypes[i] != MPI_DATATYPE_NULL)
-            MPI_Type_free(recvtypes + i);
+            if ((mpierr = MPI_Type_free(recvtypes + i)))
+                return check_mpi(NULL, mpierr, __FILE__, __LINE__);
     }
 
     /* Free memory. */
@@ -858,6 +879,7 @@ int rearrange_io2comp(const iosystem_desc_t ios, io_desc_t *iodesc, void *sbuf,
     MPI_Datatype *sendtypes;
     MPI_Datatype *recvtypes;
     int i, tsize;
+    int mpierr; /* Return code from MPI calls. */
 
     assert(iodesc);
 
@@ -879,7 +901,8 @@ int rearrange_io2comp(const iosystem_desc_t ios, io_desc_t *iodesc, void *sbuf,
     }
 
     /* Get the size of this communicator. */
-    MPI_Comm_size(mycomm, &ntasks);
+    if ((mpierr = MPI_Comm_size(mycomm, &ntasks)))
+        return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 
     /* Define the MPI data types that will be used for this
      * io_desc_t. */
@@ -984,6 +1007,7 @@ void determine_fill(iosystem_desc_t ios, io_desc_t *iodesc, const int gsize[],
     PIO_Offset totalllen = 0;
     PIO_Offset totalgridsize = 1;
     int i;
+    int mpierr; /* Return code from MPI calls. */
 
     assert(iodesc);
 
@@ -997,7 +1021,9 @@ void determine_fill(iosystem_desc_t ios, io_desc_t *iodesc, const int gsize[],
             if (compmap[i] > 0)
                 totalllen++;
 
-    MPI_Allreduce(MPI_IN_PLACE, &totalllen, 1, PIO_OFFSET, MPI_SUM, ios.union_comm);
+    if ((mpierr = MPI_Allreduce(MPI_IN_PLACE, &totalllen, 1, PIO_OFFSET, MPI_SUM,
+                                ios.union_comm)))
+        check_mpi(NULL, mpierr, __FILE__, __LINE__);
 
     /* If the total size of the data provided to be written is < the
      * total data size then we need fill values. */
@@ -1095,6 +1121,7 @@ int box_rearrange_create(const iosystem_desc_t ios, const int maplen, const PIO_
     MPI_Datatype dtypes[nprocs];
     PIO_Offset iomaplen[nioprocs];
     int maxreq = MAX_GATHER_BLOCK_SIZE;
+    int mpierr; /* Return code from MPI functions. */
 
     assert(iodesc);
 
@@ -1105,7 +1132,8 @@ int box_rearrange_create(const iosystem_desc_t ios, const int maplen, const PIO_
     for (int i= ndims - 2; i >= 0; i--)
         gstride[i] = gstride[i + 1] * gsize[i + 1];
 
-    MPI_Type_size(MPI_OFFSET, &tsize);
+    if ((mpierr = MPI_Type_size(MPI_OFFSET, &tsize)))
+        return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 
     for (i = 0; i < maplen; i++)
     {
@@ -1335,6 +1363,7 @@ void default_subset_partition(const iosystem_desc_t ios, io_desc_t *iodesc)
     int taskratio = ios.num_comptasks/ios.num_iotasks;
     int color;
     int key;
+    int mpierr; /* Return value from MPI functions. */
 
     assert(iodesc);
 
@@ -1351,7 +1380,8 @@ void default_subset_partition(const iosystem_desc_t ios, io_desc_t *iodesc)
         color = min(ios.num_iotasks - 1, ios.comp_rank / taskratio);
     }
 
-    MPI_Comm_split(ios.comp_comm, color, key, &iodesc->subset_comm);
+    if ((mpierr = MPI_Comm_split(ios.comp_comm, color, key, &iodesc->subset_comm)))
+        check_mpi(NULL, mpierr, __FILE__, __LINE__);
 }
 
 /**
@@ -1396,8 +1426,10 @@ int subset_rearrange_create(const iosystem_desc_t ios, const int maplen, PIO_Off
     iodesc->rearranger = PIO_REARR_SUBSET;
 
     /* Get size of this subset communicator, and rank in it. */
-    MPI_Comm_rank(iodesc->subset_comm, &rank);
-    MPI_Comm_size(iodesc->subset_comm, &ntasks);
+    if ((mpierr = MPI_Comm_rank(iodesc->subset_comm, &rank)))
+        return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+    if ((mpierr = MPI_Comm_size(iodesc->subset_comm, &ntasks)))
+        return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 
     /* Check rank for correctness. */
     if (ios.ioproc)
@@ -1451,8 +1483,9 @@ int subset_rearrange_create(const iosystem_desc_t ios, const int maplen, PIO_Off
 
     /* Pass the reduced maplen (without holes) from each compute task to its associated IO task
        printf("%s %d %ld\n",__FILE__,__LINE__,iodesc->scount); */
-    MPI_Gather(iodesc->scount, 1, MPI_INT, iodesc->rcount, rcnt, MPI_INT,
-               0, iodesc->subset_comm);
+    if ((mpierr = MPI_Gather(iodesc->scount, 1, MPI_INT, iodesc->rcount, rcnt, MPI_INT,
+                             0, iodesc->subset_comm)))
+        return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 
     iodesc->llen = 0;
 
@@ -1494,7 +1527,7 @@ int subset_rearrange_create(const iosystem_desc_t ios, const int maplen, PIO_Off
                               srcindex, recvlths, rdispls, PIO_OFFSET, 0,
                               iodesc->subset_comm)))
         return check_mpi(NULL, mpierr, __FILE__, __LINE__);
-    
+
     if (ios.ioproc && iodesc->llen>0)
     {
         if (!(map = bget(iodesc->llen * sizeof(mapsort))))
@@ -1527,7 +1560,7 @@ int subset_rearrange_create(const iosystem_desc_t ios, const int maplen, PIO_Off
         shrtmap = compmap;
     }
 
-    if ((mpierr = MPI_Gatherv(shrtmap, iodesc->scount[0], PIO_OFFSET, iomap, recvlths, rdispls, 
+    if ((mpierr = MPI_Gatherv(shrtmap, iodesc->scount[0], PIO_OFFSET, iomap, recvlths, rdispls,
                               PIO_OFFSET, 0, iodesc->subset_comm)))
         return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 
@@ -1629,7 +1662,9 @@ int subset_rearrange_create(const iosystem_desc_t ios, const int maplen, PIO_Off
                 }
             }
 
-            MPI_Gather(&cnt, 1, MPI_INT, gcnt, 1, MPI_INT, nio, ios.io_comm);
+            if ((mpierr = MPI_Gather(&cnt, 1, MPI_INT, gcnt, 1, MPI_INT, nio, ios.io_comm)))
+                return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+
             if (nio == ios.io_rank)
 	    {
                 displs[0] = 0;
@@ -1701,20 +1736,23 @@ int subset_rearrange_create(const iosystem_desc_t ios, const int maplen, PIO_Off
             brel(myfillgrid);
             maxregions = iodesc->maxfillregions;
         }
-        MPI_Allreduce(MPI_IN_PLACE, &maxregions, 1, MPI_INT, MPI_MAX, ios.io_comm);
+        if ((mpierr = MPI_Allreduce(MPI_IN_PLACE, &maxregions, 1, MPI_INT, MPI_MAX, ios.io_comm)))
+            return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+
         iodesc->maxfillregions = maxregions;
     }
 
-    CheckMPIReturn(MPI_Scatterv((void *)srcindex, recvlths, rdispls, PIO_OFFSET, (void *)iodesc->sindex,
-				iodesc->scount[0],  PIO_OFFSET, 0, iodesc->subset_comm), __FILE__, __LINE__);
-
+    if ((mpierr = MPI_Scatterv((void *)srcindex, recvlths, rdispls, PIO_OFFSET, (void *)iodesc->sindex,
+                               iodesc->scount[0],  PIO_OFFSET, 0, iodesc->subset_comm)))
+        return check_mpi(NULL, mpierr, __FILE__, __LINE__);
     if (ios.ioproc)
     {
         iodesc->maxregions = 0;
         get_start_and_count_regions(iodesc->ndims,gsize,iodesc->llen, iomap,&(iodesc->maxregions),
                                     iodesc->firstregion);
         maxregions = iodesc->maxregions;
-        MPI_Allreduce(MPI_IN_PLACE, &maxregions, 1, MPI_INT, MPI_MAX, ios.io_comm);
+        if ((mpierr = MPI_Allreduce(MPI_IN_PLACE, &maxregions, 1, MPI_INT, MPI_MAX, ios.io_comm)))
+            return check_mpi(NULL, mpierr, __FILE__, __LINE__);
         iodesc->maxregions = maxregions;
         if (iomap)
             brel(iomap);
@@ -1760,10 +1798,12 @@ void performance_tune_rearranger(iosystem_desc_t ios, io_desc_t *iodesc)
     void *cbuf, *ibuf;
     int tsize;
     int myrank;
+    int mpierr; /* Return code for MPI calls. */
 
     assert(iodesc);
 
-    MPI_Type_size(iodesc->basetype, &tsize);
+    if ((mpierr = MPI_Type_size(iodesc->basetype, &tsize)))
+        return check_mpi(NULL, mpierr, __FILE__, __LINE__);
     cbuf = NULL;
     ibuf = NULL;
     if (iodesc->ndof > 0)
@@ -1779,8 +1819,10 @@ void performance_tune_rearranger(iosystem_desc_t ios, io_desc_t *iodesc)
     else
         mycomm = iodesc->subset_comm;
 
-    MPI_Comm_size(mycomm, &nprocs);
-    MPI_Comm_rank(mycomm, &myrank);
+    if ((mpierr = MPI_Comm_size(mycomm, &nprocs)))
+        return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+    if ((mpierr = MPI_Comm_rank(mycomm, &myrank)))
+        return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 
     int log2 = log(nprocs) / log(2) + 1;
     if (!(wall = bget(2 * 4 * log2 * sizeof(double))))
@@ -1788,13 +1830,15 @@ void performance_tune_rearranger(iosystem_desc_t ios, io_desc_t *iodesc)
     double mintime;
     int k = 0;
 
-    MPI_Barrier(mycomm);
+    if ((mpierr = MPI_Barrier(mycomm)))
+        return check_mpi(NULL, mpierr, __FILE__, __LINE__);
     GPTLstamp(&wall[0], &usr[0], &sys[0]);
     rearrange_comp2io(ios, iodesc, cbuf, ibuf, 1);
     rearrange_io2comp(ios, iodesc, ibuf, cbuf);
     GPTLstamp(&wall[1], &usr[1], &sys[1]);
     mintime = wall[1]-wall[0];
-    MPI_Allreduce(MPI_IN_PLACE, &mintime, 1, MPI_DOUBLE, MPI_MAX, mycomm);
+    if ((mpierr = MPI_Allreduce(MPI_IN_PLACE, &mintime, 1, MPI_DOUBLE, MPI_MAX, mycomm)))
+        return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 
     handshake = iodesc->handshake;
     isend = iodesc->isend;
@@ -1819,13 +1863,16 @@ void performance_tune_rearranger(iosystem_desc_t ios, io_desc_t *iodesc)
             for (nreqs = nprocs; nreqs >= 2; nreqs /= 2)
 	    {
                 iodesc->max_requests = nreqs;
-                MPI_Barrier(mycomm);
+                if ((mpierr = MPI_Barrier(mycomm)))
+                    return check_mpi(NULL, mpierr, __FILE__, __LINE__);
                 GPTLstamp(wall, usr, sys);
                 rearrange_comp2io(ios, iodesc, cbuf, ibuf, 1);
                 rearrange_io2comp(ios, iodesc, ibuf, cbuf);
                 GPTLstamp(wall+1, usr, sys);
                 wall[1] -= wall[0];
-                MPI_Allreduce(MPI_IN_PLACE, wall + 1, 1, MPI_DOUBLE, MPI_MAX, mycomm);
+                if ((mpierr = MPI_Allreduce(MPI_IN_PLACE, wall + 1, 1, MPI_DOUBLE, MPI_MAX,
+                                            mycomm)))
+                    return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 
                 if (wall[1] < mintime * 0.95)
 		{
