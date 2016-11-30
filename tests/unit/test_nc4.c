@@ -360,8 +360,7 @@ int test_no_async(int my_rank, int num_flavors, int *flavor, MPI_Comm test_comm)
  * @param test_comm communicator with all test tasks.
  * @returns 0 for success error code otherwise.
  */
-int test_async(int my_rank, int nprocs, int num_flavors, int *flavor,
-               MPI_Comm test_comm)
+int test_async(int my_rank, int num_flavors, int *flavor, MPI_Comm test_comm)
 {
     int niotasks;            /* Number of processors that will do IO. */
     int ioproc_stride = 1;   /* Stride in the mpi rank between io tasks. */
@@ -370,7 +369,7 @@ int test_async(int my_rank, int nprocs, int num_flavors, int *flavor,
     int iosysid[COMPONENT_COUNT];  /* The ID for the parallel I/O system. */
     int ioid;                      /* The I/O description ID. */
     PIO_Offset *compdof;           /* The decomposition mapping. */
-    int num_procs[COMPONENT_COUNT + 1] = {1, nprocs - 1}; /* Num procs in each component. */
+    int num_procs[COMPONENT_COUNT + 1] = {1, TARGET_NTASKS - 1}; /* Num procs in each component. */
     int mpierr;  /* Return code from MPI functions. */
     int ret;     /* Return code. */
 
@@ -457,7 +456,7 @@ int main(int argc, char **argv)
             return ret;
 
         /* Run tests with async. */
-        if ((ret = test_async(my_rank, ntasks, num_flavors, flavor, test_comm)))
+        if ((ret = test_async(my_rank, num_flavors, flavor, test_comm)))
             return ret;
 
     } /* endif my_rank < TARGET_NTASKS */
