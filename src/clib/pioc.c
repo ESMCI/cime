@@ -601,7 +601,7 @@ int PIOc_Init_Intracomm_from_F90(int f90_comp_comm,
  * @param hintval the value of the hint
  * @returns 0 for success, or PIO_BADID if iosysid can't be found.
  */
-int PIOc_set_hint(const int iosysid, char hint[], const char hintval[])
+int PIOc_set_hint(int iosysid, const char *hint, const char *hintval)
 {
     iosystem_desc_t *ios;
     int mpierr; /* Return value for MPI calls. */

@@ -623,7 +623,7 @@ extern "C" {
     int PIOc_set_blocksize(const int newblocksize);
     int PIOc_File_is_Open(int ncid);
     int PIOc_Set_File_Error_Handling(int ncid, int method);
-    int PIOc_set_hint(const int iosysid, char hint[], const char hintval[]);
+    int PIOc_set_hint(int iosysid, const char *hint, const char *hintval);
     int PIOc_set_chunk_cache(int iosysid, int iotype, PIO_Offset size, PIO_Offset nelems,
 			     float preemption);
     int PIOc_get_chunk_cache(int iosysid, int iotype, PIO_Offset *sizep, PIO_Offset *nelemsp,
