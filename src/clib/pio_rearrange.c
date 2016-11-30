@@ -672,7 +672,11 @@ int compute_counts(const iosystem_desc_t ios, io_desc_t *iodesc, const int maple
 /**
  * Moves data from compute tasks to IO tasks.
  *
+ * @param ios the iosystem_desc_t struct
  * @param iodesc a pointer to the io_desc_t struct.
+ * @param sbuf send buffer.
+ * @param rbuf receive buffer.
+ * @param nvars number of variables.
  * @returns 0 on success, error code otherwise.
  */
 int rearrange_comp2io(const iosystem_desc_t ios, io_desc_t *iodesc, void *sbuf,
@@ -713,11 +717,11 @@ int rearrange_comp2io(const iosystem_desc_t ios, io_desc_t *iodesc, void *sbuf,
 
     /* Get the number of tasks. */
     if ((mpierr = MPI_Comm_size(mycomm, &ntasks)))
-        return check_mpi(NULL, mpierr, __FILE__, __LINE__);                                                        
+        return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 
     /* Get the size of the MPI type. */
     if ((mpierr = MPI_Type_size(iodesc->basetype, &tsize)))
-        return check_mpi(NULL, mpierr, __FILE__, __LINE__);                                                        
+        return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 
     /* Define the MPI data types that will be used for this
      * io_desc_t. */
@@ -1780,7 +1784,8 @@ int subset_rearrange_create(const iosystem_desc_t ios, const int maplen, PIO_Off
     return ierr;
 }
 
-/** Performance tuning rearranger.
+/**
+ * Performance tuning rearranger.
  *
  * @param ios the iosystem description struct
  * @param iodesc pointer to the IO description struct
