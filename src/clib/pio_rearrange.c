@@ -712,32 +712,34 @@ int rearrange_comp2io(const iosystem_desc_t ios, io_desc_t *iodesc, void *sbuf,
     }
 
     /* Get the number of tasks. */
-    MPI_Comm_size(mycomm, &ntasks);
+    if ((mpierr = MPI_Comm_size(mycomm, &ntasks)))
+        return check_mpi(NULL, mpierr, __FILE__, __LINE__);                                                        
 
     /* Get the size of the MPI type. */
-    MPI_Type_size(iodesc->basetype, &tsize);
+    if ((mpierr = MPI_Type_size(iodesc->basetype, &tsize)))
+        return check_mpi(NULL, mpierr, __FILE__, __LINE__);                                                        
 
     /* Define the MPI data types that will be used for this
      * io_desc_t. */
     define_iodesc_datatypes(ios, iodesc);
 
     /* Allocate arrays needed by the pio_swapm() function. */
-    if (!(sendcounts = bget(ntasks*sizeof(int))))
+    if (!(sendcounts = bget(ntasks * sizeof(int))))
         piomemerror(ios, ntasks * sizeof(int), __FILE__, __LINE__);
 
-    if (!(recvcounts = bget(ntasks*sizeof(int))))
+    if (!(recvcounts = bget(ntasks * sizeof(int))))
         piomemerror(ios, ntasks * sizeof(int), __FILE__, __LINE__);
 
-    if (!(sdispls = bget(ntasks*sizeof(int))))
+    if (!(sdispls = bget(ntasks * sizeof(int))))
         piomemerror(ios, ntasks * sizeof(int), __FILE__, __LINE__);
 
-    if (!(rdispls = bget(ntasks*sizeof(int))))
+    if (!(rdispls = bget(ntasks * sizeof(int))))
         piomemerror(ios, ntasks * sizeof(int), __FILE__, __LINE__);
 
-    if (!(sendtypes = bget(ntasks*sizeof(MPI_Datatype))))
+    if (!(sendtypes = bget(ntasks * sizeof(MPI_Datatype))))
         piomemerror(ios, ntasks * sizeof(MPI_Datatype), __FILE__, __LINE__);
 
-    if (!(recvtypes = bget(ntasks*sizeof(MPI_Datatype))))
+    if (!(recvtypes = bget(ntasks * sizeof(MPI_Datatype))))
         piomemerror(ios, ntasks * sizeof(MPI_Datatype), __FILE__, __LINE__);
 
     /* Initialize arrays. */
