@@ -6,12 +6,14 @@
 #include <pio.h>
 #include <pio_internal.h>
 
-/* start at 16 so that it will be easy for us to notice that it's not
-   netcdf (starts at 4), pnetcdf (starts at 0) or netCDF-4/HDF5 (starts at 65xxx). */
-
+/* This is the next ncid that will be used when a file is opened or
+   created. We start at 16 so that it will be easy for us to notice
+   that it's not netcdf (starts at 4), pnetcdf (starts at 0) or
+   netCDF-4/HDF5 (starts at 65xxx). */
 int pio_next_ncid = 16;
 
-/** Open an existing file using PIO library.
+/**
+ * Open an existing file using PIO library.
  *
  * If the open fails, try again as netCDF serial before giving
  * up. Input parameters are read on comp task 0 and ignored elsewhere.
@@ -21,7 +23,6 @@ int pio_next_ncid = 16;
  * @param iotype : A pio output format (input)
  * @param filename : The filename to open
  * @param mode : The netcdf mode for the open operation
- *
  * @return 0 for success, error code otherwise.
  * @ingroup PIO_openfile
  */
@@ -43,7 +44,6 @@ int PIOc_openfile(const int iosysid, int *ncidp, int *iotype,
  * @param path The filename to open
  * @param mode The netcdf mode for the open operation
  * @param ncidp pointer to int where ncid will go
- *
  * @return 0 for success, error code otherwise.
  * @ingroup PIO_openfile
  */
@@ -253,18 +253,16 @@ int PIOc_createfile(const int iosysid, int *ncidp, int *iotype,
     return ierr;
 }
 
-/** Open a new file using pio. Input parameters are read on comp task
+/**
+ * Open a new file using pio. Input parameters are read on comp task
  * 0 and ignored elsewhere.
- *
- * @public
- * @ingroup PIO_create
  *
  * @param iosysid : A defined pio system descriptor (input)
  * @param cmode : The netcdf mode for the create operation
  * @param filename : The filename to open
  * @param ncidp : A pio file descriptor (output)
- *
  * @return 0 for success, error code otherwise.
+ * @ingroup PIO_create
  */
 int PIOc_create(int iosysid, const char *filename, int cmode, int *ncidp)
 {
@@ -289,10 +287,11 @@ int PIOc_create(int iosysid, const char *filename, int cmode, int *ncidp)
     return PIOc_createfile(iosysid, ncidp, &iotype, filename, cmode);
 }
 
-/** Close a file previously opened with PIO.
- * @ingroup PIO_closefile
+/**
+ * Close a file previously opened with PIO.
  *
  * @param ncid: the file pointer
+ * @returns PIO_NOERR for success, error code otherwise.
  */
 int PIOc_closefile(int ncid)
 {
@@ -378,11 +377,12 @@ int PIOc_closefile(int ncid)
     return ierr;
 }
 
-/** Delete a file.
- * @ingroup PIO_deletefile
+/**
+ * Delete a file.
  *
- * @param iosysid : a pio system handle
- * @param filename : a filename
+ * @param iosysid a pio system handle.
+ * @param filename a filename.
+ * @returns PIO_NOERR for success, error code otherwise.
  */
 int PIOc_deletefile(const int iosysid, const char filename[])
 {
@@ -429,7 +429,7 @@ int PIOc_deletefile(const int iosysid, const char filename[])
         MPI_Barrier(ios->io_comm);
     }
 
-    //   Special case - always broadcast the return from the
+    /* Special case - always broadcast the return from the ??? */
     MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm);
 
     return ierr;
@@ -442,14 +442,17 @@ int PIOc_deletefile(const int iosysid, const char filename[])
  * Refer to the <A
  * HREF="http://www.unidata.ucar.edu/software/netcdf/docs/modules.html"
  * target="_blank"> netcdf </A> documentation.
+ *
+ * @param ncid the ncid of the file to sync.
+ * @returns PIO_NOERR for success, error code otherwise.
  */
 int PIOc_sync(int ncid)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Pointer to file information. */
-    int ierr = PIO_NOERR;  /* Return code from function calls. */
-    int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
     wmulti_buffer *wmb, *twmb;
+    int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
+    int ierr = PIO_NOERR;  /* Return code from function calls. */
 
     /* Get the file info from the ncid. */
     if ((ierr = pio_get_file(ncid, &file)))
@@ -472,43 +475,46 @@ int PIOc_sync(int ncid)
 
     if (file->mode & PIO_WRITE)
     {
-        //  cn_buffer_report( *ios, true);
-        wmb = &(file->buffer);
-        while(wmb != NULL){
-            //    printf("%s %d %d %d\n",__FILE__,__LINE__,wmb->ioid, wmb->validvars);
-            if (wmb->validvars>0){
+        /*  cn_buffer_report( *ios, true); */
+        wmb = &file->buffer;
+        while (wmb)
+        {
+            if (wmb->validvars > 0)
                 flush_buffer(ncid, wmb, true);
-            }
             twmb = wmb;
             wmb = wmb->next;
-            if (twmb == &(file->buffer)){
-                twmb->ioid=-1;
-                twmb->next=NULL;
-            }else{
+            if (twmb == &file->buffer)
+            {
+                twmb->ioid = -1;
+                twmb->next = NULL;
+            }
+            else
+            {
                 brel(twmb);
             }
         }
-        if(file->iotype == PIO_IOTYPE_PNETCDF)
+        if (file->iotype == PIO_IOTYPE_PNETCDF)
             flush_output_buffer(file, true, 0);
 
-        if (ios->ioproc){
-            switch(file->iotype){
+        if (ios->ioproc)
+        {
+            switch(file->iotype)
+            {
 #ifdef _NETCDF
 #ifdef _NETCDF4
             case PIO_IOTYPE_NETCDF4P:
-                ierr = nc_sync(file->fh);;
+                ierr = nc_sync(file->fh);
                 break;
             case PIO_IOTYPE_NETCDF4C:
 #endif
             case PIO_IOTYPE_NETCDF:
-                if (ios->io_rank==0){
-                    ierr = nc_sync(file->fh);;
-                }
+                if (ios->io_rank == 0)
+                    ierr = nc_sync(file->fh);
                 break;
 #endif
 #ifdef _PNETCDF
             case PIO_IOTYPE_PNETCDF:
-                ierr = ncmpi_sync(file->fh);;
+                ierr = ncmpi_sync(file->fh);
                 break;
 #endif
             default:
