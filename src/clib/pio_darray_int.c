@@ -1175,8 +1175,8 @@ int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid, void *IOBU
  * @returns 0 for success, error code otherwise.
  * @ingroup PIO_read_darray
  */
-int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc,
-                              int vid, void *IOBUF)
+int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc, int vid,
+                              void *IOBUF)
 {
     int ierr=PIO_NOERR;
     iosystem_desc_t *ios;  /* Pointer to io system information. */
@@ -1185,7 +1185,7 @@ int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc,
     MPI_Status status;
     int i;
     int mpierr;  /* Return code from MPI functions. */
-    
+
 #ifdef TIMING
     /* Start timing this function. */
     GPTLstart("PIO:read_darray_nc_serial");
@@ -1281,18 +1281,23 @@ int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc,
 
         if (ios->io_rank > 0)
         {
-            MPI_Send(&iodesc->llen, 1, MPI_OFFSET, 0, ios->io_rank, ios->io_comm);
+            if ((mpierr = MPI_Send(&iodesc->llen, 1, MPI_OFFSET, 0, ios->io_rank, ios->io_comm)))
+                return check_mpi(file, mpierr, __FILE__, __LINE__);
 
             if (iodesc->llen > 0)
             {
-                MPI_Send(&(iodesc->maxregions), 1, MPI_INT, 0,
-                         ios->num_iotasks + ios->io_rank, ios->io_comm);
-                MPI_Send(tmp_count, iodesc->maxregions*fndims, MPI_OFFSET, 0,
-                         2 * ios->num_iotasks + ios->io_rank, ios->io_comm);
-                MPI_Send(tmp_start, iodesc->maxregions*fndims, MPI_OFFSET, 0,
-                         3 * ios->num_iotasks + ios->io_rank, ios->io_comm);
-                MPI_Recv(IOBUF, iodesc->llen, iodesc->basetype, 0,
-                         4 * ios->num_iotasks+ios->io_rank, ios->io_comm, &status);
+                if ((mpierr = MPI_Send(&(iodesc->maxregions), 1, MPI_INT, 0,
+                                       ios->num_iotasks + ios->io_rank, ios->io_comm)))
+                    return check_mpi(file, mpierr, __FILE__, __LINE__);
+                if ((mpierr = MPI_Send(tmp_count, iodesc->maxregions*fndims, MPI_OFFSET, 0,
+                                       2 * ios->num_iotasks + ios->io_rank, ios->io_comm)))
+                    return check_mpi(file, mpierr, __FILE__, __LINE__);
+                if ((mpierr = MPI_Send(tmp_start, iodesc->maxregions*fndims, MPI_OFFSET, 0,
+                                       3 * ios->num_iotasks + ios->io_rank, ios->io_comm)))
+                    return check_mpi(file, mpierr, __FILE__, __LINE__);
+                if ((mpierr = MPI_Recv(IOBUF, iodesc->llen, iodesc->basetype, 0,
+                                       4 * ios->num_iotasks+ios->io_rank, ios->io_comm, &status)))
+                    return check_mpi(file, mpierr, __FILE__, __LINE__);
             }
         }
         else if (ios->io_rank == 0)
@@ -1306,16 +1311,20 @@ int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc,
             {
                 if (rtask < ios->num_iotasks)
                 {
-                    MPI_Recv(&tmp_bufsize, 1, MPI_OFFSET, rtask, rtask, ios->io_comm, &status);
+                    if ((mpierr = MPI_Recv(&tmp_bufsize, 1, MPI_OFFSET, rtask, rtask, ios->io_comm, &status)))
+                        return check_mpi(file, mpierr, __FILE__, __LINE__);
 
                     if (tmp_bufsize > 0)
                     {
-                        MPI_Recv(&maxregions, 1, MPI_INT, rtask, ios->num_iotasks+rtask,
-                                 ios->io_comm, &status);
-                        MPI_Recv(this_count, maxregions*fndims, MPI_OFFSET, rtask,
-                                 2 * ios->num_iotasks + rtask, ios->io_comm, &status);
-                        MPI_Recv(this_start, maxregions*fndims, MPI_OFFSET, rtask,
-                                 3 * ios->num_iotasks + rtask, ios->io_comm, &status);
+                        if ((mpierr = MPI_Recv(&maxregions, 1, MPI_INT, rtask, ios->num_iotasks + rtask,
+                                               ios->io_comm, &status)))
+                            return check_mpi(file, mpierr, __FILE__, __LINE__);
+                        if ((mpierr = MPI_Recv(this_count, maxregions*fndims, MPI_OFFSET, rtask,
+                                               2 * ios->num_iotasks + rtask, ios->io_comm, &status)))
+                            return check_mpi(file, mpierr, __FILE__, __LINE__);
+                        if ((mpierr = MPI_Recv(this_start, maxregions*fndims, MPI_OFFSET, rtask,
+                                               3 * ios->num_iotasks + rtask, ios->io_comm, &status)))
+                            return check_mpi(file, mpierr, __FILE__, __LINE__);
                     }
                 }
                 else
@@ -1369,9 +1378,11 @@ int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc,
                                     vid, i, start[i], count[i], ierr);
 #endif
                 }
+
                 if (rtask < ios->num_iotasks)
-                    MPI_Send(IOBUF, tmp_bufsize, iodesc->basetype, rtask,
-                             4 * ios->num_iotasks + rtask, ios->io_comm);
+                    if ((mpierr = MPI_Send(IOBUF, tmp_bufsize, iodesc->basetype, rtask,
+                                           4 * ios->num_iotasks + rtask, ios->io_comm)))
+                        return check_mpi(file, mpierr, __FILE__, __LINE__);
             }
         }
     }
@@ -1399,6 +1410,7 @@ int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc,
  */
 int flush_output_buffer(file_desc_t *file, bool force, PIO_Offset addsize)
 {
+    int mpierr;  /* Return code from MPI functions. */
     int ierr = PIO_NOERR;
 
 #ifdef _PNETCDF
@@ -1419,8 +1431,9 @@ int flush_output_buffer(file_desc_t *file, bool force, PIO_Offset addsize)
     if (!force && file->iosystem->io_comm != MPI_COMM_NULL)
     {
         usage += addsize;
-        MPI_Allreduce(MPI_IN_PLACE, &usage, 1,  MPI_OFFSET,  MPI_MAX,
-                      file->iosystem->io_comm);
+        if ((mpierr = MPI_Allreduce(MPI_IN_PLACE, &usage, 1,  MPI_OFFSET,  MPI_MAX,
+                                    file->iosystem->io_comm)))
+            return check_mpi(file, mpierr, __FILE__, __LINE__);
     }
 
     /* Keep track of the maximum usage. */
@@ -1510,6 +1523,7 @@ int flush_output_buffer(file_desc_t *file, bool force, PIO_Offset addsize)
  */
 void cn_buffer_report(iosystem_desc_t ios, bool collective)
 {
+    int mpierr;  /* Return code from MPI functions. */
 
     LOG((2, "cn_buffer_report ios.iossysid = %d collective = %d CN_bpool = %d",
          ios.iosysid, collective, CN_bpool));
@@ -1523,9 +1537,11 @@ void cn_buffer_report(iosystem_desc_t ios, bool collective)
         if (collective)
         {
             LOG((3, "cn_buffer_report calling MPI_Reduce ios.comp_comm = %d", ios.comp_comm));
-            MPI_Reduce(bget_stats, bget_maxs, 5, MPI_LONG, MPI_MAX, 0, ios.comp_comm);
+            if ((mpierr = MPI_Reduce(bget_stats, bget_maxs, 5, MPI_LONG, MPI_MAX, 0, ios.comp_comm)))
+                check_mpi(NULL, mpierr, __FILE__, __LINE__);
             LOG((3, "cn_buffer_report calling MPI_Reduce"));
-            MPI_Reduce(bget_stats, bget_mins, 5, MPI_LONG, MPI_MIN, 0, ios.comp_comm);
+            if ((mpierr = MPI_Reduce(bget_stats, bget_mins, 5, MPI_LONG, MPI_MIN, 0, ios.comp_comm)))
+                check_mpi(NULL, mpierr, __FILE__, __LINE__);
             if (ios.compmaster)
             {
                 printf("PIO: Currently allocated buffer space %ld %ld\n",
@@ -1616,12 +1632,13 @@ void flush_buffer(int ncid, wmulti_buffer *wmb, bool flushtodisk)
  * @param ios the IO system structure
  * @param iodesc a pointer to the defined iodescriptor for the buffer
  */
-void compute_maxaggregate_bytes(const iosystem_desc_t ios, io_desc_t *iodesc)
+void compute_maxaggregate_bytes(iosystem_desc_t ios, io_desc_t *iodesc)
 {
     int maxbytesoniotask = INT_MAX;
     int maxbytesoncomputetask = INT_MAX;
     int maxbytes;
-
+    int mpierr;  /* Return code from MPI functions. */
+    
     /* Check inputs. */
     if (!iodesc)
         return;
@@ -1639,6 +1656,8 @@ void compute_maxaggregate_bytes(const iosystem_desc_t ios, io_desc_t *iodesc)
     LOG((2, "compute_maxaggregate_bytes maxbytesoniotask = %d maxbytesoncomputetask = %d",
 	 maxbytesoniotask, maxbytesoncomputetask));
 
-    MPI_Allreduce(MPI_IN_PLACE, &maxbytes, 1, MPI_INT, MPI_MIN, ios.union_comm);
+    if ((mpierr = MPI_Allreduce(MPI_IN_PLACE, &maxbytes, 1, MPI_INT, MPI_MIN,
+                                ios.union_comm)))
+        check_mpi(NULL, mpierr, __FILE__, __LINE__);                            
     iodesc->maxbytes = maxbytes;
 }
