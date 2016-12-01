@@ -391,8 +391,8 @@ int pio_write_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid,
                         while(vdesc->request[reqn] != NC_REQ_NULL)
                             reqn++;
 
-                    if ((ierr = ncmpi_bput_varn(file->fh, vid, rrcnt, startlist, countlist, IOBUF, iodesc->llen, iodesc->basetype, vdesc->request+reqn)))
-
+                    ierr = ncmpi_bput_varn(file->fh, vid, rrcnt, startlist, countlist, IOBUF, iodesc->llen,
+                                           iodesc->basetype, vdesc->request+reqn);
 
                     if (vdesc->request[reqn] == NC_REQ_NULL)
                         vdesc->request[reqn] = PIO_REQ_NULL;  /* keeps wait calls in sync */
