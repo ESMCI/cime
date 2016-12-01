@@ -419,10 +419,9 @@ int pio_swapm(void *sendbuf, int *sendcounts, int *sdispls, MPI_Datatype *sendty
  * @param flow_cntl if non-zero, flow control will be used.
  * @returns 0 for success, error code otherwise.
  */
-int pio_fc_gatherv(void *sendbuf, const int sendcnt, const MPI_Datatype sendtype,
+int pio_fc_gatherv(const void *sendbuf, int sendcnt, MPI_Datatype sendtype,
                    void *recvbuf, const int *recvcnts, const int *displs,
-                   const MPI_Datatype recvtype, const int root,
-                   const MPI_Comm comm, const int flow_cntl)
+                   MPI_Datatype recvtype, int root, MPI_Comm comm, int flow_cntl)
 {
     bool fc_gather;
     int gather_block_size;

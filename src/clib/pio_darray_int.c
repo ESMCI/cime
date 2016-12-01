@@ -828,13 +828,13 @@ int pio_write_darray_multi_nc_serial(file_desc_t *file, const int nvars, const i
         {
             /* task0 is ready to recieve */
             mpierr = MPI_Recv(&ierr, 1, MPI_INT, 0, 0, ios->io_comm, &status);
-            MPI_Send(&llen, 1, MPI_OFFSET, 0, ios->io_rank, ios->io_comm);
-            if (llen>0)
+            MPI_Send((void *)&llen, 1, MPI_OFFSET, 0, ios->io_rank, ios->io_comm);
+            if (llen > 0)
             {
-                MPI_Send(&maxregions, 1, MPI_INT, 0, ios->io_rank+ios->num_iotasks, ios->io_comm);
-                MPI_Send(tmp_start, maxregions*fndims, MPI_OFFSET, 0, ios->io_rank+2*ios->num_iotasks, ios->io_comm);
-                MPI_Send(tmp_count, maxregions*fndims, MPI_OFFSET, 0, ios->io_rank+3*ios->num_iotasks, ios->io_comm);
-                MPI_Send(IOBUF, nvars*llen, basetype, 0, ios->io_rank+4*ios->num_iotasks, ios->io_comm);
+                MPI_Send((void *)&maxregions, 1, MPI_INT, 0, ios->io_rank+ios->num_iotasks, ios->io_comm);
+                MPI_Send(tmp_start, maxregions * fndims, MPI_OFFSET, 0, ios->io_rank + 2 * ios->num_iotasks, ios->io_comm);
+                MPI_Send(tmp_count, maxregions * fndims, MPI_OFFSET, 0, ios->io_rank + 3 * ios->num_iotasks, ios->io_comm);
+                MPI_Send(IOBUF, nvars * llen, basetype, 0, ios->io_rank + 4 * ios->num_iotasks, ios->io_comm);
             }
         }
         else
