@@ -19,8 +19,9 @@
 #define MAX_RANK_STR 12
 #define ERROR_PREFIX "ERROR: "
 int pio_log_level = 0;
+int pio_log_ref_cnt = 0;
 int my_rank;
-FILE *LOG_FILE;
+FILE *LOG_FILE = NULL;
 #endif /* PIO_ENABLE_LOGGING */
 
 /** The PIO library maintains its own set of ncids. This is the next
@@ -93,19 +94,57 @@ int PIOc_strerror(int pioerr, char *errmsg)
 int PIOc_set_log_level(int level)
 {
 #if PIO_ENABLE_LOGGING
-    char log_filename[NC_MAX_NAME];
-
     /* Set the log level. */
     pio_log_level = level;
-
-    /* Create a filename with the rank in it. */
-    MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
-    sprintf(log_filename, "pio_log_%d.txt", my_rank);
-
-    /* Open a file for this rank to log messages. */
-    LOG_FILE = fopen(log_filename, "w");
 #endif /* PIO_ENABLE_LOGGING */
     return PIO_NOERR;
+}
+
+/** Initialize logging
+ * Open log file, if not opened yet, or
+ * increment ref count if already open
+ */
+void pio_init_logging(void )
+{
+#if PIO_ENABLE_LOGGING
+    char log_filename[NC_MAX_NAME];
+
+    if (!LOG_FILE)
+    {
+        /* Create a filename with the rank in it. */
+        MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
+        sprintf(log_filename, "pio_log_%d.txt", my_rank);
+
+        /* Open a file for this rank to log messages. */
+        LOG_FILE = fopen(log_filename, "w");
+
+        pio_log_ref_cnt = 1;
+    }
+    else
+    {
+        pio_log_ref_cnt++;
+    }
+#endif /* PIO_ENABLE_LOGGING */
+}
+
+/** Finalize logging - close log file, if open 
+ */
+void pio_finalize_logging(void )
+{
+#if PIO_ENABLE_LOGGING
+    pio_log_ref_cnt -= 1;
+    if (LOG_FILE)
+        if (pio_log_ref_cnt == 0)
+        {
+            fclose(LOG_FILE);
+            LOG_FILE = NULL;
+        }
+        else
+        {
+            LOG((2, "pio_finalize_logging, postpone close, ref_cnt = %d",
+                pio_log_ref_cnt));
+        }
+#endif /* PIO_ENABLE_LOGGING */
 }
 
 #if PIO_ENABLE_LOGGING
@@ -131,6 +170,7 @@ void pio_log(int severity, const char *fmt, ...)
 {
     va_list argp;
     int t;
+    int rem_len = MAX_LOG_MSG;
     char msg[MAX_LOG_MSG];
     char *ptr = msg;
     char rank_str[MAX_RANK_STR];
@@ -148,35 +188,43 @@ void pio_log(int severity, const char *fmt, ...)
        many tabs before the message. */
     if (!severity)
     {
-        strcpy(ptr, ERROR_PREFIX);
+        strncpy(ptr, ERROR_PREFIX, (rem_len > 0) ? rem_len : 0);
         ptr += strlen(ERROR_PREFIX);
+        rem_len -= strlen(ERROR_PREFIX);
     }
     for (t = 0; t < severity; t++)
-        strcpy(ptr++, "\t");
+    {
+        strncpy(ptr++, "\t", (rem_len > 0) ? rem_len : 0);
+        rem_len--;
+    }
 
     /* Show the rank. */
-    sprintf(rank_str, "%d ", my_rank);
-    strcpy(ptr, rank_str);
+    snprintf(rank_str, MAX_RANK_STR, "%d ", my_rank);
+    strncpy(ptr, rank_str, (rem_len > 0) ? rem_len : 0);
     ptr += strlen(rank_str);
+    rem_len -= strlen(rank_str);
 
     /* Print out the variable list of args with vprintf. */
     va_start(argp, fmt);
-    vsprintf(ptr, fmt, argp);
+    vsnprintf(ptr, ((rem_len > 0) ? rem_len : 0), fmt, argp);
     va_end(argp);
 
     /* Put on a final linefeed. */
     ptr = msg + strlen(msg);
-    strcpy(ptr, "\n\0");
+    rem_len = MAX_LOG_MSG - strlen(msg);
+    strncpy(ptr, "\n\0", (rem_len > 0) ? rem_len : 0);
 
     /* Send message to stdout. */
     fprintf(stdout, "%s", msg);
 
     /* Send message to log file. */
-    fprintf(LOG_FILE, "%s", msg);
+    if (LOG_FILE)
+        fprintf(LOG_FILE, "%s", msg);
 
     /* Ensure an immediate flush of stdout. */
     fflush(stdout);
-    fflush(LOG_FILE);
+    if (LOG_FILE)
+        fflush(LOG_FILE);
 }
 #endif /* PIO_ENABLE_LOGGING */
 

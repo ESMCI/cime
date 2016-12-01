@@ -2353,6 +2353,7 @@ PIOc_Init_Async(MPI_Comm world, int num_io_procs, int *io_proc_list,
     if (component_count > 1)
         return PIO_EINVAL;
 
+    pio_init_logging();
     LOG((1, "PIOc_Init_Async component_count = %d", component_count));
 
     /* If the user did not supply a list of process numbers to use for

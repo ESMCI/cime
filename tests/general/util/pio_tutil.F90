@@ -177,6 +177,9 @@ CONTAINS
 
   ! Finalize Testing framework - Internal (Not directly used by unit tests)
   SUBROUTINE  PIO_TF_Finalize_
+#ifdef TIMING
+   use perf_mod
+#endif
 #ifndef NO_MPIMOD
     use mpi
 #else
@@ -191,6 +194,11 @@ CONTAINS
 
     ! Finalize PIO
     CALL PIO_finalize(pio_tf_iosystem_, ierr);
+    CALL MPI_COMM_FREE(pio_tf_comm_, ierr);
+
+#ifdef TIMING
+    call t_finalizef()
+#endif
   END SUBROUTINE PIO_TF_Finalize_
 
   ! Collective assert - Internal (Not directly used by unit tests)

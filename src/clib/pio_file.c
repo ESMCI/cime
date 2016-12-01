@@ -109,6 +109,7 @@ int PIOc_createfile(int iosysid, int *ncidp, int *iotype, const char *filename, 
         return PIO_ENOMEM;
 
     /* Fill in some file values. */
+    file->fh = -1;
     file->next = NULL;
     file->iosystem = ios;
     file->iotype = *iotype;
