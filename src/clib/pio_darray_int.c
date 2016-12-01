@@ -62,7 +62,8 @@ void compute_buffer_init(iosystem_desc_t ios)
     LOG((2, "compute_buffer_init CN_bpool = %d", CN_bpool));
 }
 
-/** Write a single distributed field to output. This routine is only
+/**
+ * Write a single distributed field to output. This routine is only
  * used if aggregation is off.
  *
  * @param file a pointer to the open file descriptor for the file
@@ -72,7 +73,6 @@ void compute_buffer_init(iosystem_desc_t ios)
  * @param IOBUF the buffer to be written from this mpi task
  * @param fillvalue the optional fillvalue to be used for missing
  * data in this buffer
- *
  * @return 0 for success, error code otherwise.
  * @ingroup PIO_write_darray
  */
@@ -150,7 +150,8 @@ int pio_write_darray_nc(file_desc_t *file, io_desc_t *iodesc, const int vid,
         PIO_Offset *countlist[iodesc->maxregions];
 
         /* Get the type size (again?) */
-        MPI_Type_size(iodesc->basetype, &tsize);
+        if ((mpierr = MPI_Type_size(iodesc->basetype, &tsize)))
+            return check_mpi(file, mpierr, __FILE__, __LINE__);
 
         region = iodesc->firstregion;
 
@@ -237,7 +238,8 @@ int pio_write_darray_nc(file_desc_t *file, io_desc_t *iodesc, const int vid,
             case PIO_IOTYPE_NETCDF:
             {
                 /* Find the type size (again?) */
-                mpierr = MPI_Type_size(iodesc->basetype, &dsize);
+                if ((mpierr = MPI_Type_size(iodesc->basetype, &dsize)))
+                    return check_mpi(file, mpierr, __FILE__, __LINE__);
 
                 size_t tstart[ndims], tcount[ndims];
 
@@ -267,17 +269,27 @@ int pio_write_darray_nc(file_desc_t *file, io_desc_t *iodesc, const int vid,
                         else
                         {
                             /* Handshake - tell the sending task I'm ready. */
-                            mpierr = MPI_Send(&ierr, 1, MPI_INT, i, 0, ios->io_comm);
-                            mpierr = MPI_Recv(&buflen, 1, MPI_INT, i, 1, ios->io_comm, &status);
+                            if ((mpierr = MPI_Send(&ierr, 1, MPI_INT, i, 0, ios->io_comm)))
+                                return check_mpi(file, mpierr, __FILE__, __LINE__);
+
+                            if ((mpierr = MPI_Recv(&buflen, 1, MPI_INT, i, 1, ios->io_comm, &status)))
+                                return check_mpi(file, mpierr, __FILE__, __LINE__);
+
                             if (buflen > 0)
                             {
-                                mpierr = MPI_Recv(tstart, ndims, MPI_OFFSET, i, ios->num_iotasks+i,
-                                                  ios->io_comm, &status);
-                                mpierr = MPI_Recv(tcount, ndims, MPI_OFFSET, i, 2 * ios->num_iotasks + i,
-                                                  ios->io_comm, &status);
+                                if ((mpierr = MPI_Recv(tstart, ndims, MPI_OFFSET, i, ios->num_iotasks + i,
+                                                       ios->io_comm, &status)))
+                                    return check_mpi(file, mpierr, __FILE__, __LINE__);
+
+                                if ((mpierr = MPI_Recv(tcount, ndims, MPI_OFFSET, i, 2 * ios->num_iotasks + i,
+                                                       ios->io_comm, &status)))
+                                    return check_mpi(file, mpierr, __FILE__, __LINE__);
+
                                 if (!(tmp_buf = malloc(buflen * dsize)))
                                     return PIO_ENOMEM;
-                                mpierr = MPI_Recv(tmp_buf, buflen, iodesc->basetype, i, i, ios->io_comm, &status);
+                                if ((mpierr = MPI_Recv(tmp_buf, buflen, iodesc->basetype, i, i, ios->io_comm, &status)))
+                                    return check_mpi(file, mpierr, __FILE__, __LINE__);
+
                             }
                         }
 
@@ -318,15 +330,20 @@ int pio_write_darray_nc(file_desc_t *file, io_desc_t *iodesc, const int vid,
                              tstart[1],tcount[0],tcount[1],buflen,ndims,fndims);*/
 
 		    /* task0 is ready to recieve */
-                    mpierr = MPI_Recv(&ierr, 1, MPI_INT, 0, 0, ios->io_comm, &status);
-                    mpierr = MPI_Rsend(&buflen, 1, MPI_INT, 0, 1, ios->io_comm);
+                    if ((mpierr = MPI_Recv(&ierr, 1, MPI_INT, 0, 0, ios->io_comm, &status)))
+                        return check_mpi(file, mpierr, __FILE__, __LINE__);
+
+                    if ((mpierr = MPI_Rsend(&buflen, 1, MPI_INT, 0, 1, ios->io_comm)))
+                        return check_mpi(file, mpierr, __FILE__, __LINE__);
+
                     if (buflen > 0)
                     {
-                        mpierr = MPI_Rsend(tstart, ndims, MPI_OFFSET, 0, ios->num_iotasks+ios->io_rank,
-                                           ios->io_comm);
-                        mpierr = MPI_Rsend(tcount, ndims, MPI_OFFSET, 0,2*ios->num_iotasks+ios->io_rank,
-                                           ios->io_comm);
-                        mpierr = MPI_Rsend(bufptr, buflen, iodesc->basetype, 0, ios->io_rank, ios->io_comm);
+                        if ((mpierr = MPI_Rsend(tstart, ndims, MPI_OFFSET, 0, ios->num_iotasks+ios->io_rank, ios->io_comm)))
+                            return check_mpi(file, mpierr, __FILE__, __LINE__);
+                        if ((mpierr = MPI_Rsend(tcount, ndims, MPI_OFFSET, 0,2*ios->num_iotasks+ios->io_rank, ios->io_comm)))
+                            return check_mpi(file, mpierr, __FILE__, __LINE__);
+                        if ((mpierr = MPI_Rsend(bufptr, buflen, iodesc->basetype, 0, ios->io_rank, ios->io_comm)))
+                            return check_mpi(file, mpierr, __FILE__, __LINE__);
                     }
                 }
                 break;
@@ -374,8 +391,9 @@ int pio_write_darray_nc(file_desc_t *file, io_desc_t *iodesc, const int vid,
                         while(vdesc->request[reqn] != NC_REQ_NULL)
                             reqn++;
 
-                    ierr = ncmpi_bput_varn(file->fh, vid, rrcnt, startlist, countlist,
-                                           IOBUF, iodesc->llen, iodesc->basetype, vdesc->request+reqn);
+                    if ((ierr = ncmpi_bput_varn(file->fh, vid, rrcnt, startlist, countlist, IOBUF, iodesc->llen, iodesc->basetype, vdesc->request+reqn)))
+
+
                     if (vdesc->request[reqn] == NC_REQ_NULL)
                         vdesc->request[reqn] = PIO_REQ_NULL;  /* keeps wait calls in sync */
                     vdesc->nreqs = reqn;
@@ -413,7 +431,8 @@ int pio_write_darray_nc(file_desc_t *file, io_desc_t *iodesc, const int vid,
     return ierr;
 }
 
-/** Write a set of one or more aggregated arrays to output file.
+/**
+ * Write a set of one or more aggregated arrays to output file.
  *
  * This routine is used if aggregation is enabled, data is already on
  * the io-tasks
@@ -439,7 +458,6 @@ int pio_write_darray_nc(file_desc_t *file, io_desc_t *iodesc, const int vid,
  * @param IOBUF the buffer to be written from this mpi task
  * @param frame the frame or record dimension for each of the nvars
  * variables in IOBUF
- *
  * @return 0 for success, error code otherwise.
  * @ingroup PIO_write_darray
  */
@@ -501,7 +519,8 @@ int pio_write_darray_multi_nc(file_desc_t *file, const int nvars, const int *vid
         return ierr;
 
     /* Find out the size of the MPI type. */
-    MPI_Type_size(basetype, &tsize);
+    if ((mpierr = MPI_Type_size(basetype, &tsize)))
+        return check_mpi(file, mpierr, __FILE__, __LINE__);
 
     /* If this is an IO task write the data. */
     if (ios->ioproc)
@@ -776,7 +795,8 @@ int pio_write_darray_multi_nc_serial(file_desc_t *file, const int nvars, const i
     /* Get the number of dimensions. */
     if ((ierr = PIOc_inq_varndims(file->pio_ncid, vid[0], &fndims)))
         return ierr;
-    MPI_Type_size(basetype, &tsize);
+    if ((mpierr = MPI_Type_size(basetype, &tsize)))
+        return check_mpi(file, mpierr, __FILE__, __LINE__);
 
     if (ios->ioproc)
     {
@@ -827,14 +847,23 @@ int pio_write_darray_multi_nc_serial(file_desc_t *file, const int nvars, const i
         if (ios->io_rank > 0)
         {
             /* task0 is ready to recieve */
-            mpierr = MPI_Recv(&ierr, 1, MPI_INT, 0, 0, ios->io_comm, &status);
-            MPI_Send((void *)&llen, 1, MPI_OFFSET, 0, ios->io_rank, ios->io_comm);
+            if ((mpierr = MPI_Recv(&ierr, 1, MPI_INT, 0, 0, ios->io_comm, &status)))
+                return check_mpi(file, mpierr, __FILE__, __LINE__);
+            if ((mpierr = MPI_Send((void *)&llen, 1, MPI_OFFSET, 0, ios->io_rank, ios->io_comm)))
+                return check_mpi(file, mpierr, __FILE__, __LINE__);
+
             if (llen > 0)
             {
-                MPI_Send((void *)&maxregions, 1, MPI_INT, 0, ios->io_rank+ios->num_iotasks, ios->io_comm);
-                MPI_Send(tmp_start, maxregions * fndims, MPI_OFFSET, 0, ios->io_rank + 2 * ios->num_iotasks, ios->io_comm);
-                MPI_Send(tmp_count, maxregions * fndims, MPI_OFFSET, 0, ios->io_rank + 3 * ios->num_iotasks, ios->io_comm);
-                MPI_Send(IOBUF, nvars * llen, basetype, 0, ios->io_rank + 4 * ios->num_iotasks, ios->io_comm);
+                if ((mpierr = MPI_Send((void *)&maxregions, 1, MPI_INT, 0, ios->io_rank+ios->num_iotasks, ios->io_comm)))
+                    return check_mpi(file, mpierr, __FILE__, __LINE__);
+                if ((mpierr = MPI_Send(tmp_start, maxregions * fndims, MPI_OFFSET, 0, ios->io_rank + 2 * ios->num_iotasks,
+                                       ios->io_comm)))
+                    return check_mpi(file, mpierr, __FILE__, __LINE__);
+                if ((mpierr = MPI_Send(tmp_count, maxregions * fndims, MPI_OFFSET, 0, ios->io_rank + 3 * ios->num_iotasks,
+                                       ios->io_comm)))
+                    return check_mpi(file, mpierr, __FILE__, __LINE__);
+                if ((mpierr = MPI_Send(IOBUF, nvars * llen, basetype, 0, ios->io_rank + 4 * ios->num_iotasks, ios->io_comm)))
+                    return check_mpi(file, mpierr, __FILE__, __LINE__);
             }
         }
         else
@@ -843,22 +872,29 @@ int pio_write_darray_multi_nc_serial(file_desc_t *file, const int nvars, const i
             int rregions;
             size_t start[fndims], count[fndims];
             size_t loffset;
-            mpierr = MPI_Type_size(basetype, &dsize);
+            if ((mpierr = MPI_Type_size(basetype, &dsize)))
+                return check_mpi(file, mpierr, __FILE__, __LINE__);
 
             for (int rtask = 0; rtask < ios->num_iotasks; rtask++)
             {
                 if (rtask > 0)
                 {
                     /* handshake - tell the sending task I'm ready */
-                    mpierr = MPI_Send(&ierr, 1, MPI_INT, rtask, 0, ios->io_comm);
-                    MPI_Recv(&rlen, 1, MPI_OFFSET, rtask, rtask, ios->io_comm, &status);
+                    if ((mpierr = MPI_Send(&ierr, 1, MPI_INT, rtask, 0, ios->io_comm)))
+                        return check_mpi(file, mpierr, __FILE__, __LINE__);
+                    if ((mpierr = MPI_Recv(&rlen, 1, MPI_OFFSET, rtask, rtask, ios->io_comm, &status)))
+                        return check_mpi(file, mpierr, __FILE__, __LINE__);
 
                     if (rlen > 0)
                     {
-                        MPI_Recv(&rregions, 1, MPI_INT, rtask, rtask+ios->num_iotasks, ios->io_comm, &status);
-                        MPI_Recv(tmp_start, rregions*fndims, MPI_OFFSET, rtask, rtask+2*ios->num_iotasks, ios->io_comm, &status);
-                        MPI_Recv(tmp_count, rregions*fndims, MPI_OFFSET, rtask, rtask+3*ios->num_iotasks, ios->io_comm, &status);
-                        MPI_Recv(IOBUF, nvars*rlen, basetype, rtask, rtask+4*ios->num_iotasks, ios->io_comm, &status);
+                        if ((mpierr = MPI_Recv(&rregions, 1, MPI_INT, rtask, rtask+ios->num_iotasks, ios->io_comm, &status)))
+                            return check_mpi(file, mpierr, __FILE__, __LINE__);
+                        if ((mpierr = MPI_Recv(tmp_start, rregions*fndims, MPI_OFFSET, rtask, rtask+2*ios->num_iotasks, ios->io_comm, &status)))
+                            return check_mpi(file, mpierr, __FILE__, __LINE__);
+                        if ((mpierr = MPI_Recv(tmp_count, rregions*fndims, MPI_OFFSET, rtask, rtask+3*ios->num_iotasks, ios->io_comm, &status)))
+                            return check_mpi(file, mpierr, __FILE__, __LINE__);
+                        if ((mpierr = MPI_Recv(IOBUF, nvars*rlen, basetype, rtask, rtask+4*ios->num_iotasks, ios->io_comm, &status)))
+                            return check_mpi(file, mpierr, __FILE__, __LINE__);
                     }
                 }
                 else
@@ -934,14 +970,14 @@ int pio_write_darray_multi_nc_serial(file_desc_t *file, const int nvars, const i
     return ierr;
 }
 
-/** Read an array of data from a file to the (parallel) IO library.
+/**
+ * Read an array of data from a file to the (parallel) IO library.
  *
  * @param file a pointer to the open file descriptor for the file
  * that will be written to
  * @param iodesc a pointer to the defined iodescriptor for the buffer
  * @param vid the variable id to be read
  * @param IOBUF the buffer to be read into from this mpi task
- *
  * @return 0 on success, error code otherwise.
  * @ingroup PIO_read_darray
  */
@@ -954,6 +990,7 @@ int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, const int vid,
     int ndims, fndims;
     MPI_Status status;
     int i;
+    int mpierr;  /* Return code from MPI functions. */
 
 #ifdef TIMING
     /* Start timing this function. */
@@ -1004,7 +1041,8 @@ int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, const int vid,
         region = iodesc->firstregion;
 
 	/* Get the size of the MPI type. */
-        MPI_Type_size(iodesc->basetype, &tsize);
+        if ((mpierr = MPI_Type_size(iodesc->basetype, &tsize)))
+            return check_mpi(file, mpierr, __FILE__, __LINE__);
 
         if (fndims > ndims)
         {
@@ -1125,15 +1163,15 @@ int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, const int vid,
     return ierr;
 }
 
-/** Read an array of data from a file to the (serial) IO library.
+/**
+ * Read an array of data from a file to the (serial) IO library.
  *
  * @param file a pointer to the open file descriptor for the file
  * that will be written to
  * @param iodesc a pointer to the defined iodescriptor for the buffer
  * @param vid the variable id to be read.
  * @param IOBUF the buffer to be read into from this mpi task
- *
- * @returns
+ * @returns 0 for success, error code otherwise.
  * @ingroup PIO_read_darray
  */
 int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc,
@@ -1145,7 +1183,8 @@ int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc,
     int ndims, fndims;
     MPI_Status status;
     int i;
-
+    int mpierr;  /* Return code from MPI functions. */
+    
 #ifdef TIMING
     /* Start timing this function. */
     GPTLstart("PIO:read_darray_nc_serial");
@@ -1185,9 +1224,12 @@ int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc,
            multiple datatypes by allowing the calling program to change
            the basetype. */
         region = iodesc->firstregion;
-        MPI_Type_size(iodesc->basetype, &tsize);
 
-        if (fndims>ndims)
+	/* Get the size of the MPI type. */
+        if ((mpierr = MPI_Type_size(iodesc->basetype, &tsize)))
+            return check_mpi(file, mpierr, __FILE__, __LINE__);
+
+        if (fndims > ndims)
         {
             if (vdesc->record < 0)
                 vdesc->record = 0;
@@ -1343,14 +1385,14 @@ int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc,
     return ierr;
 }
 
-/** Flush the output buffer. This is only relevant for files opened
+/**
+ * Flush the output buffer. This is only relevant for files opened
  * with pnetcdf.
  *
  * @param file a pointer to the open file descriptor for the file
  * that will be written to
  * @param force true to force the flushing of the buffer
  * @param addsize additional size to add to buffer (in bytes)
- *
  * @return 0 for success, error code otherwise.
  * @ingroup PIO_write_darray
  */
@@ -1458,7 +1500,8 @@ int flush_output_buffer(file_desc_t *file, bool force, PIO_Offset addsize)
     return ierr;
 }
 
-/** Print out info about the buffer for debug purposes.
+/**
+ * Print out info about the buffer for debug purposes.
  *
  * @param ios the IO system structure
  * @param collective true if collective report is desired
@@ -1512,7 +1555,8 @@ void cn_buffer_report(iosystem_desc_t ios, bool collective)
     }
 }
 
-/** Free the buffer pool. If malloc is used (that is, PIO_USE_MALLOC is
+/**
+ * Free the buffer pool. If malloc is used (that is, PIO_USE_MALLOC is
  * non zero), this function does nothing.
  *
  * @param ios the IO system structure
@@ -1532,7 +1576,8 @@ void free_cn_buffer_pool(iosystem_desc_t ios)
 #endif /* !PIO_USE_MALLOC */
 }
 
-/** Flush the buffer.
+/**
+ * Flush the buffer.
  *
  * @param ncid identifies the netCDF file
  * @param wmb
@@ -1564,7 +1609,8 @@ void flush_buffer(int ncid, wmulti_buffer *wmb, bool flushtodisk)
     }
 }
 
-/** Compute the maximum aggregate number of bytes.
+/**
+ * Compute the maximum aggregate number of bytes.
  *
  * @param ios the IO system structure
  * @param iodesc a pointer to the defined iodescriptor for the buffer
