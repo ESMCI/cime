@@ -104,7 +104,7 @@ int PIOc_set_log_level(int level)
  * Open log file, if not opened yet, or
  * increment ref count if already open
  */
-void pio_init_logging(void )
+void pio_init_logging(void)
 {
 #if PIO_ENABLE_LOGGING
     char log_filename[NC_MAX_NAME];
