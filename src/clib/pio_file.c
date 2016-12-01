@@ -26,8 +26,8 @@ int pio_next_ncid = 16;
  * @return 0 for success, error code otherwise.
  * @ingroup PIO_openfile
  */
-int PIOc_openfile(const int iosysid, int *ncidp, int *iotype,
-                  const char *filename, const int mode)
+int PIOc_openfile(int iosysid, int *ncidp, int *iotype, const char *filename,
+                  int mode)
 {
     LOG((1, "PIOc_openfile iosysid = %d iotype = %d filename = %s mode = %d",
          iosysid, *iotype, filename, mode));
@@ -86,8 +86,7 @@ int PIOc_open(int iosysid, const char *path, int mode, int *ncidp)
  * @returns 0 for success, error code otherwise.
  * @ingroup PIO_createfile
  */
-int PIOc_createfile(const int iosysid, int *ncidp, int *iotype,
-                    const char *filename, const int mode)
+int PIOc_createfile(int iosysid, int *ncidp, int *iotype, const char *filename, int mode)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Pointer to file information. */
@@ -384,7 +383,7 @@ int PIOc_closefile(int ncid)
  * @param filename a filename.
  * @returns PIO_NOERR for success, error code otherwise.
  */
-int PIOc_deletefile(const int iosysid, const char filename[])
+int PIOc_deletefile(int iosysid, const char *filename)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Pointer to file information. */
@@ -416,21 +415,27 @@ int PIOc_deletefile(const int iosysid, const char filename[])
     /* If this is an IO task, then call the netCDF function. The
      * barriers are needed to assure that no task is trying to operate
      * on the file while it is being deleted. */
-    if (ios->ioproc){
-        MPI_Barrier(ios->io_comm);
+    if (ios->ioproc)
+    {
+        mpierr = MPI_Barrier(ios->io_comm);
+            
 #ifdef _NETCDF
-        if (ios->io_rank==0)
+        if (!mpierr && file->iotype == PIO_IOTYPE_NETCDF4P && file->do_io)
             ierr = nc_delete(filename);
 #else
 #ifdef _PNETCDF
-        ierr = ncmpi_delete(filename, ios->info);
+        if (!mpierr && file->iotype == PIO_IOTYPE_PNETCDF)
+            ierr = ncmpi_delete(filename, ios->info);
 #endif
 #endif
-        MPI_Barrier(ios->io_comm);
+        mpierr = MPI_Barrier(ios->io_comm);
     }
 
-    /* Special case - always broadcast the return from the ??? */
-    MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm);
+    /* Broadcast and check the return code. */
+    if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
+        return check_mpi(file, mpierr2, __FILE__, __LINE__);        
+    if (ierr)
+        return check_netcdf(file, ierr, __FILE__, __LINE__);
 
     return ierr;
 }

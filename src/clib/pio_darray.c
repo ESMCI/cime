@@ -65,10 +65,8 @@ PIO_Offset PIOc_set_buffer_size_limit(const PIO_Offset limit)
  * @return 0 for success, error code otherwise.
  * @ingroup PIO_write_darray
  */
-int PIOc_write_darray_multi(const int ncid, const int *vid, const int ioid,
-                            const int nvars, const PIO_Offset arraylen,
-                            void *array, const int *frame, void **fillvalue,
-                            bool flushtodisk)
+int PIOc_write_darray_multi(int ncid, const int *vid, int ioid, int nvars, PIO_Offset arraylen,
+                            void *array, const int *frame, void **fillvalue, bool flushtodisk)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Pointer to file information. */
@@ -76,6 +74,7 @@ int PIOc_write_darray_multi(const int ncid, const int *vid, const int ioid,
     int vsize;             /* size in bytes of the given data. */
     int rlen;              /* total data buffer size. */
     var_desc_t *vdesc0;    /* pointer to var_desc structure for each var. */
+    int mpierr;            /* Return code from MPI functions. */
     int ierr = PIO_NOERR;  /* Return code. */
 
     /* Check inputs. */
@@ -104,12 +103,12 @@ int PIOc_write_darray_multi(const int ncid, const int *vid, const int ioid,
 
     /* ??? */
     /*   rlen = iodesc->llen*nvars; */
-    rlen=0;
+    rlen = 0;
     if (iodesc->llen > 0)
-        rlen = iodesc->maxiobuflen*nvars;
+        rlen = iodesc->maxiobuflen * nvars;
 
     if (vdesc0->iobuf)
-        piodie("Attempt to overwrite existing io buffer",__FILE__,__LINE__);
+        piodie("Attempt to overwrite existing io buffer",__FILE__, __LINE__);
 
     /* Currently there are two rearrangers box=1 and subset=2. There
      * is never a case where rearranger==0. */
@@ -117,7 +116,8 @@ int PIOc_write_darray_multi(const int ncid, const int *vid, const int ioid,
     {
         if (rlen > 0)
         {
-            MPI_Type_size(iodesc->basetype, &vsize);
+            if ((mpierr = MPI_Type_size(iodesc->basetype, &vsize)))
+                return check_mpi(file, mpierr, __FILE__, __LINE__);
 
 	    /* Allocate memory for the variable buffer. */
             if (!(vdesc0->iobuf = bget((size_t)vsize * (size_t)rlen)))
@@ -270,8 +270,8 @@ int PIOc_write_darray_multi(const int ncid, const int *vid, const int ioid,
  * @returns 0 for success, non-zero error code for failure.
  * @ingroup PIO_write_darray
  */
-int PIOc_write_darray(const int ncid, const int vid, const int ioid,
-                      const PIO_Offset arraylen, void *array, void *fillvalue)
+int PIOc_write_darray(int ncid, int vid, int ioid, PIO_Offset arraylen,
+                      void *array, void *fillvalue)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Info about file we are writing to. */
@@ -286,7 +286,7 @@ int PIOc_write_darray(const int ncid, const int vid, const int ioid,
     bufsize totfree;       /* Amount of free space in the buffer. */
     bufsize maxfree;       /* Max amount of free space in buffer. */
     int ierr = PIO_NOERR;  /* Return code. */
-    int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
+    int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI functions. */
 
     LOG((1, "PIOc_write_darray ncid = %d vid = %d ioid = %d arraylen = %d",
 	 ncid, vid, ioid, arraylen));
@@ -518,8 +518,8 @@ int PIOc_write_darray(const int ncid, const int vid, const int ioid,
  * @return 0 for success, error code otherwise.
  * @ingroup PIO_read_darray
  */
-int PIOc_read_darray(const int ncid, const int vid, const int ioid,
-                     const PIO_Offset arraylen, void *array)
+int PIOc_read_darray(int ncid, int vid, int ioid, PIO_Offset arraylen,
+                     void *array)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Pointer to file information. */
@@ -528,6 +528,7 @@ int PIOc_read_darray(const int ncid, const int vid, const int ioid,
     size_t rlen = 0;       /* the length of data in iobuf. */
     int tsize;          /* Total size. */
     MPI_Datatype vtype; /* MPI type of this var. */
+    int mpierr;         /* Return code from MPI functions. */
     int ierr;           /* Return code. */
 
     /* Get the file info. */
@@ -551,7 +552,8 @@ int PIOc_read_darray(const int ncid, const int vid, const int ioid,
         if (ios->ioproc && rlen > 0)
         {
             /* Get the MPI type size. */
-            MPI_Type_size(iodesc->basetype, &tsize);
+            if ((mpierr = MPI_Type_size(iodesc->basetype, &tsize)))
+                return check_mpi(file, mpierr, __FILE__, __LINE__);
 
             /* Allocate a buffer for one record. */
             if (!(iobuf = bget((size_t)tsize * rlen)))
