@@ -76,7 +76,7 @@ void compute_buffer_init(iosystem_desc_t ios)
  * @return 0 for success, error code otherwise.
  * @ingroup PIO_write_darray
  */
-int pio_write_darray_nc(file_desc_t *file, io_desc_t *iodesc, const int vid,
+int pio_write_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid,
                         void *IOBUF, void *fillvalue)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
@@ -461,11 +461,10 @@ int pio_write_darray_nc(file_desc_t *file, io_desc_t *iodesc, const int vid,
  * @return 0 for success, error code otherwise.
  * @ingroup PIO_write_darray
  */
-int pio_write_darray_multi_nc(file_desc_t *file, const int nvars, const int *vid,
-                              const int iodesc_ndims, MPI_Datatype basetype, const PIO_Offset *gsize,
-                              const int maxregions, io_region *firstregion, const PIO_Offset llen,
-                              const int maxiobuflen, const int num_aiotasks,
-                              void *IOBUF, const int *frame)
+int pio_write_darray_multi_nc(file_desc_t *file, int nvars, const int *vid, int iodesc_ndims,
+                              MPI_Datatype basetype, const PIO_Offset *gsize, int maxregions,
+                              io_region *firstregion, PIO_Offset llen, int maxiobuflen,
+                              int num_aiotasks, void *IOBUF, const int *frame)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     var_desc_t *vdesc;
@@ -738,11 +737,10 @@ int pio_write_darray_multi_nc(file_desc_t *file, const int nvars, const int *vid
  * @return 0 for success, error code otherwise.
  * @ingroup PIO_write_darray
  */
-int pio_write_darray_multi_nc_serial(file_desc_t *file, const int nvars, const int *vid,
-                                     const int iodesc_ndims, MPI_Datatype basetype, const PIO_Offset *gsize,
-                                     const int maxregions, io_region *firstregion, const PIO_Offset llen,
-                                     const int maxiobuflen, const int num_aiotasks,
-                                     void *IOBUF, const int *frame)
+int pio_write_darray_multi_nc_serial(file_desc_t *file, int nvars, const int *vid, int iodesc_ndims,
+                                     MPI_Datatype basetype, const PIO_Offset *gsize, int maxregions,
+                                     io_region *firstregion, PIO_Offset llen, int maxiobuflen,
+                                     int num_aiotasks, void *IOBUF, const int *frame)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     var_desc_t *vdesc;
@@ -887,13 +885,17 @@ int pio_write_darray_multi_nc_serial(file_desc_t *file, const int nvars, const i
 
                     if (rlen > 0)
                     {
-                        if ((mpierr = MPI_Recv(&rregions, 1, MPI_INT, rtask, rtask+ios->num_iotasks, ios->io_comm, &status)))
+                        if ((mpierr = MPI_Recv(&rregions, 1, MPI_INT, rtask, rtask + ios->num_iotasks,
+                                               ios->io_comm, &status)))
                             return check_mpi(file, mpierr, __FILE__, __LINE__);
-                        if ((mpierr = MPI_Recv(tmp_start, rregions*fndims, MPI_OFFSET, rtask, rtask+2*ios->num_iotasks, ios->io_comm, &status)))
+                        if ((mpierr = MPI_Recv(tmp_start, rregions * fndims, MPI_OFFSET, rtask, rtask + 2 * ios->num_iotasks,
+                                               ios->io_comm, &status)))
                             return check_mpi(file, mpierr, __FILE__, __LINE__);
-                        if ((mpierr = MPI_Recv(tmp_count, rregions*fndims, MPI_OFFSET, rtask, rtask+3*ios->num_iotasks, ios->io_comm, &status)))
+                        if ((mpierr = MPI_Recv(tmp_count, rregions * fndims, MPI_OFFSET, rtask, rtask + 3 * ios->num_iotasks,
+                                               ios->io_comm, &status)))
                             return check_mpi(file, mpierr, __FILE__, __LINE__);
-                        if ((mpierr = MPI_Recv(IOBUF, nvars*rlen, basetype, rtask, rtask+4*ios->num_iotasks, ios->io_comm, &status)))
+                        if ((mpierr = MPI_Recv(IOBUF, nvars * rlen, basetype, rtask, rtask + 4 * ios->num_iotasks, ios->io_comm,
+                                               &status)))
                             return check_mpi(file, mpierr, __FILE__, __LINE__);
                     }
                 }
@@ -981,8 +983,7 @@ int pio_write_darray_multi_nc_serial(file_desc_t *file, const int nvars, const i
  * @return 0 on success, error code otherwise.
  * @ingroup PIO_read_darray
  */
-int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, const int vid,
-                       void *IOBUF)
+int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid, void *IOBUF)
 {
     int ierr = PIO_NOERR;
     iosystem_desc_t *ios;  /* Pointer to io system information. */
@@ -1175,7 +1176,7 @@ int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, const int vid,
  * @ingroup PIO_read_darray
  */
 int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc,
-                              const int vid, void *IOBUF)
+                              int vid, void *IOBUF)
 {
     int ierr=PIO_NOERR;
     iosystem_desc_t *ios;  /* Pointer to io system information. */
