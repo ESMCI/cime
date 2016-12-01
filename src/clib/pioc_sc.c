@@ -80,7 +80,7 @@ long long lgcd(long long a, long long b)
 }
 
 /**
- * ???
+ * Return the gcd of nain and any value in ain.
  *
  * @param main
  * @param ain
@@ -107,7 +107,7 @@ int gcd_array(int nain, int *ain)
 }
 
 /**
- * ???
+ * Return the gcd of nain and any value in ain as int_64.
  *
  * @param main
  * @param ain
@@ -166,7 +166,8 @@ void computestartandcount(int gdim, int ioprocs, int rank, PIO_Offset *start,
 }
 
 /**
- * ???
+ * Look for the largest block of data for io which can be expressed in
+ * terms of start and count.
  *
  * @param arrlen
  * @param arr_in
@@ -246,7 +247,7 @@ PIO_Offset GCDblocksize(int arrlen, const PIO_Offset *arr_in)
 }
 
 /**
- * ???
+ * Compute start and count values for each io task.
  *
  * @param basetype
  * @param ndims
