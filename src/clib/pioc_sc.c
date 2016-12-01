@@ -34,7 +34,7 @@ typedef long long PIO_Offset;
 
 /** The default target blocksize for each io task when the box
  * rearranger is used. */
-#define default_blocksize       1024
+#define default_blocksize 1024
 
 /** The target blocksize for each io task when the box rearranger is
  * used. */
@@ -134,6 +134,7 @@ long long lgcd_array(int nain, long long *ain)
 }
 
 /**
+ * ???
  *
  * @param gdim
  * @param ioprocs
@@ -165,6 +166,7 @@ void computestartandcount(int gdim, int ioprocs, int rank, PIO_Offset *start,
 }
 
 /**
+ * ???
  *
  * @param arrlen
  * @param arr_in
