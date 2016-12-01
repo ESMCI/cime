@@ -357,7 +357,6 @@ int PIOc_InitDecomp(int iosysid, int basetype, int ndims, const int *dims, int m
 }
 
 /**
- * @ingroup PIO_initdecomp
  * This is a simplified initdecomp which can be used if the memory
  * order of the data can be expressed in terms of start and count on
  * the file.  In this case we compute the compdof and use the subset
@@ -371,6 +370,7 @@ int PIOc_InitDecomp(int iosysid, int basetype, int ndims, const int *dims, int m
  * @param count count array
  * @param pointer that gets the IO ID.
  * @returns 0 for success, error code otherwise
+ * @ingroup PIO_initdecomp
  */
 int PIOc_InitDecomp_bc(const int iosysid, const int basetype, const int ndims, const int dims[],
                        const long int start[], const long int count[], int *ioidp)
@@ -430,7 +430,6 @@ int PIOc_InitDecomp_bc(const int iosysid, const int basetype, const int ndims, c
 }
 
 /**
- * @ingroup PIO_init
  * Library initialization used when IO tasks are a subset of compute
  * tasks.
  *
@@ -448,6 +447,7 @@ int PIOc_InitDecomp_bc(const int iosysid, const int basetype, const int ndims, c
  * overriden in the @ref PIO_initdecomp
  * @param iosysidp index of the defined system descriptor
  * @return 0 on success, otherwise a PIO error code.
+ * @ingroup PIO_init
  */
 int PIOc_Init_Intracomm(MPI_Comm comp_comm, int num_iotasks, int stride, int base,
                         int rearr, int *iosysidp)
