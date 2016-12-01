@@ -26,8 +26,8 @@ int pio_next_ncid = 16;
  * @return 0 for success, error code otherwise.
  * @ingroup PIO_openfile
  */
-int PIOc_openfile(const int iosysid, int *ncidp, int *iotype,
-                  const char *filename, const int mode)
+int PIOc_openfile(int iosysid, int *ncidp, int *iotype, const char *filename,
+                  int mode)
 {
     LOG((1, "PIOc_openfile iosysid = %d iotype = %d filename = %s mode = %d",
          iosysid, *iotype, filename, mode));
@@ -86,8 +86,7 @@ int PIOc_open(int iosysid, const char *path, int mode, int *ncidp)
  * @returns 0 for success, error code otherwise.
  * @ingroup PIO_createfile
  */
-int PIOc_createfile(const int iosysid, int *ncidp, int *iotype,
-                    const char *filename, const int mode)
+int PIOc_createfile(int iosysid, int *ncidp, int *iotype, const char *filename, int mode)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Pointer to file information. */
@@ -384,7 +383,7 @@ int PIOc_closefile(int ncid)
  * @param filename a filename.
  * @returns PIO_NOERR for success, error code otherwise.
  */
-int PIOc_deletefile(const int iosysid, const char filename[])
+int PIOc_deletefile(int iosysid, const char *filename)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Pointer to file information. */

@@ -65,10 +65,8 @@ PIO_Offset PIOc_set_buffer_size_limit(const PIO_Offset limit)
  * @return 0 for success, error code otherwise.
  * @ingroup PIO_write_darray
  */
-int PIOc_write_darray_multi(const int ncid, const int *vid, const int ioid,
-                            const int nvars, const PIO_Offset arraylen,
-                            void *array, const int *frame, void **fillvalue,
-                            bool flushtodisk)
+int PIOc_write_darray_multi(int ncid, const int *vid, int ioid, int nvars, PIO_Offset arraylen,
+                            void *array, const int *frame, void **fillvalue, bool flushtodisk)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Pointer to file information. */
@@ -270,8 +268,8 @@ int PIOc_write_darray_multi(const int ncid, const int *vid, const int ioid,
  * @returns 0 for success, non-zero error code for failure.
  * @ingroup PIO_write_darray
  */
-int PIOc_write_darray(const int ncid, const int vid, const int ioid,
-                      const PIO_Offset arraylen, void *array, void *fillvalue)
+int PIOc_write_darray(int ncid, int vid, int ioid, PIO_Offset arraylen,
+                      void *array, void *fillvalue)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Info about file we are writing to. */
@@ -518,8 +516,8 @@ int PIOc_write_darray(const int ncid, const int vid, const int ioid,
  * @return 0 for success, error code otherwise.
  * @ingroup PIO_read_darray
  */
-int PIOc_read_darray(const int ncid, const int vid, const int ioid,
-                     const PIO_Offset arraylen, void *array)
+int PIOc_read_darray(int ncid, int vid, int ioid, PIO_Offset arraylen,
+                     void *array)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Pointer to file information. */

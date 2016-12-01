@@ -21,7 +21,7 @@ static int counter = 0;
  * otherwise.
  * @returns 0 on success, error code otherwise
  */
-int PIOc_iosystem_is_active(const int iosysid, bool *active)
+int PIOc_iosystem_is_active(int iosysid, bool *active)
 {
     iosystem_desc_t *ios;
 
@@ -99,17 +99,16 @@ int PIOc_advanceframe(int ncid, int varid)
 }
 
 /**
- * @ingroup PIO_setframe
  * Set the unlimited dimension of the given variable
  *
  * @param ncid the ncid of the file.
  * @param varid the varid of the variable
  * @param frame the value of the unlimited dimension.  In c 0 for the
  * first record, 1 for the second
- *
  * @return PIO_NOERR for no error, or error code.
+ * @ingroup PIO_setframe
  */
-int PIOc_setframe(const int ncid, const int varid, const int frame)
+int PIOc_setframe(int ncid, int varid, int frame)
 {
     file_desc_t *file;
     int ret;
@@ -233,10 +232,9 @@ int PIOc_Set_IOSystem_Error_Handling(int iosysid, int method)
  * @returns 0 on success, error code otherwise
  * @ingroup PIO_initdecomp
  */
-int PIOc_InitDecomp(const int iosysid, const int basetype, const int ndims,
-		    const int *dims, const int maplen, const PIO_Offset *compmap,
-		    int *ioidp, const int *rearranger, const PIO_Offset *iostart,
-		    const PIO_Offset *iocount)
+int PIOc_InitDecomp(int iosysid, int basetype, int ndims, const int *dims, int maplen,
+                    const PIO_Offset *compmap, int *ioidp, const int *rearranger,
+                    const PIO_Offset *iostart, const PIO_Offset *iocount)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     io_desc_t *iodesc;     /* The IO description. */
@@ -451,9 +449,8 @@ int PIOc_InitDecomp_bc(const int iosysid, const int basetype, const int ndims, c
  * @param iosysidp index of the defined system descriptor
  * @return 0 on success, otherwise a PIO error code.
  */
-int PIOc_Init_Intracomm(const MPI_Comm comp_comm, const int num_iotasks,
-                        const int stride, const int base, const int rearr,
-                        int *iosysidp)
+int PIOc_Init_Intracomm(MPI_Comm comp_comm, int num_iotasks, int stride, int base,
+                        int rearr, int *iosysidp)
 {
     iosystem_desc_t *iosys;
     int ierr = PIO_NOERR;
@@ -625,7 +622,7 @@ int PIOc_set_hint(int iosysid, const char *hint, const char *hintval)
  * @returns 0 for success or non-zero for error.
  * @ingroup PIO_finalize
  */
-int PIOc_finalize(const int iosysid)
+int PIOc_finalize(int iosysid)
 {
     iosystem_desc_t *ios, *nios;
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
@@ -729,7 +726,7 @@ int PIOc_finalize(const int iosysid)
  * otherwise. Ignored if NULL.
  * @returns 0 for success, or PIO_BADID if iosysid can't be found.
  */
-int PIOc_iam_iotask(const int iosysid, bool *ioproc)
+int PIOc_iam_iotask(int iosysid, bool *ioproc)
 {
     iosystem_desc_t *ios;
 
@@ -751,7 +748,7 @@ int PIOc_iam_iotask(const int iosysid, bool *ioproc)
  * in the IO communicator. Ignored if NULL.
  * @returns 0 for success, or PIO_BADID if iosysid can't be found.
  */
-int PIOc_iotask_rank(const int iosysid, int *iorank)
+int PIOc_iotask_rank(int iosysid, int *iorank)
 {
     iosystem_desc_t *ios;
 
@@ -770,7 +767,7 @@ int PIOc_iotask_rank(const int iosysid, int *iorank)
  * @param iotype the io type to check
  * @returns 1 if iotype is in build, 0 if not.
  */
-int PIOc_iotype_available(const int iotype)
+int PIOc_iotype_available(int iotype)
 {
     switch(iotype)
     {

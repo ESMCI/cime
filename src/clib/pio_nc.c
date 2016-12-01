@@ -1829,7 +1829,6 @@ int PIOc_def_dim(int ncid, const char *name, PIO_Offset len, int *idp)
 }
 
 /**
- * @ingroup PIO_def_var
  * The PIO-C interface for the NetCDF function nc_def_var.
  *
  * This routine is called collectively by all tasks in the communicator
@@ -1842,6 +1841,7 @@ int PIOc_def_dim(int ncid, const char *name, PIO_Offset len, int *idp)
  * @param varid the variable ID.
  * @param varidp a pointer that will get the variable id
  * @return PIO_NOERR for success, error code otherwise.
+ * @ingroup PIO_def_var
  */
 int PIOc_def_var(int ncid, const char *name, nc_type xtype, int ndims,
 		 const int *dimidsp, int *varidp)

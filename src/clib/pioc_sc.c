@@ -50,7 +50,7 @@ int blocksize = default_blocksize;
  ** @brief Set the target blocksize for the box rearranger.
  **
  */
-int PIOc_set_blocksize(const int newblocksize)
+int PIOc_set_blocksize(int newblocksize)
 {
     if(newblocksize > 0)
         blocksize = newblocksize;
