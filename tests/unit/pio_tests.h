@@ -29,6 +29,7 @@
 #define ERR_AWFUL 1111
 #define ERR_WRONG 1112
 #define ERR_GPTL 1113
+#define ERR_MPI 1114
 
 /** Handle MPI errors. This should only be used with MPI library
  * function calls. */
@@ -58,6 +59,8 @@ int resultlen;
 
 /* Function prototypes. */
 int pio_test_init(int argc, char **argv, int *my_rank, int *ntasks, int target_ntasks, MPI_Comm *test_comm);
+int pio_test_init2(int argc, char **argv, int *my_rank, int *ntasks, int min_ntasks,
+                   int max_ntasks, MPI_Comm *test_comm);
 int create_nc_sample(int sample, int iosysid, int format, char *filename, int my_rank, int *ncid);
 int check_nc_sample(int sample, int iosysid, int format, char *filename, int my_rank, int *ncid);
 int create_nc_sample_0(int iosysid, int format, char *filename, int my_rank, int *ncid);
@@ -68,6 +71,6 @@ int create_nc_sample_2(int iosysid, int format, char *filename, int my_rank, int
 int check_nc_sample_2(int iosysid, int format, char *filename, int my_rank, int *ncid);
 int get_iotypes(int *num_flavors, int *flavors);
 int get_iotype_name(int iotype, char *name);
-int pio_test_finalize();
+int pio_test_finalize(MPI_Comm *test_comm);
 
 #endif /* _PIO_TESTS_H */

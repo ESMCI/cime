@@ -1,5 +1,5 @@
-/**
- * @file Tests for PIOc_Intercomm. This tests the Init_Intercomm()
+/*
+ * Tests for PIOc_Intercomm. This tests the Init_Intercomm()
  * function, and basic asynch I/O capability.
  *
  * To run with valgrind, use this command:
@@ -7,14 +7,14 @@
  * --error-exitcode=99 --track-origins=yes ./test_intercomm2</pre>
  *
  */
-#define LOGGING 1
 #include <pio.h>
 #include <pio_tests.h>
-#include <netcdf.h>
-#include <unistd.h>
-#ifdef TIMING
-#include <gptl.h>
-#endif
+
+/* The number of tasks this test should run on. */
+#define TARGET_NTASKS 4
+
+/* The name of this test. */
+#define TEST_NAME "test_intercomm2"
 
 /* Number of processors that will do IO. */
 #define NUM_IO_PROCS 2
@@ -22,47 +22,35 @@
 /* Number of computational components to create. */
 #define COMPONENT_COUNT 1
 
-/** The number of dimensions in the test data. */
+/* The number of dimensions in the test data. */
 #define NDIM 1
 
-/** The length of our test data. */
+/* The length of our test data. */
 #define DIM_LEN 4
 
-#define TARGET_NTASKS 4
-/** The name of the dimension in the netCDF output file. */
+/* Number of netCDF atomic types. */
+#define NUM_TYPES 11
+
+/* The name of the dimension in the netCDF output file. */
 #define FIRST_DIM_NAME "jojo"
 #define DIM_NAME "dim_test_intercomm2"
 
-/** The name of the variable in the netCDF output file. */
+/* The name of the variable in the netCDF output file. */
 #define FIRST_VAR_NAME "bill"
 #define VAR_NAME "var_test_intercomm2"
 
-/** The name of the global attribute in the netCDF output file. */
+/* The name of the global attribute in the netCDF output file. */
 #define FIRST_ATT_NAME "willy_gatt_test_intercomm2"
 #define ATT_NAME "gatt_test_intercomm2"
 #define SHORT_ATT_NAME "short_gatt_test_intercomm2"
 #define FLOAT_ATT_NAME "float_gatt_test_intercomm2"
 #define DOUBLE_ATT_NAME "double_gatt_test_intercomm2"
 
-/** The value of the global attribute in the netCDF output file. */
+/* The value of the global attribute in the netCDF output file. */
 #define ATT_VALUE 42
 
-/** Error code for when things go wrong. */
-#define ERR_AWFUL 1111
-#define ERR_WRONG 2222
-
-/** Global err buffer for MPI. When there is an MPI error, this buffer
- * is used to store the error message that is associated with the MPI
- * error. */
-char err_buffer[MPI_MAX_ERROR_STRING];
-
-/** This is the length of the most recent MPI error message, stored
- * int the global error string. */
-int resultlen;
-
 /* Check the file for correctness. */
-int
-check_file(int iosysid, int format, char *filename, int my_rank, int verbose)
+int check_file(int iosysid, int format, char *filename, int my_rank)
 {
     int ncid;
     int ret;
@@ -86,8 +74,7 @@ check_file(int iosysid, int format, char *filename, int my_rank, int verbose)
     double double_att_data;
 
     /* Re-open the file to check it. */
-    if (verbose)
-        printf("%d test_intercomm2 opening file %s format %d\n", my_rank, filename, format);
+    printf("%d test_intercomm2 opening file %s format %d\n", my_rank, filename, format);
     if ((ret = PIOc_openfile(iosysid, &ncid, &format, filename,
                              NC_NOWRITE)))
         ERR(ret);
@@ -99,8 +86,7 @@ check_file(int iosysid, int format, char *filename, int my_rank, int verbose)
         ERR(ret);
     for (int i = 0; i < DIM_LEN; i++)
     {
-        if (verbose)
-            printf("%d test_intercomm2 read data_in[%d] = %d\n", my_rank, i, data_in[i]);
+	printf("%d test_intercomm2 read data_in[%d] = %d\n", my_rank, i, data_in[i]);
         if (data_in[i] != i)
             ERR(ERR_AWFUL);
     }
@@ -212,8 +198,7 @@ check_file(int iosysid, int format, char *filename, int my_rank, int verbose)
         ERR(ERR_WRONG);
     if ((ret = PIOc_get_att_int(ncid, NC_GLOBAL, ATT_NAME, &att_data)))
         ERR(ret);
-    if (verbose)
-        printf("%d test_intercomm2 att_data = %d\n", my_rank, att_data);
+    printf("%d test_intercomm2 att_data = %d\n", my_rank, att_data);
     if (att_data != ATT_VALUE)
         ERR(ERR_WRONG);
     if ((ret = PIOc_inq_att(ncid, NC_GLOBAL, SHORT_ATT_NAME, &atttype, &attlen)))
@@ -235,49 +220,41 @@ check_file(int iosysid, int format, char *filename, int my_rank, int verbose)
 
 
     /* Close the file. */
-    if (verbose)
-        printf("%d test_intercomm2 closing file (again) ncid = %d\n", my_rank, ncid);
+    printf("%d test_intercomm2 closing file (again) ncid = %d\n", my_rank, ncid);
     if ((ret = PIOc_closefile(ncid)))
         ERR(ret);
 
     return 0;
 }
 
-/** Run Tests for Init_Intercomm
- *
- * @param argc argument count
- * @param argv array of arguments
- */
-int
-main(int argc, char **argv)
+/* Run Tests for Init_Intercomm. */
+int main(int argc, char **argv)
 {
-    int verbose = 1;
-
-    /** Zero-based rank of processor. */
+    /* Zero-based rank of processor. */
     int my_rank;
 
-    /** Number of processors involved in current execution. */
+    /* Number of processors involved in current execution. */
     int ntasks;
 
     int num_flavors; /* Number of PIO netCDF flavors in this build. */
     int flavor[NUM_FLAVORS]; /* iotypes for the supported netCDF IO flavors. */
 
-    /** Names for the output files. */
+    /* Names for the output files. */
     char filename[NUM_FLAVORS][NC_MAX_NAME + 1];
 
-    /** The ID for the parallel I/O system. */
+    /* The ID for the parallel I/O system. */
     int iosysid[COMPONENT_COUNT];
 
-    /** The ncid of the netCDF file. */
+    /* The ncid of the netCDF file. */
     int ncid;
 
-    /** The ID of the netCDF varable. */
+    /* The ID of the netCDF varable. */
     int varid;
 
-    /** Return code. */
+    /* Return code. */
     int ret;
 
-    /** Index for loops. */
+    /* Index for loops. */
     int fmt, d, d1, i;
 
     MPI_Comm test_comm;
@@ -291,9 +268,8 @@ main(int argc, char **argv)
 
     if(my_rank < TARGET_NTASKS)
     {
-        if (verbose)
-            printf("%d: test_intercomm2 ParallelIO Library test_intercomm2 running on %d processors.\n",
-                   my_rank, ntasks);
+	printf("%d: test_intercomm2 ParallelIO Library test_intercomm2 running on %d processors.\n",
+	       my_rank, ntasks);
 
         /* Initialize the PIO IO system. This specifies how many and which
          * processors are involved in I/O. */
@@ -317,9 +293,8 @@ main(int argc, char **argv)
                                    num_procs, NULL, iosysid)))
             ERR(ERR_AWFUL);
 
-        if (verbose)
-            printf("%d: test_intercomm2 ParallelIO Library test_intercomm2 comp task returned.\n",
-                   my_rank);
+	printf("%d: test_intercomm2 ParallelIO Library test_intercomm2 comp task returned.\n",
+	       my_rank);
 
 
 
@@ -338,19 +313,16 @@ main(int argc, char **argv)
                 sprintf(filename[fmt], "test_intercomm2_%d.nc", flavor[fmt]);
 
                 /* Create a netCDF file with one dimension and one variable. */
-                if (verbose)
-                    printf("%d test_intercomm2 creating file %s\n", my_rank, filename[fmt]);
+		printf("%d test_intercomm2 creating file %s\n", my_rank, filename[fmt]);
                 if ((ret = PIOc_createfile(iosysid[my_comp_idx], &ncid, &flavor[fmt], filename[fmt],
                                            NC_CLOBBER)))
                     ERR(ret);
-                if (verbose)
-                    printf("%d test_intercomm2 file created ncid = %d\n", my_rank, ncid);
+		printf("%d test_intercomm2 file created ncid = %d\n", my_rank, ncid);
 
                 /* End define mode, then re-enter it. */
                 if ((ret = PIOc_enddef(ncid)))
                     ERR(ret);
-                if (verbose)
-                    printf("%d test_intercomm2 calling redef\n", my_rank);
+		printf("%d test_intercomm2 calling redef\n", my_rank);
                 if ((ret = PIOc_redef(ncid)))
                     ERR(ret);
 
@@ -368,7 +340,6 @@ main(int argc, char **argv)
                 /* Test the inq_type function for atomic types. */
                 char type_name[NC_MAX_NAME + 1];
                 PIO_Offset type_size;
-#define NUM_TYPES 11
                 nc_type xtype[NUM_TYPES] = {NC_CHAR, NC_BYTE, NC_SHORT, NC_INT, NC_FLOAT, NC_DOUBLE,
                                             NC_UBYTE, NC_USHORT, NC_UINT, NC_INT64, NC_UINT64};
                 int type_len[NUM_TYPES] = {1, 1, 2, 4, 4, 8, 1, 2, 4, 8, 8};
@@ -383,8 +354,7 @@ main(int argc, char **argv)
 
                 /* Define a dimension. */
                 char dimname2[NC_MAX_NAME + 1];
-                if (verbose)
-                    printf("%d test_intercomm2 defining dimension %s\n", my_rank, DIM_NAME);
+		printf("%d test_intercomm2 defining dimension %s\n", my_rank, DIM_NAME);
                 if ((ret = PIOc_def_dim(ncid, FIRST_DIM_NAME, DIM_LEN, &dimid)))
                     ERR(ret);
                 if ((ret = PIOc_inq_dimname(ncid, 0, dimname2)))
@@ -396,8 +366,7 @@ main(int argc, char **argv)
 
                 /* Define a 1-D variable. */
                 char varname2[NC_MAX_NAME + 1];
-                if (verbose)
-                    printf("%d test_intercomm2 defining variable %s\n", my_rank, VAR_NAME);
+		printf("%d test_intercomm2 defining variable %s\n", my_rank, VAR_NAME);
                 if ((ret = PIOc_def_var(ncid, FIRST_VAR_NAME, NC_INT, NDIM, &dimid, &varid)))
                     ERR(ret);
                 if ((ret = PIOc_inq_varname(ncid, 0, varname2)))
@@ -410,8 +379,7 @@ main(int argc, char **argv)
                 char *buf111 = malloc(19999);
 
                 /* Add a global attribute. */
-                if (verbose)
-                    printf("%d test_intercomm2 writing attributes %s\n", my_rank, ATT_NAME);
+		printf("%d test_intercomm2 writing attributes %s\n", my_rank, ATT_NAME);
                 int att_data = ATT_VALUE;
                 short short_att_data = ATT_VALUE;
                 float float_att_data = ATT_VALUE;
@@ -448,8 +416,7 @@ main(int argc, char **argv)
                     ERR(ret);
 
                 /* End define mode. */
-                if (verbose)
-                    printf("%d test_intercomm2 ending define mode ncid = %d\n", my_rank, ncid);
+		printf("%d test_intercomm2 ending define mode ncid = %d\n", my_rank, ncid);
                 if ((ret = PIOc_enddef(ncid)))
                     ERR(ret);
 
@@ -460,23 +427,20 @@ main(int argc, char **argv)
                  * ignored. */
                 for (int i = 0; i < DIM_LEN; i++)
                     data[i] = i;
-                if (verbose)
-                    printf("%d test_intercomm2 writing data\n", my_rank);
-                if (verbose)
-                    printf("%d test_intercomm2 writing data\n", my_rank);
+		printf("%d test_intercomm2 writing data\n", my_rank);
+		printf("%d test_intercomm2 writing data\n", my_rank);
                 start[0] = 0;
                 count[0] = DIM_LEN;
                 if ((ret = PIOc_put_vars_tc(ncid, varid, start, count, NULL, NC_INT, data)))
                     ERR(ret);
 
                 /* Close the file. */
-                if (verbose)
-                    printf("%d test_intercomm2 closing file ncid = %d\n", my_rank, ncid);
+		printf("%d test_intercomm2 closing file ncid = %d\n", my_rank, ncid);
                 if ((ret = PIOc_closefile(ncid)))
                     ERR(ret);
 
                 /* Check the file for correctness. */
-                if ((ret = check_file(iosysid[my_comp_idx], flavor[fmt], filename[fmt], my_rank, verbose)))
+                if ((ret = check_file(iosysid[my_comp_idx], flavor[fmt], filename[fmt], my_rank)))
                     ERR(ret);
 
                 /* Now delete the file. */
@@ -489,27 +453,18 @@ main(int argc, char **argv)
             } /* next netcdf flavor */
 
             /* Finalize the IO system. Only call this from the computation tasks. */
-            if (verbose)
-                printf("%d test_intercomm2 Freeing PIO resources\n", my_rank);
+	    printf("%d test_intercomm2 Freeing PIO resources\n", my_rank);
             if ((ret = PIOc_finalize(iosysid[my_comp_idx])))
                 ERR(ret);
         }
-
     } /* my_rank < TARGET_NTASKS */
-    MPI_Barrier(MPI_COMM_WORLD);
 
-    /* Finalize the MPI library. */
-    MPI_Finalize();
+    /* Finalize test. */
+    printf("%d %s finalizing...\n", my_rank, TEST_NAME);
+    if ((ret = pio_test_finalize(&test_comm)))
+        return ERR_AWFUL;
 
-#ifdef TIMING
-    /* Finalize the GPTL timing library. */
-    if ((ret = GPTLfinalize()))
-        return ret;
-#endif
-
-    if (verbose)
-        printf("%d test_intercomm2 SUCCESS!!\n", my_rank);
-
+    printf("%d %s SUCCESS!!\n", my_rank, TEST_NAME);
 
     return 0;
 }

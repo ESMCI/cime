@@ -1,6 +1,5 @@
-/**
- * @file Tests for PIOc_Intercomm. This tests basic asynch I/O capability.
- * @author Ed Hartnett
+/*
+ * Tests for PIOc_Intercomm. This tests basic asynch I/O capability.
  *
  * This very simple test runs on two ranks. One is used for
  * computation, the other for IO. A sample netCDF file is created and
@@ -10,15 +9,10 @@
  * <pre>mpiexec -n 4 valgrind -v --leak-check=full --suppressions=../../../tests/unit/valsupp_test.supp
  * --error-exitcode=99 --track-origins=yes ./test_async_simple</pre>
  *
+ * Ed Hartnett
  */
 #include <pio.h>
 #include <pio_tests.h>
-
-/* Number of processors that will do IO. */
-#define NUM_IO_PROCS 1
-
-/* Number of computational components to create. */
-#define COMPONENT_COUNT 1
 
 /* The number of tasks this test should run on. */
 #define TARGET_NTASKS 2
@@ -26,9 +20,14 @@
 /* The name of this test. */
 #define TEST_NAME "test_async_simple"
 
-/** Run simple async test. */
-int
-main(int argc, char **argv)
+/* Number of processors that will do IO. */
+#define NUM_IO_PROCS 1
+
+/* Number of computational components to create. */
+#define COMPONENT_COUNT 1
+
+/* Run simple async test. */
+int main(int argc, char **argv)
 {
     int my_rank; /* Zero-based rank of processor. */
     int ntasks; /* Number of processors involved in current execution. */
@@ -41,7 +40,8 @@ main(int argc, char **argv)
     MPI_Comm test_comm;
 
     /* Initialize test. */
-    if ((ret = pio_test_init(argc, argv, &my_rank, &ntasks, TARGET_NTASKS, &test_comm)))
+    if ((ret = pio_test_init(argc, argv, &my_rank, &ntasks, TARGET_NTASKS,
+			     &test_comm)))
         ERR(ERR_INIT);
 
     /* Only do something on TARGET_NTASKS tasks. */
@@ -100,14 +100,11 @@ main(int argc, char **argv)
             }
         } /* endif comp_task */
     } /* endif my_rank < TARGET_NTASKS */
-    /* Wait for everyone to catch up. */
-    printf("%d %s waiting for all processes!\n", my_rank, TEST_NAME);
-    MPI_Barrier(test_comm);
 
-    /* Finalize the MPI library. */
-    printf("%d %s Finalizing...\n", my_rank, TEST_NAME);
-    if ((ret = pio_test_finalize()))
-        return ret;
+    /* Finalize test. */
+    printf("%d %s finalizing...\n", my_rank, TEST_NAME);
+    if ((ret = pio_test_finalize(&test_comm)))
+        return ERR_AWFUL;
 
     printf("%d %s SUCCESS!!\n", my_rank, TEST_NAME);
 

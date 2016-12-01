@@ -25,6 +25,11 @@ contributes to code quality.
 
 # C Code #
 
+## Warnings ##
+
+<p>The C library compiles under GNU gcc without warnings. No code will
+be merged with the C library which causes warnings during compile.
+
 ## Backward Compatibility ##
 
 <p>We cannot remove or change a function in the public C API. We can
@@ -87,17 +92,34 @@ correctly. M-x indent-region will indent a selected region of code.
 
 <ul>
 
+<li>All code is subject to review.
+
 <li>Pull requests will be as small as possible and focused on
 one(-ish) issue.
 
-<li>Pull requests will be left up on github for at least a day to
-allow all team members time to look at them.
+<li>All non-trivial pull requests are associated with a github
+issue. The issue is where discussion of requirements and
+implementation details can be worked out.
+
+<li>Pull requests will be left up on github for about a day. Request
+more time if you need it and are actively reviewing the code. (Note
+that pull request can also be reviewed after they are merged, if you
+miss one).
 
 <li>Jim will identify key stakeholders in chaged code and ensure they
 accept code changes.
 
 <li>Reviewers are open-minded and ready to accept improvements to the
 library.
+
+<li>Reviewers will make comments on the pull request. All comments
+must be resolved.
+
+<li>If chages are dictated, they happen on the branch, so code
+reviewers can see the updated code.
+
+<li>The pull request is only merged when all programmers agree that
+all issues have been resolved.
 
 </ul>
 

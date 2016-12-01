@@ -616,7 +616,7 @@ int PIOc_freedecomp(int iosysid, int ioid)
  * @param file the filename
  */
 int PIOc_readmap(const char *file, int *ndims, int *gdims[], PIO_Offset *fmaplen,
-		 PIO_Offset *map[], const MPI_Comm comm)
+		 PIO_Offset *map[], MPI_Comm comm)
 {
     int npes, myrank;
     int rnpes, rversno;
@@ -719,7 +719,7 @@ int PIOc_readmap(const char *file, int *ndims, int *gdims[], PIO_Offset *fmaplen
  * @returns 0 for success, error code otherwise.
  */
 int PIOc_readmap_from_f90(const char *file, int *ndims, int *gdims[], PIO_Offset *maplen,
-			  PIO_Offset *map[], const int f90_comm)
+			  PIO_Offset *map[], int f90_comm)
 {
     return PIOc_readmap(file, ndims, gdims, maplen, map, MPI_Comm_f2c(f90_comm));
 }
@@ -735,8 +735,8 @@ int PIOc_readmap_from_f90(const char *file, int *ndims, int *gdims[], PIO_Offset
  * @param comm an MPI communicator.
  * @returns 0 for success, error code otherwise.
  */
-int PIOc_writemap(const char *file, const int ndims, const int *gdims, PIO_Offset maplen,
-		  PIO_Offset *map, const MPI_Comm comm)
+int PIOc_writemap(const char *file, int ndims, const int *gdims, PIO_Offset maplen,
+		  PIO_Offset *map, MPI_Comm comm)
 {
     int npes, myrank;
     PIO_Offset *nmaplen = NULL;

@@ -1,46 +1,47 @@
-/**
- * @file Common test code for some PIO tests.
+/*
+ * Common test code for PIO C tests.
  *
+ * Ed Hartnett
  */
 #include <pio.h>
 #include <pio_tests.h>
 
-/** The number of dimensions in the test data. */
+/* The number of dimensions in the test data. */
 #define NDIM_S1 1
 
-/** The length of our test data. */
+/* The length of our test data. */
 #define DIM_LEN_S1 4
 
-/** The name of the dimension in the netCDF output file. */
+/* The name of the dimension in the netCDF output file. */
 #define FIRST_DIM_NAME_S1 "jojo"
 #define DIM_NAME_S1 "dim_sample_s1"
 
-/** The name of the variable in the netCDF output file. */
+/* The name of the variable in the netCDF output file. */
 #define FIRST_VAR_NAME_S1 "bill"
 #define VAR_NAME_S1 "var_sample_s1"
 
-/** The number of dimensions in the sample 2 test data. */
+/* The number of dimensions in the sample 2 test data. */
 #define NDIM_S2 1
 
-/** The length of our sample 2 test data. */
+/* The length of our sample 2 test data. */
 #define DIM_LEN_S2 4
 
-/** The name of the dimension in the sample 2 output file. */
+/* The name of the dimension in the sample 2 output file. */
 #define FIRST_DIM_NAME_S2 "jojo"
 #define DIM_NAME_S2 "dim_sample_s2"
 
-/** The name of the variable in the sample 2 output file. */
+/* The name of the variable in the sample 2 output file. */
 #define FIRST_VAR_NAME_S2 "bill"
 #define VAR_NAME_S2 "var_sample_s2"
 
-/** The name of the global attribute in the sample 2 output file. */
+/* The name of the global attribute in the sample 2 output file. */
 #define FIRST_ATT_NAME_S2 "willy_gatt_sample s2"
 #define ATT_NAME_S2 "gatt_sample s2"
 #define SHORT_ATT_NAME_S2 "short_gatt_sample s2"
 #define FLOAT_ATT_NAME_S2 "float_gatt_sample s2"
 #define DOUBLE_ATT_NAME_S2 "double_gatt_sample s2"
 
-/** The value of the global attribute in the sample 2 output file. */
+/* The value of the global attribute in the sample 2 output file. */
 #define ATT_VALUE_S2 42
 
 /* How many flavors of netCDF are available? */
@@ -110,9 +111,27 @@ int get_iotype_name(int iotype, char *name)
  * for this test and contain target_ntasks tasks from WORLD.
  * @returns 0 for success, error code otherwise.
 */
-int
-pio_test_init(int argc, char **argv, int *my_rank, int *ntasks,
-              int target_ntasks, MPI_Comm *comm)
+int pio_test_init(int argc, char **argv, int *my_rank, int *ntasks,
+		  int target_ntasks, MPI_Comm *comm)
+{
+    return pio_test_init2(argc,argv, my_rank, ntasks, target_ntasks,
+                          target_ntasks, comm);
+}
+
+/* Initalize the test system. 
+ *
+ * @param argc argument count from main().
+ * @param argv argument array from main().
+ * @param my_rank pointer that gets this tasks rank.
+ * @param ntasks pointer that gets the number of tasks in WORLD
+ * communicator.
+ * @param target_ntasks the number of tasks this test needs to run.
+ * @param comm a pointer to an MPI communicator that will be created
+ * for this test and contain target_ntasks tasks from WORLD.
+ * @returns 0 for success, error code otherwise.
+*/
+int pio_test_init2(int argc, char **argv, int *my_rank, int *ntasks,
+                   int min_ntasks, int max_ntasks, MPI_Comm *comm)
 {
     int ret; /* Return value. */
 
@@ -131,21 +150,22 @@ pio_test_init(int argc, char **argv, int *my_rank, int *ntasks,
         MPIERR(ret);
     if ((ret = MPI_Comm_size(MPI_COMM_WORLD, ntasks)))
         MPIERR(ret);
+    printf("%d has %d tasks\n", *my_rank, *ntasks);
 
     /* Check that a valid number of processors was specified. */
-    if (*ntasks < target_ntasks)
+    if (*ntasks < min_ntasks)
     {
         fprintf(stderr, "ERROR: Number of processors must be at least %d for this test!\n",
-                target_ntasks);
+                min_ntasks);
         return ERR_AWFUL;
     }
-    else if (*ntasks > target_ntasks)
+    else if (*ntasks > max_ntasks)
     {
 	/* If more tasks are available than we need for this test,
 	 * create a communicator with exactly the number of tasks we
 	 * need. */
         int color, key;
-        if (*my_rank < target_ntasks)
+        if (*my_rank < max_ntasks)
         {
             color = 0;
 	    key = *my_rank;
@@ -153,29 +173,44 @@ pio_test_init(int argc, char **argv, int *my_rank, int *ntasks,
         else
         {
             color = 1;
-            key = *my_rank - target_ntasks;
+            key = *my_rank - max_ntasks;
         }
+	printf("%d splitting comm for test color = %d key = %d\n", *my_rank, color, key);
         if ((ret = MPI_Comm_split(MPI_COMM_WORLD, color, key, comm)))
             MPIERR(ret);
     }
     else
     {
+	printf("%d using whole comm for test\n", *my_rank);
         if ((ret = MPI_Comm_dup(MPI_COMM_WORLD, comm)))
             MPIERR(ret);
     }
 
     /* Turn on logging. */
+    printf("%d setting log level\n", *my_rank);    
     if ((ret = PIOc_set_log_level(3)))
         return ret;
+    printf("%d done setting log level\n", *my_rank);    
 
     return PIO_NOERR;
 }
 
-/* Finalize a test. */
-int
-pio_test_finalize()
+/* Finalize a PIO C test. 
+*
+* @param test_comm pointer to the test communicator.
+* @returns 0 for success, error code otherwise.
+*/
+int pio_test_finalize(MPI_Comm *test_comm)
 {
     int ret = PIO_NOERR; /* Return value. */
+
+    /* Wait for all processes to arrive here. */
+    if (MPI_Barrier(*test_comm))
+        return ERR_MPI;        
+
+    /* Free communicator. */
+    if (MPI_Comm_free(test_comm))
+        return ERR_MPI;
 
     /* Finalize MPI. */
     MPI_Finalize();
@@ -189,7 +224,7 @@ pio_test_finalize()
     return ret;
 }
 
-/** Test the inq_format function. */
+/* Test the inq_format function. */
 int
 test_inq_format(int ncid, int format)
 {
@@ -210,7 +245,7 @@ test_inq_format(int ncid, int format)
     return PIO_NOERR;
 }
 
-/** Test the inq_type function for atomic types. */
+/* Test the inq_type function for atomic types. */
 int
 test_inq_type(int ncid, int format)
 {
@@ -235,7 +270,7 @@ test_inq_type(int ncid, int format)
     return PIO_NOERR;
 }
 
-/** This creates a netCDF sample file in the specified format. */
+/* This creates a netCDF sample file in the specified format. */
 int
 create_nc_sample(int sample, int iosysid, int format, char *filename, int my_rank, int *ncid)
 {
@@ -254,7 +289,7 @@ create_nc_sample(int sample, int iosysid, int format, char *filename, int my_ran
     return PIO_EINVAL;
 }
 
-/** This checks a netCDF sample file in the specified format. */
+/* This checks a netCDF sample file in the specified format. */
 int
 check_nc_sample(int sample, int iosysid, int format, char *filename, int my_rank, int *ncid)
 {
@@ -273,7 +308,7 @@ check_nc_sample(int sample, int iosysid, int format, char *filename, int my_rank
     return PIO_EINVAL;
 }
 
-/** This creates an empty netCDF file in the specified format. */
+/* This creates an empty netCDF file in the specified format. */
 int
 create_nc_sample_0(int iosysid, int format, char *filename, int my_rank, int *ncidp)
 {
@@ -363,7 +398,7 @@ check_nc_sample_0(int iosysid, int format, char *filename, int my_rank, int *nci
     return 0;
 }
 
-/** This creates a netCDF file in the specified format, with some
+/* This creates a netCDF file in the specified format, with some
  * sample values. */
 int
 create_nc_sample_1(int iosysid, int format, char *filename, int my_rank, int *ncidp)
@@ -547,7 +582,7 @@ check_nc_sample_1(int iosysid, int format, char *filename, int my_rank, int *nci
     return 0;
 }
 
-/** This creates a netCDF file in the specified format, with some
+/* This creates a netCDF file in the specified format, with some
  * sample values. */
 int
 create_nc_sample_2(int iosysid, int format, char *filename, int my_rank, int *ncidp)
