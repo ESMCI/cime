@@ -57,6 +57,28 @@ int dim_len[NDIM] = {NC_UNLIMITED, X_DIM_LEN, Y_DIM_LEN};
 /* Length of chunksizes to use in netCDF-4 files. */
 PIO_Offset chunksize[NDIM] = {2, X_DIM_LEN/2, Y_DIM_LEN/2};
 
+int test_file_delete(int iosysid, int num_flavors, int *flavor, int my_rank)
+{
+    int ret;    /* Return code. */
+    
+    /* Use PIO to create the example file in each of the four
+     * available ways. */
+    for (int fmt = 0; fmt < num_flavors; fmt++)
+    {
+        char filename[NC_MAX_NAME + 1]; /* Test filename. */
+        char iotype_name[NC_MAX_NAME + 1];
+
+        /* Create a filename. */
+        if ((ret = get_iotype_name(flavor[fmt], iotype_name)))
+            return ret;
+        sprintf(filename, "%s_%s.nc", TEST_NAME, iotype_name);
+
+        printf("%d testing delete for file %s with format %d...\n",
+               my_rank, filename, flavor[fmt]);
+    }
+}
+
+/* Test the netCDF-4 optimization functions. */
 int test_nc4(int iosysid, int num_flavors, int *flavor, int my_rank)
 {
     int ncid;    /* The ncid of the netCDF file. */
@@ -83,22 +105,15 @@ int test_nc4(int iosysid, int num_flavors, int *flavor, int my_rank)
     PIO_Offset var_cache_nelems; /* Number of elements in var cache. */
     float var_cache_preemption;     /* Var cache preemption. */
     char varname_in[NC_MAX_NAME];
-    int fmt;
     int expected_ret; /* The return code we expect to get. */
     int ret;    /* Return code. */
 
     /* Use PIO to create the example file in each of the four
      * available ways. */
-    for (fmt = 0; fmt < num_flavors; fmt++)
+    for (int fmt = 0; fmt < num_flavors; fmt++)
     {
         char filename[NC_MAX_NAME + 1]; /* Test filename. */
         char iotype_name[NC_MAX_NAME + 1];
-
-#ifdef HAVE_MPE
-        /* Log with MPE that we are starting CREATE. */
-        if ((ret = MPE_Log_event(event_num[START][CREATE_PNETCDF+fmt], 0, "start create")))
-            MPIERR(ret);
-#endif /* HAVE_MPE */
 
         /* Create a filename. */
         if ((ret = get_iotype_name(flavor[fmt], iotype_name)))
@@ -278,6 +293,22 @@ int test_nc4(int iosysid, int num_flavors, int *flavor, int my_rank)
     return PIO_NOERR;
 }
 
+int test_all(int iosysid, int num_flavors, int *flavor, int my_rank)
+{
+    int ret; /* Return code. */
+    
+    /* Test file deletes. */
+    if ((ret = test_nc4(iosysid, num_flavors, flavor, my_rank)))
+        return ret;
+
+    /* Test netCDF-4 functions. */
+    if ((ret = test_nc4(iosysid, num_flavors, flavor, my_rank)))
+        return ret;
+    return PIO_NOERR;
+}
+
+
+
 /* Test without async.
  *
  * @param my_rank rank of the task.
@@ -321,15 +352,10 @@ int test_no_async(int my_rank, int num_flavors, int *flavor, MPI_Comm test_comm)
         ERR(ret);
     free(compdof);
 
-#ifdef HAVE_MPE
-    /* Log with MPE that we are done with INIT. */
-    if ((ret = MPE_Log_event(event_num[END][INIT], 0, "end init")))
-        MPIERR(ret);
-#endif /* HAVE_MPE */
-
-    if ((ret = test_nc4(iosysid, num_flavors, flavor, my_rank)))
+    /* Run tests. */
+    if ((ret = test_all(iosysid, num_flavors, flavor, my_rank)))
         return ret;
-
+        
     /* Free the PIO decomposition. */
     printf("%d Freeing PIO decomposition...\n", my_rank);
     if ((ret = PIOc_freedecomp(iosysid, ioid)))
