@@ -432,7 +432,7 @@ int PIOc_deletefile(int iosysid, const char *filename)
         mpierr = MPI_Barrier(ios->io_comm);
             
 #ifdef _NETCDF
-        if (ios->io_rank == 0)
+        if (!mpierr && ios->io_rank == 0)
         {
             LOG((3, "about to call nc_delete with filename %s", filename));
             ierr = nc_delete(filename);
@@ -440,11 +440,12 @@ int PIOc_deletefile(int iosysid, const char *filename)
         }
 #else
 #ifdef _PNETCDF
-        if (delete_called)
+        if (!mpierr && !delete_called)
             ierr = ncmpi_delete(filename, ios->info);
 #endif
 #endif
-        mpierr = MPI_Barrier(ios->io_comm);
+        if (!mpierr)
+            mpierr = MPI_Barrier(ios->io_comm);
     }
 
     /* Broadcast and check the return code. */
