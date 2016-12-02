@@ -69,6 +69,9 @@ int test_deletefile(int iosysid, int num_flavors, int *flavor, int my_rank)
         char filename[NC_MAX_NAME + 1]; /* Test filename. */
         char iotype_name[NC_MAX_NAME + 1];
 
+        /* Set error handling. */
+        PIOc_Set_IOSystem_Error_Handling(ncid, PIO_RETURN_ERROR);
+
         /* Create a filename. */
         if ((ret = get_iotype_name(flavor[fmt], iotype_name)))
             return ret;
@@ -92,6 +95,12 @@ int test_deletefile(int iosysid, int num_flavors, int *flavor, int my_rank)
         printf("%d Deleting %s...\n", my_rank, filename);
         if ((ret = PIOc_deletefile(iosysid, filename)))
             ERR(ret);
+
+        /* Make sure it is gone. */
+        /* if ((ret = PIOc_openfile(iosysid, &ncid, &(flavor[fmt]), filename, */
+        /*                          PIO_NOWRITE)) != PIO_ENFILE) */
+        /*     ERR(ret); */
+        
     }
 
     return PIO_NOERR;
@@ -467,8 +476,8 @@ int main(int argc, char **argv)
             return ret;
 
         /* Run tests with async. */
-        if ((ret = test_async(my_rank, num_flavors, flavor, test_comm)))
-            return ret;
+        /* if ((ret = test_async(my_rank, num_flavors, flavor, test_comm))) */
+        /*     return ret; */
 
     } /* endif my_rank < TARGET_NTASKS */
 
