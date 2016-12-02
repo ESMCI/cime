@@ -47,5 +47,5 @@ Please review the ChangeLog that is included with the distribution for up-to-dat
  - \ref examp
  - \ref faq
  - \ref api
- - \ref code_style
+ - \ref contributing_code
 */
