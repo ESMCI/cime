@@ -329,14 +329,12 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank)
     if ((ret = test_deletefile(iosysid, num_flavors, flavor, my_rank)))
         return ret;
 
-    /* /\* Test netCDF-4 functions. *\/ */
-    /* if ((ret = test_nc4(iosysid, num_flavors, flavor, my_rank))) */
-    /*     return ret; */
+    /* Test netCDF-4 functions. */
+    if ((ret = test_nc4(iosysid, num_flavors, flavor, my_rank)))
+        return ret;
 
     return PIO_NOERR;
 }
-
-
 
 /* Test without async.
  *
