@@ -57,8 +57,9 @@ int dim_len[NDIM] = {NC_UNLIMITED, X_DIM_LEN, Y_DIM_LEN};
 /* Length of chunksizes to use in netCDF-4 files. */
 PIO_Offset chunksize[NDIM] = {2, X_DIM_LEN/2, Y_DIM_LEN/2};
 
-int test_file_delete(int iosysid, int num_flavors, int *flavor, int my_rank)
+int test_deletefile(int iosysid, int num_flavors, int *flavor, int my_rank)
 {
+    int ncid;
     int ret;    /* Return code. */
     
     /* Use PIO to create the example file in each of the four
@@ -71,11 +72,29 @@ int test_file_delete(int iosysid, int num_flavors, int *flavor, int my_rank)
         /* Create a filename. */
         if ((ret = get_iotype_name(flavor[fmt], iotype_name)))
             return ret;
-        sprintf(filename, "%s_%s.nc", TEST_NAME, iotype_name);
+        sprintf(filename, "delete_me_%s_%s.nc", TEST_NAME, iotype_name);
 
         printf("%d testing delete for file %s with format %d...\n",
                my_rank, filename, flavor[fmt]);
+        if ((ret = PIOc_createfile(iosysid, &ncid, &(flavor[fmt]), filename, PIO_CLOBBER)))
+            ERR(ret);
+
+        /* End define mode. */
+        if ((ret = PIOc_enddef(ncid)))
+            ERR(ret);
+
+        /* Close the netCDF file. */
+        printf("%d Closing the sample data file...\n", my_rank);
+        if ((ret = PIOc_closefile(ncid)))
+            ERR(ret);
+
+        /* Now delete the file. */
+        printf("%d Deleting %s...\n", my_rank, filename);
+        if ((ret = PIOc_deletefile(iosysid, filename)))
+            ERR(ret);
     }
+
+    return PIO_NOERR;
 }
 
 /* Test the netCDF-4 optimization functions. */
@@ -298,12 +317,13 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank)
     int ret; /* Return code. */
     
     /* Test file deletes. */
-    if ((ret = test_nc4(iosysid, num_flavors, flavor, my_rank)))
+    if ((ret = test_deletefile(iosysid, num_flavors, flavor, my_rank)))
         return ret;
 
-    /* Test netCDF-4 functions. */
-    if ((ret = test_nc4(iosysid, num_flavors, flavor, my_rank)))
-        return ret;
+    /* /\* Test netCDF-4 functions. *\/ */
+    /* if ((ret = test_nc4(iosysid, num_flavors, flavor, my_rank))) */
+    /*     return ret; */
+
     return PIO_NOERR;
 }
 
