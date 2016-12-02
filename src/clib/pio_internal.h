@@ -195,8 +195,9 @@ extern "C" {
     /* Handle end and re-defs. */
     int pioc_change_def(int ncid, int is_enddef);    
 
+    /* Initialize and finalize logging. */
+    void pio_init_logging(void);
     void pio_finalize_logging(void );
-
 #if defined(__cplusplus)
 }
 #endif
