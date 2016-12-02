@@ -94,8 +94,9 @@ correctly. M-x indent-region will indent a selected region of code.
 
 <li>All code is subject to review.
 
-<li>Pull requests will be as small as possible and focused on
-one(-ish) issue.
+<li>Pull requests will be focused on one issue.
+
+<li>Pull requests may not be submitted until all tests pass.
 
 <li>All non-trivial pull requests are associated with a github
 issue. The issue is where discussion of requirements and
@@ -106,7 +107,7 @@ more time if you need it and are actively reviewing the code. (Note
 that pull request can also be reviewed after they are merged, if you
 miss one).
 
-<li>Jim will identify key stakeholders in chaged code and ensure they
+<li>Jim will identify key stakeholders in changed code and ensure they
 accept code changes.
 
 <li>Reviewers are open-minded and ready to accept improvements to the
