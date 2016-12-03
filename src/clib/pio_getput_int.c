@@ -510,21 +510,14 @@ int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
 
         /* Free tmp resources. */
         if (start_present)
-        {
             free(rstart);
-        }
         else
-        {
             start = rstart;
-        }
+
         if (count_present)
-        {
             free(rcount);
-        }
         else
-        {
             count = rcount;
-        }
 
         /* Only PNETCDF requires a non-NULL stride, realocate it later if needed */
         free(rstride);
@@ -722,6 +715,7 @@ int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
         }
 #endif /* _NETCDF */
     }
+
     if (!ios->async_interface || !ios->ioproc)
     {
         /* Free tmp start/count allocated to account for NULL start/counts */
@@ -741,7 +735,34 @@ int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
     return ierr;
 }
 
-/** Interface to netCDF data write function. */
+/**
+ * Internal PIO function which provides a type-neutral interface to
+ * nc_put_var1 calls.
+ *
+ * Users should not call this function directly. Instead, call one of
+ * the derived functions, depending on the type of data you are
+ * writing: PIOc_put_var1_text(), PIOc_put_var1_uchar(),
+ * PIOc_put_var1_schar(), PIOc_put_var1_ushort(),
+ * PIOc_put_var1_short(), PIOc_put_var1_uint(), PIOc_put_var1_int(),
+ * PIOc_put_var1_long(), PIOc_put_var1_float(),
+ * PIOc_put_var1_longlong(), PIOc_put_var1_double(),
+ * PIOc_put_var1_ulonglong().
+ *
+ * This routine is called collectively by all tasks in the
+ * communicator ios.union_comm.
+ *
+ * @param ncid identifies the netCDF file
+ * @param varid the variable ID number
+ * @param index an array of start indicies (must have same number of
+ * entries as variable has dimensions). If NULL, indices of 0 will be
+ * used.
+ * @param xtype the netCDF type of the data being passed in buf. Data
+ * will be automatically covnerted from this type to the type of the
+ * variable being written to.
+ * @param op pointer to the data to be written.
+ *
+ * @return PIO_NOERR on success, error code otherwise.
+ */
 int PIOc_put_var1_tc(int ncid, int varid, const PIO_Offset *index, nc_type xtype,
                      const void *op)
 {
