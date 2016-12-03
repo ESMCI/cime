@@ -224,28 +224,25 @@ int PIOc_createfile(int iosysid, int *ncidp, int *iotype, const char *filename, 
         return check_netcdf(file, ierr, __FILE__, __LINE__);
 
     /* Broadcast results to all tasks. Ignore NULL parameters. */
-    if (!ierr)
-    {
-        if ((mpierr = MPI_Bcast(&file->mode, 1, MPI_INT, ios->ioroot, ios->union_comm)))
-            return check_mpi(file, mpierr, __FILE__, __LINE__);
+    if ((mpierr = MPI_Bcast(&file->mode, 1, MPI_INT, ios->ioroot, ios->union_comm)))
+        return check_mpi(file, mpierr, __FILE__, __LINE__);
 
-        /* This flag is implied by netcdf create functions but we need
-           to know if its set. */
-        file->mode = file->mode | PIO_WRITE;
+    /* This flag is implied by netcdf create functions but we need
+       to know if its set. */
+    file->mode = file->mode | PIO_WRITE;
 
-        /* Assign the PIO ncid, necessary because files may be opened
-         * on mutilple iosystems, causing the underlying library to
-         * reuse ncids. Hilarious confusion ensues. */
-        file->pio_ncid = pio_next_ncid++;
-        LOG((2, "file->fh = %d file->pio_ncid = %d", file->fh, file->pio_ncid));
+    /* Assign the PIO ncid, necessary because files may be opened
+     * on mutilple iosystems, causing the underlying library to
+     * reuse ncids. Hilarious confusion ensues. */
+    file->pio_ncid = pio_next_ncid++;
+    LOG((2, "file->fh = %d file->pio_ncid = %d", file->fh, file->pio_ncid));
 
-        /* Return the ncid to the caller. */
-        *ncidp = file->pio_ncid;
+    /* Return the ncid to the caller. */
+    *ncidp = file->pio_ncid;
 
-        /* Add the struct with this files info to the global list of
-         * open files. */
-        pio_add_to_file_list(file);
-    }
+    /* Add the struct with this files info to the global list of
+     * open files. */
+    pio_add_to_file_list(file);
 
     LOG((2, "Created file %s file->fh = %d file->pio_ncid = %d", filename,
          file->fh, file->pio_ncid));
