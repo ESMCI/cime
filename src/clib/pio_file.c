@@ -390,8 +390,11 @@ int PIOc_deletefile(int iosysid, const char *filename)
     file_desc_t *file;     /* Pointer to file information. */
     int ierr = PIO_NOERR;  /* Return code from function calls. */
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
+    int delete_called = 0; /* Becomes non-zero after delete is called. */
     int msg = PIO_MSG_DELETE_FILE;
     size_t len;
+
+    LOG((1, "PIOc_deletefile iosysid = %d filename = %s", iosysid, filename));
 
     /* Get the IO system info from the id. */
     if (!(ios = pio_get_iosystem_from_id(iosysid)))
@@ -409,8 +412,16 @@ int PIOc_deletefile(int iosysid, const char *filename)
             if (!mpierr)
                 mpierr = MPI_Bcast(&len, 1, MPI_INT, ios->compmaster, ios->intercomm);
             if (!mpierr)
-                mpierr = MPI_Bcast((void *)filename, len + 1, MPI_CHAR, ios->compmaster, ios->intercomm);
+                mpierr = MPI_Bcast((void *)filename, len + 1, MPI_CHAR, ios->compmaster,
+                                   ios->intercomm);
+            LOG((2, "Bcast len = %s filename = %s", len, filename));
         }
+
+        /* Handle MPI errors. */
+        if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
+            return check_mpi(file, mpierr2, __FILE__, __LINE__);
+        if (mpierr)
+            return check_mpi(file, mpierr, __FILE__, __LINE__);
     }
 
     /* If this is an IO task, then call the netCDF function. The
@@ -421,15 +432,20 @@ int PIOc_deletefile(int iosysid, const char *filename)
         mpierr = MPI_Barrier(ios->io_comm);
             
 #ifdef _NETCDF
-        if (!mpierr && file->iotype == PIO_IOTYPE_NETCDF4P && file->do_io)
+        if (!mpierr && ios->io_rank == 0)
+        {
+            LOG((3, "about to call nc_delete with filename %s", filename));
             ierr = nc_delete(filename);
+            delete_called++;
+        }
 #else
 #ifdef _PNETCDF
-        if (!mpierr && file->iotype == PIO_IOTYPE_PNETCDF)
+        if (!mpierr && !delete_called)
             ierr = ncmpi_delete(filename, ios->info);
 #endif
 #endif
-        mpierr = MPI_Barrier(ios->io_comm);
+        if (!mpierr)
+            mpierr = MPI_Barrier(ios->io_comm);
     }
 
     /* Broadcast and check the return code. */
