@@ -61,7 +61,7 @@ int PIOc_def_var_deflate(int ncid, int varid, int shuffle, int deflate,
                 mpierr = MPI_Bcast(&ncid, 1, MPI_INT, ios->compmaster, ios->intercomm);
         }
 
-        /* Handle MPI errors. */
+        /* Handle MPI errors from computation tasks. */
         if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
             return check_mpi(file, mpierr2, __FILE__, __LINE__);
         if (mpierr)
@@ -185,15 +185,16 @@ int PIOc_inq_var_deflate(int ncid, int varid, int *shufflep, int *deflatep,
         return check_netcdf(file, ierr, __FILE__, __LINE__);
 
     /* Broadcast results to all tasks. */
-    if (ierr == PIO_NOERR)
-    {
-        if (shufflep)
-            ierr = MPI_Bcast(shufflep, 1, MPI_INT, ios->ioroot, ios->my_comm);
-        if (deflatep)
-            ierr = MPI_Bcast(deflatep, 1, MPI_INT, ios->ioroot, ios->my_comm);
-        if (deflate_levelp)
-            ierr = MPI_Bcast(deflate_levelp, 1, MPI_INT, ios->ioroot, ios->my_comm);
-    }
+    if (shufflep)
+        if ((mpierr = MPI_Bcast(shufflep, 1, MPI_INT, ios->ioroot, ios->my_comm)))
+            return check_mpi(file, mpierr, __FILE__, __LINE__);
+    if (deflatep)
+        if ((mpierr = MPI_Bcast(deflatep, 1, MPI_INT, ios->ioroot, ios->my_comm)))
+            return check_mpi(file, mpierr, __FILE__, __LINE__);
+    if (deflate_levelp)
+        if ((mpierr = MPI_Bcast(deflate_levelp, 1, MPI_INT, ios->ioroot, ios->my_comm)))
+            return check_mpi(file, mpierr, __FILE__, __LINE__);
+
     return ierr;
 }
 
@@ -437,11 +438,14 @@ int PIOc_inq_var_chunking(int ncid, int varid, int *storagep, PIO_Offset *chunks
         return check_netcdf(file, ierr, __FILE__, __LINE__);
 
     /* Broadcast results to all tasks. */
-    ierr = MPI_Bcast(&ndims, 1, MPI_INT, ios->ioroot, ios->my_comm);
+    if ((mpierr = MPI_Bcast(&ndims, 1, MPI_INT, ios->ioroot, ios->my_comm)))
+        return check_mpi(file, mpierr, __FILE__, __LINE__);
     if (storagep)
-        ierr = MPI_Bcast(storagep, 1, MPI_INT, ios->ioroot, ios->my_comm);
+        if ((mpierr = MPI_Bcast(storagep, 1, MPI_INT, ios->ioroot, ios->my_comm)))
+            return check_mpi(file, mpierr, __FILE__, __LINE__);
     if (chunksizesp)
-        ierr = MPI_Bcast(chunksizesp, ndims, MPI_OFFSET, ios->ioroot, ios->my_comm);
+        if ((mpierr = MPI_Bcast(chunksizesp, ndims, MPI_OFFSET, ios->ioroot, ios->my_comm)))
+            return check_mpi(file, mpierr, __FILE__, __LINE__);
 
     return ierr;
 }
@@ -682,7 +686,8 @@ int PIOc_inq_var_endian(int ncid, int varid, int *endianp)
 
     /* Broadcast results to all tasks. */
     if (endianp)
-        ierr = MPI_Bcast(endianp, 1, MPI_INT, ios->ioroot, ios->my_comm);
+        if ((mpierr = MPI_Bcast(endianp, 1, MPI_INT, ios->ioroot, ios->my_comm)))
+            return check_mpi(file, mpierr, __FILE__, __LINE__);            
 
     return ierr;
 }
@@ -880,28 +885,27 @@ int PIOc_get_chunk_cache(int iosysid, int iotype, PIO_Offset *sizep, PIO_Offset 
     if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
         return check_mpi(NULL, mpierr, __FILE__, __LINE__);
     LOG((2, "bcast complete ierr = %d sizep = %d", ierr, sizep));
+    if (ierr)
+        return check_netcdf(NULL, ierr, __FILE__, __LINE__);        
 
-    if (!ierr)
+    if (sizep)
     {
-        if (sizep)
-        {
-            LOG((2, "bcasting size = %d ios->ioroot = %d", *sizep, ios->ioroot));
-            if ((mpierr = MPI_Bcast(sizep, 1, MPI_OFFSET, ios->ioroot, ios->my_comm)))
-                return check_mpi(NULL, mpierr, __FILE__, __LINE__);
-            LOG((2, "bcast size = %d", *sizep));
-        }
-        if (nelemsp)
-        {
-            if ((mpierr = MPI_Bcast(nelemsp, 1, MPI_OFFSET, ios->ioroot, ios->my_comm)))
-                return check_mpi(NULL, mpierr, __FILE__, __LINE__);
-            LOG((2, "bcast complete nelems = %d", *nelemsp));
-        }
-        if (preemptionp)
-        {
-            if ((mpierr = MPI_Bcast(preemptionp, 1, MPI_FLOAT, ios->ioroot, ios->my_comm)))
-                return check_mpi(NULL, mpierr, __FILE__, __LINE__);
-            LOG((2, "bcast complete preemption = %d", *preemptionp));
-        }
+        LOG((2, "bcasting size = %d ios->ioroot = %d", *sizep, ios->ioroot));
+        if ((mpierr = MPI_Bcast(sizep, 1, MPI_OFFSET, ios->ioroot, ios->my_comm)))
+            return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+        LOG((2, "bcast size = %d", *sizep));
+    }
+    if (nelemsp)
+    {
+        if ((mpierr = MPI_Bcast(nelemsp, 1, MPI_OFFSET, ios->ioroot, ios->my_comm)))
+            return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+        LOG((2, "bcast complete nelems = %d", *nelemsp));
+    }
+    if (preemptionp)
+    {
+        if ((mpierr = MPI_Bcast(preemptionp, 1, MPI_FLOAT, ios->ioroot, ios->my_comm)))
+            return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+        LOG((2, "bcast complete preemption = %d", *preemptionp));
     }
 
     return ierr;
@@ -1087,15 +1091,15 @@ int PIOc_get_var_chunk_cache(int ncid, int varid, PIO_Offset *sizep, PIO_Offset 
         return check_netcdf(file, ierr, __FILE__, __LINE__);
 
     /* Broadcast results to all tasks. */
-    if (!ierr)
-    {
-        if (sizep && !ierr)
-            ierr = MPI_Bcast(sizep, 1, MPI_OFFSET, ios->ioroot, ios->my_comm);
-        if (nelemsp && !ierr)
-            ierr = MPI_Bcast(nelemsp, 1, MPI_OFFSET, ios->ioroot, ios->my_comm);
-        if (preemptionp && !ierr)
-            ierr = MPI_Bcast(preemptionp, 1, MPI_FLOAT, ios->ioroot, ios->my_comm);
-    }
+    if (sizep && !ierr)
+        if ((mpierr = MPI_Bcast(sizep, 1, MPI_OFFSET, ios->ioroot, ios->my_comm)))
+            return check_mpi(file, mpierr, __FILE__, __LINE__);
+    if (nelemsp && !ierr)
+        if ((mpierr = MPI_Bcast(nelemsp, 1, MPI_OFFSET, ios->ioroot, ios->my_comm)))
+            return check_mpi(file, mpierr, __FILE__, __LINE__);
+    if (preemptionp && !ierr)
+        if ((mpierr = MPI_Bcast(preemptionp, 1, MPI_FLOAT, ios->ioroot, ios->my_comm)))
+            return check_mpi(file, mpierr, __FILE__, __LINE__);
 
     return ierr;
 }
