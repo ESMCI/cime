@@ -113,6 +113,7 @@ int PIOc_createfile(int iosysid, int *ncidp, int *iotype, const char *filename, 
     file->next = NULL;
     file->iosystem = ios;
     file->iotype = *iotype;
+    file->error_handler = 0;
 
     file->buffer.validvars = 0;
     file->buffer.data = NULL;

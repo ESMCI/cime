@@ -409,6 +409,79 @@ int check_netcdf(file_desc_t *file, int status, const char *fname, const int lin
 }
 
 /**
+ * Handle an error in PIO. This will consult the error handler
+ * settings and either call MPI_Abort() or return an error code.
+ *
+ * The error hanlder has three settings:
+ *
+ * Errors cause abort: PIO_INTERNAL_ERROR.
+ *
+ * Error codes are broadcast to all tasks: PIO_BCAST_ERROR.
+ *
+ * Errors are returned to caller with no internal action:
+ * PIO_RETURN_ERROR.
+ *
+ * @param ios pointer to the IO system info. Ignored if NULL.
+ * @param file pointer to the file description data. Ignored if
+ * NULL. If not NULL, then file level error handling is applied before
+ * IO system level error handling.
+ * @param err_num the error code
+ * @param fname name of code file where error occured.
+ * @param line the line of code where the error occurred.
+ * @returns err_num if abort is not called.
+ */
+int pio_err(iosystem_desc_t *ios, file_desc_t *file, int err_num, const char *fname,
+            int line)
+{
+    char err_msg[PIO_MAX_NAME + 1];
+    int err_handler = PIO_INTERNAL_ERROR; /* Default error handler. */
+    int ret;
+    
+    /* User must provide this. */
+    pioassert(fname, "file name must be provided", __FILE__, __LINE__);
+
+    /* No harm, no foul. */
+    if (err_num == PIO_NOERR)
+        return PIO_NOERR;
+
+    /* Get the error message. */
+    if ((ret = PIOc_strerror(err_num, err_msg)))
+        return ret;
+
+    /* If logging is in use, log an error message. */
+    LOG((0, "%s err_num = %d fname = %s line = %d", err_msg, err_num, fname ? fname : '\0', line));
+
+    /* ??? */
+    print_trace(stderr);
+
+    /* What error handler should we use? */
+    if (file)
+        err_handler = file->error_handler ? file->error_handler : file->iosystem->error_handler;
+    else if (ios)
+        err_handler = ios->error_handler;
+
+    /* Should we abort? */
+    if (err_handler == PIO_INTERNAL_ERROR)
+    {
+#ifdef MPI_SERIAL
+        /* Why the special abort() call for MPI_SERIAL??? */
+        abort();
+#else
+        MPI_Abort(MPI_COMM_WORLD, -1);
+#endif
+    }
+
+    /* What should we do here??? */
+    if (err_handler == PIO_BCAST_ERROR)
+    {
+        /* ??? */
+    }
+
+    /* If abort was not called, we'll get here. */
+    return err_num;
+}
+
+/**
  * Handle IO type error. 
  *
  * @param iotype the undefined IO type
@@ -879,6 +952,8 @@ int PIOc_openfile_retry(const int iosysid, int *ncidp, int *iotype,
     file->next = NULL;
     file->iosystem = ios;
     file->mode = mode;
+    file->error_handler = 0;
+    
     for (int i = 0; i < PIO_MAX_VARS; i++)
     {
         file->varlist[i].record = -1;
