@@ -95,7 +95,7 @@ int PIOc_createfile(int iosysid, int *ncidp, int *iotype, const char *filename, 
 
     /* User must provide valid input for these parameters. */
     if (!ncidp || !iotype || !filename || strlen(filename) > NC_MAX_NAME)
-        return PIO_EINVAL;
+        return pio_err(NULL, NULL, PIO_EINVAL, __FILE__, __LINE__);
 
     LOG((1, "PIOc_createfile iosysid = %d iotype = %d filename = %s mode = %d",
          iosysid, *iotype, filename, mode));
