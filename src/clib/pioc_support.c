@@ -451,9 +451,6 @@ int pio_err(iosystem_desc_t *ios, file_desc_t *file, int err_num, const char *fn
     /* If logging is in use, log an error message. */
     LOG((0, "%s err_num = %d fname = %s line = %d", err_msg, err_num, fname ? fname : '\0', line));
 
-    /* ??? */
-    print_trace(stderr);
-
     /* What error handler should we use? */
     if (file)
         err_handler = file->error_handler ? file->error_handler : file->iosystem->error_handler;
@@ -463,6 +460,9 @@ int pio_err(iosystem_desc_t *ios, file_desc_t *file, int err_num, const char *fn
     /* Should we abort? */
     if (err_handler == PIO_INTERNAL_ERROR)
     {
+        /* For debugging only, this will print a traceback of the call tree.  */
+        print_trace(stderr);
+
 #ifdef MPI_SERIAL
         /* Why the special abort() call for MPI_SERIAL??? */
         abort();

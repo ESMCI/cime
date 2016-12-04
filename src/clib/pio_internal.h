@@ -77,7 +77,7 @@ extern "C" {
         bool isend;
     } pio_swapm_defaults;
 
-    /* Handle are error in the PIO library. */
+    /* Handle an error in the PIO library. */
     int pio_err(iosystem_desc_t *ios, file_desc_t *file, int err_num, const char *fname,
                 int line);
     
