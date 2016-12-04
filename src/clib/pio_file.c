@@ -102,11 +102,11 @@ int PIOc_createfile(int iosysid, int *ncidp, int *iotype, const char *filename, 
 
     /* Get the IO system info from the iosysid. */
     if (!(ios = pio_get_iosystem_from_id(iosysid)))
-        return PIO_EBADID;
+        return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
 
     /* Allocate space for the file info. */
     if (!(file = (file_desc_t *)malloc(sizeof(file_desc_t))))
-        return PIO_ENOMEM;
+        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
     /* Fill in some file values. */
     file->fh = -1;
