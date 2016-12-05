@@ -136,7 +136,16 @@ develop.
 <li>When code review is complete, and the changes are approved, the PR
 is merged into the develop branch.
 
-<li> ???
+<li>The develop branch is tested automatically by Jenkins.
+
+<li>The develop branch is tested periodically by CDash (every ~6
+hours).
+
+<li>After all jenkins and Cdash builds complete successfully, with all
+tests passing, and no warnings, the PR is merged into master by Jim
+(???)
+
+<li>The branch is then deleted by whomever merged it to master.
 
 </ul>
 
