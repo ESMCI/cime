@@ -306,7 +306,7 @@ int PIOc_closefile(int ncid)
 
     /* Find the info about this file. */
     if ((ierr = pio_get_file(ncid, &file)))
-        return ierr;
+        return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
     ios = file->iosystem;
 
     /* Sync changes before closing. */
@@ -400,7 +400,7 @@ int PIOc_deletefile(int iosysid, const char *filename)
 
     /* Get the IO system info from the id. */
     if (!(ios = pio_get_iosystem_from_id(iosysid)))
-        return PIO_EBADID;
+        return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
 
     /* If async is in use, send message to IO master task. */
     if (ios->async_interface)
@@ -480,7 +480,7 @@ int PIOc_sync(int ncid)
 
     /* Get the file info from the ncid. */
     if ((ierr = pio_get_file(ncid, &file)))
-        return ierr;
+        return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
     ios = file->iosystem;
 
     /* If async is in use, send message to IO master tasks. */
