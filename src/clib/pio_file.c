@@ -389,7 +389,6 @@ int PIOc_closefile(int ncid)
 int PIOc_deletefile(int iosysid, const char *filename)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
-    file_desc_t *file;     /* Pointer to file information. */
     int ierr = PIO_NOERR;  /* Return code from function calls. */
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
     int delete_called = 0; /* Becomes non-zero after delete is called. */
@@ -421,9 +420,9 @@ int PIOc_deletefile(int iosysid, const char *filename)
 
         /* Handle MPI errors. */
         if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
-            return check_mpi(file, mpierr2, __FILE__, __LINE__);
+            return check_mpi(NULL, mpierr2, __FILE__, __LINE__);
         if (mpierr)
-            return check_mpi(file, mpierr, __FILE__, __LINE__);
+            return check_mpi(NULL, mpierr, __FILE__, __LINE__);
     }
 
     /* If this is an IO task, then call the netCDF function. The
@@ -452,9 +451,9 @@ int PIOc_deletefile(int iosysid, const char *filename)
 
     /* Broadcast and check the return code. */
     if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
-        return check_mpi(file, mpierr2, __FILE__, __LINE__);        
+        return check_mpi(NULL, mpierr2, __FILE__, __LINE__);        
     if (ierr)
-        return check_netcdf(file, ierr, __FILE__, __LINE__);
+        return check_netcdf(NULL, ierr, __FILE__, __LINE__);
 
     return ierr;
 }
