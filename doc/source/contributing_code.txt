@@ -145,8 +145,8 @@ test cycles. (???)
 hours).
 
 <li>After all jenkins and Cdash builds complete successfully, with all
-tests passing, and no warnings, the PR is merged into master by Jim
-(???)
+tests passing, and no warnings, the PR is merged into master by the
+integrator.
 
 <li>Multiple PRs may be merged to master between test cycles. (???)
 
