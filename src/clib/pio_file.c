@@ -78,11 +78,15 @@ int PIOc_open(int iosysid, const char *path, int mode, int *ncidp)
  * Create a new file using pio. Input parameters are read on comp task
  * 0 and ignored elsewhere.
  *
- * @param iosysid A defined pio system descriptor (input)
- * @param ncidp A pio file descriptor (output)
- * @param iotype A pio output format (input)
- * @param filename The filename to open
- * @param mode The netcdf mode for the open operation
+ * @param iosysid A defined pio system ID, obtained from
+ * PIOc_InitIntercomm() or PIOc_InitAsync().
+ * @param ncidp A pointer that gets the ncid of the newly created
+ * file.
+ * @param iotype A pointer to a pio output format. Must be one of
+ * PIO_IOTYPE_PNETCDF, PIO_IOTYPE_NETCDF, PIO_IOTYPE_NETCDF4C, or
+ * PIO_IOTYPE_NETCDF4P.
+ * @param filename The filename to create.
+ * @param mode The netcdf mode for the create operation.
  * @returns 0 for success, error code otherwise.
  * @ingroup PIO_createfile
  */
@@ -95,24 +99,25 @@ int PIOc_createfile(int iosysid, int *ncidp, int *iotype, const char *filename, 
 
     /* User must provide valid input for these parameters. */
     if (!ncidp || !iotype || !filename || strlen(filename) > NC_MAX_NAME)
-        return PIO_EINVAL;
+        return pio_err(NULL, NULL, PIO_EINVAL, __FILE__, __LINE__);
 
     LOG((1, "PIOc_createfile iosysid = %d iotype = %d filename = %s mode = %d",
          iosysid, *iotype, filename, mode));
 
     /* Get the IO system info from the iosysid. */
     if (!(ios = pio_get_iosystem_from_id(iosysid)))
-        return PIO_EBADID;
+        return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
 
     /* Allocate space for the file info. */
     if (!(file = (file_desc_t *)malloc(sizeof(file_desc_t))))
-        return PIO_ENOMEM;
+        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
     /* Fill in some file values. */
     file->fh = -1;
     file->next = NULL;
     file->iosystem = ios;
     file->iotype = *iotype;
+    file->error_handler = 0;
 
     file->buffer.validvars = 0;
     file->buffer.data = NULL;

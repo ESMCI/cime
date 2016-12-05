@@ -374,6 +374,10 @@ typedef struct file_desc_t
      * the same communication pattern prior to a write. */
     struct wmulti_buffer buffer;
 
+    /** Controls handling errors. Overrides the IO system error
+     * handler if set. */
+    int error_handler;
+
     /** Pointer to the next file_desc_t in the list of open files. */
     struct file_desc_t *next;
 
