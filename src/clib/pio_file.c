@@ -109,7 +109,7 @@ int PIOc_createfile(int iosysid, int *ncidp, int *iotype, const char *filename, 
         return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
 
     /* Allocate space for the file info. */
-    if (!(file = (file_desc_t *)malloc(sizeof(file_desc_t))))
+    if (!(file = malloc(sizeof(file_desc_t))))
         return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
     /* Fill in some file values. */
@@ -306,7 +306,7 @@ int PIOc_closefile(int ncid)
 
     /* Find the info about this file. */
     if ((ierr = pio_get_file(ncid, &file)))
-        return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
+        return pio_err(NULL, NULL, ierr, __FILE__, __LINE__);
     ios = file->iosystem;
 
     /* Sync changes before closing. */
@@ -480,7 +480,7 @@ int PIOc_sync(int ncid)
 
     /* Get the file info from the ncid. */
     if ((ierr = pio_get_file(ncid, &file)))
-        return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
+        return pio_err(NULL, NULL, ierr, __FILE__, __LINE__);
     ios = file->iosystem;
 
     /* If async is in use, send message to IO master tasks. */
