@@ -148,8 +148,6 @@ hours).
 tests passing, and no warnings, the PR is merged into master by Jim
 (???)
 
-<li>Commit comments are squished, to come comment per merged PR.
-
 <li>Multiple PRs may be merged to master between test cycles. (???)
 
 <li>The branch is then deleted by whomever merged it to master.
