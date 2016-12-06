@@ -551,7 +551,7 @@ enum PIO_ERROR_HANDLERS
 #define PIO_EBADIOTYPE  (-500)
 
 /** ??? */
-#define PIO_REQ_NULL (NC_REQ_NULL - 1)
+#define PIO_REQ_NULL (NC_REQ_NULL-1)
 
 #if defined(__cplusplus)
 extern "C" {

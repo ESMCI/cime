@@ -99,6 +99,8 @@ extern "C" {
     int pio_add_to_iosystem_list(iosystem_desc_t *ios);
 
     int check_netcdf(file_desc_t *file,const int status, const char *fname, const int line);
+    int check_netcdf2(iosystem_desc_t *ios, file_desc_t *file, int status,
+                      const char *fname, const int line);
     int iotype_error(const int iotype, const char *fname, const int line);
     void piodie(const char *msg,const char *fname, const int line);
     void pioassert(bool exp, const char *msg,const char *fname, const int line);

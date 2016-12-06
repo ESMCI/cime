@@ -445,47 +445,25 @@ int check_netcdf2(iosystem_desc_t *ios, file_desc_t *file, int status,
         err_handler = ios->error_handler;
     if (file)
         err_handler = file->error_handler;
-        
-    ios = file->iosystem;
-    ierr = PIO_NOERR;
 
-    switch(file->iotype)
+    /* Decide what to do based on the error handler. */
+    if (err_handler == PIO_INTERNAL_ERROR)
     {
-#ifdef _NETCDF
-#ifdef _NETCDF4
-    case PIO_IOTYPE_NETCDF4P:
-    case PIO_IOTYPE_NETCDF4C:
-#endif
-    case PIO_IOTYPE_NETCDF:
-        if (ios->iomaster)
-	{
-            if (status != NC_NOERR && (ios->error_handler == PIO_INTERNAL_ERROR))
-                piodie(nc_strerror(status),fname,line);
-        }
-        if (ios->error_handler == PIO_INTERNAL_ERROR)
-	{
-            if (status != NC_NOERR)
-                MPI_Abort(MPI_COMM_WORLD,status);
-        }
-	else if (ios->error_handler == PIO_BCAST_ERROR)
-	{
-            ierr = MPI_Bcast(&status, 1, MPI_INTEGER, ios->ioroot, ios->my_comm);
-        }
-        break;
-#endif
-#ifdef _PNETCDF
-    case PIO_IOTYPE_PNETCDF:
-        if (status != NC_NOERR && (ios->error_handler == PIO_INTERNAL_ERROR)) 
-            piodie(ncmpi_strerror(status),fname,line);
+        char errmsg[PIO_MAX_NAME + 1];
+        
+        /* Get an error message. */
+        ierr = PIOc_strerror(status, errmsg);
 
-        if (ios->error_handler == PIO_BCAST_ERROR)
-            ierr = MPI_Bcast(&status, 1, MPI_INTEGER, ios->ioroot, ios->my_comm);
-
-        break;
-#endif
-    default:
-        ierr = iotype_error(file->iotype,__FILE__,__LINE__);
+        /* Die! */
+        piodie(errmsg, fname, line);        
     }
+    else if (err_handler == PIO_BCAST_ERROR && ios)
+    {
+        /* Not sure what this will do. */
+        ierr = MPI_Bcast(&status, 1, MPI_INTEGER, ios->ioroot, ios->my_comm);
+    }
+
+    /* For PIO_RETURN_ERROR, just return the error. */
     return status;
 }
 

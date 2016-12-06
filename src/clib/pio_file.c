@@ -400,6 +400,7 @@ int PIOc_deletefile(int iosysid, const char *filename)
     /* Get the IO system info from the id. */
     if (!(ios = pio_get_iosystem_from_id(iosysid)))
         return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
+    LOG((2, "PIOc_deletefile got ios"));
 
     /* If async is in use, send message to IO master task. */
     if (ios->async_interface)
@@ -431,6 +432,7 @@ int PIOc_deletefile(int iosysid, const char *filename)
     if (ios->ioproc)
     {
         mpierr = MPI_Barrier(ios->io_comm);
+        LOG((2, "PIOc_deletefile here we go"));
             
 #ifdef _NETCDF
         if (!mpierr && ios->io_rank == 0)
@@ -442,18 +444,22 @@ int PIOc_deletefile(int iosysid, const char *filename)
 #else
 #ifdef _PNETCDF
         if (!mpierr && !delete_called)
+        {
+            LOG((3, "about to call ncmpi_delete with filename %s", filename));
             ierr = ncmpi_delete(filename, ios->info);
+        }
 #endif
 #endif
         if (!mpierr)
             mpierr = MPI_Barrier(ios->io_comm);
     }
+    LOG((2, "PIOc_deletefile ierr = %d", ierr));
 
     /* Broadcast and check the return code. */
     if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
         return check_mpi(NULL, mpierr2, __FILE__, __LINE__);        
     if (ierr)
-        return check_netcdf(NULL, ierr, __FILE__, __LINE__);
+        return check_netcdf2(ios, NULL, ierr, __FILE__, __LINE__);
 
     return ierr;
 }
