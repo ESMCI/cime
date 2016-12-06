@@ -19,6 +19,10 @@ module pio
        PIO_deletefile, PIO_get_numiotasks, PIO_iotype_available
 
   use pio_types, only : io_desc_t, file_desc_t, var_desc_t, iosystem_desc_t, &
+       pio_rearr_opt_t, pio_rearr_comm_fc_opt_t, pio_rearr_comm_fc_2d_enable,&
+       pio_rearr_comm_fc_1d_comp2io, pio_rearr_comm_fc_1d_io2comp,&
+       pio_rearr_comm_fc_2d_disable, pio_rearr_comm_unlimited_pend_req,&
+       pio_rearr_comm_p2p, pio_rearr_comm_coll,&
        pio_int, pio_real, pio_double, pio_noerr, iotype_netcdf, &
        iotype_pnetcdf,  pio_iotype_netcdf4p, pio_iotype_netcdf4c, &
        pio_iotype_pnetcdf,pio_iotype_netcdf, &
@@ -28,7 +32,7 @@ module pio
        pio_nofill, pio_unlimited, pio_fill_int, pio_fill_double, pio_fill_float, &
 #endif
        pio_64bit_offset, pio_64bit_data, &
-       pio_internal_error, pio_bcast_error, pio_return_error, pio_rearr_opt_t
+       pio_internal_error, pio_bcast_error, pio_return_error
 
   use piodarray, only : pio_read_darray, pio_write_darray, pio_set_buffer_size_limit  
 
