@@ -28,18 +28,18 @@ FILE *LOG_FILE = NULL;
  * ncid number that will be assigned. */
 extern int pio_next_ncid;
 
-/** Return a string description of an error code. If zero is passed, a
- * null is returned.
+/** 
+ * Return a string description of an error code. If zero is passed,
+ * the errmsg will be "No error".
  *
  * @param pioerr the error code returned by a PIO function call.
- * @param errmsg Pointer that will get the error message. It will be
- * PIO_MAX_NAME chars or less.
- *
- * @return 0 on success
+ * @param errmsg Pointer that will get the error message. The message
+ * will be PIO_MAX_NAME chars or less.
+ * @return 0 on success.
  */
 int PIOc_strerror(int pioerr, char *errmsg)
 {
-    /* System error? */
+    /* System error? NetCDF and pNetCDF errors are always negative. */
     if (pioerr > 0)
     {
         const char *cp = (const char *)strerror(pioerr);
@@ -52,14 +52,18 @@ int PIOc_strerror(int pioerr, char *errmsg)
     {
         strcpy(errmsg, "No error");
     }
+#if defined(_NETCDF)
     else if (pioerr <= NC2_ERR && pioerr >= NC4_LAST_ERROR)     /* NetCDF error? */
     {
-#if defined( _PNETCDF) || defined(_NETCDF)
         strncpy(errmsg, nc_strerror(pioerr), NC_MAX_NAME);
-#else /* defined( _PNETCDF) || defined(_NETCDF) */
-        strcpy(errmsg, "NetCDF error code, PIO not built with netCDF.");
-#endif /* defined( _PNETCDF) || defined(_NETCDF) */
     }
+#endif /* endif defined(_NETCDF) */
+#if defined(_PNETCDF)    
+    else if (pioerr > PIO_FIRST_ERROR_CODE)     /* pNetCDF error? */
+    {
+        strncpy(errmsg, ncmpi_strerror(pioerr), NC_MAX_NAME);
+    }
+#endif /* defined( _PNETCDF) */
     else
     {
         /* Handle PIO errors. */
