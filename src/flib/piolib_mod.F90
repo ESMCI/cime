@@ -13,7 +13,7 @@ module piolib_mod
   !--------------
   use pio_types, only : file_desc_t, iosystem_desc_t, var_desc_t, io_desc_t, &
         pio_iotype_netcdf, pio_iotype_pnetcdf, pio_iotype_netcdf4p, pio_iotype_netcdf4c, &
-        pio_noerr, pio_rearr_subset
+        pio_noerr, pio_rearr_subset, pio_rearr_opt_t
   !--------------
   use pio_support, only : piodie, debug, debugio, debugasync, checkmpireturn
   !
@@ -844,7 +844,7 @@ contains
 !! @param iosystem a derived type which can be used in subsequent pio operations (defined in PIO_types).
 !! @param base @em optional argument can be used to offset the first io task - default base is task 1.
 !<
-  subroutine init_intracom(comp_rank, comp_comm, num_iotasks, num_aggregator, stride,  rearr, iosystem,base)
+  subroutine init_intracom(comp_rank, comp_comm, num_iotasks, num_aggregator, stride,  rearr, iosystem,base, rearr_opts)
     use pio_types, only : pio_internal_error
     integer(i4), intent(in) :: comp_rank
     integer(i4), intent(in) :: comp_comm
@@ -854,6 +854,8 @@ contains
     integer(i4), intent(in) :: rearr
     type (iosystem_desc_t), intent(out)  :: iosystem  ! io descriptor to initalize
     integer(i4), intent(in),optional :: base
+    type (pio_rearr_opt_t), intent(in), optional :: rearr_opts
+
     integer :: lbase
     integer :: ierr
     interface
