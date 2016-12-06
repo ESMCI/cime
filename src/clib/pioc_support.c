@@ -28,14 +28,14 @@ FILE *LOG_FILE = NULL;
  * ncid number that will be assigned. */
 extern int pio_next_ncid;
 
-/** Return a string description of an error code. If zero is passed, a
- * null is returned.
+/** 
+ * Return a string description of an error code. If zero is passed,
+ * the errmsg will be "No error".
  *
  * @param pioerr the error code returned by a PIO function call.
- * @param errmsg Pointer that will get the error message. It will be
- * PIO_MAX_NAME chars or less.
- *
- * @return 0 on success
+ * @param errmsg Pointer that will get the error message. The message
+ * will be PIO_MAX_NAME chars or less.
+ * @return 0 on success.
  */
 int PIOc_strerror(int pioerr, char *errmsg)
 {
