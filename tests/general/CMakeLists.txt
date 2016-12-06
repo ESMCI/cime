@@ -12,6 +12,7 @@ SET(GENERATED_SRCS pio_file_simple_tests.F90
   ncdf_get_put.F90
   ncdf_fail.F90
   ncdf_inq.F90
+  pio_rearr_opts.F90
   pio_decomp_tests.F90
   pio_decomp_tests_1d.F90
   pio_decomp_tests_2d.F90
@@ -213,6 +214,25 @@ else ()
     EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/ncdf_inq
     NUMPROCS 2
     TIMEOUT ${DEFAULT_TEST_TIMEOUT})
+endif ()
+
+#===== pio_rearr_opts =====
+add_executable (pio_rearr_opts EXCLUDE_FROM_ALL
+    pio_rearr_opts.F90
+    ${CMAKE_CURRENT_SOURCE_DIR}/util/pio_tutil.F90)
+target_link_libraries (pio_rearr_opts piof)
+add_dependencies (tests pio_rearr_opts)
+
+if (PIO_USE_MPISERIAL)
+    add_test(NAME pio_rearr_opts
+        COMMAND pio_rearr_opts)
+    set_tests_properties(pio_rearr_opts
+        PROPERTIES TIMEOUT ${DEFAULT_TEST_TIMEOUT})
+else ()
+    add_mpi_test(pio_rearr_opts
+        EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/pio_rearr_opts
+        NUMPROCS 2
+        TIMEOUT ${DEFAULT_TEST_TIMEOUT})
 endif ()
 
 #===== pio_decomp_tests =====

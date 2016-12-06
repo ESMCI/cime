@@ -1,0 +1,43 @@
+! Test rearranger options
+PIO_TF_AUTO_TEST_SUB_BEGIN init_fin_with_rearr_opts
+  implicit none
+
+  integer, parameter :: NUM_REARRANGERS = 2
+  integer :: rearrs(NUM_REARRANGERS) = (/pio_rearr_subset,pio_rearr_box/)
+  character(len=PIO_TF_MAX_STR_LEN) :: rearrs_info(NUM_REARRANGERS) = (/"PIO_REARR_SUBSET","PIO_REARR_BOX   "/)
+  type(pio_rearr_opt_t) :: pio_rearr_opts
+  ! Dummy val for max pend req
+  integer, parameter :: MAX_PEND_REQ = 10
+
+  type(iosystem_desc_t) :: dup_iosys
+  integer :: dup_comm
+  integer :: i, ret
+
+  call MPI_Comm_dup(pio_tf_comm_, dup_comm, ret)
+
+  do i=1,NUM_REARRANGERS
+    ! Some dummy values for rearranger options
+    pio_rearr_opts%comm_type = PIO_rearr_comm_p2p
+    pio_rearr_opts%fcd = PIO_rearr_comm_fc_2d_enable
+
+    pio_rearr_opts%comm_fc_opts_comp2io%max_pend_req = PIO_REARR_COMM_UNLIMITED_PEND_REQ
+    pio_rearr_opts%comm_fc_opts_comp2io%enable_hs = .true.
+    pio_rearr_opts%comm_fc_opts_comp2io%enable_isend = .true.
+
+    pio_rearr_opts%comm_fc_opts_io2comp%max_pend_req = MAX_PEND_REQ
+    pio_rearr_opts%comm_fc_opts_io2comp%enable_hs = .true.
+    pio_rearr_opts%comm_fc_opts_io2comp%enable_isend = .true.
+
+    call PIO_init(pio_tf_world_rank_, dup_comm, pio_tf_world_sz_, &
+                  1, &! Num aggregators
+                  1, &! Stride
+                  rearrs(i), dup_iosys, base=0, rearr_opts=pio_rearr_opts)
+    call PIO_seterrorhandling(dup_iosys, PIO_BCAST_ERROR)
+
+    call PIO_finalize(dup_iosys, ret)
+    PIO_TF_CHECK_ERR(ret, "Finalize failed")
+  end do
+
+  call MPI_Comm_free(dup_comm, ret)
+
+PIO_TF_AUTO_TEST_SUB_END init_fin_with_rearr_opts
