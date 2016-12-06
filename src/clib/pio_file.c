@@ -400,7 +400,6 @@ int PIOc_deletefile(int iosysid, const char *filename)
     /* Get the IO system info from the id. */
     if (!(ios = pio_get_iosystem_from_id(iosysid)))
         return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
-    LOG((2, "PIOc_deletefile got ios"));
 
     /* If async is in use, send message to IO master task. */
     if (ios->async_interface)
@@ -432,22 +431,17 @@ int PIOc_deletefile(int iosysid, const char *filename)
     if (ios->ioproc)
     {
         mpierr = MPI_Barrier(ios->io_comm);
-        LOG((2, "PIOc_deletefile here we go"));
             
 #ifdef _NETCDF
         if (!mpierr && ios->io_rank == 0)
         {
-            LOG((3, "about to call nc_delete with filename %s", filename));
             ierr = nc_delete(filename);
             delete_called++;
         }
 #else
 #ifdef _PNETCDF
         if (!mpierr && !delete_called)
-        {
-            LOG((3, "about to call ncmpi_delete with filename %s", filename));
             ierr = ncmpi_delete(filename, ios->info);
-        }
 #endif
 #endif
         if (!mpierr)
