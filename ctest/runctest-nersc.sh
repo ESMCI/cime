@@ -38,7 +38,13 @@ echo "\$CTEST_CMD -S ${scrdir}/CTestScript-Test.cmake,${model} -V" >> runctest.s
 chmod +x runctest.slurm
 # Submit the job to the queue
 #jobid=`sbatch runctest.slurm| egrep -o -e "\b[0-9]+$"`
-salloc -N 1 ./runctest.slurm
+case "$NERSC_HOST" in
+    edison)
+	salloc -N 1 ./runctest.slurm
+	;;
+    cori)
+	salloc -N 1 -C knl ./runctest.slurm
+esac
 # Wait for the job to complete before exiting
 #while true; do
 #	status=`squeue -j $jobid`
