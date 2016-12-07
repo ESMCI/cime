@@ -19,7 +19,16 @@ model=$2
 echo "#!/bin/sh" > runctest.slurm
 echo "#SBATCH --partition debug" >> runctest.slurm
 echo "#SBATCH --nodes=1" >> runctest.slurm
-echo "#SBATCH --ntasks-per-node=32" >> runctest.slurm
+case "$NERSC_HOST" in
+    edison)
+	echo "#SBATCH --ntasks-per-node=32" >> runctest.slurm
+	;;
+    cori)
+	echo "#SBATCH --ntasks-per-node=68" >> runctest.slurm
+	echo "#SBATCH -C knl" >> runctest.slurm
+	;;
+esac
+
 echo "#SBATCH --time=00:15:00" >> runctest.slurm
 
 echo "#SBATCH --export PIO_DASHBOARD_SITE,PIO_DASHBOARD_BUILD_NAME,PIO_DASHBOARD_SOURCE_DIR,PIO_DASHBOARD_BINARY_DIR" >> runctest.slurm
