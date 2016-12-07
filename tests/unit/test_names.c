@@ -37,7 +37,7 @@ int dim_len[NDIM] = {NC_UNLIMITED, X_DIM_LEN, Y_DIM_LEN};
  * @param ncid ncid of open netCDF file
  * @returns 0 for success, error code otherwise. */
 int
-check_dim_names(int my_rank, int ncid)
+check_dim_names(int my_rank, int ncid, MPI_Comm test_comm)
 {
     char dim_name[NC_MAX_NAME + 1];
     char zero_dim_name[NC_MAX_NAME + 1];
@@ -55,7 +55,7 @@ check_dim_names(int my_rank, int ncid)
             strcpy(zero_dim_name, dim_name);
         /*     printf("rank %d dim_name %s zero_dim_name %s\n", my_rank, dim_name, zero_dim_name); */
         if ((ret = MPI_Bcast(&zero_dim_name, strlen(dim_name) + 1, MPI_CHAR, 0,
-                             MPI_COMM_WORLD)))
+                             test_comm)))
             MPIERR(ret);
         if (strcmp(dim_name, zero_dim_name))
             return ERR_AWFUL;
@@ -70,7 +70,7 @@ check_dim_names(int my_rank, int ncid)
  *
  * @returns 0 for success, error code otherwise. */
 int
-check_var_name(int my_rank, int ncid)
+check_var_name(int my_rank, int ncid, MPI_Comm test_comm)
 {
     char var_name[NC_MAX_NAME + 1];
     char zero_var_name[NC_MAX_NAME + 1];
@@ -85,7 +85,7 @@ check_var_name(int my_rank, int ncid)
     if (!my_rank)
         strcpy(zero_var_name, var_name);
     if ((ret = MPI_Bcast(&zero_var_name, strlen(var_name) + 1, MPI_CHAR, 0,
-                         MPI_COMM_WORLD)))
+                         test_comm)))
         MPIERR(ret);
     if (strcmp(var_name, zero_var_name))
         return ERR_AWFUL;
@@ -99,7 +99,7 @@ check_var_name(int my_rank, int ncid)
  *
  * @returns 0 for success, error code otherwise. */
 int
-check_att_name(int my_rank, int ncid)
+check_att_name(int my_rank, int ncid, MPI_Comm test_comm)
 {
     char att_name[NC_MAX_NAME + 1];
     char zero_att_name[NC_MAX_NAME + 1];
@@ -116,7 +116,7 @@ check_att_name(int my_rank, int ncid)
     if (!my_rank)
         strcpy(zero_att_name, att_name);
     if ((ret = MPI_Bcast(&zero_att_name, strlen(att_name) + 1, MPI_CHAR, 0,
-                         MPI_COMM_WORLD)))
+                         test_comm)))
         MPIERR(ret);
     if (strcmp(att_name, zero_att_name))
         return ERR_AWFUL;
@@ -287,64 +287,24 @@ int check_strerror(int my_rank)
 /* Run Tests for NetCDF-4 Functions. */
 int main(int argc, char **argv)
 {
-    /* Zero-based rank of processor. */
-    int my_rank;
-
-    /* Number of processors involved in current execution. */
-    int ntasks;
-
-    /* Specifies the flavor of netCDF output format. */
-    int iotype;
-
-    /* Number of processors that will do IO. In this test we
-     * will do IO from all processors. */
-    int niotasks;
-
-    /* Stride in the mpi rank between io tasks. Always 1 in this
-     * test. */
-    int ioproc_stride = 1;
-
-    /* Number of the aggregator? Always 0 in this test. */
-    int numAggregator = 0;
-
-    /* Zero based rank of first processor to be used for I/O. */
-    int ioproc_start = 0;
-
-    /* The dimension IDs. */
-    int dimids[NDIM];
-
-    /* Array index per processing unit. */
-    PIO_Offset elements_per_pe;
-
-    /* The ID for the parallel I/O system. */
-    int iosysid;
-
-    /* The ncid of the netCDF file. */
-    int ncid = 0;
-
-    /* The ID of the netCDF varable. */
-    int varid;
-
-    /* The I/O description ID. */
-    int ioid;
-
-    /* A buffer for sample data. */
-    float *buffer;
-
-    /* A buffer for reading data back from the file. */
-    int *read_buffer;
-
-    /* The decomposition mapping. */
-    PIO_Offset *compdof;
-
-    /* Return code. */
-    int ret;
-
-    /* Index for loops. */
-    int fmt, d, d1, i;
-    int num_flavors; /* Number of PIO netCDF flavors in this build. */
+    int my_rank;    /* Zero-based rank of processor. */
+    int ntasks;     /* Number of processors involved in current execution. */
+    int iotype;     /* Specifies the flavor of netCDF output format. */
+    int niotasks;   /* Number of processors that will do IO. */
+    int ioproc_stride = 1;   /* Stride in the mpi rank between io tasks. */
+    int ioproc_start = 0;    /* Zero based rank of first processor to be used for I/O. */
+    int dimids[NDIM];        /* The dimension IDs. */
+    PIO_Offset elements_per_pe;  /* Array index per processing unit. */
+    int iosysid;    /* The ID for the parallel I/O system. */
+    int ncid;       /* The ncid of the netCDF file. */
+    int varid;      /* The ID of the netCDF varable. */
+    int ioid;       /* The I/O description ID. */
+    PIO_Offset *compdof;     /* The decomposition mapping. */
+    int fmt, d, d1, i;       /* Index for loops. */
+    int num_flavors;         /* Number of PIO netCDF flavors in this build. */
     int flavor[NUM_FLAVORS]; /* iotypes for the supported netCDF IO flavors. */
-    MPI_Comm test_comm; /* A communicator for this test. */
+    MPI_Comm test_comm;      /* A communicator for this test. */
+    int ret;                 /* Return code. */
 
     /* Initialize test. */
     if ((ret = pio_test_init2(argc, argv, &my_rank, &ntasks, MIN_NTASKS, TARGET_NTASKS,
@@ -420,7 +380,7 @@ int main(int argc, char **argv)
 	    }
 
 	    /* Check the dimension names. */
-	    if ((ret = check_dim_names(my_rank, ncid)))
+	    if ((ret = check_dim_names(my_rank, ncid, test_comm)))
 		ERR(ret);
 
 	    /* Define a global attribute. */
@@ -429,7 +389,7 @@ int main(int argc, char **argv)
 		ERR(ret);
 
 	    /* Check the attribute name. */
-	    if ((ret = check_att_name(my_rank, ncid)))
+	    if ((ret = check_att_name(my_rank, ncid, test_comm)))
 		ERR(ret);
 
 	    /* Define a variable. */
@@ -437,7 +397,7 @@ int main(int argc, char **argv)
 		ERR(ret);
 
 	    /* Check the variable name. */
-	    if ((ret = check_var_name(my_rank, ncid)))
+	    if ((ret = check_var_name(my_rank, ncid, test_comm)))
 		ERR(ret);
 
 	    if ((ret = PIOc_enddef(ncid)))
