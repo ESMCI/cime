@@ -44,7 +44,8 @@ case "$NERSC_HOST" in
 	;;
     cori)
 	salloc -N 1 -C knl ./runctest.slurm
-esac
+	;;
+esac 
 # Wait for the job to complete before exiting
 #while true; do
 #	status=`squeue -j $jobid`
