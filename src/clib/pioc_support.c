@@ -413,6 +413,60 @@ int check_netcdf(file_desc_t *file, int status, const char *fname, const int lin
 }
 
 /**
+ * Check the result of a netCDF API call.
+ *
+ * @param ios the iosystem description struct
+ * @param file pointer to the PIO structure describing this file.
+ * @param status the return value from the netCDF call.
+ * @param fname the name of the code file.
+ * @param line the line number of the netCDF call in the code.
+ * @return the error code
+ */
+int check_netcdf2(iosystem_desc_t *ios, file_desc_t *file, int status,
+                  const char *fname, const int line)
+{
+    int eh = PIO_INTERNAL_ERROR; /* Default error handler. */
+    int ierr;
+
+    /* User must provide this. */
+    pioassert(fname, "code file name must be provided", __FILE__, __LINE__);
+
+    /* No harm, no foul. */
+    if (status == PIO_NOERR)
+        return PIO_NOERR;
+
+    /* Pick an error handler. File settings override iosystem
+     * settings. */
+    if (ios)
+        eh = ios->error_handler;
+    if (file)
+        eh = file->error_handler;
+    pioassert(eh == PIO_INTERNAL_ERROR || eh == PIO_BCAST_ERROR || eh == PIO_RETURN_ERROR,
+              "invalid error handler", __FILE__, __LINE__);
+    
+
+    /* Decide what to do based on the error handler. */
+    if (eh == PIO_INTERNAL_ERROR)
+    {
+        char errmsg[PIO_MAX_NAME + 1];
+        
+        /* Get an error message. */
+        ierr = PIOc_strerror(status, errmsg);
+
+        /* Die! */
+        piodie(errmsg, fname, line);        
+    }
+    else if (eh == PIO_BCAST_ERROR && ios)
+    {
+        /* Not sure what this will do. */
+        ierr = MPI_Bcast(&status, 1, MPI_INTEGER, ios->ioroot, ios->my_comm);
+    }
+
+    /* For PIO_RETURN_ERROR, just return the error. */
+    return status;
+}
+
+/**
  * Handle an error in PIO. This will consult the error handler
  * settings and either call MPI_Abort() or return an error code.
  *
