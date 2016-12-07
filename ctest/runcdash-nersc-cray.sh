@@ -38,5 +38,6 @@ else
   git fetch origin
   git checkout develop
 fi
+export HDF5_DISABLE_VERSION_CHECK=2
 
 ctest -S CTestScript.cmake,${model} -VV
