@@ -32,7 +32,11 @@ cd "$PIO_DASHBOARD_ROOT"
 
 if [ ! -d src ]; then
   git clone --branch develop https://github.com/NCAR/ParallelIO src
+  cd src
+else
+  cd src
+  git fetch origin
+  git checkout develop
 fi
-cd src
 
 ctest -S CTestScript.cmake,${model} -VV

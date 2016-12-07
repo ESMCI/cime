@@ -29,8 +29,12 @@ echo "PIO_DASHBOARD_SOURCE_DIR="${PIO_DASHBOARD_SOURCE_DIR}
 
 if [ ! -d src ]; then
   git clone --branch develop https://github.com/PARALLELIO/ParallelIO src
+  cd src
+else
+  cd src
+  git fetch origin
+  git checkout develop
 fi
 
-cd src
 
 ctest -S CTestScript.cmake,${model} -VV
