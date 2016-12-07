@@ -123,47 +123,169 @@ check_att_name(int my_rank, int ncid)
     return 0;
 }
 
+/* 
+ * Check error strings. 
+ *
+ * @param my_rank rank of this task.
+ * @param num_tries number of errcodes to try.
+ * @param errcode pointer to array of error codes, of length num_tries.
+ * @param expected pointer to an array of strings, with the expected
+ * error messages for each error code.
+ * @returns 0 for success, error code otherwise.
+ */
+int check_error_strings(int my_rank, int num_tries, int *errcode,
+                        const char **expected)
+{
+    int ret;
+    
+    /* Try each test code. */
+    for (int try = 0; try < num_tries; try++)
+    {
+        char errstr[PIO_MAX_NAME + 1];
+        
+        /* Get the error string for this errcode. */
+        if ((ret = PIOc_strerror(errcode[try], errstr)))
+            return ret;
+
+        if (!my_rank)
+            printf("%d for errcode = %d message = %s\n", my_rank, errcode[try], errstr);
+
+        /* Check that it was as expected. */
+        if (strncmp(errstr, expected[try], strlen(expected[try])))
+        {
+            if (!my_rank)
+                printf("expected %s got %s\n", expected[try], errstr);
+            return ERR_AWFUL;
+        }
+        if (!my_rank)
+            printf("%d errcode = %d passed\n", my_rank, errcode[try]);
+    }
+
+    return PIO_NOERR;
+}    
+
+/* Check the PIOc_strerror() function for classic netCDF.
+ *
+ * @param my_rank the rank of this process.
+ * @return 0 for success, error code otherwise.
+ */
+int check_strerror_netcdf(int my_rank)
+{
+#ifdef _NETCDF
+    #define NUM_NETCDF_TRIES 4
+    int errcode[NUM_NETCDF_TRIES] = {PIO_EBADID, NC4_LAST_ERROR - 1, 0, 1};
+    const char *expected[NUM_NETCDF_TRIES] = {"NetCDF: Not a valid ID",
+                                       "Unknown Error: Unrecognized error code", "No error",
+                                       nc_strerror(1)};
+    int ret;
+
+    if ((ret = check_error_strings(my_rank, NUM_NETCDF_TRIES, errcode, expected)))
+        return ret;
+
+    if (!my_rank)
+        printf("check_strerror_netcdf SUCCEEDED!\n");
+#endif /* (_NETCDF) */
+
+    return PIO_NOERR;
+}
+
+/* Check the PIOc_strerror() function for netCDF-4.
+ *
+ * @param my_rank the rank of this process.
+ * @return 0 for success, error code otherwise.
+ */
+int check_strerror_netcdf4(int my_rank)
+{
+#ifdef _NETCDF4
+#define NUM_NETCDF4_TRIES 2
+    int errcode[NUM_NETCDF4_TRIES] = {NC_ENOTNC3, NC_ENOPAR};
+    const char *expected[NUM_NETCDF4_TRIES] =
+        {"NetCDF: Attempting netcdf-3 operation on netcdf-4 file",
+         "NetCDF: Parallel operation on file opened for non-parallel access"};
+    int ret;
+
+    if ((ret = check_error_strings(my_rank, NUM_NETCDF4_TRIES, errcode, expected)))
+        return ret;
+
+    if (!my_rank)
+        printf("check_strerror_netcdf4 SUCCEEDED!\n");
+#endif /* _NETCDF4 */
+
+    return PIO_NOERR;
+}
+
+/* Check the PIOc_strerror() function for parallel-netCDF.
+ *
+ * @param my_rank the rank of this process.
+ * @return 0 for success, error code otherwise.
+ */
+int check_strerror_pnetcdf(int my_rank)
+{
+#ifdef _PNETCDF
+#define NUM_PNETCDF_TRIES 2
+    int errcode[NUM_PNETCDF_TRIES] = {NC_EMULTIDEFINE_VAR_NUM, NC_EMULTIDEFINE_ATTR_VAL};
+    const char *expected[NUM_PNETCDF_TRIES] =
+        {"Number of variables is defined inconsistently among processes.",
+         "Attribute value is inconsistent among processes."};
+    int ret;
+
+    if ((ret = check_error_strings(my_rank, NUM_PNETCDF_TRIES, errcode, expected)))
+        return ret;
+
+    if (!my_rank)
+        printf("check_strerror_pnetcdf SUCCEEDED!\n");
+#endif /* _PNETCDF */
+
+    return PIO_NOERR;
+}
+
+/* Check the PIOc_strerror() function for PIO.
+ *
+ * @param my_rank the rank of this process.
+ * @return 0 for success, error code otherwise.
+ */
+int check_strerror_pio(int my_rank)
+{
+#define NUM_PIO_TRIES 6
+    int errcode[NUM_PIO_TRIES] = {PIO_EBADID,
+                              NC_ENOTNC3, NC4_LAST_ERROR - 1, 0, 1,
+                              PIO_EBADIOTYPE};
+    const char *expected[NUM_PIO_TRIES] = {"NetCDF: Not a valid ID",
+                                       "NetCDF: Attempting netcdf-3 operation on netcdf-4 file",
+                                       "Unknown Error: Unrecognized error code", "No error",
+                                       nc_strerror(1), "Bad IO type"};
+    int ret;
+
+    if ((ret = check_error_strings(my_rank, NUM_PIO_TRIES, errcode, expected)))
+        return ret;
+
+    if (!my_rank)
+        printf("check_strerror_pio SUCCEEDED!\n");
+
+    return PIO_NOERR;
+}
+
 /* Check the PIOc_strerror() function.
  *
  * @param my_rank the rank of this process.
- *
  * @return 0 for success, error code otherwise.
  */
 int check_strerror(int my_rank)
 {
-#define NUM_TRIES 6
-    char errstr[PIO_MAX_NAME + 1];
-    int errcode[NUM_TRIES] = {PIO_EBADID,
-                              NC_ENOTNC3, NC4_LAST_ERROR - 1, 0, 1,
-                              PIO_EBADIOTYPE};
-    const char *expected[NUM_TRIES] = {"NetCDF: Not a valid ID",
-                                       "NetCDF: Attempting netcdf-3 operation on netcdf-4 file",
-                                       "unknown PIO error", "No error",
-                                       nc_strerror(1), "Bad IO type"};
-    int ret = PIO_NOERR;
-
-    for (int try = 0; try < NUM_TRIES; try++)
-    {
-        char result[PIO_MAX_NAME];
-
-        /* Get the error string for this errcode. */
-        PIOc_strerror(errcode[try], errstr);
-
-        /* Check that it was as expected. */
-        if (strcmp(errstr, expected[try]))
-            ret = ERR_AWFUL;
-    }
-
-    return ret;
+    int ret;
+    if ((ret = check_strerror_netcdf(my_rank)))
+        return ret;
+    if ((ret = check_strerror_netcdf4(my_rank)))
+        return ret;
+    if ((ret = check_strerror_pnetcdf(my_rank)))
+        return ret;
+    if ((ret = check_strerror_pio(my_rank)))
+        return ret;
+    
 }
 
-/* Run Tests for NetCDF-4 Functions.
- *
- * @param argc argument count
- * @param argv array of arguments
- */
-int
-main(int argc, char **argv)
+/* Run Tests for NetCDF-4 Functions. */
+int main(int argc, char **argv)
 {
     /* Zero-based rank of processor. */
     int my_rank;

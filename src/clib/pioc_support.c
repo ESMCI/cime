@@ -28,18 +28,18 @@ FILE *LOG_FILE = NULL;
  * ncid number that will be assigned. */
 extern int pio_next_ncid;
 
-/** Return a string description of an error code. If zero is passed, a
- * null is returned.
+/** 
+ * Return a string description of an error code. If zero is passed,
+ * the errmsg will be "No error".
  *
  * @param pioerr the error code returned by a PIO function call.
- * @param errmsg Pointer that will get the error message. It will be
- * PIO_MAX_NAME chars or less.
- *
- * @return 0 on success
+ * @param errmsg Pointer that will get the error message. The message
+ * will be PIO_MAX_NAME chars or less.
+ * @return 0 on success.
  */
 int PIOc_strerror(int pioerr, char *errmsg)
 {
-    /* System error? */
+    /* System error? NetCDF and pNetCDF errors are always negative. */
     if (pioerr > 0)
     {
         const char *cp = (const char *)strerror(pioerr);
@@ -52,14 +52,18 @@ int PIOc_strerror(int pioerr, char *errmsg)
     {
         strcpy(errmsg, "No error");
     }
+#if defined(_NETCDF)
     else if (pioerr <= NC2_ERR && pioerr >= NC4_LAST_ERROR)     /* NetCDF error? */
     {
-#if defined( _PNETCDF) || defined(_NETCDF)
         strncpy(errmsg, nc_strerror(pioerr), NC_MAX_NAME);
-#else /* defined( _PNETCDF) || defined(_NETCDF) */
-        strcpy(errmsg, "NetCDF error code, PIO not built with netCDF.");
-#endif /* defined( _PNETCDF) || defined(_NETCDF) */
     }
+#endif /* endif defined(_NETCDF) */
+#if defined(_PNETCDF)    
+    else if (pioerr > PIO_FIRST_ERROR_CODE)     /* pNetCDF error? */
+    {
+        strncpy(errmsg, ncmpi_strerror(pioerr), NC_MAX_NAME);
+    }
+#endif /* defined( _PNETCDF) */
     else
     {
         /* Handle PIO errors. */
@@ -405,6 +409,60 @@ int check_netcdf(file_desc_t *file, int status, const char *fname, const int lin
     default:
         ierr = iotype_error(file->iotype,__FILE__,__LINE__);
     }
+    return status;
+}
+
+/**
+ * Check the result of a netCDF API call.
+ *
+ * @param ios the iosystem description struct
+ * @param file pointer to the PIO structure describing this file.
+ * @param status the return value from the netCDF call.
+ * @param fname the name of the code file.
+ * @param line the line number of the netCDF call in the code.
+ * @return the error code
+ */
+int check_netcdf2(iosystem_desc_t *ios, file_desc_t *file, int status,
+                  const char *fname, const int line)
+{
+    int eh = PIO_INTERNAL_ERROR; /* Default error handler. */
+    int ierr;
+
+    /* User must provide this. */
+    pioassert(fname, "code file name must be provided", __FILE__, __LINE__);
+
+    /* No harm, no foul. */
+    if (status == PIO_NOERR)
+        return PIO_NOERR;
+
+    /* Pick an error handler. File settings override iosystem
+     * settings. */
+    if (ios)
+        eh = ios->error_handler;
+    if (file)
+        eh = file->error_handler;
+    pioassert(eh == PIO_INTERNAL_ERROR || eh == PIO_BCAST_ERROR || eh == PIO_RETURN_ERROR,
+              "invalid error handler", __FILE__, __LINE__);
+    
+
+    /* Decide what to do based on the error handler. */
+    if (eh == PIO_INTERNAL_ERROR)
+    {
+        char errmsg[PIO_MAX_NAME + 1];
+        
+        /* Get an error message. */
+        ierr = PIOc_strerror(status, errmsg);
+
+        /* Die! */
+        piodie(errmsg, fname, line);        
+    }
+    else if (eh == PIO_BCAST_ERROR && ios)
+    {
+        /* Not sure what this will do. */
+        ierr = MPI_Bcast(&status, 1, MPI_INTEGER, ios->ioroot, ios->my_comm);
+    }
+
+    /* For PIO_RETURN_ERROR, just return the error. */
     return status;
 }
 
