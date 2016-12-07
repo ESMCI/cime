@@ -16,14 +16,15 @@
 /* The name of this test. */
 #define TEST_NAME "test_names"
 
-#define NUM_NETCDF_FLAVORS 4
+/* The number of dimensions in the test data. */
 #define NDIM 3
+
+
 #define X_DIM_LEN 400
 #define Y_DIM_LEN 400
 #define NUM_TIMESTEPS 6
 #define VAR_NAME "foo"
 #define ATT_NAME "bar"
-#define START_DATA_VAL 42
 
 /* The dimension names. */
 char dim_name[NDIM][NC_MAX_NAME + 1] = {"timestep", "x", "y"};
@@ -350,6 +351,7 @@ int main(int argc, char **argv)
 	    ERR(ret);
 	free(compdof);
 	printf("%d inited decomp\n", my_rank);		
+
 
 	/* Use PIO to create the example file in each of the four
 	 * available ways. */
