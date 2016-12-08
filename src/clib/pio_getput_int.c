@@ -110,9 +110,9 @@ int PIOc_get_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
          * user may have passed in NULLs.) */
         /* Allocate memory for these arrays, now that we know ndims. */
         if (!(rstart = malloc(ndims * sizeof(PIO_Offset))))
-            return check_netcdf(ios, file, ierr, __FILE__, __LINE__);
+            return check_netcdf(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
         if (!(rcount = malloc(ndims * sizeof(PIO_Offset))))
-            return check_netcdf(ios, file, ierr, __FILE__, __LINE__);
+            return check_netcdf(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
 
         PIO_Offset rstride[ndims];
         for (int vd = 0; vd < ndims; vd++)
@@ -486,11 +486,11 @@ int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
 
         /* Allocate memory for these arrays, now that we know ndims. */
         if (!(rstart = malloc(ndims * sizeof(PIO_Offset))))
-            return check_netcdf(ios, file, ierr, __FILE__, __LINE__);
+            return check_netcdf(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
         if (!(rcount = malloc(ndims * sizeof(PIO_Offset))))
-            return check_netcdf(ios, file, ierr, __FILE__, __LINE__);
+            return check_netcdf(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
         if (!(rstride = malloc(ndims * sizeof(PIO_Offset))))
-            return check_netcdf(ios, file, ierr, __FILE__, __LINE__);
+            return check_netcdf(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
 
         /* Figure out the real start, count, and stride arrays. (The
          * user may have passed in NULLs.) */
@@ -591,7 +591,7 @@ int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
             {
                 LOG((2, "stride not present"));
                 if (!(fake_stride = malloc(ndims * sizeof(PIO_Offset))))
-                    return PIO_ENOMEM;
+                    return check_netcdf(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
                 for (int d = 0; d < ndims; d++)
                     fake_stride[d] = 1;
             }
