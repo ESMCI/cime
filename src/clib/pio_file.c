@@ -441,7 +441,7 @@ int PIOc_deletefile(int iosysid, const char *filename)
 #else
 #ifdef _PNETCDF
         if (!mpierr && !delete_called)
-            ierr = ncmpi_delete(filename, ios->info);
+            ierr = ncmpi_delete((char *)filename, ios->info);
 #endif
 #endif
         if (!mpierr)
