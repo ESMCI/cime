@@ -421,7 +421,7 @@ int pio_write_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid,
     if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
         return check_mpi(file, mpierr, __FILE__, __LINE__);
     if (ierr)
-        return check_netcdf(file, ierr, __FILE__, __LINE__);
+        return check_netcdf(ios, file, ierr, __FILE__, __LINE__);
 
 #ifdef TIMING
     /* Stop timing this function. */
@@ -696,7 +696,7 @@ int pio_write_darray_multi_nc(file_desc_t *file, int nvars, const int *vid, int 
         } /* next regioncnt */
     } /* endif (ios->ioproc) */
 
-    ierr = check_netcdf(file, ierr, __FILE__,__LINE__);
+    ierr = check_netcdf(ios, file, ierr, __FILE__,__LINE__);
 
 #ifdef TIMING
     /* Stop timing this function. */
@@ -962,7 +962,7 @@ int pio_write_darray_multi_nc_serial(file_desc_t *file, int nvars, const int *vi
         }
     }
 
-    ierr = check_netcdf(file, ierr, __FILE__,__LINE__);
+    ierr = check_netcdf(ios, file, ierr, __FILE__,__LINE__);
 
 #ifdef TIMING
     /* Stop timing this function. */
@@ -1154,7 +1154,7 @@ int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid, void *IOBU
         } /* next regioncnt */
     }
 
-    ierr = check_netcdf(file, ierr, __FILE__,__LINE__);
+    ierr = check_netcdf(ios, file, ierr, __FILE__,__LINE__);
 
 #ifdef TIMING
     /* Stop timing this function. */
@@ -1387,7 +1387,7 @@ int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc, int vid,
         }
     }
 
-    ierr = check_netcdf(file, ierr, __FILE__, __LINE__);
+    ierr = check_netcdf(ios, file, ierr, __FILE__, __LINE__);
 
 #ifdef TIMING
     /* Stop timing this function. */
