@@ -1175,7 +1175,7 @@ int PIOc_put_var(int ncid, int varid, const void *buf, PIO_Offset bufcount,
         }
     }
 
-    ierr = check_netcdf(ios, file, ierr, __FILE__,__LINE__);
+    ierr = check_netcdf(file, ierr, __FILE__,__LINE__);
 
     return ierr;
 }
@@ -1261,7 +1261,7 @@ int PIOc_put_vars(int ncid, int varid, const PIO_Offset *start, const PIO_Offset
         }
     }
 
-    ierr = check_netcdf(ios, file, ierr, __FILE__,__LINE__);
+    ierr = check_netcdf(file, ierr, __FILE__,__LINE__);
 
     return ierr;
 }
@@ -1336,7 +1336,7 @@ int PIOc_put_var1(int ncid, int varid, const PIO_Offset *index, const void *buf,
         }
     }
 
-    ierr = check_netcdf(ios, file, ierr, __FILE__,__LINE__);
+    ierr = check_netcdf(file, ierr, __FILE__,__LINE__);
 
     return ierr;
 }
@@ -1411,7 +1411,7 @@ int PIOc_put_vara(int ncid, int varid, const PIO_Offset *start, const PIO_Offset
         }
     }
 
-    ierr = check_netcdf(ios, file, ierr, __FILE__,__LINE__);
+    ierr = check_netcdf(file, ierr, __FILE__,__LINE__);
 
     return ierr;
 }
