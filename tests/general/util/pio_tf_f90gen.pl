@@ -623,6 +623,7 @@ sub get_default_test_main
   $out_line = $out_line . "          WRITE(*,PIO_TF_TEST_RES_FMT) \"PIO_TF: \",&\n";
   $out_line = $out_line . "           \"All tests\", \"---------\", \"PASSED\"\n";
   $out_line = $out_line . "        ELSE\n";
+  $out_line = $out_line . "          pio_tf_nerrs_total_ = pio_tf_nerrs_total_ + 1\n";
   $out_line = $out_line . "          WRITE(*,PIO_TF_TEST_RES_FMT) \"PIO_TF: \",&\n";
   $out_line = $out_line . "           \"Test driver\", \"---------\", \"FAILED\"\n";
   $out_line = $out_line . "        END IF\n";
