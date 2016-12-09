@@ -12,12 +12,12 @@ module load PrgEnv-cray
 module load craype-haswell
 module load cray-shmem
 module load cray-mpich
-module swap cce cce/8.4.2
+module swap cce cce/8.5.1
 module load git/2.6.3
 module load cmake/3.3.2
-module load cray-hdf5-parallel/1.8.14
+module load cray-hdf5-parallel/1.8.16
 module load cray-netcdf-hdf5parallel/4.3.3.1
-module load cray-parallel-netcdf/1.6.1
+module load cray-parallel-netcdf/1.7.0
 
 export CC=cc
 export FC=ftn
