@@ -83,7 +83,7 @@ int PIOc_def_var_deflate(int ncid, int varid, int shuffle, int deflate,
     if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
         return check_mpi(file, mpierr, __FILE__, __LINE__);
     if (ierr)
-        return check_netcdf(file, ierr, __FILE__, __LINE__);
+        return check_netcdf(ios, file, ierr, __FILE__, __LINE__);
 
     return ierr;
 }
@@ -182,7 +182,7 @@ int PIOc_inq_var_deflate(int ncid, int varid, int *shufflep, int *deflatep,
     if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
         return check_mpi(file, mpierr, __FILE__, __LINE__);
     if (ierr)
-        return check_netcdf(file, ierr, __FILE__, __LINE__);
+        return check_netcdf(ios, file, ierr, __FILE__, __LINE__);
 
     /* Broadcast results to all tasks. */
     if (shufflep)
@@ -247,7 +247,7 @@ int PIOc_def_var_chunking(int ncid, int varid, int storage,
      * dimensions. */
     if (!ios->async_interface || !ios->ioproc)
         if ((ierr = PIOc_inq_varndims(ncid, varid, &ndims)))
-            return check_netcdf(file, ierr, __FILE__, __LINE__);
+            return check_netcdf(ios, file, ierr, __FILE__, __LINE__);
     LOG((2, "PIOc_def_var_chunking first ndims = %d", ndims));
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
@@ -317,7 +317,7 @@ int PIOc_def_var_chunking(int ncid, int varid, int storage,
     if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
         return check_mpi(file, mpierr, __FILE__, __LINE__);
     if (ierr)
-        return check_netcdf(file, ierr, __FILE__, __LINE__);
+        return check_netcdf(ios, file, ierr, __FILE__, __LINE__);
 
     return ierr;
 }
@@ -435,7 +435,7 @@ int PIOc_inq_var_chunking(int ncid, int varid, int *storagep, PIO_Offset *chunks
     if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
         return check_mpi(file, mpierr, __FILE__, __LINE__);
     if (ierr)
-        return check_netcdf(file, ierr, __FILE__, __LINE__);
+        return check_netcdf(ios, file, ierr, __FILE__, __LINE__);
 
     /* Broadcast results to all tasks. */
     if ((mpierr = MPI_Bcast(&ndims, 1, MPI_INT, ios->ioroot, ios->my_comm)))
@@ -522,7 +522,7 @@ int PIOc_def_var_fill(int ncid, int varid, int no_fill, const void *fill_value)
     if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
         return check_mpi(file, mpierr, __FILE__, __LINE__);
     if (ierr)
-        return check_netcdf(file, ierr, __FILE__, __LINE__);
+        return check_netcdf(ios, file, ierr, __FILE__, __LINE__);
 
     return ierr;
 }
@@ -602,7 +602,7 @@ int PIOc_def_var_endian(int ncid, int varid, int endian)
     if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
         return check_mpi(file, mpierr, __FILE__, __LINE__);
     if (ierr)
-        return check_netcdf(file, ierr, __FILE__, __LINE__);
+        return check_netcdf(ios, file, ierr, __FILE__, __LINE__);
 
     return ierr;
 }
@@ -682,7 +682,7 @@ int PIOc_inq_var_endian(int ncid, int varid, int *endianp)
     if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
         return check_mpi(file, mpierr, __FILE__, __LINE__);
     if (ierr)
-        return check_netcdf(file, ierr, __FILE__, __LINE__);
+        return check_netcdf(ios, file, ierr, __FILE__, __LINE__);
 
     /* Broadcast results to all tasks. */
     if (endianp)
@@ -781,7 +781,7 @@ int PIOc_set_chunk_cache(int iosysid, int iotype, PIO_Offset size, PIO_Offset ne
     if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
         return check_mpi(file, mpierr, __FILE__, __LINE__);
     if (ierr)
-        check_netcdf(file, ierr, __FILE__, __LINE__);
+        check_netcdf(ios, file, ierr, __FILE__, __LINE__);
 
     LOG((2, "PIOc_set_chunk_cache complete!"));
     return ierr;
@@ -886,7 +886,7 @@ int PIOc_get_chunk_cache(int iosysid, int iotype, PIO_Offset *sizep, PIO_Offset 
         return check_mpi(NULL, mpierr, __FILE__, __LINE__);
     LOG((2, "bcast complete ierr = %d sizep = %d", ierr, sizep));
     if (ierr)
-        return check_netcdf(NULL, ierr, __FILE__, __LINE__);        
+        return check_netcdf(ios, NULL, ierr, __FILE__, __LINE__);        
 
     if (sizep)
     {
@@ -992,7 +992,7 @@ int PIOc_set_var_chunk_cache(int ncid, int varid, PIO_Offset size, PIO_Offset ne
     if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
         return check_mpi(file, mpierr, __FILE__, __LINE__);
     if (ierr)
-        return check_netcdf(file, ierr, __FILE__, __LINE__);
+        return check_netcdf(ios, file, ierr, __FILE__, __LINE__);
 
     return ierr;
 }
@@ -1088,7 +1088,7 @@ int PIOc_get_var_chunk_cache(int ncid, int varid, PIO_Offset *sizep, PIO_Offset 
     if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
         return check_mpi(file, mpierr, __FILE__, __LINE__);
     if (ierr)
-        return check_netcdf(file, ierr, __FILE__, __LINE__);
+        return check_netcdf(ios, file, ierr, __FILE__, __LINE__);
 
     /* Broadcast results to all tasks. */
     if (sizep && !ierr)

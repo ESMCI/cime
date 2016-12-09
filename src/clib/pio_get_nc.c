@@ -1091,7 +1091,7 @@ int PIOc_get_var(int ncid, int varid, void *buf, PIO_Offset bufcount, MPI_Dataty
         }
     }
 
-    ierr = check_netcdf(file, ierr, __FILE__,__LINE__);
+    ierr = check_netcdf(ios, file, ierr, __FILE__,__LINE__);
 
     if(ios->async_interface || bcast ||
        (ios->num_iotasks < ios->num_comptasks)){
@@ -1165,7 +1165,7 @@ int PIOc_get_var1(int ncid, int varid, const PIO_Offset *index, void *buf, PIO_O
         }
     }
 
-    ierr = check_netcdf(file, ierr, __FILE__,__LINE__);
+    ierr = check_netcdf(ios, file, ierr, __FILE__,__LINE__);
 
     if(ios->async_interface || bcast ||
        (ios->num_iotasks < ios->num_comptasks)){
@@ -1239,7 +1239,7 @@ int PIOc_get_vara(int ncid, int varid, const PIO_Offset *start, const PIO_Offset
         }
     }
 
-    ierr = check_netcdf(file, ierr, __FILE__,__LINE__);
+    ierr = check_netcdf(ios, file, ierr, __FILE__,__LINE__);
 
     if(ios->async_interface || bcast ||
        (ios->num_iotasks < ios->num_comptasks)){
@@ -1313,7 +1313,7 @@ int PIOc_get_vars(int ncid, int varid, const PIO_Offset *start, const PIO_Offset
         }
     }
 
-    ierr = check_netcdf(file, ierr, __FILE__,__LINE__);
+    ierr = check_netcdf(ios, file, ierr, __FILE__,__LINE__);
 
     if(ios->async_interface || bcast ||
        (ios->num_iotasks < ios->num_comptasks)){

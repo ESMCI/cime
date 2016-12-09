@@ -133,7 +133,7 @@ int PIOc_inq(int ncid, int *ndimsp, int *nvarsp, int *ngattsp, int *unlimdimidp)
     if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
         return check_mpi(file, mpierr, __FILE__, __LINE__);
     if (ierr)
-        return check_netcdf(file, ierr, __FILE__, __LINE__);
+        return check_netcdf(ios, file, ierr, __FILE__, __LINE__);
 
     /* Broadcast results to all tasks. Ignore NULL parameters. */
     if (ndimsp)
@@ -282,7 +282,7 @@ int PIOc_inq_type(int ncid, nc_type xtype, char *name, PIO_Offset *sizep)
     if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
         return check_mpi(file, mpierr, __FILE__, __LINE__);
     if (ierr)
-        return check_netcdf(file, ierr, __FILE__, __LINE__);
+        return check_netcdf(ios, file, ierr, __FILE__, __LINE__);
 
     /* Broadcast results to all tasks. Ignore NULL parameters. */
     if (name)
@@ -367,7 +367,7 @@ int PIOc_inq_format(int ncid, int *formatp)
     if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
         return check_mpi(file, mpierr, __FILE__, __LINE__);
     if (ierr)
-        return check_netcdf(file, ierr, __FILE__, __LINE__);
+        return check_netcdf(ios, file, ierr, __FILE__, __LINE__);
 
     /* Broadcast results to all tasks. Ignore NULL parameters. */
     if (formatp)
@@ -460,7 +460,7 @@ int PIOc_inq_dim(int ncid, int dimid, char *name, PIO_Offset *lenp)
     if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
         return check_mpi(file, mpierr, __FILE__, __LINE__);
     if (ierr)
-        return check_netcdf(file, ierr, __FILE__, __LINE__);
+        return check_netcdf(ios, file, ierr, __FILE__, __LINE__);
 
     /* Broadcast results to all tasks. Ignore NULL parameters. */
     if (name)
@@ -594,7 +594,7 @@ int PIOc_inq_dimid(int ncid, const char *name, int *idp)
     if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
         return check_mpi(file, mpierr, __FILE__, __LINE__);
     if (ierr)
-        return check_netcdf(file, ierr, __FILE__, __LINE__);
+        return check_netcdf(ios, file, ierr, __FILE__, __LINE__);
 
     /* Broadcast results. */
     if (idp)
@@ -724,7 +724,7 @@ int PIOc_inq_var(int ncid, int varid, char *name, nc_type *xtypep, int *ndimsp,
     if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
         return check_mpi(file, mpierr, __FILE__, __LINE__);
     if (ierr)
-        return check_netcdf(file, ierr, __FILE__, __LINE__);
+        return check_netcdf(ios, file, ierr, __FILE__, __LINE__);
 
     /* Broadcast the results for non-null pointers. */
     if (name)
@@ -914,7 +914,7 @@ int PIOc_inq_varid(int ncid, const char *name, int *varidp)
     if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
         return check_mpi(file, mpierr, __FILE__, __LINE__);
     if (ierr)
-        return check_netcdf(file, ierr, __FILE__, __LINE__);
+        return check_netcdf(ios, file, ierr, __FILE__, __LINE__);
 
     /* Broadcast results to all tasks. Ignore NULL parameters. */
     if (varidp)
@@ -1012,7 +1012,7 @@ int PIOc_inq_att(int ncid, int varid, const char *name, nc_type *xtypep,
     if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
         return check_mpi(file, mpierr, __FILE__, __LINE__);
     if (ierr)
-        return check_netcdf(file, ierr, __FILE__, __LINE__);
+        return check_netcdf(ios, file, ierr, __FILE__, __LINE__);
 
     /* Broadcast results. */
     if (xtypep)
@@ -1133,7 +1133,7 @@ int PIOc_inq_attname(int ncid, int varid, int attnum, char *name)
     if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
         return check_mpi(file, mpierr, __FILE__, __LINE__);
     if (ierr)
-        return check_netcdf(file, ierr, __FILE__, __LINE__);
+        return check_netcdf(ios, file, ierr, __FILE__, __LINE__);
 
     /* Broadcast results to all tasks. Ignore NULL parameters. */
     if (name)
@@ -1231,7 +1231,7 @@ int PIOc_inq_attid(int ncid, int varid, const char *name, int *idp)
     if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
         return check_mpi(file, mpierr, __FILE__, __LINE__);
     if (ierr)
-        return check_netcdf(file, ierr, __FILE__, __LINE__);
+        return check_netcdf(ios, file, ierr, __FILE__, __LINE__);
 
     /* Broadcast results. */
     if (idp)
@@ -1321,7 +1321,7 @@ int PIOc_rename_dim(int ncid, int dimid, const char *name)
     if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
         return check_mpi(file, mpierr, __FILE__, __LINE__);
     if (ierr)
-        return check_netcdf(file, ierr, __FILE__, __LINE__);
+        return check_netcdf(ios, file, ierr, __FILE__, __LINE__);
 
     return ierr;
 }
@@ -1407,7 +1407,7 @@ int PIOc_rename_var(int ncid, int varid, const char *name)
     if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
         return check_mpi(file, mpierr, __FILE__, __LINE__);
     if (ierr)
-        return check_netcdf(file, ierr, __FILE__, __LINE__);
+        return check_netcdf(ios, file, ierr, __FILE__, __LINE__);
 
     return ierr;
 }
@@ -1498,7 +1498,7 @@ int PIOc_rename_att(int ncid, int varid, const char *name,
     if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
         return check_mpi(file, mpierr, __FILE__, __LINE__);
     if (ierr)
-        return check_netcdf(file, ierr, __FILE__, __LINE__);
+        return check_netcdf(ios, file, ierr, __FILE__, __LINE__);
 
     LOG((2, "PIOc_rename_att succeeded"));
     return ierr;
@@ -1582,7 +1582,7 @@ int PIOc_del_att(int ncid, int varid, const char *name)
     if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
         return check_mpi(file, mpierr, __FILE__, __LINE__);
     if (ierr)
-        return check_netcdf(file, ierr, __FILE__, __LINE__);
+        return check_netcdf(ios, file, ierr, __FILE__, __LINE__);
 
     return ierr;
 }
@@ -1653,7 +1653,7 @@ int PIOc_set_fill(int ncid, int fillmode, int *old_modep)
     if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
         return check_mpi(file, mpierr, __FILE__, __LINE__);
     if (ierr)
-        return check_netcdf(file, ierr, __FILE__, __LINE__);
+        return check_netcdf(ios, file, ierr, __FILE__, __LINE__);
 
     LOG((2, "PIOc_set_fill succeeded"));
     return ierr;
@@ -1774,7 +1774,7 @@ int PIOc_def_dim(int ncid, const char *name, PIO_Offset len, int *idp)
     if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
         return check_mpi(file, mpierr, __FILE__, __LINE__);
     if (ierr)
-        return check_netcdf(file, ierr, __FILE__, __LINE__);
+        return check_netcdf(ios, file, ierr, __FILE__, __LINE__);
 
     /* Broadcast results to all tasks. Ignore NULL parameters. */
     if (idp)
@@ -1811,7 +1811,7 @@ int PIOc_def_var(int ncid, const char *name, nc_type xtype, int ndims,
     /* User must provide name and storage for varid. */
     if (!name || !varidp || strlen(name) > NC_MAX_NAME)
     {
-        check_netcdf(file, PIO_EINVAL, __FILE__, __LINE__);
+        check_netcdf(ios, file, PIO_EINVAL, __FILE__, __LINE__);
         return PIO_EINVAL;
     }
 
@@ -1881,7 +1881,7 @@ int PIOc_def_var(int ncid, const char *name, nc_type xtype, int ndims,
     if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
         return check_mpi(file, mpierr, __FILE__, __LINE__);
     if (ierr)
-        return check_netcdf(file, ierr, __FILE__, __LINE__);
+        return check_netcdf(ios, file, ierr, __FILE__, __LINE__);
 
     /* Broadcast results. */
     if (varidp)
@@ -1957,7 +1957,7 @@ int PIOc_inq_var_fill(int ncid, int varid, int *no_fill, void *fill_valuep)
     if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
         return check_mpi(file, mpierr, __FILE__, __LINE__);
     if (ierr)
-        return check_netcdf(file, ierr, __FILE__, __LINE__);
+        return check_netcdf(ios, file, ierr, __FILE__, __LINE__);
 
     /* Broadcast results to all tasks. Ignore NULL parameters. */
     if (fill_valuep)
@@ -2008,7 +2008,7 @@ int PIOc_get_att(int ncid, int varid, const char *name, void *ip)
         /* Get the type and length of the attribute. */
         if ((ierr = PIOc_inq_att(ncid, varid, name, &atttype, &attlen)))
         {
-            check_netcdf(file, ierr, __FILE__, __LINE__);
+            check_netcdf(ios, file, ierr, __FILE__, __LINE__);
             return ierr;
         }
         LOG((2, "atttype = %d attlen = %d", atttype, attlen));
@@ -2016,7 +2016,7 @@ int PIOc_get_att(int ncid, int varid, const char *name, void *ip)
         /* Get the length (in bytes) of the type. */
         if ((ierr = PIOc_inq_type(ncid, atttype, NULL, &typelen)))
         {
-            check_netcdf(file, ierr, __FILE__, __LINE__);
+            check_netcdf(ios, file, ierr, __FILE__, __LINE__);
             return ierr;
         }
         LOG((2, "typelen = %d", typelen));
@@ -2094,7 +2094,7 @@ int PIOc_get_att(int ncid, int varid, const char *name, void *ip)
     if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
         return check_mpi(file, mpierr, __FILE__, __LINE__);
     if (ierr)
-        return check_netcdf(file, ierr, __FILE__, __LINE__);
+        return check_netcdf(ios, file, ierr, __FILE__, __LINE__);
 
     /* Broadcast results to all tasks. */
     if ((mpierr = MPI_Bcast(ip, (int)attlen * typelen, MPI_BYTE, ios->ioroot,
@@ -2144,7 +2144,7 @@ int PIOc_put_att(int ncid, int varid, const char *name, nc_type xtype,
         /* Get the length (in bytes) of the type. */
         if ((ierr = PIOc_inq_type(ncid, xtype, NULL, &typelen)))
         {
-            check_netcdf(file, ierr, __FILE__, __LINE__);
+            check_netcdf(ios, file, ierr, __FILE__, __LINE__);
             return ierr;
         }
         LOG((2, "PIOc_put_att typelen = %d", ncid, typelen));
@@ -2211,7 +2211,7 @@ int PIOc_put_att(int ncid, int varid, const char *name, nc_type xtype,
     if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
         return check_mpi(file, mpierr, __FILE__, __LINE__);
     if (ierr)
-        return check_netcdf(file, ierr, __FILE__, __LINE__);
+        return check_netcdf(ios, file, ierr, __FILE__, __LINE__);
 
     return ierr;
 }

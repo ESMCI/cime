@@ -226,7 +226,7 @@ int PIOc_createfile(int iosysid, int *ncidp, int *iotype, const char *filename, 
     if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
         return check_mpi(file, mpierr, __FILE__, __LINE__);
     if (ierr)
-        return check_netcdf(file, ierr, __FILE__, __LINE__);
+        return check_netcdf(ios, file, ierr, __FILE__, __LINE__);
 
     /* Broadcast results to all tasks. Ignore NULL parameters. */
     if ((mpierr = MPI_Bcast(&file->mode, 1, MPI_INT, ios->ioroot, ios->union_comm)))
@@ -371,7 +371,7 @@ int PIOc_closefile(int ncid)
     if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
         return check_mpi(file, mpierr, __FILE__, __LINE__);
     if (ierr)
-        return check_netcdf(file, ierr, __FILE__, __LINE__);
+        return check_netcdf(ios, file, ierr, __FILE__, __LINE__);
 
     /* Delete file from our list of open files. */
     pio_delete_file_from_list(ncid);
@@ -441,7 +441,7 @@ int PIOc_deletefile(int iosysid, const char *filename)
 #else
 #ifdef _PNETCDF
         if (!mpierr && !delete_called)
-            ierr = ncmpi_delete(filename, ios->info);
+            ierr = ncmpi_delete((char *)filename, ios->info);
 #endif
 #endif
         if (!mpierr)
@@ -453,7 +453,7 @@ int PIOc_deletefile(int iosysid, const char *filename)
     if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
         return check_mpi(NULL, mpierr2, __FILE__, __LINE__);        
     if (ierr)
-        return check_netcdf2(ios, NULL, ierr, __FILE__, __LINE__);
+        return check_netcdf(ios, NULL, ierr, __FILE__, __LINE__);
 
     return ierr;
 }
@@ -545,7 +545,7 @@ int PIOc_sync(int ncid)
             }
         }
 
-        ierr = check_netcdf(file, ierr, __FILE__,__LINE__);
+        ierr = check_netcdf(ios, file, ierr, __FILE__,__LINE__);
     }
     return ierr;
 }
