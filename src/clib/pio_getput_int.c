@@ -81,11 +81,11 @@ int PIOc_get_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
     {
         /* Get the length of the data type. */
         if ((ierr = PIOc_inq_type(ncid, xtype, NULL, &typelen)))
-            return check_netcdf(file, ierr, __FILE__, __LINE__);
+            return check_netcdf(ios, file, ierr, __FILE__, __LINE__);
 
         /* Get the number of dims for this var. */
         if ((ierr = PIOc_inq_varndims(ncid, varid, &ndims)))
-            return check_netcdf(file, ierr, __FILE__, __LINE__);
+            return check_netcdf(ios, file, ierr, __FILE__, __LINE__);
 
         PIO_Offset dimlen[ndims];
 
@@ -98,21 +98,21 @@ int PIOc_get_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
 
             /* Get the dimids for this var. */
             if ((ierr = PIOc_inq_vardimid(ncid, varid, dimid)))
-                return check_netcdf(file, ierr, __FILE__, __LINE__);
+                return check_netcdf(ios, file, ierr, __FILE__, __LINE__);
 
             /* Get the length of each dimension. */
             for (int vd = 0; vd < ndims; vd++)
                 if ((ierr = PIOc_inq_dimlen(ncid, dimid[vd], &dimlen[vd])))
-                    return check_netcdf(file, ierr, __FILE__, __LINE__);
+                    return check_netcdf(ios, file, ierr, __FILE__, __LINE__);
         }
 
         /* Figure out the real start, count, and stride arrays. (The
          * user may have passed in NULLs.) */
         /* Allocate memory for these arrays, now that we know ndims. */
         if (!(rstart = malloc(ndims * sizeof(PIO_Offset))))
-            return check_netcdf(file, PIO_ENOMEM, __FILE__, __LINE__);
+            return check_netcdf(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
         if (!(rcount = malloc(ndims * sizeof(PIO_Offset))))
-            return check_netcdf(file, PIO_ENOMEM, __FILE__, __LINE__);
+            return check_netcdf(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
 
         PIO_Offset rstride[ndims];
         for (int vd = 0; vd < ndims; vd++)
@@ -339,7 +339,7 @@ int PIOc_get_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
     if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
         return check_mpi(file, mpierr, __FILE__, __LINE__);
     if (ierr)
-        return check_netcdf(file, ierr, __FILE__, __LINE__);
+        return check_netcdf(ios, file, ierr, __FILE__, __LINE__);
 
     /* Send the data. */
     LOG((2, "PIOc_get_vars_tc bcasting data num_elem = %d typelen = %d", num_elem,
@@ -454,11 +454,11 @@ int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
     {
         /* Get the number of dims for this var. */
         if ((ierr = PIOc_inq_varndims(ncid, varid, &ndims)))
-            return check_netcdf(file, ierr, __FILE__, __LINE__);
+            return check_netcdf(ios, file, ierr, __FILE__, __LINE__);
 
         /* Get the length of the data type. */
         if ((ierr = PIOc_inq_type(ncid, xtype, NULL, &typelen)))
-            return check_netcdf(file, ierr, __FILE__, __LINE__);
+            return check_netcdf(ios, file, ierr, __FILE__, __LINE__);
 
         LOG((2, "ndims = %d typelen = %d", ndims, typelen));
 
@@ -473,24 +473,24 @@ int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
 
             /* Get the dimids for this var. */
             if ((ierr = PIOc_inq_vardimid(ncid, varid, dimid)))
-                return check_netcdf(file, ierr, __FILE__, __LINE__);
+                return check_netcdf(ios, file, ierr, __FILE__, __LINE__);
 
             /* Get the length of each dimension. */
             for (int vd = 0; vd < ndims; vd++)
             {
                 if ((ierr = PIOc_inq_dimlen(ncid, dimid[vd], &dimlen[vd])))
-                    return check_netcdf(file, ierr, __FILE__, __LINE__);
+                    return check_netcdf(ios, file, ierr, __FILE__, __LINE__);
                 LOG((3, "dimlen[%d] = %d", vd, dimlen[vd]));
             }
         }
 
         /* Allocate memory for these arrays, now that we know ndims. */
         if (!(rstart = malloc(ndims * sizeof(PIO_Offset))))
-            return check_netcdf(file, PIO_ENOMEM, __FILE__, __LINE__);
+            return check_netcdf(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
         if (!(rcount = malloc(ndims * sizeof(PIO_Offset))))
-            return check_netcdf(file, PIO_ENOMEM, __FILE__, __LINE__);
+            return check_netcdf(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
         if (!(rstride = malloc(ndims * sizeof(PIO_Offset))))
-            return check_netcdf(file, PIO_ENOMEM, __FILE__, __LINE__);
+            return check_netcdf(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
 
         /* Figure out the real start, count, and stride arrays. (The
          * user may have passed in NULLs.) */
@@ -591,7 +591,7 @@ int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
             {
                 LOG((2, "stride not present"));
                 if (!(fake_stride = malloc(ndims * sizeof(PIO_Offset))))
-                    return PIO_ENOMEM;
+                    return check_netcdf(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
                 for (int d = 0; d < ndims; d++)
                     fake_stride[d] = 1;
             }
@@ -729,7 +729,7 @@ int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
     if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
         return check_mpi(file, mpierr, __FILE__, __LINE__);
     if (ierr)
-        return check_netcdf(file, ierr, __FILE__, __LINE__);
+        return check_netcdf(ios, file, ierr, __FILE__, __LINE__);
     LOG((2, "PIOc_put_vars_tc bcast netcdf return code %d complete", ierr));
 
     return ierr;
