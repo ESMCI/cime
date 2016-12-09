@@ -226,7 +226,7 @@ int check_strerror_pnetcdf(int my_rank)
 #define NUM_PNETCDF_TRIES 2
     int errcode[NUM_PNETCDF_TRIES] = {NC_EMULTIDEFINE_VAR_NUM, NC_EMULTIDEFINE_ATTR_VAL};
     const char *expected[NUM_PNETCDF_TRIES] =
-        {"Number of variables is defined inconsistently among processes.",
+        {"Number of variables is",
          "Attribute value is inconsistent among processes."};
     int ret;
 
