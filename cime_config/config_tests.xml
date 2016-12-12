@@ -193,6 +193,9 @@ LII    CLM initial condition interpolation test
     <BFBFLAG>TRUE</BFBFLAG>
     <STOP_OPTION>ndays</STOP_OPTION>
     <STOP_N>11</STOP_N>
+    <HIST_OPTION>$STOP_OPTION</HIST_OPTION>
+    <HIST_N>$STOP_N</HIST_N>
+    <CONTINUE_RUN>FALSE</CONTINUE_RUN>
     <DOUT_S>FALSE</DOUT_S>
   </test>
 
