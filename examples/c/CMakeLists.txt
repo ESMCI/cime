@@ -32,20 +32,19 @@ SET(SRC example1.c)
 ADD_EXECUTABLE(example1 ${SRC})
 TARGET_LINK_LIBRARIES(example1 pioc)
 
-SET(SRC example2.c)
-ADD_EXECUTABLE(example2 ${SRC})
-TARGET_LINK_LIBRARIES(example2 pioc)
-
 #===== MPE =====
 find_package (MPE "2.4.8" COMPONENTS C)
-if (MPE_C_FOUND)
+if (PIO_ENABLE_FORTRAN)
+  if (MPE_C_FOUND)
+    SET(SRC example2.c)
+    ADD_EXECUTABLE(example2 ${SRC})
+    TARGET_LINK_LIBRARIES(example2 pioc)
+
     target_include_directories (example2
-        PUBLIC ${MPE_C_INCLUDE_DIRS})
+      PUBLIC ${MPE_C_INCLUDE_DIRS})
     target_compile_definitions (example2
-        PUBLIC HAVE_MPE)
+      PUBLIC HAVE_MPE)
     target_link_libraries (example2 pioc lmpe mpe pthread m)
-else ()
-    target_compile_definitions (example2
-        PUBLIC _NOMPE)
+  endif ()
 endif ()
 
