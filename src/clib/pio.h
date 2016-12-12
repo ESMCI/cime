@@ -351,9 +351,6 @@ typedef struct file_desc_t
     /** The IO system ID used to open this file. */
     iosystem_desc_t *iosystem;
 
-    /** The buffersize does not seem to be used anywhere. */
-    /* PIO_Offset buffsize;*/
-
     /** The ncid returned for this file by the underlying library
      * (netcdf or pnetcdf). */
     int fh;
