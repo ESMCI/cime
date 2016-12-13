@@ -993,7 +993,7 @@ int PIOc_writemap_from_f90(const char *file, const int ndims, const int *gdims,
  * @ingroup PIO_openfile
  */
 int PIOc_openfile_retry(const int iosysid, int *ncidp, int *iotype,
-                        const char *filename, const int mode, int retry)
+                        const char *filename, int mode, int retry)
 {
     iosystem_desc_t *ios;  /** Pointer to io system information. */
     file_desc_t *file;     /** Pointer to file information. */
