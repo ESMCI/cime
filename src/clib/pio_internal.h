@@ -92,8 +92,10 @@ extern "C" {
     void pio_add_to_file_list(file_desc_t *file);
     void pio_push_request(file_desc_t *file, int request);
 
-    int PIOc_openfile_retry(const int iosysid, int *ncidp, int *iotype,
-                            const char *filename, const int mode, int retry);
+    /* Open a file with optional retry as netCDF-classic if first
+     * iotype does not work. */
+    int PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype,
+                            const char *filename, int mode, int retry);
 
     iosystem_desc_t *pio_get_iosystem_from_id(int iosysid);
     int pio_add_to_iosystem_list(iosystem_desc_t *ios);

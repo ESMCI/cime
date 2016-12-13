@@ -975,8 +975,8 @@ int PIOc_writemap_from_f90(const char *file, const int ndims, const int *gdims,
  * @return 0 for success, error code otherwise.
  * @ingroup PIO_openfile
  */
-int PIOc_openfile_retry(const int iosysid, int *ncidp, int *iotype,
-                        const char *filename, const int mode, int retry)
+int PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype,
+                        const char *filename, int mode, int retry)
 {
     iosystem_desc_t *ios;  /** Pointer to io system information. */
     file_desc_t *file;     /** Pointer to file information. */
@@ -986,58 +986,38 @@ int PIOc_openfile_retry(const int iosysid, int *ncidp, int *iotype,
 
     /* User must provide valid input for these parameters. */
     if (!ncidp || !iotype || !filename)
-        return PIO_EINVAL;
+        return pio_err(NULL, NULL, PIO_EINVAL, __FILE__, __LINE__);
     if (*iotype < PIO_IOTYPE_PNETCDF || *iotype > PIO_IOTYPE_NETCDF4P)
-        return PIO_ENOMEM;
+        return pio_err(NULL, NULL, PIO_EINVAL, __FILE__, __LINE__);
 
     LOG((2, "PIOc_openfile_retry iosysid = %d iotype = %d filename = %s mode = %d retry = %d",
          iosysid, *iotype, filename, mode, retry));
 
     /* Get the IO system info from the iosysid. */
     if (!(ios = pio_get_iosystem_from_id(iosysid)))
-    {
-        LOG((0, "PIOc_openfile got bad iosysid %d",iosysid));
-        return PIO_EBADID;
-    }
+        return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);        
 
     /* Allocate space for the file info. */
-    if (!(file = (file_desc_t *) malloc(sizeof(*file))))
-        return PIO_ENOMEM;
+    if (!(file = calloc(sizeof(*file), 1)))
+        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
     /* Fill in some file values. */
     file->fh = -1;
     file->iotype = *iotype;
-    file->next = NULL;
     file->iosystem = ios;
     file->mode = mode;
-    file->error_handler = 0;
     
     for (int i = 0; i < PIO_MAX_VARS; i++)
     {
         file->varlist[i].record = -1;
         file->varlist[i].ndims = -1;
-#ifdef _PNETCDF
-        file->varlist[i].request = NULL;
-        file->varlist[i].nreqs=0;
-#endif
-        file->varlist[i].fillbuf = NULL;
-        file->varlist[i].iobuf = NULL;
     }
-
-    file->buffer.validvars = 0;
-    file->buffer.vid = NULL;
-    file->buffer.data = NULL;
-    file->buffer.next = NULL;
-    file->buffer.frame = NULL;
-    file->buffer.fillvalue = NULL;
 
     /* Set to true if this task should participate in IO (only true for
      * one task with netcdf serial files. */
     if (file->iotype == PIO_IOTYPE_NETCDF4P || file->iotype == PIO_IOTYPE_PNETCDF ||
         ios->io_rank == 0)
         file->do_io = 1;
-    else
-        file->do_io = 0;
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
     if (ios->async_interface)
@@ -1128,17 +1108,15 @@ int PIOc_openfile_retry(const int iosysid, int *ncidp, int *iotype,
                 if (ios->iomaster)
                     printf("PIO2 pio_file.c retry NETCDF\n");
 
-                // reset ierr on all tasks
+                /* reset ierr on all tasks */
                 ierr = PIO_NOERR;
 
-                // reset file markers for NETCDF on all tasks
+                /* reset file markers for NETCDF on all tasks */
                 file->iotype = PIO_IOTYPE_NETCDF;
 
-                // open netcdf file serially on main task
-                if (ios->io_rank==0)
-                {
+                /* open netcdf file serially on main task */
+                if (ios->io_rank == 0)
                     ierr = nc_open(filename, file->mode, &file->fh);
-                }
             }
 #endif
         }
@@ -1154,23 +1132,20 @@ int PIOc_openfile_retry(const int iosysid, int *ncidp, int *iotype,
     LOG((2, "error code Bcast complete ierr = %d ios->my_comm = %d", ierr, ios->my_comm));
 
     /* Broadcast results to all tasks. Ignore NULL parameters. */
-    if (!ierr)
-    {
-        if ((mpierr = MPI_Bcast(&file->mode, 1, MPI_INT, ios->ioroot, ios->my_comm)))
-            return check_mpi(file, mpierr, __FILE__, __LINE__);
+    if ((mpierr = MPI_Bcast(&file->mode, 1, MPI_INT, ios->ioroot, ios->my_comm)))
+        return check_mpi(file, mpierr, __FILE__, __LINE__);
 
-        /* Create the ncid that the user will see. This is necessary
-         * because otherwise ncids will be reused if files are opened
-         * on multiple iosystems. */
-        file->pio_ncid = pio_next_ncid++;
-
-        /* Return the PIO ncid to the user. */
-        *ncidp = file->pio_ncid;
-
-        /* Add this file to the list of currently open files. */
-        pio_add_to_file_list(file);
-    }
-
+    /* Create the ncid that the user will see. This is necessary
+     * because otherwise ncids will be reused if files are opened
+     * on multiple iosystems. */
+    file->pio_ncid = pio_next_ncid++;
+    
+    /* Return the PIO ncid to the user. */
+    *ncidp = file->pio_ncid;
+    
+    /* Add this file to the list of currently open files. */
+    pio_add_to_file_list(file);
+    
     LOG((2, "Opened file %s file->pio_ncid = %d file->fh = %d ierr = %d",
          filename, file->pio_ncid, file->fh, ierr));
 
