@@ -29,6 +29,7 @@ module load PrgEnv-intel
 
 case "$NERSC_HOST" in
     edison)
+	cd $CSCRATCH/dashboard
 	module switch intel intel/16.0.0.109
 	module load craype-ivybridge
 	module load git/2.4.6
@@ -38,6 +39,7 @@ case "$NERSC_HOST" in
 	module load cray-parallel-netcdf/1.7.0
 	;;
     cori)
+        cd $SCRATCH/dashboard
 	module switch intel intel/17.0.1.132
 	module load craype-mic-knl
 	module load git/2.9.1
@@ -69,5 +71,5 @@ else
   git checkout develop
 fi
 
-
+export HDF5_DISABLE_VERSION_CHECK=2
 ctest -S CTestScript.cmake,${model} -VV
