@@ -36,4 +36,6 @@ endif ()
 add_subdirectory (clib)
 
 # Build the Fortran library
-add_subdirectory (flib)
+if (PIO_ENABLE_FORTRAN)
+  add_subdirectory (flib)
+endif ()

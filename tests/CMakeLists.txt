@@ -17,7 +17,9 @@ add_dependencies (check tests)
 #==============================================================================
 
 add_subdirectory (unit)
-add_subdirectory (general)
+if (PIO_ENABLE_FORTRAN)
+  add_subdirectory (general)
+endif()
 if (PIO_ENABLE_TIMING)
     add_subdirectory (performance)
 else ()
