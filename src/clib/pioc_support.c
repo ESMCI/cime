@@ -699,6 +699,9 @@ int PIOc_freedecomp(int iosysid, int ioid)
     if (!(iodesc = pio_get_iodesc_from_id(ioid)))
         return PIO_EBADID;
 
+    if (iodesc->gsize)
+        brel(iodesc->gsize);
+
     if (iodesc->rfrom)
         brel(iodesc->rfrom);
     
@@ -734,6 +737,9 @@ int PIOc_freedecomp(int iosysid, int ioid)
 
     if (iodesc->firstregion)
         free_region_list(iodesc->firstregion);
+
+    if (iodesc->fillregion)
+        free_region_list(iodesc->fillregion);
 
     if (iodesc->rearranger == PIO_REARR_SUBSET)
         MPI_Comm_free(&(iodesc->subset_comm));
