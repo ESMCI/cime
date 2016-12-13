@@ -39,7 +39,6 @@ if (PIO_ENABLE_FORTRAN)
     SET(SRC example2.c)
     ADD_EXECUTABLE(example2 ${SRC})
     TARGET_LINK_LIBRARIES(example2 pioc)
-
     target_include_directories (example2
       PUBLIC ${MPE_C_INCLUDE_DIRS})
     target_compile_definitions (example2

@@ -109,36 +109,19 @@ int PIOc_createfile(int iosysid, int *ncidp, int *iotype, const char *filename, 
         return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
 
     /* Allocate space for the file info. */
-    if (!(file = malloc(sizeof(file_desc_t))))
+    if (!(file = calloc(sizeof(file_desc_t), 1)))
         return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
     /* Fill in some file values. */
     file->fh = -1;
-    file->next = NULL;
     file->iosystem = ios;
     file->iotype = *iotype;
-    file->error_handler = 0;
-
-    file->buffer.validvars = 0;
-    file->buffer.data = NULL;
-    file->buffer.next = NULL;
-    file->buffer.vid = NULL;
     file->buffer.ioid = -1;
-    file->buffer.frame = NULL;
-    file->buffer.fillvalue = NULL;
-
-    for(int i = 0; i < PIO_MAX_VARS; i++)
+    for (int i = 0; i < PIO_MAX_VARS; i++)
     {
         file->varlist[i].record = -1;
         file->varlist[i].ndims = -1;
-#ifdef _PNETCDF
-        file->varlist[i].request = NULL;
-        file->varlist[i].nreqs=0;
-#endif
-        file->varlist[i].fillbuf = NULL;
-        file->varlist[i].iobuf = NULL;
     }
-
     file->mode = mode;
 
     /* Set to true if this task should participate in IO (only true for
@@ -146,8 +129,7 @@ int PIOc_createfile(int iosysid, int *ncidp, int *iotype, const char *filename, 
     if (file->iotype == PIO_IOTYPE_NETCDF4P || file->iotype == PIO_IOTYPE_PNETCDF ||
         ios->io_rank == 0)
         file->do_io = 1;
-    else
-        file->do_io = 0;
+
     LOG((2, "file->do_io = %d ios->async_interface = %d", file->do_io, ios->async_interface));
 
     /* If async is in use, and this is not an IO task, bcast the
