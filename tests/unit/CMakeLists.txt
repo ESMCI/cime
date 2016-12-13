@@ -23,26 +23,28 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O0")
 #  PREPARE FOR TESTING
 #==============================================================================
 
-file (COPY "./input.nl"
-      DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-file (COPY "./not_netcdf.ieee"
-      DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+if (PIO_ENABLE_FORTRAN)
+  file (COPY "./input.nl"
+    DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+  file (COPY "./not_netcdf.ieee"
+    DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
-#==============================================================================
-#  DEFINE THE TARGETS AND TESTS
-#==============================================================================
+  #==============================================================================
+  #  DEFINE THE TARGETS AND TESTS
+  #==============================================================================
 
-set (SRCS basic_tests.F90
-          driver.F90
-          global_vars.F90
-          ncdf_tests.F90
-          nc_set_log_level2.c)
+  set (SRCS basic_tests.F90
+    driver.F90
+    global_vars.F90
+    ncdf_tests.F90
+    nc_set_log_level2.c)
 
-add_executable (pio_unit_test EXCLUDE_FROM_ALL ${SRCS})
-target_link_libraries (pio_unit_test piof)
-if ("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
+  add_executable (pio_unit_test EXCLUDE_FROM_ALL ${SRCS})
+  target_link_libraries (pio_unit_test piof)
+  if ("${CMAKE_Fortran_COMPILER_ID}" STREQUAL "GNU")
     target_compile_options (pio_unit_test
-        PRIVATE -ffree-line-length-none)
+      PRIVATE -ffree-line-length-none)
+  endif()
 endif()
 
 # Don't run these tests if we are using MPI SERIAL.
@@ -103,7 +105,9 @@ endif ()
 add_dependencies (tests test_names)
 add_dependencies (tests test_darray)
 add_dependencies (tests test_nc4)
-add_dependencies (tests pio_unit_test)
+if (PIO_ENABLE_FORTRAN)
+  add_dependencies (tests pio_unit_test)
+endif()
 
 # Test Timeout in seconds.
 set (DEFAULT_TEST_TIMEOUT 60)
@@ -119,11 +123,13 @@ if (PIO_USE_MPISERIAL)
     add_test(NAME test_names
         COMMAND test_names)
     add_test(NAME test_nc4
-        COMMAND test_nc4)
-    add_test(NAME pio_unit_test
+      COMMAND test_nc4)
+    if (PIO_ENABLE_FORTRAN)
+      add_test(NAME pio_unit_test
         COMMAND pio_unit_test)
-    set_tests_properties(pio_unit_test
+      set_tests_properties(pio_unit_test
         PROPERTIES TIMEOUT ${DEFAULT_TEST_TIMEOUT})
+    endif()
 else ()
     add_mpi_test(test_darray
         EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_darray
@@ -189,13 +195,17 @@ else ()
         EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_nc4
         NUMPROCS ${AT_LEAST_FOUR_TASKS}
         TIMEOUT ${DEFAULT_TEST_TIMEOUT})
-    add_mpi_test(pio_unit_test
+    if (PIO_ENABLE_FORTRAN)
+      add_mpi_test(pio_unit_test
         EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/pio_unit_test
         NUMPROCS 4
         TIMEOUT ${DEFAULT_TEST_TIMEOUT})
+    endif()
 endif ()
 
 if (PIO_HDF5_LOGGING)
-    target_compile_definitions (pio_unit_test
+    if (PIO_ENABLE_FORTRAN)  
+      target_compile_definitions (pio_unit_test
         PUBLIC LOGGING)
+    endif ()
 endif ()
