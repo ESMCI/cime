@@ -100,7 +100,7 @@ int test_no_async2(int my_rank, int num_flavors, int *flavor, MPI_Comm test_comm
     /* Initialize the PIO IO system. This specifies how
      * many and which processors are involved in I/O. */
     if ((ret = PIOc_Init_Intracomm(test_comm, niotasks, ioproc_stride,
-                                   ioproc_start, PIO_REARR_SUBSET, &iosysid)))
+                                   ioproc_start, PIO_REARR_SUBSET, NULL, &iosysid)))
         return ret;
 
     /* Describe the decomposition. This is a 1-based array, so add 1! */
