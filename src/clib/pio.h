@@ -569,7 +569,7 @@ extern "C" {
     int PIOc_writemap(const char *file, int ndims, const int *gdims, PIO_Offset maplen,
 		      PIO_Offset *map, MPI_Comm comm);
     int PIOc_writemap_from_f90(const char *file, int ndims, const int *gdims,
-			       const PIO_Offset maplen, const PIO_Offset *map, int f90_comm);
+			       PIO_Offset maplen, const PIO_Offset *map, int f90_comm);
 
     /* Initializing IO system. */
     int PIOc_Init_Async(MPI_Comm world, int num_io_procs, int *io_proc_list, int component_count,

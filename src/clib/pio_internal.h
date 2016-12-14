@@ -100,11 +100,14 @@ extern "C" {
     iosystem_desc_t *pio_get_iosystem_from_id(int iosysid);
     int pio_add_to_iosystem_list(iosystem_desc_t *ios);
 
-    int check_netcdf(file_desc_t *file,const int status, const char *fname, const int line);
+    /* Check the return code from a netCDF call. */
+    int check_netcdf(file_desc_t *file,const int status, const char *fname, int line);
+
+    /* Check the return code from a netCDF call, with ios pointer. */
     int check_netcdf2(iosystem_desc_t *ios, file_desc_t *file, int status,
-                      const char *fname, const int line);
-    int iotype_error(const int iotype, const char *fname, const int line);
-    void piodie(const char *msg,const char *fname, const int line);
+                      const char *fname, int line);
+    int iotype_error(int iotype, const char *fname, int line);
+    void piodie(const char *msg, const char *fname, int line);
     void pioassert(bool exp, const char *msg,const char *fname, const int line);
     int CalcStartandCount(const int basetype, const int ndims, const int *gdims, const int num_io_procs,
                           const int myiorank, PIO_Offset *start, PIO_Offset *kount);
@@ -135,12 +138,12 @@ extern "C" {
     int rearrange_comp2io(const iosystem_desc_t ios, io_desc_t *iodesc, void *sbuf,
                           void *rbuf, const int nvars);
     int calcdisplace(const int bsize, const int numblocks,const PIO_Offset map[],int displace[]);
-    io_desc_t *malloc_iodesc(const int piotype, const int ndims);
+    io_desc_t *malloc_iodesc(int piotype, int ndims);
     void performance_tune_rearranger(iosystem_desc_t ios, io_desc_t *iodesc);
 
     int flush_output_buffer(file_desc_t *file, bool force, PIO_Offset addsize);
     void compute_maxIObuffersize(MPI_Comm io_comm, io_desc_t *iodesc);
-    io_region *alloc_region(const int ndims);
+    io_region *alloc_region(int ndims);
     int pio_delete_iosystem_from_list(int piosysid);
     int gcd(int a, int b);
     long long lgcd (long long a,long long b );
@@ -164,7 +167,7 @@ extern "C" {
     void compute_buffer_init(iosystem_desc_t ios);
     void free_cn_buffer_pool(iosystem_desc_t ios);
     void flush_buffer(int ncid, wmulti_buffer *wmb, bool flushtodisk);
-    void piomemerror(iosystem_desc_t ios, size_t req, char *fname, const int line);
+    void piomemerror(iosystem_desc_t ios, size_t req, char *fname, int line);
     void compute_maxaggregate_bytes(const iosystem_desc_t ios, io_desc_t *iodesc);
 
     /* Check the return code from an MPI function call. */
