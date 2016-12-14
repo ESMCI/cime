@@ -274,17 +274,17 @@ int check_strerror(int my_rank)
     if ((ret = check_strerror_netcdf(my_rank)))
         return ret;
 
-    /* printf("checking strerror for netCDF-4 error codes...\n"); */
-    /* if ((ret = check_strerror_netcdf4(my_rank))) */
-    /*     return ret; */
+    printf("checking strerror for netCDF-4 error codes...\n");
+    if ((ret = check_strerror_netcdf4(my_rank)))
+        return ret;
 
-    /* printf("checking strerror for pnetcdf error codes...\n"); */
-    /* if ((ret = check_strerror_pnetcdf(my_rank))) */
-    /*     return ret; */
+    printf("checking strerror for pnetcdf error codes...\n");
+    if ((ret = check_strerror_pnetcdf(my_rank)))
+        return ret;
 
-    /* printf("checking strerror for PIO error codes...\n"); */
-    /* if ((ret = check_strerror_pio(my_rank))) */
-    /*     return ret; */
+    printf("checking strerror for PIO error codes...\n");
+    if ((ret = check_strerror_pio(my_rank)))
+        return ret;
 
     return PIO_NOERR;
 }
