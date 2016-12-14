@@ -4,6 +4,7 @@
 
 # Include PIO include and lib directories
 INCLUDE_DIRECTORIES(${PIO_INCLUDE_DIRS})
+include_directories("${CMAKE_SOURCE_DIR}/examples/c")
 LINK_DIRECTORIES(${PIO_LIB_DIR})
 
 set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -g -O0")
@@ -24,13 +25,22 @@ endif()
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -O0")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O0")
 
-SET(SRC examplePio.c)
-ADD_EXECUTABLE(examplePio_c ${SRC})
-TARGET_LINK_LIBRARIES(examplePio_c pioc)
+ADD_EXECUTABLE(examplePio EXCLUDE_FROM_ALL examplePio.c)
+TARGET_LINK_LIBRARIES(examplePio pioc)
+add_dependencies(tests examplePio)
 
-SET(SRC example1.c)
-ADD_EXECUTABLE(example1 ${SRC})
+ADD_EXECUTABLE(example1 example1.c)
 TARGET_LINK_LIBRARIES(example1 pioc)
+add_dependencies(tests example1)
+
+if (PIO_USE_MPISERIAL)
+  add_test(NAME examplePio COMMAND examplePio)
+  add_test(NAME example1 COMMAND example1)
+else ()
+  add_mpi_test(examplePio EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/examplePio NUMPROCS 4 TIMEOUT 60)
+  add_mpi_test(example1 EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/example1 NUMPROCS 4 TIMEOUT 60)
+endif ()
+
 
 #===== MPE =====
 find_package (MPE "2.4.8" COMPONENTS C)
