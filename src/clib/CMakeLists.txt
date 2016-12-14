@@ -18,27 +18,27 @@ include_directories(
 
 # Include the clib source directory
 target_include_directories (pioc
-    PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+  PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 # System and compiler CPP directives
 target_compile_definitions (pioc
-    PUBLIC ${CMAKE_SYSTEM_DIRECTIVE})
+  PUBLIC ${CMAKE_SYSTEM_DIRECTIVE})
 target_compile_definitions (pioc
-    PUBLIC ${CMAKE_C_COMPILER_DIRECTIVE})
+  PUBLIC ${CMAKE_C_COMPILER_DIRECTIVE})
 
 # Compiler-specific compiler options
 if ("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
-    target_compile_options (pioc
-        PRIVATE -std=c99)
+  target_compile_options (pioc
+    PRIVATE -std=c99)
 elseif ("${CMAKE_C_COMPILER_ID}" STREQUAL "PGI")
-    target_compile_options (pioc
-        PRIVATE -c99)
+  target_compile_options (pioc
+    PRIVATE -c99)
 elseif ("${CMAKE_C_COMPILER_ID}" STREQUAL "Intel")
-    target_compile_options (pioc
-        PRIVATE -std=c99)
+  target_compile_options (pioc
+    PRIVATE -std=c99)
 elseif ("${CMAKE_C_COMPILER_ID}" STREQUAL "Clang")
-    target_compile_options (pioc
-        PRIVATE -std=c99)
+  target_compile_options (pioc
+    PRIVATE -std=c99)
 endif()
 
 #==============================================================================
@@ -54,100 +54,100 @@ install (FILES ${CMAKE_CURRENT_SOURCE_DIR}/pio.h DESTINATION include)
 #==============================================================================
 #  DEFINE THE DEPENDENCIES
 #==============================================================================
-    
+
 #===== MPI =====
 if (PIO_USE_MPISERIAL)
-    find_package (MPISERIAL COMPONENTS C REQUIRED)
-    if (MPISERIAL_C_FOUND)
-        target_compile_definitions (pioc
-            PRIVATE MPI_SERIAL)
-        target_include_directories (pioc
-            PUBLIC ${MPISERIAL_C_INCLUDE_DIRS})
-        target_link_libraries (pioc
-            PUBLIC ${MPISERIAL_C_LIBRARIES})
+  find_package (MPISERIAL COMPONENTS C REQUIRED)
+  if (MPISERIAL_C_FOUND)
+    target_compile_definitions (pioc
+      PRIVATE MPI_SERIAL)
+    target_include_directories (pioc
+      PUBLIC ${MPISERIAL_C_INCLUDE_DIRS})
+    target_link_libraries (pioc
+      PUBLIC ${MPISERIAL_C_LIBRARIES})
 
-        set (WITH_PNETCDF FALSE)
-    endif ()
+    set (WITH_PNETCDF FALSE)
+  endif ()
 else ()
-    find_package (MPI REQUIRED)
+  find_package (MPI REQUIRED)
 endif ()
 
 #===== GPTL =====
 if (PIO_ENABLE_TIMING)
-    find_package (GPTL COMPONENTS C QUIET)
-    if (GPTL_C_FOUND)
-        message (STATUS "Found GPTL C: ${GPTL_C_LIBRARIES}")
-        target_include_directories (pioc 
-            PUBLIC ${GPTL_C_INCLUDE_DIRS})
-        target_link_libraries (pioc
-            PUBLIC ${GPTL_C_LIBRARIES})
-    else ()
-        message (STATUS "Using internal GPTL C library for timing")
-        target_link_libraries (pioc
-            PUBLIC gptl)
-    endif ()
-    target_compile_definitions (pioc
-        PUBLIC TIMING)
+  find_package (GPTL COMPONENTS C QUIET)
+  if (GPTL_C_FOUND)
+    message (STATUS "Found GPTL C: ${GPTL_C_LIBRARIES}")
+    target_include_directories (pioc
+      PUBLIC ${GPTL_C_INCLUDE_DIRS})
+    target_link_libraries (pioc
+      PUBLIC ${GPTL_C_LIBRARIES})
+  else ()
+    message (STATUS "Using internal GPTL C library for timing")
+    target_link_libraries (pioc
+      PUBLIC gptl)
+  endif ()
+  target_compile_definitions (pioc
+    PUBLIC TIMING)
 endif ()
 
 #===== NetCDF-C =====
 find_package (NetCDF "4.3.3" COMPONENTS C)
 if (NetCDF_C_FOUND)
-    target_include_directories (pioc 
-        PUBLIC ${NetCDF_C_INCLUDE_DIRS})
-    target_compile_definitions (pioc 
-        PUBLIC _NETCDF)
-    target_link_libraries (pioc
-        PUBLIC ${NetCDF_C_LIBRARIES})
-    if (${NetCDF_C_HAS_PARALLEL})
-        target_compile_definitions (pioc 
-            PUBLIC _NETCDF4)
-    endif ()
+  target_include_directories (pioc
+    PUBLIC ${NetCDF_C_INCLUDE_DIRS})
+  target_compile_definitions (pioc
+    PUBLIC _NETCDF)
+  target_link_libraries (pioc
+    PUBLIC ${NetCDF_C_LIBRARIES})
+  if (${NetCDF_C_HAS_PARALLEL})
+    target_compile_definitions (pioc
+      PUBLIC _NETCDF4)
+  endif ()
 else ()
-    target_compile_definitions (pioc 
-        PUBLIC _NONETCDF)
+  target_compile_definitions (pioc
+    PUBLIC _NONETCDF)
 endif ()
 
 #===== PnetCDF-C =====
 if (WITH_PNETCDF)
-    find_package (PnetCDF "1.6" COMPONENTS C REQUIRED)
+  find_package (PnetCDF "1.6" COMPONENTS C REQUIRED)
 endif ()
 if (PnetCDF_C_FOUND)
-    target_include_directories (pioc 
-        PUBLIC ${PnetCDF_C_INCLUDE_DIRS})
-    target_compile_definitions (pioc 
-        PUBLIC _PNETCDF)
-    target_link_libraries (pioc
-        PUBLIC ${PnetCDF_C_LIBRARIES})
+  target_include_directories (pioc
+    PUBLIC ${PnetCDF_C_INCLUDE_DIRS})
+  target_compile_definitions (pioc
+    PUBLIC _PNETCDF)
+  target_link_libraries (pioc
+    PUBLIC ${PnetCDF_C_LIBRARIES})
 
-    # Check library for varn functions
-    set (CMAKE_REQUIRED_LIBRARIES ${PnetCDF_C_LIBRARY})
-    check_function_exists (ncmpi_get_varn PnetCDF_C_HAS_VARN)
-    if (PnetCDF_C_HAS_VARN)
-        target_compile_definitions(pioc
-            PUBLIC USE_PNETCDF_VARN
-            PUBLIC USE_PNETCDF_VARN_ON_READ)
-    endif()  
+  # Check library for varn functions
+  set (CMAKE_REQUIRED_LIBRARIES ${PnetCDF_C_LIBRARY})
+  check_function_exists (ncmpi_get_varn PnetCDF_C_HAS_VARN)
+  if (PnetCDF_C_HAS_VARN)
+    target_compile_definitions(pioc
+      PUBLIC USE_PNETCDF_VARN
+      PUBLIC USE_PNETCDF_VARN_ON_READ)
+  endif()
 else ()
-    target_compile_definitions (pioc 
-        PUBLIC _NOPNETCDF)
+  target_compile_definitions (pioc
+    PUBLIC _NOPNETCDF)
 endif ()
 
 #===== Add EXTRAs =====
 target_include_directories (pioc
-    PUBLIC ${PIO_C_EXTRA_INCLUDE_DIRS})
+  PUBLIC ${PIO_C_EXTRA_INCLUDE_DIRS})
 target_link_libraries (pioc
-    PUBLIC ${PIO_C_EXTRA_LIBRARIES})
+  PUBLIC ${PIO_C_EXTRA_LIBRARIES})
 target_compile_options (pioc
-    PRIVATE ${PIO_C_EXTRA_COMPILE_OPTIONS})
+  PRIVATE ${PIO_C_EXTRA_COMPILE_OPTIONS})
 target_compile_definitions (pioc
-    PUBLIC ${PIO_C_EXTRA_COMPILE_DEFINITIONS})
+  PUBLIC ${PIO_C_EXTRA_COMPILE_DEFINITIONS})
 if (PIO_C_EXTRA_LINK_FLAGS)
-    set_target_properties(pioc PROPERTIES 
-        LINK_FLAGS ${PIO_C_EXTRA_LINK_FLAGS})
+  set_target_properties(pioc PROPERTIES
+    LINK_FLAGS ${PIO_C_EXTRA_LINK_FLAGS})
 endif ()
 
 #===== Check for necessities =====
 if (NOT PnetCDF_C_FOUND AND NOT NetCDF_C_FOUND)
-    message (FATAL_ERROR "Must have PnetCDF and/or NetCDF C libraries")
+  message (FATAL_ERROR "Must have PnetCDF and/or NetCDF C libraries")
 endif ()

@@ -29,7 +29,7 @@ case "$NERSC_HOST" in
 	;;
 esac
 
-echo "#SBATCH --time=00:15:00" >> runctest.slurm
+echo "#SBATCH --time=01:00:00" >> runctest.slurm
 
 echo "#SBATCH --export PIO_DASHBOARD_SITE,PIO_DASHBOARD_BUILD_NAME,PIO_DASHBOARD_SOURCE_DIR,PIO_DASHBOARD_BINARY_DIR" >> runctest.slurm
 #echo "cd \$PBS_O_WORKDIR" >> runctest.pbs

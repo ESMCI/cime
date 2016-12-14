@@ -59,14 +59,14 @@ option (PIO_VALGRIND_CHECK  "Enable memory leak check using valgrind"           
 
 # Old NETCDF_DIR variable --> NetCDF_PATH
 if (DEFINED NETCDF_DIR)
-    set (NetCDF_PATH ${NETCDF_DIR}
-         CACHE STRING "Location of the NetCDF library installation")
+  set (NetCDF_PATH ${NETCDF_DIR}
+    CACHE STRING "Location of the NetCDF library installation")
 endif ()
 
 # Old PNETCDF_DIR variable --> PnetCDF_PATH
 if (DEFINED PNETCDF_DIR)
-    set (PnetCDF_PATH ${PNETCDF_DIR}
-         CACHE STRING "Location of the PnetCDF library installation")
+  set (PnetCDF_PATH ${PNETCDF_DIR}
+    CACHE STRING "Location of the PnetCDF library installation")
 endif ()
 
 #==============================================================================
@@ -78,23 +78,23 @@ list (APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
 #===== External modules =====
 if (NOT DEFINED USER_CMAKE_MODULE_PATH)
-    message (STATUS "Importing CMake_Fortran_utils")
-    execute_process(
-        COMMAND git clone https://github.com/CESM-Development/CMake_Fortran_utils
-        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-        OUTPUT_QUIET
-        ERROR_QUIET)
-    find_path (USER_CMAKE_MODULE_PATH
-               NAMES mpiexec.cmake
-               HINTS ${CMAKE_BINARY_DIR}/CMake_Fortran_utils)
-    if (USER_CMAKE_MODULE_PATH)
-        message (STATUS "Importing CMake_Fortran_utils - success")
-    else ()
-        message (FATAL_ERROR "Failed to import CMake_Fortran_utils")
-    endif ()
+  message (STATUS "Importing CMake_Fortran_utils")
+  execute_process(
+    COMMAND git clone https://github.com/CESM-Development/CMake_Fortran_utils
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+    OUTPUT_QUIET
+    ERROR_QUIET)
+  find_path (USER_CMAKE_MODULE_PATH
+    NAMES mpiexec.cmake
+    HINTS ${CMAKE_BINARY_DIR}/CMake_Fortran_utils)
+  if (USER_CMAKE_MODULE_PATH)
+    message (STATUS "Importing CMake_Fortran_utils - success")
+  else ()
+    message (FATAL_ERROR "Failed to import CMake_Fortran_utils")
+  endif ()
 endif ()
 set (USER_CMAKE_MODULE_PATH ${USER_CMAKE_MODULE_PATH}
-     CACHE STRING "Location of the CMake_Fortran_utils")
+  CACHE STRING "Location of the CMake_Fortran_utils")
 list (APPEND CMAKE_MODULE_PATH ${USER_CMAKE_MODULE_PATH})
 
 #==============================================================================
@@ -104,23 +104,23 @@ list (APPEND CMAKE_MODULE_PATH ${USER_CMAKE_MODULE_PATH})
 # System Name
 string (TOUPPER "${CMAKE_SYSTEM_NAME}" CMAKE_SYSTEM_NAME_CAPS)
 set (CMAKE_SYSTEM_DIRECTIVE "${CMAKE_SYSTEM_NAME_CAPS}"
-     CACHE STRING "System name preprocessor directive")
+  CACHE STRING "System name preprocessor directive")
 
 # C Compiler Name
 string (TOUPPER "${CMAKE_C_COMPILER_ID}" CMAKE_C_COMPILER_NAME)
 if (CMAKE_C_COMPILER_NAME STREQUAL "XL")
-    set (CMAKE_C_COMPILER_NAME "IBM")
+  set (CMAKE_C_COMPILER_NAME "IBM")
 endif ()
 set (CMAKE_C_COMPILER_DIRECTIVE "CPR${CMAKE_C_COMPILER_NAME}"
-     CACHE STRING "C compiler name preprocessor directive")
+  CACHE STRING "C compiler name preprocessor directive")
 
 # Fortran Compiler Name
 string (TOUPPER "${CMAKE_Fortran_COMPILER_ID}" CMAKE_Fortran_COMPILER_NAME)
 if (CMAKE_Fortran_COMPILER_NAME STREQUAL "XL")
-    set (CMAKE_Fortran_COMPILER_NAME "IBM")
+  set (CMAKE_Fortran_COMPILER_NAME "IBM")
 endif ()
 set (CMAKE_Fortran_COMPILER_DIRECTIVE "CPR${CMAKE_Fortran_COMPILER_NAME}"
-     CACHE STRING "Fortran compiler name preprocessor directive")
+  CACHE STRING "Fortran compiler name preprocessor directive")
 
 # configure a header file to pass some of the CMake settings
 # to the source code
@@ -135,16 +135,16 @@ configure_file (
 
 # Only support GNU compilers at this time
 if (PIO_ENABLE_COVERAGE)
-    if (CMAKE_C_COMPILER_NAME STREQUAL "GNU")
-        set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fprofile-arcs -ftest-coverage")
-    else ()
-        message (WARNING "The C compiler is non-GNU: coverage of C code could NOT be enabled")
-    endif ()
-    if (CMAKE_Fortran_COMPILER_NAME STREQUAL "GNU")
-        set (CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -fprofile-arcs -ftest-coverage")
-    else ()
-        message (WARNING "The Fortran compiler is non-GNU: coverage of Fortran code could NOT be enabled")
-    endif ()
+  if (CMAKE_C_COMPILER_NAME STREQUAL "GNU")
+    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fprofile-arcs -ftest-coverage")
+  else ()
+    message (WARNING "The C compiler is non-GNU: coverage of C code could NOT be enabled")
+  endif ()
+  if (CMAKE_Fortran_COMPILER_NAME STREQUAL "GNU")
+    set (CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -fprofile-arcs -ftest-coverage")
+  else ()
+    message (WARNING "The Fortran compiler is non-GNU: coverage of Fortran code could NOT be enabled")
+  endif ()
 endif ()
 
 #==============================================================================
@@ -156,10 +156,10 @@ add_subdirectory (src)
 
 # Tests
 if (PIO_ENABLE_TESTS)
-    enable_testing()
-    include (CTest)
-    add_subdirectory (tests)
-    add_subdirectory (examples)
+  enable_testing()
+  include (CTest)
+  add_subdirectory (tests)
+  add_subdirectory (examples)
 endif ()
 
 # Documentation

@@ -15,9 +15,12 @@ add_dependencies (check tests)
 #==============================================================================
 #  INCLUDE SOURCE DIRECTORIES
 #==============================================================================
+add_subdirectory (cunit)
 
-add_subdirectory (unit)
-add_subdirectory (general)
+if (PIO_ENABLE_FORTRAN)
+  add_subdirectory (unit)
+  add_subdirectory (general)
+endif()
 if (PIO_ENABLE_TIMING)
     add_subdirectory (performance)
 else ()
