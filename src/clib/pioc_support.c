@@ -39,6 +39,11 @@ extern int pio_next_ncid;
  */
 int PIOc_strerror(int pioerr, char *errmsg)
 {
+    LOG((1, "PIOc_strerror pioerr = %d", pioerr));
+
+    /* Caller must provide this. */
+    pioassert(errmsg, "pointer to errmsg string must be provided", __FILE__, __LINE__);    
+    
     /* System error? NetCDF and pNetCDF errors are always negative. */
     if (pioerr > 0)
     {
@@ -55,13 +60,17 @@ int PIOc_strerror(int pioerr, char *errmsg)
 #if defined(_NETCDF)
     else if (pioerr <= NC2_ERR && pioerr >= NC4_LAST_ERROR)     /* NetCDF error? */
     {
+        LOG((2, "cheking netcdf for error = %d", pioerr));
         strncpy(errmsg, nc_strerror(pioerr), NC_MAX_NAME);
+        LOG((2, "errmsg = %s", errmsg));
     }
 #endif /* endif defined(_NETCDF) */
 #if defined(_PNETCDF)    
     else if (pioerr > PIO_FIRST_ERROR_CODE)     /* pNetCDF error? */
     {
+        LOG((2, "cheking pnetcdf for error = %d", pioerr));        
         strncpy(errmsg, ncmpi_strerror(pioerr), NC_MAX_NAME);
+        LOG((2, "errmsg = %s", errmsg));        
     }
 #endif /* defined( _PNETCDF) */
     else
@@ -73,7 +82,7 @@ int PIOc_strerror(int pioerr, char *errmsg)
             strcpy(errmsg, "Bad IO type");
             break;
         default:
-            strcpy(errmsg, "unknown PIO error");
+            strcpy(errmsg, "Unknown Error: Unrecognized error code");
         }
     }
 
