@@ -268,10 +268,10 @@ module pio_types
 !!  - max_pend_req : Maximum pending requests (To indicated unlimited
 !!                    number of requests use PIO_REARR_COMM_UNLIMITED_PEND_REQ)
 !>
-   type, public :: PIO_rearr_comm_fc_opt_t
-      logical :: enable_hs            ! Enable handshake?
-      logical :: enable_isend         ! Enable isends?
-      integer :: max_pend_req         ! Maximum pending requests
+   type, bind(c), public :: PIO_rearr_comm_fc_opt_t
+      logical(c_bool) :: enable_hs            ! Enable handshake?
+      logical(c_bool) :: enable_isend         ! Enable isends?
+      integer(c_int) :: max_pend_req         ! Maximum pending requests
     end type PIO_rearr_comm_fc_opt_t
 
     integer, public, parameter :: PIO_REARR_COMM_UNLIMITED_PEND_REQ = -1
@@ -283,9 +283,9 @@ module pio_types
 !!  - fcd : @copydoc PIO_rearr_comm_dir
 !!  - comm_fc_opts : @copydoc PIO_rearr_comm_fc_options
 !>
-    type, public :: PIO_rearr_opt_t
-      integer                         :: comm_type
-      integer                         :: fcd       ! Flow control direction
+    type, bind(c), public :: PIO_rearr_opt_t
+      integer(c_int)                         :: comm_type
+      integer(c_int)                         :: fcd       ! Flow control direction
       type(PIO_rearr_comm_fc_opt_t)   :: comm_fc_opts_comp2io
       type(PIO_rearr_comm_fc_opt_t)   :: comm_fc_opts_io2comp
     end type PIO_rearr_opt_t

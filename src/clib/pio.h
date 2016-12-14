@@ -219,6 +219,66 @@ typedef struct io_desc_t
 } io_desc_t;
 
 /**
+ * Note: The rearranger option values must match the definitions
+ * in the fortran interface
+ */
+/**
+ * Rearranger comm type
+ */
+enum PIO_REARR_COMM_TYPE
+{
+    /** Point to point */
+    PIO_REARR_COMM_P2P = (0),
+    /** Collective */
+    PIO_REARR_COMM_COLL
+};
+
+/**
+ * Rearranger comm flow control direction
+ */
+enum PIO_REARR_COMM_FC_DIR
+{
+    /** Comp procs to io procs and vice versa */
+    PIO_REARR_COMM_FC_2D_ENABLE = (0),
+    /** Comp procs to io procs only */
+    PIO_REARR_COMM_FC_1D_COMP2IO,
+    /** IO procs to comp procs only */
+    PIO_REARR_COMM_FC_1D_IO2COMP,
+    /** Disable flow control */
+    PIO_REARR_COMM_FC_2D_DISABLE
+};
+
+/**
+ * Rearranger comm flow control options
+ */
+#define PIO_REARR_COMM_UNLIMITED_PEND_REQ -1
+typedef struct rearr_comm_fc_opt{
+    /* FIXME: Is _Bool instead of bool required here? */
+    /** Enable handshake */
+    bool enable_hs;
+    /** Enable isends */
+    bool enable_isend;
+    /** Max pending requests
+      * (PIO_REARR_COMM_UNLIMITED_PEND_REQ => unlimited pend req)
+      */
+    int max_pend_req;
+} rearr_comm_fc_opt_t;
+
+/**
+ * Rearranger options
+ */
+typedef struct rearr_opt{
+    /** Comm type - see PIO_REARR_COMM_TYPE */
+    int comm_type;
+    /** Comm flow control dir - see PIO_REARR_COMM_FC_DIR */
+    int fcd;
+    /** flow control opts, comp to io procs */
+    rearr_comm_fc_opt_t comm_fc_opts_comp2io;
+    /** flow control opts, io to comp procs */
+    rearr_comm_fc_opt_t comm_fc_opts_io2comp;
+} rearr_opt_t;
+
+/**
  * IO system descriptor structure.
  *
  * This structure contains the general IO subsystem data and MPI
@@ -313,6 +373,9 @@ typedef struct iosystem_desc_t
 
     /** Index of this component in the list of components. */
     int comp_idx;
+
+    /** Rearranger options. */
+    rearr_opt_t rearr_opts;
 
     /** Pointer to the next iosystem_desc_t in the list. */
     struct iosystem_desc_t *next;
@@ -595,7 +658,7 @@ extern "C" {
                             MPI_Comm io_comm, int *iosysidp);
     int PIOc_get_numiotasks(int iosysid, int *numiotasks);
     int PIOc_Init_Intracomm(MPI_Comm comp_comm, int num_iotasks, int stride, int base, int rearr,
-                            int *iosysidp);
+                            rearr_opt_t *rearr_opts, int *iosysidp);
     int PIOc_finalize(int iosysid);
 
     /* Set error handling for entire io system. */

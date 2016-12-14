@@ -511,12 +511,13 @@ int PIOc_InitDecomp_bc(const int iosysid, const int basetype, const int ndims, c
  * @param base the comp_comm index of the first io task
  * @param rearr the rearranger to use by default, this may be
  * overriden in the @ref PIO_initdecomp
+ * @param rearr_opts the rearranger options
  * @param iosysidp index of the defined system descriptor
  * @return 0 on success, otherwise a PIO error code.
  * @ingroup PIO_init
  */
 int PIOc_Init_Intracomm(MPI_Comm comp_comm, int num_iotasks, int stride, int base,
-                        int rearr, int *iosysidp)
+                        int rearr, rearr_opt_t *rearr_opts, int *iosysidp)
 {
     iosystem_desc_t *ios;
     int ustride;
@@ -548,6 +549,8 @@ int PIOc_Init_Intracomm(MPI_Comm comp_comm, int num_iotasks, int stride, int bas
     ios->default_rearranger = rearr;
     ios->num_iotasks = num_iotasks;
     ios->num_comptasks = num_comptasks;
+    if (rearr_opts)
+        ios->rearr_opts = *rearr_opts;
 
     /* Copy the computation communicator into union_comm. */
     if ((mpierr = MPI_Comm_dup(comp_comm, &ios->union_comm)))
@@ -640,15 +643,18 @@ int PIOc_Init_Intracomm(MPI_Comm comp_comm, int num_iotasks, int stride, int bas
  * @param stride the stride to use assigning tasks
  * @param base the starting point when assigning tasks
  * @param rearr the rearranger
+ * @param rearr_opts the rearranger options
  * @param iosysidp a pointer that gets the IO system ID
  * @returns 0 for success, error code otherwise
  */
 int PIOc_Init_Intracomm_from_F90(int f90_comp_comm,
                                  const int num_iotasks, const int stride,
-                                 const int base, const int rearr, int *iosysidp)
+                                 const int base, const int rearr,
+                                 rearr_opt_t *rearr_opts, int *iosysidp)
 {
-    return PIOc_Init_Intracomm(MPI_Comm_f2c(f90_comp_comm), num_iotasks, stride, base, rearr,
-                               iosysidp);
+    return PIOc_Init_Intracomm(MPI_Comm_f2c(f90_comp_comm), num_iotasks,
+                                stride, base, rearr, rearr_opts,
+                                iosysidp);
 }
 
 /**

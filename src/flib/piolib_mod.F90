@@ -845,7 +845,9 @@ contains
 !! @param base @em optional argument can be used to offset the first io task - default base is task 1.
 !<
   subroutine init_intracom(comp_rank, comp_comm, num_iotasks, num_aggregator, stride,  rearr, iosystem,base, rearr_opts)
-    use pio_types, only : pio_internal_error
+    use pio_types, only : pio_internal_error, pio_rearr_opt_t
+    use iso_c_binding
+
     integer(i4), intent(in) :: comp_rank
     integer(i4), intent(in) :: comp_comm
     integer(i4), intent(in) :: num_iotasks
@@ -859,14 +861,16 @@ contains
     integer :: lbase
     integer :: ierr
     interface
-       integer(c_int) function PIOc_Init_Intracomm_from_F90(f90_comp_comm, num_iotasks, stride,base,rearr,iosysidp) &
+       integer(c_int) function PIOc_Init_Intracomm_from_F90(f90_comp_comm, num_iotasks, stride,base,rearr,rearr_opts,iosysidp) &
             bind(C,name="PIOc_Init_Intracomm_from_F90")
          use iso_c_binding
+         use pio_types
          integer(C_INT), value :: f90_comp_comm
          integer(C_INT), value :: num_iotasks
          integer(C_INT), value :: stride
          integer(C_INT), value :: base
          integer(C_INT), value :: rearr
+          type(pio_rearr_opt_t) :: rearr_opts
          integer(C_INT) :: iosysidp
        end function PIOc_Init_Intracomm_from_F90
     end interface
@@ -876,7 +880,7 @@ contains
 #endif
     lbase=0
     if(present(base)) lbase=base
-    ierr = PIOc_Init_Intracomm_from_F90(comp_comm,num_iotasks,stride,lbase,rearr,iosystem%iosysid)
+    ierr = PIOc_Init_Intracomm_from_F90(comp_comm,num_iotasks,stride,lbase,rearr,rearr_opts,iosystem%iosysid)
 
     call CheckMPIReturn("Bad Initialization in PIO_Init_Intracomm:  ", ierr,__FILE__,__LINE__)
 #ifdef TIMING
