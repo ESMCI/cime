@@ -328,7 +328,7 @@ int PIOc_InitDecomp(int iosysid, int basetype, int ndims, const int *dims, int m
         return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
 
     /* Allocate space for the iodesc info. */
-    if (!(iodesc = malloc_iodesc(basetype, ndims)))
+    if (!(iodesc = malloc_iodesc(ios, basetype, ndims)))
 	piodie("Out of memory", __FILE__, __LINE__);
 
     /* Remember the maplen. */

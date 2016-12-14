@@ -568,10 +568,11 @@ io_region *alloc_region(int ndims)
  * @returns pointer to the newly allocated io_desc_t or NULL if
  * allocation failed.
  */
-io_desc_t *malloc_iodesc(int piotype, int ndims)
+io_desc_t *malloc_iodesc(const iosystem_desc_t *ios, int piotype, int ndims)
 {
     io_desc_t *iodesc;
 
+    assert(ios != NULL);
     /* Allocate space for the io_desc_t struct. */
     if (!(iodesc = calloc(1, sizeof(io_desc_t))))
         return NULL;
@@ -601,9 +602,14 @@ io_desc_t *malloc_iodesc(int piotype, int ndims)
     iodesc->firstregion = alloc_region(ndims);
 
     /* Set the swap memory settings to defaults. */
+    /*
     iodesc->handshake = swapm_defaults.handshake;
     iodesc->isend = swapm_defaults.isend;
     iodesc->max_requests = swapm_defaults.nreqs;
+    */
+    iodesc->handshake = ios->rearr_opts.comm_fc_opts_comp2io.enable_hs;
+    iodesc->isend = ios->rearr_opts.comm_fc_opts_comp2io.enable_isend;
+    iodesc->max_requests = ios->rearr_opts.comm_fc_opts_comp2io.max_pend_req;
 
     return iodesc;
 }
