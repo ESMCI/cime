@@ -322,7 +322,7 @@ void pioassert(_Bool expression, const char *msg, const char *fname, const int l
 /**
  * Handle MPI errors. An error message is sent to stderr, then the
  * check_netcdf() function is called with PIO_EIO.
-
+ *
  * @param file pointer to the file_desc_t info. May be NULL, in which
  * case check_netcdf() is not called.
  * @param mpierr the MPI return code to handle
@@ -330,8 +330,27 @@ void pioassert(_Bool expression, const char *msg, const char *fname, const int l
  * @param line the line of code where error occured.
  * @return PIO_NOERR for no error, otherwise PIO_EIO.
 */
-int check_mpi(file_desc_t *file, const int mpierr, const char *filename,
-              const int line)
+int check_mpi(file_desc_t *file, int mpierr, const char *filename,
+              int line)
+{
+    return check_mpi2(NULL, file, mpierr, filename, line);
+}
+
+/**
+ * Handle MPI errors. An error message is sent to stderr, then the
+ * check_netcdf() function is called with PIO_EIO. This version of the
+ * function accepts an ios parameter, for the (rare) occasions where
+ * we have an ios but not a file.
+ *
+ * @param ios pointer to the iosystem_info_t. May be NULL.
+ * @param file pointer to the file_desc_t info. May be NULL.
+ * @param mpierr the MPI return code to handle
+ * @param filename the name of the code file where error occured.
+ * @param line the line of code where error occured.
+ * @return PIO_NOERR for no error, otherwise PIO_EIO.
+*/
+int check_mpi2(iosystem_desc_t *ios, file_desc_t *file, int mpierr,
+               const char *filename, int line)
 {
     if (mpierr)
     {
@@ -344,8 +363,7 @@ int check_mpi(file_desc_t *file, const int mpierr, const char *filename,
                     errstring, filename ? filename : "_", line);
 
         /* Handle all MPI errors as PIO_EIO. */
-        if (file)
-            check_netcdf(file, PIO_EIO, filename, line);
+        check_netcdf2(ios, file, PIO_EIO, filename, line);
         return PIO_EIO;
     }
     return PIO_NOERR;
@@ -443,7 +461,6 @@ int check_netcdf2(iosystem_desc_t *ios, file_desc_t *file, int status,
         eh = file->error_handler;
     pioassert(eh == PIO_INTERNAL_ERROR || eh == PIO_BCAST_ERROR || eh == PIO_RETURN_ERROR,
               "invalid error handler", __FILE__, __LINE__);
-    
 
     /* Decide what to do based on the error handler. */
     if (eh == PIO_INTERNAL_ERROR)

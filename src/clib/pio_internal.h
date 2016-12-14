@@ -166,8 +166,13 @@ extern "C" {
     void flush_buffer(int ncid, wmulti_buffer *wmb, bool flushtodisk);
     void piomemerror(iosystem_desc_t ios, size_t req, char *fname, const int line);
     void compute_maxaggregate_bytes(const iosystem_desc_t ios, io_desc_t *iodesc);
-    int check_mpi(file_desc_t *file, const int mpierr, const char *filename,
-                  const int line);
+
+    /* Check the return code from an MPI function call. */
+    int check_mpi(file_desc_t *file, int mpierr, const char *filename, int line);
+
+    /* Check the return code from an MPI function call. */
+    int check_mpi2(iosystem_desc_t *ios, file_desc_t *file, int mpierr, const char *filename,
+                   int line);
 
     /* Darray support functions. */
     int pio_write_darray_multi_nc(file_desc_t *file, const int nvars, const int *vid,
