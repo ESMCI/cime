@@ -539,13 +539,7 @@ int pio_err(iosystem_desc_t *ios, file_desc_t *file, int err_num, const char *fn
     {
         /* For debugging only, this will print a traceback of the call tree.  */
         print_trace(stderr);
-
-#ifdef MPI_SERIAL
-        /* Why the special abort() call for MPI_SERIAL??? */
-        abort();
-#else
         MPI_Abort(MPI_COMM_WORLD, -1);
-#endif
     }
 
     /* What should we do here??? */
