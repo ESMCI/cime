@@ -18,6 +18,7 @@ option (PIO_ENABLE_TIMING    "Enable the use of the GPTL timing library"    ON)
 option (PIO_ENABLE_LOGGING   "Enable debug logging (large output possible)" OFF)
 option (PIO_ENABLE_DOC       "Enable building PIO documentation"            ON)
 option (PIO_ENABLE_COVERAGE  "Enable code coverage"                         OFF)
+option (PIO_ENABLE_EXAMPLES  "Enable PIO examples"                          ON)
 option (PIO_INTERNAL_DOC     "Enable PIO developer documentation"           OFF)
 option (PIO_TEST_BIG_ENDIAN  "Enable test to see if machine is big endian"  ON)
 option (PIO_USE_MPIIO        "Enable support for MPI-IO auto detect"        ON)
@@ -154,12 +155,25 @@ endif ()
 # Libraries
 add_subdirectory (src)
 
+#==============================================================================
+#  TESTING TARGET
+#==============================================================================
+
+# Custom "piotests" target (builds the test executables)
+add_custom_target (tests)
+
+# Custom "check" target that depends upon "tests"
+add_custom_target (check COMMAND ${CMAKE_CTEST_COMMAND})
+add_dependencies (check tests)
+
 # Tests
 if (PIO_ENABLE_TESTS)
   enable_testing()
   include (CTest)
   add_subdirectory (tests)
-  add_subdirectory (examples)
+  if (PIO_ENABLE_EXAMPLES)
+    add_subdirectory (examples)
+  endif ()
 endif ()
 
 # Documentation
