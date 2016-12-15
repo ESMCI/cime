@@ -154,8 +154,6 @@ CONTAINS
     !    pio_tf_num_aggregators_
     !END IF
 
-    ierr = PIO_set_log_level(3)
-
     ! FIXME: Do we need to test with different types of aggregators?
     ! Initialize PIO
     CALL PIO_init(pio_tf_world_rank_, &
