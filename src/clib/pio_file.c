@@ -117,6 +117,7 @@ int PIOc_createfile(int iosysid, int *ncidp, int *iotype, const char *filename, 
     file->iosystem = ios;
     file->iotype = *iotype;
     file->buffer.ioid = -1;
+    file->error_handler = ios->error_handler;
     for (int i = 0; i < PIO_MAX_VARS; i++)
     {
         file->varlist[i].record = -1;

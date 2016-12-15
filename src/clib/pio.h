@@ -581,7 +581,13 @@ extern "C" {
                             int *iosysidp);
     int PIOc_finalize(int iosysid);
     int PIOc_get_iorank(int iosysid, int *iorank);
+
+    /* Set error handling for entire io system. */
     int PIOc_Set_IOSystem_Error_Handling(int iosysid, int method);
+
+    /* Set error handling for entire io system. */
+    int PIOc_set_iosystem_error(int iosysid, int method);
+    
     int PIOc_iam_iotask(int iosysid, bool *ioproc);
     int PIOc_iotask_rank(int iosysid, int *iorank);
     int PIOc_iosystem_is_active(int iosysid, bool *active);
@@ -616,7 +622,13 @@ extern "C" {
     int PIOc_inq_type(int ncid, nc_type xtype, char *name, PIO_Offset *sizep);
     int PIOc_set_blocksize(int newblocksize);
     int PIOc_File_is_Open(int ncid);
+
+    /* Set the error hanlding for a file. */
     int PIOc_Set_File_Error_Handling(int ncid, int method);
+
+    /* Set the error hanlding for a file. */
+    int PIOc_set_file_error(int ncid, int method);
+    
     int PIOc_set_hint(int iosysid, const char *hint, const char *hintval);
     int PIOc_set_chunk_cache(int iosysid, int iotype, PIO_Offset size, PIO_Offset nelems,
 			     float preemption);

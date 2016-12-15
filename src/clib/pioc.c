@@ -55,12 +55,16 @@ int PIOc_File_is_Open(int ncid)
 }
 
 /**
- * Set the error handling method to be used for subsequent pio
- * library calls, returns the previous method setting.
+ * Set the error handling method to be used for subsequent pio library
+ * calls, returns the previous method setting. This function is
+ * supported but deprecated. New code should use
+ * PIOc_set_file_error().  This method has no way to return an error,
+ * so any failure will result in MPI_Abort.
  *
  * @param ncid the ncid of an open file
  * @param method the error handling method
- * @returns 0 on success, error code otherwise
+ * @returns old error handler
+ * @ingroup PIO_error_method
  */
 int PIOc_Set_File_Error_Handling(int ncid, int method)
 {
@@ -68,13 +72,49 @@ int PIOc_Set_File_Error_Handling(int ncid, int method)
     int oldmethod;
     int ret;
 
+    /* Get the file info. */
+    if (pio_get_file(ncid, &file))
+        piodie("Could not find file", __FILE__, __LINE__);                
+
+    /* Get the old method. */
+    oldmethod = file->iosystem->error_handler;
+
+    /* Set the file error handler. */
+    if (PIOc_set_file_error(ncid, method))
+        piodie("Could not set the file error hanlder", __FILE__, __LINE__);        
+
+    return oldmethod;
+}
+
+/**
+ * Set the error handling method to be used for subsequent pio
+ * library calls on this file.
+ *
+ * @param ncid the ncid of an open file
+ * @param method the error handling method
+ * @returns 0 for success, error code otherwise.
+ * @ingroup PIO_error_method
+ */
+int PIOc_set_file_error(int ncid, int method)
+{
+    file_desc_t *file;
+    int ret;
+
+    LOG((1, "PIOc_set_file_error ncid = %d method = %d", ncid, method));
+
     /* Find info for this file. */
     if ((ret = pio_get_file(ncid, &file)))
-        return ret;
+        return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
 
-    oldmethod = file->iosystem->error_handler;
+    /* Check that valid error handler was provided. */
+    if (method != PIO_INTERNAL_ERROR && method != PIO_BCAST_ERROR &&
+        method != PIO_RETURN_ERROR)
+        return pio_err(file->iosystem, file, PIO_EINVAL, __FILE__, __LINE__);
+
+    /* Set the error hanlder. */
     file->iosystem->error_handler = method;
-    return oldmethod;
+    
+    return PIO_NOERR;
 }
 
 /**
@@ -184,29 +224,65 @@ int PIOc_get_local_array_size(int ioid)
 }
 
 /**
- * @ingroup PIO_error_method
- * Set the error handling method used for subsequent calls.
+ * Set the error handling method used for subsequent calls. This
+ * function is deprecated. New code should use
+ * PIOc_set_iosystem_error(). This method has no way to return an
+ * error, so any failure will result in MPI_Abort.
  *
  * @param iosysid the IO system ID
  * @param method the error handling method
- * @returns 0 on success, error code otherwise
+ * @returns old error handler
+ * @ingroup PIO_error_method
  */
 int PIOc_Set_IOSystem_Error_Handling(int iosysid, int method)
 {
     iosystem_desc_t *ios;
     int oldmethod;
+    int ret;
 
-    /* Find info about this iosystem. */
-    if (!(ios = pio_get_iosystem_from_id(iosysid)))
-        return PIO_EBADID;
+    /* Get the iosystem info. */
+    if (!(ios = pio_get_iosystem_from_id(iosysid)))    
+        piodie("Could not get the IOSystem", __FILE__, __LINE__);
 
     /* Remember old method setting. */
     oldmethod = ios->error_handler;
 
+    /* Set the file error handler. */
+    if (PIOc_set_iosystem_error(iosysid, method))
+        piodie("Could not set the IOSystem error hanlder", __FILE__, __LINE__);
+
+    return oldmethod;
+}
+
+/**
+ * Set the error handling method used for subsequent calls for this IO
+ * system. This may be overridden for individual files by
+ * PIOc_set_file_error().
+ *
+ * @param iosysid the IO system ID
+ * @param method the error handling method
+ * @returns 0 for success, error code otherwise.
+ * @ingroup PIO_error_method
+ */
+int PIOc_set_iosystem_error(int iosysid, int method)
+{
+    iosystem_desc_t *ios;
+
+    LOG((1, "PIOc_set_iosystem_error iosysid = %d method = %d", iosysid, method));
+
+    /* Find info about this iosystem. */
+    if (!(ios = pio_get_iosystem_from_id(iosysid)))
+        return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
+
+    /* Check that valid error handler was provided. */
+    if (method != PIO_INTERNAL_ERROR && method != PIO_BCAST_ERROR &&
+        method != PIO_RETURN_ERROR)
+        return pio_err(ios, NULL, PIO_EINVAL, __FILE__, __LINE__);
+
     /* Set new error handler. */
     ios->error_handler = method;
 
-    return oldmethod;
+    return PIO_NOERR;
 }
 
 /**
@@ -247,7 +323,7 @@ int PIOc_InitDecomp(int iosysid, int basetype, int ndims, const int *dims, int m
     /* Check the dim lengths. */
     for (int i = 0; i < ndims; i++)
         if (dims[i] <= 0)
-            piodie("Invalid dims argument",__FILE__,__LINE__);
+            piodie("Invalid dims argument", __FILE__, __LINE__);
 
     /* Get IO system info. */
     if (!(ios = pio_get_iosystem_from_id(iosysid)))
@@ -352,6 +428,7 @@ int PIOc_InitDecomp(int iosysid, int basetype, int ndims, const int *dims, int m
 
     LOG((3, "About to tune rearranger..."));
     performance_tune_rearranger(*ios, iodesc);
+    LOG((3, "Done with rearranger tune."));
 
     return PIO_NOERR;
 }
@@ -453,7 +530,6 @@ int PIOc_Init_Intracomm(MPI_Comm comp_comm, int num_iotasks, int stride, int bas
                         int rearr, int *iosysidp)
 {
     iosystem_desc_t *iosys;
-    int ierr = PIO_NOERR;
     int ustride;
     int lbase;
     int mpierr; /* Return value for MPI calls. */
@@ -570,7 +646,7 @@ int PIOc_Init_Intracomm(MPI_Comm comp_comm, int num_iotasks, int stride, int bas
 
     LOG((2, "Init_Intracomm complete iosysid = %d", *iosysidp));
 
-    return ierr;
+    return PIO_NOERR;
 }
 
 /**

@@ -382,58 +382,14 @@ int check_mpi2(iosystem_desc_t *ios, file_desc_t *file, int mpierr,
  */
 int check_netcdf(file_desc_t *file, int status, const char *fname, int line)
 {
-    iosystem_desc_t *ios;
-    int ierr;
-    char errstr[160];
-
-    /* Check inputs. */
-    assert(file);
-
-    ios = file->iosystem;
-    ierr = PIO_NOERR;
-
-    switch(file->iotype)
-    {
-#ifdef _NETCDF
-#ifdef _NETCDF4
-    case PIO_IOTYPE_NETCDF4P:
-    case PIO_IOTYPE_NETCDF4C:
-#endif
-    case PIO_IOTYPE_NETCDF:
-        if (ios->iomaster)
-        {
-            if (status != NC_NOERR && (ios->error_handler == PIO_INTERNAL_ERROR))
-                piodie(nc_strerror(status),fname,line);
-        }
-        if (ios->error_handler == PIO_INTERNAL_ERROR)
-        {
-            if (status != NC_NOERR)
-                MPI_Abort(MPI_COMM_WORLD,status);
-        }
-        else if (ios->error_handler == PIO_BCAST_ERROR)
-        {
-            ierr = MPI_Bcast(&status, 1, MPI_INTEGER, ios->ioroot, ios->my_comm);
-        }
-        break;
-#endif
-#ifdef _PNETCDF
-    case PIO_IOTYPE_PNETCDF:
-        if (status != NC_NOERR && (ios->error_handler == PIO_INTERNAL_ERROR))
-            piodie(ncmpi_strerror(status),fname,line);
-
-        if (ios->error_handler == PIO_BCAST_ERROR)
-            ierr = MPI_Bcast(&status, 1, MPI_INTEGER, ios->ioroot, ios->my_comm);
-
-        break;
-#endif
-    default:
-        ierr = iotype_error(file->iotype,__FILE__,__LINE__);
-    }
-    return status;
+    return check_netcdf2(NULL, file, status, fname, line);
 }
 
 /**
- * Check the result of a netCDF API call.
+ * Check the result of a netCDF API call. This is the same as
+ * check_netcdf() except for the extra iosystem_desc_t pointer, which
+ * is used to determine error handling when there is no file_desc_t
+ * pointer.
  *
  * @param ios the iosystem description struct
  * @param file pointer to the PIO structure describing this file.
@@ -454,6 +410,8 @@ int check_netcdf2(iosystem_desc_t *ios, file_desc_t *file, int status,
     /* No harm, no foul. */
     if (status == PIO_NOERR)
         return PIO_NOERR;
+
+    LOG((1, "check_netcdf4 status = %d fname = %s line = %d", status, fname, line));
 
     /* Pick an error handler. File settings override iosystem
      * settings. */
@@ -1032,6 +990,7 @@ int PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype,
     file->iotype = *iotype;
     file->iosystem = ios;
     file->mode = mode;
+    file->error_handler = ios->error_handler;
 
     for (int i = 0; i < PIO_MAX_VARS; i++)
     {

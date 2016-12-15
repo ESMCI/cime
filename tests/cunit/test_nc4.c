@@ -70,7 +70,8 @@ int test_deletefile(int iosysid, int num_flavors, int *flavor, int my_rank)
         char iotype_name[NC_MAX_NAME + 1];
 
         /* Set error handling. */
-        PIOc_Set_IOSystem_Error_Handling(ncid, PIO_RETURN_ERROR);
+        if ((ret = PIOc_set_iosystem_error(iosysid, PIO_RETURN_ERROR)))
+            return ret;
 
         /* Create a filename. */
         if ((ret = get_iotype_name(flavor[fmt], iotype_name)))
@@ -326,10 +327,12 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank)
     int ret; /* Return code. */
     
     /* Test file deletes. */
+    printf("%d Testing deletefile...\n", my_rank);
     if ((ret = test_deletefile(iosysid, num_flavors, flavor, my_rank)))
         return ret;
 
     /* Test netCDF-4 functions. */
+    printf("%d Testing nc4 functions...\n", my_rank);
     if ((ret = test_nc4(iosysid, num_flavors, flavor, my_rank)))
         return ret;
 
@@ -380,6 +383,7 @@ int test_no_async(int my_rank, int num_flavors, int *flavor, MPI_Comm test_comm)
     free(compdof);
 
     /* Run tests. */
+    printf("%d Running tests...\n", my_rank);
     if ((ret = test_all(iosysid, num_flavors, flavor, my_rank)))
         return ret;
         
