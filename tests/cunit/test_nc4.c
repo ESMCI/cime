@@ -68,10 +68,13 @@ int test_deletefile(int iosysid, int num_flavors, int *flavor, int my_rank)
     {
         char filename[NC_MAX_NAME + 1]; /* Test filename. */
         char iotype_name[NC_MAX_NAME + 1];
+        int old_method;
 
         /* Set error handling. */
-        if ((ret = PIOc_set_iosystem_error(iosysid, PIO_RETURN_ERROR)))
+        if ((ret = PIOc_set_iosystem_error_handling(iosysid, PIO_RETURN_ERROR, &old_method)))
             return ret;
+        if (old_method != PIO_INTERNAL_ERROR && old_method != PIO_RETURN_ERROR)
+            return ERR_WRONG;
 
         /* Create a filename. */
         if ((ret = get_iotype_name(flavor[fmt], iotype_name)))

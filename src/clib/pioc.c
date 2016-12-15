@@ -58,8 +58,8 @@ int PIOc_File_is_Open(int ncid)
  * Set the error handling method to be used for subsequent pio library
  * calls, returns the previous method setting. This function is
  * supported but deprecated. New code should use
- * PIOc_set_file_error().  This method has no way to return an error,
- * so any failure will result in MPI_Abort.
+ * PIOc_set_file_error_handling().  This method has no way to return
+ * an error, so any failure will result in MPI_Abort.
  *
  * @param ncid the ncid of an open file
  * @param method the error handling method
@@ -80,7 +80,7 @@ int PIOc_Set_File_Error_Handling(int ncid, int method)
     oldmethod = file->iosystem->error_handler;
 
     /* Set the file error handler. */
-    if (PIOc_set_file_error(ncid, method))
+    if (PIOc_set_file_error_handling(ncid, method, &oldmethod))
         piodie("Could not set the file error hanlder", __FILE__, __LINE__);        
 
     return oldmethod;
@@ -92,15 +92,16 @@ int PIOc_Set_File_Error_Handling(int ncid, int method)
  *
  * @param ncid the ncid of an open file
  * @param method the error handling method
+ * @param old_method pointer to int that will get old method. Ignored if NULL.
  * @returns 0 for success, error code otherwise.
  * @ingroup PIO_error_method
  */
-int PIOc_set_file_error(int ncid, int method)
+int PIOc_set_file_error_handling(int ncid, int method, int *old_method)
 {
     file_desc_t *file;
     int ret;
 
-    LOG((1, "PIOc_set_file_error ncid = %d method = %d", ncid, method));
+    LOG((1, "PIOc_set_file_error_handling ncid = %d method = %d", ncid, method));
 
     /* Find info for this file. */
     if ((ret = pio_get_file(ncid, &file)))
@@ -111,8 +112,12 @@ int PIOc_set_file_error(int ncid, int method)
         method != PIO_RETURN_ERROR)
         return pio_err(file->iosystem, file, PIO_EINVAL, __FILE__, __LINE__);
 
+    /* Return the current handler. */
+    if (old_method)
+        *old_method = file->error_handler;
+
     /* Set the error hanlder. */
-    file->iosystem->error_handler = method;
+    file->error_handler = method;
     
     return PIO_NOERR;
 }
@@ -226,8 +231,8 @@ int PIOc_get_local_array_size(int ioid)
 /**
  * Set the error handling method used for subsequent calls. This
  * function is deprecated. New code should use
- * PIOc_set_iosystem_error(). This method has no way to return an
- * error, so any failure will result in MPI_Abort.
+ * PIOc_set_iosystem_error_handling(). This method has no way to
+ * return an error, so any failure will result in MPI_Abort.
  *
  * @param iosysid the IO system ID
  * @param method the error handling method
@@ -248,7 +253,7 @@ int PIOc_Set_IOSystem_Error_Handling(int iosysid, int method)
     oldmethod = ios->error_handler;
 
     /* Set the file error handler. */
-    if (PIOc_set_iosystem_error(iosysid, method))
+    if (PIOc_set_iosystem_error_handling(iosysid, method, &oldmethod))
         piodie("Could not set the IOSystem error hanlder", __FILE__, __LINE__);
 
     return oldmethod;
@@ -257,18 +262,19 @@ int PIOc_Set_IOSystem_Error_Handling(int iosysid, int method)
 /**
  * Set the error handling method used for subsequent calls for this IO
  * system. This may be overridden for individual files by
- * PIOc_set_file_error().
+ * PIOc_set_file_error_handling().
  *
  * @param iosysid the IO system ID
  * @param method the error handling method
+ * @param old_method pointer to int that will get old method. Ignored if NULL.
  * @returns 0 for success, error code otherwise.
  * @ingroup PIO_error_method
  */
-int PIOc_set_iosystem_error(int iosysid, int method)
+int PIOc_set_iosystem_error_handling(int iosysid, int method, int *old_method)
 {
     iosystem_desc_t *ios;
 
-    LOG((1, "PIOc_set_iosystem_error iosysid = %d method = %d", iosysid, method));
+    LOG((1, "PIOc_set_iosystem_error_handling iosysid = %d method = %d", iosysid, method));
 
     /* Find info about this iosystem. */
     if (!(ios = pio_get_iosystem_from_id(iosysid)))
@@ -278,6 +284,10 @@ int PIOc_set_iosystem_error(int iosysid, int method)
     if (method != PIO_INTERNAL_ERROR && method != PIO_BCAST_ERROR &&
         method != PIO_RETURN_ERROR)
         return pio_err(ios, NULL, PIO_EINVAL, __FILE__, __LINE__);
+
+    /* Return the current handler. */
+    if (old_method)
+        *old_method = ios->error_handler;
 
     /* Set new error handler. */
     ios->error_handler = method;

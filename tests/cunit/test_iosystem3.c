@@ -49,12 +49,16 @@ int create_file(MPI_Comm comm, int iosysid, int format, char *filename,
     printf("%d file created ncid = %d\n", my_rank, ncid);
 
     /* Set the error handler. */
-    if ((ret = PIOc_set_file_error(ncid, PIO_BCAST_ERROR)))
+    int old_method;
+    if ((ret = PIOc_set_file_error_handling(ncid, PIO_RETURN_ERROR, &old_method)))
         return ret;
+    printf("old_method = %d\n", old_method);
+    if (old_method != PIO_BCAST_ERROR) /* the default */
+        return ERR_WRONG;
 
     /* Set the error handler the old-fashioned way. */
-    int old_method = PIOc_Set_File_Error_Handling(ncid, PIO_BCAST_ERROR);
-    if (old_method != PIO_BCAST_ERROR)
+    old_method = PIOc_Set_File_Error_Handling(ncid, PIO_BCAST_ERROR);
+    if (old_method != PIO_RETURN_ERROR)
         return ERR_WRONG;
 
     /* Define a dimension. */
@@ -189,7 +193,7 @@ int main(int argc, char **argv)
         /* Set the error handler. */
         /*PIOc_Set_IOSystem_Error_Handling(iosysid_world, PIO_BCAST_ERROR);*/
         printf("%d about to set iosystem error hanlder for world\n", my_rank);
-        if ((ret = PIOc_set_iosystem_error(iosysid_world, PIO_BCAST_ERROR)))
+        if ((ret = PIOc_set_iosystem_error_handling(iosysid_world, PIO_BCAST_ERROR, NULL)))
             ERR(ret);
         printf("%d done setting iosystem error hanlder for world\n", my_rank);
 
@@ -248,7 +252,7 @@ int main(int argc, char **argv)
             /* Set the error handler. */
             /*PIOc_Set_IOSystem_Error_Handling(even_iosysid, PIO_BCAST_ERROR);*/
             printf("%d about to set iosystem error hanlder for even\n", my_rank);
-            if ((ret = PIOc_set_iosystem_error(even_iosysid, PIO_BCAST_ERROR)))
+            if ((ret = PIOc_set_iosystem_error_handling(even_iosysid, PIO_BCAST_ERROR, NULL)))
                 ERR(ret);
             printf("%d done setting iosystem error hanlder for even\n", my_rank);
         }
@@ -262,7 +266,7 @@ int main(int argc, char **argv)
 
             printf("%d about to set iosystem error hanlder for overlap\n", my_rank);
             /* Set the error handler. */
-            /* if ((ret = PIOc_set_iosystem_error(overlap_iosysid, PIO_BCAST_ERROR))) */
+            /* if ((ret = PIOc_set_iosystem_error_handling(overlap_iosysid, PIO_BCAST_ERROR))) */
             /*     ERR(ret); */
             PIOc_Set_IOSystem_Error_Handling(overlap_iosysid, PIO_BCAST_ERROR);
             printf("%d done setting iosystem error hanlder for overlap\n", my_rank);

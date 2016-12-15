@@ -586,7 +586,7 @@ extern "C" {
     int PIOc_Set_IOSystem_Error_Handling(int iosysid, int method);
 
     /* Set error handling for entire io system. */
-    int PIOc_set_iosystem_error(int iosysid, int method);
+    int PIOc_set_iosystem_error_handling(int iosysid, int method, int *old_method);
     
     int PIOc_iam_iotask(int iosysid, bool *ioproc);
     int PIOc_iotask_rank(int iosysid, int *iorank);
@@ -627,7 +627,7 @@ extern "C" {
     int PIOc_Set_File_Error_Handling(int ncid, int method);
 
     /* Set the error hanlding for a file. */
-    int PIOc_set_file_error(int ncid, int method);
+    int PIOc_set_file_error_handling(int ncid, int method, int *old_method);
     
     int PIOc_set_hint(int iosysid, const char *hint, const char *hintval);
     int PIOc_set_chunk_cache(int iosysid, int iotype, PIO_Offset size, PIO_Offset nelems,
