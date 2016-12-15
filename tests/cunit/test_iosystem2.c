@@ -192,6 +192,9 @@ int main(int argc, char **argv)
             if ((ret = PIOc_closefile(ncid2)))
                 ERR(ret);
         } /* next iotype */
+        if ((ret = MPI_Comm_free(&newcomm)))
+            MPIERR(ret);
+
         /* Finalize PIO system. */
         if ((ret = PIOc_finalize(iosysid)))
             ERR(ret);
