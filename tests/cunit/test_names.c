@@ -145,14 +145,12 @@ int check_error_strings(int my_rank, int num_tries, int *errcode,
         if ((ret = PIOc_strerror(errcode[try], errstr)))
             return ret;
 
-        if (!my_rank)
-            printf("%d for errcode = %d message = %s\n", my_rank, errcode[try], errstr);
+        printf("%d for errcode = %d message = %s\n", my_rank, errcode[try], errstr);
 
         /* Check that it was as expected. */
         if (strncmp(errstr, expected[try], strlen(expected[try])))
         {
-            if (!my_rank)
-                printf("expected %s got %s\n", expected[try], errstr);
+            printf("%d expected %s got %s\n", my_rank, expected[try], errstr);
             return ERR_AWFUL;
         }
         if (!my_rank)
