@@ -3,6 +3,9 @@
   Interface definitions for bget.c, the memory management package.
 
 */
+#ifndef _BGET_H_
+#define _BGET_H_
+
 /* in PIO we use DEBUG bget uses NDEBUG */
 //#ifndef DEBUG
 //#undef NDEBUG
@@ -34,3 +37,5 @@ void    bpoold      _((void *pool, int dumpalloc, int dumpfree));
 int     bpoolv      _((void *pool));
 void bpoolrelease  _();
 void bfreespace  _((bufsize *maxfree, bufsize *totfree));
+
+#endif
