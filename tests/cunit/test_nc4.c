@@ -97,11 +97,10 @@ int test_deletefile(int iosysid, int num_flavors, int *flavor, int my_rank)
         if ((ret = PIOc_deletefile(iosysid, filename)))
             ERR(ret);
 
-        /* Make sure it is gone. */
-        /* if ((ret = PIOc_openfile(iosysid, &ncid, &(flavor[fmt]), filename, */
-        /*                          PIO_NOWRITE)) != PIO_ENFILE) */
-        /*     ERR(ret); */
-        
+        /* Make sure it is gone. Openfile will now return an error
+         * code when I try to open the file. */
+        if (!PIOc_openfile(iosysid, &ncid, &(flavor[fmt]), filename, PIO_NOWRITE))
+            ERR(ret);
     }
 
     return PIO_NOERR;
