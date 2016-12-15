@@ -30,6 +30,13 @@ FILE *LOG_FILE = NULL;
 */
 extern int pio_next_ncid;
 
+/** Default settings for swap memory. */
+static pio_swapm_defaults swapm_defaults;
+
+/** If this is set to true, then InitDecomp() will save the
+ * decomposition to file. */
+bool PIO_Save_Decomps = false;
+
 /**
  * Return a string description of an error code. If zero is passed,
  * the errmsg will be "No error".
@@ -233,13 +240,6 @@ void pio_log(int severity, const char *fmt, ...)
         fflush(LOG_FILE);
 }
 #endif /* PIO_ENABLE_LOGGING */
-
-/** Default settings for swap memory. */
-static pio_swapm_defaults swapm_defaults;
-
-/** If this is set to true, then InitDecomp() will save the
- * decomposition to file. */
-bool PIO_Save_Decomps = false;
 
 /**
  * Obtain a backtrace and print it to stderr.
