@@ -1947,9 +1947,12 @@ int PIOc_inq_var_fill(int ncid, int varid, int *no_fill, void *fill_valuep)
         if (file->iotype == PIO_IOTYPE_PNETCDF)
             ierr = ncmpi_inq_var_fill(file->fh, varid, no_fill, fill_valuep);
 #endif /* _PNETCDF */
-#ifdef _NETCDF
+#ifdef _NETCDF4
+        /* The inq_var_fill is not supported in classic-only builds. */
         if (file->iotype != PIO_IOTYPE_PNETCDF && file->do_io)
             ierr = nc_inq_var_fill(file->fh, varid, no_fill, fill_valuep);
+#else
+        ierr = PIO_ENOTNC4;
 #endif /* _NETCDF */
     }
 
