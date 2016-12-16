@@ -539,7 +539,7 @@ int PIOc_InitDecomp_bc(const int iosysid, const int basetype, const int ndims, c
 int PIOc_Init_Intracomm(MPI_Comm comp_comm, int num_iotasks, int stride, int base,
                         int rearr, int *iosysidp)
 {
-    iosystem_desc_t *iosys;
+    iosystem_desc_t *ios;
     int ustride;
     int lbase;
     int mpierr; /* Return value for MPI calls. */
@@ -549,113 +549,110 @@ int PIOc_Init_Intracomm(MPI_Comm comp_comm, int num_iotasks, int stride, int bas
     LOG((1, "PIOc_Init_Intracomm comp_comm = %d num_iotasks = %d stride = %d base = %d "
          "rearr = %d", comp_comm, num_iotasks, stride, base, rearr));
 
-    if (!(iosys = malloc(sizeof(iosystem_desc_t))))
+    /* Allocate memory for the iosystem info. */
+    if (!(ios = calloc(1, sizeof(iosystem_desc_t))))
         return PIO_ENOMEM;
 
+    ios->io_comm = MPI_COMM_NULL;
+    ios->intercomm = MPI_COMM_NULL;
+    ios->error_handler = PIO_INTERNAL_ERROR;
+    ios->default_rearranger = rearr;
+    ios->num_iotasks = num_iotasks;
+
     /* Copy the computation communicator into union_comm. */
-    if ((mpierr = MPI_Comm_dup(comp_comm, &iosys->union_comm)))
-        return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+    if ((mpierr = MPI_Comm_dup(comp_comm, &ios->union_comm)))
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
 
     /* Copy the computation communicator into comp_comm. */
-    if ((mpierr = MPI_Comm_dup(comp_comm, &iosys->comp_comm)))
-        return check_mpi(NULL, mpierr, __FILE__, __LINE__);            
-    LOG((2, "union_comm = %d comp_comm = %d", iosys->union_comm, iosys->comp_comm));
+    if ((mpierr = MPI_Comm_dup(comp_comm, &ios->comp_comm)))
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);            
+    LOG((2, "union_comm = %d comp_comm = %d", ios->union_comm, ios->comp_comm));
 
-    iosys->my_comm = iosys->comp_comm;
-    iosys->io_comm = MPI_COMM_NULL;
-    iosys->intercomm = MPI_COMM_NULL;
-    iosys->error_handler = PIO_INTERNAL_ERROR;
-    iosys->async_interface = false;
-    iosys->compmaster = 0;
-    iosys->iomaster = 0;
-    iosys->ioproc = false;
-    iosys->default_rearranger = rearr;
-    iosys->num_iotasks = num_iotasks;
-
+    ios->my_comm = ios->comp_comm;
     ustride = stride;
 
     /* Find MPI rank and number of tasks in comp_comm communicator. */
-    if ((mpierr = MPI_Comm_rank(iosys->comp_comm, &iosys->comp_rank)))
-        return check_mpi(NULL, mpierr, __FILE__, __LINE__);
-    if ((mpierr = MPI_Comm_size(iosys->comp_comm, &iosys->num_comptasks)))
-        return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+    if ((mpierr = MPI_Comm_rank(ios->comp_comm, &ios->comp_rank)))
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+    if ((mpierr = MPI_Comm_size(ios->comp_comm, &ios->num_comptasks)))
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     
-    if (iosys->comp_rank == 0)
-        iosys->compmaster = MPI_ROOT;
-    LOG((2, "comp_rank = %d num_comptasks = %d", iosys->comp_rank, iosys->num_comptasks));
+    if (ios->comp_rank == 0)
+        ios->compmaster = MPI_ROOT;
+    LOG((2, "comp_rank = %d num_comptasks = %d", ios->comp_rank, ios->num_comptasks));
 
     /* Ensure that settings for number of computation tasks, number
      * of IO tasks, and the stride are reasonable. */
-    if (iosys->num_comptasks == 1 && num_iotasks * ustride > 1)
+    if (ios->num_comptasks == 1 && num_iotasks * ustride > 1)
     {
         // This is a serial run with a bad configuration. Set up a single task.
         fprintf(stderr, "PIO_TP PIOc_Init_Intracomm reset stride and tasks.\n");
-        iosys->num_iotasks = 1;
+        ios->num_iotasks = 1;
         ustride = 1;
     }
     
-    if (iosys->num_iotasks < 1 || iosys->num_iotasks * ustride > iosys->num_comptasks)
+    if (ios->num_iotasks < 1 || ios->num_iotasks * ustride > ios->num_comptasks)
     {
         fprintf(stderr, "PIO_TP PIOc_Init_Intracomm error\n");
         fprintf(stderr, "num_iotasks=%d, ustride=%d, num_comptasks=%d\n", num_iotasks,
-                ustride, iosys->num_comptasks);
+                ustride, ios->num_comptasks);
         return PIO_EBADID;
     }
 
     /* Create an array that holds the ranks of the tasks to be used for IO. */
-    if (!(iosys->ioranks = calloc(sizeof(int), iosys->num_iotasks)))
+    if (!(ios->ioranks = calloc(sizeof(int), ios->num_iotasks)))
         return PIO_ENOMEM;
-    for (int i = 0; i < iosys->num_iotasks; i++)
+    for (int i = 0; i < ios->num_iotasks; i++)
     {
-        iosys->ioranks[i] = (base + i * ustride) % iosys->num_comptasks;
-        if (iosys->ioranks[i] == iosys->comp_rank)
-            iosys->ioproc = true;
+        ios->ioranks[i] = (base + i * ustride) % ios->num_comptasks;
+        if (ios->ioranks[i] == ios->comp_rank)
+            ios->ioproc = true;
     }
-    iosys->ioroot = iosys->ioranks[0];
+    ios->ioroot = ios->ioranks[0];
 
-    for (int i = 0; i < iosys->num_iotasks; i++)
-        LOG((3, "iosys->ioranks[%d] = %d", i, iosys->ioranks[i]));
+    for (int i = 0; i < ios->num_iotasks; i++)
+        LOG((3, "ios->ioranks[%d] = %d", i, ios->ioranks[i]));
 
     /* We are not providing an info object. */
-    iosys->info = MPI_INFO_NULL;
+    ios->info = MPI_INFO_NULL;
 
     /* The task that has an iomaster value of MPI_ROOT will be the
      * root of the IO communicator. */
-    if (iosys->comp_rank == iosys->ioranks[0])
-        iosys->iomaster = MPI_ROOT;
+    if (ios->comp_rank == ios->ioranks[0])
+        ios->iomaster = MPI_ROOT;
 
     /* Create a group for the computation tasks. */
-    if ((mpierr = MPI_Comm_group(iosys->comp_comm, &iosys->compgroup)))
-        return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+    if ((mpierr = MPI_Comm_group(ios->comp_comm, &ios->compgroup)))
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
 
     /* Create a group for the IO tasks. */
-    if ((mpierr = MPI_Group_incl(iosys->compgroup, iosys->num_iotasks, iosys->ioranks,
-                                 &iosys->iogroup)))
-        return check_mpi(NULL, mpierr, __FILE__, __LINE__);        
+    if ((mpierr = MPI_Group_incl(ios->compgroup, ios->num_iotasks, ios->ioranks,
+                                 &ios->iogroup)))
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);        
 
     /* Create an MPI communicator for the IO tasks. */
-    if ((mpierr = MPI_Comm_create(iosys->comp_comm, iosys->iogroup, &iosys->io_comm)))
-        return check_mpi(NULL, mpierr, __FILE__, __LINE__);                
+    if ((mpierr = MPI_Comm_create(ios->comp_comm, ios->iogroup, &ios->io_comm)))
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);                
 
     /* For the tasks that are doing IO, get their rank within the IO
      * communicator. For some reason when I check the return value of
      * this MPI call, all tests start to fail! */
-    if (iosys->ioproc)
+    if (ios->ioproc)
     {
-        if ((mpierr = MPI_Comm_rank(iosys->io_comm, &iosys->io_rank)))
-            return check_mpi(NULL, mpierr, __FILE__, __LINE__);                            
+        if ((mpierr = MPI_Comm_rank(ios->io_comm, &ios->io_rank)))
+            return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);                            
     }
     else
-        iosys->io_rank = -1;
-    LOG((3, "iosys->io_comm = %d iosys->io_rank = %d", iosys->io_comm, iosys->io_rank));
+        ios->io_rank = -1;
+    LOG((3, "ios->io_comm = %d ios->io_rank = %d", ios->io_comm, ios->io_rank));
 
-    iosys->union_rank = iosys->comp_rank;
+    ios->union_rank = ios->comp_rank;
 
-    /* Add this iosys struct to the list in the PIO library. */
-    *iosysidp = pio_add_to_iosystem_list(iosys);
+    /* Add this ios struct to the list in the PIO library. */
+    *iosysidp = pio_add_to_iosystem_list(ios);
 
     /* Allocate buffer space for compute nodes. */
-    compute_buffer_init(*iosys);
+    compute_buffer_init(*ios);
 
     LOG((2, "Init_Intracomm complete iosysid = %d", *iosysidp));
 

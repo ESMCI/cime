@@ -99,6 +99,10 @@ int check_file(int iosysid, int ntasks, int my_rank, char *filename)
     if ((ret = PIOc_closefile(ncid)))
         return ret;
 
+    /* Free the PIO decomposition. */
+    if ((ret = PIOc_freedecomp(iosysid, ioid)))
+        ERR(ret);
+
     return PIO_NOERR;
 }
 
