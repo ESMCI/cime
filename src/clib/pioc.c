@@ -641,7 +641,10 @@ int PIOc_Init_Intracomm(MPI_Comm comp_comm, int num_iotasks, int stride, int bas
      * communicator. For some reason when I check the return value of
      * this MPI call, all tests start to fail! */
     if (iosys->ioproc)
-        CheckMPIReturn(MPI_Comm_rank(iosys->io_comm, &iosys->io_rank),__FILE__,__LINE__);
+    {
+        if ((mpierr = MPI_Comm_rank(iosys->io_comm, &iosys->io_rank)))
+            return check_mpi(NULL, mpierr, __FILE__, __LINE__);                            
+    }
     else
         iosys->io_rank = -1;
     LOG((3, "iosys->io_comm = %d iosys->io_rank = %d", iosys->io_comm, iosys->io_rank));
