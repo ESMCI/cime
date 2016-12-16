@@ -424,6 +424,9 @@ int main(int argc, char **argv)
         if ((ret = PIOc_freedecomp(iosysid, ioid)))
             ERR(ret);
 
+        /* Finalize PIO system. */
+        if ((ret = PIOc_finalize(iosysid)))
+            ERR(ret);
     } /* endif my_rank < TARGET_NTASKS */
 
     /* Wait for everyone to catch up. */

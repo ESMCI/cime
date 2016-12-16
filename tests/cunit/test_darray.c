@@ -211,6 +211,11 @@ int test_no_async(int my_rank, int ntasks, int num_flavors, int *flavor,
     printf("rank: %d Freeing PIO decomposition...\n", my_rank);
     if ((ret = PIOc_freedecomp(iosysid, ioid)))
         ERR(ret);
+
+    /* Finalize PIO system. */
+    if ((ret = PIOc_finalize(iosysid)))
+        ERR(ret);
+
     return PIO_NOERR;
 }
 
