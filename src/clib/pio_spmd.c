@@ -12,27 +12,6 @@
 #include <pio_internal.h>
 
 /**
- * Wrapper for MPI calls to print the Error string on error.
- *
- * @param ierr the error code to check.
- * @param file the code file where the error happened.
- * @param line the line of code (near) where the error happened.
- */
-void CheckMPIReturn(const int ierr, const char *file, const int line)
-{
-
-    if (ierr != MPI_SUCCESS)
-    {
-        char errstring[MPI_MAX_ERROR_STRING];
-        int errstrlen;
-        int mpierr = MPI_Error_string(ierr, errstring, &errstrlen);
-
-        fprintf(stderr, "MPI ERROR: %s in file %s at line %d\n", errstring, file,
-                line);
-    }
-}
-
-/**
  * Returns the smallest power of 2 greater than i.
  *
  * @param i input number
