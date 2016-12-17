@@ -330,12 +330,12 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, int async)
     int ret; /* Return code. */
     
     /* Test file deletes. */
-    printf("%d Testing deletefile...\n", my_rank);
+    printf("%d Testing deletefile. async = %d\n", my_rank, async);
     if ((ret = test_deletefile(iosysid, num_flavors, flavor, my_rank)))
         return ret;
 
     /* Test netCDF-4 functions. */
-    printf("%d Testing nc4 functions...\n", my_rank);
+    printf("%d Testing nc4 functions. async = %d\n", my_rank, async);
     if ((ret = test_nc4(iosysid, num_flavors, flavor, my_rank)))
         return ret;
 
@@ -445,10 +445,6 @@ int test_async(int my_rank, int num_flavors, int *flavor, MPI_Comm test_comm)
         if ((ret = test_all(iosysid[0], num_flavors, flavor, my_rank, 1)))
             return ret;
         
-        /* Test the netCDF-4 functions. */
-        /* if ((ret = test_nc4(iosysid[0], num_flavors, flavor, my_rank))) */
-        /*     return ret; */
-
         /* Finalize the IO system. Only call this from the computation tasks. */
         printf("%d %s Freeing PIO resources\n", my_rank, TEST_NAME);
         for (int c = 0; c < COMPONENT_COUNT; c++)
