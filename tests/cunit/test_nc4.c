@@ -324,7 +324,8 @@ int test_nc4(int iosysid, int num_flavors, int *flavor, int my_rank)
     return PIO_NOERR;
 }
 
-int test_all(int iosysid, int num_flavors, int *flavor, int my_rank)
+/* Run all the tests. */
+int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, int async)
 {
     int ret; /* Return code. */
     
@@ -386,7 +387,7 @@ int test_no_async(int my_rank, int num_flavors, int *flavor, MPI_Comm test_comm)
 
     /* Run tests. */
     printf("%d Running tests...\n", my_rank);
-    if ((ret = test_all(iosysid, num_flavors, flavor, my_rank)))
+    if ((ret = test_all(iosysid, num_flavors, flavor, my_rank, 0)))
         return ret;
         
     /* Free the PIO decomposition. */
@@ -439,9 +440,14 @@ int test_async(int my_rank, int num_flavors, int *flavor, MPI_Comm test_comm)
      * and when the do, they should go straight to finalize. */
     if (comp_task)
     {
-        /* Test the netCDF-4 functions. */
-        if ((ret = test_nc4(iosysid[0], num_flavors, flavor, my_rank)))
+        /* Run tests. */
+        printf("%d Running tests...\n", my_rank);
+        if ((ret = test_all(iosysid[0], num_flavors, flavor, my_rank, 1)))
             return ret;
+        
+        /* Test the netCDF-4 functions. */
+        /* if ((ret = test_nc4(iosysid[0], num_flavors, flavor, my_rank))) */
+        /*     return ret; */
 
         /* Finalize the IO system. Only call this from the computation tasks. */
         printf("%d %s Freeing PIO resources\n", my_rank, TEST_NAME);
