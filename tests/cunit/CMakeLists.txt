@@ -55,11 +55,8 @@ if (NOT PIO_USE_MPISERIAL)
   add_executable (test_iosystem3 EXCLUDE_FROM_ALL test_iosystem3.c test_common.c)
   target_link_libraries (test_iosystem3 pioc)
   add_dependencies (tests test_iosystem3)
-  add_executable (test_file EXCLUDE_FROM_ALL test_file.c test_common.c)
-  target_link_libraries (test_file pioc)
-  add_dependencies (tests test_file)
-  add_executable (test_nc4 EXCLUDE_FROM_ALL test_nc4.c test_common.c)
-  target_link_libraries (test_nc4 pioc)
+  add_executable (test_pioc EXCLUDE_FROM_ALL test_pioc.c test_common.c)
+  target_link_libraries (test_pioc pioc)
 endif ()
 add_executable (test_spmd EXCLUDE_FROM_ALL test_spmd.c test_common.c)
 target_link_libraries (test_spmd pioc)
@@ -71,7 +68,7 @@ target_link_libraries (test_darray pioc)
 
 add_dependencies (tests test_names)
 add_dependencies (tests test_darray)
-add_dependencies (tests test_nc4)
+add_dependencies (tests test_pioc)
 
 # Test Timeout in seconds.
 set (DEFAULT_TEST_TIMEOUT 60)
@@ -86,15 +83,11 @@ set (AT_LEAST_FOUR_TASKS 5)
 if (PIO_USE_MPISERIAL)
   add_test(NAME test_names
     COMMAND test_names)
-  add_test(NAME test_nc4
-    COMMAND test_nc4)
+  add_test(NAME test_pioc
+    COMMAND test_pioc)
 else ()
   add_mpi_test(test_darray
     EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_darray
-    NUMPROCS ${AT_LEAST_FOUR_TASKS}
-    TIMEOUT ${DEFAULT_TEST_TIMEOUT})
-  add_mpi_test(test_file
-    EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_file
     NUMPROCS ${AT_LEAST_FOUR_TASKS}
     TIMEOUT ${DEFAULT_TEST_TIMEOUT})
   add_mpi_test(test_spmd
@@ -145,8 +138,8 @@ else ()
     EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_names
     NUMPROCS ${AT_LEAST_FOUR_TASKS}
     TIMEOUT ${DEFAULT_TEST_TIMEOUT})
-  add_mpi_test(test_nc4
-    EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_nc4
+  add_mpi_test(test_pioc
+    EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_pioc
     NUMPROCS ${AT_LEAST_FOUR_TASKS}
     TIMEOUT ${DEFAULT_TEST_TIMEOUT})
 endif ()

@@ -37,8 +37,11 @@
 /* The number of timesteps of data to write. */
 #define NUM_TIMESTEPS 6
 
-/* The name of the variable in the netCDF output file. */
+/* The name of the variable in the netCDF output files. */
 #define VAR_NAME "foo"
+
+/* The name of the attribute in the netCDF output files. */
+#define ATT_NAME "bar"
 
 /* The meaning of life, the universe, and everything. */
 #define START_DATA_VAL 42
@@ -57,6 +60,147 @@ int dim_len[NDIM] = {NC_UNLIMITED, X_DIM_LEN, Y_DIM_LEN};
 /* Length of chunksizes to use in netCDF-4 files. */
 PIO_Offset chunksize[NDIM] = {2, X_DIM_LEN/2, Y_DIM_LEN/2};
 
+/* Define metadata for the test file. */
+int define_metadata(int ncid, int my_rank)
+{
+    int dimids[NDIM]; /* The dimension IDs. */
+    int varid; /* The variable ID. */
+    int ret;
+
+    for (int d = 0; d < NDIM; d++)
+        if ((ret = PIOc_def_dim(ncid, dim_name[d], (PIO_Offset)dim_len[d], &dimids[d])))
+            ERR(ret);
+
+    if ((ret = PIOc_def_var(ncid, VAR_NAME, NC_INT, NDIM, dimids, &varid)))
+        ERR(ret);
+
+    return PIO_NOERR;
+}
+
+/* Check the metadata in the test file. */
+int check_metadata(int ncid, int my_rank)
+{
+    int ndims, nvars, ngatts, unlimdimid, natts, dimid[NDIM];
+    PIO_Offset len_in;
+    char name_in[NC_MAX_NAME + 1];
+    nc_type xtype_in;
+    int ret;
+
+    /* Check how many dims, vars, global atts there are, and the id of
+     * the unlimited dimension. */
+    if ((ret = PIOc_inq(ncid, &ndims, &nvars, &ngatts, &unlimdimid)))
+        return ret;
+    if (ndims != NDIM || nvars != 1 || ngatts != 0 || unlimdimid != 0)
+        return ERR_AWFUL;
+
+    /* Check the dimensions. */
+    for (int d = 0; d < NDIM; d++)
+    {
+        if ((ret = PIOc_inq_dim(ncid, d, name_in, &len_in)))
+            ERR(ret);
+        if (len_in != dim_len[d] || strcmp(name_in, dim_name[d]))
+            return ERR_AWFUL;
+    }
+
+    /* Check the variable. */
+    if ((ret = PIOc_inq_var(ncid, 0, name_in, &xtype_in, &ndims, dimid, &natts)))
+        ERR(ret);
+    if (strcmp(name_in, VAR_NAME) || xtype_in != NC_INT || ndims != NDIM ||
+        dimid[0] != 0 || dimid[1] != 1 || dimid[2] != 2 || natts != 0)
+        return ERR_AWFUL;
+
+    return PIO_NOERR;
+}
+
+/* Test file operations.
+ *
+ * @param iosysid the iosystem ID that will be used for the test.
+ * @param num_flavors the number of different IO types that will be tested.
+ * @param flavor an array of the valid IO types.
+ * @param my_rank 0-based rank of task.
+ * @returns 0 for success, error code otherwise.
+ */
+int test_files(int iosysid, int num_flavors, int *flavor, int my_rank)
+{
+    int ncid;
+    int ret;    /* Return code. */
+    
+    /* Use PIO to create the example file in each of the four
+     * available ways. */
+    for (int fmt = 0; fmt < num_flavors; fmt++)
+    {
+        char filename[NC_MAX_NAME + 1]; /* Test filename. */
+        char iotype_name[NC_MAX_NAME + 1];
+
+        /* Overwrite existing test file. */
+        int mode = PIO_CLOBBER;
+
+        /* If this is netCDF-4, add the netCDF4 flag. */
+        if (flavor[fmt] == PIO_IOTYPE_NETCDF4C || flavor[fmt] == PIO_IOTYPE_NETCDF4P)
+        {
+            printf("%d adding NC_NETCDF4 flag\n", my_rank);
+            mode |= NC_NETCDF4;
+        }
+
+        /* If this is pnetcdf or netCDF-4 parallel, add the MPIIO flag. */
+        if (flavor[fmt] == PIO_IOTYPE_PNETCDF || flavor[fmt] == PIO_IOTYPE_NETCDF4P)
+        {
+            printf("%d adding NC_MPIIO flag\n", my_rank);
+            mode |= NC_MPIIO;
+        }
+
+        /* Create a filename. */
+        if ((ret = get_iotype_name(flavor[fmt], iotype_name)))
+            return ret;
+        sprintf(filename, "%s_%s.nc", TEST_NAME, iotype_name);
+
+        /* Create the netCDF output file. */
+        printf("rank: %d Creating sample file %s with format %d...\n",
+               my_rank, filename, flavor[fmt]);
+        if ((ret = PIOc_create(iosysid, filename, mode, &ncid)))
+            ERR(ret);
+
+        /* Define the test file metadata. */
+        if ((ret = define_metadata(ncid, my_rank)))
+            ERR(ret);
+
+        /* End define mode. */
+        if ((ret = PIOc_enddef(ncid)))
+            ERR(ret);
+
+        /* Close the netCDF file. */
+        printf("rank: %d Closing the sample data file...\n", my_rank);
+        if ((ret = PIOc_closefile(ncid)))
+            ERR(ret);
+
+        /* Reopen the test file. */
+        printf("rank: %d Re-opening sample file %s with format %d...\n",
+               my_rank, filename, flavor[fmt]);
+        if ((ret = PIOc_open(iosysid, filename, mode, &ncid)))
+            ERR(ret);
+
+        /* Check the test file metadata. */
+        if ((ret = check_metadata(ncid, my_rank)))
+            ERR(ret);
+
+        /* Close the netCDF file. */
+        printf("rank: %d Closing the sample data file...\n", my_rank);
+        if ((ret = PIOc_closefile(ncid)))
+            ERR(ret);
+
+    }
+
+    return PIO_NOERR;
+}
+
+/* Test the deletion of files.
+ *
+ * @param iosysid the iosystem ID that will be used for the test.
+ * @param num_flavors the number of different IO types that will be tested.
+ * @param flavor an array of the valid IO types.
+ * @param my_rank 0-based rank of task.
+ * @returns 0 for success, error code otherwise.
+ */
 int test_deletefile(int iosysid, int num_flavors, int *flavor, int my_rank)
 {
     int ncid;
@@ -324,17 +468,23 @@ int test_nc4(int iosysid, int num_flavors, int *flavor, int my_rank)
     return PIO_NOERR;
 }
 
-int test_all(int iosysid, int num_flavors, int *flavor, int my_rank)
+/* Run all the tests. */
+int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, int async)
 {
     int ret; /* Return code. */
     
+    /* Test file stuff. */
+    printf("%d Testing file creation. async = %d\n", my_rank, async);
+    if ((ret = test_files(iosysid, num_flavors, flavor, my_rank)))
+        return ret;
+
     /* Test file deletes. */
-    printf("%d Testing deletefile...\n", my_rank);
+    printf("%d Testing deletefile. async = %d\n", my_rank, async);
     if ((ret = test_deletefile(iosysid, num_flavors, flavor, my_rank)))
         return ret;
 
     /* Test netCDF-4 functions. */
-    printf("%d Testing nc4 functions...\n", my_rank);
+    printf("%d Testing nc4 functions. async = %d\n", my_rank, async);
     if ((ret = test_nc4(iosysid, num_flavors, flavor, my_rank)))
         return ret;
 
@@ -386,7 +536,7 @@ int test_no_async(int my_rank, int num_flavors, int *flavor, MPI_Comm test_comm)
 
     /* Run tests. */
     printf("%d Running tests...\n", my_rank);
-    if ((ret = test_all(iosysid, num_flavors, flavor, my_rank)))
+    if ((ret = test_all(iosysid, num_flavors, flavor, my_rank, 0)))
         return ret;
         
     /* Free the PIO decomposition. */
@@ -439,10 +589,11 @@ int test_async(int my_rank, int num_flavors, int *flavor, MPI_Comm test_comm)
      * and when the do, they should go straight to finalize. */
     if (comp_task)
     {
-        /* Test the netCDF-4 functions. */
-        if ((ret = test_nc4(iosysid[0], num_flavors, flavor, my_rank)))
+        /* Run tests. */
+        printf("%d Running tests...\n", my_rank);
+        if ((ret = test_all(iosysid[0], num_flavors, flavor, my_rank, 1)))
             return ret;
-
+        
         /* Finalize the IO system. Only call this from the computation tasks. */
         printf("%d %s Freeing PIO resources\n", my_rank, TEST_NAME);
         for (int c = 0; c < COMPONENT_COUNT; c++)
