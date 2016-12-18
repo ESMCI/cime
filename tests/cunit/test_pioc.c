@@ -60,6 +60,263 @@ int dim_len[NDIM] = {NC_UNLIMITED, X_DIM_LEN, Y_DIM_LEN};
 /* Length of chunksizes to use in netCDF-4 files. */
 PIO_Offset chunksize[NDIM] = {2, X_DIM_LEN/2, Y_DIM_LEN/2};
 
+/* Check the dimension names.
+ *
+ * @param my_rank rank of process
+ * @param ncid ncid of open netCDF file
+ * @returns 0 for success, error code otherwise. */
+int check_dim_names(int my_rank, int ncid, MPI_Comm test_comm)
+{
+    char dim_name[NC_MAX_NAME + 1];
+    char zero_dim_name[NC_MAX_NAME + 1];
+    int ret;
+
+    for (int d = 0; d < NDIM; d++)
+    {
+        strcpy(dim_name, "11111111111111111111111111111111");
+        if ((ret = PIOc_inq_dimname(ncid, d, dim_name)))
+            return ret;
+        printf("my_rank %d dim %d name %s\n", my_rank, d, dim_name);
+
+        /* Did other ranks get the same name? */
+        if (!my_rank)
+            strcpy(zero_dim_name, dim_name);
+        /*     printf("rank %d dim_name %s zero_dim_name %s\n", my_rank, dim_name, zero_dim_name); */
+        if ((ret = MPI_Bcast(&zero_dim_name, strlen(dim_name) + 1, MPI_CHAR, 0,
+                             test_comm)))
+            MPIERR(ret);
+        if (strcmp(dim_name, zero_dim_name))
+            return ERR_AWFUL;
+    }
+    return 0;
+}
+
+/* Check the variable name.
+ *
+ * @param my_rank rank of process
+ * @param ncid ncid of open netCDF file
+ *
+ * @returns 0 for success, error code otherwise. */
+int check_var_name(int my_rank, int ncid, MPI_Comm test_comm)
+{
+    char var_name[NC_MAX_NAME + 1];
+    char zero_var_name[NC_MAX_NAME + 1];
+    int ret;
+
+    strcpy(var_name, "11111111111111111111111111111111");
+    if ((ret = PIOc_inq_varname(ncid, 0, var_name)))
+        return ret;
+    printf("my_rank %d var name %s\n", my_rank, var_name);
+
+    /* Did other ranks get the same name? */
+    if (!my_rank)
+        strcpy(zero_var_name, var_name);
+    if ((ret = MPI_Bcast(&zero_var_name, strlen(var_name) + 1, MPI_CHAR, 0,
+                         test_comm)))
+        MPIERR(ret);
+    if (strcmp(var_name, zero_var_name))
+        return ERR_AWFUL;
+    return 0;
+}
+
+/* Check the attribute name.
+ *
+ * @param my_rank rank of process
+ * @param ncid ncid of open netCDF file
+ *
+ * @returns 0 for success, error code otherwise. */
+int check_att_name(int my_rank, int ncid, MPI_Comm test_comm)
+{
+    char att_name[NC_MAX_NAME + 1];
+    char zero_att_name[NC_MAX_NAME + 1];
+    int ret;
+
+    strcpy(att_name, "11111111111111111111111111111111");
+    if ((ret = PIOc_inq_attname(ncid, NC_GLOBAL, 0, att_name)))
+        return ret;
+    printf("my_rank %d att name %s\n", my_rank, att_name);
+
+    /* Did everyone ranks get the same length name? */
+/*    if (strlen(att_name) != strlen(ATT_NAME))
+      return ERR_AWFUL;*/
+    if (!my_rank)
+        strcpy(zero_att_name, att_name);
+    if ((ret = MPI_Bcast(&zero_att_name, strlen(att_name) + 1, MPI_CHAR, 0,
+                         test_comm)))
+        MPIERR(ret);
+    if (strcmp(att_name, zero_att_name))
+        return ERR_AWFUL;
+    return 0;
+}
+
+/*
+ * Check error strings.
+ *
+ * @param my_rank rank of this task.
+ * @param num_tries number of errcodes to try.
+ * @param errcode pointer to array of error codes, of length num_tries.
+ * @param expected pointer to an array of strings, with the expected
+ * error messages for each error code.
+ * @returns 0 for success, error code otherwise.
+ */
+int check_error_strings(int my_rank, int num_tries, int *errcode,
+                        const char **expected)
+{
+    int ret;
+
+    /* Try each test code. */
+    for (int try = 0; try < num_tries; try++)
+    {
+        char errstr[PIO_MAX_NAME + 1];
+
+        /* Get the error string for this errcode. */
+        if ((ret = PIOc_strerror(errcode[try], errstr)))
+            return ret;
+
+        printf("%d for errcode = %d message = %s\n", my_rank, errcode[try], errstr);
+
+        /* Check that it was as expected. */
+        if (strncmp(errstr, expected[try], strlen(expected[try])))
+        {
+            printf("%d expected %s got %s\n", my_rank, expected[try], errstr);
+            return ERR_AWFUL;
+        }
+        if (!my_rank)
+            printf("%d errcode = %d passed\n", my_rank, errcode[try]);
+    }
+
+    return PIO_NOERR;
+}
+
+/* Check the PIOc_strerror() function for classic netCDF.
+ *
+ * @param my_rank the rank of this process.
+ * @return 0 for success, error code otherwise.
+ */
+int check_strerror_netcdf(int my_rank)
+{
+#ifdef _NETCDF
+#define NUM_NETCDF_TRIES 4
+    int errcode[NUM_NETCDF_TRIES] = {PIO_EBADID, NC4_LAST_ERROR - 1, 0, 1};
+    const char *expected[NUM_NETCDF_TRIES] = {"NetCDF: Not a valid ID",
+                                              "Unknown Error: Unrecognized error code", "No error",
+                                              nc_strerror(1)};
+    int ret;
+
+    if ((ret = check_error_strings(my_rank, NUM_NETCDF_TRIES, errcode, expected)))
+        return ret;
+
+    if (!my_rank)
+        printf("check_strerror_netcdf SUCCEEDED!\n");
+#endif /* (_NETCDF) */
+
+    return PIO_NOERR;
+}
+
+/* Check the PIOc_strerror() function for netCDF-4.
+ *
+ * @param my_rank the rank of this process.
+ * @return 0 for success, error code otherwise.
+ */
+int check_strerror_netcdf4(int my_rank)
+{
+#ifdef _NETCDF4
+#define NUM_NETCDF4_TRIES 2
+    int errcode[NUM_NETCDF4_TRIES] = {NC_ENOTNC3, NC_ENOPAR};
+    const char *expected[NUM_NETCDF4_TRIES] =
+        {"NetCDF: Attempting netcdf-3 operation on netcdf-4 file",
+         "NetCDF: Parallel operation on file opened for non-parallel access"};
+    int ret;
+
+    if ((ret = check_error_strings(my_rank, NUM_NETCDF4_TRIES, errcode, expected)))
+        return ret;
+
+    if (!my_rank)
+        printf("check_strerror_netcdf4 SUCCEEDED!\n");
+#endif /* _NETCDF4 */
+
+    return PIO_NOERR;
+}
+
+/* Check the PIOc_strerror() function for parallel-netCDF.
+ *
+ * @param my_rank the rank of this process.
+ * @return 0 for success, error code otherwise.
+ */
+int check_strerror_pnetcdf(int my_rank)
+{
+#ifdef _PNETCDF
+#define NUM_PNETCDF_TRIES 2
+    int errcode[NUM_PNETCDF_TRIES] = {NC_EMULTIDEFINE_VAR_NUM, NC_EMULTIDEFINE_ATTR_VAL};
+    const char *expected[NUM_PNETCDF_TRIES] =
+        {"Number of variables is",
+         "Attribute value is inconsistent among processes."};
+    int ret;
+
+    if ((ret = check_error_strings(my_rank, NUM_PNETCDF_TRIES, errcode, expected)))
+        return ret;
+
+    if (!my_rank)
+        printf("check_strerror_pnetcdf SUCCEEDED!\n");
+#endif /* _PNETCDF */
+
+    return PIO_NOERR;
+}
+
+/* Check the PIOc_strerror() function for PIO.
+ *
+ * @param my_rank the rank of this process.
+ * @return 0 for success, error code otherwise.
+ */
+int check_strerror_pio(int my_rank)
+{
+#define NUM_PIO_TRIES 6
+    int errcode[NUM_PIO_TRIES] = {PIO_EBADID,
+                                  NC_ENOTNC3, NC4_LAST_ERROR - 1, 0, 1,
+                                  PIO_EBADIOTYPE};
+    const char *expected[NUM_PIO_TRIES] = {"NetCDF: Not a valid ID",
+                                           "NetCDF: Attempting netcdf-3 operation on netcdf-4 file",
+                                           "Unknown Error: Unrecognized error code", "No error",
+                                           nc_strerror(1), "Bad IO type"};
+    int ret;
+
+    if ((ret = check_error_strings(my_rank, NUM_PIO_TRIES, errcode, expected)))
+        return ret;
+
+    if (!my_rank)
+        printf("check_strerror_pio SUCCEEDED!\n");
+
+    return PIO_NOERR;
+}
+
+/* Check the PIOc_strerror() function.
+ *
+ * @param my_rank the rank of this process.
+ * @return 0 for success, error code otherwise.
+ */
+int check_strerror(int my_rank)
+{
+    int ret;
+
+    printf("checking strerror for netCDF-classic error codes...\n");
+    if ((ret = check_strerror_netcdf(my_rank)))
+        return ret;
+
+    printf("checking strerror for netCDF-4 error codes...\n");
+    if ((ret = check_strerror_netcdf4(my_rank)))
+        return ret;
+
+    printf("checking strerror for pnetcdf error codes...\n");
+    if ((ret = check_strerror_pnetcdf(my_rank)))
+        return ret;
+
+    printf("checking strerror for PIO error codes...\n");
+    if ((ret = check_strerror_pio(my_rank)))
+        return ret;
+
+    return PIO_NOERR;
+}
+
 /* Define metadata for the test file. */
 int define_metadata(int ncid, int my_rank)
 {
@@ -108,6 +365,83 @@ int check_metadata(int ncid, int my_rank)
     if (strcmp(name_in, VAR_NAME) || xtype_in != NC_INT || ndims != NDIM ||
         dimid[0] != 0 || dimid[1] != 1 || dimid[2] != 2 || natts != 0)
         return ERR_AWFUL;
+
+    return PIO_NOERR;
+}
+
+/* Test file operations.
+ *
+ * @param iosysid the iosystem ID that will be used for the test.
+ * @param num_flavors the number of different IO types that will be tested.
+ * @param flavor an array of the valid IO types.
+ * @param my_rank 0-based rank of task.
+ * @returns 0 for success, error code otherwise.
+ */
+int test_names(int iosysid, int num_flavors, int *flavor, int my_rank,
+               MPI_Comm test_comm)
+{
+    int ret;    /* Return code. */
+    
+    /* Use PIO to create the example file in each of the four
+     * available ways. */
+    for (int fmt = 0; fmt < num_flavors; fmt++)
+    {
+        int ncid;
+        int varid;
+        char filename[NC_MAX_NAME + 1]; /* Test filename. */
+        char iotype_name[NC_MAX_NAME + 1];
+        int dimids[NDIM];        /* The dimension IDs. */
+
+        /* Create a filename. */
+        if ((ret = get_iotype_name(flavor[fmt], iotype_name)))
+            return ret;
+        sprintf(filename, "%s_%s.nc", TEST_NAME, iotype_name);
+
+        /* Create the netCDF output file. */
+        printf("rank: %d Creating sample file %s with format %d...\n",
+               my_rank, filename, flavor[fmt]);
+        if ((ret = PIOc_createfile(iosysid, &ncid, &(flavor[fmt]), filename, PIO_CLOBBER)))
+            ERR(ret);
+
+        /* Define netCDF dimensions and variable. */
+        printf("rank: %d Defining netCDF metadata...\n", my_rank);
+        for (int d = 0; d < NDIM; d++)
+        {
+            printf("rank: %d Defining netCDF dimension %s, length %d\n", my_rank,
+                   dim_name[d], dim_len[d]);
+            if ((ret = PIOc_def_dim(ncid, dim_name[d], (PIO_Offset)dim_len[d], &dimids[d])))
+                ERR(ret);
+        }
+
+        /* Check the dimension names. */
+        if ((ret = check_dim_names(my_rank, ncid, test_comm)))
+            ERR(ret);
+
+        /* Define a global attribute. */
+        int att_val = 42;
+        if ((ret = PIOc_put_att_int(ncid, NC_GLOBAL, ATT_NAME, NC_INT, 1, &att_val)))
+            ERR(ret);
+
+        /* Check the attribute name. */
+        if ((ret = check_att_name(my_rank, ncid, test_comm)))
+            ERR(ret);
+
+        /* Define a variable. */
+        if ((ret = PIOc_def_var(ncid, VAR_NAME, PIO_FLOAT, NDIM, dimids, &varid)))
+            ERR(ret);
+
+        /* Check the variable name. */
+        if ((ret = check_var_name(my_rank, ncid, test_comm)))
+            ERR(ret);
+
+        if ((ret = PIOc_enddef(ncid)))
+            ERR(ret);
+
+        /* Close the netCDF file. */
+        printf("rank: %d Closing the sample data file...\n", my_rank);
+        if ((ret = PIOc_closefile(ncid)))
+            ERR(ret);
+    }
 
     return PIO_NOERR;
 }
@@ -469,9 +803,15 @@ int test_nc4(int iosysid, int num_flavors, int *flavor, int my_rank)
 }
 
 /* Run all the tests. */
-int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, int async)
+int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm test_comm,
+             int async)
 {
     int ret; /* Return code. */
+
+    /* Check the error string function. */
+    printf("%d Testing streror. async = %d\n", my_rank, async);    
+    if ((ret = check_strerror(my_rank)))
+        ERR(ret);
     
     /* Test file stuff. */
     printf("%d Testing file creation. async = %d\n", my_rank, async);
@@ -479,9 +819,20 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, int async)
         return ret;
 
     /* Test file deletes. */
-    printf("%d Testing deletefile. async = %d\n", my_rank, async);
-    if ((ret = test_deletefile(iosysid, num_flavors, flavor, my_rank)))
-        return ret;
+    if (!async)
+    {
+        printf("%d Testing deletefile. async = %d\n", my_rank, async);
+        if ((ret = test_deletefile(iosysid, num_flavors, flavor, my_rank)))
+            return ret;
+    }
+
+    /* Test name stuff. */
+    if (!async)
+    {
+        printf("%d Testing names. async = %d\n", my_rank, async);
+        if ((ret = test_names(iosysid, num_flavors, flavor, my_rank, test_comm)))
+            return ret;
+    }
 
     /* Test netCDF-4 functions. */
     printf("%d Testing nc4 functions. async = %d\n", my_rank, async);
@@ -536,7 +887,7 @@ int test_no_async(int my_rank, int num_flavors, int *flavor, MPI_Comm test_comm)
 
     /* Run tests. */
     printf("%d Running tests...\n", my_rank);
-    if ((ret = test_all(iosysid, num_flavors, flavor, my_rank, 0)))
+    if ((ret = test_all(iosysid, num_flavors, flavor, my_rank, test_comm, 0)))
         return ret;
         
     /* Free the PIO decomposition. */
@@ -591,7 +942,7 @@ int test_async(int my_rank, int num_flavors, int *flavor, MPI_Comm test_comm)
     {
         /* Run tests. */
         printf("%d Running tests...\n", my_rank);
-        if ((ret = test_all(iosysid[0], num_flavors, flavor, my_rank, 1)))
+        if ((ret = test_all(iosysid[0], num_flavors, flavor, my_rank, test_comm, 1)))
             return ret;
         
         /* Finalize the IO system. Only call this from the computation tasks. */
@@ -636,8 +987,8 @@ int main(int argc, char **argv)
             return ret;
 
         /* Run tests with async. */
-        /* if ((ret = test_async(my_rank, num_flavors, flavor, test_comm))) */
-        /*     return ret; */
+        if ((ret = test_async(my_rank, num_flavors, flavor, test_comm)))
+            return ret;
 
     } /* endif my_rank < TARGET_NTASKS */
 
