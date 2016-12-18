@@ -61,12 +61,9 @@ endif ()
 add_executable (test_spmd EXCLUDE_FROM_ALL test_spmd.c test_common.c)
 target_link_libraries (test_spmd pioc)
 add_dependencies (tests test_spmd)
-add_executable (test_names EXCLUDE_FROM_ALL test_names.c test_common.c)
-target_link_libraries (test_names pioc)
 add_executable (test_darray EXCLUDE_FROM_ALL test_darray.c test_common.c)
 target_link_libraries (test_darray pioc)
 
-add_dependencies (tests test_names)
 add_dependencies (tests test_darray)
 add_dependencies (tests test_pioc)
 
@@ -81,8 +78,6 @@ set (AT_LEAST_THREE_TASKS 4)
 set (AT_LEAST_FOUR_TASKS 5)
 
 if (PIO_USE_MPISERIAL)
-  add_test(NAME test_names
-    COMMAND test_names)
   add_test(NAME test_pioc
     COMMAND test_pioc)
 else ()
@@ -132,10 +127,6 @@ else ()
     TIMEOUT ${DEFAULT_TEST_TIMEOUT})
   add_mpi_test(test_iosystem3
     EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_iosystem3
-    NUMPROCS ${AT_LEAST_FOUR_TASKS}
-    TIMEOUT ${DEFAULT_TEST_TIMEOUT})
-  add_mpi_test(test_names
-    EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_names
     NUMPROCS ${AT_LEAST_FOUR_TASKS}
     TIMEOUT ${DEFAULT_TEST_TIMEOUT})
   add_mpi_test(test_pioc
