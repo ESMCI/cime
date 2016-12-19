@@ -350,13 +350,13 @@ sudo make install </pre>
 
 <p>Download parallel-netcdf from the <a
 href="https://trac.mcs.anl.gov/projects/parallel-netcdf/wiki/Download">parallel-netcdf download
-page</a>. (These instructions were tested using version 1.6.1). Untar
-with: <pre>tar zxf parallel-netcdf-1.6.1.tar.gz</pre>
+page</a>. (These instructions were tested using version 1.7.0). Untar
+with: <pre>tar zxf parallel-netcdf-1.7.0.tar.gz</pre>
 
 
 <p>Build with:
 <pre>cd parallel-netcdf-1.7.0
-FC=mpifort CC=mpicc CFLAGS=-fPIC ./configure --prefix=/usr/local
+FC=mpifort CC=mpicc CFLAGS=-fPIC ./configure --prefix=/usr/local/pnetcdf-1.7.0
 make all check
 sudo make install </pre>
 
@@ -368,24 +368,13 @@ sudo make install </pre>
 href="https://www.hdfgroup.org/HDF5/release/obtain5.html">HDF5 download
 page</a>.
 
-<h3>1.8.17</h3>
+<h3>1.10.0-patch1</h3>
 
-<p>These instructions were tested using version 1.8.17. Untar
-with: <pre>tar zxf hdf5-1.8.17.tar.gz</pre>
-
-<p>Build with:
-<pre>cd hdf5-1.8.17
-CC=mpicc ./configure --with-zlib=/usr/local --prefix=/usr/local --with-szlib=/usr/local --enable-parallel
-make all check
-sudo make install </pre>
-
-<h3>1.8.15-patch1</h3>
-
-<p>These instructions were tested using version 1.8.15-patch1. Untar
-with: <pre>tar zxf hdf5-1.8.15-patch1.tar.gz</pre>
+<p>These instructions were tested using version 1.10.0-patch1. Untar
+with: <pre>tar zxf hdf5-1.10.0-patch1.tar.gz</pre>
 
 <p>Build with:
-<pre>cd hdf5-1.8.15-patch1
+<pre>cd hdf5-1.10.0-patch1
 CC=mpicc ./configure --with-zlib=/usr/local --prefix=/usr/local --with-szlib=/usr/local --enable-parallel
 make all check
 sudo make install </pre>
@@ -400,13 +389,9 @@ with: <pre>tar zxf netcdf-c-4.4.0.tar.gz</pre>
 
 <p>Build with:
 <pre>cd netcdf-c-4.4.1
-CC=mpicc ./configure --with-zlib=/usr/local --prefix=/usr/local --with-szlib=/usr/local --with-hdf5=/usr/local --enable-pnetcdf --enable-parallel-tests --enable-logging
+CC=mpicc ./configure --enable-parallel-tests --prefix=/usr/local/netcdf-c-4.4.1 --with-hdf5=/usr/local --with-zlib=/usr/local --with-szlib=/usr/local
 make all check
 sudo make install </pre>
-
-<p>(Note that one one system I got some failures on the nc_test type
-conversion tests. These are under investigation. Meanwhile I ignored
-the results and did a make install.)
 
 <li>Installing NetCDF-4 Fortran Library
 
@@ -418,8 +403,7 @@ with: <pre>tar zxf netcdf-fortran-4.4.3.tar.gz</pre>
 
 <p>Build with:
 <pre>cd netcdf-fortran-4.4.3
-F77=mpif77 F90=mpif90  ./configure --with-zlib=/usr/local --prefix=/usr/local --with-szlib=/usr/local --with-hdf5=/usr/local --enable-pnetcdf --enable-parallel-tests --enable-logging
-make all check
+make distclean; LD_LIBRARY_PATH=/usr/local/netcdf-c-4.4.1/lib FC=mpifort CPPFLAGS=-I/usr/local/netcdf-c-4.4.1/include LDFLAGS=-L/usr/local/netcdf-c-4.4.1/lib CC=mpicc ./configure --enable-parallel-tests --prefix=/usr/local/netcdf-c-4.4.1 && make check
 sudo make install </pre>
 
 <li>Installing ParallelIO Library
@@ -442,12 +426,14 @@ build from the command line, including tests:
 
 <pre>
 cd build
-rm -rf * && CFLAGS=-g FFLAGS=-g CC=mpicc FC=mpifort cmake -DNetCDF_C_PATH=/usr/local -DNetCDF_Fortran_PATH=/usr/local -DPnetCDF_PATH=/usr/local -DPIO_HDF5_LOGGING=On .. && make VERBOSE=1 all tests check
+rm -rf * && CFLAGS=-g FFLAGS=-g CC=mpicc FC=mpifort cmake -DNetCDF_C_PATH=/usr/local/netcdf-c-4.4.1 -DNetCDF_Fortran_PATH=/usr/local/netcdf-fortran-4.4.3 -DPnetCDF_PATH=/usr/local/pnetcdf-1.7.0 -DPIO_ENABLE_LOGGING=On -DPIO_HDF5_LOGGING=On .. && make VERBOSE=1 all tests check
 </pre>
 
-<p>(Note the optional CFLAGS=-g which allows the use of a debugger
+<p>Note the optional CFLAGS=-g which allows the use of a debugger
 with this code. Also note the optional VERBOSE=1 provided to make,
-which causes the build commands to be made visible.)
+which causes the build commands to be made visible.
+
+<p>Note also the -DPIO_ENABLE_LOGGING=On which is helpful for debugging but should probably not be used in production builds.
 
 <li>Building and Running Performance Tests
 
