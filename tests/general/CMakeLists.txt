@@ -11,6 +11,7 @@ SET(GENERATED_SRCS pio_file_simple_tests.F90
   ncdf_simple_tests.F90
   ncdf_get_put.F90
   ncdf_fail.F90
+  ncdf_inq.F90
   pio_decomp_tests.F90
   pio_decomp_tests_1d.F90
   pio_decomp_tests_2d.F90
@@ -191,6 +192,25 @@ if (PIO_USE_MPISERIAL)
 else ()
   add_mpi_test(ncdf_fail
     EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/ncdf_fail
+    NUMPROCS 2
+    TIMEOUT ${DEFAULT_TEST_TIMEOUT})
+endif ()
+
+#===== ncdf_inq =====
+add_executable (ncdf_inq EXCLUDE_FROM_ALL
+  ncdf_inq.F90
+  ${CMAKE_CURRENT_SOURCE_DIR}/util/pio_tutil.F90)
+target_link_libraries (ncdf_inq piof)
+add_dependencies (tests ncdf_inq)
+
+if (PIO_USE_MPISERIAL)
+  add_test(NAME ncdf_inq
+    COMMAND ncdf_inq)
+  set_tests_properties(ncdf_inq
+    PROPERTIES TIMEOUT ${DEFAULT_TEST_TIMEOUT})
+else ()
+  add_mpi_test(ncdf_inq
+    EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/ncdf_inq
     NUMPROCS 2
     TIMEOUT ${DEFAULT_TEST_TIMEOUT})
 endif ()
