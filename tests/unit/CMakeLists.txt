@@ -18,8 +18,7 @@ file (COPY "./not_netcdf.ieee"
 set (SRCS basic_tests.F90
   driver.F90
   global_vars.F90
-  ncdf_tests.F90
-  nc_set_log_level2.c)
+  ncdf_tests.F90)
 
 add_executable (pio_unit_test EXCLUDE_FROM_ALL ${SRCS})
 target_link_libraries (pio_unit_test piof)
