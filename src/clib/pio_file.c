@@ -208,10 +208,15 @@ int PIOc_createfile(int iosysid, int *ncidp, int *iotype, const char *filename, 
     /* Broadcast and check the return code. */
     if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
         return check_mpi(file, mpierr, __FILE__, __LINE__);
-    if (ierr)
-        return check_netcdf(file, ierr, __FILE__, __LINE__);
 
-    /* Broadcast results to all tasks. Ignore NULL parameters. */
+    /* If there was an error, free the memory we allocated and handle error. */
+    if (ierr)
+    {
+        free(file);
+        return check_netcdf2(ios, NULL, ierr, __FILE__, __LINE__);
+    }
+
+    /* Broadcast mode to all tasks. */
     if ((mpierr = MPI_Bcast(&file->mode, 1, MPI_INT, ios->ioroot, ios->union_comm)))
         return check_mpi(file, mpierr, __FILE__, __LINE__);
 
