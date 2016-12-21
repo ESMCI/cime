@@ -132,7 +132,7 @@ int create_file_handler(iosystem_desc_t *ios)
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     LOG((1, "create_file_handler got parameter len = %d\n", len));
     if (!(filename = malloc(len + 1 * sizeof(char))))
-        return PIO_ENOMEM;
+        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast((void *)filename, len + 1, MPI_CHAR, 0,
                             ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
@@ -319,7 +319,7 @@ int inq_dimid_handler(iosystem_desc_t *ios)
     if ((mpierr = MPI_Bcast(&namelen, 1, MPI_INT, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if (!(name = malloc((namelen + 1) * sizeof(char))))
-        return PIO_ENOMEM;
+        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast((void *)name, namelen + 1, MPI_CHAR, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&id_present, 1, MPI_CHAR, 0, ios->intercomm)))
@@ -375,10 +375,10 @@ int inq_att_handler(iosystem_desc_t *ios)
     if ((mpierr = MPI_Bcast(&namelen, 1, MPI_INT,  ios->compmaster, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if (!(name = malloc((namelen + 1) * sizeof(char))))
-        return PIO_ENOMEM;
+        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast((void *)name, namelen + 1, MPI_CHAR, ios->compmaster,
                             ios->intercomm)))
-        return PIO_ENOMEM;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&xtype_present, 1, MPI_CHAR, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&len_present, 1, MPI_CHAR, 0, ios->intercomm)))
@@ -479,7 +479,7 @@ int inq_attid_handler(iosystem_desc_t *ios)
     if ((mpierr = MPI_Bcast(&namelen, 1, MPI_INT,  ios->compmaster, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if (!(name = malloc((namelen + 1) * sizeof(char))))
-        return PIO_ENOMEM;
+        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(name, namelen + 1, MPI_CHAR,  ios->compmaster, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&id_present, 1, MPI_CHAR, 0, ios->intercomm)))
@@ -533,7 +533,7 @@ int att_put_handler(iosystem_desc_t *ios)
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     mpierr = MPI_Bcast(&namelen, 1, MPI_INT,  ios->compmaster, ios->intercomm);
     if (!(name = malloc((namelen + 1) * sizeof(char))))
-        return PIO_ENOMEM;
+        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
     mpierr = MPI_Bcast((void *)name, namelen + 1, MPI_CHAR, ios->compmaster,
                        ios->intercomm);
     if ((mpierr = MPI_Bcast(&atttype, 1, MPI_INT, 0, ios->intercomm)))
@@ -543,7 +543,7 @@ int att_put_handler(iosystem_desc_t *ios)
     if ((mpierr = MPI_Bcast(&typelen, 1, MPI_OFFSET, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if (!(op = malloc(attlen * typelen)))
-        return PIO_ENOMEM;
+        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast((void *)op, attlen * typelen, MPI_BYTE, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     LOG((1, "att_put_handler ncid = %d varid = %d namelen = %d name = %s iotype = %d"
@@ -595,7 +595,7 @@ int att_get_handler(iosystem_desc_t *ios)
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     mpierr = MPI_Bcast(&namelen, 1, MPI_INT,  ios->compmaster, ios->intercomm);
     if (!(name = malloc((namelen + 1) * sizeof(char))))
-        return PIO_ENOMEM;
+        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
     mpierr = MPI_Bcast((void *)name, namelen + 1, MPI_CHAR, ios->compmaster,
                        ios->intercomm);
     if ((mpierr = MPI_Bcast(&iotype, 1, MPI_INT, 0, ios->intercomm)))
@@ -612,7 +612,7 @@ int att_get_handler(iosystem_desc_t *ios)
 
     /* Allocate space for the attribute data. */
     if (!(ip = malloc(attlen * typelen)))
-        return PIO_ENOMEM;
+        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
     /* Call the function to read the attribute. */
     if ((ierr = PIOc_get_att(ncid, varid, name, ip)))
@@ -698,7 +698,7 @@ int put_vars_handler(iosystem_desc_t *ios)
 
     /* Allocate room for our data. */
     if (!(buf = malloc(num_elem * typelen)))
-        return PIO_ENOMEM;
+        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
     /* Get the data. */
     if ((mpierr = MPI_Bcast(buf, num_elem * typelen, MPI_BYTE, 0, ios->intercomm)))
@@ -846,7 +846,7 @@ int get_vars_handler(iosystem_desc_t *ios)
 
     /* Allocate room for our data. */
     if (!(buf = malloc(num_elem * typelen)))
-        return PIO_ENOMEM;
+        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
     /* Set the non-NULL pointers. */
     startp = start;
@@ -1157,7 +1157,7 @@ int inq_varid_handler(iosystem_desc_t *ios)
     if ((mpierr = MPI_Bcast(&namelen, 1, MPI_INT, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if (!(name = malloc((namelen + 1) * sizeof(char))))
-        return PIO_ENOMEM;
+        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast((void *)name, namelen + 1, MPI_CHAR, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
 
@@ -1261,7 +1261,7 @@ int def_var_handler(iosystem_desc_t *ios)
     if ((mpierr = MPI_Bcast(&namelen, 1, MPI_INT, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if (!(name = malloc(namelen + 1 * sizeof(char))))
-        return PIO_ENOMEM;
+        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast((void *)name, namelen + 1, MPI_CHAR, 0,
                             ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
@@ -1270,7 +1270,7 @@ int def_var_handler(iosystem_desc_t *ios)
     if ((mpierr = MPI_Bcast(&ndims, 1, MPI_INT, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if (!(dimids = malloc(ndims * sizeof(int))))
-        return PIO_ENOMEM;
+        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(dimids, ndims, MPI_INT, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     LOG((1, "def_var_handler got parameters namelen = %d "
@@ -1448,7 +1448,7 @@ int def_dim_handler(iosystem_desc_t *ios)
     if ((mpierr = MPI_Bcast(&namelen, 1, MPI_INT, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if (!(name = malloc(namelen + 1 * sizeof(char))))
-        return PIO_ENOMEM;
+        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast((void *)name, namelen + 1, MPI_CHAR, 0,
                             ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
@@ -1500,7 +1500,7 @@ int rename_dim_handler(iosystem_desc_t *ios)
     if ((mpierr = MPI_Bcast(&namelen, 1, MPI_INT, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if (!(name = malloc((namelen + 1) * sizeof(char))))
-        return PIO_ENOMEM;
+        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast((void *)name, namelen + 1, MPI_CHAR, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     LOG((2, "rename_dim_handler got parameters namelen = %d "
@@ -1549,7 +1549,7 @@ int rename_var_handler(iosystem_desc_t *ios)
     if ((mpierr = MPI_Bcast(&namelen, 1, MPI_INT, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if (!(name = malloc((namelen + 1) * sizeof(char))))
-        return PIO_ENOMEM;
+        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast((void *)name, namelen + 1, MPI_CHAR, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     LOG((2, "rename_var_handler got parameters namelen = %d "
@@ -1595,13 +1595,13 @@ int rename_att_handler(iosystem_desc_t *ios)
     if ((mpierr = MPI_Bcast(&namelen, 1, MPI_INT, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if (!(name = malloc((namelen + 1) * sizeof(char))))
-        return PIO_ENOMEM;
+        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(name, namelen + 1, MPI_CHAR, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&newnamelen, 1, MPI_INT, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if (!(newname = malloc((newnamelen + 1) * sizeof(char))))
-        return PIO_ENOMEM;
+        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(newname, newnamelen + 1, MPI_CHAR, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     LOG((2, "rename_att_handler got parameters namelen = %d name = %s ncid = %d varid = %d "
@@ -1648,7 +1648,7 @@ int delete_att_handler(iosystem_desc_t *ios)
     if ((mpierr = MPI_Bcast(&namelen, 1, MPI_INT, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if (!(name = malloc((namelen + 1) * sizeof(char))))
-        return PIO_ENOMEM;
+        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(name, namelen + 1, MPI_CHAR, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     LOG((2, "delete_att_handler namelen = %d name = %s ncid = %d varid = %d ",
@@ -1692,7 +1692,7 @@ int open_file_handler(iosystem_desc_t *ios)
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     LOG((2, "open_file_handler got parameter len = %d", len));
     if (!(filename = malloc(len + 1 * sizeof(char))))
-        return PIO_ENOMEM;
+        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast((void *)filename, len + 1, MPI_CHAR, 0,
                             ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
@@ -1738,7 +1738,7 @@ int delete_file_handler(iosystem_desc_t *ios)
     if ((mpierr = MPI_Bcast(&len, 1, MPI_INT, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if (!(filename = malloc(len + 1 * sizeof(char))))
-        return PIO_ENOMEM;
+        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast((void *)filename, len + 1, MPI_CHAR, 0,
                             ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
