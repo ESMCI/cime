@@ -1112,8 +1112,13 @@ int PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype,
          ios->my_comm));
     if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
         return check_mpi(file, mpierr, __FILE__, __LINE__);
+
+    /* If there was an error, free allocated memory and deal with the error. */
     if (ierr)
-        return check_netcdf(file, ierr, __FILE__, __LINE__);
+    {
+        free(file);
+        return check_netcdf2(ios, NULL, ierr, __FILE__, __LINE__);
+    }
     LOG((2, "error code Bcast complete ierr = %d ios->my_comm = %d", ierr, ios->my_comm));
 
     /* Broadcast results to all tasks. Ignore NULL parameters. */
