@@ -367,12 +367,18 @@ int define_iodesc_datatypes(const iosystem_desc_t ios, io_desc_t *iodesc)
                 /* Create the datatypes, which will be used both to
                  * receive and to send data. */
                 if (iodesc->rearranger == PIO_REARR_SUBSET)
-                    create_mpi_datatypes(iodesc->basetype, iodesc->nrecvs, iodesc->llen,
-                                         iodesc->rindex, iodesc->rcount, iodesc->rfrom,
-                                         iodesc->rtype);
+                {
+                    if ((ret = create_mpi_datatypes(iodesc->basetype, iodesc->nrecvs, iodesc->llen,
+                                                   iodesc->rindex, iodesc->rcount, iodesc->rfrom,
+                                                   iodesc->rtype)))
+                        return ret;
+                }
                 else
-                    create_mpi_datatypes(iodesc->basetype, iodesc->nrecvs, iodesc->llen,
-                                         iodesc->rindex, iodesc->rcount, NULL, iodesc->rtype);
+                {
+                    if ((ret = create_mpi_datatypes(iodesc->basetype, iodesc->nrecvs, iodesc->llen,
+                                                    iodesc->rindex, iodesc->rcount, NULL, iodesc->rtype)))
+                        return ret;
+                }
             }
         }
     }
