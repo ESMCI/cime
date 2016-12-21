@@ -103,6 +103,10 @@ if (NetCDF_C_FOUND)
     target_compile_definitions (pioc
       PUBLIC _NETCDF4)
   endif ()
+  if (${NetCDF_C_LOGGING_ENABLED})
+    target_compile_definitions (pioc
+      PUBLIC NETCDF_C_LOGGING_ENABLED)
+  endif()
 else ()
   target_compile_definitions (pioc
     PUBLIC _NONETCDF)
