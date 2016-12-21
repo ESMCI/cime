@@ -968,18 +968,18 @@ int PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype,
     int ierr = PIO_NOERR;  /** Return code from function calls. */
     int mpierr = MPI_SUCCESS, mpierr2;  /** Return code from MPI function codes. */
 
-    /* User must provide valid input for these parameters. */
-    if (!ncidp || !iotype || !filename)
-        return pio_err(NULL, NULL, PIO_EINVAL, __FILE__, __LINE__);
-    if (*iotype < PIO_IOTYPE_PNETCDF || *iotype > PIO_IOTYPE_NETCDF4P)
-        return pio_err(NULL, NULL, PIO_EINVAL, __FILE__, __LINE__);
-
-    LOG((2, "PIOc_openfile_retry iosysid = %d iotype = %d filename = %s mode = %d retry = %d",
-         iosysid, *iotype, filename, mode, retry));
-
     /* Get the IO system info from the iosysid. */
     if (!(ios = pio_get_iosystem_from_id(iosysid)))
         return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
+
+    /* User must provide valid input for these parameters. */
+    if (!ncidp || !iotype || !filename)
+        return pio_err(ios, NULL, PIO_EINVAL, __FILE__, __LINE__);
+    if (*iotype < PIO_IOTYPE_PNETCDF || *iotype > PIO_IOTYPE_NETCDF4P)
+        return pio_err(ios, NULL, PIO_EINVAL, __FILE__, __LINE__);
+
+    LOG((2, "PIOc_openfile_retry iosysid = %d iotype = %d filename = %s mode = %d retry = %d",
+         iosysid, *iotype, filename, mode, retry));
 
     /* Allocate space for the file info. */
     if (!(file = calloc(sizeof(*file), 1)))

@@ -26,7 +26,7 @@ int PIOc_iosystem_is_active(int iosysid, bool *active)
     iosystem_desc_t *ios;
 
     if (!(ios = pio_get_iosystem_from_id(iosysid)))
-        return PIO_EBADID;
+        return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
 
     if (active)
         if (ios->comp_comm == MPI_COMM_NULL && ios->io_comm == MPI_COMM_NULL)
@@ -105,7 +105,7 @@ int PIOc_set_file_error_handling(int ncid, int method, int *old_method)
 
     /* Find info for this file. */
     if ((ret = pio_get_file(ncid, &file)))
-        return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
+        return pio_err(NULL, NULL, ret, __FILE__, __LINE__);
 
     /* Check that valid error handler was provided. */
     if (method != PIO_INTERNAL_ERROR && method != PIO_BCAST_ERROR &&
@@ -158,13 +158,13 @@ int PIOc_setframe(int ncid, int varid, int frame)
     file_desc_t *file;
     int ret;
 
-    /* Check inputs. */
-    if (varid < 0 || varid >= PIO_MAX_VARS)
-        return PIO_EINVAL;
-
     /* Get file info. */
     if ((ret = pio_get_file(ncid, &file)))
-        return ret;
+        return pio_err(NULL, NULL, ret, __FILE__, __LINE__);
+
+    /* Check inputs. */
+    if (varid < 0 || varid >= PIO_MAX_VARS)
+        return pio_err(NULL, file, PIO_EINVAL, __FILE__, __LINE__);
 
     file->varlist[varid].record = frame;
 
@@ -596,12 +596,14 @@ int PIOc_Init_Intracomm(MPI_Comm comp_comm, int num_iotasks, int stride, int bas
         fprintf(stderr, "PIO_TP PIOc_Init_Intracomm error\n");
         fprintf(stderr, "num_iotasks=%d, ustride=%d, num_comptasks=%d\n", num_iotasks,
                 ustride, ios->num_comptasks);
-        return PIO_EBADID;
+        return pio_err(ios, NULL, PIO_EINVAL, __FILE__, __LINE__);
     }
 
-    /* Create an array that holds the ranks of the tasks to be used for IO. */
+    /* Create an array that holds the ranks of the tasks to be used
+     * for IO. NOTE that sizeof(int) should probably be 1, not
+     * sizeof(int) ???*/
     if (!(ios->ioranks = calloc(sizeof(int), ios->num_iotasks)))
-        return PIO_ENOMEM;
+        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
     for (int i = 0; i < ios->num_iotasks; i++)
     {
         ios->ioranks[i] = (base + i * ustride) % ios->num_comptasks;
@@ -692,7 +694,7 @@ int PIOc_set_hint(int iosysid, const char *hint, const char *hintval)
     int mpierr; /* Return value for MPI calls. */
     
     if (!(ios = pio_get_iosystem_from_id(iosysid)))
-        return PIO_EBADID;
+        return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
 
     /* Set the MPI hint. */
     if (ios->ioproc)
@@ -721,7 +723,7 @@ int PIOc_finalize(int iosysid)
 
     /* Find the IO system information. */
     if (!(ios = pio_get_iosystem_from_id(iosysid)))
-        return PIO_EBADID;
+        return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
 
     /* If asynch IO is in use, send the PIO_MSG_EXIT message from the
      * comp master to the IO processes. This may be called by
@@ -821,7 +823,7 @@ int PIOc_iam_iotask(int iosysid, bool *ioproc)
     iosystem_desc_t *ios;
 
     if (!(ios = pio_get_iosystem_from_id(iosysid)))
-        return PIO_EBADID;
+        return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
 
     if (ioproc)
         *ioproc = ios->ioproc;
@@ -843,7 +845,7 @@ int PIOc_iotask_rank(int iosysid, int *iorank)
     iosystem_desc_t *ios;
 
     if (!(ios = pio_get_iosystem_from_id(iosysid)))
-        return PIO_EBADID;
+        return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
 
     if (iorank)
         *iorank = ios->io_rank;

@@ -207,7 +207,7 @@ int main(int argc, char **argv)
     /* Finalize test. */
     printf("%d %s finalizing...\n", my_rank, TEST_NAME);
     if ((ret = pio_test_finalize(&test_comm)))
-        return ERR_AWFUL;
+        return ret;
 
     printf("%d %s SUCCESS!!\n", my_rank, TEST_NAME);
 

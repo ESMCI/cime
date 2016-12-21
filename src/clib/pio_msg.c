@@ -2270,8 +2270,7 @@ int pio_msg_handler2(int io_rank, int component_count, iosystem_desc_t **iosys,
     return PIO_NOERR;
 }
 
-/** @ingroup PIO_init
- *
+/** 
  * Library initialization used when IO tasks are distinct from compute
  * tasks.
  *
@@ -2332,11 +2331,11 @@ int pio_msg_handler2(int io_rank, int component_count, iosystem_desc_t **iosys,
  * gets the iosysid for each component.
  *
  * @return PIO_NOERR on success, error code otherwise.
+ * @ingroup PIO_init
  */
-int
-PIOc_Init_Async(MPI_Comm world, int num_io_procs, int *io_proc_list,
-                int component_count, int *num_procs_per_comp, int **proc_list,
-                int *iosysidp)
+int PIOc_Init_Async(MPI_Comm world, int num_io_procs, int *io_proc_list,
+                    int component_count, int *num_procs_per_comp, int **proc_list,
+                    int *iosysidp)
 {
     int my_rank;
     MPI_Comm newcomm;
@@ -2347,12 +2346,13 @@ PIOc_Init_Async(MPI_Comm world, int num_io_procs, int *io_proc_list,
     /* Check input parameters. */
     if (num_io_procs < 1 || component_count < 1 || !num_procs_per_comp ||
         !iosysidp)
-        return PIO_EINVAL;
+        return pio_err(NULL, NULL, PIO_EINVAL, __FILE__, __LINE__);
 
     /* Temporarily limit to one computational component. */
     if (component_count > 1)
-        return PIO_EINVAL;
+        return pio_err(NULL, NULL, PIO_EINVAL, __FILE__, __LINE__);
 
+    /* Turn on the logging system for PIO. */
     pio_init_logging();
     LOG((1, "PIOc_Init_Async component_count = %d", component_count));
 
@@ -2361,7 +2361,7 @@ PIOc_Init_Async(MPI_Comm world, int num_io_procs, int *io_proc_list,
     if (!io_proc_list)
     {
         if (!(my_io_proc_list = malloc(num_io_procs * sizeof(int))))
-            return PIO_ENOMEM;
+            return pio_err(NULL, NULL, PIO_ENOMEM, __FILE__, __LINE__);
         for (int p = 0; p < num_io_procs; p++)
             my_io_proc_list[p] = p;
     }
@@ -2376,7 +2376,7 @@ PIOc_Init_Async(MPI_Comm world, int num_io_procs, int *io_proc_list,
 
         /* Allocate space for array of arrays. */
         if (!(my_proc_list = malloc((component_count + 1) * sizeof(int *))))
-            return PIO_ENOMEM;
+            return pio_err(NULL, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
         /* Fill the array of arrays. */
         for (int cmp = 0; cmp < component_count + 1; cmp++)
@@ -2385,7 +2385,7 @@ PIOc_Init_Async(MPI_Comm world, int num_io_procs, int *io_proc_list,
 
             /* Allocate space for each array. */
             if (!(my_proc_list[cmp] = malloc(num_procs_per_comp[cmp] * sizeof(int))))
-                return PIO_ENOMEM;
+                return pio_err(NULL, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
             int proc;
             for (proc = last_proc; proc < num_procs_per_comp[cmp] + last_proc; proc++)
@@ -2416,7 +2416,7 @@ PIOc_Init_Async(MPI_Comm world, int num_io_procs, int *io_proc_list,
     iosystem_desc_t *iosys[component_count], *my_iosys;
     for (int cmp1 = 0; cmp1 < component_count; cmp1++)
         if (!(iosys[cmp1] = (iosystem_desc_t *)calloc(1, sizeof(iosystem_desc_t))))
-            return PIO_ENOMEM;
+            return pio_err(NULL, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
     /* Create group for world. */
     MPI_Group world_group;
