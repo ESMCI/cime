@@ -41,13 +41,13 @@ int inq_type_handler(iosystem_desc_t *ios)
     /* Get the parameters for this function that the the comp master
      * task is broadcasting. */
     if ((mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&xtype, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&name_present, 1, MPI_CHAR, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&size_present, 1, MPI_CHAR, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
 
     /* Handle null pointer issues. */
     if (name_present)
@@ -85,9 +85,9 @@ int inq_format_handler(iosystem_desc_t *ios)
     /* Get the parameters for this function that the the comp master
      * task is broadcasting. */
     if ((mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&format_present, 1, MPI_CHAR, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     LOG((2, "inq_format_handler got parameters ncid = %d format_present = %d",
          ncid, format_present));
 
@@ -129,17 +129,17 @@ int create_file_handler(iosystem_desc_t *ios)
     /* Get the parameters for this function that the he comp master
      * task is broadcasting. */
     if ((mpierr = MPI_Bcast(&len, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     LOG((1, "create_file_handler got parameter len = %d\n", len));
     if (!(filename = malloc(len + 1 * sizeof(char))))
         return PIO_ENOMEM;
     if ((mpierr = MPI_Bcast((void *)filename, len + 1, MPI_CHAR, 0,
                             ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&iotype, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&mode, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     LOG((1, "create_file_handler got parameters len = %d "
          "filename = %s iotype = %d mode = %d\n",
          len, filename, iotype, mode));
@@ -175,7 +175,7 @@ int close_file_handler(iosystem_desc_t *ios)
     /* Get the parameters for this function that the the comp master
      * task is broadcasting. */
     if ((mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     LOG((1, "create_file_handler got parameter ncid = %d", ncid));
 
     /* Call the close file function. */
@@ -209,15 +209,15 @@ int inq_handler(iosystem_desc_t *ios)
     /* Get the parameters for this function that the the comp master
      * task is broadcasting. */
     if ((mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&ndims_present, 1, MPI_CHAR, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&nvars_present, 1, MPI_CHAR, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&ngatts_present, 1, MPI_CHAR, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&unlimdimid_present, 1, MPI_CHAR, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     LOG((1, "inq_handler ndims_present = %d nvars_present = %d ngatts_present = %d unlimdimid_present = %d\n",
          ndims_present, nvars_present, ngatts_present, unlimdimid_present));
 
@@ -268,13 +268,13 @@ int inq_dim_handler(iosystem_desc_t *ios, int msg)
     /* Get the parameters for this function that the the comp master
      * task is broadcasting. */
     if ((mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&dimid, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&name_present, 1, MPI_CHAR, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&len_present, 1, MPI_CHAR, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     LOG((2, "inq_handler name_present = %d len_present = %d", name_present,
          len_present));
 
@@ -315,15 +315,15 @@ int inq_dimid_handler(iosystem_desc_t *ios)
     /* Get the parameters for this function that the the comp master
      * task is broadcasting. */
     if ((mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&namelen, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if (!(name = malloc((namelen + 1) * sizeof(char))))
         return PIO_ENOMEM;
     if ((mpierr = MPI_Bcast((void *)name, namelen + 1, MPI_CHAR, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&id_present, 1, MPI_CHAR, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     LOG((1, "inq_dimid_handler ncid = %d namelen = %d name = %s id_present = %d",
          ncid, namelen, name, id_present));
 
@@ -369,20 +369,20 @@ int inq_att_handler(iosystem_desc_t *ios)
     /* Get the parameters for this function that the the comp master
      * task is broadcasting. */
     if ((mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&varid, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&namelen, 1, MPI_INT,  ios->compmaster, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if (!(name = malloc((namelen + 1) * sizeof(char))))
         return PIO_ENOMEM;
     if ((mpierr = MPI_Bcast((void *)name, namelen + 1, MPI_CHAR, ios->compmaster,
                             ios->intercomm)))
         return PIO_ENOMEM;
     if ((mpierr = MPI_Bcast(&xtype_present, 1, MPI_CHAR, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&len_present, 1, MPI_CHAR, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
 
     /* Match NULLs in collective function call. */
     if (xtype_present)
@@ -425,13 +425,13 @@ int inq_attname_handler(iosystem_desc_t *ios)
     /* Get the parameters for this function that the the comp master
      * task is broadcasting. */
     if ((mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&varid, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&attnum, 1, MPI_INT,  ios->compmaster, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&name_present, 1, MPI_CHAR, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     LOG((2, "inq_attname_handler got ncid = %d varid = %d attnum = %d name_present = %d",
          ncid, varid, attnum, name_present));
 
@@ -473,17 +473,17 @@ int inq_attid_handler(iosystem_desc_t *ios)
     /* Get the parameters for this function that the the comp master
      * task is broadcasting. */
     if ((mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&varid, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&namelen, 1, MPI_INT,  ios->compmaster, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if (!(name = malloc((namelen + 1) * sizeof(char))))
         return PIO_ENOMEM;
     if ((mpierr = MPI_Bcast(name, namelen + 1, MPI_CHAR,  ios->compmaster, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&id_present, 1, MPI_CHAR, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     LOG((2, "inq_attid_handler got ncid = %d varid = %d attnum = %d id_present = %d",
          ncid, varid, attnum, id_present));
 
@@ -528,24 +528,24 @@ int att_put_handler(iosystem_desc_t *ios)
     /* Get the parameters for this function that the the comp master
      * task is broadcasting. */
     if ((mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&varid, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     mpierr = MPI_Bcast(&namelen, 1, MPI_INT,  ios->compmaster, ios->intercomm);
     if (!(name = malloc((namelen + 1) * sizeof(char))))
         return PIO_ENOMEM;
     mpierr = MPI_Bcast((void *)name, namelen + 1, MPI_CHAR, ios->compmaster,
                        ios->intercomm);
     if ((mpierr = MPI_Bcast(&atttype, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&attlen, 1, MPI_OFFSET, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&typelen, 1, MPI_OFFSET, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if (!(op = malloc(attlen * typelen)))
         return PIO_ENOMEM;
     if ((mpierr = MPI_Bcast((void *)op, attlen * typelen, MPI_BYTE, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     LOG((1, "att_put_handler ncid = %d varid = %d namelen = %d name = %s iotype = %d"
          "atttype = %d attlen = %d typelen = %d",
          ncid, varid, namelen, name, iotype, atttype, attlen, typelen));
@@ -590,22 +590,22 @@ int att_get_handler(iosystem_desc_t *ios)
     /* Get the parameters for this function that the the comp master
      * task is broadcasting. */
     if ((mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&varid, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     mpierr = MPI_Bcast(&namelen, 1, MPI_INT,  ios->compmaster, ios->intercomm);
     if (!(name = malloc((namelen + 1) * sizeof(char))))
         return PIO_ENOMEM;
     mpierr = MPI_Bcast((void *)name, namelen + 1, MPI_CHAR, ios->compmaster,
                        ios->intercomm);
     if ((mpierr = MPI_Bcast(&iotype, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&atttype, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&attlen, 1, MPI_OFFSET, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&typelen, 1, MPI_OFFSET, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     LOG((1, "att_get_handler ncid = %d varid = %d namelen = %d name = %s iotype = %d"
          "atttype = %d attlen = %d typelen = %d",
          ncid, varid, namelen, name, iotype, atttype, attlen, typelen));
@@ -654,11 +654,11 @@ int put_vars_handler(iosystem_desc_t *ios)
     /* Get the parameters for this function that the the comp master
      * task is broadcasting. */
     if ((mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&varid, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&ndims, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
 
     /* Now we know how big to make these arrays. */
     PIO_Offset start[ndims], count[ndims], stride[ndims];
@@ -666,23 +666,23 @@ int put_vars_handler(iosystem_desc_t *ios)
     if (!mpierr)
     {
         if ((mpierr = MPI_Bcast(start, ndims, MPI_OFFSET, 0, ios->intercomm)))
-            return PIO_EIO;
+            return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
         LOG((1, "put_vars_handler getting start[0] = %d ndims = %d", start[0], ndims));
     }
     if (!mpierr)
         if ((mpierr = MPI_Bcast(count, ndims, MPI_OFFSET, 0, ios->intercomm)))
-            return PIO_EIO;
+            return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&stride_present, 1, MPI_CHAR, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if (!mpierr && stride_present)
         if ((mpierr = MPI_Bcast(stride, ndims, MPI_OFFSET, 0, ios->intercomm)))
-            return PIO_EIO;
+            return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&xtype, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&num_elem, 1, MPI_OFFSET, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&typelen, 1, MPI_OFFSET, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     LOG((1, "put_vars_handler ncid = %d varid = %d ndims = %d "
          "stride_present = %d xtype = %d num_elem = %d typelen = %d",
          ncid, varid, ndims, stride_present, xtype,
@@ -702,7 +702,7 @@ int put_vars_handler(iosystem_desc_t *ios)
 
     /* Get the data. */
     if ((mpierr = MPI_Bcast(buf, num_elem * typelen, MPI_BYTE, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
 
     /* for (int e = 0; e < num_elem; e++) */
     /*  LOG((2, "element %d = %d", e, ((int *)buf)[e])); */
@@ -802,11 +802,11 @@ int get_vars_handler(iosystem_desc_t *ios)
     /* Get the parameters for this function that the the comp master
      * task is broadcasting. */
     if ((mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&varid, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&ndims, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
 
     /* Now we know how big to make these arrays. */
     PIO_Offset start[ndims], count[ndims], stride[ndims];
@@ -814,23 +814,23 @@ int get_vars_handler(iosystem_desc_t *ios)
     if (!mpierr)
     {
         if ((mpierr = MPI_Bcast(start, ndims, MPI_OFFSET, 0, ios->intercomm)))
-            return PIO_EIO;
+            return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
         LOG((1, "put_vars_handler getting start[0] = %d ndims = %d", start[0], ndims));
     }
     if (!mpierr)
         if ((mpierr = MPI_Bcast(count, ndims, MPI_OFFSET, 0, ios->intercomm)))
-            return PIO_EIO;
+            return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&stride_present, 1, MPI_CHAR, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if (!mpierr && stride_present)
         if ((mpierr = MPI_Bcast(stride, ndims, MPI_OFFSET, 0, ios->intercomm)))
-            return PIO_EIO;
+            return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&xtype, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&num_elem, 1, MPI_OFFSET, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&typelen, 1, MPI_OFFSET, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     LOG((1, "get_vars_handler ncid = %d varid = %d ndims = %d "
          "stride_present = %d xtype = %d num_elem = %d typelen = %d",
          ncid, varid, ndims, stride_present, xtype,
@@ -942,19 +942,19 @@ int inq_var_handler(iosystem_desc_t *ios)
     /* Get the parameters for this function that the the comp master
      * task is broadcasting. */
     if ((mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&varid, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&name_present, 1, MPI_CHAR, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&xtype_present, 1, MPI_CHAR, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&ndims_present, 1, MPI_CHAR, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&dimids_present, 1, MPI_CHAR, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&natts_present, 1, MPI_CHAR, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     LOG((2,"inq_var_handler ncid = %d varid = %d name_present = %d xtype_present = %d ndims_present = %d "
          "dimids_present = %d natts_present = %d\n",
          ncid, varid, name_present, xtype_present, ndims_present, dimids_present, natts_present));
@@ -1004,13 +1004,13 @@ int inq_var_chunking_handler(iosystem_desc_t *ios)
     /* Get the parameters for this function that the the comp master
      * task is broadcasting. */
     if ((mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&varid, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&storage_present, 1, MPI_CHAR, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&chunksizes_present, 1, MPI_CHAR, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     LOG((2,"inq_var_handler ncid = %d varid = %d storage_present = %d chunksizes_present = %d",
          ncid, varid, storage_present, chunksizes_present));
 
@@ -1049,11 +1049,11 @@ int inq_var_endian_handler(iosystem_desc_t *ios)
     /* Get the parameters for this function that the the comp master
      * task is broadcasting. */
     if ((mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&varid, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&endian_present, 1, MPI_CHAR, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     LOG((2,"inq_var_endian_handler ncid = %d varid = %d endian_present = %d", ncid, varid,
          endian_present));
 
@@ -1094,24 +1094,24 @@ int inq_var_deflate_handler(iosystem_desc_t *ios)
     /* Get the parameters for this function that the the comp master
      * task is broadcasting. */
     if ((mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&varid, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&shuffle_present, 1, MPI_CHAR, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if (shuffle_present && !mpierr)
         if ((mpierr = MPI_Bcast(&shuffle, 1, MPI_INT, 0, ios->intercomm)))
-            return PIO_EIO;
+            return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&deflate_present, 1, MPI_CHAR, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if (deflate_present && !mpierr)
         if ((mpierr = MPI_Bcast(&deflate, 1, MPI_INT, 0, ios->intercomm)))
-            return PIO_EIO;
+            return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&deflate_level_present, 1, MPI_CHAR, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if (deflate_level_present && !mpierr)
         if ((mpierr = MPI_Bcast(&deflate_level, 1, MPI_INT, 0, ios->intercomm)))
-            return PIO_EIO;
+            return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     LOG((2, "inq_var_handler ncid = %d varid = %d shuffle_present = %d deflate_present = %d "
          "deflate_level_present = %d", ncid, varid, shuffle_present, deflate_present,
          deflate_level_present));
@@ -1153,13 +1153,13 @@ int inq_varid_handler(iosystem_desc_t *ios)
     /* Get the parameters for this function that the the comp master
      * task is broadcasting. */
     if ((mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&namelen, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if (!(name = malloc((namelen + 1) * sizeof(char))))
         return PIO_ENOMEM;
     if ((mpierr = MPI_Bcast((void *)name, namelen + 1, MPI_CHAR, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
 
     /* Call the inq_dimid function. */
     if ((ret = PIOc_inq_varid(ncid, name, &varid)))
@@ -1190,7 +1190,7 @@ int sync_file_handler(iosystem_desc_t *ios)
     /* Get the parameters for this function that the comp master
      * task is broadcasting. */
     if ((mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     LOG((1, "sync_file_handler got parameter ncid = %d", ncid));
 
     /* Call the sync file function. */
@@ -1220,7 +1220,7 @@ int change_def_file_handler(iosystem_desc_t *ios, int msg)
     /* Get the parameters for this function that the comp master
      * task is broadcasting. */
     if ((mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
 
     /* Call the function. */
     ret = (msg == PIO_MSG_ENDDEF) ? PIOc_enddef(ncid) : PIOc_redef(ncid);
@@ -1257,22 +1257,22 @@ int def_var_handler(iosystem_desc_t *ios)
     /* Get the parameters for this function that the he comp master
      * task is broadcasting. */
     if ((mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&namelen, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if (!(name = malloc(namelen + 1 * sizeof(char))))
         return PIO_ENOMEM;
     if ((mpierr = MPI_Bcast((void *)name, namelen + 1, MPI_CHAR, 0,
                             ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&xtype, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&ndims, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if (!(dimids = malloc(ndims * sizeof(int))))
         return PIO_ENOMEM;
     if ((mpierr = MPI_Bcast(dimids, ndims, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     LOG((1, "def_var_handler got parameters namelen = %d "
          "name = %s len = %d ncid = %d\n", namelen, name, len, ncid));
 
@@ -1312,18 +1312,18 @@ int def_var_chunking_handler(iosystem_desc_t *ios)
     /* Get the parameters for this function that the he comp master
      * task is broadcasting. */
     if ((mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&varid, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&storage, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&ndims, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&chunksizes_present, 1, MPI_CHAR, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if (chunksizes_present)
         if ((mpierr = MPI_Bcast(chunksizes, ndims, MPI_OFFSET, 0, ios->intercomm)))
-            return PIO_EIO;
+            return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     LOG((1, "def_var_chunking_handler got parameters ncid = %d varid = %d storage = %d "
          "ndims = %d chunksizes_present = %d", ncid, varid, storage, ndims, chunksizes_present));
 
@@ -1360,11 +1360,11 @@ int def_var_endian_handler(iosystem_desc_t *ios)
     /* Get the parameters for this function that the he comp master
      * task is broadcasting. */
     if ((mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&varid, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&endian, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     LOG((1, "def_var_endian_handler got parameters ncid = %d varid = %d endain = %d ",
          ncid, varid, endian));
 
@@ -1399,15 +1399,15 @@ int set_var_chunk_cache_handler(iosystem_desc_t *ios)
     /* Get the parameters for this function that the he comp master
      * task is broadcasting. */
     if ((mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&varid, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&size, 1, MPI_OFFSET, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&nelems, 1, MPI_OFFSET, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&preemption, 1, MPI_FLOAT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     LOG((1, "set_var_chunk_cache_handler got params ncid = %d varid = %d size = %d "
          "nelems = %d preemption = %g", ncid, varid, size, nelems, preemption));
 
@@ -1444,16 +1444,16 @@ int def_dim_handler(iosystem_desc_t *ios)
     /* Get the parameters for this function that the he comp master
      * task is broadcasting. */
     if ((mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&namelen, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if (!(name = malloc(namelen + 1 * sizeof(char))))
         return PIO_ENOMEM;
     if ((mpierr = MPI_Bcast((void *)name, namelen + 1, MPI_CHAR, 0,
                             ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&len, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     LOG((2, "def_dim_handler got parameters namelen = %d "
          "name = %s len = %d ncid = %d", namelen, name, len, ncid));
 
@@ -1494,15 +1494,15 @@ int rename_dim_handler(iosystem_desc_t *ios)
     /* Get the parameters for this function that the he comp master
      * task is broadcasting. */
     if ((mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&dimid, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&namelen, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if (!(name = malloc((namelen + 1) * sizeof(char))))
         return PIO_ENOMEM;
     if ((mpierr = MPI_Bcast((void *)name, namelen + 1, MPI_CHAR, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     LOG((2, "rename_dim_handler got parameters namelen = %d "
          "name = %s ncid = %d dimid = %d", namelen, name, ncid, dimid));
 
@@ -1543,15 +1543,15 @@ int rename_var_handler(iosystem_desc_t *ios)
     /* Get the parameters for this function that the he comp master
      * task is broadcasting. */
     if ((mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&varid, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&namelen, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if (!(name = malloc((namelen + 1) * sizeof(char))))
         return PIO_ENOMEM;
     if ((mpierr = MPI_Bcast((void *)name, namelen + 1, MPI_CHAR, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     LOG((2, "rename_var_handler got parameters namelen = %d "
          "name = %s ncid = %d varid = %d", namelen, name, ncid, varid));
 
@@ -1589,21 +1589,21 @@ int rename_att_handler(iosystem_desc_t *ios)
     /* Get the parameters for this function that the he comp master
      * task is broadcasting. */
     if ((mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&varid, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&namelen, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if (!(name = malloc((namelen + 1) * sizeof(char))))
         return PIO_ENOMEM;
     if ((mpierr = MPI_Bcast(name, namelen + 1, MPI_CHAR, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&newnamelen, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if (!(newname = malloc((newnamelen + 1) * sizeof(char))))
         return PIO_ENOMEM;
     if ((mpierr = MPI_Bcast(newname, newnamelen + 1, MPI_CHAR, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     LOG((2, "rename_att_handler got parameters namelen = %d name = %s ncid = %d varid = %d "
          "newnamelen = %d newname = %s", namelen, name, ncid, varid, newnamelen, newname));
 
@@ -1642,15 +1642,15 @@ int delete_att_handler(iosystem_desc_t *ios)
     /* Get the parameters for this function that the he comp master
      * task is broadcasting. */
     if ((mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&varid, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&namelen, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if (!(name = malloc((namelen + 1) * sizeof(char))))
         return PIO_ENOMEM;
     if ((mpierr = MPI_Bcast(name, namelen + 1, MPI_CHAR, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     LOG((2, "delete_att_handler namelen = %d name = %s ncid = %d varid = %d ",
          namelen, name, ncid, varid));
 
@@ -1689,17 +1689,17 @@ int open_file_handler(iosystem_desc_t *ios)
     /* Get the parameters for this function that the he comp master
      * task is broadcasting. */
     if ((mpierr = MPI_Bcast(&len, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     LOG((2, "open_file_handler got parameter len = %d", len));
     if (!(filename = malloc(len + 1 * sizeof(char))))
         return PIO_ENOMEM;
     if ((mpierr = MPI_Bcast((void *)filename, len + 1, MPI_CHAR, 0,
                             ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&iotype, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&mode, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     LOG((2, "open_file_handler got parameters len = %d filename = %s iotype = %d mode = %d\n",
          len, filename, iotype, mode));
 
@@ -1736,12 +1736,12 @@ int delete_file_handler(iosystem_desc_t *ios)
     /* Get the parameters for this function that the he comp master
      * task is broadcasting. */
     if ((mpierr = MPI_Bcast(&len, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if (!(filename = malloc(len + 1 * sizeof(char))))
         return PIO_ENOMEM;
     if ((mpierr = MPI_Bcast((void *)filename, len + 1, MPI_CHAR, 0,
                             ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     LOG((1, "delete_file_handler got parameters len = %d filename = %s\n",
          len, filename));
 
@@ -1840,15 +1840,15 @@ int set_chunk_cache_handler(iosystem_desc_t *ios)
     /* Get the parameters for this function that the the comp master
      * task is broadcasting. */
     if ((mpierr = MPI_Bcast(&iosysid, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&iotype, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&size, 1, MPI_OFFSET, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&nelems, 1, MPI_OFFSET, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&preemption, 1, MPI_FLOAT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     LOG((1, "set_chunk_cache_handler got params iosysid = %d iotype = %d size = %d "
          "nelems = %d preemption = %g", iosysid, iotype, size, nelems, preemption));
 
@@ -1885,15 +1885,15 @@ int get_chunk_cache_handler(iosystem_desc_t *ios)
     /* Get the parameters for this function that the the comp master
      * task is broadcasting. */
     if ((mpierr = MPI_Bcast(&iosysid, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&iotype, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&size_present, 1, MPI_CHAR, 0, ios->intercomm)))
-        return PIO_EIO;    
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);    
     if ((mpierr = MPI_Bcast(&nelems_present, 1, MPI_CHAR, 0, ios->intercomm)))
-        return PIO_EIO;    
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);    
     if ((mpierr = MPI_Bcast(&preemption_present, 1, MPI_CHAR, 0, ios->intercomm)))
-        return PIO_EIO;    
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);    
     LOG((1, "get_chunk_cache_handler got params iosysid = %d iotype = %d size_present = %d "
          "nelems_present = %d preemption_present = %g", iosysid, iotype, size_present,
          nelems_present, preemption_present));
@@ -1939,15 +1939,15 @@ int get_var_chunk_cache_handler(iosystem_desc_t *ios)
     /* Get the parameters for this function that the the comp master
      * task is broadcasting. */
     if ((mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&varid, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&size_present, 1, MPI_CHAR, 0, ios->intercomm)))
-        return PIO_EIO;    
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);    
     if ((mpierr = MPI_Bcast(&nelems_present, 1, MPI_CHAR, 0, ios->intercomm)))
-        return PIO_EIO;    
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);    
     if ((mpierr = MPI_Bcast(&preemption_present, 1, MPI_CHAR, 0, ios->intercomm)))
-        return PIO_EIO;    
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);    
     LOG((1, "get_var_chunk_cache_handler got params ncid = %d varid = %d size_present = %d "
          "nelems_present = %d preemption_present = %g", ncid, varid, size_present,
          nelems_present, preemption_present));
@@ -2002,7 +2002,7 @@ int finalize_handler(iosystem_desc_t *ios, int index)
     /* Get the parameters for this function that the the comp master
      * task is broadcasting. */
     if ((mpierr = MPI_Bcast(&iosysid, 1, MPI_INT, 0, ios->intercomm)))
-        return PIO_EIO;
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     LOG((1, "finalize_handler got parameter iosysid = %d", iosysid));
 
     /* Call the close file function. */
