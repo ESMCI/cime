@@ -106,6 +106,9 @@ if (NetCDF_C_FOUND)
   if (${NetCDF_C_LOGGING_ENABLED})
     target_compile_definitions (pioc
       PUBLIC NETCDF_C_LOGGING_ENABLED)
+    # netcdf.h needs this to be defined to use netCDF logging.
+    target_compile_definitions (pioc
+      PUBLIC LOGGING)
   endif()
 else ()
   target_compile_definitions (pioc
