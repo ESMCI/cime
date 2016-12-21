@@ -335,8 +335,7 @@ void pioassert(_Bool expression, const char *msg, const char *fname, int line)
  * Handle MPI errors. An error message is sent to stderr, then the
  * check_netcdf() function is called with PIO_EIO.
  *
- * @param file pointer to the file_desc_t info. May be NULL, in which
- * case check_netcdf() is not called.
+ * @param file pointer to the file_desc_t info. Ignored if NULL.
  * @param mpierr the MPI return code to handle
  * @param filename the name of the code file where error occured.
  * @param line the line of code where error occured.
@@ -384,7 +383,8 @@ int check_mpi2(iosystem_desc_t *ios, file_desc_t *file, int mpierr,
 /**
  * Check the result of a netCDF API call.
  *
- * @param file pointer to the PIO structure describing this file.
+ * @param file pointer to the PIO structure describing this
+ * file. Ignored if NULL.
  * @param status the return value from the netCDF call.
  * @param fname the name of the code file.
  * @param line the line number of the netCDF call in the code.
@@ -401,8 +401,8 @@ int check_netcdf(file_desc_t *file, int status, const char *fname, int line)
  * is used to determine error handling when there is no file_desc_t
  * pointer.
  *
- * @param ios the iosystem description struct
- * @param file pointer to the PIO structure describing this file.
+ * @param ios pointer to the iosystem description struct. Ignored if NULL.
+ * @param file pointer to the PIO structure describing this file. Ignored if NULL.
  * @param status the return value from the netCDF call.
  * @param fname the name of the code file.
  * @param line the line number of the netCDF call in the code.
@@ -421,7 +421,7 @@ int check_netcdf2(iosystem_desc_t *ios, file_desc_t *file, int status,
     if (status == PIO_NOERR)
         return PIO_NOERR;
 
-    LOG((1, "check_netcdf4 status = %d fname = %s line = %d", status, fname, line));
+    LOG((1, "check_netcdf2 status = %d fname = %s line = %d", status, fname, line));
 
     /* Pick an error handler. File settings override iosystem
      * settings. */
@@ -978,18 +978,18 @@ int PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype,
     int ierr = PIO_NOERR;  /** Return code from function calls. */
     int mpierr = MPI_SUCCESS, mpierr2;  /** Return code from MPI function codes. */
 
-    /* User must provide valid input for these parameters. */
-    if (!ncidp || !iotype || !filename)
-        return pio_err(NULL, NULL, PIO_EINVAL, __FILE__, __LINE__);
-    if (*iotype < PIO_IOTYPE_PNETCDF || *iotype > PIO_IOTYPE_NETCDF4P)
-        return pio_err(NULL, NULL, PIO_EINVAL, __FILE__, __LINE__);
-
-    LOG((2, "PIOc_openfile_retry iosysid = %d iotype = %d filename = %s mode = %d retry = %d",
-         iosysid, *iotype, filename, mode, retry));
-
     /* Get the IO system info from the iosysid. */
     if (!(ios = pio_get_iosystem_from_id(iosysid)))
         return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
+
+    /* User must provide valid input for these parameters. */
+    if (!ncidp || !iotype || !filename)
+        return pio_err(ios, NULL, PIO_EINVAL, __FILE__, __LINE__);
+    if (*iotype < PIO_IOTYPE_PNETCDF || *iotype > PIO_IOTYPE_NETCDF4P)
+        return pio_err(ios, NULL, PIO_EINVAL, __FILE__, __LINE__);
+
+    LOG((2, "PIOc_openfile_retry iosysid = %d iotype = %d filename = %s mode = %d retry = %d",
+         iosysid, *iotype, filename, mode, retry));
 
     /* Allocate space for the file info. */
     if (!(file = calloc(sizeof(*file), 1)))
