@@ -57,7 +57,7 @@ int inq_type_handler(iosystem_desc_t *ios)
 
     /* Call the function. */
     if ((ret = PIOc_inq_type(ncid, xtype, namep, sizep)))
-        return ret;
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
     LOG((1, "inq_type_handler succeeded!"));
     return PIO_NOERR;
@@ -97,7 +97,7 @@ int inq_format_handler(iosystem_desc_t *ios)
 
     /* Call the function. */
     if ((ret = PIOc_inq_format(ncid, formatp)))
-        return ret;
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
     if (formatp)
         LOG((2, "inq_format_handler format = %d", *formatp));
@@ -146,7 +146,7 @@ int create_file_handler(iosystem_desc_t *ios)
 
     /* Call the create file function. */
     if ((ret = PIOc_createfile(ios->iosysid, &ncid, &iotype, filename, mode)))
-        return ret;
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
     /* Free resources. */
     free(filename);
@@ -180,7 +180,7 @@ int close_file_handler(iosystem_desc_t *ios)
 
     /* Call the close file function. */
     if ((ret = PIOc_closefile(ncid)))
-        return ret;
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
     LOG((1, "close_file_handler succeeded!"));
     return PIO_NOERR;
@@ -235,7 +235,7 @@ int inq_handler(iosystem_desc_t *ios)
 
     /* Call the inq function to get the values. */
     if ((ret = PIOc_inq(ncid, ndimsp, nvarsp, ngattsp, unlimdimidp)))
-        return ret;
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
     return PIO_NOERR;
 }
@@ -286,7 +286,7 @@ int inq_dim_handler(iosystem_desc_t *ios, int msg)
 
     /* Call the inq function to get the values. */
     if ((ret = PIOc_inq_dim(ncid, dimid, dimnamep, dimlenp)))
-        return ret;
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
     return PIO_NOERR;
 }
@@ -333,7 +333,7 @@ int inq_dimid_handler(iosystem_desc_t *ios)
 
     /* Call the inq_dimid function. */
     if ((ret = PIOc_inq_dimid(ncid, name, dimidp)))
-        return ret;
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
     /* Free resources. */
     free(name);
@@ -392,7 +392,7 @@ int inq_att_handler(iosystem_desc_t *ios)
 
     /* Call the function to learn about the attribute. */
     if ((ret = PIOc_inq_att(ncid, varid, name, xtypep, lenp)))
-        return ret;
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
     /* Free memory. */
     free(name);
@@ -441,7 +441,7 @@ int inq_attname_handler(iosystem_desc_t *ios)
 
     /* Call the function to learn about the attribute. */
     if ((ret = PIOc_inq_attname(ncid, varid, attnum, namep)))
-        return ret;
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
     return PIO_NOERR;
 }
@@ -493,7 +493,7 @@ int inq_attid_handler(iosystem_desc_t *ios)
 
     /* Call the function to learn about the attribute. */
     if ((ret = PIOc_inq_attid(ncid, varid, name, idp)))
-        return ret;
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
     /* Free resources. */
     free(name);
@@ -973,7 +973,7 @@ int inq_var_handler(iosystem_desc_t *ios)
 
     /* Call the inq function to get the values. */
     if ((ret = PIOc_inq_var(ncid, varid, namep, xtypep, ndimsp, dimidsp, nattsp)))
-        return ret;
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
     if (ndims_present)
         LOG((2, "inq_var_handler ndims = %d", ndims));
@@ -1022,7 +1022,7 @@ int inq_var_chunking_handler(iosystem_desc_t *ios)
 
     /* Call the inq function to get the values. */
     if ((ret = PIOc_inq_var_chunking(ncid, varid, storagep, chunksizesp)))
-        return ret;
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
     return PIO_NOERR;
 }
@@ -1063,7 +1063,7 @@ int inq_var_endian_handler(iosystem_desc_t *ios)
 
     /* Call the inq function to get the values. */
     if ((ret = PIOc_inq_var_endian(ncid, varid, endianp)))
-        return ret;
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
     return PIO_NOERR;
 }
@@ -1126,7 +1126,7 @@ int inq_var_deflate_handler(iosystem_desc_t *ios)
 
     /* Call the inq function to get the values. */
     if ((ret = PIOc_inq_var_deflate(ncid, varid, shufflep, deflatep, deflate_levelp)))
-        return ret;
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
     return PIO_NOERR;
 }
@@ -1163,7 +1163,7 @@ int inq_varid_handler(iosystem_desc_t *ios)
 
     /* Call the inq_dimid function. */
     if ((ret = PIOc_inq_varid(ncid, name, &varid)))
-        return ret;
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
     /* Free resources. */
     free(name);
@@ -1195,7 +1195,7 @@ int sync_file_handler(iosystem_desc_t *ios)
 
     /* Call the sync file function. */
     if ((ret = PIOc_sync(ncid)))
-        return ret;
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
     LOG((2, "sync_file_handler succeeded!"));
     return PIO_NOERR;
@@ -1278,7 +1278,7 @@ int def_var_handler(iosystem_desc_t *ios)
 
     /* Call the create file function. */
     if ((ret = PIOc_def_var(ncid, name, xtype, ndims, dimids, &varid)))
-        return ret;
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
     /* Free resources. */
     free(name);
@@ -1333,7 +1333,7 @@ int def_var_chunking_handler(iosystem_desc_t *ios)
 
     /* Call the create file function. */
     if ((ret = PIOc_def_var_chunking(ncid, varid, storage, chunksizesp)))
-        return ret;
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
     LOG((1, "def_var_chunking_handler succeeded!"));
     return PIO_NOERR;
@@ -1370,7 +1370,7 @@ int def_var_endian_handler(iosystem_desc_t *ios)
 
     /* Call the function. */
     if ((ret = PIOc_def_var_endian(ncid, varid, endian)))
-        return ret;
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
     LOG((1, "def_var_chunking_handler succeeded!"));
     return PIO_NOERR;
@@ -1413,7 +1413,7 @@ int set_var_chunk_cache_handler(iosystem_desc_t *ios)
 
     /* Call the create file function. */
     if ((ret = PIOc_set_var_chunk_cache(ncid, varid, size, nelems, preemption)))
-        return ret;
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
     LOG((1, "def_var_chunk_cache_handler succeeded!"));
     return PIO_NOERR;
@@ -1459,7 +1459,7 @@ int def_dim_handler(iosystem_desc_t *ios)
 
     /* Call the create file function. */
     if ((ret = PIOc_def_dim(ncid, name, len, &dimid)))
-        return ret;
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
     /* Free resources. */
     free(name);
@@ -1508,7 +1508,7 @@ int rename_dim_handler(iosystem_desc_t *ios)
 
     /* Call the create file function. */
     if ((ret = PIOc_rename_dim(ncid, dimid, name)))
-        return ret;
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
     /* Free resources. */
     free(name);
@@ -1557,7 +1557,7 @@ int rename_var_handler(iosystem_desc_t *ios)
 
     /* Call the create file function. */
     if ((ret = PIOc_rename_var(ncid, varid, name)))
-        return ret;
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
     /* Free resources. */
     free(name);
@@ -1609,7 +1609,7 @@ int rename_att_handler(iosystem_desc_t *ios)
 
     /* Call the create file function. */
     if ((ret = PIOc_rename_att(ncid, varid, name, newname)))
-        return ret;
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
     /* Free resources. */
     free(name);
@@ -1656,7 +1656,7 @@ int delete_att_handler(iosystem_desc_t *ios)
 
     /* Call the create file function. */
     if ((ret = PIOc_del_att(ncid, varid, name)))
-        return ret;
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
     /* Free resources. */
     free(name);
@@ -1705,7 +1705,7 @@ int open_file_handler(iosystem_desc_t *ios)
 
     /* Call the open file function. */
     if ((ret = PIOc_openfile(ios->iosysid, &ncid, &iotype, filename, mode)))
-        return ret;
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
     /* Free resources. */
     free(filename);
@@ -1747,7 +1747,7 @@ int delete_file_handler(iosystem_desc_t *ios)
 
     /* Call the delete file function. */
     if ((ret = PIOc_deletefile(ios->iosysid, filename)))
-        return ret;
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
     /* Free resources. */
     free(filename);
@@ -1854,7 +1854,7 @@ int set_chunk_cache_handler(iosystem_desc_t *ios)
 
     /* Call the function. */
     if ((ret = PIOc_set_chunk_cache(iosysid, iotype, size, nelems, preemption)))
-        return ret;
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
     
     LOG((1, "set_chunk_cache_handler succeeded!"));
     return PIO_NOERR;
@@ -1908,7 +1908,7 @@ int get_chunk_cache_handler(iosystem_desc_t *ios)
 
     /* Call the function. */
     if ((ret = PIOc_get_chunk_cache(iosysid, iotype, sizep, nelemsp, preemptionp)))
-        return ret;
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
     
     LOG((1, "get_chunk_cache_handler succeeded!"));
     return PIO_NOERR;
@@ -1962,7 +1962,7 @@ int get_var_chunk_cache_handler(iosystem_desc_t *ios)
 
     /* Call the function. */
     if ((ret = PIOc_get_var_chunk_cache(ncid, varid, sizep, nelemsp, preemptionp)))
-        return ret;
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
     
     LOG((1, "get_var_chunk_cache_handler succeeded!"));
     return PIO_NOERR;
@@ -2009,7 +2009,7 @@ int finalize_handler(iosystem_desc_t *ios, int index)
     LOG((2, "finalize_handler calling PIOc_finalize for iosysid = %d",
          iosysid));
     if ((ret = PIOc_finalize(iosysid)))
-        return ret;
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
     LOG((1, "finalize_handler succeeded!"));
     return PIO_NOERR;
