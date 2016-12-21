@@ -18,6 +18,7 @@
 #define MAX_LOG_MSG 1024
 #define MAX_RANK_STR 12
 #define ERROR_PREFIX "ERROR: "
+#define NC_LEVEL_DIFF 3
 int pio_log_level = 0;
 int pio_log_ref_cnt = 0;
 int my_rank;
@@ -104,11 +105,20 @@ int PIOc_strerror(int pioerr, char *errmsg)
  */
 int PIOc_set_log_level(int level)
 {
+    int ret = PIO_NOERR;
 #if PIO_ENABLE_LOGGING
     /* Set the log level. */
     pio_log_level = level;
+
+#if NETCDF_C_LOGGING_ENABLED
+    /* If netcdf logging is available turn it on starting at level = 4. */
+    if (level > NC_LEVEL_DIFF)
+        if ((ret = nc_set_log_level(level - NC_LEVEL_DIFF)))
+            return ret;
+#endif /* NETCDF_C_LOGGING_ENABLED */
 #endif /* PIO_ENABLE_LOGGING */
-    return PIO_NOERR;
+
+    return ret;
 }
 
 /**
