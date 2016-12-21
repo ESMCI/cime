@@ -24,8 +24,8 @@ Program pio_unit_test_driver
        ltest_pnetcdf,    &
        stride
   integer ret_val
-  character(len=80) :: errmsg
-  character(len=80) :: expected
+  character(len=pio_max_name) :: errmsg
+  character(len=pio_max_name) :: expected
   
   ! Set up MPI
   call MPI_Init(ierr)
