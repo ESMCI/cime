@@ -2688,6 +2688,9 @@ PIOc_Init_Async(MPI_Comm world, int num_io_procs, int *io_proc_list,
                 return check_mpi(NULL, ret, __FILE__, __LINE__);
     }
 
+    if ((ret = MPI_Group_free(&world_group)))
+        return check_mpi(NULL, ret, __FILE__, __LINE__);
+
     LOG((2, "successfully done with PIO_Init_Async"));
     return PIO_NOERR;
 }
