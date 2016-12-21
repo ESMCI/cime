@@ -514,7 +514,7 @@ int att_put_handler(iosystem_desc_t *ios)
     int ncid;
     int varid;
     int mpierr;
-    int ierr;
+    int ret;
     char *name;
     int namelen;
     PIO_Offset attlen, typelen;
@@ -551,9 +551,8 @@ int att_put_handler(iosystem_desc_t *ios)
          ncid, varid, namelen, name, iotype, atttype, attlen, typelen));
 
     /* Call the function to read the attribute. */
-    if ((ierr = PIOc_put_att(ncid, varid, name, atttype, attlen, op)))
-        return ierr;
-    LOG((2, "put_handler called PIOc_put_att, ierr = %d", ierr));
+    if ((ret = PIOc_put_att(ncid, varid, name, atttype, attlen, op)))
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
     /* Free resources. */
     free(name);
@@ -576,7 +575,7 @@ int att_get_handler(iosystem_desc_t *ios)
     int ncid;
     int varid;
     int mpierr;
-    int ierr;
+    int ret;
     char *name;
     int namelen;
     PIO_Offset attlen, typelen;
@@ -615,8 +614,8 @@ int att_get_handler(iosystem_desc_t *ios)
         return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
     /* Call the function to read the attribute. */
-    if ((ierr = PIOc_get_att(ncid, varid, name, ip)))
-        return ierr;
+    if ((ret = PIOc_get_att(ncid, varid, name, ip)))
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
     /* Free resources. */
     free(name);
@@ -637,7 +636,7 @@ int put_vars_handler(iosystem_desc_t *ios)
     int ncid;
     int varid;
     int mpierr;
-    int ierr;
+    int ret;
     char *name;
     int namelen;
     PIO_Offset typelen; /** Length (in bytes) of this type. */
@@ -717,53 +716,53 @@ int put_vars_handler(iosystem_desc_t *ios)
     switch(xtype)
     {
     case NC_BYTE:
-        ierr = PIOc_put_vars_schar(ncid, varid, startp, countp, stridep, buf);
+        ret = PIOc_put_vars_schar(ncid, varid, startp, countp, stridep, buf);
         break;
     case NC_CHAR:
-        ierr = PIOc_put_vars_schar(ncid, varid, startp, countp, stridep, buf);
+        ret = PIOc_put_vars_schar(ncid, varid, startp, countp, stridep, buf);
         break;
     case NC_SHORT:
-        ierr = PIOc_put_vars_short(ncid, varid, startp, countp, stridep, buf);
+        ret = PIOc_put_vars_short(ncid, varid, startp, countp, stridep, buf);
         break;
     case NC_INT:
-        ierr = PIOc_put_vars_int(ncid, varid, startp, countp,
+        ret = PIOc_put_vars_int(ncid, varid, startp, countp,
                                  stridep, buf);
         break;
     case NC_FLOAT:
-        ierr = PIOc_put_vars_float(ncid, varid, startp, countp,
+        ret = PIOc_put_vars_float(ncid, varid, startp, countp,
                                    stridep, buf);
         break;
     case NC_DOUBLE:
-        ierr = PIOc_put_vars_double(ncid, varid, startp, countp,
+        ret = PIOc_put_vars_double(ncid, varid, startp, countp,
                                     stridep, buf);
         break;
 #ifdef _NETCDF4
     case NC_UBYTE:
-        ierr = PIOc_put_vars_uchar(ncid, varid, startp, countp,
+        ret = PIOc_put_vars_uchar(ncid, varid, startp, countp,
                                    stridep, buf);
         break;
     case NC_USHORT:
-        ierr = PIOc_put_vars_ushort(ncid, varid, startp, countp,
+        ret = PIOc_put_vars_ushort(ncid, varid, startp, countp,
                                     stridep, buf);
         break;
     case NC_UINT:
-        ierr = PIOc_put_vars_uint(ncid, varid, startp, countp,
+        ret = PIOc_put_vars_uint(ncid, varid, startp, countp,
                                   stridep, buf);
         break;
     case NC_INT64:
-        ierr = PIOc_put_vars_longlong(ncid, varid, startp, countp,
+        ret = PIOc_put_vars_longlong(ncid, varid, startp, countp,
                                       stridep, buf);
         break;
     case NC_UINT64:
-        ierr = PIOc_put_vars_ulonglong(ncid, varid, startp, countp,
+        ret = PIOc_put_vars_ulonglong(ncid, varid, startp, countp,
                                        stridep, buf);
         break;
         /* case NC_STRING: */
-        /*      ierr = PIOc_put_vars_string(ncid, varid, startp, countp, */
+        /*      ret = PIOc_put_vars_string(ncid, varid, startp, countp, */
         /*                                stridep, (void *)buf); */
         /*      break; */
         /*    default:*/
-        /* ierr = PIOc_put_vars(ncid, varid, startp, countp, */
+        /* ret = PIOc_put_vars(ncid, varid, startp, countp, */
         /*                   stridep, buf); */
 #endif /* _NETCDF4 */
     }
