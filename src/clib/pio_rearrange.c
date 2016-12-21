@@ -517,7 +517,8 @@ int compute_counts(iosystem_desc_t ios, io_desc_t *iodesc, int maplen,
     /* Share the iodesc->scount from each compute task to all io tasks. */
     ierr = pio_swapm(iodesc->scount, send_counts, send_displs, sr_types,
                      recv_buf, recv_counts, recv_displs, sr_types,
-                     mycomm, false, false, maxreq);
+                     mycomm, iodesc->handshake, iodesc->isend,
+                     iodesc->max_requests);
 
     /* ??? */
     nrecvs = 0;
@@ -643,8 +644,9 @@ int compute_counts(iosystem_desc_t ios, io_desc_t *iodesc, int maplen,
       printf("%ld ",s2rindex[i]);
       printf("\n");
     */
-    ierr = pio_swapm(s2rindex, send_counts, send_displs, sr_types, iodesc->rindex, recv_counts,
-                     recv_displs, sr_types, mycomm, false, false, 0);
+    ierr = pio_swapm(s2rindex, send_counts, send_displs, sr_types, iodesc->rindex,
+                    recv_counts, recv_displs, sr_types, mycomm,
+                    iodesc->handshake, iodesc->isend, iodesc->max_requests);
 
     /*  rindex is an array of the indices of the data to be sent from
         this io task to each compute task. */
@@ -1169,7 +1171,8 @@ int box_rearrange_create(iosystem_desc_t ios, int maplen, const PIO_Offset *comp
         iomaplen = calloc(nioprocs, sizeof(PIO_Offset)); */
     pio_swapm(&(iodesc->llen), sndlths, sdispls, dtypes,
               iomaplen, recvlths, rdispls, dtypes,
-              ios.union_comm, false, false, maxreq);
+              ios.union_comm, iodesc->handshake,
+              iodesc->isend, iodesc->max_requests);
 
     for (i = 0; i < nioprocs; i++)
     {
@@ -1191,12 +1194,14 @@ int box_rearrange_create(iosystem_desc_t ios, int maplen, const PIO_Offset *comp
             /* The count from iotask i is sent to all compute tasks */
             pio_swapm(iodesc->firstregion->count,  sndlths, sdispls, dtypes,
                       count, recvlths, rdispls, dtypes,
-                      ios.union_comm, false, false, maxreq);
+                      ios.union_comm, iodesc->handshake,
+                      iodesc->isend, iodesc->max_requests);
 
             /* The start from iotask i is sent to all compute tasks. */
             pio_swapm(iodesc->firstregion->start,  sndlths, sdispls, dtypes,
                       start, recvlths, rdispls, dtypes,
-                      ios.union_comm, false, false, maxreq);
+                      ios.union_comm, iodesc->handshake,
+                      iodesc->isend, iodesc->max_requests);
 
             for (k = 0; k < maplen; k++)
             {
