@@ -520,7 +520,7 @@ int pio_write_darray_multi_nc(file_desc_t *file, int nvars, const int *vid, int 
 
     /* Find out how many dims this variable has. */
     if ((ierr = PIOc_inq_varndims(file->pio_ncid, vid[0], &fndims)))
-        return ierr;
+        return pio_err(ios, file, ierr, __FILE__, __LINE__);
 
     /* Find out the size of the MPI type. */
     if ((mpierr = MPI_Type_size(basetype, &tsize)))
@@ -798,7 +798,7 @@ int pio_write_darray_multi_nc_serial(file_desc_t *file, int nvars, const int *vi
 
     /* Get the number of dimensions. */
     if ((ierr = PIOc_inq_varndims(file->pio_ncid, vid[0], &fndims)))
-        return ierr;
+        return pio_err(ios, file, ierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Type_size(basetype, &tsize)))
         return check_mpi(file, mpierr, __FILE__, __LINE__);
 
@@ -1016,7 +1016,7 @@ int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid, void *IOBU
 
     /* Get the number of dims for this var. */
     if ((ierr = PIOc_inq_varndims(file->pio_ncid, vid, &fndims)))
-        return ierr;
+        return pio_err(ios, file, ierr, __FILE__, __LINE__);
 
     /* Is this a record var? */
     if (fndims == ndims)
