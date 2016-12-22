@@ -96,7 +96,7 @@ int pio_write_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid,
     /* Check inputs. */
     pioassert(file && file->iosystem && iodesc && IOBUF, "invalid input",
       __FILE__, __LINE__);
-    
+
 #ifdef TIMING
     /* Start timing this function. */
     GPTLstart("PIO:write_darray_nc");
@@ -107,7 +107,7 @@ int pio_write_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid,
 
     /* Get pointer to variable information. */
     if (!(vdesc = file->varlist + vid))
-        return PIO_EBADID;
+        return pio_err(ios, file, PIO_EBADID, __FILE__, __LINE__);
 
     ndims = iodesc->ndims;
 
@@ -485,8 +485,8 @@ int pio_write_darray_multi_nc(file_desc_t *file, int nvars, const int *vid, int 
     ierr = PIO_NOERR;
 
     /* Check inputs. */
-    /*pioassert(file && file->iosystem && IOBUF, "invalid input", __FILE__, __LINE__);*/
-    
+    pioassert(file && file->iosystem, "invalid input", __FILE__, __LINE__);
+
 #ifdef TIMING
     /* Start timing this function. */
     GPTLstart("PIO:write_darray_multi_nc");
@@ -495,7 +495,7 @@ int pio_write_darray_multi_nc(file_desc_t *file, int nvars, const int *vid, int 
     /* Get file and variable info. */
     ios = file->iosystem;
     if (!(vdesc = file->varlist + vid[0]))
-        return PIO_EBADID;
+        return pio_err(ios, file, PIO_EBADID, __FILE__, __LINE__);
     ncid = file->fh;
 
     /* If async is in use, send message to IO master task. */
@@ -761,7 +761,7 @@ int pio_write_darray_multi_nc_serial(file_desc_t *file, int nvars, const int *vi
     int ncid;
 
     /* Check inputs. */
-    /*pioassert(file && file->iosystem && IOBUF, "invalid input", __FILE__, __LINE__);*/
+    pioassert(file && file->iosystem, "invalid input", __FILE__, __LINE__);
 
 #ifdef TIMING
     /* Start timing this function. */
@@ -773,7 +773,7 @@ int pio_write_darray_multi_nc_serial(file_desc_t *file, int nvars, const int *vi
 
     /* Get the var info. */
     if (!(vdesc = (file->varlist) + vid[0]))
-        return PIO_EBADID;
+        return pio_err(ios, file, PIO_EBADID, __FILE__, __LINE__);
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
     if (ios->async_interface)
@@ -1000,7 +1000,7 @@ int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid, void *IOBU
     int mpierr;  /* Return code from MPI functions. */
 
     /* Check inputs. */
-    /*pioassert(file && file->iosystem && iodesc && IOBUF, "invalid input", __FILE__, __LINE__);*/
+    pioassert(file && file->iosystem && iodesc, "invalid input", __FILE__, __LINE__);
 
 #ifdef TIMING
     /* Start timing this function. */
@@ -1010,7 +1010,7 @@ int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid, void *IOBU
     ios = file->iosystem;
 
     if (!(vdesc = (file->varlist) + vid))
-        return PIO_EBADID;
+        return pio_err(ios, file, PIO_EBADID, __FILE__, __LINE__);
 
     ndims = iodesc->ndims;
 
@@ -1191,7 +1191,7 @@ int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc, int vid,
     int mpierr;  /* Return code from MPI functions. */
 
     /* Check inputs. */
-    /*pioassert(file && file->iosystem && iodesc && IOBUF, "invalid input", __FILE__, __LINE__);*/
+    pioassert(file && file->iosystem && iodesc, "invalid input", __FILE__, __LINE__);
 
 #ifdef TIMING
     /* Start timing this function. */
@@ -1426,8 +1426,7 @@ int flush_output_buffer(file_desc_t *file, bool force, PIO_Offset addsize)
     PIO_Offset usage = 0;
 
     /* Check inputs. */
-    if (!file)
-        return PIO_EINVAL;
+    pioassert(file, "invalid input", __FILE__, __LINE__);
 
     /* Find out the buffer usage. */
     if ((ierr = ncmpi_inq_buffer_usage(file->fh, &usage)))
