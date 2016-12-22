@@ -80,6 +80,10 @@ extern "C" {
     /* Handle an error in the PIO library. */
     int pio_err(iosystem_desc_t *ios, file_desc_t *file, int err_num, const char *fname,
                 int line);
+
+    /* For async cases, this runs on IO tasks and listens for messages. */
+    int pio_msg_handler2(int io_rank, int component_count, iosystem_desc_t **iosys,
+                         MPI_Comm io_comm);
     
     void pio_get_env(void);
     int  pio_add_to_iodesc_list(io_desc_t *iodesc);
