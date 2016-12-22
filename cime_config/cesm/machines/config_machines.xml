@@ -1256,7 +1256,8 @@
     <mpirun mpilib="default">
       <executable>mpiexec_mpt</executable>
       <arguments>
-	<arg name="labelstdout">-p "%g:"</arg>
+	<arg name="labelstdout">-p "%g:" </arg>
+	<arg name="threadplacement"> omplace </arg>
       </arguments>
     </mpirun>
     <mpirun mpilib="mpi-serial">
