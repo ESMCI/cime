@@ -282,6 +282,7 @@ PIO_TF_AUTO_TEST_SUB_BEGIN write_with_rearr_opts
                     pio_rearr_comm_fc_1d_comp2io,&
                     pio_rearr_comm_fc_1d_io2comp,&
                     pio_rearr_comm_fc_2d_enable/)
+  integer :: num_fcd_opts_comm_type
   integer, parameter :: NUM_ENABLE_HS_OPTS = 2
   logical :: enable_hs_opts(NUM_ENABLE_HS_OPTS) = (/.true.,.false./)
   integer :: num_enable_hs_opts_comp2io, num_enable_hs_opts_io2comp
@@ -335,7 +336,14 @@ PIO_TF_AUTO_TEST_SUB_BEGIN write_with_rearr_opts
       do cur_comm_type_opt=1,NUM_COMM_TYPE_OPTS
         ! Some dummy values for rearranger options
         pio_rearr_opts%comm_type = comm_type_opts(cur_comm_type_opt)
-        do cur_fcd_opt=1,NUM_FCD_OPTS
+        if(pio_rearr_opts%comm_type == pio_rearr_comm_coll) then
+          num_fcd_opts_comm_type = 1
+        else if(pio_rearr_opts%comm_type == pio_rearr_comm_p2p) then
+          num_fcd_opts_comm_type = NUM_FCD_OPTS
+        else
+          PIO_TF_ERROR("Unexpected comm type")
+        end if
+        do cur_fcd_opt=1,num_fcd_opts_comm_type
           pio_rearr_opts%fcd = fcd_opts(cur_fcd_opt)
           if(pio_rearr_opts%fcd == pio_rearr_comm_fc_2d_enable) then
             num_enable_hs_opts_comp2io = NUM_ENABLE_HS_OPTS
