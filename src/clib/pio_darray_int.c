@@ -72,7 +72,7 @@ void compute_buffer_init(iosystem_desc_t ios)
  * @param vid the variable id to be written
  * @param IOBUF the buffer to be written from this mpi task
  * @param fillvalue the optional fillvalue to be used for missing
- * data in this buffer
+ * data in this buffer. Ignored in all cases.
  * @return 0 for success, error code otherwise.
  * @ingroup PIO_write_darray
  */
@@ -450,7 +450,7 @@ int pio_write_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid,
  * @param maxregions max number of blocks to be written from
  * this iotask
  * @param firstregion pointer to the first element of a linked
- * list of region descriptions.
+ * list of region descriptions. May be NULL.
  * @param llen length of the iobuffer on this task for a single
  * field
  * @param maxiobuflen maximum llen participating
@@ -722,11 +722,11 @@ int pio_write_darray_multi_nc(file_desc_t *file, int nvars, const int *vid, int 
  * iodesc
  * @param basetype : the basic type of the minimal data unit
  * @param gsize : array of the global dimensions of the field to be
- * written
+ * written. (Not used ???)
  * @param maxregions : max number of blocks to be written from this
  * iotask
  * @param firstregion : pointer to the first element of a linked
- * list of region descriptions.
+ * list of region descriptions. May be NULL.
  * @param llen : length of the iobuffer on this task for a single
  * field
  * @param maxiobuflen : maximum llen participating
@@ -1178,7 +1178,7 @@ int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid, void *IOBU
 int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc, int vid,
                               void *IOBUF)
 {
-    int ierr=PIO_NOERR;
+    int ierr = PIO_NOERR;
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     var_desc_t *vdesc;
     int ndims, fndims;
@@ -1598,7 +1598,7 @@ void free_cn_buffer_pool(iosystem_desc_t ios)
  * Flush the buffer.
  *
  * @param ncid identifies the netCDF file
- * @param wmb
+ * @param wmb May be NULL, in which case function returns.
  * @param flushtodisk
  * @ingroup PIO_write_darray
  */
@@ -1631,7 +1631,8 @@ void flush_buffer(int ncid, wmulti_buffer *wmb, bool flushtodisk)
  * Compute the maximum aggregate number of bytes.
  *
  * @param ios the IO system structure
- * @param iodesc a pointer to the defined iodescriptor for the buffer
+ * @param iodesc a pointer to the defined iodescriptor for the
+ * buffer. If NULL, function returns immediately.
  */
 void compute_maxaggregate_bytes(iosystem_desc_t ios, io_desc_t *iodesc)
 {
