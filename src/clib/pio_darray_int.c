@@ -1197,17 +1197,16 @@ int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc, int vid,
     /* Start timing this function. */
     GPTLstart("PIO:read_darray_nc_serial");
 #endif
-    if (!(ios = file->iosystem))
-        return PIO_EBADID;
+    ios = file->iosystem;
 
     if (!(vdesc = (file->varlist) + vid))
-        return PIO_EBADID;
+        return pio_err(ios, file, PIO_EBADID, __FILE__, __LINE__);
 
     ndims = iodesc->ndims;
 
     /* Get number of dims for this var. */
     if ((ierr = PIOc_inq_varndims(file->pio_ncid, vid, &fndims)))
-        return ierr;
+        return pio_err(ios, file, ierr, __FILE__, __LINE__);
 
     /* Is this a record var? */
     if (fndims == ndims)
@@ -1428,10 +1427,11 @@ int flush_output_buffer(file_desc_t *file, bool force, PIO_Offset addsize)
     /* Check inputs. */
     pioassert(file, "invalid input", __FILE__, __LINE__);
 
-    /* Find out the buffer usage. */
+    /* Find out the buffer usage. If I check the turn code, some tests fail. ??? */
     if ((ierr = ncmpi_inq_buffer_usage(file->fh, &usage)))
         return ierr;
-
+    /*return pio_err(ios, file, PIO_EBADID, __FILE__, __LINE__);*/
+    
     /* If we are not forcing a flush, spread the usage to all IO
      * tasks. */
     if (!force && file->iosystem->io_comm != MPI_COMM_NULL)
