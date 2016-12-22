@@ -177,7 +177,6 @@
       <env name="MP_RC_USE_LMC">yes</env>
       <env debug="TRUE" name="MP_EUIDEVELOP">yes</env>
       <env debug="FALSE" name="MP_EUIDEVELOP">min</env>
-      <env name="MP_EAGER_LIMIT">0</env>
     </block>
   </machine>
 </config_env>

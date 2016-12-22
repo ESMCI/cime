@@ -142,6 +142,10 @@
     <lname>1850_CAM5%WCCM_CLM45%CN_CICE_POP2_RTM_SGLC_SWAV</lname>
   </compset>
 
+  <compset>
+    <alias>B5505C5WCCML45CNR</alias>
+    <lname>5505_CAM5%WCCM_CLM45%CN_CICE_POP2_RTM_SGLC_SWAV</lname>
+  </compset>
 
   <compset>
     <alias>BC4WCMAL40SPR</alias>
@@ -464,11 +468,19 @@
 	<value compset="HIST_"     >1850-01-01</value> 
 	<value compset="C2R[68]_"  >1950-01-01</value> 
 	<value compset="C2R4_"     >2004-01-01</value>
+	<value compset="5505_CAM5%WCCM_CLM45%CN_CICE_POP2">2010-01-01</value>
 	<value compset="5505_"     >1955-01-01</value> 
 	<value compset="RCP[2468]_">2005-01-01</value>
 	<value compset="2013_"     >2013-01-01</value> 
       </values>
     </entry>
+
+   <entry id="CICE_CONFIG_OPTS">
+      <values>
+        <value compset="505_CAM5%WCCM_CLM45%CN_CICE_POP2">-phys cice4</value> 
+      </values>
+   </entry>
+
   </entries>
 
 </compsets>
