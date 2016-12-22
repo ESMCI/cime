@@ -286,7 +286,7 @@ int pio_write_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid,
                                     return check_mpi(file, mpierr, __FILE__, __LINE__);
 
                                 if (!(tmp_buf = malloc(buflen * dsize)))
-                                    return PIO_ENOMEM;
+                                    return pio_err(NULL, file, PIO_ENOMEM, __FILE__, __LINE__);
                                 if ((mpierr = MPI_Recv(tmp_buf, buflen, iodesc->basetype, i, i, ios->io_comm, &status)))
                                     return check_mpi(file, mpierr, __FILE__, __LINE__);
 
@@ -360,9 +360,9 @@ int pio_write_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid,
                 if (dsize > 0)
                 {
                     if (!(startlist[rrcnt] = calloc(fndims, sizeof(PIO_Offset))))
-                        return PIO_ENOMEM;
+                        return pio_err(NULL, file, PIO_ENOMEM, __FILE__, __LINE__);
                     if (!(countlist[rrcnt] = calloc(fndims, sizeof(PIO_Offset))))
-                        return PIO_ENOMEM;
+                        return pio_err(NULL, file, PIO_ENOMEM, __FILE__, __LINE__);
                     for (i = 0; i < fndims; i++)
                     {
                         startlist[rrcnt][i] = start[i];
@@ -381,7 +381,7 @@ int pio_write_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid,
                     {
                         if (!(vdesc->request = realloc(vdesc->request,
                                                        sizeof(int) * (vdesc->nreqs + PIO_REQUEST_ALLOC_CHUNK))))
-                            return PIO_ENOMEM;
+                            return pio_err(NULL, file, PIO_ENOMEM, __FILE__, __LINE__);
 
                         for (int i = vdesc->nreqs; i < vdesc->nreqs + PIO_REQUEST_ALLOC_CHUNK; i++)
                             vdesc->request[i] = NC_REQ_NULL;
@@ -617,9 +617,9 @@ int pio_write_darray_multi_nc(file_desc_t *file, int nvars, const int *vid, int 
                 if (dsize > 0)
                 {
                     if (!(startlist[rrcnt] = calloc(fndims, sizeof(PIO_Offset))))
-                        return PIO_ENOMEM;
+                        return pio_err(NULL, file, PIO_ENOMEM, __FILE__, __LINE__);
                     if (!(countlist[rrcnt] = calloc(fndims, sizeof(PIO_Offset))))
-                        return PIO_ENOMEM;
+                        return pio_err(NULL, file, PIO_ENOMEM, __FILE__, __LINE__);
                     for (i = 0; i < fndims; i++)
                     {
                         startlist[rrcnt][i] = start[i];
@@ -647,7 +647,7 @@ int pio_write_darray_multi_nc(file_desc_t *file, int nvars, const int *vid, int 
                         {
                             if (!(vdesc->request = realloc(vdesc->request,
                                                            sizeof(int)*(vdesc->nreqs+PIO_REQUEST_ALLOC_CHUNK))))
-                                return PIO_ENOMEM;
+                                return pio_err(NULL, file, PIO_ENOMEM, __FILE__, __LINE__);
 
                             for (int i = vdesc->nreqs; i < vdesc->nreqs + PIO_REQUEST_ALLOC_CHUNK; i++)
                                 vdesc->request[i] = NC_REQ_NULL;
@@ -1640,7 +1640,7 @@ void compute_maxaggregate_bytes(iosystem_desc_t ios, io_desc_t *iodesc)
     int maxbytesoncomputetask = INT_MAX;
     int maxbytes;
     int mpierr;  /* Return code from MPI functions. */
-    
+
     /* Check inputs. */
     if (!iodesc)
         return;
@@ -1660,6 +1660,6 @@ void compute_maxaggregate_bytes(iosystem_desc_t ios, io_desc_t *iodesc)
 
     if ((mpierr = MPI_Allreduce(MPI_IN_PLACE, &maxbytes, 1, MPI_INT, MPI_MIN,
                                 ios.union_comm)))
-        check_mpi(NULL, mpierr, __FILE__, __LINE__);                            
+        check_mpi(NULL, mpierr, __FILE__, __LINE__);
     iodesc->maxbytes = maxbytes;
 }
