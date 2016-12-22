@@ -72,7 +72,7 @@ void compute_buffer_init(iosystem_desc_t ios)
  * @param vid the variable id to be written
  * @param IOBUF the buffer to be written from this mpi task
  * @param fillvalue the optional fillvalue to be used for missing
- * data in this buffer. Ignored in all cases.
+ * data in this buffer. Ignored in all cases. (???)
  * @return 0 for success, error code otherwise.
  * @ingroup PIO_write_darray
  */
@@ -93,14 +93,17 @@ int pio_write_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid,
 
     LOG((1, "pio_write_array_nc vid = %d", vid));
 
+    /* Check inputs. */
+    pioassert(file && file->iosystem && iodesc && IOBUF, "invalid input",
+      __FILE__, __LINE__);
+    
 #ifdef TIMING
     /* Start timing this function. */
     GPTLstart("PIO:write_darray_nc");
 #endif
 
     /* Get the IO system info. */
-    if (!(ios = file->iosystem))
-        return PIO_EBADID;
+    ios = file->iosystem;
 
     /* Get pointer to variable information. */
     if (!(vdesc = file->varlist + vid))
@@ -481,14 +484,16 @@ int pio_write_darray_multi_nc(file_desc_t *file, int nvars, const int *vid, int 
     tdsize=0;
     ierr = PIO_NOERR;
 
+    /* Check inputs. */
+    /*pioassert(file && file->iosystem && IOBUF, "invalid input", __FILE__, __LINE__);*/
+    
 #ifdef TIMING
     /* Start timing this function. */
     GPTLstart("PIO:write_darray_multi_nc");
 #endif
 
     /* Get file and variable info. */
-    if (!(ios = file->iosystem))
-        return PIO_EBADID;
+    ios = file->iosystem;
     if (!(vdesc = file->varlist + vid[0]))
         return PIO_EBADID;
     ncid = file->fh;
@@ -755,14 +760,15 @@ int pio_write_darray_multi_nc_serial(file_desc_t *file, int nvars, const int *vi
     int tsize;
     int ncid;
 
+    /* Check inputs. */
+    /*pioassert(file && file->iosystem && IOBUF, "invalid input", __FILE__, __LINE__);*/
+
 #ifdef TIMING
     /* Start timing this function. */
     GPTLstart("PIO:write_darray_multi_nc_serial");
 #endif
 
-    /* Get the file info. */
-    if (!(ios = file->iosystem))
-        return PIO_EBADID;
+    ios = file->iosystem;
     ncid = file->fh;
 
     /* Get the var info. */
@@ -993,17 +999,15 @@ int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid, void *IOBU
     int i;
     int mpierr;  /* Return code from MPI functions. */
 
+    /* Check inputs. */
+    /*pioassert(file && file->iosystem && iodesc && IOBUF, "invalid input", __FILE__, __LINE__);*/
+
 #ifdef TIMING
     /* Start timing this function. */
     GPTLstart("PIO:read_darray_nc");
 #endif
 
-    /* Check inputs. */
-    if (!file || !iodesc)
-        return PIO_EINVAL;
-
-    if (!(ios = file->iosystem))
-        return PIO_EBADID;
+    ios = file->iosystem;
 
     if (!(vdesc = (file->varlist) + vid))
         return PIO_EBADID;
@@ -1185,6 +1189,9 @@ int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc, int vid,
     MPI_Status status;
     int i;
     int mpierr;  /* Return code from MPI functions. */
+
+    /* Check inputs. */
+    /*pioassert(file && file->iosystem && iodesc && IOBUF, "invalid input", __FILE__, __LINE__);*/
 
 #ifdef TIMING
     /* Start timing this function. */
