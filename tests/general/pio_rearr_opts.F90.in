@@ -4,7 +4,8 @@ MODULE pio_rearr_opts_tgv
   character(len=PIO_TF_MAX_STR_LEN), parameter ::tgv_var_name ="dummy_var"
   character(len=PIO_TF_MAX_STR_LEN), parameter ::tgv_dim_name ="dummy_dim"
 END MODULE pio_rearr_opts_tgv
-! Test rearranger options
+
+! Test init/finalize wiht a default set of rearranger options
 PIO_TF_AUTO_TEST_SUB_BEGIN init_fin_with_rearr_opts
   implicit none
 
@@ -173,6 +174,8 @@ SUBROUTINE get_1d_bc_info(rank, sz, dims, start, count, force_rearrange)
 
 END SUBROUTINE
 
+! Create a decomp that will be used by tests below
+! The iodesc needs to be freed by the caller
 SUBROUTINE create_decomp_and_init_buf(iodesc, wbuf, dims, ret)
   use pio_tutil
   implicit none
@@ -202,6 +205,8 @@ SUBROUTINE create_decomp_and_init_buf(iodesc, wbuf, dims, ret)
 
 END SUBROUTINE
 
+! Create file and var used in the tests below
+! All details are picked from pio_rearr_opts_tgv module
 SUBROUTINE create_file_and_var(iotype, dims, ret)
   use pio_tutil
   use pio_rearr_opts_tgv
@@ -231,6 +236,9 @@ SUBROUTINE create_file_and_var(iotype, dims, ret)
 
 END SUBROUTINE
 
+! Open file and inq var
+! All details are picked from pio_rearr_opts_tgv module
+! Note: The file is kept open so the called needs to close it
 SUBROUTINE open_file_and_get_var(pio_file, iotype, pio_var, dims, ret)
   use pio_tutil
   use pio_rearr_opts_tgv
@@ -334,11 +342,12 @@ PIO_TF_AUTO_TEST_SUB_BEGIN write_with_rearr_opts
     do cur_rearr=1,NUM_REARRANGERS
       PIO_TF_LOG(0,*) "Testing ", rearrs_info(cur_rearr)
       do cur_comm_type_opt=1,NUM_COMM_TYPE_OPTS
-        ! Some dummy values for rearranger options
         pio_rearr_opts%comm_type = comm_type_opts(cur_comm_type_opt)
         if(pio_rearr_opts%comm_type == pio_rearr_comm_coll) then
+          ! For coll we only test pio_rearr_comm_fc_2d_disable
           num_fcd_opts_comm_type = 1
         else if(pio_rearr_opts%comm_type == pio_rearr_comm_p2p) then
+          ! for p2p we test all possible combinations
           num_fcd_opts_comm_type = NUM_FCD_OPTS
         else
           PIO_TF_ERROR("Unexpected comm type")
@@ -353,6 +362,7 @@ PIO_TF_AUTO_TEST_SUB_BEGIN write_with_rearr_opts
             num_max_pend_req_opts_comp2io = NUM_MAX_PEND_REQ_OPTS
             num_max_pend_req_opts_io2comp = NUM_MAX_PEND_REQ_OPTS
           else if(pio_rearr_opts%fcd == pio_rearr_comm_fc_1d_comp2io) then
+            ! Only test different rearr opts in comp2io direction
             num_enable_hs_opts_comp2io = NUM_ENABLE_HS_OPTS
             num_enable_hs_opts_io2comp = 1
             num_enable_isend_opts_comp2io = NUM_ENABLE_ISEND_OPTS
@@ -360,6 +370,7 @@ PIO_TF_AUTO_TEST_SUB_BEGIN write_with_rearr_opts
             num_max_pend_req_opts_comp2io = NUM_MAX_PEND_REQ_OPTS
             num_max_pend_req_opts_io2comp = 1
           else if(pio_rearr_opts%fcd == pio_rearr_comm_fc_1d_io2comp) then
+            ! Only test different rearr opts in io2comp direction
             num_enable_hs_opts_comp2io = 1
             num_enable_hs_opts_io2comp = NUM_ENABLE_HS_OPTS
             num_enable_isend_opts_comp2io = 1
@@ -367,6 +378,7 @@ PIO_TF_AUTO_TEST_SUB_BEGIN write_with_rearr_opts
             num_max_pend_req_opts_comp2io = 1
             num_max_pend_req_opts_io2comp = NUM_MAX_PEND_REQ_OPTS
           else if(pio_rearr_opts%fcd == pio_rearr_comm_fc_2d_disable) then
+            ! Just test one default combination
             num_enable_hs_opts_comp2io = 1
             num_enable_hs_opts_io2comp = 1
             num_enable_isend_opts_comp2io = 1
