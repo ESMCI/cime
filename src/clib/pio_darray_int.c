@@ -363,9 +363,9 @@ int pio_write_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid,
                 if (dsize > 0)
                 {
                     if (!(startlist[rrcnt] = calloc(fndims, sizeof(PIO_Offset))))
-                        return pio_err(NULL, file, PIO_ENOMEM, __FILE__, __LINE__);
+                        return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
                     if (!(countlist[rrcnt] = calloc(fndims, sizeof(PIO_Offset))))
-                        return pio_err(NULL, file, PIO_ENOMEM, __FILE__, __LINE__);
+                        return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
                     for (i = 0; i < fndims; i++)
                     {
                         startlist[rrcnt][i] = start[i];
@@ -384,7 +384,7 @@ int pio_write_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid,
                     {
                         if (!(vdesc->request = realloc(vdesc->request,
                                                        sizeof(int) * (vdesc->nreqs + PIO_REQUEST_ALLOC_CHUNK))))
-                            return pio_err(NULL, file, PIO_ENOMEM, __FILE__, __LINE__);
+                            return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
 
                         for (int i = vdesc->nreqs; i < vdesc->nreqs + PIO_REQUEST_ALLOC_CHUNK; i++)
                             vdesc->request[i] = NC_REQ_NULL;
@@ -622,9 +622,9 @@ int pio_write_darray_multi_nc(file_desc_t *file, int nvars, const int *vid, int 
                 if (dsize > 0)
                 {
                     if (!(startlist[rrcnt] = calloc(fndims, sizeof(PIO_Offset))))
-                        return pio_err(NULL, file, PIO_ENOMEM, __FILE__, __LINE__);
+                        return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
                     if (!(countlist[rrcnt] = calloc(fndims, sizeof(PIO_Offset))))
-                        return pio_err(NULL, file, PIO_ENOMEM, __FILE__, __LINE__);
+                        return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
                     for (i = 0; i < fndims; i++)
                     {
                         startlist[rrcnt][i] = start[i];
@@ -652,7 +652,7 @@ int pio_write_darray_multi_nc(file_desc_t *file, int nvars, const int *vid, int 
                         {
                             if (!(vdesc->request = realloc(vdesc->request,
                                                            sizeof(int)*(vdesc->nreqs+PIO_REQUEST_ALLOC_CHUNK))))
-                                return pio_err(NULL, file, PIO_ENOMEM, __FILE__, __LINE__);
+                                return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
 
                             for (int i = vdesc->nreqs; i < vdesc->nreqs + PIO_REQUEST_ALLOC_CHUNK; i++)
                                 vdesc->request[i] = NC_REQ_NULL;
