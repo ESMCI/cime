@@ -1,3 +1,9 @@
+MODULE pio_rearr_opts_tgv
+  use pio_tutil
+  character(len=PIO_TF_MAX_STR_LEN), parameter ::tgv_fname ="pio_rearr_opts_test.nc"
+  character(len=PIO_TF_MAX_STR_LEN), parameter ::tgv_var_name ="dummy_var"
+  character(len=PIO_TF_MAX_STR_LEN), parameter ::tgv_dim_name ="dummy_dim"
+END MODULE pio_rearr_opts_tgv
 ! Test rearranger options
 PIO_TF_AUTO_TEST_SUB_BEGIN init_fin_with_rearr_opts
   implicit none
@@ -196,11 +202,40 @@ SUBROUTINE create_decomp_and_init_buf(iodesc, wbuf, dims, ret)
 
 END SUBROUTINE
 
-SUBROUTINE create_file_and_var(filename, pio_file, iotype, pio_var, dims, ret)
+SUBROUTINE create_file_and_var(iotype, dims, ret)
   use pio_tutil
+  use pio_rearr_opts_tgv
   implicit none
 
-  character(len=*), intent(in) :: filename
+  integer, intent(in) :: iotype
+  integer, dimension(1), intent(in) :: dims
+  integer, intent(out) :: ret
+
+  type(file_desc_t) :: pio_file
+  type(var_desc_t) :: pio_var
+  integer :: pio_dim
+
+  ret = PIO_createfile(pio_tf_iosystem_, pio_file, iotype, tgv_fname, PIO_CLOBBER)
+  PIO_TF_CHECK_ERR(ret, "Could not create file " // trim(tgv_fname))
+
+  ret = PIO_def_dim(pio_file, tgv_dim_name, dims(1), pio_dim)
+  PIO_TF_CHECK_ERR(ret, "Failed to define dim file =" // trim(tgv_fname))
+
+  ret = PIO_def_var(pio_file, tgv_var_name, pio_real, (/pio_dim/), pio_var)
+  PIO_TF_CHECK_ERR(ret, "Failed to define var file =" // trim(tgv_fname))
+
+  ret = PIO_enddef(pio_file)
+  PIO_TF_CHECK_ERR(ret, "Failed to enddef file =" // trim(tgv_fname))
+
+  call PIO_closefile(pio_file)
+
+END SUBROUTINE
+
+SUBROUTINE open_file_and_get_var(pio_file, iotype, pio_var, dims, ret)
+  use pio_tutil
+  use pio_rearr_opts_tgv
+  implicit none
+
   type(file_desc_t), intent(out) :: pio_file
   integer, intent(in) :: iotype
   type(var_desc_t), intent(out) :: pio_var
@@ -209,23 +244,18 @@ SUBROUTINE create_file_and_var(filename, pio_file, iotype, pio_var, dims, ret)
 
   integer :: pio_dim
 
-  ret = PIO_createfile(pio_tf_iosystem_, pio_file, iotype, filename, PIO_CLOBBER)
-  PIO_TF_CHECK_ERR(ret, "Could not create file " // trim(filename))
+  ret = PIO_openfile(pio_tf_iosystem_, pio_file, iotype, tgv_fname, pio_write)
+  PIO_TF_CHECK_ERR(ret, "Could not create file " // trim(tgv_fname))
 
-  ret = PIO_def_dim(pio_file, "PIO_TF_test_dim", dims(1), pio_dim)
-  PIO_TF_CHECK_ERR(ret, "Failed to define dim file =" // trim(filename))
-
-  ret = PIO_def_var(pio_file, "PIO_TF_test_var", pio_real, (/pio_dim/), pio_var)
-  PIO_TF_CHECK_ERR(ret, "Failed to define var file =" // trim(filename))
-
-  ret = PIO_enddef(pio_file)
-  PIO_TF_CHECK_ERR(ret, "Failed to enddef file =" // trim(filename))
+  ret = PIO_inq_varid(pio_file, tgv_var_name, pio_var)
+  PIO_TF_CHECK_ERR(ret, "Could not inq var " // trim(tgv_fname))
 
 END SUBROUTINE
 
 
 ! Test all possible combinations of rearranger options
 PIO_TF_AUTO_TEST_SUB_BEGIN write_with_rearr_opts
+  use pio_rearr_opts_tgv
   implicit none
   interface
     subroutine create_decomp_and_init_buf(iodesc, wbuf, dims, ret)
@@ -248,10 +278,10 @@ PIO_TF_AUTO_TEST_SUB_BEGIN write_with_rearr_opts
                   (/pio_rearr_comm_p2p,pio_rearr_comm_coll/)
   integer, parameter :: NUM_FCD_OPTS = 4
   integer :: fcd_opts(NUM_FCD_OPTS) = &
-                  (/pio_rearr_comm_fc_2d_enable,&
+                  (/pio_rearr_comm_fc_2d_disable,&
                     pio_rearr_comm_fc_1d_comp2io,&
                     pio_rearr_comm_fc_1d_io2comp,&
-                    pio_rearr_comm_fc_2d_disable/)
+                    pio_rearr_comm_fc_2d_enable/)
   integer, parameter :: NUM_ENABLE_HS_OPTS = 2
   logical :: enable_hs_opts(NUM_ENABLE_HS_OPTS) = (/.true.,.false./)
   integer :: num_enable_hs_opts_comp2io, num_enable_hs_opts_io2comp
@@ -270,7 +300,6 @@ PIO_TF_AUTO_TEST_SUB_BEGIN write_with_rearr_opts
               cur_enable_isend_c2i, cur_max_pend_req_c2i, &
               cur_enable_hs_i2c, cur_enable_isend_i2c, cur_max_pend_req_i2c
 
-  character(len=PIO_TF_MAX_STR_LEN) :: filename
   type(file_desc_t) :: pio_file
   type(io_desc_t) :: iodesc
   type(var_desc_t) :: pio_var
@@ -290,14 +319,13 @@ PIO_TF_AUTO_TEST_SUB_BEGIN write_with_rearr_opts
   allocate(rbuf(size(wbuf)))
   rbuf = wbuf
 
-  filename = "test_pio_rearr_opts.testfile"
   num_iotypes = 0
   call PIO_TF_Get_nc_iotypes(iotypes, iotype_descs, num_iotypes)
   do i=1,num_iotypes
     PIO_TF_LOG(0,*) "Testing : ", iotype_descs(i)
     ! Create the file and decomp 
-    call create_file_and_var(filename, pio_file, iotypes(i), pio_var, dims, ret)
-    PIO_TF_CHECK_ERR(ret, "Creating file/decomp/var reqd for test failed :" // filename)
+    call create_file_and_var(iotypes(i), dims, ret)
+    PIO_TF_CHECK_ERR(ret, "Creating file/decomp/var reqd for test failed :" // trim(tgv_fname))
 
     call MPI_Comm_dup(pio_tf_comm_, dup_comm, ret)
 
@@ -375,15 +403,21 @@ PIO_TF_AUTO_TEST_SUB_BEGIN write_with_rearr_opts
                                       rearr_opts=pio_rearr_opts)
                       call PIO_seterrorhandling(dup_iosys, PIO_BCAST_ERROR)
 
+                      call open_file_and_get_var(pio_file, iotypes(i),&
+                              pio_var, dims, ret)
+                      PIO_TF_CHECK_ERR(ret, "Creating file/decomp/var reqd for test failed :" // trim(tgv_fname))
+
                       call PIO_write_darray(pio_file, pio_var, iodesc, wbuf, ret)
-                      PIO_TF_CHECK_ERR(ret, "Writing var failed fname="//filename)
+                      PIO_TF_CHECK_ERR(ret, "Writing var failed fname="//trim(tgv_fname))
 
                       call PIO_syncfile(pio_file)
 
                       call PIO_read_darray(pio_file, pio_var, iodesc, rbuf, ret)
-                      PIO_TF_CHECK_ERR(ret, "Reading var failed fname="//filename)
+                      PIO_TF_CHECK_ERR(ret, "Reading var failed fname="//trim(tgv_fname))
 
                       PIO_TF_CHECK_VAL((rbuf, wbuf), "Got wrong val")
+
+                      call PIO_closefile(pio_file)
 
                       call PIO_finalize(dup_iosys, ret)
                       PIO_TF_CHECK_ERR(ret, "Finalize failed")
@@ -397,8 +431,7 @@ PIO_TF_AUTO_TEST_SUB_BEGIN write_with_rearr_opts
       end do ! cur_comm_type_opt
     end do ! cur_rearr
 
-    call PIO_closefile(pio_file)
-    call PIO_deletefile(pio_tf_iosystem_, filename)
+    call PIO_deletefile(pio_tf_iosystem_, trim(tgv_fname))
   end do ! iotypes
 
   call MPI_Comm_free(dup_comm, ret)
