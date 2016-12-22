@@ -254,12 +254,15 @@ PIO_TF_AUTO_TEST_SUB_BEGIN write_with_rearr_opts
                     pio_rearr_comm_fc_2d_disable/)
   integer, parameter :: NUM_ENABLE_HS_OPTS = 2
   logical :: enable_hs_opts(NUM_ENABLE_HS_OPTS) = (/.true.,.false./)
+  integer :: num_enable_hs_opts_comp2io, num_enable_hs_opts_io2comp
   integer, parameter :: NUM_ENABLE_ISEND_OPTS = 2
   logical :: enable_isend_opts(NUM_ENABLE_ISEND_OPTS) = (/.true.,.false./)
+  integer :: num_enable_isend_opts_comp2io, num_enable_isend_opts_io2comp
   integer, parameter :: NUM_MAX_PEND_REQ_OPTS = 3
   integer :: max_pend_req_opts(NUM_MAX_PEND_REQ_OPTS) = &
                   (/pio_rearr_comm_unlimited_pend_req,&
                     0, 2/)
+  integer :: num_max_pend_req_opts_comp2io, num_max_pend_req_opts_io2comp
 
   type(iosystem_desc_t) :: dup_iosys
   integer :: dup_comm
@@ -306,27 +309,58 @@ PIO_TF_AUTO_TEST_SUB_BEGIN write_with_rearr_opts
         pio_rearr_opts%comm_type = comm_type_opts(cur_comm_type_opt)
         do cur_fcd_opt=1,NUM_FCD_OPTS
           pio_rearr_opts%fcd = fcd_opts(cur_fcd_opt)
-          do cur_enable_hs_c2i=1,NUM_ENABLE_HS_OPTS
+          if(pio_rearr_opts%fcd == pio_rearr_comm_fc_2d_enable) then
+            num_enable_hs_opts_comp2io = NUM_ENABLE_HS_OPTS
+            num_enable_hs_opts_io2comp = NUM_ENABLE_HS_OPTS
+            num_enable_isend_opts_comp2io = NUM_ENABLE_ISEND_OPTS
+            num_enable_isend_opts_io2comp = NUM_ENABLE_ISEND_OPTS
+            num_max_pend_req_opts_comp2io = NUM_MAX_PEND_REQ_OPTS
+            num_max_pend_req_opts_io2comp = NUM_MAX_PEND_REQ_OPTS
+          else if(pio_rearr_opts%fcd == pio_rearr_comm_fc_1d_comp2io) then
+            num_enable_hs_opts_comp2io = NUM_ENABLE_HS_OPTS
+            num_enable_hs_opts_io2comp = 1
+            num_enable_isend_opts_comp2io = NUM_ENABLE_ISEND_OPTS
+            num_enable_isend_opts_io2comp = 1
+            num_max_pend_req_opts_comp2io = NUM_MAX_PEND_REQ_OPTS
+            num_max_pend_req_opts_io2comp = 1
+          else if(pio_rearr_opts%fcd == pio_rearr_comm_fc_1d_io2comp) then
+            num_enable_hs_opts_comp2io = 1
+            num_enable_hs_opts_io2comp = NUM_ENABLE_HS_OPTS
+            num_enable_isend_opts_comp2io = 1
+            num_enable_isend_opts_io2comp = NUM_ENABLE_ISEND_OPTS
+            num_max_pend_req_opts_comp2io = 1
+            num_max_pend_req_opts_io2comp = NUM_MAX_PEND_REQ_OPTS
+          else if(pio_rearr_opts%fcd == pio_rearr_comm_fc_2d_disable) then
+            num_enable_hs_opts_comp2io = 1
+            num_enable_hs_opts_io2comp = 1
+            num_enable_isend_opts_comp2io = 1
+            num_enable_isend_opts_io2comp = 1
+            num_max_pend_req_opts_comp2io = 1
+            num_max_pend_req_opts_io2comp = 1
+          else
+            PIO_TF_ERROR("Unexpected flow control option")
+          end if
+          do cur_enable_hs_c2i=1,num_enable_hs_opts_comp2io
             pio_rearr_opts%comm_fc_opts_comp2io%enable_hs = &
                   enable_hs_opts(cur_enable_hs_c2i)
 
-            do cur_enable_isend_c2i=1,NUM_ENABLE_ISEND_OPTS
+            do cur_enable_isend_c2i=1,num_enable_isend_opts_comp2io
               pio_rearr_opts%comm_fc_opts_comp2io%enable_isend = &
                     enable_isend_opts(cur_enable_isend_c2i)
 
-              do cur_max_pend_req_c2i=1, NUM_MAX_PEND_REQ_OPTS
+              do cur_max_pend_req_c2i=1,num_max_pend_req_opts_comp2io
                 pio_rearr_opts%comm_fc_opts_comp2io%max_pend_req = &
                     max_pend_req_opts(cur_max_pend_req_c2i)
 
-                do cur_enable_hs_i2c=1,NUM_ENABLE_HS_OPTS
+                do cur_enable_hs_i2c=1,num_enable_hs_opts_io2comp
                   pio_rearr_opts%comm_fc_opts_io2comp%enable_hs =&
                     enable_hs_opts(cur_enable_hs_i2c)
                 
-                  do cur_enable_isend_i2c=1,NUM_ENABLE_ISEND_OPTS
+                  do cur_enable_isend_i2c=1,num_enable_isend_opts_io2comp
                     pio_rearr_opts%comm_fc_opts_io2comp%enable_isend =&
                       enable_isend_opts(cur_enable_isend_i2c)
 
-                    do cur_max_pend_req_i2c=1,NUM_MAX_PEND_REQ_OPTS
+                    do cur_max_pend_req_i2c=1,num_max_pend_req_opts_io2comp
                       pio_rearr_opts%comm_fc_opts_io2comp%max_pend_req =&
                         max_pend_req_opts(cur_max_pend_req_i2c)
 
