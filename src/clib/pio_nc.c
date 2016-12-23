@@ -474,7 +474,7 @@ int PIOc_inq_dim(int ncid, int dimid, char *name, PIO_Offset *lenp)
         if ((mpierr = MPI_Bcast((void *)name, slen + 1, MPI_CHAR, ios->ioroot, ios->my_comm)))
             return check_mpi(file, mpierr, __FILE__, __LINE__);
     }
-    
+
     if (lenp)
         if ((mpierr = MPI_Bcast(lenp , 1, MPI_OFFSET, ios->ioroot, ios->my_comm)))
             return check_mpi(file, mpierr, __FILE__, __LINE__);
@@ -1428,7 +1428,7 @@ int PIOc_rename_var(int ncid, int varid, const char *name)
  * PIOc_Set_File_Error_Handling
  */
 int PIOc_rename_att(int ncid, int varid, const char *name,
-		    const char *newname)
+                    const char *newname)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Pointer to file information. */
@@ -1802,7 +1802,7 @@ int PIOc_def_dim(int ncid, const char *name, PIO_Offset len, int *idp)
  * @ingroup PIO_def_var
  */
 int PIOc_def_var(int ncid, const char *name, nc_type xtype, int ndims,
-		 const int *dimidsp, int *varidp)
+                 const int *dimidsp, int *varidp)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Pointer to file information. */
@@ -1819,7 +1819,7 @@ int PIOc_def_var(int ncid, const char *name, nc_type xtype, int ndims,
         return pio_err(ios, file, PIO_EINVAL, __FILE__, __LINE__);
 
     LOG((1, "PIOc_def_var ncid = %d name = %s xtype = %d ndims = %d", ncid, name,
-	 xtype, ndims));
+         xtype, ndims));
 
     /* If using async, and not an IO task, then send parameters. */
     if (ios->async_interface)
@@ -2014,7 +2014,7 @@ int PIOc_get_att(int ncid, int varid, const char *name, void *ip)
         /* Get the length (in bytes) of the type. */
         if ((ierr = PIOc_inq_type(ncid, atttype, NULL, &typelen)))
             return check_netcdf(file, ierr, __FILE__, __LINE__);
-       LOG((2, "typelen = %d", typelen));
+        LOG((2, "typelen = %d", typelen));
     }
     LOG((2, "again typelen = %d", typelen));
 

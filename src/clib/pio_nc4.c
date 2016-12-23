@@ -231,7 +231,7 @@ int PIOc_def_var_chunking(int ncid, int varid, int storage,
 
     LOG((1, "PIOc_def_var_chunking ncid = %d varid = %d storage = %d", ncid,
          varid, storage));
-    
+
     /* Find the info about this file. */
     if ((ierr = pio_get_file(ncid, &file)))
         return pio_err(NULL, NULL, ierr, __FILE__, __LINE__);
@@ -289,7 +289,7 @@ int PIOc_def_var_chunking(int ncid, int varid, int storage,
     }
 
     LOG((2, "PIOc_def_var_chunking ndims = %d", ndims));
-    
+
     /* If this is an IO task, then call the netCDF function. */
     if (ios->ioproc)
     {
@@ -379,7 +379,7 @@ int PIOc_inq_var_chunking(int ncid, int varid, int *storagep, PIO_Offset *chunks
             int msg = PIO_MSG_INQ_VAR_CHUNKING;
             char storage_present = storagep ? true : false;
             char chunksizes_present = chunksizesp ? true : false;
-            
+
             if (ios->compmaster)
                 mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
 
@@ -393,7 +393,7 @@ int PIOc_inq_var_chunking(int ncid, int varid, int *storagep, PIO_Offset *chunks
                 mpierr = MPI_Bcast(&chunksizes_present, 1, MPI_CHAR, ios->compmaster, ios->intercomm);
             LOG((2, "PIOc_inq_var_chunking ncid = %d varid = %d storage_present = %d chunksizes_present = %d",
                  ncid, varid, storage_present, chunksizes_present));
-            
+
         }
 
         /* Handle MPI errors. */
@@ -686,7 +686,7 @@ int PIOc_inq_var_endian(int ncid, int varid, int *endianp)
     /* Broadcast results to all tasks. */
     if (endianp)
         if ((mpierr = MPI_Bcast(endianp, 1, MPI_INT, ios->ioroot, ios->my_comm)))
-            return check_mpi(file, mpierr, __FILE__, __LINE__);            
+            return check_mpi(file, mpierr, __FILE__, __LINE__);
 
     return PIO_NOERR;
 }
@@ -841,7 +841,7 @@ int PIOc_get_chunk_cache(int iosysid, int iotype, PIO_Offset *sizep, PIO_Offset 
             char size_present = sizep ? true : false;
             char nelems_present = nelemsp ? true : false;
             char preemption_present = preemptionp ? true : false;
-            
+
             if (ios->compmaster)
                 mpierr = MPI_Send(&msg, 1, MPI_INT, ios->ioroot, 1, ios->union_comm);
 
@@ -879,13 +879,13 @@ int PIOc_get_chunk_cache(int iosysid, int iotype, PIO_Offset *sizep, PIO_Offset 
 #endif
         LOG((2, "nc_get_chunk_cache called ierr = %d", ierr));
     }
-    
+
     /* Broadcast and check the return code. */
     if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
         return check_mpi(NULL, mpierr, __FILE__, __LINE__);
     LOG((2, "bcast complete ierr = %d sizep = %d", ierr, sizep));
     if (ierr)
-        return check_netcdf(NULL, ierr, __FILE__, __LINE__);        
+        return check_netcdf(NULL, ierr, __FILE__, __LINE__);
 
     if (sizep)
     {
@@ -1047,7 +1047,7 @@ int PIOc_get_var_chunk_cache(int ncid, int varid, PIO_Offset *sizep, PIO_Offset 
             char size_present = sizep ? true : false;
             char nelems_present = nelemsp ? true : false;
             char preemption_present = preemptionp ? true : false;
-            
+
             if (ios->compmaster)
                 mpierr = MPI_Send(&msg, 1, MPI_INT, ios->ioroot, 1, ios->union_comm);
 
