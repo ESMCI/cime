@@ -72,7 +72,7 @@ void compute_buffer_init(iosystem_desc_t ios)
  * @param vid the variable id to be written
  * @param IOBUF the buffer to be written from this mpi task
  * @param fillvalue the optional fillvalue to be used for missing
- * data in this buffer
+ * data in this buffer. Ignored in all cases. (???)
  * @return 0 for success, error code otherwise.
  * @ingroup PIO_write_darray
  */
@@ -93,18 +93,21 @@ int pio_write_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid,
 
     LOG((1, "pio_write_array_nc vid = %d", vid));
 
+    /* Check inputs. */
+    pioassert(file && file->iosystem && iodesc && IOBUF, "invalid input",
+      __FILE__, __LINE__);
+
 #ifdef TIMING
     /* Start timing this function. */
     GPTLstart("PIO:write_darray_nc");
 #endif
 
     /* Get the IO system info. */
-    if (!(ios = file->iosystem))
-        return PIO_EBADID;
+    ios = file->iosystem;
 
     /* Get pointer to variable information. */
     if (!(vdesc = file->varlist + vid))
-        return PIO_EBADID;
+        return pio_err(ios, file, PIO_EBADID, __FILE__, __LINE__);
 
     ndims = iodesc->ndims;
 
@@ -286,7 +289,7 @@ int pio_write_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid,
                                     return check_mpi(file, mpierr, __FILE__, __LINE__);
 
                                 if (!(tmp_buf = malloc(buflen * dsize)))
-                                    return PIO_ENOMEM;
+                                    return pio_err(NULL, file, PIO_ENOMEM, __FILE__, __LINE__);
                                 if ((mpierr = MPI_Recv(tmp_buf, buflen, iodesc->basetype, i, i, ios->io_comm, &status)))
                                     return check_mpi(file, mpierr, __FILE__, __LINE__);
 
@@ -360,9 +363,9 @@ int pio_write_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid,
                 if (dsize > 0)
                 {
                     if (!(startlist[rrcnt] = calloc(fndims, sizeof(PIO_Offset))))
-                        return PIO_ENOMEM;
+                        return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
                     if (!(countlist[rrcnt] = calloc(fndims, sizeof(PIO_Offset))))
-                        return PIO_ENOMEM;
+                        return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
                     for (i = 0; i < fndims; i++)
                     {
                         startlist[rrcnt][i] = start[i];
@@ -381,7 +384,7 @@ int pio_write_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid,
                     {
                         if (!(vdesc->request = realloc(vdesc->request,
                                                        sizeof(int) * (vdesc->nreqs + PIO_REQUEST_ALLOC_CHUNK))))
-                            return PIO_ENOMEM;
+                            return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
 
                         for (int i = vdesc->nreqs; i < vdesc->nreqs + PIO_REQUEST_ALLOC_CHUNK; i++)
                             vdesc->request[i] = NC_REQ_NULL;
@@ -450,7 +453,7 @@ int pio_write_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid,
  * @param maxregions max number of blocks to be written from
  * this iotask
  * @param firstregion pointer to the first element of a linked
- * list of region descriptions.
+ * list of region descriptions. May be NULL.
  * @param llen length of the iobuffer on this task for a single
  * field
  * @param maxiobuflen maximum llen participating
@@ -481,16 +484,18 @@ int pio_write_darray_multi_nc(file_desc_t *file, int nvars, const int *vid, int 
     tdsize=0;
     ierr = PIO_NOERR;
 
+    /* Check inputs. */
+    pioassert(file && file->iosystem, "invalid input", __FILE__, __LINE__);
+
 #ifdef TIMING
     /* Start timing this function. */
     GPTLstart("PIO:write_darray_multi_nc");
 #endif
 
     /* Get file and variable info. */
-    if (!(ios = file->iosystem))
-        return PIO_EBADID;
+    ios = file->iosystem;
     if (!(vdesc = file->varlist + vid[0]))
-        return PIO_EBADID;
+        return pio_err(ios, file, PIO_EBADID, __FILE__, __LINE__);
     ncid = file->fh;
 
     /* If async is in use, send message to IO master task. */
@@ -515,7 +520,7 @@ int pio_write_darray_multi_nc(file_desc_t *file, int nvars, const int *vid, int 
 
     /* Find out how many dims this variable has. */
     if ((ierr = PIOc_inq_varndims(file->pio_ncid, vid[0], &fndims)))
-        return ierr;
+        return pio_err(ios, file, ierr, __FILE__, __LINE__);
 
     /* Find out the size of the MPI type. */
     if ((mpierr = MPI_Type_size(basetype, &tsize)))
@@ -617,9 +622,9 @@ int pio_write_darray_multi_nc(file_desc_t *file, int nvars, const int *vid, int 
                 if (dsize > 0)
                 {
                     if (!(startlist[rrcnt] = calloc(fndims, sizeof(PIO_Offset))))
-                        return PIO_ENOMEM;
+                        return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
                     if (!(countlist[rrcnt] = calloc(fndims, sizeof(PIO_Offset))))
-                        return PIO_ENOMEM;
+                        return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
                     for (i = 0; i < fndims; i++)
                     {
                         startlist[rrcnt][i] = start[i];
@@ -647,7 +652,7 @@ int pio_write_darray_multi_nc(file_desc_t *file, int nvars, const int *vid, int 
                         {
                             if (!(vdesc->request = realloc(vdesc->request,
                                                            sizeof(int)*(vdesc->nreqs+PIO_REQUEST_ALLOC_CHUNK))))
-                                return PIO_ENOMEM;
+                                return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
 
                             for (int i = vdesc->nreqs; i < vdesc->nreqs + PIO_REQUEST_ALLOC_CHUNK; i++)
                                 vdesc->request[i] = NC_REQ_NULL;
@@ -722,11 +727,11 @@ int pio_write_darray_multi_nc(file_desc_t *file, int nvars, const int *vid, int 
  * iodesc
  * @param basetype : the basic type of the minimal data unit
  * @param gsize : array of the global dimensions of the field to be
- * written
+ * written. (Not used ???)
  * @param maxregions : max number of blocks to be written from this
  * iotask
  * @param firstregion : pointer to the first element of a linked
- * list of region descriptions.
+ * list of region descriptions. May be NULL.
  * @param llen : length of the iobuffer on this task for a single
  * field
  * @param maxiobuflen : maximum llen participating
@@ -755,19 +760,20 @@ int pio_write_darray_multi_nc_serial(file_desc_t *file, int nvars, const int *vi
     int tsize;
     int ncid;
 
+    /* Check inputs. */
+    pioassert(file && file->iosystem, "invalid input", __FILE__, __LINE__);
+
 #ifdef TIMING
     /* Start timing this function. */
     GPTLstart("PIO:write_darray_multi_nc_serial");
 #endif
 
-    /* Get the file info. */
-    if (!(ios = file->iosystem))
-        return PIO_EBADID;
+    ios = file->iosystem;
     ncid = file->fh;
 
     /* Get the var info. */
     if (!(vdesc = (file->varlist) + vid[0]))
-        return PIO_EBADID;
+        return pio_err(ios, file, PIO_EBADID, __FILE__, __LINE__);
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
     if (ios->async_interface)
@@ -792,7 +798,7 @@ int pio_write_darray_multi_nc_serial(file_desc_t *file, int nvars, const int *vi
 
     /* Get the number of dimensions. */
     if ((ierr = PIOc_inq_varndims(file->pio_ncid, vid[0], &fndims)))
-        return ierr;
+        return pio_err(ios, file, ierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Type_size(basetype, &tsize)))
         return check_mpi(file, mpierr, __FILE__, __LINE__);
 
@@ -993,26 +999,24 @@ int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid, void *IOBU
     int i;
     int mpierr;  /* Return code from MPI functions. */
 
+    /* Check inputs. */
+    pioassert(file && file->iosystem && iodesc, "invalid input", __FILE__, __LINE__);
+
 #ifdef TIMING
     /* Start timing this function. */
     GPTLstart("PIO:read_darray_nc");
 #endif
 
-    /* Check inputs. */
-    if (!file || !iodesc)
-        return PIO_EINVAL;
-
-    if (!(ios = file->iosystem))
-        return PIO_EBADID;
+    ios = file->iosystem;
 
     if (!(vdesc = (file->varlist) + vid))
-        return PIO_EBADID;
+        return pio_err(ios, file, PIO_EBADID, __FILE__, __LINE__);
 
     ndims = iodesc->ndims;
 
     /* Get the number of dims for this var. */
     if ((ierr = PIOc_inq_varndims(file->pio_ncid, vid, &fndims)))
-        return ierr;
+        return pio_err(ios, file, ierr, __FILE__, __LINE__);
 
     /* Is this a record var? */
     if (fndims == ndims)
@@ -1178,7 +1182,7 @@ int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid, void *IOBU
 int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc, int vid,
                               void *IOBUF)
 {
-    int ierr=PIO_NOERR;
+    int ierr = PIO_NOERR;
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     var_desc_t *vdesc;
     int ndims, fndims;
@@ -1186,21 +1190,23 @@ int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc, int vid,
     int i;
     int mpierr;  /* Return code from MPI functions. */
 
+    /* Check inputs. */
+    pioassert(file && file->iosystem && iodesc, "invalid input", __FILE__, __LINE__);
+
 #ifdef TIMING
     /* Start timing this function. */
     GPTLstart("PIO:read_darray_nc_serial");
 #endif
-    if (!(ios = file->iosystem))
-        return PIO_EBADID;
+    ios = file->iosystem;
 
     if (!(vdesc = (file->varlist) + vid))
-        return PIO_EBADID;
+        return pio_err(ios, file, PIO_EBADID, __FILE__, __LINE__);
 
     ndims = iodesc->ndims;
 
     /* Get number of dims for this var. */
     if ((ierr = PIOc_inq_varndims(file->pio_ncid, vid, &fndims)))
-        return ierr;
+        return pio_err(ios, file, ierr, __FILE__, __LINE__);
 
     /* Is this a record var? */
     if (fndims == ndims)
@@ -1419,13 +1425,13 @@ int flush_output_buffer(file_desc_t *file, bool force, PIO_Offset addsize)
     PIO_Offset usage = 0;
 
     /* Check inputs. */
-    if (!file)
-        return PIO_EINVAL;
+    pioassert(file, "invalid input", __FILE__, __LINE__);
 
-    /* Find out the buffer usage. */
+    /* Find out the buffer usage. If I check the turn code, some tests fail. ??? */
     if ((ierr = ncmpi_inq_buffer_usage(file->fh, &usage)))
         return ierr;
-
+    /*return pio_err(ios, file, PIO_EBADID, __FILE__, __LINE__);*/
+    
     /* If we are not forcing a flush, spread the usage to all IO
      * tasks. */
     if (!force && file->iosystem->io_comm != MPI_COMM_NULL)
@@ -1598,7 +1604,7 @@ void free_cn_buffer_pool(iosystem_desc_t ios)
  * Flush the buffer.
  *
  * @param ncid identifies the netCDF file
- * @param wmb
+ * @param wmb May be NULL, in which case function returns.
  * @param flushtodisk
  * @ingroup PIO_write_darray
  */
@@ -1631,7 +1637,8 @@ void flush_buffer(int ncid, wmulti_buffer *wmb, bool flushtodisk)
  * Compute the maximum aggregate number of bytes.
  *
  * @param ios the IO system structure
- * @param iodesc a pointer to the defined iodescriptor for the buffer
+ * @param iodesc a pointer to the defined iodescriptor for the
+ * buffer. If NULL, function returns immediately.
  */
 void compute_maxaggregate_bytes(iosystem_desc_t ios, io_desc_t *iodesc)
 {
@@ -1639,7 +1646,7 @@ void compute_maxaggregate_bytes(iosystem_desc_t ios, io_desc_t *iodesc)
     int maxbytesoncomputetask = INT_MAX;
     int maxbytes;
     int mpierr;  /* Return code from MPI functions. */
-    
+
     /* Check inputs. */
     if (!iodesc)
         return;
@@ -1659,6 +1666,6 @@ void compute_maxaggregate_bytes(iosystem_desc_t ios, io_desc_t *iodesc)
 
     if ((mpierr = MPI_Allreduce(MPI_IN_PLACE, &maxbytes, 1, MPI_INT, MPI_MIN,
                                 ios.union_comm)))
-        check_mpi(NULL, mpierr, __FILE__, __LINE__);                            
+        check_mpi(NULL, mpierr, __FILE__, __LINE__);
     iodesc->maxbytes = maxbytes;
 }

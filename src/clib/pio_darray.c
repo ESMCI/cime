@@ -77,22 +77,22 @@ int PIOc_write_darray_multi(int ncid, const int *vid, int ioid, int nvars, PIO_O
     int mpierr;            /* Return code from MPI functions. */
     int ierr = PIO_NOERR;  /* Return code. */
 
-    /* Check inputs. */
-    if (nvars <= 0)
-        return PIO_EINVAL;
-
     /* Get the file info. */
     if ((ierr = pio_get_file(ncid, &file)))
-        return ierr;
+        return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
     ios = file->iosystem;
+
+    /* Check inputs. */
+    if (nvars <= 0)
+        return pio_err(ios, file, PIO_EINVAL, __FILE__, __LINE__);
 
     /* Check that we can write to this file. */
     if (! (file->mode & PIO_WRITE))
-        return PIO_EPERM;
+        return pio_err(ios, file, PIO_EPERM, __FILE__, __LINE__);
 
     /* Get iodesc. */
     if (!(iodesc = pio_get_iodesc_from_id(ioid)))
-        return PIO_EBADID;
+        return pio_err(ios, file, PIO_EBADID, __FILE__, __LINE__);
 
     /* For netcdf serial writes we collect the data on io nodes and
      * then move that data one node at a time to the io master node
@@ -293,20 +293,20 @@ int PIOc_write_darray(int ncid, int vid, int ioid, PIO_Offset arraylen,
 
     /* Get the file info. */
     if ((ierr = pio_get_file(ncid, &file)))
-        return ierr;
+        return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
     ios = file->iosystem;
 
     /* Can we write to this file? */
     if (!(file->mode & PIO_WRITE))
-        return PIO_EPERM;
+        return pio_err(ios, file, PIO_EPERM, __FILE__, __LINE__);
 
     /* Get iodesc. */
     if (!(iodesc = pio_get_iodesc_from_id(ioid)))
-        return PIO_EBADID;
+        return pio_err(ios, file, PIO_EBADID, __FILE__, __LINE__);
 
     /* Get var description. */
     if (!(vdesc = file->varlist + vid))
-        return PIO_EBADID;
+        return pio_err(ios, file, PIO_EBADID, __FILE__, __LINE__);
 
     /* Is this a record variable? */
     recordvar = vdesc->record >= 0 ? true : false;
@@ -315,7 +315,7 @@ int PIOc_write_darray(int ncid, int vid, int ioid, PIO_Offset arraylen,
     /* Check that the local size of the variable passed in matches the
      * size expected by the io descriptor. */
     if (iodesc->ndof != arraylen)
-        piodie("ndof != arraylen",__FILE__,__LINE__);
+        return pio_err(ios, file, PIO_EINVAL, __FILE__, __LINE__);
 
     /* Get a pointer to the buffer space for this file. It will hold
      * data from one or more variables that fit the same
@@ -471,9 +471,7 @@ int PIOc_write_darray(int ncid, int vid, int ioid, PIO_Offset arraylen,
                 memcpy((char *)wmb->fillvalue + tsize * wmb->validvars, &fill, tsize);
             }
             else
-            {
-		return PIO_EBADTYPE;
-            }
+                return pio_err(ios, file, PIO_EBADTYPE, __FILE__, __LINE__);
         }
     }
 
@@ -533,12 +531,12 @@ int PIOc_read_darray(int ncid, int vid, int ioid, PIO_Offset arraylen,
 
     /* Get the file info. */
     if ((ierr = pio_get_file(ncid, &file)))
-        return ierr;
+        return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
     ios = file->iosystem;
 
     /* Get the iodesc. */
     if (!(iodesc = pio_get_iodesc_from_id(ioid)))
-        return PIO_EBADID;
+        return pio_err(ios, file, PIO_EBADID, __FILE__, __LINE__);
 
     /* ??? */
     if (ios->iomaster)

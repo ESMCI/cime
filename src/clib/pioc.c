@@ -136,11 +136,11 @@ int PIOc_advanceframe(int ncid, int varid)
 
     /* Get the file info. */
     if ((ret = pio_get_file(ncid, &file)))
-        return ret;
+        return pio_err(NULL, NULL, ret, __FILE__, __LINE__);
 
     file->varlist[varid].record++;
 
-    return(PIO_NOERR);
+    return PIO_NOERR;
 }
 
 /**
@@ -184,7 +184,7 @@ int PIOc_get_numiotasks(int iosysid, int *numiotasks)
     iosystem_desc_t *ios;
 
     if (!(ios = pio_get_iosystem_from_id(iosysid)))
-        return PIO_EBADID;
+        return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
 
     if (numiotasks)
         *numiotasks = ios->num_iotasks;
@@ -205,7 +205,7 @@ int PIOc_get_iorank(int iosysid, int *iorank)
     iosystem_desc_t *ios;
 
     if (!(ios = pio_get_iosystem_from_id(iosysid)))
-        return PIO_EBADID;
+        return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
 
     if (iorank)
         *iorank = ios->io_rank;
@@ -216,14 +216,15 @@ int PIOc_get_iorank(int iosysid, int *iorank)
 /**
  * Get the local size of the variable.
  *
- * @param ioid
- * @returns 0 on success, error code otherwise
+ * @param ioid IO descrption ID.
+ * @returns the size of the array.
  */
 int PIOc_get_local_array_size(int ioid)
 {
     io_desc_t *iodesc;
 
-    iodesc = pio_get_iodesc_from_id(ioid);
+    if (!(iodesc = pio_get_iodesc_from_id(ioid)))
+        piodie("Could not get iodesc", __FILE__, __LINE__);        
 
     return iodesc->ndof;
 }
@@ -247,7 +248,7 @@ int PIOc_Set_IOSystem_Error_Handling(int iosysid, int method)
 
     /* Get the iosystem info. */
     if (!(ios = pio_get_iosystem_from_id(iosysid)))    
-        piodie("Could not get the IOSystem", __FILE__, __LINE__);
+        return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
 
     /* Remember old method setting. */
     oldmethod = ios->error_handler;
@@ -337,7 +338,7 @@ int PIOc_InitDecomp(int iosysid, int basetype, int ndims, const int *dims, int m
 
     /* Get IO system info. */
     if (!(ios = pio_get_iosystem_from_id(iosysid)))
-        return PIO_EBADID;
+        return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
 
     /* If desired, save the computed decompositions to
      * files. PIO_Save_Decomps is a global var set in
@@ -481,7 +482,7 @@ int PIOc_InitDecomp_bc(const int iosysid, const int basetype, const int ndims, c
 
     /* Get the info about the io system. */
     if (!(ios = pio_get_iosystem_from_id(iosysid)))
-        return PIO_EBADID;
+        return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
 
     for (i = 0; i < ndims; i++)
         maplen *= count[i];
@@ -544,6 +545,7 @@ int PIOc_Init_Intracomm(MPI_Comm comp_comm, int num_iotasks, int stride, int bas
     int lbase;
     int mpierr; /* Return value for MPI calls. */
 
+    /* Turn on the logging system. */
     pio_init_logging();
 
     LOG((1, "PIOc_Init_Intracomm comp_comm = %d num_iotasks = %d stride = %d base = %d "
@@ -551,8 +553,8 @@ int PIOc_Init_Intracomm(MPI_Comm comp_comm, int num_iotasks, int stride, int bas
 
     /* Allocate memory for the iosystem info. */
     if (!(ios = calloc(1, sizeof(iosystem_desc_t))))
-        return PIO_ENOMEM;
-
+        return pio_err(NULL, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+    
     ios->io_comm = MPI_COMM_NULL;
     ios->intercomm = MPI_COMM_NULL;
     ios->error_handler = PIO_INTERNAL_ERROR;
@@ -766,7 +768,7 @@ int PIOc_finalize(int iosysid)
     /* Free the buffer pool. */
     int niosysid;
     if ((ierr = pio_num_iosystem(&niosysid)))
-        return ierr;
+        return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
     LOG((2, "%d iosystems are still open.", niosysid));
 
     /* Only free the buffer pool if this is the last open iosysid. */
@@ -801,9 +803,8 @@ int PIOc_finalize(int iosysid)
     /* Delete the iosystem_desc_t data associated with this id. */
     LOG((2, "About to delete iosysid %d.", iosysid));
     if ((ierr = pio_delete_iosystem_from_list(iosysid)))
-        return ierr;
+        return pio_err(NULL, NULL, ierr, __FILE__, __LINE__);
     
-    LOG((2, "About to finalize logging"));
     pio_finalize_logging();
 
     LOG((2, "PIOc_finalize completed successfully"));
@@ -1271,7 +1272,7 @@ int PIOc_Init_Async(MPI_Comm world, int num_io_procs, int *io_proc_list,
         LOG((2, "Starting message handler io_rank = %d component_count = %d",
              io_rank, component_count));
         if ((ret = pio_msg_handler2(io_rank, component_count, iosys, io_comm)))
-            return ret;
+            return pio_err(NULL, NULL, ret, __FILE__, __LINE__);
         LOG((2, "Returned from pio_msg_handler2() ret = %d", ret));
     }
 
