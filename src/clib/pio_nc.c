@@ -38,7 +38,7 @@ int PIOc_inq(int ncid, int *ndimsp, int *nvarsp, int *ngattsp, int *unlimdimidp)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Pointer to file information. */
-    int ierr = PIO_NOERR;  /* Return code from function calls. */
+    int ierr;              /* Return code from function calls. */
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
 
     LOG((1, "PIOc_inq ncid = %d", ncid));
@@ -152,7 +152,7 @@ int PIOc_inq(int ncid, int *ndimsp, int *nvarsp, int *ngattsp, int *unlimdimidp)
         if ((mpierr = MPI_Bcast(unlimdimidp, 1, MPI_INT, ios->ioroot, ios->my_comm)))
             return check_mpi(file, mpierr, __FILE__, __LINE__);
 
-    return ierr;
+    return PIO_NOERR;
 }
 
 /**
@@ -224,7 +224,7 @@ int PIOc_inq_type(int ncid, nc_type xtype, char *name, PIO_Offset *sizep)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Pointer to file information. */
-    int ierr = PIO_NOERR;  /* Return code from function calls. */
+    int ierr;              /* Return code from function calls. */
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
     int typelen;
 
@@ -300,7 +300,7 @@ int PIOc_inq_type(int ncid, nc_type xtype, char *name, PIO_Offset *sizep)
         if ((mpierr = MPI_Bcast(sizep , 1, MPI_OFFSET, ios->ioroot, ios->my_comm)))
             return check_mpi(file, mpierr, __FILE__, __LINE__);
 
-    return ierr;
+    return PIO_NOERR;
 }
 
 /**
@@ -315,7 +315,7 @@ int PIOc_inq_format(int ncid, int *formatp)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Pointer to file information. */
-    int ierr = PIO_NOERR;  /* Return code from function calls. */
+    int ierr;              /* Return code from function calls. */
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
 
     LOG((1, "PIOc_inq ncid = %d", ncid));
@@ -374,7 +374,7 @@ int PIOc_inq_format(int ncid, int *formatp)
         if ((mpierr = MPI_Bcast(formatp , 1, MPI_INT, ios->ioroot, ios->my_comm)))
             return check_mpi(file, mpierr, __FILE__, __LINE__);
 
-    return ierr;
+    return PIO_NOERR;
 }
 
 /**
@@ -395,7 +395,7 @@ int PIOc_inq_dim(int ncid, int dimid, char *name, PIO_Offset *lenp)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Pointer to file information. */
-    int ierr = PIO_NOERR;  /* Return code from function calls. */
+    int ierr;              /* Return code from function calls. */
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
 
     LOG((1, "PIOc_inq_dim ncid = %d dimid = %d", ncid, dimid));
@@ -480,7 +480,7 @@ int PIOc_inq_dim(int ncid, int dimid, char *name, PIO_Offset *lenp)
             return check_mpi(file, mpierr, __FILE__, __LINE__);
 
     LOG((2, "done with PIOc_inq_dim"));
-    return ierr;
+    return PIO_NOERR;
 }
 
 /**
@@ -532,20 +532,20 @@ int PIOc_inq_dimid(int ncid, const char *name, int *idp)
 {
     iosystem_desc_t *ios;
     file_desc_t *file;
-    int ierr = PIO_NOERR;
+    int ierr;
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
-
-    /* Name must be provided. */
-    if (!name)
-        return PIO_EINVAL;
-
-    LOG((1, "PIOc_inq_dimid ncid = %d name = %s", ncid, name));
 
     /* Get the file info, based on the ncid. */
     if ((ierr = pio_get_file(ncid, &file)))
         return pio_err(NULL, NULL, ierr, __FILE__, __LINE__);
     ios = file->iosystem;
     LOG((2, "iosysid = %d", ios->iosysid));
+
+    /* User must provide name shorter than NC_MAX_NAME +1. */
+    if (!name || strlen(name) > NC_MAX_NAME)
+        return pio_err(ios, file, PIO_EINVAL, __FILE__, __LINE__);
+
+    LOG((1, "PIOc_inq_dimid ncid = %d name = %s", ncid, name));
 
     /* If using async, and not an IO task, then send parameters. */
     if (ios->async_interface)
@@ -601,7 +601,7 @@ int PIOc_inq_dimid(int ncid, const char *name, int *idp)
         if ((mpierr = MPI_Bcast(idp, 1, MPI_INT, ios->ioroot, ios->my_comm)))
             return check_mpi(file, mpierr, __FILE__, __LINE__);
 
-    return ierr;
+    return PIO_NOERR;
 }
 
 /**
@@ -626,7 +626,7 @@ int PIOc_inq_var(int ncid, int varid, char *name, nc_type *xtypep, int *ndimsp,
     iosystem_desc_t *ios;
     file_desc_t *file;
     int ndims;    /* The number of dimensions for this variable. */
-    int ierr = PIO_NOERR;
+    int ierr;
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
 
     LOG((1, "PIOc_inq_var ncid = %d varid = %d", ncid, varid));
@@ -761,7 +761,7 @@ int PIOc_inq_var(int ncid, int varid, char *name, nc_type *xtypep, int *ndimsp,
         if ((mpierr = MPI_Bcast(nattsp, 1, MPI_INT, ios->ioroot, ios->my_comm)))
             return check_mpi(file, mpierr, __FILE__, __LINE__);
 
-    return ierr;
+    return PIO_NOERR;
 }
 
 /**
@@ -857,17 +857,17 @@ int PIOc_inq_varid(int ncid, const char *name, int *varidp)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Pointer to file information. */
-    int ierr = PIO_NOERR;  /* Return code from function calls. */
+    int ierr;              /* Return code from function calls. */
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
-
-    /* Caller must provide name. */
-    if (!name || strlen(name) > NC_MAX_NAME)
-        return PIO_EINVAL;
 
     /* Get file info based on ncid. */
     if ((ierr = pio_get_file(ncid, &file)))
         return pio_err(NULL, NULL, ierr, __FILE__, __LINE__);
     ios = file->iosystem;
+
+    /* Caller must provide name. */
+    if (!name || strlen(name) > NC_MAX_NAME)
+        return pio_err(ios, file, PIO_EINVAL, __FILE__, __LINE__);
 
     LOG((1, "PIOc_inq_varid ncid = %d name = %s", ncid, name));
 
@@ -921,7 +921,7 @@ int PIOc_inq_varid(int ncid, const char *name, int *varidp)
         if ((mpierr = MPI_Bcast(varidp, 1, MPI_INT, ios->ioroot, ios->my_comm)))
             check_mpi(file, mpierr, __FILE__, __LINE__);
 
-    return ierr;
+    return PIO_NOERR;
 }
 
 /**
@@ -947,19 +947,19 @@ int PIOc_inq_att(int ncid, int varid, const char *name, nc_type *xtypep,
     iosystem_desc_t *ios;
     file_desc_t *file;
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
-    int ierr = PIO_NOERR;
-
-    /* Caller must provide a name. */
-    if (!name)
-        return PIO_EINVAL;
-
-    LOG((1, "PIOc_inq_att ncid = %d varid = %d xtpyep = %d lenp = %d",
-         ncid, varid, xtypep, lenp));
+    int ierr;
 
     /* Find file based on ncid. */
     if ((ierr = pio_get_file(ncid, &file)))
         return pio_err(NULL, NULL, ierr, __FILE__, __LINE__);
     ios = file->iosystem;
+
+    /* User must provide name shorter than NC_MAX_NAME +1. */
+    if (!name || strlen(name) > NC_MAX_NAME)
+        return pio_err(ios, file, PIO_EINVAL, __FILE__, __LINE__);
+
+    LOG((1, "PIOc_inq_att ncid = %d varid = %d xtpyep = %d lenp = %d",
+         ncid, varid, xtypep, lenp));
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
     if (ios->async_interface)
@@ -1022,7 +1022,7 @@ int PIOc_inq_att(int ncid, int varid, const char *name, nc_type *xtypep,
         if ((mpierr = MPI_Bcast(lenp, 1, MPI_OFFSET, ios->ioroot, ios->my_comm)))
             check_mpi(file, mpierr, __FILE__, __LINE__);
 
-    return ierr;
+    return PIO_NOERR;
 }
 
 /**
@@ -1076,7 +1076,7 @@ int PIOc_inq_attname(int ncid, int varid, int attnum, char *name)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Pointer to file information. */
-    int ierr = PIO_NOERR;  /* Return code from function calls. */
+    int ierr;              /* Return code from function calls. */
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
 
     LOG((1, "PIOc_inq_attname ncid = %d varid = %d attnum = %d", ncid, varid,
@@ -1146,7 +1146,7 @@ int PIOc_inq_attname(int ncid, int varid, int attnum, char *name)
             check_mpi(file, mpierr, __FILE__, __LINE__);
     }
 
-    return ierr;
+    return PIO_NOERR;
 }
 
 /**
@@ -1168,19 +1168,19 @@ int PIOc_inq_attid(int ncid, int varid, const char *name, int *idp)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Pointer to file information. */
-    int ierr = PIO_NOERR;  /* Return code from function calls. */
+    int ierr;              /* Return code from function calls. */
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
-
-    /* User must provide name shorter than NC_MAX_NAME +1. */
-    if (!name || strlen(name) > NC_MAX_NAME)
-        return PIO_EINVAL;
-
-    LOG((1, "PIOc_inq_attid ncid = %d varid = %d name = %s", ncid, varid, name));
 
     /* Find the info about this file. */
     if ((ierr = pio_get_file(ncid, &file)))
         return pio_err(NULL, NULL, ierr, __FILE__, __LINE__);
     ios = file->iosystem;
+
+    /* User must provide name shorter than NC_MAX_NAME +1. */
+    if (!name || strlen(name) > NC_MAX_NAME)
+        return pio_err(ios, file, PIO_EINVAL, __FILE__, __LINE__);
+
+    LOG((1, "PIOc_inq_attid ncid = %d varid = %d name = %s", ncid, varid, name));
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
     if (ios->async_interface)
@@ -1238,7 +1238,7 @@ int PIOc_inq_attid(int ncid, int varid, const char *name, int *idp)
         if ((mpierr = MPI_Bcast(idp, 1, MPI_INT, ios->ioroot, ios->my_comm)))
             check_mpi(file, mpierr, __FILE__, __LINE__);
 
-    return ierr;
+    return PIO_NOERR;
 }
 
 /**
@@ -1258,19 +1258,19 @@ int PIOc_rename_dim(int ncid, int dimid, const char *name)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Pointer to file information. */
-    int ierr = PIO_NOERR;  /* Return code from function calls. */
+    int ierr;              /* Return code from function calls. */
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
-
-    /* User must provide name of correct length. */
-    if (!name || strlen(name) > NC_MAX_NAME)
-        return PIO_EINVAL;
-
-    LOG((1, "PIOc_rename_dim ncid = %d dimid = %d name = %s", ncid, dimid, name));
 
     /* Find the info about this file. */
     if ((ierr = pio_get_file(ncid, &file)))
         return pio_err(NULL, NULL, ierr, __FILE__, __LINE__);
     ios = file->iosystem;
+
+    /* User must provide name shorter than NC_MAX_NAME +1. */
+    if (!name || strlen(name) > NC_MAX_NAME)
+        return pio_err(ios, file, PIO_EINVAL, __FILE__, __LINE__);
+
+    LOG((1, "PIOc_rename_dim ncid = %d dimid = %d name = %s", ncid, dimid, name));
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
     if (ios->async_interface)
@@ -1323,7 +1323,7 @@ int PIOc_rename_dim(int ncid, int dimid, const char *name)
     if (ierr)
         return check_netcdf(file, ierr, __FILE__, __LINE__);
 
-    return ierr;
+    return PIO_NOERR;
 }
 
 /**
@@ -1344,19 +1344,19 @@ int PIOc_rename_var(int ncid, int varid, const char *name)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Pointer to file information. */
-    int ierr = PIO_NOERR;  /* Return code from function calls. */
+    int ierr;              /* Return code from function calls. */
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
-
-    /* User must provide name of correct length. */
-    if (!name || strlen(name) > NC_MAX_NAME)
-        return PIO_EINVAL;
-
-    LOG((1, "PIOc_rename_var ncid = %d varid = %d name = %s", ncid, varid, name));
 
     /* Find the info about this file. */
     if ((ierr = pio_get_file(ncid, &file)))
         return pio_err(NULL, NULL, ierr, __FILE__, __LINE__);
     ios = file->iosystem;
+
+    /* User must provide name shorter than NC_MAX_NAME +1. */
+    if (!name || strlen(name) > NC_MAX_NAME)
+        return pio_err(ios, file, PIO_EINVAL, __FILE__, __LINE__);
+
+    LOG((1, "PIOc_rename_var ncid = %d varid = %d name = %s", ncid, varid, name));
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
     if (ios->async_interface)
@@ -1409,7 +1409,7 @@ int PIOc_rename_var(int ncid, int varid, const char *name)
     if (ierr)
         return check_netcdf(file, ierr, __FILE__, __LINE__);
 
-    return ierr;
+    return PIO_NOERR;
 }
 
 /**
@@ -1428,25 +1428,25 @@ int PIOc_rename_var(int ncid, int varid, const char *name)
  * PIOc_Set_File_Error_Handling
  */
 int PIOc_rename_att(int ncid, int varid, const char *name,
-		    const char *newname)
+                    const char *newname)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Pointer to file information. */
-    int ierr = PIO_NOERR;  /* Return code from function calls. */
+    int ierr;              /* Return code from function calls. */
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI functions. */
-
-    /* User must provide names of correct length. */
-    if (!name || strlen(name) > NC_MAX_NAME ||
-        !newname || strlen(newname) > NC_MAX_NAME)
-        return PIO_EINVAL;
-
-    LOG((1, "PIOc_rename_att ncid = %d varid = %d name = %s newname = %s",
-         ncid, varid, name, newname));
 
     /* Find the info about this file. */
     if ((ierr = pio_get_file(ncid, &file)))
         return pio_err(NULL, NULL, ierr, __FILE__, __LINE__);
     ios = file->iosystem;
+
+    /* User must provide names of correct length. */
+    if (!name || strlen(name) > NC_MAX_NAME ||
+        !newname || strlen(newname) > NC_MAX_NAME)
+        return pio_err(ios, file, PIO_EINVAL, __FILE__, __LINE__);
+
+    LOG((1, "PIOc_rename_att ncid = %d varid = %d name = %s newname = %s",
+         ncid, varid, name, newname));
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
     if (ios->async_interface)
@@ -1501,7 +1501,7 @@ int PIOc_rename_att(int ncid, int varid, const char *name,
         return check_netcdf(file, ierr, __FILE__, __LINE__);
 
     LOG((2, "PIOc_rename_att succeeded"));
-    return ierr;
+    return PIO_NOERR;
 }
 
 /**
@@ -1523,19 +1523,19 @@ int PIOc_del_att(int ncid, int varid, const char *name)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Pointer to file information. */
-    int ierr = PIO_NOERR;  /* Return code from function calls. */
+    int ierr;              /* Return code from function calls. */
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI functions. */
-
-    /* User must provide name of correct length. */
-    if (!name || strlen(name) > NC_MAX_NAME)
-        return PIO_EINVAL;
-
-    LOG((1, "PIOc_del_att ncid = %d varid = %d name = %s", ncid, varid, name));
 
     /* Find the info about this file. */
     if ((ierr = pio_get_file(ncid, &file)))
         return pio_err(NULL, NULL, ierr, __FILE__, __LINE__);
     ios = file->iosystem;
+
+    /* User must provide name shorter than NC_MAX_NAME +1. */
+    if (!name || strlen(name) > NC_MAX_NAME)
+        return pio_err(ios, file, PIO_EINVAL, __FILE__, __LINE__);
+
+    LOG((1, "PIOc_del_att ncid = %d varid = %d name = %s", ncid, varid, name));
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
     if (ios->async_interface)
@@ -1584,7 +1584,7 @@ int PIOc_del_att(int ncid, int varid, const char *name)
     if (ierr)
         return check_netcdf(file, ierr, __FILE__, __LINE__);
 
-    return ierr;
+    return PIO_NOERR;
 }
 
 /**
@@ -1604,7 +1604,7 @@ int PIOc_set_fill(int ncid, int fillmode, int *old_modep)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Pointer to file information. */
-    int ierr = PIO_NOERR;  /* Return code from function calls. */
+    int ierr;              /* Return code from function calls. */
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI functions. */
 
     LOG((1, "PIOc_set_fill ncid = %d fillmode = %d old_modep = %d", ncid, fillmode,
@@ -1656,7 +1656,7 @@ int PIOc_set_fill(int ncid, int fillmode, int *old_modep)
         return check_netcdf(file, ierr, __FILE__, __LINE__);
 
     LOG((2, "PIOc_set_fill succeeded"));
-    return ierr;
+    return PIO_NOERR;
 }
 
 /**
@@ -1713,19 +1713,20 @@ int PIOc_def_dim(int ncid, const char *name, PIO_Offset len, int *idp)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Pointer to file information. */
-    int ierr = PIO_NOERR;  /* Return code from function calls. */
+    int ierr;              /* Return code from function calls. */
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
 
-    /* User must provide name. */
-    if (!name || strlen(name) > NC_MAX_NAME)
-        return PIO_EINVAL;
-
-    LOG((1, "PIOc_def_dim ncid = %d name = %s len = %d", ncid, name, len));
 
     /* Find the info about this file. */
     if ((ierr = pio_get_file(ncid, &file)))
         return pio_err(NULL, NULL, ierr, __FILE__, __LINE__);
     ios = file->iosystem;
+
+    /* User must provide name shorter than NC_MAX_NAME +1. */
+    if (!name || strlen(name) > NC_MAX_NAME)
+        return pio_err(ios, file, PIO_EINVAL, __FILE__, __LINE__);
+
+    LOG((1, "PIOc_def_dim ncid = %d name = %s len = %d", ncid, name, len));
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
     if (ios->async_interface)
@@ -1782,7 +1783,7 @@ int PIOc_def_dim(int ncid, const char *name, PIO_Offset len, int *idp)
             check_mpi(file, mpierr, __FILE__, __LINE__);
 
     LOG((2, "def_dim ierr = %d", ierr));
-    return ierr;
+    return PIO_NOERR;
 }
 
 /**
@@ -1801,27 +1802,24 @@ int PIOc_def_dim(int ncid, const char *name, PIO_Offset len, int *idp)
  * @ingroup PIO_def_var
  */
 int PIOc_def_var(int ncid, const char *name, nc_type xtype, int ndims,
-		 const int *dimidsp, int *varidp)
+                 const int *dimidsp, int *varidp)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Pointer to file information. */
-    int ierr = PIO_NOERR;  /* Return code from function calls. */
+    int ierr;              /* Return code from function calls. */
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
-
-    /* User must provide name and storage for varid. */
-    if (!name || !varidp || strlen(name) > NC_MAX_NAME)
-    {
-        check_netcdf(file, PIO_EINVAL, __FILE__, __LINE__);
-        return PIO_EINVAL;
-    }
-
-    LOG((1, "PIOc_def_var ncid = %d name = %s xtype = %d ndims = %d", ncid, name,
-	 xtype, ndims));
 
     /* Get the file information. */
     if ((ierr = pio_get_file(ncid, &file)))
         return pio_err(NULL, NULL, ierr, __FILE__, __LINE__);
     ios = file->iosystem;
+
+    /* User must provide name and storage for varid. */
+    if (!name || !varidp || strlen(name) > NC_MAX_NAME)
+        return pio_err(ios, file, PIO_EINVAL, __FILE__, __LINE__);
+
+    LOG((1, "PIOc_def_var ncid = %d name = %s xtype = %d ndims = %d", ncid, name,
+         xtype, ndims));
 
     /* If using async, and not an IO task, then send parameters. */
     if (ios->async_interface)
@@ -1888,7 +1886,7 @@ int PIOc_def_var(int ncid, const char *name, nc_type xtype, int ndims,
         if ((mpierr = MPI_Bcast(varidp , 1, MPI_INT, ios->ioroot, ios->my_comm)))
             check_mpi(file, mpierr, __FILE__, __LINE__);
 
-    return ierr;
+    return PIO_NOERR;
 }
 
 /**
@@ -1909,7 +1907,7 @@ int PIOc_inq_var_fill(int ncid, int varid, int *no_fill, void *fill_valuep)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Pointer to file information. */
-    int ierr = PIO_NOERR;  /* Return code from function calls. */
+    int ierr;              /* Return code from function calls. */
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
 
     LOG((1, "PIOc_inq ncid = %d", ncid));
@@ -1967,7 +1965,7 @@ int PIOc_inq_var_fill(int ncid, int varid, int *no_fill, void *fill_valuep)
         if ((mpierr = MPI_Bcast(fill_valuep, 1, MPI_INT, ios->ioroot, ios->my_comm)))
             check_mpi(file, mpierr, __FILE__, __LINE__);
 
-    return ierr;
+    return PIO_NOERR;
 }
 
 /**
@@ -1988,21 +1986,21 @@ int PIOc_get_att(int ncid, int varid, const char *name, void *ip)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Pointer to file information. */
-    int ierr = PIO_NOERR;  /* Return code from function calls. */
+    int ierr;              /* Return code from function calls. */
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
     PIO_Offset attlen, typelen;
     nc_type atttype;
-
-    /* User must provide a name and destination pointer. */
-    if (!name || !ip || strlen(name) > NC_MAX_NAME)
-        return PIO_EINVAL;
-
-    LOG((1, "PIOc_get_att ncid %d varid %d name %s", ncid, varid, name));
 
     /* Find the info about this file. */
     if ((ierr = pio_get_file(ncid, &file)))
         return pio_err(NULL, NULL, ierr, __FILE__, __LINE__);
     ios = file->iosystem;
+
+    /* User must provide a name and destination pointer. */
+    if (!name || !ip || strlen(name) > NC_MAX_NAME)
+        return pio_err(ios, file, PIO_EINVAL, __FILE__, __LINE__);
+
+    LOG((1, "PIOc_get_att ncid %d varid %d name %s", ncid, varid, name));
 
     /* Run these on all tasks if async is not in use, but only on
      * non-IO tasks if async is in use. */
@@ -2010,18 +2008,12 @@ int PIOc_get_att(int ncid, int varid, const char *name, void *ip)
     {
         /* Get the type and length of the attribute. */
         if ((ierr = PIOc_inq_att(ncid, varid, name, &atttype, &attlen)))
-        {
-            check_netcdf(file, ierr, __FILE__, __LINE__);
-            return ierr;
-        }
+            return check_netcdf(file, ierr, __FILE__, __LINE__);
         LOG((2, "atttype = %d attlen = %d", atttype, attlen));
 
         /* Get the length (in bytes) of the type. */
         if ((ierr = PIOc_inq_type(ncid, atttype, NULL, &typelen)))
-        {
-            check_netcdf(file, ierr, __FILE__, __LINE__);
-            return ierr;
-        }
+            return check_netcdf(file, ierr, __FILE__, __LINE__);
         LOG((2, "typelen = %d", typelen));
     }
     LOG((2, "again typelen = %d", typelen));
@@ -2105,7 +2097,7 @@ int PIOc_get_att(int ncid, int varid, const char *name, void *ip)
         return check_mpi(file, mpierr, __FILE__, __LINE__);
 
     LOG((2, "get_att data bcast complete"));
-    return ierr;
+    return PIO_NOERR;
 }
 
 /**
@@ -2130,7 +2122,7 @@ int PIOc_put_att(int ncid, int varid, const char *name, nc_type xtype,
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Pointer to file information. */
     PIO_Offset typelen; /* Length (in bytes) of the type. */
-    int ierr = PIO_NOERR;  /* Return code from function calls. */
+    int ierr;           /* Return code from function calls. */
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
 
     LOG((1, "PIOc_put_att ncid = %d varid = %d name = %s", ncid, varid, name));
@@ -2146,10 +2138,7 @@ int PIOc_put_att(int ncid, int varid, const char *name, nc_type xtype,
     {
         /* Get the length (in bytes) of the type. */
         if ((ierr = PIOc_inq_type(ncid, xtype, NULL, &typelen)))
-        {
-            check_netcdf(file, ierr, __FILE__, __LINE__);
-            return ierr;
-        }
+            return check_netcdf(file, ierr, __FILE__, __LINE__);
         LOG((2, "PIOc_put_att typelen = %d", ncid, typelen));
     }
 
@@ -2216,7 +2205,7 @@ int PIOc_put_att(int ncid, int varid, const char *name, nc_type xtype,
     if (ierr)
         return check_netcdf(file, ierr, __FILE__, __LINE__);
 
-    return ierr;
+    return PIO_NOERR;
 }
 
 /**
