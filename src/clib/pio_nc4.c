@@ -40,7 +40,7 @@ int PIOc_def_var_deflate(int ncid, int varid, int shuffle, int deflate,
 
     /* Get the file info. */
     if ((ierr = pio_get_file(ncid, &file)))
-        return ierr;
+        return pio_err(NULL, NULL, ierr, __FILE__, __LINE__);
     ios = file->iosystem;
 
     /* Only netCDF-4 files can use this feature. */
@@ -122,7 +122,7 @@ int PIOc_inq_var_deflate(int ncid, int varid, int *shufflep, int *deflatep,
 
     /* Get the file info. */
     if ((ierr = pio_get_file(ncid, &file)))
-        return ierr;
+        return pio_err(NULL, NULL, ierr, __FILE__, __LINE__);
     ios = file->iosystem;
 
     /* Only netCDF-4 files can use this feature. */
@@ -235,7 +235,7 @@ int PIOc_def_var_chunking(int ncid, int varid, int storage,
     
     /* Find the info about this file. */
     if ((ierr = pio_get_file(ncid, &file)))
-        return ierr;
+        return pio_err(NULL, NULL, ierr, __FILE__, __LINE__);
     ios = file->iosystem;
 
     /* Only netCDF-4 files can use this feature. */
@@ -355,7 +355,7 @@ int PIOc_inq_var_chunking(int ncid, int varid, int *storagep, PIO_Offset *chunks
 
     /* Get the file info. */
     if ((ierr = pio_get_file(ncid, &file)))
-        return ierr;
+        return pio_err(NULL, NULL, ierr, __FILE__, __LINE__);
     ios = file->iosystem;
 
     /* Only netCDF-4 files can use this feature. */
@@ -482,7 +482,7 @@ int PIOc_def_var_fill(int ncid, int varid, int no_fill, const void *fill_value)
 
     /* Get the file info. */
     if ((ierr = pio_get_file(ncid, &file)))
-        return ierr;
+        return pio_err(NULL, NULL, ierr, __FILE__, __LINE__);
     ios = file->iosystem;
 
     /* Only netCDF-4 files can use this feature. */
@@ -559,7 +559,7 @@ int PIOc_def_var_endian(int ncid, int varid, int endian)
 
     /* Get the file info. */
     if ((ierr = pio_get_file(ncid, &file)))
-        return ierr;
+        return pio_err(NULL, NULL, ierr, __FILE__, __LINE__);
     ios = file->iosystem;
 
     /* Only netCDF-4 files can use this feature. */
@@ -636,7 +636,7 @@ int PIOc_inq_var_endian(int ncid, int varid, int *endianp)
 
     /* Get the file info. */
     if ((ierr = pio_get_file(ncid, &file)))
-        return ierr;
+        return pio_err(NULL, NULL, ierr, __FILE__, __LINE__);
     ios = file->iosystem;
 
     /* Only netCDF-4 files can use this feature. */
@@ -944,7 +944,7 @@ int PIOc_set_var_chunk_cache(int ncid, int varid, PIO_Offset size, PIO_Offset ne
 
     /* Get the file info. */
     if ((ierr = pio_get_file(ncid, &file)))
-        return ierr;
+        return pio_err(NULL, NULL, ierr, __FILE__, __LINE__);
     ios = file->iosystem;
 
     /* Only netCDF-4 files can use this feature. */
@@ -1032,7 +1032,7 @@ int PIOc_get_var_chunk_cache(int ncid, int varid, PIO_Offset *sizep, PIO_Offset 
 
     /* Get the file info. */
     if ((ierr = pio_get_file(ncid, &file)))
-        return ierr;
+        return pio_err(NULL, NULL, ierr, __FILE__, __LINE__);
     ios = file->iosystem;
 
     /* Only netCDF-4 files can use this feature. */
