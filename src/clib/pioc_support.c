@@ -25,9 +25,9 @@ int my_rank;
 FILE *LOG_FILE = NULL;
 #endif /* PIO_ENABLE_LOGGING */
 
-/** 
+/**
  * The PIO library maintains its own set of ncids. This is the next
- * ncid number that will be assigned. 
+ * ncid number that will be assigned.
 */
 extern int pio_next_ncid;
 
@@ -105,7 +105,8 @@ int PIOc_strerror(int pioerr, char *errmsg)
  */
 int PIOc_set_log_level(int level)
 {
-    int ret = PIO_NOERR;
+    int ret;
+
 #if PIO_ENABLE_LOGGING
     /* Set the log level. */
     pio_log_level = level;
@@ -114,11 +115,11 @@ int PIOc_set_log_level(int level)
     /* If netcdf logging is available turn it on starting at level = 4. */
     if (level > NC_LEVEL_DIFF)
         if ((ret = nc_set_log_level(level - NC_LEVEL_DIFF)))
-            return ret;
+            return pio_err(NULL, NULL, ret, __FILE__, __LINE__);
 #endif /* NETCDF_C_LOGGING_ENABLED */
 #endif /* PIO_ENABLE_LOGGING */
 
-    return ret;
+    return PIO_NOERR;
 }
 
 /**
@@ -673,12 +674,13 @@ int PIOc_freedecomp(int iosysid, int ioid)
     iosystem_desc_t *ios;
     io_desc_t *iodesc;
     int i;
+    int mpierr; /* Return code for MPI calls. */
 
     if (!(ios = pio_get_iosystem_from_id(iosysid)))
-        return PIO_EBADID;
+        return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
 
     if (!(iodesc = pio_get_iodesc_from_id(ioid)))
-        return PIO_EBADID;
+        return pio_err(ios, NULL, PIO_EBADID, __FILE__, __LINE__);
 
     if (iodesc->gsize)
         brel(iodesc->gsize);
@@ -690,7 +692,9 @@ int PIOc_freedecomp(int iosysid, int ioid)
     {
         for (i = 0; i < iodesc->nrecvs; i++)
             if (iodesc->rtype[i] != MPI_DATATYPE_NULL)
-                MPI_Type_free(iodesc->rtype + i);
+                if ((mpierr = MPI_Type_free(iodesc->rtype + i)))
+                    return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+
         brel(iodesc->rtype);
     }
 
@@ -698,7 +702,8 @@ int PIOc_freedecomp(int iosysid, int ioid)
     {
         for (i = 0; i < iodesc->num_stypes; i++)
             if (iodesc->stype[i] != MPI_DATATYPE_NULL)
-                MPI_Type_free(iodesc->stype + i);
+                if ((mpierr = MPI_Type_free(iodesc->stype + i)))
+                    return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
 
         iodesc->num_stypes = 0;
         brel(iodesc->stype);
@@ -723,7 +728,8 @@ int PIOc_freedecomp(int iosysid, int ioid)
         free_region_list(iodesc->fillregion);
 
     if (iodesc->rearranger == PIO_REARR_SUBSET)
-        MPI_Comm_free(&(iodesc->subset_comm));
+        if ((mpierr = MPI_Comm_free(&iodesc->subset_comm)))
+            return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
 
     return pio_delete_iodesc_from_list(ioid);
 }
@@ -749,13 +755,16 @@ int PIOc_readmap(const char *file, int *ndims, int **gdims, PIO_Offset *fmaplen,
     PIO_Offset *tmap;
     MPI_Status status;
     PIO_Offset maplen;
+    int mpierr; /* Return code for MPI calls. */
 
     /* Check inputs. */
     if (!ndims || !gdims || !fmaplen || !map)
-        piodie("Invalid arg ",  __FILE__, __LINE__);
+        return pio_err(NULL, NULL, PIO_EINVAL, __FILE__, __LINE__);
 
-    MPI_Comm_size(comm, &npes);
-    MPI_Comm_rank(comm, &myrank);
+    if ((mpierr = MPI_Comm_size(comm, &npes)))
+        return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+    if ((mpierr = MPI_Comm_rank(comm, &myrank)))
+        return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 
     if (myrank == 0)
     {
@@ -766,35 +775,40 @@ int PIOc_readmap(const char *file, int *ndims, int **gdims, PIO_Offset *fmaplen,
         fscanf(fp,"version %d npes %d ndims %d\n",&rversno, &rnpes, ndims);
 
         if (rversno != VERSNO)
-            piodie("Attempt to read incompatable map file version", __FILE__, __LINE__);
+            return pio_err(NULL, NULL, PIO_EINVAL, __FILE__, __LINE__);            
 
         if (rnpes < 1 || rnpes > npes)
-            piodie("Incompatable pe count in map file ", __FILE__, __LINE__);
+            return pio_err(NULL, NULL, PIO_EINVAL, __FILE__, __LINE__);            
 
-        MPI_Bcast(&rnpes, 1, MPI_INT, 0, comm);
-        MPI_Bcast(ndims, 1, MPI_INT, 0, comm);
+        if ((mpierr = MPI_Bcast(&rnpes, 1, MPI_INT, 0, comm)))
+            return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+        if ((mpierr = MPI_Bcast(ndims, 1, MPI_INT, 0, comm)))
+            return check_mpi(NULL, mpierr, __FILE__, __LINE__);
         if (!(tdims = calloc(*ndims, sizeof(int))))
-            piodie("Memory allocation error ", __FILE__, __LINE__);
+            return pio_err(NULL, NULL, PIO_ENOMEM, __FILE__, __LINE__);
         for (int i = 0; i < *ndims; i++)
-            fscanf(fp,"%d ",tdims + i);
+            fscanf(fp,"%d ", tdims + i);
 
-        MPI_Bcast(tdims, *ndims, MPI_INT, 0, comm);
+        if ((mpierr = MPI_Bcast(tdims, *ndims, MPI_INT, 0, comm)))
+            return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 
         for (int i = 0; i < rnpes; i++)
         {
             fscanf(fp, "%d %ld", &j, &maplen);
             if (j != i)  // Not sure how this could be possible
-                piodie("Incomprehensable error reading map file ", __FILE__, __LINE__);
+                return pio_err(NULL, NULL, PIO_EINVAL, __FILE__, __LINE__);
 
             if (!(tmap = malloc(maplen * sizeof(PIO_Offset))))
-                piodie("Memory allocation error ", __FILE__, __LINE__);
+                return pio_err(NULL, NULL, PIO_ENOMEM, __FILE__, __LINE__);
             for (j = 0; j < maplen; j++)
                 fscanf(fp, "%ld ", tmap+j);
 
             if (i > 0)
             {
-                MPI_Send(&maplen, 1, PIO_OFFSET, i, i + npes, comm);
-                MPI_Send(tmap, maplen, PIO_OFFSET, i, i, comm);
+                if ((mpierr = MPI_Send(&maplen, 1, PIO_OFFSET, i, i + npes, comm)))
+                    return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+                if ((mpierr = MPI_Send(tmap, maplen, PIO_OFFSET, i, i, comm)))
+                    return check_mpi(NULL, mpierr, __FILE__, __LINE__);
                 free(tmap);
             }
             else
@@ -807,17 +821,23 @@ int PIOc_readmap(const char *file, int *ndims, int **gdims, PIO_Offset *fmaplen,
     }
     else
     {
-        MPI_Bcast(&rnpes, 1, MPI_INT, 0, comm);
-        MPI_Bcast(ndims, 1, MPI_INT, 0, comm);
-        tdims = (int *)calloc((*ndims), sizeof(int));
-        MPI_Bcast(tdims, *ndims, MPI_INT, 0, comm);
+        if ((mpierr = MPI_Bcast(&rnpes, 1, MPI_INT, 0, comm)))
+            return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+        if ((mpierr = MPI_Bcast(ndims, 1, MPI_INT, 0, comm)))
+            return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+        if (!(tdims = calloc(*ndims, sizeof(int))))
+            return pio_err(NULL, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+        if ((mpierr = MPI_Bcast(tdims, *ndims, MPI_INT, 0, comm)))
+            return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 
-        if (myrank<rnpes)
+        if (myrank < rnpes)
         {
-            MPI_Recv(&maplen, 1, PIO_OFFSET, 0, myrank+npes, comm, &status);
+            if ((mpierr = MPI_Recv(&maplen, 1, PIO_OFFSET, 0, myrank + npes, comm, &status)))
+                return check_mpi(NULL, mpierr, __FILE__, __LINE__);
             if (!(tmap = malloc(maplen * sizeof(PIO_Offset))))
                 piodie("Memory allocation error ", __FILE__, __LINE__);
-            MPI_Recv(tmap, maplen, PIO_OFFSET, 0, myrank, comm, &status);
+            if ((mpierr = MPI_Recv(tmap, maplen, PIO_OFFSET, 0, myrank, comm, &status)))
+                return check_mpi(NULL, mpierr, __FILE__, __LINE__);
             *map = tmap;
         }
         else
@@ -867,16 +887,20 @@ int PIOc_writemap(const char *file, int ndims, const int *gdims, PIO_Offset mapl
     MPI_Status status;
     int i;
     PIO_Offset *nmap;
+    int mpierr; /* Return code for MPI calls. */
 
-    MPI_Comm_size(comm, &npes);
-    MPI_Comm_rank(comm, &myrank);
+    if ((mpierr = MPI_Comm_size(comm, &npes)))
+        return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+    if ((mpierr = MPI_Comm_rank(comm, &myrank)))
+        return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 
     /* Allocate memory for the nmaplen. */
     if (myrank == 0)
         if (!(nmaplen = malloc(npes * sizeof(PIO_Offset))))
-            piodie("Memory allocation error ", __FILE__, __LINE__);
+            return pio_err(NULL, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
-    MPI_Gather(&maplen, 1, PIO_OFFSET, nmaplen, 1, PIO_OFFSET, 0, comm);
+    if ((mpierr = MPI_Gather(&maplen, 1, PIO_OFFSET, nmaplen, 1, PIO_OFFSET, 0, comm)))
+        return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 
     /* Only rank 0 writes the file. */
     if (myrank == 0)
@@ -885,7 +909,7 @@ int PIOc_writemap(const char *file, int ndims, const int *gdims, PIO_Offset mapl
 
         /* Open the file to write. */
         if (!(fp = fopen(file, "w")))
-            return PIO_EIO;
+            return pio_err(NULL, NULL, PIO_EIO, __FILE__, __LINE__);            
 
         /* Write the version and dimension info. */
         fprintf(fp,"version %d npes %d ndims %d \n", VERSNO, npes, ndims);
@@ -903,8 +927,10 @@ int PIOc_writemap(const char *file, int ndims, const int *gdims, PIO_Offset mapl
         {
             nmap = (PIO_Offset *)malloc(nmaplen[i] * sizeof(PIO_Offset));
 
-            MPI_Send(&i, 1, MPI_INT, i, npes + i, comm);
-            MPI_Recv(nmap, nmaplen[i], PIO_OFFSET, i, i, comm, &status);
+            if ((mpierr = MPI_Send(&i, 1, MPI_INT, i, npes + i, comm)))
+                return check_mpi(NULL, mpierr, __FILE__, __LINE__);                                        
+            if ((mpierr = MPI_Recv(nmap, nmaplen[i], PIO_OFFSET, i, i, comm, &status)))
+                return check_mpi(NULL, mpierr, __FILE__, __LINE__);                                        
 
             fprintf(fp, "%d %ld\n", i, nmaplen[i]);
             for (int j = 0; j < nmaplen[i]; j++)
@@ -921,9 +947,12 @@ int PIOc_writemap(const char *file, int ndims, const int *gdims, PIO_Offset mapl
     }
     else
     {
-        MPI_Recv(&i, 1, MPI_INT, 0, npes+myrank, comm, &status);
-        MPI_Send(map, maplen, PIO_OFFSET, 0, myrank, comm);
+        if ((mpierr = MPI_Recv(&i, 1, MPI_INT, 0, npes+myrank, comm, &status)))
+            return check_mpi(NULL, mpierr, __FILE__, __LINE__);                                        
+        if ((mpierr = MPI_Send(map, maplen, PIO_OFFSET, 0, myrank, comm)))
+            return check_mpi(NULL, mpierr, __FILE__, __LINE__);                                        
     }
+    
     return PIO_NOERR;
 }
 
@@ -1218,9 +1247,11 @@ int pioc_change_def(int ncid, int is_enddef)
 
     LOG((2, "pioc_change_def ncid = %d is_enddef = %d", ncid, is_enddef));
 
-    /* Find the info about this file. */
+    /* Find the info about this file. When I check the return code
+     * here, some tests fail. ???*/
     if ((ierr = pio_get_file(ncid, &file)))
         return ierr;
+    /*return pio_err(NULL, NULL, ierr, __FILE__, __LINE__);*/
     ios = file->iosystem;
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
