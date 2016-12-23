@@ -759,7 +759,7 @@ int PIOc_readmap(const char *file, int *ndims, int **gdims, PIO_Offset *fmaplen,
 
     /* Check inputs. */
     if (!ndims || !gdims || !fmaplen || !map)
-        piodie("Invalid arg ",  __FILE__, __LINE__);
+        return pio_err(NULL, NULL, PIO_EINVAL, __FILE__, __LINE__);
 
     if ((mpierr = MPI_Comm_size(comm, &npes)))
         return check_mpi(NULL, mpierr, __FILE__, __LINE__);
@@ -775,10 +775,10 @@ int PIOc_readmap(const char *file, int *ndims, int **gdims, PIO_Offset *fmaplen,
         fscanf(fp,"version %d npes %d ndims %d\n",&rversno, &rnpes, ndims);
 
         if (rversno != VERSNO)
-            piodie("Attempt to read incompatable map file version", __FILE__, __LINE__);
+            return pio_err(NULL, NULL, PIO_EINVAL, __FILE__, __LINE__);            
 
         if (rnpes < 1 || rnpes > npes)
-            piodie("Incompatable pe count in map file ", __FILE__, __LINE__);
+            return pio_err(NULL, NULL, PIO_EINVAL, __FILE__, __LINE__);            
 
         if ((mpierr = MPI_Bcast(&rnpes, 1, MPI_INT, 0, comm)))
             return check_mpi(NULL, mpierr, __FILE__, __LINE__);
