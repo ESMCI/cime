@@ -1247,9 +1247,11 @@ int pioc_change_def(int ncid, int is_enddef)
 
     LOG((2, "pioc_change_def ncid = %d is_enddef = %d", ncid, is_enddef));
 
-    /* Find the info about this file. */
+    /* Find the info about this file. When I check the return code
+     * here, some tests fail. ???*/
     if ((ierr = pio_get_file(ncid, &file)))
         return ierr;
+    /*return pio_err(NULL, NULL, ierr, __FILE__, __LINE__);*/
     ios = file->iosystem;
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
