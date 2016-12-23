@@ -53,7 +53,7 @@ int PIOc_get_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
     file_desc_t *file;     /* Pointer to file information. */
     int ierr = PIO_NOERR;  /* Return code from function calls. */
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
-    int ndims; /* The number of dimensions in the variable. */
+    int ndims;   /* The number of dimensions in the variable. */
     int *dimids; /* The IDs of the dimensions for this variable. */
     PIO_Offset typelen; /* Size (in bytes) of the data type of data in buf. */
     PIO_Offset num_elem = 1; /* Number of data elements in the buffer. */
@@ -66,14 +66,14 @@ int PIOc_get_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
     LOG((1, "PIOc_get_vars_tc ncid = %d varid = %d start = %d count = %d "
          "stride = %d xtype = %d", ncid, varid, start, count, stride, xtype));
 
-    /* User must provide a place to put some data. */
-    if (!buf)
-        return PIO_EINVAL;
-
     /* Find the info about this file. */
     if ((ierr = pio_get_file(ncid, &file)))
-        return ierr;
+        return pio_err(NULL, NULL, ierr, __FILE__, __LINE__);
     ios = file->iosystem;
+
+    /* User must provide a place to put some data. */
+    if (!buf)
+        return pio_err(ios, file, ierr, __FILE__, __LINE__);        
 
     /* Run these on all tasks if async is not in use, but only on
      * non-IO tasks if async is in use. */
@@ -110,9 +110,9 @@ int PIOc_get_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
          * user may have passed in NULLs.) */
         /* Allocate memory for these arrays, now that we know ndims. */
         if (!(rstart = malloc(ndims * sizeof(PIO_Offset))))
-            return check_netcdf(file, PIO_ENOMEM, __FILE__, __LINE__);
+            return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
         if (!(rcount = malloc(ndims * sizeof(PIO_Offset))))
-            return check_netcdf(file, PIO_ENOMEM, __FILE__, __LINE__);
+            return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
 
         PIO_Offset rstride[ndims];
         for (int vd = 0; vd < ndims; vd++)
@@ -347,7 +347,7 @@ int PIOc_get_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
     if (!mpierr)
         mpierr = MPI_Bcast((void *)buf, num_elem * typelen, MPI_BYTE, ios->ioroot,
                            ios->my_comm);
-    return ierr;
+    return PIO_NOERR;
 }
 
 /**
@@ -368,12 +368,19 @@ int PIOc_get_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
 int PIOc_get_var1_tc(int ncid, int varid, const PIO_Offset *index, nc_type xtype,
                      void *buf)
 {
-    int ndims;
-    int ierr;
+    iosystem_desc_t *ios;  /* Pointer to io system information. */
+    file_desc_t *file;     /* Pointer to file information. */
+    int ndims;   /* The number of dimensions in the variable. */
+    int ierr;    /* Return code from function calls. */
+
+    /* Find the info about this file. We need this for error handling. */
+    if ((ierr = pio_get_file(ncid, &file)))
+        return pio_err(NULL, NULL, ierr, __FILE__, __LINE__);
+    ios = file->iosystem;
 
     /* Find the number of dimensions. */
     if ((ierr = PIOc_inq_varndims(ncid, varid, &ndims)))
-        return ierr;
+        return pio_err(ios, file, ierr, __FILE__, __LINE__);
 
     /* Set up count array. */
     PIO_Offset count[ndims];
@@ -439,14 +446,14 @@ int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
     LOG((1, "PIOc_put_vars_tc ncid = %d varid = %d start = %d count = %d "
          "stride = %d xtype = %d", ncid, varid, start, count, stride, xtype));
 
-    /* User must provide some data. */
-    if (!buf)
-        return PIO_EINVAL;
-
     /* Get file info. */
     if ((ierr = pio_get_file(ncid, &file)))
-        return ierr;
+        return pio_err(NULL, NULL, ierr, __FILE__, __LINE__);
     ios = file->iosystem;
+
+    /* User must provide a place to put some data. */
+    if (!buf)
+        return pio_err(ios, file, ierr, __FILE__, __LINE__);        
 
     /* Run these on all tasks if async is not in use, but only on
      * non-IO tasks if async is in use. */
@@ -486,11 +493,11 @@ int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
 
         /* Allocate memory for these arrays, now that we know ndims. */
         if (!(rstart = malloc(ndims * sizeof(PIO_Offset))))
-            return check_netcdf(file, PIO_ENOMEM, __FILE__, __LINE__);
+            return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
         if (!(rcount = malloc(ndims * sizeof(PIO_Offset))))
-            return check_netcdf(file, PIO_ENOMEM, __FILE__, __LINE__);
+            return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
         if (!(rstride = malloc(ndims * sizeof(PIO_Offset))))
-            return check_netcdf(file, PIO_ENOMEM, __FILE__, __LINE__);
+            return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
 
         /* Figure out the real start, count, and stride arrays. (The
          * user may have passed in NULLs.) */
@@ -591,7 +598,7 @@ int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
             {
                 LOG((2, "stride not present"));
                 if (!(fake_stride = malloc(ndims * sizeof(PIO_Offset))))
-                    return PIO_ENOMEM;
+                    return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
                 for (int d = 0; d < ndims; d++)
                     fake_stride[d] = 1;
             }
@@ -603,7 +610,7 @@ int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
             if (vdesc->nreqs % PIO_REQUEST_ALLOC_CHUNK == 0)
                 if (!(vdesc->request = realloc(vdesc->request,
                                                sizeof(int) * (vdesc->nreqs + PIO_REQUEST_ALLOC_CHUNK))))
-                    return PIO_ENOMEM;
+                    return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
             request = vdesc->request + vdesc->nreqs;
             LOG((2, "PIOc_put_vars_tc request = %d", vdesc->request));
 
@@ -732,7 +739,7 @@ int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
         return check_netcdf(file, ierr, __FILE__, __LINE__);
     LOG((2, "PIOc_put_vars_tc bcast netcdf return code %d complete", ierr));
 
-    return ierr;
+    return PIO_NOERR;
 }
 
 /**
@@ -766,12 +773,19 @@ int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
 int PIOc_put_var1_tc(int ncid, int varid, const PIO_Offset *index, nc_type xtype,
                      const void *op)
 {
-    int ndims;
-    int ierr;
+    iosystem_desc_t *ios;  /* Pointer to io system information. */
+    file_desc_t *file;     /* Pointer to file information. */
+    int ndims;   /* The number of dimensions in the variable. */
+    int ierr;    /* Return code from function calls. */
+
+    /* Find the info about this file. We need this for error handling. */
+    if ((ierr = pio_get_file(ncid, &file)))
+        return pio_err(NULL, NULL, ierr, __FILE__, __LINE__);
+    ios = file->iosystem;
 
     /* Find the number of dimensions. */
     if ((ierr = PIOc_inq_varndims(ncid, varid, &ndims)))
-        return ierr;
+        return pio_err(ios, file, ierr, __FILE__, __LINE__);
 
     /* Set up count array. */
     PIO_Offset count[ndims];
