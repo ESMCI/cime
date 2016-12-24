@@ -186,14 +186,14 @@ extern "C" {
                                   const int iodesc_ndims, MPI_Datatype basetype, const PIO_Offset *gsize,
                                   const int maxregions, io_region *firstregion, const PIO_Offset llen,
                                   const int maxiobuflen, const int num_aiotasks,
-                                  void *IOBUF, const int *frame);
+                                  void *iobuf, const int *frame);
     int pio_write_darray_multi_nc_serial(file_desc_t *file, const int nvars, const int *vid,
                                          const int iodesc_ndims, MPI_Datatype basetype, const PIO_Offset *gsize,
                                          const int maxregions, io_region *firstregion, const PIO_Offset llen,
                                          const int maxiobuflen, const int num_aiotasks,
-                                         void *IOBUF, const int *frame);
-    int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, const int vid, void *IOBUF);
-    int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc, const int vid, void *IOBUF);
+                                         void *iobuf, const int *frame);
+    int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, const int vid, void *iobuf);
+    int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc, const int vid, void *iobuf);
 
     /* Generalized get functions. */
     int PIOc_get_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Offset *count,
