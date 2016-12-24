@@ -70,14 +70,20 @@ void compute_buffer_init(iosystem_desc_t ios)
  * that will be written to
  * @param iodesc a pointer to the defined iodescriptor for the buffer
  * @param vid the variable id to be written
- * @param IOBUF the buffer to be written from this mpi task
+ * @param iobuf the buffer to be written from this mpi task. May be
+ * null. for example we have 8 ionodes and a distributed array with
+ * global size 4, then at least 4 nodes will have a null iobuf. In
+ * practice the box rearranger trys to have at least blocksize bytes
+ * on each io task and so if the total number of bytes to write is
+ * less than blocksize*numiotasks then some iotasks will have a NULL
+ * iobuf.
  * @param fillvalue the optional fillvalue to be used for missing
  * data in this buffer. Ignored in all cases. (???)
  * @return 0 for success, error code otherwise.
  * @ingroup PIO_write_darray
  */
 int pio_write_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid,
-                        void *IOBUF, void *fillvalue)
+                        void *iobuf, void *fillvalue)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     var_desc_t *vdesc;     /* Pointer to info about the var. */
@@ -94,7 +100,7 @@ int pio_write_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid,
     LOG((1, "pio_write_array_nc vid = %d", vid));
 
     /* Check inputs. */
-    pioassert(file && file->iosystem && iodesc && IOBUF, "invalid input",
+    pioassert(file && file->iosystem && iodesc && iobuf, "invalid input",
       __FILE__, __LINE__);
 
 #ifdef TIMING
@@ -182,7 +188,7 @@ int pio_write_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid,
 
             if (region)
             {
-                bufptr = (void *)((char *)IOBUF + tsize * region->loffset);
+                bufptr = (void *)((char *)iobuf + tsize * region->loffset);
                 if (vdesc->record >= 0)
                 {
                     /* This is a record based multidimensional array. */
@@ -377,7 +383,7 @@ int pio_write_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid,
                 {
                     /* printf("%s %d %d %ld %ld\n",__FILE__,__LINE__,ios->io_rank,iodesc->llen, tdsize);
                          ierr = ncmpi_put_varn_all(file->fh, vid, iodesc->maxregions, startlist, countlist,
-                                           IOBUF, iodesc->llen, iodesc->basetype); */
+                                           iobuf, iodesc->llen, iodesc->basetype); */
                     int reqn = 0;
 
                     if (vdesc->nreqs % PIO_REQUEST_ALLOC_CHUNK == 0 )
@@ -394,7 +400,7 @@ int pio_write_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid,
                         while(vdesc->request[reqn] != NC_REQ_NULL)
                             reqn++;
 
-                    ierr = ncmpi_bput_varn(file->fh, vid, rrcnt, startlist, countlist, IOBUF, iodesc->llen,
+                    ierr = ncmpi_bput_varn(file->fh, vid, rrcnt, startlist, countlist, iobuf, iodesc->llen,
                                            iodesc->basetype, vdesc->request+reqn);
 
                     if (vdesc->request[reqn] == NC_REQ_NULL)
@@ -458,16 +464,22 @@ int pio_write_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid,
  * field
  * @param maxiobuflen maximum llen participating
  * @param num_aiotasks actual number of iotasks participating
- * @param IOBUF the buffer to be written from this mpi task
+ * @param iobuf the buffer to be written from this mpi task. May be
+ * null. for example we have 8 ionodes and a distributed array with
+ * global size 4, then at least 4 nodes will have a null iobuf. In
+ * practice the box rearranger trys to have at least blocksize bytes
+ * on each io task and so if the total number of bytes to write is
+ * less than blocksize*numiotasks then some iotasks will have a NULL
+ * iobuf.
  * @param frame the frame or record dimension for each of the nvars
- * variables in IOBUF
+ * variables in iobuf
  * @return 0 for success, error code otherwise.
  * @ingroup PIO_write_darray
  */
 int pio_write_darray_multi_nc(file_desc_t *file, int nvars, const int *vid, int iodesc_ndims,
                               MPI_Datatype basetype, const PIO_Offset *gsize, int maxregions,
                               io_region *firstregion, PIO_Offset llen, int maxiobuflen,
-                              int num_aiotasks, void *IOBUF, const int *frame)
+                              int num_aiotasks, void *iobuf, const int *frame)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     var_desc_t *vdesc;
@@ -594,7 +606,7 @@ int pio_write_darray_multi_nc(file_desc_t *file, int nvars, const int *vid, int 
                         start[0] = frame[nv];
 
                     if (region)
-                        bufptr = (void *)((char *)IOBUF + tsize * (nv * llen + region->loffset));
+                        bufptr = (void *)((char *)iobuf + tsize * (nv * llen + region->loffset));
 
                     ierr = nc_var_par_access(ncid, vid[nv], NC_COLLECTIVE);
 
@@ -636,7 +648,7 @@ int pio_write_darray_multi_nc(file_desc_t *file, int nvars, const int *vid, int 
                 {
                     /*printf("%s %d %d %ld %ld\n",__FILE__,__LINE__,ios->io_rank,iodesc->llen, tdsize);
                          ierr = ncmpi_put_varn_all(ncid, vid, iodesc->maxregions, startlist, countlist,
-                                           IOBUF, iodesc->llen, iodesc->basetype);*/
+                                           iobuf, iodesc->llen, iodesc->basetype);*/
 
                     for (int nv = 0; nv < nvars; nv++)
                     {
@@ -645,7 +657,7 @@ int pio_write_darray_multi_nc(file_desc_t *file, int nvars, const int *vid, int 
                             for (int rc = 0; rc < rrcnt; rc++)
                                 startlist[rc][0] = frame[nv];
 
-                        bufptr = (void *)((char *)IOBUF + nv * tsize * llen);
+                        bufptr = (void *)((char *)iobuf + nv * tsize * llen);
 
                         int reqn = 0;
                         if (vdesc->nreqs % PIO_REQUEST_ALLOC_CHUNK == 0 )
@@ -736,16 +748,22 @@ int pio_write_darray_multi_nc(file_desc_t *file, int nvars, const int *vid, int 
  * field
  * @param maxiobuflen : maximum llen participating
  * @param num_aiotasks : actual number of iotasks participating
- * @param IOBUF: the buffer to be written from this mpi task
+ * @param iobuf the buffer to be written from this mpi task. May be
+ * null. for example we have 8 ionodes and a distributed array with
+ * global size 4, then at least 4 nodes will have a null iobuf. In
+ * practice the box rearranger trys to have at least blocksize bytes
+ * on each io task and so if the total number of bytes to write is
+ * less than blocksize*numiotasks then some iotasks will have a NULL
+ * iobuf.
  * @param frame : the frame or record dimension for each of the
- * nvars variables in IOBUF
+ * nvars variables in iobuf
  * @return 0 for success, error code otherwise.
  * @ingroup PIO_write_darray
  */
 int pio_write_darray_multi_nc_serial(file_desc_t *file, int nvars, const int *vid, int iodesc_ndims,
                                      MPI_Datatype basetype, const PIO_Offset *gsize, int maxregions,
                                      io_region *firstregion, PIO_Offset llen, int maxiobuflen,
-                                     int num_aiotasks, void *IOBUF, const int *frame)
+                                     int num_aiotasks, void *iobuf, const int *frame)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     var_desc_t *vdesc;
@@ -866,7 +884,7 @@ int pio_write_darray_multi_nc_serial(file_desc_t *file, int nvars, const int *vi
                 if ((mpierr = MPI_Send(tmp_count, maxregions * fndims, MPI_OFFSET, 0, ios->io_rank + 3 * ios->num_iotasks,
                                        ios->io_comm)))
                     return check_mpi(file, mpierr, __FILE__, __LINE__);
-                if ((mpierr = MPI_Send(IOBUF, nvars * llen, basetype, 0, ios->io_rank + 4 * ios->num_iotasks, ios->io_comm)))
+                if ((mpierr = MPI_Send(iobuf, nvars * llen, basetype, 0, ios->io_rank + 4 * ios->num_iotasks, ios->io_comm)))
                     return check_mpi(file, mpierr, __FILE__, __LINE__);
             }
         }
@@ -900,7 +918,7 @@ int pio_write_darray_multi_nc_serial(file_desc_t *file, int nvars, const int *vi
                         if ((mpierr = MPI_Recv(tmp_count, rregions * fndims, MPI_OFFSET, rtask, rtask + 3 * ios->num_iotasks,
                                                ios->io_comm, &status)))
                             return check_mpi(file, mpierr, __FILE__, __LINE__);
-                        if ((mpierr = MPI_Recv(IOBUF, nvars * rlen, basetype, rtask, rtask + 4 * ios->num_iotasks, ios->io_comm,
+                        if ((mpierr = MPI_Recv(iobuf, nvars * rlen, basetype, rtask, rtask + 4 * ios->num_iotasks, ios->io_comm,
                                                &status)))
                             return check_mpi(file, mpierr, __FILE__, __LINE__);
                     }
@@ -923,7 +941,7 @@ int pio_write_darray_multi_nc_serial(file_desc_t *file, int nvars, const int *vi
 
                         for (int nv = 0; nv < nvars; nv++)
                         {
-                            bufptr = (void *)((char *)IOBUF+ tsize * (nv * rlen + loffset));
+                            bufptr = (void *)((char *)iobuf+ tsize * (nv * rlen + loffset));
 
                             if (vdesc->record >= 0)
                             {
@@ -985,11 +1003,17 @@ int pio_write_darray_multi_nc_serial(file_desc_t *file, int nvars, const int *vi
  * that will be written to
  * @param iodesc a pointer to the defined iodescriptor for the buffer
  * @param vid the variable id to be read
- * @param IOBUF the buffer to be read into from this mpi task
+ * @param iobuf the buffer to be written from this mpi task. May be
+ * null. for example we have 8 ionodes and a distributed array with
+ * global size 4, then at least 4 nodes will have a null iobuf. In
+ * practice the box rearranger trys to have at least blocksize bytes
+ * on each io task and so if the total number of bytes to write is
+ * less than blocksize*numiotasks then some iotasks will have a NULL
+ * iobuf.
  * @return 0 on success, error code otherwise.
  * @ingroup PIO_read_darray
  */
-int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid, void *IOBUF)
+int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid, void *iobuf)
 {
     int ierr = PIO_NOERR;
     iosystem_desc_t *ios;  /* Pointer to io system information. */
@@ -1070,9 +1094,9 @@ int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid, void *IOBU
             else
             {
                 if (regioncnt == 0 || region == NULL)
-                    bufptr = IOBUF;
+                    bufptr = iobuf;
                 else
-                    bufptr=(void *)((char *)IOBUF + tsize * region->loffset);
+                    bufptr=(void *)((char *)iobuf + tsize * region->loffset);
 
                 LOG((2, "%d %d %d", iodesc->llen - region->loffset, iodesc->llen, region->loffset));
 
@@ -1137,7 +1161,7 @@ int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid, void *IOBU
                 if (regioncnt == iodesc->maxregions - 1)
                 {
                     ierr = ncmpi_get_varn_all(file->fh, vid, rrlen, startlist,
-                                              countlist, IOBUF, iodesc->llen, iodesc->basetype);
+                                              countlist, iobuf, iodesc->llen, iodesc->basetype);
 
                     /* Release the start and count arrays. */
                     for (i = 0; i < rrlen; i++)
@@ -1175,12 +1199,18 @@ int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid, void *IOBU
  * that will be written to
  * @param iodesc a pointer to the defined iodescriptor for the buffer
  * @param vid the variable id to be read.
- * @param IOBUF the buffer to be read into from this mpi task
+ * @param iobuf the buffer to be written from this mpi task. May be
+ * null. for example we have 8 ionodes and a distributed array with
+ * global size 4, then at least 4 nodes will have a null iobuf. In
+ * practice the box rearranger trys to have at least blocksize bytes
+ * on each io task and so if the total number of bytes to write is
+ * less than blocksize*numiotasks then some iotasks will have a NULL
+ * iobuf.
  * @returns 0 for success, error code otherwise.
  * @ingroup PIO_read_darray
  */
 int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc, int vid,
-                              void *IOBUF)
+                              void *iobuf)
 {
     int ierr = PIO_NOERR;
     iosystem_desc_t *ios;  /* Pointer to io system information. */
@@ -1301,7 +1331,7 @@ int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc, int vid,
                 if ((mpierr = MPI_Send(tmp_start, iodesc->maxregions*fndims, MPI_OFFSET, 0,
                                        3 * ios->num_iotasks + ios->io_rank, ios->io_comm)))
                     return check_mpi(file, mpierr, __FILE__, __LINE__);
-                if ((mpierr = MPI_Recv(IOBUF, iodesc->llen, iodesc->basetype, 0,
+                if ((mpierr = MPI_Recv(iobuf, iodesc->llen, iodesc->basetype, 0,
                                        4 * ios->num_iotasks+ios->io_rank, ios->io_comm, &status)))
                     return check_mpi(file, mpierr, __FILE__, __LINE__);
             }
@@ -1343,7 +1373,7 @@ int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc, int vid,
 
                 for (regioncnt = 0; regioncnt < maxregions; regioncnt++)
                 {
-                    bufptr=(void *)((char *)IOBUF + tsize * loffset);
+                    bufptr=(void *)((char *)iobuf + tsize * loffset);
                     regionsize = 1;
 
                     if (rtask < ios->num_iotasks)
@@ -1386,7 +1416,7 @@ int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc, int vid,
                 }
 
                 if (rtask < ios->num_iotasks)
-                    if ((mpierr = MPI_Send(IOBUF, tmp_bufsize, iodesc->basetype, rtask,
+                    if ((mpierr = MPI_Send(iobuf, tmp_bufsize, iodesc->basetype, rtask,
                                            4 * ios->num_iotasks + rtask, ios->io_comm)))
                         return check_mpi(file, mpierr, __FILE__, __LINE__);
             }
