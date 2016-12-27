@@ -56,10 +56,13 @@ int PIOc_File_is_Open(int ncid)
 
 /**
  * Set the error handling method to be used for subsequent pio library
- * calls, returns the previous method setting. This function is
- * supported but deprecated. New code should use
- * PIOc_set_file_error_handling().  This method has no way to return
- * an error, so any failure will result in MPI_Abort.
+ * calls, returns the previous method setting. Note that this changes
+ * error handling for the IO system that was used when this file was
+ * opened. Other files opened with the same IO system will also he
+ * affected by this call. This function is supported but
+ * deprecated. New code should use PIOc_set_iosystem_error_handling().
+ * This method has no way to return an error, so any failure will
+ * result in MPI_Abort.
  *
  * @param ncid the ncid of an open file
  * @param method the error handling method
@@ -230,12 +233,12 @@ int PIOc_Set_IOSystem_Error_Handling(int iosysid, int method)
 
 /**
  * Set the error handling method used for subsequent calls for this IO
- * system. This may be overridden for individual files by
- * PIOc_set_file_error_handling().
+ * system.
  *
  * @param iosysid the IO system ID
  * @param method the error handling method
- * @param old_method pointer to int that will get old method. Ignored if NULL.
+ * @param old_method pointer to int that will get old method. Ignored
+ * if NULL.
  * @returns 0 for success, error code otherwise.
  * @ingroup PIO_error_method
  */
