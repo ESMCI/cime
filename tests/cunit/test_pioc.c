@@ -675,9 +675,6 @@ int test_nc4(int iosysid, int num_flavors, int *flavor, int my_rank)
         if ((ret = PIOc_createfile(iosysid, &ncid, &(flavor[fmt]), filename, PIO_CLOBBER)))
             ERR(ret);
 
-        /* Set error handling. */
-        /* PIOc_Set_File_Error_Handling(ncid, PIO_BCAST_ERROR); */
-
         /* Define netCDF dimensions and variable. */
         printf("%d Defining netCDF metadata...\n", my_rank);
         for (int d = 0; d < NDIM; d++)

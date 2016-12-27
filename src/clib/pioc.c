@@ -76,50 +76,18 @@ int PIOc_Set_File_Error_Handling(int ncid, int method)
     if (pio_get_file(ncid, &file))
         piodie("Could not find file", __FILE__, __LINE__);                
 
-    /* Get the old method. */
-    oldmethod = file->iosystem->error_handler;
-
-    /* Set the file error handler. */
-    if (PIOc_set_file_error_handling(ncid, method, &oldmethod))
-        piodie("Could not set the file error hanlder", __FILE__, __LINE__);        
-
-    return oldmethod;
-}
-
-/**
- * Set the error handling method to be used for subsequent pio
- * library calls on this file.
- *
- * @param ncid the ncid of an open file
- * @param method the error handling method
- * @param old_method pointer to int that will get old method. Ignored if NULL.
- * @returns 0 for success, error code otherwise.
- * @ingroup PIO_error_method
- */
-int PIOc_set_file_error_handling(int ncid, int method, int *old_method)
-{
-    file_desc_t *file;
-    int ret;
-
-    LOG((1, "PIOc_set_file_error_handling ncid = %d method = %d", ncid, method));
-
-    /* Find info for this file. */
-    if ((ret = pio_get_file(ncid, &file)))
-        return pio_err(NULL, NULL, ret, __FILE__, __LINE__);
-
     /* Check that valid error handler was provided. */
     if (method != PIO_INTERNAL_ERROR && method != PIO_BCAST_ERROR &&
         method != PIO_RETURN_ERROR)
         return pio_err(file->iosystem, file, PIO_EINVAL, __FILE__, __LINE__);
 
-    /* Return the current handler. */
-    if (old_method)
-        *old_method = file->error_handler;
+    /* Get the old method. */
+    oldmethod = file->iosystem->error_handler;
 
     /* Set the error hanlder. */
-    file->error_handler = method;
-    
-    return PIO_NOERR;
+    file->iosystem->error_handler = method;
+
+    return oldmethod;
 }
 
 /**

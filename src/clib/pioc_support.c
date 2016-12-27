@@ -429,7 +429,7 @@ int check_netcdf2(iosystem_desc_t *ios, file_desc_t *file, int status,
     if (ios)
         eh = ios->error_handler;
     if (file)
-        eh = file->error_handler;
+        eh = file->iosystem->error_handler;
     pioassert(eh == PIO_INTERNAL_ERROR || eh == PIO_BCAST_ERROR || eh == PIO_RETURN_ERROR,
               "invalid error handler", __FILE__, __LINE__);
 
@@ -499,7 +499,7 @@ int pio_err(iosystem_desc_t *ios, file_desc_t *file, int err_num, const char *fn
 
     /* What error handler should we use? */
     if (file)
-        err_handler = file->error_handler ? file->error_handler : file->iosystem->error_handler;
+        err_handler = file->iosystem->error_handler;
     else if (ios)
         err_handler = ios->error_handler;
 
@@ -1029,7 +1029,6 @@ int PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype,
     file->iotype = *iotype;
     file->iosystem = ios;
     file->mode = mode;
-    file->error_handler = ios->error_handler;
 
     for (int i = 0; i < PIO_MAX_VARS; i++)
     {

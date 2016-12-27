@@ -371,10 +371,6 @@ typedef struct file_desc_t
      * the same communication pattern prior to a write. */
     struct wmulti_buffer buffer;
 
-    /** Controls handling errors. Overrides the IO system error
-     * handler if set. */
-    int error_handler;
-
     /** Pointer to the next file_desc_t in the list of open files. */
     struct file_desc_t *next;
 
@@ -626,9 +622,6 @@ extern "C" {
     /* Set the error hanlding for a file. */
     int PIOc_Set_File_Error_Handling(int ncid, int method);
 
-    /* Set the error hanlding for a file. */
-    int PIOc_set_file_error_handling(int ncid, int method, int *old_method);
-    
     int PIOc_set_hint(int iosysid, const char *hint, const char *hintval);
     int PIOc_set_chunk_cache(int iosysid, int iotype, PIO_Offset size, PIO_Offset nelems,
 			     float preemption);
