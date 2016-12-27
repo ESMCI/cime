@@ -48,19 +48,6 @@ int create_file(MPI_Comm comm, int iosysid, int format, char *filename,
         return ret;
     printf("%d file created ncid = %d\n", my_rank, ncid);
 
-    /* Set the error handler. */
-    int old_method;
-    if ((ret = PIOc_set_file_error_handling(ncid, PIO_RETURN_ERROR, &old_method)))
-        return ret;
-    printf("old_method = %d\n", old_method);
-    if (old_method != PIO_BCAST_ERROR) /* the default */
-        return ERR_WRONG;
-
-    /* Set the error handler the old-fashioned way. */
-    old_method = PIOc_Set_File_Error_Handling(ncid, PIO_BCAST_ERROR);
-    if (old_method != PIO_RETURN_ERROR)
-        return ERR_WRONG;
-
     /* Define a dimension. */
     printf("%d defining dimension %s\n", my_rank, dimname);
     if ((ret = PIOc_def_dim(ncid, dimname, PIO_TF_MAX_STR_LEN, &dimid)))
