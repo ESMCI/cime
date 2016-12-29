@@ -430,6 +430,7 @@ int check_netcdf2(iosystem_desc_t *ios, file_desc_t *file, int status,
         eh = ios->error_handler;
     if (file)
         eh = file->iosystem->error_handler;
+    LOG((1, "check_netcdf2 eh = %d", eh));
     pioassert(eh == PIO_INTERNAL_ERROR || eh == PIO_BCAST_ERROR || eh == PIO_RETURN_ERROR,
               "invalid error handler", __FILE__, __LINE__);
 
@@ -1150,6 +1151,7 @@ int PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype,
          ios->my_comm));
     if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
         return check_mpi(file, mpierr, __FILE__, __LINE__);
+    LOG((2, "Bcast error code ierr = %d", ierr));
 
     /* If there was an error, free allocated memory and deal with the error. */
     if (ierr)

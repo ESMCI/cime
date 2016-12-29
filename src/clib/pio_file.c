@@ -393,31 +393,39 @@ int PIOc_deletefile(int iosysid, const char *filename)
     {
         if (!ios->ioproc)
         {
+            LOG((3, "sending message"));
             if (ios->comp_rank==0)
                 mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
 
             len = strlen(filename);
+            LOG((3, "message sent len = %d", len));
             if (!mpierr)
                 mpierr = MPI_Bcast(&len, 1, MPI_INT, ios->compmaster, ios->intercomm);
+            LOG((3, "len sent mpierr = %d", mpierr));
             if (!mpierr)
                 mpierr = MPI_Bcast((void *)filename, len + 1, MPI_CHAR, ios->compmaster,
                                    ios->intercomm);
-            LOG((2, "Bcast len = %s filename = %s", len, filename));
+            LOG((2, "Bcast len = %d filename = %s", len, filename));
         }
 
+        LOG((3, "hanlding errors mpierr = %d", mpierr));
         /* Handle MPI errors. */
         if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
             return check_mpi2(ios, NULL, mpierr2, __FILE__, __LINE__);
         if (mpierr)
             return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+        LOG((3, "done hanlding errors mpierr = %d", mpierr));
     }
+    LOG((3, "past async stuff"));
 
     /* If this is an IO task, then call the netCDF function. The
      * barriers are needed to assure that no task is trying to operate
      * on the file while it is being deleted. */
     if (ios->ioproc)
     {
+        LOG((3, "waiting at io_comm barrier"));        
         mpierr = MPI_Barrier(ios->io_comm);
+        LOG((3, "done waiting at io_comm barrier"));        
             
 #ifdef _NETCDF
         if (!mpierr && ios->io_rank == 0)
