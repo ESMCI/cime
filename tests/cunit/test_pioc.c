@@ -939,15 +939,14 @@ int test_async(int my_rank, int num_flavors, int *flavor, MPI_Comm test_comm)
      * and when the do, they should go straight to finalize. */
     if (comp_task)
     {
-        /* Run tests. */
-        printf("%d Running tests...\n", my_rank);
-        if ((ret = test_all(iosysid[0], num_flavors, flavor, my_rank, test_comm, 1)))
-            return ret;
-        
-        /* Finalize the IO system. Only call this from the computation tasks. */
-        printf("%d %s Freeing PIO resources\n", my_rank, TEST_NAME);
         for (int c = 0; c < COMPONENT_COUNT; c++)
         {
+            printf("%d Running tests...\n", my_rank);
+            if ((ret = test_all(iosysid[c], num_flavors, flavor, my_rank, comp_comm[0], 1)))
+                return ret;
+
+            /* Finalize the IO system. Only call this from the computation tasks. */
+            printf("%d %s Freeing PIO resources\n", my_rank, TEST_NAME);
             if ((ret = PIOc_finalize(iosysid[c])))
                 ERR(ret);
             printf("%d %s PIOc_finalize completed for iosysid = %d\n", my_rank, TEST_NAME,
