@@ -911,6 +911,16 @@ int PIOc_iotype_available(int iotype)
  * computation components are assigned processors sequentially
  * starting with processor num_io_procs.
  *
+ * @param user_io_comm pointer to an MPI_Comm. If not NULL, it will
+ * get an MPI duplicate of the IO communicator. (It is a full
+ * duplicate and later must be freed with MPI_Free() by the caller.)
+ *
+ * @param user_comp_comm pointer to an array of pointers to MPI_Comm;
+ * the array is of length component_count. If not NULL, it will get an
+ * MPI duplicate of each computation communicator. (These are full
+ * duplicates and each must later be freed with MPI_Free() by the
+ * caller.)
+ *
  * @param iosysidp pointer to array of length component_count that
  * gets the iosysid for each component.
  *
@@ -919,12 +929,13 @@ int PIOc_iotype_available(int iotype)
  */
 int PIOc_Init_Async(MPI_Comm world, int num_io_procs, int *io_proc_list,
                     int component_count, int *num_procs_per_comp, int **proc_list,
-                    int *iosysidp)
+                     MPI_Comm *user_io_comm, MPI_Comm *user_comp_comm, int *iosysidp)
 {
     int my_rank;
     MPI_Comm newcomm;
     int **my_proc_list;
     int *my_io_proc_list;
+    int mpierr;
     int ret;
 
     /* Check input parameters. */
@@ -1032,6 +1043,15 @@ int PIOc_Init_Async(MPI_Comm world, int num_io_procs, int *io_proc_list,
     if ((ret = MPI_Comm_create(world, io_group, &io_comm)))
         return check_mpi(NULL, ret, __FILE__, __LINE__);
     LOG((3, "created io comm io_comm = %d", io_comm));
+
+    /* Does the user want a copy of the IO communicator? */
+    if (user_io_comm)
+    {
+        *user_io_comm = MPI_COMM_NULL;
+        if (in_io)
+            if ((mpierr = MPI_Comm_dup(io_comm, user_io_comm)))
+                return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+    }
 
     /* For processes in the IO component, get their rank within the IO
      * communicator. */
@@ -1156,11 +1176,23 @@ int PIOc_Init_Async(MPI_Comm world, int num_io_procs, int *io_proc_list,
         {
             if ((ret = MPI_Comm_create(world, group[cmp], &my_iosys->comp_comm)))
                 return check_mpi(NULL, ret, __FILE__, __LINE__);
+
             if (in_cmp)
             {
+                /* Does the user want a copy? */
+                if (user_comp_comm)
+                    if ((mpierr = MPI_Comm_dup(my_iosys->comp_comm, &user_comp_comm[cmp - 1])))
+                        return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+
+                /* Get the rank in this comp comm. */
                 if ((ret = MPI_Comm_rank(my_iosys->comp_comm, &my_iosys->comp_rank)))
                     return check_mpi(NULL, ret, __FILE__, __LINE__);
+
+                /* Set comp_rank 0 to be the compmaster. It will have
+                 * a setting of MPI_ROOT, all other tasks will have a
+                 * setting of MPI_PROC_NULL. */
                 my_iosys->compmaster = my_iosys->comp_rank ? MPI_PROC_NULL : MPI_ROOT;
+                
                 LOG((3, "intracomm created for cmp = %d comp_comm = %d comp_rank = %d comp %s",
                      cmp, my_iosys->comp_comm, my_iosys->comp_rank,
                      my_iosys->compmaster == MPI_ROOT ? "MASTER" : "SERVANT"));

@@ -1011,6 +1011,8 @@ int test_async(int my_rank, int num_flavors, int *flavor, MPI_Comm test_comm)
     int ioid;                      /* The I/O description ID. */
     PIO_Offset *compdof;           /* The decomposition mapping. */
     int num_procs[COMPONENT_COUNT + 1] = {1, TARGET_NTASKS - 1}; /* Num procs in each component. */
+    MPI_Comm io_comm;              /* Will get a duplicate of IO communicator. */
+    MPI_Comm comp_comm[COMPONENT_COUNT]; /* Will get duplicates of computation communicators. */
     int mpierr;  /* Return code from MPI functions. */
     int ret;     /* Return code. */
 
@@ -1020,7 +1022,7 @@ int test_async(int my_rank, int num_flavors, int *flavor, MPI_Comm test_comm)
 
     /* Initialize the IO system. */
     if ((ret = PIOc_Init_Async(test_comm, NUM_IO_PROCS, NULL, COMPONENT_COUNT,
-                               num_procs, NULL, iosysid)))
+                               num_procs, NULL, &io_comm, comp_comm, iosysid)))
         ERR(ERR_INIT);
     for (int c = 0; c < COMPONENT_COUNT; c++)
         printf("%d iosysid[%d] = %d\n", my_rank, c, iosysid[c]);
@@ -1030,20 +1032,26 @@ int test_async(int my_rank, int num_flavors, int *flavor, MPI_Comm test_comm)
      * and when the do, they should go straight to finalize. */
     if (comp_task)
     {
-        /* Run tests. */
-        printf("%d Running tests...\n", my_rank);
-        if ((ret = test_all(iosysid[0], num_flavors, flavor, my_rank, test_comm, 1)))
-            return ret;
-        
-        /* Finalize the IO system. Only call this from the computation tasks. */
-        printf("%d %s Freeing PIO resources\n", my_rank, TEST_NAME);
         for (int c = 0; c < COMPONENT_COUNT; c++)
         {
+            printf("%d Running tests...\n", my_rank);
+            if ((ret = test_all(iosysid[c], num_flavors, flavor, my_rank, comp_comm[0], 1)))
+                return ret;
+
+            /* Finalize the IO system. Only call this from the computation tasks. */
+            printf("%d %s Freeing PIO resources\n", my_rank, TEST_NAME);
             if ((ret = PIOc_finalize(iosysid[c])))
                 ERR(ret);
             printf("%d %s PIOc_finalize completed for iosysid = %d\n", my_rank, TEST_NAME,
                    iosysid[c]);
+            if ((mpierr = MPI_Comm_free(&comp_comm[c])))
+                MPIERR(mpierr);
         }
+    }
+    else
+    {
+        if ((mpierr = MPI_Comm_free(&io_comm)))
+            MPIERR(mpierr);
     } /* endif comp_task */
 
     return PIO_NOERR;

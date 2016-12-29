@@ -59,7 +59,7 @@ int main(int argc, char **argv)
 
             /* Initialize the IO system. */
             if ((ret = PIOc_Init_Async(test_comm, num_io_procs[combo], NULL, COMPONENT_COUNT,
-                                       num_procs[combo], NULL, iosysid)))
+                                       num_procs[combo], NULL, NULL, NULL, iosysid)))
                 ERR(ERR_INIT);
 
             for (int c = 0; c < COMPONENT_COUNT; c++)

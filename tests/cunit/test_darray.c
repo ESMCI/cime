@@ -252,7 +252,7 @@ int test_async(int my_rank, int nprocs, int num_flavors, int *flavor,
 
     /* Initialize the IO system. */
     if ((ret = PIOc_Init_Async(test_comm, NUM_IO_PROCS, NULL, COMPONENT_COUNT,
-                               num_procs, NULL, iosysid)))
+                               num_procs, NULL, NULL, NULL, iosysid)))
         ERR(ERR_INIT);
     for (int c = 0; c < COMPONENT_COUNT; c++)
         printf("%d iosysid[%d] = %d\n", my_rank, c, iosysid[c]);

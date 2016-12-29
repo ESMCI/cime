@@ -56,7 +56,7 @@ int main(int argc, char **argv)
 
         /* Initialize the IO system. */
         if ((ret = PIOc_Init_Async(test_comm, NUM_IO_PROCS, NULL, COMPONENT_COUNT,
-                                   num_procs, NULL, iosysid)))
+                                   num_procs, NULL, NULL, NULL, iosysid)))
             ERR(ERR_INIT);
 
         /* All the netCDF calls are only executed on the computation
