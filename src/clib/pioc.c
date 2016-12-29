@@ -921,10 +921,19 @@ int PIOc_Init_Async(MPI_Comm world, int num_io_procs, int *io_proc_list,
                     int component_count, int *num_procs_per_comp, int **proc_list,
                     int *iosysidp)
 {
+    return PIOc_init_async2(world, num_io_procs, io_proc_list, component_count,
+                            num_procs_per_comp, proc_list, NULL, NULL, iosysidp);
+}
+
+int PIOc_init_async2(MPI_Comm world, int num_io_procs, int *io_proc_list,
+                     int component_count, int *num_procs_per_comp, int **proc_list,
+                     MPI_Comm *user_io_comm, MPI_Comm **user_comp_comm, int *iosysidp)
+{
     int my_rank;
     MPI_Comm newcomm;
     int **my_proc_list;
     int *my_io_proc_list;
+    int mpierr;
     int ret;
 
     /* Check input parameters. */
@@ -1032,6 +1041,11 @@ int PIOc_Init_Async(MPI_Comm world, int num_io_procs, int *io_proc_list,
     if ((ret = MPI_Comm_create(world, io_group, &io_comm)))
         return check_mpi(NULL, ret, __FILE__, __LINE__);
     LOG((3, "created io comm io_comm = %d", io_comm));
+
+    /* Does the user want a copy of the IO communicator? */
+    if (user_io_comm)
+        if ((mpierr = MPI_Comm_dup(io_comm, user_io_comm)))
+            return check_mpi(NULL, mpierr, __FILE__, __LINE__);            
 
     /* For processes in the IO component, get their rank within the IO
      * communicator. */
@@ -1156,6 +1170,12 @@ int PIOc_Init_Async(MPI_Comm world, int num_io_procs, int *io_proc_list,
         {
             if ((ret = MPI_Comm_create(world, group[cmp], &my_iosys->comp_comm)))
                 return check_mpi(NULL, ret, __FILE__, __LINE__);
+
+            /* Does the user want a copy? */
+            if (user_comp_comm)
+                if ((mpierr = MPI_Comm_dup(my_iosys->comp_comm, user_comp_comm[cmp])))
+                    return check_mpi(NULL, mpierr, __FILE__, __LINE__);            
+                
             if (in_cmp)
             {
                 if ((ret = MPI_Comm_rank(my_iosys->comp_comm, &my_iosys->comp_rank)))
