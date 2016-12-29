@@ -18,7 +18,7 @@
 #define MIN_NTASKS 4
 
 /* The name of this test. */
-#define TEST_NAME "test_nc4"
+#define TEST_NAME "test_pioc"
 
 /* Number of processors that will do IO. */
 #define NUM_IO_PROCS 1
@@ -504,19 +504,28 @@ int test_putget(int iosysid, int num_flavors, int *flavor, int my_rank,
         if ((ret = PIOc_put_vara_float(ncid, varid, start, count, &data)))
             ERR(ret);
 
+        /* Close the netCDF file. */
+        printf("rank: %d Closing the sample data file...\n", my_rank);
+        if ((ret = PIOc_closefile(ncid)))
+            ERR(ret);
+
         /* Try to read it. */
-        /* float data_in; */
-        /* if ((ret = PIOc_get_vara_float(ncid, varid, start, count, &data_in))) */
-        /*     ERR(ret); */
+        if ((ret = PIOc_openfile(iosysid, &ncid, &(flavor[fmt]), filename, PIO_NOWRITE)))
+            ERR(ret);
+        
+        float data_in;
+        if ((ret = PIOc_get_vara_float(ncid, varid, start, count, &data_in)))
+            ERR(ret);
 
         /* Check results. */
-        /* if (data_in != data) */
-        /*     return ERR_WRONG; */
+        if (data_in != data)
+            return ERR_WRONG;
 
         /* Close the netCDF file. */
         printf("rank: %d Closing the sample data file...\n", my_rank);
         if ((ret = PIOc_closefile(ncid)))
             ERR(ret);
+
     }
 
     return PIO_NOERR;
