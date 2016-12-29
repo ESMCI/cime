@@ -918,6 +918,8 @@ int test_async(int my_rank, int num_flavors, int *flavor, MPI_Comm test_comm)
     int ioid;                      /* The I/O description ID. */
     PIO_Offset *compdof;           /* The decomposition mapping. */
     int num_procs[COMPONENT_COUNT + 1] = {1, TARGET_NTASKS - 1}; /* Num procs in each component. */
+    MPI_Comm io_comm;              /* Will get a duplicate of IO communicator. */
+    MPI_Comm comp_comm[COMPONENT_COUNT]; /* Will get duplicates of computation communicators. */
     int mpierr;  /* Return code from MPI functions. */
     int ret;     /* Return code. */
 
@@ -927,7 +929,7 @@ int test_async(int my_rank, int num_flavors, int *flavor, MPI_Comm test_comm)
 
     /* Initialize the IO system. */
     if ((ret = PIOc_Init_Async(test_comm, NUM_IO_PROCS, NULL, COMPONENT_COUNT,
-                               num_procs, NULL, NULL, NULL, iosysid)))
+                               num_procs, NULL, &io_comm, comp_comm, iosysid)))
         ERR(ERR_INIT);
     for (int c = 0; c < COMPONENT_COUNT; c++)
         printf("%d iosysid[%d] = %d\n", my_rank, c, iosysid[c]);
@@ -950,7 +952,14 @@ int test_async(int my_rank, int num_flavors, int *flavor, MPI_Comm test_comm)
                 ERR(ret);
             printf("%d %s PIOc_finalize completed for iosysid = %d\n", my_rank, TEST_NAME,
                    iosysid[c]);
+            if ((mpierr = MPI_Comm_free(&comp_comm[c])))
+                MPIERR(mpierr);
         }
+    }
+    else
+    {
+        if ((mpierr = MPI_Comm_free(&io_comm)))
+            MPIERR(mpierr);
     } /* endif comp_task */
 
     return PIO_NOERR;
