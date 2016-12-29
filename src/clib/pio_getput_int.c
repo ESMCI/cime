@@ -120,6 +120,8 @@ int PIOc_get_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
             rstart[vd] = start ? start[vd] : 0;
             rcount[vd] = count ? count[vd] : dimlen[vd];
             rstride[vd] = stride ? stride[vd] : 1;
+            LOG((3, "rstart[%d] = %d rcount[%d] = %d rstride[%d] = %d", vd,
+                 rstart[vd], vd, rcount[vd], vd, rstride[vd]));
         }
 
         /* How many elements in buf? */

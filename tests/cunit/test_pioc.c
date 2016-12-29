@@ -18,7 +18,7 @@
 #define MIN_NTASKS 4
 
 /* The name of this test. */
-#define TEST_NAME "test_nc4"
+#define TEST_NAME "test_pioc"
 
 /* Number of processors that will do IO. */
 #define NUM_IO_PROCS 1
@@ -446,6 +446,91 @@ int test_names(int iosysid, int num_flavors, int *flavor, int my_rank,
     return PIO_NOERR;
 }
 
+/* Test data read/write operations.
+ *
+ * @param iosysid the iosystem ID that will be used for the test.
+ * @param num_flavors the number of different IO types that will be tested.
+ * @param flavor an array of the valid IO types.
+ * @param my_rank 0-based rank of task.
+ * @returns 0 for success, error code otherwise.
+ */
+int test_putget(int iosysid, int num_flavors, int *flavor, int my_rank,
+                MPI_Comm test_comm)
+{
+    int ret;    /* Return code. */
+    
+    /* Use PIO to create the example file in each of the four
+     * available ways. */
+    for (int fmt = 0; fmt < num_flavors; fmt++)
+    {
+        int ncid;
+        int varid;
+        char filename[NC_MAX_NAME + 1]; /* Test filename. */
+        char iotype_name[NC_MAX_NAME + 1];
+        int dimids[NDIM];        /* The dimension IDs. */
+
+        /* Create a filename. */
+        if ((ret = get_iotype_name(flavor[fmt], iotype_name)))
+            return ret;
+        sprintf(filename, "%s_putget_%s.nc", TEST_NAME, iotype_name);
+
+        /* Create the netCDF output file. */
+        printf("rank: %d Creating sample file %s with format %d...\n",
+               my_rank, filename, flavor[fmt]);
+        if ((ret = PIOc_createfile(iosysid, &ncid, &(flavor[fmt]), filename, PIO_CLOBBER)))
+            ERR(ret);
+
+        /* Define netCDF dimensions and variable. */
+        printf("rank: %d Defining netCDF metadata...\n", my_rank);
+        for (int d = 0; d < NDIM; d++)
+        {
+            printf("rank: %d Defining netCDF dimension %s, length %d\n", my_rank,
+                   dim_name[d], dim_len[d]);
+            if ((ret = PIOc_def_dim(ncid, dim_name[d], (PIO_Offset)dim_len[d], &dimids[d])))
+                ERR(ret);
+        }
+
+        /* Define a variable. */
+        if ((ret = PIOc_def_var(ncid, VAR_NAME, PIO_FLOAT, NDIM, dimids, &varid)))
+            ERR(ret);
+
+        if ((ret = PIOc_enddef(ncid)))
+            ERR(ret);
+
+        /* Write some data. */
+        PIO_Offset start[NDIM] = {0, 0, 0};
+        PIO_Offset count[NDIM] = {1, 1, 1};
+        float data = 42.42;
+        if ((ret = PIOc_put_vara_float(ncid, varid, start, count, &data)))
+            ERR(ret);
+
+        /* Close the netCDF file. */
+        printf("rank: %d Closing the sample data file...\n", my_rank);
+        if ((ret = PIOc_closefile(ncid)))
+            ERR(ret);
+
+        /* Try to read it. */
+        if ((ret = PIOc_openfile(iosysid, &ncid, &(flavor[fmt]), filename, PIO_NOWRITE)))
+            ERR(ret);
+        
+        float data_in;
+        if ((ret = PIOc_get_vara_float(ncid, varid, start, count, &data_in)))
+            ERR(ret);
+
+        /* Check results. */
+        if (data_in != data)
+            return ERR_WRONG;
+
+        /* Close the netCDF file. */
+        printf("rank: %d Closing the sample data file...\n", my_rank);
+        if ((ret = PIOc_closefile(ncid)))
+            ERR(ret);
+
+    }
+
+    return PIO_NOERR;
+}
+
 /* Test file operations.
  *
  * @param iosysid the iosystem ID that will be used for the test.
@@ -804,6 +889,14 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
              int async)
 {
     int ret; /* Return code. */
+
+    /* Test read/write stuff. */
+    if (!async)
+    {
+        printf("%d Testing names. async = %d\n", my_rank, async);
+        if ((ret = test_putget(iosysid, num_flavors, flavor, my_rank, test_comm)))
+            return ret;
+    }
 
     /* Check the error string function. */
     printf("%d Testing streror. async = %d\n", my_rank, async);    
