@@ -911,6 +911,16 @@ int PIOc_iotype_available(int iotype)
  * computation components are assigned processors sequentially
  * starting with processor num_io_procs.
  *
+ * @param user_io_comm pointer to an MPI_Comm. If not NULL, it will
+ * get an MPI duplicate of the IO communicator. (It is a full
+ * duplicate and later must be freed with MPI_Free() by the caller.)
+ *
+ * @param user_comp_comm pointer to an array of pointers to MPI_Comm;
+ * the array is of length component_count. If not NULL, it will get an
+ * MPI duplicate of each computation communicator. (These are full
+ * duplicates and each must later be freed with MPI_Free() by the
+ * caller.)
+ *
  * @param iosysidp pointer to array of length component_count that
  * gets the iosysid for each component.
  *
@@ -919,14 +929,6 @@ int PIOc_iotype_available(int iotype)
  */
 int PIOc_Init_Async(MPI_Comm world, int num_io_procs, int *io_proc_list,
                     int component_count, int *num_procs_per_comp, int **proc_list,
-                    int *iosysidp)
-{
-    return PIOc_init_async2(world, num_io_procs, io_proc_list, component_count,
-                            num_procs_per_comp, proc_list, NULL, NULL, iosysidp);
-}
-
-int PIOc_init_async2(MPI_Comm world, int num_io_procs, int *io_proc_list,
-                     int component_count, int *num_procs_per_comp, int **proc_list,
                      MPI_Comm *user_io_comm, MPI_Comm **user_comp_comm, int *iosysidp)
 {
     int my_rank;

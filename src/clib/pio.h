@@ -569,10 +569,8 @@ extern "C" {
 
     /* Initializing IO system. */
     int PIOc_Init_Async(MPI_Comm world, int num_io_procs, int *io_proc_list, int component_count,
-                        int *num_procs_per_comp, int **proc_list, int *iosysidp);
-    int PIOc_init_async2(MPI_Comm world, int num_io_procs, int *io_proc_list,
-                         int component_count, int *num_procs_per_comp, int **proc_list,
-                         MPI_Comm *io_comm, MPI_Comm **comp_comm, int *iosysidp);
+                        int *num_procs_per_comp, int **proc_list, MPI_Comm *io_comm, MPI_Comm **comp_comm,
+                        int *iosysidp);
     int PIOc_Init_Intercomm(int component_count, MPI_Comm peer_comm, MPI_Comm *comp_comms,
                             MPI_Comm io_comm, int *iosysidp);
     int PIOc_get_numiotasks(int iosysid, int *numiotasks);

@@ -290,7 +290,7 @@ int main(int argc, char **argv)
 
         /* Initialize the IO system. */
         if ((ret = PIOc_Init_Async(test_comm, NUM_IO_PROCS, NULL, COMPONENT_COUNT,
-                                   num_procs, NULL, iosysid)))
+                                   num_procs, NULL, NULL, NULL, iosysid)))
             ERR(ERR_AWFUL);
 
 	printf("%d: test_intercomm2 ParallelIO Library test_intercomm2 comp task returned.\n",
