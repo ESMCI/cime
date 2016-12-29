@@ -69,22 +69,28 @@ int check_dim_names(int my_rank, int ncid, MPI_Comm test_comm)
 {
     char dim_name[NC_MAX_NAME + 1];
     char zero_dim_name[NC_MAX_NAME + 1];
+    int my_test_rank;
     int ret;
 
+    /* Find rank in test communicator. */
+    if ((ret = MPI_Comm_rank(test_comm, &my_test_rank)))
+        MPIERR(ret);
+    
     for (int d = 0; d < NDIM; d++)
     {
         strcpy(dim_name, "11111111111111111111111111111111");
         if ((ret = PIOc_inq_dimname(ncid, d, dim_name)))
             return ret;
-        printf("my_rank %d dim %d name %s\n", my_rank, d, dim_name);
+        printf("my_rank %d my_test_rank %d dim %d name %s\n", my_rank, my_test_rank, d, dim_name);
 
         /* Did other ranks get the same name? */
-        if (!my_rank)
+        if (!my_test_rank)
             strcpy(zero_dim_name, dim_name);
-        /*     printf("rank %d dim_name %s zero_dim_name %s\n", my_rank, dim_name, zero_dim_name); */
+        printf("rank %d dim_name %s zero_dim_name %s\n", my_rank, dim_name, zero_dim_name); 
         if ((ret = MPI_Bcast(&zero_dim_name, strlen(dim_name) + 1, MPI_CHAR, 0,
                              test_comm)))
             MPIERR(ret);
+        printf("%d zero_dim_name = %s dim_name = %s\n", my_rank, zero_dim_name, dim_name);
         if (strcmp(dim_name, zero_dim_name))
             return ERR_AWFUL;
     }
@@ -101,7 +107,12 @@ int check_var_name(int my_rank, int ncid, MPI_Comm test_comm)
 {
     char var_name[NC_MAX_NAME + 1];
     char zero_var_name[NC_MAX_NAME + 1];
+    int my_test_rank;
     int ret;
+
+    /* Find rank in test communicator. */
+    if ((ret = MPI_Comm_rank(test_comm, &my_test_rank)))
+        MPIERR(ret);
 
     strcpy(var_name, "11111111111111111111111111111111");
     if ((ret = PIOc_inq_varname(ncid, 0, var_name)))
@@ -109,7 +120,7 @@ int check_var_name(int my_rank, int ncid, MPI_Comm test_comm)
     printf("my_rank %d var name %s\n", my_rank, var_name);
 
     /* Did other ranks get the same name? */
-    if (!my_rank)
+    if (!my_test_rank)
         strcpy(zero_var_name, var_name);
     if ((ret = MPI_Bcast(&zero_var_name, strlen(var_name) + 1, MPI_CHAR, 0,
                          test_comm)))
@@ -129,7 +140,12 @@ int check_att_name(int my_rank, int ncid, MPI_Comm test_comm)
 {
     char att_name[NC_MAX_NAME + 1];
     char zero_att_name[NC_MAX_NAME + 1];
+    int my_test_rank;
     int ret;
+
+    /* Find rank in test communicator. */
+    if ((ret = MPI_Comm_rank(test_comm, &my_test_rank)))
+        MPIERR(ret);
 
     strcpy(att_name, "11111111111111111111111111111111");
     if ((ret = PIOc_inq_attname(ncid, NC_GLOBAL, 0, att_name)))
@@ -139,7 +155,7 @@ int check_att_name(int my_rank, int ncid, MPI_Comm test_comm)
     /* Did everyone ranks get the same length name? */
 /*    if (strlen(att_name) != strlen(ATT_NAME))
       return ERR_AWFUL;*/
-    if (!my_rank)
+    if (!my_test_rank)
         strcpy(zero_att_name, att_name);
     if ((ret = MPI_Bcast(&zero_att_name, strlen(att_name) + 1, MPI_CHAR, 0,
                          test_comm)))
@@ -917,7 +933,7 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
     }
 
     /* Test name stuff. */
-    if (!async)
+    /*if (!async)*/
     {
         printf("%d Testing names. async = %d\n", my_rank, async);
         if ((ret = test_names(iosysid, num_flavors, flavor, my_rank, test_comm)))
