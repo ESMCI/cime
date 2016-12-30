@@ -517,8 +517,10 @@ int compute_counts(iosystem_desc_t ios, io_desc_t *iodesc, int maplen,
     /* Share the iodesc->scount from each compute task to all io tasks. */
     ierr = pio_swapm(iodesc->scount, send_counts, send_displs, sr_types,
                      recv_buf, recv_counts, recv_displs, sr_types,
-                     mycomm, iodesc->handshake, iodesc->isend,
-                     iodesc->max_requests);
+                     mycomm,
+                     iodesc->rearr_opts.comm_fc_opts_comp2io.enable_hs,
+                     iodesc->rearr_opts.comm_fc_opts_comp2io.enable_isend,
+                     iodesc->rearr_opts.comm_fc_opts_comp2io.max_pend_req);
 
     /* ??? */
     nrecvs = 0;
@@ -646,7 +648,9 @@ int compute_counts(iosystem_desc_t ios, io_desc_t *iodesc, int maplen,
     */
     ierr = pio_swapm(s2rindex, send_counts, send_displs, sr_types, iodesc->rindex,
                     recv_counts, recv_displs, sr_types, mycomm,
-                    iodesc->handshake, iodesc->isend, iodesc->max_requests);
+                    iodesc->rearr_opts.comm_fc_opts_comp2io.enable_hs,
+                    iodesc->rearr_opts.comm_fc_opts_comp2io.enable_isend,
+                    iodesc->rearr_opts.comm_fc_opts_comp2io.max_pend_req);
 
     /*  rindex is an array of the indices of the data to be sent from
         this io task to each compute task. */
@@ -818,8 +822,12 @@ int rearrange_comp2io(iosystem_desc_t ios, io_desc_t *iodesc, void *sbuf,
         }
     }
     /* Data in sbuf on the compute nodes is sent to rbuf on the ionodes */
-    pio_swapm(sbuf, sendcounts, sdispls, sendtypes, rbuf, recvcounts, rdispls, recvtypes,
-              mycomm, iodesc->handshake, iodesc->isend, iodesc->max_requests);
+    pio_swapm(sbuf, sendcounts, sdispls, sendtypes,
+              rbuf, recvcounts, rdispls, recvtypes, mycomm,
+              iodesc->rearr_opts.comm_fc_opts_comp2io.enable_hs,
+              iodesc->rearr_opts.comm_fc_opts_comp2io.enable_isend,
+              iodesc->rearr_opts.comm_fc_opts_comp2io.max_pend_req);
+
     /* Free the MPI types. */
     for (i = 0; i < ntasks; i++)
     {
@@ -963,8 +971,11 @@ int rearrange_io2comp(iosystem_desc_t ios, io_desc_t *iodesc, void *sbuf,
     }
 
     /* Data in sbuf on the ionodes is sent to rbuf on the compute nodes */
-    pio_swapm(sbuf, sendcounts, sdispls, sendtypes, rbuf, recvcounts, rdispls, recvtypes,
-              mycomm, iodesc->handshake, iodesc->isend, iodesc->max_requests);
+    pio_swapm(sbuf, sendcounts, sdispls, sendtypes,
+              rbuf, recvcounts, rdispls, recvtypes, mycomm,
+              iodesc->rearr_opts.comm_fc_opts_io2comp.enable_hs,
+              iodesc->rearr_opts.comm_fc_opts_io2comp.enable_isend,
+              iodesc->rearr_opts.comm_fc_opts_io2comp.max_pend_req);
 
     /* Release memory. */
     free(sendcounts);
@@ -1171,8 +1182,10 @@ int box_rearrange_create(iosystem_desc_t ios, int maplen, const PIO_Offset *comp
         iomaplen = calloc(nioprocs, sizeof(PIO_Offset)); */
     pio_swapm(&(iodesc->llen), sndlths, sdispls, dtypes,
               iomaplen, recvlths, rdispls, dtypes,
-              ios.union_comm, iodesc->handshake,
-              iodesc->isend, iodesc->max_requests);
+              ios.union_comm,
+              iodesc->rearr_opts.comm_fc_opts_io2comp.enable_hs,
+              iodesc->rearr_opts.comm_fc_opts_io2comp.enable_isend,
+              iodesc->rearr_opts.comm_fc_opts_io2comp.max_pend_req);
 
     for (i = 0; i < nioprocs; i++)
     {
@@ -1194,14 +1207,18 @@ int box_rearrange_create(iosystem_desc_t ios, int maplen, const PIO_Offset *comp
             /* The count from iotask i is sent to all compute tasks */
             pio_swapm(iodesc->firstregion->count,  sndlths, sdispls, dtypes,
                       count, recvlths, rdispls, dtypes,
-                      ios.union_comm, iodesc->handshake,
-                      iodesc->isend, iodesc->max_requests);
+                      ios.union_comm,
+                      iodesc->rearr_opts.comm_fc_opts_io2comp.enable_hs,
+                      iodesc->rearr_opts.comm_fc_opts_io2comp.enable_isend,
+                      iodesc->rearr_opts.comm_fc_opts_io2comp.max_pend_req);
 
             /* The start from iotask i is sent to all compute tasks. */
             pio_swapm(iodesc->firstregion->start,  sndlths, sdispls, dtypes,
                       start, recvlths, rdispls, dtypes,
-                      ios.union_comm, iodesc->handshake,
-                      iodesc->isend, iodesc->max_requests);
+                      ios.union_comm,
+                      iodesc->rearr_opts.comm_fc_opts_io2comp.enable_hs,
+                      iodesc->rearr_opts.comm_fc_opts_io2comp.enable_isend,
+                      iodesc->rearr_opts.comm_fc_opts_io2comp.max_pend_req);
 
             for (k = 0; k < maplen; k++)
             {
@@ -1798,16 +1815,16 @@ void performance_tune_rearranger(iosystem_desc_t ios, io_desc_t *iodesc)
     if ((mpierr = MPI_Allreduce(MPI_IN_PLACE, &mintime, 1, MPI_DOUBLE, MPI_MAX, mycomm)))
         return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 
-    handshake = iodesc->handshake;
+    handshake = iodesc->rearr_opts.comm_fc_opts_comp2io.enable_hs;
     isend = iodesc->isend;
     maxreqs = iodesc->max_requests;
 
     for (int i = 0; i < 2; i++)
     {
         if (i == 0)
-            iodesc->handshake = false;
+            iodesc->rearr_opts.comm_fc_opts_comp2io.enable_hs = false;
         else
-            iodesc->handshake = true;
+            iodesc->rearr_opts.comm_fc_opts_comp2io.enable_hs = true;
 
         for (int j = 0; j < 2; j++)
         {
@@ -1834,7 +1851,7 @@ void performance_tune_rearranger(iosystem_desc_t ios, io_desc_t *iodesc)
 
                 if (wall[1] < mintime * 0.95)
                 {
-                    handshake = iodesc->handshake;
+                    handshake = iodesc->rearr_opts.comm_fc_opts_comp2io.enable_hs;
                     isend = iodesc->isend;
                     maxreqs = nreqs;
                     mintime = wall[1];
@@ -1847,7 +1864,7 @@ void performance_tune_rearranger(iosystem_desc_t ios, io_desc_t *iodesc)
         }
     }
 
-    iodesc->handshake = handshake;
+    iodesc->rearr_opts.comm_fc_opts_comp2io.enable_hs = handshake;
     iodesc->isend = isend;
     iodesc->max_requests = maxreqs;
 

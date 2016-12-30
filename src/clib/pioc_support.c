@@ -607,9 +607,7 @@ io_desc_t *malloc_iodesc(const iosystem_desc_t *ios, int piotype, int ndims)
     iodesc->isend = swapm_defaults.isend;
     iodesc->max_requests = swapm_defaults.nreqs;
     */
-    iodesc->handshake = ios->rearr_opts.comm_fc_opts_comp2io.enable_hs;
-    iodesc->isend = ios->rearr_opts.comm_fc_opts_comp2io.enable_isend;
-    iodesc->max_requests = ios->rearr_opts.comm_fc_opts_comp2io.max_pend_req;
+    iodesc->rearr_opts = ios->rearr_opts;
 
     return iodesc;
 }
