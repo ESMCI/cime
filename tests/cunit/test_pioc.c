@@ -1066,35 +1066,35 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
             return ret;
     }
 
-    /* /\* Test read/write stuff. *\/ */
-    /* printf("%d Testing putget. async = %d\n", my_rank, async); */
-    /* if ((ret = test_putget(iosysid, num_flavors, flavor, my_rank, test_comm))) */
-    /*     return ret; */
+    /* Test read/write stuff. */
+    printf("%d Testing putget. async = %d\n", my_rank, async);
+    if ((ret = test_putget(iosysid, num_flavors, flavor, my_rank, test_comm)))
+        return ret;
 
-    /* /\* Check the error string function. *\/ */
-    /* printf("%d Testing streror. async = %d\n", my_rank, async); */
-    /* if ((ret = check_strerror(my_rank))) */
-    /*     ERR(ret); */
+    /* Check the error string function. */
+    printf("%d Testing streror. async = %d\n", my_rank, async);
+    if ((ret = check_strerror(my_rank)))
+        ERR(ret);
     
-    /* /\* Test file stuff. *\/ */
-    /* printf("%d Testing file creation. async = %d\n", my_rank, async); */
-    /* if ((ret = test_files(iosysid, num_flavors, flavor, my_rank))) */
-    /*     return ret; */
+    /* Test file stuff. */
+    printf("%d Testing file creation. async = %d\n", my_rank, async);
+    if ((ret = test_files(iosysid, num_flavors, flavor, my_rank)))
+        return ret;
 
-    /* /\* Test file deletes. *\/ */
-    /* printf("%d Testing deletefile. async = %d\n", my_rank, async); */
-    /* if ((ret = test_deletefile(iosysid, num_flavors, flavor, my_rank))) */
-    /*     return ret; */
+    /* Test file deletes. */
+    printf("%d Testing deletefile. async = %d\n", my_rank, async);
+    if ((ret = test_deletefile(iosysid, num_flavors, flavor, my_rank)))
+        return ret;
 
-    /* /\* Test name stuff. *\/ */
-    /* printf("%d Testing names. async = %d\n", my_rank, async); */
-    /* if ((ret = test_names(iosysid, num_flavors, flavor, my_rank, test_comm))) */
-    /*     return ret; */
+    /* Test name stuff. */
+    printf("%d Testing names. async = %d\n", my_rank, async);
+    if ((ret = test_names(iosysid, num_flavors, flavor, my_rank, test_comm)))
+        return ret;
 
-    /* /\* Test netCDF-4 functions. *\/ */
-    /* printf("%d Testing nc4 functions. async = %d\n", my_rank, async); */
-    /* if ((ret = test_nc4(iosysid, num_flavors, flavor, my_rank))) */
-    /*     return ret; */
+    /* Test netCDF-4 functions. */
+    printf("%d Testing nc4 functions. async = %d\n", my_rank, async);
+    if ((ret = test_nc4(iosysid, num_flavors, flavor, my_rank)))
+        return ret;
 
     return PIO_NOERR;
 }
