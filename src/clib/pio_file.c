@@ -402,7 +402,7 @@ int PIOc_deletefile(int iosysid, const char *filename)
             if (!mpierr)
                 mpierr = MPI_Bcast((void *)filename, len + 1, MPI_CHAR, ios->compmaster,
                                    ios->intercomm);
-            LOG((2, "Bcast len = %s filename = %s", len, filename));
+            LOG((2, "Bcast len = %d filename = %s", len, filename));
         }
 
         /* Handle MPI errors. */
@@ -410,6 +410,7 @@ int PIOc_deletefile(int iosysid, const char *filename)
             return check_mpi2(ios, NULL, mpierr2, __FILE__, __LINE__);
         if (mpierr)
             return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+        LOG((3, "done hanlding errors mpierr = %d", mpierr));
     }
 
     /* If this is an IO task, then call the netCDF function. The

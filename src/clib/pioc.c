@@ -245,6 +245,7 @@ int PIOc_Set_IOSystem_Error_Handling(int iosysid, int method)
 int PIOc_set_iosystem_error_handling(int iosysid, int method, int *old_method)
 {
     iosystem_desc_t *ios;
+    int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
 
     LOG((1, "PIOc_set_iosystem_error_handling iosysid = %d method = %d", iosysid, method));
 
@@ -256,6 +257,30 @@ int PIOc_set_iosystem_error_handling(int iosysid, int method, int *old_method)
     if (method != PIO_INTERNAL_ERROR && method != PIO_BCAST_ERROR &&
         method != PIO_RETURN_ERROR)
         return pio_err(ios, NULL, PIO_EINVAL, __FILE__, __LINE__);
+
+    /* If using async, and not an IO task, then send parameters. */
+    if (ios->async_interface)
+    {
+        if (!ios->ioproc)
+        {
+            int msg = PIO_MSG_SETERRORHANDLING;
+            char old_method_present = old_method ? true : false;
+            
+            if(ios->compmaster)
+                mpierr = MPI_Send(&msg, 1, MPI_INT, ios->ioroot, 1, ios->union_comm);
+
+            if (!mpierr)
+                mpierr = MPI_Bcast(&method, 1, MPI_INT, ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast(&old_method_present, 1, MPI_CHAR, ios->compmaster, ios->intercomm);
+        }
+
+        /* Handle MPI errors. */
+        if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
+            check_mpi2(ios, NULL, mpierr2, __FILE__, __LINE__);
+        if (mpierr)
+            return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+    }
 
     /* Return the current handler. */
     if (old_method)

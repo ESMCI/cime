@@ -1736,10 +1736,10 @@ int delete_file_handler(iosystem_desc_t *ios)
      * task is broadcasting. */
     if ((mpierr = MPI_Bcast(&len, 1, MPI_INT, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+    LOG((2, "len = %d", len));
     if (!(filename = malloc(len + 1 * sizeof(char))))
         return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
-    if ((mpierr = MPI_Bcast((void *)filename, len + 1, MPI_CHAR, 0,
-                            ios->intercomm)))
+    if ((mpierr = MPI_Bcast((void *)filename, len + 1, MPI_CHAR, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     LOG((1, "delete_file_handler got parameters len = %d filename = %s\n",
          len, filename));
@@ -1811,7 +1811,34 @@ int readdarray_handler(iosystem_desc_t *ios)
  */
 int seterrorhandling_handler(iosystem_desc_t *ios)
 {
+    int method;
+    int old_method_present;
+    int old_method;
+    int *old_methodp = NULL;
+    int mpierr;
+    int ret;
+    
+    LOG((1, "seterrorhandling_handler comproot = %d", ios->comproot));
     assert(ios);
+
+    /* Get the parameters for this function that the he comp master
+     * task is broadcasting. */
+    if ((mpierr = MPI_Bcast(&method, 1, MPI_INT, 0, ios->intercomm)))
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+    if ((mpierr = MPI_Bcast(&old_method_present, 1, MPI_CHAR, 0, ios->intercomm)))
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+    
+    LOG((1, "seterrorhandling_handler got parameters method = %d old_method_present = %d\n",
+         method, old_method_present));
+
+    if (old_method_present)
+        old_methodp = &old_method;
+
+    /* Call the function. */
+    if ((ret = PIOc_set_iosystem_error_handling(ios->iosysid, method, old_methodp)))
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+
+    LOG((1, "seterrorhandling_handler succeeded!"));
     return PIO_NOERR;
 }
 
