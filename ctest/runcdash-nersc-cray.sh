@@ -34,7 +34,7 @@ case "$NERSC_HOST" in
 	module load craype-ivybridge
 	module load git/2.4.6
 	module load cmake/3.3.2
-	module load cray-hdf5-parallel/1.8.16 
+	module load cray-hdf5-parallel/1.8.16
 	module load cray-netcdf-hdf5parallel/4.3.3.1
 	module load cray-parallel-netcdf/1.7.0
 	;;
@@ -48,7 +48,7 @@ case "$NERSC_HOST" in
 	module load cray-netcdf-hdf5parallel/4.3.3.1
 	module load cray-parallel-netcdf/1.7.0
 	;;
-	
+
 esac
 
 export CC=cc
@@ -64,12 +64,11 @@ cd "$PIO_DASHBOARD_ROOT"
 
 if [ ! -d src ]; then
   git clone --branch develop https://github.com/PARALLELIO/ParallelIO src
-  cd src
-else
-  cd src
-  git fetch origin
-  git checkout develop
 fi
+cd src
+git checkout develop
+git pull origin develop
+
 export HDF5_DISABLE_VERSION_CHECK=2
 
 ctest -S CTestScript.cmake,${model} -VV
