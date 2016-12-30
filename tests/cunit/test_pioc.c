@@ -31,8 +31,8 @@
 #define NDIM 3
 
 /* The length of our sample data along each dimension. */
-#define X_DIM_LEN 400
-#define Y_DIM_LEN 400
+#define X_DIM_LEN 40
+#define Y_DIM_LEN 40
 
 /* The number of timesteps of data to write. */
 #define NUM_TIMESTEPS 6
@@ -480,11 +480,20 @@ int test_putget(int iosysid, int num_flavors, int *flavor, int my_rank,
     for (int fmt = 0; fmt < num_flavors; fmt++)
     {
         int ncid;
-        int varid;
         char filename[NC_MAX_NAME + 1]; /* Test filename. */
         char iotype_name[NC_MAX_NAME + 1];
         int dimids[NDIM];        /* The dimension IDs. */
+        int num_vars = 6;
+        int xtype[num_vars];
+        int varid[num_vars];
 
+        xtype[0] = PIO_BYTE;
+        xtype[1] = PIO_CHAR;
+        xtype[2] = PIO_SHORT;
+        xtype[3] = PIO_INT;
+        xtype[4] = PIO_FLOAT;
+        xtype[5] = PIO_DOUBLE;
+        
         /* Create a filename. */
         if ((ret = get_iotype_name(flavor[fmt], iotype_name)))
             return ret;
@@ -507,8 +516,13 @@ int test_putget(int iosysid, int num_flavors, int *flavor, int my_rank,
         }
 
         /* Define a variable. */
-        if ((ret = PIOc_def_var(ncid, VAR_NAME, PIO_FLOAT, NDIM, dimids, &varid)))
-            ERR(ret);
+        for (int v = 0; v < num_vars; v++)
+        {
+            char var_name[PIO_MAX_NAME + 1];
+            snprintf(var_name, PIO_MAX_NAME, "%s_%d", VAR_NAME, xtype[v]);
+            if ((ret = PIOc_def_var(ncid, var_name, xtype[v], NDIM, dimids, &varid[v])))
+                ERR(ret);
+        }
 
         if ((ret = PIOc_enddef(ncid)))
             ERR(ret);
@@ -516,9 +530,33 @@ int test_putget(int iosysid, int num_flavors, int *flavor, int my_rank,
         /* Write some data. */
         PIO_Offset start[NDIM] = {0, 0, 0};
         PIO_Offset count[NDIM] = {1, 1, 1};
-        float data = 42.42;
-        if ((ret = PIOc_put_vara_float(ncid, varid, start, count, &data)))
+
+        char char_data = 2;
+        /* if ((ret = PIOc_put_var1_text(ncid, varid[2], start, &char_data))) */
+        /*     ERR(ret); */
+
+        signed char byte_data = -42;
+        if ((ret = PIOc_put_var1_schar(ncid, varid[0], start, &byte_data)))
             ERR(ret);
+
+        short short_data = byte_data * byte_data;
+        if ((ret = PIOc_put_var1_short(ncid, varid[2], start, &short_data)))
+            ERR(ret);
+
+        int int_data = -10000;
+        if ((ret = PIOc_put_var1_int(ncid, varid[3], start, &int_data)))
+            ERR(ret);
+
+        float float_data = -42.42;
+        if ((ret = PIOc_put_var1_float(ncid, varid[4], start, &float_data)))
+            ERR(ret);
+
+        double double_data = -420000000000.5;
+        if ((ret = PIOc_put_var1_double(ncid, varid[5], start, &double_data)))
+            ERR(ret);
+
+        /* if ((ret = PIOc_put_vara_float(ncid, varid, start, count, &data))) */
+        /*   ERR(ret); */
 
         /* Close the netCDF file. */
         printf("rank: %d Closing the sample data file...\n", my_rank);
@@ -529,12 +567,35 @@ int test_putget(int iosysid, int num_flavors, int *flavor, int my_rank,
         if ((ret = PIOc_openfile(iosysid, &ncid, &(flavor[fmt]), filename, PIO_NOWRITE)))
             ERR(ret);
         
-        float data_in;
-        if ((ret = PIOc_get_vara_float(ncid, varid, start, count, &data_in)))
-            ERR(ret);
-
         /* Check results. */
-        if (data_in != data)
+        signed char byte_data_in;
+        if ((ret = PIOc_get_vara_schar(ncid, varid[0], start, count, &byte_data_in)))
+            ERR(ret);
+        if (byte_data_in != byte_data)
+            return ERR_WRONG;
+
+        short short_data_in;
+        if ((ret = PIOc_get_vara_short(ncid, varid[2], start, count, &short_data_in)))
+            ERR(ret);
+        if (short_data_in != short_data)
+            return ERR_WRONG;
+
+        int int_data_in;
+        if ((ret = PIOc_get_vara_int(ncid, varid[3], start, count, &int_data_in)))
+            ERR(ret);
+        if (int_data_in != int_data)
+            return ERR_WRONG;
+
+        float float_data_in;
+        if ((ret = PIOc_get_vara_float(ncid, varid[4], start, count, &float_data_in)))
+            ERR(ret);
+        if (float_data_in != float_data)
+            return ERR_WRONG;
+
+        double double_data_in;
+        if ((ret = PIOc_get_vara_double(ncid, varid[5], start, count, &double_data_in)))
+            ERR(ret);
+        if (double_data_in != double_data)
             return ERR_WRONG;
 
         /* Close the netCDF file. */

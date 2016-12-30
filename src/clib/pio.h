@@ -431,11 +431,13 @@ enum PIO_ERROR_HANDLERS
 #define PIO_UNLIMITED NC_UNLIMITED
 
 /* NetCDF types. */
-#define PIO_DOUBLE NC_DOUBLE
-#define PIO_REAL   NC_FLOAT
-#define PIO_FLOAT  NC_FLOAT
-#define PIO_INT    NC_INT
+#define PIO_BYTE   NC_BYTE
 #define PIO_CHAR   NC_CHAR
+#define PIO_SHORT  NC_SHORT
+#define PIO_INT    NC_INT
+#define PIO_FLOAT  NC_FLOAT
+#define PIO_REAL   NC_FLOAT
+#define PIO_DOUBLE NC_DOUBLE
 
 /* NetCDF flags. */
 #define PIO_WRITE  NC_WRITE
