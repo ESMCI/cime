@@ -61,10 +61,6 @@ endif ()
 add_executable (test_spmd EXCLUDE_FROM_ALL test_spmd.c test_common.c)
 target_link_libraries (test_spmd pioc)
 add_dependencies (tests test_spmd)
-add_executable (test_darray EXCLUDE_FROM_ALL test_darray.c test_common.c)
-target_link_libraries (test_darray pioc)
-
-add_dependencies (tests test_darray)
 add_dependencies (tests test_pioc)
 
 # Test Timeout in seconds.
@@ -81,10 +77,6 @@ if (PIO_USE_MPISERIAL)
   add_test(NAME test_pioc
     COMMAND test_pioc)
 else ()
-  add_mpi_test(test_darray
-    EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_darray
-    NUMPROCS ${AT_LEAST_FOUR_TASKS}
-    TIMEOUT ${DEFAULT_TEST_TIMEOUT})
   add_mpi_test(test_spmd
     EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_spmd
     NUMPROCS ${AT_LEAST_FOUR_TASKS}
