@@ -635,12 +635,6 @@ int test_putget(int iosysid, int num_flavors, int *flavor, int my_rank,
                                         PIO_DOUBLE, PIO_UBYTE, PIO_USHORT, PIO_UINT, PIO_INT64,
                                         PIO_UINT64, PIO_STRING};
         int varid[NUM_NETCDF4_TYPES];
-        int extra_types = 0;
-
-        /* Are we testing extra types? */
-#ifdef _NETCDF4
-        extra_types++;
-#endif /* _NETCDF4 */
         
         /* Create a filename. */
         if ((ret = get_iotype_name(flavor[fmt], iotype_name)))
