@@ -52,7 +52,7 @@
 #define VAR_CACHE_PREEMPTION 0.5
 
 /* The dimension names. */
-char dim_name[NDIM][NC_MAX_NAME + 1] = {"timestep", "x", "y"};
+char dim_name[NDIM][PIO_MAX_NAME + 1] = {"timestep", "x", "y"};
 
 /* Length of the dimensions in the sample data. */
 int dim_len[NDIM] = {NC_UNLIMITED, X_DIM_LEN, Y_DIM_LEN};
@@ -102,7 +102,7 @@ int check_darray_file(int iosysid, int ntasks, int my_rank, char *filename)
 {
     int ncid;
     int ndims, nvars, ngatts, unlimdimid;
-    char dim_name_in[NC_MAX_NAME + 1];
+    char dim_name_in[PIO_MAX_NAME + 1];
     PIO_Offset dim_len_in;
     PIO_Offset arraylen = 1;
     float data_in;
@@ -151,13 +151,13 @@ int check_darray_file(int iosysid, int ntasks, int my_rank, char *filename)
 /* Test the darray functionality. */
 int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank)
 {
-    char filename[NC_MAX_NAME + 1]; /* Name for the output files. */
+    char filename[PIO_MAX_NAME + 1]; /* Name for the output files. */
     int dim_len[NDIM1] = {DIM_LEN}; /* Length of the dimensions in the sample data. */
     int dimids[NDIM1];      /* The dimension IDs. */
     int ncid;      /* The ncid of the netCDF file. */
     int varid;     /* The ID of the netCDF varable. */
     int ret;       /* Return code. */
-    
+
     /* Use PIO to create the example file in each of the four
      * available ways. */
     for (int fmt = 0; fmt < num_flavors; fmt++)
@@ -212,15 +212,15 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
  * @returns 0 for success, error code otherwise. */
 int check_dim_names(int my_rank, int ncid, MPI_Comm test_comm)
 {
-    char dim_name[NC_MAX_NAME + 1];
-    char zero_dim_name[NC_MAX_NAME + 1];
+    char dim_name[PIO_MAX_NAME + 1];
+    char zero_dim_name[PIO_MAX_NAME + 1];
     int my_test_rank;
     int ret;
 
     /* Find rank in test communicator. */
     if ((ret = MPI_Comm_rank(test_comm, &my_test_rank)))
         MPIERR(ret);
-    
+
     for (int d = 0; d < NDIM; d++)
     {
         strcpy(dim_name, "11111111111111111111111111111111");
@@ -231,7 +231,7 @@ int check_dim_names(int my_rank, int ncid, MPI_Comm test_comm)
         /* Did other ranks get the same name? */
         if (!my_test_rank)
             strcpy(zero_dim_name, dim_name);
-        printf("rank %d dim_name %s zero_dim_name %s\n", my_rank, dim_name, zero_dim_name); 
+        printf("rank %d dim_name %s zero_dim_name %s\n", my_rank, dim_name, zero_dim_name);
         if ((ret = MPI_Bcast(&zero_dim_name, strlen(dim_name) + 1, MPI_CHAR, 0,
                              test_comm)))
             MPIERR(ret);
@@ -250,8 +250,8 @@ int check_dim_names(int my_rank, int ncid, MPI_Comm test_comm)
  * @returns 0 for success, error code otherwise. */
 int check_var_name(int my_rank, int ncid, MPI_Comm test_comm)
 {
-    char var_name[NC_MAX_NAME + 1];
-    char zero_var_name[NC_MAX_NAME + 1];
+    char var_name[PIO_MAX_NAME + 1];
+    char zero_var_name[PIO_MAX_NAME + 1];
     int my_test_rank;
     int ret;
 
@@ -283,8 +283,8 @@ int check_var_name(int my_rank, int ncid, MPI_Comm test_comm)
  * @returns 0 for success, error code otherwise. */
 int check_att_name(int my_rank, int ncid, MPI_Comm test_comm)
 {
-    char att_name[NC_MAX_NAME + 1];
-    char zero_att_name[NC_MAX_NAME + 1];
+    char att_name[PIO_MAX_NAME + 1];
+    char zero_att_name[PIO_MAX_NAME + 1];
     int my_test_rank;
     int ret;
 
@@ -489,7 +489,7 @@ int define_metadata(int ncid, int my_rank)
         if ((ret = PIOc_def_dim(ncid, dim_name[d], (PIO_Offset)dim_len[d], &dimids[d])))
             ERR(ret);
 
-    if ((ret = PIOc_def_var(ncid, VAR_NAME, NC_INT, NDIM, dimids, &varid)))
+    if ((ret = PIOc_def_var(ncid, VAR_NAME, PIO_INT, NDIM, dimids, &varid)))
         ERR(ret);
 
     return PIO_NOERR;
@@ -500,7 +500,7 @@ int check_metadata(int ncid, int my_rank)
 {
     int ndims, nvars, ngatts, unlimdimid, natts, dimid[NDIM];
     PIO_Offset len_in;
-    char name_in[NC_MAX_NAME + 1];
+    char name_in[PIO_MAX_NAME + 1];
     nc_type xtype_in;
     int ret;
 
@@ -523,7 +523,7 @@ int check_metadata(int ncid, int my_rank)
     /* Check the variable. */
     if ((ret = PIOc_inq_var(ncid, 0, name_in, &xtype_in, &ndims, dimid, &natts)))
         ERR(ret);
-    if (strcmp(name_in, VAR_NAME) || xtype_in != NC_INT || ndims != NDIM ||
+    if (strcmp(name_in, VAR_NAME) || xtype_in != PIO_INT || ndims != NDIM ||
         dimid[0] != 0 || dimid[1] != 1 || dimid[2] != 2 || natts != 0)
         return ERR_AWFUL;
 
@@ -542,15 +542,15 @@ int test_names(int iosysid, int num_flavors, int *flavor, int my_rank,
                MPI_Comm test_comm)
 {
     int ret;    /* Return code. */
-    
+
     /* Use PIO to create the example file in each of the four
      * available ways. */
     for (int fmt = 0; fmt < num_flavors; fmt++)
     {
         int ncid;
         int varid;
-        char filename[NC_MAX_NAME + 1]; /* Test filename. */
-        char iotype_name[NC_MAX_NAME + 1];
+        char filename[PIO_MAX_NAME + 1]; /* Test filename. */
+        char iotype_name[PIO_MAX_NAME + 1];
         int dimids[NDIM];        /* The dimension IDs. */
 
         /* Create a filename. */
@@ -580,7 +580,7 @@ int test_names(int iosysid, int num_flavors, int *flavor, int my_rank,
 
         /* Define a global attribute. */
         int att_val = 42;
-        if ((ret = PIOc_put_att_int(ncid, NC_GLOBAL, ATT_NAME, NC_INT, 1, &att_val)))
+        if ((ret = PIOc_put_att_int(ncid, NC_GLOBAL, ATT_NAME, PIO_INT, 1, &att_val)))
             ERR(ret);
 
         /* Check the attribute name. */
@@ -618,27 +618,24 @@ int test_names(int iosysid, int num_flavors, int *flavor, int my_rank,
 int test_putget(int iosysid, int num_flavors, int *flavor, int my_rank,
                 MPI_Comm test_comm)
 {
+#define NUM_CLASSIC_TYPES 6
+#define NUM_NETCDF4_TYPES 12
     int ret;    /* Return code. */
-    
+
     /* Use PIO to create the example file in each of the four
      * available ways. */
     for (int fmt = 0; fmt < num_flavors; fmt++)
     {
         int ncid;
-        char filename[NC_MAX_NAME + 1]; /* Test filename. */
-        char iotype_name[NC_MAX_NAME + 1];
+        char filename[PIO_MAX_NAME + 1]; /* Test filename. */
+        char iotype_name[PIO_MAX_NAME + 1];
         int dimids[NDIM];        /* The dimension IDs. */
-        int num_vars = 6;
-        int xtype[num_vars];
-        int varid[num_vars];
+        int num_vars = NUM_CLASSIC_TYPES;
+        int xtype[NUM_NETCDF4_TYPES] = {PIO_BYTE, PIO_CHAR, PIO_SHORT, PIO_INT, PIO_FLOAT,
+                                        PIO_DOUBLE, PIO_UBYTE, PIO_USHORT, PIO_UINT, PIO_INT64,
+                                        PIO_UINT64, PIO_STRING};
+        int varid[NUM_NETCDF4_TYPES];
 
-        xtype[0] = PIO_BYTE;
-        xtype[1] = PIO_CHAR;
-        xtype[2] = PIO_SHORT;
-        xtype[3] = PIO_INT;
-        xtype[4] = PIO_FLOAT;
-        xtype[5] = PIO_DOUBLE;
-        
         /* Create a filename. */
         if ((ret = get_iotype_name(flavor[fmt], iotype_name)))
             return ret;
@@ -660,7 +657,13 @@ int test_putget(int iosysid, int num_flavors, int *flavor, int my_rank,
                 ERR(ret);
         }
 
-        /* Define a variable. */
+        /* For netcdf-4, there are extra types. */
+#ifdef _NETCDF4
+        if (flavor[fmt] == PIO_IOTYPE_NETCDF4C || flavor[fmt] == PIO_IOTYPE_NETCDF4P)
+            num_vars = NUM_NETCDF4_TYPES;
+#endif /* _NETCDF4 */
+
+        /* Define variables. */
         for (int v = 0; v < num_vars; v++)
         {
             char var_name[PIO_MAX_NAME + 1];
@@ -700,6 +703,28 @@ int test_putget(int iosysid, int num_flavors, int *flavor, int my_rank,
         if ((ret = PIOc_put_var1_double(ncid, varid[5], start, &double_data)))
             ERR(ret);
 
+        /* For netcdf-4, there are extra types. */
+#ifdef _NETCDF4
+        unsigned char ubyte_data = 43;
+        unsigned short ushort_data = 666;
+        unsigned int uint_data = 666666;
+        long long int64_data = -99999999999;
+        unsigned long long uint64_data = 99999999999;
+        
+        if (flavor[fmt] == PIO_IOTYPE_NETCDF4C || flavor[fmt] == PIO_IOTYPE_NETCDF4P)
+        {
+            if ((ret = PIOc_put_var1_uchar(ncid, varid[6], start, &ubyte_data)))
+                ERR(ret);
+            if ((ret = PIOc_put_var1_ushort(ncid, varid[7], start, &ushort_data)))
+                ERR(ret);
+            if ((ret = PIOc_put_var1_uint(ncid, varid[8], start, &uint_data)))
+                ERR(ret);
+            /* if ((ret = PIOc_put_var1_int64(ncid, varid[9], start, &int64_data))) */
+            /*     ERR(ret); */
+            /* if ((ret = PIOc_put_var1_uint64(ncid, varid[10], start, &uint64_data))) */
+            /*     ERR(ret); */
+        }
+#endif /* _NETCDF4 */
         /* if ((ret = PIOc_put_vara_float(ncid, varid, start, count, &data))) */
         /*   ERR(ret); */
 
@@ -711,7 +736,7 @@ int test_putget(int iosysid, int num_flavors, int *flavor, int my_rank,
         /* Try to read it. */
         if ((ret = PIOc_openfile(iosysid, &ncid, &(flavor[fmt]), filename, PIO_NOWRITE)))
             ERR(ret);
-        
+
         /* Check results. */
         signed char byte_data_in;
         if ((ret = PIOc_get_vara_schar(ncid, varid[0], start, count, &byte_data_in)))
@@ -743,6 +768,27 @@ int test_putget(int iosysid, int num_flavors, int *flavor, int my_rank,
         if (double_data_in != double_data)
             return ERR_WRONG;
 
+#ifdef _NETCDF4
+        if (flavor[fmt] == PIO_IOTYPE_NETCDF4C || flavor[fmt] == PIO_IOTYPE_NETCDF4P)
+        {
+            unsigned char ubyte_data_in;
+            if ((ret = PIOc_get_vara_uchar(ncid, varid[6], start, count, &ubyte_data_in)))
+                ERR(ret);
+            if (ubyte_data_in != ubyte_data)
+                return ERR_WRONG;
+            unsigned short ushort_data_in;
+            if ((ret = PIOc_get_vara_ushort(ncid, varid[7], start, count, &ushort_data_in)))
+                ERR(ret);
+            if (ushort_data_in != ushort_data)
+                return ERR_WRONG;
+            unsigned int uint_data_in;
+            if ((ret = PIOc_get_vara_uint(ncid, varid[8], start, count, &uint_data_in)))
+                ERR(ret);
+            if (uint_data_in != uint_data)
+                return ERR_WRONG;
+        }
+#endif /* _NETCDF4 */
+
         /* Close the netCDF file. */
         printf("rank: %d Closing the sample data file...\n", my_rank);
         if ((ret = PIOc_closefile(ncid)))
@@ -765,13 +811,13 @@ int test_files(int iosysid, int num_flavors, int *flavor, int my_rank)
 {
     int ncid;
     int ret;    /* Return code. */
-    
+
     /* Use PIO to create the example file in each of the four
      * available ways. */
     for (int fmt = 0; fmt < num_flavors; fmt++)
     {
-        char filename[NC_MAX_NAME + 1]; /* Test filename. */
-        char iotype_name[NC_MAX_NAME + 1];
+        char filename[PIO_MAX_NAME + 1]; /* Test filename. */
+        char iotype_name[PIO_MAX_NAME + 1];
 
         /* Overwrite existing test file. */
         int mode = PIO_CLOBBER;
@@ -846,13 +892,13 @@ int test_deletefile(int iosysid, int num_flavors, int *flavor, int my_rank)
 {
     int ncid;
     int ret;    /* Return code. */
-    
+
     /* Use PIO to create the example file in each of the four
      * available ways. */
     for (int fmt = 0; fmt < num_flavors; fmt++)
     {
-        char filename[NC_MAX_NAME + 1]; /* Test filename. */
-        char iotype_name[NC_MAX_NAME + 1];
+        char filename[PIO_MAX_NAME + 1]; /* Test filename. */
+        char iotype_name[PIO_MAX_NAME + 1];
         int old_method;
 
         /* Set error handling. */
@@ -920,7 +966,7 @@ int test_nc4(int iosysid, int num_flavors, int *flavor, int my_rank)
     PIO_Offset var_cache_size;    /* Size of the var chunk cache. */
     PIO_Offset var_cache_nelems; /* Number of elements in var cache. */
     float var_cache_preemption;     /* Var cache preemption. */
-    char varname_in[NC_MAX_NAME];
+    char varname_in[PIO_MAX_NAME];
     int expected_ret; /* The return code we expect to get. */
     int ret;    /* Return code. */
 
@@ -928,8 +974,8 @@ int test_nc4(int iosysid, int num_flavors, int *flavor, int my_rank)
      * available ways. */
     for (int fmt = 0; fmt < num_flavors; fmt++)
     {
-        char filename[NC_MAX_NAME + 1]; /* Test filename. */
-        char iotype_name[NC_MAX_NAME + 1];
+        char filename[PIO_MAX_NAME + 1]; /* Test filename. */
+        char iotype_name[PIO_MAX_NAME + 1];
 
         /* Create a filename. */
         if ((ret = get_iotype_name(flavor[fmt], iotype_name)))
@@ -945,13 +991,13 @@ int test_nc4(int iosysid, int num_flavors, int *flavor, int my_rank)
         /* chunk_cache_preemption = 50.0; */
         /* ret = PIOc_set_chunk_cache(iosysid, flavor[fmt], chunk_cache_size, */
         /*                            chunk_cache_nelems, chunk_cache_preemption); */
-        
+
         /* printf("%d Set chunk cache ret = %d.\n", my_rank, ret); */
 
         /* /\* What result did we expect to get? *\/ */
         /* expected_ret = flavor[fmt] == PIO_IOTYPE_NETCDF4C || flavor[fmt] == PIO_IOTYPE_NETCDF4P ? */
         /*     NC_EINVAL : NC_ENOTNC4; */
-        
+
         /* /\* Check the result. *\/ */
         /* if (ret != expected_ret) */
         /*     ERR(ERR_AWFUL); */
@@ -1063,7 +1109,7 @@ int test_nc4(int iosysid, int num_flavors, int *flavor, int my_rank)
                 ERR(ERR_AWFUL);
             if (endianness != 1)
                 ERR(ERR_WRONG);
-            
+
     /*     } */
     /*     else */
     /*     { */
@@ -1122,7 +1168,7 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
         /* Decompose the data over the tasks. */
         if ((ret = create_decomposition(my_test_size, my_rank, iosysid, &ioid)))
             return ret;
-    
+
         if ((ret = test_darray(iosysid, ioid, num_flavors, flavor, my_rank)))
             return ret;
     }
@@ -1136,7 +1182,7 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
     printf("%d Testing streror. async = %d\n", my_rank, async);
     if ((ret = check_strerror(my_rank)))
         ERR(ret);
-    
+
     /* Test file stuff. */
     printf("%d Testing file creation. async = %d\n", my_rank, async);
     if ((ret = test_files(iosysid, num_flavors, flavor, my_rank)))
@@ -1207,7 +1253,7 @@ int test_no_async(int my_rank, int num_flavors, int *flavor, MPI_Comm test_comm)
     printf("%d Running tests...\n", my_rank);
     if ((ret = test_all(iosysid, num_flavors, flavor, my_rank, test_comm, 0)))
         return ret;
-        
+
     /* Free the PIO decomposition. */
     printf("%d Freeing PIO decomposition...\n", my_rank);
     if ((ret = PIOc_freedecomp(iosysid, ioid)))
