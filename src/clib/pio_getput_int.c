@@ -194,6 +194,7 @@ int PIOc_get_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
     /* If this is an IO task, then call the netCDF function. */
     if (ios->ioproc)
     {
+        LOG((2, "file->iotype = %d xtype = %d file->do_io = %d", file->iotype, xtype, file->do_io));
 #ifdef _PNETCDF
         if (file->iotype == PIO_IOTYPE_PNETCDF)
         {
@@ -249,8 +250,6 @@ int PIOc_get_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
                 break;
             case NC_INT:
                 ierr = ncmpi_get_vars_int_all(file->fh, varid, start, count, stride, buf);
-                for (int i = 0; i < 4; i++)
-                    LOG((2, "((int *)buf)[%d] = %d", i, ((int *)buf)[0]));
                 break;
             case NC_FLOAT:
                 ierr = ncmpi_get_vars_float_all(file->fh, varid, start, count, stride, buf);
@@ -309,6 +308,7 @@ int PIOc_get_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
                                         (ptrdiff_t *)stride, buf);
                 break;
             case NC_INT64:
+                LOG((3, "about to call nc_get_vars_longlong"));
                 ierr = nc_get_vars_longlong(file->fh, varid, (size_t *)start, (size_t *)count,
                                             (ptrdiff_t *)stride, buf);
                 break;

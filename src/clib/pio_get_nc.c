@@ -325,7 +325,7 @@ int PIOc_get_vars_ulonglong(int ncid, int varid, const PIO_Offset *start,
 int PIOc_get_vars_longlong(int ncid, int varid, const PIO_Offset *start,
                            const PIO_Offset *count, const PIO_Offset *stride, long long *buf)
 {
-    return PIOc_get_vars_tc(ncid, varid, start, count, stride, NC_UINT64, buf);
+    return PIOc_get_vars_tc(ncid, varid, start, count, stride, NC_INT64, buf);
 }
 
 /**

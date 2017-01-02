@@ -727,10 +727,45 @@ extern "C" {
     int PIOc_put_att_ubyte(int ncid, int varid, const char *name, nc_type xtype, PIO_Offset len,
 			   const unsigned char *op);
 
+    /* Data reads - var1. */
+    int PIOc_get_var1(int ncid, int varid, const PIO_Offset *index, void *buf, PIO_Offset bufcount,
+		      MPI_Datatype buftype);
+    int PIOc_get_var1_text(int ncid, int varid, const PIO_Offset *index, char *buf);
+    int PIOc_get_var1_schar(int ncid, int varid, const PIO_Offset *index, signed char *buf);
+    int PIOc_get_var1_short(int ncid, int varid, const PIO_Offset *index, short *buf);
+    int PIOc_get_var1_int(int ncid, int varid, const PIO_Offset *index, int *buf);
+    int PIOc_get_var1_long(int ncid, int varid, const PIO_Offset *index, long *buf);
+    int PIOc_get_var1_float(int ncid, int varid, const PIO_Offset *index, float *buf);
+    int PIOc_get_var1_double(int ncid, int varid, const PIO_Offset *index, double *buf);
+    int PIOc_get_var1_uchar(int ncid, int varid, const PIO_Offset *index, unsigned char *buf);
+    int PIOc_get_var1_ushort(int ncid, int varid, const PIO_Offset *index, unsigned short *buf);
+    int PIOc_get_var1_uint(int ncid, int varid, const PIO_Offset *index, unsigned int *buf);
+    int PIOc_get_var1_longlong(int ncid, int varid, const PIO_Offset *index, long long *buf);
+    int PIOc_get_var1_ulonglong(int ncid, int varid, const PIO_Offset *index, unsigned long long *buf);
+
+    /* Data writes - var1. */
+    int PIOc_put_var1(int ncid, int varid, const PIO_Offset *index, const void *buf,
+		      PIO_Offset bufcount, MPI_Datatype buftype);
+    int PIOc_put_var1_text(int ncid, int varid, const PIO_Offset *index, const char *op);
+    int PIOc_put_var1_schar(int ncid, int varid, const PIO_Offset *index, const signed char *op);
+    int PIOc_put_var1_short(int ncid, int varid, const PIO_Offset *index, const short *op);
+    int PIOc_put_var1_int(int ncid, int varid, const PIO_Offset *index, const int *op);
+    int PIOc_put_var1_long(int ncid, int varid, const PIO_Offset *index, const long *ip);
+    int PIOc_put_var1_float(int ncid, int varid, const PIO_Offset *index, const float *op);
+    int PIOc_put_var1_double(int ncid, int varid, const PIO_Offset *index, const double *op);
+    int PIOc_put_var1_uchar(int ncid, int varid, const PIO_Offset *index,
+			    const unsigned char *op);
+    int PIOc_put_var1_ushort(int ncid, int varid, const PIO_Offset *index,
+			     const unsigned short *op);
+    int PIOc_put_var1_uint(int ncid, int varid, const PIO_Offset *index,
+			   const unsigned int *op);
+    int PIOc_put_var1_longlong(int ncid, int varid, const PIO_Offset *index, const long long *op);
+    int PIOc_put_var1_ulonglong(int ncid, int varid, const PIO_Offset *index,
+				const unsigned long long *op);
+
     /* Data reads and writes. */
     int PIOc_put_vars_uchar(int ncid, int varid, const PIO_Offset *start, const PIO_Offset *count,
 			    const PIO_Offset *stride, const unsigned char *op);
-    int PIOc_get_var1_schar(int ncid, int varid, const PIO_Offset *index, signed char *buf);
     int PIOc_put_vars_ushort(int ncid, int varid, const PIO_Offset *start, const PIO_Offset *count,
 			     const PIO_Offset *stride, const unsigned short *op);
     int PIOc_put_vars_ulonglong(int ncid, int varid, const PIO_Offset *start,
@@ -746,13 +781,11 @@ extern "C" {
     int PIOc_put_var_ushort(int ncid, int varid, const unsigned short *op);
     int PIOc_get_vars_short(int ncid, int varid, const PIO_Offset *start, const PIO_Offset *count,
 			    const PIO_Offset *stride, short *buf);
-    int PIOc_put_var1_longlong(int ncid, int varid, const PIO_Offset *index, const long long *op);
     int PIOc_get_var_double(int ncid, int varid, double *buf);
     int PIOc_put_vara_uchar(int ncid, int varid, const PIO_Offset *start, const PIO_Offset *count,
 			    const unsigned char *op);
     int PIOc_get_vara_double(int ncid, int varid, const PIO_Offset *start,
 			     const PIO_Offset *count, double *buf);
-    int PIOc_put_var1_long(int ncid, int varid, const PIO_Offset *index, const long *ip);
     int PIOc_get_var_int(int ncid, int varid, int *buf);
     int PIOc_put_vars_long(int ncid, int varid, const PIO_Offset *start, const PIO_Offset *count,
 			   const PIO_Offset *stride, const long *op);
@@ -762,8 +795,6 @@ extern "C" {
     int PIOc_put_vara_int(int ncid, int varid, const PIO_Offset *start, const PIO_Offset *count,
 			  const int *op);
 
-    int PIOc_put_var1_ushort(int ncid, int varid, const PIO_Offset *index,
-			     const unsigned short *op);
     int PIOc_put_vara_text(int ncid, int varid, const PIO_Offset *start,
 			   const PIO_Offset *count, const char *op);
     int PIOc_put_var_ulonglong(int ncid, int varid, const unsigned long long *op);
@@ -781,17 +812,11 @@ extern "C" {
 			   const PIO_Offset *count, const unsigned int *op);
     int PIOc_put_vara_schar(int ncid, int varid, const PIO_Offset *start,
 			    const PIO_Offset *count, const signed char *op);
-    int PIOc_put_var1_uchar(int ncid, int varid, const PIO_Offset *index,
-			    const unsigned char *op);
     int PIOc_put_vars_schar(int ncid, int varid, const PIO_Offset *start,
 			    const PIO_Offset *count, const PIO_Offset *stride,
 			    const signed char *op);
-    int PIOc_put_var1(int ncid, int varid, const PIO_Offset *index, const void *buf,
-		      PIO_Offset bufcount, MPI_Datatype buftype);
     int PIOc_put_vara_float(int ncid, int varid, const PIO_Offset *start,
 			    const PIO_Offset *count, const float *op);
-    int PIOc_put_var1_float(int ncid, int varid, const PIO_Offset *index, const float *op);
-    int PIOc_put_var1_text(int ncid, int varid, const PIO_Offset *index, const char *op);
     int PIOc_put_vars_text(int ncid, int varid, const PIO_Offset *start,
 			   const PIO_Offset *count, const PIO_Offset *stride, const char *op);
     int PIOc_put_vars_double(int ncid, int varid, const PIO_Offset *start,
@@ -800,27 +825,19 @@ extern "C" {
 			       const PIO_Offset *count, const long long *op);
     int PIOc_put_var_double(int ncid, int varid, const double *op);
     int PIOc_put_var_float(int ncid, int varid, const float *op);
-    int PIOc_put_var1_ulonglong(int ncid, int varid, const PIO_Offset *index,
-				const unsigned long long *op);
-    int PIOc_put_var1_uint(int ncid, int varid, const PIO_Offset *index,
-			   const unsigned int *op);
-    int PIOc_put_var1_int(int ncid, int varid, const PIO_Offset *index, const int *op);
     int PIOc_put_vars_float(int ncid, int varid, const PIO_Offset *start, const PIO_Offset *count,
 			    const PIO_Offset *stride, const float *op);
     int PIOc_put_vara_short(int ncid, int varid, const PIO_Offset *start, const PIO_Offset *count,
 			    const short *op);
-    int PIOc_put_var1_schar(int ncid, int varid, const PIO_Offset *index, const signed char *op);
     int PIOc_put_vara_ulonglong(int ncid, int varid, const PIO_Offset *start,
 				const PIO_Offset *count, const unsigned long long *op);
     int PIOc_put_vara(int ncid, int varid, const PIO_Offset *start, const PIO_Offset *count,
 		      const void *buf, PIO_Offset bufcount, MPI_Datatype buftype);
     int PIOc_put_vara_long(int ncid, int varid, const PIO_Offset *start, const PIO_Offset *count,
 			   const long *op);
-    int PIOc_put_var1_double(int ncid, int varid, const PIO_Offset *index, const double *op);
     int PIOc_put_var_text(int ncid, int varid, const char *op);
     int PIOc_put_vars_int(int ncid, int varid, const PIO_Offset *start, const PIO_Offset *count,
 			  const PIO_Offset *stride, const int *op);
-    int PIOc_put_var1_short(int ncid, int varid, const PIO_Offset *index, const short *op);
     int PIOc_put_vars_longlong(int ncid, int varid, const PIO_Offset *start, const PIO_Offset *count,
 			       const PIO_Offset *stride, const long long *op);
     int PIOc_put_vara_double(int ncid, int varid, const PIO_Offset *start, const PIO_Offset *count,
@@ -833,8 +850,6 @@ extern "C" {
     int PIOc_put_var_long(int ncid, int varid, const long *op);
     int PIOc_get_vara_int(int ncid, int varid, const PIO_Offset *start, const PIO_Offset *count,
 			  int *buf);
-    int PIOc_get_var1_float(int ncid, int varid, const PIO_Offset *index, float *buf);
-    int PIOc_get_var1_short(int ncid, int varid, const PIO_Offset *index, short *buf);
     int PIOc_get_vars_int(int ncid, int varid, const PIO_Offset *start, const PIO_Offset *count,
 			  const PIO_Offset *stride, int *buf);
     int PIOc_get_var_text(int ncid, int varid, char *buf);
@@ -842,16 +857,13 @@ extern "C" {
 			    const PIO_Offset *stride, signed char *buf);
     int PIOc_get_vara_ushort(int ncid, int varid, const PIO_Offset *start, const PIO_Offset *count,
 			     unsigned short *buf);
-    int PIOc_get_var1_ushort(int ncid, int varid, const PIO_Offset *index, unsigned short *buf);
     int PIOc_get_var_float(int ncid, int varid, float *buf);
     int PIOc_get_vars_uchar(int ncid, int varid, const PIO_Offset *start, const PIO_Offset *count,
 			    const PIO_Offset *stride, unsigned char *buf);
     int PIOc_get_var(int ncid, int varid, void *buf, PIO_Offset bufcount, MPI_Datatype buftype);
-    int PIOc_get_var1_longlong(int ncid, int varid, const PIO_Offset *index, long long *buf);
     int PIOc_get_vars_ushort(int ncid, int varid, const PIO_Offset *start, const PIO_Offset *count,
 			     const PIO_Offset *stride, unsigned short *buf);
     int PIOc_get_var_long(int ncid, int varid, long *buf);
-    int PIOc_get_var1_double(int ncid, int varid, const PIO_Offset *index, double *buf);
     int PIOc_get_vara_uint(int ncid, int varid, const PIO_Offset *start, const PIO_Offset *count,
 			   unsigned int *buf);
     int PIOc_get_vars_longlong(int ncid, int varid, const PIO_Offset *start, const PIO_Offset *count,
@@ -861,8 +873,6 @@ extern "C" {
 			    short *buf);
     int PIOc_get_vara_long(int ncid, int varid, const PIO_Offset *start, const PIO_Offset *count,
 			   long *buf);
-    int PIOc_get_var1_int(int ncid, int varid, const PIO_Offset *index, int *buf);
-    int PIOc_get_var1_ulonglong(int ncid, int varid, const PIO_Offset *index, unsigned long long *buf);
     int PIOc_get_var_uchar(int ncid, int varid, unsigned char *buf);
     int PIOc_get_vara_uchar(int ncid, int varid, const PIO_Offset *start, const PIO_Offset *count,
 			    unsigned char *buf);
@@ -870,19 +880,15 @@ extern "C" {
 			    const PIO_Offset *stride, float *buf);
     int PIOc_get_vars_long(int ncid, int varid, const PIO_Offset *start, const PIO_Offset *count,
 			   const PIO_Offset *stride, long *buf);
-    int PIOc_get_var1(int ncid, int varid, const PIO_Offset *index, void *buf, PIO_Offset bufcount,
-		      MPI_Datatype buftype);
     int PIOc_get_var_uint(int ncid, int varid, unsigned int *buf);
     int PIOc_get_vara(int ncid, int varid, const PIO_Offset *start, const PIO_Offset *count, void *buf,
 		      PIO_Offset bufcount, MPI_Datatype buftype);
     int PIOc_get_vara_schar(int ncid, int varid, const PIO_Offset *start, const PIO_Offset *count,
 			    signed char *buf);
-    int PIOc_get_var1_uint(int ncid, int varid, const PIO_Offset *index, unsigned int *buf);
     int PIOc_get_vars_uint(int ncid, int varid, const PIO_Offset *start, const PIO_Offset *count,
 			   const PIO_Offset *stride, unsigned int *buf);
     int PIOc_get_vara_float(int ncid, int varid, const PIO_Offset *start, const PIO_Offset *count,
 			    float *buf);
-    int PIOc_get_var1_text(int ncid, int varid, const PIO_Offset *index, char *buf);
     int PIOc_get_vars_double(int ncid, int varid, const PIO_Offset *start, const PIO_Offset *count,
 			     const PIO_Offset *stride, double *buf);
     int PIOc_get_vara_longlong(int ncid, int varid, const PIO_Offset *start, const PIO_Offset *count,
@@ -891,10 +897,8 @@ extern "C" {
     int PIOc_get_vara_ulonglong(int ncid, int varid, const PIO_Offset *start, const PIO_Offset *count,
 				unsigned long long *buf);
     int PIOc_get_var_short(int ncid, int varid, short *buf);
-    int PIOc_get_var1_long(int ncid, int varid, const PIO_Offset *index, long *buf);
     int PIOc_get_vars_text(int ncid, int varid, const PIO_Offset *start, const PIO_Offset *count,
 			   const PIO_Offset *stride, char *buf);
-    int PIOc_get_var1_uchar(int ncid, int varid, const PIO_Offset *index, unsigned char *buf);
     int PIOc_get_vars(int ncid, int varid, const PIO_Offset *start, const PIO_Offset *count,
 		      const PIO_Offset *stride, void *buf, PIO_Offset bufcount, MPI_Datatype buftype);
     int PIOc_get_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Offset *count,

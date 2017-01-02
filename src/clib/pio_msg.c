@@ -857,49 +857,38 @@ int get_vars_handler(iosystem_desc_t *ios)
     switch(xtype)
     {
     case NC_BYTE:
-        ierr = PIOc_get_vars_schar(ncid, varid, startp, countp,
-                                   stridep, buf);
+        ierr = PIOc_get_vars_schar(ncid, varid, startp, countp, stridep, buf);
         break;
     case NC_CHAR:
-        ierr = PIOc_get_vars_schar(ncid, varid, startp, countp,
-                                   stridep, buf);
+        ierr = PIOc_get_vars_schar(ncid, varid, startp, countp, stridep, buf);
         break;
     case NC_SHORT:
-        ierr = PIOc_get_vars_short(ncid, varid, startp, countp,
-                                   stridep, buf);
+        ierr = PIOc_get_vars_short(ncid, varid, startp, countp, stridep, buf);
         break;
     case NC_INT:
-        ierr = PIOc_get_vars_int(ncid, varid, startp, countp,
-                                 stridep, buf);
+        ierr = PIOc_get_vars_int(ncid, varid, startp, countp, stridep, buf);
         break;
     case NC_FLOAT:
-        ierr = PIOc_get_vars_float(ncid, varid, startp, countp,
-                                   stridep, buf);
+        ierr = PIOc_get_vars_float(ncid, varid, startp, countp, stridep, buf);
         break;
     case NC_DOUBLE:
-        ierr = PIOc_get_vars_double(ncid, varid, startp, countp,
-                                    stridep, buf);
+        ierr = PIOc_get_vars_double(ncid, varid, startp, countp, stridep, buf);
         break;
 #ifdef _NETCDF4
     case NC_UBYTE:
-        ierr = PIOc_get_vars_uchar(ncid, varid, startp, countp,
-                                   stridep, buf);
+        ierr = PIOc_get_vars_uchar(ncid, varid, startp, countp, stridep, buf);
         break;
     case NC_USHORT:
-        ierr = PIOc_get_vars_ushort(ncid, varid, startp, countp,
-                                    stridep, buf);
+        ierr = PIOc_get_vars_ushort(ncid, varid, startp, countp, stridep, buf);
         break;
     case NC_UINT:
-        ierr = PIOc_get_vars_uint(ncid, varid, startp, countp,
-                                  stridep, buf);
+        ierr = PIOc_get_vars_uint(ncid, varid, startp, countp, stridep, buf);
         break;
     case NC_INT64:
-        ierr = PIOc_get_vars_longlong(ncid, varid, startp, countp,
-                                      stridep, buf);
+        ierr = PIOc_get_vars_longlong(ncid, varid, startp, countp, stridep, buf);
         break;
     case NC_UINT64:
-        ierr = PIOc_get_vars_ulonglong(ncid, varid, startp, countp,
-                                       stridep, buf);
+        ierr = PIOc_get_vars_ulonglong(ncid, varid, startp, countp, stridep, buf);
         break;
         /* case NC_STRING: */
         /*      ierr = PIOc_get_vars_string(ncid, varid, startp, countp, */
@@ -916,7 +905,7 @@ int get_vars_handler(iosystem_desc_t *ios)
     return PIO_NOERR;
 }
 
-/** 
+/**
  * Do an inq_var on a netCDF variable. This function is only run on
  * IO tasks.
  *
@@ -980,7 +969,7 @@ int inq_var_handler(iosystem_desc_t *ios)
     return PIO_NOERR;
 }
 
-/** 
+/**
  * Do an inq_var_chunking on a netCDF variable. This function is only
  * run on IO tasks.
  *
@@ -1026,7 +1015,7 @@ int inq_var_chunking_handler(iosystem_desc_t *ios)
     return PIO_NOERR;
 }
 
-/** 
+/**
  * Do an inq_var_endian on a netCDF variable. This function is only
  * run on IO tasks.
  *
@@ -1067,7 +1056,7 @@ int inq_var_endian_handler(iosystem_desc_t *ios)
     return PIO_NOERR;
 }
 
-/** 
+/**
  * Do an inq_var_deflate on a netCDF variable. This function is only
  * run on IO tasks.
  *
@@ -1287,7 +1276,7 @@ int def_var_handler(iosystem_desc_t *ios)
     return PIO_NOERR;
 }
 
-/** 
+/**
  * This function is run on the IO tasks to define chunking for a
  *  netCDF variable.
  *
@@ -1338,7 +1327,7 @@ int def_var_chunking_handler(iosystem_desc_t *ios)
     return PIO_NOERR;
 }
 
-/** 
+/**
  * This function is run on the IO tasks to define endianness for a
  * netCDF variable.
  *
@@ -1375,7 +1364,7 @@ int def_var_endian_handler(iosystem_desc_t *ios)
     return PIO_NOERR;
 }
 
-/** 
+/**
  * This function is run on the IO tasks to define chunk cache settings
  * for a netCDF variable.
  *
@@ -1817,7 +1806,7 @@ int seterrorhandling_handler(iosystem_desc_t *ios)
     int *old_methodp = NULL;
     int mpierr;
     int ret;
-    
+
     LOG((1, "seterrorhandling_handler comproot = %d", ios->comproot));
     assert(ios);
 
@@ -1827,7 +1816,7 @@ int seterrorhandling_handler(iosystem_desc_t *ios)
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&old_method_present, 1, MPI_CHAR, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
-    
+
     LOG((1, "seterrorhandling_handler got parameters method = %d old_method_present = %d\n",
          method, old_method_present));
 
@@ -1842,7 +1831,7 @@ int seterrorhandling_handler(iosystem_desc_t *ios)
     return PIO_NOERR;
 }
 
-/** 
+/**
  * This function is run on the IO tasks to set the chunk cache
  * parameters for netCDF-4.
  *
@@ -1859,8 +1848,8 @@ int set_chunk_cache_handler(iosystem_desc_t *ios)
     float preemption;
     int mpierr = MPI_SUCCESS;  /* Return code from MPI function codes. */
     int ret; /* Return code. */
-    
-    LOG((1, "set_chunk_cache_handler called"));    
+
+    LOG((1, "set_chunk_cache_handler called"));
     assert(ios);
 
     /* Get the parameters for this function that the the comp master
@@ -1881,12 +1870,12 @@ int set_chunk_cache_handler(iosystem_desc_t *ios)
     /* Call the function. */
     if ((ret = PIOc_set_chunk_cache(iosysid, iotype, size, nelems, preemption)))
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
-    
+
     LOG((1, "set_chunk_cache_handler succeeded!"));
     return PIO_NOERR;
 }
 
-/** 
+/**
  * This function is run on the IO tasks to get the chunk cache
  * parameters for netCDF-4.
  *
@@ -1898,14 +1887,14 @@ int get_chunk_cache_handler(iosystem_desc_t *ios)
 {
     int iosysid;
     int iotype;
-    char size_present, nelems_present, preemption_present;    
+    char size_present, nelems_present, preemption_present;
     PIO_Offset size, *sizep;
     PIO_Offset nelems, *nelemsp;
     float preemption, *preemptionp;
     int mpierr = MPI_SUCCESS;  /* Return code from MPI function codes. */
     int ret; /* Return code. */
-    
-    LOG((1, "get_chunk_cache_handler called"));    
+
+    LOG((1, "get_chunk_cache_handler called"));
     assert(ios);
 
     /* Get the parameters for this function that the the comp master
@@ -1915,11 +1904,11 @@ int get_chunk_cache_handler(iosystem_desc_t *ios)
     if ((mpierr = MPI_Bcast(&iotype, 1, MPI_INT, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&size_present, 1, MPI_CHAR, 0, ios->intercomm)))
-        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);    
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&nelems_present, 1, MPI_CHAR, 0, ios->intercomm)))
-        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);    
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&preemption_present, 1, MPI_CHAR, 0, ios->intercomm)))
-        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);    
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     LOG((1, "get_chunk_cache_handler got params iosysid = %d iotype = %d size_present = %d "
          "nelems_present = %d preemption_present = %g", iosysid, iotype, size_present,
          nelems_present, preemption_present));
@@ -1935,12 +1924,12 @@ int get_chunk_cache_handler(iosystem_desc_t *ios)
     /* Call the function. */
     if ((ret = PIOc_get_chunk_cache(iosysid, iotype, sizep, nelemsp, preemptionp)))
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
-    
+
     LOG((1, "get_chunk_cache_handler succeeded!"));
     return PIO_NOERR;
 }
 
-/** 
+/**
  * This function is run on the IO tasks to get the variable chunk
  * cache parameters for netCDF-4.
  *
@@ -1952,14 +1941,14 @@ int get_var_chunk_cache_handler(iosystem_desc_t *ios)
 {
     int ncid;
     int varid;
-    char size_present, nelems_present, preemption_present;    
+    char size_present, nelems_present, preemption_present;
     PIO_Offset size, *sizep;
     PIO_Offset nelems, *nelemsp;
     float preemption, *preemptionp;
     int mpierr = MPI_SUCCESS;  /* Return code from MPI function codes. */
     int ret; /* Return code. */
-    
-    LOG((1, "get_var_chunk_cache_handler called"));    
+
+    LOG((1, "get_var_chunk_cache_handler called"));
     assert(ios);
 
     /* Get the parameters for this function that the the comp master
@@ -1969,11 +1958,11 @@ int get_var_chunk_cache_handler(iosystem_desc_t *ios)
     if ((mpierr = MPI_Bcast(&varid, 1, MPI_INT, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&size_present, 1, MPI_CHAR, 0, ios->intercomm)))
-        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);    
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&nelems_present, 1, MPI_CHAR, 0, ios->intercomm)))
-        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);    
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&preemption_present, 1, MPI_CHAR, 0, ios->intercomm)))
-        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);    
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     LOG((1, "get_var_chunk_cache_handler got params ncid = %d varid = %d size_present = %d "
          "nelems_present = %d preemption_present = %g", ncid, varid, size_present,
          nelems_present, preemption_present));
@@ -1989,7 +1978,7 @@ int get_var_chunk_cache_handler(iosystem_desc_t *ios)
     /* Call the function. */
     if ((ret = PIOc_get_var_chunk_cache(ncid, varid, sizep, nelemsp, preemptionp)))
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
-    
+
     LOG((1, "get_var_chunk_cache_handler succeeded!"));
     return PIO_NOERR;
 }
@@ -2054,7 +2043,7 @@ int pio_callback_handler(iosystem_desc_t *ios, int msg)
     return PIO_NOERR;
 }
 
-/** 
+/**
  * This function is called by the IO tasks.  This function will not
  * return, unless there is an error.
  *

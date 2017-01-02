@@ -719,10 +719,10 @@ int test_putget(int iosysid, int num_flavors, int *flavor, int my_rank,
                 ERR(ret);
             if ((ret = PIOc_put_var1_uint(ncid, varid[8], start, &uint_data)))
                 ERR(ret);
-            /* if ((ret = PIOc_put_var1_int64(ncid, varid[9], start, &int64_data))) */
-            /*     ERR(ret); */
-            /* if ((ret = PIOc_put_var1_uint64(ncid, varid[10], start, &uint64_data))) */
-            /*     ERR(ret); */
+            if ((ret = PIOc_put_var1_longlong(ncid, varid[9], start, &int64_data)))
+                ERR(ret);
+            if ((ret = PIOc_put_var1_ulonglong(ncid, varid[10], start, &uint64_data)))
+                ERR(ret);
         }
 #endif /* _NETCDF4 */
         /* if ((ret = PIOc_put_vara_float(ncid, varid, start, count, &data))) */
@@ -785,6 +785,16 @@ int test_putget(int iosysid, int num_flavors, int *flavor, int my_rank,
             if ((ret = PIOc_get_vara_uint(ncid, varid[8], start, count, &uint_data_in)))
                 ERR(ret);
             if (uint_data_in != uint_data)
+                return ERR_WRONG;
+            long long int64_data_in;
+            if ((ret = PIOc_get_vara_longlong(ncid, varid[9], start, count, &int64_data_in)))
+                ERR(ret);
+            if (int64_data_in != int64_data)
+                return ERR_WRONG;
+            unsigned long long uint64_data_in;
+            if ((ret = PIOc_get_vara_ulonglong(ncid, varid[10], start, count, &uint64_data_in)))
+                ERR(ret);
+            if (uint64_data_in != uint64_data)
                 return ERR_WRONG;
         }
 #endif /* _NETCDF4 */
