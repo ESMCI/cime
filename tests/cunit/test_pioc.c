@@ -635,7 +635,13 @@ int test_putget(int iosysid, int num_flavors, int *flavor, int my_rank,
                                         PIO_DOUBLE, PIO_UBYTE, PIO_USHORT, PIO_UINT, PIO_INT64,
                                         PIO_UINT64, PIO_STRING};
         int varid[NUM_NETCDF4_TYPES];
+        int extra_types = 0;
 
+        /* Are we testing extra types? */
+#ifdef _NETCDF4
+        extra_types++;
+#endif /* _NETCDF4 */
+        
         /* Create a filename. */
         if ((ret = get_iotype_name(flavor[fmt], iotype_name)))
             return ret;
@@ -704,7 +710,6 @@ int test_putget(int iosysid, int num_flavors, int *flavor, int my_rank,
             ERR(ret);
 
         /* For netcdf-4, there are extra types. */
-#ifdef _NETCDF4
         unsigned char ubyte_data = 43;
         unsigned short ushort_data = 666;
         unsigned int uint_data = 666666;
@@ -724,7 +729,6 @@ int test_putget(int iosysid, int num_flavors, int *flavor, int my_rank,
             if ((ret = PIOc_put_var1_ulonglong(ncid, varid[10], start, &uint64_data)))
                 ERR(ret);
         }
-#endif /* _NETCDF4 */
 
         /* Close the netCDF file. */
         printf("rank: %d Closing the sample data file...\n", my_rank);
@@ -766,7 +770,6 @@ int test_putget(int iosysid, int num_flavors, int *flavor, int my_rank,
         if (double_data_in != double_data)
             return ERR_WRONG;
 
-#ifdef _NETCDF4
         unsigned char ubyte_data_in;
         unsigned short ushort_data_in;
         unsigned int uint_data_in;
@@ -795,7 +798,6 @@ int test_putget(int iosysid, int num_flavors, int *flavor, int my_rank,
             if (uint64_data_in != uint64_data)
                 return ERR_WRONG;
         }
-#endif /* _NETCDF4 */
 
         /* Check results again with vara functions. Should get identical results. */
         if ((ret = PIOc_get_vara_schar(ncid, varid[0], start, count, &byte_data_in)))
@@ -823,7 +825,6 @@ int test_putget(int iosysid, int num_flavors, int *flavor, int my_rank,
         if (double_data_in != double_data)
             return ERR_WRONG;
 
-#ifdef _NETCDF4
         if (flavor[fmt] == PIO_IOTYPE_NETCDF4C || flavor[fmt] == PIO_IOTYPE_NETCDF4P)
         {
             if ((ret = PIOc_get_vara_uchar(ncid, varid[6], start, count, &ubyte_data_in)))
@@ -847,7 +848,6 @@ int test_putget(int iosysid, int num_flavors, int *flavor, int my_rank,
             if (uint64_data_in != uint64_data)
                 return ERR_WRONG;
         }
-#endif /* _NETCDF4 */
 
         /* Close the netCDF file. */
         printf("rank: %d Closing the sample data file...\n", my_rank);
