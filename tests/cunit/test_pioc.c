@@ -660,6 +660,47 @@ int putget_write_var1(int ncid, int *varid, PIO_Offset *index, int flavor)
     return 0;
 }
 
+/* Use the vara functions to write some data to an open test file. */
+int putget_write_vara(int ncid, int *varid, PIO_Offset *start, PIO_Offset *count,
+                      int flavor)
+{
+    int ret;
+    
+    /* if ((ret = PIOc_put_vara_text(ncid, varid[2], start, count, &char_data))) */
+    /*     ERR(ret); */
+
+    if ((ret = PIOc_put_vara_schar(ncid, varid[0], start, count, &byte_data)))
+        return ret;
+
+    if ((ret = PIOc_put_vara_short(ncid, varid[2], start, count, &short_data)))
+        return ret;
+
+    if ((ret = PIOc_put_vara_int(ncid, varid[3], start, count, &int_data)))
+        return ret;
+
+    if ((ret = PIOc_put_vara_float(ncid, varid[4], start, count, &float_data)))
+        return ret;
+
+    if ((ret = PIOc_put_vara_double(ncid, varid[5], start, count, &double_data)))
+        return ret;
+        
+    if (flavor == PIO_IOTYPE_NETCDF4C || flavor == PIO_IOTYPE_NETCDF4P)
+    {
+        if ((ret = PIOc_put_vara_uchar(ncid, varid[6], start, count, &ubyte_data)))
+            return ret;
+        if ((ret = PIOc_put_vara_ushort(ncid, varid[7], start, count, &ushort_data)))
+            return ret;
+        if ((ret = PIOc_put_vara_uint(ncid, varid[8], start, count, &uint_data)))
+            return ret;
+        if ((ret = PIOc_put_vara_longlong(ncid, varid[9], start, count, &int64_data)))
+            return ret;
+        if ((ret = PIOc_put_vara_ulonglong(ncid, varid[10], start, count, &uint64_data)))
+            return ret;
+    }
+
+    return 0;
+}
+
 /* Use the var1 functions to read some data from an open test file. */
 int putget_read_var1(int ncid, int *varid, PIO_Offset *index, int flavor)
 {
@@ -871,6 +912,10 @@ int test_putget(int iosysid, int num_flavors, int *flavor, int my_rank,
 
         /* Use the var1 functions to write some data. */
         if ((ret = putget_write_var1(ncid, varid, index, flavor[fmt])))
+            return ret;
+
+        /* Use the var1 functions to write some data. */
+        if ((ret = putget_write_vara(ncid, varid, start, count, flavor[fmt])))
             return ret;
 
         /* Close the netCDF file. */
