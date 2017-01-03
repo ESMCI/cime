@@ -1,44 +1,21 @@
 /**
- * @file 
+ * @file
  * Compute start and count arrays for the box rearranger
  *
  * @author Jim Edwards
  * @date  2014
  */
 #include <config.h>
-
-#ifdef TESTCALCDECOMP
-enum PIO_DATATYPE{
-    PIO_REAL,
-    PIO_INT,
-    PIO_DOUBLE
-};
-#define PIO_NOERR 0
-typedef long long PIO_Offset;
-#define max(a,b)                                \
-    ({ __typeof__ (a) _a = (a);                 \
-        __typeof__ (b) _b = (b);                \
-        _a > _b ? _a : _b; })
-
-#define min(a,b)                                \
-    ({ __typeof__ (a) _a = (a);                 \
-        __typeof__ (b) _b = (b);                \
-        _a < _b ? _a : _b; })
-#include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
-#else
 #include <pio.h>
 #include <pio_internal.h>
-#endif
 
 /** The default target blocksize for each io task when the box
  * rearranger is used. */
-#define default_blocksize 1024
+#define DEFAULT_BLOCKSIZE 1024
 
 /** The target blocksize for each io task when the box rearranger is
  * used. */
-int blocksize = default_blocksize;
+int blocksize = DEFAULT_BLOCKSIZE;
 
 /**
  * Set the target blocksize for the box rearranger.
@@ -371,7 +348,7 @@ int CalcStartandCount(int basetype, int ndims, const int *gdims, int num_io_proc
                 }
 
             }
-            
+
             if (myiorank == iorank)
             {
                 for (i = 0; i < ndims; i++)
@@ -427,55 +404,3 @@ int CalcStartandCount(int basetype, int ndims, const int *gdims, int num_io_proc
 
     return use_io_procs;
 }
-
-#ifdef TESTCALCDECOMP
-int main()
-{
-    int ndims=2;
-    int gdims[2]={31,777602};
-    int num_io_procs=24;
-    bool converged=false;
-    long int start[ndims], kount[ndims];
-    int iorank, numaiotasks;
-    long int tpsize;
-    long int psize;
-    long int pgdims;
-    int scnt;
-
-    pgdims=1;
-    for(int i=0;i<ndims;i++)
-        pgdims*=gdims[i];
-
-    tpsize = 0;
-    numaiotasks = 0;
-    while (! converged){
-        for(iorank=0;iorank<num_io_procs;iorank++){
-            numaiotasks = CalcStartandCount(PIO_DOUBLE,ndims,gdims,num_io_procs, iorank, start,kount);
-            if(iorank<numaiotasks)
-                printf("iorank %d start %ld %ld count %ld %ld\n",iorank,start[0],start[1],kount[0],kount[1]);
-
-            if(numaiotasks<0) return numaiotasks;
-
-            psize=1;
-            scnt=0;
-            for(int i=0;i<ndims;i++){
-                psize*=kount[i];
-                scnt+=kount[i];
-            }
-            tpsize+=psize;
-
-        }
-        if(tpsize==pgdims)
-            converged = true;
-        else{
-            printf("Failed to converge %ld %ld %d\n",tpsize,pgdims,num_io_procs);
-            tpsize=0;
-            num_io_procs--;
-        }
-    }
-
-
-
-
-}
-#endif
