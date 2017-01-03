@@ -1105,7 +1105,19 @@ int PIOc_put_var_double(int ncid, int varid, const double *op)
     return PIOc_put_vars_double(ncid, varid, NULL, NULL, NULL, op);
 }
 
-/** Interface to netCDF data write function. */
+/**
+ * Put all data to a variable of any type.
+ *
+ * This routine is called collectively by all tasks in the
+ * communicator ios.union_comm.
+ *
+ * @param ncid identifies the netCDF file
+ * @param varid the variable ID number
+ * @param buf pointer that will get the data.
+ * @param bufcount number of elements that will end up in buffer.
+ * @param buftype the MPI type of the data.
+ * @return PIO_NOERR on success, error code otherwise.
+ */
 int PIOc_put_var(int ncid, int varid, const void *buf, PIO_Offset bufcount,
                  MPI_Datatype buftype)
 {
@@ -1181,14 +1193,27 @@ int PIOc_put_var(int ncid, int varid, const void *buf, PIO_Offset bufcount,
 }
 
 /**
- * PIO interface to nc_put_vars
+ * Write strided, muti-dimensional subset of a variable of any type.
  *
  * This routine is called collectively by all tasks in the
  * communicator ios.union_comm.
-
- * Refer to the <A
- * HREF="http://www.unidata.ucar.edu/software/netcdf/docs/netcdf_documentation.html">
- * netcdf documentation. </A> */
+ *
+ * @param ncid identifies the netCDF file
+ * @param varid the variable ID number
+ * @param start an array of start indicies (must have same number of
+ * entries as variable has dimensions). If NULL, indices of 0 will be
+ * used.
+ * @param count an array of counts (must have same number of entries
+ * as variable has dimensions). If NULL, counts matching the size of
+ * the variable will be used.
+ * @param stride an array of strides (must have same number of
+ * entries as variable has dimensions). If NULL, strides of 1 will be
+ * used.
+ * @param buf pointer that will get the data.
+ * @param bufcount number of elements that will end up in buffer.
+ * @param buftype the MPI type of the data.
+ * @return PIO_NOERR on success, error code otherwise.
+ */
 int PIOc_put_vars(int ncid, int varid, const PIO_Offset *start, const PIO_Offset *count,
                   const PIO_Offset *stride, const void *buf, PIO_Offset bufcount,
                   MPI_Datatype buftype)
@@ -1266,7 +1291,22 @@ int PIOc_put_vars(int ncid, int varid, const PIO_Offset *start, const PIO_Offset
     return ierr;
 }
 
-/** Interface to netCDF data write function. */
+/**
+ * Get one value from a variable of any type.
+ *
+ * This routine is called collectively by all tasks in the
+ * communicator ios.union_comm.
+ *
+ * @param ncid identifies the netCDF file
+ * @param varid the variable ID number
+ * @param start an array of start indicies (must have same number of
+ * entries as variable has dimensions). If NULL, indices of 0 will be
+ * used.
+ * @param buf pointer that will get the data.
+ * @param bufcount number of elements that will end up in buffer.
+ * @param buftype the MPI type of the data.
+ * @return PIO_NOERR on success, error code otherwise.
+ */
 int PIOc_put_var1(int ncid, int varid, const PIO_Offset *index, const void *buf,
                   PIO_Offset bufcount, MPI_Datatype buftype)
 {
@@ -1341,9 +1381,27 @@ int PIOc_put_var1(int ncid, int varid, const PIO_Offset *index, const void *buf,
     return ierr;
 }
 
-/** Interface to netCDF data write function. */
-int PIOc_put_vara(int ncid, int varid, const PIO_Offset *start, const PIO_Offset *count, const void *buf,
-                  PIO_Offset bufcount, MPI_Datatype buftype)
+/**
+ * Put muti-dimensional subset of a variable of any type.
+ *
+ * This routine is called collectively by all tasks in the
+ * communicator ios.union_comm.
+ *
+ * @param ncid identifies the netCDF file
+ * @param varid the variable ID number
+ * @param start an array of start indicies (must have same number of
+ * entries as variable has dimensions). If NULL, indices of 0 will be
+ * used.
+ * @param count an array of counts (must have same number of entries
+ * as variable has dimensions). If NULL, counts matching the size of
+ * the variable will be used.
+ * @param buf pointer that will get the data.
+ * @param bufcount number of elements that will end up in buffer.
+ * @param buftype the MPI type of the data.
+ * @return PIO_NOERR on success, error code otherwise.
+ */
+int PIOc_put_vara(int ncid, int varid, const PIO_Offset *start, const PIO_Offset *count,
+                  const void *buf, PIO_Offset bufcount, MPI_Datatype buftype)
 {
     int ierr;
     int msg;
