@@ -739,6 +739,47 @@ int putget_write_vara(int ncid, int *varid, PIO_Offset *start, PIO_Offset *count
     return 0;
 }
 
+/* Use the vars functions to write some data to an open test file. */
+int putget_write_vars(int ncid, int *varid, PIO_Offset *start, PIO_Offset *count,
+                      PIO_Offset *stride, int flavor)
+{
+    int ret;
+
+    /* if ((ret = PIOc_put_vara_text(ncid, varid[2], start, count, char_array))) */
+    /*     ERR(ret); */
+
+    if ((ret = PIOc_put_vara_schar(ncid, varid[0], start, count, (signed char *)byte_array)))
+        return ret;
+
+    if ((ret = PIOc_put_vara_short(ncid, varid[2], start, count, (short *)short_array)))
+        return ret;
+
+    if ((ret = PIOc_put_vara_int(ncid, varid[3], start, count, (int *)int_array)))
+        return ret;
+
+    if ((ret = PIOc_put_vara_float(ncid, varid[4], start, count, (float *)float_array)))
+        return ret;
+
+    if ((ret = PIOc_put_vara_double(ncid, varid[5], start, count, (double *)double_array)))
+        return ret;
+
+    if (flavor == PIO_IOTYPE_NETCDF4C || flavor == PIO_IOTYPE_NETCDF4P)
+    {
+        if ((ret = PIOc_put_vara_uchar(ncid, varid[6], start, count, (unsigned char *)ubyte_array)))
+            return ret;
+        if ((ret = PIOc_put_vara_ushort(ncid, varid[7], start, count, (unsigned short *)ushort_array)))
+            return ret;
+        if ((ret = PIOc_put_vara_uint(ncid, varid[8], start, count, (unsigned int *)uint_array)))
+            return ret;
+        if ((ret = PIOc_put_vara_longlong(ncid, varid[9], start, count, (long long *)int64_array)))
+            return ret;
+        if ((ret = PIOc_put_vara_ulonglong(ncid, varid[10], start, count, (unsigned long long *)uint64_array)))
+            return ret;
+    }
+
+    return 0;
+}
+
 /* Use the var1 functions to read some data from an open test file. */
 int putget_read_var1(int ncid, int *varid, PIO_Offset *index, int flavor)
 {
@@ -884,7 +925,8 @@ int putget_read_vara(int ncid, int *varid, PIO_Offset *start, PIO_Offset *count,
 /* Create a test file for the putget tests to write data to and check
  * by reading it back. In this function we create the file, define the
  * dims and vars, and pass back the ncid. */
-int create_putget_file(int iosysid, int flavor, int *varid, char *filename, int *ncidp)
+int create_putget_file(int iosysid, int try, int flavor, int *varid, char *filename,
+                       int *ncidp)
 {
     char iotype_name[PIO_MAX_NAME + 1];
     int dimids[NDIM];        /* The dimension IDs. */
@@ -898,7 +940,7 @@ int create_putget_file(int iosysid, int flavor, int *varid, char *filename, int 
     /* Create a filename. */
     if ((ret = get_iotype_name(flavor, iotype_name)))
         return ret;
-    sprintf(filename, "%s_putget_%s.nc", TEST_NAME, iotype_name);
+    sprintf(filename, "%s_putget_try_%d_%s.nc", TEST_NAME, try, iotype_name);
 
     /* Create the netCDF output file. */
     if ((ret = PIOc_createfile(iosysid, &ncid, &flavor, filename, PIO_CLOBBER)))
@@ -944,69 +986,101 @@ int create_putget_file(int iosysid, int flavor, int *varid, char *filename, int 
 int test_putget(int iosysid, int num_flavors, int *flavor, int my_rank,
                 MPI_Comm test_comm)
 {
-    /* Use PIO to create the example file in each of the four
-     * available ways. */
-    for (int fmt = 0; fmt < num_flavors; fmt++)
+#define NUM_TRIES 3
+    for (int try = 0; try < NUM_TRIES; try++)
     {
-        char filename[PIO_MAX_NAME + 1]; /* Test filename. */
-        int ncid;
-        int varid[NUM_NETCDF4_TYPES];
-        int ret;    /* Return code. */
+        /* Use PIO to create the example file in each of the four
+         * available ways. */
+        for (int fmt = 0; fmt < num_flavors; fmt++)
+        {
+            char filename[PIO_MAX_NAME + 1]; /* Test filename. */
+            int ncid;
+            int varid[NUM_NETCDF4_TYPES];
+            int ret;    /* Return code. */
 
-        /* Create test file with dims and vars defined. */
-        printf("%d Creating test file for flavor = %d...\n", my_rank, flavor[fmt]);
-        if ((ret = create_putget_file(iosysid, flavor[fmt], varid, filename, &ncid)))
-            return ret;
+            /* Create test file with dims and vars defined. */
+            printf("%d Creating test file for flavor = %d...\n", my_rank, flavor[fmt]);
+            if ((ret = create_putget_file(iosysid, try, flavor[fmt], varid, filename, &ncid)))
+                return ret;
 
-        /* Write some data. */
-        PIO_Offset index[NDIM] = {0, 0, 0};
-        PIO_Offset start[NDIM] = {0, 0, 0};
-        PIO_Offset count[NDIM] = {1, X_DIM_LEN, Y_DIM_LEN};
+            /* Write some data. */
+            PIO_Offset index[NDIM] = {0, 0, 0};
+            PIO_Offset start[NDIM] = {0, 0, 0};
+            PIO_Offset count[NDIM] = {1, X_DIM_LEN, Y_DIM_LEN};
+            PIO_Offset stride[NDIM] = {1, 1, 1};
 
-        /* Use the var1 functions to write some data. */
-        if ((ret = putget_write_var1(ncid, varid, index, flavor[fmt])))
-            return ret;
+            switch (try)
+            {
+            case 1:
+                /* Use the var1 functions to write some data. */
+                if ((ret = putget_write_var1(ncid, varid, index, flavor[fmt])))
+                    return ret;
+                break;
 
-        /* Use the var1 functions to write some data. */
-        if ((ret = putget_write_vara(ncid, varid, start, count, flavor[fmt])))
-            return ret;
+            case 2:
+                /* Use the vara functions to write some data. */
+                if ((ret = putget_write_vara(ncid, varid, start, count, flavor[fmt])))
+                    return ret;
+                break;
 
-        /* Make sure all data are written (pnetcdf needs this). */
-        if ((ret = PIOc_sync(ncid)))
-            ERR(ret);
+            case 3:
+                /* Use the vara functions to write some data. */
+                if ((ret = putget_write_vars(ncid, varid, start, count, stride, flavor[fmt])))
+                    return ret;
+                break;
+            }
 
-        /* Use the var1 functions to read some data. */
-        if ((ret = putget_read_var1(ncid, varid, index, flavor[fmt])))
-            return ret;
+            /* Make sure all data are written (pnetcdf needs this). */
+            if ((ret = PIOc_sync(ncid)))
+                ERR(ret);
 
-        /* Use the vara functions to read some data. */
-        if ((ret = putget_read_vara(ncid, varid, start, count, flavor[fmt])))
-            return ret;
+            switch (try)
+            {
+            case 1:
+                /* Use the var1 functions to read some data. */
+                if ((ret = putget_read_var1(ncid, varid, index, flavor[fmt])))
+                    return ret;
+                break;
 
-        /* Close the netCDF file. */
-        printf("%d Closing the sample data file...\n", my_rank);
-        if ((ret = PIOc_closefile(ncid)))
-            ERR(ret);
+            case 2:
+                /* Use the vara functions to read some data. */
+                if ((ret = putget_read_vara(ncid, varid, start, count, flavor[fmt])))
+                    return ret;
+                break;
+            }
 
-        /* Try to read it. */
-        if ((ret = PIOc_openfile(iosysid, &ncid, &(flavor[fmt]), filename, PIO_NOWRITE)))
-            ERR(ret);
+            /* Close the netCDF file. */
+            printf("%d Closing the sample data file...\n", my_rank);
+            if ((ret = PIOc_closefile(ncid)))
+                ERR(ret);
 
-        /* Use the var1 functions to read some data. */
-        if ((ret = putget_read_var1(ncid, varid, index, flavor[fmt])))
-            return ret;
+            /* Try to read it. */
+            if ((ret = PIOc_openfile(iosysid, &ncid, &(flavor[fmt]), filename, PIO_NOWRITE)))
+                ERR(ret);
 
-        /* Use the vara functions to read some data. */
-        if ((ret = putget_read_vara(ncid, varid, start, count, flavor[fmt])))
-            return ret;
+            switch (try)
+            {
+            case 1:
+                /* Use the var1 functions to read some data. */
+                if ((ret = putget_read_var1(ncid, varid, index, flavor[fmt])))
+                    return ret;
+                break;
 
-        /* Close the netCDF file. */
-        printf("rank: %d Closing the sample data file...\n", my_rank);
-        if ((ret = PIOc_closefile(ncid)))
-            ERR(ret);
+            case 2:
+                /* Use the vara functions to read some data. */
+                if ((ret = putget_read_vara(ncid, varid, start, count, flavor[fmt])))
+                    return ret;
+                break;
+            }
 
-    }
+            /* Close the netCDF file. */
+            printf("rank: %d Closing the sample data file...\n", my_rank);
+            if ((ret = PIOc_closefile(ncid)))
+                ERR(ret);
 
+        } /* next flavor */
+    } /* next try */
+    
     return PIO_NOERR;
 }
 
