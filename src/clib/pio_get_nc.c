@@ -1028,6 +1028,19 @@ int PIOc_get_var1_longlong(int ncid, int varid, const PIO_Offset *index,
     return PIOc_get_var1_tc(ncid, varid, index, NC_INT64, buf);
 }
 
+/**
+ * Get all data from a variable of any type.
+ *
+ * This routine is called collectively by all tasks in the
+ * communicator ios.union_comm.
+ *
+ * @param ncid identifies the netCDF file
+ * @param varid the variable ID number
+ * @param buf pointer that will get the data.
+ * @param bufcount number of elements that will end up in buffer.
+ * @param buftype the MPI type of the data.
+ * @return PIO_NOERR on success, error code otherwise.
+ */
 int PIOc_get_var(int ncid, int varid, void *buf, PIO_Offset bufcount, MPI_Datatype buftype)
 {
     int ierr;
@@ -1101,7 +1114,24 @@ int PIOc_get_var(int ncid, int varid, void *buf, PIO_Offset bufcount, MPI_Dataty
     return ierr;
 }
 
-int PIOc_get_var1(int ncid, int varid, const PIO_Offset *index, void *buf, PIO_Offset bufcount, MPI_Datatype buftype)
+/**
+ * Get one value from a variable of any type.
+ *
+ * This routine is called collectively by all tasks in the
+ * communicator ios.union_comm.
+ *
+ * @param ncid identifies the netCDF file
+ * @param varid the variable ID number
+ * @param index an array of start indicies (must have same number of
+ * entries as variable has dimensions). If NULL, indices of 0 will be
+ * used.
+ * @param buf pointer that will get the data.
+ * @param bufcount number of elements that will end up in buffer.
+ * @param buftype the MPI type of the data.
+ * @return PIO_NOERR on success, error code otherwise.
+ */
+int PIOc_get_var1(int ncid, int varid, const PIO_Offset *index, void *buf,
+                  PIO_Offset bufcount, MPI_Datatype buftype)
 {
     int ierr;
     int msg;
@@ -1175,7 +1205,25 @@ int PIOc_get_var1(int ncid, int varid, const PIO_Offset *index, void *buf, PIO_O
     return ierr;
 }
 
-int PIOc_get_vara(int ncid, int varid, const PIO_Offset *start, const PIO_Offset *count, void *buf, PIO_Offset bufcount, MPI_Datatype buftype)
+/**
+ * Get a muti-dimensional subset of a variable of any type.
+ *
+ * This routine is called collectively by all tasks in the
+ * communicator ios.union_comm.
+ *
+ * @param ncid identifies the netCDF file
+ * @param varid the variable ID number
+ * @param start an array of start indicies (must have same number of
+ * entries as variable has dimensions). If NULL, indices of 0 will be
+ * used.
+ * @param count an array of counts (must have same number of entries
+ * as variable has dimensions). If NULL, counts matching the size of
+ * the variable will be used.
+ * @param buf pointer that will get the data.
+ * @return PIO_NOERR on success, error code otherwise.
+ */
+int PIOc_get_vara(int ncid, int varid, const PIO_Offset *start, const PIO_Offset *count,
+                  void *buf, PIO_Offset bufcount, MPI_Datatype buftype)
 {
     int ierr;
     int msg;
@@ -1249,7 +1297,30 @@ int PIOc_get_vara(int ncid, int varid, const PIO_Offset *start, const PIO_Offset
     return ierr;
 }
 
-int PIOc_get_vars(int ncid, int varid, const PIO_Offset *start, const PIO_Offset *count, const PIO_Offset *stride, void *buf, PIO_Offset bufcount, MPI_Datatype buftype)
+/**
+ * Get strided, muti-dimensional subset of a variable of any type.
+ *
+ * This routine is called collectively by all tasks in the
+ * communicator ios.union_comm.
+ *
+ * @param ncid identifies the netCDF file
+ * @param varid the variable ID number
+ * @param start an array of start indicies (must have same number of
+ * entries as variable has dimensions). If NULL, indices of 0 will be
+ * used.
+ * @param count an array of counts (must have same number of entries
+ * as variable has dimensions). If NULL, counts matching the size of
+ * the variable will be used.
+ * @param stride an array of strides (must have same number of
+ * entries as variable has dimensions). If NULL, strides of 1 will be
+ * used.
+ * @param buf pointer that will get the data.
+ * @param bufcount number of elements that will end up in buffer.
+ * @param buftype the MPI type of the data.
+ * @return PIO_NOERR on success, error code otherwise.
+ */
+int PIOc_get_vars(int ncid, int varid, const PIO_Offset *start, const PIO_Offset *count,
+                  const PIO_Offset *stride, void *buf, PIO_Offset bufcount, MPI_Datatype buftype)
 {
     int ierr;
     int msg;
@@ -1276,7 +1347,6 @@ int PIOc_get_vars(int ncid, int varid, const PIO_Offset *start, const PIO_Offset
             mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
         mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
     }
-
 
     if(ios->ioproc){
         switch(file->iotype){
