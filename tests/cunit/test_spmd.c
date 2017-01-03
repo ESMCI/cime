@@ -141,6 +141,56 @@ int run_spmd_tests(MPI_Comm test_comm)
     return 0;
 }
 
+int test_CalcStartandCount()
+{
+    int ndims = 2;
+    int gdims[2] = {31, 777602};
+    int num_io_procs = 24;
+    bool converged = false;
+    PIO_Offset start[ndims], kount[ndims];
+    int iorank, numaiotasks = 0;
+    long int tpsize = 0;
+    long int psize;
+    long int pgdims = 1;
+    int scnt;
+
+    for (int i = 0; i < ndims; i++)
+        pgdims *= gdims[i];
+
+    while (!converged)
+    {
+        for (iorank = 0; iorank < num_io_procs; iorank++)
+        {
+            numaiotasks = CalcStartandCount(PIO_DOUBLE, ndims, gdims, num_io_procs, iorank, start, kount);
+            if (iorank < numaiotasks)
+                printf("iorank %d start %ld %ld count %ld %ld\n", iorank, start[0], start[1], kount[0], kount[1]);
+
+            if (numaiotasks < 0)
+                return numaiotasks;
+
+            psize = 1;
+            scnt = 0;
+            for (int i = 0; i < ndims; i++)
+            {
+                psize *= kount[i];
+                scnt += kount[i];
+            }
+            tpsize += psize;
+        }
+        
+        if (tpsize == pgdims)
+            converged = true;
+        else
+        {
+            printf("Failed to converge %ld %ld %d\n", tpsize, pgdims, num_io_procs);
+            tpsize = 0;
+            num_io_procs--;
+        }
+    }
+
+    return 0;
+}
+
 /* Run Tests for pio_spmd.c functions. */
 int main(int argc, char **argv)
 {
@@ -158,10 +208,14 @@ int main(int argc, char **argv)
      * nothing. */
     if (my_rank < TARGET_NTASKS)
     {
-        printf("%d running test code\n", my_rank);
+        printf("%d running spmd test code\n", my_rank);
         if ((ret = run_spmd_tests(test_comm)))
             return ret;
 
+        printf("%d running CalcStartandCount test code\n", my_rank);
+        if ((ret = test_CalcStartandCount()))
+            return ret;
+        
     } /* endif my_rank < TARGET_NTASKS */
 
     /* Finalize the MPI library. */
