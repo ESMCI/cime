@@ -60,9 +60,54 @@ int dim_len[NDIM] = {NC_UNLIMITED, X_DIM_LEN, Y_DIM_LEN};
 /* Length of chunksizes to use in netCDF-4 files. */
 PIO_Offset chunksize[NDIM] = {2, X_DIM_LEN/2, Y_DIM_LEN/2};
 
+/* Some sample data values to write. */
+char char_data = 2;
+signed char byte_data = -42;
+short short_data = -300;
+int int_data = -10000;
+float float_data = -42.42;
+double double_data = -420000000000.5;
+unsigned char ubyte_data = 43;
+unsigned short ushort_data = 666;
+unsigned int uint_data = 666666;
+long long int64_data = -99999999999;
+unsigned long long uint64_data = 99999999999;
+
+char char_array[X_DIM_LEN][Y_DIM_LEN];
+signed char byte_array[X_DIM_LEN][Y_DIM_LEN];
+short short_array[X_DIM_LEN][Y_DIM_LEN];
+int int_array[X_DIM_LEN][Y_DIM_LEN];
+float float_array[X_DIM_LEN][Y_DIM_LEN];
+double double_array[X_DIM_LEN][Y_DIM_LEN];
+unsigned char ubyte_array[X_DIM_LEN][Y_DIM_LEN];
+unsigned short ushort_array[X_DIM_LEN][Y_DIM_LEN];
+unsigned int uint_array[X_DIM_LEN][Y_DIM_LEN];
+long long int64_array[X_DIM_LEN][Y_DIM_LEN];
+unsigned long long uint64_array[X_DIM_LEN][Y_DIM_LEN];
+
 #define DIM_NAME "dim"
 #define NDIM1 1
 #define DIM_LEN 4
+
+/* Fill up the data arrays with some values. */
+void init_arrays()
+{
+    for (int x = 0; x < X_DIM_LEN; x++)
+        for (int y = 0; y < Y_DIM_LEN; y++)
+        {
+            char_array[x][y] = char_data;
+            byte_array[x][y] = byte_data;
+            short_array[x][y] = short_data;
+            int_array[x][y] = int_data;
+            float_array[x][y] = float_data;
+            double_array[x][y] = double_data;
+            ubyte_array[x][y] = ubyte_data;
+            ushort_array[x][y] = ushort_data;
+            uint_array[x][y] = uint_data;
+            int64_array[x][y] = int64_data;
+            uint64_array[x][y] = uint64_data;
+        }
+}
 
 /* Create the decomposition to divide the data between the 4 tasks. */
 int create_decomposition(int ntasks, int my_rank, int iosysid, int *ioid)
@@ -607,6 +652,229 @@ int test_names(int iosysid, int num_flavors, int *flavor, int my_rank,
     return PIO_NOERR;
 }
 
+/* Use the var1 functions to write some data to an open test file. */
+int putget_write_var1(int ncid, int *varid, PIO_Offset *index, int flavor)
+{
+    int ret;
+    
+    /* if ((ret = PIOc_put_var1_text(ncid, varid[2], index, &char_data))) */
+    /*     ERR(ret); */
+
+    if ((ret = PIOc_put_var1_schar(ncid, varid[0], index, &byte_data)))
+        return ret;
+
+    if ((ret = PIOc_put_var1_short(ncid, varid[2], index, &short_data)))
+        return ret;
+
+    if ((ret = PIOc_put_var1_int(ncid, varid[3], index, &int_data)))
+        return ret;
+
+    if ((ret = PIOc_put_var1_float(ncid, varid[4], index, &float_data)))
+        return ret;
+
+    if ((ret = PIOc_put_var1_double(ncid, varid[5], index, &double_data)))
+        return ret;
+        
+    if (flavor == PIO_IOTYPE_NETCDF4C || flavor == PIO_IOTYPE_NETCDF4P)
+    {
+        if ((ret = PIOc_put_var1_uchar(ncid, varid[6], index, &ubyte_data)))
+            return ret;
+        if ((ret = PIOc_put_var1_ushort(ncid, varid[7], index, &ushort_data)))
+            return ret;
+        if ((ret = PIOc_put_var1_uint(ncid, varid[8], index, &uint_data)))
+            return ret;
+        if ((ret = PIOc_put_var1_longlong(ncid, varid[9], index, &int64_data)))
+            return ret;
+        if ((ret = PIOc_put_var1_ulonglong(ncid, varid[10], index, &uint64_data)))
+            return ret;
+    }
+
+    return 0;
+}
+
+/* Use the vara functions to write some data to an open test file. */
+int putget_write_vara(int ncid, int *varid, PIO_Offset *start, PIO_Offset *count,
+                      int flavor)
+{
+    int ret;
+    
+    /* if ((ret = PIOc_put_vara_text(ncid, varid[2], start, count, char_array))) */
+    /*     ERR(ret); */
+
+    if ((ret = PIOc_put_vara_schar(ncid, varid[0], start, count, (signed char *)byte_array)))
+        return ret;
+
+    if ((ret = PIOc_put_vara_short(ncid, varid[2], start, count, (short *)short_array)))
+        return ret;
+
+    if ((ret = PIOc_put_vara_int(ncid, varid[3], start, count, (int *)int_array)))
+        return ret;
+
+    if ((ret = PIOc_put_vara_float(ncid, varid[4], start, count, (float *)float_array)))
+        return ret;
+
+    if ((ret = PIOc_put_vara_double(ncid, varid[5], start, count, (double *)double_array)))
+        return ret;
+        
+    if (flavor == PIO_IOTYPE_NETCDF4C || flavor == PIO_IOTYPE_NETCDF4P)
+    {
+        if ((ret = PIOc_put_vara_uchar(ncid, varid[6], start, count, (unsigned char *)ubyte_array)))
+            return ret;
+        if ((ret = PIOc_put_vara_ushort(ncid, varid[7], start, count, (unsigned short *)ushort_array)))
+            return ret;
+        if ((ret = PIOc_put_vara_uint(ncid, varid[8], start, count, (unsigned int *)uint_array)))
+            return ret;
+        if ((ret = PIOc_put_vara_longlong(ncid, varid[9], start, count, (long long *)int64_array)))
+            return ret;
+        if ((ret = PIOc_put_vara_ulonglong(ncid, varid[10], start, count, (unsigned long long *)uint64_array)))
+            return ret;
+    }
+
+    return 0;
+}
+
+/* Use the var1 functions to read some data from an open test file. */
+int putget_read_var1(int ncid, int *varid, PIO_Offset *index, int flavor)
+{
+    signed char byte_data_in;
+    short short_data_in;
+    unsigned char ubyte_data_in;
+    int int_data_in;
+    float float_data_in;
+    double double_data_in;
+    unsigned short ushort_data_in;
+    unsigned int uint_data_in;
+    long long int64_data_in;
+    unsigned long long uint64_data_in;
+    int ret;
+    
+    if ((ret = PIOc_get_var1_schar(ncid, varid[0], index, &byte_data_in)))
+        return ret;
+    if (byte_data_in != byte_data)
+        return ERR_WRONG;
+
+    if ((ret = PIOc_get_var1_short(ncid, varid[2], index, &short_data_in)))
+        return ret;
+    if (short_data_in != short_data)
+        return ERR_WRONG;
+
+    if ((ret = PIOc_get_var1_int(ncid, varid[3], index, &int_data_in)))
+        return ret;
+    if (int_data_in != int_data)
+        return ERR_WRONG;
+
+    if ((ret = PIOc_get_var1_float(ncid, varid[4], index, &float_data_in)))
+        return ret;
+    if (float_data_in != float_data)
+        return ERR_WRONG;
+
+    if ((ret = PIOc_get_var1_double(ncid, varid[5], index, &double_data_in)))
+        return ret;
+    if (double_data_in != double_data)
+        return ERR_WRONG;
+
+    if (flavor == PIO_IOTYPE_NETCDF4C || flavor == PIO_IOTYPE_NETCDF4P)
+    {
+        if ((ret = PIOc_get_var1_uchar(ncid, varid[6], index, &ubyte_data_in)))
+            return ret;
+        if (ubyte_data_in != ubyte_data)
+            return ERR_WRONG;
+        if ((ret = PIOc_get_var1_ushort(ncid, varid[7], index, &ushort_data_in)))
+            return ret;
+        if (ushort_data_in != ushort_data)
+            return ERR_WRONG;
+        if ((ret = PIOc_get_var1_uint(ncid, varid[8], index, &uint_data_in)))
+            return ret;
+        if (uint_data_in != uint_data)
+            return ERR_WRONG;
+        if ((ret = PIOc_get_var1_longlong(ncid, varid[9], index, &int64_data_in)))
+            return ret;
+        if (int64_data_in != int64_data)
+            return ERR_WRONG;
+        if ((ret = PIOc_get_var1_ulonglong(ncid, varid[10], index, &uint64_data_in)))
+            return ret;
+        if (uint64_data_in != uint64_data)
+            return ERR_WRONG;
+    }
+
+    return 0;
+}
+
+/* Use the vara functions to read some data from an open test file. */
+int putget_read_vara(int ncid, int *varid, PIO_Offset *start, PIO_Offset *count,
+                     int flavor)
+{
+    signed char byte_array_in[X_DIM_LEN][Y_DIM_LEN];
+    short short_array_in[X_DIM_LEN][Y_DIM_LEN];
+    unsigned char ubyte_array_in[X_DIM_LEN][Y_DIM_LEN];
+    int int_array_in[X_DIM_LEN][Y_DIM_LEN];
+    float float_array_in[X_DIM_LEN][Y_DIM_LEN];
+    double double_array_in[X_DIM_LEN][Y_DIM_LEN];
+    unsigned short ushort_array_in[X_DIM_LEN][Y_DIM_LEN];
+    unsigned int uint_array_in[X_DIM_LEN][Y_DIM_LEN];
+    long long int64_array_in[X_DIM_LEN][Y_DIM_LEN];
+    unsigned long long uint64_array_in[X_DIM_LEN][Y_DIM_LEN];
+    int x, y;
+    int ret;
+        
+    if ((ret = PIOc_get_vara_schar(ncid, varid[0], start, count, (signed char *)byte_array_in)))
+        return ret;
+    if ((ret = PIOc_get_vara_short(ncid, varid[2], start, count, (short *)short_array_in)))
+        return ret;
+    if ((ret = PIOc_get_vara_int(ncid, varid[3], start, count, (int *)int_array_in)))
+        return ret;
+    if ((ret = PIOc_get_vara_float(ncid, varid[4], start, count, (float *)float_array_in)))
+        return ret;
+    if ((ret = PIOc_get_vara_double(ncid, varid[5], start, count, (double *)double_array_in)))
+        return ret;
+
+    for (x = 0; x < X_DIM_LEN; x++)
+        for (y = 0; y < Y_DIM_LEN; y++)
+        {
+            if (byte_array_in[x][y] != byte_array[x][y])
+                return ERR_WRONG;
+            if (short_array_in[x][y] != short_array[x][y])
+                return ERR_WRONG;
+            if (int_array_in[x][y] != int_array[x][y])
+                return ERR_WRONG;
+            if (float_array_in[x][y] != float_array[x][y])
+                return ERR_WRONG;
+            if (double_array_in[x][y] != double_array[x][y])
+                return ERR_WRONG;
+        }
+    
+    if (flavor == PIO_IOTYPE_NETCDF4C || flavor == PIO_IOTYPE_NETCDF4P)
+    {
+        if ((ret = PIOc_get_vara_uchar(ncid, varid[6], start, count, (unsigned char *)ubyte_array_in)))
+            return ret;
+
+        if ((ret = PIOc_get_vara_ushort(ncid, varid[7], start, count, (unsigned short *)ushort_array_in)))
+            return ret;
+        if ((ret = PIOc_get_vara_uint(ncid, varid[8], start, count, (unsigned int *)uint_array_in)))
+            return ret;
+        if ((ret = PIOc_get_vara_longlong(ncid, varid[9], start, count, (long long *)int64_array_in)))
+            return ret;
+        if ((ret = PIOc_get_vara_ulonglong(ncid, varid[10], start, count, (unsigned long long *)uint64_array_in)))
+            return ret;
+        for (x = 0; x < X_DIM_LEN; x++)
+            for (y = 0; y < Y_DIM_LEN; y++)
+            {
+                if (ubyte_array_in[x][y] != ubyte_array[x][y])
+                    return ERR_WRONG;
+                if (ushort_array_in[x][y] != ushort_array[x][y])
+                    return ERR_WRONG;
+                if (uint_array_in[x][y] != uint_array[x][y])
+                    return ERR_WRONG;
+                if (int64_array_in[x][y] != int64_array[x][y])
+                    return ERR_WRONG;
+                if (uint64_array_in[x][y] != uint64_array[x][y])
+                    return ERR_WRONG;
+            }
+    }
+
+    return 0;
+}
+
 /* Test data read/write operations.
  *
  * @param iosysid the iosystem ID that will be used for the test.
@@ -676,56 +944,32 @@ int test_putget(int iosysid, int num_flavors, int *flavor, int my_rank,
             ERR(ret);
 
         /* Write some data. */
+        PIO_Offset index[NDIM] = {0, 0, 0};
         PIO_Offset start[NDIM] = {0, 0, 0};
-        PIO_Offset count[NDIM] = {1, 1, 1};
+        PIO_Offset count[NDIM] = {1, X_DIM_LEN, Y_DIM_LEN};
 
-        char char_data = 2;
-        /* if ((ret = PIOc_put_var1_text(ncid, varid[2], start, &char_data))) */
-        /*     ERR(ret); */
+        /* Use the var1 functions to write some data. */
+        if ((ret = putget_write_var1(ncid, varid, index, flavor[fmt])))
+            return ret;
 
-        signed char byte_data = -42;
-        if ((ret = PIOc_put_var1_schar(ncid, varid[0], start, &byte_data)))
+        /* Use the var1 functions to write some data. */
+        if ((ret = putget_write_vara(ncid, varid, start, count, flavor[fmt])))
+            return ret;
+
+        /* Make sure all data are written (pnetcdf needs this). */
+        if ((ret = PIOc_sync(ncid)))
             ERR(ret);
 
-        short short_data = byte_data * byte_data;
-        if ((ret = PIOc_put_var1_short(ncid, varid[2], start, &short_data)))
-            ERR(ret);
+        /* Use the var1 functions to read some data. */
+        if ((ret = putget_read_var1(ncid, varid, index, flavor[fmt])))
+            return ret;
 
-        int int_data = -10000;
-        if ((ret = PIOc_put_var1_int(ncid, varid[3], start, &int_data)))
-            ERR(ret);
-
-        float float_data = -42.42;
-        if ((ret = PIOc_put_var1_float(ncid, varid[4], start, &float_data)))
-            ERR(ret);
-
-        double double_data = -420000000000.5;
-        if ((ret = PIOc_put_var1_double(ncid, varid[5], start, &double_data)))
-            ERR(ret);
-
-        /* For netcdf-4, there are extra types. */
-        unsigned char ubyte_data = 43;
-        unsigned short ushort_data = 666;
-        unsigned int uint_data = 666666;
-        long long int64_data = -99999999999;
-        unsigned long long uint64_data = 99999999999;
-        
-        if (flavor[fmt] == PIO_IOTYPE_NETCDF4C || flavor[fmt] == PIO_IOTYPE_NETCDF4P)
-        {
-            if ((ret = PIOc_put_var1_uchar(ncid, varid[6], start, &ubyte_data)))
-                ERR(ret);
-            if ((ret = PIOc_put_var1_ushort(ncid, varid[7], start, &ushort_data)))
-                ERR(ret);
-            if ((ret = PIOc_put_var1_uint(ncid, varid[8], start, &uint_data)))
-                ERR(ret);
-            if ((ret = PIOc_put_var1_longlong(ncid, varid[9], start, &int64_data)))
-                ERR(ret);
-            if ((ret = PIOc_put_var1_ulonglong(ncid, varid[10], start, &uint64_data)))
-                ERR(ret);
-        }
+        /* Use the vara functions to read some data. */
+        if ((ret = putget_read_vara(ncid, varid, start, count, flavor[fmt])))
+            return ret;
 
         /* Close the netCDF file. */
-        printf("rank: %d Closing the sample data file...\n", my_rank);
+        printf("%d Closing the sample data file...\n", my_rank);
         if ((ret = PIOc_closefile(ncid)))
             ERR(ret);
 
@@ -733,115 +977,13 @@ int test_putget(int iosysid, int num_flavors, int *flavor, int my_rank,
         if ((ret = PIOc_openfile(iosysid, &ncid, &(flavor[fmt]), filename, PIO_NOWRITE)))
             ERR(ret);
 
-        /* Check results. */
-        signed char byte_data_in;
-        if ((ret = PIOc_get_var1_schar(ncid, varid[0], start, &byte_data_in)))
-            ERR(ret);
-        if (byte_data_in != byte_data)
-            return ERR_WRONG;
+        /* Use the var1 functions to read some data. */
+        if ((ret = putget_read_var1(ncid, varid, index, flavor[fmt])))
+            return ret;
 
-        short short_data_in;
-        if ((ret = PIOc_get_var1_short(ncid, varid[2], start, &short_data_in)))
-            ERR(ret);
-        if (short_data_in != short_data)
-            return ERR_WRONG;
-
-        int int_data_in;
-        if ((ret = PIOc_get_var1_int(ncid, varid[3], start, &int_data_in)))
-            ERR(ret);
-        if (int_data_in != int_data)
-            return ERR_WRONG;
-
-        float float_data_in;
-        if ((ret = PIOc_get_var1_float(ncid, varid[4], start, &float_data_in)))
-            ERR(ret);
-        if (float_data_in != float_data)
-            return ERR_WRONG;
-
-        double double_data_in;
-        if ((ret = PIOc_get_var1_double(ncid, varid[5], start, &double_data_in)))
-            ERR(ret);
-        if (double_data_in != double_data)
-            return ERR_WRONG;
-
-        unsigned char ubyte_data_in;
-        unsigned short ushort_data_in;
-        unsigned int uint_data_in;
-        long long int64_data_in;
-        unsigned long long uint64_data_in;
-        if (flavor[fmt] == PIO_IOTYPE_NETCDF4C || flavor[fmt] == PIO_IOTYPE_NETCDF4P)
-        {
-            if ((ret = PIOc_get_var1_uchar(ncid, varid[6], start, &ubyte_data_in)))
-                ERR(ret);
-            if (ubyte_data_in != ubyte_data)
-                return ERR_WRONG;
-            if ((ret = PIOc_get_var1_ushort(ncid, varid[7], start, &ushort_data_in)))
-                ERR(ret);
-            if (ushort_data_in != ushort_data)
-                return ERR_WRONG;
-            if ((ret = PIOc_get_var1_uint(ncid, varid[8], start, &uint_data_in)))
-                ERR(ret);
-            if (uint_data_in != uint_data)
-                return ERR_WRONG;
-            if ((ret = PIOc_get_var1_longlong(ncid, varid[9], start, &int64_data_in)))
-                ERR(ret);
-            if (int64_data_in != int64_data)
-                return ERR_WRONG;
-            if ((ret = PIOc_get_var1_ulonglong(ncid, varid[10], start, &uint64_data_in)))
-                ERR(ret);
-            if (uint64_data_in != uint64_data)
-                return ERR_WRONG;
-        }
-
-        /* Check results again with vara functions. Should get identical results. */
-        if ((ret = PIOc_get_vara_schar(ncid, varid[0], start, count, &byte_data_in)))
-            ERR(ret);
-        if (byte_data_in != byte_data)
-            return ERR_WRONG;
-
-        if ((ret = PIOc_get_vara_short(ncid, varid[2], start, count, &short_data_in)))
-            ERR(ret);
-        if (short_data_in != short_data)
-            return ERR_WRONG;
-
-        if ((ret = PIOc_get_vara_int(ncid, varid[3], start, count, &int_data_in)))
-            ERR(ret);
-        if (int_data_in != int_data)
-            return ERR_WRONG;
-
-        if ((ret = PIOc_get_vara_float(ncid, varid[4], start, count, &float_data_in)))
-            ERR(ret);
-        if (float_data_in != float_data)
-            return ERR_WRONG;
-
-        if ((ret = PIOc_get_vara_double(ncid, varid[5], start, count, &double_data_in)))
-            ERR(ret);
-        if (double_data_in != double_data)
-            return ERR_WRONG;
-
-        if (flavor[fmt] == PIO_IOTYPE_NETCDF4C || flavor[fmt] == PIO_IOTYPE_NETCDF4P)
-        {
-            if ((ret = PIOc_get_vara_uchar(ncid, varid[6], start, count, &ubyte_data_in)))
-                ERR(ret);
-            if (ubyte_data_in != ubyte_data)
-                return ERR_WRONG;
-            if ((ret = PIOc_get_vara_ushort(ncid, varid[7], start, count, &ushort_data_in)))
-                ERR(ret);
-            if (ushort_data_in != ushort_data)
-                return ERR_WRONG;
-            if ((ret = PIOc_get_vara_uint(ncid, varid[8], start, count, &uint_data_in)))
-                ERR(ret);
-            if (uint_data_in != uint_data)
-                return ERR_WRONG;
-            if ((ret = PIOc_get_vara_longlong(ncid, varid[9], start, count, &int64_data_in)))
-                ERR(ret);
-            if (int64_data_in != int64_data)
-                return ERR_WRONG;
-            if ((ret = PIOc_get_vara_ulonglong(ncid, varid[10], start, count, &uint64_data_in)))
-                ERR(ret);
-            if (uint64_data_in != uint64_data)
-                return ERR_WRONG;
-        }
+        /* Use the vara functions to read some data. */
+        if ((ret = putget_read_vara(ncid, varid, start, count, flavor[fmt])))
+            return ret;
 
         /* Close the netCDF file. */
         printf("rank: %d Closing the sample data file...\n", my_rank);
@@ -1111,9 +1253,6 @@ int test_nc4(int iosysid, int num_flavors, int *flavor, int my_rank)
             printf("%d Checking chunksizes\n", my_rank);
             if ((ret = PIOc_inq_var_chunking(ncid, 0, &storage, my_chunksize)))
                 ERR(ret);
-            printf("%d ret: %d storage: %d\n", my_rank, ret, storage);
-            for (int d1 = 0; d1 < NDIM; d1++)
-                printf("chunksize[%d] = %d\n", d1, my_chunksize[d1]);
 
             /* Check the answers. */
             if (storage != NC_CHUNKED)
@@ -1388,13 +1527,15 @@ int test_async(int my_rank, int num_flavors, int *flavor, MPI_Comm test_comm)
 /* Run Tests for NetCDF-4 Functions. */
 int main(int argc, char **argv)
 {
-    int my_rank; /* Zero-based rank of processor. */
-    int ntasks; /* Number of processors involved in current execution. */
+    int my_rank;     /* Zero-based rank of processor. */
+    int ntasks;      /* Number of processors involved in current execution. */
     int num_flavors; /* Number of PIO netCDF flavors in this build. */
     int flavor[NUM_FLAVORS]; /* iotypes for the supported netCDF IO flavors. */
-    int ret;    /* Return code. */
-
     MPI_Comm test_comm; /* A communicator for this test. */
+    int ret;         /* Return code. */
+
+    /* Initialize data arrays with sample data. */
+    init_arrays();
 
     /* Initialize test. */
     if ((ret = pio_test_init2(argc, argv, &my_rank, &ntasks, MIN_NTASKS,
