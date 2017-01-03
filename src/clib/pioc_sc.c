@@ -1,5 +1,5 @@
 /**
- * @file 
+ * @file
  * Compute start and count arrays for the box rearranger
  *
  * @author Jim Edwards
@@ -348,7 +348,7 @@ int CalcStartandCount(int basetype, int ndims, const int *gdims, int num_io_proc
                 }
 
             }
-            
+
             if (myiorank == iorank)
             {
                 for (i = 0; i < ndims; i++)

@@ -45,7 +45,7 @@ int run_spmd_tests(MPI_Comm test_comm)
 
     int sbuf[ntasks];    /* The send buffer. */
     int rbuf[ntasks];    /* The receive buffer. */
-    int sendcounts[ntasks]; /* Number of elements of data being sent from each task. */ 
+    int sendcounts[ntasks]; /* Number of elements of data being sent from each task. */
     int recvcounts[ntasks]; /* Number of elements of data being sent from each task. */
     int sdispls[ntasks]; /* Displacements for sending data. */
     int rdispls[ntasks]; /* Displacements for receiving data. */
@@ -122,7 +122,7 @@ int run_spmd_tests(MPI_Comm test_comm)
             if ((ret = pio_swapm(sbuf, sendcounts, sdispls, sendtypes, rbuf, recvcounts,
                                  rdispls, recvtypes, test_comm, hs, isend, msg_cnt)))
                 return ret;
-        
+
             /* Print results. */
             /* MPI_Barrier(test_comm); */
             /* for (int e = 0; e < num_elem; e++) */
@@ -137,7 +137,7 @@ int run_spmd_tests(MPI_Comm test_comm)
                     return ERR_WRONG;
         }
     }
-    
+
     return 0;
 }
 
@@ -177,7 +177,7 @@ int test_CalcStartandCount()
             }
             tpsize += psize;
         }
-        
+
         if (tpsize == pgdims)
             converged = true;
         else
@@ -215,7 +215,7 @@ int main(int argc, char **argv)
         printf("%d running CalcStartandCount test code\n", my_rank);
         if ((ret = test_CalcStartandCount()))
             return ret;
-        
+
     } /* endif my_rank < TARGET_NTASKS */
 
     /* Finalize the MPI library. */
