@@ -51,6 +51,12 @@
 #define VAR_CACHE_NELEMS 10
 #define VAR_CACHE_PREEMPTION 0.5
 
+/* Number of NetCDF classic types. */
+#define NUM_CLASSIC_TYPES 6
+
+/* Number of NetCDF-4 types. */
+#define NUM_NETCDF4_TYPES 12
+
 /* The dimension names. */
 char dim_name[NDIM][PIO_MAX_NAME + 1] = {"timestep", "x", "y"};
 
@@ -656,7 +662,7 @@ int test_names(int iosysid, int num_flavors, int *flavor, int my_rank,
 int putget_write_var1(int ncid, int *varid, PIO_Offset *index, int flavor)
 {
     int ret;
-    
+
     /* if ((ret = PIOc_put_var1_text(ncid, varid[2], index, &char_data))) */
     /*     ERR(ret); */
 
@@ -674,7 +680,7 @@ int putget_write_var1(int ncid, int *varid, PIO_Offset *index, int flavor)
 
     if ((ret = PIOc_put_var1_double(ncid, varid[5], index, &double_data)))
         return ret;
-        
+
     if (flavor == PIO_IOTYPE_NETCDF4C || flavor == PIO_IOTYPE_NETCDF4P)
     {
         if ((ret = PIOc_put_var1_uchar(ncid, varid[6], index, &ubyte_data)))
@@ -697,7 +703,7 @@ int putget_write_vara(int ncid, int *varid, PIO_Offset *start, PIO_Offset *count
                       int flavor)
 {
     int ret;
-    
+
     /* if ((ret = PIOc_put_vara_text(ncid, varid[2], start, count, char_array))) */
     /*     ERR(ret); */
 
@@ -715,7 +721,7 @@ int putget_write_vara(int ncid, int *varid, PIO_Offset *start, PIO_Offset *count
 
     if ((ret = PIOc_put_vara_double(ncid, varid[5], start, count, (double *)double_array)))
         return ret;
-        
+
     if (flavor == PIO_IOTYPE_NETCDF4C || flavor == PIO_IOTYPE_NETCDF4P)
     {
         if ((ret = PIOc_put_vara_uchar(ncid, varid[6], start, count, (unsigned char *)ubyte_array)))
@@ -747,7 +753,7 @@ int putget_read_var1(int ncid, int *varid, PIO_Offset *index, int flavor)
     long long int64_data_in;
     unsigned long long uint64_data_in;
     int ret;
-    
+
     if ((ret = PIOc_get_var1_schar(ncid, varid[0], index, &byte_data_in)))
         return ret;
     if (byte_data_in != byte_data)
@@ -816,7 +822,7 @@ int putget_read_vara(int ncid, int *varid, PIO_Offset *start, PIO_Offset *count,
     unsigned long long uint64_array_in[X_DIM_LEN][Y_DIM_LEN];
     int x, y;
     int ret;
-        
+
     if ((ret = PIOc_get_vara_schar(ncid, varid[0], start, count, (signed char *)byte_array_in)))
         return ret;
     if ((ret = PIOc_get_vara_short(ncid, varid[2], start, count, (short *)short_array_in)))
@@ -842,7 +848,7 @@ int putget_read_vara(int ncid, int *varid, PIO_Offset *start, PIO_Offset *count,
             if (double_array_in[x][y] != double_array[x][y])
                 return ERR_WRONG;
         }
-    
+
     if (flavor == PIO_IOTYPE_NETCDF4C || flavor == PIO_IOTYPE_NETCDF4P)
     {
         if ((ret = PIOc_get_vara_uchar(ncid, varid[6], start, count, (unsigned char *)ubyte_array_in)))
@@ -875,6 +881,58 @@ int putget_read_vara(int ncid, int *varid, PIO_Offset *start, PIO_Offset *count,
     return 0;
 }
 
+/* Create a test file for the putget tests to write data to and check
+ * by reading it back. In this function we create the file, define the
+ * dims and vars, and pass back the ncid. */
+int create_putget_file(int iosysid, int flavor, int *varid, char *filename, int *ncidp)
+{
+    char iotype_name[PIO_MAX_NAME + 1];
+    int dimids[NDIM];        /* The dimension IDs. */
+    int num_vars = NUM_CLASSIC_TYPES;
+    int xtype[NUM_NETCDF4_TYPES] = {PIO_BYTE, PIO_CHAR, PIO_SHORT, PIO_INT, PIO_FLOAT,
+                                    PIO_DOUBLE, PIO_UBYTE, PIO_USHORT, PIO_UINT, PIO_INT64,
+                                    PIO_UINT64, PIO_STRING};
+    int ncid;
+    int ret;
+
+    /* Create a filename. */
+    if ((ret = get_iotype_name(flavor, iotype_name)))
+        return ret;
+    sprintf(filename, "%s_putget_%s.nc", TEST_NAME, iotype_name);
+
+    /* Create the netCDF output file. */
+    if ((ret = PIOc_createfile(iosysid, &ncid, &flavor, filename, PIO_CLOBBER)))
+        return ret;
+
+    /* Define netCDF dimensions and variable. */
+    for (int d = 0; d < NDIM; d++)
+    {
+        if ((ret = PIOc_def_dim(ncid, dim_name[d], (PIO_Offset)dim_len[d], &dimids[d])))
+            return ret;
+    }
+
+    /* For netcdf-4, there are extra types. */
+    if (flavor == PIO_IOTYPE_NETCDF4C || flavor == PIO_IOTYPE_NETCDF4P)
+        num_vars = NUM_NETCDF4_TYPES;
+
+    /* Define variables. */
+    for (int v = 0; v < num_vars; v++)
+    {
+        char var_name[PIO_MAX_NAME + 1];
+        snprintf(var_name, PIO_MAX_NAME, "%s_%d", VAR_NAME, xtype[v]);
+        if ((ret = PIOc_def_var(ncid, var_name, xtype[v], NDIM, dimids, &varid[v])))
+            return ret;
+    }
+
+    if ((ret = PIOc_enddef(ncid)))
+        return ret;
+
+    /* Pass back the ncid. */
+    *ncidp = ncid;
+
+    return 0;
+}
+
 /* Test data read/write operations.
  *
  * @param iosysid the iosystem ID that will be used for the test.
@@ -886,62 +944,19 @@ int putget_read_vara(int ncid, int *varid, PIO_Offset *start, PIO_Offset *count,
 int test_putget(int iosysid, int num_flavors, int *flavor, int my_rank,
                 MPI_Comm test_comm)
 {
-#define NUM_CLASSIC_TYPES 6
-#define NUM_NETCDF4_TYPES 12
-    int ret;    /* Return code. */
-
     /* Use PIO to create the example file in each of the four
      * available ways. */
     for (int fmt = 0; fmt < num_flavors; fmt++)
     {
-        int ncid;
         char filename[PIO_MAX_NAME + 1]; /* Test filename. */
-        char iotype_name[PIO_MAX_NAME + 1];
-        int dimids[NDIM];        /* The dimension IDs. */
-        int num_vars = NUM_CLASSIC_TYPES;
-        int xtype[NUM_NETCDF4_TYPES] = {PIO_BYTE, PIO_CHAR, PIO_SHORT, PIO_INT, PIO_FLOAT,
-                                        PIO_DOUBLE, PIO_UBYTE, PIO_USHORT, PIO_UINT, PIO_INT64,
-                                        PIO_UINT64, PIO_STRING};
+        int ncid;
         int varid[NUM_NETCDF4_TYPES];
-        
-        /* Create a filename. */
-        if ((ret = get_iotype_name(flavor[fmt], iotype_name)))
+        int ret;    /* Return code. */
+
+        /* Create test file with dims and vars defined. */
+        printf("%d Creating test file for flavor = %d...\n", my_rank, flavor[fmt]);
+        if ((ret = create_putget_file(iosysid, flavor[fmt], varid, filename, &ncid)))
             return ret;
-        sprintf(filename, "%s_putget_%s.nc", TEST_NAME, iotype_name);
-
-        /* Create the netCDF output file. */
-        printf("rank: %d Creating sample file %s with format %d...\n",
-               my_rank, filename, flavor[fmt]);
-        if ((ret = PIOc_createfile(iosysid, &ncid, &(flavor[fmt]), filename, PIO_CLOBBER)))
-            ERR(ret);
-
-        /* Define netCDF dimensions and variable. */
-        printf("rank: %d Defining netCDF metadata...\n", my_rank);
-        for (int d = 0; d < NDIM; d++)
-        {
-            printf("rank: %d Defining netCDF dimension %s, length %d\n", my_rank,
-                   dim_name[d], dim_len[d]);
-            if ((ret = PIOc_def_dim(ncid, dim_name[d], (PIO_Offset)dim_len[d], &dimids[d])))
-                ERR(ret);
-        }
-
-        /* For netcdf-4, there are extra types. */
-#ifdef _NETCDF4
-        if (flavor[fmt] == PIO_IOTYPE_NETCDF4C || flavor[fmt] == PIO_IOTYPE_NETCDF4P)
-            num_vars = NUM_NETCDF4_TYPES;
-#endif /* _NETCDF4 */
-
-        /* Define variables. */
-        for (int v = 0; v < num_vars; v++)
-        {
-            char var_name[PIO_MAX_NAME + 1];
-            snprintf(var_name, PIO_MAX_NAME, "%s_%d", VAR_NAME, xtype[v]);
-            if ((ret = PIOc_def_var(ncid, var_name, xtype[v], NDIM, dimids, &varid[v])))
-                ERR(ret);
-        }
-
-        if ((ret = PIOc_enddef(ncid)))
-            ERR(ret);
 
         /* Write some data. */
         PIO_Offset index[NDIM] = {0, 0, 0};
