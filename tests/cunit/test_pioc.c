@@ -1364,6 +1364,10 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
 
         if ((ret = test_darray(iosysid, ioid, num_flavors, flavor, my_rank)))
             return ret;
+
+        /* Free the PIO decomposition. */
+        if ((ret = PIOc_freedecomp(iosysid, ioid)))
+            ERR(ret);
     }
 
     /* Test read/write stuff. */
