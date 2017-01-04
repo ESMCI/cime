@@ -709,31 +709,31 @@ int putget_write_var(int ncid, int *varid, int flavor)
     if ((ret = PIOc_put_var_schar(ncid, varid[0], &byte_data)))
         return ret;
 
-    if ((ret = PIOc_put_var_short(ncid, varid[2], &short_data)))
-        return ret;
+    /* if ((ret = PIOc_put_var_short(ncid, varid[2], &short_data))) */
+    /*     return ret; */
 
-    if ((ret = PIOc_put_var_int(ncid, varid[3], &int_data)))
-        return ret;
+    /* if ((ret = PIOc_put_var_int(ncid, varid[3], &int_data))) */
+    /*     return ret; */
 
-    if ((ret = PIOc_put_var_float(ncid, varid[4], &float_data)))
-        return ret;
+    /* if ((ret = PIOc_put_var_float(ncid, varid[4], &float_data))) */
+    /*     return ret; */
 
-    if ((ret = PIOc_put_var_double(ncid, varid[5], &double_data)))
-        return ret;
+    /* if ((ret = PIOc_put_var_double(ncid, varid[5], &double_data))) */
+    /*     return ret; */
 
-    if (flavor == PIO_IOTYPE_NETCDF4C || flavor == PIO_IOTYPE_NETCDF4P)
-    {
-        if ((ret = PIOc_put_var_uchar(ncid, varid[6], &ubyte_data)))
-            return ret;
-        if ((ret = PIOc_put_var_ushort(ncid, varid[7], &ushort_data)))
-            return ret;
-        if ((ret = PIOc_put_var_uint(ncid, varid[8], &uint_data)))
-            return ret;
-        if ((ret = PIOc_put_var_longlong(ncid, varid[9], &int64_data)))
-            return ret;
-        if ((ret = PIOc_put_var_ulonglong(ncid, varid[10], &uint64_data)))
-            return ret;
-    }
+    /* if (flavor == PIO_IOTYPE_NETCDF4C || flavor == PIO_IOTYPE_NETCDF4P) */
+    /* { */
+    /*     if ((ret = PIOc_put_var_uchar(ncid, varid[6], &ubyte_data))) */
+    /*         return ret; */
+    /*     if ((ret = PIOc_put_var_ushort(ncid, varid[7], &ushort_data))) */
+    /*         return ret; */
+    /*     if ((ret = PIOc_put_var_uint(ncid, varid[8], &uint_data))) */
+    /*         return ret; */
+    /*     if ((ret = PIOc_put_var_longlong(ncid, varid[9], &int64_data))) */
+    /*         return ret; */
+    /*     if ((ret = PIOc_put_var_ulonglong(ncid, varid[10], &uint64_data))) */
+    /*         return ret; */
+    /* } */
 
     return 0;
 }
@@ -1101,12 +1101,13 @@ int create_putget_file(int iosysid, int try, int flavor, int *varid, char *filen
 int test_putget(int iosysid, int num_flavors, int *flavor, int my_rank,
                 MPI_Comm test_comm)
 {
-#define NUM_TRIES 4
+#define NUM_TRIES 1
     for (int try = 0; try < NUM_TRIES; try++)
     {
         /* Use PIO to create the example file in each of the four
          * available ways. */
-        for (int fmt = 0; fmt < num_flavors; fmt++)
+        /*for (int fmt = 0; fmt < num_flavors; fmt++)*/
+        for (int fmt = 0; fmt < 1; fmt++)
         {
             char filename[PIO_MAX_NAME + 1]; /* Test filename. */
             int ncid;
@@ -1114,7 +1115,8 @@ int test_putget(int iosysid, int num_flavors, int *flavor, int my_rank,
             int ret;    /* Return code. */
 
             /* Create test file with dims and vars defined. */
-            printf("%d Creating test file for flavor = %d...\n", my_rank, flavor[fmt]);
+            printf("%d Try %d creating test file for flavor = %d...\n", my_rank, try,
+                   flavor[fmt]);
             if ((ret = create_putget_file(iosysid, try, flavor[fmt], varid, filename, &ncid)))
                 return ret;
 
@@ -1126,6 +1128,14 @@ int test_putget(int iosysid, int num_flavors, int *flavor, int my_rank,
 
             switch (try)
             {
+            case 0:
+                printf("%d Try %d writing data with var functions for flavor = %d...\n", my_rank,
+                       try, flavor[fmt]);
+                /* Use the var functions to write some data. */
+                if ((ret = putget_write_var(ncid, varid, flavor[fmt])))
+                    return ret;
+                break;
+
             case 1:
                 /* Use the var1 functions to write some data. */
                 if ((ret = putget_write_var1(ncid, varid, index, flavor[fmt])))
@@ -1138,15 +1148,9 @@ int test_putget(int iosysid, int num_flavors, int *flavor, int my_rank,
                     return ret;
                 break;
 
-            case 3:
+            case 4:
                 /* Use the vara functions to write some data. */
                 if ((ret = putget_write_vars(ncid, varid, start, count, stride, flavor[fmt])))
-                    return ret;
-                break;
-
-            case 4:
-                /* Use the var functions to write some data. */
-                if ((ret = putget_write_var(ncid, varid, flavor[fmt])))
                     return ret;
                 break;
             }
@@ -1207,7 +1211,7 @@ int test_putget(int iosysid, int num_flavors, int *flavor, int my_rank,
             }
 
             /* Close the netCDF file. */
-            printf("rank: %d Closing the sample data file...\n", my_rank);
+            printf("%d Closing the sample data file...\n", my_rank);
             if ((ret = PIOc_closefile(ncid)))
                 ERR(ret);
 
@@ -1260,7 +1264,7 @@ int test_files(int iosysid, int num_flavors, int *flavor, int my_rank)
         sprintf(filename, "%s_%s.nc", TEST_NAME, iotype_name);
 
         /* Create the netCDF output file. */
-        printf("rank: %d Creating sample file %s with format %d...\n",
+        printf("%d Creating sample file %s with format %d...\n",
                my_rank, filename, flavor[fmt]);
         if ((ret = PIOc_create(iosysid, filename, mode, &ncid)))
             ERR(ret);
@@ -1274,12 +1278,12 @@ int test_files(int iosysid, int num_flavors, int *flavor, int my_rank)
             ERR(ret);
 
         /* Close the netCDF file. */
-        printf("rank: %d Closing the sample data file...\n", my_rank);
+        printf("%d Closing the sample data file...\n", my_rank);
         if ((ret = PIOc_closefile(ncid)))
             ERR(ret);
 
         /* Reopen the test file. */
-        printf("rank: %d Re-opening sample file %s with format %d...\n",
+        printf("%d Re-opening sample file %s with format %d...\n",
                my_rank, filename, flavor[fmt]);
         if ((ret = PIOc_open(iosysid, filename, mode, &ncid)))
             ERR(ret);
@@ -1289,7 +1293,7 @@ int test_files(int iosysid, int num_flavors, int *flavor, int my_rank)
             ERR(ret);
 
         /* Close the netCDF file. */
-        printf("rank: %d Closing the sample data file...\n", my_rank);
+        printf("%d Closing the sample data file...\n", my_rank);
         if ((ret = PIOc_closefile(ncid)))
             ERR(ret);
 
@@ -1578,49 +1582,50 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
     if ((ret = MPI_Comm_size(test_comm, &my_test_size)))
         MPIERR(ret);
 
-    if (!async)
-    {
-        /* Decompose the data over the tasks. */
-        if ((ret = create_decomposition(my_test_size, my_rank, iosysid, &ioid)))
-            return ret;
-
-        if ((ret = test_darray(iosysid, ioid, num_flavors, flavor, my_rank)))
-            return ret;
-
-        /* Free the PIO decomposition. */
-        if ((ret = PIOc_freedecomp(iosysid, ioid)))
-            ERR(ret);
-    }
-
     /* Test read/write stuff. */
     printf("%d Testing putget. async = %d\n", my_rank, async);
     if ((ret = test_putget(iosysid, num_flavors, flavor, my_rank, test_comm)))
         return ret;
 
-    /* Check the error string function. */
-    printf("%d Testing streror. async = %d\n", my_rank, async);
-    if ((ret = check_strerror(my_rank)))
-        ERR(ret);
+    /* if (!async) */
+    /* { */
+    /*     /\* Decompose the data over the tasks. *\/ */
+    /*     if ((ret = create_decomposition(my_test_size, my_rank, iosysid, &ioid))) */
+    /*         return ret; */
 
-    /* Test file stuff. */
-    printf("%d Testing file creation. async = %d\n", my_rank, async);
-    if ((ret = test_files(iosysid, num_flavors, flavor, my_rank)))
-        return ret;
+    /*     if ((ret = test_darray(iosysid, ioid, num_flavors, flavor, my_rank))) */
+    /*         return ret; */
 
-    /* Test file deletes. */
-    printf("%d Testing deletefile. async = %d\n", my_rank, async);
-    if ((ret = test_deletefile(iosysid, num_flavors, flavor, my_rank)))
-        return ret;
+    /*     /\* Free the PIO decomposition. *\/ */
+    /*     if ((ret = PIOc_freedecomp(iosysid, ioid))) */
+    /*         ERR(ret); */
+    /* } */
 
-    /* Test name stuff. */
-    printf("%d Testing names. async = %d\n", my_rank, async);
-    if ((ret = test_names(iosysid, num_flavors, flavor, my_rank, test_comm)))
-        return ret;
 
-    /* Test netCDF-4 functions. */
-    printf("%d Testing nc4 functions. async = %d\n", my_rank, async);
-    if ((ret = test_nc4(iosysid, num_flavors, flavor, my_rank)))
-        return ret;
+    /* /\* Check the error string function. *\/ */
+    /* printf("%d Testing streror. async = %d\n", my_rank, async); */
+    /* if ((ret = check_strerror(my_rank))) */
+    /*     ERR(ret); */
+
+    /* /\* Test file stuff. *\/ */
+    /* printf("%d Testing file creation. async = %d\n", my_rank, async); */
+    /* if ((ret = test_files(iosysid, num_flavors, flavor, my_rank))) */
+    /*     return ret; */
+
+    /* /\* Test file deletes. *\/ */
+    /* printf("%d Testing deletefile. async = %d\n", my_rank, async); */
+    /* if ((ret = test_deletefile(iosysid, num_flavors, flavor, my_rank))) */
+    /*     return ret; */
+
+    /* /\* Test name stuff. *\/ */
+    /* printf("%d Testing names. async = %d\n", my_rank, async); */
+    /* if ((ret = test_names(iosysid, num_flavors, flavor, my_rank, test_comm))) */
+    /*     return ret; */
+
+    /* /\* Test netCDF-4 functions. *\/ */
+    /* printf("%d Testing nc4 functions. async = %d\n", my_rank, async); */
+    /* if ((ret = test_nc4(iosysid, num_flavors, flavor, my_rank))) */
+    /*     return ret; */
 
     return PIO_NOERR;
 }
