@@ -698,6 +698,46 @@ int putget_write_var1(int ncid, int *varid, PIO_Offset *index, int flavor)
     return 0;
 }
 
+/* Use the var1 functions to write some data to an open test file. */
+int putget_write_var(int ncid, int *varid, int flavor)
+{
+    int ret;
+
+    /* if ((ret = PIOc_put_var_text(ncid, varid[2], &char_data))) */
+    /*     ERR(ret); */
+
+    if ((ret = PIOc_put_var_schar(ncid, varid[0], &byte_data)))
+        return ret;
+
+    if ((ret = PIOc_put_var_short(ncid, varid[2], &short_data)))
+        return ret;
+
+    if ((ret = PIOc_put_var_int(ncid, varid[3], &int_data)))
+        return ret;
+
+    if ((ret = PIOc_put_var_float(ncid, varid[4], &float_data)))
+        return ret;
+
+    if ((ret = PIOc_put_var_double(ncid, varid[5], &double_data)))
+        return ret;
+
+    if (flavor == PIO_IOTYPE_NETCDF4C || flavor == PIO_IOTYPE_NETCDF4P)
+    {
+        if ((ret = PIOc_put_var_uchar(ncid, varid[6], &ubyte_data)))
+            return ret;
+        if ((ret = PIOc_put_var_ushort(ncid, varid[7], &ushort_data)))
+            return ret;
+        if ((ret = PIOc_put_var_uint(ncid, varid[8], &uint_data)))
+            return ret;
+        if ((ret = PIOc_put_var_longlong(ncid, varid[9], &int64_data)))
+            return ret;
+        if ((ret = PIOc_put_var_ulonglong(ncid, varid[10], &uint64_data)))
+            return ret;
+    }
+
+    return 0;
+}
+
 /* Use the vara functions to write some data to an open test file. */
 int putget_write_vara(int ncid, int *varid, PIO_Offset *start, PIO_Offset *count,
                       int flavor)
@@ -1061,7 +1101,7 @@ int create_putget_file(int iosysid, int try, int flavor, int *varid, char *filen
 int test_putget(int iosysid, int num_flavors, int *flavor, int my_rank,
                 MPI_Comm test_comm)
 {
-#define NUM_TRIES 3
+#define NUM_TRIES 4
     for (int try = 0; try < NUM_TRIES; try++)
     {
         /* Use PIO to create the example file in each of the four
@@ -1101,6 +1141,12 @@ int test_putget(int iosysid, int num_flavors, int *flavor, int my_rank,
             case 3:
                 /* Use the vara functions to write some data. */
                 if ((ret = putget_write_vars(ncid, varid, start, count, stride, flavor[fmt])))
+                    return ret;
+                break;
+
+            case 4:
+                /* Use the var functions to write some data. */
+                if ((ret = putget_write_var(ncid, varid, flavor[fmt])))
                     return ret;
                 break;
             }
