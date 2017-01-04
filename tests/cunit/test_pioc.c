@@ -1107,7 +1107,7 @@ int test_putget(int iosysid, int num_flavors, int *flavor, int my_rank,
 
             /* Make sure all data are written (pnetcdf needs this). */
             if ((ret = PIOc_sync(ncid)))
-                ERR(ret);
+                return ret;
 
             switch (try)
             {
@@ -1116,13 +1116,13 @@ int test_putget(int iosysid, int num_flavors, int *flavor, int my_rank,
                 if ((ret = putget_read_var1(ncid, varid, index, flavor[fmt])))
                     return ret;
                 break;
-
+                
             case 2:
                 /* Use the vara functions to read some data. */
                 if ((ret = putget_read_vara(ncid, varid, start, count, flavor[fmt])))
                     return ret;
                 break;
-
+                
             case 3:
                 /* Use the vara functions to read some data. */
                 if ((ret = putget_read_vars(ncid, varid, start, count, stride, flavor[fmt])))
@@ -1150,6 +1150,12 @@ int test_putget(int iosysid, int num_flavors, int *flavor, int my_rank,
             case 2:
                 /* Use the vara functions to read some data. */
                 if ((ret = putget_read_vara(ncid, varid, start, count, flavor[fmt])))
+                    return ret;
+                break;
+
+            case 3:
+                /* Use the vara functions to read some data. */
+                if ((ret = putget_read_vars(ncid, varid, start, count, stride, flavor[fmt])))
                     return ret;
                 break;
             }
