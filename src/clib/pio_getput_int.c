@@ -73,7 +73,7 @@ int PIOc_get_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
 
     /* User must provide a place to put some data. */
     if (!buf)
-        return pio_err(ios, file, ierr, __FILE__, __LINE__);        
+        return pio_err(ios, file, PIO_EINVAL, __FILE__, __LINE__);        
 
     /* Run these on all tasks if async is not in use, but only on
      * non-IO tasks if async is in use. */
@@ -344,11 +344,12 @@ int PIOc_get_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
         return check_netcdf(file, ierr, __FILE__, __LINE__);
 
     /* Send the data. */
-    LOG((2, "PIOc_get_vars_tc bcasting data num_elem = %d typelen = %d", num_elem,
-         typelen));
-    if (!mpierr)
-        mpierr = MPI_Bcast((void *)buf, num_elem * typelen, MPI_BYTE, ios->ioroot,
-                           ios->my_comm);
+    LOG((2, "PIOc_get_vars_tc bcasting data num_elem = %d typelen = %d ios->ioroot = %d", num_elem,
+         typelen, ios->ioroot));
+    if ((mpierr = MPI_Bcast(buf, num_elem * typelen, MPI_BYTE, ios->ioroot, ios->my_comm)))
+        return check_mpi(file, mpierr, __FILE__, __LINE__);
+    LOG((2, "PIOc_get_vars_tc bcasting data complete"));
+
     return PIO_NOERR;
 }
 

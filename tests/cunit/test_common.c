@@ -4,6 +4,7 @@
  * Ed Hartnett
  */
 #include <pio.h>
+#include <pio_internal.h>
 #include <pio_tests.h>
 
 /* The number of dimensions in the test data. */
@@ -115,7 +116,7 @@ int pio_test_init(int argc, char **argv, int *my_rank, int *ntasks,
 		  int target_ntasks, MPI_Comm *comm)
 {
     return pio_test_init2(argc,argv, my_rank, ntasks, target_ntasks,
-                          target_ntasks, comm);
+                          target_ntasks, 3, comm);
 }
 
 /* Initalize the test system. 
@@ -126,12 +127,13 @@ int pio_test_init(int argc, char **argv, int *my_rank, int *ntasks,
  * @param ntasks pointer that gets the number of tasks in WORLD
  * communicator.
  * @param target_ntasks the number of tasks this test needs to run.
+ * @param log_level PIOc_set_log_level() will be called with this value.
  * @param comm a pointer to an MPI communicator that will be created
  * for this test and contain target_ntasks tasks from WORLD.
  * @returns 0 for success, error code otherwise.
 */
 int pio_test_init2(int argc, char **argv, int *my_rank, int *ntasks,
-                   int min_ntasks, int max_ntasks, MPI_Comm *comm)
+                   int min_ntasks, int max_ntasks, int log_level, MPI_Comm *comm)
 {
     int ret; /* Return value. */
 
@@ -188,7 +190,7 @@ int pio_test_init2(int argc, char **argv, int *my_rank, int *ntasks,
 
     /* Turn on logging. */
     printf("%d setting log level\n", *my_rank);    
-    if ((ret = PIOc_set_log_level(3)))
+    if ((ret = PIOc_set_log_level(log_level)))
         return ret;
     printf("%d done setting log level\n", *my_rank);    
 
