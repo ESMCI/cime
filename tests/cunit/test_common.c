@@ -4,6 +4,7 @@
  * Ed Hartnett
  */
 #include <pio.h>
+#include <pio_internal.h>
 #include <pio_tests.h>
 
 /* The number of dimensions in the test data. */
