@@ -112,6 +112,7 @@ int PIOc_write_darray_multi(int ncid, const int *vid, int ioid, int nvars, PIO_O
 
     /* Currently there are two rearrangers box=1 and subset=2. There
      * is never a case where rearranger==0. */
+    LOG((2, "pio_write_darray_multi nvars=%d arraylen=%ld \n",nvars, arraylen));
     if (iodesc->rearranger > 0)
     {
         if (rlen > 0)
@@ -186,8 +187,9 @@ int PIOc_write_darray_multi(int ncid, const int *vid, int ioid, int nvars, PIO_O
      * points. This is generally faster than the netcdf method of
      * filling the entire array with missing values before overwriting
      * those values later. */
-    if (iodesc->rearranger == PIO_REARR_SUBSET && iodesc->needsfill &&
-        iodesc->holegridsize > 0)
+    if (iodesc->rearranger == PIO_REARR_SUBSET)
+	LOG((2, "pio_write_darray_multi nvars=%d holegridsize=%ld %d\n",nvars, iodesc->holegridsize, iodesc->needsfill));
+    if (iodesc->rearranger == PIO_REARR_SUBSET && iodesc->needsfill)
     {
         if (vdesc0->fillbuf)
             piodie("Attempt to overwrite existing buffer",__FILE__,__LINE__);
