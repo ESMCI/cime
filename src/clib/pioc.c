@@ -496,6 +496,28 @@ int PIOc_InitDecomp_bc(const int iosysid, const int basetype, const int ndims, c
 }
 
 /**
+ * Internal library util function to initialize rearranger options
+ * @param rearr_opts pointer to rearranger options
+ */
+
+static void init_rearr_opts(rearr_opt_t *rearr_opts)
+{
+    const int DEF_P2P_MAXREQ = 64;
+
+    assert(rearr_opts != NULL);
+    rearr_opts->comm_type = PIO_REARR_COMM_P2P;
+    rearr_opts->fcd = PIO_REARR_COMM_FC_2D_ENABLE;
+
+    rearr_opts->comm_fc_opts_comp2io.enable_hs = true;
+    rearr_opts->comm_fc_opts_comp2io.enable_isend = false;
+    rearr_opts->comm_fc_opts_comp2io.max_pend_req = DEF_P2P_MAXREQ;
+
+    rearr_opts->comm_fc_opts_io2comp.enable_hs = true;
+    rearr_opts->comm_fc_opts_io2comp.enable_isend = false;
+    rearr_opts->comm_fc_opts_io2comp.max_pend_req = DEF_P2P_MAXREQ;
+}
+
+/**
  * Library initialization used when IO tasks are a subset of compute
  * tasks.
  *
@@ -551,6 +573,8 @@ int PIOc_Init_Intracomm(MPI_Comm comp_comm, int num_iotasks, int stride, int bas
     ios->num_comptasks = num_comptasks;
     if (rearr_opts)
         ios->rearr_opts = *rearr_opts;
+    else
+        init_rearr_opts(&(ios->rearr_opts));
 
     /* Copy the computation communicator into union_comm. */
     if ((mpierr = MPI_Comm_dup(comp_comm, &ios->union_comm)))
