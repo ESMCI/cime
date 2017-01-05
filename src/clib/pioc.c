@@ -1309,6 +1309,10 @@ int PIOc_Init_Async(MPI_Comm world, int num_io_procs, int *io_proc_list,
     if (!io_proc_list)
         free(my_io_proc_list);
 
+    if (in_io)
+        if ((mpierr = MPI_Comm_free(&io_comm)))
+            return check_mpi(NULL, ret, __FILE__, __LINE__);
+    
     if (!proc_list)
     {
         for (int cmp = 0; cmp < component_count + 1; cmp++)
