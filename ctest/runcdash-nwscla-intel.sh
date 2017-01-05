@@ -15,7 +15,7 @@ module swap intel intel/16.0.3
 module load git/2.10.0
 module load cmake/3.6.2
 module load netcdf-mpi/4.4.1
-module load pnetcdf/1.7.x
+module load pnetcdf/1.8.0
 echo "MODULE LIST..."
 module list
 
