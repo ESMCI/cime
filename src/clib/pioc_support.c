@@ -602,11 +602,6 @@ io_desc_t *malloc_iodesc(const iosystem_desc_t *ios, int piotype, int ndims)
     iodesc->firstregion = alloc_region(ndims);
 
     /* Set the swap memory settings to defaults. */
-    /*
-    iodesc->handshake = swapm_defaults.handshake;
-    iodesc->isend = swapm_defaults.isend;
-    iodesc->max_requests = swapm_defaults.nreqs;
-    */
     iodesc->rearr_opts = ios->rearr_opts;
 
     return iodesc;
