@@ -563,6 +563,7 @@ io_region *alloc_region(int ndims)
 /**
  * Allocate space for an IO description struct.
  *
+ * @param ios pointer to the IO system info.
  * @param piotype the PIO data type (ex. PIO_FLOAT, PIO_INT, etc.).
  * @param ndims the number of dimensions.
  * @returns pointer to the newly allocated io_desc_t or NULL if
