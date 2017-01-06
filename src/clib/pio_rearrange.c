@@ -251,7 +251,7 @@ int create_mpi_datatypes(const MPI_Datatype basetype, const int msgcnt,
     }
 
     bsizeT[0] = 0;
-    mtype[0] = MPI_DATATYPE_NULL;
+    mtype[0] = PIO_DATATYPE_NULL;
     int pos = 0;
     int ii = 0;
 
@@ -312,7 +312,7 @@ int create_mpi_datatypes(const MPI_Datatype basetype, const int msgcnt,
                 if ((mpierr = MPI_Type_create_indexed_block(len, blocksize, displace, basetype, mtype + i)))
                     return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 
-                if (mtype[i] == MPI_DATATYPE_NULL)
+                if (mtype[i] == PIO_DATATYPE_NULL)
                     piodie("Unexpected NULL MPI DATATYPE", __FILE__, __LINE__);
 
                 /* Commit the MPI data type. */
@@ -362,7 +362,7 @@ int define_iodesc_datatypes(const iosystem_desc_t ios, io_desc_t *iodesc)
 
                 /* Initialize data types to NULL. */
                 for (int i = 0; i < iodesc->nrecvs; i++)
-                    iodesc->rtype[i] = MPI_DATATYPE_NULL;
+                    iodesc->rtype[i] = PIO_DATATYPE_NULL;
 
                 /* Create the datatypes, which will be used both to
                  * receive and to send data. */
@@ -408,7 +408,7 @@ int define_iodesc_datatypes(const iosystem_desc_t ios, io_desc_t *iodesc)
 
         /* Initialize send types to NULL. */
         for (int i = 0; i < ntypes; i++)
-            iodesc->stype[i] = MPI_DATATYPE_NULL;
+            iodesc->stype[i] = PIO_DATATYPE_NULL;
 
         iodesc->num_stypes = ntypes;
 
@@ -759,8 +759,8 @@ int rearrange_comp2io(const iosystem_desc_t ios, io_desc_t *iodesc, void *sbuf,
         recvcounts[i] = 0;
         sdispls[i] = 0;
         rdispls[i] = 0;
-        recvtypes[i] = MPI_DATATYPE_NULL;
-        sendtypes[i] =  MPI_DATATYPE_NULL;
+        recvtypes[i] = PIO_DATATYPE_NULL;
+        sendtypes[i] =  PIO_DATATYPE_NULL;
     }
 
     /* If this io proc will exchange data with compute tasks create a
@@ -769,7 +769,7 @@ int rearrange_comp2io(const iosystem_desc_t ios, io_desc_t *iodesc, void *sbuf,
     {
         for (i = 0; i < iodesc->nrecvs; i++)
         {
-            if (iodesc->rtype[i] != MPI_DATATYPE_NULL)
+            if (iodesc->rtype[i] != PIO_DATATYPE_NULL)
             {
                 if (iodesc->rearranger == PIO_REARR_SUBSET)
                 {
@@ -781,7 +781,7 @@ int rearrange_comp2io(const iosystem_desc_t ios, io_desc_t *iodesc, void *sbuf,
                                                    recvtypes + i)))
                         return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 
-                    if (recvtypes[i] == MPI_DATATYPE_NULL)
+                    if (recvtypes[i] == PIO_DATATYPE_NULL)
                         piodie("Unexpected NULL MPI DATATYPE", __FILE__, __LINE__);
 
                     if ((mpierr = MPI_Type_commit(recvtypes + i)))
@@ -797,7 +797,7 @@ int rearrange_comp2io(const iosystem_desc_t ios, io_desc_t *iodesc, void *sbuf,
                                                    recvtypes + iodesc->rfrom[i])))
                         return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 
-                    if (recvtypes[iodesc->rfrom[i]] == MPI_DATATYPE_NULL)
+                    if (recvtypes[iodesc->rfrom[i]] == PIO_DATATYPE_NULL)
                         piodie("Unexpected NULL MPI DATATYPE", __FILE__, __LINE__);
 
                     if ((mpierr = MPI_Type_commit(recvtypes+iodesc->rfrom[i])))
@@ -825,7 +825,7 @@ int rearrange_comp2io(const iosystem_desc_t ios, io_desc_t *iodesc, void *sbuf,
                                            sendtypes + io_comprank)))
                 return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 
-            if (sendtypes[io_comprank] == MPI_DATATYPE_NULL)
+            if (sendtypes[io_comprank] == PIO_DATATYPE_NULL)
                 piodie("Unexpected NULL MPI DATATYPE",__FILE__,__LINE__);
 
             if ((mpierr = MPI_Type_commit(sendtypes + io_comprank)))
@@ -836,19 +836,17 @@ int rearrange_comp2io(const iosystem_desc_t ios, io_desc_t *iodesc, void *sbuf,
             sendcounts[io_comprank]=0;
         }
     }
-
     /* Data in sbuf on the compute nodes is sent to rbuf on the ionodes */
     pio_swapm(sbuf, sendcounts, sdispls, sendtypes, rbuf, recvcounts, rdispls, recvtypes,
               mycomm, iodesc->handshake, iodesc->isend, iodesc->max_requests);
-
     /* Free the MPI types. */
     for (i = 0; i < ntasks; i++)
     {
-        if (sendtypes[i] != MPI_DATATYPE_NULL)
+        if (sendtypes[i] != PIO_DATATYPE_NULL)
             if ((mpierr = MPI_Type_free(sendtypes + i)))
                 return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 
-        if (recvtypes[i] != MPI_DATATYPE_NULL)
+        if (recvtypes[i] != PIO_DATATYPE_NULL)
             if ((mpierr = MPI_Type_free(recvtypes + i)))
                 return check_mpi(NULL, mpierr, __FILE__, __LINE__);
     }
@@ -946,14 +944,14 @@ int rearrange_io2comp(const iosystem_desc_t ios, io_desc_t *iodesc, void *sbuf,
         recvcounts[i] = 0;
         sdispls[i] = 0;
         rdispls[i] = 0;
-        sendtypes[i] = MPI_DATATYPE_NULL;
-        recvtypes[i] = MPI_DATATYPE_NULL;
+        sendtypes[i] = PIO_DATATYPE_NULL;
+        recvtypes[i] = PIO_DATATYPE_NULL;
     }
 
     /* In IO tasks ??? */
     if (ios.ioproc)
         for (i = 0; i < iodesc->nrecvs; i++)
-            if (iodesc->rtype[i] != MPI_DATATYPE_NULL)
+            if (iodesc->rtype[i] != PIO_DATATYPE_NULL)
                 if (iodesc->rearranger == PIO_REARR_SUBSET)
                 {
                     if (sbuf)
@@ -978,7 +976,7 @@ int rearrange_io2comp(const iosystem_desc_t ios, io_desc_t *iodesc, void *sbuf,
         if (iodesc->rearranger == PIO_REARR_SUBSET)
             io_comprank = 0;
 
-        if (scount[i] > 0 && iodesc->stype[i] != MPI_DATATYPE_NULL)
+        if (scount[i] > 0 && iodesc->stype[i] != PIO_DATATYPE_NULL)
         {
             recvcounts[io_comprank] = 1;
             recvtypes[io_comprank] = iodesc->stype[i];

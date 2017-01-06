@@ -137,40 +137,11 @@ int pio_swapm(void *sendbuf, int *sendcounts, int *sdispls, MPI_Datatype *sendty
      * mpi_alltoallw function is used. */
     if (max_requests == 0)
     {
-#ifdef OPEN_MPI
-        /* OPEN_MPI developers determined that MPI_DATATYPE_NULL was
-           not a valid argument to MPI_Alltoallw according to the
-           standard. The standard is a little vague on this issue and
-           other mpi vendors disagree. In my opinion it just makes
-           sense that if an argument expects an mpi datatype then
-           MPI_DATATYPE_NULL should be valid. For each task it's
-           possible that either sendlength or receive length is 0 it
-           is in this case that the datatype null makes sense. */
-        for (int i = 0; i < ntasks; i++)
-        {
-            if (sendtypes[i] == MPI_DATATYPE_NULL)
-                sendtypes[i] = MPI_CHAR;
-            if (recvtypes[i] == MPI_DATATYPE_NULL)
-                recvtypes[i] = MPI_CHAR;
-        }
-#endif
-
         /* Call the MPI alltoall without flow control. */
         LOG((3, "Calling MPI_Alltoallw without flow control."));
         if ((mpierr = MPI_Alltoallw(sendbuf, sendcounts, sdispls, sendtypes, recvbuf,
                                     recvcounts, rdispls, recvtypes, comm)))
             return check_mpi(NULL, mpierr, __FILE__, __LINE__);
-
-#ifdef OPEN_MPI
-        /* OPEN_MPI has problems with MPI_DATATYPE_NULL. */
-        for (int i = 0; i < ntasks; i++)
-        {
-            if (sendtypes[i] == MPI_CHAR)
-                sendtypes[i] = MPI_DATATYPE_NULL;
-            if (recvtypes[i] == MPI_CHAR)
-                recvtypes[i] = MPI_DATATYPE_NULL;
-        }
-#endif
         return PIO_NOERR;
     }
 
