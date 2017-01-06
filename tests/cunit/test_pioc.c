@@ -1704,10 +1704,10 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
     if ((ret = MPI_Comm_size(test_comm, &my_test_size)))
         MPIERR(ret);
 
-    /* /\* Test read/write stuff. *\/ */
-    /* printf("%d Testing putget. async = %d\n", my_rank, async); */
-    /* if ((ret = test_putget(iosysid, num_flavors, flavor, my_rank, test_comm))) */
-    /*     return ret; */
+    /* Test read/write stuff. */
+    printf("%d Testing putget. async = %d\n", my_rank, async);
+    if ((ret = test_putget(iosysid, num_flavors, flavor, my_rank, test_comm)))
+        return ret;
 
     if (!async)
     {
@@ -1733,30 +1733,30 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
     }
 
 
-    /* /\* Check the error string function. *\/ */
-    /* printf("%d Testing streror. async = %d\n", my_rank, async); */
-    /* if ((ret = check_strerror(my_rank))) */
-    /*     ERR(ret); */
+    /* Check the error string function. */
+    printf("%d Testing streror. async = %d\n", my_rank, async);
+    if ((ret = check_strerror(my_rank)))
+        ERR(ret);
 
-    /* /\* Test file stuff. *\/ */
-    /* printf("%d Testing file creation. async = %d\n", my_rank, async); */
-    /* if ((ret = test_files(iosysid, num_flavors, flavor, my_rank))) */
-    /*     return ret; */
+    /* Test file stuff. */
+    printf("%d Testing file creation. async = %d\n", my_rank, async);
+    if ((ret = test_files(iosysid, num_flavors, flavor, my_rank)))
+        return ret;
 
-    /* /\* Test file deletes. *\/ */
-    /* printf("%d Testing deletefile. async = %d\n", my_rank, async); */
-    /* if ((ret = test_deletefile(iosysid, num_flavors, flavor, my_rank))) */
-    /*     return ret; */
+    /* Test file deletes. */
+    printf("%d Testing deletefile. async = %d\n", my_rank, async);
+    if ((ret = test_deletefile(iosysid, num_flavors, flavor, my_rank)))
+        return ret;
 
-    /* /\* Test name stuff. *\/ */
-    /* printf("%d Testing names. async = %d\n", my_rank, async); */
-    /* if ((ret = test_names(iosysid, num_flavors, flavor, my_rank, test_comm))) */
-    /*     return ret; */
+    /* Test name stuff. */
+    printf("%d Testing names. async = %d\n", my_rank, async);
+    if ((ret = test_names(iosysid, num_flavors, flavor, my_rank, test_comm)))
+        return ret;
 
-    /* /\* Test netCDF-4 functions. *\/ */
-    /* printf("%d Testing nc4 functions. async = %d\n", my_rank, async); */
-    /* if ((ret = test_nc4(iosysid, num_flavors, flavor, my_rank))) */
-    /*     return ret; */
+    /* Test netCDF-4 functions. */
+    printf("%d Testing nc4 functions. async = %d\n", my_rank, async);
+    if ((ret = test_nc4(iosysid, num_flavors, flavor, my_rank)))
+        return ret;
 
     return PIO_NOERR;
 }
@@ -1901,7 +1901,7 @@ int main(int argc, char **argv)
 
     /* Initialize test. */
     if ((ret = pio_test_init2(argc, argv, &my_rank, &ntasks, MIN_NTASKS,
-                              TARGET_NTASKS, 3, &test_comm)))
+                              TARGET_NTASKS, 0, &test_comm)))
         ERR(ERR_INIT);
 
     /* Only do something on TARGET_NTASKS tasks. */
@@ -1916,8 +1916,8 @@ int main(int argc, char **argv)
             return ret;
 
         /* Run tests with async. */
-        /* if ((ret = test_async(my_rank, num_flavors, flavor, test_comm))) */
-        /*     return ret; */
+        if ((ret = test_async(my_rank, num_flavors, flavor, test_comm)))
+            return ret;
 
     } /* endif my_rank < TARGET_NTASKS */
 
