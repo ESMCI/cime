@@ -148,7 +148,7 @@ int PIOc_get_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
         {
             int msg = PIO_MSG_GET_VARS;
 
-            if(ios->compmaster)
+            if (ios->compmaster == MPI_ROOT)
                 mpierr = MPI_Send(&msg, 1, MPI_INT, ios->ioroot, 1, ios->union_comm);
 
             /* Send the function parameters and associated informaiton
@@ -204,7 +204,7 @@ int PIOc_get_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
 
             /* Only the IO master does the IO, so we are not really
              * getting parallel IO here. */
-            if (ios->iomaster)
+            if (ios->iomaster == MPI_ROOT)
             {
                 switch(xtype)
                 {
@@ -618,7 +618,7 @@ int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
             LOG((2, "PIOc_put_vars_tc request = %d", vdesc->request));
 
             /* Only the IO master actually does the call. */
-            if (ios->iomaster)
+            if (ios->iomaster == MPI_ROOT)
             {
                 switch(xtype)
                 {

@@ -59,7 +59,7 @@ int PIOc_inq(int ncid, int *ndimsp, int *nvarsp, int *ngattsp, int *unlimdimidp)
             char ngatts_present = ngattsp ? true : false;
             char unlimdimid_present = unlimdimidp ? true : false;
 
-            if (ios->compmaster)
+            if (ios->compmaster == MPI_ROOT)
                 mpierr = MPI_Send(&msg, 1, MPI_INT, ios->ioroot, 1, ios->union_comm);
 
             if (!mpierr)
@@ -244,7 +244,7 @@ int PIOc_inq_type(int ncid, nc_type xtype, char *name, PIO_Offset *sizep)
             char name_present = name ? true : false;
             char size_present = sizep ? true : false;
 
-            if (ios->compmaster)
+            if (ios->compmaster == MPI_ROOT)
                 mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
 
             if (!mpierr)
@@ -288,7 +288,7 @@ int PIOc_inq_type(int ncid, nc_type xtype, char *name, PIO_Offset *sizep)
     if (name)
     {
         int slen;
-        if (ios->iomaster)
+        if (ios->iomaster == MPI_ROOT)
             slen = strlen(name);
         if ((mpierr = MPI_Bcast(&slen, 1, MPI_INT, ios->ioroot, ios->my_comm)))
             return check_mpi(file, mpierr, __FILE__, __LINE__);
@@ -333,7 +333,7 @@ int PIOc_inq_format(int ncid, int *formatp)
             int msg = PIO_MSG_INQ_FORMAT;
             char format_present = formatp ? true : false;
 
-            if(ios->compmaster)
+            if (ios->compmaster == MPI_ROOT)
                 mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
 
             if (!mpierr)
@@ -414,7 +414,7 @@ int PIOc_inq_dim(int ncid, int dimid, char *name, PIO_Offset *lenp)
             char name_present = name ? true : false;
             char len_present = lenp ? true : false;
 
-            if(ios->compmaster)
+            if (ios->compmaster == MPI_ROOT)
                 mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
 
             if (!mpierr)
@@ -467,7 +467,7 @@ int PIOc_inq_dim(int ncid, int dimid, char *name, PIO_Offset *lenp)
     {
         int slen;
         LOG((2, "bcasting results my_comm = %d", ios->my_comm));
-        if (ios->iomaster)
+        if (ios->iomaster == MPI_ROOT)
             slen = strlen(name);
         if ((mpierr = MPI_Bcast(&slen, 1, MPI_INT, ios->ioroot, ios->my_comm)))
             return check_mpi(file, mpierr, __FILE__, __LINE__);
@@ -555,7 +555,7 @@ int PIOc_inq_dimid(int ncid, const char *name, int *idp)
             int msg = PIO_MSG_INQ_DIMID;
             char id_present = idp ? true : false;
 
-            if(ios->compmaster)
+            if (ios->compmaster == MPI_ROOT)
                 mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
 
             if (!mpierr)
@@ -649,7 +649,7 @@ int PIOc_inq_var(int ncid, int varid, char *name, nc_type *xtypep, int *ndimsp,
             char dimids_present = dimidsp ? true : false;
             char natts_present = nattsp ? true : false;
 
-            if(ios->compmaster)
+            if (ios->compmaster == MPI_ROOT)
                 mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
 
             if (!mpierr)
@@ -730,7 +730,7 @@ int PIOc_inq_var(int ncid, int varid, char *name, nc_type *xtypep, int *ndimsp,
     if (name)
     {
         int slen;
-        if(ios->iomaster)
+        if (ios->iomaster == MPI_ROOT)
             slen = strlen(name);
         if ((mpierr = MPI_Bcast(&slen, 1, MPI_INT, ios->ioroot, ios->my_comm)))
             return check_mpi(file, mpierr, __FILE__, __LINE__);
@@ -877,7 +877,7 @@ int PIOc_inq_varid(int ncid, const char *name, int *varidp)
         {
             int msg = PIO_MSG_INQ_VARID;
 
-            if(ios->compmaster)
+            if (ios->compmaster == MPI_ROOT)
                 mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
 
             if (!mpierr)
@@ -970,7 +970,7 @@ int PIOc_inq_att(int ncid, int varid, const char *name, nc_type *xtypep,
             char len_present = lenp ? true : false;
             int namelen = strlen(name);
 
-            if(ios->compmaster)
+            if (ios->compmaster == MPI_ROOT)
                 mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
 
             if (!mpierr)
@@ -1095,7 +1095,7 @@ int PIOc_inq_attname(int ncid, int varid, int attnum, char *name)
             int msg = PIO_MSG_INQ_ATTNAME;
             char name_present = name ? true : false;
 
-            if(ios->compmaster)
+            if (ios->compmaster == MPI_ROOT)
                 mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
 
             if (!mpierr)
@@ -1191,7 +1191,7 @@ int PIOc_inq_attid(int ncid, int varid, const char *name, int *idp)
             int namelen = strlen(name);
             char id_present = idp ? true : false;
 
-            if(ios->compmaster)
+            if (ios->compmaster == MPI_ROOT)
                 mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
 
             if (!mpierr)
@@ -1280,7 +1280,7 @@ int PIOc_rename_dim(int ncid, int dimid, const char *name)
             int msg = PIO_MSG_RENAME_DIM; /* Message for async notification. */
             int namelen = strlen(name);
 
-            if(ios->compmaster)
+            if (ios->compmaster == MPI_ROOT)
                 mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
 
             if (!mpierr)
@@ -1366,7 +1366,7 @@ int PIOc_rename_var(int ncid, int varid, const char *name)
             int msg = PIO_MSG_RENAME_VAR; /* Message for async notification. */
             int namelen = strlen(name);
 
-            if(ios->compmaster)
+            if (ios->compmaster == MPI_ROOT)
                 mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
 
             if (!mpierr)
@@ -1457,7 +1457,7 @@ int PIOc_rename_att(int ncid, int varid, const char *name,
             int namelen = strlen(name);
             int newnamelen = strlen(newname);
 
-            if (ios->compmaster)
+            if (ios->compmaster == MPI_ROOT)
                 mpierr = MPI_Send(&msg, 1, MPI_INT, ios->ioroot, 1, ios->union_comm);
 
             if (!mpierr)
@@ -1545,7 +1545,7 @@ int PIOc_del_att(int ncid, int varid, const char *name)
             int msg = PIO_MSG_DEL_ATT;
             int namelen = strlen(name); /* Length of name string. */
 
-            if(ios->compmaster)
+            if (ios->compmaster == MPI_ROOT)
                 mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
 
             if (!mpierr)
@@ -1622,7 +1622,7 @@ int PIOc_set_fill(int ncid, int fillmode, int *old_modep)
         {
             int msg = PIO_MSG_SET_FILL;
 
-            if(ios->compmaster)
+            if (ios->compmaster == MPI_ROOT)
                 mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
 
             if (!mpierr)
@@ -1736,7 +1736,7 @@ int PIOc_def_dim(int ncid, const char *name, PIO_Offset len, int *idp)
             int msg = PIO_MSG_DEF_DIM;
             int namelen = strlen(name);
 
-            if(ios->compmaster)
+            if (ios->compmaster == MPI_ROOT)
                 mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
 
             if (!mpierr)
@@ -1829,7 +1829,7 @@ int PIOc_def_var(int ncid, const char *name, nc_type xtype, int ndims,
             int msg = PIO_MSG_DEF_VAR;
             int namelen = strlen(name);
 
-            if(ios->compmaster)
+            if (ios->compmaster == MPI_ROOT)
                 mpierr = MPI_Send(&msg, 1, MPI_INT, ios->ioroot, 1, ios->union_comm);
 
             if (!mpierr)
@@ -1924,7 +1924,7 @@ int PIOc_inq_var_fill(int ncid, int varid, int *no_fill, void *fill_valuep)
         {
             int msg = PIO_MSG_INQ_VAR_FILL;
 
-            if(ios->compmaster)
+            if (ios->compmaster == MPI_ROOT)
                 mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
 
             if (!mpierr)
@@ -2028,7 +2028,7 @@ int PIOc_get_att(int ncid, int varid, const char *name, void *ip)
             LOG((2, "sending parameters"));
 
             /* Send the message to IO master. */
-            if(ios->compmaster)
+            if (ios->compmaster == MPI_ROOT)
                 mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
 
             /* Send the function parameters. */
@@ -2149,7 +2149,7 @@ int PIOc_put_att(int ncid, int varid, const char *name, nc_type xtype,
         {
             int msg = PIO_MSG_PUT_ATT;
 
-            if(ios->compmaster)
+            if (ios->compmaster == MPI_ROOT)
                 mpierr = MPI_Send(&msg, 1, MPI_INT, ios->ioroot, 1, ios->union_comm);
 
             if (!mpierr)

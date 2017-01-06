@@ -1052,7 +1052,7 @@ int PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype,
         if (!ios->ioproc)
         {
             /* Send the message to the message handler. */
-            if (ios->compmaster)
+            if (ios->compmaster == MPI_ROOT)
                 mpierr = MPI_Send(&msg, 1, MPI_INT, ios->ioroot, 1, ios->union_comm);
 
             /* Send the parameters of the function call. */
@@ -1108,7 +1108,7 @@ int PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype,
             // This should only be done with a file opened to append
             if (ierr == PIO_NOERR && (file->mode & PIO_WRITE))
             {
-                if (ios->iomaster)
+                if (ios->iomaster == MPI_ROOT)
                     LOG((2, "%d Setting IO buffer %ld", __LINE__, pio_buffer_size_limit));
                 ierr = ncmpi_buffer_attach(file->fh, pio_buffer_size_limit);
             }
@@ -1129,7 +1129,7 @@ int PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype,
 #ifdef _NETCDF
             if ((ierr == NC_ENOTNC || ierr == NC_EINVAL) && (file->iotype != PIO_IOTYPE_NETCDF))
             {
-                if (ios->iomaster)
+                if (ios->iomaster == MPI_ROOT)
                     printf("PIO2 pio_file.c retry NETCDF\n");
 
                 /* reset ierr on all tasks */
@@ -1261,7 +1261,7 @@ int pioc_change_def(int ncid, int is_enddef)
         if (!ios->ioproc)
         {
             int msg = is_enddef ? PIO_MSG_ENDDEF : PIO_MSG_REDEF;
-            if (ios->compmaster)
+            if (ios->compmaster == MPI_ROOT)
                 mpierr = MPI_Send(&msg, 1, MPI_INT, ios->ioroot, 1, ios->union_comm);
 
             if (!mpierr)

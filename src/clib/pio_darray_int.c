@@ -127,7 +127,7 @@ int pio_write_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid,
         {
             int msg = 0;
 
-            if (ios->compmaster)
+            if (ios->compmaster == MPI_ROOT)
                 mpierr = MPI_Send(&msg, 1, MPI_INT, ios->ioroot, 1, ios->union_comm);
 
             if (!mpierr)
@@ -516,7 +516,7 @@ int pio_write_darray_multi_nc(file_desc_t *file, int nvars, const int *vid, int 
         if (!ios->ioproc)
         {
             int msg = 0;
-            if (ios->compmaster)
+            if (ios->compmaster == MPI_ROOT)
                 mpierr = MPI_Send(&msg, 1, MPI_INT, ios->ioroot, 1, ios->union_comm);
 
             if (!mpierr)
@@ -1578,7 +1578,7 @@ void cn_buffer_report(iosystem_desc_t ios, bool collective)
             LOG((3, "cn_buffer_report calling MPI_Reduce"));
             if ((mpierr = MPI_Reduce(bget_stats, bget_mins, 5, MPI_LONG, MPI_MIN, 0, ios.comp_comm)))
                 check_mpi(NULL, mpierr, __FILE__, __LINE__);
-            if (ios.compmaster)
+            if (ios.compmaster == MPI_ROOT)
             {
                 printf("PIO: Currently allocated buffer space %ld %ld\n",
                        bget_mins[0], bget_maxs[0]);
