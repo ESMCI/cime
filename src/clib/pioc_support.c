@@ -683,6 +683,12 @@ int PIOc_freedecomp(int iosysid, int ioid)
     if (!(iodesc = pio_get_iodesc_from_id(ioid)))
         return pio_err(ios, NULL, PIO_EBADID, __FILE__, __LINE__);
 
+    /* Free the map. */
+    free(iodesc->map);
+
+    /* Free the dimlens. */
+    free(iodesc->dimlen);
+
     if (iodesc->gsize)
         brel(iodesc->gsize);
 
@@ -776,10 +782,10 @@ int PIOc_readmap(const char *file, int *ndims, int **gdims, PIO_Offset *fmaplen,
         fscanf(fp,"version %d npes %d ndims %d\n",&rversno, &rnpes, ndims);
 
         if (rversno != VERSNO)
-            return pio_err(NULL, NULL, PIO_EINVAL, __FILE__, __LINE__);            
+            return pio_err(NULL, NULL, PIO_EINVAL, __FILE__, __LINE__);
 
         if (rnpes < 1 || rnpes > npes)
-            return pio_err(NULL, NULL, PIO_EINVAL, __FILE__, __LINE__);            
+            return pio_err(NULL, NULL, PIO_EINVAL, __FILE__, __LINE__);
 
         if ((mpierr = MPI_Bcast(&rnpes, 1, MPI_INT, 0, comm)))
             return check_mpi(NULL, mpierr, __FILE__, __LINE__);
@@ -872,6 +878,32 @@ int PIOc_readmap_from_f90(const char *file, int *ndims, int **gdims, PIO_Offset 
 /**
  * Write the decomposition map to a file.
  *
+ * @param file the filename to be used.
+ * @param iosysid the IO system ID.
+ * @param ioid the ID of the IO description.
+ * @param comm an MPI communicator.
+ * @returns 0 for success, error code otherwise.
+ */
+int PIOc_write_decomp(const char *file, int iosysid, int ioid, MPI_Comm comm)
+{
+    iosystem_desc_t *ios;
+    io_desc_t *iodesc;
+
+    LOG((1, "PIOc_write_decomp file = %s iosysid = %d ioid = %d", file, iosysid, ioid));
+
+    if (!(ios = pio_get_iosystem_from_id(iosysid)))
+        return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
+
+    if (!(iodesc = pio_get_iodesc_from_id(ioid)))
+        return pio_err(ios, NULL, PIO_EBADID, __FILE__, __LINE__);
+
+    return PIOc_writemap(file, iodesc->ndims, iodesc->dimlen, iodesc->maplen, iodesc->map,
+                         comm);
+}
+
+/**
+ * Write the decomposition map to a file.
+ *
  * @param file the filename
  * @param ndims the number of dimensions
  * @param gdims an array of dimension ids
@@ -890,10 +922,13 @@ int PIOc_writemap(const char *file, int ndims, const int *gdims, PIO_Offset mapl
     PIO_Offset *nmap;
     int mpierr; /* Return code for MPI calls. */
 
+    LOG((1, "PIOc_writemap file = %s ndims = %d maplen = %d", file, ndims, maplen));
+
     if ((mpierr = MPI_Comm_size(comm, &npes)))
         return check_mpi(NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Comm_rank(comm, &myrank)))
         return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+    LOG((2, "npes = %d myrank = %d", npes, myrank));
 
     /* Allocate memory for the nmaplen. */
     if (myrank == 0)
@@ -910,7 +945,7 @@ int PIOc_writemap(const char *file, int ndims, const int *gdims, PIO_Offset mapl
 
         /* Open the file to write. */
         if (!(fp = fopen(file, "w")))
-            return pio_err(NULL, NULL, PIO_EIO, __FILE__, __LINE__);            
+            return pio_err(NULL, NULL, PIO_EIO, __FILE__, __LINE__);
 
         /* Write the version and dimension info. */
         fprintf(fp,"version %d npes %d ndims %d \n", VERSNO, npes, ndims);
@@ -926,12 +961,14 @@ int PIOc_writemap(const char *file, int ndims, const int *gdims, PIO_Offset mapl
 
         for (i = 1; i < npes; i++)
         {
+            LOG((2, "creating nmap for i = %d", i));
             nmap = (PIO_Offset *)malloc(nmaplen[i] * sizeof(PIO_Offset));
 
             if ((mpierr = MPI_Send(&i, 1, MPI_INT, i, npes + i, comm)))
-                return check_mpi(NULL, mpierr, __FILE__, __LINE__);                                        
+                return check_mpi(NULL, mpierr, __FILE__, __LINE__);
             if ((mpierr = MPI_Recv(nmap, nmaplen[i], PIO_OFFSET, i, i, comm, &status)))
-                return check_mpi(NULL, mpierr, __FILE__, __LINE__);                                        
+                return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+            LOG((2,"MPI_Recv map complete"));
 
             fprintf(fp, "%d %ld\n", i, nmaplen[i]);
             for (int j = 0; j < nmaplen[i]; j++)
@@ -945,15 +982,19 @@ int PIOc_writemap(const char *file, int ndims, const int *gdims, PIO_Offset mapl
 
         /* Close the file. */
         fclose(fp);
+        LOG((2,"decomp file closed."));
     }
     else
     {
+        LOG((2,"ready to MPI_Recv..."));
         if ((mpierr = MPI_Recv(&i, 1, MPI_INT, 0, npes+myrank, comm, &status)))
-            return check_mpi(NULL, mpierr, __FILE__, __LINE__);                                        
+            return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+        LOG((2,"MPI_Recv got %d", i));
         if ((mpierr = MPI_Send(map, maplen, PIO_OFFSET, 0, myrank, comm)))
-            return check_mpi(NULL, mpierr, __FILE__, __LINE__);                                        
+            return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+        LOG((2,"MPI_Send map complete"));
     }
-    
+
     return PIO_NOERR;
 }
 

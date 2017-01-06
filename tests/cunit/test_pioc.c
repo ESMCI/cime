@@ -140,7 +140,7 @@ int create_decomposition(int ntasks, int my_rank, int iosysid, int *ioid)
                                compdof, ioid, NULL, NULL, NULL)))
         ERR(ret);
 
-    printf("%d decomposition initialized.", my_rank);
+    printf("%d decomposition initialized.\n", my_rank);
 
     /* Free the mapping. */
     free(compdof);
@@ -1704,16 +1704,25 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
     if ((ret = MPI_Comm_size(test_comm, &my_test_size)))
         MPIERR(ret);
 
-    /* Test read/write stuff. */
-    printf("%d Testing putget. async = %d\n", my_rank, async);
-    if ((ret = test_putget(iosysid, num_flavors, flavor, my_rank, test_comm)))
-        return ret;
+    /* /\* Test read/write stuff. *\/ */
+    /* printf("%d Testing putget. async = %d\n", my_rank, async); */
+    /* if ((ret = test_putget(iosysid, num_flavors, flavor, my_rank, test_comm))) */
+    /*     return ret; */
 
     if (!async)
     {
+        char filename[NC_MAX_NAME + 1];
+        sprintf(filename, "decomp_%d.txt", my_rank);
+        
+        printf("%d Testing darray. async = %d\n", my_rank, async);        
         /* Decompose the data over the tasks. */
         if ((ret = create_decomposition(my_test_size, my_rank, iosysid, &ioid)))
             return ret;
+
+        printf("%d Calling write_decomp. async = %d\n", my_rank, async);        
+        if ((ret = PIOc_write_decomp(filename, iosysid, ioid, test_comm)))
+            return ret;
+        printf("%d Called write_decomp. async = %d\n", my_rank, async);
 
         if ((ret = test_darray(iosysid, ioid, num_flavors, flavor, my_rank)))
             return ret;
@@ -1724,30 +1733,30 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
     }
 
 
-    /* Check the error string function. */
-    printf("%d Testing streror. async = %d\n", my_rank, async);
-    if ((ret = check_strerror(my_rank)))
-        ERR(ret);
+    /* /\* Check the error string function. *\/ */
+    /* printf("%d Testing streror. async = %d\n", my_rank, async); */
+    /* if ((ret = check_strerror(my_rank))) */
+    /*     ERR(ret); */
 
-    /* Test file stuff. */
-    printf("%d Testing file creation. async = %d\n", my_rank, async);
-    if ((ret = test_files(iosysid, num_flavors, flavor, my_rank)))
-        return ret;
+    /* /\* Test file stuff. *\/ */
+    /* printf("%d Testing file creation. async = %d\n", my_rank, async); */
+    /* if ((ret = test_files(iosysid, num_flavors, flavor, my_rank))) */
+    /*     return ret; */
 
-    /* Test file deletes. */
-    printf("%d Testing deletefile. async = %d\n", my_rank, async);
-    if ((ret = test_deletefile(iosysid, num_flavors, flavor, my_rank)))
-        return ret;
+    /* /\* Test file deletes. *\/ */
+    /* printf("%d Testing deletefile. async = %d\n", my_rank, async); */
+    /* if ((ret = test_deletefile(iosysid, num_flavors, flavor, my_rank))) */
+    /*     return ret; */
 
-    /* Test name stuff. */
-    printf("%d Testing names. async = %d\n", my_rank, async);
-    if ((ret = test_names(iosysid, num_flavors, flavor, my_rank, test_comm)))
-        return ret;
+    /* /\* Test name stuff. *\/ */
+    /* printf("%d Testing names. async = %d\n", my_rank, async); */
+    /* if ((ret = test_names(iosysid, num_flavors, flavor, my_rank, test_comm))) */
+    /*     return ret; */
 
-    /* Test netCDF-4 functions. */
-    printf("%d Testing nc4 functions. async = %d\n", my_rank, async);
-    if ((ret = test_nc4(iosysid, num_flavors, flavor, my_rank)))
-        return ret;
+    /* /\* Test netCDF-4 functions. *\/ */
+    /* printf("%d Testing nc4 functions. async = %d\n", my_rank, async); */
+    /* if ((ret = test_nc4(iosysid, num_flavors, flavor, my_rank))) */
+    /*     return ret; */
 
     return PIO_NOERR;
 }
@@ -1892,7 +1901,7 @@ int main(int argc, char **argv)
 
     /* Initialize test. */
     if ((ret = pio_test_init2(argc, argv, &my_rank, &ntasks, MIN_NTASKS,
-                              TARGET_NTASKS, 0, &test_comm)))
+                              TARGET_NTASKS, 3, &test_comm)))
         ERR(ERR_INIT);
 
     /* Only do something on TARGET_NTASKS tasks. */
@@ -1907,8 +1916,8 @@ int main(int argc, char **argv)
             return ret;
 
         /* Run tests with async. */
-        if ((ret = test_async(my_rank, num_flavors, flavor, test_comm)))
-            return ret;
+        /* if ((ret = test_async(my_rank, num_flavors, flavor, test_comm))) */
+        /*     return ret; */
 
     } /* endif my_rank < TARGET_NTASKS */
 

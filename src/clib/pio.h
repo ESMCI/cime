@@ -104,8 +104,11 @@ typedef struct io_desc_t
     /** The ID of this io_desc_t. */
     int ioid;
 
-    /** Not used... */
-    /*int async_id;*/
+    /** The length of the decomposition map. */
+    int maplen;
+
+    /** An array of length maplen. */
+    PIO_Offset *map;
 
     /** Number of tasks involved in the communication between comp and
      * io tasks. */
@@ -117,6 +120,9 @@ typedef struct io_desc_t
     /** All vars included in this io_desc_t have the same number of
      * dimensions. */
     int ndims;
+
+    /** An array of size ndims with the length of each dimension. */
+    int *dimlen;
 
     /** The actual number of IO tasks participating. */
     int num_aiotasks;
@@ -143,7 +149,8 @@ typedef struct io_desc_t
     /** Maximum llen participating. */
     int maxiobuflen;
 
-    /** Array of the global size of each dimension. */
+    /** Array of the global size of each dimension. (Does not seem to
+     * be used anywhere.) */
     PIO_Offset *gsize;
 
     /** Array of tasks received from in pio_swapm(). */
@@ -574,7 +581,8 @@ extern "C" {
 		      PIO_Offset *map, MPI_Comm comm);
     int PIOc_writemap_from_f90(const char *file, int ndims, const int *gdims,
 			       PIO_Offset maplen, const PIO_Offset *map, int f90_comm);
-
+    int PIOc_write_decomp(const char *file, int iosysid, int ioid, MPI_Comm comm);
+    
     /* Initializing IO system. */
     int PIOc_Init_Async(MPI_Comm world, int num_io_procs, int *io_proc_list, int component_count,
                         int *num_procs_per_comp, int **proc_list, MPI_Comm *io_comm, MPI_Comm *comp_comm,
@@ -907,7 +915,7 @@ extern "C" {
     int PIOc_put_vars_ulonglong(int ncid, int varid, const PIO_Offset *start,
 				const PIO_Offset *count, const PIO_Offset *stride,
 				const unsigned long long *op);
-    
+
     /* Varm functions are deprecated and should be used with extreme
      * caution or not at all. Varm functions are not supported in
      * async mode. */
