@@ -140,7 +140,7 @@ int create_decomposition(int ntasks, int my_rank, int iosysid, int *ioid)
                                compdof, ioid, NULL, NULL, NULL)))
         ERR(ret);
 
-    printf("%d decomposition initialized.", my_rank);
+    printf("%d decomposition initialized.\n", my_rank);
 
     /* Free the mapping. */
     free(compdof);
@@ -1711,9 +1711,18 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
 
     if (!async)
     {
+        char filename[NC_MAX_NAME + 1];
+        sprintf(filename, "decomp_%d.txt", my_rank);
+        
+        printf("%d Testing darray. async = %d\n", my_rank, async);        
         /* Decompose the data over the tasks. */
         if ((ret = create_decomposition(my_test_size, my_rank, iosysid, &ioid)))
             return ret;
+
+        printf("%d Calling write_decomp. async = %d\n", my_rank, async);        
+        if ((ret = PIOc_write_decomp(filename, iosysid, ioid, test_comm)))
+            return ret;
+        printf("%d Called write_decomp. async = %d\n", my_rank, async);
 
         if ((ret = test_darray(iosysid, ioid, num_flavors, flavor, my_rank)))
             return ret;
