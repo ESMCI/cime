@@ -142,7 +142,7 @@ int PIOc_createfile(int iosysid, int *ncidp, int *iotype, const char *filename, 
         if (!ios->ioproc)
         {
             /* Send the message to the message handler. */
-            if (ios->compmaster)
+            if (ios->compmaster == MPI_ROOT)
                 mpierr = MPI_Send(&msg, 1, MPI_INT, ios->ioroot, 1, ios->union_comm);
 
             /* Send the parameters of the function call. */
@@ -310,7 +310,7 @@ int PIOc_closefile(int ncid)
         {
             int msg = PIO_MSG_CLOSE_FILE;
 
-            if (ios->compmaster)
+            if (ios->compmaster == MPI_ROOT)
                 mpierr = MPI_Send(&msg, 1, MPI_INT, ios->ioroot, 1, ios->union_comm);
 
             if (!mpierr)

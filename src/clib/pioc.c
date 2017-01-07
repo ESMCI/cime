@@ -266,7 +266,7 @@ int PIOc_set_iosystem_error_handling(int iosysid, int method, int *old_method)
             int msg = PIO_MSG_SETERRORHANDLING;
             char old_method_present = old_method ? true : false;
 
-            if(ios->compmaster)
+          if (ios->compmaster == MPI_ROOT)
                 mpierr = MPI_Send(&msg, 1, MPI_INT, ios->ioroot, 1, ios->union_comm);
 
             if (!mpierr)
@@ -754,7 +754,7 @@ int PIOc_finalize(int iosysid)
                  ios->ioroot, ios->union_comm));
 
             /* Send the message to the message handler. */
-            if (ios->compmaster)
+            if (ios->compmaster == MPI_ROOT)
                 mpierr = MPI_Send(&msg, 1, MPI_INT, ios->ioroot, 1, ios->union_comm);
 
             /* Send the parameters of the function call. */

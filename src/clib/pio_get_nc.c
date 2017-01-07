@@ -1065,13 +1065,13 @@ int PIOc_get_var(int ncid, int varid, void *buf, PIO_Offset bufcount, MPI_Dataty
     ibuftype = buftype;
     ierr = PIO_NOERR;
 
-    if(ios->async_interface && ! ios->ioproc){
-        if(ios->compmaster)
+    if (ios->async_interface && ! ios->ioproc){
+        if (ios->compmaster == MPI_ROOT)
             mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
         mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
     }
 
-    if(ios->ioproc){
+    if (ios->ioproc){
         switch(file->iotype){
 #ifdef _NETCDF
 #ifdef _NETCDF4
@@ -1082,7 +1082,7 @@ int PIOc_get_var(int ncid, int varid, void *buf, PIO_Offset bufcount, MPI_Dataty
 #endif
         case PIO_IOTYPE_NETCDF:
             bcast = true;
-            if(ios->iomaster){
+            if (ios->iomaster == MPI_ROOT){
                 ierr = nc_get_var(file->fh, varid,   buf);;
             }
             break;
@@ -1091,7 +1091,7 @@ int PIOc_get_var(int ncid, int varid, void *buf, PIO_Offset bufcount, MPI_Dataty
         case PIO_IOTYPE_PNETCDF:
 #ifdef PNET_READ_AND_BCAST
             ncmpi_begin_indep_data(file->fh);
-            if(ios->iomaster){
+            if (ios->iomaster == MPI_ROOT){
                 ierr = ncmpi_get_var(file->fh, varid, buf, bufcount, buftype);;
             };
             ncmpi_end_indep_data(file->fh);
@@ -1108,7 +1108,7 @@ int PIOc_get_var(int ncid, int varid, void *buf, PIO_Offset bufcount, MPI_Dataty
 
     ierr = check_netcdf(file, ierr, __FILE__,__LINE__);
 
-    if(ios->async_interface || bcast ||
+    if (ios->async_interface || bcast ||
        (ios->num_iotasks < ios->num_comptasks)){
         MPI_Bcast(buf, ibufcnt, ibuftype, ios->ioroot, ios->my_comm);
     }
@@ -1155,14 +1155,14 @@ int PIOc_get_var1(int ncid, int varid, const PIO_Offset *index, void *buf,
     ibuftype = buftype;
     ierr = PIO_NOERR;
 
-    if(ios->async_interface && ! ios->ioproc){
-        if(ios->compmaster)
+    if (ios->async_interface && ! ios->ioproc){
+        if (ios->compmaster == MPI_ROOT)
             mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
         mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
     }
 
 
-    if(ios->ioproc){
+    if (ios->ioproc){
         switch(file->iotype){
 #ifdef _NETCDF
 #ifdef _NETCDF4
@@ -1173,7 +1173,7 @@ int PIOc_get_var1(int ncid, int varid, const PIO_Offset *index, void *buf,
 #endif
         case PIO_IOTYPE_NETCDF:
             bcast = true;
-            if(ios->iomaster){
+            if (ios->iomaster == MPI_ROOT){
                 ierr = nc_get_var1(file->fh, varid, (size_t *) index,   buf);;
             }
             break;
@@ -1182,7 +1182,7 @@ int PIOc_get_var1(int ncid, int varid, const PIO_Offset *index, void *buf,
         case PIO_IOTYPE_PNETCDF:
 #ifdef PNET_READ_AND_BCAST
             ncmpi_begin_indep_data(file->fh);
-            if(ios->iomaster){
+            if (ios->iomaster == MPI_ROOT){
                 ierr = ncmpi_get_var1(file->fh, varid, index, buf, bufcount, buftype);;
             };
             ncmpi_end_indep_data(file->fh);
@@ -1199,7 +1199,7 @@ int PIOc_get_var1(int ncid, int varid, const PIO_Offset *index, void *buf,
 
     ierr = check_netcdf(file, ierr, __FILE__,__LINE__);
 
-    if(ios->async_interface || bcast ||
+    if (ios->async_interface || bcast ||
        (ios->num_iotasks < ios->num_comptasks)){
         MPI_Bcast(buf, ibufcnt, ibuftype, ios->ioroot, ios->my_comm);
     }
@@ -1247,14 +1247,14 @@ int PIOc_get_vara(int ncid, int varid, const PIO_Offset *start, const PIO_Offset
     ibuftype = buftype;
     ierr = PIO_NOERR;
 
-    if(ios->async_interface && ! ios->ioproc){
-        if(ios->compmaster)
+    if (ios->async_interface && ! ios->ioproc){
+        if (ios->compmaster == MPI_ROOT)
             mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
         mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
     }
 
 
-    if(ios->ioproc){
+    if (ios->ioproc){
         switch(file->iotype){
 #ifdef _NETCDF
 #ifdef _NETCDF4
@@ -1265,7 +1265,7 @@ int PIOc_get_vara(int ncid, int varid, const PIO_Offset *start, const PIO_Offset
 #endif
         case PIO_IOTYPE_NETCDF:
             bcast = true;
-            if(ios->iomaster){
+            if (ios->iomaster == MPI_ROOT){
                 ierr = nc_get_vara(file->fh, varid, (size_t *) start, (size_t *) count,   buf);;
             }
             break;
@@ -1274,7 +1274,7 @@ int PIOc_get_vara(int ncid, int varid, const PIO_Offset *start, const PIO_Offset
         case PIO_IOTYPE_PNETCDF:
 #ifdef PNET_READ_AND_BCAST
             ncmpi_begin_indep_data(file->fh);
-            if(ios->iomaster){
+            if (ios->iomaster == MPI_ROOT){
                 ierr = ncmpi_get_vara(file->fh, varid, start, count, buf, bufcount, buftype);;
             };
             ncmpi_end_indep_data(file->fh);
@@ -1291,7 +1291,7 @@ int PIOc_get_vara(int ncid, int varid, const PIO_Offset *start, const PIO_Offset
 
     ierr = check_netcdf(file, ierr, __FILE__,__LINE__);
 
-    if(ios->async_interface || bcast ||
+    if (ios->async_interface || bcast ||
        (ios->num_iotasks < ios->num_comptasks)){
         MPI_Bcast(buf, ibufcnt, ibuftype, ios->ioroot, ios->my_comm);
     }
@@ -1344,13 +1344,13 @@ int PIOc_get_vars(int ncid, int varid, const PIO_Offset *start, const PIO_Offset
     ibuftype = buftype;
     ierr = PIO_NOERR;
 
-    if(ios->async_interface && ! ios->ioproc){
-        if(ios->compmaster)
+    if (ios->async_interface && ! ios->ioproc){
+        if (ios->compmaster == MPI_ROOT)
             mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
         mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
     }
 
-    if(ios->ioproc){
+    if (ios->ioproc){
         switch(file->iotype){
 #ifdef _NETCDF
 #ifdef _NETCDF4
@@ -1361,7 +1361,7 @@ int PIOc_get_vars(int ncid, int varid, const PIO_Offset *start, const PIO_Offset
 #endif
         case PIO_IOTYPE_NETCDF:
             bcast = true;
-            if(ios->iomaster){
+            if (ios->iomaster == MPI_ROOT){
                 ierr = nc_get_vars(file->fh, varid, (size_t *) start, (size_t *) count, (ptrdiff_t *) stride,   buf);;
             }
             break;
@@ -1370,7 +1370,7 @@ int PIOc_get_vars(int ncid, int varid, const PIO_Offset *start, const PIO_Offset
         case PIO_IOTYPE_PNETCDF:
 #ifdef PNET_READ_AND_BCAST
             ncmpi_begin_indep_data(file->fh);
-            if(ios->iomaster){
+            if (ios->iomaster == MPI_ROOT){
                 ierr = ncmpi_get_vars(file->fh, varid, start, count, stride, buf, bufcount, buftype);;
             };
             ncmpi_end_indep_data(file->fh);
@@ -1387,7 +1387,7 @@ int PIOc_get_vars(int ncid, int varid, const PIO_Offset *start, const PIO_Offset
 
     ierr = check_netcdf(file, ierr, __FILE__,__LINE__);
 
-    if(ios->async_interface || bcast ||
+    if (ios->async_interface || bcast ||
        (ios->num_iotasks < ios->num_comptasks)){
         MPI_Bcast(buf, ibufcnt, ibuftype, ios->ioroot, ios->my_comm);
     }

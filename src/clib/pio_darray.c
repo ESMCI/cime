@@ -541,7 +541,7 @@ int PIOc_read_darray(int ncid, int vid, int ioid, PIO_Offset arraylen,
         return pio_err(ios, file, PIO_EBADID, __FILE__, __LINE__);
 
     /* ??? */
-    if (ios->iomaster)
+    if (ios->iomaster == MPI_ROOT)
         rlen = iodesc->maxiobuflen;
     else
         rlen = iodesc->llen;

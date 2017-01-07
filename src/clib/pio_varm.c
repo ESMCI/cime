@@ -1021,7 +1021,7 @@ int PIOc_get_varm_uchar (int ncid, int varid, const PIO_Offset start[], const PI
     ierr = PIO_NOERR;
 
     if(ios->async_interface && ! ios->ioproc){
-        if(ios->compmaster)
+        if (ios->compmaster == MPI_ROOT)
             mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
         mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
     }
@@ -1038,7 +1038,7 @@ int PIOc_get_varm_uchar (int ncid, int varid, const PIO_Offset start[], const PI
 #endif
         case PIO_IOTYPE_NETCDF:
             bcast = true;
-            if(ios->iomaster){
+            if (ios->iomaster == MPI_ROOT){
                 ierr = nc_get_varm_uchar(file->fh, varid, (size_t *) start, (size_t *) count, (ptrdiff_t *) stride, (ptrdiff_t *) imap,  buf);;
             }
             break;
@@ -1047,7 +1047,7 @@ int PIOc_get_varm_uchar (int ncid, int varid, const PIO_Offset start[], const PI
         case PIO_IOTYPE_PNETCDF:
 #ifdef PNET_READ_AND_BCAST
             ncmpi_begin_indep_data(file->fh);
-            if(ios->iomaster){
+            if (ios->iomaster == MPI_ROOT){
                 ierr = ncmpi_get_varm_uchar(file->fh, varid, start, count, stride, imap,  buf);;
             };
             ncmpi_end_indep_data(file->fh);
@@ -1098,7 +1098,7 @@ int PIOc_get_varm_schar (int ncid, int varid, const PIO_Offset start[], const PI
     ierr = PIO_NOERR;
 
     if(ios->async_interface && ! ios->ioproc){
-        if(ios->compmaster)
+        if (ios->compmaster == MPI_ROOT)
             mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
         mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
     }
@@ -1115,7 +1115,7 @@ int PIOc_get_varm_schar (int ncid, int varid, const PIO_Offset start[], const PI
 #endif
         case PIO_IOTYPE_NETCDF:
             bcast = true;
-            if(ios->iomaster){
+            if (ios->iomaster == MPI_ROOT){
                 ierr = nc_get_varm_schar(file->fh, varid, (size_t *) start, (size_t *) count, (ptrdiff_t *) stride, (ptrdiff_t *) imap,  buf);;
             }
             break;
@@ -1124,7 +1124,7 @@ int PIOc_get_varm_schar (int ncid, int varid, const PIO_Offset start[], const PI
         case PIO_IOTYPE_PNETCDF:
 #ifdef PNET_READ_AND_BCAST
             ncmpi_begin_indep_data(file->fh);
-            if(ios->iomaster){
+            if (ios->iomaster == MPI_ROOT){
                 ierr = ncmpi_get_varm_schar(file->fh, varid, start, count, stride, imap,  buf);;
             };
             ncmpi_end_indep_data(file->fh);
@@ -1175,7 +1175,7 @@ int PIOc_get_varm_double (int ncid, int varid, const PIO_Offset start[], const P
     ierr = PIO_NOERR;
 
     if(ios->async_interface && ! ios->ioproc){
-        if(ios->compmaster)
+        if (ios->compmaster == MPI_ROOT)
             mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
         mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
     }
@@ -1192,7 +1192,7 @@ int PIOc_get_varm_double (int ncid, int varid, const PIO_Offset start[], const P
 #endif
         case PIO_IOTYPE_NETCDF:
             bcast = true;
-            if(ios->iomaster){
+            if (ios->iomaster == MPI_ROOT){
                 ierr = nc_get_varm_double(file->fh, varid, (size_t *) start, (size_t *) count, (ptrdiff_t *) stride, (ptrdiff_t *) imap,  buf);;
             }
             break;
@@ -1201,7 +1201,7 @@ int PIOc_get_varm_double (int ncid, int varid, const PIO_Offset start[], const P
         case PIO_IOTYPE_PNETCDF:
 #ifdef PNET_READ_AND_BCAST
             ncmpi_begin_indep_data(file->fh);
-            if(ios->iomaster){
+            if (ios->iomaster == MPI_ROOT){
                 ierr = ncmpi_get_varm_double(file->fh, varid, start, count, stride, imap,  buf);;
             };
             ncmpi_end_indep_data(file->fh);
@@ -1252,7 +1252,7 @@ int PIOc_get_varm_text (int ncid, int varid, const PIO_Offset start[], const PIO
     ierr = PIO_NOERR;
 
     if(ios->async_interface && ! ios->ioproc){
-        if(ios->compmaster)
+        if (ios->compmaster == MPI_ROOT)
             mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
         mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
     }
@@ -1269,7 +1269,7 @@ int PIOc_get_varm_text (int ncid, int varid, const PIO_Offset start[], const PIO
 #endif
         case PIO_IOTYPE_NETCDF:
             bcast = true;
-            if(ios->iomaster){
+            if (ios->iomaster == MPI_ROOT){
                 ierr = nc_get_varm_text(file->fh, varid, (size_t *) start, (size_t *) count, (ptrdiff_t *) stride, (ptrdiff_t *) imap,  buf);;
             }
             break;
@@ -1278,7 +1278,7 @@ int PIOc_get_varm_text (int ncid, int varid, const PIO_Offset start[], const PIO
         case PIO_IOTYPE_PNETCDF:
 #ifdef PNET_READ_AND_BCAST
             ncmpi_begin_indep_data(file->fh);
-            if(ios->iomaster){
+            if (ios->iomaster == MPI_ROOT){
                 ierr = ncmpi_get_varm_text(file->fh, varid, start, count, stride, imap,  buf);;
             };
             ncmpi_end_indep_data(file->fh);
@@ -1329,7 +1329,7 @@ int PIOc_get_varm_int (int ncid, int varid, const PIO_Offset start[], const PIO_
     ierr = PIO_NOERR;
 
     if(ios->async_interface && ! ios->ioproc){
-        if(ios->compmaster)
+        if (ios->compmaster == MPI_ROOT)
             mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
         mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
     }
@@ -1346,7 +1346,7 @@ int PIOc_get_varm_int (int ncid, int varid, const PIO_Offset start[], const PIO_
 #endif
         case PIO_IOTYPE_NETCDF:
             bcast = true;
-            if(ios->iomaster){
+            if (ios->iomaster == MPI_ROOT){
                 ierr = nc_get_varm_int(file->fh, varid, (size_t *) start, (size_t *) count, (ptrdiff_t *) stride, (ptrdiff_t *) imap,  buf);;
             }
             break;
@@ -1355,7 +1355,7 @@ int PIOc_get_varm_int (int ncid, int varid, const PIO_Offset start[], const PIO_
         case PIO_IOTYPE_PNETCDF:
 #ifdef PNET_READ_AND_BCAST
             ncmpi_begin_indep_data(file->fh);
-            if(ios->iomaster){
+            if (ios->iomaster == MPI_ROOT){
                 ierr = ncmpi_get_varm_int(file->fh, varid, start, count, stride, imap,  buf);;
             };
             ncmpi_end_indep_data(file->fh);
@@ -1406,7 +1406,7 @@ int PIOc_get_varm_uint (int ncid, int varid, const PIO_Offset start[], const PIO
     ierr = PIO_NOERR;
 
     if(ios->async_interface && ! ios->ioproc){
-        if(ios->compmaster)
+        if (ios->compmaster == MPI_ROOT)
             mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
         mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
     }
@@ -1423,7 +1423,7 @@ int PIOc_get_varm_uint (int ncid, int varid, const PIO_Offset start[], const PIO
 #endif
         case PIO_IOTYPE_NETCDF:
             bcast = true;
-            if(ios->iomaster){
+            if (ios->iomaster == MPI_ROOT){
                 ierr = nc_get_varm_uint(file->fh, varid, (size_t *) start, (size_t *) count, (ptrdiff_t *) stride, (ptrdiff_t *) imap,  buf);;
             }
             break;
@@ -1432,7 +1432,7 @@ int PIOc_get_varm_uint (int ncid, int varid, const PIO_Offset start[], const PIO
         case PIO_IOTYPE_PNETCDF:
 #ifdef PNET_READ_AND_BCAST
             ncmpi_begin_indep_data(file->fh);
-            if(ios->iomaster){
+            if (ios->iomaster == MPI_ROOT){
                 ierr = ncmpi_get_varm_uint(file->fh, varid, start, count, stride, imap,  buf);;
             };
             ncmpi_end_indep_data(file->fh);
@@ -1479,7 +1479,7 @@ int PIOc_get_varm (int ncid, int varid, const PIO_Offset start[], const PIO_Offs
     ierr = PIO_NOERR;
 
     if(ios->async_interface && ! ios->ioproc){
-        if(ios->compmaster)
+        if (ios->compmaster == MPI_ROOT)
             mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
         mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
     }
@@ -1496,7 +1496,7 @@ int PIOc_get_varm (int ncid, int varid, const PIO_Offset start[], const PIO_Offs
 #endif
         case PIO_IOTYPE_NETCDF:
             bcast = true;
-            if(ios->iomaster){
+            if (ios->iomaster == MPI_ROOT){
                 ierr = nc_get_varm(file->fh, varid, (size_t *) start, (size_t *) count, (ptrdiff_t *) stride, (ptrdiff_t *) imap,   buf);;
             }
             break;
@@ -1505,7 +1505,7 @@ int PIOc_get_varm (int ncid, int varid, const PIO_Offset start[], const PIO_Offs
         case PIO_IOTYPE_PNETCDF:
 #ifdef PNET_READ_AND_BCAST
             ncmpi_begin_indep_data(file->fh);
-            if(ios->iomaster){
+            if (ios->iomaster == MPI_ROOT){
                 ierr = ncmpi_get_varm(file->fh, varid, start, count, stride, imap, buf, bufcount, buftype);;
             };
             ncmpi_end_indep_data(file->fh);
@@ -1556,7 +1556,7 @@ int PIOc_get_varm_float (int ncid, int varid, const PIO_Offset start[], const PI
     ierr = PIO_NOERR;
 
     if(ios->async_interface && ! ios->ioproc){
-        if(ios->compmaster)
+        if (ios->compmaster == MPI_ROOT)
             mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
         mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
     }
@@ -1573,7 +1573,7 @@ int PIOc_get_varm_float (int ncid, int varid, const PIO_Offset start[], const PI
 #endif
         case PIO_IOTYPE_NETCDF:
             bcast = true;
-            if(ios->iomaster){
+            if (ios->iomaster == MPI_ROOT){
                 ierr = nc_get_varm_float(file->fh, varid,(size_t *) start, (size_t *) count, (ptrdiff_t *) stride, (ptrdiff_t *) imap,  buf);;
             }
             break;
@@ -1582,7 +1582,7 @@ int PIOc_get_varm_float (int ncid, int varid, const PIO_Offset start[], const PI
         case PIO_IOTYPE_PNETCDF:
 #ifdef PNET_READ_AND_BCAST
             ncmpi_begin_indep_data(file->fh);
-            if(ios->iomaster){
+            if (ios->iomaster == MPI_ROOT){
                 ierr = ncmpi_get_varm_float(file->fh, varid, start, count, stride, imap,  buf);;
             };
             ncmpi_end_indep_data(file->fh);
@@ -1633,7 +1633,7 @@ int PIOc_get_varm_long (int ncid, int varid, const PIO_Offset start[], const PIO
     ierr = PIO_NOERR;
 
     if(ios->async_interface && ! ios->ioproc){
-        if(ios->compmaster)
+        if (ios->compmaster == MPI_ROOT)
             mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
         mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
     }
@@ -1650,7 +1650,7 @@ int PIOc_get_varm_long (int ncid, int varid, const PIO_Offset start[], const PIO
 #endif
         case PIO_IOTYPE_NETCDF:
             bcast = true;
-            if(ios->iomaster){
+            if (ios->iomaster == MPI_ROOT){
                 ierr = nc_get_varm_long(file->fh, varid, (size_t *) start, (size_t *) count, (ptrdiff_t *) stride, (ptrdiff_t *) imap,  buf);;
             }
             break;
@@ -1659,7 +1659,7 @@ int PIOc_get_varm_long (int ncid, int varid, const PIO_Offset start[], const PIO
         case PIO_IOTYPE_PNETCDF:
 #ifdef PNET_READ_AND_BCAST
             ncmpi_begin_indep_data(file->fh);
-            if(ios->iomaster){
+            if (ios->iomaster == MPI_ROOT){
                 ierr = ncmpi_get_varm_long(file->fh, varid, start, count, stride, imap,  buf);;
             };
             ncmpi_end_indep_data(file->fh);
@@ -1710,7 +1710,7 @@ int PIOc_get_varm_ushort (int ncid, int varid, const PIO_Offset start[], const P
     ierr = PIO_NOERR;
 
     if(ios->async_interface && ! ios->ioproc){
-        if(ios->compmaster)
+        if (ios->compmaster == MPI_ROOT)
             mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
         mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
     }
@@ -1727,7 +1727,7 @@ int PIOc_get_varm_ushort (int ncid, int varid, const PIO_Offset start[], const P
 #endif
         case PIO_IOTYPE_NETCDF:
             bcast = true;
-            if(ios->iomaster){
+            if (ios->iomaster == MPI_ROOT){
                 ierr = nc_get_varm_ushort(file->fh, varid, (size_t *) start, (size_t *) count, (ptrdiff_t *) stride, (ptrdiff_t *) imap,  buf);;
             }
             break;
@@ -1736,7 +1736,7 @@ int PIOc_get_varm_ushort (int ncid, int varid, const PIO_Offset start[], const P
         case PIO_IOTYPE_PNETCDF:
 #ifdef PNET_READ_AND_BCAST
             ncmpi_begin_indep_data(file->fh);
-            if(ios->iomaster){
+            if (ios->iomaster == MPI_ROOT){
                 ierr = ncmpi_get_varm_ushort(file->fh, varid, start, count, stride, imap,  buf);;
             };
             ncmpi_end_indep_data(file->fh);
@@ -1787,7 +1787,7 @@ int PIOc_get_varm_longlong (int ncid, int varid, const PIO_Offset start[], const
     ierr = PIO_NOERR;
 
     if(ios->async_interface && ! ios->ioproc){
-        if(ios->compmaster)
+        if (ios->compmaster == MPI_ROOT)
             mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
         mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
     }
@@ -1804,7 +1804,7 @@ int PIOc_get_varm_longlong (int ncid, int varid, const PIO_Offset start[], const
 #endif
         case PIO_IOTYPE_NETCDF:
             bcast = true;
-            if(ios->iomaster){
+            if (ios->iomaster == MPI_ROOT){
                 ierr = nc_get_varm_longlong(file->fh, varid, (size_t *) start, (size_t *) count, (ptrdiff_t *) stride, (ptrdiff_t *) imap,  buf);;
             }
             break;
@@ -1813,7 +1813,7 @@ int PIOc_get_varm_longlong (int ncid, int varid, const PIO_Offset start[], const
         case PIO_IOTYPE_PNETCDF:
 #ifdef PNET_READ_AND_BCAST
             ncmpi_begin_indep_data(file->fh);
-            if(ios->iomaster){
+            if (ios->iomaster == MPI_ROOT){
                 ierr = ncmpi_get_varm_longlong(file->fh, varid, start, count, stride, imap,  buf);;
             };
             ncmpi_end_indep_data(file->fh);
@@ -1864,7 +1864,7 @@ int PIOc_get_varm_short (int ncid, int varid, const PIO_Offset start[], const PI
     ierr = PIO_NOERR;
 
     if(ios->async_interface && ! ios->ioproc){
-        if(ios->compmaster)
+        if (ios->compmaster == MPI_ROOT)
             mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
         mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
     }
@@ -1881,7 +1881,7 @@ int PIOc_get_varm_short (int ncid, int varid, const PIO_Offset start[], const PI
 #endif
         case PIO_IOTYPE_NETCDF:
             bcast = true;
-            if(ios->iomaster){
+            if (ios->iomaster == MPI_ROOT){
                 ierr = nc_get_varm_short(file->fh, varid, (size_t *) start, (size_t *) count, (ptrdiff_t *) stride, (ptrdiff_t *) imap,  buf);;
             }
             break;
@@ -1890,7 +1890,7 @@ int PIOc_get_varm_short (int ncid, int varid, const PIO_Offset start[], const PI
         case PIO_IOTYPE_PNETCDF:
 #ifdef PNET_READ_AND_BCAST
             ncmpi_begin_indep_data(file->fh);
-            if(ios->iomaster){
+            if (ios->iomaster == MPI_ROOT){
                 ierr = ncmpi_get_varm_short(file->fh, varid, start, count, stride, imap,  buf);;
             };
             ncmpi_end_indep_data(file->fh);
@@ -1941,7 +1941,7 @@ int PIOc_get_varm_ulonglong (int ncid, int varid, const PIO_Offset start[], cons
     ierr = PIO_NOERR;
 
     if(ios->async_interface && ! ios->ioproc){
-        if(ios->compmaster)
+        if (ios->compmaster == MPI_ROOT)
             mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
         mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
     }
@@ -1958,7 +1958,7 @@ int PIOc_get_varm_ulonglong (int ncid, int varid, const PIO_Offset start[], cons
 #endif
         case PIO_IOTYPE_NETCDF:
             bcast = true;
-            if(ios->iomaster){
+            if (ios->iomaster == MPI_ROOT){
                 ierr = nc_get_varm_ulonglong(file->fh, varid, (size_t *) start, (size_t *) count, (ptrdiff_t *) stride, (ptrdiff_t *) imap,  buf);;
             }
             break;
@@ -1967,7 +1967,7 @@ int PIOc_get_varm_ulonglong (int ncid, int varid, const PIO_Offset start[], cons
         case PIO_IOTYPE_PNETCDF:
 #ifdef PNET_READ_AND_BCAST
             ncmpi_begin_indep_data(file->fh);
-            if(ios->iomaster){
+            if (ios->iomaster == MPI_ROOT){
                 ierr = ncmpi_get_varm_ulonglong(file->fh, varid, start, count, stride, imap,  buf);;
             };
             ncmpi_end_indep_data(file->fh);

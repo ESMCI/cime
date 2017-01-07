@@ -54,7 +54,7 @@ int PIOc_def_var_deflate(int ncid, int varid, int shuffle, int deflate,
         {
             int msg = PIO_MSG_DEF_VAR_DEFLATE;
 
-            if (ios->compmaster)
+            if (ios->compmaster == MPI_ROOT)
                 mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
 
             if (!mpierr)
@@ -138,7 +138,7 @@ int PIOc_inq_var_deflate(int ncid, int varid, int *shufflep, int *deflatep,
             char deflate_present = deflatep ? true : false;
             char deflate_level_present = deflate_levelp ? true : false;
 
-            if (ios->compmaster)
+            if (ios->compmaster == MPI_ROOT)
                 mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
 
             if (!mpierr)
@@ -257,7 +257,7 @@ int PIOc_def_var_chunking(int ncid, int varid, int storage,
             int msg = PIO_MSG_DEF_VAR_CHUNKING;
             char chunksizes_present = chunksizesp ? true : false;
 
-            if (ios->compmaster)
+            if (ios->compmaster == MPI_ROOT)
                 mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
 
             if (!mpierr)
@@ -380,7 +380,7 @@ int PIOc_inq_var_chunking(int ncid, int varid, int *storagep, PIO_Offset *chunks
             char storage_present = storagep ? true : false;
             char chunksizes_present = chunksizesp ? true : false;
 
-            if (ios->compmaster)
+            if (ios->compmaster == MPI_ROOT)
                 mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
 
             if (!mpierr)
@@ -495,7 +495,7 @@ int PIOc_def_var_fill(int ncid, int varid, int no_fill, const void *fill_value)
         {
             int msg = PIO_MSG_SET_FILL;
 
-            if (ios->compmaster)
+            if (ios->compmaster == MPI_ROOT)
                 mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
 
             if (!mpierr)
@@ -571,7 +571,7 @@ int PIOc_def_var_endian(int ncid, int varid, int endian)
         if (!ios->ioproc)
         {
             int msg = PIO_MSG_DEF_VAR_ENDIAN;
-            if (ios->compmaster)
+            if (ios->compmaster == MPI_ROOT)
                 mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
 
             if (!mpierr)
@@ -650,7 +650,7 @@ int PIOc_inq_var_endian(int ncid, int varid, int *endianp)
             int msg = PIO_MSG_INQ_VAR_ENDIAN;
             char endian_present = endianp ? true : false;
 
-            if (ios->compmaster)
+            if (ios->compmaster == MPI_ROOT)
                 mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
 
             if (!mpierr)
@@ -741,7 +741,7 @@ int PIOc_set_chunk_cache(int iosysid, int iotype, PIO_Offset size, PIO_Offset ne
         {
             int msg = PIO_MSG_SET_CHUNK_CACHE; /* Message for async notification. */
 
-            if (ios->compmaster)
+            if (ios->compmaster == MPI_ROOT)
                 mpierr = MPI_Send(&msg, 1, MPI_INT, ios->ioroot, 1, ios->union_comm);
 
             if (!mpierr)
@@ -842,7 +842,7 @@ int PIOc_get_chunk_cache(int iosysid, int iotype, PIO_Offset *sizep, PIO_Offset 
             char nelems_present = nelemsp ? true : false;
             char preemption_present = preemptionp ? true : false;
 
-            if (ios->compmaster)
+            if (ios->compmaster == MPI_ROOT)
                 mpierr = MPI_Send(&msg, 1, MPI_INT, ios->ioroot, 1, ios->union_comm);
 
             if (!mpierr)
@@ -957,7 +957,7 @@ int PIOc_set_var_chunk_cache(int ncid, int varid, PIO_Offset size, PIO_Offset ne
         {
             int msg = PIO_MSG_SET_VAR_CHUNK_CACHE;
 
-            if (ios->compmaster)
+            if (ios->compmaster == MPI_ROOT)
                 mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
 
             if (!mpierr)
@@ -1048,7 +1048,7 @@ int PIOc_get_var_chunk_cache(int ncid, int varid, PIO_Offset *sizep, PIO_Offset 
             char nelems_present = nelemsp ? true : false;
             char preemption_present = preemptionp ? true : false;
 
-            if (ios->compmaster)
+            if (ios->compmaster == MPI_ROOT)
                 mpierr = MPI_Send(&msg, 1, MPI_INT, ios->ioroot, 1, ios->union_comm);
 
             if (!mpierr)
