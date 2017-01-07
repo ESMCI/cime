@@ -698,7 +698,7 @@ int PIOc_freedecomp(int iosysid, int ioid)
     if (iodesc->rtype)
     {
         for (i = 0; i < iodesc->nrecvs; i++)
-            if (iodesc->rtype[i] != MPI_DATATYPE_NULL)
+            if (iodesc->rtype[i] != PIO_DATATYPE_NULL)
                 if ((mpierr = MPI_Type_free(iodesc->rtype + i)))
                     return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
 
@@ -708,7 +708,7 @@ int PIOc_freedecomp(int iosysid, int ioid)
     if (iodesc->stype)
     {
         for (i = 0; i < iodesc->num_stypes; i++)
-            if (iodesc->stype[i] != MPI_DATATYPE_NULL)
+            if (iodesc->stype[i] != PIO_DATATYPE_NULL)
                 if ((mpierr = MPI_Type_free(iodesc->stype + i)))
                     return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
 
