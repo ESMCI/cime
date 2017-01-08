@@ -72,5 +72,13 @@ int check_nc_sample_2(int iosysid, int format, char *filename, int my_rank, int 
 int get_iotypes(int *num_flavors, int *flavors);
 int get_iotype_name(int iotype, char *name);
 int pio_test_finalize(MPI_Comm *test_comm);
-
+int test_async2(int my_rank, int num_flavors, int *flavor, MPI_Comm test_comm,
+                int component_count, int num_io_procs, int target_ntasks, char *test_name);
+int test_no_async2(int my_rank, int num_flavors, int *flavor, MPI_Comm test_comm, int target_ntasks,
+                   int x_dim_len, int y_dim_len);
+int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm test_comm,
+             int async);
+int run_test_main(int argc, char **argv, int min_ntasks, int max_ntasks,
+                  int log_level, char *test_name, int *dim_len, int component_count,
+                  int num_io_procs);
 #endif /* _PIO_TESTS_H */

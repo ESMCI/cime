@@ -189,7 +189,7 @@ int pio_test_init2(int argc, char **argv, int *my_rank, int *ntasks,
     }
 
     /* Turn on logging. */
-    printf("%d setting log level\n", *my_rank);    
+    printf("%d setting log level to %d\n", *my_rank, log_level);    
     if ((ret = PIOc_set_log_level(log_level)))
         return ret;
     printf("%d done setting log level\n", *my_rank);    
@@ -887,3 +887,5 @@ check_nc_sample_2(int iosysid, int format, char *filename, int my_rank, int *nci
 
     return 0;
 }
+
+
