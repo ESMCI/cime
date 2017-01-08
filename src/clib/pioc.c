@@ -1218,9 +1218,8 @@ int PIOc_Init_Async(MPI_Comm world, int num_io_procs, int *io_proc_list,
         }
 
 
-        /* If this is the IO component, remember the
-         * comm. Otherwise make a copy of the comm for each
-         * component. */
+        /* If this is the IO component, make a copy of the IO comm for
+         * each computational component. */
         if (in_io)
             if (cmp)
             {
