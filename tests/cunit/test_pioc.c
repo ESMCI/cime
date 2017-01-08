@@ -66,15 +66,16 @@ PIO_Offset chunksize[NDIM] = {2, X_DIM_LEN/2, Y_DIM_LEN/2};
 #define DIM_LEN 4
 
 /* Create the decomposition to divide the data between the 4 tasks. */
-int create_decomposition(int ntasks, int my_rank, int iosysid, int *ioid)
+int create_decomposition(int ntasks, int my_rank, int iosysid, int dim1_len, int *ioid)
 {
+#define NDIM1 1
     PIO_Offset elements_per_pe;     /* Array elements per processing unit. */
     PIO_Offset *compdof;  /* The decomposition mapping. */
-    int dim_len[NDIM1] = {DIM_LEN};
+    int dim_len[NDIM1] = {dim1_len};
     int ret;
 
     /* How many data elements per task? */
-    elements_per_pe = DIM_LEN / ntasks;
+    elements_per_pe = dim1_len / ntasks;
 
     /* Allocate space for the decomposition array. */
     if (!(compdof = malloc(elements_per_pe * sizeof(PIO_Offset))))
@@ -127,7 +128,7 @@ int check_darray_file(int iosysid, int ntasks, int my_rank, char *filename)
         return ERR_WRONG;
 
     /* Decompose the data over the tasks. */
-    if ((ret = create_decomposition(ntasks, my_rank, iosysid, &ioid)))
+    if ((ret = create_decomposition(ntasks, my_rank, iosysid, DIM_LEN, &ioid)))
         return ret;
 
     /* Read data. */
@@ -976,7 +977,7 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
         
         printf("%d Testing darray. async = %d\n", my_rank, async);        
         /* Decompose the data over the tasks. */
-        if ((ret = create_decomposition(my_test_size, my_rank, iosysid, &ioid)))
+        if ((ret = create_decomposition(my_test_size, my_rank, iosysid, DIM_LEN, &ioid)))
             return ret;
 
         printf("%d Calling write_decomp. async = %d\n", my_rank, async);        
@@ -1021,169 +1022,9 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
     return PIO_NOERR;
 }
 
-/* Test without async.
- *
- * @param my_rank rank of the task.
- * @param num_flavors the number of PIO IO types that will be tested.
- * @param flavors array of the PIO IO types that will be tested.
- * @param test_comm communicator with all test tasks.
- * @returns 0 for success error code otherwise.
- */
-int test_no_async(int my_rank, int num_flavors, int *flavor, MPI_Comm test_comm)
-{
-    int niotasks;    /* Number of processors that will do IO. */
-    int ioproc_stride = 1;    /* Stride in the mpi rank between io tasks. */
-    int numAggregator = 0;    /* Number of the aggregator? Always 0 in this test. */
-    int ioproc_start = 0;     /* Zero based rank of first processor to be used for I/O. */
-    PIO_Offset elements_per_pe; /* Array index per processing unit. */
-    int iosysid;  /* The ID for the parallel I/O system. */
-    int ioid;     /* The I/O description ID. */
-    PIO_Offset *compdof; /* The decomposition mapping. */
-    int ret;      /* Return code. */
-
-    /* keep things simple - 1 iotask per MPI process */
-    niotasks = TARGET_NTASKS;
-
-    /* Initialize the PIO IO system. This specifies how
-     * many and which processors are involved in I/O. */
-    if ((ret = PIOc_Init_Intracomm(test_comm, niotasks, ioproc_stride,
-                                   ioproc_start, PIO_REARR_SUBSET, &iosysid)))
-        ERR(ret);
-
-    /* Describe the decomposition. This is a 1-based array, so add 1! */
-    elements_per_pe = X_DIM_LEN * Y_DIM_LEN / TARGET_NTASKS;
-    if (!(compdof = malloc(elements_per_pe * sizeof(PIO_Offset))))
-        return PIO_ENOMEM;
-    for (int i = 0; i < elements_per_pe; i++)
-        compdof[i] = my_rank * elements_per_pe + i + 1;
-
-    /* Create the PIO decomposition for this test. */
-    printf("%d Creating decomposition...\n", my_rank);
-    if ((ret = PIOc_InitDecomp(iosysid, PIO_FLOAT, 2, &dim_len[1], (PIO_Offset)elements_per_pe,
-                               compdof, &ioid, NULL, NULL, NULL)))
-        ERR(ret);
-    free(compdof);
-
-    /* Run tests. */
-    printf("%d Running tests...\n", my_rank);
-    if ((ret = test_all(iosysid, num_flavors, flavor, my_rank, test_comm, 0)))
-        return ret;
-
-    /* Free the PIO decomposition. */
-    printf("%d Freeing PIO decomposition...\n", my_rank);
-    if ((ret = PIOc_freedecomp(iosysid, ioid)))
-        ERR(ret);
-
-    /* Finalize PIO system. */
-    if ((ret = PIOc_finalize(iosysid)))
-        ERR(ret);
-
-    return PIO_NOERR;
-}
-
-/* Test with async.
- *
- * @param my_rank rank of the task.
- * @param nprocs the size of the communicator.
- * @param num_flavors the number of PIO IO types that will be tested.
- * @param flavors array of the PIO IO types that will be tested.
- * @param test_comm communicator with all test tasks.
- * @returns 0 for success error code otherwise.
- */
-int test_async(int my_rank, int num_flavors, int *flavor, MPI_Comm test_comm)
-{
-    int niotasks;            /* Number of processors that will do IO. */
-    int ioproc_stride = 1;   /* Stride in the mpi rank between io tasks. */
-    int ioproc_start = 0;    /* 0 based rank of first task to be used for I/O. */
-    PIO_Offset elements_per_pe;    /* Array index per processing unit. */
-    int iosysid[COMPONENT_COUNT];  /* The ID for the parallel I/O system. */
-    int ioid;                      /* The I/O description ID. */
-    PIO_Offset *compdof;           /* The decomposition mapping. */
-    int num_procs[COMPONENT_COUNT + 1] = {1, TARGET_NTASKS - 1}; /* Num procs in each component. */
-    MPI_Comm io_comm;              /* Will get a duplicate of IO communicator. */
-    MPI_Comm comp_comm[COMPONENT_COUNT]; /* Will get duplicates of computation communicators. */
-    int mpierr;  /* Return code from MPI functions. */
-    int ret;     /* Return code. */
-
-    /* Is the current process a computation task? */
-    int comp_task = my_rank < NUM_IO_PROCS ? 0 : 1;
-    printf("%d comp_task = %d\n", my_rank, comp_task);
-
-    /* Initialize the IO system. */
-    if ((ret = PIOc_Init_Async(test_comm, NUM_IO_PROCS, NULL, COMPONENT_COUNT,
-                               num_procs, NULL, &io_comm, comp_comm, iosysid)))
-        ERR(ERR_INIT);
-    for (int c = 0; c < COMPONENT_COUNT; c++)
-        printf("%d iosysid[%d] = %d\n", my_rank, c, iosysid[c]);
-
-    /* All the netCDF calls are only executed on the computation
-     * tasks. The IO tasks have not returned from PIOc_Init_Intercomm,
-     * and when the do, they should go straight to finalize. */
-    if (comp_task)
-    {
-        for (int c = 0; c < COMPONENT_COUNT; c++)
-        {
-            printf("%d Running tests...\n", my_rank);
-            if ((ret = test_all(iosysid[c], num_flavors, flavor, my_rank, comp_comm[0], 1)))
-                return ret;
-
-            /* Finalize the IO system. Only call this from the computation tasks. */
-            printf("%d %s Freeing PIO resources\n", my_rank, TEST_NAME);
-            if ((ret = PIOc_finalize(iosysid[c])))
-                ERR(ret);
-            printf("%d %s PIOc_finalize completed for iosysid = %d\n", my_rank, TEST_NAME,
-                   iosysid[c]);
-            if ((mpierr = MPI_Comm_free(&comp_comm[c])))
-                MPIERR(mpierr);
-        }
-    }
-    else
-    {
-        if ((mpierr = MPI_Comm_free(&io_comm)))
-            MPIERR(mpierr);
-    } /* endif comp_task */
-
-    return PIO_NOERR;
-}
-
 /* Run Tests for NetCDF-4 Functions. */
 int main(int argc, char **argv)
 {
-    int my_rank;     /* Zero-based rank of processor. */
-    int ntasks;      /* Number of processors involved in current execution. */
-    int num_flavors; /* Number of PIO netCDF flavors in this build. */
-    int flavor[NUM_FLAVORS]; /* iotypes for the supported netCDF IO flavors. */
-    MPI_Comm test_comm; /* A communicator for this test. */
-    int ret;         /* Return code. */
-
-    /* Initialize test. */
-    if ((ret = pio_test_init2(argc, argv, &my_rank, &ntasks, MIN_NTASKS,
-                              TARGET_NTASKS, 0, &test_comm)))
-        ERR(ERR_INIT);
-
-    /* Only do something on TARGET_NTASKS tasks. */
-    if (my_rank < TARGET_NTASKS)
-    {
-        /* Figure out iotypes. */
-        if ((ret = get_iotypes(&num_flavors, flavor)))
-            ERR(ret);
-
-        /* Run tests without async feature. */
-        if ((ret = test_no_async(my_rank, num_flavors, flavor, test_comm)))
-            return ret;
-
-        /* Run tests with async. */
-        if ((ret = test_async(my_rank, num_flavors, flavor, test_comm)))
-            return ret;
-
-    } /* endif my_rank < TARGET_NTASKS */
-
-    /* Finalize the MPI library. */
-    printf("%d %s Finalizing...\n", my_rank, TEST_NAME);
-    if ((ret = pio_test_finalize(&test_comm)))
-        return ret;
-
-    printf("%d %s SUCCESS!!\n", my_rank, TEST_NAME);
-
-    return 0;
+    return run_test_main(argc, argv, MIN_NTASKS, TARGET_NTASKS, 0,
+                         TEST_NAME, dim_len, COMPONENT_COUNT, NUM_IO_PROCS);
 }
