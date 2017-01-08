@@ -270,9 +270,7 @@ int CalcStartandCount(int basetype, int ndims, const int *gdims, int num_io_proc
         basesize = sizeof(double);
         break;
     default:
-#ifndef TESTCALCDECOMP
         piodie("Invalid basetype ",__FILE__,__LINE__);
-#endif
         break;
     }
     minblocksize = minbytes / basesize;
@@ -281,7 +279,7 @@ int CalcStartandCount(int basetype, int ndims, const int *gdims, int num_io_proc
     for (i = 0; i < ndims; i++)
         pgdims *= (long int)gdims[i];
     p = pgdims;
-    use_io_procs = max(1, min((int) ((float)p / (float)minblocksize + 0.5), num_io_procs));
+    use_io_procs = max(1, min((int)((float)p / (float)minblocksize + 0.5), num_io_procs));
     converged = 0;
     for (i = 0; i < ndims; i++)
     {
@@ -320,22 +318,14 @@ int CalcStartandCount(int basetype, int ndims, const int *gdims, int num_io_proc
 
             ioprocs = use_io_procs;
             tiorank = iorank;
-#ifdef TESTCALCDECOMP
-            if(myiorank==0)      printf("%d use_io_procs %d ldims %d\n",__LINE__,use_io_procs,ldims);
-#endif
             for (i = 0; i <= ldims; i++)
             {
                 if (gdims[i] >= ioprocs)
                 {
                     computestartandcount(gdims[i], ioprocs, tiorank, start + i, kount + i);
-#ifdef TESTCALCDECOMP
-                    if(myiorank==0)      printf("%d tiorank %d i %d start %d count %d\n",__LINE__,tiorank,i,start[i],kount[i]);
-#endif
                     if (start[i] + kount[i] > gdims[i] + 1)
                     {
-#ifndef TESTCALCDECOMP
                         piodie("Start plus count exceeds dimension bound",__FILE__,__LINE__);
-#endif
                     }
                 }
                 else if(gdims[i] > 1)
@@ -377,9 +367,6 @@ int CalcStartandCount(int basetype, int ndims, const int *gdims, int num_io_proc
 
         if (!converged)
         {
-#ifdef TESTCALCDECOMP
-            printf("%d start %d %d count %d %d tpsize %ld\n",__LINE__,mystart[0],mystart[1],mykount[0],mykount[1],tpsize);
-#endif
             tpsize = 0;
             use_io_procs--;
         }
