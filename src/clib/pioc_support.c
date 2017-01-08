@@ -34,10 +34,6 @@ extern int pio_next_ncid;
 /** Default settings for swap memory. */
 static pio_swapm_defaults swapm_defaults;
 
-/** If this is set to true, then InitDecomp() will save the
- * decomposition to file. */
-bool PIO_Save_Decomps = false;
-
 /**
  * Return a string description of an error code. If zero is passed,
  * the errmsg will be "No error".

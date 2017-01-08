@@ -336,28 +336,6 @@ int PIOc_InitDecomp(int iosysid, int basetype, int ndims, const int *dims, int m
     if (!(ios = pio_get_iosystem_from_id(iosysid)))
         return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
 
-    /* If desired, save the computed decompositions to
-     * files. PIO_Save_Decomps is a global var set in
-     * pioc_support.c. This used to be set by environment variable and
-     * needs to be settable for debug purposes. */
-    if (PIO_Save_Decomps)
-    {
-        char filename[NC_MAX_NAME];
-        if (ios->num_comptasks < 100)
-            sprintf(filename, "piodecomp%2.2dtasks%2.2ddims%2.2d.dat", ios->num_comptasks,
-		    ndims, counter);
-        else if (ios->num_comptasks < 10000)
-            sprintf(filename, "piodecomp%4.4dtasks%2.2ddims%2.2d.dat", ios->num_comptasks,
-		    ndims, counter);
-        else
-            sprintf(filename, "piodecomp%6.6dtasks%2.2ddims%2.2d.dat", ios->num_comptasks,
-		    ndims, counter);
-
-	LOG((2, "saving decomp map to %s", filename));
-        PIOc_writemap(filename, ndims, dims, maplen, (PIO_Offset *)compmap, ios->comp_comm);
-        counter++;
-    }
-
     /* Allocate space for the iodesc info. */
     if (!(iodesc = malloc_iodesc(basetype, ndims)))
 	piodie("Out of memory", __FILE__, __LINE__);
