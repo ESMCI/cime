@@ -200,4 +200,3 @@ int run_test_main(int argc, char **argv, int min_ntasks, int max_ntasks,
     printf("%d %s SUCCESS!!\n", my_rank, test_name);
     return 0;
 }
-

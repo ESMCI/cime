@@ -81,5 +81,8 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
 int run_test_main(int argc, char **argv, int min_ntasks, int max_ntasks,
                   int log_level, char *test_name, int *dim_len, int component_count,
                   int num_io_procs);
+int run_test_main1(int argc, char **argv, int min_ntasks, int max_ntasks,
+                   int log_level, char *test_name, int *dim_len, int component_count,
+                   int num_io_procs);
 
 #endif /* _PIO_TESTS_H */

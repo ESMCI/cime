@@ -815,49 +815,11 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
 /* Run Tests for NetCDF-4 Functions. */
 int main(int argc, char **argv)
 {
-    int my_rank;     /* Zero-based rank of processor. */
-    int ntasks;      /* Number of processors involved in current execution. */
-    int num_flavors; /* Number of PIO netCDF flavors in this build. */
-    int flavor[NUM_FLAVORS]; /* iotypes for the supported netCDF IO flavors. */
-    MPI_Comm test_comm; /* A communicator for this test. */
-    int ret;         /* Return code. */
-
     /* Initialize data arrays with sample data. */
     init_arrays();
 
-    /* Initialize test. */
-    if ((ret = pio_test_init2(argc, argv, &my_rank, &ntasks, MIN_NTASKS,
-                              TARGET_NTASKS, 0, &test_comm)))
-        ERR(ERR_INIT);
-
-    /* Only do something on TARGET_NTASKS tasks. */
-    if (my_rank < TARGET_NTASKS)
-    {
-        /* Figure out iotypes. */
-        if ((ret = get_iotypes(&num_flavors, flavor)))
-            ERR(ret);
-
-        /* Run tests without async feature. */
-        if ((ret = test_no_async2(my_rank, num_flavors, flavor, test_comm, TARGET_NTASKS,
-                                  X_DIM_LEN, Y_DIM_LEN)))
-            return ret;
-
-        /* Run tests with async. */
-        if ((ret = test_async2(my_rank, num_flavors, flavor, test_comm, COMPONENT_COUNT,
-                               NUM_IO_PROCS, TARGET_NTASKS, TEST_NAME)))
-            return ret;
-
-    } /* endif my_rank < TARGET_NTASKS */
-
-    /* Finalize the MPI library. */
-    printf("%d %s Finalizing...\n", my_rank, TEST_NAME);
-    if ((ret = pio_test_finalize(&test_comm)))
-        return ret;
-
-    printf("%d %s SUCCESS!!\n", my_rank, TEST_NAME);
-
-    /* return run_test_main(argc, argv, MIN_NTASKS, TARGET_NTASKS, 3, */
-    /*                      TEST_NAME, dim_len, COMPONENT_COUNT, NUM_IO_PROCS); */
+    return run_test_main(argc, argv, MIN_NTASKS, TARGET_NTASKS, 3,
+                         TEST_NAME, dim_len, COMPONENT_COUNT, NUM_IO_PROCS);
 
     return 0;
 }
