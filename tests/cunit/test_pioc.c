@@ -485,12 +485,35 @@ int define_metadata(int ncid, int my_rank)
 {
     int dimids[NDIM]; /* The dimension IDs. */
     int varid; /* The variable ID. */
+    char too_long_name[PIO_MAX_NAME * 5 + 1];
     int ret;
 
+    /* Check invalid parameters. */
+    memset(too_long_name, 74, PIO_MAX_NAME * 5);
+    too_long_name[PIO_MAX_NAME * 5] = 0;
+    if (PIOc_def_dim(ncid + 1, dim_name[0], (PIO_Offset)dim_len[0], &dimids[0]) != PIO_EBADID)
+        ERR(ERR_WRONG);
+    if (PIOc_def_dim(ncid, NULL, (PIO_Offset)dim_len[0], &dimids[0]) != PIO_EINVAL)
+        ERR(ERR_WRONG);
+    if (PIOc_def_dim(ncid, too_long_name, (PIO_Offset)dim_len[0], &dimids[0]) != PIO_EINVAL)
+        ERR(ERR_WRONG);
+
+    /* Define dimensions. */
     for (int d = 0; d < NDIM; d++)
         if ((ret = PIOc_def_dim(ncid, dim_name[d], (PIO_Offset)dim_len[d], &dimids[d])))
             ERR(ret);
 
+    /* Check invalid parameters. */
+    if (PIOc_def_var(ncid + 1, VAR_NAME, PIO_INT, NDIM, dimids, &varid) != PIO_EBADID)
+        ERR(ERR_WRONG);
+    if (PIOc_def_var(ncid, NULL, PIO_INT, NDIM, dimids, &varid) != PIO_EINVAL)
+        ERR(ERR_WRONG);
+    if (PIOc_def_var(ncid, VAR_NAME, PIO_INT, NDIM, dimids, NULL) != PIO_EINVAL)
+        ERR(ERR_WRONG);
+    if (PIOc_def_var(ncid, too_long_name, PIO_INT, NDIM, dimids, NULL) != PIO_EINVAL)
+        ERR(ERR_WRONG);
+
+    /* Define a variable. */
     if ((ret = PIOc_def_var(ncid, VAR_NAME, PIO_INT, NDIM, dimids, &varid)))
         ERR(ret);
 
@@ -508,6 +531,10 @@ int check_metadata(int ncid, int my_rank)
 
     /* Check how many dims, vars, global atts there are, and the id of
      * the unlimited dimension. */
+    if (PIOc_inq(ncid + 1, &ndims, &nvars, &ngatts, &unlimdimid) != PIO_EBADID)
+        return ERR_WRONG;
+    if ((ret = PIOc_inq(ncid, NULL, NULL, NULL, NULL)))
+        return ret;
     if ((ret = PIOc_inq(ncid, &ndims, &nvars, &ngatts, &unlimdimid)))
         return ret;
     if (ndims != NDIM || nvars != 1 || ngatts != 0 || unlimdimid != 0)
@@ -516,6 +543,12 @@ int check_metadata(int ncid, int my_rank)
     /* Check the dimensions. */
     for (int d = 0; d < NDIM; d++)
     {
+        if (PIOc_inq_dim(ncid + 1, d, name_in, &len_in) != PIO_EBADID)
+            ERR(ERR_WRONG);
+        if (PIOc_inq_dim(ncid, d + 40, name_in, &len_in) != PIO_EBADDIM)
+            ERR(ERR_WRONG);
+        if ((ret = PIOc_inq_dim(ncid, d, NULL, NULL)))
+            ERR(ret);
         if ((ret = PIOc_inq_dim(ncid, d, name_in, &len_in)))
             ERR(ret);
         if (len_in != dim_len[d] || strcmp(name_in, dim_name[d]))
@@ -523,6 +556,12 @@ int check_metadata(int ncid, int my_rank)
     }
 
     /* Check the variable. */
+    if (PIOc_inq_var(ncid + 1, 0, name_in, &xtype_in, &ndims, dimid, &natts) != PIO_EBADID)
+        ERR(ERR_WRONG);
+    if (PIOc_inq_var(ncid, 45, name_in, &xtype_in, &ndims, dimid, &natts) != PIO_ENOTVAR)
+        ERR(ERR_WRONG);
+    if ((ret = PIOc_inq_var(ncid, 0, name_in, NULL, NULL, NULL, NULL)))
+        ERR(ret);
     if ((ret = PIOc_inq_var(ncid, 0, name_in, &xtype_in, &ndims, dimid, &natts)))
         ERR(ret);
     if (strcmp(name_in, VAR_NAME) || xtype_in != PIO_INT || ndims != NDIM ||
@@ -653,11 +692,11 @@ int test_files(int iosysid, int num_flavors, int *flavor, int my_rank)
 
         /* Testing some invalid parameters. */
         if (PIOc_create(iosysid + 1, filename, mode, &ncid) != PIO_EBADID)
-          return ERR_WRONG;
+            return ERR_WRONG;
         if (PIOc_create(iosysid, filename, mode, NULL) != PIO_EINVAL)
-          return ERR_WRONG;
+            return ERR_WRONG;
         if (PIOc_create(iosysid, NULL, mode, &ncid) != PIO_EINVAL)
-          return ERR_WRONG;
+            return ERR_WRONG;
 
         /* Create the netCDF output file. */
         printf("%d Creating sample file %s with format %d...\n",
@@ -824,25 +863,18 @@ int test_nc4(int iosysid, int num_flavors, int *flavor, int my_rank)
         printf("%d Setting chunk cache for file %s with format %d...\n",
                my_rank, filename, flavor[fmt]);
 
-        /* Try to set the chunk cache with invalid preemption to check
-         * error handling. Can't do this because correct bahavior is
-         * to MPI_Abort, and code now does that. But how to test? */
-        /* chunk_cache_preemption = 50.0; */
-        /* ret = PIOc_set_chunk_cache(iosysid, flavor[fmt], chunk_cache_size, */
-        /*                            chunk_cache_nelems, chunk_cache_preemption); */
+        /* Try to set the chunk cache. */
+        chunk_cache_preemption = 0.5;
+        ret = PIOc_set_chunk_cache(iosysid, flavor[fmt], chunk_cache_size,
+                                   chunk_cache_nelems, chunk_cache_preemption);
 
-        /* printf("%d Set chunk cache ret = %d.\n", my_rank, ret); */
-
-        /* /\* What result did we expect to get? *\/ */
-        /* expected_ret = flavor[fmt] == PIO_IOTYPE_NETCDF4C || flavor[fmt] == PIO_IOTYPE_NETCDF4P ? */
-        /*     NC_EINVAL : NC_ENOTNC4; */
-
-        /* /\* Check the result. *\/ */
-        /* if (ret != expected_ret) */
-        /*     ERR(ERR_AWFUL); */
+        /* What result did we expect to get? */
+        expected_ret = flavor[fmt] == PIO_IOTYPE_NETCDF4C || flavor[fmt] == PIO_IOTYPE_NETCDF4P ?
+            PIO_NOERR : PIO_ENOTNC4;
+        if (ret != expected_ret)
+            ERR(ERR_AWFUL);
 
         /* Try to set the chunk cache for netCDF-4 iotypes. */
-        chunk_cache_preemption = 0.5;
         if (flavor[fmt] == PIO_IOTYPE_NETCDF4C || flavor[fmt] == PIO_IOTYPE_NETCDF4P)
             if ((ret = PIOc_set_chunk_cache(iosysid, flavor[fmt], chunk_cache_size,
                                             chunk_cache_nelems, chunk_cache_preemption)))
@@ -880,6 +912,30 @@ int test_nc4(int iosysid, int num_flavors, int *flavor, int my_rank)
         if ((ret = PIOc_def_var(ncid, VAR_NAME, PIO_FLOAT, NDIM, dimids, &varid)))
             ERR(ret);
 
+        /* Check that invalid arguments are properly rejected. */
+        if (PIOc_def_var_chunking(ncid + 1, 0, NC_CHUNKED, chunksize) != PIO_EBADID)
+            ERR(ERR_AWFUL);
+        if (PIOc_inq_var_chunking(ncid + 1, 0, &storage, my_chunksize) != PIO_EBADID)
+            ERR(ERR_AWFUL);
+        if (PIOc_inq_var_deflate(ncid + 1, 0, &shuffle, &deflate, &deflate_level) != PIO_EBADID)
+            ERR(ret);
+        if (PIOc_def_var_endian(ncid + 1, 0, 1) != PIO_EBADID)
+            ERR(ERR_AWFUL);
+        if (PIOc_inq_var_endian(ncid + 1, 0, &endianness) != PIO_EBADID)
+            ERR(ERR_AWFUL);
+        if (PIOc_set_var_chunk_cache(ncid + 1, 0, VAR_CACHE_SIZE, VAR_CACHE_NELEMS,
+                                     VAR_CACHE_PREEMPTION) != PIO_EBADID)
+            ERR(ERR_AWFUL);
+        if (PIOc_get_var_chunk_cache(ncid + 1, 0, &var_cache_size, &var_cache_nelems,
+                                     &var_cache_preemption) != PIO_EBADID)
+            ERR(ERR_AWFUL);
+        if (PIOc_set_chunk_cache(iosysid + 1, flavor[fmt], chunk_cache_size, chunk_cache_nelems,
+                                 chunk_cache_preemption) != PIO_EBADID)
+            ERR(ERR_AWFUL);
+        if (PIOc_get_chunk_cache(iosysid + 1, flavor[fmt], &chunk_cache_size,
+                                 &chunk_cache_nelems, &chunk_cache_preemption) != PIO_EBADID)
+            ERR(ERR_AWFUL);
+
         /* For netCDF-4 files, set the chunksize to improve performance. */
         if (flavor[fmt] == PIO_IOTYPE_NETCDF4C || flavor[fmt] == PIO_IOTYPE_NETCDF4P)
         {
@@ -889,11 +945,15 @@ int test_nc4(int iosysid, int num_flavors, int *flavor, int my_rank)
 
             /* Check that the inq_varname function works. */
             printf("%d Checking varname\n", my_rank);
-            ret = PIOc_inq_varname(ncid, 0, varname_in);
-            printf("%d ret: %d varname_in: %s\n", my_rank, ret, varname_in);
+            if ((ret = PIOc_inq_varname(ncid, 0, NULL)))
+                ERR(ret);
+            if ((ret = PIOc_inq_varname(ncid, 0, varname_in)))
+                ERR(ret);
 
             /* Check that the inq_var_chunking function works. */
             printf("%d Checking chunksizes\n", my_rank);
+            if ((ret = PIOc_inq_var_chunking(ncid, 0, NULL, NULL)))
+                ERR(ret);
             if ((ret = PIOc_inq_var_chunking(ncid, 0, &storage, my_chunksize)))
                 ERR(ret);
 
@@ -945,35 +1005,33 @@ int test_nc4(int iosysid, int num_flavors, int *flavor, int my_rank)
                 ERR(ERR_AWFUL);
             if (endianness != 1)
                 ERR(ERR_WRONG);
-
         }
         else
         {
             /* Trying to set or inq netCDF-4 settings for non-netCDF-4
              * files results in the PIO_ENOTNC4 error. */
-            if ((ret = PIOc_def_var_chunking(ncid, 0, NC_CHUNKED, chunksize)) != PIO_ENOTNC4)
+            if (PIOc_def_var_chunking(ncid, 0, NC_CHUNKED, chunksize) != PIO_ENOTNC4)
                 ERR(ERR_AWFUL);
-            if ((ret = PIOc_inq_var_chunking(ncid, 0, &storage, my_chunksize)) != PIO_ENOTNC4)
+            if (PIOc_inq_var_chunking(ncid, 0, &storage, my_chunksize) != PIO_ENOTNC4)
                 ERR(ERR_AWFUL);
-            if ((ret = PIOc_inq_var_deflate(ncid, 0, &shuffle, &deflate, &deflate_level))
-                != PIO_ENOTNC4)
+            if (PIOc_inq_var_deflate(ncid, 0, &shuffle, &deflate, &deflate_level) != PIO_ENOTNC4)
                 ERR(ret);
-            if ((ret = PIOc_def_var_endian(ncid, 0, 1)) != PIO_ENOTNC4)
+            if (PIOc_def_var_endian(ncid, 0, 1) != PIO_ENOTNC4)
                 ERR(ERR_AWFUL);
-            if ((ret = PIOc_inq_var_endian(ncid, 0, &endianness)) != PIO_ENOTNC4)
+            if (PIOc_inq_var_endian(ncid, 0, &endianness) != PIO_ENOTNC4)
                 ERR(ERR_AWFUL);
-            if ((ret = PIOc_set_var_chunk_cache(ncid, 0, VAR_CACHE_SIZE, VAR_CACHE_NELEMS,
-                                                VAR_CACHE_PREEMPTION)) != PIO_ENOTNC4)
-                ERR(ret);
-            if ((ret = PIOc_get_var_chunk_cache(ncid, 0, &var_cache_size, &var_cache_nelems,
-                                                &var_cache_preemption)) != PIO_ENOTNC4)
-                ERR(ret);
-            if ((ret = PIOc_set_chunk_cache(iosysid, flavor[fmt], chunk_cache_size, chunk_cache_nelems,
-                                            chunk_cache_preemption)) != PIO_ENOTNC4)
-                ERR(ret);
-            if ((ret = PIOc_get_chunk_cache(iosysid, flavor[fmt], &chunk_cache_size,
-                                            &chunk_cache_nelems, &chunk_cache_preemption)) != PIO_ENOTNC4)
-                ERR(ret);
+            if (PIOc_set_var_chunk_cache(ncid, 0, VAR_CACHE_SIZE, VAR_CACHE_NELEMS,
+                                         VAR_CACHE_PREEMPTION) != PIO_ENOTNC4)
+                ERR(ERR_AWFUL);
+            if (PIOc_get_var_chunk_cache(ncid, 0, &var_cache_size, &var_cache_nelems,
+                                         &var_cache_preemption) != PIO_ENOTNC4)
+                ERR(ERR_AWFUL);
+            if (PIOc_set_chunk_cache(iosysid, flavor[fmt], chunk_cache_size, chunk_cache_nelems,
+                                     chunk_cache_preemption) != PIO_ENOTNC4)
+                ERR(ERR_AWFUL);
+            if (PIOc_get_chunk_cache(iosysid, flavor[fmt], &chunk_cache_size,
+                                     &chunk_cache_nelems, &chunk_cache_preemption) != PIO_ENOTNC4)
+                ERR(ERR_AWFUL);
         }
 
         /* End define mode. */
@@ -1013,7 +1071,7 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
     {
         char filename[NC_MAX_NAME + 1];
         sprintf(filename, "decomp_%d.txt", my_rank);
-        
+
         printf("%d Testing darray. async = %d\n", my_rank, async);
         /* Decompose the data over the tasks. */
         if ((ret = create_decomposition(my_test_size, my_rank, iosysid, DIM_LEN, &ioid)))

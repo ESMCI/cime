@@ -220,8 +220,7 @@ int PIOc_inq_var_deflate(int ncid, int varid, int *shufflep, int *deflatep,
  * every variable dimension.
  * @return PIO_NOERR for success, otherwise an error code.
  */
-int PIOc_def_var_chunking(int ncid, int varid, int storage,
-                          const PIO_Offset *chunksizesp)
+int PIOc_def_var_chunking(int ncid, int varid, int storage, const PIO_Offset *chunksizesp)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Pointer to file information. */
@@ -414,8 +413,11 @@ int PIOc_inq_var_chunking(int ncid, int varid, int *storagep, PIO_Offset *chunks
         if (file->do_io)
 	{
 	    size_t chunksizes_sizet[ndims];
-	    ierr = nc_inq_var_chunking(file->fh, varid, storagep, chunksizes_sizet);
-	    if (!ierr)
+            size_t *my_chunksize_ptr = NULL;
+            if (chunksizesp)
+                my_chunksize_ptr = chunksizes_sizet;
+	    ierr = nc_inq_var_chunking(file->fh, varid, storagep, my_chunksize_ptr);
+	    if (!ierr && chunksizesp)
 		for (int d = 0; d < ndims; d++)
 		{
 		    if (chunksizes_sizet[d] > NC_MAX_INT64)
