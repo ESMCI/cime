@@ -413,10 +413,7 @@ int PIOc_inq_var_chunking(int ncid, int varid, int *storagep, PIO_Offset *chunks
         if (file->do_io)
 	{
 	    size_t chunksizes_sizet[ndims];
-            size_t *my_chunksize_ptr = NULL;
-            if (chunksizesp)
-                my_chunksize_ptr = chunksizes_sizet;
-	    ierr = nc_inq_var_chunking(file->fh, varid, storagep, my_chunksize_ptr);
+	    ierr = nc_inq_var_chunking(file->fh, varid, storagep, chunksizes_sizet);
 	    if (!ierr && chunksizesp)
 		for (int d = 0; d < ndims; d++)
 		{
