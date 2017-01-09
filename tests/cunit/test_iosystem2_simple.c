@@ -42,6 +42,10 @@ int main(int argc, char **argv)
     if ((ret = pio_test_init(argc, argv, &my_rank, &ntasks, TARGET_NTASKS,
 			     &test_comm)))
         ERR(ERR_INIT);
+
+    /* Change error handling so we can test inval parameters. */
+    if ((ret = PIOc_set_iosystem_error_handling(PIO_DEFAULT, PIO_RETURN_ERROR, NULL)))
+        return ret;
     
     /* Test code runs on TARGET_NTASKS tasks. The left over tasks do
      * nothing. */
