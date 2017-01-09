@@ -13,6 +13,9 @@
 
 static int counter = 0;
 
+/** The default error handler used when iosystem cannot be located. */
+int default_error_handler = PIO_INTERNAL_ERROR;
+
 /**
  * Check to see if PIO has been initialized.
  *
@@ -235,7 +238,8 @@ int PIOc_Set_IOSystem_Error_Handling(int iosysid, int method)
  * Set the error handling method used for subsequent calls for this IO
  * system.
  *
- * @param iosysid the IO system ID
+ * @param iosysid the IO system ID. Passing PIO_DEFAULT instead
+ * changes the default error handling for the library.
  * @param method the error handling method
  * @param old_method pointer to int that will get old method. Ignored
  * if NULL.
@@ -244,14 +248,16 @@ int PIOc_Set_IOSystem_Error_Handling(int iosysid, int method)
  */
 int PIOc_set_iosystem_error_handling(int iosysid, int method, int *old_method)
 {
-    iosystem_desc_t *ios;
+    iosystem_desc_t *ios = NULL;
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
 
-    LOG((1, "PIOc_set_iosystem_error_handling iosysid = %d method = %d", iosysid, method));
+    LOG((1, "PIOc_set_iosystem_error_handling iosysid = %d method = %d", iosysid,
+         method));
 
     /* Find info about this iosystem. */
-    if (!(ios = pio_get_iosystem_from_id(iosysid)))
-        return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
+    if (iosysid != PIO_DEFAULT)
+        if (!(ios = pio_get_iosystem_from_id(iosysid)))
+            return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
 
     /* Check that valid error handler was provided. */
     if (method != PIO_INTERNAL_ERROR && method != PIO_BCAST_ERROR &&
@@ -259,35 +265,39 @@ int PIOc_set_iosystem_error_handling(int iosysid, int method, int *old_method)
         return pio_err(ios, NULL, PIO_EINVAL, __FILE__, __LINE__);
 
     /* If using async, and not an IO task, then send parameters. */
-    if (ios->async_interface)
-    {
-        if (!ios->ioproc)
+    if (iosysid != PIO_DEFAULT)
+        if (ios->async_interface)
         {
-            int msg = PIO_MSG_SETERRORHANDLING;
-            char old_method_present = old_method ? true : false;
+            if (!ios->ioproc)
+            {
+                int msg = PIO_MSG_SETERRORHANDLING;
+                char old_method_present = old_method ? true : false;
+                
+                if (ios->compmaster == MPI_ROOT)
+                    mpierr = MPI_Send(&msg, 1, MPI_INT, ios->ioroot, 1, ios->union_comm);
+                
+                if (!mpierr)
+                    mpierr = MPI_Bcast(&method, 1, MPI_INT, ios->compmaster, ios->intercomm);
+                if (!mpierr)
+                    mpierr = MPI_Bcast(&old_method_present, 1, MPI_CHAR, ios->compmaster, ios->intercomm);
+            }
 
-          if (ios->compmaster == MPI_ROOT)
-                mpierr = MPI_Send(&msg, 1, MPI_INT, ios->ioroot, 1, ios->union_comm);
-
-            if (!mpierr)
-                mpierr = MPI_Bcast(&method, 1, MPI_INT, ios->compmaster, ios->intercomm);
-            if (!mpierr)
-                mpierr = MPI_Bcast(&old_method_present, 1, MPI_CHAR, ios->compmaster, ios->intercomm);
+            /* Handle MPI errors. */
+            if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
+                check_mpi2(ios, NULL, mpierr2, __FILE__, __LINE__);
+            if (mpierr)
+                return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
         }
-
-        /* Handle MPI errors. */
-        if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
-            check_mpi2(ios, NULL, mpierr2, __FILE__, __LINE__);
-        if (mpierr)
-            return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
-    }
 
     /* Return the current handler. */
     if (old_method)
-        *old_method = ios->error_handler;
+        *old_method = iosysid == PIO_DEFAULT ? default_error_handler : ios->error_handler;
 
     /* Set new error handler. */
-    ios->error_handler = method;
+    if (iosysid == PIO_DEFAULT)
+        default_error_handler = method;
+    else
+        ios->error_handler = method;
 
     return PIO_NOERR;
 }
@@ -546,7 +556,7 @@ int PIOc_Init_Intracomm(MPI_Comm comp_comm, int num_iotasks, int stride, int bas
 
     ios->io_comm = MPI_COMM_NULL;
     ios->intercomm = MPI_COMM_NULL;
-    ios->error_handler = PIO_INTERNAL_ERROR;
+    ios->error_handler = default_error_handler;
     ios->default_rearranger = rearr;
     ios->num_iotasks = num_iotasks;
 
@@ -1109,7 +1119,7 @@ int PIOc_Init_Async(MPI_Comm world, int num_io_procs, int *io_proc_list,
             my_iosys->intercomm = MPI_COMM_NULL;
             my_iosys->my_comm = MPI_COMM_NULL;
             my_iosys->async_interface = 1;
-            my_iosys->error_handler = PIO_INTERNAL_ERROR;
+            my_iosys->error_handler = default_error_handler;
             my_iosys->num_comptasks = num_procs_per_comp[cmp];
             my_iosys->num_iotasks = num_procs_per_comp[0];
             my_iosys->compgroup = MPI_GROUP_NULL;
@@ -1218,9 +1228,8 @@ int PIOc_Init_Async(MPI_Comm world, int num_io_procs, int *io_proc_list,
         }
 
 
-        /* If this is the IO component, remember the
-         * comm. Otherwise make a copy of the comm for each
-         * component. */
+        /* If this is the IO component, make a copy of the IO comm for
+         * each computational component. */
         if (in_io)
             if (cmp)
             {

@@ -31,6 +31,9 @@ FILE *LOG_FILE = NULL;
 */
 extern int pio_next_ncid;
 
+/** The default error handler used when iosystem cannot be located. */
+extern int default_error_handler;
+
 /** Default settings for swap memory. */
 static pio_swapm_defaults swapm_defaults;
 
@@ -408,7 +411,7 @@ int check_netcdf(file_desc_t *file, int status, const char *fname, int line)
 int check_netcdf2(iosystem_desc_t *ios, file_desc_t *file, int status,
                   const char *fname, int line)
 {
-    int eh = PIO_INTERNAL_ERROR; /* Default error handler. */
+    int eh = default_error_handler; /* Default error handler. */
     int ierr;
 
     /* User must provide this. */
@@ -429,6 +432,8 @@ int check_netcdf2(iosystem_desc_t *ios, file_desc_t *file, int status,
     LOG((1, "check_netcdf2 eh = %d", eh));
     pioassert(eh == PIO_INTERNAL_ERROR || eh == PIO_BCAST_ERROR || eh == PIO_RETURN_ERROR,
               "invalid error handler", __FILE__, __LINE__);
+
+    LOG((2, "check_netcdf2 chose error handler = %d", eh));
 
     /* Decide what to do based on the error handler. */
     if (eh == PIO_INTERNAL_ERROR)
@@ -477,7 +482,7 @@ int pio_err(iosystem_desc_t *ios, file_desc_t *file, int err_num, const char *fn
             int line)
 {
     char err_msg[PIO_MAX_NAME + 1];
-    int err_handler = PIO_INTERNAL_ERROR; /* Default error handler. */
+    int err_handler = default_error_handler; /* Default error handler. */
     int ret;
 
     /* User must provide this. */
@@ -499,6 +504,8 @@ int pio_err(iosystem_desc_t *ios, file_desc_t *file, int err_num, const char *fn
         err_handler = file->iosystem->error_handler;
     else if (ios)
         err_handler = ios->error_handler;
+
+    LOG((2, "pio_err chose error handler = %d", err_handler));
 
     /* Should we abort? */
     if (err_handler == PIO_INTERNAL_ERROR)
@@ -1348,4 +1355,34 @@ int pioc_change_def(int ncid, int is_enddef)
     LOG((3, "pioc_change_def succeeded"));
 
     return ierr;
+}
+
+/**
+ * Check whether an IO type is valid for the build. 
+ *
+ * @param iotype the IO type to check
+ * @returns 0 if valid, non-zero otherwise.
+ */
+int iotype_is_valid(int iotype)
+{
+    /* Assume it's not valid. */
+    int ret = 0;
+
+    /* All builds include netCDF. */
+    if (iotype == PIO_IOTYPE_NETCDF)
+        ret++;
+
+    /* Some builds include netCDF-4. */
+#ifdef _NETCDF4
+    if (iotype == PIO_IOTYPE_NETCDF4C || iotype == PIO_IOTYPE_NETCDF4P)
+        ret++;
+#endif /* _NETCDF4 */
+
+    /* Some builds include pnetcdf. */
+    if (iotype == PIO_IOTYPE_PNETCDF)
+        ret++;
+#ifdef _PNETCDF
+#endif /* _PNETCDF */
+
+    return ret;
 }

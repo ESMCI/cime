@@ -717,6 +717,10 @@ int test_putget(int iosysid, int num_flavors, int *flavor, int my_rank,
                     break;
                 }
 
+                /* Check for bad input handling. */
+                if (PIOc_sync(ncid + 42) != PIO_EBADID)
+                    return ret;
+                
                 /* Make sure all data are written (pnetcdf needs this). */
                 if ((ret = PIOc_sync(ncid)))
                     return ret;

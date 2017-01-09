@@ -118,6 +118,10 @@ extern "C" {
     /* Check the return code from a netCDF call, with ios pointer. */
     int check_netcdf2(iosystem_desc_t *ios, file_desc_t *file, int status,
                       const char *fname, int line);
+
+    /* Check whether an IO type is valid for this build. */
+    int iotype_is_valid(int iotype);    
+    
     int iotype_error(int iotype, const char *fname, int line);
     void piodie(const char *msg, const char *fname, int line);
     void pioassert(bool exp, const char *msg,const char *fname, const int line);
