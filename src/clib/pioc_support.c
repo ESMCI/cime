@@ -374,8 +374,7 @@ int check_mpi2(iosystem_desc_t *ios, file_desc_t *file, int mpierr,
                     errstring, filename ? filename : "_", line);
 
         /* Handle all MPI errors as PIO_EIO. */
-        check_netcdf2(ios, file, PIO_EIO, filename, line);
-        return PIO_EIO;
+        return pio_err(ios, file, PIO_EIO, filename, line);
     }
     return PIO_NOERR;
 }

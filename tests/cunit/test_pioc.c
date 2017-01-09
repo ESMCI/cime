@@ -665,6 +665,12 @@ int test_files(int iosysid, int num_flavors, int *flavor, int my_rank)
         if ((ret = PIOc_create(iosysid, filename, mode, &ncid)))
             ERR(ret);
 
+        /* Check this support function. */
+        if (!PIOc_File_is_Open(ncid))
+            ERR(ERR_WRONG);
+        if (PIOc_File_is_Open(ncid + 1))
+            ERR(ERR_WRONG);
+
         /* Define the test file metadata. */
         if ((ret = define_metadata(ncid, my_rank)))
             ERR(ret);

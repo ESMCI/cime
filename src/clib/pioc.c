@@ -28,11 +28,11 @@ int PIOc_iosystem_is_active(int iosysid, bool *active)
 {
     iosystem_desc_t *ios;
 
-    if (!(ios = pio_get_iosystem_from_id(iosysid)))
-        return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
+    /* Get the ios if there is one. */
+    ios = pio_get_iosystem_from_id(iosysid);
 
     if (active)
-        if (ios->comp_comm == MPI_COMM_NULL && ios->io_comm == MPI_COMM_NULL)
+        if (!ios || ios->comp_comm == MPI_COMM_NULL && ios->io_comm == MPI_COMM_NULL)
             *active = false;
         else
             *active = true;
@@ -550,7 +550,7 @@ int PIOc_Init_Intracomm(MPI_Comm comp_comm, int num_iotasks, int stride, int bas
 
     /* Find the number of computation tasks. */
     if ((mpierr = MPI_Comm_size(comp_comm, &num_comptasks)))
-        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+        return check_mpi2(NULL, NULL, mpierr, __FILE__, __LINE__);
 
     /* Check the inputs. */
     if (!iosysidp || num_iotasks < 1 || num_iotasks * stride > num_comptasks)    
@@ -957,8 +957,7 @@ int PIOc_Init_Async(MPI_Comm world, int num_io_procs, int *io_proc_list,
     int ret;
 
     /* Check input parameters. */
-    if (num_io_procs < 1 || component_count < 1 || !num_procs_per_comp ||
-        !iosysidp)
+    if (num_io_procs < 1 || component_count < 1 || !num_procs_per_comp || !iosysidp)
         return pio_err(NULL, NULL, PIO_EINVAL, __FILE__, __LINE__);
 
     /* Temporarily limit to one computational component. */
