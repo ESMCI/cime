@@ -1361,43 +1361,6 @@ int pioc_change_def(int ncid, int is_enddef)
  * Check whether an IO type is valid for the build. 
  *
  * @param iotype the IO type to check
- * @param valid_iotype pointer to an int that gets set to 1 if the IO
- * type is valid, 0 otherwise.
- * @returns 0 for success.
- */
-int check_iotype(int iotype, int *valid_iotype)
-{
-    int ret;
-
-    pioassert(valid_iotype, "pointer to int must be provided", __FILE__, __LINE__);
-    LOG((1, "check_iotype iotype = %d", iotype));
-
-    /* Assume it's not valid. */
-    *valid_iotype = 0;
-
-    /* All builds include netCDF. */
-    if (iotype == PIO_IOTYPE_NETCDF)
-        *valid_iotype++;
-
-    /* Some builds include netCDF-4. */
-#ifdef _NETCDF4
-    if (iotype == PIO_IOTYPE_NETCDF4C || iotype == PIO_IOTYPE_NETCDF4P)
-        *valid_iotype++;
-#endif /* _NETCDF4 */
-
-    /* Some builds include pnetcdf. */
-    if (iotype == PIO_IOTYPE_PNETCDF)
-        *valid_iotype++;
-#ifdef _PNETCDF
-#endif /* _PNETCDF */
-
-    return PIO_NOERR;
-}
-
-/**
- * Check whether an IO type is valid for the build. 
- *
- * @param iotype the IO type to check
  * @returns 0 if valid, non-zero otherwise.
  */
 int iotype_is_valid(int iotype)

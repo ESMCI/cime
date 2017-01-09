@@ -121,7 +121,6 @@ extern "C" {
 
     /* Check whether an IO type is valid for this build. */
     int iotype_is_valid(int iotype);    
-    int check_iotype(int iotype, int *valid_iotype);
     
     int iotype_error(int iotype, const char *fname, int line);
     void piodie(const char *msg, const char *fname, int line);
