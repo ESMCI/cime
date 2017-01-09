@@ -94,7 +94,7 @@ int PIOc_createfile(int iosysid, int *ncidp, int *iotype, const char *filename, 
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Pointer to file information. */
-    int ierr = PIO_NOERR;  /* Return code from function calls. */
+    int ierr;              /* Return code from function calls. */
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
 
     /* Get the IO system info from the iosysid. */
@@ -103,6 +103,10 @@ int PIOc_createfile(int iosysid, int *ncidp, int *iotype, const char *filename, 
 
     /* User must provide valid input for these parameters. */
     if (!ncidp || !iotype || !filename || strlen(filename) > NC_MAX_NAME)
+        return pio_err(ios, NULL, PIO_EINVAL, __FILE__, __LINE__);
+
+    /* A valid iotype must be specified. */
+    if (!iotype_is_valid(*iotype))
         return pio_err(ios, NULL, PIO_EINVAL, __FILE__, __LINE__);
 
     LOG((1, "PIOc_createfile iosysid = %d iotype = %d filename = %s mode = %d",
@@ -199,8 +203,6 @@ int PIOc_createfile(int iosysid, int *ncidp, int *iotype, const char *filename, 
                 ierr = ncmpi_buffer_attach(file->fh, pio_buffer_size_limit);
             break;
 #endif
-        default:
-            ierr = iotype_error(file->iotype,__FILE__,__LINE__);
         }
     }
 
@@ -419,7 +421,7 @@ int PIOc_deletefile(int iosysid, const char *filename)
     if (ios->ioproc)
     {
         mpierr = MPI_Barrier(ios->io_comm);
-            
+
 #ifdef _NETCDF
         if (!mpierr && ios->io_rank == 0)
         {
@@ -439,7 +441,7 @@ int PIOc_deletefile(int iosysid, const char *filename)
 
     /* Broadcast and check the return code. */
     if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
-        return check_mpi2(ios, NULL, mpierr2, __FILE__, __LINE__);        
+        return check_mpi2(ios, NULL, mpierr2, __FILE__, __LINE__);
     if (ierr)
         return check_netcdf2(ios, NULL, ierr, __FILE__, __LINE__);
 

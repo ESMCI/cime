@@ -651,6 +651,14 @@ int test_files(int iosysid, int num_flavors, int *flavor, int my_rank)
             return ret;
         sprintf(filename, "%s_%s.nc", TEST_NAME, iotype_name);
 
+        /* Testing some invalid parameters. */
+        if (PIOc_create(iosysid + 1, filename, mode, &ncid) != PIO_EBADID)
+          return ERR_WRONG;
+        if (PIOc_create(iosysid, filename, mode, NULL) != PIO_EINVAL)
+          return ERR_WRONG;
+        if (PIOc_create(iosysid, NULL, mode, &ncid) != PIO_EINVAL)
+          return ERR_WRONG;
+
         /* Create the netCDF output file. */
         printf("%d Creating sample file %s with format %d...\n",
                my_rank, filename, flavor[fmt]);
@@ -662,13 +670,25 @@ int test_files(int iosysid, int num_flavors, int *flavor, int my_rank)
             ERR(ret);
 
         /* End define mode. */
+        if (PIOc_enddef(ncid + 1) != PIO_EBADID)
+            return ERR_WRONG;
         if ((ret = PIOc_enddef(ncid)))
             ERR(ret);
 
         /* Close the netCDF file. */
         printf("%d Closing the sample data file...\n", my_rank);
+        if (PIOc_closefile(ncid + 1) != PIO_EBADID)
+            return ERR_WRONG;
         if ((ret = PIOc_closefile(ncid)))
             ERR(ret);
+
+        /* Check some invalid paramters. */
+        if (PIOc_open(iosysid + 1, filename, mode, &ncid) != PIO_EBADID)
+            return ERR_WRONG;
+        if (PIOc_open(iosysid, NULL, mode, &ncid) != PIO_EINVAL)
+            return ERR_WRONG;
+        if (PIOc_open(iosysid, filename, mode, NULL) != PIO_EINVAL)
+            return ERR_WRONG;
 
         /* Reopen the test file. */
         printf("%d Re-opening sample file %s with format %d...\n",
@@ -724,6 +744,9 @@ int test_deletefile(int iosysid, int num_flavors, int *flavor, int my_rank)
 
         printf("%d testing delete for file %s with format %d...\n",
                my_rank, filename, flavor[fmt]);
+        int bad_iotype = 42;
+        if (PIOc_createfile(iosysid, &ncid, &bad_iotype, filename, PIO_CLOBBER) != PIO_EINVAL)
+            return ERR_WRONG;
         if ((ret = PIOc_createfile(iosysid, &ncid, &(flavor[fmt]), filename, PIO_CLOBBER)))
             ERR(ret);
 
@@ -917,34 +940,34 @@ int test_nc4(int iosysid, int num_flavors, int *flavor, int my_rank)
             if (endianness != 1)
                 ERR(ERR_WRONG);
 
-    /*     } */
-    /*     else */
-    /*     { */
-    /*         /\* Trying to set or inq netCDF-4 settings for non-netCDF-4 */
-    /*          * files results in the PIO_ENOTNC4 error. *\/ */
-    /*         if ((ret = PIOc_def_var_chunking(ncid, 0, NC_CHUNKED, chunksize)) != PIO_ENOTNC4) */
-    /*             ERR(ERR_AWFUL); */
-    /*         /\* if ((ret = PIOc_inq_var_chunking(ncid, 0, &storage, my_chunksize)) != PIO_ENOTNC4) *\/ */
-    /*         /\*     ERR(ERR_AWFUL); *\/ */
-    /*         if ((ret = PIOc_inq_var_deflate(ncid, 0, &shuffle, &deflate, &deflate_level)) */
-    /*             != PIO_ENOTNC4) */
-    /*             ERR(ret); */
-    /*         if ((ret = PIOc_def_var_endian(ncid, 0, 1)) != PIO_ENOTNC4) */
-    /*             ERR(ERR_AWFUL); */
-    /*         if ((ret = PIOc_inq_var_endian(ncid, 0, &endianness)) != PIO_ENOTNC4) */
-    /*             ERR(ERR_AWFUL); */
-    /*         if ((ret = PIOc_set_var_chunk_cache(ncid, 0, VAR_CACHE_SIZE, VAR_CACHE_NELEMS, */
-    /*                                             VAR_CACHE_PREEMPTION)) != PIO_ENOTNC4) */
-    /*             ERR(ret); */
-    /*         if ((ret = PIOc_get_var_chunk_cache(ncid, 0, &var_cache_size, &var_cache_nelems, */
-    /*                                             &var_cache_preemption)) != PIO_ENOTNC4) */
-    /*             ERR(ret); */
-    /*         if ((ret = PIOc_set_chunk_cache(iosysid, flavor[fmt], chunk_cache_size, chunk_cache_nelems, */
-    /*                                         chunk_cache_preemption)) != PIO_ENOTNC4) */
-    /*             ERR(ret); */
-    /*         if ((ret = PIOc_get_chunk_cache(iosysid, flavor[fmt], &chunk_cache_size, */
-    /*                                         &chunk_cache_nelems, &chunk_cache_preemption)) != PIO_ENOTNC4) */
-    /*             ERR(ret); */
+        }
+        else
+        {
+            /* Trying to set or inq netCDF-4 settings for non-netCDF-4
+             * files results in the PIO_ENOTNC4 error. */
+            if ((ret = PIOc_def_var_chunking(ncid, 0, NC_CHUNKED, chunksize)) != PIO_ENOTNC4)
+                ERR(ERR_AWFUL);
+            if ((ret = PIOc_inq_var_chunking(ncid, 0, &storage, my_chunksize)) != PIO_ENOTNC4)
+                ERR(ERR_AWFUL);
+            if ((ret = PIOc_inq_var_deflate(ncid, 0, &shuffle, &deflate, &deflate_level))
+                != PIO_ENOTNC4)
+                ERR(ret);
+            if ((ret = PIOc_def_var_endian(ncid, 0, 1)) != PIO_ENOTNC4)
+                ERR(ERR_AWFUL);
+            if ((ret = PIOc_inq_var_endian(ncid, 0, &endianness)) != PIO_ENOTNC4)
+                ERR(ERR_AWFUL);
+            if ((ret = PIOc_set_var_chunk_cache(ncid, 0, VAR_CACHE_SIZE, VAR_CACHE_NELEMS,
+                                                VAR_CACHE_PREEMPTION)) != PIO_ENOTNC4)
+                ERR(ret);
+            if ((ret = PIOc_get_var_chunk_cache(ncid, 0, &var_cache_size, &var_cache_nelems,
+                                                &var_cache_preemption)) != PIO_ENOTNC4)
+                ERR(ret);
+            if ((ret = PIOc_set_chunk_cache(iosysid, flavor[fmt], chunk_cache_size, chunk_cache_nelems,
+                                            chunk_cache_preemption)) != PIO_ENOTNC4)
+                ERR(ret);
+            if ((ret = PIOc_get_chunk_cache(iosysid, flavor[fmt], &chunk_cache_size,
+                                            &chunk_cache_nelems, &chunk_cache_preemption)) != PIO_ENOTNC4)
+                ERR(ret);
         }
 
         /* End define mode. */
@@ -970,17 +993,27 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
     if ((ret = MPI_Comm_size(test_comm, &my_test_size)))
         MPIERR(ret);
 
+    /* Test file deletes. */
+    printf("%d Testing deletefile. async = %d\n", my_rank, async);
+    if ((ret = test_deletefile(iosysid, num_flavors, flavor, my_rank)))
+        return ret;
+
+    /* Test file stuff. */
+    printf("%d Testing file creation. async = %d\n", my_rank, async);
+    if ((ret = test_files(iosysid, num_flavors, flavor, my_rank)))
+        return ret;
+
     if (!async)
     {
         char filename[NC_MAX_NAME + 1];
         sprintf(filename, "decomp_%d.txt", my_rank);
         
-        printf("%d Testing darray. async = %d\n", my_rank, async);        
+        printf("%d Testing darray. async = %d\n", my_rank, async);
         /* Decompose the data over the tasks. */
         if ((ret = create_decomposition(my_test_size, my_rank, iosysid, DIM_LEN, &ioid)))
             return ret;
 
-        printf("%d Calling write_decomp. async = %d\n", my_rank, async);        
+        printf("%d Calling write_decomp. async = %d\n", my_rank, async);
         if ((ret = PIOc_write_decomp(filename, iosysid, ioid, test_comm)))
             return ret;
         printf("%d Called write_decomp. async = %d\n", my_rank, async);
@@ -999,16 +1032,6 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
     if ((ret = check_strerror(my_rank)))
         ERR(ret);
 
-    /* Test file stuff. */
-    printf("%d Testing file creation. async = %d\n", my_rank, async);
-    if ((ret = test_files(iosysid, num_flavors, flavor, my_rank)))
-        return ret;
-
-    /* Test file deletes. */
-    printf("%d Testing deletefile. async = %d\n", my_rank, async);
-    if ((ret = test_deletefile(iosysid, num_flavors, flavor, my_rank)))
-        return ret;
-
     /* Test name stuff. */
     printf("%d Testing names. async = %d\n", my_rank, async);
     if ((ret = test_names(iosysid, num_flavors, flavor, my_rank, test_comm)))
@@ -1025,6 +1048,6 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
 /* Run Tests for NetCDF-4 Functions. */
 int main(int argc, char **argv)
 {
-    return run_test_main(argc, argv, MIN_NTASKS, TARGET_NTASKS, 0,
+    return run_test_main(argc, argv, MIN_NTASKS, TARGET_NTASKS, 3,
                          TEST_NAME, dim_len, COMPONENT_COUNT, NUM_IO_PROCS);
 }

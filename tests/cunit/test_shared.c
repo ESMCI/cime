@@ -173,6 +173,9 @@ int run_test_main(int argc, char **argv, int min_ntasks, int max_ntasks,
                               max_ntasks, log_level, &test_comm)))
         ERR(ERR_INIT);
 
+    if ((ret = PIOc_set_iosystem_error_handling(PIO_DEFAULT, PIO_RETURN_ERROR, NULL)))
+        return ret;
+
     /* Only do something on max_ntasks tasks. */
     if (my_rank < max_ntasks)
     {
