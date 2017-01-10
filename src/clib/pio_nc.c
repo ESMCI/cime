@@ -2265,7 +2265,6 @@ int PIOc_get_att_ushort(int ncid, int varid, const char *name, unsigned short *i
 }
 
 /**
- * @ingroup PIO_get_att
  * Get the value of an 32-bit unsigned integer array attribute.
  *
  * This routine is called collectively by all tasks in the communicator
@@ -2277,6 +2276,7 @@ int PIOc_get_att_ushort(int ncid, int varid, const char *name, unsigned short *i
  * @param name the name of the attribute to get
  * @param ip a pointer that will get the attribute value.
  * @return PIO_NOERR for success, error code otherwise.
+ * @ingroup PIO_get_att
  */
 int PIOc_get_att_uint(int ncid, int varid, const char *name, unsigned int *ip)
 {
