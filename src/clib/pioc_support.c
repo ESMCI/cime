@@ -410,7 +410,8 @@ int check_netcdf(file_desc_t *file, int status, const char *fname, int line)
 int check_netcdf2(iosystem_desc_t *ios, file_desc_t *file, int status,
                   const char *fname, int line)
 {
-    int eh = default_error_handler; /* Default error handler. */
+    int eh = default_error_handler; /* Error handler that will be used. */
+    char errmsg[PIO_MAX_NAME + 1];  /* Error message. */
     int ierr;
 
     /* User must provide this. */
@@ -428,28 +429,19 @@ int check_netcdf2(iosystem_desc_t *ios, file_desc_t *file, int status,
         eh = ios->error_handler;
     if (file)
         eh = file->iosystem->error_handler;
-    LOG((1, "check_netcdf2 eh = %d", eh));
     pioassert(eh == PIO_INTERNAL_ERROR || eh == PIO_BCAST_ERROR || eh == PIO_RETURN_ERROR,
               "invalid error handler", __FILE__, __LINE__);
-
     LOG((2, "check_netcdf2 chose error handler = %d", eh));
+
+    /* Get an error message. */
+    ierr = PIOc_strerror(status, errmsg);
+    LOG((1, "check_netcdf2 errmsg = %s", errmsg));
 
     /* Decide what to do based on the error handler. */
     if (eh == PIO_INTERNAL_ERROR)
-    {
-        char errmsg[PIO_MAX_NAME + 1];
-
-        /* Get an error message. */
-        ierr = PIOc_strerror(status, errmsg);
-
-        /* Die! */
-        piodie(errmsg, fname, line);
-    }
-    else if (eh == PIO_BCAST_ERROR && ios)
-    {
-        /* Not sure what this will do. */
+        piodie(errmsg, fname, line);        /* Die! */
+    else if (eh == PIO_BCAST_ERROR && ios)  /* Not sure what this will do. */
         ierr = MPI_Bcast(&status, 1, MPI_INTEGER, ios->ioroot, ios->my_comm);
-    }
 
     /* For PIO_RETURN_ERROR, just return the error. */
     return status;

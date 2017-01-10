@@ -688,56 +688,58 @@ extern "C" {
     int PIOc_get_var_chunk_cache(int ncid, int varid, PIO_Offset *sizep, PIO_Offset *nelemsp,
                                  float *preemptionp);
 
-    /* Attributes. */
+    /* Attributes - misc. */
     int PIOc_rename_att(int ncid, int varid, const char *name, const char *newname);
     int PIOc_del_att(int ncid, int varid, const char *name);
+
+    /* Attributes - inquiry functions. */
     int PIOc_inq_att(int ncid, int varid, const char *name, nc_type *xtypep,
 		     PIO_Offset *lenp);
     int PIOc_inq_attid(int ncid, int varid, const char *name, int *idp);
     int PIOc_inq_attlen(int ncid, int varid, const char *name, PIO_Offset *lenp);
     int PIOc_inq_atttype(int ncid, int varid, const char *name, nc_type *xtypep);
     int PIOc_inq_attname(int ncid, int varid, int attnum, char *name);
+
+    /* Attributes - writing. */
     int PIOc_put_att(int ncid, int varid, const char *name, nc_type xtype, PIO_Offset len, const void *op);
-    int PIOc_get_att(int ncid, int varid, const char *name, void *ip);
-    int PIOc_put_att_double(int ncid, int varid, const char *name, nc_type xtype, PIO_Offset len,
-			    const double *op);
-    int PIOc_put_att_int(int ncid, int varid, const char *name, nc_type xtype, PIO_Offset len,
-			 const int *op);
-    int PIOc_get_att_text(int ncid, int varid, const char *name, char *ip);
-    int PIOc_get_att_short(int ncid, int varid, const char *name, short *ip);
-    int PIOc_put_att_long(int ncid, int varid, const char *name, nc_type xtype, PIO_Offset len,
-			  const long *op);
-    int PIOc_put_att_short(int ncid, int varid, const char *name, nc_type xtype, PIO_Offset len,
-			   const short *op);
     int PIOc_put_att_text(int ncid, int varid, const char *name, PIO_Offset len, const char *op);
-    int PIOc_get_att_ulonglong(int ncid, int varid, const char *name, unsigned long long *ip);
-    int PIOc_get_att_ushort(int ncid, int varid, const char *name, unsigned short *ip);
-    int PIOc_put_att_ulonglong(int ncid, int varid, const char *name, nc_type xtype,
-			       PIO_Offset len, const unsigned long long *op);
-    int PIOc_get_att_uint(int ncid, int varid, const char *name, unsigned int *ip);
-    int PIOc_get_att_longlong(int ncid, int varid, const char *name, long long *ip);
     int PIOc_put_att_schar(int ncid, int varid, const char *name, nc_type xtype, PIO_Offset len,
 			   const signed char *op);
+    int PIOc_put_att_short(int ncid, int varid, const char *name, nc_type xtype, PIO_Offset len,
+			   const short *op);
+    int PIOc_put_att_int(int ncid, int varid, const char *name, nc_type xtype, PIO_Offset len,
+			 const int *op);
+    int PIOc_put_att_long(int ncid, int varid, const char *name, nc_type xtype, PIO_Offset len,
+			  const long *op);
     int PIOc_put_att_float(int ncid, int varid, const char *name, nc_type xtype, PIO_Offset len,
 			   const float *op);
-    int PIOc_get_att_long(int ncid, int varid, const char *name, long *ip);
-    int PIOc_put_att_ushort(int ncid, int varid, const char *name, nc_type xtype, PIO_Offset len,
-			    const unsigned short *op);
-    int PIOc_get_att_float(int ncid, int varid, const char *name, float *ip);
-    int PIOc_put_att_longlong(int ncid, int varid, const char *name, nc_type xtype, PIO_Offset len,
-			      const long long *op);
-    int PIOc_put_att_uint(int ncid, int varid, const char *name, nc_type xtype, PIO_Offset len,
-			  const unsigned int *op);
-    int PIOc_get_att_schar(int ncid, int varid, const char *name, signed char *ip);
-    int PIOc_get_att_int(int ncid, int varid, const char *name, int *ip);
-    int PIOc_get_att_double(int ncid, int varid, const char *name, double *ip);
+    int PIOc_put_att_double(int ncid, int varid, const char *name, nc_type xtype, PIO_Offset len,
+			    const double *op);
     int PIOc_put_att_uchar(int ncid, int varid, const char *name, nc_type xtype, PIO_Offset len,
 			   const unsigned char *op);
-    int PIOc_get_att_uchar(int ncid, int varid, const char *name, unsigned char *ip);
+    int PIOc_put_att_ushort(int ncid, int varid, const char *name, nc_type xtype, PIO_Offset len,
+			    const unsigned short *op);
+    int PIOc_put_att_uint(int ncid, int varid, const char *name, nc_type xtype, PIO_Offset len,
+			  const unsigned int *op);
+    int PIOc_put_att_longlong(int ncid, int varid, const char *name, nc_type xtype, PIO_Offset len,
+			      const long long *op);
+    int PIOc_put_att_ulonglong(int ncid, int varid, const char *name, nc_type xtype,
+			       PIO_Offset len, const unsigned long long *op);
 
-    int PIOc_get_att_ubyte(int ncid, int varid, const char *name, unsigned char *ip);
-    int PIOc_put_att_ubyte(int ncid, int varid, const char *name, nc_type xtype, PIO_Offset len,
-			   const unsigned char *op);
+    /* Attributes - reading. */
+    int PIOc_get_att(int ncid, int varid, const char *name, void *ip);
+    int PIOc_get_att_text(int ncid, int varid, const char *name, char *ip);
+    int PIOc_get_att_schar(int ncid, int varid, const char *name, signed char *ip);
+    int PIOc_get_att_short(int ncid, int varid, const char *name, short *ip);
+    int PIOc_get_att_int(int ncid, int varid, const char *name, int *ip);
+    int PIOc_get_att_long(int ncid, int varid, const char *name, long *ip);
+    int PIOc_get_att_float(int ncid, int varid, const char *name, float *ip);
+    int PIOc_get_att_double(int ncid, int varid, const char *name, double *ip);
+    int PIOc_get_att_uchar(int ncid, int varid, const char *name, unsigned char *ip);
+    int PIOc_get_att_ushort(int ncid, int varid, const char *name, unsigned short *ip);
+    int PIOc_get_att_uint(int ncid, int varid, const char *name, unsigned int *ip);
+    int PIOc_get_att_longlong(int ncid, int varid, const char *name, long long *ip);
+    int PIOc_get_att_ulonglong(int ncid, int varid, const char *name, unsigned long long *ip);
 
     /* Data reads - var. */
     int PIOc_get_var(int ncid, int varid, void *buf, PIO_Offset bufcount, MPI_Datatype buftype);

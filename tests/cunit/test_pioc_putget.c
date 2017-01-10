@@ -52,6 +52,26 @@
 /* Number of NetCDF-4 types. */
 #define NUM_NETCDF4_TYPES 12
 
+/* Length of the attributes for each type. */
+#define ATT_LEN 3
+
+/* Text att (must be two chars long to fit in ATT_LEN with a NULL). */
+#define TEXT_ATT_VALUE "hi"
+
+/* Names for each type attribute. */
+#define TEXT_ATT_NAME "text_att"
+#define SCHAR_ATT_NAME "schar_att"
+#define SHORT_ATT_NAME "short_att"
+#define INT_ATT_NAME "int_att"
+#define LONG_ATT_NAME "long_att"
+#define FLOAT_ATT_NAME "float_att"
+#define DOUBLE_ATT_NAME "double_att"
+#define UCHAR_ATT_NAME "uchar_att"
+#define USHORT_ATT_NAME "ushort_att"
+#define UINT_ATT_NAME "uint_att"
+#define INT64_ATT_NAME "int64_att"
+#define UINT64_ATT_NAME "unit64_att"
+
 /* The dimension names. */
 char dim_name[NDIM][PIO_MAX_NAME + 1] = {"timestep", "x", "y"};
 
@@ -185,6 +205,155 @@ int putget_write_var(int ncid, int *varid, int flavor)
             return ret;
         if ((ret = PIOc_put_var_ulonglong(ncid, varid[10], (unsigned long long *)uint64_array)))
             return ret;
+    }
+
+    return 0;
+}
+
+/* Use the att functions to write some data to attributes in an open
+ * test file. 
+ *
+ * @param ncid the ncid of the test file to read.
+ * @param varid an array of varids in the file.
+ * @param flavor the PIO IO type of the test file.
+ * @returns 0 for success, error code otherwise.
+*/
+int test_write_atts(int ncid, int *varid, int flavor)
+{
+    int ret;
+
+    /* Test some invalid parameters. (Type is irrelevant here.) */
+    /* if (PIOc_put_att_schar(ncid + 1, varid[0], SCHAR_ATT_NAME, PIO_BYTE, */
+    /*                        ATT_LEN, (signed char *)byte_array) != PIO_EBADID) */
+    /*     return ERR_WRONG; */
+
+    if ((ret = PIOc_put_att_text(ncid, varid[0], TEXT_ATT_NAME, ATT_LEN,
+                                 TEXT_ATT_VALUE)))
+        return ret;
+    if ((ret = PIOc_put_att_schar(ncid, varid[0], SCHAR_ATT_NAME, PIO_BYTE,
+                                  ATT_LEN, (signed char *)byte_array)))
+        return ret;
+
+    if ((ret = PIOc_put_att_short(ncid, varid[2], SHORT_ATT_NAME, PIO_SHORT,
+                                  ATT_LEN, (short *)short_array)))
+        return ret;
+
+    if ((ret = PIOc_put_att_int(ncid, varid[3], INT_ATT_NAME, PIO_INT,
+                                  ATT_LEN, (int *)int_array)))
+        return ret;
+
+    /* Use long on same int var. */
+    /* if ((ret = PIOc_put_att_long(ncid, varid[3], LONG_ATT_NAME, PIO_INT, */
+    /*                              ATT_LEN, (long int *)int_array))) */
+    /*     return ret; */
+
+    if ((ret = PIOc_put_att_float(ncid, varid[4], FLOAT_ATT_NAME, PIO_FLOAT,
+                                  ATT_LEN, (float *)float_array)))
+        return ret;
+
+    if ((ret = PIOc_put_att_double(ncid, varid[5], DOUBLE_ATT_NAME, PIO_DOUBLE,
+                                  ATT_LEN, (double *)double_array)))
+        return ret;
+
+    if (flavor == PIO_IOTYPE_NETCDF4C || flavor == PIO_IOTYPE_NETCDF4P)
+    {
+        if ((ret = PIOc_put_att_uchar(ncid, varid[6], UCHAR_ATT_NAME, PIO_UBYTE,
+                                      ATT_LEN, (unsigned char *)ubyte_array)))
+            return ret;
+        if ((ret = PIOc_put_att_ushort(ncid, varid[7], USHORT_ATT_NAME, PIO_SHORT,
+                                       ATT_LEN, (unsigned short *)ushort_array)))
+            return ret;
+        if ((ret = PIOc_put_att_uint(ncid, varid[8], UINT_ATT_NAME, PIO_UINT,
+                                     ATT_LEN, (unsigned int *)uint_array)))
+            return ret;
+        if ((ret = PIOc_put_att_longlong(ncid, varid[9], INT64_ATT_NAME, PIO_INT64,
+                                         ATT_LEN, (long long *)int64_array)))
+            return ret;
+        if ((ret = PIOc_put_att_ulonglong(ncid, varid[10], UINT64_ATT_NAME, PIO_UINT64,
+                                          ATT_LEN, (unsigned long long *)uint64_array)))
+            return ret;
+    }
+
+    return 0;
+}
+
+/* Use the att functions to read some attributes from an open test
+ * file.
+ *
+ * @param ncid the ncid of the test file to read.
+ * @param varid an array of varids in the file.
+ * @param flavor the PIO IO type of the test file.
+ * @returns 0 for success, error code otherwise.
+ */
+int test_read_att(int ncid, int *varid, int flavor)
+{
+    char text_in[ATT_LEN];
+    signed char byte_array_in[ATT_LEN];
+    short short_array_in[ATT_LEN];
+    unsigned char ubyte_array_in[ATT_LEN];
+    int int_array_in[ATT_LEN];
+    float float_array_in[ATT_LEN];
+    double double_array_in[ATT_LEN];
+    unsigned short ushort_array_in[ATT_LEN];
+    unsigned int uint_array_in[ATT_LEN];
+    long long int64_array_in[ATT_LEN];
+    unsigned long long uint64_array_in[ATT_LEN];
+    int x, y;
+    int ret;
+
+    if ((ret = PIOc_get_att_text(ncid, varid[0], TEXT_ATT_NAME, text_in)))
+        return ret;
+    if ((ret = PIOc_get_att_schar(ncid, varid[0], SCHAR_ATT_NAME, byte_array_in)))
+        return ret;
+    if ((ret = PIOc_get_att_short(ncid, varid[2], SHORT_ATT_NAME, short_array_in)))
+        return ret;
+    if ((ret = PIOc_get_att_int(ncid, varid[3], INT_ATT_NAME, int_array_in)))
+        return ret;
+    if ((ret = PIOc_get_att_float(ncid, varid[4], FLOAT_ATT_NAME, float_array_in)))
+        return ret;
+    if ((ret = PIOc_get_att_double(ncid, varid[5], DOUBLE_ATT_NAME, double_array_in)))
+        return ret;
+    for (x = 0; x < ATT_LEN; x++)
+    {
+        if (strncmp(text_in, TEXT_ATT_VALUE, ATT_LEN))
+            return ERR_WRONG;
+        if (byte_array_in[x] != byte_array[x][0])
+            return ERR_WRONG;
+        if (short_array_in[x] != short_array[x][0])
+            return ERR_WRONG;
+        if (int_array_in[x] != int_array[x][0])
+            return ERR_WRONG;
+        if (float_array_in[x] != float_array[x][0])
+            return ERR_WRONG;
+        if (double_array_in[x] != double_array[x][0])
+            return ERR_WRONG;
+    }
+
+    if (flavor == PIO_IOTYPE_NETCDF4C || flavor == PIO_IOTYPE_NETCDF4P)
+    {
+        if ((ret = PIOc_get_att_uchar(ncid, varid[6], UCHAR_ATT_NAME, ubyte_array_in)))
+            return ret;
+        if ((ret = PIOc_get_att_ushort(ncid, varid[7], USHORT_ATT_NAME, ushort_array_in)))
+            return ret;
+        if ((ret = PIOc_get_att_uint(ncid, varid[8], UINT_ATT_NAME, uint_array_in)))
+            return ret;
+        if ((ret = PIOc_get_att_longlong(ncid, varid[9], INT64_ATT_NAME, int64_array_in)))
+            return ret;
+        if ((ret = PIOc_get_att_ulonglong(ncid, varid[10], UINT64_ATT_NAME, uint64_array_in)))
+            return ret;
+        for (x = 0; x < ATT_LEN; x++)
+        {
+            if (ubyte_array_in[x] != ubyte_array[x][0])
+                return ERR_WRONG;
+            if (ushort_array_in[x] != ushort_array[x][0])
+                return ERR_WRONG;
+            if (uint_array_in[x] != uint_array[x][0])
+                return ERR_WRONG;
+            if (int64_array_in[x] != int64_array[x][0])
+                return ERR_WRONG;
+            if (uint64_array_in[x] != uint64_array[x][0])
+                return ERR_WRONG;
+        }
     }
 
     return 0;
@@ -636,6 +805,11 @@ int create_putget_file(int iosysid, int access, int unlim, int flavor, int *dim_
             return ret;
     }
 
+    /* For the first access, also test attributes. */
+    if (access == 0)
+        if ((ret = test_write_atts(ncid, varid, flavor)))
+            return ret;
+
     if ((ret = PIOc_enddef(ncid)))
         return ret;
 
@@ -728,6 +902,10 @@ int test_putget(int iosysid, int num_flavors, int *flavor, int my_rank,
                 switch (access)
                 {
                 case 0:
+                    /* Use the att functions to read some data. */
+                    if ((ret = test_read_att(ncid, varid, flavor[fmt])))
+                        return ret;
+                    
                     /* Use the vara functions to read some data. */
                     if ((ret = putget_read_var(ncid, varid, unlim, flavor[fmt])))
                         return ret;
@@ -822,7 +1000,7 @@ int main(int argc, char **argv)
     /* Initialize data arrays with sample data. */
     init_arrays();
 
-    return run_test_main(argc, argv, MIN_NTASKS, TARGET_NTASKS, 3,
+    return run_test_main(argc, argv, MIN_NTASKS, TARGET_NTASKS, 0,
                          TEST_NAME, dim_len, COMPONENT_COUNT, NUM_IO_PROCS);
 
     return 0;
