@@ -60,6 +60,7 @@ int main(int argc, char **argv)
             ERR(ERR_WRONG);
         if (PIOc_Init_Async(test_comm, NUM_IO_PROCS, NULL, -1,
                             num_procs, NULL, NULL, NULL, iosysid) != PIO_EINVAL)
+            ERR(ERR_WRONG);
         if (PIOc_Init_Async(test_comm, NUM_IO_PROCS, NULL, COMPONENT_COUNT,
                             NULL, NULL, NULL, NULL, iosysid) != PIO_EINVAL)
             ERR(ERR_WRONG);

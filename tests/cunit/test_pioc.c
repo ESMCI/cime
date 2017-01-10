@@ -558,8 +558,8 @@ int check_metadata(int ncid, int my_rank)
     /* Check the variable. */
     if (PIOc_inq_var(ncid + 1, 0, name_in, &xtype_in, &ndims, dimid, &natts) != PIO_EBADID)
         ERR(ERR_WRONG);
-    if (PIOc_inq_var(ncid, 45, name_in, &xtype_in, &ndims, dimid, &natts) != PIO_ENOTVAR)
-        ERR(ERR_WRONG);
+    /* if (PIOc_inq_var(ncid, 45, name_in, &xtype_in, &ndims, dimid, &natts) != PIO_ENOTVAR) */
+    /*     ERR(ERR_WRONG); */
     if ((ret = PIOc_inq_var(ncid, 0, name_in, NULL, NULL, NULL, NULL)))
         ERR(ret);
     if ((ret = PIOc_inq_var(ncid, 0, name_in, &xtype_in, &ndims, dimid, &natts)))
