@@ -72,7 +72,7 @@ int PIOc_put_varm (int ncid, int varid, const PIO_Offset start[], const PIO_Offs
             break;
 #endif
         default:
-            ierr = iotype_error(file->iotype,__FILE__,__LINE__);
+            return pio_err(ios, file, PIO_EBADIOTYPE, __FILE__, __LINE__);
         }
     }
 
@@ -147,7 +147,7 @@ int PIOc_put_varm_uchar (int ncid, int varid, const PIO_Offset start[], const PI
             break;
 #endif
         default:
-            ierr = iotype_error(file->iotype,__FILE__,__LINE__);
+            return pio_err(ios, file, PIO_EBADIOTYPE, __FILE__, __LINE__);
         }
     }
 
@@ -222,7 +222,7 @@ int PIOc_put_varm_short (int ncid, int varid, const PIO_Offset start[], const PI
             break;
 #endif
         default:
-            ierr = iotype_error(file->iotype,__FILE__,__LINE__);
+            return pio_err(ios, file, PIO_EBADIOTYPE, __FILE__, __LINE__);
         }
     }
 
@@ -298,7 +298,7 @@ int PIOc_put_varm_text (int ncid, int varid, const PIO_Offset start[], const PIO
             break;
 #endif
         default:
-            ierr = iotype_error(file->iotype,__FILE__,__LINE__);
+            return pio_err(ios, file, PIO_EBADIOTYPE, __FILE__, __LINE__);
         }
     }
 
@@ -375,7 +375,7 @@ int PIOc_put_varm_ushort (int ncid, int varid, const PIO_Offset start[], const P
             break;
 #endif
         default:
-            ierr = iotype_error(file->iotype,__FILE__,__LINE__);
+            return pio_err(ios, file, PIO_EBADIOTYPE, __FILE__, __LINE__);
         }
     }
 
@@ -452,7 +452,7 @@ int PIOc_put_varm_ulonglong (int ncid, int varid, const PIO_Offset start[], cons
             break;
 #endif
         default:
-            ierr = iotype_error(file->iotype,__FILE__,__LINE__);
+            return pio_err(ios, file, PIO_EBADIOTYPE, __FILE__, __LINE__);
         }
     }
 
@@ -528,7 +528,7 @@ int PIOc_put_varm_int (int ncid, int varid, const PIO_Offset start[], const PIO_
             break;
 #endif
         default:
-            ierr = iotype_error(file->iotype,__FILE__,__LINE__);
+            return pio_err(ios, file, PIO_EBADIOTYPE, __FILE__, __LINE__);
         }
     }
 
@@ -605,7 +605,7 @@ int PIOc_put_varm_float (int ncid, int varid, const PIO_Offset start[], const PI
             break;
 #endif
         default:
-            ierr = iotype_error(file->iotype,__FILE__,__LINE__);
+            return pio_err(ios, file, PIO_EBADIOTYPE, __FILE__, __LINE__);
         }
     }
 
@@ -681,7 +681,7 @@ int PIOc_put_varm_long (int ncid, int varid, const PIO_Offset start[], const PIO
             break;
 #endif
         default:
-            ierr = iotype_error(file->iotype,__FILE__,__LINE__);
+            return pio_err(ios, file, PIO_EBADIOTYPE, __FILE__, __LINE__);
         }
     }
 
@@ -758,7 +758,7 @@ int PIOc_put_varm_uint (int ncid, int varid, const PIO_Offset start[], const PIO
             break;
 #endif
         default:
-            ierr = iotype_error(file->iotype,__FILE__,__LINE__);
+            return pio_err(ios, file, PIO_EBADIOTYPE, __FILE__, __LINE__);
         }
     }
 
@@ -835,7 +835,7 @@ int PIOc_put_varm_double (int ncid, int varid, const PIO_Offset start[], const P
             break;
 #endif
         default:
-            ierr = iotype_error(file->iotype,__FILE__,__LINE__);
+            return pio_err(ios, file, PIO_EBADIOTYPE, __FILE__, __LINE__);
         }
     }
 
@@ -911,7 +911,7 @@ int PIOc_put_varm_schar (int ncid, int varid, const PIO_Offset start[], const PI
             break;
 #endif
         default:
-            ierr = iotype_error(file->iotype,__FILE__,__LINE__);
+            return pio_err(ios, file, PIO_EBADIOTYPE, __FILE__, __LINE__);
         }
     }
 
@@ -986,7 +986,7 @@ int PIOc_put_varm_longlong (int ncid, int varid, const PIO_Offset start[], const
             break;
 #endif
         default:
-            ierr = iotype_error(file->iotype,__FILE__,__LINE__);
+            return pio_err(ios, file, PIO_EBADIOTYPE, __FILE__, __LINE__);
         }
     }
 
@@ -1058,7 +1058,7 @@ int PIOc_get_varm_uchar (int ncid, int varid, const PIO_Offset start[], const PI
             break;
 #endif
         default:
-            ierr = iotype_error(file->iotype,__FILE__,__LINE__);
+            return pio_err(ios, file, PIO_EBADIOTYPE, __FILE__, __LINE__);
         }
     }
 
@@ -1135,7 +1135,7 @@ int PIOc_get_varm_schar (int ncid, int varid, const PIO_Offset start[], const PI
             break;
 #endif
         default:
-            ierr = iotype_error(file->iotype,__FILE__,__LINE__);
+            return pio_err(ios, file, PIO_EBADIOTYPE, __FILE__, __LINE__);
         }
     }
 
@@ -1212,7 +1212,7 @@ int PIOc_get_varm_double (int ncid, int varid, const PIO_Offset start[], const P
             break;
 #endif
         default:
-            ierr = iotype_error(file->iotype,__FILE__,__LINE__);
+            return pio_err(ios, file, PIO_EBADIOTYPE, __FILE__, __LINE__);
         }
     }
 
@@ -1289,7 +1289,7 @@ int PIOc_get_varm_text (int ncid, int varid, const PIO_Offset start[], const PIO
             break;
 #endif
         default:
-            ierr = iotype_error(file->iotype,__FILE__,__LINE__);
+            return pio_err(ios, file, PIO_EBADIOTYPE, __FILE__, __LINE__);
         }
     }
 
@@ -1366,7 +1366,7 @@ int PIOc_get_varm_int (int ncid, int varid, const PIO_Offset start[], const PIO_
             break;
 #endif
         default:
-            ierr = iotype_error(file->iotype,__FILE__,__LINE__);
+            return pio_err(ios, file, PIO_EBADIOTYPE, __FILE__, __LINE__);
         }
     }
 
@@ -1443,7 +1443,7 @@ int PIOc_get_varm_uint (int ncid, int varid, const PIO_Offset start[], const PIO
             break;
 #endif
         default:
-            ierr = iotype_error(file->iotype,__FILE__,__LINE__);
+            return pio_err(ios, file, PIO_EBADIOTYPE, __FILE__, __LINE__);
         }
     }
 
@@ -1516,7 +1516,7 @@ int PIOc_get_varm (int ncid, int varid, const PIO_Offset start[], const PIO_Offs
             break;
 #endif
         default:
-            ierr = iotype_error(file->iotype,__FILE__,__LINE__);
+            return pio_err(ios, file, PIO_EBADIOTYPE, __FILE__, __LINE__);
         }
     }
 
@@ -1593,7 +1593,7 @@ int PIOc_get_varm_float (int ncid, int varid, const PIO_Offset start[], const PI
             break;
 #endif
         default:
-            ierr = iotype_error(file->iotype,__FILE__,__LINE__);
+            return pio_err(ios, file, PIO_EBADIOTYPE, __FILE__, __LINE__);
         }
     }
 
@@ -1670,7 +1670,7 @@ int PIOc_get_varm_long (int ncid, int varid, const PIO_Offset start[], const PIO
             break;
 #endif
         default:
-            ierr = iotype_error(file->iotype,__FILE__,__LINE__);
+            return pio_err(ios, file, PIO_EBADIOTYPE, __FILE__, __LINE__);
         }
     }
 
@@ -1747,7 +1747,7 @@ int PIOc_get_varm_ushort (int ncid, int varid, const PIO_Offset start[], const P
             break;
 #endif
         default:
-            ierr = iotype_error(file->iotype,__FILE__,__LINE__);
+            return pio_err(ios, file, PIO_EBADIOTYPE, __FILE__, __LINE__);
         }
     }
 
@@ -1824,7 +1824,7 @@ int PIOc_get_varm_longlong (int ncid, int varid, const PIO_Offset start[], const
             break;
 #endif
         default:
-            ierr = iotype_error(file->iotype,__FILE__,__LINE__);
+            return pio_err(ios, file, PIO_EBADIOTYPE, __FILE__, __LINE__);
         }
     }
 
@@ -1901,7 +1901,7 @@ int PIOc_get_varm_short (int ncid, int varid, const PIO_Offset start[], const PI
             break;
 #endif
         default:
-            ierr = iotype_error(file->iotype,__FILE__,__LINE__);
+            return pio_err(ios, file, PIO_EBADIOTYPE, __FILE__, __LINE__);
         }
     }
 
@@ -1978,7 +1978,7 @@ int PIOc_get_varm_ulonglong (int ncid, int varid, const PIO_Offset start[], cons
             break;
 #endif
         default:
-            ierr = iotype_error(file->iotype,__FILE__,__LINE__);
+            return pio_err(ios, file, PIO_EBADIOTYPE, __FILE__, __LINE__);
         }
     }
 

@@ -121,10 +121,13 @@ extern "C" {
 
     /* Check whether an IO type is valid for this build. */
     int iotype_is_valid(int iotype);    
-    
-    int iotype_error(int iotype, const char *fname, int line);
+
+    /* Print error message and abort. */
     void piodie(const char *msg, const char *fname, int line);
+
+    /* Assert that an expression is true. */
     void pioassert(bool exp, const char *msg,const char *fname, const int line);
+    
     int CalcStartandCount(const int basetype, const int ndims, const int *gdims, const int num_io_procs,
                           const int myiorank, PIO_Offset *start, PIO_Offset *kount);
 
@@ -180,7 +183,10 @@ extern "C" {
                                 const int gsize[], const int ndims, io_desc_t *iodesc);
     void print_trace (FILE *fp);
     void cn_buffer_report(iosystem_desc_t ios, bool collective);
-    void compute_buffer_init(iosystem_desc_t ios);
+
+    /* Initialize the compute buffer. */
+    int compute_buffer_init(iosystem_desc_t ios);
+    
     void free_cn_buffer_pool(iosystem_desc_t ios);
     void flush_buffer(int ncid, wmulti_buffer *wmb, bool flushtodisk);
     void piomemerror(iosystem_desc_t ios, size_t req, char *fname, int line);

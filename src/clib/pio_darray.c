@@ -145,7 +145,7 @@ int PIOc_write_darray_multi(int ncid, const int *vid, int ioid, int nvars, PIO_O
          } */
 
     /* Write the darray based on the iotype. */
-    switch(file->iotype)
+    switch (file->iotype)
     {
     case PIO_IOTYPE_NETCDF4P:
     case PIO_IOTYPE_PNETCDF:
@@ -164,6 +164,8 @@ int PIOc_write_darray_multi(int ncid, const int *vid, int ioid, int nvars, PIO_O
                                                 vdesc0->iobuf, frame);
 
         break;
+    default:
+        return pio_err(NULL, NULL, PIO_EBADIOTYPE, __FILE__, __LINE__);
     }
 
     /* For PNETCDF the iobuf is freed in flush_output_buffer() */
@@ -210,7 +212,7 @@ int PIOc_write_darray_multi(int ncid, const int *vid, int ioid, int nvars, PIO_O
                     ((double *)vdesc0->fillbuf)[i + nv * iodesc->holegridsize] = ((double *)fillvalue)[nv];
 
         /* Write the darray based on the iotype. */
-        switch(file->iotype)
+        switch (file->iotype)
         {
         case PIO_IOTYPE_PNETCDF:
         case PIO_IOTYPE_NETCDF4P:
@@ -228,6 +230,8 @@ int PIOc_write_darray_multi(int ncid, const int *vid, int ioid, int nvars, PIO_O
                                                     iodesc->holegridsize, iodesc->num_aiotasks,
                                                     vdesc0->fillbuf, frame);
             break;
+        default:
+            return pio_err(ios, file, PIO_EBADIOTYPE, __FILE__, __LINE__);
         }
 
         /* For PNETCDF fillbuf is freed in flush_output_buffer() */
@@ -566,7 +570,7 @@ int PIOc_read_darray(int ncid, int vid, int ioid, PIO_Offset arraylen,
     }
 
     /* Call the correct darray read function based on iotype. */
-    switch(file->iotype)
+    switch (file->iotype)
     {
     case PIO_IOTYPE_NETCDF:
     case PIO_IOTYPE_NETCDF4C:
@@ -577,7 +581,7 @@ int PIOc_read_darray(int ncid, int vid, int ioid, PIO_Offset arraylen,
         ierr = pio_read_darray_nc(file, iodesc, vid, iobuf);
         break;
     default:
-        ierr = iotype_error(file->iotype,__FILE__,__LINE__);
+        return pio_err(NULL, NULL, PIO_EBADIOTYPE, __FILE__, __LINE__);
     }
 
     /* If a rearranger was specified, rearrange the data. */

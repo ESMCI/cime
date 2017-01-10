@@ -544,6 +544,7 @@ int PIOc_Init_Intracomm(MPI_Comm comp_comm, int num_iotasks, int stride, int bas
     int lbase;
     int num_comptasks; /* The size of the comp_comm. */
     int mpierr;        /* Return value for MPI calls. */
+    int ret;           /* Return code for function calls. */
 
     /* Turn on the logging system. */
     pio_init_logging();
@@ -645,7 +646,8 @@ int PIOc_Init_Intracomm(MPI_Comm comp_comm, int num_iotasks, int stride, int bas
     *iosysidp = pio_add_to_iosystem_list(ios);
 
     /* Allocate buffer space for compute nodes. */
-    compute_buffer_init(*ios);
+    if ((ret = compute_buffer_init(*ios)))
+        return ret;
 
     LOG((2, "Init_Intracomm complete iosysid = %d", *iosysidp));
 

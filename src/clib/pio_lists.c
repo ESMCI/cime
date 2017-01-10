@@ -79,6 +79,9 @@ int pio_get_file(int ncid, file_desc_t **cfile1)
     if (!cfile->iosystem)
         return PIO_EINVAL;
 
+    /* Let's just ensure we have a valid IO type. */
+    pioassert(iotype_is_valid(cfile->iotype), "invalid IO type", __FILE__, __LINE__);
+
     /* Copy pointer to file info. */
     *cfile1 = cfile;
 
