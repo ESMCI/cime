@@ -1167,13 +1167,13 @@ int PIOc_put_var(int ncid, int varid, const void *buf, PIO_Offset bufcount,
         case PIO_IOTYPE_PNETCDF:
             vdesc = file->varlist + varid;
 
-            if (vdesc->nreqs%PIO_REQUEST_ALLOC_CHUNK == 0 )
+            if (vdesc->nreqs % PIO_REQUEST_ALLOC_CHUNK == 0 )
             {
                 if (!(vdesc->request = realloc(vdesc->request,
                                                sizeof(int) * (vdesc->nreqs + PIO_REQUEST_ALLOC_CHUNK))))
                     return PIO_ENOMEM;
             }
-            request = vdesc->request+vdesc->nreqs;
+            request = vdesc->request + vdesc->nreqs;
 
             if (ios->io_rank == 0)
                 ierr = ncmpi_bput_var(file->fh, varid, buf, bufcount, buftype, request);
@@ -1239,7 +1239,7 @@ int PIOc_put_vars(int ncid, int varid, const PIO_Offset *start, const PIO_Offset
 
     if (ios->async_interface && !ios->ioproc)
     {
-        if (ios->compmaster)
+        if (ios->compmaster == MPI_ROOT)
             mpierr = MPI_Send(&msg, 1, MPI_INT, ios->ioroot, 1, ios->union_comm);
         mpierr = MPI_Bcast(&ncid, 1, MPI_INT, ios->compmaster, ios->intercomm);
     }
@@ -1272,7 +1272,7 @@ int PIOc_put_vars(int ncid, int varid, const PIO_Offset *start, const PIO_Offset
                                                sizeof(int) * (vdesc->nreqs + PIO_REQUEST_ALLOC_CHUNK))))
                     return PIO_ENOMEM;
             }
-            request = vdesc->request+vdesc->nreqs;
+            request = vdesc->request + vdesc->nreqs;
 
             if(ios->io_rank == 0)
                 ierr = ncmpi_bput_vars(file->fh, varid, start, count, stride, buf,
@@ -1332,7 +1332,7 @@ int PIOc_put_var1(int ncid, int varid, const PIO_Offset *index, const void *buf,
 
     if (ios->async_interface && !ios->ioproc)
     {
-        if (ios->compmaster)
+        if (ios->compmaster == MPI_ROOT)
             mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
         mpierr = MPI_Bcast(&ncid, 1, MPI_INT, ios->compmaster, ios->intercomm);
     }
@@ -1359,13 +1359,13 @@ int PIOc_put_var1(int ncid, int varid, const PIO_Offset *index, const void *buf,
         case PIO_IOTYPE_PNETCDF:
             vdesc = file->varlist + varid;
 
-            if (vdesc->nreqs%PIO_REQUEST_ALLOC_CHUNK == 0)
+            if (vdesc->nreqs % PIO_REQUEST_ALLOC_CHUNK == 0)
             {
                 if (!(vdesc->request = realloc(vdesc->request,
                                                sizeof(int) * (vdesc->nreqs + PIO_REQUEST_ALLOC_CHUNK))))
                     return PIO_ENOMEM;
             }
-            request = vdesc->request+vdesc->nreqs;
+            request = vdesc->request + vdesc->nreqs;
 
             if (ios->io_rank==0)
                 ierr = ncmpi_bput_var1(file->fh, varid, index, buf, bufcount, buftype, request);
@@ -1427,8 +1427,8 @@ int PIOc_put_vara(int ncid, int varid, const PIO_Offset *start, const PIO_Offset
 
     if (ios->async_interface && !ios->ioproc)
     {
-        if (ios->compmaster)
-            mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
+        if (ios->compmaster == MPI_ROOT)
+            mpierr = MPI_Send(&msg, 1, MPI_INT, ios->ioroot, 1, ios->union_comm);
         mpierr = MPI_Bcast(&ncid, 1, MPI_INT, ios->compmaster, ios->intercomm);
     }
 
@@ -1446,7 +1446,7 @@ int PIOc_put_vara(int ncid, int varid, const PIO_Offset *start, const PIO_Offset
         case PIO_IOTYPE_NETCDF4C:
 #endif
         case PIO_IOTYPE_NETCDF:
-            if(ios->io_rank == 0)
+            if (ios->io_rank == 0)
                 ierr = nc_put_vara(file->fh, varid, (size_t *)start, (size_t *)count, buf);
             break;
 #endif
@@ -1454,7 +1454,7 @@ int PIOc_put_vara(int ncid, int varid, const PIO_Offset *start, const PIO_Offset
         case PIO_IOTYPE_PNETCDF:
             vdesc = file->varlist + varid;
 
-            if(vdesc->nreqs%PIO_REQUEST_ALLOC_CHUNK == 0 )
+            if (vdesc->nreqs % PIO_REQUEST_ALLOC_CHUNK == 0 )
             {
                 if (!(vdesc->request = realloc(vdesc->request,
                                                sizeof(int) * (vdesc->nreqs + PIO_REQUEST_ALLOC_CHUNK))))
@@ -1462,11 +1462,10 @@ int PIOc_put_vara(int ncid, int varid, const PIO_Offset *start, const PIO_Offset
             }
             request = vdesc->request + vdesc->nreqs;
 
-            if(ios->io_rank==0){
+            if (ios->io_rank == 0)
                 ierr = ncmpi_bput_vara(file->fh, varid, start, count, buf, bufcount, buftype, request);
-            }else{
+            else
                 *request = PIO_REQ_NULL;
-            }
             vdesc->nreqs++;
             flush_output_buffer(file, false, 0);
             break;
