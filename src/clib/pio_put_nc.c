@@ -1154,13 +1154,13 @@ int PIOc_put_var(int ncid, int varid, const void *buf, PIO_Offset bufcount,
 #ifdef _NETCDF4
         case PIO_IOTYPE_NETCDF4P:
             ierr = nc_var_par_access(file->fh, varid, NC_COLLECTIVE);
-            ierr = nc_put_var(file->fh, varid,   buf);
+            ierr = nc_put_var(file->fh, varid, buf);
             break;
         case PIO_IOTYPE_NETCDF4C:
 #endif
         case PIO_IOTYPE_NETCDF:
             if (ios->io_rank == 0)
-                ierr = nc_put_var(file->fh, varid,   buf);
+                ierr = nc_put_var(file->fh, varid, buf);
             break;
 #endif
 #ifdef _PNETCDF
