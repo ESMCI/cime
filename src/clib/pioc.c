@@ -497,24 +497,62 @@ int PIOc_InitDecomp_bc(const int iosysid, const int basetype, const int ndims, c
 
 /**
  * Internal library util function to initialize rearranger options
- * @param rearr_opts pointer to rearranger options
+ * @param iosys pointer to iosystem descriptor
+ * @param user_rearr_opts pointer to user rearranger options
  */
 
-static void init_rearr_opts(rearr_opt_t *rearr_opts)
+static void init_rearr_opts(iosystem_desc_t *iosys, rearr_opt_t *user_rearr_opts)
 {
+    /* The old default for max pending requests - we no longer use it*/
     const int DEF_P2P_MAXREQ = 64;
+    /* Disable handshake/isend and set max_pend_req to unlimited */
+    const rearr_comm_fc_opt_t def_comm_nofc_opts = 
+                  { false, false, PIO_REARR_COMM_UNLIMITED_PEND_REQ };
+    /* Disable handshake /isend and set max_pend_req = 0 to turn of throttling */
+    const rearr_comm_fc_opt_t def_coll_comm_fc_opts = { false, false, 0 };
 
-    assert(rearr_opts != NULL);
-    rearr_opts->comm_type = PIO_REARR_COMM_P2P;
-    rearr_opts->fcd = PIO_REARR_COMM_FC_2D_ENABLE;
-
-    rearr_opts->comm_fc_opts_comp2io.enable_hs = true;
-    rearr_opts->comm_fc_opts_comp2io.enable_isend = false;
-    rearr_opts->comm_fc_opts_comp2io.max_pend_req = DEF_P2P_MAXREQ;
-
-    rearr_opts->comm_fc_opts_io2comp.enable_hs = true;
-    rearr_opts->comm_fc_opts_io2comp.enable_isend = false;
-    rearr_opts->comm_fc_opts_io2comp.max_pend_req = DEF_P2P_MAXREQ;
+    assert(iosys != NULL);
+    if(!user_rearr_opts)
+    {
+        /* User has not specified rearranger options - default to 
+         * coll - i.e., no flow control */
+        iosys->rearr_opts.comm_type = PIO_REARR_COMM_COLL;
+        iosys->rearr_opts.fcd = PIO_REARR_COMM_FC_2D_DISABLE;
+        iosys->rearr_opts.comm_fc_opts_comp2io = def_coll_comm_fc_opts;
+        iosys->rearr_opts.comm_fc_opts_io2comp = def_coll_comm_fc_opts;
+    }
+    else
+    {
+        iosys->rearr_opts = *user_rearr_opts;
+        /* Set the defaults, in case the user did not set them explicitly */
+        if(user_rearr_opts->comm_type == PIO_REARR_COMM_COLL)
+        {
+            /* Hard reset flow control options */
+            iosys->rearr_opts.fcd = PIO_REARR_COMM_FC_2D_DISABLE;
+            iosys->rearr_opts.comm_fc_opts_comp2io = def_coll_comm_fc_opts;
+            iosys->rearr_opts.comm_fc_opts_io2comp = def_coll_comm_fc_opts;
+        }
+        else if(user_rearr_opts->comm_type == PIO_REARR_COMM_P2P)
+        {
+            if(user_rearr_opts->fcd == PIO_REARR_COMM_FC_2D_DISABLE)
+            {
+                /* Hard reset flow control opts to defaults */
+                iosys->rearr_opts.comm_fc_opts_comp2io = def_comm_nofc_opts;
+                iosys->rearr_opts.comm_fc_opts_io2comp = def_comm_nofc_opts;
+            }
+            else if(user_rearr_opts->fcd == PIO_REARR_COMM_FC_1D_COMP2IO)
+            {
+                /* Hard reset io2comp dir to defaults */
+                iosys->rearr_opts.comm_fc_opts_io2comp = def_comm_nofc_opts;
+            }
+            else if(user_rearr_opts->fcd == PIO_REARR_COMM_FC_1D_IO2COMP)
+            {
+                /* Hard reset comp2io dir to defaults */
+                iosys->rearr_opts.comm_fc_opts_comp2io = def_comm_nofc_opts;
+            }
+            /* Don't reset if flow control is enabled in both directions by user */
+        }
+    }
 }
 
 /**
@@ -571,10 +609,7 @@ int PIOc_Init_Intracomm(MPI_Comm comp_comm, int num_iotasks, int stride, int bas
     ios->default_rearranger = rearr;
     ios->num_iotasks = num_iotasks;
     ios->num_comptasks = num_comptasks;
-    if (rearr_opts)
-        ios->rearr_opts = *rearr_opts;
-    else
-        init_rearr_opts(&(ios->rearr_opts));
+    init_rearr_opts(ios, rearr_opts);
 
     /* Copy the computation communicator into union_comm. */
     if ((mpierr = MPI_Comm_dup(comp_comm, &ios->union_comm)))
