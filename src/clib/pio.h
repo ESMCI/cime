@@ -640,6 +640,9 @@ extern "C" {
     int PIOc_set_blocksize(int newblocksize);
     int PIOc_File_is_Open(int ncid);
 
+    /* Set the IO node data buffer size limit. */
+    PIO_Offset PIOc_set_buffer_size_limit(PIO_Offset limit);
+
     /* Set the error hanlding for a file. */
     int PIOc_Set_File_Error_Handling(int ncid, int method);
 
