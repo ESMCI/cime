@@ -201,12 +201,9 @@ void compute_maxIObuffersize(MPI_Comm io_comm, io_desc_t *iodesc)
         check_mpi(NULL, mpierr, __FILE__, __LINE__);
 
     iodesc->maxiobuflen = totiosize;
+    
     if (iodesc->maxiobuflen <= 0)
-    {
-        fprintf(stderr, "%s %d %ld %ld %d %d %d\n", __FILE__,__LINE__, iodesc->maxiobuflen,
-                totiosize, MPI_OFFSET, MPI_MAX, io_comm);
-        piodie("ERROR: maxiobuflen<=0", __FILE__, __LINE__);
-    }
+        pio_err(NULL, NULL, PIO_EINVAL, __FILE__, __LINE__);        
 }
 
 /**
@@ -1248,14 +1245,10 @@ int box_rearrange_create(const iosystem_desc_t ios, const int maplen, const PIO_
         }
     }
 
+    /* Check that a destination is found for each compmap entry. */
     for (k = 0; k < maplen; k++)
-    {
         if (dest_ioproc[k] < 0 && compmap[k] > 0)
-        {
-            fprintf(stderr,"No destination found for compmap[%d] = %ld\n", k, compmap[k]);
-            piodie(" ", __FILE__, __LINE__);
-        }
-    }
+            return pio_err((iosystem_desc_t *)&ios, NULL, PIO_EINVAL, __FILE__, __LINE__);
 
     compute_counts(ios, iodesc, maplen, dest_ioproc, dest_ioindex, ios.union_comm);
 
