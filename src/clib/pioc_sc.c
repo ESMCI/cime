@@ -17,20 +17,6 @@
  * used. */
 int blocksize = DEFAULT_BLOCKSIZE;
 
-/**
- * Set the target blocksize for the box rearranger.
- *
- * @param newblocksize the new blocksize.
- * @returns 0 for success.
- * @ingroup PIO_set_blocksize
- */
-int PIOc_set_blocksize(int newblocksize)
-{
-    if (newblocksize > 0)
-        blocksize = newblocksize;
-    return PIO_NOERR;
-}
-
 /* Recursive Standard C Function: Greatest Common Divisor.
  *
  * @param a
