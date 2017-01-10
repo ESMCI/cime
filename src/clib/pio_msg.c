@@ -2030,19 +2030,6 @@ int finalize_handler(iosystem_desc_t *ios, int index)
     return PIO_NOERR;
 }
 
-/** This function is called if no other handler exists. I'm not
- * actually sure this function should exist.
- *
- * @param ios pointer to the iosystem info
- * @param msg the unhandled message
- * @returns always returns 0
- */
-int pio_callback_handler(iosystem_desc_t *ios, int msg)
-{
-    assert(ios);
-    return PIO_NOERR;
-}
-
 /**
  * This function is called by the IO tasks.  This function will not
  * return, unless there is an error.
@@ -2250,7 +2237,8 @@ int pio_msg_handler2(int io_rank, int component_count, iosystem_desc_t **iosys,
             msg = -1;
             break;
         default:
-            pio_callback_handler(my_iosys, msg);
+            LOG((0, "unknown message received %d", msg));
+            return PIO_EINVAL;
         }
 
         /* If an error was returned by the handler, do something! */
