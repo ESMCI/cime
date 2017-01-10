@@ -634,8 +634,6 @@ create_nc_sample_2(int iosysid, int format, char *filename, int my_rank, int *nc
     if ((ret = PIOc_rename_var(ncid, 0, VAR_NAME_S2)))
         return ret;
 
-    /* char *buf111 = malloc(19999); */
-
     /* Add a global attribute. */
     printf("%d writing attributes %s\n", my_rank, ATT_NAME_S2);
     int att_data = ATT_VALUE_S2;

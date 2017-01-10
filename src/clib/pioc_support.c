@@ -525,21 +525,6 @@ int pio_err(iosystem_desc_t *ios, file_desc_t *file, int err_num, const char *fn
 }
 
 /**
- * Handle IO type error.
- *
- * @param iotype the undefined IO type
- * @param fname name of code file where error occured
- * @param line the line of code where the error occurred.
- * @returns PIO_EBADIOTYPE
- */
-int iotype_error(int iotype, const char *fname, int line)
-{
-    fprintf(stderr, "ERROR: iotype %d not defined in build %s %d\n",
-            iotype, fname ? fname : "_", line);
-    return PIO_EBADIOTYPE;
-}
-
-/**
  * Allocate an region.
  *
  * ndims the number of dimensions for the data in this region.
@@ -1160,8 +1145,7 @@ int PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype,
 #endif
 
         default:
-            ierr = iotype_error(file->iotype,__FILE__,__LINE__);
-            break;
+            return pio_err(ios, file, PIO_EBADIOTYPE, __FILE__, __LINE__);
         }
 
         /* If the caller requested a retry, and we failed to open a

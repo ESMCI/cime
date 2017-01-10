@@ -377,8 +377,6 @@ int main(int argc, char **argv)
                 if ((ret = PIOc_rename_var(ncid, 0, VAR_NAME)))
                     ERR(ret);
 
-                char *buf111 = malloc(19999);
-
                 /* Add a global attribute. */
 		printf("%d test_intercomm2 writing attributes %s\n", my_rank, ATT_NAME);
                 int att_data = ATT_VALUE;

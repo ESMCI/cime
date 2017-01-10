@@ -25,41 +25,35 @@ extern void *CN_bpool;
 /* Maximum buffer usage. */
 extern PIO_Offset maxusage;
 
-/** Initialize the compute buffer to size pio_cnbuffer_limit.
+/** 
+ * Initialize the compute buffer to size pio_cnbuffer_limit.
  *
  * This routine initializes the compute buffer pool if the bget memory
  * management is used. If malloc is used (that is, PIO_USE_MALLOC is
  * non zero), this function does nothing.
  *
  * @param ios the iosystem descriptor which will use the new buffer
+ * @returns 0 for success, error code otherwise.
  */
-void compute_buffer_init(iosystem_desc_t ios)
+int compute_buffer_init(iosystem_desc_t ios)
 {
 #if !PIO_USE_MALLOC
 
     if (!CN_bpool)
     {
         if (!(CN_bpool = malloc(pio_cnbuffer_limit)))
-        {
-            char errmsg[180];
-            sprintf(errmsg,"Unable to allocate a buffer pool of size %d on task %d:"
-                    " try reducing pio_cnbuffer_limit\n", pio_cnbuffer_limit, ios.comp_rank);
-            piodie(errmsg, __FILE__, __LINE__);
-        }
+            return pio_err(&ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);            
 
         bpool(CN_bpool, pio_cnbuffer_limit);
-        if (!CN_bpool)
-        {
-            char errmsg[180];
-            sprintf(errmsg,"Unable to allocate a buffer pool of size %d on task %d:"
-                    " try reducing pio_cnbuffer_limit\n", pio_cnbuffer_limit, ios.comp_rank);
-            piodie(errmsg, __FILE__, __LINE__);
-        }
+        if (!CN_bpool) 
+            return pio_err(&ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);            
 
         bectl(NULL, malloc, free, pio_cnbuffer_limit);
     }
 #endif
     LOG((2, "compute_buffer_init CN_bpool = %d", CN_bpool));
+
+    return PIO_NOERR;
 }
 
 /**
@@ -219,7 +213,7 @@ int pio_write_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid,
                 }
             }
 
-            switch(file->iotype)
+            switch (file->iotype)
             {
 #ifdef _NETCDF
 #ifdef _NETCDF4
@@ -417,7 +411,7 @@ int pio_write_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid,
                 break;
 #endif /* _PNETCDF */
             default:
-                ierr = iotype_error(file->iotype,__FILE__,__LINE__);
+                return pio_err(ios, file, PIO_EBADIOTYPE, __FILE__, __LINE__);
             }
 
             /* Move to the next region. */
@@ -596,7 +590,7 @@ int pio_write_darray_multi_nc(file_desc_t *file, int nvars, const int *vid, int 
                 }
             }
 
-            switch(file->iotype)
+            switch (file->iotype)
             {
 #ifdef _NETCDF4
             case PIO_IOTYPE_NETCDF4P:
@@ -704,7 +698,7 @@ int pio_write_darray_multi_nc(file_desc_t *file, int nvars, const int *vid, int 
                 break;
 #endif
             default:
-                ierr = iotype_error(file->iotype,__FILE__,__LINE__);
+                return pio_err(ios, file, PIO_EBADIOTYPE, __FILE__, __LINE__);
             }
 
             /* Go to next region. */
@@ -1122,7 +1116,7 @@ int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid, void *iobu
                 }
             }
 
-            switch(file->iotype)
+            switch (file->iotype)
             {
 #ifdef _NETCDF4
             case PIO_IOTYPE_NETCDF4P:
@@ -1174,8 +1168,7 @@ int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid, void *iobu
             break;
 #endif
             default:
-                ierr = iotype_error(file->iotype,__FILE__,__LINE__);
-
+                return pio_err(ios, file, PIO_EBADIOTYPE, __FILE__, __LINE__);
             }
             if (region)
                 region = region->next;
@@ -1405,8 +1398,7 @@ int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc, int vid,
                     else if (iodesc->basetype == MPI_FLOAT || iodesc->basetype == MPI_REAL4)
                         ierr = nc_get_vara_float(file->fh, vid, start, count,  bufptr);
                     else
-                        fprintf(stderr,"Type not recognized %d in pioc_write_darray_nc_serial\n",
-                                (int)iodesc->basetype);
+                        return pio_err(ios, NULL, PIO_EBADTYPE, __FILE__, __LINE__);
 
                     if (ierr)
                         for (int i = 0; i < fndims; i++)

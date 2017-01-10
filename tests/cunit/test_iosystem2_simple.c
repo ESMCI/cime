@@ -46,6 +46,10 @@ int main(int argc, char **argv)
      * nothing. */
     if(my_rank < TARGET_NTASKS)
     {
+        /* Try setting the blocksize. */
+        if ((ret = PIOc_set_blocksize(2048)))
+            ERR(ret);
+        
         /* Figure out iotypes. */
         if ((ret = get_iotypes(&num_flavors, flavor)))
             ERR(ret);

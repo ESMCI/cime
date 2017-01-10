@@ -352,7 +352,7 @@ int PIOc_closefile(int ncid)
             break;
 #endif
         default:
-            ierr = iotype_error(file->iotype,__FILE__,__LINE__);
+            return pio_err(ios, file, PIO_EBADIOTYPE, __FILE__, __LINE__);
         }
     }
 
@@ -531,7 +531,7 @@ int PIOc_sync(int ncid)
                 break;
 #endif
             default:
-                ierr = iotype_error(file->iotype,__FILE__,__LINE__);
+                return pio_err(ios, file, PIO_EBADIOTYPE, __FILE__, __LINE__);
             }
         }
 

@@ -16,6 +16,10 @@ static int counter = 0;
 /** The default error handler used when iosystem cannot be located. */
 int default_error_handler = PIO_INTERNAL_ERROR;
 
+/** The target blocksize for each io task when the box rearranger is
+ * used (see pio_sc.c). */
+extern int blocksize;
+
 /**
  * Check to see if PIO has been initialized.
  *
@@ -544,6 +548,7 @@ int PIOc_Init_Intracomm(MPI_Comm comp_comm, int num_iotasks, int stride, int bas
     int lbase;
     int num_comptasks; /* The size of the comp_comm. */
     int mpierr;        /* Return value for MPI calls. */
+    int ret;           /* Return code for function calls. */
 
     /* Turn on the logging system. */
     pio_init_logging();
@@ -645,7 +650,8 @@ int PIOc_Init_Intracomm(MPI_Comm comp_comm, int num_iotasks, int stride, int bas
     *iosysidp = pio_add_to_iosystem_list(ios);
 
     /* Allocate buffer space for compute nodes. */
-    compute_buffer_init(*ios);
+    if ((ret = compute_buffer_init(*ios)))
+        return ret;
 
     LOG((2, "Init_Intracomm complete iosysid = %d", *iosysidp));
 
@@ -1330,3 +1336,18 @@ int PIOc_Init_Async(MPI_Comm world, int num_io_procs, int *io_proc_list,
     LOG((2, "successfully done with PIO_Init_Async"));
     return PIO_NOERR;
 }
+
+/**
+ * Set the target blocksize for the box rearranger.
+ *
+ * @param newblocksize the new blocksize.
+ * @returns 0 for success.
+ * @ingroup PIO_set_blocksize
+ */
+int PIOc_set_blocksize(int newblocksize)
+{
+    if (newblocksize > 0)
+        blocksize = newblocksize;
+    return PIO_NOERR;
+}
+

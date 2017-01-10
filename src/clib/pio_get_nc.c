@@ -1102,7 +1102,7 @@ int PIOc_get_var(int ncid, int varid, void *buf, PIO_Offset bufcount, MPI_Dataty
             break;
 #endif
         default:
-            ierr = iotype_error(file->iotype,__FILE__,__LINE__);
+            return pio_err(ios, file, PIO_EBADIOTYPE, __FILE__, __LINE__);
         }
     }
 
@@ -1193,7 +1193,7 @@ int PIOc_get_var1(int ncid, int varid, const PIO_Offset *index, void *buf,
             break;
 #endif
         default:
-            ierr = iotype_error(file->iotype,__FILE__,__LINE__);
+            return pio_err(ios, file, PIO_EBADIOTYPE, __FILE__, __LINE__);
         }
     }
 
@@ -1285,7 +1285,7 @@ int PIOc_get_vara(int ncid, int varid, const PIO_Offset *start, const PIO_Offset
             break;
 #endif
         default:
-            ierr = iotype_error(file->iotype,__FILE__,__LINE__);
+            return pio_err(ios, file, PIO_EBADIOTYPE, __FILE__, __LINE__);
         }
     }
 
@@ -1381,7 +1381,7 @@ int PIOc_get_vars(int ncid, int varid, const PIO_Offset *start, const PIO_Offset
             break;
 #endif
         default:
-            ierr = iotype_error(file->iotype,__FILE__,__LINE__);
+            return pio_err(ios, file, PIO_EBADIOTYPE, __FILE__, __LINE__);
         }
     }
 
