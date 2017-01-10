@@ -1716,7 +1716,6 @@ int PIOc_def_dim(int ncid, const char *name, PIO_Offset len, int *idp)
     int ierr;              /* Return code from function calls. */
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
 
-
     /* Find the info about this file. */
     if ((ierr = pio_get_file(ncid, &file)))
         return pio_err(NULL, NULL, ierr, __FILE__, __LINE__);

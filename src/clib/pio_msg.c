@@ -981,7 +981,7 @@ int inq_var_chunking_handler(iosystem_desc_t *ios)
     int ncid;
     int varid;
     char storage_present, chunksizes_present;
-    int storage, *storagep;
+    int storage, *storagep = NULL;
     PIO_Offset chunksizes[NC_MAX_DIMS], *chunksizesp = NULL;
     int mpierr;
     int ret;

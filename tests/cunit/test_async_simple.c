@@ -54,6 +54,17 @@ int main(int argc, char **argv)
         /* Is the current process a computation task? */
         int comp_task = my_rank < NUM_IO_PROCS ? 0 : 1;
 
+        /* Check for invalid values. */
+        if (PIOc_Init_Async(test_comm, NUM_IO_PROCS, NULL, COMPONENT_COUNT,
+                            num_procs, NULL, NULL, NULL, NULL) != PIO_EINVAL)
+            ERR(ERR_WRONG);
+        if (PIOc_Init_Async(test_comm, NUM_IO_PROCS, NULL, -1,
+                            num_procs, NULL, NULL, NULL, iosysid) != PIO_EINVAL)
+            ERR(ERR_WRONG);
+        if (PIOc_Init_Async(test_comm, NUM_IO_PROCS, NULL, COMPONENT_COUNT,
+                            NULL, NULL, NULL, NULL, iosysid) != PIO_EINVAL)
+            ERR(ERR_WRONG);
+
         /* Initialize the IO system. */
         if ((ret = PIOc_Init_Async(test_comm, NUM_IO_PROCS, NULL, COMPONENT_COUNT,
                                    num_procs, NULL, NULL, NULL, iosysid)))

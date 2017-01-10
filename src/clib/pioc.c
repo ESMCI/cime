@@ -28,11 +28,11 @@ int PIOc_iosystem_is_active(int iosysid, bool *active)
 {
     iosystem_desc_t *ios;
 
-    if (!(ios = pio_get_iosystem_from_id(iosysid)))
-        return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
+    /* Get the ios if there is one. */
+    ios = pio_get_iosystem_from_id(iosysid);
 
     if (active)
-        if (ios->comp_comm == MPI_COMM_NULL && ios->io_comm == MPI_COMM_NULL)
+        if (!ios || ios->comp_comm == MPI_COMM_NULL && ios->io_comm == MPI_COMM_NULL)
             *active = false;
         else
             *active = true;
@@ -542,10 +542,19 @@ int PIOc_Init_Intracomm(MPI_Comm comp_comm, int num_iotasks, int stride, int bas
     iosystem_desc_t *ios;
     int ustride;
     int lbase;
-    int mpierr; /* Return value for MPI calls. */
+    int num_comptasks; /* The size of the comp_comm. */
+    int mpierr;        /* Return value for MPI calls. */
 
     /* Turn on the logging system. */
     pio_init_logging();
+
+    /* Find the number of computation tasks. */
+    if ((mpierr = MPI_Comm_size(comp_comm, &num_comptasks)))
+        return check_mpi2(NULL, NULL, mpierr, __FILE__, __LINE__);
+
+    /* Check the inputs. */
+    if (!iosysidp || num_iotasks < 1 || num_iotasks * stride > num_comptasks)    
+        return pio_err(NULL, NULL, PIO_EINVAL, __FILE__, __LINE__);
 
     LOG((1, "PIOc_Init_Intracomm comp_comm = %d num_iotasks = %d stride = %d base = %d "
          "rearr = %d", comp_comm, num_iotasks, stride, base, rearr));
@@ -559,6 +568,7 @@ int PIOc_Init_Intracomm(MPI_Comm comp_comm, int num_iotasks, int stride, int bas
     ios->error_handler = default_error_handler;
     ios->default_rearranger = rearr;
     ios->num_iotasks = num_iotasks;
+    ios->num_comptasks = num_comptasks;
 
     /* Copy the computation communicator into union_comm. */
     if ((mpierr = MPI_Comm_dup(comp_comm, &ios->union_comm)))
@@ -572,33 +582,13 @@ int PIOc_Init_Intracomm(MPI_Comm comp_comm, int num_iotasks, int stride, int bas
     ios->my_comm = ios->comp_comm;
     ustride = stride;
 
-    /* Find MPI rank and number of tasks in comp_comm communicator. */
+    /* Find MPI rank comp_comm communicator. */
     if ((mpierr = MPI_Comm_rank(ios->comp_comm, &ios->comp_rank)))
-        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
-    if ((mpierr = MPI_Comm_size(ios->comp_comm, &ios->num_comptasks)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
 
     if (ios->comp_rank == 0)
         ios->compmaster = MPI_ROOT;
     LOG((2, "comp_rank = %d num_comptasks = %d", ios->comp_rank, ios->num_comptasks));
-
-    /* Ensure that settings for number of computation tasks, number
-     * of IO tasks, and the stride are reasonable. */
-    if (ios->num_comptasks == 1 && num_iotasks * ustride > 1)
-    {
-        // This is a serial run with a bad configuration. Set up a single task.
-        fprintf(stderr, "PIO_TP PIOc_Init_Intracomm reset stride and tasks.\n");
-        ios->num_iotasks = 1;
-        ustride = 1;
-    }
-
-    if (ios->num_iotasks < 1 || ios->num_iotasks * ustride > ios->num_comptasks)
-    {
-        fprintf(stderr, "PIO_TP PIOc_Init_Intracomm error\n");
-        fprintf(stderr, "num_iotasks=%d, ustride=%d, num_comptasks=%d\n", num_iotasks,
-                ustride, ios->num_comptasks);
-        return pio_err(ios, NULL, PIO_EINVAL, __FILE__, __LINE__);
-    }
 
     /* Create an array that holds the ranks of the tasks to be used
      * for IO. NOTE that sizeof(int) should probably be 1, not
@@ -967,8 +957,7 @@ int PIOc_Init_Async(MPI_Comm world, int num_io_procs, int *io_proc_list,
     int ret;
 
     /* Check input parameters. */
-    if (num_io_procs < 1 || component_count < 1 || !num_procs_per_comp ||
-        !iosysidp)
+    if (num_io_procs < 1 || component_count < 1 || !num_procs_per_comp || !iosysidp)
         return pio_err(NULL, NULL, PIO_EINVAL, __FILE__, __LINE__);
 
     /* Temporarily limit to one computational component. */

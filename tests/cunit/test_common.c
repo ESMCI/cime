@@ -100,7 +100,7 @@ int get_iotype_name(int iotype, char *name)
     return PIO_NOERR;
 }
 
-/* Initalize the test system. 
+/* Initalize the test system.
  *
  * @param argc argument count from main().
  * @param argv argument array from main().
@@ -119,7 +119,7 @@ int pio_test_init(int argc, char **argv, int *my_rank, int *ntasks,
                           target_ntasks, 3, comm);
 }
 
-/* Initalize the test system. 
+/* Initalize the test system.
  *
  * @param argc argument count from main().
  * @param argv argument array from main().
@@ -189,15 +189,19 @@ int pio_test_init2(int argc, char **argv, int *my_rank, int *ntasks,
     }
 
     /* Turn on logging. */
-    printf("%d setting log level to %d\n", *my_rank, log_level);    
+    printf("%d setting log level to %d\n", *my_rank, log_level);
     if ((ret = PIOc_set_log_level(log_level)))
         return ret;
-    printf("%d done setting log level\n", *my_rank);    
+    printf("%d done setting log level\n", *my_rank);
+
+    /* Change error handling so we can test inval parameters. */
+    if ((ret = PIOc_set_iosystem_error_handling(PIO_DEFAULT, PIO_RETURN_ERROR, NULL)))
+        return ret;
 
     return PIO_NOERR;
 }
 
-/* Finalize a PIO C test. 
+/* Finalize a PIO C test.
 *
 * @param test_comm pointer to the test communicator.
 * @returns 0 for success, error code otherwise.
@@ -208,7 +212,7 @@ int pio_test_finalize(MPI_Comm *test_comm)
 
     /* Wait for all processes to arrive here. */
     if (MPI_Barrier(*test_comm))
-        return ERR_MPI;        
+        return ERR_MPI;
 
     /* Free communicator. */
     if (MPI_Comm_free(test_comm))
@@ -887,5 +891,3 @@ check_nc_sample_2(int iosysid, int format, char *filename, int my_rank, int *nci
 
     return 0;
 }
-
-

@@ -39,10 +39,9 @@ int main(int argc, char **argv)
     MPI_Comm test_comm;
 
     /* Initialize test. */
-    if ((ret = pio_test_init(argc, argv, &my_rank, &ntasks, TARGET_NTASKS,
-			     &test_comm)))
+    if ((ret = pio_test_init(argc, argv, &my_rank, &ntasks, TARGET_NTASKS, &test_comm)))
         ERR(ERR_INIT);
-    
+
     /* Test code runs on TARGET_NTASKS tasks. The left over tasks do
      * nothing. */
     if(my_rank < TARGET_NTASKS)
@@ -63,9 +62,27 @@ int main(int argc, char **argv)
         if ((ret = MPI_Comm_size(newcomm, &new_size)))
             MPIERR(ret);
 
+        /* Check that some bad inputs are rejected. */
+        if (PIOc_Init_Intracomm(newcomm, new_size, STRIDE + 30, BASE, REARRANGER,
+                                &iosysid) != PIO_EINVAL)
+            return ERR_WRONG;
+        if (PIOc_Init_Intracomm(newcomm, new_size, STRIDE, BASE, REARRANGER, NULL) != PIO_EINVAL)
+            return ERR_WRONG;
+
         /* Initialize an intracomm for evens/odds. */
         if ((ret = PIOc_Init_Intracomm(newcomm, new_size, STRIDE, BASE, REARRANGER, &iosysid)))
             ERR(ret);
+
+        /* Test some support functions. */
+        bool active;
+        if ((ret = PIOc_iosystem_is_active(iosysid, &active)))
+            ERR(ret);
+        if (!active)
+            ERR(ERR_WRONG);
+        if ((ret = PIOc_iosystem_is_active(iosysid + 1, &active)))
+            ERR(ret);
+        if (active)
+            ERR(ERR_WRONG);
 
         /* Initialize an intracomm for all processes. */
         if ((ret = PIOc_Init_Intracomm(test_comm, TARGET_NTASKS, STRIDE, BASE, REARRANGER,
