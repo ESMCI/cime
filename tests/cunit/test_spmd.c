@@ -141,6 +141,55 @@ int run_spmd_tests(MPI_Comm test_comm)
     return 0;
 }
 
+/* Test some of the functions in the file pioc_sc.c. 
+ *
+ * @param test_comm the MPI communicator that the test code is running on. 
+ * @returns 0 for success, error code otherwise.
+ */
+int run_sc_tests(MPI_Comm test_comm)
+{
+#define SC_ARRAY_LEN 3
+    int my_rank;  /* 0-based rank in test_comm. */
+    int ntasks;   /* Number of tasks in test_comm. */
+    int mpierr;   /* Return value from MPI calls. */
+    int array1[SC_ARRAY_LEN] = {7, 42, 14};
+    int array2[SC_ARRAY_LEN] = {2, 3, 7};
+    int array3[SC_ARRAY_LEN] = {90, 180, 270};
+    int ret;      /* Return value. */
+
+    /* Learn rank and size. */
+    if ((mpierr = MPI_Comm_size(test_comm, &ntasks)))
+        MPIERR(mpierr);
+    if ((mpierr = MPI_Comm_rank(test_comm, &my_rank)))
+        MPIERR(mpierr);
+
+    /* Test the gcd() function. */
+    if (gcd(0, 2) != 2)
+        return ERR_WRONG;
+    if (gcd(2, 2) != 2)
+        return ERR_WRONG;
+    if (gcd(42, 2) != 2)
+        return ERR_WRONG;
+
+    /* Test the long long version. */
+    if (lgcd(0, 2) != 2)
+        return ERR_WRONG;
+    if (lgcd(2, 2) != 2)
+        return ERR_WRONG;
+    if (lgcd(42, 2) != 2)
+        return ERR_WRONG;
+
+    /* Test the gcd_array() function. */
+    if (gcd_array(SC_ARRAY_LEN, array1) != 7)
+        return ERR_WRONG;
+    if (gcd_array(SC_ARRAY_LEN, array2) != 1)
+        return ERR_WRONG;
+    if (gcd_array(SC_ARRAY_LEN, array3) != 90)
+        return ERR_WRONG;
+
+    return 0;
+}
+
 int test_CalcStartandCount()
 {
     int ndims = 2;
@@ -208,10 +257,14 @@ int main(int argc, char **argv)
      * nothing. */
     if (my_rank < TARGET_NTASKS)
     {
+        printf("%d running tests for functions in pioc_sc.c\n", my_rank);
+        if ((ret = run_sc_tests(test_comm)))
+            return ret;
+
         printf("%d running spmd test code\n", my_rank);
         if ((ret = run_spmd_tests(test_comm)))
             return ret;
-
+        
         printf("%d running CalcStartandCount test code\n", my_rank);
         if ((ret = test_CalcStartandCount()))
             return ret;

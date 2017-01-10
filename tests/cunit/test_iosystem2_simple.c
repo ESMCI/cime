@@ -26,6 +26,9 @@
 #define BASE 0
 #define REARRANGER 1
 
+/* Ten megabytes. */
+#define TEN_MEG 10485760
+
 /* Run test. */
 int main(int argc, char **argv)
 {
@@ -35,6 +38,7 @@ int main(int argc, char **argv)
     int iosysid_world; /* The ID for the parallel I/O system. */
     int num_flavors; /* Number of PIO netCDF flavors in this build. */
     int flavor[NUM_FLAVORS]; /* iotypes for the supported netCDF IO flavors. */
+    PIO_Offset oldlimit;
     int ret; /* Return code. */
     MPI_Comm test_comm;
 
@@ -49,6 +53,12 @@ int main(int argc, char **argv)
         /* Try setting the blocksize. */
         if ((ret = PIOc_set_blocksize(2048)))
             ERR(ret);
+
+        /* Try setting the buffer size limit. */
+        oldlimit = PIOc_set_buffer_size_limit(200000);
+        if (oldlimit != TEN_MEG)
+            ERR(ERR_WRONG);
+        oldlimit = PIOc_set_buffer_size_limit(TEN_MEG);
         
         /* Figure out iotypes. */
         if ((ret = get_iotypes(&num_flavors, flavor)))
