@@ -17,11 +17,13 @@
  * used. */
 int blocksize = DEFAULT_BLOCKSIZE;
 
-/* Recursive Standard C Function: Greatest Common Divisor.
+/**
+ * Recursive Standard C Function: Greatest Common Divisor.
  *
  * @param a
  * @param b
- * @returns greates common divisor. */
+ * @returns greates common divisor. 
+ */
 int gcd(int a, int b )
 {
     if (a == 0)
@@ -29,12 +31,14 @@ int gcd(int a, int b )
     return gcd(b % a, a);
 }
 
-/* Recursive Standard C Function: Greatest Common Divisor for 64 bit
+/**
+ * Recursive Standard C Function: Greatest Common Divisor for 64 bit
  * ints.
  *
  * @param a
  * @param b
- * @returns greates common divisor. */
+ * @returns greates common divisor. 
+ */
 long long lgcd(long long a, long long b)
 {
     if (a == 0)
@@ -43,11 +47,11 @@ long long lgcd(long long a, long long b)
 }
 
 /**
- * Return the gcd of nain and any value in ain.
+ * Return the gcd of elements in an int array.
  *
- * @param main
- * @param ain
- * @returns
+ * @param nain length of the array
+ * @param ain an array of length nain
+ * @returns greatest common divisor.
  */
 int gcd_array(int nain, int *ain)
 {
@@ -60,9 +64,9 @@ int gcd_array(int nain, int *ain)
 
     bsize = ain[0];
     i = 1;
-    while(i < nain && bsize > 1)
+    while (i < nain && bsize > 1)
     {
-        bsize = gcd(bsize,ain[i]);
+        bsize = gcd(bsize, ain[i]);
         i++;
     }
 
