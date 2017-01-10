@@ -1141,7 +1141,7 @@ int PIOc_put_var(int ncid, int varid, const void *buf, PIO_Offset bufcount,
 
     if (ios->async_interface && !ios->ioproc)
     {
-        if (ios->compmaster)
+        if (ios->compmaster == MPI_ROOT)
             mpierr = MPI_Send(&msg, 1, MPI_INT, ios->ioroot, 1, ios->union_comm);
 
         mpierr = MPI_Bcast(&ncid,1, MPI_INT, ios->compmaster, ios->intercomm);
