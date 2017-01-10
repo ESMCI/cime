@@ -540,7 +540,7 @@ int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
         {
             int msg = PIO_MSG_PUT_VARS;
 
-            if(ios->compmaster)
+            if (ios->compmaster == MPI_ROOT)
                 mpierr = MPI_Send(&msg, 1, MPI_INT, ios->ioroot, 1, ios->union_comm);
 
             /* Send the function parameters and associated informaiton

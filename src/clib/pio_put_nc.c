@@ -1139,8 +1139,8 @@ int PIOc_put_var(int ncid, int varid, const void *buf, PIO_Offset bufcount,
 
     msg = PIO_MSG_PUT_VAR;
 
-    if(ios->async_interface && ! ios->ioproc){
-        if(ios->compmaster)
+    if (ios->async_interface && ! ios->ioproc){
+        if (ios->compmaster == MPI_ROOT)
             mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
         mpierr = MPI_Bcast(&ncid,1, MPI_INT, ios->compmaster, ios->intercomm);
     }
@@ -1236,8 +1236,8 @@ int PIOc_put_vars(int ncid, int varid, const PIO_Offset *start, const PIO_Offset
 
     msg = PIO_MSG_PUT_VARS;
 
-    if(ios->async_interface && ! ios->ioproc){
-        if(ios->compmaster)
+    if (ios->async_interface && ! ios->ioproc){
+        if (ios->compmaster == MPI_ROOT)
             mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
         mpierr = MPI_Bcast(&ncid, 1, MPI_INT, ios->compmaster, ios->intercomm);
     }
@@ -1328,8 +1328,8 @@ int PIOc_put_var1(int ncid, int varid, const PIO_Offset *index, const void *buf,
 
     msg = PIO_MSG_PUT_VAR1;
 
-    if(ios->async_interface && ! ios->ioproc){
-        if(ios->compmaster)
+    if (ios->async_interface && ! ios->ioproc){
+        if (ios->compmaster == MPI_ROOT)
             mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
         mpierr = MPI_Bcast(&ncid, 1, MPI_INT, ios->compmaster, ios->intercomm);
     }
@@ -1421,8 +1421,8 @@ int PIOc_put_vara(int ncid, int varid, const PIO_Offset *start, const PIO_Offset
 
     msg = PIO_MSG_PUT_VARA;
 
-    if(ios->async_interface && ! ios->ioproc){
-        if(ios->compmaster)
+    if (ios->async_interface && ! ios->ioproc){
+        if (ios->compmaster == MPI_ROOT)
             mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
         mpierr = MPI_Bcast(&ncid, 1, MPI_INT, ios->compmaster, ios->intercomm);
     }
