@@ -30,7 +30,7 @@ PIO_Offset maxusage = 0;
  * @param limit the size of the buffer on the IO nodes
  * @return The previous limit setting.
  */
-PIO_Offset PIOc_set_buffer_size_limit(const PIO_Offset limit)
+PIO_Offset PIOc_set_buffer_size_limit(PIO_Offset limit)
 {
     PIO_Offset oldsize = pio_buffer_size_limit;
 
