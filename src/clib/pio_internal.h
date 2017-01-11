@@ -144,18 +144,18 @@ extern "C" {
     void PIO_Offset_size(MPI_Datatype *dtype, int *tsize);
     PIO_Offset GCDblocksize(const int arrlen, const PIO_Offset arr_in[]);
 
-    int subset_rearrange_create(const iosystem_desc_t ios,const int maplen, PIO_Offset compmap[], const int gsize[],
-                                const int ndim, io_desc_t *iodesc);
+    /* Create a subset rearranger. */
+    int subset_rearrange_create(iosystem_desc_t ios, int maplen, PIO_Offset compmap[], const int gsize[],
+                                int ndim, io_desc_t *iodesc);
 
 
-    int box_rearrange_create(const iosystem_desc_t ios,const int maplen, const PIO_Offset compmap[], const int gsize[],
-                             const int ndim, io_desc_t *iodesc);
+    /* Create a box rearranger. */
+    int box_rearrange_create(iosystem_desc_t ios, int maplen, const PIO_Offset *compmap, const int *gsize,
+                             int ndim, io_desc_t *iodesc);
 
 
-    int rearrange_io2comp(const iosystem_desc_t ios, io_desc_t *iodesc, void *sbuf,
-                          void *rbuf);
-    int rearrange_comp2io(const iosystem_desc_t ios, io_desc_t *iodesc, void *sbuf,
-                          void *rbuf, const int nvars);
+    int rearrange_io2comp(iosystem_desc_t ios, io_desc_t *iodesc, void *sbuf, void *rbuf);
+    int rearrange_comp2io(iosystem_desc_t ios, io_desc_t *iodesc, void *sbuf, void *rbuf, const int nvars);
     int calcdisplace(const int bsize, const int numblocks,const PIO_Offset map[],int displace[]);
     io_desc_t *malloc_iodesc(int piotype, int ndims);
     void performance_tune_rearranger(iosystem_desc_t ios, io_desc_t *iodesc);
@@ -173,14 +173,14 @@ extern "C" {
 
     int ceil2(const int i);
     int pair(const int np, const int p, const int k);
-    int define_iodesc_datatypes(const iosystem_desc_t ios, io_desc_t *iodesc);
+    int define_iodesc_datatypes(iosystem_desc_t ios, io_desc_t *iodesc);
 
     int create_mpi_datatypes(const MPI_Datatype basetype,const int msgcnt,const PIO_Offset dlen,
                              const PIO_Offset mindex[],const int mcount[],int *mfrom, MPI_Datatype mtype[]);
     int compare_offsets(const void *a,const void *b) ;
 
-    int subset_rearrange_create(const iosystem_desc_t ios, int maplen, PIO_Offset compmap[],
-                                const int gsize[], const int ndims, io_desc_t *iodesc);
+    int subset_rearrange_create(iosystem_desc_t ios, int maplen, PIO_Offset *compmap,
+                                const int *gsize, int ndims, io_desc_t *iodesc);
     void print_trace (FILE *fp);
     void cn_buffer_report(iosystem_desc_t ios, bool collective);
 
@@ -190,7 +190,7 @@ extern "C" {
     void free_cn_buffer_pool(iosystem_desc_t ios);
     void flush_buffer(int ncid, wmulti_buffer *wmb, bool flushtodisk);
     void piomemerror(iosystem_desc_t ios, size_t req, char *fname, int line);
-    void compute_maxaggregate_bytes(const iosystem_desc_t ios, io_desc_t *iodesc);
+    void compute_maxaggregate_bytes(iosystem_desc_t ios, io_desc_t *iodesc);
 
     /* Check the return code from an MPI function call. */
     int check_mpi(file_desc_t *file, int mpierr, const char *filename, int line);
