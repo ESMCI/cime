@@ -286,7 +286,7 @@ int pio_delete_iodesc_from_list(int ioid)
 
             if (current_iodesc == ciodesc)
                 current_iodesc = pio_iodesc_list;
-            brel(ciodesc);
+            free(ciodesc);
             return PIO_NOERR;
         }
         piodesc = ciodesc;

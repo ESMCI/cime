@@ -571,7 +571,7 @@ io_desc_t *malloc_iodesc(int piotype, int ndims)
     io_desc_t *iodesc;
 
     /* Allocate space for the io_desc_t struct. */
-    if (!(iodesc = bget(sizeof(io_desc_t))))
+    if (!(iodesc = calloc(1, sizeof(io_desc_t))))
         return NULL;
 
     /* Decide on the base type. */
@@ -593,24 +593,10 @@ io_desc_t *malloc_iodesc(int piotype, int ndims)
     }
 
     /* Initialize some values in the struct. */
-    iodesc->rearranger = 0;
     iodesc->maxregions = 1;
-    iodesc->rfrom = NULL;
-    iodesc->scount = NULL;
-    iodesc->rtype = NULL;
-    iodesc->stype = NULL;
-    iodesc->num_stypes = 0;
-    iodesc->sindex = NULL;
-    iodesc->rindex = NULL;
-    iodesc->rcount = NULL;
     iodesc->ioid = -1;
-    iodesc->llen = 0;
-    iodesc->maxiobuflen = 0;
-    iodesc->holegridsize = 0;
-    iodesc->maxbytes = 0;
     iodesc->ndims = ndims;
     iodesc->firstregion = alloc_region(ndims);
-    iodesc->fillregion = NULL;
 
     /* Set the swap memory settings to defaults. */
     iodesc->handshake = swapm_defaults.handshake;
@@ -669,10 +655,10 @@ int PIOc_freedecomp(int iosysid, int ioid)
     free(iodesc->dimlen);
 
     if (iodesc->gsize)
-        brel(iodesc->gsize);
+        free(iodesc->gsize);
 
     if (iodesc->rfrom)
-        brel(iodesc->rfrom);
+        free(iodesc->rfrom);
 
     if (iodesc->rtype)
     {
@@ -681,7 +667,7 @@ int PIOc_freedecomp(int iosysid, int ioid)
                 if ((mpierr = MPI_Type_free(iodesc->rtype + i)))
                     return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
 
-        brel(iodesc->rtype);
+        free(iodesc->rtype);
     }
 
     if (iodesc->stype)
@@ -692,20 +678,20 @@ int PIOc_freedecomp(int iosysid, int ioid)
                     return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
 
         iodesc->num_stypes = 0;
-        brel(iodesc->stype);
+        free(iodesc->stype);
     }
 
     if (iodesc->scount)
-        brel(iodesc->scount);
+        free(iodesc->scount);
 
     if (iodesc->rcount)
-        brel(iodesc->rcount);
+        free(iodesc->rcount);
 
     if (iodesc->sindex)
-        brel(iodesc->sindex);
+        free(iodesc->sindex);
 
     if (iodesc->rindex)
-        brel(iodesc->rindex);
+        free(iodesc->rindex);
 
     if (iodesc->firstregion)
         free_region_list(iodesc->firstregion);
