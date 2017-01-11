@@ -231,7 +231,7 @@ if (PIO_USE_MPISERIAL)
 else ()
     add_mpi_test(pio_rearr_opts
         EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/pio_rearr_opts
-        NUMPROCS 2
+        NUMPROCS 4
         TIMEOUT ${DEFAULT_TEST_TIMEOUT})
 endif ()
 
