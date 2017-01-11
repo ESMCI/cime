@@ -308,7 +308,7 @@ int check_file(int ntasks, char *filename) {
 	/* Initialize the PIO IO system. This specifies how
 	 * many and which processors are involved in I/O. */
 	if ((ret = PIOc_Init_Intracomm(MPI_COMM_WORLD, niotasks, ioproc_stride,
-				       ioproc_start, PIO_REARR_SUBSET, &iosysid)))
+				       ioproc_start, PIO_REARR_SUBSET, NULL, &iosysid)))
 	    ERR(ret);
 
 	/* Describe the decomposition. This is a 1-based array, so add 1! */

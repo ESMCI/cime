@@ -196,7 +196,7 @@ struct examplePioClass* epc_init( struct examplePioClass* this )
         printf("Running with %d MPI processes and %d PIO processes. \n",this->ntasks,this->niotasks);
     }
     
-    PIOc_Init_Intracomm(MPI_COMM_WORLD, this->niotasks, this->stride, this->optBase, PIO_REARR_SUBSET, &this->pioIoSystem);
+    PIOc_Init_Intracomm(MPI_COMM_WORLD, this->niotasks, this->stride, this->optBase, PIO_REARR_SUBSET, NULL, &this->pioIoSystem);
     
     /*
     ** set up some data that we will write to a netcdf file
