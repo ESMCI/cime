@@ -1049,6 +1049,8 @@ int determine_fill(iosystem_desc_t ios, io_desc_t *iodesc, const int *gsize,
         for (i = 0; i < iodesc->ndims; i++)
             iodesc->gsize[i] = gsize[i];
     }
+
+    return PIO_NOERR;
 }
 
 /**
