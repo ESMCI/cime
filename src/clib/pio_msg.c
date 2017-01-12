@@ -123,14 +123,14 @@ int create_file_handler(iosystem_desc_t *ios)
     int mpierr;
     int ret;
 
-    LOG((1, "create_file_handler comproot = %d\n", ios->comproot));
+    LOG((1, "create_file_handler comproot = %d", ios->comproot));
     assert(ios);
 
     /* Get the parameters for this function that the he comp master
      * task is broadcasting. */
     if ((mpierr = MPI_Bcast(&len, 1, MPI_INT, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
-    LOG((1, "create_file_handler got parameter len = %d\n", len));
+    LOG((1, "create_file_handler got parameter len = %d", len));
     pioassert(len <= PIO_MAX_NAME, "len > PIO_MAX_NAME", __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast((void *)filename, len + 1, MPI_CHAR, 0,
                             ios->intercomm)))
@@ -140,7 +140,7 @@ int create_file_handler(iosystem_desc_t *ios)
     if ((mpierr = MPI_Bcast(&mode, 1, MPI_INT, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     LOG((1, "create_file_handler got parameters len = %d "
-         "filename = %s iotype = %d mode = %d\n",
+         "filename = %s iotype = %d mode = %d",
          len, filename, iotype, mode));
 
     /* Call the create file function. */
@@ -214,7 +214,7 @@ int inq_handler(iosystem_desc_t *ios)
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&unlimdimid_present, 1, MPI_CHAR, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
-    LOG((1, "inq_handler ndims_present = %d nvars_present = %d ngatts_present = %d unlimdimid_present = %d\n",
+    LOG((1, "inq_handler ndims_present = %d nvars_present = %d ngatts_present = %d unlimdimid_present = %d",
          ndims_present, nvars_present, ngatts_present, unlimdimid_present));
 
     /* NULLs passed in to any of the pointers in the original call
@@ -350,7 +350,6 @@ int inq_att_handler(iosystem_desc_t *ios)
     int ret;
     char name[PIO_MAX_NAME + 1];
     int namelen;
-    int *op, *ip;
     nc_type xtype, *xtypep = NULL;
     PIO_Offset len, *lenp = NULL;
     char xtype_present, len_present;
@@ -447,7 +446,6 @@ int inq_attid_handler(iosystem_desc_t *ios)
 {
     int ncid;
     int varid;
-    int attnum;
     char name[PIO_MAX_NAME + 1];
     int namelen;
     int id, *idp = NULL;
@@ -471,8 +469,8 @@ int inq_attid_handler(iosystem_desc_t *ios)
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&id_present, 1, MPI_CHAR, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
-    LOG((2, "inq_attid_handler got ncid = %d varid = %d attnum = %d id_present = %d",
-         ncid, varid, attnum, id_present));
+    LOG((2, "inq_attid_handler got ncid = %d varid = %d id_present = %d",
+         ncid, varid, id_present));
 
     /* Match NULLs in collective function call. */
     if (id_present)
@@ -503,8 +501,7 @@ int att_put_handler(iosystem_desc_t *ios)
     int namelen;
     PIO_Offset attlen, typelen;
     nc_type atttype;
-    int *op, *ip;
-    int iotype;
+    int *op;
 
     LOG((1, "att_put_handler"));
     assert(ios);
@@ -532,9 +529,9 @@ int att_put_handler(iosystem_desc_t *ios)
         free(op);
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     }
-    LOG((1, "att_put_handler ncid = %d varid = %d namelen = %d name = %s iotype = %d"
+    LOG((1, "att_put_handler ncid = %d varid = %d namelen = %d name = %s"
          "atttype = %d attlen = %d typelen = %d",
-         ncid, varid, namelen, name, iotype, atttype, attlen, typelen));
+         ncid, varid, namelen, name, atttype, attlen, typelen));
 
     /* Call the function to read the attribute. */
     if ((ret = PIOc_put_att(ncid, varid, name, atttype, attlen, op)))
@@ -568,7 +565,7 @@ int att_get_handler(iosystem_desc_t *ios)
     int namelen;
     PIO_Offset attlen, typelen;
     nc_type atttype;
-    int *op, *ip;
+    int *ip;
     int iotype;
 
     LOG((1, "att_get_handler"));
@@ -625,9 +622,6 @@ int put_vars_handler(iosystem_desc_t *ios)
     int ncid;
     int varid;
     int mpierr;
-    int ret;
-    char *name;
-    int namelen;
     PIO_Offset typelen; /** Length (in bytes) of this type. */
     nc_type xtype; /** Type of the data being written. */
     char stride_present;
@@ -678,10 +672,10 @@ int put_vars_handler(iosystem_desc_t *ios)
 
     for (int d = 0; d < ndims; d++)
     {
-        LOG((2, "start[%d] = %d\n", d, start[d]));
-        LOG((2, "count[%d] = %d\n", d, count[d]));
+        LOG((2, "start[%d] = %d", d, start[d]));
+        LOG((2, "count[%d] = %d", d, count[d]));
         if (stride_present)
-            LOG((2, "stride[%d] = %d\n", d, stride[d]));
+            LOG((2, "stride[%d] = %d", d, stride[d]));
     }
 
     /* Allocate room for our data. */
@@ -704,57 +698,58 @@ int put_vars_handler(iosystem_desc_t *ios)
     if (stride_present)
         stridep = stride;
 
-    /* Call the function to write the data. */
+    /* Call the function to write the data. No need to check return
+     * values, they are bcast to computation tasks inside function. */
     switch(xtype)
     {
     case NC_BYTE:
-        ret = PIOc_put_vars_schar(ncid, varid, startp, countp, stridep, buf);
+        PIOc_put_vars_schar(ncid, varid, startp, countp, stridep, buf);
         break;
     case NC_CHAR:
-        ret = PIOc_put_vars_schar(ncid, varid, startp, countp, stridep, buf);
+        PIOc_put_vars_schar(ncid, varid, startp, countp, stridep, buf);
         break;
     case NC_SHORT:
-        ret = PIOc_put_vars_short(ncid, varid, startp, countp, stridep, buf);
+        PIOc_put_vars_short(ncid, varid, startp, countp, stridep, buf);
         break;
     case NC_INT:
-        ret = PIOc_put_vars_int(ncid, varid, startp, countp,
+        PIOc_put_vars_int(ncid, varid, startp, countp,
                                  stridep, buf);
         break;
     case NC_FLOAT:
-        ret = PIOc_put_vars_float(ncid, varid, startp, countp,
+        PIOc_put_vars_float(ncid, varid, startp, countp,
                                    stridep, buf);
         break;
     case NC_DOUBLE:
-        ret = PIOc_put_vars_double(ncid, varid, startp, countp,
+        PIOc_put_vars_double(ncid, varid, startp, countp,
                                     stridep, buf);
         break;
 #ifdef _NETCDF4
     case NC_UBYTE:
-        ret = PIOc_put_vars_uchar(ncid, varid, startp, countp,
+        PIOc_put_vars_uchar(ncid, varid, startp, countp,
                                    stridep, buf);
         break;
     case NC_USHORT:
-        ret = PIOc_put_vars_ushort(ncid, varid, startp, countp,
+        PIOc_put_vars_ushort(ncid, varid, startp, countp,
                                     stridep, buf);
         break;
     case NC_UINT:
-        ret = PIOc_put_vars_uint(ncid, varid, startp, countp,
+        PIOc_put_vars_uint(ncid, varid, startp, countp,
                                   stridep, buf);
         break;
     case NC_INT64:
-        ret = PIOc_put_vars_longlong(ncid, varid, startp, countp,
+        PIOc_put_vars_longlong(ncid, varid, startp, countp,
                                       stridep, buf);
         break;
     case NC_UINT64:
-        ret = PIOc_put_vars_ulonglong(ncid, varid, startp, countp,
+        PIOc_put_vars_ulonglong(ncid, varid, startp, countp,
                                        stridep, buf);
         break;
         /* case NC_STRING: */
-        /*      ret = PIOc_put_vars_string(ncid, varid, startp, countp, */
+        /*      PIOc_put_vars_string(ncid, varid, startp, countp, */
         /*                                stridep, (void *)buf); */
         /*      break; */
         /*    default:*/
-        /* ret = PIOc_put_vars(ncid, varid, startp, countp, */
+        /* PIOc_put_vars(ncid, varid, startp, countp, */
         /*                   stridep, buf); */
 #endif /* _NETCDF4 */
     }
@@ -776,9 +771,6 @@ int get_vars_handler(iosystem_desc_t *ios)
     int ncid;
     int varid;
     int mpierr;
-    int ierr;
-    char *name;
-    int namelen;
     PIO_Offset typelen; /** Length (in bytes) of this type. */
     nc_type xtype; /** Type of the data being written. */
     char stride_present;
@@ -829,10 +821,10 @@ int get_vars_handler(iosystem_desc_t *ios)
 
     for (int d = 0; d < ndims; d++)
     {
-        LOG((2, "start[%d] = %d\n", d, start[d]));
-        LOG((2, "count[%d] = %d\n", d, count[d]));
+        LOG((2, "start[%d] = %d", d, start[d]));
+        LOG((2, "count[%d] = %d", d, count[d]));
         if (stride_present)
-            LOG((2, "stride[%d] = %d\n", d, stride[d]));
+            LOG((2, "stride[%d] = %d", d, stride[d]));
     }
 
     /* Allocate room for our data. */
@@ -849,45 +841,45 @@ int get_vars_handler(iosystem_desc_t *ios)
     switch(xtype)
     {
     case NC_BYTE:
-        ierr = PIOc_get_vars_schar(ncid, varid, startp, countp, stridep, buf);
+        PIOc_get_vars_schar(ncid, varid, startp, countp, stridep, buf);
         break;
     case NC_CHAR:
-        ierr = PIOc_get_vars_schar(ncid, varid, startp, countp, stridep, buf);
+        PIOc_get_vars_schar(ncid, varid, startp, countp, stridep, buf);
         break;
     case NC_SHORT:
-        ierr = PIOc_get_vars_short(ncid, varid, startp, countp, stridep, buf);
+        PIOc_get_vars_short(ncid, varid, startp, countp, stridep, buf);
         break;
     case NC_INT:
-        ierr = PIOc_get_vars_int(ncid, varid, startp, countp, stridep, buf);
+        PIOc_get_vars_int(ncid, varid, startp, countp, stridep, buf);
         break;
     case NC_FLOAT:
-        ierr = PIOc_get_vars_float(ncid, varid, startp, countp, stridep, buf);
+        PIOc_get_vars_float(ncid, varid, startp, countp, stridep, buf);
         break;
     case NC_DOUBLE:
-        ierr = PIOc_get_vars_double(ncid, varid, startp, countp, stridep, buf);
+        PIOc_get_vars_double(ncid, varid, startp, countp, stridep, buf);
         break;
 #ifdef _NETCDF4
     case NC_UBYTE:
-        ierr = PIOc_get_vars_uchar(ncid, varid, startp, countp, stridep, buf);
+        PIOc_get_vars_uchar(ncid, varid, startp, countp, stridep, buf);
         break;
     case NC_USHORT:
-        ierr = PIOc_get_vars_ushort(ncid, varid, startp, countp, stridep, buf);
+        PIOc_get_vars_ushort(ncid, varid, startp, countp, stridep, buf);
         break;
     case NC_UINT:
-        ierr = PIOc_get_vars_uint(ncid, varid, startp, countp, stridep, buf);
+        PIOc_get_vars_uint(ncid, varid, startp, countp, stridep, buf);
         break;
     case NC_INT64:
-        ierr = PIOc_get_vars_longlong(ncid, varid, startp, countp, stridep, buf);
+        PIOc_get_vars_longlong(ncid, varid, startp, countp, stridep, buf);
         break;
     case NC_UINT64:
-        ierr = PIOc_get_vars_ulonglong(ncid, varid, startp, countp, stridep, buf);
+        PIOc_get_vars_ulonglong(ncid, varid, startp, countp, stridep, buf);
         break;
         /* case NC_STRING: */
-        /*      ierr = PIOc_get_vars_string(ncid, varid, startp, countp, */
+        /*      PIOc_get_vars_string(ncid, varid, startp, countp, */
         /*                                stridep, (void *)buf); */
         /*      break; */
         /*    default:*/
-        /* ierr = PIOc_get_vars(ncid, varid, startp, countp, */
+        /* PIOc_get_vars(ncid, varid, startp, countp, */
         /*                   stridep, buf); */
 #endif /* _NETCDF4 */
     }
@@ -936,7 +928,7 @@ int inq_var_handler(iosystem_desc_t *ios)
     if ((mpierr = MPI_Bcast(&natts_present, 1, MPI_CHAR, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     LOG((2,"inq_var_handler ncid = %d varid = %d name_present = %d xtype_present = %d ndims_present = %d "
-         "dimids_present = %d natts_present = %d\n",
+         "dimids_present = %d natts_present = %d",
          ncid, varid, name_present, xtype_present, ndims_present, dimids_present, natts_present));
 
     /* Set the non-NULL pointers. */
@@ -1188,7 +1180,6 @@ int change_def_file_handler(iosystem_desc_t *ios, int msg)
 {
     int ncid;
     int mpierr;
-    int ret;
 
     LOG((1, "change_def_file_handler"));
     assert(ios);
@@ -1199,7 +1190,10 @@ int change_def_file_handler(iosystem_desc_t *ios, int msg)
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
 
     /* Call the function. */
-    ret = (msg == PIO_MSG_ENDDEF) ? PIOc_enddef(ncid) : PIOc_redef(ncid);
+    if (msg == PIO_MSG_ENDDEF)
+        PIOc_enddef(ncid);
+    else
+        PIOc_redef(ncid);
 
     LOG((1, "change_def_file_handler succeeded!"));
     return PIO_NOERR;
@@ -1216,10 +1210,8 @@ int change_def_file_handler(iosystem_desc_t *ios, int msg)
 int def_var_handler(iosystem_desc_t *ios)
 {
     int ncid;
-    int len, namelen;
-    int iotype;
+    int namelen;
     char name[PIO_MAX_NAME + 1];
-    int mode;
     int mpierr;
     int ret;
     int varid;
@@ -1252,7 +1244,7 @@ int def_var_handler(iosystem_desc_t *ios)
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     }
     LOG((1, "def_var_handler got parameters namelen = %d "
-         "name = %s len = %d ncid = %d\n", namelen, name, len, ncid));
+         "name = %s ncid = %d", namelen, name, ncid));
 
     /* Call the create file function. */
     if ((ret = PIOc_def_var(ncid, name, xtype, ndims, dimids, &varid)))
@@ -1411,9 +1403,7 @@ int def_dim_handler(iosystem_desc_t *ios)
 {
     int ncid;
     int len, namelen;
-    int iotype;
     char name[PIO_MAX_NAME + 1];
-    int mode;
     int mpierr;
     int ret;
     int dimid;
@@ -1455,14 +1445,11 @@ int def_dim_handler(iosystem_desc_t *ios)
 int rename_dim_handler(iosystem_desc_t *ios)
 {
     int ncid;
-    int len, namelen;
-    int iotype;
+    int namelen;
     char name[PIO_MAX_NAME + 1];
-    int mode;
     int mpierr;
     int ret;
     int dimid;
-    char name1[NC_MAX_NAME + 1];
 
     LOG((1, "rename_dim_handler"));
     assert(ios);
@@ -1500,14 +1487,11 @@ int rename_dim_handler(iosystem_desc_t *ios)
 int rename_var_handler(iosystem_desc_t *ios)
 {
     int ncid;
-    int len, namelen;
-    int iotype;
+    int namelen;
     char name[PIO_MAX_NAME + 1];
-    int mode;
     int mpierr;
     int ret;
     int varid;
-    char name1[NC_MAX_NAME + 1];
 
     LOG((1, "rename_var_handler"));
     assert(ios);
@@ -1593,8 +1577,8 @@ int delete_att_handler(iosystem_desc_t *ios)
 {
     int ncid;
     int varid;
-    int namelen, newnamelen;
-    char name[PIO_MAX_NAME + 1], *newname;
+    int namelen;
+    char name[PIO_MAX_NAME + 1];
     int mpierr;
     int ret;
 
@@ -1657,7 +1641,7 @@ int open_file_handler(iosystem_desc_t *ios)
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&mode, 1, MPI_INT, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
-    LOG((2, "open_file_handler got parameters len = %d filename = %s iotype = %d mode = %d\n",
+    LOG((2, "open_file_handler got parameters len = %d filename = %s iotype = %d mode = %d",
          len, filename, iotype, mode));
 
     /* Call the open file function. */
@@ -1678,7 +1662,6 @@ int open_file_handler(iosystem_desc_t *ios)
  */
 int delete_file_handler(iosystem_desc_t *ios)
 {
-    int ncid;
     int len;
     char filename[PIO_MAX_NAME + 1];
     int mpierr;
@@ -1695,7 +1678,7 @@ int delete_file_handler(iosystem_desc_t *ios)
     pioassert(len <= PIO_MAX_NAME, "len > PIO_MAX_NAME", __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast((void *)filename, len + 1, MPI_CHAR, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
-    LOG((1, "delete_file_handler got parameters len = %d filename = %s\n",
+    LOG((1, "delete_file_handler got parameters len = %d filename = %s",
          len, filename));
 
     /* Call the delete file function. */
@@ -1779,7 +1762,7 @@ int seterrorhandling_handler(iosystem_desc_t *ios)
     if ((mpierr = MPI_Bcast(&old_method_present, 1, MPI_CHAR, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
 
-    LOG((1, "seterrorhandling_handler got parameters method = %d old_method_present = %d\n",
+    LOG((1, "seterrorhandling_handler got parameters method = %d old_method_present = %d",
          method, old_method_present));
 
     if (old_method_present)
@@ -2042,7 +2025,7 @@ int pio_msg_handler2(int io_rank, int component_count, iosystem_desc_t **iosys,
          * appropriate member of the req array to MPI_REQUEST_NULL. */
         if (!io_rank)
         {
-            LOG((1, "about to call MPI_Waitany req[0] = %d MPI_REQUEST_NULL = %d\n",
+            LOG((1, "about to call MPI_Waitany req[0] = %d MPI_REQUEST_NULL = %d",
                  req[0], MPI_REQUEST_NULL));
             for (int c = 0; c < component_count; c++)
                 LOG((2, "req[%d] = %d", c, req[c]));
@@ -2220,7 +2203,7 @@ int pio_msg_handler2(int io_rank, int component_count, iosystem_desc_t **iosys,
             if ((mpierr = MPI_Irecv(&msg, 1, MPI_INT, my_iosys->comproot, MPI_ANY_TAG, my_iosys->union_comm,
                                     &req[index])))
                 return check_mpi(NULL, mpierr, __FILE__, __LINE__);
-            LOG((3, "pio_msg_handler2 called MPI_Irecv req[%d] = %d\n", index, req[index]));
+            LOG((3, "pio_msg_handler2 called MPI_Irecv req[%d] = %d", index, req[index]));
         }
 
         LOG((3, "pio_msg_handler2 done msg = %d open_components = %d",
