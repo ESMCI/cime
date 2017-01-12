@@ -17,8 +17,8 @@
  * @param dim_list
  * @returns 0 on success, error code otherwise.
  */
-void idx_to_dim_list(const int ndims, const int gdims[], const PIO_Offset idx,
-                     PIO_Offset dim_list[])
+void idx_to_dim_list(int ndims, const int *gdims, PIO_Offset idx,
+                     PIO_Offset *dim_list)
 {
     int i, curr_idx, next_idx;
     curr_idx = idx;
@@ -53,10 +53,9 @@ void idx_to_dim_list(const int ndims, const int gdims[], const PIO_Offset idx,
  * @param count array of counts
  * @returns 0 on success, error code otherwise.
  */
-void expand_region(const int dim, const int gdims[], const int maplen,
-                   const PIO_Offset map[], const int region_size,
-                   const int region_stride, const int max_size[],
-                   PIO_Offset count[])
+void expand_region(int dim, const int *gdims, int maplen, const PIO_Offset *map,
+                   int region_size, int region_stride, const int *max_size,
+                   PIO_Offset *count)
 {
     int i, j, test_idx, expansion_done;
     /* Precondition: maplen >= region_size (thus loop runs at least
@@ -111,9 +110,8 @@ void expand_region(const int dim, const int gdims[], const int maplen,
  * @param count array of counts
  * @returns 0 on success, error code otherwise.
  */
-PIO_Offset find_region(const int ndims, const int gdims[],
-                       const int maplen, const PIO_Offset map[],
-                       PIO_Offset start[], PIO_Offset count[])
+PIO_Offset find_region(int ndims, const int *gdims, int maplen, const PIO_Offset *map,
+                       PIO_Offset *start, PIO_Offset *count)
 {
     int dim;
     int max_size[ndims];
@@ -151,8 +149,7 @@ PIO_Offset find_region(const int ndims, const int gdims[],
  * @param count array of counts
  * @returns 0 on success, error code otherwise.
  */
-PIO_Offset coord_to_lindex(const int ndims, const PIO_Offset *lcoord,
-                           const PIO_Offset *count)
+PIO_Offset coord_to_lindex(int ndims, const PIO_Offset *lcoord, const PIO_Offset *count)
 {
     PIO_Offset lindex = 0;
     PIO_Offset stride = 1;
@@ -223,9 +220,9 @@ void compute_maxIObuffersize(MPI_Comm io_comm, io_desc_t *iodesc)
  * read/write
  * @returns 0 on success, error code otherwise.
  */
-int create_mpi_datatypes(const MPI_Datatype basetype, const int msgcnt,
-                         const PIO_Offset dlen, const PIO_Offset *mindex,
-                         const int *mcount, int *mfrom, MPI_Datatype *mtype)
+int create_mpi_datatypes(MPI_Datatype basetype, int msgcnt, PIO_Offset dlen,
+                         const PIO_Offset *mindex, const int *mcount, int *mfrom,
+                         MPI_Datatype *mtype)
 {
     PIO_Offset bsizeT[msgcnt];
     int blocksize;
@@ -1102,8 +1099,8 @@ void iodesc_dump(io_desc_t *iodesc)
  * @param iodesc a pointer to the io_desc_t struct.
  * @returns 0 on success, error code otherwise.
  */
-int box_rearrange_create( iosystem_desc_t ios, const int maplen, const PIO_Offset compmap[],
-                         const int gsize[], const int ndims, io_desc_t *iodesc)
+int box_rearrange_create(iosystem_desc_t ios, int maplen, const PIO_Offset *compmap,
+                         const int *gsize, int ndims, io_desc_t *iodesc)
 {
     int ierr = PIO_NOERR;
     int nprocs = ios.num_comptasks;
@@ -1291,8 +1288,8 @@ int compare_offsets(const void *a, const void *b)
  * @param firstregion pointer to the first region.
  * @returns 0 on success, error code otherwise.
  */
-void get_start_and_count_regions(const int ndims, const int gdims[],const int maplen,
-                                 const PIO_Offset map[], int *maxregions, io_region *firstregion)
+void get_start_and_count_regions(int ndims, const int *gdims, int maplen, const PIO_Offset *map,
+                                 int *maxregions, io_region *firstregion)
 {
     int i;
     int nmaplen;

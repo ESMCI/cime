@@ -17,7 +17,7 @@
  * @param i input number
  * @returns the smallest power of 2 greater than i.
  */
-int ceil2(const int i)
+int ceil2(int i)
 {
     int p = 1;
     while (p < i)
@@ -35,7 +35,7 @@ int ceil2(const int i)
  * @param k integer between 0 and np - 1.
  * @returns (p + 1) ^ k else -1.
  */
-int pair(const int np, const int p, const int k)
+int pair(int np, int p, int k)
 {
     int q = (p + 1) ^ k ;
     int pair = (q > np - 1) ? -1 : q;
@@ -77,7 +77,7 @@ int pair(const int np, const int p, const int k)
  */
 int pio_swapm(void *sendbuf, int *sendcounts, int *sdispls, MPI_Datatype *sendtypes,
               void *recvbuf, int *recvcounts, int *rdispls, MPI_Datatype *recvtypes,
-              MPI_Comm comm, const bool handshake, bool isend, const int max_requests)
+              MPI_Comm comm, bool handshake, bool isend, int max_requests)
 {
     int ntasks;  /* Number of tasks in communicator comm. */
     int my_rank; /* Rank of this task in comm. */
