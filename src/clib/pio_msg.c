@@ -533,7 +533,7 @@ int att_put_handler(iosystem_desc_t *ios)
          "atttype = %d attlen = %d typelen = %d",
          ncid, varid, namelen, name, atttype, attlen, typelen));
 
-    /* Call the function to read the attribute. */
+    /* Call the function to write the attribute. */
     if ((ret = PIOc_put_att(ncid, varid, name, atttype, attlen, op)))
     {
         free(op);
@@ -1246,7 +1246,7 @@ int def_var_handler(iosystem_desc_t *ios)
     LOG((1, "def_var_handler got parameters namelen = %d "
          "name = %s ncid = %d", namelen, name, ncid));
 
-    /* Call the create file function. */
+    /* Call the function. */
     if ((ret = PIOc_def_var(ncid, name, xtype, ndims, dimids, &varid)))
     {
         free(dimids);
@@ -1303,7 +1303,7 @@ int def_var_chunking_handler(iosystem_desc_t *ios)
     if (chunksizes_present)
         chunksizesp = chunksizes;
 
-    /* Call the create file function. */
+    /* Call the function. */
     if ((ret = PIOc_def_var_chunking(ncid, varid, storage, chunksizesp)))
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
@@ -1383,7 +1383,7 @@ int set_var_chunk_cache_handler(iosystem_desc_t *ios)
     LOG((1, "set_var_chunk_cache_handler got params ncid = %d varid = %d size = %d "
          "nelems = %d preemption = %g", ncid, varid, size, nelems, preemption));
 
-    /* Call the create file function. */
+    /* Call the function. */
     if ((ret = PIOc_set_var_chunk_cache(ncid, varid, size, nelems, preemption)))
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
@@ -1426,7 +1426,7 @@ int def_dim_handler(iosystem_desc_t *ios)
     LOG((2, "def_dim_handler got parameters namelen = %d "
          "name = %s len = %d ncid = %d", namelen, name, len, ncid));
 
-    /* Call the create file function. */
+    /* Call the function. */
     if ((ret = PIOc_def_dim(ncid, name, len, &dimid)))
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
@@ -1468,7 +1468,7 @@ int rename_dim_handler(iosystem_desc_t *ios)
     LOG((2, "rename_dim_handler got parameters namelen = %d "
          "name = %s ncid = %d dimid = %d", namelen, name, ncid, dimid));
 
-    /* Call the create file function. */
+    /* Call the function. */
     if ((ret = PIOc_rename_dim(ncid, dimid, name)))
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
@@ -1510,7 +1510,7 @@ int rename_var_handler(iosystem_desc_t *ios)
     LOG((2, "rename_var_handler got parameters namelen = %d "
          "name = %s ncid = %d varid = %d", namelen, name, ncid, varid));
 
-    /* Call the create file function. */
+    /* Call the function. */
     if ((ret = PIOc_rename_var(ncid, varid, name)))
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
@@ -1557,7 +1557,7 @@ int rename_att_handler(iosystem_desc_t *ios)
     LOG((2, "rename_att_handler got parameters namelen = %d name = %s ncid = %d varid = %d "
          "newnamelen = %d newname = %s", namelen, name, ncid, varid, newnamelen, newname));
 
-    /* Call the create file function. */
+    /* Call the function. */
     if ((ret = PIOc_rename_att(ncid, varid, name, newname)))
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
@@ -1599,7 +1599,7 @@ int delete_att_handler(iosystem_desc_t *ios)
     LOG((2, "delete_att_handler namelen = %d name = %s ncid = %d varid = %d ",
          namelen, name, ncid, varid));
 
-    /* Call the create file function. */
+    /* Call the function. */
     if ((ret = PIOc_del_att(ncid, varid, name)))
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
@@ -1965,7 +1965,7 @@ int finalize_handler(iosystem_desc_t *ios, int index)
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     LOG((1, "finalize_handler got parameter iosysid = %d", iosysid));
 
-    /* Call the close file function. */
+    /* Call the function. */
     LOG((2, "finalize_handler calling PIOc_finalize for iosysid = %d",
          iosysid));
     if ((ret = PIOc_finalize(iosysid)))
