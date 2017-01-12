@@ -1365,6 +1365,49 @@ int def_var_endian_handler(iosystem_desc_t *ios)
 }
 
 /**
+ * This function is run on the IO tasks to define deflate settings for
+ * a netCDF variable.
+ *
+ * @param ios pointer to the iosystem_desc_t.
+ * @returns 0 for success, error code otherwise.
+ */
+int def_var_deflate_handler(iosystem_desc_t *ios)
+{
+    int ncid;
+    int varid;
+    int shuffle;
+    int deflate;
+    int deflate_level;
+    int mpierr;
+    int ret;
+
+    assert(ios);
+    LOG((1, "def_var_deflate_handler comproot = %d", ios->comproot));
+
+    /* Get the parameters for this function that the he comp master
+     * task is broadcasting. */
+    if ((mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm)))
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+    if ((mpierr = MPI_Bcast(&varid, 1, MPI_INT, 0, ios->intercomm)))
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+    if ((mpierr = MPI_Bcast(&shuffle, 1, MPI_INT, 0, ios->intercomm)))
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+    if ((mpierr = MPI_Bcast(&deflate, 1, MPI_INT, 0, ios->intercomm)))
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+    if ((mpierr = MPI_Bcast(&deflate_level, 1, MPI_INT, 0, ios->intercomm)))
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+    LOG((1, "def_var_deflate_handler got parameters ncid = %d varid = %d shuffle = %d ",
+         "deflate = %d deflate_level = %d", ncid, varid, shuffle, deflate, deflate_level));
+
+    /* Call the function. */
+    if ((ret = PIOc_def_var_deflate(ncid, varid, shuffle, deflate, deflate_level)))
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+
+    LOG((1, "def_var_deflate_handler succeeded!"));
+    return PIO_NOERR;
+}
+
+/**
  * This function is run on the IO tasks to define chunk cache settings
  * for a netCDF variable.
  *
@@ -2159,6 +2202,9 @@ int pio_msg_handler2(int io_rank, int component_count, iosystem_desc_t **iosys,
             break;
         case PIO_MSG_DEF_VAR_ENDIAN:
             def_var_endian_handler(my_iosys);
+            break;
+        case PIO_MSG_DEF_VAR_DEFLATE:
+            def_var_deflate_handler(my_iosys);
             break;
         case PIO_MSG_INQ_VAR_ENDIAN:
             inq_var_endian_handler(my_iosys);

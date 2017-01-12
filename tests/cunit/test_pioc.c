@@ -921,6 +921,8 @@ int test_nc4(int iosysid, int num_flavors, int *flavor, int my_rank)
             ERR(ret);
         if (PIOc_def_var_endian(ncid + 1, 0, 1) != PIO_EBADID)
             ERR(ERR_AWFUL);
+        if (PIOc_def_var_deflate(ncid + 1, 0, 0, 0, 0) != PIO_EBADID)
+            ERR(ERR_AWFUL);
         if (PIOc_inq_var_endian(ncid + 1, 0, &endianness) != PIO_EBADID)
             ERR(ERR_AWFUL);
         if (PIOc_set_var_chunk_cache(ncid + 1, 0, VAR_CACHE_SIZE, VAR_CACHE_NELEMS,
@@ -943,6 +945,12 @@ int test_nc4(int iosysid, int num_flavors, int *flavor, int my_rank)
             if ((ret = PIOc_def_var_chunking(ncid, 0, NC_CHUNKED, chunksize)))
                 ERR(ret);
 
+            /* Setting deflate should not work with parallel iotype. */
+            printf("%d Defining deflate\n", my_rank);
+            ret = PIOc_def_var_deflate(ncid, 0, 0, 1, 1);
+            if (ret != flavor[fmt] == PIO_IOTYPE_NETCDF4P ? PIO_EINVAL : PIO_NOERR)
+                ERR(ret);
+            
             /* Check that the inq_varname function works. */
             printf("%d Checking varname\n", my_rank);
             if ((ret = PIOc_inq_varname(ncid, 0, NULL)))

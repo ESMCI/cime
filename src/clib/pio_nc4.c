@@ -59,6 +59,14 @@ int PIOc_def_var_deflate(int ncid, int varid, int shuffle, int deflate,
 
             if (!mpierr)
                 mpierr = MPI_Bcast(&ncid, 1, MPI_INT, ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast(&varid, 1, MPI_INT, ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast(&shuffle, 1, MPI_INT, ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast(&deflate, 1, MPI_INT, ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast(&deflate_level, 1, MPI_INT, ios->compmaster, ios->intercomm);
         }
 
         /* Handle MPI errors from computation tasks. */
