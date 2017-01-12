@@ -351,6 +351,42 @@ int check_error_strings(int my_rank, int num_tries, int *errcode,
     return PIO_NOERR;
 }
 
+/* Check the PIOc_iotype_available() function.
+ *
+ * @param my_rank the rank of this process.
+ * @return 0 for success, error code otherwise.
+ */
+int test_iotypes(int my_rank)
+{
+    /* NetCDF is always present. */
+    if (!PIOc_iotype_available(PIO_IOTYPE_NETCDF))
+        return ERR_WRONG;
+
+    /* Pnetcdf may or may not be present. */
+#ifdef _PNETCDF
+    if (!PIOc_iotype_available(PIO_IOTYPE_PNETCDF))
+        return ERR_WRONG;
+#else
+    if (PIOc_iotype_available(PIO_IOTYPE_PNETCDF))
+        return ERR_WRONG;
+#endif /* _PNETCDF */
+
+    /* NetCDF-4 may or may not be present. */
+#ifdef _NETCDF4
+    if (!PIOc_iotype_available(PIO_IOTYPE_NETCDF4C))
+        return ERR_WRONG;
+    if (!PIOc_iotype_available(PIO_IOTYPE_NETCDF4P))
+        return ERR_WRONG;
+#else
+    if (PIOc_iotype_available(PIO_IOTYPE_NETCDF4C))
+        return ERR_WRONG;
+    if (PIOc_iotype_available(PIO_IOTYPE_NETCDF4P))
+        return ERR_WRONG;
+#endif /* _NETCDF4 */
+
+    return PIO_NOERR;
+}
+
 /* Check the PIOc_strerror() function for classic netCDF.
  *
  * @param my_rank the rank of this process.
@@ -1057,6 +1093,11 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
     if ((ret = MPI_Comm_size(test_comm, &my_test_size)))
         MPIERR(ret);
 
+    /* Check iotypes. */
+    printf("%d Testing iotypes. async = %d\n", my_rank, async);
+    if ((ret = test_iotypes(my_rank)))
+        ERR(ret);
+
     /* Test file deletes. */
     printf("%d Testing deletefile. async = %d\n", my_rank, async);
     if ((ret = test_deletefile(iosysid, num_flavors, flavor, my_rank)))
@@ -1089,7 +1130,6 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
         if ((ret = PIOc_freedecomp(iosysid, ioid)))
             ERR(ret);
     }
-
 
     /* Check the error string function. */
     printf("%d Testing streror. async = %d\n", my_rank, async);

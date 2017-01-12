@@ -59,7 +59,7 @@ int main(int argc, char **argv)
         if (oldlimit != TEN_MEG)
             ERR(ERR_WRONG);
         oldlimit = PIOc_set_buffer_size_limit(TEN_MEG);
-        
+
         /* Figure out iotypes. */
         if ((ret = get_iotypes(&num_flavors, flavor)))
             ERR(ret);
@@ -69,12 +69,12 @@ int main(int argc, char **argv)
         int even = my_rank % 2 ? 0 : 1;
         if ((ret = MPI_Comm_split(test_comm, even, 0, &newcomm)))
             MPIERR(ret);
-        printf("%d newcomm = %d even = %d\n", my_rank, newcomm, even);
 
         /* Get size of new communicator. */
         int new_size;
         if ((ret = MPI_Comm_size(newcomm, &new_size)))
             MPIERR(ret);
+        printf("%d newcomm = %d even = %d new_size = %d\n", my_rank, newcomm, even, new_size);
 
         /* Check that some bad inputs are rejected. */
         if (PIOc_Init_Intracomm(newcomm, new_size, STRIDE + 30, BASE, REARRANGER,
@@ -96,6 +96,53 @@ int main(int argc, char **argv)
         if ((ret = PIOc_iosystem_is_active(iosysid + 1, &active)))
             ERR(ret);
         if (active)
+            ERR(ERR_WRONG);
+
+        int numiotasks;
+        if (PIOc_get_numiotasks(iosysid + 42, &numiotasks) != PIO_EBADID)
+            ERR(ERR_WRONG);
+        if ((ret = PIOc_get_numiotasks(iosysid, NULL)))
+            ERR(ret);
+        if ((ret = PIOc_get_numiotasks(iosysid, &numiotasks)))
+            ERR(ret);
+        printf("%d numiotasks = %d\n", my_rank, numiotasks);
+        if (numiotasks != 1)
+            ERR(ERR_WRONG);
+
+        int iorank;
+        if (PIOc_get_iorank(iosysid + 42, &iorank) != PIO_EBADID)
+            ERR(ERR_WRONG);
+        if ((ret = PIOc_get_iorank(iosysid, NULL)))
+            ERR(ret);
+        if ((ret = PIOc_get_iorank(iosysid, &iorank)))
+            ERR(ret);
+        printf("%d iorank = %d\n", my_rank, iorank);
+        /* Each of two tasks has an iosystem. On both iosystems, the
+         * single task has iorank of zero. */
+        if (iorank != 0)
+            ERR(ERR_WRONG);
+
+        if (PIOc_iotask_rank(iosysid + 42, &iorank) != PIO_EBADID)
+            ERR(ERR_WRONG);
+        if ((ret = PIOc_iotask_rank(iosysid, NULL)))
+            ERR(ret);
+        if ((ret = PIOc_iotask_rank(iosysid, &iorank)))
+            ERR(ret);
+        printf("%d iorank = %d\n", my_rank, iorank);
+        /* Each of two tasks has an iosystem. On both iosystems, the
+         * single task has iorank of zero. */
+        if (iorank != 0)
+            ERR(ERR_WRONG);
+
+        /* Both tasks are IO tasks. */
+        bool ioproc;
+        if (PIOc_iam_iotask(iosysid + 42, &ioproc) != PIO_EBADID)
+            ERR(ret);
+        if ((ret = PIOc_iam_iotask(iosysid, NULL)))
+            ERR(ret);
+        if ((ret = PIOc_iam_iotask(iosysid, &ioproc)))
+            ERR(ret);
+        if (!ioproc)
             ERR(ERR_WRONG);
 
         /* Initialize an intracomm for all processes. */
