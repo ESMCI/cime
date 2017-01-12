@@ -118,7 +118,7 @@ int create_file_handler(iosystem_desc_t *ios)
     int ncid;
     int len;
     int iotype;
-    char *filename;
+    char filename[PIO_MAX_NAME + 1];
     int mode;
     int mpierr;
     int ret;
@@ -131,8 +131,7 @@ int create_file_handler(iosystem_desc_t *ios)
     if ((mpierr = MPI_Bcast(&len, 1, MPI_INT, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     LOG((1, "create_file_handler got parameter len = %d\n", len));
-    if (!(filename = malloc(len + 1 * sizeof(char))))
-        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+    pioassert(len <= PIO_MAX_NAME, "len > PIO_MAX_NAME", __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast((void *)filename, len + 1, MPI_CHAR, 0,
                             ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
@@ -147,9 +146,6 @@ int create_file_handler(iosystem_desc_t *ios)
     /* Call the create file function. */
     if ((ret = PIOc_createfile(ios->iosysid, &ncid, &iotype, filename, mode)))
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
-
-    /* Free resources. */
-    free(filename);
 
     LOG((1, "create_file_handler succeeded!"));
     return PIO_NOERR;
@@ -307,7 +303,7 @@ int inq_dimid_handler(iosystem_desc_t *ios)
     int id_present;
     int ret;
     int namelen;
-    char *name;
+    char name[PIO_MAX_NAME + 1];
 
     LOG((1, "inq_dimid_handler"));
     assert(ios);
@@ -318,8 +314,7 @@ int inq_dimid_handler(iosystem_desc_t *ios)
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&namelen, 1, MPI_INT, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
-    if (!(name = malloc((namelen + 1) * sizeof(char))))
-        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+    pioassert(namelen <= PIO_MAX_NAME, "namelen > PIO_MAX_NAME", __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast((void *)name, namelen + 1, MPI_CHAR, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&id_present, 1, MPI_CHAR, 0, ios->intercomm)))
@@ -334,9 +329,6 @@ int inq_dimid_handler(iosystem_desc_t *ios)
     /* Call the inq_dimid function. */
     if ((ret = PIOc_inq_dimid(ncid, name, dimidp)))
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
-
-    /* Free resources. */
-    free(name);
 
     return PIO_NOERR;
 }
@@ -356,7 +348,7 @@ int inq_att_handler(iosystem_desc_t *ios)
     int varid;
     int mpierr;
     int ret;
-    char *name;
+    char name[PIO_MAX_NAME + 1];
     int namelen;
     int *op, *ip;
     nc_type xtype, *xtypep = NULL;
@@ -374,8 +366,7 @@ int inq_att_handler(iosystem_desc_t *ios)
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&namelen, 1, MPI_INT,  ios->compmaster, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
-    if (!(name = malloc((namelen + 1) * sizeof(char))))
-        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+    pioassert(namelen <= PIO_MAX_NAME, "namelen > PIO_MAX_NAME", __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast((void *)name, namelen + 1, MPI_CHAR, ios->compmaster,
                             ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
@@ -393,9 +384,6 @@ int inq_att_handler(iosystem_desc_t *ios)
     /* Call the function to learn about the attribute. */
     if ((ret = PIOc_inq_att(ncid, varid, name, xtypep, lenp)))
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
-
-    /* Free memory. */
-    free(name);
 
     return PIO_NOERR;
 }
@@ -460,7 +448,7 @@ int inq_attid_handler(iosystem_desc_t *ios)
     int ncid;
     int varid;
     int attnum;
-    char *name;
+    char name[PIO_MAX_NAME + 1];
     int namelen;
     int id, *idp = NULL;
     char id_present;
@@ -478,8 +466,7 @@ int inq_attid_handler(iosystem_desc_t *ios)
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&namelen, 1, MPI_INT,  ios->compmaster, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
-    if (!(name = malloc((namelen + 1) * sizeof(char))))
-        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+    pioassert(namelen <= PIO_MAX_NAME, "namelen > PIO_MAX_NAME", __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(name, namelen + 1, MPI_CHAR,  ios->compmaster, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&id_present, 1, MPI_CHAR, 0, ios->intercomm)))
@@ -494,9 +481,6 @@ int inq_attid_handler(iosystem_desc_t *ios)
     /* Call the function to learn about the attribute. */
     if ((ret = PIOc_inq_attid(ncid, varid, name, idp)))
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
-
-    /* Free resources. */
-    free(name);
 
     return PIO_NOERR;
 }
@@ -515,7 +499,7 @@ int att_put_handler(iosystem_desc_t *ios)
     int varid;
     int mpierr;
     int ret;
-    char *name;
+    char name[PIO_MAX_NAME + 1];
     int namelen;
     PIO_Offset attlen, typelen;
     nc_type atttype;
@@ -532,8 +516,7 @@ int att_put_handler(iosystem_desc_t *ios)
     if ((mpierr = MPI_Bcast(&varid, 1, MPI_INT, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     mpierr = MPI_Bcast(&namelen, 1, MPI_INT,  ios->compmaster, ios->intercomm);
-    if (!(name = malloc((namelen + 1) * sizeof(char))))
-        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+    pioassert(namelen <= PIO_MAX_NAME, "namelen > PIO_MAX_NAME", __FILE__, __LINE__);
     mpierr = MPI_Bcast((void *)name, namelen + 1, MPI_CHAR, ios->compmaster,
                        ios->intercomm);
     if ((mpierr = MPI_Bcast(&atttype, 1, MPI_INT, 0, ios->intercomm)))
@@ -545,17 +528,22 @@ int att_put_handler(iosystem_desc_t *ios)
     if (!(op = malloc(attlen * typelen)))
         return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast((void *)op, attlen * typelen, MPI_BYTE, 0, ios->intercomm)))
+    {
+        free(op);
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+    }
     LOG((1, "att_put_handler ncid = %d varid = %d namelen = %d name = %s iotype = %d"
          "atttype = %d attlen = %d typelen = %d",
          ncid, varid, namelen, name, iotype, atttype, attlen, typelen));
 
     /* Call the function to read the attribute. */
     if ((ret = PIOc_put_att(ncid, varid, name, atttype, attlen, op)))
+    {
+        free(op);
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+    }
 
     /* Free resources. */
-    free(name);
     free(op);
 
     LOG((2, "put_handler complete!"));
@@ -576,7 +564,7 @@ int att_get_handler(iosystem_desc_t *ios)
     int varid;
     int mpierr;
     int ret;
-    char *name;
+    char name[PIO_MAX_NAME + 1];
     int namelen;
     PIO_Offset attlen, typelen;
     nc_type atttype;
@@ -593,8 +581,7 @@ int att_get_handler(iosystem_desc_t *ios)
     if ((mpierr = MPI_Bcast(&varid, 1, MPI_INT, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     mpierr = MPI_Bcast(&namelen, 1, MPI_INT,  ios->compmaster, ios->intercomm);
-    if (!(name = malloc((namelen + 1) * sizeof(char))))
-        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+    pioassert(namelen <= PIO_MAX_NAME, "namelen > PIO_MAX_NAME", __FILE__, __LINE__);
     mpierr = MPI_Bcast((void *)name, namelen + 1, MPI_CHAR, ios->compmaster,
                        ios->intercomm);
     if ((mpierr = MPI_Bcast(&iotype, 1, MPI_INT, 0, ios->intercomm)))
@@ -615,10 +602,12 @@ int att_get_handler(iosystem_desc_t *ios)
 
     /* Call the function to read the attribute. */
     if ((ret = PIOc_get_att(ncid, varid, name, ip)))
+    {
+        free(ip);
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+    }
 
     /* Free resources. */
-    free(name);
     free(ip);
 
     return PIO_NOERR;
@@ -701,7 +690,10 @@ int put_vars_handler(iosystem_desc_t *ios)
 
     /* Get the data. */
     if ((mpierr = MPI_Bcast(buf, num_elem * typelen, MPI_BYTE, 0, ios->intercomm)))
+    {
+        free(buf);
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+    }
 
     /* for (int e = 0; e < num_elem; e++) */
     /*  LOG((2, "element %d = %d", e, ((int *)buf)[e])); */
@@ -1134,7 +1126,7 @@ int inq_varid_handler(iosystem_desc_t *ios)
     int mpierr;
     int ret;
     int namelen;
-    char *name;
+    char name[PIO_MAX_NAME + 1];
 
     assert(ios);
 
@@ -1144,17 +1136,13 @@ int inq_varid_handler(iosystem_desc_t *ios)
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&namelen, 1, MPI_INT, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
-    if (!(name = malloc((namelen + 1) * sizeof(char))))
-        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+    pioassert(namelen <= PIO_MAX_NAME, "namelen > PIO_MAX_NAME", __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast((void *)name, namelen + 1, MPI_CHAR, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
 
     /* Call the inq_dimid function. */
     if ((ret = PIOc_inq_varid(ncid, name, &varid)))
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
-
-    /* Free resources. */
-    free(name);
 
     return PIO_NOERR;
 }
@@ -1230,7 +1218,7 @@ int def_var_handler(iosystem_desc_t *ios)
     int ncid;
     int len, namelen;
     int iotype;
-    char *name;
+    char name[PIO_MAX_NAME + 1];
     int mode;
     int mpierr;
     int ret;
@@ -1248,8 +1236,7 @@ int def_var_handler(iosystem_desc_t *ios)
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&namelen, 1, MPI_INT, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
-    if (!(name = malloc(namelen + 1 * sizeof(char))))
-        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+    pioassert(namelen <= PIO_MAX_NAME, "namelen > PIO_MAX_NAME", __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast((void *)name, namelen + 1, MPI_CHAR, 0,
                             ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
@@ -1260,16 +1247,21 @@ int def_var_handler(iosystem_desc_t *ios)
     if (!(dimids = malloc(ndims * sizeof(int))))
         return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(dimids, ndims, MPI_INT, 0, ios->intercomm)))
+    {
+        free(dimids);
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+    }
     LOG((1, "def_var_handler got parameters namelen = %d "
          "name = %s len = %d ncid = %d\n", namelen, name, len, ncid));
 
     /* Call the create file function. */
     if ((ret = PIOc_def_var(ncid, name, xtype, ndims, dimids, &varid)))
+    {
+        free(dimids);
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+    }
 
     /* Free resources. */
-    free(name);
     free(dimids);
 
     LOG((1, "def_var_handler succeeded!"));
@@ -1420,7 +1412,7 @@ int def_dim_handler(iosystem_desc_t *ios)
     int ncid;
     int len, namelen;
     int iotype;
-    char *name;
+    char name[PIO_MAX_NAME + 1];
     int mode;
     int mpierr;
     int ret;
@@ -1435,8 +1427,7 @@ int def_dim_handler(iosystem_desc_t *ios)
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&namelen, 1, MPI_INT, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
-    if (!(name = malloc(namelen + 1 * sizeof(char))))
-        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+    pioassert(namelen <= PIO_MAX_NAME, "namelen > PIO_MAX_NAME", __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast((void *)name, namelen + 1, MPI_CHAR, 0,
                             ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
@@ -1448,9 +1439,6 @@ int def_dim_handler(iosystem_desc_t *ios)
     /* Call the create file function. */
     if ((ret = PIOc_def_dim(ncid, name, len, &dimid)))
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
-
-    /* Free resources. */
-    free(name);
 
     LOG((1, "def_dim_handler succeeded!"));
     return PIO_NOERR;
@@ -1469,7 +1457,7 @@ int rename_dim_handler(iosystem_desc_t *ios)
     int ncid;
     int len, namelen;
     int iotype;
-    char *name;
+    char name[PIO_MAX_NAME + 1];
     int mode;
     int mpierr;
     int ret;
@@ -1487,8 +1475,7 @@ int rename_dim_handler(iosystem_desc_t *ios)
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&namelen, 1, MPI_INT, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
-    if (!(name = malloc((namelen + 1) * sizeof(char))))
-        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+    pioassert(namelen <= PIO_MAX_NAME, "namelen > PIO_MAX_NAME", __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast((void *)name, namelen + 1, MPI_CHAR, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     LOG((2, "rename_dim_handler got parameters namelen = %d "
@@ -1497,9 +1484,6 @@ int rename_dim_handler(iosystem_desc_t *ios)
     /* Call the create file function. */
     if ((ret = PIOc_rename_dim(ncid, dimid, name)))
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
-
-    /* Free resources. */
-    free(name);
 
     LOG((1, "rename_dim_handler succeeded!"));
     return PIO_NOERR;
@@ -1518,7 +1502,7 @@ int rename_var_handler(iosystem_desc_t *ios)
     int ncid;
     int len, namelen;
     int iotype;
-    char *name;
+    char name[PIO_MAX_NAME + 1];
     int mode;
     int mpierr;
     int ret;
@@ -1536,8 +1520,7 @@ int rename_var_handler(iosystem_desc_t *ios)
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&namelen, 1, MPI_INT, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
-    if (!(name = malloc((namelen + 1) * sizeof(char))))
-        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+    pioassert(namelen <= PIO_MAX_NAME, "namelen > PIO_MAX_NAME", __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast((void *)name, namelen + 1, MPI_CHAR, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     LOG((2, "rename_var_handler got parameters namelen = %d "
@@ -1546,9 +1529,6 @@ int rename_var_handler(iosystem_desc_t *ios)
     /* Call the create file function. */
     if ((ret = PIOc_rename_var(ncid, varid, name)))
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
-
-    /* Free resources. */
-    free(name);
 
     LOG((1, "rename_var_handler succeeded!"));
     return PIO_NOERR;
@@ -1567,7 +1547,7 @@ int rename_att_handler(iosystem_desc_t *ios)
     int ncid;
     int varid;
     int namelen, newnamelen;
-    char *name, *newname;
+    char name[PIO_MAX_NAME + 1], newname[PIO_MAX_NAME + 1];
     int mpierr;
     int ret;
 
@@ -1582,14 +1562,12 @@ int rename_att_handler(iosystem_desc_t *ios)
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&namelen, 1, MPI_INT, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
-    if (!(name = malloc((namelen + 1) * sizeof(char))))
-        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+    pioassert(namelen <= PIO_MAX_NAME, "namelen > PIO_MAX_NAME", __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(name, namelen + 1, MPI_CHAR, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&newnamelen, 1, MPI_INT, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
-    if (!(newname = malloc((newnamelen + 1) * sizeof(char))))
-        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+    pioassert(newnamelen <= PIO_MAX_NAME, "newnamelen > PIO_MAX_NAME", __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(newname, newnamelen + 1, MPI_CHAR, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     LOG((2, "rename_att_handler got parameters namelen = %d name = %s ncid = %d varid = %d "
@@ -1598,10 +1576,6 @@ int rename_att_handler(iosystem_desc_t *ios)
     /* Call the create file function. */
     if ((ret = PIOc_rename_att(ncid, varid, name, newname)))
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
-
-    /* Free resources. */
-    free(name);
-    free(newname);
 
     LOG((1, "rename_att_handler succeeded!"));
     return PIO_NOERR;
@@ -1620,7 +1594,7 @@ int delete_att_handler(iosystem_desc_t *ios)
     int ncid;
     int varid;
     int namelen, newnamelen;
-    char *name, *newname;
+    char name[PIO_MAX_NAME + 1], *newname;
     int mpierr;
     int ret;
 
@@ -1635,8 +1609,7 @@ int delete_att_handler(iosystem_desc_t *ios)
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&namelen, 1, MPI_INT, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
-    if (!(name = malloc((namelen + 1) * sizeof(char))))
-        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+    pioassert(namelen <= PIO_MAX_NAME, "namelen > PIO_MAX_NAME", __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(name, namelen + 1, MPI_CHAR, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     LOG((2, "delete_att_handler namelen = %d name = %s ncid = %d varid = %d ",
@@ -1645,9 +1618,6 @@ int delete_att_handler(iosystem_desc_t *ios)
     /* Call the create file function. */
     if ((ret = PIOc_del_att(ncid, varid, name)))
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
-
-    /* Free resources. */
-    free(name);
 
     LOG((1, "delete_att_handler succeeded!"));
     return PIO_NOERR;
@@ -1666,7 +1636,7 @@ int open_file_handler(iosystem_desc_t *ios)
     int ncid;
     int len;
     int iotype;
-    char *filename;
+    char filename[PIO_MAX_NAME + 1];
     int mode;
     int mpierr;
     int ret;
@@ -1679,8 +1649,7 @@ int open_file_handler(iosystem_desc_t *ios)
     if ((mpierr = MPI_Bcast(&len, 1, MPI_INT, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     LOG((2, "open_file_handler got parameter len = %d", len));
-    if (!(filename = malloc(len + 1 * sizeof(char))))
-        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+    pioassert(len <= PIO_MAX_NAME, "len > PIO_MAX_NAME", __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast((void *)filename, len + 1, MPI_CHAR, 0,
                             ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
@@ -1694,9 +1663,6 @@ int open_file_handler(iosystem_desc_t *ios)
     /* Call the open file function. */
     if ((ret = PIOc_openfile(ios->iosysid, &ncid, &iotype, filename, mode)))
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
-
-    /* Free resources. */
-    free(filename);
 
     LOG((1, "open_file_handler succeeded!"));
     return PIO_NOERR;
@@ -1714,7 +1680,7 @@ int delete_file_handler(iosystem_desc_t *ios)
 {
     int ncid;
     int len;
-    char *filename;
+    char filename[PIO_MAX_NAME + 1];
     int mpierr;
     int ret;
 
@@ -1726,8 +1692,7 @@ int delete_file_handler(iosystem_desc_t *ios)
     if ((mpierr = MPI_Bcast(&len, 1, MPI_INT, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     LOG((2, "len = %d", len));
-    if (!(filename = malloc(len + 1 * sizeof(char))))
-        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+    pioassert(len <= PIO_MAX_NAME, "len > PIO_MAX_NAME", __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast((void *)filename, len + 1, MPI_CHAR, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     LOG((1, "delete_file_handler got parameters len = %d filename = %s\n",
@@ -1736,9 +1701,6 @@ int delete_file_handler(iosystem_desc_t *ios)
     /* Call the delete file function. */
     if ((ret = PIOc_deletefile(ios->iosysid, filename)))
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
-
-    /* Free resources. */
-    free(filename);
 
     LOG((1, "delete_file_handler succeeded!"));
     return PIO_NOERR;
