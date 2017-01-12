@@ -65,12 +65,12 @@ int main(int argc, char **argv)
             MPIERR(ret);
 
         /* Initialize an intracomm for evens/odds. */
-        if ((ret = PIOc_Init_Intracomm(newcomm, new_size, STRIDE, BASE, REARRANGER, NULL, &iosysid)))
+        if ((ret = PIOc_Init_Intracomm(newcomm, new_size, STRIDE, BASE, REARRANGER, &iosysid)))
             ERR(ret);
 
         /* Initialize an intracomm for all processes. */
         if ((ret = PIOc_Init_Intracomm(test_comm, TARGET_NTASKS, STRIDE, BASE, REARRANGER,
-                                       NULL, &iosysid_world)))
+                                       &iosysid_world)))
             ERR(ret);
 
         for (int flv = 0; flv < num_flavors; flv++)

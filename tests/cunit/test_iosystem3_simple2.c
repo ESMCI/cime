@@ -49,7 +49,7 @@ int main(int argc, char **argv)
             ERR(ret);
 
         /* Initialize PIO system on world. */
-        if ((ret = PIOc_Init_Intracomm(test_comm, NUM_IO4, STRIDE1, BASE0, REARRANGER, NULL, &iosysid_world)))
+        if ((ret = PIOc_Init_Intracomm(test_comm, NUM_IO4, STRIDE1, BASE0, REARRANGER, &iosysid_world)))
             ERR(ret);
 
         for (int i = 0; i < num_flavors; i++)

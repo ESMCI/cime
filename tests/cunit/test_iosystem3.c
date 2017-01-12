@@ -172,7 +172,7 @@ int main(int argc, char **argv)
 
         /* Initialize PIO system on world. */
         printf("%d about to call Init_Intracomm\n", my_rank);
-        if ((ret = PIOc_Init_Intracomm(test_comm, NUM_IO4, STRIDE1, BASE0, REARRANGER, NULL, &iosysid_world)))
+        if ((ret = PIOc_Init_Intracomm(test_comm, NUM_IO4, STRIDE1, BASE0, REARRANGER, &iosysid_world)))
             ERR(ret);
         printf("%d done with Init_Intracomm\n", my_rank);
 
@@ -232,7 +232,7 @@ int main(int argc, char **argv)
         /* Initialize PIO system for even. */
         if (even_comm != MPI_COMM_NULL)
         {
-            if ((ret = PIOc_Init_Intracomm(even_comm, NUM_IO1, STRIDE1, BASE1, REARRANGER, NULL, &even_iosysid)))
+            if ((ret = PIOc_Init_Intracomm(even_comm, NUM_IO1, STRIDE1, BASE1, REARRANGER, &even_iosysid)))
                 ERR(ret);
 
             /* Set the error handler. */
@@ -247,7 +247,7 @@ int main(int argc, char **argv)
         if (overlap_comm != MPI_COMM_NULL)
         {
             if ((ret = PIOc_Init_Intracomm(overlap_comm, NUM_IO2, STRIDE1, BASE1, REARRANGER,
-                                           NULL, &overlap_iosysid)))
+                                           &overlap_iosysid)))
                 ERR(ret);
 
             printf("%d about to set iosystem error hanlder for overlap\n", my_rank);

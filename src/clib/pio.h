@@ -653,7 +653,7 @@ extern "C" {
                             MPI_Comm io_comm, int *iosysidp);
     int PIOc_get_numiotasks(int iosysid, int *numiotasks);
     int PIOc_Init_Intracomm(MPI_Comm comp_comm, int num_iotasks, int stride, int base, int rearr,
-                            rearr_opt_t *rearr_opts, int *iosysidp);
+                            int *iosysidp);
     int PIOc_finalize(int iosysid);
 
     /* Set error handling for entire io system. */

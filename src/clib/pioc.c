@@ -571,13 +571,12 @@ static void init_rearr_opts(iosystem_desc_t *iosys, rearr_opt_t *user_rearr_opts
  * @param base the comp_comm index of the first io task
  * @param rearr the rearranger to use by default, this may be
  * overriden in the @ref PIO_initdecomp
- * @param rearr_opts the rearranger options
  * @param iosysidp index of the defined system descriptor
  * @return 0 on success, otherwise a PIO error code.
  * @ingroup PIO_init
  */
 int PIOc_Init_Intracomm(MPI_Comm comp_comm, int num_iotasks, int stride, int base,
-                        int rearr, rearr_opt_t *rearr_opts, int *iosysidp)
+                        int rearr, int *iosysidp)
 {
     iosystem_desc_t *ios;
     int ustride;
@@ -609,7 +608,7 @@ int PIOc_Init_Intracomm(MPI_Comm comp_comm, int num_iotasks, int stride, int bas
     ios->default_rearranger = rearr;
     ios->num_iotasks = num_iotasks;
     ios->num_comptasks = num_comptasks;
-    init_rearr_opts(ios, rearr_opts);
+    init_rearr_opts(ios, NULL);
 
     /* Copy the computation communicator into union_comm. */
     if ((mpierr = MPI_Comm_dup(comp_comm, &ios->union_comm)))
@@ -712,7 +711,7 @@ int PIOc_Init_Intracomm_from_F90(int f90_comp_comm,
                                  rearr_opt_t *rearr_opts, int *iosysidp)
 {
     return PIOc_Init_Intracomm(MPI_Comm_f2c(f90_comp_comm), num_iotasks,
-                                stride, base, rearr, rearr_opts,
+                                stride, base, rearr,
                                 iosysidp);
 }
 

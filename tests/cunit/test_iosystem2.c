@@ -142,11 +142,11 @@ int main(int argc, char **argv)
                new_rank, new_size);
 
         /* Initialize PIO system. */
-        if ((ret = PIOc_Init_Intracomm(newcomm, 2, 1, 0, 1, NULL, &iosysid)))
+        if ((ret = PIOc_Init_Intracomm(newcomm, 2, 1, 0, 1, &iosysid)))
             ERR(ret);
 
         /* Initialize another PIO system. */
-        if ((ret = PIOc_Init_Intracomm(test_comm, 4, 1, 0, 1, NULL, &iosysid_world)))
+        if ((ret = PIOc_Init_Intracomm(test_comm, 4, 1, 0, 1, &iosysid_world)))
             ERR(ret);
 
         for (int i = 0; i < num_flavors; i++)

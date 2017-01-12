@@ -53,7 +53,7 @@ int main(int argc, char **argv)
             return ret;
 
         /* Initialize PIO system on world. */
-        if ((ret = PIOc_Init_Intracomm(test_comm, 4, 1, 0, 1, NULL, &iosysid_world)))
+        if ((ret = PIOc_Init_Intracomm(test_comm, 4, 1, 0, 1, &iosysid_world)))
             ERR(ret);
 
         /* Get MPI_Group of world comm. */
@@ -85,7 +85,7 @@ int main(int argc, char **argv)
         /* Initialize PIO system for overlap comm. */
         if (overlap_comm != MPI_COMM_NULL)
         {
-            if ((ret = PIOc_Init_Intracomm(overlap_comm, 1, 1, 0, 1, NULL, &overlap_iosysid)))
+            if ((ret = PIOc_Init_Intracomm(overlap_comm, 1, 1, 0, 1, &overlap_iosysid)))
                 ERR(ret);
         }
 

@@ -78,13 +78,13 @@ int main(int argc, char **argv)
 
         /* Check that some bad inputs are rejected. */
         if (PIOc_Init_Intracomm(newcomm, new_size, STRIDE + 30, BASE, REARRANGER,
-                                NULL, &iosysid) != PIO_EINVAL)
+                                &iosysid) != PIO_EINVAL)
             return ERR_WRONG;
-        if (PIOc_Init_Intracomm(newcomm, new_size, STRIDE, BASE, REARRANGER, NULL, NULL) != PIO_EINVAL)
+        if (PIOc_Init_Intracomm(newcomm, new_size, STRIDE, BASE, REARRANGER, NULL) != PIO_EINVAL)
             return ERR_WRONG;
 
         /* Initialize an intracomm for evens/odds. */
-        if ((ret = PIOc_Init_Intracomm(newcomm, new_size, STRIDE, BASE, REARRANGER, NULL, &iosysid)))
+        if ((ret = PIOc_Init_Intracomm(newcomm, new_size, STRIDE, BASE, REARRANGER, &iosysid)))
             ERR(ret);
 
         /* Test some support functions. */
@@ -135,7 +135,7 @@ int main(int argc, char **argv)
 
         /* Initialize an intracomm for all processes. */
         if ((ret = PIOc_Init_Intracomm(test_comm, TARGET_NTASKS, STRIDE, BASE, REARRANGER,
-                                       NULL, &iosysid_world)))
+                                       &iosysid_world)))
             ERR(ret);
 
         int ncid;
