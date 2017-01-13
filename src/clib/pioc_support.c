@@ -156,16 +156,16 @@ void pio_finalize_logging(void )
 #if PIO_ENABLE_LOGGING
     pio_log_ref_cnt -= 1;
     if (LOG_FILE)
+    {
         if (pio_log_ref_cnt == 0)
         {
             fclose(LOG_FILE);
             LOG_FILE = NULL;
         }
         else
-        {
             LOG((2, "pio_finalize_logging, postpone close, ref_cnt = %d",
                  pio_log_ref_cnt));
-        }
+    }
 #endif /* PIO_ENABLE_LOGGING */
 }
 
@@ -1325,7 +1325,7 @@ int pioc_change_def(int ncid, int is_enddef)
 }
 
 /**
- * Check whether an IO type is valid for the build. 
+ * Check whether an IO type is valid for the build.
  *
  * @param iotype the IO type to check
  * @returns 0 if valid, non-zero otherwise.

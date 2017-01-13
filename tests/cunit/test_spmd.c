@@ -155,7 +155,6 @@ int run_sc_tests(MPI_Comm test_comm)
     int array1[SC_ARRAY_LEN] = {7, 42, 14};
     int array2[SC_ARRAY_LEN] = {2, 3, 7};
     int array3[SC_ARRAY_LEN] = {90, 180, 270};
-    int ret;      /* Return value. */
 
     /* Learn rank and size. */
     if ((mpierr = MPI_Comm_size(test_comm, &ntasks)))
@@ -210,9 +209,11 @@ int test_CalcStartandCount()
     {
         for (iorank = 0; iorank < num_io_procs; iorank++)
         {
-            numaiotasks = CalcStartandCount(PIO_DOUBLE, ndims, gdims, num_io_procs, iorank, start, kount);
+            numaiotasks = CalcStartandCount(PIO_DOUBLE, ndims, gdims, num_io_procs, iorank,
+                                            start, kount);
             if (iorank < numaiotasks)
-                printf("iorank %d start %ld %ld count %ld %ld\n", iorank, start[0], start[1], kount[0], kount[1]);
+                printf("iorank %d start %lld %lld count %lld %lld\n", iorank, start[0],
+                       start[1], kount[0], kount[1]);
 
             if (numaiotasks < 0)
                 return numaiotasks;
