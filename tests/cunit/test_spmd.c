@@ -155,6 +155,8 @@ int run_sc_tests(MPI_Comm test_comm)
     int array1[SC_ARRAY_LEN] = {7, 42, 14};
     int array2[SC_ARRAY_LEN] = {2, 3, 7};
     int array3[SC_ARRAY_LEN] = {90, 180, 270};
+    int array4[SC_ARRAY_LEN] = {1, 180, 270};
+    int ret;      /* Return value. */
 
     /* Learn rank and size. */
     if ((mpierr = MPI_Comm_size(test_comm, &ntasks)))
@@ -185,10 +187,13 @@ int run_sc_tests(MPI_Comm test_comm)
         return ERR_WRONG;
     if (gcd_array(SC_ARRAY_LEN, array3) != 90)
         return ERR_WRONG;
+    if (gcd_array(SC_ARRAY_LEN, array4) != 1)
+        return ERR_WRONG;
 
     return 0;
 }
 
+/* This test code was recovered from main() in pioc_sc.c. */
 int test_CalcStartandCount()
 {
     int ndims = 2;
