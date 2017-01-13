@@ -110,18 +110,6 @@ int main(int argc, char **argv)
             ERR(ERR_WRONG);
 
         int iorank;
-        if (PIOc_get_iorank(iosysid + 42, &iorank) != PIO_EBADID)
-            ERR(ERR_WRONG);
-        if ((ret = PIOc_get_iorank(iosysid, NULL)))
-            ERR(ret);
-        if ((ret = PIOc_get_iorank(iosysid, &iorank)))
-            ERR(ret);
-        printf("%d iorank = %d\n", my_rank, iorank);
-        /* Each of two tasks has an iosystem. On both iosystems, the
-         * single task has iorank of zero. */
-        if (iorank != 0)
-            ERR(ERR_WRONG);
-
         if (PIOc_iotask_rank(iosysid + 42, &iorank) != PIO_EBADID)
             ERR(ERR_WRONG);
         if ((ret = PIOc_iotask_rank(iosysid, NULL)))
