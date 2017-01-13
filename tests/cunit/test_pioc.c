@@ -949,13 +949,19 @@ int test_nc4(int iosysid, int num_flavors, int *flavor, int my_rank)
             ERR(ret);
 
         /* Check that invalid arguments are properly rejected. */
+        if (PIOc_def_var_chunking(ncid + 1, 1000, NC_CHUNKED, chunksize) == PIO_NOERR)
+            ERR(ERR_AWFUL);
         if (PIOc_def_var_chunking(ncid + 1, 0, NC_CHUNKED, chunksize) != PIO_EBADID)
+            ERR(ERR_AWFUL);
+        if (PIOc_inq_var_chunking(ncid + 1, 1000, &storage, my_chunksize) == PIO_NOERR)
             ERR(ERR_AWFUL);
         if (PIOc_inq_var_chunking(ncid + 1, 0, &storage, my_chunksize) != PIO_EBADID)
             ERR(ERR_AWFUL);
         if (PIOc_inq_var_deflate(ncid + 1, 0, &shuffle, &deflate, &deflate_level) != PIO_EBADID)
             ERR(ret);
         if (PIOc_def_var_endian(ncid + 1, 0, 1) != PIO_EBADID)
+            ERR(ERR_AWFUL);
+        if (PIOc_def_var_deflate(ncid + 1, 0, 0, 0, 0) != PIO_EBADID)
             ERR(ERR_AWFUL);
         if (PIOc_inq_var_endian(ncid + 1, 0, &endianness) != PIO_EBADID)
             ERR(ERR_AWFUL);
@@ -975,10 +981,20 @@ int test_nc4(int iosysid, int num_flavors, int *flavor, int my_rank)
         /* For netCDF-4 files, set the chunksize to improve performance. */
         if (flavor[fmt] == PIO_IOTYPE_NETCDF4C || flavor[fmt] == PIO_IOTYPE_NETCDF4P)
         {
+            unsigned long long too_big_chunksize[NDIM] = {(unsigned long long)NC_MAX_INT64 + 42, X_DIM_LEN/2, Y_DIM_LEN/2};
+            if (PIOc_def_var_chunking(ncid, 0, NC_CHUNKED, too_big_chunksize) == PIO_NOERR)
+                ERR(ret);
+            
             printf("%d Defining chunksizes\n", my_rank);
             if ((ret = PIOc_def_var_chunking(ncid, 0, NC_CHUNKED, chunksize)))
                 ERR(ret);
 
+            /* Setting deflate should not work with parallel iotype. */
+            printf("%d Defining deflate\n", my_rank);
+            ret = PIOc_def_var_deflate(ncid, 0, 0, 1, 1);
+            if (ret != flavor[fmt] == PIO_IOTYPE_NETCDF4P ? PIO_EINVAL : PIO_NOERR)
+                ERR(ret);
+            
             /* Check that the inq_varname function works. */
             printf("%d Checking varname\n", my_rank);
             if ((ret = PIOc_inq_varname(ncid, 0, NULL)))
