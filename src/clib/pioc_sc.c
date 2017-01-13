@@ -101,7 +101,7 @@ long long lgcd_array(int nain, long long *ain)
 }
 
 /**
- * ???
+ * Compute start and count arrays.
  *
  * @param gdim
  * @param ioprocs
@@ -142,9 +142,7 @@ void computestartandcount(int gdim, int ioprocs, int rank, PIO_Offset *start,
  */
 PIO_Offset GCDblocksize(int arrlen, const PIO_Offset *arr_in)
 {
-    PIO_Offset *gaps = NULL;
-    PIO_Offset *blk_len = NULL;
-    int i, j, k, n, numblks, numtimes, ii, numgaps;
+    int i, j, n, numblks, numtimes, ii, numgaps;
     PIO_Offset bsize, bsizeg, blklensum;
     PIO_Offset del_arr[arrlen - 1];
     PIO_Offset loc_arr[arrlen - 1];
