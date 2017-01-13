@@ -246,17 +246,8 @@ int main(int argc, char **argv)
     /* The ID for the parallel I/O system. */
     int iosysid[COMPONENT_COUNT];
 
-    /* The ncid of the netCDF file. */
-    int ncid;
-
-    /* The ID of the netCDF varable. */
-    int varid;
-
     /* Return code. */
     int ret;
-
-    /* Index for loops. */
-    int fmt, d, d1, i;
 
     MPI_Comm test_comm;
 
@@ -395,7 +386,6 @@ int main(int argc, char **argv)
                     ERR(ret);
 
                 /* Write an att and delete it. */
-                nc_type myatttype;
                 if ((ret = PIOc_put_att_int(ncid, NC_GLOBAL, FIRST_ATT_NAME, NC_INT, 1, &att_data)))
                     ERR(ret);
                 if ((ret = PIOc_del_att(ncid, NC_GLOBAL, FIRST_ATT_NAME)))
@@ -413,6 +403,21 @@ int main(int argc, char **argv)
                     ERR(ret);
                 if ((ret = PIOc_put_att_double(ncid, NC_GLOBAL, DOUBLE_ATT_NAME, NC_DOUBLE, 1, &double_att_data)))
                     ERR(ret);
+
+                /* Check some att types. */
+                nc_type myatttype;
+                if ((ret = PIOc_inq_atttype(ncid, NC_GLOBAL, SHORT_ATT_NAME, &myatttype)))
+                    ERR(ret);
+                if (myatttype != NC_SHORT)
+                    ERR(ERR_WRONG);
+                if ((ret = PIOc_inq_atttype(ncid, NC_GLOBAL, FLOAT_ATT_NAME, &myatttype)))
+                    ERR(ret);
+                if (myatttype != NC_FLOAT)
+                    ERR(ERR_WRONG);
+                if ((ret = PIOc_inq_atttype(ncid, NC_GLOBAL, DOUBLE_ATT_NAME, &myatttype)))
+                    ERR(ret);
+                if (myatttype != NC_DOUBLE)
+                    ERR(ERR_WRONG);
 
                 /* End define mode. */
 		printf("%d test_intercomm2 ending define mode ncid = %d\n", my_rank, ncid);

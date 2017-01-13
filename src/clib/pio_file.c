@@ -298,9 +298,11 @@ int PIOc_closefile(int ncid)
         return pio_err(NULL, NULL, ierr, __FILE__, __LINE__);
     ios = file->iosystem;
 
-    /* Sync changes before closing. */
-    if (file->mode & PIO_WRITE)
-        PIOc_sync(ncid);
+    /* Sync changes before closing on all tasks if async is not in
+     * use, but only on non-IO tasks if async is in use. */
+    if (!ios->async_interface || !ios->ioproc)
+        if (file->mode & PIO_WRITE)
+            PIOc_sync(ncid);
 
     /* If async is in use and this is a comp tasks, then the compmaster
      * sends a msg to the pio_msg_handler running on the IO master and
@@ -479,15 +481,24 @@ int PIOc_sync(int ncid)
         {
             int msg = PIO_MSG_SYNC;
 
-            if (ios->comp_rank == 0)
-                mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
+            if (ios->compmaster == MPI_ROOT)
+                mpierr = MPI_Send(&msg, 1, MPI_INT, ios->ioroot, 1, ios->union_comm);
 
-            mpierr = MPI_Bcast(&ncid, 1, MPI_INT, ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast(&ncid, 1, MPI_INT, ios->compmaster, ios->intercomm);
         }
+
+        /* Handle MPI errors. */
+        if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
+            check_mpi(file, mpierr2, __FILE__, __LINE__);
+        if (mpierr)
+            return check_mpi(file, mpierr, __FILE__, __LINE__);
     }
 
     if (file->mode & PIO_WRITE)
     {
+        LOG((3, "PIOc_sync checking buffers"));
+        
         /*  cn_buffer_report( *ios, true); */
         wmb = &file->buffer;
         while (wmb)
@@ -534,8 +545,14 @@ int PIOc_sync(int ncid)
                 return pio_err(ios, file, PIO_EBADIOTYPE, __FILE__, __LINE__);
             }
         }
-
-        ierr = check_netcdf(file, ierr, __FILE__,__LINE__);
+        LOG((2, "PIOc_sync ierr = %d", ierr));        
     }
+
+    /* Broadcast and check the return code. */
+    if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+    if (ierr)
+        return check_netcdf2(ios, NULL, ierr, __FILE__, __LINE__);
+
     return ierr;
 }
