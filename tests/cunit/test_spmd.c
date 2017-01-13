@@ -156,7 +156,6 @@ int run_sc_tests(MPI_Comm test_comm)
     int array2[SC_ARRAY_LEN] = {2, 3, 7};
     int array3[SC_ARRAY_LEN] = {90, 180, 270};
     int array4[SC_ARRAY_LEN] = {1, 180, 270};
-    int ret;      /* Return value. */
 
     /* Learn rank and size. */
     if ((mpierr = MPI_Comm_size(test_comm, &ntasks)))

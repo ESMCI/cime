@@ -73,12 +73,8 @@ int main(int argc, char **argv)
                                        &iosysid_world)))
             ERR(ret);
 
-        int ncid;
-        int ncid2;
         for (int flv = 0; flv < num_flavors; flv++)
         {
-            char fn[NUM_FILES][NC_MAX_NAME + 1];
-            char dimname[NC_MAX_NAME + 1];
             char filename[NUM_SAMPLES][NC_MAX_NAME + 1]; /* Test filename. */
             int sample_ncid[NUM_SAMPLES];
 
