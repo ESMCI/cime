@@ -412,7 +412,6 @@ int check_netcdf2(iosystem_desc_t *ios, file_desc_t *file, int status,
 {
     int eh = default_error_handler; /* Error handler that will be used. */
     char errmsg[PIO_MAX_NAME + 1];  /* Error message. */
-    int ierr;
 
     /* User must provide this. */
     pioassert(fname, "code file name must be provided", __FILE__, __LINE__);
@@ -434,14 +433,17 @@ int check_netcdf2(iosystem_desc_t *ios, file_desc_t *file, int status,
     LOG((2, "check_netcdf2 chose error handler = %d", eh));
 
     /* Get an error message. */
-    ierr = PIOc_strerror(status, errmsg);
-    LOG((1, "check_netcdf2 errmsg = %s", errmsg));
+    if (!PIOc_strerror(status, errmsg))
+    {
+        fprintf(stderr, "%s\n", errmsg);
+        LOG((1, "check_netcdf2 errmsg = %s", errmsg));
+    }
 
     /* Decide what to do based on the error handler. */
     if (eh == PIO_INTERNAL_ERROR)
         piodie(errmsg, fname, line);        /* Die! */
     else if (eh == PIO_BCAST_ERROR && ios)  /* Not sure what this will do. */
-        ierr = MPI_Bcast(&status, 1, MPI_INTEGER, ios->ioroot, ios->my_comm);
+        MPI_Bcast(&status, 1, MPI_INTEGER, ios->ioroot, ios->my_comm);
 
     /* For PIO_RETURN_ERROR, just return the error. */
     return status;
@@ -1012,7 +1014,6 @@ int PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype,
 {
     iosystem_desc_t *ios;  /** Pointer to io system information. */
     file_desc_t *file;     /** Pointer to file information. */
-    int tmp_fh = -1;
     int ierr = PIO_NOERR;  /** Return code from function calls. */
     int mpierr = MPI_SUCCESS, mpierr2;  /** Return code from MPI function codes. */
 
@@ -1203,7 +1204,6 @@ int pioc_pnetcdf_inq_type(int ncid, nc_type xtype, char *name,
                           PIO_Offset *sizep)
 {
     int typelen;
-    char typename[NC_MAX_NAME + 1];
 
     switch (xtype)
     {
@@ -1292,13 +1292,16 @@ int pioc_change_def(int ncid, int is_enddef)
              file->fh, file->do_io));
 #ifdef _PNETCDF
         if (file->iotype == PIO_IOTYPE_PNETCDF)
+        {
             if (is_enddef)
                 ierr = ncmpi_enddef(file->fh);
             else
                 ierr = ncmpi_redef(file->fh);
+        }
 #endif /* _PNETCDF */
 #ifdef _NETCDF
         if (file->iotype != PIO_IOTYPE_PNETCDF && file->do_io)
+        {
             if (is_enddef)
             {
                 LOG((3, "pioc_change_def calling nc_enddef file->fh = %d", file->fh));
@@ -1306,6 +1309,7 @@ int pioc_change_def(int ncid, int is_enddef)
             }
             else
                 ierr = nc_redef(file->fh);
+        }
 #endif /* _NETCDF */
     }
 
