@@ -1047,13 +1047,12 @@ int PIOc_get_var(int ncid, int varid, void *buf, PIO_Offset bufcount, MPI_Dataty
 {
     int ierr;
     int msg;
-    int mpierr;
     iosystem_desc_t *ios;
     file_desc_t *file;
     MPI_Datatype ibuftype;
-    int ndims;
     int ibufcnt;
     bool bcast = false;
+    int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
 
     /* Get the file info. */
     if ((ierr = pio_get_file(ncid, &file)))
@@ -1065,12 +1064,25 @@ int PIOc_get_var(int ncid, int varid, void *buf, PIO_Offset bufcount, MPI_Dataty
     ibuftype = buftype;
     ierr = PIO_NOERR;
 
-    if (ios->async_interface && ! ios->ioproc){
-        if (ios->compmaster == MPI_ROOT)
-            mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
-        mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
-    }
+    /* If async is in use, send message to IO master tasks. */
+    if (ios->async_interface)
+    {
+        if (!ios->ioproc)
+        {
+            if (ios->compmaster == MPI_ROOT)
+                mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
 
+            if (!mpierr)            
+                mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
+        }
+
+        /* Handle MPI errors. */
+        if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
+            check_mpi(file, mpierr2, __FILE__, __LINE__);
+        if (mpierr)
+            return check_mpi(file, mpierr, __FILE__, __LINE__);
+    }
+        
     if (ios->ioproc){
         switch(file->iotype){
 #ifdef _NETCDF
@@ -1136,31 +1148,42 @@ int PIOc_get_var1(int ncid, int varid, const PIO_Offset *index, void *buf,
                   PIO_Offset bufcount, MPI_Datatype buftype)
 {
     int ierr;
-    int msg;
-    int mpierr;
     iosystem_desc_t *ios;
     file_desc_t *file;
     MPI_Datatype ibuftype;
-    int ndims;
     int ibufcnt;
     bool bcast = false;
+    int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
 
     /* Get file info. */
     if ((ierr = pio_get_file(ncid, &file)))
         return ierr;
     ios = file->iosystem;
 
-    msg = PIO_MSG_GET_VAR1;
     ibufcnt = bufcount;
     ibuftype = buftype;
     ierr = PIO_NOERR;
 
-    if (ios->async_interface && ! ios->ioproc){
-        if (ios->compmaster == MPI_ROOT)
-            mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
-        mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
-    }
+    /* If async is in use, send message to IO master tasks. */
+    if (ios->async_interface)
+    {
+        if (!ios->ioproc)
+        {
+            int msg = PIO_MSG_GET_VAR1;
 
+            if (ios->compmaster == MPI_ROOT)
+                mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
+            
+            if (!mpierr)
+                mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
+        }
+
+        /* Handle MPI errors. */
+        if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
+            check_mpi(file, mpierr2, __FILE__, __LINE__);
+        if (mpierr)
+            return check_mpi(file, mpierr, __FILE__, __LINE__);
+    }
 
     if (ios->ioproc){
         switch(file->iotype){
@@ -1229,13 +1252,12 @@ int PIOc_get_vara(int ncid, int varid, const PIO_Offset *start, const PIO_Offset
 {
     int ierr;
     int msg;
-    int mpierr;
     iosystem_desc_t *ios;
     file_desc_t *file;
     MPI_Datatype ibuftype;
-    int ndims;
     int ibufcnt;
     bool bcast = false;
+    int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
 
     /* Get file info. */
     if ((ierr = pio_get_file(ncid, &file)))
@@ -1247,12 +1269,25 @@ int PIOc_get_vara(int ncid, int varid, const PIO_Offset *start, const PIO_Offset
     ibuftype = buftype;
     ierr = PIO_NOERR;
 
-    if (ios->async_interface && ! ios->ioproc){
-        if (ios->compmaster == MPI_ROOT)
-            mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
-        mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
-    }
+    /* If async is in use, send message to IO master tasks. */
+    if (ios->async_interface)
+    {
+        if (!ios->ioproc)
+        {
 
+            if (ios->compmaster == MPI_ROOT)
+                mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
+
+            if (!mpierr)
+                mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
+        }
+
+        /* Handle MPI errors. */
+        if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
+            check_mpi(file, mpierr2, __FILE__, __LINE__);
+        if (mpierr)
+            return check_mpi(file, mpierr, __FILE__, __LINE__);
+    }
 
     if (ios->ioproc){
         switch(file->iotype){
@@ -1326,13 +1361,12 @@ int PIOc_get_vars(int ncid, int varid, const PIO_Offset *start, const PIO_Offset
 {
     int ierr;
     int msg;
-    int mpierr;
     iosystem_desc_t *ios;
     file_desc_t *file;
     MPI_Datatype ibuftype;
-    int ndims;
     int ibufcnt;
     bool bcast = false;
+    int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
 
     /* Get file info. */
     if ((ierr = pio_get_file(ncid, &file)))
@@ -1344,10 +1378,23 @@ int PIOc_get_vars(int ncid, int varid, const PIO_Offset *start, const PIO_Offset
     ibuftype = buftype;
     ierr = PIO_NOERR;
 
-    if (ios->async_interface && ! ios->ioproc){
-        if (ios->compmaster == MPI_ROOT)
-            mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
-        mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
+    /* If async is in use, send message to IO master tasks. */
+    if (ios->async_interface)
+    {
+        if (!ios->ioproc)
+        {
+            if (ios->compmaster == MPI_ROOT)
+                mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
+            
+            if (!mpierr)
+                mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm);
+        }
+
+        /* Handle MPI errors. */
+        if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
+            check_mpi(file, mpierr2, __FILE__, __LINE__);
+        if (mpierr)
+            return check_mpi(file, mpierr, __FILE__, __LINE__);
     }
 
     if (ios->ioproc){
