@@ -1,3 +1,7 @@
+/**
+ * @file
+ * PIO list functions.
+ */
 #include <config.h>
 #include <pio.h>
 #include <pio_internal.h>

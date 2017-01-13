@@ -3,7 +3,7 @@
  * PIO interfaces to
  * [NetCDF](http://www.unidata.ucar.edu/software/netcdf/docs/modules.html)
  * support functions
-
+ *
  *  This file provides an interface to the
  *  [NetCDF](http://www.unidata.ucar.edu/software/netcdf/docs/modules.html)
  *  support functions.  Each subroutine calls the underlying netcdf or
@@ -226,7 +226,6 @@ int PIOc_inq_type(int ncid, nc_type xtype, char *name, PIO_Offset *sizep)
     file_desc_t *file;     /* Pointer to file information. */
     int ierr;              /* Return code from function calls. */
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
-    int typelen;
 
     LOG((1, "PIOc_inq_type ncid = %d xtype = %d", ncid, xtype));
 

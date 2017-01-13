@@ -1397,7 +1397,8 @@ int PIOc_get_vars(int ncid, int varid, const PIO_Offset *start, const PIO_Offset
             return check_mpi(file, mpierr, __FILE__, __LINE__);
     }
 
-    if (ios->ioproc){
+    if (ios->ioproc)
+    {
         switch(file->iotype){
 #ifdef _NETCDF
 #ifdef _NETCDF4

@@ -341,7 +341,6 @@ int create_mpi_datatypes(MPI_Datatype basetype, int msgcnt, PIO_Offset dlen,
 int define_iodesc_datatypes(iosystem_desc_t ios, io_desc_t *iodesc)
 {
     int ret; /* Return value. */
-    int i;
 
     /* Set up the to transfer data to and from the IO tasks. */
     if (ios.ioproc)
@@ -677,7 +676,6 @@ int rearrange_comp2io(iosystem_desc_t ios, io_desc_t *iodesc, void *sbuf,
     int ntasks;
     int niotasks;
     int *scount = iodesc->scount;
-    int ivar;
     int i, tsize;
     int *sendcounts;
     int *recvcounts;
@@ -874,7 +872,7 @@ int rearrange_io2comp(iosystem_desc_t ios, io_desc_t *iodesc, void *sbuf,
     int *rdispls;
     MPI_Datatype *sendtypes;
     MPI_Datatype *recvtypes;
-    int i, tsize;
+    int i;
     int mpierr; /* Return code from MPI calls. */
 
     assert(iodesc);
@@ -938,6 +936,7 @@ int rearrange_io2comp(iosystem_desc_t ios, io_desc_t *iodesc, void *sbuf,
     if (ios.ioproc)
         for (i = 0; i < iodesc->nrecvs; i++)
             if (iodesc->rtype[i] != PIO_DATATYPE_NULL)
+            {
                 if (iodesc->rearranger == PIO_REARR_SUBSET)
                 {
                     if (sbuf)
@@ -951,6 +950,7 @@ int rearrange_io2comp(iosystem_desc_t ios, io_desc_t *iodesc, void *sbuf,
                     sendcounts[iodesc->rfrom[i]] = 1;
                     sendtypes[iodesc->rfrom[i]] = iodesc->rtype[i];
                 }
+            }
 
     /* In the box rearranger each comp task may communicate with
      * multiple IO tasks here we are setting the count and data type
@@ -1060,27 +1060,27 @@ void iodesc_dump(io_desc_t *iodesc)
 {
     assert(iodesc);
 
-    printf("ioid= %d\n",iodesc->ioid);
+    printf("ioid= %d\n", iodesc->ioid);
 /*    printf("async_id= %d\n",iodesc->async_id);*/
-    printf("nrecvs= %d\n",iodesc->nrecvs);
-    printf("ndof= %d\n",iodesc->ndof);
-    printf("ndims= %d\n",iodesc->ndims);
-    printf("num_aiotasks= %d\n",iodesc->num_aiotasks);
-    printf("rearranger= %d\n",iodesc->rearranger);
-    printf("maxregions= %d\n",iodesc->maxregions);
-    printf("needsfill= %d\n",(int) iodesc->needsfill);
+    printf("nrecvs= %d\n", iodesc->nrecvs);
+    printf("ndof= %d\n", iodesc->ndof);
+    printf("ndims= %d\n", iodesc->ndims);
+    printf("num_aiotasks= %d\n", iodesc->num_aiotasks);
+    printf("rearranger= %d\n", iodesc->rearranger);
+    printf("maxregions= %d\n", iodesc->maxregions);
+    printf("needsfill= %d\n", (int)iodesc->needsfill);
 
-    printf("llen= %ld\n",iodesc->llen);
-    printf("maxiobuflen= %d\n",iodesc->maxiobuflen);
+    printf("llen= %lld\n", iodesc->llen);
+    printf("maxiobuflen= %d\n", iodesc->maxiobuflen);
     printf("gsize=");
-    for (int i = 0; i< iodesc->ndims; i++){
-        printf(" %d",iodesc->ioid);
+    for (int i = 0; i < iodesc->ndims; i++){
+        printf(" %d", iodesc->ioid);
     }
     printf("\n");
 
     printf("rindex= ");
-    for (int j = 0;j<iodesc->llen;j++)
-        printf(" %ld ",iodesc->rindex[j]);
+    for (int j = 0; j < iodesc->llen; j++)
+        printf(" %lld ", iodesc->rindex[j]);
     printf("\n");
 }
 
@@ -1102,14 +1102,11 @@ void iodesc_dump(io_desc_t *iodesc)
 int box_rearrange_create(iosystem_desc_t ios, int maplen, const PIO_Offset *compmap,
                          const int *gsize, int ndims, io_desc_t *iodesc)
 {
-    int ierr = PIO_NOERR;
     int nprocs = ios.num_comptasks;
     int nioprocs = ios.num_iotasks;
     PIO_Offset gstride[ndims];
-    PIO_Offset iomap;
     PIO_Offset start[ndims], count[ndims];
-    int  tsize, i, j, k, llen;
-    MPI_Datatype dtype;
+    int  tsize, i, j, k;
     int dest_ioproc[maplen];
     PIO_Offset dest_ioindex[maplen];
     int sndlths[nprocs];
@@ -1294,7 +1291,7 @@ void get_start_and_count_regions(int ndims, const int *gdims, int maplen, const 
     int i;
     int nmaplen;
     int regionlen;
-    io_region *region, *prevregion;
+    io_region *region;
 
     assert(maxregions);
     assert(firstregion);
@@ -1309,7 +1306,6 @@ void get_start_and_count_regions(int ndims, const int *gdims, int maplen, const 
     region->loffset = nmaplen;
 
     *maxregions = 1;
-    prevregion = NULL;
 
     while(nmaplen < maplen)
     {
@@ -1396,10 +1392,7 @@ void default_subset_partition(iosystem_desc_t ios, io_desc_t *iodesc)
 int subset_rearrange_create(iosystem_desc_t ios, int maplen, PIO_Offset *compmap,
                             const int *gsize, int ndims, io_desc_t *iodesc)
 {
-    int taskratio;
-    int i, j, jlast;
-    bool hs = false;
-    bool isend = false;
+    int i, j;
     PIO_Offset *iomap = NULL;
     int ierr = PIO_NOERR;
     mapsort *map = NULL;
@@ -1408,7 +1401,6 @@ int subset_rearrange_create(iosystem_desc_t ios, int maplen, PIO_Offset *compmap
     PIO_Offset *myfillgrid = NULL;
     int maxregions;
     int rank, ntasks, rcnt;
-    size_t pio_offset_size = sizeof(PIO_Offset);
     int mpierr; /* Return call from MPI function calls. */
     int ret;
 
@@ -1582,20 +1574,14 @@ int subset_rearrange_create(iosystem_desc_t ios, int maplen, PIO_Offset *compmap
     }
 
     int cnt[ntasks];
-    int sndlths[ntasks];
-    int sdispls[ntasks];
-    MPI_Datatype dtypes[ntasks];
     for (i = 0; i < ntasks; i++)
     {
         cnt[i] = rdispls[i];
 
         /* offsets to swapm are in bytes */
         /*    rdispls[i]*=pio_offset_size; */
-        sdispls[i] = 0;
-        sndlths[i] = 0;
-        dtypes[i] = PIO_OFFSET;
     }
-    sndlths[0] = iodesc->scount[0];
+
     mapsort *mptr;
     for (i = 0; i < iodesc->llen; i++)
     {
@@ -1768,12 +1754,6 @@ int subset_rearrange_create(iosystem_desc_t ios, int maplen, PIO_Offset *compmap
  */
 void performance_tune_rearranger(iosystem_desc_t ios, io_desc_t *iodesc)
 {
-    bool handshake;
-    bool isend;
-    int nreqs;
-    int maxreqs;
-    int nprocs;
-    MPI_Comm mycomm;
 #ifdef TIMING
 #ifdef PERFTUNE
     double *wall, usr[2], sys[2];
