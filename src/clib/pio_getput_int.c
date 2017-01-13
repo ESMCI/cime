@@ -54,10 +54,8 @@ int PIOc_get_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
     int ierr = PIO_NOERR;  /* Return code from function calls. */
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
     int ndims;   /* The number of dimensions in the variable. */
-    int *dimids; /* The IDs of the dimensions for this variable. */
     PIO_Offset typelen; /* Size (in bytes) of the data type of data in buf. */
     PIO_Offset num_elem = 1; /* Number of data elements in the buffer. */
-    int bcast = false;
     char start_present = start ? true : false;
     char count_present = count ? true : false;
     char stride_present = stride ? true : false;
@@ -435,7 +433,6 @@ int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
     int ierr = PIO_NOERR;  /* Return code from function calls. */
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
     int ndims; /* The number of dimensions in the variable. */
-    int *dimids; /* The IDs of the dimensions for this variable. */
     PIO_Offset typelen; /* Size (in bytes) of the data type of data in buf. */
     PIO_Offset num_elem = 1; /* Number of data elements in the buffer. */
     char start_present = start ? true : false; /* Is start non-NULL? */
@@ -443,7 +440,6 @@ int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
     char stride_present = stride ? true : false; /* Is stride non-NULL? */
     PIO_Offset *rstart, *rcount, *rstride;
     var_desc_t *vdesc;
-    PIO_Offset usage;
     int *request;
 
     LOG((1, "PIOc_put_vars_tc ncid = %d varid = %d start = %d count = %d "

@@ -1123,12 +1123,11 @@ int PIOc_put_var(int ncid, int varid, const void *buf, PIO_Offset bufcount,
 {
     int ierr;
     int msg;
-    int mpierr;
     iosystem_desc_t *ios;
     file_desc_t *file;
     var_desc_t *vdesc;
-    PIO_Offset usage;
     int *request;
+    int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
 
     ierr = PIO_NOERR;
 
@@ -1139,12 +1138,23 @@ int PIOc_put_var(int ncid, int varid, const void *buf, PIO_Offset bufcount,
 
     msg = PIO_MSG_PUT_VAR;
 
-    if (ios->async_interface && !ios->ioproc)
+    /* If async is in use, send message to IO master tasks. */
+    if (ios->async_interface)
     {
-        if (ios->compmaster == MPI_ROOT)
-            mpierr = MPI_Send(&msg, 1, MPI_INT, ios->ioroot, 1, ios->union_comm);
+        if (!ios->ioproc)
+        {
+            if (ios->compmaster == MPI_ROOT)
+                mpierr = MPI_Send(&msg, 1, MPI_INT, ios->ioroot, 1, ios->union_comm);
 
-        mpierr = MPI_Bcast(&ncid,1, MPI_INT, ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast(&ncid,1, MPI_INT, ios->compmaster, ios->intercomm);
+        }
+
+        /* Handle MPI errors. */
+        if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
+            check_mpi(file, mpierr2, __FILE__, __LINE__);
+        if (mpierr)
+            return check_mpi(file, mpierr, __FILE__, __LINE__);
     }
 
     if (ios->ioproc)
@@ -1222,12 +1232,11 @@ int PIOc_put_vars(int ncid, int varid, const PIO_Offset *start, const PIO_Offset
 {
     int ierr;
     int msg;
-    int mpierr;
     iosystem_desc_t *ios;
     file_desc_t *file;
     var_desc_t *vdesc;
-    PIO_Offset usage;
     int *request;
+    int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
 
     ierr = PIO_NOERR;
 
@@ -1238,11 +1247,23 @@ int PIOc_put_vars(int ncid, int varid, const PIO_Offset *start, const PIO_Offset
 
     msg = PIO_MSG_PUT_VARS;
 
-    if (ios->async_interface && !ios->ioproc)
+    /* If async is in use, send message to IO master tasks. */
+    if (ios->async_interface)
     {
-        if (ios->compmaster == MPI_ROOT)
-            mpierr = MPI_Send(&msg, 1, MPI_INT, ios->ioroot, 1, ios->union_comm);
-        mpierr = MPI_Bcast(&ncid, 1, MPI_INT, ios->compmaster, ios->intercomm);
+        if (!ios->ioproc)
+        {
+            if (ios->compmaster == MPI_ROOT)
+                mpierr = MPI_Send(&msg, 1, MPI_INT, ios->ioroot, 1, ios->union_comm);
+
+            if (!mpierr)
+                mpierr = MPI_Bcast(&ncid, 1, MPI_INT, ios->compmaster, ios->intercomm);
+        }
+
+        /* Handle MPI errors. */
+        if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
+            check_mpi(file, mpierr2, __FILE__, __LINE__);
+        if (mpierr)
+            return check_mpi(file, mpierr, __FILE__, __LINE__);
     }
 
     if (ios->ioproc)
@@ -1315,12 +1336,11 @@ int PIOc_put_var1(int ncid, int varid, const PIO_Offset *index, const void *buf,
 {
     int ierr;
     int msg;
-    int mpierr;
     iosystem_desc_t *ios;
     file_desc_t *file;
     var_desc_t *vdesc;
-    PIO_Offset usage;
     int *request;
+    int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
 
     ierr = PIO_NOERR;
 
@@ -1331,13 +1351,24 @@ int PIOc_put_var1(int ncid, int varid, const PIO_Offset *index, const void *buf,
 
     msg = PIO_MSG_PUT_VAR1;
 
-    if (ios->async_interface && !ios->ioproc)
+    /* If async is in use, send message to IO master tasks. */
+    if (ios->async_interface)
     {
-        if (ios->compmaster == MPI_ROOT)
-            mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
-        mpierr = MPI_Bcast(&ncid, 1, MPI_INT, ios->compmaster, ios->intercomm);
-    }
+        if (!ios->ioproc)
+        {
+            if (ios->compmaster == MPI_ROOT)
+                mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
 
+            if (!mpierr)            
+                mpierr = MPI_Bcast(&ncid, 1, MPI_INT, ios->compmaster, ios->intercomm);
+        }
+
+        /* Handle MPI errors. */
+        if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
+            check_mpi(file, mpierr2, __FILE__, __LINE__);
+        if (mpierr)
+            return check_mpi(file, mpierr, __FILE__, __LINE__);
+    }
 
     if (ios->ioproc)
     {
@@ -1410,12 +1441,11 @@ int PIOc_put_vara(int ncid, int varid, const PIO_Offset *start, const PIO_Offset
 {
     int ierr;
     int msg;
-    int mpierr;
     iosystem_desc_t *ios;
     file_desc_t *file;
     var_desc_t *vdesc;
-    PIO_Offset usage;
     int *request;
+    int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
 
     ierr = PIO_NOERR;
 
@@ -1426,13 +1456,24 @@ int PIOc_put_vara(int ncid, int varid, const PIO_Offset *start, const PIO_Offset
 
     msg = PIO_MSG_PUT_VARA;
 
-    if (ios->async_interface && !ios->ioproc)
+    /* If async is in use, send message to IO master tasks. */
+    if (ios->async_interface)
     {
-        if (ios->compmaster == MPI_ROOT)
-            mpierr = MPI_Send(&msg, 1, MPI_INT, ios->ioroot, 1, ios->union_comm);
-        mpierr = MPI_Bcast(&ncid, 1, MPI_INT, ios->compmaster, ios->intercomm);
-    }
+        if (!ios->ioproc)
+        {
+            if (ios->compmaster == MPI_ROOT)
+                mpierr = MPI_Send(&msg, 1, MPI_INT, ios->ioroot, 1, ios->union_comm);
 
+            if (!mpierr)
+                mpierr = MPI_Bcast(&ncid, 1, MPI_INT, ios->compmaster, ios->intercomm);
+        }
+
+        /* Handle MPI errors. */
+        if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
+            check_mpi(file, mpierr2, __FILE__, __LINE__);
+        if (mpierr)
+            return check_mpi(file, mpierr, __FILE__, __LINE__);
+    }
 
     if (ios->ioproc)
     {

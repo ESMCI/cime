@@ -81,8 +81,6 @@ int pio_swapm(void *sendbuf, int *sendcounts, int *sdispls, MPI_Datatype *sendty
 {
     int ntasks;  /* Number of tasks in communicator comm. */
     int my_rank; /* Rank of this task in comm. */
-    int maxsend = 0;
-    int maxrecv = 0;
     int tag;
     int offset_t;
     int steps;
@@ -92,11 +90,9 @@ int pio_swapm(void *sendbuf, int *sendcounts, int *sdispls, MPI_Datatype *sendty
     int maxreq;
     int maxreqh;
     int hs = 1; /* Used for handshaking. */
-    int cnt;
     void *ptr;
     MPI_Status status; /* Not actually used - replace with MPI_STATUSES_IGNORE. */
     int mpierr;  /* Return code from MPI functions. */
-    int ierr;    /* Return value. */
 
     LOG((2, "pio_swapm handshake = %d isend = %d max_requests = %d", handshake,
          isend, max_requests));
@@ -152,7 +148,6 @@ int pio_swapm(void *sendbuf, int *sendcounts, int *sdispls, MPI_Datatype *sendty
     if (sendcounts[my_rank] > 0)
     {
         void *sptr, *rptr;
-        int extent, lb;
         tag = my_rank + offset_t;
         sptr = (char *)sendbuf + sdispls[my_rank];
         rptr = (char *)recvbuf + rdispls[my_rank];
@@ -289,12 +284,16 @@ int pio_swapm(void *sendbuf, int *sendcounts, int *sdispls, MPI_Datatype *sendty
             ptr = (char *)sendbuf + sdispls[p];
 
             if (isend)
+            {                
                 if ((mpierr = MPI_Irsend(ptr, sendcounts[p], sendtypes[p], p, tag, comm,
                                          sndids + istep)))
                     return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+            }
             else
+            {
                 if ((mpierr = MPI_Send(ptr, sendcounts[p], sendtypes[p], p, tag, comm)))
                     return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+            }
         }
 
         /* We did comms in sets of size max_reqs, if istep > maxreqh
@@ -381,7 +380,6 @@ int pio_fc_gatherv(const void *sendbuf, int sendcnt, MPI_Datatype sendtype,
     int hs;
     int dsize;
     int mpierr;  /* Return code from MPI functions. */
-    int ierr;
 
     if (flow_cntl > 0)
     {
