@@ -65,7 +65,16 @@ PIO_Offset chunksize[NDIM] = {2, X_DIM_LEN/2, Y_DIM_LEN/2};
 #define NDIM1 1
 #define DIM_LEN 4
 
-/* Create the decomposition to divide the data between the 4 tasks. */
+/* Create the decomposition to divide the 1-dimensional sample data
+ * between the 4 tasks.
+ * 
+ * @param ntasks the number of available tasks
+ * @param my_rank rank of this task.
+ * @param iosysid the IO system ID.
+ * @param dim1_len the length of the dimension.
+ * @param ioid a pointer that gets the ID of this decomposition.
+ * @returns 0 for success, error code otherwise.
+ **/
 int create_decomposition(int ntasks, int my_rank, int iosysid, int dim1_len, int *ioid)
 {
 #define NDIM1 1
@@ -86,7 +95,7 @@ int create_decomposition(int ntasks, int my_rank, int iosysid, int dim1_len, int
         compdof[i] = my_rank * elements_per_pe + i + 1;
 
     /* Create the PIO decomposition for this test. */
-    printf("%d Creating decomposition elements_per_pe = %d\n", my_rank, elements_per_pe);
+    printf("%d Creating decomposition elements_per_pe = %lld\n", my_rank, elements_per_pe);
     if ((ret = PIOc_InitDecomp(iosysid, PIO_FLOAT, NDIM1, dim_len, elements_per_pe,
                                compdof, ioid, NULL, NULL, NULL)))
         ERR(ret);
@@ -187,13 +196,13 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
             ERR(ret);
 
         /* Write some data. */
-        float fillvalue = 0.0;
         PIO_Offset arraylen = 1;
+        float fillvalue = 0.0;
         float test_data[arraylen];
         for (int f = 0; f < arraylen; f++)
             test_data[f] = my_rank * 10 + f;
-        /* if ((ret = PIOc_write_darray(ncid, varid, ioid, arraylen, test_data, &fillvalue))) */
-        /*     ERR(ret); */
+        if ((ret = PIOc_write_darray(ncid, varid, ioid, arraylen, test_data, &fillvalue)))
+            ERR(ret);
 
         /* Close the netCDF file. */
         printf("rank: %d Closing the sample data file...\n", my_rank);
@@ -201,8 +210,8 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
             ERR(ret);
 
         /* Check the file contents. */
-        /* if ((ret = check_darray_file(iosysid, TARGET_NTASKS, my_rank, filename))) */
-        /*     ERR(ret); */
+        if ((ret = check_darray_file(iosysid, TARGET_NTASKS, my_rank, filename)))
+            ERR(ret);
     }
     return PIO_NOERR;
 }
@@ -1027,7 +1036,7 @@ int test_nc4(int iosysid, int num_flavors, int *flavor, int my_rank)
                 ERR(ret);
 
             /* Check that we got expected values. */
-            printf("%d var_cache_size = %d\n", my_rank, var_cache_size);
+            printf("%d var_cache_size = %lld\n", my_rank, var_cache_size);
             if (var_cache_size != VAR_CACHE_SIZE)
                 ERR(ERR_AWFUL);
             if (var_cache_nelems != VAR_CACHE_NELEMS)
