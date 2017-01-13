@@ -292,7 +292,7 @@ int PIOc_write_darray(int ncid, int vid, int ioid, PIO_Offset arraylen,
     bufsize totfree;       /* Amount of free space in the buffer. */
     bufsize maxfree;       /* Max amount of free space in buffer. */
     int ierr = PIO_NOERR;  /* Return code. */
-    int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI functions. */
+    int mpierr = MPI_SUCCESS;  /* Return code from MPI functions. */
 
     LOG((1, "PIOc_write_darray ncid = %d vid = %d ioid = %d arraylen = %d",
 	 ncid, vid, ioid, arraylen));
@@ -531,7 +531,6 @@ int PIOc_read_darray(int ncid, int vid, int ioid, PIO_Offset arraylen,
     void *iobuf = NULL;    /* holds the data as read on the io node. */
     size_t rlen = 0;       /* the length of data in iobuf. */
     int tsize;          /* Total size. */
-    MPI_Datatype vtype; /* MPI type of this var. */
     int mpierr;         /* Return code from MPI functions. */
     int ierr;           /* Return code. */
 

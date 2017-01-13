@@ -87,7 +87,6 @@ int pio_write_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid,
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
     int dsize;             /* Size of the type. */
     MPI_Status status;     /* Status from MPI_Recv calls. */
-    PIO_Offset usage;      /* Size of current buffer. */
     int fndims;            /* Number of dims for variable according to netCDF. */
     PIO_Offset tdsize = 0; /* Total size. */
 
@@ -481,8 +480,6 @@ int pio_write_darray_multi_nc(file_desc_t *file, int nvars, const int *vid, int 
     int i;
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
     int dsize;
-    MPI_Status status;
-    PIO_Offset usage;
     int fndims;
     PIO_Offset tdsize;
     int tsize;
@@ -539,7 +536,7 @@ int pio_write_darray_multi_nc(file_desc_t *file, int nvars, const int *vid, int 
         int regioncnt;
         int rrcnt;
         void *bufptr;
-        int buflen, j;
+        int j;
         size_t start[fndims];
         size_t count[fndims];
         int ndims = iodesc_ndims;
@@ -766,9 +763,7 @@ int pio_write_darray_multi_nc_serial(file_desc_t *file, int nvars, const int *vi
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
     int dsize;
     MPI_Status status;
-    PIO_Offset usage;
     int fndims;
-    PIO_Offset tdsize = 0;
     int tsize;
     int ncid;
 
@@ -818,9 +813,7 @@ int pio_write_darray_multi_nc_serial(file_desc_t *file, int nvars, const int *vi
     {
         io_region *region;
         int regioncnt;
-        int rrcnt;
         void *bufptr;
-        int buflen, j;
         size_t tmp_start[fndims*maxregions];
         size_t tmp_count[fndims*maxregions];
         int ndims = iodesc_ndims;
@@ -828,7 +821,6 @@ int pio_write_darray_multi_nc_serial(file_desc_t *file, int nvars, const int *vi
         ncid = file->fh;
         region = firstregion;
 
-        rrcnt = 0;
         for (regioncnt = 0; regioncnt < maxregions; regioncnt++)
         {
             for (i = 0; i < fndims; i++)
@@ -1013,7 +1005,6 @@ int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid, void *iobu
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     var_desc_t *vdesc;
     int ndims, fndims;
-    MPI_Status status;
     int i;
     int mpierr;  /* Return code from MPI functions. */
 
@@ -1045,9 +1036,7 @@ int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid, void *iobu
         io_region *region;
         size_t start[fndims];
         size_t count[fndims];
-        size_t tmp_start[fndims];
-        size_t tmp_count[fndims];
-        size_t tmp_bufsize=1;
+        size_t tmp_bufsize = 1;
         int regioncnt;
         void *bufptr;
         int tsize;
@@ -1246,7 +1235,6 @@ int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc, int vid,
         int regioncnt;
         void *bufptr;
         int tsize;
-        int rrlen = 0;
 
         /* buffer is incremented by byte and loffset is in terms of
            the iodessc->basetype so we need to multiply by the size of
@@ -1443,7 +1431,6 @@ int flush_output_buffer(file_desc_t *file, bool force, PIO_Offset addsize)
 
 #ifdef _PNETCDF
     var_desc_t *vdesc;
-    int *status;
     PIO_Offset usage = 0;
 
     /* Check inputs. */
@@ -1473,9 +1460,6 @@ int flush_output_buffer(file_desc_t *file, bool force, PIO_Offset addsize)
     if (force || usage >= pio_buffer_size_limit)
     {
         int rcnt;
-        bool prev_dist=false;
-        int prev_record=-1;
-        int prev_type=0;
         int  maxreq;
         int reqcnt;
         maxreq = 0;
