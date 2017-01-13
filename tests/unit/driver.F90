@@ -202,6 +202,9 @@ Program pio_unit_test_driver
   end if
 
   call PIO_finalize(pio_iosystem, ierr)
+#ifdef TIMING
+  call t_finalizef()
+#endif
   call MPI_Finalize(ierr)
   if(fail_cnt>0) then
      stop 1
