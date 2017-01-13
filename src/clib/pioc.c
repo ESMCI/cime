@@ -171,27 +171,6 @@ int PIOc_get_numiotasks(int iosysid, int *numiotasks)
 }
 
 /**
- * Get the IO rank on the current task.
- *
- * @param iosysid the IO system ID
- * @param iorank a pointer that gets the IO rank of the current task,
- * or -1 if it is not an IO task. Ignored if NULL.
- * @returns 0 on success, error code otherwise
- */
-int PIOc_get_iorank(int iosysid, int *iorank)
-{
-    iosystem_desc_t *ios;
-
-    if (!(ios = pio_get_iosystem_from_id(iosysid)))
-        return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
-
-    if (iorank)
-        *iorank = ios->io_rank;
-
-    return PIO_NOERR;
-}
-
-/**
  * Get the local size of the variable.
  *
  * @param ioid IO descrption ID.

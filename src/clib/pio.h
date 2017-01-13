@@ -597,7 +597,6 @@ extern "C" {
     int PIOc_Init_Intracomm(MPI_Comm comp_comm, int num_iotasks, int stride, int base, int rearr,
                             int *iosysidp);
     int PIOc_finalize(int iosysid);
-    int PIOc_get_iorank(int iosysid, int *iorank);
 
     /* Set error handling for entire io system. */
     int PIOc_Set_IOSystem_Error_Handling(int iosysid, int method);
