@@ -561,8 +561,6 @@ static bufsize pool_len = 0;          /* 0: no bpool calls have been made
 
 #define ESent   ((bufsize) (-(((1L << (sizeof(bufsize) * 8 - 2)) - 1) * 2) - 2))
 
-static int maxsize=0;
-
 /* added for PIO so that a bpool can be freed and another allocated */
 void bpoolrelease()
 {
@@ -777,7 +775,8 @@ bufsize requested_size;
                 buf =  (void *) (bdh + 1);
 
                 /*only let this happen once */
-                printf("%s %d memory request exceeds block size %d %d %x\n",__FILE__,__LINE__,size,exp_incr,buf);
+                printf("%s %d memory request exceeds block size %ld %ld %x\n",__FILE__,__LINE__,
+                       size,exp_incr,buf);
                 exp_incr = size+sizeof(struct bhead);
 
                 return buf;
