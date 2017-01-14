@@ -19,13 +19,7 @@
 int test_async2(int my_rank, int num_flavors, int *flavor, MPI_Comm test_comm,
                 int component_count, int num_io_procs, int target_ntasks, char *test_name)
 {
-    int niotasks;            /* Number of processors that will do IO. */
-    int ioproc_stride = 1;   /* Stride in the mpi rank between io tasks. */
-    int ioproc_start = 0;    /* 0 based rank of first task to be used for I/O. */
-    PIO_Offset elements_per_pe;    /* Array index per processing unit. */
     int iosysid[component_count];  /* The ID for the parallel I/O system. */
-    int ioid;                      /* The I/O description ID. */
-    PIO_Offset *compdof;           /* The decomposition mapping. */
     int num_procs[component_count + 1]; /* Num procs in each component. */
     MPI_Comm io_comm;              /* Will get a duplicate of IO communicator. */
     MPI_Comm comp_comm[component_count]; /* Will get duplicates of computation communicators. */
@@ -89,7 +83,6 @@ int test_no_async2(int my_rank, int num_flavors, int *flavor, MPI_Comm test_comm
 {
     int niotasks;    /* Number of processors that will do IO. */
     int ioproc_stride = 1;    /* Stride in the mpi rank between io tasks. */
-    int numAggregator = 0;    /* Number of the aggregator? Always 0 in this test. */
     int ioproc_start = 0;     /* Zero based rank of first processor to be used for I/O. */
     PIO_Offset elements_per_pe; /* Array index per processing unit. */
     int iosysid;  /* The ID for the parallel I/O system. */

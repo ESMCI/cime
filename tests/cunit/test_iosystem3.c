@@ -142,7 +142,6 @@ int main(int argc, char **argv)
 {
     int my_rank; /* Zero-based rank of processor. */
     int ntasks; /* Number of processors involved in current execution. */
-    int iosysid; /* The ID for the parallel I/O system. */
     int iosysid_world; /* The ID for the parallel I/O system. */
     int even_iosysid; /* The ID for iosystem of even_comm. */
     int overlap_iosysid; /* The ID for iosystem of even_comm. */
@@ -189,7 +188,7 @@ int main(int argc, char **argv)
             ERR(ret);
 
         /* Create a group with tasks 0 and 2. */
-        int even_ranges[EVEN_NUM_RANGES][3] = {0, 2, 2};
+        int even_ranges[EVEN_NUM_RANGES][3] = {{0, 2, 2}};
         if ((ret = MPI_Group_range_incl(world_group, EVEN_NUM_RANGES, even_ranges, &even_group)))
             ERR(ret);
 

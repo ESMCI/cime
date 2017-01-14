@@ -440,13 +440,11 @@ create_nc_sample_1(int iosysid, int format, char *filename, int my_rank, int *nc
         return ret;
 
     /* Define a dimension. */
-    char dimname2[NC_MAX_NAME + 1];
     printf("%d defining dimension %s\n", my_rank, DIM_NAME_S1);
     if ((ret = PIOc_def_dim(ncid, DIM_NAME_S1, DIM_LEN_S1, &dimid)))
         return ret;
 
     /* Define a 1-D variable. */
-    char varname2[NC_MAX_NAME + 1];
     printf("%d defining variable %s\n", my_rank, VAR_NAME_S1);
     if ((ret = PIOc_def_var(ncid, VAR_NAME_S1, NC_INT, NDIM_S1, &dimid, &varid)))
         return ret;
@@ -499,22 +497,11 @@ check_nc_sample_1(int iosysid, int format, char *filename, int my_rank, int *nci
     int ret;
     int ndims, nvars, ngatts, unlimdimid;
     int ndims2, nvars2, ngatts2, unlimdimid2;
-    int dimid2;
     char dimname[NC_MAX_NAME + 1];
     PIO_Offset dimlen;
-    char dimname2[NC_MAX_NAME + 1];
-    PIO_Offset dimlen2;
     char varname[NC_MAX_NAME + 1];
     nc_type vartype;
     int varndims, vardimids, varnatts;
-    char varname2[NC_MAX_NAME + 1];
-    nc_type vartype2;
-    int varndims2, vardimids2, varnatts2;
-    int varid2;
-    int att_data;
-    short short_att_data;
-    float float_att_data;
-    double double_att_data;
 
     /* Re-open the file to check it. */
     printf("%d opening file %s format %d\n", my_rank, filename, format);
@@ -652,7 +639,6 @@ create_nc_sample_2(int iosysid, int format, char *filename, int my_rank, int *nc
         return ret;
 
     /* Write an att and delete it. */
-    nc_type myatttype;
     if ((ret = PIOc_put_att_int(ncid, NC_GLOBAL, FIRST_ATT_NAME_S2, NC_INT, 1, &att_data)))
         return ret;
     if ((ret = PIOc_del_att(ncid, NC_GLOBAL, FIRST_ATT_NAME_S2)))

@@ -298,7 +298,7 @@ int test_read_att(int ncid, int *varid, int flavor)
     unsigned int uint_array_in[ATT_LEN];
     long long int64_array_in[ATT_LEN];
     unsigned long long uint64_array_in[ATT_LEN];
-    int x, y;
+    int x;
     int ret;
 
     if ((ret = PIOc_get_att_text(ncid, varid[0], TEXT_ATT_NAME, text_in)))
@@ -979,7 +979,6 @@ int test_putget(int iosysid, int num_flavors, int *flavor, int my_rank,
 int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm test_comm,
              int async)
 {
-    int ioid;
     int my_test_size;
     int ret; /* Return code. */
 

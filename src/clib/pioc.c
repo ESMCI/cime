@@ -11,8 +11,6 @@
 #include <pio.h>
 #include <pio_internal.h>
 
-static int counter = 0;
-
 /** The default error handler used when iosystem cannot be located. */
 int default_error_handler = PIO_INTERNAL_ERROR;
 
@@ -36,10 +34,12 @@ int PIOc_iosystem_is_active(int iosysid, bool *active)
     ios = pio_get_iosystem_from_id(iosysid);
 
     if (active)
-        if (!ios || ios->comp_comm == MPI_COMM_NULL && ios->io_comm == MPI_COMM_NULL)
+    {
+        if (!ios || (ios->comp_comm == MPI_COMM_NULL && ios->io_comm == MPI_COMM_NULL))
             *active = false;
         else
             *active = true;
+    }
 
     return PIO_NOERR;
 }
@@ -80,7 +80,6 @@ int PIOc_Set_File_Error_Handling(int ncid, int method)
 {
     file_desc_t *file;
     int oldmethod;
-    int ret;
 
     /* Get the file info. */
     if (pio_get_file(ncid, &file))
@@ -201,7 +200,6 @@ int PIOc_Set_IOSystem_Error_Handling(int iosysid, int method)
 {
     iosystem_desc_t *ios;
     int oldmethod;
-    int ret;
 
     /* Get the iosystem info. */
     if (!(ios = pio_get_iosystem_from_id(iosysid)))
@@ -363,8 +361,9 @@ int PIOc_InitDecomp(int iosysid, int basetype, int ndims, const int *dims, int m
             fprintf(stderr,"%s %s\n","Iostart and iocount arguments to PIOc_InitDecomp",
                     "are incompatable with subset rearrange method and will be ignored");
         iodesc->num_aiotasks = ios->num_iotasks;
-        ierr = subset_rearrange_create(*ios, maplen, (PIO_Offset *)compmap, dims,
-                                       ndims, iodesc);
+        if ((ierr = subset_rearrange_create(*ios, maplen, (PIO_Offset *)compmap, dims,
+                                            ndims, iodesc)))
+            return pio_err(NULL, NULL, ierr, __FILE__, __LINE__);
     }
     else
     {
@@ -447,9 +446,6 @@ int PIOc_InitDecomp_bc(const int iosysid, const int basetype, const int ndims, c
 
 {
     iosystem_desc_t *ios;
-    io_desc_t *iodesc;
-    int mpierr;
-    int ierr;
     int n, i, maplen = 1;
     int rearr = PIO_REARR_SUBSET;
 
@@ -524,7 +520,6 @@ int PIOc_Init_Intracomm(MPI_Comm comp_comm, int num_iotasks, int stride, int bas
 {
     iosystem_desc_t *ios;
     int ustride;
-    int lbase;
     int num_comptasks; /* The size of the comp_comm. */
     int mpierr;        /* Return value for MPI calls. */
     int ret;           /* Return code for function calls. */
@@ -690,7 +685,7 @@ int PIOc_set_hint(int iosysid, const char *hint, const char *hintval)
  */
 int PIOc_finalize(int iosysid)
 {
-    iosystem_desc_t *ios, *nios;
+    iosystem_desc_t *ios;
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
     int ierr = PIO_NOERR;
 
@@ -935,7 +930,6 @@ int PIOc_Init_Async(MPI_Comm world, int num_io_procs, int *io_proc_list,
                      MPI_Comm *user_io_comm, MPI_Comm *user_comp_comm, int *iosysidp)
 {
     int my_rank;
-    MPI_Comm newcomm;
     int **my_proc_list;
     int *my_io_proc_list;
     int mpierr;

@@ -205,14 +205,8 @@ int check_file(int ntasks, char *filename) {
 	 * example. */
 	int ioproc_stride = 1;
 
-	/** Number of the aggregator? Always 0 in this example. */
-	int numAggregator = 0;
-
 	/** Zero based rank of first processor to be used for I/O. */
 	int ioproc_start = 0;
-
-	/** Specifies the flavor of netCDF output format. */
-	int iotype;
 
 	/** The dimension ID. */
 	int dimid;
@@ -251,12 +245,6 @@ int check_file(int ntasks, char *filename) {
 	 * execution of the example code. It's length will be the same
 	 * as elements_per_pe.*/
 	int *buffer;
-
-	/** A buffer for reading data back from the file. The size of
-	 * this array will vary depending on how many processors are
-	 * involved in the execution of the example code. It's length
-	 * will be the same as elements_per_pe.*/
-	int *read_buffer;
 
 	/** A 1-D array which holds the decomposition mapping for this
 	 * example. The size of this array will vary depending on how
