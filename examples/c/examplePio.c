@@ -232,8 +232,9 @@ struct examplePioClass* epc_init( struct examplePioClass* this )
         localVal++;
     }
 
-    if (this->verbose) {
-	printf("rank: %lld length: %d [", this->myRank, this->arrIdxPerPe);
+    if (this->verbose)
+    {
+	printf("rank: %d length: %lld [", this->myRank, this->arrIdxPerPe);
 	for (i = 0; i < this->arrIdxPerPe; i++ ) {
 	    printf("%lld", this->compdof[i]);
 	    if (i < this->arrIdxPerPe - 1)

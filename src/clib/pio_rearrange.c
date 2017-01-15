@@ -503,13 +503,12 @@ int compute_counts(iosystem_desc_t ios, io_desc_t *iodesc, int maplen,
     {
         /* Allocate memory to hold array of tasks that have recieved
          * data ??? */
-        if (!(recv_buf = bget(ntasks * sizeof(int))))
-            piomemerror(ios, ntasks * sizeof(int), __FILE__, __LINE__);
+        if (!(recv_buf = calloc(ntasks, sizeof(int))))
+            return pio_err(&ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);            
 
         /* Initialize arrays that keep track of receives. */
         for (i = 0; i < ntasks; i++)
         {
-            recv_buf[i] = 0;
             recv_counts[i] = 1;
             recv_displs[i] = i * sizeof(int);
         }
@@ -552,7 +551,7 @@ int compute_counts(iosystem_desc_t ios, io_desc_t *iodesc, int maplen,
                 nrecvs++;
             }
         }
-        brel(recv_buf);
+        free(recv_buf);
     }
 
     /* ??? */
@@ -718,31 +717,27 @@ int rearrange_comp2io(iosystem_desc_t ios, io_desc_t *iodesc, void *sbuf,
     define_iodesc_datatypes(ios, iodesc);
 
     /* Allocate arrays needed by the pio_swapm() function. */
-    if (!(sendcounts = bget(ntasks * sizeof(int))))
-        piomemerror(ios, ntasks * sizeof(int), __FILE__, __LINE__);
+    if (!(sendcounts = calloc(ntasks, sizeof(int))))
+        return pio_err(&ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
-    if (!(recvcounts = bget(ntasks * sizeof(int))))
-        piomemerror(ios, ntasks * sizeof(int), __FILE__, __LINE__);
+    if (!(recvcounts = calloc(ntasks, sizeof(int))))
+        return pio_err(&ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
-    if (!(sdispls = bget(ntasks * sizeof(int))))
-        piomemerror(ios, ntasks * sizeof(int), __FILE__, __LINE__);
+    if (!(sdispls = calloc(ntasks, sizeof(int))))
+        return pio_err(&ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
-    if (!(rdispls = bget(ntasks * sizeof(int))))
-        piomemerror(ios, ntasks * sizeof(int), __FILE__, __LINE__);
+    if (!(rdispls = calloc(ntasks, sizeof(int))))
+        return pio_err(&ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
-    if (!(sendtypes = bget(ntasks * sizeof(MPI_Datatype))))
-        piomemerror(ios, ntasks * sizeof(MPI_Datatype), __FILE__, __LINE__);
+    if (!(sendtypes = malloc(ntasks * sizeof(MPI_Datatype))))
+        return pio_err(&ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
-    if (!(recvtypes = bget(ntasks * sizeof(MPI_Datatype))))
-        piomemerror(ios, ntasks * sizeof(MPI_Datatype), __FILE__, __LINE__);
+    if (!(recvtypes = malloc(ntasks * sizeof(MPI_Datatype))))
+        return pio_err(&ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
     /* Initialize arrays. */
     for (i = 0; i < ntasks; i++)
     {
-        sendcounts[i] = 0;
-        recvcounts[i] = 0;
-        sdispls[i] = 0;
-        rdispls[i] = 0;
         recvtypes[i] = PIO_DATATYPE_NULL;
         sendtypes[i] =  PIO_DATATYPE_NULL;
     }
@@ -836,12 +831,12 @@ int rearrange_comp2io(iosystem_desc_t ios, io_desc_t *iodesc, void *sbuf,
     }
 
     /* Free memory. */
-    brel(sendcounts);
-    brel(recvcounts);
-    brel(sdispls);
-    brel(rdispls);
-    brel(sendtypes);
-    brel(recvtypes);
+    free(sendcounts);
+    free(recvcounts);
+    free(sdispls);
+    free(rdispls);
+    free(sendtypes);
+    free(recvtypes);
 
 #ifdef TIMING
     GPTLstop("PIO:rearrange_comp2io");
@@ -903,31 +898,27 @@ int rearrange_io2comp(iosystem_desc_t ios, io_desc_t *iodesc, void *sbuf,
     define_iodesc_datatypes(ios, iodesc);
 
     /* Allocate arrays needed by the pio_swapm() function. */
-    if (!(sendcounts = bget(ntasks * sizeof(int))))
-        piomemerror(ios,ntasks * sizeof(int), __FILE__,__LINE__);
+    if (!(sendcounts = calloc(ntasks, sizeof(int))))
+        return pio_err(&ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
-    if (!(recvcounts = bget(ntasks * sizeof(int))))
-        piomemerror(ios,ntasks * sizeof(int), __FILE__,__LINE__);
+    if (!(recvcounts = calloc(ntasks, sizeof(int))))
+        return pio_err(&ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
-    if (!(sdispls = bget(ntasks * sizeof(int))))
-        piomemerror(ios,ntasks * sizeof(int), __FILE__,__LINE__);
+    if (!(sdispls = calloc(ntasks, sizeof(int))))
+        return pio_err(&ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
-    if (!(rdispls = bget(ntasks * sizeof(int))))
-        piomemerror(ios,ntasks * sizeof(int), __FILE__,__LINE__);
+    if (!(rdispls = calloc(ntasks, sizeof(int))))
+        return pio_err(&ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
-    if (!(sendtypes = bget(ntasks * sizeof(MPI_Datatype))))
-        piomemerror(ios,ntasks * sizeof(MPI_Datatype), __FILE__,__LINE__);
+    if (!(sendtypes = malloc(ntasks * sizeof(MPI_Datatype))))
+        return pio_err(&ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
-    if (!(recvtypes = bget(ntasks * sizeof(MPI_Datatype))))
-        piomemerror(ios,ntasks * sizeof(MPI_Datatype), __FILE__,__LINE__);
+    if (!(recvtypes = malloc(ntasks * sizeof(MPI_Datatype))))
+        return pio_err(&ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
     /* Initialize arrays. */
     for (i = 0; i < ntasks; i++)
     {
-        sendcounts[i] = 0;
-        recvcounts[i] = 0;
-        sdispls[i] = 0;
-        rdispls[i] = 0;
         sendtypes[i] = PIO_DATATYPE_NULL;
         recvtypes[i] = PIO_DATATYPE_NULL;
     }
@@ -974,12 +965,12 @@ int rearrange_io2comp(iosystem_desc_t ios, io_desc_t *iodesc, void *sbuf,
               mycomm, iodesc->handshake, iodesc->isend, iodesc->max_requests);
 
     /* Release memory. */
-    brel(sendcounts);
-    brel(recvcounts);
-    brel(sdispls);
-    brel(rdispls);
-    brel(sendtypes);
-    brel(recvtypes);
+    free(sendcounts);
+    free(recvcounts);
+    free(sdispls);
+    free(rdispls);
+    free(sendtypes);
+    free(recvtypes);
 
 #ifdef TIMING
     GPTLstop("PIO:rearrange_io2comp");
