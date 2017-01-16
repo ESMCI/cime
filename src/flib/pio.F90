@@ -16,7 +16,8 @@ module pio
        pio_seterrorhandling, pio_setframe, pio_init, pio_get_local_array_size, &
        pio_freedecomp, pio_syncfile, &
        pio_finalize, pio_set_hint, pio_getnumiotasks, pio_file_is_open, &
-       PIO_deletefile, PIO_get_numiotasks, PIO_iotype_available
+       PIO_deletefile, PIO_get_numiotasks, PIO_iotype_available, &
+       pio_set_rearr_opts
 
   use pio_types, only : io_desc_t, file_desc_t, var_desc_t, iosystem_desc_t, &
        pio_rearr_opt_t, pio_rearr_comm_fc_opt_t, pio_rearr_comm_fc_2d_enable,&

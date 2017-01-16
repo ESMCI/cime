@@ -50,7 +50,8 @@ module piolib_mod
        PIO_FILE_IS_OPEN, &
        PIO_deletefile, &
        PIO_get_numiotasks, &
-       PIO_iotype_available
+       PIO_iotype_available, &
+       PIO_set_rearr_opts
 
 #ifdef MEMCHK
 !> this is an internal variable for memory leak debugging
@@ -1487,6 +1488,64 @@ contains
     ierr = PIOc_deletefile(ios%iosysid, trim(fname)//C_NULL_CHAR)
 
   end subroutine pio_deletefile
+
+!>
+!! @public
+!! @ingroup PIO_set_rearr_opts
+!! @brief Set the rerranger options
+!! @details
+!! @param ios : handle to pio iosystem
+!! @param comm_type : @copydoc PIO_rearr_comm_t
+!! @param fcd : @copydoc PIO_rearr_comm_dir
+!! @param enable_hs_c2i : Enable handshake (compute procs to io procs)
+!! @param enable_isend_c2i : Enable isends (compute procs to io procs)
+!! @param max_pend_req_c2i: Maximum pending requests (compute procs to io procs)
+!! @param enable_hs_i2c : Enable handshake (io procs to compute procs)
+!! @param enable_isend_i2c : Enable isends (io procs to compute procs)
+!! @param max_pend_req_i2c: Maximum pending requests (io procs to compute procs)
+!! @copydoc PIO_rearr_comm_fc_options
+!<
+  function pio_set_rearr_opts(ios, comm_type, fcd,&
+                              enable_hs_c2i, enable_isend_c2i,&
+                              max_pend_req_c2i,&
+                              enable_hs_i2c, enable_isend_i2c,&
+                              max_pend_req_i2c) result(ierr)
+
+    type(iosystem_desc_t), intent(inout) :: ios
+    integer, intent(in) :: comm_type, fcd
+    logical, intent(in) :: enable_hs_c2i, enable_hs_i2c
+    logical, intent(in) :: enable_isend_c2i, enable_isend_i2c
+    integer, intent(in) :: max_pend_req_c2i, max_pend_req_i2c
+    integer :: ierr
+    interface
+      integer(c_int) function PIOc_set_rearr_opts(iosysid, comm_type, fcd,&
+                                                  enable_hs_c2i, enable_isend_c2i,&
+                                                  max_pend_req_c2i,&
+                                                  enable_hs_i2c, enable_isend_i2c,&
+                                                  max_pend_req_i2c)&
+        bind(C,name="PIOc_set_rearr_opts")
+        use iso_c_binding
+        integer(C_INT), intent(in), value :: iosysid
+        integer(C_INT), intent(in), value :: comm_type
+        integer(C_INT), intent(in), value :: fcd
+        logical(C_BOOL), intent(in), value :: enable_hs_c2i
+        logical(C_BOOL), intent(in), value :: enable_isend_c2i
+        integer(C_INT), intent(in), value :: max_pend_req_c2i
+        logical(C_BOOL), intent(in), value :: enable_hs_i2c
+        logical(C_BOOL), intent(in), value :: enable_isend_i2c
+        integer(C_INT), intent(in), value :: max_pend_req_i2c
+      end function PIOc_set_rearr_opts
+    end interface
+
+    ierr = PIOc_set_rearr_opts(ios%iosysid, comm_type, fcd,&
+                                logical(enable_hs_c2i, kind=c_bool),&
+                                logical(enable_isend_c2i, kind=c_bool),&
+                                max_pend_req_c2i,&
+                                logical(enable_hs_i2c, kind=c_bool),&
+                                logical(enable_isend_i2c, kind=c_bool),&
+                                max_pend_req_i2c)
+
+  end function pio_set_rearr_opts
 
 
 end module piolib_mod
