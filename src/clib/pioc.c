@@ -710,9 +710,29 @@ int PIOc_Init_Intracomm_from_F90(int f90_comp_comm,
                                  const int base, const int rearr,
                                  rearr_opt_t *rearr_opts, int *iosysidp)
 {
-    return PIOc_Init_Intracomm(MPI_Comm_f2c(f90_comp_comm), num_iotasks,
+    int ret = PIO_NOERR;
+    ret = PIOc_Init_Intracomm(MPI_Comm_f2c(f90_comp_comm), num_iotasks,
                                 stride, base, rearr,
                                 iosysidp);
+    if (ret != PIO_NOERR)
+    {
+        LOG((1, "PIOc_Init_Intracomm failed"));
+        return ret;
+    }
+
+    if (rearr_opts)
+    {
+        LOG((1, "Setting rearranger options, iosys=%d", *iosysidp));
+        return PIOc_set_rearr_opts(*iosysidp, rearr_opts->comm_type,
+                                    rearr_opts->fcd,
+                                    rearr_opts->comm_fc_opts_comp2io.enable_hs,
+                                    rearr_opts->comm_fc_opts_comp2io.enable_isend,
+                                    rearr_opts->comm_fc_opts_comp2io.max_pend_req,
+                                    rearr_opts->comm_fc_opts_io2comp.enable_hs,
+                                    rearr_opts->comm_fc_opts_io2comp.enable_isend,
+                                    rearr_opts->comm_fc_opts_io2comp.max_pend_req);
+    }
+    return ret;
 }
 
 /**
