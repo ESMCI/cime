@@ -666,7 +666,11 @@ extern "C" {
     int PIOc_iotask_rank(int iosysid, int *iorank);
     int PIOc_iosystem_is_active(int iosysid, bool *active);
     int PIOc_iotype_available(int iotype);
-
+    int PIOc_set_rearr_opts(int iosysid, int comm_type, int fcd,
+                        bool enable_hs_c2i, bool enable_isend_c2i,
+                        int max_pend_req_c2i,
+                        bool enable_hs_i2c, bool enable_isend_i2c,
+                        int max_pend_req_i2c);
     /* Distributed data. */
     int PIOc_advanceframe(int ncid, int varid);
     int PIOc_setframe(int ncid, int varid, int frame);
