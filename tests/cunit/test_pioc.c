@@ -36,7 +36,11 @@
 #define VAR_NAME "foo"
 
 /* The name of the attribute in the netCDF output files. */
-#define ATT_NAME "bar"
+#define ATT_NAME "foo"
+#define ATT_NAME2 "bar"
+
+/* Value to write to attributes. */
+#define ATT_VAL 42
 
 /* The meaning of life, the universe, and everything. */
 #define START_DATA_VAL 42
@@ -292,7 +296,7 @@ int check_var_name(int my_rank, int ncid, MPI_Comm test_comm)
  * @param ncid ncid of open netCDF file
  *
  * @returns 0 for success, error code otherwise. */
-int check_att_name(int my_rank, int ncid, MPI_Comm test_comm)
+int check_atts(int my_rank, int ncid, MPI_Comm test_comm)
 {
     char att_name[PIO_MAX_NAME + 1];
     char zero_att_name[PIO_MAX_NAME + 1];
@@ -306,11 +310,8 @@ int check_att_name(int my_rank, int ncid, MPI_Comm test_comm)
     strcpy(att_name, "11111111111111111111111111111111");
     if ((ret = PIOc_inq_attname(ncid, NC_GLOBAL, 0, att_name)))
         return ret;
-    printf("my_rank %d att name %s\n", my_rank, att_name);
 
-    /* Did everyone ranks get the same length name? */
-/*    if (strlen(att_name) != strlen(ATT_NAME))
-      return ERR_AWFUL;*/
+    /* Did all ranks get the same name? */
     if (!my_test_rank)
         strcpy(zero_att_name, att_name);
     if ((ret = MPI_Bcast(&zero_att_name, strlen(att_name) + 1, MPI_CHAR, 0,
@@ -318,6 +319,37 @@ int check_att_name(int my_rank, int ncid, MPI_Comm test_comm)
         MPIERR(ret);
     if (strcmp(att_name, zero_att_name))
         return ERR_AWFUL;
+
+    nc_type att_type;
+    PIO_Offset att_len;
+    int att_int_value;
+    short att_short_value;
+    float att_float_value;
+    
+    /* Check first att. */
+    if ((ret = PIOc_inq_att(ncid, NC_GLOBAL, ATT_NAME, &att_type, &att_len)))
+        return ret;
+    if (att_type != PIO_INT || att_len != 1)
+        return ERR_WRONG;
+    if ((ret = PIOc_get_att_int(ncid, NC_GLOBAL, ATT_NAME, &att_int_value)))
+        return ret;
+    if (att_int_value != ATT_VAL)
+        return ERR_WRONG;
+
+    /* Check second att. */
+    /* if ((ret = PIOc_inq_att(ncid, NC_GLOBAL, ATT_NAME2, &att_type, &att_len))) */
+    /*     return ret; */
+    /* if (att_type != PIO_FLOAT || att_len != 1) */
+    /*     return ERR_WRONG; */
+    /* if ((ret = PIOc_get_att_short(ncid, NC_GLOBAL, ATT_NAME2, &att_short_value))) */
+    /*     return ret; */
+    /* if (att_short_value != ATT_VAL) */
+    /*     return ERR_WRONG; */
+    /* if ((ret = PIOc_get_att_float(ncid, NC_GLOBAL, ATT_NAME2, &att_float_value))) */
+    /*     return ret; */
+    /* if (att_float_value != ATT_VAL) */
+    /*     return ERR_WRONG; */
+    
     return 0;
 }
 
@@ -642,7 +674,7 @@ int test_names(int iosysid, int num_flavors, int *flavor, int my_rank,
         /* Create a filename. */
         if ((ret = get_iotype_name(flavor[fmt], iotype_name)))
             return ret;
-        sprintf(filename, "%s_%s.nc", TEST_NAME, iotype_name);
+        sprintf(filename, "%s_%s_names.nc", TEST_NAME, iotype_name);
 
         /* Create the netCDF output file. */
         printf("rank: %d Creating sample file %s with format %d...\n",
@@ -665,12 +697,14 @@ int test_names(int iosysid, int num_flavors, int *flavor, int my_rank,
             ERR(ret);
 
         /* Define a global attribute. */
-        int att_val = 42;
+        int att_val = ATT_VAL;
         if ((ret = PIOc_put_att_int(ncid, NC_GLOBAL, ATT_NAME, PIO_INT, 1, &att_val)))
+            ERR(ret);
+        if ((ret = PIOc_put_att_int(ncid, NC_GLOBAL, ATT_NAME2, PIO_FLOAT, 1, &att_val)))
             ERR(ret);
 
         /* Check the attribute name. */
-        if ((ret = check_att_name(my_rank, ncid, test_comm)))
+        if ((ret = check_atts(my_rank, ncid, test_comm)))
             ERR(ret);
 
         /* Define a variable. */

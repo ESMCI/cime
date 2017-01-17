@@ -2099,6 +2099,141 @@ int PIOc_get_att(int ncid, int varid, const char *name, void *ip)
 }
 
 /**
+ * Get the value of an attribute of any type, converting to any type.
+ *
+ * This routine is called collectively by all tasks in the communicator
+ * ios.union_comm.
+ *
+ * @param ncid the ncid of the open file, obtained from
+ * PIOc_openfile() or PIOc_createfile().
+ * @param varid the variable ID.
+ * @param name the name of the attribute to get
+ * @param memtype the type of the data in memory (if different from
+ * the type of the attribute, the data will be converted to
+ * memtype). The ip pointer points to memory to hold att_len elements
+ * of type memtype.
+ * @param ip a pointer that will get the attribute value.
+ * @return PIO_NOERR for success, error code otherwise.
+ */
+int PIOc_get_att_tc(int ncid, int varid, const char *name, nc_type memtype, void *ip)
+{
+    iosystem_desc_t *ios;  /* Pointer to io system information. */
+    file_desc_t *file;     /* Pointer to file information. */
+    int ierr;              /* Return code from function calls. */
+    int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
+    PIO_Offset attlen, typelen;
+    nc_type atttype;
+
+    /* Find the info about this file. */
+    if ((ierr = pio_get_file(ncid, &file)))
+        return pio_err(NULL, NULL, ierr, __FILE__, __LINE__);
+    ios = file->iosystem;
+
+    /* User must provide a name and destination pointer. */
+    if (!name || !ip || strlen(name) > NC_MAX_NAME)
+        return pio_err(ios, file, PIO_EINVAL, __FILE__, __LINE__);
+
+    LOG((1, "PIOc_get_att ncid %d varid %d name %s", ncid, varid, name));
+
+    /* Run these on all tasks if async is not in use, but only on
+     * non-IO tasks if async is in use. */
+    if (!ios->async_interface || !ios->ioproc)
+    {
+        /* Get the type and length of the attribute. */
+        if ((ierr = PIOc_inq_att(ncid, varid, name, &atttype, &attlen)))
+            return check_netcdf(file, ierr, __FILE__, __LINE__);
+        LOG((2, "atttype = %d attlen = %d", atttype, attlen));
+
+        /* Get the length (in bytes) of the type. */
+        if ((ierr = PIOc_inq_type(ncid, atttype, NULL, &typelen)))
+            return check_netcdf(file, ierr, __FILE__, __LINE__);
+        LOG((2, "typelen = %d", typelen));
+    }
+    LOG((2, "again typelen = %d", typelen));
+
+    /* If async is in use, and this is not an IO task, bcast the
+     * parameters and the attribute and type information we fetched. */
+    if (ios->async_interface)
+    {
+        if (!ios->ioproc)
+        {
+            int msg = PIO_MSG_GET_ATT;
+            LOG((2, "sending parameters"));
+
+            /* Send the message to IO master. */
+            if (ios->compmaster == MPI_ROOT)
+                mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
+
+            /* Send the function parameters. */
+            if (!mpierr)
+                mpierr = MPI_Bcast(&ncid, 1, MPI_INT, ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast(&varid, 1, MPI_INT, ios->compmaster, ios->intercomm);
+            int namelen = strlen(name);
+            if (!mpierr)
+                mpierr = MPI_Bcast(&namelen, 1, MPI_INT,  ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast((void *)name, namelen + 1, MPI_CHAR, ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast(&file->iotype, 1, MPI_INT, ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast(&atttype, 1, MPI_INT, ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast(&attlen, 1, MPI_OFFSET, ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast(&typelen, 1, MPI_OFFSET, ios->compmaster, ios->intercomm);
+            LOG((2, "Bcast complete ncid = %d varid = %d namelen = %d name = %s iotype = %d "
+                 "atttype = %d attlen = %d typelen = %d", ncid, varid, namelen, name, file->iotype,
+                 atttype, attlen, typelen));
+        }
+
+        /* Handle MPI errors. */
+        if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
+            check_mpi(file, mpierr2, __FILE__, __LINE__);
+        if (mpierr)
+            return check_mpi(file, mpierr, __FILE__, __LINE__);
+        LOG((2, "mpi errors handled"));
+
+        /* Broadcast values currently only known on computation tasks to IO tasks. */
+        LOG((2, "PIOc_get_att bcast from comproot = %d attlen = %d typelen = %d", ios->comproot, attlen, typelen));
+        if ((mpierr = MPI_Bcast(&attlen, 1, MPI_OFFSET, ios->comproot, ios->my_comm)))
+            return check_mpi(file, mpierr, __FILE__, __LINE__);
+        if ((mpierr = MPI_Bcast(&typelen, 1, MPI_OFFSET, ios->comproot, ios->my_comm)))
+            return check_mpi(file, mpierr, __FILE__, __LINE__);
+        LOG((2, "PIOc_get_att bcast complete attlen = %d typelen = %d", attlen, typelen));
+    }
+
+    /* If this is an IO task, then call the netCDF function. */
+    if (ios->ioproc)
+    {
+        LOG((2, "calling pnetcdf/netcdf"));
+#ifdef _PNETCDF
+        if (file->iotype == PIO_IOTYPE_PNETCDF)
+            ierr = ncmpi_get_att(file->fh, varid, name, ip);
+#endif /* _PNETCDF */
+#ifdef _NETCDF
+        if (file->iotype != PIO_IOTYPE_PNETCDF && file->do_io)
+            ierr = nc_get_att(file->fh, varid, name, ip);
+#endif /* _NETCDF */
+    }
+
+    /* Broadcast and check the return code. */
+    LOG((2, "ierr = %d", ierr));
+    if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
+        return check_mpi(file, mpierr, __FILE__, __LINE__);
+    if (ierr)
+        return check_netcdf(file, ierr, __FILE__, __LINE__);
+
+    /* Broadcast results to all tasks. */
+    if ((mpierr = MPI_Bcast(ip, (int)attlen * typelen, MPI_BYTE, ios->ioroot,
+                            ios->my_comm)))
+        return check_mpi(file, mpierr, __FILE__, __LINE__);
+
+    LOG((2, "get_att data bcast complete"));
+    return PIO_NOERR;
+}
+
+/**
  * @ingroup PIO_put_att
  * Write a netCDF attribute of any type.
  *
@@ -2222,7 +2357,7 @@ int PIOc_put_att(int ncid, int varid, const char *name, nc_type xtype,
  */
 int PIOc_get_att_double(int ncid, int varid, const char *name, double *ip)
 {
-    return PIOc_get_att(ncid, varid, name, (void *)ip);
+    return PIOc_get_att_tc(ncid, varid, name, PIO_DOUBLE, (void *)ip);
 }
 
 /**
@@ -2241,7 +2376,7 @@ int PIOc_get_att_double(int ncid, int varid, const char *name, double *ip)
  */
 int PIOc_get_att_uchar(int ncid, int varid, const char *name, unsigned char *ip)
 {
-    return PIOc_get_att(ncid, varid, name, (void *)ip);
+    return PIOc_get_att_tc(ncid, varid, name, PIO_CHAR, (void *)ip);
 }
 
 /**
@@ -2260,7 +2395,7 @@ int PIOc_get_att_uchar(int ncid, int varid, const char *name, unsigned char *ip)
  */
 int PIOc_get_att_ushort(int ncid, int varid, const char *name, unsigned short *ip)
 {
-    return PIOc_get_att(ncid, varid, name, (void *)ip);
+    return PIOc_get_att_tc(ncid, varid, name, PIO_USHORT, (void *)ip);
 }
 
 /**
@@ -2279,7 +2414,7 @@ int PIOc_get_att_ushort(int ncid, int varid, const char *name, unsigned short *i
  */
 int PIOc_get_att_uint(int ncid, int varid, const char *name, unsigned int *ip)
 {
-    return PIOc_get_att(ncid, varid, name, (void *)ip);
+    return PIOc_get_att_tc(ncid, varid, name, PIO_UINT, (void *)ip);
 }
 
 /**
@@ -2298,12 +2433,13 @@ int PIOc_get_att_uint(int ncid, int varid, const char *name, unsigned int *ip)
  */
 int PIOc_get_att_long(int ncid, int varid, const char *name, long *ip)
 {
-    return PIOc_get_att(ncid, varid, name, (void *)ip);
+    return PIOc_get_att_tc(ncid, varid, name, PIO_INT, (void *)ip);
 }
 
 /**
- * @ingroup PIO_get_att
- * Get the value of an 8-bit unsigned byte array attribute.
+ * Get the value of an text attribute. There is no type conversion
+ * with this call. If the attribute is not of type NC_CHAR, then an
+ * error will be returned.
  *
  * This routine is called collectively by all tasks in the communicator
  * ios.union_comm.
@@ -2314,25 +2450,7 @@ int PIOc_get_att_long(int ncid, int varid, const char *name, long *ip)
  * @param name the name of the attribute to get
  * @param ip a pointer that will get the attribute value.
  * @return PIO_NOERR for success, error code otherwise.
- */
-int PIOc_get_att_ubyte(int ncid, int varid, const char *name, unsigned char *ip)
-{
-    return PIOc_get_att(ncid, varid, name, (void *)ip);
-}
-
-/**
  * @ingroup PIO_get_att
- * Get the value of an text attribute.
- *
- * This routine is called collectively by all tasks in the communicator
- * ios.union_comm.
- *
- * @param ncid the ncid of the open file, obtained from
- * PIOc_openfile() or PIOc_createfile().
- * @param varid the variable ID.
- * @param name the name of the attribute to get
- * @param ip a pointer that will get the attribute value.
- * @return PIO_NOERR for success, error code otherwise.
  */
 int PIOc_get_att_text(int ncid, int varid, const char *name, char *ip)
 {
@@ -2355,7 +2473,7 @@ int PIOc_get_att_text(int ncid, int varid, const char *name, char *ip)
  */
 int PIOc_get_att_schar(int ncid, int varid, const char *name, signed char *ip)
 {
-    return PIOc_get_att(ncid, varid, name, (void *)ip);
+    return PIOc_get_att_tc(ncid, varid, name, PIO_CHAR, (void *)ip);
 }
 
 /**
@@ -2374,7 +2492,7 @@ int PIOc_get_att_schar(int ncid, int varid, const char *name, signed char *ip)
  */
 int PIOc_get_att_ulonglong(int ncid, int varid, const char *name, unsigned long long *ip)
 {
-    return PIOc_get_att(ncid, varid, name, (void *)ip);
+    return PIOc_get_att_tc(ncid, varid, name, PIO_UINT64, (void *)ip);
 }
 
 /**
@@ -2393,7 +2511,7 @@ int PIOc_get_att_ulonglong(int ncid, int varid, const char *name, unsigned long 
  */
 int PIOc_get_att_short(int ncid, int varid, const char *name, short *ip)
 {
-    return PIOc_get_att(ncid, varid, name, (void *)ip);
+    return PIOc_get_att_tc(ncid, varid, name, PIO_SHORT, (void *)ip);
 }
 
 /**
@@ -2412,7 +2530,7 @@ int PIOc_get_att_short(int ncid, int varid, const char *name, short *ip)
  */
 int PIOc_get_att_int(int ncid, int varid, const char *name, int *ip)
 {
-    return PIOc_get_att(ncid, varid, name, (void *)ip);
+    return PIOc_get_att_tc(ncid, varid, name, PIO_INT, (void *)ip);
 }
 
 /**
@@ -2431,7 +2549,7 @@ int PIOc_get_att_int(int ncid, int varid, const char *name, int *ip)
  */
 int PIOc_get_att_longlong(int ncid, int varid, const char *name, long long *ip)
 {
-    return PIOc_get_att(ncid, varid, name, (void *)ip);
+    return PIOc_get_att_tc(ncid, varid, name, PIO_INT64, (void *)ip);
 }
 
 /**
@@ -2450,7 +2568,7 @@ int PIOc_get_att_longlong(int ncid, int varid, const char *name, long long *ip)
  */
 int PIOc_get_att_float(int ncid, int varid, const char *name, float *ip)
 {
-    return PIOc_get_att(ncid, varid, name, (void *)ip);
+    return PIOc_get_att_tc(ncid, varid, name, PIO_FLOAT, (void *)ip);
 }
 
 /**
