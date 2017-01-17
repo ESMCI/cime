@@ -2252,13 +2252,9 @@ int pio_msg_handler2(int io_rank, int component_count, iosystem_desc_t **iosys,
 
         /* If an error was returned by the handler, do nothing! */
         LOG((3, "pio_msg_handler2 checking error ret = %d", ret));
-        /* if (ret) */
-        /*     MPI_Finalize(); */
 
-        LOG((3, "pio_msg_handler2 getting ready to listen"));
-
-        /* Unless finalize was called, listen for another msg from the
-         * component whose message we just handled. */
+        /* Listen for another msg from the component whose message we
+         * just handled. */
         if (!io_rank && msg != -1)
         {
             my_iosys = iosys[index];
