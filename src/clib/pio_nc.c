@@ -2160,7 +2160,7 @@ int PIOc_get_att_double(int ncid, int varid, const char *name, double *ip)
  */
 int PIOc_get_att_uchar(int ncid, int varid, const char *name, unsigned char *ip)
 {
-    return PIOc_get_att_tc(ncid, varid, name, PIO_CHAR, (void *)ip);
+    return PIOc_get_att_tc(ncid, varid, name, PIO_UBYTE, (void *)ip);
 }
 
 /**
@@ -2257,7 +2257,7 @@ int PIOc_get_att_text(int ncid, int varid, const char *name, char *ip)
  */
 int PIOc_get_att_schar(int ncid, int varid, const char *name, signed char *ip)
 {
-    return PIOc_get_att_tc(ncid, varid, name, PIO_CHAR, (void *)ip);
+    return PIOc_get_att_tc(ncid, varid, name, PIO_BYTE, (void *)ip);
 }
 
 /**

@@ -71,7 +71,7 @@ PIO_Offset chunksize[NDIM] = {2, X_DIM_LEN/2, Y_DIM_LEN/2};
 
 /* Create the decomposition to divide the 1-dimensional sample data
  * between the 4 tasks.
- * 
+ *
  * @param ntasks the number of available tasks
  * @param my_rank rank of this task.
  * @param iosysid the IO system ID.
@@ -296,11 +296,23 @@ int check_var_name(int my_rank, int ncid, MPI_Comm test_comm)
  * @param ncid ncid of open netCDF file
  *
  * @returns 0 for success, error code otherwise. */
-int check_atts(int my_rank, int ncid, MPI_Comm test_comm)
+int check_atts(int my_rank, int ncid, int flavor, MPI_Comm test_comm)
 {
     char att_name[PIO_MAX_NAME + 1];
     char zero_att_name[PIO_MAX_NAME + 1];
     int my_test_rank;
+    nc_type att_type;
+    PIO_Offset att_len;
+    signed char att_schar_value;
+    short att_short_value;
+    int att_int_value;
+    float att_float_value;
+    double att_double_value;
+    unsigned char att_uchar_value;
+    unsigned short att_ushort_value;
+    unsigned int att_uint_value;
+    long long int att_int64_value;
+    unsigned long long int att_uint64_value;
     int ret;
 
     /* Find rank in test communicator. */
@@ -320,12 +332,6 @@ int check_atts(int my_rank, int ncid, MPI_Comm test_comm)
     if (strcmp(att_name, zero_att_name))
         return ERR_AWFUL;
 
-    nc_type att_type;
-    PIO_Offset att_len;
-    int att_int_value;
-    short att_short_value;
-    float att_float_value;
-    
     /* Check first att. */
     if ((ret = PIOc_inq_att(ncid, NC_GLOBAL, ATT_NAME, &att_type, &att_len)))
         return ret;
@@ -337,19 +343,55 @@ int check_atts(int my_rank, int ncid, MPI_Comm test_comm)
         return ERR_WRONG;
 
     /* Check second att. */
-    /* if ((ret = PIOc_inq_att(ncid, NC_GLOBAL, ATT_NAME2, &att_type, &att_len))) */
-    /*     return ret; */
-    /* if (att_type != PIO_FLOAT || att_len != 1) */
-    /*     return ERR_WRONG; */
-    /* if ((ret = PIOc_get_att_short(ncid, NC_GLOBAL, ATT_NAME2, &att_short_value))) */
-    /*     return ret; */
-    /* if (att_short_value != ATT_VAL) */
-    /*     return ERR_WRONG; */
-    /* if ((ret = PIOc_get_att_float(ncid, NC_GLOBAL, ATT_NAME2, &att_float_value))) */
-    /*     return ret; */
-    /* if (att_float_value != ATT_VAL) */
-    /*     return ERR_WRONG; */
-    
+    if ((ret = PIOc_inq_att(ncid, NC_GLOBAL, ATT_NAME2, &att_type, &att_len)))
+        return ret;
+    if (att_type != PIO_FLOAT || att_len != 1)
+        return ERR_WRONG;
+
+    /* Try converting to every type. */
+    if ((ret = PIOc_get_att_schar(ncid, NC_GLOBAL, ATT_NAME2, &att_schar_value)))
+        return ret;
+    if (att_schar_value != ATT_VAL)
+        return ERR_WRONG;
+    if ((ret = PIOc_get_att_short(ncid, NC_GLOBAL, ATT_NAME2, &att_short_value)))
+        return ret;
+    if (att_short_value != ATT_VAL)
+        return ERR_WRONG;
+    if ((ret = PIOc_get_att_int(ncid, NC_GLOBAL, ATT_NAME2, &att_int_value)))
+        return ret;
+    if (att_int_value != ATT_VAL)
+        return ERR_WRONG;
+    if ((ret = PIOc_get_att_float(ncid, NC_GLOBAL, ATT_NAME2, &att_float_value)))
+        return ret;
+    if (att_float_value != ATT_VAL)
+        return ERR_WRONG;
+    if ((ret = PIOc_get_att_double(ncid, NC_GLOBAL, ATT_NAME2, &att_double_value)))
+        return ret;
+    if (att_double_value != ATT_VAL)
+        return ERR_WRONG;
+    if (flavor == PIO_IOTYPE_NETCDF4C || flavor == PIO_IOTYPE_NETCDF4P)
+    {
+        if ((ret = PIOc_get_att_uchar(ncid, NC_GLOBAL, ATT_NAME2, &att_uchar_value)))
+            return ret;
+        if (att_uchar_value != ATT_VAL)
+            return ERR_WRONG;
+        if ((ret = PIOc_get_att_ushort(ncid, NC_GLOBAL, ATT_NAME2, &att_ushort_value)))
+            return ret;
+        if (att_ushort_value != ATT_VAL)
+            return ERR_WRONG;
+        if ((ret = PIOc_get_att_uint(ncid, NC_GLOBAL, ATT_NAME2, &att_uint_value)))
+            return ret;
+        if (att_uint_value != ATT_VAL)
+            return ERR_WRONG;
+        if ((ret = PIOc_get_att_longlong(ncid, NC_GLOBAL, ATT_NAME2, &att_int64_value)))
+            return ret;
+        if (att_int64_value != ATT_VAL)
+            return ERR_WRONG;        
+        if ((ret = PIOc_get_att_ulonglong(ncid, NC_GLOBAL, ATT_NAME2, &att_uint64_value)))
+            return ret;
+        if (att_uint64_value != ATT_VAL)
+            return ERR_WRONG;        
+    }
     return 0;
 }
 
@@ -698,13 +740,16 @@ int test_names(int iosysid, int num_flavors, int *flavor, int my_rank,
 
         /* Define a global attribute. */
         int att_val = ATT_VAL;
+        float float_att_val = ATT_VAL;
         if ((ret = PIOc_put_att_int(ncid, NC_GLOBAL, ATT_NAME, PIO_INT, 1, &att_val)))
             ERR(ret);
-        if ((ret = PIOc_put_att_int(ncid, NC_GLOBAL, ATT_NAME2, PIO_FLOAT, 1, &att_val)))
+        if ((ret = PIOc_put_att_float(ncid, NC_GLOBAL, ATT_NAME2, PIO_FLOAT, 1, &float_att_val)))
             ERR(ret);
+        /* if ((ret = PIOc_put_att_int(ncid, NC_GLOBAL, ATT_NAME2, PIO_FLOAT, 1, &att_val))) */
+        /*     ERR(ret); */
 
         /* Check the attribute name. */
-        if ((ret = check_atts(my_rank, ncid, test_comm)))
+        if ((ret = check_atts(my_rank, ncid, flavor[fmt], test_comm)))
             ERR(ret);
 
         /* Define a variable. */
@@ -1027,7 +1072,7 @@ int test_nc4(int iosysid, int num_flavors, int *flavor, int my_rank)
             unsigned long long too_big_chunksize[NDIM] = {(unsigned long long)NC_MAX_INT64 + 42, X_DIM_LEN/2, Y_DIM_LEN/2};
             if (PIOc_def_var_chunking(ncid, 0, NC_CHUNKED, (MPI_Offset *)too_big_chunksize) == PIO_NOERR)
                 ERR(ret);
-            
+
             printf("%d Defining chunksizes\n", my_rank);
             if ((ret = PIOc_def_var_chunking(ncid, 0, NC_CHUNKED, chunksize)))
                 ERR(ret);

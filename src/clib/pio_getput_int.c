@@ -50,7 +50,8 @@ int PIOc_get_att_tc(int ncid, int varid, const char *name, nc_type memtype, void
     if (!name || !ip || strlen(name) > NC_MAX_NAME)
         return pio_err(ios, file, PIO_EINVAL, __FILE__, __LINE__);
 
-    LOG((1, "PIOc_get_att ncid %d varid %d name %s", ncid, varid, name));
+    LOG((1, "PIOc_get_att_tc ncid %d varid %d name %s memtype %d",
+         ncid, varid, name, memtype));
 
     /* Run these on all tasks if async is not in use, but only on
      * non-IO tasks if async is in use. */
@@ -125,7 +126,10 @@ int PIOc_get_att_tc(int ncid, int varid, const char *name, nc_type memtype, void
             return check_mpi(file, mpierr, __FILE__, __LINE__);
         if ((mpierr = MPI_Bcast(&atttype_len, 1, MPI_OFFSET, ios->comproot, ios->my_comm)))
             return check_mpi(file, mpierr, __FILE__, __LINE__);
-        LOG((2, "PIOc_get_att bcast complete attlen = %d atttype_len = %d", attlen, atttype_len));
+        if ((mpierr = MPI_Bcast(&memtype_len, 1, MPI_OFFSET, ios->comproot, ios->my_comm)))
+            return check_mpi(file, mpierr, __FILE__, __LINE__);
+        LOG((2, "PIOc_get_att bcast complete attlen = %d atttype_len = %d memtype_len = %d", attlen, atttype_len,
+             memtype_len));
     }
 
     /* If this is an IO task, then call the netCDF function. */
@@ -161,8 +165,6 @@ int PIOc_get_att_tc(int ncid, int varid, const char *name, nc_type memtype, void
             default:
                 return pio_err(ios, file, PIO_EINVAL, __FILE__, __LINE__);
             }
-            
-            ierr = ncmpi_get_att(file->fh, varid, name, ip);
         }
 #endif /* _PNETCDF */
 #ifdef _NETCDF
@@ -224,7 +226,8 @@ int PIOc_get_att_tc(int ncid, int varid, const char *name, nc_type memtype, void
         return check_netcdf(file, ierr, __FILE__, __LINE__);
 
     /* Broadcast results to all tasks. */
-    if ((mpierr = MPI_Bcast(ip, (int)attlen * atttype_len, MPI_BYTE, ios->ioroot,
+    LOG((2, "bcasting att values attlen = %d memtype_len = %d", attlen, memtype_len));
+    if ((mpierr = MPI_Bcast(ip, (int)attlen * memtype_len, MPI_BYTE, ios->ioroot,
                             ios->my_comm)))
         return check_mpi(file, mpierr, __FILE__, __LINE__);
 

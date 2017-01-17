@@ -598,7 +598,7 @@ int att_get_handler(iosystem_desc_t *ios)
     if ((mpierr = MPI_Bcast(&memtype_len, 1, MPI_OFFSET, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     LOG((1, "att_get_handler ncid = %d varid = %d namelen = %d name = %s iotype = %d"
-         "atttype = %d attlen = %d atttype_len = %d memtype = %d memtype_len = %d",
+         " atttype = %d attlen = %d atttype_len = %d memtype = %d memtype_len = %d",
          ncid, varid, namelen, name, iotype, atttype, attlen, atttype_len, memtype, memtype_len));
 
     /* Allocate space for the attribute data. */
