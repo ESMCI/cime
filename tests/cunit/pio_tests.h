@@ -20,6 +20,9 @@
  * the ParallelIO library. */
 #define NUM_FLAVORS 4
 
+/** Number of netCDF types. */
+#define NUM_NETCDF_TYPES 12
+
 /* Number of sample files constructed for these tests. */
 #define NUM_SAMPLES 3
 

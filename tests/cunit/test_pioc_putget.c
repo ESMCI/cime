@@ -130,6 +130,123 @@ void init_arrays()
         }
 }
 
+/**
+ * Test the attribute conversions.
+ *
+ * @param ncid the ncid of the open test file.
+ * @param flavor the iotype of the test file.
+ * @param expected array of int, one per type. Expected return value.
+ * @return 0 for success, error code otherwise.
+ */
+int test_att_conv(int ncid, int flavor, char *name, int *expected)
+{
+    signed char byte_array_in[ATT_LEN];
+    short short_array_in[ATT_LEN];
+    unsigned char ubyte_array_in[ATT_LEN];
+    int int_array_in[ATT_LEN];
+    /* long long_array_in[ATT_LEN]; */
+    float float_array_in[ATT_LEN];
+    double double_array_in[ATT_LEN];
+    unsigned short ushort_array_in[ATT_LEN];
+    unsigned int uint_array_in[ATT_LEN];
+    long long int64_array_in[ATT_LEN];
+    unsigned long long uint64_array_in[ATT_LEN];
+
+    /* Read the att and check results. */
+    if (expected[PIO_BYTE] != PIOc_get_att_schar(ncid, NC_GLOBAL, name, byte_array_in))
+        return ERR_WRONG;
+
+    if (expected[PIO_BYTE] == 0)
+        for (int x = 0; x < ATT_LEN; x++)
+            if (byte_array_in[x] != byte_array[x][0])
+                return ERR_WRONG;
+    
+    if (expected[PIO_SHORT] != PIOc_get_att_short(ncid, NC_GLOBAL, name, short_array_in))
+        return ERR_WRONG;
+    
+    if (expected[PIO_SHORT] == 0)
+        for (int x = 0; x < ATT_LEN; x++)
+            if (short_array_in[x] != byte_array[x][0])
+                return ERR_WRONG;
+    
+    if (expected[PIO_INT] != PIOc_get_att_int(ncid, NC_GLOBAL, name, int_array_in))
+        return ERR_WRONG;
+
+    if (expected[PIO_INT] == 0)
+        for (int x = 0; x < ATT_LEN; x++)
+            if (int_array_in[x] != byte_array[x][0])
+                return ERR_WRONG;
+
+    /* if (expected[PIO_INT] != PIOc_get_att_long(ncid, NC_GLOBAL, name, long_array_in)) */
+    /*     return ERR_WRONG; */
+
+    /* if (expected[PIO_INT] == 0) */
+    /*     for (int x = 0; x < ATT_LEN; x++) */
+    /*         if (long_array_in[x] != byte_array[x][0]) */
+    /*             return ERR_WRONG; */
+
+    if (expected[PIO_FLOAT] != PIOc_get_att_float(ncid, NC_GLOBAL, name, float_array_in))
+        return ERR_WRONG;
+
+    if (expected[PIO_FLOAT] == 0)
+        for (int x = 0; x < ATT_LEN; x++)
+            if (float_array_in[x] != byte_array[x][0])
+                return ERR_WRONG;
+
+    if (expected[PIO_DOUBLE] != PIOc_get_att_double(ncid, NC_GLOBAL, name, double_array_in))
+        return ERR_WRONG;
+
+    if (expected[PIO_DOUBLE] == 0)
+        for (int x = 0; x < ATT_LEN; x++)
+            if (double_array_in[x] != byte_array[x][0])
+                return ERR_WRONG;
+
+    if (flavor == PIO_IOTYPE_NETCDF4C || flavor == PIO_IOTYPE_NETCDF4P)
+    {
+        if ((expected[PIO_UBYTE] != PIOc_get_att_uchar(ncid, NC_GLOBAL, name, ubyte_array_in)))
+            return ERR_WRONG;
+
+        if (expected[PIO_UBYTE] == 0)
+            for (int x = 0; x < ATT_LEN; x++)
+                if (ubyte_array_in[x] != byte_array[x][0])
+                    return ERR_WRONG;
+        
+        if ((expected[PIO_USHORT] != PIOc_get_att_ushort(ncid, NC_GLOBAL, name, ushort_array_in)))
+            return ERR_WRONG;
+
+        if (expected[PIO_USHORT] == 0)
+            for (int x = 0; x < ATT_LEN; x++)
+                if (ushort_array_in[x] != byte_array[x][0])
+                    return ERR_WRONG;
+        
+        if ((expected[PIO_UINT] != PIOc_get_att_uint(ncid, NC_GLOBAL, name, uint_array_in)))
+            return ERR_WRONG;
+
+        if (expected[PIO_UINT] == 0)
+            for (int x = 0; x < ATT_LEN; x++)
+                if (uint_array_in[x] != byte_array[x][0])
+                    return ERR_WRONG;
+        
+        if ((expected[PIO_INT64] != PIOc_get_att_longlong(ncid, NC_GLOBAL, name, int64_array_in)))
+            return ERR_WRONG;
+
+        if (expected[PIO_INT64] == 0)
+            for (int x = 0; x < ATT_LEN; x++)
+                if (int64_array_in[x] != byte_array[x][0])
+                    return ERR_WRONG;
+        
+        if ((expected[PIO_UINT64] != PIOc_get_att_ulonglong(ncid, NC_GLOBAL, name, uint64_array_in)))
+            return ERR_WRONG;
+
+        if (expected[PIO_UINT64] == 0)
+            for (int x = 0; x < ATT_LEN; x++)
+                if (uint64_array_in[x] != byte_array[x][0])
+                    return ERR_WRONG;
+    }
+    
+    return PIO_NOERR;
+}
+
 /* Test attribute read/write operations.
  *
  * This function creates a file with 3 dimensions, with a var of each
@@ -152,17 +269,6 @@ int test_atts(int iosysid, int num_flavors, int *flavor, int my_rank,
         char iotype_name[PIO_MAX_NAME + 1];
         char filename[PIO_MAX_NAME + 1]; /* Test filename. */
         int ncid;
-        signed char byte_array_in[ATT_LEN];
-        short short_array_in[ATT_LEN];
-        unsigned char ubyte_array_in[ATT_LEN];
-        int int_array_in[ATT_LEN];
-        long long_array_in[ATT_LEN];
-        float float_array_in[ATT_LEN];
-        double double_array_in[ATT_LEN];
-        unsigned short ushort_array_in[ATT_LEN];
-        unsigned int uint_array_in[ATT_LEN];
-        long long int64_array_in[ATT_LEN];
-        unsigned long long uint64_array_in[ATT_LEN];
         int ret;    /* Return code. */
 
         /* Create test file with dims and vars defined. */
@@ -177,12 +283,50 @@ int test_atts(int iosysid, int num_flavors, int *flavor, int my_rank,
         if ((ret = PIOc_createfile(iosysid, &ncid, &flavor[fmt], filename, PIO_CLOBBER)))
             return ret;
 
-        if ((ret = PIOc_put_att_schar(ncid, NC_GLOBAL, ATT_NAME, PIO_BYTE, ATT_LEN, (signed char *)byte_array)))
+        if ((ret = PIOc_put_att_schar(ncid, NC_GLOBAL, SCHAR_ATT_NAME, PIO_BYTE, ATT_LEN, (signed char *)byte_array)))
             return ret;
-
+        if ((ret = PIOc_put_att_schar(ncid, NC_GLOBAL, SHORT_ATT_NAME, PIO_SHORT, ATT_LEN, (signed char *)byte_array)))
+            return ret;
+        if ((ret = PIOc_put_att_schar(ncid, NC_GLOBAL, INT_ATT_NAME, PIO_INT, ATT_LEN, (signed char *)byte_array)))
+            return ret;
+        if ((ret = PIOc_put_att_schar(ncid, NC_GLOBAL, FLOAT_ATT_NAME, PIO_FLOAT, ATT_LEN, (signed char *)byte_array)))
+            return ret;
+        if ((ret = PIOc_put_att_schar(ncid, NC_GLOBAL, DOUBLE_ATT_NAME, PIO_DOUBLE, ATT_LEN, (signed char *)byte_array)))
+            return ret;
+        if (flavor[fmt] == PIO_IOTYPE_NETCDF4C || flavor[fmt] == PIO_IOTYPE_NETCDF4P)
+        {
+            if (PIOc_put_att_schar(ncid, NC_GLOBAL, UCHAR_ATT_NAME, PIO_UBYTE, ATT_LEN, (signed char *)byte_array) != PIO_ERANGE)
+                return ERR_WRONG;
+            if (PIOc_put_att_schar(ncid, NC_GLOBAL, USHORT_ATT_NAME, PIO_USHORT, ATT_LEN, (signed char *)byte_array) != PIO_ERANGE)
+                return ERR_WRONG;
+            if (PIOc_put_att_schar(ncid, NC_GLOBAL, UINT_ATT_NAME, PIO_UINT, ATT_LEN, (signed char *)byte_array) != PIO_ERANGE)
+                return ERR_WRONG;
+            if ((ret = PIOc_put_att_schar(ncid, NC_GLOBAL, INT64_ATT_NAME, PIO_INT64, ATT_LEN, (signed char *)byte_array)))
+                return ret;
+            if (PIOc_put_att_schar(ncid, NC_GLOBAL, UINT64_ATT_NAME, PIO_UINT64, ATT_LEN, (signed char *)byte_array) != PIO_ERANGE)
+                return ERR_WRONG;
+        }
         if ((ret = PIOc_enddef(ncid)))
             return ret;
 
+        /* Test the attribute conversions. */
+        int schar_expected[NUM_NETCDF_TYPES + 1] = {0, 0, PIO_ERANGE, 0, 0, 0, 0, PIO_ERANGE, PIO_ERANGE, PIO_ERANGE,
+                                                    0, PIO_ERANGE, PIO_ERANGE};
+        if ((ret = test_att_conv(ncid, flavor[fmt], SCHAR_ATT_NAME, schar_expected)))
+            ERR(ret);
+
+        if ((ret = test_att_conv(ncid, flavor[fmt], SHORT_ATT_NAME, schar_expected)))
+            ERR(ret);
+        if ((ret = test_att_conv(ncid, flavor[fmt], INT_ATT_NAME, schar_expected)))
+            ERR(ret);
+        if ((ret = test_att_conv(ncid, flavor[fmt], FLOAT_ATT_NAME, schar_expected)))
+            ERR(ret);
+        if ((ret = test_att_conv(ncid, flavor[fmt], DOUBLE_ATT_NAME, schar_expected)))
+            ERR(ret);
+        if (flavor[fmt] == PIO_IOTYPE_NETCDF4C || flavor[fmt] == PIO_IOTYPE_NETCDF4P)
+            if ((ret = test_att_conv(ncid, flavor[fmt], INT64_ATT_NAME, schar_expected)))
+                ERR(ret);
+        
         /* Close the netCDF file. */
         if ((ret = PIOc_closefile(ncid)))
             ERR(ret);
@@ -191,50 +335,9 @@ int test_atts(int iosysid, int num_flavors, int *flavor, int my_rank,
         if ((ret = PIOc_openfile(iosysid, &ncid, &(flavor[fmt]), filename, PIO_NOWRITE)))
             ERR(ret);
 
-        /* Read the att and check results. */
-        if ((ret = PIOc_get_att_schar(ncid, NC_GLOBAL, ATT_NAME, byte_array_in)))
-            return ret;
-        if ((ret = PIOc_get_att_short(ncid, NC_GLOBAL, ATT_NAME, short_array_in)))
-            return ret;
-        if ((ret = PIOc_get_att_int(ncid, NC_GLOBAL, ATT_NAME, int_array_in)))
-            return ret;
-        if ((ret = PIOc_get_att_long(ncid, NC_GLOBAL, ATT_NAME, long_array_in)))
-            return ret;
-        if ((ret = PIOc_get_att_float(ncid, NC_GLOBAL, ATT_NAME, float_array_in)))
-            return ret;
-        if ((ret = PIOc_get_att_double(ncid, NC_GLOBAL, ATT_NAME, double_array_in)))
-            return ret;
-        for (int x = 0; x < ATT_LEN; x++)
-        {
-            if (byte_array_in[x] != byte_array[x][0])
-                return ERR_WRONG;
-            if (short_array_in[x] != byte_array[x][0])
-                return ERR_WRONG;
-            if (int_array_in[x] != byte_array[x][0])
-                return ERR_WRONG;
-            /* if (long_array_in[x] != byte_array[x][0]) */
-            /*     return ERR_WRONG; */
-            if (float_array_in[x] != byte_array[x][0])
-                return ERR_WRONG;
-            if (double_array_in[x] != byte_array[x][0])
-                return ERR_WRONG;
-        }
-        if (flavor[fmt] == PIO_IOTYPE_NETCDF4C || flavor[fmt] == PIO_IOTYPE_NETCDF4P)
-        {
-            if (PIOc_get_att_uchar(ncid, NC_GLOBAL, ATT_NAME, ubyte_array_in) != PIO_ERANGE)
-                return ERR_WRONG;
-            if (PIOc_get_att_ushort(ncid, NC_GLOBAL, ATT_NAME, ushort_array_in) != PIO_ERANGE)
-                return ERR_WRONG;
-            if (PIOc_get_att_uint(ncid, NC_GLOBAL, ATT_NAME, uint_array_in) != PIO_ERANGE)
-                return ERR_WRONG;
-            if ((ret = PIOc_get_att_longlong(ncid, NC_GLOBAL, ATT_NAME, int64_array_in)))
-                return ret;
-            if (PIOc_get_att_ulonglong(ncid, NC_GLOBAL, ATT_NAME, uint64_array_in) != PIO_ERANGE)
-                return ERR_WRONG;
-            for (int x = 0; x < ATT_LEN; x++)
-                if (int64_array_in[x] != byte_array[x][0])
-                    return ERR_WRONG;
-        }
+        /* Test the attribute conversions. */
+        if ((ret = test_att_conv(ncid, flavor[fmt], SCHAR_ATT_NAME, schar_expected)))
+            ERR(ret);
         
         /* Close the netCDF file. */
         if ((ret = PIOc_closefile(ncid)))

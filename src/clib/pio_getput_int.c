@@ -94,7 +94,7 @@ int PIOc_put_att_tc(int ncid, int varid, const char *name, nc_type atttype,
             if (!mpierr)
                 mpierr = MPI_Bcast(&memtype_len, 1, MPI_OFFSET,  ios->compmaster, ios->intercomm);
             if (!mpierr)
-                mpierr = MPI_Bcast((void *)op, len * atttype_len, MPI_BYTE, ios->compmaster,
+                mpierr = MPI_Bcast((void *)op, len * memtype_len, MPI_BYTE, ios->compmaster,
                                    ios->intercomm);
             LOG((2, "PIOc_put_att finished bcast ncid = %d varid = %d namelen = %d name = %s "
                  "len = %d atttype_len = %d memtype = %d memtype_len = %d", ncid, varid, namelen,
