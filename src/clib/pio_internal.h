@@ -222,6 +222,9 @@ extern "C" {
     int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid, void *iobuf);
     int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc, int vid, void *iobuf);
 
+    /* Read atts with type conversion. */
+    int PIOc_get_att_tc(int ncid, int varid, const char *name, nc_type memtype, void *ip);    
+
     /* Generalized get functions. */
     int PIOc_get_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Offset *count,
                          const PIO_Offset *stride, nc_type xtype, void *buf);
