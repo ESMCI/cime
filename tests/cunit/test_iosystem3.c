@@ -59,8 +59,7 @@ int create_file(MPI_Comm comm, int iosysid, int format, char *filename,
         return ret;
 
     /* Write an attribute. */
-    if ((ret = PIOc_put_att_text(ncid, varid, attname, strlen(filename),
-                                 filename)))
+    if ((ret = PIOc_put_att_text(ncid, varid, attname, strlen(filename), filename)))
         return ret;
 
     /* End define mode. */

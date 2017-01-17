@@ -14,6 +14,202 @@
 #include <pio_internal.h>
 
 /**
+ * Write a netCDF attribute of any type, converting to any type.
+ *
+ * This routine is called collectively by all tasks in the communicator
+ * ios.union_comm.
+ *
+ * @param ncid the ncid of the open file, obtained from
+ * PIOc_openfile() or PIOc_createfile().
+ * @param varid the variable ID.
+ * @param name the name of the attribute.
+ * @param atttype the nc_type of the attribute.
+ * @param len the length of the attribute array.
+ * @param op a pointer with the attribute data.
+ * @return PIO_NOERR for success, error code otherwise.
+ */
+int PIOc_put_att_tc(int ncid, int varid, const char *name, nc_type atttype,
+                    PIO_Offset len, nc_type memtype, const void *op)
+{
+    iosystem_desc_t *ios;  /* Pointer to io system information. */
+    file_desc_t *file;     /* Pointer to file information. */
+    PIO_Offset atttype_len;    /* Length (in bytes) of the att type in file. */
+    PIO_Offset memtype_len;    /* Length of the att data type in memory. */
+    int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
+    int ierr;           /* Return code from function calls. */
+
+    /* Find the info about this file. */
+    if ((ierr = pio_get_file(ncid, &file)))
+        return pio_err(NULL, NULL, ierr, __FILE__, __LINE__);
+    ios = file->iosystem;
+
+    /* User must provide some valid parameters. */
+    if (!name || !op || strlen(name) > NC_MAX_NAME || len < 0)
+        return pio_err(ios, file, PIO_EINVAL, __FILE__, __LINE__);
+
+    LOG((1, "PIOc_put_att_tc ncid = %d varid = %d name = %s atttype = %d len = %d memtype = %d",
+         ncid, varid, name, atttype, len, memtype));
+
+    /* Run these on all tasks if async is not in use, but only on
+     * non-IO tasks if async is in use. */
+    if (!ios->async_interface || !ios->ioproc)
+    {
+        /* Get the length (in bytes) of the type in file. */
+        if ((ierr = PIOc_inq_type(ncid, atttype, NULL, &atttype_len)))
+            return check_netcdf(file, ierr, __FILE__, __LINE__);
+
+        /* Get the length (in bytes) of the type in memory. */
+        if ((ierr = PIOc_inq_type(ncid, memtype, NULL, &memtype_len)))
+            return check_netcdf(file, ierr, __FILE__, __LINE__);
+        LOG((2, "PIOc_put_att atttype_len = %d memtype_len = %d", ncid, atttype_len, memtype_len));
+    }
+
+    /* If async is in use, and this is not an IO task, bcast the parameters. */
+    if (ios->async_interface)
+    {
+        if (!ios->ioproc)
+        {
+            int msg = PIO_MSG_PUT_ATT;
+
+            if (ios->compmaster == MPI_ROOT)
+                mpierr = MPI_Send(&msg, 1, MPI_INT, ios->ioroot, 1, ios->union_comm);
+
+            if (!mpierr)
+                mpierr = MPI_Bcast(&ncid, 1, MPI_INT, ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast(&varid, 1, MPI_INT, ios->compmaster, ios->intercomm);
+            int namelen = strlen(name);
+            if (!mpierr)
+                mpierr = MPI_Bcast(&namelen, 1, MPI_INT,  ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast((void *)name, namelen + 1, MPI_CHAR, ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast(&atttype, 1, MPI_INT,  ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast(&len, 1, MPI_OFFSET,  ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast(&atttype_len, 1, MPI_OFFSET,  ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast(&memtype, 1, MPI_INT,  ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast(&memtype_len, 1, MPI_OFFSET,  ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast((void *)op, len * atttype_len, MPI_BYTE, ios->compmaster,
+                                   ios->intercomm);
+            LOG((2, "PIOc_put_att finished bcast ncid = %d varid = %d namelen = %d name = %s "
+                 "len = %d atttype_len = %d memtype = %d memtype_len = %d", ncid, varid, namelen,
+                 name, len, atttype_len, memtype, memtype_len));
+        }
+
+        /* Handle MPI errors. */
+        if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
+            check_mpi(file, mpierr2, __FILE__, __LINE__);
+        if (mpierr)
+            return check_mpi(file, mpierr, __FILE__, __LINE__);
+
+        /* Broadcast values currently only known on computation tasks to IO tasks. */
+        if ((mpierr = MPI_Bcast(&atttype_len, 1, MPI_OFFSET, ios->comproot, ios->my_comm)))
+            check_mpi(file, mpierr, __FILE__, __LINE__);
+        if ((mpierr = MPI_Bcast(&memtype_len, 1, MPI_OFFSET, ios->comproot, ios->my_comm)))
+            check_mpi(file, mpierr, __FILE__, __LINE__);
+        LOG((2, "PIOc_put_att bcast from comproot = %d atttype_len = %d", ios->comproot,
+             atttype_len, memtype_len));
+    }
+
+    /* If this is an IO task, then call the netCDF function. */
+    if (ios->ioproc)
+    {
+#ifdef _PNETCDF
+        if (file->iotype == PIO_IOTYPE_PNETCDF)
+        {
+            switch(memtype)
+            {
+            case NC_BYTE:
+                ierr = ncmpi_put_att_schar(file->fh, varid, name, atttype, len, op);
+                break;
+            case NC_CHAR:
+                ierr = ncmpi_put_att_text(file->fh, varid, name, len, op);
+                break;
+            case NC_SHORT:
+                ierr = ncmpi_put_att_short(file->fh, varid, name, atttype, len, op);
+                break;
+            case NC_INT:
+                ierr = ncmpi_put_att_int(file->fh, varid, name, atttype, len, op);
+                break;
+            case NC_FLOAT:
+                ierr = ncmpi_put_att_float(file->fh, varid, name, atttype, len, op);
+                break;
+            case NC_DOUBLE:
+                ierr = ncmpi_put_att_double(file->fh, varid, name, atttype, len, op);
+                break;
+            case NC_INT64:
+                ierr = ncmpi_put_att_longlong(file->fh, varid, name, atttype, len, op);
+                break;
+            default:
+                return pio_err(ios, file, PIO_EINVAL, __FILE__, __LINE__);
+            }
+        }
+#endif /* _PNETCDF */
+
+        if (file->iotype != PIO_IOTYPE_PNETCDF && file->do_io)
+        {
+            switch(memtype)
+            {
+            case NC_CHAR:
+                ierr = nc_put_att_text(file->fh, varid, name, len, op);
+                break;
+            case NC_BYTE:
+                ierr = nc_put_att_schar(file->fh, varid, name, atttype, len, op);
+                break;
+            case NC_SHORT:
+                ierr = nc_put_att_short(file->fh, varid, name, atttype, len, op);
+                break;
+            case NC_INT:
+                ierr = nc_put_att_int(file->fh, varid, name, atttype, len, op);
+                break;
+            case NC_FLOAT:
+                ierr = nc_put_att_float(file->fh, varid, name, atttype, len, op);
+                break;
+            case NC_DOUBLE:
+                ierr = nc_put_att_double(file->fh, varid, name, atttype, len, op);
+                break;
+#ifdef _NETCDF4
+            case NC_UBYTE:
+                ierr = nc_put_att_uchar(file->fh, varid, name, atttype, len, op);
+                break;
+            case NC_USHORT:
+                ierr = nc_put_att_ushort(file->fh, varid, name, atttype, len, op);
+                break;
+            case NC_UINT:
+                ierr = nc_put_att_uint(file->fh, varid, name, atttype, len, op);
+                break;
+            case NC_INT64:
+                LOG((3, "about to call nc_put_att_longlong"));
+                ierr = nc_put_att_longlong(file->fh, varid, name, atttype, len, op);
+                break;
+            case NC_UINT64:
+                ierr = nc_put_att_ulonglong(file->fh, varid, name, atttype, len, op);
+                break;
+                /* case NC_STRING: */
+                /*      ierr = nc_put_att_string(file->fh, varid, name, atttype, len, op); */
+                /*      break; */
+#endif /* _NETCDF4 */
+            default:
+                return pio_err(ios, file, PIO_EINVAL, __FILE__, __LINE__);
+            }
+        }
+    }
+
+    /* Broadcast and check the return code. */
+    if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
+        return check_mpi(file, mpierr, __FILE__, __LINE__);
+    if (ierr)
+        return check_netcdf(file, ierr, __FILE__, __LINE__);
+
+    return PIO_NOERR;
+}
+
+/**
  * Get the value of an attribute of any type, converting to any type.
  *
  * This routine is called collectively by all tasks in the communicator
