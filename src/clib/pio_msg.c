@@ -2250,10 +2250,10 @@ int pio_msg_handler2(int io_rank, int component_count, iosystem_desc_t **iosys,
             return PIO_EINVAL;
         }
 
-        /* If an error was returned by the handler, do something! */
+        /* If an error was returned by the handler, do nothing! */
         LOG((3, "pio_msg_handler2 checking error ret = %d", ret));
-        if (ret)
-            MPI_Finalize();
+        /* if (ret) */
+        /*     MPI_Finalize(); */
 
         LOG((3, "pio_msg_handler2 getting ready to listen"));
 

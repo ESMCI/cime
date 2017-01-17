@@ -130,6 +130,121 @@ void init_arrays()
         }
 }
 
+/* Test attribute read/write operations.
+ *
+ * This function creates a file with 3 dimensions, with a var of each
+ * type. Then it uses the var/var1/vars/vars functions to write, and
+ * then read data from the test file.
+ *
+ * @param iosysid the iosystem ID that will be used for the test.
+ * @param num_flavors the number of different IO types that will be tested.
+ * @param flavor an array of the valid IO types.
+ * @param my_rank 0-based rank of task.
+ * @returns 0 for success, error code otherwise.
+ */
+int test_atts(int iosysid, int num_flavors, int *flavor, int my_rank,
+              MPI_Comm test_comm)
+{
+    /* Use PIO to create the example file in each of the four
+     * available ways. */
+    for (int fmt = 0; fmt < num_flavors; fmt++)
+    {
+        char iotype_name[PIO_MAX_NAME + 1];
+        char filename[PIO_MAX_NAME + 1]; /* Test filename. */
+        int ncid;
+        signed char byte_array_in[ATT_LEN];
+        short short_array_in[ATT_LEN];
+        unsigned char ubyte_array_in[ATT_LEN];
+        int int_array_in[ATT_LEN];
+        long long_array_in[ATT_LEN];
+        float float_array_in[ATT_LEN];
+        double double_array_in[ATT_LEN];
+        unsigned short ushort_array_in[ATT_LEN];
+        unsigned int uint_array_in[ATT_LEN];
+        long long int64_array_in[ATT_LEN];
+        unsigned long long uint64_array_in[ATT_LEN];
+        int ret;    /* Return code. */
+
+        /* Create test file with dims and vars defined. */
+        printf("%d creating test file for flavor = %d...\n", my_rank, flavor[fmt]);
+
+        /* Create a filename. */
+        if ((ret = get_iotype_name(flavor[fmt], iotype_name)))
+            return ret;
+        sprintf(filename, "%s_att_%s.nc", TEST_NAME, iotype_name);
+
+        /* Create the netCDF output file. */
+        if ((ret = PIOc_createfile(iosysid, &ncid, &flavor[fmt], filename, PIO_CLOBBER)))
+            return ret;
+
+        if ((ret = PIOc_put_att_schar(ncid, NC_GLOBAL, ATT_NAME, PIO_BYTE, ATT_LEN, (signed char *)byte_array)))
+            return ret;
+
+        if ((ret = PIOc_enddef(ncid)))
+            return ret;
+
+        /* Close the netCDF file. */
+        if ((ret = PIOc_closefile(ncid)))
+            ERR(ret);
+
+        /* Reopen the file. */
+        if ((ret = PIOc_openfile(iosysid, &ncid, &(flavor[fmt]), filename, PIO_NOWRITE)))
+            ERR(ret);
+
+        /* Read the att and check results. */
+        if ((ret = PIOc_get_att_schar(ncid, NC_GLOBAL, ATT_NAME, byte_array_in)))
+            return ret;
+        if ((ret = PIOc_get_att_short(ncid, NC_GLOBAL, ATT_NAME, short_array_in)))
+            return ret;
+        if ((ret = PIOc_get_att_int(ncid, NC_GLOBAL, ATT_NAME, int_array_in)))
+            return ret;
+        if ((ret = PIOc_get_att_long(ncid, NC_GLOBAL, ATT_NAME, long_array_in)))
+            return ret;
+        if ((ret = PIOc_get_att_float(ncid, NC_GLOBAL, ATT_NAME, float_array_in)))
+            return ret;
+        if ((ret = PIOc_get_att_double(ncid, NC_GLOBAL, ATT_NAME, double_array_in)))
+            return ret;
+        for (int x = 0; x < ATT_LEN; x++)
+        {
+            if (byte_array_in[x] != byte_array[x][0])
+                return ERR_WRONG;
+            if (short_array_in[x] != byte_array[x][0])
+                return ERR_WRONG;
+            if (int_array_in[x] != byte_array[x][0])
+                return ERR_WRONG;
+            /* if (long_array_in[x] != byte_array[x][0]) */
+            /*     return ERR_WRONG; */
+            if (float_array_in[x] != byte_array[x][0])
+                return ERR_WRONG;
+            if (double_array_in[x] != byte_array[x][0])
+                return ERR_WRONG;
+        }
+        if (flavor[fmt] == PIO_IOTYPE_NETCDF4C || flavor[fmt] == PIO_IOTYPE_NETCDF4P)
+        {
+            if (PIOc_get_att_uchar(ncid, NC_GLOBAL, ATT_NAME, ubyte_array_in) != PIO_ERANGE)
+                return ERR_WRONG;
+            if (PIOc_get_att_ushort(ncid, NC_GLOBAL, ATT_NAME, ushort_array_in) != PIO_ERANGE)
+                return ERR_WRONG;
+            if (PIOc_get_att_uint(ncid, NC_GLOBAL, ATT_NAME, uint_array_in) != PIO_ERANGE)
+                return ERR_WRONG;
+            if ((ret = PIOc_get_att_longlong(ncid, NC_GLOBAL, ATT_NAME, int64_array_in)))
+                return ret;
+            if (PIOc_get_att_ulonglong(ncid, NC_GLOBAL, ATT_NAME, uint64_array_in) != PIO_ERANGE)
+                return ERR_WRONG;
+            for (int x = 0; x < ATT_LEN; x++)
+                if (int64_array_in[x] != byte_array[x][0])
+                    return ERR_WRONG;
+        }
+        
+        /* Close the netCDF file. */
+        if ((ret = PIOc_closefile(ncid)))
+            ERR(ret);
+        
+    } /* next flavor */
+
+    return PIO_NOERR;
+}
+
 /* Use the var1 functions to write some data to an open test file. */
 int putget_write_var1(int ncid, int *varid, PIO_Offset *index, int flavor)
 {
@@ -985,11 +1100,16 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
     if ((ret = MPI_Comm_size(test_comm, &my_test_size)))
         MPIERR(ret);
 
+    /* Test attribute stuff. */
+    printf("%d Testing attributes. async = %d\n", my_rank, async);
+    if ((ret = test_atts(iosysid, num_flavors, flavor, my_rank, test_comm)))
+        return ret;
+
     /* Test read/write stuff. */
     printf("%d Testing putget. async = %d\n", my_rank, async);
     if ((ret = test_putget(iosysid, num_flavors, flavor, my_rank, test_comm)))
         return ret;
-
+    
     return PIO_NOERR;
 }
 
