@@ -499,9 +499,12 @@ int att_put_handler(iosystem_desc_t *ios)
     int ret;
     char name[PIO_MAX_NAME + 1];
     int namelen;
-    PIO_Offset attlen, typelen;
-    nc_type atttype;
-    int *op;
+    PIO_Offset attlen;  /* Number of elements in att array. */
+    nc_type atttype;    /* Type of att in file. */
+    PIO_Offset atttype_len; /* Length in bytes of one elementy of type atttype. */
+    nc_type memtype;    /* Type of att data in memory. */
+    PIO_Offset memtype_len; /* Length of element of memtype. */
+    void *op;
 
     LOG((1, "att_put_handler"));
     assert(ios);
@@ -512,38 +515,45 @@ int att_put_handler(iosystem_desc_t *ios)
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&varid, 1, MPI_INT, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
-    mpierr = MPI_Bcast(&namelen, 1, MPI_INT,  ios->compmaster, ios->intercomm);
-    pioassert(namelen <= PIO_MAX_NAME, "namelen > PIO_MAX_NAME", __FILE__, __LINE__);
-    mpierr = MPI_Bcast((void *)name, namelen + 1, MPI_CHAR, ios->compmaster,
-                       ios->intercomm);
+    if ((mpierr = MPI_Bcast(&namelen, 1, MPI_INT,  ios->compmaster, ios->intercomm)))
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+    if ((mpierr = MPI_Bcast((void *)name, namelen + 1, MPI_CHAR, ios->compmaster,
+                            ios->intercomm)))
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&atttype, 1, MPI_INT, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&attlen, 1, MPI_OFFSET, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
-    if ((mpierr = MPI_Bcast(&typelen, 1, MPI_OFFSET, 0, ios->intercomm)))
+    if ((mpierr = MPI_Bcast(&atttype_len, 1, MPI_OFFSET, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
-    if (!(op = malloc(attlen * typelen)))
+    if ((mpierr = MPI_Bcast(&memtype, 1, MPI_INT, 0, ios->intercomm)))
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+    if ((mpierr = MPI_Bcast(&memtype_len, 1, MPI_OFFSET, 0, ios->intercomm)))
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+
+    /* Allocate memory for the attribute data. */
+    if (!(op = malloc(attlen * memtype_len)))
         return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
-    if ((mpierr = MPI_Bcast((void *)op, attlen * typelen, MPI_BYTE, 0, ios->intercomm)))
+    if ((mpierr = MPI_Bcast((void *)op, attlen * memtype_len, MPI_BYTE, 0, ios->intercomm)))
     {
         free(op);
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     }
     LOG((1, "att_put_handler ncid = %d varid = %d namelen = %d name = %s"
-         "atttype = %d attlen = %d typelen = %d",
-         ncid, varid, namelen, name, atttype, attlen, typelen));
+         "atttype = %d attlen = %d atttype_len = %d memtype = %d memtype_len = 5d",
+         ncid, varid, namelen, name, atttype, attlen, atttype_len, memtype, memtype_len));
 
     /* Call the function to write the attribute. */
-    if ((ret = PIOc_put_att(ncid, varid, name, atttype, attlen, op)))
-    {
-        free(op);
-        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
-    }
+    ret = PIOc_put_att_tc(ncid, varid, name, atttype, attlen, memtype, op);
 
     /* Free resources. */
     free(op);
 
-    LOG((2, "put_handler complete!"));
+    /* Did it work? */
+    if (ret)
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+    
+    LOG((2, "att_put_handler complete!"));
     return PIO_NOERR;
 }
 
@@ -560,13 +570,16 @@ int att_get_handler(iosystem_desc_t *ios)
     int ncid;
     int varid;
     int mpierr;
-    int ret;
     char name[PIO_MAX_NAME + 1];
     int namelen;
-    PIO_Offset attlen, typelen;
-    nc_type atttype;
+    PIO_Offset attlen;
+    nc_type atttype;        /* Type of att in file. */
+    PIO_Offset atttype_len; /* Length in bytes of an element of attype. */
+    nc_type memtype;        /* Type of att in memory. */
+    PIO_Offset memtype_len; /* Length in bytes of an element of memype. */
     int *ip;
     int iotype;
+    int ret;
 
     LOG((1, "att_get_handler"));
     assert(ios);
@@ -577,35 +590,40 @@ int att_get_handler(iosystem_desc_t *ios)
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&varid, 1, MPI_INT, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
-    mpierr = MPI_Bcast(&namelen, 1, MPI_INT,  ios->compmaster, ios->intercomm);
-    pioassert(namelen <= PIO_MAX_NAME, "namelen > PIO_MAX_NAME", __FILE__, __LINE__);
-    mpierr = MPI_Bcast((void *)name, namelen + 1, MPI_CHAR, ios->compmaster,
-                       ios->intercomm);
+    if ((mpierr = MPI_Bcast(&namelen, 1, MPI_INT,  ios->compmaster, ios->intercomm)))
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+    if ((mpierr = MPI_Bcast((void *)name, namelen + 1, MPI_CHAR, ios->compmaster,
+                            ios->intercomm)))
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&iotype, 1, MPI_INT, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&atttype, 1, MPI_INT, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&attlen, 1, MPI_OFFSET, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
-    if ((mpierr = MPI_Bcast(&typelen, 1, MPI_OFFSET, 0, ios->intercomm)))
+    if ((mpierr = MPI_Bcast(&atttype_len, 1, MPI_OFFSET, 0, ios->intercomm)))
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+    if ((mpierr = MPI_Bcast(&memtype, 1, MPI_INT, 0, ios->intercomm)))
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+    if ((mpierr = MPI_Bcast(&memtype_len, 1, MPI_OFFSET, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     LOG((1, "att_get_handler ncid = %d varid = %d namelen = %d name = %s iotype = %d"
-         "atttype = %d attlen = %d typelen = %d",
-         ncid, varid, namelen, name, iotype, atttype, attlen, typelen));
+         " atttype = %d attlen = %d atttype_len = %d memtype = %d memtype_len = %d",
+         ncid, varid, namelen, name, iotype, atttype, attlen, atttype_len, memtype, memtype_len));
 
     /* Allocate space for the attribute data. */
-    if (!(ip = malloc(attlen * typelen)))
+    if (!(ip = malloc(attlen * memtype_len)))
         return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
     /* Call the function to read the attribute. */
-    if ((ret = PIOc_get_att(ncid, varid, name, ip)))
-    {
-        free(ip);
-        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
-    }
-
+    ret = PIOc_get_att_tc(ncid, varid, name, memtype, ip);
+    
     /* Free resources. */
     free(ip);
+
+    /* Did it work? */
+    if (ret)
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
     return PIO_NOERR;
 }
