@@ -328,7 +328,7 @@ int PIOc_InitDecomp(int iosysid, int basetype, int ndims, const int *dims, int m
         return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
 
     /* Allocate space for the iodesc info. */
-    if (!(iodesc = malloc_iodesc(basetype, ndims)))
+    if (!(iodesc = malloc_iodesc(ios, basetype, ndims)))
 	piodie("Out of memory", __FILE__, __LINE__);
 
     /* Remember the maplen. */
@@ -496,6 +496,26 @@ int PIOc_InitDecomp_bc(const int iosysid, const int basetype, const int ndims, c
 }
 
 /**
+ * Internal library util function to initialize rearranger options
+ * @param iosys pointer to iosystem descriptor
+ */
+
+static void init_rearr_opts(iosystem_desc_t *iosys)
+{
+    /* The old default for max pending requests - we no longer use it*/
+    const int DEF_P2P_MAXREQ = 64;
+    /* Disable handshake /isend and set max_pend_req = 0 to turn of throttling */
+    const rearr_comm_fc_opt_t def_coll_comm_fc_opts = { false, false, 0 };
+
+    assert(iosys != NULL);
+    /* Default to coll - i.e., no flow control */
+    iosys->rearr_opts.comm_type = PIO_REARR_COMM_COLL;
+    iosys->rearr_opts.fcd = PIO_REARR_COMM_FC_2D_DISABLE;
+    iosys->rearr_opts.comm_fc_opts_comp2io = def_coll_comm_fc_opts;
+    iosys->rearr_opts.comm_fc_opts_io2comp = def_coll_comm_fc_opts;
+}
+
+/**
  * Library initialization used when IO tasks are a subset of compute
  * tasks.
  *
@@ -548,6 +568,7 @@ int PIOc_Init_Intracomm(MPI_Comm comp_comm, int num_iotasks, int stride, int bas
     ios->default_rearranger = rearr;
     ios->num_iotasks = num_iotasks;
     ios->num_comptasks = num_comptasks;
+    init_rearr_opts(ios);
 
     /* Copy the computation communicator into union_comm. */
     if ((mpierr = MPI_Comm_dup(comp_comm, &ios->union_comm)))
@@ -640,15 +661,38 @@ int PIOc_Init_Intracomm(MPI_Comm comp_comm, int num_iotasks, int stride, int bas
  * @param stride the stride to use assigning tasks
  * @param base the starting point when assigning tasks
  * @param rearr the rearranger
+ * @param rearr_opts the rearranger options
  * @param iosysidp a pointer that gets the IO system ID
  * @returns 0 for success, error code otherwise
  */
 int PIOc_Init_Intracomm_from_F90(int f90_comp_comm,
                                  const int num_iotasks, const int stride,
-                                 const int base, const int rearr, int *iosysidp)
+                                 const int base, const int rearr,
+                                 rearr_opt_t *rearr_opts, int *iosysidp)
 {
-    return PIOc_Init_Intracomm(MPI_Comm_f2c(f90_comp_comm), num_iotasks, stride, base, rearr,
-                               iosysidp);
+    int ret = PIO_NOERR;
+    ret = PIOc_Init_Intracomm(MPI_Comm_f2c(f90_comp_comm), num_iotasks,
+                                stride, base, rearr,
+                                iosysidp);
+    if (ret != PIO_NOERR)
+    {
+        LOG((1, "PIOc_Init_Intracomm failed"));
+        return ret;
+    }
+
+    if (rearr_opts)
+    {
+        LOG((1, "Setting rearranger options, iosys=%d", *iosysidp));
+        return PIOc_set_rearr_opts(*iosysidp, rearr_opts->comm_type,
+                                    rearr_opts->fcd,
+                                    rearr_opts->comm_fc_opts_comp2io.enable_hs,
+                                    rearr_opts->comm_fc_opts_comp2io.enable_isend,
+                                    rearr_opts->comm_fc_opts_comp2io.max_pend_req,
+                                    rearr_opts->comm_fc_opts_io2comp.enable_hs,
+                                    rearr_opts->comm_fc_opts_io2comp.enable_isend,
+                                    rearr_opts->comm_fc_opts_io2comp.max_pend_req);
+    }
+    return ret;
 }
 
 /**

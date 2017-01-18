@@ -158,7 +158,7 @@ extern "C" {
 
     int rearrange_comp2io(iosystem_desc_t ios, io_desc_t *iodesc, void *sbuf, void *rbuf, int nvars);
 
-    io_desc_t *malloc_iodesc(int piotype, int ndims);
+    io_desc_t *malloc_iodesc(const iosystem_desc_t *ios, int piotype, int ndims);
     void performance_tune_rearranger(iosystem_desc_t ios, io_desc_t *iodesc);
 
     int flush_output_buffer(file_desc_t *file, bool force, PIO_Offset addsize);

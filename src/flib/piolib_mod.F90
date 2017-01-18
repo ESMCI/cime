@@ -13,7 +13,7 @@ module piolib_mod
   !--------------
   use pio_types, only : file_desc_t, iosystem_desc_t, var_desc_t, io_desc_t, &
         pio_iotype_netcdf, pio_iotype_pnetcdf, pio_iotype_netcdf4p, pio_iotype_netcdf4c, &
-        pio_noerr, pio_rearr_subset
+        pio_noerr, pio_rearr_subset, pio_rearr_opt_t
   !--------------
   use pio_support, only : piodie, debug, debugio, debugasync, checkmpireturn
   !
@@ -50,7 +50,8 @@ module piolib_mod
        PIO_FILE_IS_OPEN, &
        PIO_deletefile, &
        PIO_get_numiotasks, &
-       PIO_iotype_available
+       PIO_iotype_available, &
+       PIO_set_rearr_opts
 
 #ifdef MEMCHK
 !> this is an internal variable for memory leak debugging
@@ -844,8 +845,10 @@ contains
 !! @param iosystem a derived type which can be used in subsequent pio operations (defined in PIO_types).
 !! @param base @em optional argument can be used to offset the first io task - default base is task 1.
 !<
-  subroutine init_intracom(comp_rank, comp_comm, num_iotasks, num_aggregator, stride,  rearr, iosystem,base)
-    use pio_types, only : pio_internal_error
+  subroutine init_intracom(comp_rank, comp_comm, num_iotasks, num_aggregator, stride,  rearr, iosystem,base, rearr_opts)
+    use pio_types, only : pio_internal_error, pio_rearr_opt_t
+    use iso_c_binding
+
     integer(i4), intent(in) :: comp_rank
     integer(i4), intent(in) :: comp_comm
     integer(i4), intent(in) :: num_iotasks
@@ -854,17 +857,21 @@ contains
     integer(i4), intent(in) :: rearr
     type (iosystem_desc_t), intent(out)  :: iosystem  ! io descriptor to initalize
     integer(i4), intent(in),optional :: base
+    type (pio_rearr_opt_t), intent(in), optional :: rearr_opts
+
     integer :: lbase
     integer :: ierr
     interface
-       integer(c_int) function PIOc_Init_Intracomm_from_F90(f90_comp_comm, num_iotasks, stride,base,rearr,iosysidp) &
+       integer(c_int) function PIOc_Init_Intracomm_from_F90(f90_comp_comm, num_iotasks, stride,base,rearr,rearr_opts,iosysidp) &
             bind(C,name="PIOc_Init_Intracomm_from_F90")
          use iso_c_binding
+         use pio_types
          integer(C_INT), value :: f90_comp_comm
          integer(C_INT), value :: num_iotasks
          integer(C_INT), value :: stride
          integer(C_INT), value :: base
          integer(C_INT), value :: rearr
+          type(pio_rearr_opt_t) :: rearr_opts
          integer(C_INT) :: iosysidp
        end function PIOc_Init_Intracomm_from_F90
     end interface
@@ -874,7 +881,7 @@ contains
 #endif
     lbase=0
     if(present(base)) lbase=base
-    ierr = PIOc_Init_Intracomm_from_F90(comp_comm,num_iotasks,stride,lbase,rearr,iosystem%iosysid)
+    ierr = PIOc_Init_Intracomm_from_F90(comp_comm,num_iotasks,stride,lbase,rearr,rearr_opts,iosystem%iosysid)
 
     call CheckMPIReturn("Bad Initialization in PIO_Init_Intracomm:  ", ierr,__FILE__,__LINE__)
 #ifdef TIMING
@@ -1481,6 +1488,64 @@ contains
     ierr = PIOc_deletefile(ios%iosysid, trim(fname)//C_NULL_CHAR)
 
   end subroutine pio_deletefile
+
+!>
+!! @public
+!! @ingroup PIO_set_rearr_opts
+!! @brief Set the rerranger options
+!! @details
+!! @param ios : handle to pio iosystem
+!! @param comm_type : @copydoc PIO_rearr_comm_t
+!! @param fcd : @copydoc PIO_rearr_comm_dir
+!! @param enable_hs_c2i : Enable handshake (compute procs to io procs)
+!! @param enable_isend_c2i : Enable isends (compute procs to io procs)
+!! @param max_pend_req_c2i: Maximum pending requests (compute procs to io procs)
+!! @param enable_hs_i2c : Enable handshake (io procs to compute procs)
+!! @param enable_isend_i2c : Enable isends (io procs to compute procs)
+!! @param max_pend_req_i2c: Maximum pending requests (io procs to compute procs)
+!! @copydoc PIO_rearr_comm_fc_options
+!<
+  function pio_set_rearr_opts(ios, comm_type, fcd,&
+                              enable_hs_c2i, enable_isend_c2i,&
+                              max_pend_req_c2i,&
+                              enable_hs_i2c, enable_isend_i2c,&
+                              max_pend_req_i2c) result(ierr)
+
+    type(iosystem_desc_t), intent(inout) :: ios
+    integer, intent(in) :: comm_type, fcd
+    logical, intent(in) :: enable_hs_c2i, enable_hs_i2c
+    logical, intent(in) :: enable_isend_c2i, enable_isend_i2c
+    integer, intent(in) :: max_pend_req_c2i, max_pend_req_i2c
+    integer :: ierr
+    interface
+      integer(c_int) function PIOc_set_rearr_opts(iosysid, comm_type, fcd,&
+                                                  enable_hs_c2i, enable_isend_c2i,&
+                                                  max_pend_req_c2i,&
+                                                  enable_hs_i2c, enable_isend_i2c,&
+                                                  max_pend_req_i2c)&
+        bind(C,name="PIOc_set_rearr_opts")
+        use iso_c_binding
+        integer(C_INT), intent(in), value :: iosysid
+        integer(C_INT), intent(in), value :: comm_type
+        integer(C_INT), intent(in), value :: fcd
+        logical(C_BOOL), intent(in), value :: enable_hs_c2i
+        logical(C_BOOL), intent(in), value :: enable_isend_c2i
+        integer(C_INT), intent(in), value :: max_pend_req_c2i
+        logical(C_BOOL), intent(in), value :: enable_hs_i2c
+        logical(C_BOOL), intent(in), value :: enable_isend_i2c
+        integer(C_INT), intent(in), value :: max_pend_req_i2c
+      end function PIOc_set_rearr_opts
+    end interface
+
+    ierr = PIOc_set_rearr_opts(ios%iosysid, comm_type, fcd,&
+                                logical(enable_hs_c2i, kind=c_bool),&
+                                logical(enable_isend_c2i, kind=c_bool),&
+                                max_pend_req_c2i,&
+                                logical(enable_hs_i2c, kind=c_bool),&
+                                logical(enable_isend_i2c, kind=c_bool),&
+                                max_pend_req_i2c)
+
+  end function pio_set_rearr_opts
 
 
 end module piolib_mod

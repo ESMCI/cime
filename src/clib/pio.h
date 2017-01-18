@@ -98,6 +98,70 @@ typedef struct io_region
 } io_region;
 
 /**
+ * Note: The rearranger option values must match the definitions
+ * in the fortran interface
+ */
+/**
+ * Rearranger comm type
+ */
+enum PIO_REARR_COMM_TYPE
+{
+    /** Point to point */
+    PIO_REARR_COMM_P2P = (0),
+    /** Collective */
+    PIO_REARR_COMM_COLL
+};
+
+/**
+ * Rearranger comm flow control direction
+ */
+enum PIO_REARR_COMM_FC_DIR
+{
+    /** Comp procs to io procs and vice versa */
+    PIO_REARR_COMM_FC_2D_ENABLE = (0),
+    /** Comp procs to io procs only */
+    PIO_REARR_COMM_FC_1D_COMP2IO,
+    /** IO procs to comp procs only */
+    PIO_REARR_COMM_FC_1D_IO2COMP,
+    /** Disable flow control */
+    PIO_REARR_COMM_FC_2D_DISABLE
+};
+
+/**
+ * Rearranger comm flow control options
+ */
+#define PIO_REARR_COMM_UNLIMITED_PEND_REQ -1
+typedef struct rearr_comm_fc_opt{
+    /* FIXME: Is _Bool instead of bool required here? */
+    /** Enable handshake */
+    bool enable_hs;
+    /** Enable isends  - if false use blocking sends */
+    bool enable_isend;
+    /** Max pending requests
+      * (PIO_REARR_COMM_UNLIMITED_PEND_REQ => unlimited pend req)
+      */
+    /** This is the number of messages allowed to be in flight at one
+     * time. On some systems posting all messages at once creates a
+     * significant bottleneck in communications and throttling in this
+     * manner improves overall performance. */
+    int max_pend_req;
+} rearr_comm_fc_opt_t;
+
+/**
+ * Rearranger options
+ */
+typedef struct rearr_opt{
+    /** Comm type - see PIO_REARR_COMM_TYPE */
+    int comm_type;
+    /** Comm flow control dir - see PIO_REARR_COMM_FC_DIR */
+    int fcd;
+    /** flow control opts, comp to io procs */
+    rearr_comm_fc_opt_t comm_fc_opts_comp2io;
+    /** flow control opts, io to comp procs */
+    rearr_comm_fc_opt_t comm_fc_opts_io2comp;
+} rearr_opt_t;
+
+/**
  * IO descriptor structure.
  *
  * This structure defines the mapping for a given variable between
@@ -195,19 +259,10 @@ typedef struct io_desc_t
     /** Used when writing fill data. */
     io_region *fillregion;
 
-    /** If true, then handshaking will be used in pio_swapm() calls
-     * (which add flow control to MPI_Alltoallw). */
-    bool handshake;
-
-    /** If true, use non-blocking ready send, otherwise use blocking
-     * send in pio_swapm(). */
-    bool isend;
-
-    /** This is the number of messages allowed to be in flight at one
-     * time. On some systems posting all messages at once creates a
-     * significant bottleneck in communications and throttling in this
-     * manner improves overall performance. */
-    int max_requests;
+    /** Rearranger flow control options
+     *  (handshake, non-blocking sends, pending requests)
+     */
+    rearr_opt_t rearr_opts;
 
     /** In the subset communicator each io task is associated with a
      * unique group of comp tasks this is the communicator for that
@@ -313,6 +368,9 @@ typedef struct iosystem_desc_t
 
     /** Index of this component in the list of components. */
     int comp_idx;
+
+    /** Rearranger options. */
+    rearr_opt_t rearr_opts;
 
     /** Pointer to the next iosystem_desc_t in the list. */
     struct iosystem_desc_t *next;
@@ -608,7 +666,11 @@ extern "C" {
     int PIOc_iotask_rank(int iosysid, int *iorank);
     int PIOc_iosystem_is_active(int iosysid, bool *active);
     int PIOc_iotype_available(int iotype);
-
+    int PIOc_set_rearr_opts(int iosysid, int comm_type, int fcd,
+                        bool enable_hs_c2i, bool enable_isend_c2i,
+                        int max_pend_req_c2i,
+                        bool enable_hs_i2c, bool enable_isend_i2c,
+                        int max_pend_req_i2c);
     /* Distributed data. */
     int PIOc_advanceframe(int ncid, int varid);
     int PIOc_setframe(int ncid, int varid, int frame);
