@@ -83,13 +83,19 @@ int check_file(int iosysid, int format, char *filename, int my_rank)
     /* Try to read the data. */
     PIO_Offset start[NDIM] = {0}, count[NDIM] = {DIM_LEN};
     int data_in[DIM_LEN];
-    if ((ret = PIOc_get_vars_tc(ncid, 0, start, count, NULL, NC_INT, data_in)))
-        ERR(ret);
-    for (int i = 0; i < DIM_LEN; i++)
+    /* Check with various combinations of start/count */
+    for (int start_index = 0; start_index < DIM_LEN; start_index++)
     {
-	printf("%d test_intercomm2 read data_in[%d] = %d\n", my_rank, i, data_in[i]);
-        if (data_in[i] != i)
-            ERR(ERR_AWFUL);
+        start[0] = start_index;
+        count[0] = DIM_LEN - start_index;
+        if ((ret = PIOc_get_vars_tc(ncid, 0, start, count, NULL, NC_INT, data_in)))
+            ERR(ret);
+        for (int i = 0; i < count[0]; i++)
+        {
+            printf("%d test_intercomm2 read data_in[%d] = %d, start_index = %d\n", my_rank, i, data_in[i], start_index);
+            if (data_in[i] != (i + start_index))
+                ERR(ERR_AWFUL);
+        }
     }
 
     /* Find the number of dimensions, variables, and global attributes.*/
