@@ -8,6 +8,27 @@
 #include <pio_internal.h>
 
 /**
+ * Internal library util function to initialize rearranger options.
+ *
+ * @param iosys pointer to iosystem descriptor
+ */
+void init_rearr_opts(iosystem_desc_t *iosys)
+{
+    /* The old default for max pending requests was 64 - we no longer use it*/
+
+    /* Disable handshake /isend and set max_pend_req = 0 to turn of throttling */
+    const rearr_comm_fc_opt_t def_coll_comm_fc_opts = { false, false, 0 };
+
+    assert(iosys);
+    
+    /* Default to coll - i.e., no flow control */
+    iosys->rearr_opts.comm_type = PIO_REARR_COMM_COLL;
+    iosys->rearr_opts.fcd = PIO_REARR_COMM_FC_2D_DISABLE;
+    iosys->rearr_opts.comm_fc_opts_comp2io = def_coll_comm_fc_opts;
+    iosys->rearr_opts.comm_fc_opts_io2comp = def_coll_comm_fc_opts;
+}
+
+/**
  * Convert an index into a list of dimensions. E.g., for index 4 into a
  * array defined as a[3][2], will return 1 1.
  *

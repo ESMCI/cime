@@ -144,6 +144,9 @@ extern "C" {
     void PIO_Offset_size(MPI_Datatype *dtype, int *tsize);
     PIO_Offset GCDblocksize(int arrlen, const PIO_Offset *arr_in);
 
+    /* Initialize the rearranger options. */
+    void init_rearr_opts(iosystem_desc_t *iosys);
+
     /* Create a subset rearranger. */
     int subset_rearrange_create(iosystem_desc_t ios, int maplen, PIO_Offset *compmap, const int *gsize,
                                 int ndim, io_desc_t *iodesc);
