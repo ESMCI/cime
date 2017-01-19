@@ -909,6 +909,12 @@ int test_deletefile(int iosysid, int num_flavors, int *flavor, int my_rank)
         char iotype_name[PIO_MAX_NAME + 1];
         int old_method;
 
+        /* These should fail. */
+        if (PIOc_set_iosystem_error_handling(iosysid + 42, PIO_RETURN_ERROR, &old_method) != PIO_EBADID)
+            return ERR_WRONG;
+        if (PIOc_set_iosystem_error_handling(iosysid, PIO_RETURN_ERROR + 42, &old_method) != PIO_EINVAL)
+            return ERR_WRONG;
+        
         /* Set error handling. */
         if ((ret = PIOc_set_iosystem_error_handling(iosysid, PIO_RETURN_ERROR, &old_method)))
             return ret;

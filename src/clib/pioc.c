@@ -329,7 +329,7 @@ int PIOc_InitDecomp(int iosysid, int basetype, int ndims, const int *dims, int m
 
     /* Allocate space for the iodesc info. */
     if (!(iodesc = malloc_iodesc(ios, basetype, ndims)))
-	piodie("Out of memory", __FILE__, __LINE__);
+        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
     /* Remember the maplen. */
     iodesc->maplen = maplen;
@@ -441,8 +441,8 @@ int PIOc_InitDecomp(int iosysid, int basetype, int ndims, const int *dims, int m
  * @returns 0 for success, error code otherwise
  * @ingroup PIO_initdecomp
  */
-int PIOc_InitDecomp_bc(const int iosysid, const int basetype, const int ndims, const int dims[],
-                       const long int start[], const long int count[], int *ioidp)
+int PIOc_InitDecomp_bc(int iosysid, int basetype, int ndims, const int *dims,
+                       const long int *start, const long int *count, int *ioidp)
 
 {
     iosystem_desc_t *ios;
@@ -452,10 +452,10 @@ int PIOc_InitDecomp_bc(const int iosysid, const int basetype, const int ndims, c
     for (int i = 0; i < ndims; i++)
     {
         if (dims[i] <= 0)
-            piodie("Invalid dims argument",__FILE__,__LINE__);
+            return pio_err(NULL, NULL, PIO_EINVAL, __FILE__, __LINE__);
 
         if (start[i] < 0 || count[i] < 0 || (start[i] + count[i]) > dims[i])
-            piodie("Invalid start or count argument ",__FILE__,__LINE__);
+            return pio_err(NULL, NULL, PIO_EINVAL, __FILE__, __LINE__);
     }
 
     /* Get the info about the io system. */
