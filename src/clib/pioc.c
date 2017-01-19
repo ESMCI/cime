@@ -325,7 +325,7 @@ int PIOc_InitDecomp(int iosysid, int basetype, int ndims, const int *dims, int m
     /* Check the dim lengths. */
     for (int i = 0; i < ndims; i++)
         if (dims[i] <= 0)
-            return pio_err(NULL, NULL, PIO_EINVAL, __FILE__, __LINE__);
+            return pio_err(ios, NULL, PIO_EINVAL, __FILE__, __LINE__);
 
     /* Allocate space for the iodesc info. */
     if (!(iodesc = malloc_iodesc(ios, basetype, ndims)))
