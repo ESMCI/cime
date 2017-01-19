@@ -73,6 +73,11 @@ int check_file(int iosysid, int format, char *filename, int my_rank)
     short short_att_data;
     float float_att_data;
     double double_att_data;
+    char too_long_name[PIO_MAX_NAME * 5 + 1];
+
+    /* Create a name that is too long. */
+    memset(too_long_name, 74, PIO_MAX_NAME * 5);
+    too_long_name[PIO_MAX_NAME * 5] = 0;
 
     /* Re-open the file to check it. */
     printf("%d test_intercomm2 opening file %s format %d\n", my_rank, filename, format);
@@ -149,6 +154,12 @@ int check_file(int iosysid, int format, char *filename, int my_rank)
     if (dimid2 != 0)
         ERR(ERR_WRONG);
 
+    /* These should not work. */
+    if (PIOc_inq_dimid(ncid + 42, DIM_NAME, &dimid2) != PIO_EBADID)
+        ERR(ERR_WRONG);
+    if (PIOc_inq_dimid(ncid, too_long_name, &dimid2) != PIO_EINVAL)
+        ERR(ERR_WRONG);
+
     /* Check out the variable. */
     if ((ret = PIOc_inq_var(ncid, 0, varname, &vartype, &varndims, &vardimids, &varnatts)))
         ERR(ret);
@@ -182,6 +193,14 @@ int check_file(int iosysid, int format, char *filename, int my_rank)
     if (varid2 != 0)
         ERR(ERR_WRONG);
 
+    /* These should not work. */
+    if (PIOc_inq_varid(ncid + 42, VAR_NAME, &varid2) != PIO_EBADID)
+        ERR(ERR_WRONG);
+    if (PIOc_inq_varid(ncid, NULL, &varid2) != PIO_EINVAL)
+        ERR(ERR_WRONG);
+    if (PIOc_inq_varid(ncid, too_long_name, &varid2) != PIO_EINVAL)
+        ERR(ERR_WRONG);
+
     /* Check out the global attributes. */
     nc_type atttype;
     PIO_Offset attlen;
@@ -201,6 +220,8 @@ int check_file(int iosysid, int format, char *filename, int my_rank)
         ERR(ERR_WRONG);
     if ((ret = PIOc_inq_attid(ncid, NC_GLOBAL, ATT_NAME, &myid)))
         ERR(ret);
+    if (PIOc_inq_attid(ncid + 42, NC_GLOBAL, ATT_NAME, &myid) != PIO_EBADID)
+        ERR(ERR_WRONG);
     if (myid != 0)
         ERR(ERR_WRONG);
     if ((ret = PIOc_get_att_int(ncid, NC_GLOBAL, ATT_NAME, &att_data)))
@@ -225,6 +246,19 @@ int check_file(int iosysid, int format, char *filename, int my_rank)
     if (double_att_data != ATT_VALUE)
         ERR(ERR_WRONG);
 
+    /* These should not work. */
+    if (PIOc_inq_att(ncid + 42, NC_GLOBAL, ATT_NAME, &atttype, &attlen) != PIO_EBADID)
+        ERR(ERR_WRONG);
+    if (PIOc_inq_att(ncid + 42, NC_GLOBAL, NULL, &atttype, &attlen) != PIO_EBADID)
+        ERR(ERR_WRONG);
+    if (PIOc_inq_att(ncid + 42, NC_GLOBAL, too_long_name, &atttype, &attlen) != PIO_EBADID)
+        ERR(ERR_WRONG);
+    if (PIOc_get_att(ncid + 42, NC_GLOBAL, ATT_NAME, &att_data) != PIO_EBADID)
+        ERR(ERR_WRONG);
+    if (PIOc_get_att(ncid, NC_GLOBAL, NULL, &att_data) != PIO_EINVAL)
+        ERR(ERR_WRONG);
+    if (PIOc_get_att(ncid, NC_GLOBAL, too_long_name, &att_data) != PIO_EINVAL)
+        ERR(ERR_WRONG);
 
     /* Close the file. */
     printf("%d test_intercomm2 closing file (again) ncid = %d\n", my_rank, ncid);
@@ -257,6 +291,12 @@ int main(int argc, char **argv)
 
     MPI_Comm test_comm;
 
+    char too_long_name[PIO_MAX_NAME * 5 + 1];
+
+    /* Create a name that is too long. */
+    memset(too_long_name, 74, PIO_MAX_NAME * 5);
+    too_long_name[PIO_MAX_NAME * 5] = 0;
+    
     if ((ret = pio_test_init(argc, argv, &my_rank, &ntasks, TARGET_NTASKS, &test_comm)))
         ERR(ERR_INIT);
 
@@ -294,8 +334,6 @@ int main(int argc, char **argv)
 	printf("%d: test_intercomm2 ParallelIO Library test_intercomm2 comp task returned.\n",
 	       my_rank);
 
-
-
         /* All the netCDF calls are only executed on the computation
          * tasks. The IO tasks have not returned from PIOc_Init_Intercomm,
          * and when the do, they should go straight to finalize. */
@@ -326,6 +364,8 @@ int main(int argc, char **argv)
 
                 /* Test the inq_format function. */
                 int myformat;
+                if (PIOc_inq_format(ncid + 42, &myformat) != PIO_EBADID)
+                    ERR(ERR_WRONG);
                 if ((ret = PIOc_inq_format(ncid, &myformat)))
                     ERR(ret);
                 if ((flavor[fmt] == PIO_IOTYPE_PNETCDF || flavor[fmt] == PIO_IOTYPE_NETCDF) &&
@@ -342,6 +382,12 @@ int main(int argc, char **argv)
                                             NC_UBYTE, NC_USHORT, NC_UINT, NC_INT64, NC_UINT64};
                 int type_len[NUM_TYPES] = {1, 1, 2, 4, 4, 8, 1, 2, 4, 8, 8};
                 int max_type = flavor[fmt] == PIO_IOTYPE_NETCDF ? NC_DOUBLE : NC_UINT64;
+
+                /* This should not work. */
+                if (PIOc_inq_type(ncid + 42, xtype[0], type_name, &type_size) != PIO_EBADID)
+                    ERR(ERR_WRONG);
+
+                /* These should work. */
                 for (int i = 0; i < max_type; i++)
                 {
                     if ((ret = PIOc_inq_type(ncid, xtype[i], type_name, &type_size)))
@@ -362,6 +408,14 @@ int main(int argc, char **argv)
                 if ((ret = PIOc_rename_dim(ncid, 0, DIM_NAME)))
                     ERR(ret);
 
+                /* These should not work. */
+                if (PIOc_rename_dim(ncid + 42, 0, DIM_NAME) != PIO_EBADID)
+                    ERR(ERR_WRONG);
+                if (PIOc_rename_dim(ncid, 0, NULL) != PIO_EINVAL)
+                    ERR(ERR_WRONG);
+                if (PIOc_rename_dim(ncid, 0, too_long_name) != PIO_EINVAL)
+                    ERR(ERR_WRONG);
+
                 /* Define a 1-D variable. */
                 char varname2[NC_MAX_NAME + 1];
 		printf("%d test_intercomm2 defining variable %s\n", my_rank, VAR_NAME);
@@ -374,6 +428,14 @@ int main(int argc, char **argv)
                 if ((ret = PIOc_rename_var(ncid, 0, VAR_NAME)))
                     ERR(ret);
 
+                /* These should not work. */
+                if (PIOc_rename_var(ncid + 42, 0, VAR_NAME) != PIO_EBADID)
+                    ERR(ERR_WRONG);
+                if (PIOc_rename_var(ncid, 0, NULL) != PIO_EINVAL)
+                    ERR(ERR_WRONG);
+                if (PIOc_rename_var(ncid, 0, too_long_name) != PIO_EINVAL)
+                    ERR(ERR_WRONG);
+
                 /* Add a global attribute. */
 		printf("%d test_intercomm2 writing attributes %s\n", my_rank, ATT_NAME);
                 int att_data = ATT_VALUE;
@@ -381,6 +443,7 @@ int main(int argc, char **argv)
                 float float_att_data = ATT_VALUE;
                 double double_att_data = ATT_VALUE;
                 char attname2[NC_MAX_NAME + 1];
+
                 /* Write an att and rename it. */
                 if ((ret = PIOc_put_att_int(ncid, NC_GLOBAL, FIRST_ATT_NAME, NC_INT, 1, &att_data)))
                     ERR(ret);
@@ -390,6 +453,22 @@ int main(int argc, char **argv)
                     ERR(ERR_WRONG);
                 if ((ret = PIOc_rename_att(ncid, NC_GLOBAL, FIRST_ATT_NAME, ATT_NAME)))
                     ERR(ret);
+
+                /* These should not work. */
+                if (PIOc_inq_attname(ncid + 42, NC_GLOBAL, 0, attname2) != PIO_EBADID)
+                    ERR(ERR_WRONG);
+                if (PIOc_rename_att(ncid + 42, NC_GLOBAL, FIRST_ATT_NAME, ATT_NAME) != PIO_EBADID)
+                    ERR(ERR_WRONG);
+                if (PIOc_rename_att(ncid, NC_GLOBAL, FIRST_ATT_NAME, NULL) != PIO_EINVAL)
+                    ERR(ERR_WRONG);
+                if (PIOc_rename_att(ncid, NC_GLOBAL, FIRST_ATT_NAME, too_long_name) != PIO_EINVAL)
+                    ERR(ERR_WRONG);
+                if (PIOc_del_att(ncid + 42, NC_GLOBAL, FIRST_ATT_NAME) != PIO_EBADID)
+                    ERR(ERR_WRONG);
+                if (PIOc_del_att(ncid, NC_GLOBAL, NULL) != PIO_EINVAL)
+                    ERR(ERR_WRONG);
+                if (PIOc_del_att(ncid, NC_GLOBAL, too_long_name) != PIO_EINVAL)
+                    ERR(ERR_WRONG);
 
                 /* Write an att and delete it. */
                 if ((ret = PIOc_put_att_int(ncid, NC_GLOBAL, FIRST_ATT_NAME, NC_INT, 1, &att_data)))

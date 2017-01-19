@@ -329,7 +329,7 @@ int PIOc_InitDecomp(int iosysid, int basetype, int ndims, const int *dims, int m
 
     /* Allocate space for the iodesc info. */
     if (!(iodesc = malloc_iodesc(ios, basetype, ndims)))
-	piodie("Out of memory", __FILE__, __LINE__);
+        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
     /* Remember the maplen. */
     iodesc->maplen = maplen;
@@ -441,8 +441,8 @@ int PIOc_InitDecomp(int iosysid, int basetype, int ndims, const int *dims, int m
  * @returns 0 for success, error code otherwise
  * @ingroup PIO_initdecomp
  */
-int PIOc_InitDecomp_bc(const int iosysid, const int basetype, const int ndims, const int dims[],
-                       const long int start[], const long int count[], int *ioidp)
+int PIOc_InitDecomp_bc(int iosysid, int basetype, int ndims, const int *dims,
+                       const long int *start, const long int *count, int *ioidp)
 
 {
     iosystem_desc_t *ios;
@@ -452,10 +452,10 @@ int PIOc_InitDecomp_bc(const int iosysid, const int basetype, const int ndims, c
     for (int i = 0; i < ndims; i++)
     {
         if (dims[i] <= 0)
-            piodie("Invalid dims argument",__FILE__,__LINE__);
+            return pio_err(NULL, NULL, PIO_EINVAL, __FILE__, __LINE__);
 
         if (start[i] < 0 || count[i] < 0 || (start[i] + count[i]) > dims[i])
-            piodie("Invalid start or count argument ",__FILE__,__LINE__);
+            return pio_err(NULL, NULL, PIO_EINVAL, __FILE__, __LINE__);
     }
 
     /* Get the info about the io system. */
@@ -493,26 +493,6 @@ int PIOc_InitDecomp_bc(const int iosysid, const int basetype, const int ndims, c
                      maplen,  compmap, ioidp, &rearr, NULL, NULL);
 
     return PIO_NOERR;
-}
-
-/**
- * Internal library util function to initialize rearranger options
- * @param iosys pointer to iosystem descriptor
- */
-
-static void init_rearr_opts(iosystem_desc_t *iosys)
-{
-    /* The old default for max pending requests - we no longer use it*/
-    const int DEF_P2P_MAXREQ = 64;
-    /* Disable handshake /isend and set max_pend_req = 0 to turn of throttling */
-    const rearr_comm_fc_opt_t def_coll_comm_fc_opts = { false, false, 0 };
-
-    assert(iosys != NULL);
-    /* Default to coll - i.e., no flow control */
-    iosys->rearr_opts.comm_type = PIO_REARR_COMM_COLL;
-    iosys->rearr_opts.fcd = PIO_REARR_COMM_FC_2D_DISABLE;
-    iosys->rearr_opts.comm_fc_opts_comp2io = def_coll_comm_fc_opts;
-    iosys->rearr_opts.comm_fc_opts_io2comp = def_coll_comm_fc_opts;
 }
 
 /**
@@ -568,6 +548,8 @@ int PIOc_Init_Intracomm(MPI_Comm comp_comm, int num_iotasks, int stride, int bas
     ios->default_rearranger = rearr;
     ios->num_iotasks = num_iotasks;
     ios->num_comptasks = num_comptasks;
+
+    /* Initialize the rearranger options. */
     init_rearr_opts(ios);
 
     /* Copy the computation communicator into union_comm. */
@@ -708,13 +690,25 @@ int PIOc_set_hint(int iosysid, const char *hint, const char *hintval)
     iosystem_desc_t *ios;
     int mpierr; /* Return value for MPI calls. */
 
+    /* Get the iosysid. */
     if (!(ios = pio_get_iosystem_from_id(iosysid)))
         return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
 
+    /* User must provide these. */
+    if (!hint || !hintval)
+        return pio_err(ios, NULL, PIO_EINVAL, __FILE__, __LINE__);
+
+    LOG((1, "PIOc_set_hint hint = %s hintval = %s", hint, hintval));
+
+    /* Make sure we have an info object. */
+    if (ios->info == MPI_INFO_NULL)
+        if ((mpierr = MPI_Info_create(&ios->info)))
+            return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);            
+    
     /* Set the MPI hint. */
     if (ios->ioproc)
         if ((mpierr = MPI_Info_set(ios->info, hint, hintval)))
-            return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+            return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
 
     return PIO_NOERR;
 }
@@ -1141,9 +1135,8 @@ int PIOc_Init_Async(MPI_Comm world, int num_io_procs, int *io_proc_list,
             my_iosys->comproot = num_procs_per_comp[0];
             LOG((3, "my_iosys->comproot = %d", my_iosys->comproot));
 
-            /* Create an MPI info object. */
-            if ((ret = MPI_Info_create(&my_iosys->info)))
-                return check_mpi(NULL, ret, __FILE__, __LINE__);
+            /* We are not providing an info object. */
+            my_iosys->info = MPI_INFO_NULL;
         }
 
         /* Create a group for this component. */
