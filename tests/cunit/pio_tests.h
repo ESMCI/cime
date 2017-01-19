@@ -23,6 +23,12 @@
 /** Number of netCDF types. */
 #define NUM_NETCDF_TYPES 12
 
+/* Number of NetCDF classic types. */
+#define NUM_CLASSIC_TYPES 6
+
+/* Number of NetCDF-4 types. */
+#define NUM_NETCDF4_TYPES 12
+
 /* Number of sample files constructed for these tests. */
 #define NUM_SAMPLES 3
 
