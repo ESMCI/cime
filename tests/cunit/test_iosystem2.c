@@ -145,6 +145,10 @@ int main(int argc, char **argv)
         if ((ret = PIOc_Init_Intracomm(newcomm, 2, 1, 0, 1, &iosysid)))
             ERR(ret);
 
+        /* This should fail. */
+        if (PIOc_finalize(iosysid + 42) != PIO_EBADID)
+            ERR(ERR_WRONG);
+
         /* Initialize another PIO system. */
         if ((ret = PIOc_Init_Intracomm(test_comm, 4, 1, 0, 1, &iosysid_world)))
             ERR(ret);

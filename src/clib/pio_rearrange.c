@@ -8,6 +8,27 @@
 #include <pio_internal.h>
 
 /**
+ * Internal library util function to initialize rearranger options.
+ *
+ * @param iosys pointer to iosystem descriptor
+ */
+void init_rearr_opts(iosystem_desc_t *iosys)
+{
+    /* The old default for max pending requests was 64 - we no longer use it*/
+
+    /* Disable handshake /isend and set max_pend_req = 0 to turn of throttling */
+    const rearr_comm_fc_opt_t def_coll_comm_fc_opts = { false, false, 0 };
+
+    assert(iosys);
+    
+    /* Default to coll - i.e., no flow control */
+    iosys->rearr_opts.comm_type = PIO_REARR_COMM_COLL;
+    iosys->rearr_opts.fcd = PIO_REARR_COMM_FC_2D_DISABLE;
+    iosys->rearr_opts.comm_fc_opts_comp2io = def_coll_comm_fc_opts;
+    iosys->rearr_opts.comm_fc_opts_io2comp = def_coll_comm_fc_opts;
+}
+
+/**
  * Convert an index into a list of dimensions. E.g., for index 4 into a
  * array defined as a[3][2], will return 1 1.
  *
@@ -233,7 +254,7 @@ int create_mpi_datatypes(MPI_Datatype basetype, int msgcnt, PIO_Offset dlen,
     for (int j = 0; j < msgcnt; j++)
         numinds += mcount[j];
 
-    pioassert(dlen >= 0,"dlen < 0", __FILE__, __LINE__);
+    pioassert(dlen >= 0, "dlen < 0", __FILE__, __LINE__);
     pioassert(numinds >= 0, "num inds < 0", __FILE__, __LINE__);
 
     if (mindex)
@@ -444,9 +465,8 @@ int compute_counts(iosystem_desc_t ios, io_desc_t *iodesc, int maplen,
     int send_displs[ntasks];
     int recv_counts[ntasks];
     int recv_displs[ntasks];
-    int *recv_buf=NULL;
+    int *recv_buf = NULL;
     int nrecvs;
-    int maxreq = MAX_GATHER_BLOCK_SIZE;
     int ierr;
     int io_comprank;
     int ioindex;
@@ -1119,7 +1139,6 @@ int box_rearrange_create(iosystem_desc_t ios, int maplen, const PIO_Offset *comp
     int rdispls[nprocs];
     MPI_Datatype dtypes[nprocs];
     PIO_Offset iomaplen[nioprocs];
-    int maxreq = MAX_GATHER_BLOCK_SIZE;
     int mpierr; /* Return code from MPI functions. */
     int ret;
 

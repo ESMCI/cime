@@ -85,6 +85,7 @@ int create_decomposition(int ntasks, int my_rank, int iosysid, int dim1_len, int
     PIO_Offset elements_per_pe;     /* Array elements per processing unit. */
     PIO_Offset *compdof;  /* The decomposition mapping. */
     int dim_len[NDIM1] = {dim1_len};
+    int bad_dim_len[NDIM1] = {-50};
     int ret;
 
     /* How many data elements per task? */
@@ -97,6 +98,14 @@ int create_decomposition(int ntasks, int my_rank, int iosysid, int dim1_len, int
     /* Describe the decomposition. This is a 1-based array, so add 1! */
     for (int i = 0; i < elements_per_pe; i++)
         compdof[i] = my_rank * elements_per_pe + i + 1;
+
+    /* These should fail. */
+    if (PIOc_InitDecomp(iosysid + 42, PIO_FLOAT, NDIM1, dim_len, elements_per_pe,
+                        compdof, ioid, NULL, NULL, NULL) != PIO_EBADID)
+        ERR(ERR_WRONG);
+    if (PIOc_InitDecomp(iosysid, PIO_FLOAT, NDIM1, bad_dim_len, elements_per_pe,
+                        compdof, ioid, NULL, NULL, NULL) != PIO_EINVAL)
+        ERR(ERR_WRONG);
 
     /* Create the PIO decomposition for this test. */
     printf("%d Creating decomposition elements_per_pe = %lld\n", my_rank, elements_per_pe);
@@ -900,6 +909,12 @@ int test_deletefile(int iosysid, int num_flavors, int *flavor, int my_rank)
         char iotype_name[PIO_MAX_NAME + 1];
         int old_method;
 
+        /* These should fail. */
+        if (PIOc_set_iosystem_error_handling(iosysid + 42, PIO_RETURN_ERROR, &old_method) != PIO_EBADID)
+            return ERR_WRONG;
+        if (PIOc_set_iosystem_error_handling(iosysid, PIO_RETURN_ERROR + 42, &old_method) != PIO_EINVAL)
+            return ERR_WRONG;
+        
         /* Set error handling. */
         if ((ret = PIOc_set_iosystem_error_handling(iosysid, PIO_RETURN_ERROR, &old_method)))
             return ret;

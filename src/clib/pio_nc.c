@@ -2489,28 +2489,6 @@ int PIOc_put_att_uint(int ncid, int varid, const char *name, nc_type xtype,
 
 /**
  * @ingroup PIO_put_att
- * Write a netCDF attribute array of 8-bit unsigned bytes.
- *
- * This routine is called collectively by all tasks in the communicator
- * ios.union_comm.
- *
- * @param ncid the ncid of the open file, obtained from
- * PIOc_openfile() or PIOc_createfile().
- * @param varid the variable ID.
- * @param name the name of the attribute.
- * @param xtype the nc_type of the attribute.
- * @param len the length of the attribute array.
- * @param op a pointer with the attribute data.
- * @return PIO_NOERR for success, error code otherwise.
- */
-int PIOc_put_att_ubyte(int ncid, int varid, const char *name, nc_type xtype,
-                       PIO_Offset len, const unsigned char *op)
-{
-    return PIOc_put_att_tc(ncid, varid, name, xtype, len, PIO_UBYTE, op);
-}
-
-/**
- * @ingroup PIO_put_att
  * Write a netCDF attribute array of 32-bit floating points.
  *
  * This routine is called collectively by all tasks in the communicator

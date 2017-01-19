@@ -234,6 +234,16 @@ int main(int argc, char **argv)
             if ((ret = PIOc_Init_Intracomm(even_comm, NUM_IO1, STRIDE1, BASE1, REARRANGER, &even_iosysid)))
                 ERR(ret);
 
+            /* These should not work. */
+            if (PIOc_set_hint(even_iosysid + 42, NULL, NULL) != PIO_EBADID)
+                ERR(ERR_WRONG);
+            if (PIOc_set_hint(even_iosysid, NULL, NULL) != PIO_EINVAL)
+                ERR(ERR_WRONG);
+
+            /* Set the hint (which will be ignored). */
+            if ((ret = PIOc_set_hint(even_iosysid, "hint", "hint_value")))
+                ERR(ret);
+
             /* Set the error handler. */
             /*PIOc_Set_IOSystem_Error_Handling(even_iosysid, PIO_BCAST_ERROR);*/
             printf("%d about to set iosystem error hanlder for even\n", my_rank);
