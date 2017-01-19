@@ -142,6 +142,14 @@ module pio_types
 
 !>
 !! @public
+!! @defgroup PIO_error_method error_methods
+!! @details
+!! Use this instead of ios to set error handling for the library.
+!<
+  integer(i4), public, parameter :: PIO_DEFAULT = -1
+
+!>
+!! @public
 !! @defgroup error_return error return codes
 !! @brief : The error return code; ierr != PIO_noerr indicates
 !! an error. (see @ref PIO_seterrorhandling )

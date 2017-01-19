@@ -199,6 +199,7 @@ module piolib_mod
   interface PIO_seterrorhandling
      module procedure seterrorhandlingf
      module procedure seterrorhandlingi
+     module procedure seterrorhandlingg
   end interface
 
 !>
@@ -406,6 +407,35 @@ contains
 
 
   end subroutine seterrorhandlingi
+
+!>
+!! @ingroup PIO_seterrorhandling
+!! @public
+!! @brief set the pio error handling method for the iosystem
+!! @param iosystem : a defined pio system descriptor, see PIO_types
+!! @param method :
+!! @copydoc PIO_error_method
+!<
+  subroutine seterrorhandlingg(global, method, oldmethod)
+    integer, intent(in) :: global
+    integer, intent(in) :: method
+    integer, intent(out), optional :: oldmethod
+
+    interface
+       integer(c_int) function PIOc_Set_IOSystem_Error_Handling(global, method) &
+            bind(C,name="PIOc_Set_IOSystem_Error_Handling")
+         use iso_c_binding
+         integer(c_int), value :: global
+         integer(c_int), value :: method
+       end function PIOc_Set_IOSystem_Error_Handling
+    end interface
+    integer(c_int) ::  loldmethod
+
+    loldmethod = PIOc_Set_IOSystem_Error_Handling(global, method)
+    if(present(oldmethod)) oldmethod = loldmethod
+
+
+  end subroutine seterrorhandlingg
 
 
 !>

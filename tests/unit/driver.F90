@@ -117,7 +117,8 @@ Program pio_unit_test_driver
        PIO_rearr_subset,  & ! rearr
        pio_iosystem, base=1)     ! iosystem
 
-  call PIO_seterrorhandling(pio_iosystem, PIO_BCAST_ERROR)
+  call PIO_seterrorhandling(pio_iosystem, PIO_RETURN_ERROR)
+  call PIO_seterrorhandling(PIO_DEFAULT, PIO_RETURN_ERROR)
 
   fail_cnt = 0
   test_cnt = 0
