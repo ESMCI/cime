@@ -321,7 +321,7 @@ int PIOc_InitDecomp(int iosysid, int basetype, int ndims, const int *dims, int m
     /* Check the dim lengths. */
     for (int i = 0; i < ndims; i++)
         if (dims[i] <= 0)
-            piodie("Invalid dims argument", __FILE__, __LINE__);
+            return pio_err(NULL, NULL, PIO_EINVAL, __FILE__, __LINE__);
 
     /* Get IO system info. */
     if (!(ios = pio_get_iosystem_from_id(iosysid)))
@@ -502,12 +502,13 @@ int PIOc_InitDecomp_bc(const int iosysid, const int basetype, const int ndims, c
 
 static void init_rearr_opts(iosystem_desc_t *iosys)
 {
-    /* The old default for max pending requests - we no longer use it*/
-    const int DEF_P2P_MAXREQ = 64;
+    /* The old default for max pending requests was 64 - we no longer use it*/
+
     /* Disable handshake /isend and set max_pend_req = 0 to turn of throttling */
     const rearr_comm_fc_opt_t def_coll_comm_fc_opts = { false, false, 0 };
 
-    assert(iosys != NULL);
+    assert(iosys);
+    
     /* Default to coll - i.e., no flow control */
     iosys->rearr_opts.comm_type = PIO_REARR_COMM_COLL;
     iosys->rearr_opts.fcd = PIO_REARR_COMM_FC_2D_DISABLE;

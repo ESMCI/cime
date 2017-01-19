@@ -85,6 +85,7 @@ int create_decomposition(int ntasks, int my_rank, int iosysid, int dim1_len, int
     PIO_Offset elements_per_pe;     /* Array elements per processing unit. */
     PIO_Offset *compdof;  /* The decomposition mapping. */
     int dim_len[NDIM1] = {dim1_len};
+    int bad_dim_len[NDIM1] = {-50};
     int ret;
 
     /* How many data elements per task? */
@@ -97,6 +98,14 @@ int create_decomposition(int ntasks, int my_rank, int iosysid, int dim1_len, int
     /* Describe the decomposition. This is a 1-based array, so add 1! */
     for (int i = 0; i < elements_per_pe; i++)
         compdof[i] = my_rank * elements_per_pe + i + 1;
+
+    /* These should fail. */
+    if (PIOc_InitDecomp(iosysid + 42, PIO_FLOAT, NDIM1, dim_len, elements_per_pe,
+                        compdof, ioid, NULL, NULL, NULL) != PIO_EBADID)
+        ERR(ERR_WRONG);
+    if (PIOc_InitDecomp(iosysid, PIO_FLOAT, NDIM1, bad_dim_len, elements_per_pe,
+                        compdof, ioid, NULL, NULL, NULL) != PIO_EINVAL)
+        ERR(ERR_WRONG);
 
     /* Create the PIO decomposition for this test. */
     printf("%d Creating decomposition elements_per_pe = %lld\n", my_rank, elements_per_pe);

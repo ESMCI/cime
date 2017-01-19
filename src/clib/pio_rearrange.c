@@ -233,7 +233,7 @@ int create_mpi_datatypes(MPI_Datatype basetype, int msgcnt, PIO_Offset dlen,
     for (int j = 0; j < msgcnt; j++)
         numinds += mcount[j];
 
-    pioassert(dlen >= 0,"dlen < 0", __FILE__, __LINE__);
+    pioassert(dlen >= 0, "dlen < 0", __FILE__, __LINE__);
     pioassert(numinds >= 0, "num inds < 0", __FILE__, __LINE__);
 
     if (mindex)
@@ -444,9 +444,8 @@ int compute_counts(iosystem_desc_t ios, io_desc_t *iodesc, int maplen,
     int send_displs[ntasks];
     int recv_counts[ntasks];
     int recv_displs[ntasks];
-    int *recv_buf=NULL;
+    int *recv_buf = NULL;
     int nrecvs;
-    int maxreq = MAX_GATHER_BLOCK_SIZE;
     int ierr;
     int io_comprank;
     int ioindex;
@@ -1119,7 +1118,6 @@ int box_rearrange_create(iosystem_desc_t ios, int maplen, const PIO_Offset *comp
     int rdispls[nprocs];
     MPI_Datatype dtypes[nprocs];
     PIO_Offset iomaplen[nioprocs];
-    int maxreq = MAX_GATHER_BLOCK_SIZE;
     int mpierr; /* Return code from MPI functions. */
     int ret;
 
