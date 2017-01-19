@@ -318,14 +318,14 @@ int PIOc_InitDecomp(int iosysid, int basetype, int ndims, const int *dims, int m
     LOG((1, "PIOc_InitDecomp iosysid = %d basetype = %d ndims = %d maplen = %d",
          iosysid, basetype, ndims, maplen));
 
-    /* Check the dim lengths. */
-    for (int i = 0; i < ndims; i++)
-        if (dims[i] <= 0)
-            return pio_err(NULL, NULL, PIO_EINVAL, __FILE__, __LINE__);
-
     /* Get IO system info. */
     if (!(ios = pio_get_iosystem_from_id(iosysid)))
         return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
+
+    /* Check the dim lengths. */
+    for (int i = 0; i < ndims; i++)
+        if (dims[i] <= 0)
+            return pio_err(ios, NULL, PIO_EINVAL, __FILE__, __LINE__);
 
     /* Allocate space for the iodesc info. */
     if (!(iodesc = malloc_iodesc(ios, basetype, ndims)))

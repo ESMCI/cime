@@ -709,7 +709,8 @@ int PIOc_freedecomp(int iosysid, int ioid)
 }
 
 /**
- * Read a decomposition map from a file.
+ * Read a decomposition map from a file. The decomp file is only read
+ * by task 0 in the communicator.
  *
  * @param file the filename
  * @param ndims pointer to an int with the number of dims.
@@ -732,7 +733,7 @@ int PIOc_readmap(const char *file, int *ndims, int **gdims, PIO_Offset *fmaplen,
     int mpierr; /* Return code for MPI calls. */
 
     /* Check inputs. */
-    if (!ndims || !gdims || !fmaplen || !map)
+    if (!file || !ndims || !gdims || !fmaplen || !map)
         return pio_err(NULL, NULL, PIO_EINVAL, __FILE__, __LINE__);
 
     if ((mpierr = MPI_Comm_size(comm, &npes)))
