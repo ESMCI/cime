@@ -137,7 +137,7 @@ ifeq (,$(SHAREDPATH))
   INSTALL_SHAREDPATH = $(EXEROOT)/$(SHAREDPATH)
 endif
 
-include $(CASEROOT)/Macros
+include $(CASEROOT)/Macros.make
 # Decide whether to use a C++ or Fortran linker, based on whether we
 # are using any C++ code and the compiler-dependent CXX_LINKER variable
 ifeq ($(USE_CXX), true)
@@ -185,14 +185,45 @@ ifndef AR
    AR := ar
 endif
 
-ifdef NETCDF_PATH
+ifdef NETCDF_C_PATH
+  ifndef NETCDF_FORTRAN_PATH
+    $(error "NETCDF_C_PATH specified without NETCDF_FORTRAN_PATH")
+  endif
+  NETCDF_SEPARATE:=true
+  ifndef INC_NETCDF_C
+    INC_NETCDF_C:=$(NETCDF_C_PATH)/include
+  endif
+  ifndef INC_NETCDF_FORTRAN
+    INC_NETCDF_FORTRAN:=$(NETCDF_FORTRAN_PATH)/include
+  endif
+  ifndef LIB_NETCDF_C
+    LIB_NETCDF_C:=$(NETCDF_C_PATH)/lib
+  endif
+  ifndef LIB_NETCDF_FORTRAN
+    LIB_NETCDF_FORTRAN:=$(NETCDF_C_PATH)/lib
+  endif
+ else ifdef NETCDF_FORTRAN_PATH
+  $(error "NETCDF_FORTRAN_PATH specified without NETCDF_C_PATH")
+ else ifdef NETCDF_PATH
+  NETCDF_SEPARATE:=false
   ifndef INC_NETCDF
     INC_NETCDF:=$(NETCDF_PATH)/include
   endif
   ifndef LIB_NETCDF
     LIB_NETCDF:=$(NETCDF_PATH)/lib
   endif
+else
+  # No Netcdf is an error unless target is clean or DEP
+  ifneq ($(MAKECMDGOALS), db_files)
+  ifneq ($(MAKECMDGOALS), db_flags)
+  ifeq (,$(findstring clean,$(MAKECMDGOALS)))
+      $(error NETCDF not found: Define NETCDF_PATH or NETCDF_C_PATH and NETCDF_FORTRAN_PATH in config_machines.xml or config_compilers.xml)
+  endif
+  endif
+  endif
 endif
+
+
 ifeq ($(MPILIB),mpi-serial)
   undefine PNETCDF_PATH
 else
@@ -274,15 +305,11 @@ else
   FPPDEFS := $(CPPDEFS)
 endif
 
-
 #===============================================================================
 # Set config args for pio and mct to blank and then enable serial
 #===============================================================================
 ifndef CONFIG_ARGS
   CONFIG_ARGS :=
-endif
-ifeq ($(MPILIB),mpi-serial)
-   CONFIG_ARGS+= --enable-mpiserial
 endif
 ifeq  ($(findstring pio,$(MODEL)),pio)
   CONFIG_ARGS+= --enable-timing
@@ -311,7 +338,7 @@ ifeq ($(strip $(MPILIB)), mpi-serial)
   MPIFC   := $(SFC)
   MPICC   := $(SCC)
   MPICXX  := $(SCXX)
-  CONFIG_ARGS += --enable-mpiserial MCT_PATH=$(SHAREDLIBROOT)/$(SHAREDPATH)/mct/mpi-serial
+  CONFIG_ARGS += MCT_PATH=$(SHAREDLIBROOT)/$(SHAREDPATH)/mct/mpi-serial
 else
   CC  := $(MPICC)
   FC  := $(MPIFC)
@@ -327,8 +354,10 @@ endif
 #===============================================================================
 INCLDIR += -I$(INSTALL_SHAREDPATH)/include -I$(INSTALL_SHAREDPATH)/$(COMP_INTERFACE)/$(ESMFDIR)/$(NINST_VALUE)/include
 
-ifdef INC_NETCDF
+ifeq ($(NETCDF_SEPARATE), false)
   INCLDIR += -I$(INC_NETCDF)
+else ifeq ($(NETCDF_SEPARATE), true)
+  INCLDIR += -I$(INC_NETCDF_C) -I$(INC_NETCDF_FORTRAN)
 endif
 ifdef MOD_NETCDF
   INCLDIR += -I$(MOD_NETCDF)
@@ -355,7 +384,12 @@ ifeq ($(MODEL),driver)
 # nagfor requires the weird "-Wl,-Wl,," syntax.
 # If done in config_compilers.xml, we break MCT.
   ifeq ($(strip $(COMPILER)),nag)
-     SLIBS += -Wl,-Wl,,-rpath=$(NETCDF_PATH)/lib
+     ifeq ($(NETCDF_SEPARATE), false)
+       SLIBS += -Wl,-Wl,,-rpath=$(LIB_NETCDF)
+     else ifeq ($(NETCDF_SEPARATE), true)
+       SLIBS += -Wl,-Wl,,-rpath=$(LIB_NETCDF_C)
+       SLIBS += -Wl,-Wl,,-rpath=$(LIB_NETCDF_FORTRAN)
+     endif
   endif
 else
   ifeq ($(strip $(COMPILER)),nag)
@@ -399,10 +433,18 @@ INCLDIR +=	-I$(INSTALL_SHAREDPATH)/include -I$(CIMEROOT)/share/csm_share/shr \
 CFLAGS+=$(CPPDEFS)
 CXXFLAGS := $(CFLAGS)
 
-CONFIG_ARGS +=  CC="$(SCC)" FC="$(SFC)" MPICC="$(MPICC)" \
+CONFIG_ARGS +=  CC="$(CC)" FC="$(FC)" MPICC="$(MPICC)" \
                 MPIFC="$(MPIFC)" FCFLAGS="$(FFLAGS) $(FREEFLAGS) $(INCLDIR)" \
                 CPPDEFS="$(CPPDEFS)" CFLAGS="$(CFLAGS) -I.. $(INCLDIR)" \
-                NETCDF_PATH=$(NETCDF_PATH) LDFLAGS="$(LDFLAGS)"
+                LDFLAGS="$(LDFLAGS)"
+
+ifeq ($(NETCDF_SEPARATE), false)
+  CONFIG_ARGS += NETCDF_PATH=$(NETCDF_PATH)
+else ifeq ($(NETCDF_SEPARATE), true)
+  # The mct library needs the NetCDF_C library
+  CONFIG_ARGS += NETCDF_PATH=$(NETCDF_C_PATH)
+endif
+
 ifeq ($(COMPILER),nag)
   CONFIG_ARGS += LIBS="$(SLIBS)"
 endif
@@ -417,24 +459,25 @@ COSP_LIBDIR:=$(EXEROOT)/atm/obj/cosp
 endif
 
 ifeq ($(MODEL),cam)
-   # These RRTMG files take an extraordinarily long time to compile with optimization.
-   # Until mods are made to read the data from files, just remove optimization from
-   # their compilation.
+  # These RRTMG files take an extraordinarily long time to compile with optimization.
+  # Until mods are made to read the data from files, just remove optimization from
+  # their compilation.
 rrtmg_lw_k_g.o: rrtmg_lw_k_g.f90
 	$(FC) -c $(FPPFLAGS) $(INCLDIR) $(INCS) $(FREEFLAGS) $(FFLAGS_NOOPT) $<
+
 rrtmg_sw_k_g.o: rrtmg_sw_k_g.f90
 	$(FC) -c $(FPPFLAGS) $(INCLDIR) $(INCS) $(FREEFLAGS) $(FFLAGS_NOOPT) $<
 
 
-ifdef COSP_LIBDIR
-INCLDIR+=-I$(COSP_LIBDIR) -I$(COSP_LIBDIR)/../
-$(COSP_LIBDIR)/libcosp.a: cam_abortutils.o
-	$(MAKE) -C $(COSP_LIBDIR) F90='$(FC)' F90FLAGS='$(INCLDIR) $(INCS) $(FREEFLAGS) $(FFLAGS) $(FC_AUTO_R8)' \
-	F90FLAGS_noauto='$(INCLDIR) $(INCS) $(FREEFLAGS) $(FFLAGS)' \
-	F90FLAGS_fixed='$(INCLDIR) $(INCS) $(FIXEDFLAGS) $(FFLAGS) $(FC_AUTO_R8)'
+  ifdef COSP_LIBDIR
+    INCLDIR+=-I$(COSP_LIBDIR) -I$(COSP_LIBDIR)/../
+    $(COSP_LIBDIR)/libcosp.a: cam_abortutils.o
+    $(MAKE) -C $(COSP_LIBDIR) F90='$(FC)' F90FLAGS='$(INCLDIR) $(INCS) $(FREEFLAGS) $(FFLAGS) $(FC_AUTO_R8)' \
+    F90FLAGS_noauto='$(INCLDIR) $(INCS) $(FREEFLAGS) $(FFLAGS)' \
+    F90FLAGS_fixed='$(INCLDIR) $(INCS) $(FIXEDFLAGS) $(FFLAGS) $(FC_AUTO_R8)'
 
-cospsimulator_intr.o: $(COSP_LIBDIR)/libcosp.a
-endif
+    cospsimulator_intr.o: $(COSP_LIBDIR)/libcosp.a
+  endif
 
 endif
 
@@ -450,8 +493,13 @@ endif
 
 # System libraries (netcdf, mpi, pnetcdf, esmf, trilinos, etc.)
 ifndef SLIBS
-   SLIBS := -L$(LIB_NETCDF) -lnetcdf
+  ifeq ($(NETCDF_SEPARATE), false)
+    SLIBS := -L$(LIB_NETCDF) -lnetcdff -lnetcdf
+  else ifeq ($(NETCDF_SEPARATE), true)
+    SLIBS := -L$(LIB_NETCDF_FORTRAN) -L$(LIB_NETCDF_C) -lnetcdff -lnetcdf
+  endif
 endif
+
 ifdef LIB_PNETCDF
    SLIBS += -L$(LIB_PNETCDF) -lpnetcdf
 endif
@@ -522,7 +570,7 @@ $(SHAREDLIBROOT)/$(SHAREDPATH)/mct/Makefile.conf:
 
 $(SHAREDLIBROOT)/$(SHAREDPATH)/mct/mpi-serial/Makefile.conf:
 	@echo "SHAREDLIBROOT |$(SHAREDLIBROOT)| SHAREDPATH |$(SHAREDPATH)|"; \
-	$(CONFIG_SHELL) $(CIMEROOT)/externals/mct/mpi-serial/configure $(CONFIG_ARGS) --srcdir $(CIMEROOT)/externals/mct
+	$(CONFIG_SHELL) $(CIMEROOT)/externals/mct/mpi-serial/configure $(CONFIG_ARGS) --srcdir $(CIMEROOT)/externals/mct/mpi-serial
 
 ifeq ($(PIO_VERSION),2)
 # This is a pio2 library
@@ -562,10 +610,19 @@ CMAKE_OPTS += -D CMAKE_Fortran_FLAGS:STRING="$(FFLAGS) $(INCLDIR)" \
               -D CMAKE_C_FLAGS:STRING="$(CFLAGS) $(INCLDIR)" \
               -D CMAKE_CXX_FLAGS:STRING="$(CXXFLAGS) $(INCLDIR)" \
               -D CMAKE_VERBOSE_MAKEFILE:BOOL=ON \
-              -D NETCDF_DIR:STRING=$(NETCDF_PATH) \
               -D GPTL_PATH:STRING=$(INSTALL_SHAREDPATH) \
               -D PIO_ENABLE_TESTS:BOOL=OFF \
               -D USER_CMAKE_MODULE_PATH:STRING=$(CIMEROOT)/externals/CMake
+
+# Allow for separate installations of the NetCDF C and Fortran libraries
+ifeq ($(NETCDF_SEPARATE), false)
+  CMAKE_OPTS += -D NETCDF_DIR:PATH=$(NETCDF_PATH)
+else ifeq ($(NETCDF_SEPARATE), true)
+  # NETCDF_Fortran_DIR points to the separate
+  # installation of Fortran NetCDF for PIO
+  CMAKE_OPTS += -D NETCDF_DIR:PATH=$(NETCDF_C_PATH) \
+                -D NETCDF_Fortran_DIR:PATH=$(NETCDF_FORTRAN_PATH)
+endif
 
 ifdef PNETCDF_PATH
 	CMAKE_OPTS += -D PNETCDF_DIR:STRING="$(PNETCDF_PATH)"
@@ -659,8 +716,13 @@ db_flags:
 
 test_fc: test_fc.o
 	$(LD) -o $@ test_fc.o $(LDFLAGS)
+ifeq ($(NETCDF_SEPARATE), false)
 test_nc: test_nc.o
-	$(LD) -o $@ test_nc.o -L$(LIB_NETCDF) -lnetcdf $(LDFLAGS)
+	$(LD) -o $@ test_nc.o -L$(LIB_NETCDF) -lnetcdff -lnetcdf $(LDFLAGS)
+else ifeq ($(NETCDF_SEPARATE), true)
+test_nc: test_nc.o
+	$(LD) -o $@ test_nc.o -L$(LIB_NETCDF_FORTRAN) -L$(LIB_NETCDF_C) -lnetcdff -lnetcdf $(LDFLAGS)
+endif
 test_mpi: test_mpi.o
 	$(LD) -o $@ test_mpi.o $(LDFLAGS)
 test_esmf: test_esmf.o
