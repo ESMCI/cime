@@ -59,15 +59,18 @@ int test_decomp1(int iosysid, int my_rank, MPI_Comm test_comm)
     int slice_dimlen[2];
     int bad_slice_dimlen[2];    /* Invalid values. */
     int ndims;
-    int gdims[NDIM];
+    int *gdims;
     PIO_Offset fmaplen;
-    PIO_Offset map[16];
+    PIO_Offset *map;
     int ret;
     
     /* Describe the decomposition. This is a 1-based array, so add 1! */
     slice_dimlen[0] = X_DIM_LEN;
     slice_dimlen[1] = Y_DIM_LEN;
     elements_per_pe = X_DIM_LEN * Y_DIM_LEN / TARGET_NTASKS;
+
+    /* The compdof array contains a mapping for this task into the
+     * global data array. */
     if (!(compdof = malloc(elements_per_pe * sizeof(PIO_Offset))))
         return PIO_ENOMEM;
     for (int i = 0; i < elements_per_pe; i++)
@@ -80,6 +83,15 @@ int test_decomp1(int iosysid, int my_rank, MPI_Comm test_comm)
         return ERR_WRONG;
     if (PIOc_InitDecomp(iosysid, PIO_FLOAT, 2, bad_slice_dimlen, (PIO_Offset)elements_per_pe,
                         compdof, &ioid, NULL, NULL, NULL) != PIO_EINVAL)
+        return ERR_WRONG;
+    if (PIOc_InitDecomp(iosysid, PIO_FLOAT, 2, NULL, (PIO_Offset)elements_per_pe,
+                        compdof, &ioid, NULL, NULL, NULL) != PIO_EINVAL)
+        return ERR_WRONG;
+    if (PIOc_InitDecomp(iosysid, PIO_FLOAT, 2, slice_dimlen, (PIO_Offset)elements_per_pe,
+                        NULL, &ioid, NULL, NULL, NULL) != PIO_EINVAL)
+        return ERR_WRONG;
+    if (PIOc_InitDecomp(iosysid, PIO_FLOAT, 2, slice_dimlen, (PIO_Offset)elements_per_pe,
+                        compdof, NULL, NULL, NULL, NULL) != PIO_EINVAL)
         return ERR_WRONG;
         
     /* Create the PIO decomposition for this test. */
@@ -130,6 +142,9 @@ int test_decomp1(int iosysid, int my_rank, MPI_Comm test_comm)
     {
         printf("map[%d] = %lld\n", m, map[m]);
     }
+
+    free(map);
+    free(gdims);
         
     /* Free the PIO decomposition. */
     printf("%d Freeing PIO decomposition...\n", my_rank);
@@ -155,15 +170,15 @@ int test_decomp_bc(int iosysid, int my_rank, MPI_Comm test_comm)
     long int bad_count[NDIM2] = {-1, 0};
     long int bad_start[NDIM2] = {-1, 0};
     int ndims;
-    int *gdims = NULL;
+    int *gdims;
     PIO_Offset fmaplen;
-    PIO_Offset map[16];
+    PIO_Offset *map;
     int slice_dimlen[NDIM2];
     int ret;
     
     /* Describe the decomposition. This is a 1-based array, so add 1! */
-    start[0] = 0;
-    start[1] = 2;
+    start[0] = my_rank;
+    start[1] = 0;
     count[0] = 1;
     count[1] = 4;
     slice_dimlen[0] = X_DIM_LEN;
@@ -187,34 +202,37 @@ int test_decomp_bc(int iosysid, int my_rank, MPI_Comm test_comm)
         return ERR_WRONG;
         
     /* Create the PIO decomposition for this test. */
-    /* printf("%d Creating decomposition...\n", my_rank); */
-    /* if ((ret = PIOc_InitDecomp_bc(iosysid, PIO_FLOAT, 2, slice_dimlen, start, count, &ioid))) */
-    /*     return ret; */
+    printf("%d Creating decomposition...\n", my_rank);
+    if ((ret = PIOc_InitDecomp_bc(iosysid, PIO_FLOAT, 2, slice_dimlen, start, count, &ioid)))
+        return ret;
 
-    /* /\* Write the decomp file. *\/ */
-    /* if ((ret = PIOc_write_decomp(DECOMP_BC_FILE, iosysid, ioid, test_comm))) */
-    /*     return ret; */
+    /* Write the decomp file. */
+    if ((ret = PIOc_write_decomp(DECOMP_BC_FILE, iosysid, ioid, test_comm)))
+        return ret;
 
-    /* /\* Read the decomp file and check results. *\/ */
-    /* if ((ret = PIOc_readmap(DECOMP_BC_FILE, &ndims, (int **)&gdims, &fmaplen, (PIO_Offset **)&map, */
-    /*                         test_comm))) */
-    /*     return ret; */
-    /* printf("ndims = %d fmaplen = %lld\n", ndims, fmaplen); */
-    /* if (ndims != 2 || fmaplen != 4) */
-    /*     return ERR_WRONG; */
-    /* for (int d = 0; d < ndims; d++) */
-    /* { */
-    /*     printf("gdims[%d] = %d\n", d, gdims[d]); */
-    /* } */
-    /* for (int m = 0; m < fmaplen; m++) */
-    /* { */
-    /*     printf("map[%d] = %lld\n", m, map[m]); */
-    /* } */
+    /* Read the decomp file and check results. */
+    if ((ret = PIOc_readmap(DECOMP_BC_FILE, &ndims, (int **)&gdims, &fmaplen, (PIO_Offset **)&map,
+                            test_comm)))
+        return ret;
+    printf("ndims = %d fmaplen = %lld\n", ndims, fmaplen);
+    if (ndims != 2 || fmaplen != 4)
+        return ERR_WRONG;
+    for (int d = 0; d < ndims; d++)
+    {
+        printf("gdims[%d] = %d\n", d, gdims[d]);
+    }
+    for (int m = 0; m < fmaplen; m++)
+    {
+        printf("map[%d] = %lld\n", m, map[m]);
+    }
+
+    free(map);
+    free(gdims);
         
-    /* /\* Free the PIO decomposition. *\/ */
-    /* printf("%d Freeing PIO decomposition...\n", my_rank); */
-    /* if ((ret = PIOc_freedecomp(iosysid, ioid))) */
-    /*     return ret; */
+    /* Free the PIO decomposition. */
+    printf("%d Freeing PIO decomposition...\n", my_rank);
+    if ((ret = PIOc_freedecomp(iosysid, ioid)))
+        return ret;
         
     return 0;
 }
