@@ -163,15 +163,15 @@ int test_att_conv_byte(int ncid, int flavor, char *name, int *expected, long lon
         for (int x = 0; x < ATT_LEN; x++)
             if (byte_array_in[x] != expected_data[x])
                 return ERR_WRONG;
-    
+
     if (expected[PIO_SHORT] != PIOc_get_att_short(ncid, NC_GLOBAL, name, short_array_in))
         return ERR_WRONG;
-    
+
     if (expected[PIO_SHORT] == 0)
         for (int x = 0; x < ATT_LEN; x++)
             if (short_array_in[x] != expected_data[x])
                 return ERR_WRONG;
-    
+
     if (expected[PIO_INT] != PIOc_get_att_int(ncid, NC_GLOBAL, name, int_array_in))
         return ERR_WRONG;
 
@@ -213,7 +213,7 @@ int test_att_conv_byte(int ncid, int flavor, char *name, int *expected, long lon
             for (int x = 0; x < ATT_LEN; x++)
                 if (ubyte_array_in[x] != expected_data[x])
                     return ERR_WRONG;
-        
+
         if ((expected[PIO_USHORT] != PIOc_get_att_ushort(ncid, NC_GLOBAL, name, ushort_array_in)))
             return ERR_WRONG;
 
@@ -221,7 +221,7 @@ int test_att_conv_byte(int ncid, int flavor, char *name, int *expected, long lon
             for (int x = 0; x < ATT_LEN; x++)
                 if (ushort_array_in[x] != expected_data[x])
                     return ERR_WRONG;
-        
+
         if ((expected[PIO_UINT] != PIOc_get_att_uint(ncid, NC_GLOBAL, name, uint_array_in)))
             return ERR_WRONG;
 
@@ -229,7 +229,7 @@ int test_att_conv_byte(int ncid, int flavor, char *name, int *expected, long lon
             for (int x = 0; x < ATT_LEN; x++)
                 if (uint_array_in[x] != expected_data[x])
                     return ERR_WRONG;
-        
+
         if ((expected[PIO_INT64] != PIOc_get_att_longlong(ncid, NC_GLOBAL, name, int64_array_in)))
             return ERR_WRONG;
 
@@ -237,7 +237,7 @@ int test_att_conv_byte(int ncid, int flavor, char *name, int *expected, long lon
             for (int x = 0; x < ATT_LEN; x++)
                 if (int64_array_in[x] != expected_data[x])
                     return ERR_WRONG;
-        
+
         if ((expected[PIO_UINT64] != PIOc_get_att_ulonglong(ncid, NC_GLOBAL, name, uint64_array_in)))
             return ERR_WRONG;
 
@@ -246,7 +246,7 @@ int test_att_conv_byte(int ncid, int flavor, char *name, int *expected, long lon
                 if (uint64_array_in[x] != expected_data[x])
                     return ERR_WRONG;
     }
-    
+
     return PIO_NOERR;
 }
 
@@ -283,11 +283,11 @@ int test_att_conv_int64(int ncid, int flavor, char *name, int *expected, long lo
             return ERR_WRONG;
         if ((expected[PIO_UINT] != PIOc_get_att_uint(ncid, NC_GLOBAL, name, uint_array_in)))
             return ERR_WRONG;
-        
+
         if ((expected[PIO_INT64] != PIOc_get_att_longlong(ncid, NC_GLOBAL, name, int64_array_in)))
             return ERR_WRONG;
     }
-    
+
     return PIO_NOERR;
 }
 
@@ -357,7 +357,7 @@ int test_atts_byte(int iosysid, int num_flavors, int *flavor, int my_rank,
         long long expected_data[ATT_LEN];
         for (int x = 0; x < ATT_LEN; x++)
             expected_data[x] = byte_array[x][0];
-                 
+
         int schar_expected[NUM_NETCDF_TYPES + 1] = {0, 0, PIO_ERANGE, 0, 0, 0, 0, PIO_ERANGE, PIO_ERANGE, PIO_ERANGE,
                                                     0, PIO_ERANGE, PIO_ERANGE};
         if ((ret = test_att_conv_byte(ncid, flavor[fmt], SCHAR_ATT_NAME, schar_expected, expected_data)))
@@ -373,7 +373,7 @@ int test_atts_byte(int iosysid, int num_flavors, int *flavor, int my_rank,
         if (flavor[fmt] == PIO_IOTYPE_NETCDF4C || flavor[fmt] == PIO_IOTYPE_NETCDF4P)
             if ((ret = test_att_conv_byte(ncid, flavor[fmt], INT64_ATT_NAME, schar_expected, expected_data)))
                 ERR(ret);
-        
+
         /* Close the netCDF file. */
         if ((ret = PIOc_closefile(ncid)))
             ERR(ret);
@@ -396,11 +396,11 @@ int test_atts_byte(int iosysid, int num_flavors, int *flavor, int my_rank,
         if (flavor[fmt] == PIO_IOTYPE_NETCDF4C || flavor[fmt] == PIO_IOTYPE_NETCDF4P)
             if ((ret = test_att_conv_byte(ncid, flavor[fmt], INT64_ATT_NAME, schar_expected, expected_data)))
                 ERR(ret);
-        
+
         /* Close the netCDF file. */
         if ((ret = PIOc_closefile(ncid)))
             ERR(ret);
-        
+
     } /* next flavor */
 
     return PIO_NOERR;
@@ -430,6 +430,10 @@ int test_atts_int64(int iosysid, int num_flavors, int *flavor, int my_rank,
         int ncid;
         int ret;    /* Return code. */
 
+        /* Only do these tests on netCDF-4 files. */
+        if (flavor[fmt] != PIO_IOTYPE_NETCDF4C && flavor[fmt] != PIO_IOTYPE_NETCDF4P)
+            continue;
+
         /* Create test file with dims and vars defined. */
         printf("%d creating test file for flavor = %d...\n", my_rank, flavor[fmt]);
 
@@ -443,28 +447,25 @@ int test_atts_int64(int iosysid, int num_flavors, int *flavor, int my_rank,
             return ret;
 
         if (PIOc_put_att_longlong(ncid, NC_GLOBAL, SCHAR_ATT_NAME, PIO_BYTE, ATT_LEN, (long long *)int64_array) != PIO_ERANGE)
-            return ERR_WRONG;            
+            return ERR_WRONG;
         if (PIOc_put_att_longlong(ncid, NC_GLOBAL, SHORT_ATT_NAME, PIO_SHORT, ATT_LEN, (long long *)int64_array) != PIO_ERANGE)
-            return ERR_WRONG;            
+            return ERR_WRONG;
         if (PIOc_put_att_longlong(ncid, NC_GLOBAL, INT_ATT_NAME, PIO_INT, ATT_LEN, (long long *)int64_array) != PIO_ERANGE)
-            return ERR_WRONG;            
+            return ERR_WRONG;
         if ((ret = PIOc_put_att_longlong(ncid, NC_GLOBAL, FLOAT_ATT_NAME, PIO_FLOAT, ATT_LEN, (long long *)int64_array)))
             return ret;
         if ((ret = PIOc_put_att_longlong(ncid, NC_GLOBAL, DOUBLE_ATT_NAME, PIO_DOUBLE, ATT_LEN, (long long *)int64_array)))
             return ret;
-        if (flavor[fmt] == PIO_IOTYPE_NETCDF4C || flavor[fmt] == PIO_IOTYPE_NETCDF4P)
-        {
-            if (PIOc_put_att_longlong(ncid, NC_GLOBAL, UCHAR_ATT_NAME, PIO_UBYTE, ATT_LEN, (long long *)int64_array) != PIO_ERANGE)
-                return ERR_WRONG;
-            if (PIOc_put_att_longlong(ncid, NC_GLOBAL, USHORT_ATT_NAME, PIO_USHORT, ATT_LEN, (long long *)int64_array) != PIO_ERANGE)
-                return ERR_WRONG;
-            if (PIOc_put_att_longlong(ncid, NC_GLOBAL, UINT_ATT_NAME, PIO_UINT, ATT_LEN, (long long *)int64_array) != PIO_ERANGE)
-                return ERR_WRONG;
-            if ((ret = PIOc_put_att_longlong(ncid, NC_GLOBAL, INT64_ATT_NAME, PIO_INT64, ATT_LEN, (long long *)int64_array)))
-                return ret;
-            if (PIOc_put_att_longlong(ncid, NC_GLOBAL, UINT64_ATT_NAME, PIO_UINT64, ATT_LEN, (long long *)int64_array) != PIO_ERANGE)
-                return ERR_WRONG;
-        }
+        if (PIOc_put_att_longlong(ncid, NC_GLOBAL, UCHAR_ATT_NAME, PIO_UBYTE, ATT_LEN, (long long *)int64_array) != PIO_ERANGE)
+            return ERR_WRONG;
+        if (PIOc_put_att_longlong(ncid, NC_GLOBAL, USHORT_ATT_NAME, PIO_USHORT, ATT_LEN, (long long *)int64_array) != PIO_ERANGE)
+            return ERR_WRONG;
+        if (PIOc_put_att_longlong(ncid, NC_GLOBAL, UINT_ATT_NAME, PIO_UINT, ATT_LEN, (long long *)int64_array) != PIO_ERANGE)
+            return ERR_WRONG;
+        if ((ret = PIOc_put_att_longlong(ncid, NC_GLOBAL, INT64_ATT_NAME, PIO_INT64, ATT_LEN, (long long *)int64_array)))
+            return ret;
+        if (PIOc_put_att_longlong(ncid, NC_GLOBAL, UINT64_ATT_NAME, PIO_UINT64, ATT_LEN, (long long *)int64_array) != PIO_ERANGE)
+            return ERR_WRONG;
         if ((ret = PIOc_enddef(ncid)))
             return ret;
 
@@ -472,23 +473,12 @@ int test_atts_int64(int iosysid, int num_flavors, int *flavor, int my_rank,
         long long expected_data[ATT_LEN];
         for (int x = 0; x < ATT_LEN; x++)
             expected_data[x] = int64_array[x][0];
-                 
+
         int int64_expected[NUM_NETCDF_TYPES + 1] = {0, PIO_ERANGE, PIO_ERANGE, PIO_ERANGE, PIO_ERANGE, 0, 0, 0, 0, 0,
                                                     0, PIO_ERANGE, PIO_ERANGE};
         if ((ret = test_att_conv_int64(ncid, flavor[fmt], SCHAR_ATT_NAME, int64_expected, expected_data)))
             ERR(ret);
-        /* if ((ret = test_att_conv_int64(ncid, flavor[fmt], SHORT_ATT_NAME, schar_expected, expected_data))) */
-        /*     ERR(ret); */
-        /* if ((ret = test_att_conv_int64(ncid, flavor[fmt], INT_ATT_NAME, schar_expected, expected_data))) */
-        /*     ERR(ret); */
-        /* if ((ret = test_att_conv_int64(ncid, flavor[fmt], FLOAT_ATT_NAME, schar_expected, expected_data))) */
-        /*     ERR(ret); */
-        /* if ((ret = test_att_conv_int64(ncid, flavor[fmt], DOUBLE_ATT_NAME, schar_expected, expected_data))) */
-        /*     ERR(ret); */
-        /* if (flavor[fmt] == PIO_IOTYPE_NETCDF4C || flavor[fmt] == PIO_IOTYPE_NETCDF4P) */
-        /*     if ((ret = test_att_conv_int64(ncid, flavor[fmt], INT64_ATT_NAME, schar_expected, expected_data))) */
-        /*         ERR(ret); */
-        
+
         /* Close the netCDF file. */
         if ((ret = PIOc_closefile(ncid)))
             ERR(ret);
@@ -497,25 +487,10 @@ int test_atts_int64(int iosysid, int num_flavors, int *flavor, int my_rank,
         if ((ret = PIOc_openfile(iosysid, &ncid, &(flavor[fmt]), filename, PIO_NOWRITE)))
             ERR(ret);
 
-        /* /\* Test the attribute conversions. *\/ */
-        /* if ((ret = test_att_conv_int64(ncid, flavor[fmt], SCHAR_ATT_NAME, schar_expected, expected_data))) */
-        /*     ERR(ret); */
-        /* if ((ret = test_att_conv_int64(ncid, flavor[fmt], SHORT_ATT_NAME, schar_expected, expected_data))) */
-        /*     ERR(ret); */
-        /* if ((ret = test_att_conv_int64(ncid, flavor[fmt], INT_ATT_NAME, schar_expected, expected_data))) */
-        /*     ERR(ret); */
-        /* if ((ret = test_att_conv_int64(ncid, flavor[fmt], FLOAT_ATT_NAME, schar_expected, expected_data))) */
-        /*     ERR(ret); */
-        /* if ((ret = test_att_conv_int64(ncid, flavor[fmt], DOUBLE_ATT_NAME, schar_expected, expected_data))) */
-        /*     ERR(ret); */
-        /* if (flavor[fmt] == PIO_IOTYPE_NETCDF4C || flavor[fmt] == PIO_IOTYPE_NETCDF4P) */
-        /*     if ((ret = test_att_conv_int64(ncid, flavor[fmt], INT64_ATT_NAME, schar_expected, expected_data))) */
-        /*         ERR(ret); */
-        
         /* Close the netCDF file. */
         if ((ret = PIOc_closefile(ncid)))
             ERR(ret);
-        
+
     } /* next flavor */
 
     return PIO_NOERR;
@@ -602,7 +577,7 @@ int putget_write_var(int ncid, int *varid, int flavor)
 }
 
 /* Use the att functions to write some data to attributes in an open
- * test file. 
+ * test file.
  *
  * @param ncid the ncid of the test file to read.
  * @param varid an array of varids in the file.
@@ -1285,7 +1260,7 @@ int test_putget(int iosysid, int num_flavors, int *flavor, int my_rank,
                 /* Check for bad input handling. */
                 if (PIOc_sync(ncid + 42) != PIO_EBADID)
                     return ret;
-                
+
                 /* Make sure all data are written (pnetcdf needs this). */
                 if ((ret = PIOc_sync(ncid)))
                     return ret;
@@ -1296,7 +1271,7 @@ int test_putget(int iosysid, int num_flavors, int *flavor, int my_rank,
                     /* Use the att functions to read some data. */
                     if ((ret = test_read_att(ncid, varid, flavor[fmt])))
                         return ret;
-                    
+
                     /* Use the vara functions to read some data. */
                     if ((ret = putget_read_var(ncid, varid, unlim, flavor[fmt])))
                         return ret;
@@ -1389,7 +1364,7 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
     printf("%d Testing putget. async = %d\n", my_rank, async);
     if ((ret = test_putget(iosysid, num_flavors, flavor, my_rank, test_comm)))
         return ret;
-    
+
     return PIO_NOERR;
 }
 
