@@ -339,7 +339,7 @@ int main(int argc, char **argv)
          * and when the do, they should go straight to finalize. */
         if (comp_task)
         {
-            for (int fmt = 1; fmt < num_flavors; fmt++)
+            for (int fmt = 0; fmt < num_flavors; fmt++)
             {
                 int ncid, varid, dimid;
                 PIO_Offset start[NDIM], count[NDIM] = {0};
