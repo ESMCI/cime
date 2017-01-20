@@ -634,6 +634,8 @@ extern "C" {
     int PIOc_InitDecomp(int iosysid, int basetype, int ndims, const int *dims, int maplen,
                         const PIO_Offset *compmap, int *ioidp, const int *rearr,
                         const PIO_Offset *iostart, const PIO_Offset *iocount);
+    int PIOc_InitDecomp_bc(int iosysid, int basetype, int ndims, const int *dims,
+                           const long int *start, const long int *count, int *ioidp);
     int PIOc_freedecomp(int iosysid, int ioid);
     int PIOc_readmap(const char *file, int *ndims, int **gdims, PIO_Offset *fmaplen,
 		     PIO_Offset **map, MPI_Comm comm);
