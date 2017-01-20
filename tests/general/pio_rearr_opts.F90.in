@@ -451,9 +451,9 @@ PIO_TF_AUTO_TEST_SUB_BEGIN write_with_rearr_opts
     end do ! cur_rearr
 
     call PIO_deletefile(pio_tf_iosystem_, trim(tgv_fname))
-  end do ! iotypes
 
-  call MPI_Comm_free(dup_comm, ret)
+    call MPI_Comm_free(dup_comm, ret)
+  end do ! iotypes
 
   if(allocated(iotypes)) then
     deallocate(iotypes)
