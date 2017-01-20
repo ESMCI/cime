@@ -202,13 +202,11 @@ int PIOc_Set_IOSystem_Error_Handling(int iosysid, int method)
     int oldmethod;
 
     /* Get the iosystem info. */
-    if (!(ios = pio_get_iosystem_from_id(iosysid)))
-        return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
+    if (iosysid != PIO_DEFAULT)    
+        if (!(ios = pio_get_iosystem_from_id(iosysid)))
+            return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
 
-    /* Remember old method setting. */
-    oldmethod = ios->error_handler;
-
-    /* Set the file error handler. */
+    /* Set the error handler. */
     if (PIOc_set_iosystem_error_handling(iosysid, method, &oldmethod))
         piodie("Could not set the IOSystem error hanlder", __FILE__, __LINE__);
 
