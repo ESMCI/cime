@@ -54,9 +54,9 @@ int main(int argc, char **argv)
     int bad_slice_dimlen[2];    /* Invalid values. */
     int ioid;                   /* The decomposition ID. */
     int ndims;
-    int gdims[NDIM];
+    int *gdims = NULL;
     PIO_Offset fmaplen;
-    PIO_Offset map[16];
+    PIO_Offset *map = NULL;
     int ret;                    /* Return code. */
 
     /* Initialize test. */
@@ -125,23 +125,23 @@ int main(int argc, char **argv)
             return ret;
 
         /* These should not work. */
-        if (PIOc_readmap(NULL, &ndims, (int **)&gdims, &fmaplen, (PIO_Offset **)&map,
+        if (PIOc_readmap(NULL, &ndims, &gdims, &fmaplen, &map,
                          test_comm) != PIO_EINVAL)
             return ERR_WRONG;
-        if (PIOc_readmap(DECOMP_FILE, NULL, (int **)&gdims, &fmaplen, (PIO_Offset **)&map,
+        if (PIOc_readmap(DECOMP_FILE, NULL, &gdims, &fmaplen, &map,
                          test_comm) != PIO_EINVAL)
             return ERR_WRONG;
-        if (PIOc_readmap(DECOMP_FILE, &ndims, NULL, &fmaplen, (PIO_Offset **)&map,
+        if (PIOc_readmap(DECOMP_FILE, &ndims, NULL, &fmaplen, &map,
                          test_comm) != PIO_EINVAL)
             return ERR_WRONG;
-        if (PIOc_readmap(DECOMP_FILE, &ndims, (int **)&gdims, NULL, (PIO_Offset **)&map,
+        if (PIOc_readmap(DECOMP_FILE, &ndims, &gdims, NULL, &map,
                          test_comm) != PIO_EINVAL)
             return ERR_WRONG;
-        if (PIOc_readmap(DECOMP_FILE, &ndims, (int **)&gdims, &fmaplen, NULL, test_comm) != PIO_EINVAL)
+        if (PIOc_readmap(DECOMP_FILE, &ndims, &gdims, &fmaplen, NULL, test_comm) != PIO_EINVAL)
             return ERR_WRONG;
 
         /* Read the decomp file and check results. */
-        if ((ret = PIOc_readmap(DECOMP_FILE, &ndims, (int **)&gdims, &fmaplen, (PIO_Offset **)&map,
+        if ((ret = PIOc_readmap(DECOMP_FILE, &ndims, &gdims, &fmaplen, &map,
                                 test_comm)))
             return ret;
         printf("ndims = %d fmaplen = %lld\n", ndims, fmaplen);
@@ -155,6 +155,10 @@ int main(int argc, char **argv)
         {
             printf("map[%d] = %lld\n", m, map[m]);
         }
+
+        /* Free memory allocated inside PIOc_readmap() */
+        free(gdims);
+        free(map);
         
         /* Free the PIO decomposition. */
         printf("%d Freeing PIO decomposition...\n", my_rank);
