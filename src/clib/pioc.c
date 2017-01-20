@@ -288,7 +288,8 @@ int PIOc_set_iosystem_error_handling(int iosysid, int method, int *old_method)
  *
  * @param iosysid the IO system ID.
  * @param basetype the basic PIO data type used.
- * @param ndims the number of dimensions in the variable.
+ * @param ndims the number of dimensions in the variable, not
+ * including the unlimited dimension.
  * @param dims an array of global size of each dimension.
  * @param maplen the local length of the compmap array.
  * @param compmap a 1 based array of offsets into the array record on
@@ -319,6 +320,10 @@ int PIOc_InitDecomp(int iosysid, int basetype, int ndims, const int *dims, int m
     /* Get IO system info. */
     if (!(ios = pio_get_iosystem_from_id(iosysid)))
         return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
+
+    /* Caller must provide these. */
+    if (!dims || !compmap || !ioidp)
+        return pio_err(ios, NULL, PIO_EINVAL, __FILE__, __LINE__);
 
     /* Check the dim lengths. */
     for (int i = 0; i < ndims; i++)
@@ -426,8 +431,7 @@ int PIOc_InitDecomp(int iosysid, int basetype, int ndims, const int *dims, int m
 /**
  * This is a simplified initdecomp which can be used if the memory
  * order of the data can be expressed in terms of start and count on
- * the file.  In this case we compute the compdof and use the subset
- * rearranger.
+ * the file. In this case we compute the compdof.
  *
  * @param iosysid the IO system ID
  * @param basetype
