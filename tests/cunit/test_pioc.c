@@ -341,6 +341,16 @@ int check_atts(int my_rank, int ncid, int flavor, MPI_Comm test_comm)
     if (strcmp(att_name, zero_att_name))
         return ERR_AWFUL;
 
+    /* These should not work. */
+    if (PIOc_get_att_int(ncid + 42, NC_GLOBAL, ATT_NAME, &att_int_value) != PIO_EBADID)
+        return ERR_WRONG;
+    if (PIOc_get_att_int(ncid, 42, ATT_NAME, &att_int_value) != PIO_ENOTVAR)
+        return ERR_WRONG;
+    if (PIOc_get_att_int(ncid, NC_GLOBAL, NULL, &att_int_value) != PIO_EINVAL)
+        return ERR_WRONG;
+    if (PIOc_get_att_int(ncid, NC_GLOBAL, ATT_NAME, NULL) != PIO_EINVAL)
+        return ERR_WRONG;
+
     /* Check first att. */
     if ((ret = PIOc_inq_att(ncid, NC_GLOBAL, ATT_NAME, &att_type, &att_len)))
         return ret;
@@ -710,8 +720,12 @@ int check_metadata(int ncid, int my_rank)
 int test_names(int iosysid, int num_flavors, int *flavor, int my_rank,
                MPI_Comm test_comm)
 {
+    char too_long_name[PIO_MAX_NAME * 5 + 1];
     int ret;    /* Return code. */
 
+    memset(too_long_name, 74, PIO_MAX_NAME * 5);
+    too_long_name[PIO_MAX_NAME * 5] = 0;
+    
     /* Use PIO to create the example file in each of the four
      * available ways. */
     for (int fmt = 0; fmt < num_flavors; fmt++)
@@ -721,6 +735,8 @@ int test_names(int iosysid, int num_flavors, int *flavor, int my_rank,
         char filename[PIO_MAX_NAME + 1]; /* Test filename. */
         char iotype_name[PIO_MAX_NAME + 1];
         int dimids[NDIM];        /* The dimension IDs. */
+        int att_val = ATT_VAL;
+        float float_att_val = ATT_VAL;
 
         /* Create a filename. */
         if ((ret = get_iotype_name(flavor[fmt], iotype_name)))
@@ -747,15 +763,25 @@ int test_names(int iosysid, int num_flavors, int *flavor, int my_rank,
         if ((ret = check_dim_names(my_rank, ncid, test_comm)))
             ERR(ret);
 
+        /* These should not work. */
+        if (PIOc_put_att_int(ncid + 42, NC_GLOBAL, ATT_NAME, PIO_INT, 1, &att_val) != PIO_EBADID)
+            ERR(ERR_WRONG);
+        if (PIOc_put_att_int(ncid, 42, ATT_NAME, PIO_INT, 1, &att_val) != PIO_ENOTVAR)
+            ERR(ERR_WRONG);
+        if (PIOc_put_att_int(ncid, NC_GLOBAL, NULL, PIO_INT, 1, &att_val) != PIO_EINVAL)
+            ERR(ERR_WRONG);
+        if (PIOc_put_att_int(ncid, NC_GLOBAL, ATT_NAME, PIO_INT, 1, NULL) != PIO_EINVAL)
+            ERR(ERR_WRONG);
+        if (PIOc_put_att_int(ncid, NC_GLOBAL, too_long_name, PIO_INT, 1, &att_val) != PIO_EINVAL)
+            ERR(ERR_WRONG);
+        if (PIOc_put_att_int(ncid, NC_GLOBAL, ATT_NAME, PIO_INT, -1, &att_val) != PIO_EINVAL)
+            ERR(ERR_WRONG);
+
         /* Define a global attribute. */
-        int att_val = ATT_VAL;
-        float float_att_val = ATT_VAL;
         if ((ret = PIOc_put_att_int(ncid, NC_GLOBAL, ATT_NAME, PIO_INT, 1, &att_val)))
             ERR(ret);
         if ((ret = PIOc_put_att_float(ncid, NC_GLOBAL, ATT_NAME2, PIO_FLOAT, 1, &float_att_val)))
             ERR(ret);
-        /* if ((ret = PIOc_put_att_int(ncid, NC_GLOBAL, ATT_NAME2, PIO_FLOAT, 1, &att_val))) */
-        /*     ERR(ret); */
 
         /* Check the attribute name. */
         if ((ret = check_atts(my_rank, ncid, flavor[fmt], test_comm)))
