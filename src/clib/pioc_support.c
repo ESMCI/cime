@@ -34,9 +34,6 @@ extern int pio_next_ncid;
 /** The default error handler used when iosystem cannot be located. */
 extern int default_error_handler;
 
-/** Default settings for swap memory. */
-static pio_swapm_defaults swapm_defaults;
-
 /**
  * Return a string description of an error code. If zero is passed,
  * the errmsg will be "No error".
@@ -769,14 +766,14 @@ int PIOc_readmap(const char *file, int *ndims, int **gdims, PIO_Offset *fmaplen,
 
         for (int i = 0; i < rnpes; i++)
         {
-            fscanf(fp, "%d %ld", &j, &maplen);
+            fscanf(fp, "%d %lld", &j, &maplen);
             if (j != i)  // Not sure how this could be possible
                 return pio_err(NULL, NULL, PIO_EINVAL, __FILE__, __LINE__);
 
             if (!(tmap = malloc(maplen * sizeof(PIO_Offset))))
                 return pio_err(NULL, NULL, PIO_ENOMEM, __FILE__, __LINE__);
             for (j = 0; j < maplen; j++)
-                fscanf(fp, "%ld ", tmap+j);
+                fscanf(fp, "%lld ", tmap+j);
 
             if (i > 0)
             {
@@ -922,9 +919,9 @@ int PIOc_writemap(const char *file, int ndims, const int *gdims, PIO_Offset mapl
         fprintf(fp, "\n");
 
         /* Write the map. */
-        fprintf(fp, "0 %ld\n", nmaplen[0]);
+        fprintf(fp, "0 %lld\n", nmaplen[0]);
         for (i = 0; i < nmaplen[0]; i++)
-            fprintf(fp, "%ld ", map[i]);
+            fprintf(fp, "%lld ", map[i]);
         fprintf(fp,"\n");
 
         for (i = 1; i < npes; i++)
@@ -938,9 +935,9 @@ int PIOc_writemap(const char *file, int ndims, const int *gdims, PIO_Offset mapl
                 return check_mpi(NULL, mpierr, __FILE__, __LINE__);
             LOG((2,"MPI_Recv map complete"));
 
-            fprintf(fp, "%d %ld\n", i, nmaplen[i]);
+            fprintf(fp, "%d %lld\n", i, nmaplen[i]);
             for (int j = 0; j < nmaplen[i]; j++)
-                fprintf(fp, "%ld ", nmap[j]);
+                fprintf(fp, "%lld ", nmap[j]);
             fprintf(fp, "\n");
 
             free(nmap);
@@ -1417,17 +1414,17 @@ static bool cmp_rearr_opts(const rearr_opt_t *rearr_opts,
 }
 
 /**
- * Internal function to reset rearranger opts in iosystem to valid values
+ * Internal function to reset rearranger opts in iosystem to valid values.
+ * The old default for max pending requests was DEF_P2P_MAXREQ = 64.
+ *
  * @param ios pointer to iosystem descriptor
  */
 
 static void check_and_reset_rearr_opts(iosystem_desc_t *ios)
 {
-    /* The old default for max pending requests - we no longer use it*/
-    const int DEF_P2P_MAXREQ = 64;
     /* Disable handshake/isend and set max_pend_req to unlimited */
     const rearr_comm_fc_opt_t def_comm_nofc_opts = 
-                  { false, false, PIO_REARR_COMM_UNLIMITED_PEND_REQ };
+        { false, false, PIO_REARR_COMM_UNLIMITED_PEND_REQ };
     /* Disable handshake /isend and set max_pend_req = 0 to turn off throttling */
     const rearr_comm_fc_opt_t def_coll_comm_fc_opts = { false, false, 0 };
     const rearr_opt_t def_coll_rearr_opts = {
@@ -1436,7 +1433,6 @@ static void check_and_reset_rearr_opts(iosystem_desc_t *ios)
                                                 def_coll_comm_fc_opts,
                                                 def_coll_comm_fc_opts
                                             };
-    rearr_opt_t user_rearr_opts;
 
     assert(ios != NULL);
     /* Reset to defaults, if needed (user did not set it correctly) */
