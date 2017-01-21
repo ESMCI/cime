@@ -772,7 +772,6 @@ int PIOc_readmap(const char *file, int *ndims, int **gdims, PIO_Offset *fmaplen,
             fscanf(fp, "%d %ld", &j, &maplen);
             if (j != i)  // Not sure how this could be possible
                 return pio_err(NULL, NULL, PIO_EINVAL, __FILE__, __LINE__);
-
             if (!(tmap = malloc(maplen * sizeof(PIO_Offset))))
                 return pio_err(NULL, NULL, PIO_ENOMEM, __FILE__, __LINE__);
             for (j = 0; j < maplen; j++)

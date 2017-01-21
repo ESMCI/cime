@@ -288,7 +288,8 @@ int PIOc_set_iosystem_error_handling(int iosysid, int method, int *old_method)
  *
  * @param iosysid the IO system ID.
  * @param basetype the basic PIO data type used.
- * @param ndims the number of dimensions in the variable.
+ * @param ndims the number of dimensions in the variable, not
+ * including the unlimited dimension.
  * @param dims an array of global size of each dimension.
  * @param maplen the local length of the compmap array.
  * @param compmap a 1 based array of offsets into the array record on
@@ -319,6 +320,10 @@ int PIOc_InitDecomp(int iosysid, int basetype, int ndims, const int *dims, int m
     /* Get IO system info. */
     if (!(ios = pio_get_iosystem_from_id(iosysid)))
         return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
+
+    /* Caller must provide these. */
+    if (!dims || !compmap || !ioidp)
+        return pio_err(ios, NULL, PIO_EINVAL, __FILE__, __LINE__);
 
     /* Check the dim lengths. */
     for (int i = 0; i < ndims; i++)
@@ -426,8 +431,7 @@ int PIOc_InitDecomp(int iosysid, int basetype, int ndims, const int *dims, int m
 /**
  * This is a simplified initdecomp which can be used if the memory
  * order of the data can be expressed in terms of start and count on
- * the file.  In this case we compute the compdof and use the subset
- * rearranger.
+ * the file. In this case we compute the compdof.
  *
  * @param iosysid the IO system ID
  * @param basetype
@@ -445,26 +449,33 @@ int PIOc_InitDecomp_bc(int iosysid, int basetype, int ndims, const int *dims,
 {
     iosystem_desc_t *ios;
     int n, i, maplen = 1;
+    PIO_Offset prod[ndims], loc[ndims];
     int rearr = PIO_REARR_SUBSET;
 
-    for (int i = 0; i < ndims; i++)
-    {
-        if (dims[i] <= 0)
-            return pio_err(NULL, NULL, PIO_EINVAL, __FILE__, __LINE__);
-
-        if (start[i] < 0 || count[i] < 0 || (start[i] + count[i]) > dims[i])
-            return pio_err(NULL, NULL, PIO_EINVAL, __FILE__, __LINE__);
-    }
+    LOG((1, "PIOc_InitDecomp_bc iosysid = %d basetype = %d ndims = %d"));
 
     /* Get the info about the io system. */
     if (!(ios = pio_get_iosystem_from_id(iosysid)))
         return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
 
+    /* Check for required inputs. */
+    if (!dims || !start || !count || !ioidp)
+        return pio_err(ios, NULL, PIO_EINVAL, __FILE__, __LINE__);
+
+    /* Check that dim, start, and count values are not obviously
+     * incorrect. */
+    for (int i = 0; i < ndims; i++)
+        if (dims[i] <= 0 || start[i] < 0 || count[i] < 0 || (start[i] + count[i]) > dims[i])
+            return pio_err(ios, NULL, PIO_EINVAL, __FILE__, __LINE__);
+
+    /* Find the maplen. */
     for (i = 0; i < ndims; i++)
         maplen *= count[i];
 
-    PIO_Offset compmap[maplen], prod[ndims], loc[ndims];
+    /* Get storage for the compmap. */
+    PIO_Offset compmap[maplen];
 
+    /* Find the compmap. */
     prod[ndims - 1] = 1;
     loc[ndims - 1] = 0;
     for (n = ndims - 2; n >= 0; n--)
@@ -476,7 +487,7 @@ int PIOc_InitDecomp_bc(int iosysid, int basetype, int ndims, const int *dims,
     {
         compmap[i] = 0;
         for (n = ndims - 1; n >= 0; n--)
-            compmap[i]+=(start[n]+loc[n])*prod[n];
+            compmap[i] += (start[n] + loc[n]) * prod[n];
 
         n = ndims - 1;
         loc[n] = (loc[n] + 1) % count[n];
@@ -487,10 +498,8 @@ int PIOc_InitDecomp_bc(int iosysid, int basetype, int ndims, const int *dims,
         }
     }
 
-    PIOc_InitDecomp( iosysid, basetype,ndims, dims,
-                     maplen,  compmap, ioidp, &rearr, NULL, NULL);
-
-    return PIO_NOERR;
+    return PIOc_InitDecomp(iosysid, basetype, ndims, dims, maplen, compmap, ioidp,
+                           &rearr, NULL, NULL);
 }
 
 /**
