@@ -805,6 +805,10 @@ int PIOc_finalize(int iosysid)
     if (ios->my_comm != MPI_COMM_NULL)
         ios->my_comm = MPI_COMM_NULL;
 
+    /* Free the MPI Info object. */
+    if (ios->info != MPI_INFO_NULL)
+        MPI_Info_free(&ios->info);
+
     /* Delete the iosystem_desc_t data associated with this id. */
     LOG((2, "About to delete iosysid %d.", iosysid));
     if ((ierr = pio_delete_iosystem_from_list(iosysid)))
