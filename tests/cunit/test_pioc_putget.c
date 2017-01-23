@@ -592,15 +592,17 @@ int test_write_atts(int ncid, int *varid, int flavor)
     int ret;
 
     /* Test some invalid parameters. (Type is irrelevant here.) */
-    /* if (PIOc_put_att_schar(ncid + 1, varid[0], SCHAR_ATT_NAME, PIO_BYTE, */
-    /*                        ATT_LEN, (signed char *)byte_array) != PIO_EBADID) */
-    /*     return ERR_WRONG; */
+    if (PIOc_put_att_schar(ncid + 1, varid[0], SCHAR_ATT_NAME, PIO_BYTE,
+                           ATT_LEN, (signed char *)byte_array) != PIO_EBADID)
+        return ERR_WRONG;
 
     if ((ret = PIOc_put_att_text(ncid, varid[0], TEXT_ATT_NAME, ATT_LEN,
                                  TEXT_ATT_VALUE)))
         return ret;
-    if ((ret = PIOc_put_att_schar(ncid, varid[0], SCHAR_ATT_NAME, PIO_BYTE,
-                                  ATT_LEN, (signed char *)byte_array)))
+
+    /* Use put_att() for the schar. */
+    if ((ret = PIOc_put_att(ncid, varid[0], SCHAR_ATT_NAME, PIO_BYTE,
+                            ATT_LEN, (signed char *)byte_array)))
         return ret;
 
     if ((ret = PIOc_put_att_short(ncid, varid[2], SHORT_ATT_NAME, PIO_SHORT,
