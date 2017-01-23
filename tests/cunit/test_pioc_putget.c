@@ -82,6 +82,7 @@ int dim_len[NDIM] = {NC_UNLIMITED, X_DIM_LEN, Y_DIM_LEN};
 PIO_Offset chunksize[NDIM] = {2, X_DIM_LEN/2, Y_DIM_LEN/2};
 
 /* Some sample data values to write. */
+char text[] = "hi";
 char char_data = 2;
 signed char byte_data = -42;
 short short_data = -300;
@@ -94,6 +95,7 @@ unsigned int uint_data = 666666;
 long long int64_data = -99999999999;
 unsigned long long uint64_data = 99999999999;
 
+char text_array[X_DIM_LEN][Y_DIM_LEN];
 char char_array[X_DIM_LEN][Y_DIM_LEN];
 signed char byte_array[X_DIM_LEN][Y_DIM_LEN];
 short short_array[X_DIM_LEN][Y_DIM_LEN];
@@ -114,6 +116,8 @@ unsigned long long uint64_array[X_DIM_LEN][Y_DIM_LEN];
 void init_arrays()
 {
     for (int x = 0; x < X_DIM_LEN; x++)
+    {
+        strcpy(text_array[x], text);
         for (int y = 0; y < Y_DIM_LEN; y++)
         {
             char_array[x][y] = char_data;
@@ -128,6 +132,7 @@ void init_arrays()
             int64_array[x][y] = int64_data;
             uint64_array[x][y] = uint64_data;
         }
+    }
 }
 
 /**
@@ -504,8 +509,8 @@ int putget_write_var1(int ncid, int *varid, PIO_Offset *index, int flavor)
 {
     int ret;
 
-    /* if ((ret = PIOc_put_var1_text(ncid, varid[2], index, &char_data))) */
-    /*     ERR(ret); */
+    if ((ret = PIOc_put_var1_text(ncid, varid[1], index, text)))
+        return ret;
 
     if ((ret = PIOc_put_var1_schar(ncid, varid[0], index, (signed char *)byte_array)))
         return ret;
@@ -539,13 +544,13 @@ int putget_write_var1(int ncid, int *varid, PIO_Offset *index, int flavor)
     return 0;
 }
 
-/* Use the var1 functions to write some data to an open test file. */
+/* Use the var functions to write some data to an open test file. */
 int putget_write_var(int ncid, int *varid, int flavor)
 {
     int ret;
 
-    /* if ((ret = PIOc_put_var_text(ncid, varid[2], &char_array))) */
-    /*     ERR(ret); */
+    if ((ret = PIOc_put_var_text(ncid, varid[1], (char *)text_array)))
+        return ret;
 
     if ((ret = PIOc_put_var_schar(ncid, varid[0], (signed char *)byte_array)))
         return ret;
@@ -592,9 +597,9 @@ int test_write_atts(int ncid, int *varid, int flavor)
     int ret;
 
     /* Test some invalid parameters. (Type is irrelevant here.) */
-    /* if (PIOc_put_att_schar(ncid + 1, varid[0], SCHAR_ATT_NAME, PIO_BYTE, */
-    /*                        ATT_LEN, (signed char *)byte_array) != PIO_EBADID) */
-    /*     return ERR_WRONG; */
+    if (PIOc_put_att_schar(ncid + 1, varid[0], SCHAR_ATT_NAME, PIO_BYTE,
+                           ATT_LEN, (signed char *)byte_array) != PIO_EBADID)
+        return ERR_WRONG;
 
     if ((ret = PIOc_put_att_text(ncid, varid[0], TEXT_ATT_NAME, ATT_LEN,
                                  TEXT_ATT_VALUE)))
@@ -734,8 +739,8 @@ int putget_write_vara(int ncid, int *varid, PIO_Offset *start, PIO_Offset *count
 {
     int ret;
 
-    /* if ((ret = PIOc_put_vara_text(ncid, varid[2], start, count, char_array))) */
-    /*     ERR(ret); */
+    if ((ret = PIOc_put_vara_text(ncid, varid[1], start, count, (char *)text_array)))
+        return ret;
 
     if ((ret = PIOc_put_vara_schar(ncid, varid[0], start, count, (signed char *)byte_array)))
         return ret;
@@ -775,8 +780,8 @@ int putget_write_vars(int ncid, int *varid, PIO_Offset *start, PIO_Offset *count
 {
     int ret;
 
-    /* if ((ret = PIOc_put_vara_text(ncid, varid[2], start, count, char_array))) */
-    /*     ERR(ret); */
+    if ((ret = PIOc_put_vara_text(ncid, varid[1], start, count, (char *)text_array)))
+        return ret;
 
     if ((ret = PIOc_put_vars_schar(ncid, varid[0], start, count, stride, (signed char *)byte_array)))
         return ret;
@@ -814,6 +819,7 @@ int putget_write_vars(int ncid, int *varid, PIO_Offset *start, PIO_Offset *count
 int putget_read_var1(int ncid, int *varid, PIO_Offset *index, int flavor)
 {
     signed char byte_data_in;
+    char text_data_in[PIO_MAX_NAME];
     short short_data_in;
     unsigned char ubyte_data_in;
     int int_data_in;
@@ -828,6 +834,12 @@ int putget_read_var1(int ncid, int *varid, PIO_Offset *index, int flavor)
     if ((ret = PIOc_get_var1_schar(ncid, varid[0], index, &byte_data_in)))
         return ret;
     if (byte_data_in != byte_data)
+        return ERR_WRONG;
+
+    if ((ret = PIOc_get_var1_text(ncid, varid[1], index, text_data_in)))
+        return ret;
+    printf("text_data_in = %s\n", text_data_in);
+    if (strncmp(text_data_in, "h", 1))
         return ERR_WRONG;
 
     if ((ret = PIOc_get_var1_short(ncid, varid[2], index, &short_data_in)))
@@ -888,6 +900,7 @@ int putget_read_var1(int ncid, int *varid, PIO_Offset *index, int flavor)
 int putget_read_var(int ncid, int *varid, int unlim, int flavor)
 {
     signed char byte_array_in[X_DIM_LEN][Y_DIM_LEN];
+    char text_array_in[X_DIM_LEN][Y_DIM_LEN];
     short short_array_in[X_DIM_LEN][Y_DIM_LEN];
     unsigned char ubyte_array_in[X_DIM_LEN][Y_DIM_LEN];
     int int_array_in[X_DIM_LEN][Y_DIM_LEN];
@@ -902,14 +915,15 @@ int putget_read_var(int ncid, int *varid, int unlim, int flavor)
 
     /* When using the unlimited dimension, no data are wrtten by the
      * put_var_TYPE() functions, since the length of the unlimited
-     * dimension is still 0. So for reading, just confirm that the
-     * data files are empty. */
+     * dimension is still 0. */
     if (unlim)
     {
         return 0;
     }
 
     if ((ret = PIOc_get_var_schar(ncid, varid[0], (signed char *)byte_array_in)))
+        return ret;
+    if ((ret = PIOc_get_var_text(ncid, varid[1], (char *)text_array_in)))
         return ret;
     if ((ret = PIOc_get_var_short(ncid, varid[2], (short *)short_array_in)))
         return ret;
@@ -920,6 +934,9 @@ int putget_read_var(int ncid, int *varid, int unlim, int flavor)
     if ((ret = PIOc_get_var_double(ncid, varid[5], (double *)double_array_in)))
         return ret;
     for (x = 0; x < X_DIM_LEN; x++)
+    {
+        if (strncmp(text_array_in[x], text, strlen(text)))
+                return ERR_WRONG;
         for (y = 0; y < Y_DIM_LEN; y++)
         {
             if (byte_array_in[x][y] != byte_array[x][y])
@@ -933,6 +950,7 @@ int putget_read_var(int ncid, int *varid, int unlim, int flavor)
             if (double_array_in[x][y] != double_array[x][y])
                 return ERR_WRONG;
         }
+    }
 
     if (flavor == PIO_IOTYPE_NETCDF4C || flavor == PIO_IOTYPE_NETCDF4P)
     {
@@ -970,6 +988,7 @@ int putget_read_vara(int ncid, int *varid, PIO_Offset *start, PIO_Offset *count,
                      int flavor)
 {
     signed char byte_array_in[X_DIM_LEN][Y_DIM_LEN];
+    char text_array_in[X_DIM_LEN][Y_DIM_LEN];
     short short_array_in[X_DIM_LEN][Y_DIM_LEN];
     unsigned char ubyte_array_in[X_DIM_LEN][Y_DIM_LEN];
     int int_array_in[X_DIM_LEN][Y_DIM_LEN];
@@ -984,6 +1003,8 @@ int putget_read_vara(int ncid, int *varid, PIO_Offset *start, PIO_Offset *count,
 
     if ((ret = PIOc_get_vara_schar(ncid, varid[0], start, count, (signed char *)byte_array_in)))
         return ret;
+    if ((ret = PIOc_get_vara_text(ncid, varid[1], start, count, (char *)text_array_in)))
+        return ret;
     if ((ret = PIOc_get_vara_short(ncid, varid[2], start, count, (short *)short_array_in)))
         return ret;
     if ((ret = PIOc_get_vara_int(ncid, varid[3], start, count, (int *)int_array_in)))
@@ -994,6 +1015,9 @@ int putget_read_vara(int ncid, int *varid, PIO_Offset *start, PIO_Offset *count,
         return ret;
 
     for (x = 0; x < X_DIM_LEN; x++)
+    {
+        if (strncmp(text_array_in[x], text, strlen(text)))
+                return ERR_WRONG;
         for (y = 0; y < Y_DIM_LEN; y++)
         {
             if (byte_array_in[x][y] != byte_array[x][y])
@@ -1007,6 +1031,7 @@ int putget_read_vara(int ncid, int *varid, PIO_Offset *start, PIO_Offset *count,
             if (double_array_in[x][y] != double_array[x][y])
                 return ERR_WRONG;
         }
+    }
 
     if (flavor == PIO_IOTYPE_NETCDF4C || flavor == PIO_IOTYPE_NETCDF4P)
     {
@@ -1045,6 +1070,7 @@ int putget_read_vars(int ncid, int *varid, PIO_Offset *start, PIO_Offset *count,
                      PIO_Offset *stride, int flavor)
 {
     signed char byte_array_in[X_DIM_LEN][Y_DIM_LEN];
+    char text_array_in[X_DIM_LEN][Y_DIM_LEN];
     short short_array_in[X_DIM_LEN][Y_DIM_LEN];
     unsigned char ubyte_array_in[X_DIM_LEN][Y_DIM_LEN];
     int int_array_in[X_DIM_LEN][Y_DIM_LEN];
@@ -1059,6 +1085,8 @@ int putget_read_vars(int ncid, int *varid, PIO_Offset *start, PIO_Offset *count,
 
     if ((ret = PIOc_get_vars_schar(ncid, varid[0], start, count, stride, (signed char *)byte_array_in)))
         return ret;
+    if ((ret = PIOc_get_vars_text(ncid, varid[1], start, count, stride, (char *)text_array_in)))
+        return ret;
     if ((ret = PIOc_get_vars_short(ncid, varid[2], start, count, stride, (short *)short_array_in)))
         return ret;
     if ((ret = PIOc_get_vars_int(ncid, varid[3], start, count, stride, (int *)int_array_in)))
@@ -1069,6 +1097,9 @@ int putget_read_vars(int ncid, int *varid, PIO_Offset *start, PIO_Offset *count,
         return ret;
 
     for (x = 0; x < X_DIM_LEN; x++)
+    {
+        if (strncmp(text_array_in[x], text, strlen(text)))
+            return ERR_WRONG;
         for (y = 0; y < Y_DIM_LEN; y++)
         {
             if (byte_array_in[x][y] != byte_array[x][y])
@@ -1082,6 +1113,7 @@ int putget_read_vars(int ncid, int *varid, PIO_Offset *start, PIO_Offset *count,
             if (double_array_in[x][y] != double_array[x][y])
                 return ERR_WRONG;
         }
+    }
 
     if (flavor == PIO_IOTYPE_NETCDF4C || flavor == PIO_IOTYPE_NETCDF4P)
     {
@@ -1365,8 +1397,9 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
 
     /* Test read/write stuff. */
     printf("%d Testing putget. async = %d\n", my_rank, async);
-    if ((ret = test_putget(iosysid, num_flavors, flavor, my_rank, test_comm)))
-        return ret;
+    if (!async)
+        if ((ret = test_putget(iosysid, num_flavors, flavor, my_rank, test_comm)))
+            return ret;
 
     return PIO_NOERR;
 }
