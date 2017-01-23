@@ -33,6 +33,13 @@ int create_file(MPI_Comm comm, int iosysid, int format, char *filename,
         return ret;
     printf("%d file created ncid = %d\n", my_rank, ncid);
 
+    /* Use the ncid to set the IO system error handler. This function
+     * is deprecated. */
+    PIOc_Set_File_Error_Handling(ncid, PIO_RETURN_ERROR);
+    int method = PIOc_Set_File_Error_Handling(ncid, PIO_RETURN_ERROR);
+    if (method != PIO_BCAST_ERROR)
+        return ERR_WRONG;
+
     /* Define a dimension. */
     printf("%d defining dimension %s\n", my_rank, dimname);
     if ((ret = PIOc_def_dim(ncid, dimname, PIO_TF_MAX_STR_LEN, &dimid)))
