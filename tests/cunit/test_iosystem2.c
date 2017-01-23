@@ -37,7 +37,7 @@ int create_file(MPI_Comm comm, int iosysid, int format, char *filename,
      * is deprecated. */
     PIOc_Set_File_Error_Handling(ncid, PIO_RETURN_ERROR);
     int method = PIOc_Set_File_Error_Handling(ncid, PIO_RETURN_ERROR);
-    if (method != PIO_BCAST_ERROR)
+    if (method != PIO_RETURN_ERROR)
         return ERR_WRONG;
 
     /* Define a dimension. */
