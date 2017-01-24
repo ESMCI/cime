@@ -2131,7 +2131,7 @@ int PIOc_get_att_uint(int ncid, int varid, const char *name, unsigned int *ip)
  */
 int PIOc_get_att_long(int ncid, int varid, const char *name, long *ip)
 {
-    return PIOc_get_att_tc(ncid, varid, name, PIO_INT, (void *)ip);
+    return PIOc_get_att_tc(ncid, varid, name, PIO_INT64, (void *)ip);
 }
 
 /**
@@ -2310,7 +2310,7 @@ int PIOc_put_att_schar(int ncid, int varid, const char *name, nc_type xtype,
 int PIOc_put_att_long(int ncid, int varid, const char *name, nc_type xtype,
                       PIO_Offset len, const long *op)
 {
-    return PIOc_put_att_tc(ncid, varid, name, NC_CHAR, len, PIO_INT, op);
+    return PIOc_put_att_tc(ncid, varid, name, xtype, len, PIO_INT64, op);
 }
 
 /**
