@@ -2442,7 +2442,7 @@ int PIOc_put_att_float(int ncid, int varid, const char *name, nc_type xtype,
 int PIOc_put_att_ulonglong(int ncid, int varid, const char *name, nc_type xtype,
                            PIO_Offset len, const unsigned long long *op)
 {
-    return PIOc_put_att_tc(ncid, varid, name, xtype, len, PIO_INT64, op);
+    return PIOc_put_att_tc(ncid, varid, name, xtype, len, PIO_UINT64, op);
 }
 
 /**
