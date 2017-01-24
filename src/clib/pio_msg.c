@@ -718,7 +718,7 @@ int put_vars_handler(iosystem_desc_t *ios)
         PIOc_put_vars_schar(ncid, varid, startp, countp, stridep, buf);
         break;
     case NC_CHAR:
-        PIOc_put_vars_schar(ncid, varid, startp, countp, stridep, buf);
+        PIOc_put_vars_text(ncid, varid, startp, countp, stridep, buf);
         break;
     case NC_SHORT:
         PIOc_put_vars_short(ncid, varid, startp, countp, stridep, buf);
@@ -856,7 +856,7 @@ int get_vars_handler(iosystem_desc_t *ios)
         PIOc_get_vars_schar(ncid, varid, startp, countp, stridep, buf);
         break;
     case NC_CHAR:
-        PIOc_get_vars_schar(ncid, varid, startp, countp, stridep, buf);
+        PIOc_get_vars_text(ncid, varid, startp, countp, stridep, buf);
         break;
     case NC_SHORT:
         PIOc_get_vars_short(ncid, varid, startp, countp, stridep, buf);
