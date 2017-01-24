@@ -601,8 +601,13 @@ int test_write_atts(int ncid, int *varid, int flavor)
                            ATT_LEN, (signed char *)byte_array) != PIO_EBADID)
         return ERR_WRONG;
 
-    if ((ret = PIOc_put_att_schar(ncid, varid[0], SCHAR_ATT_NAME, PIO_BYTE,
-                                  ATT_LEN, (signed char *)byte_array)))
+    if ((ret = PIOc_put_att_text(ncid, varid[0], TEXT_ATT_NAME, ATT_LEN,
+                                 TEXT_ATT_VALUE)))
+        return ret;
+
+    /* Use put_att() for the schar. */
+    if ((ret = PIOc_put_att(ncid, varid[0], SCHAR_ATT_NAME, PIO_BYTE,
+                            ATT_LEN, (signed char *)byte_array)))
         return ret;
 
     if ((ret = PIOc_put_att_text(ncid, varid[1], TEXT_ATT_NAME, ATT_LEN,
