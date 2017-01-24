@@ -100,6 +100,7 @@ char char_array[X_DIM_LEN][Y_DIM_LEN];
 signed char byte_array[X_DIM_LEN][Y_DIM_LEN];
 short short_array[X_DIM_LEN][Y_DIM_LEN];
 int int_array[X_DIM_LEN][Y_DIM_LEN];
+long int long_array[X_DIM_LEN][Y_DIM_LEN];
 float float_array[X_DIM_LEN][Y_DIM_LEN];
 double double_array[X_DIM_LEN][Y_DIM_LEN];
 unsigned char ubyte_array[X_DIM_LEN][Y_DIM_LEN];
@@ -124,6 +125,7 @@ void init_arrays()
             byte_array[x][y] = byte_data;
             short_array[x][y] = short_data;
             int_array[x][y] = int_data;
+            long_array[x][y] = int_data;
             float_array[x][y] = float_data;
             double_array[x][y] = double_data;
             ubyte_array[x][y] = ubyte_data;
@@ -150,7 +152,7 @@ int test_att_conv_byte(int ncid, int flavor, char *name, int *expected, long lon
     short short_array_in[ATT_LEN];
     unsigned char ubyte_array_in[ATT_LEN];
     int int_array_in[ATT_LEN];
-    /* long long_array_in[ATT_LEN]; */
+    long long_array_in[ATT_LEN];
     float float_array_in[ATT_LEN];
     double double_array_in[ATT_LEN];
     unsigned short ushort_array_in[ATT_LEN];
@@ -185,13 +187,13 @@ int test_att_conv_byte(int ncid, int flavor, char *name, int *expected, long lon
             if (int_array_in[x] != expected_data[x])
                 return ERR_WRONG;
 
-    /* if (expected[PIO_INT] != PIOc_get_att_long(ncid, NC_GLOBAL, name, long_array_in)) */
-    /*     return ERR_WRONG; */
+    if (expected[PIO_INT] != PIOc_get_att_long(ncid, NC_GLOBAL, name, long_array_in))
+        return ERR_WRONG;
 
-    /* if (expected[PIO_INT] == 0) */
-    /*     for (int x = 0; x < ATT_LEN; x++) */
-    /*         if (long_array_in[x] != expected_data[x]) */
-    /*             return ERR_WRONG; */
+    if (expected[PIO_INT] == 0)
+        for (int x = 0; x < ATT_LEN; x++)
+            if (long_array_in[x] != expected_data[x])
+                return ERR_WRONG;
 
     if (expected[PIO_FLOAT] != PIOc_get_att_float(ncid, NC_GLOBAL, name, float_array_in))
         return ERR_WRONG;
@@ -494,7 +496,7 @@ int test_atts_int64(int iosysid, int num_flavors, int *flavor, int my_rank,
 
         if ((ret = test_att_conv_int64(ncid, flavor[fmt], SCHAR_ATT_NAME, int64_expected, expected_data)))
             ERR(ret);
-            
+
         /* Close the netCDF file. */
         if ((ret = PIOc_closefile(ncid)))
             ERR(ret);
@@ -623,9 +625,9 @@ int test_write_atts(int ncid, int *varid, int flavor)
         return ret;
 
     /* Use long on same int var. */
-    /* if ((ret = PIOc_put_att_long(ncid, varid[3], LONG_ATT_NAME, PIO_INT, */
-    /*                              ATT_LEN, (long int *)int_array))) */
-    /*     return ret; */
+    if ((ret = PIOc_put_att_long(ncid, varid[3], LONG_ATT_NAME, PIO_INT,
+                                 ATT_LEN, (long int *)long_array)))
+        return ret;
 
     if ((ret = PIOc_put_att_float(ncid, varid[4], FLOAT_ATT_NAME, PIO_FLOAT,
                                   ATT_LEN, (float *)float_array)))
@@ -1403,9 +1405,8 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
 
     /* Test read/write stuff. */
     printf("%d Testing putget. async = %d\n", my_rank, async);
-    if (!async)
-        if ((ret = test_putget(iosysid, num_flavors, flavor, my_rank, test_comm)))
-            return ret;
+    if ((ret = test_putget(iosysid, num_flavors, flavor, my_rank, test_comm)))
+        return ret;
 
     return PIO_NOERR;
 }
