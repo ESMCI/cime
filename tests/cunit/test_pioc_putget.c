@@ -511,6 +511,14 @@ int putget_write_var1(int ncid, int *varid, PIO_Offset *index, int flavor)
 {
     int ret;
 
+    /* These should not work. */
+    if (PIOc_put_var1_text(ncid, varid[1], index, NULL) != PIO_EINVAL)
+        return ERR_WRONG;
+    if (PIOc_put_var1_text(ncid + 42, varid[1], index, text) != PIO_EBADID)
+        return ERR_WRONG;
+    if (PIOc_put_var1_text(ncid, varid[1] + 42, index, text) != PIO_ENOTVAR)
+        return ERR_WRONG;
+
     if ((ret = PIOc_put_var1_text(ncid, varid[1], index, text)))
         return ret;
 
@@ -839,6 +847,15 @@ int putget_read_var1(int ncid, int *varid, PIO_Offset *index, int flavor)
     unsigned long long uint64_data_in;
     int ret;
 
+    /* These should not work. */
+    if (PIOc_get_var1_schar(ncid + 42, varid[0], index, &byte_data_in) != PIO_EBADID)
+        return ERR_WRONG;
+    if (PIOc_get_var1_schar(ncid, varid[0] + 42, index, &byte_data_in) != PIO_ENOTVAR)
+        return ERR_WRONG;
+    if (PIOc_get_var1_schar(ncid, varid[0], index, NULL) != PIO_EINVAL)
+        return ERR_WRONG;
+
+    /* Get and check the data. */
     if ((ret = PIOc_get_var1_schar(ncid, varid[0], index, &byte_data_in)))
         return ret;
     if (byte_data_in != byte_data)
