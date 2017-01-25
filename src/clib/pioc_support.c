@@ -249,7 +249,21 @@ void pio_log(int severity, const char *fmt, ...)
 #endif /* PIO_ENABLE_LOGGING */
 
 /**
- * Obtain a backtrace and print it to stderr.
+ * Obtain a backtrace and print it to stderr. This is appended to the
+ * text decomposition file. 
+ *
+ * Note from Jim: 
+ *
+ * The stack trace can be used to identify the usage in
+ * the model code of the particular decomposition in question and so
+ * if using the pio performance tool leads to tuning that could be
+ * applied in the model you know more or less where to do it.
+ *
+ * It's also useful if you have a model bug and used the env variable
+ * to enable printing decompositions - then you have 20 or so of them
+ * and you need to identify the one that was problematic.  So it's
+ * used as an add to the developer and not used at all by any
+ * automated process or tools.
  *
  * @param fp file pointer to send output to
  */
