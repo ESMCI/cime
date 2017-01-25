@@ -667,7 +667,7 @@ int define_metadata(int ncid, int my_rank)
     if (temp_mode != PIO_NOFILL)
         return ERR_WRONG;
     if ((ret = PIOc_set_fill(ncid, old_mode, NULL)))
-        ERR(ret);
+        return ret;
     
     return PIO_NOERR;
 }
@@ -696,26 +696,26 @@ int check_metadata(int ncid, int my_rank)
     for (int d = 0; d < NDIM; d++)
     {
         if (PIOc_inq_dim(ncid + 1, d, name_in, &len_in) != PIO_EBADID)
-            ERR(ERR_WRONG);
+            return ERR_WRONG;
         if (PIOc_inq_dim(ncid, d + 40, name_in, &len_in) != PIO_EBADDIM)
-            ERR(ERR_WRONG);
+            return ERR_WRONG;
         if ((ret = PIOc_inq_dim(ncid, d, NULL, NULL)))
-            ERR(ret);
+            return ret;
         if ((ret = PIOc_inq_dim(ncid, d, name_in, &len_in)))
-            ERR(ret);
+            return ret;
         if (len_in != dim_len[d] || strcmp(name_in, dim_name[d]))
             return ERR_AWFUL;
     }
 
     /* Check the variable. */
     if (PIOc_inq_var(ncid + 1, 0, name_in, &xtype_in, &ndims, dimid, &natts) != PIO_EBADID)
-        ERR(ERR_WRONG);
-    /* if (PIOc_inq_var(ncid, 45, name_in, &xtype_in, &ndims, dimid, &natts) != PIO_ENOTVAR) */
-    /*     ERR(ERR_WRONG); */
+        return ERR_WRONG;
+    if (PIOc_inq_var(ncid, 45, name_in, &xtype_in, &ndims, dimid, &natts) != PIO_ENOTVAR)
+        return ERR_WRONG;
     if ((ret = PIOc_inq_var(ncid, 0, name_in, NULL, NULL, NULL, NULL)))
-        ERR(ret);
+        return ret;
     if ((ret = PIOc_inq_var(ncid, 0, name_in, &xtype_in, &ndims, dimid, &natts)))
-        ERR(ret);
+        return ret;
     if (strcmp(name_in, VAR_NAME) || xtype_in != PIO_INT || ndims != NDIM ||
         dimid[0] != 0 || dimid[1] != 1 || dimid[2] != 2 || natts != 0)
         return ERR_AWFUL;
