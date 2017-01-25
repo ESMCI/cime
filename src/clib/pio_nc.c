@@ -1620,12 +1620,19 @@ int PIOc_set_fill(int ncid, int fillmode, int *old_modep)
         if (!ios->ioproc)
         {
             int msg = PIO_MSG_SET_FILL;
+            int old_modep_present = old_modep ? 1 : 0;
 
             if (ios->compmaster == MPI_ROOT)
                 mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
 
             if (!mpierr)
                 mpierr = MPI_Bcast(&ncid, 1, MPI_INT, ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast(&fillmode, 1, MPI_INT, ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast(&old_modep_present, 1, MPI_INT, ios->compmaster, ios->intercomm);
+            LOG((2, "PIOc_set_fill sent ncid = %d fillmode = %d old_modep_present = %d", ncid, fillmode,
+                 old_modep_present));
         }
 
         /* Handle MPI errors. */
@@ -1653,6 +1660,14 @@ int PIOc_set_fill(int ncid, int fillmode, int *old_modep)
         return check_mpi(file, mpierr, __FILE__, __LINE__);
     if (ierr)
         return check_netcdf(file, ierr, __FILE__, __LINE__);
+
+    /* Broadcast results. */
+    if (old_modep)
+    {
+        LOG((2, "old_mode = %d", *old_modep));
+        if ((mpierr = MPI_Bcast(old_modep, 1, MPI_INT, ios->ioroot, ios->my_comm)))
+            check_mpi(file, mpierr, __FILE__, __LINE__);
+    }
 
     LOG((2, "PIOc_set_fill succeeded"));
     return PIO_NOERR;
@@ -1881,7 +1896,7 @@ int PIOc_def_var(int ncid, const char *name, nc_type xtype, int ndims,
 
     /* Broadcast results. */
     if (varidp)
-        if ((mpierr = MPI_Bcast(varidp , 1, MPI_INT, ios->ioroot, ios->my_comm)))
+        if ((mpierr = MPI_Bcast(varidp, 1, MPI_INT, ios->ioroot, ios->my_comm)))
             check_mpi(file, mpierr, __FILE__, __LINE__);
 
     return PIO_NOERR;

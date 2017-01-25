@@ -106,6 +106,48 @@ int inq_format_handler(iosystem_desc_t *ios)
     return PIO_NOERR;
 }
 
+/** This function is run on the IO tasks to set the file fill mode.
+ *
+ * @param ios pointer to the iosystem info.
+ * @returns 0 for success, error code otherwise.
+ * @internal
+ */
+int set_fill_handler(iosystem_desc_t *ios)
+{
+    int ncid;
+    int fillmode;
+    int old_modep_present;
+    int old_mode, *old_modep = NULL;
+    int mpierr;
+    int ret;
+
+    LOG((1, "set_fill_handler"));
+    assert(ios);
+
+    /* Get the parameters for this function that the the comp master
+     * task is broadcasting. */
+    if ((mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm)))
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+    if ((mpierr = MPI_Bcast(&fillmode, 1, MPI_INT, 0, ios->intercomm)))
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+    if ((mpierr = MPI_Bcast(&old_modep_present, 1, MPI_INT, 0, ios->intercomm)))
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+    LOG((2, "set_fill_handler got parameters ncid = %d fillmode = %d old_modep_present = %d",
+         ncid, fillmode, old_modep_present));
+
+    /* Manage NULL pointers. */
+    if (old_modep_present)
+        old_modep = &old_mode;
+
+    /* Call the function. */
+    if ((ret = PIOc_set_fill(ncid, fillmode, old_modep)))
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+
+    LOG((1, "set_fill_handler succeeded!"));
+
+    return PIO_NOERR;
+}
+
 /** This function is run on the IO tasks to create a netCDF file.
  *
  * @param ios pointer to the iosystem info.
@@ -2225,6 +2267,9 @@ int pio_msg_handler2(int io_rank, int component_count, iosystem_desc_t **iosys,
             break;
         case PIO_MSG_FREEDECOMP:
             freedecomp_handler(my_iosys);
+            break;
+        case PIO_MSG_SET_FILL:
+            set_fill_handler(my_iosys);
             break;
         case PIO_MSG_EXIT:
             finalize_handler(my_iosys, index);

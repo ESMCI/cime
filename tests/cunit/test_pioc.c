@@ -630,31 +630,45 @@ int define_metadata(int ncid, int my_rank)
     memset(too_long_name, 74, PIO_MAX_NAME * 5);
     too_long_name[PIO_MAX_NAME * 5] = 0;
     if (PIOc_def_dim(ncid + 1, dim_name[0], (PIO_Offset)dim_len[0], &dimids[0]) != PIO_EBADID)
-        ERR(ERR_WRONG);
+        return ERR_WRONG;
     if (PIOc_def_dim(ncid, NULL, (PIO_Offset)dim_len[0], &dimids[0]) != PIO_EINVAL)
-        ERR(ERR_WRONG);
+        return ERR_WRONG;
     if (PIOc_def_dim(ncid, too_long_name, (PIO_Offset)dim_len[0], &dimids[0]) != PIO_EINVAL)
-        ERR(ERR_WRONG);
+        return ERR_WRONG;
 
     /* Define dimensions. */
     for (int d = 0; d < NDIM; d++)
         if ((ret = PIOc_def_dim(ncid, dim_name[d], (PIO_Offset)dim_len[d], &dimids[d])))
-            ERR(ret);
+            return ret;
 
     /* Check invalid parameters. */
     if (PIOc_def_var(ncid + 1, VAR_NAME, PIO_INT, NDIM, dimids, &varid) != PIO_EBADID)
-        ERR(ERR_WRONG);
+        return ERR_WRONG;
     if (PIOc_def_var(ncid, NULL, PIO_INT, NDIM, dimids, &varid) != PIO_EINVAL)
-        ERR(ERR_WRONG);
+        return ERR_WRONG;
     if (PIOc_def_var(ncid, VAR_NAME, PIO_INT, NDIM, dimids, NULL) != PIO_EINVAL)
-        ERR(ERR_WRONG);
+        return ERR_WRONG;
     if (PIOc_def_var(ncid, too_long_name, PIO_INT, NDIM, dimids, NULL) != PIO_EINVAL)
-        ERR(ERR_WRONG);
+        return ERR_WRONG;
 
     /* Define a variable. */
     if ((ret = PIOc_def_var(ncid, VAR_NAME, PIO_INT, NDIM, dimids, &varid)))
-        ERR(ret);
+        return ret;
 
+    /* Set the fill mode. */
+    int fillmode = PIO_NOFILL;
+    int temp_mode;
+    int old_mode;
+    if ((ret = PIOc_set_fill(ncid, fillmode, &old_mode)))
+        return ERR_WRONG;
+    if ((ret = PIOc_set_fill(ncid, fillmode, &temp_mode)))
+        return ERR_WRONG;
+    printf("%d old_mode = %d temp_mode = %d\n", my_rank, old_mode, temp_mode);
+    if (temp_mode != PIO_NOFILL)
+        return ERR_WRONG;
+    if ((ret = PIOc_set_fill(ncid, old_mode, NULL)))
+        ERR(ret);
+    
     return PIO_NOERR;
 }
 

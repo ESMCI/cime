@@ -642,11 +642,8 @@ int PIOc_get_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
                 case NC_DOUBLE:
                     ierr = ncmpi_get_vars_double(file->fh, varid, start, count, stride, buf);
                     break;
-                case NC_INT64:
-                    ierr = ncmpi_get_vars_longlong(file->fh, varid, start, count, stride, buf);
-                    break;
                 default:
-                    LOG((0, "Unknown type for pnetcdf file! xtype = %d", xtype));
+                    return pio_err(ios, file, PIO_EBADIOTYPE, __FILE__, __LINE__);
                 }
             };
             ncmpi_end_indep_data(file->fh);
@@ -673,11 +670,8 @@ int PIOc_get_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
             case NC_DOUBLE:
                 ierr = ncmpi_get_vars_double_all(file->fh, varid, start, count, stride, buf);
                 break;
-            case NC_INT64:
-                ierr = ncmpi_get_vars_longlong_all(file->fh, varid, start, count, stride, buf);
-                break;
             default:
-                LOG((0, "Unknown type for pnetcdf file! xtype = %d", xtype));
+                return pio_err(ios, file, PIO_EBADIOTYPE, __FILE__, __LINE__);
             }
 #endif /* PNET_READ_AND_BCAST */
         }
@@ -737,8 +731,7 @@ int PIOc_get_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
                 /*                                (ptrdiff_t *)stride, (void *)buf); */
                 /*      break; */
             default:
-                ierr = nc_get_vars(file->fh, varid, (size_t *)start, (size_t *)count,
-                                   (ptrdiff_t *)stride, buf);
+                return pio_err(ios, file, PIO_EBADIOTYPE, __FILE__, __LINE__);
 #endif /* _NETCDF4 */
             }
 #endif /* _NETCDF */
@@ -1054,11 +1047,8 @@ int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
                 case NC_DOUBLE:
                     ierr = ncmpi_bput_vars_double(file->fh, varid, start, count, fake_stride, buf, request);
                     break;
-                case NC_INT64:
-                    ierr = ncmpi_bput_vars_longlong(file->fh, varid, start, count, fake_stride, buf, request);
-                    break;
                 default:
-                    LOG((0, "Unknown type for pnetcdf file! xtype = %d", xtype));
+                    return pio_err(ios, file, PIO_EBADIOTYPE, __FILE__, __LINE__);
                 }
                 LOG((2, "PIOc_put_vars_tc io_rank 0 done with pnetcdf call, ierr=%d", ierr));
             }
@@ -1131,8 +1121,7 @@ int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
                 /*                                (ptrdiff_t *)stride, (void *)buf); */
                 /*      break; */
             default:
-                ierr = nc_put_vars(file->fh, varid, (size_t *)start, (size_t *)count,
-                                   (ptrdiff_t *)stride, buf);
+                return pio_err(ios, file, PIO_EBADIOTYPE, __FILE__, __LINE__);
 #endif /* _NETCDF4 */
             }
             LOG((2, "PIOc_put_vars_tc io_rank 0 done with netcdf call, ierr=%d", ierr));
