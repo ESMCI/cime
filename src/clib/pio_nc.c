@@ -624,7 +624,7 @@ int PIOc_inq_var(int ncid, int varid, char *name, nc_type *xtypep, int *ndimsp,
 {
     iosystem_desc_t *ios;
     file_desc_t *file;
-    int ndims;    /* The number of dimensions for this variable. */
+    int ndims = 0;    /* The number of dimensions for this variable. */
     int ierr;
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
 
@@ -694,25 +694,32 @@ int PIOc_inq_var(int ncid, int varid, char *name, nc_type *xtypep, int *ndimsp,
         if (file->iotype != PIO_IOTYPE_PNETCDF && file->do_io)
         {
             ierr = nc_inq_varndims(file->fh, varid, &ndims);
-            char my_name[NC_MAX_NAME + 1];
-            nc_type my_xtype;
-            int my_ndims, my_dimids[ndims], my_natts;
             LOG((2, "file->fh = %d varid = %d xtypep = %d ndimsp = %d dimidsp = %d nattsp = %d",
                  file->fh, varid, xtypep, ndimsp, dimidsp, nattsp));
             if (!ierr)
+            {
+                char my_name[NC_MAX_NAME + 1];
+                nc_type my_xtype;
+                int my_ndims = 0, my_dimids[ndims], my_natts = 0;
                 ierr = nc_inq_var(file->fh, varid, my_name, &my_xtype, &my_ndims, my_dimids, &my_natts);
-            LOG((3, "my_name = %s my_xtype = %d my_ndims = %d my_natts = %d",  my_name, my_xtype, my_ndims, my_natts));
-            if (name)
-                strcpy(name, my_name);
-            if (xtypep)
-                *xtypep = my_xtype;
-            if (ndimsp)
-                *ndimsp = my_ndims;
-            if (dimidsp)
-                for (int d = 0; d < ndims; d++)
-                    dimidsp[d] = my_dimids[d];
-            if (nattsp)
-                *nattsp = my_natts;
+                LOG((3, "my_name = %s my_xtype = %d my_ndims = %d my_natts = %d",  my_name, my_xtype, my_ndims, my_natts));
+                if (!ierr)
+                {
+                    if (name)
+                    strcpy(name, my_name);
+                    if (xtypep)
+                        *xtypep = my_xtype;
+                    if (ndimsp)
+                        *ndimsp = my_ndims;
+                    if (dimidsp)
+                    {
+                        for (int d = 0; d < ndims; d++)
+                            dimidsp[d] = my_dimids[d];
+                    }
+                    if (nattsp)
+                        *nattsp = my_natts;
+                }
+            }
         }
 #endif /* _NETCDF */
         if (ndimsp)
