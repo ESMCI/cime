@@ -4,7 +4,6 @@ CIME HOMME test. This class inherits from SystemTestsCommon
 from CIME.XML.standard_module_setup import *
 from CIME.SystemTests.system_tests_common import SystemTestsCommon
 from CIME.build import post_build
-
 import shutil
 
 logger = logging.getLogger(__name__)
@@ -62,3 +61,12 @@ class HOMME(SystemTestsCommon):
             run_cmd_no_fail("%s -j 4 check >& %s" % (gmake, log), from_dir=exeroot)
         else:
             run_cmd_no_fail("%s -j 4 baseline >& %s" % (gmake, log), from_dir=exeroot)
+
+    # Homme is a bit of an oddball test since it's not really running the ACME model
+    # We need to override some methods to make the core infrastructure work.
+
+    def _generate_baseline(self):
+        pass
+
+    def _compare_baseline(self):
+        pass

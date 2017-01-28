@@ -1,5 +1,5 @@
 import CIME.compare_namelists, CIME.simple_compare
-from CIME.utils import expect
+from CIME.utils import expect, get_model
 from CIME.test_status import *
 from CIME.hist_utils import compare_baseline
 from CIME.case_cmpgen_namelists import case_cmpgen_namelists
@@ -17,9 +17,13 @@ def compare_namelists(case, baseline_name, baseline_root, logfile_name):
     return success
 
 ###############################################################################
-def compare_history(case, baseline_name, baseline_root, log_id):
+def compare_history(case, baseline_name, baseline_root, log_id, compiler):
 ###############################################################################
-    baseline_full_dir = os.path.join(baseline_root, baseline_name, case.get_value("CASEBASEID"))
+    if get_model() == "acme":
+        os.path.join(baseline_root, compiler, baseline_name, case.get_value("CASEBASEID"))
+    else:
+        baseline_full_dir = os.path.join(baseline_root, baseline_name, case.get_value("CASEBASEID"))
+
     outfile_suffix = "%s.%s" % (baseline_name, log_id)
     result, comments = compare_baseline(case, baseline_dir=baseline_full_dir,
                                         outfile_suffix=outfile_suffix)
@@ -111,7 +115,7 @@ def compare_test_results(baseline_name, baseline_root, test_root, compiler, test
                             all_pass_or_skip = False
 
                     if do_compare:
-                        success, detailed_comments = compare_history(case, baseline_name, baseline_root, log_id)
+                        success, detailed_comments = compare_history(case, baseline_name, baseline_root, log_id, compiler)
                         if success:
                             compare_result = TEST_PASS_STATUS
                         else:
