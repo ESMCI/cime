@@ -23,6 +23,16 @@
     <desc>logical to save timing files in rundir</desc>
   </entry>
 
+  <entry id="TPROF_TOTAL">
+    <type>integer</type>
+    <default_value>0</default_value>
+    <group>run_cesm</group>
+    <file>env_run.xml</file>
+    <desc>Determines number of times profiler is called over the model run period.
+    This sets values for tprof_option and tprof_n that determine the timing output file frequency
+    </desc>
+  </entry>
+
   <entry id="TIMER_DETAIL">
     <type>integer</type>
     <default_value>2</default_value>

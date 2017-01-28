@@ -551,8 +551,8 @@
       </modules>
     </module_system>
     <environment_variables>
-      <env name="NETCDFROOT">$SEMS_NETCDF_ROOT</env>
-      <env name="PNETCDFROOT" mpilib="!mpi-serial">$SEMS_NETCDF_ROOT</env>
+      <env name="NETCDFROOT">$ENV{SEMS_NETCDF_ROOT}</env>
+      <env name="PNETCDFROOT" mpilib="!mpi-serial">$ENV{SEMS_NETCDF_ROOT}</env>
     </environment_variables>
 </machine>
 
@@ -614,8 +614,8 @@
       </modules>
     </module_system>
     <environment_variables>
-      <env name="NETCDFROOT">$SEMS_NETCDF_ROOT</env>
-      <env name="PNETCDFROOT" mpilib="!mpi-serial">$SEMS_NETCDF_ROOT</env>
+      <env name="NETCDFROOT">$ENV{SEMS_NETCDF_ROOT}</env>
+      <env name="PNETCDFROOT" mpilib="!mpi-serial">$ENV{SEMS_NETCDF_ROOT}</env>
     </environment_variables>
 </machine>
 
@@ -744,10 +744,10 @@
     <env name="NETCDF_LIBS">/projects/ccsm/tpl/netcdf/4.3.2/intel/13.0.1/openmpi/1.6.5/lib</env>
     <env name="NETCDFROOT">/projects/ccsm/tpl/netcdf/4.3.2/intel/13.0.1/openmpi/1.6.5</env>
     <env name="PNETCDFROOT">/projects/ccsm/tpl/netcdf/4.3.2/intel/13.0.1/openmpi/1.6.5</env>
-    <!-- <env name="NETCDFROOT">$SEMS_NETCDF_ROOT</env> -->
-    <!-- <env name="PNETCDFROOT" mpilib="!mpi-serial">$SEMS_NETCDF_ROOT</env> -->
-    <!-- <env name="NETCDF_INCLUDES">$SEMS_NETCDF_ROOT/include</env> -->
-    <!-- <env name="NETCDF_LIBS">$SEMS_NETCDF_ROOT/lib</env> -->
+    <!-- <env name="NETCDFROOT">$ENV{SEMS_NETCDF_ROOT}</env> -->
+    <!-- <env name="PNETCDFROOT" mpilib="!mpi-serial">$ENV{SEMS_NETCDF_ROOT}</env> -->
+    <!-- <env name="NETCDF_INCLUDES">$ENV{SEMS_NETCDF_ROOT}/include</env> -->
+    <!-- <env name="NETCDF_LIBS">$ENV{SEMS_NETCDF_ROOT}/lib</env> -->
     <env name="OMP_STACKSIZE">64M</env>
   </environment_variables>
 </machine>
@@ -824,10 +824,10 @@
     <env name="NETCDF_LIBS">/projects/ccsm/tpl/netcdf/4.3.2/intel/13.0.1/openmpi/1.6.5/lib</env>
     <env name="NETCDFROOT">/projects/ccsm/tpl/netcdf/4.3.2/intel/13.0.1/openmpi/1.6.5</env>
     <env name="PNETCDFROOT">/projects/ccsm/tpl/netcdf/4.3.2/intel/13.0.1/openmpi/1.6.5</env>
-    <!-- <env name="NETCDFROOT">$SEMS_NETCDF_ROOT</env> -->
-    <!-- <env name="PNETCDFROOT" mpilib="!mpi-serial">$SEMS_NETCDF_ROOT</env> -->
-    <!-- <env name="NETCDF_INCLUDES">$SEMS_NETCDF_ROOT/include</env> -->
-    <!-- <env name="NETCDF_LIBS">$SEMS_NETCDF_ROOT/lib</env> -->
+    <!-- <env name="NETCDFROOT">$ENV{SEMS_NETCDF_ROOT}</env> -->
+    <!-- <env name="PNETCDFROOT" mpilib="!mpi-serial">$ENV{SEMS_NETCDF_ROOT}</env> -->
+    <!-- <env name="NETCDF_INCLUDES">$ENV{SEMS_NETCDF_ROOT}/include</env> -->
+    <!-- <env name="NETCDF_LIBS">$ENV{SEMS_NETCDF_ROOT}/lib</env> -->
     <env name="OMP_STACKSIZE">64M</env>
   </environment_variables>
 </machine>
