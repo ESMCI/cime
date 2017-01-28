@@ -574,7 +574,7 @@ class TestScheduler(object):
             return False
 
     ###########################################################################
-    def _get_procs_needed(self, test, phase, threads_in_flight=None, no_batch=False):
+    def _get_procs_needed(self, test, phase, no_batch=False):
     ###########################################################################
         if phase == RUN_PHASE and (self._no_batch or no_batch):
             test_dir = self._get_test_dir(test)
@@ -667,7 +667,7 @@ class TestScheduler(object):
                         test_phase, test_status = self._get_test_data(test)
                         expect(test_status != TEST_PEND_STATUS, test)
                         next_phase = self._phases[self._phases.index(test_phase) + 1]
-                        procs_needed = self._get_procs_needed(test, next_phase, threads_in_flight)
+                        procs_needed = self._get_procs_needed(test, next_phase)
 
                         if procs_needed <= self._procs_avail:
                             self._procs_avail -= procs_needed
