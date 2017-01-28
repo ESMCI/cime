@@ -574,13 +574,22 @@ class TestScheduler(object):
             return False
 
     ###########################################################################
-    def _get_procs_needed(self, test, phase, no_batch=False):
+    def _get_procs_needed(self, test, phase, threads_in_flight=None, no_batch=False):
     ###########################################################################
         if phase == RUN_PHASE and (self._no_batch or no_batch):
             test_dir = self._get_test_dir(test)
             out = run_cmd_no_fail("./xmlquery TOTAL_CORES -value", from_dir=test_dir)
             return int(out)
-        elif phase in [SHAREDLIB_BUILD_PHASE, MODEL_BUILD_PHASE]:
+        elif (phase == SHAREDLIB_BUILD_PHASE):
+            # Will force serialization of sharedlib builds
+            # TODO - instead of serializing, compute all library configs needed and build
+            # them all in parallel
+            for _, _, running_phase in threads_in_flight.values():
+                if (running_phase == SHAREDLIB_BUILD_PHASE):
+                    return self._proc_pool + 1
+
+            return 1
+        elif (phase == MODEL_BUILD_PHASE):
             # Model builds now happen in parallel
             return 4
         else:
@@ -667,7 +676,7 @@ class TestScheduler(object):
                         test_phase, test_status = self._get_test_data(test)
                         expect(test_status != TEST_PEND_STATUS, test)
                         next_phase = self._phases[self._phases.index(test_phase) + 1]
-                        procs_needed = self._get_procs_needed(test, next_phase)
+                        procs_needed = self._get_procs_needed(test, next_phase, threads_in_flight)
 
                         if procs_needed <= self._procs_avail:
                             self._procs_avail -= procs_needed
