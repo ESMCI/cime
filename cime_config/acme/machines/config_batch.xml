@@ -193,7 +193,7 @@
     </queues>
    </batch_system>
 
-    <batch_system MACH="cori-haswell" type="slurm" version="x.y">
+    <batch_system MACH="cori-haswell" type="slurm">
       <directives>
         <directive> --constraint=haswell</directive>
       </directives>
@@ -203,7 +203,7 @@
       </queues>
     </batch_system>
 
-    <batch_system MACH="cori-knl" type="slurm" version="x.y">
+    <batch_system MACH="cori-knl" type="slurm">
       <directives>
         <directive> --constraint=knl,quad,cache</directive>
       </directives>
@@ -231,7 +231,7 @@
       </walltimes>
     </batch_system>
 
-   <batch_system MACH="constance" type="slurm" version="x.y">
+   <batch_system MACH="constance" type="slurm">
     <directives>
        <directive>-A  climate</directive>
        <directive>--ntasks-per-node={{ tasks_per_node }}</directive>
