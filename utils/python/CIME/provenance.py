@@ -29,6 +29,7 @@ def save_build_provenance_acme(case, lid=None):
     cimeroot = case.get_value("CIMEROOT")
     exeroot = case.get_value("EXEROOT")
     caseroot = case.get_value("CASEROOT")
+
     lid = os.environ["LID"] if lid is None else lid
     # Save git describe
     describe_prov = os.path.join(exeroot, "GIT_DESCRIBE.%s" % lid)
@@ -188,7 +189,10 @@ def save_prerun_provenance_acme(case, lid=None):
                 fd.write("%s\n" % syslog_jobid)
 
     # Save state of repo
-    run_cmd_no_fail("git describe > %s" % os.path.join(full_timing_dir, "GIT_DESCRIBE.%s" % lid), from_dir=os.path.dirname(cimeroot))
+    if os.path.exists(os.path.join(cimeroot, ".git")):
+        run_cmd_no_fail("git describe > %s" % os.path.join(full_timing_dir, "GIT_DESCRIBE.%s" % lid), from_dir=cimeroot)
+    else:
+        run_cmd_no_fail("git describe > %s" % os.path.join(full_timing_dir, "GIT_DESCRIBE.%s" % lid), from_dir=os.path.dirname(cimeroot))
 
 def save_prerun_provenance_cesm(case, lid=None): # pylint: disable=unused-argument
     pass

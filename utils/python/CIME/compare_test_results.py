@@ -8,8 +8,11 @@ from CIME.case import Case
 import os, glob, logging
 
 ###############################################################################
-def compare_namelists(case, baseline_name, baseline_root, logfile_name):
+def compare_namelists(case, baseline_name, baseline_root, logfile_name, compiler):
 ###############################################################################
+    if get_model() == "acme":
+        baseline_name = os.path.join(compiler, baseline_name)
+
     log_lvl = logging.getLogger().getEffectiveLevel()
     logging.disable(logging.CRITICAL)
     success = case_cmpgen_namelists(case, compare=True, compare_name=baseline_name, baseline_root=baseline_root, logfile_name=logfile_name)
@@ -20,7 +23,7 @@ def compare_namelists(case, baseline_name, baseline_root, logfile_name):
 def compare_history(case, baseline_name, baseline_root, log_id, compiler):
 ###############################################################################
     if get_model() == "acme":
-        os.path.join(baseline_root, compiler, baseline_name, case.get_value("CASEBASEID"))
+        baseline_full_dir = os.path.join(baseline_root, compiler, baseline_name, case.get_value("CASEBASEID"))
     else:
         baseline_full_dir = os.path.join(baseline_root, baseline_name, case.get_value("CASEBASEID"))
 
@@ -105,7 +108,7 @@ def compare_test_results(baseline_name, baseline_root, test_root, compiler, test
             if nl_do_compare or do_compare:
                 with Case(test_dir) as case:
                     if nl_do_compare:
-                        nl_success = compare_namelists(case, baseline_name, baseline_root, logfile_name)
+                        nl_success = compare_namelists(case, baseline_name, baseline_root, logfile_name, compiler)
                         if nl_success:
                             nl_compare_result = TEST_PASS_STATUS
                             nl_compare_comment = ""
