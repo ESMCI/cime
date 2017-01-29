@@ -7,7 +7,7 @@ from CIME.XML.standard_module_setup import *
 from CIME.preview_namelists import create_namelists
 from CIME.compare_namelists import is_namelist_file, compare_namelist_files
 from CIME.simple_compare import compare_files
-from CIME.utils import get_current_branch, append_status, get_model
+from CIME.utils import append_status
 from CIME.test_status import *
 
 import os, shutil, traceback, stat, glob
