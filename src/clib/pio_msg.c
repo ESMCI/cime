@@ -675,14 +675,16 @@ int put_vars_handler(iosystem_desc_t *ios)
 {
     int ncid;
     int varid;
-    int mpierr;
-    PIO_Offset typelen; /** Length (in bytes) of this type. */
-    nc_type xtype; /** Type of the data being written. */
-    char stride_present;
-    PIO_Offset *startp = NULL, *countp = NULL, *stridep = NULL;
-    int ndims; /** Number of dimensions. */
-    void *buf; /** Buffer for data storage. */
+    PIO_Offset typelen;  /** Length (in bytes) of this type. */
+    nc_type xtype;       /** Type of the data being written. */
+    char stride_present; /** Zero if user passed a NULL stride. */
+    PIO_Offset *startp = NULL;
+    PIO_Offset *countp = NULL;
+    PIO_Offset *stridep = NULL;
+    int ndims;           /** Number of dimensions. */
+    void *buf;           /** Buffer for data storage. */
     PIO_Offset num_elem; /** Number of data elements in the buffer. */
+    int mpierr;          /** Error code from MPI function calls. */
 
     LOG((1, "put_vars_handler"));
     assert(ios);
@@ -699,18 +701,14 @@ int put_vars_handler(iosystem_desc_t *ios)
     /* Now we know how big to make these arrays. */
     PIO_Offset start[ndims], count[ndims], stride[ndims];
 
-    if (!mpierr)
-    {
-        if ((mpierr = MPI_Bcast(start, ndims, MPI_OFFSET, 0, ios->intercomm)))
-            return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
-        LOG((1, "put_vars_handler getting start[0] = %d ndims = %d", start[0], ndims));
-    }
-    if (!mpierr)
-        if ((mpierr = MPI_Bcast(count, ndims, MPI_OFFSET, 0, ios->intercomm)))
-            return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+    if ((mpierr = MPI_Bcast(start, ndims, MPI_OFFSET, 0, ios->intercomm)))
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+    LOG((1, "put_vars_handler getting start[0] = %d ndims = %d", start[0], ndims));
+    if ((mpierr = MPI_Bcast(count, ndims, MPI_OFFSET, 0, ios->intercomm)))
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&stride_present, 1, MPI_CHAR, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
-    if (!mpierr && stride_present)
+    if (stride_present)
         if ((mpierr = MPI_Bcast(stride, ndims, MPI_OFFSET, 0, ios->intercomm)))
             return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&xtype, 1, MPI_INT, 0, ios->intercomm)))
@@ -721,8 +719,7 @@ int put_vars_handler(iosystem_desc_t *ios)
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     LOG((1, "put_vars_handler ncid = %d varid = %d ndims = %d "
          "stride_present = %d xtype = %d num_elem = %d typelen = %d",
-         ncid, varid, ndims, stride_present, xtype,
-         num_elem, typelen));
+         ncid, varid, ndims, stride_present, xtype, num_elem, typelen));
 
     for (int d = 0; d < ndims; d++)
     {
@@ -766,37 +763,32 @@ int put_vars_handler(iosystem_desc_t *ios)
         PIOc_put_vars_short(ncid, varid, startp, countp, stridep, buf);
         break;
     case NC_INT:
-        PIOc_put_vars_int(ncid, varid, startp, countp,
-                                 stridep, buf);
+        PIOc_put_vars_int(ncid, varid, startp, countp, stridep, buf);
+        break;
+    case PIO_LONG_INTERNAL:
+        PIOc_put_vars_long(ncid, varid, startp, countp, stridep, buf);
         break;
     case NC_FLOAT:
-        PIOc_put_vars_float(ncid, varid, startp, countp,
-                                   stridep, buf);
+        PIOc_put_vars_float(ncid, varid, startp, countp, stridep, buf);
         break;
     case NC_DOUBLE:
-        PIOc_put_vars_double(ncid, varid, startp, countp,
-                                    stridep, buf);
+        PIOc_put_vars_double(ncid, varid, startp, countp, stridep, buf);
         break;
 #ifdef _NETCDF4
     case NC_UBYTE:
-        PIOc_put_vars_uchar(ncid, varid, startp, countp,
-                                   stridep, buf);
+        PIOc_put_vars_uchar(ncid, varid, startp, countp, stridep, buf);
         break;
     case NC_USHORT:
-        PIOc_put_vars_ushort(ncid, varid, startp, countp,
-                                    stridep, buf);
+        PIOc_put_vars_ushort(ncid, varid, startp, countp, stridep, buf);
         break;
     case NC_UINT:
-        PIOc_put_vars_uint(ncid, varid, startp, countp,
-                                  stridep, buf);
+        PIOc_put_vars_uint(ncid, varid, startp, countp, stridep, buf);
         break;
     case NC_INT64:
-        PIOc_put_vars_longlong(ncid, varid, startp, countp,
-                                      stridep, buf);
+        PIOc_put_vars_longlong(ncid, varid, startp, countp, stridep, buf);
         break;
     case NC_UINT64:
-        PIOc_put_vars_ulonglong(ncid, varid, startp, countp,
-                                       stridep, buf);
+        PIOc_put_vars_ulonglong(ncid, varid, startp, countp, stridep, buf);
         break;
         /* case NC_STRING: */
         /*      PIOc_put_vars_string(ncid, varid, startp, countp, */
@@ -848,18 +840,14 @@ int get_vars_handler(iosystem_desc_t *ios)
     /* Now we know how big to make these arrays. */
     PIO_Offset start[ndims], count[ndims], stride[ndims];
 
-    if (!mpierr)
-    {
-        if ((mpierr = MPI_Bcast(start, ndims, MPI_OFFSET, 0, ios->intercomm)))
-            return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
-        LOG((1, "put_vars_handler getting start[0] = %d ndims = %d", start[0], ndims));
-    }
-    if (!mpierr)
-        if ((mpierr = MPI_Bcast(count, ndims, MPI_OFFSET, 0, ios->intercomm)))
-            return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+    if ((mpierr = MPI_Bcast(start, ndims, MPI_OFFSET, 0, ios->intercomm)))
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+    LOG((1, "put_vars_handler getting start[0] = %d ndims = %d", start[0], ndims));
+    if ((mpierr = MPI_Bcast(count, ndims, MPI_OFFSET, 0, ios->intercomm)))
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&stride_present, 1, MPI_CHAR, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
-    if (!mpierr && stride_present)
+    if (stride_present)
         if ((mpierr = MPI_Bcast(stride, ndims, MPI_OFFSET, 0, ios->intercomm)))
             return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&xtype, 1, MPI_INT, 0, ios->intercomm)))
@@ -870,8 +858,7 @@ int get_vars_handler(iosystem_desc_t *ios)
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     LOG((1, "get_vars_handler ncid = %d varid = %d ndims = %d "
          "stride_present = %d xtype = %d num_elem = %d typelen = %d",
-         ncid, varid, ndims, stride_present, xtype,
-         num_elem, typelen));
+         ncid, varid, ndims, stride_present, xtype, num_elem, typelen));
 
     for (int d = 0; d < ndims; d++)
     {
@@ -905,6 +892,9 @@ int get_vars_handler(iosystem_desc_t *ios)
         break;
     case NC_INT:
         PIOc_get_vars_int(ncid, varid, startp, countp, stridep, buf);
+        break;
+    case PIO_LONG_INTERNAL:
+        PIOc_get_vars_long(ncid, varid, startp, countp, stridep, buf);
         break;
     case NC_FLOAT:
         PIOc_get_vars_float(ncid, varid, startp, countp, stridep, buf);

@@ -4,6 +4,7 @@
  * Ed Hartnett
  */
 #include <pio.h>
+#include <pio_internal.h>
 #include <pio_tests.h>
 
 /* The number of tasks this test should run on. */
@@ -650,6 +651,10 @@ int define_metadata(int ncid, int my_rank)
         return ERR_WRONG;
     if (PIOc_def_var(ncid, too_long_name, PIO_INT, NDIM, dimids, NULL) != PIO_EINVAL)
         return ERR_WRONG;
+    if (PIOc_def_var(ncid, too_long_name, 42, NDIM, dimids, &varid) != PIO_EINVAL)
+        return ERR_WRONG;
+    if (PIOc_def_var(ncid, too_long_name, PIO_LONG_INTERNAL, NDIM, dimids, &varid) != PIO_EINVAL)
+        return ERR_WRONG;
 
     /* Define a variable. */
     if ((ret = PIOc_def_var(ncid, VAR_NAME, PIO_INT, NDIM, dimids, &varid)))
@@ -789,6 +794,10 @@ int test_names(int iosysid, int num_flavors, int *flavor, int my_rank,
         if (PIOc_put_att_int(ncid, NC_GLOBAL, too_long_name, PIO_INT, 1, &att_val) != PIO_EINVAL)
             ERR(ERR_WRONG);
         if (PIOc_put_att_int(ncid, NC_GLOBAL, ATT_NAME, PIO_INT, -1, &att_val) != PIO_EINVAL)
+            ERR(ERR_WRONG);
+        if (PIOc_put_att_int(ncid, NC_GLOBAL, ATT_NAME, 42, 1, &att_val) != PIO_EBADTYPE)
+            ERR(ERR_WRONG);
+        if (PIOc_put_att_int(ncid, NC_GLOBAL, ATT_NAME, PIO_LONG_INTERNAL, 1, &att_val) != PIO_EBADTYPE)
             ERR(ERR_WRONG);
 
         /* Define a global attribute. */

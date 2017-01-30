@@ -59,8 +59,13 @@ int PIOc_put_att_tc(int ncid, int varid, const char *name, nc_type atttype,
             return check_netcdf(file, ierr, __FILE__, __LINE__);
 
         /* Get the length (in bytes) of the type in memory. */
-        if ((ierr = PIOc_inq_type(ncid, memtype, NULL, &memtype_len)))
-            return check_netcdf(file, ierr, __FILE__, __LINE__);
+        if (memtype == PIO_LONG_INTERNAL)
+            memtype_len = sizeof(long int);
+        else
+        {
+            if ((ierr = PIOc_inq_type(ncid, memtype, NULL, &memtype_len)))
+                return check_netcdf(file, ierr, __FILE__, __LINE__);
+        }
         LOG((2, "PIOc_put_att atttype_len = %d memtype_len = %d", ncid, atttype_len, memtype_len));
     }
 
@@ -136,6 +141,9 @@ int PIOc_put_att_tc(int ncid, int varid, const char *name, nc_type atttype,
             case NC_INT:
                 ierr = ncmpi_put_att_int(file->fh, varid, name, atttype, len, op);
                 break;
+            case PIO_LONG_INTERNAL:
+                ierr = ncmpi_put_att_long(file->fh, varid, name, atttype, len, op);
+                break;
             case NC_FLOAT:
                 ierr = ncmpi_put_att_float(file->fh, varid, name, atttype, len, op);
                 break;
@@ -166,6 +174,9 @@ int PIOc_put_att_tc(int ncid, int varid, const char *name, nc_type atttype,
                 break;
             case NC_INT:
                 ierr = nc_put_att_int(file->fh, varid, name, atttype, len, op);
+                break;
+            case PIO_LONG_INTERNAL:
+                ierr = nc_put_att_long(file->fh, varid, name, atttype, len, op);
                 break;
             case NC_FLOAT:
                 ierr = nc_put_att_float(file->fh, varid, name, atttype, len, op);
@@ -264,8 +275,13 @@ int PIOc_get_att_tc(int ncid, int varid, const char *name, nc_type memtype, void
 
         /* Get the length (in bytes) of the type that the user wants
          * the data converted to. */
-        if ((ierr = PIOc_inq_type(ncid, memtype, NULL, &memtype_len)))
-            return check_netcdf(file, ierr, __FILE__, __LINE__);
+        if (memtype == PIO_LONG_INTERNAL)
+            memtype_len = sizeof(long int);
+        else
+        {
+            if ((ierr = PIOc_inq_type(ncid, memtype, NULL, &memtype_len)))
+                return check_netcdf(file, ierr, __FILE__, __LINE__);
+        }
     }
     LOG((2, "atttype_len = %d memtype_len = %d", atttype_len, memtype_len));
 
@@ -349,6 +365,9 @@ int PIOc_get_att_tc(int ncid, int varid, const char *name, nc_type memtype, void
             case NC_INT:
                 ierr = ncmpi_get_att_int(file->fh, varid, name, ip);
                 break;
+            case PIO_LONG_INTERNAL:
+                ierr = ncmpi_get_att_long(file->fh, varid, name, ip);
+                break;
             case NC_FLOAT:
                 ierr = ncmpi_get_att_float(file->fh, varid, name, ip);
                 break;
@@ -379,6 +398,9 @@ int PIOc_get_att_tc(int ncid, int varid, const char *name, nc_type memtype, void
                 break;
             case NC_INT:
                 ierr = nc_get_att_int(file->fh, varid, name, ip);
+                break;
+            case PIO_LONG_INTERNAL:
+                ierr = nc_get_att_long(file->fh, varid, name, ip);
                 break;
             case NC_FLOAT:
                 ierr = nc_get_att_float(file->fh, varid, name, ip);
@@ -495,9 +517,13 @@ int PIOc_get_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
      * non-IO tasks if async is in use. */
     if (!ios->async_interface || !ios->ioproc)
     {
-        /* Get the length of the data type. */
-        if ((ierr = PIOc_inq_type(ncid, xtype, NULL, &typelen)))
-            return check_netcdf(file, ierr, __FILE__, __LINE__);
+        if (xtype == PIO_LONG_INTERNAL)
+            typelen = sizeof(long int);
+        else
+        {
+            if ((ierr = PIOc_inq_type(ncid, xtype, NULL, &typelen)))
+                return check_netcdf(file, ierr, __FILE__, __LINE__);
+        }
 
         /* Get the number of dims for this var. */
         if ((ierr = PIOc_inq_varndims(ncid, varid, &ndims)))
@@ -636,6 +662,9 @@ int PIOc_get_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
                 case NC_INT:
                     ierr = ncmpi_get_vars_int(file->fh, varid, start, count, stride, buf);
                     break;
+                case PIO_LONG_INTERNAL:
+                    ierr = ncmpi_get_vars_long(file->fh, varid, start, count, stride, buf);
+                    break;
                 case NC_FLOAT:
                     ierr = ncmpi_get_vars_float(file->fh, varid, start, count, stride, buf);
                     break;
@@ -663,6 +692,9 @@ int PIOc_get_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
                 break;
             case NC_INT:
                 ierr = ncmpi_get_vars_int_all(file->fh, varid, start, count, stride, buf);
+                break;
+            case PIO_LONG_INTERNAL:
+                ierr = ncmpi_get_vars_long_all(file->fh, varid, start, count, stride, buf);
                 break;
             case NC_FLOAT:
                 ierr = ncmpi_get_vars_float_all(file->fh, varid, start, count, stride, buf);
@@ -695,6 +727,10 @@ int PIOc_get_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
             case NC_INT:
                 ierr = nc_get_vars_int(file->fh, varid, (size_t *)start, (size_t *)count,
                                        (ptrdiff_t *)stride, buf);
+                break;
+            case PIO_LONG_INTERNAL:
+                ierr = nc_get_vars_long(file->fh, varid, (size_t *)start, (size_t *)count,
+                                        (ptrdiff_t *)stride, buf);
                 break;
             case NC_FLOAT:
                 ierr = nc_get_vars_float(file->fh, varid, (size_t *)start, (size_t *)count,
@@ -874,8 +910,13 @@ int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
             return check_netcdf(file, ierr, __FILE__, __LINE__);
 
         /* Get the length of the data type. */
-        if ((ierr = PIOc_inq_type(ncid, xtype, NULL, &typelen)))
-            return check_netcdf(file, ierr, __FILE__, __LINE__);
+        if (xtype == PIO_LONG_INTERNAL)
+            typelen = sizeof(long int);
+        else
+        {
+            if ((ierr = PIOc_inq_type(ncid, xtype, NULL, &typelen)))
+                return check_netcdf(file, ierr, __FILE__, __LINE__);
+        }
 
         LOG((2, "ndims = %d typelen = %d", ndims, typelen));
 
@@ -1041,6 +1082,9 @@ int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
                 case NC_INT:
                     ierr = ncmpi_bput_vars_int(file->fh, varid, start, count, fake_stride, buf, request);
                     break;
+                case PIO_LONG_INTERNAL:
+                    ierr = ncmpi_bput_vars_long(file->fh, varid, start, count, fake_stride, buf, request);
+                    break;
                 case NC_FLOAT:
                     ierr = ncmpi_bput_vars_float(file->fh, varid, start, count, fake_stride, buf, request);
                     break;
@@ -1086,6 +1130,10 @@ int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
             case NC_INT:
                 ierr = nc_put_vars_int(file->fh, varid, (size_t *)start, (size_t *)count,
                                        (ptrdiff_t *)stride, buf);
+                break;
+            case PIO_LONG_INTERNAL:
+                ierr = nc_put_vars_long(file->fh, varid, (size_t *)start, (size_t *)count,
+                                        (ptrdiff_t *)stride, buf);
                 break;
             case NC_FLOAT:
                 ierr = nc_put_vars_float(file->fh, varid, (size_t *)start, (size_t *)count,

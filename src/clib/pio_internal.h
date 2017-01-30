@@ -59,6 +59,11 @@ void pio_log(int severity, const char *fmt, ...);
 #define MAX_GATHER_BLOCK_SIZE 0
 #define PIO_REQUEST_ALLOC_CHUNK 16
 
+/** This is needed to handle _long() functions. It may not be used as
+ * a data type when creating attributes or varaibles, it is only used
+ * internally. */
+#define PIO_LONG_INTERNAL 13
+
 #if defined(__cplusplus)
 extern "C" {
 #endif
