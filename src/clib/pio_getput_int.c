@@ -891,8 +891,6 @@ int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Pointer to file information. */
-    int ierr = PIO_NOERR;  /* Return code from function calls. */
-    int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
     int ndims; /* The number of dimensions in the variable. */
     PIO_Offset typelen; /* Size (in bytes) of the data type of data in buf. */
     PIO_Offset num_elem = 1; /* Number of data elements in the buffer. */
@@ -902,6 +900,9 @@ int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
     PIO_Offset *rstart, *rcount, *rstride;
     var_desc_t *vdesc;
     int *request;
+    nc_type vartype;   /* The type of the var we are reading from. */
+    int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
+    int ierr;          /* Return code from function calls. */
 
     LOG((1, "PIOc_put_vars_tc ncid = %d varid = %d start = %d count = %d "
          "stride = %d xtype = %d", ncid, varid, start, count, stride, xtype));
