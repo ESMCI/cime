@@ -900,6 +900,50 @@ int putget_write_vara(int ncid, int *varid, PIO_Offset *start, PIO_Offset *count
     return 0;
 }
 
+/* Use the no-type vara functions to write some data to an open test file. */
+int putget_write_vara_nt(int ncid, int *varid, PIO_Offset *start, PIO_Offset *count,
+                         int flavor)
+{
+    int ret;
+
+    if ((ret = PIOc_put_vara(ncid, varid[1], start, count, (char *)text_array)))
+        return ret;
+
+    if ((ret = PIOc_put_vara(ncid, varid[0], start, count, (signed char *)byte_array)))
+        return ret;
+
+    if ((ret = PIOc_put_vara(ncid, varid[2], start, count, (short *)short_array)))
+        return ret;
+
+    if ((ret = PIOc_put_vara(ncid, varid[3], start, count, (int *)int_array)))
+        return ret;
+
+    if ((ret = PIOc_put_vara(ncid, varid[4], start, count, (int *)int_array)))
+        return ret;
+
+    if ((ret = PIOc_put_vara(ncid, varid[5], start, count, (float *)float_array)))
+        return ret;
+
+    if ((ret = PIOc_put_vara(ncid, varid[6], start, count, (double *)double_array)))
+        return ret;
+
+    if (flavor == PIO_IOTYPE_NETCDF4C || flavor == PIO_IOTYPE_NETCDF4P)
+    {
+        if ((ret = PIOc_put_vara(ncid, varid[7], start, count, (unsigned char *)ubyte_array)))
+            return ret;
+        if ((ret = PIOc_put_vara(ncid, varid[8], start, count, (unsigned short *)ushort_array)))
+            return ret;
+        if ((ret = PIOc_put_vara(ncid, varid[9], start, count, (unsigned int *)uint_array)))
+            return ret;
+        if ((ret = PIOc_put_vara(ncid, varid[10], start, count, (long long *)int64_array)))
+            return ret;
+        if ((ret = PIOc_put_vara(ncid, varid[11], start, count, (unsigned long long *)uint64_array)))
+            return ret;
+    }
+
+    return 0;
+}
+
 /* Use the vars functions to write some data to an open test file. */
 int putget_write_vars(int ncid, int *varid, PIO_Offset *start, PIO_Offset *count,
                       PIO_Offset *stride, int flavor)
@@ -938,6 +982,50 @@ int putget_write_vars(int ncid, int *varid, PIO_Offset *start, PIO_Offset *count
         if ((ret = PIOc_put_vars_longlong(ncid, varid[10], start, count, stride, (long long *)int64_array)))
             return ret;
         if ((ret = PIOc_put_vars_ulonglong(ncid, varid[11], start, count, stride, (unsigned long long *)uint64_array)))
+            return ret;
+    }
+
+    return 0;
+}
+
+/* Use the no-type vars functions to write some data to an open test file. */
+int putget_write_vars_nt(int ncid, int *varid, PIO_Offset *start, PIO_Offset *count,
+                         PIO_Offset *stride, int flavor)
+{
+    int ret;
+
+    if ((ret = PIOc_put_vara(ncid, varid[1], start, count, (char *)text_array)))
+        return ret;
+
+    if ((ret = PIOc_put_vars(ncid, varid[0], start, count, stride, (signed char *)byte_array)))
+        return ret;
+
+    if ((ret = PIOc_put_vars(ncid, varid[2], start, count, stride, (short *)short_array)))
+        return ret;
+
+    if ((ret = PIOc_put_vars(ncid, varid[3], start, count, stride, (int *)int_array)))
+        return ret;
+
+    if ((ret = PIOc_put_vars(ncid, varid[4], start, count, stride, (int *)int_array)))
+        return ret;
+
+    if ((ret = PIOc_put_vars(ncid, varid[5], start, count, stride, (float *)float_array)))
+        return ret;
+
+    if ((ret = PIOc_put_vars(ncid, varid[6], start, count, stride, (double *)double_array)))
+        return ret;
+
+    if (flavor == PIO_IOTYPE_NETCDF4C || flavor == PIO_IOTYPE_NETCDF4P)
+    {
+        if ((ret = PIOc_put_vars(ncid, varid[7], start, count, stride, (unsigned char *)ubyte_array)))
+            return ret;
+        if ((ret = PIOc_put_vars(ncid, varid[8], start, count, stride, (unsigned short *)ushort_array)))
+            return ret;
+        if ((ret = PIOc_put_vars(ncid, varid[9], start, count, stride, (unsigned int *)uint_array)))
+            return ret;
+        if ((ret = PIOc_put_vars(ncid, varid[10], start, count, stride, (long long *)int64_array)))
+            return ret;
+        if ((ret = PIOc_put_vars(ncid, varid[11], start, count, stride, (unsigned long long *)uint64_array)))
             return ret;
     }
 
@@ -1493,6 +1581,180 @@ int putget_read_vars(int ncid, int *varid, PIO_Offset *start, PIO_Offset *count,
     return 0;
 }
 
+/* Use the no-type vara functions to read some data from an open test file. */
+int putget_read_vara_nt(int ncid, int *varid, PIO_Offset *start, PIO_Offset *count,
+                        int flavor)
+{
+    signed char byte_array_in[X_DIM_LEN][Y_DIM_LEN];
+    char text_array_in[X_DIM_LEN][Y_DIM_LEN];
+    short short_array_in[X_DIM_LEN][Y_DIM_LEN];
+    unsigned char ubyte_array_in[X_DIM_LEN][Y_DIM_LEN];
+    int int_array_in[X_DIM_LEN][Y_DIM_LEN];
+    int int_array_in2[X_DIM_LEN][Y_DIM_LEN];
+    float float_array_in[X_DIM_LEN][Y_DIM_LEN];
+    double double_array_in[X_DIM_LEN][Y_DIM_LEN];
+    unsigned short ushort_array_in[X_DIM_LEN][Y_DIM_LEN];
+    unsigned int uint_array_in[X_DIM_LEN][Y_DIM_LEN];
+    long long int64_array_in[X_DIM_LEN][Y_DIM_LEN];
+    unsigned long long uint64_array_in[X_DIM_LEN][Y_DIM_LEN];
+    int x, y;
+    int ret;
+
+    if ((ret = PIOc_get_vara(ncid, varid[0], start, count, (signed char *)byte_array_in)))
+        return ret;
+    if ((ret = PIOc_get_vara(ncid, varid[1], start, count, (char *)text_array_in)))
+        return ret;
+    if ((ret = PIOc_get_vara(ncid, varid[2], start, count, (short *)short_array_in)))
+        return ret;
+    if ((ret = PIOc_get_vara(ncid, varid[3], start, count, (int *)int_array_in)))
+        return ret;
+    if ((ret = PIOc_get_vara(ncid, varid[4], start, count, (int *)int_array_in2)))
+        return ret;
+    if ((ret = PIOc_get_vara(ncid, varid[5], start, count, (float *)float_array_in)))
+        return ret;
+    if ((ret = PIOc_get_vara(ncid, varid[6], start, count, (double *)double_array_in)))
+        return ret;
+
+    for (x = 0; x < X_DIM_LEN; x++)
+    {
+        if (strncmp(text_array_in[x], text, strlen(text)))
+                return ERR_WRONG;
+        for (y = 0; y < Y_DIM_LEN; y++)
+        {
+            if (byte_array_in[x][y] != byte_array[x][y])
+                return ERR_WRONG;
+            if (short_array_in[x][y] != short_array[x][y])
+                return ERR_WRONG;
+            if (int_array_in[x][y] != int_array[x][y])
+                return ERR_WRONG;
+            if (int_array_in2[x][y] != int_array[x][y])
+                return ERR_WRONG;
+            if (float_array_in[x][y] != float_array[x][y])
+                return ERR_WRONG;
+            if (double_array_in[x][y] != double_array[x][y])
+                return ERR_WRONG;
+        }
+    }
+
+    if (flavor == PIO_IOTYPE_NETCDF4C || flavor == PIO_IOTYPE_NETCDF4P)
+    {
+        if ((ret = PIOc_get_vara(ncid, varid[7], start, count, (unsigned char *)ubyte_array_in)))
+            return ret;
+
+        if ((ret = PIOc_get_vara(ncid, varid[8], start, count, (unsigned short *)ushort_array_in)))
+            return ret;
+        if ((ret = PIOc_get_vara(ncid, varid[9], start, count, (unsigned int *)uint_array_in)))
+            return ret;
+        if ((ret = PIOc_get_vara(ncid, varid[10], start, count, (long long *)int64_array_in)))
+            return ret;
+        if ((ret = PIOc_get_vara(ncid, varid[11], start, count, (unsigned long long *)uint64_array_in)))
+            return ret;
+        for (x = 0; x < X_DIM_LEN; x++)
+            for (y = 0; y < Y_DIM_LEN; y++)
+            {
+                if (ubyte_array_in[x][y] != ubyte_array[x][y])
+                    return ERR_WRONG;
+                if (ushort_array_in[x][y] != ushort_array[x][y])
+                    return ERR_WRONG;
+                if (uint_array_in[x][y] != uint_array[x][y])
+                    return ERR_WRONG;
+                if (int64_array_in[x][y] != int64_array[x][y])
+                    return ERR_WRONG;
+                if (uint64_array_in[x][y] != uint64_array[x][y])
+                    return ERR_WRONG;
+            }
+    }
+
+    return 0;
+}
+
+/* Use the vars functions to read some data from an open test file. */
+int putget_read_vars_nt(int ncid, int *varid, PIO_Offset *start, PIO_Offset *count,
+                        PIO_Offset *stride, int flavor)
+{
+    signed char byte_array_in[X_DIM_LEN][Y_DIM_LEN];
+    char text_array_in[X_DIM_LEN][Y_DIM_LEN];
+    short short_array_in[X_DIM_LEN][Y_DIM_LEN];
+    unsigned char ubyte_array_in[X_DIM_LEN][Y_DIM_LEN];
+    int int_array_in[X_DIM_LEN][Y_DIM_LEN];
+    int int_array_in2[X_DIM_LEN][Y_DIM_LEN];
+    float float_array_in[X_DIM_LEN][Y_DIM_LEN];
+    double double_array_in[X_DIM_LEN][Y_DIM_LEN];
+    unsigned short ushort_array_in[X_DIM_LEN][Y_DIM_LEN];
+    unsigned int uint_array_in[X_DIM_LEN][Y_DIM_LEN];
+    long long int64_array_in[X_DIM_LEN][Y_DIM_LEN];
+    unsigned long long uint64_array_in[X_DIM_LEN][Y_DIM_LEN];
+    int x, y;
+    int ret;
+
+    if ((ret = PIOc_get_vars(ncid, varid[0], start, count, stride, (signed char *)byte_array_in)))
+        return ret;
+    if ((ret = PIOc_get_vars(ncid, varid[1], start, count, stride, (char *)text_array_in)))
+        return ret;
+    if ((ret = PIOc_get_vars(ncid, varid[2], start, count, stride, (short *)short_array_in)))
+        return ret;
+    if ((ret = PIOc_get_vars(ncid, varid[3], start, count, stride, (int *)int_array_in)))
+        return ret;
+    if ((ret = PIOc_get_vars(ncid, varid[4], start, count, stride, (int *)int_array_in2)))
+        return ret;
+    if ((ret = PIOc_get_vars(ncid, varid[5], start, count, stride, (float *)float_array_in)))
+        return ret;
+    if ((ret = PIOc_get_vars(ncid, varid[6], start, count, stride, (double *)double_array_in)))
+        return ret;
+
+    for (x = 0; x < X_DIM_LEN; x++)
+    {
+        if (strncmp(text_array_in[x], text, strlen(text)))
+            return ERR_WRONG;
+        for (y = 0; y < Y_DIM_LEN; y++)
+        {
+            if (byte_array_in[x][y] != byte_array[x][y])
+                return ERR_WRONG;
+            if (short_array_in[x][y] != short_array[x][y])
+                return ERR_WRONG;
+            if (int_array_in[x][y] != int_array[x][y])
+                return ERR_WRONG;
+            if (int_array_in2[x][y] != int_array[x][y])
+                return ERR_WRONG;
+            if (float_array_in[x][y] != float_array[x][y])
+                return ERR_WRONG;
+            if (double_array_in[x][y] != double_array[x][y])
+                return ERR_WRONG;
+        }
+    }
+
+    if (flavor == PIO_IOTYPE_NETCDF4C || flavor == PIO_IOTYPE_NETCDF4P)
+    {
+        if ((ret = PIOc_get_vars(ncid, varid[7], start, count, stride, (unsigned char *)ubyte_array_in)))
+            return ret;
+
+        if ((ret = PIOc_get_vars(ncid, varid[8], start, count, stride, (unsigned short *)ushort_array_in)))
+            return ret;
+        if ((ret = PIOc_get_vars(ncid, varid[9], start, count, stride, (unsigned int *)uint_array_in)))
+            return ret;
+        if ((ret = PIOc_get_vars(ncid, varid[10], start, count, stride, (long long *)int64_array_in)))
+            return ret;
+        if ((ret = PIOc_get_vars(ncid, varid[11], start, count, stride, (unsigned long long *)uint64_array_in)))
+            return ret;
+        for (x = 0; x < X_DIM_LEN; x++)
+            for (y = 0; y < Y_DIM_LEN; y++)
+            {
+                if (ubyte_array_in[x][y] != ubyte_array[x][y])
+                    return ERR_WRONG;
+                if (ushort_array_in[x][y] != ushort_array[x][y])
+                    return ERR_WRONG;
+                if (uint_array_in[x][y] != uint_array[x][y])
+                    return ERR_WRONG;
+                if (int64_array_in[x][y] != int64_array[x][y])
+                    return ERR_WRONG;
+                if (uint64_array_in[x][y] != uint64_array[x][y])
+                    return ERR_WRONG;
+            }
+    }
+
+    return 0;
+}
+
 /* Create a test file for the putget tests to write data to and check
  * by reading it back. In this function we create the file, define the
  * dims and vars, and pass back the ncid.
@@ -1569,6 +1831,71 @@ int create_putget_file(int iosysid, int access, int unlim, int flavor, int *dim_
     return 0;
 }
 
+/** Check the contents of the test file. */
+int check_file(int access, int ncid, int *varid, int flavor, PIO_Offset *index, PIO_Offset *start,
+               PIO_Offset *count, PIO_Offset *stride, int unlim)
+{
+    int ret;
+    
+    switch (access)
+    {
+    case 0:
+        /* Use the att functions to read some data. */
+        if ((ret = test_read_att(ncid, varid, flavor)))
+            return ret;
+
+        /* Use the vara functions to read some data. */
+        if ((ret = putget_read_var(ncid, varid, unlim, flavor)))
+            return ret;
+        break;
+
+    case 1:
+        /* Use the var1 functions to read some data. */
+        if ((ret = putget_read_var1(ncid, varid, index, flavor)))
+            return ret;
+        break;
+
+    case 2:
+        /* Use the vara functions to read some data. */
+        if ((ret = putget_read_vara(ncid, varid, start, count, flavor)))
+            return ret;
+        break;
+
+    case 3:
+        /* Use the vara functions to read some data. */
+        if ((ret = putget_read_vars(ncid, varid, start, count, stride, flavor)))
+            return ret;
+        break;
+
+    case 4:
+        /* Use the var1 functions to read some data. */
+        if ((ret = putget_read_var_nt(ncid, varid, unlim, flavor)))
+            return ret;
+        break;
+
+    case 5:
+        /* Use the var1 functions to read some data. */
+        if ((ret = putget_read_var1_nt(ncid, varid, index, flavor)))
+            return ret;
+        break;
+
+    case 6:
+        /* Use the vara functions to read some data. */
+        if ((ret = putget_read_vara_nt(ncid, varid, start, count, flavor)))
+            return ret;
+        break;
+
+    case 7:
+        /* Use the vara functions to read some data. */
+        if ((ret = putget_read_vars_nt(ncid, varid, start, count, stride, flavor)))
+            return ret;
+        break;
+
+    }
+
+    return PIO_NOERR;
+}
+
 /* Test data read/write operations.
  *
  * This function creates a file with 3 dimensions, with a var of each
@@ -1586,7 +1913,7 @@ int test_putget(int iosysid, int num_flavors, int *flavor, int my_rank,
 {
     int dim_len[NDIM] = {NC_UNLIMITED, X_DIM_LEN, Y_DIM_LEN};
 
-#define NUM_ACCESS 5
+#define NUM_ACCESS 7
     for (int unlim = 0; unlim < 2; unlim++)
         for (int access = 0; access < NUM_ACCESS; access++)
         {
@@ -1649,14 +1976,26 @@ int test_putget(int iosysid, int num_flavors, int *flavor, int my_rank,
                     break;
 
                 case 4:
-                    /* Use the var1 functions to write some data. */
+                    /* Use the no-type var functions to write some data. */
                     if ((ret = putget_write_var_nt(ncid, varid, flavor[fmt])))
                         return ret;
                     break;
 
                 case 5:
-                    /* Use the var1 functions to write some data. */
+                    /* Use the no-type var1 functions to write some data. */
                     if ((ret = putget_write_var1_nt(ncid, varid, index, flavor[fmt])))
+                        return ret;
+                    break;
+
+                case 6:
+                    /* Use the no-type vara functions to write some data. */
+                    if ((ret = putget_write_vara_nt(ncid, varid, start, count, flavor[fmt])))
+                        return ret;
+                    break;
+
+                case 7:
+                    /* Use the no-type vars functions to write some data. */
+                    if ((ret = putget_write_vars_nt(ncid, varid, start, count, stride, flavor[fmt])))
                         return ret;
                     break;
 
@@ -1670,49 +2009,9 @@ int test_putget(int iosysid, int num_flavors, int *flavor, int my_rank,
                 if ((ret = PIOc_sync(ncid)))
                     return ret;
 
-                switch (access)
-                {
-                case 0:
-                    /* Use the att functions to read some data. */
-                    if ((ret = test_read_att(ncid, varid, flavor[fmt])))
-                        return ret;
-
-                    /* Use the vara functions to read some data. */
-                    if ((ret = putget_read_var(ncid, varid, unlim, flavor[fmt])))
-                        return ret;
-                    break;
-
-                case 1:
-                    /* Use the var1 functions to read some data. */
-                    if ((ret = putget_read_var1(ncid, varid, index, flavor[fmt])))
-                        return ret;
-                    break;
-
-                case 2:
-                    /* Use the vara functions to read some data. */
-                    if ((ret = putget_read_vara(ncid, varid, start, count, flavor[fmt])))
-                        return ret;
-                    break;
-
-                case 3:
-                    /* Use the vara functions to read some data. */
-                    if ((ret = putget_read_vars(ncid, varid, start, count, stride, flavor[fmt])))
-                        return ret;
-                    break;
-
-                case 4:
-                    /* Use the var1 functions to read some data. */
-                    if ((ret = putget_read_var_nt(ncid, varid, unlim, flavor[fmt])))
-                        return ret;
-                    break;
-
-                case 5:
-                    /* Use the var1 functions to read some data. */
-                    if ((ret = putget_read_var1_nt(ncid, varid, index, flavor[fmt])))
-                        return ret;
-                    break;
-
-                }
+                /* Check contents of the file. */
+                if ((ret = check_file(access, ncid, varid, flavor[fmt], index, start, count, stride, unlim)))
+                    return ret;
 
                 /* Close the netCDF file. */
                 if ((ret = PIOc_closefile(ncid)))
@@ -1723,32 +2022,9 @@ int test_putget(int iosysid, int num_flavors, int *flavor, int my_rank,
                 if ((ret = PIOc_openfile(iosysid, &ncid, &(flavor[fmt]), filename, PIO_NOWRITE)))
                     ERR(ret);
 
-                switch (access)
-                {
-                case 0:
-                    /* Use the vara functions to read some data. */
-                    if ((ret = putget_read_var(ncid, varid, unlim, flavor[fmt])))
-                        return ret;
-                    break;
-
-                case 1:
-                    /* Use the var1 functions to read some data. */
-                    if ((ret = putget_read_var1(ncid, varid, index, flavor[fmt])))
-                        return ret;
-                    break;
-
-                case 2:
-                    /* Use the vara functions to read some data. */
-                    if ((ret = putget_read_vara(ncid, varid, start, count, flavor[fmt])))
-                        return ret;
-                    break;
-
-                case 3:
-                    /* Use the vara functions to read some data. */
-                    if ((ret = putget_read_vars(ncid, varid, start, count, stride, flavor[fmt])))
-                        return ret;
-                    break;
-                }
+                /* Check contents of the file. */
+                if ((ret = check_file(access, ncid, varid, flavor[fmt], index, start, count, stride, unlim)))
+                    return ret;
 
                 /* Close the netCDF file. */
                 if ((ret = PIOc_closefile(ncid)))
