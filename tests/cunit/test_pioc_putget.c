@@ -1227,9 +1227,8 @@ int putget_read_vars(int ncid, int *varid, PIO_Offset *start, PIO_Offset *count,
  * @returns 0 for success, error code otherwise.
  */
 int create_putget_file(int iosysid, int access, int unlim, int flavor, int *dim_len,
-                       int *varid, char *filename, int *ncidp)
+                       int *varid, const char *filename, int *ncidp)
 {
-    char iotype_name[PIO_MAX_NAME + 1];
     int dimids[NDIM];        /* The dimension IDs. */
     int num_vars = NUM_CLASSIC_TYPES + 1;
     int xtype[NUM_NETCDF4_TYPES + 1] = {PIO_BYTE, PIO_CHAR, PIO_SHORT, PIO_INT, PIO_LONG_INTERNAL,
@@ -1237,12 +1236,6 @@ int create_putget_file(int iosysid, int access, int unlim, int flavor, int *dim_
                                         PIO_UINT64, PIO_STRING};
     int ncid;
     int ret;
-
-    /* Create a filename. */
-    if ((ret = get_iotype_name(flavor, iotype_name)))
-        return ret;
-    sprintf(filename, "%s_putget_access_%d_unlim_%d_%s.nc", TEST_NAME, access, unlim,
-            iotype_name);
 
     /* Create the netCDF output file. */
     if ((ret = PIOc_createfile(iosysid, &ncid, &flavor, filename, PIO_CLOBBER)))
@@ -1252,6 +1245,7 @@ int create_putget_file(int iosysid, int access, int unlim, int flavor, int *dim_
     if (!unlim)
         dim_len[0] = NUM_TIMESTEPS;
 
+    printf("filename = %s\n", filename);
     /* Define netCDF dimensions and variable. */
     for (int d = 0; d < NDIM; d++)
         if ((ret = PIOc_def_dim(ncid, dim_name[d], (PIO_Offset)dim_len[d], &dimids[d])))
@@ -1261,16 +1255,24 @@ int create_putget_file(int iosysid, int access, int unlim, int flavor, int *dim_
     if (flavor == PIO_IOTYPE_NETCDF4C || flavor == PIO_IOTYPE_NETCDF4P)
         num_vars = NUM_NETCDF4_TYPES + 1;
 
+    printf("filename = %s\n", filename);
     /* Define variables. */
     for (int v = 0; v < num_vars; v++)
     {
         char var_name[PIO_MAX_NAME + 1];
         snprintf(var_name, PIO_MAX_NAME, "%s_%d", VAR_NAME, xtype[v]);
-        nc_type my_type = xtype[v] == PIO_LONG_INTERNAL ? PIO_INT : xtype[v];
+        printf("defining var %s\n", var_name);
+        /*nc_type my_type = xtype[v] == PIO_LONG_INTERNAL ? PIO_INT : xtype[v];*/
+        nc_type my_type;
+        if (xtype[v] == PIO_LONG_INTERNAL)
+            my_type = PIO_INT;
+        else
+            my_type = xtype[v];
         if ((ret = PIOc_def_var(ncid, var_name, my_type, NDIM, dimids, &varid[v])))
             return ret;
     }
 
+    printf("filename = %s\n", filename);
     /* For the first access, also test attributes. */
     if (access == 0)
         if ((ret = test_write_atts(ncid, varid, flavor)))
@@ -1311,16 +1313,24 @@ int test_putget(int iosysid, int num_flavors, int *flavor, int my_rank,
             for (int fmt = 0; fmt < num_flavors; fmt++)
             {
                 char filename[PIO_MAX_NAME + 1]; /* Test filename. */
+                char iotype_name[PIO_MAX_NAME + 1];
                 int ncid;
-                int varid[NUM_NETCDF4_TYPES];
+                int varid[NUM_NETCDF4_TYPES + 1];
                 int ret;    /* Return code. */
 
+                /* Create a filename. */
+                if ((ret = get_iotype_name(flavor[fmt], iotype_name)))
+                    return ret;
+                snprintf(filename, PIO_MAX_NAME, "%s_putget_access_%d_unlim_%d_%s.nc", TEST_NAME,
+                         access, unlim, iotype_name);
+
                 /* Create test file with dims and vars defined. */
-                printf("%d Access %d creating test file for flavor = %d...\n",
-                       my_rank, access, flavor[fmt]);
+                printf("%d Access %d creating test file %s for flavor = %d...\n", my_rank, access,
+                       filename, flavor[fmt]);
                 if ((ret = create_putget_file(iosysid, access, unlim, flavor[fmt], dim_len, varid,
                                               filename, &ncid)))
                     return ret;
+                printf("created file %s\n", filename);
 
                 /* Write some data. */
                 PIO_Offset index[NDIM] = {0, 0, 0};
@@ -1400,7 +1410,8 @@ int test_putget(int iosysid, int num_flavors, int *flavor, int my_rank,
                 if ((ret = PIOc_closefile(ncid)))
                     ERR(ret);
 
-                /* Access to read it. */
+                /* /\* Access to read it. *\/ */
+                printf("about to try to open file %s\n", filename);
                 if ((ret = PIOc_openfile(iosysid, &ncid, &(flavor[fmt]), filename, PIO_NOWRITE)))
                     ERR(ret);
 
@@ -1474,7 +1485,7 @@ int main(int argc, char **argv)
     /* Initialize data arrays with sample data. */
     init_arrays();
 
-    return run_test_main(argc, argv, MIN_NTASKS, TARGET_NTASKS, 3,
+    return run_test_main(argc, argv, MIN_NTASKS, TARGET_NTASKS, 0,
                          TEST_NAME, dim_len, COMPONENT_COUNT, NUM_IO_PROCS);
 
     return 0;
