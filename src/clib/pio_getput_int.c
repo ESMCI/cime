@@ -482,7 +482,8 @@ int PIOc_get_att_tc(int ncid, int varid, const char *name, nc_type memtype, void
  * used.
  * @param xtype the netCDF type of the data being passed in buf. Data
  * will be automatically covnerted from the type of the variable being
- * read from to this type.
+ * read from to this type. If NC_NAT then the variable's file type
+ * will be used. Use special PIO_LONG_INTERNAL for _long() functions.
  * @param buf pointer to the data to be written.
  * @return PIO_NOERR on success, error code otherwise.
  */
@@ -500,6 +501,7 @@ int PIOc_get_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
     char count_present = count ? true : false;
     char stride_present = stride ? true : false;
     PIO_Offset *rstart = NULL, *rcount = NULL;
+    nc_type vartype;   /* The type of the var we are reading from. */
 
     LOG((1, "PIOc_get_vars_tc ncid = %d varid = %d start = %d count = %d "
          "stride = %d xtype = %d", ncid, varid, start, count, stride, xtype));
@@ -517,6 +519,15 @@ int PIOc_get_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
      * non-IO tasks if async is in use. */
     if (!ios->async_interface || !ios->ioproc)
     {
+        /* Get the type of this var. */
+        if ((ierr = PIOc_inq_vartype(ncid, varid, &vartype)))
+            return check_netcdf(file, ierr, __FILE__, __LINE__);
+
+        /* If no type was specified, use the var type. */
+        if (xtype == NC_NAT)
+            xtype = vartype;
+
+        /* Handle _long() calls with an special type. */
         if (xtype == PIO_LONG_INTERNAL)
             typelen = sizeof(long int);
         else
@@ -630,6 +641,8 @@ int PIOc_get_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
         if ((mpierr = MPI_Bcast(&num_elem, 1, MPI_OFFSET, ios->comproot, ios->my_comm)))
             check_mpi(file, mpierr, __FILE__, __LINE__);
         if ((mpierr = MPI_Bcast(&typelen, 1, MPI_OFFSET, ios->comproot, ios->my_comm)))
+            check_mpi(file, mpierr, __FILE__, __LINE__);
+        if ((mpierr = MPI_Bcast(&xtype, 1, MPI_INT, ios->comproot, ios->my_comm)))
             check_mpi(file, mpierr, __FILE__, __LINE__);
     }
 
@@ -867,7 +880,8 @@ int PIOc_get_var1_tc(int ncid, int varid, const PIO_Offset *index, nc_type xtype
  * used.
  * @param xtype the netCDF type of the data being passed in buf. Data
  * will be automatically covnerted from this type to the type of the
- * variable being written to.
+ * variable being written to. If NC_NAT then the variable's file type
+ * will be used. Use special PIO_LONG_INTERNAL for _long() functions.
  * @param buf pointer to the data to be written.
  *
  * @return PIO_NOERR on success, error code otherwise.
@@ -877,8 +891,6 @@ int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Pointer to file information. */
-    int ierr = PIO_NOERR;  /* Return code from function calls. */
-    int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
     int ndims; /* The number of dimensions in the variable. */
     PIO_Offset typelen; /* Size (in bytes) of the data type of data in buf. */
     PIO_Offset num_elem = 1; /* Number of data elements in the buffer. */
@@ -888,6 +900,9 @@ int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
     PIO_Offset *rstart, *rcount, *rstride;
     var_desc_t *vdesc;
     int *request;
+    nc_type vartype;   /* The type of the var we are reading from. */
+    int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
+    int ierr;          /* Return code from function calls. */
 
     LOG((1, "PIOc_put_vars_tc ncid = %d varid = %d start = %d count = %d "
          "stride = %d xtype = %d", ncid, varid, start, count, stride, xtype));
@@ -905,6 +920,14 @@ int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
      * non-IO tasks if async is in use. */
     if (!ios->async_interface || !ios->ioproc)
     {
+        /* Get the type of this var. */
+        if ((ierr = PIOc_inq_vartype(ncid, varid, &vartype)))
+            return check_netcdf(file, ierr, __FILE__, __LINE__);
+
+        /* If no type was specified, use the var type. */
+        if (xtype == NC_NAT)
+            xtype = vartype;
+
         /* Get the number of dims for this var. */
         if ((ierr = PIOc_inq_varndims(ncid, varid, &ndims)))
             return check_netcdf(file, ierr, __FILE__, __LINE__);
@@ -1033,6 +1056,8 @@ int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
         /* Broadcast values currently only known on computation tasks to IO tasks. */
         LOG((2, "PIOc_put_vars_tc bcast from comproot"));
         if ((mpierr = MPI_Bcast(&ndims, 1, MPI_INT, ios->comproot, ios->my_comm)))
+            return check_mpi(file, mpierr, __FILE__, __LINE__);
+        if ((mpierr = MPI_Bcast(&xtype, 1, MPI_INT, ios->comproot, ios->my_comm)))
             return check_mpi(file, mpierr, __FILE__, __LINE__);
         LOG((2, "PIOc_put_vars_tc complete bcast from comproot ndims = %d", ndims));
     }
