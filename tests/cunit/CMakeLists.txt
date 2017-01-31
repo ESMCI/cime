@@ -70,7 +70,11 @@ add_dependencies (tests test_pioc_putget)
 add_dependencies (tests test_decomps)
 
 # Test Timeout in seconds.
-set (DEFAULT_TEST_TIMEOUT 60)
+if (PIO_VALGRIND_CHECK)
+  set (DEFAULT_TEST_TIMEOUT 120)
+else ()
+  set (DEFAULT_TEST_TIMEOUT 60)
+endif ()
 
 # All tests need a certain number of tasks, but they should be able to
 # run successfully with more than they need. Test this by providing an
