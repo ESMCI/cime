@@ -154,7 +154,7 @@ int PIOc_put_att_tc(int ncid, int varid, const char *name, nc_type atttype,
                 ierr = ncmpi_put_att_longlong(file->fh, varid, name, atttype, len, op);
                 break;
             default:
-                return pio_err(ios, file, PIO_EINVAL, __FILE__, __LINE__);
+                return pio_err(ios, file, PIO_EBADTYPE, __FILE__, __LINE__);
             }
         }
 #endif /* _PNETCDF */
@@ -206,7 +206,7 @@ int PIOc_put_att_tc(int ncid, int varid, const char *name, nc_type atttype,
                 /*      break; */
 #endif /* _NETCDF4 */
             default:
-                return pio_err(ios, file, PIO_EINVAL, __FILE__, __LINE__);
+                return pio_err(ios, file, PIO_EBADTYPE, __FILE__, __LINE__);
             }
         }
     }
@@ -378,7 +378,7 @@ int PIOc_get_att_tc(int ncid, int varid, const char *name, nc_type memtype, void
                 ierr = ncmpi_get_att_longlong(file->fh, varid, name, ip);
                 break;
             default:
-                return pio_err(ios, file, PIO_EINVAL, __FILE__, __LINE__);
+                return pio_err(ios, file, PIO_EBADTYPE, __FILE__, __LINE__);
             }
         }
 #endif /* _PNETCDF */
@@ -428,9 +428,9 @@ int PIOc_get_att_tc(int ncid, int varid, const char *name, nc_type memtype, void
                 /* case NC_STRING: */
                 /*      ierr = nc_get_att_string(file->fh, varid, name, ip); */
                 /*      break; */
-            default:
-                return pio_err(ios, file, PIO_EINVAL, __FILE__, __LINE__);
 #endif /* _NETCDF4 */
+            default:
+                return pio_err(ios, file, PIO_EBADTYPE, __FILE__, __LINE__);
             }
         }
 #endif /* _NETCDF */
@@ -689,7 +689,6 @@ int PIOc_get_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
                 }
             };
             ncmpi_end_indep_data(file->fh);
-            bcast=true;
 #else /* PNET_READ_AND_BCAST */
             LOG((1, "not PNET_READ_AND_BCAST"));
             switch(xtype)
@@ -716,7 +715,7 @@ int PIOc_get_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
                 ierr = ncmpi_get_vars_double_all(file->fh, varid, start, count, stride, buf);
                 break;
             default:
-                return pio_err(ios, file, PIO_EBADIOTYPE, __FILE__, __LINE__);
+                return pio_err(ios, file, PIO_EBADTYPE, __FILE__, __LINE__);
             }
 #endif /* PNET_READ_AND_BCAST */
         }
@@ -779,9 +778,9 @@ int PIOc_get_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
                 /*      ierr = nc_get_vars_string(file->fh, varid, (size_t *)start, (size_t *)count, */
                 /*                                (ptrdiff_t *)stride, (void *)buf); */
                 /*      break; */
-            default:
-                return pio_err(ios, file, PIO_EBADIOTYPE, __FILE__, __LINE__);
 #endif /* _NETCDF4 */
+            default:
+                return pio_err(ios, file, PIO_EBADTYPE, __FILE__, __LINE__);
             }
 #endif /* _NETCDF */
     }
@@ -1117,7 +1116,7 @@ int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
                     ierr = ncmpi_bput_vars_double(file->fh, varid, start, count, fake_stride, buf, request);
                     break;
                 default:
-                    return pio_err(ios, file, PIO_EBADIOTYPE, __FILE__, __LINE__);
+                    return pio_err(ios, file, PIO_EBADTYPE, __FILE__, __LINE__);
                 }
                 LOG((2, "PIOc_put_vars_tc io_rank 0 done with pnetcdf call, ierr=%d", ierr));
             }
@@ -1193,9 +1192,9 @@ int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
                 /*      ierr = nc_put_vars_string(file->fh, varid, (size_t *)start, (size_t *)count, */
                 /*                                (ptrdiff_t *)stride, (void *)buf); */
                 /*      break; */
-            default:
-                return pio_err(ios, file, PIO_EBADIOTYPE, __FILE__, __LINE__);
 #endif /* _NETCDF4 */
+            default:
+                return pio_err(ios, file, PIO_EBADTYPE, __FILE__, __LINE__);
             }
             LOG((2, "PIOc_put_vars_tc io_rank 0 done with netcdf call, ierr=%d", ierr));
         }
