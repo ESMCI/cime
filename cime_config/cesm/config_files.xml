@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 
-<?xml-stylesheet type="text/xsl" href="definitions_variables.xsl" ?>
+<?xml-stylesheet type="text/xsl" ?>
 
-<files>
+<entry_id>
 
   <entry id="MODEL">
     <type>char</type>
@@ -30,6 +30,7 @@
     <group>case_last</group>
     <file>env_case.xml</file>
     <desc>file containing specification of all supported model grids, domains and mapping files (for documentation only - DO NOT EDIT)</desc>
+    <schema version="2.0">$CIMEROOT/cime_config/xml_schemas/config_grids_v2.xsd</schema>
   </entry>
 
   <entry id="MACHINES_SPEC_FILE">
@@ -38,6 +39,7 @@
     <group>case_last</group>
     <file>env_case.xml</file>
     <desc>file containing machine specifications for target model primary component (for documentation only - DO NOT EDIT)</desc>
+    <schema>$CIMEROOT/cime_config/xml_schemas/config_machines.xsd</schema>
   </entry>
 
   <entry id="COMPILERS_SPEC_FILE">
@@ -46,14 +48,7 @@
     <group>case_last</group>
     <file>env_case.xml</file>
     <desc>file containing compiler specifications for target model primary component (for documentation only - DO NOT EDIT)</desc>
-  </entry>
-
-  <entry id="BUILD_SPEC_FILE">
-    <type>char</type>
-    <default_value>$CIMEROOT/cime_config/$MODEL/machines/config_build.xml</default_value>
-    <group>case_last</group>
-    <file>env_case.xml</file>
-    <desc>file containing build specifications for target model primary component (for documentation only - DO NOT EDIT)</desc>
+    <schema>$CIMEROOT/cime_config/xml_schemas/config_compilers_v2.xsd</schema>
   </entry>
 
   <entry id="PIO_SPEC_FILE">
@@ -113,6 +108,7 @@
     <group>case_last</group>
     <file>env_case.xml</file>
     <desc>file containing specification of all pe-layouts for primary component (for documentation only - DO NOT EDIT)</desc>
+    <schema>$CIMEROOT/cime_config/xml_schemas/config_pes.xsd</schema>
   </entry>
 
   <entry id="SYSTEM_TESTS_DIR">
@@ -191,16 +187,25 @@
     <desc>directory containing user modifications for primary components (for documentation only - DO NOT EDIT)</desc>
   </entry>
 
+  <entry id="LTARCHIVE_SPEC_FILE">
+    <type>char</type>
+    <default_value>$CIMEROOT/cime_config/$MODEL/machines/config_lt_archive.xml</default_value>
+    <group>case_last</group>
+    <file>env_case.xml</file>
+    <desc>file containing all lt archive configuration variables (for documentation only - DO NOT EDIT)</desc>
+  </entry>
+
   <!-- =============================================================== -->
   <!-- File names for all component specific configuration variables -->
   <!-- =============================================================== -->
 
-  <entry id="CONFIG_DRV_FILE">
+  <entry id="CONFIG_CPL_FILE">
     <type>char</type>
     <default_value>$CIMEROOT/driver_cpl/cime_config/config_component.xml</default_value>
     <group>case_last</group>
     <file>env_case.xml</file>
     <desc>file containing all non-component specific case configuration variables (for documentation only - DO NOT EDIT)</desc>
+    <schema>$CIMEROOT/cime_config/xml_schemas/entry_id.xsd</schema>
   </entry>
 
   <entry id="CONFIG_ATM_FILE">
@@ -215,6 +220,7 @@
     <group>case_last</group>
     <file>env_case.xml</file>
     <desc>file containing specification of component specific definitions and values(for documentation only - DO NOT EDIT)</desc>
+    <schema>$CIMEROOT/cime_config/xml_schemas/entry_id.xsd</schema>
   </entry>
 
   <entry id="CONFIG_LND_FILE">
@@ -230,6 +236,7 @@
     <group>case_last</group>
     <file>env_case.xml</file>
     <desc>file containing specification of component specific definitions and values(for documentation only - DO NOT EDIT)</desc>
+    <schema>$CIMEROOT/cime_config/xml_schemas/entry_id.xsd</schema>
   </entry>
 
   <entry id="CONFIG_ROF_FILE">
@@ -245,6 +252,7 @@
     <group>case_last</group>
     <file>env_case.xml</file>
     <desc>file containing specification of component specific definitions and values(for documentation only - DO NOT EDIT)</desc>
+    <schema>$CIMEROOT/cime_config/xml_schemas/entry_id.xsd</schema>
   </entry>
 
   <entry id="CONFIG_ICE_FILE">
@@ -259,6 +267,7 @@
     <group>case_last</group>
     <file>env_case.xml</file>
     <desc>file containing specification of component specific definitions and values(for documentation only - DO NOT EDIT)</desc>
+    <schema>$CIMEROOT/cime_config/xml_schemas/entry_id.xsd</schema>
   </entry>
 
   <entry id="CONFIG_OCN_FILE">
@@ -276,6 +285,7 @@
     <group>case_last</group>
     <file>env_case.xml</file>
     <desc>file containing specification of component specific definitions and values(for documentation only - DO NOT EDIT)</desc>
+    <schema>$CIMEROOT/cime_config/xml_schemas/entry_id.xsd</schema>
   </entry>
 
   <entry id="CONFIG_GLC_FILE">
@@ -290,13 +300,14 @@
     <group>case_last</group>
     <file>env_case.xml</file>
     <desc>file containing specification of component specific definitions and values(for documentation only - DO NOT EDIT)</desc>
+    <schema>$CIMEROOT/cime_config/xml_schemas/entry_id.xsd</schema>
   </entry>
 
   <entry id="CONFIG_WAV_FILE">
     <type>char</type>
     <default_value>unset</default_value>
     <values>
-      <value component="ww"  >$SRCROOT/components/ww3/cime_config/config_component.xml</value>
+      <value component="ww3" >$SRCROOT/components/ww3/cime_config/config_component.xml</value>
       <value component="dwav">$CIMEROOT/components/data_comps/dwav/cime_config/config_component.xml</value>
       <value component="swav">$CIMEROOT/components/stub_comps/swav/cime_config/config_component.xml</value>
       <value component="xwav">$CIMEROOT/components/xcpl_comps/xwav/cime_config/config_component.xml</value>
@@ -304,6 +315,7 @@
     <group>case_last</group>
     <file>env_case.xml</file>
     <desc>file containing specification of component specific definitions and values(for documentation only - DO NOT EDIT)</desc>
+    <schema>$CIMEROOT/cime_config/xml_schemas/entry_id.xsd</schema>
   </entry>
 
   <entry id="CONFIG_ESP_FILE">
@@ -315,7 +327,7 @@
     <group>case_last</group>
     <file>env_case.xml</file>
     <desc>file containing specification of component specific definitions and values(for documentation only - DO NOT EDIT)</desc>
+    <schema>$CIMEROOT/cime_config/xml_schemas/entry_id.xsd</schema>
   </entry>
 
-</files>
-
+</entry_id>

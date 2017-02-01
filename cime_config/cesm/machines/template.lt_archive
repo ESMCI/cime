@@ -1,13 +1,12 @@
 #!/usr/bin/env python
+# Batch system directives
+{{ batchdirectives }}
 
 """
 template to create a case longterm term archiving script. This should only ever be called
 by case.submit when on batch system. This script only exists as a way of providing
 batch directives. Use case.submit from the command line to run your case.
 """
-
-# Batch system directives
-{{ batchdirectives }}
 
 import sys
 import os
