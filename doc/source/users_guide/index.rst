@@ -3,11 +3,22 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
+
+***********************
+**CIME User's Guide**
+***********************
+
 .. toctree::
    :maxdepth: 3
-      
-   users_guide/index.rst
-   data_models/index.rst
+   :numbered:
+
+   introduction-and-overview.rst
+   create-a-case.rst
+   building-a-case.rst
+   running-a-case.rst
+   porting-cime.rst
+   troubleshooting.rst
+   faq/faq.rst
 
 Indices and tables
 ==================
