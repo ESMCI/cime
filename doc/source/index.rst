@@ -16,6 +16,7 @@ CIME User's Guide
    building-a-case.rst
    running-a-case.rst
    porting-cime.rst
+   troubleshooting.rst
    faq/faq.rst
 
 Indices and tables
