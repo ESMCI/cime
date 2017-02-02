@@ -3,11 +3,22 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
+***********************
+**CIME Data Models**
+***********************
+
 .. toctree::
    :maxdepth: 3
+   :numbered:
       
-   users_guide/index.rst
-   data_models/index.rst
+   introduction.rst
+   input-streams.rst
+   data-model-science.rst
+   data-atm.rst
+   data-lnd.rst
+   data-seaice.rst
+   data-ocean.rst
+   data-river.rst
 
 Indices and tables
 ==================
