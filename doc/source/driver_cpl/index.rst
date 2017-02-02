@@ -12,6 +12,8 @@
    :numbered:
       
    introduction.rst
+   design.rst
+   implementation.rst
 
 Indices and tables
 ==================
