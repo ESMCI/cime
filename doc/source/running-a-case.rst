@@ -23,7 +23,13 @@ branch
   To set up a branch run, locate the restart tar file or restart directory for ``$RUN_REFCASE`` and ``$RUN_REFDATE`` from a previous run, then place those files in the ``$RUNDIR`` directory. See `setting up a branch run <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_ for an example.
 
 hybrid
-  A hybrid run indicates that CESM is initialized more like a startup, but uses initialization datasets from a previous case. This is somewhat analogous to a branch run with relaxed restart constraints. A hybrid run allows users to bring together combinations of initial/restart files from a previous case (specified by ``$RUN_REFCASE``) at a given model output date (specified by ``$RUN_REFDATE``). Unlike a branch run, the starting date of a hybrid run (specified by ``$RUN_STARTDATE``) can be modified relative to the reference case. In a hybrid run, the model does not continue in a bit-for-bit fashion with respect to the reference case. The resulting climate, however, should be continuous provided that no model source code or namelists are changed in the hybrid run. In a hybrid initialization, the ocean model does not start until the second ocean coupling step, and the coupler does a "cold start" without a restart file.
+  A hybrid run indicates that the model is initialized more like a startup, but uses initialization datasets from a previous case. 
+  This is somewhat analogous to a branch run with relaxed restart constraints. 
+  A hybrid run allows users to bring together combinations of initial/restart files from a previous case (specified by ``$RUN_REFCASE``) at a given model output date (specified by ``$RUN_REFDATE``). 
+  Unlike a branch run, the starting date of a hybrid run (specified by ``$RUN_STARTDATE``) can be modified relative to the reference case. 
+  In a hybrid run, the model does not continue in a bit-for-bit fashion with respect to the reference case. 
+  The resulting climate, however, should be continuous provided that no model source code or namelists are changed in the hybrid run. 
+  In a hybrid initialization, the ocean model does not start until the second ocean coupling step, and the coupler does a "cold start" without a restart file.
 
 The variable ``$RUN_TYPE`` determines the initialization type. This setting is only important for the initial run of a production run when the $CONTINUE_RUN variable is set to FALSE. After the initial run, the ``$CONTINUE_RUN`` variable is set to TRUE, and the model restarts exactly using input files in a case, date, and bit-for-bit continuous fashion. The variable ``$RUN_TYPE`` is the start date (in yyyy-mm-dd format) either a startup or hybrid run. If the run is targeted to be a hybrid or branch run, you must also specify values for ``$RUN_REFCASE`` and ``$RUN_REFDATE``. All run startup variables are discussed in `run start control variables <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_.
 
@@ -40,100 +46,52 @@ The default setting is only appropriate for initial testing. Before a longer run
 Customizing component-specific namelist settings
 ------------------------------------------------
 
-In your ``$CASEROOT`` directory, the subdirectory ``$CASEROOT/Buildconf`` contains files to create the component namelists, build the component libraries and create the model executable. ``Buildconf/$component.buildexe.csh`` creates the component libraries and ``Buildconf/$component.buildnml.csh`` creates the component namelists. A new feature in the CESM1.1 and CESM1.2 release series is that ALL CESM components now use a component-specific **build-namelist** utility (similar to that of CAM, CLM and CICE in the CESM1.0 series) to generate their respective model namelists. In addition, CAM, CLM and CICE have an associated **configure** utility that sets up compile time configuration options and is also called from the corresponding Buildconf/*.buildnml.csh (e.g. Buildconf/cam.buildnml.csh).
+All CIME_compliant components generate their namelist settings using the ``cime_config/buildnml`` file located in the component's directory tree.
+As an example, the CIME data atmosphere model (DATM), generates namelists using the script ``$CIMEROOT/components/data_comps/datm/cime_config/buildnml``.
 
-**In the CESM1.2 series, user specific component namelist changes should only be made only by editing the ``$CASEROOT/user_nl_xxx`` files OR by changing xml variables in `env_run.xml <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_ or `env_build.xml <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_**. A full discussion of how to change the namelist variables for each component is provided below. You can preview the case component namelists by running ``preview_namelists`` in your ``$CASEROOT``. Calling p``review_namelists`` results in the creation of component namelists (e.g. atm_in, lnd_in, .etc) in ``$CASEROOT/CaseDocs/``. A complete documentation of all `model component namelists <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_ for CESM1.2 releases is now available. The namelist files created in the ``CaseDocs/`` are there only for user reference and SHOULD NOT BE EDITED since they are overwritten every time ``preview_namelists``, ``$CASE.run`` and ``$CASE.build`` are called. In CESM1.2, (like CESM1.1 but unlike CESM1.0) the only files that you should modify are in ``$CASEROOT``. No files in ``Buildconf/`` should be changed. The following represents a summary of controlling and modifying component-specific run-time settings:
+**User specific component namelist changes should only be made only by editing the ``$CASEROOT/user_nl_xxx`` files OR by changing xml variables in `env_run.xml` or `env_build.xml`**. 
+A full discussion of how to change the namelist variables for each component is provided below. 
+You can preview the ``$CASEROOT`` component namelists by running ``preview_namelists`` from your ``$CASEROOT``. 
+Calling ``review_namelists`` results in the creation of component namelists (e.g. atm_in, lnd_in, .etc) in ``$CASEROOT/CaseDocs/``. 
+The namelist files created in the ``CaseDocs/`` are there only for user reference and SHOULD NOT BE EDITED since they are overwritten every time ``preview_namelists``, ``case.submit`` and ``case.build`` are called. 
+A complete documentation of all `CESM2 model component namelists <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_. 
+The only files that you should modify are in ``$CASEROOT``. 
+The following represents a summary of controlling and modifying component-specific run-time settings:
 
 DRV
 ^^^
-In CESM1.2, `driver namelist <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_ are in two groups - those that are set directly from xml variables in `env_case.xml <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_, `env_mach_pes.xml <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_ and `env_run.xml <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_, and those that are set by the driver build-namelist utility (``$CCSMROOT/models/drv/bld/build-namelist``) for the target compset and resolution. Except for the following driver namelist variables (see below), driver namelist variables that are in ``env_run.xml`` can be changed either by changing the xml variable OR by adding the correct key-word value pair at the end of ``user_nl_cpl``, where any changes in ``user_nl_cpl`` *will take precedence over* values set in the xml file. For example, to change eps_frac to 1.0e-15, add the following line to the end of the ``user_nl_cpl``, "eps_frac = 1.0e-15". To see the result of this modification to ``user_nl_cpl`` call ``preview_namelists`` and verify that this new value appears in ``CaseDocs/drv_in``.
+Driver namelist variables belong in two groups - those that are set directly from ``$CASEROOT` xml variables and those that are set by the driver ``buildnml`` utility (``$CIMEROOT/driver_cpl/cime_config/buildnml``).
+All driver namelist variables are defined in ``$CIMEROOT/driver_cpl/cime_config/namelist_definition_drv.xml``. 
+Those variables that can only be changed by modifying xml variables appear with the ``entry`` attribute ``modify_via_xml="xml_variable_name"``.
+All other variables that appear ``$CIMEROOT/driver_cpl/cime_config/namelist_definition_drv.xml`` can be modified by adding a key-word value pair at the end of ``user_nl_cpl``.
+For example, to change the driver namelist value of ``eps_frac`` to ``1.0e-15``, you should add the following line to the end of the ``user_nl_cpl``
 ::
 
-   The following namelist variables MAY NOT be changed in ``user_nl_cpl`` -
-   but must be changed in the appropriate ``$CASEROOT`` xml file.  
-   XXX  refers to ATM,LND,ICE,OCN,ROF,GLC,WAV
-   ======================================
-   drv namelist   => xml variable 
-   variable       
-   ======================================
-   case_name      => CASE                
-   username       => CCSMUSER         
-   hostname       => MACH                
-   model_version  => CCSM_REPOTAG  
-   start_type     => RUN_TYPE          
-   start_ymd      => RUN_STARTDATE  
-   start_tod      => START_TOD
-   XXX_cpl_dt     => XXX_NCPL          
-   XXX_ntasks     => NTASKS_XXX
-   XXX_nthreads   => NTHRDS_XXX
-   XXX_rootpe     => ROOTPE_XXX
-   XXX_pestride   => PSTRID_XXX
-   XXX_layout     => NINST_XXX_LAYOUT
+   eps_frac = 1.0e-15
 
-CAM
-^^^
-CAM's `configure <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_ and `build-namelist <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_ utilities are called by ``Buildconf/cam.buildnml.csh``. `CAM_CONFIG_OPTS <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_, `CAM_NAMELIST_OPTS <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_ and `CAM_NML_USECASE <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_ are used to set compset variables (e.g., "-phys cam5" for CAM_CONFIG_OPTS) and in general should not be modified for supported compsets. For a complete documentation of namelist settings, see `CAM namelist variables <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_. To modify CAM namelist settings, you should add the appropriate keyword/value pair at the end of the ``$CASEROOT/user_nl_cam`` file (see the documentation for each file at the top of that file). For example, to change the solar constant to 1363.27, modify the ``user_nl_cam`` file to contain the following line at the end "solar_const=1363.27". To see the result of adding this, call **preview_namelists** and verify that this new value appears in ``CaseDocs/atm_in``.
-
-CLM
-^^^
-CLM's `configure <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_ and `build-namelist <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_ utilities are called by ``Buildconf/clm.buildnml.csh``. `CLM_CONFIG_OPTS <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_ and `CLM_NML_USE_CASE <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_ are used to set compset specific variables and in general should not be modified for supported compsets. For a complete documentation of namelist settings, see `CLM namelist variables <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_. To modify CLM namelist settings, you should add the appropriate keyword/value pair at the end of the ``$CASEROOT/user_nl_clm`` file (see the documentation for each file at the top of that file). To see the result of your change, call **preview_namelists** and verify that the changes appear correctly in ``CaseDocs/lnd_in``.
-
-RTM
-^^^
-RTM's **build-namelist** utility is called by ``Buildconf/rtm.buildnml.csh``. For a complete documentation of namelist settings, see RTM namelist variables. To modify `RTM namelist settings <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_, you should add the appropriate keyword/value pair at the end of the ``$CASEROOT/user_nl_rtm`` file (see the documentation for each file at the top of that file). To see the result of your change, call **preview_namelists** and verify that the changes appear correctly in ``CaseDocs/rof_in``.
-
-CICE
-^^^^
-CICE's `configure <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_ and `build-namelist <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_ utilities are now called by ``Buildconf/cice.buildnml.csh``. Note that `CICE_CONFIG_OPTS <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_, and `CICE_NAMELIST_OPTS <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_ are used to set compset specific variables and in general should not be modified for supported compsets. For a complete documentation of namelist settings, see `CICE namelist variables <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_. To modify CICE namelist settings, you should add the appropriate keyword/value pair at the end of the ``$CASEROOT/user_nl_cice`` file (see the documentation for each file at the top of that file). To see the result of your change, call **preview_namelists** and verify that the changes appear correctly in ``CaseDocs/ice_in``.
-
-In addition, **cesm_setup** creates CICE's compile time `block decomposition variables <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_ in ``env_build.xml`` as follows:
-::
-
-   ./case.setup
-     ⇓
-   Buildconf/cice.buildnml.csh and $NTASKS_ICE and $NTHRDS_ICE
-     ⇓
-   env_build.xml variables CICE_BLCKX, CICE_BLCKY, CICE_MXBLCKS, CICE_DECOMPTYPE 
-   CPP variables in cice.buildexe.csh
-   
-
-POP2
-^^^^
-See `POP2 namelist variables <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_ for a complete description of the POP2 run-time namelist variables. Note that `OCN_COUPLING, OCN_ICE_FORCING, OCN_TRANSIENT <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_ are normally utilized ONLY to set compset specific variables and should not be edited. For a complete documentation of namelist settings, see `CICE namelist variables <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_. To modify POP2 namelist settings, you should add the appropriate keyword/value pair at the end of the ``$CASEROOT/user_nl_pop2`` file (see the documentation for each file at the top of that file). To see the result of your change, call **preview_namelists** and verify that the changes appear correctly in ``CaseDocs/ocn_in``.
-
-In addition, **cesm_setup** also generates POP2's compile time compile time `block decomposition variables <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_ in ``env_build.xml`` as follows:
-::
-
-   ./cesm_setup  
-       ⇓
-   Buildconf/pop2.buildnml.csh and $NTASKS_OCN and $NTHRDS_OCN
-       ⇓
-   env_build.xml variables POP2_BLCKX, POP2_BLCKY, POP2_MXBLCKS, POP2_DECOMPTYPE 
-   CPP variables in pop2.buildexe.csh
-
-CISM
-^^^^
-See `CISM namelist variables <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_ for a complete description of the CISM run-time namelist variables. This includes variables that appear both in ``cism_in`` and in ``cism.config``. To modify any of these settings, you should add the appropriate keyword/value pair at the end of the ``user_nl_cism`` file (see the documentation for each file at the top of that file). To see the result of your change, call **preview_namelists** and verify that the changes appear correctly in ``CaseDocs/cism_in`` and ``CaseDocs/cism.config``.
-
-There are also some run-time settings set via ``env_run.xml``, as documented in `CISM run time variables <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_ - in particular, the model resolution, set via ``CISM_GRID``. The value of ``CISM_GRID`` determines the default value of a number of other namelist parameters.
+To see the result of this modification to ``user_nl_cpl`` call ``preview_namelists`` and verify that this new value appears in ``CaseDocs/drv_in``.
 
 DATM
 ^^^^
-DATM is discussed in detail in `Data Model's User's Guide <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_. DATM is normally used to provide observational forcing data (or forcing data produced by a previous run using active components) to drive CLM (I compset), POP2 (C compset), and POP2/CICE (G compset). As a result, DATM variable settings are specific to the compset that will be targeted.
+DATM is discussed in detail in `Data Model's User's Guide <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_. 
+DATM is normally used to provide observational forcing data (or forcing data produced by a previous run using active components) to drive CLM (I compset), POP2 (C compset), and POP2/CICE (G compset). 
+As a result, DATM variable settings are specific to the compset that will be targeted.
 
 DATM can be user configured in three different ways.
 
 You can set `DATM run-time variables <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_ my modifying control settings for CLM and CPLHIST forcing.
 
-You can edit ``user_nl_datm`` to change namelist settings namelists settings by adding all user specific namelist changes in the form of "namelist_var = new_namelist_value". Note that any namelist variable from shr_strdata_nml and datm_nml can be modified below using the this syntax. Use preview_namelists to view (not modify) the output namelist in ``CaseDocs``.
+You can edit ``user_nl_datm`` to change namelist settings namelists settings by adding all user specific namelist changes in the form of "namelist_var = new_namelist_value". 
+Note that any namelist variable from shr_strdata_nml and datm_nml can be modified below using the this syntax. 
+Use preview_namelists to view (not modify) the output namelist in ``CaseDocs``.
 
 You can modify the contents of a DATM stream txt file. To do this:
 
 - use **preview_namelists** to obtain the contents of the stream txt files in ``CaseDocs``
 
-- place a *copy* of this file in ``$CASEROOT`` with the string "*user*_" prepended
+- place a *copy* of this file in ``$CASEROOT`` with the string *"user_"* prepended
 
-- **Make sure you change the permissions of the file to be writeabl** (chmod 644)
+- **Make sure you change the permissions of the file to be writeable** (chmod 644)
 
 - Modify the ``user_datm.streams.txt.*`` file.
 
@@ -143,28 +101,43 @@ DOCN
 ^^^^
 DOCN is discussed in detail in `Data Model's User's Guide <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_.
 
-DOCN running in prescribed mode assumes that the only field in the input stream is SST and also that SST is in Celsius and must be converted to Kelvin. All other fields are set to zero except for ocean salinity, which is set to a constant reference salinity value. Normally the ice fraction data (used for prescribed CICE) is found in the same data files that provide SST data to the data ocean model since SST and ice fraction data are derived from the same observational data sets and are consistent with each other. For DOCN prescribed mode, default yearly climatological datasets are provided for various model resolutions. For multi-year runs requiring AMIP datasets of sst/ice_cov fields, you need to set the variables for `DOCN_SSTDATA_FILENAME, DOCN_SSTDATA_YEAR_START, and DOCN_SSTDATA_YEAR_END <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_. CICE in prescribed mode also uses these values.
+DOCN running in prescribed mode assumes that the only field in the input stream is SST and also that SST is in Celsius and must be converted to Kelvin. 
+All other fields are set to zero except for ocean salinity, which is set to a constant reference salinity value. 
+Normally the ice fraction data (used for prescribed CICE) is found in the same data files that provide SST data to the data ocean model since SST and ice fraction data are derived from the same observational data sets and are consistent with each other. 
+For DOCN prescribed mode, default yearly climatological datasets are provided for various model resolutions. 
+For multi-year runs requiring AMIP datasets of sst/ice_cov fields, you need to set the variables for `DOCN_SSTDATA_FILENAME, DOCN_SSTDATA_YEAR_START, and DOCN_SSTDATA_YEAR_END <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_. 
+CICE in prescribed mode also uses these values.
 
-DOCN running as a slab ocean model is used (in conjunction with CICE running in prognostic mode) in all `E compsets <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_. SOM ("slab ocean model") mode is a prognostic mode. This mode computes a prognostic sea surface temperature and a freeze/melt potential (surface Q-flux) used by the sea ice model. This calculation requires an external SOM forcing data file that includes ocean mixed layer depths and bottom-of-the-slab Q-fluxes. Scientifically appropriate bottom-of-the-slab Q-fluxes are normally ocean resolution dependent and are derived from the ocean model output of a fully coupled run. Note that while this mode runs out of the box, the default SOM forcing file is not scientifically appropriate and is provided for testing and development purposes only. Users must create scientifically appropriate data for their particular application. A tool is available to derive valid SOM forcing.
+DOCN running as a slab ocean model is used (in conjunction with CICE running in prognostic mode) in all `E compsets <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_. 
+SOM ("slab ocean model") mode is a prognostic mode. 
+This mode computes a prognostic sea surface temperature and a freeze/melt potential (surface Q-flux) used by the sea ice model. 
+This calculation requires an external SOM forcing data file that includes ocean mixed layer depths and bottom-of-the-slab Q-fluxes. 
+Scientifically appropriate bottom-of-the-slab Q-fluxes are normally ocean resolution dependent and are derived from the ocean model output of a fully coupled run. 
+Note that while this mode runs out of the box, the default SOM forcing file is not scientifically appropriate and is provided for testing and development purposes only. 
+Users must create scientifically appropriate data for their particular application. A tool is available to derive valid SOM forcing.
 
 DOCN can be user-customized in three ways.
 
 You can set `DOCN run-time variables <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_.
 
-You can edit ``user_nl_docn`` to change namelist settings by adding all user specific namelist changes in the form of "namelist_var = new_namelist_value". Note that any namelist variable from shr_strdata_nml and datm_nml can be modified below using the this syntax. Use **preview_namelists** to view (not modify) the output namelist in ``CaseDocs``.
+You can edit ``user_nl_docn`` to change namelist settings by adding all user specific namelist changes in the form of "namelist_var = new_namelist_value". 
+Note that any namelist variable from shr_strdata_nml and datm_nml can be modified below using the this syntax. 
+Use **preview_namelists** to view (not modify) the output namelist in ``CaseDocs``.
 
-You can modify the contents of a DOCN stream txt file. To do this:
+You can modify the contents of a DOCN stream txt file. 
+To do this:
 
 - use **preview_namelists** to obtain the contents of the stream txt files in ``CaseDocs/``
 
-- place a *copy* of this file in ``$CASEROOT`` with the string "*user*_" prepended
+- place a *copy* of this file in ``$CASEROOT`` with the string *"user_"* prepended
 
 - **Make sure you change the permissions of the file to be writeable** (chmod 644)
 
 - Modify the ``user_docn.streams.txt.*`` file.
 
 As an example, if the stream text file in ``CaseDocs/`` is 
-``doc.stream.txt.prescribed``, the modified copy in ``$CASEROOT`` should be ``user_docn.streams.txt.prescribed``. After changing this file and calling **preview_namelists** again, you should see your new modifications appear in ``CaseDocs/docn.streams.txt.prescribed``.
+``doc.stream.txt.prescribed``, the modified copy in ``$CASEROOT`` should be ``user_docn.streams.txt.prescribed``. 
+After changing this file and calling **preview_namelists** again, you should see your new modifications appear in ``CaseDocs/docn.streams.txt.prescribed``.
 
 DICE
 ^^^^
@@ -225,6 +198,65 @@ You can modify the contents of a DROF stream txt file. To do this:
 - **Make sure you change the permissions of the file to be writeable** (chmod 644)
 
 - Modify the ``user_drof.streams.txt.*`` file.
+
+Customizing CESM prognostic component-specific namelist settings
+----------------------------------------------------------------
+
+CAM
+^^^
+CAM's `configure <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_ and `build-namelist <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_ utilities are called by ``Buildconf/cam.buildnml.csh``. 
+`CAM_CONFIG_OPTS <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_, `CAM_NAMELIST_OPTS <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_ and `CAM_NML_USECASE <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_ are used to set compset variables (e.g., "-phys cam5" for CAM_CONFIG_OPTS) and in general should not be modified for supported compsets. 
+For a complete documentation of namelist settings, see `CAM namelist variables <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_. 
+To modify CAM namelist settings, you should add the appropriate keyword/value pair at the end of the ``$CASEROOT/user_nl_cam`` file (see the documentation for each file at the top of that file). 
+For example, to change the solar constant to 1363.27, modify the ``user_nl_cam`` file to contain the following line at the end "solar_const=1363.27". 
+To see the result of adding this, call **preview_namelists** and verify that this new value appears in ``CaseDocs/atm_in``.
+
+CLM
+^^^
+CLM's `configure <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_ and `build-namelist <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_ utilities are called by ``Buildconf/clm.buildnml.csh``. `CLM_CONFIG_OPTS <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_ and `CLM_NML_USE_CASE <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_ are used to set compset specific variables and in general should not be modified for supported compsets. For a complete documentation of namelist settings, see `CLM namelist variables <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_. To modify CLM namelist settings, you should add the appropriate keyword/value pair at the end of the ``$CASEROOT/user_nl_clm`` file (see the documentation for each file at the top of that file). To see the result of your change, call **preview_namelists** and verify that the changes appear correctly in ``CaseDocs/lnd_in``.
+
+RTM
+^^^
+RTM's **build-namelist** utility is called by ``Buildconf/rtm.buildnml.csh``. For a complete documentation of namelist settings, see RTM namelist variables. To modify `RTM namelist settings <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_, you should add the appropriate keyword/value pair at the end of the ``$CASEROOT/user_nl_rtm`` file (see the documentation for each file at the top of that file). To see the result of your change, call **preview_namelists** and verify that the changes appear correctly in ``CaseDocs/rof_in``.
+
+CICE
+^^^^
+CICE's `configure <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_ and `build-namelist <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_ utilities are now called by ``Buildconf/cice.buildnml.csh``. Note that `CICE_CONFIG_OPTS <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_, and `CICE_NAMELIST_OPTS <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_ are used to set compset specific variables and in general should not be modified for supported compsets. For a complete documentation of namelist settings, see `CICE namelist variables <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_. To modify CICE namelist settings, you should add the appropriate keyword/value pair at the end of the ``$CASEROOT/user_nl_cice`` file (see the documentation for each file at the top of that file). To see the result of your change, call **preview_namelists** and verify that the changes appear correctly in ``CaseDocs/ice_in``.
+
+In addition, **cesm_setup** creates CICE's compile time `block decomposition variables <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_ in ``env_build.xml`` as follows:
+::
+
+   ./case.setup
+     ⇓
+   Buildconf/cice.buildnml.csh and $NTASKS_ICE and $NTHRDS_ICE
+     ⇓
+   env_build.xml variables CICE_BLCKX, CICE_BLCKY, CICE_MXBLCKS, CICE_DECOMPTYPE 
+   CPP variables in cice.buildexe.csh
+   
+
+POP2
+^^^^
+See `POP2 namelist variables <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_ for a complete description of the POP2 run-time namelist variables. Note that `OCN_COUPLING, OCN_ICE_FORCING, OCN_TRANSIENT <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_ are normally utilized ONLY to set compset specific variables and should not be edited. For a complete documentation of namelist settings, see `CICE namelist variables <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_. To modify POP2 namelist settings, you should add the appropriate keyword/value pair at the end of the ``$CASEROOT/user_nl_pop2`` file (see the documentation for each file at the top of that file). To see the result of your change, call **preview_namelists** and verify that the changes appear correctly in ``CaseDocs/ocn_in``.
+
+In addition, **cesm_setup** also generates POP2's compile time compile time `block decomposition variables <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_ in ``env_build.xml`` as follows:
+::
+
+   ./cesm_setup  
+       ⇓
+   Buildconf/pop2.buildnml.csh and $NTASKS_OCN and $NTHRDS_OCN
+       ⇓
+   env_build.xml variables POP2_BLCKX, POP2_BLCKY, POP2_MXBLCKS, POP2_DECOMPTYPE 
+   CPP variables in pop2.buildexe.csh
+
+CISM
+^^^^
+See `CISM namelist variables <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_ for a complete description of the CISM run-time namelist variables. This includes variables that appear both in ``cism_in`` and in ``cism.config``. To modify any of these settings, you should add the appropriate keyword/value pair at the end of the ``user_nl_cism`` file (see the documentation for each file at the top of that file). To see the result of your change, call **preview_namelists** and verify that the changes appear correctly in ``CaseDocs/cism_in`` and ``CaseDocs/cism.config``.
+
+There are also some run-time settings set via ``env_run.xml``, as documented in `CISM run time variables <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_ - in particular, the model resolution, set via ``CISM_GRID``. The value of ``CISM_GRID`` determines the default value of a number of other namelist parameters.
+
+
+Customizing ACME prognostic component-specific namelist settings
+----------------------------------------------------------------
 
 Controlling output data
 -----------------------
