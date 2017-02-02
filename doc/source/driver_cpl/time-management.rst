@@ -23,8 +23,7 @@ The clock passed to the component by the driver contains this information.
 Component models are also responsible for making sure the coupling period is consistent with their internal timestep. 
 History files are managed independently by each component, but restart files are coordinated by the driver.
 
-The clocks in CESM1 are based on the ESMF clock datatype are are supported in software by either an official ESMF library or by software included in CESM called esmf_wrf_timemgr.
-The esmf_wrf_timemgr software is a much simplified Fortran implementation of a subset of the ESMF time manager interfaces.
+The driver clocks are based on ESMF clock datatype are are supported in software by either an official ESMF library or by software included in CIME called ``esmf_wrf_timemgr``, which is a much simplified Fortran implementation of a subset of the ESMF time manager interfaces.
 
 --------------------
 The Driver Time Loop
@@ -78,15 +77,14 @@ The driver time loop is basically sequenced as follows,
 The land ice model interaction is slightly different. 
 ::
 
-   - The land ice model is run on the land grid and the coupling in purely one-way in the CESM1.
-     implementation. 
+   - The land ice model is run on the land grid
    - Land model output is passed to the land ice model every land coupling period.
    - The driver accumluates this data, interpolates the data to the land ice grid, 
      and the land ice model advances the land ice model about once a year.
 
 The runoff coupling should be coupled at a frequency between the land coupling and ocean coupling frequencies. The runoff model runs at the same time as the land and sea ice models when it runs.
 
-The driver sequencing in CESM1 has been developed over nearly two decades, and it plays a critical role in conserving mass and heat, minimizing lags, and providing stability in the system.
+The current driver sequencing has been developed over nearly two decades, and it plays a critical role in conserving mass and heat, minimizing lags, and providing stability in the system.
 The above description is consistent with the concurrency limitations described `here <http://www.cesm.ucar.edu/models/cesm2.0/cpl7/doc.new/x32.html#design_seq>`_. 
 Just to reiterate, the land, runoff, and sea ice models will always run before the atmospheric model, and the coupler and ocean models are able to run concurrently with all other components.
 The coupling between the atmosphere, land, sea ice, and atmosphere/ocean flux computation incurs no lags but the coupling to the ocean state is lagged by one ocean coupling period in the system. 
