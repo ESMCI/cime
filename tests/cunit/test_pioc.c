@@ -248,12 +248,13 @@ int check_dim_names(int my_rank, int ncid, MPI_Comm test_comm)
 
     for (int d = 0; d < NDIM; d++)
     {
-        strcpy(dim_name, "11111111111111111111111111111111");
+        memset(dim_name, 0, sizeof(dim_name));
         if ((ret = PIOc_inq_dimname(ncid, d, dim_name)))
             return ret;
         printf("my_rank %d my_test_rank %d dim %d name %s\n", my_rank, my_test_rank, d, dim_name);
 
         /* Did other ranks get the same name? */
+        memset(zero_dim_name, 0, sizeof(zero_dim_name));
         if (!my_test_rank)
             strcpy(zero_dim_name, dim_name);
         printf("rank %d dim_name %s zero_dim_name %s\n", my_rank, dim_name, zero_dim_name);
@@ -284,12 +285,13 @@ int check_var_name(int my_rank, int ncid, MPI_Comm test_comm)
     if ((ret = MPI_Comm_rank(test_comm, &my_test_rank)))
         MPIERR(ret);
 
-    strcpy(var_name, "11111111111111111111111111111111");
+    memset(var_name, 0, sizeof(var_name));
     if ((ret = PIOc_inq_varname(ncid, 0, var_name)))
         return ret;
     printf("my_rank %d var name %s\n", my_rank, var_name);
 
     /* Did other ranks get the same name? */
+    memset(zero_var_name, 0, sizeof(zero_var_name));
     if (!my_test_rank)
         strcpy(zero_var_name, var_name);
     if ((ret = MPI_Bcast(&zero_var_name, strlen(var_name) + 1, MPI_CHAR, 0,
@@ -329,11 +331,12 @@ int check_atts(int my_rank, int ncid, int flavor, MPI_Comm test_comm)
     if ((ret = MPI_Comm_rank(test_comm, &my_test_rank)))
         MPIERR(ret);
 
-    strcpy(att_name, "11111111111111111111111111111111");
+    memset(att_name, 0, sizeof(att_name));
     if ((ret = PIOc_inq_attname(ncid, NC_GLOBAL, 0, att_name)))
         return ret;
 
     /* Did all ranks get the same name? */
+    memset(zero_att_name, 0, sizeof(zero_att_name));
     if (!my_test_rank)
         strcpy(zero_att_name, att_name);
     if ((ret = MPI_Bcast(&zero_att_name, strlen(att_name) + 1, MPI_CHAR, 0,

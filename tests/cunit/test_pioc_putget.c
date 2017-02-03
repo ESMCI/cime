@@ -1063,6 +1063,7 @@ int putget_read_var1(int ncid, int *varid, PIO_Offset *index, int flavor)
     if (byte_data_in != byte_data)
         return ERR_WRONG;
 
+    memset(text_data_in, 0, sizeof(text_data_in));
     if ((ret = PIOc_get_var1_text(ncid, varid[1], index, text_data_in)))
         return ret;
     printf("text_data_in = %s\n", text_data_in);
@@ -1151,6 +1152,7 @@ int putget_read_var1_nt(int ncid, int *varid, PIO_Offset *index, int flavor)
     if (byte_data_in != byte_data)
         return ERR_WRONG;
 
+    memset(text_data_in, 0, sizeof(text_data_in));
     if ((ret = PIOc_get_var1(ncid, varid[1], index, text_data_in)))
         return ret;
     printf("text_data_in = %s\n", text_data_in);
