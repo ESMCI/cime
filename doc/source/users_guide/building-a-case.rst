@@ -1,12 +1,13 @@
 .. _building-a-case:
 
+******************
 Building a Case
-========================
+******************
 
 The following summarizes details of building the model exectuable.
 
 How do I build my model?
-------------------------
+========================
 
 After calling **case.setup**, you can build the model executable by running **./$CASE.build**. Running this will:
 
@@ -67,10 +68,10 @@ Input data is handled by the build process as follows:
 The ``env_run.xml`` variables ``DIN_LOC_ROOT`` and ``DIN_LOC_ROOT_CLMFORC`` determine where you should expect input data to reside on local disk. See the `input data variables <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_.
 
 Input Data
------------------------
+========================
 
 User-created input data
-^^^^^^^^^^^^^^^^^^^^^^^
+-----------------------
 
 If you want to use new user-created dataset(s) and give these dataset(s) names that are different than the names in ``$DIN_LOC_ROOT``, we recommend using the script **link_dirtree** in the directory ``$CCSMROOT/scripts``. **link_dirtree** creates a virtual copy of the input data directory by linking one directory tree to another. The full directory structure of the original directory is duplicated and the files are linked. To use this script, use the -h optiion for usage.
 ```
@@ -84,7 +85,7 @@ If you want to use new user-created dataset(s) and give these dataset(s) names t
 then incorporate the new dataset(s) directly into the appropriate directory in /user/home/newdata.
 
 Using the input data server
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+----------------------------
 
 The script ``$CASEROOT/check_input_data`` determines if the required data files for the case exist on local disk in the appropriate subdirectory of ``$DIN_LOC_ROOT``. If any of the required datasets do not exist locally, **check_input_data** provides the capability for downloading them to the ``$DIN_LOC_ROOT`` directory hierarchy via interaction with the input data server. You can independently verify that the required data is present locally by using the following commands:
 ```
@@ -100,7 +101,7 @@ If input data sets are missing, you must obtain the datasets from the input data
 Required data files not on local disk will be downloaded through interaction with the Subversion input data server. These will be placed in the appropriate subdirectory of ``$DIN_LOC_ROOT``. For what to expect when interacting with a Subversion repository, see `downloading input data <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_.
 
 Rebuilding the model
-^^^^^^^^^^^^^^^^^^^^
+-----------------------
 
 You should rebuild the model under the following circumstances:
 

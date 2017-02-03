@@ -3,9 +3,9 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-************************
-**CIME Driver/Coupler**
-************************
+#######################
+  CIME Driver/Coupler
+#######################
 
 .. toctree::
    :maxdepth: 3
