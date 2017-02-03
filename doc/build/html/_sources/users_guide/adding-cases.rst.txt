@@ -1,0 +1,15 @@
+.. _adding-cases
+
+
+**************************
+Adding new cases
+**************************
+
+Adding compsets
+=================
+
+Adding grids
+===================
+
+Adding components
+===================

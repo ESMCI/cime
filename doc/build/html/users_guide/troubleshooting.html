@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>1. Troubleshooting &#8212; on  documentation</title>
+    <title>3. Troubleshooting &#8212; on  documentation</title>
     
     <link rel="stylesheet" href="../_static/bizstyle.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -28,8 +28,8 @@
     <script type="text/javascript" src="../_static/bizstyle.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="2. FAQ" href="faq/faq.html" />
-    <link rel="prev" title="5. Porting and Validating CIME on a new Platform" href="porting-cime.html" />
+    <link rel="next" title="4. FAQ" href="faq/faq.html" />
+    <link rel="prev" title="2. Adding new cases" href="adding-cases.html" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <!--[if lt IE 9]>
     <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
@@ -43,33 +43,33 @@
           <a href="../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="faq/faq.html" title="2. FAQ"
+          <a href="faq/faq.html" title="4. FAQ"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="porting-cime.html" title="5. Porting and Validating CIME on a new Platform"
+          <a href="adding-cases.html" title="2. Adding new cases"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">on  documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">CIME User&#8217;s Guide: Part 1</a> &#187;</li> 
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">CIME User&#8217;s Guide Part 1: Basic Use</a> &#187;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
   <h3><a href="../index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">1. Troubleshooting</a><ul>
-<li><a class="reference internal" href="#troubleshooting-case-creation">1.1. Troubleshooting case creation</a></li>
-<li><a class="reference internal" href="#troubleshooting-job-submission">1.2. Troubleshooting job submission</a></li>
-<li><a class="reference internal" href="#troubleshooting-run-time-problems">1.3. Troubleshooting run-time problems</a></li>
+<li><a class="reference internal" href="#">3. Troubleshooting</a><ul>
+<li><a class="reference internal" href="#troubleshooting-case-creation">3.1. Troubleshooting case creation</a></li>
+<li><a class="reference internal" href="#troubleshooting-job-submission">3.2. Troubleshooting job submission</a></li>
+<li><a class="reference internal" href="#troubleshooting-run-time-problems">3.3. Troubleshooting run-time problems</a></li>
 </ul>
 </li>
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="porting-cime.html"
-                        title="previous chapter">5. Porting and Validating CIME on a new Platform</a></p>
+  <p class="topless"><a href="adding-cases.html"
+                        title="previous chapter">2. Adding new cases</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="faq/faq.html"
-                        title="next chapter">2. FAQ</a></p>
+                        title="next chapter">4. FAQ</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -96,9 +96,9 @@
           <div class="body" role="main">
             
   <div class="section" id="troubleshooting">
-<span id="id1"></span><h1>1. Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permalink to this headline">¶</a></h1>
+<span id="id1"></span><h1>3. Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="troubleshooting-case-creation">
-<h2>1.1. Troubleshooting case creation<a class="headerlink" href="#troubleshooting-case-creation" title="Permalink to this headline">¶</a></h2>
+<h2>3.1. Troubleshooting case creation<a class="headerlink" href="#troubleshooting-case-creation" title="Permalink to this headline">¶</a></h2>
 <p>Generally, <strong>create_newcase</strong> errors are reported to the terminal and should provide some guidance about what caused the error.</p>
 <p>If <strong>create_newcase</strong> fails on a relatively generic error, first check carefully that the command line arguments match the interfaces specification. Type:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">create_newcase</span> <span class="o">--</span><span class="n">help</span>
@@ -107,7 +107,7 @@
 <p>and review usage.</p>
 </div>
 <div class="section" id="troubleshooting-job-submission">
-<h2>1.2. Troubleshooting job submission<a class="headerlink" href="#troubleshooting-job-submission" title="Permalink to this headline">¶</a></h2>
+<h2>3.2. Troubleshooting job submission<a class="headerlink" href="#troubleshooting-job-submission" title="Permalink to this headline">¶</a></h2>
 <p>Most of the problems associated with submission or launch are very site specific.
 The batch and run aspects of the <code class="docutils literal"><span class="pre">case.submit</span></code> script is created by parsing the xml variables in <code class="docutils literal"><span class="pre">$CASEROOT/env_batch.xml</span></code>.</p>
 <p>First, review the batch submission options being used. These are found in <code class="docutils literal"><span class="pre">$CASEROOT/env_batch.xml</span></code>.
@@ -116,7 +116,7 @@ Confirm that the options are consistent with the site specific batch environment
 The information for how <code class="docutils literal"><span class="pre">case.submit</span></code> submit jobs appears at the end of the standard output stream.</p>
 </div>
 <div class="section" id="troubleshooting-run-time-problems">
-<h2>1.3. Troubleshooting run-time problems<a class="headerlink" href="#troubleshooting-run-time-problems" title="Permalink to this headline">¶</a></h2>
+<h2>3.3. Troubleshooting run-time problems<a class="headerlink" href="#troubleshooting-run-time-problems" title="Permalink to this headline">¶</a></h2>
 <p>To check that a run completed successfully, check the last several lines of the cpl.log file for the string <code class="docutils literal"><span class="pre">SUCCESSFUL</span> <span class="pre">TERMINATION</span> <span class="pre">OF</span> <span class="pre">CPL7-CCSM</span></code>. A successful job also usually copies the log files to the directory $CASEROOT/logs.</p>
 <p><strong>Note</strong>: The first things to check if a job fails are:
 - whether the model timed out
@@ -192,13 +192,13 @@ Please make sure a case fails consistently in the same place before filing a bug
           <a href="../genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="faq/faq.html" title="2. FAQ"
+          <a href="faq/faq.html" title="4. FAQ"
              >next</a> |</li>
         <li class="right" >
-          <a href="porting-cime.html" title="5. Porting and Validating CIME on a new Platform"
+          <a href="adding-cases.html" title="2. Adding new cases"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">on  documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" >CIME User&#8217;s Guide: Part 1</a> &#187;</li> 
+          <li class="nav-item nav-item-1"><a href="index.html" >CIME User&#8217;s Guide Part 1: Basic Use</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
