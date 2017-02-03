@@ -498,7 +498,7 @@ int PIOc_sync(int ncid)
     if (file->mode & PIO_WRITE)
     {
         LOG((3, "PIOc_sync checking buffers"));
-        
+
         /*  cn_buffer_report( *ios, true); */
         wmb = &file->buffer;
         while (wmb)
@@ -545,7 +545,7 @@ int PIOc_sync(int ncid)
                 return pio_err(ios, file, PIO_EBADIOTYPE, __FILE__, __LINE__);
             }
         }
-        LOG((2, "PIOc_sync ierr = %d", ierr));        
+        LOG((2, "PIOc_sync ierr = %d", ierr));
     }
 
     /* Broadcast and check the return code. */

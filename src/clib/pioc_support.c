@@ -250,9 +250,9 @@ void pio_log(int severity, const char *fmt, ...)
 
 /**
  * Obtain a backtrace and print it to stderr. This is appended to the
- * text decomposition file. 
+ * text decomposition file.
  *
- * Note from Jim: 
+ * Note from Jim:
  *
  * The stack trace can be used to identify the usage in
  * the model code of the particular decomposition in question and so
@@ -1107,6 +1107,8 @@ int PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype,
 #else
             file->mode = file->mode |  NC_MPIIO;
             ierr = nc_open_par(filename, file->mode, ios->io_comm, ios->info, &file->fh);
+	    LOG((2, "PIOc_openfile_retry:nc_open_par filename = %s mode = %d ierr = %d",
+		 filename, file->mode, ierr));
 #endif
             break;
 
@@ -1161,6 +1163,10 @@ int PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype,
                 if (ios->io_rank == 0)
                     ierr = nc_open(filename, file->mode, &file->fh);
             }
+            LOG((2, "retry nc_open(%s) : fd = %d, ierr = %d", filename, file->fh, ierr));
+	    if (ios->io_rank != 0)
+		file->do_io = 0;
+
 #endif
         }
     }
@@ -1436,7 +1442,7 @@ static bool cmp_rearr_opts(const rearr_opt_t *rearr_opts,
 static void check_and_reset_rearr_opts(iosystem_desc_t *ios)
 {
     /* Disable handshake/isend and set max_pend_req to unlimited */
-    const rearr_comm_fc_opt_t def_comm_nofc_opts = 
+    const rearr_comm_fc_opt_t def_comm_nofc_opts =
         { false, false, PIO_REARR_COMM_UNLIMITED_PEND_REQ };
     /* Disable handshake /isend and set max_pend_req = 0 to turn off throttling */
     const rearr_comm_fc_opt_t def_coll_comm_fc_opts = { false, false, 0 };
