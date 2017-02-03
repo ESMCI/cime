@@ -4,9 +4,9 @@
    contain the root `toctree` directive.
 
 
-***********************
-**CIME User's Guide**
-***********************
+##########################
+CIME User's Guide: Part 1
+##########################
 
 .. toctree::
    :maxdepth: 3
@@ -17,6 +17,15 @@
    building-a-case.rst
    running-a-case.rst
    porting-cime.rst
+
+##########################
+CIME User's Guide: Part 2
+##########################
+
+.. toctree::
+   :maxdepth: 3
+   :numbered:
+
    troubleshooting.rst
    faq/faq.rst
 

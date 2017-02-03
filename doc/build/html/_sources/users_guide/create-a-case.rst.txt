@@ -1,10 +1,11 @@
 .. _creating-a-case:
 
+*********************************
 Creating and Setting up a Case
-===================================
+*********************************
 
 How to create a new case
------------------------------------
+===================================
 
 The first step in creating a CIME based experiment is to use **create_newcase**.
 
@@ -21,7 +22,7 @@ CIME supports out of the box ``component sets``, ``model grids`` and ``hardware 
 - Aliases are required by the CIME regression test system but can also be used for user convenience. Compset aliases are unique - each compset alias is associated with one and only one compset. Grid aliases, on the other hand, are overloaded and the same grid alias may result in a different grid based depending on the compset the alias is associated with. We recommend that the user always confirm that the compset longname and grid longname are the expected result when using aliases to create a case. 
 
 Component Set Naming Convention
------------------------------------
+===================================
 
 The component set (compset) longname has the form::
 
@@ -74,7 +75,7 @@ The alias for this compset is B1850. Either a compset longname or a compset alia
 It is also possible to create your own custom compset (see `How do I create my own compset? in the FAQ`)
 
 Model Grid Naming Convention
-----------------------------------------
+=============================
 
 The model grid longname has the form::
 
@@ -121,7 +122,7 @@ Component grids (such as the atmosphere grid or ocean grid above) are denoted by
 - "tx[D]v[n]" is a tripole grid where D is the approximate resolution in degrees and n is the grid version.
 
 Using create_newcase
---------------------
+=============================
 
 If you are not on an out-of-the box CIME supported platform, you will need to first :ref:`port <porting>` CIME to your system.
 
@@ -170,10 +171,10 @@ For more complete information about the files in the case directory, see the `Se
 
 
 How to set up a case and customize the PE layout
-------------------------------------------------
+=================================================
 
 Calling case.setup
-^^^^^^^^^^^^^^^^^^
+-------------------
 
 After creating a case using **create_newcase**, you need to call the **case.setup** command from ``$CASEROOT``. 
 To see the options to **case.setup** use the ``--help`` option. 
@@ -208,7 +209,7 @@ If ``env_mach_pes.xml`` variables need to be changed after **case.setup** has be
 (Also see the `Section called *BASICS: What are the directories and files in my case directory?* in Chapter 6 <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_.)
 
 Changing the PE layout
-^^^^^^^^^^^^^^^^^^^^^^
+-----------------------
 
 The file, ``env_mach_pes.xml``, determines the number of processors and OpenMP threads for each component, the number of instances of each component and the layout of the components across the hardware processors. 
 Optimizing the throughput and efficiency of a CIME experiment often involves customizing the processor (PE) layout for `load balancing <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_.  
@@ -270,7 +271,7 @@ Hardware processors 65-112 would have been allocated but completely idle.
 For an example of changing pes, see the `Section called *BASICS: How do I change processor counts and component layouts on processors?* in Chapter 6 <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_.
 
 Modifying an xml file
----------------------
+======================
 
 You can edit the xml files directly to change the variable values. 
 However, modification of the xml variables is best done using **xmlchange** in the ``$CASEROOT`` directory since it performs variable error checking as part of changing values in the xml files. 
@@ -309,7 +310,7 @@ To invoke **xmlchange**:
   Print usage info to STDOUT. (optional)
 
 Multi-instance component functionality
---------------------------------------
+======================================
 
 The CIME coupling infrastructure has the capability to run multiple component instances under one model executable. 
 The only caveat to this usage is that if N multiple instances of any one active component is used, then N multiple instances of ALL active components are required. 
@@ -397,7 +398,7 @@ It is also important to stress the following points:
 
 
 Cloning a case
----------------------
+===============
 This is an advanced feature provided for expert users. If you are a new user, skip this section.
 
 If you have access to the run you want to clone, the **create_clone** command will create a new case while also preserving local modifications to the case that you want to clone. 

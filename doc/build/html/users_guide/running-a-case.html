@@ -49,7 +49,7 @@
           <a href="building-a-case.html" title="3. Building a Case"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">on  documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U"><strong>CIME User&#8217;s Guide</strong></a> &#187;</li> 
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">CIME User&#8217;s Guide: Part 1</a> &#187;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -71,9 +71,8 @@
 <li><a class="reference internal" href="#cam">4.3.1. CAM</a></li>
 <li><a class="reference internal" href="#clm">4.3.2. CLM</a></li>
 <li><a class="reference internal" href="#rtm">4.3.3. RTM</a></li>
-<li><a class="reference internal" href="#cice">4.3.4. CICE</a></li>
-<li><a class="reference internal" href="#pop2">4.3.5. POP2</a></li>
-<li><a class="reference internal" href="#cism">4.3.6. CISM</a></li>
+<li><a class="reference internal" href="#pop2">4.3.4. POP2</a></li>
+<li><a class="reference internal" href="#cism">4.3.5. CISM</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#customizing-acme-prognostic-component-specific-namelist-settings">4.4. Customizing ACME prognostic component-specific namelist settings</a></li>
@@ -133,6 +132,7 @@
             
   <div class="section" id="running-a-case">
 <span id="id1"></span><h1>4. Running a Case<a class="headerlink" href="#running-a-case" title="Permalink to this headline">¶</a></h1>
+<hr class="docutils" />
 <p>To run a CIME case, you will run the script <code class="docutils literal"><span class="pre">case.submit</span></code> after you have modified <code class="docutils literal"><span class="pre">env_run.xml</span></code> for your particular needs.</p>
 <p>The <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">env_run.xml</a> file contains variables which may be modified at the initialization of a model run and during the course of that model run. These variables comprise coupler namelist settings for the model stop time, model restart frequency, coupler history frequency and a flag to determine if the run should be flagged as a continuation run. In general, you only need to set the variables <code class="docutils literal"><span class="pre">$STOP_OPTION</span></code> and <code class="docutils literal"><span class="pre">$STOP_N</span></code>. The other coupler settings will then be given consistent and reasonable default values. These default settings guarantee that restart files are produced at the end of the model run.</p>
 <p>In the following, we focus on the handling of run control (e.g. length of run, continuing a run) and output data. We also give a more detailed description of CIME restarts.</p>
@@ -303,10 +303,9 @@ To see the result of adding this, call <strong>preview_namelists</strong> and ve
 <div class="section" id="rtm">
 <h3>4.3.3. RTM<a class="headerlink" href="#rtm" title="Permalink to this headline">¶</a></h3>
 <p>RTM&#8217;s <strong>build-namelist</strong> utility is called by <code class="docutils literal"><span class="pre">Buildconf/rtm.buildnml.csh</span></code>. For a complete documentation of namelist settings, see RTM namelist variables. To modify <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">RTM namelist settings</a>, you should add the appropriate keyword/value pair at the end of the <code class="docutils literal"><span class="pre">$CASEROOT/user_nl_rtm</span></code> file (see the documentation for each file at the top of that file). To see the result of your change, call <strong>preview_namelists</strong> and verify that the changes appear correctly in <code class="docutils literal"><span class="pre">CaseDocs/rof_in</span></code>.</p>
-</div>
-<div class="section" id="cice">
-<h3>4.3.4. CICE<a class="headerlink" href="#cice" title="Permalink to this headline">¶</a></h3>
-<p>CICE&#8217;s <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">configure</a> and <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">build-namelist</a> utilities are now called by <code class="docutils literal"><span class="pre">Buildconf/cice.buildnml.csh</span></code>. Note that <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">CICE_CONFIG_OPTS</a>, and <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">CICE_NAMELIST_OPTS</a> are used to set compset specific variables and in general should not be modified for supported compsets. For a complete documentation of namelist settings, see <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">CICE namelist variables</a>. To modify CICE namelist settings, you should add the appropriate keyword/value pair at the end of the <code class="docutils literal"><span class="pre">$CASEROOT/user_nl_cice</span></code> file (see the documentation for each file at the top of that file). To see the result of your change, call <strong>preview_namelists</strong> and verify that the changes appear correctly in <code class="docutils literal"><span class="pre">CaseDocs/ice_in</span></code>.</p>
+<p>CICE
+&#8212;
+CICE&#8217;s <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">configure</a> and <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">build-namelist</a> utilities are now called by <code class="docutils literal"><span class="pre">Buildconf/cice.buildnml.csh</span></code>. Note that <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">CICE_CONFIG_OPTS</a>, and <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">CICE_NAMELIST_OPTS</a> are used to set compset specific variables and in general should not be modified for supported compsets. For a complete documentation of namelist settings, see <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">CICE namelist variables</a>. To modify CICE namelist settings, you should add the appropriate keyword/value pair at the end of the <code class="docutils literal"><span class="pre">$CASEROOT/user_nl_cice</span></code> file (see the documentation for each file at the top of that file). To see the result of your change, call <strong>preview_namelists</strong> and verify that the changes appear correctly in <code class="docutils literal"><span class="pre">CaseDocs/ice_in</span></code>.</p>
 <p>In addition, <strong>cesm_setup</strong> creates CICE&#8217;s compile time <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">block decomposition variables</a> in <code class="docutils literal"><span class="pre">env_build.xml</span></code> as follows:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span>./case.setup
   ⇓
@@ -318,7 +317,7 @@ CPP variables in cice.buildexe.csh
 </div>
 </div>
 <div class="section" id="pop2">
-<h3>4.3.5. POP2<a class="headerlink" href="#pop2" title="Permalink to this headline">¶</a></h3>
+<h3>4.3.4. POP2<a class="headerlink" href="#pop2" title="Permalink to this headline">¶</a></h3>
 <p>See <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">POP2 namelist variables</a> for a complete description of the POP2 run-time namelist variables. Note that <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">OCN_COUPLING, OCN_ICE_FORCING, OCN_TRANSIENT</a> are normally utilized ONLY to set compset specific variables and should not be edited. For a complete documentation of namelist settings, see <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">CICE namelist variables</a>. To modify POP2 namelist settings, you should add the appropriate keyword/value pair at the end of the <code class="docutils literal"><span class="pre">$CASEROOT/user_nl_pop2</span></code> file (see the documentation for each file at the top of that file). To see the result of your change, call <strong>preview_namelists</strong> and verify that the changes appear correctly in <code class="docutils literal"><span class="pre">CaseDocs/ocn_in</span></code>.</p>
 <p>In addition, <strong>cesm_setup</strong> also generates POP2&#8217;s compile time compile time <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">block decomposition variables</a> in <code class="docutils literal"><span class="pre">env_build.xml</span></code> as follows:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span>./cesm_setup
@@ -331,7 +330,7 @@ CPP variables in pop2.buildexe.csh
 </div>
 </div>
 <div class="section" id="cism">
-<h3>4.3.6. CISM<a class="headerlink" href="#cism" title="Permalink to this headline">¶</a></h3>
+<h3>4.3.5. CISM<a class="headerlink" href="#cism" title="Permalink to this headline">¶</a></h3>
 <p>See <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">CISM namelist variables</a> for a complete description of the CISM run-time namelist variables. This includes variables that appear both in <code class="docutils literal"><span class="pre">cism_in</span></code> and in <code class="docutils literal"><span class="pre">cism.config</span></code>. To modify any of these settings, you should add the appropriate keyword/value pair at the end of the <code class="docutils literal"><span class="pre">user_nl_cism</span></code> file (see the documentation for each file at the top of that file). To see the result of your change, call <strong>preview_namelists</strong> and verify that the changes appear correctly in <code class="docutils literal"><span class="pre">CaseDocs/cism_in</span></code> and <code class="docutils literal"><span class="pre">CaseDocs/cism.config</span></code>.</p>
 <p>There are also some run-time settings set via <code class="docutils literal"><span class="pre">env_run.xml</span></code>, as documented in <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">CISM run time variables</a> - in particular, the model resolution, set via <code class="docutils literal"><span class="pre">CISM_GRID</span></code>. The value of <code class="docutils literal"><span class="pre">CISM_GRID</span></code> determines the default value of a number of other namelist parameters.</p>
 </div>
@@ -541,7 +540,7 @@ In general, there are seven unique models (atm, lnd, rof, ocn, ice, glc, cpl) th
           <a href="building-a-case.html" title="3. Building a Case"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">on  documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" ><strong>CIME User&#8217;s Guide</strong></a> &#187;</li> 
+          <li class="nav-item nav-item-1"><a href="index.html" >CIME User&#8217;s Guide: Part 1</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

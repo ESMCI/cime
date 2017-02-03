@@ -1,6 +1,8 @@
 .. _running-a-case:
 
+***************
 Running a Case
+***************
 ========================
 
 To run a CIME case, you will run the script ``case.submit`` after you have modified ``env_run.xml`` for your particular needs.
@@ -10,7 +12,7 @@ The `env_run.xml <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_ 
 In the following, we focus on the handling of run control (e.g. length of run, continuing a run) and output data. We also give a more detailed description of CIME restarts.
 
 Controlling starting, stopping and restarting a run
----------------------------------------------------
+====================================================
 
 The case initialization type is set in ``env_run.xml``. A CIME run can be initialized in one of three ways; startup, branch, or hybrid.
 
@@ -46,7 +48,7 @@ STOP_DATE = -999
 The default setting is only appropriate for initial testing. Before a longer run is started, update the stop times based on the case throughput and batch queue limits. For example, if the model runs 5 model years/day, set ``RESUBMIT=30, STOP_OPTION= nyears, and STOP_N= 5``. The model will then run in five year increments, and stop after 30 submissions.
 
 Customizing component-specific namelist settings
-------------------------------------------------
+====================================================
 
 All CIME_compliant components generate their namelist settings using the ``cime_config/buildnml`` file located in the component's directory tree.
 As an example, the CIME data atmosphere model (DATM), generates namelists using the script ``$CIMEROOT/components/data_comps/datm/cime_config/buildnml``.
@@ -61,7 +63,7 @@ The only files that you should modify are in ``$CASEROOT``.
 The following represents a summary of controlling and modifying component-specific run-time settings:
 
 DRV
-^^^
+---
 Driver namelist variables belong in two groups - those that are set directly from ``$CASEROOT` xml variables and those that are set by the driver ``buildnml`` utility (``$CIMEROOT/driver_cpl/cime_config/buildnml``).
 All driver namelist variables are defined in ``$CIMEROOT/driver_cpl/cime_config/namelist_definition_drv.xml``. 
 Those variables that can only be changed by modifying xml variables appear with the ``entry`` attribute ``modify_via_xml="xml_variable_name"``.
@@ -74,7 +76,7 @@ For example, to change the driver namelist value of ``eps_frac`` to ``1.0e-15``,
 To see the result of this modification to ``user_nl_cpl`` call ``preview_namelists`` and verify that this new value appears in ``CaseDocs/drv_in``.
 
 DATM
-^^^^
+----
 DATM is discussed in detail in `Data Model's User's Guide <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_. 
 DATM is normally used to provide observational forcing data (or forcing data produced by a previous run using active components) to drive CLM (I compset), POP2 (C compset), and POP2/CICE (G compset). 
 As a result, DATM variable settings are specific to the compset that will be targeted.
@@ -100,7 +102,7 @@ You can modify the contents of a DATM stream txt file. To do this:
 As an example, if the stream txt file in ``CaseDocs/`` is datm.streams.txt.CORE2_NYF.GISS, the modified copy in ``$CASEROOT`` should be ``user_datm.streams.txt.CORE2_NYF.GISS``. After calling **preview_namelists** again, you should see your new modifications appear in ``CaseDocs/datm.streams.txt.CORE2_NYF.GISS``.
 
 DOCN
-^^^^
+----
 DOCN is discussed in detail in `Data Model's User's Guide <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_.
 
 DOCN running in prescribed mode assumes that the only field in the input stream is SST and also that SST is in Celsius and must be converted to Kelvin. 
@@ -142,7 +144,7 @@ As an example, if the stream text file in ``CaseDocs/`` is
 After changing this file and calling **preview_namelists** again, you should see your new modifications appear in ``CaseDocs/docn.streams.txt.prescribed``.
 
 DICE
-^^^^
+-----
 DICE is discussed in detail in `Data Model's User's Guide <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_.
 
 DICE can be user-customized in three ways.
@@ -162,7 +164,7 @@ You can modify the contents of a DICE stream txt file. To do this:
 - Modify the ``user_dice.streams.txt.*`` file.
 
 DLND
-^^^^
+-----
 DLND is discussed in detail in `Data Model's User's Guide <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_. The data land model is different from the other data models because it can run as a purely data-land model (reading in coupler history data for atm/land fluxes and land albedos produced by a previous run), or to read in model output from CLM to send to CISM.
 
 DLND can be user-customized in three ways:
@@ -182,7 +184,7 @@ You can modify the contents of a DLND stream txt file. To do this:
 - Modify the ``user_dlnd.streams.txt.*`` file.
 
 DROF
-^^^^
+-----
 DROF is discussed in `Data Model's User's Guide <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_. The data river runoff model reads in runoff data and sends it back to the coupler. In general, the data river runoff model is only used to provide runoff forcing data to POP2 when running C or G compsets
 
 DROF can be user-customized in three ways:
@@ -202,10 +204,10 @@ You can modify the contents of a DROF stream txt file. To do this:
 - Modify the ``user_drof.streams.txt.*`` file.
 
 Customizing CESM prognostic component-specific namelist settings
-----------------------------------------------------------------
+=================================================================
 
 CAM
-^^^
+---
 CAM's `configure <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_ and `build-namelist <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_ utilities are called by ``Buildconf/cam.buildnml.csh``. 
 `CAM_CONFIG_OPTS <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_, `CAM_NAMELIST_OPTS <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_ and `CAM_NML_USECASE <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_ are used to set compset variables (e.g., "-phys cam5" for CAM_CONFIG_OPTS) and in general should not be modified for supported compsets. 
 For a complete documentation of namelist settings, see `CAM namelist variables <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_. 
@@ -214,15 +216,15 @@ For example, to change the solar constant to 1363.27, modify the ``user_nl_cam``
 To see the result of adding this, call **preview_namelists** and verify that this new value appears in ``CaseDocs/atm_in``.
 
 CLM
-^^^
+---
 CLM's `configure <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_ and `build-namelist <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_ utilities are called by ``Buildconf/clm.buildnml.csh``. `CLM_CONFIG_OPTS <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_ and `CLM_NML_USE_CASE <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_ are used to set compset specific variables and in general should not be modified for supported compsets. For a complete documentation of namelist settings, see `CLM namelist variables <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_. To modify CLM namelist settings, you should add the appropriate keyword/value pair at the end of the ``$CASEROOT/user_nl_clm`` file (see the documentation for each file at the top of that file). To see the result of your change, call **preview_namelists** and verify that the changes appear correctly in ``CaseDocs/lnd_in``.
 
 RTM
-^^^
+---
 RTM's **build-namelist** utility is called by ``Buildconf/rtm.buildnml.csh``. For a complete documentation of namelist settings, see RTM namelist variables. To modify `RTM namelist settings <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_, you should add the appropriate keyword/value pair at the end of the ``$CASEROOT/user_nl_rtm`` file (see the documentation for each file at the top of that file). To see the result of your change, call **preview_namelists** and verify that the changes appear correctly in ``CaseDocs/rof_in``.
 
 CICE
-^^^^
+---
 CICE's `configure <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_ and `build-namelist <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_ utilities are now called by ``Buildconf/cice.buildnml.csh``. Note that `CICE_CONFIG_OPTS <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_, and `CICE_NAMELIST_OPTS <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_ are used to set compset specific variables and in general should not be modified for supported compsets. For a complete documentation of namelist settings, see `CICE namelist variables <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_. To modify CICE namelist settings, you should add the appropriate keyword/value pair at the end of the ``$CASEROOT/user_nl_cice`` file (see the documentation for each file at the top of that file). To see the result of your change, call **preview_namelists** and verify that the changes appear correctly in ``CaseDocs/ice_in``.
 
 In addition, **cesm_setup** creates CICE's compile time `block decomposition variables <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_ in ``env_build.xml`` as follows:
@@ -237,7 +239,7 @@ In addition, **cesm_setup** creates CICE's compile time `block decomposition var
    
 
 POP2
-^^^^
+----
 See `POP2 namelist variables <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_ for a complete description of the POP2 run-time namelist variables. Note that `OCN_COUPLING, OCN_ICE_FORCING, OCN_TRANSIENT <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_ are normally utilized ONLY to set compset specific variables and should not be edited. For a complete documentation of namelist settings, see `CICE namelist variables <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_. To modify POP2 namelist settings, you should add the appropriate keyword/value pair at the end of the ``$CASEROOT/user_nl_pop2`` file (see the documentation for each file at the top of that file). To see the result of your change, call **preview_namelists** and verify that the changes appear correctly in ``CaseDocs/ocn_in``.
 
 In addition, **cesm_setup** also generates POP2's compile time compile time `block decomposition variables <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_ in ``env_build.xml`` as follows:
@@ -251,17 +253,17 @@ In addition, **cesm_setup** also generates POP2's compile time compile time `blo
    CPP variables in pop2.buildexe.csh
 
 CISM
-^^^^
+----
 See `CISM namelist variables <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_ for a complete description of the CISM run-time namelist variables. This includes variables that appear both in ``cism_in`` and in ``cism.config``. To modify any of these settings, you should add the appropriate keyword/value pair at the end of the ``user_nl_cism`` file (see the documentation for each file at the top of that file). To see the result of your change, call **preview_namelists** and verify that the changes appear correctly in ``CaseDocs/cism_in`` and ``CaseDocs/cism.config``.
 
 There are also some run-time settings set via ``env_run.xml``, as documented in `CISM run time variables <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_ - in particular, the model resolution, set via ``CISM_GRID``. The value of ``CISM_GRID`` determines the default value of a number of other namelist parameters.
 
 
 Customizing ACME prognostic component-specific namelist settings
-----------------------------------------------------------------
+================================================================
 
 Controlling output data
------------------------
+=========================
 
 During a model run, each CESM component produces its own output datasets consisting of history, restart and output log files. Component history files and restart files are in netCDF format. Restart files are used to either exactly restart the model or to serve as initial conditions for other model cases.
 
@@ -296,7 +298,7 @@ the run will automatically submit the **$CASE.l_archive** to the queue upon its 
 
 
 Load Balancing a Case
----------------------
+=========================
 
 Load balancing refers to the optimization of the processor layout for a given model configuration (compset, grid, etc) such that the cost and throughput will be optimal. 
 Optimal is a somewhat subjective thing. 
@@ -312,7 +314,7 @@ In general, there are seven unique models (atm, lnd, rof, ocn, ice, glc, cpl) th
 Please see the section on `setting the case PE layout <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_ for a detailed discussion of how to set processor layouts and the example on `changing the PE layout <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_.
 
 Model timing data
-^^^^^^^^^^^^^^^^^
+------------------
 
 In order to perform a load balancing exercise, you must first be aware of the different types of timing information produced by every CESM run. How this information is used is described in detail in `using model timing data <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_.
 
@@ -327,7 +329,7 @@ Separately, there is another file in the timing directory, ccsm_timing_stats.$da
 There is one other stream of useful timing information in the cpl.log.$date file that is produced for every run. The cpl.log file contains the run time for each model day during the model run. This diagnostic is output as the model runs. You can search for tStamp in the cpl.log file to see this information. This timing information is useful for tracking down temporal variability in model cost either due to inherent model variability cost (I/O, spin-up, seasonal, etc) or possibly due to variability due to hardware. The model daily cost is generally pretty constant unless I/O is written intermittently such as at the end of the month.
 
 Using model timing data
-^^^^^^^^^^^^^^^^^^^^^^^
+------------------------
 
 In practice, load-balancing requires a number of considerations such as which components are run, their absolute and relative resolution; cost, scaling and processor count sweet-spots for each component; and internal load imbalance within a component. It is often best to load balance the system with all significant run-time I/O turned off because this occurs very infrequently, typically one timestep per month, and is best treated as a separate cost as it can bias interpretation of the overall model load balance. Also, the use of OpenMP threading in some or all of the components is dependent on the hardware/OS support as well as whether the system supports running all MPI and mixed MPI/OpenMP on overlapping processors for different components. A final point is deciding whether components should run sequentially, concurrently, or some combination of the two with each other. Typically, a series of short test runs is done with the desired production configuration to establish a reasonable load balance setup for the production job. The timing output can be used to compare test runs to help determine the optimal load balance.
 
@@ -379,10 +381,10 @@ There are some general rules for finding optimal configurations:
 
 
 How do I run a case?
------------------------
+======================
 
 Setting the time limits
-^^^^^^^^^^^^^^^^^^^^^^^
+-----------------------
 
 Before you can run the job, you need to make sure the batch queue variables are set correctly for the specific run being targeted. This is done currently by manually editing ``$CASE.run``. You should carefully check the batch queue submission lines and make sure that you have appropriate account numbers, time limits, and stdout file names. In looking at the ccsm_timing.$CASE.$datestamp files for "Model Throughput", output like the following will be found:
 
@@ -408,7 +410,7 @@ and ``xmlchange`` should be invoked as follows in ``CASEROOT``:
 ```
 
 Submitting the run
-^^^^^^^^^^^^^^^^^^^^^^^
+-----------------------
 
 Once you have configured and built the model, submit $CASE.run to your machine's batch queue system using the ``$CASE.submit`` command.
 
@@ -441,7 +443,7 @@ If the job failed, there are several places where you should look for informatio
 REMINDER: Once you have a successful first run, you must set CONTINUE_RUN to TRUE in ``env_run.xml`` before resubmitting, otherwise the job will not progress. You may also need to modify the `STOP_OPTION, STOP_N and/or STOP_DATE <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_, `REST_OPTION, REST_N and/or REST_DATE <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_, and `RESUBMIT <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_ variables in ``env_run.xml`` before resubmitting.
 
 Restarting a run
-^^^^^^^^^^^^^^^^^^^^^^^
+-----------------------
 
 Restart files are written by each active component (and some data components) at intervals dictated by the driver via the setting of the ``env_run.xml`` variables, ``$REST_OPTION`` and ``$REST_N``. Restart files allow the model to stop and then start again with bit-for-bit exact capability (i.e. the model output is exactly the same as if it had never been stopped). The driver coordinates the writing of restart files as well as the time evolution of the model. All components receive restart and stop information from the driver and write restarts or stop as specified by the driver.
 
@@ -463,26 +465,26 @@ Whenever a component writes a restart file, it also writes a restart pointer fil
 If short-term archiving is turned on, then the model archives the component restart datasets and pointer files into ``$DOUT_S_ROOT/rest/yyyy-mm-dd-sssss``, where yyyy-mm-dd-sssss is the model date at the time of the restart (see `below for more details <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_). If long-term archiving these restart then archived in ``$DOUT_L_MSROOT/rest``. ``DOUT_S_ROOT`` and ``DOUT_L_MSROOT`` are set in ``env_run.xml``, and can be changed at any time during the run.
 
 Backing up to a previous restart
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+---------------------------------
 
 If a run encounters problems and crashes, you will normally have to back up to a previous restart. Assuming that short-term archiving is enabled, you will need to find the latest ``$DOUT_S_ROOT/rest/yyyy-mm-dd-ssss/`` directory that was created and copy the contents of that directory into your run directory (``$RUNDIR``). You can then continue the run and these restarts will be used. It is important to make sure the new rpointer.* files overwrite the rpointer.* files that were in ``$RUNDIR``, or the job may not restart in the correct place.
 
 Occasionally, when a run has problems restarting, it is because the rpointer files are out of sync with the restart files. The rpointer files are text files and can easily be edited to match the correct dates of the restart and history files. All the restart files should have the same date.
 
 Data flow during a model run
-----------------------------
+============================
 
 All component log files are copied to the directory specified by the ``env_run.xml`` variable ``$LOGDIR`` which by default is set to ``$CASEROOT/logs``. This location is where log files are copied when the job completes successfully. If the job aborts, the log files will NOT be copied out of the ``$RUNDIR`` directory.
 
 Once a model run has completed successfully, the output data flow will depend on whether or not short-term archiving is enabled (as set by the ``env_run.xml`` variable, ``$DOUT_S``). By default, short-term archiving will be done.
 
 No archiving
-^^^^^^^^^^^^
+-------------
 
 If no short-term archiving is performed, then all model output data will remain in the run directory, as specified by the ``env_run.xml`` variable, ``$RUNDIR``. Furthermore, if short-term archiving is disabled, then long-term archiving will not be allowed.
 
 Short-term archiving
-^^^^^^^^^^^^^^^^^^^^
+---------------------
 
 If short-term archiving is enabled, the component output files will be moved to the short term archiving area on local disk, as specified by ``$DOUT_S_ROOT``. The directory ``DOUT_S_ROOT`` is normally set to ``$EXEROOT/../archive/$CASE.`` and will contain the following directory structure:
 ::
@@ -504,7 +506,7 @@ logs/ contains component log files created during the run. In addition to ``$LOG
 rest/ contains a subset of directories that each contain a *consistent* set of restart files, initial files and rpointer files. Each sub-directory has a unique name corresponding to the model year, month, day and seconds into the day where the files were created (e.g. 1852-01-01-00000/). The contents of any restart directory can be used to `create a branch run or a hybrid run <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_ or back up to a previous restart date.
 
 Long-term archiving
-^^^^^^^^^^^^^^^^^^^
+---------------------
 
 For long production runs that generate many giga-bytes of data, you will normally want to move the output data from local disk to a long-term archival location. Long-term archiving can be activated by setting ``$DOUT_L_MS`` to TRUE in ``env_run.xml``. By default, the value of this variable is FALSE, and long-term archiving is disabled. If the value is set to TRUE, then the following additional variables are: ``$DOUT_L_MSROOT, $DOUT_S_ROOT DOUT_S`` (see 
 `variables for output data management <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_).
