@@ -1,3 +1,5 @@
+.. _creating-a-case:
+
 Creating and Setting up a Case
 ===================================
 
@@ -6,7 +8,7 @@ How to create a new case
 
 The first step in creating a CIME based experiment is to use **create_newcase**.
 
-CIME supports out of the box `component sets <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_, `model grids <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_ and `hardware platforms <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_.  
+CIME supports out of the box ``component sets``, ``model grids`` and ``hardware platforms``.
 
 - Component sets (usually referred to as compsets) define both the specific model components that will be used in a given CIME configuration, *and* any component-specific namelist or configuration settings that are specific to this configuration.  
 
@@ -14,7 +16,7 @@ CIME supports out of the box `component sets <http://www.cesm.ucar.edu/models/ce
 
 - At a minimum creating a CIME experiment requires specifying a component set and a model grid.
 
-- Out of the box compsets and models grids are associated with two names: a longname, and an alias name.  
+- Out of the box compsets and models grids are associated with two names: a longname and an alias name.  
 
 - Aliases are required by the CIME regression test system but can also be used for user convenience. Compset aliases are unique - each compset alias is associated with one and only one compset. Grid aliases, on the other hand, are overloaded and the same grid alias may result in a different grid based depending on the compset the alias is associated with. We recommend that the user always confirm that the compset longname and grid longname are the expected result when using aliases to create a case. 
 
@@ -58,18 +60,18 @@ The component set (compset) longname has the form::
   BGC  = optional BGC scenario                    
 
   The OPTIONAL %phys attributes specify sub-modes of the given system
-  For example DOCN%DOM is the  DOCN data ocean (rather than slab-ocean) 
-  mode. ALL the possible %phys choices for each component are listed by
-  the calling **create_newcase** with the -list compsets argument. ALL 
-  data models now have a %phys option that corresponds to the data model mode 
+  For example DOCN%DOM is the DOCN data ocean (rather than slab-ocean) mode.
+  ALL the possible %phys choices for each component are listed by
+  the calling **manage_case** with the **-list** compsets argument. 
+  ALL data models now have a %phys option that corresponds to the data model mode.
 
 As an example, the CESM compset longname::
 
    1850_CAM60_CLM50%BGC_CICE_POP2%ECO_MOSART_CISM2%NOEVOLVE_WW3_BGC%BDRD
 
-refers to running a pre-industrial control with prognostic CESM components CAM, CLM, CICE, POP2, MOSART, CISM2 and WW3 a BDRD BGC coupling scenario. The alias for this compset is B1850. Either a compset longname or a compset alias can be used as input to **create_newcase**. It is also possible to create your own custom compset (see `How do I create my own compset? <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_). 
-
-All the out-of-the-box CESM2.0 release series compsets are listed in `component sets <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_. Upon clicking on any of the long names a pop up box will appear that provides more details of the component configuration.
+refers to running a pre-industrial control with prognostic CESM components CAM, CLM, CICE, POP2, MOSART, CISM2 and WW3 a BDRD BGC coupling scenario. 
+The alias for this compset is B1850. Either a compset longname or a compset alias can be used as input to **create_newcase**. 
+It is also possible to create your own custom compset (see `How do I create my own compset? in the FAQ`)
 
 Model Grid Naming Convention
 ----------------------------------------
@@ -99,11 +101,10 @@ As an example, the longname::
 
    a%ne30np4_l%ne30np4_oi%gx1v6_r%r05_m%gx1v6_g%null_w%null
 
-refers to a model grid with a ne30np4 spectral element 1-degree atmosphere and land grids, gx1v6 Greenland pole 1-degree ocean and sea-ice grids, a 1/2 degree river routing grid, null wave and internal cism grids and an gx1v6 ocean mask. The alias for this grid is ne30_g16. Either the grid longname or alias can be used as input to **create_newcase**. 
+refers to a model grid with a ne30np4 spectral element 1-degree atmosphere and land grids, gx1v6 Greenland pole 1-degree ocean and sea-ice grids, a 1/2 degree river routing grid, null wave and internal cism grids and an gx1v6 ocean mask. 
+The alias for this grid is ne30_g16. Either the grid longname or alias can be used as input to **create_newcase**. 
 
-CIME also permits users to introduce their own user defined grids (see `Adding a new user-defined grid <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_). 
-
-All the out-of-the-box CIME5 release series model grids are listed in `grids <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_. Upon clicking on any of the long names a pop up box will appear that provides more details of the model grid.  
+CIME also permits users to introduce their own :ref:`<user defined grids <faq-user-defined-grid>`.
 
 Component grids (such as the atmosphere grid or ocean grid above) are denoted by the following naming convention:
 
@@ -122,15 +123,12 @@ Component grids (such as the atmosphere grid or ocean grid above) are denoted by
 Using create_newcase
 --------------------
 
-You should first use the --help option in calling **create_newcase** to document its input options.  On CIME supported out of the box machines, the only required arguments to **create_newcase** are:
+If you are not on an out-of-the box CIME supported platform, you will need to first :ref:`port <porting>` CIME to your system.
+
+You should first use the --help option in calling **create_newcase** to document its input options.  The only required arguments to **create_newcase** are:
 ::
 
    create_newcase --case [CASE] --compset [COMPSET] --res [GRID]
-
-for non-supported machines, users will need to also add the following two arguments
-::
-
-   create_newcase --case [CASE] --compset [COMPSET] --res [GRID] --machine [MACH] --compiler [compiler]
 
 Following is a simple example of using **create_newcase**  using aliases for both compset and grid names. In what follows, ``$CIMEROOT`` is the full pathname of the root directory of the CIME distribution. 
 ::

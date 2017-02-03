@@ -1,3 +1,5 @@
+.. _faq-basic-example:
+
 A Basic Example
 ---------------
 

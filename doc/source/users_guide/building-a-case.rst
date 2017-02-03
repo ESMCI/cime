@@ -1,3 +1,5 @@
+.. _building-a-case:
+
 Building a Case
 ========================
 

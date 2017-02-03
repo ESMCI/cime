@@ -1,3 +1,5 @@
+.. _running-a-case:
+
 Running a Case
 ========================
 
