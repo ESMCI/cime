@@ -1,10 +1,11 @@
 .. _porting:
 
+*********************************************
 Porting and Validating CIME on a new Platform
-=============================================
+*********************************************
 
 Porting Overview 
-----------------
+================
 
 One of the first steps many users will have to address is getting CIME based models running on their local machine. 
 This section will describe that process. 
@@ -72,12 +73,12 @@ This script will run a number of basic unit tests starting from the simplest iss
 - Finally when all the previous steps have run correctly, you are ready to try a case at your target compset and resolution.
 
 Enabling out-of-the-box capability for your machine
----------------------------------------------------
+====================================================
 Once you have successfully created the required xml files in your .cime directory and are satisfied with the results you can merge them into the default files in the cime_config/$CIME_MODEL/machines directory.   
 If you would like to make this machine definition available generally you may then issue a pull request to add your changes to the git repository.  
 
 Validating your port
----------------------------------------------------
+====================================================
 
 The following port validation is recommended for any new machine. 
 Carrying out these steps does not guarantee the model is running properly in all cases nor that the model is scientifically valid on the new machine. 
