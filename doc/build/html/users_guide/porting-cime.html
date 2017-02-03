@@ -1,0 +1,253 @@
+
+
+<!doctype html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>5. Porting and Validating CIME on a new Platform &#8212; on  documentation</title>
+    
+    <link rel="stylesheet" href="../_static/bizstyle.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/bizstyle.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="6. Troubleshooting" href="troubleshooting.html" />
+    <link rel="prev" title="4. Running a Case" href="running-a-case.html" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
+    <![endif]-->
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="troubleshooting.html" title="6. Troubleshooting"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="running-a-case.html" title="4. Running a Case"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">on  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U"><strong>CIME User&#8217;s Guide</strong></a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">5. Porting and Validating CIME on a new Platform</a><ul>
+<li><a class="reference internal" href="#porting-overview">5.1. Porting Overview</a></li>
+<li><a class="reference internal" href="#enabling-out-of-the-box-capability-for-your-machine">5.2. Enabling out-of-the-box capability for your machine</a></li>
+<li><a class="reference internal" href="#validating-your-port">5.3. Validating your port</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="running-a-case.html"
+                        title="previous chapter">4. Running a Case</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="troubleshooting.html"
+                        title="next chapter">6. Troubleshooting</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/users_guide/porting-cime.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="porting-and-validating-cime-on-a-new-platform">
+<span id="porting"></span><h1>5. Porting and Validating CIME on a new Platform<a class="headerlink" href="#porting-and-validating-cime-on-a-new-platform" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="porting-overview">
+<h2>5.1. Porting Overview<a class="headerlink" href="#porting-overview" title="Permalink to this headline">¶</a></h2>
+<p>One of the first steps many users will have to address is getting CIME based models running on their local machine.
+This section will describe that process.
+It is usually very helpful to assure that you can run a basic mpi parallel program on your machine prior to attempting a CIME port.
+Understanding how to compile and run the program fhello_world_mpi.F90 shown here could potentially save many hours of frustration.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">program</span> <span class="n">fhello_world_mpi</span><span class="o">.</span><span class="n">F90</span>
+  <span class="n">use</span> <span class="n">mpi</span>
+  <span class="n">implicit</span> <span class="n">none</span>
+  <span class="n">integer</span> <span class="p">(</span> <span class="n">kind</span> <span class="o">=</span> <span class="mi">4</span> <span class="p">)</span> <span class="n">error</span>
+  <span class="n">integer</span> <span class="p">(</span> <span class="n">kind</span> <span class="o">=</span> <span class="mi">4</span> <span class="p">)</span> <span class="nb">id</span>
+  <span class="n">integer</span> <span class="n">p</span>
+  <span class="n">character</span><span class="p">(</span><span class="nb">len</span><span class="o">=</span><span class="n">MPI_MAX_PROCESSOR_NAME</span><span class="p">)</span> <span class="p">::</span> <span class="n">name</span>
+  <span class="n">integer</span> <span class="n">clen</span>
+  <span class="n">integer</span><span class="p">,</span> <span class="n">allocatable</span> <span class="p">::</span> <span class="n">mype</span><span class="p">(:)</span>
+  <span class="n">real</span> <span class="p">(</span> <span class="n">kind</span> <span class="o">=</span> <span class="mi">8</span> <span class="p">)</span> <span class="n">wtime</span>
+
+  <span class="n">call</span> <span class="n">MPI_Init</span> <span class="p">(</span> <span class="n">error</span> <span class="p">)</span>
+  <span class="n">call</span> <span class="n">MPI_Comm_size</span> <span class="p">(</span> <span class="n">MPI_COMM_WORLD</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">error</span> <span class="p">)</span>
+  <span class="n">call</span> <span class="n">MPI_Comm_rank</span> <span class="p">(</span> <span class="n">MPI_COMM_WORLD</span><span class="p">,</span> <span class="nb">id</span><span class="p">,</span> <span class="n">error</span> <span class="p">)</span>
+  <span class="k">if</span> <span class="p">(</span> <span class="nb">id</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">)</span> <span class="n">then</span>
+     <span class="n">wtime</span> <span class="o">=</span> <span class="n">MPI_Wtime</span> <span class="p">(</span> <span class="p">)</span>
+
+     <span class="n">write</span> <span class="p">(</span> <span class="o">*</span><span class="p">,</span> <span class="s1">&#39;(a)&#39;</span> <span class="p">)</span> <span class="s1">&#39; &#39;</span>
+     <span class="n">write</span> <span class="p">(</span> <span class="o">*</span><span class="p">,</span> <span class="s1">&#39;(a)&#39;</span> <span class="p">)</span> <span class="s1">&#39;HELLO_MPI - Master process:&#39;</span>
+     <span class="n">write</span> <span class="p">(</span> <span class="o">*</span><span class="p">,</span> <span class="s1">&#39;(a)&#39;</span> <span class="p">)</span> <span class="s1">&#39;  FORTRAN90/MPI version&#39;</span>
+     <span class="n">write</span> <span class="p">(</span> <span class="o">*</span><span class="p">,</span> <span class="s1">&#39;(a)&#39;</span> <span class="p">)</span> <span class="s1">&#39; &#39;</span>
+     <span class="n">write</span> <span class="p">(</span> <span class="o">*</span><span class="p">,</span> <span class="s1">&#39;(a)&#39;</span> <span class="p">)</span> <span class="s1">&#39;  An MPI test program.&#39;</span>
+     <span class="n">write</span> <span class="p">(</span> <span class="o">*</span><span class="p">,</span> <span class="s1">&#39;(a)&#39;</span> <span class="p">)</span> <span class="s1">&#39; &#39;</span>
+     <span class="n">write</span> <span class="p">(</span> <span class="o">*</span><span class="p">,</span> <span class="s1">&#39;(a,i8)&#39;</span> <span class="p">)</span> <span class="s1">&#39;  The number of processes is &#39;</span><span class="p">,</span> <span class="n">p</span>
+     <span class="n">write</span> <span class="p">(</span> <span class="o">*</span><span class="p">,</span> <span class="s1">&#39;(a)&#39;</span> <span class="p">)</span> <span class="s1">&#39; &#39;</span>
+  <span class="n">end</span> <span class="k">if</span>
+  <span class="n">call</span> <span class="n">MPI_GET_PROCESSOR_NAME</span><span class="p">(</span><span class="n">NAME</span><span class="p">,</span> <span class="n">CLEN</span><span class="p">,</span> <span class="n">ERROR</span><span class="p">)</span>
+  <span class="n">write</span> <span class="p">(</span> <span class="o">*</span><span class="p">,</span> <span class="s1">&#39;(a)&#39;</span> <span class="p">)</span> <span class="s1">&#39; &#39;</span>
+  <span class="n">write</span> <span class="p">(</span> <span class="o">*</span><span class="p">,</span> <span class="s1">&#39;(a,i8,a,a)&#39;</span> <span class="p">)</span> <span class="s1">&#39;  Process &#39;</span><span class="p">,</span> <span class="nb">id</span><span class="p">,</span> <span class="s1">&#39; says &quot;Hello, world!&quot; &#39;</span><span class="p">,</span><span class="n">name</span><span class="p">(</span><span class="mi">1</span><span class="p">:</span><span class="n">clen</span><span class="p">)</span>
+
+  <span class="n">call</span> <span class="n">MPI_Finalize</span> <span class="p">(</span> <span class="n">error</span> <span class="p">)</span>
+<span class="n">end</span> <span class="n">program</span>
+</pre></div>
+</div>
+<p>Once you are assured that you have a basic functional MPI environment you will need to provide a few prerequisite tools for building and running CIME.</p>
+<ul class="simple">
+<li>A python interpreter version 2.7 or newer</li>
+<li>Build tools gmake and cmake</li>
+<li>A netcdf library version 4.3 or newer built with the same compiler you will use for CIME</li>
+<li>Optionally a pnetcdf library.</li>
+</ul>
+<p>The following steps should be followed:</p>
+<ul class="simple">
+<li>Create a $HOME/.cime directory</li>
+<li>Copy the template file <code class="docutils literal"><span class="pre">$CIME/cime_config/xml_schemas/config_machines_template.xml</span></code> to <code class="docutils literal"><span class="pre">$HOME/.cime/config_machines.xml</span></code></li>
+<li>Fill in the details of <code class="docutils literal"><span class="pre">$HOME/.cime/config_machines.xml</span></code> that specific to your machine.</li>
+<li>The completed file should conform to the schema definition provided, check it using:</li>
+</ul>
+<div class="highlight-default"><div class="highlight"><pre><span></span>xmllint --noout --schema $CIME/cime_config/xml_schemas/config_machines.xsd $HOME/.cime/config_machines.xml
+</pre></div>
+</div>
+<ul class="simple">
+<li>The files <code class="docutils literal"><span class="pre">config_batch.xml</span></code> and <code class="docutils literal"><span class="pre">config_compilers.xml</span></code> may also need specific adjustments for your batch system and compiler.</li>
+</ul>
+<p>You can edit these files in place to add your machine configuration or you can place your custom configuration files in the directory <code class="docutils literal"><span class="pre">$HOME/.cime/</span></code>.
+We recommend the latter approach. All files in <code class="docutils literal"><span class="pre">$HOME/.cime/</span></code> are appended to the xml objects read into memory.</p>
+<ul class="simple">
+<li>Once you have a basic configuration for your machine defined in your new <code class="docutils literal"><span class="pre">$HOME/.cime</span></code> XML files, you should try the <code class="docutils literal"><span class="pre">scripts_regression_test</span></code> in directory <code class="docutils literal"><span class="pre">$CIME/utils/python/tests</span></code>.</li>
+</ul>
+<p>This script will run a number of basic unit tests starting from the simplest issues and working toward more complicated ones.</p>
+<ul class="simple">
+<li>Finally when all the previous steps have run correctly, you are ready to try a case at your target compset and resolution.</li>
+</ul>
+</div>
+<div class="section" id="enabling-out-of-the-box-capability-for-your-machine">
+<h2>5.2. Enabling out-of-the-box capability for your machine<a class="headerlink" href="#enabling-out-of-the-box-capability-for-your-machine" title="Permalink to this headline">¶</a></h2>
+<p>Once you have successfully created the required xml files in your .cime directory and are satisfied with the results you can merge them into the default files in the cime_config/$CIME_MODEL/machines directory.
+If you would like to make this machine definition available generally you may then issue a pull request to add your changes to the git repository.</p>
+</div>
+<div class="section" id="validating-your-port">
+<h2>5.3. Validating your port<a class="headerlink" href="#validating-your-port" title="Permalink to this headline">¶</a></h2>
+<p>The following port validation is recommended for any new machine.
+Carrying out these steps does not guarantee the model is running properly in all cases nor that the model is scientifically valid on the new machine.
+In addition to these tests, detailed validation should be carried out for any new production run.
+That means verifying that model restarts are bit-for-bit identical with a baseline run, that the model is bit-for-bit reproducible when identical cases are run for several months, and that production cases are monitored very carefully as they integrate forward to identify any potential problems as early as possible.
+These are recommended steps for validating a port and are largely functional tests.
+Users are responsible for their own validation process, especially with respect to science validation.</p>
+<p>1. Verify functionality by performing these <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">functionality tests</a>.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">ERS_D</span><span class="o">.</span><span class="n">f19_g16</span><span class="o">.</span><span class="n">X</span>
+<span class="n">ERS_D</span><span class="o">.</span><span class="n">T31_g37</span><span class="o">.</span><span class="n">A</span>
+<span class="n">ERS_D</span><span class="o">.</span><span class="n">f19_g16</span><span class="o">.</span><span class="n">B1850CN</span>
+<span class="n">ERI</span><span class="o">.</span><span class="n">ne30_g16</span><span class="o">.</span><span class="n">X</span>
+<span class="n">ERI</span><span class="o">.</span><span class="n">T31_g37</span><span class="o">.</span><span class="n">A</span>
+<span class="n">ERI</span><span class="o">.</span><span class="n">f19_g16</span><span class="o">.</span><span class="n">B1850CN</span>
+<span class="n">ERS</span><span class="o">.</span><span class="n">ne30_ne30</span><span class="o">.</span><span class="n">F</span>
+<span class="n">ERS</span><span class="o">.</span><span class="n">f19_g16</span><span class="o">.</span><span class="n">I</span>
+<span class="n">ERS</span><span class="o">.</span><span class="n">T62_g16</span><span class="o">.</span><span class="n">C</span>
+<span class="n">ERS</span><span class="o">.</span><span class="n">T62_g16</span><span class="o">.</span><span class="n">DTEST</span>
+<span class="n">ERT</span><span class="o">.</span><span class="n">ne30_g16</span><span class="o">.</span><span class="n">B1850CN</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="2">
+<li>Verify performance and scaling analysis.<ol class="loweralpha">
+<li>Create one or two <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">load-balanced</a> configurations to check into <code class="docutils literal"><span class="pre">Machines/config_pes.xml</span></code> for the new machine.</li>
+<li>Verify that performance and scaling are reasonable.</li>
+<li>Review timing summaries in <code class="docutils literal"><span class="pre">$CASEROOT</span></code> for load balance and throughput.</li>
+<li>Review coupler &#8220;daily&#8221; timing output for timing inconsistencies.
+As has been mentioned in the section on <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">load balancing a case</a>, useful timing information is contained in cpl.log.$date file that is produced for every run.
+The cpl.log file contains the run time for each model day during the model run.
+This diagnostic is output as the model runs.
+You can search for tStamp in this file to see this information.
+This timing information is useful for tracking down temporal variability in model cost either due to inherent model variability cost (I/O, spin-up, seasonal, etc) or possibly due to variability due to hardware.
+The model daily cost is generally pretty constant unless I/O is written intermittently such as at the end of the month.</li>
+</ol>
+</li>
+<li>Perform validation (both functional and scientific):<ol class="loweralpha">
+<li>Perform a new CIME validation test (<a href="#id1"><span class="problematic" id="id2">**</span></a>TODO: fill this in <a href="#id3"><span class="problematic" id="id4">**</span></a>)</li>
+<li>Follow the <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">CCSM4.0 CICE port-validation procedure</a>.</li>
+<li>Follow the <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">CCSM4.0 POP2 port-validation procedure</a>.</li>
+</ol>
+</li>
+<li>Perform two, one-year runs (using the expected load-balanced configuration) as separate job submissions and verify that atmosphere history files are bfb for the last month.
+Do this after some performance testing is complete; you may also combine this with the production test by running the first year as a single run and the second year as a multi-submission production run.
+This will test reproducibility, exact restart over the one-year timescale, and production capability all in one test.</li>
+<li>Carry out a 20-30 year 1.9x2.5_gx1v6 resolution, B_1850_CN compset simulation and compare the results with the diagnostics plots for the 1.9x2.5_gx1v6 Pre-Industrial Control (see the <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">CCSM4.0 diagnostics</a>).
+Model output data for these runs will be available on the <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">Earth System Grid (ESG)</a> as well.</li>
+</ol>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="troubleshooting.html" title="6. Troubleshooting"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="running-a-case.html" title="4. Running a Case"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">on  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" ><strong>CIME User&#8217;s Guide</strong></a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Mariana Vertenstein, Rob Jacob, Jim Edwards, Jim Foucar, Alice Bertini.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.2.
+    </div>
+  </body>
+</html>

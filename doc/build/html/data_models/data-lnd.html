@@ -1,0 +1,229 @@
+
+
+<!doctype html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>5. Data Land (DLND) &#8212; on  documentation</title>
+    
+    <link rel="stylesheet" href="../_static/bizstyle.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/bizstyle.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="6. Data Ice (DICE)" href="data-seaice.html" />
+    <link rel="prev" title="4. Data Atmosphere (DATM)" href="data-atm.html" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
+    <![endif]-->
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="data-seaice.html" title="6. Data Ice (DICE)"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="data-atm.html" title="4. Data Atmosphere (DATM)"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">on  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U"><strong>CIME Data Models</strong></a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">5. Data Land (DLND)</a><ul>
+<li><a class="reference internal" href="#namelists">5.1. Namelists</a></li>
+<li><a class="reference internal" href="#fields">5.2. Fields</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="data-atm.html"
+                        title="previous chapter">4. Data Atmosphere (DATM)</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="data-seaice.html"
+                        title="next chapter">6. Data Ice (DICE)</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/data_models/data-lnd.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="data-land-dlnd">
+<h1>5. Data Land (DLND)<a class="headerlink" href="#data-land-dlnd" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="namelists">
+<h2>5.1. Namelists<a class="headerlink" href="#namelists" title="Permalink to this headline">¶</a></h2>
+<p>The land model is unique because it supports land data and snow data (<em>lnd and sno</em>) almost as if they were two separate components, but they are in fact running in one component model through one interface. The lnd (land) data consist of fields sent to the atmosphere. This set of data is used when running dlnd with an active atmosphere. In general this is not a mode that is used or supported in CESM1.1. The sno (snow) data consist of fields sent to the glacier model. This set of data is used when running dlnd with an active glacier model (TG compsets). Both sets of data are assumed to be on the same grid.</p>
+<p>DLND namelists can be separated into two groups, <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/cesm/doc/modelnl/nl_dlnd.html#nonstream">stream-independent namelist variables</a> that are specific to the DLND model and <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/cesm/doc/modelnl/nl_dlnd.html#stream">stream-specific namelist variables</a> that are contained in share code and whose names are common to all the data models.</p>
+<p>For stream-independent input, the namelist input filename is hardwired in the data model code to &#8220;dlnd_in&#8221; (or dlnd_in_NNNN for multiple instances) and the namelist group is called &#8220;dlnd_nml&#8221;. The variable formats are character string (char), integer (int), double precision real (r8), or logical (log) or one dimensional arrays of any of those things (array of ...).</p>
+<p>For stream-dependent input, the namelist input file is dlnd_lnd_in and dlnd_sno_in (or dlnd_lnd_in_NNNN and dlnd_sno_in_NNNN for NNNN multiple instances) and the namelist group is &#8220;shr_strdata_nml&#8221;. One of the variables in shr_strdata_nml is the datamode value. The mode is selected by a character string set in the strdata namelist variable dataMode. Each data model has a unique set of datamode values that it supports. Those for DLND are listed in detail in the <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/cesm/doc/modelnl/nl_dlnd.html#stream">datamode</a> definition.</p>
+<p>If you want to change the namelist settings in dlnd_lnd_in or dlnd_in you should edit the file user_nl_dlnd. If you want to change the namelist settings in dsno_lnd_in or dsno_in you should edit the file user_nl_dsno.</p>
+</div>
+<div class="section" id="fields">
+<h2>5.2. Fields<a class="headerlink" href="#fields" title="Permalink to this headline">¶</a></h2>
+<p>The pre-defined internal field names in the data land model are as follows. In general, the stream input file should translate the input variable names into these names for use within the data land model.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="19%" />
+<col width="19%" />
+<col width="19%" />
+<col width="19%" />
+<col width="17%" />
+<col width="9%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>(/ &#8220;t</td>
+<td>&#8221;,&#8221;tref</td>
+<td>&#8221;,&#8221;qref</td>
+<td>&#8221;,&#8221;avsdr</td>
+<td>&#8221;,&#8221;anidr</td>
+<td>&#8221;, &amp;</td>
+</tr>
+<tr class="row-even"><td>&#8220;avsdf</td>
+<td>&#8221;,&#8221;anidf</td>
+<td>&#8221;,&#8221;snowh</td>
+<td>&#8221;,&#8221;taux</td>
+<td>&#8221;,&#8221;tauy</td>
+<td>&#8221;, &amp;</td>
+</tr>
+<tr class="row-odd"><td>&#8220;lat</td>
+<td>&#8221;,&#8221;sen</td>
+<td>&#8221;,&#8221;lwup</td>
+<td>&#8221;,&#8221;evap</td>
+<td>&#8221;,&#8221;swnet</td>
+<td>&#8221;, &amp;</td>
+</tr>
+<tr class="row-even"><td>&#8220;lfrac</td>
+<td>&#8221;,&#8221;fv</td>
+<td>&#8221;,&#8221;ram1</td>
+<td>&#8221;,</td>
+<td>&nbsp;</td>
+<td>&amp;</td>
+</tr>
+<tr class="row-odd"><td>&#8220;flddst1</td>
+<td>&#8221;,&#8221;flxdst2</td>
+<td>&#8221;,&#8221;flxdst3</td>
+<td>&#8221;,&#8221;flxdst4</td>
+<td>&#8221;,</td>
+<td>&amp;</td>
+</tr>
+<tr class="row-even"><td>&#8220;tsrf01</td>
+<td>&#8221;,&#8221;topo01</td>
+<td>&#8221;,&#8221;tsrf02</td>
+<td>&#8221;,&#8221;topo02</td>
+<td>&#8221;,&#8221;tsrf03</td>
+<td>&#8221;, &amp;</td>
+</tr>
+<tr class="row-odd"><td>&#8220;topo03</td>
+<td>&#8221;,&#8221;tsrf04</td>
+<td>&#8221;,&#8221;topo04</td>
+<td>&#8221;,&#8221;tsrf05</td>
+<td>&#8221;,&#8221;topo05</td>
+<td>&#8221;, &amp;</td>
+</tr>
+<tr class="row-even"><td>&#8220;tsrf06</td>
+<td>&#8221;,&#8221;topo06</td>
+<td>&#8221;,&#8221;tsrf07</td>
+<td>&#8221;,&#8221;topo07</td>
+<td>&#8221;,&#8221;tsrf08</td>
+<td>&#8221;, &amp;</td>
+</tr>
+<tr class="row-odd"><td>&#8220;topo08</td>
+<td>&#8221;,&#8221;tsrf09</td>
+<td>&#8221;,&#8221;topo09</td>
+<td>&#8221;,&#8221;tsrf10</td>
+<td>&#8221;,&#8221;topo10</td>
+<td>&#8221;, &amp;</td>
+</tr>
+<tr class="row-even"><td>&#8220;qice01</td>
+<td>&#8221;,&#8221;qice02</td>
+<td>&#8221;,&#8221;qice03</td>
+<td>&#8221;,&#8221;qice04</td>
+<td>&#8221;,&#8221;qice05</td>
+<td>&#8221;, &amp;</td>
+</tr>
+<tr class="row-odd"><td>&#8220;qice06</td>
+<td>&#8221;,&#8221;qice07</td>
+<td>&#8221;,&#8221;qice08</td>
+<td>&#8221;,&#8221;qice09</td>
+<td>&#8221;,&#8221;qice10</td>
+<td>&#8221;  /)</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="data-seaice.html" title="6. Data Ice (DICE)"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="data-atm.html" title="4. Data Atmosphere (DATM)"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">on  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" ><strong>CIME Data Models</strong></a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Mariana Vertenstein, Rob Jacob, Jim Edwards, Jim Foucar, Alice Bertini.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.2.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,552 @@
+
+
+<!doctype html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>4. Running a Case &#8212; on  documentation</title>
+    
+    <link rel="stylesheet" href="../_static/bizstyle.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/bizstyle.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="5. Porting and Validating CIME on a new Platform" href="porting-cime.html" />
+    <link rel="prev" title="3. Building a Case" href="building-a-case.html" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
+    <![endif]-->
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="porting-cime.html" title="5. Porting and Validating CIME on a new Platform"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="building-a-case.html" title="3. Building a Case"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">on  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U"><strong>CIME User&#8217;s Guide</strong></a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">4. Running a Case</a><ul>
+<li><a class="reference internal" href="#controlling-starting-stopping-and-restarting-a-run">4.1. Controlling starting, stopping and restarting a run</a></li>
+<li><a class="reference internal" href="#customizing-component-specific-namelist-settings">4.2. Customizing component-specific namelist settings</a><ul>
+<li><a class="reference internal" href="#drv">4.2.1. DRV</a></li>
+<li><a class="reference internal" href="#datm">4.2.2. DATM</a></li>
+<li><a class="reference internal" href="#docn">4.2.3. DOCN</a></li>
+<li><a class="reference internal" href="#dice">4.2.4. DICE</a></li>
+<li><a class="reference internal" href="#dlnd">4.2.5. DLND</a></li>
+<li><a class="reference internal" href="#drof">4.2.6. DROF</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#customizing-cesm-prognostic-component-specific-namelist-settings">4.3. Customizing CESM prognostic component-specific namelist settings</a><ul>
+<li><a class="reference internal" href="#cam">4.3.1. CAM</a></li>
+<li><a class="reference internal" href="#clm">4.3.2. CLM</a></li>
+<li><a class="reference internal" href="#rtm">4.3.3. RTM</a></li>
+<li><a class="reference internal" href="#cice">4.3.4. CICE</a></li>
+<li><a class="reference internal" href="#pop2">4.3.5. POP2</a></li>
+<li><a class="reference internal" href="#cism">4.3.6. CISM</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#customizing-acme-prognostic-component-specific-namelist-settings">4.4. Customizing ACME prognostic component-specific namelist settings</a></li>
+<li><a class="reference internal" href="#controlling-output-data">4.5. Controlling output data</a></li>
+<li><a class="reference internal" href="#load-balancing-a-case">4.6. Load Balancing a Case</a><ul>
+<li><a class="reference internal" href="#model-timing-data">4.6.1. Model timing data</a></li>
+<li><a class="reference internal" href="#id18">4.6.2. Using model timing data</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#how-do-i-run-a-case">4.7. How do I run a case?</a><ul>
+<li><a class="reference internal" href="#setting-the-time-limits">4.7.1. Setting the time limits</a></li>
+<li><a class="reference internal" href="#submitting-the-run">4.7.2. Submitting the run</a></li>
+<li><a class="reference internal" href="#restarting-a-run">4.7.3. Restarting a run</a></li>
+<li><a class="reference internal" href="#backing-up-to-a-previous-restart">4.7.4. Backing up to a previous restart</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#data-flow-during-a-model-run">4.8. Data flow during a model run</a><ul>
+<li><a class="reference internal" href="#no-archiving">4.8.1. No archiving</a></li>
+<li><a class="reference internal" href="#short-term-archiving">4.8.2. Short-term archiving</a></li>
+<li><a class="reference internal" href="#long-term-archiving">4.8.3. Long-term archiving</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="building-a-case.html"
+                        title="previous chapter">3. Building a Case</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="porting-cime.html"
+                        title="next chapter">5. Porting and Validating CIME on a new Platform</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/users_guide/running-a-case.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="running-a-case">
+<span id="id1"></span><h1>4. Running a Case<a class="headerlink" href="#running-a-case" title="Permalink to this headline">¶</a></h1>
+<p>To run a CIME case, you will run the script <code class="docutils literal"><span class="pre">case.submit</span></code> after you have modified <code class="docutils literal"><span class="pre">env_run.xml</span></code> for your particular needs.</p>
+<p>The <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">env_run.xml</a> file contains variables which may be modified at the initialization of a model run and during the course of that model run. These variables comprise coupler namelist settings for the model stop time, model restart frequency, coupler history frequency and a flag to determine if the run should be flagged as a continuation run. In general, you only need to set the variables <code class="docutils literal"><span class="pre">$STOP_OPTION</span></code> and <code class="docutils literal"><span class="pre">$STOP_N</span></code>. The other coupler settings will then be given consistent and reasonable default values. These default settings guarantee that restart files are produced at the end of the model run.</p>
+<p>In the following, we focus on the handling of run control (e.g. length of run, continuing a run) and output data. We also give a more detailed description of CIME restarts.</p>
+<div class="section" id="controlling-starting-stopping-and-restarting-a-run">
+<h2>4.1. Controlling starting, stopping and restarting a run<a class="headerlink" href="#controlling-starting-stopping-and-restarting-a-run" title="Permalink to this headline">¶</a></h2>
+<p>The case initialization type is set in <code class="docutils literal"><span class="pre">env_run.xml</span></code>. A CIME run can be initialized in one of three ways; startup, branch, or hybrid.</p>
+<dl class="docutils">
+<dt>startup</dt>
+<dd>In a startup run (the default), all components are initialized using baseline states. These baseline states are set independently by each component and can include the use of restart files, initial files, external observed data files, or internal initialization (i.e., a &#8220;cold start&#8221;). In a startup run, the coupler sends the start date to the components at initialization. In addition, the coupler does not need an input data file. In a startup initialization, the ocean model does not start until the second ocean coupling step.</dd>
+<dt>branch</dt>
+<dd><p class="first">In a branch run, all components are initialized using a consistent set of restart files from a previous run (determined by the <code class="docutils literal"><span class="pre">$RUN_REFCASE</span></code> and <code class="docutils literal"><span class="pre">$RUN_REFDATE</span></code> variables in <code class="docutils literal"><span class="pre">env_run.xml</span></code>). The case name is generally changed for a branch run, although it does not have to be. In a branch run, setting <code class="docutils literal"><span class="pre">$RUN_STARTDATE</span></code> is ignored because the model components obtain the start date from their restart datasets. Therefore, the start date cannot be changed for a branch run. This is the same mechanism that is used for performing a restart run (where <code class="docutils literal"><span class="pre">$CONTINUE_RUN</span></code> is set to TRUE in the <code class="docutils literal"><span class="pre">env_run.xml</span></code> file).</p>
+<p>Branch runs are typically used when sensitivity or parameter studies are required, or when settings for history file output streams need to be modified while still maintaining bit-for-bit reproducibility. Under this scenario, the new case is able to produce an exact bit-for-bit restart in the same manner as a continuation run if no source code or component namelist inputs are modified. All models use restart files to perform this type of run. <code class="docutils literal"><span class="pre">$RUN_REFCASE</span></code> and <code class="docutils literal"><span class="pre">$RUN_REFDATE</span></code> are required for branch runs.</p>
+<p class="last">To set up a branch run, locate the restart tar file or restart directory for <code class="docutils literal"><span class="pre">$RUN_REFCASE</span></code> and <code class="docutils literal"><span class="pre">$RUN_REFDATE</span></code> from a previous run, then place those files in the <code class="docutils literal"><span class="pre">$RUNDIR</span></code> directory. See <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">setting up a branch run</a> for an example.</p>
+</dd>
+<dt>hybrid</dt>
+<dd>A hybrid run indicates that the model is initialized more like a startup, but uses initialization datasets from a previous case.
+This is somewhat analogous to a branch run with relaxed restart constraints.
+A hybrid run allows users to bring together combinations of initial/restart files from a previous case (specified by <code class="docutils literal"><span class="pre">$RUN_REFCASE</span></code>) at a given model output date (specified by <code class="docutils literal"><span class="pre">$RUN_REFDATE</span></code>).
+Unlike a branch run, the starting date of a hybrid run (specified by <code class="docutils literal"><span class="pre">$RUN_STARTDATE</span></code>) can be modified relative to the reference case.
+In a hybrid run, the model does not continue in a bit-for-bit fashion with respect to the reference case.
+The resulting climate, however, should be continuous provided that no model source code or namelists are changed in the hybrid run.
+In a hybrid initialization, the ocean model does not start until the second ocean coupling step, and the coupler does a &#8220;cold start&#8221; without a restart file.</dd>
+</dl>
+<p>The variable <code class="docutils literal"><span class="pre">$RUN_TYPE</span></code> determines the initialization type. This setting is only important for the initial run of a production run when the $CONTINUE_RUN variable is set to FALSE. After the initial run, the <code class="docutils literal"><span class="pre">$CONTINUE_RUN</span></code> variable is set to TRUE, and the model restarts exactly using input files in a case, date, and bit-for-bit continuous fashion. The variable <code class="docutils literal"><span class="pre">$RUN_TYPE</span></code> is the start date (in yyyy-mm-dd format) either a startup or hybrid run. If the run is targeted to be a hybrid or branch run, you must also specify values for <code class="docutils literal"><span class="pre">$RUN_REFCASE</span></code> and <code class="docutils literal"><span class="pre">$RUN_REFDATE</span></code>. All run startup variables are discussed in <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">run start control variables</a>.</p>
+<p>Before a job is submitted to the batch system, you need to first check that the batch submission lines in <code class="docutils literal"><span class="pre">env_batch.xml</span></code> are appropriate. These lines should be checked and modified accordingly for appropriate account numbers, time limits, and stdout/stderr file names. You should then modify <code class="docutils literal"><span class="pre">env_run.xml</span></code> to determine the key run-time settings. See <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">controlling run termination</a>, <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">controlling run restarts</a>, and <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">performing model restarts</a> for more details. A brief note on restarting runs. When you first begin a branch, hybrid or startup run, CONTINUE_RUN must be set to FALSE. When you successfully run and get a restart file, you will need to change CONTINUE_RUN to TRUE for the remainder of your run. See performing model restarts for more details.   Setting the RESUBMIT option to a value &gt; 0 will cause the CONTINUE_RUN variable to be automatically set to TRUE upon completion of the initial run.</p>
+<p>By default,
+<code class="docutils literal"><span class="pre">`</span>
+<span class="pre">STOP_OPTION</span> <span class="pre">=</span> <span class="pre">ndays</span>
+<span class="pre">STOP_N</span> <span class="pre">=</span> <span class="pre">5</span>
+<span class="pre">STOP_DATE</span> <span class="pre">=</span> <span class="pre">-999</span>
+<span class="pre">`</span></code>
+The default setting is only appropriate for initial testing. Before a longer run is started, update the stop times based on the case throughput and batch queue limits. For example, if the model runs 5 model years/day, set <code class="docutils literal"><span class="pre">RESUBMIT=30,</span> <span class="pre">STOP_OPTION=</span> <span class="pre">nyears,</span> <span class="pre">and</span> <span class="pre">STOP_N=</span> <span class="pre">5</span></code>. The model will then run in five year increments, and stop after 30 submissions.</p>
+</div>
+<div class="section" id="customizing-component-specific-namelist-settings">
+<h2>4.2. Customizing component-specific namelist settings<a class="headerlink" href="#customizing-component-specific-namelist-settings" title="Permalink to this headline">¶</a></h2>
+<p>All CIME_compliant components generate their namelist settings using the <code class="docutils literal"><span class="pre">cime_config/buildnml</span></code> file located in the component&#8217;s directory tree.
+As an example, the CIME data atmosphere model (DATM), generates namelists using the script <code class="docutils literal"><span class="pre">$CIMEROOT/components/data_comps/datm/cime_config/buildnml</span></code>.</p>
+<p><strong>User specific component namelist changes should only be made only by editing the ``$CASEROOT/user_nl_xxx`` files OR by changing xml variables in `env_run.xml` or `env_build.xml`</strong>.
+A full discussion of how to change the namelist variables for each component is provided below.
+You can preview the <code class="docutils literal"><span class="pre">$CASEROOT</span></code> component namelists by running <code class="docutils literal"><span class="pre">preview_namelists</span></code> from your <code class="docutils literal"><span class="pre">$CASEROOT</span></code>.
+Calling <code class="docutils literal"><span class="pre">review_namelists</span></code> results in the creation of component namelists (e.g. atm_in, lnd_in, .etc) in <code class="docutils literal"><span class="pre">$CASEROOT/CaseDocs/</span></code>.
+The namelist files created in the <code class="docutils literal"><span class="pre">CaseDocs/</span></code> are there only for user reference and SHOULD NOT BE EDITED since they are overwritten every time <code class="docutils literal"><span class="pre">preview_namelists</span></code>, <code class="docutils literal"><span class="pre">case.submit</span></code> and <code class="docutils literal"><span class="pre">case.build</span></code> are called.
+A complete documentation of all <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">CESM2 model component namelists</a>.
+The only files that you should modify are in <code class="docutils literal"><span class="pre">$CASEROOT</span></code>.
+The following represents a summary of controlling and modifying component-specific run-time settings:</p>
+<div class="section" id="drv">
+<h3>4.2.1. DRV<a class="headerlink" href="#drv" title="Permalink to this headline">¶</a></h3>
+<p>Driver namelist variables belong in two groups - those that are set directly from <code class="docutils literal"><span class="pre">$CASEROOT`</span> <span class="pre">xml</span> <span class="pre">variables</span> <span class="pre">and</span> <span class="pre">those</span> <span class="pre">that</span> <span class="pre">are</span> <span class="pre">set</span> <span class="pre">by</span> <span class="pre">the</span> <span class="pre">driver</span> <span class="pre">``buildnml</span></code> utility (<code class="docutils literal"><span class="pre">$CIMEROOT/driver_cpl/cime_config/buildnml</span></code>).
+All driver namelist variables are defined in <code class="docutils literal"><span class="pre">$CIMEROOT/driver_cpl/cime_config/namelist_definition_drv.xml</span></code>.
+Those variables that can only be changed by modifying xml variables appear with the <code class="docutils literal"><span class="pre">entry</span></code> attribute <code class="docutils literal"><span class="pre">modify_via_xml=&quot;xml_variable_name&quot;</span></code>.
+All other variables that appear <code class="docutils literal"><span class="pre">$CIMEROOT/driver_cpl/cime_config/namelist_definition_drv.xml</span></code> can be modified by adding a key-word value pair at the end of <code class="docutils literal"><span class="pre">user_nl_cpl</span></code>.
+For example, to change the driver namelist value of <code class="docutils literal"><span class="pre">eps_frac</span></code> to <code class="docutils literal"><span class="pre">1.0e-15</span></code>, you should add the following line to the end of the <code class="docutils literal"><span class="pre">user_nl_cpl</span></code></p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">eps_frac</span> <span class="o">=</span> <span class="mf">1.0e-15</span>
+</pre></div>
+</div>
+<p>To see the result of this modification to <code class="docutils literal"><span class="pre">user_nl_cpl</span></code> call <code class="docutils literal"><span class="pre">preview_namelists</span></code> and verify that this new value appears in <code class="docutils literal"><span class="pre">CaseDocs/drv_in</span></code>.</p>
+</div>
+<div class="section" id="datm">
+<h3>4.2.2. DATM<a class="headerlink" href="#datm" title="Permalink to this headline">¶</a></h3>
+<p>DATM is discussed in detail in <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">Data Model&#8217;s User&#8217;s Guide</a>.
+DATM is normally used to provide observational forcing data (or forcing data produced by a previous run using active components) to drive CLM (I compset), POP2 (C compset), and POP2/CICE (G compset).
+As a result, DATM variable settings are specific to the compset that will be targeted.</p>
+<p>DATM can be user configured in three different ways.</p>
+<p>You can set <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">DATM run-time variables</a> my modifying control settings for CLM and CPLHIST forcing.</p>
+<p>You can edit <code class="docutils literal"><span class="pre">user_nl_datm</span></code> to change namelist settings namelists settings by adding all user specific namelist changes in the form of &#8220;namelist_var = new_namelist_value&#8221;.
+Note that any namelist variable from shr_strdata_nml and datm_nml can be modified below using the this syntax.
+Use preview_namelists to view (not modify) the output namelist in <code class="docutils literal"><span class="pre">CaseDocs</span></code>.</p>
+<p>You can modify the contents of a DATM stream txt file. To do this:</p>
+<ul class="simple">
+<li>use <strong>preview_namelists</strong> to obtain the contents of the stream txt files in <code class="docutils literal"><span class="pre">CaseDocs</span></code></li>
+<li>place a <em>copy</em> of this file in <code class="docutils literal"><span class="pre">$CASEROOT</span></code> with the string <em>&#8220;user_&#8221;</em> prepended</li>
+<li><strong>Make sure you change the permissions of the file to be writeable</strong> (chmod 644)</li>
+<li>Modify the <code class="docutils literal"><span class="pre">user_datm.streams.txt.*</span></code> file.</li>
+</ul>
+<p>As an example, if the stream txt file in <code class="docutils literal"><span class="pre">CaseDocs/</span></code> is datm.streams.txt.CORE2_NYF.GISS, the modified copy in <code class="docutils literal"><span class="pre">$CASEROOT</span></code> should be <code class="docutils literal"><span class="pre">user_datm.streams.txt.CORE2_NYF.GISS</span></code>. After calling <strong>preview_namelists</strong> again, you should see your new modifications appear in <code class="docutils literal"><span class="pre">CaseDocs/datm.streams.txt.CORE2_NYF.GISS</span></code>.</p>
+</div>
+<div class="section" id="docn">
+<h3>4.2.3. DOCN<a class="headerlink" href="#docn" title="Permalink to this headline">¶</a></h3>
+<p>DOCN is discussed in detail in <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">Data Model&#8217;s User&#8217;s Guide</a>.</p>
+<p>DOCN running in prescribed mode assumes that the only field in the input stream is SST and also that SST is in Celsius and must be converted to Kelvin.
+All other fields are set to zero except for ocean salinity, which is set to a constant reference salinity value.
+Normally the ice fraction data (used for prescribed CICE) is found in the same data files that provide SST data to the data ocean model since SST and ice fraction data are derived from the same observational data sets and are consistent with each other.
+For DOCN prescribed mode, default yearly climatological datasets are provided for various model resolutions.
+For multi-year runs requiring AMIP datasets of sst/ice_cov fields, you need to set the variables for <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">DOCN_SSTDATA_FILENAME, DOCN_SSTDATA_YEAR_START, and DOCN_SSTDATA_YEAR_END</a>.
+CICE in prescribed mode also uses these values.</p>
+<p>DOCN running as a slab ocean model is used (in conjunction with CICE running in prognostic mode) in all <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">E compsets</a>.
+SOM (&#8220;slab ocean model&#8221;) mode is a prognostic mode.
+This mode computes a prognostic sea surface temperature and a freeze/melt potential (surface Q-flux) used by the sea ice model.
+This calculation requires an external SOM forcing data file that includes ocean mixed layer depths and bottom-of-the-slab Q-fluxes.
+Scientifically appropriate bottom-of-the-slab Q-fluxes are normally ocean resolution dependent and are derived from the ocean model output of a fully coupled run.
+Note that while this mode runs out of the box, the default SOM forcing file is not scientifically appropriate and is provided for testing and development purposes only.
+Users must create scientifically appropriate data for their particular application. A tool is available to derive valid SOM forcing.</p>
+<p>DOCN can be user-customized in three ways.</p>
+<p>You can set <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">DOCN run-time variables</a>.</p>
+<p>You can edit <code class="docutils literal"><span class="pre">user_nl_docn</span></code> to change namelist settings by adding all user specific namelist changes in the form of &#8220;namelist_var = new_namelist_value&#8221;.
+Note that any namelist variable from shr_strdata_nml and datm_nml can be modified below using the this syntax.
+Use <strong>preview_namelists</strong> to view (not modify) the output namelist in <code class="docutils literal"><span class="pre">CaseDocs</span></code>.</p>
+<p>You can modify the contents of a DOCN stream txt file.
+To do this:</p>
+<ul class="simple">
+<li>use <strong>preview_namelists</strong> to obtain the contents of the stream txt files in <code class="docutils literal"><span class="pre">CaseDocs/</span></code></li>
+<li>place a <em>copy</em> of this file in <code class="docutils literal"><span class="pre">$CASEROOT</span></code> with the string <em>&#8220;user_&#8221;</em> prepended</li>
+<li><strong>Make sure you change the permissions of the file to be writeable</strong> (chmod 644)</li>
+<li>Modify the <code class="docutils literal"><span class="pre">user_docn.streams.txt.*</span></code> file.</li>
+</ul>
+<p>As an example, if the stream text file in <code class="docutils literal"><span class="pre">CaseDocs/</span></code> is
+<code class="docutils literal"><span class="pre">doc.stream.txt.prescribed</span></code>, the modified copy in <code class="docutils literal"><span class="pre">$CASEROOT</span></code> should be <code class="docutils literal"><span class="pre">user_docn.streams.txt.prescribed</span></code>.
+After changing this file and calling <strong>preview_namelists</strong> again, you should see your new modifications appear in <code class="docutils literal"><span class="pre">CaseDocs/docn.streams.txt.prescribed</span></code>.</p>
+</div>
+<div class="section" id="dice">
+<h3>4.2.4. DICE<a class="headerlink" href="#dice" title="Permalink to this headline">¶</a></h3>
+<p>DICE is discussed in detail in <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">Data Model&#8217;s User&#8217;s Guide</a>.</p>
+<p>DICE can be user-customized in three ways.</p>
+<p>You can set <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">DICE run-time variables</a>.</p>
+<p>You can edit <code class="docutils literal"><span class="pre">user_nl_dice</span></code> to change namelist settings by adding all user specific namelist changes in the form of &#8220;namelist_var = new_namelist_value&#8221;. Note that any namelist variable from shr_strdata_nml and datm_nml can be modified below using the this syntax. Use <strong>preview_namelists</strong> to view (not modify) the output namelist in <code class="docutils literal"><span class="pre">CaseDocs/</span></code>.</p>
+<p>You can modify the contents of a DICE stream txt file. To do this:</p>
+<ul class="simple">
+<li>use <strong>preview_namelists</strong> to obtain the contents of the stream txt files in <code class="docutils literal"><span class="pre">CaseDocs/</span></code></li>
+<li>place a <em>copy</em> of this file in <code class="docutils literal"><span class="pre">$CASEROOT</span></code> with the string &#8220;<a href="#id4"><span class="problematic" id="id5">*</span></a>user*_&#8221; prepended</li>
+<li><strong>Make sure you change the permissions of the file to be writeable</strong> (chmod 644)</li>
+<li>Modify the <code class="docutils literal"><span class="pre">user_dice.streams.txt.*</span></code> file.</li>
+</ul>
+</div>
+<div class="section" id="dlnd">
+<h3>4.2.5. DLND<a class="headerlink" href="#dlnd" title="Permalink to this headline">¶</a></h3>
+<p>DLND is discussed in detail in <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">Data Model&#8217;s User&#8217;s Guide</a>. The data land model is different from the other data models because it can run as a purely data-land model (reading in coupler history data for atm/land fluxes and land albedos produced by a previous run), or to read in model output from CLM to send to CISM.</p>
+<p>DLND can be user-customized in three ways:</p>
+<p>You can set <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">DLND run-time variables</a>.</p>
+<p>You can edit <code class="docutils literal"><span class="pre">user_nl_dlnd</span></code> OR <code class="docutils literal"><span class="pre">user_nl_dsno</span></code> depending on the component set, to change namelist settings namelists settings by adding all user specific namelist changes in the form of &#8220;namelist_var = new_namelist_value&#8221;. Note that any namelist variable from <code class="docutils literal"><span class="pre">shr_strdata_nml</span></code> and <code class="docutils literal"><span class="pre">dlnd_nml</span></code> or <code class="docutils literal"><span class="pre">dsno_nml</span></code> can be modified below using the this syntax. Use <strong>preview_namelists</strong> to view (not modify) the output namelist in <code class="docutils literal"><span class="pre">CaseDocs/</span></code>.</p>
+<p>You can modify the contents of a DLND stream txt file. To do this:</p>
+<ul class="simple">
+<li>use <strong>preview_namelists</strong> to obtain the contents of the stream txt files in <code class="docutils literal"><span class="pre">CaseDocs/</span></code></li>
+<li>place a <em>copy</em> of this file in <code class="docutils literal"><span class="pre">$CASEROOT</span></code> with the string &#8220;<a href="#id7"><span class="problematic" id="id8">*</span></a>user*_&#8221; prepended</li>
+<li><strong>Make sure you change the permissions of the file to be writeable</strong> (chmod 644)</li>
+<li>Modify the <code class="docutils literal"><span class="pre">user_dlnd.streams.txt.*</span></code> file.</li>
+</ul>
+</div>
+<div class="section" id="drof">
+<h3>4.2.6. DROF<a class="headerlink" href="#drof" title="Permalink to this headline">¶</a></h3>
+<p>DROF is discussed in <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">Data Model&#8217;s User&#8217;s Guide</a>. The data river runoff model reads in runoff data and sends it back to the coupler. In general, the data river runoff model is only used to provide runoff forcing data to POP2 when running C or G compsets</p>
+<p>DROF can be user-customized in three ways:</p>
+<p>You can set <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">DROF run-time variables</a>.</p>
+<p>You can edit <code class="docutils literal"><span class="pre">user_nl_drof</span></code> to change namelist settings namelists settings by adding all user specific namelist changes in the form of &#8220;namelist_var = new_namelist_value&#8221;. Note that any namelist variable from <code class="docutils literal"><span class="pre">shr_strdata_nml</span></code> and <code class="docutils literal"><span class="pre">drof_nml</span></code> can be modified using the this syntax. Use <strong>preview_namelists</strong> to view (not modify) the output namelist in <code class="docutils literal"><span class="pre">CaseDocs/</span></code>.</p>
+<p>You can modify the contents of a DROF stream txt file. To do this:</p>
+<ul class="simple">
+<li>use <strong>preview_namelists</strong> to obtain the contents of the stream txt files in <code class="docutils literal"><span class="pre">CaseDocs/</span></code></li>
+<li>place a <em>copy</em> of this file in <code class="docutils literal"><span class="pre">$CASEROOT</span></code> with the string &#8220;<a href="#id10"><span class="problematic" id="id11">*</span></a>user*_&#8221; prepended</li>
+<li><strong>Make sure you change the permissions of the file to be writeable</strong> (chmod 644)</li>
+<li>Modify the <code class="docutils literal"><span class="pre">user_drof.streams.txt.*</span></code> file.</li>
+</ul>
+</div>
+</div>
+<div class="section" id="customizing-cesm-prognostic-component-specific-namelist-settings">
+<h2>4.3. Customizing CESM prognostic component-specific namelist settings<a class="headerlink" href="#customizing-cesm-prognostic-component-specific-namelist-settings" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="cam">
+<h3>4.3.1. CAM<a class="headerlink" href="#cam" title="Permalink to this headline">¶</a></h3>
+<p>CAM&#8217;s <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">configure</a> and <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">build-namelist</a> utilities are called by <code class="docutils literal"><span class="pre">Buildconf/cam.buildnml.csh</span></code>.
+<a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">CAM_CONFIG_OPTS</a>, <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">CAM_NAMELIST_OPTS</a> and <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">CAM_NML_USECASE</a> are used to set compset variables (e.g., &#8220;-phys cam5&#8221; for CAM_CONFIG_OPTS) and in general should not be modified for supported compsets.
+For a complete documentation of namelist settings, see <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">CAM namelist variables</a>.
+To modify CAM namelist settings, you should add the appropriate keyword/value pair at the end of the <code class="docutils literal"><span class="pre">$CASEROOT/user_nl_cam</span></code> file (see the documentation for each file at the top of that file).
+For example, to change the solar constant to 1363.27, modify the <code class="docutils literal"><span class="pre">user_nl_cam</span></code> file to contain the following line at the end &#8220;solar_const=1363.27&#8221;.
+To see the result of adding this, call <strong>preview_namelists</strong> and verify that this new value appears in <code class="docutils literal"><span class="pre">CaseDocs/atm_in</span></code>.</p>
+</div>
+<div class="section" id="clm">
+<h3>4.3.2. CLM<a class="headerlink" href="#clm" title="Permalink to this headline">¶</a></h3>
+<p>CLM&#8217;s <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">configure</a> and <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">build-namelist</a> utilities are called by <code class="docutils literal"><span class="pre">Buildconf/clm.buildnml.csh</span></code>. <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">CLM_CONFIG_OPTS</a> and <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">CLM_NML_USE_CASE</a> are used to set compset specific variables and in general should not be modified for supported compsets. For a complete documentation of namelist settings, see <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">CLM namelist variables</a>. To modify CLM namelist settings, you should add the appropriate keyword/value pair at the end of the <code class="docutils literal"><span class="pre">$CASEROOT/user_nl_clm</span></code> file (see the documentation for each file at the top of that file). To see the result of your change, call <strong>preview_namelists</strong> and verify that the changes appear correctly in <code class="docutils literal"><span class="pre">CaseDocs/lnd_in</span></code>.</p>
+</div>
+<div class="section" id="rtm">
+<h3>4.3.3. RTM<a class="headerlink" href="#rtm" title="Permalink to this headline">¶</a></h3>
+<p>RTM&#8217;s <strong>build-namelist</strong> utility is called by <code class="docutils literal"><span class="pre">Buildconf/rtm.buildnml.csh</span></code>. For a complete documentation of namelist settings, see RTM namelist variables. To modify <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">RTM namelist settings</a>, you should add the appropriate keyword/value pair at the end of the <code class="docutils literal"><span class="pre">$CASEROOT/user_nl_rtm</span></code> file (see the documentation for each file at the top of that file). To see the result of your change, call <strong>preview_namelists</strong> and verify that the changes appear correctly in <code class="docutils literal"><span class="pre">CaseDocs/rof_in</span></code>.</p>
+</div>
+<div class="section" id="cice">
+<h3>4.3.4. CICE<a class="headerlink" href="#cice" title="Permalink to this headline">¶</a></h3>
+<p>CICE&#8217;s <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">configure</a> and <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">build-namelist</a> utilities are now called by <code class="docutils literal"><span class="pre">Buildconf/cice.buildnml.csh</span></code>. Note that <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">CICE_CONFIG_OPTS</a>, and <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">CICE_NAMELIST_OPTS</a> are used to set compset specific variables and in general should not be modified for supported compsets. For a complete documentation of namelist settings, see <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">CICE namelist variables</a>. To modify CICE namelist settings, you should add the appropriate keyword/value pair at the end of the <code class="docutils literal"><span class="pre">$CASEROOT/user_nl_cice</span></code> file (see the documentation for each file at the top of that file). To see the result of your change, call <strong>preview_namelists</strong> and verify that the changes appear correctly in <code class="docutils literal"><span class="pre">CaseDocs/ice_in</span></code>.</p>
+<p>In addition, <strong>cesm_setup</strong> creates CICE&#8217;s compile time <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">block decomposition variables</a> in <code class="docutils literal"><span class="pre">env_build.xml</span></code> as follows:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>./case.setup
+  ⇓
+Buildconf/cice.buildnml.csh and $NTASKS_ICE and $NTHRDS_ICE
+  ⇓
+env_build.xml variables CICE_BLCKX, CICE_BLCKY, CICE_MXBLCKS, CICE_DECOMPTYPE
+CPP variables in cice.buildexe.csh
+</pre></div>
+</div>
+</div>
+<div class="section" id="pop2">
+<h3>4.3.5. POP2<a class="headerlink" href="#pop2" title="Permalink to this headline">¶</a></h3>
+<p>See <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">POP2 namelist variables</a> for a complete description of the POP2 run-time namelist variables. Note that <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">OCN_COUPLING, OCN_ICE_FORCING, OCN_TRANSIENT</a> are normally utilized ONLY to set compset specific variables and should not be edited. For a complete documentation of namelist settings, see <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">CICE namelist variables</a>. To modify POP2 namelist settings, you should add the appropriate keyword/value pair at the end of the <code class="docutils literal"><span class="pre">$CASEROOT/user_nl_pop2</span></code> file (see the documentation for each file at the top of that file). To see the result of your change, call <strong>preview_namelists</strong> and verify that the changes appear correctly in <code class="docutils literal"><span class="pre">CaseDocs/ocn_in</span></code>.</p>
+<p>In addition, <strong>cesm_setup</strong> also generates POP2&#8217;s compile time compile time <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">block decomposition variables</a> in <code class="docutils literal"><span class="pre">env_build.xml</span></code> as follows:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>./cesm_setup
+    ⇓
+Buildconf/pop2.buildnml.csh and $NTASKS_OCN and $NTHRDS_OCN
+    ⇓
+env_build.xml variables POP2_BLCKX, POP2_BLCKY, POP2_MXBLCKS, POP2_DECOMPTYPE
+CPP variables in pop2.buildexe.csh
+</pre></div>
+</div>
+</div>
+<div class="section" id="cism">
+<h3>4.3.6. CISM<a class="headerlink" href="#cism" title="Permalink to this headline">¶</a></h3>
+<p>See <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">CISM namelist variables</a> for a complete description of the CISM run-time namelist variables. This includes variables that appear both in <code class="docutils literal"><span class="pre">cism_in</span></code> and in <code class="docutils literal"><span class="pre">cism.config</span></code>. To modify any of these settings, you should add the appropriate keyword/value pair at the end of the <code class="docutils literal"><span class="pre">user_nl_cism</span></code> file (see the documentation for each file at the top of that file). To see the result of your change, call <strong>preview_namelists</strong> and verify that the changes appear correctly in <code class="docutils literal"><span class="pre">CaseDocs/cism_in</span></code> and <code class="docutils literal"><span class="pre">CaseDocs/cism.config</span></code>.</p>
+<p>There are also some run-time settings set via <code class="docutils literal"><span class="pre">env_run.xml</span></code>, as documented in <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">CISM run time variables</a> - in particular, the model resolution, set via <code class="docutils literal"><span class="pre">CISM_GRID</span></code>. The value of <code class="docutils literal"><span class="pre">CISM_GRID</span></code> determines the default value of a number of other namelist parameters.</p>
+</div>
+</div>
+<div class="section" id="customizing-acme-prognostic-component-specific-namelist-settings">
+<h2>4.4. Customizing ACME prognostic component-specific namelist settings<a class="headerlink" href="#customizing-acme-prognostic-component-specific-namelist-settings" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="controlling-output-data">
+<h2>4.5. Controlling output data<a class="headerlink" href="#controlling-output-data" title="Permalink to this headline">¶</a></h2>
+<p>During a model run, each CESM component produces its own output datasets consisting of history, restart and output log files. Component history files and restart files are in netCDF format. Restart files are used to either exactly restart the model or to serve as initial conditions for other model cases.</p>
+<p>Archiving is a phase of a CESM model run where the generated output data is moved from $RUNDIR to a local disk area (short-term archiving) and subsequently to a long-term storage system (long-term archiving). It has no impact on the production run except to clean up disk space and help manage user quotas. Although short-term and long-term archiving are implemented independently in the scripts, there is a dependence between the two since the short-term archiver must be turned on in order for the long-term archiver to be activated. In <code class="docutils literal"><span class="pre">env_run.xml</span></code>, several variables control the behavior of short and long-term archiving. See <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">short and long term archiving</a> for a description of output data control variables. Several important points need to be made about both short and long term archiving:</p>
+<ul class="simple">
+<li>By default, short-term archiving is enabled and long-term archiving is disabled.</li>
+<li>All output data is initially written to <code class="docutils literal"><span class="pre">$RUNDIR</span></code>.</li>
+<li>Unless a user explicitly turns off short-term archiving, files will be moved to <code class="docutils literal"><span class="pre">$DOUT_S_ROOT</span></code> at the end of a successful model run.</li>
+<li>If long-term archiving is enabled, files will be moved to <code class="docutils literal"><span class="pre">$DOUT_L_MSROOT</span></code> by <code class="docutils literal"><span class="pre">$CASE.l_archive</span></code>, which is run as a separate batch job after the successful completion of a model run.</li>
+<li>Users should generally turn off short term-archiving when developing new CESM code.</li>
+<li>If long-term archiving is not enabled, users must monitor quotas and usage in the <code class="docutils literal"><span class="pre">$DOUT_S_ROOT/</span></code> directory and should manually clean up these areas on a frequent basis.</li>
+</ul>
+<p>Standard output generated from each CESM component is saved in a &#8220;log file&#8221; for each component in $RUNDIR. Each time the model is run, a single coordinated datestamp is incorporated in the filenames of all output log files associated with that run. This common datestamp is generated by the run script and is of the form YYMMDD-hhmmss, where YYMMDD are the Year, Month, Day and hhmmss are the hour, minute and second that the run began (e.g. ocn.log.040526-082714). Log files are also copied to a user specified directory using the variable $LOGDIR in <code class="docutils literal"><span class="pre">env_run.xml</span></code>. The default is a &#8216;logs&#8217; subdirectory beneath the case directory.</p>
+<p>By default, each component also periodically writes history files (usually monthly) in netCDF format and also writes netCDF or binary restart files in the $RUNDIR directory. The history and log files are controlled independently by each component. History output control (i.e. output fields and frequency) is set in the <code class="docutils literal"><span class="pre">Buildconf/$component.buildnml.csh</span></code> files.</p>
+<p>The raw history data does not lend itself well to easy time-series analysis. For example, CAM writes one or more large netCDF history file(s) at each requested output period. While this behavior is optimal for model execution, it makes it difficult to analyze time series of individual variables without having to access the entire data volume. Thus, the raw data from major model integrations is usually postprocessed into more user-friendly configurations, such as single files containing long time-series of each output fields, and made available to the community.</p>
+<p>As an example, for the following example settings:
+<code class="docutils literal"><span class="pre">`</span>
+<span class="pre">DOUT_S</span> <span class="pre">=</span> <span class="pre">TRUE</span>
+<span class="pre">DOUT_S_ROOT</span> <span class="pre">=</span> <span class="pre">/ptmp/$user/archive</span>
+<span class="pre">DOUT_L_MS</span> <span class="pre">=</span> <span class="pre">TRUE</span>
+<span class="pre">DOUT_L_MSROOT</span> <span class="pre">/USER/csm/$CASE</span>
+<span class="pre">`</span></code>
+the run will automatically submit the <strong>$CASE.l_archive</strong> to the queue upon its completion to archive the data. The system is not bulletproof, and you will want to verify at regular intervals that the archived data is complete, particularly during long running jobs.</p>
+</div>
+<div class="section" id="load-balancing-a-case">
+<h2>4.6. Load Balancing a Case<a class="headerlink" href="#load-balancing-a-case" title="Permalink to this headline">¶</a></h2>
+<p>Load balancing refers to the optimization of the processor layout for a given model configuration (compset, grid, etc) such that the cost and throughput will be optimal.
+Optimal is a somewhat subjective thing.
+For a fixed total number of processors, it means achieving the maximum throughput.
+For a given configuration across varied processor counts, it means finding several &#8220;sweet spots&#8221; where the model is minimally idle, the cost is relatively low, and the throughput is relatively high.
+As with most models, increasing total processors normally results in both increased throughput and increased cost.
+If models scaled linearly, the cost would remain constant across different processor counts, but generally, models don&#8217;t scale linearly and cost increases with increasing processor count.
+This is certainly true for CESM. It is strongly recommended that a user perform a load-balancing exercise on their proposed model run before undertaking a long production run.</p>
+<p>CESM has significant flexibility with respect to the layout of components across different hardware processors.
+In general, there are seven unique models (atm, lnd, rof, ocn, ice, glc, cpl) that are managed independently in CESM, each with a unique MPI communicator. In addition, the driver runs on the union of all processors and controls the sequencing and hardware partitioning.</p>
+<p>Please see the section on <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">setting the case PE layout</a> for a detailed discussion of how to set processor layouts and the example on <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">changing the PE layout</a>.</p>
+<div class="section" id="model-timing-data">
+<h3>4.6.1. Model timing data<a class="headerlink" href="#model-timing-data" title="Permalink to this headline">¶</a></h3>
+<p>In order to perform a load balancing exercise, you must first be aware of the different types of timing information produced by every CESM run. How this information is used is described in detail in <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">using model timing data</a>.</p>
+<p>A summary timing output file is produced after every CESM run. This file is placed in <code class="docutils literal"><span class="pre">$CASEROOT/timing/ccsm_timing.$CASE.$date</span></code>, where $date is a datestamp set by CESM at runtime, and contains a summary of various information. The following provides a description of the most important parts of a timing file.</p>
+<p>The first section in the timing output, CCSM TIMING PROFILE, summarizes general timing information for the run. The total run time and cost is given in several metrics including pe-hrs per simulated year (cost), simulated years per wall day (thoughput), seconds, and seconds per model day. This provides general summary information quickly in several units for analysis and comparison with other runs. The total run time for each component is also provided, as is the time for initialization of the model. These times are the aggregate over the total run and do not take into account any temporal or processor load imbalances.</p>
+<p>The second section in the timing output, &#8220;DRIVER TIMING FLOWCHART&#8221;, provides timing information for the driver in sequential order and indicates which processors are involved in the cost. Finally, the timings for the coupler are broken out at the bottom of the timing output file.</p>
+<p>Separately, there is another file in the timing directory, ccsm_timing_stats.$date that accompanies the above timing summary. This second file provides a summary of the minimum and maximum of all the model timers.</p>
+<p>There is one other stream of useful timing information in the cpl.log.$date file that is produced for every run. The cpl.log file contains the run time for each model day during the model run. This diagnostic is output as the model runs. You can search for tStamp in the cpl.log file to see this information. This timing information is useful for tracking down temporal variability in model cost either due to inherent model variability cost (I/O, spin-up, seasonal, etc) or possibly due to variability due to hardware. The model daily cost is generally pretty constant unless I/O is written intermittently such as at the end of the month.</p>
+</div>
+<div class="section" id="id18">
+<h3>4.6.2. Using model timing data<a class="headerlink" href="#id18" title="Permalink to this headline">¶</a></h3>
+<p>In practice, load-balancing requires a number of considerations such as which components are run, their absolute and relative resolution; cost, scaling and processor count sweet-spots for each component; and internal load imbalance within a component. It is often best to load balance the system with all significant run-time I/O turned off because this occurs very infrequently, typically one timestep per month, and is best treated as a separate cost as it can bias interpretation of the overall model load balance. Also, the use of OpenMP threading in some or all of the components is dependent on the hardware/OS support as well as whether the system supports running all MPI and mixed MPI/OpenMP on overlapping processors for different components. A final point is deciding whether components should run sequentially, concurrently, or some combination of the two with each other. Typically, a series of short test runs is done with the desired production configuration to establish a reasonable load balance setup for the production job. The timing output can be used to compare test runs to help determine the optimal load balance.</p>
+<p>Changing the pe layout of the model has NO IMPACT on the scientific results. The basic order of operations and calling sequence is hardwired into the driver and that doesn&#8217;t change when the pe layout is changed. There are some constraints on the ability of CESM to run fully concurrent. In particular, the atmosphere model always run sequentially with the ice and land for scientific reasons. As a result, running the atmosphere concurrently with the ice and land will result in idle processors in these components at some point in the timestepping sequence. For more information about how the driver is implemented, see (Craig, A.P., Vertenstein, M., Jacob, R., 2012: A new flexible coupler for earth system modeling developed for CCSM4 and CESM1.0. International Journal of High Performance Computing Applications, 26, 31-42, 10.1177/1094342011428141). As of CESM1.1.1, there is a new separate rof component. That component is implemented in the driver just like the land model. It can run concurrently with the land model but not concurrently with the atmosphere model.</p>
+<p>In general, we normally carry out 20-day model runs with restarts and history turned off in order to find the layout that has the best load balance for the targeted number of processors. This provides a reasonable performance estimate for the production run for most of the runtime. The end of month history and end of run restart I/O is treated as a separate cost from the load balance perspective. To set up this test configuration, create your production case, and then edit env_run.xml and set STOP_OPTION to ndays, STOP_N to 20, and RESTART_OPTION to never. Seasonal variation and spin-up costs can change performance over time, so even after a production run has started, it&#8217;s worthwhile to occasionally review the timing output to see whether any changes might be made to the layout to improve throughput or decrease cost.</p>
+<p>In determining an optimal load balance for a specific configuration, two pieces of information are useful.</p>
+<ul class="simple">
+<li>Determine which component or components are most expensive.</li>
+<li>Understand the scaling of the individual components, whether they run faster with all MPI or mixed MPI/OpenMP decomposition strategies, and their optimal decompositions at each processor count. If the cost and scaling of the components are unknown, several short tests can be carried out with arbitrary component pe counts just to establish component scaling and sweet spots.</li>
+</ul>
+<p>One method for determining an optimal load balance is as follows</p>
+<ul class="simple">
+<li>start with the most expensive component and a fixed optimal processor count and decomposition for that component</li>
+<li>test the systems, varying the sequencing/concurrency of the components and the pe counts of the other components</li>
+<li>identify a few best potential load balance configurations and then run each a few times to establish run-to-run variability and to try to statistically establish the faster layout</li>
+</ul>
+<p>In all cases, the component run times in the timing output file can be reviewed for both overall throughput and independent component timings. Using the timing output, idle processors can be identified by considering the component concurrency in conjunction with the component timing.</p>
+<p>In general, there are only a few reasonable component layout options for CESM.</p>
+<ul class="simple">
+<li>fully sequential</li>
+<li>fully sequential except the ocean running concurrently</li>
+<li>fully concurrent except the atmosphere run sequentially with the ice, rof, and land components</li>
+<li>finally, it makes best sense for the coupler to run on a subset of the atmosphere processors and that can be sequentially or concurrently run with the land and ice</li>
+</ul>
+<p>The concurrency is limited in part by the hardwired sequencing in the driver. This sequencing is set by scientific constraints, although there may be some addition flexibility with respect to concurrency when running with mixed active and data models.</p>
+<p>There are some general rules for finding optimal configurations:</p>
+<ul class="simple">
+<li>Make sure you have set a processor layout where each hardware processor is assigned to at least one component. There is rarely a reason to have completely idle processors in your layout.</li>
+<li>Make sure your cheapest components keep up with your most expensive components. In other words, a component that runs on 1024 processors should not be waiting on a component running on 16 processors.</li>
+<li>Before running the job, make sure the batch queue settings in the $CASE.run script are set correctly for the specific run being targetted. The account numbers, queue names, time limits should be reviewed. The ideal time limit, queues, and run length are all dependent on each other and on the current model throughput.</li>
+<li>Make sure you are taking full advantage of the hardware resources. If you are charged by the 32-way node, you might as well target a total processor count that is a multiple of 32.</li>
+<li>If possible, keep a single component on a single node. That usually minimizes internal component communication cost. That&#8217;s obviously not possible if running on more processors than the size of a node.</li>
+<li>And always assume the hardware performance could have variations due to contention on the interconnect, file systems, or other areas. If unsure of a timing result, run cases multiple times.</li>
+</ul>
+</div>
+</div>
+<div class="section" id="how-do-i-run-a-case">
+<h2>4.7. How do I run a case?<a class="headerlink" href="#how-do-i-run-a-case" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="setting-the-time-limits">
+<h3>4.7.1. Setting the time limits<a class="headerlink" href="#setting-the-time-limits" title="Permalink to this headline">¶</a></h3>
+<p>Before you can run the job, you need to make sure the batch queue variables are set correctly for the specific run being targeted. This is done currently by manually editing <code class="docutils literal"><span class="pre">$CASE.run</span></code>. You should carefully check the batch queue submission lines and make sure that you have appropriate account numbers, time limits, and stdout file names. In looking at the ccsm_timing.$CASE.$datestamp files for &#8220;Model Throughput&#8221;, output like the following will be found:</p>
+<p><code class="docutils literal"><span class="pre">`</span>
+<span class="pre">Overall</span> <span class="pre">Metrics:</span>
+<span class="pre">Model</span> <span class="pre">Cost:</span> <span class="pre">327.14</span> <span class="pre">pe-hrs/simulated_year</span> <span class="pre">(scale=</span> <span class="pre">0.50)</span>
+<span class="pre">Model</span> <span class="pre">Throughput:</span> <span class="pre">4.70</span> <span class="pre">simulated_years/day</span>
+<span class="pre">`</span></code></p>
+<p>The model throughput is the estimated number of model years that you can run in a wallclock day. Based on this, you can maximize $CASE.run queue limit and change $STOP_OPTION and $STOP_N in <code class="docutils literal"><span class="pre">env_run.xml</span></code>. For example, say a model&#8217;s throughput is 4.7 simulated_years/day. On yellowstone(??), the maximum runtime limit is 6 hours. 4.7 model years/24 hours * 6 hours = 1.17 years. On the massively parallel computers, there is always some variability in how long it will take a job to run. On some machines, you may need to leave as much as 20% buffer time in your run to guarantee that jobs finish reliably before the time limit. For that reason we will set our model to run only one model year/job. Continuing to assume that the run is on yellowstone, in <code class="docutils literal"><span class="pre">$CASE.yellowstone.run</span> <span class="pre">set</span></code>:</p>
+<p><code class="docutils literal"><span class="pre">`</span>
+<span class="pre">#BSUB</span> <span class="pre">-W</span> <span class="pre">6:00</span>
+<span class="pre">`</span></code></p>
+<p>and <code class="docutils literal"><span class="pre">xmlchange</span></code> should be invoked as follows in <code class="docutils literal"><span class="pre">CASEROOT</span></code>:</p>
+<p><code class="docutils literal"><span class="pre">`</span>
+<span class="pre">./xmlchange</span> <span class="pre">STOP_OPTION=nyears</span>
+<span class="pre">./xmlchange</span> <span class="pre">STOP_N=1</span>
+<span class="pre">./xmlchange</span> <span class="pre">REST_OPTION=nyears</span>
+<span class="pre">./xmlchange</span> <span class="pre">REST_N=1</span>
+<span class="pre">`</span></code></p>
+</div>
+<div class="section" id="submitting-the-run">
+<h3>4.7.2. Submitting the run<a class="headerlink" href="#submitting-the-run" title="Permalink to this headline">¶</a></h3>
+<p>Once you have configured and built the model, submit $CASE.run to your machine&#8217;s batch queue system using the <code class="docutils literal"><span class="pre">$CASE.submit</span></code> command.</p>
+<p><code class="docutils literal"><span class="pre">`</span>
+<span class="pre">&gt;</span> <span class="pre">$CASE.submit</span>
+<span class="pre">`</span></code></p>
+<p>You can see a complete example of how to run a case in <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">the basic example</a>.</p>
+<p>When executed, the run script, <code class="docutils literal"><span class="pre">$CASE.run</span></code>:</p>
+<ul class="simple">
+<li>Will not execute the build script. Building CESM is now done only via an interactive call to the build script, <code class="docutils literal"><span class="pre">$CASE.build</span></code>.</li>
+<li>Will check that locked files are consistent with the current xml files, run the buildnml script for each component and verify that required input data is present on local disk (in <code class="docutils literal"><span class="pre">$DIN_LOC_ROOT</span></code>).</li>
+<li>Will run the CESM model.</li>
+<li>Upon completion, will put timing information in <code class="docutils literal"><span class="pre">$LOGDIR/timing</span></code> and copy log files back to <code class="docutils literal"><span class="pre">$LOGDIR</span></code></li>
+<li>If <code class="docutils literal"><span class="pre">$DOUT_S</span></code> is TRUE, component history, log, diagnostic, and restart files will be moved from <code class="docutils literal"><span class="pre">$RUNDIR</span></code> to the short-term archive directory, <code class="docutils literal"><span class="pre">$DOUT_S_ROOT</span></code>.</li>
+<li>If <code class="docutils literal"><span class="pre">$DOUT_L_MS</span></code> is TRUE, the long-term archiver, <code class="docutils literal"><span class="pre">$CASE.l_archive</span></code>, will be submitted to the batch queue upon successful completion of the run.</li>
+<li>If <code class="docutils literal"><span class="pre">$RESUBMIT</span></code> &gt;0, resubmit <code class="docutils literal"><span class="pre">$CASE.run</span></code></li>
+</ul>
+<p>If the job runs to completion, you should have &#8220;SUCCESSFUL TERMINATION OF CPL7-CCSM&#8221; near the end of your STDOUT file. New data should be in the subdirectories under $DOUT_S_ROOT, or if you have long-term archiving turned on, it should be automatically moved to subdirectories under $DOUT_L_MSROOT.</p>
+<p>If the job failed, there are several places where you should look for information. Start with the STDOUT and STDERR file(s) in $CASEROOT. If you don&#8217;t find an obvious error message there, the $RUNDIR/$model.log.$datestamp files will probably give you a hint. First check cpl.log.$datestamp, because it will often tell you when the model failed. Then check the rest of the component log files. Please see <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">troubleshooting runtime errors</a> for more information.</p>
+<p>REMINDER: Once you have a successful first run, you must set CONTINUE_RUN to TRUE in <code class="docutils literal"><span class="pre">env_run.xml</span></code> before resubmitting, otherwise the job will not progress. You may also need to modify the <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">STOP_OPTION, STOP_N and/or STOP_DATE</a>, <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">REST_OPTION, REST_N and/or REST_DATE</a>, and <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">RESUBMIT</a> variables in <code class="docutils literal"><span class="pre">env_run.xml</span></code> before resubmitting.</p>
+</div>
+<div class="section" id="restarting-a-run">
+<h3>4.7.3. Restarting a run<a class="headerlink" href="#restarting-a-run" title="Permalink to this headline">¶</a></h3>
+<p>Restart files are written by each active component (and some data components) at intervals dictated by the driver via the setting of the <code class="docutils literal"><span class="pre">env_run.xml</span></code> variables, <code class="docutils literal"><span class="pre">$REST_OPTION</span></code> and <code class="docutils literal"><span class="pre">$REST_N</span></code>. Restart files allow the model to stop and then start again with bit-for-bit exact capability (i.e. the model output is exactly the same as if it had never been stopped). The driver coordinates the writing of restart files as well as the time evolution of the model. All components receive restart and stop information from the driver and write restarts or stop as specified by the driver.</p>
+<p>It is important to note that runs that are initialized as branch or hybrid runs, will require restart/initial files from previous model runs (as specified by the variables, <code class="docutils literal"><span class="pre">$RUN_REFCASE</span></code> and <code class="docutils literal"><span class="pre">$RUN_REFDATE</span></code>). These required files must be prestaged by the user to the case <code class="docutils literal"><span class="pre">$RUNDIR</span></code> (normally <code class="docutils literal"><span class="pre">$EXEROOT/run</span></code>) before the model run starts. This is normally done by just copying the contents of the relevant <code class="docutils literal"><span class="pre">$RUN_REFCASE/rest/$RUN_REFDATE.00000</span></code> directory.</p>
+<p>Whenever a component writes a restart file, it also writes a restart pointer file of the form, <code class="docutils literal"><span class="pre">rpointer.$component</span></code>. The restart pointer file contains the restart filename that was just written by the component. Upon a restart, each component reads its restart pointer file to determine the filename(s) to read in order to continue the model run. As examples, the following pointer files will be created for a component set using full active model components.</p>
+<p><code class="docutils literal"><span class="pre">`</span>
+<span class="pre">-</span> <span class="pre">rpointer.atm</span>
+<span class="pre">-</span> <span class="pre">rpointer.drv</span>
+<span class="pre">-</span> <span class="pre">rpointer.ice</span>
+<span class="pre">-</span> <span class="pre">rpointer.lnd</span>
+<span class="pre">-</span> <span class="pre">rpointer.rof</span>
+<span class="pre">-</span> <span class="pre">rpointer.cism</span>
+<span class="pre">-</span> <span class="pre">rpointer.ocn.ovf</span>
+<span class="pre">-</span> <span class="pre">rpointer.ocn.restart</span>
+<span class="pre">`</span></code></p>
+<p>If short-term archiving is turned on, then the model archives the component restart datasets and pointer files into <code class="docutils literal"><span class="pre">$DOUT_S_ROOT/rest/yyyy-mm-dd-sssss</span></code>, where yyyy-mm-dd-sssss is the model date at the time of the restart (see <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">below for more details</a>). If long-term archiving these restart then archived in <code class="docutils literal"><span class="pre">$DOUT_L_MSROOT/rest</span></code>. <code class="docutils literal"><span class="pre">DOUT_S_ROOT</span></code> and <code class="docutils literal"><span class="pre">DOUT_L_MSROOT</span></code> are set in <code class="docutils literal"><span class="pre">env_run.xml</span></code>, and can be changed at any time during the run.</p>
+</div>
+<div class="section" id="backing-up-to-a-previous-restart">
+<h3>4.7.4. Backing up to a previous restart<a class="headerlink" href="#backing-up-to-a-previous-restart" title="Permalink to this headline">¶</a></h3>
+<p>If a run encounters problems and crashes, you will normally have to back up to a previous restart. Assuming that short-term archiving is enabled, you will need to find the latest <code class="docutils literal"><span class="pre">$DOUT_S_ROOT/rest/yyyy-mm-dd-ssss/</span></code> directory that was created and copy the contents of that directory into your run directory (<code class="docutils literal"><span class="pre">$RUNDIR</span></code>). You can then continue the run and these restarts will be used. It is important to make sure the new rpointer.* files overwrite the rpointer.* files that were in <code class="docutils literal"><span class="pre">$RUNDIR</span></code>, or the job may not restart in the correct place.</p>
+<p>Occasionally, when a run has problems restarting, it is because the rpointer files are out of sync with the restart files. The rpointer files are text files and can easily be edited to match the correct dates of the restart and history files. All the restart files should have the same date.</p>
+</div>
+</div>
+<div class="section" id="data-flow-during-a-model-run">
+<h2>4.8. Data flow during a model run<a class="headerlink" href="#data-flow-during-a-model-run" title="Permalink to this headline">¶</a></h2>
+<p>All component log files are copied to the directory specified by the <code class="docutils literal"><span class="pre">env_run.xml</span></code> variable <code class="docutils literal"><span class="pre">$LOGDIR</span></code> which by default is set to <code class="docutils literal"><span class="pre">$CASEROOT/logs</span></code>. This location is where log files are copied when the job completes successfully. If the job aborts, the log files will NOT be copied out of the <code class="docutils literal"><span class="pre">$RUNDIR</span></code> directory.</p>
+<p>Once a model run has completed successfully, the output data flow will depend on whether or not short-term archiving is enabled (as set by the <code class="docutils literal"><span class="pre">env_run.xml</span></code> variable, <code class="docutils literal"><span class="pre">$DOUT_S</span></code>). By default, short-term archiving will be done.</p>
+<div class="section" id="no-archiving">
+<h3>4.8.1. No archiving<a class="headerlink" href="#no-archiving" title="Permalink to this headline">¶</a></h3>
+<p>If no short-term archiving is performed, then all model output data will remain in the run directory, as specified by the <code class="docutils literal"><span class="pre">env_run.xml</span></code> variable, <code class="docutils literal"><span class="pre">$RUNDIR</span></code>. Furthermore, if short-term archiving is disabled, then long-term archiving will not be allowed.</p>
+</div>
+<div class="section" id="short-term-archiving">
+<h3>4.8.2. Short-term archiving<a class="headerlink" href="#short-term-archiving" title="Permalink to this headline">¶</a></h3>
+<p>If short-term archiving is enabled, the component output files will be moved to the short term archiving area on local disk, as specified by <code class="docutils literal"><span class="pre">$DOUT_S_ROOT</span></code>. The directory <code class="docutils literal"><span class="pre">DOUT_S_ROOT</span></code> is normally set to <code class="docutils literal"><span class="pre">$EXEROOT/../archive/$CASE.</span></code> and will contain the following directory structure:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">rest</span><span class="o">/</span><span class="n">yyyy</span><span class="o">-</span><span class="n">mm</span><span class="o">-</span><span class="n">dd</span><span class="o">-</span><span class="n">sssss</span><span class="o">/</span>
+<span class="n">logs</span><span class="o">/</span>
+<span class="n">atm</span><span class="o">/</span><span class="n">hist</span><span class="o">/</span>
+<span class="n">cpl</span><span class="o">/</span><span class="n">hist</span>
+<span class="n">glc</span><span class="o">/</span><span class="n">hist</span>
+<span class="n">ice</span><span class="o">/</span><span class="n">hist</span>
+<span class="n">lnd</span><span class="o">/</span><span class="n">hist</span>
+<span class="n">ocn</span><span class="o">/</span><span class="n">hist</span>
+<span class="n">rof</span><span class="o">/</span><span class="n">hist</span>
+<span class="n">wav</span><span class="o">/</span><span class="n">hist</span>
+<span class="o">....</span>
+</pre></div>
+</div>
+<p>logs/ contains component log files created during the run. In addition to <code class="docutils literal"><span class="pre">$LOGDIR</span></code>, log files are also copied to the short-term archiving directory and therefore are available for long-term archiving.</p>
+<p>rest/ contains a subset of directories that each contain a <em>consistent</em> set of restart files, initial files and rpointer files. Each sub-directory has a unique name corresponding to the model year, month, day and seconds into the day where the files were created (e.g. 1852-01-01-00000/). The contents of any restart directory can be used to <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">create a branch run or a hybrid run</a> or back up to a previous restart date.</p>
+</div>
+<div class="section" id="long-term-archiving">
+<h3>4.8.3. Long-term archiving<a class="headerlink" href="#long-term-archiving" title="Permalink to this headline">¶</a></h3>
+<p>For long production runs that generate many giga-bytes of data, you will normally want to move the output data from local disk to a long-term archival location. Long-term archiving can be activated by setting <code class="docutils literal"><span class="pre">$DOUT_L_MS</span></code> to TRUE in <code class="docutils literal"><span class="pre">env_run.xml</span></code>. By default, the value of this variable is FALSE, and long-term archiving is disabled. If the value is set to TRUE, then the following additional variables are: <code class="docutils literal"><span class="pre">$DOUT_L_MSROOT,</span> <span class="pre">$DOUT_S_ROOT</span> <span class="pre">DOUT_S</span></code> (see
+<a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">variables for output data management</a>).</p>
+<p>As was mentioned above, if long-term archiving is enabled, files will be moved out of <code class="docutils literal"><span class="pre">$DOUT_S_ROOT</span></code> to <code class="docutils literal"><span class="pre">$DOUT_L_ROOT</span></code> by <code class="docutils literal"><span class="pre">$CASE.l_archive</span></code>, which is run as a separate batch job after the successful completion of a model run.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="porting-cime.html" title="5. Porting and Validating CIME on a new Platform"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="building-a-case.html" title="3. Building a Case"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">on  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" ><strong>CIME User&#8217;s Guide</strong></a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Mariana Vertenstein, Rob Jacob, Jim Edwards, Jim Foucar, Alice Bertini.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.2.
+    </div>
+  </body>
+</html>

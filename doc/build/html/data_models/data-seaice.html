@@ -1,0 +1,215 @@
+
+
+<!doctype html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>6. Data Ice (DICE) &#8212; on  documentation</title>
+    
+    <link rel="stylesheet" href="../_static/bizstyle.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/bizstyle.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="7. Data Ocean (DOCN)" href="data-ocean.html" />
+    <link rel="prev" title="5. Data Land (DLND)" href="data-lnd.html" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
+    <![endif]-->
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="data-ocean.html" title="7. Data Ocean (DOCN)"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="data-lnd.html" title="5. Data Land (DLND)"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">on  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U"><strong>CIME Data Models</strong></a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">6. Data Ice (DICE)</a><ul>
+<li><a class="reference internal" href="#namelists">6.1. Namelists</a></li>
+<li><a class="reference internal" href="#fields">6.2. Fields</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="data-lnd.html"
+                        title="previous chapter">5. Data Land (DLND)</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="data-ocean.html"
+                        title="next chapter">7. Data Ocean (DOCN)</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/data_models/data-seaice.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="data-ice-dice">
+<h1>6. Data Ice (DICE)<a class="headerlink" href="#data-ice-dice" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="namelists">
+<h2>6.1. Namelists<a class="headerlink" href="#namelists" title="Permalink to this headline">¶</a></h2>
+<p>DICE namelists can be separated into two groups, <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/cesm/doc/modelnl/nl_ice.html#nonstream">stream-independent namelist variables</a> that are specific to the DATM model and <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/cesm/doc/modelnl/nl_dice.html#stream">stream-specific namelist variables</a> that are contained in share code and whose names are common to all the data models.</p>
+<p>For stream-independent input, the namelist input filename is hardwired in the data model code to &#8220;dice_in&#8221; (or dice_in_NNNN for multiple instances) and the namelist group is called &#8220;dice_nml&#8221;.</p>
+<p>Its important to point out that the only currently supported datamode that is not &#8220;NULL&#8221; or &#8220;COPYALL&#8221; is &#8220;SSTDATA&#8221;, which is a prognostic mode and therefore requires data be sent to the ice model. Ice fraction (extent) data is read from an input stream, atmosphere state variables are received from the coupler, and then an atmosphere-ice surface flux is computed and sent to the coupler. It is called &#8220;SSTDATA&#8221; mode because normally the ice fraction data is found in the same data files that provide SST data to the data ocean model. They are normally found in the same file because the SST and ice fraction data are derived from the same observational data sets and are consistent with each other.</p>
+</div>
+<div class="section" id="fields">
+<h2>6.2. Fields<a class="headerlink" href="#fields" title="Permalink to this headline">¶</a></h2>
+<p>The pre-defined internal field names in the data ice model are as follows. In general, the stream input file should translate the input variable names into these names for use within the data ocean model.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="20%" />
+<col width="22%" />
+<col width="20%" />
+<col width="22%" />
+<col width="17%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>(/&#8221;to</td>
+<td>&#8221;,&#8221;s</td>
+<td>&#8221;,&#8221;uo</td>
+<td>&#8221;,&#8221;vo</td>
+<td>&#8221;, &amp;</td>
+</tr>
+<tr class="row-even"><td>&#8220;dhdx</td>
+<td>&#8221;,&#8221;dhdy</td>
+<td>&#8221;,&#8221;q</td>
+<td>&#8221;,&#8221;z</td>
+<td>&#8221;, &amp;</td>
+</tr>
+<tr class="row-odd"><td>&#8220;ua</td>
+<td>&#8221;,&#8221;va</td>
+<td>&#8221;,&#8221;ptem</td>
+<td>&#8221;,&#8221;tbot</td>
+<td>&#8221;, &amp;</td>
+</tr>
+<tr class="row-even"><td>&#8220;shum</td>
+<td>&#8221;,&#8221;dens</td>
+<td>&#8221;,&#8221;swndr</td>
+<td>&#8221;,&#8221;swvdr</td>
+<td>&#8221;, &amp;</td>
+</tr>
+<tr class="row-odd"><td>&#8220;swndf</td>
+<td>&#8221;,&#8221;swvdf</td>
+<td>&#8221;,&#8221;lwdn</td>
+<td>&#8221;,&#8221;rain</td>
+<td>&#8221;, &amp;</td>
+</tr>
+<tr class="row-even"><td>&#8220;snow</td>
+<td>&#8221;,&#8221;t</td>
+<td>&#8221;,&#8221;tref</td>
+<td>&#8221;,&#8221;qref</td>
+<td>&#8221;, &amp;</td>
+</tr>
+<tr class="row-odd"><td>&#8220;ifrac</td>
+<td>&#8221;,&#8221;avsdr</td>
+<td>&#8221;,&#8221;anidr</td>
+<td>&#8221;,&#8221;avsdf</td>
+<td>&#8221;, &amp;</td>
+</tr>
+<tr class="row-even"><td>&#8220;anidf</td>
+<td>&#8221;,&#8221;tauxa</td>
+<td>&#8221;,&#8221;tauya</td>
+<td>&#8221;,&#8221;lat</td>
+<td>&#8221;, &amp;</td>
+</tr>
+<tr class="row-odd"><td>&#8220;sen</td>
+<td>&#8221;,&#8221;lwup</td>
+<td>&#8221;,&#8221;evap</td>
+<td>&#8221;,&#8221;swnet</td>
+<td>&#8221;, &amp;</td>
+</tr>
+<tr class="row-even"><td>&#8220;swpen</td>
+<td>&#8221;,&#8221;melth</td>
+<td>&#8221;,&#8221;meltw</td>
+<td>&#8221;,&#8221;salt</td>
+<td>&#8221;, &amp;</td>
+</tr>
+<tr class="row-odd"><td>&#8220;tauxo</td>
+<td>&#8221;,&#8221;tauyo</td>
+<td>&#8221; /)</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="data-ocean.html" title="7. Data Ocean (DOCN)"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="data-lnd.html" title="5. Data Land (DLND)"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">on  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" ><strong>CIME Data Models</strong></a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Mariana Vertenstein, Rob Jacob, Jim Edwards, Jim Foucar, Alice Bertini.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.2.
+    </div>
+  </body>
+</html>

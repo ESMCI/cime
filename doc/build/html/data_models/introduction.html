@@ -1,0 +1,300 @@
+
+
+<!doctype html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>1. Introduction &#8212; on  documentation</title>
+    
+    <link rel="stylesheet" href="../_static/bizstyle.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/bizstyle.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="2. Input Streams" href="input-streams.html" />
+    <link rel="prev" title="CIME Data Models" href="index.html" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
+    <![endif]-->
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="input-streams.html" title="2. Input Streams"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="CIME Data Models"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">on  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U"><strong>CIME Data Models</strong></a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">1. Introduction</a><ul>
+<li><a class="reference internal" href="#overview">1.1. Overview</a></li>
+<li><a class="reference internal" href="#design">1.2. Design</a></li>
+<li><a class="reference internal" href="#io-through-data-models">1.3. IO Through Data Models</a></li>
+<li><a class="reference internal" href="#restart-files">1.4. Restart Files</a></li>
+<li><a class="reference internal" href="#hierarchy">1.5. Hierarchy</a></li>
+<li><a class="reference internal" href="#summary">1.6. Summary</a></li>
+<li><a class="reference internal" href="#next-sections">1.7. Next Sections</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter"><strong>CIME Data Models</strong></a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="input-streams.html"
+                        title="next chapter">2. Input Streams</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/data_models/introduction.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="introduction">
+<h1>1. Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="overview">
+<h2>1.1. Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<p>The CESM1.2 data models continue to perform the basic function of reading external data files, modifying that data, and then sending it to the coupler via standard CESM coupling interfaces. The coupler and other models have no fundamental knowledge of whether another component is fully active or just a data model. In some cases, data models are prognostic, that is, they also receive and use data sent by the coupler to the data model. But in most cases, the data models are not running prognostically and have no need to receive any data from the coupler.</p>
+<p>The CESM data models have parallel capability and share significant amounts of source code. Methods for reading and interpolating data have been established and can easily be reused. There is a natural hierarchy in the system. The data model calls strdata (&#8220;stream data&#8221;) methods which then call stream methods. There are inputs associated with the data model, <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/data8/doc/c72.html#strdata">strdata</a>, and <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/data8/doc/c72.html#streams">streams</a> to configure the setup. The stream methods are responsible for managing lists of input data files and their time axis. The information is then passed up to the strdata methods where the data is read and interpolated in space and time. The interpolated data is passed up to the data model where final fields are derived, packed, and returned to the coupler.</p>
+</div>
+<div class="section" id="design">
+<h2>1.2. Design<a class="headerlink" href="#design" title="Permalink to this headline">¶</a></h2>
+<p>The strdata implementation is hardwired to execute a set of specific operations associated with reading and interpolating data in space and time. The text box below shows the sequencing of the computation of model fields using the strdata methods. The strdata implementation does the following:</p>
+<ul class="simple">
+<li>determines nearest lower and upper bound data from the input dataset</li>
+<li>if that is new data then read lower and upper bound data</li>
+<li>fill lower and upper bound data</li>
+<li>spatially map lower and upper bound data to model grid</li>
+<li>time interpolate lower and upper bound data to model time</li>
+<li>return fields to data model</li>
+</ul>
+</div>
+<div class="section" id="io-through-data-models">
+<h2>1.3. IO Through Data Models<a class="headerlink" href="#io-through-data-models" title="Permalink to this headline">¶</a></h2>
+<p>The two timestamps of input data that bracket the present model time are read first.
+These are called the lower and upper bounds of data and will change as the model advances.
+Those two sets of inputdata are first filled based on the user setting of the namelist variables <code class="docutils literal"><span class="pre">str_fillalgo</span></code> and <code class="docutils literal"><span class="pre">str_fillmask</span></code>.
+That operation occurs on the input data grid.
+The lower and upper bound data are then spatially mapped to the model grid based upon the user setting of the namelist variables <code class="docutils literal"><span class="pre">str_mapalgo</span></code> and <code class="docutils literal"><span class="pre">str_mapmask</span></code>.
+Spatial interpolation only occurs if the input data grid and model grid are not the identical, and this is determined in the strdata module automatically.
+Time interpolation is the final step and is done using a time interpolation method specified by the user in namelist (via the shr_strdata_nml namelist variable &#8220;tintalgo&#8221;).
+A final set of fields is then available to the data model on the model grid and for the current model time.</p>
+<p>There are two primary costs associated with strdata, reading data and spatially mapping data.
+Time interpolation is relatively cheap in the current implementation.
+As much as possible, redundant operations are minimized.
+Fill and mapping weights are generated at initialization and saved.
+The upper and lower bound mapped input data is saved between time steps to reduce mapping costs in cases where data is time interpolated more often than new data is read.
+If the input data timestep is relatively small (for example, hourly data as opposed to daily or monthly data) the cost of reading input data can be quite large.
+Also, there can be significant variation in cost of the data model over the coarse of the run, for instance, when new inputdata must be read and interpolated, although it&#8217;s relatively predictable.
+The present implementation doesn&#8217;t support changing the order of operations, for instance, time interpolating the data before spatial mapping.
+Because the present computations are always linear, changing the order of operations will not fundamentally change the results.
+The present order of operations generally minimizes the mapping cost for typical data model use cases.</p>
+<p>There are several limitations in both options and usage within the data models at the present time.
+Spatial interpolation can only be performed from a two-dimensional latitude-longitude input grid.
+The target grid can be arbitrary but the source grid must be able to be described by simple one-dimensional lists of longitudes and latitudes, although they don&#8217;t have to have equally spaced.</p>
+<p>At the present time, data models can only read netcdf data, and IO is handled through either standard netcdf interfaces or through the pio library using either netcdf or pnetcdf.
+If standard netcdf is used, global fields are read and then scattered one field at a time.
+If pio is used, then data will be read either serially or in parallel in chunks that are approximately the global field size divided by the number of io tasks.
+If pnetcdf is used through pio, then the pnetcdf library must be included during the build of the model.
+The pnetcdf path and option is hardwired into the <code class="docutils literal"><span class="pre">Macros.make</span></code> file for the specific machine.
+To turn on <code class="docutils literal"><span class="pre">pnetcdf</span></code> in the build, make sure the <code class="docutils literal"><span class="pre">Macros.make</span></code> variables PNETCDF_PATH, INC_PNETCDF, and LIB_PNETCDF are set and that the pio CONFIG_ARGS sets the PNETCDF_PATH argument.</p>
+<p>Beyond just the option of selecting IO with pio, several namelist are available to help optimize pio IO performance.
+Those are TODO - list these.
+The total mpi tasks that can be used for IO is limited to the total number of tasks used by the data model.
+Often though, fewer io tasks result in improved performance.
+In general, [io_root + (num_iotasks-1)*io_stride + 1] has to be less than the total number of data model tasks.
+In practice, pio seems to perform optimally somewhere between the extremes of 1 task and all tasks, and is highly machine and problem dependent.</p>
+</div>
+<div class="section" id="restart-files">
+<h2>1.4. Restart Files<a class="headerlink" href="#restart-files" title="Permalink to this headline">¶</a></h2>
+<p>Restart files are generated automatically by the data models based upon a flag sent from the coupler. The restart files must meet the naming convention specified by the CESM project and an rpointer file is generated at the same time. An rpointer file is a <em>restart pointer</em> file which contains the name of the most recently created restart file. Normally, if restart files are read, the restart filenames are specified in the rpointer file. Optionally though, there are namelist variables such as <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/cesm/doc/modelnl/nl_datm.html#nonstream">restfilm</a> to specify the restart filenames via namelist. If those namelist are set, the rpointer file will be ignored. The standard procedure in is to use the rpointer files to specify the restart filenames. In many cases, no model restart is required for the data models to restart exactly. This is because there is no memory between timesteps in many of the data model science modes. If a model restart is required, it will be written automatically and then must be used to continue the previous run.</p>
+<p>There are separate stream restart files that only exist for performance reasons. A stream restart file contains information about the time axis of the input streams. This information helps reduce the start costs associated with reading the input dataset time axis information. If a stream restart file is missing, the code will restart without it but may need to reread data from the input data files that would have been stored in the stream restart file. This will take extra time but will not impact the results.</p>
+</div>
+<div class="section" id="hierarchy">
+<h2>1.5. Hierarchy<a class="headerlink" href="#hierarchy" title="Permalink to this headline">¶</a></h2>
+<p>The hierarchy of data models, strdata, and streams also compartmentalize grids and fields.
+Data models communicate with the coupler with fields on only the data model model grid.
+<em>Although for each strdata namelist, data is interpolated to a single model grid, each strdata namelist input can have multiple stream description files and each stream input file can contain data on a different grid</em>.
+The strdata module will gracefully read the different streams of input data and interpolate both spatially and temporally to the appropriate final model grid and model time.</p>
+<p>The text box below provides a schematic of the hierarchy</p>
+<dl class="docutils">
+<dt>::</dt>
+<dd>driver     :      call data land model
+data model :         data land model
+data model :           land_data
+data model :            grid
+data model :           strdata
+strdata    :    interpa   interpb   interpc
+strdata    :    streama   streamb   streamc
+stream     :     grida     gridb     gridc
+stream     :   filea_01   fileb_01  filec_01
+stream     :     ...                  ...
+stream     :   filea_04             filec_96</dd>
+</dl>
+<p>Users will primarily setup different data model configurations through existing namelist settings.
+<em>The strdata and stream input options and format are identical for all data models</em>.
+The data model specific namelist has significant overlap between data models, but each data model has a slightly different set of input namelist variables and each model reads that namelist from a unique filename.
+The detailed namelist options for each data model will be described later, but each model will specify a filename or filenames for strdata namelist input and each strdata namelist will specify a set of stream input files.</p>
+<p>To continue with the above example, the following inputs would be consistent with the above figure. The data model namelist input file is hardwired to &#8220;dlnd_in&#8221; and in this case, the namelist would look something like</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">file</span><span class="o">=</span><span class="s2">&quot;dlnd_in&quot;</span><span class="p">:</span>
+<span class="o">&amp;</span><span class="n">dlnd_nml</span>
+   <span class="n">lnd_in</span> <span class="o">=</span> <span class="s1">&#39;dlnd_lnd_in&#39;</span>
+   <span class="n">decomp</span> <span class="o">=</span> <span class="s1">&#39;1d&#39;</span>
+<span class="o">/</span>
+</pre></div>
+</div>
+<p>The lnd_in specifies the filenames associated with the strdata namelist input for the land and runoff data separately.
+The land and runoff strdata namelist would then look like</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">file</span><span class="o">=</span><span class="s2">&quot;dlnd_lnd_in&quot;</span><span class="p">:</span>
+<span class="o">&amp;</span><span class="n">shr_strdata_nml</span>
+  <span class="n">dataMode</span>   <span class="o">=</span> <span class="s1">&#39;CPLHIST&#39;</span>
+  <span class="n">domainFile</span> <span class="o">=</span> <span class="s1">&#39;grid.nc&#39;</span>
+  <span class="n">streams</span>    <span class="o">=</span> <span class="s1">&#39;streama&#39;</span><span class="p">,</span>
+               <span class="s1">&#39;streamb&#39;</span><span class="p">,</span>
+               <span class="s1">&#39;streamc&#39;</span>
+  <span class="n">mapalgo</span>    <span class="o">=</span> <span class="s1">&#39;interpa&#39;</span><span class="p">,</span>
+               <span class="s1">&#39;interpb&#39;</span><span class="p">,</span>
+               <span class="s1">&#39;interpc&#39;</span>
+<span class="o">/</span>
+</pre></div>
+</div>
+<p>Three stream description files are then expected to be available, streama, streamb and streamc.
+Those files specify the input data filenames, input data grids, and input fields that are expected among other things.
+For instance, one of the stream description files might look like</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">stream</span><span class="o">&gt;</span>
+   <span class="o">&lt;</span><span class="n">dataSource</span><span class="o">&gt;</span>
+      <span class="n">GENERIC</span>
+   <span class="o">&lt;/</span><span class="n">dataSource</span><span class="o">&gt;</span>
+   <span class="o">&lt;</span><span class="n">fieldInfo</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">variableNames</span><span class="o">&gt;</span>
+         <span class="n">dn10</span>  <span class="n">dens</span>
+         <span class="n">slp_</span>  <span class="n">pslv</span>
+         <span class="n">q_10</span>  <span class="n">shum</span>
+         <span class="n">t_10</span>  <span class="n">tbot</span>
+         <span class="n">u_10</span>  <span class="n">u</span>
+         <span class="n">v_10</span>  <span class="n">v</span>
+      <span class="o">&lt;/</span><span class="n">variableNames</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">filePath</span><span class="o">&gt;</span>
+         <span class="o">/</span><span class="n">glade</span><span class="o">/</span><span class="n">proj3</span><span class="o">/</span><span class="n">cseg</span><span class="o">/</span><span class="n">inputdata</span><span class="o">/</span><span class="n">atm</span><span class="o">/</span><span class="n">datm7</span><span class="o">/</span><span class="n">NYF</span>
+      <span class="o">&lt;/</span><span class="n">filePath</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">offset</span><span class="o">&gt;</span>
+         <span class="mi">0</span>
+      <span class="o">&lt;/</span><span class="n">offset</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">fileNames</span><span class="o">&gt;</span>
+         <span class="n">nyf</span><span class="o">.</span><span class="n">ncep</span><span class="o">.</span><span class="n">T62</span><span class="o">.</span><span class="mf">050923.</span><span class="n">nc</span>
+      <span class="o">&lt;/</span><span class="n">fileNames</span><span class="o">&gt;</span>
+   <span class="o">&lt;/</span><span class="n">fieldInfo</span><span class="o">&gt;</span>
+   <span class="o">&lt;</span><span class="n">domainInfo</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">variableNames</span><span class="o">&gt;</span>
+         <span class="n">time</span>   <span class="n">time</span>
+         <span class="n">lon</span>    <span class="n">lon</span>
+         <span class="n">lat</span>    <span class="n">lat</span>
+         <span class="n">area</span>   <span class="n">area</span>
+         <span class="n">mask</span>   <span class="n">mask</span>
+      <span class="o">&lt;/</span><span class="n">variableNames</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">filePath</span><span class="o">&gt;</span>
+         <span class="o">/</span><span class="n">glade</span><span class="o">/</span><span class="n">proj3</span><span class="o">/</span><span class="n">cseg</span><span class="o">/</span><span class="n">inputdata</span><span class="o">/</span><span class="n">atm</span><span class="o">/</span><span class="n">datm7</span><span class="o">/</span><span class="n">NYF</span>
+      <span class="o">&lt;/</span><span class="n">filePath</span><span class="o">&gt;</span>
+      <span class="o">&lt;</span><span class="n">fileNames</span><span class="o">&gt;</span>
+         <span class="n">nyf</span><span class="o">.</span><span class="n">ncep</span><span class="o">.</span><span class="n">T62</span><span class="o">.</span><span class="mf">050923.</span><span class="n">nc</span>
+      <span class="o">&lt;/</span><span class="n">fileNames</span><span class="o">&gt;</span>
+   <span class="o">&lt;/</span><span class="n">domainInfo</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">stream</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>The stream files are not Fortran namelist format.
+Their format and options will be described later.
+In general, these examples of input files are not complete, but they do show the general hierarchy and feel of the data model input.</p>
+</div>
+<div class="section" id="summary">
+<h2>1.6. Summary<a class="headerlink" href="#summary" title="Permalink to this headline">¶</a></h2>
+<p>In summary, for each data model a top level namelist will be set that will point to a file that contains the strdata namelist.
+That namelist will specify the data model mode, stream description text files, and interpolation options.
+The stream description files will be provided as separate input files and contain the files and fields that need to be read.</p>
+<p>From a user perspective, for any data model, it&#8217;s important to know what modes are supported and the internal field names in the data model.
+That information will be used in the strdata namelist and stream input files.</p>
+</div>
+<div class="section" id="next-sections">
+<h2>1.7. Next Sections<a class="headerlink" href="#next-sections" title="Permalink to this headline">¶</a></h2>
+<p>In the next sections, more details will be presented including a full description of the science modes and namelist settings for the data atmosphere, data land, data runoff, data ocean, and data ice models; namelist settings for the strdata namelist input; a description of the format and options for the stream description input files; and a list of internal field names for each of the data components.
+The internal data model field names are important because they are used to setup the stream description files and to map the input data fields to the internal data model field names.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="input-streams.html" title="2. Input Streams"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="CIME Data Models"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">on  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" ><strong>CIME Data Models</strong></a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Mariana Vertenstein, Rob Jacob, Jim Edwards, Jim Foucar, Alice Bertini.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.2.
+    </div>
+  </body>
+</html>

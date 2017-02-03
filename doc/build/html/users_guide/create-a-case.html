@@ -1,0 +1,611 @@
+
+
+<!doctype html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>2. Creating and Setting up a Case &#8212; on  documentation</title>
+    
+    <link rel="stylesheet" href="../_static/bizstyle.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/bizstyle.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="3. Building a Case" href="building-a-case.html" />
+    <link rel="prev" title="1. Introduction and Overview" href="introduction-and-overview.html" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
+    <![endif]-->
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="building-a-case.html" title="3. Building a Case"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="introduction-and-overview.html" title="1. Introduction and Overview"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">on  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U"><strong>CIME User&#8217;s Guide</strong></a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">2. Creating and Setting up a Case</a><ul>
+<li><a class="reference internal" href="#how-to-create-a-new-case">2.1. How to create a new case</a></li>
+<li><a class="reference internal" href="#component-set-naming-convention">2.2. Component Set Naming Convention</a></li>
+<li><a class="reference internal" href="#model-grid-naming-convention">2.3. Model Grid Naming Convention</a></li>
+<li><a class="reference internal" href="#using-create-newcase">2.4. Using create_newcase</a></li>
+<li><a class="reference internal" href="#how-to-set-up-a-case-and-customize-the-pe-layout">2.5. How to set up a case and customize the PE layout</a><ul>
+<li><a class="reference internal" href="#calling-case-setup">2.5.1. Calling case.setup</a></li>
+<li><a class="reference internal" href="#changing-the-pe-layout">2.5.2. Changing the PE layout</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#modifying-an-xml-file">2.6. Modifying an xml file</a></li>
+<li><a class="reference internal" href="#multi-instance-component-functionality">2.7. Multi-instance component functionality</a></li>
+<li><a class="reference internal" href="#cloning-a-case">2.8. Cloning a case</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="introduction-and-overview.html"
+                        title="previous chapter">1. Introduction and Overview</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="building-a-case.html"
+                        title="next chapter">3. Building a Case</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/users_guide/create-a-case.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="creating-and-setting-up-a-case">
+<span id="creating-a-case"></span><h1>2. Creating and Setting up a Case<a class="headerlink" href="#creating-and-setting-up-a-case" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="how-to-create-a-new-case">
+<h2>2.1. How to create a new case<a class="headerlink" href="#how-to-create-a-new-case" title="Permalink to this headline">¶</a></h2>
+<p>The first step in creating a CIME based experiment is to use <strong>create_newcase</strong>.</p>
+<p>CIME supports out of the box <code class="docutils literal"><span class="pre">component</span> <span class="pre">sets</span></code>, <code class="docutils literal"><span class="pre">model</span> <span class="pre">grids</span></code> and <code class="docutils literal"><span class="pre">hardware</span> <span class="pre">platforms</span></code>.</p>
+<ul class="simple">
+<li>Component sets (usually referred to as compsets) define both the specific model components that will be used in a given CIME configuration, <em>and</em> any component-specific namelist or configuration settings that are specific to this configuration.</li>
+<li>Model grids specify the grid for each component making up the model.</li>
+<li>At a minimum creating a CIME experiment requires specifying a component set and a model grid.</li>
+<li>Out of the box compsets and models grids are associated with two names: a longname and an alias name.</li>
+<li>Aliases are required by the CIME regression test system but can also be used for user convenience. Compset aliases are unique - each compset alias is associated with one and only one compset. Grid aliases, on the other hand, are overloaded and the same grid alias may result in a different grid based depending on the compset the alias is associated with. We recommend that the user always confirm that the compset longname and grid longname are the expected result when using aliases to create a case.</li>
+</ul>
+</div>
+<div class="section" id="component-set-naming-convention">
+<h2>2.2. Component Set Naming Convention<a class="headerlink" href="#component-set-naming-convention" title="Permalink to this headline">¶</a></h2>
+<p>The component set (compset) longname has the form:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">TIME_ATM</span><span class="p">[</span><span class="o">%</span><span class="n">phys</span><span class="p">]</span><span class="n">_LND</span><span class="p">[</span><span class="o">%</span><span class="n">phys</span><span class="p">]</span><span class="n">_ICE</span><span class="p">[</span><span class="o">%</span><span class="n">phys</span><span class="p">]</span><span class="n">_OCN</span><span class="p">[</span><span class="o">%</span><span class="n">phys</span><span class="p">]</span><span class="n">_ROF</span><span class="p">[</span><span class="o">%</span><span class="n">phys</span><span class="p">]</span><span class="n">_GLC</span><span class="p">[</span><span class="o">%</span><span class="n">phys</span><span class="p">]</span><span class="n">_WAV</span><span class="p">[</span><span class="o">%</span><span class="n">phys</span><span class="p">]</span><span class="n">_ESP</span><span class="p">[</span><span class="n">_BGC</span><span class="o">%</span><span class="n">phys</span><span class="p">]</span>
+
+<span class="n">TIME</span> <span class="o">=</span> <span class="n">model</span> <span class="n">time</span> <span class="n">period</span> <span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">g</span><span class="o">.</span> <span class="mi">2000</span><span class="p">,</span> <span class="mi">20</span><span class="n">TR</span><span class="p">,</span> <span class="n">RCP8</span><span class="o">...</span><span class="p">)</span>
+
+<span class="n">CIME</span> <span class="n">supports</span> <span class="n">the</span> <span class="n">following</span> <span class="n">values</span> <span class="k">for</span> <span class="n">ATM</span><span class="p">,</span><span class="n">LND</span><span class="p">,</span><span class="n">ICE</span><span class="p">,</span><span class="n">OCN</span><span class="p">,</span><span class="n">ROF</span><span class="p">,</span><span class="n">GLC</span><span class="p">,</span><span class="n">WAV</span> <span class="ow">and</span> <span class="n">ESP</span>
+<span class="n">ATM</span>  <span class="o">=</span> <span class="p">[</span><span class="n">DATM</span><span class="p">,</span> <span class="n">SATM</span><span class="p">,</span> <span class="n">XATM</span><span class="p">]</span>
+<span class="n">LND</span>  <span class="o">=</span> <span class="p">[</span><span class="n">DLND</span><span class="p">,</span> <span class="n">SLND</span><span class="p">,</span> <span class="n">XLND</span><span class="p">]</span>
+<span class="n">ICE</span>  <span class="o">=</span> <span class="p">[</span><span class="n">DICE</span><span class="p">,</span> <span class="n">SICE</span><span class="p">,</span> <span class="n">SICE</span><span class="p">]</span>
+<span class="n">OCN</span>  <span class="o">=</span> <span class="p">[</span><span class="n">DOCN</span><span class="p">,</span> <span class="n">SOCN</span><span class="p">,</span> <span class="n">XOCN</span><span class="p">]</span>
+<span class="n">ROF</span>  <span class="o">=</span> <span class="p">[</span><span class="n">DROF</span><span class="p">,</span> <span class="n">SROF</span><span class="p">,</span> <span class="n">XROF</span><span class="p">]</span>
+<span class="n">GLC</span>  <span class="o">=</span> <span class="p">[</span><span class="n">SGLC</span><span class="p">,</span> <span class="n">XGLC</span><span class="p">]</span>
+<span class="n">WAV</span>  <span class="o">=</span> <span class="p">[</span><span class="n">SWAV</span><span class="p">,</span> <span class="n">XWAV</span><span class="p">]</span>
+<span class="n">ESP</span>  <span class="o">=</span> <span class="p">[</span><span class="n">SESP</span><span class="p">]</span>
+
+<span class="n">If</span> <span class="n">CIME</span> <span class="ow">is</span> <span class="n">run</span> <span class="k">with</span> <span class="n">CESM</span> <span class="n">prognostic</span> <span class="n">components</span><span class="p">,</span> <span class="n">the</span> <span class="n">following</span> <span class="n">additional</span> <span class="n">values</span> <span class="n">are</span> <span class="n">permitted</span><span class="p">:</span>
+<span class="n">ATM</span>  <span class="o">=</span> <span class="p">[</span><span class="n">CAM40</span><span class="p">,</span> <span class="n">CAM50</span><span class="p">,</span> <span class="n">CAM55</span><span class="p">,</span> <span class="n">CAM60</span><span class="p">]</span>
+<span class="n">LND</span>  <span class="o">=</span> <span class="p">[</span><span class="n">CLM45</span><span class="p">,</span> <span class="n">CLM50</span><span class="p">]</span>
+<span class="n">ICE</span>  <span class="o">=</span> <span class="p">[</span><span class="n">CICE</span><span class="p">]</span>
+<span class="n">OCN</span>  <span class="o">=</span> <span class="p">[</span><span class="n">POP2</span><span class="p">,</span> <span class="n">AQUAP</span><span class="p">]</span>
+<span class="n">ROF</span>  <span class="o">=</span> <span class="p">[</span><span class="n">RTM</span><span class="p">,</span> <span class="n">MOSART</span><span class="p">]</span>
+<span class="n">GLC</span>  <span class="o">=</span> <span class="p">[</span><span class="n">CISM1</span><span class="p">,</span> <span class="n">CISM2</span><span class="p">]</span>
+<span class="n">WAV</span>  <span class="o">=</span> <span class="p">[</span><span class="n">WW</span><span class="p">]</span>
+<span class="n">BGC</span>  <span class="o">=</span> <span class="n">optional</span> <span class="n">BGC</span> <span class="n">scenario</span>
+
+<span class="n">If</span> <span class="n">CIME</span> <span class="ow">is</span> <span class="n">run</span> <span class="k">with</span> <span class="n">ACME</span> <span class="n">prognostic</span> <span class="n">components</span><span class="p">,</span> <span class="n">the</span> <span class="n">following</span> <span class="n">additional</span> <span class="n">values</span> <span class="n">are</span> <span class="n">permitted</span><span class="p">:</span>
+<span class="n">ATM</span>  <span class="o">=</span> <span class="p">[]</span>
+<span class="n">LND</span>  <span class="o">=</span> <span class="p">[]</span>
+<span class="n">ICE</span>  <span class="o">=</span> <span class="p">[]</span>
+<span class="n">OCN</span>  <span class="o">=</span> <span class="p">[]</span>
+<span class="n">ROF</span>  <span class="o">=</span> <span class="p">[]</span>
+<span class="n">GLC</span>  <span class="o">=</span> <span class="p">[]</span>
+<span class="n">WAV</span>  <span class="o">=</span> <span class="p">[]</span>
+<span class="n">BGC</span>  <span class="o">=</span> <span class="n">optional</span> <span class="n">BGC</span> <span class="n">scenario</span>
+
+<span class="n">The</span> <span class="n">OPTIONAL</span> <span class="o">%</span><span class="n">phys</span> <span class="n">attributes</span> <span class="n">specify</span> <span class="n">sub</span><span class="o">-</span><span class="n">modes</span> <span class="n">of</span> <span class="n">the</span> <span class="n">given</span> <span class="n">system</span>
+<span class="n">For</span> <span class="n">example</span> <span class="n">DOCN</span><span class="o">%</span><span class="n">DOM</span> <span class="ow">is</span> <span class="n">the</span> <span class="n">DOCN</span> <span class="n">data</span> <span class="n">ocean</span> <span class="p">(</span><span class="n">rather</span> <span class="n">than</span> <span class="n">slab</span><span class="o">-</span><span class="n">ocean</span><span class="p">)</span> <span class="n">mode</span><span class="o">.</span>
+<span class="n">ALL</span> <span class="n">the</span> <span class="n">possible</span> <span class="o">%</span><span class="n">phys</span> <span class="n">choices</span> <span class="k">for</span> <span class="n">each</span> <span class="n">component</span> <span class="n">are</span> <span class="n">listed</span> <span class="n">by</span>
+<span class="n">the</span> <span class="n">calling</span> <span class="o">**</span><span class="n">manage_case</span><span class="o">**</span> <span class="k">with</span> <span class="n">the</span> <span class="o">**-</span><span class="nb">list</span><span class="o">**</span> <span class="n">compsets</span> <span class="n">argument</span><span class="o">.</span>
+<span class="n">ALL</span> <span class="n">data</span> <span class="n">models</span> <span class="n">now</span> <span class="n">have</span> <span class="n">a</span> <span class="o">%</span><span class="n">phys</span> <span class="n">option</span> <span class="n">that</span> <span class="n">corresponds</span> <span class="n">to</span> <span class="n">the</span> <span class="n">data</span> <span class="n">model</span> <span class="n">mode</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>As an example, the CESM compset longname:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="mi">1850</span><span class="n">_CAM60_CLM50</span><span class="o">%</span><span class="n">BGC_CICE_POP2</span><span class="o">%</span><span class="n">ECO_MOSART_CISM2</span><span class="o">%</span><span class="n">NOEVOLVE_WW3_BGC</span><span class="o">%</span><span class="n">BDRD</span>
+</pre></div>
+</div>
+<p>refers to running a pre-industrial control with prognostic CESM components CAM, CLM, CICE, POP2, MOSART, CISM2 and WW3 a BDRD BGC coupling scenario.
+The alias for this compset is B1850. Either a compset longname or a compset alias can be used as input to <strong>create_newcase</strong>.
+It is also possible to create your own custom compset (see <cite>How do I create my own compset? in the FAQ</cite>)</p>
+</div>
+<div class="section" id="model-grid-naming-convention">
+<h2>2.3. Model Grid Naming Convention<a class="headerlink" href="#model-grid-naming-convention" title="Permalink to this headline">¶</a></h2>
+<p>The model grid longname has the form:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">a</span><span class="o">%</span><span class="n">name_l</span><span class="o">%</span><span class="n">name_oi</span><span class="o">%</span><span class="n">name_r</span><span class="o">%</span><span class="n">name_m</span><span class="o">%</span><span class="n">mask_g</span><span class="o">%</span><span class="n">name_w</span><span class="o">%</span><span class="n">name</span>
+
+<span class="n">a</span><span class="o">%</span>  <span class="o">=</span> <span class="n">atmosphere</span> <span class="n">grid</span>
+<span class="n">l</span><span class="o">%</span>  <span class="o">=</span> <span class="n">land</span> <span class="n">grid</span>
+<span class="n">oi</span><span class="o">%</span> <span class="o">=</span> <span class="n">ocean</span><span class="o">/</span><span class="n">sea</span><span class="o">-</span><span class="n">ice</span> <span class="n">grid</span> <span class="p">(</span><span class="n">must</span> <span class="n">be</span> <span class="n">the</span> <span class="n">same</span><span class="p">)</span>
+<span class="n">r</span><span class="o">%</span>  <span class="o">=</span> <span class="n">river</span> <span class="n">grid</span>
+<span class="n">m</span><span class="o">%</span>  <span class="o">=</span> <span class="n">ocean</span> <span class="n">mask</span> <span class="n">grid</span>
+<span class="n">g</span><span class="o">%</span>  <span class="o">=</span> <span class="n">internal</span> <span class="n">land</span><span class="o">-</span><span class="n">ice</span> <span class="p">(</span><span class="n">CISM</span><span class="p">)</span> <span class="n">grid</span>
+<span class="n">w</span><span class="o">%</span>  <span class="o">=</span> <span class="n">wave</span> <span class="n">component</span> <span class="n">grid</span>
+
+<span class="n">The</span> <span class="n">ocean</span> <span class="n">mask</span> <span class="n">grid</span> <span class="n">determines</span> <span class="n">land</span><span class="o">/</span><span class="n">ocean</span> <span class="n">boundaries</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">model</span><span class="o">.</span>
+<span class="n">It</span> <span class="ow">is</span> <span class="n">assumed</span> <span class="n">that</span> <span class="n">on</span> <span class="n">the</span> <span class="n">ocean</span> <span class="n">grid</span><span class="p">,</span> <span class="n">a</span> <span class="n">gridcell</span> <span class="ow">is</span> <span class="n">either</span> <span class="nb">all</span> <span class="n">ocean</span> <span class="ow">or</span> <span class="nb">all</span> <span class="n">land</span><span class="o">.</span>
+<span class="n">The</span> <span class="n">land</span> <span class="n">mask</span> <span class="n">on</span> <span class="n">the</span> <span class="n">land</span> <span class="n">grid</span> <span class="ow">is</span> <span class="n">then</span> <span class="n">obtained</span> <span class="n">by</span> <span class="n">mapping</span> <span class="n">the</span> <span class="n">ocean</span> <span class="n">mask</span>
+<span class="p">(</span><span class="n">using</span> <span class="n">first</span> <span class="n">order</span> <span class="n">conservative</span> <span class="n">mapping</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">the</span> <span class="n">ocean</span> <span class="n">grid</span> <span class="n">to</span> <span class="n">the</span> <span class="n">land</span> <span class="n">grid</span><span class="o">.</span>
+
+<span class="n">From</span> <span class="n">the</span> <span class="n">point</span> <span class="n">of</span> <span class="n">view</span> <span class="n">of</span> <span class="n">model</span> <span class="n">coupling</span> <span class="o">-</span> <span class="n">the</span> <span class="n">glc</span> <span class="p">(</span><span class="n">CISM</span><span class="p">)</span> <span class="n">grid</span> <span class="ow">is</span> <span class="n">assumed</span> <span class="n">to</span>
+<span class="n">be</span> <span class="n">identical</span> <span class="n">to</span> <span class="n">the</span> <span class="n">land</span> <span class="n">grid</span><span class="o">.</span> <span class="n">However</span><span class="p">,</span> <span class="n">the</span> <span class="n">internal</span> <span class="n">CISM</span> <span class="n">grid</span> <span class="n">can</span> <span class="n">be</span> <span class="n">different</span><span class="p">,</span>
+<span class="ow">and</span> <span class="ow">is</span> <span class="n">specified</span> <span class="n">by</span> <span class="n">the</span> <span class="n">g</span><span class="o">%</span> <span class="n">value</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>As an example, the longname:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">a</span><span class="o">%</span><span class="n">ne30np4_l</span><span class="o">%</span><span class="n">ne30np4_oi</span><span class="o">%</span><span class="n">gx1v6_r</span><span class="o">%</span><span class="n">r05_m</span><span class="o">%</span><span class="n">gx1v6_g</span><span class="o">%</span><span class="n">null_w</span><span class="o">%</span><span class="n">null</span>
+</pre></div>
+</div>
+<p>refers to a model grid with a ne30np4 spectral element 1-degree atmosphere and land grids, gx1v6 Greenland pole 1-degree ocean and sea-ice grids, a 1/2 degree river routing grid, null wave and internal cism grids and an gx1v6 ocean mask.
+The alias for this grid is ne30_g16. Either the grid longname or alias can be used as input to <strong>create_newcase</strong>.</p>
+<p>CIME also permits users to introduce their own <a class="reference internal" href="faq/experts-adding-new-user-defined-grid.html#faq-user-defined-grid"><span class="std std-ref">&lt;user defined grids</span></a>.</p>
+<p>Component grids (such as the atmosphere grid or ocean grid above) are denoted by the following naming convention:</p>
+<ul class="simple">
+<li>&#8220;[dlat]x[dlon]&#8221; are regular lon/lat finite volume grids where dlat and dlon are the approximate grid spacing. The shorthand convention is &#8220;fnn&#8221; where nn is generally a pair of numbers indicating the resolution. An example is 1.9x2.5 or f19 for the approximately &#8220;2-degree&#8221; finite volume grid. Note that CAM uses an [nlat]x[nlon] naming convention internally for this grid.</li>
+<li>&#8220;Tnn&#8221; are spectral lon/lat grids where nn is the spectral truncation value for the resolution. The shorthand name is identical. An example is T85.</li>
+<li>&#8220;ne[X]np[Y]&#8221; are cubed sphere resolutions where X and Y are integers. The short name is generally ne[X]. An example is ne30np4 or ne30.</li>
+<li>&#8220;pt1&#8221; is a single grid point.</li>
+<li>&#8220;gx[D]v[n]&#8221; is a displaced pole grid where D is the approximate resolution in degrees and n is the grid version. The short name is generally g[D][n]. An example is gx1v6 or g16 for a grid of approximately 1-degree resolution.</li>
+<li>&#8220;tx[D]v[n]&#8221; is a tripole grid where D is the approximate resolution in degrees and n is the grid version.</li>
+</ul>
+</div>
+<div class="section" id="using-create-newcase">
+<h2>2.4. Using create_newcase<a class="headerlink" href="#using-create-newcase" title="Permalink to this headline">¶</a></h2>
+<p>If you are not on an out-of-the box CIME supported platform, you will need to first <a class="reference internal" href="porting-cime.html#porting"><span class="std std-ref">port</span></a> CIME to your system.</p>
+<p>You should first use the &#8211;help option in calling <strong>create_newcase</strong> to document its input options.  The only required arguments to <strong>create_newcase</strong> are:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">create_newcase</span> <span class="o">--</span><span class="n">case</span> <span class="p">[</span><span class="n">CASE</span><span class="p">]</span> <span class="o">--</span><span class="n">compset</span> <span class="p">[</span><span class="n">COMPSET</span><span class="p">]</span> <span class="o">--</span><span class="n">res</span> <span class="p">[</span><span class="n">GRID</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Following is a simple example of using <strong>create_newcase</strong>  using aliases for both compset and grid names. In what follows, <code class="docutils literal"><span class="pre">$CIMEROOT</span></code> is the full pathname of the root directory of the CIME distribution.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>&gt; cd $CIMEROOT/scripts
+&gt; create_newcase --case ~/cime/example1 --compset A --res f09_g16_rx1
+</pre></div>
+</div>
+<p>This example creates a <code class="docutils literal"><span class="pre">$CASEROOT</span></code> directory <code class="docutils literal"><span class="pre">~/cime/example1</span></code> where <code class="docutils literal"><span class="pre">$CASE</span></code> is <code class="docutils literal"><span class="pre">&quot;example1&quot;</span></code>.
+The model resolution is <code class="docutils literal"><span class="pre">a%0.9x1.25_l%0.9x1.25_oi%gx1v6_r%r05_m%gx1v6_g%null_w%null</span></code> and the compset is <code class="docutils literal"><span class="pre">2000_DATM%NYF_SLND_DICE%SSMI_DOCN%DOM_DROF%NYF_SGLC_SWAV</span></code>.
+The complete example appears in the <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">basic example</a>. <code class="docutils literal"><span class="pre">$CASE</span></code> can include letters, numbers, &#8221;.&#8221;, and &#8220;_&#8221;.
+Note that <strong>create_newcase</strong> creates the <code class="docutils literal"><span class="pre">$CASEROOT</span></code> directory. If the directory already exists, it prints a warning and aborts.
+As a more general description, <strong>create_newcase</strong> creates the directory <code class="docutils literal"><span class="pre">$CASEROOT</span></code>, which is specified by the &#8211;case option.
+In <code class="docutils literal"><span class="pre">$CASEROOT</span></code>, <strong>create_newcase</strong> installs files to build and run the model and optionally perform archiving of the case on the target platform. <strong>create_newcase</strong> also creates the directory <code class="docutils literal"><span class="pre">$CASEROOT/Buildconf/</span></code>, that in turn contains scripts to generate component namelist and build component libraries. The table below outlines the files and directories created by <strong>create_newcase</strong>:</p>
+<table border="1" class="colwidths-given docutils" id="id5">
+<caption><span class="caption-text">Result of invoking create_newcase</span><a class="headerlink" href="#id5" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col width="14%" />
+<col width="86%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Directory or Filename</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>README.case</td>
+<td>File detailing your <strong>create_newcase</strong> usage. This is a good place for you to keep track of runtime problems and changes.</td>
+</tr>
+<tr class="row-odd"><td>CaseStatus</td>
+<td>File containing a list of operations done in the current case.</td>
+</tr>
+<tr class="row-even"><td>env_mach_specific.xml</td>
+<td>File used to set a number of machine-specific environment variables for building and/or running. Although you can edit this at any time, build environment variables should not be edited after a build is invoked.</td>
+</tr>
+<tr class="row-odd"><td>env_case.xml</td>
+<td>Sets case specific variables (e.g. model components, model and case root directories) and cannot be modified after a case has been created. To make changes, your should re-run <strong>create_newcase</strong> with different options.</td>
+</tr>
+<tr class="row-even"><td>env_build.xml</td>
+<td>Sets model build settings, including component resolutions and component configuration options (e.g. CAM_CONFIG_OTPS) where applicable (see <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">env_build.xml variables</a>).</td>
+</tr>
+<tr class="row-odd"><td>env_mach_pes.xml</td>
+<td>Sets component machine-specific processor layout (see the <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">Section called *Changing the PE layout*</a>). The settings in this are critical to a well-load-balanced simulation (see <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">loadbalancing a run</a>).</td>
+</tr>
+<tr class="row-even"><td>env_run.xml</td>
+<td>Sets run-time settings such as length of run, frequency of restarts, output of coupler diagnostics, and short-term and long-term archiving. See <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">run initialization variables</a>, <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">run stop variables</a>, <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">run restart control variables</a>, for a more complete discussion of general run control settings.</td>
+</tr>
+<tr class="row-odd"><td>case.setup</td>
+<td>Script used to set up the case (create the case.run script, the Macros file and user_nl_xxx files)</td>
+</tr>
+<tr class="row-even"><td>case.build</td>
+<td>Script to build component and utility libraries and model executable.</td>
+</tr>
+<tr class="row-odd"><td>case.st_archive</td>
+<td>Script to perform short-term archiving of output data (see <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">archiving</a>).</td>
+</tr>
+<tr class="row-even"><td>case.lt_archive</td>
+<td>Script to perform long-term archiving of output data (see <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">archiving</a>).</td>
+</tr>
+<tr class="row-odd"><td>xmlchange</td>
+<td>Utility for modifying values in the xml files.</td>
+</tr>
+<tr class="row-even"><td>preview_namelists</td>
+<td>Utility to enable users to see their component namelists in <code class="docutils literal"><span class="pre">$CASEROOT/CaseDocs</span></code> before running the model. NOTE: the namelists generated in <code class="docutils literal"><span class="pre">$CASEROOT/CaseDocs</span></code> should not be edited by the user - they are only there to document model behavior.</td>
+</tr>
+<tr class="row-odd"><td>check_input_data</td>
+<td>Utility that checks for various input datasets and moves them into place.</td>
+</tr>
+<tr class="row-even"><td>Buildconf/</td>
+<td>Work directory containing scripts to generate component namelists and component and utility libraries (e.g., PIO, MCT). You should never have to edit the contents of this directory</td>
+</tr>
+<tr class="row-odd"><td>SourceMods/</td>
+<td>Directory where you can place modified source code.</td>
+</tr>
+<tr class="row-even"><td>LockedFiles/</td>
+<td>Directory that holds copies of files that should not be changed. Certain xml files are <em>locked</em> after their variables have been used by other parts of the system and cannot be changed. The scripts do this by <em>locking</em> a file and not permitting you to modify that file unless a &#8216;clean&#8217; operation is performed. <strong>TODO - put a link in for the section - Why is there file locking and how does it work?</strong></td>
+</tr>
+<tr class="row-odd"><td>Tools/</td>
+<td>Directory containing support utility scripts. You should never need to edit the contents of this directory.</td>
+</tr>
+</tbody>
+</table>
+<p>For more complete information about the files in the case directory, see the <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">Section called *BASICS: What are the directories and files in my case directory?* in Chapter 6</a>.</p>
+</div>
+<div class="section" id="how-to-set-up-a-case-and-customize-the-pe-layout">
+<h2>2.5. How to set up a case and customize the PE layout<a class="headerlink" href="#how-to-set-up-a-case-and-customize-the-pe-layout" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="calling-case-setup">
+<h3>2.5.1. Calling case.setup<a class="headerlink" href="#calling-case-setup" title="Permalink to this headline">¶</a></h3>
+<p>After creating a case using <strong>create_newcase</strong>, you need to call the <strong>case.setup</strong> command from <code class="docutils literal"><span class="pre">$CASEROOT</span></code>.
+To see the options to <strong>case.setup</strong> use the <code class="docutils literal"><span class="pre">--help</span></code> option.
+Calling <code class="docutils literal"><span class="pre">case.setup</span></code> creates the following <strong>additional</strong> files and directories in <code class="docutils literal"><span class="pre">$CASEROOT</span></code>: (<a href="#id2"><span class="problematic" id="id3">**</span></a>TODO: which files are modifiable below?)</p>
+<table border="1" class="colwidths-given docutils" id="id6">
+<caption><span class="caption-text"><strong>Result of calling case.setup</strong></span><a class="headerlink" href="#id6" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col width="14%" />
+<col width="86%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">File or Directory</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Macros.make</td>
+<td>File containing machine-specific makefile directives for your target platform/compiler.
+This is only created the <em>first</em> time that <strong>case.setup</strong> is called. Calling <strong>case.setup -clean</strong> will not remove the Macros file once it has been created.</td>
+</tr>
+<tr class="row-odd"><td>user_nl_xxx[_NNNN] files</td>
+<td>Files where all user modifications to component namelists are made.
+xxx denotes any one of the set of components targeted for the specific case.
+NNNN goes from 0001 to the number of instances of that component (see the <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">multiple instance</a> discussion below).
+For example, for a full active CESM compset, xxx would denote [cam,clm,rtm,cice,pop2,cism2,ww3,cpl].
+For a case where there is only 1 instance of each component (default) NNNN will not appear in the user_nl file names.
+A user_nl file of a given name will only be created once.
+Calling <strong>case.setup -clean</strong> will not remove any user_nl files. Changing the number of instances in the <code class="docutils literal"><span class="pre">env_mach_pes.xml</span></code> will only cause new user_nl files to be added to <code class="docutils literal"><span class="pre">$CASEROOT</span></code>.</td>
+</tr>
+<tr class="row-even"><td>$CASE.run</td>
+<td>This is the case run script and contains the necessary batch directives to run the model on the required machine for the requested PE layout.
+Additionally, this script also optionally performs short-term and long-term archiving of output data (see <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">running CESM</a>).
+This script is removed when <strong>case.setup &#8211;clean</strong> is called.</td>
+</tr>
+<tr class="row-odd"><td>CaseDocs/</td>
+<td>Directory that contains all the component namelists for the run.
+This is for reference only and files in this directory SHOULD NOT BE EDITED since they will be overwritten at build time and run time.</td>
+</tr>
+<tr class="row-even"><td>.env_mach_specific.[csh,sh]</td>
+<td>Files summarizing the module load commands and environment variables that are set when the scripts in <code class="docutils literal"><span class="pre">$CASEROOT</span></code> are called.
+<strong>TODO:</strong> can or should users invoke this?</td>
+</tr>
+<tr class="row-odd"><td>software_environment.txt</td>
+<td><strong>TODO:</strong> FILL THIS IN.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>case.setup -clean</strong> removes <code class="docutils literal"><span class="pre">$CASEROOT/$CASE.run</span></code> and must be run if modifications are made to <code class="docutils literal"><span class="pre">env_mach_pes.xml</span></code>.
+<strong>case.setup</strong> must then be rerun before you can build and run the model.
+If <code class="docutils literal"><span class="pre">env_mach_pes.xml</span></code> variables need to be changed after <strong>case.setup</strong> has been called, then <strong>case.setup -clean</strong> must be run first, followed by <strong>case.setup</strong>.</p>
+<p>(Also see the <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">Section called *BASICS: What are the directories and files in my case directory?* in Chapter 6</a>.)</p>
+</div>
+<div class="section" id="changing-the-pe-layout">
+<h3>2.5.2. Changing the PE layout<a class="headerlink" href="#changing-the-pe-layout" title="Permalink to this headline">¶</a></h3>
+<p>The file, <code class="docutils literal"><span class="pre">env_mach_pes.xml</span></code>, determines the number of processors and OpenMP threads for each component, the number of instances of each component and the layout of the components across the hardware processors.
+Optimizing the throughput and efficiency of a CIME experiment often involves customizing the processor (PE) layout for <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">load balancing</a>.
+CIME provides significant flexibility with respect to the layout of components across different hardware processors. In general, the CIME components &#8211; atm, lnd, ocn, ice, glc, rof, wav, and cpl &#8211; can run on overlapping or mutually unique processors.
+Whereas Each component is associated with a unique MPI communicator, the CIME driver runs on the union of all processors and controls the sequencing and hardware partitioning.
+The component processor layout is via three settings: the number of MPI tasks, the number of OpenMP threads per task, and the root MPI processor number from the global set.</p>
+<p>The entries in <code class="docutils literal"><span class="pre">env_mach_pes.xml</span></code> have the following meanings:</p>
+<table border="1" class="colwidths-given docutils" id="id7">
+<caption><span class="caption-text"><strong>Table 2-3. env_mach_pes.xml entries</strong></span><a class="headerlink" href="#id7" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col width="14%" />
+<col width="86%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">XML entry</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>NTASKS</td>
+<td>the total number of MPI tasks, a negative value indicates nodes rather than tasks.</td>
+</tr>
+<tr class="row-odd"><td>NTHRDS</td>
+<td>the number of OpenMP threads per MPI task.</td>
+</tr>
+<tr class="row-even"><td>ROOTPE</td>
+<td>the global mpi task of the component root task, if negative, indicates nodes rather than tasks.</td>
+</tr>
+<tr class="row-odd"><td>PSTRID</td>
+<td>the stride of MPI tasks across the global set of pes (for now set to 1)</td>
+</tr>
+<tr class="row-even"><td>NINST</td>
+<td>the number of component instances (will be spread evenly across NTASKS)</td>
+</tr>
+</tbody>
+</table>
+<p>For example, if a component has <code class="docutils literal"><span class="pre">NTASKS=16</span></code>, <code class="docutils literal"><span class="pre">NTHRDS=4</span></code> and <code class="docutils literal"><span class="pre">ROOTPE=32</span></code>, then it will run on 64 hardware processors using 16 MPI tasks and 4 threads per task starting at global MPI task 32.
+Each CIME component has corresponding entries for <code class="docutils literal"><span class="pre">NTASKS</span></code>, <code class="docutils literal"><span class="pre">NTHRDS</span></code>, <code class="docutils literal"><span class="pre">ROOTPE</span></code> and <code class="docutils literal"><span class="pre">NINST</span></code> in <code class="docutils literal"><span class="pre">env_mach_pes.xml</span></code>.
+There are some important things to note.</p>
+<ul class="simple">
+<li>NTASKS must be greater or equal to 1 (one) even for inactive (stub) components.</li>
+<li>NTHRDS must be greater or equal to 1 (one).
+If NTHRDS is set to 1, this generally means threading parallelization will be off for that component.
+NTHRDS should never be set to zero.</li>
+<li>The total number of hardware processors allocated to a component is NTASKS * NTHRDS.</li>
+<li>The coupler processor inputs specify the pes used by coupler computation such as mapping, merging, diagnostics, and flux calculation.
+This is distinct from the driver which always automatically runs on the union of all processors to manage model concurrency and sequencing.</li>
+<li>The root processor is set relative to the MPI global communicator, not the hardware processors counts.
+An example of this is below.</li>
+<li>The layout of components on processors has no impact on the science.
+The scientific sequencing is hardwired into the driver.
+Changing processor layouts does not change intrinsic coupling lags or coupling sequencing.
+ONE IMPORTANT POINT is that for a fully active configuration, the atmosphere component is hardwired in the driver to never run concurrently with the land or ice component.
+Performance improvements associated with processor layout concurrency is therefore constrained in this case such that there is never a performance reason not to overlap the atmosphere component with the land and ice components.
+Beyond that constraint, the land, ice, coupler and ocean models can run concurrently, and the ocean model can also run concurrently with the atmosphere model.</li>
+<li>If all components have identical NTASKS, NTHRDS, and ROOTPE set, all components will run sequentially on the same hardware processors.</li>
+</ul>
+<p>An important, but often misunderstood point, is that the root processor for any given component, is set relative to the MPI global communicator, not the hardware processor counts.
+For instance, in the following example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">NTASKS</span><span class="p">(</span><span class="n">ATM</span><span class="p">)</span><span class="o">=</span><span class="mi">6</span>  <span class="n">NTHRRDS</span><span class="p">(</span><span class="n">ATM</span><span class="p">)</span><span class="o">=</span><span class="mi">4</span>  <span class="n">ROOTPE</span><span class="p">(</span><span class="n">ATM</span><span class="p">)</span><span class="o">=</span><span class="mi">0</span>
+<span class="n">NTASKS</span><span class="p">(</span><span class="n">OCN</span><span class="p">)</span><span class="o">=</span><span class="mi">64</span> <span class="n">NTHRDS</span><span class="p">(</span><span class="n">OCN</span><span class="p">)</span><span class="o">=</span><span class="mi">1</span>   <span class="n">ROOTPE</span><span class="p">(</span><span class="n">OCN</span><span class="p">)</span><span class="o">=</span><span class="mi">16</span>
+</pre></div>
+</div>
+<p>The atmosphere and ocean will run concurrently, each on 64 processors with the atmosphere running on MPI tasks 0-15 and the ocean running on MPI tasks 16-79.
+The first 16 tasks are each threaded 4 ways for the atmosphere.
+CIME ensures that the batch submission script ($CASE.run) automatically request 128 hardware processors, and the first 16 MPI tasks will be laid out on the first 64 hardware processors with a stride of 4.
+The next 64 MPI tasks will be laid out on the second set of 64 hardware processors.
+If you had set ROOTPE_OCN=64 in this example, then a total of 176 processors would have been requested and the atmosphere would have been laid out on the first 64 hardware processors in 16x4 fashion, and the ocean model would have been laid out on hardware processors 113-176.
+Hardware processors 65-112 would have been allocated but completely idle.</p>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<p><strong>Note</strong>: <code class="docutils literal"><span class="pre">env_mach_pes.xml</span></code> <em>cannot</em> be modified after &#8221;./case.setup&#8221; has been invoked without first invoking &#8220;case.setup -clean&#8221;.
+For an example of changing pes, see the <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">Section called *BASICS: How do I change processor counts and component layouts on processors?* in Chapter 6</a>.</p>
+</div>
+</div>
+<div class="section" id="modifying-an-xml-file">
+<h2>2.6. Modifying an xml file<a class="headerlink" href="#modifying-an-xml-file" title="Permalink to this headline">¶</a></h2>
+<p>You can edit the xml files directly to change the variable values.
+However, modification of the xml variables is best done using <strong>xmlchange</strong> in the <code class="docutils literal"><span class="pre">$CASEROOT</span></code> directory since it performs variable error checking as part of changing values in the xml files.
+To invoke <strong>xmlchange</strong>:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">xmlchange</span> <span class="o">&lt;</span><span class="n">entry</span> <span class="nb">id</span><span class="o">&gt;=&lt;</span><span class="n">value</span><span class="o">&gt;</span>
+<span class="o">--</span> <span class="n">OR</span> <span class="o">--</span>
+<span class="n">xmlchange</span> <span class="o">-</span><span class="nb">id</span> <span class="o">&lt;</span><span class="n">entry</span> <span class="nb">id</span><span class="o">&gt;</span> <span class="o">-</span><span class="n">val</span> <span class="o">&lt;</span><span class="n">name</span><span class="o">&gt;</span> <span class="o">-</span><span class="n">file</span> <span class="o">&lt;</span><span class="n">filename</span><span class="o">&gt;</span>
+          <span class="p">[</span><span class="o">-</span><span class="n">help</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">silent</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">verbose</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">warn</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">append</span><span class="p">]</span> <span class="p">[</span><span class="o">-</span><span class="n">file</span><span class="p">]</span>
+</pre></div>
+</div>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd><span class="option">-i<var>d</var></span></kbd></td>
+<td>The xml variable name to be changed. (required)</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">-v<var>al</var></span></kbd></td>
+<td><p class="first">The intended value of the variable associated with the -id argument. (required)</p>
+<p class="last"><strong>Note</strong>: If you want a single quotation mark (&#8220;&#8217;&#8221;, also called an apostrophe) to appear in the string provided by the -val option, you must specify it as &#8220;&amp;apos;&#8221;.</p>
+</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">-f<var>ile</var></span></kbd></td>
+<td>The xml file to be edited. (optional)</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">-s<var>ilent</var></span></kbd></td>
+<td>Turns on silent mode. Only fatal messages will be issued. (optional)</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">-v<var>erbose</var></span></kbd></td>
+<td>Echoes all settings made by <strong>create_newcase</strong> and <strong>case.setup</strong>. (optional)</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">-h<var>elp</var></span></kbd></td>
+<td>Print usage info to STDOUT. (optional)</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="multi-instance-component-functionality">
+<h2>2.7. Multi-instance component functionality<a class="headerlink" href="#multi-instance-component-functionality" title="Permalink to this headline">¶</a></h2>
+<p>The CIME coupling infrastructure has the capability to run multiple component instances under one model executable.
+The only caveat to this usage is that if N multiple instances of any one active component is used, then N multiple instances of ALL active components are required.
+More details are discussed below.
+The primary motivation for this development was to be able to run an ensemble Kalman-Filter for data assimilation and parameter estimation (e.g. UQ).
+However, it also provides you with the ability to run a set of experiments within a single model executable where each instance can have a different namelist, and have all the output go to one directory.</p>
+<p>In the following an F compset will be used as an illustration. Utilizing the multiple instance code involves the following steps:</p>
+<p>1. create the case</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">create_newcase</span> <span class="o">-</span><span class="n">case</span> <span class="n">Fmulti</span> <span class="o">-</span><span class="n">compset</span> <span class="n">F</span> <span class="o">-</span><span class="n">res</span> <span class="n">ne30_g16</span>
+<span class="o">&gt;</span> <span class="n">cd</span> <span class="n">Fmulti</span>
+</pre></div>
+</div>
+<p>2. Lets assume the following out of the box pe-layout</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">NTASKS</span><span class="p">(</span><span class="n">ATM</span><span class="p">)</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">NTHRDS</span><span class="p">(</span><span class="n">ATM</span><span class="p">)</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">ROOTPE</span><span class="p">(</span><span class="n">ATM</span><span class="p">)</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">NINST</span><span class="p">(</span><span class="n">ATM</span><span class="p">)</span><span class="o">=</span><span class="mi">1</span>
+<span class="n">NTASKS</span><span class="p">(</span><span class="n">LND</span><span class="p">)</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">NTHRDS</span><span class="p">(</span><span class="n">LND</span><span class="p">)</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">ROOTPE</span><span class="p">(</span><span class="n">LND</span><span class="p">)</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">NINST</span><span class="p">(</span><span class="n">LND</span><span class="p">)</span><span class="o">=</span><span class="mi">1</span>
+<span class="n">NTASKS</span><span class="p">(</span><span class="n">ICE</span><span class="p">)</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">NTHRDS</span><span class="p">(</span><span class="n">ICE</span><span class="p">)</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">ROOTPE</span><span class="p">(</span><span class="n">ICE</span><span class="p">)</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">NINST</span><span class="p">(</span><span class="n">ICE</span><span class="p">)</span><span class="o">=</span><span class="mi">1</span>
+<span class="n">NTASKS</span><span class="p">(</span><span class="n">OCN</span><span class="p">)</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">NTHRDS</span><span class="p">(</span><span class="n">OCN</span><span class="p">)</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">ROOTPE</span><span class="p">(</span><span class="n">OCN</span><span class="p">)</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">NINST</span><span class="p">(</span><span class="n">OCN</span><span class="p">)</span><span class="o">=</span><span class="mi">1</span>
+<span class="n">NTASKS</span><span class="p">(</span><span class="n">GLC</span><span class="p">)</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">NTHRDS</span><span class="p">(</span><span class="n">GLC</span><span class="p">)</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">ROOTPE</span><span class="p">(</span><span class="n">GLC</span><span class="p">)</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">NINST</span><span class="p">(</span><span class="n">GLC</span><span class="p">)</span><span class="o">=</span><span class="mi">1</span>
+<span class="n">NTASKS</span><span class="p">(</span><span class="n">WAV</span><span class="p">)</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">NTHRDS</span><span class="p">(</span><span class="n">WAV</span><span class="p">)</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">ROOTPE</span><span class="p">(</span><span class="n">WAV</span><span class="p">)</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">NINST</span><span class="p">(</span><span class="n">WAV</span><span class="p">)</span><span class="o">=</span><span class="mi">1</span>
+<span class="n">NTASKS</span><span class="p">(</span><span class="n">CPL</span><span class="p">)</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">NTHRDS</span><span class="p">(</span><span class="n">CPL</span><span class="p">)</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">ROOTPE</span><span class="p">(</span><span class="n">CPL</span><span class="p">)</span><span class="o">=</span><span class="mi">0</span>
+</pre></div>
+</div>
+<p>In this F compset, the atm, lnd, rof are full prognostic components, the ocn is a prescribed data component, cice is a mixed prescribed/prognostic component (ice-coverage is prescribed) and glc and wav are stub components.
+Lets say we want to run 2 instances of CAM in this experiment.
+The current implementation of multi-instances will also require you to run 2 instances of CLM, CICE and RTM.
+However, you have the flexibility to run either 1 or 2 instances of DOCN (we can ignore glc and wav since they do not do anything in this compset).
+To run 2 instances of CAM, CLM, CICE, RTM and DOCN, all you need to do is to invoke the following command in your <code class="docutils literal"><span class="pre">$CASEROOT</span></code>:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">xmlchange</span> <span class="n">NINST_ATM</span><span class="o">=</span><span class="mi">2</span>
+<span class="o">./</span><span class="n">xmlchange</span> <span class="n">NINST_LND</span><span class="o">=</span><span class="mi">2</span>
+<span class="o">./</span><span class="n">xmlchange</span> <span class="n">NINST_ICE</span><span class="o">=</span><span class="mi">2</span>
+<span class="o">./</span><span class="n">xmlchange</span> <span class="n">NINST_ROF</span><span class="o">=</span><span class="mi">2</span>
+<span class="o">./</span><span class="n">xmlchange</span> <span class="n">NINST_OCN</span><span class="o">=</span><span class="mi">2</span>
+</pre></div>
+</div>
+<p>As a result of this, you will have 2 instances of CAM, CLM and CICE (prescribed), RTM, and DOCN,  each running concurrently on 64 MPI tasks  <strong>TODO: put in reference to xmlchange&#8221;.</strong></p>
+<p>3. Setup the case</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="o">./</span><span class="n">case</span><span class="o">.</span><span class="n">setup</span>
+</pre></div>
+</div>
+<p>New user_nl_xxx_NNNN file (where NNNN is the number of the component instances) will be generated when <strong>case.setup</strong> is called.
+In particular, calling <strong>case.setup</strong> with the above <code class="docutils literal"><span class="pre">env_mach_pes.xml</span></code> file will result in the following <code class="docutils literal"><span class="pre">user_nl_*</span></code> files in <code class="docutils literal"><span class="pre">$CASEROOT</span></code></p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">user_nl_cam_0001</span><span class="p">,</span>  <span class="n">user_nl_cam_0002</span>
+<span class="n">user_nl_cice_0001</span><span class="p">,</span> <span class="n">user_nl_cice_0002</span>
+<span class="n">user_nl_clm_0001</span><span class="p">,</span>  <span class="n">user_nl_clm_0002</span>
+<span class="n">user_nl_rtm_0001</span><span class="p">,</span>  <span class="n">user_nl_rtm_0002</span>
+<span class="n">user_nl_docn_0001</span><span class="p">,</span> <span class="n">user_nl_docn_0002</span>
+<span class="n">user_nl_cpl</span>
+</pre></div>
+</div>
+<p>and the following <code class="docutils literal"><span class="pre">*_in_*</span></code> files and <code class="docutils literal"><span class="pre">*txt*</span></code> files in $CASEROOT/CaseDocs:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">atm_in_0001</span><span class="p">,</span> <span class="n">atm_in_0002</span>
+<span class="n">docn</span><span class="o">.</span><span class="n">streams</span><span class="o">.</span><span class="n">txt</span><span class="o">.</span><span class="n">prescribed_0001</span><span class="p">,</span> <span class="n">docn</span><span class="o">.</span><span class="n">streams</span><span class="o">.</span><span class="n">txt</span><span class="o">.</span><span class="n">prescribed_0002</span>
+<span class="n">docn_in_0001</span><span class="p">,</span> <span class="n">docn_in_0002</span>
+<span class="n">docn_ocn_in_0001</span><span class="p">,</span> <span class="n">docn_ocn_in_0002</span>
+<span class="n">drv_flds_in</span><span class="p">,</span> <span class="n">drv_in</span>
+<span class="n">ice_in_0001</span><span class="p">,</span> <span class="n">ice_in_0002</span>
+<span class="n">lnd_in_0001</span><span class="p">,</span> <span class="n">lnd_in_0002</span>
+<span class="n">rof_in_0001</span><span class="p">,</span> <span class="n">rof_in_0002</span>
+</pre></div>
+</div>
+<p>The namelist for each component instance can be modified by changing the corresponding user_nl_xxx_NNNN file for that component instance.
+Modifying the user_nl_cam_0002 will result in the namelist changes you put in to be active ONLY for instance 2 of CAM.
+To change the DOCN stream txt file instance 0002, you should place a copy of <code class="docutils literal"><span class="pre">docn.streams.txt.prescribed_0002</span></code> in <code class="docutils literal"><span class="pre">$CASEROOT</span></code> with the name <code class="docutils literal"><span class="pre">user_docn.streams.txt.prescribed_0002</span></code> and modify it accordlingly.</p>
+<p>It is also important to stress the following points:</p>
+<ol class="arabic simple">
+<li><strong>Different component instances can ONLY differ by differences in namelist settings - they are ALL using the same model executable.</strong></li>
+<li>Only 1 coupler component is supported currently in multiple instance implementation.</li>
+<li><code class="docutils literal"><span class="pre">user_nl_*</span></code> files once they are created by <strong>case.setup</strong> <em>ARE NOT</em> removed by calling <strong>caes.setup -clean</strong>.</li>
+<li>In general, you should run multiple instances concurrently (the default setting in <code class="docutils literal"><span class="pre">env_mach_pes.xml</span></code>).
+The serial setting is only for EXPERT USERS in upcoming development code implementations.</li>
+</ol>
+</div>
+<div class="section" id="cloning-a-case">
+<h2>2.8. Cloning a case<a class="headerlink" href="#cloning-a-case" title="Permalink to this headline">¶</a></h2>
+<p>This is an advanced feature provided for expert users. If you are a new user, skip this section.</p>
+<p>If you have access to the run you want to clone, the <strong>create_clone</strong> command will create a new case while also preserving local modifications to the case that you want to clone.
+You can run the utility <strong>create_clone</strong> either from <code class="docutils literal"><span class="pre">$CCSMROOT</span></code> or from the directory where you want the new case to be created.
+It has the following arguments:</p>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd><span class="option">-c<var>ase</var></span></kbd></td>
+<td>The name or path of the new case.</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">-c<var>lone</var></span></kbd></td>
+<td>The full pathname of the case to be cloned.</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">-s<var>ilent</var></span></kbd></td>
+<td>Enables silent mode. Only fatal messages will be issued.</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">-v<var>erbose</var></span></kbd></td>
+<td>Echoes all settings.</td></tr>
+<tr><td class="option-group">
+<kbd><span class="option">-h<var>elp</var></span></kbd></td>
+<td>Prints usage instructions.</td></tr>
+</tbody>
+</table>
+<p>Here is the simplest example of using <strong>create_clone</strong>:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>&gt; cd $CCSMROOT/scripts
+&gt; create_clone -case $CASEROOT -clone $CLONEROOT
+</pre></div>
+</div>
+<p><strong>create_clone</strong> will preserve any local namelist modifications made in the user_nl_xxxx files as well as any source code modifications in the SourceMods tree.</p>
+<p><strong>Important</strong>:: Do not change anything in the <code class="docutils literal"><span class="pre">env_case.xml</span></code> file.
+The <code class="docutils literal"><span class="pre">$CASEROOT/</span></code> directory will now appear as if <strong>create_newcase</strong> had just been run &#8211; with the exception that local modifications to the env_* files are preserved.</p>
+<p>Another approach to duplicating a case is to use the information in that case&#8217;s <code class="docutils literal"><span class="pre">README.case</span></code> and <code class="docutils literal"><span class="pre">CaseStatus</span></code> files to create a new case and duplicate the relevant <code class="docutils literal"><span class="pre">xlmchange</span></code> commands that were issued in the original case.
+Note that this approach will <em>not</em> preserve any local modifications that were made to the original case, such as source-code or build-script modifications; you will need to import those changes manually.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="building-a-case.html" title="3. Building a Case"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="introduction-and-overview.html" title="1. Introduction and Overview"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">on  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" ><strong>CIME User&#8217;s Guide</strong></a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, Mariana Vertenstein, Rob Jacob, Jim Edwards, Jim Foucar, Alice Bertini.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.2.
+    </div>
+  </body>
+</html>
