@@ -1910,7 +1910,6 @@ int PIOc_def_var(int ncid, const char *name, nc_type xtype, int ndims,
 }
 
 /**
- * @ingroup PIO_inq_var_fill
  * The PIO-C interface for the NetCDF function nc_inq_var_fill.
  *
  * This routine is called collectively by all tasks in the communicator
@@ -1921,21 +1920,46 @@ int PIOc_def_var(int ncid, const char *name, nc_type xtype, int ndims,
  * @param ncid the ncid of the open file, obtained from
  * PIOc_openfile() or PIOc_createfile().
  * @param varid the variable ID.
- * @return PIO_NOERR for success, error code otherwise.  See PIOc_Set_File_Error_Handling
+ * @param fill_mode a pointer to int that will get the fill
+ * mode. Ignored if NULL (except with pnetcdf, which seg-faults with
+ * NULL.)
+ * @param fill_valuep pointer to space that gets the fill value for
+ * this variable. Ignored if NULL.
+ * @return PIO_NOERR for success, error code otherwise.
+ * @ingroup PIO_inq_var_fill
  */
-int PIOc_inq_var_fill(int ncid, int varid, int *no_fill, void *fill_valuep)
+int PIOc_inq_var_fill(int ncid, int varid, int *fill_mode, void *fill_valuep)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Pointer to file information. */
-    int ierr;              /* Return code from function calls. */
+    PIO_Offset type_size;  /* Size in bytes of this variable's type. */
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
+    int ierr = PIO_NOERR;  /* Return code from function calls. */
 
-    LOG((1, "PIOc_inq ncid = %d", ncid));
+    LOG((1, "PIOc_inq_var_fill ncid = %d varid = %d", ncid, varid));
 
     /* Find the info about this file. */
     if ((ierr = pio_get_file(ncid, &file)))
         return pio_err(NULL, NULL, ierr, __FILE__, __LINE__);
     ios = file->iosystem;
+    LOG((2, "found file"));
+    
+    /* Only netCDF-4 and pnetcdf files can use this feature. */
+    if (file->iotype == PIO_IOTYPE_NETCDF)
+        return pio_err(ios, file, PIO_ENOTNC4, __FILE__, __LINE__);
+
+    /* Run this on all tasks if async is not in use, but only on
+     * non-IO tasks if async is in use. Get the size of this vars
+     * type. */
+    if (!ios->async_interface || !ios->ioproc)
+    {
+        nc_type xtype;
+        if ((ierr = PIOc_inq_vartype(ncid, varid, &xtype)))
+            return check_netcdf(file, ierr, __FILE__, __LINE__);
+        if ((ierr = PIOc_inq_type(ncid, xtype, NULL, &type_size)))
+            return check_netcdf(file, ierr, __FILE__, __LINE__);
+        LOG((2, "PIOc_inq_var_fill type_size = %d", type_size));
+    }
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
     if (ios->async_interface)
@@ -1943,12 +1967,25 @@ int PIOc_inq_var_fill(int ncid, int varid, int *no_fill, void *fill_valuep)
         if (!ios->ioproc)
         {
             int msg = PIO_MSG_INQ_VAR_FILL;
+            char fill_mode_present = fill_mode ? true : false;
+            char fill_value_present = fill_valuep ? true : false;
 
+            LOG((2, "sending msg type_size = %d", type_size));
             if (ios->compmaster == MPI_ROOT)
                 mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
 
             if (!mpierr)
                 mpierr = MPI_Bcast(&ncid, 1, MPI_INT, ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast(&varid, 1, MPI_INT, ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast(&type_size, 1, MPI_OFFSET, ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast(&fill_mode_present, 1, MPI_CHAR, ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast(&fill_value_present, 1, MPI_CHAR, ios->compmaster, ios->intercomm);
+            LOG((2, "PIOc_inq_var_fill ncid = %d varid = %d type_size = %lld fill_mode_present = %d fill_value_present = %d",
+                 ncid, varid, type_size, fill_mode_present, fill_value_present));
         }
 
         /* Handle MPI errors. */
@@ -1956,22 +1993,30 @@ int PIOc_inq_var_fill(int ncid, int varid, int *no_fill, void *fill_valuep)
             check_mpi(file, mpierr2, __FILE__, __LINE__);
         if (mpierr)
             return check_mpi(file, mpierr, __FILE__, __LINE__);
+
+        /* Broadcast values currently only known on computation tasks to IO tasks. */
+        if ((mpierr = MPI_Bcast(&type_size, 1, MPI_OFFSET, ios->comproot, ios->my_comm)))
+            check_mpi(file, mpierr, __FILE__, __LINE__); 
     }
 
     /* If this is an IO task, then call the netCDF function. */
     if (ios->ioproc)
     {
+        LOG((2, "calling inq_var_fill file->iotype = %d file->fh = %d varid = %d fill_mode = %d",
+             file->iotype, file->fh, varid, fill_mode));
 #ifdef _PNETCDF
         if (file->iotype == PIO_IOTYPE_PNETCDF)
-            ierr = ncmpi_inq_var_fill(file->fh, varid, no_fill, fill_valuep);
+        {
+            ierr = ncmpi_inq_var_fill(file->fh, varid, fill_mode, fill_valuep);
+            printf("ncmpi_inq_var_fill returned %d\n", ierr);
+        }
 #endif /* _PNETCDF */
 #ifdef _NETCDF4
         /* The inq_var_fill is not supported in classic-only builds. */
         if (file->iotype != PIO_IOTYPE_PNETCDF && file->do_io)
-            ierr = nc_inq_var_fill(file->fh, varid, no_fill, fill_valuep);
-#else
-        ierr = PIO_ENOTNC4;
+            ierr = nc_inq_var_fill(file->fh, varid, fill_mode, fill_valuep);
 #endif /* _NETCDF */
+        LOG((2, "after call to inq_var_fill, ierr = %d", ierr));
     }
 
     /* Broadcast and check the return code. */
@@ -1981,8 +2026,11 @@ int PIOc_inq_var_fill(int ncid, int varid, int *no_fill, void *fill_valuep)
         return check_netcdf(file, ierr, __FILE__, __LINE__);
 
     /* Broadcast results to all tasks. Ignore NULL parameters. */
+    if (fill_mode)
+        if ((mpierr = MPI_Bcast(fill_mode, 1, MPI_INT, ios->ioroot, ios->my_comm)))
+            check_mpi(file, mpierr, __FILE__, __LINE__);
     if (fill_valuep)
-        if ((mpierr = MPI_Bcast(fill_valuep, 1, MPI_INT, ios->ioroot, ios->my_comm)))
+        if ((mpierr = MPI_Bcast(fill_valuep, type_size, MPI_CHAR, ios->ioroot, ios->my_comm)))
             check_mpi(file, mpierr, __FILE__, __LINE__);
 
     return PIO_NOERR;
