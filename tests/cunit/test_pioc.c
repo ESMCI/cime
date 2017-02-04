@@ -676,7 +676,6 @@ int define_metadata(int ncid, int my_rank, int flavor)
         return ERR_WRONG;
     if ((ret = PIOc_set_fill(ncid, old_mode, NULL)))
         return ret;
-
     /* Set the fill value for netCDF-4 files. */
     int int_fill = -999;
     int int_fill_in;
@@ -727,7 +726,6 @@ int define_metadata(int ncid, int my_rank, int flavor)
            return ret;
        if (fill_mode != NC_FILL)
             ERR(ERR_WRONG);
-
     }
     else
     {
