@@ -409,11 +409,11 @@ int check_atts(int my_rank, int ncid, int flavor, MPI_Comm test_comm)
         if ((ret = PIOc_get_att_longlong(ncid, NC_GLOBAL, ATT_NAME2, &att_int64_value)))
             return ret;
         if (att_int64_value != ATT_VAL)
-            return ERR_WRONG;        
+            return ERR_WRONG;
         if ((ret = PIOc_get_att_ulonglong(ncid, NC_GLOBAL, ATT_NAME2, &att_uint64_value)))
             return ret;
         if (att_uint64_value != ATT_VAL)
-            return ERR_WRONG;        
+            return ERR_WRONG;
     }
     return 0;
 }
@@ -676,12 +676,12 @@ int define_metadata(int ncid, int my_rank, int flavor)
         return ERR_WRONG;
     if ((ret = PIOc_set_fill(ncid, old_mode, NULL)))
         return ret;
-    
+
     /* Set the fill value for netCDF-4 files. */
     int int_fill = -999;
     int int_fill_in;
     int fill_mode;
-    
+
     if (flavor != PIO_IOTYPE_NETCDF)
     {
         /* These should not work. */
@@ -693,20 +693,20 @@ int define_metadata(int ncid, int my_rank, int flavor)
             return ERR_WRONG;
         if (PIOc_def_var_fill(ncid, varid, NC_FILL, NULL) != PIO_EINVAL)
             return ERR_WRONG;
-        
+
         /* Set the fill value. */
         if ((ret = PIOc_def_var_fill(ncid, varid, NC_FILL, &int_fill)))
             return ret;
-        
+
         /* These should not work. */
         if (PIOc_inq_var_fill(ncid + 42, varid, &fill_mode, &int_fill_in) != PIO_EBADID)
             return ERR_WRONG;
         if (PIOc_inq_var_fill(ncid, varid + 42, &fill_mode, &int_fill_in) != PIO_ENOTVAR)
             return ERR_WRONG;
-        
+
         /* Check the fill value. */
         if ((ret = PIOc_inq_var_fill(ncid, varid, &fill_mode, &int_fill_in)))
-            return ret; 
+            return ret;
        if (fill_mode != NC_FILL || int_fill_in != int_fill)
             ERR(ERR_WRONG);
 
@@ -727,14 +727,14 @@ int define_metadata(int ncid, int my_rank, int flavor)
            return ret;
        if (fill_mode != NC_FILL)
             ERR(ERR_WRONG);
-       
+
     }
     else
     {
         /* These should not work. */
         if (PIOc_def_var_fill(ncid, varid, NC_FILL, &int_fill) != PIO_ENOTNC4)
             return ERR_WRONG;
-    }            
+    }
 
     return PIO_NOERR;
 }
@@ -810,7 +810,7 @@ int test_names(int iosysid, int num_flavors, int *flavor, int my_rank,
 
     memset(too_long_name, 74, PIO_MAX_NAME * 5);
     too_long_name[PIO_MAX_NAME * 5] = 0;
-    
+
     /* Use PIO to create the example file in each of the four
      * available ways. */
     for (int fmt = 0; fmt < num_flavors; fmt++)
@@ -1029,7 +1029,7 @@ int test_deletefile(int iosysid, int num_flavors, int *flavor, int my_rank)
             return ERR_WRONG;
         if (PIOc_set_iosystem_error_handling(iosysid, PIO_RETURN_ERROR + 42, &old_method) != PIO_EINVAL)
             return ERR_WRONG;
-        
+
         /* Set error handling. */
         if ((ret = PIOc_set_iosystem_error_handling(iosysid, PIO_RETURN_ERROR, &old_method)))
             return ret;

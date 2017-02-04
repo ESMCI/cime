@@ -1,5 +1,5 @@
 /**
- * @file 
+ * @file
  * Internal PIO functions to get and put attributes and data
  * (excluding varm functions).
  *
@@ -507,7 +507,7 @@ int PIOc_get_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
 
     /* User must provide a place to put some data. */
     if (!buf)
-        return pio_err(ios, file, PIO_EINVAL, __FILE__, __LINE__);        
+        return pio_err(ios, file, PIO_EINVAL, __FILE__, __LINE__);
 
     /* Run these on all tasks if async is not in use, but only on
      * non-IO tasks if async is in use. */
@@ -907,7 +907,7 @@ int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
 
     /* User must provide a place to put some data. */
     if (!buf)
-        return pio_err(ios, file, PIO_EINVAL, __FILE__, __LINE__);        
+        return pio_err(ios, file, PIO_EINVAL, __FILE__, __LINE__);
 
     /* Run these on all tasks if async is not in use, but only on
      * non-IO tasks if async is in use. */
