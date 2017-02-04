@@ -1044,6 +1044,62 @@ int inq_var_chunking_handler(iosystem_desc_t *ios)
 }
 
 /**
+ * Do an inq_var_fill on a netCDF variable. This function is only
+ * run on IO tasks.
+ *
+ * @param ios pointer to the iosystem_desc_t.
+ * @returns 0 for success, error code otherwise.
+ */
+int inq_var_fill_handler(iosystem_desc_t *ios)
+{
+    int ncid;
+    int varid;
+    char fill_mode_present, fill_value_present;
+    PIO_Offset type_size;
+    int fill_mode, *fill_modep = NULL;
+    PIO_Offset *fill_value, *fill_valuep = NULL;
+    int mpierr;
+
+    assert(ios);
+    LOG((1, "inq_var_fill_handler"));
+
+    /* Get the parameters for this function that the the comp master
+     * task is broadcasting. */
+    if ((mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm)))
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+    if ((mpierr = MPI_Bcast(&varid, 1, MPI_INT, 0, ios->intercomm)))
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+    if ((mpierr = MPI_Bcast(&type_size, 1, MPI_OFFSET, 0, ios->intercomm)))
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+    if ((mpierr = MPI_Bcast(&fill_mode_present, 1, MPI_CHAR, 0, ios->intercomm)))
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+    if ((mpierr = MPI_Bcast(&fill_value_present, 1, MPI_CHAR, 0, ios->intercomm)))
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+    LOG((2,"inq_var_fill_handler ncid = %d varid = %d type_size = %lld, fill_mode_present = %d fill_value_present = %d",
+         ncid, varid, type_size, fill_mode_present, fill_value_present));
+
+    /* If we need to, alocate storage for fill value. */
+    if (fill_value_present)
+        if (!(fill_value = malloc(type_size)))
+            return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);        
+
+    /* Set the non-NULL pointers. */
+    if (fill_mode_present)
+        fill_modep = &fill_mode;
+    if (fill_value_present)
+        fill_valuep = fill_value;
+
+    /* Call the inq function to get the values. */
+    PIOc_inq_var_fill(ncid, varid, fill_modep, fill_valuep);
+
+    /* Free fill value storage if we allocated some. */
+    if (fill_value_present)
+        free(fill_value);
+    
+    return PIO_NOERR;
+}
+
+/**
  * Do an inq_var_endian on a netCDF variable. This function is only
  * run on IO tasks.
  *
@@ -1349,6 +1405,62 @@ int def_var_chunking_handler(iosystem_desc_t *ios)
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
     LOG((1, "def_var_chunking_handler succeeded!"));
+    return PIO_NOERR;
+}
+
+/**
+ * This function is run on the IO tasks to define fill mode and fill
+ * value.
+ *
+ * @param ios pointer to the iosystem_desc_t.
+ * @returns 0 for success, error code otherwise.
+ */
+int def_var_fill_handler(iosystem_desc_t *ios)
+{
+    int ncid;
+    int varid;
+    int fill_mode;
+    char fill_value_present;
+    PIO_Offset type_size;
+    PIO_Offset *fill_valuep = NULL;
+    int mpierr;
+
+    assert(ios);
+    LOG((1, "def_var_fill_handler comproot = %d", ios->comproot));
+
+    /* Get the parameters for this function that the he comp master
+     * task is broadcasting. */
+    if ((mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm)))
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+    if ((mpierr = MPI_Bcast(&varid, 1, MPI_INT, 0, ios->intercomm)))
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+    if ((mpierr = MPI_Bcast(&fill_mode, 1, MPI_INT, 0, ios->intercomm)))
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+    if ((mpierr = MPI_Bcast(&type_size, 1, MPI_OFFSET, 0, ios->intercomm)))
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+    if ((mpierr = MPI_Bcast(&fill_value_present, 1, MPI_CHAR, 0, ios->intercomm)))
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+    if (fill_value_present)
+    {
+        if (!(fill_valuep = malloc(type_size)))
+            return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);            
+        if ((mpierr = MPI_Bcast(fill_valuep, type_size, MPI_CHAR, 0, ios->intercomm)))
+        {
+            free(fill_valuep);
+            return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+        }
+    }
+    LOG((1, "def_var_fill_handler got parameters ncid = %d varid = %d fill_mode = %d "
+         "type_size = %lld fill_value_present = %d", ncid, varid, fill_mode, type_size, fill_value_present));
+
+    /* Call the function. */
+    PIOc_def_var_fill(ncid, varid, fill_mode, fill_valuep);
+
+    /* Free memory allocated for the fill value. */
+    if (fill_valuep)
+        free(fill_valuep);
+    
+    LOG((1, "def_var_fill_handler succeeded!"));
     return PIO_NOERR;
 }
 
@@ -2180,6 +2292,9 @@ int pio_msg_handler2(int io_rank, int component_count, iosystem_desc_t **iosys,
         case PIO_MSG_DEF_VAR_CHUNKING:
             def_var_chunking_handler(my_iosys);
             break;
+        case PIO_MSG_DEF_VAR_FILL:
+            def_var_fill_handler(my_iosys);
+            break;
         case PIO_MSG_DEF_VAR_ENDIAN:
             def_var_endian_handler(my_iosys);
             break;
@@ -2209,6 +2324,9 @@ int pio_msg_handler2(int io_rank, int component_count, iosystem_desc_t **iosys,
             break;
         case PIO_MSG_INQ_VAR_CHUNKING:
             inq_var_chunking_handler(my_iosys);
+            break;
+        case PIO_MSG_INQ_VAR_FILL:
+            inq_var_fill_handler(my_iosys);
             break;
         case PIO_MSG_INQ_VAR_DEFLATE:
             inq_var_deflate_handler(my_iosys);

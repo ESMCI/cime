@@ -623,7 +623,7 @@ int check_strerror(int my_rank)
 }
 
 /* Define metadata for the test file. */
-int define_metadata(int ncid, int my_rank)
+int define_metadata(int ncid, int my_rank, int flavor)
 {
     int dimids[NDIM]; /* The dimension IDs. */
     int varid; /* The variable ID. */
@@ -677,17 +677,80 @@ int define_metadata(int ncid, int my_rank)
     if ((ret = PIOc_set_fill(ncid, old_mode, NULL)))
         return ret;
     
+    /* Set the fill value for netCDF-4 files. */
+    int int_fill = -999;
+    int int_fill_in;
+    int fill_mode;
+    
+    if (flavor != PIO_IOTYPE_NETCDF)
+    {
+        /* These should not work. */
+        if (PIOc_def_var_fill(ncid + 42, varid, NC_FILL, &int_fill) != PIO_EBADID)
+            return ERR_WRONG;
+        if (PIOc_def_var_fill(ncid, varid + 42, NC_FILL, &int_fill) != PIO_ENOTVAR)
+            return ERR_WRONG;
+        if (PIOc_def_var_fill(ncid, varid, NC_FILL + 42, &int_fill) != PIO_EINVAL)
+            return ERR_WRONG;
+        if (PIOc_def_var_fill(ncid, varid, NC_FILL, NULL) != PIO_EINVAL)
+            return ERR_WRONG;
+        
+        /* Set the fill value. */
+        if ((ret = PIOc_def_var_fill(ncid, varid, NC_FILL, &int_fill)))
+            return ret;
+        
+        /* These should not work. */
+        if (PIOc_inq_var_fill(ncid + 42, varid, &fill_mode, &int_fill_in) != PIO_EBADID)
+            return ERR_WRONG;
+        if (PIOc_inq_var_fill(ncid, varid + 42, &fill_mode, &int_fill_in) != PIO_ENOTVAR)
+            return ERR_WRONG;
+        
+        /* Check the fill value. */
+        if ((ret = PIOc_inq_var_fill(ncid, varid, &fill_mode, &int_fill_in)))
+            return ret; 
+       if (fill_mode != NC_FILL || int_fill_in != int_fill)
+            ERR(ERR_WRONG);
+
+       /* These should also work. */
+       int_fill_in = 0;
+
+       /* This does not work for pnetcdf, but probably should. */
+       if (flavor != PIO_IOTYPE_PNETCDF)
+       {
+           if ((ret = PIOc_inq_var_fill(ncid, varid, NULL, &int_fill_in)))
+               return ret;
+           if (int_fill_in != int_fill)
+               ERR(ERR_WRONG);
+           if ((ret = PIOc_inq_var_fill(ncid, varid, NULL, NULL)))
+               return ret;
+       }
+       if ((ret = PIOc_inq_var_fill(ncid, varid, &fill_mode, NULL)))
+           return ret;
+       if (fill_mode != NC_FILL)
+            ERR(ERR_WRONG);
+       
+    }
+    else
+    {
+        /* These should not work. */
+        if (PIOc_def_var_fill(ncid, varid, NC_FILL, &int_fill) != PIO_ENOTNC4)
+            return ERR_WRONG;
+    }            
+
     return PIO_NOERR;
 }
 
 /* Check the metadata in the test file. */
-int check_metadata(int ncid, int my_rank)
+int check_metadata(int ncid, int my_rank, int flavor)
 {
     int ndims, nvars, ngatts, unlimdimid, natts, dimid[NDIM];
     PIO_Offset len_in;
     char name_in[PIO_MAX_NAME + 1];
     nc_type xtype_in;
+    int expected_atts;
     int ret;
+
+    /* The netCDF-4 and pnetcdf files will have a fill value attribute. */
+    expected_atts = (flavor == PIO_IOTYPE_NETCDF) ? 0 : 1;
 
     /* Check how many dims, vars, global atts there are, and the id of
      * the unlimited dimension. */
@@ -725,7 +788,7 @@ int check_metadata(int ncid, int my_rank)
     if ((ret = PIOc_inq_var(ncid, 0, name_in, &xtype_in, &ndims, dimid, &natts)))
         return ret;
     if (strcmp(name_in, VAR_NAME) || xtype_in != PIO_INT || ndims != NDIM ||
-        dimid[0] != 0 || dimid[1] != 1 || dimid[2] != 2 || natts != 0)
+        dimid[0] != 0 || dimid[1] != 1 || dimid[2] != 2 || natts != expected_atts)
         return ERR_AWFUL;
 
     return PIO_NOERR;
@@ -896,7 +959,7 @@ int test_files(int iosysid, int num_flavors, int *flavor, int my_rank)
             ERR(ERR_WRONG);
 
         /* Define the test file metadata. */
-        if ((ret = define_metadata(ncid, my_rank)))
+        if ((ret = define_metadata(ncid, my_rank, flavor[fmt])))
             ERR(ret);
 
         /* End define mode. */
@@ -927,7 +990,7 @@ int test_files(int iosysid, int num_flavors, int *flavor, int my_rank)
             ERR(ret);
 
         /* Check the test file metadata. */
-        if ((ret = check_metadata(ncid, my_rank)))
+        if ((ret = check_metadata(ncid, my_rank, flavor[fmt])))
             ERR(ret);
 
         /* Close the netCDF file. */

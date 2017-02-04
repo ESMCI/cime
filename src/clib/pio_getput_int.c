@@ -150,9 +150,6 @@ int PIOc_put_att_tc(int ncid, int varid, const char *name, nc_type atttype,
             case NC_DOUBLE:
                 ierr = ncmpi_put_att_double(file->fh, varid, name, atttype, len, op);
                 break;
-            case NC_INT64:
-                ierr = ncmpi_put_att_longlong(file->fh, varid, name, atttype, len, op);
-                break;
             default:
                 return pio_err(ios, file, PIO_EBADTYPE, __FILE__, __LINE__);
             }
@@ -373,9 +370,6 @@ int PIOc_get_att_tc(int ncid, int varid, const char *name, nc_type memtype, void
                 break;
             case NC_DOUBLE:
                 ierr = ncmpi_get_att_double(file->fh, varid, name, ip);
-                break;
-            case NC_INT64:
-                ierr = ncmpi_get_att_longlong(file->fh, varid, name, ip);
                 break;
             default:
                 return pio_err(ios, file, PIO_EBADTYPE, __FILE__, __LINE__);
