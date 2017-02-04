@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>6. Porting and Validating CIME on a new Platform &#8212; on  documentation</title>
+    <title>5. Porting and Validating CIME on a new Platform &#8212; on  documentation</title>
     
     <link rel="stylesheet" href="../_static/bizstyle.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -28,8 +28,8 @@
     <script type="text/javascript" src="../_static/bizstyle.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="1. Testing with create_test" href="testing.html" />
-    <link rel="prev" title="5. create_clone" href="cloning-a-case.html" />
+    <link rel="next" title="1. create_clone" href="cloning-a-case.html" />
+    <link rel="prev" title="4. Running a Case" href="running-a-case.html" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <!--[if lt IE 9]>
     <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
@@ -43,10 +43,10 @@
           <a href="../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="testing.html" title="1. Testing with create_test"
+          <a href="cloning-a-case.html" title="1. create_clone"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="cloning-a-case.html" title="5. create_clone"
+          <a href="running-a-case.html" title="4. Running a Case"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">on  documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">CIME User&#8217;s Guide Part 1: Basic Use</a> &#187;</li> 
@@ -56,20 +56,20 @@
         <div class="sphinxsidebarwrapper">
   <h3><a href="../index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">6. Porting and Validating CIME on a new Platform</a><ul>
-<li><a class="reference internal" href="#porting-overview">6.1. Porting Overview</a></li>
-<li><a class="reference internal" href="#enabling-out-of-the-box-capability-for-your-machine">6.2. Enabling out-of-the-box capability for your machine</a></li>
-<li><a class="reference internal" href="#validating-your-port">6.3. Validating your port</a></li>
+<li><a class="reference internal" href="#">5. Porting and Validating CIME on a new Platform</a><ul>
+<li><a class="reference internal" href="#porting-overview">5.1. Porting Overview</a></li>
+<li><a class="reference internal" href="#enabling-out-of-the-box-capability-for-your-machine">5.2. Enabling out-of-the-box capability for your machine</a></li>
+<li><a class="reference internal" href="#validating-your-port">5.3. Validating your port</a></li>
 </ul>
 </li>
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="cloning-a-case.html"
-                        title="previous chapter">5. create_clone</a></p>
+  <p class="topless"><a href="running-a-case.html"
+                        title="previous chapter">4. Running a Case</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="testing.html"
-                        title="next chapter">1. Testing with create_test</a></p>
+  <p class="topless"><a href="cloning-a-case.html"
+                        title="next chapter">1. create_clone</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -96,9 +96,9 @@
           <div class="body" role="main">
             
   <div class="section" id="porting-and-validating-cime-on-a-new-platform">
-<span id="porting"></span><h1>6. Porting and Validating CIME on a new Platform<a class="headerlink" href="#porting-and-validating-cime-on-a-new-platform" title="Permalink to this headline">¶</a></h1>
+<span id="porting"></span><h1>5. Porting and Validating CIME on a new Platform<a class="headerlink" href="#porting-and-validating-cime-on-a-new-platform" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="porting-overview">
-<h2>6.1. Porting Overview<a class="headerlink" href="#porting-overview" title="Permalink to this headline">¶</a></h2>
+<h2>5.1. Porting Overview<a class="headerlink" href="#porting-overview" title="Permalink to this headline">¶</a></h2>
 <p>One of the first steps many users will have to address is getting CIME based models running on their local machine.
 This section will describe that process.
 It is usually very helpful to assure that you can run a basic mpi parallel program on your machine prior to attempting a CIME port.
@@ -168,12 +168,12 @@ We recommend the latter approach. All files in <code class="docutils literal"><s
 </ul>
 </div>
 <div class="section" id="enabling-out-of-the-box-capability-for-your-machine">
-<h2>6.2. Enabling out-of-the-box capability for your machine<a class="headerlink" href="#enabling-out-of-the-box-capability-for-your-machine" title="Permalink to this headline">¶</a></h2>
+<h2>5.2. Enabling out-of-the-box capability for your machine<a class="headerlink" href="#enabling-out-of-the-box-capability-for-your-machine" title="Permalink to this headline">¶</a></h2>
 <p>Once you have successfully created the required xml files in your .cime directory and are satisfied with the results you can merge them into the default files in the cime_config/$CIME_MODEL/machines directory.
 If you would like to make this machine definition available generally you may then issue a pull request to add your changes to the git repository.</p>
 </div>
 <div class="section" id="validating-your-port">
-<h2>6.3. Validating your port<a class="headerlink" href="#validating-your-port" title="Permalink to this headline">¶</a></h2>
+<h2>5.3. Validating your port<a class="headerlink" href="#validating-your-port" title="Permalink to this headline">¶</a></h2>
 <p>The following port validation is recommended for any new machine.
 Carrying out these steps does not guarantee the model is running properly in all cases nor that the model is scientifically valid on the new machine.
 In addition to these tests, detailed validation should be carried out for any new production run.
@@ -236,10 +236,10 @@ Model output data for these runs will be available on the <a class="reference ex
           <a href="../genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="testing.html" title="1. Testing with create_test"
+          <a href="cloning-a-case.html" title="1. create_clone"
              >next</a> |</li>
         <li class="right" >
-          <a href="cloning-a-case.html" title="5. create_clone"
+          <a href="running-a-case.html" title="4. Running a Case"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">on  documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" >CIME User&#8217;s Guide Part 1: Basic Use</a> &#187;</li> 

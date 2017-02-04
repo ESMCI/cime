@@ -49,7 +49,7 @@
           <a href="introduction-and-overview.html" title="1. Introduction and Overview"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">on  documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">CIME User&#8217;s Guide: Part 1</a> &#187;</li> 
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">CIME User&#8217;s Guide Part 1: Basic Use</a> &#187;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -68,7 +68,6 @@
 </li>
 <li><a class="reference internal" href="#modifying-an-xml-file">2.6. Modifying an xml file</a></li>
 <li><a class="reference internal" href="#multi-instance-component-functionality">2.7. Multi-instance component functionality</a></li>
-<li><a class="reference internal" href="#cloning-a-case">2.8. Cloning a case</a></li>
 </ul>
 </li>
 </ul>
@@ -541,44 +540,6 @@ To change the DOCN stream txt file instance 0002, you should place a copy of <co
 The serial setting is only for EXPERT USERS in upcoming development code implementations.</li>
 </ol>
 </div>
-<div class="section" id="cloning-a-case">
-<h2>2.8. Cloning a case<a class="headerlink" href="#cloning-a-case" title="Permalink to this headline">¶</a></h2>
-<p>This is an advanced feature provided for expert users. If you are a new user, skip this section.</p>
-<p>If you have access to the run you want to clone, the <strong>create_clone</strong> command will create a new case while also preserving local modifications to the case that you want to clone.
-You can run the utility <strong>create_clone</strong> either from <code class="docutils literal"><span class="pre">$CCSMROOT</span></code> or from the directory where you want the new case to be created.
-It has the following arguments:</p>
-<table class="docutils option-list" frame="void" rules="none">
-<col class="option" />
-<col class="description" />
-<tbody valign="top">
-<tr><td class="option-group">
-<kbd><span class="option">-c<var>ase</var></span></kbd></td>
-<td>The name or path of the new case.</td></tr>
-<tr><td class="option-group">
-<kbd><span class="option">-c<var>lone</var></span></kbd></td>
-<td>The full pathname of the case to be cloned.</td></tr>
-<tr><td class="option-group">
-<kbd><span class="option">-s<var>ilent</var></span></kbd></td>
-<td>Enables silent mode. Only fatal messages will be issued.</td></tr>
-<tr><td class="option-group">
-<kbd><span class="option">-v<var>erbose</var></span></kbd></td>
-<td>Echoes all settings.</td></tr>
-<tr><td class="option-group">
-<kbd><span class="option">-h<var>elp</var></span></kbd></td>
-<td>Prints usage instructions.</td></tr>
-</tbody>
-</table>
-<p>Here is the simplest example of using <strong>create_clone</strong>:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>&gt; cd $CCSMROOT/scripts
-&gt; create_clone -case $CASEROOT -clone $CLONEROOT
-</pre></div>
-</div>
-<p><strong>create_clone</strong> will preserve any local namelist modifications made in the user_nl_xxxx files as well as any source code modifications in the SourceMods tree.</p>
-<p><strong>Important</strong>:: Do not change anything in the <code class="docutils literal"><span class="pre">env_case.xml</span></code> file.
-The <code class="docutils literal"><span class="pre">$CASEROOT/</span></code> directory will now appear as if <strong>create_newcase</strong> had just been run &#8211; with the exception that local modifications to the env_* files are preserved.</p>
-<p>Another approach to duplicating a case is to use the information in that case&#8217;s <code class="docutils literal"><span class="pre">README.case</span></code> and <code class="docutils literal"><span class="pre">CaseStatus</span></code> files to create a new case and duplicate the relevant <code class="docutils literal"><span class="pre">xlmchange</span></code> commands that were issued in the original case.
-Note that this approach will <em>not</em> preserve any local modifications that were made to the original case, such as source-code or build-script modifications; you will need to import those changes manually.</p>
-</div>
 </div>
 
 
@@ -600,7 +561,7 @@ Note that this approach will <em>not</em> preserve any local modifications that 
           <a href="introduction-and-overview.html" title="1. Introduction and Overview"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">on  documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" >CIME User&#8217;s Guide: Part 1</a> &#187;</li> 
+          <li class="nav-item nav-item-1"><a href="index.html" >CIME User&#8217;s Guide Part 1: Basic Use</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
