@@ -16,7 +16,6 @@ CIME User's Guide Part 1: Basic Use
    create-a-case.rst
    building-a-case.rst
    running-a-case.rst
-   cloning-a-case.rst
    porting-cime.rst
 
 #########################################
@@ -27,6 +26,7 @@ CIME User's Guide Part 2: Advanced CIME
    :maxdepth: 3
    :numbered:
 
+   cloning-a-case.rst
    testing.rst
    adding-cases.rst
    troubleshooting.rst
