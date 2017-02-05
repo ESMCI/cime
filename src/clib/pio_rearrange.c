@@ -20,7 +20,7 @@ void init_rearr_opts(iosystem_desc_t *iosys)
     const rearr_comm_fc_opt_t def_coll_comm_fc_opts = { false, false, 0 };
 
     assert(iosys);
-    
+
     /* Default to coll - i.e., no flow control */
     iosys->rearr_opts.comm_type = PIO_REARR_COMM_COLL;
     iosys->rearr_opts.fcd = PIO_REARR_COMM_FC_2D_DISABLE;
@@ -524,7 +524,7 @@ int compute_counts(iosystem_desc_t ios, io_desc_t *iodesc, int maplen,
         /* Allocate memory to hold array of tasks that have recieved
          * data ??? */
         if (!(recv_buf = calloc(ntasks, sizeof(int))))
-            return pio_err(&ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);            
+            return pio_err(&ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
         /* Initialize arrays that keep track of receives. */
         for (i = 0; i < ntasks; i++)
@@ -1522,7 +1522,7 @@ int subset_rearrange_create(iosystem_desc_t ios, int maplen, PIO_Offset *compmap
         if (iodesc->llen > 0)
         {
             if (!(srcindex = calloc(iodesc->llen, sizeof(PIO_Offset))))
-                return pio_err(&ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);                
+                return pio_err(&ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
             for (i = 0; i < iodesc->llen; i++)
                 srcindex[i] = 0;
@@ -1537,7 +1537,7 @@ int subset_rearrange_create(iosystem_desc_t ios, int maplen, PIO_Offset *compmap
         }
     }
     if ((ret = determine_fill(ios, iodesc, gsize, compmap)))
-        return pio_err(&ios, NULL, ret, __FILE__, __LINE__);        
+        return pio_err(&ios, NULL, ret, __FILE__, __LINE__);
 
     /* Pass the sindex from each compute task to its associated IO task. */
     if ((mpierr = MPI_Gatherv(iodesc->sindex, iodesc->scount[0], PIO_OFFSET,
@@ -1559,7 +1559,7 @@ int subset_rearrange_create(iosystem_desc_t ios, int maplen, PIO_Offset *compmap
     if (maplen>iodesc->scount[0] && iodesc->scount[0] > 0)
     {
         if (!(shrtmap = calloc(iodesc->scount[0], sizeof(PIO_Offset))))
-            return pio_err(&ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);            
+            return pio_err(&ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
         j = 0;
         for (i = 0; i < maplen; i++)

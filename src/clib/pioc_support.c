@@ -250,9 +250,9 @@ void pio_log(int severity, const char *fmt, ...)
 
 /**
  * Obtain a backtrace and print it to stderr. This is appended to the
- * text decomposition file. 
+ * text decomposition file.
  *
- * Note from Jim: 
+ * Note from Jim:
  *
  * The stack trace can be used to identify the usage in
  * the model code of the particular decomposition in question and so
@@ -1027,7 +1027,7 @@ int PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype,
     file_desc_t *file;     /** Pointer to file information. */
     int ierr = PIO_NOERR;  /** Return code from function calls. */
     int mpierr = MPI_SUCCESS, mpierr2;  /** Return code from MPI function codes. */
-
+    int imode;  /** internal mode val for netcdf4 file open */
     /* Get the IO system info from the iosysid. */
     if (!(ios = pio_get_iosystem_from_id(iosysid)))
         return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
@@ -1105,14 +1105,25 @@ int PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype,
 #ifdef _MPISERIAL
             ierr = nc_open(filename, file->mode, &file->fh);
 #else
-            file->mode = file->mode |  NC_MPIIO;
-            ierr = nc_open_par(filename, file->mode, ios->io_comm, ios->info, &file->fh);
+            imode = file->mode |  NC_MPIIO;
+            ierr = nc_open_par(filename, imode, ios->io_comm, ios->info, &file->fh);
+	    if (ierr == PIO_NOERR)
+		file->mode = imode;
+	    LOG((2, "PIOc_openfile_retry:nc_open_par filename = %s mode = %d imode = %d ierr = %d",
+		 filename, file->mode, imode, ierr));
 #endif
             break;
 
         case PIO_IOTYPE_NETCDF4C:
-            file->mode = file->mode | NC_NETCDF4;
-            // *** Note the INTENTIONAL FALLTHROUGH ***
+            if (ios->io_rank == 0)
+	    {
+		imode = file->mode | NC_NETCDF4;
+                ierr = nc_open(filename, imode, &file->fh);
+		if (ierr == PIO_NOERR)
+		    file->mode = imode;
+	    }
+            break;
+
 #endif
 
         case PIO_IOTYPE_NETCDF:
@@ -1146,6 +1157,7 @@ int PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype,
         if (retry)
         {
 #ifdef _NETCDF
+	    LOG((2, "retry error code ierr = %d io_rank %d", ierr, ios->io_rank));
             if ((ierr == NC_ENOTNC || ierr == NC_EINVAL) && (file->iotype != PIO_IOTYPE_NETCDF))
             {
                 if (ios->iomaster == MPI_ROOT)
@@ -1160,7 +1172,10 @@ int PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype,
                 /* open netcdf file serially on main task */
                 if (ios->io_rank == 0)
                     ierr = nc_open(filename, file->mode, &file->fh);
+		else
+		    file->do_io = 0;
             }
+            LOG((2, "retry nc_open(%s) : fd = %d, iotype = %d, do_io = %d, ierr = %d", filename, file->fh, file->iotype, file->do_io, ierr));
 #endif
         }
     }
@@ -1298,8 +1313,8 @@ int pioc_change_def(int ncid, int is_enddef)
     LOG((3, "pioc_change_def ios->ioproc = %d", ios->ioproc));
     if (ios->ioproc)
     {
-        LOG((3, "pioc_change_def calling netcdf function file->fh = %d file->do_io = %d",
-             file->fh, file->do_io));
+        LOG((3, "pioc_change_def calling netcdf function file->fh = %d file->do_io = %d iotype = %d",
+             file->fh, file->do_io, file->iotype));
 #ifdef _PNETCDF
         if (file->iotype == PIO_IOTYPE_PNETCDF)
         {
@@ -1436,7 +1451,7 @@ static bool cmp_rearr_opts(const rearr_opt_t *rearr_opts,
 static void check_and_reset_rearr_opts(iosystem_desc_t *ios)
 {
     /* Disable handshake/isend and set max_pend_req to unlimited */
-    const rearr_comm_fc_opt_t def_comm_nofc_opts = 
+    const rearr_comm_fc_opt_t def_comm_nofc_opts =
         { false, false, PIO_REARR_COMM_UNLIMITED_PEND_REQ };
     /* Disable handshake /isend and set max_pend_req = 0 to turn off throttling */
     const rearr_comm_fc_opt_t def_coll_comm_fc_opts = { false, false, 0 };
