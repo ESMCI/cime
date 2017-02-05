@@ -1,5 +1,5 @@
 /**
- * @file 
+ * @file
  * Internal PIO functions to get and put attributes and data
  * (excluding varm functions).
  *
@@ -149,9 +149,6 @@ int PIOc_put_att_tc(int ncid, int varid, const char *name, nc_type atttype,
                 break;
             case NC_DOUBLE:
                 ierr = ncmpi_put_att_double(file->fh, varid, name, atttype, len, op);
-                break;
-            case NC_INT64:
-                ierr = ncmpi_put_att_longlong(file->fh, varid, name, atttype, len, op);
                 break;
             default:
                 return pio_err(ios, file, PIO_EBADTYPE, __FILE__, __LINE__);
@@ -374,9 +371,6 @@ int PIOc_get_att_tc(int ncid, int varid, const char *name, nc_type memtype, void
             case NC_DOUBLE:
                 ierr = ncmpi_get_att_double(file->fh, varid, name, ip);
                 break;
-            case NC_INT64:
-                ierr = ncmpi_get_att_longlong(file->fh, varid, name, ip);
-                break;
             default:
                 return pio_err(ios, file, PIO_EBADTYPE, __FILE__, __LINE__);
             }
@@ -513,7 +507,7 @@ int PIOc_get_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
 
     /* User must provide a place to put some data. */
     if (!buf)
-        return pio_err(ios, file, PIO_EINVAL, __FILE__, __LINE__);        
+        return pio_err(ios, file, PIO_EINVAL, __FILE__, __LINE__);
 
     /* Run these on all tasks if async is not in use, but only on
      * non-IO tasks if async is in use. */
@@ -913,7 +907,7 @@ int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
 
     /* User must provide a place to put some data. */
     if (!buf)
-        return pio_err(ios, file, PIO_EINVAL, __FILE__, __LINE__);        
+        return pio_err(ios, file, PIO_EINVAL, __FILE__, __LINE__);
 
     /* Run these on all tasks if async is not in use, but only on
      * non-IO tasks if async is in use. */
