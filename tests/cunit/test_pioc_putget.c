@@ -1915,7 +1915,7 @@ int test_putget(int iosysid, int num_flavors, int *flavor, int my_rank,
 {
     int dim_len[NDIM] = {NC_UNLIMITED, X_DIM_LEN, Y_DIM_LEN};
 
-#define NUM_ACCESS 7
+#define NUM_ACCESS 8
     for (int unlim = 0; unlim < 2; unlim++)
         for (int access = 0; access < NUM_ACCESS; access++)
         {
