@@ -59,6 +59,8 @@ if (NOT PIO_USE_MPISERIAL)
   target_link_libraries (test_pioc pioc)
   add_executable (test_pioc_putget EXCLUDE_FROM_ALL test_pioc_putget.c test_common.c test_shared.c)
   target_link_libraries (test_pioc_putget pioc)
+  add_executable (test_pioc_more EXCLUDE_FROM_ALL test_pioc_more.c test_common.c test_shared.c)
+  target_link_libraries (test_pioc_more pioc)
   add_executable (test_decomps EXCLUDE_FROM_ALL test_decomps.c test_common.c)
   target_link_libraries (test_decomps pioc)
 endif ()
@@ -137,6 +139,10 @@ else ()
     TIMEOUT ${DEFAULT_TEST_TIMEOUT})
   add_mpi_test(test_pioc_putget
     EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_pioc_putget
+    NUMPROCS ${AT_LEAST_FOUR_TASKS}
+    TIMEOUT ${DEFAULT_TEST_TIMEOUT})
+  add_mpi_test(test_pioc_more
+    EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_pioc_more
     NUMPROCS ${AT_LEAST_FOUR_TASKS}
     TIMEOUT ${DEFAULT_TEST_TIMEOUT})
   add_mpi_test(test_decomps
