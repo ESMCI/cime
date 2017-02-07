@@ -475,8 +475,7 @@ int check_netcdf2(iosystem_desc_t *ios, file_desc_t *file, int status,
  *
  * @param ios pointer to the IO system info. Ignored if NULL.
  * @param file pointer to the file description data. Ignored if
- * NULL. If not NULL, then file level error handling is applied before
- * IO system level error handling.
+ * NULL. If provided file->iosystem is used as ios pointer.
  * @param err_num the error code
  * @param fname name of code file where error occured.
  * @param line the line of code where the error occurred.
