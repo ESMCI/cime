@@ -500,20 +500,31 @@ int test_iotypes(int my_rank)
  */
 int check_strerror_netcdf(int my_rank)
 {
-#ifdef _NETCDF
-#define NUM_NETCDF_TRIES 4
-    int errcode[NUM_NETCDF_TRIES] = {PIO_EBADID, NC4_LAST_ERROR - 1, 0, 1};
+#define NUM_NETCDF_TRIES 5
+    int errcode[NUM_NETCDF_TRIES] = {PIO_EBADID, NC4_LAST_ERROR - 1, 0, 1, -600};
     const char *expected[NUM_NETCDF_TRIES] = {"NetCDF: Not a valid ID",
                                               "Unknown Error: Unrecognized error code", "No error",
-                                              nc_strerror(1)};
+                                              nc_strerror(1), "Unknown Error: Unrecognized error code"};
     int ret;
 
     if ((ret = check_error_strings(my_rank, NUM_NETCDF_TRIES, errcode, expected)))
         return ret;
 
+    /* When called with a code of 0, these functions should do nothing
+     * and return 0. */
+    if (check_mpi(NULL, 0, __FILE__, __LINE__))
+        return ERR_WRONG;
+    if (check_mpi2(NULL, NULL, 0, __FILE__, __LINE__))
+        return ERR_WRONG;
+    if (pio_err(NULL, NULL, 0, __FILE__, __LINE__))
+        return ERR_WRONG;
+    if (check_netcdf(NULL, 0, __FILE__, __LINE__))
+        return ERR_WRONG;
+    if (check_netcdf2(NULL, NULL, 0, __FILE__, __LINE__))
+        return ERR_WRONG;
+
     if (!my_rank)
         printf("check_strerror_netcdf SUCCEEDED!\n");
-#endif /* (_NETCDF) */
 
     return PIO_NOERR;
 }
