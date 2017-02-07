@@ -69,7 +69,7 @@ target_link_libraries (test_spmd pioc)
 add_dependencies (tests test_spmd)
 add_dependencies (tests test_pioc)
 add_dependencies (tests test_pioc_putget)
-add_dependencies (tests test_more)
+add_dependencies (tests test_pioc_more)
 add_dependencies (tests test_decomps)
 
 # Test Timeout in seconds.
