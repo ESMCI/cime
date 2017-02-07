@@ -1322,6 +1322,57 @@ int test_nc4(int iosysid, int num_flavors, int *flavor, int my_rank)
     return PIO_NOERR;
 }
 
+/** Test the malloc_iodesc() function.
+ *
+ * @param my_rank rank of this task.
+ * @returns 0 for success, error code otherwise.
+ */
+int test_malloc_iodesc(int iosysid, int my_rank)
+{
+    int ioid;
+    iosystem_desc_t *ios;
+    io_desc_t *iodesc;
+    int ret;
+
+    if (!(ios = pio_get_iosystem_from_id(iosysid)))
+        return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
+
+    /* Test an int one. */
+    if (!(iodesc = malloc_iodesc(ios, PIO_INT, 1)))
+        return ERR_WRONG;
+    if (iodesc->basetype != MPI_INTEGER)
+        return ERR_WRONG;
+    if (iodesc->ndims != 1)
+        return ERR_WRONG;
+    ioid = pio_add_to_iodesc_list(iodesc);
+    if ((ret = pio_delete_iodesc_from_list(ioid)))
+        return ret;
+    
+    /* Test a char one. */
+    if (!(iodesc = malloc_iodesc(ios, PIO_CHAR, 1)))
+        return ERR_WRONG;
+    if (iodesc->basetype != MPI_CHAR)
+        return ERR_WRONG;
+    if (iodesc->ndims != 1)
+        return ERR_WRONG;
+    ioid = pio_add_to_iodesc_list(iodesc);
+    if ((ret = pio_delete_iodesc_from_list(ioid)))
+        return ret;
+    
+    /* Test a double. */
+    if (!(iodesc = malloc_iodesc(ios, PIO_DOUBLE, 1)))
+        return ERR_WRONG;
+    if (iodesc->basetype != MPI_DOUBLE)
+        return ERR_WRONG;
+    if (iodesc->ndims != 1)
+        return ERR_WRONG;
+    ioid = pio_add_to_iodesc_list(iodesc);
+    if ((ret = pio_delete_iodesc_from_list(ioid)))
+        return ret;
+    
+    return 0;
+}
+
 /* Run all the tests. */
 int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm test_comm,
              int async)
@@ -1346,6 +1397,10 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
     /* Test file stuff. */
     printf("%d Testing file creation. async = %d\n", my_rank, async);
     if ((ret = test_files(iosysid, num_flavors, flavor, my_rank)))
+        return ret;
+
+    /* Test some misc stuff. */
+    if ((ret = test_malloc_iodesc(iosysid, my_rank)))
         return ret;
 
     if (!async)
@@ -1392,6 +1447,6 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
 /* Run Tests for NetCDF-4 Functions. */
 int main(int argc, char **argv)
 {
-    return run_test_main(argc, argv, MIN_NTASKS, TARGET_NTASKS, 3,
+    return run_test_main(argc, argv, MIN_NTASKS, TARGET_NTASKS, 0,
                          TEST_NAME, dim_len, COMPONENT_COUNT, NUM_IO_PROCS);
 }
