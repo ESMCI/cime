@@ -302,20 +302,20 @@ int PIOc_def_var_chunking(int ncid, int varid, int storage, const PIO_Offset *ch
     {
 #ifdef _NETCDF4
         if (file->do_io)
-	{
-	    size_t chunksizes_sizet[ndims];
-	    for (int d = 0; d < ndims; d++)
-	    {
-		if (chunksizesp[d] < 0)
-		{
-		    ierr = PIO_ERANGE;
-		    break;
-		}
-		chunksizes_sizet[d] = chunksizesp[d];
-	    }
-	    if (!ierr)
-		ierr = nc_def_var_chunking(file->fh, varid, storage, chunksizes_sizet);
-	}
+        {
+            size_t chunksizes_sizet[ndims];
+            for (int d = 0; d < ndims; d++)
+            {
+                if (chunksizesp[d] < 0)
+                {
+                    ierr = PIO_ERANGE;
+                    break;
+                }
+                chunksizes_sizet[d] = chunksizesp[d];
+            }
+            if (!ierr)
+                ierr = nc_def_var_chunking(file->fh, varid, storage, chunksizes_sizet);
+        }
 #endif
     }
 
@@ -418,20 +418,20 @@ int PIOc_inq_var_chunking(int ncid, int varid, int *storagep, PIO_Offset *chunks
     {
 #ifdef _NETCDF4
         if (file->do_io)
-	{
-	    size_t chunksizes_sizet[ndims];
-	    ierr = nc_inq_var_chunking(file->fh, varid, storagep, chunksizes_sizet);
-	    if (!ierr && chunksizesp)
-		for (int d = 0; d < ndims; d++)
-		{
-		    if (chunksizes_sizet[d] > NC_MAX_INT64)
-		    {
-			ierr = PIO_ERANGE;
-			break;
-		    }
-		    chunksizesp[d] = chunksizes_sizet[d];
-		}
-	}
+        {
+            size_t chunksizes_sizet[ndims];
+            ierr = nc_inq_var_chunking(file->fh, varid, storagep, chunksizes_sizet);
+            if (!ierr && chunksizesp)
+                for (int d = 0; d < ndims; d++)
+                {
+                    if (chunksizes_sizet[d] > NC_MAX_INT64)
+                    {
+                        ierr = PIO_ERANGE;
+                        break;
+                    }
+                    chunksizesp[d] = chunksizes_sizet[d];
+                }
+        }
 #endif
         LOG((2, "ierr = %d", ierr));
     }
@@ -551,7 +551,7 @@ int PIOc_def_var_fill(int ncid, int varid, int fill_mode, const void *fill_value
 
         /* Broadcast values currently only known on computation tasks to IO tasks. */
         if ((mpierr = MPI_Bcast(&type_size, 1, MPI_OFFSET, ios->comproot, ios->my_comm)))
-            check_mpi(file, mpierr, __FILE__, __LINE__); 
+            check_mpi(file, mpierr, __FILE__, __LINE__);
     }
 
     if (ios->ioproc)

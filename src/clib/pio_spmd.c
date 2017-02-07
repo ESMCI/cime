@@ -286,16 +286,16 @@ int pio_swapm(void *sendbuf, int *sendcounts, int *sdispls, MPI_Datatype *sendty
             /* On some software stacks MPI_Irsend() is either not available, not
              * a major issue anymore, or is buggy. With PIO1 we have found that
              * although the code correctly posts receives before the irsends,
-             * on some systems (software stacks) the code hangs. However the 
-             * code works fine with isends. The USE_MPI_ISEND_FOR_FC macro should be 
+             * on some systems (software stacks) the code hangs. However the
+             * code works fine with isends. The USE_MPI_ISEND_FOR_FC macro should be
              * used to choose between mpi_irsends and mpi_isends - the default
              * is still mpi_irsend
-             */ 
+             */
             if (isend)
             {
 #ifdef USE_MPI_ISEND_FOR_FC
                 if ((mpierr = MPI_Isend(ptr, sendcounts[p], sendtypes[p], p, tag, comm,
-                                         sndids + istep)))
+                                        sndids + istep)))
                     return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 #else
                 if ((mpierr = MPI_Irsend(ptr, sendcounts[p], sendtypes[p], p, tag, comm,
@@ -483,4 +483,3 @@ int pio_fc_gatherv(const void *sendbuf, int sendcnt, MPI_Datatype sendtype,
 
     return PIO_NOERR;
 }
-

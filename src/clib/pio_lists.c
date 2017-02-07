@@ -260,12 +260,12 @@ io_desc_t *pio_get_iodesc_from_id(int ioid)
     if (current_iodesc != NULL && current_iodesc->ioid == abs(ioid))
         ciodesc = current_iodesc;
     else
-	for (ciodesc = pio_iodesc_list; ciodesc; ciodesc = ciodesc->next)
-	    if (ciodesc->ioid == abs(ioid))
-	    {
-		current_iodesc = ciodesc;
-		break;
-	    }
+        for (ciodesc = pio_iodesc_list; ciodesc; ciodesc = ciodesc->next)
+            if (ciodesc->ioid == abs(ioid))
+            {
+                current_iodesc = ciodesc;
+                break;
+            }
 
     return ciodesc;
 }

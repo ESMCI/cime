@@ -383,8 +383,8 @@ int define_iodesc_datatypes(iosystem_desc_t ios, io_desc_t *iodesc)
                 if (iodesc->rearranger == PIO_REARR_SUBSET)
                 {
                     if ((ret = create_mpi_datatypes(iodesc->basetype, iodesc->nrecvs, iodesc->llen,
-                                                   iodesc->rindex, iodesc->rcount, iodesc->rfrom,
-                                                   iodesc->rtype)))
+                                                    iodesc->rindex, iodesc->rcount, iodesc->rfrom,
+                                                    iodesc->rtype)))
                         return ret;
                 }
                 else
@@ -667,10 +667,10 @@ int compute_counts(iosystem_desc_t ios, io_desc_t *iodesc, int maplen,
       printf("\n");
     */
     ierr = pio_swapm(s2rindex, send_counts, send_displs, sr_types, iodesc->rindex,
-                    recv_counts, recv_displs, sr_types, mycomm,
-                    iodesc->rearr_opts.comm_fc_opts_comp2io.enable_hs,
-                    iodesc->rearr_opts.comm_fc_opts_comp2io.enable_isend,
-                    iodesc->rearr_opts.comm_fc_opts_comp2io.max_pend_req);
+                     recv_counts, recv_displs, sr_types, mycomm,
+                     iodesc->rearr_opts.comm_fc_opts_comp2io.enable_hs,
+                     iodesc->rearr_opts.comm_fc_opts_comp2io.enable_isend,
+                     iodesc->rearr_opts.comm_fc_opts_comp2io.max_pend_req);
 
     /*  rindex is an array of the indices of the data to be sent from
         this io task to each compute task. */

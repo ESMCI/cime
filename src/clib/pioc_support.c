@@ -28,7 +28,7 @@ FILE *LOG_FILE = NULL;
 /**
  * The PIO library maintains its own set of ncids. This is the next
  * ncid number that will be assigned.
-*/
+ */
 extern int pio_next_ncid;
 
 /** The default error handler used when iosystem cannot be located. */
@@ -1107,21 +1107,21 @@ int PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype,
 #else
             imode = file->mode |  NC_MPIIO;
             ierr = nc_open_par(filename, imode, ios->io_comm, ios->info, &file->fh);
-	    if (ierr == PIO_NOERR)
-		file->mode = imode;
-	    LOG((2, "PIOc_openfile_retry:nc_open_par filename = %s mode = %d imode = %d ierr = %d",
-		 filename, file->mode, imode, ierr));
+            if (ierr == PIO_NOERR)
+                file->mode = imode;
+            LOG((2, "PIOc_openfile_retry:nc_open_par filename = %s mode = %d imode = %d ierr = %d",
+                 filename, file->mode, imode, ierr));
 #endif
             break;
 
         case PIO_IOTYPE_NETCDF4C:
             if (ios->io_rank == 0)
-	    {
-		imode = file->mode | NC_NETCDF4;
+            {
+                imode = file->mode | NC_NETCDF4;
                 ierr = nc_open(filename, imode, &file->fh);
-		if (ierr == PIO_NOERR)
-		    file->mode = imode;
-	    }
+                if (ierr == PIO_NOERR)
+                    file->mode = imode;
+            }
             break;
 
 #endif
@@ -1157,7 +1157,7 @@ int PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype,
         if (retry)
         {
 #ifdef _NETCDF
-	    LOG((2, "retry error code ierr = %d io_rank %d", ierr, ios->io_rank));
+            LOG((2, "retry error code ierr = %d io_rank %d", ierr, ios->io_rank));
             if ((ierr == NC_ENOTNC || ierr == NC_EINVAL) && (file->iotype != PIO_IOTYPE_NETCDF))
             {
                 if (ios->iomaster == MPI_ROOT)
@@ -1172,8 +1172,8 @@ int PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype,
                 /* open netcdf file serially on main task */
                 if (ios->io_rank == 0)
                     ierr = nc_open(filename, file->mode, &file->fh);
-		else
-		    file->do_io = 0;
+                else
+                    file->do_io = 0;
             }
             LOG((2, "retry nc_open(%s) : fd = %d, iotype = %d, do_io = %d, ierr = %d", filename, file->fh, file->iotype, file->do_io, ierr));
 #endif
@@ -1386,7 +1386,7 @@ int iotype_is_valid(int iotype)
  * @return true if values in opt == values in exp_opt, false otherwise
  */
 static bool cmp_rearr_comm_fc_opts(const rearr_comm_fc_opt_t *opt,
-                                    const rearr_comm_fc_opt_t *exp_opt)
+                                   const rearr_comm_fc_opt_t *exp_opt)
 {
     bool is_same = true;
     assert((opt != NULL) && (exp_opt != NULL));
@@ -1419,7 +1419,7 @@ static bool cmp_rearr_comm_fc_opts(const rearr_comm_fc_opt_t *opt,
  */
 
 static bool cmp_rearr_opts(const rearr_opt_t *rearr_opts,
-                            const rearr_opt_t *exp_rearr_opts)
+                           const rearr_opt_t *exp_rearr_opts)
 {
     bool is_same = true;
     assert((rearr_opts != NULL) && (exp_rearr_opts != NULL));
@@ -1456,11 +1456,11 @@ static void check_and_reset_rearr_opts(iosystem_desc_t *ios)
     /* Disable handshake /isend and set max_pend_req = 0 to turn off throttling */
     const rearr_comm_fc_opt_t def_coll_comm_fc_opts = { false, false, 0 };
     const rearr_opt_t def_coll_rearr_opts = {
-                                                PIO_REARR_COMM_COLL,
-                                                PIO_REARR_COMM_FC_2D_DISABLE,
-                                                def_coll_comm_fc_opts,
-                                                def_coll_comm_fc_opts
-                                            };
+        PIO_REARR_COMM_COLL,
+        PIO_REARR_COMM_FC_2D_DISABLE,
+        def_coll_comm_fc_opts,
+        def_coll_comm_fc_opts
+    };
 
     assert(ios != NULL);
     /* Reset to defaults, if needed (user did not set it correctly) */
@@ -1477,9 +1477,9 @@ static void check_and_reset_rearr_opts(iosystem_desc_t *ios)
         {
             /* Compare and log user and default opts */
             cmp_rearr_comm_fc_opts(&(ios->rearr_opts.comm_fc_opts_comp2io),
-                                    &def_comm_nofc_opts);
+                                   &def_comm_nofc_opts);
             cmp_rearr_comm_fc_opts(&(ios->rearr_opts.comm_fc_opts_io2comp),
-                                    &def_comm_nofc_opts);
+                                   &def_comm_nofc_opts);
             /* Hard reset flow control opts to defaults */
             ios->rearr_opts.comm_fc_opts_comp2io = def_comm_nofc_opts;
             ios->rearr_opts.comm_fc_opts_io2comp = def_comm_nofc_opts;
@@ -1488,7 +1488,7 @@ static void check_and_reset_rearr_opts(iosystem_desc_t *ios)
         {
             /* Compare and log user and default opts */
             cmp_rearr_comm_fc_opts(&(ios->rearr_opts.comm_fc_opts_io2comp),
-                                    &def_comm_nofc_opts);
+                                   &def_comm_nofc_opts);
             /* Hard reset io2comp dir to defaults */
             ios->rearr_opts.comm_fc_opts_io2comp = def_comm_nofc_opts;
         }
@@ -1496,7 +1496,7 @@ static void check_and_reset_rearr_opts(iosystem_desc_t *ios)
         {
             /* Compare and log user and default opts */
             cmp_rearr_comm_fc_opts(&(ios->rearr_opts.comm_fc_opts_comp2io),
-                                    &def_comm_nofc_opts);
+                                   &def_comm_nofc_opts);
             /* Hard reset comp2io dir to defaults */
             ios->rearr_opts.comm_fc_opts_comp2io = def_comm_nofc_opts;
         }
@@ -1548,10 +1548,10 @@ int PIOc_set_rearr_opts(int iosysid,
     iosystem_desc_t *ios;
     int ret = PIO_NOERR;
     rearr_opt_t user_rearr_opts = {
-                                      comm_type, fcd,
-                                      {enable_hs_c2i,enable_isend_c2i, max_pend_req_c2i},
-                                      {enable_hs_i2c, enable_isend_i2c, max_pend_req_i2c}
-                                  };
+        comm_type, fcd,
+        {enable_hs_c2i,enable_isend_c2i, max_pend_req_c2i},
+        {enable_hs_i2c, enable_isend_i2c, max_pend_req_i2c}
+    };
 
     if (!(ios = pio_get_iosystem_from_id(iosysid)))
         return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);

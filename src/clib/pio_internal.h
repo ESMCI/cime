@@ -24,7 +24,7 @@
 #endif
 
 #if defined(MPT_VERSION) || defined(OPEN_MPI)
-/* Some MPI implementations do not allow passing MPI_DATATYPE_NULL to comm functions 
+/* Some MPI implementations do not allow passing MPI_DATATYPE_NULL to comm functions
  * even though the send or recv length is 0, in these cases we use MPI_CHAR */
 #define PIO_DATATYPE_NULL MPI_CHAR
 #else
@@ -97,7 +97,7 @@ extern "C" {
     /* For async cases, this runs on IO tasks and listens for messages. */
     int pio_msg_handler2(int io_rank, int component_count, iosystem_desc_t **iosys,
                          MPI_Comm io_comm);
-    
+
     void pio_get_env(void);
     int  pio_add_to_iodesc_list(io_desc_t *iodesc);
     io_desc_t *pio_get_iodesc_from_id(int ioid);
@@ -125,14 +125,14 @@ extern "C" {
                       const char *fname, int line);
 
     /* Check whether an IO type is valid for this build. */
-    int iotype_is_valid(int iotype);    
+    int iotype_is_valid(int iotype);
 
     /* Print error message and abort. */
     void piodie(const char *msg, const char *fname, int line);
 
     /* Assert that an expression is true. */
     void pioassert(bool exp, const char *msg, const char *fname, int line);
-    
+
     int CalcStartandCount(int basetype, int ndims, const int *gdims, int num_io_procs,
                           int myiorank, PIO_Offset *start, PIO_Offset *kount);
 
@@ -182,7 +182,7 @@ extern "C" {
 
     /* Find greatest commond divisor in an array. */
     int gcd_array(int nain, int *ain);
-    
+
     void free_region_list(io_region *top);
 
     /* Convert a global coordinate value into a local array index. */
@@ -205,7 +205,7 @@ extern "C" {
 
     /* Initialize the compute buffer. */
     int compute_buffer_init(iosystem_desc_t ios);
-    
+
     void free_cn_buffer_pool(iosystem_desc_t ios);
     void flush_buffer(int ncid, wmulti_buffer *wmb, bool flushtodisk);
     void piomemerror(iosystem_desc_t ios, size_t req, char *fname, int line);
@@ -252,10 +252,10 @@ extern "C" {
     /* An internal replacement for a function pnetcdf does not
      * have. */
     int pioc_pnetcdf_inq_type(int ncid, nc_type xtype, char *name,
-			      PIO_Offset *sizep);
+                              PIO_Offset *sizep);
 
     /* Handle end and re-defs. */
-    int pioc_change_def(int ncid, int is_enddef);    
+    int pioc_change_def(int ncid, int is_enddef);
 
     /* Initialize and finalize logging. */
     void pio_init_logging(void);
