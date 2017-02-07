@@ -328,7 +328,7 @@ int create_mpi_datatypes(MPI_Datatype basetype, int msgcnt, PIO_Offset dlen,
                     return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 
                 if (mtype[i] == PIO_DATATYPE_NULL)
-                    piodie("Unexpected NULL MPI DATATYPE", __FILE__, __LINE__);
+                    return pio_err(NULL, NULL, PIO_EINVAL, __FILE__, __LINE__);
 
                 /* Commit the MPI data type. */
                 if ((mpierr = MPI_Type_commit(mtype + i)))
@@ -787,7 +787,7 @@ int rearrange_comp2io(iosystem_desc_t ios, io_desc_t *iodesc, void *sbuf,
                         return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 
                     if (recvtypes[i] == PIO_DATATYPE_NULL)
-                        piodie("Unexpected NULL MPI DATATYPE", __FILE__, __LINE__);
+                        return pio_err(NULL, NULL, PIO_EINVAL, __FILE__, __LINE__);
 
                     if ((mpierr = MPI_Type_commit(recvtypes + i)))
                         return check_mpi(NULL, mpierr, __FILE__, __LINE__);
@@ -803,7 +803,7 @@ int rearrange_comp2io(iosystem_desc_t ios, io_desc_t *iodesc, void *sbuf,
                         return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 
                     if (recvtypes[iodesc->rfrom[i]] == PIO_DATATYPE_NULL)
-                        piodie("Unexpected NULL MPI DATATYPE", __FILE__, __LINE__);
+                        return pio_err(NULL, NULL, PIO_EINVAL, __FILE__, __LINE__);
 
                     if ((mpierr = MPI_Type_commit(recvtypes+iodesc->rfrom[i])))
                         return check_mpi(NULL, mpierr, __FILE__, __LINE__);
@@ -831,7 +831,7 @@ int rearrange_comp2io(iosystem_desc_t ios, io_desc_t *iodesc, void *sbuf,
                 return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 
             if (sendtypes[io_comprank] == PIO_DATATYPE_NULL)
-                piodie("Unexpected NULL MPI DATATYPE",__FILE__,__LINE__);
+                return pio_err(NULL, NULL, PIO_EINVAL, __FILE__, __LINE__);
 
             if ((mpierr = MPI_Type_commit(sendtypes + io_comprank)))
                 return check_mpi(NULL, mpierr, __FILE__, __LINE__);
@@ -1722,7 +1722,7 @@ int subset_rearrange_create(iosystem_desc_t ios, int maplen, PIO_Offset *compmap
                 if (myfillgrid[j] == -1)
                     myfillgrid[j++]=thisgridmin[ios.io_rank] + i;
                 else
-                    piodie("something wrong",__FILE__,__LINE__);
+                    return pio_err(&ios, NULL, PIO_EINVAL, __FILE__, __LINE__);
             }
         }
         maxregions = 0;

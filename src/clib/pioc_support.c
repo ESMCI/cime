@@ -755,7 +755,7 @@ int PIOc_readmap(const char *file, int *ndims, int **gdims, PIO_Offset *fmaplen,
     {
         FILE *fp = fopen(file, "r");
         if (!fp)
-            piodie("Failed to open dof file",__FILE__,__LINE__);
+            pio_err(NULL, NULL, PIO_EINVAL, __FILE__, __LINE__);
 
         fscanf(fp,"version %d npes %d ndims %d\n",&rversno, &rnpes, ndims);
 
@@ -819,7 +819,7 @@ int PIOc_readmap(const char *file, int *ndims, int **gdims, PIO_Offset *fmaplen,
             if ((mpierr = MPI_Recv(&maplen, 1, PIO_OFFSET, 0, myrank + npes, comm, &status)))
                 return check_mpi(NULL, mpierr, __FILE__, __LINE__);
             if (!(tmap = malloc(maplen * sizeof(PIO_Offset))))
-                piodie("Memory allocation error ", __FILE__, __LINE__);
+                return pio_err(NULL, NULL, PIO_ENOMEM, __FILE__, __LINE__);
             if ((mpierr = MPI_Recv(tmap, maplen, PIO_OFFSET, 0, myrank, comm, &status)))
                 return check_mpi(NULL, mpierr, __FILE__, __LINE__);
             *map = tmap;
