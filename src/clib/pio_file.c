@@ -29,9 +29,6 @@ int pio_next_ncid = 16;
 int PIOc_openfile(int iosysid, int *ncidp, int *iotype, const char *filename,
                   int mode)
 {
-    LOG((1, "PIOc_openfile iosysid = %d iotype = %d filename = %s mode = %d",
-         iosysid, *iotype, filename, mode));
-
     return PIOc_openfile_retry(iosysid, ncidp, iotype, filename, mode, 1);
 }
 

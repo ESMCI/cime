@@ -165,6 +165,18 @@ int main(int argc, char **argv)
                     return ret;
             }
 
+            /* These should not work. */
+            if (PIOc_openfile(iosysid_world + 42, &ncid, &flavor[i], fn[0], PIO_WRITE) != PIO_EBADID)
+                return ERR_WRONG;
+            if (PIOc_openfile(iosysid_world, NULL, &flavor[i], fn[0], PIO_WRITE) != PIO_EINVAL)
+                return ERR_WRONG;
+            if (PIOc_openfile(iosysid_world, &ncid, NULL, fn[0], PIO_WRITE) != PIO_EINVAL)
+                return ERR_WRONG;
+            if (PIOc_openfile(iosysid_world, &ncid, &flavor[i], NULL, PIO_WRITE) != PIO_EINVAL)
+                return ERR_WRONG;
+            if (PIOc_openfile(iosysid_world, &ncid, &flavor[i] + 42, fn[0], PIO_WRITE) != PIO_EINVAL)
+                return ERR_WRONG;
+
             /* Open the first file with world iosystem. */
             if ((ret = PIOc_openfile(iosysid_world, &ncid, &flavor[i], fn[0], PIO_WRITE)))
                 return ret;
