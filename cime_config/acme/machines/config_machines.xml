@@ -667,8 +667,8 @@
       </modules>
     </module_system>
     <environment_variables>
-      <env name="NETCDFROOT">$(dirname $(dirname $(which ncdump)))</env>
-      <env name="PNETCDFROOT" mpilib="!mpi-serial">$(dirname $(dirname $(which pnetcdf_version)))</env>
+      <env name="NETCDFROOT">$SHELL{dirname $(dirname $(which ncdump))}</env>
+      <env name="PNETCDFROOT" mpilib="!mpi-serial">$SHELL{dirname $(dirname $(which pnetcdf_version))}</env>
     </environment_variables>
 </machine>
 
@@ -738,8 +738,8 @@
   </module_system>
   <environment_variables>
     <!-- <env name="PATH">/projects/ccsm/cmake-2.8.10.2-Linux-i386/bin:$PATH</env> -->
-    <env name="PATH">/projects/ccsm/tpl/netcdf/4.3.2/intel/13.0.1/openmpi/1.6.5/bin:$PATH</env>
-    <env name="LD_LIBRARY_PATH">/projects/ccsm/tpl/netcdf/4.3.2/intel/13.0.1/openmpi/1.6.5/lib:$LD_LIBRARY_PATH</env>
+    <env name="PATH">/projects/ccsm/tpl/netcdf/4.3.2/intel/13.0.1/openmpi/1.6.5/bin:$ENV{PATH}</env>
+    <env name="LD_LIBRARY_PATH">/projects/ccsm/tpl/netcdf/4.3.2/intel/13.0.1/openmpi/1.6.5/lib:$ENV{LD_LIBRARY_PATH}</env>
     <env name="NETCDF_INCLUDES">/projects/ccsm/tpl/netcdf/4.3.2/intel/13.0.1/openmpi/1.6.5/include</env>
     <env name="NETCDF_LIBS">/projects/ccsm/tpl/netcdf/4.3.2/intel/13.0.1/openmpi/1.6.5/lib</env>
     <env name="NETCDFROOT">/projects/ccsm/tpl/netcdf/4.3.2/intel/13.0.1/openmpi/1.6.5</env>
@@ -818,8 +818,8 @@
   </module_system>
   <environment_variables>
     <!-- <env name="PATH">/projects/ccsm/cmake-2.8.10.2-Linux-i386/bin:$PATH</env> -->
-    <env name="PATH">/projects/ccsm/tpl/netcdf/4.3.2/intel/13.0.1/openmpi/1.6.5/bin:$PATH</env>
-    <env name="LD_LIBRARY_PATH">/projects/ccsm/tpl/netcdf/4.3.2/intel/13.0.1/openmpi/1.6.5/lib:$LD_LIBRARY_PATH</env>
+    <env name="PATH">/projects/ccsm/tpl/netcdf/4.3.2/intel/13.0.1/openmpi/1.6.5/bin:$ENV{PATH}</env>
+    <env name="LD_LIBRARY_PATH">/projects/ccsm/tpl/netcdf/4.3.2/intel/13.0.1/openmpi/1.6.5/lib:$ENV{LD_LIBRARY_PATH}</env>
     <env name="NETCDF_INCLUDES">/projects/ccsm/tpl/netcdf/4.3.2/intel/13.0.1/openmpi/1.6.5/include</env>
     <env name="NETCDF_LIBS">/projects/ccsm/tpl/netcdf/4.3.2/intel/13.0.1/openmpi/1.6.5/lib</env>
     <env name="NETCDFROOT">/projects/ccsm/tpl/netcdf/4.3.2/intel/13.0.1/openmpi/1.6.5</env>
@@ -897,8 +897,8 @@
       <env name="NETCDFROOT">/soft/climate/netcdf/4.3.3.1c-4.2cxx-4.4.2f-serial/intel-15.0.1</env>
       <env name="NETCDF_INCLUDES">/soft/climate/netcdf/4.3.3.1c-4.2cxx-4.4.2f-serial/intel-15.0.1/include</env>
       <env name="NETCDF_LIBS">/soft/climate/netcdf/4.3.3.1c-4.2cxx-4.4.2f-serial/intel-15.0.1/lib</env>
-      <env name="PATH">$NETCDFROOT/bin:$PATH</env>
-      <env name="LD_LIBRARY_PATH">$NETCDFROOT/lib:/soft/intel/15.0.1/mkl/lib/intel64:$LD_LIBRARY_PATH</env>
+      <env name="PATH">$ENV{NETCDFROOT}/bin:$ENV{PATH}</env>
+      <env name="LD_LIBRARY_PATH">$ENV{NETCDFROOT}/lib:/soft/intel/15.0.1/mkl/lib/intel64:$ENV{LD_LIBRARY_PATH}</env>
     </environment_variables>
     <environment_variables compiler="intel" mpilib="mvapich">
       <env name="PNETCDFROOT">/soft/climate/pnetcdf/1.6.1/intel-15.0.1/mvapich2-2.2a-intel-15.0</env>
