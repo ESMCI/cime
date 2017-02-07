@@ -1115,5 +1115,5 @@ int PIOc_get_vara(int ncid, int varid, const PIO_Offset *start, const PIO_Offset
 int PIOc_get_vars(int ncid, int varid, const PIO_Offset *start, const PIO_Offset *count,
                   const PIO_Offset *stride, void *buf)
 {
-    return PIOc_get_vars_tc(ncid, varid, start, count, stride, NC_NAT, buf);    
+    return PIOc_get_vars_tc(ncid, varid, start, count, stride, NC_NAT, buf);
 }

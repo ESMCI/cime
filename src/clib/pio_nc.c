@@ -706,7 +706,7 @@ int PIOc_inq_var(int ncid, int varid, char *name, nc_type *xtypep, int *ndimsp,
                 if (!ierr)
                 {
                     if (name)
-                    strcpy(name, my_name);
+                        strcpy(name, my_name);
                     if (xtypep)
                         *xtypep = my_xtype;
                     if (ndimsp)
@@ -1943,7 +1943,7 @@ int PIOc_inq_var_fill(int ncid, int varid, int *fill_mode, void *fill_valuep)
         return pio_err(NULL, NULL, ierr, __FILE__, __LINE__);
     ios = file->iosystem;
     LOG((2, "found file"));
-    
+
     /* Only netCDF-4 and pnetcdf files can use this feature. */
     if (file->iotype == PIO_IOTYPE_NETCDF)
         return pio_err(ios, file, PIO_ENOTNC4, __FILE__, __LINE__);
@@ -1996,7 +1996,7 @@ int PIOc_inq_var_fill(int ncid, int varid, int *fill_mode, void *fill_valuep)
 
         /* Broadcast values currently only known on computation tasks to IO tasks. */
         if ((mpierr = MPI_Bcast(&type_size, 1, MPI_OFFSET, ios->comproot, ios->my_comm)))
-            check_mpi(file, mpierr, __FILE__, __LINE__); 
+            check_mpi(file, mpierr, __FILE__, __LINE__);
     }
 
     /* If this is an IO task, then call the netCDF function. */
@@ -2083,7 +2083,7 @@ int PIOc_get_att(int ncid, int varid, const char *name, void *ip)
     if (ios->async_interface)
         if ((mpierr = MPI_Bcast(&atttype, 1, MPI_OFFSET, ios->comproot, ios->my_comm)))
             return check_mpi(file, mpierr, __FILE__, __LINE__);
-    
+
     return PIOc_get_att_tc(ncid, varid, name, atttype, ip);
 }
 

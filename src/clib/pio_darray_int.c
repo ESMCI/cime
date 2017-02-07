@@ -25,7 +25,7 @@ extern void *CN_bpool;
 /* Maximum buffer usage. */
 extern PIO_Offset maxusage;
 
-/** 
+/**
  * Initialize the compute buffer to size pio_cnbuffer_limit.
  *
  * This routine initializes the compute buffer pool if the bget memory
@@ -42,11 +42,11 @@ int compute_buffer_init(iosystem_desc_t ios)
     if (!CN_bpool)
     {
         if (!(CN_bpool = malloc(pio_cnbuffer_limit)))
-            return pio_err(&ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);            
+            return pio_err(&ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
         bpool(CN_bpool, pio_cnbuffer_limit);
-        if (!CN_bpool) 
-            return pio_err(&ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);            
+        if (!CN_bpool)
+            return pio_err(&ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
         bectl(NULL, malloc, free, pio_cnbuffer_limit);
     }
@@ -94,7 +94,7 @@ int pio_write_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid,
 
     /* Check inputs. */
     pioassert(file && file->iosystem && iodesc && iobuf, "invalid input",
-      __FILE__, __LINE__);
+              __FILE__, __LINE__);
 
 #ifdef TIMING
     /* Start timing this function. */
@@ -331,7 +331,7 @@ int pio_write_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid,
                     /*       printf("%s %d %d %d %d %d %d %d %d %d\n",__FILE__,__LINE__,ios->io_rank,tstart[0],
                              tstart[1],tcount[0],tcount[1],buflen,ndims,fndims);*/
 
-		    /* task0 is ready to recieve */
+                    /* task0 is ready to recieve */
                     if ((mpierr = MPI_Recv(&ierr, 1, MPI_INT, 0, 0, ios->io_comm, &status)))
                         return check_mpi(file, mpierr, __FILE__, __LINE__);
 
@@ -375,8 +375,8 @@ int pio_write_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid,
                 if (regioncnt == iodesc->maxregions - 1)
                 {
                     /* printf("%s %d %d %ld %ld\n",__FILE__,__LINE__,ios->io_rank,iodesc->llen, tdsize);
-                         ierr = ncmpi_put_varn_all(file->fh, vid, iodesc->maxregions, startlist, countlist,
-                                           iobuf, iodesc->llen, iodesc->basetype); */
+                       ierr = ncmpi_put_varn_all(file->fh, vid, iodesc->maxregions, startlist, countlist,
+                       iobuf, iodesc->llen, iodesc->basetype); */
                     int reqn = 0;
 
                     if (vdesc->nreqs % PIO_REQUEST_ALLOC_CHUNK == 0 )
@@ -400,7 +400,7 @@ int pio_write_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid,
                         vdesc->request[reqn] = PIO_REQ_NULL;  /* keeps wait calls in sync */
                     vdesc->nreqs = reqn;
 
-		    /* Free memory. */
+                    /* Free memory. */
                     for (i = 0; i < rrcnt; i++)
                     {
                         free(startlist[i]);
@@ -638,8 +638,8 @@ int pio_write_darray_multi_nc(file_desc_t *file, int nvars, const int *vid, int 
                 if (regioncnt == maxregions - 1)
                 {
                     /*printf("%s %d %d %ld %ld\n",__FILE__,__LINE__,ios->io_rank,iodesc->llen, tdsize);
-                         ierr = ncmpi_put_varn_all(ncid, vid, iodesc->maxregions, startlist, countlist,
-                                           iobuf, iodesc->llen, iodesc->basetype);*/
+                      ierr = ncmpi_put_varn_all(ncid, vid, iodesc->maxregions, startlist, countlist,
+                      iobuf, iodesc->llen, iodesc->basetype);*/
 
                     for (int nv = 0; nv < nvars; nv++)
                     {
@@ -1046,13 +1046,13 @@ int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid, void *iobu
         PIO_Offset *countlist[iodesc->maxregions];
 
         /* buffer is incremented by byte and loffset is in terms of
-	   the iodessc->basetype so we need to multiply by the size of
-	   the basetype We can potentially allow for one iodesc to
-	   have multiple datatypes by allowing the calling program to
-	   change the basetype. */
+           the iodessc->basetype so we need to multiply by the size of
+           the basetype We can potentially allow for one iodesc to
+           have multiple datatypes by allowing the calling program to
+           change the basetype. */
         region = iodesc->firstregion;
 
-	/* Get the size of the MPI type. */
+        /* Get the size of the MPI type. */
         if ((mpierr = MPI_Type_size(iodesc->basetype, &tsize)))
             return check_mpi(file, mpierr, __FILE__, __LINE__);
 
@@ -1243,7 +1243,7 @@ int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc, int vid,
            the basetype. */
         region = iodesc->firstregion;
 
-	/* Get the size of the MPI type. */
+        /* Get the size of the MPI type. */
         if ((mpierr = MPI_Type_size(iodesc->basetype, &tsize)))
             return check_mpi(file, mpierr, __FILE__, __LINE__);
 
@@ -1440,7 +1440,7 @@ int flush_output_buffer(file_desc_t *file, bool force, PIO_Offset addsize)
     if ((ierr = ncmpi_inq_buffer_usage(file->fh, &usage)))
         return ierr;
     /*return pio_err(ios, file, PIO_EBADID, __FILE__, __LINE__);*/
-    
+
     /* If we are not forcing a flush, spread the usage to all IO
      * tasks. */
     if (!force && file->iosystem->io_comm != MPI_COMM_NULL)
@@ -1658,7 +1658,7 @@ void compute_maxaggregate_bytes(iosystem_desc_t ios, io_desc_t *iodesc)
         return;
 
     LOG((2, "compute_maxaggregate_bytes iodesc->maxiobuflen = %d iodesc->ndof = %d",
-	 iodesc->maxiobuflen, iodesc->ndof));
+         iodesc->maxiobuflen, iodesc->ndof));
 
     if (ios.ioproc && iodesc->maxiobuflen > 0)
         maxbytesoniotask = pio_buffer_size_limit / iodesc->maxiobuflen;
@@ -1668,7 +1668,7 @@ void compute_maxaggregate_bytes(iosystem_desc_t ios, io_desc_t *iodesc)
 
     maxbytes = min(maxbytesoniotask, maxbytesoncomputetask);
     LOG((2, "compute_maxaggregate_bytes maxbytesoniotask = %d maxbytesoncomputetask = %d",
-	 maxbytesoniotask, maxbytesoncomputetask));
+         maxbytesoniotask, maxbytesoncomputetask));
 
     if ((mpierr = MPI_Allreduce(MPI_IN_PLACE, &maxbytes, 1, MPI_INT, MPI_MIN,
                                 ios.union_comm)))

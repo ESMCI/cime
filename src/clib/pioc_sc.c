@@ -22,7 +22,7 @@ int blocksize = DEFAULT_BLOCKSIZE;
  *
  * @param a
  * @param b
- * @returns greates common divisor. 
+ * @returns greates common divisor.
  */
 int gcd(int a, int b )
 {
@@ -37,7 +37,7 @@ int gcd(int a, int b )
  *
  * @param a
  * @param b
- * @returns greates common divisor. 
+ * @returns greates common divisor.
  */
 long long lgcd(long long a, long long b)
 {

@@ -589,7 +589,7 @@ int att_put_handler(iosystem_desc_t *ios)
     /* Did it work? */
     if (ret)
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
-    
+
     LOG((2, "att_put_handler complete!"));
     return PIO_NOERR;
 }
@@ -653,7 +653,7 @@ int att_get_handler(iosystem_desc_t *ios)
 
     /* Call the function to read the attribute. */
     ret = PIOc_get_att_tc(ncid, varid, name, memtype, ip);
-    
+
     /* Free resources. */
     free(ip);
 
@@ -1081,7 +1081,7 @@ int inq_var_fill_handler(iosystem_desc_t *ios)
     /* If we need to, alocate storage for fill value. */
     if (fill_value_present)
         if (!(fill_value = malloc(type_size)))
-            return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);        
+            return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
     /* Set the non-NULL pointers. */
     if (fill_mode_present)
@@ -1095,7 +1095,7 @@ int inq_var_fill_handler(iosystem_desc_t *ios)
     /* Free fill value storage if we allocated some. */
     if (fill_value_present)
         free(fill_value);
-    
+
     return PIO_NOERR;
 }
 
@@ -1443,7 +1443,7 @@ int def_var_fill_handler(iosystem_desc_t *ios)
     if (fill_value_present)
     {
         if (!(fill_valuep = malloc(type_size)))
-            return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);            
+            return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
         if ((mpierr = MPI_Bcast(fill_valuep, type_size, MPI_CHAR, 0, ios->intercomm)))
         {
             free(fill_valuep);
@@ -1459,7 +1459,7 @@ int def_var_fill_handler(iosystem_desc_t *ios)
     /* Free memory allocated for the fill value. */
     if (fill_valuep)
         free(fill_valuep);
-    
+
     LOG((1, "def_var_fill_handler succeeded!"));
     return PIO_NOERR;
 }
@@ -1825,11 +1825,11 @@ int open_file_handler(iosystem_desc_t *ios)
     char filename[len + 1];
 
     if ((mpierr = MPI_Bcast(filename, len + 1, MPI_CHAR, 0, ios->intercomm)))
-        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);        
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&iotype, 1, MPI_INT, 0, ios->intercomm)))
-        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);        
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&mode, 1, MPI_INT, 0, ios->intercomm)))
-        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);        
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
 
     LOG((2, "open_file_handler got parameters len = %d filename = %s iotype = %d mode = %d",
          len, filename, iotype, mode));
