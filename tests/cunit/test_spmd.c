@@ -245,6 +245,25 @@ int test_CalcStartandCount()
     return 0;
 }
 
+/* Tesst some list stuff. */
+int test_lists()
+{
+    file_desc_t *fdesc;
+    
+    /* Test that bad input is correctly rejected. */
+    if (pio_delete_iodesc_from_list(42) != PIO_EBADID)
+        return ERR_WRONG;
+    if (pio_delete_iosystem_from_list(42) != PIO_EBADID)
+        return ERR_WRONG;
+    if (pio_delete_file_from_list(42) != PIO_EBADID)
+        return ERR_WRONG;
+    if (pio_get_file(42, NULL) != PIO_EINVAL)
+        return ERR_WRONG;
+    if (pio_get_file(42, &fdesc) != PIO_EBADID)
+        return ERR_WRONG;
+    return 0;
+}
+
 /* Run Tests for pio_spmd.c functions. */
 int main(int argc, char **argv)
 {
@@ -272,6 +291,10 @@ int main(int argc, char **argv)
         
         printf("%d running CalcStartandCount test code\n", my_rank);
         if ((ret = test_CalcStartandCount()))
+            return ret;
+
+        printf("%d running list tests\n", my_rank);
+        if ((ret = test_lists()))
             return ret;
 
     } /* endif my_rank < TARGET_NTASKS */
