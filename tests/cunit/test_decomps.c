@@ -145,6 +145,12 @@ int test_decomp1(int iosysid, int my_rank, MPI_Comm test_comm)
 
     free(map);
     free(gdims);
+
+    /* These should not work. */
+    if (PIOc_freedecomp(iosysid + 42, ioid) != PIO_EBADID)
+        return ERR_WRONG;
+    if (PIOc_freedecomp(iosysid, ioid + 42) != PIO_EBADID)
+        return ERR_WRONG;
         
     /* Free the PIO decomposition. */
     printf("%d Freeing PIO decomposition...\n", my_rank);
