@@ -16,6 +16,7 @@ module piolib_mod
         pio_noerr, pio_rearr_subset, pio_rearr_opt_t
   !--------------
   use pio_support, only : piodie, debug, debugio, debugasync, checkmpireturn
+  use pio_nf, only : pio_set_log_level
   !
 
 
@@ -331,6 +332,7 @@ contains
 !<
   subroutine setdebuglevel(level)
     integer(i4), intent(in) :: level
+    integer :: ierr
     if(level.eq.0) then
        debug=.false.
        debugio=.false.
@@ -359,7 +361,11 @@ contains
        debug=.true.
        debugio=.true.
        debugasync=.true.
-
+    end if
+    ierr = PIO_set_log_level(level)
+    if(ierr /= PIO_NOERR) then
+      ! This is not a fatal error
+      print *, __PIO_FILE__, __LINE__, "Setting log level failed, ierr =",ierr
     end if
   end subroutine setdebuglevel
 
