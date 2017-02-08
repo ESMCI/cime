@@ -438,6 +438,13 @@ int create_putget_file(int iosysid, int flavor, int *dim_len, int *varid, const 
     if ((ret = PIOc_createfile(iosysid, &ncid, &flavor, filename, PIO_CLOBBER)))
         return ret;
 
+    /* Confirm that NOFILL mode is set. */
+    int old_mode;
+    if ((ret = PIOc_set_fill(ncid, NC_NOFILL, &old_mode)))
+        return ret;
+    if (old_mode != NC_NOFILL)
+        return ERR_WRONG;
+
     /* Define netCDF dimensions and variable. */
     for (int d = 0; d < NDIM; d++)
         if ((ret = PIOc_def_dim(ncid, dim_name[d], (PIO_Offset)dim_len[d], &dimids[d])))
@@ -565,7 +572,7 @@ int test_fill(int iosysid, int num_flavors, int *flavor, int my_rank,
 
             /* Access to read it. */
             printf("about to try to open file %s\n", filename);
-            if ((ret = PIOc_openfile(iosysid, &ncid, &(flavor[fmt]), filename, PIO_NOWRITE)))
+            if ((ret = PIOc_openfile(iosysid, &ncid, &(flavor[fmt]), filename, PIO_WRITE)))
                 ERR(ret);
 
             /* Use the vara functions to read some data. */
