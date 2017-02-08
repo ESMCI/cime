@@ -32,17 +32,7 @@ int pio_next_ncid = 16;
 int PIOc_openfile(int iosysid, int *ncidp, int *iotype, const char *filename,
                   int mode)
 {
-    iosystem_desc_t *ios;  /* Pointer to io system information. */
-    int ret;               /* Return code from function calls. */
-
-    /* Get the IO system info from the id. */
-    if (!(ios = pio_get_iosystem_from_id(iosysid)))
-        return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
-
-    if ((ret = PIOc_openfile_retry(iosysid, ncidp, iotype, filename, mode, 1)))
-        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
-
-    return PIO_NOERR;
+    return PIOc_openfile_retry(iosysid, ncidp, iotype, filename, mode, 1);
 }
 
 /**
