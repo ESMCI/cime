@@ -155,7 +155,7 @@ int check_fill(int ncid, int *varid, int flavor, int default_fill)
 {
     int ret;
 
-    if (flavor == PIO_IOTYPE_NETCDF4C || flavor == PIO_IOTYPE_NETCDF4P)
+    if (flavor == PIO_IOTYPE_NETCDF4C || flavor == PIO_IOTYPE_NETCDF4P || flavor == PIO_IOTYPE_PNETCDF)
     {
         int fill_mode;
         char char_fill_value_in;
@@ -172,14 +172,17 @@ int check_fill(int ncid, int *varid, int flavor, int default_fill)
 
         if ((ret = PIOc_inq_var_fill(ncid, varid[0], &fill_mode, &byte_fill_value_in)))
             return ret;
-        if (fill_mode != NC_FILL || byte_fill_value_in != (default_fill ? NC_FILL_BYTE : byte_fill_value))
-            return ERR_WRONG;
+        printf("byte_fill_value_in = %d\n", byte_fill_value_in);
+        if (flavor != PIO_IOTYPE_PNETCDF)
+            if (fill_mode != NC_FILL || byte_fill_value_in != (default_fill ? NC_FILL_BYTE : byte_fill_value))
+                return ERR_WRONG;
         fill_mode = -99;
 
         if ((ret = PIOc_inq_var_fill(ncid, varid[1], &fill_mode, &char_fill_value_in)))
             return ret;
-        if (fill_mode != NC_FILL || char_fill_value_in != (default_fill ? NC_FILL_CHAR : char_fill_value))
-            return ERR_WRONG;
+        if (flavor != PIO_IOTYPE_PNETCDF)
+            if (fill_mode != NC_FILL || char_fill_value_in != (default_fill ? NC_FILL_CHAR : char_fill_value))
+                return ERR_WRONG;
         fill_mode = -99;
 
         if ((ret = PIOc_inq_var_fill(ncid, varid[2], &fill_mode, &short_fill_value_in)))
@@ -206,35 +209,38 @@ int check_fill(int ncid, int *varid, int flavor, int default_fill)
             return ERR_WRONG;
         fill_mode = -99;
 
-        if ((ret = PIOc_inq_var_fill(ncid, varid[6], &fill_mode, &ubyte_fill_value_in)))
-            return ret;
-        if (fill_mode != NC_FILL || ubyte_fill_value_in != (default_fill ? NC_FILL_UBYTE : ubyte_fill_value))
-            return ERR_WRONG;
-        fill_mode = -99;
-
-        if ((ret = PIOc_inq_var_fill(ncid, varid[7], &fill_mode, &ushort_fill_value_in)))
-            return ret;
-        if (fill_mode != NC_FILL || ushort_fill_value_in != (default_fill ? NC_FILL_USHORT : ushort_fill_value))
-            return ERR_WRONG;
-        fill_mode = -99;
-
-        if ((ret = PIOc_inq_var_fill(ncid, varid[8], &fill_mode, &uint_fill_value_in)))
-            return ret;
-        if (fill_mode != NC_FILL || uint_fill_value_in != (default_fill ? NC_FILL_UINT : uint_fill_value))
-            return ERR_WRONG;
-        fill_mode = -99;
-
-        if ((ret = PIOc_inq_var_fill(ncid, varid[9], &fill_mode, &int64_fill_value_in)))
-            return ret;
-        if (fill_mode != NC_FILL || int64_fill_value_in != (default_fill ? NC_FILL_INT64 : int64_fill_value))
-            return ERR_WRONG;
-        fill_mode = -99;
-
-        if ((ret = PIOc_inq_var_fill(ncid, varid[10], &fill_mode, &uint64_fill_value_in)))
-            return ret;
-        if (fill_mode != NC_FILL || uint64_fill_value_in != (default_fill ? NC_FILL_UINT64 : uint64_fill_value))
-            return ERR_WRONG;
-        fill_mode = -99;
+        if (flavor == PIO_IOTYPE_NETCDF4C || flavor == PIO_IOTYPE_NETCDF4P)
+        {
+            if ((ret = PIOc_inq_var_fill(ncid, varid[6], &fill_mode, &ubyte_fill_value_in)))
+                return ret;
+            if (fill_mode != NC_FILL || ubyte_fill_value_in != (default_fill ? NC_FILL_UBYTE : ubyte_fill_value))
+                return ERR_WRONG;
+            fill_mode = -99;
+            
+            if ((ret = PIOc_inq_var_fill(ncid, varid[7], &fill_mode, &ushort_fill_value_in)))
+                return ret;
+            if (fill_mode != NC_FILL || ushort_fill_value_in != (default_fill ? NC_FILL_USHORT : ushort_fill_value))
+                return ERR_WRONG;
+            fill_mode = -99;
+            
+            if ((ret = PIOc_inq_var_fill(ncid, varid[8], &fill_mode, &uint_fill_value_in)))
+                return ret;
+            if (fill_mode != NC_FILL || uint_fill_value_in != (default_fill ? NC_FILL_UINT : uint_fill_value))
+                return ERR_WRONG;
+            fill_mode = -99;
+            
+            if ((ret = PIOc_inq_var_fill(ncid, varid[9], &fill_mode, &int64_fill_value_in)))
+                return ret;
+            if (fill_mode != NC_FILL || int64_fill_value_in != (default_fill ? NC_FILL_INT64 : int64_fill_value))
+                return ERR_WRONG;
+            fill_mode = -99;
+            
+            if ((ret = PIOc_inq_var_fill(ncid, varid[10], &fill_mode, &uint64_fill_value_in)))
+                return ret;
+            if (fill_mode != NC_FILL || uint64_fill_value_in != (default_fill ? NC_FILL_UINT64 : uint64_fill_value))
+                return ERR_WRONG;
+            fill_mode = -99;
+        }
     }
 
     return 0;
@@ -363,10 +369,13 @@ int putget_read_vara_fill(int ncid, int *varid, PIO_Offset *start, PIO_Offset *c
     {
         for (y = 0; y < Y_DIM_LEN; y++)
         {
-            if (byte_array_in[x][y] != (default_fill ? NC_FILL_BYTE : byte_fill_value))
-                return ERR_WRONG;
-            if (text_array_in[x][y] != (default_fill ? NC_FILL_CHAR : char_fill_value))
-                return ERR_WRONG;
+            if (flavor != PIO_IOTYPE_PNETCDF)
+            {    
+                if (byte_array_in[x][y] != (default_fill ? NC_FILL_BYTE : byte_fill_value))
+                    return ERR_WRONG;
+                if (text_array_in[x][y] != (default_fill ? NC_FILL_CHAR : char_fill_value))
+                    return ERR_WRONG;
+            }
             if (short_array_in[x][y] != (default_fill ? NC_FILL_SHORT : short_fill_value))
                 return ERR_WRONG;
             if (int_array_in[x][y] != (default_fill ? NC_FILL_INT : int_fill_value))
@@ -438,10 +447,11 @@ int create_putget_file(int iosysid, int flavor, int *dim_len, int *varid, const 
     if ((ret = PIOc_createfile(iosysid, &ncid, &flavor, filename, PIO_CLOBBER)))
         return ret;
 
-    /* Confirm that NOFILL mode is set. */
+    /* Turn on fill mode. */
     int old_mode;
-    if ((ret = PIOc_set_fill(ncid, NC_NOFILL, &old_mode)))
+    if ((ret = PIOc_set_fill(ncid, NC_FILL, &old_mode)))
         return ret;
+    printf("old_mode = %d\n", old_mode);
     if (old_mode != NC_NOFILL)
         return ERR_WRONG;
 
@@ -467,7 +477,7 @@ int create_putget_file(int iosysid, int flavor, int *dim_len, int *varid, const 
     /* Maybe set fill values. */
     if (!default_fill)
     {
-        if (flavor == PIO_IOTYPE_NETCDF4C || flavor == PIO_IOTYPE_NETCDF4P)
+        if (flavor == PIO_IOTYPE_NETCDF4C || flavor == PIO_IOTYPE_NETCDF4P || flavor == PIO_IOTYPE_PNETCDF)
         {
             if ((ret = PIOc_def_var_fill(ncid, varid[0], NC_FILL, &byte_fill_value)))
                 return ret;
@@ -580,7 +590,7 @@ int test_fill(int iosysid, int num_flavors, int *flavor, int my_rank,
                 return ret;
 
             /* Use the vara functions to read some data which are just fill values. */
-            if (flavor[fmt] == PIO_IOTYPE_NETCDF4C || flavor[fmt] == PIO_IOTYPE_NETCDF4P)
+            if (flavor[fmt] == PIO_IOTYPE_NETCDF4C || flavor[fmt] == PIO_IOTYPE_NETCDF4P || flavor[fmt] == PIO_IOTYPE_PNETCDF)
             {
                 start[0] = 0;
                 if ((ret = putget_read_vara_fill(ncid, varid, start, count, default_fill, flavor[fmt])))
@@ -609,9 +619,8 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
 
     /* Test read/write stuff. */
     printf("%d Testing fill. async = %d\n", my_rank, async);
-    if (!async)
-        if ((ret = test_fill(iosysid, num_flavors, flavor, my_rank, test_comm)))
-            ERR(ret);
+    if ((ret = test_fill(iosysid, num_flavors, flavor, my_rank, test_comm)))
+        ERR(ret);
 
     return PIO_NOERR;
 }
