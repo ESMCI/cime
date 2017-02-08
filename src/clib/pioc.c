@@ -311,7 +311,7 @@ int PIOc_InitDecomp(int iosysid, int basetype, int ndims, const int *dims, int m
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     io_desc_t *iodesc;     /* The IO description. */
-    int mpierr;            /* Return code from MPI calls. */
+    int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function calls. */
     int ierr;              /* Return code. */
 
     LOG((1, "PIOc_InitDecomp iosysid = %d basetype = %d ndims = %d maplen = %d",
@@ -329,6 +329,57 @@ int PIOc_InitDecomp(int iosysid, int basetype, int ndims, const int *dims, int m
     for (int i = 0; i < ndims; i++)
         if (dims[i] <= 0)
             return pio_err(ios, NULL, PIO_EINVAL, __FILE__, __LINE__);
+
+    /* If async is in use, and this is not an IO task, bcast the parameters. */
+    if (ios->async_interface)
+    {
+        if (!ios->ioproc)
+        {
+            int msg = PIO_MSG_INITDECOMP_DOF; /* Message for async notification. */
+            char rearranger_present = rearranger ? true : false;
+            char iostart_present = iostart ? true : false;
+            char iocount_present = iocount ? true : false;
+
+            if (ios->compmaster == MPI_ROOT)
+                mpierr = MPI_Send(&msg, 1, MPI_INT, ios->ioroot, 1, ios->union_comm);
+
+            if (!mpierr)
+                mpierr = MPI_Bcast(&iosysid, 1, MPI_INT, ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast(&basetype, 1, MPI_INT, ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast(&ndims, 1, MPI_INT, ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast((int *)dims, ndims, MPI_INT, ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast(&maplen, 1, MPI_INT, ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast((PIO_Offset *)compmap, maplen, MPI_OFFSET, ios->compmaster, ios->intercomm);
+
+            if (!mpierr)
+                mpierr = MPI_Bcast(&rearranger_present, 1, MPI_CHAR, ios->compmaster, ios->intercomm);
+            if (rearranger_present && !mpierr)
+                mpierr = MPI_Bcast((int *)rearranger, 1, MPI_INT, ios->compmaster, ios->intercomm);
+
+            if (!mpierr)
+                mpierr = MPI_Bcast(&iostart_present, 1, MPI_CHAR, ios->compmaster, ios->intercomm);
+            if (iostart_present && !mpierr)
+                mpierr = MPI_Bcast((PIO_Offset *)iostart, ndims, MPI_OFFSET, ios->compmaster, ios->intercomm);
+
+            if (!mpierr)
+                mpierr = MPI_Bcast(&iocount_present, 1, MPI_CHAR, ios->compmaster, ios->intercomm);
+            if (iocount_present && !mpierr)
+                mpierr = MPI_Bcast((PIO_Offset *)iocount, ndims, MPI_OFFSET, ios->compmaster, ios->intercomm);
+            LOG((2, "PIOc_InitDecomp iosysid = %d basetype = %d ndims = %d maplen = %d rearranger_present = %d iostart_present = %d "
+                 "iocount_present = %d ", iosysid, basetype, ndims, maplen, rearranger_present, iostart_present, iocount_present));
+        }
+
+        /* Handle MPI errors. */
+        if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
+            return check_mpi(NULL, mpierr2, __FILE__, __LINE__);
+        if (mpierr)
+            return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+    }
 
     /* Allocate space for the iodesc info. */
     if (!(iodesc = malloc_iodesc(ios, basetype, ndims)))

@@ -1407,67 +1407,77 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
 {
     int ioid;
     int my_test_size;
+    char filename[NC_MAX_NAME + 1];
     int ret; /* Return code. */
 
     if ((ret = MPI_Comm_size(test_comm, &my_test_size)))
         MPIERR(ret);
 
-    /* Check iotypes. */
-    printf("%d Testing iotypes. async = %d\n", my_rank, async);
-    if ((ret = test_iotypes(my_rank)))
-        ERR(ret);
+    /* This will be our file name for writing out decompositions. */
+    sprintf(filename, "decomp_%d.txt", my_rank);
 
-    /* Test file deletes. */
-    printf("%d Testing deletefile. async = %d\n", my_rank, async);
-    if ((ret = test_deletefile(iosysid, num_flavors, flavor, my_rank)))
+    /* /\* Check iotypes. *\/ */
+    /* printf("%d Testing iotypes. async = %d\n", my_rank, async); */
+    /* if ((ret = test_iotypes(my_rank))) */
+    /*     ERR(ret); */
+
+    /* /\* Test file deletes. *\/ */
+    /* printf("%d Testing deletefile. async = %d\n", my_rank, async); */
+    /* if ((ret = test_deletefile(iosysid, num_flavors, flavor, my_rank))) */
+    /*     return ret; */
+
+    /* /\* Test file stuff. *\/ */
+    /* printf("%d Testing file creation. async = %d\n", my_rank, async); */
+    /* if ((ret = test_files(iosysid, num_flavors, flavor, my_rank))) */
+    /*     return ret; */
+
+    /* /\* Test some misc stuff. *\/ */
+    /* if ((ret = test_malloc_iodesc(iosysid, my_rank))) */
+    /*     return ret; */
+
+    /* Decompose the data over the tasks. */
+    if ((ret = create_decomposition(my_test_size, my_rank, iosysid, DIM_LEN, &ioid)))
         return ret;
 
-    /* Test file stuff. */
-    printf("%d Testing file creation. async = %d\n", my_rank, async);
-    if ((ret = test_files(iosysid, num_flavors, flavor, my_rank)))
-        return ret;
+    /* Free the PIO decomposition. */
+    /* if ((ret = PIOc_freedecomp(iosysid, ioid))) */
+    /*     ERR(ret); */
 
-    /* Test some misc stuff. */
-    if ((ret = test_malloc_iodesc(iosysid, my_rank)))
-        return ret;
+    /* if (!async) */
+    /* { */
+    /*     printf("%d Testing darray. async = %d\n", my_rank, async); */
+        
+    /*     /\* Decompose the data over the tasks. *\/ */
+    /*     if ((ret = create_decomposition(my_test_size, my_rank, iosysid, DIM_LEN, &ioid))) */
+    /*         return ret; */
 
-    if (!async)
-    {
-        char filename[NC_MAX_NAME + 1];
-        sprintf(filename, "decomp_%d.txt", my_rank);
+    /*     printf("%d Calling write_decomp. async = %d\n", my_rank, async); */
+    /*     if ((ret = PIOc_write_decomp(filename, iosysid, ioid, test_comm))) */
+    /*         return ret; */
+    /*     printf("%d Called write_decomp. async = %d\n", my_rank, async); */
 
-        printf("%d Testing darray. async = %d\n", my_rank, async);
-        /* Decompose the data over the tasks. */
-        if ((ret = create_decomposition(my_test_size, my_rank, iosysid, DIM_LEN, &ioid)))
-            return ret;
+    /*     if ((ret = test_darray(iosysid, ioid, num_flavors, flavor, my_rank))) */
+    /*         return ret; */
 
-        printf("%d Calling write_decomp. async = %d\n", my_rank, async);
-        if ((ret = PIOc_write_decomp(filename, iosysid, ioid, test_comm)))
-            return ret;
-        printf("%d Called write_decomp. async = %d\n", my_rank, async);
+    /*     /\* Free the PIO decomposition. *\/ */
+    /*     if ((ret = PIOc_freedecomp(iosysid, ioid))) */
+    /*         ERR(ret); */
+    /* } */
 
-        if ((ret = test_darray(iosysid, ioid, num_flavors, flavor, my_rank)))
-            return ret;
+    /* /\* Check the error string function. *\/ */
+    /* printf("%d Testing streror. async = %d\n", my_rank, async); */
+    /* if ((ret = check_strerror(my_rank))) */
+    /*     ERR(ret); */
 
-        /* Free the PIO decomposition. */
-        if ((ret = PIOc_freedecomp(iosysid, ioid)))
-            ERR(ret);
-    }
+    /* /\* Test name stuff. *\/ */
+    /* printf("%d Testing names. async = %d\n", my_rank, async); */
+    /* if ((ret = test_names(iosysid, num_flavors, flavor, my_rank, test_comm))) */
+    /*     return ret; */
 
-    /* Check the error string function. */
-    printf("%d Testing streror. async = %d\n", my_rank, async);
-    if ((ret = check_strerror(my_rank)))
-        ERR(ret);
-
-    /* Test name stuff. */
-    printf("%d Testing names. async = %d\n", my_rank, async);
-    if ((ret = test_names(iosysid, num_flavors, flavor, my_rank, test_comm)))
-        return ret;
-
-    /* Test netCDF-4 functions. */
-    printf("%d Testing nc4 functions. async = %d\n", my_rank, async);
-    if ((ret = test_nc4(iosysid, num_flavors, flavor, my_rank)))
-        return ret;
+    /* /\* Test netCDF-4 functions. *\/ */
+    /* printf("%d Testing nc4 functions. async = %d\n", my_rank, async); */
+    /* if ((ret = test_nc4(iosysid, num_flavors, flavor, my_rank))) */
+    /*     return ret; */
 
     return PIO_NOERR;
 }
