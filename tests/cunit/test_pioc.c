@@ -464,6 +464,10 @@ int check_error_strings(int my_rank, int num_tries, int *errcode,
  */
 int test_iotypes(int my_rank)
 {
+    /* This is never present. */
+    if (PIOc_iotype_available(1000))
+        return ERR_WRONG;
+    
     /* NetCDF is always present. */
     if (!PIOc_iotype_available(PIO_IOTYPE_NETCDF))
         return ERR_WRONG;
