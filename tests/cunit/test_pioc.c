@@ -852,7 +852,7 @@ int test_names(int iosysid, int num_flavors, int *flavor, int my_rank,
         printf("rank: %d Creating sample file %s with format %d...\n",
                my_rank, filename, flavor[fmt]);
         if ((ret = PIOc_createfile(iosysid, &ncid, &(flavor[fmt]), filename, PIO_CLOBBER)))
-            ERR(ret);
+            return ret;
 
         /* Define netCDF dimensions and variable. */
         printf("rank: %d Defining netCDF metadata...\n", my_rank);
@@ -861,8 +861,18 @@ int test_names(int iosysid, int num_flavors, int *flavor, int my_rank,
             printf("rank: %d Defining netCDF dimension %s, length %d\n", my_rank,
                    dim_name[d], dim_len[d]);
             if ((ret = PIOc_def_dim(ncid, dim_name[d], (PIO_Offset)dim_len[d], &dimids[d])))
-                ERR(ret);
+                return ret;
         }
+
+        /* These should not work. */
+        if (PIOc_setframe(ncid + 42, 0, 0) != PIO_EBADID)
+            return ERR_WRONG;
+        if (PIOc_setframe(ncid, -1, 0) != PIO_EINVAL)
+            return ERR_WRONG;
+        if (PIOc_advanceframe(ncid + 42, 0) != PIO_EBADID)
+            return ERR_WRONG;
+        if (PIOc_advanceframe(ncid, -1) != PIO_EINVAL)
+            return ERR_WRONG;
 
         /* Check the dimension names. */
         if ((ret = check_dim_names(my_rank, ncid, test_comm)))
