@@ -18,6 +18,9 @@ int pio_next_ncid = 16;
  * If the open fails, try again as netCDF serial before giving
  * up. Input parameters are read on comp task 0 and ignored elsewhere.
  *
+ * Note that the file is opened with default fill mode, NOFILL for
+ * pnetcdf, and FILL for netCDF classic and netCDF-4 files.
+ *
  * @param iosysid : A defined pio system descriptor (input)
  * @param ncidp : A pio file descriptor (output)
  * @param iotype : A pio output format (input)
@@ -83,7 +86,8 @@ int PIOc_open(int iosysid, const char *path, int mode, int *ncidp)
 
 /**
  * Create a new file using pio. Input parameters are read on comp task
- * 0 and ignored elsewhere. NOFILL will be turned on in all cases.
+ * 0 and ignored elsewhere. NOFILL mode will be turned on in all
+ * cases.
  *
  * @param iosysid A defined pio system ID, obtained from
  * PIOc_InitIntercomm() or PIOc_InitAsync().
@@ -97,7 +101,8 @@ int PIOc_open(int iosysid, const char *path, int mode, int *ncidp)
  * @returns 0 for success, error code otherwise.
  * @ingroup PIO_createfile
  */
-int PIOc_createfile(int iosysid, int *ncidp, int *iotype, const char *filename, int mode)
+int PIOc_createfile(int iosysid, int *ncidp, int *iotype, const char *filename,
+                    int mode)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Pointer to file information. */
