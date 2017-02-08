@@ -1360,6 +1360,8 @@ int test_malloc_iodesc(int iosysid, int my_rank)
     if (iodesc->ndims != 1)
         return ERR_WRONG;
     ioid = pio_add_to_iodesc_list(iodesc);
+    if (iodesc->firstregion)
+        free_region_list(iodesc->firstregion);
     if ((ret = pio_delete_iodesc_from_list(ioid)))
         return ret;
     
@@ -1371,6 +1373,8 @@ int test_malloc_iodesc(int iosysid, int my_rank)
     if (iodesc->ndims != 1)
         return ERR_WRONG;
     ioid = pio_add_to_iodesc_list(iodesc);
+    if (iodesc->firstregion)
+        free_region_list(iodesc->firstregion);
     if ((ret = pio_delete_iodesc_from_list(ioid)))
         return ret;
     
@@ -1382,6 +1386,8 @@ int test_malloc_iodesc(int iosysid, int my_rank)
     if (iodesc->ndims != 1)
         return ERR_WRONG;
     ioid = pio_add_to_iodesc_list(iodesc);
+    if (iodesc->firstregion)
+        free_region_list(iodesc->firstregion);
     if ((ret = pio_delete_iodesc_from_list(ioid)))
         return ret;
     
