@@ -452,6 +452,8 @@ int create_putget_file(int iosysid, int flavor, int *dim_len, int *varid, const 
     if ((ret = PIOc_set_fill(ncid, NC_FILL, &old_mode)))
         return ret;
     printf("old_mode = %d\n", old_mode);
+    if (old_mode != NC_NOFILL)
+        return ERR_WRONG;
 
     /* Define netCDF dimensions and variable. */
     for (int d = 0; d < NDIM; d++)
@@ -580,7 +582,7 @@ int test_fill(int iosysid, int num_flavors, int *flavor, int my_rank,
 
             /* Access to read it. */
             printf("about to try to open file %s\n", filename);
-            if ((ret = PIOc_openfile(iosysid, &ncid, &(flavor[fmt]), filename, PIO_NOWRITE)))
+            if ((ret = PIOc_openfile(iosysid, &ncid, &(flavor[fmt]), filename, PIO_WRITE)))
                 ERR(ret);
 
             /* Use the vara functions to read some data. */
