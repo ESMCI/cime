@@ -98,9 +98,6 @@ typedef struct io_region
 } io_region;
 
 /**
- * Note: 
- */
-/**
  * Rearranger comm type. The rearranger option values must match the
  * definitions in the fortran interface.
  */
