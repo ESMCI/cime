@@ -109,6 +109,9 @@ extern "C" {
     void pio_add_to_file_list(file_desc_t *file);
     void pio_push_request(file_desc_t *file, int request);
 
+    /* Create a file (internal function). */
+    int PIOc_createfile_int(int iosysid, int *ncidp, int *iotype, const char *filename, int mode);
+
     /* Open a file with optional retry as netCDF-classic if first
      * iotype does not work. */
     int PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype,

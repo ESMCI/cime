@@ -18,6 +18,9 @@ int pio_next_ncid = 16;
  * If the open fails, try again as netCDF serial before giving
  * up. Input parameters are read on comp task 0 and ignored elsewhere.
  *
+ * Note that the file is opened with default fill mode, NOFILL for
+ * pnetcdf, and FILL for netCDF classic and netCDF-4 files.
+ *
  * @param iosysid : A defined pio system descriptor (input)
  * @param ncidp : A pio file descriptor (output)
  * @param iotype : A pio output format (input)
@@ -73,7 +76,8 @@ int PIOc_open(int iosysid, const char *path, int mode, int *ncidp)
 
 /**
  * Create a new file using pio. Input parameters are read on comp task
- * 0 and ignored elsewhere.
+ * 0 and ignored elsewhere. NOFILL mode will be turned on in all
+ * cases.
  *
  * @param iosysid A defined pio system ID, obtained from
  * PIOc_InitIntercomm() or PIOc_InitAsync().
@@ -87,166 +91,40 @@ int PIOc_open(int iosysid, const char *path, int mode, int *ncidp)
  * @returns 0 for success, error code otherwise.
  * @ingroup PIO_createfile
  */
-int PIOc_createfile(int iosysid, int *ncidp, int *iotype, const char *filename, int mode)
+int PIOc_createfile(int iosysid, int *ncidp, int *iotype, const char *filename,
+                    int mode)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Pointer to file information. */
-    int ierr;              /* Return code from function calls. */
-    int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
+    int ret;               /* Return code from function calls. */
 
-    /* Get the IO system info from the iosysid. */
+    /* Get the IO system info from the id. */
     if (!(ios = pio_get_iosystem_from_id(iosysid)))
         return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
 
-    /* User must provide valid input for these parameters. */
-    if (!ncidp || !iotype || !filename || strlen(filename) > NC_MAX_NAME)
-        return pio_err(ios, NULL, PIO_EINVAL, __FILE__, __LINE__);
+    /* Create the file. */
+    if ((ret = PIOc_createfile_int(iosysid, ncidp, iotype, filename, mode)))
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
-    /* A valid iotype must be specified. */
-    if (!iotype_is_valid(*iotype))
-        return pio_err(ios, NULL, PIO_EINVAL, __FILE__, __LINE__);
-
-    LOG((1, "PIOc_createfile iosysid = %d iotype = %d filename = %s mode = %d",
-         iosysid, *iotype, filename, mode));
-
-    /* Allocate space for the file info. */
-    if (!(file = calloc(sizeof(file_desc_t), 1)))
-        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
-
-    /* Fill in some file values. */
-    file->fh = -1;
-    file->iosystem = ios;
-    file->iotype = *iotype;
-    file->buffer.ioid = -1;
-    for (int i = 0; i < PIO_MAX_VARS; i++)
+    /* Run this on all tasks if async is not in use, but only on
+     * non-IO tasks if async is in use. */
+    if (!ios->async_interface || !ios->ioproc)
     {
-        file->varlist[i].record = -1;
-        file->varlist[i].ndims = -1;
-    }
-    file->mode = mode;
-
-    /* Set to true if this task should participate in IO (only true for
-     * one task with netcdf serial files. */
-    if (file->iotype == PIO_IOTYPE_NETCDF4P || file->iotype == PIO_IOTYPE_PNETCDF ||
-        ios->io_rank == 0)
-        file->do_io = 1;
-
-    LOG((2, "file->do_io = %d ios->async_interface = %d", file->do_io, ios->async_interface));
-
-    /* If async is in use, and this is not an IO task, bcast the
-     * parameters. */
-    if (ios->async_interface)
-    {
-        int msg = PIO_MSG_CREATE_FILE;
-        size_t len = strlen(filename);
-
-        if (!ios->ioproc)
-        {
-            /* Send the message to the message handler. */
-            if (ios->compmaster == MPI_ROOT)
-                mpierr = MPI_Send(&msg, 1, MPI_INT, ios->ioroot, 1, ios->union_comm);
-
-            /* Send the parameters of the function call. */
-            if (!mpierr)
-                mpierr = MPI_Bcast(&len, 1, MPI_INT, ios->compmaster, ios->intercomm);
-            if (!mpierr)
-                mpierr = MPI_Bcast((void *)filename, len + 1, MPI_CHAR, ios->compmaster, ios->intercomm);
-            if (!mpierr)
-                mpierr = MPI_Bcast(&file->iotype, 1, MPI_INT, ios->compmaster, ios->intercomm);
-            if (!mpierr)
-                mpierr = MPI_Bcast(&file->mode, 1, MPI_INT, ios->compmaster, ios->intercomm);
-            LOG((2, "len = %d filename = %s iotype = %d mode = %d", len, filename,
-                 file->iotype, file->mode));
-        }
-
-        /* Handle MPI errors. */
-        LOG((2, "handling mpi errors mpierr = %d", mpierr));
-        if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
-            return check_mpi(file, mpierr2, __FILE__, __LINE__);
-        if (mpierr)
-            return check_mpi(file, mpierr, __FILE__, __LINE__);
+        /* Set the fill mode to NOFILL. */
+        if ((ret = PIOc_set_fill(*ncidp, NC_NOFILL, NULL)))
+            return ret;
     }
 
-    /* If this task is in the IO component, do the IO. */
-    if (ios->ioproc)
-    {
-        switch (file->iotype)
-        {
-#ifdef _NETCDF
-#ifdef _NETCDF4
-        case PIO_IOTYPE_NETCDF4P:
-            file->mode = file->mode |  NC_MPIIO | NC_NETCDF4;
-            LOG((2, "Calling nc_create_par io_comm = %d mode = %d fh = %d",
-                 ios->io_comm, file->mode, file->fh));
-            ierr = nc_create_par(filename, file->mode, ios->io_comm, ios->info, &file->fh);
-            LOG((2, "nc_create_par returned %d file->fh = %d", ierr, file->fh));
-            break;
-        case PIO_IOTYPE_NETCDF4C:
-            file->mode = file->mode | NC_NETCDF4;
-#endif
-        case PIO_IOTYPE_NETCDF:
-            if (!ios->io_rank)
-            {
-                LOG((2, "Calling nc_create mode = %d", file->mode));
-                ierr = nc_create(filename, file->mode, &file->fh);
-            }
-            break;
-#endif
-#ifdef _PNETCDF
-        case PIO_IOTYPE_PNETCDF:
-            LOG((2, "Calling ncmpi_create mode = %d", file->mode));
-            ierr = ncmpi_create(ios->io_comm, filename, file->mode, ios->info, &file->fh);
-            if (!ierr)
-                ierr = ncmpi_buffer_attach(file->fh, pio_buffer_size_limit);
-            break;
-#endif
-        }
-    }
-
-    /* Broadcast and check the return code. */
-    if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
-        return check_mpi(file, mpierr, __FILE__, __LINE__);
-
-    /* If there was an error, free the memory we allocated and handle error. */
-    if (ierr)
-    {
-        free(file);
-        return check_netcdf2(ios, NULL, ierr, __FILE__, __LINE__);
-    }
-
-    /* Broadcast mode to all tasks. */
-    if ((mpierr = MPI_Bcast(&file->mode, 1, MPI_INT, ios->ioroot, ios->union_comm)))
-        return check_mpi(file, mpierr, __FILE__, __LINE__);
-
-    /* This flag is implied by netcdf create functions but we need
-       to know if its set. */
-    file->mode = file->mode | PIO_WRITE;
-
-    /* Assign the PIO ncid, necessary because files may be opened
-     * on mutilple iosystems, causing the underlying library to
-     * reuse ncids. Hilarious confusion ensues. */
-    file->pio_ncid = pio_next_ncid++;
-    LOG((2, "file->fh = %d file->pio_ncid = %d", file->fh, file->pio_ncid));
-
-    /* Return the ncid to the caller. */
-    *ncidp = file->pio_ncid;
-
-    /* Add the struct with this files info to the global list of
-     * open files. */
-    pio_add_to_file_list(file);
-
-    LOG((2, "Created file %s file->fh = %d file->pio_ncid = %d", filename,
-         file->fh, file->pio_ncid));
-
-    return ierr;
+    return ret;
 }
 
 /**
- * Open a new file using pio. Input parameters are read on comp task
- * 0 and ignored elsewhere.
+ * Open a new file using pio. The default fill mode will be used (FILL
+ * for netCDF and netCDF-4 formats, NOFILL for pnetcdf.) Input
+ * parameters are read on comp task 0 and ignored elsewhere.
  *
  * @param iosysid : A defined pio system descriptor (input)
- * @param cmode : The netcdf mode for the create operation
+ * @param cmode : The netcdf mode for the create operation. 
  * @param filename : The filename to open
  * @param ncidp : A pio file descriptor (output)
  * @return 0 for success, error code otherwise.
@@ -272,7 +150,7 @@ int PIOc_create(int iosysid, const char *filename, int cmode, int *ncidp)
             iotype = PIO_IOTYPE_NETCDF;
     }
 
-    return PIOc_createfile(iosysid, ncidp, &iotype, filename, cmode);
+    return PIOc_createfile_int(iosysid, ncidp, &iotype, filename, cmode);
 }
 
 /**
