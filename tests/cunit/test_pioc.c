@@ -527,6 +527,13 @@ int check_strerror_netcdf(int my_rank)
     if (check_netcdf2(NULL, NULL, 0, __FILE__, __LINE__))
         return ERR_WRONG;
 
+    /* When called with other error messages, these functions should
+     * return PIO_EIO. */
+    if (check_mpi(NULL, 100, __FILE__, __LINE__) != PIO_EIO)
+        return ERR_WRONG;
+    if (check_mpi(NULL, 10000, __FILE__, __LINE__) != PIO_EIO)
+        return ERR_WRONG;
+
     if (!my_rank)
         printf("check_strerror_netcdf SUCCEEDED!\n");
 
