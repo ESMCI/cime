@@ -1379,31 +1379,39 @@ int iotype_is_valid(int iotype)
 }
 
 /**
- * Internal function to compare rearranger flow control options
- * @param opt pointer to rearranger flow control options to compare
- * @param exp_opt pointer to rearranger flow control options with expected values
- * @return true if values in opt == values in exp_opt, false otherwise
+ * Internal function to compare rearranger flow control options.
+ *
+ * @param opt pointer to rearranger flow control options to compare.
+ * @param exp_opt pointer to rearranger flow control options with
+ * expected values.
+ * @return true if values in opt == values in exp_opt, false
+ * otherwise.
  */
-static bool cmp_rearr_comm_fc_opts(const rearr_comm_fc_opt_t *opt,
-                                   const rearr_comm_fc_opt_t *exp_opt)
+bool cmp_rearr_comm_fc_opts(const rearr_comm_fc_opt_t *opt,
+                            const rearr_comm_fc_opt_t *exp_opt)
 {
     bool is_same = true;
-    assert((opt != NULL) && (exp_opt != NULL));
-    if(opt->enable_hs != exp_opt->enable_hs)
+
+    assert(opt && exp_opt);
+
+    if (opt->enable_hs != exp_opt->enable_hs)
     {
-        LOG((1, "Warning rearranger enable_hs = %s, expected = %s", ((opt->enable_hs)? "TRUE" : "FALSE"), ((exp_opt->enable_hs)? "TRUE" : "FALSE")));
+        LOG((1, "Warning rearranger enable_hs = %s, expected = %s",
+             opt->enable_hs ? "TRUE" : "FALSE", exp_opt->enable_hs ? "TRUE" : "FALSE"));
         is_same = false;
     }
 
-    if(opt->enable_isend != exp_opt->enable_isend)
+    if (opt->enable_isend != exp_opt->enable_isend)
     {
-        LOG((1, "Warning rearranger enable_isend = %s, expected = %s", ((opt->enable_isend)? "TRUE" : "FALSE"), ((exp_opt->enable_isend)? "TRUE" : "FALSE")));
+        LOG((1, "Warning rearranger enable_isend = %s, expected = %s",
+             opt->enable_isend ? "TRUE" : "FALSE", exp_opt->enable_isend ? "TRUE" : "FALSE"));
         is_same = false;
     }
 
-    if(opt->max_pend_req != exp_opt->max_pend_req)
+    if (opt->max_pend_req != exp_opt->max_pend_req)
     {
-        LOG((1, "Warning rearranger max_pend_req = %d, expected = %s", opt->max_pend_req, exp_opt->max_pend_req));
+        LOG((1, "Warning rearranger max_pend_req = %d, expected = %d",
+             opt->max_pend_req, exp_opt->max_pend_req));
         is_same = false;
     }
 
@@ -1411,31 +1419,38 @@ static bool cmp_rearr_comm_fc_opts(const rearr_comm_fc_opt_t *opt,
 }
 
 /**
- * Internal function to compare rearranger options
+ * Internal function to compare rearranger options.
+ *
  * @param rearr_opts pointer to rearranger options to compare
- * @param exp_rearr_opts pointer to rearranger options with the expected value
- * @return true if values in rearr_opts == values in exp_rearr_opts false otherwise
+ * @param exp_rearr_opts pointer to rearranger options with the
+ * expected value
+ * @return true if values in rearr_opts == values in exp_rearr_opts
+ * false otherwise
  */
-
-static bool cmp_rearr_opts(const rearr_opt_t *rearr_opts,
-                           const rearr_opt_t *exp_rearr_opts)
+bool cmp_rearr_opts(const rearr_opt_t *rearr_opts, const rearr_opt_t *exp_rearr_opts)
 {
     bool is_same = true;
-    assert((rearr_opts != NULL) && (exp_rearr_opts != NULL));
-    if(rearr_opts->comm_type != exp_rearr_opts->comm_type)
+
+    assert(rearr_opts && exp_rearr_opts);
+
+    if (rearr_opts->comm_type != exp_rearr_opts->comm_type)
     {
-        LOG((1, "Warning rearranger comm_type = %d, expected = %d. ", rearr_opts->comm_type, exp_rearr_opts->comm_type));
+        LOG((1, "Warning rearranger comm_type = %d, expected = %d. ", rearr_opts->comm_type,
+             exp_rearr_opts->comm_type));
         is_same = false;
     }
 
-    if(rearr_opts->fcd != exp_rearr_opts->fcd)
+    if (rearr_opts->fcd != exp_rearr_opts->fcd)
     {
-        LOG((1, "Warning rearranger fcd = %d, expected = %d. ", rearr_opts->fcd, exp_rearr_opts->fcd));
+        LOG((1, "Warning rearranger fcd = %d, expected = %d. ", rearr_opts->fcd,
+             exp_rearr_opts->fcd));
         is_same = false;
     }
 
-    is_same = is_same && cmp_rearr_comm_fc_opts(&(rearr_opts->comm_fc_opts_comp2io), &(exp_rearr_opts->comm_fc_opts_comp2io));
-    is_same = is_same && cmp_rearr_comm_fc_opts(&(rearr_opts->comm_fc_opts_io2comp), &(exp_rearr_opts->comm_fc_opts_io2comp));
+    is_same = is_same && cmp_rearr_comm_fc_opts(&(rearr_opts->comm_fc_opts_comp2io),
+                                                &(exp_rearr_opts->comm_fc_opts_comp2io));
+    is_same = is_same && cmp_rearr_comm_fc_opts(&(rearr_opts->comm_fc_opts_io2comp),
+                                                &(exp_rearr_opts->comm_fc_opts_io2comp));
 
     return is_same;
 }
@@ -1446,8 +1461,7 @@ static bool cmp_rearr_opts(const rearr_opt_t *rearr_opts,
  *
  * @param ios pointer to iosystem descriptor
  */
-
-static void check_and_reset_rearr_opts(iosystem_desc_t *ios)
+void check_and_reset_rearr_opts(iosystem_desc_t *ios)
 {
     /* Disable handshake/isend and set max_pend_req to unlimited */
     const rearr_comm_fc_opt_t def_comm_nofc_opts =
@@ -1461,45 +1475,47 @@ static void check_and_reset_rearr_opts(iosystem_desc_t *ios)
         def_coll_comm_fc_opts
     };
 
-    assert(ios != NULL);
+    assert(ios);
+    
     /* Reset to defaults, if needed (user did not set it correctly) */
-    if(ios->rearr_opts.comm_type == PIO_REARR_COMM_COLL)
+    if (ios->rearr_opts.comm_type == PIO_REARR_COMM_COLL)
     {
-        /* Compare and log the user and default rearr opts for coll */
+        /* Compare and log the user and default rearr opts for coll. */
         cmp_rearr_opts(&(ios->rearr_opts), &def_coll_rearr_opts);
-        /* Hard reset flow control options */
+        /* Hard reset flow control options. */
         ios->rearr_opts = def_coll_rearr_opts;
     }
-    else if(ios->rearr_opts.comm_type == PIO_REARR_COMM_P2P)
+    else if (ios->rearr_opts.comm_type == PIO_REARR_COMM_P2P)
     {
-        if(ios->rearr_opts.fcd == PIO_REARR_COMM_FC_2D_DISABLE)
+        if (ios->rearr_opts.fcd == PIO_REARR_COMM_FC_2D_DISABLE)
         {
-            /* Compare and log user and default opts */
+            /* Compare and log user and default opts. */
             cmp_rearr_comm_fc_opts(&(ios->rearr_opts.comm_fc_opts_comp2io),
                                    &def_comm_nofc_opts);
             cmp_rearr_comm_fc_opts(&(ios->rearr_opts.comm_fc_opts_io2comp),
                                    &def_comm_nofc_opts);
-            /* Hard reset flow control opts to defaults */
+            /* Hard reset flow control opts to defaults. */
             ios->rearr_opts.comm_fc_opts_comp2io = def_comm_nofc_opts;
             ios->rearr_opts.comm_fc_opts_io2comp = def_comm_nofc_opts;
         }
-        else if(ios->rearr_opts.fcd == PIO_REARR_COMM_FC_1D_COMP2IO)
+        else if (ios->rearr_opts.fcd == PIO_REARR_COMM_FC_1D_COMP2IO)
         {
-            /* Compare and log user and default opts */
+            /* Compare and log user and default opts. */
             cmp_rearr_comm_fc_opts(&(ios->rearr_opts.comm_fc_opts_io2comp),
                                    &def_comm_nofc_opts);
-            /* Hard reset io2comp dir to defaults */
+            /* Hard reset io2comp dir to defaults. */
             ios->rearr_opts.comm_fc_opts_io2comp = def_comm_nofc_opts;
         }
-        else if(ios->rearr_opts.fcd == PIO_REARR_COMM_FC_1D_IO2COMP)
+        else if (ios->rearr_opts.fcd == PIO_REARR_COMM_FC_1D_IO2COMP)
         {
-            /* Compare and log user and default opts */
+            /* Compare and log user and default opts. */
             cmp_rearr_comm_fc_opts(&(ios->rearr_opts.comm_fc_opts_comp2io),
                                    &def_comm_nofc_opts);
-            /* Hard reset comp2io dir to defaults */
+            /* Hard reset comp2io dir to defaults. */
             ios->rearr_opts.comm_fc_opts_comp2io = def_comm_nofc_opts;
         }
-        /* Don't reset if flow control is enabled in both directions by user */
+        /* Don't reset if flow control is enabled in both directions
+         * by user. */
     }
 }
 
@@ -1537,10 +1553,8 @@ static void check_and_reset_rearr_opts(iosystem_desc_t *ios)
  * @param iosysidp index of the defined system descriptor
  * @return 0 on success, otherwise a PIO error code.
  */
-int PIOc_set_rearr_opts(int iosysid,
-                        int comm_type, int fcd,
-                        bool enable_hs_c2i, bool enable_isend_c2i,
-                        int max_pend_req_c2i,
+int PIOc_set_rearr_opts(int iosysid, int comm_type, int fcd, bool enable_hs_c2i,
+                        bool enable_isend_c2i, int max_pend_req_c2i,
                         bool enable_hs_i2c, bool enable_isend_i2c,
                         int max_pend_req_i2c)
 {
@@ -1552,6 +1566,7 @@ int PIOc_set_rearr_opts(int iosysid,
         {enable_hs_i2c, enable_isend_i2c, max_pend_req_i2c}
     };
 
+    /* Get the IO system info. */
     if (!(ios = pio_get_iosystem_from_id(iosysid)))
         return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
 
