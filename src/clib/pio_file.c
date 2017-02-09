@@ -95,7 +95,6 @@ int PIOc_createfile(int iosysid, int *ncidp, int *iotype, const char *filename,
                     int mode)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
-    file_desc_t *file;     /* Pointer to file information. */
     int ret;               /* Return code from function calls. */
 
     /* Get the IO system info from the id. */

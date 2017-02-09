@@ -652,7 +652,6 @@ int PIOc_freedecomp(int iosysid, int ioid)
     iosystem_desc_t *ios;
     io_desc_t *iodesc;
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function calls. */
-    int ierr;              /* Return code. */
 
     if (!(ios = pio_get_iosystem_from_id(iosysid)))
         return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
