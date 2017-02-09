@@ -655,6 +655,8 @@ extern "C" {
                       PIO_Offset *map, MPI_Comm comm);
     int PIOc_writemap_from_f90(const char *file, int ndims, const int *gdims,
                                PIO_Offset maplen, const PIO_Offset *map, int f90_comm);
+
+    /* Write a decomposition file. */
     int PIOc_write_decomp(const char *file, int iosysid, int ioid, MPI_Comm comm);
 
     /* Initializing IO system. */
