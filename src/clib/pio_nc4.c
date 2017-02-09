@@ -481,6 +481,7 @@ int PIOc_def_var_fill(int ncid, int varid, int fill_mode, const void *fill_value
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Pointer to file information. */
+    nc_type xtype;         /* The type of the variable (and fill value att). */
     PIO_Offset type_size;  /* Size in bytes of this variable's type. */
     int ierr;              /* Return code from function calls. */
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
@@ -498,16 +499,11 @@ int PIOc_def_var_fill(int ncid, int varid, int fill_mode, const void *fill_value
         (fill_mode == NC_FILL && !fill_valuep))
         return pio_err(ios, file, PIO_EINVAL, __FILE__, __LINE__);
 
-    /* Only netCDF-4 and pnetcdf files can use this feature. */
-    if (file->iotype == PIO_IOTYPE_NETCDF)
-        return pio_err(ios, file, PIO_ENOTNC4, __FILE__, __LINE__);
-
     /* Run this on all tasks if async is not in use, but only on
      * non-IO tasks if async is in use. Get the size of this vars
      * type. */
     if (!ios->async_interface || !ios->ioproc)
     {
-        nc_type xtype;
         if ((ierr = PIOc_inq_vartype(ncid, varid, &xtype)))
             return check_netcdf(file, ierr, __FILE__, __LINE__);
         if ((ierr = PIOc_inq_type(ncid, xtype, NULL, &type_size)))
@@ -550,6 +546,8 @@ int PIOc_def_var_fill(int ncid, int varid, int fill_mode, const void *fill_value
             return check_mpi(file, mpierr, __FILE__, __LINE__);
 
         /* Broadcast values currently only known on computation tasks to IO tasks. */
+        if ((mpierr = MPI_Bcast(&xtype, 1, MPI_INT, ios->comproot, ios->my_comm)))
+            check_mpi(file, mpierr, __FILE__, __LINE__);
         if ((mpierr = MPI_Bcast(&type_size, 1, MPI_OFFSET, ios->comproot, ios->my_comm)))
             check_mpi(file, mpierr, __FILE__, __LINE__);
     }
@@ -561,6 +559,11 @@ int PIOc_def_var_fill(int ncid, int varid, int fill_mode, const void *fill_value
 #ifdef _PNETCDF
             ierr = ncmpi_def_var_fill(file->fh, varid, fill_mode, (void *)fill_valuep);
 #endif /* _PNETCDF */
+        }
+        else if (file->iotype == PIO_IOTYPE_NETCDF)
+        {
+            LOG((2, "defining fill value attribute for netCDF classic file"));
+            ierr = nc_put_att(file->fh, varid, _FillValue, xtype, 1, fill_valuep);
         }
         else
         {
