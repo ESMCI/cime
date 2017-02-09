@@ -95,7 +95,6 @@ int PIOc_createfile(int iosysid, int *ncidp, int *iotype, const char *filename,
                     int mode)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
-    file_desc_t *file;     /* Pointer to file information. */
     int ret;               /* Return code from function calls. */
 
     /* Get the IO system info from the id. */
@@ -208,7 +207,6 @@ int PIOc_closefile(int ncid)
     {
         switch (file->iotype)
         {
-#ifdef _NETCDF
 #ifdef _NETCDF4
         case PIO_IOTYPE_NETCDF4P:
             ierr = nc_close(file->fh);
@@ -219,7 +217,6 @@ int PIOc_closefile(int ncid)
             if (ios->io_rank == 0)
                 ierr = nc_close(file->fh);
             break;
-#endif
 #ifdef _PNETCDF
         case PIO_IOTYPE_PNETCDF:
             if ((file->mode & PIO_WRITE)){
@@ -399,7 +396,6 @@ int PIOc_sync(int ncid)
         {
             switch(file->iotype)
             {
-#ifdef _NETCDF
 #ifdef _NETCDF4
             case PIO_IOTYPE_NETCDF4P:
                 ierr = nc_sync(file->fh);
@@ -410,7 +406,6 @@ int PIOc_sync(int ncid)
                 if (ios->io_rank == 0)
                     ierr = nc_sync(file->fh);
                 break;
-#endif
 #ifdef _PNETCDF
             case PIO_IOTYPE_PNETCDF:
                 ierr = ncmpi_sync(file->fh);

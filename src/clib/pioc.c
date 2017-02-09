@@ -937,7 +937,6 @@ int PIOc_iotype_available(int iotype)
 {
     switch(iotype)
     {
-#ifdef _NETCDF
 #ifdef _NETCDF4
     case PIO_IOTYPE_NETCDF4P:
     case PIO_IOTYPE_NETCDF4C:
@@ -945,7 +944,6 @@ int PIOc_iotype_available(int iotype)
 #endif
     case PIO_IOTYPE_NETCDF:
         return 1;
-#endif
 #ifdef _PNETCDF
     case PIO_IOTYPE_PNETCDF:
         return 1;
