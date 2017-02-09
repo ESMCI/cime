@@ -1288,11 +1288,12 @@ int box_rearrange_create(iosystem_desc_t ios, int maplen, const PIO_Offset *comp
 }
 
 /**
- * Compare offsets is used by the sort in the subset rearrange.
+ * Compare offsets is used by the sort in the subset rearrange. This
+ * function is passed to qsort.
  *
  * @param a
  * @param b
- * @returns 0 on success, error code otherwise.
+ * @returns 0 if offsets are the same.
  */
 int compare_offsets(const void *a, const void *b)
 {
