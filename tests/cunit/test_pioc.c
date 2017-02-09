@@ -1411,6 +1411,32 @@ int test_malloc_iodesc(int iosysid, int my_rank)
     return 0;
 }
 
+/* Test some decomp stuff. */
+int test_decomp(int my_test_size, int my_rank, int iosysid, int dim_len,
+                MPI_Comm test_comm, int async)
+{
+    int ioid;
+    char filename[NC_MAX_NAME + 1]; /* Test decomp filename. */
+    int ret;
+    
+    /* This will be our file name for writing out decompositions. */
+    sprintf(filename, "decomp_%s_rank_%d_async_%d.txt", TEST_NAME, my_rank, async);
+
+    /* Decompose the data over the tasks. */
+    if ((ret = create_decomposition(my_test_size, my_rank, iosysid, dim_len, &ioid)))
+        return ret;
+
+    printf("%d about to write decomp file %s\n", my_rank, filename);
+    if ((ret = PIOc_write_decomp(filename, iosysid, ioid, test_comm)))
+        return ret;
+
+    /* Free the PIO decomposition. */
+    if ((ret = PIOc_freedecomp(iosysid, ioid)))
+        ERR(ret);
+
+    return 0;
+}
+
 /* Run all the tests. */
 int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm test_comm,
              int async)
@@ -1445,13 +1471,9 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
     if ((ret = test_malloc_iodesc(iosysid, my_rank)))
         return ret;
 
-    /* Decompose the data over the tasks. */
-    if ((ret = create_decomposition(my_test_size, my_rank, iosysid, DIM_LEN, &ioid)))
+    /* Test decomposition stuff. */
+    if ((ret = test_decomp(my_test_size, my_rank, iosysid, DIM_LEN, test_comm, async)))
         return ret;
-
-    /* Free the PIO decomposition. */
-    if ((ret = PIOc_freedecomp(iosysid, ioid)))
-        ERR(ret);
 
     if (!async)
     {
