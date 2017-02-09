@@ -1879,18 +1879,94 @@ int delete_file_handler(iosystem_desc_t *ios)
     return PIO_NOERR;
 }
 
-/** This function is run on the IO tasks to...
- * NOTE: not yet implemented
+/** 
+ * This function is run on the IO tasks to initialize a decomposition.
  *
  * @param ios pointer to the iosystem_desc_t data.
- *
  * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
  * from netCDF base function.
- * @internal
  */
 int initdecomp_dof_handler(iosystem_desc_t *ios)
 {
+    int iosysid;
+    int basetype;
+    int ndims;
+    int maplen;
+    int ioid;
+    char rearranger_present;
+    int rearranger;
+    int *rearrangerp = NULL;
+    char iostart_present;
+    PIO_Offset *iostartp = NULL;
+    char iocount_present;
+    PIO_Offset *iocountp = NULL;
+    int mpierr = MPI_SUCCESS;  /* Return code from MPI function codes. */
+    int ret; /* Return code. */
+
+    LOG((1, "initdecomp_dof_handler called"));
     assert(ios);
+
+    /* Get the parameters for this function that the the comp master
+     * task is broadcasting. */
+    if ((mpierr = MPI_Bcast(&iosysid, 1, MPI_INT, 0, ios->intercomm)))
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+    if ((mpierr = MPI_Bcast(&basetype, 1, MPI_INT, 0, ios->intercomm)))
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+    if ((mpierr = MPI_Bcast(&ndims, 1, MPI_INT, 0, ios->intercomm)))
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+
+    /* Now we know the size of these arrays. */
+    int dims[ndims];
+    PIO_Offset iostart[ndims];
+    PIO_Offset iocount[ndims];
+
+    if ((mpierr = MPI_Bcast(dims, ndims, MPI_INT, 0, ios->intercomm)))
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+    if ((mpierr = MPI_Bcast(&maplen, 1, MPI_INT, 0, ios->intercomm)))
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+
+    PIO_Offset compmap[maplen];
+
+    if ((mpierr = MPI_Bcast(compmap, maplen, MPI_OFFSET, 0, ios->intercomm)))
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+
+    if ((mpierr = MPI_Bcast(&rearranger_present, 1, MPI_CHAR, 0, ios->intercomm)))
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+
+    if (rearranger_present)
+        if ((mpierr = MPI_Bcast(&rearranger, 1, MPI_INT, 0, ios->intercomm)))
+            return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+
+    if ((mpierr = MPI_Bcast(&iostart_present, 1, MPI_CHAR, 0, ios->intercomm)))
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+
+    if (iostart_present)
+        if ((mpierr = MPI_Bcast(iostart, ndims, MPI_OFFSET, 0, ios->intercomm)))
+            return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+
+    if ((mpierr = MPI_Bcast(&iocount_present, 1, MPI_CHAR, 0, ios->intercomm)))
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+
+    if (iocount_present)
+        if ((mpierr = MPI_Bcast(iocount, ndims, MPI_OFFSET, 0, ios->intercomm)))
+            return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+
+    LOG((2, "initdecomp_dof_handler iosysid = %d basetype = %d ndims = %d maplen = %d "
+         "rearranger_present = %d iostart_present = %d iocount_present = %d ",
+         iosysid, basetype, ndims, maplen, rearranger_present, iostart_present, iocount_present));
+
+    if (rearranger_present)
+        rearrangerp = &rearranger;
+    if (iostart_present)
+        iostartp = iostart;
+    if (iocount_present)
+        iocountp = iocount;
+
+    /* Call the function. */
+    ret = PIOc_InitDecomp(iosysid, basetype, ndims, dims, maplen, compmap, &ioid, rearrangerp,
+                          iostartp, iocountp);
+    
+    LOG((1, "PIOc_InitDecomp returned %d", ret));
     return PIO_NOERR;
 }
 
@@ -2119,16 +2195,33 @@ int get_var_chunk_cache_handler(iosystem_desc_t *ios)
 }
 
 /** This function is run on the IO tasks to free the decomp hanlder.
- * NOTE: not yet implemented
  *
  * @param ios pointer to the iosystem_desc_t data.
- *
  * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
  * from netCDF base function.
- * @internal
  */
 int freedecomp_handler(iosystem_desc_t *ios)
 {
+    int iosysid;
+    int ioid;
+    int mpierr = MPI_SUCCESS;  /* Return code from MPI function codes. */
+    int ret; /* Return code. */
+
+    LOG((1, "freedecomp_handler called"));
+    assert(ios);
+
+    /* Get the parameters for this function that the the comp master
+     * task is broadcasting. */
+    if ((mpierr = MPI_Bcast(&iosysid, 1, MPI_INT, 0, ios->intercomm)))
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+    if ((mpierr = MPI_Bcast(&ioid, 1, MPI_INT, 0, ios->intercomm)))
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+    LOG((2, "freedecomp_handler iosysid = %d ioid = %d", iosysid, ioid));
+
+    /* Call the function. */
+    ret = PIOc_freedecomp(iosysid, ioid);
+    
+    LOG((1, "PIOc_freedecomp returned %d", ret));
     return PIO_NOERR;
 }
 

@@ -1417,10 +1417,14 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
 {
     int ioid;
     int my_test_size;
+    char filename[NC_MAX_NAME + 1];
     int ret; /* Return code. */
 
     if ((ret = MPI_Comm_size(test_comm, &my_test_size)))
         MPIERR(ret);
+
+    /* This will be our file name for writing out decompositions. */
+    sprintf(filename, "decomp_%d.txt", my_rank);
 
     /* Check iotypes. */
     printf("%d Testing iotypes. async = %d\n", my_rank, async);
@@ -1441,12 +1445,18 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
     if ((ret = test_malloc_iodesc(iosysid, my_rank)))
         return ret;
 
+    /* Decompose the data over the tasks. */
+    if ((ret = create_decomposition(my_test_size, my_rank, iosysid, DIM_LEN, &ioid)))
+        return ret;
+
+    /* Free the PIO decomposition. */
+    if ((ret = PIOc_freedecomp(iosysid, ioid)))
+        ERR(ret);
+
     if (!async)
     {
-        char filename[NC_MAX_NAME + 1];
-        sprintf(filename, "decomp_%d.txt", my_rank);
-
         printf("%d Testing darray. async = %d\n", my_rank, async);
+        
         /* Decompose the data over the tasks. */
         if ((ret = create_decomposition(my_test_size, my_rank, iosysid, DIM_LEN, &ioid)))
             return ret;

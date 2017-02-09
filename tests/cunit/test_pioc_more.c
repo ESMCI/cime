@@ -491,16 +491,19 @@ int create_putget_file(int iosysid, int flavor, int *dim_len, int *varid, const 
                 return ret;
             if ((ret = PIOc_def_var_fill(ncid, varid[5], NC_FILL, &double_fill_value)))
                 return ret;
-            if ((ret = PIOc_def_var_fill(ncid, varid[6], NC_FILL, &ubyte_fill_value)))
-                return ret;
-            if ((ret = PIOc_def_var_fill(ncid, varid[7], NC_FILL, &ushort_fill_value)))
-                return ret;
-            if ((ret = PIOc_def_var_fill(ncid, varid[8], NC_FILL, &uint_fill_value)))
-                return ret;
-            if ((ret = PIOc_def_var_fill(ncid, varid[9], NC_FILL, &int64_fill_value)))
-                return ret;
-            if ((ret = PIOc_def_var_fill(ncid, varid[10], NC_FILL, &uint64_fill_value)))
-                return ret;
+            if (flavor == PIO_IOTYPE_NETCDF4C || flavor == PIO_IOTYPE_NETCDF4P)
+            {
+                if ((ret = PIOc_def_var_fill(ncid, varid[6], NC_FILL, &ubyte_fill_value)))
+                    return ret;
+                if ((ret = PIOc_def_var_fill(ncid, varid[7], NC_FILL, &ushort_fill_value)))
+                    return ret;
+                if ((ret = PIOc_def_var_fill(ncid, varid[8], NC_FILL, &uint_fill_value)))
+                    return ret;
+                if ((ret = PIOc_def_var_fill(ncid, varid[9], NC_FILL, &int64_fill_value)))
+                    return ret;
+                if ((ret = PIOc_def_var_fill(ncid, varid[10], NC_FILL, &uint64_fill_value)))
+                    return ret;
+            }
         }
     }
 

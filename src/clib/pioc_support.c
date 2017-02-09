@@ -651,14 +651,38 @@ int PIOc_freedecomp(int iosysid, int ioid)
 {
     iosystem_desc_t *ios;
     io_desc_t *iodesc;
-    int i;
-    int mpierr; /* Return code for MPI calls. */
+    int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function calls. */
+    int ierr;              /* Return code. */
 
     if (!(ios = pio_get_iosystem_from_id(iosysid)))
         return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
 
     if (!(iodesc = pio_get_iodesc_from_id(ioid)))
         return pio_err(ios, NULL, PIO_EBADID, __FILE__, __LINE__);
+
+    /* If async is in use, and this is not an IO task, bcast the parameters. */
+    if (ios->async_interface)
+    {
+        if (!ios->ioproc)
+        {
+            int msg = PIO_MSG_FREEDECOMP; /* Message for async notification. */
+
+            if (ios->compmaster == MPI_ROOT)
+                mpierr = MPI_Send(&msg, 1, MPI_INT, ios->ioroot, 1, ios->union_comm);
+
+            if (!mpierr)
+                mpierr = MPI_Bcast(&iosysid, 1, MPI_INT, ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast(&ioid, 1, MPI_INT, ios->compmaster, ios->intercomm);
+            LOG((2, "PIOc_freedecomp iosysid = %d ioid = %d", iosysid, ioid));
+        }
+
+        /* Handle MPI errors. */
+        if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
+            return check_mpi(NULL, mpierr2, __FILE__, __LINE__);
+        if (mpierr)
+            return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+    }
 
     /* Free the map. */
     free(iodesc->map);
@@ -674,7 +698,7 @@ int PIOc_freedecomp(int iosysid, int ioid)
 
     if (iodesc->rtype)
     {
-        for (i = 0; i < iodesc->nrecvs; i++)
+        for (int i = 0; i < iodesc->nrecvs; i++)
             if (iodesc->rtype[i] != PIO_DATATYPE_NULL)
                 if ((mpierr = MPI_Type_free(iodesc->rtype + i)))
                     return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
@@ -684,7 +708,7 @@ int PIOc_freedecomp(int iosysid, int ioid)
 
     if (iodesc->stype)
     {
-        for (i = 0; i < iodesc->num_stypes; i++)
+        for (int i = 0; i < iodesc->num_stypes; i++)
             if (iodesc->stype[i] != PIO_DATATYPE_NULL)
                 if ((mpierr = MPI_Type_free(iodesc->stype + i)))
                     return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
