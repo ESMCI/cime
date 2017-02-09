@@ -305,11 +305,45 @@ int test_rearranger_opts1()
 /* Test some of the rearranger utility functions. */
 int test_rearranger_opts2()
 {
-    iosystem_desc_t *ios;
+    iosystem_desc_t my_ios;
+    iosystem_desc_t *ios = &my_ios;
 
     /* I'm not sure what the point of this function is... */
     check_and_reset_rearr_opts(ios);
     
+    return 0;
+}
+
+/* Test the compare_offsets() function. */
+int test_compare_offsets()
+{
+    mapsort m1, m2, m3;
+
+    m1.rfrom = 0;
+    m1.soffset = 0;
+    m1.iomap = 0;
+    m2.rfrom = 0;
+    m2.soffset = 0;
+    m2.iomap = 0;
+    m3.rfrom = 0;
+    m3.soffset = 0;
+    m3.iomap = 1;
+
+    /* Return 0 if either or both parameters are null. */
+    if (compare_offsets(NULL, &m2))
+        return ERR_WRONG;
+    if (compare_offsets(&m1, NULL))
+        return ERR_WRONG;
+    if (compare_offsets(NULL, NULL))
+        return ERR_WRONG;
+
+    /* m1 and m2 are the same. */
+    if (compare_offsets(&m1, &m2))
+        return ERR_WRONG;
+
+    /* m1 and m3 are different. */
+    if (compare_offsets(&m1, &m3) != -1)
+        return ERR_WRONG;
     return 0;
 }
 
@@ -352,6 +386,10 @@ int main(int argc, char **argv)
 
         printf("%d running rearranger opts tests 2\n", my_rank);
         if ((ret = test_rearranger_opts2()))
+            return ret;
+
+        printf("%d running compare_offsets tests\n", my_rank);
+        if ((ret = test_compare_offsets()))
             return ret;
 
     } /* endif my_rank < TARGET_NTASKS */
