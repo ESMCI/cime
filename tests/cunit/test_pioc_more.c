@@ -538,8 +538,7 @@ int test_fill(int iosysid, int num_flavors, int *flavor, int my_rank,
     {
         /* Use PIO to create the example file in each of the four
          * available ways. */
-        /*for (int fmt = 0; fmt < num_flavors; fmt++)*/
-        for (int fmt = 1; fmt < 2; fmt++)
+        for (int fmt = 0; fmt < num_flavors; fmt++)
         {
             char filename[PIO_MAX_NAME + 1]; /* Test filename. */
             char iotype_name[PIO_MAX_NAME + 1];
@@ -591,12 +590,9 @@ int test_fill(int iosysid, int num_flavors, int *flavor, int my_rank,
                 return ret;
 
             /* Use the vara functions to read some data which are just fill values. */
-            if (flavor[fmt] == PIO_IOTYPE_NETCDF4C || flavor[fmt] == PIO_IOTYPE_NETCDF4P || flavor[fmt] == PIO_IOTYPE_PNETCDF)
-            {
-                start[0] = 0;
-                if ((ret = putget_read_vara_fill(ncid, varid, start, count, default_fill, flavor[fmt])))
-                    return ret;
-            }
+            start[0] = 0;
+            if ((ret = putget_read_vara_fill(ncid, varid, start, count, default_fill, flavor[fmt])))
+                return ret;
 
             /* Close the netCDF file. */
             if ((ret = PIOc_closefile(ncid)))
@@ -634,7 +630,8 @@ int main(int argc, char **argv)
     /* Initialize data arrays with sample data. */
     init_arrays();
 
-    if ((ret = run_test_main(argc, argv, MIN_NTASKS, TARGET_NTASKS, 3,
+    /* Change the 5th arg to 3 to turn on logging. */
+    if ((ret = run_test_main(argc, argv, MIN_NTASKS, TARGET_NTASKS, 0,
                              TEST_NAME, dim_len, COMPONENT_COUNT, NUM_IO_PROCS)))
         return ret;
 
