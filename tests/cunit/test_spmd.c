@@ -1,7 +1,5 @@
 /*
- * This program tests MPI_Alltoallw by having processor i send different
- * amounts of data to each processor.
- * The first test sends i items to processor i from all processors.
+ * This program tests some internal functions in the library.
  *
  * Jim Edwards
  * Ed Hartnett, 11/23/16
@@ -24,7 +22,9 @@
 
 #define TEST_MAX_GATHER_BLOCK_SIZE 32
 
-/* The actual tests are here. */
+/* Test MPI_Alltoallw by having processor i send different amounts of
+ * data to each processor.  The first test sends i items to processor
+ * i from all processors. */
 int run_spmd_tests(MPI_Comm test_comm)
 {
     int my_rank;  /* 0-based rank in test_comm. */
@@ -264,6 +264,55 @@ int test_lists()
     return 0;
 }
 
+/* Test some of the rearranger utility functions. */
+int test_rearranger_opts1()
+{
+    rearr_comm_fc_opt_t *ro1;
+    rearr_comm_fc_opt_t *ro2;
+    rearr_comm_fc_opt_t *ro3;
+
+    if (!(ro1 = calloc(1, sizeof(rearr_comm_fc_opt_t))))
+        return ERR_AWFUL;
+    if (!(ro2 = calloc(1, sizeof(rearr_comm_fc_opt_t))))
+        return ERR_AWFUL;
+    if (!(ro3 = calloc(1, sizeof(rearr_comm_fc_opt_t))))
+        return ERR_AWFUL;
+
+    /* This should not work. */
+    if (PIOc_set_rearr_opts(42, 1, 1, 0, 0, 0, 0, 0, 0) != PIO_EBADID)
+        return ERR_WRONG;
+
+    /* ro1 and ro2 are the same. */
+    if (!cmp_rearr_comm_fc_opts(ro1, ro2))
+        return ERR_WRONG;
+
+    /* Make ro3 different. */
+    ro3->enable_hs = 1;
+    if (cmp_rearr_comm_fc_opts(ro1, ro3))
+        return ERR_WRONG;
+    ro3->enable_hs = 0;
+    ro3->enable_isend = 1;
+    if (cmp_rearr_comm_fc_opts(ro1, ro3))
+        return ERR_WRONG;
+    ro3->enable_isend = 0;
+    ro3->max_pend_req = 1;
+    if (cmp_rearr_comm_fc_opts(ro1, ro3))
+        return ERR_WRONG;
+    
+    return 0;
+}
+
+/* Test some of the rearranger utility functions. */
+int test_rearranger_opts2()
+{
+    iosystem_desc_t *ios;
+
+    /* I'm not sure what the point of this function is... */
+    check_and_reset_rearr_opts(ios);
+    
+    return 0;
+}
+
 /* Run Tests for pio_spmd.c functions. */
 int main(int argc, char **argv)
 {
@@ -295,6 +344,14 @@ int main(int argc, char **argv)
 
         printf("%d running list tests\n", my_rank);
         if ((ret = test_lists()))
+            return ret;
+
+        printf("%d running rearranger opts tests 1\n", my_rank);
+        if ((ret = test_rearranger_opts1()))
+            return ret;
+
+        printf("%d running rearranger opts tests 2\n", my_rank);
+        if ((ret = test_rearranger_opts2()))
             return ret;
 
     } /* endif my_rank < TARGET_NTASKS */

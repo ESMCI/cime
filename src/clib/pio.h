@@ -98,49 +98,54 @@ typedef struct io_region
 } io_region;
 
 /**
- * Note: The rearranger option values must match the definitions
- * in the fortran interface
- */
-/**
- * Rearranger comm type
+ * Rearranger comm type. The rearranger option values must match the
+ * definitions in the fortran interface.
  */
 enum PIO_REARR_COMM_TYPE
 {
     /** Point to point */
     PIO_REARR_COMM_P2P = (0),
+
     /** Collective */
     PIO_REARR_COMM_COLL
 };
 
 /**
- * Rearranger comm flow control direction
+ * Rearranger comm flow control direction. The rearranger option
+ * values must match the definitions in the fortran interface.
  */
 enum PIO_REARR_COMM_FC_DIR
 {
     /** Comp procs to io procs and vice versa */
     PIO_REARR_COMM_FC_2D_ENABLE = (0),
+
     /** Comp procs to io procs only */
     PIO_REARR_COMM_FC_1D_COMP2IO,
+
     /** IO procs to comp procs only */
     PIO_REARR_COMM_FC_1D_IO2COMP,
+
     /** Disable flow control */
     PIO_REARR_COMM_FC_2D_DISABLE
 };
 
-/**
- * Rearranger comm flow control options
- */
+/* Constant to indicate unlimited requests. */
 #define PIO_REARR_COMM_UNLIMITED_PEND_REQ -1
-typedef struct rearr_comm_fc_opt{
-    /* FIXME: Is _Bool instead of bool required here? */
+
+/**
+ * Rearranger comm flow control options.
+ */
+typedef struct rearr_comm_fc_opt
+{
     /** Enable handshake */
     bool enable_hs;
-    /** Enable isends  - if false use blocking sends */
+    
+    /** Enable isends - if false use blocking sends */
     bool enable_isend;
+    
     /** Max pending requests
-     * (PIO_REARR_COMM_UNLIMITED_PEND_REQ => unlimited pend req)
-     */
-    /** This is the number of messages allowed to be in flight at one
+     * (PIO_REARR_COMM_UNLIMITED_PEND_REQ => unlimited pend req).
+     * This is the number of messages allowed to be in flight at one
      * time. On some systems posting all messages at once creates a
      * significant bottleneck in communications and throttling in this
      * manner improves overall performance. */
@@ -150,13 +155,17 @@ typedef struct rearr_comm_fc_opt{
 /**
  * Rearranger options
  */
-typedef struct rearr_opt{
+typedef struct rearr_opt
+{
     /** Comm type - see PIO_REARR_COMM_TYPE */
     int comm_type;
+
     /** Comm flow control dir - see PIO_REARR_COMM_FC_DIR */
     int fcd;
+
     /** flow control opts, comp to io procs */
     rearr_comm_fc_opt_t comm_fc_opts_comp2io;
+
     /** flow control opts, io to comp procs */
     rearr_comm_fc_opt_t comm_fc_opts_io2comp;
 } rearr_opt_t;
