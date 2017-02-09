@@ -214,7 +214,6 @@ int pio_write_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid,
 
             switch (file->iotype)
             {
-#ifdef _NETCDF
 #ifdef _NETCDF4
             case PIO_IOTYPE_NETCDF4P:
 
@@ -351,7 +350,7 @@ int pio_write_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid,
                 break;
             }
             break;
-#endif /* _NETCDF */
+
 #ifdef _PNETCDF
             case PIO_IOTYPE_PNETCDF:
                 for (i = 0, dsize = 1; i < ndims; i++)
@@ -1377,7 +1376,6 @@ int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc, int vid,
                     }
                     loffset += regionsize;
 
-#ifdef _NETCDF
                     /* Cant use switch here because MPI_DATATYPE may not be simple (openmpi). */
                     if (iodesc->basetype == MPI_DOUBLE || iodesc->basetype == MPI_REAL8)
                         ierr = nc_get_vara_double(file->fh, vid,start, count, bufptr);
@@ -1392,7 +1390,6 @@ int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc, int vid,
                         for (int i = 0; i < fndims; i++)
                             fprintf(stderr,"vid %d dim %d start %ld count %ld err %d\n",
                                     vid, i, start[i], count[i], ierr);
-#endif
                 }
 
                 if (rtask < ios->num_iotasks)

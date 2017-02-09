@@ -376,7 +376,7 @@ int PIOc_get_att_tc(int ncid, int varid, const char *name, nc_type memtype, void
             }
         }
 #endif /* _PNETCDF */
-#ifdef _NETCDF
+
         if (file->iotype != PIO_IOTYPE_PNETCDF && file->do_io)
         {
             switch(memtype)
@@ -427,7 +427,6 @@ int PIOc_get_att_tc(int ncid, int varid, const char *name, nc_type memtype, void
                 return pio_err(ios, file, PIO_EBADTYPE, __FILE__, __LINE__);
             }
         }
-#endif /* _NETCDF */
     }
 
     /* Broadcast and check the return code. */
@@ -714,7 +713,7 @@ int PIOc_get_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
 #endif /* PNET_READ_AND_BCAST */
         }
 #endif /* _PNETCDF */
-#ifdef _NETCDF
+
         if (file->iotype != PIO_IOTYPE_PNETCDF && file->do_io)
             switch(xtype)
             {
@@ -776,7 +775,6 @@ int PIOc_get_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
             default:
                 return pio_err(ios, file, PIO_EBADTYPE, __FILE__, __LINE__);
             }
-#endif /* _NETCDF */
     }
 
     if (!ios->async_interface || !ios->ioproc)
@@ -1126,7 +1124,7 @@ int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
                 free(fake_stride);
         }
 #endif /* _PNETCDF */
-#ifdef _NETCDF
+
         if (file->iotype != PIO_IOTYPE_PNETCDF && file->do_io)
         {
             LOG((2, "PIOc_put_vars_tc calling netcdf function file->iotype = %d",
@@ -1192,7 +1190,6 @@ int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
             }
             LOG((2, "PIOc_put_vars_tc io_rank 0 done with netcdf call, ierr=%d", ierr));
         }
-#endif /* _NETCDF */
     }
 
     if (!ios->async_interface || !ios->ioproc)

@@ -1121,7 +1121,6 @@ int PIOc_createfile_int(int iosysid, int *ncidp, int *iotype, const char *filena
     {
         switch (file->iotype)
         {
-#ifdef _NETCDF
 #ifdef _NETCDF4
         case PIO_IOTYPE_NETCDF4P:
             file->mode = file->mode |  NC_MPIIO | NC_NETCDF4;
@@ -1140,7 +1139,6 @@ int PIOc_createfile_int(int iosysid, int *ncidp, int *iotype, const char *filena
                 ierr = nc_create(filename, file->mode, &file->fh);
             }
             break;
-#endif
 #ifdef _PNETCDF
         case PIO_IOTYPE_PNETCDF:
             LOG((2, "Calling ncmpi_create mode = %d", file->mode));
@@ -1293,7 +1291,6 @@ int PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype, const char *filena
     {
         switch (file->iotype)
         {
-#ifdef _NETCDF
 #ifdef _NETCDF4
 
         case PIO_IOTYPE_NETCDF4P:
@@ -1325,7 +1322,6 @@ int PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype, const char *filena
             if (ios->io_rank == 0)
                 ierr = nc_open(filename, file->mode, &file->fh);
             break;
-#endif
 
 #ifdef _PNETCDF
         case PIO_IOTYPE_PNETCDF:
@@ -1351,7 +1347,6 @@ int PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype, const char *filena
            with just plain old basic NetCDF. */
         if (retry)
         {
-#ifdef _NETCDF
             LOG((2, "retry error code ierr = %d io_rank %d", ierr, ios->io_rank));
             if ((ierr == NC_ENOTNC || ierr == NC_EINVAL) && (file->iotype != PIO_IOTYPE_NETCDF))
             {
@@ -1371,7 +1366,6 @@ int PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype, const char *filena
                     file->do_io = 0;
             }
             LOG((2, "retry nc_open(%s) : fd = %d, iotype = %d, do_io = %d, ierr = %d", filename, file->fh, file->iotype, file->do_io, ierr));
-#endif
         }
     }
 
@@ -1519,7 +1513,6 @@ int pioc_change_def(int ncid, int is_enddef)
                 ierr = ncmpi_redef(file->fh);
         }
 #endif /* _PNETCDF */
-#ifdef _NETCDF
         if (file->iotype != PIO_IOTYPE_PNETCDF && file->do_io)
         {
             if (is_enddef)
@@ -1530,7 +1523,6 @@ int pioc_change_def(int ncid, int is_enddef)
             else
                 ierr = nc_redef(file->fh);
         }
-#endif /* _NETCDF */
     }
 
     /* Broadcast and check the return code. */
