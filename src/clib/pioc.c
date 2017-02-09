@@ -115,6 +115,10 @@ int PIOc_advanceframe(int ncid, int varid)
     if ((ret = pio_get_file(ncid, &file)))
         return pio_err(NULL, NULL, ret, __FILE__, __LINE__);
 
+    /* Check inputs. */
+    if (varid < 0 || varid >= PIO_MAX_VARS)
+        return pio_err(NULL, file, PIO_EINVAL, __FILE__, __LINE__);
+
     file->varlist[varid].record++;
 
     return PIO_NOERR;
