@@ -659,6 +659,9 @@ extern "C" {
     /* Write a decomposition file. */
     int PIOc_write_decomp(const char *file, int iosysid, int ioid, MPI_Comm comm);
 
+    /* Write a decomposition file using netCDF. */
+    int PIOc_write_nc_decomp(const char *file, int iosysid, int ioid, MPI_Comm comm);
+
     /* Initializing IO system. */
     int PIOc_Init_Async(MPI_Comm world, int num_io_procs, int *io_proc_list, int component_count,
                         int *num_procs_per_comp, int **proc_list, MPI_Comm *io_comm, MPI_Comm *comp_comm,

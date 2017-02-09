@@ -1416,18 +1416,24 @@ int test_decomp(int my_test_size, int my_rank, int iosysid, int dim_len,
                 MPI_Comm test_comm, int async)
 {
     int ioid;
-    char filename[NC_MAX_NAME + 1]; /* Test decomp filename. */
+    char filename[NC_MAX_NAME + 1];    /* Test decomp filename. */
+    char nc_filename[NC_MAX_NAME + 1]; /* Test decomp filename (netcdf version). */
     int ret;
     
     /* This will be our file name for writing out decompositions. */
     sprintf(filename, "decomp_%s_rank_%d_async_%d.txt", TEST_NAME, my_rank, async);
+    sprintf(nc_filename, "nc_decomp_%s_rank_%d_async_%d.txt", TEST_NAME, my_rank, async);
 
     /* Decompose the data over the tasks. */
     if ((ret = create_decomposition(my_test_size, my_rank, iosysid, dim_len, &ioid)))
         return ret;
 
-    printf("%d about to write decomp file %s\n", my_rank, filename);
+    /* Write the decomp file (on appropriate tasks). */
     if ((ret = PIOc_write_decomp(filename, iosysid, ioid, test_comm)))
+        return ret;
+
+    /* Write the netcdf decomp file (on appropriate tasks). */
+    if ((ret = PIOc_write_nc_decomp(nc_filename, iosysid, ioid, test_comm)))
         return ret;
 
     /* Free the PIO decomposition. */

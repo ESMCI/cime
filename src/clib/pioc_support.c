@@ -876,6 +876,33 @@ int PIOc_readmap_from_f90(const char *file, int *ndims, int **gdims, PIO_Offset 
 }
 
 /**
+ * Write the decomposition map to a file using netCDF, everyones
+ * favorite data format.
+ *
+ * @param file the filename to be used.
+ * @param iosysid the IO system ID.
+ * @param ioid the ID of the IO description.
+ * @param comm an MPI communicator.
+ * @returns 0 for success, error code otherwise.
+ */
+int PIOc_write_nc_decomp(const char *file, int iosysid, int ioid, MPI_Comm comm)
+{
+    iosystem_desc_t *ios;
+    io_desc_t *iodesc;
+
+    LOG((1, "PIOc_write_nc_decomp file = %s iosysid = %d ioid = %d", file, iosysid, ioid));
+
+    if (!(ios = pio_get_iosystem_from_id(iosysid)))
+        return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
+
+    if (!(iodesc = pio_get_iodesc_from_id(ioid)))
+        return pio_err(ios, NULL, PIO_EBADID, __FILE__, __LINE__);
+
+    return PIOc_writemap(file, iodesc->ndims, iodesc->dimlen, iodesc->maplen, iodesc->map,
+                         comm);
+}
+
+/**
  * Write the decomposition map to a file.
  *
  * @param file the filename to be used.
