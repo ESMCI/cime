@@ -68,6 +68,19 @@ elseif (HOSTNAME MATCHES "^h2ologin" )
 # CGD local linux cluster
 elseif (HOSTNAME MATCHES "^hobart")
     set (HOSTNAME_ID "cgd")
+# Argonne Linux workstations
+elseif (HOSTNAME MATCHES "^compute001" OR
+        HOSTNAME MATCHES "^thwomp" OR
+        HOSTNAME MATCHES "^stomp" OR
+        HOSTNAME MATCHES "^crush" OR
+        HOSTNAME MATCHES "^crank" OR
+        HOSTNAME MATCHES "^steamroller" OR
+        HOSTNAME MATCHES "^grind" OR
+        HOSTNAME MATCHES "^churn" OR
+        HOSTNAME MATCHES "^trounce" OR
+        HOSTNAME MATCHES "^thrash" OR
+        HOSTNAME MATCHES "^vanquish")
+    set (HOSTNAME_ID "anlworkstation")
 else ()
      if (CMAKE_SYSTEM_NAME MATCHES "Catamount")
         set (HOSTNAME_ID "ncsa")
