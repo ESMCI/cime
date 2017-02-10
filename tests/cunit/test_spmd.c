@@ -298,6 +298,11 @@ int test_rearranger_opts1()
     ro3->max_pend_req = 1;
     if (cmp_rearr_comm_fc_opts(ro1, ro3))
         return ERR_WRONG;
+
+    /* Free resourses. */
+    free(ro1);
+    free(ro2);
+    free(ro3);
     
     return 0;
 }
