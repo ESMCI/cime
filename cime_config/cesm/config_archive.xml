@@ -164,5 +164,15 @@
     </rpointer>
   </comp_archive_spec>
 
+  <comp_archive_spec compname="micom" compclass="ocn">
+    <rest_file_extension>\.r.*</rest_file_extension>
+    <hist_file_extension>\.h.*.nc$</hist_file_extension>
+    <rest_history_varname>unset</rest_history_varname>
+    <rpointer>
+      <rpointer_file>rpointer$NINST_STRING.ocn</rpointer_file>
+      <rpointer_content>./$CASE.micom$NINST_STRING.r.$DATENAME.nc</rpointer_content>
+    </rpointer>
+  </comp_archive_spec>
+
 </components>
 
