@@ -1422,7 +1422,7 @@ int test_decomp(int my_test_size, int my_rank, int iosysid, int dim_len,
     
     /* This will be our file name for writing out decompositions. */
     sprintf(filename, "decomp_%s_rank_%d_async_%d.txt", TEST_NAME, my_rank, async);
-    sprintf(nc_filename, "nc_decomp_%s_rank_%d_async_%d.txt", TEST_NAME, my_rank, async);
+    sprintf(nc_filename, "nc_decomp_%s_rank_%d_async_%d.nc", TEST_NAME, my_rank, async);
 
     /* Decompose the data over the tasks. */
     if ((ret = create_decomposition(my_test_size, my_rank, iosysid, dim_len, &ioid)))
@@ -1432,9 +1432,19 @@ int test_decomp(int my_test_size, int my_rank, int iosysid, int dim_len,
     if ((ret = PIOc_write_decomp(filename, iosysid, ioid, test_comm)))
         return ret;
 
-    /* Write the netcdf decomp file (on appropriate tasks). */
-    if ((ret = PIOc_write_nc_decomp(nc_filename, iosysid, ioid, test_comm)))
+    /* Write a netCDF decomp file for this iosystem. */
+    char *title = "Very Simple Test Decompositon";
+    char *history = "Added to PIO automatic testing by Ed in February 2017.";
+    int global_dimlen[] = {DIM_LEN};
+    int task_maplen[TARGET_NTASKS] = {1, 1, 1, 1};
+    int map[TARGET_NTASKS][1] = {{0},{1},{2},{3}};
+    if ((ret = pioc_write_nc_decomp_int(iosysid, nc_filename, NDIM1, global_dimlen,
+                                        TARGET_NTASKS, task_maplen, map, title, history)))
         return ret;
+    
+    /* /\* Write the netcdf decomp file (on appropriate tasks). *\/ */
+    /* if ((ret = PIOc_write_nc_decomp(nc_filename, iosysid, ioid, test_comm))) */
+    /*     return ret; */
 
     /* Free the PIO decomposition. */
     if ((ret = PIOc_freedecomp(iosysid, ioid)))

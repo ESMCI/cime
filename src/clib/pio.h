@@ -44,6 +44,44 @@
  * order to set default error handling. */
 #define PIO_DEFAULT (-1)
 
+/** Used in the decomposition netCDF file. */
+
+/* Holds the version of the decomposition file. */
+#define DECOMP_VERSION_ATT_NAME "version"
+
+/* Holds the maximum length of any task map. */
+#define DECOMP_MAX_MAPLEN_ATT_NAME "max_maplen"
+
+/* Name of title attribute. */
+#define DECOMP_TITLE_ATT_NAME "title"
+
+/* Name of history attribute. */
+#define DECOMP_HISTORY_ATT_NAME "history"
+
+/* Name of source attribute. */
+#define DECOMP_SOURCE_ATT_NAME "source"
+
+/* Name for the dim dim in decomp file. */
+#define DECOMP_DIM_DIM "dims"
+
+/* Name for the npes dim in decomp file. */
+#define DECOMP_TASK_DIM_NAME "task"
+
+/* Name for the npes dim in decomp file. */
+#define DECOMP_MAPELEM_DIM_NAME "map_element"
+
+#define DECOMP_NDIMS "ndims"
+
+/* Name of var in decomp file that holds global array sizes. */
+#define DECOMP_GLOBAL_SIZE_VAR_NAME "global_size"
+
+/* Name of var in decomp file that holds the length of the map for
+ * each task. */
+#define DECOMP_MAPLEN_VAR_NAME "maplen"
+
+/* Name of var in decomp file that holds map. */
+#define DECOMP_MAP_VAR_NAME "map"
+
 /**
  * Variable description structure.
  */
