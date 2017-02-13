@@ -1440,7 +1440,7 @@ int test_decomp(int my_test_size, int my_rank, int iosysid, int dim_len,
     int map[TARGET_NTASKS][1] = {{0},{1},{2},{3}};
     if ((ret = pioc_write_nc_decomp_int(iosysid, nc_filename, NDIM1, global_dimlen,
                                         TARGET_NTASKS, task_maplen, (int *)map, title,
-                                        history)))
+                                        history, 0)))
         return ret;
 
     /* Read the decomp file. */
@@ -1456,9 +1456,10 @@ int test_decomp(int my_test_size, int my_rank, int iosysid, int dim_len,
     char expected_version[] = "2017";
     int global_dimlen_in[NDIM1];    
     int map_in[TARGET_NTASKS][MAX_MAPLEN];
+    int fortran_order_in;
     if ((ret = pioc_read_nc_decomp_int(iosysid, nc_filename, &ndims_in, global_dimlen_in,
                                        &num_tasks_in, task_maplen, &max_maplen_in, map_in, title_in,
-                                       history_in, source_in, version_in)))
+                                       history_in, source_in, version_in, &fortran_order_in)))
         return ret;
 
     /* Did we get the correct answers? */
@@ -1466,7 +1467,8 @@ int test_decomp(int my_test_size, int my_rank, int iosysid, int dim_len,
     if (strcmp(title, title_in) || strcmp(history, history_in) ||
         strcmp(source_in, expected_source) || strcmp(version_in, expected_version))
         return ERR_WRONG;
-    if (ndims_in != NDIM1 || num_tasks_in != TARGET_NTASKS || max_maplen_in != 1)
+    if (ndims_in != NDIM1 || num_tasks_in != TARGET_NTASKS || max_maplen_in != 1 ||
+        fortran_order_in)
         return ERR_WRONG;
     for (int d = 0; d < ndims_in; d++)
         if (global_dimlen_in[d] != global_dimlen[d])

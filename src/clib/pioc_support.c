@@ -1022,12 +1022,13 @@ int PIOc_write_nc_decomp(const char *filename, int iosysid, int ioid, MPI_Comm c
  * @param history null-terminated string that will be written as an
  * attribute. If provided, length must be < PIO_MAX_NAME + 1. Ignored
  * if NULL.
-
+ * @param fortran_order set to non-zero if using fortran array
+ * ordering, 0 for C array ordering.
  * @returns 0 for success, error code otherwise.
  */
 int pioc_write_nc_decomp_int(int iosysid, const char *filename, int ndims, int *global_dimlen,
                              int num_tasks, int *task_maplen, int *map, const char *title,
-                             const char *history)
+                             const char *history, int fortran_order)
 {
     iosystem_desc_t *ios;
     int max_maplen = 0;
@@ -1090,6 +1091,14 @@ int pioc_write_nc_decomp_int(int iosysid, const char *filename, int ndims, int *
                                  strlen(source) + 1, source)))
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
+    /* Write an attribute with array ordering (C or Fortran). */
+    char c_order_str[] = DECOMP_C_ORDER_STR;
+    char fortran_order_str[] = DECOMP_FORTRAN_ORDER_STR;
+    char *my_order_str = fortran_order ? fortran_order_str : c_order_str;
+    if ((ret = PIOc_put_att_text(ncid, NC_GLOBAL, DECOMP_ORDER_ATT_NAME,
+                                 strlen(my_order_str) + 1, my_order_str)))
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+
     /* We need a dimension for the dimensions in the data. (Example:
      * for 4D data we will need to store 4 dimension IDs.) */
     int dim_dimid;
@@ -1130,6 +1139,7 @@ int pioc_write_nc_decomp_int(int iosysid, const char *filename, int ndims, int *
                             &map_varid)))
         return ret;
 
+    /* End define mode, to write data. */
     if ((ret = PIOc_enddef(ncid)))
         return ret;
 
@@ -1145,59 +1155,6 @@ int pioc_write_nc_decomp_int(int iosysid, const char *filename, int ndims, int *
     if ((PIOc_put_var_int(ncid, map_varid, map)))
         return ret;
 
-    /* /\* Write the map. *\/ */
-    /* /\* if ((PIOc_put_var_int(ncid, map_varid, (int *)map))) *\/ */
-    /* /\*     return ret; *\/ */
-
-    /* /\*     fprintf(fp,"version %d npes %d ndims %d \n", VERSNO, npes, ndims); *\/ */
-    /* /\*     for (i = 0; i < ndims; i++) *\/ */
-    /* /\*         fprintf(fp, "%d ", gdims[i]); *\/ */
-    /* /\*     fprintf(fp, "\n"); *\/ */
-
-    /* /\*     /\\* Write the map. *\\/ *\/ */
-    /* /\*     fprintf(fp, "0 %lld\n", nmaplen[0]); *\/ */
-    /* /\*     for (i = 0; i < nmaplen[0]; i++) *\/ */
-    /* /\*         fprintf(fp, "%lld ", map[i]); *\/ */
-    /* /\*     fprintf(fp,"\n"); *\/ */
-
-    /* /\*     for (i = 1; i < npes; i++) *\/ */
-    /* /\*     { *\/ */
-    /* /\*         LOG((2, "creating nmap for i = %d", i)); *\/ */
-    /* /\*         nmap = (PIO_Offset *)malloc(nmaplen[i] * sizeof(PIO_Offset)); *\/ */
-
-    /* /\*         if ((mpierr = MPI_Send(&i, 1, MPI_INT, i, npes + i, comm))) *\/ */
-    /* /\*             return check_mpi(NULL, mpierr, __FILE__, __LINE__); *\/ */
-    /* /\*         if ((mpierr = MPI_Recv(nmap, nmaplen[i], PIO_OFFSET, i, i, comm, &status))) *\/ */
-    /* /\*             return check_mpi(NULL, mpierr, __FILE__, __LINE__); *\/ */
-    /* /\*         LOG((2,"MPI_Recv map complete")); *\/ */
-
-    /* /\*         fprintf(fp, "%d %lld\n", i, nmaplen[i]); *\/ */
-    /* /\*         for (int j = 0; j < nmaplen[i]; j++) *\/ */
-    /* /\*             fprintf(fp, "%lld ", nmap[j]); *\/ */
-    /* /\*         fprintf(fp, "\n"); *\/ */
-
-    /* /\*         free(nmap); *\/ */
-    /* /\*     } *\/ */
-    /* /\*     /\\* Free memory for the nmaplen. *\\/ *\/ */
-    /* /\*     free(nmaplen); *\/ */
-    /* /\*     fprintf(fp, "\n"); *\/ */
-    /* /\*     print_trace(fp); *\/ */
-
-    /* /\*     /\\* Close the file. *\\/ *\/ */
-    /* /\*     fclose(fp); *\/ */
-    /* /\*     LOG((2,"decomp file closed.")); *\/ */
-    /* /\* } *\/ */
-    /* /\* else *\/ */
-    /* /\* { *\/ */
-    /* /\*     LOG((2,"ready to MPI_Recv...")); *\/ */
-    /* /\*     if ((mpierr = MPI_Recv(&i, 1, MPI_INT, 0, npes+myrank, comm, &status))) *\/ */
-    /* /\*         return check_mpi(NULL, mpierr, __FILE__, __LINE__); *\/ */
-    /* /\*     LOG((2,"MPI_Recv got %d", i)); *\/ */
-    /* /\*     if ((mpierr = MPI_Send(map, maplen, PIO_OFFSET, 0, myrank, comm))) *\/ */
-    /* /\*         return check_mpi(NULL, mpierr, __FILE__, __LINE__); *\/ */
-    /* /\*     LOG((2,"MPI_Send map complete")); *\/ */
-    /* /\* } *\/ */
-
     /* Close the netCDF decomp file. */
     if ((ret = PIOc_closefile(ncid)))
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
@@ -1209,49 +1166,40 @@ int pioc_write_nc_decomp_int(int iosysid, const char *filename, int ndims, int *
  * internal function.
  *
  * @param iosysid the IO system ID.
-
  * @param filename the name the decomp file will have.
-
  * @param ndims pointer to int that will get number of dims in the
  * data being described. Ignored if NULL.
-
  * @param global_dimlen an array, of size ndims, that will get the
  * size of the global array in each dimension. Ignored if NULL.
-
  * @param num_tasks pointer to int that gets the number of tasks the
  * data are decomposed over. Ignored if NULL.
-
  * @param task_maplen array of size num_tasks that gets the length of
  * the map for each task. Ignored if NULL.
-
  * @param max_maplen pointer to int that gets the maximum maplen for
  * any task. Ignored if NULL.
-
  * @param map pointer to a 2D array of size [num_tasks][max_maplen]
  * that will get the 0-based mapping from local to global array
  * elements. Ignored if NULL.
-
  * @param title pointer that will get the contents of title attribute,
  * if present. If present, title will be < PIO_MAX_NAME + 1 in
  * length. Ignored if NULL.
-
  * @param history pointer that will get the contents of history attribute,
  * if present. If present, history will be < PIO_MAX_NAME + 1 in
  * length. Ignored if NULL.
-
  * @param source pointer that will get the contents of source
  * attribute. Source will be < PIO_MAX_NAME + 1 in length. Ignored if
  * NULL.
-
  * @param version pointer that will get the contents of version
  * attribute. It will be < PIO_MAX_NAME + 1 in length. Ignored if
  * NULL.
-
+ * @param fortran_order int pointer that will get a 0 if this
+ * decomposition file uses C array ordering, 1 if it uses Fortran
+ * array ordering.
  * @returns 0 for success, error code otherwise.
  */
 int pioc_read_nc_decomp_int(int iosysid, const char *filename, int *ndims, int *global_dimlen,
                             int *num_tasks, int *task_maplen, int *max_maplen, int *map, char *title,
-                            char *history, char *source, char *version)
+                            char *history, char *source, char *version, int *fortran_order)
 {
     iosystem_desc_t *ios;
     int ncid;
@@ -1278,6 +1226,21 @@ int pioc_read_nc_decomp_int(int iosysid, const char *filename, int *ndims, int *
     LOG((3, "version_in = %s", version_in));
     if (version)
         strncpy(version, version_in, PIO_MAX_NAME + 1);
+
+    /* Read order attribute. */
+    char order_in[PIO_MAX_NAME + 1];
+    if ((ret = PIOc_get_att_text(ncid, NC_GLOBAL, DECOMP_ORDER_ATT_NAME, order_in)))
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+    LOG((3, "order_in = %s", order_in));
+    if (fortran_order)
+    {
+        if (!strncmp(order_in, DECOMP_C_ORDER_STR, PIO_MAX_NAME + 1))
+            *fortran_order = 0;
+        else if (!strncmp(order_in, DECOMP_FORTRAN_ORDER_STR, PIO_MAX_NAME + 1))
+            *fortran_order = 1;
+        else
+            return pio_err(ios, NULL, PIO_EINVAL, __FILE__, __LINE__);            
+    }
 
     /* Read attribute with the max map len. */
     int max_maplen_in;

@@ -61,6 +61,9 @@
 /* Name of source attribute. */
 #define DECOMP_SOURCE_ATT_NAME "source"
 
+/* Name of array order (C or Fortran) attribute. */
+#define DECOMP_ORDER_ATT_NAME "array_order"
+
 /* Name for the dim dim in decomp file. */
 #define DECOMP_DIM_DIM "dims"
 
@@ -81,6 +84,15 @@
 
 /* Name of var in decomp file that holds map. */
 #define DECOMP_MAP_VAR_NAME "map"
+
+/* String used to indicate a decomposition file is in C
+ * array-order. */
+#define DECOMP_C_ORDER_STR "C"
+
+/* String used to indicate a decomposition file is in Fortran
+ * array-order. */
+#define DECOMP_FORTRAN_ORDER_STR "Fortran"
+
 
 /**
  * Variable description structure.
