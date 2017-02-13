@@ -12,7 +12,7 @@
 #include <execinfo.h>
 
 #define VERSNO 2001
-#define VERSNO2 2017
+#define VERSNO2 "2017"
 
 /* Some logging constants. */
 #if PIO_ENABLE_LOGGING
@@ -888,51 +888,51 @@ int PIOc_readmap_from_f90(const char *file, int *ndims, int **gdims, PIO_Offset 
  */
 int PIOc_write_nc_decomp(const char *filename, int iosysid, int ioid, MPI_Comm comm)
 {
-    iosystem_desc_t *ios;
-    io_desc_t *iodesc;
-    int npes;   /* Size of this communicator. */
-    int myrank; /* Rank of this task. */
-    int ncid;
-    int mpierr;
-    int ret;
+    /* iosystem_desc_t *ios; */
+    /* io_desc_t *iodesc; */
+    /* int npes;   /\* Size of this communicator. *\/ */
+    /* int myrank; /\* Rank of this task. *\/ */
+    /* int ncid; */
+    /* int mpierr; */
+    /* int ret; */
 
-    LOG((1, "PIOc_write_nc_decomp filename = %s iosysid = %d ioid = %d", filename,
-         iosysid, ioid));
+    /* LOG((1, "PIOc_write_nc_decomp filename = %s iosysid = %d ioid = %d", filename, */
+    /*      iosysid, ioid)); */
 
-    /* Get the IO system info. */
-    if (!(ios = pio_get_iosystem_from_id(iosysid)))
-        return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
+    /* /\* Get the IO system info. *\/ */
+    /* if (!(ios = pio_get_iosystem_from_id(iosysid))) */
+    /*     return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__); */
 
-    /* Get the IO desc, which describes the decomposition. */
-    if (!(iodesc = pio_get_iodesc_from_id(ioid)))
-        return pio_err(ios, NULL, PIO_EBADID, __FILE__, __LINE__);
+    /* /\* Get the IO desc, which describes the decomposition. *\/ */
+    /* if (!(iodesc = pio_get_iodesc_from_id(ioid))) */
+    /*     return pio_err(ios, NULL, PIO_EBADID, __FILE__, __LINE__); */
 
-    iodesc_dump(iodesc);
+    /* /\*iodesc_dump(iodesc);*\/ */
 
-    if ((mpierr = MPI_Comm_size(comm, &npes)))
-        return check_mpi(NULL, mpierr, __FILE__, __LINE__);
-    if ((mpierr = MPI_Comm_rank(comm, &myrank)))
-        return check_mpi(NULL, mpierr, __FILE__, __LINE__);
-    LOG((2, "npes = %d myrank = %d", npes, myrank));
+    /* if ((mpierr = MPI_Comm_size(comm, &npes))) */
+    /*     return check_mpi(NULL, mpierr, __FILE__, __LINE__); */
+    /* if ((mpierr = MPI_Comm_rank(comm, &myrank))) */
+    /*     return check_mpi(NULL, mpierr, __FILE__, __LINE__); */
+    /* LOG((2, "npes = %d myrank = %d", npes, myrank)); */
 
-    /* Allocate memory for the nmaplen. This will contain the length
-     * of the map on each task. */
-    PIO_Offset nmaplen[npes];
-    int nmaplen_int[npes];
+    /* /\* Allocate memory for the nmaplen. This will contain the length */
+    /*  * of the map on each task. *\/ */
+    /* PIO_Offset nmaplen[npes]; */
+    /* int nmaplen_int[npes]; */
 
-    /* Gather maplens from all tasks and fill the nmaplen array on
-     * task 0. */
-    if ((mpierr = MPI_Gather(&iodesc->maplen, 1, PIO_OFFSET, nmaplen, 1, PIO_OFFSET, 0, comm)))
-        return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+    /* /\* Gather maplens from all tasks and fill the nmaplen array on */
+    /*  * task 0. *\/ */
+    /* if ((mpierr = MPI_Gather(&iodesc->maplen, 1, PIO_OFFSET, nmaplen, 1, PIO_OFFSET, 0, comm))) */
+    /*     return check_mpi(NULL, mpierr, __FILE__, __LINE__); */
 
-    /* Copy maplens to int array. Also find the max maplen. */
-    int max_maplen = 0;
-    for (int p = 0; p < npes; p++)
-    {
-        nmaplen_int[p] = nmaplen[p];
-        if (nmaplen_int[p] > max_maplen)
-            max_maplen = nmaplen_int[p];
-    }
+    /* /\* Copy maplens to int array. Also find the max maplen. *\/ */
+    /* int max_maplen = 0; */
+    /* for (int p = 0; p < npes; p++) */
+    /* { */
+    /*     nmaplen_int[p] = nmaplen[p]; */
+    /*     if (nmaplen_int[p] > max_maplen) */
+    /*         max_maplen = nmaplen_int[p]; */
+    /* } */
 
     /* The iodesc->map on each task is a 1-D array with iodesc->maplen
      * elements, which are the 1-based mappings to the global array
@@ -1062,9 +1062,9 @@ int pioc_write_nc_decomp_int(int iosysid, const char *filename, int ndims, int *
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
     /* Write an attribute with the version of this file. */
-    int versno = VERSNO2;
-    if ((ret = PIOc_put_att_int(ncid, NC_GLOBAL, DECOMP_VERSION_ATT_NAME, PIO_INT,
-                                1, &versno)))
+    char version[] = VERSNO2;
+    if ((ret = PIOc_put_att_text(ncid, NC_GLOBAL, DECOMP_VERSION_ATT_NAME,
+                                 strlen(version) + 1, version)))
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
     /* Write an attribute with the max map len. */
@@ -1075,19 +1075,19 @@ int pioc_write_nc_decomp_int(int iosysid, const char *filename, int ndims, int *
     /* Write title attribute, if the user provided one. */
     if (title)
         if ((ret = PIOc_put_att_text(ncid, NC_GLOBAL, DECOMP_TITLE_ATT_NAME,
-                                     strlen(title), title)))
+                                     strlen(title) + 1, title)))
             return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
     /* Write history attribute, if the user provided one. */
     if (history)
         if ((ret = PIOc_put_att_text(ncid, NC_GLOBAL, DECOMP_HISTORY_ATT_NAME,
-                                     strlen(history), history)))
+                                     strlen(history) + 1, history)))
             return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
     /* Write a source attribute. */
     char source[] = "Decomposition file produced by PIO library.";
     if ((ret = PIOc_put_att_text(ncid, NC_GLOBAL, DECOMP_SOURCE_ATT_NAME,
-                                 strlen(source), source)))
+                                 strlen(source) + 1, source)))
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
     /* We need a dimension for the dimensions in the data. (Example:
@@ -1201,7 +1201,197 @@ int pioc_write_nc_decomp_int(int iosysid, const char *filename, int ndims, int *
     /* Close the netCDF decomp file. */
     if ((ret = PIOc_closefile(ncid)))
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
-return PIO_NOERR;
+
+    return PIO_NOERR;
+}
+
+/* Read the decomp information from a netCDF decomp file. This is an
+ * internal function.
+ *
+ * @param iosysid the IO system ID.
+
+ * @param filename the name the decomp file will have.
+
+ * @param ndims pointer to int that will get number of dims in the
+ * data being described. Ignored if NULL.
+
+ * @param global_dimlen an array, of size ndims, that will get the
+ * size of the global array in each dimension. Ignored if NULL.
+
+ * @param num_tasks pointer to int that gets the number of tasks the
+ * data are decomposed over. Ignored if NULL.
+
+ * @param task_maplen array of size num_tasks that gets the length of
+ * the map for each task. Ignored if NULL.
+
+ * @param max_maplen pointer to int that gets the maximum maplen for
+ * any task. Ignored if NULL.
+
+ * @param map pointer to a 2D array of size [num_tasks][max_maplen]
+ * that will get the 0-based mapping from local to global array
+ * elements. Ignored if NULL.
+
+ * @param title pointer that will get the contents of title attribute,
+ * if present. If present, title will be < PIO_MAX_NAME + 1 in
+ * length. Ignored if NULL.
+
+ * @param history pointer that will get the contents of history attribute,
+ * if present. If present, history will be < PIO_MAX_NAME + 1 in
+ * length. Ignored if NULL.
+
+ * @param source pointer that will get the contents of source
+ * attribute. Source will be < PIO_MAX_NAME + 1 in length. Ignored if
+ * NULL.
+
+ * @param version pointer that will get the contents of version
+ * attribute. It will be < PIO_MAX_NAME + 1 in length. Ignored if
+ * NULL.
+
+ * @returns 0 for success, error code otherwise.
+ */
+int pioc_read_nc_decomp_int(int iosysid, const char *filename, int *ndims, int *global_dimlen,
+                            int *num_tasks, int *task_maplen, int *max_maplen, int *map, char *title,
+                            char *history, char *source, char *version)
+{
+    iosystem_desc_t *ios;
+    int ncid;
+    int ret;
+    
+    /* Get the IO system info. */
+    if (!(ios = pio_get_iosystem_from_id(iosysid)))
+        return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
+
+    /* Check inputs. */
+    if (!filename)
+        return pio_err(ios, NULL, PIO_EINVAL, __FILE__, __LINE__);
+
+    LOG((1, "pioc_read_nc_decomp_int iosysid = %d filename = %s", iosysid, filename));
+
+    /* Open the netCDF decomp file. */
+    if ((ret = PIOc_open(iosysid, filename, NC_WRITE, &ncid)))
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+
+    /* Read version attribute. */
+    char version_in[PIO_MAX_NAME + 1];
+    if ((ret = PIOc_get_att_text(ncid, NC_GLOBAL, DECOMP_VERSION_ATT_NAME, version_in)))
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+    LOG((3, "version_in = %s", version_in));
+    if (version)
+        strncpy(version, version_in, PIO_MAX_NAME + 1);
+
+    /* Read attribute with the max map len. */
+    int max_maplen_in;
+    if ((ret = PIOc_get_att_int(ncid, NC_GLOBAL, DECOMP_MAX_MAPLEN_ATT_NAME, &max_maplen_in)))
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+    LOG((3, "max_maplen_in = %d", version_in));
+    if (max_maplen)
+        *max_maplen = max_maplen_in;
+
+    /* Read title attribute, if it is in the file. */
+    char title_in[NC_MAX_NAME + 1];
+    ret = PIOc_get_att_text(ncid, NC_GLOBAL, DECOMP_TITLE_ATT_NAME, title_in);
+    if (ret == PIO_NOERR)
+    {
+        /* If the caller wants it, copy the title for them. */
+        if (title)
+            strncpy(title, title_in, PIO_MAX_NAME + 1);
+    }
+    else if (ret == PIO_ENOTATT)
+    {
+        /* No title attribute. */
+        if (title)
+            title[0] = '\0';
+    }
+    else
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+
+    /* Read history attribute, if it is in the file. */
+    char history_in[NC_MAX_NAME + 1];
+    ret = PIOc_get_att_text(ncid, NC_GLOBAL, DECOMP_HISTORY_ATT_NAME, history_in);
+    if (ret == PIO_NOERR)
+    {
+        /* If the caller wants it, copy the history for them. */
+        if (history)
+            strncpy(history, history_in, PIO_MAX_NAME + 1);
+    }
+    else if (ret == PIO_ENOTATT)
+    {
+        /* No history attribute. */
+        if (history)
+            history[0] = '\0';
+    }
+    else
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+
+    /* Read source attribute. */
+    char source_in[NC_MAX_NAME + 1];
+    if ((ret = PIOc_get_att_text(ncid, NC_GLOBAL, DECOMP_SOURCE_ATT_NAME, source_in)))
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+    if (source)
+        strncpy(source, source_in, PIO_MAX_NAME + 1);
+
+    /* Read dimension for the dimensions in the data. (Example: for 4D
+     * data we will need to store 4 dimension IDs.) */
+    int dim_dimid;
+    PIO_Offset ndims_in;
+    if ((ret = PIOc_inq_dimid(ncid, DECOMP_DIM_DIM, &dim_dimid)))
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+    if ((ret = PIOc_inq_dim(ncid, dim_dimid, NULL, &ndims_in)))
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+    if (ndims)
+        *ndims = ndims_in;
+
+    /* Read the global sizes of the array. */
+    int gsize_varid;
+    int global_dimlen_in[ndims_in];
+    if ((ret = PIOc_inq_varid(ncid, DECOMP_GLOBAL_SIZE_VAR_NAME, &gsize_varid)))
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+    if ((ret = PIOc_get_var_int(ncid, gsize_varid, global_dimlen_in)))
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+    if (global_dimlen)
+        for (int d = 0; d < ndims_in; d++)
+            global_dimlen[d] = global_dimlen_in[d];
+
+    /* Read dimension for tasks. If we have 4 tasks, we need to store
+     * an array of length 4 with the size of the local array on each
+     * task. */
+    int task_dimid;
+    PIO_Offset num_tasks_in;
+    if ((ret = PIOc_inq_dimid(ncid, DECOMP_TASK_DIM_NAME, &task_dimid)))
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+    if ((ret = PIOc_inq_dim(ncid, task_dimid, NULL, &num_tasks_in)))
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+    if (num_tasks)
+        *num_tasks = num_tasks_in;
+
+    /* Read the length if the local array on each task. */
+    int maplen_varid;
+    int task_maplen_in[num_tasks_in];
+    if ((ret = PIOc_inq_varid(ncid, DECOMP_MAPLEN_VAR_NAME, &maplen_varid)))
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+    if ((ret = PIOc_get_var_int(ncid, maplen_varid, task_maplen_in)))
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+    if (task_maplen)
+        for (int t = 0; t < num_tasks_in; t++)
+            task_maplen[t] = task_maplen_in[t];
+
+    /* Read the map. */
+    int map_varid;
+    int map_in[num_tasks_in][max_maplen_in];
+    if ((ret = PIOc_inq_varid(ncid, DECOMP_MAP_VAR_NAME, &map_varid)))
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+    if ((ret = PIOc_get_var_int(ncid, map_varid, (int *)map_in)))
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+    if (map)
+        for (int t = 0; t < num_tasks_in; t++)
+            for (int l = 0; l < max_maplen_in; l++)
+                map[t * max_maplen_in + l] = map_in[t][l];
+
+    /* Close the netCDF decomp file. */
+    if ((ret = PIOc_closefile(ncid)))
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+
+    return PIO_NOERR;
 }
 
 /**

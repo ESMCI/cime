@@ -1439,13 +1439,43 @@ int test_decomp(int my_test_size, int my_rank, int iosysid, int dim_len,
     int task_maplen[TARGET_NTASKS] = {1, 1, 1, 1};
     int map[TARGET_NTASKS][1] = {{0},{1},{2},{3}};
     if ((ret = pioc_write_nc_decomp_int(iosysid, nc_filename, NDIM1, global_dimlen,
-                                        TARGET_NTASKS, task_maplen, map, title, history)))
+                                        TARGET_NTASKS, task_maplen, (int *)map, title,
+                                        history)))
         return ret;
-    
-    /* /\* Write the netcdf decomp file (on appropriate tasks). *\/ */
-    /* if ((ret = PIOc_write_nc_decomp(nc_filename, iosysid, ioid, test_comm))) */
-    /*     return ret; */
 
+    /* Read the decomp file. */
+#define MAX_MAPLEN 1
+    int ndims_in;
+    int num_tasks_in;
+    int max_maplen_in;
+    char title_in[PIO_MAX_NAME + 1];
+    char history_in[PIO_MAX_NAME + 1];
+    char source_in[PIO_MAX_NAME + 1];
+    char version_in[PIO_MAX_NAME + 1];
+    char expected_source[] = "Decomposition file produced by PIO library.";
+    char expected_version[] = "2017";
+    int global_dimlen_in[NDIM1];    
+    int map_in[TARGET_NTASKS][MAX_MAPLEN];
+    if ((ret = pioc_read_nc_decomp_int(iosysid, nc_filename, &ndims_in, global_dimlen_in,
+                                       &num_tasks_in, task_maplen, &max_maplen_in, map_in, title_in,
+                                       history_in, source_in, version_in)))
+        return ret;
+
+    /* Did we get the correct answers? */
+    printf("source_in = %s\n", source_in);
+    if (strcmp(title, title_in) || strcmp(history, history_in) ||
+        strcmp(source_in, expected_source) || strcmp(version_in, expected_version))
+        return ERR_WRONG;
+    if (ndims_in != NDIM1 || num_tasks_in != TARGET_NTASKS || max_maplen_in != 1)
+        return ERR_WRONG;
+    for (int d = 0; d < ndims_in; d++)
+        if (global_dimlen_in[d] != global_dimlen[d])
+            return ERR_WRONG;
+    for (int t = 0; t < num_tasks_in; t++)
+        for (int l = 0; l < max_maplen_in; l++)
+            if (map_in[t][l] != map[t][l])
+                return ERR_WRONG;
+    
     /* Free the PIO decomposition. */
     if ((ret = PIOc_freedecomp(iosysid, ioid)))
         ERR(ret);
@@ -1533,6 +1563,6 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
 /* Run Tests for NetCDF-4 Functions. */
 int main(int argc, char **argv)
 {
-    return run_test_main(argc, argv, MIN_NTASKS, TARGET_NTASKS, 0,
+    return run_test_main(argc, argv, MIN_NTASKS, TARGET_NTASKS, 3,
                          TEST_NAME, dim_len, COMPONENT_COUNT, NUM_IO_PROCS);
 }
