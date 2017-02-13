@@ -29,7 +29,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="2. Creating and Setting up a Case" href="create-a-case.html" />
-    <link rel="prev" title="CIME User’s Guide: Part 1" href="index.html" />
+    <link rel="prev" title="CIME User’s Guide Part 1: Basic Use" href="index.html" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <!--[if lt IE 9]>
     <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
@@ -46,10 +46,10 @@
           <a href="create-a-case.html" title="2. Creating and Setting up a Case"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="index.html" title="CIME User’s Guide: Part 1"
+          <a href="index.html" title="CIME User’s Guide Part 1: Basic Use"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">on  documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">CIME User&#8217;s Guide: Part 1</a> &#187;</li> 
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">CIME User&#8217;s Guide Part 1: Basic Use</a> &#187;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -57,18 +57,16 @@
   <h3><a href="../index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">1. Introduction and Overview</a><ul>
-<li><a class="reference internal" href="#style-definitions">1.1. Style definitions</a></li>
-<li><a class="reference internal" href="#cime-version-naming">1.2. CIME version naming</a></li>
-<li><a class="reference internal" href="#prerequisites">1.3. Prerequisites</a></li>
-<li><a class="reference internal" href="#input-data">1.4. Input data</a></li>
-<li><a class="reference internal" href="#cime-quick-start">1.5. CIME quick start</a></li>
+<li><a class="reference internal" href="#prerequisites">1.1. Prerequisites</a></li>
+<li><a class="reference internal" href="#cime-terms-and-concepts">1.2. CIME terms and concepts</a></li>
+<li><a class="reference internal" href="#setting-cime-defaults">1.3. Setting CIME defaults</a></li>
 </ul>
 </li>
 </ul>
 
   <h4>Previous topic</h4>
   <p class="topless"><a href="index.html"
-                        title="previous chapter">CIME User&#8217;s Guide: Part 1</a></p>
+                        title="previous chapter">CIME User&#8217;s Guide Part 1: Basic Use</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="create-a-case.html"
                         title="next chapter">2. Creating and Setting up a Case</a></p>
@@ -99,20 +97,67 @@
             
   <div class="section" id="introduction-and-overview">
 <span id="introduction"></span><h1>1. Introduction and Overview<a class="headerlink" href="#introduction-and-overview" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="style-definitions">
-<h2>1.1. Style definitions<a class="headerlink" href="#style-definitions" title="Permalink to this headline">¶</a></h2>
-</div>
-<div class="section" id="cime-version-naming">
-<h2>1.2. CIME version naming<a class="headerlink" href="#cime-version-naming" title="Permalink to this headline">¶</a></h2>
-</div>
+<p>The Common Infrastructure for Modeling the Earth (CIME) provides a UNIX command-line-based user interface for
+performing all of the necessary functions to configure, compile and execute an earth system model.  Part 1 of
+this guide will explain all of the basic commands needed to get a model running.</p>
 <div class="section" id="prerequisites">
-<h2>1.3. Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h2>
+<h2>1.1. Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h2>
+<p>You should be familiar with the basic concepts of climate modeling.</p>
+<p>You should be familiar with UNIX command line terminals and the UNIX development environment.</p>
+<p>CIME&#8217;s commands are python scripts and require a correct version of the Python interpreter to be installed before any use.</p>
+<p>The python version must be greater then 2.7 but less the 3.0.  You can check which version of ptyhon you have by typing:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">python</span> <span class="o">--</span><span class="n">version</span>
+</pre></div>
 </div>
-<div class="section" id="input-data">
-<h2>1.4. Input data<a class="headerlink" href="#input-data" title="Permalink to this headline">¶</a></h2>
+<p><strong>NOTE:</strong>  Part 1 of this user&#8217;s guide assumes that CIME and necessary input files have already been installed on
+the computer you are using.  If it is not, see Installing CIME.</p>
 </div>
-<div class="section" id="cime-quick-start">
-<h2>1.5. CIME quick start<a class="headerlink" href="#cime-quick-start" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="cime-terms-and-concepts">
+<h2>1.2. CIME terms and concepts<a class="headerlink" href="#cime-terms-and-concepts" title="Permalink to this headline">¶</a></h2>
+<p>The following concepts are ingrained in CIME and will occur frequently in this documentation.</p>
+<dl class="docutils">
+<dt><strong>full</strong> vs <strong>data</strong> vs <strong>stub</strong> models:</dt>
+<dd><p class="first">Most coupled climate models contain sub-models of the atmosphere, ocean, and other systems
+that each have their own set of equations to solve must all interact with each other through their shared physical
+interfaces.  We refer to those as <em>full</em> models.</p>
+<p>CIME recognizes 7 different physical sub-models of a climate model, those are:</p>
+<blockquote>
+<div>atmosphere, ocean, sea-ice, land surface, river, glacier, wave</div></blockquote>
+<p>All must be specified to compile an executable within CIME.</p>
+<p>For some climate problems, its necessary to reduce feedbacks within the system
+by replacing a full model with a version that sends and recieves the same variables to and from other models but
+the values sent are not computed from the equations but instead read from files.  The values received are ignored.
+We call these full-model substitutes <em>data models</em>&#8221; and CIME provides data models for each of the sub-models supported.</p>
+<p class="last">For some configurations, a data model is not needed and so CIME provides <em>stub</em> versions that simply occupy the
+required place in the climate execution sequence  and do not send or receive any data.</p>
+</dd>
+<dt><strong>component set</strong> or <strong>compset</strong>:</dt>
+<dd>The sub-models within a climate model are also called <em>components</em> of the climate model. We
+say a climate model has an atmosphere component, an ocean component, etc.  CIME supports mixing <em>full</em>, <em>data</em> and
+<em>stub</em> components together depending on the problem.  The resulting set of components is called the <em>component set</em> or <em>compset</em>.</dd>
+<dt><strong>grid set</strong> or <strong>grid</strong>:</dt>
+<dd>Each full model must solve its equations on a numerical grid.  CIME allows several models within the system to have different grids.  The resulting set of numerical grids is called the <em>grid set</em> or sometimes just the
+<em>grid</em> where <em>grid</em> is a unique abbreviation denoting a set of numerical grids.  Sometimes the <em>resolution</em> will also
+refer to a specific set of grids with different resolutions.</dd>
+<dt><strong>machine</strong>:</dt>
+<dd>The computer you are using to run CIME and build and run the climate model is called the <em>machine</em>.  It could be a workstation or
+a national supercomputer.  The <em>machine</em> is typically the UNIX host name but could be any string.</dd>
+<dt><strong>compiler</strong>:</dt>
+<dd>CIME will control compiling the source code (Fortran, C and C++)  of your model in to an executable.
+Some machines support mutiple compilers and so you may need to specify which one to use.</dd>
+<dt><strong>case</strong>:</dt>
+<dd>The most important concept in CIME is a <em>case</em>.  To build and excute a CIME-enabled climate model, you have to
+make choices of compset, grid set, machine and compiler.  The collection of these choices, and any additional customizations
+you may make, is called the <em>case</em>.</dd>
+</dl>
+</div>
+<div class="section" id="setting-cime-defaults">
+<h2>1.3. Setting CIME defaults<a class="headerlink" href="#setting-cime-defaults" title="Permalink to this headline">¶</a></h2>
+<p>Before using any CIME commands, you should set the CIME_MODEL environmental variable. In csh, this would be:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">setenv</span> <span class="n">CIME_MODEL</span> <span class="o">&lt;</span><span class="n">model</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>Where &lt;model&gt; is one of &#8220;acme&#8221; or &#8220;cesm&#8221;.</p>
 </div>
 </div>
 
@@ -132,10 +177,10 @@
           <a href="create-a-case.html" title="2. Creating and Setting up a Case"
              >next</a> |</li>
         <li class="right" >
-          <a href="index.html" title="CIME User’s Guide: Part 1"
+          <a href="index.html" title="CIME User’s Guide Part 1: Basic Use"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">on  documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" >CIME User&#8217;s Guide: Part 1</a> &#187;</li> 
+          <li class="nav-item nav-item-1"><a href="index.html" >CIME User&#8217;s Guide Part 1: Basic Use</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

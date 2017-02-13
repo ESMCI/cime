@@ -28,7 +28,7 @@
     <script type="text/javascript" src="../_static/bizstyle.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="1. create_clone" href="cloning-a-case.html" />
+    <link rel="next" title="1. Cloning a Case" href="cloning-a-case.html" />
     <link rel="prev" title="4. Running a Case" href="running-a-case.html" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <!--[if lt IE 9]>
@@ -43,7 +43,7 @@
           <a href="../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="cloning-a-case.html" title="1. create_clone"
+          <a href="cloning-a-case.html" title="1. Cloning a Case"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="running-a-case.html" title="4. Running a Case"
@@ -69,7 +69,7 @@
                         title="previous chapter">4. Running a Case</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="cloning-a-case.html"
-                        title="next chapter">1. create_clone</a></p>
+                        title="next chapter">1. Cloning a Case</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -155,15 +155,8 @@ Understanding how to compile and run the program fhello_world_mpi.F90 shown here
 </pre></div>
 </div>
 <ul class="simple">
-<li>The files <code class="docutils literal"><span class="pre">config_batch.xml</span></code> and <code class="docutils literal"><span class="pre">config_compilers.xml</span></code> may also need specific adjustments for your batch system and compiler.</li>
-</ul>
-<p>You can edit these files in place to add your machine configuration or you can place your custom configuration files in the directory <code class="docutils literal"><span class="pre">$HOME/.cime/</span></code>.
-We recommend the latter approach. All files in <code class="docutils literal"><span class="pre">$HOME/.cime/</span></code> are appended to the xml objects read into memory.</p>
-<ul class="simple">
-<li>Once you have a basic configuration for your machine defined in your new <code class="docutils literal"><span class="pre">$HOME/.cime</span></code> XML files, you should try the <code class="docutils literal"><span class="pre">scripts_regression_test</span></code> in directory <code class="docutils literal"><span class="pre">$CIME/utils/python/tests</span></code>.</li>
-</ul>
-<p>This script will run a number of basic unit tests starting from the simplest issues and working toward more complicated ones.</p>
-<ul class="simple">
+<li>The files <code class="docutils literal"><span class="pre">config_batch.xml</span></code> and <code class="docutils literal"><span class="pre">config_compilers.xml</span></code> may also need specific adjustments for your batch system and compiler. You can edit these files in place to add your machine configuration or you can place your custom configuration files in the directory <code class="docutils literal"><span class="pre">$HOME/.cime/</span></code>.  We recommend the latter approach. All files in <code class="docutils literal"><span class="pre">$HOME/.cime/</span></code> are appended to the xml objects read into memory.</li>
+<li>Once you have a basic configuration for your machine defined in your new <code class="docutils literal"><span class="pre">$HOME/.cime</span></code> XML files, you should try the <code class="docutils literal"><span class="pre">scripts_regression_test</span></code> in directory <code class="docutils literal"><span class="pre">$CIME/utils/python/tests</span></code>. This script will run a number of basic unit tests starting from the simplest issues and working toward more complicated ones.</li>
 <li>Finally when all the previous steps have run correctly, you are ready to try a case at your target compset and resolution.</li>
 </ul>
 </div>
@@ -236,7 +229,7 @@ Model output data for these runs will be available on the <a class="reference ex
           <a href="../genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="cloning-a-case.html" title="1. create_clone"
+          <a href="cloning-a-case.html" title="1. Cloning a Case"
              >next</a> |</li>
         <li class="right" >
           <a href="running-a-case.html" title="4. Running a Case"
