@@ -139,114 +139,38 @@ int check_darray_file(int iosysid, int ntasks, int my_rank, char *filename)
     return PIO_NOERR;
 }
 
-/* Test the darray functionality. */
-int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank)
+/* Create the test file. */
+int create_test_file(int iosysid, int ioid, int iotype, int my_rank, int *ncid, int *varid)
 {
-    /* char filename[PIO_MAX_NAME + 1]; /\* Name for the output files. *\/ */
-    /* int dim_len[NDIM] = {2, X_DIM_LEN}; /\* Length of the dimensions in the sample data. *\/ */
-    /* int dimids[NDIM];      /\* The dimension IDs. *\/ */
-    /* int ncid;      /\* The ncid of the netCDF file. *\/ */
-    /* int varid;     /\* The ID of the netCDF varable. *\/ */
-    /* int ret;       /\* Return code. *\/ */
+    char filename[PIO_MAX_NAME + 1]; /* Name for the output files. */
+    int dim_len[NDIM] = {NC_UNLIMITED, X_DIM_LEN}; /* Length of the dimensions in the sample data. */
+    int dimids[NDIM];      /* The dimension IDs. */
+    int ret;       /* Return code. */
 
-    /* /\* Use PIO to create the example file in each of the four */
-    /*  * available ways. *\/ */
-    /* for (int fmt = 0; fmt < num_flavors; fmt++) */
-    /* { */
-    /*     /\* Create the filename. *\/ */
-    /*     sprintf(filename, "%s_%d.nc", TEST_NAME, flavor[fmt]); */
-
-    /*     /\* Create the netCDF output file. *\/ */
-    /*     printf("rank: %d Creating sample file %s with format %d...\n", my_rank, filename, */
-    /*            flavor[fmt]); */
-    /*     if ((ret = PIOc_createfile(iosysid, &ncid, &(flavor[fmt]), filename, PIO_CLOBBER))) */
-    /*         ERR(ret); */
-
-    /*     /\* Define netCDF dimensions and variable. *\/ */
-    /*     printf("rank: %d Defining netCDF metadata...\n", my_rank); */
-    /*     if ((ret = PIOc_def_dim(ncid, DIM_NAME, (PIO_Offset)dim_len[0], &dimids[0]))) */
-    /*         ERR(ret); */
-
-    /*     /\* Define a variable. *\/ */
-    /*     if ((ret = PIOc_def_var(ncid, VAR_NAME, PIO_FLOAT, NDIM1, dimids, &varid))) */
-    /*         ERR(ret); */
-
-    /*     /\* End define mode. *\/ */
-    /*     if ((ret = PIOc_enddef(ncid))) */
-    /*         ERR(ret); */
-
-    /*     /\* Write some data. *\/ */
-    /*     PIO_Offset arraylen = 1; */
-    /*     float fillvalue = 0.0; */
-    /*     float test_data[arraylen]; */
-    /*     for (int f = 0; f < arraylen; f++) */
-    /*         test_data[f] = my_rank * 10 + f; */
-    /*     if ((ret = PIOc_write_darray(ncid, varid, ioid, arraylen, test_data, &fillvalue))) */
-    /*         ERR(ret); */
-
-    /*     /\* Close the netCDF file. *\/ */
-    /*     printf("rank: %d Closing the sample data file...\n", my_rank); */
-    /*     if ((ret = PIOc_closefile(ncid))) */
-    /*         ERR(ret); */
-
-    /*     /\* Check the file contents. *\/ */
-    /*     if ((ret = check_darray_file(iosysid, TARGET_NTASKS, my_rank, filename))) */
-    /*         ERR(ret); */
-    /* } */
-    return PIO_NOERR;
-}
-
-/* Define metadata for the test file. */
-int define_metadata(int ncid, int my_rank, int flavor)
-{
-    int dimids[NDIM]; /* The dimension IDs. */
-    int varid; /* The variable ID. */
-    int ret;
-
-    /* Define dimensions. */
-    for (int d = 0; d < NDIM; d++)
-        if ((ret = PIOc_def_dim(ncid, dim_name[d], (PIO_Offset)dim_len[d], &dimids[d])))
-            return ret;
-
+    /* Create the filename. */
+    sprintf(filename, "%s_iotype_%d.nc", TEST_NAME, iotype);
+    
+    /* Create the netCDF output file. */
+    printf("rank: %d Creating sample file %s with format %d...\n", my_rank, filename,
+           iotype);
+    if ((ret = PIOc_createfile(iosysid, ncid, &iotype, filename, PIO_CLOBBER)))
+        ERR(ret);
+    
+    /* Define netCDF dimensions and variable. */
+    printf("rank: %d Defining netCDF metadata...\n", my_rank);
+    if ((ret = PIOc_def_dim(*ncid, dim_name[0], (PIO_Offset)dim_len[0], &dimids[0])))
+        ERR(ret);
+    if ((ret = PIOc_def_dim(*ncid, dim_name[1], (PIO_Offset)dim_len[1], &dimids[1])))
+        ERR(ret);
+    
     /* Define a variable. */
-    if ((ret = PIOc_def_var(ncid, VAR_NAME, PIO_INT, NDIM, dimids, &varid)))
-        return ret;
-
-    return PIO_NOERR;
-}
-
-/* Check the metadata in the test file. */
-int check_metadata(int ncid, int my_rank, int flavor)
-{
-    int ndims, nvars, ngatts, unlimdimid, natts, dimid[NDIM];
-    PIO_Offset len_in;
-    char name_in[PIO_MAX_NAME + 1];
-    nc_type xtype_in;
-    int ret;
-
-    /* Check how many dims, vars, global atts there are, and the id of
-     * the unlimited dimension. */
-    if ((ret = PIOc_inq(ncid, &ndims, &nvars, &ngatts, &unlimdimid)))
-        return ret;
-    if (ndims != NDIM || nvars != 1 || ngatts != 0 || unlimdimid != 0)
-        return ERR_AWFUL;
-
-    /* Check the dimensions. */
-    for (int d = 0; d < NDIM; d++)
-    {
-        if ((ret = PIOc_inq_dim(ncid, d, name_in, &len_in)))
-            return ret;
-        if (len_in != dim_len[d] || strcmp(name_in, dim_name[d]))
-            return ERR_AWFUL;
-    }
-
-    /* Check the variable. */
-    if ((ret = PIOc_inq_var(ncid, 0, name_in, &xtype_in, &ndims, dimid, &natts)))
-        return ret;
-    if (strcmp(name_in, VAR_NAME) || xtype_in != PIO_INT || ndims != NDIM ||
-        dimid[0] != 0 || dimid[1] != 1 || dimid[2] != 2 || natts != 1)
-        return ERR_AWFUL;
-
+    if ((ret = PIOc_def_var(*ncid, VAR_NAME, PIO_FLOAT, NDIM, dimids, varid)))
+        ERR(ret);
+    
+    /* End define mode. */
+    if ((ret = PIOc_enddef(*ncid)))
+        ERR(ret);
+    
     return PIO_NOERR;
 }
 
@@ -255,6 +179,8 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
              int async)
 {
     int ioid;
+    int ncid;
+    int varid;
     int my_test_size;
     char filename[NC_MAX_NAME + 1];
     int ret; /* Return code. */
@@ -273,13 +199,28 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
         if ((ret = create_decomposition(my_test_size, my_rank, iosysid, X_DIM_LEN, &ioid)))
             return ret;
 
-        /* printf("%d Calling write_decomp. async = %d\n", my_rank, async); */
-        /* if ((ret = PIOc_write_decomp(filename, iosysid, ioid, test_comm))) */
-        /*     return ret; */
-        /* printf("%d Called write_decomp. async = %d\n", my_rank, async); */
+        /* Use PIO to create the example file in each of the four
+         * available ways. */
+        for (int fmt = 0; fmt < num_flavors; fmt++)
+        {
+            if ((ret = create_test_file(iosysid, ioid, flavor[fmt], my_rank, &ncid, &varid)))
+                return ret;
+            if ((ret = PIOc_setframe(ncid, varid, 0)))
+                return ret;
+            if ((ret = PIOc_advanceframe(ncid, varid)))
+                return ret;
 
-        /* if ((ret = test_darray(iosysid, ioid, num_flavors, flavor, my_rank))) */
-        /*     return ret; */
+            /* Look at the internals to check that the frame commands
+             * worked. */
+            file_desc_t *file;            
+            if ((ret = pio_get_file(ncid, &file)))
+                return ret;
+            if (file->varlist[varid].record != 1)
+                return ERR_WRONG;
+            
+            if ((PIOc_closefile(ncid)))
+                return ret;
+        }
 
         /* Free the PIO decomposition. */
         if ((ret = PIOc_freedecomp(iosysid, ioid)))
