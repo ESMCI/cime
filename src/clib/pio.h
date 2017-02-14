@@ -710,7 +710,8 @@ extern "C" {
     int PIOc_write_decomp(const char *file, int iosysid, int ioid, MPI_Comm comm);
 
     /* Write a decomposition file using netCDF. */
-    int PIOc_write_nc_decomp(const char *file, int iosysid, int ioid, MPI_Comm comm);
+    int PIOc_write_nc_decomp(const char *filename, int iosysid, int ioid, MPI_Comm comm,
+                             char *title, char *history, int fortran_order);
 
     /* Initializing IO system. */
     int PIOc_Init_Async(MPI_Comm world, int num_io_procs, int *io_proc_list, int component_count,
