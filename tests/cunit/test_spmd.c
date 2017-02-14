@@ -352,6 +352,32 @@ int test_compare_offsets()
     return 0;
 }
 
+/* Test the ceil2() and pair() functions. */
+int test_ceil2_pair()
+{
+    /* Test the ceil2() function. */
+    if (ceil2(1) != 1)
+        return ERR_WRONG;
+    if (ceil2(-100) != 1)
+        return ERR_WRONG;
+    if (ceil2(2) != 2)
+        return ERR_WRONG;
+    if (ceil2(3) != 4)
+        return ERR_WRONG;
+    if (ceil2(16) != 16)
+        return ERR_WRONG;
+    if (ceil2(17) != 32)
+        return ERR_WRONG;
+
+    /* Test the pair() function. */
+    if (pair(4, 0, 0) != 1)
+        return ERR_WRONG;
+    if (pair(4, 2, 2) != 1)
+        return ERR_WRONG;
+    
+    return 0;
+}
+
 /* Run Tests for pio_spmd.c functions. */
 int main(int argc, char **argv)
 {
@@ -395,6 +421,10 @@ int main(int argc, char **argv)
 
         printf("%d running compare_offsets tests\n", my_rank);
         if ((ret = test_compare_offsets()))
+            return ret;
+
+        printf("%d running ceil2/pair tests\n", my_rank);
+        if ((ret = test_ceil2_pair()))
             return ret;
 
     } /* endif my_rank < TARGET_NTASKS */
