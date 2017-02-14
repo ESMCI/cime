@@ -1511,44 +1511,43 @@ int test_decomp_public(int my_test_size, int my_rank, int iosysid, int dim_len,
     if ((ret = PIOc_write_nc_decomp(nc_filename, iosysid, ioid, test_comm, title, history, 0)))
         return ret;
     
-/*     /\* Read the decomp file. *\/ */
-/* #define MAX_MAPLEN 1 */
-/*     int ndims_in; */
-/*     int num_tasks_in; */
-/*     int max_maplen_in; */
-/*     char title_in[PIO_MAX_NAME + 1]; */
-/*     char history_in[PIO_MAX_NAME + 1]; */
-/*     char source_in[PIO_MAX_NAME + 1]; */
-/*     char version_in[PIO_MAX_NAME + 1]; */
-/*     char expected_source[] = "Decomposition file produced by PIO library."; */
-/*     char expected_version[] = "2017"; */
-/*     int global_dimlen_in[NDIM1];     */
-/*     int task_maplen_in[TARGET_NTASKS]; */
-/*     int map_in[TARGET_NTASKS][MAX_MAPLEN]; */
-/*     int fortran_order_in; */
-/*     if ((ret = pioc_read_nc_decomp_int(iosysid, nc_filename, &ndims_in, global_dimlen_in, */
-/*                                        &num_tasks_in, task_maplen_in, &max_maplen_in, (int *)map_in, title_in, */
-/*                                        history_in, source_in, version_in, &fortran_order_in))) */
-/*         return ret; */
+    /* Read the decomp file. */
+    int ndims_in;
+    int num_tasks_in;
+    int max_maplen_in;
+    char title_in[PIO_MAX_NAME + 1];
+    char history_in[PIO_MAX_NAME + 1];
+    char source_in[PIO_MAX_NAME + 1];
+    char version_in[PIO_MAX_NAME + 1];
+    char expected_source[] = "Decomposition file produced by PIO library.";
+    char expected_version[] = "2017";
+    int global_dimlen_in[NDIM1];
+    int task_maplen_in[TARGET_NTASKS];
+    int map_in[TARGET_NTASKS][MAX_MAPLEN];
+    int fortran_order_in;
+    if ((ret = pioc_read_nc_decomp_int(iosysid, nc_filename, &ndims_in, global_dimlen_in,
+                                       &num_tasks_in, task_maplen_in, &max_maplen_in, (int *)map_in, title_in,
+                                       history_in, source_in, version_in, &fortran_order_in)))
+        return ret;
 
-/*     /\* Did we get the correct answers? *\/ */
-/*     printf("source_in = %s\n", source_in); */
-/*     if (strcmp(title, title_in) || strcmp(history, history_in) || */
-/*         strcmp(source_in, expected_source) || strcmp(version_in, expected_version)) */
-/*         return ERR_WRONG; */
-/*     if (ndims_in != NDIM1 || num_tasks_in != TARGET_NTASKS || max_maplen_in != 1 || */
-/*         fortran_order_in) */
-/*         return ERR_WRONG; */
-/*     for (int d = 0; d < ndims_in; d++) */
-/*         if (global_dimlen_in[d] != DIM_LEN) */
-/*             return ERR_WRONG; */
-/*     for (int t = 0; t < num_tasks_in; t++) */
-/*         if (task_maplen_in[t] != 1) */
-/*             return ERR_WRONG; */
-/*     for (int t = 0; t < num_tasks_in; t++) */
-/*         for (int l = 0; l < max_maplen_in; l++) */
-/*             if (map_in[t][l] != t) */
-/*                 return ERR_WRONG; */
+    /* Did we get the correct answers? */
+    printf("source_in = %s\n", source_in);
+    if (strcmp(title, title_in) || strcmp(history, history_in) ||
+        strcmp(source_in, expected_source) || strcmp(version_in, expected_version))
+        return ERR_WRONG;
+    if (ndims_in != NDIM1 || num_tasks_in != TARGET_NTASKS || max_maplen_in != 1 ||
+        fortran_order_in)
+        return ERR_WRONG;
+    for (int d = 0; d < ndims_in; d++)
+        if (global_dimlen_in[d] != DIM_LEN)
+            return ERR_WRONG;
+    for (int t = 0; t < num_tasks_in; t++)
+        if (task_maplen_in[t] != 1)
+            return ERR_WRONG;
+    for (int t = 0; t < num_tasks_in; t++)
+        for (int l = 0; l < max_maplen_in; l++)
+            if (map_in[t][l] != t)
+                return ERR_WRONG;
     
     /* Free the PIO decomposition. */
     if ((ret = PIOc_freedecomp(iosysid, ioid)))

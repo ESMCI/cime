@@ -234,7 +234,8 @@ typedef struct io_desc_t
     /** The length of the decomposition map. */
     int maplen;
 
-    /** An array of length maplen. */
+    /** A 1-D array with iodesc->maplen elements, which are the
+     * 1-based mappings to the global array for that task. */
     PIO_Offset *map;
 
     /** Number of tasks involved in the communication between comp and
