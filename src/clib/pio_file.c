@@ -254,8 +254,7 @@ int PIOc_deletefile(int iosysid, const char *filename)
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     int ierr = PIO_NOERR;  /* Return code from function calls. */
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
-    int delete_called = 0; /* Becomes non-zero after delete is called. */
-    int msg = PIO_MSG_DELETE_FILE;
+     int msg = PIO_MSG_DELETE_FILE;
     size_t len;
 
     LOG((1, "PIOc_deletefile iosysid = %d filename = %s", iosysid, filename));
@@ -291,23 +290,15 @@ int PIOc_deletefile(int iosysid, const char *filename)
 
     /* If this is an IO task, then call the netCDF function. The
      * barriers are needed to assure that no task is trying to operate
-     * on the file while it is being deleted. */
+     * on the file while it is being deleted. IOTYPE is not known, but
+     * nc_delete() will delete any type of file. */
     if (ios->ioproc)
     {
         mpierr = MPI_Barrier(ios->io_comm);
 
-#ifdef _NETCDF
         if (!mpierr && ios->io_rank == 0)
-        {
-            ierr = nc_delete(filename);
-            delete_called++;
-        }
-#else
-#ifdef _PNETCDF
-        if (!mpierr && !delete_called)
-            ierr = ncmpi_delete(filename, ios->info);
-#endif
-#endif
+             ierr = nc_delete(filename);
+ 
         if (!mpierr)
             mpierr = MPI_Barrier(ios->io_comm);
     }
