@@ -264,6 +264,11 @@
   </compset>
 
   <compset>
+    <alias>N1850OC</alias>
+    <lname>1850_CAM60%PTAERO_CLM50%BGC_CICE_MICOM%ECO_MOSART_SGLC_SWAV</lname>
+  </compset>
+
+  <compset>
     <alias>N1850P</alias>
     <lname>1850_CAM60%PTAERO_CLM50%BGC_CICE_POP2_MOSART_SGLC_SWAV</lname>
   </compset>
