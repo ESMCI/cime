@@ -44,6 +44,56 @@
  * order to set default error handling. */
 #define PIO_DEFAULT (-1)
 
+/** Used in the decomposition netCDF file. */
+
+/* Holds the version of the decomposition file. */
+#define DECOMP_VERSION_ATT_NAME "version"
+
+/* Holds the maximum length of any task map. */
+#define DECOMP_MAX_MAPLEN_ATT_NAME "max_maplen"
+
+/* Name of title attribute. */
+#define DECOMP_TITLE_ATT_NAME "title"
+
+/* Name of history attribute. */
+#define DECOMP_HISTORY_ATT_NAME "history"
+
+/* Name of source attribute. */
+#define DECOMP_SOURCE_ATT_NAME "source"
+
+/* Name of array order (C or Fortran) attribute. */
+#define DECOMP_ORDER_ATT_NAME "array_order"
+
+/* Name for the dim dim in decomp file. */
+#define DECOMP_DIM_DIM "dims"
+
+/* Name for the npes dim in decomp file. */
+#define DECOMP_TASK_DIM_NAME "task"
+
+/* Name for the npes dim in decomp file. */
+#define DECOMP_MAPELEM_DIM_NAME "map_element"
+
+#define DECOMP_NDIMS "ndims"
+
+/* Name of var in decomp file that holds global array sizes. */
+#define DECOMP_GLOBAL_SIZE_VAR_NAME "global_size"
+
+/* Name of var in decomp file that holds the length of the map for
+ * each task. */
+#define DECOMP_MAPLEN_VAR_NAME "maplen"
+
+/* Name of var in decomp file that holds map. */
+#define DECOMP_MAP_VAR_NAME "map"
+
+/* String used to indicate a decomposition file is in C
+ * array-order. */
+#define DECOMP_C_ORDER_STR "C"
+
+/* String used to indicate a decomposition file is in Fortran
+ * array-order. */
+#define DECOMP_FORTRAN_ORDER_STR "Fortran"
+
+
 /**
  * Variable description structure.
  */
@@ -184,7 +234,8 @@ typedef struct io_desc_t
     /** The length of the decomposition map. */
     int maplen;
 
-    /** An array of length maplen. */
+    /** A 1-D array with iodesc->maplen elements, which are the
+     * 1-based mappings to the global array for that task. */
     PIO_Offset *map;
 
     /** Number of tasks involved in the communication between comp and
@@ -658,6 +709,10 @@ extern "C" {
 
     /* Write a decomposition file. */
     int PIOc_write_decomp(const char *file, int iosysid, int ioid, MPI_Comm comm);
+
+    /* Write a decomposition file using netCDF. */
+    int PIOc_write_nc_decomp(const char *filename, int iosysid, int ioid, MPI_Comm comm,
+                             char *title, char *history, int fortran_order);
 
     /* Initializing IO system. */
     int PIOc_Init_Async(MPI_Comm world, int num_io_procs, int *io_proc_list, int component_count,

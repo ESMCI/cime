@@ -1398,25 +1398,144 @@ int test_malloc_iodesc(int iosysid, int my_rank)
     return 0;
 }
 
-/* Test some decomp stuff. */
-int test_decomp(int my_test_size, int my_rank, int iosysid, int dim_len,
-                MPI_Comm test_comm, int async)
+/* Test some decomp internal functions. */
+int test_decomp_internal(int my_test_size, int my_rank, int iosysid, int dim_len,
+                         MPI_Comm test_comm, int async)
 {
     int ioid;
-    char filename[NC_MAX_NAME + 1]; /* Test decomp filename. */
+    char filename[NC_MAX_NAME + 1];    /* Test decomp filename. */
+    char nc_filename[NC_MAX_NAME + 1]; /* Test decomp filename (netcdf version). */
     int ret;
     
     /* This will be our file name for writing out decompositions. */
     sprintf(filename, "decomp_%s_rank_%d_async_%d.txt", TEST_NAME, my_rank, async);
+    sprintf(nc_filename, "nc_decomp_internal_%s_rank_%d_async_%d.nc", TEST_NAME, my_rank, async);
 
     /* Decompose the data over the tasks. */
     if ((ret = create_decomposition(my_test_size, my_rank, iosysid, dim_len, &ioid)))
         return ret;
 
-    printf("%d about to write decomp file %s\n", my_rank, filename);
+    /* Write the decomp file (on appropriate tasks). */
     if ((ret = PIOc_write_decomp(filename, iosysid, ioid, test_comm)))
         return ret;
 
+    /* Write a netCDF decomp file for this iosystem. */
+    char *title = "Very Simple Test Decompositon";
+    char *history = "Added to PIO automatic testing by Ed in February 2017.";
+    int global_dimlen[] = {DIM_LEN};
+    int task_maplen[TARGET_NTASKS] = {1, 1, 1, 1};
+    int map[TARGET_NTASKS][1] = {{0},{1},{2},{3}};
+    if ((ret = pioc_write_nc_decomp_int(iosysid, nc_filename, NDIM1, global_dimlen,
+                                        TARGET_NTASKS, task_maplen, (int *)map, title,
+                                        history, 0)))
+        return ret;
+
+    /* Read the decomp file. */
+#define MAX_MAPLEN 1
+    int ndims_in;
+    int num_tasks_in;
+    int max_maplen_in;
+    char title_in[PIO_MAX_NAME + 1];
+    char history_in[PIO_MAX_NAME + 1];
+    char source_in[PIO_MAX_NAME + 1];
+    char version_in[PIO_MAX_NAME + 1];
+    char expected_source[] = "Decomposition file produced by PIO library.";
+    char expected_version[] = "2017";
+    int global_dimlen_in[NDIM1];    
+    int task_maplen_in[TARGET_NTASKS];
+    int map_in[TARGET_NTASKS][MAX_MAPLEN];
+    int fortran_order_in;
+
+    if ((ret = pioc_read_nc_decomp_int(iosysid, nc_filename, &ndims_in, global_dimlen_in,
+                                       &num_tasks_in, task_maplen_in, &max_maplen_in, (int *)map_in, title_in,
+                                       history_in, source_in, version_in, &fortran_order_in)))
+        return ret;
+
+    /* Did we get the correct answers? */
+    printf("source_in = %s\n", source_in);
+    if (strcmp(title, title_in) || strcmp(history, history_in) ||
+        strcmp(source_in, expected_source) || strcmp(version_in, expected_version))
+        return ERR_WRONG;
+    if (ndims_in != NDIM1 || num_tasks_in != TARGET_NTASKS || max_maplen_in != 1 ||
+        fortran_order_in)
+        return ERR_WRONG;
+    for (int d = 0; d < ndims_in; d++)
+        if (global_dimlen_in[d] != global_dimlen[d])
+            return ERR_WRONG;
+    for (int t = 0; t < num_tasks_in; t++)
+        if (task_maplen_in[t] != 1)
+            return ERR_WRONG;
+    for (int t = 0; t < num_tasks_in; t++)
+        for (int l = 0; l < max_maplen_in; l++)
+            if (map_in[t][l] != map[t][l])
+                return ERR_WRONG;
+    
+    /* Free the PIO decomposition. */
+    if ((ret = PIOc_freedecomp(iosysid, ioid)))
+        ERR(ret);
+
+    return 0;
+}
+
+/* Test some decomp public API functions. */
+int test_decomp_public(int my_test_size, int my_rank, int iosysid, int dim_len,
+                       MPI_Comm test_comm, int async)
+{
+    int ioid;
+    char nc_filename[NC_MAX_NAME + 1]; /* Test decomp filename (netcdf version). */
+    int ret;
+    
+    /* This will be our file name for writing out decompositions. */
+    sprintf(nc_filename, "nc_decomp_%s_rank_%d_async_%d.nc", TEST_NAME, my_rank, async);
+
+    /* Decompose the data over the tasks. */
+    if ((ret = create_decomposition(my_test_size, my_rank, iosysid, dim_len, &ioid)))
+        return ret;
+
+    /* Write a netCDF decomp file for this iosystem. */
+    char *title = "Very Simple Test Decompositon";
+    char *history = "Added to PIO automatic testing by Ed in February 2017.";
+    if ((ret = PIOc_write_nc_decomp(nc_filename, iosysid, ioid, test_comm, title, history, 0)))
+        return ret;
+    
+    /* Read the decomp file. */
+    int ndims_in;
+    int num_tasks_in;
+    int max_maplen_in;
+    char title_in[PIO_MAX_NAME + 1];
+    char history_in[PIO_MAX_NAME + 1];
+    char source_in[PIO_MAX_NAME + 1];
+    char version_in[PIO_MAX_NAME + 1];
+    char expected_source[] = "Decomposition file produced by PIO library.";
+    char expected_version[] = "2017";
+    int global_dimlen_in[NDIM1];
+    int task_maplen_in[TARGET_NTASKS];
+    int map_in[TARGET_NTASKS][MAX_MAPLEN];
+    int fortran_order_in;
+    if ((ret = pioc_read_nc_decomp_int(iosysid, nc_filename, &ndims_in, global_dimlen_in,
+                                       &num_tasks_in, task_maplen_in, &max_maplen_in, (int *)map_in, title_in,
+                                       history_in, source_in, version_in, &fortran_order_in)))
+        return ret;
+
+    /* Did we get the correct answers? */
+    printf("source_in = %s\n", source_in);
+    if (strcmp(title, title_in) || strcmp(history, history_in) ||
+        strcmp(source_in, expected_source) || strcmp(version_in, expected_version))
+        return ERR_WRONG;
+    if (ndims_in != NDIM1 || num_tasks_in != TARGET_NTASKS || max_maplen_in != 1 ||
+        fortran_order_in)
+        return ERR_WRONG;
+    for (int d = 0; d < ndims_in; d++)
+        if (global_dimlen_in[d] != DIM_LEN)
+            return ERR_WRONG;
+    for (int t = 0; t < num_tasks_in; t++)
+        if (task_maplen_in[t] != 1)
+            return ERR_WRONG;
+    for (int t = 0; t < num_tasks_in; t++)
+        for (int l = 0; l < max_maplen_in; l++)
+            if (map_in[t][l] != t)
+                return ERR_WRONG;
+    
     /* Free the PIO decomposition. */
     if ((ret = PIOc_freedecomp(iosysid, ioid)))
         ERR(ret);
@@ -1458,9 +1577,15 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
     if ((ret = test_malloc_iodesc(iosysid, my_rank)))
         return ret;
 
-    /* Test decomposition stuff. */
-    if ((ret = test_decomp(my_test_size, my_rank, iosysid, DIM_LEN, test_comm, async)))
-        return ret;
+    /* Test decomposition internal functions. */
+    if (!async)
+        if ((ret = test_decomp_internal(my_test_size, my_rank, iosysid, DIM_LEN, test_comm, async)))
+            return ret;
+
+    /* Test decomposition public API functions. */
+    if (!async)
+        if ((ret = test_decomp_public(my_test_size, my_rank, iosysid, DIM_LEN, test_comm, async)))
+            return ret;
 
     if (!async)
     {

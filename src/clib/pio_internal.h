@@ -70,10 +70,6 @@ extern "C" {
 
     extern PIO_Offset pio_buffer_size_limit;
 
-    /** If this is true, then InitDecomp() will save decompositions to
-     * a file. */
-    extern bool PIO_Save_Decomps;
-
     /** Used to sort map points in the subset rearranger. */
     typedef struct mapsort
     {
@@ -273,6 +269,17 @@ extern "C" {
     /* Initialize and finalize logging. */
     void pio_init_logging(void);
     void pio_finalize_logging(void );
+
+    /* Write a netCDF decomp file. */
+    int pioc_write_nc_decomp_int(int iosysid, const char *filename, int ndims, int *global_dimlen,
+                                 int num_tasks, int *task_maplen, int *map, const char *title,
+                                 const char *history, int fortran_order);
+
+    /* Read a netCDF decomp file. */
+    int pioc_read_nc_decomp_int(int iosysid, const char *filename, int *ndims, int *global_dimlen,
+                                int *num_tasks, int *task_maplen, int *max_maplen, int *map, char *title,
+                                char *history, char *source, char *version, int *fortran_order);
+    
 #if defined(__cplusplus)
 }
 #endif
