@@ -1,6 +1,6 @@
 # - Try to find PnetCDF
 #
-# This can be controlled by setting the PnetCDF_PATH (or, equivalently, the 
+# This can be controlled by setting the PnetCDF_PATH (or, equivalently, the
 # PNETCDF environment variable), or PnetCDF_<lang>_PATH CMake variables, where
 # <lang> is the COMPONENT language one needs.
 #
@@ -47,14 +47,14 @@ foreach (PNCDFcomp IN LISTS PnetCDF_FIND_VALID_COMPONENTS)
                               INCLUDE_DIRECTORIES ${MPI_${PNCDFcomp}_INCLUDE_PATH}
                               LIBRARIES ${MPI_${PNCDFcomp}_LIBRARIES})
             find_package_component(PnetCDF COMPONENT ${PNCDFcomp}
-                                   PATHS ${PnetCDF_${PNCDFcomp}_PATHS})
+                                   PATHS ${PnetCDF_${PNCDFcomp}_PATHS} ${NETCDF_DIR})
         else ()
-            find_package_component(PnetCDF COMPONENT ${PNCDFcomp})
+            find_package_component(PnetCDF COMPONENT ${PNCDFcomp} PATHS ${NETCDF_DIR})
         endif ()
 
         # Continue only if component found
         if (PnetCDF_${PNCDFcomp}_FOUND)
-        
+
             # Check version
             check_version (PnetCDF
                            NAME "pnetcdf.h"
@@ -62,7 +62,7 @@ foreach (PNCDFcomp IN LISTS PnetCDF_FIND_VALID_COMPONENTS)
                            MACRO_REGEX "PNETCDF_VERSION_")
 
         endif ()
-            
+
     endif ()
-    
+
 endforeach ()
