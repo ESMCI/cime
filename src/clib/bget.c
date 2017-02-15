@@ -775,8 +775,8 @@ bufsize requested_size;
                 buf =  (void *) (bdh + 1);
 
                 /*only let this happen once */
-                printf("%s %d memory request exceeds block size %ld %ld %x\n",__FILE__,__LINE__,
-                       size,exp_incr,buf);
+                printf("%s %d memory request exceeds block size %ld %ld\n",__FILE__,__LINE__,
+                       size,exp_incr);
                 exp_incr = size+sizeof(struct bhead);
 
                 return buf;
