@@ -1,7 +1,7 @@
 /*
- * Tests for PIO Functions. In this test we use a simple 2D variable,
+ * Tests for PIO Functions. In this test we use a simple 3D variable,
  * with an unlimited dimension. The data will have two timesteps, and
- * 4 elements each timestep.
+ * 4x4 elements each timestep.
  *
  * Ed Hartnett, 2/14/17
  */
@@ -25,28 +25,29 @@
 #define COMPONENT_COUNT 1
 
 /* The number of dimensions in the example data. In this test, we
- * are using two-dimensional data. */
-#define NDIM 2
+ * are using three-dimensional data. */
+#define NDIM 3
 
 /* The length of our sample data along each dimension. */
 #define X_DIM_LEN 4
+#define Y_DIM_LEN 4
 
 /* The number of timesteps of data to write. */
 #define NUM_TIMESTEPS 2
 
 /* The name of the variable in the netCDF output files. */
-#define VAR_NAME "var_2D_with_unlim"
+#define VAR_NAME "var_3D_with_unlim"
 
 /* The meaning of life, the universe, and everything. */
 #define START_DATA_VAL 42
 
 /* The dimension names. */
-char dim_name[NDIM][PIO_MAX_NAME + 1] = {"timestep", "x"};
+char dim_name[NDIM][PIO_MAX_NAME + 1] = {"timestep", "x", "y"};
 
 /* Length of the dimensions in the sample data. */
-int dim_len[NDIM] = {NC_UNLIMITED, X_DIM_LEN};
+int dim_len[NDIM] = {NC_UNLIMITED, X_DIM_LEN, Y_DIM_LEN};
 
-/* Create the decomposition to divide the 2-dimensional sample data
+/* Create the decomposition to divide the 3-dimensional sample data
  * between the 4 tasks.
  *
  * @param ntasks the number of available tasks
@@ -56,15 +57,15 @@ int dim_len[NDIM] = {NC_UNLIMITED, X_DIM_LEN};
  * @param ioid a pointer that gets the ID of this decomposition.
  * @returns 0 for success, error code otherwise.
  **/
-int create_decomposition(int ntasks, int my_rank, int iosysid, int dim1_len, int *ioid)
+int create_decomposition(int ntasks, int my_rank, int iosysid, int dim1_len,
+                         int *ioid)
 {
     PIO_Offset elements_per_pe;     /* Array elements per processing unit. */
     PIO_Offset *compdof;  /* The decomposition mapping. */
-    int dim_len[NDIM] = {X_DIM_LEN};
     int ret;
 
     /* How many data elements per task? */
-    elements_per_pe = X_DIM_LEN / ntasks;
+    elements_per_pe = X_DIM_LEN * Y_DIM_LEN / ntasks;
 
     /* Allocate space for the decomposition array. */
     if (!(compdof = malloc(elements_per_pe * sizeof(PIO_Offset))))
@@ -76,7 +77,7 @@ int create_decomposition(int ntasks, int my_rank, int iosysid, int dim1_len, int
 
     /* Create the PIO decomposition for this test. */
     printf("%d Creating decomposition elements_per_pe = %lld\n", my_rank, elements_per_pe);
-    if ((ret = PIOc_InitDecomp(iosysid, PIO_FLOAT, NDIM - 1, dim_len, elements_per_pe,
+    if ((ret = PIOc_InitDecomp(iosysid, PIO_FLOAT, NDIM - 1, &dim_len[1], elements_per_pe,
                                compdof, ioid, NULL, NULL, NULL)))
         ERR(ret);
 
@@ -92,7 +93,7 @@ int create_decomposition(int ntasks, int my_rank, int iosysid, int dim1_len, int
 int create_test_file(int iosysid, int ioid, int iotype, int my_rank, int *ncid, int *varid)
 {
     char filename[PIO_MAX_NAME + 1]; /* Name for the output files. */
-    int dim_len[NDIM] = {NC_UNLIMITED, X_DIM_LEN}; /* Length of the dimensions in the sample data. */
+    int dim_len[NDIM] = {NC_UNLIMITED, X_DIM_LEN, Y_DIM_LEN}; /* Length of the dimensions in the sample data. */
     int dimids[NDIM];      /* The dimension IDs. */
     int ret;       /* Return code. */
 
@@ -107,10 +108,9 @@ int create_test_file(int iosysid, int ioid, int iotype, int my_rank, int *ncid, 
     
     /* Define netCDF dimensions and variable. */
     printf("rank: %d Defining netCDF metadata...\n", my_rank);
-    if ((ret = PIOc_def_dim(*ncid, dim_name[0], (PIO_Offset)dim_len[0], &dimids[0])))
-        ERR(ret);
-    if ((ret = PIOc_def_dim(*ncid, dim_name[1], (PIO_Offset)dim_len[1], &dimids[1])))
-        ERR(ret);
+    for (int d = 0; d < NDIM; d++)
+        if ((ret = PIOc_def_dim(*ncid, dim_name[d], (PIO_Offset)dim_len[d], &dimids[d])))
+            ERR(ret);
     
     /* Define a variable. */
     if ((ret = PIOc_def_var(*ncid, VAR_NAME, PIO_FLOAT, NDIM, dimids, varid)))
