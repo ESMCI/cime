@@ -172,16 +172,14 @@ int check_fill(int ncid, int *varid, int flavor, int default_fill)
     if ((ret = PIOc_inq_var_fill(ncid, varid[0], &fill_mode, &byte_fill_value_in)))
         return ret;
     printf("byte_fill_value_in = %d\n", byte_fill_value_in);
-    /* if (flavor != PIO_IOTYPE_PNETCDF) */
-        if (fill_mode != NC_FILL || byte_fill_value_in != (default_fill ? NC_FILL_BYTE : byte_fill_value))
-            return ERR_WRONG;
+    if (fill_mode != NC_FILL || byte_fill_value_in != (default_fill ? NC_FILL_BYTE : byte_fill_value))
+        return ERR_WRONG;
     fill_mode = -99;
 
     if ((ret = PIOc_inq_var_fill(ncid, varid[1], &fill_mode, &char_fill_value_in)))
         return ret;
-    /* if (flavor != PIO_IOTYPE_PNETCDF) */
-        if (fill_mode != NC_FILL || char_fill_value_in != (default_fill ? NC_FILL_CHAR : char_fill_value))
-            return ERR_WRONG;
+    if (fill_mode != NC_FILL || char_fill_value_in != (default_fill ? NC_FILL_CHAR : char_fill_value))
+        return ERR_WRONG;
     fill_mode = -99;
 
     if ((ret = PIOc_inq_var_fill(ncid, varid[2], &fill_mode, &short_fill_value_in)))
@@ -367,13 +365,10 @@ int putget_read_vara_fill(int ncid, int *varid, PIO_Offset *start, PIO_Offset *c
     {
         for (y = 0; y < Y_DIM_LEN; y++)
         {
-            /* if (flavor != PIO_IOTYPE_PNETCDF) */
-            {    
-                if (byte_array_in[x][y] != (default_fill ? NC_FILL_BYTE : byte_fill_value))
-                    return ERR_WRONG;
-                if (text_array_in[x][y] != (default_fill ? NC_FILL_CHAR : char_fill_value))
-                    return ERR_WRONG;
-            }
+            if (byte_array_in[x][y] != (default_fill ? NC_FILL_BYTE : byte_fill_value))
+                return ERR_WRONG;
+            if (text_array_in[x][y] != (default_fill ? NC_FILL_CHAR : char_fill_value))
+                return ERR_WRONG;
             if (short_array_in[x][y] != (default_fill ? NC_FILL_SHORT : short_fill_value))
                 return ERR_WRONG;
             if (int_array_in[x][y] != (default_fill ? NC_FILL_INT : int_fill_value))
