@@ -1662,6 +1662,9 @@ int test_decomp_public(int my_test_size, int my_rank, int iosysid, int dim_len,
     if (PIOc_read_nc_decomp(NULL, iosysid, &ioid_in, test_comm, title_in,
                             history_in, &fortran_order_in) != PIO_EINVAL)
         return ret;
+    if (PIOc_read_nc_decomp(nc_filename, iosysid, NULL, test_comm, title_in,
+                            history_in, &fortran_order_in) != PIO_EINVAL)
+        return ret;
     
     /* Read it using the public read function. */
     if ((ret = PIOc_read_nc_decomp(nc_filename, iosysid, &ioid_in, test_comm, title_in,
