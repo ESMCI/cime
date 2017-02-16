@@ -276,8 +276,8 @@ extern "C" {
                                  const char *history, int fortran_order);
 
     /* Read a netCDF decomp file. */
-    int pioc_read_nc_decomp_int(int iosysid, const char *filename, int *ndims, int *global_dimlen,
-                                int *num_tasks, int *task_maplen, int *max_maplen, int *map, char *title,
+    int pioc_read_nc_decomp_int(int iosysid, const char *filename, int *ndims, int **global_dimlen,
+                                int *num_tasks, int **task_maplen, int *max_maplen, int **map, char *title,
                                 char *history, char *source, char *version, int *fortran_order);
     
 #if defined(__cplusplus)

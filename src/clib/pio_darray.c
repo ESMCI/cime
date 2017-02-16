@@ -376,7 +376,7 @@ int PIOc_write_darray(int ncid, int vid, int ioid, PIO_Offset arraylen,
     {
         /* Allocate a buffer. */
         if (!(wmb->next = bget((bufsize)sizeof(wmulti_buffer))))
-            piomemerror(*ios,sizeof(wmulti_buffer), __FILE__,__LINE__);
+            piomemerror(*ios, sizeof(wmulti_buffer), __FILE__, __LINE__);
 
         /* Set pointer to newly allocated buffer and initialize.*/
         wmb = wmb->next;
