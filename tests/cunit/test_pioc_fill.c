@@ -14,7 +14,7 @@
 #define MIN_NTASKS 4
 
 /* The name of this test. */
-#define TEST_NAME "test_pioc_more"
+#define TEST_NAME "test_pioc_fill"
 
 /* Number of processors that will do IO. */
 #define NUM_IO_PROCS 1
@@ -167,11 +167,11 @@ int check_fill(int ncid, int *varid, int flavor, int default_fill)
     unsigned long long uint64_fill_value_in;
     int ret;
 
-    printf("checking fill values for flavor %d\n", flavor);
+    printf("checking fill values for flavor %d default_fill %d\n", flavor, default_fill);
     
     if ((ret = PIOc_inq_var_fill(ncid, varid[0], &fill_mode, &byte_fill_value_in)))
         return ret;
-    printf("byte_fill_value_in = %d\n", byte_fill_value_in);
+    printf("byte_fill_value_in = %d\n", (int)byte_fill_value_in);
     if (fill_mode != NC_FILL || byte_fill_value_in != (default_fill ? NC_FILL_BYTE : byte_fill_value))
         return ERR_WRONG;
     fill_mode = -99;
@@ -190,6 +190,7 @@ int check_fill(int ncid, int *varid, int flavor, int default_fill)
 
     if ((ret = PIOc_inq_var_fill(ncid, varid[3], &fill_mode, &int_fill_value_in)))
         return ret;
+    printf("int_fill_value_in = %d\n", int_fill_value_in);
     if (fill_mode != NC_FILL || int_fill_value_in != (default_fill ? NC_FILL_INT : int_fill_value))
         return ERR_WRONG;
     fill_mode = -99;
