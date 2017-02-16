@@ -325,7 +325,11 @@ int check_atts(int my_rank, int ncid, int flavor, MPI_Comm test_comm)
     unsigned int att_uint_value;
     long long int att_int64_value;
     unsigned long long int att_uint64_value;
+    char too_long_name[PIO_MAX_NAME * 5 + 1];
     int ret;
+
+    memset(too_long_name, 74, PIO_MAX_NAME * 5);
+    too_long_name[PIO_MAX_NAME * 5] = 0;
 
     /* Find rank in test communicator. */
     if ((ret = MPI_Comm_rank(test_comm, &my_test_rank)))
@@ -354,6 +358,13 @@ int check_atts(int my_rank, int ncid, int flavor, MPI_Comm test_comm)
         return ERR_WRONG;
     if (PIOc_get_att_int(ncid, NC_GLOBAL, ATT_NAME, NULL) != PIO_EINVAL)
         return ERR_WRONG;
+
+    /* These should not work. */
+    if (PIOc_inq_att(ncid, NC_GLOBAL, too_long_name, &att_type, &att_len) != PIO_EINVAL)
+        return ret;
+    int tmp_attid;
+    if (PIOc_inq_attid(ncid, NC_GLOBAL, too_long_name, &tmp_attid) != PIO_EINVAL)
+        return ret;
 
     /* Check first att. */
     if ((ret = PIOc_inq_att(ncid, NC_GLOBAL, ATT_NAME, &att_type, &att_len)))
