@@ -36,35 +36,11 @@
 /* The name of the variable in the netCDF output files. */
 #define VAR_NAME "foo"
 
-/* The name of the attribute in the netCDF output files. */
-#define ATT_NAME "foo"
-#define ATT_NAME2 "bar"
-
-/* Value to write to attributes. */
-#define ATT_VAL 42
-
-/* The meaning of life, the universe, and everything. */
-#define START_DATA_VAL 42
-
-/* Values for some netcdf-4 settings. */
-#define VAR_CACHE_SIZE (1024 * 1024)
-#define VAR_CACHE_NELEMS 10
-#define VAR_CACHE_PREEMPTION 0.5
-
-/* Number of NetCDF classic types. */
-#define NUM_CLASSIC_TYPES 6
-
-/* Number of NetCDF-4 types. */
-#define NUM_NETCDF4_TYPES 12
-
 /* The dimension names. */
 char dim_name[NDIM][PIO_MAX_NAME + 1] = {"timestep", "x", "y"};
 
 /* Length of the dimensions in the sample data. */
 int dim_len[NDIM] = {NC_UNLIMITED, X_DIM_LEN, Y_DIM_LEN};
-
-/* Length of chunksizes to use in netCDF-4 files. */
-PIO_Offset chunksize[NDIM] = {2, X_DIM_LEN/2, Y_DIM_LEN/2};
 
 #define DIM_NAME "dim"
 #define NDIM1 1
