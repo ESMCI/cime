@@ -63,6 +63,8 @@ if (NOT PIO_USE_MPISERIAL)
   target_link_libraries (test_pioc_putget pioc)
   add_executable (test_pioc_fill EXCLUDE_FROM_ALL test_pioc_fill.c test_common.c test_shared.c)
   target_link_libraries (test_pioc_fill pioc)
+  add_executable (test_pioc_darray EXCLUDE_FROM_ALL test_pioc_darray.c test_common.c test_shared.c)
+  target_link_libraries (test_pioc_darray pioc)
   add_executable (test_decomps EXCLUDE_FROM_ALL test_decomps.c test_common.c)
   target_link_libraries (test_decomps pioc)
 endif ()
@@ -73,6 +75,7 @@ add_dependencies (tests test_pioc)
 add_dependencies (tests test_pioc_unlim)
 add_dependencies (tests test_pioc_putget)
 add_dependencies (tests test_pioc_fill)
+add_dependencies (tests test_pioc_darray)
 add_dependencies (tests test_decomps)
 
 # Test Timeout in seconds.
@@ -151,6 +154,10 @@ else ()
     TIMEOUT ${DEFAULT_TEST_TIMEOUT})
   add_mpi_test(test_pioc_fill
     EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_pioc_fill
+    NUMPROCS ${AT_LEAST_FOUR_TASKS}
+    TIMEOUT ${DEFAULT_TEST_TIMEOUT})
+  add_mpi_test(test_pioc_darray
+    EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_pioc_darray
     NUMPROCS ${AT_LEAST_FOUR_TASKS}
     TIMEOUT ${DEFAULT_TEST_TIMEOUT})
   add_mpi_test(test_decomps
