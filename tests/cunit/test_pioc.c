@@ -1671,7 +1671,30 @@ int test_decomp_public(int my_test_size, int my_rank, int iosysid, int dim_len,
                                    history_in, &fortran_order_in)))
         return ret;
 
+    /* Did we get expected results? */
+    if (strcmp(title, title_in) || strcmp(history, history_in))
+        return ERR_WRONG;
+
     /* Free the PIO decomposition. */
+    if ((ret = PIOc_freedecomp(iosysid, ioid_in)))
+        ERR(ret);
+
+    /* These should also work. */
+    if ((ret = PIOc_read_nc_decomp(nc_filename, iosysid, &ioid_in, test_comm, NULL,
+                                   history_in, &fortran_order_in)))
+        return ret;
+    if ((ret = PIOc_freedecomp(iosysid, ioid_in)))
+        ERR(ret);
+
+    if ((ret = PIOc_read_nc_decomp(nc_filename, iosysid, &ioid_in, test_comm, title_in,
+                                   NULL, &fortran_order_in)))
+        return ret;
+    if ((ret = PIOc_freedecomp(iosysid, ioid_in)))
+        ERR(ret);
+
+    if ((ret = PIOc_read_nc_decomp(nc_filename, iosysid, &ioid_in, test_comm, title_in,
+                                  history_in, NULL)))
+        return ret;
     if ((ret = PIOc_freedecomp(iosysid, ioid_in)))
         ERR(ret);
 
