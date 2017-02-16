@@ -361,10 +361,10 @@ int check_atts(int my_rank, int ncid, int flavor, MPI_Comm test_comm)
 
     /* These should not work. */
     if (PIOc_inq_att(ncid, NC_GLOBAL, too_long_name, &att_type, &att_len) != PIO_EINVAL)
-        return ret;
+        return ERR_WRONG;
     int tmp_attid;
     if (PIOc_inq_attid(ncid, NC_GLOBAL, too_long_name, &tmp_attid) != PIO_EINVAL)
-        return ret;
+        return ERR_WRONG;
 
     /* Check first att. */
     if ((ret = PIOc_inq_att(ncid, NC_GLOBAL, ATT_NAME, &att_type, &att_len)))
