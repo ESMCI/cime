@@ -1075,6 +1075,10 @@ int test_deletefile(int iosysid, int num_flavors, int *flavor, int my_rank)
         if ((ret = PIOc_closefile(ncid)))
             ERR(ret);
 
+        /* This should not work. */
+        if (PIOc_deletefile(iosysid + 42, filename) != PIO_EBADID)
+            ERR(ERR_WRONG);
+
         /* Now delete the file. */
         printf("%d Deleting %s...\n", my_rank, filename);
         if ((ret = PIOc_deletefile(iosysid, filename)))
