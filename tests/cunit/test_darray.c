@@ -93,57 +93,6 @@ int create_decomposition_2d(int ntasks, int my_rank, int iosysid, int dim1_len, 
     return 0;
 }
 
-/* Check the contents of the test file. */
-int check_darray_file(int iosysid, int ntasks, int my_rank, char *filename)
-{
-    /* /\* int ncid; *\/ */
-    /* /\* int ndims, nvars, ngatts, unlimdimid; *\/ */
-    /* /\* char dim_name_in[PIO_MAX_NAME + 1]; *\/ */
-    /* /\* PIO_Offset dim_len_in; *\/ */
-    /* /\* PIO_Offset arraylen = 1; *\/ */
-    /* /\* float data_in; *\/ */
-    /* /\* int ioid; *\/ */
-    /* /\* int ret; *\/ */
-
-    /* /\* assert(filename); *\/ */
-
-    /* /\* /\\* Open the file. *\\/ *\/ */
-    /* /\* if ((ret = PIOc_open(iosysid, filename, NC_NOWRITE, &ncid))) *\/ */
-    /* /\*     return ret; *\/ */
-
-    /* /\* /\\* Check metadata. *\\/ *\/ */
-    /* /\* if ((ret = PIOc_inq(ncid, &ndims, &nvars, &ngatts, &unlimdimid))) *\/ */
-    /* /\*     return ret; *\/ */
-    /* /\* if (ndims != 1 || nvars != 1 || ngatts != 0 || unlimdimid != -1) *\/ */
-    /* /\*     return ERR_WRONG; *\/ */
-    /* /\* if ((ret = PIOc_inq_dim(ncid, 0, dim_name_in, &dim_len_in))) *\/ */
-    /* /\*     return ret; *\/ */
-    /* /\* if (strcmp(dim_name_in, DIM_NAME) || dim_len_in != DIM_LEN) *\/ */
-    /* /\*     return ERR_WRONG; *\/ */
-
-    /* /\* /\\* Decompose the data over the tasks. *\\/ *\/ */
-    /* /\* if ((ret = create_decomposition(ntasks, my_rank, iosysid, DIM_LEN, &ioid))) *\/ */
-    /* /\*     return ret; *\/ */
-
-    /* /\* /\\* Read data. *\\/ *\/ */
-    /* /\* if ((ret = PIOc_read_darray(ncid, 0, ioid, arraylen, &data_in))) *\/ */
-    /* /\*     return ret; *\/ */
-
-    /* /\* /\\* Check data. *\\/ *\/ */
-    /* /\* if (data_in != my_rank * 10) *\/ */
-    /* /\*     return ERR_WRONG; *\/ */
-
-    /* /\* Close the file. *\/ */
-    /* if ((ret = PIOc_closefile(ncid))) */
-    /*     return ret; */
-
-    /* /\* Free the PIO decomposition. *\/ */
-    /* if ((ret = PIOc_freedecomp(iosysid, ioid))) */
-    /*     ERR(ret); */
-
-    return PIO_NOERR;
-}
-
 /** 
  * Test the darray functionality. Create a netCDF file with 3
  * dimensions and 1 variable, and use darray to write some data.
@@ -208,10 +157,6 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
         printf("rank: %d Closing the sample data file...\n", my_rank);
         if ((ret = PIOc_closefile(ncid)))
             ERR(ret);
-
-        /* Check the file contents. */
-        /* if ((ret = check_darray_file(iosysid, TARGET_NTASKS, my_rank, filename))) */
-        /*     ERR(ret); */
     }
     return PIO_NOERR;
 }
