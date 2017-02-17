@@ -1,24 +1,36 @@
+.. _data-model-introduction:
+
 Introduction
 ============
 
 --------
 Overview
 --------
-The CESM1.2 data models continue to perform the basic function of reading external data files, modifying that data, and then sending it to the coupler via standard CESM coupling interfaces. The coupler and other models have no fundamental knowledge of whether another component is fully active or just a data model. In some cases, data models are prognostic, that is, they also receive and use data sent by the coupler to the data model. But in most cases, the data models are not running prognostically and have no need to receive any data from the coupler.
+The CIME data models perform the basic function of reading external data files, modifying that data, and then sending it to the driver/coupler via the CIME coupling interfaces. 
+The driver/coupler and other models have no fundamental knowledge of whether another component is fully active or just a data model. 
+In some cases, data models have prognostic functionality, that is, they also receive and use data sent by the driver to/coupler the data model. 
+However, in most cases, the data models are not running prognostically and have no need to receive any data from the driver/coupler.
 
-The CESM data models have parallel capability and share significant amounts of source code. Methods for reading and interpolating data have been established and can easily be reused. There is a natural hierarchy in the system. The data model calls strdata ("stream data") methods which then call stream methods. There are inputs associated with the data model, `strdata <http://www.cesm.ucar.edu/models/cesm2.0/data8/doc/c72.html#strdata>`_, and `streams <http://www.cesm.ucar.edu/models/cesm2.0/data8/doc/c72.html#streams>`_ to configure the setup. The stream methods are responsible for managing lists of input data files and their time axis. The information is then passed up to the strdata methods where the data is read and interpolated in space and time. The interpolated data is passed up to the data model where final fields are derived, packed, and returned to the coupler.
+The CIME data models have parallel capability and share significant amounts of source code. 
+Methods for reading and interpolating data have been established and can easily be reused. 
+There is a natural hierarchy in the system. 
+The data model calls strdata ("stream data") methods which then call stream methods. 
+The stream methods are responsible for managing lists of input data files and their time axis. 
+The information is then passed up to the strdata methods where the data is read and interpolated in space and time. 
+The interpolated data is passed up to the data model where final fields are derived, packed, and returned to the coupler.
 
 ------
 Design
 ------
-The strdata implementation is hardwired to execute a set of specific operations associated with reading and interpolating data in space and time. The text box below shows the sequencing of the computation of model fields using the strdata methods. The strdata implementation does the following:
+The strdata implementation is hardwired to execute a set of specific operations associated with reading and interpolating data in space and time. 
+The strdata implementation does the following:
 
-- determines nearest lower and upper bound data from the input dataset 
-- if that is new data then read lower and upper bound data
-- fill lower and upper bound data
-- spatially map lower and upper bound data to model grid
-- time interpolate lower and upper bound data to model time
-- return fields to data model
+1. determines nearest lower and upper bound data from the input dataset 
+2. if that is new data then read lower and upper bound data
+3. fill lower and upper bound data
+4. spatially map lower and upper bound data to model grid
+5. time interpolate lower and upper bound data to model time
+6. return fields to data model
 
 ----------------------
 IO Through Data Models
@@ -47,38 +59,53 @@ There are several limitations in both options and usage within the data models a
 Spatial interpolation can only be performed from a two-dimensional latitude-longitude input grid. 
 The target grid can be arbitrary but the source grid must be able to be described by simple one-dimensional lists of longitudes and latitudes, although they don't have to have equally spaced.
 
-At the present time, data models can only read netcdf data, and IO is handled through either standard netcdf interfaces or through the pio library using either netcdf or pnetcdf.
+At the present time, data models can only read netcdf data, and IO is handled through either standard netcdf interfaces or through the PIO library using either netcdf or pnetcdf.
 If standard netcdf is used, global fields are read and then scattered one field at a time. 
-If pio is used, then data will be read either serially or in parallel in chunks that are approximately the global field size divided by the number of io tasks.
-If pnetcdf is used through pio, then the pnetcdf library must be included during the build of the model. 
+If PIO is used, then data will be read either serially or in parallel in chunks that are approximately the global field size divided by the number of io tasks.
+If pnetcdf is used through PIO, then the pnetcdf library must be included during the build of the model. 
 The pnetcdf path and option is hardwired into the ``Macros.make`` file for the specific machine.
-To turn on ``pnetcdf`` in the build, make sure the ``Macros.make`` variables PNETCDF_PATH, INC_PNETCDF, and LIB_PNETCDF are set and that the pio CONFIG_ARGS sets the PNETCDF_PATH argument. 
+To turn on ``pnetcdf`` in the build, make sure the ``Macros.make`` variables PNETCDF_PATH, INC_PNETCDF, and LIB_PNETCDF are set and that the PIO CONFIG_ARGS sets the PNETCDF_PATH argument. 
 
-Beyond just the option of selecting IO with pio, several namelist are available to help optimize pio IO performance.
-Those are TODO - list these. 
+Beyond just the option of selecting IO with PIO, several namelist are available to help optimize PIO IO performance.
+Those are **TODO** - list these. 
 The total mpi tasks that can be used for IO is limited to the total number of tasks used by the data model.
 Often though, fewer io tasks result in improved performance. 
 In general, [io_root + (num_iotasks-1)*io_stride + 1] has to be less than the total number of data model tasks.
-In practice, pio seems to perform optimally somewhere between the extremes of 1 task and all tasks, and is highly machine and problem dependent.
+In practice, PIO seems to perform optimally somewhere between the extremes of 1 task and all tasks, and is highly machine and problem dependent.
 
 -------------
 Restart Files
 -------------
-Restart files are generated automatically by the data models based upon a flag sent from the coupler. The restart files must meet the naming convention specified by the CESM project and an rpointer file is generated at the same time. An rpointer file is a *restart pointer* file which contains the name of the most recently created restart file. Normally, if restart files are read, the restart filenames are specified in the rpointer file. Optionally though, there are namelist variables such as `restfilm <http://www.cesm.ucar.edu/models/cesm2.0/cesm/doc/modelnl/nl_datm.html#nonstream>`_ to specify the restart filenames via namelist. If those namelist are set, the rpointer file will be ignored. The standard procedure in is to use the rpointer files to specify the restart filenames. In many cases, no model restart is required for the data models to restart exactly. This is because there is no memory between timesteps in many of the data model science modes. If a model restart is required, it will be written automatically and then must be used to continue the previous run.
+Restart files are generated automatically by the data models based upon a flag sent from the coupler. 
+The restart files must meet the CIME naming convention and an ``rpointer`` file is generated at the same time. 
+An ``rpointer`` file is a *restart pointer* file which contains the name of the most recently created restart file. 
+Normally, if restart files are read, the restart filenames are specified in the rpointer file. 
+Optionally though, there are namelist variables such as `restfilm`` to specify the restart filenames via namelist. If those namelist are set, the ``rpointer`` file will be ignored. 
+The default method is to use the ``rpointer`` files to specify the restart filenames. 
+In most cases, no model restart is required for the data models to restart exactly. 
+This is because there is no memory between timesteps in many of the data model science modes. 
+If a model restart is required, it will be written automatically and then must be used to continue the previous run.
 
-There are separate stream restart files that only exist for performance reasons. A stream restart file contains information about the time axis of the input streams. This information helps reduce the start costs associated with reading the input dataset time axis information. If a stream restart file is missing, the code will restart without it but may need to reread data from the input data files that would have been stored in the stream restart file. This will take extra time but will not impact the results.
+There are separate stream restart files that only exist for performance reasons. 
+A stream restart file contains information about the time axis of the input streams. 
+This information helps reduce the start costs associated with reading the input dataset time axis information. 
+If a stream restart file is missing, the code will restart without it but may need to reread data from the input data files that would have been stored in the stream restart file. 
+This will take extra time but will not impact the results.
 
 ---------
 Hierarchy
 ---------
 The hierarchy of data models, strdata, and streams also compartmentalize grids and fields. 
 Data models communicate with the coupler with fields on only the data model model grid. 
-*Although for each strdata namelist, data is interpolated to a single model grid, each strdata namelist input can have multiple stream description files and each stream input file can contain data on a different grid*.
+- *Each strdata namelist input can have multiple stream description files*
+- *Each stream input file can contain data on a different grid*.
+- *Each stream input file data is interpolated to a single model grid*. 
 The strdata module will gracefully read the different streams of input data and interpolate both spatially and temporally to the appropriate final model grid and model time. 
 
-The text box below provides a schematic of the hierarchy
+Below is a schematic of the hierarchy:
 
 ::
+
    driver     :      call data land model
    data model :         data land model
    data model :           land_data               
@@ -99,31 +126,21 @@ The detailed namelist options for each data model will be described later, but e
 To continue with the above example, the following inputs would be consistent with the above figure. The data model namelist input file is hardwired to "dlnd_in" and in this case, the namelist would look something like
 ::
 
-   file="dlnd_in":
    &dlnd_nml
-      lnd_in = 'dlnd_lnd_in'
       decomp = '1d'
    /
-
-The lnd_in specifies the filenames associated with the strdata namelist input for the land and runoff data separately.
-The land and runoff strdata namelist would then look like
-::
-
-   file="dlnd_lnd_in":
    &shr_strdata_nml
      dataMode   = 'CPLHIST'
      domainFile = 'grid.nc'
-     streams    = 'streama',
-                  'streamb',
-                  'streamc'
-     mapalgo    = 'interpa',
-                  'interpb',
-                  'interpc'
+     streams    = 'streama', 'streamb', 'streamc'
+     mapalgo    = 'interpa', 'interpb', 'interpc'
    /
 
-Three stream description files are then expected to be available, streama, streamb and streamc.
+Three stream description files are then expected to be available, ``streama``, ``streamb`` and ``streamc``.
 Those files specify the input data filenames, input data grids, and input fields that are expected among other things. 
-For instance, one of the stream description files might look like
+The stream files are not Fortran namelist format.
+Their format and options will be described later.
+As an example, one of the stream description files might look like
 ::
 
    <stream>
@@ -166,18 +183,19 @@ For instance, one of the stream description files might look like
       </domainInfo>
    </stream>
 
-The stream files are not Fortran namelist format.
-Their format and options will be described later.
+
 In general, these examples of input files are not complete, but they do show the general hierarchy and feel of the data model input.
 
 -------
 Summary
 -------
-In summary, for each data model a top level namelist will be set that will point to a file that contains the strdata namelist.
-That namelist will specify the data model mode, stream description text files, and interpolation options. 
-The stream description files will be provided as separate input files and contain the files and fields that need to be read.
+In summary, each data model has a stream-dependent and a stream-independent namelist group. 
 
-From a user perspective, for any data model, it's important to know what modes are supported and the internal field names in the data model.
+The stream-dependent namelist group (``shr_strdata_nml``) specifies the data model mode, stream description text files, and interpolation options. 
+The stream description files will be provided as separate input files and contain the files and fields that need to be read.
+The stream-independent namelist gorup contains namelist input such as the data model decomposition, etc.
+
+From a user perspective, for any data model, it is important to know what modes are supported and the internal field names in the data model.
 That information will be used in the strdata namelist and stream input files.
 
 -------------

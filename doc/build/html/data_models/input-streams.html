@@ -58,9 +58,10 @@
   <ul>
 <li><a class="reference internal" href="#">2. Input Streams</a><ul>
 <li><a class="reference internal" href="#overview">2.1. Overview</a></li>
-<li><a class="reference internal" href="#stream-data">2.2. Stream Data</a></li>
-<li><a class="reference internal" href="#specifying-what-streams-to-use">2.3. Specifying What Streams to Use</a></li>
+<li><a class="reference internal" href="#stream-data-and-shr-strdata-nml-namelists">2.2. Stream Data and shr_strdata_nml namelists</a></li>
+<li><a class="reference internal" href="#customizing-shr-strdata-nml-values">2.3. Customizing shr_strdata_nml values</a></li>
 <li><a class="reference internal" href="#stream-description-file">2.4. Stream Description File</a></li>
+<li><a class="reference internal" href="#customizing-stream-description-files">2.5. Customizing stream description files</a></li>
 </ul>
 </li>
 </ul>
@@ -97,7 +98,7 @@
           <div class="body" role="main">
             
   <div class="section" id="input-streams">
-<h1>2. Input Streams<a class="headerlink" href="#input-streams" title="Permalink to this headline">¶</a></h1>
+<span id="id1"></span><h1>2. Input Streams<a class="headerlink" href="#input-streams" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="overview">
 <h2>2.1. Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
 <p>An <em>input data stream</em> is a time-series of input data files where all the fields in the stream are located in the same data file and all share the same spatial and temporal coordinates (ie. are all on the same grid and share the same time axis). Normally a time axis has a uniform dt, but this is not a requirement.</p>
@@ -112,38 +113,78 @@
 </ul>
 <p>Generally, information about what streams a user wants to use and how to use them is input via the strdata (&#8220;stream data&#8221;) Fortran namelist, while meta-data that describes the stream data itself is found in an xml-like text file called a &#8220;stream description file.&#8221;</p>
 </div>
-<div class="section" id="stream-data">
-<h2>2.2. Stream Data<a class="headerlink" href="#stream-data" title="Permalink to this headline">¶</a></h2>
-<p>The <em>strdata</em> (short for &#8220;stream data&#8221;) input is set via a fortran namelist called shr_strdata_nml. That namelist, the strdata datatype, and the methods are contained in the share source code file, models/csm_share/shr/shr_strdata_mod.F90. In general, strdata input defines an array of input streams and operations to perform on those streams. Therefore, many namelist inputs are arrays of character strings. Different variable of the same index are associated. For instance, mapalgo(1) spatial interpolation will be performed between streams(1) and the target domain.</p>
-<p>The following namelist are available with the strdata namelist.</p>
-<ul class="simple">
-<li>dataMode - component specific mode</li>
-<li>domainFile- final domain</li>
-<li>streams - input files</li>
-<li>vectors - paired vector field names</li>
-<li>fillalgo - fill algorithm</li>
-<li>fillmask - fill mask</li>
-<li>fillread - fill mapping file to read</li>
-<li>fillwrite - fill mapping file to write</li>
-<li>mapalgo - spatial interpolation algorithm</li>
-<li>mapmask - spatial interpolation mask</li>
-<li>mapread - spatial interpolation mapping file to read</li>
-<li>mapwrite - spatial interpolation mapping file to write</li>
-<li>tintalgo - time interpolation algorithm</li>
-<li>taxMode - time interpolation mode</li>
-<li>dtlimit - delta time axis limit</li>
-</ul>
-<p>The set of shr_strdata_nml namelist keywords are the same for all data models. As a result, any of the data model namelist documentation can be used to view a full description. For example, see <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/cesm/doc/modelnl/nl_datm.html#stream">stream specific namelist settings</a>.</p>
-</div>
-<div class="section" id="specifying-what-streams-to-use">
-<h2>2.3. Specifying What Streams to Use<a class="headerlink" href="#specifying-what-streams-to-use" title="Permalink to this headline">¶</a></h2>
-<p>The data models have a namelist variable that specifies which input streams to use and, for each input stream, the name of the corresponding stream description file, what years of data to use, and how to align the input stream time axis with the model run time axis. This input is set in the strdata namelist input.</p>
-<p>General format:</p>
+<div class="section" id="stream-data-and-shr-strdata-nml-namelists">
+<h2>2.2. Stream Data and shr_strdata_nml namelists<a class="headerlink" href="#stream-data-and-shr-strdata-nml-namelists" title="Permalink to this headline">¶</a></h2>
+<p>The <em>strdata</em> (short for &#8220;stream data&#8221;) input is set via a fortran namelist called <code class="docutils literal"><span class="pre">shr_strdata_nml</span></code>.
+That namelist, the associated strdata datatype, and the methods are contained in the share source code file, <code class="docutils literal"><span class="pre">shr_strdata_mod.F90</span></code>.
+In general, strdata input defines an array of input streams and operations to perform on those streams.
+Therefore, many namelist inputs are arrays of character strings.
+Different variables of the same index are associated. For instance, mapalgo(1) spatial interpolation will be performed between streams(1) and the target domain.</p>
+<p>Each data model component has a stream-dependent namelist group, <code class="docutils literal"><span class="pre">shr_strmdata_nml</span></code>.
+The following namelist entries are available in <code class="docutils literal"><span class="pre">shr_strdata_nml</span></code> and are <strong>the same for all data models</strong>.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="15%" />
+<col width="85%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>dataMode</td>
+<td>component specific mode</td>
+</tr>
+<tr class="row-even"><td>domainFile</td>
+<td><p class="first">component domain (all streams will be mapped to this domain)</p>
+<p class="last">if the value is <strong>null</strong> then the domain of the first stream
+will be used as the component domain</p>
+</td>
+</tr>
+<tr class="row-odd"><td>streams</td>
+<td>array of input stream filenames and associated years of data</td>
+</tr>
+<tr class="row-even"><td>fillalgo</td>
+<td>array of fill algorithms</td>
+</tr>
+<tr class="row-odd"><td>fillmask</td>
+<td>array of fill masks</td>
+</tr>
+<tr class="row-even"><td>fillread</td>
+<td>array of fill mapping files to read</td>
+</tr>
+<tr class="row-odd"><td>fillwrite</td>
+<td>array of fill mapping file to write</td>
+</tr>
+<tr class="row-even"><td>mapalgo</td>
+<td>array of spatial interpolation algorithms</td>
+</tr>
+<tr class="row-odd"><td>mapmask</td>
+<td>array of spatial interpolation mask</td>
+</tr>
+<tr class="row-even"><td>mapread</td>
+<td>array of spatial interpolation mapping files to read (optional)</td>
+</tr>
+<tr class="row-odd"><td>mapwrite</td>
+<td>array of spatial interpolation mapping files to write (optional)</td>
+</tr>
+<tr class="row-even"><td>tintalgo</td>
+<td>array of time interpolation algorithms</td>
+</tr>
+<tr class="row-odd"><td>taxMode</td>
+<td>array of time interpolation modes</td>
+</tr>
+<tr class="row-even"><td>dtlimit</td>
+<td>array of delta time axis limit</td>
+</tr>
+<tr class="row-odd"><td>vectors</td>
+<td>paired vector field names</td>
+</tr>
+</tbody>
+</table>
+<p><code class="docutils literal"><span class="pre">shr_strdata_nml</span></code> contains a namelist variable, <code class="docutils literal"><span class="pre">streams</span></code>, that specifies a list of input stream description files and for each file what years of data to use, and how to align the input stream time axis with the model run time axis.</p>
+<p>The general input format for the <code class="docutils literal"><span class="pre">streams</span></code> namelist variable is:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&amp;</span><span class="n">shr_strdata_nml</span>
   <span class="n">streams</span> <span class="o">=</span> <span class="s1">&#39;stream1.txt year_align year_first year_last &#39;</span><span class="p">,</span>
             <span class="s1">&#39;stream2.txt year_align year_first year_last &#39;</span><span class="p">,</span>
              <span class="o">...</span>
-             <span class="s1">&#39;streamN.txt year_align year_first year_last &#39;</span>
+            <span class="s1">&#39;streamN.txt year_align year_first year_last &#39;</span>
 <span class="o">/</span>
 </pre></div>
 </div>
@@ -158,26 +199,40 @@
    <span class="n">a</span> <span class="n">model</span> <span class="n">year</span> <span class="n">that</span> <span class="n">will</span> <span class="n">be</span> <span class="n">aligned</span> <span class="k">with</span> <span class="n">data</span> <span class="k">for</span> <span class="n">year_first</span>
 </pre></div>
 </div>
-<p>The stream text files for a given data model mode are automatically generated by the corresponding data model <strong>build-namelist</strong> with present names.
-As an example we refer to the following datm_atm_in example file (that would appear in both <code class="docutils literal"><span class="pre">$CASEROOT/CaseDocs</span></code> and <code class="docutils literal"><span class="pre">$RUNDIR</span></code>):</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">datamode</span>   <span class="o">=</span> <span class="s1">&#39;CLMNCEP&#39;</span>
-<span class="n">domainfile</span> <span class="o">=</span> <span class="s1">&#39;/glade/proj3/cseg/inputdata/share/domains/domain.lnd.fv1.9x2.5_gx1v6.090206.nc&#39;</span>
-<span class="n">dtlimit</span>    <span class="o">=</span> <span class="mf">1.5</span><span class="p">,</span><span class="mf">1.5</span><span class="p">,</span><span class="mf">1.5</span><span class="p">,</span><span class="mf">1.5</span>
-<span class="n">fillalgo</span>   <span class="o">=</span> <span class="s1">&#39;nn&#39;</span><span class="p">,</span><span class="s1">&#39;nn&#39;</span><span class="p">,</span><span class="s1">&#39;nn&#39;</span><span class="p">,</span><span class="s1">&#39;nn&#39;</span>
-<span class="n">fillmask</span>   <span class="o">=</span> <span class="s1">&#39;nomask&#39;</span><span class="p">,</span><span class="s1">&#39;nomask&#39;</span><span class="p">,</span><span class="s1">&#39;nomask&#39;</span><span class="p">,</span><span class="s1">&#39;nomask&#39;</span>
-<span class="n">mapalgo</span>    <span class="o">=</span> <span class="s1">&#39;bilinear&#39;</span><span class="p">,</span><span class="s1">&#39;bilinear&#39;</span><span class="p">,</span><span class="s1">&#39;bilinear&#39;</span><span class="p">,</span><span class="s1">&#39;bilinear&#39;</span>
-<span class="n">mapmask</span>    <span class="o">=</span> <span class="s1">&#39;nomask&#39;</span><span class="p">,</span><span class="s1">&#39;nomask&#39;</span><span class="p">,</span><span class="s1">&#39;nomask&#39;</span><span class="p">,</span><span class="s1">&#39;nomask&#39;</span>
-<span class="n">streams</span>    <span class="o">=</span> <span class="s2">&quot;datm.streams.txt.CLM_QIAN.Solar  1895 1948 1972  &quot;</span><span class="p">,</span>
-             <span class="s2">&quot;datm.streams.txt.CLM_QIAN.Precip 1895 1948 1972  &quot;</span><span class="p">,</span>
-             <span class="s2">&quot;datm.streams.txt.CLM_QIAN.TPQW   1895 1948 1972  &quot;</span><span class="p">,</span>
-             <span class="s2">&quot;datm.streams.txt.presaero.trans_1850-2000 1849 1849 2006&quot;</span>
-<span class="n">taxmode</span>    <span class="o">=</span> <span class="s1">&#39;cycle&#39;</span><span class="p">,</span><span class="s1">&#39;cycle&#39;</span><span class="p">,</span><span class="s1">&#39;cycle&#39;</span><span class="p">,</span><span class="s1">&#39;cycle&#39;</span>
-<span class="n">tintalgo</span>   <span class="o">=</span> <span class="s1">&#39;coszen&#39;</span><span class="p">,</span><span class="s1">&#39;nearest&#39;</span><span class="p">,</span><span class="s1">&#39;linear&#39;</span><span class="p">,</span><span class="s1">&#39;linear&#39;</span>
-<span class="n">vectors</span>    <span class="o">=</span> <span class="s1">&#39;null&#39;</span>
+</div>
+<div class="section" id="customizing-shr-strdata-nml-values">
+<h2>2.3. Customizing shr_strdata_nml values<a class="headerlink" href="#customizing-shr-strdata-nml-values" title="Permalink to this headline">¶</a></h2>
+<p>The contents of <code class="docutils literal"><span class="pre">shr_strdata_nml</span> <span class="pre">are</span> <span class="pre">automatically</span> <span class="pre">generated</span> <span class="pre">by</span> <span class="pre">that</span> <span class="pre">data</span> <span class="pre">model's</span> <span class="pre">**cime_config/buildnml**</span> <span class="pre">script.</span>
+<span class="pre">These</span> <span class="pre">contents</span> <span class="pre">are</span> <span class="pre">easily</span> <span class="pre">customizable</span> <span class="pre">for</span> <span class="pre">your</span> <span class="pre">target</span> <span class="pre">experiment.</span>
+<span class="pre">As</span> <span class="pre">an</span> <span class="pre">example</span> <span class="pre">we</span> <span class="pre">refer</span> <span class="pre">to</span> <span class="pre">the</span> <span class="pre">following</span> <span class="pre">``datm_in</span></code> contents (that would appear in both <code class="docutils literal"><span class="pre">$CASEROOT/CaseDocs</span></code> and <code class="docutils literal"><span class="pre">$RUNDIR</span></code>):</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>\<span class="o">&amp;</span><span class="n">shr_strdata_nml</span>
+   <span class="n">datamode</span>   <span class="o">=</span> <span class="s1">&#39;CLMNCEP&#39;</span>
+   <span class="n">domainfile</span> <span class="o">=</span> <span class="s1">&#39;/glade/proj3/cseg/inputdata/share/domains/domain.lnd.fv1.9x2.5_gx1v6.090206.nc&#39;</span>
+   <span class="n">dtlimit</span>    <span class="o">=</span> <span class="mf">1.5</span><span class="p">,</span><span class="mf">1.5</span><span class="p">,</span><span class="mf">1.5</span><span class="p">,</span><span class="mf">1.5</span>
+   <span class="n">fillalgo</span>   <span class="o">=</span> <span class="s1">&#39;nn&#39;</span><span class="p">,</span><span class="s1">&#39;nn&#39;</span><span class="p">,</span><span class="s1">&#39;nn&#39;</span><span class="p">,</span><span class="s1">&#39;nn&#39;</span>
+   <span class="n">fillmask</span>   <span class="o">=</span> <span class="s1">&#39;nomask&#39;</span><span class="p">,</span><span class="s1">&#39;nomask&#39;</span><span class="p">,</span><span class="s1">&#39;nomask&#39;</span><span class="p">,</span><span class="s1">&#39;nomask&#39;</span>
+   <span class="n">mapalgo</span>    <span class="o">=</span> <span class="s1">&#39;bilinear&#39;</span><span class="p">,</span><span class="s1">&#39;bilinear&#39;</span><span class="p">,</span><span class="s1">&#39;bilinear&#39;</span><span class="p">,</span><span class="s1">&#39;bilinear&#39;</span>
+   <span class="n">mapmask</span>    <span class="o">=</span> <span class="s1">&#39;nomask&#39;</span><span class="p">,</span><span class="s1">&#39;nomask&#39;</span><span class="p">,</span><span class="s1">&#39;nomask&#39;</span><span class="p">,</span><span class="s1">&#39;nomask&#39;</span>
+   <span class="n">streams</span>    <span class="o">=</span> <span class="s2">&quot;datm.streams.txt.CLM_QIAN.Solar  1895 1948 1972  &quot;</span><span class="p">,</span>
+                <span class="s2">&quot;datm.streams.txt.CLM_QIAN.Precip 1895 1948 1972  &quot;</span><span class="p">,</span>
+                <span class="s2">&quot;datm.streams.txt.CLM_QIAN.TPQW   1895 1948 1972  &quot;</span><span class="p">,</span>
+                <span class="s2">&quot;datm.streams.txt.presaero.trans_1850-2000 1849 1849 2006&quot;</span>
+   <span class="n">taxmode</span>    <span class="o">=</span> <span class="s1">&#39;cycle&#39;</span><span class="p">,</span><span class="s1">&#39;cycle&#39;</span><span class="p">,</span><span class="s1">&#39;cycle&#39;</span><span class="p">,</span><span class="s1">&#39;cycle&#39;</span>
+   <span class="n">tintalgo</span>   <span class="o">=</span> <span class="s1">&#39;coszen&#39;</span><span class="p">,</span><span class="s1">&#39;nearest&#39;</span><span class="p">,</span><span class="s1">&#39;linear&#39;</span><span class="p">,</span><span class="s1">&#39;linear&#39;</span>
+   <span class="n">vectors</span>    <span class="o">=</span> <span class="s1">&#39;null&#39;</span>
+<span class="o">/</span>
 </pre></div>
 </div>
-<p>As is discussed in the CIME User&#8217;s Guide, in order to change the contents of <code class="docutils literal"><span class="pre">datm_in</span></code>, you must edit <code class="docutils literal"><span class="pre">$CASEROOT/user_nl_datm</span></code> to change any of the above settings EXCEPT FOR THE NAMES <code class="docutils literal"><span class="pre">datm.streams.txt.CLM_QIAN.Solar</span></code>, <code class="docutils literal"><span class="pre">datm.streams.txt.CLM_QIAN.Precip</span></code>, <code class="docutils literal"><span class="pre">datm.streams.txt.CLM_QIAN.TPQW</span></code> and <code class="docutils literal"><span class="pre">datm.streams.txt.presaero.trans_1850-2000</span></code>.
-Note that any namelist variable from shr_strdata_nml and datm_nml can be modified by adding the appropriate keyword/value pairs to <code class="docutils literal"><span class="pre">user_nl_datm</span></code>.</p>
+<p>As is discussed in the <a class="reference internal" href="../users_guide/running-a-case.html#running-a-case"><span class="std std-ref">CIME User&#8217;s Guide</span></a>, to change the contents of <code class="docutils literal"><span class="pre">datm_in</span></code>, you must edit <code class="docutils literal"><span class="pre">$CASEROOT/user_nl_datm</span></code>.
+In the above example, you can to this to change any of the above settings <strong>except for the names</strong></p>
+<dl class="docutils">
+<dt>::</dt>
+<dd>datm.streams.txt.CLM_QIAN.Solar
+datm.streams.txt.CLM_QIAN.Precip
+datm.streams.txt.CLM_QIAN.TPQW
+datm.streams.txt.presaero.trans_1850-2000</dd>
+</dl>
+<p>Other than these names, any namelist variable from <code class="docutils literal"><span class="pre">shr_strdata_nml</span></code> can be modified by adding the appropriate keyword/value pairs to <code class="docutils literal"><span class="pre">user_nl_datm</span></code>.</p>
 <p>As an example, the following could be the contents of <code class="docutils literal"><span class="pre">$CASEROOT/user_nl_datm</span></code>:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span>!------------------------------------------------------------------------
 ! Users should ONLY USE user_nl_datm to change namelists variables
@@ -198,7 +253,7 @@ streams    = &quot;datm.streams.txt.CLM_QIAN.Solar  1895 1948 1900  &quot;,
              &quot;datm.streams.txt.presaero.trans_1850-2000 1849 1849 2006&quot;
 </pre></div>
 </div>
-<p>and the contents of shr_strdata_nml (in both $CASEROOT/CaseDocs and $RUNDIR) would be</p>
+<p>and the contents of <code class="docutils literal"><span class="pre">shr_strdata_nml</span></code> (in both <code class="docutils literal"><span class="pre">$CASEROOT/CaseDocs</span></code> and <code class="docutils literal"><span class="pre">$RUNDIR</span></code>) would be</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">datamode</span>   <span class="o">=</span> <span class="s1">&#39;CLMNCEP&#39;</span>
 <span class="n">domainfile</span> <span class="o">=</span> <span class="s1">&#39;/glade/proj3/cseg/inputdata/share/domains/domain.lnd.fv1.9x2.5_gx1v6.090206.nc&#39;</span>
 <span class="n">dtlimit</span>    <span class="o">=</span> <span class="mf">1.5</span><span class="p">,</span><span class="mf">1.5</span><span class="p">,</span><span class="mf">1.5</span><span class="p">,</span><span class="mf">1.5</span>
@@ -215,72 +270,57 @@ streams    = &quot;datm.streams.txt.CLM_QIAN.Solar  1895 1948 1900  &quot;,
 <span class="n">vectors</span>    <span class="o">=</span> <span class="s1">&#39;null&#39;</span>
 </pre></div>
 </div>
-<p>As is discussed in the CIME User&#8217;s Guide, you should use <strong>preview_namelists</strong> to view (not modify) the output namelist in <code class="docutils literal"><span class="pre">CaseDocs</span></code>.</p>
+<p>As is discussed in the <a class="reference internal" href="../users_guide/running-a-case.html#running-a-case"><span class="std std-ref">CIME User&#8217;s Guide</span></a>, you should use <strong>preview_namelists</strong> to view (not modify) the output namelist in <code class="docutils literal"><span class="pre">CaseDocs</span></code>.</p>
 </div>
 <div class="section" id="stream-description-file">
 <h2>2.4. Stream Description File<a class="headerlink" href="#stream-description-file" title="Permalink to this headline">¶</a></h2>
 <p>The <em>stream description file</em> is not a Fortran namelist, but a locally built xml-like parsing implementation.
 Sometimes it is called a &#8220;stream dot-text file&#8221; because it has a &#8221;.txt.&#8221; in the filename.
-Stream description files contain data that specifies the names of the fields in the stream, the names of the input data files, and the file system directory where the data files are located.
-In addition, a few other options are available such as the time axis offset parameter.</p>
-<p>Each data model&#8217;s <strong>buildnml</strong> utility (e.g. $CIMEROOT/components/data_comps/datm/cime_config/buildnml) automatically generates these stream description files.
-The directory contents of each data model will look like the following (using DATM as an example)</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$CIMEROOT/components/data_comps/datm/cime_config/buildnml
-$CIMEROOT/components/data_comps/datm/cime_config/namelist_definition_datm.xml
-</pre></div>
-</div>
-<p>The <code class="docutils literal"><span class="pre">namelist_definition_datm.xml</span></code> file defines and sets default values for all the namelist variables and associated groups and also provides out-of-the box settings for the target data model and target stream.
-<strong>buildnml</strong> utilizes this two files to construct the stream files for the given compset settings. You can modify the generated stream files for your particular needs by doing the following:</p>
-<ol class="arabic">
-<li><p class="first">Call <strong>case.setup</strong> OR <strong>preview_namelists</strong>.</p>
-</li>
-<li><p class="first">Copy the relevant description file from <code class="docutils literal"><span class="pre">$CASEROOT/CaseDocs</span></code> to <code class="docutils literal"><span class="pre">$CASEROOT</span></code> and pre-pend a &#8220;user_&#8221;string to the filename. Change the permission of the file to write. For example, assuming you are in <strong>$CASEROOT</strong></p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>cp $CASEROOT/CaseDocs/datm.streams.txt.CLM_QIAN.Solar  $CASEROOT/user_datm.streams.txt.CLM_QIAN.Solar
-chmod u+w $CASEROOT/user_datm.streams.txt.CLM_QIAN.Solar
-</pre></div>
-</div>
-</li>
-<li><ul class="first simple">
-<li>Edit <code class="docutils literal"><span class="pre">$CASEROOT/user_datm.streams.txt.CLM_QIAN.Solar</span></code> with your desired changes.</li>
-<li><em>Be sure not to put any tab characters in the file: use spaces instead</em>.</li>
-<li>In contrast to other user_nl_xxx files, be sure to set all relevant data model settings in the xml files, issue the <strong>preview_namelist</strong> command and THEN edit the <code class="docutils literal"><span class="pre">user_datm.streams.txt.CLM_QIAN.Solar</span></code> file.</li>
-<li><strong>Once you have created a user_xxx.streams.txt.* file, further modifications to the relevant data model settings in the xml files will be ignored.</strong></li>
-<li>If you later realize that you need to change some settings in an xml file, you should remove the user_xxx.streams.txt.* file(s), make the modifications in the xml file, rerun <strong>preview_namelists</strong>, and then reintroduce your modifications into a new user_xxx.streams.txt.* stream file(s).</li>
-</ul>
-</li>
-<li><p class="first">Call <strong>preview_namelists</strong></p>
-</li>
-<li><p class="first">Verify that your changes do indeed appear in the resultant stream description file appear in <code class="docutils literal"><span class="pre">CaseDocs/datm.streams.txt.CLM_QIAN.Solar</span></code>. These changes will also appear in <code class="docutils literal"><span class="pre">$RUNDIR/datm.streams.txt.CLM_QIAN.Solar</span></code>.</p>
-</li>
-</ol>
+Stream description files contain data that specifies the names of the fields in the stream, the names of the input data files, and the file system directory where the data files are located.</p>
 <p>The data elements found in the stream description file are:</p>
 <dl class="docutils">
-<dt>dataSource</dt>
-<dd>A comment about the source of the data &#8211; always set to GENERIC in CESM1.2 and not used by the model. This is there only for backwards compatibility.</dd>
-<dt>fieldInfo</dt>
-<dd>Information about the field data for this stream...</dd>
-<dt>variableNames</dt>
-<dd>A list of the field variable names. This is a paired list with the name of the variable in the netCDF file on the left and the name of the corresponding model variable on the right. This is the list of fields to read in from the data file, there may be other fields in the file which are not read in (ie. they won&#8217;t be used).</dd>
-<dt>filePath</dt>
-<dd>The file system directory where the data files are located.</dd>
-<dt>fileNames</dt>
-<dd>The list of data files to use. If there is more than one file, the files must be in chronological order, that is, the dates in time axis of the first file are before the dates in the time axis of the second file.</dd>
-<dt>tInterpAlgo</dt>
-<dd>The option is obsolete and no longer performs a function. Control of the time interpolation algorithm is in the strdata namelists, <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/data8/cesm/doc/modelnl/nl_datm.html#stream">tinterp_algo and taxMode</a>.</dd>
-<dt>offset</dt>
-<dd><p class="first">The offset allows a user to shift the time axis of a data stream by a fixed and constant number of seconds. For instance, if a data set contains daily average data with timestamps for the data at the end of the day, it might be appropriate to shift the time axis by 12 hours so the data is taken to be at the middle of the day instead of the end of the day. This feature supports only simple shifts in seconds as a way of correcting input data time axes without having to modify the input data time axis manually. This feature does not support more complex shifts such as end of month to mid-month. But in conjunction with the time interpolation methods in the strdata input, hopefully most user needs can be accommodated with the two settings. Note that a positive offset advances the input data time axis forward by that number of seconds.</p>
-<p>The data models advance in time discretely. At a given time, they read/derive fields from input files. Those input files have data on a discrete time axis as well. Each data point in the input files are associated with a discrete time (as opposed to a time interval). Depending whether you pick lower, upper, nearest, linear, or coszen; the data in the input file will be &#8220;interpolated&#8221; to the time in the model.</p>
-<p class="last">The offset shifts the time axis of the input data the given number of seconds. so if the input data is at 0, 3600, 7200, 10800 seconds (hourly) and you set an offset of 1800, then the input data will be set at times 1800, 5400, 9000, and 12600. so a model at time 3600 using linear interpolation would have data at &#8220;n=2&#8221; with offset of 0 will have data at &#8220;n=(2+3)/2&#8221; with an offset of 1800. n=2 is the 2nd data in the time list 0, 3600, 7200, 10800 in this example. n=(2+3)/2 is the average of the 2nd and 3rd data in the time list 0, 3600, 7200, 10800. offset can be positive or negative.</p>
-</dd>
-<dt>domainInfo</dt>
-<dd>Information about the domain data for this stream...</dd>
-<dt>variableNames</dt>
+<dt><code class="docutils literal"><span class="pre">dataSource</span></code></dt>
+<dd>A comment about the source of the data &#8211; always set to GENERIC and is there only for backwards compatibility.</dd>
+<dt><code class="docutils literal"><span class="pre">domainInfo</span></code></dt>
+<dd><p class="first">Information about the domain data for this stream specified by the following 3 sub elements.</p>
+<dl class="last docutils">
+<dt><code class="docutils literal"><span class="pre">variableNames</span></code></dt>
 <dd>A list of the domain variable names. This is a paired list with the name of the variable in the netCDF file on the left and the name of the corresponding model variable on the right. This data models require five variables in this list. The names of model&#8217;s variables (names on the right) must be: &#8220;time,&#8221; &#8220;lon,&#8221; &#8220;lat,&#8221; &#8220;area,&#8221; and &#8220;mask.&#8221;</dd>
-<dt>filePath</dt>
-<dd>The file system directory where the domain data file is located.</dd>
-<dt>fileNames</dt>
+<dt><code class="docutils literal"><span class="pre">filePath</span></code></dt>
+<dd><blockquote class="first">
+<div>The file system directory where the domain data file is located.</div></blockquote>
+<dl class="last docutils">
+<dt><code class="docutils literal"><span class="pre">fileNames</span></code></dt>
 <dd>The name of the domain data file. Often the domain data is located in the same file as the field data (above), in which case the name of the domain file could simply be the name of the first field data file. Sometimes the field data files don&#8217;t contain the domain data required by the data models, in this case, one new file can be created that contains the required data.</dd>
 </dl>
+</dd>
+</dl>
+</dd>
+<dt><code class="docutils literal"><span class="pre">fieldInfo</span></code></dt>
+<dd><p class="first">Information about the stream data for this stream specified by the following 3 required sub elements and optional offset element.</p>
+<dl class="last docutils">
+<dt><code class="docutils literal"><span class="pre">variableNames</span></code></dt>
+<dd>A list of the field variable names. This is a paired list with the name of the variable in the netCDF file on the left and the name of the corresponding model variable on the right. This is the list of fields to read in from the data file, there may be other fields in the file which are not read in (ie. they won&#8217;t be used).</dd>
+<dt><code class="docutils literal"><span class="pre">filePath</span></code></dt>
+<dd>The file system directory where the data files are located.</dd>
+<dt><code class="docutils literal"><span class="pre">fileNames</span></code></dt>
+<dd>The list of data files to use. If there is more than one file, the files must be in chronological order, that is, the dates in time axis of the first file are before the dates in the time axis of the second file.</dd>
+<dt><code class="docutils literal"><span class="pre">offset</span></code></dt>
+<dd>The offset allows a user to shift the time axis of a data stream by a fixed and constant number of seconds. For instance, if a data set contains daily average data with timestamps for the data at the end of the day, it might be appropriate to shift the time axis by 12 hours so the data is taken to be at the middle of the day instead of the end of the day. This feature supports only simple shifts in seconds as a way of correcting input data time axes without having to modify the input data time axis manually. This feature does not support more complex shifts such as end of month to mid-month. But in conjunction with the time interpolation methods in the strdata input, hopefully most user needs can be accommodated with the two settings. Note that a positive offset advances the input data time axis forward by that number of seconds.</dd>
+</dl>
+</dd>
+</dl>
+<p>The data models advance in time discretely.
+At a given time, they read/derive fields from input files.
+Those input files have data on a discrete time axis as well.
+Each data point in the input files are associated with a discrete time (as opposed to a time interval).
+Depending whether you pick lower, upper, nearest, linear, or coszen; the data in the input file will be &#8220;interpolated&#8221; to the time in the model.</p>
+<p>The offset shifts the time axis of the input data the given number of seconds.
+So if the input data is at 0, 3600, 7200, 10800 seconds (hourly) and you set an offset of 1800, then the input data will be set at times 1800, 5400, 9000, and 12600.
+So a model at time 3600 using linear interpolation would have data at &#8220;n=2&#8221; with offset of 0 will have data at &#8220;n=(2+3)/2&#8221; with an offset of 1800.
+n=2 is the 2nd data in the time list 0, 3600, 7200, 10800 in this example.
+n=(2+3)/2 is the average of the 2nd and 3rd data in the time list 0, 3600, 7200, 10800.
+offset can be positive or negative.</p>
 <p>Actual example:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">stream</span><span class="o">&gt;</span>
 <span class="o">&lt;</span><span class="n">domainInfo</span><span class="o">&gt;</span>
@@ -320,6 +360,35 @@ chmod u+w $CASEROOT/user_datm.streams.txt.CLM_QIAN.Solar
 <span class="o">&lt;/</span><span class="n">stream</span><span class="o">&gt;</span>
 </pre></div>
 </div>
+</div>
+<div class="section" id="customizing-stream-description-files">
+<h2>2.5. Customizing stream description files<a class="headerlink" href="#customizing-stream-description-files" title="Permalink to this headline">¶</a></h2>
+<p>Each data model&#8217;s <strong>cime-config/buildnml</strong> utility automatically generates the required stream description files for the case.
+The directory contents of each data model will look like the following (using DATM as an example)</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>$CIMEROOT/components/data_comps/datm/cime_config/buildnml
+$CIMEROOT/components/data_comps/datm/cime_config/namelist_definition_datm.xml
+</pre></div>
+</div>
+<p>The <code class="docutils literal"><span class="pre">namelist_definition_datm.xml</span></code> file defines and sets default values for all the namelist variables and associated groups and also provides out-of-the box settings for the target data model and target stream.
+<strong>buildnml</strong> utilizes this two files to construct the stream files for the given compset settings. You can modify the generated stream files for your particular needs by doing the following:</p>
+<ol class="arabic">
+<li><p class="first">Copy the relevant description file from <code class="docutils literal"><span class="pre">$CASEROOT/CaseDocs</span></code> to <code class="docutils literal"><span class="pre">$CASEROOT</span></code> and pre-pend a &#8220;user_&#8221;string to the filename. Change the permission of the file to write. For example, assuming you are in <strong>$CASEROOT</strong></p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>cp $CASEROOT/CaseDocs/datm.streams.txt.CLM_QIAN.Solar  $CASEROOT/user_datm.streams.txt.CLM_QIAN.Solar
+chmod u+w $CASEROOT/user_datm.streams.txt.CLM_QIAN.Solar
+</pre></div>
+</div>
+</li>
+<li><ul class="first simple">
+<li>Edit <code class="docutils literal"><span class="pre">$CASEROOT/user_datm.streams.txt.CLM_QIAN.Solar</span></code> with your desired changes.</li>
+<li><em>Be sure not to put any tab characters in the file: use spaces instead</em>.</li>
+<li>In contrast to other user_nl_xxx files, be sure to set all relevant data model settings in the xml files, issue the <strong>preview_namelist</strong> command and THEN edit the <code class="docutils literal"><span class="pre">user_datm.streams.txt.CLM_QIAN.Solar</span></code> file.</li>
+<li><strong>Once you have created a user_xxx.streams.txt.* file, further modifications to the relevant data model settings in the xml files will be ignored.</strong></li>
+<li>If you later realize that you need to change some settings in an xml file, you should remove the user_xxx.streams.txt.* file(s), make the modifications in the xml file, rerun <strong>preview_namelists</strong>, and then reintroduce your modifications into a new user_xxx.streams.txt.* stream file(s).</li>
+</ul>
+</li>
+<li><p class="first">Call <strong>preview_namelists</strong> and verify that your changes do indeed appear in the resultant stream description file appear in <code class="docutils literal"><span class="pre">CaseDocs/datm.streams.txt.CLM_QIAN.Solar</span></code>. These changes will also appear in <code class="docutils literal"><span class="pre">$RUNDIR/datm.streams.txt.CLM_QIAN.Solar</span></code>.</p>
+</li>
+</ol>
 </div>
 </div>
 

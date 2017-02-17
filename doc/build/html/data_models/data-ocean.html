@@ -58,7 +58,8 @@
   <ul>
 <li><a class="reference internal" href="#">7. Data Ocean (DOCN)</a><ul>
 <li><a class="reference internal" href="#namelists">7.1. Namelists</a></li>
-<li><a class="reference internal" href="#fields">7.2. Fields</a></li>
+<li><a class="reference internal" href="#xml-variables">7.2. XML variables</a></li>
+<li><a class="reference internal" href="#fields">7.3. Fields</a></li>
 </ul>
 </li>
 </ul>
@@ -95,24 +96,114 @@
           <div class="body" role="main">
             
   <div class="section" id="data-ocean-docn">
-<h1>7. Data Ocean (DOCN)<a class="headerlink" href="#data-ocean-docn" title="Permalink to this headline">¶</a></h1>
+<span id="data-ocean"></span><h1>7. Data Ocean (DOCN)<a class="headerlink" href="#data-ocean-docn" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="namelists">
 <h2>7.1. Namelists<a class="headerlink" href="#namelists" title="Permalink to this headline">¶</a></h2>
-<p>DOCN namelists can be separated into two groups, <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/cesm/doc/modelnl/nl_ocn.html#nonstream">stream-independent namelist variables</a> that are specific to the DATM model and <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/cesm/doc/modelnl/nl_docn.html#stream">stream-specific namelist variables</a> that are contained in share code and whose names are common to all the data models.</p>
-<p>For stream-independent input, the namelist input filename is hardwired in the data model code to &#8220;docn_in&#8221; (or docn_in_NNNN for multiple instances) and the namelist group is called &#8220;docn_nml&#8221;. The variable formats are character string (char), integer (int), double precision real (r8), or logical (log) or one dimensional arrays of any of those things (array of ...).</p>
-<p>For stream-dependent input, the namelist input file is docn_ocn_in (or docn_ocn_in_NNNN for multiple instances) and the namelist group is &#8220;shr_strdata_nml&#8221;. One of the variables in shr_strdata_nml is the datamode value. The mode is selected by a character string set in the strdata namelist variable dataMode. Each data model has a unique set of datamode values that it supports. Those for DOCN are listed in detail in the <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/cesm/doc/modelnl/nl_docn.html#stream">datamode</a> definition. As part of the stream independent namelist input, DOCN supports two science modes, &#8220;SSTDATA&#8221; and &#8220;SOM&#8221;. SOM (&#8220;slab ocean model&#8221;) mode is a prognostic mode. This mode computes a prognostic sea surface temperature and a freeze/melt potential (surface Q-flux) used by the sea ice model. This calculation requires an external SOM forcing data file that includes ocean mixed layer depths and bottom-of-the-slab Q-fluxes. Scientifically appropriate bottom-of-the-slab Q-fluxes are normally ocean resolution dependent and are derived from the ocean model output of a fully coupled CCSM run. Note that this mode no longer runs out of the box, the default testing SOM forcing file is not scientifically appropriate and is provided for testing and development purposes only. Users must create scientifically appropriate data for their particular application or use one of the standard SOM forcing files from the CESM control runs. Some of these are available in the <a class="reference external" href="https://svn-ccsm-inputdata.cgd.ucar.edu/trunk/inputdata/ocn/docn7/SOM/">inputdata repository</a>. The user then edits the DOCN_SOM_FILENAME variable in env_run.xml to point to the appropriate SOM forcing dataset. A tool is available to derive valid <a class="reference external" href="http://www.cesm.ucar.edu/models/ccsm1.1/data8/SOM.pdf">SOM forcing</a>. More information on creating the SOM forcing is also available.</p>
+<p>As is the case for all data models, DROF namelists can be separated into two groups, stream-independent and stream-dependent.</p>
+<p>The namelist file for DOCN is <code class="docutils literal"><span class="pre">docn_in</span></code> (or <code class="docutils literal"><span class="pre">docn_in_NNN</span></code> for multiple instances).</p>
+<p>The stream dependent group is <a class="reference internal" href="input-streams.html#input-streams"><span class="std std-ref">shr_strdata_nml</span></a> .</p>
+<p>As part of the stream dependent namelist input, DOCN supports two science modes, <code class="docutils literal"><span class="pre">SSTDATA</span></code> and <code class="docutils literal"><span class="pre">SOM</span></code>.
+SOM (&#8220;slab ocean model&#8221;) mode is a prognostic mode.
+This mode computes a prognostic sea surface temperature and a freeze/melt potential (surface Q-flux) used by the sea ice model.
+This calculation requires an external SOM forcing data file that includes ocean mixed layer depths and bottom-of-the-slab Q-fluxes.
+Scientifically appropriate bottom-of-the-slab Q-fluxes are normally ocean resolution dependent and are derived from the ocean model output of a fully coupled CCSM run.
+Note that this mode no longer runs out of the box, the default testing SOM forcing file is not scientifically appropriate and is provided for testing and development purposes only.
+Users must create scientifically appropriate data for their particular application or use one of the standard SOM forcing files from the CESM control runs.
+Some of these are available in the <a class="reference external" href="https://svn-ccsm-inputdata.cgd.ucar.edu/trunk/inputdata/ocn/docn7/SOM/">inputdata repository</a>.
+The user then edits the DOCN_SOM_FILENAME variable in env_run.xml to point to the appropriate SOM forcing dataset.
+A tool is available to derive valid <a href="#id1"><span class="problematic" id="id2">**</span></a>TODO - put in the right link ** <a class="reference external" href="http://www.cesm.ucar.edu/models/ccsm1.1/data8/SOM.pdf">SOM forcing</a>.
+More information on creating the SOM forcing is also available.</p>
+<p>The stream-independent group is <code class="docutils literal"><span class="pre">docn_nml</span></code> and the DROF stream-independent namelist variables are:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="28%" />
+<col width="72%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>decomp</td>
+<td><p class="first">decomposition strategy (1d, root)</p>
+<p class="last">1d =&gt; vector decomposition, root =&gt; run on master task</p>
+</td>
+</tr>
+<tr class="row-even"><td>restfilm</td>
+<td>master restart filename</td>
+</tr>
+<tr class="row-odd"><td>restfils</td>
+<td>stream restart filename</td>
+</tr>
+<tr class="row-even"><td>force_prognostic_true</td>
+<td>TRUE =&gt; force prognostic behavior</td>
+</tr>
+</tbody>
+</table>
+<p>To change the namelist settings in docn_in, edit the file user_nl_docn.</p>
+</div>
+<div class="section" id="xml-variables">
+<h2>7.2. XML variables<a class="headerlink" href="#xml-variables" title="Permalink to this headline">¶</a></h2>
+<p>The following are xml variables that CIME supports for DROF.  These variables will appear in <code class="docutils literal"><span class="pre">env_run.xml</span></code> and are used by the DROF <code class="docutils literal"><span class="pre">cime_config/buildnml</span></code> script to generate the DROF namelist file <code class="docutils literal"><span class="pre">drof_in</span></code> and the required associated stream files for the case.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="20%" />
+<col width="80%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>DOCN_MODE</td>
+<td>Data mode</td>
+</tr>
+<tr class="row-even"><td>DOCN_SOM_FILENAME</td>
+<td>Sets SOM forcing data filename for pres runs, only used in D and E compset</td>
+</tr>
+<tr class="row-odd"><td>SSTICE_STREAM</td>
+<td><p class="first">Prescribed SST and ice coverage stream name.</p>
+<p class="last">Sets SST and ice coverage stream name for prescribed runs.</p>
+</td>
+</tr>
+<tr class="row-even"><td>SSTICE_DATA_FILENAME</td>
+<td><p class="first">Prescribed SST and ice coverage data file name.</p>
+<p class="last">Sets SST and ice coverage data file name for DOCN prescribed runs.</p>
+</td>
+</tr>
+<tr class="row-odd"><td>SSTICE_YEAR_ALIGN</td>
+<td><p class="first">The model year that corresponds to SSTICE_YEAR_START on the data file.</p>
+<p>Prescribed SST and ice coverage data will be aligned so that the first year of</p>
+<p>data corresponds to SSTICE_YEAR_ALIGN in the model. For instance, if the first</p>
+<p>year of prescribed data is the same as the first year of the model run, this</p>
+<p>should be set to the year given in RUN_STARTDATE.</p>
+<p>If SSTICE_YEAR_ALIGN is later than the model&#8217;s starting year, or if the model is</p>
+<p>run after the prescribed data ends (as determined by SSTICE_YEAR_END), the</p>
+<p>default behavior is to assume that the data from SSTICE_YEAR_START to</p>
+<p>SSTICE_YEAR_END cyclically repeats. This behavior is controlled by the</p>
+<p class="last"><em>taxmode</em> stream option</p>
+</td>
+</tr>
+<tr class="row-even"><td>SSTICE_YEAR_START</td>
+<td><p class="first">The first year of data to use from SSTICE_DATA_FILENAME.</p>
+<p>This is the first year of prescribed SST and ice coverage data to use. For</p>
+<p>example, if a data file has data for years 0-99, and SSTICE_YEAR_START is 10,</p>
+<p class="last">years 0-9 in the file will not be used.&lt;/desc&gt;</p>
+</td>
+</tr>
+<tr class="row-odd"><td>SSTICE_YEAR_END</td>
+<td><p class="first">The last year of data to use from SSTICE_DATA_FILENAME.</p>
+<p>This is the last year of prescribed SST and ice coverage data to use. For</p>
+<p>example, if a data file has data for years 0-99, and value is 49,</p>
+<p class="last">years 50-99 in the file will not be used.&lt;/desc&gt;</p>
+</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="section" id="fields">
-<h2>7.2. Fields<a class="headerlink" href="#fields" title="Permalink to this headline">¶</a></h2>
+<h2>7.3. Fields<a class="headerlink" href="#fields" title="Permalink to this headline">¶</a></h2>
 <p>The pre-defined internal field names in the data ocean model are as follows. In general, the stream input file should translate the input variable names into these names for use within the data ocean model.</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="18%" />
+<col width="17%" />
+<col width="19%" />
+<col width="17%" />
+<col width="19%" />
 <col width="20%" />
-<col width="18%" />
-<col width="20%" />
-<col width="16%" />
-<col width="10%" />
+<col width="9%" />
 </colgroup>
 <tbody valign="top">
 <tr class="row-odd"><td>(/ &#8220;ifrac</td>
@@ -138,8 +229,8 @@
 </tr>
 <tr class="row-even"><td>&#8220;evap</td>
 <td>&#8221;,&#8221;meltw</td>
-<td>&#8221;,&#8221;roff</td>
-<td>&#8221;,&#8221;ioff</td>
+<td>&#8221;,&#8221;rofl</td>
+<td>&#8221;,&#8221;rofi</td>
 <td>&#8221;,</td>
 <td>&amp;</td>
 </tr>
@@ -154,8 +245,8 @@
 <td>&#8221;,&#8221;q</td>
 <td>&#8221;,&#8221;h</td>
 <td>&#8221;,&#8221;qbot</td>
-<td>&#8220;</td>
-<td>/)</td>
+<td>&#8221;,&#8221;fswpen</td>
+<td>&#8221;  /)</td>
 </tr>
 </tbody>
 </table>

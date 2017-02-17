@@ -58,7 +58,8 @@
   <ul>
 <li><a class="reference internal" href="#">8. Data River (DROF)</a><ul>
 <li><a class="reference internal" href="#namelists">8.1. Namelists</a></li>
-<li><a class="reference internal" href="#fields">8.2. Fields</a></li>
+<li><a class="reference internal" href="#xml-variables">8.2. XML variables</a></li>
+<li><a class="reference internal" href="#fields">8.3. Fields</a></li>
 </ul>
 </li>
 </ul>
@@ -95,16 +96,70 @@
           <div class="body" role="main">
             
   <div class="section" id="data-river-drof">
-<h1>8. Data River (DROF)<a class="headerlink" href="#data-river-drof" title="Permalink to this headline">¶</a></h1>
+<span id="data-river"></span><h1>8. Data River (DROF)<a class="headerlink" href="#data-river-drof" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="namelists">
 <h2>8.1. Namelists<a class="headerlink" href="#namelists" title="Permalink to this headline">¶</a></h2>
-<p>The data river runoff model is new and is effectively the runoff part of the dlnd model in CESM1.0 that has been made its own top level component.</p>
-<p>DROF namelists can be separated into two groups, <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/cesm/doc/modelnl/nl_drof.html#nonstream">stream-independent namelist variables</a> that are specific to the DROF model and <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/cesm/doc/modelnl/nl_drof.html#stream">stream-specific namelist variables</a> that are contained in share code and whose names are common to all the data models.</p>
-<p>For stream-independent input, the namelist input filename is hardwired in the data model code to &#8220;drof_in&#8221; (or drof_in_NNNN for multiple instances) and the namelist group is called &#8220;drof_nml&#8221;. The variable formats are character string (char), integer (int), double precision real (r8), or logical (log) or one dimensional arrays of any of those things (array of ...).</p>
-<p>For stream-dependent input, the namelist input file is &#8220;drof_lnd_in&#8221; (or drof_rof_in_NNNN for NNNN multiple instances) and the namelist group is &#8220;shr_strdata_nml&#8221;. One of the variables in shr_strdata_nml is the datamode value. The mode is selected by a character string set in the strdata namelist variable dataMode. Each data model has a unique set of datamode values that it supports. Those for DROF are listed in detail in the <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/cesm/doc/modelnl/nl_drof.html#stream">datamode</a> definition.</p>
+<p>The data river runoff model (DROF) provides data river input to prognostic components such as the ocean.</p>
+<p>The namelist file for DROF is <code class="docutils literal"><span class="pre">drof_in</span></code>.</p>
+<p>As is the case for all data models, DROF namelists can be separated into two groups, stream-independent and stream-dependent.</p>
+<p>The stream dependent group is <a class="reference internal" href="input-streams.html#input-streams"><span class="std std-ref">shr_strdata_nml</span></a>.</p>
+<p>The stream-independent group is <code class="docutils literal"><span class="pre">drof_nml</span></code> and the DROF stream-independent namelist variables are:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="28%" />
+<col width="72%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>decomp</td>
+<td><p class="first">decomposition strategy (1d, root)</p>
+<p class="last">1d =&gt; vector decomposition, root =&gt; run on master task</p>
+</td>
+</tr>
+<tr class="row-even"><td>restfilm</td>
+<td>master restart filename</td>
+</tr>
+<tr class="row-odd"><td>restfils</td>
+<td>stream restart filename</td>
+</tr>
+<tr class="row-even"><td>force_prognostic_true</td>
+<td>TRUE =&gt; force prognostic behavior</td>
+</tr>
+</tbody>
+</table>
+<p>To change the namelist settings in drof_in, edit the file user_nl_drof.</p>
+</div>
+<div class="section" id="xml-variables">
+<h2>8.2. XML variables<a class="headerlink" href="#xml-variables" title="Permalink to this headline">¶</a></h2>
+<p>The following are xml variables that CIME supports for DROF.  These variables will appear in <code class="docutils literal"><span class="pre">env_run.xml</span></code> and are used by the DROF <code class="docutils literal"><span class="pre">cime_config/buildnml</span></code> script to generate the DROF namelist file <code class="docutils literal"><span class="pre">drof_in</span></code> and the required associated stream files for the case.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="21%" />
+<col width="79%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>DROF_MODE</td>
+<td>Data mode</td>
+</tr>
+<tr class="row-even"><td>DROF_CPLHIST_CASE</td>
+<td>Coupler history data mode case name</td>
+</tr>
+<tr class="row-odd"><td>DROF_CPLHIST_DIR</td>
+<td>Coupler history data mode directory containing coupler history data</td>
+</tr>
+<tr class="row-even"><td>DROF_CPLHIST_YR_ALIGN</td>
+<td>Coupler history data model simulation year corresponding to data starting year</td>
+</tr>
+<tr class="row-odd"><td>DROF_CPLHIST_YR_START</td>
+<td>Coupler history data model starting year to loop data over</td>
+</tr>
+<tr class="row-even"><td>DROF_CPLHIST_YR_END</td>
+<td>Coupler history data model ending year to loop data over</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="section" id="fields">
-<h2>8.2. Fields<a class="headerlink" href="#fields" title="Permalink to this headline">¶</a></h2>
+<h2>8.3. Fields<a class="headerlink" href="#fields" title="Permalink to this headline">¶</a></h2>
 <p>The pre-defined internal field names in the data river runoff model are as follows. In general, the stream input file should translate the input variable names into these names for use within the data river runoff model.</p>
 <table border="1" class="docutils">
 <colgroup>

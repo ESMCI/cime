@@ -1,4 +1,4 @@
-.. _introduction:
+.. _introduction-and-overview:
 
 
 **************************
@@ -27,34 +27,32 @@ The python version must be greater then 2.7 but less the 3.0.  You can check whi
 the computer you are using.  If it is not, see Installing CIME.
 
 
-CIME terms and concepts
+Terms and concepts
 =======================
 
 The following concepts are ingrained in CIME and will occur frequently in this documentation.
 
-**full** vs **data** vs **stub** models:
-   Most coupled climate models contain sub-models of the atmosphere, ocean, and other systems 
-   that each have their own set of equations to solve must all interact with each other through their shared physical
-   interfaces.  We refer to those as *full* models.
+**component set** or **compset**:
+   CIME allows several sub-models and other tools to be linked together in to a climate model. These sub-models and tools are called 
+   *components* of the climate model. We say a climate model has an atmosphere component, an ocean component, etc.  
+   The resulting set of components is called the *component set* or *compset*.
 
-   CIME recognizes 7 different physical sub-models of a climate model, those are:
+**full** vs **data** vs **stub** models:
+   A component for the atmosphere or ocean that solve a complex set of equations to describe their behavior are called *full* models.
+
+   CIME recognizes 7 different full models of a climate model, those are:
 
        atmosphere, ocean, sea-ice, land surface, river, glacier, wave
 
-   All must be specified to compile an executable within CIME.
+   In addition, an "external processing system" or ESP component is also allowed.
 
-   For some climate problems, its necessary to reduce feedbacks within the system
-   by replacing a full model with a version that sends and recieves the same variables to and from other models but
+   For some climate problems, its necessary to reduce feedbacks within the system by replacing a full model with a 
+   version that sends and recieves the same variables to and from other models but
    the values sent are not computed from the equations but instead read from files.  The values received are ignored.
-   We call these full-model substitutes *data models*" and CIME provides data models for each of the sub-models supported.
+   We call these full-model substitutes *data models*" and CIME provides data models for each of the supported components.
 
    For some configurations, a data model is not needed and so CIME provides *stub* versions that simply occupy the
    required place in the climate execution sequence  and do not send or receive any data.
-
-**component set** or **compset**:
-   The sub-models within a climate model are also called *components* of the climate model. We
-   say a climate model has an atmosphere component, an ocean component, etc.  CIME supports mixing *full*, *data* and 
-   *stub* components together depending on the problem.  The resulting set of components is called the *component set* or *compset*.
 
 **grid set** or **grid**: 
    Each full model must solve its equations on a numerical grid.  CIME allows several models within the system to have different grids.  The resulting set of numerical grids is called the *grid set* or sometimes just the
@@ -75,8 +73,8 @@ The following concepts are ingrained in CIME and will occur frequently in this d
     you may make, is called the *case*.
 
 
-Setting CIME defaults
-=====================
+Setting defaults
+=================
 
 Before using any CIME commands, you should set the CIME_MODEL environmental variable. In csh, this would be:
 ::
@@ -85,4 +83,51 @@ Before using any CIME commands, you should set the CIME_MODEL environmental vari
 
 Where <model> is one of "acme" or "cesm".
 
+Directory content
+==================
 
+If you use CIME as part of a climate model or stand alone, the content of the cime directory is the same.  
+
+If you are using it as part of
+a climate model, cime is usually one of the first subdirectories under the main directory:
+
+.. csv-table:: CIME directory in a climate model
+   :header: "Directory or Filename", "Description"
+   :widths: 200, 300
+
+   "README, etc.", "typical top-level directory content."
+   "components/", "source code for all of the full models."
+   "cime/", "All of CIME code"
+
+CIME's content is split in to several subdirectories:
+
+.. csv-table:: CIME directory content
+   :header: "Directory or Filename", "Description"
+   :widths: 150, 300
+
+   "CMakeLists.txt", "For building with CMake"
+   "ChangeLog", "Developer-maintained record of changes to CIME"
+   "ChangeLog_template", "template for an entry in ChangeLog"
+   "LICENSE.TXT", "The CIME license"
+   "README", "Brief intro to CIME"
+   "README.md", "README in markdown language"
+   "README.unit_testing", "Instructions on running unit tests with CIME"
+   "cime_config/", "shared and model-specific configuration files"
+   "components/", "CIME-provided components including data and stub models"
+   "driver_cpl/", "CIME-provided main driver for a climate model"
+   "externals/", "Software provided with CIME for building a climate model"
+   "scripts/", "The CIME user interface"
+   "share/", "Source code provided by CIME and used by multiple components"
+   "tests/", "tests"
+   "tools/", "Standalone tools useful for climate modeling"
+   "utils/", "source code for CIME scripts and functions"
+
+Users should start in the "scripts" subdirectory.
+
+Quick Start
+==================
+
+You can cd to cime/scripts and try to build a simple data-model only case.
+
+Discovering available content
+==============================

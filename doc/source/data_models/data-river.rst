@@ -1,16 +1,45 @@
+.. _data-river:
+
 Data River (DROF)
 =================
 
 ---------
 Namelists
 ---------
-The data river runoff model is new and is effectively the runoff part of the dlnd model in CESM1.0 that has been made its own top level component.
+The data river runoff model (DROF) provides data river input to prognostic components such as the ocean.
 
-DROF namelists can be separated into two groups, `stream-independent namelist variables <http://www.cesm.ucar.edu/models/cesm2.0/cesm/doc/modelnl/nl_drof.html#nonstream>`_ that are specific to the DROF model and `stream-specific namelist variables <http://www.cesm.ucar.edu/models/cesm2.0/cesm/doc/modelnl/nl_drof.html#stream>`_ that are contained in share code and whose names are common to all the data models.
+The namelist file for DROF is ``drof_in``.
 
-For stream-independent input, the namelist input filename is hardwired in the data model code to "drof_in" (or drof_in_NNNN for multiple instances) and the namelist group is called "drof_nml". The variable formats are character string (char), integer (int), double precision real (r8), or logical (log) or one dimensional arrays of any of those things (array of ...).
+As is the case for all data models, DROF namelists can be separated into two groups, stream-independent and stream-dependent. 
 
-For stream-dependent input, the namelist input file is "drof_lnd_in" (or drof_rof_in_NNNN for NNNN multiple instances) and the namelist group is "shr_strdata_nml". One of the variables in shr_strdata_nml is the datamode value. The mode is selected by a character string set in the strdata namelist variable dataMode. Each data model has a unique set of datamode values that it supports. Those for DROF are listed in detail in the `datamode <http://www.cesm.ucar.edu/models/cesm2.0/cesm/doc/modelnl/nl_drof.html#stream>`_ definition.
+The stream dependent group is :ref:`shr_strdata_nml<input-streams>`. 
+
+The stream-independent group is ``drof_nml`` and the DROF stream-independent namelist variables are:
+
+=====================  ======================================================
+decomp                 decomposition strategy (1d, root)
+    
+                       1d => vector decomposition, root => run on master task
+restfilm               master restart filename 
+restfils               stream restart filename 
+force_prognostic_true  TRUE => force prognostic behavior
+=====================  ======================================================
+
+To change the namelist settings in drof_in, edit the file user_nl_drof. 
+
+---------------
+XML variables
+---------------
+The following are xml variables that CIME supports for DROF.  These variables will appear in ``env_run.xml`` and are used by the DROF ``cime_config/buildnml`` script to generate the DROF namelist file ``drof_in`` and the required associated stream files for the case.
+
+===================== =============================================================================== 
+DROF_MODE             Data mode
+DROF_CPLHIST_CASE     Coupler history data mode case name 
+DROF_CPLHIST_DIR      Coupler history data mode directory containing coupler history data 
+DROF_CPLHIST_YR_ALIGN Coupler history data model simulation year corresponding to data starting year 
+DROF_CPLHIST_YR_START Coupler history data model starting year to loop data over
+DROF_CPLHIST_YR_END   Coupler history data model ending year to loop data over
+===================== =============================================================================== 
 
 ------
 Fields

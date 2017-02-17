@@ -86,8 +86,10 @@
           <div class="body" role="main">
             
   <div class="section" id="data-model-science">
-<h1>3. Data Model Science<a class="headerlink" href="#data-model-science" title="Permalink to this headline">¶</a></h1>
-<p>When a given data models run, the user must specify which <em>science mode</em> it will run in. Each data model has a fixed set of fields that it must send to the coupler, but it is the choice of mode that specifies how that set of fields is to be computed. Each mode activates various assumptions about what input fields are available from the input data streams, what input fields are available from the the coupler, and how to use this input data to compute the output fields sent to the coupler.</p>
+<span id="id1"></span><h1>3. Data Model Science<a class="headerlink" href="#data-model-science" title="Permalink to this headline">¶</a></h1>
+<p>When a given data models run, the user must specify which <em>science mode</em> it will run in.
+Each data model has a fixed set of fields that it must send to the coupler, but it is the choice of mode that specifies how that set of fields is to be computed.
+Each mode activates various assumptions about what input fields are available from the input data streams, what input fields are available from the the coupler, and how to use this input data to compute the output fields sent to the coupler.</p>
 <p>In general, a mode might specify...</p>
 <ul class="simple">
 <li>that fields be set to a time invariant constant (so that no input data is needed)</li>
@@ -96,12 +98,17 @@
 <li>that fields be computed using from data received from the coupler</li>
 <li>some combination of the above.</li>
 </ul>
-<p>If a science mode is chosen that is not consistent with the input data provided, the model may abort (perhaps with a &#8220;missing data&#8221; error message), or the model may send erroneous data to the coupler (for example, if a mode assumes an input stream has temperature in Kelvin on it, but it really has temperature in Celsius). Such an error is unlikely unless a user has edited the run scripts to specify either non-standard input data or a non-standard science mode. When editing the run scripts to use non-standard stream data or modes, users must be careful that the input data is consistent with the science mode and should verify that the data model is providing data to the coupler as expected.</p>
-<p>The data model mode is a character string that is set in the namelist variable &#8220;datamode&#8221; in the namelist group &#8220;shr_strdata_nml&#8221;. Although each data model, <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/cesm/doc/modelnl/nl_datm.html#stream">datm</a>, <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/cesm/doc/modelnl/nl_dlnd.html#stream">dlnd</a>, <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/cesm/doc/modelnl/nl_drof.html#stream">drof</a>, <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/cesm/doc/modelnl/nl_docn.html#stream">docn</a>, and <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/cesm/doc/modelnl/nl_dice.html#stream">dicn</a>, has its own set of valid datamode values, two modes are common to all data models: COPYALL and NULL.</p>
-<p><code class="docutils literal"><span class="pre">dataMode</span> <span class="pre">=</span> <span class="pre">&quot;COPYALL&quot;</span></code></p>
-<p>The default mode is COPYALL &#8211; the model will assume <em>all</em> the data that must be sent to the coupler will be found in the input data streams, and that this data can be sent to the coupler, unaltered, except for spatial and temporal interpolation.</p>
-<p><code class="docutils literal"><span class="pre">dataMode</span> <span class="pre">=</span> <span class="pre">&quot;NULL&quot;</span></code>
-NULL mode turns off the data model as a provider of data to the coupler. The model_present flag (eg. atm_present) will be set to false and the coupler will assume no exchange of data to or from the data model.</p>
+<p>If a science mode is chosen that is not consistent with the input data provided, the model may abort (perhaps with a &#8220;missing data&#8221; error message), or the model may send erroneous data to the coupler (for example, if a mode assumes an input stream has temperature in Kelvin on it, but it really has temperature in Celsius).
+Such an error is unlikely unless a user has edited the run scripts to specify either non-standard input data or a non-standard science mode.
+When editing the run scripts to use non-standard stream data or modes, users must be careful that the input data is consistent with the science mode and should verify that the data model is providing data to the coupler as expected.</p>
+<p>The data model mode is a character string that is set in the namelist variable <code class="docutils literal"><span class="pre">datamode</span></code> in the namelist group <code class="docutils literal"><span class="pre">shr_strdata_nml</span></code>. Although each data model,
+<code class="docutils literal"><span class="pre">datm</span></code>, <code class="docutils literal"><span class="pre">dlnd</span></code>, <code class="docutils literal"><span class="pre">drof</span></code>, <code class="docutils literal"><span class="pre">docn</span></code>, <code class="docutils literal"><span class="pre">dice</span></code> and <code class="docutils literal"><span class="pre">dwav</span></code> has its own set of valid datamode values, two modes are common to all data models: <code class="docutils literal"><span class="pre">COPYALL</span></code> and <code class="docutils literal"><span class="pre">NULL</span></code>.</p>
+<dl class="docutils">
+<dt><code class="docutils literal"><span class="pre">dataMode</span> <span class="pre">=</span> <span class="pre">&quot;COPYALL&quot;</span></code></dt>
+<dd>The default mode is COPYALL &#8211; the model will assume <em>all</em> the data that must be sent to the coupler will be found in the input data streams, and that this data can be sent to the coupler, unaltered, except for spatial and temporal interpolation.</dd>
+<dt><code class="docutils literal"><span class="pre">dataMode</span> <span class="pre">=</span> <span class="pre">&quot;NULL&quot;</span></code></dt>
+<dd>NULL mode turns off the data model as a provider of data to the coupler. The model_present flag (eg. atm_present) will be set to false and the coupler will assume no exchange of data to or from the data model.</dd>
+</dl>
 </div>
 
 

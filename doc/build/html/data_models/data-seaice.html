@@ -58,7 +58,8 @@
   <ul>
 <li><a class="reference internal" href="#">6. Data Ice (DICE)</a><ul>
 <li><a class="reference internal" href="#namelists">6.1. Namelists</a></li>
-<li><a class="reference internal" href="#fields">6.2. Fields</a></li>
+<li><a class="reference internal" href="#xml-variables">6.2. XML variables</a></li>
+<li><a class="reference internal" href="#fields">6.3. Fields</a></li>
 </ul>
 </li>
 </ul>
@@ -95,15 +96,76 @@
           <div class="body" role="main">
             
   <div class="section" id="data-ice-dice">
-<h1>6. Data Ice (DICE)<a class="headerlink" href="#data-ice-dice" title="Permalink to this headline">¶</a></h1>
+<span id="data-seaice"></span><h1>6. Data Ice (DICE)<a class="headerlink" href="#data-ice-dice" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="namelists">
 <h2>6.1. Namelists<a class="headerlink" href="#namelists" title="Permalink to this headline">¶</a></h2>
-<p>DICE namelists can be separated into two groups, <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/cesm/doc/modelnl/nl_ice.html#nonstream">stream-independent namelist variables</a> that are specific to the DATM model and <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/cesm/doc/modelnl/nl_dice.html#stream">stream-specific namelist variables</a> that are contained in share code and whose names are common to all the data models.</p>
-<p>For stream-independent input, the namelist input filename is hardwired in the data model code to &#8220;dice_in&#8221; (or dice_in_NNNN for multiple instances) and the namelist group is called &#8220;dice_nml&#8221;.</p>
-<p>Its important to point out that the only currently supported datamode that is not &#8220;NULL&#8221; or &#8220;COPYALL&#8221; is &#8220;SSTDATA&#8221;, which is a prognostic mode and therefore requires data be sent to the ice model. Ice fraction (extent) data is read from an input stream, atmosphere state variables are received from the coupler, and then an atmosphere-ice surface flux is computed and sent to the coupler. It is called &#8220;SSTDATA&#8221; mode because normally the ice fraction data is found in the same data files that provide SST data to the data ocean model. They are normally found in the same file because the SST and ice fraction data are derived from the same observational data sets and are consistent with each other.</p>
+<p>DICE is a combination of a data model and a prognostic model.
+The data functionality reads in ice coverage.
+The prognostic functionality calculates the ice/atmosphere and ice/ocean fluxes.
+DICE receives the same atmospheric input from the coupler as the active CICE model (i.e., atmospheric  states, shortwave fluxes, and ocean ice melt flux) and acts very similarly to CICE running in prescribed mode.
+Currently, this component is only used to drive POP in &#8220;C&#8221; compsets.</p>
+<p>The namelist file for DICE is <code class="docutils literal"><span class="pre">dice_in</span></code> (or <code class="docutils literal"><span class="pre">dice_in_NNN</span></code> for multiple instances).</p>
+<p>As is the case for all data models, DICE namelists can be separated into two groups, stream-independent and stream-dependent.</p>
+<p>The stream dependent group is <a class="reference internal" href="input-streams.html#input-streams"><span class="std std-ref">shr_strdata_nml</span></a>.</p>
+<p>The stream-independent group is <code class="docutils literal"><span class="pre">dice_nml</span></code> and the DICE stream-independent namelist variables are:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="28%" />
+<col width="72%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>decomp</td>
+<td><p class="first">decomposition strategy (1d, root)</p>
+<p class="last">1d =&gt; vector decomposition, root =&gt; run on master task</p>
+</td>
+</tr>
+<tr class="row-even"><td>flux_qacc</td>
+<td>activates water accumulation/melt wrt Q</td>
+</tr>
+<tr class="row-odd"><td>flux_qacc0</td>
+<td>initial water accumulation value</td>
+</tr>
+<tr class="row-even"><td>flux_qmin</td>
+<td>bound on melt rate</td>
+</tr>
+<tr class="row-odd"><td>flux_swpf</td>
+<td>short-wave penetration factor</td>
+</tr>
+<tr class="row-even"><td>restfilm</td>
+<td>master restart filename</td>
+</tr>
+<tr class="row-odd"><td>restfils</td>
+<td>stream restart filename</td>
+</tr>
+<tr class="row-even"><td>force_prognostic_true</td>
+<td>TRUE =&gt; force prognostic behavior</td>
+</tr>
+</tbody>
+</table>
+<p>To change the namelist settings in <code class="docutils literal"><span class="pre">dice_in</span></code>, edit the file <code class="docutils literal"><span class="pre">user_nl_dice</span></code>.</p>
+</div>
+<div class="section" id="xml-variables">
+<h2>6.2. XML variables<a class="headerlink" href="#xml-variables" title="Permalink to this headline">¶</a></h2>
+<p>The following are xml variables that CIME supports for DICE.  These variables will appear in <code class="docutils literal"><span class="pre">env_run.xml</span></code> and are used by the DICE <code class="docutils literal"><span class="pre">cime_config/buildnml</span></code> script to generate the DICE namelist file <code class="docutils literal"><span class="pre">dice_in</span></code> and the required associated stream files for the case.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="21%" />
+<col width="79%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>DLND_MODE</td>
+<td>Data mode</td>
+</tr>
+</tbody>
+</table>
+<p>If DICE_MODE is set to <code class="docutils literal"><span class="pre">SSMI</span></code> or <code class="docutils literal"><span class="pre">SSMI_IAF</span></code>, it is a prognostic mode.
+It requires data be sent to the ice model.
+Ice fraction (extent) data is read from an input stream, atmosphere state variables are received from the coupler, and then an atmosphere-ice surface flux is computed and sent to the coupler.
+Normally the ice fraction data is found in the same data files that provide SST data to the data ocean model.
+They are normally found in the same file because the SST and ice fraction data are derived from the same observational data sets and are consistent with each other.</p>
 </div>
 <div class="section" id="fields">
-<h2>6.2. Fields<a class="headerlink" href="#fields" title="Permalink to this headline">¶</a></h2>
+<h2>6.3. Fields<a class="headerlink" href="#fields" title="Permalink to this headline">¶</a></h2>
 <p>The pre-defined internal field names in the data ice model are as follows. In general, the stream input file should translate the input variable names into these names for use within the data ocean model.</p>
 <table border="1" class="docutils">
 <colgroup>
