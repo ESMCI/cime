@@ -86,6 +86,9 @@ int PIOc_write_darray_multi(int ncid, const int *vid, int ioid, int nvars, PIO_O
     if (nvars <= 0)
         return pio_err(ios, file, PIO_EINVAL, __FILE__, __LINE__);
 
+    LOG((1, "PIOc_write_darray_multi ncid = %d ioid = %d nvars = %d arraylen = %ld flushtodisk = %d",
+         ncid, ioid, nvars, arraylen, flushtodisk));
+
     /* Check that we can write to this file. */
     if (! (file->mode & PIO_WRITE))
         return pio_err(ios, file, PIO_EPERM, __FILE__, __LINE__);
@@ -112,7 +115,7 @@ int PIOc_write_darray_multi(int ncid, const int *vid, int ioid, int nvars, PIO_O
 
     /* Currently there are two rearrangers box=1 and subset=2. There
      * is never a case where rearranger==0. */
-    LOG((2, "pio_write_darray_multi nvars=%d arraylen=%ld \n",nvars, arraylen));
+    LOG((2, "iodesc->rearranger = %d \n", iodesc->rearranger));
     if (iodesc->rearranger > 0)
     {
         if (rlen > 0)
@@ -149,19 +152,17 @@ int PIOc_write_darray_multi(int ncid, const int *vid, int ioid, int nvars, PIO_O
     {
     case PIO_IOTYPE_NETCDF4P:
     case PIO_IOTYPE_PNETCDF:
-        ierr = pio_write_darray_multi_nc(file, nvars, vid,
-                                         iodesc->ndims, iodesc->basetype, iodesc->gsize,
-                                         iodesc->maxregions, iodesc->firstregion, iodesc->llen,
-                                         iodesc->maxiobuflen, iodesc->num_aiotasks,
+        ierr = pio_write_darray_multi_nc(file, nvars, vid, iodesc->ndims, iodesc->basetype,
+                                         iodesc->gsize, iodesc->maxregions, iodesc->firstregion,
+                                         iodesc->llen, iodesc->maxiobuflen, iodesc->num_aiotasks,
                                          vdesc0->iobuf, frame);
         break;
     case PIO_IOTYPE_NETCDF4C:
     case PIO_IOTYPE_NETCDF:
-        ierr = pio_write_darray_multi_nc_serial(file, nvars, vid,
-                                                iodesc->ndims, iodesc->basetype, iodesc->gsize,
-                                                iodesc->maxregions, iodesc->firstregion, iodesc->llen,
-                                                iodesc->maxiobuflen, iodesc->num_aiotasks,
-                                                vdesc0->iobuf, frame);
+        ierr = pio_write_darray_multi_nc_serial(file, nvars, vid, iodesc->ndims, iodesc->basetype,
+                                                iodesc->gsize, iodesc->maxregions,
+                                                iodesc->firstregion, iodesc->llen, iodesc->maxiobuflen,
+                                                iodesc->num_aiotasks, vdesc0->iobuf, frame);
 
         break;
     default:
@@ -189,10 +190,11 @@ int PIOc_write_darray_multi(int ncid, const int *vid, int ioid, int nvars, PIO_O
      * points. This is generally faster than the netcdf method of
      * filling the entire array with missing values before overwriting
      * those values later. */
-    if (iodesc->rearranger == PIO_REARR_SUBSET)
-        LOG((2, "pio_write_darray_multi nvars=%d holegridsize=%ld %d\n",nvars, iodesc->holegridsize, iodesc->needsfill));
     if (iodesc->rearranger == PIO_REARR_SUBSET && iodesc->needsfill)
     {
+        LOG((2, "nvars = %d holegridsize = %ld iodesc->needsfill = %d\n", nvars,
+             iodesc->holegridsize, iodesc->needsfill));
+
         if (vdesc0->fillbuf)
             piodie("Attempt to overwrite existing buffer",__FILE__,__LINE__);
 
