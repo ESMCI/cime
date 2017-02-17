@@ -954,7 +954,7 @@ int pio_write_darray_multi_nc_serial(file_desc_t *file, int nvars, const int *vi
                     rregions = maxregions;
                 }
 
-                LOG((3, "rlen = %d rregions = %d", rlen, rregions));
+                LOG((3, "rtask = %d rlen = %d rregions = %d", rtask, rlen, rregions));
                 if (rlen > 0)
                 {
                     loffset = 0;

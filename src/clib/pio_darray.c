@@ -113,7 +113,8 @@ int PIOc_write_darray_multi(int ncid, const int *vid, int ioid, int nvars, PIO_O
 
     /* Currently there are two rearrangers box=1 and subset=2. There
      * is never a case where rearranger==0. */
-    LOG((2, "iodesc->rearranger = %d \n", iodesc->rearranger));
+    LOG((2, "iodesc->rearranger = %d iodesc->needsfill = %d\n", iodesc->rearranger,
+         iodesc->needsfill));
     if (iodesc->rearranger > 0)
     {
         if (rlen > 0)
@@ -148,6 +149,7 @@ int PIOc_write_darray_multi(int ncid, const int *vid, int ioid, int nvars, PIO_O
          } */
 
     /* Write the darray based on the iotype. */
+    LOG((2, "about to write darray for iotype = %d", file->iotype));
     switch (file->iotype)
     {
     case PIO_IOTYPE_NETCDF4P:
@@ -168,6 +170,7 @@ int PIOc_write_darray_multi(int ncid, const int *vid, int ioid, int nvars, PIO_O
     default:
         return pio_err(NULL, NULL, PIO_EBADIOTYPE, __FILE__, __LINE__);
     }
+    LOG((3, "ierr = %d", ierr));
 
     /* For PNETCDF the iobuf is freed in flush_output_buffer() */
     if (file->iotype != PIO_IOTYPE_PNETCDF)
