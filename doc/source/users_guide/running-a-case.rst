@@ -3,11 +3,17 @@
 ***************
 Running a Case
 ***************
-========================
 
-To run a CIME case, you will run the script ``case.submit`` after you have modified ``env_run.xml`` for your particular needs.
+To run a CIME case:
 
-The `env_run.xml <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_ file contains variables which may be modified at the initialization of a model run and during the course of that model run. These variables comprise coupler namelist settings for the model stop time, model restart frequency, coupler history frequency and a flag to determine if the run should be flagged as a continuation run. In general, you only need to set the variables ``$STOP_OPTION`` and ``$STOP_N``. The other coupler settings will then be given consistent and reasonable default values. These default settings guarantee that restart files are produced at the end of the model run.
+- modified ``env_run.xml`` for your particular needs
+- call the script ``case.submit`` 
+
+The ``env_run.xml`` file contains variables which may be modified at initialization and any time during the course of that model run. 
+Among other features, the file variables comprise coupler namelist settings for the model stop time, model restart frequency, coupler history frequency and a flag to determine if the run should be flagged as a continuation run. 
+At a minimum, you will only need to set the variables ``$STOP_OPTION`` and ``$STOP_N``. 
+The other coupler settings will then be given consistent and reasonable default values. 
+These default settings guarantee that restart files are produced at the end of the model run.
 
 In the following, we focus on the handling of run control (e.g. length of run, continuing a run) and output data. We also give a more detailed description of CIME restarts.
 
@@ -145,7 +151,7 @@ After changing this file and calling **preview_namelists** again, you should see
 
 DICE
 -----
-DICE is discussed in detail in `Data Model's User's Guide <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_.
+DICE is discussed in detail in :ref:`Data Model User's Guide<data-seaice>`.
 
 DICE can be user-customized in three ways.
 
@@ -157,7 +163,7 @@ You can modify the contents of a DICE stream txt file. To do this:
 
 - use **preview_namelists** to obtain the contents of the stream txt files in ``CaseDocs/``
 
-- place a *copy* of this file in ``$CASEROOT`` with the string "*user*_" prepended
+- place a *copy* of this file in ``$CASEROOT`` with the string **user_** prepended
 
 - **Make sure you change the permissions of the file to be writeable** (chmod 644)
 
