@@ -329,7 +329,11 @@ int check_atts(int my_rank, int ncid, int flavor, MPI_Comm test_comm)
     unsigned int att_uint_value;
     long long int att_int64_value;
     unsigned long long int att_uint64_value;
+    char too_long_name[PIO_MAX_NAME * 5 + 1];
     int ret;
+
+    memset(too_long_name, 74, PIO_MAX_NAME * 5);
+    too_long_name[PIO_MAX_NAME * 5] = 0;
 
     /* Find rank in test communicator. */
     if ((ret = MPI_Comm_rank(test_comm, &my_test_rank)))
@@ -357,6 +361,13 @@ int check_atts(int my_rank, int ncid, int flavor, MPI_Comm test_comm)
     if (PIOc_get_att_int(ncid, NC_GLOBAL, NULL, &att_int_value) != PIO_EINVAL)
         return ERR_WRONG;
     if (PIOc_get_att_int(ncid, NC_GLOBAL, ATT_NAME, NULL) != PIO_EINVAL)
+        return ERR_WRONG;
+
+    /* These should not work. */
+    if (PIOc_inq_att(ncid, NC_GLOBAL, too_long_name, &att_type, &att_len) != PIO_EINVAL)
+        return ERR_WRONG;
+    int tmp_attid;
+    if (PIOc_inq_attid(ncid, NC_GLOBAL, too_long_name, &tmp_attid) != PIO_EINVAL)
         return ERR_WRONG;
 
     /* Check first att. */
@@ -1078,6 +1089,10 @@ int test_deletefile(int iosysid, int num_flavors, int *flavor, int my_rank)
         printf("%d Closing the sample data file...\n", my_rank);
         if ((ret = PIOc_closefile(ncid)))
             ERR(ret);
+
+        /* This should not work. */
+        if (PIOc_deletefile(iosysid + 42, filename) != PIO_EBADID)
+            ERR(ERR_WRONG);
 
         /* Now delete the file. */
         printf("%d Deleting %s...\n", my_rank, filename);

@@ -1783,6 +1783,10 @@ int create_putget_file(int iosysid, int access, int unlim, int flavor, int *dim_
     int ncid;
     int ret;
 
+    /* This should not work. */
+    if (PIOc_createfile(iosysid + 42, &ncid, &flavor, filename, PIO_CLOBBER) != PIO_EBADID)
+        return ERR_WRONG;
+
     /* Create the netCDF output file. */
     if ((ret = PIOc_createfile(iosysid, &ncid, &flavor, filename, PIO_CLOBBER)))
         return ret;
