@@ -902,12 +902,16 @@ int PIOc_write_nc_decomp(const char *filename, int iosysid, int ioid, MPI_Comm c
     int mpierr;
     int ret;
 
-    LOG((1, "PIOc_write_nc_decomp filename = %s iosysid = %d ioid = %d", filename,
-         iosysid, ioid));
-
     /* Get the IO system info. */
     if (!(ios = pio_get_iosystem_from_id(iosysid)))
         return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
+
+    /* Check inputs. */
+    if (!filename)
+        return pio_err(NULL, NULL, PIO_EINVAL, __FILE__, __LINE__);
+
+    LOG((1, "PIOc_write_nc_decomp filename = %s iosysid = %d ioid = %d", filename,
+         iosysid, ioid));
 
     /* Get the IO desc, which describes the decomposition. */
     if (!(iodesc = pio_get_iodesc_from_id(ioid)))
@@ -934,7 +938,7 @@ int PIOc_write_nc_decomp(const char *filename, int iosysid, int ioid, MPI_Comm c
 
     /* Find the max maxplen. */
     if ((mpierr = MPI_Allreduce(&iodesc->maplen, &max_maplen, 1, MPI_INT, MPI_MAX, comm)))
-        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);        
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     LOG((3, "max_maplen = %d", max_maplen));
 
     /* 2D array that, on task 0, will hold all the map information for
@@ -955,7 +959,7 @@ int PIOc_write_nc_decomp(const char *filename, int iosysid, int ioid, MPI_Comm c
     if ((mpierr = MPI_Allgather(&my_map, max_maplen, MPI_INT, full_map, max_maplen,
                              MPI_INT, comm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
-    
+
     for (int p = 0; p < npes; p++)
         for (int e = 0; e < max_maplen; e++)
             LOG((3, "full_map[%d][%d] = %d", p, e, full_map[p][e]));
@@ -965,8 +969,98 @@ int PIOc_write_nc_decomp(const char *filename, int iosysid, int ioid, MPI_Comm c
                                         task_maplen, (int *)full_map, title, history, fortran_order)))
         return ret;
 
-    
+
     return PIO_NOERR;
+}
+
+/**
+ * Read the decomposition map from a netCDF decomp file produced by
+ * PIOc_write_nc_decomp().
+ *
+ * @param filename the name of the decomp file.
+ * @param iosysid the IO system ID.
+ * @param ioid pointer that will get the newly-assigned ID of the IO
+ * description. The ioid is needed to later free the decomposition.
+ * @param comm an MPI communicator.
+ * @param title pointer that will get optial title attribute for the
+ * file. Will be less than NC_MAX_NAME + 1 if provided. Ignored if
+ * NULL.
+ * @param history pointer that will get optial history attribute for
+ * the file. Will be less than NC_MAX_NAME + 1 if provided. Ignored if
+ * NULL.
+ * @param fortran_order pointer that gets set to 1 if fortran array
+ * ordering is used, or to zero if C array ordering is used.
+ * @returns 0 for success, error code otherwise.
+ */
+int PIOc_read_nc_decomp(const char *filename, int iosysid, int *ioidp, MPI_Comm comm,
+                        char *title, char *history, int *fortran_order)
+{
+    iosystem_desc_t *ios; /* Pointer to the IO system info. */
+    int ndims;            /* The number of data dims (except unlim). */
+    int max_maplen;       /* The max maplen of any task. */
+    int *global_dimlen;   /* An array with sizes of global dimensions. */
+    int *task_maplen;     /* A map of one tasks mapping to global data. */
+    int *full_map;        /* A map with the task maps of every task. */
+    int num_tasks_decomp; /* The number of tasks for this decomp. */
+    int size;             /* Size of comm. */
+    int my_rank;          /* Task rank in comm. */
+    char source_in[PIO_MAX_NAME + 1];  /* Text metadata in decomp file. */
+    char version_in[PIO_MAX_NAME + 1]; /* Text metadata in decomp file. */
+    int basetype = PIO_INT;
+    int mpierr;
+    int ret;
+
+    /* Get the IO system info. */
+    if (!(ios = pio_get_iosystem_from_id(iosysid)))
+        return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
+
+    /* Check inputs. */
+    if (!filename || !ioidp)
+        return pio_err(ios, NULL, PIO_EINVAL, __FILE__, __LINE__);
+
+    LOG((1, "PIOc_read_nc_decomp filename = %s iosysid = %d", filename, iosysid));
+
+    /* Get the communicator size and task rank. */
+    if ((mpierr = MPI_Comm_size(comm, &size)))
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+    if ((mpierr = MPI_Comm_rank(comm, &my_rank)))
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+    LOG((2, "size = %d my_rank = %d", size, my_rank));
+
+    /* Read the file. This allocates three arrays that we have to
+     * free. */
+    if ((ret = pioc_read_nc_decomp_int(iosysid, filename, &ndims, &global_dimlen, &num_tasks_decomp,
+                                       &task_maplen, &max_maplen, &full_map, title, history,
+                                       source_in, version_in, fortran_order)))
+        return ret;
+    LOG((2, "ndims = %d num_tasks_decomp = %d max_maplen = %d", ndims, num_tasks_decomp,
+         max_maplen));
+
+    /* If the size does not match the number of tasks in the decomp,
+     * that's an error. */
+    if (size != num_tasks_decomp)
+        ret = PIO_EINVAL;
+
+    /* Now initialize the iodesc on each task for this decomposition. */
+    if (!ret)
+    {
+        PIO_Offset compmap[task_maplen[my_rank]];
+
+        /* Copy array into PIO_Offset array. */
+        for (int e = 0; e < task_maplen[my_rank]; e++)
+            compmap[e] = full_map[my_rank * max_maplen + e];
+
+        /* Initialize the decomposition. */
+        ret = PIOc_InitDecomp(iosysid, basetype, ndims, global_dimlen, task_maplen[my_rank],
+                              compmap, ioidp, NULL, NULL, NULL);
+    }
+
+    /* Free resources. */
+    free(global_dimlen);
+    free(task_maplen);
+    free(full_map);
+
+    return ret;
 }
 
 /* Write the decomp information in netCDF. This is an internal
@@ -1135,17 +1229,19 @@ int pioc_write_nc_decomp_int(int iosysid, const char *filename, int ndims, int *
  * @param filename the name the decomp file will have.
  * @param ndims pointer to int that will get number of dims in the
  * data being described. Ignored if NULL.
- * @param global_dimlen an array, of size ndims, that will get the
- * size of the global array in each dimension. Ignored if NULL.
+ * @param global_dimlen a pointer that gets an array, of size ndims,
+ * that will have the size of the global array in each
+ * dimension. Ignored if NULL, otherwise must be freed by caller.
  * @param num_tasks pointer to int that gets the number of tasks the
  * data are decomposed over. Ignored if NULL.
- * @param task_maplen array of size num_tasks that gets the length of
- * the map for each task. Ignored if NULL.
+ * @param task_maplen pointer that gets array of size num_tasks that
+ * gets the length of the map for each task. Ignored if NULL,
+ * otherwise must be freed by caller.
  * @param max_maplen pointer to int that gets the maximum maplen for
  * any task. Ignored if NULL.
- * @param map pointer to a 2D array of size [num_tasks][max_maplen]
- * that will get the 0-based mapping from local to global array
- * elements. Ignored if NULL.
+ * @param map pointer that gets a 2D array of size [num_tasks][max_maplen]
+ * that will have the 0-based mapping from local to global array
+ * elements. Ignored if NULL, otherwise must be freed by caller.
  * @param title pointer that will get the contents of title attribute,
  * if present. If present, title will be < PIO_MAX_NAME + 1 in
  * length. Ignored if NULL.
@@ -1163,8 +1259,8 @@ int pioc_write_nc_decomp_int(int iosysid, const char *filename, int ndims, int *
  * array ordering.
  * @returns 0 for success, error code otherwise.
  */
-int pioc_read_nc_decomp_int(int iosysid, const char *filename, int *ndims, int *global_dimlen,
-                            int *num_tasks, int *task_maplen, int *max_maplen, int *map, char *title,
+int pioc_read_nc_decomp_int(int iosysid, const char *filename, int *ndims, int **global_dimlen,
+                            int *num_tasks, int **task_maplen, int *max_maplen, int **map, char *title,
                             char *history, char *source, char *version, int *fortran_order)
 {
     iosystem_desc_t *ios;
@@ -1278,8 +1374,12 @@ int pioc_read_nc_decomp_int(int iosysid, const char *filename, int *ndims, int *
     if ((ret = PIOc_get_var_int(ncid, gsize_varid, global_dimlen_in)))
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
     if (global_dimlen)
+    {
+        if (!(*global_dimlen = malloc(ndims_in * sizeof(int))))
+            return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
         for (int d = 0; d < ndims_in; d++)
-            global_dimlen[d] = global_dimlen_in[d];
+            (*global_dimlen)[d] = global_dimlen_in[d];
+    }
 
     /* Read dimension for tasks. If we have 4 tasks, we need to store
      * an array of length 4 with the size of the local array on each
@@ -1301,8 +1401,12 @@ int pioc_read_nc_decomp_int(int iosysid, const char *filename, int *ndims, int *
     if ((ret = PIOc_get_var_int(ncid, maplen_varid, task_maplen_in)))
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
     if (task_maplen)
+    {
+        if (!(*task_maplen = malloc(num_tasks_in * sizeof(int))))
+            return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
         for (int t = 0; t < num_tasks_in; t++)
-            task_maplen[t] = task_maplen_in[t];
+            (*task_maplen)[t] = task_maplen_in[t];
+    }
 
     /* Read the map. */
     int map_varid;
@@ -1312,9 +1416,13 @@ int pioc_read_nc_decomp_int(int iosysid, const char *filename, int *ndims, int *
     if ((ret = PIOc_get_var_int(ncid, map_varid, (int *)map_in)))
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
     if (map)
+    {
+        if (!(*map = malloc(num_tasks_in * max_maplen_in * sizeof(int))))
+            return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
         for (int t = 0; t < num_tasks_in; t++)
             for (int l = 0; l < max_maplen_in; l++)
-                map[t * max_maplen_in + l] = map_in[t][l];
+                (*map)[t * max_maplen_in + l] = map_in[t][l];
+    }
 
     /* Close the netCDF decomp file. */
     if ((ret = PIOc_closefile(ncid)))
