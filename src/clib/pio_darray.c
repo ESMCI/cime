@@ -103,15 +103,13 @@ int PIOc_write_darray_multi(int ncid, const int *vid, int ioid, int nvars, PIO_O
      * large as the largest used to accommodate this serial io
      * method. */
     vdesc0 = file->varlist + vid[0];
+    pioassert(!vdesc0->iobuf, "Attempt to overwrite existing io buffer",__FILE__, __LINE__);
 
     /* ??? */
     /*   rlen = iodesc->llen*nvars; */
     rlen = 0;
     if (iodesc->llen > 0)
         rlen = iodesc->maxiobuflen * nvars;
-
-    if (vdesc0->iobuf)
-        piodie("Attempt to overwrite existing io buffer",__FILE__, __LINE__);
 
     /* Currently there are two rearrangers box=1 and subset=2. There
      * is never a case where rearranger==0. */
@@ -126,10 +124,12 @@ int PIOc_write_darray_multi(int ncid, const int *vid, int ioid, int nvars, PIO_O
             /* Allocate memory for the variable buffer. */
             if (!(vdesc0->iobuf = bget((size_t)vsize * (size_t)rlen)))
                 piomemerror(*ios, (size_t)rlen * (size_t)vsize, __FILE__, __LINE__);
+            LOG((3, "allocated %ld bytes for variable buffer", (size_t)rlen * (size_t)vsize));
 
             /* If data are missing for the BOX rearranger, insert fill values. */
             if (iodesc->needsfill && iodesc->rearranger == PIO_REARR_BOX)
             {
+                LOG((3, "inserting fill values, vsize = %d", vsize));
                 if (vsize == 4)
                     for (int nv = 0; nv < nvars; nv++)
                         for (int i = 0; i < iodesc->maxiobuflen; i++)

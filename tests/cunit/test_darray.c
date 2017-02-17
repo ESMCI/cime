@@ -193,9 +193,9 @@ int test_all_darray(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_
     if ((ret = test_darray(iosysid, ioid, num_flavors, flavor, my_rank)))
         return ret;
     
-    printf("writing decomp file %s\n", filename);
-    if ((ret = PIOc_write_nc_decomp(filename, iosysid, ioid, test_comm, NULL, NULL, 0)))
-        return ret;
+    /* printf("writing decomp file %s\n", filename); */
+    /* if ((ret = PIOc_write_nc_decomp(filename, iosysid, ioid, test_comm, NULL, NULL, 0))) */
+    /*     return ret; */
     
     /* Free the PIO decomposition. */
     if ((ret = PIOc_freedecomp(iosysid, ioid)))
