@@ -151,9 +151,10 @@ PIO_TF_AUTO_TEST_SUB_BEGIN nc_wr_rd_1d_bc
 
   do rd_rearr_opt_idx=1,size(enable_rd_rearr)
     do wr_rearr_opt_idx=1,size(enable_wr_rearr)
-      PIO_TF_LOG(0, *) "Testing 1d decomp with Read rearrangment =", enable_rd_rearr(rd_rearr_opt_idx), ", Write rearrangemnt =", enable_wr_rearr(wr_rearr_opt_idx)
+      PIO_TF_LOG(0, *) "Testing Rd rearr =", enable_rd_rearr(rd_rearr_opt_idx), ",Write rearr=", enable_wr_rearr(wr_rearr_opt_idx)
       ! Set the decomposition for writing data - forcing rearrangement
-      call get_1d_bc_info(pio_tf_world_rank_, pio_tf_world_sz_, dims, start, count, enable_wr_rearr(wr_rearr_opt_idx))
+      call get_1d_bc_info(pio_tf_world_rank_, pio_tf_world_sz_, dims,&
+             start, count, enable_wr_rearr(wr_rearr_opt_idx))
       allocate(wbuf(count(1)))
       allocate(compdof(count(1)))
       do i=1,count(1)
@@ -165,7 +166,8 @@ PIO_TF_AUTO_TEST_SUB_BEGIN nc_wr_rd_1d_bc
       deallocate(compdof)
 
       ! Set the decomposition for reading data - different from the write decomp
-      call get_1d_bc_info(pio_tf_world_rank_, pio_tf_world_sz_, dims, start, count, enable_rd_rearr(rd_rearr_opt_idx))
+      call get_1d_bc_info(pio_tf_world_rank_, pio_tf_world_sz_, dims,&
+             start, count, enable_rd_rearr(rd_rearr_opt_idx))
       allocate(rbuf(count(1)))
       allocate(compdof(count(1)))
       allocate(exp_val(count(1)))
