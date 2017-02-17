@@ -398,13 +398,16 @@ int PIOc_write_darray(int ncid, int vid, int ioid, PIO_Offset arraylen, void *ar
 
     /* At this point wmb should be pointing to a new or existing buffer
        so we can add the data. */
+
+    /* Find out how much free, contiguous space is available. */
     bfreespace(&totfree, &maxfree);
 
-    /* ??? */
+    /* maxfree is the available memory. If that is < 10% greater than
+     * the size of the current request needsflush is true. */
     if (needsflush == 0)
         needsflush = (maxfree <= 1.1 * (1 + wmb->validvars) * arraylen * tsize);
 
-    /* Tell all tests on the computation communicator whether we need
+    /* Tell all tasks on the computation communicator whether we need
      * to flush data. */
     if ((mpierr = MPI_Allreduce(MPI_IN_PLACE, &needsflush, 1,  MPI_INT,  MPI_MAX, ios->comp_comm)))
         return check_mpi(file, mpierr, __FILE__, __LINE__);
