@@ -178,7 +178,8 @@ int check_darray_file(int iosysid, int ntasks, int my_rank, char *filename)
 }
 
 /* Test the darray functionality. */
-int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank)
+int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank,
+                int fv)
 {
     char filename[PIO_MAX_NAME + 1]; /* Name for the output files. */
     int dim_len[NDIM1] = {DIM_LEN}; /* Length of the dimensions in the sample data. */
@@ -192,7 +193,7 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
     for (int fmt = 0; fmt < num_flavors; fmt++)
     {
         /* Create the filename. */
-        sprintf(filename, "%s_%d.nc", TEST_NAME, flavor[fmt]);
+        sprintf(filename, "%s_flavor_%d_fv_%d.nc", TEST_NAME, flavor[fmt], fv);
 
         /* Create the netCDF output file. */
         printf("rank: %d Creating sample file %s with format %d...\n", my_rank, filename,
@@ -216,10 +217,11 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
         /* Write some data. */
         PIO_Offset arraylen = 1;
         float fillvalue = 0.0;
+        float *fillvaluep = fv ? &fillvalue : NULL;
         float test_data[arraylen];
         for (int f = 0; f < arraylen; f++)
             test_data[f] = my_rank * 10 + f;
-        if ((ret = PIOc_write_darray(ncid, varid, ioid, arraylen, test_data, &fillvalue)))
+        if ((ret = PIOc_write_darray(ncid, varid, ioid, arraylen, test_data, fillvaluep)))
             ERR(ret);
 
         /* Close the netCDF file. */
@@ -1818,13 +1820,16 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
         if ((ret = create_decomposition(my_test_size, my_rank, iosysid, DIM_LEN, &ioid)))
             return ret;
 
+        /* Write out an ASCII version of the decomp file. */
         printf("%d Calling write_decomp. async = %d\n", my_rank, async);
         if ((ret = PIOc_write_decomp(filename, iosysid, ioid, test_comm)))
             return ret;
         printf("%d Called write_decomp. async = %d\n", my_rank, async);
 
-        if ((ret = test_darray(iosysid, ioid, num_flavors, flavor, my_rank)))
-            return ret;
+        /* Run the darray tests. */
+        for (int fv = 0; fv < 2; fv++)
+            if ((ret = test_darray(iosysid, ioid, num_flavors, flavor, my_rank, fv)))
+                return ret;
 
         /* Free the PIO decomposition. */
         if ((ret = PIOc_freedecomp(iosysid, ioid)))
