@@ -171,8 +171,10 @@ extern "C" {
                              int ndim, io_desc_t *iodesc);
 
 
-    int rearrange_io2comp(iosystem_desc_t ios, io_desc_t *iodesc, void *sbuf, void *rbuf);
+    /* Move data from IO tasks to compute tasks. */
+    int rearrange_io2comp(iosystem_desc_t *ios, io_desc_t *iodesc, void *sbuf, void *rbuf);
 
+    /* Move data from compute tasks to IO tasks. */
     int rearrange_comp2io(iosystem_desc_t ios, io_desc_t *iodesc, void *sbuf, void *rbuf, int nvars);
 
     io_desc_t *malloc_iodesc(const iosystem_desc_t *ios, int piotype, int ndims);
@@ -199,7 +201,9 @@ extern "C" {
 
     int ceil2(int i);
     int pair(int np, int p, int k);
-    int define_iodesc_datatypes(iosystem_desc_t ios, io_desc_t *iodesc);
+
+    /* Create MPI datatypes used for comp2io and io2comp data transfers. */
+    int define_iodesc_datatypes(iosystem_desc_t *ios, io_desc_t *iodesc);
 
     /* Create the derived MPI datatypes used for comp2io and io2comp
      * transfers. */

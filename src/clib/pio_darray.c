@@ -608,7 +608,7 @@ int PIOc_read_darray(int ncid, int vid, int ioid, PIO_Offset arraylen,
     /* If a rearranger was specified, rearrange the data. */
     if (iodesc->rearranger > 0)
     {
-        ierr = rearrange_io2comp(*ios, iodesc, iobuf, array);
+        ierr = rearrange_io2comp(ios, iodesc, iobuf, array);
 
         /* Free the buffer. */
         if (rlen > 0)
