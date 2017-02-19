@@ -12,8 +12,16 @@ The namelist file for DOCN is ``docn_in`` (or ``docn_in_NNN`` for multiple insta
 
 The stream dependent group is :ref:`shr_strdata_nml<input-streams>` .
 
-As part of the stream dependent namelist input, DOCN supports two science modes, ``SSTDATA`` and ``SOM``. 
-SOM ("slab ocean model") mode is a prognostic mode. 
+As part of the stream dependent namelist input, DOCN supports two science modes, ``SSTDATA`` (prescribed mode) and ``SOM`` (slab ocean mode). 
+
+DOCN running in prescribed mode assumes that the only field in the input stream is SST and also that SST is in Celsius and must be converted to Kelvin. 
+All other fields are set to zero except for ocean salinity, which is set to a constant reference salinity value. 
+Normally the ice fraction data (used for prescribed CICE) is found in the same data files that provide SST data to the data ocean model since SST and ice fraction data are derived from the same observational data sets and are consistent with each other. 
+For DOCN prescribed mode, default yearly climatological datasets are provided for various model resolutions. 
+For multi-year runs requiring AMIP datasets of sst/ice_cov fields, you need to set the xml variables for ``DOCN_SSTDATA_FILENAME``, ``DOCN_SSTDATA_YEAR_START``, and ``DOCN_SSTDATA_YEAR_END``.
+CICE in prescribed mode also uses these values.
+
+DOCN running as a slab ocean model is used in conjunction with active ice mode running in full prognostic mode (e.g. CICE for CESM).
 This mode computes a prognostic sea surface temperature and a freeze/melt potential (surface Q-flux) used by the sea ice model. 
 This calculation requires an external SOM forcing data file that includes ocean mixed layer depths and bottom-of-the-slab Q-fluxes. 
 Scientifically appropriate bottom-of-the-slab Q-fluxes are normally ocean resolution dependent and are derived from the ocean model output of a fully coupled CCSM run. 

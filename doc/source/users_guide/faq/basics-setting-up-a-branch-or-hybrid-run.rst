@@ -1,3 +1,5 @@
+.. _setting-up-a-branch-run:
+
 Setting up a branch or hybrid run
 ---------------------------------
 
