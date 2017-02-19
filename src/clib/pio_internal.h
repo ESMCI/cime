@@ -209,16 +209,24 @@ extern "C" {
 
     int subset_rearrange_create(iosystem_desc_t ios, int maplen, PIO_Offset *compmap,
                                 const int *gsize, int ndims, io_desc_t *iodesc);
+
+    /* Print a trace statement, for debugging. */
     void print_trace (FILE *fp);
+    
     void cn_buffer_report(iosystem_desc_t ios, bool collective);
 
     /* Initialize the compute buffer. */
     int compute_buffer_init(iosystem_desc_t ios);
 
     void free_cn_buffer_pool(iosystem_desc_t ios);
-    void flush_buffer(int ncid, wmulti_buffer *wmb, bool flushtodisk);
-    void piomemerror(iosystem_desc_t ios, size_t req, char *fname, int line);
+
+    /* Flush PIO's data buffer. */
+    int flush_buffer(int ncid, wmulti_buffer *wmb, bool flushtodisk);
+
     void compute_maxaggregate_bytes(iosystem_desc_t ios, io_desc_t *iodesc);
+
+    /* Announce a memory error with bget memory, and die. */
+    void piomemerror(iosystem_desc_t ios, size_t req, char *fname, int line);
 
     /* Check the return code from an MPI function call. */
     int check_mpi(file_desc_t *file, int mpierr, const char *filename, int line);

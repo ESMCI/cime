@@ -1672,33 +1672,54 @@ void free_cn_buffer_pool(iosystem_desc_t ios)
  * @param ncid identifies the netCDF file
  * @param wmb May be NULL, in which case function returns.
  * @param flushtodisk
+ * @returns 0 for success, error code otherwise.
  * @ingroup PIO_write_darray
  */
-void flush_buffer(int ncid, wmulti_buffer *wmb, bool flushtodisk)
+int flush_buffer(int ncid, wmulti_buffer *wmb, bool flushtodisk)
 {
-    /* Check inputs. */
-    if (!wmb)
-        return;
+    file_desc_t *file;
+    int ret;
 
+    /* Check input. */
+    pioassert(wmb, "invalid input", __FILE__, __LINE__);
+
+    /* Get the file info (to get error handler). */
+    if ((ret = pio_get_file(ncid, &file)))
+        return pio_err(NULL, NULL, ret, __FILE__, __LINE__);
+    
     LOG((1, "flush_buffer ncid = %d flushtodisk = %d", ncid, flushtodisk));
 
+    /* If there are any variables in this buffer... */
     if (wmb->validvars > 0)
     {
-        PIOc_write_darray_multi(ncid, wmb->vid,  wmb->ioid, wmb->validvars,
-                                wmb->arraylen, wmb->data, wmb->frame,
-                                wmb->fillvalue, flushtodisk);
+        /* Write any data in the buffer. */
+        if ((ret = PIOc_write_darray_multi(ncid, wmb->vid,  wmb->ioid, wmb->validvars,
+                                           wmb->arraylen, wmb->data, wmb->frame,
+                                           wmb->fillvalue, flushtodisk)))
+            return pio_err(NULL, file, ret, __FILE__, __LINE__);
+
         wmb->validvars = 0;
+
+        /* Release the list of variable IDs. */
         brel(wmb->vid);
         wmb->vid = NULL;
+
+        /* Release the data memory. */
         brel(wmb->data);
         wmb->data = NULL;
+        
+        /* If there is a fill value, release it. */
         if (wmb->fillvalue)
             brel(wmb->fillvalue);
+        wmb->fillvalue = NULL;
+
+        /* Release the record number. */
         if (wmb->frame)
             brel(wmb->frame);
-        wmb->fillvalue = NULL;
         wmb->frame = NULL;
     }
+
+    return PIO_NOERR;
 }
 
 /**

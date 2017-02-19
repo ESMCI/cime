@@ -142,7 +142,10 @@ int PIOc_write_darray_multi(int ncid, const int *vid, int ioid, int nvars, PIO_O
             }
         }
 
-        ierr = rearrange_comp2io(*ios, iodesc, array, vdesc0->iobuf, nvars);
+        /* Move data from compute to IO tasks. */
+        if ((ierr = rearrange_comp2io(*ios, iodesc, array, vdesc0->iobuf, nvars)))
+            return pio_err(ios, file, ierr, __FILE__, __LINE__);
+        
     }/*  this is wrong, need to think about it
          else{
          vdesc0->iobuf = array;
@@ -299,6 +302,7 @@ int PIOc_write_darray(int ncid, int vid, int ioid, PIO_Offset arraylen, void *ar
     bufsize maxfree;       /* Max amount of free space in buffer. */
     int ierr = PIO_NOERR;  /* Return code. */
     int mpierr = MPI_SUCCESS;  /* Return code from MPI functions. */
+    int ret;
 
     LOG((1, "PIOc_write_darray ncid = %d vid = %d ioid = %d arraylen = %d",
          ncid, vid, ioid, arraylen));
@@ -428,7 +432,8 @@ int PIOc_write_darray(int ncid, int vid, int ioid, PIO_Offset arraylen, void *ar
         cn_buffer_report(*ios, true);
 
         /* If needsflush == 2 flush to disk otherwise just flush to io node. */
-        flush_buffer(ncid, wmb, needsflush == 2);
+        if ((ret = flush_buffer(ncid, wmb, needsflush == 2)))
+            return pio_err(ios, file, ret, __FILE__, __LINE__);            
     }
 
     /* Get memory for data. */

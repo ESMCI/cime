@@ -385,13 +385,13 @@ int define_iodesc_datatypes(iosystem_desc_t ios, io_desc_t *iodesc)
                     if ((ret = create_mpi_datatypes(iodesc->basetype, iodesc->nrecvs, iodesc->llen,
                                                     iodesc->rindex, iodesc->rcount, iodesc->rfrom,
                                                     iodesc->rtype)))
-                        return ret;
+                        return pio_err(&ios, NULL, ret, __FILE__, __LINE__);
                 }
                 else
                 {
                     if ((ret = create_mpi_datatypes(iodesc->basetype, iodesc->nrecvs, iodesc->llen,
                                                     iodesc->rindex, iodesc->rcount, NULL, iodesc->rtype)))
-                        return ret;
+                        return pio_err(&ios, NULL, ret, __FILE__, __LINE__);
                 }
             }
         }
@@ -710,8 +710,8 @@ int rearrange_comp2io(iosystem_desc_t ios, io_desc_t *iodesc, void *sbuf,
     MPI_Datatype *recvtypes;
     MPI_Comm mycomm;
     int mpierr; /* Return code from MPI calls. */
+    int ret;
 
-    
 #ifdef TIMING
     GPTLstart("PIO:rearrange_comp2io");
 #endif
@@ -744,7 +744,8 @@ int rearrange_comp2io(iosystem_desc_t ios, io_desc_t *iodesc, void *sbuf,
 
     /* Define the MPI data types that will be used for this
      * io_desc_t. */
-    define_iodesc_datatypes(ios, iodesc);
+    if ((ret = define_iodesc_datatypes(ios, iodesc)))
+        return pio_err(&ios, NULL, ret, __FILE__, __LINE__);
 
     /* Allocate arrays needed by the pio_swapm() function. */
     if (!(sendcounts = calloc(ntasks, sizeof(int))))
@@ -903,6 +904,7 @@ int rearrange_io2comp(iosystem_desc_t ios, io_desc_t *iodesc, void *sbuf,
     MPI_Datatype *recvtypes;
     int i;
     int mpierr; /* Return code from MPI calls. */
+    int ret;
 
     assert(iodesc);
 
@@ -929,7 +931,8 @@ int rearrange_io2comp(iosystem_desc_t ios, io_desc_t *iodesc, void *sbuf,
 
     /* Define the MPI data types that will be used for this
      * io_desc_t. */
-    define_iodesc_datatypes(ios, iodesc);
+    if ((ret = define_iodesc_datatypes(ios, iodesc)))
+        return pio_err(&ios, NULL, ret, __FILE__, __LINE__);
 
     /* Allocate arrays needed by the pio_swapm() function. */
     if (!(sendcounts = calloc(ntasks, sizeof(int))))
