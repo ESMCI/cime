@@ -4,8 +4,9 @@
 Porting and Validating CIME on a new Platform
 *********************************************
 
+===================
 Porting Overview 
-================
+===================
 
 One of the first steps many users will have to address is getting CIME based models running on their local machine. 
 This section will describe that process. 
@@ -59,9 +60,11 @@ The following steps should be followed:
 - Copy the template file ``$CIME/cime_config/xml_schemas/config_machines_template.xml`` to ``$HOME/.cime/config_machines.xml``
 - Fill in the details of ``$HOME/.cime/config_machines.xml`` that specific to your machine.  
 - The completed file should conform to the schema definition provided, check it using: 
+
 ::
 
    xmllint --noout --schema $CIME/cime_config/xml_schemas/config_machines.xsd $HOME/.cime/config_machines.xml
+
 
 - The files ``config_batch.xml`` and ``config_compilers.xml`` may also need specific adjustments for your batch system and compiler. You can edit these files in place to add your machine configuration or you can place your custom configuration files in the directory ``$HOME/.cime/``.  We recommend the latter approach. All files in ``$HOME/.cime/`` are appended to the xml objects read into memory.
 
@@ -69,11 +72,13 @@ The following steps should be followed:
 
 - Finally when all the previous steps have run correctly, you are ready to try a case at your target compset and resolution.
 
+====================================================
 Enabling out-of-the-box capability for your machine
 ====================================================
 Once you have successfully created the required xml files in your .cime directory and are satisfied with the results you can merge them into the default files in the cime_config/$CIME_MODEL/machines directory.   
 If you would like to make this machine definition available generally you may then issue a pull request to add your changes to the git repository.  
 
+====================================================
 Validating your port
 ====================================================
 
@@ -117,7 +122,7 @@ Users are responsible for their own validation process, especially with respect 
 
 3. Perform validation (both functional and scientific):
 
-   a. Perform a new CIME validation test (**TODO: fill this in **)
+   a. Perform a new CIME validation test (**TODO: fill this in**)
 
    b. Follow the `CCSM4.0 CICE port-validation procedure <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_.
 

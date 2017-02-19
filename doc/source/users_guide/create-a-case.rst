@@ -194,7 +194,7 @@ Various scripts, files and directories are created in ``$CASEROOT`` by **create_
                           This includes component resolutions and component compile-time configuration options
    env_mach_pes.xml       Sets component machine-specific processor layout (see :ref:`changing pe layout<changing-the-pe-layout>` ). 
 
-                          The settings in this are critical to a well-load-balanced simulation (see :ref:`load balancing <load-balancing-a-case>`)."
+                          The settings in this are critical to a well-load-balanced simulation (see :ref:`load balancing <optimizing-processor-layout>`)."
    env_run.xml            Sets run-time settings such as length of run, frequency of restarts, output of coupler diagnostics, 
 
                           and short-term and long-term archiving.

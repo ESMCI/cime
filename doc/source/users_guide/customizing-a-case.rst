@@ -71,7 +71,7 @@ Customizing the PE layout
 - the number of instances of each component
 -  the layout of the components across the hardware processors 
 
-Optimizing the throughput and efficiency of a CIME experiment often involves customizing the processor (PE) layout for (see :ref:`load balancing <load-balancing-a-case>`).
+Optimizing the throughput and efficiency of a CIME experiment often involves customizing the processor (PE) layout for (see :ref:`load balancing <optimizing-processor-layout>`).
 CIME provides significant flexibility with respect to the layout of components across different hardware processors. 
 In general, the CIME components -- atm, lnd, ocn, ice, glc, rof, wav, and cpl -- can run on overlapping or mutually unique processors. 
 Whereas each component is associated with a unique MPI communicator, the CIME driver runs on the union of all processors and controls the sequencing and hardware partitioning. 
