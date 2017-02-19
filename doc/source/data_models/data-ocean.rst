@@ -167,3 +167,103 @@ The pre-defined internal field names in the data ocean model are as follows. In 
 "t              ","u           ","v           ","dhdx        ","dhdy        ", &
 "s              ","q           ","h           ","qbot        ","fswpen      "  /)
 =========       ==========     =========      ==========     ===========    =====
+
+.. _creating-sstdata-input-from-prognostic-run:
+
+---------------------------------------------------------------------
+Creating SSTDATA mode input from a fully prognostic run (CESM only)
+---------------------------------------------------------------------
+
+The following outlines the steps you would take to create monthly averages of SST and ice coverage from a previous fully prognostic run that can then be read as as stream data by DOCN.
+
+As an example, the following uses an f09_g16 CESM B-configuration simulation using CAM5 physics and with cosp enabled. The procedure to create the SST/ICE file is as follows:
+
+1. Save monthly averaged 'aice' information from cice code (this is the default).
+
+2. Save monthly averaged SST information from pop2. To do this, copy $SRCROOT/pop2/input_templates/gx1v6_tavg_contents to $CASEROOT/SourceMods/src.pop2 and change the 2 in front of SST to 1 for monthly frequency.
+
+3. Extract (using ncrcat) SST from monthly pop2 history files and form a single netcdf file containing just SST; change SST to SST_cpl.
+   ::
+
+      > ncrcat -v SST case.pop.h.*.nc temp.nc
+      > ncrename -v SST,SST_cpl temp.nc sst_cpl.nc
+
+4. Extract aice from monthly cice history files and form a single netcdf file containing aice; change aice to ice_cov; divide values by 100 (to convert from percent to fraction).
+   ::
+
+      > ncrcat -v aice case.cice.h.*.nc temp.nc
+      > ncrename -v aice,ice_cov temp.nc temp2.nc
+      > ncap2 -s 'ice_cov=ice_cov/100.' temp2.nc ice_cov.nc
+
+5. Modify fill values in the sst_cpl file (which are over land points) to have value -1.8 and remove fill and missing value designators; change coordinate lengths and names: to accomplish this, first run ncdump, then replace _ with -1.8 in SST_cpl, then remove lines with _FillValue and missing_value. 
+   (Note: although it might be possible to merely change the fill value to -1.8, this is conforming to other SST/ICE files, which have SST_cpl explicitly set to -1.8 over land.) 
+   To change coordinate lengths and names, replace nlon by lon, nlat by lat, TLONG by lon, TLAT by lat. 
+   The last step is to run ncgen. Note: when using ncdump followed by ncgen, precision will be lost; however, one can specify -d 9,17 to maximize precision - as in the following example:
+   ::
+
+      > ncdump -d 9,17 old.nc > old
+      > ncgen -o new.nc new
+
+6. Modify fill values in the ice_cov file (which are over land points) to have value 1 and remove fill and missing value designators; change coordinate lengths and names; patch longitude and latitude to replace missing values.
+   To accomplish this, first run ncdump, then replace _ with 1 in ice_cov, then remove lines with _FillValue and missing_value. 
+   To change coordinate lengths and names, replace ni by lon, nj by lat, TLON by lon, TLAT by lat. 
+   To patch longitude and latitude arrays, replace values of those arrays with those in sst_cpl file. 
+   The last step is to run ncgen. 
+   (Note: the replacement of longitude and latitude missing values by actual values should not be necessary but is safer.)
+
+7. Combine (using ncks) the two netcdf files.
+   ::
+
+      > ncks -v ice_cov ice_cov.nc sst_cpl.nc
+
+   Rename the file to ssticetemp.nc. 
+   The time variable will refer to the number of days at the end of each month, counting from year 0, whereas the actual simulation began at year 1. 
+   However, we want time values to be in the middle of each month, referenced to the first year of the simulation (first time value equals 15.5).
+   Extract (using ncks) time variable from existing amip sst file (for correct number of months - 132 in this example) into working netcdf file.
+   ::
+
+      > ncks -d time,0,131 -v time amipsst.nc ssticetemp.nc
+
+   Add date variable: ncdump date variable from existing amip sst file; modify first year to be year 0 instead of 1949 (do not including leading zeroes or it will interpret as octal) and use correct number of months; ncgen to new netcdf file; extract date (using ncks) and place in working netcdf file.
+   ::
+
+      > ncks -v date datefile.nc ssticetemp.nc
+
+   Add datesec variable: extract (using ncks) datesec (correct number of months) from existing amip sst file and place in working netcdf file.
+   ::
+
+      > ncks -d time,0,131 -v datesec amipsst.nc ssticetemp.nc
+
+8. At this point, you have an SST/ICE file in the correct format. 
+
+9. Due to CAM's linear interpolation between mid-month values, you need to apply a procedure to assure that the computed monthly means are consistent with the input data. 
+   To do this, invoke ``$SRCROOT/components/cam/tools/icesst/bcgen`` and following the following steps:
+
+   a. Rename SST_cpl to SST, and ice_cov to ICEFRAC in the current SST/ICE file:
+      ::
+
+	 > ncrename -v SST_cpl,SST -v ice_cov,ICEFRAC ssticetemp.nc
+
+   b. In driver.f90, sufficiently expand the lengths of variables prev_history and history (16384 should be sufficient); also comment out the test that the climate year be between 1982 and 2001 (lines 152-158).
+
+   c. In bcgen.f90 and setup_outfile.f90, change the dimensions of xlon and ???TODO xlat to (nlon,nlat); this is to accommodate use of non-cartesian ocean grid.
+
+   d. In setup_outfile.f90, modify the 4th and 5th ???TODO arguments in the calls to wrap_nf_def_var for *lon* and *lat* to be *2* and *dimids*; this is to accommodate use of non-cartesian ocean grid.
+
+   e. Adjust Makefile to have proper path for LIB_NETCDF and INC_NETCDF.
+
+   f. Modify namelist accordingly.
+
+   g. Make bcgen and execute per instructions. The resulting sstice_ts.nc file is the desired ICE/SST file.
+
+9. Place the new SST/ICE file in desired location and modify ``env_run.xml`` to have :
+
+   a. ``SSTICE_DATA_FILENAME`` point to the complete path of your SST/ICE file.
+
+   b. ``SSTICE_GRID_FILENAME`` correspond to full path of (in this case) gx1v6 grid file.
+
+   c. ``SSTICE_YEAR_START`` set to 0
+
+   d. ``SSTICE_YEAR_END`` to one less than the total number of years
+      
+   e. ``SSTICE_YEAR_ALIGN`` to 1 (for CESM, since CESM starts counting at year 1).
