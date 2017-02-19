@@ -7,4 +7,3 @@ The following section contains examples for a variety of use cases, spanning a b
 
    basics-a-basic-example.rst
    basics-setting-up-a-branch-or-hybrid-run.rst
-   experts-adding-new-user-defined-grid.rst

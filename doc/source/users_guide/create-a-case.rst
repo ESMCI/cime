@@ -115,7 +115,7 @@ As an example, the longname::
 refers to a model grid with a ne30np4 spectral element 1-degree atmosphere and land grids, gx1v6 Greenland pole 1-degree ocean and sea-ice grids, a 1/2 degree river routing grid, null wave and internal cism grids and an gx1v6 ocean mask. 
 The alias for this grid is ne30_g16. Either the grid longname or alias can be used as input to **create_newcase**. 
 
-CIME also permits users to introduce their own :ref:`<user defined grids <faq-user-defined-grid>`.
+CIME also permits users to introduce their own :ref:`<user defined grids <adding-a-grid>`.
 
 Component grids (such as the atmosphere grid or ocean grid above) are denoted by the following naming convention:
 
@@ -230,4 +230,15 @@ Various scripts, files and directories are created in ``$CASEROOT`` by **create_
    Tools/                 Work directory containing support utility scripts. You should never need to edit the contents of this directory.
    =====================  ===============================================================================================================================
  
+In CIME, the ``$CASEROOT`` xml files are organized so that variables can be locked after different phases of the **create_newcase**, **case.setup**. 
+Locking these files prevents users from changing variables after they have been resolved (used) in other parts of the scripts system. CIME locking currently does the following:
+- variables in ``env_case.xml`` are locked when **create_newcase**. 
+- variables in ``env_mach_pes.xml`` are locked when **case.setup** is called. 
+- variables in ``env_build.xml`` locked after a successful completion of **case.build**.
+- variables in ``env_run.xml``, ``env_batch.xml`` and ``env_archive.xml`` variables are never locked and can be changed anytime. 
+
+These files can be "unlocked" as follows.
+- ``env_case.xml can never by unlocked``
+- **case.setup --clean** unlocks ``env_mach_pes.xml``
+- **case.build --clean** unlcoks ``env_build.xml``
 
