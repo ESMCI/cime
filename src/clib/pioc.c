@@ -419,7 +419,7 @@ int PIOc_InitDecomp(int iosysid, int basetype, int ndims, const int *dims, int m
             fprintf(stderr,"%s %s\n","Iostart and iocount arguments to PIOc_InitDecomp",
                     "are incompatable with subset rearrange method and will be ignored");
         iodesc->num_aiotasks = ios->num_iotasks;
-        if ((ierr = subset_rearrange_create(*ios, maplen, (PIO_Offset *)compmap, dims,
+        if ((ierr = subset_rearrange_create(ios, maplen, (PIO_Offset *)compmap, dims,
                                             ndims, iodesc)))
             return pio_err(NULL, NULL, ierr, __FILE__, __LINE__);
     }
@@ -459,7 +459,7 @@ int PIOc_InitDecomp(int iosysid, int basetype, int ndims, const int *dims, int m
 
         /* Compute the communications pattern for this decomposition. */
         if (iodesc->rearranger == PIO_REARR_BOX)
-            ierr = box_rearrange_create(*ios, maplen, compmap, dims, ndims, iodesc);
+            ierr = box_rearrange_create(ios, maplen, compmap, dims, ndims, iodesc);
 
         /*
           if (ios->ioproc){
@@ -477,7 +477,7 @@ int PIOc_InitDecomp(int iosysid, int basetype, int ndims, const int *dims, int m
     *ioidp = pio_add_to_iodesc_list(iodesc);
 
     LOG((3, "About to tune rearranger..."));
-    performance_tune_rearranger(*ios, iodesc);
+    performance_tune_rearranger(ios, iodesc);
     LOG((3, "Done with rearranger tune."));
 
     return PIO_NOERR;
@@ -689,7 +689,7 @@ int PIOc_Init_Intracomm(MPI_Comm comp_comm, int num_iotasks, int stride, int bas
     *iosysidp = pio_add_to_iosystem_list(ios);
 
     /* Allocate buffer space for compute nodes. */
-    if ((ret = compute_buffer_init(*ios)))
+    if ((ret = compute_buffer_init(ios)))
         return ret;
 
     LOG((2, "Init_Intracomm complete iosysid = %d", *iosysidp));
@@ -843,7 +843,7 @@ int PIOc_finalize(int iosysid)
     /* Only free the buffer pool if this is the last open iosysid. */
     if (niosysid == 1)
     {
-        free_cn_buffer_pool(*ios);
+        free_cn_buffer_pool(ios);
         LOG((2, "Freed buffer pool."));
     }
 

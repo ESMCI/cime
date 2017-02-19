@@ -162,12 +162,12 @@ extern "C" {
                                 const rearr_comm_fc_opt_t *exp_opt);
 
     /* Create a subset rearranger. */
-    int subset_rearrange_create(iosystem_desc_t ios, int maplen, PIO_Offset *compmap, const int *gsize,
+    int subset_rearrange_create(iosystem_desc_t *ios, int maplen, PIO_Offset *compmap, const int *gsize,
                                 int ndim, io_desc_t *iodesc);
 
 
     /* Create a box rearranger. */
-    int box_rearrange_create(iosystem_desc_t ios, int maplen, const PIO_Offset *compmap, const int *gsize,
+    int box_rearrange_create(iosystem_desc_t *ios, int maplen, const PIO_Offset *compmap, const int *gsize,
                              int ndim, io_desc_t *iodesc);
 
 
@@ -175,13 +175,14 @@ extern "C" {
     int rearrange_io2comp(iosystem_desc_t *ios, io_desc_t *iodesc, void *sbuf, void *rbuf);
 
     /* Move data from compute tasks to IO tasks. */
-    int rearrange_comp2io(iosystem_desc_t ios, io_desc_t *iodesc, void *sbuf, void *rbuf, int nvars);
+    int rearrange_comp2io(iosystem_desc_t *ios, io_desc_t *iodesc, void *sbuf, void *rbuf, int nvars);
 
     io_desc_t *malloc_iodesc(const iosystem_desc_t *ios, int piotype, int ndims);
-    void performance_tune_rearranger(iosystem_desc_t ios, io_desc_t *iodesc);
+    
+    void performance_tune_rearranger(iosystem_desc_t *ios, io_desc_t *iodesc);
 
     int flush_output_buffer(file_desc_t *file, bool force, PIO_Offset addsize);
-    void compute_maxIObuffersize(MPI_Comm io_comm, io_desc_t *iodesc);
+    int compute_maxIObuffersize(MPI_Comm io_comm, io_desc_t *iodesc);
     io_region *alloc_region(int ndims);
     int pio_delete_iosystem_from_list(int piosysid);
 
@@ -211,26 +212,23 @@ extern "C" {
                              const int *mcount, int *mfrom, MPI_Datatype *mtype);
     int compare_offsets(const void *a, const void *b) ;
 
-    int subset_rearrange_create(iosystem_desc_t ios, int maplen, PIO_Offset *compmap,
-                                const int *gsize, int ndims, io_desc_t *iodesc);
-
     /* Print a trace statement, for debugging. */
     void print_trace (FILE *fp);
     
-    void cn_buffer_report(iosystem_desc_t ios, bool collective);
+    void cn_buffer_report(iosystem_desc_t *ios, bool collective);
 
     /* Initialize the compute buffer. */
-    int compute_buffer_init(iosystem_desc_t ios);
+    int compute_buffer_init(iosystem_desc_t *ios);
 
-    void free_cn_buffer_pool(iosystem_desc_t ios);
+    void free_cn_buffer_pool(iosystem_desc_t *ios);
 
     /* Flush PIO's data buffer. */
     int flush_buffer(int ncid, wmulti_buffer *wmb, bool flushtodisk);
 
-    void compute_maxaggregate_bytes(iosystem_desc_t ios, io_desc_t *iodesc);
+    int compute_maxaggregate_bytes(iosystem_desc_t *ios, io_desc_t *iodesc);
 
     /* Announce a memory error with bget memory, and die. */
-    void piomemerror(iosystem_desc_t ios, size_t req, char *fname, int line);
+    void piomemerror(iosystem_desc_t *ios, size_t req, char *fname, int line);
 
     /* Check the return code from an MPI function call. */
     int check_mpi(file_desc_t *file, int mpierr, const char *filename, int line);

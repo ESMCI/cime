@@ -124,7 +124,7 @@ int PIOc_write_darray_multi(int ncid, const int *vid, int ioid, int nvars, PIO_O
 
             /* Allocate memory for the variable buffer. */
             if (!(vdesc0->iobuf = bget((size_t)vsize * (size_t)rlen)))
-                piomemerror(*ios, (size_t)rlen * (size_t)vsize, __FILE__, __LINE__);
+                piomemerror(ios, (size_t)rlen * (size_t)vsize, __FILE__, __LINE__);
             LOG((3, "allocated %ld bytes for variable buffer", (size_t)rlen * (size_t)vsize));
 
             /* If data are missing for the BOX rearranger, insert fill values. */
@@ -143,7 +143,7 @@ int PIOc_write_darray_multi(int ncid, const int *vid, int ioid, int nvars, PIO_O
         }
 
         /* Move data from compute to IO tasks. */
-        if ((ierr = rearrange_comp2io(*ios, iodesc, array, vdesc0->iobuf, nvars)))
+        if ((ierr = rearrange_comp2io(ios, iodesc, array, vdesc0->iobuf, nvars)))
             return pio_err(ios, file, ierr, __FILE__, __LINE__);
         
     }/*  this is wrong, need to think about it
@@ -383,7 +383,7 @@ int PIOc_write_darray(int ncid, int vid, int ioid, PIO_Offset arraylen, void *ar
     {
         /* Allocate a buffer. */
         if (!(wmb->next = bget((bufsize)sizeof(wmulti_buffer))))
-            piomemerror(*ios, sizeof(wmulti_buffer), __FILE__, __LINE__);
+            piomemerror(ios, sizeof(wmulti_buffer), __FILE__, __LINE__);
         LOG((3, "allocated multi-buffer"));
 
         /* Set pointer to newly allocated buffer and initialize.*/
@@ -429,7 +429,7 @@ int PIOc_write_darray(int ncid, int vid, int ioid, PIO_Offset arraylen, void *ar
              maxfree, wmb->validvars, (1 + wmb->validvars) * arraylen * tsize, totfree));
 
         /* Collect a debug report about buffer. (Shouldn't we be able to turn this off??) */
-        cn_buffer_report(*ios, true);
+        cn_buffer_report(ios, true);
 
         /* If needsflush == 2 flush to disk otherwise just flush to io node. */
         if ((ret = flush_buffer(ncid, wmb, needsflush == 2)))
@@ -440,28 +440,28 @@ int PIOc_write_darray(int ncid, int vid, int ioid, PIO_Offset arraylen, void *ar
     if (arraylen > 0)
     {
         if (!(wmb->data = bgetr(wmb->data, (1 + wmb->validvars) * arraylen * tsize)))
-            piomemerror(*ios, (1 + wmb->validvars) * arraylen * tsize, __FILE__, __LINE__);
+            piomemerror(ios, (1 + wmb->validvars) * arraylen * tsize, __FILE__, __LINE__);
         LOG((2, "got %ld bytes for data", (1 + wmb->validvars) * arraylen * tsize));
     }
 
     /* vid is an array of variable ids in the wmb list, grow the list
      * and add the new entry. */
     if (!(wmb->vid = bgetr(wmb->vid, sizeof(int) * (1 + wmb->validvars))))
-        piomemerror(*ios, (1 + wmb->validvars) * sizeof(int), __FILE__, __LINE__);
+        piomemerror(ios, (1 + wmb->validvars) * sizeof(int), __FILE__, __LINE__);
 
     /* wmb->frame is the record number, we assume that the variables
      * in the wmb list may not all have the same unlimited dimension
      * value although they usually do. */
     if (vdesc->record >= 0)
         if (!(wmb->frame = bgetr(wmb->frame, sizeof(int) * (1 + wmb->validvars))))
-            piomemerror(*ios, (1 + wmb->validvars) * sizeof(int), __FILE__, __LINE__);
+            piomemerror(ios, (1 + wmb->validvars) * sizeof(int), __FILE__, __LINE__);
 
     /* If we need a fill value, get it. */
     if (iodesc->needsfill)
     {
         /* Get memory to hold fill value. */
         if (!(wmb->fillvalue = bgetr(wmb->fillvalue, tsize * (1 + wmb->validvars))))
-            piomemerror(*ios, (1 + wmb->validvars) * tsize, __FILE__, __LINE__);
+            piomemerror(ios, (1 + wmb->validvars) * tsize, __FILE__, __LINE__);
 
         /* If the user passed a fill value, use that, otherwise use
          * the default fill value of the netCDF type. Copy the fill
@@ -582,7 +582,7 @@ int PIOc_read_darray(int ncid, int vid, int ioid, PIO_Offset arraylen,
 
             /* Allocate a buffer for one record. */
             if (!(iobuf = bget((size_t)tsize * rlen)))
-                piomemerror(*ios, rlen * (size_t)tsize, __FILE__, __LINE__);
+                piomemerror(ios, rlen * (size_t)tsize, __FILE__, __LINE__);
         }
     }
     else

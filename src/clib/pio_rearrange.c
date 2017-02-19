@@ -188,8 +188,9 @@ PIO_Offset coord_to_lindex(int ndims, const PIO_Offset *lcoord, const PIO_Offset
  *
  * @param io_comm the IO communicator
  * @param iodesc a pointer to the io_desc_t struct.
+ * @returns 0 for success, error code otherwise.
  */
-void compute_maxIObuffersize(MPI_Comm io_comm, io_desc_t *iodesc)
+int compute_maxIObuffersize(MPI_Comm io_comm, io_desc_t *iodesc)
 {
     PIO_Offset iosize, totiosize;
     int i;
@@ -216,12 +217,14 @@ void compute_maxIObuffersize(MPI_Comm io_comm, io_desc_t *iodesc)
 
     /* Share the max io buffer size with all io tasks. */
     if ((mpierr = MPI_Allreduce(MPI_IN_PLACE, &totiosize, 1, MPI_OFFSET, MPI_MAX, io_comm)))
-        check_mpi(NULL, mpierr, __FILE__, __LINE__);
+        return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 
     iodesc->maxiobuflen = totiosize;
 
     if (iodesc->maxiobuflen <= 0)
-        pio_err(NULL, NULL, PIO_EINVAL, __FILE__, __LINE__);
+        return pio_err(NULL, NULL, PIO_EINVAL, __FILE__, __LINE__);
+
+    return PIO_NOERR;
 }
 
 /**
@@ -438,7 +441,7 @@ int define_iodesc_datatypes(iosystem_desc_t *ios, io_desc_t *iodesc)
 /**
  *  Completes the mapping for the box rearranger.
  *
- * @param ios the iosystem_desc_t struct
+ * @param ios pointer to the iosystem_desc_t struct
  * @param iodesc a pointer to the io_desc_t struct.
  * @param maplen the length of the map
  * @param dest_ioproc an array of IO task numbers
@@ -446,7 +449,7 @@ int define_iodesc_datatypes(iosystem_desc_t *ios, io_desc_t *iodesc)
  * @param mycomm an MPI communicator
  * @returns 0 on success, error code otherwise.
  */
-int compute_counts(iosystem_desc_t ios, io_desc_t *iodesc, int maplen,
+int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc, int maplen,
                    const int *dest_ioproc, const PIO_Offset *dest_ioindex, MPI_Comm mycomm)
 {
     int i;
@@ -479,13 +482,13 @@ int compute_counts(iosystem_desc_t ios, io_desc_t *iodesc, int maplen,
 
     /* Subset rearranger always gets 1 IO task. */
     if (iodesc->rearranger == PIO_REARR_BOX)
-        numiotasks = ios.num_iotasks;
+        numiotasks = ios->num_iotasks;
     else
         numiotasks = 1;
 
     /* Allocate memory for the array of counts. */
     if (!(iodesc->scount = malloc(numiotasks * sizeof(int))))
-        return pio_err(&ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
     /* Initialize counts to zero. */
     for (i = 0; i < numiotasks; i++)
@@ -514,18 +517,18 @@ int compute_counts(iosystem_desc_t ios, io_desc_t *iodesc, int maplen,
         if (iodesc->rearranger == PIO_REARR_SUBSET)
             io_comprank = 0;
         else
-            io_comprank = ios.ioranks[i];
+            io_comprank = ios->ioranks[i];
         send_counts[io_comprank] = 1;
         send_displs[io_comprank] = i * sizeof(int);
     }
 
     /* ??? */
-    if (ios.ioproc)
+    if (ios->ioproc)
     {
         /* Allocate memory to hold array of tasks that have recieved
          * data ??? */
         if (!(recv_buf = calloc(ntasks, sizeof(int))))
-            return pio_err(&ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+            return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
         /* Initialize arrays that keep track of receives. */
         for (i = 0; i < ntasks; i++)
@@ -545,7 +548,7 @@ int compute_counts(iosystem_desc_t ios, io_desc_t *iodesc, int maplen,
 
     /* ??? */
     nrecvs = 0;
-    if (ios.ioproc)
+    if (ios->ioproc)
     {
         for (i = 0; i < ntasks; i++)
             if (recv_buf[i] != 0)
@@ -553,11 +556,11 @@ int compute_counts(iosystem_desc_t ios, io_desc_t *iodesc, int maplen,
 
         /* Get memory to hold the count of data receives. */
         if (!(iodesc->rcount = malloc(max(1, nrecvs) * sizeof(int))))
-            return pio_err(&ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+            return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
         /* Get memory to hold the list of task data was from. */
         if (!(iodesc->rfrom = malloc(max(1, nrecvs) * sizeof(int))))
-            return pio_err(&ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+            return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
         for (i = 0; i < max(1, nrecvs); i++)
         {
@@ -582,7 +585,7 @@ int compute_counts(iosystem_desc_t ios, io_desc_t *iodesc, int maplen,
     iodesc->nrecvs = nrecvs;
     if (iodesc->sindex == NULL && iodesc->ndof > 0)
         if (!(iodesc->sindex = malloc(iodesc->ndof * sizeof(PIO_Offset))))
-            return pio_err(&ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+            return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
     int tempcount[numiotasks];
     int spos[numiotasks];
@@ -630,7 +633,7 @@ int compute_counts(iosystem_desc_t ios, io_desc_t *iodesc, int maplen,
     for (i = 0; i < numiotasks; i++)
     {
         if (iodesc->rearranger == PIO_REARR_BOX)
-            io_comprank = ios.ioranks[i];
+            io_comprank = ios->ioranks[i];
         else
             io_comprank = 0;
 
@@ -639,7 +642,7 @@ int compute_counts(iosystem_desc_t ios, io_desc_t *iodesc, int maplen,
             send_displs[io_comprank] = spos[i] * tsize;
     }
 
-    if (ios.ioproc)
+    if (ios->ioproc)
     {
         int totalrecv = 0;
         for (i = 0; i < nrecvs; i++)
@@ -656,13 +659,13 @@ int compute_counts(iosystem_desc_t ios, io_desc_t *iodesc, int maplen,
         {
             totalrecv = iodesc->llen;  /* can reduce memory usage here */
             if (!(iodesc->rindex = calloc(totalrecv, sizeof(PIO_Offset))))
-                return pio_err(&ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+                return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
         }
     }
 
     /* s2rindex is the list of indeces on each compute task */
     /*
-      printf("%d s2rindex: ", ios.comp_rank);
+      printf("%d s2rindex: ", ios->comp_rank);
       for (i = 0;i<iodesc->ndof;i++)
       printf("%ld ",s2rindex[i]);
       printf("\n");
@@ -676,8 +679,8 @@ int compute_counts(iosystem_desc_t ios, io_desc_t *iodesc, int maplen,
     /*  rindex is an array of the indices of the data to be sent from
         this io task to each compute task. */
     /*
-      if (ios.ioproc){
-      printf("%d rindex: ",ios.io_rank);
+      if (ios->ioproc){
+      printf("%d rindex: ",ios->io_rank);
       for (int j = 0;j<iodesc->llen;j++)
       printf(" %ld ",iodesc->rindex[j]);
       printf("\n");
@@ -689,14 +692,14 @@ int compute_counts(iosystem_desc_t ios, io_desc_t *iodesc, int maplen,
 /**
  * Moves data from compute tasks to IO tasks.
  *
- * @param ios the iosystem_desc_t struct
+ * @param ios pointer to the iosystem_desc_t struct
  * @param iodesc a pointer to the io_desc_t struct.
  * @param sbuf send buffer.
  * @param rbuf receive buffer.
  * @param nvars number of variables.
  * @returns 0 on success, error code otherwise.
  */
-int rearrange_comp2io(iosystem_desc_t ios, io_desc_t *iodesc, void *sbuf,
+int rearrange_comp2io(iosystem_desc_t *ios, io_desc_t *iodesc, void *sbuf,
                       void *rbuf, int nvars)
 {
     int ntasks;
@@ -725,8 +728,8 @@ int rearrange_comp2io(iosystem_desc_t ios, io_desc_t *iodesc, void *sbuf,
 
     if (iodesc->rearranger == PIO_REARR_BOX)
     {
-        mycomm = ios.union_comm;
-        niotasks = ios.num_iotasks;
+        mycomm = ios->union_comm;
+        niotasks = ios->num_iotasks;
     }
     else
     {
@@ -745,27 +748,27 @@ int rearrange_comp2io(iosystem_desc_t ios, io_desc_t *iodesc, void *sbuf,
 
     /* Define the MPI data types that will be used for this
      * io_desc_t. */
-    if ((ret = define_iodesc_datatypes(&ios, iodesc)))
-        return pio_err(&ios, NULL, ret, __FILE__, __LINE__);
+    if ((ret = define_iodesc_datatypes(ios, iodesc)))
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
     /* Allocate arrays needed by the pio_swapm() function. */
     if (!(sendcounts = calloc(ntasks, sizeof(int))))
-        return pio_err(&ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
     if (!(recvcounts = calloc(ntasks, sizeof(int))))
-        return pio_err(&ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
     if (!(sdispls = calloc(ntasks, sizeof(int))))
-        return pio_err(&ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
     if (!(rdispls = calloc(ntasks, sizeof(int))))
-        return pio_err(&ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
     if (!(sendtypes = malloc(ntasks * sizeof(MPI_Datatype))))
-        return pio_err(&ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
     if (!(recvtypes = malloc(ntasks * sizeof(MPI_Datatype))))
-        return pio_err(&ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
     /* Initialize arrays. */
     for (i = 0; i < ntasks; i++)
@@ -776,7 +779,7 @@ int rearrange_comp2io(iosystem_desc_t ios, io_desc_t *iodesc, void *sbuf,
 
     /* If this io proc will exchange data with compute tasks create a
      * MPI DataType for that exchange. */
-    if (ios.ioproc && iodesc->nrecvs > 0)
+    if (ios->ioproc && iodesc->nrecvs > 0)
     {
         for (i = 0; i < iodesc->nrecvs; i++)
         {
@@ -825,7 +828,7 @@ int rearrange_comp2io(iosystem_desc_t ios, io_desc_t *iodesc, void *sbuf,
      * each exchange.  */
     for (i = 0; i < niotasks; i++)
     {
-        int io_comprank = ios.ioranks[i];
+        int io_comprank = ios->ioranks[i];
         if (iodesc->rearranger == PIO_REARR_SUBSET)
             io_comprank=0;
 
@@ -1023,7 +1026,7 @@ int rearrange_io2comp(iosystem_desc_t *ios, io_desc_t *iodesc, void *sbuf,
 /**
  * Determine fill value.
  *
- * @param ios the iosystem_desc_t struct
+ * @param ios pointer to the iosystem_desc_t struct
  * @param iodesc a pointer to the io_desc_t struct.
  * @param gsize pointer to an array of sizes
  * @param compmap
@@ -1123,7 +1126,7 @@ void iodesc_dump(io_desc_t *iodesc)
  * all rearrangement in the mapping, but should minimize data movement
  * in lower level libraries
  *
- * @param ios the iosystem_desc_t struct
+ * @param ios pointer to the iosystem_desc_t struct
  * @param maplen the length of the map
  * @param compmap
  * @param gsize pointer to an array of sizes
@@ -1131,11 +1134,11 @@ void iodesc_dump(io_desc_t *iodesc)
  * @param iodesc a pointer to the io_desc_t struct.
  * @returns 0 on success, error code otherwise.
  */
-int box_rearrange_create(iosystem_desc_t ios, int maplen, const PIO_Offset *compmap,
+int box_rearrange_create(iosystem_desc_t *ios, int maplen, const PIO_Offset *compmap,
                          const int *gsize, int ndims, io_desc_t *iodesc)
 {
-    int nprocs = ios.num_comptasks;
-    int nioprocs = ios.num_iotasks;
+    int nprocs = ios->num_comptasks;
+    int nioprocs = ios->num_iotasks;
     PIO_Offset gstride[ndims];
     PIO_Offset start[ndims], count[ndims];
     int  tsize, i, j, k;
@@ -1176,7 +1179,7 @@ int box_rearrange_create(iosystem_desc_t ios, int maplen, const PIO_Offset *comp
         dtypes[i] = MPI_OFFSET;
     }
     iodesc->llen = 0;
-    if (ios.ioproc)
+    if (ios->ioproc)
     {
         for (i = 0; i < nprocs; i++)
             sndlths[i] = 1;
@@ -1186,11 +1189,11 @@ int box_rearrange_create(iosystem_desc_t ios, int maplen, const PIO_Offset *comp
         for (i = 0; i < ndims; i++)
             iodesc->llen *= iodesc->firstregion->count[i];
     }
-    if ((ret = determine_fill(&ios, iodesc, gsize, compmap)))
-        return pio_err(&ios, NULL, ret, __FILE__, __LINE__);
+    if ((ret = determine_fill(ios, iodesc, gsize, compmap)))
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
     /*
-      if (ios.ioproc){
+      if (ios->ioproc){
       for (i = 0; i<ndims; i++){
       printf("%d %d %d ",i,iodesc->firstregion->start[i],iodesc->firstregion->count[i]);
       }
@@ -1200,7 +1203,7 @@ int box_rearrange_create(iosystem_desc_t ios, int maplen, const PIO_Offset *comp
 
     for (i = 0; i < nioprocs; i++)
     {
-        int io_comprank = ios.ioranks[i];
+        int io_comprank = ios->ioranks[i];
         recvlths[io_comprank] = 1;
         rdispls[io_comprank] = i * tsize;
     }
@@ -1209,7 +1212,7 @@ int box_rearrange_create(iosystem_desc_t ios, int maplen, const PIO_Offset *comp
         iomaplen = calloc(nioprocs, sizeof(PIO_Offset)); */
     pio_swapm(&(iodesc->llen), sndlths, sdispls, dtypes,
               iomaplen, recvlths, rdispls, dtypes,
-              ios.union_comm,
+              ios->union_comm,
               iodesc->rearr_opts.comm_fc_opts_io2comp.enable_hs,
               iodesc->rearr_opts.comm_fc_opts_io2comp.enable_isend,
               iodesc->rearr_opts.comm_fc_opts_io2comp.max_pend_req);
@@ -1219,14 +1222,14 @@ int box_rearrange_create(iosystem_desc_t ios, int maplen, const PIO_Offset *comp
 
         if (iomaplen[i] > 0)
         {
-            int io_comprank = ios.ioranks[i];
+            int io_comprank = ios->ioranks[i];
             for (j = 0; j < nprocs; j++)
             {
                 sndlths[j] = 0;
                 sdispls[j] = 0;
                 rdispls[j] = 0;
                 recvlths[j] = 0;
-                if (ios.union_rank == io_comprank)
+                if (ios->union_rank == io_comprank)
                     sndlths[j] = ndims;
             }
             recvlths[io_comprank] = ndims;
@@ -1234,7 +1237,7 @@ int box_rearrange_create(iosystem_desc_t ios, int maplen, const PIO_Offset *comp
             /* The count from iotask i is sent to all compute tasks */
             pio_swapm(iodesc->firstregion->count,  sndlths, sdispls, dtypes,
                       count, recvlths, rdispls, dtypes,
-                      ios.union_comm,
+                      ios->union_comm,
                       iodesc->rearr_opts.comm_fc_opts_io2comp.enable_hs,
                       iodesc->rearr_opts.comm_fc_opts_io2comp.enable_isend,
                       iodesc->rearr_opts.comm_fc_opts_io2comp.max_pend_req);
@@ -1242,7 +1245,7 @@ int box_rearrange_create(iosystem_desc_t ios, int maplen, const PIO_Offset *comp
             /* The start from iotask i is sent to all compute tasks. */
             pio_swapm(iodesc->firstregion->start,  sndlths, sdispls, dtypes,
                       start, recvlths, rdispls, dtypes,
-                      ios.union_comm,
+                      ios->union_comm,
                       iodesc->rearr_opts.comm_fc_opts_io2comp.enable_hs,
                       iodesc->rearr_opts.comm_fc_opts_io2comp.enable_isend,
                       iodesc->rearr_opts.comm_fc_opts_io2comp.max_pend_req);
@@ -1278,17 +1281,19 @@ int box_rearrange_create(iosystem_desc_t ios, int maplen, const PIO_Offset *comp
     /* Check that a destination is found for each compmap entry. */
     for (k = 0; k < maplen; k++)
         if (dest_ioproc[k] < 0 && compmap[k] > 0)
-            return pio_err((iosystem_desc_t *)&ios, NULL, PIO_EINVAL, __FILE__, __LINE__);
+            return pio_err(ios, NULL, PIO_EINVAL, __FILE__, __LINE__);
 
-    compute_counts(ios, iodesc, maplen, dest_ioproc, dest_ioindex, ios.union_comm);
+    compute_counts(ios, iodesc, maplen, dest_ioproc, dest_ioindex, ios->union_comm);
 
-    if (ios.ioproc)
-        compute_maxIObuffersize(ios.io_comm, iodesc);
-
+    if (ios->ioproc)
+        if ((ret = compute_maxIObuffersize(ios->io_comm, iodesc)))
+            return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+    
     /* Using maxiobuflen compute the maximum number of vars of this type that the io
        task buffer can handle. */
-    compute_maxaggregate_bytes(ios, iodesc);
-
+    if ((ret = compute_maxaggregate_bytes(ios, iodesc)))
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+    
 #ifdef DEBUG
     iodesc_dump(iodesc);
 #endif
@@ -1387,34 +1392,36 @@ void get_start_and_count_regions(int ndims, const int *gdims, int maplen, const 
  * only one IO task.  This mapping groups by mpi task id others are
  * possible and may be better for certain decompositions
  *
- * @param ios the iosystem_desc_t struct
+ * @param ios pointer to the iosystem_desc_t struct
  * @param iodesc a pointer to the io_desc_t struct.
  * @returns 0 on success, error code otherwise.
  */
-void default_subset_partition(iosystem_desc_t ios, io_desc_t *iodesc)
+int default_subset_partition(iosystem_desc_t *ios, io_desc_t *iodesc)
 {
-    int taskratio = ios.num_comptasks/ios.num_iotasks;
+    int taskratio = ios->num_comptasks/ios->num_iotasks;
     int color;
     int key;
     int mpierr; /* Return value from MPI functions. */
 
-    assert(iodesc);
+    assert(ios && iodesc);
 
     /* Create a new comm for each subset group with the io task in
        rank 0 and only 1 io task per group */
-    if (ios.ioproc)
+    if (ios->ioproc)
     {
         key = 0;
-        color= ios.io_rank;
+        color= ios->io_rank;
     }
     else
     {
-        key = max(1, ios.comp_rank % taskratio + 1);
-        color = min(ios.num_iotasks - 1, ios.comp_rank / taskratio);
+        key = max(1, ios->comp_rank % taskratio + 1);
+        color = min(ios->num_iotasks - 1, ios->comp_rank / taskratio);
     }
 
-    if ((mpierr = MPI_Comm_split(ios.comp_comm, color, key, &iodesc->subset_comm)))
-        check_mpi(NULL, mpierr, __FILE__, __LINE__);
+    if ((mpierr = MPI_Comm_split(ios->comp_comm, color, key, &iodesc->subset_comm)))
+        return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+
+    return PIO_NOERR;
 }
 
 /**
@@ -1422,15 +1429,15 @@ void default_subset_partition(iosystem_desc_t ios, io_desc_t *iodesc)
  * compute tasks such that each compute task communicates with one and
  * only one IO task.
  *
- * @param ios the iosystem_desc_t struct
- * @param maplen the length of the map
+ * @param ios pointer to the iosystem_desc_t struct.
+ * @param maplen the length of the map.
  * @param compmap
- * @param gsize pointer to an array of sizes
- * @param ndims the number of dimensions
+ * @param gsize pointer to an array of sizes.
+ * @param ndims the number of dimensions.
  * @param iodesc a pointer to the io_desc_t struct.
  * @returns 0 on success, error code otherwise.
  */
-int subset_rearrange_create(iosystem_desc_t ios, int maplen, PIO_Offset *compmap,
+int subset_rearrange_create(iosystem_desc_t *ios, int maplen, PIO_Offset *compmap,
                             const int *gsize, int ndims, io_desc_t *iodesc)
 {
     int i, j;
@@ -1452,17 +1459,18 @@ int subset_rearrange_create(iosystem_desc_t ios, int maplen, PIO_Offset *compmap
     /* subset partitions each have exactly 1 io task which is task 0
      * of that subset_comm */
     /* TODO: introduce a mechanism for users to define partitions */
-    default_subset_partition(ios, iodesc);
+    if ((ret = default_subset_partition(ios, iodesc)))
+            return pio_err(ios, NULL, ret, __FILE__, __LINE__);
     iodesc->rearranger = PIO_REARR_SUBSET;
 
     /* Get size of this subset communicator, and rank in it. */
     if ((mpierr = MPI_Comm_rank(iodesc->subset_comm, &rank)))
-        return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Comm_size(iodesc->subset_comm, &ntasks)))
-        return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
 
     /* Check rank for correctness. */
-    if (ios.ioproc)
+    if (ios->ioproc)
         pioassert(rank == 0, "Bad io rank in subset create", __FILE__, __LINE__);
     else
         pioassert(rank > 0 && rank < ntasks, "Bad comp rank in subset create",
@@ -1470,18 +1478,18 @@ int subset_rearrange_create(iosystem_desc_t ios, int maplen, PIO_Offset *compmap
 
     rcnt = 0;
     iodesc->ndof = maplen;
-    if (ios.ioproc)
+    if (ios->ioproc)
     {
         /* Allocate space to hold count of data to be received in pio_swapm(). */
         if (!(iodesc->rcount = malloc(ntasks * sizeof(int))))
-            return pio_err(&ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+            return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
         rcnt = 1;
     }
 
     /* Allocate space to hold count of data to be sent in pio_swapm(). */
     if (!(iodesc->scount = malloc(sizeof(int))))
-        return pio_err(&ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
     iodesc->scount[0] = 0;
     totalgridsize = 1;
@@ -1499,7 +1507,7 @@ int subset_rearrange_create(iosystem_desc_t ios, int maplen, PIO_Offset *compmap
 
     if (iodesc->scount[0] > 0)
         if (!(iodesc->sindex = calloc(iodesc->scount[0], sizeof(PIO_Offset))))
-            return pio_err(&ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+            return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
     j = 0;
     for (i = 0; i < maplen; i++)
@@ -1517,7 +1525,7 @@ int subset_rearrange_create(iosystem_desc_t ios, int maplen, PIO_Offset *compmap
     int rdispls[ntasks];
     int recvlths[ntasks];
 
-    if (ios.ioproc)
+    if (ios->ioproc)
     {
         for (i = 0;i < ntasks; i++)
         {
@@ -1531,7 +1539,7 @@ int subset_rearrange_create(iosystem_desc_t ios, int maplen, PIO_Offset *compmap
         if (iodesc->llen > 0)
         {
             if (!(srcindex = calloc(iodesc->llen, sizeof(PIO_Offset))))
-                return pio_err(&ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+                return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
             for (i = 0; i < iodesc->llen; i++)
                 srcindex[i] = 0;
@@ -1545,8 +1553,8 @@ int subset_rearrange_create(iosystem_desc_t ios, int maplen, PIO_Offset *compmap
             rdispls[i] = 0;
         }
     }
-    if ((ret = determine_fill(&ios, iodesc, gsize, compmap)))
-        return pio_err(&ios, NULL, ret, __FILE__, __LINE__);
+    if ((ret = determine_fill(ios, iodesc, gsize, compmap)))
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
     /* Pass the sindex from each compute task to its associated IO task. */
     if ((mpierr = MPI_Gatherv(iodesc->sindex, iodesc->scount[0], PIO_OFFSET,
@@ -1554,13 +1562,13 @@ int subset_rearrange_create(iosystem_desc_t ios, int maplen, PIO_Offset *compmap
                               iodesc->subset_comm)))
         return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 
-    if (ios.ioproc && iodesc->llen>0)
+    if (ios->ioproc && iodesc->llen>0)
     {
         if (!(map = calloc(iodesc->llen, sizeof(mapsort))))
-            return pio_err(&ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+            return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
         if (!(iomap = calloc(iodesc->llen, sizeof(PIO_Offset))))
-            return pio_err(&ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+            return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
     }
 
     /* Now pass the compmap, skipping the holes. */
@@ -1568,7 +1576,7 @@ int subset_rearrange_create(iosystem_desc_t ios, int maplen, PIO_Offset *compmap
     if (maplen>iodesc->scount[0] && iodesc->scount[0] > 0)
     {
         if (!(shrtmap = calloc(iodesc->scount[0], sizeof(PIO_Offset))))
-            return pio_err(&ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+            return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
         j = 0;
         for (i = 0; i < maplen; i++)
@@ -1587,7 +1595,7 @@ int subset_rearrange_create(iosystem_desc_t ios, int maplen, PIO_Offset *compmap
     if (shrtmap != compmap)
         free(shrtmap);
 
-    if (ios.ioproc && iodesc->llen > 0)
+    if (ios->ioproc && iodesc->llen > 0)
     {
         int pos = 0;
         int k = 0;
@@ -1608,10 +1616,10 @@ int subset_rearrange_create(iosystem_desc_t ios, int maplen, PIO_Offset *compmap
         qsort(map, iodesc->llen, sizeof(mapsort), compare_offsets);
 
         if (!(iodesc->rindex = calloc(1, iodesc->llen * sizeof(PIO_Offset))))
-            return pio_err(&ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+            return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
         if (!(iodesc->rfrom = calloc(1, iodesc->llen * sizeof(int))))
-            return pio_err(&ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+            return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
     }
 
     int cnt[ntasks];
@@ -1633,29 +1641,29 @@ int subset_rearrange_create(iosystem_desc_t ios, int maplen, PIO_Offset *compmap
         srcindex[(cnt[iodesc->rfrom[i]])++] = mptr->soffset;
     }
 
-    if (ios.ioproc && iodesc->needsfill)
+    if (ios->ioproc && iodesc->needsfill)
     {
         /* we need the list of offsets which are not in the union of iomap */
-        PIO_Offset thisgridsize[ios.num_iotasks];
-        PIO_Offset thisgridmin[ios.num_iotasks], thisgridmax[ios.num_iotasks];
+        PIO_Offset thisgridsize[ios->num_iotasks];
+        PIO_Offset thisgridmin[ios->num_iotasks], thisgridmax[ios->num_iotasks];
         int nio;
         PIO_Offset *myusegrid = NULL;
-        int gcnt[ios.num_iotasks];
-        int displs[ios.num_iotasks];
+        int gcnt[ios->num_iotasks];
+        int displs[ios->num_iotasks];
 
         thisgridmin[0] = 1;
-        thisgridsize[0] =  totalgridsize / ios.num_iotasks;
+        thisgridsize[0] =  totalgridsize / ios->num_iotasks;
         thisgridmax[0] = thisgridsize[0];
-        int xtra = totalgridsize - thisgridsize[0] * ios.num_iotasks;
+        int xtra = totalgridsize - thisgridsize[0] * ios->num_iotasks;
 
-        for (nio = 0; nio < ios.num_iotasks; nio++)
+        for (nio = 0; nio < ios->num_iotasks; nio++)
         {
             int cnt = 0;
             int imin = 0;
             if (nio > 0)
             {
-                thisgridsize[nio] =  totalgridsize / ios.num_iotasks;
-                if (nio >= ios.num_iotasks - xtra)
+                thisgridsize[nio] =  totalgridsize / ios->num_iotasks;
+                if (nio >= ios->num_iotasks - xtra)
                     thisgridsize[nio]++;
                 thisgridmin[nio] = thisgridmax[nio - 1] + 1;
                 thisgridmax[nio]= thisgridmin[nio] + thisgridsize[nio] - 1;
@@ -1670,18 +1678,18 @@ int subset_rearrange_create(iosystem_desc_t ios, int maplen, PIO_Offset *compmap
                 }
             }
 
-            if ((mpierr = MPI_Gather(&cnt, 1, MPI_INT, gcnt, 1, MPI_INT, nio, ios.io_comm)))
+            if ((mpierr = MPI_Gather(&cnt, 1, MPI_INT, gcnt, 1, MPI_INT, nio, ios->io_comm)))
                 return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 
-            if (nio == ios.io_rank)
+            if (nio == ios->io_rank)
             {
                 displs[0] = 0;
-                for (i = 1; i < ios.num_iotasks; i++)
+                for (i = 1; i < ios->num_iotasks; i++)
                     displs[i] = displs[i - 1] + gcnt[i - 1];
 
                 /* Allocate storage for the grid. */
                 if (!(myusegrid = malloc(thisgridsize[nio] * sizeof(PIO_Offset))))
-                    return pio_err(&ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+                    return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
                 /* Initialize the grid to all -1. */
                 for (i = 0; i < thisgridsize[nio]; i++)
@@ -1689,19 +1697,19 @@ int subset_rearrange_create(iosystem_desc_t ios, int maplen, PIO_Offset *compmap
             }
 
             if ((mpierr = MPI_Gatherv((iomap + imin), cnt, PIO_OFFSET, myusegrid, gcnt,
-                                      displs, PIO_OFFSET, nio, ios.io_comm)))
+                                      displs, PIO_OFFSET, nio, ios->io_comm)))
                 return check_mpi(NULL, mpierr, __FILE__, __LINE__);
         }
 
-        PIO_Offset grid[thisgridsize[ios.io_rank]];
-        for (i = 0; i < thisgridsize[ios.io_rank]; i++)
+        PIO_Offset grid[thisgridsize[ios->io_rank]];
+        for (i = 0; i < thisgridsize[ios->io_rank]; i++)
             grid[i] = 0;
 
         int cnt = 0;
-        for (i = 0; i < thisgridsize[ios.io_rank]; i++)
+        for (i = 0; i < thisgridsize[ios->io_rank]; i++)
         {
-            int j = myusegrid[i] - thisgridmin[ios.io_rank];
-            pioassert(j < thisgridsize[ios.io_rank], "out of bounds array index", __FILE__, __LINE__);
+            int j = myusegrid[i] - thisgridmin[ios->io_rank];
+            pioassert(j < thisgridsize[ios->io_rank], "out of bounds array index", __FILE__, __LINE__);
             if (j >= 0)
             {
                 grid[j] = 1;
@@ -1711,12 +1719,12 @@ int subset_rearrange_create(iosystem_desc_t ios, int maplen, PIO_Offset *compmap
         if (myusegrid)
             free(myusegrid);
 
-        iodesc->holegridsize=thisgridsize[ios.io_rank] - cnt;
+        iodesc->holegridsize=thisgridsize[ios->io_rank] - cnt;
         if (iodesc->holegridsize > 0)
         {
             /* Allocate space for the fillgrid. */
             if (!(myfillgrid = malloc(iodesc->holegridsize * sizeof(PIO_Offset))))
-                return pio_err(&ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+                return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
         }
 
         /* Initialize the fillgrid. */
@@ -1724,14 +1732,14 @@ int subset_rearrange_create(iosystem_desc_t ios, int maplen, PIO_Offset *compmap
             myfillgrid[i] = -1;
 
         j = 0;
-        for (i = 0; i < thisgridsize[ios.io_rank]; i++)
+        for (i = 0; i < thisgridsize[ios->io_rank]; i++)
         {
             if (grid[i] == 0)
             {
                 if (myfillgrid[j] == -1)
-                    myfillgrid[j++]=thisgridmin[ios.io_rank] + i;
+                    myfillgrid[j++]=thisgridmin[ios->io_rank] + i;
                 else
-                    return pio_err(&ios, NULL, PIO_EINVAL, __FILE__, __LINE__);
+                    return pio_err(ios, NULL, PIO_EINVAL, __FILE__, __LINE__);
             }
         }
         maxregions = 0;
@@ -1744,7 +1752,7 @@ int subset_rearrange_create(iosystem_desc_t ios, int maplen, PIO_Offset *compmap
             free(myfillgrid);
             maxregions = iodesc->maxfillregions;
         }
-        if ((mpierr = MPI_Allreduce(MPI_IN_PLACE, &maxregions, 1, MPI_INT, MPI_MAX, ios.io_comm)))
+        if ((mpierr = MPI_Allreduce(MPI_IN_PLACE, &maxregions, 1, MPI_INT, MPI_MAX, ios->io_comm)))
             return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 
         iodesc->maxfillregions = maxregions;
@@ -1753,13 +1761,13 @@ int subset_rearrange_create(iosystem_desc_t ios, int maplen, PIO_Offset *compmap
     if ((mpierr = MPI_Scatterv((void *)srcindex, recvlths, rdispls, PIO_OFFSET, (void *)iodesc->sindex,
                                iodesc->scount[0],  PIO_OFFSET, 0, iodesc->subset_comm)))
         return check_mpi(NULL, mpierr, __FILE__, __LINE__);
-    if (ios.ioproc)
+    if (ios->ioproc)
     {
         iodesc->maxregions = 0;
         get_start_and_count_regions(iodesc->ndims,gsize,iodesc->llen, iomap,&(iodesc->maxregions),
                                     iodesc->firstregion);
         maxregions = iodesc->maxregions;
-        if ((mpierr = MPI_Allreduce(MPI_IN_PLACE, &maxregions, 1, MPI_INT, MPI_MAX, ios.io_comm)))
+        if ((mpierr = MPI_Allreduce(MPI_IN_PLACE, &maxregions, 1, MPI_INT, MPI_MAX, ios->io_comm)))
             return check_mpi(NULL, mpierr, __FILE__, __LINE__);
         iodesc->maxregions = maxregions;
         if (iomap)
@@ -1771,7 +1779,7 @@ int subset_rearrange_create(iosystem_desc_t ios, int maplen, PIO_Offset *compmap
         if (srcindex)
             free(srcindex);
 
-        compute_maxIObuffersize(ios.io_comm, iodesc);
+        compute_maxIObuffersize(ios->io_comm, iodesc);
 
         iodesc->nrecvs = ntasks;
 #ifdef DEBUG
@@ -1781,7 +1789,8 @@ int subset_rearrange_create(iosystem_desc_t ios, int maplen, PIO_Offset *compmap
 
     /* Using maxiobuflen compute the maximum number of vars of this type that the io
        task buffer can handle. */
-    compute_maxaggregate_bytes(ios, iodesc);
+    if ((ret = compute_maxaggregate_bytes(ios, iodesc)))
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);        
 
     return ierr;
 }
@@ -1789,11 +1798,11 @@ int subset_rearrange_create(iosystem_desc_t ios, int maplen, PIO_Offset *compmap
 /**
  * Performance tuning rearranger.
  *
- * @param ios the iosystem description struct
- * @param iodesc pointer to the IO description struct
+ * @param ios pointer to the iosystem description struct.
+ * @param iodesc pointer to the IO description struct.
  * @returns 0 on success, error code otherwise.
  */
-void performance_tune_rearranger(iosystem_desc_t ios, io_desc_t *iodesc)
+void performance_tune_rearranger(iosystem_desc_t *ios, io_desc_t *iodesc)
 {
 #ifdef TIMING
 #ifdef PERFTUNE
@@ -1818,7 +1827,7 @@ void performance_tune_rearranger(iosystem_desc_t ios, io_desc_t *iodesc)
             piomemerror(ios, iodesc->llen * tsize, __FILE__, __LINE__);
 
     if (iodesc->rearranger == PIO_REARR_BOX)
-        mycomm = ios.union_comm;
+        mycomm = ios->union_comm;
     else
         mycomm = iodesc->subset_comm;
 
@@ -1837,7 +1846,7 @@ void performance_tune_rearranger(iosystem_desc_t ios, io_desc_t *iodesc)
         return check_mpi(NULL, mpierr, __FILE__, __LINE__);
     GPTLstamp(&wall[0], &usr[0], &sys[0]);
     rearrange_comp2io(ios, iodesc, cbuf, ibuf, 1);
-    rearrange_io2comp(&ios, iodesc, ibuf, cbuf);
+    rearrange_io2comp(ios, iodesc, ibuf, cbuf);
     GPTLstamp(&wall[1], &usr[1], &sys[1]);
     mintime = wall[1]-wall[0];
     if ((mpierr = MPI_Allreduce(MPI_IN_PLACE, &mintime, 1, MPI_DOUBLE, MPI_MAX, mycomm)))
@@ -1870,7 +1879,7 @@ void performance_tune_rearranger(iosystem_desc_t ios, io_desc_t *iodesc)
                     return check_mpi(NULL, mpierr, __FILE__, __LINE__);
                 GPTLstamp(wall, usr, sys);
                 rearrange_comp2io(ios, iodesc, cbuf, ibuf, 1);
-                rearrange_io2comp(&ios, iodesc, ibuf, cbuf);
+                rearrange_io2comp(ios, iodesc, ibuf, cbuf);
                 GPTLstamp(wall+1, usr, sys);
                 wall[1] -= wall[0];
                 if ((mpierr = MPI_Allreduce(MPI_IN_PLACE, wall + 1, 1, MPI_DOUBLE, MPI_MAX,

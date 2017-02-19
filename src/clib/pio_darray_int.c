@@ -32,21 +32,22 @@ extern PIO_Offset maxusage;
  * management is used. If malloc is used (that is, PIO_USE_MALLOC is
  * non zero), this function does nothing.
  *
- * @param ios the iosystem descriptor which will use the new buffer
+ * @param ios pointer to the iosystem descriptor which will use the
+ * new buffer.
  * @returns 0 for success, error code otherwise.
  */
-int compute_buffer_init(iosystem_desc_t ios)
+int compute_buffer_init(iosystem_desc_t *ios)
 {
 #if !PIO_USE_MALLOC
 
     if (!CN_bpool)
     {
         if (!(CN_bpool = malloc(pio_cnbuffer_limit)))
-            return pio_err(&ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+            return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
         bpool(CN_bpool, pio_cnbuffer_limit);
         if (!CN_bpool)
-            return pio_err(&ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+            return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
         bectl(NULL, malloc, free, pio_cnbuffer_limit);
     }
@@ -1589,16 +1590,16 @@ int flush_output_buffer(file_desc_t *file, bool force, PIO_Offset addsize)
 /**
  * Print out info about the buffer for debug purposes.
  *
- * @param ios the IO system structure
+ * @param ios pointer to the IO system structure
  * @param collective true if collective report is desired
  * @ingroup PIO_write_darray
  */
-void cn_buffer_report(iosystem_desc_t ios, bool collective)
+void cn_buffer_report(iosystem_desc_t *ios, bool collective)
 {
     int mpierr;  /* Return code from MPI functions. */
 
-    LOG((2, "cn_buffer_report ios.iossysid = %d collective = %d CN_bpool = %d",
-         ios.iosysid, collective, CN_bpool));
+    LOG((2, "cn_buffer_report ios->iossysid = %d collective = %d CN_bpool = %d",
+         ios->iosysid, collective, CN_bpool));
     if (CN_bpool)
     {
         long bget_stats[5];
@@ -1608,13 +1609,13 @@ void cn_buffer_report(iosystem_desc_t ios, bool collective)
         bstats(bget_stats, bget_stats+1,bget_stats+2,bget_stats+3,bget_stats+4);
         if (collective)
         {
-            LOG((3, "cn_buffer_report calling MPI_Reduce ios.comp_comm = %d", ios.comp_comm));
-            if ((mpierr = MPI_Reduce(bget_stats, bget_maxs, 5, MPI_LONG, MPI_MAX, 0, ios.comp_comm)))
+            LOG((3, "cn_buffer_report calling MPI_Reduce ios->comp_comm = %d", ios->comp_comm));
+            if ((mpierr = MPI_Reduce(bget_stats, bget_maxs, 5, MPI_LONG, MPI_MAX, 0, ios->comp_comm)))
                 check_mpi(NULL, mpierr, __FILE__, __LINE__);
             LOG((3, "cn_buffer_report calling MPI_Reduce"));
-            if ((mpierr = MPI_Reduce(bget_stats, bget_mins, 5, MPI_LONG, MPI_MIN, 0, ios.comp_comm)))
+            if ((mpierr = MPI_Reduce(bget_stats, bget_mins, 5, MPI_LONG, MPI_MIN, 0, ios->comp_comm)))
                 check_mpi(NULL, mpierr, __FILE__, __LINE__);
-            if (ios.compmaster == MPI_ROOT)
+            if (ios->compmaster == MPI_ROOT)
             {
                 printf("PIO: Currently allocated buffer space %ld %ld\n",
                        bget_mins[0], bget_maxs[0]);
@@ -1631,15 +1632,15 @@ void cn_buffer_report(iosystem_desc_t ios, bool collective)
         else
         {
             printf("%d: PIO: Currently allocated buffer space %ld \n",
-                   ios.union_rank, bget_stats[0]) ;
+                   ios->union_rank, bget_stats[0]) ;
             printf("%d: PIO: Currently available buffer space %ld \n",
-                   ios.union_rank, bget_stats[1]);
+                   ios->union_rank, bget_stats[1]);
             printf("%d: PIO: Current largest free block %ld \n",
-                   ios.union_rank, bget_stats[2]);
+                   ios->union_rank, bget_stats[2]);
             printf("%d: PIO: Number of successful bget calls %ld \n",
-                   ios.union_rank, bget_stats[3]);
+                   ios->union_rank, bget_stats[3]);
             printf("%d: PIO: Number of successful brel calls  %ld \n",
-                   ios.union_rank, bget_stats[4]);
+                   ios->union_rank, bget_stats[4]);
         }
     }
 }
@@ -1648,10 +1649,10 @@ void cn_buffer_report(iosystem_desc_t ios, bool collective)
  * Free the buffer pool. If malloc is used (that is, PIO_USE_MALLOC is
  * non zero), this function does nothing.
  *
- * @param ios the IO system structure
+ * @param ios pointer to the IO system structure.
  * @ingroup PIO_write_darray
  */
-void free_cn_buffer_pool(iosystem_desc_t ios)
+void free_cn_buffer_pool(iosystem_desc_t *ios)
 {
 #if !PIO_USE_MALLOC
     LOG((2, "free_cn_buffer_pool CN_bpool = %d", CN_bpool));
@@ -1728,8 +1729,9 @@ int flush_buffer(int ncid, wmulti_buffer *wmb, bool flushtodisk)
  * @param ios the IO system structure
  * @param iodesc a pointer to the defined iodescriptor for the
  * buffer. If NULL, function returns immediately.
+ * @returns 0 for success, error code otherwise.
  */
-void compute_maxaggregate_bytes(iosystem_desc_t ios, io_desc_t *iodesc)
+int compute_maxaggregate_bytes(iosystem_desc_t *ios, io_desc_t *iodesc)
 {
     int maxbytesoniotask = INT_MAX;
     int maxbytesoncomputetask = INT_MAX;
@@ -1737,16 +1739,15 @@ void compute_maxaggregate_bytes(iosystem_desc_t ios, io_desc_t *iodesc)
     int mpierr;  /* Return code from MPI functions. */
 
     /* Check inputs. */
-    if (!iodesc)
-        return;
+    pioassert(iodesc, "invalid input", __FILE__, __LINE__);
 
     LOG((2, "compute_maxaggregate_bytes iodesc->maxiobuflen = %d iodesc->ndof = %d",
          iodesc->maxiobuflen, iodesc->ndof));
 
-    if (ios.ioproc && iodesc->maxiobuflen > 0)
+    if (ios->ioproc && iodesc->maxiobuflen > 0)
         maxbytesoniotask = pio_buffer_size_limit / iodesc->maxiobuflen;
 
-    if (ios.comp_rank >= 0 && iodesc->ndof > 0)
+    if (ios->comp_rank >= 0 && iodesc->ndof > 0)
         maxbytesoncomputetask = pio_cnbuffer_limit / iodesc->ndof;
 
     maxbytes = min(maxbytesoniotask, maxbytesoncomputetask);
@@ -1754,7 +1755,9 @@ void compute_maxaggregate_bytes(iosystem_desc_t ios, io_desc_t *iodesc)
          maxbytesoniotask, maxbytesoncomputetask));
 
     if ((mpierr = MPI_Allreduce(MPI_IN_PLACE, &maxbytes, 1, MPI_INT, MPI_MIN,
-                                ios.union_comm)))
-        check_mpi(NULL, mpierr, __FILE__, __LINE__);
+                                ios->union_comm)))
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     iodesc->maxbytes = maxbytes;
+
+    return PIO_NOERR;
 }

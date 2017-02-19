@@ -298,7 +298,7 @@ void print_trace(FILE *fp)
  * @param fname name of code file where error occured
  * @param line the line of code where the error occurred.
  */
-void piomemerror(iosystem_desc_t ios, size_t req, char *fname, int line)
+void piomemerror(iosystem_desc_t *ios, size_t req, char *fname, int line)
 {
     char msg[80];
     sprintf(msg, "out of memory requesting: %ld", req);
