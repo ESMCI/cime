@@ -3,7 +3,12 @@
 Data Atmosphere (DATM)
 ======================
 
----------
+DATM is normally used to provide observational forcing data (or forcing data produced by a previous run using active components) to drive prognostic components.
+In the case of CESM, these would be: CLM (I compset), POP2 (C compset), and POP2/CICE (G compset). 
+As a result, DATM variable settings are specific to the compset that will be targeted.
+As examples, CORE2_NYF (CORE2 normal year forcing) is the DATM mode used in C and G compsets. 
+CLM_QIAN, CLMCRUNCEP, CLMGSWP3 and CLM1PT are DATM modes using observational data for forcing CLM in I compsets.
+
 Namelists
 ---------
 
@@ -17,8 +22,6 @@ One of the variables in shr_strdata_nml is the ``datamode``, whose value is a ch
 Each data model has a unique set of ``datamode`` values that it supports. 
 The valid values for ``datamode`` are set by the xml variable ``DATM_MODE`` in the ``config_component.xml`` file for DATM. 
 CIME will generate a value ``datamode`` that is compset dependent. 
-As examples, CORE2_NYF (CORE2 normal year forcing) is the DATM mode used in C and G compsets. 
-CLM_QIAN, CLMCRUNCEP, CLMGSWP3 and CLM1PT are DATM modes using observational data for forcing CLM in I compsets.
 
 ---------------
 XML variables

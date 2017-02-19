@@ -46,8 +46,7 @@ In practice, the scientific constraints mean the active atmosphere model cannot 
 Again, `figure 1 <cplug-02.1-figx1.jpg?raw=true>`_ does not necessarily represent the optimum processor layout for performance for any configuration, but it provides a practical limit to the amount of concurrency in the system due to scientific constraints. 
 Results are bit-for-bit identical regardless of the component sequencing because the scientific lags are fixed by the implementation, not the processor layout.
 
-.. 
-image:: http://www.cesm.ucar.edu/models/cesm2.0/cime/images/cplug-02.1-figx1.jpg
+image:: cplug-02.1-figx1.jpg
 
 Figure 1: Maximum potential processor concurrency designed to support scientific requirements and stability.
 

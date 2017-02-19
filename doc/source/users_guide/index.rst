@@ -4,6 +4,8 @@
    contain the root `toctree` directive.
 
 
+.. _users-guide1:
+
 #####################################
 CIME User's Guide Part 1: Basic Use
 #####################################
@@ -14,9 +16,14 @@ CIME User's Guide Part 1: Basic Use
 
    introduction-and-overview.rst
    create-a-case.rst
+   setting-up-a-case.rst
    building-a-case.rst
    running-a-case.rst
+   customizing-a-case.rst
+   optimizing-processor-layout.rst
    porting-cime.rst
+
+.. _users-guide2:
 
 #########################################
 CIME User's Guide Part 2: Advanced CIME
@@ -27,6 +34,7 @@ CIME User's Guide Part 2: Advanced CIME
    :numbered:
 
    cloning-a-case.rst
+   multi-instance.rst
    testing.rst
    adding-cases.rst
    troubleshooting.rst
