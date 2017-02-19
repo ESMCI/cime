@@ -1,3 +1,5 @@
+.. _time-management:
+
 ==================
 Time Management
 ==================

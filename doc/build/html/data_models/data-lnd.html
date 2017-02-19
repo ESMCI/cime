@@ -59,7 +59,9 @@
 <li><a class="reference internal" href="#">5. Data Land (DLND)</a><ul>
 <li><a class="reference internal" href="#namelists">5.1. Namelists</a></li>
 <li><a class="reference internal" href="#xml-variables">5.2. XML variables</a></li>
-<li><a class="reference internal" href="#fields">5.3. Fields</a></li>
+<li><a class="reference internal" href="#datamode-values">5.3. Datamode values</a></li>
+<li><a class="reference internal" href="#datamode-independent-streams">5.4. Datamode independent streams</a></li>
+<li><a class="reference internal" href="#fields">5.5. Fields</a></li>
 </ul>
 </li>
 </ul>
@@ -97,17 +99,17 @@
             
   <div class="section" id="data-land-dlnd">
 <span id="data-lnd"></span><h1>5. Data Land (DLND)<a class="headerlink" href="#data-land-dlnd" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="namelists">
-<h2>5.1. Namelists<a class="headerlink" href="#namelists" title="Permalink to this headline">¶</a></h2>
 <p>The land model is unique because it supports land data and snow data (<em>lnd and sno</em>) almost as if they were two separate components, but they are in fact running in one component model through one interface.
 The lnd (land) data consist of fields sent to the atmosphere.
-This set of data is used when running dlnd with an active atmosphere.
+This set of data is used when running DLND with an active atmosphere.
 In general this is not a mode that is used or supported.
 The sno (snow) data consist of fields sent to the glacier model. This set of data is used when running dlnd with an active glacier model (TG compsets). Both sets of data are assumed to be on the same grid.</p>
+<div class="section" id="namelists">
+<h2>5.1. Namelists<a class="headerlink" href="#namelists" title="Permalink to this headline">¶</a></h2>
 <p>The namelist file for DLND is <code class="docutils literal"><span class="pre">dlnd_in</span></code> (or <code class="docutils literal"><span class="pre">dlnd_in_NNN</span></code> for multiple instances).</p>
 <p>As is the case for all data models, DLND namelists can be separated into two groups, stream-independent and stream-dependent.</p>
 <p>The stream dependent group is <a class="reference internal" href="input-streams.html#input-streams"><span class="std std-ref">shr_strdata_nml</span></a>.</p>
-<p>The stream-independent group is <code class="docutils literal"><span class="pre">dlnd_nml</span></code> and the DLND stream-independent namelist variables are:</p>
+<p id="dlnd-stream-independent-namelists">The stream-independent group is <code class="docutils literal"><span class="pre">dlnd_nml</span></code> and the DLND stream-independent namelist variables are:</p>
 <table border="1" class="docutils">
 <colgroup>
 <col width="28%" />
@@ -133,37 +135,109 @@ The sno (snow) data consist of fields sent to the glacier model. This set of dat
 <p>To change the namelist settings in dlnd_in, edit the file user_nl_dlnd.</p>
 </div>
 <div class="section" id="xml-variables">
-<h2>5.2. XML variables<a class="headerlink" href="#xml-variables" title="Permalink to this headline">¶</a></h2>
+<span id="dlnd-xml-vars"></span><h2>5.2. XML variables<a class="headerlink" href="#xml-variables" title="Permalink to this headline">¶</a></h2>
 <p>The following are xml variables that CIME supports for DLND.  These variables will appear in <code class="docutils literal"><span class="pre">env_run.xml</span></code> and are used by the DLND <code class="docutils literal"><span class="pre">cime_config/buildnml</span></code> script to generate the DLND namelist file <code class="docutils literal"><span class="pre">dlnd_in</span></code> and the required associated stream files for the case.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">These xml variables are used by the the dlnd&#8217;s <strong>cime_config/buildnml</strong> script in conjunction with dlnd&#8217;s <strong>cime_config/namelist_definition_dlnd.xml</strong> file to generate the namelist file <code class="docutils literal"><span class="pre">dlnd_in</span></code>.</p>
+</div>
 <table border="1" class="docutils">
 <colgroup>
 <col width="21%" />
 <col width="79%" />
 </colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">XML variable</th>
+<th class="head">Description</th>
+</tr>
+</thead>
 <tbody valign="top">
-<tr class="row-odd"><td>DLND_MODE</td>
+<tr class="row-even"><td>DLND_MODE</td>
 <td>Data mode</td>
 </tr>
-<tr class="row-even"><td>DLND_CPLHIST_CASE</td>
+<tr class="row-odd"><td>DLND_CPLHIST_CASE</td>
 <td>Coupler history data mode case name</td>
 </tr>
-<tr class="row-odd"><td>DLND_CPLHIST_DIR</td>
+<tr class="row-even"><td>DLND_CPLHIST_DIR</td>
 <td>Coupler history data mode directory containing coupler history data</td>
 </tr>
-<tr class="row-even"><td>DLND_CPLHIST_YR_ALIGN</td>
+<tr class="row-odd"><td>DLND_CPLHIST_YR_ALIGN</td>
 <td>Coupler history data model simulation year corresponding to data starting year</td>
 </tr>
-<tr class="row-odd"><td>DLND_CPLHIST_YR_START</td>
+<tr class="row-even"><td>DLND_CPLHIST_YR_START</td>
 <td>Coupler history data model starting year to loop data over</td>
 </tr>
-<tr class="row-even"><td>DLND_CPLHIST_YR_END</td>
+<tr class="row-odd"><td>DLND_CPLHIST_YR_END</td>
 <td>Coupler history data model ending year to loop data over</td>
 </tr>
 </tbody>
 </table>
+<p>In the above table, <code class="docutils literal"><span class="pre">$DLND_MODE</span></code> has the following supported settings:</p>
+<table border="1" class="docutils" id="dlnd-datamodes">
+<colgroup>
+<col width="19%" />
+<col width="81%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">DLND_MODE value</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>NULL</td>
+<td>null mode</td>
+</tr>
+<tr class="row-odd"><td>CPLHIST</td>
+<td><p class="first">coupler history mode for land</p>
+<p class="last">Land forcing data (e.g. produced by CESM/CLM) from a previous
+model run is output in coupler history files and read in by the data land model.</p>
+</td>
+</tr>
+<tr class="row-even"><td>GLC_CPLHIST</td>
+<td><p class="first">coupler history mode for snow</p>
+<p class="last">glc coupling fields (e.g. produced by CESM/CLM) from a previous model run are read in
+from a coupler history file.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="datamode-values">
+<h2>5.3. Datamode values<a class="headerlink" href="#datamode-values" title="Permalink to this headline">¶</a></h2>
+<p>One of the variables in <code class="docutils literal"><span class="pre">shr_strdata_nml</span></code> is the <code class="docutils literal"><span class="pre">datamode</span></code>, whose value is a character string.
+Each data model has a unique set of <code class="docutils literal"><span class="pre">datamode</span></code> values that it supports.</p>
+<p>The valid values for <code class="docutils literal"><span class="pre">datamode</span></code> are set by the xml variable <code class="docutils literal"><span class="pre">DLND_MODE</span></code> in the <code class="docutils literal"><span class="pre">config_component.xml</span></code> file for DLND.
+CIME will generate a value <code class="docutils literal"><span class="pre">datamode</span></code> that is compset dependent.</p>
+<p>The following are the supported DLND datamode values and their relationship to the <code class="docutils literal"><span class="pre">$DLND_MODE</span></code> xml variable value.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="21%" />
+<col width="79%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">datamode value</th>
+<th class="head">XML variable value</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>NULL</td>
+<td>NULL</td>
+</tr>
+<tr class="row-odd"><td>COPYALL</td>
+<td><p class="first">CPLHIST, GLC_CPLHIST</p>
+<p class="last">copies all fields directly from the input data streams Any required
+fields not found on an input stream will be set to zero.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="datamode-independent-streams">
+<span id="dlnd-mode-independent-streams"></span><h2>5.4. Datamode independent streams<a class="headerlink" href="#datamode-independent-streams" title="Permalink to this headline">¶</a></h2>
+<p>There are no datamode independent streams for DLND.</p>
 </div>
 <div class="section" id="fields">
-<h2>5.3. Fields<a class="headerlink" href="#fields" title="Permalink to this headline">¶</a></h2>
+<span id="dlnd-fields"></span><h2>5.5. Fields<a class="headerlink" href="#fields" title="Permalink to this headline">¶</a></h2>
 <p>The pre-defined internal field names in the data land model are as follows. In general, the stream input file should translate the input variable names into these names for use within the data land model.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -219,8 +293,7 @@ The sno (snow) data consist of fields sent to the glacier model. This set of dat
 </tr>
 </tbody>
 </table>
-<p>where NN = (01,02,...,``nflds_snow * glc_nec)``, and <code class="docutils literal"><span class="pre">nflds_snow</span></code> is the number of snow fields in
-each elevation class and <code class="docutils literal"><span class="pre">glc_nec</span></code> is the number of elevation classes.</p>
+<p>where NN = (01,02,...,``nflds_snow * glc_nec)``, and <code class="docutils literal"><span class="pre">nflds_snow</span></code> is the number of snow fields in each elevation class and <code class="docutils literal"><span class="pre">glc_nec</span></code> is the number of elevation classes.</p>
 </div>
 </div>
 

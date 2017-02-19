@@ -115,65 +115,176 @@
 </div>
 <div class="section" id="stream-data-and-shr-strdata-nml-namelists">
 <h2>2.2. Stream Data and shr_strdata_nml namelists<a class="headerlink" href="#stream-data-and-shr-strdata-nml-namelists" title="Permalink to this headline">¶</a></h2>
-<p>The <em>strdata</em> (short for &#8220;stream data&#8221;) input is set via a fortran namelist called <code class="docutils literal"><span class="pre">shr_strdata_nml</span></code>.
+<p>The stream data (referred to as <em>strdata</em>) input is set via a fortran namelist called <code class="docutils literal"><span class="pre">shr_strdata_nml</span></code>.
 That namelist, the associated strdata datatype, and the methods are contained in the share source code file, <code class="docutils literal"><span class="pre">shr_strdata_mod.F90</span></code>.
 In general, strdata input defines an array of input streams and operations to perform on those streams.
 Therefore, many namelist inputs are arrays of character strings.
 Different variables of the same index are associated. For instance, mapalgo(1) spatial interpolation will be performed between streams(1) and the target domain.</p>
-<p>Each data model component has a stream-dependent namelist group, <code class="docutils literal"><span class="pre">shr_strmdata_nml</span></code>.
-The following namelist entries are available in <code class="docutils literal"><span class="pre">shr_strdata_nml</span></code> and are <strong>the same for all data models</strong>.</p>
+<p>Each data model as an associated input namelist file, <code class="docutils literal"><span class="pre">xxx_in</span></code>, where <code class="docutils literal"><span class="pre">xxx=[datm,dlnd,dice,docn,drof,dwav]</span></code>.</p>
+<p>The input namelist file for each data model has a stream dependent namelist group, <code class="docutils literal"><span class="pre">shr_strdata_nml</span></code>, and a stream independent namelist group.
+The  <code class="docutils literal"><span class="pre">shr_strdata_nml</span></code> namelist variables <strong>are the same for all data models</strong>.</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="15%" />
-<col width="85%" />
+<col width="8%" />
+<col width="92%" />
 </colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td>dataMode</td>
-<td>component specific mode</td>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">File</th>
+<th class="head">Namelist Groups</th>
 </tr>
-<tr class="row-even"><td>domainFile</td>
-<td><p class="first">component domain (all streams will be mapped to this domain)</p>
-<p class="last">if the value is <strong>null</strong> then the domain of the first stream
-will be used as the component domain</p>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>datm_in</td>
+<td>datm_nml, shr_strdata_nml</td>
+</tr>
+<tr class="row-odd"><td>dice_in</td>
+<td>dice_nml, shr_strdata_nml</td>
+</tr>
+<tr class="row-even"><td>dlnd_in</td>
+<td>dlnd_nml, shr_strdata_nml</td>
+</tr>
+<tr class="row-odd"><td>docn_in</td>
+<td>docn_nml, shr_strdata_nml</td>
+</tr>
+<tr class="row-even"><td>drof_in</td>
+<td>drof_nml, shr_strdata_nml</td>
+</tr>
+<tr class="row-odd"><td>dwav_in</td>
+<td>dwav_nml, shr_strdata_nml</td>
+</tr>
+</tbody>
+</table>
+<p id="shr-strdata-nml">The following table summaries the <code class="docutils literal"><span class="pre">shr_strdata_nml</span></code> entries.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="8%" />
+<col width="92%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Namelist</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>dataMode</td>
+<td><p class="first">component specific mode.</p>
+<p>Each CIME data model has its own datamode values as described below:</p>
+<p><a class="reference internal" href="data-atm.html#datm-datamodes"><span class="std std-ref">datm dataMode</span></a></p>
+<p><a class="reference internal" href="data-seaice.html#dice-datamodes"><span class="std std-ref">dice dataMode</span></a></p>
+<p><a class="reference internal" href="data-lnd.html#dlnd-datamodes"><span class="std std-ref">dlnd dataMode</span></a></p>
+<p><a class="reference internal" href="data-ocean.html#docn-datamodes"><span class="std std-ref">docn dataMode</span></a></p>
+<p class="last"><a class="reference internal" href="data-river.html#drof-datamodes"><span class="std std-ref">drof dataMode</span></a></p>
 </td>
 </tr>
-<tr class="row-odd"><td>streams</td>
-<td>array of input stream filenames and associated years of data</td>
+<tr class="row-odd"><td>domainFile</td>
+<td><p class="first">component domain (all streams will be mapped to this domain).</p>
+<p>Spatial gridfile associated with the strdata.  grid information will
+be read from this file and that grid will serve as the target grid
+for all input data for this strdata input.
+If the value is <strong>null</strong> then the domain of the first stream
+will be used as the component domain</p>
+<p class="last">default=&#8221;null&#8221;</p>
+</td>
 </tr>
-<tr class="row-even"><td>fillalgo</td>
-<td>array of fill algorithms</td>
+<tr class="row-even"><td>streams</td>
+<td><p class="first">character array (up to 30 elemnets) of input stream filenames and associated years of data.</p>
+<p>Each array entry consists of a stream_input_filename year_align year_first year_last.
+The  stream_input_filename is a stream text input file and the format and options are described elsewhere.
+The year_align, year_first, and year_last provide information about  the time axis of the file and how to relate
+the input time axis to the model time axis.</p>
+<p class="last">default=&#8221;null&#8221;.</p>
+</td>
 </tr>
-<tr class="row-odd"><td>fillmask</td>
-<td>array of fill masks</td>
+<tr class="row-odd"><td>fillalgo</td>
+<td><p class="first">array (up to 30 elements) of fill algorithms associated with the array of streams.</p>
+<p>Valid options are just copy (ie. no fill), special value, nearest neighbor, nearest neighbor in &#8220;i&#8221; direction,
+or nearest neighbor in &#8220;j&#8221; direction.</p>
+<p>valid values:  &#8216;copy&#8217;,&#8217;spval&#8217;,&#8217;nn&#8217;,&#8217;nnoni&#8217;,&#8217;nnonj&#8217;</p>
+<p class="last">default value=&#8217;nn&#8217;</p>
+</td>
 </tr>
-<tr class="row-even"><td>fillread</td>
-<td>array of fill mapping files to read</td>
+<tr class="row-even"><td>fillmask</td>
+<td><p class="first">array (up to 30 elements) of fill masks.</p>
+<p>valid values: &#8220;nomask,srcmask,dstmask,bothmask&#8221;</p>
+<p class="last">default=&#8221;nomask&#8221;</p>
+</td>
 </tr>
-<tr class="row-odd"><td>fillwrite</td>
-<td>array of fill mapping file to write</td>
+<tr class="row-odd"><td>fillread</td>
+<td><p class="first">array (up to 30 elements) fill mapping files to read. Secifies the weights file to read in instead of
+computing the weights on the fly for the fill operation.  If this is set, fillalgo and fillmask are ignored.</p>
+<p class="last">default=&#8217;NOT_SET&#8217;</p>
+</td>
 </tr>
-<tr class="row-even"><td>mapalgo</td>
-<td>array of spatial interpolation algorithms</td>
+<tr class="row-even"><td>fillwrite</td>
+<td><p class="first">array of fill mapping file to write</p>
+<p class="last">default=&#8217;NOT_SET&#8217;</p>
+</td>
 </tr>
-<tr class="row-odd"><td>mapmask</td>
-<td>array of spatial interpolation mask</td>
+<tr class="row-odd"><td>mapalgo</td>
+<td><p class="first">array of spatial interpolation algorithms</p>
+<p class="last">default=&#8221;bilinear&#8221;</p>
+</td>
 </tr>
-<tr class="row-even"><td>mapread</td>
-<td>array of spatial interpolation mapping files to read (optional)</td>
+<tr class="row-even"><td>mapmask</td>
+<td><p class="first">array of spatial interpolation mask</p>
+<p class="last">default=&#8217;NOT_SET&#8217;</p>
+</td>
 </tr>
-<tr class="row-odd"><td>mapwrite</td>
-<td>array of spatial interpolation mapping files to write (optional)</td>
+<tr class="row-odd"><td>mapread</td>
+<td><p class="first">array of spatial interpolation mapping files to read (optional)</p>
+<p class="last">default=&#8217;NOT_SET&#8217;</p>
+</td>
 </tr>
-<tr class="row-even"><td>tintalgo</td>
-<td>array of time interpolation algorithms</td>
+<tr class="row-even"><td>mapwrite</td>
+<td><p class="first">array (up to 30 elements) of spatial interpolation mapping files to write (optional). Specifies the weights file</p>
+<p class="last">to generate after weights are computed on the fly for the mapping (interpolation) operation, thereby allowing
+users to save and reuse a set of weights later.
+default=&#8217;NOT_SET&#8217;</p>
+</td>
 </tr>
-<tr class="row-odd"><td>taxMode</td>
-<td>array of time interpolation modes</td>
+<tr class="row-odd"><td>tintalgo</td>
+<td><p class="first">array (up to 30 elements) of time interpolation algorithm options associated with the array of streams.</p>
+<p>valid values: lower,upper,nearest,linear,coszen
+lower   = Use lower time-value</p>
+<p>upper   = Use upper time-value</p>
+<p>nearest = Use the nearest time-value</p>
+<p>linear  = Linearly interpolate between the two time-values</p>
+<p>coszen  = Scale according to the cosine of the solar zenith angle (for solar)</p>
+<p class="last">default=&#8221;linear&#8221;</p>
+</td>
 </tr>
-<tr class="row-even"><td>dtlimit</td>
-<td>array of delta time axis limit</td>
+<tr class="row-even"><td>taxMode</td>
+<td><p class="first">array (up to 30 elements) of time interpolation modes.</p>
+<p>Time axis interpolation modes are associated with the array of streams for</p>
+<p>handling data outside the specified stream time axis.</p>
+<p>Valid options are to cycle the data based on the first, last, and align</p>
+<p>settings associated with the stream dataset, to extend the first and last</p>
+<p>valid value indefinitely, or to limit the interpolated data to fall only between</p>
+<p>the least and greatest valid value of the time array.</p>
+<p>valid values: cycle,extend,limit</p>
+<p>extend = extrapolate before and after the period by using the first or last value.</p>
+<p>cycle  = cycle between the range of data</p>
+<p>limit  = restrict to the period for which the data is valid</p>
+<p class="last">default=&#8221;cycle&#8221;</p>
+</td>
 </tr>
-<tr class="row-odd"><td>vectors</td>
+<tr class="row-odd"><td>dtlimit</td>
+<td><p class="first">array (up to 30 elements) of setting delta time axis limit.</p>
+<p>Specifies delta time ratio limits placed on the time interpolation</p>
+<p>associated with the array of streams.  Causes the model to stop if</p>
+<p>the ratio of the running maximum delta time divided by the minimum delta time</p>
+<p>is greater than the dtlimit for that stream.  For instance, with daily data,</p>
+<p>the delta time should be exactly one day throughout the dataset and</p>
+<p>the computed maximum divided by minimum delta time should always be 1.0.</p>
+<p>For monthly data, the delta time should be between 28 and 31 days and the</p>
+<p>maximum ratio should be about 1.1.  The running value of the delta</p>
+<p>time is computed as data is read and any wraparound or cycling is also</p>
+<p>included.  this input helps trap missing data or errors in cycling.</p>
+<p>to turn off trapping, set the value to 1.0e30 or something similar.</p>
+<p class="last">default=1.5</p>
+</td>
+</tr>
+<tr class="row-even"><td>vectors</td>
 <td>paired vector field names</td>
 </tr>
 </tbody>

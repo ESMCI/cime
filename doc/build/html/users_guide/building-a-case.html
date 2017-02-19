@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>3. Building a Case &#8212; on  documentation</title>
+    <title>4. Building a Case &#8212; on  documentation</title>
     
     <link rel="stylesheet" href="../_static/bizstyle.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -28,8 +28,8 @@
     <script type="text/javascript" src="../_static/bizstyle.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="4. Running a Case" href="running-a-case.html" />
-    <link rel="prev" title="2. Creating and Setting up a Case" href="create-a-case.html" />
+    <link rel="next" title="5. Running a Case" href="running-a-case.html" />
+    <link rel="prev" title="3. Setting up a Case" href="setting-up-a-case.html" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <!--[if lt IE 9]>
     <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
@@ -43,10 +43,10 @@
           <a href="../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="running-a-case.html" title="4. Running a Case"
+          <a href="running-a-case.html" title="5. Running a Case"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="create-a-case.html" title="2. Creating and Setting up a Case"
+          <a href="setting-up-a-case.html" title="3. Setting up a Case"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">on  documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">CIME User&#8217;s Guide Part 1: Basic Use</a> &#187;</li> 
@@ -56,24 +56,19 @@
         <div class="sphinxsidebarwrapper">
   <h3><a href="../index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">3. Building a Case</a><ul>
-<li><a class="reference internal" href="#how-do-i-build-my-model">3.1. How do I build my model?</a></li>
-<li><a class="reference internal" href="#input-data">3.2. Input Data</a><ul>
-<li><a class="reference internal" href="#user-created-input-data">3.2.1. User-created input data</a></li>
-<li><a class="reference internal" href="#using-the-input-data-server">3.2.2. Using the input data server</a></li>
-<li><a class="reference internal" href="#rebuilding-the-model">3.2.3. Rebuilding the model</a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#">4. Building a Case</a><ul>
+<li><a class="reference internal" href="#calling-case-build">4.1. Calling <strong>case.build</strong></a></li>
+<li><a class="reference internal" href="#rebuilding-the-model">4.2. Rebuilding the model</a></li>
 </ul>
 </li>
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="create-a-case.html"
-                        title="previous chapter">2. Creating and Setting up a Case</a></p>
+  <p class="topless"><a href="setting-up-a-case.html"
+                        title="previous chapter">3. Setting up a Case</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="running-a-case.html"
-                        title="next chapter">4. Running a Case</a></p>
+                        title="next chapter">5. Running a Case</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -100,14 +95,13 @@
           <div class="body" role="main">
             
   <div class="section" id="building-a-case">
-<span id="id1"></span><h1>3. Building a Case<a class="headerlink" href="#building-a-case" title="Permalink to this headline">¶</a></h1>
+<span id="id1"></span><h1>4. Building a Case<a class="headerlink" href="#building-a-case" title="Permalink to this headline">¶</a></h1>
 <p>The following summarizes details of building the model exectuable.</p>
-<div class="section" id="how-do-i-build-my-model">
-<h2>3.1. How do I build my model?<a class="headerlink" href="#how-do-i-build-my-model" title="Permalink to this headline">¶</a></h2>
-<p>After calling <strong>case.setup</strong>, you can build the model executable by running <strong>./$CASE.build</strong>. Running this will:</p>
+<div class="section" id="calling-case-build">
+<h2>4.1. Calling <strong>case.build</strong><a class="headerlink" href="#calling-case-build" title="Permalink to this headline">¶</a></h2>
+<p>After calling <strong>case.setup</strong>, you can build the model executable by running case.build. Running this will:</p>
 <ol class="arabic simple">
-<li>Create the component namelists in <code class="docutils literal"><span class="pre">$RUNDIR</span></code> (by calling the <code class="docutils literal"><span class="pre">Buildconf/$component.buildnml.csh</span></code> scripts).</li>
-<li>Check for the <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">required input data sets</a> and download missing data automatically on local disk, and if successful proceed to the following steps.</li>
+<li>Create the component namelists in <code class="docutils literal"><span class="pre">$RUNDIR</span></code> and <code class="docutils literal"><span class="pre">$CASEROOT/CaseDocs</span></code>.</li>
 <li>Create the necessary utility libraries for <code class="docutils literal"><span class="pre">mct</span></code>, <code class="docutils literal"><span class="pre">pio</span></code>, <code class="docutils literal"><span class="pre">gptl</span></code> and <code class="docutils literal"><span class="pre">csm_share</span></code>.
 These will be placed in <code class="docutils literal"><span class="pre">$EXEROOT/bld/lib</span></code>.</li>
 <li>Create the necessary component libraries.
@@ -118,21 +112,25 @@ This will be placed in <code class="docutils literal"><span class="pre">$EXEROOT
 <p><code class="docutils literal"><span class="pre">$CASEROOT/Tools/Makefile</span></code> and <code class="docutils literal"><span class="pre">$CASEROOT/Macros.make</span></code> are used to generate the utility libraries, the component libraries and the model executable.
 You do not need to change the default build settings to create the executable.
 However, since the CIME scripts provide you with a great deal of flexibility in customizing various aspects of the build process, it is useful to become familiar with these in order to make optimal use of the system.</p>
-<p>The <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">env_build.xml variables</a>, control various aspects of building the model executable.
-Most of the variables should not be modified by users. Among the variables that you can modify are <code class="docutils literal"><span class="pre">BUILD_THREADED</span></code>, <code class="docutils literal"><span class="pre">DEBUG</span></code> and <code class="docutils literal"><span class="pre">GMAKE_J</span></code>.
-Full documentation for each variable is provided in the <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">env_build.xml variables</a>.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>&gt; cd $CASEROOT
-&gt; ./$CASE.build
+<p>The <code class="docutils literal"><span class="pre">env_build.xml</span></code> variables control various aspects of building the model executable.
+Most of the variables should not be modified by users.
+Among the variables that you can modify are <code class="docutils literal"><span class="pre">BUILD_THREADED</span></code>, <code class="docutils literal"><span class="pre">DEBUG</span></code> and <code class="docutils literal"><span class="pre">GMAKE_J</span></code>.
+The best way to see what xml variables are in your <code class="docutils literal"><span class="pre">$CASEROOT</span></code> is to use the <code class="docutils literal"><span class="pre">xmlquery</span></code> command.
+To see its usage, simply call</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">xmlquery</span> <span class="o">--</span><span class="n">help</span>
 </pre></div>
 </div>
-<p>Diagnostic comments will appear as the build proceeds.
-You will also be notified that the required case input data in <code class="docutils literal"><span class="pre">$DIN_LOC_ROOT</span></code> has been successfully checked.</p>
-<p>Finally, the build script generates the utility and component libraries and the model executable.
-Build log files are created as the model build proceeds.
-Each is date stamped, and a pointer to the build log file for that library or component is shown.
-The build log files have names of the form $model.bldlog.$datestamp and are located in <code class="docutils literal"><span class="pre">$BLDDIR</span></code>.
+<p>To build the model:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>&gt; cd $CASEROOT
+&gt; ./case.build
+</pre></div>
+</div>
+<p>Diagnostic comments will appear as the build proceeds.</p>
+<p><code class="docutils literal"><span class="pre">case.build</span></code> generates the utility and component libraries and the model executable, as well as build logs for each component.
+Each build log file is date stamped, and a pointer to the build log file for that library or component is shown.
+The build log files have names of the form $component.bldlog.$datestamp and are located in <code class="docutils literal"><span class="pre">$BLDDIR</span></code>.
 If they are compressed (indicated by a .gz file extension), then the build ran successfully.</p>
-<p>Invoking <strong>$CASE.build</strong> creates the following directory structure in <code class="docutils literal"><span class="pre">$EXEROOT</span></code> if the <code class="docutils literal"><span class="pre">intel</span></code> compiler is used:</p>
+<p>Invoking <strong>case.build</strong> creates the following directory structure in <code class="docutils literal"><span class="pre">$EXEROOT</span></code> if the <code class="docutils literal"><span class="pre">intel</span></code> compiler is used:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">atm</span><span class="o">/</span><span class="p">,</span> <span class="n">cpl</span><span class="o">/</span><span class="p">,</span> <span class="n">esp</span><span class="o">/</span><span class="p">,</span> <span class="n">glc</span><span class="o">/</span><span class="p">,</span> <span class="n">ice</span><span class="o">/</span><span class="p">,</span> <span class="n">intel</span><span class="o">/</span><span class="p">,</span> <span class="n">lib</span><span class="o">/</span><span class="p">,</span> <span class="n">lnd</span><span class="o">/</span><span class="p">,</span> <span class="n">ocn</span><span class="o">/</span><span class="p">,</span> <span class="n">rof</span><span class="o">/</span><span class="p">,</span> <span class="n">wav</span><span class="o">/</span>
 </pre></div>
 </div>
@@ -148,43 +146,13 @@ However, on supported machines (and some non-supported machines), data already e
 <p>Input data is handled by the build process as follows:</p>
 <ul class="simple">
 <li>The buildnml scripts in <code class="docutils literal"><span class="pre">Buildconf/</span></code> create listings of required component input datasets in the <code class="docutils literal"><span class="pre">Buildconf/$component.input_data_list</span></code> files.</li>
-<li><code class="docutils literal"><span class="pre">$CASE.build</span></code> checks for the presence of the required input data files in the root directory <code class="docutils literal"><span class="pre">$DIN_LOC_ROOT</span></code>. If all required data sets are found on local disk, then the build can proceed.</li>
+<li><code class="docutils literal"><span class="pre">case.build</span></code> checks for the presence of the required input data files in the root directory <code class="docutils literal"><span class="pre">$DIN_LOC_ROOT</span></code>. If all required data sets are found on local disk, then the build can proceed.</li>
 <li>If any of the required input data sets are not found, the build script will abort and the files that are missing will be listed. At this point, you must obtain the required data from the input data server using check_input_data with the -export option.</li>
 </ul>
 <p>The <code class="docutils literal"><span class="pre">env_run.xml</span></code> variables <code class="docutils literal"><span class="pre">DIN_LOC_ROOT</span></code> and <code class="docutils literal"><span class="pre">DIN_LOC_ROOT_CLMFORC</span></code> determine where you should expect input data to reside on local disk. See the <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">input data variables</a>.</p>
 </div>
-<div class="section" id="input-data">
-<h2>3.2. Input Data<a class="headerlink" href="#input-data" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="user-created-input-data">
-<h3>3.2.1. User-created input data<a class="headerlink" href="#user-created-input-data" title="Permalink to this headline">¶</a></h3>
-<p>If you want to use new user-created dataset(s) and give these dataset(s) names that are different than the names in <code class="docutils literal"><span class="pre">$DIN_LOC_ROOT</span></code>, we recommend using the script <strong>link_dirtree</strong> in the directory <code class="docutils literal"><span class="pre">$CCSMROOT/scripts</span></code>. <strong>link_dirtree</strong> creates a virtual copy of the input data directory by linking one directory tree to another. The full directory structure of the original directory is duplicated and the files are linked. To use this script, use the -h optiion for usage.
-<code class="docutils literal"><span class="pre">`</span>
-<span class="pre">&gt;</span> <span class="pre">cd</span> <span class="pre">$CCSMROOT/scripts</span>
-<span class="pre">&gt;</span> <span class="pre">./link_dirtree</span> <span class="pre">-h</span>
-<span class="pre">`</span></code>
-<strong>link_dirtree</strong> can be conveniently used to generate the equivalent of a local copy of <code class="docutils literal"><span class="pre">$DIN_LOC_ROOT</span></code> which can then be populated with user-specified input datasets. For example, you can first generate a virtual copy of <code class="docutils literal"><span class="pre">$DIN_LOC_ROOT</span></code> in /user/home/newdata with the following command:
-<code class="docutils literal"><span class="pre">`</span>
-<span class="pre">&gt;</span> <span class="pre">link_dirtree</span> <span class="pre">$DIN_LOC_ROOT</span> <span class="pre">/user/home/newdata</span>
-<span class="pre">`</span></code>
-then incorporate the new dataset(s) directly into the appropriate directory in /user/home/newdata.</p>
-</div>
-<div class="section" id="using-the-input-data-server">
-<h3>3.2.2. Using the input data server<a class="headerlink" href="#using-the-input-data-server" title="Permalink to this headline">¶</a></h3>
-<p>The script <code class="docutils literal"><span class="pre">$CASEROOT/check_input_data</span></code> determines if the required data files for the case exist on local disk in the appropriate subdirectory of <code class="docutils literal"><span class="pre">$DIN_LOC_ROOT</span></code>. If any of the required datasets do not exist locally, <strong>check_input_data</strong> provides the capability for downloading them to the <code class="docutils literal"><span class="pre">$DIN_LOC_ROOT</span></code> directory hierarchy via interaction with the input data server. You can independently verify that the required data is present locally by using the following commands:
-<code class="docutils literal"><span class="pre">`</span>
-<span class="pre">&gt;</span> <span class="pre">cd</span> <span class="pre">$CASEROOT</span>
-<span class="pre">&gt;</span> <span class="pre">check_input_data</span> <span class="pre">-help</span>
-<span class="pre">&gt;</span> <span class="pre">check_input_data</span> <span class="pre">-inputdata</span> <span class="pre">$DIN_LOC_ROOT</span> <span class="pre">-check</span>
-<span class="pre">`</span></code>
-If input data sets are missing, you must obtain the datasets from the input data server:
-<code class="docutils literal"><span class="pre">`</span>
-<span class="pre">&gt;</span> <span class="pre">cd</span> <span class="pre">$CASEROOT</span>
-<span class="pre">&gt;</span> <span class="pre">check_input_data</span> <span class="pre">-inputdata</span> <span class="pre">$DIN_LOC_ROOT</span> <span class="pre">-export</span>
-<span class="pre">``</span>
-<span class="pre">Required</span> <span class="pre">data</span> <span class="pre">files</span> <span class="pre">not</span> <span class="pre">on</span> <span class="pre">local</span> <span class="pre">disk</span> <span class="pre">will</span> <span class="pre">be</span> <span class="pre">downloaded</span> <span class="pre">through</span> <span class="pre">interaction</span> <span class="pre">with</span> <span class="pre">the</span> <span class="pre">Subversion</span> <span class="pre">input</span> <span class="pre">data</span> <span class="pre">server.</span> <span class="pre">These</span> <span class="pre">will</span> <span class="pre">be</span> <span class="pre">placed</span> <span class="pre">in</span> <span class="pre">the</span> <span class="pre">appropriate</span> <span class="pre">subdirectory</span> <span class="pre">of</span> <span class="pre">``$DIN_LOC_ROOT</span></code>. For what to expect when interacting with a Subversion repository, see <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">downloading input data</a>.</p>
-</div>
 <div class="section" id="rebuilding-the-model">
-<h3>3.2.3. Rebuilding the model<a class="headerlink" href="#rebuilding-the-model" title="Permalink to this headline">¶</a></h3>
+<h2>4.2. Rebuilding the model<a class="headerlink" href="#rebuilding-the-model" title="Permalink to this headline">¶</a></h2>
 <p>You should rebuild the model under the following circumstances:</p>
 <p>If either <code class="docutils literal"><span class="pre">env_build.xml</span></code> or <code class="docutils literal"><span class="pre">Macros</span></code> has been modified, and/or if code is added to <code class="docutils literal"><span class="pre">SourceMods/src.*</span></code>, then it&#8217;s safest to clean the build and rebuild from scratch as follows,</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span>&gt; cd $CASEROOT
@@ -215,7 +183,6 @@ If input data sets are missing, you must obtain the datasets from the input data
 <p>You are responsible for manually rebuilding the model when needed. If there is any doubt, you should rebuild.</p>
 </div>
 </div>
-</div>
 
 
           </div>
@@ -230,10 +197,10 @@ If input data sets are missing, you must obtain the datasets from the input data
           <a href="../genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="running-a-case.html" title="4. Running a Case"
+          <a href="running-a-case.html" title="5. Running a Case"
              >next</a> |</li>
         <li class="right" >
-          <a href="create-a-case.html" title="2. Creating and Setting up a Case"
+          <a href="setting-up-a-case.html" title="3. Setting up a Case"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">on  documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" >CIME User&#8217;s Guide Part 1: Basic Use</a> &#187;</li> 

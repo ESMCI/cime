@@ -29,7 +29,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="1. Introduction" href="introduction.html" />
-    <link rel="prev" title="5.3. Adding a user-defined grid" href="../users_guide/faq/experts-adding-new-user-defined-grid.html" />
+    <link rel="prev" title="6.2. Setting up a branch or hybrid run" href="../users_guide/faq/basics-setting-up-a-branch-or-hybrid-run.html" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <!--[if lt IE 9]>
     <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
@@ -46,7 +46,7 @@
           <a href="introduction.html" title="1. Introduction"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="../users_guide/faq/experts-adding-new-user-defined-grid.html" title="5.3. Adding a user-defined grid"
+          <a href="../users_guide/faq/basics-setting-up-a-branch-or-hybrid-run.html" title="6.2. Setting up a branch or hybrid run"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">on  documentation</a> &#187;</li> 
       </ul>
@@ -62,8 +62,8 @@
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="../users_guide/faq/experts-adding-new-user-defined-grid.html"
-                        title="previous chapter">5.3. Adding a user-defined grid</a></p>
+  <p class="topless"><a href="../users_guide/faq/basics-setting-up-a-branch-or-hybrid-run.html"
+                        title="previous chapter">6.2. Setting up a branch or hybrid run</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="introduction.html"
                         title="next chapter">1. Introduction</a></p>
@@ -92,7 +92,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="cime-data-models">
+  <span class="target" id="data-models"></span><div class="section" id="cime-data-models">
 <h1>CIME Data Models<a class="headerlink" href="#cime-data-models" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
 <ul>
@@ -118,31 +118,42 @@
 <li class="toctree-l1"><a class="reference internal" href="data-atm.html">4. Data Atmosphere (DATM)</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="data-atm.html#namelists">4.1. Namelists</a></li>
 <li class="toctree-l2"><a class="reference internal" href="data-atm.html#xml-variables">4.2. XML variables</a></li>
-<li class="toctree-l2"><a class="reference internal" href="data-atm.html#fields">4.3. Fields</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data-atm.html#datamode-values">4.3. Datamode values</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data-atm.html#datamode-independent-streams">4.4. Datamode independent streams</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data-atm.html#fields">4.5. Fields</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="data-lnd.html">5. Data Land (DLND)</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="data-lnd.html#namelists">5.1. Namelists</a></li>
 <li class="toctree-l2"><a class="reference internal" href="data-lnd.html#xml-variables">5.2. XML variables</a></li>
-<li class="toctree-l2"><a class="reference internal" href="data-lnd.html#fields">5.3. Fields</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data-lnd.html#datamode-values">5.3. Datamode values</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data-lnd.html#datamode-independent-streams">5.4. Datamode independent streams</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data-lnd.html#fields">5.5. Fields</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="data-seaice.html">6. Data Ice (DICE)</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="data-seaice.html#namelists">6.1. Namelists</a></li>
 <li class="toctree-l2"><a class="reference internal" href="data-seaice.html#xml-variables">6.2. XML variables</a></li>
-<li class="toctree-l2"><a class="reference internal" href="data-seaice.html#fields">6.3. Fields</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data-seaice.html#datamode-values">6.3. Datamode values</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data-seaice.html#datamode-independent-streams">6.4. Datamode independent streams</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data-seaice.html#fields">6.5. Fields</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="data-ocean.html">7. Data Ocean (DOCN)</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="data-ocean.html#namelists">7.1. Namelists</a></li>
 <li class="toctree-l2"><a class="reference internal" href="data-ocean.html#xml-variables">7.2. XML variables</a></li>
-<li class="toctree-l2"><a class="reference internal" href="data-ocean.html#fields">7.3. Fields</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data-ocean.html#datamode-values">7.3. Datamode values</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data-ocean.html#datamode-independent-streams">7.4. Datamode independent streams</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data-ocean.html#fields">7.5. Fields</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data-ocean.html#creating-sstdata-mode-input-from-a-fully-prognostic-run-cesm-only">7.6. Creating SSTDATA mode input from a fully prognostic run (CESM only)</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="data-river.html">8. Data River (DROF)</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="data-river.html#namelists">8.1. Namelists</a></li>
 <li class="toctree-l2"><a class="reference internal" href="data-river.html#xml-variables">8.2. XML variables</a></li>
-<li class="toctree-l2"><a class="reference internal" href="data-river.html#fields">8.3. Fields</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data-river.html#datamode-values">8.3. Datamode values</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data-river.html#datamode-independent-streams">8.4. Datamode independent streams</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data-river.html#fields">8.5. Fields</a></li>
 </ul>
 </li>
 </ul>
@@ -173,7 +184,7 @@
           <a href="introduction.html" title="1. Introduction"
              >next</a> |</li>
         <li class="right" >
-          <a href="../users_guide/faq/experts-adding-new-user-defined-grid.html" title="5.3. Adding a user-defined grid"
+          <a href="../users_guide/faq/basics-setting-up-a-branch-or-hybrid-run.html" title="6.2. Setting up a branch or hybrid run"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">on  documentation</a> &#187;</li> 
       </ul>
