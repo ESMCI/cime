@@ -711,13 +711,16 @@ int rearrange_comp2io(iosystem_desc_t ios, io_desc_t *iodesc, void *sbuf,
     MPI_Comm mycomm;
     int mpierr; /* Return code from MPI calls. */
 
+    
 #ifdef TIMING
     GPTLstart("PIO:rearrange_comp2io");
 #endif
 
-    /* Caller must provide this. */
-    assert(iodesc);
-    pioassert(nvars > 0, "nvars must be > 0", __FILE__, __LINE__);
+    /* Caller must provide these. */
+    pioassert(iodesc && nvars > 0, "invalid input", __FILE__, __LINE__);
+
+    LOG((2, "rearrange_comp2io nvars = %d iodesc->rearranger = %d", nvars,
+         iodesc->rearranger));
 
     if (iodesc->rearranger == PIO_REARR_BOX)
     {
@@ -737,6 +740,7 @@ int rearrange_comp2io(iosystem_desc_t ios, io_desc_t *iodesc, void *sbuf,
     /* Get the size of the MPI type. */
     if ((mpierr = MPI_Type_size(iodesc->basetype, &tsize)))
         return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+    LOG((3, "ntasks = %d tsize = %d", ntasks, tsize));
 
     /* Define the MPI data types that will be used for this
      * io_desc_t. */
