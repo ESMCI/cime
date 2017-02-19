@@ -26,35 +26,177 @@ Generally, information about what streams a user wants to use and how to use the
 --------------------------------------------------
 Stream Data and shr_strdata_nml namelists
 --------------------------------------------------
-The *strdata* (short for "stream data") input is set via a fortran namelist called ``shr_strdata_nml``. 
+The stream data (referred to as *strdata*) input is set via a fortran namelist called ``shr_strdata_nml``. 
 That namelist, the associated strdata datatype, and the methods are contained in the share source code file, ``shr_strdata_mod.F90``. 
 In general, strdata input defines an array of input streams and operations to perform on those streams. 
 Therefore, many namelist inputs are arrays of character strings. 
 Different variables of the same index are associated. For instance, mapalgo(1) spatial interpolation will be performed between streams(1) and the target domain.
 
-Each data model component has a stream-dependent namelist group, ``shr_strmdata_nml``. 
-The following namelist entries are available in ``shr_strdata_nml`` and are **the same for all data models**. 
+Each data model as an associated input namelist file, ``xxx_in``, where ``xxx=[datm,dlnd,dice,docn,drof,dwav]``. 
 
-=========== ============================================================
-dataMode    component specific mode
-domainFile  component domain (all streams will be mapped to this domain)
+The input namelist file for each data model has a stream dependent namelist group, ``shr_strdata_nml``, and a stream independent namelist group. 
+The  ``shr_strdata_nml`` namelist variables **are the same for all data models**. 
 
-            if the value is **null** then the domain of the first stream 
+=========== ==========================================================================================================================
+File        Namelist Groups
+=========== ==========================================================================================================================
+datm_in     datm_nml, shr_strdata_nml
+dice_in     dice_nml, shr_strdata_nml
+dlnd_in     dlnd_nml, shr_strdata_nml
+docn_in     docn_nml, shr_strdata_nml
+drof_in     drof_nml, shr_strdata_nml
+dwav_in     dwav_nml, shr_strdata_nml
+=========== ==========================================================================================================================
+
+.. _shr-strdata-nml:
+
+The following table summaries the ``shr_strdata_nml`` entries.
+
+=========== ==========================================================================================================================
+Namelist    Description
+=========== ==========================================================================================================================
+dataMode    component specific mode. 
+
+            Each CIME data model has its own datamode values as described below:
+
+            :ref:`datm dataMode<datm-datamodes>`
+
+	    :ref:`dice dataMode<dice-datamodes>`
+
+	    :ref:`dlnd dataMode<dlnd-datamodes>`
+
+	    :ref:`docn dataMode<docn-datamodes>`
+
+	    :ref:`drof dataMode<drof-datamodes>`
+
+domainFile  component domain (all streams will be mapped to this domain).
+
+            Spatial gridfile associated with the strdata.  grid information will
+	    be read from this file and that grid will serve as the target grid
+	    for all input data for this strdata input.  
+	    If the value is **null** then the domain of the first stream 
 	    will be used as the component domain 
-streams     array of input stream filenames and associated years of data
-fillalgo    array of fill algorithms
-fillmask    array of fill masks
-fillread    array of fill mapping files to read
+
+	    default="null" 
+
+streams     character array (up to 30 elemnets) of input stream filenames and associated years of data.
+
+            Each array entry consists of a stream_input_filename year_align year_first year_last.  
+            The  stream_input_filename is a stream text input file and the format and options are described elsewhere.  
+	    The year_align, year_first, and year_last provide information about  the time axis of the file and how to relate 
+	    the input time axis to the model time axis.  
+
+	    default="null".
+
+fillalgo    array (up to 30 elements) of fill algorithms associated with the array of streams. 
+
+            Valid options are just copy (ie. no fill), special value, nearest neighbor, nearest neighbor in "i" direction, 
+	    or nearest neighbor in "j" direction. 
+
+	    valid values:  'copy','spval','nn','nnoni','nnonj'  
+
+	    default value='nn'
+
+fillmask    array (up to 30 elements) of fill masks.
+
+            valid values: "nomask,srcmask,dstmask,bothmask"
+
+            default="nomask"
+
+fillread    array (up to 30 elements) fill mapping files to read. Secifies the weights file to read in instead of 
+            computing the weights on the fly for the fill operation.  If this is set, fillalgo and fillmask are ignored.
+
+	    default='NOT_SET'
+
 fillwrite   array of fill mapping file to write
+
+	    default='NOT_SET'
+
 mapalgo     array of spatial interpolation algorithms
+
+            default="bilinear"
+
 mapmask     array of spatial interpolation mask
+
+	    default='NOT_SET'
+
 mapread     array of spatial interpolation mapping files to read (optional)
-mapwrite    array of spatial interpolation mapping files to write (optional)
-tintalgo    array of time interpolation algorithms 
-taxMode     array of time interpolation modes
-dtlimit     array of delta time axis limit
+
+	    default='NOT_SET'
+
+mapwrite    array (up to 30 elements) of spatial interpolation mapping files to write (optional). Specifies the weights file 
+
+            to generate after weights are computed on the fly for the mapping (interpolation) operation, thereby allowing 
+	    users to save and reuse a set of weights later.
+	    default='NOT_SET'
+
+tintalgo    array (up to 30 elements) of time interpolation algorithm options associated with the array of streams. 
+
+            valid values: lower,upper,nearest,linear,coszen
+            lower   = Use lower time-value
+
+            upper   = Use upper time-value
+
+            nearest = Use the nearest time-value
+
+            linear  = Linearly interpolate between the two time-values
+
+            coszen  = Scale according to the cosine of the solar zenith angle (for solar)
+
+            default="linear"
+
+taxMode     array (up to 30 elements) of time interpolation modes.
+
+            Time axis interpolation modes are associated with the array of streams for 
+
+	    handling data outside the specified stream time axis.  
+
+	    Valid options are to cycle the data based on the first, last, and align 
+
+	    settings associated with the stream dataset, to extend the first and last 
+
+	    valid value indefinitely, or to limit the interpolated data to fall only between 
+
+	    the least and greatest valid value of the time array.
+
+	    valid values: cycle,extend,limit
+
+	    extend = extrapolate before and after the period by using the first or last value.
+
+	    cycle  = cycle between the range of data
+
+	    limit  = restrict to the period for which the data is valid
+
+	    default="cycle"
+
+dtlimit     array (up to 30 elements) of setting delta time axis limit.
+
+            Specifies delta time ratio limits placed on the time interpolation 
+
+	    associated with the array of streams.  Causes the model to stop if 
+
+	    the ratio of the running maximum delta time divided by the minimum delta time 
+
+	    is greater than the dtlimit for that stream.  For instance, with daily data, 
+
+	    the delta time should be exactly one day throughout the dataset and 
+
+	    the computed maximum divided by minimum delta time should always be 1.0.  
+
+	    For monthly data, the delta time should be between 28 and 31 days and the
+
+            maximum ratio should be about 1.1.  The running value of the delta
+
+            time is computed as data is read and any wraparound or cycling is also
+
+            included.  this input helps trap missing data or errors in cycling.
+
+            to turn off trapping, set the value to 1.0e30 or something similar.
+
+            default=1.5 
+
 vectors     paired vector field names
-=========== ============================================================
+=========== ==========================================================================================================================
 
 
 ``shr_strdata_nml`` contains a namelist variable, ``streams``, that specifies a list of input stream description files and for each file what years of data to use, and how to align the input stream time axis with the model run time axis. 

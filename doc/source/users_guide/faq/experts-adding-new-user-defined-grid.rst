@@ -1,5 +1,6 @@
 .. _faq-user-defined-grid:
 
+---------------------------
 Adding a user-defined grid
 ---------------------------
 
@@ -115,12 +116,14 @@ The process for mapping from the runoff grid to the ocean grid is currently unde
 
 6. If you are adding a new new lnd grid, create a new CLM surface dataset. (Otherwise you can skip this step.)
 - Generate mapping files for CLM surface dataset (since this is a non-standard grid).
+
 ::
 
    > cd $CCSMROOT/models/lnd/clm/tools/mkmapdata
    > ./mkmapdata.sh --gridfile <lnd SCRIP grid file> --res <atm resolution name> --gridtype global
 
 - Generate CLM surface dataset. Below is an example for a current day surface dataset (model year 2000).
+
 ::
    > cd  $CCSMROOT/models/lnd/clm/tools/mksurfdata_map
    > ./mksurfdata.pl -res usrspec -usr_gname <atm resolution name> -usr_gdate yymmdd -y 2000

@@ -1,5 +1,4 @@
-.. _cloning-a-case
-
+.. _cloning-a-case:
 
 **************************
 Cloning a Case
