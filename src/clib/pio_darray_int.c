@@ -1702,10 +1702,9 @@ int flush_buffer(int ncid, wmulti_buffer *wmb, bool flushtodisk)
     if (wmb->validvars > 0)
     {
         /* Write any data in the buffer. */
-        if ((ret = PIOc_write_darray_multi(ncid, wmb->vid,  wmb->ioid, wmb->validvars,
-                                           wmb->arraylen, wmb->data, wmb->frame,
-                                           wmb->fillvalue, flushtodisk)))
-            return pio_err(NULL, file, ret, __FILE__, __LINE__);
+        ret = PIOc_write_darray_multi(ncid, wmb->vid,  wmb->ioid, wmb->validvars,
+                                      wmb->arraylen, wmb->data, wmb->frame,
+                                      wmb->fillvalue, flushtodisk);
 
         wmb->validvars = 0;
 
@@ -1726,6 +1725,9 @@ int flush_buffer(int ncid, wmulti_buffer *wmb, bool flushtodisk)
         if (wmb->frame)
             brel(wmb->frame);
         wmb->frame = NULL;
+
+        if (ret)
+            return pio_err(NULL, file, ret, __FILE__, __LINE__);
     }
 
     return PIO_NOERR;
