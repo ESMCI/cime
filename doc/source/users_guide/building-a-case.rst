@@ -69,7 +69,7 @@ Input data is handled by the build process as follows:
 
 - ``check_input_data`` (called by ``case.build``) checks for the presence of the required input data files in the root directory ``$DIN_LOC_ROOT``. If all required data sets are found on local disk, then the build can proceed.
 
-- If any of the required input data sets are not found and cannot be downloaded from the server, the build script will abort and the files that are missing will be listed. At this point, you must obtain the required data from the input data server using check_input_data with the -export option.
+- If any of the required input data sets are not found locally, the build script will abort and the files that are missing will be listed. At this point, you must obtain the required data from the input data server using check_input_data with the -export option.
 
 The ``env_run.xml`` variables ``DIN_LOC_ROOT`` and ``DIN_LOC_ROOT_CLMFORC`` determine where you should expect input data to reside on local disk. See the `input data variables <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_.
 
