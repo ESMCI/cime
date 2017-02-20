@@ -378,9 +378,10 @@ int test_ceil2_pair()
     return 0;
 }
 
+/* Test the function that finds an MPI type to match a PIO type. */
 int test_find_mpi_type()
 {
-    int mpi_type;
+    MPI_Datatype mpi_type;
     int ret;
 
     /* This should not work. */

@@ -124,7 +124,7 @@ extern "C" {
                       const char *fname, int line);
 
     /* Find the MPI type that matches a PIO type. */
-    int find_mpi_type(int pio_type, int *mpi_type);
+    int find_mpi_type(int pio_type, MPI_Datatype *mpi_type);
 
     /* Check whether an IO type is valid for this build. */
     int iotype_is_valid(int iotype);

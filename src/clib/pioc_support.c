@@ -575,11 +575,11 @@ io_region *alloc_region(int ndims)
  * Find the MPI type for a PIO type.
  *
  * @param pio_type a PIO type, PIO_INT, PIO_FLOAT, etc.
- * @param mpi_type a pointer that will get the MPI type that
- * coresponds to the PIO type.
+ * @param mpi_type a pointer to MPI_Datatype that will get the MPI
+ * type that coresponds to the PIO type.
  * @returns 0 for success, error code otherwise.
  */
-int find_mpi_type(int pio_type, int *mpi_type)
+int find_mpi_type(int pio_type, MPI_Datatype *mpi_type)
 {
     /* Check input. */
     pioassert(mpi_type, "invalid input", __FILE__, __LINE__);
