@@ -75,7 +75,7 @@ int PIOc_write_darray_multi(int ncid, const int *vid, int ioid, int nvars, PIO_O
     int rlen;              /* total data buffer size. */
     var_desc_t *vdesc0;    /* pointer to var_desc structure for each var. */
     int mpierr;            /* Return code from MPI functions. */
-    int ierr = PIO_NOERR;  /* Return code. */
+    int ierr;              /* Return code. */
 
     /* Get the file info. */
     if ((ierr = pio_get_file(ncid, &file)))
@@ -124,7 +124,7 @@ int PIOc_write_darray_multi(int ncid, const int *vid, int ioid, int nvars, PIO_O
 
             /* Allocate memory for the variable buffer. */
             if (!(vdesc0->iobuf = bget((size_t)vsize * (size_t)rlen)))
-                piomemerror(*ios, (size_t)rlen * (size_t)vsize, __FILE__, __LINE__);
+                piomemerror(ios, (size_t)rlen * (size_t)vsize, __FILE__, __LINE__);
             LOG((3, "allocated %ld bytes for variable buffer", (size_t)rlen * (size_t)vsize));
 
             /* If data are missing for the BOX rearranger, insert fill values. */
@@ -142,7 +142,10 @@ int PIOc_write_darray_multi(int ncid, const int *vid, int ioid, int nvars, PIO_O
             }
         }
 
-        ierr = rearrange_comp2io(*ios, iodesc, array, vdesc0->iobuf, nvars);
+        /* Move data from compute to IO tasks. */
+        if ((ierr = rearrange_comp2io(ios, iodesc, array, vdesc0->iobuf, nvars)))
+            return pio_err(ios, file, ierr, __FILE__, __LINE__);
+
     }/*  this is wrong, need to think about it
          else{
          vdesc0->iobuf = array;
@@ -154,23 +157,24 @@ int PIOc_write_darray_multi(int ncid, const int *vid, int ioid, int nvars, PIO_O
     {
     case PIO_IOTYPE_NETCDF4P:
     case PIO_IOTYPE_PNETCDF:
-        ierr = pio_write_darray_multi_nc(file, nvars, vid, iodesc->ndims, iodesc->basetype,
-                                         iodesc->gsize, iodesc->maxregions, iodesc->firstregion,
-                                         iodesc->llen, iodesc->maxiobuflen, iodesc->num_aiotasks,
-                                         vdesc0->iobuf, frame);
+        if ((ierr = pio_write_darray_multi_nc(file, nvars, vid, iodesc->ndims, iodesc->basetype,
+                                              iodesc->gsize, iodesc->maxregions, iodesc->firstregion,
+                                              iodesc->llen, iodesc->maxiobuflen, iodesc->num_aiotasks,
+                                              vdesc0->iobuf, frame)))
+            return pio_err(ios, file, ierr, __FILE__, __LINE__);
         break;
     case PIO_IOTYPE_NETCDF4C:
     case PIO_IOTYPE_NETCDF:
-        ierr = pio_write_darray_multi_nc_serial(file, nvars, vid, iodesc->ndims, iodesc->basetype,
-                                                iodesc->gsize, iodesc->maxregions,
-                                                iodesc->firstregion, iodesc->llen, iodesc->maxiobuflen,
-                                                iodesc->num_aiotasks, vdesc0->iobuf, frame);
+        if ((ierr = pio_write_darray_multi_nc_serial(file, nvars, vid, iodesc->ndims, iodesc->basetype,
+                                                     iodesc->gsize, iodesc->maxregions,
+                                                     iodesc->firstregion, iodesc->llen, iodesc->maxiobuflen,
+                                                     iodesc->num_aiotasks, vdesc0->iobuf, frame)))
+            return pio_err(ios, file, ierr, __FILE__, __LINE__);
 
         break;
     default:
         return pio_err(NULL, NULL, PIO_EBADIOTYPE, __FILE__, __LINE__);
     }
-    LOG((3, "ierr = %d", ierr));
 
     /* For PNETCDF the iobuf is freed in flush_output_buffer() */
     if (file->iotype != PIO_IOTYPE_PNETCDF)
@@ -221,19 +225,21 @@ int PIOc_write_darray_multi(int ncid, const int *vid, int ioid, int nvars, PIO_O
         {
         case PIO_IOTYPE_PNETCDF:
         case PIO_IOTYPE_NETCDF4P:
-            ierr = pio_write_darray_multi_nc(file, nvars, vid,
-                                             iodesc->ndims, iodesc->basetype, iodesc->gsize,
-                                             iodesc->maxfillregions, iodesc->fillregion, iodesc->holegridsize,
-                                             iodesc->holegridsize, iodesc->num_aiotasks,
-                                             vdesc0->fillbuf, frame);
+            if ((ierr = pio_write_darray_multi_nc(file, nvars, vid,
+                                                  iodesc->ndims, iodesc->basetype, iodesc->gsize,
+                                                  iodesc->maxfillregions, iodesc->fillregion, iodesc->holegridsize,
+                                                  iodesc->holegridsize, iodesc->num_aiotasks,
+                                                  vdesc0->fillbuf, frame)))
+                return pio_err(ios, file, ierr, __FILE__, __LINE__);
             break;
         case PIO_IOTYPE_NETCDF4C:
         case PIO_IOTYPE_NETCDF:
-            ierr = pio_write_darray_multi_nc_serial(file, nvars, vid,
-                                                    iodesc->ndims, iodesc->basetype, iodesc->gsize,
-                                                    iodesc->maxfillregions, iodesc->fillregion, iodesc->holegridsize,
-                                                    iodesc->holegridsize, iodesc->num_aiotasks,
-                                                    vdesc0->fillbuf, frame);
+            if ((ierr = pio_write_darray_multi_nc_serial(file, nvars, vid,
+                                                         iodesc->ndims, iodesc->basetype, iodesc->gsize,
+                                                         iodesc->maxfillregions, iodesc->fillregion, iodesc->holegridsize,
+                                                         iodesc->holegridsize, iodesc->num_aiotasks,
+                                                         vdesc0->fillbuf, frame)))
+                return pio_err(ios, file, ierr, __FILE__, __LINE__);
             break;
         default:
             return pio_err(ios, file, PIO_EBADIOTYPE, __FILE__, __LINE__);
@@ -252,10 +258,11 @@ int PIOc_write_darray_multi(int ncid, const int *vid, int ioid, int nvars, PIO_O
     }
 
     /* Flush data to disk. */
-    if(file->iotype == PIO_IOTYPE_PNETCDF)
-        flush_output_buffer(file, flushtodisk, 0);
+    if (file->iotype == PIO_IOTYPE_PNETCDF)
+        if ((ierr = flush_output_buffer(file, flushtodisk, 0)))
+            return pio_err(ios, file, ierr, __FILE__, __LINE__);
 
-    return ierr;
+    return PIO_NOERR;
 }
 
 /**
@@ -297,8 +304,8 @@ int PIOc_write_darray(int ncid, int vid, int ioid, PIO_Offset arraylen, void *ar
     int needsflush = 0;    /* True if we need to flush buffer. */
     bufsize totfree;       /* Amount of free space in the buffer. */
     bufsize maxfree;       /* Max amount of free space in buffer. */
-    int ierr = PIO_NOERR;  /* Return code. */
     int mpierr = MPI_SUCCESS;  /* Return code from MPI functions. */
+    int ierr = PIO_NOERR;  /* Return code. */
 
     LOG((1, "PIOc_write_darray ncid = %d vid = %d ioid = %d arraylen = %d",
          ncid, vid, ioid, arraylen));
@@ -379,7 +386,7 @@ int PIOc_write_darray(int ncid, int vid, int ioid, PIO_Offset arraylen, void *ar
     {
         /* Allocate a buffer. */
         if (!(wmb->next = bget((bufsize)sizeof(wmulti_buffer))))
-            piomemerror(*ios, sizeof(wmulti_buffer), __FILE__, __LINE__);
+            piomemerror(ios, sizeof(wmulti_buffer), __FILE__, __LINE__);
         LOG((3, "allocated multi-buffer"));
 
         /* Set pointer to newly allocated buffer and initialize.*/
@@ -425,38 +432,39 @@ int PIOc_write_darray(int ncid, int vid, int ioid, PIO_Offset arraylen, void *ar
              maxfree, wmb->validvars, (1 + wmb->validvars) * arraylen * tsize, totfree));
 
         /* Collect a debug report about buffer. (Shouldn't we be able to turn this off??) */
-        cn_buffer_report(*ios, true);
+        cn_buffer_report(ios, true);
 
         /* If needsflush == 2 flush to disk otherwise just flush to io node. */
-        flush_buffer(ncid, wmb, needsflush == 2);
+        if ((ierr = flush_buffer(ncid, wmb, needsflush == 2)))
+            return pio_err(ios, file, ierr, __FILE__, __LINE__);
     }
 
     /* Get memory for data. */
     if (arraylen > 0)
     {
         if (!(wmb->data = bgetr(wmb->data, (1 + wmb->validvars) * arraylen * tsize)))
-            piomemerror(*ios, (1 + wmb->validvars) * arraylen * tsize, __FILE__, __LINE__);
+            piomemerror(ios, (1 + wmb->validvars) * arraylen * tsize, __FILE__, __LINE__);
         LOG((2, "got %ld bytes for data", (1 + wmb->validvars) * arraylen * tsize));
     }
 
     /* vid is an array of variable ids in the wmb list, grow the list
      * and add the new entry. */
     if (!(wmb->vid = bgetr(wmb->vid, sizeof(int) * (1 + wmb->validvars))))
-        piomemerror(*ios, (1 + wmb->validvars) * sizeof(int), __FILE__, __LINE__);
+        piomemerror(ios, (1 + wmb->validvars) * sizeof(int), __FILE__, __LINE__);
 
     /* wmb->frame is the record number, we assume that the variables
      * in the wmb list may not all have the same unlimited dimension
      * value although they usually do. */
     if (vdesc->record >= 0)
         if (!(wmb->frame = bgetr(wmb->frame, sizeof(int) * (1 + wmb->validvars))))
-            piomemerror(*ios, (1 + wmb->validvars) * sizeof(int), __FILE__, __LINE__);
+            piomemerror(ios, (1 + wmb->validvars) * sizeof(int), __FILE__, __LINE__);
 
     /* If we need a fill value, get it. */
     if (iodesc->needsfill)
     {
         /* Get memory to hold fill value. */
         if (!(wmb->fillvalue = bgetr(wmb->fillvalue, tsize * (1 + wmb->validvars))))
-            piomemerror(*ios, (1 + wmb->validvars) * tsize, __FILE__, __LINE__);
+            piomemerror(ios, (1 + wmb->validvars) * tsize, __FILE__, __LINE__);
 
         /* If the user passed a fill value, use that, otherwise use
          * the default fill value of the netCDF type. Copy the fill
@@ -520,7 +528,7 @@ int PIOc_write_darray(int ncid, int vid, int ioid, PIO_Offset arraylen, void *ar
     if (wmb->validvars >= iodesc->maxbytes / tsize)
         PIOc_sync(ncid);
 
-    return ierr;
+    return PIO_NOERR;
 }
 
 /**
@@ -577,7 +585,7 @@ int PIOc_read_darray(int ncid, int vid, int ioid, PIO_Offset arraylen,
 
             /* Allocate a buffer for one record. */
             if (!(iobuf = bget((size_t)tsize * rlen)))
-                piomemerror(*ios, rlen * (size_t)tsize, __FILE__, __LINE__);
+                piomemerror(ios, rlen * (size_t)tsize, __FILE__, __LINE__);
         }
     }
     else
@@ -590,11 +598,13 @@ int PIOc_read_darray(int ncid, int vid, int ioid, PIO_Offset arraylen,
     {
     case PIO_IOTYPE_NETCDF:
     case PIO_IOTYPE_NETCDF4C:
-        ierr = pio_read_darray_nc_serial(file, iodesc, vid, iobuf);
+        if ((ierr = pio_read_darray_nc_serial(file, iodesc, vid, iobuf)))
+                return pio_err(ios, file, ierr, __FILE__, __LINE__);
         break;
     case PIO_IOTYPE_PNETCDF:
     case PIO_IOTYPE_NETCDF4P:
-        ierr = pio_read_darray_nc(file, iodesc, vid, iobuf);
+        if ((ierr = pio_read_darray_nc(file, iodesc, vid, iobuf)))
+            return pio_err(ios, file, ierr, __FILE__, __LINE__);
         break;
     default:
         return pio_err(NULL, NULL, PIO_EBADIOTYPE, __FILE__, __LINE__);
@@ -603,12 +613,13 @@ int PIOc_read_darray(int ncid, int vid, int ioid, PIO_Offset arraylen,
     /* If a rearranger was specified, rearrange the data. */
     if (iodesc->rearranger > 0)
     {
-        ierr = rearrange_io2comp(*ios, iodesc, iobuf, array);
+        if ((ierr = rearrange_io2comp(ios, iodesc, iobuf, array)))
+            return pio_err(ios, file, ierr, __FILE__, __LINE__);
 
         /* Free the buffer. */
         if (rlen > 0)
             brel(iobuf);
     }
 
-    return ierr;
+    return PIO_NOERR;
 }
