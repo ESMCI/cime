@@ -716,7 +716,7 @@ extern "C" {
 
     /* Read a netCDF decomposition file. */
     int PIOc_read_nc_decomp(const char *filename, int iosysid, int *ioid, MPI_Comm comm,
-                            int basetype, char *title, char *history, int *fortran_order);
+                            int pio_type, char *title, char *history, int *fortran_order);
     
     /* Initializing IO system. */
     int PIOc_Init_Async(MPI_Comm world, int num_io_procs, int *io_proc_list, int component_count,
