@@ -572,6 +572,67 @@ io_region *alloc_region(int ndims)
 }
 
 /**
+ * Find the MPI type for a PIO type.
+ *
+ * @param pio_type a PIO type, PIO_INT, PIO_FLOAT, etc.
+ * @param mpi_type a pointer that will get the MPI type that
+ * coresponds to the PIO type.
+ * @returns 0 for success, error code otherwise.
+ */
+int find_mpi_type(int pio_type, int *mpi_type)
+{
+    /* Check input. */
+    pioassert(mpi_type, "invalid input", __FILE__, __LINE__);
+
+    /* Decide on the base type. */
+    switch(pio_type)
+    {
+    case PIO_BYTE:
+        *mpi_type = MPI_BYTE;
+        break;
+    case PIO_CHAR:
+        *mpi_type = MPI_CHAR;
+        break;
+    case PIO_SHORT:
+        *mpi_type = MPI_SHORT;
+        break;
+    case PIO_INT:
+        *mpi_type = MPI_INT;
+        break;
+    case PIO_FLOAT:
+        *mpi_type = MPI_FLOAT;
+        break;
+    case PIO_DOUBLE:
+        *mpi_type = MPI_DOUBLE;
+        break;
+#ifdef _NETCDF4
+    case PIO_UBYTE:
+        *mpi_type = MPI_UNSIGNED_CHAR;
+        break;
+    case PIO_USHORT:
+        *mpi_type = MPI_UNSIGNED_SHORT;
+        break;
+    case PIO_UINT:
+        *mpi_type = MPI_UNSIGNED;
+        break;
+    case PIO_INT64:
+        *mpi_type = MPI_LONG_LONG;
+        break;
+    case PIO_UINT64:
+        *mpi_type = MPI_UNSIGNED_LONG_LONG;
+        break;
+    case PIO_STRING:
+        *mpi_type = MPI_CHAR;
+        break;
+#endif /* _NETCDF4 */
+    default:
+        return PIO_EBADTYPE;
+    }
+
+    return PIO_NOERR;
+}
+
+/**
  * Allocate space for an IO description struct.
  *
  * @param ios pointer to the IO system info.
@@ -982,6 +1043,7 @@ int PIOc_write_nc_decomp(const char *filename, int iosysid, int ioid, MPI_Comm c
  * @param ioid pointer that will get the newly-assigned ID of the IO
  * description. The ioid is needed to later free the decomposition.
  * @param comm an MPI communicator.
+ * @param pio_type the PIO type to be used as the type for the data.
  * @param title pointer that will get optial title attribute for the
  * file. Will be less than NC_MAX_NAME + 1 if provided. Ignored if
  * NULL.
@@ -993,7 +1055,7 @@ int PIOc_write_nc_decomp(const char *filename, int iosysid, int ioid, MPI_Comm c
  * @returns 0 for success, error code otherwise.
  */
 int PIOc_read_nc_decomp(const char *filename, int iosysid, int *ioidp, MPI_Comm comm,
-                        char *title, char *history, int *fortran_order)
+                        int pio_type, char *title, char *history, int *fortran_order)
 {
     iosystem_desc_t *ios; /* Pointer to the IO system info. */
     int ndims;            /* The number of data dims (except unlim). */
@@ -1004,9 +1066,9 @@ int PIOc_read_nc_decomp(const char *filename, int iosysid, int *ioidp, MPI_Comm 
     int num_tasks_decomp; /* The number of tasks for this decomp. */
     int size;             /* Size of comm. */
     int my_rank;          /* Task rank in comm. */
+    int mpi_type;         /* Will be used as the basetype in iodesc. */
     char source_in[PIO_MAX_NAME + 1];  /* Text metadata in decomp file. */
     char version_in[PIO_MAX_NAME + 1]; /* Text metadata in decomp file. */
-    int basetype = PIO_INT;
     int mpierr;
     int ret;
 
@@ -1018,7 +1080,12 @@ int PIOc_read_nc_decomp(const char *filename, int iosysid, int *ioidp, MPI_Comm 
     if (!filename || !ioidp)
         return pio_err(ios, NULL, PIO_EINVAL, __FILE__, __LINE__);
 
-    LOG((1, "PIOc_read_nc_decomp filename = %s iosysid = %d", filename, iosysid));
+    LOG((1, "PIOc_read_nc_decomp filename = %s iosysid = %d pio_type = %d",
+         filename, iosysid, pio_type));
+
+    /* Get the MPI type. */
+    if ((ret = find_mpi_type(pio_type, &mpi_type)))
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);        
 
     /* Get the communicator size and task rank. */
     if ((mpierr = MPI_Comm_size(comm, &size)))
@@ -1051,7 +1118,7 @@ int PIOc_read_nc_decomp(const char *filename, int iosysid, int *ioidp, MPI_Comm 
             compmap[e] = full_map[my_rank * max_maplen + e];
 
         /* Initialize the decomposition. */
-        ret = PIOc_InitDecomp(iosysid, basetype, ndims, global_dimlen, task_maplen[my_rank],
+        ret = PIOc_InitDecomp(iosysid, mpi_type, ndims, global_dimlen, task_maplen[my_rank],
                               compmap, ioidp, NULL, NULL, NULL);
     }
 
