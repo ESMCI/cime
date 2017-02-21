@@ -1066,7 +1066,8 @@ int PIOc_read_nc_decomp(const char *filename, int iosysid, int *ioidp, MPI_Comm 
     int num_tasks_decomp; /* The number of tasks for this decomp. */
     int size;             /* Size of comm. */
     int my_rank;          /* Task rank in comm. */
-    int mpi_type;         /* Will be used as the basetype in iodesc. */
+    MPI_Datatype mpi_type;             /* Will be used as the basetype in iodesc. */
+    int mpi_type_int;                  /* int version of mpi_type. */
     char source_in[PIO_MAX_NAME + 1];  /* Text metadata in decomp file. */
     char version_in[PIO_MAX_NAME + 1]; /* Text metadata in decomp file. */
     int mpierr;
@@ -1083,9 +1084,11 @@ int PIOc_read_nc_decomp(const char *filename, int iosysid, int *ioidp, MPI_Comm 
     LOG((1, "PIOc_read_nc_decomp filename = %s iosysid = %d pio_type = %d",
          filename, iosysid, pio_type));
 
-    /* Get the MPI type. */
+    /* Get the MPI type. We need it as an int. */
     if ((ret = find_mpi_type(pio_type, &mpi_type)))
-        return pio_err(ios, NULL, ret, __FILE__, __LINE__);        
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+    mpi_type_int = mpi_type;
+    LOG((2, "mpi_type = %d mpi_type_int = %d", mpi_type, mpi_type_int));
 
     /* Get the communicator size and task rank. */
     if ((mpierr = MPI_Comm_size(comm, &size)))
@@ -1118,7 +1121,7 @@ int PIOc_read_nc_decomp(const char *filename, int iosysid, int *ioidp, MPI_Comm 
             compmap[e] = full_map[my_rank * max_maplen + e] + 1;
 
         /* Initialize the decomposition. */
-        ret = PIOc_InitDecomp(iosysid, mpi_type, ndims, global_dimlen, task_maplen[my_rank],
+        ret = PIOc_InitDecomp(iosysid, pio_type, ndims, global_dimlen, task_maplen[my_rank],
                               compmap, ioidp, NULL, NULL, NULL);
     }
 

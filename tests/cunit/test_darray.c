@@ -234,16 +234,17 @@ int test_decomp_read_write(int iosysid, int ioid, int num_flavors, int *flavor, 
             /* Get the IO desc, which describes the decomposition. */
             if (!(iodesc = pio_get_iodesc_from_id(ioid2)))
                 return pio_err(ios, NULL, PIO_EBADID, __FILE__, __LINE__);
-            if (iodesc->ioid != ioid2 || iodesc->maplen != TARGET_NTASKS || iodesc->ndims != NDIM2 || iodesc->nrecvs != 1 ||
-                iodesc->ndof != TARGET_NTASKS || iodesc->num_aiotasks != TARGET_NTASKS || iodesc->rearranger != PIO_REARR_SUBSET ||
-                iodesc->maxregions != 1 || iodesc->needsfill || iodesc->maxbytes != 2621440 || iodesc->basetype != MPI_INT || iodesc->llen != 4)
+            if (iodesc->ioid != ioid2 || iodesc->maplen != TARGET_NTASKS || iodesc->ndims != NDIM2 ||
+                iodesc->nrecvs != 1 || iodesc->ndof != TARGET_NTASKS || iodesc->num_aiotasks != TARGET_NTASKS
+                || iodesc->rearranger != PIO_REARR_SUBSET || iodesc->maxregions != 1 ||
+                iodesc->needsfill || iodesc->basetype != MPI_INTEGER)
                 return ERR_WRONG;
             for (int e = 0; e < iodesc->maplen; e++)
                 if (iodesc->map[e] != my_rank * 4 + e + 1)
                     return ERR_WRONG;
             if (iodesc->dimlen[0] != X_DIM_LEN || iodesc->dimlen[1] != Y_DIM_LEN)
                 return ERR_WRONG;
-            printf("%d in my test iodesc->maxiobuflen = %d iodesc->maxbytes = %d\n", my_rank, iodesc->maxiobuflen, iodesc->maxbytes);
+            printf("%d in my test iodesc->maxiobuflen = %d\n", my_rank, iodesc->maxiobuflen);
         }
         
 
