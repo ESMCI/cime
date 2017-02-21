@@ -45,10 +45,6 @@ char dim_name[NDIM][PIO_MAX_NAME + 1] = {"timestep", "x", "y"};
 /* Length of the dimensions in the sample data. */
 int dim_len[NDIM] = {NC_UNLIMITED, X_DIM_LEN, Y_DIM_LEN};
 
-#define DIM_NAME "dim"
-#define NDIM1 1
-#define DIM_LEN 4
-
 /* Create the decomposition to divide the 3-dimensional sample data
  * between the 4 tasks. For the purposes of decomposition we are only
  * concerned with 2 dimensions - we ignore the unlimited dimension.
@@ -56,11 +52,10 @@ int dim_len[NDIM] = {NC_UNLIMITED, X_DIM_LEN, Y_DIM_LEN};
  * @param ntasks the number of available tasks
  * @param my_rank rank of this task.
  * @param iosysid the IO system ID.
- * @param dim_len an array of length 2 with the dimension sizes.
  * @param ioid a pointer that gets the ID of this decomposition.
  * @returns 0 for success, error code otherwise.
  **/
-int create_decomposition_2d(int ntasks, int my_rank, int iosysid, int dim1_len, int *ioid)
+int create_decomposition_2d(int ntasks, int my_rank, int iosysid, int *ioid)
 {
     PIO_Offset elements_per_pe;     /* Array elements per processing unit. */
     PIO_Offset *compdof;  /* The decomposition mapping. */
@@ -240,7 +235,7 @@ int test_decomp_read_write(int iosysid, int ioid, int num_flavors, int *flavor, 
                 iodesc->needsfill || iodesc->basetype != MPI_INTEGER)
                 return ERR_WRONG;
             for (int e = 0; e < iodesc->maplen; e++)
-                if (iodesc->map[e] != my_rank * 4 + e + 1)
+                if (iodesc->map[e] != my_rank * iodesc->maplen + e + 1)
                     return ERR_WRONG;
             if (iodesc->dimlen[0] != X_DIM_LEN || iodesc->dimlen[1] != Y_DIM_LEN)
                 return ERR_WRONG;
@@ -281,7 +276,7 @@ int test_all_darray(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_
     printf("%d Testing darray.\n", my_rank);
         
     /* Decompose the data over the tasks. */
-    if ((ret = create_decomposition_2d(TARGET_NTASKS, my_rank, iosysid, DIM_LEN, &ioid)))
+    if ((ret = create_decomposition_2d(TARGET_NTASKS, my_rank, iosysid, &ioid)))
         return ret;
 
     /* Test decomposition read/write. */
