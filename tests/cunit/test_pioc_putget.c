@@ -516,9 +516,9 @@ int putget_write_var1(int ncid, int *varid, PIO_Offset *index, int flavor)
     /* These should not work. */
     if (PIOc_put_var1_text(ncid, varid[1], index, NULL) != PIO_EINVAL)
         return ERR_WRONG;
-    if (PIOc_put_var1_text(ncid + 42, varid[1], index, text) != PIO_EBADID)
+    if (PIOc_put_var1_text(ncid + TEST_VAL_42, varid[1], index, text) != PIO_EBADID)
         return ERR_WRONG;
-    if (PIOc_put_var1_text(ncid, varid[1] + 42, index, text) != PIO_ENOTVAR)
+    if (PIOc_put_var1_text(ncid, varid[1] + TEST_VAL_42, index, text) != PIO_ENOTVAR)
         return ERR_WRONG;
 
     if ((ret = PIOc_put_var1_text(ncid, varid[1], index, text)))
@@ -568,9 +568,9 @@ int putget_write_var1_nt(int ncid, int *varid, PIO_Offset *index, int flavor)
     /* These should not work. */
     if (PIOc_put_var1(ncid, varid[1], index, NULL) != PIO_EINVAL)
         return ERR_WRONG;
-    if (PIOc_put_var1(ncid + 42, varid[1], index, text) != PIO_EBADID)
+    if (PIOc_put_var1(ncid + TEST_VAL_42, varid[1], index, text) != PIO_EBADID)
         return ERR_WRONG;
-    if (PIOc_put_var1(ncid, varid[1] + 42, index, text) != PIO_ENOTVAR)
+    if (PIOc_put_var1(ncid, varid[1] + TEST_VAL_42, index, text) != PIO_ENOTVAR)
         return ERR_WRONG;
 
     if ((ret = PIOc_put_var1(ncid, varid[0], index, (signed char *)byte_array)))
@@ -1050,9 +1050,9 @@ int putget_read_var1(int ncid, int *varid, PIO_Offset *index, int flavor)
     int ret;
 
     /* These should not work. */
-    if (PIOc_get_var1_schar(ncid + 42, varid[0], index, &byte_data_in) != PIO_EBADID)
+    if (PIOc_get_var1_schar(ncid + TEST_VAL_42, varid[0], index, &byte_data_in) != PIO_EBADID)
         return ERR_WRONG;
-    if (PIOc_get_var1_schar(ncid, varid[0] + 42, index, &byte_data_in) != PIO_ENOTVAR)
+    if (PIOc_get_var1_schar(ncid, varid[0] + TEST_VAL_42, index, &byte_data_in) != PIO_ENOTVAR)
         return ERR_WRONG;
     if (PIOc_get_var1_schar(ncid, varid[0], index, NULL) != PIO_EINVAL)
         return ERR_WRONG;
@@ -1139,9 +1139,9 @@ int putget_read_var1_nt(int ncid, int *varid, PIO_Offset *index, int flavor)
     int ret;
 
     /* These should not work. */
-    if (PIOc_get_var1(ncid + 42, varid[0], index, &byte_data_in) != PIO_EBADID)
+    if (PIOc_get_var1(ncid + TEST_VAL_42, varid[0], index, &byte_data_in) != PIO_EBADID)
         return ERR_WRONG;
-    if (PIOc_get_var1(ncid, varid[0] + 42, index, &byte_data_in) != PIO_ENOTVAR)
+    if (PIOc_get_var1(ncid, varid[0] + TEST_VAL_42, index, &byte_data_in) != PIO_ENOTVAR)
         return ERR_WRONG;
     if (PIOc_get_var1(ncid, varid[0], index, NULL) != PIO_EINVAL)
         return ERR_WRONG;
@@ -1784,7 +1784,7 @@ int create_putget_file(int iosysid, int access, int unlim, int flavor, int *dim_
     int ret;
 
     /* This should not work. */
-    if (PIOc_createfile(iosysid + 42, &ncid, &flavor, filename, PIO_CLOBBER) != PIO_EBADID)
+    if (PIOc_createfile(iosysid + TEST_VAL_42, &ncid, &flavor, filename, PIO_CLOBBER) != PIO_EBADID)
         return ERR_WRONG;
 
     /* Create the netCDF output file. */
@@ -2008,7 +2008,7 @@ int test_putget(int iosysid, int num_flavors, int *flavor, int my_rank,
                 }
 
                 /* Check for bad input handling. */
-                if (PIOc_sync(ncid + 42) != PIO_EBADID)
+                if (PIOc_sync(ncid + TEST_VAL_42) != PIO_EBADID)
                     return ret;
 
                 /* Make sure all data are written (pnetcdf needs this). */

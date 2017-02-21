@@ -105,7 +105,7 @@ int create_decomposition(int ntasks, int my_rank, int iosysid, int dim1_len, int
         compdof[i] = my_rank * elements_per_pe + i + 1;
 
     /* These should fail. */
-    if (PIOc_InitDecomp(iosysid + 42, PIO_FLOAT, NDIM1, dim_len, elements_per_pe,
+    if (PIOc_InitDecomp(iosysid + TEST_VAL_42, PIO_FLOAT, NDIM1, dim_len, elements_per_pe,
                         compdof, ioid, NULL, NULL, NULL) != PIO_EBADID)
         ERR(ERR_WRONG);
     if (PIOc_InitDecomp(iosysid, PIO_FLOAT, NDIM1, bad_dim_len, elements_per_pe,
@@ -356,9 +356,9 @@ int check_atts(int my_rank, int ncid, int flavor, MPI_Comm test_comm)
         return ERR_AWFUL;
 
     /* These should not work. */
-    if (PIOc_get_att_int(ncid + 42, NC_GLOBAL, ATT_NAME, &att_int_value) != PIO_EBADID)
+    if (PIOc_get_att_int(ncid + TEST_VAL_42, NC_GLOBAL, ATT_NAME, &att_int_value) != PIO_EBADID)
         return ERR_WRONG;
-    if (PIOc_get_att_int(ncid, 42, ATT_NAME, &att_int_value) != PIO_ENOTVAR)
+    if (PIOc_get_att_int(ncid, TEST_VAL_42, ATT_NAME, &att_int_value) != PIO_ENOTVAR)
         return ERR_WRONG;
     if (PIOc_get_att_int(ncid, NC_GLOBAL, NULL, &att_int_value) != PIO_EINVAL)
         return ERR_WRONG;
@@ -693,7 +693,7 @@ int define_metadata(int ncid, int my_rank, int flavor)
         return ERR_WRONG;
     if (PIOc_def_var(ncid, too_long_name, PIO_INT, NDIM, dimids, NULL) != PIO_EINVAL)
         return ERR_WRONG;
-    if (PIOc_def_var(ncid, too_long_name, 42, NDIM, dimids, &varid) != PIO_EINVAL)
+    if (PIOc_def_var(ncid, too_long_name, TEST_VAL_42, NDIM, dimids, &varid) != PIO_EINVAL)
         return ERR_WRONG;
     if (PIOc_def_var(ncid, too_long_name, PIO_LONG_INTERNAL, NDIM, dimids, &varid) != PIO_EINVAL)
         return ERR_WRONG;
@@ -722,11 +722,11 @@ int define_metadata(int ncid, int my_rank, int flavor)
     int fill_mode;
 
     /* These should not work. */
-    if (PIOc_def_var_fill(ncid + 42, varid, NC_FILL, &int_fill) != PIO_EBADID)
+    if (PIOc_def_var_fill(ncid + TEST_VAL_42, varid, NC_FILL, &int_fill) != PIO_EBADID)
         return ERR_WRONG;
-    if (PIOc_def_var_fill(ncid, varid + 42, NC_FILL, &int_fill) != PIO_ENOTVAR)
+    if (PIOc_def_var_fill(ncid, varid + TEST_VAL_42, NC_FILL, &int_fill) != PIO_ENOTVAR)
         return ERR_WRONG;
-    if (PIOc_def_var_fill(ncid, varid, NC_FILL + 42, &int_fill) != PIO_EINVAL)
+    if (PIOc_def_var_fill(ncid, varid, NC_FILL + TEST_VAL_42, &int_fill) != PIO_EINVAL)
         return ERR_WRONG;
     if (PIOc_def_var_fill(ncid, varid, NC_FILL, NULL) != PIO_EINVAL)
         return ERR_WRONG;
@@ -736,9 +736,9 @@ int define_metadata(int ncid, int my_rank, int flavor)
         return ret;
     
     /* These should not work. */
-    if (PIOc_inq_var_fill(ncid + 42, varid, &fill_mode, &int_fill_in) != PIO_EBADID)
+    if (PIOc_inq_var_fill(ncid + TEST_VAL_42, varid, &fill_mode, &int_fill_in) != PIO_EBADID)
         return ERR_WRONG;
-    if (PIOc_inq_var_fill(ncid, varid + 42, &fill_mode, &int_fill_in) != PIO_ENOTVAR)
+    if (PIOc_inq_var_fill(ncid, varid + TEST_VAL_42, &fill_mode, &int_fill_in) != PIO_ENOTVAR)
         return ERR_WRONG;
     
     /* Check the fill value. */
@@ -870,11 +870,11 @@ int test_names(int iosysid, int num_flavors, int *flavor, int my_rank,
         }
 
         /* These should not work. */
-        if (PIOc_setframe(ncid + 42, 0, 0) != PIO_EBADID)
+        if (PIOc_setframe(ncid + TEST_VAL_42, 0, 0) != PIO_EBADID)
             return ERR_WRONG;
         if (PIOc_setframe(ncid, -1, 0) != PIO_EINVAL)
             return ERR_WRONG;
-        if (PIOc_advanceframe(ncid + 42, 0) != PIO_EBADID)
+        if (PIOc_advanceframe(ncid + TEST_VAL_42, 0) != PIO_EBADID)
             return ERR_WRONG;
         if (PIOc_advanceframe(ncid, -1) != PIO_EINVAL)
             return ERR_WRONG;
@@ -884,9 +884,9 @@ int test_names(int iosysid, int num_flavors, int *flavor, int my_rank,
             ERR(ret);
 
         /* These should not work. */
-        if (PIOc_put_att_int(ncid + 42, NC_GLOBAL, ATT_NAME, PIO_INT, 1, &att_val) != PIO_EBADID)
+        if (PIOc_put_att_int(ncid + TEST_VAL_42, NC_GLOBAL, ATT_NAME, PIO_INT, 1, &att_val) != PIO_EBADID)
             ERR(ERR_WRONG);
-        if (PIOc_put_att_int(ncid, 42, ATT_NAME, PIO_INT, 1, &att_val) != PIO_ENOTVAR)
+        if (PIOc_put_att_int(ncid, TEST_VAL_42, ATT_NAME, PIO_INT, 1, &att_val) != PIO_ENOTVAR)
             ERR(ERR_WRONG);
         if (PIOc_put_att_int(ncid, NC_GLOBAL, NULL, PIO_INT, 1, &att_val) != PIO_EINVAL)
             ERR(ERR_WRONG);
@@ -896,7 +896,7 @@ int test_names(int iosysid, int num_flavors, int *flavor, int my_rank,
             ERR(ERR_WRONG);
         if (PIOc_put_att_int(ncid, NC_GLOBAL, ATT_NAME, PIO_INT, -1, &att_val) != PIO_EINVAL)
             ERR(ERR_WRONG);
-        if (PIOc_put_att_int(ncid, NC_GLOBAL, ATT_NAME, 42, 1, &att_val) != PIO_EBADTYPE)
+        if (PIOc_put_att_int(ncid, NC_GLOBAL, ATT_NAME, TEST_VAL_42, 1, &att_val) != PIO_EBADTYPE)
             ERR(ERR_WRONG);
         if (PIOc_put_att_int(ncid, NC_GLOBAL, ATT_NAME, PIO_LONG_INTERNAL, 1, &att_val) != PIO_EBADTYPE)
             ERR(ERR_WRONG);
@@ -1059,9 +1059,9 @@ int test_deletefile(int iosysid, int num_flavors, int *flavor, int my_rank)
         int old_method;
 
         /* These should fail. */
-        if (PIOc_set_iosystem_error_handling(iosysid + 42, PIO_RETURN_ERROR, &old_method) != PIO_EBADID)
+        if (PIOc_set_iosystem_error_handling(iosysid + TEST_VAL_42, PIO_RETURN_ERROR, &old_method) != PIO_EBADID)
             return ERR_WRONG;
-        if (PIOc_set_iosystem_error_handling(iosysid, PIO_RETURN_ERROR + 42, &old_method) != PIO_EINVAL)
+        if (PIOc_set_iosystem_error_handling(iosysid, PIO_RETURN_ERROR + TEST_VAL_42, &old_method) != PIO_EINVAL)
             return ERR_WRONG;
 
         /* Set error handling. */
@@ -1077,7 +1077,7 @@ int test_deletefile(int iosysid, int num_flavors, int *flavor, int my_rank)
 
         printf("%d testing delete for file %s with format %d...\n",
                my_rank, filename, flavor[fmt]);
-        int bad_iotype = 42;
+        int bad_iotype = TEST_VAL_42;
         if (PIOc_createfile(iosysid, &ncid, &bad_iotype, filename, PIO_CLOBBER) != PIO_EINVAL)
             return ERR_WRONG;
         if ((ret = PIOc_createfile(iosysid, &ncid, &(flavor[fmt]), filename, PIO_CLOBBER)))
@@ -1093,7 +1093,7 @@ int test_deletefile(int iosysid, int num_flavors, int *flavor, int my_rank)
             ERR(ret);
 
         /* This should not work. */
-        if (PIOc_deletefile(iosysid + 42, filename) != PIO_EBADID)
+        if (PIOc_deletefile(iosysid + TEST_VAL_42, filename) != PIO_EBADID)
             ERR(ERR_WRONG);
 
         /* Now delete the file. */
@@ -1237,7 +1237,7 @@ int test_nc4(int iosysid, int num_flavors, int *flavor, int my_rank)
         /* For netCDF-4 files, set the chunksize to improve performance. */
         if (flavor[fmt] == PIO_IOTYPE_NETCDF4C || flavor[fmt] == PIO_IOTYPE_NETCDF4P)
         {
-            unsigned long long too_big_chunksize[NDIM] = {(unsigned long long)NC_MAX_INT64 + 42, X_DIM_LEN/2, Y_DIM_LEN/2};
+            unsigned long long too_big_chunksize[NDIM] = {(unsigned long long)NC_MAX_INT64 + TEST_VAL_42, X_DIM_LEN/2, Y_DIM_LEN/2};
             if (PIOc_def_var_chunking(ncid, 0, NC_CHUNKED, (MPI_Offset *)too_big_chunksize) == PIO_NOERR)
                 ERR(ret);
 
@@ -1451,7 +1451,7 @@ int test_decomp_internal(int my_test_size, int my_rank, int iosysid, int dim_len
     /* These should not work. */
     memset(too_long_name, 74, PIO_MAX_NAME * 5);
     too_long_name[PIO_MAX_NAME * 5] = 0;
-    if (pioc_write_nc_decomp_int(iosysid + 42, nc_filename, NDIM1, global_dimlen,
+    if (pioc_write_nc_decomp_int(iosysid + TEST_VAL_42, nc_filename, NDIM1, global_dimlen,
                                  TARGET_NTASKS, task_maplen, (int *)map, title,
                                  history, 0) != PIO_EBADID)
         return ERR_WRONG;
@@ -1498,7 +1498,7 @@ int test_decomp_internal(int my_test_size, int my_rank, int iosysid, int dim_len
     int fortran_order_in;
 
     /* These should not work. */
-    if (pioc_read_nc_decomp_int(iosysid + 42, nc_filename, &ndims_in, &global_dimlen_in,
+    if (pioc_read_nc_decomp_int(iosysid + TEST_VAL_42, nc_filename, &ndims_in, &global_dimlen_in,
                                 &num_tasks_in, &task_maplen_in, &max_maplen_in, &map_in, title_in,
                                 history_in, source_in, version_in, &fortran_order_in) != PIO_EBADID)
         return ERR_WRONG;
@@ -1656,11 +1656,11 @@ int test_decomp_public(int my_test_size, int my_rank, int iosysid, int dim_len,
     char *history = "Added to PIO automatic testing by Ed in February 2017.";
 
     /* These should not work. */
-    if (PIOc_write_nc_decomp(nc_filename, iosysid + 42, ioid, test_comm, title, history, 0) != PIO_EBADID)
+    if (PIOc_write_nc_decomp(nc_filename, iosysid + TEST_VAL_42, ioid, test_comm, title, history, 0) != PIO_EBADID)
         return ERR_WRONG;
     if (PIOc_write_nc_decomp(NULL, iosysid, ioid, test_comm, title, history, 0) != PIO_EINVAL)
         return ERR_WRONG;
-    if (PIOc_write_nc_decomp(nc_filename, iosysid, ioid + 42, test_comm, title, history, 0) != PIO_EBADID)
+    if (PIOc_write_nc_decomp(nc_filename, iosysid, ioid + TEST_VAL_42, test_comm, title, history, 0) != PIO_EBADID)
         return ERR_WRONG;
 
     /* Write a netCDF decomp file for this iosystem. */
@@ -1673,8 +1673,8 @@ int test_decomp_public(int my_test_size, int my_rank, int iosysid, int dim_len,
     int fortran_order_in;
 
     /* These should not work. */
-    if (PIOc_read_nc_decomp(nc_filename, iosysid + 42, &ioid_in, test_comm, PIO_INT,
-                            title_in, history_in, &fortran_order_in) != PIO_EBADID)
+    if (PIOc_read_nc_decomp(nc_filename, iosysid + TEST_VAL_42, &ioid_in, test_comm, title_in,
+                            history_in, &fortran_order_in) != PIO_EBADID)
         return ret;
     if (PIOc_read_nc_decomp(NULL, iosysid, &ioid_in, test_comm, PIO_INT, title_in,
                             history_in, &fortran_order_in) != PIO_EINVAL)
