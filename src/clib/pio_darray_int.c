@@ -730,27 +730,27 @@ int pio_write_darray_multi_nc(file_desc_t *file, int nvars, const int *vid, int 
  * netCDF-4 serial iotypes. Parallel iotypes use
  * pio_write_darray_multi_nc().
  *
- * This routine is used if aggregation is enabled, data is already on the
- * io-tasks
+ * This routine is used if aggregation is enabled, data is already on
+ * the io-tasks.
  *
- * @param file: a pointer to the open file descriptor for the file
- * that will be written to
- * @param nvars: the number of variables to be written with this
- * decomposition
- * @param vid: an array of the variable ids to be written
- * @param iodesc_ndims: the number of dimensions explicitly in the
- * iodesc
- * @param basetype : the basic type of the minimal data unit
- * @param gsize : array of the global dimensions of the field to be
+ * @param file a pointer to the open file descriptor for the file
+ * that will be written to.
+ * @param nvars the number of variables to be written with this
+ * decomposition.
+ * @param vid an array of the variable ids to be written
+ * @param iodesc_ndims the number of dimensions explicitly in the
+ * iodesc.
+ * @param basetype the basic type of the minimal data unit
+ * @param gsize array of the global dimensions of the field to be
  * written. (Not used ???)
- * @param maxregions : max number of blocks to be written from this
- * iotask
- * @param firstregion : pointer to the first element of a linked
+ * @param maxregions max number of blocks to be written from this
+ * iotask.
+ * @param firstregion pointer to the first element of a linked
  * list of region descriptions. May be NULL.
- * @param llen : length of the iobuffer on this task for a single
- * field
- * @param maxiobuflen : maximum llen participating
- * @param num_aiotasks : actual number of iotasks participating
+ * @param llen length of the iobuffer on this task for a single
+ * field.
+ * @param maxiobuflen maximum llen participating
+ * @param num_aiotasks actual number of iotasks participating
  * @param iobuf the buffer to be written from this mpi task. May be
  * null. for example we have 8 ionodes and a distributed array with
  * global size 4, then at least 4 nodes will have a null iobuf. In
@@ -758,8 +758,8 @@ int pio_write_darray_multi_nc(file_desc_t *file, int nvars, const int *vid, int 
  * on each io task and so if the total number of bytes to write is
  * less than blocksize*numiotasks then some iotasks will have a NULL
  * iobuf.
- * @param frame : the frame or record dimension for each of the
- * nvars variables in iobuf
+ * @param frame the record dimension for each of the nvars variables
+ * in iobuf.
  * @return 0 for success, error code otherwise.
  * @ingroup PIO_write_darray
  */
@@ -828,6 +828,7 @@ int pio_write_darray_multi_nc_serial(file_desc_t *file, int nvars, const int *vi
         return check_mpi(file, mpierr, __FILE__, __LINE__);
     LOG((3, "fndims = %d tsize = %d", fndims, tsize));
 
+    /* Only IO tasks participate in this code. */
     if (ios->ioproc)
     {
         io_region *region;
@@ -839,6 +840,8 @@ int pio_write_darray_multi_nc_serial(file_desc_t *file, int nvars, const int *vi
 
         LOG((3, "maxregions = %d", maxregions));
 
+        /* Fill the tmp_start and tmp_count arrays, which contain the
+         * start and count arrays for all regions. */
         for (int regioncnt = 0; regioncnt < maxregions; regioncnt++)
         {
             /* Initialize the start/count arrays for this region to 0. */
@@ -881,15 +884,21 @@ int pio_write_darray_multi_nc_serial(file_desc_t *file, int nvars, const int *vi
             } /* endif region */
         } /* next regioncnt */
 
+        /* Tasks other than 0 will send their data to task 0. */
         if (ios->io_rank > 0)
         {
-            /* Tasks other than 0 will send their data to task 0. */
+            /* Do a handshake. */
             if ((mpierr = MPI_Recv(&ierr, 1, MPI_INT, 0, 0, ios->io_comm, &status)))
                 return check_mpi(file, mpierr, __FILE__, __LINE__);
+
+            /* Send local length of iobuffer for each field (all
+             * fields are the same length). */
             if ((mpierr = MPI_Send((void *)&llen, 1, MPI_OFFSET, 0, ios->io_rank, ios->io_comm)))
                 return check_mpi(file, mpierr, __FILE__, __LINE__);
             LOG((3, "sent llen = %d", llen));
 
+            /* Send the number of data regions, the start/count for
+             * all regions, and the data buffer with all the data. */
             if (llen > 0)
             {
                 if ((mpierr = MPI_Send((void *)&maxregions, 1, MPI_INT, 0, ios->io_rank+ios->num_iotasks, ios->io_comm)))
@@ -908,26 +917,36 @@ int pio_write_darray_multi_nc_serial(file_desc_t *file, int nvars, const int *vi
         else
         {
             /* Task 0 will receive data from all other IO tasks. */
-            size_t rlen;
-            int rregions;
+            size_t rlen;    /* Length of IO buffer on this task. */
+            int rregions;   /* Number of regions in buffer for this task. */
             size_t start[fndims], count[fndims];
             size_t loffset;
 
+            /* Get the size of the MPI data type. */
             if ((mpierr = MPI_Type_size(basetype, &dsize)))
                 return check_mpi(file, mpierr, __FILE__, __LINE__);
             LOG((3, "dsize = %d", dsize));
 
+            /* For each of the other tasks that are using this task
+             * for IO. */
             for (int rtask = 0; rtask < ios->num_iotasks; rtask++)
             {
-                if (rtask > 0)
+                /* From the remote tasks, we send information about
+                 * the data regions. and also the data. */
+                if (rtask)
                 {
                     /* handshake - tell the sending task I'm ready */
                     if ((mpierr = MPI_Send(&ierr, 1, MPI_INT, rtask, 0, ios->io_comm)))
                         return check_mpi(file, mpierr, __FILE__, __LINE__);
+
+                    /* Get length of iobuffer for each field on this
+                     * task (all fields are the same length). */
                     if ((mpierr = MPI_Recv(&rlen, 1, MPI_OFFSET, rtask, rtask, ios->io_comm, &status)))
                         return check_mpi(file, mpierr, __FILE__, __LINE__);
                     LOG((3, "received rlen = %d", rlen));
 
+                    /* Get the number of regions, the start/count
+                     * values for all regions, and the data buffer. */
                     if (rlen > 0)
                     {
                         if ((mpierr = MPI_Recv(&rregions, 1, MPI_INT, rtask, rtask + ios->num_iotasks,
@@ -945,28 +964,40 @@ int pio_write_darray_multi_nc_serial(file_desc_t *file, int nvars, const int *vi
                         LOG((3, "received data rregions = %d fndims = %d", rregions, fndims));
                     }
                 }
-                else
+                else /* task 0 */
                 {
                     rlen = llen;
                     rregions = maxregions;
                 }
-
                 LOG((3, "rtask = %d rlen = %d rregions = %d", rtask, rlen, rregions));
+
+                /* If there is data from this task, write it. */
                 if (rlen > 0)
                 {
                     loffset = 0;
                     for (int regioncnt = 0; regioncnt < rregions; regioncnt++)
                     {
+                        LOG((3, "writing data for region with regioncnt = %d", regioncnt));
+                        
+                        /* Get the start/count arrays for this region. */
                         for (int i = 0; i < fndims; i++)
                         {
                             start[i] = tmp_start[i + regioncnt * fndims];
                             count[i] = tmp_count[i + regioncnt * fndims];
+                            LOG((3, "start[%d] = %d count[%d] = %d", i, start[i], i, count[i]));
                         }
 
+                        /* Process each variable in the buffer. */
                         for (int nv = 0; nv < nvars; nv++)
                         {
+                            LOG((3, "writing buffer var %d", nv));
+
+                            /* Get a pointer to the correct part of the buffer. */
                             bufptr = (void *)((char *)iobuf + tsize * (nv * rlen + loffset));
 
+                            /* If this var has an unlimited dim, set
+                             * the start on that dim to the frame
+                             * value for this variable. */
                             if (vdesc->record >= 0)
                             {
                                 if (fndims > 1 && iodesc_ndims < fndims && count[1] > 0)
@@ -982,11 +1013,20 @@ int pio_write_darray_multi_nc_serial(file_desc_t *file, int nvars, const int *vi
 
                             /* Call the netCDF functions to write the data. */
                             if (basetype == MPI_INTEGER)
+                            {
+                                LOG((3, "about to call nc_put_vara_int()"));
                                 ierr = nc_put_vara_int(file->fh, vid[nv], start, count, (const int *)bufptr);
+                            }
                             else if (basetype == MPI_DOUBLE || basetype == MPI_REAL8)
+                            {
+                                LOG((3, "about to call nc_put_vara_double()"));
                                 ierr = nc_put_vara_double(file->fh, vid[nv], start, count, (const double *)bufptr);
+                            }
                             else if (basetype == MPI_FLOAT || basetype == MPI_REAL4)
+                            {
+                                LOG((3, "about to call nc_put_vara_float()"));
                                 ierr = nc_put_vara_float(file->fh, vid[nv], start, count, (const float *)bufptr);
+                            }
                             else
                                 fprintf(stderr, "Type not recognized %d in pioc_write_darray\n", (int)basetype);
 
@@ -1004,14 +1044,10 @@ int pio_write_darray_multi_nc_serial(file_desc_t *file, int nvars, const int *vi
                         for (int i = 0; i < fndims; i++)
                             tsize *= count[i];
 
+                        /* Keep track of where we are in the buffer. */
                         loffset += tsize;
-
-#if PIO_ENABLE_LOGGING
-                        /* Log arrays for debug purposes. */
-                        LOG((3, "regioncnt = %d tsize = %d loffset = %d", regioncnt, tsize, loffset));
-                        for (int i = 0; i < fndims; i++)
-                            LOG((3, "start[%d] = %d count[%d] = %d", i, start[i], i, count[i]));
-#endif /* PIO_ENABLE_LOGGING */
+                        LOG((3, " at bottom of loop regioncnt = %d tsize = %d loffset = %d", regioncnt,
+                             tsize, loffset));
                     } /* next regioncnt */
                 } /* endif (rlen > 0) */
             } /* next rtask */
