@@ -81,7 +81,7 @@ int create_decomposition_2d(int ntasks, int my_rank, int iosysid, int dim1_len, 
 
     /* Create the PIO decomposition for this test. */
     printf("%d Creating decomposition elements_per_pe = %lld\n", my_rank, elements_per_pe);
-    if ((ret = PIOc_InitDecomp(iosysid, PIO_FLOAT, NDIM2, dim_len_2d, elements_per_pe,
+    if ((ret = PIOc_InitDecomp(iosysid, PIO_INT, NDIM2, dim_len_2d, elements_per_pe,
                                compdof, ioid, NULL, NULL, NULL)))
         ERR(ret);
 
