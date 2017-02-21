@@ -646,8 +646,6 @@ int PIOc_get_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
 #ifdef _PNETCDF
         if (file->iotype == PIO_IOTYPE_PNETCDF)
         {
-#ifdef PNET_READ_AND_BCAST
-            LOG((1, "PNET_READ_AND_BCAST"));
             ncmpi_begin_indep_data(file->fh);
 
             /* Only the IO master does the IO, so we are not really
@@ -682,35 +680,6 @@ int PIOc_get_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
                 }
             };
             ncmpi_end_indep_data(file->fh);
-#else /* PNET_READ_AND_BCAST */
-            LOG((1, "not PNET_READ_AND_BCAST"));
-            switch(xtype)
-            {
-            case NC_BYTE:
-                ierr = ncmpi_get_vars_schar_all(file->fh, varid, start, count, stride, buf);
-                break;
-            case NC_CHAR:
-                ierr = ncmpi_get_vars_text_all(file->fh, varid, start, count, stride, buf);
-                break;
-            case NC_SHORT:
-                ierr = ncmpi_get_vars_short_all(file->fh, varid, start, count, stride, buf);
-                break;
-            case NC_INT:
-                ierr = ncmpi_get_vars_int_all(file->fh, varid, start, count, stride, buf);
-                break;
-            case PIO_LONG_INTERNAL:
-                ierr = ncmpi_get_vars_long_all(file->fh, varid, start, count, stride, buf);
-                break;
-            case NC_FLOAT:
-                ierr = ncmpi_get_vars_float_all(file->fh, varid, start, count, stride, buf);
-                break;
-            case NC_DOUBLE:
-                ierr = ncmpi_get_vars_double_all(file->fh, varid, start, count, stride, buf);
-                break;
-            default:
-                return pio_err(ios, file, PIO_EBADTYPE, __FILE__, __LINE__);
-            }
-#endif /* PNET_READ_AND_BCAST */
         }
 #endif /* _PNETCDF */
 
