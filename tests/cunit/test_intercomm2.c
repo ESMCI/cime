@@ -155,7 +155,7 @@ int check_file(int iosysid, int format, char *filename, int my_rank)
         ERR(ERR_WRONG);
 
     /* These should not work. */
-    if (PIOc_inq_dimid(ncid + 42, DIM_NAME, &dimid2) != PIO_EBADID)
+    if (PIOc_inq_dimid(ncid + TEST_VAL_42, DIM_NAME, &dimid2) != PIO_EBADID)
         ERR(ERR_WRONG);
     if (PIOc_inq_dimid(ncid, too_long_name, &dimid2) != PIO_EINVAL)
         ERR(ERR_WRONG);
@@ -194,7 +194,7 @@ int check_file(int iosysid, int format, char *filename, int my_rank)
         ERR(ERR_WRONG);
 
     /* These should not work. */
-    if (PIOc_inq_varid(ncid + 42, VAR_NAME, &varid2) != PIO_EBADID)
+    if (PIOc_inq_varid(ncid + TEST_VAL_42, VAR_NAME, &varid2) != PIO_EBADID)
         ERR(ERR_WRONG);
     if (PIOc_inq_varid(ncid, NULL, &varid2) != PIO_EINVAL)
         ERR(ERR_WRONG);
@@ -220,7 +220,7 @@ int check_file(int iosysid, int format, char *filename, int my_rank)
         ERR(ERR_WRONG);
     if ((ret = PIOc_inq_attid(ncid, NC_GLOBAL, ATT_NAME, &myid)))
         ERR(ret);
-    if (PIOc_inq_attid(ncid + 42, NC_GLOBAL, ATT_NAME, &myid) != PIO_EBADID)
+    if (PIOc_inq_attid(ncid + TEST_VAL_42, NC_GLOBAL, ATT_NAME, &myid) != PIO_EBADID)
         ERR(ERR_WRONG);
     if (myid != 0)
         ERR(ERR_WRONG);
@@ -247,13 +247,13 @@ int check_file(int iosysid, int format, char *filename, int my_rank)
         ERR(ERR_WRONG);
 
     /* These should not work. */
-    if (PIOc_inq_att(ncid + 42, NC_GLOBAL, ATT_NAME, &atttype, &attlen) != PIO_EBADID)
+    if (PIOc_inq_att(ncid + TEST_VAL_42, NC_GLOBAL, ATT_NAME, &atttype, &attlen) != PIO_EBADID)
         ERR(ERR_WRONG);
-    if (PIOc_inq_att(ncid + 42, NC_GLOBAL, NULL, &atttype, &attlen) != PIO_EBADID)
+    if (PIOc_inq_att(ncid + TEST_VAL_42, NC_GLOBAL, NULL, &atttype, &attlen) != PIO_EBADID)
         ERR(ERR_WRONG);
-    if (PIOc_inq_att(ncid + 42, NC_GLOBAL, too_long_name, &atttype, &attlen) != PIO_EBADID)
+    if (PIOc_inq_att(ncid + TEST_VAL_42, NC_GLOBAL, too_long_name, &atttype, &attlen) != PIO_EBADID)
         ERR(ERR_WRONG);
-    if (PIOc_get_att(ncid + 42, NC_GLOBAL, ATT_NAME, &att_data) != PIO_EBADID)
+    if (PIOc_get_att(ncid + TEST_VAL_42, NC_GLOBAL, ATT_NAME, &att_data) != PIO_EBADID)
         ERR(ERR_WRONG);
     if (PIOc_get_att(ncid, NC_GLOBAL, NULL, &att_data) != PIO_EINVAL)
         ERR(ERR_WRONG);
@@ -364,7 +364,7 @@ int main(int argc, char **argv)
 
                 /* Test the inq_format function. */
                 int myformat;
-                if (PIOc_inq_format(ncid + 42, &myformat) != PIO_EBADID)
+                if (PIOc_inq_format(ncid + TEST_VAL_42, &myformat) != PIO_EBADID)
                     ERR(ERR_WRONG);
                 if ((ret = PIOc_inq_format(ncid, &myformat)))
                     ERR(ret);
@@ -384,7 +384,7 @@ int main(int argc, char **argv)
                 int max_type = flavor[fmt] == PIO_IOTYPE_NETCDF ? NC_DOUBLE : NC_UINT64;
 
                 /* This should not work. */
-                if (PIOc_inq_type(ncid + 42, xtype[0], type_name, &type_size) != PIO_EBADID)
+                if (PIOc_inq_type(ncid + TEST_VAL_42, xtype[0], type_name, &type_size) != PIO_EBADID)
                     ERR(ERR_WRONG);
 
                 /* These should work. */
@@ -409,7 +409,7 @@ int main(int argc, char **argv)
                     ERR(ret);
 
                 /* These should not work. */
-                if (PIOc_rename_dim(ncid + 42, 0, DIM_NAME) != PIO_EBADID)
+                if (PIOc_rename_dim(ncid + TEST_VAL_42, 0, DIM_NAME) != PIO_EBADID)
                     ERR(ERR_WRONG);
                 if (PIOc_rename_dim(ncid, 0, NULL) != PIO_EINVAL)
                     ERR(ERR_WRONG);
@@ -429,7 +429,7 @@ int main(int argc, char **argv)
                     ERR(ret);
 
                 /* These should not work. */
-                if (PIOc_rename_var(ncid + 42, 0, VAR_NAME) != PIO_EBADID)
+                if (PIOc_rename_var(ncid + TEST_VAL_42, 0, VAR_NAME) != PIO_EBADID)
                     ERR(ERR_WRONG);
                 if (PIOc_rename_var(ncid, 0, NULL) != PIO_EINVAL)
                     ERR(ERR_WRONG);
@@ -455,15 +455,15 @@ int main(int argc, char **argv)
                     ERR(ret);
 
                 /* These should not work. */
-                if (PIOc_inq_attname(ncid + 42, NC_GLOBAL, 0, attname2) != PIO_EBADID)
+                if (PIOc_inq_attname(ncid + TEST_VAL_42, NC_GLOBAL, 0, attname2) != PIO_EBADID)
                     ERR(ERR_WRONG);
-                if (PIOc_rename_att(ncid + 42, NC_GLOBAL, FIRST_ATT_NAME, ATT_NAME) != PIO_EBADID)
+                if (PIOc_rename_att(ncid + TEST_VAL_42, NC_GLOBAL, FIRST_ATT_NAME, ATT_NAME) != PIO_EBADID)
                     ERR(ERR_WRONG);
                 if (PIOc_rename_att(ncid, NC_GLOBAL, FIRST_ATT_NAME, NULL) != PIO_EINVAL)
                     ERR(ERR_WRONG);
                 if (PIOc_rename_att(ncid, NC_GLOBAL, FIRST_ATT_NAME, too_long_name) != PIO_EINVAL)
                     ERR(ERR_WRONG);
-                if (PIOc_del_att(ncid + 42, NC_GLOBAL, FIRST_ATT_NAME) != PIO_EBADID)
+                if (PIOc_del_att(ncid + TEST_VAL_42, NC_GLOBAL, FIRST_ATT_NAME) != PIO_EBADID)
                     ERR(ERR_WRONG);
                 if (PIOc_del_att(ncid, NC_GLOBAL, NULL) != PIO_EINVAL)
                     ERR(ERR_WRONG);

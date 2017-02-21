@@ -153,7 +153,7 @@ int main(int argc, char **argv)
             ERR(ret);
 
         /* This should fail. */
-        if (PIOc_finalize(iosysid + 42) != PIO_EBADID)
+        if (PIOc_finalize(iosysid + TEST_VAL_42) != PIO_EBADID)
             ERR(ERR_WRONG);
 
         /* Initialize another PIO system. */

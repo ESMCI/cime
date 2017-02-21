@@ -235,7 +235,7 @@ int main(int argc, char **argv)
                 ERR(ret);
 
             /* These should not work. */
-            if (PIOc_set_hint(even_iosysid + 42, NULL, NULL) != PIO_EBADID)
+            if (PIOc_set_hint(even_iosysid + TEST_VAL_42, NULL, NULL) != PIO_EBADID)
                 ERR(ERR_WRONG);
             if (PIOc_set_hint(even_iosysid, NULL, NULL) != PIO_EINVAL)
                 ERR(ERR_WRONG);

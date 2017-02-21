@@ -40,6 +40,9 @@
 #define ERR_GPTL 1113
 #define ERR_MPI 1114
 
+/** The meaning of life, the universe, and everything. */
+#define TEST_VAL_42 42
+
 /** Handle MPI errors. This should only be used with MPI library
  * function calls. */
 #define MPIERR(e) do {                                                  \

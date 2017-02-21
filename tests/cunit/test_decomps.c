@@ -78,7 +78,7 @@ int test_decomp1(int iosysid, int my_rank, MPI_Comm test_comm)
 
     /* These should not work. */
     bad_slice_dimlen[1] = 0;
-    if (PIOc_InitDecomp(iosysid + 42, PIO_FLOAT, 2, slice_dimlen, (PIO_Offset)elements_per_pe,
+    if (PIOc_InitDecomp(iosysid + TEST_VAL_42, PIO_FLOAT, 2, slice_dimlen, (PIO_Offset)elements_per_pe,
                         compdof, &ioid, NULL, NULL, NULL) != PIO_EBADID)
         return ERR_WRONG;
     if (PIOc_InitDecomp(iosysid, PIO_FLOAT, 2, bad_slice_dimlen, (PIO_Offset)elements_per_pe,
@@ -102,9 +102,9 @@ int test_decomp1(int iosysid, int my_rank, MPI_Comm test_comm)
     free(compdof);
 
     /* These should not work. */
-    if (PIOc_write_decomp(DECOMP_FILE, iosysid + 42, ioid, test_comm) != PIO_EBADID)
+    if (PIOc_write_decomp(DECOMP_FILE, iosysid + TEST_VAL_42, ioid, test_comm) != PIO_EBADID)
         return ERR_WRONG;
-    if (PIOc_write_decomp(DECOMP_FILE, iosysid, ioid + 42, test_comm) != PIO_EBADID)
+    if (PIOc_write_decomp(DECOMP_FILE, iosysid, ioid + TEST_VAL_42, test_comm) != PIO_EBADID)
         return ERR_WRONG;
 
     /* Write the decomp file. */
@@ -147,9 +147,9 @@ int test_decomp1(int iosysid, int my_rank, MPI_Comm test_comm)
     free(gdims);
 
     /* These should not work. */
-    if (PIOc_freedecomp(iosysid + 42, ioid) != PIO_EBADID)
+    if (PIOc_freedecomp(iosysid + TEST_VAL_42, ioid) != PIO_EBADID)
         return ERR_WRONG;
-    if (PIOc_freedecomp(iosysid, ioid + 42) != PIO_EBADID)
+    if (PIOc_freedecomp(iosysid, ioid + TEST_VAL_42) != PIO_EBADID)
         return ERR_WRONG;
         
     /* Free the PIO decomposition. */
@@ -191,7 +191,7 @@ int test_decomp_bc(int iosysid, int my_rank, MPI_Comm test_comm)
     slice_dimlen[1] = Y_DIM_LEN;
 
     /* These should not work. */
-    if (PIOc_InitDecomp_bc(iosysid + 42, PIO_FLOAT, 2, slice_dimlen, start, count, &ioid) != PIO_EBADID)
+    if (PIOc_InitDecomp_bc(iosysid + TEST_VAL_42, PIO_FLOAT, 2, slice_dimlen, start, count, &ioid) != PIO_EBADID)
         return ERR_WRONG;
     printf("ret = %d\n", PIOc_InitDecomp_bc(iosysid, PIO_FLOAT, 2, NULL, start, count, &ioid));
     if (PIOc_InitDecomp_bc(iosysid, PIO_FLOAT, 2, NULL, start, count, &ioid) != PIO_EINVAL)
