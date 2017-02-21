@@ -95,7 +95,8 @@ int create_decomposition_2d(int ntasks, int my_rank, int iosysid, int dim1_len, 
 
 /** 
  * Test the darray functionality. Create a netCDF file with 3
- * dimensions and 1 variable, and use darray to write some data.
+ * dimensions and 1 PIO_INT variable, and use darray to write some
+ * data.
  *
  * @param iosysid the IO system ID.
  * @param ioid the ID of the decomposition.
@@ -109,13 +110,21 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
     char filename[PIO_MAX_NAME + 1]; /* Name for the output files. */
     int dimids[NDIM];      /* The dimension IDs. */
     int ncid;      /* The ncid of the netCDF file. */
+    int ncid2;     /* The ncid of the re-opened netCDF file. */
     int varid;     /* The ID of the netCDF varable. */
     int ret;       /* Return code. */
+    PIO_Offset arraylen = 4;
+    int fillvalue = NC_FILL_INT;
+    int test_data[arraylen];
+    int test_data_in[arraylen];
+
+    /* Initialize some data. */
+    for (int f = 0; f < arraylen; f++)
+        test_data[f] = my_rank * 10 + f;
 
     /* Use PIO to create the example file in each of the four
      * available ways. */
-    /* for (int fmt = 0; fmt < num_flavors; fmt++) */
-    for (int fmt = 1; fmt < 2; fmt++)
+    for (int fmt = 0; fmt < num_flavors; fmt++) 
     {
         /* Create the filename. */
         sprintf(filename, "data_%s_iotype_%d.nc", TEST_NAME, flavor[fmt]);
@@ -127,7 +136,7 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
             ERR(ret);
 
         /* Define netCDF dimensions and variable. */
-        printf("rank: %d Defining netCDF metadata...\n", my_rank);
+        printf("%d Defining netCDF metadata...\n", my_rank);
         for (int d = 0; d < NDIM; d++)
             if ((ret = PIOc_def_dim(ncid, dim_name[d], (PIO_Offset)dim_len[d], &dimids[d])))
                 ERR(ret);
@@ -140,23 +149,36 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
         if ((ret = PIOc_enddef(ncid)))
             ERR(ret);
 
-        /* Write some data. */
-        PIO_Offset arraylen = 4;
-        int fillvalue = NC_FILL_INT;
-        int test_data[arraylen];
-        for (int f = 0; f < arraylen; f++)
-            test_data[f] = my_rank * 10 + f;
-
+        /* Set the value of the record dimension. */
         if ((ret = PIOc_setframe(ncid, varid, 0)))
             ERR(ret);
-        
+
+        /* Write the data. */
         if ((ret = PIOc_write_darray(ncid, varid, ioid, arraylen, test_data, &fillvalue)))
             ERR(ret);
 
         /* Close the netCDF file. */
-        printf("rank: %d Closing the sample data file...\n", my_rank);
         if ((ret = PIOc_closefile(ncid)))
             ERR(ret);
+
+        /* Reopen the file. */
+        if ((ret = PIOc_openfile(iosysid, &ncid2, &flavor[fmt], filename, PIO_NOWRITE)))
+            ERR(ret);
+
+        /* Read the data. */
+        if ((ret = PIOc_read_darray(ncid2, varid, ioid, arraylen, test_data_in)))
+            ERR(ret);
+
+        /* Check the results. */
+        for (int f = 0; f < arraylen; f++)
+            if (test_data_in[f] != test_data[f])
+                return ERR_WRONG;
+        
+        /* Close the netCDF file. */
+        printf("%d Closing the sample data file...\n", my_rank);
+        if ((ret = PIOc_closefile(ncid2)))
+            ERR(ret);
+
     }
     return PIO_NOERR;
 }
