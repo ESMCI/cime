@@ -14,7 +14,7 @@
 #define MIN_NTASKS 4
 
 /* The name of this test. */
-#define TEST_NAME "test_pioc_darray"
+#define TEST_NAME "test_darray"
 
 /* Number of processors that will do IO. */
 #define NUM_IO_PROCS 1
@@ -183,6 +183,77 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
     return PIO_NOERR;
 }
 
+/** 
+ * Test the decomp read/write functionality.
+ *
+ * @param iosysid the IO system ID.
+ * @param ioid the ID of the decomposition.
+ * @param num_flavors the number of IOTYPES available in this build.
+ * @param flavor array of available iotypes.
+ * @param my_rank rank of this task.
+ * @param test_comm the MPI communicator for this test.
+ * @returns 0 for success, error code otherwise.
+*/
+int test_decomp_read_write(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank,
+                           MPI_Comm test_comm)
+{
+    char filename[PIO_MAX_NAME + 1]; /* Name for the output files. */
+    int ioid2;             /* ID for decomposition we will create from file. */
+    char title_in[PIO_MAX_NAME + 1];   /* Optional title. */
+    char history_in[PIO_MAX_NAME + 1]; /* Optional history. */
+    int fortran_order_in; /* Indicates fortran vs. c order. */
+    int ret;              /* Return code. */
+
+    /* Use PIO to create the decomp file in each of the four
+     * available ways. */
+    for (int fmt = 0; fmt < num_flavors; fmt++) 
+    {
+        /* Create the filename. */
+        sprintf(filename, "decomp_%s_iotype_%d.nc", TEST_NAME, flavor[fmt]);
+
+        printf("writing decomp file %s\n", filename);
+        if ((ret = PIOc_write_nc_decomp(filename, iosysid, ioid, test_comm, NULL,
+                                        NULL, 0)))
+            return ret;
+    
+        /* Read the data. */
+        printf("reading decomp file %s\n", filename);
+        if ((ret = PIOc_read_nc_decomp(filename, iosysid, &ioid2, test_comm, PIO_INT,
+                                       title_in, history_in, &fortran_order_in)))
+            return ret;
+    
+        /* Check the results. */
+        {
+            iosystem_desc_t *ios;
+            io_desc_t *iodesc;
+            
+            /* Get the IO system info. */
+            if (!(ios = pio_get_iosystem_from_id(iosysid)))
+                return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
+
+            /* Get the IO desc, which describes the decomposition. */
+            if (!(iodesc = pio_get_iodesc_from_id(ioid2)))
+                return pio_err(ios, NULL, PIO_EBADID, __FILE__, __LINE__);
+            if (iodesc->ioid != ioid2 || iodesc->maplen != TARGET_NTASKS || iodesc->ndims != NDIM2 || iodesc->nrecvs != 1 ||
+                iodesc->ndof != TARGET_NTASKS || iodesc->num_aiotasks != TARGET_NTASKS || iodesc->rearranger != PIO_REARR_SUBSET ||
+                iodesc->maxregions != 1)
+                return ERR_WRONG;
+            for (int e = 0; e < iodesc->maplen; e++)
+                if (iodesc->map[e] != my_rank * 4 + e + 1)
+                    return ERR_WRONG;
+            if (iodesc->dimlen[0] != X_DIM_LEN || iodesc->dimlen[1] != Y_DIM_LEN)
+                return ERR_WRONG;
+            printf("%d in my test iodesc->needsfill = %d iodesc->maxbytes = %d\n", my_rank, iodesc->needsfill, iodesc->maxbytes);
+        }
+        
+
+        /* Free the PIO decomposition. */
+        if ((ret = PIOc_freedecomp(iosysid, ioid2)))
+            ERR(ret);
+    }
+    return PIO_NOERR;
+}
+
 /**
  * Run all the tests. 
  *
@@ -211,13 +282,14 @@ int test_all_darray(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_
     /* Decompose the data over the tasks. */
     if ((ret = create_decomposition_2d(TARGET_NTASKS, my_rank, iosysid, DIM_LEN, &ioid)))
         return ret;
-    
-    if ((ret = test_darray(iosysid, ioid, num_flavors, flavor, my_rank)))
+
+    /* Test decomposition read/write. */
+    if ((ret = test_decomp_read_write(iosysid, ioid, num_flavors, flavor, my_rank, test_comm)))
         return ret;
     
-    /* printf("writing decomp file %s\n", filename); */
-    /* if ((ret = PIOc_write_nc_decomp(filename, iosysid, ioid, test_comm, NULL, NULL, 0))) */
-    /*     return ret; */
+    /* Run a simple darray test. */
+    if ((ret = test_darray(iosysid, ioid, num_flavors, flavor, my_rank)))
+        return ret;
     
     /* Free the PIO decomposition. */
     if ((ret = PIOc_freedecomp(iosysid, ioid)))

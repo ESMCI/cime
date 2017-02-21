@@ -1113,9 +1113,9 @@ int PIOc_read_nc_decomp(const char *filename, int iosysid, int *ioidp, MPI_Comm 
     {
         PIO_Offset compmap[task_maplen[my_rank]];
 
-        /* Copy array into PIO_Offset array. */
+        /* Copy array into PIO_Offset array. Make it 1 based. */
         for (int e = 0; e < task_maplen[my_rank]; e++)
-            compmap[e] = full_map[my_rank * max_maplen + e];
+            compmap[e] = full_map[my_rank * max_maplen + e] + 1;
 
         /* Initialize the decomposition. */
         ret = PIOc_InitDecomp(iosysid, mpi_type, ndims, global_dimlen, task_maplen[my_rank],
