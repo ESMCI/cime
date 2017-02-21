@@ -378,6 +378,82 @@ int test_ceil2_pair()
     return 0;
 }
 
+/* Test the function that finds an MPI type to match a PIO type. */
+int test_find_mpi_type()
+{
+    MPI_Datatype mpi_type;
+    int ret;
+
+    /* This should not work. */
+    if (find_mpi_type(PIO_BYTE + 42, &mpi_type) != PIO_EBADTYPE)
+        return ERR_WRONG;
+
+    /* Try every atomic type. */
+    if ((ret = find_mpi_type(PIO_BYTE, &mpi_type)))
+        return ret;
+    if (mpi_type != MPI_BYTE)
+        return ERR_WRONG;
+
+    if ((ret = find_mpi_type(PIO_CHAR, &mpi_type)))
+        return ret;
+    if (mpi_type != MPI_CHAR)
+        return ERR_WRONG;
+
+    if ((ret = find_mpi_type(PIO_SHORT, &mpi_type)))
+        return ret;
+    if (mpi_type != MPI_SHORT)
+        return ERR_WRONG;
+
+    if ((ret = find_mpi_type(PIO_INT, &mpi_type)))
+        return ret;
+    if (mpi_type != MPI_INT)
+        return ERR_WRONG;
+
+    if ((ret = find_mpi_type(PIO_FLOAT, &mpi_type)))
+        return ret;
+    if (mpi_type != MPI_FLOAT)
+        return ERR_WRONG;
+
+    if ((ret = find_mpi_type(PIO_DOUBLE, &mpi_type)))
+        return ret;
+    if (mpi_type != MPI_DOUBLE)
+        return ERR_WRONG;
+
+#ifdef _NETCDF4
+    if ((ret = find_mpi_type(PIO_UBYTE, &mpi_type)))
+        return ret;
+    if (mpi_type != MPI_UNSIGNED_CHAR)
+        return ERR_WRONG;
+
+    if ((ret = find_mpi_type(PIO_USHORT, &mpi_type)))
+        return ret;
+    if (mpi_type != MPI_UNSIGNED_SHORT)
+        return ERR_WRONG;
+
+    if ((ret = find_mpi_type(PIO_UINT, &mpi_type)))
+        return ret;
+    if (mpi_type != MPI_UNSIGNED)
+        return ERR_WRONG;
+
+    if ((ret = find_mpi_type(PIO_INT64, &mpi_type)))
+        return ret;
+    if (mpi_type != MPI_LONG_LONG)
+        return ERR_WRONG;
+
+    if ((ret = find_mpi_type(PIO_UINT64, &mpi_type)))
+        return ret;
+    if (mpi_type != MPI_UNSIGNED_LONG_LONG)
+        return ERR_WRONG;
+
+    if ((ret = find_mpi_type(PIO_STRING, &mpi_type)))
+        return ret;
+    if (mpi_type != MPI_CHAR)
+        return ERR_WRONG;
+
+#endif /* _NETCDF4 */
+    return PIO_NOERR;
+}
+
 /* Run Tests for pio_spmd.c functions. */
 int main(int argc, char **argv)
 {
@@ -425,6 +501,10 @@ int main(int argc, char **argv)
 
         printf("%d running ceil2/pair tests\n", my_rank);
         if ((ret = test_ceil2_pair()))
+            return ret;
+
+        printf("%d running find_mpi_type tests\n", my_rank);
+        if ((ret = test_find_mpi_type()))
             return ret;
 
     } /* endif my_rank < TARGET_NTASKS */

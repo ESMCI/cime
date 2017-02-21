@@ -1676,16 +1676,16 @@ int test_decomp_public(int my_test_size, int my_rank, int iosysid, int dim_len,
     if (PIOc_read_nc_decomp(nc_filename, iosysid + TEST_VAL_42, &ioid_in, test_comm, title_in,
                             history_in, &fortran_order_in) != PIO_EBADID)
         return ret;
-    if (PIOc_read_nc_decomp(NULL, iosysid, &ioid_in, test_comm, title_in,
+    if (PIOc_read_nc_decomp(NULL, iosysid, &ioid_in, test_comm, PIO_INT, title_in,
                             history_in, &fortran_order_in) != PIO_EINVAL)
         return ret;
-    if (PIOc_read_nc_decomp(nc_filename, iosysid, NULL, test_comm, title_in,
+    if (PIOc_read_nc_decomp(nc_filename, iosysid, NULL, test_comm, PIO_INT, title_in,
                             history_in, &fortran_order_in) != PIO_EINVAL)
         return ret;
     
     /* Read it using the public read function. */
-    if ((ret = PIOc_read_nc_decomp(nc_filename, iosysid, &ioid_in, test_comm, title_in,
-                                   history_in, &fortran_order_in)))
+    if ((ret = PIOc_read_nc_decomp(nc_filename, iosysid, &ioid_in, test_comm, PIO_INT,
+                                   title_in, history_in, &fortran_order_in)))
         return ret;
 
     /* Did we get expected results? */
@@ -1697,19 +1697,19 @@ int test_decomp_public(int my_test_size, int my_rank, int iosysid, int dim_len,
         ERR(ret);
 
     /* These should also work. */
-    if ((ret = PIOc_read_nc_decomp(nc_filename, iosysid, &ioid_in, test_comm, NULL,
+    if ((ret = PIOc_read_nc_decomp(nc_filename, iosysid, &ioid_in, test_comm, PIO_CHAR, NULL,
                                    history_in, &fortran_order_in)))
         return ret;
     if ((ret = PIOc_freedecomp(iosysid, ioid_in)))
         ERR(ret);
 
-    if ((ret = PIOc_read_nc_decomp(nc_filename, iosysid, &ioid_in, test_comm, title_in,
+    if ((ret = PIOc_read_nc_decomp(nc_filename, iosysid, &ioid_in, test_comm, PIO_BYTE, title_in,
                                    NULL, &fortran_order_in)))
         return ret;
     if ((ret = PIOc_freedecomp(iosysid, ioid_in)))
         ERR(ret);
 
-    if ((ret = PIOc_read_nc_decomp(nc_filename, iosysid, &ioid_in, test_comm, title_in,
+    if ((ret = PIOc_read_nc_decomp(nc_filename, iosysid, &ioid_in, test_comm, PIO_SHORT, title_in,
                                   history_in, NULL)))
         return ret;
     if ((ret = PIOc_freedecomp(iosysid, ioid_in)))
