@@ -6,14 +6,22 @@ Introduction
 --------
 Overview
 --------
-The CIME data models perform the basic function of reading external data files, modifying that data, and then sending it to the driver/coupler via the CIME coupling interfaces. 
-The driver/coupler and other models have no fundamental knowledge of whether another component is fully active or just a data model. 
-In some cases, data models have prognostic functionality, that is, they also receive and use data sent by the driver to/coupler the data model. 
+The CIME data models perform the basic function of reading external data files, modifying those data, and then sending the data to the driver/coupler via the CIME coupling interfaces.
+The fields sent to the coupler are the same as those that would be sent by an active component.
+This takes advantage of the fact that the driver/coupler and other models have no fundamental knowledge of whether another component is fully active or just a data model.
+So, for example, the data atmosphere model (datm) sends the same fields as the prognostic Community Atmosphere Model (CAM).
+However, rather than determining these fields prognostically, most data models simply read prescribed data.
+
+The data models typically read gridded data from observations or reanalysis products.
+Out of the box, they often provide a few possible data sources and/or time periods that you can choose from when setting up a case.
+However, data models can also be configured to read output from a previous coupled run.
+For example, you can perform a fully-coupled run in which you ask for particular extra output streams; you can then use these saved "coupler history" files as inputs to datm to run a later land-only spinup.
+
+In some cases, data models have prognostic functionality, that is, they also receive and use data sent by the driver/coupler.
 However, in most cases, the data models are not running prognostically and have no need to receive any data from the driver/coupler.
 
 The CIME data models have parallel capability and share significant amounts of source code. 
-Methods for reading and interpolating data have been established and can easily be reused. 
-There is a natural hierarchy in the system. 
+Methods for reading and interpolating data have been established and can easily be reused:
 The data model calls strdata ("stream data") methods which then call stream methods. 
 The stream methods are responsible for managing lists of input data files and their time axis. 
 The information is then passed up to the strdata methods where the data is read and interpolated in space and time. 
@@ -96,11 +104,15 @@ This will take extra time but will not impact the results.
 Hierarchy
 ---------
 The hierarchy of data models, strdata, and streams also compartmentalize grids and fields. 
-Data models communicate with the coupler with fields on only the data model model grid. 
+Data models communicate with the coupler with fields on only the data model model grid.
+
 - *Each strdata namelist input can have multiple stream description files*
+
 - *Each stream input file can contain data on a different grid*.
+
 - *Each stream input file data is interpolated to a single model grid*. 
-The strdata module will gracefully read the different streams of input data and interpolate both spatially and temporally to the appropriate final model grid and model time. 
+
+The strdata module will read the different streams of input data and interpolate both spatially and temporally to the appropriate final model grid and model time. 
 
 Below is a schematic of the hierarchy:
 
