@@ -15,6 +15,7 @@
       
    introduction.rst
    input-streams.rst
+   design-details.rst
    data-model-science.rst
    data-atm.rst
    data-lnd.rst
