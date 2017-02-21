@@ -484,7 +484,6 @@ int pio_write_darray_multi_nc(file_desc_t *file, int nvars, const int *vid, int 
     int fndims;
     PIO_Offset tdsize;
     int tsize = 0;
-    int ncid;
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
     int ierr = PIO_NOERR;
 
@@ -504,7 +503,6 @@ int pio_write_darray_multi_nc(file_desc_t *file, int nvars, const int *vid, int 
     ios = file->iosystem;
     if (!(vdesc = file->varlist + vid[0]))
         return pio_err(ios, file, PIO_EBADID, __FILE__, __LINE__);
-    ncid = file->fh;
 
     /* If async is in use, send message to IO master task. */
     if (ios->async_interface)
@@ -549,7 +547,6 @@ int pio_write_darray_multi_nc(file_desc_t *file, int nvars, const int *vid, int 
         PIO_Offset *startlist[maxregions];
         PIO_Offset *countlist[maxregions];
 
-        ncid = file->fh;
         region = firstregion;
 
         LOG((3, "maxregions = %d", maxregions));
@@ -612,16 +609,16 @@ int pio_write_darray_multi_nc(file_desc_t *file, int nvars, const int *vid, int 
                     if (region)
                         bufptr = (void *)((char *)iobuf + tsize * (nv * llen + region->loffset));
 
-                    ierr = nc_var_par_access(ncid, vid[nv], NC_COLLECTIVE);
+                    ierr = nc_var_par_access(file->fh, vid[nv], NC_COLLECTIVE);
 
                     if (basetype == MPI_DOUBLE || basetype == MPI_REAL8)
-                        ierr = nc_put_vara_double(ncid, vid[nv], (size_t *)start, (size_t *)count,
+                        ierr = nc_put_vara_double(file->fh, vid[nv], (size_t *)start, (size_t *)count,
                                                   (const double *)bufptr);
                     else if (basetype == MPI_INTEGER)
-                        ierr = nc_put_vara_int(ncid, vid[nv], (size_t *)start, (size_t *)count,
+                        ierr = nc_put_vara_int(file->fh, vid[nv], (size_t *)start, (size_t *)count,
                                                (const int *)bufptr);
                     else if (basetype == MPI_FLOAT || basetype == MPI_REAL4)
-                        ierr = nc_put_vara_float(ncid, vid[nv], (size_t *)start, (size_t *)count,
+                        ierr = nc_put_vara_float(file->fh, vid[nv], (size_t *)start, (size_t *)count,
                                                  (const float *)bufptr);
                     else
                         fprintf(stderr,"Type not recognized %d in pioc_write_darray\n",
@@ -651,7 +648,7 @@ int pio_write_darray_multi_nc(file_desc_t *file, int nvars, const int *vid, int 
                 if (regioncnt == maxregions - 1)
                 {
                     /*printf("%s %d %d %ld %ld\n",__FILE__,__LINE__,ios->io_rank,iodesc->llen, tdsize);
-                      ierr = ncmpi_put_varn_all(ncid, vid, iodesc->maxregions, startlist, countlist,
+                      ierr = ncmpi_put_varn_all(file->fh, vid, iodesc->maxregions, startlist, countlist,
                       iobuf, iodesc->llen, iodesc->basetype);*/
 
                     for (int nv = 0; nv < nvars; nv++)
@@ -678,10 +675,10 @@ int pio_write_darray_multi_nc(file_desc_t *file, int nvars, const int *vid, int 
                             while(vdesc->request[reqn] != NC_REQ_NULL)
                                 reqn++;
 
-                        ierr = ncmpi_iput_varn(ncid, vid[nv], rrcnt, startlist, countlist,
+                        ierr = ncmpi_iput_varn(file->fh, vid[nv], rrcnt, startlist, countlist,
                                                bufptr, llen, basetype, vdesc->request+reqn);
                         /*
-                          ierr = ncmpi_bput_varn(ncid, vid[nv], rrcnt, startlist, countlist,
+                          ierr = ncmpi_bput_varn(file->fh, vid[nv], rrcnt, startlist, countlist,
                           bufptr, llen, basetype, &(vdesc->request));
                         */
                         /* keeps wait calls in sync */
@@ -777,7 +774,6 @@ int pio_write_darray_multi_nc_serial(file_desc_t *file, int nvars, const int *vi
     int dsize;
     int fndims;            /* Number of dims in the var in the file. */
     int tsize;             /* Size of the MPI type, in bytes. */
-    int ncid;
     MPI_Status status;
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
     int ierr;
@@ -795,7 +791,6 @@ int pio_write_darray_multi_nc_serial(file_desc_t *file, int nvars, const int *vi
 #endif
 
     ios = file->iosystem;
-    ncid = file->fh;
 
     /* Get the var info. */
     if (!(vdesc = file->varlist + vid[0]))
@@ -840,7 +835,6 @@ int pio_write_darray_multi_nc_serial(file_desc_t *file, int nvars, const int *vi
         size_t tmp_start[fndims * maxregions]; /* A start array for each region. */
         size_t tmp_count[fndims * maxregions]; /* A count array for each region. */
 
-        ncid = file->fh;
         region = firstregion;
 
         LOG((3, "maxregions = %d", maxregions));
@@ -988,11 +982,11 @@ int pio_write_darray_multi_nc_serial(file_desc_t *file, int nvars, const int *vi
 
                             /* Call the netCDF functions to write the data. */
                             if (basetype == MPI_INTEGER)
-                                ierr = nc_put_vara_int(ncid, vid[nv], start, count, (const int *)bufptr);
+                                ierr = nc_put_vara_int(file->fh, vid[nv], start, count, (const int *)bufptr);
                             else if (basetype == MPI_DOUBLE || basetype == MPI_REAL8)
-                                ierr = nc_put_vara_double(ncid, vid[nv], start, count, (const double *)bufptr);
+                                ierr = nc_put_vara_double(file->fh, vid[nv], start, count, (const double *)bufptr);
                             else if (basetype == MPI_FLOAT || basetype == MPI_REAL4)
-                                ierr = nc_put_vara_float(ncid, vid[nv], start, count, (const float *)bufptr);
+                                ierr = nc_put_vara_float(file->fh, vid[nv], start, count, (const float *)bufptr);
                             else
                                 fprintf(stderr, "Type not recognized %d in pioc_write_darray\n", (int)basetype);
 
