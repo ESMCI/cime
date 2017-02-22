@@ -150,7 +150,7 @@ int test_decomp_read_write(int iosysid, int ioid, int num_flavors, int *flavor, 
             if (iodesc->ioid != ioid2 || iodesc->maplen != EXPECTED_MAPLEN || iodesc->ndims != NDIM3 ||
                 iodesc->nrecvs != 1 || iodesc->ndof != EXPECTED_MAPLEN || iodesc->num_aiotasks != TARGET_NTASKS ||
                 iodesc->rearranger != PIO_REARR_SUBSET || iodesc->maxregions != 1 ||
-                iodesc->needsfill || iodesc->basetype != MPI_INTEGER) 
+                iodesc->needsfill || iodesc->basetype != MPI_INT) 
                 return ERR_WRONG;
             /*     return ERR_WRONG; */
             for (int e = 0; e < iodesc->maplen; e++)
