@@ -86,7 +86,6 @@ int pio_write_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid,
     int dsize;             /* Size of the type. */
     MPI_Status status;     /* Status from MPI_Recv calls. */
     int fndims;            /* Number of dims for variable according to netCDF. */
-    PIO_Offset tdsize = 0; /* Total data size (all regions). */
     int i;                 /* Loop counter. */
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
     int ierr = PIO_NOERR;  /* Return code from function calls. */
@@ -358,8 +357,6 @@ int pio_write_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid,
                 for (i = 0, dsize = 1; i < ndims; i++)
                     dsize *= count[i];
 
-                tdsize += dsize;
-
                 if (dsize > 0)
                 {
                     if (!(startlist[rrcnt] = calloc(fndims, sizeof(PIO_Offset))))
@@ -375,9 +372,6 @@ int pio_write_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid,
                 }
                 if (regioncnt == iodesc->maxregions - 1)
                 {
-                    /* printf("%s %d %d %ld %ld\n",__FILE__,__LINE__,ios->io_rank,iodesc->llen, tdsize);
-                       ierr = ncmpi_put_varn_all(file->fh, vid, iodesc->maxregions, startlist, countlist,
-                       iobuf, iodesc->llen, iodesc->basetype); */
                     int reqn = 0;
 
                     if (vdesc->nreqs % PIO_REQUEST_ALLOC_CHUNK == 0 )
@@ -479,7 +473,6 @@ int pio_write_darray_multi_nc(file_desc_t *file, int nvars, const int *vid, int 
     var_desc_t *vdesc;     /* Pointer to var info struct. */
     int fndims;            /* Number of dims for this var in the file. */
     int dsize;             /* Data size (for one region). */
-    PIO_Offset tdsize = 0; /* Total data size (for all regions). */
     int tsize;             /* Size of MPI type. */
     int i;
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
@@ -628,7 +621,6 @@ int pio_write_darray_multi_nc(file_desc_t *file, int nvars, const int *vid, int 
             case PIO_IOTYPE_PNETCDF:
                 for (i = 0, dsize = 1; i < fndims; i++)
                     dsize *= count[i];
-                tdsize += dsize;
 
                 if (dsize > 0)
                 {
@@ -645,10 +637,6 @@ int pio_write_darray_multi_nc(file_desc_t *file, int nvars, const int *vid, int 
                 }
                 if (regioncnt == maxregions - 1)
                 {
-                    /*printf("%s %d %d %ld %ld\n",__FILE__,__LINE__,ios->io_rank,iodesc->llen, tdsize);
-                      ierr = ncmpi_put_varn_all(file->fh, vid, iodesc->maxregions, startlist, countlist,
-                      iobuf, iodesc->llen, iodesc->basetype);*/
-
                     for (int nv = 0; nv < nvars; nv++)
                     {
                         vdesc = (file->varlist) + vid[nv];
