@@ -1,7 +1,7 @@
 /*
  * Tests for PIO distributed arrays.
  *
- * Ed Hartnett, 2/16/17
+ * Ed Hartnett, 2/21/17
  */
 #include <pio.h>
 #include <pio_internal.h>
@@ -14,7 +14,7 @@
 #define MIN_NTASKS 4
 
 /* The name of this test. */
-#define TEST_NAME "test_darray"
+#define TEST_NAME "test_darray_3d"
 
 /* Number of processors that will do IO. */
 #define NUM_IO_PROCS 1
@@ -24,14 +24,18 @@
 
 /* The number of dimensions in the example data. In this test, we
  * are using three-dimensional data. */
-#define NDIM 3
+#define NDIM 4
 
 /* But sometimes we need arrays of the non-record dimensions. */
-#define NDIM2 2
+#define NDIM3 3
 
 /* The length of our sample data along each dimension. */
 #define X_DIM_LEN 4
 #define Y_DIM_LEN 4
+#define Z_DIM_LEN 4
+
+/* This is the length of the map for each task. */
+#define EXPECTED_MAPLEN 16
 
 /* The number of timesteps of data to write. */
 #define NUM_TIMESTEPS 2
@@ -40,31 +44,35 @@
 #define VAR_NAME "foo"
 
 /* The dimension names. */
-char dim_name[NDIM][PIO_MAX_NAME + 1] = {"timestep", "x", "y"};
+char dim_name[NDIM][PIO_MAX_NAME + 1] = {"timestep", "x", "y", "z"};
 
 /* Length of the dimensions in the sample data. */
-int dim_len[NDIM] = {NC_UNLIMITED, X_DIM_LEN, Y_DIM_LEN};
+int dim_len[NDIM] = {NC_UNLIMITED, X_DIM_LEN, Y_DIM_LEN, Z_DIM_LEN};
 
-/* Create the decomposition to divide the 3-dimensional sample data
+#define DIM_NAME "dim"
+#define NDIM1 1
+
+/* Create the decomposition to divide the 4-dimensional sample data
  * between the 4 tasks. For the purposes of decomposition we are only
- * concerned with 2 dimensions - we ignore the unlimited dimension.
+ * concerned with 3 dimensions - we ignore the unlimited dimension.
  *
  * @param ntasks the number of available tasks
  * @param my_rank rank of this task.
  * @param iosysid the IO system ID.
+ * @param dim_len an array of length 3 with the dimension sizes.
  * @param ioid a pointer that gets the ID of this decomposition.
  * @returns 0 for success, error code otherwise.
  **/
-int create_decomposition_2d(int ntasks, int my_rank, int iosysid, int *ioid)
+int create_decomposition_3d(int ntasks, int my_rank, int iosysid, int *ioid)
 {
     PIO_Offset elements_per_pe;     /* Array elements per processing unit. */
     PIO_Offset *compdof;  /* The decomposition mapping. */
-    int dim_len_2d[NDIM2] = {X_DIM_LEN, Y_DIM_LEN};
+    int dim_len_3d[NDIM3] = {X_DIM_LEN, Y_DIM_LEN, Z_DIM_LEN};
     int ret;
 
     /* How many data elements per task? In this example we will end up
      * with 4. */
-    elements_per_pe = X_DIM_LEN * Y_DIM_LEN / ntasks;
+    elements_per_pe = X_DIM_LEN * Y_DIM_LEN * Z_DIM_LEN / ntasks;
 
     /* Allocate space for the decomposition array. */
     if (!(compdof = malloc(elements_per_pe * sizeof(PIO_Offset))))
@@ -76,7 +84,7 @@ int create_decomposition_2d(int ntasks, int my_rank, int iosysid, int *ioid)
 
     /* Create the PIO decomposition for this test. */
     printf("%d Creating decomposition elements_per_pe = %lld\n", my_rank, elements_per_pe);
-    if ((ret = PIOc_InitDecomp(iosysid, PIO_INT, NDIM2, dim_len_2d, elements_per_pe,
+    if ((ret = PIOc_InitDecomp(iosysid, PIO_INT, NDIM3, dim_len_3d, elements_per_pe,
                                compdof, ioid, NULL, NULL, NULL)))
         ERR(ret);
 
@@ -86,96 +94,6 @@ int create_decomposition_2d(int ntasks, int my_rank, int iosysid, int *ioid)
     free(compdof);
 
     return 0;
-}
-
-/** 
- * Test the darray functionality. Create a netCDF file with 3
- * dimensions and 1 PIO_INT variable, and use darray to write some
- * data.
- *
- * @param iosysid the IO system ID.
- * @param ioid the ID of the decomposition.
- * @param num_flavors the number of IOTYPES available in this build.
- * @param flavor array of available iotypes.
- * @param my_rank rank of this task.
- * @returns 0 for success, error code otherwise.
-*/
-int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank)
-{
-    char filename[PIO_MAX_NAME + 1]; /* Name for the output files. */
-    int dimids[NDIM];      /* The dimension IDs. */
-    int ncid;      /* The ncid of the netCDF file. */
-    int ncid2;     /* The ncid of the re-opened netCDF file. */
-    int varid;     /* The ID of the netCDF varable. */
-    int ret;       /* Return code. */
-    PIO_Offset arraylen = 4;
-    int fillvalue = NC_FILL_INT;
-    int test_data[arraylen];
-    int test_data_in[arraylen];
-
-    /* Initialize some data. */
-    for (int f = 0; f < arraylen; f++)
-        test_data[f] = my_rank * 10 + f;
-
-    /* Use PIO to create the example file in each of the four
-     * available ways. */
-    for (int fmt = 0; fmt < num_flavors; fmt++) 
-    {
-        /* Create the filename. */
-        sprintf(filename, "data_%s_iotype_%d.nc", TEST_NAME, flavor[fmt]);
-
-        /* Create the netCDF output file. */
-        printf("rank: %d Creating sample file %s with format %d...\n", my_rank, filename,
-               flavor[fmt]);
-        if ((ret = PIOc_createfile(iosysid, &ncid, &flavor[fmt], filename, PIO_CLOBBER)))
-            ERR(ret);
-
-        /* Define netCDF dimensions and variable. */
-        printf("%d Defining netCDF metadata...\n", my_rank);
-        for (int d = 0; d < NDIM; d++)
-            if ((ret = PIOc_def_dim(ncid, dim_name[d], (PIO_Offset)dim_len[d], &dimids[d])))
-                ERR(ret);
-
-        /* Define a variable. */
-        if ((ret = PIOc_def_var(ncid, VAR_NAME, PIO_INT, NDIM, dimids, &varid)))
-            ERR(ret);
-
-        /* End define mode. */
-        if ((ret = PIOc_enddef(ncid)))
-            ERR(ret);
-
-        /* Set the value of the record dimension. */
-        if ((ret = PIOc_setframe(ncid, varid, 0)))
-            ERR(ret);
-
-        /* Write the data. */
-        if ((ret = PIOc_write_darray(ncid, varid, ioid, arraylen, test_data, &fillvalue)))
-            ERR(ret);
-
-        /* Close the netCDF file. */
-        if ((ret = PIOc_closefile(ncid)))
-            ERR(ret);
-
-        /* Reopen the file. */
-        if ((ret = PIOc_openfile(iosysid, &ncid2, &flavor[fmt], filename, PIO_NOWRITE)))
-            ERR(ret);
-
-        /* Read the data. */
-        if ((ret = PIOc_read_darray(ncid2, varid, ioid, arraylen, test_data_in)))
-            ERR(ret);
-
-        /* Check the results. */
-        for (int f = 0; f < arraylen; f++)
-            if (test_data_in[f] != test_data[f])
-                return ERR_WRONG;
-        
-        /* Close the netCDF file. */
-        printf("%d Closing the sample data file...\n", my_rank);
-        if ((ret = PIOc_closefile(ncid2)))
-            ERR(ret);
-
-    }
-    return PIO_NOERR;
 }
 
 /** 
@@ -229,19 +147,19 @@ int test_decomp_read_write(int iosysid, int ioid, int num_flavors, int *flavor, 
             /* Get the IO desc, which describes the decomposition. */
             if (!(iodesc = pio_get_iodesc_from_id(ioid2)))
                 return pio_err(ios, NULL, PIO_EBADID, __FILE__, __LINE__);
-            if (iodesc->ioid != ioid2 || iodesc->maplen != TARGET_NTASKS || iodesc->ndims != NDIM2 ||
-                iodesc->nrecvs != 1 || iodesc->ndof != TARGET_NTASKS || iodesc->num_aiotasks != TARGET_NTASKS
-                || iodesc->rearranger != PIO_REARR_SUBSET || iodesc->maxregions != 1 ||
-                iodesc->needsfill || iodesc->basetype != MPI_INTEGER)
+            if (iodesc->ioid != ioid2 || iodesc->maplen != EXPECTED_MAPLEN || iodesc->ndims != NDIM3 ||
+                iodesc->nrecvs != 1 || iodesc->ndof != EXPECTED_MAPLEN || iodesc->num_aiotasks != TARGET_NTASKS ||
+                iodesc->rearranger != PIO_REARR_SUBSET || iodesc->maxregions != 1 ||
+                iodesc->needsfill || iodesc->basetype != MPI_INTEGER) 
                 return ERR_WRONG;
+            /*     return ERR_WRONG; */
             for (int e = 0; e < iodesc->maplen; e++)
                 if (iodesc->map[e] != my_rank * iodesc->maplen + e + 1)
                     return ERR_WRONG;
-            if (iodesc->dimlen[0] != X_DIM_LEN || iodesc->dimlen[1] != Y_DIM_LEN)
+            if (iodesc->dimlen[0] != X_DIM_LEN || iodesc->dimlen[1] != Y_DIM_LEN ||
+                iodesc->dimlen[2] != Z_DIM_LEN)
                 return ERR_WRONG;
-            printf("%d in my test iodesc->maxiobuflen = %d\n", my_rank, iodesc->maxiobuflen);
         }
-        
 
         /* Free the PIO decomposition. */
         if ((ret = PIOc_freedecomp(iosysid, ioid2)))
@@ -276,15 +194,11 @@ int test_all_darray(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_
     printf("%d Testing darray.\n", my_rank);
         
     /* Decompose the data over the tasks. */
-    if ((ret = create_decomposition_2d(TARGET_NTASKS, my_rank, iosysid, &ioid)))
+    if ((ret = create_decomposition_3d(TARGET_NTASKS, my_rank, iosysid, &ioid)))
         return ret;
 
     /* Test decomposition read/write. */
     if ((ret = test_decomp_read_write(iosysid, ioid, num_flavors, flavor, my_rank, test_comm)))
-        return ret;
-    
-    /* Run a simple darray test. */
-    if ((ret = test_darray(iosysid, ioid, num_flavors, flavor, my_rank)))
         return ret;
     
     /* Free the PIO decomposition. */
