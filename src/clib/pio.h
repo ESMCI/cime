@@ -242,7 +242,10 @@ typedef struct io_desc_t
      * io tasks. */
     int nrecvs;
 
-    /** Local size of the decomposition array on the compute node. */
+    /** Local size of the decomposition array on the compute node. On
+        each compute task the application passes a compmap array of
+        length ndof. This array describes the arrangement of data in
+        memory on that task. */
     int ndof;
 
     /** All vars included in this io_desc_t have the same number of
@@ -272,7 +275,10 @@ typedef struct io_desc_t
     MPI_Datatype basetype;
 
     /** Length of the iobuffer on this task for a single field on the
-     * IO node. */
+     * IO node. The arrays from compute nodes gathered and rearranged
+     * to the io-nodes (which are sometimes collocated with compute
+     * nodes), each io task contains data from the compmap of one or
+     * more compute tasks in the iomap array. */
     PIO_Offset llen;
 
     /** Maximum llen participating. */
