@@ -148,6 +148,14 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
         if ((ret = PIOc_setframe(ncid, varid, 0)))
             ERR(ret);
 
+        /* These should not work. */
+        if (PIOc_write_darray(ncid + TEST_VAL_42, varid, ioid, arraylen, test_data, &fillvalue) != PIO_EBADID)
+            ERR(ERR_WRONG);
+        if (PIOc_write_darray(ncid, varid, ioid + TEST_VAL_42, arraylen, test_data, &fillvalue) != PIO_EBADID)
+            ERR(ERR_WRONG);
+        if (PIOc_write_darray(ncid, varid, ioid, arraylen + TEST_VAL_42, test_data, &fillvalue) != PIO_EINVAL)
+            ERR(ERR_WRONG);
+
         /* Write the data. */
         if ((ret = PIOc_write_darray(ncid, varid, ioid, arraylen, test_data, &fillvalue)))
             ERR(ret);
@@ -160,6 +168,14 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
         if ((ret = PIOc_openfile(iosysid, &ncid2, &flavor[fmt], filename, PIO_NOWRITE)))
             ERR(ret);
 
+        /* These should not work. */
+        if (PIOc_read_darray(ncid2 + TEST_VAL_42, varid, ioid, arraylen,
+                             test_data_in) != PIO_EBADID)
+            ERR(ERR_WRONG);
+        if (PIOc_read_darray(ncid2, varid, ioid + TEST_VAL_42, arraylen,
+                             test_data_in) != PIO_EBADID)
+            ERR(ERR_WRONG);
+        
         /* Read the data. */
         if ((ret = PIOc_read_darray(ncid2, varid, ioid, arraylen, test_data_in)))
             ERR(ret);
@@ -168,12 +184,15 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
         for (int f = 0; f < arraylen; f++)
             if (test_data_in[f] != test_data[f])
                 return ERR_WRONG;
+
+        /* Try to write, but it won't work, because we opened file read-only. */
+        if (PIOc_write_darray(ncid2, varid, ioid, arraylen, test_data, &fillvalue) != PIO_EPERM)
+            ERR(ERR_WRONG);
         
         /* Close the netCDF file. */
         printf("%d Closing the sample data file...\n", my_rank);
         if ((ret = PIOc_closefile(ncid2)))
             ERR(ret);
-
     }
     return PIO_NOERR;
 }
