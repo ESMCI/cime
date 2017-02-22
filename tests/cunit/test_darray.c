@@ -184,12 +184,15 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
         for (int f = 0; f < arraylen; f++)
             if (test_data_in[f] != test_data[f])
                 return ERR_WRONG;
+
+        /* Try to write, but it won't work, because we opened file read-only. */
+        if (PIOc_write_darray(ncid2, varid, ioid, arraylen, test_data, &fillvalue) != PIO_EPERM)
+            ERR(ERR_WRONG);
         
         /* Close the netCDF file. */
         printf("%d Closing the sample data file...\n", my_rank);
         if ((ret = PIOc_closefile(ncid2)))
             ERR(ret);
-
     }
     return PIO_NOERR;
 }
