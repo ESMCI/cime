@@ -1491,7 +1491,6 @@ int test_decomp_internal(int my_test_size, int my_rank, int iosysid, int dim_len
     char source_in[PIO_MAX_NAME + 1];
     char version_in[PIO_MAX_NAME + 1];
     char expected_source[] = "Decomposition file produced by PIO library.";
-    char expected_version[] = "2017";
     int *global_dimlen_in;    
     int *task_maplen_in;
     int *map_in;
@@ -1520,7 +1519,7 @@ int test_decomp_internal(int my_test_size, int my_rank, int iosysid, int dim_len
     /* Did we get the correct answers? */
     printf("source_in = %s\n", source_in);
     if (strcmp(title, title_in) || strcmp(history, history_in) ||
-        strcmp(source_in, expected_source) || strcmp(version_in, expected_version))
+        strcmp(source_in, expected_source))
         return ERR_WRONG;
     if (ndims_in != NDIM1 || num_tasks_in != TARGET_NTASKS || max_maplen_in != 1 ||
         fortran_order_in)
@@ -1722,7 +1721,6 @@ int test_decomp_public(int my_test_size, int my_rank, int iosysid, int dim_len,
     char source_in[PIO_MAX_NAME + 1];
     char version_in[PIO_MAX_NAME + 1];
     char expected_source[] = "Decomposition file produced by PIO library.";
-    char expected_version[] = "2017";
     int *global_dimlen_in;
     int *task_maplen_in;
     int *map_in;
@@ -1736,7 +1734,7 @@ int test_decomp_public(int my_test_size, int my_rank, int iosysid, int dim_len,
     /* Did we get the correct answers? */
     printf("source_in = %s\n", source_in);
     if (strcmp(title, title_in) || strcmp(history, history_in) ||
-        strcmp(source_in, expected_source) || strcmp(version_in, expected_version))
+        strcmp(source_in, expected_source))
         return ERR_WRONG;
     if (ndims_in != NDIM1 || num_tasks_in != TARGET_NTASKS || max_maplen_in != 1 ||
         fortran_order_in)

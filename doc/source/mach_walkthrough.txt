@@ -426,7 +426,7 @@ build from the command line, including tests:
 
 <pre>
 cd build
-rm -rf * && CFLAGS='-Wall -g' FFLAGS=-g CC=mpicc FC=mpifort cmake -DNetCDF_C_PATH=/usr/local/netcdf-4.4.1 -DNetCDF_Fortran_PATH=/usr/local/netcdf-fortran-4.4.4 -DPnetCDF_PATH=/usr/local/pnetcdf-1.7.0 -DPIO_ENABLE_LOGGING=On .. && make VERBOSE=1 all tests check
+rm -rf * && CFLAGS='-Wall -g' FFLAGS=-g CC=mpicc FC=mpifort cmake -DNetCDF_C_PATH=/usr/local/netcdf-4.4.1 -DNetCDF_Fortran_PATH=/usr/local/netcdf-fortran-4.4.4 -DPnetCDF_PATH=/usr/local/pnetcdf-1.8.1 -DPIO_ENABLE_LOGGING=On .. && make VERBOSE=1 all tests check
 </pre>
 
 <p>Note the optional CFLAGS=-g which allows the use of a debugger
