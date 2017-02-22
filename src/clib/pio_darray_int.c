@@ -83,13 +83,13 @@ int pio_write_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid,
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     var_desc_t *vdesc;     /* Pointer to info about the var. */
     int ndims;             /* Number of dimensions according to iodesc. */
-    int ierr = PIO_NOERR;  /* Return code from function calls. */
-    int i;                 /* Loop counter. */
-    int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
     int dsize;             /* Size of the type. */
     MPI_Status status;     /* Status from MPI_Recv calls. */
     int fndims;            /* Number of dims for variable according to netCDF. */
-    PIO_Offset tdsize = 0; /* Total size. */
+    PIO_Offset tdsize = 0; /* Total data size (all regions). */
+    int i;                 /* Loop counter. */
+    int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
+    int ierr = PIO_NOERR;  /* Return code from function calls. */
 
     LOG((1, "pio_write_darray_nc vid = %d", vid));
 
@@ -476,12 +476,12 @@ int pio_write_darray_multi_nc(file_desc_t *file, int nvars, const int *vid, int 
                               int num_aiotasks, void *iobuf, const int *frame)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
-    var_desc_t *vdesc;
+    var_desc_t *vdesc;     /* Pointer to var info struct. */
+    int fndims;            /* Number of dims for this var in the file. */
+    int dsize;             /* Data size (for one region). */
+    PIO_Offset tdsize = 0; /* Total data size (for all regions). */
+    int tsize;             /* Size of MPI type. */
     int i;
-    int dsize;
-    int fndims;
-    PIO_Offset tdsize;
-    int tsize = 0;
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
     int ierr = PIO_NOERR;
 
