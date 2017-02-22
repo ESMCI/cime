@@ -45,6 +45,9 @@
 /* The value of the global attribute in the sample 2 output file. */
 #define ATT_VALUE_S2 42
 
+/* For when we need 2D. */
+#define NDIM2 2
+
 /* How many flavors of netCDF are available? */
 int
 get_iotypes(int *num_flavors, int *flavors)
@@ -875,3 +878,47 @@ check_nc_sample_2(int iosysid, int format, char *filename, int my_rank, int *nci
 
     return 0;
 }
+
+/* Create the decomposition to divide the 3-dimensional sample data
+ * between the 4 tasks. For the purposes of decomposition we are only
+ * concerned with 2 dimensions - we ignore the unlimited dimension.
+ *
+ * @param ntasks the number of available tasks
+ * @param my_rank rank of this task.
+ * @param iosysid the IO system ID.
+ * @param dim_len_2d an array of length 2 with the dim lengths.
+ * @param ioid a pointer that gets the ID of this decomposition.
+ * @returns 0 for success, error code otherwise.
+ **/
+int create_decomposition_2d(int ntasks, int my_rank, int iosysid, int *dim_len_2d, int *ioid)
+{
+    PIO_Offset elements_per_pe;     /* Array elements per processing unit. */
+    PIO_Offset *compdof;  /* The decomposition mapping. */
+    int ret;
+
+    /* How many data elements per task? In this example we will end up
+     * with 4. */
+    elements_per_pe = dim_len_2d[0] * dim_len_2d[1] / ntasks;
+
+    /* Allocate space for the decomposition array. */
+    if (!(compdof = malloc(elements_per_pe * sizeof(PIO_Offset))))
+        return PIO_ENOMEM;
+
+    /* Describe the decomposition. This is a 1-based array, so add 1! */
+    for (int i = 0; i < elements_per_pe; i++)
+        compdof[i] = my_rank * elements_per_pe + i + 1;
+
+    /* Create the PIO decomposition for this test. */
+    printf("%d Creating decomposition elements_per_pe = %lld\n", my_rank, elements_per_pe);
+    if ((ret = PIOc_InitDecomp(iosysid, PIO_INT, NDIM2, dim_len_2d, elements_per_pe,
+                               compdof, ioid, NULL, NULL, NULL)))
+        ERR(ret);
+
+    printf("%d decomposition initialized.\n", my_rank);
+
+    /* Free the mapping. */
+    free(compdof);
+
+    return 0;
+}
+
