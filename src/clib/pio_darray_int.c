@@ -450,8 +450,6 @@ int pio_write_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid,
  * @param iodesc_ndims: the number of dimensions explicitly in the
  * iodesc
  * @param basetype the basic type of the minimal data unit
- * @param gsize array of the global sizes of all dimensions of the
- * field to be written
  * @param maxregions max number of blocks to be written from
  * this iotask
  * @param firstregion pointer to the first element of a linked
@@ -473,7 +471,7 @@ int pio_write_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid,
  * @ingroup PIO_write_darray
  */
 int pio_write_darray_multi_nc(file_desc_t *file, int nvars, const int *vid, int iodesc_ndims,
-                              MPI_Datatype basetype, const PIO_Offset *gsize, int maxregions,
+                              MPI_Datatype basetype, int maxregions,
                               io_region *firstregion, PIO_Offset llen, int maxiobuflen,
                               int num_aiotasks, void *iobuf, const int *frame)
 {
@@ -741,8 +739,6 @@ int pio_write_darray_multi_nc(file_desc_t *file, int nvars, const int *vid, int 
  * @param iodesc_ndims the number of dimensions explicitly in the
  * iodesc.
  * @param basetype the basic type of the minimal data unit
- * @param gsize array of the global dimensions of the field to be
- * written. (Not used ???)
  * @param maxregions max number of blocks to be written from this
  * iotask.
  * @param firstregion pointer to the first element of a linked
@@ -764,9 +760,9 @@ int pio_write_darray_multi_nc(file_desc_t *file, int nvars, const int *vid, int 
  * @ingroup PIO_write_darray
  */
 int pio_write_darray_multi_nc_serial(file_desc_t *file, int nvars, const int *vid, int iodesc_ndims,
-                                     MPI_Datatype basetype, const PIO_Offset *gsize, int maxregions,
-                                     io_region *firstregion, PIO_Offset llen, int maxiobuflen,
-                                     int num_aiotasks, void *iobuf, const int *frame)
+                                     MPI_Datatype basetype, int maxregions, io_region *firstregion,
+                                     PIO_Offset llen, int maxiobuflen, int num_aiotasks, void *iobuf,
+                                     const int *frame)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     var_desc_t *vdesc;     /* Contains info about the variable. */

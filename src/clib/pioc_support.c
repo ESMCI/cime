@@ -751,9 +751,6 @@ int PIOc_freedecomp(int iosysid, int ioid)
     /* Free the dimlens. */
     free(iodesc->dimlen);
 
-    if (iodesc->gsize)
-        free(iodesc->gsize);
-
     if (iodesc->rfrom)
         free(iodesc->rfrom);
 
