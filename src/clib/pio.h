@@ -242,7 +242,7 @@ typedef struct io_desc_t
      * io tasks. */
     int nrecvs;
 
-    /** Local size of the decomposition array. */
+    /** Local size of the decomposition array on the compute node. */
     int ndof;
 
     /** All vars included in this io_desc_t have the same number of
@@ -271,7 +271,8 @@ typedef struct io_desc_t
     /** The MPI type of the data. */
     MPI_Datatype basetype;
 
-    /** Length of the iobuffer on this task for a single field */
+    /** Length of the iobuffer on this task for a single field on the
+     * IO node. */
     PIO_Offset llen;
 
     /** Maximum llen participating. */
