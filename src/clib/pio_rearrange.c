@@ -1059,14 +1059,9 @@ int determine_fill(iosystem_desc_t *ios, io_desc_t *iodesc, const int *gsize,
     /* If the total size of the data provided to be written is < the
      * total data size then we need fill values. */
     if (totalllen < totalgridsize)
-    {
         iodesc->needsfill = true;
-    }
     else
-    {
         iodesc->needsfill = false;
-        /* iodesc->gsize = NULL; */
-    }
 
     /*  TURN OFF FILL for timing test
         iodesc->needsfill=false; */
@@ -1096,11 +1091,6 @@ void iodesc_dump(io_desc_t *iodesc)
 
     printf("llen= %lld\n", iodesc->llen);
     printf("maxiobuflen= %d\n", iodesc->maxiobuflen);
-    printf("gsize=");
-    for (int i = 0; i < iodesc->ndims; i++){
-        printf(" %d", iodesc->ioid);
-    }
-    printf("\n");
 
     printf("rindex= ");
     for (int j = 0; j < iodesc->llen; j++)
