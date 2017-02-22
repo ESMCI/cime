@@ -478,7 +478,7 @@ int PIOc_write_darray(int ncid, int vid, int ioid, PIO_Offset arraylen, void *ar
         {
             vtype = (MPI_Datatype)iodesc->basetype;
             LOG((3, "caller did not provide fill value vtype = %d", vtype));
-            if (vtype == MPI_INTEGER)
+            if (vtype == MPI_INT)
             {
                 int fill = PIO_FILL_INT;
                 memcpy((char *)wmb->fillvalue + tsize * wmb->validvars, &fill, tsize);

@@ -455,7 +455,7 @@ int check_netcdf2(iosystem_desc_t *ios, file_desc_t *file, int status,
     if (eh == PIO_INTERNAL_ERROR)
         piodie(errmsg, fname, line);        /* Die! */
     else if (eh == PIO_BCAST_ERROR && ios)  /* Not sure what this will do. */
-        MPI_Bcast(&status, 1, MPI_INTEGER, ios->ioroot, ios->my_comm);
+        MPI_Bcast(&status, 1, MPI_INT, ios->ioroot, ios->my_comm);
 
     /* For PIO_RETURN_ERROR, just return the error. */
     return status;
@@ -664,7 +664,7 @@ io_desc_t *malloc_iodesc(const iosystem_desc_t *ios, int piotype, int ndims)
         break;
     case PIO_INT:
     default:
-        iodesc->basetype = MPI_INTEGER;
+        iodesc->basetype = MPI_INT;
         break;
     }
 

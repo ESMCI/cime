@@ -1380,7 +1380,7 @@ int test_malloc_iodesc(int iosysid, int my_rank)
     /* Test an int one. */
     if (!(iodesc = malloc_iodesc(ios, PIO_INT, 1)))
         return ERR_WRONG;
-    if (iodesc->basetype != MPI_INTEGER)
+    if (iodesc->basetype != MPI_INT)
         return ERR_WRONG;
     if (iodesc->ndims != 1)
         return ERR_WRONG;
