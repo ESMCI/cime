@@ -168,6 +168,14 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
         if ((ret = PIOc_openfile(iosysid, &ncid2, &flavor[fmt], filename, PIO_NOWRITE)))
             ERR(ret);
 
+        /* These should not work. */
+        if (PIOc_read_darray(ncid2 + TEST_VAL_42, varid, ioid, arraylen,
+                             test_data_in) != PIO_EBADID)
+            ERR(ERR_WRONG);
+        if (PIOc_read_darray(ncid2, varid, ioid + TEST_VAL_42, arraylen,
+                             test_data_in) != PIO_EBADID)
+            ERR(ERR_WRONG);
+        
         /* Read the data. */
         if ((ret = PIOc_read_darray(ncid2, varid, ioid, arraylen, test_data_in)))
             ERR(ret);
