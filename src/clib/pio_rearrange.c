@@ -1065,22 +1065,11 @@ int determine_fill(iosystem_desc_t *ios, io_desc_t *iodesc, const int *gsize,
     else
     {
         iodesc->needsfill = false;
-        iodesc->gsize = NULL;
+        /* iodesc->gsize = NULL; */
     }
 
     /*  TURN OFF FILL for timing test
         iodesc->needsfill=false; */
-
-    if (iodesc->needsfill)
-    {
-        /* Allocate memory to hold dimension sizes. */
-        if (!(iodesc->gsize = malloc(iodesc->ndims * sizeof(PIO_Offset))))
-            return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
-
-        /* Save the dimension sizes. */
-        for (i = 0; i < iodesc->ndims; i++)
-            iodesc->gsize[i] = gsize[i];
-    }
 
     return PIO_NOERR;
 }

@@ -284,10 +284,6 @@ typedef struct io_desc_t
     /** Maximum llen participating. */
     int maxiobuflen;
 
-    /** Array of the global size of each dimension. (Does not seem to
-     * be used anywhere.) */
-    PIO_Offset *gsize;
-
     /** Array of tasks received from in pio_swapm(). */
     int *rfrom;
 
