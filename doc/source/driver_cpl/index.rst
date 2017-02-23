@@ -1,4 +1,4 @@
-.. _driver-coupler:
+.. _driver-cpl:
 
 .. on documentation master file, created by
    sphinx-quickstart on Tue Jan 31 19:46:36 2017.
