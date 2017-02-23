@@ -16,6 +16,8 @@ Welcome to the CIME documentation!
 
 :ref:`Building a Coupled Model with CIME <build-cpl>`: how to bring a new model in to CIME.
 
+:ref:`Miscellaneous Tools <misc-tools>`: various tools for climate modeling
+
 Table of contents
 -----------------
 
@@ -26,6 +28,7 @@ Table of contents
    data_models/index.rst
    driver_cpl/index.rst
    build_cpl/index.rst
+   misc_tools/index.rst
 
 Indices and tables
 ==================
