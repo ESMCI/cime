@@ -263,12 +263,15 @@ int test_decomp_read_write(int iosysid, int ioid, int num_flavors, int *flavor, 
     char title_in[PIO_MAX_NAME + 1];   /* Optional title. */
     char history_in[PIO_MAX_NAME + 1]; /* Optional history. */
     int fortran_order_in; /* Indicates fortran vs. c order. */
+    int num_decomp_file_types = 1;
     int ret;              /* Return code. */
 
-    /* Use PIO to create the decomp file in each of the four
-     * available ways. */
-#define NUM_DECOMP_FILE_TYPES 3
-    for (int decomp_file_type = 0; decomp_file_type < NUM_DECOMP_FILE_TYPES; decomp_file_type++)
+#ifdef _NETCDF4
+    /* Two extra output methods to tests if NetCDF-4 is present. */
+    num_decomp_file_types = 3;
+#endif /* _NETCDF4 */
+    
+    for (int decomp_file_type = 0; decomp_file_type < num_decomp_file_types; decomp_file_type++)
     {
         int cmode = 0;
             
@@ -278,6 +281,8 @@ int test_decomp_read_write(int iosysid, int ioid, int num_flavors, int *flavor, 
         if (decomp_file_type == 2)
             cmode |= NC_MPIIO;
             
+        /* Use PIO to create the decomp file in each of the four
+         * available ways. */
         for (int fmt = 0; fmt < num_flavors; fmt++) 
         {
             /* Create the filename. */
