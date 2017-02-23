@@ -17,7 +17,7 @@ After calling **case.setup**, you can build the model executable by running case
    These will be placed in a path below ``$SHAREDLIBROOT``.
 3. Create the necessary component libraries.
    These will be placed in ``$EXEROOT/bld/lib``.
-4. Create the model executable (either ``cesm.exe`` or ``acme.exe``).
+4. Create the model executable (``$MODEL.exe``).
    This will be placed in ``$EXEROOT``.
 
 ``$CASEROOT/Tools/Makefile`` and ``$CASEROOT/Macros.make`` are used to generate the utility libraries, the component libraries and the model executable.
@@ -51,10 +51,11 @@ Invoking **case.build** creates the following directory structure in ``$EXEROOT`
 
    atm/, cpl/, esp/, glc/, ice/, intel/, lib/, lnd/, ocn/, rof/, wav/
 
-All of the above directories, other than ``intel/`` and ``lib/``, each contain an ``obj/`` directory where the compiled object files for the target model component is placed.
-These object files are collected into libraries that are placed in ``lib/`` along with the ``mct``, ``pio``, ``gptl``, and ``csm_share`` libraries.
+All of the above directories, other than ``intel/`` and ``lib/``, each contain an ``obj/`` directory where the compiled object files for the target model component are placed.
+These object files are collected into libraries that are placed in ``lib/``.
+The ``mct``, ``pio``, ``gptl``, and ``csm_share`` libraries are placed in a directory tree reflecting dependancies, see the bldlog for a given component to locate the library for that component.
 Special include modules are also placed in ``lib/include``. The model executable (either ``cesm.exe`` or ``acme.exe``) is placed directly in ``$EXEROOT``.
-On the other hand, component namelists, component logs, output datasets, and restart files are placed in ``$RUNDIR``.
+Component namelists, component logs, output datasets, and restart files are placed in ``$RUNDIR``.
 It is important to note that ``$RUNDIR`` and ``$EXEROOT`` are independent variables which are set ``$CASEROOT/env_run.xml``.
 
 All active and data components use input datasets.
@@ -79,7 +80,7 @@ Rebuilding the model
 
 You should rebuild the model under the following circumstances:
 
-If either ``env_build.xml`` or ``Macros`` has been modified, and/or if code is added to ``SourceMods/src.*``, then it's safest to clean the build and rebuild from scratch as follows,
+If either ``env_build.xml`` or ``Macros.make`` has been modified, and/or if code is added to ``SourceMods/src.*``, then it's safest to clean the build and rebuild from scratch as follows,
 ::
 
    > cd $CASEROOT
