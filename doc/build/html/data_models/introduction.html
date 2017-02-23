@@ -59,11 +59,8 @@
 <li><a class="reference internal" href="#">1. Introduction</a><ul>
 <li><a class="reference internal" href="#overview">1.1. Overview</a></li>
 <li><a class="reference internal" href="#design">1.2. Design</a></li>
-<li><a class="reference internal" href="#io-through-data-models">1.3. IO Through Data Models</a></li>
-<li><a class="reference internal" href="#restart-files">1.4. Restart Files</a></li>
-<li><a class="reference internal" href="#hierarchy">1.5. Hierarchy</a></li>
-<li><a class="reference internal" href="#summary">1.6. Summary</a></li>
-<li><a class="reference internal" href="#next-sections">1.7. Next Sections</a></li>
+<li><a class="reference internal" href="#namelist-input">1.3. Namelist Input</a></li>
+<li><a class="reference internal" href="#next-sections">1.4. Next Sections</a></li>
 </ul>
 </li>
 </ul>
@@ -103,111 +100,48 @@
 <span id="data-model-introduction"></span><h1>1. Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="overview">
 <h2>1.1. Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
-<p>The CIME data models perform the basic function of reading external data files, modifying that data, and then sending it to the driver/coupler via the CIME coupling interfaces.
-The driver/coupler and other models have no fundamental knowledge of whether another component is fully active or just a data model.
-In some cases, data models have prognostic functionality, that is, they also receive and use data sent by the driver to/coupler the data model.
-However, in most cases, the data models are not running prognostically and have no need to receive any data from the driver/coupler.</p>
+<p>The CIME data models perform the basic function of reading external data files, modifying those data, and then sending the data to the driver via the CIME coupling interfaces.
+The fields sent to the driver are the same as those that would be sent by an active component.
+This takes advantage of the fact that the driver and other models have no fundamental knowledge of whether another component is fully active or just a data model.
+So, for example, the data atmosphere model (datm) sends the same fields as the prognostic Community Atmosphere Model (CAM).
+However, rather than determining these fields prognostically, most data models simply read prescribed data.</p>
+<p>The data models typically read gridded data from observations or reanalysis products.
+Out of the box, they often provide a few possible data sources and/or time periods that you can choose from when setting up a case.
+However, data models can also be configured to read output from a previous coupled run.
+For example, you can perform a fully-coupled run in which you ask for particular extra output streams; you can then use these saved &#8220;driver history&#8221; files as inputs to datm to run a later land-only spinup.</p>
+<p>In some cases, data models have prognostic functionality, that is, they also receive and use data sent by the driver.
+However, in most cases, the data models are not running prognostically and have no need to receive any data from the driver.</p>
 <p>The CIME data models have parallel capability and share significant amounts of source code.
-Methods for reading and interpolating data have been established and can easily be reused.
-There is a natural hierarchy in the system.
+Methods for reading and interpolating data have been established and can easily be reused:
 The data model calls strdata (&#8220;stream data&#8221;) methods which then call stream methods.
 The stream methods are responsible for managing lists of input data files and their time axis.
 The information is then passed up to the strdata methods where the data is read and interpolated in space and time.
-The interpolated data is passed up to the data model where final fields are derived, packed, and returned to the coupler.</p>
+The interpolated data is passed up to the data model where final fields are derived, packed, and returned to the driver.</p>
 </div>
 <div class="section" id="design">
 <h2>1.2. Design<a class="headerlink" href="#design" title="Permalink to this headline">¶</a></h2>
-<p>The strdata implementation is hardwired to execute a set of specific operations associated with reading and interpolating data in space and time.
-The strdata implementation does the following:</p>
-<ol class="arabic simple">
-<li>determines nearest lower and upper bound data from the input dataset</li>
-<li>if that is new data then read lower and upper bound data</li>
-<li>fill lower and upper bound data</li>
-<li>spatially map lower and upper bound data to model grid</li>
-<li>time interpolate lower and upper bound data to model time</li>
-<li>return fields to data model</li>
-</ol>
+<p>Data models function by reading in different streams of input data and interpolating those data both spatially and temporally to the appropriate final model grid and model time.</p>
+<ul class="simple">
+<li><strong>Each data model communicates with the driver with fields on only the data model model grid</strong>.</li>
+<li><strong>Each data model can be associated with multiple stream input files, that are specified in the strdata namelist group</strong>.</li>
+<li><strong>Each stream input file can contain data on a unique grid and unique temporal time stamps</strong>.</li>
+<li><strong>Each stream input file data is interpolated to a single model grid and the present model time</strong>.</li>
+</ul>
+<p>More details of the data model design are covered in <a class="reference internal" href="design-details.html#design-details"><span class="std std-ref">design details</span></a>.</p>
 </div>
-<div class="section" id="io-through-data-models">
-<h2>1.3. IO Through Data Models<a class="headerlink" href="#io-through-data-models" title="Permalink to this headline">¶</a></h2>
-<p>The two timestamps of input data that bracket the present model time are read first.
-These are called the lower and upper bounds of data and will change as the model advances.
-Those two sets of inputdata are first filled based on the user setting of the namelist variables <code class="docutils literal"><span class="pre">str_fillalgo</span></code> and <code class="docutils literal"><span class="pre">str_fillmask</span></code>.
-That operation occurs on the input data grid.
-The lower and upper bound data are then spatially mapped to the model grid based upon the user setting of the namelist variables <code class="docutils literal"><span class="pre">str_mapalgo</span></code> and <code class="docutils literal"><span class="pre">str_mapmask</span></code>.
-Spatial interpolation only occurs if the input data grid and model grid are not the identical, and this is determined in the strdata module automatically.
-Time interpolation is the final step and is done using a time interpolation method specified by the user in namelist (via the shr_strdata_nml namelist variable &#8220;tintalgo&#8221;).
-A final set of fields is then available to the data model on the model grid and for the current model time.</p>
-<p>There are two primary costs associated with strdata, reading data and spatially mapping data.
-Time interpolation is relatively cheap in the current implementation.
-As much as possible, redundant operations are minimized.
-Fill and mapping weights are generated at initialization and saved.
-The upper and lower bound mapped input data is saved between time steps to reduce mapping costs in cases where data is time interpolated more often than new data is read.
-If the input data timestep is relatively small (for example, hourly data as opposed to daily or monthly data) the cost of reading input data can be quite large.
-Also, there can be significant variation in cost of the data model over the coarse of the run, for instance, when new inputdata must be read and interpolated, although it&#8217;s relatively predictable.
-The present implementation doesn&#8217;t support changing the order of operations, for instance, time interpolating the data before spatial mapping.
-Because the present computations are always linear, changing the order of operations will not fundamentally change the results.
-The present order of operations generally minimizes the mapping cost for typical data model use cases.</p>
-<p>There are several limitations in both options and usage within the data models at the present time.
-Spatial interpolation can only be performed from a two-dimensional latitude-longitude input grid.
-The target grid can be arbitrary but the source grid must be able to be described by simple one-dimensional lists of longitudes and latitudes, although they don&#8217;t have to have equally spaced.</p>
-<p>At the present time, data models can only read netcdf data, and IO is handled through either standard netcdf interfaces or through the PIO library using either netcdf or pnetcdf.
-If standard netcdf is used, global fields are read and then scattered one field at a time.
-If PIO is used, then data will be read either serially or in parallel in chunks that are approximately the global field size divided by the number of io tasks.
-If pnetcdf is used through PIO, then the pnetcdf library must be included during the build of the model.
-The pnetcdf path and option is hardwired into the <code class="docutils literal"><span class="pre">Macros.make</span></code> file for the specific machine.
-To turn on <code class="docutils literal"><span class="pre">pnetcdf</span></code> in the build, make sure the <code class="docutils literal"><span class="pre">Macros.make</span></code> variables PNETCDF_PATH, INC_PNETCDF, and LIB_PNETCDF are set and that the PIO CONFIG_ARGS sets the PNETCDF_PATH argument.</p>
-<p>Beyond just the option of selecting IO with PIO, several namelist are available to help optimize PIO IO performance.
-Those are <strong>TODO</strong> - list these.
-The total mpi tasks that can be used for IO is limited to the total number of tasks used by the data model.
-Often though, fewer io tasks result in improved performance.
-In general, [io_root + (num_iotasks-1)*io_stride + 1] has to be less than the total number of data model tasks.
-In practice, PIO seems to perform optimally somewhere between the extremes of 1 task and all tasks, and is highly machine and problem dependent.</p>
-</div>
-<div class="section" id="restart-files">
-<h2>1.4. Restart Files<a class="headerlink" href="#restart-files" title="Permalink to this headline">¶</a></h2>
-<p>Restart files are generated automatically by the data models based upon a flag sent from the coupler.
-The restart files must meet the CIME naming convention and an <code class="docutils literal"><span class="pre">rpointer</span></code> file is generated at the same time.
-An <code class="docutils literal"><span class="pre">rpointer</span></code> file is a <em>restart pointer</em> file which contains the name of the most recently created restart file.
-Normally, if restart files are read, the restart filenames are specified in the rpointer file.
-Optionally though, there are namelist variables such as <cite>restfilm`</cite> to specify the restart filenames via namelist. If those namelist are set, the <code class="docutils literal"><span class="pre">rpointer</span></code> file will be ignored.
-The default method is to use the <code class="docutils literal"><span class="pre">rpointer</span></code> files to specify the restart filenames.
-In most cases, no model restart is required for the data models to restart exactly.
-This is because there is no memory between timesteps in many of the data model science modes.
-If a model restart is required, it will be written automatically and then must be used to continue the previous run.</p>
-<p>There are separate stream restart files that only exist for performance reasons.
-A stream restart file contains information about the time axis of the input streams.
-This information helps reduce the start costs associated with reading the input dataset time axis information.
-If a stream restart file is missing, the code will restart without it but may need to reread data from the input data files that would have been stored in the stream restart file.
-This will take extra time but will not impact the results.</p>
-</div>
-<div class="section" id="hierarchy">
-<h2>1.5. Hierarchy<a class="headerlink" href="#hierarchy" title="Permalink to this headline">¶</a></h2>
-<p>The hierarchy of data models, strdata, and streams also compartmentalize grids and fields.
-Data models communicate with the coupler with fields on only the data model model grid.
-- <em>Each strdata namelist input can have multiple stream description files</em>
-- <em>Each stream input file can contain data on a different grid</em>.
-- <em>Each stream input file data is interpolated to a single model grid</em>.
-The strdata module will gracefully read the different streams of input data and interpolate both spatially and temporally to the appropriate final model grid and model time.</p>
-<p>Below is a schematic of the hierarchy:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">driver</span>     <span class="p">:</span>      <span class="n">call</span> <span class="n">data</span> <span class="n">land</span> <span class="n">model</span>
-<span class="n">data</span> <span class="n">model</span> <span class="p">:</span>         <span class="n">data</span> <span class="n">land</span> <span class="n">model</span>
-<span class="n">data</span> <span class="n">model</span> <span class="p">:</span>           <span class="n">land_data</span>
-<span class="n">data</span> <span class="n">model</span> <span class="p">:</span>            <span class="n">grid</span>
-<span class="n">data</span> <span class="n">model</span> <span class="p">:</span>           <span class="n">strdata</span>
-<span class="n">strdata</span>    <span class="p">:</span>    <span class="n">interpa</span>   <span class="n">interpb</span>   <span class="n">interpc</span>
-<span class="n">strdata</span>    <span class="p">:</span>    <span class="n">streama</span>   <span class="n">streamb</span>   <span class="n">streamc</span>
-<span class="n">stream</span>     <span class="p">:</span>     <span class="n">grida</span>     <span class="n">gridb</span>     <span class="n">gridc</span>
-<span class="n">stream</span>     <span class="p">:</span>   <span class="n">filea_01</span>   <span class="n">fileb_01</span>  <span class="n">filec_01</span>
-<span class="n">stream</span>     <span class="p">:</span>     <span class="o">...</span>                  <span class="o">...</span>
-<span class="n">stream</span>     <span class="p">:</span>   <span class="n">filea_04</span>             <span class="n">filec_96</span>
-</pre></div>
-</div>
-<p>Users will primarily setup different data model configurations through existing namelist settings.
+<div class="section" id="namelist-input">
+<h2>1.3. Namelist Input<a class="headerlink" href="#namelist-input" title="Permalink to this headline">¶</a></h2>
+<p>Each data model has two namelist groups in its input namelist file: a stream-dependent and a stream-independent namelist group.</p>
+<p>The stream-dependent namelist group (<code class="docutils literal"><span class="pre">shr_strdata_nml</span></code>) specifies the data model mode, stream description text files, and interpolation options.
+The stream description files will be provided as separate input files and contain the files and fields that need to be read.
+The stream-independent namelist gorup contains namelist input such as the data model decomposition, etc.</p>
+<p>From a user perspective, for any data model, it is important to know what modes are supported and the internal field names in the data model.
+That information will be used in the strdata namelist and stream input files.</p>
+<p>Users will primarily setup different data model configurations through namelist settings.
 <em>The strdata and stream input options and format are identical for all data models</em>.
 The data model specific namelist has significant overlap between data models, but each data model has a slightly different set of input namelist variables and each model reads that namelist from a unique filename.
 The detailed namelist options for each data model will be described later, but each model will specify a filename or filenames for strdata namelist input and each strdata namelist will specify a set of stream input files.</p>
-<p>To continue with the above example, the following inputs would be consistent with the above figure. The data model namelist input file is hardwired to &#8220;dlnd_in&#8221; and in this case, the namelist would look something like</p>
+<p>The following example illustrates the basic set of namelist inputs:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&amp;</span><span class="n">dlnd_nml</span>
    <span class="n">decomp</span> <span class="o">=</span> <span class="s1">&#39;1d&#39;</span>
 <span class="o">/</span>
@@ -220,8 +154,8 @@ The detailed namelist options for each data model will be described later, but e
 </pre></div>
 </div>
 <p>Three stream description files are then expected to be available, <code class="docutils literal"><span class="pre">streama</span></code>, <code class="docutils literal"><span class="pre">streamb</span></code> and <code class="docutils literal"><span class="pre">streamc</span></code>.
-Those files specify the input data filenames, input data grids, and input fields that are expected among other things.
-The stream files are not Fortran namelist format.
+Those files specify the input data filenames, input data grids, and input fields that are expected, among other things.
+The stream files are <strong>not</strong> Fortran namelist format.
 Their format and options will be described later.
 As an example, one of the stream description files might look like</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">stream</span><span class="o">&gt;</span>
@@ -267,17 +201,8 @@ As an example, one of the stream description files might look like</p>
 </div>
 <p>In general, these examples of input files are not complete, but they do show the general hierarchy and feel of the data model input.</p>
 </div>
-<div class="section" id="summary">
-<h2>1.6. Summary<a class="headerlink" href="#summary" title="Permalink to this headline">¶</a></h2>
-<p>In summary, each data model has a stream-dependent and a stream-independent namelist group.</p>
-<p>The stream-dependent namelist group (<code class="docutils literal"><span class="pre">shr_strdata_nml</span></code>) specifies the data model mode, stream description text files, and interpolation options.
-The stream description files will be provided as separate input files and contain the files and fields that need to be read.
-The stream-independent namelist gorup contains namelist input such as the data model decomposition, etc.</p>
-<p>From a user perspective, for any data model, it is important to know what modes are supported and the internal field names in the data model.
-That information will be used in the strdata namelist and stream input files.</p>
-</div>
 <div class="section" id="next-sections">
-<h2>1.7. Next Sections<a class="headerlink" href="#next-sections" title="Permalink to this headline">¶</a></h2>
+<h2>1.4. Next Sections<a class="headerlink" href="#next-sections" title="Permalink to this headline">¶</a></h2>
 <p>In the next sections, more details will be presented including a full description of the science modes and namelist settings for the data atmosphere, data land, data runoff, data ocean, and data ice models; namelist settings for the strdata namelist input; a description of the format and options for the stream description input files; and a list of internal field names for each of the data components.
 The internal data model field names are important because they are used to setup the stream description files and to map the input data fields to the internal data model field names.</p>
 </div>

@@ -8,7 +8,7 @@ Setting up a Case
 Calling **case.setup**
 ===================================
 
-After creating a case, you need to call the **case.setup** command from ``$CASEROOT``. 
+After creating a case or changing aspects of the case such as the pe-layout, you need to call the **case.setup** command from ``$CASEROOT``. 
 To see the options to **case.setup** use the ``--help`` option. 
 
 Calling ``case.setup`` creates the following **additional** files and directories in ``$CASEROOT``: 
@@ -21,11 +21,12 @@ Calling ``case.setup`` creates the following **additional** files and directorie
 
    Macros.make		           File containing machine-specific makefile directives for your target platform/compiler. 
 
-                                   This is only created the *first* time that **case.setup** is called. 
+                                   This file is only created if it does not already exist in the case is called. 
 
-				   This file can be modified by the user, but we do not recommend it.
+				   This file can be modified by the user to change certain aspects of the build such as compiler flags.
 
-				   Calling **case.setup -clean** will not remove the Macros file once it has been created.
+				   Calling **case.setup -clean** will not remove the Macros.make file once it has been created.  
+				   However if you remove or rename the Macros.make file case.setup will recreate it for you.
 
    user_nl_xxx[_NNNN] files	   Files where all user modifications to component namelists are made. 
 
@@ -48,8 +49,9 @@ Calling ``case.setup`` creates the following **additional** files and directorie
                                    be overwritten at build time and run time. 
 
    .env_mach_specific.[cs,sh]      Files summarizing the module load commands and environment variables that are set when the scripts in ``$CASEROOT`` are called. 
-	                           **TODO:** can or should users invoke this?
-   software_environment.txt	   **TODO:** FILL THIS IN.
+	                           These files are not used by the case but can be useful for debugging case module load and environment settings.
+
+   software_environment.txt	   This file records some aspects of the computing system the case is built on, such as the shell environment.
    =============================   ===============================================================================================================================
 
 

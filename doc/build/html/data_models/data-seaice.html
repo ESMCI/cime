@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>6. Data Ice (DICE) &#8212; on  documentation</title>
+    <title>7. Data Ice (DICE) &#8212; on  documentation</title>
     
     <link rel="stylesheet" href="../_static/bizstyle.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -28,8 +28,8 @@
     <script type="text/javascript" src="../_static/bizstyle.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="7. Data Ocean (DOCN)" href="data-ocean.html" />
-    <link rel="prev" title="5. Data Land (DLND)" href="data-lnd.html" />
+    <link rel="next" title="8. Data Ocean (DOCN)" href="data-ocean.html" />
+    <link rel="prev" title="6. Data Land (DLND)" href="data-lnd.html" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <!--[if lt IE 9]>
     <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
@@ -43,10 +43,10 @@
           <a href="../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="data-ocean.html" title="7. Data Ocean (DOCN)"
+          <a href="data-ocean.html" title="8. Data Ocean (DOCN)"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="data-lnd.html" title="5. Data Land (DLND)"
+          <a href="data-lnd.html" title="6. Data Land (DLND)"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">on  documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">CIME Data Models</a> &#187;</li> 
@@ -56,22 +56,22 @@
         <div class="sphinxsidebarwrapper">
   <h3><a href="../index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">6. Data Ice (DICE)</a><ul>
-<li><a class="reference internal" href="#namelists">6.1. Namelists</a></li>
-<li><a class="reference internal" href="#xml-variables">6.2. XML variables</a></li>
-<li><a class="reference internal" href="#datamode-values">6.3. Datamode values</a></li>
-<li><a class="reference internal" href="#datamode-independent-streams">6.4. Datamode independent streams</a></li>
-<li><a class="reference internal" href="#fields">6.5. Fields</a></li>
+<li><a class="reference internal" href="#">7. Data Ice (DICE)</a><ul>
+<li><a class="reference internal" href="#namelists">7.1. Namelists</a></li>
+<li><a class="reference internal" href="#xml-variables">7.2. XML variables</a></li>
+<li><a class="reference internal" href="#datamode-values">7.3. Datamode values</a></li>
+<li><a class="reference internal" href="#datamode-independent-streams">7.4. Datamode independent streams</a></li>
+<li><a class="reference internal" href="#fields">7.5. Fields</a></li>
 </ul>
 </li>
 </ul>
 
   <h4>Previous topic</h4>
   <p class="topless"><a href="data-lnd.html"
-                        title="previous chapter">5. Data Land (DLND)</a></p>
+                        title="previous chapter">6. Data Land (DLND)</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="data-ocean.html"
-                        title="next chapter">7. Data Ocean (DOCN)</a></p>
+                        title="next chapter">8. Data Ocean (DOCN)</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -98,14 +98,14 @@
           <div class="body" role="main">
             
   <div class="section" id="data-ice-dice">
-<span id="data-seaice"></span><h1>6. Data Ice (DICE)<a class="headerlink" href="#data-ice-dice" title="Permalink to this headline">¶</a></h1>
+<span id="data-seaice"></span><h1>7. Data Ice (DICE)<a class="headerlink" href="#data-ice-dice" title="Permalink to this headline">¶</a></h1>
 <p>DICE is a combination of a data model and a prognostic model.
 The data functionality reads in ice coverage.
 The prognostic functionality calculates the ice/atmosphere and ice/ocean fluxes.
 DICE receives the same atmospheric input from the coupler as the active CICE model (i.e., atmospheric  states, shortwave fluxes, and ocean ice melt flux) and acts very similarly to CICE running in prescribed mode.
 Currently, this component is only used to drive POP in &#8220;C&#8221; compsets.</p>
 <div class="section" id="namelists">
-<h2>6.1. Namelists<a class="headerlink" href="#namelists" title="Permalink to this headline">¶</a></h2>
+<h2>7.1. Namelists<a class="headerlink" href="#namelists" title="Permalink to this headline">¶</a></h2>
 <p>The namelist file for DICE is <code class="docutils literal"><span class="pre">dice_in</span></code> (or <code class="docutils literal"><span class="pre">dice_in_NNN</span></code> for multiple instances).</p>
 <p>As is the case for all data models, DICE namelists can be separated into two groups, stream-independent and stream-dependent.</p>
 <p>The stream dependent group is <a class="reference internal" href="input-streams.html#input-streams"><span class="std std-ref">shr_strdata_nml</span></a>.</p>
@@ -147,7 +147,7 @@ Currently, this component is only used to drive POP in &#8220;C&#8221; compsets.
 <p>To change the namelist settings in <code class="docutils literal"><span class="pre">dice_in</span></code>, edit the file <code class="docutils literal"><span class="pre">user_nl_dice</span></code>.</p>
 </div>
 <div class="section" id="xml-variables">
-<span id="dice-xml-vars"></span><h2>6.2. XML variables<a class="headerlink" href="#xml-variables" title="Permalink to this headline">¶</a></h2>
+<span id="dice-xml-vars"></span><h2>7.2. XML variables<a class="headerlink" href="#xml-variables" title="Permalink to this headline">¶</a></h2>
 <p>The following are xml variables that CIME supports for DICE.  These variables will appear in <code class="docutils literal"><span class="pre">env_run.xml</span></code> and are used by the DICE <code class="docutils literal"><span class="pre">cime_config/buildnml</span></code> script to generate the DICE namelist file <code class="docutils literal"><span class="pre">dice_in</span></code> and the required associated stream files for the case.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
@@ -205,7 +205,7 @@ Normally the ice fraction data is found in the same data files that provide SST 
 They are normally found in the same file because the SST and ice fraction data are derived from the same observational data sets and are consistent with each other.</p>
 </div>
 <div class="section" id="datamode-values">
-<span id="dice-datamodes"></span><h2>6.3. Datamode values<a class="headerlink" href="#datamode-values" title="Permalink to this headline">¶</a></h2>
+<span id="dice-datamodes"></span><h2>7.3. Datamode values<a class="headerlink" href="#datamode-values" title="Permalink to this headline">¶</a></h2>
 <p>One of the variables in <code class="docutils literal"><span class="pre">shr_strdata_nml</span></code> is the <code class="docutils literal"><span class="pre">datamode</span></code>, whose value is a character string.
 Each data model has a unique set of <code class="docutils literal"><span class="pre">datamode</span></code> values that it supports.</p>
 <p>The valid values for <code class="docutils literal"><span class="pre">datamode</span></code> are set by the xml variable <code class="docutils literal"><span class="pre">DICE_MODE</span></code> in the <code class="docutils literal"><span class="pre">config_component.xml</span></code> file for DICE.
@@ -254,11 +254,11 @@ fields not found on an input stream will be set to zero.</p>
 </table>
 </div>
 <div class="section" id="datamode-independent-streams">
-<span id="dice-mode-independent-streams"></span><h2>6.4. Datamode independent streams<a class="headerlink" href="#datamode-independent-streams" title="Permalink to this headline">¶</a></h2>
+<span id="dice-mode-independent-streams"></span><h2>7.4. Datamode independent streams<a class="headerlink" href="#datamode-independent-streams" title="Permalink to this headline">¶</a></h2>
 <p>There are no datamode independent streams for DICE.</p>
 </div>
 <div class="section" id="fields">
-<span id="dice-fields"></span><h2>6.5. Fields<a class="headerlink" href="#fields" title="Permalink to this headline">¶</a></h2>
+<span id="dice-fields"></span><h2>7.5. Fields<a class="headerlink" href="#fields" title="Permalink to this headline">¶</a></h2>
 <p>The pre-defined internal field names in the data ice model are as follows. In general, the stream input file should translate the input variable names into these names for use within the data ocean model.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -353,10 +353,10 @@ fields not found on an input stream will be set to zero.</p>
           <a href="../genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="data-ocean.html" title="7. Data Ocean (DOCN)"
+          <a href="data-ocean.html" title="8. Data Ocean (DOCN)"
              >next</a> |</li>
         <li class="right" >
-          <a href="data-lnd.html" title="5. Data Land (DLND)"
+          <a href="data-lnd.html" title="6. Data Land (DLND)"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">on  documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" >CIME Data Models</a> &#187;</li> 

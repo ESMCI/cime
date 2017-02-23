@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>8. Data River (DROF) &#8212; on  documentation</title>
+    <title>9. Data River (DROF) &#8212; on  documentation</title>
     
     <link rel="stylesheet" href="../_static/bizstyle.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -29,7 +29,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="CIME Driver/Coupler" href="../driver_cpl/index.html" />
-    <link rel="prev" title="7. Data Ocean (DOCN)" href="data-ocean.html" />
+    <link rel="prev" title="8. Data Ocean (DOCN)" href="data-ocean.html" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <!--[if lt IE 9]>
     <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
@@ -46,7 +46,7 @@
           <a href="../driver_cpl/index.html" title="CIME Driver/Coupler"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="data-ocean.html" title="7. Data Ocean (DOCN)"
+          <a href="data-ocean.html" title="8. Data Ocean (DOCN)"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">on  documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">CIME Data Models</a> &#187;</li> 
@@ -56,19 +56,19 @@
         <div class="sphinxsidebarwrapper">
   <h3><a href="../index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">8. Data River (DROF)</a><ul>
-<li><a class="reference internal" href="#namelists">8.1. Namelists</a></li>
-<li><a class="reference internal" href="#xml-variables">8.2. XML variables</a></li>
-<li><a class="reference internal" href="#datamode-values">8.3. Datamode values</a></li>
-<li><a class="reference internal" href="#datamode-independent-streams">8.4. Datamode independent streams</a></li>
-<li><a class="reference internal" href="#fields">8.5. Fields</a></li>
+<li><a class="reference internal" href="#">9. Data River (DROF)</a><ul>
+<li><a class="reference internal" href="#namelists">9.1. Namelists</a></li>
+<li><a class="reference internal" href="#xml-variables">9.2. XML variables</a></li>
+<li><a class="reference internal" href="#datamode-values">9.3. Datamode values</a></li>
+<li><a class="reference internal" href="#datamode-independent-streams">9.4. Datamode independent streams</a></li>
+<li><a class="reference internal" href="#fields">9.5. Fields</a></li>
 </ul>
 </li>
 </ul>
 
   <h4>Previous topic</h4>
   <p class="topless"><a href="data-ocean.html"
-                        title="previous chapter">7. Data Ocean (DOCN)</a></p>
+                        title="previous chapter">8. Data Ocean (DOCN)</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="../driver_cpl/index.html"
                         title="next chapter">CIME Driver/Coupler</a></p>
@@ -98,18 +98,17 @@
           <div class="body" role="main">
             
   <div class="section" id="data-river-drof">
-<span id="data-river"></span><h1>8. Data River (DROF)<a class="headerlink" href="#data-river-drof" title="Permalink to this headline">¶</a></h1>
+<span id="data-river"></span><h1>9. Data River (DROF)<a class="headerlink" href="#data-river-drof" title="Permalink to this headline">¶</a></h1>
 <p>The data river model (DROF) provides river runoff data primarily to be used by the prognostic ocean component.
-This data can either be observational climatological or interannual river data or data from a previous modeul run that
-is output to coupler history files and then read back in by DROF.</p>
+This data can either be observational (climatological or interannual river data) or data from a previous model run that is output to coupler history files and then read back in by DROF.</p>
 <div class="section" id="namelists">
-<h2>8.1. Namelists<a class="headerlink" href="#namelists" title="Permalink to this headline">¶</a></h2>
+<h2>9.1. Namelists<a class="headerlink" href="#namelists" title="Permalink to this headline">¶</a></h2>
 <p>The data river runoff model (DROF) provides data river input to prognostic components such as the ocean.</p>
 <p>The namelist file for DROF is <code class="docutils literal"><span class="pre">drof_in</span></code>.</p>
-<p>As is the case for all data models, DROF namelists can be separated into two groups, stream-independent and stream-dependent.</p>
-<p>The stream dependent group is <a class="reference internal" href="input-streams.html#input-streams"><span class="std std-ref">shr_strdata_nml</span></a>.</p>
-<p id="drof-stream-independent-namelists">The stream-independent group is <code class="docutils literal"><span class="pre">drof_nml</span></code> and the DROF stream-independent namelist variables are:</p>
-<table border="1" class="docutils">
+<p>As is the case for all data models, DROF namelists can be separated into two groups, stream-independent and stream-dependent.
+The stream dependent group is <a class="reference internal" href="input-streams.html#input-streams"><span class="std std-ref">shr_strdata_nml</span></a>.
+The stream-independent group is <code class="docutils literal"><span class="pre">drof_nml</span></code> and the DROF stream-independent namelist variables are:</p>
+<table border="1" class="docutils" id="drof-stream-independent-namelists">
 <colgroup>
 <col width="28%" />
 <col width="72%" />
@@ -131,14 +130,15 @@ is output to coupler history files and then read back in by DROF.</p>
 </tr>
 </tbody>
 </table>
-<p>To change the namelist settings in drof_in, edit the file user_nl_drof.</p>
+<p>To change the namelist settings in <code class="docutils literal"><span class="pre">drof_in</span></code>, edit the file <code class="docutils literal"><span class="pre">user_nl_drof</span></code> in your case directory.</p>
 </div>
 <div class="section" id="xml-variables">
-<span id="drof-xml-vars"></span><h2>8.2. XML variables<a class="headerlink" href="#xml-variables" title="Permalink to this headline">¶</a></h2>
-<p>The following are xml variables that CIME supports for DROF.  These variables will appear in <code class="docutils literal"><span class="pre">env_run.xml</span></code> and are used by the DROF <code class="docutils literal"><span class="pre">cime_config/buildnml</span></code> script to generate the DROF namelist file <code class="docutils literal"><span class="pre">drof_in</span></code> and the required associated stream files for the case.</p>
+<span id="drof-xml-vars"></span><h2>9.2. XML variables<a class="headerlink" href="#xml-variables" title="Permalink to this headline">¶</a></h2>
+<p>The following are XML variables that CIME supports for DROF.
+These variables will appear in <code class="docutils literal"><span class="pre">env_run.xml</span></code> and are used by the DROF <code class="docutils literal"><span class="pre">cime_config/buildnml</span></code> script to generate the DROF namelist file <code class="docutils literal"><span class="pre">drof_in</span></code> and the required associated stream files for the case.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">These xml variables are used by the the drof&#8217;s <strong>cime_config/buildnml</strong> script in conjunction with drof&#8217;s <strong>cime_config/namelist_definition_drof.xml</strong> file to generate the namelist file <code class="docutils literal"><span class="pre">drof_in</span></code>.</p>
+<p class="last">These XML variables are used by the the drof&#8217;s <strong>cime_config/buildnml</strong> script in conjunction with drof&#8217;s <strong>cime_config/namelist_definition_drof.xml</strong> file to generate the namelist file <code class="docutils literal"><span class="pre">drof_in</span></code>.</p>
 </div>
 <table border="1" class="docutils">
 <colgroup>
@@ -174,8 +174,8 @@ is output to coupler history files and then read back in by DROF.</p>
 <p>In the above table, <code class="docutils literal"><span class="pre">$ROF_MODE</span></code> has the following supported settings:</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="19%" />
-<col width="81%" />
+<col width="22%" />
+<col width="78%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">DROF_MODE value</th>
@@ -184,31 +184,31 @@ is output to coupler history files and then read back in by DROF.</p>
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td>NULL</td>
-<td>null mode</td>
+<td>Null mode</td>
 </tr>
 <tr class="row-odd"><td>DIATREN_ANN_RX1</td>
-<td>climatological observational data</td>
+<td>Climatological observational data</td>
 </tr>
 <tr class="row-even"><td>DIATREN_IAF_RX1</td>
-<td>interannual observational data</td>
+<td>Interannual observational data</td>
 </tr>
 <tr class="row-odd"><td>CPLHIST</td>
-<td>coupler history file forcing from a previous model run</td>
+<td>Coupler history file forcing from a previous model run</td>
 </tr>
 </tbody>
 </table>
 </div>
 <div class="section" id="datamode-values">
-<span id="drof-datamodes"></span><h2>8.3. Datamode values<a class="headerlink" href="#datamode-values" title="Permalink to this headline">¶</a></h2>
-<p>One of the variables in <code class="docutils literal"><span class="pre">shr_strdata_nml</span></code> is the <code class="docutils literal"><span class="pre">datamode</span></code>, whose value is a character string.
+<span id="drof-datamodes"></span><h2>9.3. Datamode values<a class="headerlink" href="#datamode-values" title="Permalink to this headline">¶</a></h2>
+<p>One of the variables in <code class="docutils literal"><span class="pre">shr_strdata_nml</span></code> is <code class="docutils literal"><span class="pre">datamode</span></code>, whose value is a character string.
 Each data model has a unique set of <code class="docutils literal"><span class="pre">datamode</span></code> values that it supports.</p>
-<p>The valid values for <code class="docutils literal"><span class="pre">datamode</span></code> are set by the xml variable <code class="docutils literal"><span class="pre">DROF_MODE</span></code> in the <code class="docutils literal"><span class="pre">config_component.xml</span></code> file for DROF.
+<p>The valid values for <code class="docutils literal"><span class="pre">datamode</span></code> are set by the XML variable <code class="docutils literal"><span class="pre">DROF_MODE</span></code> in the <code class="docutils literal"><span class="pre">config_component.xml</span></code> file for DROF.
 CIME will generate a value <code class="docutils literal"><span class="pre">datamode</span></code> that is compset dependent.</p>
-<p>The following are the supported DROF datamode values and their relationship to the <code class="docutils literal"><span class="pre">$DROF_MODE</span></code> xml variable value.</p>
+<p>The following are the supported DROF datamode values and their relationship to the <code class="docutils literal"><span class="pre">$DROF_MODE</span></code> XML variable value.</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="21%" />
-<col width="79%" />
+<col width="14%" />
+<col width="86%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">datamode value</th>
@@ -218,49 +218,35 @@ CIME will generate a value <code class="docutils literal"><span class="pre">data
 <tbody valign="top">
 <tr class="row-even"><td>NULL</td>
 <td><p class="first">NULL</p>
-<p class="last">Turns off the data model as a provider of data to the coupler.  The
-rof_present flag will be set to false and the coupler will assume no
-exchange of data to or from the data model.</p>
+<p class="last">Turns off the data model as a provider of data to the coupler.
+The rof_present flag will be set to false and the coupler will assume no exchange of data to or from the data model.</p>
 </td>
 </tr>
 <tr class="row-odd"><td>DIATREN_ANN_RX1</td>
 <td><p class="first">DIATREN_ANN_RX1</p>
-<p class="last">Reads in annual forcing river data used for CORE2 forcing runs</p>
+<p class="last">Reads in annual forcing river data used for CORE2 forcing runs.</p>
 </td>
 </tr>
 <tr class="row-even"><td>DIATREN_IAF_RX1</td>
 <td><p class="first">DIATREN_IAF_RX1</p>
-<p class="last">Reads in intra-annual forcing river data used for CORE2 forcing runs</p>
+<p class="last">Reads in intra-annual forcing river data used for CORE2 forcing runs.</p>
 </td>
 </tr>
 <tr class="row-odd"><td>CPLHIST</td>
 <td><p class="first">CPLHIST</p>
-<p class="last">Reads in data from coupler history files generated by a previous run</p>
+<p class="last">Reads in data from coupler history files generated by a previous run.</p>
 </td>
 </tr>
 </tbody>
 </table>
 </div>
 <div class="section" id="datamode-independent-streams">
-<span id="drof-mode-independent-streams"></span><h2>8.4. Datamode independent streams<a class="headerlink" href="#datamode-independent-streams" title="Permalink to this headline">¶</a></h2>
+<span id="drof-mode-independent-streams"></span><h2>9.4. Datamode independent streams<a class="headerlink" href="#datamode-independent-streams" title="Permalink to this headline">¶</a></h2>
 <p>There are no datamode independent streams for DROF.</p>
 </div>
 <div class="section" id="fields">
-<span id="drof-fields"></span><h2>8.5. Fields<a class="headerlink" href="#fields" title="Permalink to this headline">¶</a></h2>
-<p>The pre-defined internal field names in the data river runoff model are as follows. In general, the stream input file should translate the input variable names into these names for use within the data river runoff model.</p>
-<table border="1" class="docutils">
-<colgroup>
-<col width="41%" />
-<col width="36%" />
-<col width="23%" />
-</colgroup>
-<tbody valign="top">
-<tr class="row-odd"><td>(/ &#8220;roff</td>
-<td>&#8221;,&#8221;ioff</td>
-<td>&#8220;/)</td>
-</tr>
-</tbody>
-</table>
+<span id="drof-fields"></span><h2>9.5. Fields<a class="headerlink" href="#fields" title="Permalink to this headline">¶</a></h2>
+<p>The pre-defined internal field names in the data river runoff model are as follows: <code class="docutils literal"><span class="pre">(/</span> <span class="pre">&quot;roff&quot;,</span> <span class="pre">&quot;ioff&quot;/)</span></code>. In general, the stream input file should translate the input variable names into these names for use within the data river runoff model.</p>
 </div>
 </div>
 
@@ -280,7 +266,7 @@ exchange of data to or from the data model.</p>
           <a href="../driver_cpl/index.html" title="CIME Driver/Coupler"
              >next</a> |</li>
         <li class="right" >
-          <a href="data-ocean.html" title="7. Data Ocean (DOCN)"
+          <a href="data-ocean.html" title="8. Data Ocean (DOCN)"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">on  documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" >CIME Data Models</a> &#187;</li> 

@@ -108,7 +108,7 @@ this guide will explain all of the basic commands needed to get a model running.
 <p>You should be familiar with the basic concepts of climate modeling.</p>
 <p>You should be familiar with UNIX command line terminals and the UNIX development environment.</p>
 <p>CIME&#8217;s commands are python scripts and require a correct version of the Python interpreter to be installed before any use.</p>
-<p>The python version must be greater then 2.7 but less the 3.0.  You can check which version of ptyhon you have by typing:</p>
+<p>The python version must be greater then 2.7 but less the 3.0.  You can check which version of python you have by typing:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">python</span> <span class="o">--</span><span class="n">version</span>
 </pre></div>
 </div>
@@ -130,7 +130,7 @@ The resulting set of components is called the <em>component set</em> or <em>comp
 <div>atmosphere, ocean, sea-ice, land surface, river, glacier, wave</div></blockquote>
 <p>In addition, an &#8220;external processing system&#8221; or ESP component is also allowed.</p>
 <p>For some climate problems, its necessary to reduce feedbacks within the system by replacing a full model with a
-version that sends and recieves the same variables to and from other models but
+version that sends and receives the same variables to and from other models but
 the values sent are not computed from the equations but instead read from files.  The values received are ignored.
 We call these full-model substitutes <em>data models</em>&#8221; and CIME provides data models for each of the supported components.</p>
 <p class="last">For some configurations, a data model is not needed and so CIME provides <em>stub</em> versions that simply occupy the
@@ -145,9 +145,9 @@ refer to a specific set of grids with different resolutions.</dd>
 a national supercomputer.  The <em>machine</em> is typically the UNIX host name but could be any string.</dd>
 <dt><strong>compiler</strong>:</dt>
 <dd>CIME will control compiling the source code (Fortran, C and C++)  of your model in to an executable.
-Some machines support mutiple compilers and so you may need to specify which one to use.</dd>
+Some machines support multiple compilers and so you may need to specify which one to use.</dd>
 <dt><strong>case</strong>:</dt>
-<dd>The most important concept in CIME is a <em>case</em>.  To build and excute a CIME-enabled climate model, you have to
+<dd>The most important concept in CIME is a <em>case</em>.  To build and execute a CIME-enabled climate model, you have to
 make choices of compset, grid set, machine and compiler.  The collection of these choices, and any additional customizations
 you may make, is called the <em>case</em>.</dd>
 </dl>
@@ -244,7 +244,7 @@ a climate model, cime is usually one of the first subdirectories under the main 
 <td>tests</td>
 </tr>
 <tr class="row-even"><td>tools/</td>
-<td>Standalone tools useful for climate modeling</td>
+<td>Stand-alone tools useful for climate modeling</td>
 </tr>
 <tr class="row-odd"><td>utils/</td>
 <td>source code for CIME scripts and functions</td>
