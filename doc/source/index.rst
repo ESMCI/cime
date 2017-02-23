@@ -6,13 +6,15 @@
 Welcome to the CIME documentation!
 ==================================
 
-:ref:`User's guide - Part 1 <users-guide1>` basic use of the scripting infrastructure.
+:ref:`User's guide - Part 1 <users-guide1>`: basic use of the scripting infrastructure.
 
-:ref:`User's guide - Part 2 <users-guide2>` advance use of the scripting infrastructure.
+:ref:`User's guide - Part 2 <users-guide2>`: advance use of the scripting infrastructure.
 
-:ref:`Data Models <data-models>` design and usage of the data models.
+:ref:`Data Models <data-models>`: design and usage of the data models.
 
-:ref:`Driver/Coupler (cpl7) <driver-cpl>` design and usage of the driver/coupler.
+:ref:`Driver/Coupler (cpl7) <driver-cpl>`: design and usage of the driver/coupler.
+
+:ref:`Building a Coupled Model with CIME <build-cpl>`: how to bring a new model in to CIME.
 
 Table of contents
 -----------------
@@ -23,6 +25,7 @@ Table of contents
    users_guide/index.rst
    data_models/index.rst
    driver_cpl/index.rst
+   build_cpl/index.rst
 
 Indices and tables
 ==================
