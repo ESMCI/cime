@@ -1655,15 +1655,15 @@ int test_decomp_public(int my_test_size, int my_rank, int iosysid, int dim_len,
     char *history = "Added to PIO automatic testing by Ed in February 2017.";
 
     /* These should not work. */
-    if (PIOc_write_nc_decomp(nc_filename, iosysid + TEST_VAL_42, ioid, test_comm, title, history, 0) != PIO_EBADID)
+    if (PIOc_write_nc_decomp(iosysid + TEST_VAL_42, nc_filename, ioid, test_comm, title, history, 0) != PIO_EBADID)
         return ERR_WRONG;
-    if (PIOc_write_nc_decomp(NULL, iosysid, ioid, test_comm, title, history, 0) != PIO_EINVAL)
+    if (PIOc_write_nc_decomp(iosysid, NULL, ioid, test_comm, title, history, 0) != PIO_EINVAL)
         return ERR_WRONG;
-    if (PIOc_write_nc_decomp(nc_filename, iosysid, ioid + TEST_VAL_42, test_comm, title, history, 0) != PIO_EBADID)
+    if (PIOc_write_nc_decomp(iosysid, nc_filename, ioid + TEST_VAL_42, test_comm, title, history, 0) != PIO_EBADID)
         return ERR_WRONG;
 
     /* Write a netCDF decomp file for this iosystem. */
-    if ((ret = PIOc_write_nc_decomp(nc_filename, iosysid, ioid, test_comm, title, history, 0)))
+    if ((ret = PIOc_write_nc_decomp(iosysid, nc_filename, ioid, test_comm, title, history, 0)))
         return ret;
 
     int ioid_in;
@@ -1756,7 +1756,7 @@ int test_decomp_public(int my_test_size, int my_rank, int iosysid, int dim_len,
     free(map_in);
 
     /* /\* These should also work. *\/ */
-    /* if ((ret = PIOc_write_nc_decomp(nc_filename, iosysid, ioid, test_comm, title, history, 0))) */
+    /* if ((ret = PIOc_write_nc_decomp(iosysid, nc_filename, ioid, test_comm, title, history, 0))) */
     /*     return ret; */
     
     /* Free the PIO decomposition. */

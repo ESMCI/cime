@@ -937,8 +937,8 @@ int PIOc_readmap_from_f90(const char *file, int *ndims, int **gdims, PIO_Offset 
  * Write the decomposition map to a file using netCDF, everyones
  * favorite data format.
  *
- * @param file the filename to be used.
  * @param iosysid the IO system ID.
+ * @param filename the filename to be used.
  * @param ioid the ID of the IO description.
  * @param comm an MPI communicator.
  * @param title optial title attribute for the file. Must be less than
@@ -949,7 +949,7 @@ int PIOc_readmap_from_f90(const char *file, int *ndims, int **gdims, PIO_Offset 
  * used, or to zero if C array ordering is used.
  * @returns 0 for success, error code otherwise.
  */
-int PIOc_write_nc_decomp(const char *filename, int iosysid, int ioid, MPI_Comm comm,
+int PIOc_write_nc_decomp(int iosysid, const char *filename, int ioid, MPI_Comm comm,
                          char *title, char *history, int fortran_order)
 {
     iosystem_desc_t *ios;
@@ -1034,8 +1034,8 @@ int PIOc_write_nc_decomp(const char *filename, int iosysid, int ioid, MPI_Comm c
  * Read the decomposition map from a netCDF decomp file produced by
  * PIOc_write_nc_decomp().
  *
- * @param filename the name of the decomp file.
  * @param iosysid the IO system ID.
+ * @param filename the name of the decomp file.
  * @param ioid pointer that will get the newly-assigned ID of the IO
  * description. The ioid is needed to later free the decomposition.
  * @param comm an MPI communicator.
@@ -1050,7 +1050,7 @@ int PIOc_write_nc_decomp(const char *filename, int iosysid, int ioid, MPI_Comm c
  * ordering is used, or to zero if C array ordering is used.
  * @returns 0 for success, error code otherwise.
  */
-int PIOc_read_nc_decomp(const char *filename, int iosysid, int *ioidp, MPI_Comm comm,
+int PIOc_read_nc_decomp(int iosysid, const char *filename, int *ioidp, MPI_Comm comm,
                         int pio_type, char *title, char *history, int *fortran_order)
 {
     iosystem_desc_t *ios; /* Pointer to the IO system info. */
