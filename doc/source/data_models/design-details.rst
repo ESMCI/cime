@@ -17,7 +17,7 @@ The strdata implementation does the following:
 
 .. _io-details:
 
----------------------
+----------------------
 IO Through Data Models
 ----------------------
 
