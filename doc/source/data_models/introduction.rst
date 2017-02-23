@@ -60,8 +60,7 @@ Users will primarily setup different data model configurations through namelist 
 The data model specific namelist has significant overlap between data models, but each data model has a slightly different set of input namelist variables and each model reads that namelist from a unique filename.
 The detailed namelist options for each data model will be described later, but each model will specify a filename or filenames for strdata namelist input and each strdata namelist will specify a set of stream input files.
 
-To continue with the above example, the following inputs would be consistent with the above figure. The data model namelist input file is hardwired to "dlnd_in" and in this case, the namelist would look something like
-::
+The following example illustrates the basic set of namelist inputs::
 
    &dlnd_nml
       decomp = '1d'
@@ -74,8 +73,8 @@ To continue with the above example, the following inputs would be consistent wit
    /
 
 Three stream description files are then expected to be available, ``streama``, ``streamb`` and ``streamc``.
-Those files specify the input data filenames, input data grids, and input fields that are expected among other things. 
-The stream files are not Fortran namelist format.
+Those files specify the input data filenames, input data grids, and input fields that are expected, among other things. 
+The stream files are **not** Fortran namelist format.
 Their format and options will be described later.
 As an example, one of the stream description files might look like
 ::
