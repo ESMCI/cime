@@ -37,3 +37,6 @@ Indices and tables
 * :ref:`modindex`
 * :ref:`search`
 
+CIME is developed by the 
+`ACME <https://climatemodeling.science.energy.gov/projects/accelerated-climate-modeling-energy>`_ and 
+`CESM <http://www.cesm.ucar.edu/>`_ projects.
