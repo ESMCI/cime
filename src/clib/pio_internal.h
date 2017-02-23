@@ -289,7 +289,7 @@ extern "C" {
     void pio_finalize_logging(void );
 
     /* Write a netCDF decomp file. */
-    int pioc_write_nc_decomp_int(int iosysid, const char *filename, int ndims, int *global_dimlen,
+    int pioc_write_nc_decomp_int(int iosysid, const char *filename, int cmode, int ndims, int *global_dimlen,
                                  int num_tasks, int *task_maplen, int *map, const char *title,
                                  const char *history, int fortran_order);
 

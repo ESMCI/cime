@@ -259,10 +259,9 @@ void pio_log(int severity, const char *fmt, ...)
  * if using the pio performance tool leads to tuning that could be
  * applied in the model you know more or less where to do it.
  *
- * It's also useful if you have a model bug and used the env variable
- * to enable printing decompositions - then you have 20 or so of them
- * and you need to identify the one that was problematic.  So it's
- * used as an add to the developer and not used at all by any
+ * It's also useful if you have a model bug - then you have 20 or so
+ * decomp files and you need to identify the one that was problematic.
+ * So it's used as an add to the developer and not used at all by any
  * automated process or tools.
  *
  * @param fp file pointer to send output to
@@ -937,8 +936,9 @@ int PIOc_readmap_from_f90(const char *file, int *ndims, int **gdims, PIO_Offset 
  * Write the decomposition map to a file using netCDF, everyones
  * favorite data format.
  *
- * @param file the filename to be used.
  * @param iosysid the IO system ID.
+ * @param filename the filename to be used.
+ * @param cmode for PIOc_create(). Will be bitwise or'd with NC_WRITE.
  * @param ioid the ID of the IO description.
  * @param comm an MPI communicator.
  * @param title optial title attribute for the file. Must be less than
@@ -949,8 +949,8 @@ int PIOc_readmap_from_f90(const char *file, int *ndims, int **gdims, PIO_Offset 
  * used, or to zero if C array ordering is used.
  * @returns 0 for success, error code otherwise.
  */
-int PIOc_write_nc_decomp(const char *filename, int iosysid, int ioid, MPI_Comm comm,
-                         char *title, char *history, int fortran_order)
+int PIOc_write_nc_decomp(int iosysid, const char *filename, int cmode, int ioid,
+                         MPI_Comm comm, char *title, char *history, int fortran_order)
 {
     iosystem_desc_t *ios;
     io_desc_t *iodesc;
@@ -1022,7 +1022,7 @@ int PIOc_write_nc_decomp(const char *filename, int iosysid, int ioid, MPI_Comm c
             LOG((3, "full_map[%d][%d] = %d", p, e, full_map[p][e]));
 
     /* Write the netCDF decomp file. */
-    if ((ret = pioc_write_nc_decomp_int(iosysid, filename, iodesc->ndims, iodesc->dimlen, npes,
+    if ((ret = pioc_write_nc_decomp_int(iosysid, filename, cmode, iodesc->ndims, iodesc->dimlen, npes,
                                         task_maplen, (int *)full_map, title, history, fortran_order)))
         return ret;
 
@@ -1034,8 +1034,8 @@ int PIOc_write_nc_decomp(const char *filename, int iosysid, int ioid, MPI_Comm c
  * Read the decomposition map from a netCDF decomp file produced by
  * PIOc_write_nc_decomp().
  *
- * @param filename the name of the decomp file.
  * @param iosysid the IO system ID.
+ * @param filename the name of the decomp file.
  * @param ioid pointer that will get the newly-assigned ID of the IO
  * description. The ioid is needed to later free the decomposition.
  * @param comm an MPI communicator.
@@ -1050,7 +1050,7 @@ int PIOc_write_nc_decomp(const char *filename, int iosysid, int ioid, MPI_Comm c
  * ordering is used, or to zero if C array ordering is used.
  * @returns 0 for success, error code otherwise.
  */
-int PIOc_read_nc_decomp(const char *filename, int iosysid, int *ioidp, MPI_Comm comm,
+int PIOc_read_nc_decomp(int iosysid, const char *filename, int *ioidp, MPI_Comm comm,
                         int pio_type, char *title, char *history, int *fortran_order)
 {
     iosystem_desc_t *ios; /* Pointer to the IO system info. */
@@ -1134,6 +1134,7 @@ int PIOc_read_nc_decomp(const char *filename, int iosysid, int *ioidp, MPI_Comm 
  *
  * @param iosysid the IO system ID.
  * @param filename the name the decomp file will have.
+ * @param cmode for PIOc_create(). Will be bitwise or'd with NC_WRITE.
  * @param ndims number of dims in the data being described.
  * @param global_dimlen an array, of size ndims, with the size of the
  * global array in each dimension.
@@ -1152,9 +1153,9 @@ int PIOc_read_nc_decomp(const char *filename, int iosysid, int *ioidp, MPI_Comm 
  * ordering, 0 for C array ordering.
  * @returns 0 for success, error code otherwise.
  */
-int pioc_write_nc_decomp_int(int iosysid, const char *filename, int ndims, int *global_dimlen,
-                             int num_tasks, int *task_maplen, int *map, const char *title,
-                             const char *history, int fortran_order)
+int pioc_write_nc_decomp_int(int iosysid, const char *filename, int cmode, int ndims,
+                             int *global_dimlen, int num_tasks, int *task_maplen, int *map,
+                             const char *title, const char *history, int fortran_order)
 {
     iosystem_desc_t *ios;
     int max_maplen = 0;
@@ -1185,7 +1186,7 @@ int pioc_write_nc_decomp_int(int iosysid, const char *filename, int ndims, int *
     LOG((3, "max_maplen = %d", max_maplen));
 
     /* Create the netCDF decomp file. */
-    if ((ret = PIOc_create(iosysid, filename, NC_WRITE, &ncid)))
+    if ((ret = PIOc_create(iosysid, filename, cmode | NC_WRITE, &ncid)))
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
     /* Write an attribute with the version of this file. */
@@ -1224,6 +1225,39 @@ int pioc_write_nc_decomp_int(int iosysid, const char *filename, int ndims, int *
     char *my_order_str = fortran_order ? fortran_order_str : c_order_str;
     if ((ret = PIOc_put_att_text(ncid, NC_GLOBAL, DECOMP_ORDER_ATT_NAME,
                                  strlen(my_order_str) + 1, my_order_str)))
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+
+    /* Write an attribute with the stack trace. This can be helpful
+     * for debugging. */
+    #define MAX_BACKTRACE 10
+    void *bt[MAX_BACKTRACE];
+    size_t bt_size;
+    char **bt_strings;
+    bt_size = backtrace(bt, MAX_BACKTRACE);
+    bt_strings = backtrace_symbols(bt, bt_size);
+
+    /* Find the max size. */
+    int max_bt_size = 0;
+    for (int b = 0; b < bt_size; b++)
+        if (strlen(bt_strings[b]) > max_bt_size)
+            max_bt_size = strlen(bt_strings[b]);
+    if (max_bt_size > NC_MAX_NAME)
+        max_bt_size = NC_MAX_NAME;
+
+    /* Copy the backtrace into one long string. */
+    char full_bt[max_bt_size * bt_size + bt_size + 1];
+    full_bt[0] = '\0';
+    for (int b = 0; b < bt_size; b++)
+    {
+        strncat(full_bt, bt_strings[b], max_bt_size);
+        strcat(full_bt, "\n");
+    }
+    free(bt_strings);
+    printf("full_bt = %s", full_bt);
+
+    /* Write the stack trace as an attribute. */
+    if ((ret = PIOc_put_att_text(ncid, NC_GLOBAL, DECOMP_BACKTRACE_ATT_NAME,
+                                 strlen(full_bt) + 1, full_bt)))
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
     /* We need a dimension for the dimensions in the data. (Example:
