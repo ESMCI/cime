@@ -18,7 +18,7 @@ You should be familiar with UNIX command line terminals and the UNIX development
 
 CIME's commands are python scripts and require a correct version of the Python interpreter to be installed before any use.
 
-The python version must be greater then 2.7 but less the 3.0.  You can check which version of ptyhon you have by typing:
+The python version must be greater then 2.7 but less the 3.0.  You can check which version of python you have by typing:
 ::
 
    > python --version
@@ -47,7 +47,7 @@ The following concepts are ingrained in CIME and will occur frequently in this d
    In addition, an "external processing system" or ESP component is also allowed.
 
    For some climate problems, its necessary to reduce feedbacks within the system by replacing a full model with a 
-   version that sends and recieves the same variables to and from other models but
+   version that sends and receives the same variables to and from other models but
    the values sent are not computed from the equations but instead read from files.  The values received are ignored.
    We call these full-model substitutes *data models*" and CIME provides data models for each of the supported components.
 
@@ -65,10 +65,10 @@ The following concepts are ingrained in CIME and will occur frequently in this d
 
 **compiler**: 
    CIME will control compiling the source code (Fortran, C and C++)  of your model in to an executable.  
-   Some machines support mutiple compilers and so you may need to specify which one to use.
+   Some machines support multiple compilers and so you may need to specify which one to use.
 
 **case**:
-    The most important concept in CIME is a *case*.  To build and excute a CIME-enabled climate model, you have to 
+    The most important concept in CIME is a *case*.  To build and execute a CIME-enabled climate model, you have to 
     make choices of compset, grid set, machine and compiler.  The collection of these choices, and any additional customizations
     you may make, is called the *case*.
 
@@ -119,7 +119,7 @@ CIME's content is split in to several subdirectories:
    "scripts/", "The CIME user interface"
    "share/", "Source code provided by CIME and used by multiple components"
    "tests/", "tests"
-   "tools/", "Standalone tools useful for climate modeling"
+   "tools/", "Stand-alone tools useful for climate modeling"
    "utils/", "source code for CIME scripts and functions"
 
 Users should start in the "scripts" subdirectory.
