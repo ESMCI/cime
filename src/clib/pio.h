@@ -64,6 +64,9 @@
 /* Name of array order (C or Fortran) attribute. */
 #define DECOMP_ORDER_ATT_NAME "array_order"
 
+/* Name of backtrace attribute. */
+#define DECOMP_BACKTRACE_ATT_NAME "backtrace"
+
 /* Name for the dim dim in decomp file. */
 #define DECOMP_DIM_DIM "dims"
 
