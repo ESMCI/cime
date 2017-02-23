@@ -273,7 +273,7 @@ int test_decomp_read_write(int iosysid, int ioid, int num_flavors, int *flavor, 
         sprintf(filename, "decomp_%s_iotype_%d.nc", TEST_NAME, flavor[fmt]);
 
         printf("writing decomp file %s\n", filename);
-        if ((ret = PIOc_write_nc_decomp(iosysid, filename, ioid, test_comm, NULL,
+        if ((ret = PIOc_write_nc_decomp(iosysid, filename, 0, ioid, test_comm, NULL,
                                         NULL, 0)))
             return ret;
     
