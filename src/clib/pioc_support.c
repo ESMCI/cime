@@ -12,7 +12,6 @@
 #include <execinfo.h>
 
 #define VERSNO 2001
-#define VERSNO2 "2017"
 
 /* Some logging constants. */
 #if PIO_ENABLE_LOGGING
@@ -986,9 +985,9 @@ int PIOc_write_nc_decomp(const char *filename, int iosysid, int ioid, MPI_Comm c
      * the length of the map on each task, for all tasks. */
     int task_maplen[npes];
 
-    /* Gather maplens from all tasks and fill the nmaplen array on
-     * task 0. */
-    if ((mpierr = MPI_Gather(&iodesc->maplen, 1, MPI_INT, task_maplen, 1, MPI_INT, 0, comm)))
+    /* Gather maplens from all tasks and fill the task_maplen array on
+     * all tasks. */
+    if ((mpierr = MPI_Allgather(&iodesc->maplen, 1, MPI_INT, task_maplen, 1, MPI_INT, comm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
 
     /* We will need to know the maximum maplen used for any task. */
@@ -1190,7 +1189,8 @@ int pioc_write_nc_decomp_int(int iosysid, const char *filename, int ndims, int *
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
     /* Write an attribute with the version of this file. */
-    char version[] = VERSNO2;
+    char version[PIO_MAX_NAME + 1];
+    sprintf(version, "%d.%d.%d", PIO_VERSION_MAJOR, PIO_VERSION_MINOR, PIO_VERSION_PATCH);
     if ((ret = PIOc_put_att_text(ncid, NC_GLOBAL, DECOMP_VERSION_ATT_NAME,
                                  strlen(version) + 1, version)))
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
