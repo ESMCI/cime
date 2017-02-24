@@ -962,7 +962,7 @@ int pio_write_darray_multi_nc_serial(file_desc_t *file, int nvars, const int *vi
                     for (int regioncnt = 0; regioncnt < rregions; regioncnt++)
                     {
                         LOG((3, "writing data for region with regioncnt = %d", regioncnt));
-                        
+
                         /* Get the start/count arrays for this region. */
                         for (int i = 0; i < fndims; i++)
                         {
@@ -1519,9 +1519,9 @@ int flush_output_buffer(file_desc_t *file, bool force, PIO_Offset addsize)
     /* Check inputs. */
     pioassert(file, "invalid input", __FILE__, __LINE__);
 
-    /* Find out the buffer usage. If I check the turn code, some tests fail. ??? */
+    /* Find out the buffer usage. */
     if ((ierr = ncmpi_inq_buffer_usage(file->fh, &usage)))
-	return ierr;
+	return pio_err(ios, file, PIO_EBADID, __FILE__, __LINE__);
 
     /* If we are not forcing a flush, spread the usage to all IO
      * tasks. */
