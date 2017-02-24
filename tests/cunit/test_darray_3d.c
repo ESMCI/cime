@@ -142,6 +142,10 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
         if ((ret = PIOc_createfile(iosysid, &ncid, &flavor[fmt], filename, PIO_CLOBBER)))
             ERR(ret);
 
+        /* Turn on fill mode. */
+        if ((ret = PIOc_set_fill(ncid, NC_FILL, NULL)))        
+            ERR(ret);
+        
         /* Define netCDF dimensions and variable. */
         printf("%d Defining netCDF metadata...\n", my_rank);
         for (int d = 0; d < NDIM; d++)
