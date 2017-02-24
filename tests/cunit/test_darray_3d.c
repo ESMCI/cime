@@ -119,11 +119,15 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
     PIO_Offset arraylen = 16;
     int fillvalue = NC_FILL_INT;
     int test_data[arraylen];
+    int test_data2[arraylen];
     int test_data_in[arraylen];
 
     /* Initialize some data. */
     for (int f = 0; f < arraylen; f++)
+    {
         test_data[f] = my_rank * 10 + f;
+        test_data2[f] = 2 * (my_rank * 10 + f);
+    }
 
     /* Use PIO to create the example file in each of the four
      * available ways. */
@@ -160,6 +164,14 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
         if ((ret = PIOc_write_darray(ncid, varid, ioid, arraylen, test_data, &fillvalue)))
             ERR(ret);
 
+        /* Set the value of the record dimension to the second record. */
+        if ((ret = PIOc_setframe(ncid, varid, 1)))
+            ERR(ret);
+
+        /* Write the data for the second record. */
+        if ((ret = PIOc_write_darray(ncid, varid, ioid, arraylen, test_data2, &fillvalue)))
+            ERR(ret);
+
         /* Close the netCDF file. */
         if ((ret = PIOc_closefile(ncid)))
             ERR(ret);
@@ -175,6 +187,19 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
         /* Check the results. */
         for (int f = 0; f < arraylen; f++)
             if (test_data_in[f] != test_data[f])
+                return ERR_WRONG;
+
+        /* Set the value of the record dimension to the second record. */
+        if ((ret = PIOc_setframe(ncid2, varid, 1)))
+            ERR(ret);
+
+        /* Read the data. */
+        if ((ret = PIOc_read_darray(ncid2, varid, ioid, arraylen, test_data_in)))
+            ERR(ret);
+
+        /* Check the results. */
+        for (int f = 0; f < arraylen; f++)
+            if (test_data_in[f] != test_data2[f])
                 return ERR_WRONG;
 
         /* Close the netCDF file. */
