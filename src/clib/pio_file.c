@@ -123,7 +123,7 @@ int PIOc_createfile(int iosysid, int *ncidp, int *iotype, const char *filename,
  * parameters are read on comp task 0 and ignored elsewhere.
  *
  * @param iosysid : A defined pio system descriptor (input)
- * @param cmode : The netcdf mode for the create operation. 
+ * @param cmode : The netcdf mode for the create operation.
  * @param filename : The filename to open
  * @param ncidp : A pio file descriptor (output)
  * @return 0 for success, error code otherwise.
@@ -298,7 +298,7 @@ int PIOc_deletefile(int iosysid, const char *filename)
 
         if (!mpierr && ios->io_rank == 0)
              ierr = nc_delete(filename);
- 
+
         if (!mpierr)
             mpierr = MPI_Barrier(ios->io_comm);
     }
@@ -380,8 +380,6 @@ int PIOc_sync(int ncid)
                 brel(twmb);
             }
         }
-        if (file->iotype == PIO_IOTYPE_PNETCDF)
-            flush_output_buffer(file, true, 0);
 
         if (ios->ioproc)
         {
@@ -399,6 +397,7 @@ int PIOc_sync(int ncid)
                 break;
 #ifdef _PNETCDF
             case PIO_IOTYPE_PNETCDF:
+                flush_output_buffer(file, true, 0);
                 ierr = ncmpi_sync(file->fh);
                 break;
 #endif
