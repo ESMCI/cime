@@ -640,6 +640,8 @@
 
     <domain name="0.9x1.25">
       <nx>288</nx>  <ny>192</ny>
+      <file grid="atm|lnd">domain.lnd.fv0.9x1.25_gx1v6.090309.nc</file>
+      <file grid="ocnice">domain.ocn.0.9x1.25_gx1v6_090403.nc</file>
       <file grid="atm|lnd" mask="gx1v6">domain.lnd.fv0.9x1.25_gx1v6.090309.nc</file>
       <file grid="ocnice" mask="gx1v6">domain.ocn.0.9x1.25_gx1v6_090403.nc</file>
       <file grid="atm|lnd" mask="tnx1v1">domain.lnd.fv0.9x1.25_tnx1v1.150512.nc</file>
@@ -651,6 +653,8 @@
 
     <domain name="1.9x2.5">
       <nx>144</nx>  <ny>96</ny>
+      <file grid="atm|lnd">domain.lnd.fv1.9x2.5_gx1v6.090206.nc</file>
+      <file grid="ocnice">domain.ocn.1.9x2.5_gx1v6_090403.nc</file>
       <file grid="atm|lnd" mask="gx1v6">domain.lnd.fv1.9x2.5_gx1v6.090206.nc</file>
       <file grid="ocnice" mask="gx1v6">domain.ocn.1.9x2.5_gx1v6_090403.nc</file>
       <file grid="atm|lnd" mask="tnx1v1">domain.lnd.fv1.9x2.5_tnx1v1.120120.nc</file>
