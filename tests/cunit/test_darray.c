@@ -221,10 +221,10 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
 int test_all_darray(int iosysid, int num_flavors, int *flavor, int my_rank,
                     MPI_Comm test_comm)
 {
-#define NUM_TYPES_TO_TEST 1
+#define NUM_TYPES_TO_TEST 3
     int ioid;
     char filename[NC_MAX_NAME + 1];
-    int pio_type[NUM_TYPES_TO_TEST] = {PIO_DOUBLE};
+    int pio_type[NUM_TYPES_TO_TEST] = {PIO_INT, PIO_FLOAT, PIO_DOUBLE};
     int dim_len_2d[NDIM2] = {X_DIM_LEN, Y_DIM_LEN};
     int ret; /* Return code. */
 
