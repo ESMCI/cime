@@ -481,12 +481,12 @@ int PIOc_write_darray(int ncid, int vid, int ioid, PIO_Offset arraylen, void *ar
                 int fill = PIO_FILL_INT;
                 memcpy((char *)wmb->fillvalue + tsize * wmb->validvars, &fill, tsize);
             }
-            else if (vtype == MPI_FLOAT || vtype == MPI_REAL4)
+            else if (vtype == MPI_FLOAT)
             {
                 float fill = PIO_FILL_FLOAT;
                 memcpy((char *)wmb->fillvalue + tsize * wmb->validvars, &fill, tsize);
             }
-            else if (vtype == MPI_DOUBLE || vtype == MPI_REAL8)
+            else if (vtype == MPI_DOUBLE)
             {
                 double fill = PIO_FILL_DOUBLE;
                 memcpy((char *)wmb->fillvalue + tsize * wmb->validvars, &fill, tsize);
