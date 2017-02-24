@@ -1521,7 +1521,7 @@ int flush_output_buffer(file_desc_t *file, bool force, PIO_Offset addsize)
 
     /* Find out the buffer usage. */
     if ((ierr = ncmpi_inq_buffer_usage(file->fh, &usage)))
-	return pio_err(ios, file, PIO_EBADID, __FILE__, __LINE__);
+	return pio_err(NULL, file, PIO_EBADID, __FILE__, __LINE__);
 
     /* If we are not forcing a flush, spread the usage to all IO
      * tasks. */
