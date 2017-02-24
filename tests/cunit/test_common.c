@@ -888,9 +888,11 @@ check_nc_sample_2(int iosysid, int format, char *filename, int my_rank, int *nci
  * @param iosysid the IO system ID.
  * @param dim_len_2d an array of length 2 with the dim lengths.
  * @param ioid a pointer that gets the ID of this decomposition.
+ * @param pio_type the data type to use for the decomposition.
  * @returns 0 for success, error code otherwise.
  **/
-int create_decomposition_2d(int ntasks, int my_rank, int iosysid, int *dim_len_2d, int *ioid)
+int create_decomposition_2d(int ntasks, int my_rank, int iosysid, int *dim_len_2d,
+                            int *ioid, int pio_type)
 {
     PIO_Offset elements_per_pe;     /* Array elements per processing unit. */
     PIO_Offset *compdof;  /* The decomposition mapping. */
@@ -910,7 +912,7 @@ int create_decomposition_2d(int ntasks, int my_rank, int iosysid, int *dim_len_2
 
     /* Create the PIO decomposition for this test. */
     printf("%d Creating decomposition elements_per_pe = %lld\n", my_rank, elements_per_pe);
-    if ((ret = PIOc_InitDecomp(iosysid, PIO_INT, NDIM2, dim_len_2d, elements_per_pe,
+    if ((ret = PIOc_InitDecomp(iosysid, pio_type, NDIM2, dim_len_2d, elements_per_pe,
                                compdof, ioid, NULL, NULL, NULL)))
         ERR(ret);
 

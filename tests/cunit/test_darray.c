@@ -55,9 +55,11 @@ int dim_len[NDIM] = {NC_UNLIMITED, X_DIM_LEN, Y_DIM_LEN};
  * @param num_flavors the number of IOTYPES available in this build.
  * @param flavor array of available iotypes.
  * @param my_rank rank of this task.
+ * @param pio_type the type of the data.
  * @returns 0 for success, error code otherwise.
 */
-int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank)
+int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank,
+                int pio_type)
 {
     char filename[PIO_MAX_NAME + 1]; /* Name for the output files. */
     int dimids[NDIM];      /* The dimension IDs. */
@@ -66,24 +68,59 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
     int varid;     /* The ID of the netCDF varable. */
     int ret;       /* Return code. */
     PIO_Offset arraylen = 4;
-    int fillvalue = NC_FILL_INT;
-    int test_data[arraylen];
-    int test_data_in[arraylen];
+    void *fillvalue;
+    void *test_data;
+    void *test_data_in;
+    int fillvalue_int = NC_FILL_INT;
+    int test_data_int[arraylen];
+    int test_data_int_in[arraylen];
+    float fillvalue_float = NC_FILL_FLOAT;
+    float test_data_float[arraylen];
+    float test_data_float_in[arraylen];
+    double fillvalue_double = NC_FILL_DOUBLE;
+    double test_data_double[arraylen];
+    double test_data_double_in[arraylen];
 
     /* Initialize some data. */
     for (int f = 0; f < arraylen; f++)
-        test_data[f] = my_rank * 10 + f;
+    {
+        test_data_int[f] = my_rank * 10 + f;
+        test_data_float[f] = my_rank * 10 + f + 0.5;
+        test_data_double[f] = my_rank * 100000 + f + 0.5;
+    }
+
+    /* Select the fill value and data. */
+    switch (pio_type)
+    {
+    case PIO_INT:
+        fillvalue = &fillvalue_int;
+        test_data = test_data_int;
+        test_data_in = test_data_int_in;
+        break;
+    case PIO_FLOAT:
+        fillvalue = &fillvalue_float;
+        test_data = test_data_float;
+        test_data_in = test_data_float_in;
+        break;
+    case PIO_DOUBLE:
+        fillvalue = &fillvalue_double;
+        test_data = test_data_double;
+        test_data_in = test_data_double_in;
+        break;
+    default:
+        ERR(ERR_WRONG);
+    }
 
     /* Use PIO to create the example file in each of the four
      * available ways. */
     for (int fmt = 0; fmt < num_flavors; fmt++) 
     {
         /* Create the filename. */
-        sprintf(filename, "data_%s_iotype_%d.nc", TEST_NAME, flavor[fmt]);
+        sprintf(filename, "data_%s_iotype_%d_pio_type_%d.nc", TEST_NAME, flavor[fmt], pio_type);
 
         /* Create the netCDF output file. */
-        printf("rank: %d Creating sample file %s with format %d...\n", my_rank, filename,
-               flavor[fmt]);
+        printf("rank: %d Creating sample file %s with format %d type %d\n", my_rank, filename,
+               flavor[fmt], pio_type);
         if ((ret = PIOc_createfile(iosysid, &ncid, &flavor[fmt], filename, PIO_CLOBBER)))
             ERR(ret);
 
@@ -94,7 +131,7 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
                 ERR(ret);
 
         /* Define a variable. */
-        if ((ret = PIOc_def_var(ncid, VAR_NAME, PIO_INT, NDIM, dimids, &varid)))
+        if ((ret = PIOc_def_var(ncid, VAR_NAME, pio_type, NDIM, dimids, &varid)))
             ERR(ret);
 
         /* End define mode. */
@@ -106,15 +143,15 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
             ERR(ret);
 
         /* These should not work. */
-        if (PIOc_write_darray(ncid + TEST_VAL_42, varid, ioid, arraylen, test_data, &fillvalue) != PIO_EBADID)
+        if (PIOc_write_darray(ncid + TEST_VAL_42, varid, ioid, arraylen, test_data, fillvalue) != PIO_EBADID)
             ERR(ERR_WRONG);
-        if (PIOc_write_darray(ncid, varid, ioid + TEST_VAL_42, arraylen, test_data, &fillvalue) != PIO_EBADID)
+        if (PIOc_write_darray(ncid, varid, ioid + TEST_VAL_42, arraylen, test_data, fillvalue) != PIO_EBADID)
             ERR(ERR_WRONG);
-        if (PIOc_write_darray(ncid, varid, ioid, arraylen + TEST_VAL_42, test_data, &fillvalue) != PIO_EINVAL)
+        if (PIOc_write_darray(ncid, varid, ioid, arraylen + TEST_VAL_42, test_data, fillvalue) != PIO_EINVAL)
             ERR(ERR_WRONG);
 
         /* Write the data. */
-        if ((ret = PIOc_write_darray(ncid, varid, ioid, arraylen, test_data, &fillvalue)))
+        if ((ret = PIOc_write_darray(ncid, varid, ioid, arraylen, test_data, fillvalue)))
             ERR(ret);
 
         /* Close the netCDF file. */
@@ -139,11 +176,28 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
 
         /* Check the results. */
         for (int f = 0; f < arraylen; f++)
-            if (test_data_in[f] != test_data[f])
-                return ERR_WRONG;
+        {
+            switch (pio_type)
+            {
+            case PIO_INT:
+                if (test_data_int_in[f] != test_data_int[f])
+                    return ERR_WRONG;
+                break;
+            case PIO_FLOAT:
+                if (test_data_float_in[f] != test_data_float[f])
+                    return ERR_WRONG;
+                break;
+            case PIO_DOUBLE:
+                if (test_data_double_in[f] != test_data_double[f])
+                    return ERR_WRONG;
+                break;
+            default:
+                ERR(ERR_WRONG);
+            }
+        }
 
         /* Try to write, but it won't work, because we opened file read-only. */
-        if (PIOc_write_darray(ncid2, varid, ioid, arraylen, test_data, &fillvalue) != PIO_EPERM)
+        if (PIOc_write_darray(ncid2, varid, ioid, arraylen, test_data, fillvalue) != PIO_EPERM)
             ERR(ERR_WRONG);
         
         /* Close the netCDF file. */
@@ -164,33 +218,35 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
  * @param test_comm the communicator the test is running on.
  * @returns 0 for success, error code otherwise. 
  */
-int test_all_darray(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm test_comm)
+int test_all_darray(int iosysid, int num_flavors, int *flavor, int my_rank,
+                    MPI_Comm test_comm)
 {
+#define NUM_TYPES_TO_TEST 1
     int ioid;
-    int my_test_size;
     char filename[NC_MAX_NAME + 1];
+    int pio_type[NUM_TYPES_TO_TEST] = {PIO_DOUBLE};
     int dim_len_2d[NDIM2] = {X_DIM_LEN, Y_DIM_LEN};
     int ret; /* Return code. */
 
-    if ((ret = MPI_Comm_size(test_comm, &my_test_size)))
-        MPIERR(ret);
+    for (int t = 0; t < NUM_TYPES_TO_TEST; t++)
+    {        
+        /* This will be our file name for writing out decompositions. */
+        sprintf(filename, "%s_decomp_rank_%d_flavor_%d_type_%d.nc", TEST_NAME, my_rank,
+                *flavor, pio_type[t]);
 
-    /* This will be our file name for writing out decompositions. */
-    sprintf(filename, "%s_decomp_rank_%d_flavor_%d_.nc", TEST_NAME, my_rank, *flavor);
-
-    printf("%d Testing darray.\n", my_rank);
-        
-    /* Decompose the data over the tasks. */
-    if ((ret = create_decomposition_2d(TARGET_NTASKS, my_rank, iosysid, dim_len_2d, &ioid)))
+        /* Decompose the data over the tasks. */
+        if ((ret = create_decomposition_2d(TARGET_NTASKS, my_rank, iosysid, dim_len_2d,
+                                           &ioid, pio_type[t])))
         return ret;
 
-    /* Run a simple darray test. */
-    if ((ret = test_darray(iosysid, ioid, num_flavors, flavor, my_rank)))
-        return ret;
+        /* Run a simple darray test. */
+        if ((ret = test_darray(iosysid, ioid, num_flavors, flavor, my_rank, pio_type[t])))
+            return ret;
     
-    /* Free the PIO decomposition. */
-    if ((ret = PIOc_freedecomp(iosysid, ioid)))
-        ERR(ret);
+        /* Free the PIO decomposition. */
+        if ((ret = PIOc_freedecomp(iosysid, ioid)))
+            ERR(ret);
+    }
 
     return PIO_NOERR;
 }
