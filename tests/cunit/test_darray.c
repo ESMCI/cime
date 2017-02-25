@@ -110,7 +110,7 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
             ERR(ERR_WRONG);
         if (PIOc_write_darray(ncid, varid, ioid + TEST_VAL_42, arraylen, test_data, &fillvalue) != PIO_EBADID)
             ERR(ERR_WRONG);
-        if (PIOc_write_darray(ncid, varid, ioid, arraylen + TEST_VAL_42, test_data, &fillvalue) != PIO_EINVAL)
+        if (PIOc_write_darray(ncid, varid, ioid, arraylen - 1, test_data, &fillvalue) != PIO_EINVAL)
             ERR(ERR_WRONG);
 
         /* Write the data. */

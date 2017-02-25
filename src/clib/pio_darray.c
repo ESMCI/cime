@@ -275,10 +275,13 @@ int PIOc_write_darray_multi(int ncid, const int *vid, int ioid, int nvars, PIO_O
  * to.
  * @param ioid the I/O description ID as passed back by
  * PIOc_InitDecomp().
- * @param arraylen the length of the array to be written. This is the
- * length of the local component of the distrubited array. That is,
- * the length of the portion of the data that is on this task. This
- * must be equal to the size of the local array in the decomposition.
+ * @param arraylen the length of the array to be written.
+ * This should be at least the length of the local component of the 
+ * distrubited array. That is, the length of the portion of the data
+ * that is on this task. This must be at least the size of the local
+ * array in the decomposition and the initial elements in the array
+ * should contain the local component of the data, as specified in
+ * the decomposition (ioid).
  * @param array pointer to the data to be written. This is a
  * pointer to the distributed portion of the array that is on this
  * task.
@@ -332,8 +335,11 @@ int PIOc_write_darray(int ncid, int vid, int ioid, PIO_Offset arraylen, void *ar
 
     /* Check that the local size of the variable passed in matches the
      * size expected by the io descriptor. */
-    if (iodesc->ndof != arraylen)
+    if (arraylen < iodesc->ndof)
         return pio_err(ios, file, PIO_EINVAL, __FILE__, __LINE__);
+
+    if (iodesc->ndof != arraylen)
+        LOG((1, "User supplied array is larger than expected, arraylen != iodesc->ndof"));
 
     /* Get a pointer to the buffer space for this file. It will hold
      * data from one or more variables that fit the same
