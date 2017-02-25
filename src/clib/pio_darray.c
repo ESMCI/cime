@@ -256,7 +256,7 @@ int PIOc_write_darray_multi(int ncid, const int *vid, int ioid, int nvars, PIO_O
     }
 
     /* Flush data to disk. */
-    if (file->iotype == PIO_IOTYPE_PNETCDF)
+    if (ios->ioproc && file->iotype == PIO_IOTYPE_PNETCDF)
         if ((ierr = flush_output_buffer(file, flushtodisk, 0)))
             return pio_err(ios, file, ierr, __FILE__, __LINE__);
 
