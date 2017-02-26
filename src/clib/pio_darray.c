@@ -83,8 +83,11 @@ int PIOc_write_darray_multi(int ncid, const int *vid, int ioid, int nvars, PIO_O
     ios = file->iosystem;
 
     /* Check inputs. */
-    if (nvars <= 0)
+    if (nvars <= 0 || !vid)
         return pio_err(ios, file, PIO_EINVAL, __FILE__, __LINE__);
+    for (int v = 0; v < nvars; v++)
+        if (vid[v] < 0 || vid[v] > PIO_MAX_VARS)
+            return pio_err(ios, file, PIO_EINVAL, __FILE__, __LINE__);
 
     LOG((1, "PIOc_write_darray_multi ncid = %d ioid = %d nvars = %d arraylen = %ld flushtodisk = %d",
          ncid, ioid, nvars, arraylen, flushtodisk));
