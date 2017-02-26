@@ -77,6 +77,8 @@ int PIOc_write_darray_multi(int ncid, const int *vid, int ioid, int nvars, PIO_O
     int mpierr;            /* Return code from MPI functions. */
     int ierr;              /* Return code. */
 
+    pioassert(vid && vid[0] >= 0 && vid[0] <= PIO_MAX_VARS, "Invalid input", __FILE__, __LINE__);
+
     /* Get the file info. */
     if ((ierr = pio_get_file(ncid, &file)))
         return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);

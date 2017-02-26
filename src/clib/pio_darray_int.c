@@ -105,8 +105,7 @@ int pio_write_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid,
     ios = file->iosystem;
 
     /* Get pointer to variable information. */
-    if (!(vdesc = file->varlist + vid))
-        return pio_err(ios, file, PIO_EBADID, __FILE__, __LINE__);
+    vdesc = file->varlist + vid;
 
     ndims = iodesc->ndims;
 
@@ -479,7 +478,8 @@ int pio_write_darray_multi_nc(file_desc_t *file, int nvars, const int *vid, int 
     int ierr = PIO_NOERR;
 
     /* Check inputs. */
-    pioassert(file && file->iosystem, "invalid input", __FILE__, __LINE__);
+    pioassert(file && file->iosystem && vid && vid[0] >= 0 && vid[0] <= PIO_MAX_VARS,
+              "invalid input", __FILE__, __LINE__);
 
     LOG((1, "pio_write_darray_multi_nc nvars = %d iodesc_ndims = %d basetype = %d "
          "maxregions = %d llen = %d maxiobuflen = %d num_aiotasks = %d", nvars, iodesc_ndims,
@@ -492,8 +492,7 @@ int pio_write_darray_multi_nc(file_desc_t *file, int nvars, const int *vid, int 
 
     /* Get file and variable info. */
     ios = file->iosystem;
-    if (!(vdesc = file->varlist + vid[0]))
-        return pio_err(ios, file, PIO_EBADID, __FILE__, __LINE__);
+    vdesc = file->varlist + vid[0];
 
     /* If async is in use, send message to IO master task. */
     if (ios->async_interface)
@@ -639,7 +638,7 @@ int pio_write_darray_multi_nc(file_desc_t *file, int nvars, const int *vid, int 
                 {
                     for (int nv = 0; nv < nvars; nv++)
                     {
-                        vdesc = (file->varlist) + vid[nv];
+                        vdesc = file->varlist + vid[nv];
                         if (vdesc->record >= 0 && ndims<fndims)
                             for (int rc = 0; rc < rrcnt; rc++)
                                 startlist[rc][0] = frame[nv];
@@ -763,7 +762,8 @@ int pio_write_darray_multi_nc_serial(file_desc_t *file, int nvars, const int *vi
     int ierr;
 
     /* Check inputs. */
-    pioassert(file && file->iosystem, "invalid input", __FILE__, __LINE__);
+    pioassert(file && file->iosystem && vid && vid[0] >= 0 && vid[0] <= PIO_MAX_VARS,
+              "invalid input", __FILE__, __LINE__);
 
     LOG((1, "pio_write_darray_multi_nc_serial nvars = %d iodesc_ndims = %d basetype = %d "
          "maxregions = %d llen = %d maxiobuflen = %d num_aiotasks = %d", nvars, iodesc_ndims,
@@ -777,8 +777,8 @@ int pio_write_darray_multi_nc_serial(file_desc_t *file, int nvars, const int *vi
     ios = file->iosystem;
 
     /* Get the var info. */
-    if (!(vdesc = file->varlist + vid[0]))
-        return pio_err(ios, file, PIO_EBADID, __FILE__, __LINE__);
+    vdesc = file->varlist + vid[0];
+
     LOG((2, "vdesc record %d ndims %d nreqs %d ios->async_interface = %d", vdesc->record,
          vdesc->ndims, vdesc->nreqs, ios->async_interface));
 
@@ -1073,7 +1073,8 @@ int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid, void *iobu
     int ierr;
 
     /* Check inputs. */
-    pioassert(file && file->iosystem && iodesc, "invalid input", __FILE__, __LINE__);
+    pioassert(file && file->iosystem && iodesc && vid <= PIO_MAX_VARS, "invalid input",
+              __FILE__, __LINE__);
 
 #ifdef TIMING
     /* Start timing this function. */
@@ -1082,8 +1083,7 @@ int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid, void *iobu
 
     ios = file->iosystem;
 
-    if (!(vdesc = (file->varlist) + vid))
-        return pio_err(ios, file, PIO_EBADID, __FILE__, __LINE__);
+    vdesc = file->varlist + vid;
 
     ndims = iodesc->ndims;
 
@@ -1272,7 +1272,8 @@ int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc, int vid,
     int ierr;
 
     /* Check inputs. */
-    pioassert(file && file->iosystem && iodesc, "invalid input", __FILE__, __LINE__);
+    pioassert(file && file->iosystem && iodesc && vid >= 0 && vid <= PIO_MAX_VARS,
+              "invalid input", __FILE__, __LINE__);
 
 #ifdef TIMING
     /* Start timing this function. */
@@ -1280,8 +1281,7 @@ int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc, int vid,
 #endif
     ios = file->iosystem;
 
-    if (!(vdesc = (file->varlist) + vid))
-        return pio_err(ios, file, PIO_EBADID, __FILE__, __LINE__);
+    vdesc = file->varlist + vid;
 
     ndims = iodesc->ndims;
 
