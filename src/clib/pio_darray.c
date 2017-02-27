@@ -279,7 +279,7 @@ int PIOc_write_darray_multi(int ncid, const int *vid, int ioid, int nvars, PIO_O
  * @param ioid the I/O description ID as passed back by
  * PIOc_InitDecomp().
  * @param arraylen the length of the array to be written.
- * This should be at least the length of the local component of the 
+ * This should be at least the length of the local component of the
  * distrubited array. That is, the length of the portion of the data
  * that is on this task. This must be at least the size of the local
  * array in the decomposition and the initial elements in the array
@@ -438,8 +438,10 @@ int PIOc_write_darray(int ncid, int vid, int ioid, PIO_Offset arraylen, void *ar
         LOG((2, "maxfree = %ld wmb->validvars = %d (1 + wmb->validvars) * arraylen * tsize = %ld totfree = %ld\n",
              maxfree, wmb->validvars, (1 + wmb->validvars) * arraylen * tsize, totfree));
 
-        /* Collect a debug report about buffer. (Shouldn't we be able to turn this off??) */
+#ifdef PIO_ENABLE_LOGGING
+        /* Collect a debug report about buffer. */
         cn_buffer_report(ios, true);
+#endif /* PIO_ENABLE_LOGGING */
 
         /* If needsflush == 2 flush to disk otherwise just flush to io node. */
         if ((ierr = flush_buffer(ncid, wmb, needsflush == 2)))
