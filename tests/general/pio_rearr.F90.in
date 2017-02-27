@@ -122,6 +122,62 @@ SUBROUTINE open_and_check_rdwr(comm, iosys, iotype, pio_file, fname, ret)
     call PIO_closefile(pio_file)
 END SUBROUTINE open_and_check_rdwr
 
+PIO_TF_AUTO_TEST_SUB_BEGIN test_rearrs_base
+  implicit none
+
+  character(len=PIO_TF_MAX_STR_LEN), target :: fname = "pio_test_rearrs_base.nc"
+  character(len=PIO_TF_MAX_STR_LEN), parameter :: attname = "filename"
+  character(len=PIO_TF_MAX_STR_LEN), parameter :: dimname = "filename_dim"
+  integer, parameter :: NUM_REARRANGERS = 2
+  integer :: rearrs(NUM_REARRANGERS) = (/pio_rearr_subset,pio_rearr_box/)
+  character(len=PIO_TF_MAX_STR_LEN) :: rearrs_info(NUM_REARRANGERS) = (/"PIO_REARR_SUBSET","PIO_REARR_BOX   "/)
+  integer, dimension(:), allocatable :: iotypes
+  character(len=PIO_TF_MAX_STR_LEN), dimension(:), allocatable :: iotype_descs
+  integer :: i, j, k, num_iotypes = 0
+  type(file_desc_t) :: pio_file
+
+  type(iosystem_desc_t) :: dup_iosys
+  integer :: dup_comm
+  integer :: dup_comm_rank, dup_comm_sz, dup_iosys_base
+  integer :: ret
+
+  call PIO_TF_Get_nc_iotypes(iotypes, iotype_descs, num_iotypes)
+  do i=1,num_iotypes
+    PIO_TF_LOG(0,*) "Testing iotype: ", iotype_descs(i)
+    call create_file(pio_tf_comm_, pio_tf_iosystem_, iotypes(i), &
+                      fname, attname, dimname, ret)
+    PIO_TF_CHECK_ERR(ret, pio_tf_comm_, "Failed to create file :" // fname)
+
+    call MPI_Comm_dup(pio_tf_comm_, dup_comm, ret)
+    call MPI_Comm_rank(dup_comm, dup_comm_rank, ret)
+    call MPI_Comm_size(dup_comm, dup_comm_sz, ret)
+    do j=1, NUM_REARRANGERS
+      PIO_TF_LOG(0,*) "Testing rearr : ", rearrs_info(j)
+      do k=1, dup_comm_sz
+        dup_iosys_base = k-1
+        PIO_TF_LOG(0,*) "Base = ", dup_iosys_base
+        call PIO_init(pio_tf_world_rank_, dup_comm, pio_tf_world_sz_, &
+                      1, &! Num aggregators
+                      1, &! Stride
+                      rearrs(j), dup_iosys, base=dup_iosys_base)
+        call PIO_seterrorhandling(dup_iosys, PIO_BCAST_ERROR)
+
+        call open_and_check_rdwr(dup_comm, dup_iosys, iotypes(i), &
+                        pio_file, fname, ret)
+        PIO_TF_CHECK_ERR(ret, dup_comm, "Checking rd+wr on file failed :" // fname)
+
+        call PIO_finalize(dup_iosys, ret)
+      end do
+    end do
+    call PIO_deletefile(pio_tf_iosystem_, fname)
+    call MPI_Comm_free(dup_comm, ret)
+  end do
+  if(allocated(iotypes)) then
+    deallocate(iotypes)
+    deallocate(iotype_descs)
+  end if
+PIO_TF_AUTO_TEST_SUB_END test_rearrs_base
+
 ! Test different combinations of the rearrangers to test the compatibility
 ! between different rearrangers
 ! init/rd+wr/finalize with one rearranger followed by another and try
