@@ -1301,20 +1301,20 @@ void cn_buffer_report(iosystem_desc_t *ios, bool collective)
                 check_mpi(NULL, mpierr, __FILE__, __LINE__);
             if (ios->compmaster == MPI_ROOT)
             {
-                LOG((1, "PIO: Currently allocated buffer space %ld %ld", bget_mins[0], bget_maxs[0]));
-                LOG((1, "PIO: Currently available buffer space %ld %ld", bget_mins[1], bget_maxs[1]));
-                LOG((1, "PIO: Current largest free block %ld %ld", bget_mins[2], bget_maxs[2]));
-                LOG((1, "PIO: Number of successful bget calls %ld %ld", bget_mins[3], bget_maxs[3]));
-                LOG((1, "PIO: Number of successful brel calls  %ld %ld", bget_mins[4], bget_maxs[4]));
+                LOG((1, "Currently allocated buffer space %ld %ld", bget_mins[0], bget_maxs[0]));
+                LOG((1, "Currently available buffer space %ld %ld", bget_mins[1], bget_maxs[1]));
+                LOG((1, "Current largest free block %ld %ld", bget_mins[2], bget_maxs[2]));
+                LOG((1, "Number of successful bget calls %ld %ld", bget_mins[3], bget_maxs[3]));
+                LOG((1, "Number of successful brel calls  %ld %ld", bget_mins[4], bget_maxs[4]));
             }
         }
         else
         {
-            LOG((1, "%d: PIO: Currently allocated buffer space %ld", ios->union_rank, bget_stats[0]));
-            LOG((1, "%d: PIO: Currently available buffer space %ld", ios->union_rank, bget_stats[1]));
-            LOG((1, "%d: PIO: Current largest free block %ld", ios->union_rank, bget_stats[2]));
-            LOG((1, "%d: PIO: Number of successful bget calls %ld", ios->union_rank, bget_stats[3]));
-            LOG((1, "%d: PIO: Number of successful brel calls  %ld", ios->union_rank, bget_stats[4]));
+            LOG((1, "Currently allocated buffer space %ld", bget_stats[0]));
+            LOG((1, "Currently available buffer space %ld", bget_stats[1]));
+            LOG((1, "Current largest free block %ld", bget_stats[2]));
+            LOG((1, "Number of successful bget calls %ld", bget_stats[3]));
+            LOG((1, "Number of successful brel calls  %ld", bget_stats[4]));
         }
     }
 }
