@@ -278,16 +278,13 @@ int PIOc_write_darray_multi(int ncid, const int *vid, int ioid, int nvars, PIO_O
  * to.
  * @param ioid the I/O description ID as passed back by
  * PIOc_InitDecomp().
- * @param arraylen the length of the array to be written.
- * This should be at least the length of the local component of the 
- * distrubited array. That is, the length of the portion of the data
- * that is on this task. This must be at least the size of the local
- * array in the decomposition and the initial elements in the array
- * should contain the local component of the data, as specified in
- * the decomposition (ioid).
- * @param array pointer to the data to be written. This is a
- * pointer to the distributed portion of the array that is on this
- * task.
+ * @param arraylen the length of the array to be written.  This should
+ * be at least the length of the local component of the distrubited
+ * array. (Any values beyond length of the local component will be
+ * ignored.)
+ * @param array pointer to an array of length arraylen with the data
+ * to be written. This is a pointer to the distributed portion of the
+ * array that is on this task.
  * @param fillvalue pointer to the fill value to be used for
  * missing data.
  * @returns 0 for success, non-zero error code for failure.

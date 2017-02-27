@@ -99,7 +99,7 @@ int test_darray_fill(int iosysid, int ioid, int pio_type, int num_flavors, int *
     int dimid;     /* The dimension ID. */
     int ncid;      /* The ncid of the netCDF file. */
     int varid;     /* The ID of the netCDF varable. */
-    PIO_Offset arraylen = 1;
+    PIO_Offset arraylen = 2;
     void *test_data;
     void *fillvalue;
     void *test_data_in;
@@ -110,6 +110,7 @@ int test_darray_fill(int iosysid, int ioid, int pio_type, int num_flavors, int *
     int int_fill = NC_FILL_INT;
     float float_fill = NC_FILL_FLOAT;
     double double_fill = NC_FILL_DOUBLE;
+    void *bufr;
     int ret;                        /* Return code. */
 
     /* Use PIO to create the example file in each of the four
@@ -167,18 +168,13 @@ int test_darray_fill(int iosysid, int ioid, int pio_type, int num_flavors, int *
             return ERR_WRONG;
         }
 
-        /* Write the data. */
+        /* Write the data. Our test_data contains only one real value
+         * (instead of 2, as indicated by arraylen), but due to the
+         * decomposition, only the first value is used in the
+         * output. */
         if ((ret = PIOc_write_darray(ncid, varid, ioid, arraylen, test_data,
                                      fillvalue)))
             ERR(ret);
-
-        /* Set the value of the record dimension to the second record. */
-        /* if ((ret = PIOc_setframe(ncid, varid, 1))) */
-        /*     ERR(ret); */
-
-        /* Write the data for the second record. */
-        /* if ((ret = PIOc_write_darray(ncid, varid, ioid, arraylen, test_data2, &fillvalue))) */
-        /*     ERR(ret); */
 
         /* Close the netCDF file. */
         if ((ret = PIOc_closefile(ncid)))
@@ -188,34 +184,54 @@ int test_darray_fill(int iosysid, int ioid, int pio_type, int num_flavors, int *
         if ((ret = PIOc_openfile(iosysid, &ncid, &flavor[fmt], filename, PIO_NOWRITE)))
             ERR(ret);
 
-        /* Allocate space for data. */
-        if (!(test_data_in = malloc(type_size)))
+        /* /\* Allocate space for data. *\/ */
+        if (!(test_data_in = malloc(type_size * arraylen)))
             ERR(PIO_ENOMEM);
 
         /* Read the data. */
         if ((ret = PIOc_read_darray(ncid, varid, ioid, arraylen, test_data_in)))
             ERR(ret);
-        printf("test_data_in = %d\n", *(int *)test_data_in);
 
-        /* Check the results. */
+        /* Check the (first) result. */
         if (memcmp(test_data_in, expected_in, type_size))
             return ERR_WRONG;
 
         /* Free resources. */
         free(test_data_in);
 
-        /* /\* Set the value of the record dimension to the second record. *\/ */
-        /* /\* if ((ret = PIOc_setframe(ncid, varid, 1))) *\/ */
-        /* /\*     ERR(ret); *\/ */
+        /* Get a buffer big enough to hold the global array. */
+        if (!(bufr = malloc(DIM_LEN * type_size)))
+            return PIO_ENOMEM;
 
-        /* /\* Read the data. *\/ */
-        /* if ((ret = PIOc_read_darray(ncid, varid, ioid, arraylen, test_data_in))) */
-        /*     ERR(ret); */
+        /* Get the whole array with good old get_var(). */
+        if ((ret = PIOc_get_var(ncid, varid, bufr)))
+            return ret;
 
-        /* /\* Check the results. *\/ */
-        /* for (int f = 0; f < arraylen; f++) */
-        /*     if (test_data_in[f] != test_data2[f]) */
-        /*         return ERR_WRONG; */
+        /* Check the results. The first four values are 0, 1, 2, 3,
+         * and the rest are the default fill value of the type. */
+        for (int e = 0; e < DIM_LEN; e++)
+        {
+            switch (pio_type)
+            {
+            case PIO_INT:
+                if (((int *)bufr)[e] != (e < 4 ? e : NC_FILL_INT))
+                    return ERR_WRONG;
+                break;
+            case PIO_FLOAT:
+                if (((float *)bufr)[e] != (e < 4 ? e : NC_FILL_FLOAT))
+                    return ERR_WRONG;
+                break;
+            case PIO_DOUBLE:
+                if (((double *)bufr)[e] != (e < 4 ? e : NC_FILL_DOUBLE))
+                    return ERR_WRONG;
+                break;
+            default:
+                return ERR_WRONG;
+            }
+        }
+        
+        /* Release buffer. */
+        free(bufr);
 
         /* Close the netCDF file. */
         printf("%d Closing the sample data file...\n", my_rank);
@@ -261,7 +277,7 @@ int test_decomp_read_write(int iosysid, int ioid, int num_flavors, int *flavor, 
     
         /* Read the data. */
         printf("reading decomp file %s\n", filename);
-        if ((ret = PIOc_read_nc_decomp(iosysid, filename, &ioid2, test_comm, PIO_INT,
+        if ((ret = PIOc_read_nc_decomp(iosysid, filename, &ioid2, test_comm, pio_type,
                                        title_in, history_in, &fortran_order_in)))
             return ret;
     
@@ -298,7 +314,6 @@ int test_decomp_read_write(int iosysid, int ioid, int num_flavors, int *flavor, 
                 iodesc->rearranger != PIO_REARR_SUBSET || iodesc->maxregions != 1 ||
                 !iodesc->needsfill || iodesc->basetype != expected_basetype)
                 return ERR_WRONG;
-            printf("iodesc->map[0] = %lld\n", iodesc->map[0]);
             /* Don't forget to add 1!! */
             if (iodesc->map[0] != my_rank + 1 || iodesc->map[1] != 0)
                 return ERR_WRONG;
@@ -316,8 +331,8 @@ int test_decomp_read_write(int iosysid, int ioid, int num_flavors, int *flavor, 
 /* Run tests for darray functions. */
 int main(int argc, char **argv)
 {
-#define NUM_TYPES_TO_TEST 1
-    int test_type[NUM_TYPES_TO_TEST] = {PIO_INT};
+#define NUM_TYPES_TO_TEST 3
+    int test_type[NUM_TYPES_TO_TEST] = {PIO_INT, PIO_FLOAT, PIO_DOUBLE};
     int my_rank;
     int ntasks;
     int num_flavors; /* Number of PIO netCDF flavors in this build. */
@@ -366,7 +381,6 @@ int main(int argc, char **argv)
                 return ret;
 
             /* Run tests. */
-            /* printf("%d Running tests...\n", my_rank); */
             /* if ((ret = test_darray_fill(iosysid, ioid, test_type[t], num_flavors, flavor, my_rank, test_comm))) */
             /*     return ret; */
             
