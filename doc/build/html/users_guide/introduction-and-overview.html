@@ -61,8 +61,8 @@
 <li><a class="reference internal" href="#terms-and-concepts">1.2. Terms and concepts</a></li>
 <li><a class="reference internal" href="#setting-defaults">1.3. Setting defaults</a></li>
 <li><a class="reference internal" href="#directory-content">1.4. Directory content</a></li>
-<li><a class="reference internal" href="#quick-start">1.5. Quick Start</a></li>
-<li><a class="reference internal" href="#discovering-available-content">1.6. Discovering available content</a></li>
+<li><a class="reference internal" href="#discovering-available-cases">1.5. Discovering available cases</a></li>
+<li><a class="reference internal" href="#quick-start">1.6. Quick Start</a></li>
 </ul>
 </li>
 </ul>
@@ -253,12 +253,29 @@ a climate model, cime is usually one of the first subdirectories under the main 
 </table>
 <p>Users should start in the &#8220;scripts&#8221; subdirectory.</p>
 </div>
-<div class="section" id="quick-start">
-<h2>1.5. Quick Start<a class="headerlink" href="#quick-start" title="Permalink to this headline">¶</a></h2>
-<p>You can cd to cime/scripts and try to build a simple data-model only case.</p>
+<div class="section" id="discovering-available-cases">
+<h2>1.5. Discovering available cases<a class="headerlink" href="#discovering-available-cases" title="Permalink to this headline">¶</a></h2>
+<p>You can find what compsets, grids and machines your CIME-enabled model supports using the manage_case command found in cime/scripts.  Use the &#8220;&#8211;help&#8221; option for more information.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="o">./</span><span class="n">manage_case</span> <span class="o">--</span><span class="n">help</span>
+</pre></div>
 </div>
-<div class="section" id="discovering-available-content">
-<h2>1.6. Discovering available content<a class="headerlink" href="#discovering-available-content" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="quick-start">
+<h2>1.6. Quick Start<a class="headerlink" href="#quick-start" title="Permalink to this headline">¶</a></h2>
+<p>If you would like to quickly see how a case is created, configured, built and run with CIME, try these commands (assuming CIME has been ported to your current machine):</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">cd</span> <span class="n">cime</span><span class="o">/</span><span class="n">scripts</span>
+<span class="o">&gt;</span> <span class="o">./</span><span class="n">create_newcase</span> <span class="o">--</span><span class="n">case</span> <span class="n">mycase</span> <span class="o">--</span><span class="n">compset</span> <span class="n">X</span> <span class="o">--</span><span class="n">res</span> <span class="n">f19_g16</span>
+<span class="o">&gt;</span> <span class="n">cd</span> <span class="n">mycase</span>
+<span class="o">&gt;</span> <span class="o">./</span><span class="n">case</span><span class="o">.</span><span class="n">setup</span>
+<span class="o">&gt;</span> <span class="o">./</span><span class="n">case</span><span class="o">.</span><span class="n">build</span>
+<span class="o">&gt;</span> <span class="o">./</span><span class="n">case</span> <span class="n">submit</span>
+</pre></div>
+</div>
+<p>The output from each command will be explained in the sections below. You can follow progress by monitoring the CaseStatus file:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">tail</span> <span class="n">CaseStatus</span>
+</pre></div>
+</div>
+<p>Repeat the above command until you see the message &#8220;Run SUCCESSFUL&#8221;.  This tells you the case finished successfully.</p>
 </div>
 </div>
 
