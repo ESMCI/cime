@@ -1153,7 +1153,7 @@ int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc, int vid,
                  * tasks. rtask here is the io task rank and
                  * ios->num_iotasks is the number of iotasks actually
                  * used in this decomposition. */
-                if (rtask < ios->num_iotasks)
+                if (rtask < ios->num_iotasks && tmp_bufsize > 0)
                     if ((mpierr = MPI_Send(iobuf, tmp_bufsize, iodesc->basetype, rtask,
                                            4 * ios->num_iotasks + rtask, ios->io_comm)))
                         return check_mpi(file, mpierr, __FILE__, __LINE__);
