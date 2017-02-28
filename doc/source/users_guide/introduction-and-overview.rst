@@ -124,10 +124,31 @@ CIME's content is split in to several subdirectories:
 
 Users should start in the "scripts" subdirectory.
 
+Discovering available cases
+==============================
+
+You can find what compsets, grids and machines your CIME-enabled model supports using the manage_case command found in cime/scripts.  Use the "--help" option for more information.
+::
+
+   > ./manage_case --help
+
 Quick Start
 ==================
 
-You can cd to cime/scripts and try to build a simple data-model only case.
+If you would like to quickly see how a case is created, configured, built and run with CIME, try these commands (assuming CIME has been ported to your current machine):
+::
 
-Discovering available content
-==============================
+   > cd cime/scripts
+   > ./create_newcase --case mycase --compset X --res f19_g16
+   > cd mycase
+   > ./case.setup
+   > ./case.build
+   > ./case submit
+
+The output from each command will be explained in the sections below. You can follow progress by monitoring the CaseStatus file:
+::
+
+   > tail CaseStatus
+
+Repeat the above command until you see the message "Run SUCCESSFUL".  This tells you the case finished successfully.
+
