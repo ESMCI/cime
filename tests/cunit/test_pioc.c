@@ -312,9 +312,12 @@ int check_var_name(int my_rank, int ncid, MPI_Comm test_comm)
  *
  * @param my_rank rank of process
  * @param ncid ncid of open netCDF file
- *
- * @returns 0 for success, error code otherwise. */
-int check_atts(int my_rank, int ncid, int flavor, MPI_Comm test_comm)
+ * @param flavor the iotype
+ * @param test_comm the MPI communicator of the test.
+ * @param async 1 if we are testing async, 0 otherwise.
+ * @returns 0 for success, error code otherwise. 
+ */
+int check_atts(int my_rank, int ncid, int flavor, MPI_Comm test_comm, int async)
 {
     char att_name[PIO_MAX_NAME + 1];
     char zero_att_name[PIO_MAX_NAME + 1];
@@ -382,6 +385,13 @@ int check_atts(int my_rank, int ncid, int flavor, MPI_Comm test_comm)
     if (att_int_value != ATT_VAL)
         return ERR_WRONG;
 
+    /* Try the typeless get. */
+    int att_int_value2;
+    if ((ret = PIOc_get_att(ncid, NC_GLOBAL, ATT_NAME, &att_int_value2)))
+        ERR(ret);
+    if (att_int_value2 != ATT_VAL)
+        return ERR_WRONG;
+    
     /* Check second att. */
     if ((ret = PIOc_inq_att(ncid, NC_GLOBAL, ATT_NAME2, &att_type, &att_len)))
         return ret;
@@ -825,10 +835,12 @@ int check_metadata(int ncid, int my_rank, int flavor)
  * @param num_flavors the number of different IO types that will be tested.
  * @param flavor an array of the valid IO types.
  * @param my_rank 0-based rank of task.
+ * @param test_comm the MPI communicator of the test.
+ * @param async 1 if we are testing async, 0 otherwise.
  * @returns 0 for success, error code otherwise.
  */
 int test_names(int iosysid, int num_flavors, int *flavor, int my_rank,
-               MPI_Comm test_comm)
+               MPI_Comm test_comm, int async)
 {
     char too_long_name[PIO_MAX_NAME * 5 + 1];
     int ret;    /* Return code. */
@@ -908,7 +920,7 @@ int test_names(int iosysid, int num_flavors, int *flavor, int my_rank,
             ERR(ret);
 
         /* Check the attribute name. */
-        if ((ret = check_atts(my_rank, ncid, flavor[fmt], test_comm)))
+        if ((ret = check_atts(my_rank, ncid, flavor[fmt], test_comm, async)))
             ERR(ret);
 
         /* Define a variable. */
@@ -1841,7 +1853,7 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
 
     /* Test name stuff. */
     printf("%d Testing names. async = %d\n", my_rank, async);
-    if ((ret = test_names(iosysid, num_flavors, flavor, my_rank, test_comm)))
+    if ((ret = test_names(iosysid, num_flavors, flavor, my_rank, test_comm, async)))
         return ret;
 
     /* Test netCDF-4 functions. */
@@ -1856,6 +1868,6 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
 int main(int argc, char **argv)
 {
     /* Change the 5th arg to 3 to turn on logging. */
-    return run_test_main(argc, argv, MIN_NTASKS, TARGET_NTASKS, 3,
+    return run_test_main(argc, argv, MIN_NTASKS, TARGET_NTASKS, 0,
                          TEST_NAME, dim_len, COMPONENT_COUNT, NUM_IO_PROCS);
 }
