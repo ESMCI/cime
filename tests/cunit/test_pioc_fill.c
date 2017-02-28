@@ -33,14 +33,19 @@
 /* The number of timesteps of data to write. */
 #define NUM_TIMESTEPS 2
 
-/* The name of the variable in the netCDF output files. */
-#define VAR_NAME "foo"
+/* The names of the variable in the netCDF output files. */
+#define VAR_NAME "Laurel"
+#define VAR_NAME_2 "Hardy"
 
 /* The dimension names. */
 char dim_name[NDIM][PIO_MAX_NAME + 1] = {"timestep", "x", "y"};
 
 /* Length of the dimensions in the sample data. */
 int dim_len[NDIM] = {NC_UNLIMITED, X_DIM_LEN, Y_DIM_LEN};
+
+/* 1D dim for fill_mode test. */
+#define DIM_NAME "SonsOfTheDesert"
+#define DIM_LEN 1
 
 /* Some sample data values to write. */
 char text[] = "hi";
@@ -168,7 +173,7 @@ int check_fill(int ncid, int *varid, int flavor, int default_fill)
     int ret;
 
     printf("checking fill values for flavor %d default_fill %d\n", flavor, default_fill);
-    
+
     if ((ret = PIOc_inq_var_fill(ncid, varid[0], &fill_mode, &byte_fill_value_in)))
         return ret;
     printf("byte_fill_value_in = %d\n", (int)byte_fill_value_in);
@@ -214,25 +219,25 @@ int check_fill(int ncid, int *varid, int flavor, int default_fill)
         if (fill_mode != NC_FILL || ubyte_fill_value_in != (default_fill ? NC_FILL_UBYTE : ubyte_fill_value))
             return ERR_WRONG;
         fill_mode = -99;
-            
+
         if ((ret = PIOc_inq_var_fill(ncid, varid[7], &fill_mode, &ushort_fill_value_in)))
             return ret;
         if (fill_mode != NC_FILL || ushort_fill_value_in != (default_fill ? NC_FILL_USHORT : ushort_fill_value))
             return ERR_WRONG;
         fill_mode = -99;
-            
+
         if ((ret = PIOc_inq_var_fill(ncid, varid[8], &fill_mode, &uint_fill_value_in)))
             return ret;
         if (fill_mode != NC_FILL || uint_fill_value_in != (default_fill ? NC_FILL_UINT : uint_fill_value))
             return ERR_WRONG;
         fill_mode = -99;
-            
+
         if ((ret = PIOc_inq_var_fill(ncid, varid[9], &fill_mode, &int64_fill_value_in)))
             return ret;
         if (fill_mode != NC_FILL || int64_fill_value_in != (default_fill ? NC_FILL_INT64 : int64_fill_value))
             return ERR_WRONG;
         fill_mode = -99;
-            
+
         if ((ret = PIOc_inq_var_fill(ncid, varid[10], &fill_mode, &uint64_fill_value_in)))
             return ret;
         if (fill_mode != NC_FILL || uint64_fill_value_in != (default_fill ? NC_FILL_UINT64 : uint64_fill_value))
@@ -518,6 +523,7 @@ int create_putget_file(int iosysid, int flavor, int *dim_len, int *varid, const 
  * @param num_flavors the number of different IO types that will be tested.
  * @param flavor an array of the valid IO types.
  * @param my_rank 0-based rank of task.
+ * @param test_comm the MPI communicator running the test.
  * @returns 0 for success, error code otherwise.
  */
 int test_fill(int iosysid, int num_flavors, int *flavor, int my_rank,
@@ -598,6 +604,179 @@ int test_fill(int iosysid, int num_flavors, int *flavor, int my_rank,
     return PIO_NOERR;
 }
 
+/* Test fill mode in files. Create a file with no data, and make sure
+ * fill mode is working correctly for all iotypes.
+ *
+ * This function creates a file with 1 dim (of length 1), 1 var. Fill
+ * mode is turned on for the file. No data is written to the
+ * file. Then the file is closed and re-opened, and the data value
+ * checked.
+ *
+ * @param iosysid the iosystem ID that will be used for the test.
+ * @param num_flavors the number of different IO types that will be tested.
+ * @param flavor an array of the valid IO types.
+ * @param my_rank 0-based rank of task.
+ * @param test_comm the MPI communicator running the test.
+ * @returns 0 for success, error code otherwise.
+ */
+int test_fill_mode(int iosysid, int num_flavors, int *flavor, int my_rank,
+                   MPI_Comm test_comm, int async)
+{
+#define NUM_TYPES_TO_TEST 2
+    int xtype[NUM_TYPES_TO_TEST] = {PIO_INT, PIO_FLOAT};
+
+    printf("test_fill_mode async = %d\n", async);
+
+    /* Test with and without default fill values. */
+    for (int default_fill = 0; default_fill < 2; default_fill++)
+    {
+        /* Test with and without extra var that does get data. */
+        for (int extra_var = 0; extra_var < 2; extra_var++)
+        {
+            /* Use PIO to create the example file in each of the four
+             * available ways. */
+            for (int fmt = 0; fmt < num_flavors; fmt++)
+            {
+                for (int t = 0; t < NUM_TYPES_TO_TEST; t++)
+                {
+                    char filename[PIO_MAX_NAME + 1]; /* Test filename. */
+                    char iotype_name[PIO_MAX_NAME + 1];
+                    int ncid;
+                    int dimid;
+                    int varid;
+                    int varid2;
+                    void *fillvalue;
+                    PIO_Offset type_size;
+                    int default_int_fill = NC_FILL_INT;
+                    float default_float_fill = NC_FILL_FLOAT;
+                    void *extra_data;
+                    int extra_data_int = TEST_VAL_42;
+                    float extra_data_float = TEST_VAL_42;
+                    int ret;    /* Return code. */
+
+                    /* Create a filename. */
+                    if ((ret = get_iotype_name(flavor[fmt], iotype_name)))
+                        return ret;
+                    snprintf(filename, PIO_MAX_NAME, "%s_fill_mode_async_%d_default_fill_%d_extra_var_%d_%s.nc",
+                             TEST_NAME, async, default_fill, extra_var, iotype_name);
+
+                    /* Create the test file. */
+                    if ((ret = PIOc_createfile(iosysid, &ncid, &flavor[fmt], filename, PIO_CLOBBER)))
+                        return ret;
+
+                    /* Turn on fill mode. */
+                    if ((ret = PIOc_set_fill(ncid, NC_FILL, NULL)))
+                        return ret;
+
+                    /* Define a dimension. */
+                    if ((ret = PIOc_def_dim(ncid, DIM_NAME, DIM_LEN, &dimid)))
+                        return ret;
+
+                    /* Define a variable. */
+                    if ((ret = PIOc_def_var(ncid, VAR_NAME, xtype[t], 1, &dimid, &varid)))
+                        return ret;
+
+                    /* Do we want an extra variable? */
+                    if (extra_var)
+                        if ((ret = PIOc_def_var(ncid, VAR_NAME_2, xtype[t], 1, &dimid, &varid2)))
+                            return ret;
+
+                    /* Find the size of our type. */
+                    if ((ret = PIOc_inq_type(ncid, xtype[t], NULL, &type_size)))
+                        return ret;
+                    if ((xtype[t] == PIO_INT || xtype[t] == PIO_FLOAT) && type_size != 4)
+                        return ERR_WRONG;
+
+                    /* Determine fill value and extra data, depending on type. */
+                    switch (xtype[t])
+                    {
+                    case PIO_INT:
+                        fillvalue = (default_fill ? &default_int_fill: &int_fill_value);
+                        extra_data = &extra_data_int;
+                        break;
+                    case PIO_FLOAT:
+                        fillvalue = (default_fill ? &default_float_fill: &float_fill_value);
+                        extra_data = &extra_data_float;
+                        break;
+                    default:
+                        return ERR_WRONG;
+                    }
+                
+                    /* If not using a default fill value, set one. */
+                    if (!default_fill)
+                        if ((ret = PIOc_def_var_fill(ncid, varid, NC_FILL, fillvalue)))
+                            return ret;
+
+                    /* End define mode. */
+                    if ((ret = PIOc_enddef(ncid)))
+                        return ret;
+
+                    /* If there is an extra variable, write data to it. */
+                    if (extra_var)
+                        if ((ret = PIOc_put_var(ncid, varid2, extra_data)))
+                            return ret;
+                    
+                    /* Close the netCDF file. */
+                    if ((ret = PIOc_closefile(ncid)))
+                        ERR(ret);
+
+                    /* Access to read it. */
+                    printf("about to try to open file %s\n", filename);
+                    if ((ret = PIOc_openfile(iosysid, &ncid, &flavor[fmt], filename, PIO_WRITE)))
+                        ERR(ret);
+
+                    /* Check the fill value. */
+                    void *fillvalue_in;
+                    int fill_mode_in;
+
+                    if (!(fillvalue_in = malloc(type_size)))
+                        return PIO_ENOMEM;
+                    if ((ret = PIOc_inq_var_fill(ncid, varid, &fill_mode_in, fillvalue_in)))
+                        return ret;
+                    if (fill_mode_in != NC_FILL)
+                        return ERR_WRONG;
+                    if (memcmp(fillvalue_in, fillvalue, type_size))
+                        return ERR_WRONG;
+                    free(fillvalue_in);
+
+                    /* Allocate space to read one element of data. */
+                    void *data_in;
+                    if (!(data_in = malloc(type_size)))
+                        return PIO_ENOMEM;
+
+                    /* Use the vara functions to read 1 datum from
+                     * the var we didn't write to. We should get a
+                     * fill value. */
+                    if ((ret = PIOc_get_var(ncid, varid, data_in)))
+                        return ret;
+                    if (memcmp(data_in, fillvalue, type_size))
+                        return ERR_WRONG;
+
+                    /* Use the vara functions to read 1 datum from the
+                     * var we did write to. We should get the value we
+                     * wrote. */
+                    if (extra_var)
+                    {
+                        if ((ret = PIOc_get_var(ncid, varid2, data_in)))
+                            return ret;
+                        if (memcmp(data_in, extra_data, type_size))
+                            return ERR_WRONG;
+                    }
+
+                    /* Free memory. */
+                    free(data_in);
+
+                    /* Close the netCDF file. */
+                    if ((ret = PIOc_closefile(ncid)))
+                        ERR(ret);
+                } /* next type */
+            } /* with or without extra var */
+        } /* next flavor */
+    }
+
+    return PIO_NOERR;
+}
+
 /* Run all the tests. */
 int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm test_comm,
              int async)
@@ -608,8 +787,12 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
     if ((ret = MPI_Comm_size(test_comm, &my_test_size)))
         MPIERR(ret);
 
+    /* Test that empty vars get fill values when fill mode is on. */
+    if ((ret = test_fill_mode(iosysid, num_flavors, flavor, my_rank, test_comm,
+                              async)))
+        ERR(ret);
+
     /* Test read/write stuff. */
-    printf("%d Testing fill. async = %d\n", my_rank, async);
     if ((ret = test_fill(iosysid, num_flavors, flavor, my_rank, test_comm)))
         ERR(ret);
 
@@ -620,7 +803,7 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
 int main(int argc, char **argv)
 {
     int ret;
-    
+
     /* Initialize data arrays with sample data. */
     init_arrays();
 
