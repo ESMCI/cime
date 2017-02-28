@@ -1282,7 +1282,8 @@ int flush_output_buffer(file_desc_t *file, bool force, PIO_Offset addsize)
 }
 
 /**
- * Print out info about the buffer for debug purposes.
+ * Print out info about the buffer for debug purposes. This should
+ * only be called when logging is enabled.
  *
  * @param ios pointer to the IO system structure
  * @param collective true if collective report is desired
@@ -1311,30 +1312,20 @@ void cn_buffer_report(iosystem_desc_t *ios, bool collective)
                 check_mpi(NULL, mpierr, __FILE__, __LINE__);
             if (ios->compmaster == MPI_ROOT)
             {
-                printf("PIO: Currently allocated buffer space %ld %ld\n",
-                       bget_mins[0], bget_maxs[0]);
-                printf("PIO: Currently available buffer space %ld %ld\n",
-                       bget_mins[1], bget_maxs[1]);
-                printf("PIO: Current largest free block %ld %ld\n",
-                       bget_mins[2], bget_maxs[2]);
-                printf("PIO: Number of successful bget calls %ld %ld\n",
-                       bget_mins[3], bget_maxs[3]);
-                printf("PIO: Number of successful brel calls  %ld %ld\n",
-                       bget_mins[4], bget_maxs[4]);
+                LOG((1, "Currently allocated buffer space %ld %ld", bget_mins[0], bget_maxs[0]));
+                LOG((1, "Currently available buffer space %ld %ld", bget_mins[1], bget_maxs[1]));
+                LOG((1, "Current largest free block %ld %ld", bget_mins[2], bget_maxs[2]));
+                LOG((1, "Number of successful bget calls %ld %ld", bget_mins[3], bget_maxs[3]));
+                LOG((1, "Number of successful brel calls  %ld %ld", bget_mins[4], bget_maxs[4]));
             }
         }
         else
         {
-            printf("%d: PIO: Currently allocated buffer space %ld \n",
-                   ios->union_rank, bget_stats[0]) ;
-            printf("%d: PIO: Currently available buffer space %ld \n",
-                   ios->union_rank, bget_stats[1]);
-            printf("%d: PIO: Current largest free block %ld \n",
-                   ios->union_rank, bget_stats[2]);
-            printf("%d: PIO: Number of successful bget calls %ld \n",
-                   ios->union_rank, bget_stats[3]);
-            printf("%d: PIO: Number of successful brel calls  %ld \n",
-                   ios->union_rank, bget_stats[4]);
+            LOG((1, "Currently allocated buffer space %ld", bget_stats[0]));
+            LOG((1, "Currently available buffer space %ld", bget_stats[1]));
+            LOG((1, "Current largest free block %ld", bget_stats[2]));
+            LOG((1, "Number of successful bget calls %ld", bget_stats[3]));
+            LOG((1, "Number of successful brel calls  %ld", bget_stats[4]));
         }
     }
 }
