@@ -2220,8 +2220,7 @@ int PIOc_get_att(int ncid, int varid, const char *name, void *ip)
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Pointer to file information. */
     int ierr;              /* Return code from function calls. */
-    int mpierr;            /* Return code from MPI function calls. */
-    nc_type atttype;
+    nc_type atttype;       /* The type of the attribute. */
 
     /* Find the info about this file. */
     if ((ierr = pio_get_file(ncid, &file)))
@@ -2234,20 +2233,10 @@ int PIOc_get_att(int ncid, int varid, const char *name, void *ip)
 
     LOG((1, "PIOc_get_att ncid %d varid %d name %s", ncid, varid, name));
 
-    /* Run these on all tasks if async is not in use, but only on
-     * non-IO tasks if async is in use. */
-    if (!ios->async_interface || !ios->ioproc)
-    {
-        /* Get the type of the attribute. */
-        if ((ierr = PIOc_inq_att(ncid, varid, name, &atttype, NULL)))
-            return check_netcdf(file, ierr, __FILE__, __LINE__);
-        LOG((2, "atttype = %d", atttype));
-    }
-
-    /* Broadcast values currently only known on computation tasks to IO tasks. */
-    if (ios->async_interface)
-        if ((mpierr = MPI_Bcast(&atttype, 1, MPI_OFFSET, ios->comproot, ios->my_comm)))
-            return check_mpi(file, mpierr, __FILE__, __LINE__);
+    /* Get the type of the attribute. */
+    if ((ierr = PIOc_inq_att(ncid, varid, name, &atttype, NULL)))
+        return check_netcdf(file, ierr, __FILE__, __LINE__);
+    LOG((2, "atttype = %d", atttype));
 
     return PIOc_get_att_tc(ncid, varid, name, atttype, ip);
 }
