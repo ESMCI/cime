@@ -62,9 +62,6 @@ int compute_buffer_init(iosystem_desc_t *ios)
  * function is only used with parallel-netcdf and netcdf-4 parallel
  * iotypes. Serial io types use pio_write_darray_multi_nc_serial().
  *
- * This routine is used if aggregation is enabled, data is already on
- * the io-tasks.
- *
  * @param file a pointer to the open file descriptor for the file
  * that will be written to
  * @param nvars the number of variables to be written with this
@@ -157,20 +154,18 @@ int pio_write_darray_multi_nc(file_desc_t *file, int nvars, const int *vid, int 
     /* If this is an IO task write the data. */
     if (ios->ioproc)
     {
-        io_region *region;
-        int rrcnt;
+        io_region *region = firstregion;
+        int rrcnt = 0; /* Number of subarray requests (pnetcdf only). */
         void *bufptr;
         size_t start[fndims];
         size_t count[fndims];
         int ndims = iodesc_ndims;
-        PIO_Offset *startlist[maxregions];
-        PIO_Offset *countlist[maxregions];
+        PIO_Offset *startlist[maxregions]; /* Array of start arrays for ncmpi_iput_varn(). */
+        PIO_Offset *countlist[maxregions]; /* Array of count  arrays for ncmpi_iput_varn(). */
 
         LOG((3, "maxregions = %d", maxregions));
 
         /* Process each region of data to be written. */
-        region = firstregion;
-        rrcnt = 0;
         for (int regioncnt = 0; regioncnt < maxregions; regioncnt++)
         {
             /* Init start/count arrays to zero. */
@@ -201,6 +196,7 @@ int pio_write_darray_multi_nc(file_desc_t *file, int nvars, const int *vid, int 
                     }
                     else if (fndims == ndims)
                     {
+                        /* ??? */
                         start[0] += vdesc->record;
                     }
                 }
@@ -258,20 +254,31 @@ int pio_write_darray_multi_nc(file_desc_t *file, int nvars, const int *vid, int 
 #endif
 #ifdef _PNETCDF
             case PIO_IOTYPE_PNETCDF:
+                /* Get the total number of data elements we are
+                 * writing for this region. */
                 dsize = 1;
                 for (int i = 0; i < fndims; i++)
                     dsize *= count[i];
+                LOG((3, "dsize = %d", dsize));
 
+                /* For pnetcdf's ncmpi_iput_varn() function, we need
+                 * to provide arrays of arrays for start/count. */
                 if (dsize > 0)
                 {
+                    /* Allocate storage for start/count arrays for
+                     * this region. */
                     if (!(startlist[rrcnt] = calloc(fndims, sizeof(PIO_Offset))))
                         return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
                     if (!(countlist[rrcnt] = calloc(fndims, sizeof(PIO_Offset))))
                         return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
+
+                    /* Copy the start/count arrays for this region. */
                     for (int i = 0; i < fndims; i++)
                     {
                         startlist[rrcnt][i] = start[i];
                         countlist[rrcnt][i] = count[i];
+                        LOG((3, "startlist[%d][%d] = %d countlist[%d][%d] = %d", rrcnt, i,
+                             startlist[rrcnt][i], rrcnt, i, countlist[rrcnt][i]));
                     }
                     rrcnt++;
                 }
@@ -285,7 +292,8 @@ int pio_write_darray_multi_nc(file_desc_t *file, int nvars, const int *vid, int 
                         /* Get the var info. */
                         vdesc = file->varlist + vid[nv];
 
-                        /* If this is a record var, get the start for the record dimension. */
+                        /* If this is a record var, set the start for
+                         * the record dimension. */
                         if (vdesc->record >= 0 && ndims < fndims)
                             for (int rc = 0; rc < rrcnt; rc++)
                                 startlist[rc][0] = frame[nv];
@@ -293,11 +301,12 @@ int pio_write_darray_multi_nc(file_desc_t *file, int nvars, const int *vid, int 
                         /* Get a pointer to the data. */
                         bufptr = (void *)((char *)iobuf + nv * tsize * llen);
 
+                        /* ??? */
                         int reqn = 0;
                         if (vdesc->nreqs % PIO_REQUEST_ALLOC_CHUNK == 0 )
                         {
-                            if (!(vdesc->request = realloc(vdesc->request,
-                                                           sizeof(int) * (vdesc->nreqs + PIO_REQUEST_ALLOC_CHUNK))))
+                            if (!(vdesc->request = realloc(vdesc->request, sizeof(int) *
+                                                           (vdesc->nreqs + PIO_REQUEST_ALLOC_CHUNK))))
                                 return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
 
                             for (int i = vdesc->nreqs; i < vdesc->nreqs + PIO_REQUEST_ALLOC_CHUNK; i++)
@@ -309,8 +318,10 @@ int pio_write_darray_multi_nc(file_desc_t *file, int nvars, const int *vid, int 
                                 reqn++;
 
                         /* Write, in non-blocking fashion, a list of subarrays. */
+                        LOG((3, "about to call ncmpi_iput_varn() vid[%d] = %d rrcnt = %d, llen = %d",
+                             nv, vid[nv], rrcnt, llen));
                         ierr = ncmpi_iput_varn(file->fh, vid[nv], rrcnt, startlist, countlist,
-                                               bufptr, llen, basetype, vdesc->request+reqn);
+                                               bufptr, llen, basetype, vdesc->request + reqn);
 
                         /* keeps wait calls in sync */
                         if (vdesc->request[reqn] == NC_REQ_NULL)
@@ -355,9 +366,6 @@ int pio_write_darray_multi_nc(file_desc_t *file, int nvars, const int *vid, int 
  * serial mode. This function is called for netCDF classic and
  * netCDF-4 serial iotypes. Parallel iotypes use
  * pio_write_darray_multi_nc().
- *
- * This routine is used if aggregation is enabled, data is already on
- * the io-tasks.
  *
  * @param file a pointer to the open file descriptor for the file
  * that will be written to.
@@ -1141,8 +1149,11 @@ int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc, int vid,
                         return check_netcdf(file, ierr, __FILE__, __LINE__);
                 }
 
-                /* ??? */
-                if (rtask < ios->num_iotasks)
+                /* The decomposition may not use all of the active io
+                 * tasks. rtask here is the io task rank and
+                 * ios->num_iotasks is the number of iotasks actually
+                 * used in this decomposition. */
+                if (rtask < ios->num_iotasks && tmp_bufsize > 0)
                     if ((mpierr = MPI_Send(iobuf, tmp_bufsize, iodesc->basetype, rtask,
                                            4 * ios->num_iotasks + rtask, ios->io_comm)))
                         return check_mpi(file, mpierr, __FILE__, __LINE__);
