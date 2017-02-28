@@ -13,10 +13,11 @@
    :maxdepth: 3
    :numbered:
       
-CIME contains the support scripts, data models, essential utility libraries, a “main” and other tools that are 
-needed to build a single-executable coupled Earth System Model. CIME is available in a stand-alone package that 
-can be compiled and tested without full prognostic components (by using the included data models) CIME does not 
-contain any prognostic components. In addition, CIME does not contain any intra-component coupling capability (such as atmosphere physics-dynamics coupling).
+CIME contains the support scripts (configure, build, run), data models, essential utility libraries, 
+a “main” and other tools that are needed to build a single-executable coupled Earth System Model. 
+CIME is available in a stand-alone package that 
+can be compiled and tested without full prognostic components but is typically included in the source of 
+a climate model. CIME does not contain: any prognostic components, any intra-component coupling capability (such as atmosphere physics-dynamics coupling).
 
 *********
 Overview
@@ -26,7 +27,7 @@ CIME is comprised of:
 
 1. A default coupled model architecture:
 
-    i. A programmer interface and libraries (including MCT) to implement a hub-and-spoke inter-component coupling architecture.
+    i. A programmer interface and libraries to implement a hub-and-spoke inter-component coupling architecture.
     ii. An implementation of a “hub” that needs 7 components (atm, ocn, lnd, sea-ice, land-ice, river, wave). a.k.a. “the driver”.
     iii. The ability to allow prognostic and data components to be mixed in any combination as long as each component implements the coupling programmer interface.
 
