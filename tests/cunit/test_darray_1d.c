@@ -81,7 +81,7 @@ int create_decomposition_1d(int ntasks, int my_rank, int iosysid, int pio_type, 
     return 0;
 }
 
-/** 
+/**
  * Test fill values and darrays.
  *
  * @param iosysid the IO system ID.
@@ -116,7 +116,7 @@ int test_darray_fill(int iosysid, int ioid, int pio_type, int num_flavors, int *
 
     /* Use PIO to create the example file in each of the four
      * available ways. */
-    for (int fmt = 0; fmt < num_flavors; fmt++) 
+    for (int fmt = 0; fmt < num_flavors; fmt++)
     {
         /* Create the filename. */
         sprintf(filename, "data_%s_iotype_%d_pio_type_%d.nc", TEST_NAME, flavor[fmt], pio_type);
@@ -128,9 +128,9 @@ int test_darray_fill(int iosysid, int ioid, int pio_type, int num_flavors, int *
             ERR(ret);
 
         /* Turn on fill mode. */
-        if ((ret = PIOc_set_fill(ncid, NC_FILL, NULL)))        
+        if ((ret = PIOc_set_fill(ncid, NC_FILL, NULL)))
             ERR(ret);
-        
+
         /* Define netCDF dimensions and variable. */
         if ((ret = PIOc_def_dim(ncid, DIM_NAME, DIM_LEN, &dimid)))
             ERR(ret);
@@ -230,7 +230,7 @@ int test_darray_fill(int iosysid, int ioid, int pio_type, int num_flavors, int *
                 return ERR_WRONG;
             }
         }
-        
+
         /* Release buffer. */
         free(bufr);
 
@@ -243,7 +243,7 @@ int test_darray_fill(int iosysid, int ioid, int pio_type, int num_flavors, int *
     return PIO_NOERR;
 }
 
-/** 
+/**
  * Test fill values and darrays with an unlimited dim.
  *
  * @param iosysid the IO system ID.
@@ -280,7 +280,7 @@ int test_darray_fill_unlim(int iosysid, int ioid, int pio_type, int num_flavors,
     /* Use PIO to create the example file in each of the four
      * available ways. */
     /* for (int fmt = 0; fmt < num_flavors; fmt++)  */
-    for (int fmt = 1; fmt < 2; fmt++) 
+    for (int fmt = 1; fmt < 2; fmt++)
     {
         /* Create the filename. */
         sprintf(filename, "data_%s_iotype_%d_pio_type_%d_unlim.nc", TEST_NAME, flavor[fmt],
@@ -293,9 +293,9 @@ int test_darray_fill_unlim(int iosysid, int ioid, int pio_type, int num_flavors,
             ERR(ret);
 
         /* Turn on fill mode. */
-        if ((ret = PIOc_set_fill(ncid, NC_FILL, NULL)))        
+        if ((ret = PIOc_set_fill(ncid, NC_FILL, NULL)))
             ERR(ret);
-        
+
         /* Define netCDF dimensions. */
         if ((ret = PIOc_def_dim(ncid, DIM_NAME, NC_UNLIMITED, &dimid[0])))
             ERR(ret);
@@ -415,7 +415,7 @@ int test_darray_fill_unlim(int iosysid, int ioid, int pio_type, int num_flavors,
                 return ERR_WRONG;
             }
         }
-        
+
         /* Release buffer. */
         free(bufr);
 
@@ -428,7 +428,7 @@ int test_darray_fill_unlim(int iosysid, int ioid, int pio_type, int num_flavors,
     return PIO_NOERR;
 }
 
-/** 
+/**
  * Test the decomp read/write functionality.
  *
  * @param iosysid the IO system ID.
@@ -453,7 +453,7 @@ int test_decomp_read_write(int iosysid, int ioid, int num_flavors, int *flavor, 
 
     /* Use PIO to create the decomp file in each of the four
      * available ways. */
-    for (int fmt = 0; fmt < num_flavors; fmt++) 
+    for (int fmt = 0; fmt < num_flavors; fmt++)
     {
         /* Create the filename. */
         sprintf(filename, "decomp_%s_iotype_%d.nc", TEST_NAME, flavor[fmt]);
@@ -462,19 +462,19 @@ int test_decomp_read_write(int iosysid, int ioid, int num_flavors, int *flavor, 
         if ((ret = PIOc_write_nc_decomp(iosysid, filename, 0, ioid, test_comm, NULL,
                                         NULL, 0)))
             return ret;
-    
+
         /* Read the data. */
         printf("reading decomp file %s\n", filename);
         if ((ret = PIOc_read_nc_decomp(iosysid, filename, &ioid2, test_comm, pio_type,
                                        title_in, history_in, &fortran_order_in)))
             return ret;
-    
+
         /* Check the results. */
         {
             iosystem_desc_t *ios;
             io_desc_t *iodesc;
             int expected_basetype;
-            
+
             switch (pio_type)
             {
             case PIO_INT:
@@ -489,7 +489,7 @@ int test_decomp_read_write(int iosysid, int ioid, int num_flavors, int *flavor, 
             default:
                 return ERR_WRONG;
             }
-                
+
             /* Get the IO system info. */
             if (!(ios = pio_get_iosystem_from_id(iosysid)))
                 return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
@@ -554,7 +554,7 @@ int main(int argc, char **argv)
         int ioproc_stride = 1;    /* Stride in the mpi rank between io tasks. */
         int ioproc_start = 0;     /* Rank of first processor to be used for I/O. */
         int ret;      /* Return code. */
-        
+
         /* Figure out iotypes. */
         if ((ret = get_iotypes(&num_flavors, flavor)))
             ERR(ret);
@@ -567,40 +567,35 @@ int main(int argc, char **argv)
             if ((ret = PIOc_Init_Intracomm(test_comm, TARGET_NTASKS, ioproc_stride,
                                            ioproc_start, rearranger[r], &iosysid)))
                 return ret;
-            
+
             /* Run tests for each data type. */
             for (int t = 0; t < NUM_TYPES_TO_TEST; t++)
             {
-                /* Testing PIO_DOUBLE with PIO_REARR_SUBSET causes a
-                 * seg fault! So skip that until we have a fix. */
-                if (rearranger[r] == PIO_REARR_SUBSET && test_type[t] == PIO_DOUBLE)
-                    continue;
-                
                 /* Decompose the data over the tasks. */
                 if ((ret = create_decomposition_1d(TARGET_NTASKS, my_rank, iosysid, test_type[t],
                                                    &ioid)))
                     return ret;
-                
+
                 /* Test decomposition read/write. */
                 if ((ret = test_decomp_read_write(iosysid, ioid, num_flavors, flavor, my_rank,
                                                   test_type[t], rearranger[r], test_comm)))
                     return ret;
-                
+
                 /* Run tests. */
                 if ((ret = test_darray_fill(iosysid, ioid, test_type[t], num_flavors, flavor,
                                             my_rank, test_comm)))
                     return ret;
-                
+
                 /* Run tests. */
                 if ((ret = test_darray_fill_unlim(iosysid, ioid, test_type[t], num_flavors,
                                                   flavor, my_rank, test_comm)))
                     return ret;
-                
+
                 /* Free the PIO decomposition. */
                 if ((ret = PIOc_freedecomp(iosysid, ioid)))
                     ERR(ret);
             }
-            
+
             /* Finalize PIO system. */
             if ((ret = PIOc_finalize(iosysid)))
                 return ret;
