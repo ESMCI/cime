@@ -12,10 +12,12 @@
 #include <pio_internal.h>
 
 /**
- * Returns the smallest power of 2 greater than i.
+ * Returns the smallest power of 2 greater than
+ * or equal to i.
  *
  * @param i input number
- * @returns the smallest power of 2 greater than i.
+ * @returns the smallest power of 2 greater than
+ * or equal to i.
  */
 int ceil2(int i)
 {
@@ -325,7 +327,7 @@ int pio_swapm(void *sendbuf, int *sendcounts, int *sdispls, MPI_Datatype *sendty
             }
         }
 
-        /* We did comms in sets of size max_reqs, if istep > maxreqh
+        /* We did comms in sets of size max_reqs, if istep > maxreqh-1
          * then there is a remainder that must be handled. */
         if (istep > maxreqh - 1)
         {
@@ -361,7 +363,7 @@ int pio_swapm(void *sendbuf, int *sendcounts, int *sdispls, MPI_Datatype *sendty
         }
     }
 
-    /* If steps > 0 there are still outstanding messages, wait for
+    /* If steps > 0 there could still be outstanding messages, wait for
      * them here. */
     if (steps > 0)
     {
