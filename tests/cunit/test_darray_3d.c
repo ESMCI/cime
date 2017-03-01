@@ -96,7 +96,7 @@ int create_decomposition_3d(int ntasks, int my_rank, int iosysid, int *ioid)
     return 0;
 }
 
-/** 
+/**
  * Test the darray functionality. Create a netCDF file with 4
  * dimensions and 1 PIO_INT variable, and use darray to write some
  * data.
@@ -131,7 +131,7 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
 
     /* Use PIO to create the example file in each of the four
      * available ways. */
-    for (int fmt = 0; fmt < num_flavors; fmt++) 
+    for (int fmt = 0; fmt < num_flavors; fmt++)
     {
         /* Create the filename. */
         sprintf(filename, "data_%s_iotype_%d.nc", TEST_NAME, flavor[fmt]);
@@ -143,9 +143,9 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
             ERR(ret);
 
         /* Turn on fill mode. */
-        if ((ret = PIOc_set_fill(ncid, NC_FILL, NULL)))        
+        if ((ret = PIOc_set_fill(ncid, NC_FILL, NULL)))
             ERR(ret);
-        
+
         /* Define netCDF dimensions and variable. */
         printf("%d Defining netCDF metadata...\n", my_rank);
         for (int d = 0; d < NDIM; d++)
@@ -214,7 +214,7 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
     return PIO_NOERR;
 }
 
-/** 
+/**
  * Test the decomp read/write functionality.
  *
  * @param iosysid the IO system ID.
@@ -222,11 +222,13 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
  * @param num_flavors the number of IOTYPES available in this build.
  * @param flavor array of available iotypes.
  * @param my_rank rank of this task.
+ * @param rearranger the rearranger to use (PIO_REARR_BOX or
+ * PIO_REARR_SUBSET).
  * @param test_comm the MPI communicator for this test.
  * @returns 0 for success, error code otherwise.
 */
 int test_decomp_read_write(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank,
-                           MPI_Comm test_comm)
+                           int rearranger, MPI_Comm test_comm)
 {
     char filename[PIO_MAX_NAME + 1]; /* Name for the output files. */
     int ioid2;             /* ID for decomposition we will create from file. */
@@ -237,7 +239,7 @@ int test_decomp_read_write(int iosysid, int ioid, int num_flavors, int *flavor, 
 
     /* Use PIO to create the decomp file in each of the four
      * available ways. */
-    for (int fmt = 0; fmt < num_flavors; fmt++) 
+    for (int fmt = 0; fmt < num_flavors; fmt++)
     {
         /* Create the filename. */
         sprintf(filename, "decomp_%s_iotype_%d.nc", TEST_NAME, flavor[fmt]);
@@ -246,18 +248,18 @@ int test_decomp_read_write(int iosysid, int ioid, int num_flavors, int *flavor, 
         if ((ret = PIOc_write_nc_decomp(iosysid, filename, 0, ioid, test_comm, NULL,
                                         NULL, 0)))
             return ret;
-    
+
         /* Read the data. */
         printf("reading decomp file %s\n", filename);
         if ((ret = PIOc_read_nc_decomp(iosysid, filename, &ioid2, test_comm, PIO_INT,
                                        title_in, history_in, &fortran_order_in)))
             return ret;
-    
+
         /* Check the results. */
         {
             iosystem_desc_t *ios;
             io_desc_t *iodesc;
-            
+
             /* Get the IO system info. */
             if (!(ios = pio_get_iosystem_from_id(iosysid)))
                 return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
@@ -266,17 +268,29 @@ int test_decomp_read_write(int iosysid, int ioid, int num_flavors, int *flavor, 
             if (!(iodesc = pio_get_iodesc_from_id(ioid2)))
                 return pio_err(ios, NULL, PIO_EBADID, __FILE__, __LINE__);
             if (iodesc->ioid != ioid2 || iodesc->maplen != EXPECTED_MAPLEN || iodesc->ndims != NDIM3 ||
-                iodesc->nrecvs != 1 || iodesc->ndof != EXPECTED_MAPLEN || iodesc->num_aiotasks != TARGET_NTASKS ||
-                iodesc->rearranger != PIO_REARR_SUBSET || iodesc->maxregions != 1 ||
-                iodesc->needsfill || iodesc->basetype != MPI_INT) 
+                iodesc->ndof != EXPECTED_MAPLEN)
                 return ERR_WRONG;
-            /*     return ERR_WRONG; */
+            if (iodesc->rearranger != rearranger || iodesc->maxregions != 1 ||
+                iodesc->needsfill || iodesc->basetype != MPI_INT)
+                return ERR_WRONG;
             for (int e = 0; e < iodesc->maplen; e++)
                 if (iodesc->map[e] != my_rank * iodesc->maplen + e + 1)
                     return ERR_WRONG;
             if (iodesc->dimlen[0] != X_DIM_LEN || iodesc->dimlen[1] != Y_DIM_LEN ||
                 iodesc->dimlen[2] != Z_DIM_LEN)
                 return ERR_WRONG;
+            if (rearranger == PIO_REARR_SUBSET)
+            {
+                if (iodesc->nrecvs != 1  || iodesc->num_aiotasks != TARGET_NTASKS)
+                    return ERR_WRONG;
+            }
+            else
+            {
+                /* I haven't figured out yet what these should be for
+                 * the box rearranger. */
+                printf("iodesc->nrecv = %d iodesc->num_aiotasks = %d\n", iodesc->nrecvs,
+                       iodesc->num_aiotasks);
+            }
         }
 
         /* Free the PIO decomposition. */
@@ -287,16 +301,19 @@ int test_decomp_read_write(int iosysid, int ioid, int num_flavors, int *flavor, 
 }
 
 /**
- * Run all the tests. 
+ * Run all the tests.
  *
  * @param iosysid the IO system ID.
  * @param num_flavors number of available iotypes in the build.
  * @param flavor pointer to array of the available iotypes.
  * @param my_rank rank of this task.
+ * @param rearranger the rearranger to use (PIO_REARR_BOX or
+ * PIO_REARR_SUBSET).
  * @param test_comm the communicator the test is running on.
- * @returns 0 for success, error code otherwise. 
+ * @returns 0 for success, error code otherwise.
  */
-int test_all_darray(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm test_comm)
+int test_all_darray(int iosysid, int num_flavors, int *flavor, int my_rank,
+                    int rearranger, MPI_Comm test_comm)
 {
     int ioid;
     int my_test_size;
@@ -310,19 +327,20 @@ int test_all_darray(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_
     sprintf(filename, "%s_decomp_rank_%d_flavor_%d_.nc", TEST_NAME, my_rank, *flavor);
 
     printf("%d Testing darray.\n", my_rank);
-        
+
     /* Decompose the data over the tasks. */
     if ((ret = create_decomposition_3d(TARGET_NTASKS, my_rank, iosysid, &ioid)))
         return ret;
 
     /* Test decomposition read/write. */
-    if ((ret = test_decomp_read_write(iosysid, ioid, num_flavors, flavor, my_rank, test_comm)))
+    if ((ret = test_decomp_read_write(iosysid, ioid, num_flavors, flavor, my_rank,
+                                      rearranger, test_comm)))
         return ret;
 
     /* Run a simple darray test. */
     if ((ret = test_darray(iosysid, ioid, num_flavors, flavor, my_rank)))
         return ret;
-    
+
     /* Free the PIO decomposition. */
     if ((ret = PIOc_freedecomp(iosysid, ioid)))
         ERR(ret);
@@ -351,31 +369,37 @@ int main(int argc, char **argv)
     /* Only do something on max_ntasks tasks. */
     if (my_rank < TARGET_NTASKS)
     {
+#define NUM_REARRANGERS_TO_TEST 2
+        int rearranger[NUM_REARRANGERS_TO_TEST] = {PIO_REARR_BOX, PIO_REARR_SUBSET};
         int iosysid;  /* The ID for the parallel I/O system. */
         int ioproc_stride = 1;    /* Stride in the mpi rank between io tasks. */
         int ioproc_start = 0;     /* Zero based rank of first processor to be used for I/O. */
         int ret;      /* Return code. */
-        
+
         /* Figure out iotypes. */
         if ((ret = get_iotypes(&num_flavors, flavor)))
             ERR(ret);
         printf("Runnings tests for %d flavors\n", num_flavors);
 
-        /* Initialize the PIO IO system. This specifies how
-         * many and which processors are involved in I/O. */
-        if ((ret = PIOc_Init_Intracomm(test_comm, TARGET_NTASKS, ioproc_stride,
-                                       ioproc_start, PIO_REARR_SUBSET, &iosysid)))
-            return ret;
+        for (int r = 0; r < NUM_REARRANGERS_TO_TEST; r++)
+        {
+            /* Initialize the PIO IO system. This specifies how
+             * many and which processors are involved in I/O. */
+            if ((ret = PIOc_Init_Intracomm(test_comm, TARGET_NTASKS, ioproc_stride,
+                                           ioproc_start, rearranger[r], &iosysid)))
+                return ret;
 
-        /* Run tests. */
-        printf("%d Running tests...\n", my_rank);
-        if ((ret = test_all_darray(iosysid, num_flavors, flavor, my_rank, test_comm)))
-            return ret;
+            /* Run tests. */
+            printf("%d Running tests...\n", my_rank);
+            if ((ret = test_all_darray(iosysid, num_flavors, flavor, my_rank,
+                                       rearranger[r], test_comm)))
+                return ret;
 
-        /* Finalize PIO system. */
-        if ((ret = PIOc_finalize(iosysid)))
-            return ret;
+            /* Finalize PIO system. */
+            if ((ret = PIOc_finalize(iosysid)))
+                return ret;
 
+        } /* next rearranger */
     } /* endif my_rank < TARGET_NTASKS */
 
     /* Finalize the MPI library. */
