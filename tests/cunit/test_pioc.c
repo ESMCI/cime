@@ -1868,6 +1868,6 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
 int main(int argc, char **argv)
 {
     /* Change the 5th arg to 3 to turn on logging. */
-    return run_test_main(argc, argv, MIN_NTASKS, TARGET_NTASKS, 3,
+    return run_test_main(argc, argv, MIN_NTASKS, TARGET_NTASKS, 0,
                          TEST_NAME, dim_len, COMPONENT_COUNT, NUM_IO_PROCS);
 }
