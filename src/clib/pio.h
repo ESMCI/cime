@@ -192,10 +192,10 @@ typedef struct rearr_comm_fc_opt
 {
     /** Enable handshake */
     bool enable_hs;
-    
+
     /** Enable isends - if false use blocking sends */
     bool enable_isend;
-    
+
     /** Max pending requests
      * (PIO_REARR_COMM_UNLIMITED_PEND_REQ => unlimited pend req).
      * This is the number of messages allowed to be in flight at one
@@ -315,6 +315,9 @@ typedef struct io_desc_t
 
     /** Used when writing fill data. */
     int holegridsize;
+
+    /** max holegridsize across all io tasks, needed for netcdf and netcdf4c serial */
+    int maxholegridsize;
 
     /** Used when writing fill data. */
     int maxfillregions;
@@ -723,7 +726,7 @@ extern "C" {
     /* Read a netCDF decomposition file. */
     int PIOc_read_nc_decomp(int iosysid, const char *filename, int *ioid, MPI_Comm comm,
                             int pio_type, char *title, char *history, int *fortran_order);
-    
+
     /* Initializing IO system. */
     int PIOc_Init_Async(MPI_Comm world, int num_io_procs, int *io_proc_list, int component_count,
                         int *num_procs_per_comp, int **proc_list, MPI_Comm *io_comm, MPI_Comm *comp_comm,

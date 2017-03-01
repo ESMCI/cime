@@ -427,7 +427,7 @@ int pio_write_darray_multi_nc_serial(file_desc_t *file, int nvars, const int *vi
 
     /* Get the var info. */
     vdesc = file->varlist + vid[0];
-    
+
     LOG((2, "vdesc record %d ndims %d nreqs %d ios->async_interface = %d", vdesc->record,
          vdesc->ndims, vdesc->nreqs, ios->async_interface));
 
@@ -592,6 +592,7 @@ int pio_write_darray_multi_nc_serial(file_desc_t *file, int nvars, const int *vi
                         if ((mpierr = MPI_Recv(tmp_count, rregions * fndims, MPI_OFFSET, rtask, rtask + 3 * ios->num_iotasks,
                                                ios->io_comm, &status)))
                             return check_mpi(file, mpierr, __FILE__, __LINE__);
+			printf("%s %d %d %d %ld\n",__FILE__,__LINE__,nvars,rlen, iobuf);
                         if ((mpierr = MPI_Recv(iobuf, nvars * rlen, basetype, rtask, rtask + 4 * ios->num_iotasks, ios->io_comm,
                                                &status)))
                             return check_mpi(file, mpierr, __FILE__, __LINE__);
@@ -680,7 +681,7 @@ int pio_write_darray_multi_nc_serial(file_desc_t *file, int nvars, const int *vi
 
                         /* Keep track of where we are in the buffer. */
                         loffset += tsize;
-                        
+
                         LOG((3, " at bottom of loop regioncnt = %d tsize = %d loffset = %d", regioncnt,
                              tsize, loffset));
                     } /* next regioncnt */
@@ -1004,7 +1005,7 @@ int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc, int vid,
                 {
                     /* This is a record var. Find start for record dims. */
                     tmp_start[regioncnt * fndims] = vdesc->record;
-                    
+
                     /* Find start/count for all non-record dims. */
                     for (int i = 1; i < fndims; i++)
                     {

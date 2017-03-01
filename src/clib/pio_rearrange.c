@@ -432,7 +432,7 @@ int define_iodesc_datatypes(iosystem_desc_t *ios, io_desc_t *iodesc)
         /* Create the MPI data types. */
         if ((ret = create_mpi_datatypes(iodesc->basetype, ntypes, ncnt, iodesc->sindex,
                                         iodesc->scount, NULL, iodesc->stype)))
-            return pio_err(ios, NULL, ret, __FILE__, __LINE__);            
+            return pio_err(ios, NULL, ret, __FILE__, __LINE__);
     }
 
     return PIO_NOERR;
@@ -1267,12 +1267,12 @@ int box_rearrange_create(iosystem_desc_t *ios, int maplen, const PIO_Offset *com
     if (ios->ioproc)
         if ((ret = compute_maxIObuffersize(ios->io_comm, iodesc)))
             return pio_err(ios, NULL, ret, __FILE__, __LINE__);
-    
+
     /* Using maxiobuflen compute the maximum number of vars of this type that the io
        task buffer can handle. */
     if ((ret = compute_maxaggregate_bytes(ios, iodesc)))
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
-    
+
 #ifdef DEBUG
     iodesc_dump(iodesc);
 #endif
@@ -1735,6 +1735,10 @@ int subset_rearrange_create(iosystem_desc_t *ios, int maplen, PIO_Offset *compma
             return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 
         iodesc->maxfillregions = maxregions;
+
+	iodesc->maxholegridsize = iodesc->holegridsize;
+        if ((mpierr = MPI_Allreduce(MPI_IN_PLACE, &(iodesc->maxholegridsize), 1, MPI_INT, MPI_MAX, ios->io_comm)))
+            return check_mpi(NULL, mpierr, __FILE__, __LINE__);
     }
 
     if ((mpierr = MPI_Scatterv((void *)srcindex, recvlths, rdispls, PIO_OFFSET, (void *)iodesc->sindex,
@@ -1769,7 +1773,7 @@ int subset_rearrange_create(iosystem_desc_t *ios, int maplen, PIO_Offset *compma
     /* Using maxiobuflen compute the maximum number of vars of this type that the io
        task buffer can handle. */
     if ((ret = compute_maxaggregate_bytes(ios, iodesc)))
-        return pio_err(ios, NULL, ret, __FILE__, __LINE__);        
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
     return ierr;
 }
