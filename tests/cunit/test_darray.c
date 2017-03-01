@@ -115,96 +115,135 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
      * available ways. */
     for (int fmt = 0; fmt < num_flavors; fmt++) 
     {
-        /* Create the filename. */
-        sprintf(filename, "data_%s_iotype_%d_pio_type_%d.nc", TEST_NAME, flavor[fmt], pio_type);
+#define NUM_TEST_CASES_WRT_MULTI 3
+        for (int test_multi = 0; test_multi < NUM_TEST_CASES_WRT_MULTI; test_multi++)
+        {
+            /* Create the filename. */
+            sprintf(filename, "data_%s_iotype_%d_pio_type_%d.nc", TEST_NAME, flavor[fmt], pio_type);
 
-        /* Create the netCDF output file. */
-        printf("rank: %d Creating sample file %s with format %d type %d\n", my_rank, filename,
-               flavor[fmt], pio_type);
-        if ((ret = PIOc_createfile(iosysid, &ncid, &flavor[fmt], filename, PIO_CLOBBER)))
-            ERR(ret);
-
-        /* Define netCDF dimensions and variable. */
-        printf("%d Defining netCDF metadata...\n", my_rank);
-        for (int d = 0; d < NDIM; d++)
-            if ((ret = PIOc_def_dim(ncid, dim_name[d], (PIO_Offset)dim_len[d], &dimids[d])))
+            /* Create the netCDF output file. */
+            printf("rank: %d Creating sample file %s with format %d type %d\n", my_rank, filename,
+                   flavor[fmt], pio_type);
+            if ((ret = PIOc_createfile(iosysid, &ncid, &flavor[fmt], filename, PIO_CLOBBER)))
                 ERR(ret);
 
-        /* Define a variable. */
-        if ((ret = PIOc_def_var(ncid, VAR_NAME, pio_type, NDIM, dimids, &varid)))
-            ERR(ret);
+            /* Define netCDF dimensions and variable. */
+            printf("%d Defining netCDF metadata...\n", my_rank);
+            for (int d = 0; d < NDIM; d++)
+                if ((ret = PIOc_def_dim(ncid, dim_name[d], (PIO_Offset)dim_len[d], &dimids[d])))
+                    ERR(ret);
 
-        /* End define mode. */
-        if ((ret = PIOc_enddef(ncid)))
-            ERR(ret);
+            /* Define a variable. */
+            if ((ret = PIOc_def_var(ncid, VAR_NAME, pio_type, NDIM, dimids, &varid)))
+                ERR(ret);
 
-        /* Set the value of the record dimension. */
-        if ((ret = PIOc_setframe(ncid, varid, 0)))
-            ERR(ret);
+            /* End define mode. */
+            if ((ret = PIOc_enddef(ncid)))
+                ERR(ret);
 
-        /* These should not work. */
-        if (PIOc_write_darray(ncid + TEST_VAL_42, varid, ioid, arraylen, test_data, fillvalue) != PIO_EBADID)
-            ERR(ERR_WRONG);
-        if (PIOc_write_darray(ncid, varid, ioid + TEST_VAL_42, arraylen, test_data, fillvalue) != PIO_EBADID)
-            ERR(ERR_WRONG);
-        if (PIOc_write_darray(ncid, varid, ioid, arraylen - 1, test_data, &fillvalue) != PIO_EINVAL)
-            ERR(ERR_WRONG);
+            /* Set the value of the record dimension. */
+            if ((ret = PIOc_setframe(ncid, varid, 0)))
+                ERR(ret);
 
-        /* Write the data. */
-        if ((ret = PIOc_write_darray(ncid, varid, ioid, arraylen, test_data, fillvalue)))
-            ERR(ret);
-
-        /* Close the netCDF file. */
-        if ((ret = PIOc_closefile(ncid)))
-            ERR(ret);
-
-        /* Reopen the file. */
-        if ((ret = PIOc_openfile(iosysid, &ncid2, &flavor[fmt], filename, PIO_NOWRITE)))
-            ERR(ret);
-
-        /* These should not work. */
-        if (PIOc_read_darray(ncid2 + TEST_VAL_42, varid, ioid, arraylen,
-                             test_data_in) != PIO_EBADID)
-            ERR(ERR_WRONG);
-        if (PIOc_read_darray(ncid2, varid, ioid + TEST_VAL_42, arraylen,
-                             test_data_in) != PIO_EBADID)
-            ERR(ERR_WRONG);
-        
-        /* Read the data. */
-        if ((ret = PIOc_read_darray(ncid2, varid, ioid, arraylen, test_data_in)))
-            ERR(ret);
-
-        /* Check the results. */
-        for (int f = 0; f < arraylen; f++)
-        {
-            switch (pio_type)
+            if (!test_multi)
             {
-            case PIO_INT:
-                if (test_data_int_in[f] != test_data_int[f])
-                    return ERR_WRONG;
-                break;
-            case PIO_FLOAT:
-                if (test_data_float_in[f] != test_data_float[f])
-                    return ERR_WRONG;
-                break;
-            case PIO_DOUBLE:
-                if (test_data_double_in[f] != test_data_double[f])
-                    return ERR_WRONG;
-                break;
-            default:
-                ERR(ERR_WRONG);
-            }
-        }
+                /* These should not work. */
+                if (PIOc_write_darray(ncid + TEST_VAL_42, varid, ioid, arraylen, test_data, fillvalue) != PIO_EBADID)
+                    ERR(ERR_WRONG);
+                if (PIOc_write_darray(ncid, varid, ioid + TEST_VAL_42, arraylen, test_data, fillvalue) != PIO_EBADID)
+                    ERR(ERR_WRONG);
+                if (PIOc_write_darray(ncid, varid, ioid, arraylen - 1, test_data, &fillvalue) != PIO_EINVAL)
+                    ERR(ERR_WRONG);
 
-        /* Try to write, but it won't work, because we opened file read-only. */
-        if (PIOc_write_darray(ncid2, varid, ioid, arraylen, test_data, fillvalue) != PIO_EPERM)
-            ERR(ERR_WRONG);
+                /* Write the data. */
+                if ((ret = PIOc_write_darray(ncid, varid, ioid, arraylen, test_data, fillvalue)))
+                    ERR(ret);
+            }
+            else
+            {
+                int frame = 0;
+                int flushtodisk = test_multi - 1;
+
+                /* These will not work. */
+                if (PIOc_write_darray_multi(ncid + TEST_VAL_42, &varid, ioid, 1, arraylen, test_data, &frame,
+                                            fillvalue, flushtodisk) != PIO_EBADID)
+                    ERR(ERR_WRONG);
+                if (PIOc_write_darray_multi(ncid, NULL, ioid, 1, arraylen, test_data, &frame,
+                                            fillvalue, flushtodisk) != PIO_EINVAL)
+                    ERR(ERR_WRONG);
+                if (PIOc_write_darray_multi(ncid, &varid, ioid + TEST_VAL_42, 1, arraylen, test_data, &frame,
+                                            fillvalue, flushtodisk) != PIO_EBADID)
+                    ERR(ERR_WRONG);
+                if (PIOc_write_darray_multi(ncid, &varid, ioid, -1, arraylen, test_data, &frame,
+                                            fillvalue, flushtodisk) != PIO_EINVAL)
+                    ERR(ERR_WRONG);
+                if (PIOc_write_darray_multi(ncid, &varid, ioid, 1, arraylen, test_data, NULL,
+                                            fillvalue, flushtodisk) != PIO_EINVAL)
+                    ERR(ERR_WRONG);
+                int varid_big = NC_MAX_VARS + TEST_VAL_42;
+                if (PIOc_write_darray_multi(ncid, &varid_big, ioid, 1, arraylen, test_data, &frame,
+                                            fillvalue, flushtodisk) != PIO_EINVAL)
+                    ERR(ERR_WRONG);
+                
+                /* Write the data with the _multi function. */
+                if ((ret = PIOc_write_darray_multi(ncid, &varid, ioid, 1, arraylen, test_data, &frame,
+                                                   fillvalue, flushtodisk)))
+                    ERR(ret);
+            }
+
+            /* Close the netCDF file. */
+            if ((ret = PIOc_closefile(ncid)))
+                ERR(ret);
+
+            /* Reopen the file. */
+            if ((ret = PIOc_openfile(iosysid, &ncid2, &flavor[fmt], filename, PIO_NOWRITE)))
+                ERR(ret);
+
+            /* These should not work. */
+            if (PIOc_read_darray(ncid2 + TEST_VAL_42, varid, ioid, arraylen,
+                                 test_data_in) != PIO_EBADID)
+                ERR(ERR_WRONG);
+            if (PIOc_read_darray(ncid2, varid, ioid + TEST_VAL_42, arraylen,
+                                 test_data_in) != PIO_EBADID)
+                ERR(ERR_WRONG);
         
-        /* Close the netCDF file. */
-        printf("%d Closing the sample data file...\n", my_rank);
-        if ((ret = PIOc_closefile(ncid2)))
-            ERR(ret);
-    }
+            /* Read the data. */
+            if ((ret = PIOc_read_darray(ncid2, varid, ioid, arraylen, test_data_in)))
+                ERR(ret);
+
+            /* Check the results. */
+            for (int f = 0; f < arraylen; f++)
+            {
+                switch (pio_type)
+                {
+                case PIO_INT:
+                    if (test_data_int_in[f] != test_data_int[f])
+                        return ERR_WRONG;
+                    break;
+                case PIO_FLOAT:
+                    if (test_data_float_in[f] != test_data_float[f])
+                        return ERR_WRONG;
+                    break;
+                case PIO_DOUBLE:
+                    if (test_data_double_in[f] != test_data_double[f])
+                        return ERR_WRONG;
+                    break;
+                default:
+                    ERR(ERR_WRONG);
+                }
+            }
+
+            /* Try to write, but it won't work, because we opened file read-only. */
+            if (PIOc_write_darray(ncid2, varid, ioid, arraylen, test_data, fillvalue) != PIO_EPERM)
+                ERR(ERR_WRONG);
+        
+            /* Close the netCDF file. */
+            printf("%d Closing the sample data file...\n", my_rank);
+            if ((ret = PIOc_closefile(ncid2)))
+                ERR(ret);
+        } /* next test multi */
+    } /* next iotype */
+
     return PIO_NOERR;
 }
 
