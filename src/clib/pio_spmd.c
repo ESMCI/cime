@@ -321,7 +321,7 @@ int pio_swapm(void *sendbuf, int *sendcounts, int *sdispls, MPI_Datatype *sendty
 
         /* We did comms in sets of size max_reqs, if istep > maxreqh
          * then there is a remainder that must be handled. */
-        if (istep > maxreqh)
+        if (istep > maxreqh - 1)
         {
             p = istep - maxreqh;
             if (rcvids[p] != MPI_REQUEST_NULL)
