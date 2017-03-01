@@ -92,23 +92,22 @@ int PIOc_write_darray_multi(int ncid, const int *vid, int ioid, int nvars, PIO_O
     ios = file->iosystem;
 
     /* Check inputs. */
-    if (nvars <= 0 || !vid || !frame)
+    if (nvars <= 0 || !vid)
         return pio_err(ios, file, PIO_EINVAL, __FILE__, __LINE__);
     for (int v = 0; v < nvars; v++)
         if (vid[v] < 0 || vid[v] > PIO_MAX_VARS)
             return pio_err(ios, file, PIO_EINVAL, __FILE__, __LINE__);
 
-    LOG((1, "PIOc_write_darray_multi ncid = %d ioid = %d nvars = %d arraylen = %ld "
-         "flushtodisk = %d", ncid, ioid, nvars, arraylen, flushtodisk));
+    LOG((1, "PIOc_write_darray_multi ncid = %d ioid = %d nvars = %d arraylen = %ld flushtodisk = %d",
+         ncid, ioid, nvars, arraylen, flushtodisk));
 
     /* Check that we can write to this file. */
-    if (!(file->mode & PIO_WRITE))
+    if (! (file->mode & PIO_WRITE))
         return pio_err(ios, file, PIO_EPERM, __FILE__, __LINE__);
 
     /* Get iodesc. */
     if (!(iodesc = pio_get_iodesc_from_id(ioid)))
         return pio_err(ios, file, PIO_EBADID, __FILE__, __LINE__);
-    LOG((2, "got iodesc"));
 
     /* For netcdf serial writes we collect the data on io nodes and
      * then move that data one node at a time to the io master node
@@ -126,8 +125,8 @@ int PIOc_write_darray_multi(int ncid, const int *vid, int ioid, int nvars, PIO_O
 
     /* Currently there are two rearrangers box=1 and subset=2. There
      * is never a case where rearranger==0. */
-    LOG((2, "rlen = %d iodesc->rearranger = %d iodesc->needsfill = %d\n", rlen,
-         iodesc->rearranger, iodesc->needsfill));
+    LOG((2, "iodesc->rearranger = %d iodesc->needsfill = %d\n", iodesc->rearranger,
+         iodesc->needsfill));
     if (iodesc->rearranger > 0)
     {
         if (rlen > 0)

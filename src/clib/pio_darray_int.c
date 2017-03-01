@@ -163,7 +163,7 @@ int pio_write_darray_multi_nc(file_desc_t *file, int nvars, const int *vid, int 
         PIO_Offset *startlist[maxregions]; /* Array of start arrays for ncmpi_iput_varn(). */
         PIO_Offset *countlist[maxregions]; /* Array of count  arrays for ncmpi_iput_varn(). */
 
-        LOG((3, "maxregions = %d vdesc->record = %d", maxregions, vdesc->record));
+        LOG((3, "maxregions = %d", maxregions));
 
         /* Process each region of data to be written. */
         for (int regioncnt = 0; regioncnt < maxregions; regioncnt++)
@@ -186,7 +186,6 @@ int pio_write_darray_multi_nc(file_desc_t *file, int nvars, const int *vid, int 
                     {
                         start[i] = region->start[i - (fndims - ndims)];
                         count[i] = region->count[i - (fndims - ndims)];
-                        LOG((3, "record-based start[%d] = %d count[%d] = %d", i, start[i], i, count[i]));
                     }
 
                     /* Now figure out start/count for record dimension. */
@@ -200,7 +199,6 @@ int pio_write_darray_multi_nc(file_desc_t *file, int nvars, const int *vid, int 
                         /* ??? */
                         start[0] += vdesc->record;
                     }
-                    LOG((3, "record-based start[0] = %d count[0] = %d", start[0], count[0]));
                 }
                 else
                 {
@@ -429,7 +427,7 @@ int pio_write_darray_multi_nc_serial(file_desc_t *file, int nvars, const int *vi
 
     /* Get the var info. */
     vdesc = file->varlist + vid[0];
-
+    
     LOG((2, "vdesc record %d ndims %d nreqs %d ios->async_interface = %d", vdesc->record,
          vdesc->ndims, vdesc->nreqs, ios->async_interface));
 
@@ -682,7 +680,7 @@ int pio_write_darray_multi_nc_serial(file_desc_t *file, int nvars, const int *vi
 
                         /* Keep track of where we are in the buffer. */
                         loffset += tsize;
-
+                        
                         LOG((3, " at bottom of loop regioncnt = %d tsize = %d loffset = %d", regioncnt,
                              tsize, loffset));
                     } /* next regioncnt */
@@ -1006,7 +1004,7 @@ int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc, int vid,
                 {
                     /* This is a record var. Find start for record dims. */
                     tmp_start[regioncnt * fndims] = vdesc->record;
-
+                    
                     /* Find start/count for all non-record dims. */
                     for (int i = 1; i < fndims; i++)
                     {

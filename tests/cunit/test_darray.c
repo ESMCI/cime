@@ -177,9 +177,9 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
                 if (PIOc_write_darray_multi(ncid, &varid, ioid, -1, arraylen, test_data, &frame,
                                             fillvalue, flushtodisk) != PIO_EINVAL)
                     ERR(ERR_WRONG);
-                if (PIOc_write_darray_multi(ncid, &varid, ioid, 1, arraylen, test_data, NULL,
-                                            fillvalue, flushtodisk) != PIO_EINVAL)
-                    ERR(ERR_WRONG);
+                /* if (PIOc_write_darray_multi(ncid, &varid, ioid, 1, arraylen, test_data, NULL, */
+                /*                             fillvalue, flushtodisk) != PIO_EINVAL) */
+                /*     ERR(ERR_WRONG); */
                 int varid_big = NC_MAX_VARS + TEST_VAL_42;
                 if (PIOc_write_darray_multi(ncid, &varid_big, ioid, 1, arraylen, test_data, &frame,
                                             fillvalue, flushtodisk) != PIO_EINVAL)
