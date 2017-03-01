@@ -39,6 +39,9 @@
 /* The name of the variable in the netCDF output files. */
 #define VAR_NAME "foo"
 
+/* Test cases relating to PIOc_write_darray_multi(). */
+#define NUM_TEST_CASES_WRT_MULTI 3
+
 /* The dimension names. */
 char dim_name[NDIM][PIO_MAX_NAME + 1] = {"timestep", "x", "y"};
 
@@ -115,7 +118,9 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
      * available ways. */
     for (int fmt = 0; fmt < num_flavors; fmt++) 
     {
-#define NUM_TEST_CASES_WRT_MULTI 3
+
+        /* Add a couple of extra tests for the
+         * PIOc_write_darray_multi() function. */
         for (int test_multi = 0; test_multi < NUM_TEST_CASES_WRT_MULTI; test_multi++)
         {
             /* Create the filename. */
