@@ -52,6 +52,9 @@ int dim_len[NDIM] = {NC_UNLIMITED, X_DIM_LEN, Y_DIM_LEN, Z_DIM_LEN};
 #define DIM_NAME "dim"
 #define NDIM1 1
 
+/* Run test for each of the rearrangers. */
+#define NUM_REARRANGERS_TO_TEST 2
+
 /* Create the decomposition to divide the 4-dimensional sample data
  * between the 4 tasks. For the purposes of decomposition we are only
  * concerned with 3 dimensions - we ignore the unlimited dimension.
@@ -369,7 +372,6 @@ int main(int argc, char **argv)
     /* Only do something on max_ntasks tasks. */
     if (my_rank < TARGET_NTASKS)
     {
-#define NUM_REARRANGERS_TO_TEST 2
         int rearranger[NUM_REARRANGERS_TO_TEST] = {PIO_REARR_BOX, PIO_REARR_SUBSET};
         int iosysid;  /* The ID for the parallel I/O system. */
         int ioproc_stride = 1;    /* Stride in the mpi rank between io tasks. */
