@@ -206,6 +206,9 @@ int pio_swapm(void *sendbuf, int *sendcounts, int *sdispls, MPI_Datatype *sendty
             swapids[steps++] = p;
     }
 
+    if (steps == 0)
+        return PIO_NOERR;
+
     if (steps == 1)
     {
         maxreq = 1;
