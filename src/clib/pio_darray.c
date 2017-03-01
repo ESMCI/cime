@@ -171,16 +171,14 @@ int PIOc_write_darray_multi(int ncid, const int *vid, int ioid, int nvars, PIO_O
     case PIO_IOTYPE_PNETCDF:
         if ((ierr = pio_write_darray_multi_nc(file, nvars, vid, iodesc->ndims, iodesc->basetype,
                                               iodesc->maxregions, iodesc->firstregion, iodesc->llen,
-                                              iodesc->maxiobuflen, iodesc->num_aiotasks, vdesc0->iobuf,
-                                              frame)))
+                                              iodesc->num_aiotasks, vdesc0->iobuf, frame)))
             return pio_err(ios, file, ierr, __FILE__, __LINE__);
         break;
     case PIO_IOTYPE_NETCDF4C:
     case PIO_IOTYPE_NETCDF:
         if ((ierr = pio_write_darray_multi_nc_serial(file, nvars, vid, iodesc->ndims, iodesc->basetype,
                                                      iodesc->maxregions, iodesc->firstregion, iodesc->llen,
-                                                     iodesc->maxiobuflen, iodesc->num_aiotasks,
-                                                     vdesc0->iobuf, frame)))
+                                                     iodesc->num_aiotasks, vdesc0->iobuf, frame)))
             return pio_err(ios, file, ierr, __FILE__, __LINE__);
 
         break;
@@ -242,7 +240,7 @@ int PIOc_write_darray_multi(int ncid, const int *vid, int ioid, int nvars, PIO_O
         case PIO_IOTYPE_NETCDF4P:
             if ((ierr = pio_write_darray_multi_nc(file, nvars, vid,
                                                   iodesc->ndims, iodesc->basetype, iodesc->maxfillregions,
-                                                  iodesc->fillregion, iodesc->holegridsize, iodesc->maxholegridsize,
+                                                  iodesc->fillregion, iodesc->holegridsize,
                                                   iodesc->num_aiotasks, vdesc0->fillbuf, frame)))
                 return pio_err(ios, file, ierr, __FILE__, __LINE__);
             break;
@@ -250,7 +248,7 @@ int PIOc_write_darray_multi(int ncid, const int *vid, int ioid, int nvars, PIO_O
         case PIO_IOTYPE_NETCDF:
             if ((ierr = pio_write_darray_multi_nc_serial(file, nvars, vid, iodesc->ndims, iodesc->basetype,
                                                          iodesc->maxfillregions, iodesc->fillregion,
-                                                         iodesc->holegridsize, iodesc->maxholegridsize,
+                                                         iodesc->holegridsize,
                                                          iodesc->num_aiotasks, vdesc0->fillbuf, frame)))
                 return pio_err(ios, file, ierr, __FILE__, __LINE__);
             break;
@@ -262,7 +260,7 @@ int PIOc_write_darray_multi(int ncid, const int *vid, int ioid, int nvars, PIO_O
         if (file->iotype != PIO_IOTYPE_PNETCDF)
         {
             /* Free resources. */
-            if (iodesc->holegridsize > 0 && vdesc0->fillbuf)
+            if (vdesc0->fillbuf)
             {
                 brel(vdesc0->fillbuf);
                 vdesc0->fillbuf = NULL;
