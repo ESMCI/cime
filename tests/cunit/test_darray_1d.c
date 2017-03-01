@@ -287,8 +287,7 @@ int test_darray_fill_unlim(int iosysid, int ioid, int pio_type, int num_flavors,
 
     /* Use PIO to create the example file in each of the four
      * available ways. */
-    /* for (int fmt = 0; fmt < num_flavors; fmt++)  */
-    for (int fmt = 1; fmt < 2; fmt++)
+    for (int fmt = 0; fmt < num_flavors; fmt++)
     {
         /* Create the filename. */
         sprintf(filename, "data_%s_iotype_%d_pio_type_%d_unlim.nc", TEST_NAME, flavor[fmt],
