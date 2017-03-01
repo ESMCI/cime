@@ -209,7 +209,7 @@ int PIOc_write_darray_multi(int ncid, const int *vid, int ioid, int nvars, PIO_O
             piodie("Attempt to overwrite existing buffer",__FILE__,__LINE__);
 
         /* Get a buffer. */
-        vdesc0->fillbuf = bget(iodesc->holegridsize * vsize * nvars);
+	vdesc0->fillbuf = bget(iodesc->holegridsize * vsize * nvars);
 
         /* copying the fill value into the data buffer for the box
          * rearranger. This will be overwritten with data where
@@ -250,7 +250,7 @@ int PIOc_write_darray_multi(int ncid, const int *vid, int ioid, int nvars, PIO_O
         if (file->iotype != PIO_IOTYPE_PNETCDF)
         {
             /* Free resources. */
-            if (vdesc0->fillbuf)
+            if (iodesc->holegridsize > 0 && vdesc0->fillbuf)
             {
                 brel(vdesc0->fillbuf);
                 vdesc0->fillbuf = NULL;
