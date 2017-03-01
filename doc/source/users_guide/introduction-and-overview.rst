@@ -99,7 +99,8 @@ a climate model, cime is usually one of the first subdirectories under the main 
    "components/", "source code for all of the active models."
    "cime/", "All of CIME code"
 
-CIME's content is split in to several subdirectories:
+CIME's content is split in to several subdirectories.
+Users should start in the "scripts" subdirectory.
 
 .. csv-table:: CIME directory content
    :header: "Directory or Filename", "Description"
@@ -112,17 +113,27 @@ CIME's content is split in to several subdirectories:
    "README", "Brief intro to CIME"
    "README.md", "README in markdown language"
    "README.unit_testing", "Instructions on running unit tests with CIME"
-   "cime_config/", "shared and model-specific configuration files"
-   "components/", "CIME-provided components including data and stub models"
-   "driver_cpl/", "CIME-provided main driver for a climate model"
-   "externals/", "Software provided with CIME for building a climate model"
+   "config/", "Shared and model-specific configuration files"
    "scripts/", "The CIME user interface"
-   "share/", "Source code provided by CIME and used by multiple components"
+   "src/", "Model source code provided by CIME"
    "tests/", "tests"
    "tools/", "Stand-alone tools useful for climate modeling"
-   "utils/", "source code for CIME scripts and functions"
+   "utils/", "Some perl source code for CIME scripts; see scripts/lib for python version"
 
-Users should start in the "scripts" subdirectory.
+Here are some other key subdirectories, down one level in the 
+directory structure.
+
+.. csv-table:: Content of some key CIME sub-directories
+   :header: "Directory or Filename", "Description"
+   :widths: 150, 300
+
+   "config/cesm/", "CESM-specific configuration options"
+   "config/acme/", "ACME-specific configuration options"
+   "src/components/", "CIME-provided components including data and stub models"
+   "src/drivers/", "CIME-provided main driver for a climate model"
+   "src/externals/", "Software provided with CIME for building a climate model"
+   "src/share/", "Model source code provided by CIME and used by multiple components"
+   "scripts/lib/", "Infrastructure source code for CIME scripts and functions"
 
 Discovering available cases
 ==============================

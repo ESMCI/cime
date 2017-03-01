@@ -72,7 +72,7 @@ The following steps should be followed:
    You can edit these files in place to add your machine configuration or you can place your custom configuration files in the directory ``$HOME/.cime/``.  
    We recommend the latter approach. All files in ``$HOME/.cime/`` are appended to the xml objects read into memory.
 
-5. Once you have a basic configuration for your machine defined in your new ``$HOME/.cime`` XML files, you should try the ``scripts_regression_test`` in directory ``$CIME/utils/python/tests``. 
+5. Once you have a basic configuration for your machine defined in your new ``$HOME/.cime`` XML files, you should try the ``scripts_regression_test`` in directory ``$CIME/scripts/tests``. 
    This script will run a number of basic unit tests starting from the simplest issues and working toward more complicated ones.
 
 6. Finally when all the previous steps have run correctly, you are ready to try a case at your target compset and resolution.
