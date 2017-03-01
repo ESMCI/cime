@@ -179,6 +179,8 @@ int pio_swapm(void *sendbuf, int *sendcounts, int *sdispls, MPI_Datatype *sendty
 #endif
     }
 
+    LOG((2, "Done sending to self... sending to other procs"));
+
     /* When send to self is complete there is nothing left to do if
      * ntasks==1. */
     if (ntasks == 1)
@@ -206,6 +208,8 @@ int pio_swapm(void *sendbuf, int *sendcounts, int *sdispls, MPI_Datatype *sendty
             swapids[steps++] = p;
     }
 
+    LOG((3, "steps=%d", steps));
+
     if (steps == 0)
         return PIO_NOERR;
 
@@ -232,6 +236,8 @@ int pio_swapm(void *sendbuf, int *sendcounts, int *sdispls, MPI_Datatype *sendty
             maxreqh = 1;
         }
     }
+
+    LOG((2, "max_requests=%d, maxreq=%d, maxreqh=%d", max_requests, maxreq, maxreqh));
 
     /* If handshaking is in use, do a nonblocking recieve to listen
      * for it. */
@@ -359,6 +365,7 @@ int pio_swapm(void *sendbuf, int *sendcounts, int *sdispls, MPI_Datatype *sendty
      * them here. */
     if (steps > 0)
     {
+        LOG((2, "Waiting for outstanding msgs"));
         if ((mpierr = MPI_Waitall(steps, rcvids, MPI_STATUSES_IGNORE)))
             return check_mpi(NULL, mpierr, __FILE__, __LINE__);
         if (isend)
