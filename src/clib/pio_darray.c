@@ -45,23 +45,32 @@ PIO_Offset PIOc_set_buffer_size_limit(PIO_Offset limit)
  * Write one or more arrays with the same IO decomposition to the
  * file.
  *
- * @param ncid identifies the netCDF file
- * @param vid: an array of the variable ids to be written
- * @param ioid: the I/O description ID as passed back by
+ * This funciton is similar to PIOc_write_darray(), but allows the
+ * caller to use their own data buffering (instead of using the
+ * buffering implemented in PIOc_write_darray()).
+ *
+ * @param ncid identifies the netCDF file.
+ * @param vid an array of length nvars containing the variable ids to
+ * be written.
+ * @param ioid the I/O description ID as passed back by
  * PIOc_InitDecomp().
  * @param nvars the number of variables to be written with this
- * decomposition
- * @param arraylen: the length of the array to be written. This
- * is the length of the distrubited array. That is, the length of
- * the portion of the data that is on the processor.
- * @param array: pointer to the data to be written. This is a
- * pointer to the distributed portion of the array that is on this
- * processor.
- * @param frame the frame or record dimension for each of the nvars
- * variables in IOBUF
- * @param fillvalue: pointer to the fill value to be used for
- * missing data.
- * @param flushtodisk
+ * call.
+ * @param arraylen the length of the array to be written. This is the
+ * length of the distrubited array. That is, the length of the portion
+ * of the data that is on the processor. The same arraylen is used for
+ * all variables in the call.
+ * @param array pointer to the data to be written. This is a pointer
+ * to an array of arrays with the distributed portion of the array
+ * that is on this processor. There are nvars arrays of data, and each
+ * array of data contains one record worth of data for that variable.
+ * @param frame an array of length nvars with the frame or record
+ * dimension for each of the nvars variables in IOBUF
+ * @param fillvalue pointer to the fill value to be used for missing
+ * data. Ignored if NULL. If provided, must be the correct fill value
+ * for the variable. The correct fill value will be used if NULL is
+ * passed.
+ * @param flushtodisk non-zero to cause buffers to be flushed to disk.
  * @return 0 for success, error code otherwise.
  * @ingroup PIO_write_darray
  */
