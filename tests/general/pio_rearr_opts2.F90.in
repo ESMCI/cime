@@ -163,18 +163,21 @@ END SUBROUTINE
 
 ! Create file and var used in the tests below
 ! All details are picked from pio_rearr_opts_tgv module
-SUBROUTINE create_file_and_var(iotype, dims, ret)
+SUBROUTINE create_file_and_var(iotype, ret)
   use pio_tutil
   use pio_rearr_opts_tgv
   implicit none
 
   integer, intent(in) :: iotype
-  integer, dimension(1), intent(in) :: dims
   integer, intent(out) :: ret
 
   type(file_desc_t) :: pio_file
   type(var_desc_t) :: pio_var
   integer :: pio_dim
+  integer, dimension(1) :: dims
+  integer, dimension(1) :: start, count
+
+  call get_1d_bc_info(pio_tf_world_rank_, pio_tf_world_sz_, dims, start, count, .true.)
 
   ret = PIO_createfile(pio_tf_iosystem_, pio_file, iotype, tgv_fname, PIO_CLOBBER)
   PIO_TF_CHECK_ERR(ret, "Could not create file " // trim(tgv_fname))
@@ -195,7 +198,7 @@ END SUBROUTINE
 ! Open file and inq var
 ! All details are picked from pio_rearr_opts_tgv module
 ! Note: The file is kept open so the called needs to close it
-SUBROUTINE open_file_and_get_var(pio_file, iotype, pio_var, dims, ret)
+SUBROUTINE open_file_and_get_var(pio_file, iotype, pio_var, ret)
   use pio_tutil
   use pio_rearr_opts_tgv
   implicit none
@@ -203,7 +206,6 @@ SUBROUTINE open_file_and_get_var(pio_file, iotype, pio_var, dims, ret)
   type(file_desc_t), intent(out) :: pio_file
   integer, intent(in) :: iotype
   type(var_desc_t), intent(out) :: pio_var
-  integer, dimension(1), intent(in) :: dims
   integer, intent(out) :: ret
 
   integer :: pio_dim
@@ -273,21 +275,15 @@ PIO_TF_AUTO_TEST_SUB_BEGIN set_rearr_opts_and_write
   integer :: num_iotypes
   integer :: ret, ierr, i
 
-  call create_decomp_and_init_buf(iodesc, wbuf, dims, ret)
-  PIO_TF_CHECK_ERR(ret, "Creating decomp failed")
-
-  allocate(rbuf(size(wbuf)))
-  rbuf = wbuf
-
   num_iotypes = 0
   call PIO_TF_Get_nc_iotypes(iotypes, iotype_descs, num_iotypes)
   do i=1,num_iotypes
     PIO_TF_LOG(0,*) "Testing : ", iotype_descs(i)
     ! Create the file and decomp 
-    call create_file_and_var(iotypes(i), dims, ret)
+    call create_file_and_var(iotypes(i), ret)
     PIO_TF_CHECK_ERR(ret, "Creating file/decomp/var reqd for test failed :" // trim(tgv_fname))
 
-    call open_file_and_get_var(pio_file, iotypes(i), pio_var, dims, ret)
+    call open_file_and_get_var(pio_file, iotypes(i), pio_var, ret)
     PIO_TF_CHECK_ERR(ret, "Creating file/decomp/var reqd for test failed :" // trim(tgv_fname))
 
     ! Test all combinations of these flow control parameters
@@ -380,6 +376,12 @@ PIO_TF_AUTO_TEST_SUB_BEGIN set_rearr_opts_and_write
                             pio_rearr_opts%comm_fc_opts_io2comp%max_pend_req)
                     PIO_TF_CHECK_ERR(ret, "Setting rearr opts failed fname="//trim(tgv_fname))
 
+                    call create_decomp_and_init_buf(iodesc, wbuf, dims, ret)
+                    PIO_TF_CHECK_ERR(ret, "Creating decomp failed")
+
+                    allocate(rbuf(size(wbuf)))
+                    rbuf = 0
+
                     call PIO_write_darray(pio_file, pio_var, iodesc, wbuf, ret)
                     PIO_TF_CHECK_ERR(ret, "Writing var failed fname="//trim(tgv_fname))
 
@@ -389,6 +391,13 @@ PIO_TF_AUTO_TEST_SUB_BEGIN set_rearr_opts_and_write
                     PIO_TF_CHECK_ERR(ret, "Reading var failed fname="//trim(tgv_fname))
 
                     PIO_TF_CHECK_VAL((rbuf, wbuf), "Got wrong val")
+
+                    call PIO_freedecomp(pio_tf_iosystem_, iodesc)
+
+                    deallocate(rbuf)
+                    if(allocated(wbuf)) then
+                      deallocate(wbuf)
+                    end if
 
                   end do ! cur_max_pend_req_i2c
                 end do ! cur_enable_isend_i2c
@@ -406,15 +415,6 @@ PIO_TF_AUTO_TEST_SUB_BEGIN set_rearr_opts_and_write
   if(allocated(iotypes)) then
     deallocate(iotypes)
     deallocate(iotype_descs)
-  end if
-
-  call PIO_freedecomp(pio_tf_iosystem_, iodesc)
-
-  if(allocated(rbuf)) then
-    deallocate(rbuf)
-  end if
-  if(allocated(wbuf)) then
-    deallocate(wbuf)
   end if
 
 PIO_TF_AUTO_TEST_SUB_END set_rearr_opts_and_write
