@@ -131,10 +131,10 @@ Hardware processors 65-112 would have been allocated but completely idle.
 Customizing driver namelists
 ===================================================
 
-Driver namelist variables belong in two groups - those that are set directly from ``$CASEROOT` xml variables and those that are set by the driver utility ``$CIMEROOT/driver_cpl/cime_config/buildnml``.
-All driver namelist variables are defined in ``$CIMEROOT/driver_cpl/cime_config/namelist_definition_drv.xml``. 
+Driver namelist variables belong in two groups - those that are set directly from ``$CASEROOT` xml variables and those that are set by the driver utility ``$CIMEROOT/src/drivers/mct/cime_config/buildnml``.
+All driver namelist variables are defined in ``$CIMEROOT/src/drivers/mct/cime_config/namelist_definition_drv.xml``. 
 Those variables that can only be changed by modifying xml variables appear with the ``entry`` attribute ``modify_via_xml="xml_variable_name"``.
-All other variables that appear ``$CIMEROOT/driver_cpl/cime_config/namelist_definition_drv.xml`` can be modified by adding a key-word value pair at the end of ``user_nl_cpl``.
+All other variables that appear ``$CIMEROOT/src/drivers/mct/cime_config/namelist_definition_drv.xml`` can be modified by adding a key-word value pair at the end of ``user_nl_cpl``.
 For example, to change the driver namelist value of ``eps_frac`` to ``1.0e-15``, you should add the following line to the end of the ``user_nl_cpl``
 ::
 
