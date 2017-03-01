@@ -590,7 +590,6 @@ int pio_write_darray_multi_nc_serial(file_desc_t *file, int nvars, const int *vi
                         if ((mpierr = MPI_Recv(tmp_count, rregions * fndims, MPI_OFFSET, rtask, rtask + 3 * ios->num_iotasks,
                                                ios->io_comm, &status)))
                             return check_mpi(file, mpierr, __FILE__, __LINE__);
-			printf("%s %d %d %d %ld\n",__FILE__,__LINE__,nvars,rlen, iobuf);
                         if ((mpierr = MPI_Recv(iobuf, nvars * rlen, basetype, rtask, rtask + 4 * ios->num_iotasks, ios->io_comm,
                                                &status)))
                             return check_mpi(file, mpierr, __FILE__, __LINE__);
