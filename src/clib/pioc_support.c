@@ -636,46 +636,40 @@ int find_mpi_type(int pio_type, MPI_Datatype *mpi_type)
  * @param ios pointer to the IO system info.
  * @param piotype the PIO data type (ex. PIO_FLOAT, PIO_INT, etc.).
  * @param ndims the number of dimensions.
- * @returns pointer to the newly allocated io_desc_t or NULL if
- * allocation failed.
+ * @iodesc pointer that gets a pointer to the newly allocated
+ * io_desc_t or NULL if allocation failed.
+ * @returns 0 for success, error code otherwise.
  */
-io_desc_t *malloc_iodesc(const iosystem_desc_t *ios, int piotype, int ndims)
+int malloc_iodesc(iosystem_desc_t *ios, int piotype, int ndims,
+                  io_desc_t **iodesc)
 {
-    io_desc_t *iodesc;
+    MPI_Datatype mpi_type;
+    int ret;
 
-    assert(ios != NULL);
+    /* Check input. */
+    pioassert(ios && iodesc, "invalid input", __FILE__, __LINE__);
+
     /* Allocate space for the io_desc_t struct. */
-    if (!(iodesc = calloc(1, sizeof(io_desc_t))))
-        return NULL;
+    if (!(*iodesc = calloc(1, sizeof(io_desc_t))))
+        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+
+    /* Get the MPI type corresponding with the PIO type. */
+    if ((ret = find_mpi_type(piotype, &mpi_type)))
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
     /* Decide on the base type. */
-    switch(piotype)
-    {
-    case PIO_REAL:
-        iodesc->basetype = MPI_FLOAT;
-        break;
-    case PIO_DOUBLE:
-        iodesc->basetype = MPI_DOUBLE;
-        break;
-    case PIO_CHAR:
-        iodesc->basetype = MPI_CHAR;
-        break;
-    case PIO_INT:
-    default:
-        iodesc->basetype = MPI_INT;
-        break;
-    }
+    (*iodesc)->basetype = mpi_type;
 
     /* Initialize some values in the struct. */
-    iodesc->maxregions = 1;
-    iodesc->ioid = -1;
-    iodesc->ndims = ndims;
-    iodesc->firstregion = alloc_region(ndims);
+    (*iodesc)->maxregions = 1;
+    (*iodesc)->ioid = -1;
+    (*iodesc)->ndims = ndims;
+    (*iodesc)->firstregion = alloc_region(ndims);
 
     /* Set the swap memory settings to defaults. */
-    iodesc->rearr_opts = ios->rearr_opts;
+    (*iodesc)->rearr_opts = ios->rearr_opts;
 
-    return iodesc;
+    return PIO_NOERR;
 }
 
 /**

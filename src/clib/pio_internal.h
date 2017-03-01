@@ -180,7 +180,8 @@ extern "C" {
     /* Move data from compute tasks to IO tasks. */
     int rearrange_comp2io(iosystem_desc_t *ios, io_desc_t *iodesc, void *sbuf, void *rbuf, int nvars);
 
-    io_desc_t *malloc_iodesc(const iosystem_desc_t *ios, int piotype, int ndims);
+    /* Allocate and initialize storage for decomposition information. */
+    int malloc_iodesc(iosystem_desc_t *ios, int piotype, int ndims, io_desc_t **iodesc);
     
     void performance_tune_rearranger(iosystem_desc_t *ios, io_desc_t *iodesc);
 

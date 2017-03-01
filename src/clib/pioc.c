@@ -386,8 +386,8 @@ int PIOc_InitDecomp(int iosysid, int basetype, int ndims, const int *dims, int m
     }
 
     /* Allocate space for the iodesc info. */
-    if (!(iodesc = malloc_iodesc(ios, basetype, ndims)))
-        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+    if ((ierr = malloc_iodesc(ios, basetype, ndims, &iodesc)))
+        return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
 
     /* Remember the maplen. */
     iodesc->maplen = maplen;
