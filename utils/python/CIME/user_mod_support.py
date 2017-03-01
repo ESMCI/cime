@@ -70,8 +70,17 @@ def apply_user_mods(caseroot, user_mods_path):
                             shell_commands_file)
             with open(shell_commands_file,"r") as fd:
                 new_shell_commands = fd.read().replace("xmlchange","xmlchange --force")
-            with open(case_shell_commands, "a") as fd:
+            # prepend new_shell_commands to case_shell_commands file
+            old_shell_commands = None
+            if os.path.isfile(case_shell_commands):
+                with open(case_shell_commands, "r") as fd:
+                    old_shell_commands = fd.read()
+                    fd.close()
+            with open(case_shell_commands, "w") as fd:
                 fd.write(new_shell_commands)
+                if old_shell_commands is not None:
+                    fd.write(old_shell_commands)
+                fd.close()
 
     for shell_command_file in case_shell_command_files:
         if os.path.isfile(shell_command_file):
