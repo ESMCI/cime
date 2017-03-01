@@ -294,7 +294,7 @@ int pio_swapm(void *sendbuf, int *sendcounts, int *sdispls, MPI_Datatype *sendty
              * used to choose between mpi_irsends and mpi_isends - the default
              * is still mpi_irsend
              */
-            if (isend)
+            if (handshake && isend)
             {
 #ifdef USE_MPI_ISEND_FOR_FC
                 if ((mpierr = MPI_Isend(ptr, sendcounts[p], sendtypes[p], p, tag, comm,
@@ -305,6 +305,12 @@ int pio_swapm(void *sendbuf, int *sendcounts, int *sdispls, MPI_Datatype *sendty
                                          sndids + istep)))
                     return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 #endif
+            }
+            else if (isend)
+            {
+                if ((mpierr = MPI_Isend(ptr, sendcounts[p], sendtypes[p], p, tag, comm,
+                                         sndids + istep)))
+                    return check_mpi(NULL, mpierr, __FILE__, __LINE__);
             }
             else
             {
