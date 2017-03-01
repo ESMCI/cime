@@ -56,8 +56,7 @@ int dim_len[NDIM] = {NC_UNLIMITED, X_DIM_LEN, Y_DIM_LEN};
 
 /** 
  * Test the darray functionality. Create a netCDF file with 3
- * dimensions and 1 PIO_INT variable, and use darray to write some
- * data.
+ * dimensions and 4 variables, and use darray to write to one of them.
  *
  * @param iosysid the IO system ID.
  * @param ioid the ID of the decomposition.
@@ -66,10 +65,12 @@ int dim_len[NDIM] = {NC_UNLIMITED, X_DIM_LEN, Y_DIM_LEN};
  * @param my_rank rank of this task.
  * @param pio_type the type of the data.
  * @param test_comm the communicator that is running this test.
+ * @param rearranger the rearranger in use for this test.
  * @returns 0 for success, error code otherwise.
 */
-int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank,
-                int pio_type, MPI_Comm test_comm)
+int test_3_empty(int iosysid, int ioid, int num_flavors, int *flavor,
+                            int my_rank, int pio_type, MPI_Comm test_comm,
+                            int rearranger)
 {
     char filename[PIO_MAX_NAME + 1]; /* Name for the output files. */
     int dimids[NDIM];      /* The dimension IDs. */
@@ -258,32 +259,28 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
  * @param flavor pointer to array of the available iotypes.
  * @param my_rank rank of this task.
  * @param test_comm the communicator the test is running on.
+ * @param rearranger the rearranger in use in this test.
  * @returns 0 for success, error code otherwise. 
  */
 int test_all_darray(int iosysid, int num_flavors, int *flavor, int my_rank,
-                    MPI_Comm test_comm)
+                    MPI_Comm test_comm, int rearranger)
 {
-#define NUM_TYPES_TO_TEST 1
+#define NUM_TYPES_TO_TEST 3
     int ioid;
-    char filename[NC_MAX_NAME + 1];
-    /* int pio_type[NUM_TYPES_TO_TEST] = {PIO_INT, PIO_FLOAT, PIO_DOUBLE}; */
-    int pio_type[NUM_TYPES_TO_TEST] = {PIO_INT};
+    int pio_type[NUM_TYPES_TO_TEST] = {PIO_INT, PIO_FLOAT, PIO_DOUBLE};
     int dim_len_2d[NDIM2] = {X_DIM_LEN, Y_DIM_LEN};
     int ret; /* Return code. */
 
     for (int t = 0; t < NUM_TYPES_TO_TEST; t++)
     {        
-        /* This will be our file name for writing out decompositions. */
-        sprintf(filename, "%s_decomp_rank_%d_flavor_%d_type_%d.nc", TEST_NAME, my_rank,
-                *flavor, pio_type[t]);
-
         /* Decompose the data over the tasks. */
         if ((ret = create_decomposition_2d(TARGET_NTASKS, my_rank, iosysid, dim_len_2d,
                                            &ioid, pio_type[t])))
         return ret;
 
         /* Run a simple darray test. */
-        if ((ret = test_darray(iosysid, ioid, num_flavors, flavor, my_rank, pio_type[t], test_comm)))
+        if ((ret = test_3_empty(iosysid, ioid, num_flavors, flavor, my_rank, pio_type[t],
+                                test_comm, rearranger)))
             return ret;
     
         /* Free the PIO decomposition. */
@@ -297,12 +294,14 @@ int test_all_darray(int iosysid, int num_flavors, int *flavor, int my_rank,
 /* Run tests for darray functions. */
 int main(int argc, char **argv)
 {
+#define NUM_REARRANGERS 2
+    int rearranger[NUM_REARRANGERS] = {PIO_REARR_BOX, PIO_REARR_SUBSET};
     int my_rank;
     int ntasks;
-    int num_flavors; /* Number of PIO netCDF flavors in this build. */
+    int num_flavors;         /* Number of PIO netCDF flavors in this build. */
     int flavor[NUM_FLAVORS]; /* iotypes for the supported netCDF IO flavors. */
-    MPI_Comm test_comm; /* A communicator for this test. */
-    int ret;         /* Return code. */
+    MPI_Comm test_comm;      /* A communicator for this test. */
+    int ret;                 /* Return code. */
 
     /* Initialize test. */
     if ((ret = pio_test_init2(argc, argv, &my_rank, &ntasks, MIN_NTASKS,
@@ -315,30 +314,35 @@ int main(int argc, char **argv)
     /* Only do something on max_ntasks tasks. */
     if (my_rank < TARGET_NTASKS)
     {
-        int iosysid;  /* The ID for the parallel I/O system. */
+        int iosysid;              /* The ID for the parallel I/O system. */
         int ioproc_stride = 1;    /* Stride in the mpi rank between io tasks. */
         int ioproc_start = 0;     /* Zero based rank of first processor to be used for I/O. */
-        int ret;      /* Return code. */
+        int ret;                  /* Return code. */
         
         /* Figure out iotypes. */
         if ((ret = get_iotypes(&num_flavors, flavor)))
             ERR(ret);
         printf("Runnings tests for %d flavors\n", num_flavors);
 
-        /* Initialize the PIO IO system. This specifies how
-         * many and which processors are involved in I/O. */
-        if ((ret = PIOc_Init_Intracomm(test_comm, TARGET_NTASKS, ioproc_stride,
-                                       ioproc_start, PIO_REARR_SUBSET, &iosysid)))
-            return ret;
+        /* Test for both arrangers. */
+        for (int r = 0; r < NUM_REARRANGERS; r++)
+        {
 
-        /* Run tests. */
-        printf("%d Running tests...\n", my_rank);
-        if ((ret = test_all_darray(iosysid, num_flavors, flavor, my_rank, test_comm)))
-            return ret;
-
-        /* Finalize PIO system. */
-        if ((ret = PIOc_finalize(iosysid)))
-            return ret;
+            /* Initialize the PIO IO system. This specifies how
+             * many and which processors are involved in I/O. */
+            if ((ret = PIOc_Init_Intracomm(test_comm, TARGET_NTASKS, ioproc_stride,
+                                           ioproc_start, rearranger[r], &iosysid)))
+                return ret;
+            
+            /* Run tests. */
+            printf("%d Running tests...\n", my_rank);
+            if ((ret = test_all_darray(iosysid, num_flavors, flavor, my_rank, test_comm, rearranger[r])))
+                return ret;
+            
+            /* Finalize PIO system. */
+            if ((ret = PIOc_finalize(iosysid)))
+                return ret;
+        }
 
     } /* endif my_rank < TARGET_NTASKS */
 
