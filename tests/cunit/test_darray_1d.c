@@ -192,7 +192,7 @@ int test_darray_fill(int iosysid, int ioid, int pio_type, int num_flavors, int *
             if ((ret = PIOc_openfile(iosysid, &ncid, &flavor[fmt], filename, PIO_NOWRITE)))
                 ERR(ret);
 
-            /* /\* Allocate space for data. *\/ */
+            /* Allocate space for data. */
             if (!(test_data_in = malloc(type_size * arraylen)))
                 ERR(PIO_ENOMEM);
 
