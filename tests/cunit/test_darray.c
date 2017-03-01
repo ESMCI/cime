@@ -293,6 +293,8 @@ int test_all_darray(int iosysid, int num_flavors, int *flavor, int my_rank,
 /* Run tests for darray functions. */
 int main(int argc, char **argv)
 {
+#define NUM_REARRANGERS_TO_TEST 2
+    int rearranger[NUM_REARRANGERS_TO_TEST] = {PIO_REARR_BOX, PIO_REARR_SUBSET};
     int my_rank;
     int ntasks;
     int num_flavors; /* Number of PIO netCDF flavors in this build. */
@@ -321,10 +323,12 @@ int main(int argc, char **argv)
             ERR(ret);
         printf("Runnings tests for %d flavors\n", num_flavors);
 
+        for (int r = 0; r < NUM_REARRANGERS_TO_TEST; r++)
+        {
         /* Initialize the PIO IO system. This specifies how
          * many and which processors are involved in I/O. */
         if ((ret = PIOc_Init_Intracomm(test_comm, TARGET_NTASKS, ioproc_stride,
-                                       ioproc_start, PIO_REARR_SUBSET, &iosysid)))
+                                       ioproc_start, rearranger[r], &iosysid)))
             return ret;
 
         /* Run tests. */
@@ -335,7 +339,7 @@ int main(int argc, char **argv)
         /* Finalize PIO system. */
         if ((ret = PIOc_finalize(iosysid)))
             return ret;
-
+        } /* next rearranger */
     } /* endif my_rank < TARGET_NTASKS */
 
     /* Finalize the MPI library. */
