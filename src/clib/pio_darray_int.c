@@ -236,18 +236,8 @@ int pio_write_darray_multi_nc(file_desc_t *file, int nvars, const int *vid, int 
                     ierr = nc_var_par_access(file->fh, vid[nv], NC_COLLECTIVE);
 
                     /* Write the data for this variable. */
-                    if (basetype == MPI_DOUBLE)
-                        ierr = nc_put_vara_double(file->fh, vid[nv], (size_t *)start, (size_t *)count,
-                                                  (const double *)bufptr);
-                    else if (basetype == MPI_INT)
-                        ierr = nc_put_vara_int(file->fh, vid[nv], (size_t *)start, (size_t *)count,
-                                               (const int *)bufptr);
-                    else if (basetype == MPI_FLOAT)
-                        ierr = nc_put_vara_float(file->fh, vid[nv], (size_t *)start, (size_t *)count,
-                                                 (const float *)bufptr);
-                    else
-                        fprintf(stderr,"Type not recognized %d in pioc_write_darray\n",
-                                (int)basetype);
+                    if (!ierr)
+                        ierr = nc_put_vara(file->fh, vid[nv], (size_t *)start, (size_t *)count, bufptr);
                 }
                 break;
 #endif
@@ -644,23 +634,7 @@ int pio_write_darray_multi_nc_serial(file_desc_t *file, int nvars, const int *vi
                             }
 
                             /* Call the netCDF functions to write the data. */
-                            if (basetype == MPI_INT)
-                            {
-                                LOG((3, "about to call nc_put_vara_int()"));
-                                ierr = nc_put_vara_int(file->fh, vid[nv], start, count, (const int *)bufptr);
-                            }
-                            else if (basetype == MPI_DOUBLE)
-                            {
-                                LOG((3, "about to call nc_put_vara_double()"));
-                                ierr = nc_put_vara_double(file->fh, vid[nv], start, count, (const double *)bufptr);
-                            }
-                            else if (basetype == MPI_FLOAT)
-                            {
-                                LOG((3, "about to call nc_put_vara_float()"));
-                                ierr = nc_put_vara_float(file->fh, vid[nv], start, count, (const float *)bufptr);
-                            }
-                            else
-                                fprintf(stderr, "Type not recognized %d in pioc_write_darray\n", (int)basetype);
+                            ierr = nc_put_vara(file->fh, vid[nv], start, count, bufptr);
 
                             if (ierr)
                             {
@@ -833,15 +807,7 @@ int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid, void *iobu
             {
 #ifdef _NETCDF4
             case PIO_IOTYPE_NETCDF4P:
-                if (iodesc->basetype == MPI_DOUBLE)
-                    ierr = nc_get_vara_double(file->fh, vid, start, count, bufptr);
-                else if (iodesc->basetype == MPI_INT)
-                    ierr = nc_get_vara_int(file->fh, vid, start, count, bufptr);
-                else if (iodesc->basetype == MPI_FLOAT)
-                    ierr = nc_get_vara_float(file->fh, vid, start, count, bufptr);
-                else
-                    fprintf(stderr, "Type not recognized %d in pioc_read_darray\n",
-                            (int)iodesc->basetype);
+                ierr = nc_get_vara(file->fh, vid, start, count, bufptr);
                 break;
 #endif
 #ifdef _PNETCDF
@@ -1133,14 +1099,7 @@ int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc, int vid,
                     loffset += regionsize;
 
                     /* Read the data. */
-                    if (iodesc->basetype == MPI_DOUBLE)
-                        ierr = nc_get_vara_double(file->fh, vid,start, count, bufptr);
-                    else if (iodesc->basetype == MPI_INT)
-                        ierr = nc_get_vara_int(file->fh, vid, start, count,  bufptr);
-                    else if (iodesc->basetype == MPI_FLOAT)
-                        ierr = nc_get_vara_float(file->fh, vid, start, count,  bufptr);
-                    else
-                        return pio_err(ios, NULL, PIO_EBADTYPE, __FILE__, __LINE__);
+                    ierr = nc_get_vara(file->fh, vid, start, count, bufptr);
 
                     /* Check error code of netCDF call. */
                     if (ierr)
