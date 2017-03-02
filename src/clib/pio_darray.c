@@ -335,8 +335,7 @@ int PIOc_write_darray(int ncid, int vid, int ioid, PIO_Offset arraylen, void *ar
         return pio_err(ios, file, PIO_EBADID, __FILE__, __LINE__);
 
     /* Get var description. */
-    if (!(vdesc = file->varlist + vid))
-        return pio_err(ios, file, PIO_EBADID, __FILE__, __LINE__);
+    vdesc = file->varlist + vid;
     LOG((2, "vdesc record %d ndims %d nreqs %d", vdesc->record, vdesc->ndims, vdesc->nreqs));
 
     /* Is this a record variable? */
