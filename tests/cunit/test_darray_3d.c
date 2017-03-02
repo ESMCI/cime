@@ -85,14 +85,14 @@ int create_decomposition_3d(int ntasks, int my_rank, int iosysid, int *ioid)
     if (!(compdof = malloc(elements_per_pe * sizeof(PIO_Offset))))
         return PIO_ENOMEM;
 
-    /* Describe the decomposition. This is a 1-based array, so add 1! */
+    /* Describe the decomposition. */
     for (int i = 0; i < elements_per_pe; i++)
-        compdof[i] = my_rank * elements_per_pe + i + 1;
+        compdof[i] = my_rank * elements_per_pe + i;
 
     /* Create the PIO decomposition for this test. */
     printf("%d Creating decomposition elements_per_pe = %lld\n", my_rank, elements_per_pe);
-    if ((ret = PIOc_InitDecomp(iosysid, PIO_INT, NDIM3, dim_len_3d, elements_per_pe,
-                               compdof, ioid, NULL, NULL, NULL)))
+    if ((ret = PIOc_init_decomp(iosysid, PIO_INT, NDIM3, dim_len_3d, elements_per_pe,
+                                compdof, ioid, NULL, NULL, NULL)))
         ERR(ret);
 
     printf("%d decomposition initialized.\n", my_rank);
