@@ -454,6 +454,17 @@ int test_find_mpi_type()
     return PIO_NOERR;
 }
 
+int test_misc()
+{
+    wmulti_buffer wmb;
+
+    /* This should not work. */
+    if (flush_buffer(TEST_VAL_42, &wmb, 0) != PIO_EBADID)
+        return ERR_WRONG;
+    
+    return 0;
+}
+
 /* Run Tests for pio_spmd.c functions. */
 int main(int argc, char **argv)
 {
@@ -505,6 +516,10 @@ int main(int argc, char **argv)
 
         printf("%d running find_mpi_type tests\n", my_rank);
         if ((ret = test_find_mpi_type()))
+            return ret;
+
+        printf("%d running misc tests\n", my_rank);
+        if ((ret = test_misc()))
             return ret;
 
     } /* endif my_rank < TARGET_NTASKS */
