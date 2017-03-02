@@ -151,12 +151,8 @@ int PIOc_write_darray_multi(int ncid, const int *vid, int ioid, int nvars, PIO_O
         /* Move data from compute to IO tasks. */
         if ((ierr = rearrange_comp2io(ios, iodesc, array, vdesc0->iobuf, nvars)))
             return pio_err(ios, file, ierr, __FILE__, __LINE__);
-
-    }/*  this is wrong, need to think about it
-         else{
-         vdesc0->iobuf = array;
-         } */
-
+    }
+    
     /* Write the darray based on the iotype. */
     LOG((2, "about to write darray for iotype = %d", file->iotype));
     switch (file->iotype)
@@ -210,22 +206,18 @@ int PIOc_write_darray_multi(int ncid, const int *vid, int ioid, int nvars, PIO_O
             piodie("Attempt to overwrite existing buffer",__FILE__,__LINE__);
 
         /* Get a buffer. */
-	if(ios->io_rank == 0)
+	if (ios->io_rank == 0)
 	    vdesc0->fillbuf = bget(iodesc->maxholegridsize * vsize * nvars);
-	else if(iodesc->holegridsize > 0)
+	else if (iodesc->holegridsize > 0)
 	    vdesc0->fillbuf = bget(iodesc->holegridsize * vsize * nvars);
 
         /* copying the fill value into the data buffer for the box
          * rearranger. This will be overwritten with data where
          * provided. */
-        if (vsize == 4)
-            for (int nv = 0; nv < nvars; nv++)
-                for (int i = 0; i < iodesc->holegridsize; i++)
-                    ((float *)vdesc0->fillbuf)[i + nv * iodesc->holegridsize] = ((float *)fillvalue)[nv];
-        else if (vsize == 8)
-            for (int nv = 0; nv < nvars; nv++)
-                for (int i = 0; i < iodesc->holegridsize; i++)
-                    ((double *)vdesc0->fillbuf)[i + nv * iodesc->holegridsize] = ((double *)fillvalue)[nv];
+        for (int nv = 0; nv < nvars; nv++)
+            for (int i = 0; i < iodesc->holegridsize; i++)
+                memcpy(&((char *)vdesc0->fillbuf)[vsize * (i + nv * iodesc->holegridsize)],
+                       &((char *)fillvalue)[vsize * nv], vsize);
 
         /* Write the darray based on the iotype. */
         switch (file->iotype)
