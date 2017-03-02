@@ -158,6 +158,8 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
                 if ((ret = PIOc_setframe(ncid, varid, 0)))
                     ERR(ret);
 
+                int frame = 0;
+                int flushtodisk = test_multi - 1;
                 if (!test_multi)
                 {
                     /* These should not work. */
@@ -174,8 +176,6 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
                 }
                 else
                 {
-                    int frame = 0;
-                    int flushtodisk = test_multi - 1;
                     int varid_big = NC_MAX_VARS + TEST_VAL_42;
 
                     /* These will not work. */
@@ -247,8 +247,17 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
                 }
 
                 /* Try to write, but it won't work, because we opened file read-only. */
-                if (PIOc_write_darray(ncid2, varid, ioid, arraylen, test_data, fillvalue) != PIO_EPERM)
-                    ERR(ERR_WRONG);
+                if (!test_multi)
+                {
+                    if (PIOc_write_darray(ncid2, varid, ioid, arraylen, test_data, fillvalue) != PIO_EPERM)
+                        ERR(ERR_WRONG);
+                }
+                else
+                {
+                    if (PIOc_write_darray_multi(ncid2, &varid, ioid, 1, arraylen, test_data, &frame,
+                                                fillvalue, flushtodisk) != PIO_EPERM)
+                        ERR(ERR_WRONG);
+                }
         
                 /* Close the netCDF file. */
                 printf("%d Closing the sample data file...\n", my_rank);
