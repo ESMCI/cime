@@ -1728,6 +1728,8 @@ int PIOc_createfile_int(int iosysid, int *ncidp, int *iotype, const char *filena
     {
         file->varlist[i].record = -1;
         file->varlist[i].ndims = -1;
+	file->varlist[i].iobuf = NULL;
+	file->varlist[i].fillbuf = NULL;
     }
     file->mode = mode;
 

@@ -76,7 +76,6 @@ int compute_buffer_init(iosystem_desc_t *ios)
  * list of region descriptions. May be NULL.
  * @param llen length of the iobuffer on this task for a single
  * field.
- * @param maxiobuflen maximum llen participating.
  * @param num_aiotasks actual number of iotasks participating.
  * @param iobuf the buffer to be written from this mpi task. May be
  * null. for example we have 8 ionodes and a distributed array with
@@ -92,7 +91,7 @@ int compute_buffer_init(iosystem_desc_t *ios)
  */
 int pio_write_darray_multi_nc(file_desc_t *file, int nvars, const int *vid, int iodesc_ndims,
                               MPI_Datatype basetype, int maxregions, io_region *firstregion,
-                              PIO_Offset llen, int maxiobuflen, int num_aiotasks, void *iobuf,
+                              PIO_Offset llen, int num_aiotasks, void *iobuf,
                               const int *frame)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
@@ -108,8 +107,8 @@ int pio_write_darray_multi_nc(file_desc_t *file, int nvars, const int *vid, int 
               "invalid input", __FILE__, __LINE__);
 
     LOG((1, "pio_write_darray_multi_nc nvars = %d iodesc_ndims = %d basetype = %d "
-         "maxregions = %d llen = %d maxiobuflen = %d num_aiotasks = %d", nvars, iodesc_ndims,
-         basetype, maxregions, llen, maxiobuflen, num_aiotasks));
+         "maxregions = %d llen = %d num_aiotasks = %d", nvars, iodesc_ndims,
+         basetype, maxregions, llen, num_aiotasks));
 
 #ifdef TIMING
     /* Start timing this function. */
@@ -381,7 +380,6 @@ int pio_write_darray_multi_nc(file_desc_t *file, int nvars, const int *vid, int 
  * list of region descriptions. May be NULL.
  * @param llen length of the iobuffer on this task for a single
  * field.
- * @param maxiobuflen maximum llen participating
  * @param num_aiotasks actual number of iotasks participating
  * @param iobuf the buffer to be written from this mpi task. May be
  * null. for example we have 8 ionodes and a distributed array with
@@ -397,7 +395,7 @@ int pio_write_darray_multi_nc(file_desc_t *file, int nvars, const int *vid, int 
  */
 int pio_write_darray_multi_nc_serial(file_desc_t *file, int nvars, const int *vid, int iodesc_ndims,
                                      MPI_Datatype basetype, int maxregions, io_region *firstregion,
-                                     PIO_Offset llen, int maxiobuflen, int num_aiotasks, void *iobuf,
+                                     PIO_Offset llen, int num_aiotasks, void *iobuf,
                                      const int *frame)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
@@ -414,8 +412,8 @@ int pio_write_darray_multi_nc_serial(file_desc_t *file, int nvars, const int *vi
               "invalid input", __FILE__, __LINE__);
 
     LOG((1, "pio_write_darray_multi_nc_serial nvars = %d iodesc_ndims = %d basetype = %d "
-         "maxregions = %d llen = %d maxiobuflen = %d num_aiotasks = %d", nvars, iodesc_ndims,
-         basetype, maxregions, llen, maxiobuflen, num_aiotasks));
+         "maxregions = %d llen = %d num_aiotasks = %d", nvars, iodesc_ndims,
+         basetype, maxregions, llen, num_aiotasks));
 
 #ifdef TIMING
     /* Start timing this function. */
@@ -427,7 +425,7 @@ int pio_write_darray_multi_nc_serial(file_desc_t *file, int nvars, const int *vi
 
     /* Get the var info. */
     vdesc = file->varlist + vid[0];
-    
+
     LOG((2, "vdesc record %d ndims %d nreqs %d ios->async_interface = %d", vdesc->record,
          vdesc->ndims, vdesc->nreqs, ios->async_interface));
 
@@ -680,7 +678,7 @@ int pio_write_darray_multi_nc_serial(file_desc_t *file, int nvars, const int *vi
 
                         /* Keep track of where we are in the buffer. */
                         loffset += tsize;
-                        
+
                         LOG((3, " at bottom of loop regioncnt = %d tsize = %d loffset = %d", regioncnt,
                              tsize, loffset));
                     } /* next regioncnt */
@@ -1004,7 +1002,7 @@ int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc, int vid,
                 {
                     /* This is a record var. Find start for record dims. */
                     tmp_start[regioncnt * fndims] = vdesc->record;
-                    
+
                     /* Find start/count for all non-record dims. */
                     for (int i = 1; i < fndims; i++)
                     {

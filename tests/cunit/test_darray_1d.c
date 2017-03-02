@@ -574,10 +574,6 @@ int main(int argc, char **argv)
             /* Run tests for each data type. */
             for (int t = 0; t < NUM_TYPES_TO_TEST; t++)
             {
-                /* This combination is still broken. */
-                if (rearranger[r] == PIO_REARR_SUBSET && test_type[t] == PIO_DOUBLE)
-                    continue;
-
                 /* Decompose the data over the tasks. */
                 if ((ret = create_decomposition_1d(TARGET_NTASKS, my_rank, iosysid, test_type[t],
                                                    &ioid)))

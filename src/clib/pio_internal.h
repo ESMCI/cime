@@ -181,7 +181,7 @@ extern "C" {
     int rearrange_comp2io(iosystem_desc_t *ios, io_desc_t *iodesc, void *sbuf, void *rbuf, int nvars);
 
     io_desc_t *malloc_iodesc(const iosystem_desc_t *ios, int piotype, int ndims);
-    
+
     void performance_tune_rearranger(iosystem_desc_t *ios, io_desc_t *iodesc);
 
     int flush_output_buffer(file_desc_t *file, bool force, PIO_Offset addsize);
@@ -217,7 +217,7 @@ extern "C" {
 
     /* Print a trace statement, for debugging. */
     void print_trace (FILE *fp);
-    
+
     void cn_buffer_report(iosystem_desc_t *ios, bool collective);
 
     /* Initialize the compute buffer. */
@@ -245,15 +245,15 @@ extern "C" {
     /* Write aggregated arrays to file using parallel I/O (netCDF-4 parallel/pnetcdf) */
     int pio_write_darray_multi_nc(file_desc_t *file, int nvars, const int *vid, int iodesc_ndims,
                                   MPI_Datatype basetype, int maxregions, io_region *firstregion,
-                                  PIO_Offset llen, int maxiobuflen, int num_aiotasks, void *iobuf,
+                                  PIO_Offset llen, int num_aiotasks, void *iobuf,
                                   const int *frame);
 
     /* Write aggregated arrays to file using serial I/O (netCDF-3/netCDF-4 serial) */
     int pio_write_darray_multi_nc_serial(file_desc_t *file, int nvars, const int *vid, int iodesc_ndims,
                                          MPI_Datatype basetype, int maxregions, io_region *firstregion,
-                                         PIO_Offset llen, int maxiobuflen, int num_aiotasks, void *iobuf,
+                                         PIO_Offset llen, int num_aiotasks, void *iobuf,
                                          const int *frame);
-    
+
     int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid, void *iobuf);
     int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc, int vid, void *iobuf);
 
@@ -297,7 +297,7 @@ extern "C" {
     int pioc_read_nc_decomp_int(int iosysid, const char *filename, int *ndims, int **global_dimlen,
                                 int *num_tasks, int **task_maplen, int *max_maplen, int **map, char *title,
                                 char *history, char *source, char *version, int *fortran_order);
-    
+
 #if defined(__cplusplus)
 }
 #endif
