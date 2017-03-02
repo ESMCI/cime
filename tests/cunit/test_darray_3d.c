@@ -43,6 +43,10 @@
 /* The name of the variable in the netCDF output files. */
 #define VAR_NAME "foo"
 
+/* Test with and without specifying a fill value to
+ * PIOc_write_darray(). */
+#define NUM_TEST_CASES_FILLVALUE 2
+
 /* The dimension names. */
 char dim_name[NDIM][PIO_MAX_NAME + 1] = {"timestep", "x", "y", "z"};
 
@@ -51,6 +55,9 @@ int dim_len[NDIM] = {NC_UNLIMITED, X_DIM_LEN, Y_DIM_LEN, Z_DIM_LEN};
 
 #define DIM_NAME "dim"
 #define NDIM1 1
+
+/* Run test for each of the rearrangers. */
+#define NUM_REARRANGERS_TO_TEST 2
 
 /* Create the decomposition to divide the 4-dimensional sample data
  * between the 4 tasks. For the purposes of decomposition we are only
@@ -106,9 +113,11 @@ int create_decomposition_3d(int ntasks, int my_rank, int iosysid, int *ioid)
  * @param num_flavors the number of IOTYPES available in this build.
  * @param flavor array of available iotypes.
  * @param my_rank rank of this task.
+ * @param provide_fill 1 if fillvalue should be provided to PIOc_write_darray().
  * @returns 0 for success, error code otherwise.
 */
-int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank)
+int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank,
+                int provide_fill)
 {
     char filename[PIO_MAX_NAME + 1]; /* Name for the output files. */
     int dimids[NDIM];      /* The dimension IDs. */
@@ -117,7 +126,8 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
     int varid;     /* The ID of the netCDF varable. */
     int ret;       /* Return code. */
     PIO_Offset arraylen = 16;
-    int fillvalue = NC_FILL_INT;
+    int int_fillvalue = NC_FILL_INT;
+    void *fillvalue = NULL;
     int test_data[arraylen];
     int test_data2[arraylen];
     int test_data_in[arraylen];
@@ -128,6 +138,10 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
         test_data[f] = my_rank * 10 + f;
         test_data2[f] = 2 * (my_rank * 10 + f);
     }
+
+    /* Are we providing a fill value? */
+    if (provide_fill)
+        fillvalue = &int_fillvalue;
 
     /* Use PIO to create the example file in each of the four
      * available ways. */
@@ -165,7 +179,7 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
             ERR(ret);
 
         /* Write the data. */
-        if ((ret = PIOc_write_darray(ncid, varid, ioid, arraylen, test_data, &fillvalue)))
+        if ((ret = PIOc_write_darray(ncid, varid, ioid, arraylen, test_data, fillvalue)))
             ERR(ret);
 
         /* Set the value of the record dimension to the second record. */
@@ -173,7 +187,7 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
             ERR(ret);
 
         /* Write the data for the second record. */
-        if ((ret = PIOc_write_darray(ncid, varid, ioid, arraylen, test_data2, &fillvalue)))
+        if ((ret = PIOc_write_darray(ncid, varid, ioid, arraylen, test_data2, fillvalue)))
             ERR(ret);
 
         /* Close the netCDF file. */
@@ -317,16 +331,10 @@ int test_all_darray(int iosysid, int num_flavors, int *flavor, int my_rank,
 {
     int ioid;
     int my_test_size;
-    char filename[NC_MAX_NAME + 1];
     int ret; /* Return code. */
 
     if ((ret = MPI_Comm_size(test_comm, &my_test_size)))
         MPIERR(ret);
-
-    /* This will be our file name for writing out decompositions. */
-    sprintf(filename, "%s_decomp_rank_%d_flavor_%d_.nc", TEST_NAME, my_rank, *flavor);
-
-    printf("%d Testing darray.\n", my_rank);
 
     /* Decompose the data over the tasks. */
     if ((ret = create_decomposition_3d(TARGET_NTASKS, my_rank, iosysid, &ioid)))
@@ -337,9 +345,13 @@ int test_all_darray(int iosysid, int num_flavors, int *flavor, int my_rank,
                                       rearranger, test_comm)))
         return ret;
 
-    /* Run a simple darray test. */
-    if ((ret = test_darray(iosysid, ioid, num_flavors, flavor, my_rank)))
-        return ret;
+    /* Test with/without providing a fill value to PIOc_write_darray(). */
+    for (int provide_fill = 0; provide_fill < NUM_TEST_CASES_FILLVALUE; provide_fill++)
+    {
+        /* Run a simple darray test. */
+        if ((ret = test_darray(iosysid, ioid, num_flavors, flavor, my_rank, provide_fill)))
+            return ret;
+    }
 
     /* Free the PIO decomposition. */
     if ((ret = PIOc_freedecomp(iosysid, ioid)))
@@ -369,7 +381,6 @@ int main(int argc, char **argv)
     /* Only do something on max_ntasks tasks. */
     if (my_rank < TARGET_NTASKS)
     {
-#define NUM_REARRANGERS_TO_TEST 2
         int rearranger[NUM_REARRANGERS_TO_TEST] = {PIO_REARR_BOX, PIO_REARR_SUBSET};
         int iosysid;  /* The ID for the parallel I/O system. */
         int ioproc_stride = 1;    /* Stride in the mpi rank between io tasks. */
