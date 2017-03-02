@@ -432,8 +432,7 @@ int check_netcdf2(iosystem_desc_t *ios, file_desc_t *file, int status,
 
     LOG((1, "check_netcdf2 status = %d fname = %s line = %d", status, fname, line));
 
-    /* Pick an error handler. File settings override iosystem
-     * settings. */
+    /* Pick an error handler. */
     if (ios)
         eh = ios->error_handler;
     if (file)
@@ -453,10 +452,12 @@ int check_netcdf2(iosystem_desc_t *ios, file_desc_t *file, int status,
     if (eh == PIO_INTERNAL_ERROR)
         piodie(errmsg, fname, line);        /* Die! */
     else if (eh == PIO_BCAST_ERROR)
+    {
 	if (ios)
 	    MPI_Bcast(&status, 1, MPI_INT, ios->ioroot, ios->my_comm);
 	else if (file)
 	    MPI_Bcast(&status, 1, MPI_INT, file->iosystem->ioroot, file->iosystem->my_comm);
+    }
 
     /* For PIO_RETURN_ERROR, just return the error. */
     return status;
