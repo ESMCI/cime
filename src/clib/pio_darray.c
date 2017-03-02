@@ -136,9 +136,9 @@ int PIOc_write_darray_multi(int ncid, const int *vid, int ioid, int nvars, PIO_O
             LOG((3, "vsize = %d", vsize));
 
             /* Allocate memory for the variable buffer. */
-            if (!(vdesc0->iobuf = bget(vsize * rlen)))
-                piomemerror(ios, rlen * vsize, __FILE__, __LINE__);
-            LOG((3, "allocated %ld bytes for variable buffer", rlen * vsize));
+            if (!(vdesc0->iobuf = bget((size_t)vsize * (size_t)rlen)))
+                piomemerror(ios, (size_t)rlen * (size_t)vsize, __FILE__, __LINE__);
+            LOG((3, "allocated %ld bytes for variable buffer", (size_t)rlen * (size_t)vsize));
 
             /* If data are missing for the BOX rearranger, insert fill values. */
             if (iodesc->needsfill && iodesc->rearranger == PIO_REARR_BOX)
