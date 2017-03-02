@@ -50,7 +50,7 @@ PIO_Offset PIOc_set_buffer_size_limit(PIO_Offset limit)
  * buffering implemented in PIOc_write_darray()).
  *
  * @param ncid identifies the netCDF file.
- * @param vid an array of length nvars containing the variable ids to
+ * @param varids an array of length nvars containing the variable ids to
  * be written.
  * @param ioid the I/O description ID as passed back by
  * PIOc_InitDecomp().
@@ -74,7 +74,7 @@ PIO_Offset PIOc_set_buffer_size_limit(PIO_Offset limit)
  * @return 0 for success, error code otherwise.
  * @ingroup PIO_write_darray
  */
-int PIOc_write_darray_multi(int ncid, const int *vid, int ioid, int nvars, PIO_Offset arraylen,
+int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars, PIO_Offset arraylen,
                             void *array, const int *frame, void **fillvalue, bool flushtodisk)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
@@ -92,10 +92,10 @@ int PIOc_write_darray_multi(int ncid, const int *vid, int ioid, int nvars, PIO_O
     ios = file->iosystem;
 
     /* Check inputs. */
-    if (nvars <= 0 || !vid)
+    if (nvars <= 0 || !varids)
         return pio_err(ios, file, PIO_EINVAL, __FILE__, __LINE__);
     for (int v = 0; v < nvars; v++)
-        if (vid[v] < 0 || vid[v] > PIO_MAX_VARS)
+        if (varids[v] < 0 || varids[v] > PIO_MAX_VARS)
             return pio_err(ios, file, PIO_EINVAL, __FILE__, __LINE__);
 
     LOG((1, "PIOc_write_darray_multi ncid = %d ioid = %d nvars = %d arraylen = %ld flushtodisk = %d",
@@ -114,7 +114,7 @@ int PIOc_write_darray_multi(int ncid, const int *vid, int ioid, int nvars, PIO_O
      * and write (or read). The buffer size on io task 0 must be as
      * large as the largest used to accommodate this serial io
      * method. */
-    vdesc0 = file->varlist + vid[0];
+    vdesc0 = file->varlist + varids[0];
     pioassert(!vdesc0->iobuf, "Attempt to overwrite existing io buffer",__FILE__, __LINE__);
 
     /* ??? */
@@ -169,14 +169,14 @@ int PIOc_write_darray_multi(int ncid, const int *vid, int ioid, int nvars, PIO_O
     {
     case PIO_IOTYPE_NETCDF4P:
     case PIO_IOTYPE_PNETCDF:
-        if ((ierr = pio_write_darray_multi_nc(file, nvars, vid, iodesc->ndims, iodesc->basetype,
+        if ((ierr = pio_write_darray_multi_nc(file, nvars, varids, iodesc->ndims, iodesc->basetype,
                                               iodesc->maxregions, iodesc->firstregion, iodesc->llen,
                                               iodesc->num_aiotasks, vdesc0->iobuf, frame)))
             return pio_err(ios, file, ierr, __FILE__, __LINE__);
         break;
     case PIO_IOTYPE_NETCDF4C:
     case PIO_IOTYPE_NETCDF:
-        if ((ierr = pio_write_darray_multi_nc_serial(file, nvars, vid, iodesc->ndims, iodesc->basetype,
+        if ((ierr = pio_write_darray_multi_nc_serial(file, nvars, varids, iodesc->ndims, iodesc->basetype,
                                                      iodesc->maxregions, iodesc->firstregion, iodesc->llen,
                                                      iodesc->num_aiotasks, vdesc0->iobuf, frame)))
             return pio_err(ios, file, ierr, __FILE__, __LINE__);
@@ -238,7 +238,7 @@ int PIOc_write_darray_multi(int ncid, const int *vid, int ioid, int nvars, PIO_O
         {
         case PIO_IOTYPE_PNETCDF:
         case PIO_IOTYPE_NETCDF4P:
-            if ((ierr = pio_write_darray_multi_nc(file, nvars, vid,
+            if ((ierr = pio_write_darray_multi_nc(file, nvars, varids,
                                                   iodesc->ndims, iodesc->basetype, iodesc->maxfillregions,
                                                   iodesc->fillregion, iodesc->holegridsize,
                                                   iodesc->num_aiotasks, vdesc0->fillbuf, frame)))
@@ -246,7 +246,7 @@ int PIOc_write_darray_multi(int ncid, const int *vid, int ioid, int nvars, PIO_O
             break;
         case PIO_IOTYPE_NETCDF4C:
         case PIO_IOTYPE_NETCDF:
-            if ((ierr = pio_write_darray_multi_nc_serial(file, nvars, vid, iodesc->ndims, iodesc->basetype,
+            if ((ierr = pio_write_darray_multi_nc_serial(file, nvars, varids, iodesc->ndims, iodesc->basetype,
                                                          iodesc->maxfillregions, iodesc->fillregion,
                                                          iodesc->holegridsize,
                                                          iodesc->num_aiotasks, vdesc0->fillbuf, frame)))
@@ -284,7 +284,7 @@ int PIOc_write_darray_multi(int ncid, const int *vid, int ioid, int nvars, PIO_O
  * is triggered.
  *
  * @param ncid the ncid of the open netCDF file.
- * @param vid the ID of the variable that these data will be written
+ * @param varid the ID of the variable that these data will be written
  * to.
  * @param ioid the I/O description ID as passed back by
  * PIOc_InitDecomp().
@@ -300,7 +300,7 @@ int PIOc_write_darray_multi(int ncid, const int *vid, int ioid, int nvars, PIO_O
  * @returns 0 for success, non-zero error code for failure.
  * @ingroup PIO_write_darray
  */
-int PIOc_write_darray(int ncid, int vid, int ioid, PIO_Offset arraylen, void *array,
+int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *array,
                       void *fillvalue)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
@@ -318,8 +318,8 @@ int PIOc_write_darray(int ncid, int vid, int ioid, PIO_Offset arraylen, void *ar
     int mpierr = MPI_SUCCESS;  /* Return code from MPI functions. */
     int ierr = PIO_NOERR;  /* Return code. */
 
-    LOG((1, "PIOc_write_darray ncid = %d vid = %d ioid = %d arraylen = %d",
-         ncid, vid, ioid, arraylen));
+    LOG((1, "PIOc_write_darray ncid = %d varid = %d ioid = %d arraylen = %d",
+         ncid, varid, ioid, arraylen));
 
     /* Get the file info. */
     if ((ierr = pio_get_file(ncid, &file)))
@@ -335,7 +335,7 @@ int PIOc_write_darray(int ncid, int vid, int ioid, PIO_Offset arraylen, void *ar
         return pio_err(ios, file, PIO_EBADID, __FILE__, __LINE__);
 
     /* Get var description. */
-    vdesc = file->varlist + vid;
+    vdesc = file->varlist + varid;
     LOG((2, "vdesc record %d ndims %d nreqs %d", vdesc->record, vdesc->ndims, vdesc->nreqs));
 
     /* Is this a record variable? */
@@ -520,7 +520,7 @@ int PIOc_write_darray(int ncid, int vid, int ioid, PIO_Offset arraylen, void *ar
 
     /* Tell the buffer about the data it is getting. */
     wmb->arraylen = arraylen;
-    wmb->vid[wmb->validvars] = vid;
+    wmb->vid[wmb->validvars] = varid;
 
     /* Copy the user-provided data to the buffer. */
     bufptr = (void *)((char *)wmb->data + arraylen * tsize * wmb->validvars);
@@ -550,7 +550,7 @@ int PIOc_write_darray(int ncid, int vid, int ioid, PIO_Offset arraylen, void *ar
  * Read a field from a file to the IO library.
  *
  * @param ncid identifies the netCDF file
- * @param vid the variable ID to be read
+ * @param varid the variable ID to be read
  * @param ioid: the I/O description ID as passed back by
  * PIOc_InitDecomp().
  * @param arraylen: the length of the array to be read. This
@@ -562,7 +562,7 @@ int PIOc_write_darray(int ncid, int vid, int ioid, PIO_Offset arraylen, void *ar
  * @return 0 for success, error code otherwise.
  * @ingroup PIO_read_darray
  */
-int PIOc_read_darray(int ncid, int vid, int ioid, PIO_Offset arraylen,
+int PIOc_read_darray(int ncid, int varid, int ioid, PIO_Offset arraylen,
                      void *array)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
@@ -613,12 +613,12 @@ int PIOc_read_darray(int ncid, int vid, int ioid, PIO_Offset arraylen,
     {
     case PIO_IOTYPE_NETCDF:
     case PIO_IOTYPE_NETCDF4C:
-        if ((ierr = pio_read_darray_nc_serial(file, iodesc, vid, iobuf)))
+        if ((ierr = pio_read_darray_nc_serial(file, iodesc, varid, iobuf)))
                 return pio_err(ios, file, ierr, __FILE__, __LINE__);
         break;
     case PIO_IOTYPE_PNETCDF:
     case PIO_IOTYPE_NETCDF4P:
-        if ((ierr = pio_read_darray_nc(file, iodesc, vid, iobuf)))
+        if ((ierr = pio_read_darray_nc(file, iodesc, varid, iobuf)))
             return pio_err(ios, file, ierr, __FILE__, __LINE__);
         break;
     default:

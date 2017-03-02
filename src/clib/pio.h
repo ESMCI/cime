@@ -756,11 +756,11 @@ extern "C" {
     /* Distributed data. */
     int PIOc_advanceframe(int ncid, int varid);
     int PIOc_setframe(int ncid, int varid, int frame);
-    int PIOc_write_darray(int ncid, int vid, int ioid, PIO_Offset arraylen, void *array,
+    int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *array,
                           void *fillvalue);
-    int PIOc_write_darray_multi(int ncid, const int *vid, int ioid, int nvars, PIO_Offset arraylen,
+    int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars, PIO_Offset arraylen,
                                 void *array, const int *frame, void **fillvalue, bool flushtodisk);
-    int PIOc_read_darray(int ncid, int vid, int ioid, PIO_Offset arraylen, void *array);
+    int PIOc_read_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *array);
     int PIOc_get_local_array_size(int ioid);
 
     /* Handling files. */
