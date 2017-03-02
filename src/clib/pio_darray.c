@@ -133,25 +133,19 @@ int PIOc_write_darray_multi(int ncid, const int *vid, int ioid, int nvars, PIO_O
         {
             if ((mpierr = MPI_Type_size(iodesc->basetype, &vsize)))
                 return check_mpi(file, mpierr, __FILE__, __LINE__);
+            LOG((3, "vsize = %d", vsize));
 
             /* Allocate memory for the variable buffer. */
-            if (!(vdesc0->iobuf = bget((size_t)vsize * (size_t)rlen)))
-                piomemerror(ios, (size_t)rlen * (size_t)vsize, __FILE__, __LINE__);
-            LOG((3, "allocated %ld bytes for variable buffer", (size_t)rlen * (size_t)vsize));
+            if (!(vdesc0->iobuf = bget(vsize * rlen)))
+                piomemerror(ios, rlen * vsize, __FILE__, __LINE__);
+            LOG((3, "allocated %ld bytes for variable buffer", rlen * vsize));
 
             /* If data are missing for the BOX rearranger, insert fill values. */
             if (iodesc->needsfill && iodesc->rearranger == PIO_REARR_BOX)
-            {
-                LOG((3, "inserting fill values, vsize = %d", vsize));
-                if (vsize == 4)
-                    for (int nv = 0; nv < nvars; nv++)
-                        for (int i = 0; i < iodesc->maxiobuflen; i++)
-                            ((float *)vdesc0->iobuf)[i + nv * iodesc->maxiobuflen] = ((float *)fillvalue)[nv];
-                else if (vsize == 8)
-                    for (int nv = 0; nv < nvars; nv++)
-                        for (int i = 0; i < iodesc->maxiobuflen; i++)
-                            ((double *)vdesc0->iobuf)[i + nv * iodesc->maxiobuflen] = ((double *)fillvalue)[nv];
-            }
+                for (int nv = 0; nv < nvars; nv++)
+                    for (int i = 0; i < iodesc->maxiobuflen; i++)
+                        memcpy(&((char *)vdesc0->iobuf)[vsize * (i + nv * iodesc->maxiobuflen)],
+                               &((char *)fillvalue)[nv * vsize], vsize);
         }
 
         /* Move data from compute to IO tasks. */

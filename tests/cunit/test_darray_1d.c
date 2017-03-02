@@ -376,7 +376,7 @@ int test_darray_fill_unlim(int iosysid, int ioid, int pio_type, int num_flavors,
         if ((ret = PIOc_openfile(iosysid, &ncid, &flavor[fmt], filename, PIO_NOWRITE)))
             ERR(ret);
 
-        /* /\* Allocate space for data. *\/ */
+        /* Allocate space for data. */
         if (!(test_data_in = malloc(type_size * arraylen)))
             ERR(PIO_ENOMEM);
 
@@ -534,9 +534,9 @@ int test_decomp_read_write(int iosysid, int ioid, int num_flavors, int *flavor, 
 /* Run tests for darray functions. */
 int main(int argc, char **argv)
 {
-#define NUM_TYPES_TO_TEST 3
 #define NUM_REARRANGERS_TO_TEST 2
     int rearranger[NUM_REARRANGERS_TO_TEST] = {PIO_REARR_BOX, PIO_REARR_SUBSET};
+#define NUM_TYPES_TO_TEST 3
     int test_type[NUM_TYPES_TO_TEST] = {PIO_INT, PIO_FLOAT, PIO_DOUBLE};
     int my_rank;
     int ntasks;
