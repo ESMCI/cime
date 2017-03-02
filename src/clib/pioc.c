@@ -380,9 +380,9 @@ int PIOc_InitDecomp(int iosysid, int basetype, int ndims, const int *dims, int m
 
         /* Handle MPI errors. */
         if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
-            return check_mpi(NULL, mpierr2, __FILE__, __LINE__);
+            return check_mpi2(ios, NULL, mpierr2, __FILE__, __LINE__);
         if (mpierr)
-            return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+            return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     }
 
     /* Allocate space for the iodesc info. */
@@ -454,7 +454,7 @@ int PIOc_InitDecomp(int iosysid, int basetype, int ndims, const int *dims, int m
         /* Depending on array size and io-blocksize the actual number
          * of io tasks used may vary. */
         if ((mpierr = MPI_Bcast(&(iodesc->num_aiotasks), 1, MPI_INT, ios->ioroot, ios->my_comm)))
-            return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+            return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
         LOG((3, "iodesc->num_aiotasks = %d", iodesc->num_aiotasks));
 
         /* Compute the communications pattern for this decomposition. */
@@ -823,9 +823,9 @@ int PIOc_finalize(int iosysid)
         /* Handle MPI errors. */
         LOG((3, "handling async errors mpierr = %d my_comm = %d", mpierr, ios->my_comm));
         if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
-            return check_mpi(NULL, mpierr2, __FILE__, __LINE__);
+            return check_mpi2(ios, NULL, mpierr2, __FILE__, __LINE__);
         if (mpierr)
-            return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+            return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
         LOG((3, "async errors bcast"));
     }
 
@@ -1340,8 +1340,7 @@ int PIOc_Init_Async(MPI_Comm world, int num_io_procs, int *io_proc_list,
                     LOG((3, "about to create intercomm for IO component to cmp = %d "
                          "my_iosys->io_comm = %d", cmp, my_iosys->io_comm));
                     if ((ret = MPI_Intercomm_create(my_iosys->io_comm, 0, my_iosys->union_comm,
-                                                    my_proc_list[cmp][0], 0,
-                                                    &my_iosys->intercomm)))
+                                                    my_proc_list[cmp][0], 0, &my_iosys->intercomm)))
                         return check_mpi(NULL, ret, __FILE__, __LINE__);
                 }
                 else
@@ -1350,8 +1349,7 @@ int PIOc_Init_Async(MPI_Comm world, int num_io_procs, int *io_proc_list,
                     LOG((3, "about to create intercomm for cmp = %d my_iosys->comp_comm = %d", cmp,
                          my_iosys->comp_comm));
                     if ((ret = MPI_Intercomm_create(my_iosys->comp_comm, 0, my_iosys->union_comm,
-                                                    my_proc_list[0][0], 0,
-                                                    &my_iosys->intercomm)))
+                                                    my_proc_list[0][0], 0, &my_iosys->intercomm)))
                         return check_mpi(NULL, ret, __FILE__, __LINE__);
                 }
                 LOG((3, "intercomm created for cmp = %d", cmp));
