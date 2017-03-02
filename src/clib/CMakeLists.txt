@@ -159,6 +159,7 @@ if (NOT PnetCDF_C_FOUND AND NOT NetCDF_C_FOUND)
   message (FATAL_ERROR "Must have PnetCDF and/or NetCDF C libraries")
 endif ()
 
+include(CheckTypeSize)
 check_type_size("size_t" SIZEOF_SIZE_T)
 CHECK_TYPE_SIZE("long long" SIZEOF_LONG_LONG)
 if (NOT ${SIZEOF_SIZE_T} EQUAL ${SIZEOF_LONG_LONG})
