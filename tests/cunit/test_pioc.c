@@ -1379,8 +1379,19 @@ int test_nc4(int iosysid, int num_flavors, int *flavor, int my_rank)
  * @param my_rank rank of this task.
  * @returns 0 for success, error code otherwise.
  */
-int test_malloc_iodesc(int iosysid, int my_rank)
+int test_malloc_iodesc2(int iosysid, int my_rank)
 {
+    /* More types are available for netCDF-4 builds. */
+#ifdef _NETCDF4
+    int num_types = NUM_NETCDF_TYPES;
+#else
+    int num_types = NUM_CLASSIC_TYPES;
+#endif /* _NETCDF4 */
+    int test_type[NUM_NETCDF_TYPES] = {PIO_BYTE, PIO_CHAR, PIO_SHORT, PIO_INT, PIO_FLOAT, PIO_DOUBLE,
+                                       PIO_UBYTE, PIO_USHORT, PIO_UINT, PIO_INT64, PIO_UINT64, PIO_STRING};
+    int mpi_type[NUM_NETCDF_TYPES] = {MPI_BYTE, MPI_CHAR, MPI_SHORT, MPI_INT, MPI_FLOAT, MPI_DOUBLE,
+                                      MPI_UNSIGNED_CHAR, MPI_UNSIGNED_SHORT, MPI_UNSIGNED, MPI_LONG_LONG,
+                                      MPI_UNSIGNED_LONG_LONG, MPI_CHAR};
     int ioid;
     iosystem_desc_t *ios;
     io_desc_t *iodesc;
@@ -1389,45 +1400,22 @@ int test_malloc_iodesc(int iosysid, int my_rank)
     if (!(ios = pio_get_iosystem_from_id(iosysid)))
         return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
 
-    /* Test an int one. */
-    if (!(iodesc = malloc_iodesc(ios, PIO_INT, 1)))
-        return ERR_WRONG;
-    if (iodesc->basetype != MPI_INT)
-        return ERR_WRONG;
-    if (iodesc->ndims != 1)
-        return ERR_WRONG;
-    ioid = pio_add_to_iodesc_list(iodesc);
-    if (iodesc->firstregion)
-        free_region_list(iodesc->firstregion);
-    if ((ret = pio_delete_iodesc_from_list(ioid)))
-        return ret;
-    
-    /* Test a char one. */
-    if (!(iodesc = malloc_iodesc(ios, PIO_CHAR, 1)))
-        return ERR_WRONG;
-    if (iodesc->basetype != MPI_CHAR)
-        return ERR_WRONG;
-    if (iodesc->ndims != 1)
-        return ERR_WRONG;
-    ioid = pio_add_to_iodesc_list(iodesc);
-    if (iodesc->firstregion)
-        free_region_list(iodesc->firstregion);
-    if ((ret = pio_delete_iodesc_from_list(ioid)))
-        return ret;
-    
-    /* Test a double. */
-    if (!(iodesc = malloc_iodesc(ios, PIO_DOUBLE, 1)))
-        return ERR_WRONG;
-    if (iodesc->basetype != MPI_DOUBLE)
-        return ERR_WRONG;
-    if (iodesc->ndims != 1)
-        return ERR_WRONG;
-    ioid = pio_add_to_iodesc_list(iodesc);
-    if (iodesc->firstregion)
-        free_region_list(iodesc->firstregion);
-    if ((ret = pio_delete_iodesc_from_list(ioid)))
-        return ret;
-    
+    /* Test with each type. */
+    for (int t = 0; t < num_types; t++)
+    {
+        if ((ret = malloc_iodesc(ios, test_type[t], 1, &iodesc)))
+            return ret;
+        if (iodesc->basetype != mpi_type[t])
+            return ERR_WRONG;
+        if (iodesc->ndims != 1)
+            return ERR_WRONG;
+        ioid = pio_add_to_iodesc_list(iodesc);
+        if (iodesc->firstregion)
+            free_region_list(iodesc->firstregion);
+        if ((ret = pio_delete_iodesc_from_list(ioid)))
+            return ret;
+    }
+
     return 0;
 }
 
@@ -1809,7 +1797,7 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
         return ret;
 
     /* Test some misc stuff. */
-    if ((ret = test_malloc_iodesc(iosysid, my_rank)))
+    if ((ret = test_malloc_iodesc2(iosysid, my_rank)))
         return ret;
 
     /* Test decomposition internal functions. */
