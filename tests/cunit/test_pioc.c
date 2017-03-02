@@ -1262,6 +1262,12 @@ int test_nc4(int iosysid, int num_flavors, int *flavor, int my_rank)
                 ERR(ERR_AWFUL);
             if (PIOc_inq_var_chunking(ncid, TEST_VAL_42, &storage, my_chunksize) != PIO_ENOTNC4)
                 ERR(ERR_AWFUL);
+            if (PIOc_set_var_chunk_cache(ncid, TEST_VAL_42, VAR_CACHE_SIZE, VAR_CACHE_NELEMS,
+                                         VAR_CACHE_PREEMPTION) != PIO_ENOTNC4)
+                ERR(ERR_AWFUL);
+            if (PIOc_get_var_chunk_cache(ncid, TEST_VAL_42, &var_cache_size, &var_cache_nelems,
+                                         &var_cache_preemption) != PIO_ENOTNC4)
+                ERR(ERR_AWFUL);
         }
 
         /* For netCDF-4 files, set the chunksize to improve performance. */
