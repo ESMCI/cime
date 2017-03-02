@@ -250,7 +250,15 @@ if (PIO_USE_MPISERIAL)
     set_tests_properties(pio_rearr_opts
         PROPERTIES TIMEOUT ${DEFAULT_TEST_TIMEOUT})
 else ()
-    add_mpi_test(pio_rearr_opts
+    add_mpi_test(pio_rearr_opts_1p
+        EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/pio_rearr_opts
+        NUMPROCS 1
+        TIMEOUT ${DEFAULT_TEST_TIMEOUT})
+    add_mpi_test(pio_rearr_opts_3p
+        EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/pio_rearr_opts
+        NUMPROCS 3
+        TIMEOUT ${DEFAULT_TEST_TIMEOUT})
+    add_mpi_test(pio_rearr_opts_4p
         EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/pio_rearr_opts
         NUMPROCS 4
         TIMEOUT ${DEFAULT_TEST_TIMEOUT})
@@ -269,7 +277,15 @@ if (PIO_USE_MPISERIAL)
     set_tests_properties(pio_rearr_opts2
         PROPERTIES TIMEOUT ${DEFAULT_TEST_TIMEOUT})
 else ()
-    add_mpi_test(pio_rearr_opts2
+    add_mpi_test(pio_rearr_opts2_1p
+        EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/pio_rearr_opts2
+        NUMPROCS 1
+        TIMEOUT ${DEFAULT_TEST_TIMEOUT})
+    add_mpi_test(pio_rearr_opts2_3p
+        EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/pio_rearr_opts2
+        NUMPROCS 3
+        TIMEOUT ${DEFAULT_TEST_TIMEOUT})
+    add_mpi_test(pio_rearr_opts2_4p
         EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/pio_rearr_opts2
         NUMPROCS 4
         TIMEOUT ${DEFAULT_TEST_TIMEOUT})

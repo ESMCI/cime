@@ -12,10 +12,12 @@
 #include <pio_internal.h>
 
 /**
- * Returns the smallest power of 2 greater than i.
+ * Returns the smallest power of 2 greater than
+ * or equal to i.
  *
  * @param i input number
- * @returns the smallest power of 2 greater than i.
+ * @returns the smallest power of 2 greater than
+ * or equal to i.
  */
 int ceil2(int i)
 {
@@ -179,6 +181,8 @@ int pio_swapm(void *sendbuf, int *sendcounts, int *sdispls, MPI_Datatype *sendty
 #endif
     }
 
+    LOG((2, "Done sending to self... sending to other procs"));
+
     /* When send to self is complete there is nothing left to do if
      * ntasks==1. */
     if (ntasks == 1)
@@ -206,6 +210,11 @@ int pio_swapm(void *sendbuf, int *sendcounts, int *sdispls, MPI_Datatype *sendty
             swapids[steps++] = p;
     }
 
+    LOG((3, "steps=%d", steps));
+
+    if (steps == 0)
+        return PIO_NOERR;
+
     if (steps == 1)
     {
         maxreq = 1;
@@ -229,6 +238,8 @@ int pio_swapm(void *sendbuf, int *sendcounts, int *sdispls, MPI_Datatype *sendty
             maxreqh = 1;
         }
     }
+
+    LOG((2, "max_requests=%d, maxreq=%d, maxreqh=%d", max_requests, maxreq, maxreqh));
 
     /* If handshaking is in use, do a nonblocking recieve to listen
      * for it. */
@@ -291,7 +302,7 @@ int pio_swapm(void *sendbuf, int *sendcounts, int *sdispls, MPI_Datatype *sendty
              * used to choose between mpi_irsends and mpi_isends - the default
              * is still mpi_irsend
              */
-            if (isend)
+            if (handshake && isend)
             {
 #ifdef USE_MPI_ISEND_FOR_FC
                 if ((mpierr = MPI_Isend(ptr, sendcounts[p], sendtypes[p], p, tag, comm,
@@ -303,6 +314,12 @@ int pio_swapm(void *sendbuf, int *sendcounts, int *sdispls, MPI_Datatype *sendty
                     return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 #endif
             }
+            else if (isend)
+            {
+                if ((mpierr = MPI_Isend(ptr, sendcounts[p], sendtypes[p], p, tag, comm,
+                                         sndids + istep)))
+                    return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+            }
             else
             {
                 if ((mpierr = MPI_Send(ptr, sendcounts[p], sendtypes[p], p, tag, comm)))
@@ -310,9 +327,9 @@ int pio_swapm(void *sendbuf, int *sendcounts, int *sdispls, MPI_Datatype *sendty
             }
         }
 
-        /* We did comms in sets of size max_reqs, if istep > maxreqh
+        /* We did comms in sets of size max_reqs, if istep > maxreqh-1
          * then there is a remainder that must be handled. */
-        if (istep > maxreqh)
+        if (istep > maxreqh - 1)
         {
             p = istep - maxreqh;
             if (rcvids[p] != MPI_REQUEST_NULL)
@@ -346,10 +363,11 @@ int pio_swapm(void *sendbuf, int *sendcounts, int *sdispls, MPI_Datatype *sendty
         }
     }
 
-    /* If steps > 0 there are still outstanding messages, wait for
+    /* If steps > 0 there could still be outstanding messages, wait for
      * them here. */
     if (steps > 0)
     {
+        LOG((2, "Waiting for outstanding msgs"));
         if ((mpierr = MPI_Waitall(steps, rcvids, MPI_STATUSES_IGNORE)))
             return check_mpi(NULL, mpierr, __FILE__, __LINE__);
         if (isend)

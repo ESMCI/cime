@@ -1580,7 +1580,6 @@ int PIOc_del_att(int ncid, int varid, const char *name)
 }
 
 /**
- * @ingroup PIO_set_fill
  * The PIO-C interface for the NetCDF function nc_set_fill.
  *
  * This routine is called collectively by all tasks in the communicator
@@ -1590,7 +1589,10 @@ int PIOc_del_att(int ncid, int varid, const char *name)
  *
  * @param ncid the ncid of the open file, obtained from
  * PIOc_openfile() or PIOc_createfile().
+ * @param fillmode either NC_FILL or NC_NOFILL.
+ * @param old_modep a pointer to an int that gets the old setting.
  * @return PIO_NOERR for success, error code otherwise.
+ * @ingroup PIO_set_fill
  */
 int PIOc_set_fill(int ncid, int fillmode, int *old_modep)
 {
@@ -1640,7 +1642,10 @@ int PIOc_set_fill(int ncid, int fillmode, int *old_modep)
     {
 #ifdef _PNETCDF
         if (file->iotype == PIO_IOTYPE_PNETCDF)
+        {
+            LOG((3, "about to call ncmpi_set_fill() fillmode = %d", fillmode));
             ierr = ncmpi_set_fill(file->fh, fillmode, old_modep);
+        }
 #endif /* _PNETCDF */
 
         if (file->iotype != PIO_IOTYPE_PNETCDF && file->do_io)

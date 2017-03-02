@@ -443,7 +443,7 @@ int check_netcdf2(iosystem_desc_t *ios, file_desc_t *file, int status,
     LOG((2, "check_netcdf2 chose error handler = %d", eh));
 
     /* Get an error message. */
-    if (!PIOc_strerror(status, errmsg))
+    if (eh != PIO_BCAST_ERROR && !PIOc_strerror(status, errmsg))
     {
         fprintf(stderr, "%s\n", errmsg);
         LOG((1, "check_netcdf2 errmsg = %s", errmsg));
@@ -452,8 +452,11 @@ int check_netcdf2(iosystem_desc_t *ios, file_desc_t *file, int status,
     /* Decide what to do based on the error handler. */
     if (eh == PIO_INTERNAL_ERROR)
         piodie(errmsg, fname, line);        /* Die! */
-    else if (eh == PIO_BCAST_ERROR && ios)  /* Not sure what this will do. */
-        MPI_Bcast(&status, 1, MPI_INT, ios->ioroot, ios->my_comm);
+    else if (eh == PIO_BCAST_ERROR)
+	if (ios)
+	    MPI_Bcast(&status, 1, MPI_INT, ios->ioroot, ios->my_comm);
+	else if (file)
+	    MPI_Bcast(&status, 1, MPI_INT, file->iosystem->ioroot, file->iosystem->my_comm);
 
     /* For PIO_RETURN_ERROR, just return the error. */
     return status;
@@ -1722,6 +1725,8 @@ int PIOc_createfile_int(int iosysid, int *ncidp, int *iotype, const char *filena
     {
         file->varlist[i].record = -1;
         file->varlist[i].ndims = -1;
+	file->varlist[i].iobuf = NULL;
+	file->varlist[i].fillbuf = NULL;
     }
     file->mode = mode;
 

@@ -96,6 +96,7 @@ int create_decomposition_1d(int ntasks, int my_rank, int iosysid, int pio_type, 
 int test_darray_fill(int iosysid, int ioid, int pio_type, int num_flavors, int *flavor,
                      int my_rank, MPI_Comm test_comm)
 {
+#define NUM_FILLVALUE_PRESENT_TESTS 2
     char filename[PIO_MAX_NAME + 1]; /* Name for the output files. */
     int dimid;     /* The dimension ID. */
     int ncid;      /* The ncid of the netCDF file. */
@@ -118,129 +119,133 @@ int test_darray_fill(int iosysid, int ioid, int pio_type, int num_flavors, int *
      * available ways. */
     for (int fmt = 0; fmt < num_flavors; fmt++)
     {
-        /* Create the filename. */
-        sprintf(filename, "data_%s_iotype_%d_pio_type_%d.nc", TEST_NAME, flavor[fmt], pio_type);
-
-        /* Create the netCDF output file. */
-        printf("rank: %d Creating sample file %s with format %d...\n", my_rank, filename,
-               flavor[fmt]);
-        if ((ret = PIOc_createfile(iosysid, &ncid, &flavor[fmt], filename, PIO_CLOBBER)))
-            ERR(ret);
-
-        /* Turn on fill mode. */
-        if ((ret = PIOc_set_fill(ncid, NC_FILL, NULL)))
-            ERR(ret);
-
-        /* Define netCDF dimensions and variable. */
-        if ((ret = PIOc_def_dim(ncid, DIM_NAME, DIM_LEN, &dimid)))
-            ERR(ret);
-
-        /* Define a variable. */
-        if ((ret = PIOc_def_var(ncid, VAR_NAME, pio_type, NDIM, &dimid, &varid)))
-            ERR(ret);
-
-        /* End define mode. */
-        if ((ret = PIOc_enddef(ncid)))
-            ERR(ret);
-
-        /* Get the size of the type. */
-        if ((ret = PIOc_inq_type(ncid, pio_type, NULL, &type_size)))
-            return ret;
-
-        /* Initialize some data. */
-        int int_test_data[2] = {my_rank, my_rank};
-        float float_test_data[2] = {my_rank, my_rank};
-        double double_test_data[2] = {my_rank, my_rank};
-        switch (pio_type)
+        for (int with_fillvalue = 0; with_fillvalue < NUM_FILLVALUE_PRESENT_TESTS; with_fillvalue++)
         {
-        case PIO_INT:
-            test_data = int_test_data;
-            fillvalue = &int_fill;
-            expected_in = &my_rank;
-            break;
-        case PIO_FLOAT:
-            test_data = float_test_data;
-            fillvalue = &float_fill;
-            expected_in = &my_float_rank;
-            break;
-        case PIO_DOUBLE:
-            test_data = double_test_data;
-            fillvalue = &double_fill;
-            expected_in = &my_double_rank;
-            break;
-        default:
-            return ERR_WRONG;
-        }
+            /* Create the filename. */
+            sprintf(filename, "data_%s_iotype_%d_pio_type_%d_with_fillvalue_%d.nc", TEST_NAME, flavor[fmt],
+                    pio_type, with_fillvalue);
 
-        /* Write the data. Our test_data contains only one real value
-         * (instead of 2, as indicated by arraylen), but due to the
-         * decomposition, only the first value is used in the
-         * output. */
-        if ((ret = PIOc_write_darray(ncid, varid, ioid, arraylen, test_data,
-                                     fillvalue)))
-            ERR(ret);
+            /* Create the netCDF output file. */
+            printf("rank: %d Creating sample file %s with format %d...\n", my_rank, filename,
+                   flavor[fmt]);
+            if ((ret = PIOc_createfile(iosysid, &ncid, &flavor[fmt], filename, PIO_CLOBBER)))
+                ERR(ret);
 
-        /* Close the netCDF file. */
-        if ((ret = PIOc_closefile(ncid)))
-            ERR(ret);
+            /* Turn on fill mode. */
+            if ((ret = PIOc_set_fill(ncid, NC_FILL, NULL)))
+                ERR(ret);
 
-        /* Reopen the file. */
-        if ((ret = PIOc_openfile(iosysid, &ncid, &flavor[fmt], filename, PIO_NOWRITE)))
-            ERR(ret);
+            /* Define netCDF dimensions and variable. */
+            if ((ret = PIOc_def_dim(ncid, DIM_NAME, DIM_LEN, &dimid)))
+                ERR(ret);
 
-        /* /\* Allocate space for data. *\/ */
-        if (!(test_data_in = malloc(type_size * arraylen)))
-            ERR(PIO_ENOMEM);
+            /* Define a variable. */
+            if ((ret = PIOc_def_var(ncid, VAR_NAME, pio_type, NDIM, &dimid, &varid)))
+                ERR(ret);
 
-        /* Read the data. */
-        if ((ret = PIOc_read_darray(ncid, varid, ioid, arraylen, test_data_in)))
-            ERR(ret);
+            /* End define mode. */
+            if ((ret = PIOc_enddef(ncid)))
+                ERR(ret);
 
-        /* Check the (first) result. */
-        if (memcmp(test_data_in, expected_in, type_size))
-            return ERR_WRONG;
+            /* Get the size of the type. */
+            if ((ret = PIOc_inq_type(ncid, pio_type, NULL, &type_size)))
+                return ret;
 
-        /* Free resources. */
-        free(test_data_in);
-
-        /* Get a buffer big enough to hold the global array. */
-        if (!(bufr = malloc(DIM_LEN * type_size)))
-            return PIO_ENOMEM;
-
-        /* Get the whole array with good old get_var(). */
-        if ((ret = PIOc_get_var(ncid, varid, bufr)))
-            return ret;
-
-        /* Check the results. The first four values are 0, 1, 2, 3,
-         * and the rest are the default fill value of the type. */
-        for (int e = 0; e < DIM_LEN; e++)
-        {
+            /* Initialize some data. */
+            int int_test_data[2] = {my_rank, my_rank};
+            float float_test_data[2] = {my_rank, my_rank};
+            double double_test_data[2] = {my_rank, my_rank};
             switch (pio_type)
             {
             case PIO_INT:
-                if (((int *)bufr)[e] != (e < 4 ? e : NC_FILL_INT))
-                    return ERR_WRONG;
+                test_data = int_test_data;
+                fillvalue = with_fillvalue ? &int_fill : NULL;
+                expected_in = &my_rank;
                 break;
             case PIO_FLOAT:
-                if (((float *)bufr)[e] != (e < 4 ? e : NC_FILL_FLOAT))
-                    return ERR_WRONG;
+                test_data = float_test_data;
+                fillvalue = with_fillvalue ? &float_fill : NULL;
+                expected_in = &my_float_rank;
                 break;
             case PIO_DOUBLE:
-                if (((double *)bufr)[e] != (e < 4 ? e : NC_FILL_DOUBLE))
-                    return ERR_WRONG;
+                test_data = double_test_data;
+                fillvalue = with_fillvalue ? &double_fill : NULL;
+                expected_in = &my_double_rank;
                 break;
             default:
                 return ERR_WRONG;
             }
-        }
 
-        /* Release buffer. */
-        free(bufr);
+            /* Write the data. Our test_data contains only one real value
+             * (instead of 2, as indicated by arraylen), but due to the
+             * decomposition, only the first value is used in the
+             * output. */
+            if ((ret = PIOc_write_darray(ncid, varid, ioid, arraylen, test_data,
+                                         fillvalue)))
+                ERR(ret);
 
-        /* Close the netCDF file. */
-        printf("%d Closing the sample data file...\n", my_rank);
-        if ((ret = PIOc_closefile(ncid)))
-            ERR(ret);
+            /* Close the netCDF file. */
+            if ((ret = PIOc_closefile(ncid)))
+                ERR(ret);
+
+            /* Reopen the file. */
+            if ((ret = PIOc_openfile(iosysid, &ncid, &flavor[fmt], filename, PIO_NOWRITE)))
+                ERR(ret);
+
+            /* Allocate space for data. */
+            if (!(test_data_in = malloc(type_size * arraylen)))
+                ERR(PIO_ENOMEM);
+
+            /* Read the data. */
+            if ((ret = PIOc_read_darray(ncid, varid, ioid, arraylen, test_data_in)))
+                ERR(ret);
+
+            /* Check the (first) result. */
+            if (memcmp(test_data_in, expected_in, type_size))
+                return ERR_WRONG;
+
+            /* Free resources. */
+            free(test_data_in);
+
+            /* Get a buffer big enough to hold the global array. */
+            if (!(bufr = malloc(DIM_LEN * type_size)))
+                return PIO_ENOMEM;
+
+            /* Get the whole array with good old get_var(). */
+            if ((ret = PIOc_get_var(ncid, varid, bufr)))
+                return ret;
+
+            /* Check the results. The first four values are 0, 1, 2, 3,
+             * and the rest are the default fill value of the type. */
+            for (int e = 0; e < DIM_LEN; e++)
+            {
+                switch (pio_type)
+                {
+                case PIO_INT:
+                    if (((int *)bufr)[e] != (e < 4 ? e : NC_FILL_INT))
+                        return ERR_WRONG;
+                    break;
+                case PIO_FLOAT:
+                    if (((float *)bufr)[e] != (e < 4 ? e : NC_FILL_FLOAT))
+                        return ERR_WRONG;
+                    break;
+                case PIO_DOUBLE:
+                    if (((double *)bufr)[e] != (e < 4 ? e : NC_FILL_DOUBLE))
+                        return ERR_WRONG;
+                    break;
+                default:
+                    return ERR_WRONG;
+                }
+            }
+
+            /* Release buffer. */
+            free(bufr);
+
+            /* Close the netCDF file. */
+            printf("%d Closing the sample data file...\n", my_rank);
+            if ((ret = PIOc_closefile(ncid)))
+                ERR(ret);
+        } /* with_fillvalue */
     } /* next iotype */
 
     return PIO_NOERR;
@@ -282,8 +287,7 @@ int test_darray_fill_unlim(int iosysid, int ioid, int pio_type, int num_flavors,
 
     /* Use PIO to create the example file in each of the four
      * available ways. */
-    /* for (int fmt = 0; fmt < num_flavors; fmt++)  */
-    for (int fmt = 1; fmt < 2; fmt++)
+    for (int fmt = 0; fmt < num_flavors; fmt++)
     {
         /* Create the filename. */
         sprintf(filename, "data_%s_iotype_%d_pio_type_%d_unlim.nc", TEST_NAME, flavor[fmt],
@@ -574,10 +578,6 @@ int main(int argc, char **argv)
             /* Run tests for each data type. */
             for (int t = 0; t < NUM_TYPES_TO_TEST; t++)
             {
-                /* This combination is still broken. */
-                if (rearranger[r] == PIO_REARR_SUBSET && test_type[t] == PIO_DOUBLE)
-                    continue;
-
                 /* Decompose the data over the tasks. */
                 if ((ret = create_decomposition_1d(TARGET_NTASKS, my_rank, iosysid, test_type[t],
                                                    &ioid)))
