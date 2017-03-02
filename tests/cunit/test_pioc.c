@@ -1217,34 +1217,52 @@ int test_nc4(int iosysid, int num_flavors, int *flavor, int my_rank)
             ERR(ret);
 
         /* Check that invalid arguments are properly rejected. */
-        if (PIOc_def_var_chunking(ncid + 1, 1000, NC_CHUNKED, chunksize) == PIO_NOERR)
+        if (PIOc_def_var_chunking(ncid + TEST_VAL_42, 0, NC_CHUNKED, chunksize) != PIO_EBADID)
             ERR(ERR_AWFUL);
-        if (PIOc_def_var_chunking(ncid + 1, 0, NC_CHUNKED, chunksize) != PIO_EBADID)
+        if (PIOc_inq_var_chunking(ncid + TEST_VAL_42, 0, &storage, my_chunksize) != PIO_EBADID)
             ERR(ERR_AWFUL);
-        if (PIOc_inq_var_chunking(ncid + 1, 1000, &storage, my_chunksize) == PIO_NOERR)
-            ERR(ERR_AWFUL);
-        if (PIOc_inq_var_chunking(ncid + 1, 0, &storage, my_chunksize) != PIO_EBADID)
-            ERR(ERR_AWFUL);
-        if (PIOc_inq_var_deflate(ncid + 1, 0, &shuffle, &deflate, &deflate_level) != PIO_EBADID)
+        if (PIOc_inq_var_deflate(ncid + TEST_VAL_42, 0, &shuffle, &deflate, &deflate_level) != PIO_EBADID)
             ERR(ret);
-        if (PIOc_def_var_endian(ncid + 1, 0, 1) != PIO_EBADID)
+        if (PIOc_def_var_endian(ncid + TEST_VAL_42, 0, 1) != PIO_EBADID)
             ERR(ERR_AWFUL);
-        if (PIOc_def_var_deflate(ncid + 1, 0, 0, 0, 0) != PIO_EBADID)
+        if (PIOc_def_var_deflate(ncid + TEST_VAL_42, 0, 0, 0, 0) != PIO_EBADID)
             ERR(ERR_AWFUL);
-        if (PIOc_inq_var_endian(ncid + 1, 0, &endianness) != PIO_EBADID)
+        if (PIOc_inq_var_endian(ncid + TEST_VAL_42, 0, &endianness) != PIO_EBADID)
             ERR(ERR_AWFUL);
-        if (PIOc_set_var_chunk_cache(ncid + 1, 0, VAR_CACHE_SIZE, VAR_CACHE_NELEMS,
+        if (PIOc_set_var_chunk_cache(ncid + TEST_VAL_42, 0, VAR_CACHE_SIZE, VAR_CACHE_NELEMS,
                                      VAR_CACHE_PREEMPTION) != PIO_EBADID)
             ERR(ERR_AWFUL);
-        if (PIOc_get_var_chunk_cache(ncid + 1, 0, &var_cache_size, &var_cache_nelems,
+        if (PIOc_get_var_chunk_cache(ncid + TEST_VAL_42, 0, &var_cache_size, &var_cache_nelems,
                                      &var_cache_preemption) != PIO_EBADID)
             ERR(ERR_AWFUL);
-        if (PIOc_set_chunk_cache(iosysid + 1, flavor[fmt], chunk_cache_size, chunk_cache_nelems,
+        if (PIOc_set_chunk_cache(iosysid + TEST_VAL_42, flavor[fmt], chunk_cache_size, chunk_cache_nelems,
                                  chunk_cache_preemption) != PIO_EBADID)
             ERR(ERR_AWFUL);
-        if (PIOc_get_chunk_cache(iosysid + 1, flavor[fmt], &chunk_cache_size,
+        if (PIOc_get_chunk_cache(iosysid + TEST_VAL_42, flavor[fmt], &chunk_cache_size,
                                  &chunk_cache_nelems, &chunk_cache_preemption) != PIO_EBADID)
             ERR(ERR_AWFUL);
+
+        if (flavor[fmt] == PIO_IOTYPE_NETCDF4C || flavor[fmt] == PIO_IOTYPE_NETCDF4P)
+        {
+            if (PIOc_def_var_chunking(ncid, TEST_VAL_42, NC_CHUNKED, chunksize) != PIO_ENOTVAR)
+                ERR(ERR_AWFUL);
+            if (PIOc_inq_var_chunking(ncid, TEST_VAL_42, &storage, my_chunksize) != PIO_ENOTVAR)
+                ERR(ERR_AWFUL);
+            if (PIOc_set_var_chunk_cache(ncid, TEST_VAL_42, VAR_CACHE_SIZE, VAR_CACHE_NELEMS,
+                                         VAR_CACHE_PREEMPTION) != PIO_ENOTVAR)
+                ERR(ERR_AWFUL);
+            if (PIOc_get_var_chunk_cache(ncid, TEST_VAL_42, &var_cache_size, &var_cache_nelems,
+                                         &var_cache_preemption) != PIO_ENOTVAR)
+                ERR(ERR_AWFUL);
+        }
+        else
+        {
+            printf("my ret = %d\n", PIOc_def_var_chunking(ncid, TEST_VAL_42, NC_CHUNKED, chunksize));
+            if (PIOc_def_var_chunking(ncid, TEST_VAL_42, NC_CHUNKED, chunksize) != PIO_ENOTNC4)
+                ERR(ERR_AWFUL);
+            if (PIOc_inq_var_chunking(ncid, TEST_VAL_42, &storage, my_chunksize) != PIO_ENOTNC4)
+                ERR(ERR_AWFUL);
+        }
 
         /* For netCDF-4 files, set the chunksize to improve performance. */
         if (flavor[fmt] == PIO_IOTYPE_NETCDF4C || flavor[fmt] == PIO_IOTYPE_NETCDF4P)
