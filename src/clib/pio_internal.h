@@ -230,6 +230,9 @@ extern "C" {
 
     int compute_maxaggregate_bytes(iosystem_desc_t *ios, io_desc_t *iodesc);
 
+    /* Compute an element of start/count arrays. */
+    void computestartandcount(int gdim, int ioprocs, int rank, PIO_Offset *start,
+                              PIO_Offset *count);
     /* Announce a memory error with bget memory, and die. */
     void piomemerror(iosystem_desc_t *ios, size_t req, char *fname, int line);
 
