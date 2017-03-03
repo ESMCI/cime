@@ -1690,14 +1690,6 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
         return check_mpi(NULL, ret, __FILE__, __LINE__);
     LOG((3, "created component MPI group - group[%d] = %d", 0, group[0]));
 
-    /* Is this process in the IO component? */
-    int in_cmp = 0;
-    for (pidx = 0; pidx < num_io_procs; pidx++)
-        if (my_rank == my_io_proc_list[pidx])
-            break;
-    in_cmp = (pidx == num_io_procs) ? 0 : 1;
-    LOG((3, "pidx = %d num_io_procs = %d in_cmp = %d", pidx, 0, num_io_procs, in_cmp));
-
     /* For each computation component. */
     for (int cmp = 1; cmp < component_count + 1; cmp++)
     {
@@ -1755,13 +1747,13 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
         if ((ret = MPI_Group_incl(world_group, nprocs_union, proc_list_union,
                                   &union_group[cmp - 1])))
             return check_mpi(NULL, ret, __FILE__, __LINE__);
-        LOG((3, "created union MPI_group - union_group[%d] = %d with %d procs", cmp, union_group[cmp-1], nprocs_union));
+        LOG((3, "created union MPI_group - union_group[%d] = %d with %d procs", cmp,
+             union_group[cmp - 1], nprocs_union));
 
         /* Remember whether this process is in the IO component. */
         my_iosys->ioproc = in_io;
 
-        /* Is this process in this computation component (which is the
-         * IO component if cmp == 0)? */
+        /* Is this process in this computation component? */
         int in_cmp = 0;
         for (pidx = 0; pidx < num_procs_per_comp[cmp]; pidx++)
             if (my_rank == my_proc_list[cmp][pidx])
@@ -1860,7 +1852,7 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
         /* Add this id to the list of PIO iosystem ids. */
         iosysidp[cmp - 1] = pio_add_to_iosystem_list(my_iosys);
         LOG((2, "new iosys ID added to iosystem_list iosysid = %d\n", iosysidp[cmp - 1]));
-    }
+    } /* next computational component */
 
     /* Now call the function from which the IO tasks will not return
      * until the PIO_MSG_EXIT message is sent. This will handle all
