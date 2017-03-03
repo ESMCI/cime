@@ -1741,7 +1741,7 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
         
         /* Add proc numbers from computation component. */
         for (int p = 0; p < num_procs_per_comp[cmp]; p++)
-            proc_list_union[p + num_procs_per_comp[0]] = my_proc_list[cmp][p];
+            proc_list_union[p + num_io_procs] = my_proc_list[cmp][p];
         
         /* Create the union group. */
         if ((ret = MPI_Group_incl(world_group, nprocs_union, proc_list_union,
@@ -1832,8 +1832,7 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
                 LOG((3, "about to create intercomm for IO component to cmp = %d "
                      "my_iosys->io_comm = %d", cmp, my_iosys->io_comm));
                 if ((ret = MPI_Intercomm_create(my_iosys->io_comm, 0, my_iosys->union_comm,
-                                                my_proc_list[cmp][0], 0,
-                                                &my_iosys->intercomm)))
+                                                my_proc_list[cmp][0], 0, &my_iosys->intercomm)))
                     return check_mpi(NULL, ret, __FILE__, __LINE__);
             }
             else
@@ -1842,8 +1841,7 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
                 LOG((3, "about to create intercomm for cmp = %d my_iosys->comp_comm = %d", cmp,
                      my_iosys->comp_comm));
                 if ((ret = MPI_Intercomm_create(my_iosys->comp_comm, 0, my_iosys->union_comm,
-                                                my_proc_list[0][0], 0,
-                                                &my_iosys->intercomm)))
+                                                my_io_proc_list[0], 0, &my_iosys->intercomm)))
                     return check_mpi(NULL, ret, __FILE__, __LINE__);
             }
             LOG((3, "intercomm created for cmp = %d", cmp));
