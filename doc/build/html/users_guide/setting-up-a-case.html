@@ -97,7 +97,7 @@
 <span id="id1"></span><h1>3. Setting up a Case<a class="headerlink" href="#setting-up-a-case" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="calling-case-setup">
 <h2>3.1. Calling <strong>case.setup</strong><a class="headerlink" href="#calling-case-setup" title="Permalink to this headline">¶</a></h2>
-<p>After creating a case, you need to call the <strong>case.setup</strong> command from <code class="docutils literal"><span class="pre">$CASEROOT</span></code>.
+<p>After creating a case or changing aspects of the case such as the pe-layout, you need to call the <strong>case.setup</strong> command from <code class="docutils literal"><span class="pre">$CASEROOT</span></code>.
 To see the options to <strong>case.setup</strong> use the <code class="docutils literal"><span class="pre">--help</span></code> option.</p>
 <p>Calling <code class="docutils literal"><span class="pre">case.setup</span></code> creates the following <strong>additional</strong> files and directories in <code class="docutils literal"><span class="pre">$CASEROOT</span></code>:</p>
 <blockquote>
@@ -115,9 +115,10 @@ Calling <strong>case.setup &#8211;clean</strong> will remove this file.</p>
 </tr>
 <tr class="row-even"><td>Macros.make</td>
 <td><p class="first">File containing machine-specific makefile directives for your target platform/compiler.</p>
-<p>This is only created the <em>first</em> time that <strong>case.setup</strong> is called.</p>
-<p>This file can be modified by the user, but we do not recommend it.</p>
-<p class="last">Calling <strong>case.setup -clean</strong> will not remove the Macros file once it has been created.</p>
+<p>This file is only created if it does not already exist in the case is called.</p>
+<p>This file can be modified by the user to change certain aspects of the build such as compiler flags.</p>
+<p class="last">Calling <strong>case.setup -clean</strong> will not remove the Macros.make file once it has been created.
+However if you remove or rename the Macros.make file case.setup will recreate it for you.</p>
 </td>
 </tr>
 <tr class="row-odd"><td>user_nl_xxx[_NNNN] files</td>
@@ -139,10 +140,10 @@ be overwritten at build time and run time.</p>
 </tr>
 <tr class="row-odd"><td>.env_mach_specific.[cs,sh]</td>
 <td>Files summarizing the module load commands and environment variables that are set when the scripts in <code class="docutils literal"><span class="pre">$CASEROOT</span></code> are called.
-<strong>TODO:</strong> can or should users invoke this?</td>
+These files are not used by the case but can be useful for debugging case module load and environment settings.</td>
 </tr>
 <tr class="row-even"><td>software_environment.txt</td>
-<td><strong>TODO:</strong> FILL THIS IN.</td>
+<td>This file records some aspects of the computing system the case is built on, such as the shell environment.</td>
 </tr>
 </tbody>
 </table>

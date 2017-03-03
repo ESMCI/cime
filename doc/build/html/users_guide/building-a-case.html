@@ -103,10 +103,10 @@
 <ol class="arabic simple">
 <li>Create the component namelists in <code class="docutils literal"><span class="pre">$RUNDIR</span></code> and <code class="docutils literal"><span class="pre">$CASEROOT/CaseDocs</span></code>.</li>
 <li>Create the necessary utility libraries for <code class="docutils literal"><span class="pre">mct</span></code>, <code class="docutils literal"><span class="pre">pio</span></code>, <code class="docutils literal"><span class="pre">gptl</span></code> and <code class="docutils literal"><span class="pre">csm_share</span></code>.
-These will be placed in <code class="docutils literal"><span class="pre">$EXEROOT/bld/lib</span></code>.</li>
+These will be placed in a path below <code class="docutils literal"><span class="pre">$SHAREDLIBROOT</span></code>.</li>
 <li>Create the necessary component libraries.
-These will also be placed in <code class="docutils literal"><span class="pre">$EXEROOT/bld/lib</span></code>.</li>
-<li>Create the model executable (either <code class="docutils literal"><span class="pre">cesm.exe</span></code> or <code class="docutils literal"><span class="pre">acme.exe</span></code>).
+These will be placed in <code class="docutils literal"><span class="pre">$EXEROOT/bld/lib</span></code>.</li>
+<li>Create the model executable (<code class="docutils literal"><span class="pre">$MODEL.exe</span></code>).
 This will be placed in <code class="docutils literal"><span class="pre">$EXEROOT</span></code>.</li>
 </ol>
 <p><code class="docutils literal"><span class="pre">$CASEROOT/Tools/Makefile</span></code> and <code class="docutils literal"><span class="pre">$CASEROOT/Macros.make</span></code> are used to generate the utility libraries, the component libraries and the model executable.
@@ -134,27 +134,29 @@ If they are compressed (indicated by a .gz file extension), then the build ran s
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">atm</span><span class="o">/</span><span class="p">,</span> <span class="n">cpl</span><span class="o">/</span><span class="p">,</span> <span class="n">esp</span><span class="o">/</span><span class="p">,</span> <span class="n">glc</span><span class="o">/</span><span class="p">,</span> <span class="n">ice</span><span class="o">/</span><span class="p">,</span> <span class="n">intel</span><span class="o">/</span><span class="p">,</span> <span class="n">lib</span><span class="o">/</span><span class="p">,</span> <span class="n">lnd</span><span class="o">/</span><span class="p">,</span> <span class="n">ocn</span><span class="o">/</span><span class="p">,</span> <span class="n">rof</span><span class="o">/</span><span class="p">,</span> <span class="n">wav</span><span class="o">/</span>
 </pre></div>
 </div>
-<p>All of the above directories, other than <code class="docutils literal"><span class="pre">intel/</span></code> and <code class="docutils literal"><span class="pre">lib/</span></code>, each contain an <code class="docutils literal"><span class="pre">obj/</span></code> directory where the compiled object files for the target model component is placed.
-These object files are collected into libraries that are placed in <code class="docutils literal"><span class="pre">lib/</span></code> along with the <code class="docutils literal"><span class="pre">mct</span></code>, <code class="docutils literal"><span class="pre">pio</span></code>, <code class="docutils literal"><span class="pre">gptl</span></code>, and <code class="docutils literal"><span class="pre">csm_share</span></code> libraries.
+<p>All of the above directories, other than <code class="docutils literal"><span class="pre">intel/</span></code> and <code class="docutils literal"><span class="pre">lib/</span></code>, each contain an <code class="docutils literal"><span class="pre">obj/</span></code> directory where the compiled object files for the target model component are placed.
+These object files are collected into libraries that are placed in <code class="docutils literal"><span class="pre">lib/</span></code>.
+The <code class="docutils literal"><span class="pre">mct</span></code>, <code class="docutils literal"><span class="pre">pio</span></code>, <code class="docutils literal"><span class="pre">gptl</span></code>, and <code class="docutils literal"><span class="pre">csm_share</span></code> libraries are placed in a directory tree reflecting dependancies, see the bldlog for a given component to locate the library for that component.
 Special include modules are also placed in <code class="docutils literal"><span class="pre">lib/include</span></code>. The model executable (either <code class="docutils literal"><span class="pre">cesm.exe</span></code> or <code class="docutils literal"><span class="pre">acme.exe</span></code>) is placed directly in <code class="docutils literal"><span class="pre">$EXEROOT</span></code>.
-On the other hand, component namelists, component logs, output datasets, and restart files are placed in <code class="docutils literal"><span class="pre">$RUNDIR</span></code>.
+Component namelists, component logs, output datasets, and restart files are placed in <code class="docutils literal"><span class="pre">$RUNDIR</span></code>.
 It is important to note that <code class="docutils literal"><span class="pre">$RUNDIR</span></code> and <code class="docutils literal"><span class="pre">$EXEROOT</span></code> are independent variables which are set <code class="docutils literal"><span class="pre">$CASEROOT/env_run.xml</span></code>.</p>
 <p>All active and data components use input datasets.
 A local disk needs <code class="docutils literal"><span class="pre">$DIN_LOC_ROOT</span></code> to be populated with input data in order to run CIME and the CIME complaint prognostic components.
 Input data is provided as part of the CIME release via data from the subversion input data server.
-However, on supported machines (and some non-supported machines), data already exists in the default local filesystem input data area as specified by <code class="docutils literal"><span class="pre">$DIN_LOC_ROOT</span></code> (see below).</p>
+Data is downloaded from the server on an as needed basis determined by the case, data may already exists in the default local filesystem input data area as specified by <code class="docutils literal"><span class="pre">$DIN_LOC_ROOT</span></code> (see below).
+There is an extensive amount of input data available and it can take significant space on a system, it is recommended that users share a common <code class="docutils literal"><span class="pre">$DIN_LOC_ROOT</span></code> directory on each system if possible.</p>
 <p>Input data is handled by the build process as follows:</p>
 <ul class="simple">
 <li>The buildnml scripts in <code class="docutils literal"><span class="pre">Buildconf/</span></code> create listings of required component input datasets in the <code class="docutils literal"><span class="pre">Buildconf/$component.input_data_list</span></code> files.</li>
-<li><code class="docutils literal"><span class="pre">case.build</span></code> checks for the presence of the required input data files in the root directory <code class="docutils literal"><span class="pre">$DIN_LOC_ROOT</span></code>. If all required data sets are found on local disk, then the build can proceed.</li>
-<li>If any of the required input data sets are not found, the build script will abort and the files that are missing will be listed. At this point, you must obtain the required data from the input data server using check_input_data with the -export option.</li>
+<li><code class="docutils literal"><span class="pre">check_input_data</span></code> (called by <code class="docutils literal"><span class="pre">case.build</span></code>) checks for the presence of the required input data files in the root directory <code class="docutils literal"><span class="pre">$DIN_LOC_ROOT</span></code>. If all required data sets are found on local disk, then the build can proceed.</li>
+<li>If any of the required input data sets are not found locally, the build script will abort and the files that are missing will be listed. At this point, you must obtain the required data from the input data server using check_input_data with the -export option.</li>
 </ul>
 <p>The <code class="docutils literal"><span class="pre">env_run.xml</span></code> variables <code class="docutils literal"><span class="pre">DIN_LOC_ROOT</span></code> and <code class="docutils literal"><span class="pre">DIN_LOC_ROOT_CLMFORC</span></code> determine where you should expect input data to reside on local disk. See the <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">input data variables</a>.</p>
 </div>
 <div class="section" id="rebuilding-the-model">
 <h2>4.2. Rebuilding the model<a class="headerlink" href="#rebuilding-the-model" title="Permalink to this headline">¶</a></h2>
 <p>You should rebuild the model under the following circumstances:</p>
-<p>If either <code class="docutils literal"><span class="pre">env_build.xml</span></code> or <code class="docutils literal"><span class="pre">Macros</span></code> has been modified, and/or if code is added to <code class="docutils literal"><span class="pre">SourceMods/src.*</span></code>, then it&#8217;s safest to clean the build and rebuild from scratch as follows,</p>
+<p>If either <code class="docutils literal"><span class="pre">env_build.xml</span></code> or <code class="docutils literal"><span class="pre">Macros.make</span></code> has been modified, and/or if code is added to <code class="docutils literal"><span class="pre">SourceMods/src.*</span></code>, then it&#8217;s safest to clean the build and rebuild from scratch as follows,</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span>&gt; cd $CASEROOT
 &gt; ./case.build --clean
 </pre></div>
@@ -181,6 +183,9 @@ However, on supported machines (and some non-supported machines), data already e
 </div>
 <p>and suggest that the model be rebuilt from scratch.</p>
 <p>You are responsible for manually rebuilding the model when needed. If there is any doubt, you should rebuild.</p>
+<p><code class="docutils literal"><span class="pre">case.build</span> <span class="pre">--clean</span></code> will clean all of the model components but not the support libraries such as mct and gptl.
+Use <code class="docutils literal"><span class="pre">case.build</span> <span class="pre">--clean-all</span></code> to clean everything associated with the build.
+You can also clean a specific component only using <code class="docutils literal"><span class="pre">case.build</span> <span class="pre">--clean</span> <span class="pre">compname</span></code> where compname is the name of the component you want to clean (eg &#8216;atm&#8217;, &#8216;clm&#8217;, &#8216;pio&#8217; ...) see <a href="#id2"><span class="problematic" id="id3">``</span></a>case.build &#8211;help `` for details.</p>
 </div>
 </div>
 

@@ -110,11 +110,11 @@
 </div>
 <p>CIME supports out of the box <code class="docutils literal"><span class="pre">component</span> <span class="pre">sets</span></code>, <code class="docutils literal"><span class="pre">model</span> <span class="pre">grids</span></code> and <code class="docutils literal"><span class="pre">hardware</span> <span class="pre">platforms</span></code>.</p>
 <ul class="simple">
-<li>Component sets (usually referred to as compsets) define both the specific model components that will be used in a given CIME configuration, <em>and</em> any component-specific namelist or configuration settings that are specific to this configuration.</li>
+<li>Component sets (usually referred to as compsets) define both the specific model components that will be used in a CIME case, <em>and</em> any component-specific namelist or configuration settings that are specific to this case.</li>
 <li>Model grids specify the grid for each component making up the model.</li>
 <li>At a minimum creating a CIME experiment requires specifying a component set and a model grid.</li>
 <li>Out of the box compsets and models grids are associated with two names: a longname and an alias name.</li>
-<li>Aliases are required by the CIME regression test system but can also be used for user convenience. Compset aliases are unique - each compset alias is associated with one and only one compset. Grid aliases, on the other hand, are overloaded and the same grid alias may result in a different grid based depending on the compset the alias is associated with. We recommend that the user always confirm that the compset longname and grid longname are the expected result when using aliases to create a case.</li>
+<li>Aliases are required by the CIME regression test system but can also be used for user convenience. Compset aliases are unique - each compset alias is associated with one and only one compset. Grid aliases, on the other hand, are overloaded and the same grid alias may result in a different grid depending on the compset the alias is associated with. We recommend that the user always confirm that the compset longname and grid longname are the expected result when using aliases to create a case.</li>
 </ul>
 <div class="section" id="component-set-naming-convention">
 <h3>2.1.1. Component Set Naming Convention<a class="headerlink" href="#component-set-naming-convention" title="Permalink to this headline">¶</a></h3>
@@ -156,15 +156,15 @@
 <span class="n">The</span> <span class="n">OPTIONAL</span> <span class="o">%</span><span class="n">phys</span> <span class="n">attributes</span> <span class="n">specify</span> <span class="n">sub</span><span class="o">-</span><span class="n">modes</span> <span class="n">of</span> <span class="n">the</span> <span class="n">given</span> <span class="n">system</span>
 <span class="n">For</span> <span class="n">example</span> <span class="n">DOCN</span><span class="o">%</span><span class="n">DOM</span> <span class="ow">is</span> <span class="n">the</span> <span class="n">DOCN</span> <span class="n">data</span> <span class="n">ocean</span> <span class="p">(</span><span class="n">rather</span> <span class="n">than</span> <span class="n">slab</span><span class="o">-</span><span class="n">ocean</span><span class="p">)</span> <span class="n">mode</span><span class="o">.</span>
 <span class="n">ALL</span> <span class="n">the</span> <span class="n">possible</span> <span class="o">%</span><span class="n">phys</span> <span class="n">choices</span> <span class="k">for</span> <span class="n">each</span> <span class="n">component</span> <span class="n">are</span> <span class="n">listed</span> <span class="n">by</span>
-<span class="n">the</span> <span class="n">calling</span> <span class="o">**</span><span class="n">manage_case</span><span class="o">**</span> <span class="k">with</span> <span class="n">the</span> <span class="o">**-</span><span class="nb">list</span><span class="o">**</span> <span class="n">compsets</span> <span class="n">argument</span><span class="o">.</span>
-<span class="n">ALL</span> <span class="n">data</span> <span class="n">models</span> <span class="n">now</span> <span class="n">have</span> <span class="n">a</span> <span class="o">%</span><span class="n">phys</span> <span class="n">option</span> <span class="n">that</span> <span class="n">corresponds</span> <span class="n">to</span> <span class="n">the</span> <span class="n">data</span> <span class="n">model</span> <span class="n">mode</span><span class="o">.</span>
+<span class="n">calling</span> <span class="o">**</span><span class="n">manage_case</span><span class="o">**</span> <span class="k">with</span> <span class="n">the</span> <span class="o">**-</span><span class="nb">list</span><span class="o">**</span> <span class="n">compsets</span> <span class="n">argument</span><span class="o">.</span>
+<span class="n">ALL</span> <span class="n">data</span> <span class="n">models</span> <span class="n">have</span> <span class="n">a</span> <span class="o">%</span><span class="n">phys</span> <span class="n">option</span> <span class="n">that</span> <span class="n">corresponds</span> <span class="n">to</span> <span class="n">the</span> <span class="n">data</span> <span class="n">model</span> <span class="n">mode</span><span class="o">.</span>
 </pre></div>
 </div>
 <p>As an example, the CESM compset longname:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="mi">1850</span><span class="n">_CAM60_CLM50</span><span class="o">%</span><span class="n">BGC_CICE_POP2</span><span class="o">%</span><span class="n">ECO_MOSART_CISM2</span><span class="o">%</span><span class="n">NOEVOLVE_WW3_BGC</span><span class="o">%</span><span class="n">BDRD</span>
 </pre></div>
 </div>
-<p>refers to running a pre-industrial control with prognostic CESM components CAM, CLM, CICE, POP2, MOSART, CISM2 and WW3 a BDRD BGC coupling scenario.
+<p>refers to running a pre-industrial control with prognostic CESM components CAM, CLM, CICE, POP2, MOSART, CISM2 and WW3 in a BDRD BGC coupling scenario.
 The alias for this compset is B1850. Either a compset longname or a compset alias can be used as input to <strong>create_newcase</strong>.
 It is also possible to create your own custom compset (see <cite>How do I create my own compset? in the FAQ</cite>)</p>
 </div>
@@ -204,7 +204,7 @@ The alias for this grid is ne30_g16. Either the grid longname or alias can be us
 <li>&#8220;Tnn&#8221; are spectral lon/lat grids where nn is the spectral truncation value for the resolution. The shorthand name is identical. An example is T85.</li>
 <li>&#8220;ne[X]np[Y]&#8221; are cubed sphere resolutions where X and Y are integers. The short name is generally ne[X]. An example is ne30np4 or ne30.</li>
 <li>&#8220;pt1&#8221; is a single grid point.</li>
-<li>&#8220;gx[D]v[n]&#8221; is a displaced pole grid where D is the approximate resolution in degrees and n is the grid version. The short name is generally g[D][n]. An example is gx1v6 or g16 for a grid of approximately 1-degree resolution.</li>
+<li>&#8220;gx[D]v[n]&#8221; is a displaced pole grid where D is the approximate resolution in degrees and n is the grid version. The short name is generally g[D][n]. An example is gx1v7 or g17 for a grid of approximately 1-degree resolution.</li>
 <li>&#8220;tx[D]v[n]&#8221; is a tripole grid where D is the approximate resolution in degrees and n is the grid version.</li>
 </ul>
 </div>
@@ -231,8 +231,8 @@ In what follows, <code class="docutils literal"><span class="pre">$CIMEROOT</spa
 <blockquote>
 <div><table border="1" class="docutils">
 <colgroup>
-<col width="14%" />
-<col width="86%" />
+<col width="9%" />
+<col width="91%" />
 </colgroup>
 <tbody valign="top">
 <tr class="row-odd"><td>case.setup&#8221;</td>
@@ -247,17 +247,11 @@ In what follows, <code class="docutils literal"><span class="pre">$CIMEROOT</spa
 <tr class="row-even"><td>case.lt_archive</td>
 <td>Script to perform long-term archiving of output data</td>
 </tr>
-<tr class="row-odd"><td>case.setup</td>
-<td>Script used to set up the case (create the case.run script, the Macros file and user_nl_xxx files)&#8221;</td>
-</tr>
-<tr class="row-even"><td>case.build</td>
-<td>Script to build component and utility libraries and model executable.&#8221;</td>
-</tr>
 <tr class="row-odd"><td>xmlchange</td>
-<td>Script for modifying values in the xml files</td>
+<td>Script to modify values in the xml files</td>
 </tr>
 <tr class="row-even"><td>xmlquery</td>
-<td>Script for query values in the xml files</td>
+<td>Script to query values in the xml files</td>
 </tr>
 <tr class="row-odd"><td>preview_namelists</td>
 <td><p class="first">Script for users to see their component namelists in <code class="docutils literal"><span class="pre">$CASEROOT/CaseDocs</span></code> before running the model</p>
@@ -267,6 +261,9 @@ In what follows, <code class="docutils literal"><span class="pre">$CIMEROOT</spa
 </tr>
 <tr class="row-even"><td>check_input_data</td>
 <td>Script for checking  for various input datasets and moves them into place.&#8221;</td>
+</tr>
+<tr class="row-odd"><td>pelayout</td>
+<td>Script to query and modify the NTASKS, ROOTPE, and NTHRDS for each component model.  This a convenience script that can be used in place of xmlchange and xmlquery.</td>
 </tr>
 </tbody>
 </table>
@@ -282,8 +279,7 @@ In what follows, <code class="docutils literal"><span class="pre">$CIMEROOT</spa
 <tbody valign="top">
 <tr class="row-odd"><td>env_mach_specific.xml</td>
 <td><p class="first">Sets a number of machine-specific environment variables for building and/or running.</p>
-<p>Although you can edit this at any time, env_build.xml variables should not be edited</p>
-<p class="last">after a <strong>case.build</strong> is invoked</p>
+<p class="last">You can edit this file at any time.</p>
 </td>
 </tr>
 <tr class="row-even"><td>env_case.xml</td>
@@ -294,7 +290,8 @@ In what follows, <code class="docutils literal"><span class="pre">$CIMEROOT</spa
 </tr>
 <tr class="row-odd"><td>env_build.xml</td>
 <td><p class="first">Sets model build settings.</p>
-<p class="last">This includes component resolutions and component compile-time configuration options</p>
+<p class="last">This includes component resolutions and component compile-time configuration options.
+You must run the case.build command after changing this file.</p>
 </td>
 </tr>
 <tr class="row-even"><td>env_mach_pes.xml</td>
@@ -304,8 +301,11 @@ In what follows, <code class="docutils literal"><span class="pre">$CIMEROOT</spa
 </tr>
 <tr class="row-odd"><td>env_run.xml</td>
 <td><p class="first">Sets run-time settings such as length of run, frequency of restarts, output of coupler diagnostics,</p>
-<p class="last">and short-term and long-term archiving.</p>
+<p class="last">and short-term and long-term archiving.  This file can be edited at any time before a job starts.</p>
 </td>
+</tr>
+<tr class="row-even"><td>env_batch.xml</td>
+<td>Sets batch system specific settings such as wallclock time and queue name.</td>
 </tr>
 </tbody>
 </table>
@@ -373,16 +373,16 @@ you can place modified source code for that component.&#8221;</td>
 </div></blockquote>
 </li>
 </ul>
-<p>In CIME, the <code class="docutils literal"><span class="pre">$CASEROOT</span></code> xml files are organized so that variables can be locked after different phases of the <strong>create_newcase</strong>, <strong>case.setup</strong>.
+<p>In CIME, the <code class="docutils literal"><span class="pre">$CASEROOT</span></code> xml files are organized so that variables can be locked after different phases of the <strong>create_newcase</strong> and <strong>case.setup</strong>.
 Locking these files prevents users from changing variables after they have been resolved (used) in other parts of the scripts system. CIME locking currently does the following:
-- variables in <code class="docutils literal"><span class="pre">env_case.xml</span></code> are locked when <strong>create_newcase</strong>.
-- variables in <code class="docutils literal"><span class="pre">env_mach_pes.xml</span></code> are locked when <strong>case.setup</strong> is called.
-- variables in <code class="docutils literal"><span class="pre">env_build.xml</span></code> locked after a successful completion of <strong>case.build</strong>.
-- variables in <code class="docutils literal"><span class="pre">env_run.xml</span></code>, <code class="docutils literal"><span class="pre">env_batch.xml</span></code> and <code class="docutils literal"><span class="pre">env_archive.xml</span></code> variables are never locked and can be changed anytime.</p>
+- variables in <code class="docutils literal"><span class="pre">env_case.xml</span></code> are locked after <strong>create_newcase</strong>.
+- variables in <code class="docutils literal"><span class="pre">env_mach_pes.xml</span></code> are locked after <strong>case.setup</strong>.
+- variables in <code class="docutils literal"><span class="pre">env_build.xml</span></code> are locked after completion of <strong>case.build</strong>.
+- variables in <code class="docutils literal"><span class="pre">env_run.xml</span></code>, <code class="docutils literal"><span class="pre">env_batch.xml</span></code> and <code class="docutils literal"><span class="pre">env_archive.xml</span></code> variables are never locked and most can be changed at anytime.  There are some exceptions in the env_batch.xml file.</p>
 <p>These files can be &#8220;unlocked&#8221; as follows.
 - <code class="docutils literal"><span class="pre">env_case.xml</span> <span class="pre">can</span> <span class="pre">never</span> <span class="pre">by</span> <span class="pre">unlocked</span></code>
 - <strong>case.setup &#8211;clean</strong> unlocks <code class="docutils literal"><span class="pre">env_mach_pes.xml</span></code>
-- <strong>case.build &#8211;clean</strong> unlcoks <code class="docutils literal"><span class="pre">env_build.xml</span></code></p>
+- <strong>case.build &#8211;clean</strong> unlocks <code class="docutils literal"><span class="pre">env_build.xml</span></code></p>
 </div>
 </div>
 </div>

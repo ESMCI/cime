@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>4. Data Atmosphere (DATM) &#8212; on  documentation</title>
+    <title>5. Data Atmosphere (DATM) &#8212; on  documentation</title>
     
     <link rel="stylesheet" href="../_static/bizstyle.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -28,8 +28,8 @@
     <script type="text/javascript" src="../_static/bizstyle.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="5. Data Land (DLND)" href="data-lnd.html" />
-    <link rel="prev" title="3. Data Model Science" href="data-model-science.html" />
+    <link rel="next" title="6. Data Land (DLND)" href="data-lnd.html" />
+    <link rel="prev" title="4. Data Model Science" href="data-model-science.html" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <!--[if lt IE 9]>
     <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
@@ -43,10 +43,10 @@
           <a href="../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="data-lnd.html" title="5. Data Land (DLND)"
+          <a href="data-lnd.html" title="6. Data Land (DLND)"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="data-model-science.html" title="3. Data Model Science"
+          <a href="data-model-science.html" title="4. Data Model Science"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">on  documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">CIME Data Models</a> &#187;</li> 
@@ -56,22 +56,22 @@
         <div class="sphinxsidebarwrapper">
   <h3><a href="../index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">4. Data Atmosphere (DATM)</a><ul>
-<li><a class="reference internal" href="#namelists">4.1. Namelists</a></li>
-<li><a class="reference internal" href="#xml-variables">4.2. XML variables</a></li>
-<li><a class="reference internal" href="#datamode-values">4.3. Datamode values</a></li>
-<li><a class="reference internal" href="#datamode-independent-streams">4.4. Datamode independent streams</a></li>
-<li><a class="reference internal" href="#fields">4.5. Fields</a></li>
+<li><a class="reference internal" href="#">5. Data Atmosphere (DATM)</a><ul>
+<li><a class="reference internal" href="#namelists">5.1. Namelists</a></li>
+<li><a class="reference internal" href="#xml-variables">5.2. XML variables</a></li>
+<li><a class="reference internal" href="#datamode-values">5.3. Datamode values</a></li>
+<li><a class="reference internal" href="#datamode-independent-streams">5.4. Datamode independent streams</a></li>
+<li><a class="reference internal" href="#fields">5.5. Fields</a></li>
 </ul>
 </li>
 </ul>
 
   <h4>Previous topic</h4>
   <p class="topless"><a href="data-model-science.html"
-                        title="previous chapter">3. Data Model Science</a></p>
+                        title="previous chapter">4. Data Model Science</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="data-lnd.html"
-                        title="next chapter">5. Data Land (DLND)</a></p>
+                        title="next chapter">6. Data Land (DLND)</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -98,14 +98,14 @@
           <div class="body" role="main">
             
   <div class="section" id="data-atmosphere-datm">
-<span id="data-atm"></span><h1>4. Data Atmosphere (DATM)<a class="headerlink" href="#data-atmosphere-datm" title="Permalink to this headline">¶</a></h1>
+<span id="data-atm"></span><h1>5. Data Atmosphere (DATM)<a class="headerlink" href="#data-atmosphere-datm" title="Permalink to this headline">¶</a></h1>
 <p>DATM is normally used to provide observational forcing data (or forcing data produced by a previous run using active components) to drive prognostic components.
 In the case of CESM, these would be: CLM (I compset), POP2 (C compset), and POP2/CICE (G compset).
 As a result, DATM variable settings are specific to the compset that will be targeted.
 As examples, CORE2_NYF (CORE2 normal year forcing) is the DATM mode used in C and G compsets.
 CLM_QIAN, CLMCRUNCEP, CLMGSWP3 and CLM1PT are DATM modes using observational data for forcing CLM in I compsets.</p>
 <div class="section" id="namelists">
-<h2>4.1. Namelists<a class="headerlink" href="#namelists" title="Permalink to this headline">¶</a></h2>
+<h2>5.1. Namelists<a class="headerlink" href="#namelists" title="Permalink to this headline">¶</a></h2>
 <p>The DATM namelist file is <code class="docutils literal"><span class="pre">datm_in</span></code> (or <code class="docutils literal"><span class="pre">datm_in_NNN</span></code> for multiple instances). DATM namelists can be separated into two groups: <em>stream-independent</em> namelist variables that are specific to the DATM model and <em>stream-specific</em> namelist variables whose names are common to all the data models.</p>
 <p>Stream dependent input is in the namelist group <code class="docutils literal"><span class="pre">&quot;shr_strdata_nml</span></code> which is discussed in <a class="reference internal" href="input-streams.html#input-streams"><span class="std std-ref">input streams</span></a> and is the same for all data models.</p>
 <p id="datm-stream-independent-namelists">The stream-independent group is <code class="docutils literal"><span class="pre">datm_nml</span></code> and the DATM stream-independent namelist variables are:</p>
@@ -156,7 +156,7 @@ CLM_QIAN, CLMCRUNCEP, CLMGSWP3 and CLM1PT are DATM modes using observational dat
 </table>
 </div>
 <div class="section" id="xml-variables">
-<span id="datm-xml-vars"></span><h2>4.2. XML variables<a class="headerlink" href="#xml-variables" title="Permalink to this headline">¶</a></h2>
+<span id="datm-xml-vars"></span><h2>5.2. XML variables<a class="headerlink" href="#xml-variables" title="Permalink to this headline">¶</a></h2>
 <p>The following are <code class="docutils literal"><span class="pre">$CASEROOT</span></code> xml variables that CIME supports for DATM.  These variables will appear in <code class="docutils literal"><span class="pre">env_run.xml</span></code> and the resulting values are compset dependent.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
@@ -266,7 +266,7 @@ CLM_QIAN, CLMCRUNCEP, CLMGSWP3 and CLM1PT are DATM modes using observational dat
 </table>
 </div>
 <div class="section" id="datamode-values">
-<span id="datm-datamodes"></span><h2>4.3. Datamode values<a class="headerlink" href="#datamode-values" title="Permalink to this headline">¶</a></h2>
+<span id="datm-datamodes"></span><h2>5.3. Datamode values<a class="headerlink" href="#datamode-values" title="Permalink to this headline">¶</a></h2>
 <p>One of the variables in <code class="docutils literal"><span class="pre">shr_strdata_nml</span></code> is the <code class="docutils literal"><span class="pre">datamode</span></code>, whose value is a character string.
 Each data model has a unique set of <code class="docutils literal"><span class="pre">datamode</span></code> values that it supports.</p>
 <p>The valid values for <code class="docutils literal"><span class="pre">datamode</span></code> are set by the xml variable <code class="docutils literal"><span class="pre">DATM_MODE</span></code> in the <code class="docutils literal"><span class="pre">config_component.xml</span></code> file for DATM.
@@ -315,7 +315,7 @@ set to a special value.</p>
 </table>
 </div>
 <div class="section" id="datamode-independent-streams">
-<span id="datm-mode-independent-streams"></span><h2>4.4. Datamode independent streams<a class="headerlink" href="#datamode-independent-streams" title="Permalink to this headline">¶</a></h2>
+<span id="datm-mode-independent-streams"></span><h2>5.4. Datamode independent streams<a class="headerlink" href="#datamode-independent-streams" title="Permalink to this headline">¶</a></h2>
 <p>In general, each DATM datamode is identified with a unique set of streams.
 However, there are several mode-independent streams in DATM that can accompany any target datamode setting.
 Currently, these are streams associated with prescribed aerosols, co2 time series, topography, anomoly forcing and bias correction.
@@ -355,7 +355,7 @@ To add this stream, you need to add any of the following keywword/value pair to 
 </ul>
 </div>
 <div class="section" id="fields">
-<span id="datm-fields"></span><h2>4.5. Fields<a class="headerlink" href="#fields" title="Permalink to this headline">¶</a></h2>
+<span id="datm-fields"></span><h2>5.5. Fields<a class="headerlink" href="#fields" title="Permalink to this headline">¶</a></h2>
 <p>The pre-defined internal field names in the data atmosphere model are as follows. In general, the stream input file should translate the input variable names into these names for use within the data atmosphere model.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -510,10 +510,10 @@ To add this stream, you need to add any of the following keywword/value pair to 
           <a href="../genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="data-lnd.html" title="5. Data Land (DLND)"
+          <a href="data-lnd.html" title="6. Data Land (DLND)"
              >next</a> |</li>
         <li class="right" >
-          <a href="data-model-science.html" title="3. Data Model Science"
+          <a href="data-model-science.html" title="4. Data Model Science"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">on  documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" >CIME Data Models</a> &#187;</li> 

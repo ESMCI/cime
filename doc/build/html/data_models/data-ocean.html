@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>7. Data Ocean (DOCN) &#8212; on  documentation</title>
+    <title>8. Data Ocean (DOCN) &#8212; on  documentation</title>
     
     <link rel="stylesheet" href="../_static/bizstyle.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -28,8 +28,8 @@
     <script type="text/javascript" src="../_static/bizstyle.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="8. Data River (DROF)" href="data-river.html" />
-    <link rel="prev" title="6. Data Ice (DICE)" href="data-seaice.html" />
+    <link rel="next" title="9. Data River (DROF)" href="data-river.html" />
+    <link rel="prev" title="7. Data Ice (DICE)" href="data-seaice.html" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <!--[if lt IE 9]>
     <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
@@ -43,10 +43,10 @@
           <a href="../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="data-river.html" title="8. Data River (DROF)"
+          <a href="data-river.html" title="9. Data River (DROF)"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="data-seaice.html" title="6. Data Ice (DICE)"
+          <a href="data-seaice.html" title="7. Data Ice (DICE)"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">on  documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">CIME Data Models</a> &#187;</li> 
@@ -56,23 +56,23 @@
         <div class="sphinxsidebarwrapper">
   <h3><a href="../index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">7. Data Ocean (DOCN)</a><ul>
-<li><a class="reference internal" href="#namelists">7.1. Namelists</a></li>
-<li><a class="reference internal" href="#xml-variables">7.2. XML variables</a></li>
-<li><a class="reference internal" href="#datamode-values">7.3. Datamode values</a></li>
-<li><a class="reference internal" href="#datamode-independent-streams">7.4. Datamode independent streams</a></li>
-<li><a class="reference internal" href="#fields">7.5. Fields</a></li>
-<li><a class="reference internal" href="#creating-sstdata-mode-input-from-a-fully-prognostic-run-cesm-only">7.6. Creating SSTDATA mode input from a fully prognostic run (CESM only)</a></li>
+<li><a class="reference internal" href="#">8. Data Ocean (DOCN)</a><ul>
+<li><a class="reference internal" href="#namelists">8.1. Namelists</a></li>
+<li><a class="reference internal" href="#xml-variables">8.2. XML variables</a></li>
+<li><a class="reference internal" href="#datamode-values">8.3. Datamode values</a></li>
+<li><a class="reference internal" href="#datamode-independent-streams">8.4. Datamode independent streams</a></li>
+<li><a class="reference internal" href="#fields">8.5. Fields</a></li>
+<li><a class="reference internal" href="#creating-sstdata-mode-input-from-a-fully-prognostic-run-cesm-only">8.6. Creating SSTDATA mode input from a fully prognostic run (CESM only)</a></li>
 </ul>
 </li>
 </ul>
 
   <h4>Previous topic</h4>
   <p class="topless"><a href="data-seaice.html"
-                        title="previous chapter">6. Data Ice (DICE)</a></p>
+                        title="previous chapter">7. Data Ice (DICE)</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="data-river.html"
-                        title="next chapter">8. Data River (DROF)</a></p>
+                        title="next chapter">9. Data River (DROF)</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -99,7 +99,7 @@
           <div class="body" role="main">
             
   <div class="section" id="data-ocean-docn">
-<span id="data-ocean"></span><h1>7. Data Ocean (DOCN)<a class="headerlink" href="#data-ocean-docn" title="Permalink to this headline">¶</a></h1>
+<span id="data-ocean"></span><h1>8. Data Ocean (DOCN)<a class="headerlink" href="#data-ocean-docn" title="Permalink to this headline">¶</a></h1>
 <p>Data ocean can be run both as a prescribed component, simply reading in SST data from a stream, or as a prognostic slab ocean model component.</p>
 <p>The data ocean component (DOCN) always returns SSTs to the driver.
 The atmosphere/ocean fluxes are computed in the coupler.
@@ -124,7 +124,7 @@ The user then modifies the <code class="docutils literal"><span class="pre">$DOC
 <p class="last">A tool is available to derive valid <a class="reference external" href="http://www.cesm.ucar.edu/models/ccsm1.1/data8/SOM.pdf">SOM forcing</a> and more information on creating the SOM forcing is also available.</p>
 </div>
 <div class="section" id="namelists">
-<h2>7.1. Namelists<a class="headerlink" href="#namelists" title="Permalink to this headline">¶</a></h2>
+<h2>8.1. Namelists<a class="headerlink" href="#namelists" title="Permalink to this headline">¶</a></h2>
 <p>As is the case for all data models, DOCN namelists can be separated into two groups, stream-independent and stream-dependent.</p>
 <p>The namelist file for DOCN is <code class="docutils literal"><span class="pre">docn_in</span></code> (or <code class="docutils literal"><span class="pre">docn_in_NNN</span></code> for multiple instances).</p>
 <p>The stream dependent group is <a class="reference internal" href="input-streams.html#input-streams"><span class="std std-ref">shr_strdata_nml</span></a> .</p>
@@ -155,7 +155,7 @@ The user then modifies the <code class="docutils literal"><span class="pre">$DOC
 <p>To change the namelist settings in docn_in, edit the file user_nl_docn.</p>
 </div>
 <div class="section" id="xml-variables">
-<span id="docn-xml-vars"></span><h2>7.2. XML variables<a class="headerlink" href="#xml-variables" title="Permalink to this headline">¶</a></h2>
+<span id="docn-xml-vars"></span><h2>8.2. XML variables<a class="headerlink" href="#xml-variables" title="Permalink to this headline">¶</a></h2>
 <p>The following are xml variables that CIME supports for DOCN.  These variables will appear in <code class="docutils literal"><span class="pre">env_run.xml</span></code> and are used by the DOCN <code class="docutils literal"><span class="pre">cime_config/buildnml</span></code> script to generate the DOCN namelist file <code class="docutils literal"><span class="pre">docn_in</span></code> and the required associated stream files for the case.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
@@ -251,7 +251,7 @@ years 50-99 in the file will not be used.&lt;/desc&gt;</p>
 </table>
 </div>
 <div class="section" id="datamode-values">
-<span id="docn-datamodes"></span><h2>7.3. Datamode values<a class="headerlink" href="#datamode-values" title="Permalink to this headline">¶</a></h2>
+<span id="docn-datamodes"></span><h2>8.3. Datamode values<a class="headerlink" href="#datamode-values" title="Permalink to this headline">¶</a></h2>
 <p>One of the variables in <code class="docutils literal"><span class="pre">shr_strdata_nml</span></code> is the <code class="docutils literal"><span class="pre">datamode</span></code>, whose value is a character string.
 Each data model has a unique set of <code class="docutils literal"><span class="pre">datamode</span></code> values that it supports.</p>
 <p>The valid values for <code class="docutils literal"><span class="pre">datamode</span></code> are set by the xml variable <code class="docutils literal"><span class="pre">DOCN_MODE</span></code> in the <code class="docutils literal"><span class="pre">config_component.xml</span></code> file for DOCN.
@@ -288,11 +288,11 @@ IAF is the interannually varying version of SSTDATA</td>
 </table>
 </div>
 <div class="section" id="datamode-independent-streams">
-<span id="docn-mode-independent-streams"></span><h2>7.4. Datamode independent streams<a class="headerlink" href="#datamode-independent-streams" title="Permalink to this headline">¶</a></h2>
+<span id="docn-mode-independent-streams"></span><h2>8.4. Datamode independent streams<a class="headerlink" href="#datamode-independent-streams" title="Permalink to this headline">¶</a></h2>
 <p>There are no datamode independent streams for DOCN.</p>
 </div>
 <div class="section" id="fields">
-<span id="docn-fields"></span><h2>7.5. Fields<a class="headerlink" href="#fields" title="Permalink to this headline">¶</a></h2>
+<span id="docn-fields"></span><h2>8.5. Fields<a class="headerlink" href="#fields" title="Permalink to this headline">¶</a></h2>
 <p>The pre-defined internal field names in the data ocean model are as follows. In general, the stream input file should translate the input variable names into these names for use within the data ocean model.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -350,7 +350,7 @@ IAF is the interannually varying version of SSTDATA</td>
 </table>
 </div>
 <div class="section" id="creating-sstdata-mode-input-from-a-fully-prognostic-run-cesm-only">
-<span id="creating-sstdata-input-from-prognostic-run"></span><h2>7.6. Creating SSTDATA mode input from a fully prognostic run (CESM only)<a class="headerlink" href="#creating-sstdata-mode-input-from-a-fully-prognostic-run-cesm-only" title="Permalink to this headline">¶</a></h2>
+<span id="creating-sstdata-input-from-prognostic-run"></span><h2>8.6. Creating SSTDATA mode input from a fully prognostic run (CESM only)<a class="headerlink" href="#creating-sstdata-mode-input-from-a-fully-prognostic-run-cesm-only" title="Permalink to this headline">¶</a></h2>
 <p>The following outlines the steps you would take to create monthly averages of SST and ice coverage from a previous fully prognostic run that can then be read as as stream data by DOCN.</p>
 <p>As an example, the following uses an f09_g16 CESM B-configuration simulation using CAM5 physics and with cosp enabled. The procedure to create the SST/ICE file is as follows:</p>
 <ol class="arabic">
@@ -458,10 +458,10 @@ To do this, invoke <code class="docutils literal"><span class="pre">$SRCROOT/com
           <a href="../genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="data-river.html" title="8. Data River (DROF)"
+          <a href="data-river.html" title="9. Data River (DROF)"
              >next</a> |</li>
         <li class="right" >
-          <a href="data-seaice.html" title="6. Data Ice (DICE)"
+          <a href="data-seaice.html" title="7. Data Ice (DICE)"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">on  documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" >CIME Data Models</a> &#187;</li> 

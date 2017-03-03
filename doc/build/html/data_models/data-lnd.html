@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>5. Data Land (DLND) &#8212; on  documentation</title>
+    <title>6. Data Land (DLND) &#8212; on  documentation</title>
     
     <link rel="stylesheet" href="../_static/bizstyle.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -28,8 +28,8 @@
     <script type="text/javascript" src="../_static/bizstyle.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="6. Data Ice (DICE)" href="data-seaice.html" />
-    <link rel="prev" title="4. Data Atmosphere (DATM)" href="data-atm.html" />
+    <link rel="next" title="7. Data Ice (DICE)" href="data-seaice.html" />
+    <link rel="prev" title="5. Data Atmosphere (DATM)" href="data-atm.html" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <!--[if lt IE 9]>
     <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
@@ -43,10 +43,10 @@
           <a href="../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="data-seaice.html" title="6. Data Ice (DICE)"
+          <a href="data-seaice.html" title="7. Data Ice (DICE)"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="data-atm.html" title="4. Data Atmosphere (DATM)"
+          <a href="data-atm.html" title="5. Data Atmosphere (DATM)"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">on  documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">CIME Data Models</a> &#187;</li> 
@@ -56,22 +56,22 @@
         <div class="sphinxsidebarwrapper">
   <h3><a href="../index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">5. Data Land (DLND)</a><ul>
-<li><a class="reference internal" href="#namelists">5.1. Namelists</a></li>
-<li><a class="reference internal" href="#xml-variables">5.2. XML variables</a></li>
-<li><a class="reference internal" href="#datamode-values">5.3. Datamode values</a></li>
-<li><a class="reference internal" href="#datamode-independent-streams">5.4. Datamode independent streams</a></li>
-<li><a class="reference internal" href="#fields">5.5. Fields</a></li>
+<li><a class="reference internal" href="#">6. Data Land (DLND)</a><ul>
+<li><a class="reference internal" href="#namelists">6.1. Namelists</a></li>
+<li><a class="reference internal" href="#xml-variables">6.2. XML variables</a></li>
+<li><a class="reference internal" href="#datamode-values">6.3. Datamode values</a></li>
+<li><a class="reference internal" href="#datamode-independent-streams">6.4. Datamode independent streams</a></li>
+<li><a class="reference internal" href="#fields">6.5. Fields</a></li>
 </ul>
 </li>
 </ul>
 
   <h4>Previous topic</h4>
   <p class="topless"><a href="data-atm.html"
-                        title="previous chapter">4. Data Atmosphere (DATM)</a></p>
+                        title="previous chapter">5. Data Atmosphere (DATM)</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="data-seaice.html"
-                        title="next chapter">6. Data Ice (DICE)</a></p>
+                        title="next chapter">7. Data Ice (DICE)</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -98,14 +98,14 @@
           <div class="body" role="main">
             
   <div class="section" id="data-land-dlnd">
-<span id="data-lnd"></span><h1>5. Data Land (DLND)<a class="headerlink" href="#data-land-dlnd" title="Permalink to this headline">¶</a></h1>
+<span id="data-lnd"></span><h1>6. Data Land (DLND)<a class="headerlink" href="#data-land-dlnd" title="Permalink to this headline">¶</a></h1>
 <p>The land model is unique because it supports land data and snow data (<em>lnd and sno</em>) almost as if they were two separate components, but they are in fact running in one component model through one interface.
 The lnd (land) data consist of fields sent to the atmosphere.
 This set of data is used when running DLND with an active atmosphere.
 In general this is not a mode that is used or supported.
 The sno (snow) data consist of fields sent to the glacier model. This set of data is used when running dlnd with an active glacier model (TG compsets). Both sets of data are assumed to be on the same grid.</p>
 <div class="section" id="namelists">
-<h2>5.1. Namelists<a class="headerlink" href="#namelists" title="Permalink to this headline">¶</a></h2>
+<h2>6.1. Namelists<a class="headerlink" href="#namelists" title="Permalink to this headline">¶</a></h2>
 <p>The namelist file for DLND is <code class="docutils literal"><span class="pre">dlnd_in</span></code> (or <code class="docutils literal"><span class="pre">dlnd_in_NNN</span></code> for multiple instances).</p>
 <p>As is the case for all data models, DLND namelists can be separated into two groups, stream-independent and stream-dependent.</p>
 <p>The stream dependent group is <a class="reference internal" href="input-streams.html#input-streams"><span class="std std-ref">shr_strdata_nml</span></a>.</p>
@@ -135,7 +135,7 @@ The sno (snow) data consist of fields sent to the glacier model. This set of dat
 <p>To change the namelist settings in dlnd_in, edit the file user_nl_dlnd.</p>
 </div>
 <div class="section" id="xml-variables">
-<span id="dlnd-xml-vars"></span><h2>5.2. XML variables<a class="headerlink" href="#xml-variables" title="Permalink to this headline">¶</a></h2>
+<span id="dlnd-xml-vars"></span><h2>6.2. XML variables<a class="headerlink" href="#xml-variables" title="Permalink to this headline">¶</a></h2>
 <p>The following are xml variables that CIME supports for DLND.  These variables will appear in <code class="docutils literal"><span class="pre">env_run.xml</span></code> and are used by the DLND <code class="docutils literal"><span class="pre">cime_config/buildnml</span></code> script to generate the DLND namelist file <code class="docutils literal"><span class="pre">dlnd_in</span></code> and the required associated stream files for the case.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
@@ -203,7 +203,7 @@ from a coupler history file.</p>
 </table>
 </div>
 <div class="section" id="datamode-values">
-<h2>5.3. Datamode values<a class="headerlink" href="#datamode-values" title="Permalink to this headline">¶</a></h2>
+<h2>6.3. Datamode values<a class="headerlink" href="#datamode-values" title="Permalink to this headline">¶</a></h2>
 <p>One of the variables in <code class="docutils literal"><span class="pre">shr_strdata_nml</span></code> is the <code class="docutils literal"><span class="pre">datamode</span></code>, whose value is a character string.
 Each data model has a unique set of <code class="docutils literal"><span class="pre">datamode</span></code> values that it supports.</p>
 <p>The valid values for <code class="docutils literal"><span class="pre">datamode</span></code> are set by the xml variable <code class="docutils literal"><span class="pre">DLND_MODE</span></code> in the <code class="docutils literal"><span class="pre">config_component.xml</span></code> file for DLND.
@@ -233,11 +233,11 @@ fields not found on an input stream will be set to zero.</p>
 </table>
 </div>
 <div class="section" id="datamode-independent-streams">
-<span id="dlnd-mode-independent-streams"></span><h2>5.4. Datamode independent streams<a class="headerlink" href="#datamode-independent-streams" title="Permalink to this headline">¶</a></h2>
+<span id="dlnd-mode-independent-streams"></span><h2>6.4. Datamode independent streams<a class="headerlink" href="#datamode-independent-streams" title="Permalink to this headline">¶</a></h2>
 <p>There are no datamode independent streams for DLND.</p>
 </div>
 <div class="section" id="fields">
-<span id="dlnd-fields"></span><h2>5.5. Fields<a class="headerlink" href="#fields" title="Permalink to this headline">¶</a></h2>
+<span id="dlnd-fields"></span><h2>6.5. Fields<a class="headerlink" href="#fields" title="Permalink to this headline">¶</a></h2>
 <p>The pre-defined internal field names in the data land model are as follows. In general, the stream input file should translate the input variable names into these names for use within the data land model.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -310,10 +310,10 @@ fields not found on an input stream will be set to zero.</p>
           <a href="../genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="data-seaice.html" title="6. Data Ice (DICE)"
+          <a href="data-seaice.html" title="7. Data Ice (DICE)"
              >next</a> |</li>
         <li class="right" >
-          <a href="data-atm.html" title="4. Data Atmosphere (DATM)"
+          <a href="data-atm.html" title="5. Data Atmosphere (DATM)"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">on  documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" >CIME Data Models</a> &#187;</li> 

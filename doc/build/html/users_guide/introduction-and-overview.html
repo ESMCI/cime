@@ -61,8 +61,8 @@
 <li><a class="reference internal" href="#terms-and-concepts">1.2. Terms and concepts</a></li>
 <li><a class="reference internal" href="#setting-defaults">1.3. Setting defaults</a></li>
 <li><a class="reference internal" href="#directory-content">1.4. Directory content</a></li>
-<li><a class="reference internal" href="#quick-start">1.5. Quick Start</a></li>
-<li><a class="reference internal" href="#discovering-available-content">1.6. Discovering available content</a></li>
+<li><a class="reference internal" href="#discovering-available-cases">1.5. Discovering available cases</a></li>
+<li><a class="reference internal" href="#quick-start">1.6. Quick Start</a></li>
 </ul>
 </li>
 </ul>
@@ -108,7 +108,7 @@ this guide will explain all of the basic commands needed to get a model running.
 <p>You should be familiar with the basic concepts of climate modeling.</p>
 <p>You should be familiar with UNIX command line terminals and the UNIX development environment.</p>
 <p>CIME&#8217;s commands are python scripts and require a correct version of the Python interpreter to be installed before any use.</p>
-<p>The python version must be greater then 2.7 but less the 3.0.  You can check which version of ptyhon you have by typing:</p>
+<p>The python version must be greater then 2.7 but less the 3.0.  You can check which version of python you have by typing:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">python</span> <span class="o">--</span><span class="n">version</span>
 </pre></div>
 </div>
@@ -130,7 +130,7 @@ The resulting set of components is called the <em>component set</em> or <em>comp
 <div>atmosphere, ocean, sea-ice, land surface, river, glacier, wave</div></blockquote>
 <p>In addition, an &#8220;external processing system&#8221; or ESP component is also allowed.</p>
 <p>For some climate problems, its necessary to reduce feedbacks within the system by replacing a full model with a
-version that sends and recieves the same variables to and from other models but
+version that sends and receives the same variables to and from other models but
 the values sent are not computed from the equations but instead read from files.  The values received are ignored.
 We call these full-model substitutes <em>data models</em>&#8221; and CIME provides data models for each of the supported components.</p>
 <p class="last">For some configurations, a data model is not needed and so CIME provides <em>stub</em> versions that simply occupy the
@@ -145,9 +145,9 @@ refer to a specific set of grids with different resolutions.</dd>
 a national supercomputer.  The <em>machine</em> is typically the UNIX host name but could be any string.</dd>
 <dt><strong>compiler</strong>:</dt>
 <dd>CIME will control compiling the source code (Fortran, C and C++)  of your model in to an executable.
-Some machines support mutiple compilers and so you may need to specify which one to use.</dd>
+Some machines support multiple compilers and so you may need to specify which one to use.</dd>
 <dt><strong>case</strong>:</dt>
-<dd>The most important concept in CIME is a <em>case</em>.  To build and excute a CIME-enabled climate model, you have to
+<dd>The most important concept in CIME is a <em>case</em>.  To build and execute a CIME-enabled climate model, you have to
 make choices of compset, grid set, machine and compiler.  The collection of these choices, and any additional customizations
 you may make, is called the <em>case</em>.</dd>
 </dl>
@@ -244,7 +244,7 @@ a climate model, cime is usually one of the first subdirectories under the main 
 <td>tests</td>
 </tr>
 <tr class="row-even"><td>tools/</td>
-<td>Standalone tools useful for climate modeling</td>
+<td>Stand-alone tools useful for climate modeling</td>
 </tr>
 <tr class="row-odd"><td>utils/</td>
 <td>source code for CIME scripts and functions</td>
@@ -253,12 +253,29 @@ a climate model, cime is usually one of the first subdirectories under the main 
 </table>
 <p>Users should start in the &#8220;scripts&#8221; subdirectory.</p>
 </div>
-<div class="section" id="quick-start">
-<h2>1.5. Quick Start<a class="headerlink" href="#quick-start" title="Permalink to this headline">¶</a></h2>
-<p>You can cd to cime/scripts and try to build a simple data-model only case.</p>
+<div class="section" id="discovering-available-cases">
+<h2>1.5. Discovering available cases<a class="headerlink" href="#discovering-available-cases" title="Permalink to this headline">¶</a></h2>
+<p>You can find what compsets, grids and machines your CIME-enabled model supports using the manage_case command found in cime/scripts.  Use the &#8220;&#8211;help&#8221; option for more information.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="o">./</span><span class="n">manage_case</span> <span class="o">--</span><span class="n">help</span>
+</pre></div>
 </div>
-<div class="section" id="discovering-available-content">
-<h2>1.6. Discovering available content<a class="headerlink" href="#discovering-available-content" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="quick-start">
+<h2>1.6. Quick Start<a class="headerlink" href="#quick-start" title="Permalink to this headline">¶</a></h2>
+<p>If you would like to quickly see how a case is created, configured, built and run with CIME, try these commands (assuming CIME has been ported to your current machine):</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">cd</span> <span class="n">cime</span><span class="o">/</span><span class="n">scripts</span>
+<span class="o">&gt;</span> <span class="o">./</span><span class="n">create_newcase</span> <span class="o">--</span><span class="n">case</span> <span class="n">mycase</span> <span class="o">--</span><span class="n">compset</span> <span class="n">X</span> <span class="o">--</span><span class="n">res</span> <span class="n">f19_g16</span>
+<span class="o">&gt;</span> <span class="n">cd</span> <span class="n">mycase</span>
+<span class="o">&gt;</span> <span class="o">./</span><span class="n">case</span><span class="o">.</span><span class="n">setup</span>
+<span class="o">&gt;</span> <span class="o">./</span><span class="n">case</span><span class="o">.</span><span class="n">build</span>
+<span class="o">&gt;</span> <span class="o">./</span><span class="n">case</span> <span class="n">submit</span>
+</pre></div>
+</div>
+<p>The output from each command will be explained in the sections below. You can follow progress by monitoring the CaseStatus file:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">tail</span> <span class="n">CaseStatus</span>
+</pre></div>
+</div>
+<p>Repeat the above command until you see the message &#8220;Run SUCCESSFUL&#8221;.  This tells you the case finished successfully.</p>
 </div>
 </div>
 

@@ -6,6 +6,8 @@
 Welcome to the CIME documentation!
 ==================================
 
+:ref:`What is CIME? <what-cime>`
+
 :ref:`User's guide - Part 1 <users-guide1>`: basic use of the scripting infrastructure.
 
 :ref:`User's guide - Part 2 <users-guide2>`: advance use of the scripting infrastructure.
@@ -16,16 +18,20 @@ Welcome to the CIME documentation!
 
 :ref:`Building a Coupled Model with CIME <build-cpl>`: how to bring a new model in to CIME.
 
+:ref:`Miscellaneous Tools <misc-tools>`: various tools for climate modeling
+
 Table of contents
 -----------------
 
 .. toctree::
    :maxdepth: 1
       
+   what_cime/index.rst
    users_guide/index.rst
    data_models/index.rst
    driver_cpl/index.rst
    build_cpl/index.rst
+   misc_tools/index.rst
 
 Indices and tables
 ==================
@@ -34,3 +40,6 @@ Indices and tables
 * :ref:`modindex`
 * :ref:`search`
 
+CIME is developed by the 
+`ACME <https://climatemodeling.science.energy.gov/projects/accelerated-climate-modeling-energy>`_ and 
+`CESM <http://www.cesm.ucar.edu/>`_ projects.
