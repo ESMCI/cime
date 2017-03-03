@@ -1681,27 +1681,23 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
      * processes. */
     MPI_Group union_group[component_count];
 
-    /* For each component, starting with the IO component. */
-    for (int cmp = 0; cmp < 1; cmp++)
-    {
-        LOG((3, "processing component %d", cmp));
+    /* For the IO component. */
+    LOG((3, "processing component %d", 0));
 
-        /* Create a group for this component. */
-        if ((ret = MPI_Group_incl(world_group, num_procs_per_comp[cmp], my_proc_list[cmp],
-                                  &group[cmp])))
-            return check_mpi(NULL, ret, __FILE__, __LINE__);
-        LOG((3, "created component MPI group - group[%d] = %d", cmp, group[cmp]));
+    /* Create a group for this component. */
+    if ((ret = MPI_Group_incl(world_group, num_procs_per_comp[0], my_proc_list[0],
+                              &group[0])))
+        return check_mpi(NULL, ret, __FILE__, __LINE__);
+    LOG((3, "created component MPI group - group[%d] = %d", 0, group[0]));
 
-        /* Is this process in this computation component (which is the
-         * IO component if cmp == 0)? */
-        int in_cmp = 0;
-        for (pidx = 0; pidx < num_procs_per_comp[cmp]; pidx++)
-            if (my_rank == my_proc_list[cmp][pidx])
-                break;
-        in_cmp = (pidx == num_procs_per_comp[cmp]) ? 0 : 1;
-        LOG((3, "pidx = %d num_procs_per_comp[%d] = %d in_cmp = %d",
-             pidx, cmp, num_procs_per_comp[cmp], in_cmp));
-    }
+    /* Is this process in the IO component? */
+    int in_cmp = 0;
+    for (pidx = 0; pidx < num_procs_per_comp[0]; pidx++)
+        if (my_rank == my_proc_list[0][pidx])
+            break;
+    in_cmp = (pidx == num_procs_per_comp[0]) ? 0 : 1;
+    LOG((3, "pidx = %d num_procs_per_comp[%d] = %d in_cmp = %d",
+         pidx, 0, num_procs_per_comp[0], in_cmp));
 
     /* For each component, starting with the IO component. */
     for (int cmp = 1; cmp < component_count + 1; cmp++)
