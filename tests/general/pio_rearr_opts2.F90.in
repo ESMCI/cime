@@ -253,9 +253,9 @@ PIO_TF_AUTO_TEST_SUB_BEGIN set_rearr_opts_and_write
   integer, parameter :: NUM_ENABLE_ISEND_OPTS = 2
   logical :: enable_isend_opts(NUM_ENABLE_ISEND_OPTS) = (/.true.,.false./)
   integer :: num_enable_isend_opts_comp2io, num_enable_isend_opts_io2comp
-  integer, parameter :: NUM_MAX_PEND_REQ_OPTS = 2
+  integer, parameter :: NUM_MAX_PEND_REQ_OPTS = 3
   integer :: max_pend_req_opts(NUM_MAX_PEND_REQ_OPTS) = &
-                  (/pio_rearr_comm_unlimited_pend_req, 2/)
+                  (/pio_rearr_comm_unlimited_pend_req, 1, 2/)
   integer :: num_max_pend_req_opts_comp2io, num_max_pend_req_opts_io2comp
 
   integer ::  cur_comm_type_opt, cur_fcd_opt, cur_enable_hs_c2i, &

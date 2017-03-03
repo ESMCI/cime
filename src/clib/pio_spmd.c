@@ -222,20 +222,26 @@ int pio_swapm(void *sendbuf, int *sendcounts, int *sdispls, MPI_Datatype *sendty
     }
     else
     {
-        if (max_requests > 1 && max_requests < steps)
-        {
-            maxreq = max_requests;
-            maxreqh = maxreq / 2;
-        }
-        else if (max_requests >= steps)
+        if (max_requests == PIO_REARR_COMM_UNLIMITED_PEND_REQ)
         {
             maxreq = steps;
             maxreqh = steps;
         }
-        else
+        else if (max_requests > 1 && max_requests < steps)
         {
+            maxreq = max_requests;
+            maxreqh = maxreq / 2;
+        }
+        else if (max_requests == 1)
+        {
+            /* Note that steps >= 2 here */
             maxreq = 2;
             maxreqh = 1;
+        }
+        else
+        {
+            maxreq = steps;
+            maxreqh = steps;
         }
     }
 
