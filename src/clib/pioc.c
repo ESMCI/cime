@@ -1528,7 +1528,7 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
                     MPI_Comm *user_io_comm, MPI_Comm *user_comp_comm, int *iosysidp)
 {
     int my_rank;          /* Rank of this task. */
-    int **my_proc_list;   /* Array of arrays if processor lists. */
+    int **my_proc_list;   /* Array of arrays of procs for comp components. */
     int *my_io_proc_list; /* List of processors in IO component. */
     int mpierr;           /* Return code from MPI functions. */
     int ret;              /* Return code. */
@@ -1565,23 +1565,11 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
      * component, create one. */
     if (!proc_list)
     {
-        int last_proc = 0;
+        int last_proc = num_io_procs;
 
         /* Allocate space for array of arrays. */
         if (!(my_proc_list = malloc((component_count + 1) * sizeof(int *))))
             return pio_err(NULL, NULL, PIO_ENOMEM, __FILE__, __LINE__);
-
-        /* Allocate space for IO proc array. */
-        if (!(my_proc_list[0] = malloc(num_procs_per_comp[0] * sizeof(int))))
-            return pio_err(NULL, NULL, PIO_ENOMEM, __FILE__, __LINE__);
-
-        int proc;
-        for (proc = last_proc; proc < num_io_procs + last_proc; proc++)
-        {
-            my_proc_list[0][proc - last_proc] = proc;
-            LOG((3, "my_proc_list[%d][%d] = %d", 0, proc - last_proc, proc));
-        }
-        last_proc = proc;
 
         /* Fill the array of arrays. */
         for (int cmp = 1; cmp < component_count + 1; cmp++)
@@ -1684,11 +1672,6 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
 
     /* For the IO component. */
     LOG((3, "processing component %d", 0));
-
-    /* Create a group for this component. */
-    if ((ret = MPI_Group_incl(world_group, num_io_procs, my_io_proc_list, &group[0])))
-        return check_mpi(NULL, ret, __FILE__, __LINE__);
-    LOG((3, "created component MPI group - group[%d] = %d", 0, group[0]));
 
     /* For each computation component. */
     for (int cmp = 1; cmp < component_count + 1; cmp++)
@@ -1875,7 +1858,7 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
 
     if (!proc_list)
     {
-        for (int cmp = 0; cmp < component_count + 1; cmp++)
+        for (int cmp = 1; cmp < component_count + 1; cmp++)
             free(my_proc_list[cmp]);
         free(my_proc_list);
     }
@@ -1884,7 +1867,7 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
     if ((ret = MPI_Group_free(&io_group)))
         return check_mpi(NULL, ret, __FILE__, __LINE__);
 
-    for (int cmp = 0; cmp < component_count + 1; cmp++)
+    for (int cmp = 1; cmp < component_count + 1; cmp++)
     {
         if ((ret = MPI_Group_free(&group[cmp])))
             return check_mpi(NULL, ret, __FILE__, __LINE__);
