@@ -1312,9 +1312,9 @@ void free_cn_buffer_pool(iosystem_desc_t *ios)
 /**
  * Flush the buffer.
  *
- * @param ncid identifies the netCDF file
- * @param wmb May be NULL, in which case function returns.
- * @param flushtodisk
+ * @param ncid identifies the netCDF file.
+ * @param wmb pointer to the wmulti_buffer structure.
+ * @param flushtodisk if true, then flush data to disk.
  * @returns 0 for success, error code otherwise.
  * @ingroup PIO_write_darray
  */
