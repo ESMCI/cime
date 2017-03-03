@@ -208,7 +208,7 @@ int PIOc_Set_IOSystem_Error_Handling(int iosysid, int method)
     /* Get the iosystem info. */
     if (iosysid != PIO_DEFAULT)
         if (!(ios = pio_get_iosystem_from_id(iosysid)))
-            return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
+            piodie("Could not find IO system.", __FILE__, __LINE__);
 
     /* Set the error handler. */
     if (PIOc_set_iosystem_error_handling(iosysid, method, &oldmethod))
