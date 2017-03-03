@@ -347,30 +347,9 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
         wmb->ioid = recordvar ? ioid : -ioid;
     else
     {
-        /* Handle record and non-record variables differently. */
-        if (recordvar)
-        {
-            /* Moving to the end of the wmb linked list to add the
-             * current variable. ??? */
-            while(wmb->next && wmb->ioid != ioid)
-                if (wmb->next)
-                    wmb = wmb->next;
-#ifdef _PNETCDF
-            /* Do we still need the commented code below? ??? */
-            /* flush the previous record before starting a new one. this is collective */
-            /*       if (vdesc->request != NULL && (vdesc->request[0] != NC_REQ_NULL) ||
-                     (wmb->frame != NULL && vdesc->record != wmb->frame[0])){
-                     needsflush = 2;  // flush to disk
-                     } */
-#endif
-        }
-        else
-        {
-            /* Move to end of list. */
-            while(wmb->next && wmb->ioid != -(ioid))
-                if (wmb->next)
-                    wmb = wmb->next;
-        }
+        /* Move to end of list. */
+        while (wmb->next && wmb->ioid != (recordvar ? ioid : -ioid))
+            wmb = wmb->next;
     }
 
     /* The write multi buffer wmulti_buffer is the cache on compute
