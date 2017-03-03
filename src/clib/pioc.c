@@ -1617,7 +1617,6 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
     LOG((3, "in_io = %d", in_io));
 
     /* Allocate struct to hold io system info for each computation component. */
-    /* Allocate struct to hold io system info for each component. */
     iosystem_desc_t *iosys[component_count], *my_iosys;
     for (int cmp1 = 0; cmp1 < component_count; cmp1++)
         if (!(iosys[cmp1] = (iosystem_desc_t *)calloc(1, sizeof(iosystem_desc_t))))
@@ -1675,7 +1674,7 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
              io_comm, io_rank, iomaster == MPI_ROOT ? "MASTER" : "SERVANT"));
     }
 
-    /* We will create a group for each component. */
+    /* We will create a group for each computational component. */
     MPI_Group group[component_count + 1];
 
     /* We will also create a group for each component and the IO
@@ -1687,21 +1686,19 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
     LOG((3, "processing component %d", 0));
 
     /* Create a group for this component. */
-    if ((ret = MPI_Group_incl(world_group, num_io_procs, my_proc_list[0],
-                              &group[0])))
+    if ((ret = MPI_Group_incl(world_group, num_io_procs, my_proc_list[0], &group[0])))
         return check_mpi(NULL, ret, __FILE__, __LINE__);
     LOG((3, "created component MPI group - group[%d] = %d", 0, group[0]));
 
     /* Is this process in the IO component? */
     int in_cmp = 0;
-    for (pidx = 0; pidx < num_procs_per_comp[0]; pidx++)
-        if (my_rank == my_proc_list[0][pidx])
+    for (pidx = 0; pidx < num_io_procs; pidx++)
+        if (my_rank == my_io_proc_list[pidx])
             break;
-    in_cmp = (pidx == num_procs_per_comp[0]) ? 0 : 1;
-    LOG((3, "pidx = %d num_procs_per_comp[%d] = %d in_cmp = %d",
-         pidx, 0, num_procs_per_comp[0], in_cmp));
+    in_cmp = (pidx == num_io_procs) ? 0 : 1;
+    LOG((3, "pidx = %d num_io_procs = %d in_cmp = %d", pidx, 0, num_io_procs, in_cmp));
 
-    /* For each component, starting with the IO component. */
+    /* For each computation component. */
     for (int cmp = 1; cmp < component_count + 1; cmp++)
     {
         LOG((3, "processing component %d", cmp));
@@ -1723,7 +1720,7 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
         my_iosys->iogroup = MPI_GROUP_NULL;
         
         /* The rank of the computation leader in the union comm. */
-        my_iosys->comproot = num_procs_per_comp[0];
+        my_iosys->comproot = num_io_procs;
         LOG((3, "my_iosys->comproot = %d", my_iosys->comproot));
         
         /* We are not providing an info object. */
@@ -1735,12 +1732,12 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
             return check_mpi(NULL, ret, __FILE__, __LINE__);
         LOG((3, "created component MPI group - group[%d] = %d", cmp, group[cmp]));
 
-        /* For all the computation components (i.e. cmp != 0), create
-         * a union group with their processors and the processors of
-         * the (shared) IO component. */
+        /* For all the computation components create a union group
+         * with their processors and the processors of the (shared) IO
+         * component. */
 
         /* How many processors in the union comm? */
-        int nprocs_union = num_procs_per_comp[0] + num_procs_per_comp[cmp];
+        int nprocs_union = num_io_procs + num_procs_per_comp[cmp];
         
         /* This will hold proc numbers from both computation and IO
          * components. */
