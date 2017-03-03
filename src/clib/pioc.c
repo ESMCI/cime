@@ -484,6 +484,47 @@ int PIOc_InitDecomp(int iosysid, int basetype, int ndims, const int *dims, int m
 }
 
 /**
+ * Initialize the decomposition used with distributed arrays. The
+ * decomposition describes how the data will be distributed between
+ * tasks.
+ *
+ * @param iosysid the IO system ID.
+ * @param basetype the basic PIO data type used.
+ * @param ndims the number of dimensions in the variable, not
+ * including the unlimited dimension.
+ * @param dims an array of global size of each dimension.
+ * @param maplen the local length of the compmap array.
+ * @param compmap a 0 based array of offsets into the array record on
+ * file. A -1 in this array indicates a value which should not be
+ * transfered.
+ * @param ioidp pointer that will get the io description ID.
+ * @param rearranger pointer to the rearranger to be used for this
+ * decomp or NULL to use the default.
+ * @param iostart An array of start values for block cyclic
+ * decompositions. If NULL ???
+ * @param iocount An array of count values for block cyclic
+ * decompositions. If NULL ???
+ * @returns 0 on success, error code otherwise
+ * @ingroup PIO_initdecomp
+ */
+int PIOc_init_decomp(int iosysid, int basetype, int ndims, const int *dims, int maplen,
+                     const PIO_Offset *compmap, int *ioidp, const int *rearranger,
+                     const PIO_Offset *iostart, const PIO_Offset *iocount)
+{
+    PIO_Offset compmap_1_based[maplen];
+
+    LOG((1, "PIOc_init_decomp iosysid = %d basetype = %d ndims = %d maplen = %d",
+         iosysid, basetype, ndims, maplen));
+
+    /* Add 1 to all elements in compmap. */
+    for (int e = 0; e < maplen; e++)
+        compmap_1_based[e] = compmap[e] + 1;
+
+    return PIOc_InitDecomp(iosysid, basetype, ndims, dims, maplen, compmap_1_based,
+                           ioidp, rearranger, iostart, iocount);
+}
+
+/**
  * This is a simplified initdecomp which can be used if the memory
  * order of the data can be expressed in terms of start and count on
  * the file. In this case we compute the compdof.
