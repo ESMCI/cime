@@ -33,15 +33,13 @@ int main(int argc, char **argv)
     MPI_Comm test_comm;
 
     /* Num procs for IO and computation. */
-    int num_procs[NUM_COMBOS][COMPONENT_COUNT + 1] = {{3, 1}, {2, 2}, {1, 3}};
     int num_procs2[NUM_COMBOS][COMPONENT_COUNT] = {{1}, {2}, {3}};
 
     /* Number of processors that will do IO. */
     int num_io_procs[NUM_COMBOS] = {3, 2, 1};
 
     /* Initialize test. */
-    if ((ret = pio_test_init(argc, argv, &my_rank, &ntasks, TARGET_NTASKS,
-			     &test_comm)))
+    if ((ret = pio_test_init(argc, argv, &my_rank, &ntasks, TARGET_NTASKS, &test_comm)))
         ERR(ERR_INIT);
     
     /* Test code runs on TARGET_NTASKS tasks. The left over tasks do
@@ -59,7 +57,7 @@ int main(int argc, char **argv)
 
             /* Initialize the IO system. */
             if ((ret = PIOc_init_async(test_comm, num_io_procs[combo], NULL, COMPONENT_COUNT,
-                                       num_procs[combo], NULL, NULL, NULL, iosysid)))
+                                       num_procs2[combo], NULL, NULL, NULL, iosysid)))
                 ERR(ERR_INIT);
 
             for (int c = 0; c < COMPONENT_COUNT; c++)
