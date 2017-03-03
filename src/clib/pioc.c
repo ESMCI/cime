@@ -1576,7 +1576,7 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
             return pio_err(NULL, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
         int proc;
-        for (proc = last_proc; proc < num_procs_per_comp[0] + last_proc; proc++)
+        for (proc = last_proc; proc < num_io_procs + last_proc; proc++)
         {
             my_proc_list[0][proc - last_proc] = proc;
             LOG((3, "my_proc_list[%d][%d] = %d", 0, proc - last_proc, proc));
@@ -1686,7 +1686,7 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
     LOG((3, "processing component %d", 0));
 
     /* Create a group for this component. */
-    if ((ret = MPI_Group_incl(world_group, num_io_procs, my_proc_list[0], &group[0])))
+    if ((ret = MPI_Group_incl(world_group, num_io_procs, my_io_proc_list, &group[0])))
         return check_mpi(NULL, ret, __FILE__, __LINE__);
     LOG((3, "created component MPI group - group[%d] = %d", 0, group[0]));
 
@@ -1707,7 +1707,7 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
         my_iosys->async_interface = 1;
         my_iosys->error_handler = default_error_handler;
         my_iosys->num_comptasks = num_procs_per_comp[cmp];
-        my_iosys->num_iotasks = num_procs_per_comp[0];
+        my_iosys->num_iotasks = num_io_procs;
         my_iosys->compgroup = MPI_GROUP_NULL;
         my_iosys->iogroup = MPI_GROUP_NULL;
         
@@ -1736,8 +1736,8 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
         int proc_list_union[nprocs_union];
         
         /* Add proc numbers from IO. */
-        for (int p = 0; p < num_procs_per_comp[0]; p++)
-            proc_list_union[p] = my_proc_list[0][p];
+        for (int p = 0; p < num_io_procs; p++)
+            proc_list_union[p] = my_io_proc_list[p];
         
         /* Add proc numbers from computation component. */
         for (int p = 0; p < num_procs_per_comp[cmp]; p++)
