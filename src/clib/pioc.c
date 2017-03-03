@@ -1567,23 +1567,21 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
         if (!(my_proc_list = malloc((component_count + 1) * sizeof(int *))))
             return pio_err(NULL, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
-        /* Fill the array of arrays. */
-        for (int cmp = 0; cmp < 1; cmp++)
+        LOG((3, "calculating processors for IO component %d", 0));
+
+        /* Allocate space for IO proc array. */
+        if (!(my_proc_list[0] = malloc(num_procs_per_comp[0] * sizeof(int))))
+            return pio_err(NULL, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+
+        int proc;
+        for (proc = last_proc; proc < num_procs_per_comp[0] + last_proc; proc++)
         {
-            LOG((3, "calculating processors for component %d", cmp));
-
-            /* Allocate space for each array. */
-            if (!(my_proc_list[cmp] = malloc(num_procs_per_comp[cmp] * sizeof(int))))
-                return pio_err(NULL, NULL, PIO_ENOMEM, __FILE__, __LINE__);
-
-            int proc;
-            for (proc = last_proc; proc < num_procs_per_comp[cmp] + last_proc; proc++)
-            {
-                my_proc_list[cmp][proc - last_proc] = proc;
-                LOG((3, "my_proc_list[%d][%d] = %d", cmp, proc - last_proc, proc));
-            }
-            last_proc = proc;
+            my_proc_list[0][proc - last_proc] = proc;
+            LOG((3, "my_proc_list[%d][%d] = %d", 0, proc - last_proc, proc));
         }
+        last_proc = proc;
+
+        /* Fill the array of arrays. */
         for (int cmp = 1; cmp < component_count + 1; cmp++)
         {
             LOG((3, "calculating processors for component %d", cmp));
