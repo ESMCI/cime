@@ -790,9 +790,9 @@ int PIOc_get_chunk_cache(int iosysid, int iotype, PIO_Offset *sizep, PIO_Offset 
 
         /* Handle MPI errors. */
         if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
-            return check_mpi(NULL, mpierr2, __FILE__, __LINE__);
+            return check_mpi2(ios, NULL, mpierr2, __FILE__, __LINE__);
         if (mpierr)
-            return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+            return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     }
 
     /* If this is an IO task, then call the netCDF function. */
@@ -810,7 +810,7 @@ int PIOc_get_chunk_cache(int iosysid, int iotype, PIO_Offset *sizep, PIO_Offset 
 
     /* Broadcast and check the return code. */
     if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
-        return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     LOG((2, "bcast complete ierr = %d sizep = %d", ierr, sizep));
     if (ierr)
         return check_netcdf(NULL, ierr, __FILE__, __LINE__);
@@ -819,19 +819,19 @@ int PIOc_get_chunk_cache(int iosysid, int iotype, PIO_Offset *sizep, PIO_Offset 
     {
         LOG((2, "bcasting size = %d ios->ioroot = %d", *sizep, ios->ioroot));
         if ((mpierr = MPI_Bcast(sizep, 1, MPI_OFFSET, ios->ioroot, ios->my_comm)))
-            return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+            return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
         LOG((2, "bcast size = %d", *sizep));
     }
     if (nelemsp)
     {
         if ((mpierr = MPI_Bcast(nelemsp, 1, MPI_OFFSET, ios->ioroot, ios->my_comm)))
-            return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+            return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
         LOG((2, "bcast complete nelems = %d", *nelemsp));
     }
     if (preemptionp)
     {
         if ((mpierr = MPI_Bcast(preemptionp, 1, MPI_FLOAT, ios->ioroot, ios->my_comm)))
-            return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+            return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
         LOG((2, "bcast complete preemption = %d", *preemptionp));
     }
 
@@ -995,9 +995,9 @@ int PIOc_get_var_chunk_cache(int ncid, int varid, PIO_Offset *sizep, PIO_Offset 
 
         /* Handle MPI errors. */
         if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
-            return check_mpi(NULL, mpierr2, __FILE__, __LINE__);
+            return check_mpi2(ios, NULL, mpierr2, __FILE__, __LINE__);
         if (mpierr)
-            return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+            return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     }
 
     /* If this is an IO task, then call the netCDF function. */
