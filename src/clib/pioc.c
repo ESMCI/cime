@@ -1549,10 +1549,14 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
      * IO, create it. */
     if (!io_proc_list)
     {
+        LOG((3, "calculating processors for IO component %d", 0));
         if (!(my_io_proc_list = malloc(num_io_procs * sizeof(int))))
             return pio_err(NULL, NULL, PIO_ENOMEM, __FILE__, __LINE__);
         for (int p = 0; p < num_io_procs; p++)
+        {
             my_io_proc_list[p] = p;
+            LOG((3, "my_io_proc_list[%d] = %d", p, my_io_proc_list[p]));
+        }            
     }
     else
         my_io_proc_list = io_proc_list;
@@ -1566,8 +1570,6 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
         /* Allocate space for array of arrays. */
         if (!(my_proc_list = malloc((component_count + 1) * sizeof(int *))))
             return pio_err(NULL, NULL, PIO_ENOMEM, __FILE__, __LINE__);
-
-        LOG((3, "calculating processors for IO component %d", 0));
 
         /* Allocate space for IO proc array. */
         if (!(my_proc_list[0] = malloc(num_procs_per_comp[0] * sizeof(int))))
@@ -1608,10 +1610,10 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
 
     /* Is this process in the IO component? */
     int pidx;
-    for (pidx = 0; pidx < num_procs_per_comp[0]; pidx++)
-        if (my_rank == my_proc_list[0][pidx])
+    for (pidx = 0; pidx < num_io_procs; pidx++)
+        if (my_rank == my_io_proc_list[pidx])
             break;
-    int in_io = (pidx == num_procs_per_comp[0]) ? 0 : 1;
+    int in_io = (pidx == num_io_procs) ? 0 : 1;
     LOG((3, "in_io = %d", in_io));
 
     /* Allocate struct to hold io system info for each computation component. */
@@ -1685,7 +1687,7 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
     LOG((3, "processing component %d", 0));
 
     /* Create a group for this component. */
-    if ((ret = MPI_Group_incl(world_group, num_procs_per_comp[0], my_proc_list[0],
+    if ((ret = MPI_Group_incl(world_group, num_io_procs, my_proc_list[0],
                               &group[0])))
         return check_mpi(NULL, ret, __FILE__, __LINE__);
     LOG((3, "created component MPI group - group[%d] = %d", 0, group[0]));
