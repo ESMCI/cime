@@ -421,7 +421,7 @@ int PIOc_InitDecomp(int iosysid, int basetype, int ndims, const int *dims, int m
         iodesc->num_aiotasks = ios->num_iotasks;
         if ((ierr = subset_rearrange_create(ios, maplen, (PIO_Offset *)compmap, dims,
                                             ndims, iodesc)))
-            return pio_err(NULL, NULL, ierr, __FILE__, __LINE__);
+            return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
     }
     else
     {
@@ -444,9 +444,10 @@ int PIOc_InitDecomp(int iosysid, int basetype, int ndims, const int *dims, int m
             }
             else
             {
-                iodesc->num_aiotasks = CalcStartandCount(basetype, ndims, dims,
-                                                         ios->num_iotasks, ios->io_rank,
-                                                         iodesc->firstregion->start, iodesc->firstregion->count);
+                if ((ierr = CalcStartandCount(basetype, ndims, dims, ios->num_iotasks,
+                                             ios->io_rank, iodesc->firstregion->start,
+                                             iodesc->firstregion->count, &iodesc->num_aiotasks)))
+                    return pio_err(ios, NULL, ierr, __FILE__, __LINE__);                    
             }
             compute_maxIObuffersize(ios->io_comm, iodesc);
         }

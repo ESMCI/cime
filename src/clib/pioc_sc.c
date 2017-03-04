@@ -234,10 +234,11 @@ PIO_Offset GCDblocksize(int arrlen, const PIO_Offset *arr_in)
  * @param myiorank rank of this task in IO communicator.
  * @param start array of length ndims with data start values.
  * @param count array of length ndims with data count values.
- * @returns num_aiotasks the number of IO tasks.
+ * @param num_aiotasks the number of IO tasks used(?)
+ * @returns 0 for success, error code otherwise.
  */
 int CalcStartandCount(int basetype, int ndims, const int *gdims, int num_io_procs,
-                      int myiorank, PIO_Offset *start, PIO_Offset *count)
+                      int myiorank, PIO_Offset *start, PIO_Offset *count, int *num_aiotasks)
 {
     int minbytes; 
     int maxbytes;
@@ -256,27 +257,15 @@ int CalcStartandCount(int basetype, int ndims, const int *gdims, int num_io_proc
     int mystart[ndims], mycount[ndims];
     long int pknt;
     long int tpsize = 0;
+    int ret;
 
     /* ??? */
     minbytes = blocksize - 256;
     maxbytes = blocksize + 256;
 
     /* Determine the size of the data type. */
-    switch (basetype)
-    {
-    case PIO_INT:
-        basesize = sizeof(int);
-        break;
-    case PIO_REAL:
-        basesize = sizeof(float);
-        break;
-    case PIO_DOUBLE:
-        basesize = sizeof(double);
-        break;
-    default:
-        piodie("Invalid basetype ",__FILE__,__LINE__);
-        break;
-    }
+    if ((ret = find_mpi_type(basetype, NULL, &basesize)))
+        return ret;
 
     /* Determine the minimum block size. */
     minblocksize = minbytes / basesize;
@@ -401,5 +390,8 @@ int CalcStartandCount(int basetype, int ndims, const int *gdims, int num_io_proc
         }
     }
 
-    return use_io_procs;
+    /* Return the number of IO procs used to the caller. */
+    *num_aiotasks = use_io_procs;
+    
+    return PIO_NOERR;
 }

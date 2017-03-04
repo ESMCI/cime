@@ -218,6 +218,7 @@ int test_CalcStartandCount()
     long int psize;
     long int pgdims = 1;
     int scnt;
+    int ret;
 
     for (int i = 0; i < ndims; i++)
         pgdims *= gdims[i];
@@ -226,8 +227,9 @@ int test_CalcStartandCount()
     {
         for (iorank = 0; iorank < num_io_procs; iorank++)
         {
-            numaiotasks = CalcStartandCount(PIO_DOUBLE, ndims, gdims, num_io_procs, iorank,
-                                            start, kount);
+            if ((ret = CalcStartandCount(PIO_DOUBLE, ndims, gdims, num_io_procs, iorank,
+                                         start, kount, &numaiotasks)))
+                return ret;
             if (iorank < numaiotasks)
                 printf("iorank %d start %lld %lld count %lld %lld\n", iorank, start[0],
                        start[1], kount[0], kount[1]);
@@ -395,72 +397,73 @@ int test_ceil2_pair()
 int test_find_mpi_type()
 {
     MPI_Datatype mpi_type;
+    int type_size;
     int ret;
 
     /* This should not work. */
-    if (find_mpi_type(PIO_BYTE + 42, &mpi_type) != PIO_EBADTYPE)
+    if (find_mpi_type(PIO_BYTE + 42, &mpi_type, &type_size) != PIO_EBADTYPE)
         return ERR_WRONG;
 
     /* Try every atomic type. */
-    if ((ret = find_mpi_type(PIO_BYTE, &mpi_type)))
+    if ((ret = find_mpi_type(PIO_BYTE, &mpi_type, &type_size)))
         return ret;
-    if (mpi_type != MPI_BYTE)
+    if (mpi_type != MPI_BYTE || type_size != 1)
         return ERR_WRONG;
 
-    if ((ret = find_mpi_type(PIO_CHAR, &mpi_type)))
+    if ((ret = find_mpi_type(PIO_CHAR, &mpi_type, &type_size)))
         return ret;
-    if (mpi_type != MPI_CHAR)
+    if (mpi_type != MPI_CHAR || type_size != 1)
         return ERR_WRONG;
 
-    if ((ret = find_mpi_type(PIO_SHORT, &mpi_type)))
+    if ((ret = find_mpi_type(PIO_SHORT, &mpi_type, &type_size)))
         return ret;
-    if (mpi_type != MPI_SHORT)
+    if (mpi_type != MPI_SHORT || type_size != 2)
         return ERR_WRONG;
 
-    if ((ret = find_mpi_type(PIO_INT, &mpi_type)))
+    if ((ret = find_mpi_type(PIO_INT, &mpi_type, &type_size)))
         return ret;
-    if (mpi_type != MPI_INT)
+    if (mpi_type != MPI_INT || type_size != 4)
         return ERR_WRONG;
 
-    if ((ret = find_mpi_type(PIO_FLOAT, &mpi_type)))
+    if ((ret = find_mpi_type(PIO_FLOAT, &mpi_type, &type_size)))
         return ret;
-    if (mpi_type != MPI_FLOAT)
+    if (mpi_type != MPI_FLOAT || type_size != 4)
         return ERR_WRONG;
 
-    if ((ret = find_mpi_type(PIO_DOUBLE, &mpi_type)))
+    if ((ret = find_mpi_type(PIO_DOUBLE, &mpi_type, &type_size)))
         return ret;
-    if (mpi_type != MPI_DOUBLE)
+    if (mpi_type != MPI_DOUBLE || type_size != 8)
         return ERR_WRONG;
 
 #ifdef _NETCDF4
-    if ((ret = find_mpi_type(PIO_UBYTE, &mpi_type)))
+    if ((ret = find_mpi_type(PIO_UBYTE, &mpi_type, &type_size)))
         return ret;
-    if (mpi_type != MPI_UNSIGNED_CHAR)
+    if (mpi_type != MPI_UNSIGNED_CHAR || type_size != 1)
         return ERR_WRONG;
 
-    if ((ret = find_mpi_type(PIO_USHORT, &mpi_type)))
+    if ((ret = find_mpi_type(PIO_USHORT, &mpi_type, &type_size)))
         return ret;
-    if (mpi_type != MPI_UNSIGNED_SHORT)
+    if (mpi_type != MPI_UNSIGNED_SHORT || type_size != 2)
         return ERR_WRONG;
 
-    if ((ret = find_mpi_type(PIO_UINT, &mpi_type)))
+    if ((ret = find_mpi_type(PIO_UINT, &mpi_type, &type_size)))
         return ret;
-    if (mpi_type != MPI_UNSIGNED)
+    if (mpi_type != MPI_UNSIGNED || type_size != 4)
         return ERR_WRONG;
 
-    if ((ret = find_mpi_type(PIO_INT64, &mpi_type)))
+    if ((ret = find_mpi_type(PIO_INT64, &mpi_type, &type_size)))
         return ret;
-    if (mpi_type != MPI_LONG_LONG)
+    if (mpi_type != MPI_LONG_LONG || type_size != 8)
         return ERR_WRONG;
 
-    if ((ret = find_mpi_type(PIO_UINT64, &mpi_type)))
+    if ((ret = find_mpi_type(PIO_UINT64, &mpi_type, &type_size)))
         return ret;
-    if (mpi_type != MPI_UNSIGNED_LONG_LONG)
+    if (mpi_type != MPI_UNSIGNED_LONG_LONG || type_size != 8)
         return ERR_WRONG;
 
-    if ((ret = find_mpi_type(PIO_STRING, &mpi_type)))
+    if ((ret = find_mpi_type(PIO_STRING, &mpi_type, &type_size)))
         return ret;
-    if (mpi_type != MPI_CHAR)
+    if (mpi_type != MPI_CHAR || type_size != 1)
         return ERR_WRONG;
 
 #endif /* _NETCDF4 */
