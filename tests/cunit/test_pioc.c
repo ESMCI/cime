@@ -886,9 +886,13 @@ int test_names(int iosysid, int num_flavors, int *flavor, int my_rank,
             return ERR_WRONG;
         if (PIOc_setframe(ncid, -1, 0) != PIO_EINVAL)
             return ERR_WRONG;
+        if (PIOc_setframe(ncid, NC_MAX_VARS + 1, 0) != PIO_EINVAL)
+            return ERR_WRONG;
         if (PIOc_advanceframe(ncid + TEST_VAL_42, 0) != PIO_EBADID)
             return ERR_WRONG;
         if (PIOc_advanceframe(ncid, -1) != PIO_EINVAL)
+            return ERR_WRONG;
+        if (PIOc_advanceframe(ncid, NC_MAX_VARS + 1) != PIO_EINVAL)
             return ERR_WRONG;
 
         /* Check the dimension names. */
