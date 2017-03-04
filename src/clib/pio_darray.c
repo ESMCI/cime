@@ -66,16 +66,17 @@ PIO_Offset PIOc_set_buffer_size_limit(PIO_Offset limit)
  * array of data contains one record worth of data for that variable.
  * @param frame an array of length nvars with the frame or record
  * dimension for each of the nvars variables in IOBUF
- * @param fillvalue pointer to the fill value to be used for missing
- * data. Ignored if NULL. If provided, must be the correct fill value
- * for the variable. The correct fill value will be used if NULL is
- * passed.
+ * @param fillvalue pointer an array (of length nvars) of pointers to
+ * the fill value to be used for missing data. Ignored if NULL. If
+ * provided, must be the correct fill value for the variable. The
+ * correct fill value will be used if NULL is passed.
  * @param flushtodisk non-zero to cause buffers to be flushed to disk.
  * @return 0 for success, error code otherwise.
  * @ingroup PIO_write_darray
  */
-int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars, PIO_Offset arraylen,
-                            void *array, const int *frame, void **fillvalue, bool flushtodisk)
+int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
+                            PIO_Offset arraylen, void *array, const int *frame,
+                            void **fillvalue, bool flushtodisk)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Pointer to file information. */
@@ -98,7 +99,8 @@ int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars, PI
         if (varids[v] < 0 || varids[v] > PIO_MAX_VARS)
             return pio_err(ios, file, PIO_EINVAL, __FILE__, __LINE__);
 
-    LOG((1, "PIOc_write_darray_multi ncid = %d ioid = %d nvars = %d arraylen = %ld flushtodisk = %d",
+    LOG((1, "PIOc_write_darray_multi ncid = %d ioid = %d nvars = %d arraylen = %ld "
+         "flushtodisk = %d",
          ncid, ioid, nvars, arraylen, flushtodisk));
 
     /* Check that we can write to this file. */
@@ -115,7 +117,8 @@ int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars, PI
      * large as the largest used to accommodate this serial io
      * method. */
     vdesc0 = file->varlist + varids[0];
-    pioassert(!vdesc0->iobuf, "Attempt to overwrite existing io buffer",__FILE__, __LINE__);
+    pioassert(!vdesc0->iobuf, "Attempt to overwrite existing io buffer",__FILE__,
+              __LINE__);
 
     /* ??? */
     /*   rlen = iodesc->llen*nvars; */
@@ -336,22 +339,6 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
     if (iodesc->ndof != arraylen)
         LOG((1, "User supplied array is larger than expected, arraylen != iodesc->ndof"));
 
-    /* Get a pointer to the buffer space for this file. It will hold
-     * data from one or more variables that fit the same
-     * description. */
-    wmb = &file->buffer;
-
-    /* If the ioid is not initialized, set it. For non record vars,
-     * use the negative ??? */
-    if (wmb->ioid == -1)
-        wmb->ioid = recordvar ? ioid : -ioid;
-    else
-    {
-        /* Move to end of list. */
-        while (wmb->next && wmb->ioid != (recordvar ? ioid : -ioid))
-            wmb = wmb->next;
-    }
-
     /* The write multi buffer wmulti_buffer is the cache on compute
        nodes that will collect and store multiple variables before
        sending them to the io nodes. Aggregating variables in this way
@@ -360,7 +347,20 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
        decomposition and base data size and we also need to keep track
        of whether each is a recordvar (has an unlimited dimension) or
        not. */
-    if ((recordvar && wmb->ioid != ioid) || (!recordvar && wmb->ioid != -(ioid)))
+    wmb = &file->buffer;
+
+    /* If the ioid is not initialized. */
+    if (wmb->ioid == -1)
+        wmb->ioid = ioid;
+    else
+    {
+        /* Move to end of list or the entry that matches this ioid. */
+        while (wmb->next && wmb->ioid != ioid)
+            wmb = wmb->next;
+    }
+
+    /* If this is a new wmb entry, initialize it. */
+    if (wmb->ioid != ioid)
     {
         /* Allocate a buffer. */
         if (!(wmb->next = bget((bufsize)sizeof(wmulti_buffer))))
@@ -370,7 +370,7 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
         /* Set pointer to newly allocated buffer and initialize.*/
         wmb = wmb->next;
         wmb->next = NULL;
-        wmb->ioid = recordvar ? ioid : -ioid;
+        wmb->ioid = ioid;
         wmb->validvars = 0;
         wmb->arraylen = arraylen;
         wmb->vid = NULL;
