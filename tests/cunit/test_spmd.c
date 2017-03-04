@@ -189,16 +189,16 @@ int run_sc_tests(MPI_Comm test_comm)
     if (gcd_array(SC_ARRAY_LEN, array4) != 1)
         return ERR_WRONG;
 
-    /* Test computestartandcount. */
+    /* Test compute_one_dim. */
     PIO_Offset start, count;
-    computestartandcount(4, 4, my_rank, &start, &count);
+    compute_one_dim(4, 4, my_rank, &start, &count);
     if (start != my_rank || count != 1)
         return ERR_WRONG;
-    computestartandcount(400, 4, my_rank, &start, &count);
+    compute_one_dim(400, 4, my_rank, &start, &count);
     if (start != my_rank * 100 || count != 100)
         return ERR_WRONG;
     /* Left over data will go to task 3. */
-    computestartandcount(5, 4, my_rank, &start, &count);
+    compute_one_dim(5, 4, my_rank, &start, &count);
     if (start != my_rank || count != (my_rank == 3 ? 2 : 1))
         return ERR_WRONG;
     printf("my_rank = %d start = %lld count = %lld\n", my_rank, start, count);
