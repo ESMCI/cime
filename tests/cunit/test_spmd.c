@@ -435,6 +435,18 @@ int test_find_mpi_type()
     if (mpi_type != MPI_DOUBLE || type_size != 8)
         return ERR_WRONG;
 
+    /* These should also work. */
+    if ((ret = find_mpi_type(PIO_INT, &mpi_type, NULL)))
+        return ret;
+    if (mpi_type != MPI_INT)
+        return ERR_WRONG;
+    if ((ret = find_mpi_type(PIO_INT, NULL, &type_size)))
+        return ret;
+    if (type_size != 4)
+        return ERR_WRONG;
+    if ((ret = find_mpi_type(PIO_INT, NULL, NULL)))
+        return ret;
+
 #ifdef _NETCDF4
     if ((ret = find_mpi_type(PIO_UBYTE, &mpi_type, &type_size)))
         return ret;
