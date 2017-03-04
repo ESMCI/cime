@@ -226,7 +226,7 @@ PIO_Offset GCDblocksize(int arrlen, const PIO_Offset *arr_in)
  * Compute start and count values for each io task. This is used in
  * PIOc_InitDecomp().
  *
- * @param basetype the PIO data type used in this decompotion.
+ * @param pio_type the PIO data type used in this decompotion.
  * @param ndims the number of dimensions in the variable, not
  * including the unlimited dimension.
  * @param gdims an array of global size of each dimension.
@@ -237,7 +237,7 @@ PIO_Offset GCDblocksize(int arrlen, const PIO_Offset *arr_in)
  * @param num_aiotasks the number of IO tasks used(?)
  * @returns 0 for success, error code otherwise.
  */
-int CalcStartandCount(int basetype, int ndims, const int *gdims, int num_io_procs,
+int CalcStartandCount(int pio_type, int ndims, const int *gdims, int num_io_procs,
                       int myiorank, PIO_Offset *start, PIO_Offset *count, int *num_aiotasks)
 {
     int minbytes; 
@@ -264,7 +264,7 @@ int CalcStartandCount(int basetype, int ndims, const int *gdims, int num_io_proc
     maxbytes = blocksize + 256;
 
     /* Determine the size of the data type. */
-    if ((ret = find_mpi_type(basetype, NULL, &basesize)))
+    if ((ret = find_mpi_type(pio_type, NULL, &basesize)))
         return ret;
 
     /* Determine the minimum block size. */

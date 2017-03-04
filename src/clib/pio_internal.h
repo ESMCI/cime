@@ -145,7 +145,7 @@ extern "C" {
     void pioassert(bool exp, const char *msg, const char *fname, int line);
 
     /* Compute start and count values for each io task for a decomposition. */
-    int CalcStartandCount(int basetype, int ndims, const int *gdims, int num_io_procs,
+    int CalcStartandCount(int pio_type, int ndims, const int *gdims, int num_io_procs,
                           int myiorank, PIO_Offset *start, PIO_Offset *count, int *num_aiotasks);
 
     /* Check return from MPI function and print error message. */
