@@ -735,11 +735,6 @@ extern "C" {
     int PIOc_read_nc_decomp(int iosysid, const char *filename, int *ioid, MPI_Comm comm,
                             int pio_type, char *title, char *history, int *fortran_order);
 
-    /* Initializing IO system. */
-    int PIOc_Init_Async(MPI_Comm world, int num_io_procs, int *io_proc_list, int component_count,
-                        int *num_procs_per_comp, int **proc_list, MPI_Comm *io_comm, MPI_Comm *comp_comm,
-                        int *iosysidp);
-
     /* Initializing IO system for async. */
     int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list, int component_count,
                         int *num_procs_per_comp, int **proc_list, MPI_Comm *io_comm, MPI_Comm *comp_comm,

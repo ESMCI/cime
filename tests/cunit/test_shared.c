@@ -20,21 +20,20 @@ int test_async2(int my_rank, int num_flavors, int *flavor, MPI_Comm test_comm,
                 int component_count, int num_io_procs, int target_ntasks, char *test_name)
 {
     int iosysid[component_count];  /* The ID for the parallel I/O system. */
-    int num_procs[component_count + 1]; /* Num procs in each component. */
+    int num_procs[component_count]; /* Num procs in each component. */
     MPI_Comm io_comm;              /* Will get a duplicate of IO communicator. */
     MPI_Comm comp_comm[component_count]; /* Will get duplicates of computation communicators. */
     int mpierr;  /* Return code from MPI functions. */
     int ret;     /* Return code. */
 
-    num_procs[0] = 1;
-    num_procs[1] = target_ntasks - 1;
+    num_procs[0] = target_ntasks - 1;
 
     /* Is the current process a computation task? */
     int comp_task = my_rank < num_io_procs ? 0 : 1;
     printf("%d comp_task = %d\n", my_rank, comp_task);
 
     /* Initialize the IO system. */
-    if ((ret = PIOc_Init_Async(test_comm, num_io_procs, NULL, component_count,
+    if ((ret = PIOc_init_async(test_comm, num_io_procs, NULL, component_count,
                                num_procs, NULL, &io_comm, comp_comm, iosysid)))
         ERR(ERR_INIT);
     for (int c = 0; c < component_count; c++)
