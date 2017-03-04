@@ -101,35 +101,46 @@ long long lgcd_array(int nain, long long *ain)
 }
 
 /**
- * Compute start and count arrays.
+ * Compute one element of start and count arrays. This function is
+ * used by CalcStartandCount().
  *
- * @param gdim
- * @param ioprocs
- * @param rank
- * @param start
- * @param kount
+ * @param gdim global size of one dimension.
+ * @param ioprocs number of io tasks?
+ * @param rank IO rank of this task
+ * @param start pointer to PIO_Offset that will get the start value.
+ * @param count pointer to PIO_Offset that will get the count value.
  */
 void computestartandcount(int gdim, int ioprocs, int rank, PIO_Offset *start,
-                          PIO_Offset *kount)
+                          PIO_Offset *count)
 {
-    int irank;
+    int irank;     /* The IO rank for this task. */
     int remainder;
     int adds;
-    PIO_Offset lstart, lkount;
+    PIO_Offset lstart, lcount;
 
+    /* Determin which IO task to use. */
     irank = rank % ioprocs;
-    lkount = (long int)(gdim / ioprocs);
-    lstart = (long int)(lkount * irank);
-    remainder = gdim - lkount * ioprocs;
 
-    if (remainder >= ioprocs-irank)
+    /* Each IO task will have its share of the global dim. */
+    lcount = (long int)(gdim / ioprocs);
+
+    /* Find the start for this task. */
+    lstart = (long int)(lcount * irank);
+
+    /* Is there anything left over? */
+    remainder = gdim - lcount * ioprocs;
+
+    /* Distribute left over data to some IO tasks. */
+    if (remainder >= ioprocs - irank)
     {
-        lkount++;
+        lcount++;
         if ((adds = irank + remainder - ioprocs) > 0)
             lstart += adds;
     }
+
+    /* Return results to caller. */
     *start = lstart;
-    *kount = lkount;
+    *count = lcount;
 }
 
 /**
@@ -212,23 +223,26 @@ PIO_Offset GCDblocksize(int arrlen, const PIO_Offset *arr_in)
 }
 
 /**
- * Compute start and count values for each io task.
+ * Compute start and count values for each io task. This is used in
+ * PIOc_InitDecomp().
  *
- * @param basetype
- * @param ndims
- * @param gdims
- * @param num_io_procs
- * @param myiorank
- * @param start
- * @param kount
+ * @param basetype the PIO data type used in this decompotion.
+ * @param ndims the number of dimensions in the variable, not
+ * including the unlimited dimension.
+ * @param gdims an array of global size of each dimension.
+ * @param num_io_procs the number of IO tasks.
+ * @param myiorank rank of this task in IO communicator.
+ * @param start array of length ndims with data start values.
+ * @param count array of length ndims with data count values.
+ * @returns num_aiotasks the number of IO tasks.
  */
 int CalcStartandCount(int basetype, int ndims, const int *gdims, int num_io_procs,
-                      int myiorank, PIO_Offset *start, PIO_Offset *kount)
+                      int myiorank, PIO_Offset *start, PIO_Offset *count)
 {
-    int minbytes;
+    int minbytes; 
     int maxbytes;
-    int minblocksize;
-    int basesize;
+    int minblocksize; /* Like minbytes, but in data elements. */
+    int basesize;     /* Size in bytes of base data type. */
     int use_io_procs;
     int i;
     long int p;
@@ -239,13 +253,15 @@ int CalcStartandCount(int basetype, int ndims, const int *gdims, int num_io_proc
     int tiorank;
     int ioprocs;
     int tioprocs;
-    int mystart[ndims], mykount[ndims];
+    int mystart[ndims], mycount[ndims];
     long int pknt;
-    long int tpsize=0;
+    long int tpsize = 0;
 
+    /* ??? */
     minbytes = blocksize - 256;
-    maxbytes  = blocksize + 256;
+    maxbytes = blocksize + 256;
 
+    /* Determine the size of the data type. */
     switch (basetype)
     {
     case PIO_INT:
@@ -261,20 +277,26 @@ int CalcStartandCount(int basetype, int ndims, const int *gdims, int num_io_proc
         piodie("Invalid basetype ",__FILE__,__LINE__);
         break;
     }
+
+    /* Determine the minimum block size. */
     minblocksize = minbytes / basesize;
 
+    /* Find the total size of the data. */
     pgdims = 1;
     for (i = 0; i < ndims; i++)
         pgdims *= (long int)gdims[i];
+
+    /* ??? */
     p = pgdims;
     use_io_procs = max(1, min((int)((float)p / (float)minblocksize + 0.5), num_io_procs));
     converged = 0;
     for (i = 0; i < ndims; i++)
     {
         mystart[i] = 0;
-        mykount[i] = 0;
+        mycount[i] = 0;
     }
 
+    /* ??? */
     while (!converged)
     {
         for (iorank = 0; iorank < use_io_procs; iorank++)
@@ -282,7 +304,7 @@ int CalcStartandCount(int basetype, int ndims, const int *gdims, int num_io_proc
             for (i = 0; i < ndims; i++)
             {
                 start[i] = 0;
-                kount[i] = gdims[i];
+                count[i] = gdims[i];
             }
             ldims = ndims - 1;
             p = basesize;
@@ -298,7 +320,7 @@ int CalcStartandCount(int basetype, int ndims, const int *gdims, int num_io_proc
 
             if (gdims[ldims] < use_io_procs)
             {
-                if (ldims > 0 && gdims[ldims-1] > use_io_procs)
+                if (ldims > 0 && gdims[ldims - 1] > use_io_procs)
                     ldims--;
                 else
                     use_io_procs -= (use_io_procs % gdims[ldims]);
@@ -310,8 +332,8 @@ int CalcStartandCount(int basetype, int ndims, const int *gdims, int num_io_proc
             {
                 if (gdims[i] >= ioprocs)
                 {
-                    computestartandcount(gdims[i], ioprocs, tiorank, start + i, kount + i);
-                    if (start[i] + kount[i] > gdims[i] + 1)
+                    computestartandcount(gdims[i], ioprocs, tiorank, start + i, count + i);
+                    if (start[i] + count[i] > gdims[i] + 1)
                     {
                         piodie("Start plus count exceeds dimension bound",__FILE__,__LINE__);
                     }
@@ -320,7 +342,7 @@ int CalcStartandCount(int basetype, int ndims, const int *gdims, int num_io_proc
                 {
                     tioprocs = gdims[i];
                     tiorank = (iorank * tioprocs) / ioprocs;
-                    computestartandcount(gdims[i], tioprocs, tiorank, start + i, kount + i);
+                    computestartandcount(gdims[i], tioprocs, tiorank, start + i, count + i);
                     ioprocs = ioprocs / tioprocs;
                     tiorank  = iorank % ioprocs;
                 }
@@ -332,13 +354,13 @@ int CalcStartandCount(int basetype, int ndims, const int *gdims, int num_io_proc
                 for (i = 0; i < ndims; i++)
                 {
                     mystart[i] = start[i];
-                    mykount[i] = kount[i];
+                    mycount[i] = count[i];
                 }
             }
             pknt = 1;
 
             for(i = 0; i < ndims; i++)
-                pknt *= kount[i];
+                pknt *= count[i];
 
             tpsize += pknt;
 
@@ -360,12 +382,14 @@ int CalcStartandCount(int basetype, int ndims, const int *gdims, int num_io_proc
         }
     }
 
+    /* On IO tasks, set the start/count arrays to computed values. On
+     * non-io tasks set start/count to zero. */
     if (myiorank < use_io_procs)
     {
         for (i = 0; i < ndims; i++)
         {
             start[i] = mystart[i];
-            kount[i] = mykount[i];
+            count[i] = mycount[i];
         }
     }
     else
@@ -373,7 +397,7 @@ int CalcStartandCount(int basetype, int ndims, const int *gdims, int num_io_proc
         for (i = 0; i < ndims; i++)
         {
             start[i] = 0;
-            kount[i] = 0;
+            count[i] = 0;
         }
     }
 
