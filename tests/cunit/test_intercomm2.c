@@ -317,7 +317,7 @@ int main(int argc, char **argv)
             ERR(ret);
 
         /* How many processors will be used for our IO and 2 computation components. */
-        int num_procs[COMPONENT_COUNT + 1] = {2, 2};
+        int num_procs[COMPONENT_COUNT] = {2};
 
         /* Is the current process a computation task? */
         int comp_task = my_rank < 2 ? 0 : 1;
@@ -327,7 +327,7 @@ int main(int argc, char **argv)
         int my_comp_idx = comp_task ? 0 : -1;
 
         /* Initialize the IO system. */
-        if ((ret = PIOc_Init_Async(test_comm, NUM_IO_PROCS, NULL, COMPONENT_COUNT,
+        if ((ret = PIOc_init_async(test_comm, NUM_IO_PROCS, NULL, COMPONENT_COUNT,
                                    num_procs, NULL, NULL, NULL, iosysid)))
             ERR(ERR_AWFUL);
 
