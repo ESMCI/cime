@@ -574,62 +574,84 @@ io_region *alloc_region(int ndims)
 }
 
 /**
- * Find the MPI type for a PIO type.
+ * Given a PIO type, find the MPI type and the type size.
  *
  * @param pio_type a PIO type, PIO_INT, PIO_FLOAT, etc.
  * @param mpi_type a pointer to MPI_Datatype that will get the MPI
- * type that coresponds to the PIO type.
+ * type that coresponds to the PIO type. Ignored if NULL.
+ * @param type_size a pointer to int that will get the size of the
+ * type, in bytes. (For example, 4 for PIO_INT). Ignored if NULL.
  * @returns 0 for success, error code otherwise.
  */
-int find_mpi_type(int pio_type, MPI_Datatype *mpi_type)
+int find_mpi_type(int pio_type, MPI_Datatype *mpi_type, int *type_size)
 {
-    /* Check input. */
-    pioassert(mpi_type, "invalid input", __FILE__, __LINE__);
+    MPI_Datatype my_mpi_type;
+    int my_type_size;
 
     /* Decide on the base type. */
     switch(pio_type)
     {
     case PIO_BYTE:
-        *mpi_type = MPI_BYTE;
+        my_mpi_type = MPI_BYTE;
+        my_type_size = NETCDF_CHAR_SIZE;
         break;
     case PIO_CHAR:
-        *mpi_type = MPI_CHAR;
+        my_mpi_type = MPI_CHAR;
+        my_type_size = NETCDF_CHAR_SIZE;
         break;
     case PIO_SHORT:
-        *mpi_type = MPI_SHORT;
+        my_mpi_type = MPI_SHORT;
+        my_type_size = NETCDF_SHORT_SIZE;
         break;
     case PIO_INT:
-        *mpi_type = MPI_INT;
+        my_mpi_type = MPI_INT;
+        my_type_size = NETCDF_INT_FLOAT_SIZE;
         break;
     case PIO_FLOAT:
-        *mpi_type = MPI_FLOAT;
+        my_mpi_type = MPI_FLOAT;
+        my_type_size = NETCDF_INT_FLOAT_SIZE;
         break;
     case PIO_DOUBLE:
-        *mpi_type = MPI_DOUBLE;
+        my_mpi_type = MPI_DOUBLE;
+        my_type_size = NETCDF_DOUBLE_INT64_SIZE;
         break;
 #ifdef _NETCDF4
     case PIO_UBYTE:
-        *mpi_type = MPI_UNSIGNED_CHAR;
+        my_mpi_type = MPI_UNSIGNED_CHAR;
+        my_type_size = NETCDF_CHAR_SIZE;
         break;
     case PIO_USHORT:
-        *mpi_type = MPI_UNSIGNED_SHORT;
+        my_mpi_type = MPI_UNSIGNED_SHORT;
+        my_type_size = NETCDF_SHORT_SIZE;
         break;
     case PIO_UINT:
-        *mpi_type = MPI_UNSIGNED;
+        my_mpi_type = MPI_UNSIGNED;
+        my_type_size = NETCDF_INT_FLOAT_SIZE;
         break;
     case PIO_INT64:
-        *mpi_type = MPI_LONG_LONG;
+        my_mpi_type = MPI_LONG_LONG;
+        my_type_size = NETCDF_DOUBLE_INT64_SIZE;
         break;
     case PIO_UINT64:
-        *mpi_type = MPI_UNSIGNED_LONG_LONG;
+        my_mpi_type = MPI_UNSIGNED_LONG_LONG;
+        my_type_size = NETCDF_DOUBLE_INT64_SIZE;
         break;
     case PIO_STRING:
-        *mpi_type = MPI_CHAR;
+        my_mpi_type = MPI_CHAR;
+        my_type_size = NETCDF_CHAR_SIZE;
         break;
 #endif /* _NETCDF4 */
     default:
         return PIO_EBADTYPE;
     }
+
+    /* If caller wants MPI type, set it. */
+    if (mpi_type)
+        *mpi_type = my_mpi_type;
+
+    /* If caller wants type size, set it. */
+    if (type_size)
+        *type_size = my_type_size;
 
     return PIO_NOERR;
 }
@@ -658,7 +680,7 @@ int malloc_iodesc(iosystem_desc_t *ios, int piotype, int ndims,
         return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
     /* Get the MPI type corresponding with the PIO type. */
-    if ((ret = find_mpi_type(piotype, &mpi_type)))
+    if ((ret = find_mpi_type(piotype, &mpi_type, NULL)))
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
     /* Decide on the base type. */
@@ -1079,7 +1101,7 @@ int PIOc_read_nc_decomp(int iosysid, const char *filename, int *ioidp, MPI_Comm 
          filename, iosysid, pio_type));
 
     /* Get the MPI type. We need it as an int. */
-    if ((ret = find_mpi_type(pio_type, &mpi_type)))
+    if ((ret = find_mpi_type(pio_type, &mpi_type, NULL)))
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
     mpi_type_int = mpi_type;
     LOG((2, "mpi_type = %d mpi_type_int = %d", mpi_type, mpi_type_int));

@@ -12,6 +12,15 @@
 
 #include <pio.h>
 
+/* These are the sizes of types in netCDF files. Do not replace these
+ * constants with sizeof() calls for C types. They are not the
+ * same. Even on a system where sizeof(short) is 4, the size of a
+ * short in a netCDF file is 2 bytes. */
+#define NETCDF_CHAR_SIZE 1
+#define NETCDF_SHORT_SIZE 2
+#define NETCDF_INT_FLOAT_SIZE 4
+#define NETCDF_DOUBLE_INT64_SIZE 8
+
 /* It seems that some versions of openmpi fail to define
  * MPI_OFFSET. */
 #ifdef OMPI_OFFSET_DATATYPE
@@ -123,8 +132,8 @@ extern "C" {
     int check_netcdf2(iosystem_desc_t *ios, file_desc_t *file, int status,
                       const char *fname, int line);
 
-    /* Find the MPI type that matches a PIO type. */
-    int find_mpi_type(int pio_type, MPI_Datatype *mpi_type);
+    /* Given PIO type, find MPI type and type size. */
+    int find_mpi_type(int pio_type, MPI_Datatype *mpi_type, int *type_size);
 
     /* Check whether an IO type is valid for this build. */
     int iotype_is_valid(int iotype);
@@ -135,8 +144,9 @@ extern "C" {
     /* Assert that an expression is true. */
     void pioassert(bool exp, const char *msg, const char *fname, int line);
 
-    int CalcStartandCount(int basetype, int ndims, const int *gdims, int num_io_procs,
-                          int myiorank, PIO_Offset *start, PIO_Offset *kount);
+    /* Compute start and count values for each io task for a decomposition. */
+    int CalcStartandCount(int pio_type, int ndims, const int *gdims, int num_io_procs,
+                          int myiorank, PIO_Offset *start, PIO_Offset *count, int *num_aiotasks);
 
     /* Check return from MPI function and print error message. */
     void CheckMPIReturn(int ierr, const char *file, int line);
