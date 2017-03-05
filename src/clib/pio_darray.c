@@ -67,9 +67,7 @@ PIO_Offset PIOc_set_buffer_size_limit(PIO_Offset limit)
  * @param frame an array of length nvars with the frame or record
  * dimension for each of the nvars variables in IOBUF
  * @param fillvalue pointer an array (of length nvars) of pointers to
- * the fill value to be used for missing data. Ignored if NULL. If
- * provided, must be the correct fill value for the variable. The
- * correct fill value will be used if NULL is passed.
+ * the fill value to be used for missing data.
  * @param flushtodisk non-zero to cause buffers to be flushed to disk.
  * @return 0 for success, error code otherwise.
  * @ingroup PIO_write_darray
@@ -136,12 +134,12 @@ int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
         {
             if ((mpierr = MPI_Type_size(iodesc->basetype, &vsize)))
                 return check_mpi(file, mpierr, __FILE__, __LINE__);
-            LOG((3, "vsize = %d", vsize));
+            LOG((3, "rlen = %d vsize = %d", rlen, vsize));
 
             /* Allocate memory for the variable buffer. */
             if (!(vdesc0->iobuf = bget((size_t)vsize * (size_t)rlen)))
                 piomemerror(ios, (size_t)rlen * (size_t)vsize, __FILE__, __LINE__);
-            LOG((3, "allocated %ld bytes for variable buffer", (size_t)rlen * (size_t)vsize));
+            LOG((3, "allocated %lld bytes for variable buffer", (size_t)rlen * (size_t)vsize));
 
             /* If data are missing for the BOX rearranger, insert fill values. */
             if (iodesc->needsfill && iodesc->rearranger == PIO_REARR_BOX)
@@ -477,7 +475,7 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
             case MPI_BYTE:
                 fill = &byte_fill;
                 break;
-            case MPI_CHARACTER:
+            case MPI_CHAR:
                 fill = &char_fill;
                 break;
             case MPI_SHORT:

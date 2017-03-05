@@ -205,7 +205,7 @@ int PIOc_inq_natts(int ncid, int *ngattsp)
  */
 int PIOc_inq_unlimdim(int ncid, int *unlimdimidp)
 {
-    LOG((1, "PIOc_inq_unlimdim ncid = %d unlimdimidp = %d", ncid, unlimdimidp));
+    LOG((1, "PIOc_inq_unlimdim ncid = %d", ncid));
     return PIOc_inq(ncid, NULL, NULL, NULL, unlimdimidp);
 }
 
@@ -629,7 +629,6 @@ int PIOc_inq_var(int ncid, int varid, char *name, nc_type *xtypep, int *ndimsp,
     if ((ierr = pio_get_file(ncid, &file)))
         return pio_err(NULL, NULL, ierr, __FILE__, __LINE__);
     ios = file->iosystem;
-    LOG((2, "got file and iosystem"));
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
     if (ios->async_interface)
@@ -689,8 +688,6 @@ int PIOc_inq_var(int ncid, int varid, char *name, nc_type *xtypep, int *ndimsp,
         if (file->iotype != PIO_IOTYPE_PNETCDF && file->do_io)
         {
             ierr = nc_inq_varndims(file->fh, varid, &ndims);
-            LOG((2, "file->fh = %d varid = %d xtypep = %d ndimsp = %d dimidsp = %d nattsp = %d",
-                 file->fh, varid, xtypep, ndimsp, dimidsp, nattsp));
             if (!ierr)
             {
                 char my_name[NC_MAX_NAME + 1];
@@ -957,8 +954,7 @@ int PIOc_inq_att(int ncid, int varid, const char *name, nc_type *xtypep,
     if (!name || strlen(name) > NC_MAX_NAME)
         return pio_err(ios, file, PIO_EINVAL, __FILE__, __LINE__);
 
-    LOG((1, "PIOc_inq_att ncid = %d varid = %d xtpyep = %d lenp = %d",
-         ncid, varid, xtypep, lenp));
+    LOG((1, "PIOc_inq_att ncid = %d varid = %d", ncid, varid));
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
     if (ios->async_interface)
@@ -1601,8 +1597,7 @@ int PIOc_set_fill(int ncid, int fillmode, int *old_modep)
     int ierr;              /* Return code from function calls. */
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI functions. */
 
-    LOG((1, "PIOc_set_fill ncid = %d fillmode = %d old_modep = %d", ncid, fillmode,
-         old_modep));
+    LOG((1, "PIOc_set_fill ncid = %d fillmode = %d", ncid, fillmode));
 
     /* Find the info about this file. */
     if ((ierr = pio_get_file(ncid, &file)))

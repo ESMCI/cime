@@ -52,7 +52,7 @@ int compute_buffer_init(iosystem_desc_t *ios)
         bectl(NULL, malloc, free, pio_cnbuffer_limit);
     }
 #endif
-    LOG((2, "compute_buffer_init CN_bpool = %d", CN_bpool));
+    LOG((2, "compute_buffer_init complete"));
 
     return PIO_NOERR;
 }
