@@ -783,8 +783,10 @@ int main(int argc, char **argv)
 {
 #define NUM_REARRANGERS_TO_TEST 2
     int rearranger[NUM_REARRANGERS_TO_TEST] = {PIO_REARR_BOX, PIO_REARR_SUBSET};
-#define NUM_TYPES_TO_TEST 4
-    int test_type[NUM_TYPES_TO_TEST] = {PIO_SHORT, PIO_INT, PIO_FLOAT, PIO_DOUBLE};
+/* #define NUM_TYPES_TO_TEST 4 */
+/*     int test_type[NUM_TYPES_TO_TEST] = {PIO_SHORT, PIO_INT, PIO_FLOAT, PIO_DOUBLE}; */
+#define NUM_TYPES_TO_TEST 1
+    int test_type[NUM_TYPES_TO_TEST] = {PIO_BYTE};
     int my_rank;
     int ntasks;
     int num_flavors; /* Number of PIO netCDF flavors in this build. */
