@@ -456,36 +456,73 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
         }
         else
         {
+            void *fill;
+            signed char byte_fill = PIO_FILL_BYTE;
+            char char_fill = PIO_FILL_CHAR;
+            short short_fill = PIO_FILL_SHORT;
+            int int_fill = PIO_FILL_INT;
+            float float_fill = PIO_FILL_FLOAT;
+            double double_fill = PIO_FILL_DOUBLE;
+#ifdef _NETCDF4
+            unsigned char ubyte_fill = PIO_FILL_UBYTE;
+            unsigned short ushort_fill = PIO_FILL_USHORT;
+            unsigned int uint_fill = PIO_FILL_UINT;
+            long long int64_fill = PIO_FILL_INT64;
+            long long uint64_fill = PIO_FILL_UINT64;
+#endif /* _NETCDF4 */
             vtype = (MPI_Datatype)iodesc->basetype;
             LOG((3, "caller did not provide fill value vtype = %d", vtype));
-            if (vtype == MPI_INT)
+            switch (vtype)
             {
-                int fill = PIO_FILL_INT;
-                memcpy((char *)wmb->fillvalue + tsize * wmb->validvars, &fill, tsize);
-            }
-            else if (vtype == MPI_FLOAT)
-            {
-                float fill = PIO_FILL_FLOAT;
-                memcpy((char *)wmb->fillvalue + tsize * wmb->validvars, &fill, tsize);
-            }
-            else if (vtype == MPI_DOUBLE)
-            {
-                double fill = PIO_FILL_DOUBLE;
-                memcpy((char *)wmb->fillvalue + tsize * wmb->validvars, &fill, tsize);
-            }
-            else if (vtype == MPI_CHARACTER)
-            {
-                char fill = PIO_FILL_CHAR;
-                memcpy((char *)wmb->fillvalue + tsize * wmb->validvars, &fill, tsize);
-            }
-            else
+            case MPI_BYTE:
+                fill = &byte_fill;
+                break;
+            case MPI_CHARACTER:
+                fill = &char_fill;
+                break;
+            case MPI_SHORT:
+                fill = &short_fill;
+                break;
+            case MPI_INT:
+                fill = &int_fill;
+                break;
+            case MPI_FLOAT:
+                fill = &float_fill;
+                break;
+            case MPI_DOUBLE:
+                fill = &double_fill;
+                break;
+#ifdef _NETCDF4
+            case MPI_UNSIGNED_CHAR:
+                fill = &ubyte_fill;
+                break;
+            case MPI_UNSIGNED_SHORT:
+                fill = &ushort_fill;
+                break;
+            case MPI_UNSIGNED:
+                fill = &uint_fill;
+                break;
+            case MPI_LONG_LONG:
+                fill = &int64_fill;
+                break;
+            case MPI_UNSIGNED_LONG_LONG:
+                fill = &uint64_fill;
+                break;
+#endif /* _NETCDF4 */
+            default:
                 return pio_err(ios, file, PIO_EBADTYPE, __FILE__, __LINE__);
+            }
+            memcpy((char *)wmb->fillvalue + tsize * wmb->validvars, fill, tsize);
+            LOG((3, "copied fill value"));
         }
     }
 
+    LOG((3, "here we are"));
     /* Tell the buffer about the data it is getting. */
     wmb->arraylen = arraylen;
     wmb->vid[wmb->validvars] = varid;
+    LOG((3, "wmb->validvars = %d wmb->vid[wmb->validvars] = %d", wmb->validvars,
+         wmb->vid[wmb->validvars]));
 
     /* Copy the user-provided data to the buffer. */
     bufptr = (void *)((char *)wmb->data + arraylen * tsize * wmb->validvars);
