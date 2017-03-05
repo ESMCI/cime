@@ -263,7 +263,7 @@ int CalcStartandCount(int pio_type, int ndims, const int *gdims, int num_io_proc
     int ret;
 
     /* Check inputs. */
-    pioassert(basetype > 0 && ndims > 0 && gdims && num_io_procs > 0 && start && count,
+    pioassert(pio_type > 0 && ndims > 0 && gdims && num_io_procs > 0 && start && count,
               "invalid input", __FILE__, __LINE__);
 
     /* We are trying to find start and count indices for each iotask
