@@ -1,5 +1,6 @@
 /*
- * Tests for PIO distributed arrays.
+ * Tests for PIO distributed arrays. This tests cases when arrays do
+ * not distribute evenly over the processors.
  *
  * Ed Hartnett, 3/6/17
  */
@@ -22,8 +23,9 @@
 /* Number of computational components to create. */
 #define COMPONENT_COUNT 1
 
-/* But sometimes we need arrays of the non-record dimensions. */
+/* This is for 3D data decompositions. */
 #define NDIM3 3
+
 /* Create the decomposition to divide the 4-dimensional sample data
  * between the 4 tasks. For the purposes of decomposition we are only
  * concerned with 3 dimensions - we ignore the unlimited dimension.
