@@ -28,7 +28,7 @@ In the following an F compset will be used as an illustration. Utilizing the mul
    NTASKS(WAV)=128, NTHRDS(WAV)=1, ROOTPE(WAV)=0, NINST(WAV)=1
    NTASKS(CPL)=128, NTHRDS(CPL)=1, ROOTPE(CPL)=0
 
-In this F compset, the atm, lnd, rof are full prognostic components, the ocn is a prescribed data component, cice is a mixed prescribed/prognostic component (ice-coverage is prescribed) and glc and wav are stub components. 
+In this F compset, the atm, lnd, rof are active components, the ocn is a prescribed data component, cice is a mixed prescribed/active component (ice-coverage is prescribed) and glc and wav are stub components. 
 Lets say we want to run 2 instances of CAM in this experiment. 
 The current implementation of multi-instances will also require you to run 2 instances of CLM, CICE and RTM. 
 However, you have the flexibility to run either 1 or 2 instances of DOCN (we can ignore glc and wav since they do not do anything in this compset). 

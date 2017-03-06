@@ -37,25 +37,25 @@ The following concepts are ingrained in CIME and will occur frequently in this d
    *components* of the climate model. We say a climate model has an atmosphere component, an ocean component, etc.  
    The resulting set of components is called the *component set* or *compset*.
 
-**full** vs **data** vs **stub** models:
-   A component for the atmosphere or ocean that solve a complex set of equations to describe their behavior are called *full* models.
+**active** vs **data** vs **stub** models:
+   A component for the atmosphere or ocean that solve a complex set of equations to describe their behavior are called *active* models, and will sometimes be refered to as *prognostic* or *full* models.
 
-   CIME recognizes 7 different full models of a climate model, those are:
+   CIME recognizes 7 different active models of a climate model, those are:
 
        atmosphere, ocean, sea-ice, land surface, river, glacier, wave
 
    In addition, an "external processing system" or ESP component is also allowed.
 
-   For some climate problems, its necessary to reduce feedbacks within the system by replacing a full model with a 
+   For some climate problems, its necessary to reduce feedbacks within the system by replacing a active model with a 
    version that sends and receives the same variables to and from other models but
    the values sent are not computed from the equations but instead read from files.  The values received are ignored.
-   We call these full-model substitutes *data models*" and CIME provides data models for each of the supported components.
+   We call these active-model substitutes *data models* and CIME provides data models for each of the supported components.
 
    For some configurations, a data model is not needed and so CIME provides *stub* versions that simply occupy the
    required place in the climate execution sequence  and do not send or receive any data.
 
 **grid set** or **grid**: 
-   Each full model must solve its equations on a numerical grid.  CIME allows several models within the system to have different grids.  The resulting set of numerical grids is called the *grid set* or sometimes just the
+   Each active model must solve its equations on a numerical grid.  CIME allows several models within the system to have different grids.  The resulting set of numerical grids is called the *grid set* or sometimes just the
    *grid* where *grid* is a unique abbreviation denoting a set of numerical grids.  Sometimes the *resolution* will also
    refer to a specific set of grids with different resolutions.
 
@@ -96,7 +96,7 @@ a climate model, cime is usually one of the first subdirectories under the main 
    :widths: 200, 300
 
    "README, etc.", "typical top-level directory content."
-   "components/", "source code for all of the full models."
+   "components/", "source code for all of the active models."
    "cime/", "All of CIME code"
 
 CIME's content is split in to several subdirectories:
