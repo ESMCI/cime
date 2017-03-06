@@ -111,7 +111,7 @@ Input Data
 ==========
 
 All active and data components use input datasets.
-A local disk needs the directory tree specified by the xml variable ``$DIN_LOC_ROOT`` to be populated with input data in order to run CIME and the CIME complaint prognostic components.
+A local disk needs the directory tree specified by the xml variable ``$DIN_LOC_ROOT`` to be populated with input data in order to run CIME and the CIME complaint active components.
 Input data is provided as part of the CIME release via data from a subversion input data server.
 Data is downloaded from the server on an as needed basis determined by the case, data may already exists in the default local filesystem input data area as specified by ``$DIN_LOC_ROOT`` (see below).
 There is an extensive amount of input data available and it can take significant space on a system, it is recommended that users share a common ``$DIN_LOC_ROOT`` directory on each system if possible.

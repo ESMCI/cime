@@ -19,7 +19,7 @@ You should first use the --help option in calling **create_newcase** to document
 
 CIME supports out of the box ``component sets``, ``model grids`` and ``hardware platforms``.
 
-- Component sets (usually referred to as compsets) define both the specific model components that will be used in a CIME case, *and* any component-specific namelist or configuration settings that are specific to this case.
+- Component sets (usually referred to as *compsets*) define both the specific model components that will be used in a CIME case, *and* any component-specific namelist or configuration settings that are specific to this case.
 
 - Model grids specify the grid for each component making up the model.
 
@@ -49,7 +49,7 @@ The component set (compset) longname has the form::
   WAV  = [SWAV, XWAV]
   ESP  = [SESP]
 
-  If CIME is run with CESM prognostic components, the following additional values are permitted:
+  If CIME is run with CESM active components, the following additional values are permitted:
   ATM  = [CAM40, CAM50, CAM55, CAM60]
   LND  = [CLM45, CLM50]
   ICE  = [CICE]
@@ -59,7 +59,7 @@ The component set (compset) longname has the form::
   WAV  = [WW]
   BGC  = optional BGC scenario
 
-  If CIME is run with ACME prognostic components, the following additional values are permitted:
+  If CIME is run with ACME active components, the following additional values are permitted:
   ATM  = []
   LND  = []
   ICE  = []
@@ -79,7 +79,7 @@ As an example, the CESM compset longname::
 
    1850_CAM60_CLM50%BGC_CICE_POP2%ECO_MOSART_CISM2%NOEVOLVE_WW3_BGC%BDRD
 
-refers to running a pre-industrial control with prognostic CESM components CAM, CLM, CICE, POP2, MOSART, CISM2 and WW3 in a BDRD BGC coupling scenario.
+refers to running a pre-industrial control with active CESM components CAM, CLM, CICE, POP2, MOSART, CISM2 and WW3 in a BDRD BGC coupling scenario.
 The alias for this compset is B1850. Either a compset longname or a compset alias can be used as input to **create_newcase**.
 It is also possible to create your own custom compset (see `How do I create my own compset? in the FAQ`)
 
@@ -160,8 +160,9 @@ Various scripts, files and directories are created in ``$CASEROOT`` by **create_
 - ``user scripts``
 
    =================     =====================================================================================================
-   case.setup"           Script used to set up the case (create the case.run script, the Macros file and user_nl_xxx files)
-   case.build"           Script to build component and utility libraries and model executable."
+   case.setup            Script used to set up the case (create the case.run script, the Macros file and user_nl_xxx files)
+   case.build            Script to build component and utility libraries and model executable
+   case.submit           Script to submit the case to run using the machine's batch queueing system
    case.st_archive       Script to perform short-term archiving of output data
    case.lt_archive       Script to perform long-term archiving of output data
    xmlchange 	         Script to modify values in the xml files
@@ -170,8 +171,8 @@ Various scripts, files and directories are created in ``$CASEROOT`` by **create_
 
                          **NOTE**: the namelists generated in ``$CASEROOT/CaseDocs`` should not be edited by the user
 
-                         they are only there to document model behavior."
-   check_input_data      Script for checking  for various input datasets and moves them into place."
+                         they are only there to document model behavior.
+   check_input_data      Script for checking  for various input datasets and moves them into place.
    pelayout              Script to query and modify the NTASKS, ROOTPE, and NTHRDS for each component model.  This a convenience script that can be used in place of xmlchange and xmlquery.
 
    =================     =====================================================================================================
@@ -195,7 +196,7 @@ Various scripts, files and directories are created in ``$CASEROOT`` by **create_
 
    env_mach_pes.xml       Sets component machine-specific processor layout (see :ref:`changing pe layout<changing-the-pe-layout>` ).
 
-                          The settings in this are critical to a well-load-balanced simulation (see :ref:`load balancing <optimizing-processor-layout>`)."
+                          The settings in this are critical to a well-load-balanced simulation (see :ref:`load balancing <optimizing-processor-layout>`).
    env_run.xml            Sets run-time settings such as length of run, frequency of restarts, output of coupler diagnostics,
 
                           and short-term and long-term archiving.  This file can be edited at any time before a job starts.
@@ -207,7 +208,7 @@ Various scripts, files and directories are created in ``$CASEROOT`` by **create_
 
    =====================  ===============================================================================================================================
    SourceMods             Top-level directory containing sub-directories for each compset component where
-                          you can place modified source code for that component."
+                          you can place modified source code for that component.
    =====================  ===============================================================================================================================
 
 - ``Provenance``

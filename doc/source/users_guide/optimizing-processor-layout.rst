@@ -57,7 +57,7 @@ Typically, a series of short test runs is done with the desired production confi
 The timing output can be used to compare test runs to help determine the optimal load balance.
 
 Changing the pe layout of the model has NO IMPACT on the scientific results. The basic order of operations and calling sequence is hardwired into the driver and that doesn't change when the pe layout is changed. 
-There are some constraints on the ability of either the CESM or ACME fully prognostic configuraiton fully concurrent. 
+There are some constraints on the ability of either the CESM or ACME fully active configuraiton fully concurrent. 
 In particular, the atmosphere model always run sequentially with the ice and land for scientific reasons. 
 As a result, running the atmosphere concurrently with the ice and land will result in idle processors in these components at some point in the timestepping sequence. 
 
