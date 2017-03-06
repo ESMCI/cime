@@ -66,12 +66,13 @@ int dim_len[NDIM] = {NC_UNLIMITED, X_DIM_LEN, Y_DIM_LEN, Z_DIM_LEN};
  * @param ntasks the number of available tasks
  * @param my_rank rank of this task.
  * @param iosysid the IO system ID.
- * @param dim_len_3d an array of length 3 with the dimension sizes.
+ * @param dim_len an array of length 3 with the dimension sizes.
  * @param pio_type the type for this decomposition.
  * @param ioid a pointer that gets the ID of this decomposition.
+ * lengths.
  * @returns 0 for success, error code otherwise.
  **/
-int create_decomposition_3d(int ntasks, int my_rank, int iosysid, int *dim_len_3d,
+int create_decomposition_3d(int ntasks, int my_rank, int iosysid, int *dim_len,
                             int pio_type, int *ioid)
 {
     PIO_Offset elements_per_pe;     /* Array elements per processing unit. */
@@ -80,7 +81,7 @@ int create_decomposition_3d(int ntasks, int my_rank, int iosysid, int *dim_len_3
 
     /* How many data elements per task? In this example we will end up
      * with 4. */
-    elements_per_pe = X_DIM_LEN * Y_DIM_LEN * Z_DIM_LEN / ntasks;
+    elements_per_pe = dim_len[0] * dim_len[1] * dim_len[2] / ntasks;
 
     /* Allocate space for the decomposition array. */
     if (!(compdof = malloc(elements_per_pe * sizeof(PIO_Offset))))
@@ -92,7 +93,7 @@ int create_decomposition_3d(int ntasks, int my_rank, int iosysid, int *dim_len_3
 
     /* Create the PIO decomposition for this test. */
     printf("%d Creating decomposition elements_per_pe = %lld\n", my_rank, elements_per_pe);
-    if ((ret = PIOc_init_decomp(iosysid, pio_type, NDIM3, dim_len_3d, elements_per_pe,
+    if ((ret = PIOc_init_decomp(iosysid, pio_type, NDIM3, dim_len, elements_per_pe,
                                 compdof, ioid, NULL, NULL, NULL)))
         ERR(ret);
 
@@ -105,7 +106,9 @@ int create_decomposition_3d(int ntasks, int my_rank, int iosysid, int *dim_len_3
 }
 
 /**
- * Test the decomp read/write functionality.
+ * Test the decomp read/write functionality. Given an ioid for a 3D
+ * decomposition, this function will write a decomp file, then read it
+ * in to ensure the correct values are read.
  *
  * @param iosysid the IO system ID.
  * @param ioid the ID of the decomposition.
@@ -115,13 +118,14 @@ int create_decomposition_3d(int ntasks, int my_rank, int iosysid, int *dim_len_3
  * @param rearranger the rearranger to use (PIO_REARR_BOX or
  * PIO_REARR_SUBSET).
  * @param test_comm the MPI communicator for this test.
+ * @param dim_len array of length 3 with dim lengths.
  * @returns 0 for success, error code otherwise.
 */
 int test_decomp_read_write(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank,
-                           int rearranger, MPI_Comm test_comm)
+                           int rearranger, MPI_Comm test_comm, int *dim_len)
 {
-    char filename[PIO_MAX_NAME + 1]; /* Name for the output files. */
-    int ioid2;             /* ID for decomposition we will create from file. */
+    int ioid2;                         /* ID for decomp we read into. */
+    char filename[PIO_MAX_NAME + 1];   /* Name for the output files. */
     char title_in[PIO_MAX_NAME + 1];   /* Optional title. */
     char history_in[PIO_MAX_NAME + 1]; /* Optional history. */
     int fortran_order_in; /* Indicates fortran vs. c order. */
@@ -174,9 +178,9 @@ int test_decomp_read_write(int iosysid, int ioid, int num_flavors, int *flavor, 
             for (int e = 0; e < iodesc->maplen; e++)
                 if (iodesc->map[e] != my_rank * iodesc->maplen + e + 1)
                     return ERR_WRONG;
-            if (iodesc->dimlen[0] != X_DIM_LEN || iodesc->dimlen[1] != Y_DIM_LEN ||
-                iodesc->dimlen[2] != Z_DIM_LEN)
-                return ERR_WRONG;
+            for (int d = 0; d < NDIM3; d++)
+                if (iodesc->dimlen[d] != dim_len[d])
+                    return ERR_WRONG;
             if (rearranger == PIO_REARR_SUBSET)
             {
                 if (iodesc->nrecvs != 1  || iodesc->num_aiotasks != TARGET_NTASKS)
@@ -225,7 +229,7 @@ int main(int argc, char **argv)
         int iosysid;  /* The ID for the parallel I/O system. */
         int ioproc_stride = 1;    /* Stride in the mpi rank between io tasks. */
         int ioproc_start = 0;     /* Zero based rank of first processor to be used for I/O. */
-        int dim_len_3d[NDIM3] = {X_DIM_LEN, Y_DIM_LEN, Z_DIM_LEN};
+        int dim_len[NDIM3] = {X_DIM_LEN, Y_DIM_LEN, Z_DIM_LEN};
         int ret;      /* Return code. */
 
         /* Figure out iotypes. */
@@ -247,13 +251,13 @@ int main(int argc, char **argv)
             for (int t = 0; t < NUM_TYPES_TO_TEST; t++)
             {
                 /* Decompose the data over the tasks. */
-                if ((ret = create_decomposition_3d(TARGET_NTASKS, my_rank, iosysid, dim_len_3d,
+                if ((ret = create_decomposition_3d(TARGET_NTASKS, my_rank, iosysid, dim_len,
                                                    test_type[t], &ioid)))
                     return ret;
             
                 /* Test decomposition read/write. */
                 if ((ret = test_decomp_read_write(iosysid, ioid, num_flavors, flavor, my_rank,
-                                                  rearranger[r], test_comm)))
+                                                  rearranger[r], test_comm, dim_len)))
                     return ret;
                 
                 /* Free the PIO decomposition. */
