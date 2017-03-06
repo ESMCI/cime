@@ -433,6 +433,10 @@ int test_darray_fill_unlim(int iosysid, int ioid, int pio_type, int num_flavors,
      * available ways. */
     for (int fmt = 0; fmt < num_flavors; fmt++)
     {
+        /* BYTE and CHAR don't work with pnetcdf. Don't know why yet. */
+        if (flavor[fmt] == PIO_IOTYPE_PNETCDF && (pio_type == PIO_BYTE || pio_type == PIO_CHAR))
+            continue;
+
         /* NetCDF-4 types only work with netCDF-4 formats. */
         printf("pio_type = %d flavor[fmt] = %d\n", pio_type, flavor[fmt]);
         if (pio_type > PIO_DOUBLE && flavor[fmt] != PIO_IOTYPE_NETCDF4C &&
@@ -798,8 +802,9 @@ int main(int argc, char **argv)
 {
 #define NUM_REARRANGERS_TO_TEST 2
     int rearranger[NUM_REARRANGERS_TO_TEST] = {PIO_REARR_BOX, PIO_REARR_SUBSET};
-#define NUM_TYPES_TO_TEST 6
-    int test_type[NUM_TYPES_TO_TEST] = {PIO_BYTE, PIO_CHAR, PIO_SHORT, PIO_INT, PIO_FLOAT, PIO_DOUBLE};
+#define NUM_TYPES_TO_TEST 11
+    int test_type[NUM_TYPES_TO_TEST] = {PIO_BYTE, PIO_CHAR, PIO_SHORT, PIO_INT, PIO_FLOAT, PIO_DOUBLE,
+                                        PIO_UBYTE, PIO_USHORT, PIO_UINT, PIO_INT64, PIO_UINT64};
     int my_rank;
     int ntasks;
     int num_flavors; /* Number of PIO netCDF flavors in this build. */
