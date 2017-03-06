@@ -184,7 +184,10 @@ PIO_Offset coord_to_lindex(int ndims, const PIO_Offset *lcoord, const PIO_Offset
 }
 
 /**
- * Compute the max io buffersize needed for a given variable
+ * Compute the max io buffer size needed for an iodesc. It is the
+ * combined size (in number of data elements) of all the regions of
+ * data stored in the buffer of this iodesc. The max size is then set
+ * in the iodesc.
  *
  * @param io_comm the IO communicator
  * @param iodesc a pointer to the io_desc_t struct.
@@ -1264,6 +1267,7 @@ int box_rearrange_create(iosystem_desc_t *ios, int maplen, const PIO_Offset *com
 
     compute_counts(ios, iodesc, maplen, dest_ioproc, dest_ioindex, ios->union_comm);
 
+    /* Compute the max io buffer size needed for an iodesc. */    
     if (ios->ioproc)
         if ((ret = compute_maxIObuffersize(ios->io_comm, iodesc)))
             return pio_err(ios, NULL, ret, __FILE__, __LINE__);
@@ -1762,7 +1766,9 @@ int subset_rearrange_create(iosystem_desc_t *ios, int maplen, PIO_Offset *compma
         if (srcindex)
             free(srcindex);
 
-        compute_maxIObuffersize(ios->io_comm, iodesc);
+        /* Compute the max io buffer size needed for an iodesc. */
+        if ((ret = compute_maxIObuffersize(ios->io_comm, iodesc)))
+            return pio_err(ios, NULL, ret, __FILE__, __LINE__);            
 
         iodesc->nrecvs = ntasks;
 #ifdef DEBUG

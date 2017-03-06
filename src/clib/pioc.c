@@ -436,6 +436,7 @@ int PIOc_InitDecomp(int iosysid, int basetype, int ndims, const int *dims, int m
                 {
                     iodesc->firstregion->start[i] = iostart[i];
                     iodesc->firstregion->count[i] = iocount[i];
+                    /* Compute the max io buffer size needed for an iodesc. */
                     if ((ierr = compute_maxIObuffersize(ios->io_comm, iodesc)))
                         return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
                 }
@@ -443,11 +444,14 @@ int PIOc_InitDecomp(int iosysid, int basetype, int ndims, const int *dims, int m
             }
             else
             {
+                /* Compute start and count values for each io task. */
                 if ((ierr = CalcStartandCount(basetype, ndims, dims, ios->num_iotasks,
                                              ios->io_rank, iodesc->firstregion->start,
                                              iodesc->firstregion->count, &iodesc->num_aiotasks)))
                     return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
             }
+
+            /* Compute the max io buffer size needed for an iodesc. */
             if ((ierr = compute_maxIObuffersize(ios->io_comm, iodesc)))
                 return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
         }
