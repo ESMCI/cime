@@ -35,7 +35,7 @@
 #define Z_DIM_LEN 4
 
 /* This is the length of the map for each task. */
-#define EXPECTED_MAPLEN 16
+#define EXPECTED_MAPLEN 8
 
 /* The number of timesteps of data to write. */
 #define NUM_TIMESTEPS 2
@@ -66,11 +66,13 @@ int dim_len[NDIM] = {NC_UNLIMITED, X_DIM_LEN, Y_DIM_LEN, Z_DIM_LEN};
  * @param ntasks the number of available tasks
  * @param my_rank rank of this task.
  * @param iosysid the IO system ID.
- * @param dim_len an array of length 3 with the dimension sizes.
+ * @param dim_len_3d an array of length 3 with the dimension sizes.
+ * @param pio_type the type for this decomposition.
  * @param ioid a pointer that gets the ID of this decomposition.
  * @returns 0 for success, error code otherwise.
  **/
-int create_decomposition_3d(int ntasks, int my_rank, int iosysid, int *dim_len_3d, int *ioid)
+int create_decomposition_3d(int ntasks, int my_rank, int iosysid, int *dim_len_3d,
+                            int pio_type, int *ioid)
 {
     PIO_Offset elements_per_pe;     /* Array elements per processing unit. */
     PIO_Offset *compdof;  /* The decomposition mapping. */
@@ -90,7 +92,7 @@ int create_decomposition_3d(int ntasks, int my_rank, int iosysid, int *dim_len_3
 
     /* Create the PIO decomposition for this test. */
     printf("%d Creating decomposition elements_per_pe = %lld\n", my_rank, elements_per_pe);
-    if ((ret = PIOc_init_decomp(iosysid, PIO_INT, NDIM3, dim_len_3d, elements_per_pe,
+    if ((ret = PIOc_init_decomp(iosysid, pio_type, NDIM3, dim_len_3d, elements_per_pe,
                                 compdof, ioid, NULL, NULL, NULL)))
         ERR(ret);
 
@@ -155,8 +157,16 @@ int test_decomp_read_write(int iosysid, int ioid, int num_flavors, int *flavor, 
             /* Get the IO desc, which describes the decomposition. */
             if (!(iodesc = pio_get_iodesc_from_id(ioid2)))
                 return pio_err(ios, NULL, PIO_EBADID, __FILE__, __LINE__);
-            if (iodesc->ioid != ioid2 || iodesc->maplen != EXPECTED_MAPLEN || iodesc->ndims != NDIM3 ||
-                iodesc->ndof != EXPECTED_MAPLEN)
+
+            /* Check values in iodesc. */
+            printf("ioid2 = %d iodesc->ioid = %d iodesc->maplen = %d iodesc->ndims = %d "
+                   "iodesc->ndof = %d iodesc->rearranger = %d iodesc->maxregions = %d "
+                   "iodesc->needsfill = %d iodesc->basetype = %d\n",
+                   ioid2, iodesc->ioid, iodesc->maplen, iodesc->ndims, iodesc->ndof,
+                   iodesc->rearranger, iodesc->maxregions, iodesc->needsfill, iodesc->basetype);
+            if (iodesc->ioid != ioid2 || iodesc->maplen != EXPECTED_MAPLEN)
+                return ERR_WRONG;
+            if (iodesc->ndims != NDIM3 || iodesc->ndof != EXPECTED_MAPLEN)
                 return ERR_WRONG;
             if (iodesc->rearranger != rearranger || iodesc->maxregions != 1 ||
                 iodesc->needsfill || iodesc->basetype != MPI_INT)
@@ -191,6 +201,8 @@ int test_decomp_read_write(int iosysid, int ioid, int num_flavors, int *flavor, 
 /* Run tests for darray functions. */
 int main(int argc, char **argv)
 {
+#define NUM_TYPES_TO_TEST 3
+    int test_type[NUM_TYPES_TO_TEST] = {PIO_INT, PIO_FLOAT, PIO_DOUBLE};
     int my_rank;
     int ntasks;
     int num_flavors; /* Number of PIO netCDF flavors in this build. */
@@ -231,18 +243,23 @@ int main(int argc, char **argv)
                                            ioproc_start, rearranger[r], &iosysid)))
                 return ret;
 
-            /* Decompose the data over the tasks. */
-            if ((ret = create_decomposition_3d(TARGET_NTASKS, my_rank, iosysid, dim_len_3d, &ioid)))
-                return ret;
+            /* Run tests for each data type. */
+            for (int t = 0; t < NUM_TYPES_TO_TEST; t++)
+            {
+                /* Decompose the data over the tasks. */
+                if ((ret = create_decomposition_3d(TARGET_NTASKS, my_rank, iosysid, dim_len_3d,
+                                                   test_type[t], &ioid)))
+                    return ret;
             
-            /* Test decomposition read/write. */
-            if ((ret = test_decomp_read_write(iosysid, ioid, num_flavors, flavor, my_rank,
-                                              rearranger[r], test_comm)))
-                return ret;
-            
-            /* Free the PIO decomposition. */
-            if ((ret = PIOc_freedecomp(iosysid, ioid)))
-                ERR(ret);
+                /* Test decomposition read/write. */
+                if ((ret = test_decomp_read_write(iosysid, ioid, num_flavors, flavor, my_rank,
+                                                  rearranger[r], test_comm)))
+                    return ret;
+                
+                /* Free the PIO decomposition. */
+                if ((ret = PIOc_freedecomp(iosysid, ioid)))
+                    ERR(ret);
+            }
             
             /* Finalize PIO system. */
             if ((ret = PIOc_finalize(iosysid)))

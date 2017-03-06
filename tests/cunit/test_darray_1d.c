@@ -536,7 +536,7 @@ int main(int argc, char **argv)
 {
 #define NUM_REARRANGERS_TO_TEST 2
     int rearranger[NUM_REARRANGERS_TO_TEST] = {PIO_REARR_BOX, PIO_REARR_SUBSET};
-#define NUM_TYPES_TO_TEST 3
+o#define NUM_TYPES_TO_TEST 3
     int test_type[NUM_TYPES_TO_TEST] = {PIO_INT, PIO_FLOAT, PIO_DOUBLE};
     int my_rank;
     int ntasks;
