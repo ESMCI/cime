@@ -802,9 +802,14 @@ int main(int argc, char **argv)
 {
 #define NUM_REARRANGERS_TO_TEST 2
     int rearranger[NUM_REARRANGERS_TO_TEST] = {PIO_REARR_BOX, PIO_REARR_SUBSET};
+#ifdef _NETCDF4
 #define NUM_TYPES_TO_TEST 11
     int test_type[NUM_TYPES_TO_TEST] = {PIO_BYTE, PIO_CHAR, PIO_SHORT, PIO_INT, PIO_FLOAT, PIO_DOUBLE,
                                         PIO_UBYTE, PIO_USHORT, PIO_UINT, PIO_INT64, PIO_UINT64};
+#else
+#define NUM_TYPES_TO_TEST 6
+    int test_type[NUM_TYPES_TO_TEST] = {PIO_BYTE, PIO_CHAR, PIO_SHORT, PIO_INT, PIO_FLOAT, PIO_DOUBLE};
+#endif /* _NETCDF4 */
     int my_rank;
     int ntasks;
     int num_flavors; /* Number of PIO netCDF flavors in this build. */
