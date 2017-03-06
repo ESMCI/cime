@@ -195,27 +195,22 @@ PIO_Offset coord_to_lindex(int ndims, const PIO_Offset *lcoord, const PIO_Offset
  */
 int compute_maxIObuffersize(MPI_Comm io_comm, io_desc_t *iodesc)
 {
-    PIO_Offset iosize, totiosize;
-    int i;
-    io_region *region;
+    PIO_Offset totiosize = 0;
     int mpierr; /* Return code from MPI calls. */
 
-    assert(iodesc);
+    pioassert(iodesc, "need iodesc", __FILE__, __LINE__);
 
     /*  compute the max io buffer size, for conveneance it is the
      *  combined size of all regions */
-    totiosize = 0;
-    region = iodesc->firstregion;
-    while(region)
+    for (io_region *region = iodesc->firstregion; region; region = region->next)
     {
         if (region->count[0] > 0)
         {
-            iosize = 1;
-            for (i = 0; i < iodesc->ndims; i++)
+            PIO_Offset iosize = 1;
+            for (int i = 0; i < iodesc->ndims; i++)
                 iosize *= region->count[i];
             totiosize += iosize;
         }
-        region = region->next;
     }
 
     /* Share the max io buffer size with all io tasks. */
