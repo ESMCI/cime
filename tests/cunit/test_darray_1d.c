@@ -121,6 +121,21 @@ int test_darray_fill(int iosysid, int ioid, int pio_type, int num_flavors, int *
     unsigned long long my_uint64_rank = my_rank;
 #endif /* _NETCDF4 */
 
+    /* Default fill value for each type. */
+    signed char byte_fill = NC_FILL_BYTE;
+    char char_fill = NC_FILL_CHAR;
+    short short_fill = NC_FILL_SHORT;
+    int int_fill = NC_FILL_INT;
+    float float_fill = NC_FILL_FLOAT;
+    double double_fill = NC_FILL_DOUBLE;
+#ifdef _NETCDF4
+    unsigned char ubyte_fill = NC_FILL_UBYTE;
+    unsigned short ushort_fill = NC_FILL_USHORT;
+    unsigned int uint_fill = NC_FILL_UINT;
+    long long int64_fill = NC_FILL_INT64;
+    unsigned long long uint64_fill = NC_FILL_UINT64;
+#endif /* _NETCDF4 */
+
     void *bufr;
     int ret; /* Return code. */
 
