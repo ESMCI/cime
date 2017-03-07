@@ -155,7 +155,7 @@ int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
         if ((ierr = rearrange_comp2io(ios, iodesc, array, vdesc0->iobuf, nvars)))
             return pio_err(ios, file, ierr, __FILE__, __LINE__);
     }
-    
+
     /* Write the darray based on the iotype. */
     LOG((2, "about to write darray for iotype = %d", file->iotype));
     switch (file->iotype)
@@ -351,7 +351,7 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
        decomposition and base data size and we also need to keep track
        of whether each is a recordvar (has an unlimited dimension) or
        not. */
-    
+
     /* Move to end of list or the entry that matches this ioid. */
     for (wmb = &file->buffer; wmb->next && wmb->ioid != ioid; wmb = wmb->next)
         ;
@@ -417,28 +417,28 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
     if (arraylen > 0)
     {
         if (!(wmb->data = bgetr(wmb->data, (1 + wmb->validvars) * arraylen * tsize)))
-            return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);            
+            return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
         LOG((2, "got %ld bytes for data", (1 + wmb->validvars) * arraylen * tsize));
     }
 
     /* vid is an array of variable ids in the wmb list, grow the list
      * and add the new entry. */
     if (!(wmb->vid = bgetr(wmb->vid, sizeof(int) * (1 + wmb->validvars))))
-        return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);            
+        return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
 
     /* wmb->frame is the record number, we assume that the variables
      * in the wmb list may not all have the same unlimited dimension
      * value although they usually do. */
     if (vdesc->record >= 0)
         if (!(wmb->frame = bgetr(wmb->frame, sizeof(int) * (1 + wmb->validvars))))
-            return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);            
+            return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
 
     /* If we need a fill value, get it. */
     if (iodesc->needsfill)
     {
         /* Get memory to hold fill value. */
         if (!(wmb->fillvalue = bgetr(wmb->fillvalue, tsize * (1 + wmb->validvars))))
-            return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);            
+            return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
 
         /* If the user passed a fill value, use that, otherwise use
          * the default fill value of the netCDF type. Copy the fill
