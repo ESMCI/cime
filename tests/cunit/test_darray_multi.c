@@ -15,7 +15,7 @@
 #define MIN_NTASKS 4
 
 /* The name of this test. */
-#define TEST_NAME "test_darray_uneven"
+#define TEST_NAME "test_darray_multi"
 
 /* Number of processors that will do IO. */
 #define NUM_IO_PROCS 1
