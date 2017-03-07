@@ -303,9 +303,13 @@ int PIOc_set_iosystem_error_handling(int iosysid, int method, int *old_method)
  * @param rearranger pointer to the rearranger to be used for this
  * decomp or NULL to use the default.
  * @param iostart An array of start values for block cyclic
- * decompositions. If NULL ???
+ * decompositions for the SUBSET rearranger. Ignored if block
+ * rearranger is used. If NULL and SUBSET rearranger is used, the
+ * iostarts are generated.
  * @param iocount An array of count values for block cyclic
- * decompositions. If NULL ???
+ * decompositions for the SUBSET rearranger. Ignored if block
+ * rearranger is used. If NULL and SUBSET rearranger is used, the
+ * iostarts are generated.
  * @returns 0 on success, error code otherwise
  * @ingroup PIO_initdecomp
  */
@@ -414,10 +418,6 @@ int PIOc_InitDecomp(int iosysid, int pio_type, int ndims, const int *dims, int m
     /* Is this the subset rearranger? */
     if (iodesc->rearranger == PIO_REARR_SUBSET)
     {
-        LOG((2, "Handling subset rearranger."));
-        if (iostart && iocount)
-            fprintf(stderr,"%s %s\n","Iostart and iocount arguments to PIOc_InitDecomp",
-                    "are incompatable with subset rearrange method and will be ignored");
         iodesc->num_aiotasks = ios->num_iotasks;
         if ((ierr = subset_rearrange_create(ios, maplen, (PIO_Offset *)compmap, dims,
                                             ndims, iodesc)))
@@ -425,7 +425,6 @@ int PIOc_InitDecomp(int iosysid, int pio_type, int ndims, const int *dims, int m
     }
     else
     {
-        LOG((2, "Handling not the subset rearranger."));
         if (ios->ioproc)
         {
             /*  Unless the user specifies the start and count for each
@@ -437,19 +436,24 @@ int PIOc_InitDecomp(int iosysid, int pio_type, int ndims, const int *dims, int m
                 {
                     iodesc->firstregion->start[i] = iostart[i];
                     iodesc->firstregion->count[i] = iocount[i];
-                    compute_maxIObuffersize(ios->io_comm, iodesc);
-
+                    /* Compute the max io buffer size needed for an iodesc. */
+                    if ((ierr = compute_maxIObuffersize(ios->io_comm, iodesc)))
+                        return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
                 }
                 iodesc->num_aiotasks = ios->num_iotasks;
             }
             else
             {
+                /* Compute start and count values for each io task. */
                 if ((ierr = CalcStartandCount(pio_type, ndims, dims, ios->num_iotasks,
                                              ios->io_rank, iodesc->firstregion->start,
                                              iodesc->firstregion->count, &iodesc->num_aiotasks)))
-                    return pio_err(ios, NULL, ierr, __FILE__, __LINE__);                    
+                    return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
             }
-            compute_maxIObuffersize(ios->io_comm, iodesc);
+
+            /* Compute the max io buffer size needed for an iodesc. */
+            if ((ierr = compute_maxIObuffersize(ios->io_comm, iodesc)))
+                return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
         }
 
         /* Depending on array size and io-blocksize the actual number
@@ -1103,7 +1107,7 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
         {
             my_io_proc_list[p] = p;
             LOG((3, "my_io_proc_list[%d] = %d", p, my_io_proc_list[p]));
-        }            
+        }
     }
     else
         my_io_proc_list = io_proc_list;
@@ -1222,7 +1226,7 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
 
         /* Get pointer to current iosys. */
         my_iosys = iosys[cmp];
-        
+
         /* Initialize some values. */
         my_iosys->io_comm = MPI_COMM_NULL;
         my_iosys->comp_comm = MPI_COMM_NULL;
@@ -1235,11 +1239,11 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
         my_iosys->num_iotasks = num_io_procs;
         my_iosys->compgroup = MPI_GROUP_NULL;
         my_iosys->iogroup = MPI_GROUP_NULL;
-        
+
         /* The rank of the computation leader in the union comm. */
         my_iosys->comproot = num_io_procs;
         LOG((3, "my_iosys->comproot = %d", my_iosys->comproot));
-        
+
         /* We are not providing an info object. */
         my_iosys->info = MPI_INFO_NULL;
 
@@ -1255,19 +1259,19 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
 
         /* How many processors in the union comm? */
         int nprocs_union = num_io_procs + num_procs_per_comp[cmp];
-        
+
         /* This will hold proc numbers from both computation and IO
          * components. */
         int proc_list_union[nprocs_union];
-        
+
         /* Add proc numbers from IO. */
         for (int p = 0; p < num_io_procs; p++)
             proc_list_union[p] = my_io_proc_list[p];
-        
+
         /* Add proc numbers from computation component. */
         for (int p = 0; p < num_procs_per_comp[cmp]; p++)
             proc_list_union[p + num_io_procs] = my_proc_list[cmp][p];
-        
+
         /* Create the union group. */
         if ((ret = MPI_Group_incl(world_group, nprocs_union, proc_list_union, &union_group[cmp])))
             return check_mpi(NULL, ret, __FILE__, __LINE__);
@@ -1292,23 +1296,23 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
         LOG((3, "creating intracomm cmp = %d from group[%d] = %d", cmp, cmp, group[cmp]));
         if ((ret = MPI_Comm_create(world, group[cmp], &my_iosys->comp_comm)))
             return check_mpi(NULL, ret, __FILE__, __LINE__);
-        
+
         if (in_cmp)
         {
             /* Does the user want a copy? */
             if (user_comp_comm)
                 if ((mpierr = MPI_Comm_dup(my_iosys->comp_comm, &user_comp_comm[cmp])))
                     return check_mpi(NULL, mpierr, __FILE__, __LINE__);
-            
+
             /* Get the rank in this comp comm. */
             if ((ret = MPI_Comm_rank(my_iosys->comp_comm, &my_iosys->comp_rank)))
                 return check_mpi(NULL, ret, __FILE__, __LINE__);
-            
+
             /* Set comp_rank 0 to be the compmaster. It will have a
              * setting of MPI_ROOT, all other tasks will have a
              * setting of MPI_PROC_NULL. */
             my_iosys->compmaster = my_iosys->comp_rank ? MPI_PROC_NULL : MPI_ROOT;
-            
+
             LOG((3, "intracomm created for cmp = %d comp_comm = %d comp_rank = %d comp %s",
                  cmp, my_iosys->comp_comm, my_iosys->comp_rank,
                  my_iosys->compmaster == MPI_ROOT ? "MASTER" : "SERVANT"));
@@ -1337,15 +1341,15 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
              * and one of the computation components. */
             if ((ret = MPI_Comm_create(world, union_group[cmp], &my_iosys->union_comm)))
                 return check_mpi(NULL, ret, __FILE__, __LINE__);
-            
+
             if ((ret = MPI_Comm_rank(my_iosys->union_comm, &my_iosys->union_rank)))
                 return check_mpi(NULL, ret, __FILE__, __LINE__);
-            
+
             /* Set my_comm to union_comm for async. */
             my_iosys->my_comm = my_iosys->union_comm;
             LOG((3, "intracomm created for union cmp = %d union_rank = %d union_comm = %d",
                  cmp, my_iosys->union_rank, my_iosys->union_comm));
-            
+
             if (in_io)
             {
                 LOG((3, "my_iosys->io_comm = %d", my_iosys->io_comm));
@@ -1367,7 +1371,7 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
             }
             LOG((3, "intercomm created for cmp = %d", cmp));
         }
-        
+
         /* Add this id to the list of PIO iosystem ids. */
         iosysidp[cmp] = pio_add_to_iosystem_list(my_iosys);
         LOG((2, "new iosys ID added to iosystem_list iosysid = %d\n", iosysidp[cmp]));
