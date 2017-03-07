@@ -84,6 +84,18 @@ int test_3_empty(int iosysid, int ioid, int num_flavors, int *flavor, int my_ran
     void *fillvalue;
     void *test_data;
     void *test_data_in;
+    signed char fillvalue_byte = NC_FILL_BYTE;
+    signed char custom_fillvalue_byte = -TEST_VAL_42;
+    signed char test_data_byte[arraylen];
+    signed char test_data_byte_in[arraylen];
+    char fillvalue_char = NC_FILL_CHAR;
+    char custom_fillvalue_char = -TEST_VAL_42;
+    char test_data_char[arraylen];
+    char test_data_char_in[arraylen];
+    short fillvalue_short = NC_FILL_SHORT;
+    short custom_fillvalue_short = -TEST_VAL_42;
+    short test_data_short[arraylen];
+    short test_data_short_in[arraylen];
     int fillvalue_int = NC_FILL_INT;
     int custom_fillvalue_int = -TEST_VAL_42;
     int test_data_int[arraylen];
@@ -101,6 +113,9 @@ int test_3_empty(int iosysid, int ioid, int num_flavors, int *flavor, int my_ran
     /* Initialize some data. */
     for (int f = 0; f < arraylen; f++)
     {
+        test_data_byte[f] = my_rank * 10 + f;
+        test_data_char[f] = my_rank * 10 + f;
+        test_data_short[f] = my_rank * 10 + f;
         test_data_int[f] = my_rank * 10 + f;
         test_data_float[f] = my_rank * 10 + f + 0.5;
         test_data_double[f] = my_rank * 100000 + f + 0.5;
@@ -109,6 +124,21 @@ int test_3_empty(int iosysid, int ioid, int num_flavors, int *flavor, int my_ran
     /* Select the fill value and data. */
     switch (pio_type)
     {
+    case PIO_BYTE:
+        fillvalue = use_default ? &fillvalue_byte : &custom_fillvalue_byte;
+        test_data = test_data_byte;
+        test_data_in = test_data_byte_in;
+        break;
+    case PIO_CHAR:
+        fillvalue = use_default ? &fillvalue_char : &custom_fillvalue_char;
+        test_data = test_data_char;
+        test_data_in = test_data_char_in;
+        break;
+    case PIO_SHORT:
+        fillvalue = use_default ? &fillvalue_short : &custom_fillvalue_short;
+        test_data = test_data_short;
+        test_data_in = test_data_short_in;
+        break;
     case PIO_INT:
         fillvalue = use_default ? &fillvalue_int : &custom_fillvalue_int;
         test_data = test_data_int;
@@ -232,6 +262,18 @@ int test_3_empty(int iosysid, int ioid, int num_flavors, int *flavor, int my_ran
         {
             switch (pio_type)
             {
+            case PIO_BYTE:
+                if (test_data_byte_in[f] != test_data_byte[f])
+                    return ERR_WRONG;
+                break;
+            case PIO_CHAR:
+                if (test_data_char_in[f] != test_data_char[f])
+                    return ERR_WRONG;
+                break;
+            case PIO_SHORT:
+                if (test_data_short_in[f] != test_data_short[f])
+                    return ERR_WRONG;
+                break;
             case PIO_INT:
                 if (test_data_int_in[f] != test_data_int[f])
                     return ERR_WRONG;
@@ -261,6 +303,18 @@ int test_3_empty(int iosysid, int ioid, int num_flavors, int *flavor, int my_ran
             {
                 switch (pio_type)
                 {
+                case PIO_BYTE:
+                    if (test_data_byte_in[f] != (use_default ? NC_FILL_BYTE : custom_fillvalue_byte))
+                        return ERR_WRONG;
+                    break;
+                case PIO_CHAR:
+                    if (test_data_char_in[f] != (use_default ? NC_FILL_CHAR : custom_fillvalue_char))
+                        return ERR_WRONG;
+                    break;
+                case PIO_SHORT:
+                    if (test_data_short_in[f] != (use_default ? NC_FILL_SHORT : custom_fillvalue_short))
+                        return ERR_WRONG;
+                    break;
                 case PIO_INT:
                     if (test_data_int_in[f] != (use_default ? NC_FILL_INT : custom_fillvalue_int))
                         return ERR_WRONG;
@@ -302,8 +356,8 @@ int test_all_darray(int iosysid, int num_flavors, int *flavor, int my_rank,
                     MPI_Comm test_comm, int rearranger)
 {
 #define NUM_FILL_TESTS 3
-#define NUM_TYPES_TO_TEST 3
-    int pio_type[NUM_TYPES_TO_TEST] = {PIO_INT, PIO_FLOAT, PIO_DOUBLE};
+#define NUM_TYPES_TO_TEST 4
+    int pio_type[NUM_TYPES_TO_TEST] = {PIO_SHORT, PIO_INT, PIO_FLOAT, PIO_DOUBLE};
     int ioid;
     int dim_len_2d[NDIM2] = {X_DIM_LEN, Y_DIM_LEN};
     int ret; /* Return code. */
