@@ -138,7 +138,7 @@ int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
 
             /* Allocate memory for the variable buffer. */
             if (!(vdesc0->iobuf = bget((size_t)vsize * (size_t)rlen)))
-                piomemerror(ios, (size_t)rlen * (size_t)vsize, __FILE__, __LINE__);
+                return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
             LOG((3, "allocated %lld bytes for variable buffer", (size_t)rlen * (size_t)vsize));
 
             /* If data are missing for the BOX rearranger, insert fill values. */
@@ -359,7 +359,7 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
     {
         /* Allocate a buffer. */
         if (!(wmb->next = bget((bufsize)sizeof(wmulti_buffer))))
-            piomemerror(ios, sizeof(wmulti_buffer), __FILE__, __LINE__);
+            return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
         LOG((3, "allocated multi-buffer"));
 
         /* Set pointer to newly allocated buffer and initialize.*/
@@ -594,7 +594,7 @@ int PIOc_read_darray(int ncid, int varid, int ioid, PIO_Offset arraylen,
 
             /* Allocate a buffer for one record. */
             if (!(iobuf = bget((size_t)tsize * rlen)))
-                piomemerror(ios, rlen * (size_t)tsize, __FILE__, __LINE__);
+                return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
         }
     }
     else

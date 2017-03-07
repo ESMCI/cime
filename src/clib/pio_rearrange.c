@@ -270,7 +270,7 @@ int create_mpi_datatypes(MPI_Datatype basetype, int msgcnt, PIO_Offset dlen,
     {
         /* memcpy(lindex, mindex, (size_t) (dlen*sizeof(PIO_Offset)));*/
         if (!(lindex = malloc(numinds * sizeof(PIO_Offset))))
-            return PIO_ENOMEM;
+            return pio_err(NULL, NULL, PIO_ENOMEM, __FILE__, __LINE__);
         memcpy(lindex, mindex, (size_t)(numinds * sizeof(PIO_Offset)));
     }
 
@@ -1822,11 +1822,11 @@ void performance_tune_rearranger(iosystem_desc_t *ios, io_desc_t *iodesc)
     ibuf = NULL;
     if (iodesc->ndof > 0)
         if (!(cbuf = bget(iodesc->ndof * tsize)))
-            piomemerror(ios, iodesc->ndof * tsize, __FILE__, __LINE__);
+            return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
 
     if (iodesc->llen > 0)
         if (!(ibuf = bget(iodesc->llen * tsize)))
-            piomemerror(ios, iodesc->llen * tsize, __FILE__, __LINE__);
+            return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
 
     if (iodesc->rearranger == PIO_REARR_BOX)
         mycomm = ios->union_comm;
@@ -1840,7 +1840,7 @@ void performance_tune_rearranger(iosystem_desc_t *ios, io_desc_t *iodesc)
 
     int log2 = log(nprocs) / log(2) + 1;
     if (!(wall = bget(2 * 4 * log2 * sizeof(double))))
-        piomemerror(ios, 2 * 4 *log2 * sizeof(double), __FILE__, __LINE__);
+        return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
     double mintime;
     int k = 0;
 
