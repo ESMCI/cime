@@ -489,6 +489,11 @@ int test_misc()
     /* This should not work. */
     if (flush_buffer(TEST_VAL_42, &wmb, 0) != PIO_EBADID)
         return ERR_WRONG;
+
+    /* This should not work either. */
+    if (PIOc_set_rearr_opts(TEST_VAL_42, 0, 0, false, false, 0, false,
+                            false, 0) != PIO_EBADID)
+        return ERR_WRONG;
     
     return 0;
 }
