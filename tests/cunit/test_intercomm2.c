@@ -253,7 +253,7 @@ int check_file(int iosysid, int format, char *filename, int my_rank)
         ERR(ERR_WRONG);
     if (PIOc_inq_att(ncid + TEST_VAL_42, NC_GLOBAL, too_long_name, &atttype, &attlen) != PIO_EBADID)
         ERR(ERR_WRONG);
-    if (PIOc_get_att(ncid + TEST_VAL_42, NC_GLOBAL, ATT_NAME, &att_data) != PIO_EBADID)
+    if (PIOc_get_att(ncid, NC_GLOBAL, TEST_NAME, &att_data) != PIO_ENOTATT)
         ERR(ERR_WRONG);
     if (PIOc_get_att(ncid, NC_GLOBAL, NULL, &att_data) != PIO_EINVAL)
         ERR(ERR_WRONG);
