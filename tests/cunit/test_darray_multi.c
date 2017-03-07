@@ -15,7 +15,7 @@
 #define MIN_NTASKS 4
 
 /* The name of this test. */
-#define TEST_NAME "test_darray_multi"
+#define TEST_NAME "test_darray_uneven"
 
 /* Number of processors that will do IO. */
 #define NUM_IO_PROCS 1
@@ -37,18 +37,22 @@
 /* The number of timesteps of data to write. */
 #define NUM_TIMESTEPS 2
 
-/* The name of the variable in the netCDF output files. */
-#define VAR_NAME "foo"
+/* Number of variables. */
+#define NVAR 3
 
-/* Test cases relating to PIOc_write_darray_multi(). */
-#define NUM_TEST_CASES_WRT_MULTI 2
+/* For attributes. */
+#define NOTE_NAME "note"
+#define NOTE "This is a test file for the PIO library, and may be deleted."
 
-/* Test with and without specifying a fill value to
- * PIOc_write_darray(). */
-#define NUM_TEST_CASES_FILLVALUE 2
+/* Who would have thought? */
+#define TOTAL_NUMBER_OF_STOOGES_NAME "Total_Number_of_Stooges"
+#define TOTAL_NUMBER_OF_STOOGES 6
 
 /* The dimension names. */
-char dim_name[NDIM][PIO_MAX_NAME + 1] = {"timestep", "x", "y"};
+char dim_name[NDIM][PIO_MAX_NAME + 1] = {"year", "Stooge_popularity", "face_smacks"};
+
+/* The variable names. */
+char var_name[NVAR][PIO_MAX_NAME + 1] = {"Larry", "Curly", "Moe"};
 
 /* Length of the dimensions in the sample data. */
 int dim_len[NDIM] = {NC_UNLIMITED, X_DIM_LEN, Y_DIM_LEN};
@@ -69,28 +73,37 @@ int dim_len[NDIM] = {NC_UNLIMITED, X_DIM_LEN, Y_DIM_LEN};
 int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank,
                 int pio_type)
 {
+#define NUM_TEST_CASES_WRT_MULTI 2
+#define NUM_TEST_CASES_FILLVALUE 2
+
     char filename[PIO_MAX_NAME + 1]; /* Name for the output files. */
     int dimids[NDIM];      /* The dimension IDs. */
-    int ncid;      /* The ncid of the netCDF file. */
-    int ncid2;     /* The ncid of the re-opened netCDF file. */
-    int varid;     /* The ID of the netCDF varable. */
-    int ret;       /* Return code. */
-    PIO_Offset arraylen = 4;
-    void *fillvalue;
-    void *test_data;
-    void *test_data_in;
+    int ncid;              /* The ncid of the netCDF file. */
+    int ncid2;             /* The ncid of the re-opened netCDF file. */
+    int varid[NVAR];       /* The IDs of the netCDF varables. */
+    int ret;               /* Return code. */
+    PIO_Offset arraylen = 4; /* Amount of data from each task. */
+    void *fillvalue;       /* Pointer to fill value. */
+    void *test_data;       /* Pointer to test data we will write. */
+    void *test_data_in;    /* Pointer to buffer we will read into. */
+
+    /* Default fill values. */
     int fillvalue_int = NC_FILL_INT;
-    int test_data_int[arraylen];
-    int test_data_int_in[arraylen];
     float fillvalue_float = NC_FILL_FLOAT;
-    float test_data_float[arraylen];
-    float test_data_float_in[arraylen];
     double fillvalue_double = NC_FILL_DOUBLE;
-    double test_data_double[arraylen];
+
+    /* Test data we will write. */
+    int test_data_int[arraylen * NVAR];
+    float test_data_float[arraylen * NVAR];
+    double test_data_double[arraylen * NVAR];
+
+    /* We will read test data into these buffers. */
+    int test_data_int_in[arraylen];
+    float test_data_float_in[arraylen];
     double test_data_double_in[arraylen];
 
-    /* Initialize some data. */
-    for (int f = 0; f < arraylen; f++)
+    /* Initialize a big blob of test data for NVAR vars. */
+    for (int f = 0; f < arraylen * NVAR; f++)
     {
         test_data_int[f] = my_rank * 10 + f;
         test_data_float[f] = my_rank * 10 + f + 0.5;
@@ -99,7 +112,7 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
 
     /* Use PIO to create the example file in each of the four
      * available ways. */
-    for (int fmt = 0; fmt < num_flavors; fmt++) 
+    for (int fmt = 0; fmt < num_flavors; fmt++)
     {
 
         /* Add a couple of extra tests for the
@@ -148,7 +161,15 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
                         ERR(ret);
 
                 /* Define a variable. */
-                if ((ret = PIOc_def_var(ncid, VAR_NAME, pio_type, NDIM, dimids, &varid)))
+                for (int v = 0; v < NVAR; v++)
+                    if ((ret = PIOc_def_var(ncid, var_name[v], pio_type, NDIM, dimids, &varid[v])))
+                        ERR(ret);
+
+                /* Leave a note. */
+                if ((ret = PIOc_put_att_text(ncid, NC_GLOBAL, NOTE_NAME, strlen(NOTE), NOTE)))
+                    ERR(ret);
+                int num_stooges = TOTAL_NUMBER_OF_STOOGES;
+                if ((ret = PIOc_put_att_int(ncid, NC_GLOBAL, TOTAL_NUMBER_OF_STOOGES_NAME, PIO_INT, 1, &num_stooges)))
                     ERR(ret);
 
                 /* End define mode. */
@@ -156,15 +177,14 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
                     ERR(ret);
 
                 /* Set the value of the record dimension. */
-                if ((ret = PIOc_setframe(ncid, varid, 0)))
+                if ((ret = PIOc_setframe(ncid, varid[0], 0)))
                     ERR(ret);
 
-                int frame = 0;
+                int frame[NVAR] = {0, 0, 0};
                 int flushtodisk = test_multi;
-                int varid_big = NC_MAX_VARS + TEST_VAL_42;
 
                 /* Write the data with the _multi function. */
-                if ((ret = PIOc_write_darray_multi(ncid, &varid, ioid, 1, arraylen, test_data, &frame,
+                if ((ret = PIOc_write_darray_multi(ncid, varid, ioid, NVAR, arraylen, test_data, frame,
                                                    fillvalue, flushtodisk)))
                     ERR(ret);
 
@@ -176,29 +196,34 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
                 if ((ret = PIOc_openfile(iosysid, &ncid2, &flavor[fmt], filename, PIO_NOWRITE)))
                     ERR(ret);
 
-                /* Read the data. */
-                if ((ret = PIOc_read_darray(ncid2, varid, ioid, arraylen, test_data_in)))
-                    ERR(ret);
-
-                /* Check the results. */
-                for (int f = 0; f < arraylen; f++)
+                /* Now use read_darray on each var in turn and make
+                 * sure we get correct data. */
+                for (int v = 0; v < NVAR; v++)
                 {
-                    switch (pio_type)
+                    /* Read the data. */
+                    if ((ret = PIOc_read_darray(ncid2, varid[v], ioid, arraylen, test_data_in)))
+                        ERR(ret);
+                    
+                    /* Check the results. */
+                    for (int f = 0; f < arraylen; f++)
                     {
-                    case PIO_INT:
-                        if (test_data_int_in[f] != test_data_int[f])
-                            return ERR_WRONG;
-                        break;
-                    case PIO_FLOAT:
-                        if (test_data_float_in[f] != test_data_float[f])
-                            return ERR_WRONG;
-                        break;
-                    case PIO_DOUBLE:
-                        if (test_data_double_in[f] != test_data_double[f])
-                            return ERR_WRONG;
-                        break;
-                    default:
-                        ERR(ERR_WRONG);
+                        switch (pio_type)
+                        {
+                        case PIO_INT:
+                            if (test_data_int_in[f] != test_data_int[f + arraylen * v])
+                                return ERR_WRONG;
+                            break;
+                        case PIO_FLOAT:
+                            if (test_data_float_in[f] != test_data_float[f + arraylen * v])
+                                return ERR_WRONG;
+                            break;
+                        case PIO_DOUBLE:
+                            if (test_data_double_in[f] != test_data_double[f + arraylen * v])
+                                return ERR_WRONG;
+                            break;
+                        default:
+                            ERR(ERR_WRONG);
+                        }
                     }
                 }
 
@@ -259,8 +284,10 @@ int test_all_darray(int iosysid, int num_flavors, int *flavor, int my_rank,
 /* Run tests for darray functions. */
 int main(int argc, char **argv)
 {
-#define NUM_REARRANGERS_TO_TEST 2
-    int rearranger[NUM_REARRANGERS_TO_TEST] = {PIO_REARR_BOX, PIO_REARR_SUBSET};
+/* #define NUM_REARRANGERS_TO_TEST 2 */
+/*     int rearranger[NUM_REARRANGERS_TO_TEST] = {PIO_REARR_BOX, PIO_REARR_SUBSET}; */
+#define NUM_REARRANGERS_TO_TEST 1
+    int rearranger[NUM_REARRANGERS_TO_TEST] = {PIO_REARR_BOX};
     int my_rank;
     int ntasks;
     int num_flavors; /* Number of PIO netCDF flavors in this build. */
