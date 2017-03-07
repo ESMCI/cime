@@ -108,6 +108,28 @@ int test_3_empty(int iosysid, int ioid, int num_flavors, int *flavor, int my_ran
     double custom_fillvalue_double = (-TEST_VAL_42 * 100);
     double test_data_double[arraylen];
     double test_data_double_in[arraylen];
+#ifdef _NETCDF4
+    unsigned char fillvalue_ubyte = NC_FILL_UBYTE;
+    unsigned char custom_fillvalue_ubyte = TEST_VAL_42;
+    unsigned char test_data_ubyte[arraylen];
+    unsigned char test_data_ubyte_in[arraylen];
+    unsigned short fillvalue_ushort = NC_FILL_USHORT;
+    unsigned short custom_fillvalue_ushort = (TEST_VAL_42 * 100);
+    unsigned short test_data_ushort[arraylen];
+    unsigned short test_data_ushort_in[arraylen];
+    unsigned int fillvalue_uint = NC_FILL_UINT;
+    unsigned int custom_fillvalue_uint = (TEST_VAL_42 * 100);
+    unsigned int test_data_uint[arraylen];
+    unsigned int test_data_uint_in[arraylen];
+    long long fillvalue_int64 = NC_FILL_INT64;
+    long long custom_fillvalue_int64 = (TEST_VAL_42 * 100);
+    long long test_data_int64[arraylen];
+    long long test_data_int64_in[arraylen];
+    unsigned long long fillvalue_uint64 = NC_FILL_UINT64;
+    unsigned long long custom_fillvalue_uint64 = (TEST_VAL_42 * 100);
+    unsigned long long test_data_uint64[arraylen];
+    unsigned long long test_data_uint64_in[arraylen];
+#endif /* _NETCDF4 */
     int ret;       /* Return code. */
 
     /* Initialize some data. */
@@ -119,6 +141,13 @@ int test_3_empty(int iosysid, int ioid, int num_flavors, int *flavor, int my_ran
         test_data_int[f] = my_rank * 10 + f;
         test_data_float[f] = my_rank * 10 + f + 0.5;
         test_data_double[f] = my_rank * 100000 + f + 0.5;
+#ifdef _NETCDF4
+        test_data_ubyte[f] = my_rank * 10 + f;        
+        test_data_ushort[f] = my_rank * 10 + f;        
+        test_data_uint[f] = my_rank * 10 + f;        
+        test_data_int64[f] = my_rank * 10 + f;        
+        test_data_uint64[f] = my_rank * 10 + f;        
+#endif /* _NETCDF4 */
     }
 
     /* Select the fill value and data. */
@@ -154,6 +183,33 @@ int test_3_empty(int iosysid, int ioid, int num_flavors, int *flavor, int my_ran
         test_data = test_data_double;
         test_data_in = test_data_double_in;
         break;
+#ifdef _NETCDF4
+    case PIO_UBYTE:
+        fillvalue = use_default ? &fillvalue_ubyte : &custom_fillvalue_ubyte;
+        test_data = test_data_ubyte;
+        test_data_in = test_data_ubyte_in;
+        break;
+    case PIO_USHORT:
+        fillvalue = use_default ? &fillvalue_ushort : &custom_fillvalue_ushort;
+        test_data = test_data_ushort;
+        test_data_in = test_data_ushort_in;
+        break;
+    case PIO_UINT:
+        fillvalue = use_default ? &fillvalue_uint : &custom_fillvalue_uint;
+        test_data = test_data_uint;
+        test_data_in = test_data_uint_in;
+        break;
+    case PIO_INT64:
+        fillvalue = use_default ? &fillvalue_int64 : &custom_fillvalue_int64;
+        test_data = test_data_int64;
+        test_data_in = test_data_int64_in;
+        break;
+    case PIO_UINT64:
+        fillvalue = use_default ? &fillvalue_uint64 : &custom_fillvalue_uint64;
+        test_data = test_data_uint64;
+        test_data_in = test_data_uint64_in;
+        break;
+#endif /* _NETCDF4 */
     default:
         ERR(ERR_WRONG);
     }
@@ -202,6 +258,16 @@ int test_3_empty(int iosysid, int ioid, int num_flavors, int *flavor, int my_ran
      * available ways. */
     for (int fmt = 0; fmt < num_flavors; fmt++) 
     {
+        /* BYTE and CHAR don't work with pnetcdf. Don't know why yet. */
+        if (flavor[fmt] == PIO_IOTYPE_PNETCDF && (pio_type == PIO_BYTE || pio_type == PIO_CHAR))
+            continue;
+
+        /* NetCDF-4 types only work with netCDF-4 formats. */
+        printf("pio_type = %d flavor[fmt] = %d\n", pio_type, flavor[fmt]);
+        if (pio_type > PIO_DOUBLE && flavor[fmt] != PIO_IOTYPE_NETCDF4C &&
+            flavor[fmt] != PIO_IOTYPE_NETCDF4P)
+            continue;
+        
         /* Create the filename. */
         sprintf(filename, "data_%s_iotype_%d_pio_type_%d_use_fill_%d_default_fill_%d.nc",
                 TEST_NAME, flavor[fmt], pio_type, use_fill, use_default);
@@ -286,6 +352,28 @@ int test_3_empty(int iosysid, int ioid, int num_flavors, int *flavor, int my_ran
                 if (test_data_double_in[f] != test_data_double[f])
                     return ERR_WRONG;
                 break;
+#ifdef _NETCDF4
+            case PIO_UBYTE:
+                if (test_data_ubyte_in[f] != test_data_ubyte[f])
+                    return ERR_WRONG;
+                break;
+            case PIO_USHORT:
+                if (test_data_ushort_in[f] != test_data_ushort[f])
+                    return ERR_WRONG;
+                break;
+            case PIO_UINT:
+                if (test_data_uint_in[f] != test_data_uint[f])
+                    return ERR_WRONG;
+                break;
+            case PIO_INT64:
+                if (test_data_int64_in[f] != test_data_int64[f])
+                    return ERR_WRONG;
+                break;
+            case PIO_UINT64:
+                if (test_data_uint64_in[f] != test_data_uint64[f])
+                    return ERR_WRONG;
+                break;
+#endif /* _NETCDF4 */
             default:
                 ERR(ERR_WRONG);
             }
@@ -327,6 +415,28 @@ int test_3_empty(int iosysid, int ioid, int num_flavors, int *flavor, int my_ran
                     if (test_data_double_in[f] != (use_default ? NC_FILL_DOUBLE : custom_fillvalue_double))
                         return ERR_WRONG;
                     break;
+#ifdef _NETCDF4
+                case PIO_UBYTE:
+                    if (test_data_ubyte_in[f] != (use_default ? NC_FILL_UBYTE : custom_fillvalue_ubyte))
+                        return ERR_WRONG;
+                    break;
+                case PIO_USHORT:
+                    if (test_data_ushort_in[f] != (use_default ? NC_FILL_USHORT : custom_fillvalue_ushort))
+                        return ERR_WRONG;
+                    break;
+                case PIO_UINT:
+                    if (test_data_uint_in[f] != (use_default ? NC_FILL_UINT : custom_fillvalue_uint))
+                        return ERR_WRONG;
+                    break;
+                case PIO_INT64:
+                    if (test_data_int64_in[f] != (use_default ? NC_FILL_INT64 : custom_fillvalue_int64))
+                        return ERR_WRONG;
+                    break;
+                case PIO_UINT64:
+                    if (test_data_uint64_in[f] != (use_default ? NC_FILL_UINT64 : custom_fillvalue_uint64))
+                        return ERR_WRONG;
+                    break;
+#endif /* _NETCDF4 */                    
                 default:
                     ERR(ERR_WRONG);
                 }
@@ -356,8 +466,14 @@ int test_all_darray(int iosysid, int num_flavors, int *flavor, int my_rank,
                     MPI_Comm test_comm, int rearranger)
 {
 #define NUM_FILL_TESTS 3
-#define NUM_TYPES_TO_TEST 4
-    int pio_type[NUM_TYPES_TO_TEST] = {PIO_SHORT, PIO_INT, PIO_FLOAT, PIO_DOUBLE};
+#ifdef _NETCDF4
+#define NUM_TYPES_TO_TEST 11
+    int test_type[NUM_TYPES_TO_TEST] = {PIO_BYTE, PIO_CHAR, PIO_SHORT, PIO_INT, PIO_FLOAT, PIO_DOUBLE,
+                                        PIO_UBYTE, PIO_USHORT, PIO_UINT, PIO_INT64, PIO_UINT64};
+#else
+#define NUM_TYPES_TO_TEST 6
+    int test_type[NUM_TYPES_TO_TEST] = {PIO_BYTE, PIO_CHAR, PIO_SHORT, PIO_INT, PIO_FLOAT, PIO_DOUBLE};
+#endif /* _NETCDF4 */
     int ioid;
     int dim_len_2d[NDIM2] = {X_DIM_LEN, Y_DIM_LEN};
     int ret; /* Return code. */
@@ -369,7 +485,7 @@ int test_all_darray(int iosysid, int num_flavors, int *flavor, int my_rank,
         
         /* Decompose the data over the tasks. */
         if ((ret = create_decomposition_2d(TARGET_NTASKS, my_rank, iosysid, dim_len_2d,
-                                           &ioid, pio_type[t])))
+                                           &ioid, test_type[t])))
         return ret;
 
         /* Run the different combinations of use_fill and use_default. */
@@ -382,7 +498,7 @@ int test_all_darray(int iosysid, int num_flavors, int *flavor, int my_rank,
                 use_default++;
             
             /* Run a simple darray test. */
-            if ((ret = test_3_empty(iosysid, ioid, num_flavors, flavor, my_rank, pio_type[t],
+            if ((ret = test_3_empty(iosysid, ioid, num_flavors, flavor, my_rank, test_type[t],
                                     test_comm, rearranger, use_fill, use_default)))
                 return ret;
         }
