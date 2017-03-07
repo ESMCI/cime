@@ -291,7 +291,7 @@ int PIOc_set_iosystem_error_handling(int iosysid, int method, int *old_method)
  * tasks.
  *
  * @param iosysid the IO system ID.
- * @param basetype the basic PIO data type used.
+ * @param pio_type the basic PIO data type used.
  * @param ndims the number of dimensions in the variable, not
  * including the unlimited dimension.
  * @param dims an array of global size of each dimension.
@@ -309,7 +309,7 @@ int PIOc_set_iosystem_error_handling(int iosysid, int method, int *old_method)
  * @returns 0 on success, error code otherwise
  * @ingroup PIO_initdecomp
  */
-int PIOc_InitDecomp(int iosysid, int basetype, int ndims, const int *dims, int maplen,
+int PIOc_InitDecomp(int iosysid, int pio_type, int ndims, const int *dims, int maplen,
                     const PIO_Offset *compmap, int *ioidp, const int *rearranger,
                     const PIO_Offset *iostart, const PIO_Offset *iocount)
 {
@@ -318,8 +318,8 @@ int PIOc_InitDecomp(int iosysid, int basetype, int ndims, const int *dims, int m
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function calls. */
     int ierr;              /* Return code. */
 
-    LOG((1, "PIOc_InitDecomp iosysid = %d basetype = %d ndims = %d maplen = %d",
-         iosysid, basetype, ndims, maplen));
+    LOG((1, "PIOc_InitDecomp iosysid = %d pio_type = %d ndims = %d maplen = %d",
+         iosysid, pio_type, ndims, maplen));
 
     /* Get IO system info. */
     if (!(ios = pio_get_iosystem_from_id(iosysid)))
@@ -350,7 +350,7 @@ int PIOc_InitDecomp(int iosysid, int basetype, int ndims, const int *dims, int m
             if (!mpierr)
                 mpierr = MPI_Bcast(&iosysid, 1, MPI_INT, ios->compmaster, ios->intercomm);
             if (!mpierr)
-                mpierr = MPI_Bcast(&basetype, 1, MPI_INT, ios->compmaster, ios->intercomm);
+                mpierr = MPI_Bcast(&pio_type, 1, MPI_INT, ios->compmaster, ios->intercomm);
             if (!mpierr)
                 mpierr = MPI_Bcast(&ndims, 1, MPI_INT, ios->compmaster, ios->intercomm);
             if (!mpierr)
@@ -374,8 +374,8 @@ int PIOc_InitDecomp(int iosysid, int basetype, int ndims, const int *dims, int m
                 mpierr = MPI_Bcast(&iocount_present, 1, MPI_CHAR, ios->compmaster, ios->intercomm);
             if (iocount_present && !mpierr)
                 mpierr = MPI_Bcast((PIO_Offset *)iocount, ndims, MPI_OFFSET, ios->compmaster, ios->intercomm);
-            LOG((2, "PIOc_InitDecomp iosysid = %d basetype = %d ndims = %d maplen = %d rearranger_present = %d iostart_present = %d "
-                 "iocount_present = %d ", iosysid, basetype, ndims, maplen, rearranger_present, iostart_present, iocount_present));
+            LOG((2, "PIOc_InitDecomp iosysid = %d pio_type = %d ndims = %d maplen = %d rearranger_present = %d iostart_present = %d "
+                 "iocount_present = %d ", iosysid, pio_type, ndims, maplen, rearranger_present, iostart_present, iocount_present));
         }
 
         /* Handle MPI errors. */
@@ -386,7 +386,7 @@ int PIOc_InitDecomp(int iosysid, int basetype, int ndims, const int *dims, int m
     }
 
     /* Allocate space for the iodesc info. */
-    if ((ierr = malloc_iodesc(ios, basetype, ndims, &iodesc)))
+    if ((ierr = malloc_iodesc(ios, pio_type, ndims, &iodesc)))
         return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
 
     /* Remember the maplen. */
@@ -444,7 +444,7 @@ int PIOc_InitDecomp(int iosysid, int basetype, int ndims, const int *dims, int m
             }
             else
             {
-                if ((ierr = CalcStartandCount(basetype, ndims, dims, ios->num_iotasks,
+                if ((ierr = CalcStartandCount(pio_type, ndims, dims, ios->num_iotasks,
                                              ios->io_rank, iodesc->firstregion->start,
                                              iodesc->firstregion->count, &iodesc->num_aiotasks)))
                     return pio_err(ios, NULL, ierr, __FILE__, __LINE__);                    
@@ -490,7 +490,7 @@ int PIOc_InitDecomp(int iosysid, int basetype, int ndims, const int *dims, int m
  * tasks.
  *
  * @param iosysid the IO system ID.
- * @param basetype the basic PIO data type used.
+ * @param pio_type the basic PIO data type used.
  * @param ndims the number of dimensions in the variable, not
  * including the unlimited dimension.
  * @param dims an array of global size of each dimension.
@@ -508,20 +508,20 @@ int PIOc_InitDecomp(int iosysid, int basetype, int ndims, const int *dims, int m
  * @returns 0 on success, error code otherwise
  * @ingroup PIO_initdecomp
  */
-int PIOc_init_decomp(int iosysid, int basetype, int ndims, const int *dims, int maplen,
+int PIOc_init_decomp(int iosysid, int pio_type, int ndims, const int *dims, int maplen,
                      const PIO_Offset *compmap, int *ioidp, const int *rearranger,
                      const PIO_Offset *iostart, const PIO_Offset *iocount)
 {
     PIO_Offset compmap_1_based[maplen];
 
-    LOG((1, "PIOc_init_decomp iosysid = %d basetype = %d ndims = %d maplen = %d",
-         iosysid, basetype, ndims, maplen));
+    LOG((1, "PIOc_init_decomp iosysid = %d pio_type = %d ndims = %d maplen = %d",
+         iosysid, pio_type, ndims, maplen));
 
     /* Add 1 to all elements in compmap. */
     for (int e = 0; e < maplen; e++)
         compmap_1_based[e] = compmap[e] + 1;
 
-    return PIOc_InitDecomp(iosysid, basetype, ndims, dims, maplen, compmap_1_based,
+    return PIOc_InitDecomp(iosysid, pio_type, ndims, dims, maplen, compmap_1_based,
                            ioidp, rearranger, iostart, iocount);
 }
 
@@ -531,7 +531,7 @@ int PIOc_init_decomp(int iosysid, int basetype, int ndims, const int *dims, int 
  * the file. In this case we compute the compdof.
  *
  * @param iosysid the IO system ID
- * @param basetype
+ * @param pio_type
  * @param ndims the number of dimensions
  * @param dims array of dimensions
  * @param start start array
@@ -540,7 +540,7 @@ int PIOc_init_decomp(int iosysid, int basetype, int ndims, const int *dims, int 
  * @returns 0 for success, error code otherwise
  * @ingroup PIO_initdecomp
  */
-int PIOc_InitDecomp_bc(int iosysid, int basetype, int ndims, const int *dims,
+int PIOc_InitDecomp_bc(int iosysid, int pio_type, int ndims, const int *dims,
                        const long int *start, const long int *count, int *ioidp)
 
 {
@@ -549,7 +549,7 @@ int PIOc_InitDecomp_bc(int iosysid, int basetype, int ndims, const int *dims,
     PIO_Offset prod[ndims], loc[ndims];
     int rearr = PIO_REARR_SUBSET;
 
-    LOG((1, "PIOc_InitDecomp_bc iosysid = %d basetype = %d ndims = %d"));
+    LOG((1, "PIOc_InitDecomp_bc iosysid = %d pio_type = %d ndims = %d"));
 
     /* Get the info about the io system. */
     if (!(ios = pio_get_iosystem_from_id(iosysid)))
@@ -595,7 +595,7 @@ int PIOc_InitDecomp_bc(int iosysid, int basetype, int ndims, const int *dims,
         }
     }
 
-    return PIOc_InitDecomp(iosysid, basetype, ndims, dims, maplen, compmap, ioidp,
+    return PIOc_InitDecomp(iosysid, pio_type, ndims, dims, maplen, compmap, ioidp,
                            &rearr, NULL, NULL);
 }
 

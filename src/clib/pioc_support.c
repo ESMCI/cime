@@ -1429,7 +1429,7 @@ int pioc_read_nc_decomp_int(int iosysid, const char *filename, int *ndims, int *
     int max_maplen_in;
     if ((ret = PIOc_get_att_int(ncid, NC_GLOBAL, DECOMP_MAX_MAPLEN_ATT_NAME, &max_maplen_in)))
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
-    LOG((3, "max_maplen_in = %d", version_in));
+    LOG((3, "max_maplen_in = %d", max_maplen_in));
     if (max_maplen)
         *max_maplen = max_maplen_in;
 
