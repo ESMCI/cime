@@ -323,7 +323,63 @@ int test_rearranger_opts1()
 }
 
 /* Test some of the rearranger utility functions. */
-int test_rearranger_opts2()
+int test_cmp_rearr_opts()
+{
+    rearr_opt_t ro1;
+    rearr_opt_t ro2;
+
+    ro1.comm_type = PIO_REARR_COMM_P2P;
+    ro2.comm_type = PIO_REARR_COMM_P2P;
+
+    ro1.fcd = PIO_REARR_COMM_FC_2D_ENABLE;
+    ro2.fcd = PIO_REARR_COMM_FC_2D_ENABLE;
+
+    ro1.comm_fc_opts_comp2io.enable_hs = 0;
+    ro1.comm_fc_opts_comp2io.enable_isend = 0;
+    ro1.comm_fc_opts_comp2io.max_pend_req = 0;
+
+    ro1.comm_fc_opts_io2comp.enable_hs = 0;
+    ro1.comm_fc_opts_io2comp.enable_isend = 0;
+    ro1.comm_fc_opts_io2comp.max_pend_req = 0;
+    
+    ro2.comm_fc_opts_comp2io.enable_hs = 0;
+    ro2.comm_fc_opts_comp2io.enable_isend = 0;
+    ro2.comm_fc_opts_comp2io.max_pend_req = 0;
+
+    ro2.comm_fc_opts_io2comp.enable_hs = 0;
+    ro2.comm_fc_opts_io2comp.enable_isend = 0;
+    ro2.comm_fc_opts_io2comp.max_pend_req = 0;
+
+    /* They are equal. */
+    if (!cmp_rearr_opts(&ro1, &ro2))
+        return ERR_WRONG;
+
+    /* Change something. */
+    ro1.comm_type = PIO_REARR_COMM_COLL;
+
+    /* They are not equal. */
+    if (cmp_rearr_opts(&ro1, &ro2))
+        return ERR_WRONG;
+
+    /* Change something. */
+    ro2.comm_type = PIO_REARR_COMM_COLL;
+    ro1.fcd = PIO_REARR_COMM_FC_2D_DISABLE;
+    
+    /* They are not equal. */
+    if (cmp_rearr_opts(&ro1, &ro2))
+        return ERR_WRONG;
+
+    ro2.fcd = PIO_REARR_COMM_FC_2D_DISABLE;
+
+    /* They are equal again. */
+    if (!cmp_rearr_opts(&ro1, &ro2))
+        return ERR_WRONG;
+    
+    return 0;
+}
+
+/* Test some of the rearranger utility functions. */
+int test_rearranger_opts3()
 {
     iosystem_desc_t my_ios;
     iosystem_desc_t *ios = &my_ios;
@@ -535,8 +591,12 @@ int main(int argc, char **argv)
         if ((ret = test_rearranger_opts1()))
             return ret;
 
-        printf("%d running rearranger opts tests 2\n", my_rank);
-        if ((ret = test_rearranger_opts2()))
+        printf("%d running tests for cmp_rearr_opts()\n", my_rank);
+        if ((ret = test_cmp_rearr_opts()))
+            return ret;
+
+        printf("%d running rearranger opts tests 3\n", my_rank);
+        if ((ret = test_rearranger_opts3()))
             return ret;
 
         printf("%d running compare_offsets tests\n", my_rank);
