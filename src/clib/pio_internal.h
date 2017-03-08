@@ -243,8 +243,6 @@ extern "C" {
     /* Compute an element of start/count arrays. */
     void compute_one_dim(int gdim, int ioprocs, int rank, PIO_Offset *start,
                          PIO_Offset *count);
-    /* Announce a memory error with bget memory, and die. */
-    void piomemerror(iosystem_desc_t *ios, size_t req, char *fname, int line);
 
     /* Check the return code from an MPI function call. */
     int check_mpi(file_desc_t *file, int mpierr, const char *filename, int line);

@@ -289,22 +289,6 @@ void print_trace(FILE *fp)
 }
 
 /**
- * Exit due to lack of memory.
- *
- * @param ios the iosystem description struct
- * @param req amount of memory that was being requested
- * @param fname name of code file where error occured
- * @param line the line of code where the error occurred.
- */
-void piomemerror(iosystem_desc_t *ios, size_t req, char *fname, int line)
-{
-    char msg[80];
-    sprintf(msg, "out of memory requesting: %ld", req);
-    cn_buffer_report(ios, false);
-    piodie(msg, fname, line);
-}
-
-/**
  * Abort program and call MPI_Abort().
  *
  * @param msg an error message
