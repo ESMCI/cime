@@ -139,8 +139,7 @@ int test_decomp_read_write(int iosysid, int ioid, int num_flavors, int *flavor, 
         strncat(history, filename, NC_MAX_NAME - strlen(TEST_DECOMP_HISTORY));
 
         printf("writing decomp file %s\n", filename);
-        if ((ret = PIOc_write_nc_decomp(iosysid, filename, 0, ioid, test_comm, title,
-                                        history, 0)))
+        if ((ret = PIOc_write_nc_decomp(iosysid, filename, 0, ioid, title, history, 0)))
             return ret;
         printf("about to check map with netCDF\n");
 
