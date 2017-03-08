@@ -192,82 +192,6 @@ int create_file_handler(iosystem_desc_t *ios)
     return PIO_NOERR;
 }
 
-/** This function is run on the IO tasks to write a decomposition
- * file.
- *
- * @param ios pointer to the iosystem info.
- * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
- * from netCDF base function.
- * @internal
- */
-int write_nc_decomp_handler(iosystem_desc_t *ios)
-{
-    /* int filename_len; */
-    /* int title_len; */
-    /* int history_len; */
-    /* char title_present; */
-    /* char history_present; */
-    /* int cmode; */
-    /* char *titlep = NULL; */
-    /* char *historyp = NULL; */
-    /* char title[PIO_MAX_NAME + 1]; */
-    /* char history[PIO_MAX_NAME + 1]; */
-    /* int fortran_order; */
-    /* int mpierr; */
-    /* int ret; */
-
-    /* LOG((1, "write_nc_decomp_handler comproot = %d", ios->comproot)); */
-    /* assert(ios); */
-
-    /* /\* Get the parameters for this function that the he comp master */
-    /*  * task is broadcasting. *\/ */
-    /* if ((mpierr = MPI_Bcast(&filename_len, 1, MPI_INT, 0, ios->intercomm))) */
-    /*     return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__); */
-
-    /* /\* Get space for the filename. *\/ */
-    /* char filename[filename_len + 1]; */
-
-    /* if ((mpierr = MPI_Bcast(filename, len + 1, MPI_CHAR, 0, ios->intercomm))) */
-    /*     return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__); */
-    /* if ((mpierr = MPI_Bcast(&cmode, 1, MPI_INT, 0, ios->intercomm))) */
-    /*     return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__); */
-    /* if ((mpierr = MPI_Bcast(&ioid, 1, MPI_INT, 0, ios->intercomm))) */
-    /*     return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__); */
-    /* if ((mpierr = MPI_Bcast(&title_present, 1, MPI_CHAR, 0, ios->intercomm))) */
-    /*     return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__); */
-    /* if ((mpierr = MPI_Bcast(&title_len, 1, MPI_INT, 0, ios->intercomm))) */
-    /*     return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__); */
-    /* if (title_present) */
-    /*     if ((mpierr = MPI_Bcast(title, title_len + 1, MPI_CHAR, 0, ios->intercomm))) */
-    /*         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__); */
-    /* if ((mpierr = MPI_Bcast(&history_present, 1, MPI_CHAR, 0, ios->intercomm))) */
-    /*     return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__); */
-    /* if ((mpierr = MPI_Bcast(&history_len, 1, MPI_INT, 0, ios->intercomm))) */
-    /*     return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__); */
-    /* if (history_present) */
-    /*     if ((mpierr = MPI_Bcast(history, history_len + 1, MPI_CHAR, 0, ios->intercomm))) */
-    /*         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__); */
-    /* if ((mpierr = MPI_Bcast(&fortran_order, 1, MPI_INT, 0, ios->intercomm))) */
-    /*     return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__); */
-    
-    /* LOG((2, "write_nc_decomp_handler filename_len = %d filename = %s cmode = %d ioid = %d title_present = %d " */
-    /*      "title_len = %d history_present = %d history_len = %d fortran_order = %d", */
-    /*      filename_len, filename, cmode, ioid, title_present, title_len, history_present, history_len, */
-    /*      fortran_order)); */
-
-    /* if (title_present) */
-    /*     titlep = title; */
-    /* if (history_present) */
-    /*     historyp = history; */
-
-    /* /\* Call the create file function. *\/ */
-    /* ret = PIOc_write_nc_decomp(ios->iosysid, filename, cmode, ioid, titlep, historyp, fortran_order))) */
-
-    /* LOG((1, "write_nc_decomp_handler ret = %d", ret)); */
-
-    return PIO_NOERR;
-}
-
 /** This function is run on the IO tasks to close a netCDF file. It is
  * only ever run on the IO tasks.
  *
@@ -2547,9 +2471,6 @@ int pio_msg_handler2(int io_rank, int component_count, iosystem_desc_t **iosys,
             break;
         case PIO_MSG_SET_FILL:
             set_fill_handler(my_iosys);
-            break;
-        case PIO_MSG_WRITE_NC_DECOMP:
-            write_nc_decomp_handler(my_iosys);
             break;
         case PIO_MSG_EXIT:
             finalize_handler(my_iosys, index);
