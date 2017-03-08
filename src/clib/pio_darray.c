@@ -102,12 +102,14 @@ int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
          ncid, ioid, nvars, arraylen, flushtodisk));
 
     /* Check that we can write to this file. */
-    if (! (file->mode & PIO_WRITE))
+    if (!(file->mode & PIO_WRITE))
         return pio_err(ios, file, PIO_EPERM, __FILE__, __LINE__);
 
     /* Get iodesc. */
     if (!(iodesc = pio_get_iodesc_from_id(ioid)))
         return pio_err(ios, file, PIO_EBADID, __FILE__, __LINE__);
+    pioassert(iodesc->rearranger == PIO_REARR_BOX || iodesc->rearranger == PIO_REARR_SUBSET,
+              "unknown rearranger", __FILE__, __LINE__);
 
     /* For netcdf serial writes we collect the data on io nodes and
      * then move that data one node at a time to the io master node
@@ -115,44 +117,40 @@ int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
      * large as the largest used to accommodate this serial io
      * method. */
     vdesc0 = file->varlist + varids[0];
-    pioassert(!vdesc0->iobuf, "Attempt to overwrite existing io buffer",__FILE__,
-              __LINE__);
+    pioassert(!vdesc0->iobuf, "buffer overwrite",__FILE__, __LINE__);
 
-    /* ??? */
-    /*   rlen = iodesc->llen*nvars; */
+    /* Determine total size of aggregated data (all vars/records). */
     rlen = 0;
     if (iodesc->llen > 0)
         rlen = iodesc->maxiobuflen * nvars;
 
-    /* Currently there are two rearrangers box=1 and subset=2. There
-     * is never a case where rearranger==0. */
+    /* Currently there are two rearrangers box=1 and subset=2. */
     LOG((2, "iodesc->rearranger = %d iodesc->needsfill = %d\n", iodesc->rearranger,
          iodesc->needsfill));
-    if (iodesc->rearranger > 0)
+    if (rlen > 0)
     {
-        if (rlen > 0)
-        {
-            if ((mpierr = MPI_Type_size(iodesc->basetype, &vsize)))
-                return check_mpi(file, mpierr, __FILE__, __LINE__);
-            LOG((3, "rlen = %d vsize = %d", rlen, vsize));
-
-            /* Allocate memory for the variable buffer. */
-            if (!(vdesc0->iobuf = bget((size_t)vsize * (size_t)rlen)))
-                return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
-            LOG((3, "allocated %lld bytes for variable buffer", (size_t)rlen * (size_t)vsize));
-
-            /* If data are missing for the BOX rearranger, insert fill values. */
-            if (iodesc->needsfill && iodesc->rearranger == PIO_REARR_BOX)
-                for (int nv = 0; nv < nvars; nv++)
-                    for (int i = 0; i < iodesc->maxiobuflen; i++)
-                        memcpy(&((char *)vdesc0->iobuf)[vsize * (i + nv * iodesc->maxiobuflen)],
-                               &((char *)fillvalue)[nv * vsize], vsize);
-        }
-
-        /* Move data from compute to IO tasks. */
-        if ((ierr = rearrange_comp2io(ios, iodesc, array, vdesc0->iobuf, nvars)))
-            return pio_err(ios, file, ierr, __FILE__, __LINE__);
+        /* Get the size of the MPI type. */
+        if ((mpierr = MPI_Type_size(iodesc->basetype, &vsize)))
+            return check_mpi(file, mpierr, __FILE__, __LINE__);
+        LOG((3, "rlen = %d vsize = %d", rlen, vsize));
+        
+        /* Allocate memory for the buffer for all vars/records. */
+        if (!(vdesc0->iobuf = bget((size_t)vsize * (size_t)rlen)))
+            return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
+        LOG((3, "allocated %lld bytes for variable buffer", (size_t)rlen * (size_t)vsize));
+        
+        /* If fill values are desired, and we're using the BOX
+         * rearranger, insert fill values. */
+        if (iodesc->needsfill && iodesc->rearranger == PIO_REARR_BOX)
+            for (int nv = 0; nv < nvars; nv++)
+                for (int i = 0; i < iodesc->maxiobuflen; i++)
+                    memcpy(&((char *)vdesc0->iobuf)[vsize * (i + nv * iodesc->maxiobuflen)],
+                           &((char *)fillvalue)[nv * vsize], vsize);
     }
+    
+    /* Move data from compute to IO tasks. */
+    if ((ierr = rearrange_comp2io(ios, iodesc, array, vdesc0->iobuf, nvars)))
+        return pio_err(ios, file, ierr, __FILE__, __LINE__);
 
     /* Write the darray based on the iotype. */
     LOG((2, "about to write darray for iotype = %d", file->iotype));
