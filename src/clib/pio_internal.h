@@ -221,7 +221,7 @@ extern "C" {
 
     /* Create the derived MPI datatypes used for comp2io and io2comp
      * transfers. */
-    int create_mpi_datatypes(MPI_Datatype basetype, int msgcnt, PIO_Offset dlen, const PIO_Offset *mindex,
+    int create_mpi_datatypes(MPI_Datatype basetype, int msgcnt, const PIO_Offset *mindex,
                              const int *mcount, int *mfrom, MPI_Datatype *mtype);
     int compare_offsets(const void *a, const void *b) ;
 

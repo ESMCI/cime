@@ -230,19 +230,19 @@ int compute_maxIObuffersize(MPI_Comm io_comm, io_desc_t *iodesc)
  * transfers. Used in define_iodesc_datatypes().
  *
  * @param basetype The MPI type of data (MPI_INT, etc.).
- * @param msgcnt The number of MPI messages/tasks to use.
- * @param dlen The length of the data array.
+ * @param msgcnt Number of tasks involved in the communication between
+ * comp and io tasks.
  * @param mindex An array of indexes into the data array from the comp
  * map.
  * @param mcount The number of indexes to be put on each mpi
  * message/task.
  * @param mfrom A pointer to the previous structure in the read/write
- * list
+ * list.
  * @param mtype The final data structure sent through MPI to the
- * read/write
+ * read/write.
  * @returns 0 on success, error code otherwise.
  */
-int create_mpi_datatypes(MPI_Datatype basetype, int msgcnt, PIO_Offset dlen,
+int create_mpi_datatypes(MPI_Datatype basetype, int msgcnt,
                          const PIO_Offset *mindex, const int *mcount, int *mfrom,
                          MPI_Datatype *mtype)
 {
@@ -252,10 +252,9 @@ int create_mpi_datatypes(MPI_Datatype basetype, int msgcnt, PIO_Offset dlen,
     PIO_Offset *lindex = NULL;
     int mpierr; /* Return code from MPI functions. */
 
-    pioassert(mcount, "invalid input", __FILE__, __LINE__);
+    pioassert(mcount && numinds >= 0, "invalid input", __FILE__, __LINE__);
 
-    LOG((1, "create_mpi_datatypes basetype = %d msgcnt = %d dlen = %lld", basetype,
-         msgcnt, dlen));
+    LOG((1, "create_mpi_datatypes basetype = %d msgcnt = %d", basetype, msgcnt));
     LOG((2, "MPI_BYTE = %d MPI_CHAR = %d MPI_SHORT = %d MPI_INT = %d MPI_DOUBLE = %d",
          MPI_BYTE, MPI_CHAR, MPI_SHORT, MPI_INT, MPI_DOUBLE));
     
@@ -263,12 +262,8 @@ int create_mpi_datatypes(MPI_Datatype basetype, int msgcnt, PIO_Offset dlen,
     for (int j = 0; j < msgcnt; j++)
         numinds += mcount[j];
 
-    pioassert(dlen >= 0, "dlen < 0", __FILE__, __LINE__);
-    pioassert(numinds >= 0, "num inds < 0", __FILE__, __LINE__);
-
     if (mindex)
     {
-        /* memcpy(lindex, mindex, (size_t) (dlen*sizeof(PIO_Offset)));*/
         if (!(lindex = malloc(numinds * sizeof(PIO_Offset))))
             return pio_err(NULL, NULL, PIO_ENOMEM, __FILE__, __LINE__);
         memcpy(lindex, mindex, (size_t)(numinds * sizeof(PIO_Offset)));
@@ -398,15 +393,14 @@ int define_iodesc_datatypes(iosystem_desc_t *ios, io_desc_t *iodesc)
                 LOG((3, "about to call create_mpi_datatypes for IO MPI types"));                
                 if (iodesc->rearranger == PIO_REARR_SUBSET)
                 {
-                    if ((ret = create_mpi_datatypes(iodesc->basetype, iodesc->nrecvs, iodesc->llen,
-                                                    iodesc->rindex, iodesc->rcount, iodesc->rfrom,
-                                                    iodesc->rtype)))
+                    if ((ret = create_mpi_datatypes(iodesc->basetype, iodesc->nrecvs, iodesc->rindex,
+                                                    iodesc->rcount, iodesc->rfrom, iodesc->rtype)))
                         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
                 }
                 else
                 {
-                    if ((ret = create_mpi_datatypes(iodesc->basetype, iodesc->nrecvs, iodesc->llen,
-                                                    iodesc->rindex, iodesc->rcount, NULL, iodesc->rtype)))
+                    if ((ret = create_mpi_datatypes(iodesc->basetype, iodesc->nrecvs, iodesc->rindex,
+                                                    iodesc->rcount, NULL, iodesc->rtype)))
                         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
                 }
             }
@@ -417,7 +411,6 @@ int define_iodesc_datatypes(iosystem_desc_t *ios, io_desc_t *iodesc)
     if (!iodesc->stype)
     {
         int ntypes;
-        int ncnt;
 
         if (iodesc->rearranger == PIO_REARR_SUBSET)
         {
@@ -446,7 +439,7 @@ int define_iodesc_datatypes(iosystem_desc_t *ios, io_desc_t *iodesc)
         /* Create the MPI data types. */
         
         LOG((3, "about to call create_mpi_datatypes for computation MPI types"));
-        if ((ret = create_mpi_datatypes(iodesc->basetype, ntypes, ncnt, iodesc->sindex,
+        if ((ret = create_mpi_datatypes(iodesc->basetype, ntypes, iodesc->sindex,
                                         iodesc->scount, NULL, iodesc->stype)))
             return pio_err(ios, NULL, ret, __FILE__, __LINE__);
     }
