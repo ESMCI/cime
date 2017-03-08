@@ -245,10 +245,7 @@ typedef struct io_desc_t
      * io tasks. */
     int nrecvs;
 
-    /** Local size of the decomposition array on the compute node. On
-        each compute task the application passes a compmap array of
-        length ndof. This array describes the arrangement of data in
-        memory on that task. */
+    /** Local size of the decomposition array on the compute node. */
     int ndof;
 
     /** All vars included in this io_desc_t have the same number of
@@ -298,10 +295,11 @@ typedef struct io_desc_t
      * in pio_swapm(). */
     int *scount;
 
-    /** Send index. */
+    /** Array of length ndof (for the BOX rearranger) with the index
+     * for computation taks (send side during writes). */
     PIO_Offset *sindex;
 
-    /** Receive index. */
+    /** Index for the IO tasks (receive side during writes). */
     PIO_Offset *rindex;
 
     /** Array of receive MPI types in pio_swapm() call. */

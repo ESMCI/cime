@@ -568,8 +568,7 @@ int test_create_mpi_datatypes()
     int ret;
 
     /* Create an MPI data type. */
-    if ((ret = create_mpi_datatypes(basetype, msgcnt, mindex, mcount,
-                                    mfrom, &mtype)))
+    if ((ret = create_mpi_datatypes(basetype, msgcnt, mindex, mcount, mfrom, &mtype)))
         return ret;
 
     /* Free the type. */
