@@ -1838,14 +1838,13 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
         if ((ret = test_decomp_public(my_test_size, my_rank, iosysid, DIM_LEN, test_comm, async)))
             return ret;
 
+    /* Decompose the data over the tasks. */
+    if ((ret = create_decomposition(my_test_size, my_rank, iosysid, DIM_LEN, &ioid)))
+        return ret;
+
     if (!async)
     {
         printf("%d Testing darray. async = %d\n", my_rank, async);
-        
-        /* Decompose the data over the tasks. */
-        if ((ret = create_decomposition(my_test_size, my_rank, iosysid, DIM_LEN, &ioid)))
-            return ret;
-
         /* Write out an ASCII version of the decomp file. */
         printf("%d Calling write_decomp. async = %d\n", my_rank, async);
         if ((ret = PIOc_write_decomp(filename, iosysid, ioid, test_comm)))
@@ -1856,11 +1855,11 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
         for (int fv = 0; fv < 2; fv++)
             if ((ret = test_darray(iosysid, ioid, num_flavors, flavor, my_rank, fv)))
                 return ret;
-
-        /* Free the PIO decomposition. */
-        if ((ret = PIOc_freedecomp(iosysid, ioid)))
-            ERR(ret);
     }
+
+    /* Free the PIO decomposition. */
+    if ((ret = PIOc_freedecomp(iosysid, ioid)))
+        ERR(ret);
 
     /* Check the error string function. */
     printf("%d Testing streror. async = %d\n", my_rank, async);
@@ -1884,6 +1883,6 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
 int main(int argc, char **argv)
 {
     /* Change the 5th arg to 3 to turn on logging. */
-    return run_test_main(argc, argv, MIN_NTASKS, TARGET_NTASKS, 0,
+    return run_test_main(argc, argv, MIN_NTASKS, TARGET_NTASKS, 3,
                          TEST_NAME, dim_len, COMPONENT_COUNT, NUM_IO_PROCS);
 }

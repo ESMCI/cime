@@ -930,8 +930,8 @@ int PIOc_readmap(const char *file, int *ndims, int **gdims, PIO_Offset *fmaplen,
  * @param f90_comm
  * @returns 0 for success, error code otherwise.
  */
-int PIOc_readmap_from_f90(const char *file, int *ndims, int **gdims, PIO_Offset *maplen,
-                          PIO_Offset **map, int f90_comm)
+int PIOc_readmap_from_f90(const char *file, int npes, int *ndims, int **gdims,
+                          PIO_Offset *maplen, PIO_Offset **map, int f90_comm)
 {
     return PIOc_readmap(file, ndims, gdims, maplen, map, MPI_Comm_f2c(f90_comm));
 }
@@ -959,7 +959,6 @@ int PIOc_write_nc_decomp(int iosysid, const char *filename, int cmode, int ioid,
     iosystem_desc_t *ios;
     io_desc_t *iodesc;
     int npes;   /* Size of this communicator. */
-    int myrank; /* Rank of this task. */
     int mpierr;
     int ret;
 
@@ -978,12 +977,10 @@ int PIOc_write_nc_decomp(int iosysid, const char *filename, int cmode, int ioid,
     if (!(iodesc = pio_get_iodesc_from_id(ioid)))
         return pio_err(ios, NULL, PIO_EBADID, __FILE__, __LINE__);
 
-    /* Get the communicator size and task rank. */
+    /* Get the communicator size. */
     if ((mpierr = MPI_Comm_size(comm, &npes)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
-    if ((mpierr = MPI_Comm_rank(comm, &myrank)))
-        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
-    LOG((2, "npes = %d myrank = %d", npes, myrank));
+    LOG((2, "npes = %d", npes));
 
     /* Allocate memory for the nmaplen. On task 0, this will contain
      * the length of the map on each task, for all tasks. */
