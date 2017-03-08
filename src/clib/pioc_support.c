@@ -985,72 +985,208 @@ int PIOc_write_nc_decomp(int iosysid, const char *filename, int cmode, int ioid,
     /* Allocate memory for array which will contain the length of the
      * map on each task, for all computation tasks. */
     int task_maplen[ios->num_comptasks];
+    LOG((3, "ios->num_comptasks = %d", ios->num_comptasks));
 
-    /* Run this on all tasks if async is not in use, but only on
-     * non-IO tasks if async is in use. Get the composition
-     * information from the computation tasks. */
-    if (!ios->async_interface || !ios->ioproc)
-    {
-        /* Gather maplens from all computation tasks and fill the
-         * task_maplen array on all tasks. */
-        if ((mpierr = MPI_Allgather(&iodesc->maplen, 1, MPI_INT, task_maplen, 1, MPI_INT,
-                                    ios->comp_comm)))
-            return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+    /* Gather maplens from all computation tasks and fill the
+     * task_maplen array on all tasks. */
+    if ((mpierr = MPI_Allgather(&iodesc->maplen, 1, MPI_INT, task_maplen, 1, MPI_INT,
+                                ios->comp_comm)))
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
 
-        /* Find the max maxplen. */
-        if ((mpierr = MPI_Allreduce(&iodesc->maplen, &max_maplen, 1, MPI_INT, MPI_MAX,
-                                    ios->comp_comm)))
-            return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
-        LOG((3, "max_maplen = %d", max_maplen));
-    }
-
-    /* If async is in use, broadcast values currently only known on
-     * computation tasks to IO tasks. */
-    if (ios->async_interface)
-    {
-        if ((mpierr = MPI_Bcast(&max_maplen, 1, MPI_INT, ios->comproot, ios->my_comm)))
-            check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
-        LOG((3, "async bcast max_maplen = %d", max_maplen));
-    }
+    /* Find the max maxplen. */
+    if ((mpierr = MPI_Allreduce(&iodesc->maplen, &max_maplen, 1, MPI_INT, MPI_MAX,
+                                ios->comp_comm)))
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+    LOG((3, "max_maplen = %d", max_maplen));
 
     /* 2D array that will hold all the map information for all
      * tasks. */
     int full_map[ios->num_comptasks][max_maplen];
 
-    /* Run this on all tasks if async is not in use, but only on
-     * non-IO tasks if async is in use. Get the composition
-     * information from the computation tasks. */
-    if (!ios->async_interface || !ios->ioproc)
+    /* Fill local array with my map. Use the fill value for unused */
+    /* elements at the end if max_maplen is longer than maplen. Also
+     * subtract 1 because the iodesc->map is 1-based. */
+    int my_map[max_maplen];
+    for (int e = 0; e < max_maplen; e++)
     {
-        /* Fill local array with my map. Use the fill value for unused */
-        /* elements at the end if max_maplen is longer than maplen. Also
-         * subtract 1 because the iodesc->map is 1-based. */
-        int my_map[max_maplen];
-        for (int e = 0; e < max_maplen; e++)
-        {
-            my_map[e] = e < iodesc->maplen ? iodesc->map[e] - 1 : NC_FILL_INT;
-            LOG((3, "my_map[%d] = %d", e, my_map[e]));
-        }
-
-        /* Gather my_map from all computation tasks and fill the full_map array. */
-        if ((mpierr = MPI_Allgather(&my_map, max_maplen, MPI_INT, full_map, max_maplen,
-                                    MPI_INT, ios->comp_comm)))
-            return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
-
-        for (int p = 0; p < ios->num_comptasks; p++)
-            for (int e = 0; e < max_maplen; e++)
-                LOG((3, "full_map[%d][%d] = %d", p, e, full_map[p][e]));
+        my_map[e] = e < iodesc->maplen ? iodesc->map[e] - 1 : NC_FILL_INT;
+        LOG((3, "my_map[%d] = %d", e, my_map[e]));
     }
+    
+    /* Gather my_map from all computation tasks and fill the full_map array. */
+    if ((mpierr = MPI_Allgather(&my_map, max_maplen, MPI_INT, full_map, max_maplen,
+                                MPI_INT, ios->comp_comm)))
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+    
+    for (int p = 0; p < ios->num_comptasks; p++)
+        for (int e = 0; e < max_maplen; e++)
+            LOG((3, "full_map[%d][%d] = %d", p, e, full_map[p][e]));
 
     /* Write the netCDF decomp file. */
-    if ((ret = pioc_write_nc_decomp_int(ios, filename, cmode, iodesc->ndims,
-                                        iodesc->dimlen, ios->num_comptasks,
-                                        task_maplen, (int *)full_map, title,
+    if ((ret = pioc_write_nc_decomp_int(ios, filename, cmode, iodesc->ndims, iodesc->dimlen,
+                                        ios->num_comptasks, task_maplen, (int *)full_map, title,
                                         history, fortran_order)))
         return ret;
 
     return PIO_NOERR;
 }
+
+/* int PIOc_write_nc_decomp_old(int iosysid, const char *filename, int cmode, int ioid, */
+/*                              char *title, char *history, int fortran_order) */
+/* { */
+/*     iosystem_desc_t *ios; /\* IO system info. *\/ */
+/*     io_desc_t *iodesc;    /\* Decomposition info. *\/ */
+/*     int max_maplen;       /\* The maximum maplen used for any task. *\/ */
+/*     int mpierr; */
+/*     int ret; */
+
+/*     /\* Get the IO system info. *\/ */
+/*     if (!(ios = pio_get_iosystem_from_id(iosysid))) */
+/*         return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__); */
+
+/*     /\* Check inputs. *\/ */
+/*     if (!filename) */
+/*         return pio_err(ios, NULL, PIO_EINVAL, __FILE__, __LINE__); */
+/*     if (title) */
+/*         if (strlen(title) > PIO_MAX_NAME) */
+/*             return pio_err(ios, NULL, PIO_EINVAL, __FILE__, __LINE__); */
+/*     if (history) */
+/*         if (strlen(history) > PIO_MAX_NAME) */
+/*             return pio_err(ios, NULL, PIO_EINVAL, __FILE__, __LINE__); */
+
+/*     LOG((1, "PIOc_write_nc_decomp filename = %s iosysid = %d ioid = %d " */
+/*          "ios->num_comptasks = %d", filename, iosysid, ioid, ios->num_comptasks)); */
+
+/*     /\* Get the IO desc, which describes the decomposition. *\/ */
+/*     if (!(iodesc = pio_get_iodesc_from_id(ioid))) */
+/*         return pio_err(ios, NULL, PIO_EBADID, __FILE__, __LINE__); */
+
+/*     /\* Allocate memory for array which will contain the length of the */
+/*      * map on each task, for all computation tasks. *\/ */
+/*     int task_maplen[ios->num_comptasks]; */
+/*     LOG((3, "ios->num_comptasks = %d", ios->num_comptasks)); */
+
+/*     /\* Run this on all tasks if async is not in use, but only on */
+/*      * non-IO tasks if async is in use. Get the composition */
+/*      * information from the computation tasks. *\/ */
+/*     if (!ios->async_interface || !ios->ioproc) */
+/*     { */
+/*         /\* Gather maplens from all computation tasks and fill the */
+/*          * task_maplen array on all tasks. *\/ */
+/*         if ((mpierr = MPI_Allgather(&iodesc->maplen, 1, MPI_INT, task_maplen, 1, MPI_INT, */
+/*                                     ios->comp_comm))) */
+/*             return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__); */
+
+/*         /\* Find the max maxplen. *\/ */
+/*         if ((mpierr = MPI_Allreduce(&iodesc->maplen, &max_maplen, 1, MPI_INT, MPI_MAX, */
+/*                                     ios->comp_comm))) */
+/*             return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__); */
+/*         LOG((3, "max_maplen = %d", max_maplen)); */
+/*     } */
+
+/*     /\* If async is in use, and this is not an IO task, bcast the parameters. *\/ */
+/*     if (ios->async_interface) */
+/*     { */
+/*         if (!ios->ioproc) */
+/*         { */
+/*             int msg = PIO_MSG_WRITE_NC_DECOMP; */
+/*             char title_present = title ? 1 : 0; */
+/*             char history_present = history ? 1 : 0; */
+/*             int title_len = title ? strlen(title) : 0; */
+/*             int history_len = history ? strlen(history) : 0; */
+/*             int filename_len = strlen(filename); */
+
+/*             /\* Send the msg. *\/ */
+/*             if (ios->compmaster == MPI_ROOT) */
+/*                 mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm); */
+
+/*             /\* Send the parameters of the function call. *\/ */
+/*             if (!mpierr) */
+/*                 mpierr = MPI_Bcast(&filename_len, 1, MPI_INT, ios->compmaster, ios->intercomm); */
+/*             if (!mpierr) */
+/*                 mpierr = MPI_Bcast((void *)filename, filename_len + 1, MPI_CHAR, ios->compmaster, ios->intercomm); */
+/*             if (!mpierr) */
+/*                 mpierr = MPI_Bcast(&cmode, 1, MPI_INT, ios->compmaster, ios->intercomm); */
+/*             if (!mpierr) */
+/*                 mpierr = MPI_Bcast(&ioid, 1, MPI_INT, ios->compmaster, ios->intercomm); */
+/*             if (!mpierr) */
+/*                 mpierr = MPI_Bcast(&title_present, 1, MPI_CHAR, ios->compmaster, ios->intercomm); */
+/*             if (!mpierr) */
+/*                 mpierr = MPI_Bcast(&title_len, 1, MPI_INT, ios->compmaster, ios->intercomm); */
+/*             if (!mpierr && title_present) */
+/*                 mpierr = MPI_Bcast((void *)title, title_len + 1, MPI_CHAR, ios->compmaster, ios->intercomm); */
+/*             if (!mpierr) */
+/*                 mpierr = MPI_Bcast(&history_present, 1, MPI_CHAR, ios->compmaster, ios->intercomm); */
+/*             if (!mpierr) */
+/*                 mpierr = MPI_Bcast(&history_len, 1, MPI_INT, ios->compmaster, ios->intercomm); */
+/*             if (!mpierr && history_present) */
+/*                 mpierr = MPI_Bcast((void *)history, history_len + 1, MPI_CHAR, ios->compmaster, ios->intercomm); */
+/*             if (!mpierr) */
+/*                 mpierr = MPI_Bcast(&fortran_order, 1, MPI_INT, ios->compmaster, ios->intercomm); */
+/*             LOG((2, "PIOc_write_nc_decomp filename_len = %d filename = %s cmode = %d ioid = %d title_present = %d " */
+/*                  "title_len = %d history_present = %d history_len = %d fortran_order = %d", */
+/*                  filename_len, filename, cmode, ioid, title_present, title_len, history_present, history_len, */
+/*                  fortran_order)); */
+/*         } */
+
+/*         /\* Handle MPI errors. *\/ */
+/*         if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm))) */
+/*             return check_mpi(file, mpierr2, __FILE__, __LINE__); */
+/*         if (mpierr) */
+/*             return check_mpi(file, mpierr, __FILE__, __LINE__); */
+
+/*         /\* Broadcast values currently only known on computation tasks to IO tasks. *\/ */
+/*         if ((mpierr = MPI_Bcast(&max_maplen, 1, MPI_INT, ios->comproot, ios->my_comm))) */
+/*             check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__); */
+/*         LOG((3, "async bcast max_maplen = %d", max_maplen)); */
+/*     } */
+
+/*     /\* 2D array that will hold all the map information for all */
+/*      * tasks. *\/ */
+/*     int full_map[ios->num_comptasks][max_maplen]; */
+
+/*     /\* Run this on all tasks if async is not in use, but only on */
+/*      * non-IO tasks if async is in use. Get the composition */
+/*      * information from the computation tasks. *\/ */
+/*     if (!ios->async_interface || !ios->ioproc) */
+/*     { */
+/*         /\* Fill local array with my map. Use the fill value for unused *\/ */
+/*         /\* elements at the end if max_maplen is longer than maplen. Also */
+/*          * subtract 1 because the iodesc->map is 1-based. *\/ */
+/*         int my_map[max_maplen]; */
+/*         for (int e = 0; e < max_maplen; e++) */
+/*         { */
+/*             my_map[e] = e < iodesc->maplen ? iodesc->map[e] - 1 : NC_FILL_INT; */
+/*             LOG((3, "my_map[%d] = %d", e, my_map[e])); */
+/*         } */
+
+/*         /\* Gather my_map from all computation tasks and fill the full_map array. *\/ */
+/*         if ((mpierr = MPI_Allgather(&my_map, max_maplen, MPI_INT, full_map, max_maplen, */
+/*                                     MPI_INT, ios->comp_comm))) */
+/*             return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__); */
+
+/*         for (int p = 0; p < ios->num_comptasks; p++) */
+/*             for (int e = 0; e < max_maplen; e++) */
+/*                 LOG((3, "full_map[%d][%d] = %d", p, e, full_map[p][e])); */
+/*     } */
+
+/*     /\* Broadcast values currently only known on computation tasks to IO tasks. *\/ */
+/*     if (ios->async_interface) */
+/*     { */
+/*         if ((mpierr = MPI_Bcast(full_map, ios->num_comptasks * max_maplen, MPI_INT, */
+/*                                 ios->comproot, ios->my_comm))) */
+/*             check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__); */
+/*         LOG((3, "bcast of full_map complete")); */
+/*     } */
+
+/*     /\* Write the netCDF decomp file. *\/ */
+/*     if ((ret = pioc_write_nc_decomp_int(ios, filename, cmode, iodesc->ndims, iodesc->dimlen, */
+/*                                         ios->num_comptasks, task_maplen, (int *)full_map, title, */
+/*                                         history, fortran_order))) */
+/*         return ret; */
+
+/*     return PIO_NOERR; */
+/* } */
 
 /**
  * Read the decomposition map from a netCDF decomp file produced by

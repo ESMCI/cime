@@ -1855,20 +1855,12 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
         if ((ret = test_decomp_public(my_test_size, my_rank, iosysid, DIM_LEN, test_comm, async)))
             return ret;
 
-    if (!async)
-        if ((ret = test_decomp_public2(my_test_size, my_rank, iosysid, DIM_LEN, test_comm, async)))
-            return ret;
+    if ((ret = test_decomp_public_2(my_test_size, my_rank, iosysid, DIM_LEN, test_comm, async)))
+        return ret;
 
     /* Decompose the data over the tasks. */
     if ((ret = create_decomposition(my_test_size, my_rank, iosysid, DIM_LEN, &ioid)))
         return ret;
-
-    /* Write a netCDF decomp file for this iosystem. */
-    /* int cmode = 0; */
-    /* int fortran_order = 0; */
-    /* if ((ret = PIOc_write_nc_decomp(iosysid, nc_filename, cmode, ioid, NULL, */
-    /*                                 NULL, fortran_order))) */
-    /*     return ret; */
 
     /* Run the darray tests. */
     if (!async)
