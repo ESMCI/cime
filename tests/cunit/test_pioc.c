@@ -1454,7 +1454,7 @@ int test_decomp_internal(int my_test_size, int my_rank, int iosysid, int dim_len
     int ioid;
     char filename[NC_MAX_NAME + 1];    /* Test decomp filename. */
     char nc_filename[NC_MAX_NAME + 1]; /* Test decomp filename (netcdf version). */
-    char too_long_name[PIO_MAX_NAME * 5 + 1];
+    iosystem_desc_t *ios; /* IO system info. */
     int ret;
 
     /* This will be our file name for writing out decompositions. */
@@ -1476,37 +1476,12 @@ int test_decomp_internal(int my_test_size, int my_rank, int iosysid, int dim_len
     int task_maplen[TARGET_NTASKS] = {1, 1, 1, 1};
     int map[TARGET_NTASKS][1] = {{0},{1},{2},{3}};
 
-    /* These should not work. */
-    memset(too_long_name, 74, PIO_MAX_NAME * 5);
-    too_long_name[PIO_MAX_NAME * 5] = 0;
-    if (pioc_write_nc_decomp_int(iosysid + TEST_VAL_42, nc_filename, 0, NDIM1, global_dimlen,
-                                 TARGET_NTASKS, task_maplen, (int *)map, title,
-                                 history, 0) != PIO_EBADID)
-        return ERR_WRONG;
-    if (pioc_write_nc_decomp_int(iosysid, NULL, 0, NDIM1, global_dimlen,
-                                 TARGET_NTASKS, task_maplen, (int *)map, title,
-                                 history, 0) != PIO_EINVAL)
-        return ERR_WRONG;
-    if (pioc_write_nc_decomp_int(iosysid, nc_filename, 0, NDIM1, NULL,
-                                 TARGET_NTASKS, task_maplen, (int *)map, title,
-                                 history, 0) != PIO_EINVAL)
-        return ERR_WRONG;
-    if (pioc_write_nc_decomp_int(iosysid, nc_filename, 0, NDIM1, global_dimlen,
-                                 TARGET_NTASKS, NULL, (int *)map, title,
-                                 history, 0) != PIO_EINVAL)
-        return ERR_WRONG;
-    if (pioc_write_nc_decomp_int(iosysid, nc_filename, 0, NDIM1, global_dimlen,
-                                 TARGET_NTASKS, task_maplen, (int *)map, too_long_name,
-                                 history, 0) != PIO_EINVAL)
-        return ERR_WRONG;
-    if (pioc_write_nc_decomp_int(iosysid, nc_filename, 0, NDIM1, global_dimlen,
-                                 TARGET_NTASKS, task_maplen, (int *)map, title,
-                                 too_long_name, 0) != PIO_EINVAL)
-        return ERR_WRONG;
-    
+    /* Get the IO system info. */
+    if (!(ios = pio_get_iosystem_from_id(iosysid)))
+        return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
 
     /* Write the decomposition file. */
-    if ((ret = pioc_write_nc_decomp_int(iosysid, nc_filename, 0, NDIM1, global_dimlen,
+    if ((ret = pioc_write_nc_decomp_int(ios, nc_filename, 0, NDIM1, global_dimlen,
                                         TARGET_NTASKS, task_maplen, (int *)map, title,
                                         history, 0)))
         return ret;
@@ -1683,15 +1658,29 @@ int test_decomp_public(int my_test_size, int my_rank, int iosysid, int dim_len,
     char *history = "Added to PIO automatic testing by Ed in February 2017.";
 
     /* These should not work. */
-    if (PIOc_write_nc_decomp(iosysid + TEST_VAL_42, nc_filename, 0, ioid, test_comm, title, history, 0) != PIO_EBADID)
+    char too_long_name[PIO_MAX_NAME * 5 + 1];
+    memset(too_long_name, 74, PIO_MAX_NAME * 5);
+    too_long_name[PIO_MAX_NAME * 5] = 0;
+    
+    if (PIOc_write_nc_decomp(iosysid + TEST_VAL_42, nc_filename, 0, ioid,
+                             title, history, 0) != PIO_EBADID)
         return ERR_WRONG;
-    if (PIOc_write_nc_decomp(iosysid, NULL, 0, ioid, test_comm, title, history, 0) != PIO_EINVAL)
+    if (PIOc_write_nc_decomp(iosysid, NULL, 0, ioid, title, history, 0) != PIO_EINVAL)
         return ERR_WRONG;
-    if (PIOc_write_nc_decomp(iosysid, nc_filename, 0, ioid + TEST_VAL_42, test_comm, title, history, 0) != PIO_EBADID)
+    if (PIOc_write_nc_decomp(iosysid, nc_filename, 0, ioid + TEST_VAL_42,
+                             title, history, 0) != PIO_EBADID)
+        return ERR_WRONG;
+    
+    if (PIOc_write_nc_decomp(iosysid, nc_filename, 0, ioid,
+                             too_long_name, history, 0) != PIO_EINVAL)
+        return ERR_WRONG;
+    if (PIOc_write_nc_decomp(iosysid, nc_filename, 0, ioid,
+                             title, too_long_name, 0) != PIO_EINVAL)
         return ERR_WRONG;
 
     /* Write a netCDF decomp file for this iosystem. */
-    if ((ret = PIOc_write_nc_decomp(iosysid, nc_filename, 0, ioid, test_comm, title, history, 0)))
+    if ((ret = PIOc_write_nc_decomp(iosysid, nc_filename, 0, ioid, title,
+                                    history, 0)))
         return ret;
 
     int ioid_in;
@@ -1700,8 +1689,8 @@ int test_decomp_public(int my_test_size, int my_rank, int iosysid, int dim_len,
     int fortran_order_in;
 
     /* These should not work. */
-    if (PIOc_read_nc_decomp(iosysid + TEST_VAL_42, nc_filename, &ioid_in, test_comm, PIO_INT,
-                            title_in, history_in, &fortran_order_in) != PIO_EBADID)
+    if (PIOc_read_nc_decomp(iosysid + TEST_VAL_42, nc_filename, &ioid_in, test_comm,
+                            PIO_INT, title_in, history_in, &fortran_order_in) != PIO_EBADID)
         return ret;
     if (PIOc_read_nc_decomp(iosysid, NULL, &ioid_in, test_comm, PIO_INT, title_in,
                             history_in, &fortran_order_in) != PIO_EINVAL)
@@ -1784,9 +1773,35 @@ int test_decomp_public(int my_test_size, int my_rank, int iosysid, int dim_len,
     free(map_in);
 
     /* /\* These should also work. *\/ */
-    /* if ((ret = PIOc_write_nc_decomp(iosysid, nc_filename, 0, ioid, test_comm, title, history, 0))) */
+    /* if ((ret = PIOc_write_nc_decomp(iosysid, nc_filename, 0, ioid, title, history, 0))) */
     /*     return ret; */
     
+    /* Free the PIO decomposition. */
+    if ((ret = PIOc_freedecomp(iosysid, ioid)))
+        ERR(ret);
+
+    return 0;
+}
+
+/* Test some decomp public API functions. */
+int test_decomp_public_2(int my_test_size, int my_rank, int iosysid, int dim_len,
+                         MPI_Comm test_comm, int async)
+{
+    int ioid;
+    char nc_filename[NC_MAX_NAME + 1]; /* Test decomp filename (netcdf version). */
+    int ret;
+    
+    /* This will be our file name for writing out decompositions. */
+    sprintf(nc_filename, "nc_decomp_%s_rank_%d_async_%d.nc", TEST_NAME, my_rank, async);
+
+    /* Decompose the data over the tasks. */
+    if ((ret = create_decomposition(my_test_size, my_rank, iosysid, dim_len, &ioid)))
+        return ret;
+
+    /* Write a netCDF decomp file for this iosystem. */
+    if ((ret = PIOc_write_nc_decomp(iosysid, nc_filename, 0, ioid, NULL, NULL, 0)))
+        return ret;
+
     /* Free the PIO decomposition. */
     if ((ret = PIOc_freedecomp(iosysid, ioid)))
         ERR(ret);
@@ -1801,6 +1816,7 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
     int ioid;
     int my_test_size;
     char filename[NC_MAX_NAME + 1];
+    char nc_filename[NC_MAX_NAME + 1];
     int ret; /* Return code. */
 
     if ((ret = MPI_Comm_size(test_comm, &my_test_size)))
@@ -1808,6 +1824,7 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
 
     /* This will be our file name for writing out decompositions. */
     sprintf(filename, "decomp_%d.txt", my_rank);
+    sprintf(nc_filename, "decomp_%d.nc", my_rank);
 
     /* Check iotypes. */
     printf("%d Testing iotypes. async = %d\n", my_rank, async);
@@ -1838,29 +1855,22 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
         if ((ret = test_decomp_public(my_test_size, my_rank, iosysid, DIM_LEN, test_comm, async)))
             return ret;
 
+    if ((ret = test_decomp_public_2(my_test_size, my_rank, iosysid, DIM_LEN, test_comm, async)))
+        return ret;
+
+    /* Decompose the data over the tasks. */
+    if ((ret = create_decomposition(my_test_size, my_rank, iosysid, DIM_LEN, &ioid)))
+        return ret;
+
+    /* Run the darray tests. */
     if (!async)
-    {
-        printf("%d Testing darray. async = %d\n", my_rank, async);
-        
-        /* Decompose the data over the tasks. */
-        if ((ret = create_decomposition(my_test_size, my_rank, iosysid, DIM_LEN, &ioid)))
-            return ret;
-
-        /* Write out an ASCII version of the decomp file. */
-        printf("%d Calling write_decomp. async = %d\n", my_rank, async);
-        if ((ret = PIOc_write_decomp(filename, iosysid, ioid, test_comm)))
-            return ret;
-        printf("%d Called write_decomp. async = %d\n", my_rank, async);
-
-        /* Run the darray tests. */
         for (int fv = 0; fv < 2; fv++)
             if ((ret = test_darray(iosysid, ioid, num_flavors, flavor, my_rank, fv)))
                 return ret;
 
-        /* Free the PIO decomposition. */
-        if ((ret = PIOc_freedecomp(iosysid, ioid)))
-            ERR(ret);
-    }
+    /* Free the PIO decomposition. */
+    if ((ret = PIOc_freedecomp(iosysid, ioid)))
+        ERR(ret);
 
     /* Check the error string function. */
     printf("%d Testing streror. async = %d\n", my_rank, async);
@@ -1884,6 +1894,6 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
 int main(int argc, char **argv)
 {
     /* Change the 5th arg to 3 to turn on logging. */
-    return run_test_main(argc, argv, MIN_NTASKS, TARGET_NTASKS, 0,
+    return run_test_main(argc, argv, MIN_NTASKS, TARGET_NTASKS, 3,
                          TEST_NAME, dim_len, COMPONENT_COUNT, NUM_IO_PROCS);
 }

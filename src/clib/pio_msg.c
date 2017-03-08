@@ -1889,7 +1889,7 @@ int delete_file_handler(iosystem_desc_t *ios)
 int initdecomp_dof_handler(iosystem_desc_t *ios)
 {
     int iosysid;
-    int basetype;
+    int pio_type;
     int ndims;
     int maplen;
     int ioid;
@@ -1910,7 +1910,7 @@ int initdecomp_dof_handler(iosystem_desc_t *ios)
      * task is broadcasting. */
     if ((mpierr = MPI_Bcast(&iosysid, 1, MPI_INT, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
-    if ((mpierr = MPI_Bcast(&basetype, 1, MPI_INT, 0, ios->intercomm)))
+    if ((mpierr = MPI_Bcast(&pio_type, 1, MPI_INT, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&ndims, 1, MPI_INT, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
@@ -1951,9 +1951,9 @@ int initdecomp_dof_handler(iosystem_desc_t *ios)
         if ((mpierr = MPI_Bcast(iocount, ndims, MPI_OFFSET, 0, ios->intercomm)))
             return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
 
-    LOG((2, "initdecomp_dof_handler iosysid = %d basetype = %d ndims = %d maplen = %d "
+    LOG((2, "initdecomp_dof_handler iosysid = %d pio_type = %d ndims = %d maplen = %d "
          "rearranger_present = %d iostart_present = %d iocount_present = %d ",
-         iosysid, basetype, ndims, maplen, rearranger_present, iostart_present, iocount_present));
+         iosysid, pio_type, ndims, maplen, rearranger_present, iostart_present, iocount_present));
 
     if (rearranger_present)
         rearrangerp = &rearranger;
@@ -1963,7 +1963,7 @@ int initdecomp_dof_handler(iosystem_desc_t *ios)
         iocountp = iocount;
 
     /* Call the function. */
-    ret = PIOc_InitDecomp(iosysid, basetype, ndims, dims, maplen, compmap, &ioid, rearrangerp,
+    ret = PIOc_InitDecomp(iosysid, pio_type, ndims, dims, maplen, compmap, &ioid, rearrangerp,
                           iostartp, iocountp);
     
     LOG((1, "PIOc_InitDecomp returned %d", ret));

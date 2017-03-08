@@ -944,7 +944,6 @@ int PIOc_readmap_from_f90(const char *file, int *ndims, int **gdims, PIO_Offset 
  * @param filename the filename to be used.
  * @param cmode for PIOc_create(). Will be bitwise or'd with NC_WRITE.
  * @param ioid the ID of the IO description.
- * @param comm an MPI communicator.
  * @param title optial title attribute for the file. Must be less than
  * NC_MAX_NAME + 1 if provided. Ignored if NULL.
  * @param history optial history attribute for the file. Must be less
@@ -954,12 +953,11 @@ int PIOc_readmap_from_f90(const char *file, int *ndims, int **gdims, PIO_Offset 
  * @returns 0 for success, error code otherwise.
  */
 int PIOc_write_nc_decomp(int iosysid, const char *filename, int cmode, int ioid,
-                         MPI_Comm comm, char *title, char *history, int fortran_order)
+                         char *title, char *history, int fortran_order)
 {
-    iosystem_desc_t *ios;
-    io_desc_t *iodesc;
-    int npes;   /* Size of this communicator. */
-    int myrank; /* Rank of this task. */
+    iosystem_desc_t *ios; /* IO system info. */
+    io_desc_t *iodesc;    /* Decomposition info. */
+    int max_maplen;       /* The maximum maplen used for any task. */
     int mpierr;
     int ret;
 
@@ -969,42 +967,41 @@ int PIOc_write_nc_decomp(int iosysid, const char *filename, int cmode, int ioid,
 
     /* Check inputs. */
     if (!filename)
-        return pio_err(NULL, NULL, PIO_EINVAL, __FILE__, __LINE__);
+        return pio_err(ios, NULL, PIO_EINVAL, __FILE__, __LINE__);
+    if (title)
+        if (strlen(title) > PIO_MAX_NAME)
+            return pio_err(ios, NULL, PIO_EINVAL, __FILE__, __LINE__);
+    if (history)
+        if (strlen(history) > PIO_MAX_NAME)
+            return pio_err(ios, NULL, PIO_EINVAL, __FILE__, __LINE__);
 
-    LOG((1, "PIOc_write_nc_decomp filename = %s iosysid = %d ioid = %d", filename,
-         iosysid, ioid));
+    LOG((1, "PIOc_write_nc_decomp filename = %s iosysid = %d ioid = %d "
+         "ios->num_comptasks = %d", filename, iosysid, ioid, ios->num_comptasks));
 
     /* Get the IO desc, which describes the decomposition. */
     if (!(iodesc = pio_get_iodesc_from_id(ioid)))
         return pio_err(ios, NULL, PIO_EBADID, __FILE__, __LINE__);
 
-    /* Get the communicator size and task rank. */
-    if ((mpierr = MPI_Comm_size(comm, &npes)))
-        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
-    if ((mpierr = MPI_Comm_rank(comm, &myrank)))
-        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
-    LOG((2, "npes = %d myrank = %d", npes, myrank));
+    /* Allocate memory for array which will contain the length of the
+     * map on each task, for all computation tasks. */
+    int task_maplen[ios->num_comptasks];
+    LOG((3, "ios->num_comptasks = %d", ios->num_comptasks));
 
-    /* Allocate memory for the nmaplen. On task 0, this will contain
-     * the length of the map on each task, for all tasks. */
-    int task_maplen[npes];
-
-    /* Gather maplens from all tasks and fill the task_maplen array on
-     * all tasks. */
-    if ((mpierr = MPI_Allgather(&iodesc->maplen, 1, MPI_INT, task_maplen, 1, MPI_INT, comm)))
+    /* Gather maplens from all computation tasks and fill the
+     * task_maplen array on all tasks. */
+    if ((mpierr = MPI_Allgather(&iodesc->maplen, 1, MPI_INT, task_maplen, 1, MPI_INT,
+                                ios->comp_comm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
-
-    /* We will need to know the maximum maplen used for any task. */
-    int max_maplen;
 
     /* Find the max maxplen. */
-    if ((mpierr = MPI_Allreduce(&iodesc->maplen, &max_maplen, 1, MPI_INT, MPI_MAX, comm)))
+    if ((mpierr = MPI_Allreduce(&iodesc->maplen, &max_maplen, 1, MPI_INT, MPI_MAX,
+                                ios->comp_comm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     LOG((3, "max_maplen = %d", max_maplen));
 
-    /* 2D array that, on task 0, will hold all the map information for
-     * all tasks. */
-    int full_map[npes][max_maplen];
+    /* 2D array that will hold all the map information for all
+     * tasks. */
+    int full_map[ios->num_comptasks][max_maplen];
 
     /* Fill local array with my map. Use the fill value for unused */
     /* elements at the end if max_maplen is longer than maplen. Also
@@ -1015,21 +1012,21 @@ int PIOc_write_nc_decomp(int iosysid, const char *filename, int cmode, int ioid,
         my_map[e] = e < iodesc->maplen ? iodesc->map[e] - 1 : NC_FILL_INT;
         LOG((3, "my_map[%d] = %d", e, my_map[e]));
     }
-
-    /* Gather my_map from all tasks and fill the full_map array. */
+    
+    /* Gather my_map from all computation tasks and fill the full_map array. */
     if ((mpierr = MPI_Allgather(&my_map, max_maplen, MPI_INT, full_map, max_maplen,
-                             MPI_INT, comm)))
+                                MPI_INT, ios->comp_comm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
-
-    for (int p = 0; p < npes; p++)
+    
+    for (int p = 0; p < ios->num_comptasks; p++)
         for (int e = 0; e < max_maplen; e++)
             LOG((3, "full_map[%d][%d] = %d", p, e, full_map[p][e]));
 
     /* Write the netCDF decomp file. */
-    if ((ret = pioc_write_nc_decomp_int(iosysid, filename, cmode, iodesc->ndims, iodesc->dimlen, npes,
-                                        task_maplen, (int *)full_map, title, history, fortran_order)))
+    if ((ret = pioc_write_nc_decomp_int(ios, filename, cmode, iodesc->ndims, iodesc->dimlen,
+                                        ios->num_comptasks, task_maplen, (int *)full_map, title,
+                                        history, fortran_order)))
         return ret;
-
 
     return PIO_NOERR;
 }
@@ -1136,7 +1133,7 @@ int PIOc_read_nc_decomp(int iosysid, const char *filename, int *ioidp, MPI_Comm 
 /* Write the decomp information in netCDF. This is an internal
  * function.
  *
- * @param iosysid the IO system ID.
+ * @param ios pointer to io system info.
  * @param filename the name the decomp file will have.
  * @param cmode for PIOc_create(). Will be bitwise or'd with NC_WRITE.
  * @param ndims number of dims in the data being described.
@@ -1157,31 +1154,22 @@ int PIOc_read_nc_decomp(int iosysid, const char *filename, int *ioidp, MPI_Comm 
  * ordering, 0 for C array ordering.
  * @returns 0 for success, error code otherwise.
  */
-int pioc_write_nc_decomp_int(int iosysid, const char *filename, int cmode, int ndims,
+int pioc_write_nc_decomp_int(iosystem_desc_t *ios, const char *filename, int cmode, int ndims,
                              int *global_dimlen, int num_tasks, int *task_maplen, int *map,
                              const char *title, const char *history, int fortran_order)
 {
-    iosystem_desc_t *ios;
     int max_maplen = 0;
     int ncid;
     int ret;
 
-    /* Get the IO system info. */
-    if (!(ios = pio_get_iosystem_from_id(iosysid)))
-        return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
-
     /* Check inputs. */
-    if (!filename || !global_dimlen || !task_maplen)
-        return pio_err(ios, NULL, PIO_EINVAL, __FILE__, __LINE__);
-    if (title)
-        if (strlen(title) > PIO_MAX_NAME)
-            return pio_err(ios, NULL, PIO_EINVAL, __FILE__, __LINE__);
-    if (history)
-        if (strlen(history) > PIO_MAX_NAME)
-            return pio_err(ios, NULL, PIO_EINVAL, __FILE__, __LINE__);
+    pioassert(ios && filename && global_dimlen && task_maplen &&
+              (!title || strlen(title) <= PIO_MAX_NAME) &&
+              (!history || strlen(history) <= PIO_MAX_NAME), "invalid input",
+              __FILE__, __LINE__);
 
-    LOG((2, "pioc_write_nc_decomp_int iosysid = %d filename = %s ndims = %d num_tasks = %d",
-         iosysid, filename, ndims, num_tasks));
+    LOG((2, "pioc_write_nc_decomp_int filename = %s ndims = %d num_tasks = %d", filename,
+         ndims, num_tasks));
 
     /* Find the maximum maplen. */
     for (int t = 0; t < num_tasks; t++)
@@ -1190,7 +1178,7 @@ int pioc_write_nc_decomp_int(int iosysid, const char *filename, int cmode, int n
     LOG((3, "max_maplen = %d", max_maplen));
 
     /* Create the netCDF decomp file. */
-    if ((ret = PIOc_create(iosysid, filename, cmode | NC_WRITE, &ncid)))
+    if ((ret = PIOc_create(ios->iosysid, filename, cmode | NC_WRITE, &ncid)))
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
     /* Write an attribute with the version of this file. */

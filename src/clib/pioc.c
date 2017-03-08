@@ -465,17 +465,6 @@ int PIOc_InitDecomp(int iosysid, int pio_type, int ndims, const int *dims, int m
         /* Compute the communications pattern for this decomposition. */
         if (iodesc->rearranger == PIO_REARR_BOX)
             ierr = box_rearrange_create(ios, maplen, compmap, dims, ndims, iodesc);
-
-        /*
-          if (ios->ioproc){
-          io_region *ioregion = iodesc->firstregion;
-          while(ioregion != NULL){
-          for (int i=0;i<ndims;i++)
-          printf("%s %d i %d dim %d start %ld count %ld\n",__FILE__,__LINE__,i,dims[i],ioregion->start[i],ioregion->count[i]);
-          ioregion = ioregion->next;
-          }
-          }
-        */
     }
 
     /* Add this IO description to the list. */
