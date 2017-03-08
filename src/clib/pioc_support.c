@@ -2302,8 +2302,9 @@ bool cmp_rearr_opts(const rearr_opt_t *rearr_opts, const rearr_opt_t *exp_rearr_
  * The old default for max pending requests was DEF_P2P_MAXREQ = 64.
  *
  * @param rearr_opt pointer to rearranger options
+ * @return return error if the rearr_opt is invalid
  */
-void check_and_reset_rearr_opts(rearr_opt_t *rearr_opt)
+int check_and_reset_rearr_opts(rearr_opt_t *rearr_opt)
 {
     /* Disable handshake/isend and set max_pend_req to unlimited */
     const rearr_comm_fc_opt_t def_comm_nofc_opts =
@@ -2356,9 +2357,29 @@ void check_and_reset_rearr_opts(rearr_opt_t *rearr_opt)
             /* Hard reset comp2io dir to defaults. */
             rearr_opt->comm_fc_opts_comp2io = def_comm_nofc_opts;
         }
-        /* Don't reset if flow control is enabled in both directions
-         * by user. */
+        else
+        {
+            if (rearr_opt->fcd != PIO_REARR_COMM_FC_2D_ENABLE)
+                return PIO_EINVAL;
+
+            /* Don't reset if flow control is enabled in both directions
+             * by user. */
+        }
     }
+    else
+    {
+        return PIO_EINVAL;
+    }
+
+    if (( (rearr_opt->comm_fc_opts_comp2io.max_pend_req !=
+            PIO_REARR_COMM_UNLIMITED_PEND_REQ) &&
+          (rearr_opt->comm_fc_opts_comp2io.max_pend_req < 0)  ) ||
+        ( (rearr_opt->comm_fc_opts_io2comp.max_pend_req !=
+            PIO_REARR_COMM_UNLIMITED_PEND_REQ) &&
+          (rearr_opt->comm_fc_opts_io2comp.max_pend_req < 0)  ))
+        return PIO_EINVAL;
+
+    return PIO_NOERR;
 }
 
 /**
@@ -2413,9 +2434,11 @@ int PIOc_set_rearr_opts(int iosysid, int comm_type, int fcd, bool enable_hs_c2i,
         return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
 
     /* Perform sanity checks on the user supplied values and reset 
-     * values not set (or of no interest) to the user 
+     * values not set (or of no interest) by the user 
      */
-    check_and_reset_rearr_opts(&user_rearr_opts);
+    ret = check_and_reset_rearr_opts(&user_rearr_opts);
+    if (ret != PIO_NOERR)
+        return ret;
 
     ios->rearr_opts = user_rearr_opts;
 

@@ -168,7 +168,7 @@ extern "C" {
     bool cmp_rearr_opts(const rearr_opt_t *rearr_opts, const rearr_opt_t *exp_rearr_opts);
 
     /* Check and reset, if needed, rearranger opts to default values. */
-    void check_and_reset_rearr_opts(rearr_opt_t *rearr_opt);
+    int check_and_reset_rearr_opts(rearr_opt_t *rearr_opt);
 
     /* Compare rearranger flow control options. */
     bool cmp_rearr_comm_fc_opts(const rearr_comm_fc_opt_t *opt,
