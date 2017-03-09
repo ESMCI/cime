@@ -260,12 +260,14 @@ int create_mpi_datatypes(MPI_Datatype basetype, int msgcnt,
     /* How many indicies in the array? */
     for (int j = 0; j < msgcnt; j++)
         numinds += mcount[j];
+    LOG((2, "numinds = %d", numinds));
 
     if (mindex)
     {
         if (!(lindex = malloc(numinds * sizeof(PIO_Offset))))
             return pio_err(NULL, NULL, PIO_ENOMEM, __FILE__, __LINE__);
         memcpy(lindex, mindex, (size_t)(numinds * sizeof(PIO_Offset)));
+        LOG((3, "allocated lindex, copied mindex"));
     }
 
     bsizeT[0] = 0;
@@ -278,6 +280,7 @@ int create_mpi_datatypes(MPI_Datatype basetype, int msgcnt,
     {
         if (mfrom == NULL)
         {
+            LOG((3, "mfrom is NULL"));
             for (int i = 0; i < msgcnt; i++)
             {
                 if (mcount[i] > 0)
@@ -296,7 +299,8 @@ int create_mpi_datatypes(MPI_Datatype basetype, int msgcnt,
         {
             blocksize = 1;
         }
-
+        LOG((3, "blocksize = %d", blocksize));
+        
         /* pos is an index to the start of each message block. */
         pos = 0;
         for (int i = 0; i < msgcnt; i++)
@@ -330,18 +334,30 @@ int create_mpi_datatypes(MPI_Datatype basetype, int msgcnt,
                         displace[j] = ((lindex + pos)[j * blocksize] - 1);
                 }
 
-                if ((mpierr = MPI_Type_create_indexed_block(len, blocksize, displace, basetype, mtype + i)))
+#ifdef PIO_ENABLE_LOGGING
+                for (int j = 0; j <len; j++)
+                    LOG((3, "displace[%d] = %d", j, displace[j]));
+#endif /* PIO_ENABLE_LOGGING */
+                
+                LOG((3, "calling MPI_Type_create_indexed_block len = %d blocksize = %d "
+                     "basetype = %d", len, blocksize, basetype));
+                /* Create an indexed datatype with constant-sized blocks. */
+                if ((mpierr = MPI_Type_create_indexed_block(len, blocksize, displace,
+                                                            basetype, &mtype[i])))
                     return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 
                 if (mtype[i] == PIO_DATATYPE_NULL)
                     return pio_err(NULL, NULL, PIO_EINVAL, __FILE__, __LINE__);
 
                 /* Commit the MPI data type. */
+                LOG((3, "about to commit type"));
                 if ((mpierr = MPI_Type_commit(mtype + i)))
                     return check_mpi(NULL, mpierr, __FILE__, __LINE__);
                 pos += mcount[i];
             }
         }
+
+        /* Free resources. */
         if (lindex)
             free(lindex);
     }
@@ -518,7 +534,15 @@ int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc, int maplen,
         sr_types[i] = MPI_INT;
     }
 
-    /* ??? */
+    /* Setup for the swapm call at line 550 iodesc->scount is the
+     * amount of data this compute task will transfer to/from each
+     * iotask. For the subset rearranger there is only one io task per
+     * compute task, for the box rearranger there can be more than
+     * one. This provides enough information to know the size of data
+     * on the iotask, so at line 557 we allocate arrays to hold the
+     * map on the iotasks. iodesc->rcount is an array of the amount of
+     * data to expect from each compute task and iodesc->rfrom is the
+     * rank of that task. */
     for (i = 0; i < numiotasks; i++)
     {
         int io_comprank;
@@ -681,6 +705,8 @@ int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc, int maplen,
         }
     }
 
+    /* Here we are sending the mapping from the index on the compute
+     * task to the index on the io task. */
     /* s2rindex is the list of indeces on each compute task */
     ierr = pio_swapm(s2rindex, send_counts, send_displs, sr_types, iodesc->rindex,
                      recv_counts, recv_displs, sr_types, mycomm,
