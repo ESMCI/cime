@@ -230,19 +230,18 @@ int compute_maxIObuffersize(MPI_Comm io_comm, io_desc_t *iodesc)
  * transfers. Used in define_iodesc_datatypes().
  *
  * @param basetype The MPI type of data (MPI_INT, etc.).
- * @param msgcnt The number of MPI messages/tasks to use.
- * @param dlen The length of the data array.
+ * @param msgcnt This is the number of MPI types that is created.
  * @param mindex An array of indexes into the data array from the comp
  * map.
  * @param mcount The number of indexes to be put on each mpi
  * message/task.
  * @param mfrom A pointer to the previous structure in the read/write
- * list
- * @param mtype The final data structure sent through MPI to the
- * read/write
+ * list.
+ * @param mtype pointer to an array of length msgcnt which gets the
+ * created datatypes.
  * @returns 0 on success, error code otherwise.
  */
-int create_mpi_datatypes(MPI_Datatype basetype, int msgcnt, PIO_Offset dlen,
+int create_mpi_datatypes(MPI_Datatype basetype, int msgcnt,
                          const PIO_Offset *mindex, const int *mcount, int *mfrom,
                          MPI_Datatype *mtype)
 {
@@ -252,23 +251,18 @@ int create_mpi_datatypes(MPI_Datatype basetype, int msgcnt, PIO_Offset dlen,
     PIO_Offset *lindex = NULL;
     int mpierr; /* Return code from MPI functions. */
 
-    pioassert(mcount, "invalid input", __FILE__, __LINE__);
+    pioassert(mcount && numinds >= 0, "invalid input", __FILE__, __LINE__);
 
-    LOG((1, "create_mpi_datatypes basetype = %d msgcnt = %d dlen = %lld", basetype,
-         msgcnt, dlen));
+    LOG((1, "create_mpi_datatypes basetype = %d msgcnt = %d", basetype, msgcnt));
     LOG((2, "MPI_BYTE = %d MPI_CHAR = %d MPI_SHORT = %d MPI_INT = %d MPI_DOUBLE = %d",
          MPI_BYTE, MPI_CHAR, MPI_SHORT, MPI_INT, MPI_DOUBLE));
-    
+
     /* How many indicies in the array? */
     for (int j = 0; j < msgcnt; j++)
         numinds += mcount[j];
 
-    pioassert(dlen >= 0, "dlen < 0", __FILE__, __LINE__);
-    pioassert(numinds >= 0, "num inds < 0", __FILE__, __LINE__);
-
     if (mindex)
     {
-        /* memcpy(lindex, mindex, (size_t) (dlen*sizeof(PIO_Offset)));*/
         if (!(lindex = malloc(numinds * sizeof(PIO_Offset))))
             return pio_err(NULL, NULL, PIO_ENOMEM, __FILE__, __LINE__);
         memcpy(lindex, mindex, (size_t)(numinds * sizeof(PIO_Offset)));
@@ -288,16 +282,19 @@ int create_mpi_datatypes(MPI_Datatype basetype, int msgcnt, PIO_Offset dlen,
             {
                 if (mcount[i] > 0)
                 {
-                    bsizeT[ii] = GCDblocksize(mcount[i], lindex+pos);
+                    /* Look for the largest block of data for io which
+                     * can be expressed in terms of start and
+                     * count. */
+                    bsizeT[ii] = GCDblocksize(mcount[i], lindex + pos);
                     ii++;
                     pos += mcount[i];
                 }
             }
-            blocksize = (int)lgcd_array(ii ,bsizeT);
+            blocksize = (int)lgcd_array(ii, bsizeT);
         }
         else
         {
-            blocksize=1;
+            blocksize = 1;
         }
 
         /* pos is an index to the start of each message block. */
@@ -395,42 +392,36 @@ int define_iodesc_datatypes(iosystem_desc_t *ios, io_desc_t *iodesc)
 
                 /* Create the datatypes, which will be used both to
                  * receive and to send data. */
-                LOG((3, "about to call create_mpi_datatypes for IO MPI types"));                
+                LOG((3, "about to call create_mpi_datatypes for IO MPI types"));
                 if (iodesc->rearranger == PIO_REARR_SUBSET)
                 {
-                    if ((ret = create_mpi_datatypes(iodesc->basetype, iodesc->nrecvs, iodesc->llen,
-                                                    iodesc->rindex, iodesc->rcount, iodesc->rfrom,
-                                                    iodesc->rtype)))
+                    if ((ret = create_mpi_datatypes(iodesc->basetype, iodesc->nrecvs, iodesc->rindex,
+                                                    iodesc->rcount, iodesc->rfrom, iodesc->rtype)))
                         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
                 }
                 else
                 {
-                    if ((ret = create_mpi_datatypes(iodesc->basetype, iodesc->nrecvs, iodesc->llen,
-                                                    iodesc->rindex, iodesc->rcount, NULL, iodesc->rtype)))
+                    if ((ret = create_mpi_datatypes(iodesc->basetype, iodesc->nrecvs, iodesc->rindex,
+                                                    iodesc->rcount, NULL, iodesc->rtype)))
                         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
                 }
             }
         }
     }
 
-    /* Define the send datatypes if they don't exist. */
+    /* Define the datatypes for the computation components if they
+     * don't exist. (These will be the send side in a write
+     * operation.) */
     if (!iodesc->stype)
     {
         int ntypes;
-        int ncnt;
 
+        /* Subset rearranger gets one type; box rearranger gets one
+         * type per IO task. */
         if (iodesc->rearranger == PIO_REARR_SUBSET)
-        {
-            /* Subset rearranger gets one type. */
             ntypes = 1;
-            ncnt = iodesc->scount[0];
-        }
         else
-        {
-            /* Box rearranger gets one type per IO task. */
             ntypes = ios->num_iotasks;
-            ncnt = iodesc->ndof;
-        }
 
         /* Allocate memory for array of MPI types for the computation tasks. */
         if (!(iodesc->stype = malloc(ntypes * sizeof(MPI_Datatype))))
@@ -441,12 +432,12 @@ int define_iodesc_datatypes(iosystem_desc_t *ios, io_desc_t *iodesc)
         for (int i = 0; i < ntypes; i++)
             iodesc->stype[i] = PIO_DATATYPE_NULL;
 
+        /* Remember how many types we created for the send side. */
         iodesc->num_stypes = ntypes;
 
         /* Create the MPI data types. */
-        
         LOG((3, "about to call create_mpi_datatypes for computation MPI types"));
-        if ((ret = create_mpi_datatypes(iodesc->basetype, ntypes, ncnt, iodesc->sindex,
+        if ((ret = create_mpi_datatypes(iodesc->basetype, ntypes, iodesc->sindex,
                                         iodesc->scount, NULL, iodesc->stype)))
             return pio_err(ios, NULL, ret, __FILE__, __LINE__);
     }
@@ -457,16 +448,17 @@ int define_iodesc_datatypes(iosystem_desc_t *ios, io_desc_t *iodesc)
 /**
  *  Completes the mapping for the box rearranger.
  *
- * @param ios pointer to the iosystem_desc_t struct
+ * @param ios pointer to the iosystem_desc_t struct.
  * @param iodesc a pointer to the io_desc_t struct.
- * @param maplen the length of the map
- * @param dest_ioproc an array of IO task numbers
+ * @param maplen the length of the map.
+ * @param dest_ioproc an array of IO task numbers.
  * @param dest_ioindex
- * @param mycomm an MPI communicator
+ * @param mycomm an MPI communicator.
  * @returns 0 on success, error code otherwise.
  */
 int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc, int maplen,
-                   const int *dest_ioproc, const PIO_Offset *dest_ioindex, MPI_Comm mycomm)
+                   const int *dest_ioproc, const PIO_Offset *dest_ioindex,
+                   MPI_Comm mycomm)
 {
     int i;
     int iorank;
@@ -599,6 +591,9 @@ int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc, int maplen,
 
     /* ??? */
     iodesc->nrecvs = nrecvs;
+
+    /* Allocate an array for indicies on the computation tasks (the
+     * send side when writing). */
     if (iodesc->sindex == NULL && iodesc->ndof > 0)
         if (!(iodesc->sindex = malloc(iodesc->ndof * sizeof(PIO_Offset))))
             return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
@@ -615,6 +610,7 @@ int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc, int maplen,
         tempcount[i] = 0;
     }
 
+    /* ??? */
     for (i = 0; i < maplen; i++)
     {
         iorank = dest_ioproc[i];
@@ -646,8 +642,11 @@ int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc, int maplen,
     for (i = 0; i < ntasks; i++)
         sr_types[i] = MPI_OFFSET;
 
+    /* ??? */
     for (i = 0; i < numiotasks; i++)
     {
+        /* Subset rearranger needs one type, box rearranger needs one for
+         * each IO task. */
         if (iodesc->rearranger == PIO_REARR_BOX)
             io_comprank = ios->ioranks[i];
         else
@@ -658,19 +657,22 @@ int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc, int maplen,
             send_displs[io_comprank] = spos[i] * tsize;
     }
 
+    /* Only do this on IO tasks. */
     if (ios->ioproc)
     {
         int totalrecv = 0;
         for (i = 0; i < nrecvs; i++)
         {
             recv_counts[iodesc->rfrom[i]] = iodesc->rcount[i];
-            totalrecv+=iodesc->rcount[i];
+            totalrecv += iodesc->rcount[i];
         }
         recv_displs[0] = 0;
         for (i = 1; i < nrecvs; i++)
-            recv_displs[iodesc->rfrom[i]] = recv_displs[iodesc->rfrom[i-1]] + iodesc->rcount[i-1] * tsize;
+            recv_displs[iodesc->rfrom[i]] = recv_displs[iodesc->rfrom[i - 1]] +
+                iodesc->rcount[i - 1] * tsize;
 
-
+        /*  rindex is an array of the indices of the data to be sent from
+            this io task to each compute task. */
         if (totalrecv > 0)
         {
             totalrecv = iodesc->llen;  /* can reduce memory usage here */
@@ -680,28 +682,13 @@ int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc, int maplen,
     }
 
     /* s2rindex is the list of indeces on each compute task */
-    /*
-      printf("%d s2rindex: ", ios->comp_rank);
-      for (i = 0;i<iodesc->ndof;i++)
-      printf("%ld ",s2rindex[i]);
-      printf("\n");
-    */
     ierr = pio_swapm(s2rindex, send_counts, send_displs, sr_types, iodesc->rindex,
                      recv_counts, recv_displs, sr_types, mycomm,
                      iodesc->rearr_opts.comm_fc_opts_comp2io.enable_hs,
                      iodesc->rearr_opts.comm_fc_opts_comp2io.enable_isend,
                      iodesc->rearr_opts.comm_fc_opts_comp2io.max_pend_req);
 
-    /*  rindex is an array of the indices of the data to be sent from
-        this io task to each compute task. */
-    /*
-      if (ios->ioproc){
-      printf("%d rindex: ",ios->io_rank);
-      for (int j = 0;j<iodesc->llen;j++)
-      printf(" %ld ",iodesc->rindex[j]);
-      printf("\n");
-      }
-    */
+
     return ierr;
 }
 
@@ -1280,7 +1267,7 @@ int box_rearrange_create(iosystem_desc_t *ios, int maplen, const PIO_Offset *com
 
     compute_counts(ios, iodesc, maplen, dest_ioproc, dest_ioindex, ios->union_comm);
 
-    /* Compute the max io buffer size needed for an iodesc. */    
+    /* Compute the max io buffer size needed for an iodesc. */
     if (ios->ioproc)
         if ((ret = compute_maxIObuffersize(ios->io_comm, iodesc)))
             return pio_err(ios, NULL, ret, __FILE__, __LINE__);
@@ -1501,6 +1488,8 @@ int subset_rearrange_create(iosystem_desc_t *ios, int maplen, PIO_Offset *compma
             (iodesc->scount[0])++;
     }
 
+    /* Allocate an array for indicies on the computation tasks (the
+     * send side when writing). */
     if (iodesc->scount[0] > 0)
         if (!(iodesc->sindex = calloc(iodesc->scount[0], sizeof(PIO_Offset))))
             return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
@@ -1781,7 +1770,7 @@ int subset_rearrange_create(iosystem_desc_t *ios, int maplen, PIO_Offset *compma
 
         /* Compute the max io buffer size needed for an iodesc. */
         if ((ret = compute_maxIObuffersize(ios->io_comm, iodesc)))
-            return pio_err(ios, NULL, ret, __FILE__, __LINE__);            
+            return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
         iodesc->nrecvs = ntasks;
 #ifdef DEBUG

@@ -554,6 +554,30 @@ int test_misc()
     return 0;
 }
 
+/* Test the create_mpi_datatypes() function. 
+ * @returns 0 for success, error code otherwise.*/
+int test_create_mpi_datatypes()
+{
+    MPI_Datatype basetype = MPI_INT;
+    int msgcnt = 1;
+    PIO_Offset mindex[4] = {0, 0, 0, 0};
+    int mcount[4] = {1, 1, 1, 1};
+    int *mfrom = NULL;
+    MPI_Datatype mtype;
+    int mpierr;
+    int ret;
+
+    /* Create an MPI data type. */
+    if ((ret = create_mpi_datatypes(basetype, msgcnt, mindex, mcount, mfrom, &mtype)))
+        return ret;
+
+    /* Free the type. */
+    if ((mpierr = MPI_Type_free(&mtype)))
+        return ERR_WRONG;
+    
+    return 0;
+}
+
 /* Run Tests for pio_spmd.c functions. */
 int main(int argc, char **argv)
 {
@@ -609,6 +633,10 @@ int main(int argc, char **argv)
 
         printf("%d running find_mpi_type tests\n", my_rank);
         if ((ret = test_find_mpi_type()))
+            return ret;
+
+        printf("%d running create_mpi_datatypes tests\n", my_rank);
+        if ((ret = test_create_mpi_datatypes()))
             return ret;
 
         printf("%d running misc tests\n", my_rank);
