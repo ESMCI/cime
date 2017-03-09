@@ -156,7 +156,6 @@ void pio_finalize_logging(void)
     {
         if (pio_log_ref_cnt == 0)
         {
-            LOG((1, "closing this log file"));
             fclose(LOG_FILE);
             LOG_FILE = NULL;
         }
