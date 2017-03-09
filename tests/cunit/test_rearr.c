@@ -18,9 +18,6 @@
 /* The name of this test. */
 #define TEST_NAME "test_rearr"
 
-/* Number of test cases in inner loop of test. */
-#define NUM_TEST_CASES 5
-
 /* Test some of the rearranger utility functions. */
 int test_rearranger_opts1()
 {
@@ -422,10 +419,12 @@ int test_compute_maxIObuffersize(MPI_Comm test_comm, int my_rank)
             return ERR_WRONG;
         
         /* Free resources for the region. */
+        brel(ior4->start);
+        brel(ior4->count);
+        brel(ior4);
         brel(ior3->start);
         brel(ior3->count);
         brel(ior3);
-
     }
 
     return 0;
