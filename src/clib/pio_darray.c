@@ -574,6 +574,8 @@ int PIOc_read_darray(int ncid, int varid, int ioid, PIO_Offset arraylen,
     /* Get the iodesc. */
     if (!(iodesc = pio_get_iodesc_from_id(ioid)))
         return pio_err(ios, file, PIO_EBADID, __FILE__, __LINE__);
+    pioassert(iodesc->rearranger == PIO_REARR_BOX || iodesc->rearranger == PIO_REARR_SUBSET,
+              "unknown rearranger", __FILE__, __LINE__);
 
     /* ??? */
     if (ios->iomaster == MPI_ROOT)
@@ -581,23 +583,15 @@ int PIOc_read_darray(int ncid, int varid, int ioid, PIO_Offset arraylen,
     else
         rlen = iodesc->llen;
 
-    /* Is a rearranger in use? */
-    if (iodesc->rearranger > 0)
+    if (ios->ioproc && rlen > 0)
     {
-        if (ios->ioproc && rlen > 0)
-        {
-            /* Get the MPI type size. */
-            if ((mpierr = MPI_Type_size(iodesc->basetype, &tsize)))
-                return check_mpi(file, mpierr, __FILE__, __LINE__);
-
-            /* Allocate a buffer for one record. */
-            if (!(iobuf = bget((size_t)tsize * rlen)))
-                return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
-        }
-    }
-    else
-    {
-        iobuf = array;
+        /* Get the MPI type size. */
+        if ((mpierr = MPI_Type_size(iodesc->basetype, &tsize)))
+            return check_mpi(file, mpierr, __FILE__, __LINE__);
+        
+        /* Allocate a buffer for one record. */
+        if (!(iobuf = bget((size_t)tsize * rlen)))
+            return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
     }
 
     /* Call the correct darray read function based on iotype. */
@@ -617,16 +611,13 @@ int PIOc_read_darray(int ncid, int varid, int ioid, PIO_Offset arraylen,
         return pio_err(NULL, NULL, PIO_EBADIOTYPE, __FILE__, __LINE__);
     }
 
-    /* If a rearranger was specified, rearrange the data. */
-    if (iodesc->rearranger > 0)
-    {
-        if ((ierr = rearrange_io2comp(ios, iodesc, iobuf, array)))
-            return pio_err(ios, file, ierr, __FILE__, __LINE__);
+    /* Rearrange the data. */
+    if ((ierr = rearrange_io2comp(ios, iodesc, iobuf, array)))
+        return pio_err(ios, file, ierr, __FILE__, __LINE__);
 
-        /* Free the buffer. */
-        if (rlen > 0)
-            brel(iobuf);
-    }
+    /* Free the buffer. */
+    if (rlen > 0)
+        brel(iobuf);
 
     return PIO_NOERR;
 }
