@@ -8,7 +8,8 @@
 #include <pio_internal.h>
 
 /**
- * Internal library util function to initialize rearranger options.
+ * Internal library util function to initialize rearranger
+ * options. This is used in PIOc_Init_Intracomm().
  *
  * @param iosys pointer to iosystem descriptor
  */
@@ -32,20 +33,20 @@ void init_rearr_opts(iosystem_desc_t *iosys)
  * Convert an index into a list of dimensions. E.g., for index 4 into a
  * array defined as a[3][2], will return 1 1.
  *
- * @param ndims number of dimensions
- * @param gdims
- * @param idx
- * @param dim_list
- * @returns 0 on success, error code otherwise.
+ * @param ndims number of dimensions.
+ * @param gdims array of length ndims with the dimension sizes.
+ * @param idx the index to convert.
+ * @param dim_list array of length ndims that will get the dimensions
+ * corresponding to this index.
  */
 void idx_to_dim_list(int ndims, const int *gdims, PIO_Offset idx,
                      PIO_Offset *dim_list)
 {
-    int i, curr_idx, next_idx;
+    int curr_idx, next_idx;
     curr_idx = idx;
 
     /* Easiest to start from the right and move left. */
-    for (i = ndims - 1; i >= 0; --i)
+    for (int i = ndims - 1; i >= 0; --i)
     {
         /* This way of doing div/mod is slightly faster than using "/"
          * and "%". */
@@ -64,15 +65,15 @@ void idx_to_dim_list(int ndims, const int *gdims, PIO_Offset idx,
  * outermost dimension, until the region has been expanded as much as
  * possible along all dimensions.
  *
- * @param dim
- * @param gdims array of dimension ids
- * @param maplen the length of the map
- * @param map
- * @param region_size
- * @param region_stride
- * @param max_size array of maximum sizes
- * @param count array of counts
- * @returns 0 on success, error code otherwise.
+ * @param dim the dimension number to start with.
+ * @param gdims array of global dimension lengths.
+ * @param maplen the length of the map.
+ * @param map ???
+ * @param region_size ???
+ * @param region_stride ???
+ * @param max_size array of size dim + 1 that contains the maximum
+ * sizes along that dimension.
+ * @param count array of size dim + 1 that gets the new counts.
  */
 void expand_region(int dim, const int *gdims, int maplen, const PIO_Offset *map,
                    int region_size, int region_stride, const int *max_size,
@@ -123,20 +124,22 @@ void expand_region(int dim, const int *gdims, int maplen, const PIO_Offset *map,
 /**
  * Set start and count so that they describe the first region in map.
  *
- * @param ndims the number of dimensions
- * @param gdims pointer to an array of dimension ids
- * @param maplen the length of the map
+ * @param ndims the number of dimensions.
+ * @param gdims an array length ndims with the sizes of the global
+ * dimensions.
+ * @param maplen the length of the map.
  * @param map
- * @param start array of start indicies
- * @param count array of counts
- * @returns 0 on success, error code otherwise.
+ * @param start array of length ndims with start indicies.
+ * @param count array of length ndims with counts.
+ * @returns length of the region found.
  */
 PIO_Offset find_region(int ndims, const int *gdims, int maplen, const PIO_Offset *map,
                        PIO_Offset *start, PIO_Offset *count)
 {
-    int dim;
     int max_size[ndims];
     PIO_Offset regionlen = 1;
+
+    LOG((2, "find_region ndims = %d maplen = %d", ndims, maplen));
 
     /* Preconditions (which might be useful to check/assert):
        ndims is > 0
@@ -146,8 +149,11 @@ PIO_Offset find_region(int ndims, const int *gdims, int maplen, const PIO_Offset
     idx_to_dim_list(ndims, gdims, map[0] - 1, start);
 
     /* Can't expand beyond the array edge.*/
-    for (dim = 0; dim < ndims; ++dim)
+    for (int dim = 0; dim < ndims; ++dim)
+    {
         max_size[dim] = gdims[dim] - start[dim];
+        LOG((3, "max_size[%d] = %d", max_size[dim]));
+    }
 
     /* For each dimension, figure out how far we can expand in that dimension
        while staying contiguous in the input array.
@@ -156,19 +162,19 @@ PIO_Offset find_region(int ndims, const int *gdims, int maplen, const PIO_Offset
        through to the outermost dimensions. */
     expand_region(ndims - 1, gdims, maplen, map, 1, 1, max_size, count);
 
-    for (dim = 0; dim < ndims; dim++)
+    for (int dim = 0; dim < ndims; dim++)
         regionlen *= count[dim];
 
-    return(regionlen);
+    return regionlen;
 }
 
 /**
  * Convert a global coordinate value into a local array index.
  *
- * @param ndims the number of dimensions
- * @param lcoord pointer to an offset
- * @param count array of counts
- * @returns 0 on success, error code otherwise.
+ * @param ndims the number of dimensions.
+ * @param lcoord pointer to an offset.
+ * @param count array of counts.
+ * @returns the local array index.
  */
 PIO_Offset coord_to_lindex(int ndims, const PIO_Offset *lcoord, const PIO_Offset *count)
 {
@@ -212,15 +218,18 @@ int compute_maxIObuffersize(MPI_Comm io_comm, io_desc_t *iodesc)
             totiosize += iosize;
         }
     }
+    LOG((2, "compute_maxIObuffersize got totiosize = %lld", totiosize));
 
     /* Share the max io buffer size with all io tasks. */
     if ((mpierr = MPI_Allreduce(MPI_IN_PLACE, &totiosize, 1, MPI_OFFSET, MPI_MAX, io_comm)))
         return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 
+    LOG((2, "after allreduce compute_maxIObuffersize got totiosize = %lld", totiosize));
     iodesc->maxiobuflen = totiosize;
 
     if (iodesc->maxiobuflen <= 0)
         return pio_err(NULL, NULL, PIO_EINVAL, __FILE__, __LINE__);
+    LOG((2, "compute_maxIObuffersize got totiosize = %lld", totiosize));
 
     return PIO_NOERR;
 }
@@ -236,7 +245,7 @@ int compute_maxIObuffersize(MPI_Comm io_comm, io_desc_t *iodesc)
  * @param mcount The number of indexes to be put on each mpi
  * message/task.
  * @param mfrom A pointer to the previous structure in the read/write
- * list.
+ * list. This is always NULL for the BOX rearranger.
  * @param mtype pointer to an array of length msgcnt which gets the
  * created datatypes.
  * @returns 0 on success, error code otherwise.
@@ -300,7 +309,7 @@ int create_mpi_datatypes(MPI_Datatype basetype, int msgcnt,
             blocksize = 1;
         }
         LOG((3, "blocksize = %d", blocksize));
-        
+
         /* pos is an index to the start of each message block. */
         pos = 0;
         for (int i = 0; i < msgcnt; i++)
@@ -338,7 +347,7 @@ int create_mpi_datatypes(MPI_Datatype basetype, int msgcnt,
                 for (int j = 0; j <len; j++)
                     LOG((3, "displace[%d] = %d", j, displace[j]));
 #endif /* PIO_ENABLE_LOGGING */
-                
+
                 LOG((3, "calling MPI_Type_create_indexed_block len = %d blocksize = %d "
                      "basetype = %d", len, blocksize, basetype));
                 /* Create an indexed datatype with constant-sized blocks. */
@@ -1053,12 +1062,17 @@ int rearrange_io2comp(iosystem_desc_t *ios, io_desc_t *iodesc, void *sbuf,
 }
 
 /**
- * Determine fill value.
+ * Determine whether fill values are needed. If we have enough data to
+ * completely fill the variable, then fill is not needed. This
+ * function compares how much data we have to how much data is in a
+ * record (or non-record var).
  *
- * @param ios pointer to the iosystem_desc_t struct
+ * @param ios pointer to the iosystem_desc_t struct.
  * @param iodesc a pointer to the io_desc_t struct.
- * @param gsize pointer to an array of sizes
- * @param compmap
+ * @param gsize pointer to an array length iodesc->ndims with the
+ * global array sizes for one record (for record vars) or for the
+ * entire var (for non-record vars).
+ * @param compmap only used for the box communicator.
  * @returns 0 on success, error code otherwise.
  */
 int determine_fill(iosystem_desc_t *ios, io_desc_t *iodesc, const int *gsize,
@@ -1066,24 +1080,29 @@ int determine_fill(iosystem_desc_t *ios, io_desc_t *iodesc, const int *gsize,
 {
     PIO_Offset totalllen = 0;
     PIO_Offset totalgridsize = 1;
-    int i;
     int mpierr; /* Return code from MPI calls. */
 
     assert(iodesc);
 
-    for (i = 0; i < iodesc->ndims; i++)
+    /* Determine size of data space. */
+    for (int i = 0; i < iodesc->ndims; i++)
         totalgridsize *= gsize[i];
 
+    /* Determine how many values we have locally. */
     if (iodesc->rearranger == PIO_REARR_SUBSET)
-        totalllen=iodesc->llen;
+        totalllen = iodesc->llen;
     else
-        for (i = 0; i<iodesc->ndof; i++)
+        for (int i = 0; i < iodesc->ndof; i++)
             if (compmap[i] > 0)
                 totalllen++;
 
+    /* Add results accross communicator. */
+    LOG((2, "determine_fill before allreduce totalllen = %d totalgridsize = %d",
+         totalllen, totalgridsize));
     if ((mpierr = MPI_Allreduce(MPI_IN_PLACE, &totalllen, 1, PIO_OFFSET, MPI_SUM,
                                 ios->union_comm)))
         check_mpi(NULL, mpierr, __FILE__, __LINE__);
+    LOG((2, "after allreduce totalllen = %d", totalllen));
 
     /* If the total size of the data provided to be written is < the
      * total data size then we need fill values. */
@@ -1343,7 +1362,6 @@ int compare_offsets(const void *a, const void *b)
 void get_start_and_count_regions(int ndims, const int *gdims, int maplen, const PIO_Offset *map,
                                  int *maxregions, io_region *firstregion)
 {
-    int i;
     int nmaplen;
     int regionlen;
     io_region *region;
@@ -1355,24 +1373,25 @@ void get_start_and_count_regions(int ndims, const int *gdims, int maplen, const 
     region = firstregion;
     if (map)
     {
-        while(map[nmaplen++] <= 0);
+        while (map[nmaplen++] <= 0)
+            ;
         nmaplen--;
     }
     region->loffset = nmaplen;
 
     *maxregions = 1;
 
-    while(nmaplen < maplen)
+    while (nmaplen < maplen)
     {
         /* Here we find the largest region from the current offset
            into the iomap regionlen is the size of that region and we
            step to that point in the map array until we reach the
            end */
-        for (i = 0; i < ndims; i++)
+        for (int i = 0; i < ndims; i++)
             region->count[i] = 1;
 
         regionlen = find_region(ndims, gdims, maplen-nmaplen,
-                                map+nmaplen, region->start, region->count);
+                                map + nmaplen, region->start, region->count);
 
         pioassert(region->start[0] >= 0, "failed to find region", __FILE__, __LINE__);
 

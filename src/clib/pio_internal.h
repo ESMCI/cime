@@ -164,6 +164,26 @@ extern "C" {
     /* Initialize the rearranger options. */
     void init_rearr_opts(iosystem_desc_t *iosys);
 
+    /* Convert an index into dimension values. */
+    void idx_to_dim_list(int ndims, const int *gdims, PIO_Offset idx, PIO_Offset *dim_list);
+
+    /* Convert a global coordinate value into a local array index. */
+    PIO_Offset coord_to_lindex(int ndims, const PIO_Offset *lcoord, const PIO_Offset *count);
+
+    /* Determine whether fill values are needed. */
+    int determine_fill(iosystem_desc_t *ios, io_desc_t *iodesc, const int *gsize,
+                       const PIO_Offset *compmap);
+
+    /* Set start and count so that they describe the first region in map.*/
+    PIO_Offset find_region(int ndims, const int *gdims, int maplen, const PIO_Offset *map,
+                           PIO_Offset *start, PIO_Offset *count);
+
+    /* Expand a region along dimension dim, by incrementing count[i] as
+     * much as possible, consistent with the map. */
+    void expand_region(int dim, const int *gdims, int maplen, const PIO_Offset *map,
+                       int region_size, int region_stride, const int *max_size,
+                       PIO_Offset *count);
+
     /* Compare sets of rearranger options. */
     bool cmp_rearr_opts(const rearr_opt_t *rearr_opts, const rearr_opt_t *exp_rearr_opts);
 
