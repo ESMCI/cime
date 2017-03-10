@@ -1855,22 +1855,25 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
         if ((ret = test_decomp_public(my_test_size, my_rank, iosysid, DIM_LEN, test_comm, async)))
             return ret;
 
-    if ((ret = test_decomp_public_2(my_test_size, my_rank, iosysid, DIM_LEN, test_comm, async)))
-        return ret;
+    if (!async)
+        if ((ret = test_decomp_public_2(my_test_size, my_rank, iosysid, DIM_LEN, test_comm, async)))
+            return ret;
 
     /* Decompose the data over the tasks. */
-    if ((ret = create_decomposition(my_test_size, my_rank, iosysid, DIM_LEN, &ioid)))
-        return ret;
-
-    /* Run the darray tests. */
     if (!async)
+    {
+        if ((ret = create_decomposition(my_test_size, my_rank, iosysid, DIM_LEN, &ioid)))
+            return ret;
+
+        /* Run the darray tests. */
         for (int fv = 0; fv < 2; fv++)
             if ((ret = test_darray(iosysid, ioid, num_flavors, flavor, my_rank, fv)))
                 return ret;
 
-    /* Free the PIO decomposition. */
-    if ((ret = PIOc_freedecomp(iosysid, ioid)))
-        ERR(ret);
+        /* Free the PIO decomposition. */
+        if ((ret = PIOc_freedecomp(iosysid, ioid)))
+            ERR(ret);
+    }
 
     /* Check the error string function. */
     printf("%d Testing streror. async = %d\n", my_rank, async);

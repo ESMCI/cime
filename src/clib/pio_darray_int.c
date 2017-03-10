@@ -1303,7 +1303,7 @@ void free_cn_buffer_pool(iosystem_desc_t *ios)
         cn_buffer_report(ios, false);
         bpoolrelease(CN_bpool);
         LOG((2, "free_cn_buffer_pool done!"));
-        free(CN_bpool);
+        /*free(CN_bpool);*/
         CN_bpool = NULL;
     }
 #endif /* !PIO_USE_MALLOC */
