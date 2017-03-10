@@ -46,6 +46,11 @@ void idx_to_dim_list(int ndims, const int *gdimlen, PIO_Offset idx,
     int next_idx;
 
     /* Check inputs. */
+    pioassert(gdimlen && dim_list, "invalid input", __FILE__,
+              __LINE__);
+    LOG((2, "idx_to_dim_list ndims = %d idx = %d"));
+    /* if (idx < 0) */
+    /*     LOG((0, "What the fuck!")); */
     /* pioassert(gdimlen && dim_list && idx >= 0, "invalid input", __FILE__, */
     /*           __LINE__); */
     
@@ -1186,22 +1191,24 @@ int box_rearrange_create(iosystem_desc_t *ios, int maplen, const PIO_Offset *com
 
     assert(iodesc);
 
+    LOG((1, "box_rearrange_create maplen = %d ndims = %d", maplen, ndims));
+
     iodesc->rearranger = PIO_REARR_BOX;
 
     iodesc->ndof = maplen;
-    gstride[ndims-1] = 1;
-    for (int i= ndims - 2; i >= 0; i--)
+    gstride[ndims - 1] = 1;
+    for (int i = ndims - 2; i >= 0; i--)
         gstride[i] = gstride[i + 1] * gsize[i + 1];
 
     if ((mpierr = MPI_Type_size(MPI_OFFSET, &tsize)))
         return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 
-    for (i = 0; i < maplen; i++)
+    for (int i = 0; i < maplen; i++)
     {
         dest_ioproc[i] = -1;
         dest_ioindex[i] = -1;
     }
-    for (i = 0; i < nprocs; i++)
+    for (int i = 0; i < nprocs; i++)
     {
         sndlths[i] = 0;
         sdispls[i] = 0;
@@ -1212,12 +1219,12 @@ int box_rearrange_create(iosystem_desc_t *ios, int maplen, const PIO_Offset *com
     iodesc->llen = 0;
     if (ios->ioproc)
     {
-        for (i = 0; i < nprocs; i++)
+        for (int i = 0; i < nprocs; i++)
             sndlths[i] = 1;
 
         /* llen here is the number that will be read on each io task */
         iodesc->llen = 1;
-        for (i = 0; i < ndims; i++)
+        for (int i = 0; i < ndims; i++)
             iodesc->llen *= iodesc->firstregion->count[i];
     }
     if ((ret = determine_fill(ios, iodesc, gsize, compmap)))
@@ -1232,7 +1239,7 @@ int box_rearrange_create(iosystem_desc_t *ios, int maplen, const PIO_Offset *com
       }
     */
 
-    for (i = 0; i < nioprocs; i++)
+    for (int i = 0; i < nioprocs; i++)
     {
         int io_comprank = ios->ioranks[i];
         recvlths[io_comprank] = 1;
@@ -1248,13 +1255,13 @@ int box_rearrange_create(iosystem_desc_t *ios, int maplen, const PIO_Offset *com
               iodesc->rearr_opts.comm_fc_opts_io2comp.enable_isend,
               iodesc->rearr_opts.comm_fc_opts_io2comp.max_pend_req);
 
-    for (i = 0; i < nioprocs; i++)
+    for (int i = 0; i < nioprocs; i++)
     {
 
         if (iomaplen[i] > 0)
         {
             int io_comprank = ios->ioranks[i];
-            for (j = 0; j < nprocs; j++)
+            for (int j = 0; j < nprocs; j++)
             {
                 sndlths[j] = 0;
                 sdispls[j] = 0;
@@ -1281,14 +1288,14 @@ int box_rearrange_create(iosystem_desc_t *ios, int maplen, const PIO_Offset *com
                       iodesc->rearr_opts.comm_fc_opts_io2comp.enable_isend,
                       iodesc->rearr_opts.comm_fc_opts_io2comp.max_pend_req);
 
-            for (k = 0; k < maplen; k++)
+            for (int k = 0; k < maplen; k++)
             {
                 PIO_Offset gcoord[ndims], lcoord[ndims];
                 bool found = true;
                 /* The compmap array is 1 based but calculations are 0 based */
                 idx_to_dim_list(ndims, gsize, compmap[k] - 1, gcoord);
 
-                for (j = 0; j < ndims; j++)
+                for (int j = 0; j < ndims; j++)
                 {
                     if (gcoord[j] >= start[j] && gcoord[j] < start[j] + count[j])
                     {
@@ -1310,7 +1317,7 @@ int box_rearrange_create(iosystem_desc_t *ios, int maplen, const PIO_Offset *com
     }
 
     /* Check that a destination is found for each compmap entry. */
-    for (k = 0; k < maplen; k++)
+    for (int k = 0; k < maplen; k++)
         if (dest_ioproc[k] < 0 && compmap[k] > 0)
             return pio_err(ios, NULL, PIO_EINVAL, __FILE__, __LINE__);
 
