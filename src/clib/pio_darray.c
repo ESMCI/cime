@@ -65,7 +65,8 @@ PIO_Offset PIOc_set_buffer_size_limit(PIO_Offset limit)
  * that is on this processor. There are nvars arrays of data, and each
  * array of data contains one record worth of data for that variable.
  * @param frame an array of length nvars with the frame or record
- * dimension for each of the nvars variables in IOBUF
+ * dimension for each of the nvars variables in IOBUF. NULL if this
+ * iodesc contains non-record vars.
  * @param fillvalue pointer an array (of length nvars) of pointers to
  * the fill value to be used for missing data.
  * @param flushtodisk non-zero to cause buffers to be flushed to disk.
