@@ -305,16 +305,19 @@ int main(int argc, char **argv)
         int map_3x4x4[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23,
                            24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47};
         int map_1x3x3[] = {0, 1, 2, 3, 4, PIO_FILL_INT, 5, 6, PIO_FILL_INT, 7, 8, PIO_FILL_INT};
-#define NUM_DIM_COMBOS_TO_TEST 4
+        int map_1x2x3[] = {0, 1, 2, 3, 4, PIO_FILL_INT, 5, PIO_FILL_INT};
+#define NUM_DIM_COMBOS_TO_TEST 5
         int dim_len[NUM_DIM_COMBOS_TO_TEST][NDIM3] = {{1, 4, 4},
                                                       {2, 4, 4},                                                      
                                                       {3, 4, 4},
-                                                      {1, 3, 3}};
+                                                      {1, 3, 3},
+                                                      {1, 2, 3}};
         int expected_maplen[NUM_DIM_COMBOS_TO_TEST][TARGET_NTASKS] = {{4, 4, 4, 4},
                                                                       {8, 8, 8, 8},
                                                                       {12, 12, 12, 12},
-                                                                      {3, 2, 2, 2}};
-        int *expected_map[NUM_DIM_COMBOS_TO_TEST] = {map_1x4x4, map_2x4x4, map_3x4x4, map_1x3x3};
+                                                                      {3, 2, 2, 2},
+                                                                      {2, 2, 1, 1}};
+        int *expected_map[NUM_DIM_COMBOS_TO_TEST] = {map_1x4x4, map_2x4x4, map_3x4x4, map_1x3x3, map_1x2x3};
         int ret;      /* Return code. */
 
         /* Figure out iotypes. */
