@@ -106,7 +106,9 @@ int PIOc_createfile(int iosysid, int *ncidp, int *iotype, const char *filename,
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
     /* Run this on all tasks if async is not in use, but only on
-     * non-IO tasks if async is in use. */
+     * non-IO tasks if async is in use. (Because otherwise, in async
+     * mode, set_fill would be called twice by each IO task, since
+     * PIOc_createfile() will already be called on each IO task.) */
     if (!ios->async_interface || !ios->ioproc)
     {
         /* Set the fill mode to NOFILL. */
