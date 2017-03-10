@@ -85,7 +85,7 @@ int compute_buffer_init(iosystem_desc_t *ios)
  * less than blocksize*numiotasks then some iotasks will have a NULL
  * iobuf.
  * @param frame the frame or record dimension for each of the nvars
- * variables in iobuf.
+ * variables in iobuf.  NULL if this iodesc contains non-record vars.
  * @return 0 for success, error code otherwise.
  * @ingroup PIO_write_darray
  */
@@ -379,7 +379,7 @@ int pio_write_darray_multi_nc(file_desc_t *file, int nvars, const int *vid, int 
  * less than blocksize*numiotasks then some iotasks will have a NULL
  * iobuf.
  * @param frame the record dimension for each of the nvars variables
- * in iobuf.
+ * in iobuf.  NULL if this iodesc contains non-record vars.
  * @return 0 for success, error code otherwise.
  * @ingroup PIO_write_darray
  */
