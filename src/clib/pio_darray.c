@@ -430,7 +430,9 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
         if (!(wmb->frame = bgetr(wmb->frame, sizeof(int) * (1 + wmb->validvars))))
             return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
 
-    /* If we need a fill value, get it. */
+    /* If we need a fill value, get it. If we are using the subset
+     * rearranger and not using the netcdf fill mode then we need to
+     * do an extra write to fill in the holes with the fill value. */
     if (iodesc->needsfill)
     {
         /* Get memory to hold fill value. */

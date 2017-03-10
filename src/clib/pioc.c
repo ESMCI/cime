@@ -431,14 +431,10 @@ int PIOc_InitDecomp(int iosysid, int pio_type, int ndims, const int *dims, int m
              *  IO task compute it. */
             if (iostart && iocount)
             {
-                iodesc->maxiobuflen = 1;
                 for (int i = 0; i < ndims; i++)
                 {
                     iodesc->firstregion->start[i] = iostart[i];
                     iodesc->firstregion->count[i] = iocount[i];
-                    /* Compute the max io buffer size needed for an iodesc. */
-                    if ((ierr = compute_maxIObuffersize(ios->io_comm, iodesc)))
-                        return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
                 }
                 iodesc->num_aiotasks = ios->num_iotasks;
             }
