@@ -2296,11 +2296,15 @@ bool cmp_rearr_opts(const rearr_opt_t *rearr_opts, const rearr_opt_t *exp_rearr_
 
 /**
  * Internal function to reset rearranger opts in iosystem to valid values.
+ * The only values reset here are options that are not set (or of interest)
+ * to the user. e.g. Setting the io2comp/comp2io settings to defaults when
+ * user chooses coll for rearrangement.
  * The old default for max pending requests was DEF_P2P_MAXREQ = 64.
  *
- * @param ios pointer to iosystem descriptor
+ * @param rearr_opt pointer to rearranger options
+ * @return return error if the rearr_opt is invalid
  */
-void check_and_reset_rearr_opts(iosystem_desc_t *ios)
+int check_and_reset_rearr_opts(rearr_opt_t *rearr_opt)
 {
     /* Disable handshake/isend and set max_pend_req to unlimited */
     const rearr_comm_fc_opt_t def_comm_nofc_opts =
@@ -2314,48 +2318,68 @@ void check_and_reset_rearr_opts(iosystem_desc_t *ios)
         def_coll_comm_fc_opts
     };
 
-    assert(ios);
+    assert(rearr_opt);
 
     /* Reset to defaults, if needed (user did not set it correctly) */
-    if (ios->rearr_opts.comm_type == PIO_REARR_COMM_COLL)
+    if (rearr_opt->comm_type == PIO_REARR_COMM_COLL)
     {
         /* Compare and log the user and default rearr opts for coll. */
-        cmp_rearr_opts(&(ios->rearr_opts), &def_coll_rearr_opts);
+        cmp_rearr_opts(rearr_opt, &def_coll_rearr_opts);
         /* Hard reset flow control options. */
-        ios->rearr_opts = def_coll_rearr_opts;
+        *rearr_opt = def_coll_rearr_opts;
     }
-    else if (ios->rearr_opts.comm_type == PIO_REARR_COMM_P2P)
+    else if (rearr_opt->comm_type == PIO_REARR_COMM_P2P)
     {
-        if (ios->rearr_opts.fcd == PIO_REARR_COMM_FC_2D_DISABLE)
+        if (rearr_opt->fcd == PIO_REARR_COMM_FC_2D_DISABLE)
         {
             /* Compare and log user and default opts. */
-            cmp_rearr_comm_fc_opts(&(ios->rearr_opts.comm_fc_opts_comp2io),
+            cmp_rearr_comm_fc_opts(&(rearr_opt->comm_fc_opts_comp2io),
                                    &def_comm_nofc_opts);
-            cmp_rearr_comm_fc_opts(&(ios->rearr_opts.comm_fc_opts_io2comp),
+            cmp_rearr_comm_fc_opts(&(rearr_opt->comm_fc_opts_io2comp),
                                    &def_comm_nofc_opts);
             /* Hard reset flow control opts to defaults. */
-            ios->rearr_opts.comm_fc_opts_comp2io = def_comm_nofc_opts;
-            ios->rearr_opts.comm_fc_opts_io2comp = def_comm_nofc_opts;
+            rearr_opt->comm_fc_opts_comp2io = def_comm_nofc_opts;
+            rearr_opt->comm_fc_opts_io2comp = def_comm_nofc_opts;
         }
-        else if (ios->rearr_opts.fcd == PIO_REARR_COMM_FC_1D_COMP2IO)
+        else if (rearr_opt->fcd == PIO_REARR_COMM_FC_1D_COMP2IO)
         {
             /* Compare and log user and default opts. */
-            cmp_rearr_comm_fc_opts(&(ios->rearr_opts.comm_fc_opts_io2comp),
+            cmp_rearr_comm_fc_opts(&(rearr_opt->comm_fc_opts_io2comp),
                                    &def_comm_nofc_opts);
             /* Hard reset io2comp dir to defaults. */
-            ios->rearr_opts.comm_fc_opts_io2comp = def_comm_nofc_opts;
+            rearr_opt->comm_fc_opts_io2comp = def_comm_nofc_opts;
         }
-        else if (ios->rearr_opts.fcd == PIO_REARR_COMM_FC_1D_IO2COMP)
+        else if (rearr_opt->fcd == PIO_REARR_COMM_FC_1D_IO2COMP)
         {
             /* Compare and log user and default opts. */
-            cmp_rearr_comm_fc_opts(&(ios->rearr_opts.comm_fc_opts_comp2io),
+            cmp_rearr_comm_fc_opts(&(rearr_opt->comm_fc_opts_comp2io),
                                    &def_comm_nofc_opts);
             /* Hard reset comp2io dir to defaults. */
-            ios->rearr_opts.comm_fc_opts_comp2io = def_comm_nofc_opts;
+            rearr_opt->comm_fc_opts_comp2io = def_comm_nofc_opts;
         }
-        /* Don't reset if flow control is enabled in both directions
-         * by user. */
+        else
+        {
+            if (rearr_opt->fcd != PIO_REARR_COMM_FC_2D_ENABLE)
+                return PIO_EINVAL;
+
+            /* Don't reset if flow control is enabled in both directions
+             * by user. */
+        }
     }
+    else
+    {
+        return PIO_EINVAL;
+    }
+
+    if (( (rearr_opt->comm_fc_opts_comp2io.max_pend_req !=
+            PIO_REARR_COMM_UNLIMITED_PEND_REQ) &&
+          (rearr_opt->comm_fc_opts_comp2io.max_pend_req < 0)  ) ||
+        ( (rearr_opt->comm_fc_opts_io2comp.max_pend_req !=
+            PIO_REARR_COMM_UNLIMITED_PEND_REQ) &&
+          (rearr_opt->comm_fc_opts_io2comp.max_pend_req < 0)  ))
+        return PIO_EINVAL;
+
+    return PIO_NOERR;
 }
 
 /**
@@ -2409,10 +2433,14 @@ int PIOc_set_rearr_opts(int iosysid, int comm_type, int fcd, bool enable_hs_c2i,
     if (!(ios = pio_get_iosystem_from_id(iosysid)))
         return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
 
-    ios->rearr_opts = user_rearr_opts;
+    /* Perform sanity checks on the user supplied values and reset 
+     * values not set (or of no interest) by the user 
+     */
+    ret = check_and_reset_rearr_opts(&user_rearr_opts);
+    if (ret != PIO_NOERR)
+        return ret;
 
-    /* Perform sanity checks on the user supplied values */
-    check_and_reset_rearr_opts(ios);
+    ios->rearr_opts = user_rearr_opts;
 
     return ret;
 }
