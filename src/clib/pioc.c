@@ -419,6 +419,8 @@ int PIOc_InitDecomp(int iosysid, int pio_type, int ndims, const int *dims, int m
     if (iodesc->rearranger == PIO_REARR_SUBSET)
     {
         iodesc->num_aiotasks = ios->num_iotasks;
+        LOG((2, "creating subset rearranger iodesc->num_aiotasks = %d",
+             iodesc->num_aiotasks));
         if ((ierr = subset_rearrange_create(ios, maplen, (PIO_Offset *)compmap, dims,
                                             ndims, iodesc)))
             return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
@@ -441,6 +443,7 @@ int PIOc_InitDecomp(int iosysid, int pio_type, int ndims, const int *dims, int m
             else
             {
                 /* Compute start and count values for each io task. */
+                LOG((2, "about to call CalcStartandCount pio_type = %d ndims = %d", pio_type, ndims));
                 if ((ierr = CalcStartandCount(pio_type, ndims, dims, ios->num_iotasks,
                                              ios->io_rank, iodesc->firstregion->start,
                                              iodesc->firstregion->count, &iodesc->num_aiotasks)))
@@ -450,6 +453,7 @@ int PIOc_InitDecomp(int iosysid, int pio_type, int ndims, const int *dims, int m
             /* Compute the max io buffer size needed for an iodesc. */
             if ((ierr = compute_maxIObuffersize(ios->io_comm, iodesc)))
                 return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
+            LOG((3, "compute_maxIObuffersize called iodesc->maxiobuflen = %d", iodesc->maxiobuflen));
         }
 
         /* Depending on array size and io-blocksize the actual number
@@ -460,7 +464,8 @@ int PIOc_InitDecomp(int iosysid, int pio_type, int ndims, const int *dims, int m
 
         /* Compute the communications pattern for this decomposition. */
         if (iodesc->rearranger == PIO_REARR_BOX)
-            ierr = box_rearrange_create(ios, maplen, compmap, dims, ndims, iodesc);
+            if ((ierr = box_rearrange_create(ios, maplen, compmap, dims, ndims, iodesc)))
+                return pio_err(ios, NULL, ierr, __FILE__, __LINE__);                
     }
 
     /* Add this IO description to the list. */
