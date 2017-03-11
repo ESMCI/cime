@@ -1320,7 +1320,10 @@ int box_rearrange_create(iosystem_desc_t *ios, int maplen, const PIO_Offset *com
         if (dest_ioproc[k] < 0 && compmap[k] > 0)
             return pio_err(ios, NULL, PIO_EINVAL, __FILE__, __LINE__);
 
-    compute_counts(ios, iodesc, maplen, dest_ioproc, dest_ioindex, ios->union_comm);
+    /* Completes the mapping for the box rearranger. */
+    if ((ret = compute_counts(ios, iodesc, maplen, dest_ioproc, dest_ioindex,
+                              ios->union_comm)))
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
     /* Compute the max io buffer size needed for an iodesc. */
     if (ios->ioproc)

@@ -464,8 +464,9 @@ int PIOc_InitDecomp(int iosysid, int pio_type, int ndims, const int *dims, int m
 
         /* Compute the communications pattern for this decomposition. */
         if (iodesc->rearranger == PIO_REARR_BOX)
-            if ((ierr = box_rearrange_create(ios, maplen, compmap, dims, ndims, iodesc)))
-                return pio_err(ios, NULL, ierr, __FILE__, __LINE__);                
+            if ((ierr = box_rearrange_create(ios, maplen, compmap, dims, ndims,
+                                             iodesc)))
+                return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
     }
 
     /* Add this IO description to the list. */
