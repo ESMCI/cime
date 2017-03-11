@@ -25,6 +25,16 @@ extern void *CN_bpool;
 /* Maximum buffer usage. */
 extern PIO_Offset maxusage;
 
+/* handler for freeing the memory buffer pool */
+void bpool_free(void *p)
+{
+  free(p);
+  if(p == CN_bpool){
+    CN_bpool = NULL;
+  }
+}
+
+
 /**
  * Initialize the compute buffer to size pio_cnbuffer_limit.
  *
@@ -49,7 +59,7 @@ int compute_buffer_init(iosystem_desc_t *ios)
         if (!CN_bpool)
             return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
-        bectl(NULL, malloc, free, pio_cnbuffer_limit);
+        bectl(NULL, malloc, bpool_free, pio_cnbuffer_limit);
     }
 #endif
     LOG((2, "compute_buffer_init complete"));
@@ -1303,7 +1313,7 @@ void free_cn_buffer_pool(iosystem_desc_t *ios)
         cn_buffer_report(ios, false);
         bpoolrelease(CN_bpool);
         LOG((2, "free_cn_buffer_pool done!"));
-        free(CN_bpool);
+        /*free(CN_bpool);*/
         CN_bpool = NULL;
     }
 #endif /* !PIO_USE_MALLOC */
