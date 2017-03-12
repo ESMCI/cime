@@ -73,12 +73,15 @@ void idx_to_dim_list(int ndims, const int *gdimlen, PIO_Offset idx,
  * outermost dimension, until the region has been expanded as much as
  * possible along all dimensions.
  *
+ * Precondition: maplen >= region_size (thus loop runs at least
+ * once). 
+ *
  * @param dim the dimension number to start with.
  * @param gdimlen array of global dimension lengths.
  * @param maplen the length of the map.
  * @param map ???
  * @param region_size ???
- * @param region_stride ???
+ * @param region_stride amount incremented along dimension.
  * @param max_size array of size dim + 1 that contains the maximum
  * sizes along that dimension.
  * @param count array of size dim + 1 that gets the new counts.
@@ -87,16 +90,17 @@ void expand_region(int dim, const int *gdimlen, int maplen, const PIO_Offset *ma
                    int region_size, int region_stride, const int *max_size,
                    PIO_Offset *count)
 {
-    int i, j, test_idx, expansion_done;
-    /* Precondition: maplen >= region_size (thus loop runs at least
-     * once). */
-
     /* Flag used to signal that we can no longer expand the region
        along dimension dim. */
-    expansion_done = 0;
+    int expansion_done = 0;
 
+    /* Check inputs. */
+    pioassert(dim >= 0 && gdimlen && maplen >= 0 && map && region_size >= 0 &&
+              maplen >= region_size && region_stride >= 0 && max_size && count,
+              "invalid input", __FILE__, __LINE__);
+    
     /* Expand no greater than max_size along this dimension. */
-    for (i = 1; i <= max_size[dim]; ++i)
+    for (int i = 1; i <= max_size[dim]; ++i)
     {
         /* Count so far is at least i. */
         count[dim] = i;
@@ -106,8 +110,10 @@ void expand_region(int dim, const int *gdimlen, int maplen, const PIO_Offset *ma
            Assuming monotonicity in the map, we could skip this for the
            innermost dimension, but it's necessary past that because the
            region does not necessarily comprise contiguous values. */
-        for (j = 0; j < region_size; ++j)
+        for (int j = 0; j < region_size; j++)
         {
+            int test_idx; /* Index we are testing. */
+            
             test_idx = j + i * region_size;
 
             /* If we have exhausted the map, or the map no longer matches,
@@ -125,12 +131,22 @@ void expand_region(int dim, const int *gdimlen, int maplen, const PIO_Offset *ma
     /* Move on to next outermost dimension if there are more left,
      * else return. */
     if (dim > 0)
-        expand_region(dim-1, gdimlen, maplen, map, region_size * count[dim],
+        expand_region(dim - 1, gdimlen, maplen, map, region_size * count[dim],
                       region_stride * gdimlen[dim], max_size, count);
 }
 
 /**
  * Set start and count so that they describe the first region in map.
+ *
+ * Preconditions
+ * 
+ * ndims is > 0
+ *
+ * maplen is > 0
+ *
+ * All elements of map are inside the bounds specified by gdimlen.
+ * 
+ * Note that the map array is 1 based, but calculations are 0 based.
  *
  * @param ndims the number of dimensions.
  * @param gdimlen an array length ndims with the sizes of the global
@@ -147,13 +163,12 @@ PIO_Offset find_region(int ndims, const int *gdimlen, int maplen, const PIO_Offs
     int max_size[ndims];
     PIO_Offset regionlen = 1;
 
+    /* Check inputs. */
+    pioassert(ndims > 0 && gdimlen && maplen > 0 && map && start && count,
+              "invalid input", __FILE__, __LINE__);
+
     LOG((2, "find_region ndims = %d maplen = %d", ndims, maplen));
 
-    /* Preconditions (which might be useful to check/assert):
-       ndims is > 0
-       maplen is > 0
-       all elements of map are inside the bounds specified by gdimlen
-       The map array is 1 based, but calculations are 0 based */
     idx_to_dim_list(ndims, gdimlen, map[0] - 1, start);
 
     /* Can't expand beyond the array edge.*/
@@ -188,6 +203,9 @@ PIO_Offset coord_to_lindex(int ndims, const PIO_Offset *lcoord, const PIO_Offset
 {
     PIO_Offset lindex = 0;
     PIO_Offset stride = 1;
+
+    /* Check inputs. */
+    pioassert(ndims > 0 && lcoord && count, "invalid input", __FILE__, __LINE__);
 
     for (int i = ndims - 1; i >= 0; i--)
     {
@@ -499,6 +517,10 @@ int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc, int maplen,
     int ntasks;
     int mpierr; /* Return call from MPI functions. */
 
+    /* Check inputs. */
+    pioassert(ios && iodesc && maplen >= 0 && dest_ioproc && dest_ioindex,
+              "invalid input", __FILE__, __LINE__);
+
     /* Find size of communicator, and task rank. */
     if ((mpierr = MPI_Comm_rank(mycomm, &rank)))
         return check_mpi(NULL, mpierr, __FILE__, __LINE__);
@@ -518,8 +540,6 @@ int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc, int maplen,
     int tsize;
     int numiotasks;
     PIO_Offset s2rindex[iodesc->ndof];
-
-    pioassert(iodesc, "iodesc must be provided", __FILE__, __LINE__);
 
     /* Subset rearranger always gets 1 IO task. */
     if (iodesc->rearranger == PIO_REARR_BOX)
@@ -956,7 +976,8 @@ int rearrange_io2comp(iosystem_desc_t *ios, io_desc_t *iodesc, void *sbuf,
     int mpierr; /* Return code from MPI calls. */
     int ret;
 
-    assert(iodesc);
+    /* Check inputs. */
+    pioassert(iodesc, "invalid input", __FILE__, __LINE__);
 
 #ifdef TIMING
     GPTLstart("PIO:rearrange_io2comp");
@@ -1090,7 +1111,8 @@ int determine_fill(iosystem_desc_t *ios, io_desc_t *iodesc, const int *gsize,
     PIO_Offset totalgridsize = 1;
     int mpierr; /* Return code from MPI calls. */
 
-    assert(iodesc);
+    /* Check inputs. */
+    pioassert(iodesc, "invalid input", __FILE__, __LINE__);
 
     /* Determine size of data space. */
     for (int i = 0; i < iodesc->ndims; i++)
@@ -1133,7 +1155,7 @@ int determine_fill(iosystem_desc_t *ios, io_desc_t *iodesc, const int *gsize,
  */
 void iodesc_dump(io_desc_t *iodesc)
 {
-    assert(iodesc);
+    pioassert(iodesc, "invalid input", __FILE__, __LINE__);
 
     printf("ioid= %d\n", iodesc->ioid);
 /*    printf("async_id= %d\n",iodesc->async_id);*/
@@ -1188,7 +1210,9 @@ int box_rearrange_create(iosystem_desc_t *ios, int maplen, const PIO_Offset *com
     int mpierr; /* Return code from MPI functions. */
     int ret;
 
-    assert(iodesc);
+    /* Check inputs. */
+    pioassert(ios && maplen >= 0 && compmap && gsize && ndims > 0 && iodesc,
+              "invalid input", __FILE__, __LINE__);
 
     LOG((1, "box_rearrange_create maplen = %d ndims = %d", maplen, ndims));
 
@@ -1345,9 +1369,9 @@ int box_rearrange_create(iosystem_desc_t *ios, int maplen, const PIO_Offset *com
  * Compare offsets is used by the sort in the subset rearrange. This
  * function is passed to qsort.
  *
- * @param a
- * @param b
- * @returns 0 if offsets are the same.
+ * @param a pointer to an offset.
+ * @param b pointer to another offset.
+ * @returns 0 if offsets are the same or either pointer is NULL.
  */
 int compare_offsets(const void *a, const void *b)
 {
@@ -1380,8 +1404,7 @@ void get_start_and_count_regions(int ndims, const int *gdimlen, int maplen, cons
     int regionlen;
     io_region *region;
 
-    assert(maxregions);
-    assert(firstregion);
+    pioassert(maxregions && firstregion, "invalid input", __FILE__, __LINE__);
 
     nmaplen = 0;
     region = firstregion;
@@ -1445,7 +1468,7 @@ int default_subset_partition(iosystem_desc_t *ios, io_desc_t *iodesc)
     int key;
     int mpierr; /* Return value from MPI functions. */
 
-    assert(ios && iodesc);
+    pioassert(ios && iodesc, "invalid input", __FILE__, __LINE__);
 
     /* Create a new comm for each subset group with the io task in
        rank 0 and only 1 io task per group */
