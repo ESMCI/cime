@@ -1308,12 +1308,13 @@ void free_cn_buffer_pool(iosystem_desc_t *ios)
 {
 #if !PIO_USE_MALLOC
     LOG((2, "free_cn_buffer_pool CN_bpool = %d", CN_bpool));
+    /* Note: it is possible that CN_bpool has been freed and set to NULL by bpool_free() */  
     if (CN_bpool)
     {
         cn_buffer_report(ios, false);
         bpoolrelease(CN_bpool);
         LOG((2, "free_cn_buffer_pool done!"));
-        /*free(CN_bpool);*/
+        free(CN_bpool);
         CN_bpool = NULL;
     }
 #endif /* !PIO_USE_MALLOC */
