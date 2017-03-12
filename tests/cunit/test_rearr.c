@@ -120,11 +120,10 @@ int test_cmp_rearr_opts()
 /* Test some of the rearranger utility functions. */
 int test_rearranger_opts3()
 {
-    iosystem_desc_t my_ios;
-    iosystem_desc_t *ios = &my_ios;
+    rearr_opt_t ro;
 
     /* I'm not sure what the point of this function is... */
-    check_and_reset_rearr_opts(ios);
+    check_and_reset_rearr_opts(&ro);
     
     return 0;
 }

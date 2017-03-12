@@ -1176,7 +1176,7 @@ int box_rearrange_create(iosystem_desc_t *ios, int maplen, const PIO_Offset *com
     int nioprocs = ios->num_iotasks;
     PIO_Offset gstride[ndims];
     PIO_Offset start[ndims], count[ndims];
-    int  tsize, i, j, k;
+    int  tsize;
     int dest_ioproc[maplen];
     PIO_Offset dest_ioindex[maplen];
     int sndlths[nprocs];
