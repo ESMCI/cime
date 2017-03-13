@@ -116,10 +116,14 @@ int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
      * then move that data one node at a time to the io master node
      * and write (or read). The buffer size on io task 0 must be as
      * large as the largest used to accommodate this serial io
-     * method.  For pnetcdf previous iobufs may not yet be flushed, it's okay to move this pointer*/
+     * method.  */
     vdesc0 = file->varlist + varids[0];
-    if (file->iotype != PIO_IOTYPE_PNETCDF)
-	pioassert(!vdesc0->iobuf, "buffer overwrite",__FILE__, __LINE__);
+
+    /* if the buffer is already in use in pnetcdf we need to flush first */
+    if (file->iotype == PIO_IOTYPE_PNETCDF && vdesc0->iobuf)
+	flush_output_buffer(file, 1, 0);
+
+    pioassert(!vdesc0->iobuf, "buffer overwrite",__FILE__, __LINE__);
 
     /* Determine total size of aggregated data (all vars/records). */
     rlen = 0;
@@ -203,9 +207,7 @@ int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
         LOG((2, "nvars = %d holegridsize = %ld iodesc->needsfill = %d\n", nvars,
              iodesc->holegridsize, iodesc->needsfill));
 
-	if (file->iotype != PIO_IOTYPE_PNETCDF)
-	    if (vdesc0->fillbuf)
-		piodie("Attempt to overwrite existing buffer",__FILE__,__LINE__);
+	pioassert(!vdesc0->fillbuf, "buffer overwrite",__FILE__, __LINE__);
 
         /* Get a buffer. */
 	if (!vdesc0->fillbuf)
