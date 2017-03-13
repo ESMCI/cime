@@ -216,11 +216,10 @@ int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
 	pioassert(!vdesc0->fillbuf, "buffer overwrite",__FILE__, __LINE__);
 
         /* Get a buffer. */
-	if (!vdesc0->fillbuf)
-	    if (ios->io_rank == 0)
-		vdesc0->fillbuf = bget(iodesc->maxholegridsize * vsize * nvars);
-	    else if (iodesc->holegridsize > 0)
-		vdesc0->fillbuf = bget(iodesc->holegridsize * vsize * nvars);
+	if (ios->io_rank == 0)
+	    vdesc0->fillbuf = bget(iodesc->maxholegridsize * vsize * nvars);
+	else if (iodesc->holegridsize > 0)
+	    vdesc0->fillbuf = bget(iodesc->holegridsize * vsize * nvars);
 
         /* copying the fill value into the data buffer for the box
          * rearranger. This will be overwritten with data where
