@@ -74,11 +74,11 @@ int gcd_array(int nain, int *ain)
 }
 
 /**
- * Return the gcd of nain and any value in ain as int_64.
+ * Return the greatest common devisor of array ain as int_64.
  *
- * @param main
- * @param ain
- * @returns
+ * @param nain number of elements in ain.
+ * @param ain array of length nain.
+ * @returns GCD of elements in ain.
  */
 long long lgcd_array(int nain, long long *ain)
 {
@@ -153,20 +153,29 @@ void compute_one_dim(int gdim, int ioprocs, int rank, PIO_Offset *start,
  *
  * @param arrlen
  * @param arr_in
- * @returns
+ * @returns the size of the block
  */
 PIO_Offset GCDblocksize(int arrlen, const PIO_Offset *arr_in)
 {
-    int i, j, n, numblks, numtimes, ii, numgaps;
-    PIO_Offset bsize, bsizeg, blklensum;
-    PIO_Offset del_arr[arrlen - 1];
+    int numblks = 0;  /* Number of blocks. */
+    int numtimes = 0; /* Number of times adjacent arr_in elements differ by != 1. */
+    int numgaps = 0;  /* Number of gaps. */
+    int j;  /* Loop counter. */
+    int ii; /* Loop counter. */
+    int n;
+    PIO_Offset bsize;     /* Size of the block. */
+    PIO_Offset bsizeg;    /* Size of gap block. */
+    PIO_Offset blklensum; /* Sum of all block lengths. */
+    PIO_Offset del_arr[arrlen - 1]; /* Array of deltas between adjacent elements in arr_in. */
     PIO_Offset loc_arr[arrlen - 1];
 
-    numblks = 0;
-    numgaps = 0;
-    numtimes = 0;
+    /* Check inputs. */
+    pioassert(arrlen > 0 && arr_in, "invalid input", __FILE__, __LINE__);
 
-    for (i = 0; i < arrlen - 1; i++)
+    /* Find the difference between adjacent elements in arr_in. If it
+     * is more than 1, return with a result of 1. Keep track of the
+     * number of times it's not 1. ??? */
+    for (int i = 0; i < arrlen - 1; i++)
     {
         del_arr[i] = arr_in[i + 1] - arr_in[i];
         if (del_arr[i] != 1)
@@ -177,52 +186,60 @@ PIO_Offset GCDblocksize(int arrlen, const PIO_Offset *arr_in)
         }
     }
 
+    /* ??? */
     numblks = numtimes + 1;
     if (numtimes == 0)
         n = numblks;
     else
         n = numtimes;
 
+    /* ??? */
     bsize = (PIO_Offset)arrlen;
     if (numblks > 1)
     {
         PIO_Offset blk_len[numblks];
         PIO_Offset gaps[numtimes];
-        if(numtimes > 0)
+        if (numtimes > 0)
         {
             ii = 0;
-            for (i = 0; i < arrlen - 1; i++)
+            for (int i = 0; i < arrlen - 1; i++)
                 if (del_arr[i] > 1)
                     gaps[ii++] = del_arr[i] - 1;
             numgaps = ii;
         }
 
         j = 0;
-        for (i = 0; i < n; i++)
+        for (int i = 0; i < n; i++)
             loc_arr[i] = 1;
 
-        for (i = 0; i < arrlen - 1; i++)
+        for (int i = 0; i < arrlen - 1; i++)
             if(del_arr[i] != 1)
                 loc_arr[j++] = i;
 
         blk_len[0] = loc_arr[0];
         blklensum = blk_len[0];
-        for(i = 1; i < numblks - 1; i++)
+        for(int i = 1; i < numblks - 1; i++)
         {
             blk_len[i] = loc_arr[i] - loc_arr[i - 1];
             blklensum += blk_len[i];
         }
         blk_len[numblks - 1] = arrlen - blklensum;
 
+        /* Get the GCD in blk_len array. */
         bsize = lgcd_array(numblks, blk_len);
+
+        /* ??? */
         if (numgaps > 0)
         {
             bsizeg = lgcd_array(numgaps, gaps);
             bsize = lgcd(bsize, bsizeg);
         }
-        if(arr_in[0] > 0)
+
+        /* ??? */
+        if (arr_in[0] > 0)
             bsize = lgcd(bsize, arr_in[0]);
     }
+    
     return bsize;
 }
 
