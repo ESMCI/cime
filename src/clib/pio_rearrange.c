@@ -1405,8 +1405,8 @@ void get_start_and_count_regions(int ndims, const int *gdimlen, int maplen, cons
     io_region *region;
 
     /* Check inputs. */
-    pioassert(ndims >= 0 && gdimlen && maxregions && firstregion, "invalid input",
-              __FILE__, __LINE__);
+    pioassert(ndims >= 0 && gdimlen && maplen >= 0 && maxregions && firstregion,
+              "invalid input", __FILE__, __LINE__);
 
     nmaplen = 0;
     region = firstregion;
