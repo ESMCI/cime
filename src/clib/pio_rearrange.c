@@ -266,10 +266,10 @@ int compute_maxIObuffersize(MPI_Comm io_comm, io_desc_t *iodesc)
  *
  * @param basetype The MPI type of data (MPI_INT, etc.).
  * @param msgcnt This is the number of MPI types that are created.
- * @param mindex An array of indexes into the data array from the comp
- * map.
- * @param mcount The number of indexes to be put on each mpi
- * message/task.
+ * @param mindex An array (length numinds) of indexes into the data
+ * array from the comp map.
+ * @param mcount An array (length msgcnt) with the number of indexes
+ * to be put on each mpi message/task.
  * @param mfrom A pointer to the previous structure in the read/write
  * list. This is always NULL for the BOX rearranger.
  * @param mtype pointer to an array of length msgcnt which gets the

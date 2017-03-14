@@ -504,6 +504,50 @@ int test_expand_region()
     return 0;
 }
 
+/* Test define_iodesc_datatypes() function. */
+int test_define_iodesc_datatypes()
+{
+    iosystem_desc_t ios;
+    io_desc_t iodesc;
+    int mpierr;
+    int ret;
+
+    /* Set up test for IO task with BOX rearranger to create one type. */
+    ios.ioproc = 1; /* this is IO proc. */
+    iodesc.rtype = NULL; /* Array of MPI types will be created here. */
+    iodesc.nrecvs = 1; /* Number of types created. */
+    iodesc.rearranger = PIO_REARR_BOX;
+    iodesc.basetype = MPI_INT;
+
+    /* Allocate space for arrays in iodesc that will be filled in
+     * define_iodesc_datatypes(). */
+    if (!(iodesc.rcount = malloc(iodesc.nrecvs * sizeof(int))))
+        return PIO_ENOMEM;
+    if (!(iodesc.rfrom = malloc(iodesc.nrecvs * sizeof(int))))
+        return PIO_ENOMEM;
+    if (!(iodesc.rindex = malloc(1 * sizeof(PIO_Offset))))
+        return PIO_ENOMEM;
+    iodesc.rindex[0] = 0;
+    iodesc.rcount[0] = 1;
+    
+
+    /* Run the functon. */
+    if ((ret = define_iodesc_datatypes(&ios, &iodesc)))
+        return ret;
+
+    /* We created one type, so free it. */
+    if ((mpierr = MPI_Type_free(&iodesc.rtype[0])))
+        MPIERR(mpierr);
+
+    /* Free resources. */
+    free(iodesc.rtype);
+    free(iodesc.rcount);
+    free(iodesc.rfrom);
+    free(iodesc.rindex);
+
+    return 0;
+}
+
 /* Run Tests for pio_spmd.c functions. */
 int main(int argc, char **argv)
 {
@@ -559,6 +603,10 @@ int main(int argc, char **argv)
 
         printf("%d running create_mpi_datatypes tests\n", my_rank);
         if ((ret = test_create_mpi_datatypes()))
+            return ret;
+
+        printf("%d running define_iodesc_datatypes tests\n", my_rank);
+        if ((ret = test_define_iodesc_datatypes()))
             return ret;
 
         printf("%d running rearranger opts tests 1\n", my_rank);
