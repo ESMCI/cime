@@ -116,8 +116,13 @@ int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
      * then move that data one node at a time to the io master node
      * and write (or read). The buffer size on io task 0 must be as
      * large as the largest used to accommodate this serial io
-     * method. */
+     * method.  */
     vdesc0 = file->varlist + varids[0];
+
+    /* if the buffer is already in use in pnetcdf we need to flush first */
+    if (file->iotype == PIO_IOTYPE_PNETCDF && vdesc0->iobuf)
+	flush_output_buffer(file, 1, 0);
+
     pioassert(!vdesc0->iobuf, "buffer overwrite",__FILE__, __LINE__);
 
     /* Determine total size of aggregated data (all vars/records). */
@@ -134,12 +139,12 @@ int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
         if ((mpierr = MPI_Type_size(iodesc->basetype, &vsize)))
             return check_mpi(file, mpierr, __FILE__, __LINE__);
         LOG((3, "rlen = %d vsize = %d", rlen, vsize));
-        
+
         /* Allocate memory for the buffer for all vars/records. */
         if (!(vdesc0->iobuf = bget((size_t)vsize * (size_t)rlen)))
             return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
         LOG((3, "allocated %lld bytes for variable buffer", (size_t)rlen * (size_t)vsize));
-        
+
         /* If fill values are desired, and we're using the BOX
          * rearranger, insert fill values. */
         if (iodesc->needsfill && iodesc->rearranger == PIO_REARR_BOX)
@@ -147,8 +152,14 @@ int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
                 for (int i = 0; i < iodesc->maxiobuflen; i++)
                     memcpy(&((char *)vdesc0->iobuf)[vsize * (i + nv * iodesc->maxiobuflen)],
                            &((char *)fillvalue)[nv * vsize], vsize);
+    }else if(file->iotype == PIO_IOTYPE_PNETCDF){
+	/* this assures that iobuf is allocated on all iotasks thus assuring that the flush_output_buffer call
+	 above is called collectively (from all iotasks) */
+        if (!(vdesc0->iobuf = bget(1)))
+            return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
+        LOG((3, "allocated %lld bytes for variable buffer", (size_t)rlen * (size_t)vsize));
     }
-    
+
     /* Move data from compute to IO tasks. */
     if ((ierr = rearrange_comp2io(ios, iodesc, array, vdesc0->iobuf, nvars)))
         return pio_err(ios, file, ierr, __FILE__, __LINE__);
@@ -202,8 +213,7 @@ int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
         LOG((2, "nvars = %d holegridsize = %ld iodesc->needsfill = %d\n", nvars,
              iodesc->holegridsize, iodesc->needsfill));
 
-        if (vdesc0->fillbuf)
-            piodie("Attempt to overwrite existing buffer",__FILE__,__LINE__);
+	pioassert(!vdesc0->fillbuf, "buffer overwrite",__FILE__, __LINE__);
 
         /* Get a buffer. */
 	if (ios->io_rank == 0)
@@ -591,7 +601,7 @@ int PIOc_read_darray(int ncid, int varid, int ioid, PIO_Offset arraylen,
         /* Get the MPI type size. */
         if ((mpierr = MPI_Type_size(iodesc->basetype, &tsize)))
             return check_mpi(file, mpierr, __FILE__, __LINE__);
-        
+
         /* Allocate a buffer for one record. */
         if (!(iobuf = bget((size_t)tsize * rlen)))
             return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
