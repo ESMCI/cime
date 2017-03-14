@@ -152,12 +152,12 @@ int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
                 for (int i = 0; i < iodesc->maxiobuflen; i++)
                     memcpy(&((char *)vdesc0->iobuf)[vsize * (i + nv * iodesc->maxiobuflen)],
                            &((char *)fillvalue)[nv * vsize], vsize);
-    }else if(file->iotype == PIO_IOTYPE_PNETCDF){
+    }else if(file->iotype == PIO_IOTYPE_PNETCDF && ios->ioproc){
 	/* this assures that iobuf is allocated on all iotasks thus assuring that the flush_output_buffer call
 	 above is called collectively (from all iotasks) */
         if (!(vdesc0->iobuf = bget(1)))
             return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
-        LOG((3, "allocated %lld bytes for variable buffer", (size_t)rlen * (size_t)vsize));
+        LOG((3, "allocated token for variable buffer"));
     }
 
     /* Move data from compute to IO tasks. */
@@ -193,6 +193,7 @@ int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
         /* Release resources. */
         if (vdesc0->iobuf)
         {
+	    LOG((3,"freeing variable buffer in pio_darray"));
             brel(vdesc0->iobuf);
             vdesc0->iobuf = NULL;
         }
