@@ -1517,7 +1517,9 @@ int subset_rearrange_create(iosystem_desc_t *ios, int maplen, PIO_Offset *compma
     int mpierr; /* Return call from MPI function calls. */
     int ret;
 
-    pioassert(iodesc, "iodesc must be provided", __FILE__, __LINE__);
+    /* Check inputs. */
+    pioassert(ios && compmap && gsize && iodesc, "invalid input",
+              __FILE__, __LINE__);
 
     LOG((2, "subset_rearrange_create maplen = %d ndims = %d", maplen, ndims));
 
