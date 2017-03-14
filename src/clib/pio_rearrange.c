@@ -1392,7 +1392,7 @@ int compare_offsets(const void *a, const void *b)
  * @param gdimlen an array length ndims with the sizes of the global
  * dimensions.
  * @param maplen the length of the map
- * @param map
+ * @param map may be NULL.
  * @param maxregions
  * @param firstregion pointer to the first region.
  * @returns 0 on success, error code otherwise.
@@ -1405,7 +1405,7 @@ void get_start_and_count_regions(int ndims, const int *gdimlen, int maplen, cons
     io_region *region;
 
     /* Check inputs. */
-    pioassert(gdimlen && maxregions && firstregion, "invalid input",
+    pioassert(ndims >= 0 && gdimlen && maxregions && firstregion, "invalid input",
               __FILE__, __LINE__);
 
     nmaplen = 0;
