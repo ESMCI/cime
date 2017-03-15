@@ -403,6 +403,62 @@ int test_CalcStartandCount()
     return 0;
 }
 
+/* Test the GDCblocksize() function. */
+int run_GDCblocksize_tests(MPI_Comm test_comm)
+{
+    {
+        int arrlen = 1;
+        PIO_Offset arr_in[1] = {0};
+        PIO_Offset blocksize;
+        
+        blocksize = GCDblocksize(arrlen, arr_in);
+        if (blocksize != 1)
+            return ERR_WRONG;
+    }
+
+    {
+        int arrlen = 4;
+        PIO_Offset arr_in[4] = {0, 1, 2, 3};
+        PIO_Offset blocksize;
+        
+        blocksize = GCDblocksize(arrlen, arr_in);
+        if (blocksize != 4)
+            return ERR_WRONG;
+    }
+    
+    {
+        int arrlen = 4;
+        PIO_Offset arr_in[4] = {0, 2, 3, 4};
+        PIO_Offset blocksize;
+
+        blocksize = GCDblocksize(arrlen, arr_in);
+        if (blocksize != 1)
+            return ERR_WRONG;
+    }
+    
+    {
+        int arrlen = 4;
+        PIO_Offset arr_in[4] = {0, 1, 3, 4};
+        PIO_Offset blocksize;
+
+        blocksize = GCDblocksize(arrlen, arr_in);
+        if (blocksize != 1)
+            return ERR_WRONG;
+    }
+    
+    {
+        int arrlen = 4;
+        PIO_Offset arr_in[4] = {0, 1, 2, 4};
+        PIO_Offset blocksize;
+
+        blocksize = GCDblocksize(arrlen, arr_in);
+        if (blocksize != 1)
+            return ERR_WRONG;
+    }
+    
+    return 0;
+}
+
 /* Run Tests for pio_spmd.c functions. */
 int main(int argc, char **argv)
 {
@@ -428,6 +484,10 @@ int main(int argc, char **argv)
 
         printf("%d running tests for functions in pioc_sc.c\n", my_rank);
         if ((ret = run_sc_tests(test_comm)))
+            return ret;
+
+        printf("%d running tests for GCDblocksize()\n", my_rank);
+        if ((ret = run_GDCblocksize_tests(test_comm)))
             return ret;
 
         printf("%d running spmd test code\n", my_rank);

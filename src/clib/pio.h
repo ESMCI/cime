@@ -302,7 +302,7 @@ typedef struct io_desc_t
     /** Index for the IO tasks (receive side during writes). */
     PIO_Offset *rindex;
 
-    /** Array of receive MPI types in pio_swapm() call. */
+    /** Array (of length nrecvs) of receive MPI types in pio_swapm() call. */
     MPI_Datatype *rtype;
 
     /** Array of send MPI types in pio_swapm() call. */
