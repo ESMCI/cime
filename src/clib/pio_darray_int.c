@@ -1233,6 +1233,7 @@ int flush_output_buffer(file_desc_t *file, bool force, PIO_Offset addsize)
             vdesc = file->varlist + i;
             if (vdesc->iobuf)
             {
+		LOG((3,"freeing variable buffer in flush_output_buffer"));
                 brel(vdesc->iobuf);
                 vdesc->iobuf = NULL;
             }
@@ -1308,7 +1309,7 @@ void free_cn_buffer_pool(iosystem_desc_t *ios)
 {
 #if !PIO_USE_MALLOC
     LOG((2, "free_cn_buffer_pool CN_bpool = %d", CN_bpool));
-    /* Note: it is possible that CN_bpool has been freed and set to NULL by bpool_free() */  
+    /* Note: it is possible that CN_bpool has been freed and set to NULL by bpool_free() */
     if (CN_bpool)
     {
         cn_buffer_report(ios, false);
