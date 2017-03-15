@@ -477,49 +477,8 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
             vtype = (MPI_Datatype)iodesc->basetype;
             LOG((3, "caller did not provide fill value vtype = %d", vtype));
 
-            /* Need to cast MPI_Datatype to int in switches or openmpi
-             * fails. */
-/*             switch ((int)vtype) */
-/*             { */
-/*             case MPI_BYTE: */
-/*                 fill = &byte_fill; */
-/*                 break; */
-/*             case MPI_CHAR: */
-/*                 fill = &char_fill; */
-/*                 break; */
-/*             case MPI_SHORT: */
-/*                 fill = &short_fill; */
-/*                 break; */
-/*             case MPI_INT: */
-/*                 fill = &int_fill; */
-/*                 break; */
-/*             case MPI_FLOAT: */
-/*                 fill = &float_fill; */
-/*                 break; */
-/*             case MPI_DOUBLE: */
-/*                 fill = &double_fill; */
-/*                 break; */
-/* #ifdef _NETCDF4 */
-/*             case MPI_UNSIGNED_CHAR: */
-/*                 fill = &ubyte_fill; */
-/*                 break; */
-/*             case MPI_UNSIGNED_SHORT: */
-/*                 fill = &ushort_fill; */
-/*                 break; */
-/*             case MPI_UNSIGNED: */
-/*                 fill = &uint_fill; */
-/*                 break; */
-/*             case MPI_LONG_LONG: */
-/*                 fill = &int64_fill; */
-/*                 break; */
-/*             case MPI_UNSIGNED_LONG_LONG: */
-/*                 fill = &uint64_fill; */
-/*                 break; */
-/* #endif /\* _NETCDF4 *\/ */
-/*             default: */
-/*                 return pio_err(ios, file, PIO_EBADTYPE, __FILE__, __LINE__); */
-/*             } */
-
+            /* This must be done with an if statement, not a case, or
+             * openmpi will not build. */
             if (vtype == MPI_BYTE)
                 fill = &byte_fill;
             else if (vtype == MPI_CHAR)
