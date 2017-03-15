@@ -172,9 +172,9 @@ PIO_Offset GCDblocksize(int arrlen, const PIO_Offset *arr_in)
     /* Check inputs. */
     pioassert(arrlen > 0 && arr_in, "invalid input", __FILE__, __LINE__);
 
-    /* Find the difference between adjacent elements in arr_in. If it
-     * is more than 1, return with a result of 1. Keep track of the
-     * number of times it's not 1. ??? */
+    /* Count the number of contiguous blocks in arr_in. If any if
+       these blocks is of size 1, we are done and can return.
+       Otherwise numtimes is the number of blocks. */
     for (int i = 0; i < arrlen - 1; i++)
     {
         del_arr[i] = arr_in[i + 1] - arr_in[i];
@@ -186,19 +186,24 @@ PIO_Offset GCDblocksize(int arrlen, const PIO_Offset *arr_in)
         }
     }
 
-    /* ??? */
+    /* If numtimes is 0 the all of the data in arr_in is contiguous
+     * and numblks=1. Not sure why I have three different variables
+     * here, seems like n,numblks and numtimes could be combined. */
     numblks = numtimes + 1;
     if (numtimes == 0)
         n = numblks;
     else
         n = numtimes;
 
-    /* ??? */
+    /* If numblks==1 then the result is arrlen and you can return. */
     bsize = (PIO_Offset)arrlen;
     if (numblks > 1)
     {
         PIO_Offset blk_len[numblks];
         PIO_Offset gaps[numtimes];
+
+        /* If numblks > 1 then numtimes must be > 0 and this if block
+         * isn't needed. */
         if (numtimes > 0)
         {
             ii = 0;
@@ -228,7 +233,10 @@ PIO_Offset GCDblocksize(int arrlen, const PIO_Offset *arr_in)
         /* Get the GCD in blk_len array. */
         bsize = lgcd_array(numblks, blk_len);
 
-        /* ??? */
+        /* I don't recall why i needed these next two blocks, I
+         * remember struggling to get this right in all cases and I'm
+         * afraid that the end result is that bsize is almost always
+         * 1. */
         if (numgaps > 0)
         {
             bsizeg = lgcd_array(numgaps, gaps);
