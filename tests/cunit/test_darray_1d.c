@@ -719,7 +719,7 @@ int test_decomp_read_write(int iosysid, int ioid, int num_flavors, int *flavor, 
         {
             iosystem_desc_t *ios;
             io_desc_t *iodesc;
-            int expected_basetype;
+            MPI_Datatype expected_basetype;
 
             switch (pio_type)
             {
