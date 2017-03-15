@@ -760,7 +760,7 @@ int PIOc_freedecomp(int iosysid, int ioid)
     {
         for (int i = 0; i < iodesc->nrecvs; i++)
             if (iodesc->rtype[i] != PIO_DATATYPE_NULL)
-                if ((mpierr = MPI_Type_free(iodesc->rtype + i)))
+                if ((mpierr = MPI_Type_free(&iodesc->rtype[i])))
                     return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
 
         free(iodesc->rtype);
