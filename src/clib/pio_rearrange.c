@@ -855,8 +855,8 @@ int rearrange_comp2io(iosystem_desc_t *ios, io_desc_t *iodesc, void *sbuf,
 
                     /*  The stride here is the length of the collected array (llen) */
 
-                    if ((mpierr = MPI_Type_hvector(nvars, 1, (MPI_Aint) iodesc->llen * tsize, iodesc->rtype[i],
-                                                   recvtypes + i)))
+                    if ((mpierr = MPI_Type_create_hvector(nvars, 1, (MPI_Aint) iodesc->llen * tsize,
+                                                          iodesc->rtype[i], recvtypes + i)))
                         return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 
                     if (recvtypes[i] == PIO_DATATYPE_NULL)
@@ -871,8 +871,8 @@ int rearrange_comp2io(iosystem_desc_t *ios, io_desc_t *iodesc, void *sbuf,
                 {
                     recvcounts[iodesc->rfrom[i]] = 1;
 
-                    if ((mpierr = MPI_Type_hvector(nvars, 1, (MPI_Aint)iodesc->llen * tsize, iodesc->rtype[i],
-                                                   recvtypes + iodesc->rfrom[i])))
+                    if ((mpierr = MPI_Type_create_hvector(nvars, 1, (MPI_Aint)iodesc->llen * tsize, iodesc->rtype[i],
+                                                          recvtypes + iodesc->rfrom[i])))
                         return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 
                     if (recvtypes[iodesc->rfrom[i]] == PIO_DATATYPE_NULL)
@@ -899,8 +899,8 @@ int rearrange_comp2io(iosystem_desc_t *ios, io_desc_t *iodesc, void *sbuf,
         if (scount[i] > 0 && sbuf != NULL)
         {
             sendcounts[io_comprank] = 1;
-            if ((mpierr = MPI_Type_hvector(nvars, 1, (MPI_Aint)iodesc->ndof * tsize, iodesc->stype[i],
-                                           sendtypes + io_comprank)))
+            if ((mpierr = MPI_Type_create_hvector(nvars, 1, (MPI_Aint)iodesc->ndof * tsize,
+                                                  iodesc->stype[i], sendtypes + io_comprank)))
                 return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 
             if (sendtypes[io_comprank] == PIO_DATATYPE_NULL)
