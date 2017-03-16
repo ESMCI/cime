@@ -518,48 +518,6 @@ int pio_err(iosystem_desc_t *ios, file_desc_t *file, int err_num, const char *fn
 /**
  * Allocate an region.
  *
- * ndims the number of dimensions for the data in this region.
- * @returns a pointer to the newly allocated io_region struct.
- */
-io_region *alloc_region(int ndims)
-{
-    io_region *region;
-
-    /* Allocate memory for the io_region struct. */
-    if (!(region = bget(sizeof(io_region))))
-        return NULL;
-
-    /* Allocate memory for the array of start indicies. */
-    if (!(region->start = bget(ndims * sizeof(PIO_Offset))))
-    {
-        brel(region);
-        return NULL;
-    }
-
-    /* Allocate memory for the array of counts. */
-    if (!(region->count = bget(ndims * sizeof(PIO_Offset))))
-    {
-        brel(region);
-        brel(region->start);
-        return NULL;
-    }
-
-    region->loffset = 0;
-    region->next = NULL;
-
-    /* Initialize start and count arrays to zero. */
-    for (int i = 0; i < ndims; i++)
-    {
-        region->start[i] = 0;
-        region->count[i] = 0;
-    }
-
-    return region;
-}
-
-/**
- * Allocate an region.
- *
  * @param ndims the number of dimensions for the data in this region.
  * @param a pointer that gets a pointer to the newly allocated
  * io_region struct.
@@ -578,18 +536,11 @@ int alloc_region2(int ndims, io_region **regionp)
 
     /* Allocate memory for the array of start indicies. */
     if (!(region->start = bget(ndims * sizeof(PIO_Offset))))
-    {
-        brel(region);
         return PIO_ENOMEM;
-    }
 
     /* Allocate memory for the array of counts. */
     if (!(region->count = bget(ndims * sizeof(PIO_Offset))))
-    {
-        brel(region);
-        brel(region->start);
         return PIO_ENOMEM;
-    }
 
     region->loffset = 0;
     region->next = NULL;
