@@ -558,6 +558,56 @@ io_region *alloc_region(int ndims)
 }
 
 /**
+ * Allocate an region.
+ *
+ * @param ndims the number of dimensions for the data in this region.
+ * @param a pointer that gets a pointer to the newly allocated
+ * io_region struct.
+ * @returns 0 for success, error code otherwise.
+ */
+int alloc_region2(int ndims, io_region **regionp)
+{
+    io_region *region;
+
+    /* Check inputs. */
+    pioassert(ndims >= 0 && regionp, "invalid input", __FILE__, __LINE__);
+    
+    /* Allocate memory for the io_region struct. */
+    if (!(region = bget(sizeof(io_region))))
+        return PIO_ENOMEM;
+
+    /* Allocate memory for the array of start indicies. */
+    if (!(region->start = bget(ndims * sizeof(PIO_Offset))))
+    {
+        brel(region);
+        return PIO_ENOMEM;
+    }
+
+    /* Allocate memory for the array of counts. */
+    if (!(region->count = bget(ndims * sizeof(PIO_Offset))))
+    {
+        brel(region);
+        brel(region->start);
+        return PIO_ENOMEM;
+    }
+
+    region->loffset = 0;
+    region->next = NULL;
+
+    /* Initialize start and count arrays to zero. */
+    for (int i = 0; i < ndims; i++)
+    {
+        region->start[i] = 0;
+        region->count[i] = 0;
+    }
+
+    /* Return pointer to new region to caller. */
+    *regionp = region;
+    
+    return PIO_NOERR;
+}
+
+/**
  * Given a PIO type, find the MPI type and the type size.
  *
  * @param pio_type a PIO type, PIO_INT, PIO_FLOAT, etc.
@@ -674,7 +724,11 @@ int malloc_iodesc(iosystem_desc_t *ios, int piotype, int ndims,
     (*iodesc)->maxregions = 1;
     (*iodesc)->ioid = -1;
     (*iodesc)->ndims = ndims;
-    (*iodesc)->firstregion = alloc_region(ndims);
+    /* (*iodesc)->firstregion = alloc_region(ndims); */
+
+    /* Allocate space for, and initialize, the first region. */
+    if ((ret = alloc_region2(ndims, &((*iodesc)->firstregion))))
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);        
 
     /* Set the swap memory settings to defaults. */
     (*iodesc)->rearr_opts = ios->rearr_opts;
