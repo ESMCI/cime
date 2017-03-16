@@ -648,7 +648,7 @@ int find_mpi_type(int pio_type, MPI_Datatype *mpi_type, int *type_size)
  * @param piotype the PIO data type (ex. PIO_FLOAT, PIO_INT, etc.).
  * @param ndims the number of dimensions.
  * @iodesc pointer that gets a pointer to the newly allocated
- * io_desc_t or NULL if allocation failed.
+ * io_desc_t.
  * @returns 0 for success, error code otherwise.
  */
 int malloc_iodesc(iosystem_desc_t *ios, int piotype, int ndims,
@@ -658,7 +658,8 @@ int malloc_iodesc(iosystem_desc_t *ios, int piotype, int ndims,
     int ret;
 
     /* Check input. */
-    pioassert(ios && iodesc, "invalid input", __FILE__, __LINE__);
+    pioassert(ios && piotype > 0 && ndims >= 0 && iodesc,
+              "invalid input", __FILE__, __LINE__);
 
     /* Allocate space for the io_desc_t struct. */
     if (!(*iodesc = calloc(1, sizeof(io_desc_t))))
@@ -675,13 +676,12 @@ int malloc_iodesc(iosystem_desc_t *ios, int piotype, int ndims,
     (*iodesc)->maxregions = 1;
     (*iodesc)->ioid = -1;
     (*iodesc)->ndims = ndims;
-    /* (*iodesc)->firstregion = alloc_region(ndims); */
 
     /* Allocate space for, and initialize, the first region. */
     if ((ret = alloc_region2(ndims, &((*iodesc)->firstregion))))
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);        
 
-    /* Set the swap memory settings to defaults. */
+    /* Set the swap memory settings to defaults for this IO system. */
     (*iodesc)->rearr_opts = ios->rearr_opts;
 
     return PIO_NOERR;
