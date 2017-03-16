@@ -745,14 +745,14 @@ int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc, int maplen,
     /* Here we are sending the mapping from the index on the compute
      * task to the index on the io task. */
     /* s2rindex is the list of indeces on each compute task */
-    ierr = pio_swapm(s2rindex, send_counts, send_displs, sr_types, iodesc->rindex,
-                     recv_counts, recv_displs, sr_types, mycomm,
-                     iodesc->rearr_opts.comm_fc_opts_comp2io.enable_hs,
-                     iodesc->rearr_opts.comm_fc_opts_comp2io.enable_isend,
-                     iodesc->rearr_opts.comm_fc_opts_comp2io.max_pend_req);
+    if ((ierr = pio_swapm(s2rindex, send_counts, send_displs, sr_types, iodesc->rindex,
+                          recv_counts, recv_displs, sr_types, mycomm,
+                          iodesc->rearr_opts.comm_fc_opts_comp2io.enable_hs,
+                          iodesc->rearr_opts.comm_fc_opts_comp2io.enable_isend,
+                          iodesc->rearr_opts.comm_fc_opts_comp2io.max_pend_req)))
+        return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
 
-
-    return ierr;
+    return PIO_NOERR;
 }
 
 /**
@@ -896,7 +896,7 @@ int rearrange_comp2io(iosystem_desc_t *ios, io_desc_t *iodesc, void *sbuf,
     {
         int io_comprank = ios->ioranks[i];
         if (iodesc->rearranger == PIO_REARR_SUBSET)
-            io_comprank=0;
+            io_comprank = 0;
 
         if (scount[i] > 0 && sbuf != NULL)
         {
@@ -913,16 +913,17 @@ int rearrange_comp2io(iosystem_desc_t *ios, io_desc_t *iodesc, void *sbuf,
         }
         else
         {
-            sendcounts[io_comprank]=0;
+            sendcounts[io_comprank] = 0;
         }
     }
     /* Data in sbuf on the compute nodes is sent to rbuf on the ionodes */
-    pio_swapm(sbuf, sendcounts, sdispls, sendtypes,
-              rbuf, recvcounts, rdispls, recvtypes, mycomm,
-              iodesc->rearr_opts.comm_fc_opts_comp2io.enable_hs,
-              iodesc->rearr_opts.comm_fc_opts_comp2io.enable_isend,
-              iodesc->rearr_opts.comm_fc_opts_comp2io.max_pend_req);
-
+    if ((ret = pio_swapm(sbuf, sendcounts, sdispls, sendtypes,
+                         rbuf, recvcounts, rdispls, recvtypes, mycomm,
+                         iodesc->rearr_opts.comm_fc_opts_comp2io.enable_hs,
+                         iodesc->rearr_opts.comm_fc_opts_comp2io.enable_isend,
+                         iodesc->rearr_opts.comm_fc_opts_comp2io.max_pend_req)))
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);        
+    
     /* Free the MPI types. */
     for (i = 0; i < ntasks; i++)
     {
@@ -1069,11 +1070,12 @@ int rearrange_io2comp(iosystem_desc_t *ios, io_desc_t *iodesc, void *sbuf,
     }
 
     /* Data in sbuf on the ionodes is sent to rbuf on the compute nodes */
-    pio_swapm(sbuf, sendcounts, sdispls, sendtypes,
-              rbuf, recvcounts, rdispls, recvtypes, mycomm,
-              iodesc->rearr_opts.comm_fc_opts_io2comp.enable_hs,
-              iodesc->rearr_opts.comm_fc_opts_io2comp.enable_isend,
-              iodesc->rearr_opts.comm_fc_opts_io2comp.max_pend_req);
+    if ((ret = pio_swapm(sbuf, sendcounts, sdispls, sendtypes,
+                         rbuf, recvcounts, rdispls, recvtypes, mycomm,
+                         iodesc->rearr_opts.comm_fc_opts_io2comp.enable_hs,
+                         iodesc->rearr_opts.comm_fc_opts_io2comp.enable_isend,
+                         iodesc->rearr_opts.comm_fc_opts_io2comp.max_pend_req)))
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);        
 
     /* Release memory. */
     free(sendcounts);
