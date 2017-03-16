@@ -249,13 +249,11 @@ int compute_maxIObuffersize(MPI_Comm io_comm, io_desc_t *iodesc)
     /* Share the max io buffer size with all io tasks. */
     if ((mpierr = MPI_Allreduce(MPI_IN_PLACE, &totiosize, 1, MPI_OFFSET, MPI_MAX, io_comm)))
         return check_mpi(NULL, mpierr, __FILE__, __LINE__);
-
+    pioassert(totiosize > 0, "totiosize <= 0", __FILE__, __LINE__);
     LOG((2, "after allreduce compute_maxIObuffersize got totiosize = %lld", totiosize));
-    iodesc->maxiobuflen = totiosize;
 
-    if (iodesc->maxiobuflen <= 0)
-        return pio_err(NULL, NULL, PIO_EINVAL, __FILE__, __LINE__);
-    LOG((2, "compute_maxIObuffersize got totiosize = %lld", totiosize));
+    /* Remember the result. */
+    iodesc->maxiobuflen = totiosize;
 
     return PIO_NOERR;
 }

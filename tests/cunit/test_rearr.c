@@ -325,14 +325,6 @@ int test_compute_maxIObuffersize(MPI_Comm test_comm, int my_rank)
     int ret;
 
     {
-        /* This will not work. */
-        io_desc_t iodesc;
-        iodesc.firstregion = NULL;
-        if (compute_maxIObuffersize(test_comm, &iodesc) != PIO_EINVAL)
-            return ERR_WRONG;
-    }
-
-    {
         /* This is a simple test with one region containing 1 data
          * element. */
         io_desc_t iodesc;
