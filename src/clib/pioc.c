@@ -494,8 +494,9 @@ int PIOc_InitDecomp(int iosysid, int pio_type, int ndims, const int *dims, int m
  * file. A -1 in this array indicates a value which should not be
  * transfered.
  * @param ioidp pointer that will get the io description ID.
- * @param rearranger pointer to the rearranger to be used for this
- * decomp or NULL to use the default.
+ * @param rearranger the rearranger to be used for this decomp or 0 to
+ * use the default. Valid rearrangers are PIO_REARR_BOX and
+ * PIO_REARR_SUBSET.
  * @param iostart An array of start values for block cyclic
  * decompositions. If NULL ???
  * @param iocount An array of count values for block cyclic
@@ -504,20 +505,26 @@ int PIOc_InitDecomp(int iosysid, int pio_type, int ndims, const int *dims, int m
  * @ingroup PIO_initdecomp
  */
 int PIOc_init_decomp(int iosysid, int pio_type, int ndims, const int *dims, int maplen,
-                     const PIO_Offset *compmap, int *ioidp, const int *rearranger,
+                     const PIO_Offset *compmap, int *ioidp, int rearranger,
                      const PIO_Offset *iostart, const PIO_Offset *iocount)
 {
     PIO_Offset compmap_1_based[maplen];
+    int *rearrangerp = NULL;
 
     LOG((1, "PIOc_init_decomp iosysid = %d pio_type = %d ndims = %d maplen = %d",
          iosysid, pio_type, ndims, maplen));
+
+    /* If the user specified a non-default rearranger, use it. */
+    if (rearranger)
+        rearrangerp = &rearranger;
 
     /* Add 1 to all elements in compmap. */
     for (int e = 0; e < maplen; e++)
         compmap_1_based[e] = compmap[e] + 1;
 
+    /* Call the legacy version of the function. */
     return PIOc_InitDecomp(iosysid, pio_type, ndims, dims, maplen, compmap_1_based,
-                           ioidp, rearranger, iostart, iocount);
+                           ioidp, rearrangerp, iostart, iocount);
 }
 
 /**
