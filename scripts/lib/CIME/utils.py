@@ -787,6 +787,13 @@ def format_time(time_format, input_format, input_time):
     but only the first occurence will be used.
     An example of a valid format: "%H:%M:%S"
     Unlike strptime, this does support %H >= 24
+
+    >>> format_time("%H:%M:%S", "%H", "43")
+    '43:00:00'
+    >>> format_time("%H  %M", "%M.%S", "59,59")
+    '0  59'
+    >>> format_time("%H, %S", "%H:%M:%S", "2:43:9")
+    '2, 9
     """
     input_fields = input_format.split("%")
     expect(input_fields[0] == input_time[:len(input_fields[0])],
@@ -825,7 +832,7 @@ def format_time(time_format, input_format, input_time):
     output_fields = time_format.split("%")
     output_time = output_fields[0]
     # Used when a value isn't given
-    default_spec = {"H": "0", "M": "00", "S": "00"}
+    min_len_spec = {"H": 1, "M": 2, "S": 2}
     # Loop invariants given input follows the specs:
     # field starts with H, M, or S
     # output_time
@@ -835,9 +842,10 @@ def format_time(time_format, input_format, input_time):
         spec = field[0]
         expect(spec in timespec, "Unknown time specifier '" + spec + "'")
         if timespec[spec] is not None:
+            output_time += "0" * (min_len_spec[spec] - len(timespec[spec]))
             output_time += timespec[spec]
         else:
-            output_time += default_spec[spec]
+            output_time += "0" * min_len_spec[spec]
         output_time += field[1:]
     return output_time
 
