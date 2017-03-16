@@ -1856,9 +1856,9 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
         if ((ret = test_decomp_public(my_test_size, my_rank, iosysid, DIM_LEN, test_comm, async)))
             return ret;
 
-    if (!async)
-        if ((ret = test_decomp_public_2(my_test_size, my_rank, iosysid, DIM_LEN, test_comm, async)))
-            return ret;
+    /* This is a simple test that just writes the decomp. */
+    if ((ret = test_decomp_public_2(my_test_size, my_rank, iosysid, DIM_LEN, test_comm, async)))
+        return ret;
 
     /* Decompose the data over the tasks. */
     if (!async)
