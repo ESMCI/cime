@@ -60,18 +60,21 @@ int main(int argc, char **argv)
 
         /* Check for invalid values. */
         if (PIOc_init_async(test_comm, NUM_IO_PROCS, NULL, COMPONENT_COUNT,
-                            num_procs, NULL, NULL, NULL, NULL) != PIO_EINVAL)
-            ERR(ERR_WRONG);
-        if (PIOc_init_async(test_comm, NUM_IO_PROCS, NULL, -1,
-                            num_procs, NULL, NULL, NULL, iosysid) != PIO_EINVAL)
+                            num_procs, NULL, NULL, NULL, PIO_REARR_BOX, NULL) != PIO_EINVAL)
             ERR(ERR_WRONG);
         if (PIOc_init_async(test_comm, NUM_IO_PROCS, NULL, COMPONENT_COUNT,
-                            NULL, NULL, NULL, NULL, iosysid) != PIO_EINVAL)
+                            num_procs, NULL, NULL, NULL, TEST_VAL_42, iosysid) != PIO_EINVAL)
+            ERR(ERR_WRONG);
+        if (PIOc_init_async(test_comm, NUM_IO_PROCS, NULL, -1,
+                            num_procs, NULL, NULL, NULL, PIO_REARR_BOX, iosysid) != PIO_EINVAL)
+            ERR(ERR_WRONG);
+        if (PIOc_init_async(test_comm, NUM_IO_PROCS, NULL, COMPONENT_COUNT,
+                            NULL, NULL, NULL, NULL, PIO_REARR_BOX, iosysid) != PIO_EINVAL)
             ERR(ERR_WRONG);
 
         /* Initialize the IO system. */
         if ((ret = PIOc_init_async(test_comm, NUM_IO_PROCS, io_proc_list, COMPONENT_COUNT,
-                                   num_procs, (int **)proc_list, NULL, NULL, iosysid)))
+                                   num_procs, (int **)proc_list, NULL, NULL, PIO_REARR_BOX, iosysid)))
             ERR(ERR_INIT);
 
         /* All the netCDF calls are only executed on the computation

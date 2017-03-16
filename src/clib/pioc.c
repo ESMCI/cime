@@ -1065,6 +1065,10 @@ int PIOc_iotype_available(int iotype)
  * duplicates and each must later be freed with MPI_Free() by the
  * caller.)
  *
+ * @param rearranger the default rearranger to use for decompositions
+ * in this IO system. Must be either PIO_REARR_BOX or
+ * PIO_REARR_SUBSET.
+ *
  * @param iosysidp pointer to array of length component_count that
  * gets the iosysid for each component.
  *
@@ -1073,7 +1077,8 @@ int PIOc_iotype_available(int iotype)
  */
 int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
                     int component_count, int *num_procs_per_comp, int **proc_list,
-                    MPI_Comm *user_io_comm, MPI_Comm *user_comp_comm, int *iosysidp)
+                    MPI_Comm *user_io_comm, MPI_Comm *user_comp_comm, int rearranger,
+                    int *iosysidp)
 {
     int my_rank;          /* Rank of this task. */
     int **my_proc_list;   /* Array of arrays of procs for comp components. */
@@ -1082,7 +1087,8 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
     int ret;              /* Return code. */
 
     /* Check input parameters. */
-    if (num_io_procs < 1 || component_count < 1 || !num_procs_per_comp || !iosysidp)
+    if (num_io_procs < 1 || component_count < 1 || !num_procs_per_comp || !iosysidp ||
+        (rearranger != PIO_REARR_BOX && rearranger != PIO_REARR_SUBSET))
         return pio_err(NULL, NULL, PIO_EINVAL, __FILE__, __LINE__);
 
     /* Temporarily limit to one computational component. */
@@ -1237,6 +1243,7 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
         my_iosys->num_iotasks = num_io_procs;
         my_iosys->compgroup = MPI_GROUP_NULL;
         my_iosys->iogroup = MPI_GROUP_NULL;
+        my_iosys->default_rearranger = rearranger;
 
         /* The rank of the computation leader in the union comm. */
         my_iosys->comproot = num_io_procs;
