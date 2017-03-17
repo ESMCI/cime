@@ -1427,7 +1427,7 @@ int get_start_and_count_regions(int ndims, const int *gdimlen, int maplen, const
 
         if (region->next == NULL && nmaplen < maplen)
         {
-            if ((ret = alloc_region2(ndims, &region->next)))
+            if ((ret = alloc_region2(NULL, ndims, &region->next)))
                 return ret;
             
             /* The offset into the local array buffer is the sum of
@@ -1825,7 +1825,7 @@ int subset_rearrange_create(iosystem_desc_t *ios, int maplen, PIO_Offset *compma
         if (myfillgrid)
         {
             /* Allocate a data region to hold fill values. */
-            if ((ret = alloc_region2(iodesc->ndims, &iodesc->fillregion)))
+            if ((ret = alloc_region2(ios, iodesc->ndims, &iodesc->fillregion)))
                 return pio_err(ios, NULL, ret, __FILE__, __LINE__);                
             if ((ret = get_start_and_count_regions(iodesc->ndims, gdimlen, iodesc->holegridsize, myfillgrid,
                                                    &iodesc->maxfillregions, iodesc->fillregion)))

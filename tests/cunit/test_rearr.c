@@ -332,7 +332,7 @@ int test_compute_maxIObuffersize(MPI_Comm test_comm, int my_rank)
         int ndims = 1;
 
         /* This is how we allocate a region. */
-        if ((ret = alloc_region2(ndims, &ior1)))
+        if ((ret = alloc_region2(NULL, ndims, &ior1)))
             return ret;
         ior1->next = NULL;
         ior1->count[0] = 1;
@@ -347,9 +347,9 @@ int test_compute_maxIObuffersize(MPI_Comm test_comm, int my_rank)
             return ERR_WRONG;
         
         /* Free resources for the region. */
-        brel(ior1->start);
-        brel(ior1->count);
-        brel(ior1);
+        free(ior1->start);
+        free(ior1->count);
+        free(ior1);
 
     }
 
@@ -361,7 +361,7 @@ int test_compute_maxIObuffersize(MPI_Comm test_comm, int my_rank)
         int ndims = 2;
 
         /* This is how we allocate a region. */
-        if ((ret = alloc_region2(ndims, &ior2)))
+        if ((ret = alloc_region2(NULL, ndims, &ior2)))
             return ret;
 
         /* These should be 0. */
@@ -383,9 +383,9 @@ int test_compute_maxIObuffersize(MPI_Comm test_comm, int my_rank)
             return ERR_WRONG;
         
         /* Free resources for the region. */
-        brel(ior2->start);
-        brel(ior2->count);
-        brel(ior2);
+        free(ior2->start);
+        free(ior2->count);
+        free(ior2);
     }
 
     {
@@ -396,13 +396,13 @@ int test_compute_maxIObuffersize(MPI_Comm test_comm, int my_rank)
         int ndims = 2;
 
         /* This is how we allocate a region. */
-        if ((ret = alloc_region2(ndims, &ior4)))
+        if ((ret = alloc_region2(NULL, ndims, &ior4)))
             return ret;
         ior4->next = NULL;
         ior4->count[0] = 10;
         ior4->count[1] = 2;
 
-        if ((ret = alloc_region2(ndims, &ior3)))
+        if ((ret = alloc_region2(NULL, ndims, &ior3)))
             return ret;
         ior3->next = ior4;
         ior3->count[0] = 100;
@@ -419,12 +419,12 @@ int test_compute_maxIObuffersize(MPI_Comm test_comm, int my_rank)
             return ERR_WRONG;
         
         /* Free resources for the region. */
-        brel(ior4->start);
-        brel(ior4->count);
-        brel(ior4);
-        brel(ior3->start);
-        brel(ior3->count);
-        brel(ior3);
+        free(ior4->start);
+        free(ior4->count);
+        free(ior4);
+        free(ior3->start);
+        free(ior3->count);
+        free(ior3);
     }
 
     return 0;

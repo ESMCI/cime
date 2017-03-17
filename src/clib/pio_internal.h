@@ -221,7 +221,7 @@ extern "C" {
     int compute_maxIObuffersize(MPI_Comm io_comm, io_desc_t *iodesc);
 
     /* Allocation memory for a data region. */
-    int alloc_region2(int ndims, io_region **region);
+    int alloc_region2(iosystem_desc_t *ios, int ndims, io_region **region);
 
     /* Delete an entry from the lost of open IO systems. */
     int pio_delete_iosystem_from_list(int piosysid);

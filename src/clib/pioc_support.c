@@ -517,41 +517,35 @@ int pio_err(iosystem_desc_t *ios, file_desc_t *file, int err_num, const char *fn
 }
 
 /**
- * Allocate an region.
+ * Allocate a region struct, and initialize it.
  *
+ * @param ios pointer to the IO system info, used for error
+ * handling. Ignored if NULL.
  * @param ndims the number of dimensions for the data in this region.
  * @param a pointer that gets a pointer to the newly allocated
  * io_region struct.
  * @returns 0 for success, error code otherwise.
  */
-int alloc_region2(int ndims, io_region **regionp)
+int alloc_region2(iosystem_desc_t *ios, int ndims, io_region **regionp)
 {
     io_region *region;
 
     /* Check inputs. */
     pioassert(ndims >= 0 && regionp, "invalid input", __FILE__, __LINE__);
+    LOG((1, "alloc_region2 ndims = %d sizeof(io_region) = %d", ndims,
+         sizeof(io_region)));
     
     /* Allocate memory for the io_region struct. */
-    if (!(region = bget(sizeof(io_region))))
-        return PIO_ENOMEM;
+    if (!(region = calloc(1, sizeof(io_region))))
+        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
     /* Allocate memory for the array of start indicies. */
-    if (!(region->start = bget(ndims * sizeof(PIO_Offset))))
-        return PIO_ENOMEM;
+    if (!(region->start = calloc(ndims, sizeof(PIO_Offset))))
+        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
     /* Allocate memory for the array of counts. */
-    if (!(region->count = bget(ndims * sizeof(PIO_Offset))))
-        return PIO_ENOMEM;
-
-    region->loffset = 0;
-    region->next = NULL;
-
-    /* Initialize start and count arrays to zero. */
-    for (int i = 0; i < ndims; i++)
-    {
-        region->start[i] = 0;
-        region->count[i] = 0;
-    }
+    if (!(region->count = calloc(ndims, sizeof(PIO_Offset))))
+        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
     /* Return pointer to new region to caller. */
     *regionp = region;
@@ -643,9 +637,10 @@ int find_mpi_type(int pio_type, MPI_Datatype *mpi_type, int *type_size)
 }
 
 /**
- * Allocate space for an IO description struct.
+ * Allocate space for an IO description struct, and initialize it.
  *
- * @param ios pointer to the IO system info.
+ * @param ios pointer to the IO system info, used for error
+ * handling. Ignored if NULL.
  * @param piotype the PIO data type (ex. PIO_FLOAT, PIO_INT, etc.).
  * @param ndims the number of dimensions.
  * @iodesc pointer that gets a pointer to the newly allocated
@@ -662,13 +657,15 @@ int malloc_iodesc(iosystem_desc_t *ios, int piotype, int ndims,
     pioassert(ios && piotype > 0 && ndims >= 0 && iodesc,
               "invalid input", __FILE__, __LINE__);
 
-    /* Allocate space for the io_desc_t struct. */
-    if (!(*iodesc = calloc(1, sizeof(io_desc_t))))
-        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+    LOG((1, "malloc_iodesc piotype = %d ndims = %d", piotype, ndims));
 
     /* Get the MPI type corresponding with the PIO type. */
     if ((ret = find_mpi_type(piotype, &mpi_type, NULL)))
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+
+    /* Allocate space for the io_desc_t struct. */
+    if (!(*iodesc = calloc(1, sizeof(io_desc_t))))
+        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
     /* Decide on the base type. */
     (*iodesc)->basetype = mpi_type;
@@ -679,7 +676,7 @@ int malloc_iodesc(iosystem_desc_t *ios, int piotype, int ndims,
     (*iodesc)->ndims = ndims;
 
     /* Allocate space for, and initialize, the first region. */
-    if ((ret = alloc_region2(ndims, &((*iodesc)->firstregion))))
+    if ((ret = alloc_region2(ios, ndims, &((*iodesc)->firstregion))))
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);        
 
     /* Set the swap memory settings to defaults for this IO system. */
@@ -701,12 +698,12 @@ void free_region_list(io_region *top)
     while (ptr)
     {
         if (ptr->start)
-            brel(ptr->start);
+            free(ptr->start);
         if (ptr->count)
-            brel(ptr->count);
+            free(ptr->count);
         tptr = ptr;
         ptr = ptr->next;
-        brel(tptr);
+        free(tptr);
     }
 }
 
