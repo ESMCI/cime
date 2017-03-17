@@ -101,13 +101,14 @@ int PIOc_strerror(int pioerr, char *errmsg)
  */
 int PIOc_set_log_level(int level)
 {
-    int ret;
 
 #if PIO_ENABLE_LOGGING
     /* Set the log level. */
     pio_log_level = level;
 
 #if NETCDF_C_LOGGING_ENABLED
+    int ret;
+    
     /* If netcdf logging is available turn it on starting at level = 4. */
     if (level > NC_LEVEL_DIFF)
         if ((ret = nc_set_log_level(level - NC_LEVEL_DIFF)))
