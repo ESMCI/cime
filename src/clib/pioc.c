@@ -549,14 +549,15 @@ int PIOc_init_decomp(int iosysid, int pio_type, int ndims, const int *gdimlen, i
  * @param iosysid the IO system ID
  * @param pio_type
  * @param ndims the number of dimensions
- * @param dims array of dimensions
+ * @param gdimlen an array length ndims with the sizes of the global
+ * dimensions.
  * @param start start array
  * @param count count array
  * @param pointer that gets the IO ID.
  * @returns 0 for success, error code otherwise
  * @ingroup PIO_initdecomp
  */
-int PIOc_InitDecomp_bc(int iosysid, int pio_type, int ndims, const int *dims,
+int PIOc_InitDecomp_bc(int iosysid, int pio_type, int ndims, const int *gdimlen,
                        const long int *start, const long int *count, int *ioidp)
 
 {
@@ -572,13 +573,13 @@ int PIOc_InitDecomp_bc(int iosysid, int pio_type, int ndims, const int *dims,
         return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
 
     /* Check for required inputs. */
-    if (!dims || !start || !count || !ioidp)
+    if (!gdimlen || !start || !count || !ioidp)
         return pio_err(ios, NULL, PIO_EINVAL, __FILE__, __LINE__);
 
     /* Check that dim, start, and count values are not obviously
      * incorrect. */
     for (int i = 0; i < ndims; i++)
-        if (dims[i] <= 0 || start[i] < 0 || count[i] < 0 || (start[i] + count[i]) > dims[i])
+        if (gdimlen[i] <= 0 || start[i] < 0 || count[i] < 0 || (start[i] + count[i]) > gdimlen[i])
             return pio_err(ios, NULL, PIO_EINVAL, __FILE__, __LINE__);
 
     /* Find the maplen. */
@@ -593,7 +594,7 @@ int PIOc_InitDecomp_bc(int iosysid, int pio_type, int ndims, const int *dims,
     loc[ndims - 1] = 0;
     for (n = ndims - 2; n >= 0; n--)
     {
-        prod[n] = prod[n + 1] * dims[n + 1];
+        prod[n] = prod[n + 1] * gdimlen[n + 1];
         loc[n] = 0;
     }
     for (i = 0; i < maplen; i++)
@@ -611,7 +612,7 @@ int PIOc_InitDecomp_bc(int iosysid, int pio_type, int ndims, const int *dims,
         }
     }
 
-    return PIOc_InitDecomp(iosysid, pio_type, ndims, dims, maplen, compmap, ioidp,
+    return PIOc_InitDecomp(iosysid, pio_type, ndims, gdimlen, maplen, compmap, ioidp,
                            &rearr, NULL, NULL);
 }
 
