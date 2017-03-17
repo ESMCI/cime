@@ -214,9 +214,16 @@ extern "C" {
     int malloc_iodesc(iosystem_desc_t *ios, int piotype, int ndims, io_desc_t **iodesc);
     void performance_tune_rearranger(iosystem_desc_t *ios, io_desc_t *iodesc);
 
+    /* Flush contents of multi-buffer to disk. */
     int flush_output_buffer(file_desc_t *file, bool force, PIO_Offset addsize);
+
+    /* Compute the size that the IO tasks will need to hold the data. */
     int compute_maxIObuffersize(MPI_Comm io_comm, io_desc_t *iodesc);
-    io_region *alloc_region(int ndims);
+
+    /* Allocation memory for a data region. */
+    int alloc_region2(int ndims, io_region **region);
+
+    /* Delete an entry from the lost of open IO systems. */
     int pio_delete_iosystem_from_list(int piosysid);
 
     /* Find greatest commond divisor. */

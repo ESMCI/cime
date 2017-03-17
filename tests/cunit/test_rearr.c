@@ -332,7 +332,8 @@ int test_compute_maxIObuffersize(MPI_Comm test_comm, int my_rank)
         int ndims = 1;
 
         /* This is how we allocate a region. */
-        ior1 = alloc_region(ndims);
+        if ((ret = alloc_region2(ndims, &ior1)))
+            return ret;
         ior1->next = NULL;
         ior1->count[0] = 1;
         
@@ -360,11 +361,18 @@ int test_compute_maxIObuffersize(MPI_Comm test_comm, int my_rank)
         int ndims = 2;
 
         /* This is how we allocate a region. */
-        ior2 = alloc_region(ndims);
+        if ((ret = alloc_region2(ndims, &ior2)))
+            return ret;
+
+        /* These should be 0. */
+        for (int i = 0; i < ndims; i++)
+            if (ior2->start[i] != 0 || ior2->count[i] != 0)
+                return ERR_WRONG;
+        
         ior2->next = NULL;
         ior2->count[0] = 10;
         ior2->count[1] = 2;
-        
+
         iodesc.firstregion = ior2;
         iodesc.ndims = 2;
         
@@ -378,7 +386,6 @@ int test_compute_maxIObuffersize(MPI_Comm test_comm, int my_rank)
         brel(ior2->start);
         brel(ior2->count);
         brel(ior2);
-
     }
 
     {
@@ -389,12 +396,14 @@ int test_compute_maxIObuffersize(MPI_Comm test_comm, int my_rank)
         int ndims = 2;
 
         /* This is how we allocate a region. */
-        ior4 = alloc_region(ndims);
+        if ((ret = alloc_region2(ndims, &ior4)))
+            return ret;
         ior4->next = NULL;
         ior4->count[0] = 10;
         ior4->count[1] = 2;
 
-        ior3 = alloc_region(ndims);
+        if ((ret = alloc_region2(ndims, &ior3)))
+            return ret;
         ior3->next = ior4;
         ior3->count[0] = 100;
         ior3->count[1] = 5;

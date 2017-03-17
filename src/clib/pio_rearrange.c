@@ -743,14 +743,14 @@ int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc, int maplen,
     /* Here we are sending the mapping from the index on the compute
      * task to the index on the io task. */
     /* s2rindex is the list of indeces on each compute task */
-    ierr = pio_swapm(s2rindex, send_counts, send_displs, sr_types, iodesc->rindex,
-                     recv_counts, recv_displs, sr_types, mycomm,
-                     iodesc->rearr_opts.comm_fc_opts_comp2io.enable_hs,
-                     iodesc->rearr_opts.comm_fc_opts_comp2io.enable_isend,
-                     iodesc->rearr_opts.comm_fc_opts_comp2io.max_pend_req);
+    if ((ierr = pio_swapm(s2rindex, send_counts, send_displs, sr_types, iodesc->rindex,
+                          recv_counts, recv_displs, sr_types, mycomm,
+                          iodesc->rearr_opts.comm_fc_opts_comp2io.enable_hs,
+                          iodesc->rearr_opts.comm_fc_opts_comp2io.enable_isend,
+                          iodesc->rearr_opts.comm_fc_opts_comp2io.max_pend_req)))
+        return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
 
-
-    return ierr;
+    return PIO_NOERR;
 }
 
 /**
@@ -894,7 +894,7 @@ int rearrange_comp2io(iosystem_desc_t *ios, io_desc_t *iodesc, void *sbuf,
     {
         int io_comprank = ios->ioranks[i];
         if (iodesc->rearranger == PIO_REARR_SUBSET)
-            io_comprank=0;
+            io_comprank = 0;
 
         if (scount[i] > 0 && sbuf != NULL)
         {
@@ -911,16 +911,17 @@ int rearrange_comp2io(iosystem_desc_t *ios, io_desc_t *iodesc, void *sbuf,
         }
         else
         {
-            sendcounts[io_comprank]=0;
+            sendcounts[io_comprank] = 0;
         }
     }
     /* Data in sbuf on the compute nodes is sent to rbuf on the ionodes */
-    pio_swapm(sbuf, sendcounts, sdispls, sendtypes,
-              rbuf, recvcounts, rdispls, recvtypes, mycomm,
-              iodesc->rearr_opts.comm_fc_opts_comp2io.enable_hs,
-              iodesc->rearr_opts.comm_fc_opts_comp2io.enable_isend,
-              iodesc->rearr_opts.comm_fc_opts_comp2io.max_pend_req);
-
+    if ((ret = pio_swapm(sbuf, sendcounts, sdispls, sendtypes,
+                         rbuf, recvcounts, rdispls, recvtypes, mycomm,
+                         iodesc->rearr_opts.comm_fc_opts_comp2io.enable_hs,
+                         iodesc->rearr_opts.comm_fc_opts_comp2io.enable_isend,
+                         iodesc->rearr_opts.comm_fc_opts_comp2io.max_pend_req)))
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);        
+    
     /* Free the MPI types. */
     for (i = 0; i < ntasks; i++)
     {
@@ -1067,11 +1068,12 @@ int rearrange_io2comp(iosystem_desc_t *ios, io_desc_t *iodesc, void *sbuf,
     }
 
     /* Data in sbuf on the ionodes is sent to rbuf on the compute nodes */
-    pio_swapm(sbuf, sendcounts, sdispls, sendtypes,
-              rbuf, recvcounts, rdispls, recvtypes, mycomm,
-              iodesc->rearr_opts.comm_fc_opts_io2comp.enable_hs,
-              iodesc->rearr_opts.comm_fc_opts_io2comp.enable_isend,
-              iodesc->rearr_opts.comm_fc_opts_io2comp.max_pend_req);
+    if ((ret = pio_swapm(sbuf, sendcounts, sdispls, sendtypes,
+                         rbuf, recvcounts, rdispls, recvtypes, mycomm,
+                         iodesc->rearr_opts.comm_fc_opts_io2comp.enable_hs,
+                         iodesc->rearr_opts.comm_fc_opts_io2comp.enable_isend,
+                         iodesc->rearr_opts.comm_fc_opts_io2comp.max_pend_req)))
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);        
 
     /* Release memory. */
     free(sendcounts);
@@ -1398,12 +1400,13 @@ int compare_offsets(const void *a, const void *b)
  * @param firstregion pointer to the first region.
  * @returns 0 on success, error code otherwise.
  */
-void get_start_and_count_regions(int ndims, const int *gdimlen, int maplen, const PIO_Offset *map,
-                                 int *maxregions, io_region *firstregion)
+int get_start_and_count_regions(int ndims, const int *gdimlen, int maplen, const PIO_Offset *map,
+                                int *maxregions, io_region *firstregion)
 {
     int nmaplen;
     int regionlen;
     io_region *region;
+    int ret;
 
     /* Check inputs. */
     pioassert(ndims >= 0 && gdimlen && maplen >= 0 && maxregions && firstregion,
@@ -1439,7 +1442,9 @@ void get_start_and_count_regions(int ndims, const int *gdimlen, int maplen, cons
 
         if (region->next == NULL && nmaplen < maplen)
         {
-            region->next = alloc_region(ndims);
+            if ((ret = alloc_region2(ndims, &region->next)))
+                return ret;
+            
             /* The offset into the local array buffer is the sum of
              * the sizes of all of the previous regions (loffset) */
             region = region->next;
@@ -1452,6 +1457,8 @@ void get_start_and_count_regions(int ndims, const int *gdimlen, int maplen, cons
             (*maxregions)++;
         }
     }
+
+    return PIO_NOERR;
 }
 
 /**
@@ -1818,9 +1825,12 @@ int subset_rearrange_create(iosystem_desc_t *ios, int maplen, PIO_Offset *compma
         iodesc->maxfillregions = 0;
         if (myfillgrid)
         {
-            iodesc->fillregion = alloc_region(iodesc->ndims);
-            get_start_and_count_regions(iodesc->ndims, gsize, iodesc->holegridsize, myfillgrid,
-                                        &iodesc->maxfillregions, iodesc->fillregion);
+            /* Allocate a data region to hold fill values. */
+            if ((ret = alloc_region2(iodesc->ndims, &iodesc->fillregion)))
+                return pio_err(ios, NULL, ret, __FILE__, __LINE__);                
+            if ((ret = get_start_and_count_regions(iodesc->ndims, gsize, iodesc->holegridsize, myfillgrid,
+                                                   &iodesc->maxfillregions, iodesc->fillregion)))
+                return pio_err(ios, NULL, ret, __FILE__, __LINE__);                
             free(myfillgrid);
             maxregions = iodesc->maxfillregions;
         }
@@ -1840,8 +1850,9 @@ int subset_rearrange_create(iosystem_desc_t *ios, int maplen, PIO_Offset *compma
     if (ios->ioproc)
     {
         iodesc->maxregions = 0;
-        get_start_and_count_regions(iodesc->ndims,gsize,iodesc->llen, iomap,&(iodesc->maxregions),
-                                    iodesc->firstregion);
+        if ((ret = get_start_and_count_regions(iodesc->ndims,gsize,iodesc->llen, iomap,&(iodesc->maxregions),
+                                               iodesc->firstregion)))
+            return pio_err(ios, NULL, ret, __FILE__, __LINE__);                            
         maxregions = iodesc->maxregions;
         if ((mpierr = MPI_Allreduce(MPI_IN_PLACE, &maxregions, 1, MPI_INT, MPI_MAX, ios->io_comm)))
             return check_mpi(NULL, mpierr, __FILE__, __LINE__);
