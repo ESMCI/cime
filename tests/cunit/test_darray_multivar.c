@@ -541,10 +541,8 @@ int test_all_darray(int iosysid, int num_flavors, int *flavor, int my_rank,
 /* Run tests for darray functions. */
 int main(int argc, char **argv)
 {
-/* #define NUM_REARRANGERS 2 */
-/*     int rearranger[NUM_REARRANGERS] = {PIO_REARR_BOX, PIO_REARR_SUBSET}; */
-#define NUM_REARRANGERS 1
-    int rearranger[NUM_REARRANGERS] = {PIO_REARR_BOX};
+#define NUM_REARRANGERS 2
+    int rearranger[NUM_REARRANGERS] = {PIO_REARR_BOX, PIO_REARR_SUBSET};
     int my_rank;
     int ntasks;
     int num_flavors;         /* Number of PIO netCDF flavors in this build. */
