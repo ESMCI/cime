@@ -71,10 +71,11 @@ int dim_len[NDIM] = {NC_UNLIMITED, X_DIM_LEN, Y_DIM_LEN};
  * (ignored if use_fill is 0).
  * @returns 0 for success, error code otherwise.
 */
-int test_3_empty(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank,
-                 int pio_type, MPI_Comm test_comm, int rearranger, int use_fill,
-                 int use_default)
+int test_multivar_darray(int iosysid, int ioid, int num_flavors, int *flavor,
+                         int my_rank, int pio_type, MPI_Comm test_comm,
+                         int rearranger, int use_fill, int use_default)
 {
+#define NUM_MULTIVAR_TEST_CASES 2
     char filename[PIO_MAX_NAME + 1]; /* Name for the output files. */
     int dimids[NDIM];     /* The dimension IDs. */
     int ncid;             /* The ncid of the netCDF file. */
@@ -254,200 +255,226 @@ int test_3_empty(int iosysid, int ioid, int num_flavors, int *flavor, int my_ran
 #endif /* _PNETCDF */
     }
 
-    /* Use PIO to create the example file in each of the four
-     * available ways. */
-    for (int fmt = 0; fmt < num_flavors; fmt++) 
+    for (int tc = 0; tc < NUM_MULTIVAR_TEST_CASES; tc++)
     {
-        /* BYTE and CHAR don't work with pnetcdf. Don't know why yet. */
-        if (flavor[fmt] == PIO_IOTYPE_PNETCDF && (pio_type == PIO_BYTE || pio_type == PIO_CHAR))
-            continue;
-
-        /* NetCDF-4 types only work with netCDF-4 formats. */
-        printf("pio_type = %d flavor[fmt] = %d\n", pio_type, flavor[fmt]);
-        if (pio_type > PIO_DOUBLE && flavor[fmt] != PIO_IOTYPE_NETCDF4C &&
-            flavor[fmt] != PIO_IOTYPE_NETCDF4P)
-            continue;
-        
-        /* Create the filename. */
-        sprintf(filename, "data_%s_iotype_%d_pio_type_%d_use_fill_%d_default_fill_%d.nc",
-                TEST_NAME, flavor[fmt], pio_type, use_fill, use_default);
-
-        /* Create the netCDF output file. */
-        printf("rank: %d Creating sample file %s with format %d type %d\n", my_rank, filename,
-               flavor[fmt], pio_type);
-        if ((ret = PIOc_createfile(iosysid, &ncid, &flavor[fmt], filename, PIO_CLOBBER)))
-            ERR(ret);
-
-        /* Turn on fill mode if desired. */
-        if (use_fill)
-            if ((ret = PIOc_set_fill(ncid, NC_FILL, NULL)))
-                ERR(ret);
-
-        /* Define netCDF dimensions and variable. */
-        printf("%d Defining netCDF metadata...\n", my_rank);
-        for (int d = 0; d < NDIM; d++)
-            if ((ret = PIOc_def_dim(ncid, dim_name[d], (PIO_Offset)dim_len[d], &dimids[d])))
-                ERR(ret);
-
-        /* Define the variables. */
-        for (int v = 0; v < NUM_VAR; v++)
+        /* Use PIO to create the example file in each of the four
+         * available ways. */
+        for (int fmt = 0; fmt < num_flavors; fmt++)
         {
-            if ((ret = PIOc_def_var(ncid, var_name[v], pio_type, NDIM, dimids, &varid[v])))
-                ERR(ret);
-            if (use_fill && !use_default)
-                if ((ret = PIOc_def_var_fill(ncid, varid[v], NC_FILL, fillvalue)))
-                    ERR(ret);
-        }
-
-        /* End define mode. */
-        if ((ret = PIOc_enddef(ncid)))
-            ERR(ret);
-
-        /* Set the value of the record dimension. */
-        if ((ret = PIOc_setframe(ncid, varid[0], 0)))
-            ERR(ret);
-
-        /* Write the data. */
-        if ((ret = PIOc_write_darray(ncid, varid[0], ioid, arraylen, test_data, fillvalue)))
-            ERR(ret);
-
-        /* Close the netCDF file. */
-        if ((ret = PIOc_closefile(ncid)))
-            ERR(ret);
-
-        /* Reopen the file. */
-        if ((ret = PIOc_openfile(iosysid, &ncid2, &flavor[fmt], filename, PIO_NOWRITE)))
-            ERR(ret);
-
-        /* Read the data. */
-        if ((ret = PIOc_read_darray(ncid2, varid[0], ioid, arraylen, test_data_in)))
-            ERR(ret);
-
-        /* Check the results. */
-        for (int f = 0; f < arraylen; f++)
-        {
-            switch (pio_type)
-            {
-            case PIO_BYTE:
-                if (test_data_byte_in[f] != test_data_byte[f])
-                    return ERR_WRONG;
-                break;
-            case PIO_CHAR:
-                if (test_data_char_in[f] != test_data_char[f])
-                    return ERR_WRONG;
-                break;
-            case PIO_SHORT:
-                if (test_data_short_in[f] != test_data_short[f])
-                    return ERR_WRONG;
-                break;
-            case PIO_INT:
-                if (test_data_int_in[f] != test_data_int[f])
-                    return ERR_WRONG;
-                break;
-            case PIO_FLOAT:
-                if (test_data_float_in[f] != test_data_float[f])
-                    return ERR_WRONG;
-                break;
-            case PIO_DOUBLE:
-                if (test_data_double_in[f] != test_data_double[f])
-                    return ERR_WRONG;
-                break;
-#ifdef _NETCDF4
-            case PIO_UBYTE:
-                if (test_data_ubyte_in[f] != test_data_ubyte[f])
-                    return ERR_WRONG;
-                break;
-            case PIO_USHORT:
-                if (test_data_ushort_in[f] != test_data_ushort[f])
-                    return ERR_WRONG;
-                break;
-            case PIO_UINT:
-                if (test_data_uint_in[f] != test_data_uint[f])
-                    return ERR_WRONG;
-                break;
-            case PIO_INT64:
-                if (test_data_int64_in[f] != test_data_int64[f])
-                    return ERR_WRONG;
-                break;
-            case PIO_UINT64:
-                if (test_data_uint64_in[f] != test_data_uint64[f])
-                    return ERR_WRONG;
-                break;
-#endif /* _NETCDF4 */
-            default:
-                ERR(ERR_WRONG);
-            }
-        }
-
-        /* If fill mode is in use the other vars should have fill values. */
-        if (use_fill && flavor[fmt] != PIO_IOTYPE_PNETCDF)
-        {
-            /* Read the data. */
-            if ((ret = PIOc_read_darray(ncid2, varid[1], ioid, arraylen, test_data_in)))
-                ERR(ret);
+            /* BYTE and CHAR don't work with pnetcdf. Don't know why yet. */
+            if (flavor[fmt] == PIO_IOTYPE_PNETCDF && (pio_type == PIO_BYTE || pio_type == PIO_CHAR))
+                continue;
             
-            /* Check the results. */
-            for (int f = 0; f < arraylen; f++)
+            /* NetCDF-4 types only work with netCDF-4 formats. */
+            printf("pio_type = %d flavor[fmt] = %d\n", pio_type, flavor[fmt]);
+            if (pio_type > PIO_DOUBLE && flavor[fmt] != PIO_IOTYPE_NETCDF4C &&
+                flavor[fmt] != PIO_IOTYPE_NETCDF4P)
+                continue;
+            
+            /* Create the filename. */
+            sprintf(filename, "data_%s_iotype_%d_tc_%d_pio_type_%d_use_fill_%d_default_fill_%d.nc",
+                    TEST_NAME, flavor[fmt], tc, pio_type, use_fill, use_default);
+            
+            /* Create the netCDF output file. */
+            printf("rank: %d Creating sample file %s with format %d type %d\n", my_rank, filename,
+                   flavor[fmt], pio_type);
+            if ((ret = PIOc_createfile(iosysid, &ncid, &flavor[fmt], filename, PIO_CLOBBER)))
+                ERR(ret);
+
+            /* Turn on fill mode if desired. */
+            if (use_fill)
+                if ((ret = PIOc_set_fill(ncid, NC_FILL, NULL)))
+                    ERR(ret);
+
+            /* Define netCDF dimensions and variable. */
+            printf("%d Defining netCDF metadata...\n", my_rank);
+            for (int d = 0; d < NDIM; d++)
+                if ((ret = PIOc_def_dim(ncid, dim_name[d], (PIO_Offset)dim_len[d], &dimids[d])))
+                    ERR(ret);
+
+            /* Define the variables. */
+            for (int v = 0; v < NUM_VAR; v++)
             {
-                switch (pio_type)
+                if ((ret = PIOc_def_var(ncid, var_name[v], pio_type, NDIM, dimids, &varid[v])))
+                    ERR(ret);
+                if (use_fill && !use_default)
+                    if ((ret = PIOc_def_var_fill(ncid, varid[v], NC_FILL, fillvalue)))
+                        ERR(ret);
+            }
+
+            /* End define mode. */
+            if ((ret = PIOc_enddef(ncid)))
+                ERR(ret);
+
+            /* Set the value of the record dimension. */
+            for (int v = 0; v < NUM_VAR; v++)
+            {
+                if ((ret = PIOc_setframe(ncid, varid[v], 0)))
+                    ERR(ret);
+
+                /* For the first test case we just write the first variable. */
+                if (tc == 0)
+                    break;
+            }
+
+            /* Write the data. */
+            for (int v = 0; v < NUM_VAR; v++)
+            {
+                if ((ret = PIOc_write_darray(ncid, varid[v], ioid, arraylen, test_data, fillvalue)))
+                    ERR(ret);
+
+                /* For the first test case we just write the first variable. */
+                if (tc == 0)
+                    break;
+            }
+
+            /* Close the netCDF file. */
+            if ((ret = PIOc_closefile(ncid)))
+                ERR(ret);
+
+            /* Reopen the file. */
+            if ((ret = PIOc_openfile(iosysid, &ncid2, &flavor[fmt], filename, PIO_NOWRITE)))
+                ERR(ret);
+
+            for (int v = 0; v < NUM_VAR; v++)
+            {
+                /* Read the data. */
+                if ((ret = PIOc_read_darray(ncid2, varid[0], ioid, arraylen, test_data_in)))
+                    ERR(ret);
+                
+                /* Check the results. */
+                for (int f = 0; f < arraylen; f++)
                 {
-                case PIO_BYTE:
-                    if (test_data_byte_in[f] != (use_default ? NC_FILL_BYTE : custom_fillvalue_byte))
-                        return ERR_WRONG;
-                    break;
-                case PIO_CHAR:
-                    if (test_data_char_in[f] != (use_default ? NC_FILL_CHAR : custom_fillvalue_char))
-                        return ERR_WRONG;
-                    break;
-                case PIO_SHORT:
-                    if (test_data_short_in[f] != (use_default ? NC_FILL_SHORT : custom_fillvalue_short))
-                        return ERR_WRONG;
-                    break;
-                case PIO_INT:
-                    if (test_data_int_in[f] != (use_default ? NC_FILL_INT : custom_fillvalue_int))
-                        return ERR_WRONG;
-                    break;
-                case PIO_FLOAT:
-                    if (test_data_float_in[f] != (use_default ? NC_FILL_FLOAT : custom_fillvalue_float))
-                        return ERR_WRONG;
-                    break;
-                case PIO_DOUBLE:
-                    if (test_data_double_in[f] != (use_default ? NC_FILL_DOUBLE : custom_fillvalue_double))
-                        return ERR_WRONG;
-                    break;
+                    switch (pio_type)
+                    {
+                    case PIO_BYTE:
+                        if (test_data_byte_in[f] != test_data_byte[f])
+                            return ERR_WRONG;
+                        break;
+                    case PIO_CHAR:
+                        if (test_data_char_in[f] != test_data_char[f])
+                            return ERR_WRONG;
+                        break;
+                    case PIO_SHORT:
+                        if (test_data_short_in[f] != test_data_short[f])
+                            return ERR_WRONG;
+                        break;
+                    case PIO_INT:
+                        if (test_data_int_in[f] != test_data_int[f])
+                            return ERR_WRONG;
+                        break;
+                    case PIO_FLOAT:
+                        if (test_data_float_in[f] != test_data_float[f])
+                            return ERR_WRONG;
+                        break;
+                    case PIO_DOUBLE:
+                        if (test_data_double_in[f] != test_data_double[f])
+                            return ERR_WRONG;
+                        break;
 #ifdef _NETCDF4
-                case PIO_UBYTE:
-                    if (test_data_ubyte_in[f] != (use_default ? NC_FILL_UBYTE : custom_fillvalue_ubyte))
-                        return ERR_WRONG;
+                    case PIO_UBYTE:
+                        if (test_data_ubyte_in[f] != test_data_ubyte[f])
+                            return ERR_WRONG;
+                        break;
+                    case PIO_USHORT:
+                        if (test_data_ushort_in[f] != test_data_ushort[f])
+                            return ERR_WRONG;
+                        break;
+                    case PIO_UINT:
+                        if (test_data_uint_in[f] != test_data_uint[f])
+                            return ERR_WRONG;
+                        break;
+                    case PIO_INT64:
+                        if (test_data_int64_in[f] != test_data_int64[f])
+                            return ERR_WRONG;
+                        break;
+                    case PIO_UINT64:
+                        if (test_data_uint64_in[f] != test_data_uint64[f])
+                            return ERR_WRONG;
+                        break;
+#endif /* _NETCDF4 */
+                    default:
+                        ERR(ERR_WRONG);
+                    }
+                }
+
+                /* For the first test case we just write the first variable. */
+                if (tc == 0)
                     break;
-                case PIO_USHORT:
-                    if (test_data_ushort_in[f] != (use_default ? NC_FILL_USHORT : custom_fillvalue_ushort))
-                        return ERR_WRONG;
-                    break;
-                case PIO_UINT:
-                    if (test_data_uint_in[f] != (use_default ? NC_FILL_UINT : custom_fillvalue_uint))
-                        return ERR_WRONG;
-                    break;
-                case PIO_INT64:
-                    if (test_data_int64_in[f] != (use_default ? NC_FILL_INT64 : custom_fillvalue_int64))
-                        return ERR_WRONG;
-                    break;
-                case PIO_UINT64:
-                    if (test_data_uint64_in[f] != (use_default ? NC_FILL_UINT64 : custom_fillvalue_uint64))
-                        return ERR_WRONG;
-                    break;
-#endif /* _NETCDF4 */                    
-                default:
-                    ERR(ERR_WRONG);
+            } /* next var */
+
+            /* For the first test case, if fill mode is in use the other vars
+             * should have fill values. */
+            if (tc == 0 && use_fill && flavor[fmt] != PIO_IOTYPE_PNETCDF)
+            {
+                /* Read the data. */
+                if ((ret = PIOc_read_darray(ncid2, varid[1], ioid, arraylen, test_data_in)))
+                    ERR(ret);
+            
+                /* Check the results. */
+                for (int f = 0; f < arraylen; f++)
+                {
+                    switch (pio_type)
+                    {
+                    case PIO_BYTE:
+                        if (test_data_byte_in[f] != (use_default ? NC_FILL_BYTE : custom_fillvalue_byte))
+                            return ERR_WRONG;
+                        break;
+                    case PIO_CHAR:
+                        if (test_data_char_in[f] != (use_default ? NC_FILL_CHAR : custom_fillvalue_char))
+                            return ERR_WRONG;
+                        break;
+                    case PIO_SHORT:
+                        if (test_data_short_in[f] != (use_default ? NC_FILL_SHORT : custom_fillvalue_short))
+                            return ERR_WRONG;
+                        break;
+                    case PIO_INT:
+                        if (test_data_int_in[f] != (use_default ? NC_FILL_INT : custom_fillvalue_int))
+                            return ERR_WRONG;
+                        break;
+                    case PIO_FLOAT:
+                        if (test_data_float_in[f] != (use_default ? NC_FILL_FLOAT : custom_fillvalue_float))
+                            return ERR_WRONG;
+                        break;
+                    case PIO_DOUBLE:
+                        if (test_data_double_in[f] != (use_default ? NC_FILL_DOUBLE : custom_fillvalue_double))
+                            return ERR_WRONG;
+                        break;
+#ifdef _NETCDF4
+                    case PIO_UBYTE:
+                        if (test_data_ubyte_in[f] != (use_default ? NC_FILL_UBYTE : custom_fillvalue_ubyte))
+                            return ERR_WRONG;
+                        break;
+                    case PIO_USHORT:
+                        if (test_data_ushort_in[f] != (use_default ? NC_FILL_USHORT : custom_fillvalue_ushort))
+                            return ERR_WRONG;
+                        break;
+                    case PIO_UINT:
+                        if (test_data_uint_in[f] != (use_default ? NC_FILL_UINT : custom_fillvalue_uint))
+                            return ERR_WRONG;
+                        break;
+                    case PIO_INT64:
+                        if (test_data_int64_in[f] != (use_default ? NC_FILL_INT64 : custom_fillvalue_int64))
+                            return ERR_WRONG;
+                        break;
+                    case PIO_UINT64:
+                        if (test_data_uint64_in[f] != (use_default ? NC_FILL_UINT64 : custom_fillvalue_uint64))
+                            return ERR_WRONG;
+                        break;
+#endif /* _NETCDF4 */
+                    default:
+                        ERR(ERR_WRONG);
+                    }
                 }
             }
-        }
 
-        /* Close the netCDF file. */
-        printf("%d Closing the sample data file...\n", my_rank);
-        if ((ret = PIOc_closefile(ncid2)))
-            ERR(ret);
-    }
+            /* Close the netCDF file. */
+            printf("%d Closing the sample data file...\n", my_rank);
+            if ((ret = PIOc_closefile(ncid2)))
+                ERR(ret);
+        }
+    } /* next test case */
+    
     return PIO_NOERR;
 }
 
@@ -497,9 +524,9 @@ int test_all_darray(int iosysid, int num_flavors, int *flavor, int my_rank,
             if (f == 2)
                 use_default++;
             
-            /* Run a simple darray test. */
-            if ((ret = test_3_empty(iosysid, ioid, num_flavors, flavor, my_rank, test_type[t],
-                                    test_comm, rearranger, use_fill, use_default)))
+            /* Run the multivar darray tests. */
+            if ((ret = test_multivar_darray(iosysid, ioid, num_flavors, flavor, my_rank, test_type[t],
+                                            test_comm, rearranger, use_fill, use_default)))
                 return ret;
         }
         
