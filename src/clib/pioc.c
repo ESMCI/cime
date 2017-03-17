@@ -294,7 +294,8 @@ int PIOc_set_iosystem_error_handling(int iosysid, int method, int *old_method)
  * @param pio_type the basic PIO data type used.
  * @param ndims the number of dimensions in the variable, not
  * including the unlimited dimension.
- * @param dims an array of global size of each dimension.
+ * @param gdimlen an array length ndims with the sizes of the global
+ * dimensions.
  * @param maplen the local length of the compmap array.
  * @param compmap a 1 based array of offsets into the array record on
  * file. A 0 in this array indicates a value which should not be
@@ -313,7 +314,7 @@ int PIOc_set_iosystem_error_handling(int iosysid, int method, int *old_method)
  * @returns 0 on success, error code otherwise
  * @ingroup PIO_initdecomp
  */
-int PIOc_InitDecomp(int iosysid, int pio_type, int ndims, const int *dims, int maplen,
+int PIOc_InitDecomp(int iosysid, int pio_type, int ndims, const int *gdimlen, int maplen,
                     const PIO_Offset *compmap, int *ioidp, const int *rearranger,
                     const PIO_Offset *iostart, const PIO_Offset *iocount)
 {
@@ -330,12 +331,12 @@ int PIOc_InitDecomp(int iosysid, int pio_type, int ndims, const int *dims, int m
         return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
 
     /* Caller must provide these. */
-    if (!dims || !compmap || !ioidp)
+    if (!gdimlen || !compmap || !ioidp)
         return pio_err(ios, NULL, PIO_EINVAL, __FILE__, __LINE__);
 
     /* Check the dim lengths. */
     for (int i = 0; i < ndims; i++)
-        if (dims[i] <= 0)
+        if (gdimlen[i] <= 0)
             return pio_err(ios, NULL, PIO_EINVAL, __FILE__, __LINE__);
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
@@ -358,7 +359,7 @@ int PIOc_InitDecomp(int iosysid, int pio_type, int ndims, const int *dims, int m
             if (!mpierr)
                 mpierr = MPI_Bcast(&ndims, 1, MPI_INT, ios->compmaster, ios->intercomm);
             if (!mpierr)
-                mpierr = MPI_Bcast((int *)dims, ndims, MPI_INT, ios->compmaster, ios->intercomm);
+                mpierr = MPI_Bcast((int *)gdimlen, ndims, MPI_INT, ios->compmaster, ios->intercomm);
             if (!mpierr)
                 mpierr = MPI_Bcast(&maplen, 1, MPI_INT, ios->compmaster, ios->intercomm);
             if (!mpierr)
@@ -406,7 +407,7 @@ int PIOc_InitDecomp(int iosysid, int pio_type, int ndims, const int *dims, int m
     if (!(iodesc->dimlen = malloc(sizeof(int) * ndims)))
         return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
     for (int d = 0; d < ndims; d++)
-        iodesc->dimlen[d] = dims[d];
+        iodesc->dimlen[d] = gdimlen[d];
 
     /* Set the rearranger. */
     if (!rearranger)
@@ -421,11 +422,11 @@ int PIOc_InitDecomp(int iosysid, int pio_type, int ndims, const int *dims, int m
         iodesc->num_aiotasks = ios->num_iotasks;
         LOG((2, "creating subset rearranger iodesc->num_aiotasks = %d",
              iodesc->num_aiotasks));
-        if ((ierr = subset_rearrange_create(ios, maplen, (PIO_Offset *)compmap, dims,
+        if ((ierr = subset_rearrange_create(ios, maplen, (PIO_Offset *)compmap, gdimlen,
                                             ndims, iodesc)))
             return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
     }
-    else
+    else /* box rearranger */
     {
         if (ios->ioproc)
         {
@@ -444,7 +445,7 @@ int PIOc_InitDecomp(int iosysid, int pio_type, int ndims, const int *dims, int m
             {
                 /* Compute start and count values for each io task. */
                 LOG((2, "about to call CalcStartandCount pio_type = %d ndims = %d", pio_type, ndims));
-                if ((ierr = CalcStartandCount(pio_type, ndims, dims, ios->num_iotasks,
+                if ((ierr = CalcStartandCount(pio_type, ndims, gdimlen, ios->num_iotasks,
                                              ios->io_rank, iodesc->firstregion->start,
                                              iodesc->firstregion->count, &iodesc->num_aiotasks)))
                     return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
@@ -453,24 +454,36 @@ int PIOc_InitDecomp(int iosysid, int pio_type, int ndims, const int *dims, int m
             /* Compute the max io buffer size needed for an iodesc. */
             if ((ierr = compute_maxIObuffersize(ios->io_comm, iodesc)))
                 return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
-            LOG((3, "compute_maxIObuffersize called iodesc->maxiobuflen = %d", iodesc->maxiobuflen));
+            LOG((3, "compute_maxIObuffersize called iodesc->maxiobuflen = %d",
+                 iodesc->maxiobuflen));
         }
 
         /* Depending on array size and io-blocksize the actual number
          * of io tasks used may vary. */
-        if ((mpierr = MPI_Bcast(&(iodesc->num_aiotasks), 1, MPI_INT, ios->ioroot, ios->my_comm)))
+        if ((mpierr = MPI_Bcast(&(iodesc->num_aiotasks), 1, MPI_INT, ios->ioroot,
+                                ios->my_comm)))
             return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
         LOG((3, "iodesc->num_aiotasks = %d", iodesc->num_aiotasks));
 
         /* Compute the communications pattern for this decomposition. */
         if (iodesc->rearranger == PIO_REARR_BOX)
-            if ((ierr = box_rearrange_create(ios, maplen, compmap, dims, ndims,
-                                             iodesc)))
+            if ((ierr = box_rearrange_create(ios, maplen, compmap, gdimlen, ndims, iodesc)))
                 return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
     }
 
     /* Add this IO description to the list. */
     *ioidp = pio_add_to_iodesc_list(iodesc);
+
+#if PIO_ENABLE_LOGGING
+    /* Log results. */
+    LOG((2, "iodesc ioid = %d nrecvs = %d ndof = %d ndims = %d num_aiotasks = %d "
+         "rearranger = %d maxregions = %d needsfill = %d llen = %d maxiobuflen  = %d",
+         iodesc->ioid, iodesc->nrecvs, iodesc->ndof, iodesc->ndims, iodesc->num_aiotasks,
+         iodesc->rearranger, iodesc->maxregions, iodesc->needsfill, iodesc->llen,
+         iodesc->maxiobuflen));
+    for (int j = 0; j < iodesc->llen; j++)
+        LOG((3, "rindex[%d] = %lld", j, iodesc->rindex[j]));
+#endif /* PIO_ENABLE_LOGGING */            
 
     LOG((3, "About to tune rearranger..."));
     performance_tune_rearranger(ios, iodesc);
@@ -488,7 +501,8 @@ int PIOc_InitDecomp(int iosysid, int pio_type, int ndims, const int *dims, int m
  * @param pio_type the basic PIO data type used.
  * @param ndims the number of dimensions in the variable, not
  * including the unlimited dimension.
- * @param dims an array of global size of each dimension.
+ * @param gdimlen an array length ndims with the sizes of the global
+ * dimensions.
  * @param maplen the local length of the compmap array.
  * @param compmap a 0 based array of offsets into the array record on
  * file. A -1 in this array indicates a value which should not be
@@ -504,7 +518,7 @@ int PIOc_InitDecomp(int iosysid, int pio_type, int ndims, const int *dims, int m
  * @returns 0 on success, error code otherwise
  * @ingroup PIO_initdecomp
  */
-int PIOc_init_decomp(int iosysid, int pio_type, int ndims, const int *dims, int maplen,
+int PIOc_init_decomp(int iosysid, int pio_type, int ndims, const int *gdimlen, int maplen,
                      const PIO_Offset *compmap, int *ioidp, int rearranger,
                      const PIO_Offset *iostart, const PIO_Offset *iocount)
 {
@@ -523,7 +537,7 @@ int PIOc_init_decomp(int iosysid, int pio_type, int ndims, const int *dims, int 
         compmap_1_based[e] = compmap[e] + 1;
 
     /* Call the legacy version of the function. */
-    return PIOc_InitDecomp(iosysid, pio_type, ndims, dims, maplen, compmap_1_based,
+    return PIOc_InitDecomp(iosysid, pio_type, ndims, gdimlen, maplen, compmap_1_based,
                            ioidp, rearrangerp, iostart, iocount);
 }
 

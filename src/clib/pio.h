@@ -718,7 +718,7 @@ extern "C" {
                            const long int *start, const long int *count, int *ioidp);
 
     /* Init decomposition with 0-based compmap array. */
-    int PIOc_init_decomp(int iosysid, int basetype, int ndims, const int *dims, int maplen,
+    int PIOc_init_decomp(int iosysid, int basetype, int ndims, const int *gdimlen, int maplen,
                          const PIO_Offset *compmap, int *ioidp, int rearranger,
                          const PIO_Offset *iostart, const PIO_Offset *iocount);
     
