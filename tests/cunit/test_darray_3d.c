@@ -92,7 +92,7 @@ int create_decomposition_3d(int ntasks, int my_rank, int iosysid, int *ioid)
     /* Create the PIO decomposition for this test. */
     printf("%d Creating decomposition elements_per_pe = %lld\n", my_rank, elements_per_pe);
     if ((ret = PIOc_init_decomp(iosysid, PIO_INT, NDIM3, dim_len_3d, elements_per_pe,
-                                compdof, ioid, NULL, NULL, NULL)))
+                                compdof, ioid, 0, NULL, NULL)))
         ERR(ret);
 
     printf("%d decomposition initialized.\n", my_rank);

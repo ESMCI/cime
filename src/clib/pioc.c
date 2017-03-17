@@ -494,8 +494,9 @@ int PIOc_InitDecomp(int iosysid, int pio_type, int ndims, const int *dims, int m
  * file. A -1 in this array indicates a value which should not be
  * transfered.
  * @param ioidp pointer that will get the io description ID.
- * @param rearranger pointer to the rearranger to be used for this
- * decomp or NULL to use the default.
+ * @param rearranger the rearranger to be used for this decomp or 0 to
+ * use the default. Valid rearrangers are PIO_REARR_BOX and
+ * PIO_REARR_SUBSET.
  * @param iostart An array of start values for block cyclic
  * decompositions. If NULL ???
  * @param iocount An array of count values for block cyclic
@@ -504,20 +505,26 @@ int PIOc_InitDecomp(int iosysid, int pio_type, int ndims, const int *dims, int m
  * @ingroup PIO_initdecomp
  */
 int PIOc_init_decomp(int iosysid, int pio_type, int ndims, const int *dims, int maplen,
-                     const PIO_Offset *compmap, int *ioidp, const int *rearranger,
+                     const PIO_Offset *compmap, int *ioidp, int rearranger,
                      const PIO_Offset *iostart, const PIO_Offset *iocount)
 {
     PIO_Offset compmap_1_based[maplen];
+    int *rearrangerp = NULL;
 
     LOG((1, "PIOc_init_decomp iosysid = %d pio_type = %d ndims = %d maplen = %d",
          iosysid, pio_type, ndims, maplen));
+
+    /* If the user specified a non-default rearranger, use it. */
+    if (rearranger)
+        rearrangerp = &rearranger;
 
     /* Add 1 to all elements in compmap. */
     for (int e = 0; e < maplen; e++)
         compmap_1_based[e] = compmap[e] + 1;
 
+    /* Call the legacy version of the function. */
     return PIOc_InitDecomp(iosysid, pio_type, ndims, dims, maplen, compmap_1_based,
-                           ioidp, rearranger, iostart, iocount);
+                           ioidp, rearrangerp, iostart, iocount);
 }
 
 /**
@@ -1058,6 +1065,10 @@ int PIOc_iotype_available(int iotype)
  * duplicates and each must later be freed with MPI_Free() by the
  * caller.)
  *
+ * @param rearranger the default rearranger to use for decompositions
+ * in this IO system. Must be either PIO_REARR_BOX or
+ * PIO_REARR_SUBSET.
+ *
  * @param iosysidp pointer to array of length component_count that
  * gets the iosysid for each component.
  *
@@ -1066,7 +1077,8 @@ int PIOc_iotype_available(int iotype)
  */
 int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
                     int component_count, int *num_procs_per_comp, int **proc_list,
-                    MPI_Comm *user_io_comm, MPI_Comm *user_comp_comm, int *iosysidp)
+                    MPI_Comm *user_io_comm, MPI_Comm *user_comp_comm, int rearranger,
+                    int *iosysidp)
 {
     int my_rank;          /* Rank of this task. */
     int **my_proc_list;   /* Array of arrays of procs for comp components. */
@@ -1075,7 +1087,8 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
     int ret;              /* Return code. */
 
     /* Check input parameters. */
-    if (num_io_procs < 1 || component_count < 1 || !num_procs_per_comp || !iosysidp)
+    if (num_io_procs < 1 || component_count < 1 || !num_procs_per_comp || !iosysidp ||
+        (rearranger != PIO_REARR_BOX && rearranger != PIO_REARR_SUBSET))
         return pio_err(NULL, NULL, PIO_EINVAL, __FILE__, __LINE__);
 
     /* Temporarily limit to one computational component. */
@@ -1230,6 +1243,7 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
         my_iosys->num_iotasks = num_io_procs;
         my_iosys->compgroup = MPI_GROUP_NULL;
         my_iosys->iogroup = MPI_GROUP_NULL;
+        my_iosys->default_rearranger = rearranger;
 
         /* The rank of the computation leader in the union comm. */
         my_iosys->comproot = num_io_procs;

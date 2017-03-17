@@ -719,7 +719,7 @@ extern "C" {
 
     /* Init decomposition with 0-based compmap array. */
     int PIOc_init_decomp(int iosysid, int basetype, int ndims, const int *dims, int maplen,
-                         const PIO_Offset *compmap, int *ioidp, const int *rearranger,
+                         const PIO_Offset *compmap, int *ioidp, int rearranger,
                          const PIO_Offset *iostart, const PIO_Offset *iocount);
     
     int PIOc_freedecomp(int iosysid, int ioid);
@@ -746,7 +746,7 @@ extern "C" {
     /* Initializing IO system for async. */
     int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list, int component_count,
                         int *num_procs_per_comp, int **proc_list, MPI_Comm *io_comm, MPI_Comm *comp_comm,
-                        int *iosysidp);
+                        int rearranger, int *iosysidp);
     
     int PIOc_Init_Intercomm(int component_count, MPI_Comm peer_comm, MPI_Comm *comp_comms,
                             MPI_Comm io_comm, int *iosysidp);

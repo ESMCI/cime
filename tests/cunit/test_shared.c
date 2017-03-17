@@ -34,7 +34,7 @@ int test_async2(int my_rank, int num_flavors, int *flavor, MPI_Comm test_comm,
 
     /* Initialize the IO system. */
     if ((ret = PIOc_init_async(test_comm, num_io_procs, NULL, component_count,
-                               num_procs, NULL, &io_comm, comp_comm, iosysid)))
+                               num_procs, NULL, &io_comm, comp_comm, PIO_REARR_BOX, iosysid)))
         ERR(ERR_INIT);
     for (int c = 0; c < component_count; c++)
         printf("%d iosysid[%d] = %d\n", my_rank, c, iosysid[c]);
@@ -102,17 +102,17 @@ int test_no_async2(int my_rank, int num_flavors, int *flavor, MPI_Comm test_comm
                                    ioproc_start, PIO_REARR_SUBSET, &iosysid)))
         return ret;
 
-    /* Describe the decomposition. This is a 1-based array, so add 1! */
+    /* Describe the decomposition. This is a 0-based array, so don't add 1! */
     elements_per_pe = x_dim_len * y_dim_len / target_ntasks;
     if (!(compdof = malloc(elements_per_pe * sizeof(PIO_Offset))))
         return PIO_ENOMEM;
     for (int i = 0; i < elements_per_pe; i++)
-        compdof[i] = my_rank * elements_per_pe + i + 1;
+        compdof[i] = my_rank * elements_per_pe + i;
 
     /* Create the PIO decomposition for this test. */
     printf("%d Creating decomposition...\n", my_rank);
-    if ((ret = PIOc_InitDecomp(iosysid, PIO_FLOAT, 2, slice_dimlen, (PIO_Offset)elements_per_pe,
-                               compdof, &ioid, NULL, NULL, NULL)))
+    if ((ret = PIOc_init_decomp(iosysid, PIO_FLOAT, 2, slice_dimlen, (PIO_Offset)elements_per_pe,
+                                compdof, &ioid, 0, NULL, NULL)))
         return ret;
     free(compdof);
 
