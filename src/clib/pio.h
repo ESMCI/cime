@@ -291,8 +291,8 @@ typedef struct io_desc_t
      * pio_swapm(). */
     int *rcount;
 
-    /** Array of data count to send to each task in the communication
-     * in pio_swapm(). */
+    /** Array (length numiotasks) of data counts to send to each task
+     * in the communication in pio_swapm(). */
     int *scount;
 
     /** Array of length ndof (for the BOX rearranger) with the index
