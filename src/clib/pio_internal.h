@@ -148,6 +148,11 @@ extern "C" {
     int CalcStartandCount(int pio_type, int ndims, const int *gdims, int num_io_procs,
                           int myiorank, PIO_Offset *start, PIO_Offset *count, int *num_aiotasks);
 
+    /* Completes the mapping for the rearranger. */
+    int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc, int maplen,
+                       const int *dest_ioproc, const PIO_Offset *dest_ioindex,
+                       MPI_Comm mycomm);
+    
     /* Check return from MPI function and print error message. */
     void CheckMPIReturn(int ierr, const char *file, int line);
 

@@ -579,6 +579,53 @@ int test_define_iodesc_datatypes()
     return 0;
 }
 
+/* Test the compute_counts() function with the box rearranger. */
+int test_compute_counts_box(MPI_Comm test_comm)
+{
+    iosystem_desc_t ios;
+    io_desc_t iodesc;
+    int maplen = TARGET_NTASKS;
+    int dest_ioproc[TARGET_NTASKS] = {0, 1, 2, 3};
+    PIO_Offset dest_ioindex[TARGET_NTASKS] = {0, 1, 2, 3};
+    int ret;
+
+    /* Initialize ios. */
+    ios.num_iotasks = TARGET_NTASKS;
+    ios.ioproc = 1;
+    if (!(ios.ioranks = malloc(TARGET_NTASKS * sizeof(int))))
+        return PIO_ENOMEM;
+    for (int t = 0; t < TARGET_NTASKS; t++)
+        ios.ioranks[t] = t;
+    
+    /* Initialize iodesc. */
+    iodesc.rearranger = PIO_REARR_BOX;
+    iodesc.ndof = 4;
+    iodesc.llen = 4;
+    iodesc.rearr_opts.comm_type = PIO_REARR_COMM_COLL;
+    iodesc.rearr_opts.fcd = PIO_REARR_COMM_FC_2D_DISABLE;
+    iodesc.rearr_opts.comm_fc_opts_comp2io.enable_hs = 0;
+    iodesc.rearr_opts.comm_fc_opts_comp2io.enable_isend = 0;
+    iodesc.rearr_opts.comm_fc_opts_comp2io.max_pend_req = 0;
+    iodesc.rearr_opts.comm_fc_opts_io2comp.enable_hs = 0;
+    iodesc.rearr_opts.comm_fc_opts_io2comp.enable_isend = 0;
+    iodesc.rearr_opts.comm_fc_opts_io2comp.max_pend_req = 0;
+
+    if ((ret = compute_counts(&ios, &iodesc, maplen, dest_ioproc, dest_ioindex, test_comm)))
+        return ret;
+
+    /* Free test resources. */
+    free(ios.ioranks);
+
+    /* Free resources allocated in compute_counts(). */
+    free(iodesc.scount);
+    free(iodesc.sindex);
+    free(iodesc.rcount);
+    free(iodesc.rfrom);
+    free(iodesc.rindex);
+
+    return 0;
+}
+
 /* Run Tests for pio_spmd.c functions. */
 int main(int argc, char **argv)
 {
@@ -658,6 +705,10 @@ int main(int argc, char **argv)
 
         printf("%d running misc tests\n", my_rank);
         if ((ret = test_misc()))
+            return ret;
+
+        printf("%d running compute_counts tests for box rearranger\n", my_rank);
+        if ((ret = test_compute_counts_box(test_comm)))
             return ret;
 
         /* Finalize PIO system. */
