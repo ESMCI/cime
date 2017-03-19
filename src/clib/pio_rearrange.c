@@ -513,7 +513,11 @@ int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc, int maplen,
 {
     int rank;   /* Rank of this task. */
     int ntasks; /* Number of tasks in mycomm. */
-    int mpierr; /* Return call from MPI functions. */
+    int *recv_buf = NULL;
+    int nrecvs;
+    int offset_size; /* Size of the MPI_OFFSET type. */
+    int mpierr;      /* Return call from MPI functions. */
+    int ierr;
 
     /* Check inputs. */
     pioassert(ios && iodesc && maplen >= 0 && dest_ioproc && dest_ioindex &&
@@ -532,11 +536,6 @@ int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc, int maplen,
     int send_displs[ntasks];
     int recv_counts[ntasks];
     int recv_displs[ntasks];
-    int *recv_buf = NULL;
-    int nrecvs;
-    int ierr;
-    int io_comprank;
-    int offset_size; /* Size of the MPI_OFFSET type. */
     PIO_Offset s2rindex[iodesc->ndof];
 
     LOG((2, "ios->num_iotasks = %d", ios->num_iotasks));
@@ -711,7 +710,7 @@ int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc, int maplen,
     {
         /* Subset rearranger needs one type, box rearranger needs one for
          * each IO task. */
-        io_comprank = ios->ioranks[i];
+        int io_comprank = ios->ioranks[i];
 
         send_counts[io_comprank] = iodesc->scount[i];
         if (send_counts[io_comprank] > 0)
