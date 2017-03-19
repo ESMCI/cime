@@ -537,14 +537,12 @@ int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc, int maplen,
     int ierr;
     int io_comprank;
     int offset_size; /* Size of the MPI_OFFSET type. */
-    int numiotasks;  /* Number of IO tasks. */
     PIO_Offset s2rindex[iodesc->ndof];
 
-    numiotasks = ios->num_iotasks;
-    LOG((2, "numiotasks = %d", numiotasks));
+    LOG((2, "ios->num_iotasks = %d", ios->num_iotasks));
 
     /* Allocate memory for the array of counts and init to zero. */
-    if (!(iodesc->scount = calloc(numiotasks, sizeof(int))))
+    if (!(iodesc->scount = calloc(ios->num_iotasks, sizeof(int))))
         return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
     /* iodesc->scount is the amount of data sent to each task from the
@@ -576,7 +574,7 @@ int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc, int maplen,
      * map on the iotasks. iodesc->rcount is an array of the amount of
      * data to expect from each compute task and iodesc->rfrom is the
      * rank of that task. */
-    for (int i = 0; i < numiotasks; i++)
+    for (int i = 0; i < ios->num_iotasks; i++)
     {
         int io_comprank;
         io_comprank = ios->ioranks[i];
@@ -611,7 +609,7 @@ int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc, int maplen,
                           iodesc->rearr_opts.comm_fc_opts_comp2io.max_pend_req)))
         return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
 #if PIO_ENABLE_LOGGING    
-    for (int i = 0; i < numiotasks; i++)    
+    for (int i = 0; i < ios->num_iotasks; i++)    
         LOG((3, "returned from pio_swapm iodesc->scount[%d] = %d", i,
              iodesc->scount[i]));
 #endif /* PIO_ENABLE_LOGGING */    
@@ -657,13 +655,13 @@ int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc, int maplen,
             return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
     LOG((2, "iodesc->ndof = %d", iodesc->ndof));
 
-    int tempcount[numiotasks];
-    int spos[numiotasks];
+    int tempcount[ios->num_iotasks];
+    int spos[ios->num_iotasks];
 
     /* ??? */
     spos[0] = 0;
     tempcount[0] = 0;
-    for (int i = 1; i < numiotasks; i++)
+    for (int i = 1; i < ios->num_iotasks; i++)
     {
         spos[i] = spos[i - 1] + iodesc->scount[i - 1];
         tempcount[i] = 0;
@@ -709,7 +707,7 @@ int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc, int maplen,
     LOG((3, "initialized sr_types"));
 
     /* ??? */
-    for (int i = 0; i < numiotasks; i++)
+    for (int i = 0; i < ios->num_iotasks; i++)
     {
         /* Subset rearranger needs one type, box rearranger needs one for
          * each IO task. */
