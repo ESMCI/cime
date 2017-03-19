@@ -511,7 +511,6 @@ int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc, int maplen,
                    const int *dest_ioproc, const PIO_Offset *dest_ioindex,
                    MPI_Comm mycomm)
 {
-    int iorank;
     int rank;   /* Rank of this task. */
     int ntasks; /* Number of tasks in mycomm. */
     int mpierr; /* Return call from MPI functions. */
@@ -537,7 +536,6 @@ int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc, int maplen,
     int nrecvs;
     int ierr;
     int io_comprank;
-    int ioindex;
     int offset_size; /* Size of the MPI_OFFSET type. */
     int numiotasks;  /* Number of IO tasks. */
     PIO_Offset s2rindex[iodesc->ndof];
@@ -675,6 +673,9 @@ int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc, int maplen,
     /* ??? */
     for (int i = 0; i < maplen; i++)
     {
+        int iorank;
+        int ioindex;
+        
         iorank = dest_ioproc[i];
         ioindex = dest_ioindex[i];
         if (iorank > -1)
