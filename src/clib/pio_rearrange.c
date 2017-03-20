@@ -511,14 +511,17 @@ int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc, int maplen,
                    const int *dest_ioproc, const PIO_Offset *dest_ioindex,
                    MPI_Comm mycomm)
 {
-    int iorank;
     int rank;   /* Rank of this task. */
     int ntasks; /* Number of tasks in mycomm. */
-    int mpierr; /* Return call from MPI functions. */
+    int *recv_buf = NULL;
+    int nrecvs;
+    int offset_size; /* Size of the MPI_OFFSET type. */
+    int mpierr;      /* Return call from MPI functions. */
+    int ierr;
 
     /* Check inputs. */
-    pioassert(ios && iodesc && maplen >= 0 && dest_ioproc && dest_ioindex,
-              "invalid input", __FILE__, __LINE__);
+    pioassert(ios && iodesc && maplen >= 0 && dest_ioproc && dest_ioindex &&
+              iodesc->rearranger == PIO_REARR_BOX, "invalid input", __FILE__, __LINE__);
     LOG((1, "compute_counts maplen = %d", maplen));
 
     /* Find size of communicator, and task rank. */
@@ -533,24 +536,12 @@ int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc, int maplen,
     int send_displs[ntasks];
     int recv_counts[ntasks];
     int recv_displs[ntasks];
-    int *recv_buf = NULL;
-    int nrecvs;
-    int ierr;
-    int io_comprank;
-    int ioindex;
-    int offset_size; /* Size of the MPI_OFFSET type. */
-    int numiotasks;  /* Number of IO tasks. */
     PIO_Offset s2rindex[iodesc->ndof];
 
-    /* Subset rearranger always gets 1 IO task. */
-    if (iodesc->rearranger == PIO_REARR_BOX)
-        numiotasks = ios->num_iotasks;
-    else
-        numiotasks = 1;
-    LOG((2, "numiotasks = %d", numiotasks));
+    LOG((2, "ios->num_iotasks = %d", ios->num_iotasks));
 
     /* Allocate memory for the array of counts and init to zero. */
-    if (!(iodesc->scount = calloc(numiotasks, sizeof(int))))
+    if (!(iodesc->scount = calloc(ios->num_iotasks, sizeof(int))))
         return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
     /* iodesc->scount is the amount of data sent to each task from the
@@ -582,13 +573,10 @@ int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc, int maplen,
      * map on the iotasks. iodesc->rcount is an array of the amount of
      * data to expect from each compute task and iodesc->rfrom is the
      * rank of that task. */
-    for (int i = 0; i < numiotasks; i++)
+    for (int i = 0; i < ios->num_iotasks; i++)
     {
         int io_comprank;
-        if (iodesc->rearranger == PIO_REARR_SUBSET)
-            io_comprank = 0;
-        else
-            io_comprank = ios->ioranks[i];
+        io_comprank = ios->ioranks[i];
         send_counts[io_comprank] = 1;
         send_displs[io_comprank] = i * sizeof(int);
         LOG((3, "send_counts[%d] = %d send_displs[%d] = %d", io_comprank,
@@ -620,7 +608,7 @@ int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc, int maplen,
                           iodesc->rearr_opts.comm_fc_opts_comp2io.max_pend_req)))
         return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
 #if PIO_ENABLE_LOGGING    
-    for (int i = 0; i < numiotasks; i++)    
+    for (int i = 0; i < ios->num_iotasks; i++)    
         LOG((3, "returned from pio_swapm iodesc->scount[%d] = %d", i,
              iodesc->scount[i]));
 #endif /* PIO_ENABLE_LOGGING */    
@@ -666,13 +654,13 @@ int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc, int maplen,
             return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
     LOG((2, "iodesc->ndof = %d", iodesc->ndof));
 
-    int tempcount[numiotasks];
-    int spos[numiotasks];
+    int tempcount[ios->num_iotasks];
+    int spos[ios->num_iotasks];
 
     /* ??? */
     spos[0] = 0;
     tempcount[0] = 0;
-    for (int i = 1; i < numiotasks; i++)
+    for (int i = 1; i < ios->num_iotasks; i++)
     {
         spos[i] = spos[i - 1] + iodesc->scount[i - 1];
         tempcount[i] = 0;
@@ -682,13 +670,15 @@ int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc, int maplen,
     /* ??? */
     for (int i = 0; i < maplen; i++)
     {
+        int iorank;
+        int ioindex;
+        
         iorank = dest_ioproc[i];
         ioindex = dest_ioindex[i];
         if (iorank > -1)
         {
             /* this should be moved to create_box */
-            if (iodesc->rearranger == PIO_REARR_BOX)
-                iodesc->sindex[spos[iorank] + tempcount[iorank]] = i;
+            iodesc->sindex[spos[iorank] + tempcount[iorank]] = i;
 
             s2rindex[spos[iorank] + tempcount[iorank]] = ioindex;
             (tempcount[iorank])++;
@@ -716,14 +706,11 @@ int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc, int maplen,
     LOG((3, "initialized sr_types"));
 
     /* ??? */
-    for (int i = 0; i < numiotasks; i++)
+    for (int i = 0; i < ios->num_iotasks; i++)
     {
         /* Subset rearranger needs one type, box rearranger needs one for
          * each IO task. */
-        if (iodesc->rearranger == PIO_REARR_BOX)
-            io_comprank = ios->ioranks[i];
-        else
-            io_comprank = 0;
+        int io_comprank = ios->ioranks[i];
 
         send_counts[io_comprank] = iodesc->scount[i];
         if (send_counts[io_comprank] > 0)
