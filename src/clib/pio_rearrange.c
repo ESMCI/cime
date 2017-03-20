@@ -497,7 +497,8 @@ int define_iodesc_datatypes(iosystem_desc_t *ios, io_desc_t *iodesc)
 }
 
 /**
- * Completes the mapping for the rearranger.
+ * Completes the mapping for the box rearranger. This function is not
+ * used for the subset rearranger.
  *
  * @param ios pointer to the iosystem_desc_t struct.
  * @param iodesc a pointer to the io_desc_t struct.
