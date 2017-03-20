@@ -601,6 +601,7 @@ int test_compute_counts_box(MPI_Comm test_comm)
     iodesc.rearranger = PIO_REARR_BOX;
     iodesc.ndof = 4;
     iodesc.llen = 4;
+    iodesc.sindex = NULL;
     iodesc.rearr_opts.comm_type = PIO_REARR_COMM_COLL;
     iodesc.rearr_opts.fcd = PIO_REARR_COMM_FC_2D_DISABLE;
     iodesc.rearr_opts.comm_fc_opts_comp2io.enable_hs = 0;
