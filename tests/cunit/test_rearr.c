@@ -627,16 +627,16 @@ int test_compute_counts_box(MPI_Comm test_comm)
 }
 
 /* Test for the box_rearrange_create() function. */
-int test_box_rearrange_create(MPI_Comm test_comm)
+int test_box_rearrange_create(MPI_Comm test_comm, int my_rank)
 {
-#define NDIM3 3
+#define NDIM1 1
     iosystem_desc_t *ios;
     io_desc_t *iodesc;
     io_region *ior1;    
-    int maplen = TARGET_NTASKS;
-    PIO_Offset compmap[TARGET_NTASKS] = {0, 1, 2, 3};
-    const int gdimlen[NDIM3] = {4, 4, 4};
-    int ndims = NDIM3;
+    int maplen = 2;
+    PIO_Offset compmap[2] = {1, 0};
+    const int gdimlen[NDIM1] = {8};
+    int ndims = NDIM1;
     int ret;
 
     /* Allocate IO system info struct for this test. */
@@ -653,23 +653,28 @@ int test_box_rearrange_create(MPI_Comm test_comm)
 
     /* Set up for determine_fill(). */
     ios->union_comm = test_comm;
-    iodesc->ndims = NDIM3;
+    ios->io_comm = test_comm;
+    iodesc->ndims = NDIM1;
     iodesc->rearranger = PIO_REARR_BOX;
 
+    iodesc->ndof = 4;
+
     /* Set up the IO task info for the test. */
+    ios->ioproc = 1;
+    ios->union_rank = my_rank;
     ios->num_iotasks = 4;
+    ios->num_comptasks = 4;
     if (!(ios->ioranks = calloc(ios->num_iotasks, sizeof(int))))
         return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
     for (int i = 0; i < TARGET_NTASKS; i++)
         ios->ioranks[i] = i;
 
     /* This is how we allocate a region. */
-    if ((ret = alloc_region2(NULL, NDIM3, &ior1)))
+    if ((ret = alloc_region2(NULL, NDIM1, &ior1)))
         return ret;
     ior1->next = NULL;
-    ior1->count[0] = 1;
-    ior1->count[1] = 1;
-    ior1->count[2] = 1;
+    if (my_rank == 0)
+        ior1->count[0] = 8;
     
     iodesc->firstregion = ior1;
 
@@ -680,6 +685,13 @@ int test_box_rearrange_create(MPI_Comm test_comm)
     /* Check some results. */
     if (iodesc->rearranger != PIO_REARR_BOX || iodesc->ndof != maplen)
         return ERR_WRONG;
+
+    /* Free resources allocated in compute_counts(). */
+    free(iodesc->scount);
+    free(iodesc->sindex);
+    free(iodesc->rcount);
+    free(iodesc->rfrom);
+    free(iodesc->rindex);
 
     /* Free resources from test. */
     free(ior1->start);
@@ -713,73 +725,73 @@ int main(int argc, char **argv)
         if ((ret = PIOc_Init_Intracomm(test_comm, TARGET_NTASKS, 1, 0, PIO_REARR_BOX, &iosysid)))
             return ret;
         
-        printf("%d running init_rearr_opts tests\n", my_rank);
-        if ((ret = test_init_rearr_opts()))
-            return ret;
-
-        printf("%d running idx_to_dim_list tests\n", my_rank);
-        if ((ret = test_idx_to_dim_list()))
-            return ret;
-
-        printf("%d running coord_to_lindex tests\n", my_rank);
-        if ((ret = test_coord_to_lindex()))
-            return ret;
-
-        printf("%d running compute_maxIObuffersize tests\n", my_rank);
-        if ((ret = test_compute_maxIObuffersize(test_comm, my_rank)))
-            return ret;
-
-        printf("%d running determine_fill\n", my_rank);
-        if ((ret = test_determine_fill(test_comm)))
-            return ret;
-
-        printf("%d running tests for expand_region()\n", my_rank);
-        if ((ret = test_expand_region()))
-            return ret;
-
-        printf("%d running tests for find_region()\n", my_rank);
-        if ((ret = test_find_region()))
-            return ret;
-
-        printf("%d running tests for get_start_and_count_regions()\n", my_rank);
-        if ((ret = test_get_start_and_count_regions()))
-            return ret;
-
-        printf("%d running create_mpi_datatypes tests\n", my_rank);
-        if ((ret = test_create_mpi_datatypes()))
-            return ret;
-
-        printf("%d running define_iodesc_datatypes tests\n", my_rank);
-        if ((ret = test_define_iodesc_datatypes()))
-            return ret;
-
-        printf("%d running rearranger opts tests 1\n", my_rank);
-        if ((ret = test_rearranger_opts1()))
-            return ret;
-
-        printf("%d running tests for cmp_rearr_opts()\n", my_rank);
-        if ((ret = test_cmp_rearr_opts()))
-            return ret;
-
-        printf("%d running compare_offsets tests\n", my_rank);
-        if ((ret = test_compare_offsets()))
-            return ret;
-
-        printf("%d running rearranger opts tests 3\n", my_rank);
-        if ((ret = test_rearranger_opts3()))
-            return ret;
-
-        printf("%d running misc tests\n", my_rank);
-        if ((ret = test_misc()))
-            return ret;
-
-        printf("%d running compute_counts tests for box rearranger\n", my_rank);
-        if ((ret = test_compute_counts_box(test_comm)))
-            return ret;
-
-        /* printf("%d running tests for box_rearrange_create\n", my_rank); */
-        /* if ((ret = test_box_rearrange_create(test_comm))) */
+        /* printf("%d running init_rearr_opts tests\n", my_rank); */
+        /* if ((ret = test_init_rearr_opts())) */
         /*     return ret; */
+
+        /* printf("%d running idx_to_dim_list tests\n", my_rank); */
+        /* if ((ret = test_idx_to_dim_list())) */
+        /*     return ret; */
+
+        /* printf("%d running coord_to_lindex tests\n", my_rank); */
+        /* if ((ret = test_coord_to_lindex())) */
+        /*     return ret; */
+
+        /* printf("%d running compute_maxIObuffersize tests\n", my_rank); */
+        /* if ((ret = test_compute_maxIObuffersize(test_comm, my_rank))) */
+        /*     return ret; */
+
+        /* printf("%d running determine_fill\n", my_rank); */
+        /* if ((ret = test_determine_fill(test_comm))) */
+        /*     return ret; */
+
+        /* printf("%d running tests for expand_region()\n", my_rank); */
+        /* if ((ret = test_expand_region())) */
+        /*     return ret; */
+
+        /* printf("%d running tests for find_region()\n", my_rank); */
+        /* if ((ret = test_find_region())) */
+        /*     return ret; */
+
+        /* printf("%d running tests for get_start_and_count_regions()\n", my_rank); */
+        /* if ((ret = test_get_start_and_count_regions())) */
+        /*     return ret; */
+
+        /* printf("%d running create_mpi_datatypes tests\n", my_rank); */
+        /* if ((ret = test_create_mpi_datatypes())) */
+        /*     return ret; */
+
+        /* printf("%d running define_iodesc_datatypes tests\n", my_rank); */
+        /* if ((ret = test_define_iodesc_datatypes())) */
+        /*     return ret; */
+
+        /* printf("%d running rearranger opts tests 1\n", my_rank); */
+        /* if ((ret = test_rearranger_opts1())) */
+        /*     return ret; */
+
+        /* printf("%d running tests for cmp_rearr_opts()\n", my_rank); */
+        /* if ((ret = test_cmp_rearr_opts())) */
+        /*     return ret; */
+
+        /* printf("%d running compare_offsets tests\n", my_rank); */
+        /* if ((ret = test_compare_offsets())) */
+        /*     return ret; */
+
+        /* printf("%d running rearranger opts tests 3\n", my_rank); */
+        /* if ((ret = test_rearranger_opts3())) */
+        /*     return ret; */
+
+        /* printf("%d running misc tests\n", my_rank); */
+        /* if ((ret = test_misc())) */
+        /*     return ret; */
+
+        /* printf("%d running compute_counts tests for box rearranger\n", my_rank); */
+        /* if ((ret = test_compute_counts_box(test_comm))) */
+        /*     return ret; */
+
+        printf("%d running tests for box_rearrange_create\n", my_rank);
+        if ((ret = test_box_rearrange_create(test_comm, my_rank)))
+            return ret;
 
         /* Finalize PIO system. */
         if ((ret = PIOc_finalize(iosysid)))

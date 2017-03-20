@@ -685,9 +685,9 @@ int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc, int maplen,
 
             s2rindex[spos[iorank] + tempcount[iorank]] = ioindex;
             (tempcount[iorank])++;
+            LOG((3, "iorank = %d ioindex = %d tempcount[iorank] = %d", iorank, ioindex,
+                 tempcount[iorank]));
         }
-        LOG((3, "iorank = %d ioindex = %d tempcount[iorank] = %d", iorank, ioindex,
-             tempcount[iorank]));
     }
 
     /* Initialize arrays to zeros. */
@@ -1113,13 +1113,13 @@ int rearrange_io2comp(iosystem_desc_t *ios, io_desc_t *iodesc, void *sbuf,
  *
  * @param ios pointer to the iosystem_desc_t struct.
  * @param iodesc a pointer to the io_desc_t struct.
- * @param gsize pointer to an array length iodesc->ndims with the
+ * @param gdimlen pointer to an array length iodesc->ndims with the
  * global array sizes for one record (for record vars) or for the
  * entire var (for non-record vars).
  * @param compmap only used for the box communicator.
  * @returns 0 on success, error code otherwise.
  */
-int determine_fill(iosystem_desc_t *ios, io_desc_t *iodesc, const int *gsize,
+int determine_fill(iosystem_desc_t *ios, io_desc_t *iodesc, const int *gdimlen,
                    const PIO_Offset *compmap)
 {
     PIO_Offset totalllen = 0;
@@ -1127,19 +1127,27 @@ int determine_fill(iosystem_desc_t *ios, io_desc_t *iodesc, const int *gsize,
     int mpierr; /* Return code from MPI calls. */
 
     /* Check inputs. */
-    pioassert(iodesc, "invalid input", __FILE__, __LINE__);
+    pioassert(ios && iodesc, "invalid input", __FILE__, __LINE__);
 
     /* Determine size of data space. */
     for (int i = 0; i < iodesc->ndims; i++)
-        totalgridsize *= gsize[i];
+    {
+        totalgridsize *= gdimlen[i];
+        LOG((3, "gdimlen[%d] = %d", i, gdimlen[i]));
+    }
 
     /* Determine how many values we have locally. */
     if (iodesc->rearranger == PIO_REARR_SUBSET)
         totalllen = iodesc->llen;
     else
+    {
         for (int i = 0; i < iodesc->ndof; i++)
+        {
+            LOG((3, "compmap[%d] = %d", i, compmap[i]));
             if (compmap[i] > 0)
                 totalllen++;
+        }
+    }
 
     /* Add results accross communicator. */
     LOG((2, "determine_fill before allreduce totalllen = %d totalgridsize = %d",
@@ -1237,6 +1245,7 @@ int box_rearrange_create(iosystem_desc_t *ios, int maplen, const PIO_Offset *com
     iodesc->llen = 0;
 
     /* ??? */
+    LOG((3, "ios->ioproc = %d nprocs = %d", ios->ioproc, nprocs));
     if (ios->ioproc)
     {
         /* Set up send counts for sending llen in all to all gather. */
@@ -1272,7 +1281,7 @@ int box_rearrange_create(iosystem_desc_t *ios, int maplen, const PIO_Offset *com
 
     /* Distribute the llen to all tasks into array. Afterwards all
      * tasks will have all llens in array iomaplen. */
-    LOG((3, "about to call pio_swapm ndims = %d", ndims));
+    LOG((3, "calling pio_swapm to allgather llen into array iomaplen, ndims = %d", ndims));
     if ((ret = pio_swapm(&iodesc->llen, sendcounts, sdispls, dtypes, iomaplen, recvcounts,
                          rdispls, dtypes, ios->union_comm,
                          iodesc->rearr_opts.comm_fc_opts_io2comp.enable_hs,
@@ -1280,6 +1289,10 @@ int box_rearrange_create(iosystem_desc_t *ios, int maplen, const PIO_Offset *com
                          iodesc->rearr_opts.comm_fc_opts_io2comp.max_pend_req)))
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
     LOG((3, "iodesc->llen = %d", iodesc->llen));
+#if PIO_ENABLE_LOGGING
+    for (int i = 0; i < nioprocs; i++)
+        LOG((3, "iomaplen[%d] = %d", i, iomaplen[i]));
+#endif /* PIO_ENABLE_LOGGING */
 
     /* For each IO task send starts/counts to all compute tasks. */
     for (int i = 0; i < nioprocs; i++)
@@ -1289,7 +1302,7 @@ int box_rearrange_create(iosystem_desc_t *ios, int maplen, const PIO_Offset *com
         /* If there is a map for this task. */
         if (iomaplen[i] > 0)
         {
-            /* Set up send/recv parameters for all to all gether of
+            /* Set up send/recv parameters for all to all gather of
              * counts and starts. */
             for (int j = 0; j < nprocs; j++)
             {
@@ -1334,6 +1347,10 @@ int box_rearrange_create(iosystem_desc_t *ios, int maplen, const PIO_Offset *com
                 /* The compmap array is 1 based but calculations are 0 based */
                 LOG((3, "about to call idx_to_dim_list ndims = %d ", ndims));
                 idx_to_dim_list(ndims, gdimlen, compmap[k] - 1, gcoord);
+#if PIO_ENABLE_LOGGING
+            for (int d = 0; d < ndims; d++)
+                LOG((3, "gcoord[%d] = %lld", d, gcoord[d]));
+#endif /* PIO_ENABLE_LOGGING */
 
                 /* Find a destination for each entry in the compmap. */
                 for (int j = 0; j < ndims; j++)
@@ -1354,6 +1371,8 @@ int box_rearrange_create(iosystem_desc_t *ios, int maplen, const PIO_Offset *com
                 {
                     dest_ioindex[k] = coord_to_lindex(ndims, lcoord, count);
                     dest_ioproc[k] = i;
+                    LOG((3, "found dest_ioindex[%d] = %d dest_ioproc[%d] = %d", k, dest_ioindex[k],
+                         k, dest_ioproc[k]));
                 }
             }
         }
@@ -1365,6 +1384,7 @@ int box_rearrange_create(iosystem_desc_t *ios, int maplen, const PIO_Offset *com
             return pio_err(ios, NULL, PIO_EINVAL, __FILE__, __LINE__);
 
     /* Completes the mapping for the box rearranger. */
+    LOG((2, "calling compute_counts maplen = %d", maplen));
     if ((ret = compute_counts(ios, iodesc, maplen, dest_ioproc, dest_ioindex,
                               ios->union_comm)))
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
