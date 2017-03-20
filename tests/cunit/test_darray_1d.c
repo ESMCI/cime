@@ -799,11 +799,12 @@ int test_decomp_read_write(int iosysid, int ioid, int num_flavors, int *flavor, 
 /* Run tests for darray functions. */
 int main(int argc, char **argv)
 {
-#define NUM_REARRANGERS_TO_TEST 1
-    int rearranger[NUM_REARRANGERS_TO_TEST] = {PIO_REARR_BOX};
+#define NUM_REARRANGERS_TO_TEST 2
+    int rearranger[NUM_REARRANGERS_TO_TEST] = {PIO_REARR_BOX, PIO_REARR_SUBSET};
 #ifdef _NETCDF4
-#define NUM_TYPES_TO_TEST 1
-    int test_type[NUM_TYPES_TO_TEST] = {PIO_INT};
+#define NUM_TYPES_TO_TEST 11
+    int test_type[NUM_TYPES_TO_TEST] = {PIO_BYTE, PIO_CHAR, PIO_SHORT, PIO_INT, PIO_FLOAT, PIO_DOUBLE,
+                                        PIO_UBYTE, PIO_USHORT, PIO_UINT, PIO_INT64, PIO_UINT64};
 #else
 #define NUM_TYPES_TO_TEST 6
     int test_type[NUM_TYPES_TO_TEST] = {PIO_BYTE, PIO_CHAR, PIO_SHORT, PIO_INT, PIO_FLOAT, PIO_DOUBLE};
@@ -854,9 +855,9 @@ int main(int argc, char **argv)
                     return ret;
 
                 /* Test decomposition read/write. */
-                /* if ((ret = test_decomp_read_write(iosysid, ioid, num_flavors, flavor, my_rank, */
-                /*                                   test_type[t], rearranger[r], test_comm))) */
-                /*     return ret; */
+                if ((ret = test_decomp_read_write(iosysid, ioid, num_flavors, flavor, my_rank,
+                                                  test_type[t], rearranger[r], test_comm)))
+                    return ret;
 
                 /* Run tests. */
                 if ((ret = test_darray_fill(iosysid, ioid, test_type[t], num_flavors, flavor,
@@ -864,9 +865,9 @@ int main(int argc, char **argv)
                     return ret;
 
                 /* Run tests. */
-                /* if ((ret = test_darray_fill_unlim(iosysid, ioid, test_type[t], num_flavors, */
-                /*                                   flavor, my_rank, test_comm))) */
-                /*     return ret; */
+                if ((ret = test_darray_fill_unlim(iosysid, ioid, test_type[t], num_flavors,
+                                                  flavor, my_rank, test_comm)))
+                    return ret;
 
                 /* Free the PIO decomposition. */
                 if ((ret = PIOc_freedecomp(iosysid, ioid)))
