@@ -626,6 +626,72 @@ int test_compute_counts_box(MPI_Comm test_comm)
     return 0;
 }
 
+/* Test for the box_rearrange_create() function. */
+int test_box_rearrange_create(MPI_Comm test_comm)
+{
+#define NDIM3 3
+    iosystem_desc_t *ios;
+    io_desc_t *iodesc;
+    io_region *ior1;    
+    int maplen = TARGET_NTASKS;
+    PIO_Offset compmap[TARGET_NTASKS] = {0, 1, 2, 3};
+    const int gdimlen[NDIM3] = {4, 4, 4};
+    int ndims = NDIM3;
+    int ret;
+
+    /* Allocate IO system info struct for this test. */
+    if (!(ios = calloc(1, sizeof(iosystem_desc_t))))
+        return PIO_ENOMEM;
+
+    /* Allocate IO desc struct for this test. */
+    if (!(iodesc = calloc(1, sizeof(io_desc_t))))
+        return PIO_ENOMEM;
+
+    /* Default rearranger options. */
+    iodesc->rearr_opts.comm_type = PIO_REARR_COMM_COLL;
+    iodesc->rearr_opts.fcd = PIO_REARR_COMM_FC_2D_DISABLE;
+
+    /* Set up for determine_fill(). */
+    ios->union_comm = test_comm;
+    iodesc->ndims = NDIM3;
+    iodesc->rearranger = PIO_REARR_BOX;
+
+    /* Set up the IO task info for the test. */
+    ios->num_iotasks = 4;
+    if (!(ios->ioranks = calloc(ios->num_iotasks, sizeof(int))))
+        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+    for (int i = 0; i < TARGET_NTASKS; i++)
+        ios->ioranks[i] = i;
+
+    /* This is how we allocate a region. */
+    if ((ret = alloc_region2(NULL, NDIM3, &ior1)))
+        return ret;
+    ior1->next = NULL;
+    ior1->count[0] = 1;
+    ior1->count[1] = 1;
+    ior1->count[2] = 1;
+    
+    iodesc->firstregion = ior1;
+
+    /* We are finally ready to run the code under test. */
+    if ((ret = box_rearrange_create(ios, maplen, compmap, gdimlen, ndims, iodesc)))
+        return ret;
+
+    /* Check some results. */
+    if (iodesc->rearranger != PIO_REARR_BOX || iodesc->ndof != maplen)
+        return ERR_WRONG;
+
+    /* Free resources from test. */
+    free(ior1->start);
+    free(ior1->count);
+    free(ior1);
+    free(ios->ioranks);
+    free(iodesc);
+    free(ios);
+    
+    return 0;
+}
+
 /* Run Tests for pio_spmd.c functions. */
 int main(int argc, char **argv)
 {
@@ -710,6 +776,10 @@ int main(int argc, char **argv)
         printf("%d running compute_counts tests for box rearranger\n", my_rank);
         if ((ret = test_compute_counts_box(test_comm)))
             return ret;
+
+        /* printf("%d running tests for box_rearrange_create\n", my_rank); */
+        /* if ((ret = test_box_rearrange_create(test_comm))) */
+        /*     return ret; */
 
         /* Finalize PIO system. */
         if ((ret = PIOc_finalize(iosysid)))

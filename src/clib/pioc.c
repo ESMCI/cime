@@ -694,9 +694,8 @@ int PIOc_Init_Intracomm(MPI_Comm comp_comm, int num_iotasks, int stride, int bas
     LOG((2, "comp_rank = %d num_comptasks = %d", ios->comp_rank, ios->num_comptasks));
 
     /* Create an array that holds the ranks of the tasks to be used
-     * for IO. NOTE that sizeof(int) should probably be 1, not
-     * sizeof(int) ???*/
-    if (!(ios->ioranks = calloc(sizeof(int), ios->num_iotasks)))
+     * for IO. */
+    if (!(ios->ioranks = calloc(ios->num_iotasks, sizeof(int))))
         return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
     for (int i = 0; i < ios->num_iotasks; i++)
     {
