@@ -31,7 +31,7 @@ if [ ! -d src ]; then
   git clone --branch develop https://github.com/PARALLELIO/ParallelIO src
 fi
 cd src
-git checkout jpe_update_mpi_serial_path
-git pull origin jpe_update_mpi_serial_path
+git checkout develop
+git pull origin develop
 
 ctest -S CTestScript.cmake,${model} -VV
