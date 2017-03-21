@@ -338,7 +338,7 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
     /* If we don't know the fill value for this var, get it. */
     if (!vdesc->fillvalue)
     {
-        int fill_mode;
+        int no_fill;
         LOG((3, "getting fill value"));
         
         /* Find out PIO data type of var. */
@@ -356,16 +356,11 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
             return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
 
         /* Get the fill value. */
-        if ((ierr = PIOc_inq_var_fill(file->pio_ncid, varid, &fill_mode, vdesc->fillvalue)))
+        if ((ierr = PIOc_inq_var_fill(file->pio_ncid, varid, &no_fill, vdesc->fillvalue)))
             return pio_err(ios, file, ierr, __FILE__, __LINE__);
+        vdesc->use_fill = no_fill ? 0 : 1;
+        LOG((3, "vdesc->use_fill = %d", vdesc->use_fill));
     }
-
-    /* If the caller provided a fill value, make sure it's correct. */
-    /* if (fillvalue) */
-    /* { */
-    /*     if (memcmp(fillvalue, vdesc->fillvalue, vdesc->type_size)) */
-    /*         return pio_err(ios, file, PIO_EINVAL, __FILE__, __LINE__); */
-    /* } */
 
     /* Is this a record variable? */
     recordvar = vdesc->record >= 0 ? true : false;
