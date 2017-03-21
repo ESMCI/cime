@@ -172,6 +172,13 @@ def is_valid_fortran_name(string):
     """
     return FORTRAN_NAME_REGEX.search(string) is not None
 
+def get_fortran_name_only(varname):
+    
+    m = FORTRAN_NAME_REGEX.search(varname)
+    if m is not None:
+        return m.group(1)
+
+
 
 def fortran_namelist_base_value(string):
     r"""Strip off whitespace and repetition syntax from a namelist value.
