@@ -112,7 +112,8 @@ logger = logging.getLogger(__name__)
 
 # Fortran syntax regular expressions.
 # Variable names.
-FORTRAN_NAME_REGEX = re.compile(r"^[a-z][a-z0-9_]{0,62}$", re.IGNORECASE)
+FORTRAN_NAME_REGEX = re.compile(r"(^[a-z][a-z0-9_]{0,62})(\(([+-]?\d*:?){3}\))?$", re.IGNORECASE)
+
 FORTRAN_LITERAL_REGEXES = {}
 # Integer literals.
 _int_re_string = r"(\+|-)?[0-9]+"
