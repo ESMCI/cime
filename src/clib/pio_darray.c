@@ -335,6 +335,38 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
     vdesc = file->varlist + varid;
     LOG((2, "vdesc record %d ndims %d nreqs %d", vdesc->record, vdesc->ndims, vdesc->nreqs));
 
+    /* If we don't know the fill value for this var, get it. */
+    if (!vdesc->fillvalue)
+    {
+        int fill_mode;
+        LOG((3, "getting fill value"));
+        
+        /* Find out PIO data type of var. */
+        if ((ierr = PIOc_inq_vartype(file->pio_ncid, varid, &vdesc->pio_type)))
+            return pio_err(ios, file, ierr, __FILE__, __LINE__);
+
+        /* Find out length of type. */
+        if ((ierr = PIOc_inq_type(ncid, vdesc->pio_type, NULL, &vdesc->type_size)))
+            return pio_err(ios, file, ierr, __FILE__, __LINE__);
+        LOG((3, "getting fill value for varid = %d pio_type = %d type_size = %d",
+             varid, vdesc->pio_type, vdesc->type_size));
+
+        /* Allocate storage for the fill value. */
+        if (!(vdesc->fillvalue = malloc(vdesc->type_size)))
+            return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
+
+        /* Get the fill value. */
+        if ((ierr = PIOc_inq_var_fill(file->pio_ncid, varid, &fill_mode, vdesc->fillvalue)))
+            return pio_err(ios, file, ierr, __FILE__, __LINE__);
+    }
+
+    /* If the caller provided a fill value, make sure it's correct. */
+    /* if (fillvalue) */
+    /* { */
+    /*     if (memcmp(fillvalue, vdesc->fillvalue, vdesc->type_size)) */
+    /*         return pio_err(ios, file, PIO_EINVAL, __FILE__, __LINE__); */
+    /* } */
+
     /* Is this a record variable? */
     recordvar = vdesc->record >= 0 ? true : false;
     LOG((3, "recordvar = %d", recordvar));
