@@ -2125,7 +2125,7 @@ int PIOc_inq_var_fill(int ncid, int varid, int *no_fill, void *fill_valuep)
             ierr = ncmpi_inq_var_fill(file->fh, varid, no_fill, fill_valuep);
 #endif /* _PNETCDF */
         }
-        else if (file->iotype == PIO_IOTYPE_NETCDF)
+        else if (file->iotype == PIO_IOTYPE_NETCDF && file->do_io)
         {
             /* Get the file-level fill mode. */
             if (no_fill)
