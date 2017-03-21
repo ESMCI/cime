@@ -173,7 +173,22 @@ def is_valid_fortran_name(string):
     return FORTRAN_NAME_REGEX.search(string) is not None
 
 def get_fortran_name_only(varname):
-    
+    """ remove array section if any and return only the variable name 
+    >>> get_fortran_name_only('foo')
+    'foo'
+    >>> get_fortran_name_only('foo(3)')
+    'foo'
+    >>> get_fortran_name_only('foo(::)')
+    'foo'
+    >>> get_fortran_name_only('foo(1::)')
+    'foo'
+    >>> get_fortran_name_only('foo(:+2:)')
+    'foo'
+    >>> get_fortran_name_only('foo(::-3)')
+    'foo'
+    >>> get_fortran_name_only('foo(::)')
+    'foo'
+    """
     m = FORTRAN_NAME_REGEX.search(varname)
     if m is not None:
         return m.group(1)
