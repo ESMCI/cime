@@ -341,8 +341,9 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
          arraylen, iodesc->ndof));
 
     /* Get var description. */
-    vdesc = file->varlist + varid;
-    LOG((2, "vdesc record %d ndims %d nreqs %d", vdesc->record, vdesc->ndims, vdesc->nreqs));
+    vdesc = &(file->varlist[varid]);
+    LOG((2, "vdesc record %d ndims %d nreqs %d", vdesc->record, vdesc->ndims,
+         vdesc->nreqs));
 
     /* Is this a record variable? */
     recordvar = vdesc->record >= 0 ? true : false;
