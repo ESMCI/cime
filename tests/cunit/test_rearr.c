@@ -705,6 +705,41 @@ int test_box_rearrange_create(MPI_Comm test_comm, int my_rank)
     return 0;
 }
 
+/* Test function default_subset_partition. */
+int test_default_subset_partition(MPI_Comm test_comm, int my_rank)
+{
+    iosystem_desc_t *ios;
+    io_desc_t *iodesc;
+    int mpierr;
+    int ret;
+
+    /* Allocate IO system info struct for this test. */
+    if (!(ios = calloc(1, sizeof(iosystem_desc_t))))
+        return PIO_ENOMEM;
+
+    /* Allocate IO desc struct for this test. */
+    if (!(iodesc = calloc(1, sizeof(io_desc_t))))
+        return PIO_ENOMEM;
+
+    ios->ioproc = 1;
+    ios->io_rank = my_rank;
+    ios->comp_comm = test_comm;
+
+    /* Run the function to test. */
+    if ((ret = default_subset_partition(ios, iodesc)))
+        return ret;
+
+    /* Free the created communicator. */
+    if ((mpierr = MPI_Comm_free(&iodesc->subset_comm)))
+        MPIERR(mpierr);
+
+    /* Free resources from test. */
+    free(iodesc);
+    free(ios);
+
+    return 0;
+}
+
 /* Run Tests for pio_spmd.c functions. */
 int main(int argc, char **argv)
 {
@@ -792,6 +827,10 @@ int main(int argc, char **argv)
 
         printf("%d running tests for box_rearrange_create\n", my_rank);
         if ((ret = test_box_rearrange_create(test_comm, my_rank)))
+            return ret;
+
+        printf("%d running tests for default_subset_partition\n", my_rank);
+        if ((ret = test_default_subset_partition(test_comm, my_rank)))
             return ret;
 
         /* Finalize PIO system. */

@@ -1530,12 +1530,13 @@ int get_start_and_count_regions(int ndims, const int *gdimlen, int maplen, const
  */
 int default_subset_partition(iosystem_desc_t *ios, io_desc_t *iodesc)
 {
-    int taskratio = ios->num_comptasks / ios->num_iotasks;
     int color;
     int key;
     int mpierr; /* Return value from MPI functions. */
 
     pioassert(ios && iodesc, "invalid input", __FILE__, __LINE__);
+    LOG((1, "default_subset_partition ios->ioproc = %d ios->io_rank = %d "
+         "ios->comp_rank = %d", ios->ioproc, ios->io_rank, ios->comp_rank));
 
     /* Create a new comm for each subset group with the io task in
        rank 0 and only 1 io task per group */
@@ -1546,10 +1547,13 @@ int default_subset_partition(iosystem_desc_t *ios, io_desc_t *iodesc)
     }
     else
     {
+        int taskratio = ios->num_comptasks / ios->num_iotasks;
         key = max(1, ios->comp_rank % taskratio + 1);
         color = min(ios->num_iotasks - 1, ios->comp_rank / taskratio);
     }
-
+    LOG((3, "key = %d color = %d", key, color));
+    
+    /* Create new communicators. */
     if ((mpierr = MPI_Comm_split(ios->comp_comm, color, key, &iodesc->subset_comm)))
         return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 
