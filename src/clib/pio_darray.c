@@ -331,6 +331,41 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
     if (!(iodesc = pio_get_iodesc_from_id(ioid)))
         return pio_err(ios, file, PIO_EBADID, __FILE__, __LINE__);
 
+    /* Get var description. */
+    vdesc = file->varlist + varid;
+    LOG((2, "vdesc record %d ndims %d nreqs %d", vdesc->record, vdesc->ndims, vdesc->nreqs));
+
+    /* If we don't know the fill value for this var, get it. */
+    if (!vdesc->fillvalue)
+    {
+        int no_fill;
+        LOG((3, "getting fill value"));
+        
+        /* Find out PIO data type of var. */
+        if ((ierr = PIOc_inq_vartype(file->pio_ncid, varid, &vdesc->pio_type)))
+            return pio_err(ios, file, ierr, __FILE__, __LINE__);
+
+        /* Find out length of type. */
+        if ((ierr = PIOc_inq_type(ncid, vdesc->pio_type, NULL, &vdesc->type_size)))
+            return pio_err(ios, file, ierr, __FILE__, __LINE__);
+        LOG((3, "getting fill value for varid = %d pio_type = %d type_size = %d",
+             varid, vdesc->pio_type, vdesc->type_size));
+
+        /* Allocate storage for the fill value. */
+        if (!(vdesc->fillvalue = malloc(vdesc->type_size)))
+            return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
+
+        /* Get the fill value. */
+        if ((ierr = PIOc_inq_var_fill(file->pio_ncid, varid, &no_fill, vdesc->fillvalue)))
+            return pio_err(ios, file, ierr, __FILE__, __LINE__);
+        vdesc->use_fill = no_fill ? 0 : 1;
+        LOG((3, "vdesc->use_fill = %d", vdesc->use_fill));
+    }
+
+    /* Is this a record variable? */
+    recordvar = vdesc->record >= 0 ? true : false;
+    LOG((3, "recordvar = %d", recordvar));
+
     /* Check that the local size of the variable passed in matches the
      * size expected by the io descriptor. */
     if (arraylen < iodesc->ndof)

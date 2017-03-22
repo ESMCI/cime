@@ -115,7 +115,20 @@ typedef struct var_desc_t
     /** Number of requests bending with pnetcdf. */
     int nreqs;
 
-    /** Buffer that contains the fill value for this variable. */
+    /* Holds the fill value of this var. */
+    void *fillvalue;
+
+    /* The PIO data type (PIO_INT, PIO_FLOAT, etc.) */
+    int pio_type;
+
+    /* The size of the data type (2 for PIO_SHORT, 4 for PIO_INT, etc.) */
+    PIO_Offset type_size;
+
+    /** Non-zero if fill mode is turned on for this var. */
+    int use_fill;
+
+    /** Buffer that contains the holegrid fill values used to fill in
+     * missing sections of data when using the subset rearranger. */
     void *fillbuf;
 
     /** Data buffer for this variable. */
