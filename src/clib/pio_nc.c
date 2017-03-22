@@ -2037,7 +2037,7 @@ int PIOc_def_var_fill(int ncid, int varid, int fill_mode, const void *fill_value
  * @param ncid the ncid of the open file, obtained from
  * PIOc_openfile() or PIOc_createfile().
  * @param varid the variable ID.
- * @param fill_mode a pointer to int that will get the fill
+ * @param no_fill a pointer to int that will get the fill
  * mode. Ignored if NULL (except with pnetcdf, which seg-faults with
  * NULL.)
  * @param fill_valuep pointer to space that gets the fill value for
@@ -2045,7 +2045,7 @@ int PIOc_def_var_fill(int ncid, int varid, int fill_mode, const void *fill_value
  * @return PIO_NOERR for success, error code otherwise.
  * @ingroup PIO_inq_var_fill
  */
-int PIOc_inq_var_fill(int ncid, int varid, int *fill_mode, void *fill_valuep)
+int PIOc_inq_var_fill(int ncid, int varid, int *no_fill, void *fill_valuep)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Pointer to file information. */
@@ -2080,7 +2080,7 @@ int PIOc_inq_var_fill(int ncid, int varid, int *fill_mode, void *fill_valuep)
         if (!ios->ioproc)
         {
             int msg = PIO_MSG_INQ_VAR_FILL;
-            char fill_mode_present = fill_mode ? true : false;
+            char no_fill_present = no_fill ? true : false;
             char fill_value_present = fill_valuep ? true : false;
 
             LOG((2, "sending msg type_size = %d", type_size));
@@ -2094,11 +2094,11 @@ int PIOc_inq_var_fill(int ncid, int varid, int *fill_mode, void *fill_valuep)
             if (!mpierr)
                 mpierr = MPI_Bcast(&type_size, 1, MPI_OFFSET, ios->compmaster, ios->intercomm);
             if (!mpierr)
-                mpierr = MPI_Bcast(&fill_mode_present, 1, MPI_CHAR, ios->compmaster, ios->intercomm);
+                mpierr = MPI_Bcast(&no_fill_present, 1, MPI_CHAR, ios->compmaster, ios->intercomm);
             if (!mpierr)
                 mpierr = MPI_Bcast(&fill_value_present, 1, MPI_CHAR, ios->compmaster, ios->intercomm);
-            LOG((2, "PIOc_inq_var_fill ncid = %d varid = %d type_size = %lld fill_mode_present = %d fill_value_present = %d",
-                 ncid, varid, type_size, fill_mode_present, fill_value_present));
+            LOG((2, "PIOc_inq_var_fill ncid = %d varid = %d type_size = %lld no_fill_present = %d fill_value_present = %d",
+                 ncid, varid, type_size, no_fill_present, fill_value_present));
         }
 
         /* Handle MPI errors. */
@@ -2117,22 +2117,22 @@ int PIOc_inq_var_fill(int ncid, int varid, int *fill_mode, void *fill_valuep)
     /* If this is an IO task, then call the netCDF function. */
     if (ios->ioproc)
     {
-        LOG((2, "calling inq_var_fill file->iotype = %d file->fh = %d varid = %d fill_mode = %d",
-             file->iotype, file->fh, varid, fill_mode));
+        LOG((2, "calling inq_var_fill file->iotype = %d file->fh = %d varid = %d no_fill = %d",
+             file->iotype, file->fh, varid, no_fill));
         if (file->iotype == PIO_IOTYPE_PNETCDF)
         {
 #ifdef _PNETCDF
-            ierr = ncmpi_inq_var_fill(file->fh, varid, fill_mode, fill_valuep);
+            ierr = ncmpi_inq_var_fill(file->fh, varid, no_fill, fill_valuep);
 #endif /* _PNETCDF */
         }
-        else if (file->iotype == PIO_IOTYPE_NETCDF)
+        else if (file->iotype == PIO_IOTYPE_NETCDF && file->do_io)
         {
             /* Get the file-level fill mode. */
-            if (fill_mode)
+            if (no_fill)
             {
-                ierr = nc_set_fill(file->fh, NC_NOFILL, fill_mode);
+                ierr = nc_set_fill(file->fh, NC_NOFILL, no_fill);
                 if (!ierr)
-                    ierr = nc_set_fill(file->fh, *fill_mode, NULL);
+                    ierr = nc_set_fill(file->fh, *no_fill, NULL);
             }
 
             if (!ierr && fill_valuep)
@@ -2178,7 +2178,7 @@ int PIOc_inq_var_fill(int ncid, int varid, int *fill_mode, void *fill_valuep)
 #ifdef _NETCDF4
             /* The inq_var_fill is not supported in classic-only builds. */
             if (file->do_io)
-                ierr = nc_inq_var_fill(file->fh, varid, fill_mode, fill_valuep);
+                ierr = nc_inq_var_fill(file->fh, varid, no_fill, fill_valuep);
 #endif /* _NETCDF */
         }
         LOG((2, "after call to inq_var_fill, ierr = %d", ierr));
@@ -2191,8 +2191,8 @@ int PIOc_inq_var_fill(int ncid, int varid, int *fill_mode, void *fill_valuep)
         return check_netcdf(file, ierr, __FILE__, __LINE__);
 
     /* Broadcast results to all tasks. Ignore NULL parameters. */
-    if (fill_mode)
-        if ((mpierr = MPI_Bcast(fill_mode, 1, MPI_INT, ios->ioroot, ios->my_comm)))
+    if (no_fill)
+        if ((mpierr = MPI_Bcast(no_fill, 1, MPI_INT, ios->ioroot, ios->my_comm)))
             check_mpi(file, mpierr, __FILE__, __LINE__);
     if (fill_valuep)
         if ((mpierr = MPI_Bcast(fill_valuep, type_size, MPI_CHAR, ios->ioroot, ios->my_comm)))
