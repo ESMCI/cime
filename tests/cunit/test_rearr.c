@@ -741,14 +741,13 @@ int test_default_subset_partition(MPI_Comm test_comm, int my_rank)
 }
 
 /* Test function rearrange_comp2io. */
-int test_default_rearrange_comp2io(MPI_Comm test_comm, int my_rank)
+int test_rearrange_comp2io(MPI_Comm test_comm, int my_rank)
 {
     iosystem_desc_t *ios;
     io_desc_t *iodesc;
-    void *sbuf;
-    void *rbuf;
+    void *sbuf = NULL;
+    void *rbuf = NULL;
     int nvars = 1;
-    int mpierr;
     int ret;
 
     /* Allocate IO system info struct for this test. */
@@ -761,7 +760,9 @@ int test_default_rearrange_comp2io(MPI_Comm test_comm, int my_rank)
 
     ios->ioproc = 1;
     ios->io_rank = my_rank;
-    ios->comp_comm = test_comm;
+    ios->union_comm = test_comm;
+    ios->num_iotasks = TARGET_NTASKS;
+    iodesc->rearranger = PIO_REARR_BOX;
 
     /* Run the function to test. */
     /* if ((ret = rearrange_comp2io(ios, iodesc, sbuf, rbuf, nvars))) */

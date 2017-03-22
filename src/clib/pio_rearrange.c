@@ -785,12 +785,6 @@ int rearrange_comp2io(iosystem_desc_t *ios, io_desc_t *iodesc, void *sbuf,
     int ntasks;
     int niotasks;
     int tsize;        /* Size of the MPI basetype. */
-    int *sendcounts;
-    int *recvcounts;
-    int *sdispls;
-    int *rdispls;
-    MPI_Datatype *sendtypes;
-    MPI_Datatype *recvtypes;
     MPI_Comm mycomm;
     int mpierr; /* Return code from MPI calls. */
     int ret;
@@ -800,7 +794,7 @@ int rearrange_comp2io(iosystem_desc_t *ios, io_desc_t *iodesc, void *sbuf,
 #endif
 
     /* Caller must provide these. */
-    pioassert(iodesc && nvars > 0, "invalid input", __FILE__, __LINE__);
+    pioassert(iodesc && iodesc && nvars > 0, "invalid input", __FILE__, __LINE__);
 
     LOG((2, "rearrange_comp2io nvars = %d iodesc->rearranger = %d", nvars,
          iodesc->rearranger));
@@ -820,6 +814,26 @@ int rearrange_comp2io(iosystem_desc_t *ios, io_desc_t *iodesc, void *sbuf,
     if ((mpierr = MPI_Comm_size(mycomm, &ntasks)))
         return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 
+    /* These are parameters to pio_swapm to send data from compute to
+     * IO tasks. */
+    int sendcounts[ntasks];
+    int recvcounts[ntasks];  
+    int sdispls[ntasks];
+    int rdispls[ntasks];
+    MPI_Datatype sendtypes[ntasks];
+    MPI_Datatype recvtypes[ntasks];
+
+    /* Initialize pio_swapm parameter arrays. */
+    for (int i = 0; i < ntasks; i++)
+    {
+        sendcounts[i] = 0;
+        recvcounts[i] = 0;
+        sdispls[i] = 0;
+        rdispls[i] = 0;
+        recvtypes[i] = PIO_DATATYPE_NULL;
+        sendtypes[i] =  PIO_DATATYPE_NULL;
+    }
+
     /* Get the size of the MPI base type. */
     if ((mpierr = MPI_Type_size(iodesc->basetype, &tsize)))
         return check_mpi(NULL, mpierr, __FILE__, __LINE__);
@@ -829,32 +843,6 @@ int rearrange_comp2io(iosystem_desc_t *ios, io_desc_t *iodesc, void *sbuf,
      * io_desc_t. */
     if ((ret = define_iodesc_datatypes(ios, iodesc)))
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
-
-    /* Allocate arrays needed by the pio_swapm() function. */
-    if (!(sendcounts = calloc(ntasks, sizeof(int))))
-        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
-
-    if (!(recvcounts = calloc(ntasks, sizeof(int))))
-        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
-
-    if (!(sdispls = calloc(ntasks, sizeof(int))))
-        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
-
-    if (!(rdispls = calloc(ntasks, sizeof(int))))
-        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
-
-    if (!(sendtypes = malloc(ntasks * sizeof(MPI_Datatype))))
-        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
-
-    if (!(recvtypes = malloc(ntasks * sizeof(MPI_Datatype))))
-        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
-
-    /* Initialize types to NULL. */
-    for (int i = 0; i < ntasks; i++)
-    {
-        recvtypes[i] = PIO_DATATYPE_NULL;
-        sendtypes[i] =  PIO_DATATYPE_NULL;
-    }
 
     /* If this io proc will exchange data with compute tasks create a
      * MPI DataType for that exchange. */
@@ -960,14 +948,6 @@ int rearrange_comp2io(iosystem_desc_t *ios, io_desc_t *iodesc, void *sbuf,
             if ((mpierr = MPI_Type_free(&recvtypes[i])))
                 return check_mpi(NULL, mpierr, __FILE__, __LINE__);
     }
-
-    /* Free memory. */
-    free(sendcounts);
-    free(recvcounts);
-    free(sdispls);
-    free(rdispls);
-    free(sendtypes);
-    free(recvtypes);
 
 #ifdef TIMING
     GPTLstop("PIO:rearrange_comp2io");
