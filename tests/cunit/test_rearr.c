@@ -740,6 +740,40 @@ int test_default_subset_partition(MPI_Comm test_comm, int my_rank)
     return 0;
 }
 
+/* Test function rearrange_comp2io. */
+int test_default_rearrange_comp2io(MPI_Comm test_comm, int my_rank)
+{
+    iosystem_desc_t *ios;
+    io_desc_t *iodesc;
+    void *sbuf;
+    void *rbuf;
+    int nvars = 1;
+    int mpierr;
+    int ret;
+
+    /* Allocate IO system info struct for this test. */
+    if (!(ios = calloc(1, sizeof(iosystem_desc_t))))
+        return PIO_ENOMEM;
+
+    /* Allocate IO desc struct for this test. */
+    if (!(iodesc = calloc(1, sizeof(io_desc_t))))
+        return PIO_ENOMEM;
+
+    ios->ioproc = 1;
+    ios->io_rank = my_rank;
+    ios->comp_comm = test_comm;
+
+    /* Run the function to test. */
+    /* if ((ret = rearrange_comp2io(ios, iodesc, sbuf, rbuf, nvars))) */
+    /*     return ret; */
+
+    /* Free resources from test. */
+    free(iodesc);
+    free(ios);
+
+    return 0;
+}
+
 /* Run Tests for pio_spmd.c functions. */
 int main(int argc, char **argv)
 {
@@ -831,6 +865,10 @@ int main(int argc, char **argv)
 
         printf("%d running tests for default_subset_partition\n", my_rank);
         if ((ret = test_default_subset_partition(test_comm, my_rank)))
+            return ret;
+
+        printf("%d running tests for rearrange_comp2io\n", my_rank);
+        if ((ret = test_rearrange_comp2io(test_comm, my_rank)))
             return ret;
 
         /* Finalize PIO system. */
