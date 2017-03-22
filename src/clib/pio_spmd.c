@@ -117,17 +117,9 @@ int pio_swapm(void *sendbuf, int *sendcounts, int *sdispls, MPI_Datatype *sendty
 #if PIO_ENABLE_LOGGING
     {
         for (int p = 0; p < ntasks; p++)
-            LOG((3, "sendcounts[%d] = %d", p, sendcounts[p]));
-        for (int p = 0; p < ntasks; p++)
-            LOG((3, "sdispls[%d] = %d", p, sdispls[p]));
-        for (int p = 0; p < ntasks; p++)
-            LOG((3, "sendtypes[%d] = %d", p, sendtypes[p]));
-        for (int p = 0; p < ntasks; p++)
-            LOG((3, "recvcounts[%d] = %d", p, recvcounts[p]));
-        for (int p = 0; p < ntasks; p++)
-            LOG((3, "rdispls[%d] = %d", p, rdispls[p]));
-        for (int p = 0; p < ntasks; p++)
-            LOG((3, "recvtypes[%d] = %d", p, recvtypes[p]));
+            LOG((3, "sendcounts[%d] = %d sdispls[%d] = %d sendtypes[%d] = %d recvcounts[%d] = %d "
+                 "rdispls[%d] = %d recvtypes[%d] = %d", p, sendcounts[p], p, sdispls[p], p,
+                 sendtypes[p], p, recvcounts[p], p, rdispls[p], p, recvtypes[p]));
     }
 #endif /* PIO_ENABLE_LOGGING */
 

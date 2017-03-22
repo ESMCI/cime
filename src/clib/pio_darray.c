@@ -331,21 +331,23 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
     if (!(iodesc = pio_get_iodesc_from_id(ioid)))
         return pio_err(ios, file, PIO_EBADID, __FILE__, __LINE__);
 
-    /* Get var description. */
-    vdesc = file->varlist + varid;
-    LOG((2, "vdesc record %d ndims %d nreqs %d", vdesc->record, vdesc->ndims, vdesc->nreqs));
-
-    /* Is this a record variable? */
-    recordvar = vdesc->record >= 0 ? true : false;
-    LOG((3, "recordvar = %d", recordvar));
-
     /* Check that the local size of the variable passed in matches the
      * size expected by the io descriptor. */
     if (arraylen < iodesc->ndof)
         return pio_err(ios, file, PIO_EINVAL, __FILE__, __LINE__);
 
-    if (iodesc->ndof != arraylen)
-        LOG((1, "User supplied array is larger than expected, arraylen != iodesc->ndof"));
+    LOG((2, "%s arraylen = %d iodesc->ndof = %d",
+         (iodesc->ndof != arraylen) ? "WARNING: iodesc->ndof != arraylen" : "",
+         arraylen, iodesc->ndof));
+
+    /* Get var description. */
+    vdesc = &(file->varlist[varid]);
+    LOG((2, "vdesc record %d ndims %d nreqs %d", vdesc->record, vdesc->ndims,
+         vdesc->nreqs));
+
+    /* Is this a record variable? */
+    recordvar = vdesc->record >= 0 ? true : false;
+    LOG((3, "recordvar = %d", recordvar));
 
     /* Get the size of the MPI type. */
     if ((mpierr = MPI_Type_size(iodesc->basetype, &tsize)))
