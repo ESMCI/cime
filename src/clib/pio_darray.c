@@ -112,12 +112,8 @@ int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
     pioassert(iodesc->rearranger == PIO_REARR_BOX || iodesc->rearranger == PIO_REARR_SUBSET,
               "unknown rearranger", __FILE__, __LINE__);
 
-    /* For netcdf serial writes we collect the data on io nodes and
-     * then move that data one node at a time to the io master node
-     * and write (or read). The buffer size on io task 0 must be as
-     * large as the largest used to accommodate this serial io
-     * method.  */
-    vdesc0 = file->varlist + varids[0];
+    /* Get a pointer to the variable info for the first variable. */
+    vdesc0 = &file->varlist[varids[0]];
 
     /* if the buffer is already in use in pnetcdf we need to flush first */
     if (file->iotype == PIO_IOTYPE_PNETCDF && vdesc0->iobuf)
@@ -125,14 +121,17 @@ int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
 
     pioassert(!vdesc0->iobuf, "buffer overwrite",__FILE__, __LINE__);
 
-    /* Determine total size of aggregated data (all vars/records). */
+    /* Determine total size of aggregated data (all vars/records).
+     * For netcdf serial writes we collect the data on io nodes and
+     * then move that data one node at a time to the io master node
+     * and write (or read). The buffer size on io task 0 must be as
+     * large as the largest used to accommodate this serial io
+     * method.  */
     rlen = 0;
     if (iodesc->llen > 0)
         rlen = iodesc->maxiobuflen * nvars;
 
-    /* Currently there are two rearrangers box=1 and subset=2. */
-    LOG((2, "iodesc->rearranger = %d iodesc->needsfill = %d\n", iodesc->rearranger,
-         iodesc->needsfill));
+    /* Allocate iobuf. */
     if (rlen > 0)
     {
         /* Get the size of the MPI type. */
@@ -152,9 +151,12 @@ int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
                 for (int i = 0; i < iodesc->maxiobuflen; i++)
                     memcpy(&((char *)vdesc0->iobuf)[vsize * (i + nv * iodesc->maxiobuflen)],
                            &((char *)fillvalue)[nv * vsize], vsize);
-    }else if(file->iotype == PIO_IOTYPE_PNETCDF && ios->ioproc){
-	/* this assures that iobuf is allocated on all iotasks thus assuring that the flush_output_buffer call
-	 above is called collectively (from all iotasks) */
+    }
+    else if (file->iotype == PIO_IOTYPE_PNETCDF && ios->ioproc)
+    {
+	/* this assures that iobuf is allocated on all iotasks thus
+	 assuring that the flush_output_buffer call above is called
+	 collectively (from all iotasks) */
         if (!(vdesc0->iobuf = bget(1)))
             return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
         LOG((3, "allocated token for variable buffer"));
