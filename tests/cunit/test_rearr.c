@@ -73,21 +73,21 @@ int test_cmp_rearr_opts()
     ro1.fcd = PIO_REARR_COMM_FC_2D_ENABLE;
     ro2.fcd = PIO_REARR_COMM_FC_2D_ENABLE;
 
-    ro1.comm_fc_opts_comp2io.enable_hs = 0;
-    ro1.comm_fc_opts_comp2io.enable_isend = 0;
-    ro1.comm_fc_opts_comp2io.max_pend_req = 0;
+    ro1.fc_comp2io.enable_hs = 0;
+    ro1.fc_comp2io.enable_isend = 0;
+    ro1.fc_comp2io.max_pend_req = 0;
 
-    ro1.comm_fc_opts_io2comp.enable_hs = 0;
-    ro1.comm_fc_opts_io2comp.enable_isend = 0;
-    ro1.comm_fc_opts_io2comp.max_pend_req = 0;
+    ro1.fc_io2comp.enable_hs = 0;
+    ro1.fc_io2comp.enable_isend = 0;
+    ro1.fc_io2comp.max_pend_req = 0;
     
-    ro2.comm_fc_opts_comp2io.enable_hs = 0;
-    ro2.comm_fc_opts_comp2io.enable_isend = 0;
-    ro2.comm_fc_opts_comp2io.max_pend_req = 0;
+    ro2.fc_comp2io.enable_hs = 0;
+    ro2.fc_comp2io.enable_isend = 0;
+    ro2.fc_comp2io.max_pend_req = 0;
 
-    ro2.comm_fc_opts_io2comp.enable_hs = 0;
-    ro2.comm_fc_opts_io2comp.enable_isend = 0;
-    ro2.comm_fc_opts_io2comp.max_pend_req = 0;
+    ro2.fc_io2comp.enable_hs = 0;
+    ro2.fc_io2comp.enable_isend = 0;
+    ro2.fc_io2comp.max_pend_req = 0;
 
     /* They are equal. */
     if (!cmp_rearr_opts(&ro1, &ro2))
@@ -195,10 +195,10 @@ int test_init_rearr_opts()
     init_rearr_opts(&ios);
 
     if (ios.rearr_opts.comm_type != PIO_REARR_COMM_COLL || ios.rearr_opts.fcd != PIO_REARR_COMM_FC_2D_DISABLE ||
-        ios.rearr_opts.comm_fc_opts_comp2io.enable_hs || ios.rearr_opts.comm_fc_opts_comp2io.enable_isend ||
-        ios.rearr_opts.comm_fc_opts_comp2io.max_pend_req ||
-        ios.rearr_opts.comm_fc_opts_io2comp.enable_hs || ios.rearr_opts.comm_fc_opts_io2comp.enable_isend ||
-        ios.rearr_opts.comm_fc_opts_io2comp.max_pend_req)
+        ios.rearr_opts.fc_comp2io.enable_hs || ios.rearr_opts.fc_comp2io.enable_isend ||
+        ios.rearr_opts.fc_comp2io.max_pend_req ||
+        ios.rearr_opts.fc_io2comp.enable_hs || ios.rearr_opts.fc_io2comp.enable_isend ||
+        ios.rearr_opts.fc_io2comp.max_pend_req)
         return ERR_WRONG;
     
     return 0;
@@ -604,12 +604,12 @@ int test_compute_counts_box(MPI_Comm test_comm)
     iodesc.sindex = NULL;
     iodesc.rearr_opts.comm_type = PIO_REARR_COMM_COLL;
     iodesc.rearr_opts.fcd = PIO_REARR_COMM_FC_2D_DISABLE;
-    iodesc.rearr_opts.comm_fc_opts_comp2io.enable_hs = 0;
-    iodesc.rearr_opts.comm_fc_opts_comp2io.enable_isend = 0;
-    iodesc.rearr_opts.comm_fc_opts_comp2io.max_pend_req = 0;
-    iodesc.rearr_opts.comm_fc_opts_io2comp.enable_hs = 0;
-    iodesc.rearr_opts.comm_fc_opts_io2comp.enable_isend = 0;
-    iodesc.rearr_opts.comm_fc_opts_io2comp.max_pend_req = 0;
+    iodesc.rearr_opts.fc_comp2io.enable_hs = 0;
+    iodesc.rearr_opts.fc_comp2io.enable_isend = 0;
+    iodesc.rearr_opts.fc_comp2io.max_pend_req = 0;
+    iodesc.rearr_opts.fc_io2comp.enable_hs = 0;
+    iodesc.rearr_opts.fc_io2comp.enable_isend = 0;
+    iodesc.rearr_opts.fc_io2comp.max_pend_req = 0;
 
     if ((ret = compute_counts(&ios, &iodesc, maplen, dest_ioproc, dest_ioindex, test_comm)))
         return ret;

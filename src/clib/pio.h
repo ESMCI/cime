@@ -230,10 +230,10 @@ typedef struct rearr_opt
     int fcd;
 
     /** flow control opts, comp to io procs */
-    rearr_comm_fc_opt_t comm_fc_opts_comp2io;
+    rearr_comm_fc_opt_t fc_comp2io;
 
     /** flow control opts, io to comp procs */
-    rearr_comm_fc_opt_t comm_fc_opts_io2comp;
+    rearr_comm_fc_opt_t fc_io2comp;
 } rearr_opt_t;
 
 /**

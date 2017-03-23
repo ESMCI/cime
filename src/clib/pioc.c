@@ -787,12 +787,12 @@ int PIOc_Init_Intracomm_from_F90(int f90_comp_comm,
         LOG((1, "Setting rearranger options, iosys=%d", *iosysidp));
         return PIOc_set_rearr_opts(*iosysidp, rearr_opts->comm_type,
                                    rearr_opts->fcd,
-                                   rearr_opts->comm_fc_opts_comp2io.enable_hs,
-                                   rearr_opts->comm_fc_opts_comp2io.enable_isend,
-                                   rearr_opts->comm_fc_opts_comp2io.max_pend_req,
-                                   rearr_opts->comm_fc_opts_io2comp.enable_hs,
-                                   rearr_opts->comm_fc_opts_io2comp.enable_isend,
-                                   rearr_opts->comm_fc_opts_io2comp.max_pend_req);
+                                   rearr_opts->fc_comp2io.enable_hs,
+                                   rearr_opts->fc_comp2io.enable_isend,
+                                   rearr_opts->fc_comp2io.max_pend_req,
+                                   rearr_opts->fc_io2comp.enable_hs,
+                                   rearr_opts->fc_io2comp.enable_isend,
+                                   rearr_opts->fc_io2comp.max_pend_req);
     }
     return ret;
 }
