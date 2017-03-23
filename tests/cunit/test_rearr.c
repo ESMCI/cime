@@ -864,6 +864,128 @@ int test_rearrange_comp2io(MPI_Comm test_comm, int my_rank)
     return 0;
 }
 
+/* Test function rearrange_io2comp. */
+int test_rearrange_io2comp(MPI_Comm test_comm, int my_rank)
+{
+    iosystem_desc_t *ios;
+    io_desc_t *iodesc;
+    void *sbuf = NULL;
+    void *rbuf = NULL;
+    io_region *ior1;
+    int maplen = 2;
+    PIO_Offset compmap[2] = {1, 0};
+    const int gdimlen[NDIM1] = {8};
+    int ndims = NDIM1;
+    int mpierr;
+    int ret;
+
+    /* Allocate some space for data. */
+    if (!(sbuf = calloc(4, sizeof(int))))
+        return PIO_ENOMEM;
+    if (!(rbuf = calloc(4, sizeof(int))))
+        return PIO_ENOMEM;
+        
+    /* Allocate IO system info struct for this test. */
+    if (!(ios = calloc(1, sizeof(iosystem_desc_t))))
+        return PIO_ENOMEM;
+
+    /* Allocate IO desc struct for this test. */
+    if (!(iodesc = calloc(1, sizeof(io_desc_t))))
+        return PIO_ENOMEM;
+
+    ios->ioproc = 1;
+    ios->io_rank = my_rank;
+    ios->union_comm = test_comm;
+    ios->num_iotasks = TARGET_NTASKS;
+    iodesc->rearranger = PIO_REARR_BOX;
+    iodesc->basetype = MPI_INT;
+
+    /* Set up test for IO task with BOX rearranger to create one type. */
+    ios->ioproc = 1; /* this is IO proc. */
+    ios->num_iotasks = 4; /* The number of IO tasks. */
+    iodesc->rtype = NULL; /* Array of MPI types will be created here. */
+    iodesc->nrecvs = 1; /* Number of types created. */
+    iodesc->basetype = MPI_INT;
+    iodesc->stype = NULL; /* Array of MPI types will be created here. */
+
+    /* The two rearrangers create a different number of send types. */
+    int num_send_types = iodesc->rearranger == PIO_REARR_BOX ? ios->num_iotasks : 1;
+
+    /* Default rearranger options. */
+    iodesc->rearr_opts.comm_type = PIO_REARR_COMM_COLL;
+    iodesc->rearr_opts.fcd = PIO_REARR_COMM_FC_2D_DISABLE;
+
+    /* Set up for determine_fill(). */
+    ios->union_comm = test_comm;
+    ios->io_comm = test_comm;
+    iodesc->ndims = NDIM1;
+    iodesc->rearranger = PIO_REARR_BOX;
+
+    iodesc->ndof = 4;
+
+    /* Set up the IO task info for the test. */
+    ios->ioproc = 1;
+    ios->union_rank = my_rank;
+    ios->num_iotasks = 4;
+    ios->num_comptasks = 4;
+    if (!(ios->ioranks = calloc(ios->num_iotasks, sizeof(int))))
+        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+    for (int i = 0; i < TARGET_NTASKS; i++)
+        ios->ioranks[i] = i;
+
+    /* This is how we allocate a region. */
+    if ((ret = alloc_region2(NULL, NDIM1, &ior1)))
+        return ret;
+    ior1->next = NULL;
+    if (my_rank == 0)
+        ior1->count[0] = 8;
+    
+    iodesc->firstregion = ior1;
+
+    /* Create the box rearranger. */
+    if ((ret = box_rearrange_create(ios, maplen, compmap, gdimlen, ndims, iodesc)))
+        return ret;
+
+    /* Run the function to test. */
+    if ((ret = rearrange_io2comp(ios, iodesc, sbuf, rbuf)))
+        return ret;
+    printf("returned from rearrange_comp2io\n");
+
+    /* We created send types, so free them. */
+    for (int st = 0; st < num_send_types; st++)
+        if (iodesc->stype[st] != PIO_DATATYPE_NULL)        
+            if ((mpierr = MPI_Type_free(&iodesc->stype[st])))
+                MPIERR(mpierr);
+
+    /* We created one receive type, so free it. */
+    if (iodesc->rtype)
+        for (int r = 0; r < iodesc->nrecvs; r++)
+            if (iodesc->rtype[r] != PIO_DATATYPE_NULL)
+                if ((mpierr = MPI_Type_free(&iodesc->rtype[r])))
+                    MPIERR(mpierr);
+
+    /* Free resources allocated in library code. */
+    free(iodesc->rtype);
+    free(iodesc->sindex);
+    free(iodesc->scount);
+    free(iodesc->stype);
+    free(iodesc->rcount);
+    free(iodesc->rfrom);
+    free(iodesc->rindex);
+
+    /* Free resources from test. */
+    free(ior1->start);
+    free(ior1->count);
+    free(ior1);
+    free(ios->ioranks);
+    free(iodesc);
+    free(ios);
+    free(sbuf);
+    free(rbuf);
+
+    return 0;
+}
+
 /* Run Tests for pio_spmd.c functions. */
 int main(int argc, char **argv)
 {
@@ -959,6 +1081,10 @@ int main(int argc, char **argv)
 
         printf("%d running tests for rearrange_comp2io\n", my_rank);
         if ((ret = test_rearrange_comp2io(test_comm, my_rank)))
+            return ret;
+
+        printf("%d running tests for rearrange_io2comp\n", my_rank);
+        if ((ret = test_rearrange_io2comp(test_comm, my_rank)))
             return ret;
 
         /* Finalize PIO system. */

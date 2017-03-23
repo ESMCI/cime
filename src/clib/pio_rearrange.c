@@ -974,7 +974,8 @@ int rearrange_comp2io(iosystem_desc_t *ios, io_desc_t *iodesc, void *sbuf,
 }
 
 /**
- * Moves data from IO tasks to compute tasks.
+ * Moves data from IO tasks to compute tasks. This function is used in
+ * PIOc_read_darray().
  *
  * @param ios pointer to the iosystem_desc_t struct.
  * @param iodesc a pointer to the io_desc_t struct.
