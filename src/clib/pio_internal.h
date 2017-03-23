@@ -152,7 +152,10 @@ extern "C" {
     int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc, int maplen,
                        const int *dest_ioproc, const PIO_Offset *dest_ioindex,
                        MPI_Comm mycomm);
-    
+
+    /* Compute mapping for subset rearranger. */
+    int default_subset_partition(iosystem_desc_t *ios, io_desc_t *iodesc);
+
     /* Check return from MPI function and print error message. */
     void CheckMPIReturn(int ierr, const char *file, int line);
 
@@ -213,7 +216,8 @@ extern "C" {
     int rearrange_io2comp(iosystem_desc_t *ios, io_desc_t *iodesc, void *sbuf, void *rbuf);
 
     /* Move data from compute tasks to IO tasks. */
-    int rearrange_comp2io(iosystem_desc_t *ios, io_desc_t *iodesc, void *sbuf, void *rbuf, int nvars);
+    int rearrange_comp2io(iosystem_desc_t *ios, io_desc_t *iodesc, void *sbuf, void *rbuf,
+                          int nvars);
 
     /* Allocate and initialize storage for decomposition information. */
     int malloc_iodesc(iosystem_desc_t *ios, int piotype, int ndims, io_desc_t **iodesc);

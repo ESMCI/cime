@@ -283,13 +283,14 @@ int create_mpi_datatypes(MPI_Datatype basetype, int msgcnt,
                          const PIO_Offset *mindex, const int *mcount, int *mfrom,
                          MPI_Datatype *mtype)
 {
-    PIO_Offset bsizeT[msgcnt];
     int blocksize;
     int numinds = 0;
     PIO_Offset *lindex = NULL;
     int mpierr; /* Return code from MPI functions. */
 
-    pioassert(mcount && numinds >= 0, "invalid input", __FILE__, __LINE__);
+    pioassert(msgcnt > 0 && mcount, "invalid input", __FILE__, __LINE__);
+
+    PIO_Offset bsizeT[msgcnt];
 
     LOG((1, "create_mpi_datatypes basetype = %d msgcnt = %d", basetype, msgcnt));
     LOG((2, "MPI_BYTE = %d MPI_CHAR = %d MPI_SHORT = %d MPI_INT = %d MPI_DOUBLE = %d",
@@ -313,99 +314,100 @@ int create_mpi_datatypes(MPI_Datatype basetype, int msgcnt,
     int pos = 0;
     int ii = 0;
 
-    /* If there are no messages don't need to create any datatypes. */
-    if (msgcnt > 0)
+    if (mfrom == NULL)
     {
-        if (mfrom == NULL)
-        {
-            LOG((3, "mfrom is NULL"));
-            for (int i = 0; i < msgcnt; i++)
-            {
-                if (mcount[i] > 0)
-                {
-                    /* Look for the largest block of data for io which
-                     * can be expressed in terms of start and
-                     * count. */
-                    bsizeT[ii] = GCDblocksize(mcount[i], lindex + pos);
-                    ii++;
-                    pos += mcount[i];
-                }
-            }
-            blocksize = (int)lgcd_array(ii, bsizeT);
-        }
-        else
-        {
-            blocksize = 1;
-        }
-        LOG((3, "blocksize = %d", blocksize));
-
-        /* pos is an index to the start of each message block. */
-        pos = 0;
+        LOG((3, "mfrom is NULL"));
         for (int i = 0; i < msgcnt; i++)
         {
             if (mcount[i] > 0)
             {
-                int len = mcount[i] / blocksize;
-                int displace[len];
-                if (blocksize == 1)
-                {
-                    if (!mfrom)
-                    {
-                        for (int j = 0; j < len; j++)
-                            displace[j] = (int)(lindex[pos + j]);
-                    }
-                    else
-                    {
-                        int k = 0;
-                        for (int j = 0; j < numinds; j++)
-                            if (mfrom[j] == i)
-                                displace[k++] = (int)(lindex[j]);
-                    }
-
-                }
-                else
-                {
-                    for (int j = 0; j < mcount[i]; j++)
-                        (lindex + pos)[j]++;
-
-                    for (int j = 0; j < len; j++)
-                        displace[j] = ((lindex + pos)[j * blocksize] - 1);
-                }
-
-#if PIO_ENABLE_LOGGING
-                for (int j = 0; j < len; j++)
-                    LOG((3, "displace[%d] = %d", j, displace[j]));
-#endif /* PIO_ENABLE_LOGGING */
-
-                LOG((3, "calling MPI_Type_create_indexed_block len = %d blocksize = %d "
-                     "basetype = %d", len, blocksize, basetype));
-                /* Create an indexed datatype with constant-sized blocks. */
-                if ((mpierr = MPI_Type_create_indexed_block(len, blocksize, displace,
-                                                            basetype, &mtype[i])))
-                    return check_mpi(NULL, mpierr, __FILE__, __LINE__);
-
-                if (mtype[i] == PIO_DATATYPE_NULL)
-                    return pio_err(NULL, NULL, PIO_EINVAL, __FILE__, __LINE__);
-
-                /* Commit the MPI data type. */
-                LOG((3, "about to commit type"));
-                if ((mpierr = MPI_Type_commit(mtype + i)))
-                    return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+                /* Look for the largest block of data for io which
+                 * can be expressed in terms of start and
+                 * count. */
+                bsizeT[ii] = GCDblocksize(mcount[i], lindex + pos);
+                ii++;
                 pos += mcount[i];
             }
         }
-
-        /* Free resources. */
-        if (lindex)
-            free(lindex);
+        blocksize = (int)lgcd_array(ii, bsizeT);
     }
+    else
+    {
+        blocksize = 1;
+    }
+    LOG((3, "blocksize = %d", blocksize));
+    
+    /* pos is an index to the start of each message block. */
+    pos = 0;
+    for (int i = 0; i < msgcnt; i++)
+    {
+        if (mcount[i] > 0)
+        {
+            int len = mcount[i] / blocksize;
+            int displace[len];
+            if (blocksize == 1)
+            {
+                if (!mfrom)
+                {
+                    for (int j = 0; j < len; j++)
+                        displace[j] = (int)(lindex[pos + j]);
+                }
+                else
+                {
+                    int k = 0;
+                    for (int j = 0; j < numinds; j++)
+                        if (mfrom[j] == i)
+                            displace[k++] = (int)(lindex[j]);
+                }
+                
+            }
+            else
+            {
+                for (int j = 0; j < mcount[i]; j++)
+                    (lindex + pos)[j]++;
+                
+                for (int j = 0; j < len; j++)
+                    displace[j] = ((lindex + pos)[j * blocksize] - 1);
+            }
+            
+#if PIO_ENABLE_LOGGING
+            for (int j = 0; j < len; j++)
+                LOG((3, "displace[%d] = %d", j, displace[j]));
+#endif /* PIO_ENABLE_LOGGING */
+            
+            LOG((3, "calling MPI_Type_create_indexed_block len = %d blocksize = %d "
+                 "basetype = %d", len, blocksize, basetype));
+            /* Create an indexed datatype with constant-sized blocks. */
+            if ((mpierr = MPI_Type_create_indexed_block(len, blocksize, displace,
+                                                        basetype, &mtype[i])))
+                return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+            
+            if (mtype[i] == PIO_DATATYPE_NULL)
+                return pio_err(NULL, NULL, PIO_EINVAL, __FILE__, __LINE__);
+            
+            /* Commit the MPI data type. */
+            LOG((3, "about to commit type"));
+            if ((mpierr = MPI_Type_commit(mtype + i)))
+                return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+            pos += mcount[i];
+        }
+    }
+    
+    /* Free resources. */
+    if (lindex)
+        free(lindex);
 
+    LOG((3, "done with create_mpi_datatypes()"));
     return PIO_NOERR;
 }
 
 /**
- * Create the derived MPI datatypes used for comp2io and io2comp
- * transfers.
+ * If needed, create the derived MPI datatypes used for comp2io and
+ * io2comp transfers. 
+ *
+ * If iodesc->stype and iodesc->rtype arrays already exist, this
+ * function does nothing. This function is called from
+ * rearrange_io2comp() and rearrange_comp2io().
  *
  * NOTE from Jim: I am always oriented toward write so recieve
  * always means io tasks and send always means comp tasks. The
@@ -424,12 +426,13 @@ int define_iodesc_datatypes(iosystem_desc_t *ios, io_desc_t *iodesc)
     int ret; /* Return value. */
 
     pioassert(ios && iodesc, "invalid input", __FILE__, __LINE__);
-    LOG((1, "define_iodesc_datatypes ios->ioproc = %d iodesc->rtype = %d iodesc->stype = %d",
-         ios->ioproc, iodesc->rtype, iodesc->stype));
+    LOG((1, "define_iodesc_datatypes ios->ioproc = %d", ios->ioproc));
 
     /* Set up the to transfer data to and from the IO tasks. */
     if (ios->ioproc)
     {
+        /* If the types for the IO tasks have not been created, then
+         * create them. */
         if (!iodesc->rtype)
         {
             if (iodesc->nrecvs > 0)
@@ -470,6 +473,7 @@ int define_iodesc_datatypes(iosystem_desc_t *ios, io_desc_t *iodesc)
     {
         int ntypes;
 
+        LOG((3, "define send types"));
         /* Subset rearranger gets one type; box rearranger gets one
          * type per IO task. */
         if (iodesc->rearranger == PIO_REARR_SUBSET)
@@ -496,6 +500,7 @@ int define_iodesc_datatypes(iosystem_desc_t *ios, io_desc_t *iodesc)
             return pio_err(ios, NULL, ret, __FILE__, __LINE__);
     }
 
+    LOG((3, "done with define_iodesc_datatypes()"));
     return PIO_NOERR;
 }
 
@@ -770,30 +775,24 @@ int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc, int maplen,
 }
 
 /**
- * Moves data from compute tasks to IO tasks.
+ * Moves data from compute tasks to IO tasks. This is called from
+ * PIOc_write_darray_multi().
  *
- * @param ios pointer to the iosystem_desc_t struct
+ * @param ios pointer to the iosystem_desc_t struct.
  * @param iodesc a pointer to the io_desc_t struct.
- * @param sbuf send buffer.
- * @param rbuf receive buffer.
+ * @param sbuf send buffer. May be NULL.
+ * @param rbuf receive buffer. May be NULL.
  * @param nvars number of variables.
  * @returns 0 on success, error code otherwise.
  */
 int rearrange_comp2io(iosystem_desc_t *ios, io_desc_t *iodesc, void *sbuf,
                       void *rbuf, int nvars)
 {
-    int ntasks;
-    int niotasks;
-    int *scount = iodesc->scount;
-    int i, tsize;
-    int *sendcounts;
-    int *recvcounts;
-    int *sdispls;
-    int *rdispls;
-    MPI_Datatype *sendtypes;
-    MPI_Datatype *recvtypes;
-    MPI_Comm mycomm;
-    int mpierr; /* Return code from MPI calls. */
+    int ntasks;       /* Number of tasks in communicator. */
+    int niotasks;     /* Number of IO tasks. */
+    int tsize;        /* Size of the MPI basetype. */
+    MPI_Comm mycomm;  /* Communicator that data is transferred over. */
+    int mpierr;       /* Return code from MPI calls. */
     int ret;
 
 #ifdef TIMING
@@ -801,11 +800,12 @@ int rearrange_comp2io(iosystem_desc_t *ios, io_desc_t *iodesc, void *sbuf,
 #endif
 
     /* Caller must provide these. */
-    pioassert(iodesc && nvars > 0, "invalid input", __FILE__, __LINE__);
+    pioassert(iodesc && iodesc && nvars > 0, "invalid input", __FILE__, __LINE__);
 
-    LOG((2, "rearrange_comp2io nvars = %d iodesc->rearranger = %d", nvars,
+    LOG((1, "rearrange_comp2io nvars = %d iodesc->rearranger = %d", nvars,
          iodesc->rearranger));
 
+    /* Different rearraangers use different communicators. */
     if (iodesc->rearranger == PIO_REARR_BOX)
     {
         mycomm = ios->union_comm;
@@ -821,95 +821,86 @@ int rearrange_comp2io(iosystem_desc_t *ios, io_desc_t *iodesc, void *sbuf,
     if ((mpierr = MPI_Comm_size(mycomm, &ntasks)))
         return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 
-    /* Get the size of the MPI base type. */
-    if ((mpierr = MPI_Type_size(iodesc->basetype, &tsize)))
-        return check_mpi(NULL, mpierr, __FILE__, __LINE__);
-    LOG((3, "ntasks = %d tsize = %d", ntasks, tsize));
+    /* These are parameters to pio_swapm to send data from compute to
+     * IO tasks. */
+    int sendcounts[ntasks];
+    int recvcounts[ntasks];  
+    int sdispls[ntasks];
+    int rdispls[ntasks];
+    MPI_Datatype sendtypes[ntasks];
+    MPI_Datatype recvtypes[ntasks];
 
-    /* Define the MPI data types that will be used for this
-     * io_desc_t. */
-    if ((ret = define_iodesc_datatypes(ios, iodesc)))
-        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
-
-    /* Allocate arrays needed by the pio_swapm() function. */
-    if (!(sendcounts = calloc(ntasks, sizeof(int))))
-        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
-
-    if (!(recvcounts = calloc(ntasks, sizeof(int))))
-        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
-
-    if (!(sdispls = calloc(ntasks, sizeof(int))))
-        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
-
-    if (!(rdispls = calloc(ntasks, sizeof(int))))
-        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
-
-    if (!(sendtypes = malloc(ntasks * sizeof(MPI_Datatype))))
-        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
-
-    if (!(recvtypes = malloc(ntasks * sizeof(MPI_Datatype))))
-        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
-
-    /* Initialize arrays. */
-    for (i = 0; i < ntasks; i++)
+    /* Initialize pio_swapm parameter arrays. */
+    for (int i = 0; i < ntasks; i++)
     {
+        sendcounts[i] = 0;
+        recvcounts[i] = 0;
+        sdispls[i] = 0;
+        rdispls[i] = 0;
         recvtypes[i] = PIO_DATATYPE_NULL;
         sendtypes[i] =  PIO_DATATYPE_NULL;
     }
 
+    /* Get the size of the MPI base type. */
+    if ((mpierr = MPI_Type_size(iodesc->basetype, &tsize)))
+        return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+    LOG((3, "ntasks = %d tsize = %d niotasks = %d", ntasks, tsize, niotasks));
+
+    /* If it has not already been done, define the MPI data types that
+     * will be used for this io_desc_t. */
+    if ((ret = define_iodesc_datatypes(ios, iodesc)))
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+
     /* If this io proc will exchange data with compute tasks create a
      * MPI DataType for that exchange. */
+    LOG((2, "ios->ioproc %d iodesc->nrecvs = %d", ios->ioproc, iodesc->nrecvs));
     if (ios->ioproc && iodesc->nrecvs > 0)
     {
-        for (i = 0; i < iodesc->nrecvs; i++)
+        for (int i = 0; i < iodesc->nrecvs; i++)
         {
             if (iodesc->rtype[i] != PIO_DATATYPE_NULL)
             {
+                LOG((3, "iodesc->rtype[%d] = %d", i, iodesc->rtype[i]));
                 if (iodesc->rearranger == PIO_REARR_SUBSET)
                 {
-                    recvcounts[ i ] = 1;
+                    recvcounts[i] = 1;
 
                     /*  The stride here is the length of the collected array (llen) */
-
 #if PIO_USE_MPISERIAL
-                    if ((mpierr = MPI_Type_hvector(nvars, 1, (MPI_Aint) iodesc->llen * tsize,
-                                                   iodesc->rtype[i], recvtypes + i)))
+                    if ((mpierr = MPI_Type_hvector(nvars, 1, (MPI_Aint)iodesc->llen * tsize,
+                                                   iodesc->rtype[i], &recvtypes[i])))
                         return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 #else
-                    if ((mpierr = MPI_Type_create_hvector(nvars, 1, (MPI_Aint) iodesc->llen * tsize,
-                                                          iodesc->rtype[i], recvtypes + i)))
+                    if ((mpierr = MPI_Type_create_hvector(nvars, 1, (MPI_Aint)iodesc->llen * tsize,
+                                                          iodesc->rtype[i], &recvtypes[i])))
                         return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 #endif /* PIO_USE_MPISERIAL */
+                    pioassert(recvtypes[i] != PIO_DATATYPE_NULL, "bad mpi type", __FILE__, __LINE__);
 
-                    if (recvtypes[i] == PIO_DATATYPE_NULL)
-                        return pio_err(NULL, NULL, PIO_EINVAL, __FILE__, __LINE__);
-
-                    if ((mpierr = MPI_Type_commit(recvtypes + i)))
+                    if ((mpierr = MPI_Type_commit(&recvtypes[i])))
                         return check_mpi(NULL, mpierr, __FILE__, __LINE__);
-
-                    /*recvtypes[ i ] = iodesc->rtype[i]; */
                 }
                 else
                 {
+                    LOG((3, "i = %d iodesc->rfrom[i] = %d recvcounts[iodesc->rfrom[i]] = %d", i,
+                         iodesc->rfrom[i], recvcounts[iodesc->rfrom[i]]));
                     recvcounts[iodesc->rfrom[i]] = 1;
 
 #if PIO_USE_MPISERIAL
                     if ((mpierr = MPI_Type_hvector(nvars, 1, (MPI_Aint)iodesc->llen * tsize,
-                                                   iodesc->rtype[i], recvtypes + iodesc->rfrom[i])))
+                                                   iodesc->rtype[i], &recvtypes[iodesc->rfrom[i]])))
                         return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 #else
                     if ((mpierr = MPI_Type_create_hvector(nvars, 1, (MPI_Aint)iodesc->llen * tsize,
-                                                          iodesc->rtype[i], recvtypes + iodesc->rfrom[i])))
+                                                          iodesc->rtype[i], &recvtypes[iodesc->rfrom[i]])))
                         return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 #endif /* PIO_USE_MPISERIAL */
+                    pioassert(recvtypes[iodesc->rfrom[i]] != PIO_DATATYPE_NULL,  "bad mpi type",
+                              __FILE__, __LINE__);
 
-                    if (recvtypes[iodesc->rfrom[i]] == PIO_DATATYPE_NULL)
-                        return pio_err(NULL, NULL, PIO_EINVAL, __FILE__, __LINE__);
-
-                    if ((mpierr = MPI_Type_commit(recvtypes+iodesc->rfrom[i])))
+                    if ((mpierr = MPI_Type_commit(&recvtypes[iodesc->rfrom[i]])))
                         return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 
-                    /* recvtypes[ iodesc->rfrom[i] ] = iodesc->rtype[i]; */
                     rdispls[iodesc->rfrom[i]] = 0;
                 }
             }
@@ -918,29 +909,28 @@ int rearrange_comp2io(iosystem_desc_t *ios, io_desc_t *iodesc, void *sbuf,
 
     /* On compute tasks loop over iotasks and create a data type for
      * each exchange.  */
-    for (i = 0; i < niotasks; i++)
+    for (int i = 0; i < niotasks; i++)
     {
         int io_comprank = ios->ioranks[i];
         if (iodesc->rearranger == PIO_REARR_SUBSET)
             io_comprank = 0;
 
-        if (scount[i] > 0 && sbuf != NULL)
+        if (iodesc->scount[i] > 0 && sbuf)
         {
+            LOG((3, "io task %d creating sendtypes[%d]", i, io_comprank));
             sendcounts[io_comprank] = 1;
 #if PIO_USE_MPISERIAL
             if ((mpierr = MPI_Type_hvector(nvars, 1, (MPI_Aint)iodesc->ndof * tsize,
-                                           iodesc->stype[i], sendtypes + io_comprank)))
+                                           iodesc->stype[i], &sendtypes[io_comprank])))
                 return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 #else
             if ((mpierr = MPI_Type_create_hvector(nvars, 1, (MPI_Aint)iodesc->ndof * tsize,
-                                                  iodesc->stype[i], sendtypes + io_comprank)))
+                                                  iodesc->stype[i], &sendtypes[io_comprank])))
                 return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 #endif /* PIO_USE_MPISERIAL */
+            pioassert(sendtypes[io_comprank] != PIO_DATATYPE_NULL,  "bad mpi type", __FILE__, __LINE__);
 
-            if (sendtypes[io_comprank] == PIO_DATATYPE_NULL)
-                return pio_err(NULL, NULL, PIO_EINVAL, __FILE__, __LINE__);
-
-            if ((mpierr = MPI_Type_commit(sendtypes + io_comprank)))
+            if ((mpierr = MPI_Type_commit(&sendtypes[io_comprank])))
                 return check_mpi(NULL, mpierr, __FILE__, __LINE__);
         }
         else
@@ -948,7 +938,9 @@ int rearrange_comp2io(iosystem_desc_t *ios, io_desc_t *iodesc, void *sbuf,
             sendcounts[io_comprank] = 0;
         }
     }
+    
     /* Data in sbuf on the compute nodes is sent to rbuf on the ionodes */
+    LOG((2, "about to call pio_swapm for sbuf"));
     if ((ret = pio_swapm(sbuf, sendcounts, sdispls, sendtypes,
                          rbuf, recvcounts, rdispls, recvtypes, mycomm,
                          iodesc->rearr_opts.comm_fc_opts_comp2io.enable_hs,
@@ -957,24 +949,17 @@ int rearrange_comp2io(iosystem_desc_t *ios, io_desc_t *iodesc, void *sbuf,
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
     /* Free the MPI types. */
-    for (i = 0; i < ntasks; i++)
+    for (int i = 0; i < ntasks; i++)
     {
+        LOG((3, "freeing MPI types for task %d", i));
         if (sendtypes[i] != PIO_DATATYPE_NULL)
-            if ((mpierr = MPI_Type_free(sendtypes + i)))
+            if ((mpierr = MPI_Type_free(&sendtypes[i])))
                 return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 
         if (recvtypes[i] != PIO_DATATYPE_NULL)
-            if ((mpierr = MPI_Type_free(recvtypes + i)))
+            if ((mpierr = MPI_Type_free(&recvtypes[i])))
                 return check_mpi(NULL, mpierr, __FILE__, __LINE__);
     }
-
-    /* Free memory. */
-    free(sendcounts);
-    free(recvcounts);
-    free(sdispls);
-    free(rdispls);
-    free(sendtypes);
-    free(recvtypes);
 
 #ifdef TIMING
     GPTLstop("PIO:rearrange_comp2io");
@@ -1524,18 +1509,24 @@ int get_start_and_count_regions(int ndims, const int *gdimlen, int maplen, const
  * only one IO task.  This mapping groups by mpi task id others are
  * possible and may be better for certain decompositions
  *
- * @param ios pointer to the iosystem_desc_t struct
+ * The as yet unrealized vision here is that the user would be able to
+ * supply an alternative subset partitioning function. Requirements of
+ * this function are that there be exactly one io task per compute
+ * task group.
+ *
+ * @param ios pointer to the iosystem_desc_t struct.
  * @param iodesc a pointer to the io_desc_t struct.
  * @returns 0 on success, error code otherwise.
  */
 int default_subset_partition(iosystem_desc_t *ios, io_desc_t *iodesc)
 {
-    int taskratio = ios->num_comptasks / ios->num_iotasks;
     int color;
     int key;
     int mpierr; /* Return value from MPI functions. */
 
     pioassert(ios && iodesc, "invalid input", __FILE__, __LINE__);
+    LOG((1, "default_subset_partition ios->ioproc = %d ios->io_rank = %d "
+         "ios->comp_rank = %d", ios->ioproc, ios->io_rank, ios->comp_rank));
 
     /* Create a new comm for each subset group with the io task in
        rank 0 and only 1 io task per group */
@@ -1546,10 +1537,13 @@ int default_subset_partition(iosystem_desc_t *ios, io_desc_t *iodesc)
     }
     else
     {
+        int taskratio = ios->num_comptasks / ios->num_iotasks;
         key = max(1, ios->comp_rank % taskratio + 1);
         color = min(ios->num_iotasks - 1, ios->comp_rank / taskratio);
     }
-
+    LOG((3, "key = %d color = %d", key, color));
+    
+    /* Create new communicators. */
     if ((mpierr = MPI_Comm_split(ios->comp_comm, color, key, &iodesc->subset_comm)))
         return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 

@@ -705,6 +705,128 @@ int test_box_rearrange_create(MPI_Comm test_comm, int my_rank)
     return 0;
 }
 
+/* Test function default_subset_partition. */
+int test_default_subset_partition(MPI_Comm test_comm, int my_rank)
+{
+    iosystem_desc_t *ios;
+    io_desc_t *iodesc;
+    int mpierr;
+    int ret;
+
+    /* Allocate IO system info struct for this test. */
+    if (!(ios = calloc(1, sizeof(iosystem_desc_t))))
+        return PIO_ENOMEM;
+
+    /* Allocate IO desc struct for this test. */
+    if (!(iodesc = calloc(1, sizeof(io_desc_t))))
+        return PIO_ENOMEM;
+
+    ios->ioproc = 1;
+    ios->io_rank = my_rank;
+    ios->comp_comm = test_comm;
+
+    /* Run the function to test. */
+    if ((ret = default_subset_partition(ios, iodesc)))
+        return ret;
+
+    /* Free the created communicator. */
+    if ((mpierr = MPI_Comm_free(&iodesc->subset_comm)))
+        MPIERR(mpierr);
+
+    /* Free resources from test. */
+    free(iodesc);
+    free(ios);
+
+    return 0;
+}
+
+/* Test function rearrange_comp2io. */
+int test_rearrange_comp2io(MPI_Comm test_comm, int my_rank)
+{
+    iosystem_desc_t *ios;
+    io_desc_t *iodesc;
+    void *sbuf = NULL;
+    void *rbuf = NULL;
+    int nvars = 1;
+    int mpierr;
+    int ret;
+
+    /* Allocate IO system info struct for this test. */
+    if (!(ios = calloc(1, sizeof(iosystem_desc_t))))
+        return PIO_ENOMEM;
+
+    /* Allocate IO desc struct for this test. */
+    if (!(iodesc = calloc(1, sizeof(io_desc_t))))
+        return PIO_ENOMEM;
+
+    ios->ioproc = 1;
+    ios->io_rank = my_rank;
+    ios->union_comm = test_comm;
+    ios->num_iotasks = TARGET_NTASKS;
+    iodesc->rearranger = PIO_REARR_BOX;
+    iodesc->basetype = MPI_INT;
+
+    /* Set up test for IO task with BOX rearranger to create one type. */
+    ios->ioproc = 1; /* this is IO proc. */
+    ios->num_iotasks = 4; /* The number of IO tasks. */
+    iodesc->rtype = NULL; /* Array of MPI types will be created here. */
+    iodesc->nrecvs = 1; /* Number of types created. */
+    iodesc->basetype = MPI_INT;
+    iodesc->stype = NULL; /* Array of MPI types will be created here. */
+
+    /* Allocate space for arrays in iodesc that will be filled in
+     * define_iodesc_datatypes(). */
+    if (!(iodesc->rcount = malloc(iodesc->nrecvs * sizeof(int))))
+        return PIO_ENOMEM;
+    if (!(iodesc->rfrom = malloc(iodesc->nrecvs * sizeof(int))))
+        return PIO_ENOMEM;
+    if (!(iodesc->rindex = malloc(1 * sizeof(PIO_Offset))))
+        return PIO_ENOMEM;
+    iodesc->rindex[0] = 0;
+    iodesc->rcount[0] = 1;
+
+    /* The two rearrangers create a different number of send types. */
+    int num_send_types = iodesc->rearranger == PIO_REARR_BOX ? ios->num_iotasks : 1;
+
+    if (!(iodesc->sindex = malloc(num_send_types * sizeof(PIO_Offset))))
+        return PIO_ENOMEM;
+    if (!(iodesc->scount = malloc(num_send_types * sizeof(int))))
+        return PIO_ENOMEM;
+    for (int st = 0; st < num_send_types; st++)
+    {
+        iodesc->sindex[st] = 0;
+        iodesc->scount[st] = 1;
+    }
+
+    /* Run the function to test. */
+    if ((ret = rearrange_comp2io(ios, iodesc, sbuf, rbuf, nvars)))
+        return ret;
+
+    /* We created send types, so free them. */
+    for (int st = 0; st < num_send_types; st++)
+        if ((mpierr = MPI_Type_free(&iodesc->stype[st])))
+            MPIERR(mpierr);
+
+    /* We created one receive type, so free it. */
+    if ((mpierr = MPI_Type_free(&iodesc->rtype[0])))
+        MPIERR(mpierr);
+
+    /* Free resources. */
+    free(iodesc->rtype);
+    free(iodesc->sindex);
+    free(iodesc->scount);
+    free(iodesc->stype);
+    free(iodesc->rcount);
+    free(iodesc->rfrom);
+    free(iodesc->rindex);
+
+    /* Free resources from test. */
+    free(iodesc);
+    free(ios);
+
+    return 0;
+}
+
 /* Run Tests for pio_spmd.c functions. */
 int main(int argc, char **argv)
 {
@@ -793,6 +915,14 @@ int main(int argc, char **argv)
         printf("%d running tests for box_rearrange_create\n", my_rank);
         if ((ret = test_box_rearrange_create(test_comm, my_rank)))
             return ret;
+
+        printf("%d running tests for default_subset_partition\n", my_rank);
+        if ((ret = test_default_subset_partition(test_comm, my_rank)))
+            return ret;
+
+        /* printf("%d running tests for rearrange_comp2io\n", my_rank); */
+        /* if ((ret = test_rearrange_comp2io(test_comm, my_rank))) */
+        /*     return ret; */
 
         /* Finalize PIO system. */
         if ((ret = PIOc_finalize(iosysid)))
