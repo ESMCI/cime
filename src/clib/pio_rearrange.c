@@ -283,13 +283,14 @@ int create_mpi_datatypes(MPI_Datatype basetype, int msgcnt,
                          const PIO_Offset *mindex, const int *mcount, int *mfrom,
                          MPI_Datatype *mtype)
 {
-    PIO_Offset bsizeT[msgcnt];
     int blocksize;
     int numinds = 0;
     PIO_Offset *lindex = NULL;
     int mpierr; /* Return code from MPI functions. */
 
-    pioassert(mcount && numinds >= 0, "invalid input", __FILE__, __LINE__);
+    pioassert(msgcnt > 0 && mcount, "invalid input", __FILE__, __LINE__);
+
+    PIO_Offset bsizeT[msgcnt];
 
     LOG((1, "create_mpi_datatypes basetype = %d msgcnt = %d", basetype, msgcnt));
     LOG((2, "MPI_BYTE = %d MPI_CHAR = %d MPI_SHORT = %d MPI_INT = %d MPI_DOUBLE = %d",
@@ -313,100 +314,100 @@ int create_mpi_datatypes(MPI_Datatype basetype, int msgcnt,
     int pos = 0;
     int ii = 0;
 
-    /* If there are no messages don't need to create any datatypes. */
-    if (msgcnt > 0)
+    if (mfrom == NULL)
     {
-        if (mfrom == NULL)
-        {
-            LOG((3, "mfrom is NULL"));
-            for (int i = 0; i < msgcnt; i++)
-            {
-                if (mcount[i] > 0)
-                {
-                    /* Look for the largest block of data for io which
-                     * can be expressed in terms of start and
-                     * count. */
-                    bsizeT[ii] = GCDblocksize(mcount[i], lindex + pos);
-                    ii++;
-                    pos += mcount[i];
-                }
-            }
-            blocksize = (int)lgcd_array(ii, bsizeT);
-        }
-        else
-        {
-            blocksize = 1;
-        }
-        LOG((3, "blocksize = %d", blocksize));
-
-        /* pos is an index to the start of each message block. */
-        pos = 0;
+        LOG((3, "mfrom is NULL"));
         for (int i = 0; i < msgcnt; i++)
         {
             if (mcount[i] > 0)
             {
-                int len = mcount[i] / blocksize;
-                int displace[len];
-                if (blocksize == 1)
-                {
-                    if (!mfrom)
-                    {
-                        for (int j = 0; j < len; j++)
-                            displace[j] = (int)(lindex[pos + j]);
-                    }
-                    else
-                    {
-                        int k = 0;
-                        for (int j = 0; j < numinds; j++)
-                            if (mfrom[j] == i)
-                                displace[k++] = (int)(lindex[j]);
-                    }
-
-                }
-                else
-                {
-                    for (int j = 0; j < mcount[i]; j++)
-                        (lindex + pos)[j]++;
-
-                    for (int j = 0; j < len; j++)
-                        displace[j] = ((lindex + pos)[j * blocksize] - 1);
-                }
-
-#if PIO_ENABLE_LOGGING
-                for (int j = 0; j < len; j++)
-                    LOG((3, "displace[%d] = %d", j, displace[j]));
-#endif /* PIO_ENABLE_LOGGING */
-
-                LOG((3, "calling MPI_Type_create_indexed_block len = %d blocksize = %d "
-                     "basetype = %d", len, blocksize, basetype));
-                /* Create an indexed datatype with constant-sized blocks. */
-                if ((mpierr = MPI_Type_create_indexed_block(len, blocksize, displace,
-                                                            basetype, &mtype[i])))
-                    return check_mpi(NULL, mpierr, __FILE__, __LINE__);
-
-                if (mtype[i] == PIO_DATATYPE_NULL)
-                    return pio_err(NULL, NULL, PIO_EINVAL, __FILE__, __LINE__);
-
-                /* Commit the MPI data type. */
-                LOG((3, "about to commit type"));
-                if ((mpierr = MPI_Type_commit(mtype + i)))
-                    return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+                /* Look for the largest block of data for io which
+                 * can be expressed in terms of start and
+                 * count. */
+                bsizeT[ii] = GCDblocksize(mcount[i], lindex + pos);
+                ii++;
                 pos += mcount[i];
             }
         }
-
-        /* Free resources. */
-        if (lindex)
-            free(lindex);
+        blocksize = (int)lgcd_array(ii, bsizeT);
     }
+    else
+    {
+        blocksize = 1;
+    }
+    LOG((3, "blocksize = %d", blocksize));
+    
+    /* pos is an index to the start of each message block. */
+    pos = 0;
+    for (int i = 0; i < msgcnt; i++)
+    {
+        if (mcount[i] > 0)
+        {
+            int len = mcount[i] / blocksize;
+            int displace[len];
+            if (blocksize == 1)
+            {
+                if (!mfrom)
+                {
+                    for (int j = 0; j < len; j++)
+                        displace[j] = (int)(lindex[pos + j]);
+                }
+                else
+                {
+                    int k = 0;
+                    for (int j = 0; j < numinds; j++)
+                        if (mfrom[j] == i)
+                            displace[k++] = (int)(lindex[j]);
+                }
+                
+            }
+            else
+            {
+                for (int j = 0; j < mcount[i]; j++)
+                    (lindex + pos)[j]++;
+                
+                for (int j = 0; j < len; j++)
+                    displace[j] = ((lindex + pos)[j * blocksize] - 1);
+            }
+            
+#if PIO_ENABLE_LOGGING
+            for (int j = 0; j < len; j++)
+                LOG((3, "displace[%d] = %d", j, displace[j]));
+#endif /* PIO_ENABLE_LOGGING */
+            
+            LOG((3, "calling MPI_Type_create_indexed_block len = %d blocksize = %d "
+                 "basetype = %d", len, blocksize, basetype));
+            /* Create an indexed datatype with constant-sized blocks. */
+            if ((mpierr = MPI_Type_create_indexed_block(len, blocksize, displace,
+                                                        basetype, &mtype[i])))
+                return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+            
+            if (mtype[i] == PIO_DATATYPE_NULL)
+                return pio_err(NULL, NULL, PIO_EINVAL, __FILE__, __LINE__);
+            
+            /* Commit the MPI data type. */
+            LOG((3, "about to commit type"));
+            if ((mpierr = MPI_Type_commit(mtype + i)))
+                return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+            pos += mcount[i];
+        }
+    }
+    
+    /* Free resources. */
+    if (lindex)
+        free(lindex);
 
     LOG((3, "done with create_mpi_datatypes()"));
     return PIO_NOERR;
 }
 
 /**
- * Create the derived MPI datatypes used for comp2io and io2comp
- * transfers.
+ * If needed, create the derived MPI datatypes used for comp2io and
+ * io2comp transfers. 
+ *
+ * If iodesc->stype and iodesc->rtype arrays already exist, this
+ * function does nothing. This function is called from
+ * rearrange_io2comp() and rearrange_comp2io().
  *
  * NOTE from Jim: I am always oriented toward write so recieve
  * always means io tasks and send always means comp tasks. The
@@ -430,6 +431,8 @@ int define_iodesc_datatypes(iosystem_desc_t *ios, io_desc_t *iodesc)
     /* Set up the to transfer data to and from the IO tasks. */
     if (ios->ioproc)
     {
+        /* If the types for the IO tasks have not been created, then
+         * create them. */
         if (!iodesc->rtype)
         {
             if (iodesc->nrecvs > 0)
@@ -843,8 +846,8 @@ int rearrange_comp2io(iosystem_desc_t *ios, io_desc_t *iodesc, void *sbuf,
         return check_mpi(NULL, mpierr, __FILE__, __LINE__);
     LOG((3, "ntasks = %d tsize = %d niotasks = %d", ntasks, tsize, niotasks));
 
-    /* Define the MPI data types that will be used for this
-     * io_desc_t. */
+    /* If it has not already been done, define the MPI data types that
+     * will be used for this io_desc_t. */
     if ((ret = define_iodesc_datatypes(ios, iodesc)))
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
