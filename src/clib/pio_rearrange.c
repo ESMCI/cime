@@ -1190,11 +1190,18 @@ int determine_fill(iosystem_desc_t *ios, io_desc_t *iodesc, const int *gdimlen,
 int box_rearrange_create(iosystem_desc_t *ios, int maplen, const PIO_Offset *compmap,
                          const int *gdimlen, int ndims, io_desc_t *iodesc)
 {
+    int offset_size;           /* Size of the MPI_OFFSET type. */
+    int mpierr; /* Return code from MPI functions. */
+    int ret;
+
+    /* Check inputs. */
+    pioassert(ios && maplen >= 0 && compmap && gdimlen && ndims > 0 && iodesc,
+              "invalid input", __FILE__, __LINE__);
+
     int nprocs = ios->num_comptasks;
     int nioprocs = ios->num_iotasks;
     PIO_Offset gstride[ndims];
     PIO_Offset start[ndims], count[ndims];
-    int offset_size;           /* Size of the MPI_OFFSET type. */
     int dest_ioproc[maplen];
     PIO_Offset dest_ioindex[maplen];
     int sendcounts[nprocs];
@@ -1203,13 +1210,6 @@ int box_rearrange_create(iosystem_desc_t *ios, int maplen, const PIO_Offset *com
     int rdispls[nprocs];
     MPI_Datatype dtypes[nprocs]; /* Array of MPI_OFFSET types for send/recieve for swapm(). */
     PIO_Offset iomaplen[nioprocs];
-    int mpierr; /* Return code from MPI functions. */
-    int ret;
-
-    /* Check inputs. */
-    pioassert(ios && maplen >= 0 && compmap && gdimlen && ndims > 0 && iodesc,
-              "invalid input", __FILE__, __LINE__);
-
     LOG((1, "box_rearrange_create maplen = %d ndims = %d", maplen, ndims));
 
     iodesc->rearranger = PIO_REARR_BOX;
