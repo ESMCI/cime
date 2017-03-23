@@ -886,10 +886,8 @@ int rearrange_comp2io(iosystem_desc_t *ios, io_desc_t *iodesc, void *sbuf,
                 else
                 {
                     LOG((3, "exchanging data for box rearranger"));                    
-                    LOG((3, "i = %d", i));
-                    LOG((3, "i = %d iodesc->rfrom[i] = %d", i, iodesc->rfrom[i]));
-                    /* LOG((3, "i = %d iodesc->rfrom[i] = %d recvcounts[iodesc->rfrom[i]] = %d", i, */
-                    /*      iodesc->rfrom[i], recvcounts[iodesc->rfrom[i]])); */
+                    LOG((3, "i = %d iodesc->rfrom[i] = %d recvcounts[iodesc->rfrom[i]] = %d", i,
+                         iodesc->rfrom[i], recvcounts[iodesc->rfrom[i]]));
                     recvcounts[iodesc->rfrom[i]] = 1;
 
 #if PIO_USE_MPISERIAL
