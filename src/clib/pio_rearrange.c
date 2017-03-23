@@ -11,12 +11,13 @@
  * Internal library util function to initialize rearranger
  * options. This is used in PIOc_Init_Intracomm().
  *
+ * NOTE: The old default for max pending requests was 64 - we no
+ * longer use it.
+ *
  * @param iosys pointer to iosystem descriptor
  */
 void init_rearr_opts(iosystem_desc_t *iosys)
 {
-    /* The old default for max pending requests was 64 - we no longer use it*/
-
     /* Disable handshake /isend and set max_pend_req = 0 to turn of throttling */
     const rearr_comm_fc_opt_t def_coll_comm_fc_opts = { false, false, 0 };
 
@@ -275,7 +276,7 @@ int compute_maxIObuffersize(MPI_Comm io_comm, io_desc_t *iodesc)
  * to be put on each mpi message/task.
  * @param mfrom A pointer to the previous structure in the read/write
  * list. This is always NULL for the BOX rearranger.
- * @param mtype pointer to an array of length msgcnt which gets the
+ * @param mtype pointer to an array (length msgcnt) which gets the
  * created datatypes.
  * @returns 0 on success, error code otherwise.
  */
@@ -288,6 +289,7 @@ int create_mpi_datatypes(MPI_Datatype basetype, int msgcnt,
     PIO_Offset *lindex = NULL;
     int mpierr; /* Return code from MPI functions. */
 
+    /* Check inputs. */
     pioassert(msgcnt > 0 && mcount, "invalid input", __FILE__, __LINE__);
 
     PIO_Offset bsizeT[msgcnt];
@@ -447,21 +449,13 @@ int define_iodesc_datatypes(iosystem_desc_t *ios, io_desc_t *iodesc)
                 for (int i = 0; i < iodesc->nrecvs; i++)
                     iodesc->rtype[i] = PIO_DATATYPE_NULL;
 
-                /* Create the datatypes, which will be used both to
-                 * receive and to send data. */
-                LOG((3, "about to call create_mpi_datatypes for IO MPI types"));
-                if (iodesc->rearranger == PIO_REARR_SUBSET)
-                {
-                    if ((ret = create_mpi_datatypes(iodesc->basetype, iodesc->nrecvs, iodesc->rindex,
-                                                    iodesc->rcount, iodesc->rfrom, iodesc->rtype)))
-                        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
-                }
-                else
-                {
-                    if ((ret = create_mpi_datatypes(iodesc->basetype, iodesc->nrecvs, iodesc->rindex,
-                                                    iodesc->rcount, NULL, iodesc->rtype)))
-                        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
-                }
+                /* The different rearrangers get different values for mfrom. */
+                int *mfrom = iodesc->rearranger == PIO_REARR_SUBSET ? iodesc->rfrom : NULL;
+                
+                /* Create the MPI datatypes. */
+                if ((ret = create_mpi_datatypes(iodesc->basetype, iodesc->nrecvs, iodesc->rindex,
+                                                iodesc->rcount, mfrom, iodesc->rtype)))
+                    return pio_err(ios, NULL, ret, __FILE__, __LINE__);
             }
         }
     }
@@ -473,13 +467,9 @@ int define_iodesc_datatypes(iosystem_desc_t *ios, io_desc_t *iodesc)
     {
         int ntypes;
 
-        LOG((3, "define send types"));
         /* Subset rearranger gets one type; box rearranger gets one
          * type per IO task. */
-        if (iodesc->rearranger == PIO_REARR_SUBSET)
-            ntypes = 1;
-        else
-            ntypes = ios->num_iotasks;
+        ntypes = iodesc->rearranger == PIO_REARR_SUBSET ? 1 : ios->num_iotasks;
 
         /* Allocate memory for array of MPI types for the computation tasks. */
         if (!(iodesc->stype = malloc(ntypes * sizeof(MPI_Datatype))))
@@ -521,8 +511,8 @@ int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc, int maplen,
                    const int *dest_ioproc, const PIO_Offset *dest_ioindex,
                    MPI_Comm mycomm)
 {
-    int rank;   /* Rank of this task. */
-    int ntasks; /* Number of tasks in mycomm. */
+    int rank;        /* Rank of this task. */
+    int ntasks;      /* Number of tasks in mycomm. */
     int *recv_buf = NULL;
     int nrecvs;
     int offset_size; /* Size of the MPI_OFFSET type. */
@@ -738,7 +728,6 @@ int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc, int maplen,
             recv_counts[iodesc->rfrom[i]] = iodesc->rcount[i];
             totalrecv += iodesc->rcount[i];
         }
-        LOG((3, "totalrecv = %d", totalrecv));
         
         recv_displs[0] = 0;
         for (int i = 1; i < nrecvs; i++)

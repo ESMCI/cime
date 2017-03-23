@@ -220,34 +220,40 @@ int test_misc()
 int test_create_mpi_datatypes()
 {
     MPI_Datatype basetype = MPI_INT;
-    int msgcnt = 1;
-    PIO_Offset mindex[4] = {0, 0, 0, 0};
-    int mcount[4] = {1, 1, 1, 1};
     int *mfrom = NULL;
-    MPI_Datatype mtype;
     int mpierr;
     int ret;
-
-    /* Create an MPI data type. */
-    if ((ret = create_mpi_datatypes(basetype, msgcnt, mindex, mcount, mfrom, &mtype)))
-        return ret;
-
-    /* Free the type. */
-    if ((mpierr = MPI_Type_free(&mtype)))
-        return ERR_WRONG;
-
-    /* Change our parameters. */
-    msgcnt = 4;
-    MPI_Datatype mtype2[4];
     
-    /* Create 4 MPI data types. */
-    if ((ret = create_mpi_datatypes(basetype, msgcnt, mindex, mcount, mfrom, mtype2)))
-        return ret;
-
-    /* Free them. */
-    for (int t = 0; t < 4; t++)
-        if ((mpierr = MPI_Type_free(&mtype2[t])))
+    {
+        int msgcnt = 1;
+        PIO_Offset mindex[1] = {0};
+        int mcount[1] = {1};
+        MPI_Datatype mtype;
+        
+        /* Create an MPI data type. */
+        if ((ret = create_mpi_datatypes(basetype, msgcnt, mindex, mcount, mfrom, &mtype)))
+            return ret;
+        
+        /* Free the type. */
+        if ((mpierr = MPI_Type_free(&mtype)))
             return ERR_WRONG;
+    }
+
+    {
+        int msgcnt = 4;
+        PIO_Offset mindex[4] = {0, 0, 0, 0};
+        int mcount[4] = {1, 1, 1, 1};
+        MPI_Datatype mtype2[4];
+
+        /* Create 4 MPI data types. */
+        if ((ret = create_mpi_datatypes(basetype, msgcnt, mindex, mcount, mfrom, mtype2)))
+            return ret;
+        
+        /* Free them. */
+        for (int t = 0; t < 4; t++)
+            if ((mpierr = MPI_Type_free(&mtype2[t])))
+                return ERR_WRONG;
+    }
     
     return 0;
 }
