@@ -749,9 +749,20 @@ int test_rearrange_comp2io(MPI_Comm test_comm, int my_rank)
     void *sbuf = NULL;
     void *rbuf = NULL;
     int nvars = 1;
+    io_region *ior1;
+    int maplen = 2;
+    PIO_Offset compmap[2] = {1, 0};
+    const int gdimlen[NDIM1] = {8};
+    int ndims = NDIM1;
     int mpierr;
     int ret;
 
+    /* Allocate some space for data. */
+    if (!(sbuf = calloc(4, sizeof(int))))
+        return PIO_ENOMEM;
+    if (!(rbuf = calloc(4, sizeof(int))))
+        return PIO_ENOMEM;
+        
     /* Allocate IO system info struct for this test. */
     if (!(ios = calloc(1, sizeof(iosystem_desc_t))))
         return PIO_ENOMEM;
@@ -775,44 +786,63 @@ int test_rearrange_comp2io(MPI_Comm test_comm, int my_rank)
     iodesc->basetype = MPI_INT;
     iodesc->stype = NULL; /* Array of MPI types will be created here. */
 
-    /* Allocate space for arrays in iodesc that will be filled in
-     * define_iodesc_datatypes(). */
-    if (!(iodesc->rcount = malloc(iodesc->nrecvs * sizeof(int))))
-        return PIO_ENOMEM;
-    if (!(iodesc->rfrom = malloc(iodesc->nrecvs * sizeof(int))))
-        return PIO_ENOMEM;
-    if (!(iodesc->rindex = malloc(1 * sizeof(PIO_Offset))))
-        return PIO_ENOMEM;
-    iodesc->rindex[0] = 0;
-    iodesc->rcount[0] = 1;
-
     /* The two rearrangers create a different number of send types. */
     int num_send_types = iodesc->rearranger == PIO_REARR_BOX ? ios->num_iotasks : 1;
 
-    if (!(iodesc->sindex = malloc(num_send_types * sizeof(PIO_Offset))))
-        return PIO_ENOMEM;
-    if (!(iodesc->scount = malloc(num_send_types * sizeof(int))))
-        return PIO_ENOMEM;
-    for (int st = 0; st < num_send_types; st++)
-    {
-        iodesc->sindex[st] = 0;
-        iodesc->scount[st] = 1;
-    }
+    /* Default rearranger options. */
+    iodesc->rearr_opts.comm_type = PIO_REARR_COMM_COLL;
+    iodesc->rearr_opts.fcd = PIO_REARR_COMM_FC_2D_DISABLE;
+
+    /* Set up for determine_fill(). */
+    ios->union_comm = test_comm;
+    ios->io_comm = test_comm;
+    iodesc->ndims = NDIM1;
+    iodesc->rearranger = PIO_REARR_BOX;
+
+    iodesc->ndof = 4;
+
+    /* Set up the IO task info for the test. */
+    ios->ioproc = 1;
+    ios->union_rank = my_rank;
+    ios->num_iotasks = 4;
+    ios->num_comptasks = 4;
+    if (!(ios->ioranks = calloc(ios->num_iotasks, sizeof(int))))
+        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+    for (int i = 0; i < TARGET_NTASKS; i++)
+        ios->ioranks[i] = i;
+
+    /* This is how we allocate a region. */
+    if ((ret = alloc_region2(NULL, NDIM1, &ior1)))
+        return ret;
+    ior1->next = NULL;
+    if (my_rank == 0)
+        ior1->count[0] = 8;
+    
+    iodesc->firstregion = ior1;
+
+    /* Create the box rearranger. */
+    if ((ret = box_rearrange_create(ios, maplen, compmap, gdimlen, ndims, iodesc)))
+        return ret;
 
     /* Run the function to test. */
     if ((ret = rearrange_comp2io(ios, iodesc, sbuf, rbuf, nvars)))
         return ret;
+    printf("returned from rearrange_comp2io\n");
 
     /* We created send types, so free them. */
     for (int st = 0; st < num_send_types; st++)
-        if ((mpierr = MPI_Type_free(&iodesc->stype[st])))
-            MPIERR(mpierr);
+        if (iodesc->stype[st] != PIO_DATATYPE_NULL)        
+            if ((mpierr = MPI_Type_free(&iodesc->stype[st])))
+                MPIERR(mpierr);
 
     /* We created one receive type, so free it. */
-    if ((mpierr = MPI_Type_free(&iodesc->rtype[0])))
-        MPIERR(mpierr);
+    if (iodesc->rtype)
+        for (int r = 0; r < iodesc->nrecvs; r++)
+            if (iodesc->rtype[r] != PIO_DATATYPE_NULL)
+                if ((mpierr = MPI_Type_free(&iodesc->rtype[r])))
+                    MPIERR(mpierr);
 
-    /* Free resources. */
+    /* Free resources allocated in library code. */
     free(iodesc->rtype);
     free(iodesc->sindex);
     free(iodesc->scount);
@@ -822,8 +852,14 @@ int test_rearrange_comp2io(MPI_Comm test_comm, int my_rank)
     free(iodesc->rindex);
 
     /* Free resources from test. */
+    free(ior1->start);
+    free(ior1->count);
+    free(ior1);
+    free(ios->ioranks);
     free(iodesc);
     free(ios);
+    free(sbuf);
+    free(rbuf);
 
     return 0;
 }

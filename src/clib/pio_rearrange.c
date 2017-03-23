@@ -387,7 +387,7 @@ int create_mpi_datatypes(MPI_Datatype basetype, int msgcnt,
             
             /* Commit the MPI data type. */
             LOG((3, "about to commit type"));
-            if ((mpierr = MPI_Type_commit(mtype + i)))
+            if ((mpierr = MPI_Type_commit(&mtype[i])))
                 return check_mpi(NULL, mpierr, __FILE__, __LINE__);
             pos += mcount[i];
         }
@@ -505,8 +505,9 @@ int define_iodesc_datatypes(iosystem_desc_t *ios, io_desc_t *iodesc)
 }
 
 /**
- * Completes the mapping for the box rearranger. This function is not
- * used for the subset rearranger.
+ * Completes the mapping for the box rearranger. This function is call
+ * from box_rearrange_create(). It is not used for the subset
+ * rearranger.
  *
  * @param ios pointer to the iosystem_desc_t struct.
  * @param iodesc a pointer to the io_desc_t struct.
@@ -860,9 +861,11 @@ int rearrange_comp2io(iosystem_desc_t *ios, io_desc_t *iodesc, void *sbuf,
         {
             if (iodesc->rtype[i] != PIO_DATATYPE_NULL)
             {
-                LOG((3, "iodesc->rtype[%d] = %d", i, iodesc->rtype[i]));
+                LOG((3, "iodesc->rtype[%d] = %d iodesc->rearranger = %d", i, iodesc->rtype[i],
+                        iodesc->rearranger));
                 if (iodesc->rearranger == PIO_REARR_SUBSET)
                 {
+                    LOG((3, "exchanging data for subset rearranger"));
                     recvcounts[i] = 1;
 
                     /*  The stride here is the length of the collected array (llen) */
@@ -882,8 +885,11 @@ int rearrange_comp2io(iosystem_desc_t *ios, io_desc_t *iodesc, void *sbuf,
                 }
                 else
                 {
-                    LOG((3, "i = %d iodesc->rfrom[i] = %d recvcounts[iodesc->rfrom[i]] = %d", i,
-                         iodesc->rfrom[i], recvcounts[iodesc->rfrom[i]]));
+                    LOG((3, "exchanging data for box rearranger"));                    
+                    LOG((3, "i = %d", i));
+                    LOG((3, "i = %d iodesc->rfrom[i] = %d", i, iodesc->rfrom[i]));
+                    /* LOG((3, "i = %d iodesc->rfrom[i] = %d recvcounts[iodesc->rfrom[i]] = %d", i, */
+                    /*      iodesc->rfrom[i], recvcounts[iodesc->rfrom[i]])); */
                     recvcounts[iodesc->rfrom[i]] = 1;
 
 #if PIO_USE_MPISERIAL
@@ -915,6 +921,7 @@ int rearrange_comp2io(iosystem_desc_t *ios, io_desc_t *iodesc, void *sbuf,
         if (iodesc->rearranger == PIO_REARR_SUBSET)
             io_comprank = 0;
 
+        LOG((3, "i = %d iodesc->scount[i] = %d", i, iodesc->scount[i]));
         if (iodesc->scount[i] > 0 && sbuf)
         {
             LOG((3, "io task %d creating sendtypes[%d]", i, io_comprank));
