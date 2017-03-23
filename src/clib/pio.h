@@ -204,10 +204,10 @@ enum PIO_REARR_COMM_FC_DIR
 typedef struct rearr_comm_fc_opt
 {
     /** Enable handshake */
-    bool enable_hs;
+    bool hs;
 
     /** Enable isends - if false use blocking sends */
-    bool enable_isend;
+    bool isend;
 
     /** Max pending requests
      * (PIO_REARR_COMM_UNLIMITED_PEND_REQ => unlimited pend req).
@@ -230,10 +230,10 @@ typedef struct rearr_opt
     int fcd;
 
     /** flow control opts, comp to io procs */
-    rearr_comm_fc_opt_t fc_comp2io;
+    rearr_comm_fc_opt_t comp2io;
 
     /** flow control opts, io to comp procs */
-    rearr_comm_fc_opt_t fc_io2comp;
+    rearr_comm_fc_opt_t io2comp;
 } rearr_opt_t;
 
 /**

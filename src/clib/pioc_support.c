@@ -2228,17 +2228,17 @@ bool cmp_rearr_comm_fc_opts(const rearr_comm_fc_opt_t *opt,
 
     assert(opt && exp_opt);
 
-    if (opt->enable_hs != exp_opt->enable_hs)
+    if (opt->hs != exp_opt->hs)
     {
-        LOG((1, "Warning rearranger enable_hs = %s, expected = %s",
-             opt->enable_hs ? "TRUE" : "FALSE", exp_opt->enable_hs ? "TRUE" : "FALSE"));
+        LOG((1, "Warning rearranger hs = %s, expected = %s",
+             opt->hs ? "TRUE" : "FALSE", exp_opt->hs ? "TRUE" : "FALSE"));
         is_same = false;
     }
 
-    if (opt->enable_isend != exp_opt->enable_isend)
+    if (opt->isend != exp_opt->isend)
     {
-        LOG((1, "Warning rearranger enable_isend = %s, expected = %s",
-             opt->enable_isend ? "TRUE" : "FALSE", exp_opt->enable_isend ? "TRUE" : "FALSE"));
+        LOG((1, "Warning rearranger isend = %s, expected = %s",
+             opt->isend ? "TRUE" : "FALSE", exp_opt->isend ? "TRUE" : "FALSE"));
         is_same = false;
     }
 
@@ -2281,10 +2281,10 @@ bool cmp_rearr_opts(const rearr_opt_t *rearr_opts, const rearr_opt_t *exp_rearr_
         is_same = false;
     }
 
-    is_same = is_same && cmp_rearr_comm_fc_opts(&(rearr_opts->fc_comp2io),
-                                                &(exp_rearr_opts->fc_comp2io));
-    is_same = is_same && cmp_rearr_comm_fc_opts(&(rearr_opts->fc_io2comp),
-                                                &(exp_rearr_opts->fc_io2comp));
+    is_same = is_same && cmp_rearr_comm_fc_opts(&(rearr_opts->comp2io),
+                                                &(exp_rearr_opts->comp2io));
+    is_same = is_same && cmp_rearr_comm_fc_opts(&(rearr_opts->io2comp),
+                                                &(exp_rearr_opts->io2comp));
 
     return is_same;
 }
@@ -2328,29 +2328,29 @@ int check_and_reset_rearr_opts(rearr_opt_t *rearr_opt)
         if (rearr_opt->fcd == PIO_REARR_COMM_FC_2D_DISABLE)
         {
             /* Compare and log user and default opts. */
-            cmp_rearr_comm_fc_opts(&(rearr_opt->fc_comp2io),
+            cmp_rearr_comm_fc_opts(&(rearr_opt->comp2io),
                                    &def_comm_nofc_opts);
-            cmp_rearr_comm_fc_opts(&(rearr_opt->fc_io2comp),
+            cmp_rearr_comm_fc_opts(&(rearr_opt->io2comp),
                                    &def_comm_nofc_opts);
             /* Hard reset flow control opts to defaults. */
-            rearr_opt->fc_comp2io = def_comm_nofc_opts;
-            rearr_opt->fc_io2comp = def_comm_nofc_opts;
+            rearr_opt->comp2io = def_comm_nofc_opts;
+            rearr_opt->io2comp = def_comm_nofc_opts;
         }
         else if (rearr_opt->fcd == PIO_REARR_COMM_FC_1D_COMP2IO)
         {
             /* Compare and log user and default opts. */
-            cmp_rearr_comm_fc_opts(&(rearr_opt->fc_io2comp),
+            cmp_rearr_comm_fc_opts(&(rearr_opt->io2comp),
                                    &def_comm_nofc_opts);
             /* Hard reset io2comp dir to defaults. */
-            rearr_opt->fc_io2comp = def_comm_nofc_opts;
+            rearr_opt->io2comp = def_comm_nofc_opts;
         }
         else if (rearr_opt->fcd == PIO_REARR_COMM_FC_1D_IO2COMP)
         {
             /* Compare and log user and default opts. */
-            cmp_rearr_comm_fc_opts(&(rearr_opt->fc_comp2io),
+            cmp_rearr_comm_fc_opts(&(rearr_opt->comp2io),
                                    &def_comm_nofc_opts);
             /* Hard reset comp2io dir to defaults. */
-            rearr_opt->fc_comp2io = def_comm_nofc_opts;
+            rearr_opt->comp2io = def_comm_nofc_opts;
         }
         else
         {
@@ -2366,12 +2366,12 @@ int check_and_reset_rearr_opts(rearr_opt_t *rearr_opt)
         return PIO_EINVAL;
     }
 
-    if (( (rearr_opt->fc_comp2io.max_pend_req !=
+    if (( (rearr_opt->comp2io.max_pend_req !=
             PIO_REARR_COMM_UNLIMITED_PEND_REQ) &&
-          (rearr_opt->fc_comp2io.max_pend_req < 0)  ) ||
-        ( (rearr_opt->fc_io2comp.max_pend_req !=
+          (rearr_opt->comp2io.max_pend_req < 0)  ) ||
+        ( (rearr_opt->io2comp.max_pend_req !=
             PIO_REARR_COMM_UNLIMITED_PEND_REQ) &&
-          (rearr_opt->fc_io2comp.max_pend_req < 0)  ))
+          (rearr_opt->io2comp.max_pend_req < 0)  ))
         return PIO_EINVAL;
 
     return PIO_NOERR;
