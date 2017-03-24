@@ -1812,6 +1812,28 @@ int test_decomp_public_2(int my_test_size, int my_rank, int iosysid, int dim_len
     return 0;
 }
 
+/* Test some decomp public API functions. */
+int test_decomp_2(int my_test_size, int my_rank, int iosysid, int dim_len,
+                  MPI_Comm test_comm, int async)
+{
+    int ioid;
+    char nc_filename[NC_MAX_NAME + 1]; /* Test decomp filename (netcdf version). */
+    int ret;
+
+    /* This will be our file name for writing out decompositions. */
+    sprintf(nc_filename, "nc_decomp_%s_rank_%d_async_%d.nc", TEST_NAME, my_rank, async);
+
+    /* Decompose the data over the tasks. */
+    if ((ret = create_decomposition(my_test_size, my_rank, iosysid, dim_len, &ioid)))
+        return ret;
+
+    /* Free the PIO decomposition. */
+    if ((ret = PIOc_freedecomp(iosysid, ioid)))
+        ERR(ret);
+
+    return 0;
+}
+
 /* Run all the tests. */
 int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm test_comm,
              int async)
@@ -1856,6 +1878,10 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
     if (!async)
         if ((ret = test_decomp_public(my_test_size, my_rank, iosysid, DIM_LEN, test_comm, async)))
             return ret;
+
+    /* This is a simple test that just creates a decomp. */
+    /* if ((ret = test_decomp_2(my_test_size, my_rank, iosysid, DIM_LEN, test_comm, async))) */
+    /*     return ret; */
 
     /* This is a simple test that just writes the decomp. */
     if (!async)

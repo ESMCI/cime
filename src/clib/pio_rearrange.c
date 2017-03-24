@@ -857,7 +857,10 @@ int rearrange_comp2io(iosystem_desc_t *ios, io_desc_t *iodesc, void *sbuf,
                     LOG((3, "exchanging data for subset rearranger"));
                     recvcounts[i] = 1;
 
-                    /*  The stride here is the length of the collected array (llen) */
+                    /*  Create an MPI derived data type from equally
+                     *  spaced blocks of the same size. The block size
+                     *  is 1, the stride here is the length of the
+                     *  collected array (llen). */
 #if PIO_USE_MPISERIAL
                     if ((mpierr = MPI_Type_hvector(nvars, 1, (MPI_Aint)iodesc->llen * tsize,
                                                    iodesc->rtype[i], &recvtypes[i])))
@@ -1210,7 +1213,9 @@ int box_rearrange_create(iosystem_desc_t *ios, int maplen, const PIO_Offset *com
     int rdispls[nprocs];
     MPI_Datatype dtypes[nprocs]; /* Array of MPI_OFFSET types for send/recieve for swapm(). */
     PIO_Offset iomaplen[nioprocs];
-    LOG((1, "box_rearrange_create maplen = %d ndims = %d", maplen, ndims));
+
+    LOG((1, "box_rearrange_create maplen = %d ndims = %d ios->num_comptasks = %d "
+         "ios->num_iotasks = %d", maplen, ndims, ios->num_comptasks, ios->num_iotasks));
 
     iodesc->rearranger = PIO_REARR_BOX;
 
@@ -1271,6 +1276,7 @@ int box_rearrange_create(iosystem_desc_t *ios, int maplen, const PIO_Offset *com
      * gather of llen. */
     for (int i = 0; i < nioprocs; i++)
     {
+        LOG((2, "i = %d ios->ioranks[i] = %d", i, ios->ioranks[i]));
         recvcounts[ios->ioranks[i]] = 1;
         rdispls[ios->ioranks[i]] = i * offset_size;
         LOG((3, "i = %d ios->ioranks[%d] = %d recvcounts[%d] = %d rdispls[%d] = %d",
