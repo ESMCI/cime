@@ -112,7 +112,8 @@ logger = logging.getLogger(__name__)
 
 # Fortran syntax regular expressions.
 # Variable names.
-FORTRAN_NAME_REGEX = re.compile(r"^[a-z][a-z0-9_]{0,62}$", re.IGNORECASE)
+FORTRAN_NAME_REGEX = re.compile(r"(^[a-z][a-z0-9_]{0,62})(\(((\s*[+-]?\d*\s*:?\s*){3},?\s*){7}\))?$", re.IGNORECASE)
+
 FORTRAN_LITERAL_REGEXES = {}
 # Integer literals.
 _int_re_string = r"(\+|-)?[0-9]+"
@@ -152,6 +153,12 @@ def is_valid_fortran_name(string):
 
     >>> is_valid_fortran_name("")
     False
+    >>> is_valid_fortran_name("a(3, 2)")
+    True
+    >>> is_valid_fortran_name("a( 3: 2: 1)")
+    True
+    >>> is_valid_fortran_name("dtlimit(3,2 )")
+    True
     >>> is_valid_fortran_name("a")
     True
     >>> is_valid_fortran_name("A")
@@ -170,6 +177,28 @@ def is_valid_fortran_name(string):
     True
     """
     return FORTRAN_NAME_REGEX.search(string) is not None
+
+def get_fortran_name_only(varname):
+    """ remove array section if any and return only the variable name 
+    >>> get_fortran_name_only('foo')
+    'foo'
+    >>> get_fortran_name_only('foo(3)')
+    'foo'
+    >>> get_fortran_name_only('foo(::)')
+    'foo'
+    >>> get_fortran_name_only('foo(1::)')
+    'foo'
+    >>> get_fortran_name_only('foo(:+2:)')
+    'foo'
+    >>> get_fortran_name_only('foo(::-3)')
+    'foo'
+    >>> get_fortran_name_only('foo(::)')
+    'foo'
+    """
+    m = FORTRAN_NAME_REGEX.search(varname)
+    if m is not None:
+        return m.group(1)
+
 
 
 def fortran_namelist_base_value(string):
@@ -1375,12 +1404,22 @@ class _NamelistParser(object): # pylint:disable=too-few-public-methods
         variable name; if it is `False`, only white space can be used for this
         purpose.
 
+        Note that this does not allow white space in variable array syntax foo(2) is okay foo( 2) is not. 
+
         >>> _NamelistParser('abc')._parse_variable_name()
         Traceback (most recent call last):
             ...
         _NamelistEOF: Unexpected end of file encountered in namelist. (At line 1, column 3)
         >>> _NamelistParser('abc ')._parse_variable_name()
         u'abc'
+        >>> _NamelistParser('abc(1:2:3) ')._parse_variable_name()
+        u'abc(1:2:3)'
+        >>> _NamelistParser('abc(1,2,3,4,5,6,7) ')._parse_variable_name()
+        u'abc(1,2,3,4,5,6,7)'
+        >>> _NamelistParser('abc( 1,2,3,4,5,6,7) ')._parse_variable_name()
+        Traceback (most recent call last):
+        ...
+        _NamelistParseError: Error in parsing namelist: 'abc(' is not a valid variable name at line 1, column 4
         >>> _NamelistParser('ABC ')._parse_variable_name()
         u'abc'
         >>> _NamelistParser('abc\n')._parse_variable_name()
