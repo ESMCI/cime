@@ -329,9 +329,9 @@ data:
 		ERR(ret);
 
             /* Check the output file. */
-            if ((ret = check_file(iosysid, ntasks, filename, format[fmt], elements_per_pe,
-                                  my_rank, ioid)))
-                ERR(ret);
+            /* if ((ret = check_file(iosysid, ntasks, filename, format[fmt], elements_per_pe, */
+            /*                       my_rank, ioid))) */
+            /*     ERR(ret); */
 	}
 
 	/* Free the PIO decomposition. */
