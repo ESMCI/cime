@@ -667,7 +667,7 @@ int malloc_iodesc(iosystem_desc_t *ios, int piotype, int ndims,
     if (!(*iodesc = calloc(1, sizeof(io_desc_t))))
         return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
-    /* Decide on the base type. */
+    /* Remember the MPI type. */
     (*iodesc)->basetype = mpi_type;
 
     /* Initialize some values in the struct. */
