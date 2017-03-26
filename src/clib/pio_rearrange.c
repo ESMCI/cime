@@ -1248,7 +1248,8 @@ int box_rearrange_create(iosystem_desc_t *ios, int maplen, const PIO_Offset *com
     }
     iodesc->llen = 0;
 
-    /* ??? */
+    /* For IO tasks, determine llen, the length of the data array on
+     * the IO task. */
     LOG((3, "ios->ioproc = %d nprocs = %d", ios->ioproc, nprocs));
     if (ios->ioproc)
     {

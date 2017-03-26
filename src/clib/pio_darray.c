@@ -282,6 +282,23 @@ int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
  * it to the IO nodes when the compute buffer is full or when a flush
  * is triggered.
  *
+ * Internally, this function will:
+ * <ul>Locate info about this file, decomposition, and variable.
+
+ * <li>If we don't have a fillvalue for this variable, determine one
+ * and remember it for future calls.
+
+ * <li>Initialize or find the multi_buffer for this record/var.
+
+ * <li>Find out how much free space is available in the multi buffer
+ * and flush if needed.
+ *
+ * <li>Store the new user data in the mutli buffer.
+ * <li>If needed, fill in gaps in data will fillvalue.
+ * <li>
+ * <li>
+ * </ul>
+ *
  * @param ncid the ncid of the open netCDF file.
  * @param varid the ID of the variable that these data will be written
  * to.
@@ -334,7 +351,9 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
         return pio_err(ios, file, PIO_EBADID, __FILE__, __LINE__);
 
     /* Check that the local size of the variable passed in matches the
-     * size expected by the io descriptor. */
+     * size expected by the io descriptor. Fail if arraylen is too
+     * small, just put a warning in the log if it is too big (the
+     * excess values will be ignored.) */
     if (arraylen < iodesc->ndof)
         return pio_err(ios, file, PIO_EINVAL, __FILE__, __LINE__);
     LOG((2, "%s arraylen = %d iodesc->ndof = %d",
@@ -372,7 +391,9 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
         LOG((3, "vdesc->use_fill = %d", vdesc->use_fill));
     }
 
-    /* Is this a record variable? */
+    /* Is this a record variable? The user must set the vdesc->record
+     * value by calling PIOc_setframe() before calling this
+     * function. */
     recordvar = vdesc->record >= 0 ? true : false;
     LOG((3, "recordvar = %d", recordvar));
 
@@ -436,13 +457,12 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
     /* Flush data if needed. */
     if (needsflush > 0)
     {
-        LOG((2, "maxfree = %ld wmb->validvars = %d (1 + wmb->validvars) * arraylen * tsize = %ld "
-             "totfree = %ld\n", maxfree, wmb->validvars, (1 + wmb->validvars) * arraylen * tsize,
-             totfree));
-
 #ifdef PIO_ENABLE_LOGGING
         /* Collect a debug report about buffer. */
         cn_buffer_report(ios, true);
+        LOG((2, "maxfree = %ld wmb->validvars = %d (1 + wmb->validvars) *"
+             " arraylen * tsize = %ld totfree = %ld\n", maxfree, wmb->validvars,
+             (1 + wmb->validvars) * arraylen * tsize, totfree));
 #endif /* PIO_ENABLE_LOGGING */
 
         /* If needsflush == 2 flush to disk otherwise just flush to io node. */

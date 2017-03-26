@@ -253,7 +253,7 @@ PIO_Offset GCDblocksize(int arrlen, const PIO_Offset *arr_in)
 
 /**
  * Compute start and count values for each io task. This is used in
- * PIOc_InitDecomp().
+ * PIOc_InitDecomp() for the box rearranger only.
  *
  * @param pio_type the PIO data type used in this decompotion.
  * @param ndims the number of dimensions in the variable, not
@@ -290,6 +290,8 @@ int CalcStartandCount(int pio_type, int ndims, const int *gdims, int num_io_proc
     /* Check inputs. */
     pioassert(pio_type > 0 && ndims > 0 && gdims && num_io_procs > 0 && start && count,
               "invalid input", __FILE__, __LINE__);
+    LOG((1, "CalcStartandCount pio_type = %d ndims = %d num_io_procs = %d myiorank = %d",
+         pio_type, ndims, num_io_procs, myiorank));
 
     /* We are trying to find start and count indices for each iotask
      * such that each task has approximately blocksize data to write
