@@ -290,6 +290,19 @@ int PIOc_set_iosystem_error_handling(int iosysid, int method, int *old_method)
  * decomposition describes how the data will be distributed between
  * tasks.
  *
+ * Internally, this function will:
+ * <ul>
+ * <li>Allocate and initialize an iodesc struct for this
+ * decomposition. (This also allocates an io_region struct for the
+ * first region.)
+ * <li>(Box rearranger only) If iostart or iocount are NULL, call
+ * CalcStartandCount() to determine starts/counts. Then call
+ * compute_maxIObuffersize() to compute the max IO buffer size needed.
+ * <li>Create the rearranger.
+ * <li>Assign an ioid and add this decomposition to the list of open
+ * decompositions.
+ * </ul>
+ *
  * @param iosysid the IO system ID.
  * @param pio_type the basic PIO data type used.
  * @param ndims the number of dimensions in the variable, not
@@ -390,7 +403,9 @@ int PIOc_InitDecomp(int iosysid, int pio_type, int ndims, const int *gdimlen, in
             return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     }
 
-    /* Allocate space for the iodesc info. */
+    /* Allocate space for the iodesc info. This also allocates the
+     * first region and copies the rearranger opts into this
+     * iodesc. */
     if ((ierr = malloc_iodesc(ios, pio_type, ndims, &iodesc)))
         return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
 
@@ -485,9 +500,9 @@ int PIOc_InitDecomp(int iosysid, int pio_type, int ndims, const int *gdimlen, in
         LOG((3, "rindex[%d] = %lld", j, iodesc->rindex[j]));
 #endif /* PIO_ENABLE_LOGGING */            
 
-    LOG((3, "About to tune rearranger..."));
+    /* This function only does something if pre-processor macro
+     * PERFTUNE is set. */
     performance_tune_rearranger(ios, iodesc);
-    LOG((3, "Done with rearranger tune."));
 
     return PIO_NOERR;
 }
@@ -629,13 +644,37 @@ int PIOc_InitDecomp_bc(int iosysid, int pio_type, int ndims, const int *gdimlen,
  * The caller must create all comp_comm and the io_comm MPI
  * communicators before calling this function.
  *
- * @param comp_comm the MPI_Comm of the compute tasks
- * @param num_iotasks the number of io tasks to use
- * @param stride the offset between io tasks in the comp_comm
- * @param base the comp_comm index of the first io task
+ * Internally, this function does the following:
+ *
+ * <ul>
+ * <li>Initialize logging system (if PIO_ENABLE_LOGGING is set).
+ * <li>Allocates and initializes the iosystem_desc_t struct (ios).
+ * <li>MPI duplicated user comp_comm to ios->comp_comm and
+ * ios->union_comm.
+ * <li>Set ios->my_comm to be ios->comp_comm. (Not an MPI
+ * duplication.)
+ * <li>Find MPI rank in comp_comm, determine ranks of IO tasks,
+ * determine whether this task is one of the IO tasks.
+ * <li>Identify the root IO tasks.
+ * <li>Create MPI groups for IO tasks, and for computation tasks.
+ * <li>On IO tasks, create an IO communicator (ios->io_comm).
+ * <li>Assign an iosystemid, and put this iosystem_desc_t into the
+ * list of open iosystems.
+ * <li>Initialize the bget buffer, unless PIO_USE_MALLOC was used.
+ * </ul>
+ *
+ * When complete, there are three MPI communicators (ios->comp_comm,
+ * ios->union_comm, and ios->io_comm), and two MPI groups
+ * (ios->compgroup and ios->iogroup) that must be freed by MPI.
+ *
+ * @param comp_comm the MPI_Comm of the compute tasks.
+ * @param num_iotasks the number of io tasks to use.
+ * @param stride the offset between io tasks in the comp_comm.
+ * @param base the comp_comm index of the first io task.
  * @param rearr the rearranger to use by default, this may be
- * overriden in the @ref PIO_initdecomp
- * @param iosysidp index of the defined system descriptor
+ * overriden in the PIO_init_decomp(). The rearranger is not used
+ * until the decomposition is initialized.
+ * @param iosysidp index of the defined system descriptor.
  * @return 0 on success, otherwise a PIO error code.
  * @ingroup PIO_init
  */
@@ -688,7 +727,7 @@ int PIOc_Init_Intracomm(MPI_Comm comp_comm, int num_iotasks, int stride, int bas
     ios->my_comm = ios->comp_comm;
     ustride = stride;
 
-    /* Find MPI rank comp_comm communicator. */
+    /* Find MPI rank in comp_comm communicator. */
     if ((mpierr = MPI_Comm_rank(ios->comp_comm, &ios->comp_rank)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
 
@@ -705,17 +744,14 @@ int PIOc_Init_Intracomm(MPI_Comm comp_comm, int num_iotasks, int stride, int bas
         ios->ioranks[i] = (base + i * ustride) % ios->num_comptasks;
         if (ios->ioranks[i] == ios->comp_rank)
             ios->ioproc = true;
+        LOG((3, "ios->ioranks[%d] = %d", i, ios->ioranks[i]));
     }
     ios->ioroot = ios->ioranks[0];
-
-    for (int i = 0; i < ios->num_iotasks; i++)
-        LOG((3, "ios->ioranks[%d] = %d", i, ios->ioranks[i]));
 
     /* We are not providing an info object. */
     ios->info = MPI_INFO_NULL;
 
-    /* The task that has an iomaster value of MPI_ROOT will be the
-     * root of the IO communicator. */
+    /* Identify the task that will be the root of the IO communicator. */
     if (ios->comp_rank == ios->ioranks[0])
         ios->iomaster = MPI_ROOT;
 
@@ -733,8 +769,8 @@ int PIOc_Init_Intracomm(MPI_Comm comp_comm, int num_iotasks, int stride, int bas
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
 
     /* For the tasks that are doing IO, get their rank within the IO
-     * communicator. For some reason when I check the return value of
-     * this MPI call, all tests start to fail! */
+     * communicator. If they are not doing IO, set their io_rank to
+     * -1. */
     if (ios->ioproc)
     {
         if ((mpierr = MPI_Comm_rank(ios->io_comm, &ios->io_rank)))
@@ -744,6 +780,7 @@ int PIOc_Init_Intracomm(MPI_Comm comp_comm, int num_iotasks, int stride, int bas
         ios->io_rank = -1;
     LOG((3, "ios->io_comm = %d ios->io_rank = %d", ios->io_comm, ios->io_rank));
 
+    /* Rank in the union comm is the same as rank in the comp comm. */
     ios->union_rank = ios->comp_rank;
 
     /* Add this ios struct to the list in the PIO library. */

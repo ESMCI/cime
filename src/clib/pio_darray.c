@@ -333,8 +333,16 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
     if (!(iodesc = pio_get_iodesc_from_id(ioid)))
         return pio_err(ios, file, PIO_EBADID, __FILE__, __LINE__);
 
+    /* Check that the local size of the variable passed in matches the
+     * size expected by the io descriptor. */
+    if (arraylen < iodesc->ndof)
+        return pio_err(ios, file, PIO_EINVAL, __FILE__, __LINE__);
+    LOG((2, "%s arraylen = %d iodesc->ndof = %d",
+         (iodesc->ndof != arraylen) ? "WARNING: iodesc->ndof != arraylen" : "",
+         arraylen, iodesc->ndof));
+
     /* Get var description. */
-    vdesc = file->varlist + varid;
+    vdesc = &(file->varlist[varid]);
     LOG((2, "vdesc record %d ndims %d nreqs %d", vdesc->record, vdesc->ndims, vdesc->nreqs));
 
     /* If we don't know the fill value for this var, get it. */
@@ -363,24 +371,6 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
         vdesc->use_fill = no_fill ? 0 : 1;
         LOG((3, "vdesc->use_fill = %d", vdesc->use_fill));
     }
-
-    /* Is this a record variable? */
-    recordvar = vdesc->record >= 0 ? true : false;
-    LOG((3, "recordvar = %d", recordvar));
-
-    /* Check that the local size of the variable passed in matches the
-     * size expected by the io descriptor. */
-    if (arraylen < iodesc->ndof)
-        return pio_err(ios, file, PIO_EINVAL, __FILE__, __LINE__);
-
-    LOG((2, "%s arraylen = %d iodesc->ndof = %d",
-         (iodesc->ndof != arraylen) ? "WARNING: iodesc->ndof != arraylen" : "",
-         arraylen, iodesc->ndof));
-
-    /* Get var description. */
-    vdesc = &(file->varlist[varid]);
-    LOG((2, "vdesc record %d ndims %d nreqs %d", vdesc->record, vdesc->ndims,
-         vdesc->nreqs));
 
     /* Is this a record variable? */
     recordvar = vdesc->record >= 0 ? true : false;
