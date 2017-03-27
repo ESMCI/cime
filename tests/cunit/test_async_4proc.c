@@ -32,7 +32,7 @@ int main(int argc, char **argv)
     int ret; /* Return code. */
     MPI_Comm test_comm;
 
-    /* Num procs for IO and computation. */
+    /* Num procs for computation. */
     int num_procs2[NUM_COMBOS][COMPONENT_COUNT] = {{1}, {2}, {3}};
 
     /* Number of processors that will do IO. */

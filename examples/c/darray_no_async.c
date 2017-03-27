@@ -248,11 +248,11 @@ data:
         
 	/* Initialize the PIO IO system. This specifies how many and
 	 * which processors are involved in I/O. */
-	if ((ret = PIOc_Init_Intracomm(MPI_COMM_WORLD, TARGET_NTASKS, ioproc_stride,
+	if ((ret = PIOc_Init_Intracomm(MPI_COMM_WORLD, 1, ioproc_stride,
 				       ioproc_start, PIO_REARR_BOX, &iosysid)))
 	    ERR(ret);
 
-	/* Describe the decomposition. This is a 1-based array, so add 1! */
+	/* Describe the decomposition. */
 	elements_per_pe = DIM_LEN_X * DIM_LEN_Y / TARGET_NTASKS;
 
         /* Allocate and initialize array of decomposition mapping. */
