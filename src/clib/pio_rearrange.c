@@ -491,8 +491,8 @@ int define_iodesc_datatypes(iosystem_desc_t *ios, io_desc_t *iodesc)
 }
 
 /**
- * Completes the mapping for the box rearranger. This function is call
- * from box_rearrange_create(). It is not used for the subset
+ * Completes the mapping for the box rearranger. This function is
+ * called from box_rearrange_create(). It is not used for the subset
  * rearranger.
  *
  * @param ios pointer to the iosystem_desc_t struct.
@@ -507,7 +507,7 @@ int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc, int maplen,
                    const int *dest_ioproc, const PIO_Offset *dest_ioindex,
                    MPI_Comm mycomm)
 {
-    int rank;        /* Rank of this task. */
+    /* int rank;        /\* Rank of this task. *\/ */
     int ntasks;      /* Number of tasks in mycomm. */
     int *recv_buf = NULL;
     int nrecvs;
@@ -521,11 +521,11 @@ int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc, int maplen,
     LOG((1, "compute_counts maplen = %d", maplen));
 
     /* Find size of communicator, and task rank. */
-    if ((mpierr = MPI_Comm_rank(mycomm, &rank)))
-        return check_mpi(NULL, mpierr, __FILE__, __LINE__);
+    /* if ((mpierr = MPI_Comm_rank(mycomm, &rank))) */
+    /*     return check_mpi(NULL, mpierr, __FILE__, __LINE__); */
     if ((mpierr = MPI_Comm_size(mycomm, &ntasks)))
         return check_mpi(NULL, mpierr, __FILE__, __LINE__);
-    LOG((2, "rank = %d ntasks = %d", rank, ntasks));
+    /* LOG((2, "rank = %d ntasks = %d", rank, ntasks)); */
 
     MPI_Datatype sr_types[ntasks];
     int send_counts[ntasks];
@@ -1277,12 +1277,15 @@ int box_rearrange_create(iosystem_desc_t *ios, int maplen, const PIO_Offset *com
     /* Determine whether fill values will be needed. */
     if ((ret = determine_fill(ios, iodesc, gdimlen, compmap)))
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
-    LOG((2, "iodesc->needsfill = %d", iodesc->needsfill));
+    LOG((2, "iodesc->needsfill = %d ios->num_iotasks = %d", iodesc->needsfill,
+         ios->num_iotasks));
 
     /* Set up receive counts and displacements to for an AllToAll
      * gather of llen. */
     for (int i = 0; i < ios->num_iotasks; i++)
     {
+        LOG((2, "i = %d", i));
+        LOG((2, "i = %d ios->ioranks[i] = %d", i, ios->ioranks[i]));
         recvcounts[ios->ioranks[i]] = 1;
         rdispls[ios->ioranks[i]] = i * offset_size;
         LOG((3, "i = %d ios->ioranks[%d] = %d recvcounts[%d] = %d rdispls[%d] = %d",

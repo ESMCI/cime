@@ -1380,11 +1380,11 @@ int flush_buffer(int ncid, wmulti_buffer *wmb, bool flushtodisk)
 }
 
 /**
- * Compute the maximum aggregate number of bytes.
+ * Compute the maximum aggregate number of bytes. This is called by
+ * subset_rearrange_create() and box_rearrange_create().
  *
- * @param ios the IO system structure
- * @param iodesc a pointer to the defined iodescriptor for the
- * buffer. If NULL, function returns immediately.
+ * @param ios pointer to the IO system structure.
+ * @param iodesc a pointer to decomposition description.
  * @returns 0 for success, error code otherwise.
  */
 int compute_maxaggregate_bytes(iosystem_desc_t *ios, io_desc_t *iodesc)
@@ -1400,19 +1400,27 @@ int compute_maxaggregate_bytes(iosystem_desc_t *ios, io_desc_t *iodesc)
     LOG((2, "compute_maxaggregate_bytes iodesc->maxiobuflen = %d iodesc->ndof = %d",
          iodesc->maxiobuflen, iodesc->ndof));
 
+    /* Determine the max bytes that can be held on IO task. */
     if (ios->ioproc && iodesc->maxiobuflen > 0)
         maxbytesoniotask = pio_buffer_size_limit / iodesc->maxiobuflen;
 
+    /* Determine the max bytes that can be held on computation task. */
     if (ios->comp_rank >= 0 && iodesc->ndof > 0)
         maxbytesoncomputetask = pio_cnbuffer_limit / iodesc->ndof;
 
+    /* ??? */
     maxbytes = min(maxbytesoniotask, maxbytesoncomputetask);
     LOG((2, "compute_maxaggregate_bytes maxbytesoniotask = %d maxbytesoncomputetask = %d",
          maxbytesoniotask, maxbytesoncomputetask));
 
+    /* Get the min value on all tasks. */
+    LOG((3, "before allreaduce maxbytes = %d", maxbytes));
     if ((mpierr = MPI_Allreduce(MPI_IN_PLACE, &maxbytes, 1, MPI_INT, MPI_MIN,
                                 ios->union_comm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+    LOG((3, "after allreaduce maxbytes = %d", maxbytes));
+
+    /* Remember the result. */
     iodesc->maxbytes = maxbytes;
 
     return PIO_NOERR;

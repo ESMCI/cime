@@ -1392,6 +1392,14 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
             my_iosys->comp_idx = cmp;
         }
 
+        /* Create an array that holds the ranks of the tasks to be used
+         * for IO. */
+        if (!(my_iosys->ioranks = calloc(my_iosys->num_iotasks, sizeof(int))))
+            return pio_err(NULL, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+        for (int i = 0; i < my_iosys->num_iotasks; i++)
+            my_iosys->ioranks[i] = my_io_proc_list[i];
+        my_iosys->ioroot = my_iosys->ioranks[0];
+
         /* All the processes in this component, and the IO component,
          * are part of the union_comm. */
         if (in_io || in_cmp)
