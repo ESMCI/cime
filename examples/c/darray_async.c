@@ -218,8 +218,8 @@ data:
 	int my_rank;  /* Zero-based rank of processor. */
 	int ntasks;   /* Number of processors involved in current execution. */
         int iosysid; /* The ID for the parallel I/O system. */
-        PIO_Offset elements_per_pe; /* Array elements per processing unit. */
-	int ioid;     /* The I/O description ID. */
+        /* PIO_Offset elements_per_pe; /\* Array elements per processing unit. *\/ */
+	/* int ioid;     /\* The I/O description ID. *\/ */
 	/* int ncid;     /\* The ncid of the netCDF file. *\/ */
 	/* int dimid[NDIM3];    /\* The dimension ID. *\/ */
 	/* int varid;    /\* The ID of the netCDF varable. *\/ */
@@ -257,15 +257,15 @@ data:
             return ret;
 
         /* Num procs for computation. */
-        /* int num_procs2[COMPONENT_COUNT] = {4}; */
+        int num_procs2[COMPONENT_COUNT] = {4};
         
         /* Is the current process a computation task? */
-        /* int comp_task = my_rank < NUM_IO_TASKS ? 0 : 1; */
+        int comp_task = my_rank < NUM_IO_TASKS ? 0 : 1;
 
-        /* /\* Initialize the IO system. *\/ */
-        /* if ((ret = PIOc_init_async(MPI_COMM_WORLD, NUM_IO_TASKS, NULL, COMPONENT_COUNT, */
-        /*                            num_procs2, NULL, NULL, NULL, PIO_REARR_BOX, &iosysid))) */
-        /*     ERR(ret); */
+        /* Initialize the IO system. */
+        if ((ret = PIOc_init_async(MPI_COMM_WORLD, NUM_IO_TASKS, NULL, COMPONENT_COUNT,
+                                   num_procs2, NULL, NULL, NULL, PIO_REARR_BOX, &iosysid)))
+            ERR(ret);
 
 
         /* The rest of the code executes on computation tasks only. As
@@ -273,8 +273,8 @@ data:
          * async system will call them on the IO task. When the
          * computation tasks call PIO_finalize(), the IO task will get
          * a message to shut itself down. */
-        /* if (comp_task) */
-        /* { */
+        if (comp_task)
+        {
         /*     /\* Describe the decomposition. *\/ */
         /*     elements_per_pe = DIM_LEN_X * DIM_LEN_Y / NUM_COMP_TASKS; */
 
@@ -363,10 +363,10 @@ data:
             /*     ERR(ret); */
 
             /* Finalize the IO system. Only call this from the computation tasks. */
-            /* printf("%d %s Freeing PIO resources\n", my_rank, TEST_NAME); */
-            /* if ((ret = PIOc_finalize(iosysid))) */
-            /*     ERR(ret); */
-        /* } /\* endif comp_task *\/ */
+            printf("%d %s Freeing PIO resources\n", my_rank, TEST_NAME);
+            if ((ret = PIOc_finalize(iosysid)))
+                ERR(ret);
+        } /* endif comp_task */
 
 	/* Finalize the MPI library. */
 	MPI_Finalize();
