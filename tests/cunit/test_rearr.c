@@ -597,6 +597,8 @@ int test_compute_counts_box(MPI_Comm test_comm)
 
     /* Initialize ios. */
     ios.num_iotasks = TARGET_NTASKS;
+    ios.async_interface = 0;
+    ios.num_comptasks = TARGET_NTASKS;
     ios.ioproc = 1;
     if (!(ios.ioranks = malloc(TARGET_NTASKS * sizeof(int))))
         return PIO_ENOMEM;

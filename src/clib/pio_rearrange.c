@@ -497,7 +497,7 @@ int define_iodesc_datatypes(iosystem_desc_t *ios, io_desc_t *iodesc)
  *
  * @param ios pointer to the iosystem_desc_t struct.
  * @param iodesc a pointer to the io_desc_t struct.
- * @param maplen the length of the map.
+ * @param maplen the length of the map. Must be 
  * @param dest_ioproc an array (length maplen) of IO task numbers.
  * @param dest_ioindex an array (length maplen) of IO indicies.
  * @param mycomm an MPI communicator.
@@ -507,7 +507,6 @@ int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc, int maplen,
                    const int *dest_ioproc, const PIO_Offset *dest_ioindex,
                    MPI_Comm mycomm)
 {
-    /* int rank;        /\* Rank of this task. *\/ */
     int ntasks;      /* Number of tasks in mycomm. */
     int *recv_buf = NULL;
     int nrecvs;
@@ -520,12 +519,9 @@ int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc, int maplen,
               iodesc->rearranger == PIO_REARR_BOX, "invalid input", __FILE__, __LINE__);
     LOG((1, "compute_counts maplen = %d", maplen));
 
-    /* Find size of communicator, and task rank. */
-    /* if ((mpierr = MPI_Comm_rank(mycomm, &rank))) */
-    /*     return check_mpi(NULL, mpierr, __FILE__, __LINE__); */
-    if ((mpierr = MPI_Comm_size(mycomm, &ntasks)))
-        return check_mpi(NULL, mpierr, __FILE__, __LINE__);
-    /* LOG((2, "rank = %d ntasks = %d", rank, ntasks)); */
+    /* The number of tasks in the union_comm. */
+    ntasks = ios->num_comptasks + (ios->async_interface ? ios->num_iotasks : 0);
+    LOG((2, "ntasks = %d", ntasks));
 
     MPI_Datatype sr_types[ntasks];
     int send_counts[ntasks];

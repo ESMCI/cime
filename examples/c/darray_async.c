@@ -273,25 +273,25 @@ data:
          * a message to shut itself down. */
         if (comp_task)
         {
-            /* PIO_Offset elements_per_pe; /\* Array elements per processing unit. *\/ */
-            /* int ioid;     /\* The I/O description ID. *\/ */
+            PIO_Offset elements_per_pe; /* Array elements per processing unit. */
+            int ioid;     /* The I/O description ID. */
             
-            /* /\* How many elements on each computation task? *\/ */
-            /* elements_per_pe = DIM_LEN_X * DIM_LEN_Y / NUM_COMP_TASKS; */
+            /* How many elements on each computation task? */
+            elements_per_pe = DIM_LEN_X * DIM_LEN_Y / NUM_COMP_TASKS;
 
-            /* /\* Allocate and initialize array of decomposition mapping. *\/ */
-            /* PIO_Offset compdof[elements_per_pe]; */
-            /* for (int i = 0; i < elements_per_pe; i++) */
-            /*     compdof[i] = my_rank * elements_per_pe + i; */
+            /* Allocate and initialize array of decomposition mapping. */
+            PIO_Offset compdof[elements_per_pe];
+            for (int i = 0; i < elements_per_pe; i++)
+                compdof[i] = my_rank * elements_per_pe + i;
 
-            /* /\* Create the PIO decomposition for this example. Since */
-            /*    this is a variable with an unlimited dimension, we want */
-            /*    to create a 2-D composition which represents one */
-            /*    record. *\/ */
-            /* printf("rank: %d Creating decomposition...\n", my_rank); */
-            /* if ((ret = PIOc_init_decomp(iosysid, PIO_INT, NDIM3 - 1, &dim_len[1], elements_per_pe, */
-            /*                             compdof, &ioid, 0, NULL, NULL))) */
-            /*     ERR(ret); */
+            /* Create the PIO decomposition for this example. Since
+               this is a variable with an unlimited dimension, we want
+               to create a 2-D composition which represents one
+               record. */
+            printf("rank: %d Creating decomposition...\n", my_rank);
+            if ((ret = PIOc_init_decomp(iosysid, PIO_INT, NDIM3 - 1, &dim_len[1], elements_per_pe,
+                                        compdof, &ioid, 0, NULL, NULL)))
+                ERR(ret);
 
 /*         /\* The number of favors may change with the build parameters. *\/ */
 /* #ifdef _PNETCDF */
@@ -365,9 +365,9 @@ data:
             /*     ERR(ret); */
 
             /* Finalize the IO system. Only call this from the computation tasks. */
-            /* printf("%d %s Freeing PIO resources\n", my_rank, TEST_NAME); */
-            /* if ((ret = PIOc_finalize(iosysid))) */
-            /*     ERR(ret); */
+            printf("%d %s Freeing PIO resources\n", my_rank, TEST_NAME);
+            if ((ret = PIOc_finalize(iosysid)))
+                ERR(ret);
         } /* endif comp_task */
 
 	/* Finalize the MPI library. */
