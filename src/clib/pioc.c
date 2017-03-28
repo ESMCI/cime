@@ -449,6 +449,7 @@ int PIOc_InitDecomp(int iosysid, int pio_type, int ndims, const int *gdimlen, in
              *  IO task compute it. */
             if (iostart && iocount)
             {
+                LOG((3, "iostart and iocount provided"));
                 for (int i = 0; i < ndims; i++)
                 {
                     iodesc->firstregion->start[i] = iostart[i];
@@ -1433,7 +1434,7 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
 
         /* Add this id to the list of PIO iosystem ids. */
         iosysidp[cmp] = pio_add_to_iosystem_list(my_iosys);
-        LOG((2, "new iosys ID added to iosystem_list iosysid = %d\n", iosysidp[cmp]));
+        LOG((2, "new iosys ID added to iosystem_list iosysid = %d", iosysidp[cmp]));
     } /* next computational component */
 
     /* Now call the function from which the IO tasks will not return
@@ -1449,7 +1450,6 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
     }
 
     /* Free resources if needed. */
-    LOG((2, "PIOc_Init_Async starting to free resources"));
     if (!io_proc_list)
         free(my_io_proc_list);
 
