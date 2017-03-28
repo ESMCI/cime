@@ -218,7 +218,6 @@ data:
 	int my_rank;  /* Zero-based rank of processor. */
 	int ntasks;   /* Number of processors involved in current execution. */
         int iosysid; /* The ID for the parallel I/O system. */
-        /* PIO_Offset elements_per_pe; /\* Array elements per processing unit. *\/ */
 	/* int ioid;     /\* The I/O description ID. *\/ */
 	/* int ncid;     /\* The ncid of the netCDF file. *\/ */
 	/* int dimid[NDIM3];    /\* The dimension ID. *\/ */
@@ -275,21 +274,24 @@ data:
          * a message to shut itself down. */
         if (comp_task)
         {
-        /*     /\* Describe the decomposition. *\/ */
-        /*     elements_per_pe = DIM_LEN_X * DIM_LEN_Y / NUM_COMP_TASKS; */
+            PIO_Offset elements_per_pe; /* Array elements per processing unit. */
+            
+            /* How many elements on each computation task? */
+            elements_per_pe = DIM_LEN_X * DIM_LEN_Y / NUM_COMP_TASKS;
 
-        /*     /\* Allocate and initialize array of decomposition mapping. *\/ */
-        /*     PIO_Offset compdof[elements_per_pe]; */
-        /*     for (int i = 0; i < elements_per_pe; i++) */
-        /*         compdof[i] = my_rank * elements_per_pe + i; */
+            /* Allocate and initialize array of decomposition mapping. */
+            PIO_Offset compdof[elements_per_pe];
+            for (int i = 0; i < elements_per_pe; i++)
+                compdof[i] = my_rank * elements_per_pe + i;
 
-            /* Create the PIO decomposition for this example. Since this
-             * is a variable with an unlimited dimension, we want to
-             * create a 2-D composition which represents one record. */
-            /* printf("rank: %d Creating decomposition...\n", my_rank); */
-            /* if ((ret = PIOc_init_decomp(iosysid, PIO_INT, NDIM3 - 1, &dim_len[1], elements_per_pe, */
-            /*                             compdof, &ioid, 0, NULL, NULL))) */
-            /*     ERR(ret); */
+            /* Create the PIO decomposition for this example. Since
+               this is a variable with an unlimited dimension, we want
+               to create a 2-D composition which represents one
+               record. */
+            printf("rank: %d Creating decomposition...\n", my_rank);
+            if ((ret = PIOc_init_decomp(iosysid, PIO_INT, NDIM3 - 1, &dim_len[1], elements_per_pe,
+                                        compdof, &ioid, 0, NULL, NULL)))
+                ERR(ret);
 
 /*         /\* The number of favors may change with the build parameters. *\/ */
 /* #ifdef _PNETCDF */
