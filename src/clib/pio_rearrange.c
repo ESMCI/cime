@@ -1176,9 +1176,18 @@ int determine_fill(iosystem_desc_t *ios, io_desc_t *iodesc, const int *gdimlen,
 /**
  * The box rearranger computes a mapping between IO tasks and compute
  * tasks such that the data on io tasks can be written with a single
- * call to the underlying netcdf library.  This may involve an all to
+ * call to the underlying netcdf library. This may involve an all to
  * all rearrangement in the mapping, but should minimize data movement
- * in lower level libraries
+ * in lower level libraries.
+ *
+ * On each compute task the application program passes a compmap array
+ * of length ndof. This array describes the arrangement of data in
+ * memory on that task.
+ *
+ * These arrays are gathered and rearranged to the io-nodes (which are
+ * sometimes collocated with compute nodes), each io task contains
+ * data from the compmap of one or more compute tasks in the iomap
+ * array and the length of that array is llen.
  *
  * @param ios pointer to the iosystem_desc_t struct
  * @param maplen the length of the map
@@ -1217,7 +1226,7 @@ int box_rearrange_create(iosystem_desc_t *ios, int maplen, const PIO_Offset *com
     /* This is the box rearranger. */
     iodesc->rearranger = PIO_REARR_BOX;
 
-    /* ??? */
+    /* Number of elements of data on compute node. */
     iodesc->ndof = maplen;
 
     /* Find the size of the MPI_OFFSET type. */
@@ -1243,7 +1252,8 @@ int box_rearrange_create(iosystem_desc_t *ios, int maplen, const PIO_Offset *com
 
     /* For IO tasks, determine llen, the length of the data array on
      * the IO task. Also set up arrays for the allgather which will
-     * give every task a complete list of llens for each IO task. */
+     * give every IO task a complete list of llens for each IO
+     * task. */
     LOG((3, "ios->ioproc = %d ios->num_comptasks = %d", ios->ioproc,
          ios->num_comptasks));
     if (ios->ioproc)
@@ -1281,8 +1291,7 @@ int box_rearrange_create(iosystem_desc_t *ios, int maplen, const PIO_Offset *com
              ios->ioranks[i], rdispls[ios->ioranks[i]]));
     }
 
-    /* Distribute the llen to all tasks into array. Afterwards all
-     * tasks will have all llens in array iomaplen. */
+    /* All-gather the llen to all tasks into array iomaplen. */
     LOG((3, "calling pio_swapm to allgather llen into array iomaplen, ndims = %d", ndims));
     if ((ret = pio_swapm(&iodesc->llen, sendcounts, sdispls, dtypes, iomaplen, recvcounts,
                          rdispls, dtypes, ios->union_comm,
