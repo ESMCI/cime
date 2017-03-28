@@ -32,7 +32,7 @@ void init_rearr_opts(iosystem_desc_t *iosys)
 
 /**
  * Convert an index into a list of dimensions. E.g., for index 4 into a
- * array defined as a[3][2], will return 1 1.
+ * array defined as a[3][2], will return 2,0.
  *
  * Sometimes (from box_rearranger_create()) this function is called
  * with -1 for idx. Not clear if this makes sense.
@@ -46,27 +46,23 @@ void init_rearr_opts(iosystem_desc_t *iosys)
 void idx_to_dim_list(int ndims, const int *gdimlen, PIO_Offset idx,
                      PIO_Offset *dim_list)
 {
-    int curr_idx = idx;
-    int next_idx;
-
     /* Check inputs. */
-    pioassert(gdimlen && dim_list, "invalid input", __FILE__,
-              __LINE__);
-    LOG((2, "idx_to_dim_list ndims = %d idx = %d", ndims, idx));
-    /* This fails sometimes! Under investigation... */
     pioassert(gdimlen && dim_list && idx >= -1, "invalid input", __FILE__,
               __LINE__);
+    LOG((2, "idx_to_dim_list ndims = %d idx = %d", ndims, idx));
 
     /* Easiest to start from the right and move left. */
     for (int i = ndims - 1; i >= 0; --i)
     {
+        int next_idx;
+        
         /* This way of doing div/mod is slightly faster than using "/"
          * and "%". */
-        next_idx = curr_idx / gdimlen[i];
-        dim_list[i] = curr_idx - (next_idx * gdimlen[i]);
-        LOG((3, "next_idx = %d curr_idx = %d gdimlen[%d] = %d dim_list[%d] = %d",
-             next_idx, curr_idx, i, gdimlen[i], i, dim_list[i]));
-        curr_idx = next_idx;
+        next_idx = idx / gdimlen[i];
+        dim_list[i] = idx - (next_idx * gdimlen[i]);
+        LOG((3, "next_idx = %d idx = %d gdimlen[%d] = %d dim_list[%d] = %d",
+             next_idx, idx, i, gdimlen[i], i, dim_list[i]));
+        idx = next_idx;
     }
 }
 
@@ -1189,15 +1185,17 @@ int determine_fill(iosystem_desc_t *ios, io_desc_t *iodesc, const int *gdimlen,
  * data from the compmap of one or more compute tasks in the iomap
  * array and the length of that array is llen.
  *
- * @param ios pointer to the iosystem_desc_t struct
- * @param maplen the length of the map
+ * @param ios pointer to the iosystem_desc_t struct.
+ * @param maplen the length of the map. This is the number of data
+ * elements on the compute task.
  * @param compmap a 1 based array of offsets into the array record on
  * file. A 0 in this array indicates a value which should not be
  * transfered.
  * @param gdimlen an array length ndims with the sizes of the global
  * dimensions.
- * @param ndims the number of dimensions
- * @param iodesc a pointer to the io_desc_t struct.
+ * @param ndims the number of dimensions.
+ * @param iodesc a pointer to the io_desc_t struct, which must be
+ * allocated before this function is called.
  * @returns 0 on success, error code otherwise.
  */
 int box_rearrange_create(iosystem_desc_t *ios, int maplen, const PIO_Offset *compmap,
@@ -1240,6 +1238,8 @@ int box_rearrange_create(iosystem_desc_t *ios, int maplen, const PIO_Offset *com
         dest_ioproc[i] = -1;
         dest_ioindex[i] = -1;
     }
+
+    /* Initialize arrays used in swapm. */
     for (int i = 0; i < ios->num_comptasks; i++)
     {
         sendcounts[i] = 0;
@@ -1248,14 +1248,13 @@ int box_rearrange_create(iosystem_desc_t *ios, int maplen, const PIO_Offset *com
         rdispls[i] = 0;
         dtypes[i] = MPI_OFFSET;
     }
-    iodesc->llen = 0;
 
     /* For IO tasks, determine llen, the length of the data array on
-     * the IO task. Also set up arrays for the allgather which will
-     * give every IO task a complete list of llens for each IO
-     * task. */
-    LOG((3, "ios->ioproc = %d ios->num_comptasks = %d", ios->ioproc,
-         ios->num_comptasks));
+     * the IO task. For computation tasks, llen will remain at 0. Also
+     * set up arrays for the allgather which will give every IO task a
+     * complete list of llens for each IO task. */
+    LOG((3, "ios->ioproc = %d ios->num_comptasks = %d", ios->ioproc, ios->num_comptasks));
+    pioassert(iodesc->llen == 0, "error", __FILE__, __LINE__);
     if (ios->ioproc)
     {
         /* Set up send counts for sending llen in all to all gather. */
@@ -1329,19 +1328,21 @@ int box_rearrange_create(iosystem_desc_t *ios, int maplen, const PIO_Offset *com
             recvcounts[ios->ioranks[i]] = ndims;
 
             /* The count from iotask i is sent to all compute tasks */
-            LOG((3, "about to call pio_swapm with count from iotask %d ndims = %d", i, ndims));
-            if ((ret = pio_swapm(iodesc->firstregion->count,  sendcounts, sdispls, dtypes,
-                                 count, recvcounts, rdispls, dtypes, ios->union_comm,
-                                 iodesc->rearr_opts.io2comp.hs,
+            LOG((3, "about to call pio_swapm with count from iotask %d ndims = %d",
+                 i, ndims));
+            if ((ret = pio_swapm(iodesc->firstregion->count,  sendcounts, sdispls,
+                                 dtypes, count, recvcounts, rdispls, dtypes,
+                                 ios->union_comm, iodesc->rearr_opts.io2comp.hs,
                                  iodesc->rearr_opts.io2comp.isend,
                                  iodesc->rearr_opts.io2comp.max_pend_req)))
                 return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
             /* The start from iotask i is sent to all compute tasks. */
-            LOG((3, "about to call pio_swapm with start from iotask %d ndims = %d", i, ndims));
-            if ((ret = pio_swapm(iodesc->firstregion->start,  sendcounts, sdispls, dtypes,
-                                 start, recvcounts, rdispls, dtypes, ios->union_comm,
-                                 iodesc->rearr_opts.io2comp.hs,
+            LOG((3, "about to call pio_swapm with start from iotask %d ndims = %d",
+                 i, ndims));
+            if ((ret = pio_swapm(iodesc->firstregion->start,  sendcounts, sdispls,
+                                 dtypes, start, recvcounts, rdispls, dtypes,
+                                 ios->union_comm, iodesc->rearr_opts.io2comp.hs,
                                  iodesc->rearr_opts.io2comp.isend,
                                  iodesc->rearr_opts.io2comp.max_pend_req)))
                 return pio_err(ios, NULL, ret, __FILE__, __LINE__);
@@ -1578,13 +1579,13 @@ int subset_rearrange_create(iosystem_desc_t *ios, int maplen, PIO_Offset *compma
 {
     int i, j;
     PIO_Offset *iomap = NULL;
-    int ierr = PIO_NOERR;
     mapsort *map = NULL;
     PIO_Offset totalgridsize;
     PIO_Offset *srcindex = NULL;
     PIO_Offset *myfillgrid = NULL;
     int maxregions;
-    int rank, ntasks, rcnt;
+    int rank, ntasks;
+    int rcnt = 0;
     int mpierr; /* Return call from MPI function calls. */
     int ret;
 
@@ -1614,8 +1615,9 @@ int subset_rearrange_create(iosystem_desc_t *ios, int maplen, PIO_Offset *compma
         pioassert(rank > 0 && rank < ntasks, "Bad comp rank in subset create",
                   __FILE__, __LINE__);
 
-    rcnt = 0;
+    /* Remember the maplen for this computation task. */
     iodesc->ndof = maplen;
+    
     if (ios->ioproc)
     {
         /* Allocate space to hold count of data to be received in pio_swapm(). */
@@ -1963,7 +1965,7 @@ int subset_rearrange_create(iosystem_desc_t *ios, int maplen, PIO_Offset *compma
     if ((ret = compute_maxaggregate_bytes(ios, iodesc)))
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
-    return ierr;
+    return PIO_NOERR;
 }
 
 /**

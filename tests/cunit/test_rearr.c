@@ -278,12 +278,12 @@ int test_idx_to_dim_list()
     PIO_Offset idx2 = 4;
     PIO_Offset dim_list2[2];
 
-    /* According to function docs, we should get 1,1 */
+    /* According to function docs, we should get 2,0 */
     idx_to_dim_list(ndims2, gdims2, idx2, dim_list2);
     printf("dim_list2[0] = %lld\n", dim_list2[0]);
     printf("dim_list2[1] = %lld\n", dim_list2[1]);
 
-    /* This is not the result that the documentation promised! */
+    /* This is the correct result! */
     if (dim_list2[0] != 2 || dim_list2[1] != 0)
         return ERR_WRONG;
     
