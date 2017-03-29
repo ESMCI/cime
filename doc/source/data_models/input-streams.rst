@@ -303,6 +303,9 @@ and the contents of ``shr_strdata_nml`` (in both ``$CASEROOT/CaseDocs`` and ``$R
      
 As is discussed in the :ref:`CIME User's Guide<running-a-case>`, you should use **preview_namelists** to view (not modify) the output namelist in ``CaseDocs``.
 
+
+.. _stream_description_file:
+
 -----------------------
 Stream Description File
 -----------------------
