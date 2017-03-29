@@ -590,7 +590,6 @@ int test_compute_counts_box(MPI_Comm test_comm)
 {
     iosystem_desc_t ios;
     io_desc_t iodesc;
-    int maplen = TARGET_NTASKS;
     int dest_ioproc[TARGET_NTASKS] = {0, 1, 2, 3};
     PIO_Offset dest_ioindex[TARGET_NTASKS] = {0, 1, 2, 3};
     int ret;
@@ -600,6 +599,7 @@ int test_compute_counts_box(MPI_Comm test_comm)
     ios.async_interface = 0;
     ios.num_comptasks = TARGET_NTASKS;
     ios.ioproc = 1;
+    ios.union_comm = test_comm;
     if (!(ios.ioranks = malloc(TARGET_NTASKS * sizeof(int))))
         return PIO_ENOMEM;
     for (int t = 0; t < TARGET_NTASKS; t++)
@@ -607,8 +607,8 @@ int test_compute_counts_box(MPI_Comm test_comm)
     
     /* Initialize iodesc. */
     iodesc.rearranger = PIO_REARR_BOX;
-    iodesc.ndof = 4;
-    iodesc.llen = 4;
+    iodesc.ndof = TARGET_NTASKS;
+    iodesc.llen = TARGET_NTASKS;
     iodesc.sindex = NULL;
     iodesc.rearr_opts.comm_type = PIO_REARR_COMM_COLL;
     iodesc.rearr_opts.fcd = PIO_REARR_COMM_FC_2D_DISABLE;
@@ -620,7 +620,7 @@ int test_compute_counts_box(MPI_Comm test_comm)
     iodesc.rearr_opts.io2comp.max_pend_req = 0;
 
     /* Test the function. */
-    if ((ret = compute_counts(&ios, &iodesc, maplen, dest_ioproc, dest_ioindex, test_comm)))
+    if ((ret = compute_counts(&ios, &iodesc, dest_ioproc, dest_ioindex)))
         return ret;
 
     /* Free test resources. */

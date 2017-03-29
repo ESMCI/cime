@@ -148,10 +148,9 @@ extern "C" {
     int CalcStartandCount(int pio_type, int ndims, const int *gdims, int num_io_procs,
                           int myiorank, PIO_Offset *start, PIO_Offset *count, int *num_aiotasks);
 
-    /* Completes the mapping for the rearranger. */
-    int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc, int maplen,
-                       const int *dest_ioproc, const PIO_Offset *dest_ioindex,
-                       MPI_Comm mycomm);
+    /* Completes the mapping for the box rearranger. */
+    int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc, const int *dest_ioproc,
+                       const PIO_Offset *dest_ioindex);
 
     /* Compute mapping for subset rearranger. */
     int default_subset_partition(iosystem_desc_t *ios, io_desc_t *iodesc);
