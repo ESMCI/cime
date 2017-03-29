@@ -62,6 +62,8 @@ In general, [io_root + (num_iotasks-1)*io_stride + 1] has to be less than the to
 In practice, PIO seems to perform optimally somewhere between the extremes of 1 task and all tasks, and is highly machine and problem dependent.
 .. _restart-files:
 
+.. _restart-files:
+
 -------------
 Restart Files
 -------------
@@ -81,4 +83,162 @@ This information helps reduce the start costs associated with reading the input 
 If a stream restart file is missing, the code will restart without it but may need to reread data from the input data files that would have been stored in the stream restart file. 
 This will take extra time but will not impact the results.
 
+.. _data-structures:
+
+---------------
+Data Structures
+---------------
+
+The data models all use three fundamental routines.
+
+- $CIMEROOT/src/utils/shr_dmodel_mod.F90
+
+- $CIMEROOT/src/utils/shr_stream_mod.F90
+
+- $CIMEROOT/src/utils/shr_strdata.F90
+
+These routines contain three data structures that are leveraged by all the data model code.
+
+The most basic type, ``shr_stream_fileType`` is contained in ``shr_stream_mod.F90`` and specifies basic information related to a given stream file.
+
+::
+
+   type shr_stream_fileType
+      character(SHR_KIND_CL) :: name = shr_stream_file_null	! the file name
+      logical                :: haveData = .false.		! has t-coord data been read in?
+      integer  (SHR_KIND_IN) :: nt = 0				! size of time dimension
+      integer  (SHR_KIND_IN),allocatable :: date(:)		! t-coord date: yyyymmdd
+      integer  (SHR_KIND_IN),allocatable :: secs(:)		! t-coord secs: elapsed on date
+   end type shr_stream_fileType
+
+The following type, ``shr_stream_streamType`` contains information
+that encapsulates the information related to all files specific to a
+target stream. These are the list of files found in the ``domainInfo``
+and ``fieldInfo`` blocks of the target stream description file (see the overview of the :ref:`stream_description_file`).
+
+::
+
+   type shr_stream_streamType
+      !private                                    ! no public access to internal components
+      !--- input data file names and data ---
+      logical                   :: init           ! has stream been initialized?
+      integer  (SHR_KIND_IN),pointer :: initarr(:) => null()! surrogate for init flag
+      integer  (SHR_KIND_IN)    :: nFiles         ! number of data files
+      character(SHR_KIND_CS)    :: dataSource     ! meta data identifying data source
+      character(SHR_KIND_CL)    :: filePath       ! remote location of data files
+      type(shr_stream_fileType), allocatable :: file(:) ! data specific to each file
+
+      !--- specifies how model dates align with data dates ---
+      integer(SHR_KIND_IN)      :: yearFirst      ! first year to use in t-axis (yyyymmdd)
+      integer(SHR_KIND_IN)      :: yearLast       ! last  year to use in t-axis (yyyymmdd)
+      integer(SHR_KIND_IN)      :: yearAlign      ! align yearFirst with this model year
+      integer(SHR_KIND_IN)      :: offset         ! offset in seconds of stream data
+      character(SHR_KIND_CS)    :: taxMode        ! cycling option for time axis
+
+      !--- useful for quicker searching ---
+      integer(SHR_KIND_IN) :: k_lvd,n_lvd         ! file/sample of least valid date
+      logical              :: found_lvd           ! T <=> k_lvd,n_lvd have been set
+      integer(SHR_KIND_IN) :: k_gvd,n_gvd         ! file/sample of greatest valid date
+      logical              :: found_gvd           ! T <=> k_gvd,n_gvd have been set
+
+      !---- for keeping files open
+      logical                 :: fileopen         ! is current file open
+      character(SHR_KIND_CL)  :: currfile         ! current filename
+      type(file_desc_t)       :: currpioid        ! current pio file desc
+
+      !--- stream data not used by stream module itself ---
+      character(SHR_KIND_CXX):: fldListFile       ! field list: file's  field names
+      character(SHR_KIND_CXX):: fldListModel      ! field list: model's field names
+      character(SHR_KIND_CL) :: domFilePath       ! domain file: file path of domain file
+      character(SHR_KIND_CL) :: domFileName       ! domain file: name
+      character(SHR_KIND_CS) :: domTvarName       ! domain file: time-dim var name
+      character(SHR_KIND_CS) :: domXvarName       ! domain file: x-dim var name
+      character(SHR_KIND_CS) :: domYvarName       ! domain file: y-dim var name
+      character(SHR_KIND_CS) :: domZvarName       ! domain file: z-dim var name
+      character(SHR_KIND_CS) :: domAreaName       ! domain file: area  var name
+      character(SHR_KIND_CS) :: domMaskName       ! domain file: mask  var name
+
+      character(SHR_KIND_CS) :: tInterpAlgo       ! Algorithm to use for time interpolation
+      character(SHR_KIND_CL) :: calendar          ! stream calendar
+   end type shr_stream_streamType
+
+and finally, the ``shr_strdata_type`` is the heart of the CIME data
+model implemenentation and contains information for all the streams
+that are active for the target data model. The first part of the
+shr_strdata_type is filled in by the namelist values read in from the
+namelist group (see the :ref:`stream data namelist section <shr-strdata-nml>`).
+
+::
+
+   type shr_strdata_type
+     ! --- set by input namelist ---
+    character(CL)  :: dataMode          ! flags physics options wrt input data
+    character(CL)  :: domainFile        ! file   containing domain info
+    character(CL)  :: streams (nStrMax) ! stream description file names
+    character(CL)  :: taxMode (nStrMax) ! time axis cycling mode
+    real(R8)       :: dtlimit (nStrMax) ! dt max/min limit
+    character(CL)  :: vectors (nVecMax) ! define vectors to vector map
+    character(CL)  :: fillalgo(nStrMax) ! fill algorithm
+    character(CL)  :: fillmask(nStrMax) ! fill mask
+    character(CL)  :: fillread(nStrMax) ! fill mapping file to read
+    character(CL)  :: fillwrit(nStrMax) ! fill mapping file to write
+    character(CL)  :: mapalgo (nStrMax) ! scalar map algorithm
+    character(CL)  :: mapmask (nStrMax) ! scalar map mask
+    character(CL)  :: mapread (nStrMax) ! regrid mapping file to read
+    character(CL)  :: mapwrit (nStrMax) ! regrid mapping file to write
+    character(CL)  :: tintalgo(nStrMax) ! time interpolation algorithm
+    integer(IN)    :: io_type           ! io type, currently pnetcdf or netcdf
+
+    !--- data required by cosz t-interp method, ---
+    real(R8)     :: eccen   ! orbital eccentricity
+    real(R8)     :: mvelpp  ! moving vernal equinox long
+    real(R8)     :: lambm0  ! mean long of perihelion at vernal equinox (radians)
+    real(R8)     :: obliqr  ! obliquity in degrees
+    integer(IN)  :: modeldt ! data model dt in seconds (set to the coupling frequency)
+
+    ! --- data model grid, public ---
+    integer(IN)     :: nxg          ! data model grid lon size
+    integer(IN)     :: nyg          ! data model grid lat size
+    integer(IN)     :: nzg          ! data model grid vertical size
+    integer(IN)     :: lsize        ! data model grid local size
+    type(mct_gsmap) :: gsmap        ! data model grid global seg map
+    type(mct_ggrid) :: grid         ! data model grid ggrid
+    type(mct_avect) :: avs(nStrMax) ! data model stream attribute vectors
+
+    ! --- stream specific arrays, stream grid ---
+    type(shr_stream_streamType)    :: stream(nStrMax)
+    type(iosystem_desc_t), pointer :: pio_subsystem => null()
+    type(io_desc_t)    :: pio_iodesc(nStrMax)
+    integer(IN)        :: nstreams          ! actual number of streams
+    integer(IN)        :: strnxg(nStrMax)   ! stream grid lon sizes
+    integer(IN)        :: strnyg(nStrMax)   ! stream grid lat sizes
+    integer(IN)        :: strnzg(nStrMax)   ! tream grid global sizes
+    logical            :: dofill(nStrMax)   ! true if stream grid is different from data model grid
+    logical            :: domaps(nStrMax)   ! true if stream grid is different from data model grid
+    integer(IN)        :: lsizeR(nStrMax)   ! stream local size of gsmapR on processor
+    type(mct_gsmap)    :: gsmapR(nStrMax)   ! stream global seg map
+    type(mct_rearr)    :: rearrR(nStrMax)   ! rearranger 
+    type(mct_ggrid)    :: gridR(nStrMax)    ! local stream grid on processor
+    type(mct_avect)    :: avRLB(nStrMax)    ! Read attrvect
+    type(mct_avect)    :: avRUB(nStrMax)    ! Read attrvect
+    type(mct_avect)    :: avFUB(nStrMax)    ! Final attrvect
+    type(mct_avect)    :: avFLB(nStrMax)    ! Final attrvect
+    type(mct_avect)    :: avCoszen(nStrMax) ! data assocaited with coszen time interp
+    type(mct_sMatP)    :: sMatPf(nStrMax)   ! sparse matrix map for fill on stream grid
+    type(mct_sMatP)    :: sMatPs(nStrMax)   ! sparse matrix map for mapping from stream to data model grid 
+    integer(IN)        :: ymdLB(nStrMax)    ! lower bound time for stream
+    integer(IN)        :: todLB(nStrMax)    ! lower bound time for stream
+    integer(IN)        :: ymdUB(nStrMax)    ! upper bound time for stream
+    integer(IN)        :: todUB(nStrMax)    ! upper bound time for stream
+    real(R8)           :: dtmin(nStrMax)    
+    real(R8)           :: dtmax(nStrMax)
+
+    ! --- internal ---
+    integer(IN)        :: ymd  ,tod
+    character(CL)      :: calendar          ! model calendar for ymd,tod
+    integer(IN)        :: nvectors          ! number of vectors
+    integer(IN)        :: ustrm (nVecMax)
+    integer(IN)        :: vstrm (nVecMax)
+    character(CL)      :: allocstring
+  end type shr_strdata_type
 
