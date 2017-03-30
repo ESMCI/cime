@@ -245,10 +245,13 @@ data:
 	    MPIERR(ret);
 
 	/* Check that a valid number of processors was specified. */
-	if (ntasks != TARGET_NTASKS)
-	    fprintf(stderr, "Number of processors must be 4!\n");
         printf("%d: ParallelIO Library darray_async example running on %d processors.\n",
                my_rank, ntasks);
+	if (ntasks != TARGET_NTASKS)
+        {
+	    fprintf(stderr, "Number of processors must be %d!\n", TARGET_NTASKS);
+            return ERR_BAD;
+        }
 
         /* Turn on logging. */
         if ((ret = PIOc_set_log_level(LOG_LEVEL)))
