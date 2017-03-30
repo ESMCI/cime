@@ -518,7 +518,7 @@ int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc,
     LOG((1, "compute_counts"));
 
     /* The number of tasks in the union_comm. */
-    ntasks = ios->num_comptasks + (ios->async_interface ? ios->num_iotasks : 0);
+    ntasks = ios->num_comptasks + (ios->async ? ios->num_iotasks : 0);
     LOG((2, "ntasks = %d ios->num_iotasks = %d", ntasks, ios->num_iotasks));
 
     /* Arrays for swapm all to all gather calls. */

@@ -438,7 +438,7 @@ typedef struct iosystem_desc_t
     int default_rearranger;
 
     /** True if asynchronous interface is in use. */
-    bool async_interface;
+    bool async;
 
     /** True if this task is a member of the IO communicator. */
     bool ioproc;

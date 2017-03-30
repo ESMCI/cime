@@ -132,7 +132,7 @@ int pio_write_darray_multi_nc(file_desc_t *file, int nvars, const int *vid, int 
     vdesc = file->varlist + vid[0];
 
     /* If async is in use, send message to IO master task. */
-    if (ios->async_interface)
+    if (ios->async)
     {
         if (!ios->ioproc)
         {
@@ -426,11 +426,11 @@ int pio_write_darray_multi_nc_serial(file_desc_t *file, int nvars, const int *vi
     /* Get the var info. */
     vdesc = file->varlist + vid[0];
 
-    LOG((2, "vdesc record %d ndims %d nreqs %d ios->async_interface = %d", vdesc->record,
-         vdesc->ndims, vdesc->nreqs, ios->async_interface));
+    LOG((2, "vdesc record %d ndims %d nreqs %d ios->async = %d", vdesc->record,
+         vdesc->ndims, vdesc->nreqs, ios->async));
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
-    if (ios->async_interface)
+    if (ios->async)
     {
         if (!ios->ioproc)
         {

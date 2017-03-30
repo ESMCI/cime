@@ -52,7 +52,7 @@ int PIOc_put_att_tc(int ncid, int varid, const char *name, nc_type atttype,
 
     /* Run these on all tasks if async is not in use, but only on
      * non-IO tasks if async is in use. */
-    if (!ios->async_interface || !ios->ioproc)
+    if (!ios->async || !ios->ioproc)
     {
         /* Get the length (in bytes) of the type in file. */
         if ((ierr = PIOc_inq_type(ncid, atttype, NULL, &atttype_len)))
@@ -70,7 +70,7 @@ int PIOc_put_att_tc(int ncid, int varid, const char *name, nc_type atttype,
     }
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
-    if (ios->async_interface)
+    if (ios->async)
     {
         if (!ios->ioproc)
         {
@@ -259,7 +259,7 @@ int PIOc_get_att_tc(int ncid, int varid, const char *name, nc_type memtype, void
 
     /* Run these on all tasks if async is not in use, but only on
      * non-IO tasks if async is in use. */
-    if (!ios->async_interface || !ios->ioproc)
+    if (!ios->async || !ios->ioproc)
     {
         /* Get the type and length of the attribute. */
         if ((ierr = PIOc_inq_att(ncid, varid, name, &atttype, &attlen)))
@@ -284,7 +284,7 @@ int PIOc_get_att_tc(int ncid, int varid, const char *name, nc_type memtype, void
 
     /* If async is in use, and this is not an IO task, bcast the
      * parameters and the attribute and type information we fetched. */
-    if (ios->async_interface)
+    if (ios->async)
     {
         if (!ios->ioproc)
         {
@@ -510,7 +510,7 @@ int PIOc_get_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
 
     /* Run these on all tasks if async is not in use, but only on
      * non-IO tasks if async is in use. */
-    if (!ios->async_interface || !ios->ioproc)
+    if (!ios->async || !ios->ioproc)
     {
         /* Get the type of this var. */
         if ((ierr = PIOc_inq_vartype(ncid, varid, &vartype)))
@@ -588,7 +588,7 @@ int PIOc_get_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
     }
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
-    if (ios->async_interface)
+    if (ios->async)
     {
         if (!ios->ioproc)
         {
@@ -746,7 +746,7 @@ int PIOc_get_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
             }
     }
 
-    if (!ios->async_interface || !ios->ioproc)
+    if (!ios->async || !ios->ioproc)
     {
         /* Free tmp start/count allocated to account for NULL start/counts */
         if (!start_present)
@@ -878,7 +878,7 @@ int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
 
     /* Run these on all tasks if async is not in use, but only on
      * non-IO tasks if async is in use. */
-    if (!ios->async_interface || !ios->ioproc)
+    if (!ios->async || !ios->ioproc)
     {
         /* Get the type of this var. */
         if ((ierr = PIOc_inq_vartype(ncid, varid, &vartype)))
@@ -965,7 +965,7 @@ int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
     }
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
-    if (ios->async_interface)
+    if (ios->async)
     {
         if (!ios->ioproc)
         {
@@ -1161,7 +1161,7 @@ int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
         }
     }
 
-    if (!ios->async_interface || !ios->ioproc)
+    if (!ios->async || !ios->ioproc)
     {
         /* Free tmp start/count allocated to account for NULL start/counts */
         if (!start_present)
