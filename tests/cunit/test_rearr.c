@@ -278,12 +278,12 @@ int test_idx_to_dim_list()
     PIO_Offset idx2 = 4;
     PIO_Offset dim_list2[2];
 
-    /* According to function docs, we should get 1,1 */
+    /* According to function docs, we should get 2,0 */
     idx_to_dim_list(ndims2, gdims2, idx2, dim_list2);
     printf("dim_list2[0] = %lld\n", dim_list2[0]);
     printf("dim_list2[1] = %lld\n", dim_list2[1]);
 
-    /* This is not the result that the documentation promised! */
+    /* This is the correct result! */
     if (dim_list2[0] != 2 || dim_list2[1] != 0)
         return ERR_WRONG;
     
@@ -590,14 +590,16 @@ int test_compute_counts_box(MPI_Comm test_comm)
 {
     iosystem_desc_t ios;
     io_desc_t iodesc;
-    int maplen = TARGET_NTASKS;
     int dest_ioproc[TARGET_NTASKS] = {0, 1, 2, 3};
     PIO_Offset dest_ioindex[TARGET_NTASKS] = {0, 1, 2, 3};
     int ret;
 
     /* Initialize ios. */
     ios.num_iotasks = TARGET_NTASKS;
+    ios.async_interface = 0;
+    ios.num_comptasks = TARGET_NTASKS;
     ios.ioproc = 1;
+    ios.union_comm = test_comm;
     if (!(ios.ioranks = malloc(TARGET_NTASKS * sizeof(int))))
         return PIO_ENOMEM;
     for (int t = 0; t < TARGET_NTASKS; t++)
@@ -605,8 +607,8 @@ int test_compute_counts_box(MPI_Comm test_comm)
     
     /* Initialize iodesc. */
     iodesc.rearranger = PIO_REARR_BOX;
-    iodesc.ndof = 4;
-    iodesc.llen = 4;
+    iodesc.ndof = TARGET_NTASKS;
+    iodesc.llen = TARGET_NTASKS;
     iodesc.sindex = NULL;
     iodesc.rearr_opts.comm_type = PIO_REARR_COMM_COLL;
     iodesc.rearr_opts.fcd = PIO_REARR_COMM_FC_2D_DISABLE;
@@ -618,7 +620,7 @@ int test_compute_counts_box(MPI_Comm test_comm)
     iodesc.rearr_opts.io2comp.max_pend_req = 0;
 
     /* Test the function. */
-    if ((ret = compute_counts(&ios, &iodesc, maplen, dest_ioproc, dest_ioindex, test_comm)))
+    if ((ret = compute_counts(&ios, &iodesc, dest_ioproc, dest_ioindex)))
         return ret;
 
     /* Free test resources. */

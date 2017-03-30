@@ -218,8 +218,6 @@ data:
 	int my_rank;  /* Zero-based rank of processor. */
 	int ntasks;   /* Number of processors involved in current execution. */
         int iosysid; /* The ID for the parallel I/O system. */
-        PIO_Offset elements_per_pe; /* Array elements per processing unit. */
-	int ioid;     /* The I/O description ID. */
 	/* int ncid;     /\* The ncid of the netCDF file. *\/ */
 	/* int dimid[NDIM3];    /\* The dimension ID. *\/ */
 	/* int varid;    /\* The ID of the netCDF varable. *\/ */
@@ -247,25 +245,28 @@ data:
 	    MPIERR(ret);
 
 	/* Check that a valid number of processors was specified. */
-	if (ntasks != TARGET_NTASKS)
-	    fprintf(stderr, "Number of processors must be 4!\n");
         printf("%d: ParallelIO Library darray_async example running on %d processors.\n",
                my_rank, ntasks);
+	if (ntasks != TARGET_NTASKS)
+        {
+	    fprintf(stderr, "Number of processors must be %d!\n", TARGET_NTASKS);
+            return ERR_BAD;
+        }
 
         /* Turn on logging. */
         if ((ret = PIOc_set_log_level(LOG_LEVEL)))
             return ret;
 
         /* Num procs for computation. */
-        /* int num_procs2[COMPONENT_COUNT] = {4}; */
+        int num_procs2[COMPONENT_COUNT] = {4};
         
         /* Is the current process a computation task? */
-        /* int comp_task = my_rank < NUM_IO_TASKS ? 0 : 1; */
+        int comp_task = my_rank < NUM_IO_TASKS ? 0 : 1;
 
-        /* /\* Initialize the IO system. *\/ */
-        /* if ((ret = PIOc_init_async(MPI_COMM_WORLD, NUM_IO_TASKS, NULL, COMPONENT_COUNT, */
-        /*                            num_procs2, NULL, NULL, NULL, PIO_REARR_BOX, &iosysid))) */
-        /*     ERR(ret); */
+        /* Initialize the IO system. */
+        if ((ret = PIOc_init_async(MPI_COMM_WORLD, NUM_IO_TASKS, NULL, COMPONENT_COUNT,
+                                   num_procs2, NULL, NULL, NULL, PIO_REARR_BOX, &iosysid)))
+            ERR(ret);
 
 
         /* The rest of the code executes on computation tasks only. As
@@ -273,19 +274,23 @@ data:
          * async system will call them on the IO task. When the
          * computation tasks call PIO_finalize(), the IO task will get
          * a message to shut itself down. */
-        /* if (comp_task) */
-        /* { */
-        /*     /\* Describe the decomposition. *\/ */
-        /*     elements_per_pe = DIM_LEN_X * DIM_LEN_Y / NUM_COMP_TASKS; */
+        if (comp_task)
+        {
+            /* PIO_Offset elements_per_pe; /\* Array elements per processing unit. *\/ */
+            /* int ioid;     /\* The I/O description ID. *\/ */
+            
+            /* /\* How many elements on each computation task? *\/ */
+            /* elements_per_pe = DIM_LEN_X * DIM_LEN_Y / NUM_COMP_TASKS; */
 
-        /*     /\* Allocate and initialize array of decomposition mapping. *\/ */
-        /*     PIO_Offset compdof[elements_per_pe]; */
-        /*     for (int i = 0; i < elements_per_pe; i++) */
-        /*         compdof[i] = my_rank * elements_per_pe + i; */
+            /* /\* Allocate and initialize array of decomposition mapping. *\/ */
+            /* PIO_Offset compdof[elements_per_pe]; */
+            /* for (int i = 0; i < elements_per_pe; i++) */
+            /*     compdof[i] = my_rank * elements_per_pe + i; */
 
-            /* Create the PIO decomposition for this example. Since this
-             * is a variable with an unlimited dimension, we want to
-             * create a 2-D composition which represents one record. */
+            /* /\* Create the PIO decomposition for this example. Since */
+            /*    this is a variable with an unlimited dimension, we want */
+            /*    to create a 2-D composition which represents one */
+            /*    record. *\/ */
             /* printf("rank: %d Creating decomposition...\n", my_rank); */
             /* if ((ret = PIOc_init_decomp(iosysid, PIO_INT, NDIM3 - 1, &dim_len[1], elements_per_pe, */
             /*                             compdof, &ioid, 0, NULL, NULL))) */
@@ -363,10 +368,10 @@ data:
             /*     ERR(ret); */
 
             /* Finalize the IO system. Only call this from the computation tasks. */
-            /* printf("%d %s Freeing PIO resources\n", my_rank, TEST_NAME); */
-            /* if ((ret = PIOc_finalize(iosysid))) */
-            /*     ERR(ret); */
-        /* } /\* endif comp_task *\/ */
+            printf("%d %s Freeing PIO resources\n", my_rank, TEST_NAME);
+            if ((ret = PIOc_finalize(iosysid)))
+                ERR(ret);
+        } /* endif comp_task */
 
 	/* Finalize the MPI library. */
 	MPI_Finalize();

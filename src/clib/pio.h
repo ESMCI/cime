@@ -297,18 +297,18 @@ typedef struct io_desc_t
     /** Maximum llen participating. */
     int maxiobuflen;
 
-    /** Array of tasks received from in pio_swapm(). */
+    /** Array (length nrecvs) of computation tasks received from. */
     int *rfrom;
 
-    /** Array of counts of data to be received from each task in
-     * pio_swapm(). */
+    /** Array (length nrecvs) of counts of data to be received from
+     * each computation task by the IO tasks. */
     int *rcount;
 
     /** Array (length numiotasks) of data counts to send to each task
      * in the communication in pio_swapm(). */
     int *scount;
 
-    /** Array of length ndof (for the BOX rearranger) with the index
+    /** Array (length ndof) for the BOX rearranger with the index
      * for computation taks (send side during writes). */
     PIO_Offset *sindex;
 
