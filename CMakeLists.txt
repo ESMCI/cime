@@ -46,6 +46,14 @@ else()
   set(USE_MPI_SERIAL 0)
 endif()
 
+INCLUDE (CheckTypeSize) 
+
+find_package(MPI)
+include_directories(SYSTEM ${MPI_INCLUDE_PATH})
+SET(CMAKE_EXTRA_INCLUDE_FILES "mpi.h")
+check_type_size("MPI_Offset" SIZEOF_MPI_OFFSET)
+SET(CMAKE_EXTRA_INCLUDE_FILES)
+
 #===== Library Variables =====
 set (PIO_FILESYSTEM_HINTS IGNORE CACHE STRING "Filesystem hints (lustre or gpfs)")
 
