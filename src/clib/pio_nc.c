@@ -49,7 +49,7 @@ int PIOc_inq(int ncid, int *ndimsp, int *nvarsp, int *ngattsp, int *unlimdimidp)
     ios = file->iosystem;
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
-    if (ios->async_interface)
+    if (ios->async)
     {
         if (!ios->ioproc)
         {
@@ -232,7 +232,7 @@ int PIOc_inq_type(int ncid, nc_type xtype, char *name, PIO_Offset *sizep)
     ios = file->iosystem;
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
-    if (ios->async_interface)
+    if (ios->async)
     {
         if (!ios->ioproc)
         {
@@ -321,7 +321,7 @@ int PIOc_inq_format(int ncid, int *formatp)
     ios = file->iosystem;
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
-    if (ios->async_interface)
+    if (ios->async)
     {
         if (!ios->ioproc)
         {
@@ -400,7 +400,7 @@ int PIOc_inq_dim(int ncid, int dimid, char *name, PIO_Offset *lenp)
     ios = file->iosystem;
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
-    if (ios->async_interface)
+    if (ios->async)
     {
         if (!ios->ioproc)
         {
@@ -541,7 +541,7 @@ int PIOc_inq_dimid(int ncid, const char *name, int *idp)
     LOG((1, "PIOc_inq_dimid ncid = %d name = %s", ncid, name));
 
     /* If using async, and not an IO task, then send parameters. */
-    if (ios->async_interface)
+    if (ios->async)
     {
         if (!ios->ioproc)
         {
@@ -629,7 +629,7 @@ int PIOc_inq_var(int ncid, int varid, char *name, nc_type *xtypep, int *ndimsp,
     ios = file->iosystem;
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
-    if (ios->async_interface)
+    if (ios->async)
     {
         if (!ios->ioproc)
         {
@@ -866,7 +866,7 @@ int PIOc_inq_varid(int ncid, const char *name, int *varidp)
 
     LOG((1, "PIOc_inq_varid ncid = %d name = %s", ncid, name));
 
-    if (ios->async_interface)
+    if (ios->async)
     {
         if (!ios->ioproc)
         {
@@ -955,7 +955,7 @@ int PIOc_inq_att(int ncid, int varid, const char *name, nc_type *xtypep,
     LOG((1, "PIOc_inq_att ncid = %d varid = %d", ncid, varid));
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
-    if (ios->async_interface)
+    if (ios->async)
     {
         if (!ios->ioproc)
         {
@@ -1080,7 +1080,7 @@ int PIOc_inq_attname(int ncid, int varid, int attnum, char *name)
     ios = file->iosystem;
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
-    if (ios->async_interface)
+    if (ios->async)
     {
         if (!ios->ioproc)
         {
@@ -1174,7 +1174,7 @@ int PIOc_inq_attid(int ncid, int varid, const char *name, int *idp)
     LOG((1, "PIOc_inq_attid ncid = %d varid = %d name = %s", ncid, varid, name));
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
-    if (ios->async_interface)
+    if (ios->async)
     {
         if (!ios->ioproc)
         {
@@ -1263,7 +1263,7 @@ int PIOc_rename_dim(int ncid, int dimid, const char *name)
     LOG((1, "PIOc_rename_dim ncid = %d dimid = %d name = %s", ncid, dimid, name));
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
-    if (ios->async_interface)
+    if (ios->async)
     {
         if (!ios->ioproc)
         {
@@ -1348,7 +1348,7 @@ int PIOc_rename_var(int ncid, int varid, const char *name)
     LOG((1, "PIOc_rename_var ncid = %d varid = %d name = %s", ncid, varid, name));
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
-    if (ios->async_interface)
+    if (ios->async)
     {
         if (!ios->ioproc)
         {
@@ -1437,7 +1437,7 @@ int PIOc_rename_att(int ncid, int varid, const char *name,
          ncid, varid, name, newname));
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
-    if (ios->async_interface)
+    if (ios->async)
     {
         if (!ios->ioproc)
         {
@@ -1525,7 +1525,7 @@ int PIOc_del_att(int ncid, int varid, const char *name)
     LOG((1, "PIOc_del_att ncid = %d varid = %d name = %s", ncid, varid, name));
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
-    if (ios->async_interface)
+    if (ios->async)
     {
         if (!ios->ioproc)
         {
@@ -1603,7 +1603,7 @@ int PIOc_set_fill(int ncid, int fillmode, int *old_modep)
     ios = file->iosystem;
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
-    if (ios->async_interface)
+    if (ios->async)
     {
         if (!ios->ioproc)
         {
@@ -1732,7 +1732,7 @@ int PIOc_def_dim(int ncid, const char *name, PIO_Offset len, int *idp)
     LOG((1, "PIOc_def_dim ncid = %d name = %s len = %d", ncid, name, len));
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
-    if (ios->async_interface)
+    if (ios->async)
     {
         if (!ios->ioproc)
         {
@@ -1824,7 +1824,7 @@ int PIOc_def_var(int ncid, const char *name, nc_type xtype, int ndims,
          xtype, ndims));
 
     /* If using async, and not an IO task, then send parameters. */
-    if (ios->async_interface)
+    if (ios->async)
     {
         if (!ios->ioproc)
         {
@@ -1941,7 +1941,7 @@ int PIOc_def_var_fill(int ncid, int varid, int fill_mode, const void *fill_value
     /* Run this on all tasks if async is not in use, but only on
      * non-IO tasks if async is in use. Get the size of this vars
      * type. */
-    if (!ios->async_interface || !ios->ioproc)
+    if (!ios->async || !ios->ioproc)
     {
         if ((ierr = PIOc_inq_vartype(ncid, varid, &xtype)))
             return check_netcdf(file, ierr, __FILE__, __LINE__);
@@ -1951,7 +1951,7 @@ int PIOc_def_var_fill(int ncid, int varid, int fill_mode, const void *fill_value
     LOG((2, "PIOc_def_var_fill type_size = %d", type_size));
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
-    if (ios->async_interface)
+    if (ios->async)
     {
         if (!ios->ioproc)
         {
@@ -2063,7 +2063,7 @@ int PIOc_inq_var_fill(int ncid, int varid, int *no_fill, void *fill_valuep)
     /* Run this on all tasks if async is not in use, but only on
      * non-IO tasks if async is in use. Get the size of this vars
      * type. */
-    if (!ios->async_interface || !ios->ioproc)
+    if (!ios->async || !ios->ioproc)
     {
         if ((ierr = PIOc_inq_vartype(ncid, varid, &xtype)))
             return check_netcdf(file, ierr, __FILE__, __LINE__);
@@ -2073,7 +2073,7 @@ int PIOc_inq_var_fill(int ncid, int varid, int *no_fill, void *fill_valuep)
     }
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
-    if (ios->async_interface)
+    if (ios->async)
     {
         if (!ios->ioproc)
         {

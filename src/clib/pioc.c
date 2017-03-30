@@ -249,7 +249,7 @@ int PIOc_set_iosystem_error_handling(int iosysid, int method, int *old_method)
 
     /* If using async, and not an IO task, then send parameters. */
     if (iosysid != PIO_DEFAULT)
-        if (ios->async_interface)
+        if (ios->async)
         {
             if (!ios->ioproc)
             {
@@ -353,7 +353,7 @@ int PIOc_InitDecomp(int iosysid, int pio_type, int ndims, const int *gdimlen, in
             return pio_err(ios, NULL, PIO_EINVAL, __FILE__, __LINE__);
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
-    if (ios->async_interface)
+    if (ios->async)
     {
         if (!ios->ioproc)
         {
@@ -899,7 +899,7 @@ int PIOc_finalize(int iosysid)
      * comp master to the IO processes. This may be called by
      * componets for other components iosysid. So don't send unless
      * there is a valid union_comm. */
-    if (ios->async_interface && ios->union_comm != MPI_COMM_NULL)
+    if (ios->async && ios->union_comm != MPI_COMM_NULL)
     {
         int msg = PIO_MSG_EXIT;
 
@@ -1292,7 +1292,7 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
         my_iosys->union_comm = MPI_COMM_NULL;
         my_iosys->intercomm = MPI_COMM_NULL;
         my_iosys->my_comm = MPI_COMM_NULL;
-        my_iosys->async_interface = 1;
+        my_iosys->async = 1;
         my_iosys->error_handler = default_error_handler;
         my_iosys->num_comptasks = num_procs_per_comp[cmp];
         my_iosys->num_iotasks = num_io_procs;

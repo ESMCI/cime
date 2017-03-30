@@ -727,7 +727,7 @@ int PIOc_freedecomp(int iosysid, int ioid)
         return pio_err(ios, NULL, PIO_EBADID, __FILE__, __LINE__);
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
-    if (ios->async_interface)
+    if (ios->async)
     {
         if (!ios->ioproc)
         {
@@ -1726,11 +1726,11 @@ int PIOc_createfile_int(int iosysid, int *ncidp, int *iotype, const char *filena
         ios->io_rank == 0)
         file->do_io = 1;
 
-    LOG((2, "file->do_io = %d ios->async_interface = %d", file->do_io, ios->async_interface));
+    LOG((2, "file->do_io = %d ios->async = %d", file->do_io, ios->async));
 
     /* If async is in use, and this is not an IO task, bcast the
      * parameters. */
-    if (ios->async_interface)
+    if (ios->async)
     {
         int msg = PIO_MSG_CREATE_FILE;
         size_t len = strlen(filename);
@@ -1903,7 +1903,7 @@ int PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype, const char *filena
         file->do_io = 1;
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
-    if (ios->async_interface)
+    if (ios->async)
     {
         int msg = PIO_MSG_OPEN_FILE;
         size_t len = strlen(filename);
@@ -2123,7 +2123,7 @@ int pioc_change_def(int ncid, int is_enddef)
     ios = file->iosystem;
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
-    if (ios->async_interface)
+    if (ios->async)
     {
         if (!ios->ioproc)
         {
