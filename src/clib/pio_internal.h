@@ -168,9 +168,6 @@ extern "C" {
     void PIO_Offset_size(MPI_Datatype *dtype, int *tsize);
     PIO_Offset GCDblocksize(int arrlen, const PIO_Offset *arr_in);
 
-    /* Initialize the rearranger options. */
-    void init_rearr_opts(iosystem_desc_t *iosys);
-
     /* Convert an index into dimension values. */
     void idx_to_dim_list(int ndims, const int *gdims, PIO_Offset idx, PIO_Offset *dim_list);
 

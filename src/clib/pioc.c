@@ -714,8 +714,9 @@ int PIOc_Init_Intracomm(MPI_Comm comp_comm, int num_iotasks, int stride, int bas
     ios->num_comptasks = num_comptasks;
 
     /* Initialize the rearranger options. */
-    init_rearr_opts(ios);
-
+    ios->rearr_opts.comm_type = PIO_REARR_COMM_COLL;
+    ios->rearr_opts.fcd = PIO_REARR_COMM_FC_2D_DISABLE;
+    
     /* Copy the computation communicator into union_comm. */
     if ((mpierr = MPI_Comm_dup(comp_comm, &ios->union_comm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
@@ -1300,6 +1301,10 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
         my_iosys->iogroup = MPI_GROUP_NULL;
         my_iosys->default_rearranger = rearranger;
 
+        /* Initialize the rearranger options. */
+        my_iosys->rearr_opts.comm_type = PIO_REARR_COMM_COLL;
+        my_iosys->rearr_opts.fcd = PIO_REARR_COMM_FC_2D_DISABLE;
+        
         /* The rank of the computation leader in the union comm. */
         my_iosys->comproot = num_io_procs;
         LOG((3, "my_iosys->comproot = %d", my_iosys->comproot));

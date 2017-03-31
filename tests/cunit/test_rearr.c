@@ -19,112 +19,49 @@
 #define TEST_NAME "test_rearr"
 
 /* Test some of the rearranger utility functions. */
-int test_rearranger_opts1()
+int test_rearranger_opts1(int iosysid)
 {
-    rearr_comm_fc_opt_t *ro1;
-    rearr_comm_fc_opt_t *ro2;
-    rearr_comm_fc_opt_t *ro3;
-
-    if (!(ro1 = calloc(1, sizeof(rearr_comm_fc_opt_t))))
-        return ERR_AWFUL;
-    if (!(ro2 = calloc(1, sizeof(rearr_comm_fc_opt_t))))
-        return ERR_AWFUL;
-    if (!(ro3 = calloc(1, sizeof(rearr_comm_fc_opt_t))))
-        return ERR_AWFUL;
-
+    iosystem_desc_t *ios;
+    int ret;
+    
     /* This should not work. */
-    if (PIOc_set_rearr_opts(42, 1, 1, 0, 0, 0, 0, 0, 0) != PIO_EBADID)
+    if (PIOc_set_rearr_opts(TEST_VAL_42, 0, 0, false, false, 0, false,
+                            false, 0) != PIO_EBADID)
+        return ERR_WRONG;
+    if (PIOc_set_rearr_opts(iosysid, TEST_VAL_42, 0, false, false, 0, false,
+                            false, 0) != PIO_EINVAL)
+        return ERR_WRONG;
+    if (PIOc_set_rearr_opts(iosysid, 0, TEST_VAL_42, false, false, 0, false,
+                            false, 0) != PIO_EINVAL)
+        return ERR_WRONG;
+    if (PIOc_set_rearr_opts(iosysid, 0, 0, false, false,
+                            PIO_REARR_COMM_UNLIMITED_PEND_REQ - 1, false,
+                            false, 0) != PIO_EINVAL)
+        return ERR_WRONG;
+    if (PIOc_set_rearr_opts(iosysid, 0, 0, false, false, 0, false,
+                            false, PIO_REARR_COMM_UNLIMITED_PEND_REQ - 1) !=
+        PIO_EINVAL)
         return ERR_WRONG;
 
-    /* ro1 and ro2 are the same. */
-    if (!cmp_rearr_comm_fc_opts(ro1, ro2))
+    /* This should work. */
+    if ((ret = PIOc_set_rearr_opts(iosysid, PIO_REARR_COMM_P2P,
+                                   PIO_REARR_COMM_FC_1D_COMP2IO, true,
+                                   true, TEST_VAL_42, true, true, TEST_VAL_42 + 1)))
+        return ret;
+
+    /* Get the IO system info from the id. */
+    if (!(ios = pio_get_iosystem_from_id(iosysid)))
+        return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
+
+    /* Check the rearranger settings. */
+    if (ios->rearr_opts.comm_type != PIO_REARR_COMM_P2P ||
+        ios->rearr_opts.fcd != PIO_REARR_COMM_FC_1D_COMP2IO ||
+        !ios->rearr_opts.comp2io.hs || !ios->rearr_opts.comp2io.isend ||
+        !ios->rearr_opts.io2comp.hs || !ios->rearr_opts.io2comp.isend ||
+        ios->rearr_opts.comp2io.max_pend_req != TEST_VAL_42 ||
+        ios->rearr_opts.io2comp.max_pend_req != TEST_VAL_42 + 1)
         return ERR_WRONG;
 
-    /* Make ro3 different. */
-    ro3->hs = 1;
-    if (cmp_rearr_comm_fc_opts(ro1, ro3))
-        return ERR_WRONG;
-    ro3->hs = 0;
-    ro3->isend = 1;
-    if (cmp_rearr_comm_fc_opts(ro1, ro3))
-        return ERR_WRONG;
-    ro3->isend = 0;
-    ro3->max_pend_req = 1;
-    if (cmp_rearr_comm_fc_opts(ro1, ro3))
-        return ERR_WRONG;
-
-    /* Free resourses. */
-    free(ro1);
-    free(ro2);
-    free(ro3);
-    
-    return 0;
-}
-
-/* Test some of the rearranger utility functions. */
-int test_cmp_rearr_opts()
-{
-    rearr_opt_t ro1;
-    rearr_opt_t ro2;
-
-    ro1.comm_type = PIO_REARR_COMM_P2P;
-    ro2.comm_type = PIO_REARR_COMM_P2P;
-
-    ro1.fcd = PIO_REARR_COMM_FC_2D_ENABLE;
-    ro2.fcd = PIO_REARR_COMM_FC_2D_ENABLE;
-
-    ro1.comp2io.hs = 0;
-    ro1.comp2io.isend = 0;
-    ro1.comp2io.max_pend_req = 0;
-
-    ro1.io2comp.hs = 0;
-    ro1.io2comp.isend = 0;
-    ro1.io2comp.max_pend_req = 0;
-    
-    ro2.comp2io.hs = 0;
-    ro2.comp2io.isend = 0;
-    ro2.comp2io.max_pend_req = 0;
-
-    ro2.io2comp.hs = 0;
-    ro2.io2comp.isend = 0;
-    ro2.io2comp.max_pend_req = 0;
-
-    /* They are equal. */
-    if (!cmp_rearr_opts(&ro1, &ro2))
-        return ERR_WRONG;
-
-    /* Change something. */
-    ro1.comm_type = PIO_REARR_COMM_COLL;
-
-    /* They are not equal. */
-    if (cmp_rearr_opts(&ro1, &ro2))
-        return ERR_WRONG;
-
-    /* Change something. */
-    ro2.comm_type = PIO_REARR_COMM_COLL;
-    ro1.fcd = PIO_REARR_COMM_FC_2D_DISABLE;
-    
-    /* They are not equal. */
-    if (cmp_rearr_opts(&ro1, &ro2))
-        return ERR_WRONG;
-
-    ro2.fcd = PIO_REARR_COMM_FC_2D_DISABLE;
-
-    /* They are equal again. */
-    if (!cmp_rearr_opts(&ro1, &ro2))
-        return ERR_WRONG;
-    
-    return 0;
-}
-
-/* Test some of the rearranger utility functions. */
-int test_rearranger_opts3()
-{
-    rearr_opt_t ro;
-
-    /* I'm not sure what the point of this function is... */
-    check_and_reset_rearr_opts(&ro);
-    
     return 0;
 }
 
@@ -187,34 +124,6 @@ int test_ceil2_pair()
     return 0;
 }
 
-/* Test init_rearr_opts(). */
-int test_init_rearr_opts()
-{
-    iosystem_desc_t ios;
-
-    init_rearr_opts(&ios);
-
-    if (ios.rearr_opts.comm_type != PIO_REARR_COMM_COLL || ios.rearr_opts.fcd != PIO_REARR_COMM_FC_2D_DISABLE ||
-        ios.rearr_opts.comp2io.hs || ios.rearr_opts.comp2io.isend ||
-        ios.rearr_opts.comp2io.max_pend_req ||
-        ios.rearr_opts.io2comp.hs || ios.rearr_opts.io2comp.isend ||
-        ios.rearr_opts.io2comp.max_pend_req)
-        return ERR_WRONG;
-    
-    return 0;
-}
-
-/* Tests that didn't fit in anywhere else. */
-int test_misc()
-{
-    /* This should not work. */
-    if (PIOc_set_rearr_opts(TEST_VAL_42, 0, 0, false, false, 0, false,
-                            false, 0) != PIO_EBADID)
-        return ERR_WRONG;
-    
-    return 0;
-}
-
 /* Test the create_mpi_datatypes() function. 
  * @returns 0 for success, error code otherwise.*/
 int test_create_mpi_datatypes()
@@ -236,19 +145,30 @@ int test_create_mpi_datatypes()
         
         /* Free the type. */
         if ((mpierr = MPI_Type_free(&mtype)))
-            return ERR_WRONG;
+            MPIERR(mpierr);
     }
 
     {
         int msgcnt = 4;
         PIO_Offset mindex[4] = {0, 0, 0, 0};
-        int mcount[4] = {1, 1, 1, 1};
+        int mcount[4] = {2, 1, 1, 1};
         MPI_Datatype mtype2[4];
 
         /* Create 4 MPI data types. */
         if ((ret = create_mpi_datatypes(basetype, msgcnt, mindex, mcount, mfrom, mtype2)))
             return ret;
-        
+
+        /* Check the size of the data types. It should be 4. */
+        MPI_Aint lb, extent;
+        for (int t = 0; t < 4; t++)
+        {
+            if ((mpierr = MPI_Type_get_extent(mtype2[t], &lb, &extent)))
+                MPIERR(mpierr);
+            printf("t = %d lb = %ld extent = %ld\n", t, lb, extent);
+            if (lb != 0 || extent != 4)
+                return ERR_WRONG;
+        }
+            
         /* Free them. */
         for (int t = 0; t < 4; t++)
             if ((mpierr = MPI_Type_free(&mtype2[t])))
@@ -1014,10 +934,6 @@ int main(int argc, char **argv)
         if ((ret = PIOc_Init_Intracomm(test_comm, TARGET_NTASKS, 1, 0, PIO_REARR_BOX, &iosysid)))
             return ret;
         
-        printf("%d running init_rearr_opts tests\n", my_rank);
-        if ((ret = test_init_rearr_opts()))
-            return ret;
-
         printf("%d running idx_to_dim_list tests\n", my_rank);
         if ((ret = test_idx_to_dim_list()))
             return ret;
@@ -1055,23 +971,11 @@ int main(int argc, char **argv)
             return ret;
 
         printf("%d running rearranger opts tests 1\n", my_rank);
-        if ((ret = test_rearranger_opts1()))
-            return ret;
-
-        printf("%d running tests for cmp_rearr_opts()\n", my_rank);
-        if ((ret = test_cmp_rearr_opts()))
+        if ((ret = test_rearranger_opts1(iosysid)))
             return ret;
 
         printf("%d running compare_offsets tests\n", my_rank);
         if ((ret = test_compare_offsets()))
-            return ret;
-
-        printf("%d running rearranger opts tests 3\n", my_rank);
-        if ((ret = test_rearranger_opts3()))
-            return ret;
-
-        printf("%d running misc tests\n", my_rank);
-        if ((ret = test_misc()))
             return ret;
 
         printf("%d running compute_counts tests for box rearranger\n", my_rank);

@@ -2213,171 +2213,6 @@ int iotype_is_valid(int iotype)
 }
 
 /**
- * Internal function to compare rearranger flow control options.
- *
- * @param opt pointer to rearranger flow control options to compare.
- * @param exp_opt pointer to rearranger flow control options with
- * expected values.
- * @return true if values in opt == values in exp_opt, false
- * otherwise.
- */
-bool cmp_rearr_comm_fc_opts(const rearr_comm_fc_opt_t *opt,
-                            const rearr_comm_fc_opt_t *exp_opt)
-{
-    bool is_same = true;
-
-    assert(opt && exp_opt);
-
-    if (opt->hs != exp_opt->hs)
-    {
-        LOG((1, "Warning rearranger hs = %s, expected = %s",
-             opt->hs ? "TRUE" : "FALSE", exp_opt->hs ? "TRUE" : "FALSE"));
-        is_same = false;
-    }
-
-    if (opt->isend != exp_opt->isend)
-    {
-        LOG((1, "Warning rearranger isend = %s, expected = %s",
-             opt->isend ? "TRUE" : "FALSE", exp_opt->isend ? "TRUE" : "FALSE"));
-        is_same = false;
-    }
-
-    if (opt->max_pend_req != exp_opt->max_pend_req)
-    {
-        LOG((1, "Warning rearranger max_pend_req = %d, expected = %d",
-             opt->max_pend_req, exp_opt->max_pend_req));
-        is_same = false;
-    }
-
-    return is_same;
-}
-
-/**
- * Internal function to compare rearranger options.
- *
- * @param rearr_opts pointer to rearranger options to compare
- * @param exp_rearr_opts pointer to rearranger options with the
- * expected value
- * @return true if values in rearr_opts == values in exp_rearr_opts
- * false otherwise
- */
-bool cmp_rearr_opts(const rearr_opt_t *rearr_opts, const rearr_opt_t *exp_rearr_opts)
-{
-    bool is_same = true;
-
-    assert(rearr_opts && exp_rearr_opts);
-
-    if (rearr_opts->comm_type != exp_rearr_opts->comm_type)
-    {
-        LOG((1, "Warning rearranger comm_type = %d, expected = %d. ", rearr_opts->comm_type,
-             exp_rearr_opts->comm_type));
-        is_same = false;
-    }
-
-    if (rearr_opts->fcd != exp_rearr_opts->fcd)
-    {
-        LOG((1, "Warning rearranger fcd = %d, expected = %d. ", rearr_opts->fcd,
-             exp_rearr_opts->fcd));
-        is_same = false;
-    }
-
-    is_same = is_same && cmp_rearr_comm_fc_opts(&(rearr_opts->comp2io),
-                                                &(exp_rearr_opts->comp2io));
-    is_same = is_same && cmp_rearr_comm_fc_opts(&(rearr_opts->io2comp),
-                                                &(exp_rearr_opts->io2comp));
-
-    return is_same;
-}
-
-/**
- * Internal function to reset rearranger opts in iosystem to valid values.
- * The only values reset here are options that are not set (or of interest)
- * to the user. e.g. Setting the io2comp/comp2io settings to defaults when
- * user chooses coll for rearrangement.
- * The old default for max pending requests was DEF_P2P_MAXREQ = 64.
- *
- * @param rearr_opt pointer to rearranger options
- * @return return error if the rearr_opt is invalid
- */
-int check_and_reset_rearr_opts(rearr_opt_t *rearr_opt)
-{
-    /* Disable handshake/isend and set max_pend_req to unlimited */
-    const rearr_comm_fc_opt_t def_comm_nofc_opts =
-        { false, false, PIO_REARR_COMM_UNLIMITED_PEND_REQ };
-    /* Disable handshake /isend and set max_pend_req = 0 to turn off throttling */
-    const rearr_comm_fc_opt_t def_coll_comm_fc_opts = { false, false, 0 };
-    const rearr_opt_t def_coll_rearr_opts = {
-        PIO_REARR_COMM_COLL,
-        PIO_REARR_COMM_FC_2D_DISABLE,
-        def_coll_comm_fc_opts,
-        def_coll_comm_fc_opts
-    };
-
-    assert(rearr_opt);
-
-    /* Reset to defaults, if needed (user did not set it correctly) */
-    if (rearr_opt->comm_type == PIO_REARR_COMM_COLL)
-    {
-        /* Compare and log the user and default rearr opts for coll. */
-        cmp_rearr_opts(rearr_opt, &def_coll_rearr_opts);
-        /* Hard reset flow control options. */
-        *rearr_opt = def_coll_rearr_opts;
-    }
-    else if (rearr_opt->comm_type == PIO_REARR_COMM_P2P)
-    {
-        if (rearr_opt->fcd == PIO_REARR_COMM_FC_2D_DISABLE)
-        {
-            /* Compare and log user and default opts. */
-            cmp_rearr_comm_fc_opts(&(rearr_opt->comp2io),
-                                   &def_comm_nofc_opts);
-            cmp_rearr_comm_fc_opts(&(rearr_opt->io2comp),
-                                   &def_comm_nofc_opts);
-            /* Hard reset flow control opts to defaults. */
-            rearr_opt->comp2io = def_comm_nofc_opts;
-            rearr_opt->io2comp = def_comm_nofc_opts;
-        }
-        else if (rearr_opt->fcd == PIO_REARR_COMM_FC_1D_COMP2IO)
-        {
-            /* Compare and log user and default opts. */
-            cmp_rearr_comm_fc_opts(&(rearr_opt->io2comp),
-                                   &def_comm_nofc_opts);
-            /* Hard reset io2comp dir to defaults. */
-            rearr_opt->io2comp = def_comm_nofc_opts;
-        }
-        else if (rearr_opt->fcd == PIO_REARR_COMM_FC_1D_IO2COMP)
-        {
-            /* Compare and log user and default opts. */
-            cmp_rearr_comm_fc_opts(&(rearr_opt->comp2io),
-                                   &def_comm_nofc_opts);
-            /* Hard reset comp2io dir to defaults. */
-            rearr_opt->comp2io = def_comm_nofc_opts;
-        }
-        else
-        {
-            if (rearr_opt->fcd != PIO_REARR_COMM_FC_2D_ENABLE)
-                return PIO_EINVAL;
-
-            /* Don't reset if flow control is enabled in both directions
-             * by user. */
-        }
-    }
-    else
-    {
-        return PIO_EINVAL;
-    }
-
-    if (( (rearr_opt->comp2io.max_pend_req !=
-            PIO_REARR_COMM_UNLIMITED_PEND_REQ) &&
-          (rearr_opt->comp2io.max_pend_req < 0)  ) ||
-        ( (rearr_opt->io2comp.max_pend_req !=
-            PIO_REARR_COMM_UNLIMITED_PEND_REQ) &&
-          (rearr_opt->io2comp.max_pend_req < 0)  ))
-        return PIO_EINVAL;
-
-    return PIO_NOERR;
-}
-
-/**
  * Set the rearranger options associated with an iosystem
  *
  * @param comm_type Type of communication (pt2pt/coll) used
@@ -2417,25 +2252,25 @@ int PIOc_set_rearr_opts(int iosysid, int comm_type, int fcd, bool enable_hs_c2i,
                         int max_pend_req_i2c)
 {
     iosystem_desc_t *ios;
-    int ret = PIO_NOERR;
     rearr_opt_t user_rearr_opts = {
         comm_type, fcd,
         {enable_hs_c2i,enable_isend_c2i, max_pend_req_c2i},
         {enable_hs_i2c, enable_isend_i2c, max_pend_req_i2c}
     };
 
+    /* Check inputs. */
+    if ((comm_type != PIO_REARR_COMM_P2P && comm_type != PIO_REARR_COMM_FC_1D_COMP2IO) ||
+        (fcd < 0 || fcd > PIO_REARR_COMM_FC_2D_DISABLE) ||
+        (max_pend_req_c2i != PIO_REARR_COMM_UNLIMITED_PEND_REQ && max_pend_req_c2i < 0) ||
+        (max_pend_req_i2c != PIO_REARR_COMM_UNLIMITED_PEND_REQ && max_pend_req_i2c < 0))
+        return pio_err(NULL, NULL, PIO_EINVAL, __FILE__, __LINE__);        
+
     /* Get the IO system info. */
     if (!(ios = pio_get_iosystem_from_id(iosysid)))
         return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
 
-    /* Perform sanity checks on the user supplied values and reset 
-     * values not set (or of no interest) by the user 
-     */
-    ret = check_and_reset_rearr_opts(&user_rearr_opts);
-    if (ret != PIO_NOERR)
-        return ret;
-
+    /* Set the options. */
     ios->rearr_opts = user_rearr_opts;
 
-    return ret;
+    return PIO_NOERR;
 }
