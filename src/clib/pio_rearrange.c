@@ -8,15 +8,17 @@
 #include <pio_internal.h>
 
 /**
- * Convert an index into a list of dimensions. E.g., for index 4 into a
- * array defined as a[3][2], will return 2,0.
+ * Convert a 1-D index into a coordinate value in an arbitrary
+ * dimension space. E.g., for index 4 into a array defined as a[3][2],
+ * will return 2,0.
  *
  * Sometimes (from box_rearranger_create()) this function is called
  * with -1 for idx. Not clear if this makes sense.
  *
  * @param ndims number of dimensions.
  * @param gdimlen array of length ndims with the dimension sizes.
- * @param idx the index to convert.
+ * @param idx the index to convert. This is the index into a 1-D array
+ * of data.
  * @param dim_list array of length ndims that will get the dimensions
  * corresponding to this index.
  */
@@ -115,15 +117,18 @@ void expand_region(int dim, const int *gdimlen, int maplen, const PIO_Offset *ma
 }
 
 /**
- * Set start and count so that they describe the first region in map.
+ * Set start and count so that they describe the first region in
+ * map. 
  *
- * Preconditions
+ * This function is used when creating the subset rearranger (it
+ * is not used for the box rearranger). It is called by get_regions().
  *
- * ndims is > 0
- *
- * maplen is > 0
- *
- * All elements of map are inside the bounds specified by gdimlen.
+ * Preconditions:
+ * <ul>
+ * <li>ndims is > 0
+ * <li>maplen is > 0
+ * <li>All elements of map are inside the bounds specified by gdimlen.
+ * </ul>
  *
  * Note that the map array is 1 based, but calculations are 0 based.
  *
@@ -148,6 +153,8 @@ PIO_Offset find_region(int ndims, const int *gdimlen, int maplen, const PIO_Offs
 
     LOG((2, "find_region ndims = %d maplen = %d", ndims, maplen));
 
+    /* Convert the index which is the first element of map into global
+     * data space. */
     idx_to_dim_list(ndims, gdimlen, map[0] - 1, start);
 
     /* Can't expand beyond the array edge.*/
@@ -164,6 +171,7 @@ PIO_Offset find_region(int ndims, const int *gdimlen, int maplen, const PIO_Offs
        through to the outermost dimensions. */
     expand_region(ndims - 1, gdimlen, maplen, map, 1, 1, max_size, count);
 
+    /* Calculate the number of data elements in this region. */
     for (int dim = 0; dim < ndims; dim++)
         regionlen *= count[dim];
 
@@ -481,7 +489,7 @@ int define_iodesc_datatypes(iosystem_desc_t *ios, io_desc_t *iodesc)
 int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc,
                    const int *dest_ioproc, const PIO_Offset *dest_ioindex)
 {
-    int ntasks;      /* Number of tasks in mycomm. */
+    int ntasks;      /* Number of tasks in union communicator. */
     int *recv_buf = NULL;
     int nrecvs = 0;
     int ierr;
@@ -1400,6 +1408,9 @@ int compare_offsets(const void *a, const void *b)
 }
 
 /**
+ * Calculate start and count regions for the subset rearranger. This
+ * function is not used in the box rearranger.
+ *
  * Each region is a block of output which can be represented in a
  * single call to the underlying netcdf library.  This can be as small
  * as a single data point, but we hope we've aggragated better than
@@ -1414,10 +1425,10 @@ int compare_offsets(const void *a, const void *b)
  * @param firstregion pointer to the first region.
  * @returns 0 on success, error code otherwise.
  */
-int get_start_and_count_regions(int ndims, const int *gdimlen, int maplen, const PIO_Offset *map,
-                                int *maxregions, io_region *firstregion)
+int get_regions(int ndims, const int *gdimlen, int maplen, const PIO_Offset *map,
+                int *maxregions, io_region *firstregion)
 {
-    int nmaplen;
+    int nmaplen = 0;
     int regionlen;
     io_region *region;
     int ret;
@@ -1425,8 +1436,8 @@ int get_start_and_count_regions(int ndims, const int *gdimlen, int maplen, const
     /* Check inputs. */
     pioassert(ndims >= 0 && gdimlen && maplen >= 0 && maxregions && firstregion,
               "invalid input", __FILE__, __LINE__);
+    LOG((1, "get_regions ndims = %d maplen = %d", ndims, maplen));
 
-    nmaplen = 0;
     region = firstregion;
     if (map)
     {
@@ -1435,25 +1446,28 @@ int get_start_and_count_regions(int ndims, const int *gdimlen, int maplen, const
         nmaplen--;
     }
     region->loffset = nmaplen;
+    LOG((2, "region->loffset = %d", region->loffset));
 
     *maxregions = 1;
 
     while (nmaplen < maplen)
     {
         /* Here we find the largest region from the current offset
-           into the iomap regionlen is the size of that region and we
+           into the iomap. regionlen is the size of that region and we
            step to that point in the map array until we reach the
-           end */
+           end. */
         for (int i = 0; i < ndims; i++)
             region->count[i] = 1;
 
+        /* Set start/count to describe first region in map. */
         regionlen = find_region(ndims, gdimlen, maplen-nmaplen,
                                 &map[nmaplen], region->start, region->count);
-
         pioassert(region->start[0] >= 0, "failed to find region", __FILE__, __LINE__);
 
         nmaplen = nmaplen + regionlen;
+        LOG((2, "regionlen = %d nmaplen = %d", regionlen, nmaplen));
 
+        /* If we need to, allocate the next region. */
         if (region->next == NULL && nmaplen < maplen)
         {
             if ((ret = alloc_region2(NULL, ndims, &region->next)))
@@ -1469,6 +1483,7 @@ int get_start_and_count_regions(int ndims, const int *gdimlen, int maplen, const
                maxregions will be the total number of regions on this
                task. */
             (*maxregions)++;
+            LOG((2, "*maxregions = %d", *maxregions));
         }
     }
 
@@ -1863,8 +1878,8 @@ int subset_rearrange_create(iosystem_desc_t *ios, int maplen, PIO_Offset *compma
             /* Allocate a data region to hold fill values. */
             if ((ret = alloc_region2(ios, iodesc->ndims, &iodesc->fillregion)))
                 return pio_err(ios, NULL, ret, __FILE__, __LINE__);
-            if ((ret = get_start_and_count_regions(iodesc->ndims, gdimlen, iodesc->holegridsize, myfillgrid,
-                                                   &iodesc->maxfillregions, iodesc->fillregion)))
+            if ((ret = get_regions(iodesc->ndims, gdimlen, iodesc->holegridsize, myfillgrid,
+                                   &iodesc->maxfillregions, iodesc->fillregion)))
                 return pio_err(ios, NULL, ret, __FILE__, __LINE__);
             free(myfillgrid);
             maxregions = iodesc->maxfillregions;
@@ -1891,8 +1906,8 @@ int subset_rearrange_create(iosystem_desc_t *ios, int maplen, PIO_Offset *compma
     if (ios->ioproc)
     {
         iodesc->maxregions = 0;
-        if ((ret = get_start_and_count_regions(iodesc->ndims, gdimlen, iodesc->llen, iomap,
-                                               &iodesc->maxregions, iodesc->firstregion)))
+        if ((ret = get_regions(iodesc->ndims, gdimlen, iodesc->llen, iomap,
+                               &iodesc->maxregions, iodesc->firstregion)))
             return pio_err(ios, NULL, ret, __FILE__, __LINE__);
         maxregions = iodesc->maxregions;
 

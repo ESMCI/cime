@@ -182,6 +182,10 @@ extern "C" {
     PIO_Offset find_region(int ndims, const int *gdims, int maplen, const PIO_Offset *map,
                            PIO_Offset *start, PIO_Offset *count);
 
+    /* Calculate start and count regions for the subset rearranger. */
+    int get_regions(int ndims, const int *gdimlen, int maplen, const PIO_Offset *map,
+                    int *maxregions, io_region *firstregion);
+
     /* Expand a region along dimension dim, by incrementing count[i] as
      * much as possible, consistent with the map. */
     void expand_region(int dim, const int *gdims, int maplen, const PIO_Offset *map,

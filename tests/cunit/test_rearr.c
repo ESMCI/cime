@@ -18,6 +18,9 @@
 /* The name of this test. */
 #define TEST_NAME "test_rearr"
 
+/* For 1-D use. */
+#define NDIM1 1
+
 /* Test some of the rearranger utility functions. */
 int test_rearranger_opts1(int iosysid)
 {
@@ -359,36 +362,68 @@ int test_compute_maxIObuffersize(MPI_Comm test_comm, int my_rank)
 /* Tests for determine_fill() function. */
 int test_determine_fill(MPI_Comm test_comm)
 {
-    iosystem_desc_t ios;
-    io_desc_t iodesc;
+    iosystem_desc_t *ios;
+    io_desc_t *iodesc;
     int gsize[1] = {4};
     PIO_Offset *compmap = NULL;
     int ret;
 
-    /* Set up simple test. */
-    ios.union_comm = test_comm;
-    iodesc.ndims = 1;
-    iodesc.rearranger = PIO_REARR_SUBSET;
-    iodesc.llen = 1;
+    /* Initialize ios. */
+    if (!(ios = calloc(1, sizeof(iosystem_desc_t))))
+        return PIO_ENOMEM;
+    ios->union_comm = test_comm;
 
-    if ((ret = determine_fill(&ios, &iodesc, gsize, compmap)))
+    if (!(iodesc = calloc(1, sizeof(io_desc_t))))
+        return PIO_ENOMEM;
+    iodesc->ndims = 1;
+    iodesc->rearranger = PIO_REARR_SUBSET;
+    iodesc->llen = 1;
+
+    if ((ret = determine_fill(ios, iodesc, gsize, compmap)))
         return ret;
-    if (iodesc.needsfill)
+    if (iodesc->needsfill)
         return ERR_WRONG;
 
-    iodesc.llen = 0;
-    if ((ret = determine_fill(&ios, &iodesc, gsize, compmap)))
+    iodesc->llen = 0;
+    if ((ret = determine_fill(ios, iodesc, gsize, compmap)))
         return ret;
-    if (!iodesc.needsfill)
+    if (!iodesc->needsfill)
         return ERR_WRONG;
-    printf("iodesc.needsfill = %d\n", iodesc.needsfill);
+    printf("iodesc->needsfill = %d\n", iodesc->needsfill);
 
+    free(ios);
+    free(iodesc);
+    
     return 0;
 }
 
 /* Run tests for get_start_and_count_regions() funciton. */
-int test_get_start_and_count_regions()
+int test_get_regions(int my_rank)
 {
+#define MAPLEN 2
+    int ndims = NDIM1;
+    const int gdimlen[NDIM1] = {8};
+    PIO_Offset map[MAPLEN] = {my_rank * 2, (my_rank + 1) * 2};
+    int maxregions;
+    io_region firstregion;
+    io_region *ior1;
+    int ret;
+
+    /* This is how we allocate a region. */
+    if ((ret = alloc_region2(NULL, NDIM1, &ior1)))
+        return ret;
+    ior1->next = NULL;
+    ior1->count[0] = 1;
+    
+    /* Call the function we are testing. */
+    /* if ((ret = get_regions(ndims, gdimlen, MAPLEN, map, &maxregions, &firstregion))) */
+    /*     return ret; */
+
+    /* Free resources for the region. */
+    free(ior1->start);
+    free(ior1->count);
+    free(ior1);
+    
     return 0;
 }
 
@@ -558,7 +593,6 @@ int test_compute_counts_box(MPI_Comm test_comm)
 /* Test for the box_rearrange_create() function. */
 int test_box_rearrange_create(MPI_Comm test_comm, int my_rank)
 {
-#define NDIM1 1
     iosystem_desc_t *ios;
     io_desc_t *iodesc;
     io_region *ior1;    
@@ -958,8 +992,8 @@ int main(int argc, char **argv)
         if ((ret = test_find_region()))
             return ret;
 
-        printf("%d running tests for get_start_and_count_regions()\n", my_rank);
-        if ((ret = test_get_start_and_count_regions()))
+        printf("%d running tests for get_regions()\n", my_rank);
+        if ((ret = test_get_regions(my_rank)))
             return ret;
 
         printf("%d running create_mpi_datatypes tests\n", my_rank);
