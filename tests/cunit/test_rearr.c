@@ -403,9 +403,9 @@ int test_get_regions(int my_rank)
 #define MAPLEN 2
     int ndims = NDIM1;
     const int gdimlen[NDIM1] = {8};
-    PIO_Offset map[MAPLEN] = {my_rank * 2, (my_rank + 1) * 2};
+    /* Don't forget map is 1-based!! */
+    PIO_Offset map[MAPLEN] = {(my_rank * 2) + 1, ((my_rank + 1) * 2) + 1};
     int maxregions;
-    io_region firstregion;
     io_region *ior1;
     int ret;
 
@@ -416,10 +416,15 @@ int test_get_regions(int my_rank)
     ior1->count[0] = 1;
     
     /* Call the function we are testing. */
-    /* if ((ret = get_regions(ndims, gdimlen, MAPLEN, map, &maxregions, &firstregion))) */
-    /*     return ret; */
+    if ((ret = get_regions(ndims, gdimlen, MAPLEN, map, &maxregions, ior1)))
+        return ret;
+    if (maxregions != 2)
+        return ERR_WRONG;
 
     /* Free resources for the region. */
+    free(ior1->next->start);
+    free(ior1->next->count);
+    free(ior1->next);
     free(ior1->start);
     free(ior1->count);
     free(ior1);

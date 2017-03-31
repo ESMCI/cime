@@ -1442,7 +1442,10 @@ int get_regions(int ndims, const int *gdimlen, int maplen, const PIO_Offset *map
     if (map)
     {
         while (map[nmaplen++] <= 0)
+        {
+            LOG((3, "map[%d] = %d", nmaplen, map[nmaplen]));
             ;
+        }
         nmaplen--;
     }
     region->loffset = nmaplen;
@@ -1470,6 +1473,7 @@ int get_regions(int ndims, const int *gdimlen, int maplen, const PIO_Offset *map
         /* If we need to, allocate the next region. */
         if (region->next == NULL && nmaplen < maplen)
         {
+            LOG((2, "allocating next region"));
             if ((ret = alloc_region2(NULL, ndims, &region->next)))
                 return ret;
 
