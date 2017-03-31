@@ -57,13 +57,13 @@ Once you are assured that you have a basic functional MPI environment you will n
 The following steps should be followed:
 
 - Create a $HOME/.cime directory
-- Copy the template file ``$CIME/cime_config/xml_schemas/config_machines_template.xml`` to ``$HOME/.cime/config_machines.xml``
+- Copy the template file ``$CIME/config/xml_schemas/config_machines_template.xml`` to ``$HOME/.cime/config_machines.xml``
 - Fill in the details of ``$HOME/.cime/config_machines.xml`` that specific to your machine.  
 - The completed file should conform to the schema definition provided, check it using: 
 
 ::
 
-   xmllint --noout --schema $CIME/cime_config/xml_schemas/config_machines.xsd $HOME/.cime/config_machines.xml
+   xmllint --noout --schema $CIME/config/xml_schemas/config_machines.xsd $HOME/.cime/config_machines.xml
 
 
 - The files ``config_batch.xml`` and ``config_compilers.xml`` may also need specific adjustments for your batch system and compiler. You can edit these files in place to add your machine configuration or you can place your custom configuration files in the directory ``$HOME/.cime/``.  We recommend the latter approach. All files in ``$HOME/.cime/`` are appended to the xml objects read into memory.
@@ -75,7 +75,7 @@ The following steps should be followed:
 ====================================================
 Enabling out-of-the-box capability for your machine
 ====================================================
-Once you have successfully created the required xml files in your .cime directory and are satisfied with the results you can merge them into the default files in the cime_config/$CIME_MODEL/machines directory.   
+Once you have successfully created the required xml files in your .cime directory and are satisfied with the results you can merge them into the default files in the config/$CIME_MODEL/machines directory.   
 If you would like to make this machine definition available generally you may then issue a pull request to add your changes to the git repository.  
 
 ====================================================
