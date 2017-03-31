@@ -1212,6 +1212,10 @@ int main(int argc, char **argv)
         if ((ret = test_box_rearrange_create(test_comm, my_rank)))
             return ret;
 
+        printf("%d running more tests for box_rearrange_create\n", my_rank);
+        if ((ret = test_box_rearrange_create_2(test_comm, my_rank)))
+            return ret;
+
         printf("%d running tests for default_subset_partition\n", my_rank);
         if ((ret = test_default_subset_partition(test_comm, my_rank)))
             return ret;
