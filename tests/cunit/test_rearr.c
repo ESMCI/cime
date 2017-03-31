@@ -373,24 +373,27 @@ int test_determine_fill(MPI_Comm test_comm)
         return PIO_ENOMEM;
     ios->union_comm = test_comm;
 
+    /* Set up iodesc for test. */
     if (!(iodesc = calloc(1, sizeof(io_desc_t))))
         return PIO_ENOMEM;
     iodesc->ndims = 1;
     iodesc->rearranger = PIO_REARR_SUBSET;
     iodesc->llen = 1;
 
+    /* We don't need fill. */
     if ((ret = determine_fill(ios, iodesc, gsize, compmap)))
         return ret;
     if (iodesc->needsfill)
         return ERR_WRONG;
 
+    /* Change settings, so now we do need fill. */
     iodesc->llen = 0;
     if ((ret = determine_fill(ios, iodesc, gsize, compmap)))
         return ret;
     if (!iodesc->needsfill)
         return ERR_WRONG;
-    printf("iodesc->needsfill = %d\n", iodesc->needsfill);
 
+    /* Free test resources. */
     free(ios);
     free(iodesc);
     
@@ -435,17 +438,20 @@ int test_get_regions(int my_rank)
 /* Run tests for find_region() function. */
 int test_find_region()
 {
-    int ndims = 1;
-    int gdims[1] = {1};
+    int ndims = NDIM1;
+    int gdimlen[NDIM1] = {4};
     int maplen = 1;
     PIO_Offset map[1] = {1};
-    PIO_Offset start[1];
-    PIO_Offset count[1];
+    PIO_Offset start[NDIM1];
+    PIO_Offset count[NDIM1];
     PIO_Offset regionlen;
 
-    regionlen = find_region(ndims, gdims, maplen, map, start, count);
-    printf("regionlen = %lld\n", regionlen);
-    if (regionlen != 1)
+    /* Call the function we are testing. */
+    regionlen = find_region(ndims, gdimlen, maplen, map, start, count);
+
+    /* Check results. */
+    printf("regionlen = %lld start[0] = %lld count[0] = %lld\n", regionlen, start[0], count[0]);
+    if (regionlen != 1 || start[0] != 0 || count[0] != 1)
         return ERR_WRONG;
     
     return 0;
@@ -455,13 +461,13 @@ int test_find_region()
 int test_expand_region()
 {
     int dim = 0;
-    int gdims[1] = {1};
+    int gdims[NDIM1] = {1};
     int maplen = 1;
     PIO_Offset map[1] = {5};
     int region_size = 1;
     int region_stride = 1;
-    int max_size[1] = {10};
-    PIO_Offset count[1];
+    int max_size[NDIM1] = {10};
+    PIO_Offset count[NDIM1];
 
     expand_region(dim, gdims, maplen, map, region_size, region_stride, max_size, count);
     if (count[0] != 1)

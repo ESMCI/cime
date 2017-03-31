@@ -60,7 +60,7 @@ void idx_to_dim_list(int ndims, const int *gdimlen, PIO_Offset idx,
  * @param dim the dimension number to start with.
  * @param gdimlen array of global dimension lengths.
  * @param maplen the length of the map.
- * @param map ???
+ * @param map array (length maplen) with the the 1-based compmap.
  * @param region_size ???
  * @param region_stride amount incremented along dimension.
  * @param max_size array of size dim + 1 that contains the maximum
@@ -137,27 +137,30 @@ void expand_region(int dim, const int *gdimlen, int maplen, const PIO_Offset *ma
  * dimensions.
  * @param maplen the length of the map.
  * @param map
- * @param start array of length ndims with start indicies.
- * @param count array of length ndims with counts.
+ * @param start array (length ndims) that will get start indicies of
+ * found region.
+ * @param count array (length ndims) that will get counts of found
+ * region.
  * @returns length of the region found.
  */
 PIO_Offset find_region(int ndims, const int *gdimlen, int maplen, const PIO_Offset *map,
                        PIO_Offset *start, PIO_Offset *count)
 {
-    int max_size[ndims];
     PIO_Offset regionlen = 1;
 
     /* Check inputs. */
     pioassert(ndims > 0 && gdimlen && maplen > 0 && map && start && count,
               "invalid input", __FILE__, __LINE__);
-
     LOG((2, "find_region ndims = %d maplen = %d", ndims, maplen));
+
+    int max_size[ndims];
 
     /* Convert the index which is the first element of map into global
      * data space. */
     idx_to_dim_list(ndims, gdimlen, map[0] - 1, start);
 
-    /* Can't expand beyond the array edge.*/
+    /* Can't expand beyond the array edge. Set up max_size array for
+     * expand_region call below. */
     for (int dim = 0; dim < ndims; ++dim)
     {
         max_size[dim] = gdimlen[dim] - start[dim];
@@ -480,6 +483,24 @@ int define_iodesc_datatypes(iosystem_desc_t *ios, io_desc_t *iodesc)
  * called from box_rearrange_create(). It is not used for the subset
  * rearranger.
  *
+ * This function:
+ * <ul>
+ * <li>Allocates and inits iodesc->scount, array (length
+ * ios->num_iotasks) containing number of data elements sent to each
+ * IO task from current compute task.
+ * <li>Uses pio_swapm() to send iodesc->scount array from each
+ * computation task to all IO tasks.
+ * <li>On IO tasks, allocates and inits iodesc->rcount and
+ * iodesc->rfrom arrays (length max(1, nrecvs)) which holds ???.
+ * <li>Allocates and init iodesc->sindex arrays (length iodesc->ndof)
+ * which holds indecies for computation tasks.
+ * <li>On IO tasks, allocates and init iodesc->rindex (length
+   totalrecv) with indices of the data to be sent/received from this
+   io task to each compute task.
+ * <li>Uses pio_swapm() to send list of indicies on each compute task
+ * to the IO tasks.
+ * </ul>
+ *
  * @param ios pointer to the iosystem_desc_t struct.
  * @param iodesc a pointer to the io_desc_t struct.
  * @param dest_ioproc an array (length maplen) of IO task numbers.
@@ -521,12 +542,12 @@ int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc,
     /* iodesc->scount is the number of data elements sent to each IO
      * task from the current compute task. */
     for (int i = 0; i < iodesc->ndof; i++)
+    {
         if (dest_ioindex[i] >= 0)
-        {
             (iodesc->scount[dest_ioproc[i]])++;
-            LOG((3, "i = %d dest_ioproc[%d] = %d iodesc->scount[dest_ioproc[i]] = %d",
-                 i, i, dest_ioproc[i], iodesc->scount[dest_ioproc[i]]));
-        }
+        LOG((3, "i = %d dest_ioproc[%d] = %d iodesc->scount[dest_ioproc[i]] = %d",
+             i, i, dest_ioproc[i], iodesc->scount[dest_ioproc[i]]));
+    }
 
     /* Initialize arrays used in swapm call. */
     for (int i = 0; i < ntasks; i++)
@@ -582,11 +603,6 @@ int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc,
                           iodesc->rearr_opts.comp2io.isend,
                           iodesc->rearr_opts.comp2io.max_pend_req)))
         return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
-#if PIO_ENABLE_LOGGING
-    for (int i = 0; i < ios->num_iotasks; i++)
-        LOG((3, "returned from pio_swapm iodesc->scount[%d] = %d", i,
-             iodesc->scount[i]));
-#endif /* PIO_ENABLE_LOGGING */
 
     /* On IO tasks, set up data receives. */
     if (ios->ioproc)
@@ -594,8 +610,11 @@ int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc,
         /* Count the number of non-zero scounts from the compute
          * tasks. */
         for (int i = 0; i < ntasks; i++)
+        {
             if (recv_buf[i] != 0)
                 nrecvs++;
+            LOG((3, "recv_buf[%d] = %d", i, recv_buf[i]));
+        }
 
         /* Get memory to hold the count of data receives. */
         if (!(iodesc->rcount = calloc(max(1, nrecvs), sizeof(int))))
