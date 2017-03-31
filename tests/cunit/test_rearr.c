@@ -21,6 +21,9 @@
 /* For 1-D use. */
 #define NDIM1 1
 
+/* For maplens of 2. */
+#define MAPLEN2 2
+
 /* Test some of the rearranger utility functions. */
 int test_rearranger_opts1(int iosysid)
 {
@@ -552,7 +555,7 @@ int test_define_iodesc_datatypes()
 }
 
 /* Test the compute_counts() function with the box rearranger. */
-int test_compute_counts_box(MPI_Comm test_comm)
+int test_compute_counts(MPI_Comm test_comm, int my_rank)
 {
     iosystem_desc_t *ios;
     io_desc_t *iodesc;
@@ -586,6 +589,16 @@ int test_compute_counts_box(MPI_Comm test_comm)
     if ((ret = compute_counts(ios, iodesc, dest_ioproc, dest_ioindex)))
         return ret;
 
+    /* Check results. */
+    for (int i = 0; i < ios->num_iotasks; i++)
+        if (iodesc->scount[i] != 1 || iodesc->sindex[i] != i)
+            return ERR_WRONG;
+
+    for (int i = 0; i < iodesc->ndof; i++)
+        if (iodesc->rcount[i] != 1 || iodesc->rfrom[i] != i ||
+            iodesc->rindex[i] != my_rank)
+            return ERR_WRONG;
+
     /* Free resources allocated in compute_counts(). */
     free(iodesc->scount);
     free(iodesc->sindex);
@@ -601,14 +614,36 @@ int test_compute_counts_box(MPI_Comm test_comm)
     return 0;
 }
 
+/* Call PIOc_InitDecomp() with parameters such that it calls
+ * box_rearrange_create() just like test_box_rearrange_create() will
+ * (see below). */
+int test_init_decomp(int iosysid, MPI_Comm test_comm, int my_rank)
+{
+    int ioid;
+    PIO_Offset compmap[MAPLEN2] = {my_rank * 2, (my_rank + 1) * 2};
+    const int gdimlen[NDIM1] = {8};
+    int ret;
+
+    /* Initialize a decomposition. */
+    if ((ret = PIOc_init_decomp(iosysid, PIO_INT, NDIM1, gdimlen, MAPLEN2,
+                                compmap, &ioid, PIO_REARR_BOX, NULL, NULL)))
+        return ret;
+
+    /* Free it. */
+    if ((ret = PIOc_freedecomp(iosysid, ioid)))
+        return ret;
+            
+    return 0;
+}
+
 /* Test for the box_rearrange_create() function. */
 int test_box_rearrange_create(MPI_Comm test_comm, int my_rank)
 {
     iosystem_desc_t *ios;
     io_desc_t *iodesc;
     io_region *ior1;    
-    int maplen = 2;
-    PIO_Offset compmap[2] = {1, 0};
+    int maplen = MAPLEN2;
+    PIO_Offset compmap[MAPLEN2] = {(my_rank * 2) + 1, ((my_rank + 1) * 2) + 1};
     const int gdimlen[NDIM1] = {8};
     int ndims = NDIM1;
     int ret;
@@ -631,7 +666,116 @@ int test_box_rearrange_create(MPI_Comm test_comm, int my_rank)
     iodesc->ndims = NDIM1;
     iodesc->rearranger = PIO_REARR_BOX;
 
-    iodesc->ndof = 4;
+    /* Set up the IO task info for the test. */
+    ios->ioproc = 1;
+    ios->union_rank = my_rank;
+    ios->num_iotasks = 4;
+    ios->num_comptasks = 4;
+    if (!(ios->ioranks = calloc(ios->num_iotasks, sizeof(int))))
+        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+    for (int i = 0; i < TARGET_NTASKS; i++)
+        ios->ioranks[i] = i;
+
+    /* This is how we allocate a region. */
+    if ((ret = alloc_region2(NULL, NDIM1, &ior1)))
+        return ret;
+    if (my_rank == 0)
+        ior1->count[0] = 8;
+    
+    iodesc->firstregion = ior1;
+
+    /* We are finally ready to run the code under test. */
+    if ((ret = box_rearrange_create(ios, maplen, compmap, gdimlen, ndims, iodesc)))
+        return ret;
+
+    /* Check some results. */
+    if (iodesc->rearranger != PIO_REARR_BOX || iodesc->ndof != maplen ||
+        iodesc->llen != my_rank ? 0 : 8 || !iodesc->needsfill)
+        return ERR_WRONG;
+
+    /* for (int i = 0; i < ios->num_iotasks; i++) */
+    /* { */
+    /*     /\* sindex is only allocated if scount[i] > 0. *\/ */
+    /*     if (iodesc->scount[i] != i ? 0 : 1 || */
+    /*         (iodesc->scount[i] && iodesc->sindex[i] != 0)) */
+    /*         return ERR_WRONG; */
+    /* } */
+
+    /* for (int i = 0; i < iodesc->ndof; i++) */
+    /* { */
+    /*     /\* rcount is 1 for rank 0, 0 on other tasks. *\/ */
+    /*     if (iodesc->rcount[i] != my_rank ? 0 : 1) */
+    /*         return ERR_WRONG; */
+        
+    /*     /\* rfrom is 0 everywhere, except task 0, array elemnt 1. *\/ */
+    /*     if (my_rank == 0 && i == 1) */
+    /*     { */
+    /*         if (iodesc->rfrom[i] != 1) */
+    /*             return ERR_WRONG; */
+    /*     } */
+    /*     else */
+    /*     { */
+    /*         if (iodesc->rfrom[i] != 0) */
+    /*             return ERR_WRONG; */
+    /*     } */
+        
+    /*     /\* rindex is only allocated where there is a non-zero count. *\/ */
+    /*     if (iodesc->rcount[i]) */
+    /*         if (iodesc->rindex[i] != 0) */
+    /*             return ERR_WRONG; */
+    /* } */
+
+    /* Free resources allocated in compute_counts(). */
+    free(iodesc->scount);
+    free(iodesc->sindex);
+    free(iodesc->rcount);
+    free(iodesc->rfrom);
+    free(iodesc->rindex);
+
+    /* Free resources from test. */
+    free(ior1->start);
+    free(ior1->count);
+    free(ior1);
+    free(ios->ioranks);
+    free(iodesc);
+    free(ios);
+    
+    return 0;
+}
+
+/* Test for the box_rearrange_create() function. */
+int test_box_rearrange_create_2(MPI_Comm test_comm, int my_rank)
+{
+#define MAPLEN2 2
+    iosystem_desc_t *ios;
+    io_desc_t *iodesc;
+    io_region *ior1;    
+    int maplen = MAPLEN2;
+    PIO_Offset compmap[MAPLEN2] = {1, 0};
+    const int gdimlen[NDIM1] = {8};
+    int ndims = NDIM1;
+    int ret;
+
+    /* Allocate IO system info struct for this test. */
+    if (!(ios = calloc(1, sizeof(iosystem_desc_t))))
+        return PIO_ENOMEM;
+
+    /* Allocate IO desc struct for this test. */
+    if (!(iodesc = calloc(1, sizeof(io_desc_t))))
+        return PIO_ENOMEM;
+
+    /* Default rearranger options. */
+    iodesc->rearr_opts.comm_type = PIO_REARR_COMM_COLL;
+    iodesc->rearr_opts.fcd = PIO_REARR_COMM_FC_2D_DISABLE;
+
+    /* Set up for determine_fill(). */
+    ios->union_comm = test_comm;
+    ios->io_comm = test_comm;
+    iodesc->ndims = NDIM1;
+    iodesc->rearranger = PIO_REARR_BOX;
+
+    /* This is the size of the map in computation tasks. */
+    iodesc->ndof = 2;
 
     /* Set up the IO task info for the test. */
     ios->ioproc = 1;
@@ -657,8 +801,41 @@ int test_box_rearrange_create(MPI_Comm test_comm, int my_rank)
         return ret;
 
     /* Check some results. */
-    if (iodesc->rearranger != PIO_REARR_BOX || iodesc->ndof != maplen)
+    if (iodesc->rearranger != PIO_REARR_BOX || iodesc->ndof != maplen ||
+        iodesc->llen != my_rank ? 0 : 8 || !iodesc->needsfill)
         return ERR_WRONG;
+
+    for (int i = 0; i < ios->num_iotasks; i++)
+    {
+        /* sindex is only allocated if scount[i] > 0. */
+        if (iodesc->scount[i] != i ? 0 : 1 ||
+            (iodesc->scount[i] && iodesc->sindex[i] != 0))
+            return ERR_WRONG;
+    }
+
+    for (int i = 0; i < iodesc->ndof; i++)
+    {
+        /* rcount is 1 for rank 0, 0 on other tasks. */
+        if (iodesc->rcount[i] != my_rank ? 0 : 1)
+            return ERR_WRONG;
+        
+        /* rfrom is 0 everywhere, except task 0, array elemnt 1. */
+        if (my_rank == 0 && i == 1)
+        {
+            if (iodesc->rfrom[i] != 1)
+                return ERR_WRONG;
+        }
+        else
+        {
+            if (iodesc->rfrom[i] != 0)
+                return ERR_WRONG;
+        }
+        
+        /* rindex is only allocated where there is a non-zero count. */
+        if (iodesc->rcount[i])
+            if (iodesc->rindex[i] != 0)
+                return ERR_WRONG;
+    }
 
     /* Free resources allocated in compute_counts(). */
     free(iodesc->scount);
@@ -1024,7 +1201,11 @@ int main(int argc, char **argv)
             return ret;
 
         printf("%d running compute_counts tests for box rearranger\n", my_rank);
-        if ((ret = test_compute_counts_box(test_comm)))
+        if ((ret = test_compute_counts(test_comm, my_rank)))
+            return ret;
+
+        printf("%d running test for init_decomp\n", my_rank);
+        if ((ret = test_init_decomp(iosysid, test_comm, my_rank)))
             return ret;
 
         printf("%d running tests for box_rearrange_create\n", my_rank);

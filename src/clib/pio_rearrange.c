@@ -495,8 +495,8 @@ int define_iodesc_datatypes(iosystem_desc_t *ios, io_desc_t *iodesc)
  * <li>Allocates and init iodesc->sindex arrays (length iodesc->ndof)
  * which holds indecies for computation tasks.
  * <li>On IO tasks, allocates and init iodesc->rindex (length
-   totalrecv) with indices of the data to be sent/received from this
-   io task to each compute task.
+ * totalrecv) with indices of the data to be sent/received from this
+ * io task to each compute task.
  * <li>Uses pio_swapm() to send list of indicies on each compute task
  * to the IO tasks.
  * </ul>
@@ -1177,6 +1177,13 @@ int determine_fill(iosystem_desc_t *ios, io_desc_t *iodesc, const int *gdimlen,
  * data from the compmap of one or more compute tasks in the iomap
  * array and the length of that array is llen.
  *
+ * This function:
+ * <ul>
+ * <li>
+ * <li>
+ * <li>
+ * </ul>
+ *
  * @param ios pointer to the iosystem_desc_t struct.
  * @param maplen the length of the map. This is the number of data
  * elements on the compute task.
@@ -1237,7 +1244,8 @@ int box_rearrange_create(iosystem_desc_t *ios, int maplen, const PIO_Offset *com
      * the IO task. For computation tasks, llen will remain at 0. Also
      * set up arrays for the allgather which will give every IO task a
      * complete list of llens for each IO task. */
-    LOG((3, "ios->ioproc = %d ios->num_comptasks = %d", ios->ioproc, ios->num_comptasks));
+    LOG((3, "ios->ioproc = %d ios->num_comptasks = %d", ios->ioproc,
+         ios->num_comptasks));
     pioassert(iodesc->llen == 0, "error", __FILE__, __LINE__);
     if (ios->ioproc)
     {
@@ -1314,23 +1322,21 @@ int box_rearrange_create(iosystem_desc_t *ios, int maplen, const PIO_Offset *com
             }
             recvcounts[ios->ioranks[i]] = ndims;
 
-            /* The count from iotask i is sent to all compute tasks */
+            /* The count array from iotask i is sent to all compute tasks. */
             LOG((3, "about to call pio_swapm with count from iotask %d ndims = %d",
                  i, ndims));
-            if ((ret = pio_swapm(iodesc->firstregion->count,  sendcounts, sdispls,
-                                 dtypes, count, recvcounts, rdispls, dtypes,
-                                 ios->union_comm, iodesc->rearr_opts.io2comp.hs,
-                                 iodesc->rearr_opts.io2comp.isend,
+            if ((ret = pio_swapm(iodesc->firstregion->count, sendcounts, sdispls, dtypes, count,
+                                 recvcounts, rdispls, dtypes, ios->union_comm,
+                                 iodesc->rearr_opts.io2comp.hs, iodesc->rearr_opts.io2comp.isend,
                                  iodesc->rearr_opts.io2comp.max_pend_req)))
                 return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
-            /* The start from iotask i is sent to all compute tasks. */
+            /* The start array from iotask i is sent to all compute tasks. */
             LOG((3, "about to call pio_swapm with start from iotask %d ndims = %d",
                  i, ndims));
-            if ((ret = pio_swapm(iodesc->firstregion->start,  sendcounts, sdispls,
-                                 dtypes, start, recvcounts, rdispls, dtypes,
-                                 ios->union_comm, iodesc->rearr_opts.io2comp.hs,
-                                 iodesc->rearr_opts.io2comp.isend,
+            if ((ret = pio_swapm(iodesc->firstregion->start,  sendcounts, sdispls, dtypes,
+                                 start, recvcounts, rdispls, dtypes, ios->union_comm,
+                                 iodesc->rearr_opts.io2comp.hs, iodesc->rearr_opts.io2comp.isend,
                                  iodesc->rearr_opts.io2comp.max_pend_req)))
                 return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 

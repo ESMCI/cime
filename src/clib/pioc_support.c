@@ -640,11 +640,10 @@ int find_mpi_type(int pio_type, MPI_Datatype *mpi_type, int *type_size)
  * Allocate space for an IO description struct, and initialize it.
  *
  * @param ios pointer to the IO system info, used for error
- * handling. Ignored if NULL.
+ * handling.
  * @param piotype the PIO data type (ex. PIO_FLOAT, PIO_INT, etc.).
  * @param ndims the number of dimensions.
- * @iodesc pointer that gets a pointer to the newly allocated
- * io_desc_t.
+ * @param iodesc pointer that gets the newly allocated io_desc_t.
  * @returns 0 for success, error code otherwise.
  */
 int malloc_iodesc(iosystem_desc_t *ios, int piotype, int ndims,
