@@ -1179,9 +1179,14 @@ int determine_fill(iosystem_desc_t *ios, io_desc_t *iodesc, const int *gdimlen,
  *
  * This function:
  * <ul>
- * <li>
- * <li>
- * <li>
+ * <li>For IO tasks, determines llen.
+ * <li>Determine whether fill values will be needed.
+ * <li>Do an allgether of llen values into array iomaplen.
+ * <li>For each IO task, send starts/counts to all compute tasks.
+ * <li>Find dest_ioindex and dest_ioproc for each element in the map.
+ * <li>Call compute_counts().
+ * <li>On IO tasks, compute the max IO buffer size.
+ * <li>Call compute_maxaggregate_bytes().
  * </ul>
  *
  * @param ios pointer to the iosystem_desc_t struct.
