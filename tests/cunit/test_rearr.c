@@ -151,7 +151,7 @@ int test_create_mpi_datatypes()
     {
         int msgcnt = 4;
         PIO_Offset mindex[4] = {0, 0, 0, 0};
-        int mcount[4] = {2, 1, 1, 1};
+        int mcount[4] = {1, 1, 1, 1};
         MPI_Datatype mtype2[4];
 
         /* Create 4 MPI data types. */
