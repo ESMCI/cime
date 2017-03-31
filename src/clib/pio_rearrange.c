@@ -507,8 +507,6 @@ int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc,
     int ntasks;      /* Number of tasks in mycomm. */
     int *recv_buf = NULL;
     int nrecvs = 0;
-    int offset_size; /* Size of the MPI_OFFSET type. */
-    int mpierr;      /* Return call from MPI functions. */
     int ierr;
 
     /* Check inputs. */
@@ -689,11 +687,6 @@ int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc,
         recv_displs[i] = 0;
     }
 
-    /* Find the size of the offset type. */
-    if ((mpierr = MPI_Type_size(MPI_OFFSET, &offset_size)))
-        return check_mpi(NULL, mpierr, __FILE__, __LINE__);
-    LOG((3, "offset_size = %d", offset_size));
-
     /* ??? */
     for (int i = 0; i < ios->num_iotasks; i++)
     {
@@ -701,7 +694,7 @@ int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc,
          * each IO task. */
         send_counts[ios->ioranks[i]] = iodesc->scount[i];
         if (send_counts[ios->ioranks[i]] > 0)
-            send_displs[ios->ioranks[i]] = spos[i] * offset_size;
+            send_displs[ios->ioranks[i]] = spos[i] * SIZEOF_MPI_OFFSET;
         LOG((3, "ios->ioranks[i] = %d iodesc->scount[%d] = %d spos[%d] = %d",
              ios->ioranks[i], i, iodesc->scount[i], i, spos[i]));
     }
@@ -720,7 +713,7 @@ int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc,
         for (int i = 1; i < nrecvs; i++)
         {
             recv_displs[iodesc->rfrom[i]] = recv_displs[iodesc->rfrom[i - 1]] +
-                iodesc->rcount[i - 1] * offset_size;
+                iodesc->rcount[i - 1] * SIZEOF_MPI_OFFSET;
             LOG((3, "iodesc->rfrom[%d] = %d recv_displs[iodesc->rfrom[i]] = %d", i,
                  iodesc->rfrom[i], recv_displs[iodesc->rfrom[i]]));
         }
@@ -1195,8 +1188,6 @@ int determine_fill(iosystem_desc_t *ios, io_desc_t *iodesc, const int *gdimlen,
 int box_rearrange_create(iosystem_desc_t *ios, int maplen, const PIO_Offset *compmap,
                          const int *gdimlen, int ndims, io_desc_t *iodesc)
 {
-    int offset_size;   /* Size of the MPI_OFFSET type. */
-    int mpierr;        /* Return code from MPI functions. */
     int ret;
 
     /* Check inputs. */
@@ -1220,11 +1211,6 @@ int box_rearrange_create(iosystem_desc_t *ios, int maplen, const PIO_Offset *com
 
     /* Number of elements of data on compute node. */
     iodesc->ndof = maplen;
-
-    /* Find the size of the MPI_OFFSET type. */
-    if ((mpierr = MPI_Type_size(MPI_OFFSET, &offset_size)))
-        return check_mpi(NULL, mpierr, __FILE__, __LINE__);
-    LOG((2, "offset_size = %d", offset_size));
 
     /* Initialize array values. */
     for (int i = 0; i < maplen; i++)
@@ -1281,7 +1267,7 @@ int box_rearrange_create(iosystem_desc_t *ios, int maplen, const PIO_Offset *com
         LOG((2, "i = %d", i));
         LOG((2, "i = %d ios->ioranks[i] = %d", i, ios->ioranks[i]));
         recvcounts[ios->ioranks[i]] = 1;
-        rdispls[ios->ioranks[i]] = i * offset_size;
+        rdispls[ios->ioranks[i]] = i * SIZEOF_MPI_OFFSET;
         LOG((3, "i = %d ios->ioranks[%d] = %d recvcounts[%d] = %d rdispls[%d] = %d",
              i, i, ios->ioranks[i], ios->ioranks[i], recvcounts[ios->ioranks[i]],
              ios->ioranks[i], rdispls[ios->ioranks[i]]));
@@ -1776,9 +1762,6 @@ int subset_rearrange_create(iosystem_desc_t *ios, int maplen, PIO_Offset *compma
     for (i = 0; i < ntasks; i++)
     {
         cnt[i] = rdispls[i];
-
-        /* offsets to swapm are in bytes */
-        /*    rdispls[i]*=pio_offset_size; */
     }
 
     /* ??? */
