@@ -152,7 +152,7 @@ extern "C" {
     int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc, const int *dest_ioproc,
                        const PIO_Offset *dest_ioindex);
 
-    /* Compute mapping for subset rearranger. */
+    /* Create the MPI communicators needed by the subset rearranger. */
     int default_subset_partition(iosystem_desc_t *ios, io_desc_t *iodesc);
 
     /* Check return from MPI function and print error message. */
