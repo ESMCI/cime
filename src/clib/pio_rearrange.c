@@ -1637,7 +1637,7 @@ int subset_rearrange_create(iosystem_desc_t *ios, int maplen, PIO_Offset *compma
     int ret;
 
     /* Check inputs. */
-    pioassert(ios && maplen >= 0 && compmap && gdimlen && iodesc,
+    pioassert(ios && maplen >= 0 && compmap && gdimlen && ndims >= 0 && iodesc,
               "invalid input", __FILE__, __LINE__);
 
     LOG((2, "subset_rearrange_create maplen = %d ndims = %d", maplen, ndims));
