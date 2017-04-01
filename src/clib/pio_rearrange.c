@@ -8,38 +8,17 @@
 #include <pio_internal.h>
 
 /**
- * Internal library util function to initialize rearranger
- * options. This is used in PIOc_Init_Intracomm().
- *
- * NOTE: The old default for max pending requests was 64 - we no
- * longer use it.
- *
- * @param iosys pointer to iosystem descriptor
- */
-void init_rearr_opts(iosystem_desc_t *iosys)
-{
-    /* Disable handshake /isend and set max_pend_req = 0 to turn of throttling */
-    const rearr_comm_fc_opt_t def_coll_comm_fc_opts = { false, false, 0 };
-
-    pioassert(iosys, "invalid input", __FILE__, __LINE__);
-
-    /* Default to coll - i.e., no flow control */
-    iosys->rearr_opts.comm_type = PIO_REARR_COMM_COLL;
-    iosys->rearr_opts.fcd = PIO_REARR_COMM_FC_2D_DISABLE;
-    iosys->rearr_opts.comp2io = def_coll_comm_fc_opts;
-    iosys->rearr_opts.io2comp = def_coll_comm_fc_opts;
-}
-
-/**
- * Convert an index into a list of dimensions. E.g., for index 4 into a
- * array defined as a[3][2], will return 2,0.
+ * Convert a 1-D index into a coordinate value in an arbitrary
+ * dimension space. E.g., for index 4 into a array defined as a[3][2],
+ * will return 2,0.
  *
  * Sometimes (from box_rearranger_create()) this function is called
  * with -1 for idx. Not clear if this makes sense.
  *
  * @param ndims number of dimensions.
  * @param gdimlen array of length ndims with the dimension sizes.
- * @param idx the index to convert.
+ * @param idx the index to convert. This is the index into a 1-D array
+ * of data.
  * @param dim_list array of length ndims that will get the dimensions
  * corresponding to this index.
  */
@@ -81,7 +60,7 @@ void idx_to_dim_list(int ndims, const int *gdimlen, PIO_Offset idx,
  * @param dim the dimension number to start with.
  * @param gdimlen array of global dimension lengths.
  * @param maplen the length of the map.
- * @param map ???
+ * @param map array (length maplen) with the the 1-based compmap.
  * @param region_size ???
  * @param region_stride amount incremented along dimension.
  * @param max_size array of size dim + 1 that contains the maximum
@@ -138,15 +117,18 @@ void expand_region(int dim, const int *gdimlen, int maplen, const PIO_Offset *ma
 }
 
 /**
- * Set start and count so that they describe the first region in map.
+ * Set start and count so that they describe the first region in
+ * map. 
  *
- * Preconditions
+ * This function is used when creating the subset rearranger (it
+ * is not used for the box rearranger). It is called by get_regions().
  *
- * ndims is > 0
- *
- * maplen is > 0
- *
- * All elements of map are inside the bounds specified by gdimlen.
+ * Preconditions:
+ * <ul>
+ * <li>ndims is > 0
+ * <li>maplen is > 0
+ * <li>All elements of map are inside the bounds specified by gdimlen.
+ * </ul>
  *
  * Note that the map array is 1 based, but calculations are 0 based.
  *
@@ -155,25 +137,30 @@ void expand_region(int dim, const int *gdimlen, int maplen, const PIO_Offset *ma
  * dimensions.
  * @param maplen the length of the map.
  * @param map
- * @param start array of length ndims with start indicies.
- * @param count array of length ndims with counts.
+ * @param start array (length ndims) that will get start indicies of
+ * found region.
+ * @param count array (length ndims) that will get counts of found
+ * region.
  * @returns length of the region found.
  */
 PIO_Offset find_region(int ndims, const int *gdimlen, int maplen, const PIO_Offset *map,
                        PIO_Offset *start, PIO_Offset *count)
 {
-    int max_size[ndims];
     PIO_Offset regionlen = 1;
 
     /* Check inputs. */
     pioassert(ndims > 0 && gdimlen && maplen > 0 && map && start && count,
               "invalid input", __FILE__, __LINE__);
-
     LOG((2, "find_region ndims = %d maplen = %d", ndims, maplen));
 
+    int max_size[ndims];
+
+    /* Convert the index which is the first element of map into global
+     * data space. */
     idx_to_dim_list(ndims, gdimlen, map[0] - 1, start);
 
-    /* Can't expand beyond the array edge.*/
+    /* Can't expand beyond the array edge. Set up max_size array for
+     * expand_region call below. */
     for (int dim = 0; dim < ndims; ++dim)
     {
         max_size[dim] = gdimlen[dim] - start[dim];
@@ -187,6 +174,7 @@ PIO_Offset find_region(int ndims, const int *gdimlen, int maplen, const PIO_Offs
        through to the outermost dimensions. */
     expand_region(ndims - 1, gdimlen, maplen, map, 1, 1, max_size, count);
 
+    /* Calculate the number of data elements in this region. */
     for (int dim = 0; dim < ndims; dim++)
         regionlen *= count[dim];
 
@@ -495,6 +483,24 @@ int define_iodesc_datatypes(iosystem_desc_t *ios, io_desc_t *iodesc)
  * called from box_rearrange_create(). It is not used for the subset
  * rearranger.
  *
+ * This function:
+ * <ul>
+ * <li>Allocates and inits iodesc->scount, array (length
+ * ios->num_iotasks) containing number of data elements sent to each
+ * IO task from current compute task.
+ * <li>Uses pio_swapm() to send iodesc->scount array from each
+ * computation task to all IO tasks.
+ * <li>On IO tasks, allocates and inits iodesc->rcount and
+ * iodesc->rfrom arrays (length max(1, nrecvs)) which holds ???.
+ * <li>Allocates and init iodesc->sindex arrays (length iodesc->ndof)
+ * which holds indecies for computation tasks.
+ * <li>On IO tasks, allocates and init iodesc->rindex (length
+ * totalrecv) with indices of the data to be sent/received from this
+ * io task to each compute task.
+ * <li>Uses pio_swapm() to send list of indicies on each compute task
+ * to the IO tasks.
+ * </ul>
+ *
  * @param ios pointer to the iosystem_desc_t struct.
  * @param iodesc a pointer to the io_desc_t struct.
  * @param dest_ioproc an array (length maplen) of IO task numbers.
@@ -504,7 +510,7 @@ int define_iodesc_datatypes(iosystem_desc_t *ios, io_desc_t *iodesc)
 int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc,
                    const int *dest_ioproc, const PIO_Offset *dest_ioindex)
 {
-    int ntasks;      /* Number of tasks in mycomm. */
+    int ntasks;      /* Number of tasks in union communicator. */
     int *recv_buf = NULL;
     int nrecvs = 0;
     int ierr;
@@ -536,12 +542,12 @@ int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc,
     /* iodesc->scount is the number of data elements sent to each IO
      * task from the current compute task. */
     for (int i = 0; i < iodesc->ndof; i++)
+    {
         if (dest_ioindex[i] >= 0)
-        {
             (iodesc->scount[dest_ioproc[i]])++;
-            LOG((3, "i = %d dest_ioproc[%d] = %d iodesc->scount[dest_ioproc[i]] = %d",
-                 i, i, dest_ioproc[i], iodesc->scount[dest_ioproc[i]]));
-        }
+        LOG((3, "i = %d dest_ioproc[%d] = %d iodesc->scount[dest_ioproc[i]] = %d",
+             i, i, dest_ioproc[i], iodesc->scount[dest_ioproc[i]]));
+    }
 
     /* Initialize arrays used in swapm call. */
     for (int i = 0; i < ntasks; i++)
@@ -597,11 +603,6 @@ int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc,
                           iodesc->rearr_opts.comp2io.isend,
                           iodesc->rearr_opts.comp2io.max_pend_req)))
         return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
-#if PIO_ENABLE_LOGGING
-    for (int i = 0; i < ios->num_iotasks; i++)
-        LOG((3, "returned from pio_swapm iodesc->scount[%d] = %d", i,
-             iodesc->scount[i]));
-#endif /* PIO_ENABLE_LOGGING */
 
     /* On IO tasks, set up data receives. */
     if (ios->ioproc)
@@ -609,8 +610,11 @@ int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc,
         /* Count the number of non-zero scounts from the compute
          * tasks. */
         for (int i = 0; i < ntasks; i++)
+        {
             if (recv_buf[i] != 0)
                 nrecvs++;
+            LOG((3, "recv_buf[%d] = %d", i, recv_buf[i]));
+        }
 
         /* Get memory to hold the count of data receives. */
         if (!(iodesc->rcount = calloc(max(1, nrecvs), sizeof(int))))
@@ -1173,6 +1177,18 @@ int determine_fill(iosystem_desc_t *ios, io_desc_t *iodesc, const int *gdimlen,
  * data from the compmap of one or more compute tasks in the iomap
  * array and the length of that array is llen.
  *
+ * This function:
+ * <ul>
+ * <li>For IO tasks, determines llen.
+ * <li>Determine whether fill values will be needed.
+ * <li>Do an allgether of llen values into array iomaplen.
+ * <li>For each IO task, send starts/counts to all compute tasks.
+ * <li>Find dest_ioindex and dest_ioproc for each element in the map.
+ * <li>Call compute_counts().
+ * <li>On IO tasks, compute the max IO buffer size.
+ * <li>Call compute_maxaggregate_bytes().
+ * </ul>
+ *
  * @param ios pointer to the iosystem_desc_t struct.
  * @param maplen the length of the map. This is the number of data
  * elements on the compute task.
@@ -1233,7 +1249,8 @@ int box_rearrange_create(iosystem_desc_t *ios, int maplen, const PIO_Offset *com
      * the IO task. For computation tasks, llen will remain at 0. Also
      * set up arrays for the allgather which will give every IO task a
      * complete list of llens for each IO task. */
-    LOG((3, "ios->ioproc = %d ios->num_comptasks = %d", ios->ioproc, ios->num_comptasks));
+    LOG((3, "ios->ioproc = %d ios->num_comptasks = %d", ios->ioproc,
+         ios->num_comptasks));
     pioassert(iodesc->llen == 0, "error", __FILE__, __LINE__);
     if (ios->ioproc)
     {
@@ -1310,23 +1327,21 @@ int box_rearrange_create(iosystem_desc_t *ios, int maplen, const PIO_Offset *com
             }
             recvcounts[ios->ioranks[i]] = ndims;
 
-            /* The count from iotask i is sent to all compute tasks */
+            /* The count array from iotask i is sent to all compute tasks. */
             LOG((3, "about to call pio_swapm with count from iotask %d ndims = %d",
                  i, ndims));
-            if ((ret = pio_swapm(iodesc->firstregion->count,  sendcounts, sdispls,
-                                 dtypes, count, recvcounts, rdispls, dtypes,
-                                 ios->union_comm, iodesc->rearr_opts.io2comp.hs,
-                                 iodesc->rearr_opts.io2comp.isend,
+            if ((ret = pio_swapm(iodesc->firstregion->count, sendcounts, sdispls, dtypes, count,
+                                 recvcounts, rdispls, dtypes, ios->union_comm,
+                                 iodesc->rearr_opts.io2comp.hs, iodesc->rearr_opts.io2comp.isend,
                                  iodesc->rearr_opts.io2comp.max_pend_req)))
                 return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
-            /* The start from iotask i is sent to all compute tasks. */
+            /* The start array from iotask i is sent to all compute tasks. */
             LOG((3, "about to call pio_swapm with start from iotask %d ndims = %d",
                  i, ndims));
-            if ((ret = pio_swapm(iodesc->firstregion->start,  sendcounts, sdispls,
-                                 dtypes, start, recvcounts, rdispls, dtypes,
-                                 ios->union_comm, iodesc->rearr_opts.io2comp.hs,
-                                 iodesc->rearr_opts.io2comp.isend,
+            if ((ret = pio_swapm(iodesc->firstregion->start,  sendcounts, sdispls, dtypes,
+                                 start, recvcounts, rdispls, dtypes, ios->union_comm,
+                                 iodesc->rearr_opts.io2comp.hs, iodesc->rearr_opts.io2comp.isend,
                                  iodesc->rearr_opts.io2comp.max_pend_req)))
                 return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
@@ -1406,7 +1421,7 @@ int box_rearrange_create(iosystem_desc_t *ios, int maplen, const PIO_Offset *com
 }
 
 /**
- * Compare offsets is used by the sort in the subset rearrange. This
+ * Compare offsets is used by the sort in the subset rearranger. This
  * function is passed to qsort.
  *
  * @param a pointer to an offset.
@@ -1423,6 +1438,9 @@ int compare_offsets(const void *a, const void *b)
 }
 
 /**
+ * Calculate start and count regions for the subset rearranger. This
+ * function is not used in the box rearranger.
+ *
  * Each region is a block of output which can be represented in a
  * single call to the underlying netcdf library.  This can be as small
  * as a single data point, but we hope we've aggragated better than
@@ -1437,10 +1455,10 @@ int compare_offsets(const void *a, const void *b)
  * @param firstregion pointer to the first region.
  * @returns 0 on success, error code otherwise.
  */
-int get_start_and_count_regions(int ndims, const int *gdimlen, int maplen, const PIO_Offset *map,
-                                int *maxregions, io_region *firstregion)
+int get_regions(int ndims, const int *gdimlen, int maplen, const PIO_Offset *map,
+                int *maxregions, io_region *firstregion)
 {
-    int nmaplen;
+    int nmaplen = 0;
     int regionlen;
     io_region *region;
     int ret;
@@ -1448,37 +1466,44 @@ int get_start_and_count_regions(int ndims, const int *gdimlen, int maplen, const
     /* Check inputs. */
     pioassert(ndims >= 0 && gdimlen && maplen >= 0 && maxregions && firstregion,
               "invalid input", __FILE__, __LINE__);
+    LOG((1, "get_regions ndims = %d maplen = %d", ndims, maplen));
 
-    nmaplen = 0;
     region = firstregion;
     if (map)
     {
         while (map[nmaplen++] <= 0)
+        {
+            LOG((3, "map[%d] = %d", nmaplen, map[nmaplen]));
             ;
+        }
         nmaplen--;
     }
     region->loffset = nmaplen;
+    LOG((2, "region->loffset = %d", region->loffset));
 
     *maxregions = 1;
 
     while (nmaplen < maplen)
     {
         /* Here we find the largest region from the current offset
-           into the iomap regionlen is the size of that region and we
+           into the iomap. regionlen is the size of that region and we
            step to that point in the map array until we reach the
-           end */
+           end. */
         for (int i = 0; i < ndims; i++)
             region->count[i] = 1;
 
+        /* Set start/count to describe first region in map. */
         regionlen = find_region(ndims, gdimlen, maplen-nmaplen,
                                 &map[nmaplen], region->start, region->count);
-
         pioassert(region->start[0] >= 0, "failed to find region", __FILE__, __LINE__);
 
         nmaplen = nmaplen + regionlen;
+        LOG((2, "regionlen = %d nmaplen = %d", regionlen, nmaplen));
 
+        /* If we need to, allocate the next region. */
         if (region->next == NULL && nmaplen < maplen)
         {
+            LOG((2, "allocating next region"));
             if ((ret = alloc_region2(NULL, ndims, &region->next)))
                 return ret;
 
@@ -1492,6 +1517,7 @@ int get_start_and_count_regions(int ndims, const int *gdimlen, int maplen, const
                maxregions will be the total number of regions on this
                task. */
             (*maxregions)++;
+            LOG((2, "*maxregions = %d", *maxregions));
         }
     }
 
@@ -1655,7 +1681,7 @@ int subset_rearrange_create(iosystem_desc_t *ios, int maplen, PIO_Offset *compma
     /* On IO tasks ??? */
     if (ios->ioproc)
     {
-        for (i = 0;i < ntasks; i++)
+        for (i = 0; i < ntasks; i++)
         {
             iodesc->llen += iodesc->rcount[i];
             rdispls[i] = 0;
@@ -1886,8 +1912,8 @@ int subset_rearrange_create(iosystem_desc_t *ios, int maplen, PIO_Offset *compma
             /* Allocate a data region to hold fill values. */
             if ((ret = alloc_region2(ios, iodesc->ndims, &iodesc->fillregion)))
                 return pio_err(ios, NULL, ret, __FILE__, __LINE__);
-            if ((ret = get_start_and_count_regions(iodesc->ndims, gdimlen, iodesc->holegridsize, myfillgrid,
-                                                   &iodesc->maxfillregions, iodesc->fillregion)))
+            if ((ret = get_regions(iodesc->ndims, gdimlen, iodesc->holegridsize, myfillgrid,
+                                   &iodesc->maxfillregions, iodesc->fillregion)))
                 return pio_err(ios, NULL, ret, __FILE__, __LINE__);
             free(myfillgrid);
             maxregions = iodesc->maxfillregions;
@@ -1914,8 +1940,8 @@ int subset_rearrange_create(iosystem_desc_t *ios, int maplen, PIO_Offset *compma
     if (ios->ioproc)
     {
         iodesc->maxregions = 0;
-        if ((ret = get_start_and_count_regions(iodesc->ndims, gdimlen, iodesc->llen, iomap,
-                                               &iodesc->maxregions, iodesc->firstregion)))
+        if ((ret = get_regions(iodesc->ndims, gdimlen, iodesc->llen, iomap,
+                               &iodesc->maxregions, iodesc->firstregion)))
             return pio_err(ios, NULL, ret, __FILE__, __LINE__);
         maxregions = iodesc->maxregions;
 

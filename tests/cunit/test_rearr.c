@@ -18,113 +18,56 @@
 /* The name of this test. */
 #define TEST_NAME "test_rearr"
 
+/* For 1-D use. */
+#define NDIM1 1
+
+/* For maplens of 2. */
+#define MAPLEN2 2
+
 /* Test some of the rearranger utility functions. */
-int test_rearranger_opts1()
+int test_rearranger_opts1(int iosysid)
 {
-    rearr_comm_fc_opt_t *ro1;
-    rearr_comm_fc_opt_t *ro2;
-    rearr_comm_fc_opt_t *ro3;
-
-    if (!(ro1 = calloc(1, sizeof(rearr_comm_fc_opt_t))))
-        return ERR_AWFUL;
-    if (!(ro2 = calloc(1, sizeof(rearr_comm_fc_opt_t))))
-        return ERR_AWFUL;
-    if (!(ro3 = calloc(1, sizeof(rearr_comm_fc_opt_t))))
-        return ERR_AWFUL;
-
+    iosystem_desc_t *ios;
+    int ret;
+    
     /* This should not work. */
-    if (PIOc_set_rearr_opts(42, 1, 1, 0, 0, 0, 0, 0, 0) != PIO_EBADID)
+    if (PIOc_set_rearr_opts(TEST_VAL_42, 0, 0, false, false, 0, false,
+                            false, 0) != PIO_EBADID)
+        return ERR_WRONG;
+    if (PIOc_set_rearr_opts(iosysid, TEST_VAL_42, 0, false, false, 0, false,
+                            false, 0) != PIO_EINVAL)
+        return ERR_WRONG;
+    if (PIOc_set_rearr_opts(iosysid, 0, TEST_VAL_42, false, false, 0, false,
+                            false, 0) != PIO_EINVAL)
+        return ERR_WRONG;
+    if (PIOc_set_rearr_opts(iosysid, 0, 0, false, false,
+                            PIO_REARR_COMM_UNLIMITED_PEND_REQ - 1, false,
+                            false, 0) != PIO_EINVAL)
+        return ERR_WRONG;
+    if (PIOc_set_rearr_opts(iosysid, 0, 0, false, false, 0, false,
+                            false, PIO_REARR_COMM_UNLIMITED_PEND_REQ - 1) !=
+        PIO_EINVAL)
         return ERR_WRONG;
 
-    /* ro1 and ro2 are the same. */
-    if (!cmp_rearr_comm_fc_opts(ro1, ro2))
+    /* This should work. */
+    if ((ret = PIOc_set_rearr_opts(iosysid, PIO_REARR_COMM_P2P,
+                                   PIO_REARR_COMM_FC_1D_COMP2IO, true,
+                                   true, TEST_VAL_42, true, true, TEST_VAL_42 + 1)))
+        return ret;
+
+    /* Get the IO system info from the id. */
+    if (!(ios = pio_get_iosystem_from_id(iosysid)))
+        return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
+
+    /* Check the rearranger settings. */
+    if (ios->rearr_opts.comm_type != PIO_REARR_COMM_P2P ||
+        ios->rearr_opts.fcd != PIO_REARR_COMM_FC_1D_COMP2IO ||
+        !ios->rearr_opts.comp2io.hs || !ios->rearr_opts.comp2io.isend ||
+        !ios->rearr_opts.io2comp.hs || !ios->rearr_opts.io2comp.isend ||
+        ios->rearr_opts.comp2io.max_pend_req != TEST_VAL_42 ||
+        ios->rearr_opts.io2comp.max_pend_req != TEST_VAL_42 + 1)
         return ERR_WRONG;
 
-    /* Make ro3 different. */
-    ro3->hs = 1;
-    if (cmp_rearr_comm_fc_opts(ro1, ro3))
-        return ERR_WRONG;
-    ro3->hs = 0;
-    ro3->isend = 1;
-    if (cmp_rearr_comm_fc_opts(ro1, ro3))
-        return ERR_WRONG;
-    ro3->isend = 0;
-    ro3->max_pend_req = 1;
-    if (cmp_rearr_comm_fc_opts(ro1, ro3))
-        return ERR_WRONG;
-
-    /* Free resourses. */
-    free(ro1);
-    free(ro2);
-    free(ro3);
-    
-    return 0;
-}
-
-/* Test some of the rearranger utility functions. */
-int test_cmp_rearr_opts()
-{
-    rearr_opt_t ro1;
-    rearr_opt_t ro2;
-
-    ro1.comm_type = PIO_REARR_COMM_P2P;
-    ro2.comm_type = PIO_REARR_COMM_P2P;
-
-    ro1.fcd = PIO_REARR_COMM_FC_2D_ENABLE;
-    ro2.fcd = PIO_REARR_COMM_FC_2D_ENABLE;
-
-    ro1.comp2io.hs = 0;
-    ro1.comp2io.isend = 0;
-    ro1.comp2io.max_pend_req = 0;
-
-    ro1.io2comp.hs = 0;
-    ro1.io2comp.isend = 0;
-    ro1.io2comp.max_pend_req = 0;
-    
-    ro2.comp2io.hs = 0;
-    ro2.comp2io.isend = 0;
-    ro2.comp2io.max_pend_req = 0;
-
-    ro2.io2comp.hs = 0;
-    ro2.io2comp.isend = 0;
-    ro2.io2comp.max_pend_req = 0;
-
-    /* They are equal. */
-    if (!cmp_rearr_opts(&ro1, &ro2))
-        return ERR_WRONG;
-
-    /* Change something. */
-    ro1.comm_type = PIO_REARR_COMM_COLL;
-
-    /* They are not equal. */
-    if (cmp_rearr_opts(&ro1, &ro2))
-        return ERR_WRONG;
-
-    /* Change something. */
-    ro2.comm_type = PIO_REARR_COMM_COLL;
-    ro1.fcd = PIO_REARR_COMM_FC_2D_DISABLE;
-    
-    /* They are not equal. */
-    if (cmp_rearr_opts(&ro1, &ro2))
-        return ERR_WRONG;
-
-    ro2.fcd = PIO_REARR_COMM_FC_2D_DISABLE;
-
-    /* They are equal again. */
-    if (!cmp_rearr_opts(&ro1, &ro2))
-        return ERR_WRONG;
-    
-    return 0;
-}
-
-/* Test some of the rearranger utility functions. */
-int test_rearranger_opts3()
-{
-    rearr_opt_t ro;
-
-    /* I'm not sure what the point of this function is... */
-    check_and_reset_rearr_opts(&ro);
-    
     return 0;
 }
 
@@ -187,34 +130,6 @@ int test_ceil2_pair()
     return 0;
 }
 
-/* Test init_rearr_opts(). */
-int test_init_rearr_opts()
-{
-    iosystem_desc_t ios;
-
-    init_rearr_opts(&ios);
-
-    if (ios.rearr_opts.comm_type != PIO_REARR_COMM_COLL || ios.rearr_opts.fcd != PIO_REARR_COMM_FC_2D_DISABLE ||
-        ios.rearr_opts.comp2io.hs || ios.rearr_opts.comp2io.isend ||
-        ios.rearr_opts.comp2io.max_pend_req ||
-        ios.rearr_opts.io2comp.hs || ios.rearr_opts.io2comp.isend ||
-        ios.rearr_opts.io2comp.max_pend_req)
-        return ERR_WRONG;
-    
-    return 0;
-}
-
-/* Tests that didn't fit in anywhere else. */
-int test_misc()
-{
-    /* This should not work. */
-    if (PIOc_set_rearr_opts(TEST_VAL_42, 0, 0, false, false, 0, false,
-                            false, 0) != PIO_EBADID)
-        return ERR_WRONG;
-    
-    return 0;
-}
-
 /* Test the create_mpi_datatypes() function. 
  * @returns 0 for success, error code otherwise.*/
 int test_create_mpi_datatypes()
@@ -236,7 +151,7 @@ int test_create_mpi_datatypes()
         
         /* Free the type. */
         if ((mpierr = MPI_Type_free(&mtype)))
-            return ERR_WRONG;
+            MPIERR(mpierr);
     }
 
     {
@@ -248,7 +163,18 @@ int test_create_mpi_datatypes()
         /* Create 4 MPI data types. */
         if ((ret = create_mpi_datatypes(basetype, msgcnt, mindex, mcount, mfrom, mtype2)))
             return ret;
-        
+
+        /* Check the size of the data types. It should be 4. */
+        MPI_Aint lb, extent;
+        for (int t = 0; t < 4; t++)
+        {
+            if ((mpierr = MPI_Type_get_extent(mtype2[t], &lb, &extent)))
+                MPIERR(mpierr);
+            printf("t = %d lb = %ld extent = %ld\n", t, lb, extent);
+            if (lb != 0 || extent != 4)
+                return ERR_WRONG;
+        }
+            
         /* Free them. */
         for (int t = 0; t < 4; t++)
             if ((mpierr = MPI_Type_free(&mtype2[t])))
@@ -439,53 +365,96 @@ int test_compute_maxIObuffersize(MPI_Comm test_comm, int my_rank)
 /* Tests for determine_fill() function. */
 int test_determine_fill(MPI_Comm test_comm)
 {
-    iosystem_desc_t ios;
-    io_desc_t iodesc;
+    iosystem_desc_t *ios;
+    io_desc_t *iodesc;
     int gsize[1] = {4};
     PIO_Offset *compmap = NULL;
     int ret;
 
-    /* Set up simple test. */
-    ios.union_comm = test_comm;
-    iodesc.ndims = 1;
-    iodesc.rearranger = PIO_REARR_SUBSET;
-    iodesc.llen = 1;
+    /* Initialize ios. */
+    if (!(ios = calloc(1, sizeof(iosystem_desc_t))))
+        return PIO_ENOMEM;
+    ios->union_comm = test_comm;
 
-    if ((ret = determine_fill(&ios, &iodesc, gsize, compmap)))
+    /* Set up iodesc for test. */
+    if (!(iodesc = calloc(1, sizeof(io_desc_t))))
+        return PIO_ENOMEM;
+    iodesc->ndims = 1;
+    iodesc->rearranger = PIO_REARR_SUBSET;
+    iodesc->llen = 1;
+
+    /* We don't need fill. */
+    if ((ret = determine_fill(ios, iodesc, gsize, compmap)))
         return ret;
-    if (iodesc.needsfill)
+    if (iodesc->needsfill)
         return ERR_WRONG;
 
-    iodesc.llen = 0;
-    if ((ret = determine_fill(&ios, &iodesc, gsize, compmap)))
+    /* Change settings, so now we do need fill. */
+    iodesc->llen = 0;
+    if ((ret = determine_fill(ios, iodesc, gsize, compmap)))
         return ret;
-    if (!iodesc.needsfill)
+    if (!iodesc->needsfill)
         return ERR_WRONG;
-    printf("iodesc.needsfill = %d\n", iodesc.needsfill);
 
+    /* Free test resources. */
+    free(ios);
+    free(iodesc);
+    
     return 0;
 }
 
 /* Run tests for get_start_and_count_regions() funciton. */
-int test_get_start_and_count_regions()
+int test_get_regions(int my_rank)
 {
+#define MAPLEN 2
+    int ndims = NDIM1;
+    const int gdimlen[NDIM1] = {8};
+    /* Don't forget map is 1-based!! */
+    PIO_Offset map[MAPLEN] = {(my_rank * 2) + 1, ((my_rank + 1) * 2) + 1};
+    int maxregions;
+    io_region *ior1;
+    int ret;
+
+    /* This is how we allocate a region. */
+    if ((ret = alloc_region2(NULL, NDIM1, &ior1)))
+        return ret;
+    ior1->next = NULL;
+    ior1->count[0] = 1;
+    
+    /* Call the function we are testing. */
+    if ((ret = get_regions(ndims, gdimlen, MAPLEN, map, &maxregions, ior1)))
+        return ret;
+    if (maxregions != 2)
+        return ERR_WRONG;
+
+    /* Free resources for the region. */
+    free(ior1->next->start);
+    free(ior1->next->count);
+    free(ior1->next);
+    free(ior1->start);
+    free(ior1->count);
+    free(ior1);
+    
     return 0;
 }
 
 /* Run tests for find_region() function. */
 int test_find_region()
 {
-    int ndims = 1;
-    int gdims[1] = {1};
+    int ndims = NDIM1;
+    int gdimlen[NDIM1] = {4};
     int maplen = 1;
     PIO_Offset map[1] = {1};
-    PIO_Offset start[1];
-    PIO_Offset count[1];
+    PIO_Offset start[NDIM1];
+    PIO_Offset count[NDIM1];
     PIO_Offset regionlen;
 
-    regionlen = find_region(ndims, gdims, maplen, map, start, count);
-    printf("regionlen = %lld\n", regionlen);
-    if (regionlen != 1)
+    /* Call the function we are testing. */
+    regionlen = find_region(ndims, gdimlen, maplen, map, start, count);
+
+    /* Check results. */
+    printf("regionlen = %lld start[0] = %lld count[0] = %lld\n", regionlen, start[0], count[0]);
+    if (regionlen != 1 || start[0] != 0 || count[0] != 1)
         return ERR_WRONG;
     
     return 0;
@@ -495,13 +464,13 @@ int test_find_region()
 int test_expand_region()
 {
     int dim = 0;
-    int gdims[1] = {1};
+    int gdims[NDIM1] = {1};
     int maplen = 1;
     PIO_Offset map[1] = {5};
     int region_size = 1;
     int region_stride = 1;
-    int max_size[1] = {10};
-    PIO_Offset count[1];
+    int max_size[NDIM1] = {10};
+    PIO_Offset count[NDIM1];
 
     expand_region(dim, gdims, maplen, map, region_size, region_stride, max_size, count);
     if (count[0] != 1)
@@ -586,7 +555,7 @@ int test_define_iodesc_datatypes()
 }
 
 /* Test the compute_counts() function with the box rearranger. */
-int test_compute_counts_box(MPI_Comm test_comm)
+int test_compute_counts(MPI_Comm test_comm, int my_rank)
 {
     iosystem_desc_t *ios;
     io_desc_t *iodesc;
@@ -620,6 +589,16 @@ int test_compute_counts_box(MPI_Comm test_comm)
     if ((ret = compute_counts(ios, iodesc, dest_ioproc, dest_ioindex)))
         return ret;
 
+    /* Check results. */
+    for (int i = 0; i < ios->num_iotasks; i++)
+        if (iodesc->scount[i] != 1 || iodesc->sindex[i] != i)
+            return ERR_WRONG;
+
+    for (int i = 0; i < iodesc->ndof; i++)
+        if (iodesc->rcount[i] != 1 || iodesc->rfrom[i] != i ||
+            iodesc->rindex[i] != my_rank)
+            return ERR_WRONG;
+
     /* Free resources allocated in compute_counts(). */
     free(iodesc->scount);
     free(iodesc->sindex);
@@ -635,15 +614,36 @@ int test_compute_counts_box(MPI_Comm test_comm)
     return 0;
 }
 
+/* Call PIOc_InitDecomp() with parameters such that it calls
+ * box_rearrange_create() just like test_box_rearrange_create() will
+ * (see below). */
+int test_init_decomp(int iosysid, MPI_Comm test_comm, int my_rank)
+{
+    int ioid;
+    PIO_Offset compmap[MAPLEN2] = {my_rank * 2, (my_rank + 1) * 2};
+    const int gdimlen[NDIM1] = {8};
+    int ret;
+
+    /* Initialize a decomposition. */
+    if ((ret = PIOc_init_decomp(iosysid, PIO_INT, NDIM1, gdimlen, MAPLEN2,
+                                compmap, &ioid, PIO_REARR_BOX, NULL, NULL)))
+        return ret;
+
+    /* Free it. */
+    if ((ret = PIOc_freedecomp(iosysid, ioid)))
+        return ret;
+            
+    return 0;
+}
+
 /* Test for the box_rearrange_create() function. */
 int test_box_rearrange_create(MPI_Comm test_comm, int my_rank)
 {
-#define NDIM1 1
     iosystem_desc_t *ios;
     io_desc_t *iodesc;
     io_region *ior1;    
-    int maplen = 2;
-    PIO_Offset compmap[2] = {1, 0};
+    int maplen = MAPLEN2;
+    PIO_Offset compmap[MAPLEN2] = {(my_rank * 2) + 1, ((my_rank + 1) * 2) + 1};
     const int gdimlen[NDIM1] = {8};
     int ndims = NDIM1;
     int ret;
@@ -666,7 +666,116 @@ int test_box_rearrange_create(MPI_Comm test_comm, int my_rank)
     iodesc->ndims = NDIM1;
     iodesc->rearranger = PIO_REARR_BOX;
 
-    iodesc->ndof = 4;
+    /* Set up the IO task info for the test. */
+    ios->ioproc = 1;
+    ios->union_rank = my_rank;
+    ios->num_iotasks = 4;
+    ios->num_comptasks = 4;
+    if (!(ios->ioranks = calloc(ios->num_iotasks, sizeof(int))))
+        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+    for (int i = 0; i < TARGET_NTASKS; i++)
+        ios->ioranks[i] = i;
+
+    /* This is how we allocate a region. */
+    if ((ret = alloc_region2(NULL, NDIM1, &ior1)))
+        return ret;
+    if (my_rank == 0)
+        ior1->count[0] = 8;
+    
+    iodesc->firstregion = ior1;
+
+    /* We are finally ready to run the code under test. */
+    if ((ret = box_rearrange_create(ios, maplen, compmap, gdimlen, ndims, iodesc)))
+        return ret;
+
+    /* Check some results. */
+    if (iodesc->rearranger != PIO_REARR_BOX || iodesc->ndof != maplen ||
+        iodesc->llen != my_rank ? 0 : 8 || !iodesc->needsfill)
+        return ERR_WRONG;
+
+    /* for (int i = 0; i < ios->num_iotasks; i++) */
+    /* { */
+    /*     /\* sindex is only allocated if scount[i] > 0. *\/ */
+    /*     if (iodesc->scount[i] != i ? 0 : 1 || */
+    /*         (iodesc->scount[i] && iodesc->sindex[i] != 0)) */
+    /*         return ERR_WRONG; */
+    /* } */
+
+    /* for (int i = 0; i < iodesc->ndof; i++) */
+    /* { */
+    /*     /\* rcount is 1 for rank 0, 0 on other tasks. *\/ */
+    /*     if (iodesc->rcount[i] != my_rank ? 0 : 1) */
+    /*         return ERR_WRONG; */
+        
+    /*     /\* rfrom is 0 everywhere, except task 0, array elemnt 1. *\/ */
+    /*     if (my_rank == 0 && i == 1) */
+    /*     { */
+    /*         if (iodesc->rfrom[i] != 1) */
+    /*             return ERR_WRONG; */
+    /*     } */
+    /*     else */
+    /*     { */
+    /*         if (iodesc->rfrom[i] != 0) */
+    /*             return ERR_WRONG; */
+    /*     } */
+        
+    /*     /\* rindex is only allocated where there is a non-zero count. *\/ */
+    /*     if (iodesc->rcount[i]) */
+    /*         if (iodesc->rindex[i] != 0) */
+    /*             return ERR_WRONG; */
+    /* } */
+
+    /* Free resources allocated in compute_counts(). */
+    free(iodesc->scount);
+    free(iodesc->sindex);
+    free(iodesc->rcount);
+    free(iodesc->rfrom);
+    free(iodesc->rindex);
+
+    /* Free resources from test. */
+    free(ior1->start);
+    free(ior1->count);
+    free(ior1);
+    free(ios->ioranks);
+    free(iodesc);
+    free(ios);
+    
+    return 0;
+}
+
+/* Test for the box_rearrange_create() function. */
+int test_box_rearrange_create_2(MPI_Comm test_comm, int my_rank)
+{
+#define MAPLEN2 2
+    iosystem_desc_t *ios;
+    io_desc_t *iodesc;
+    io_region *ior1;    
+    int maplen = MAPLEN2;
+    PIO_Offset compmap[MAPLEN2] = {1, 0};
+    const int gdimlen[NDIM1] = {8};
+    int ndims = NDIM1;
+    int ret;
+
+    /* Allocate IO system info struct for this test. */
+    if (!(ios = calloc(1, sizeof(iosystem_desc_t))))
+        return PIO_ENOMEM;
+
+    /* Allocate IO desc struct for this test. */
+    if (!(iodesc = calloc(1, sizeof(io_desc_t))))
+        return PIO_ENOMEM;
+
+    /* Default rearranger options. */
+    iodesc->rearr_opts.comm_type = PIO_REARR_COMM_COLL;
+    iodesc->rearr_opts.fcd = PIO_REARR_COMM_FC_2D_DISABLE;
+
+    /* Set up for determine_fill(). */
+    ios->union_comm = test_comm;
+    ios->io_comm = test_comm;
+    iodesc->ndims = NDIM1;
+    iodesc->rearranger = PIO_REARR_BOX;
+
+    /* This is the size of the map in computation tasks. */
+    iodesc->ndof = 2;
 
     /* Set up the IO task info for the test. */
     ios->ioproc = 1;
@@ -692,8 +801,41 @@ int test_box_rearrange_create(MPI_Comm test_comm, int my_rank)
         return ret;
 
     /* Check some results. */
-    if (iodesc->rearranger != PIO_REARR_BOX || iodesc->ndof != maplen)
+    if (iodesc->rearranger != PIO_REARR_BOX || iodesc->ndof != maplen ||
+        iodesc->llen != my_rank ? 0 : 8 || !iodesc->needsfill)
         return ERR_WRONG;
+
+    for (int i = 0; i < ios->num_iotasks; i++)
+    {
+        /* sindex is only allocated if scount[i] > 0. */
+        if (iodesc->scount[i] != i ? 0 : 1 ||
+            (iodesc->scount[i] && iodesc->sindex[i] != 0))
+            return ERR_WRONG;
+    }
+
+    for (int i = 0; i < iodesc->ndof; i++)
+    {
+        /* rcount is 1 for rank 0, 0 on other tasks. */
+        if (iodesc->rcount[i] != my_rank ? 0 : 1)
+            return ERR_WRONG;
+        
+        /* rfrom is 0 everywhere, except task 0, array elemnt 1. */
+        if (my_rank == 0 && i == 1)
+        {
+            if (iodesc->rfrom[i] != 1)
+                return ERR_WRONG;
+        }
+        else
+        {
+            if (iodesc->rfrom[i] != 0)
+                return ERR_WRONG;
+        }
+        
+        /* rindex is only allocated where there is a non-zero count. */
+        if (iodesc->rcount[i])
+            if (iodesc->rindex[i] != 0)
+                return ERR_WRONG;
+    }
 
     /* Free resources allocated in compute_counts(). */
     free(iodesc->scount);
@@ -1014,10 +1156,6 @@ int main(int argc, char **argv)
         if ((ret = PIOc_Init_Intracomm(test_comm, TARGET_NTASKS, 1, 0, PIO_REARR_BOX, &iosysid)))
             return ret;
         
-        printf("%d running init_rearr_opts tests\n", my_rank);
-        if ((ret = test_init_rearr_opts()))
-            return ret;
-
         printf("%d running idx_to_dim_list tests\n", my_rank);
         if ((ret = test_idx_to_dim_list()))
             return ret;
@@ -1042,8 +1180,8 @@ int main(int argc, char **argv)
         if ((ret = test_find_region()))
             return ret;
 
-        printf("%d running tests for get_start_and_count_regions()\n", my_rank);
-        if ((ret = test_get_start_and_count_regions()))
+        printf("%d running tests for get_regions()\n", my_rank);
+        if ((ret = test_get_regions(my_rank)))
             return ret;
 
         printf("%d running create_mpi_datatypes tests\n", my_rank);
@@ -1055,31 +1193,27 @@ int main(int argc, char **argv)
             return ret;
 
         printf("%d running rearranger opts tests 1\n", my_rank);
-        if ((ret = test_rearranger_opts1()))
-            return ret;
-
-        printf("%d running tests for cmp_rearr_opts()\n", my_rank);
-        if ((ret = test_cmp_rearr_opts()))
+        if ((ret = test_rearranger_opts1(iosysid)))
             return ret;
 
         printf("%d running compare_offsets tests\n", my_rank);
         if ((ret = test_compare_offsets()))
             return ret;
 
-        printf("%d running rearranger opts tests 3\n", my_rank);
-        if ((ret = test_rearranger_opts3()))
-            return ret;
-
-        printf("%d running misc tests\n", my_rank);
-        if ((ret = test_misc()))
-            return ret;
-
         printf("%d running compute_counts tests for box rearranger\n", my_rank);
-        if ((ret = test_compute_counts_box(test_comm)))
+        if ((ret = test_compute_counts(test_comm, my_rank)))
+            return ret;
+
+        printf("%d running test for init_decomp\n", my_rank);
+        if ((ret = test_init_decomp(iosysid, test_comm, my_rank)))
             return ret;
 
         printf("%d running tests for box_rearrange_create\n", my_rank);
         if ((ret = test_box_rearrange_create(test_comm, my_rank)))
+            return ret;
+
+        printf("%d running more tests for box_rearrange_create\n", my_rank);
+        if ((ret = test_box_rearrange_create_2(test_comm, my_rank)))
             return ret;
 
         printf("%d running tests for default_subset_partition\n", my_rank);

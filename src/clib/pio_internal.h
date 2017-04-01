@@ -168,9 +168,6 @@ extern "C" {
     void PIO_Offset_size(MPI_Datatype *dtype, int *tsize);
     PIO_Offset GCDblocksize(int arrlen, const PIO_Offset *arr_in);
 
-    /* Initialize the rearranger options. */
-    void init_rearr_opts(iosystem_desc_t *iosys);
-
     /* Convert an index into dimension values. */
     void idx_to_dim_list(int ndims, const int *gdims, PIO_Offset idx, PIO_Offset *dim_list);
 
@@ -184,6 +181,10 @@ extern "C" {
     /* Set start and count so that they describe the first region in map.*/
     PIO_Offset find_region(int ndims, const int *gdims, int maplen, const PIO_Offset *map,
                            PIO_Offset *start, PIO_Offset *count);
+
+    /* Calculate start and count regions for the subset rearranger. */
+    int get_regions(int ndims, const int *gdimlen, int maplen, const PIO_Offset *map,
+                    int *maxregions, io_region *firstregion);
 
     /* Expand a region along dimension dim, by incrementing count[i] as
      * much as possible, consistent with the map. */
