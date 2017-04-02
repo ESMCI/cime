@@ -368,7 +368,7 @@ int test_determine_fill(MPI_Comm test_comm)
     iosystem_desc_t *ios;
     io_desc_t *iodesc;
     int gsize[1] = {4};
-    PIO_Offset *compmap = NULL;
+    PIO_Offset compmap[1] = {1};
     int ret;
 
     /* Initialize ios. */
