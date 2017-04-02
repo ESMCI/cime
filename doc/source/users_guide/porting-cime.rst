@@ -78,6 +78,66 @@ Enabling out-of-the-box capability for your machine
 Once you have successfully created the required xml files in your .cime directory and are satisfied with the results you can merge them into the default files in the config/$CIME_MODEL/machines directory.   
 If you would like to make this machine definition available generally you may then issue a pull request to add your changes to the git repository.  
 
+.. _customizing-machine-file:
+
+Customizing the machines file for your machine
+----------------------------------------------
+
+Machine specific files are defined in the model-specific :ref:`config_machines.xml <defining-machines>`.
+
+The first step a user must take to make their machine CIME-compatible is to add the appropriate entries for their machine in ``config_machines.xml``.
+
+Each ``<machine>`` tag requires the following input: 
+
+- ``DESC``: a text description of the machine, this field is current not used
+- ``NODENAME_REGEX``: a regular expression used to identify this machine it must work on compute nodes as well as login nodes, use machine option to create_test or create_newcase if this flag is not available 
+- ``OS``: the operating system of this machine. 
+- ``PROXY``: optional http proxy for access to the internet
+- ``COMPILERS``: compilers supported on this machine, comma seperated list, first is default 
+- ``MPILIBS``: mpilibs supported on this machine, comma seperated list, first is default 
+- ``PROJECT``: A project or account number used for batch jobs can be overridden in environment or $HOME/.cime/config 
+- ``SAVE_TIMING_DIR``: (Acme only) directory to write timing output to 
+- ``CIME_OUTPUT_ROOT``: Base directory for case output, the bld and run directories are written below here 
+- ``DIN_LOC_ROOT``: location of the inputdata directory 
+- ``DIN_LOC_ROOT_CLMFORC``: optional input location for clm forcing data  
+- ``DOUT_S_ROOT``: root directory of short term archive files 
+- ``DOUT_L_MSROOT``: root directory on mass store system of long term archive files
+- ``BASELINE_ROOT``:  Root directory for system test baseline files 
+- ``CCSM_CPRNC``: location of the cprnc tool, compares model output in testing
+- ``GMAKE``: gnu compatible make tool, default is 'gmake' 
+- ``GMAKE_J``: optional number of threads to pass to the gmake flag 
+- ``TESTS``: (acme only) list of tests to run on this machine 
+- ``BATCH_SYSTEM``: batch system used on this machine (none is okay) 
+- ``SUPPORTED_BY``: contact information for support for this system 
+- ``MAX_TASKS_PER_NODE``: maximum number of threads*tasks per shared memory node on this machine
+- ``PES_PER_NODE``: number of physical PES per shared node on this machine, in practice the MPI tasks per node will not exceed this value 
+- ``PROJECT_REQUIRED``: Does this machine require a project to be specified to the batch system? 
+- ``mpirun``: The mpi exec to start a job on this machine. 
+  This is itself an element that has sub elements that must be filled:
+
+  * must have a required ``<executable>`` element 
+  * may have optional attributes of ``compiler``, ``mpilib`` and/or ``threaded``
+  * may have zero or more optional ``<arguments>`` elements
+
+- ``module_system``: how and what modules to load on this system 
+- ``environment_variables``: environment_variables to set on this system
+
+.. todo:: Jim Edwards add the contents of this section. A clear explanation of how to add elements to the ``config_machines.xml`` file is really needed!!!
+
+.. _customizing-batch-file:
+
+Customizing the batch directives for your machine
+--------------------------------------------------
+
+.. todo:: Jim Edwards add the contents of this section 
+
+.. _customizing-compiler-file:
+
+Customize the compiler options for your machine
+------------------------------------------------
+
+.. todo:: Jim Edwards add the contents of this section 
+
 ====================================================
 Validating your port
 ====================================================
