@@ -6,9 +6,9 @@
 
 .. _users-guide1:
 
-#####################################
-CIME User's Guide Part 1: Basic Use
-#####################################
+#######################################
+ CIME User's Guide Part 1: Basic Usage
+#######################################
 
 .. toctree::
    :maxdepth: 3
@@ -26,9 +26,9 @@ CIME User's Guide Part 1: Basic Use
 
 .. _users-guide2:
 
-####################################################
-CIME User's Guide Part 2: Porting and CIME internals
-####################################################
+#############################################################
+CIME User's Guide Part 2: CIME internals, Porting and Testing
+#############################################################
 
 .. toctree::
    :maxdepth: 3
@@ -37,11 +37,12 @@ CIME User's Guide Part 2: Porting and CIME internals
    cime-internals.rst
    porting-cime.rst
    optimizing-processor-layout.rst
+   testing.rst
 
 .. _users-guide3:
 
 #########################################
-CIME User's Guide Part 3: Advanced CIME
+CIME User's Guide Part 3: Advanced Usage
 #########################################
 
 .. toctree::
@@ -49,7 +50,6 @@ CIME User's Guide Part 3: Advanced CIME
    :numbered:
 
    multi-instance.rst
-   testing.rst
    adding-cases.rst
    faq/faq.rst
 
