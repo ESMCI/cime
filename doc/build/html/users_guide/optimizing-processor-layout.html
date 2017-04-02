@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>7. Optimizing Processor Layout &#8212; on  documentation</title>
+    <title>3. Optimizing Processor Layout &#8212; on  documentation</title>
     
     <link rel="stylesheet" href="../_static/bizstyle.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -28,8 +28,8 @@
     <script type="text/javascript" src="../_static/bizstyle.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="8. Porting and Validating CIME on a new Platform" href="porting-cime.html" />
-    <link rel="prev" title="6. Customizing a case" href="customizing-a-case.html" />
+    <link rel="next" title="4. Testing with create_test" href="testing.html" />
+    <link rel="prev" title="2. Porting and Validating CIME on a new Platform" href="porting-cime.html" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <!--[if lt IE 9]>
     <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
@@ -43,33 +43,33 @@
           <a href="../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="porting-cime.html" title="8. Porting and Validating CIME on a new Platform"
+          <a href="testing.html" title="4. Testing with create_test"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="customizing-a-case.html" title="6. Customizing a case"
+          <a href="porting-cime.html" title="2. Porting and Validating CIME on a new Platform"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">on  documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">CIME User&#8217;s Guide Part 1: Basic Use</a> &#187;</li> 
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">CIME User&#8217;s Guide Part 1: Basic Usage</a> &#187;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
   <h3><a href="../index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">7. Optimizing Processor Layout</a><ul>
-<li><a class="reference internal" href="#model-timing-data">7.1. Model timing data</a></li>
-<li><a class="reference internal" href="#using-model-timing-data">7.2. Using model timing data</a></li>
-<li><a class="reference internal" href="#setting-the-time-limits">7.3. Setting the time limits</a></li>
+<li><a class="reference internal" href="#">3. Optimizing Processor Layout</a><ul>
+<li><a class="reference internal" href="#model-timing-data">3.1. Model timing data</a></li>
+<li><a class="reference internal" href="#using-model-timing-data">3.2. Using model timing data</a></li>
+<li><a class="reference internal" href="#setting-the-time-limits">3.3. Setting the time limits</a></li>
 </ul>
 </li>
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="customizing-a-case.html"
-                        title="previous chapter">6. Customizing a case</a></p>
-  <h4>Next topic</h4>
   <p class="topless"><a href="porting-cime.html"
-                        title="next chapter">8. Porting and Validating CIME on a new Platform</a></p>
+                        title="previous chapter">2. Porting and Validating CIME on a new Platform</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="testing.html"
+                        title="next chapter">4. Testing with create_test</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -96,7 +96,7 @@
           <div class="body" role="main">
             
   <div class="section" id="optimizing-processor-layout">
-<span id="id1"></span><h1>7. Optimizing Processor Layout<a class="headerlink" href="#optimizing-processor-layout" title="Permalink to this headline">¶</a></h1>
+<span id="id1"></span><h1>3. Optimizing Processor Layout<a class="headerlink" href="#optimizing-processor-layout" title="Permalink to this headline">¶</a></h1>
 <p>Load balancing refers to the optimization of the processor layout for a given model configuration (compset, grid, etc) such that the cost and throughput will be optimal.
 Optimal is a somewhat subjective thing.
 For a fixed total number of processors, it means achieving the maximum throughput.
@@ -109,7 +109,7 @@ In general, there are eight unique models (atm, lnd, rof, ocn, ice, glc, wav, cp
 In addition, the driver runs on the union of all processors and controls the sequencing and hardware partitioning.</p>
 <p>See <a class="reference internal" href="customizing-a-case.html#changing-the-pe-layout"><span class="std std-ref">now to cusomize the PE layout</span></a> for a detailed discussion of how to set processor layouts.</p>
 <div class="section" id="model-timing-data">
-<span id="id2"></span><h2>7.1. Model timing data<a class="headerlink" href="#model-timing-data" title="Permalink to this headline">¶</a></h2>
+<span id="id2"></span><h2>3.1. Model timing data<a class="headerlink" href="#model-timing-data" title="Permalink to this headline">¶</a></h2>
 <p>In order to perform a load balancing exercise, you must first be aware of the different types of timing information produced by every model run.</p>
 <p>A summary timing output file is produced after every model run. This file is placed in <code class="docutils literal"><span class="pre">$CASEROOT/timing/ccsm_timing.$CASE.$date</span></code>, where $date is a datestamp set by CIME at runtime, and contains a summary of various information.
 The following provides a description of the most important parts of a timing file.</p>
@@ -129,7 +129,7 @@ This timing information is useful for tracking down temporal variability in mode
 The model daily cost is generally pretty constant unless I/O is written intermittently such as at the end of the month.</p>
 </div>
 <div class="section" id="using-model-timing-data">
-<h2>7.2. Using model timing data<a class="headerlink" href="#using-model-timing-data" title="Permalink to this headline">¶</a></h2>
+<h2>3.2. Using model timing data<a class="headerlink" href="#using-model-timing-data" title="Permalink to this headline">¶</a></h2>
 <p>In practice, load-balancing requires a number of considerations such as which components are run, their absolute and relative resolution; cost, scaling and processor count sweet-spots for each component; and internal load imbalance within a component.
 It is often best to load balance the system with all significant run-time I/O turned off because this occurs very infrequently, typically one timestep per month, and is best treated as a separate cost as it can bias interpretation of the overall model load balance.
 Also, the use of OpenMP threading in some or all of the components is dependent on the hardware/OS support as well as whether the system supports running all MPI and mixed MPI/OpenMP on overlapping processors for different components.
@@ -137,7 +137,7 @@ A final point is deciding whether components should run sequentially, concurrent
 Typically, a series of short test runs is done with the desired production configuration to establish a reasonable load balance setup for the production job.
 The timing output can be used to compare test runs to help determine the optimal load balance.</p>
 <p>Changing the pe layout of the model has NO IMPACT on the scientific results. The basic order of operations and calling sequence is hardwired into the driver and that doesn&#8217;t change when the pe layout is changed.
-There are some constraints on the ability of either the CESM or ACME fully prognostic configuraiton fully concurrent.
+There are some constraints on the ability of either the CESM or ACME fully active configuraiton fully concurrent.
 In particular, the atmosphere model always run sequentially with the ice and land for scientific reasons.
 As a result, running the atmosphere concurrently with the ice and land will result in idle processors in these components at some point in the timestepping sequence.</p>
 <p>For more information about how the driver is implemented, see (Craig, A.P., Vertenstein, M., Jacob, R., 2012: A new flexible coupler for earth system modeling developed for CCSM4 and CESM1.0. International Journal of High Performance Computing Applications, 26, 31-42, 10.1177/1094342011428141).</p>
@@ -177,7 +177,7 @@ Seasonal variation and spin-up costs can change performance over time, so even a
 </ul>
 </div>
 <div class="section" id="setting-the-time-limits">
-<h2>7.3. Setting the time limits<a class="headerlink" href="#setting-the-time-limits" title="Permalink to this headline">¶</a></h2>
+<h2>3.3. Setting the time limits<a class="headerlink" href="#setting-the-time-limits" title="Permalink to this headline">¶</a></h2>
 <p>In looking at the ccsm_timing.$CASE.$datestamp files for &#8220;Model Throughput&#8221;, output like the following will be found:</p>
 <p><code class="docutils literal"><span class="pre">`</span>
 <span class="pre">Overall</span> <span class="pre">Metrics:</span>
@@ -211,13 +211,13 @@ Seasonal variation and spin-up costs can change performance over time, so even a
           <a href="../genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="porting-cime.html" title="8. Porting and Validating CIME on a new Platform"
+          <a href="testing.html" title="4. Testing with create_test"
              >next</a> |</li>
         <li class="right" >
-          <a href="customizing-a-case.html" title="6. Customizing a case"
+          <a href="porting-cime.html" title="2. Porting and Validating CIME on a new Platform"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">on  documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" >CIME User&#8217;s Guide Part 1: Basic Use</a> &#187;</li> 
+          <li class="nav-item nav-item-1"><a href="index.html" >CIME User&#8217;s Guide Part 1: Basic Usage</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

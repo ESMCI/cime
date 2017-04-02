@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>8. Porting and Validating CIME on a new Platform &#8212; on  documentation</title>
+    <title>2. Porting and Validating CIME on a new Platform &#8212; on  documentation</title>
     
     <link rel="stylesheet" href="../_static/bizstyle.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -28,8 +28,8 @@
     <script type="text/javascript" src="../_static/bizstyle.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="1. Cloning a Case" href="cloning-a-case.html" />
-    <link rel="prev" title="7. Optimizing Processor Layout" href="optimizing-processor-layout.html" />
+    <link rel="next" title="3. Optimizing Processor Layout" href="optimizing-processor-layout.html" />
+    <link rel="prev" title="1. CIME internals" href="cime-internals.html" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <!--[if lt IE 9]>
     <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
@@ -43,33 +43,38 @@
           <a href="../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="cloning-a-case.html" title="1. Cloning a Case"
+          <a href="optimizing-processor-layout.html" title="3. Optimizing Processor Layout"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="optimizing-processor-layout.html" title="7. Optimizing Processor Layout"
+          <a href="cime-internals.html" title="1. CIME internals"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">on  documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">CIME User&#8217;s Guide Part 1: Basic Use</a> &#187;</li> 
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">CIME User&#8217;s Guide Part 1: Basic Usage</a> &#187;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
   <h3><a href="../index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">8. Porting and Validating CIME on a new Platform</a><ul>
-<li><a class="reference internal" href="#porting-overview">8.1. Porting Overview</a></li>
-<li><a class="reference internal" href="#enabling-out-of-the-box-capability-for-your-machine">8.2. Enabling out-of-the-box capability for your machine</a></li>
-<li><a class="reference internal" href="#validating-your-port">8.3. Validating your port</a></li>
+<li><a class="reference internal" href="#">2. Porting and Validating CIME on a new Platform</a><ul>
+<li><a class="reference internal" href="#porting-overview">2.1. Porting Overview</a></li>
+<li><a class="reference internal" href="#enabling-out-of-the-box-capability-for-your-machine">2.2. Enabling out-of-the-box capability for your machine</a><ul>
+<li><a class="reference internal" href="#customizing-the-machines-file-for-your-machine">2.2.1. Customizing the machines file for your machine</a></li>
+<li><a class="reference internal" href="#customizing-the-batch-directives-for-your-machine">2.2.2. Customizing the batch directives for your machine</a></li>
+<li><a class="reference internal" href="#customize-the-compiler-options-for-your-machine">2.2.3. Customize the compiler options for your machine</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#validating-your-port">2.3. Validating your port</a></li>
 </ul>
 </li>
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="optimizing-processor-layout.html"
-                        title="previous chapter">7. Optimizing Processor Layout</a></p>
+  <p class="topless"><a href="cime-internals.html"
+                        title="previous chapter">1. CIME internals</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="cloning-a-case.html"
-                        title="next chapter">1. Cloning a Case</a></p>
+  <p class="topless"><a href="optimizing-processor-layout.html"
+                        title="next chapter">3. Optimizing Processor Layout</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -96,9 +101,9 @@
           <div class="body" role="main">
             
   <div class="section" id="porting-and-validating-cime-on-a-new-platform">
-<span id="porting"></span><h1>8. Porting and Validating CIME on a new Platform<a class="headerlink" href="#porting-and-validating-cime-on-a-new-platform" title="Permalink to this headline">¶</a></h1>
+<span id="porting"></span><h1>2. Porting and Validating CIME on a new Platform<a class="headerlink" href="#porting-and-validating-cime-on-a-new-platform" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="porting-overview">
-<h2>8.1. Porting Overview<a class="headerlink" href="#porting-overview" title="Permalink to this headline">¶</a></h2>
+<h2>2.1. Porting Overview<a class="headerlink" href="#porting-overview" title="Permalink to this headline">¶</a></h2>
 <p>One of the first steps many users will have to address is getting CIME based models running on their local machine.
 This section will describe that process.
 It is usually very helpful to assure that you can run a basic mpi parallel program on your machine prior to attempting a CIME port.
@@ -147,11 +152,11 @@ Understanding how to compile and run the program fhello_world_mpi.F90 shown here
 <p>The following steps should be followed:</p>
 <ul class="simple">
 <li>Create a $HOME/.cime directory</li>
-<li>Copy the template file <code class="docutils literal"><span class="pre">$CIME/cime_config/xml_schemas/config_machines_template.xml</span></code> to <code class="docutils literal"><span class="pre">$HOME/.cime/config_machines.xml</span></code></li>
+<li>Copy the template file <code class="docutils literal"><span class="pre">$CIME/config/xml_schemas/config_machines_template.xml</span></code> to <code class="docutils literal"><span class="pre">$HOME/.cime/config_machines.xml</span></code></li>
 <li>Fill in the details of <code class="docutils literal"><span class="pre">$HOME/.cime/config_machines.xml</span></code> that specific to your machine.</li>
 <li>The completed file should conform to the schema definition provided, check it using:</li>
 </ul>
-<div class="highlight-default"><div class="highlight"><pre><span></span>xmllint --noout --schema $CIME/cime_config/xml_schemas/config_machines.xsd $HOME/.cime/config_machines.xml
+<div class="highlight-default"><div class="highlight"><pre><span></span>xmllint --noout --schema $CIME/config/xml_schemas/config_machines.xsd $HOME/.cime/config_machines.xml
 </pre></div>
 </div>
 <ul class="simple">
@@ -161,12 +166,70 @@ Understanding how to compile and run the program fhello_world_mpi.F90 shown here
 </ul>
 </div>
 <div class="section" id="enabling-out-of-the-box-capability-for-your-machine">
-<h2>8.2. Enabling out-of-the-box capability for your machine<a class="headerlink" href="#enabling-out-of-the-box-capability-for-your-machine" title="Permalink to this headline">¶</a></h2>
-<p>Once you have successfully created the required xml files in your .cime directory and are satisfied with the results you can merge them into the default files in the cime_config/$CIME_MODEL/machines directory.
+<h2>2.2. Enabling out-of-the-box capability for your machine<a class="headerlink" href="#enabling-out-of-the-box-capability-for-your-machine" title="Permalink to this headline">¶</a></h2>
+<p>Once you have successfully created the required xml files in your .cime directory and are satisfied with the results you can merge them into the default files in the config/$CIME_MODEL/machines directory.
 If you would like to make this machine definition available generally you may then issue a pull request to add your changes to the git repository.</p>
+<div class="section" id="customizing-the-machines-file-for-your-machine">
+<span id="customizing-machine-file"></span><h3>2.2.1. Customizing the machines file for your machine<a class="headerlink" href="#customizing-the-machines-file-for-your-machine" title="Permalink to this headline">¶</a></h3>
+<p>Machine specific files are defined in the model-specific <a class="reference internal" href="cime-internals.html#defining-machines"><span class="std std-ref">config_machines.xml</span></a>.</p>
+<p>The first step a user must take to make their machine CIME-compatible is to add the appropriate entries for their machine in <code class="docutils literal"><span class="pre">config_machines.xml</span></code>.</p>
+<p>Each <code class="docutils literal"><span class="pre">&lt;machine&gt;</span></code> tag requires the following input:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">DESC</span></code>: a text description of the machine, this field is current not used</li>
+<li><code class="docutils literal"><span class="pre">NODENAME_REGEX</span></code>: a regular expression used to identify this machine it must work on compute nodes as well as login nodes, use machine option to create_test or create_newcase if this flag is not available</li>
+<li><code class="docutils literal"><span class="pre">OS</span></code>: the operating system of this machine.</li>
+<li><code class="docutils literal"><span class="pre">PROXY</span></code>: optional http proxy for access to the internet</li>
+<li><code class="docutils literal"><span class="pre">COMPILERS</span></code>: compilers supported on this machine, comma seperated list, first is default</li>
+<li><code class="docutils literal"><span class="pre">MPILIBS</span></code>: mpilibs supported on this machine, comma seperated list, first is default</li>
+<li><code class="docutils literal"><span class="pre">PROJECT</span></code>: A project or account number used for batch jobs can be overridden in environment or $HOME/.cime/config</li>
+<li><code class="docutils literal"><span class="pre">SAVE_TIMING_DIR</span></code>: (Acme only) directory to write timing output to</li>
+<li><code class="docutils literal"><span class="pre">CIME_OUTPUT_ROOT</span></code>: Base directory for case output, the bld and run directories are written below here</li>
+<li><code class="docutils literal"><span class="pre">DIN_LOC_ROOT</span></code>: location of the inputdata directory</li>
+<li><code class="docutils literal"><span class="pre">DIN_LOC_ROOT_CLMFORC</span></code>: optional input location for clm forcing data</li>
+<li><code class="docutils literal"><span class="pre">DOUT_S_ROOT</span></code>: root directory of short term archive files</li>
+<li><code class="docutils literal"><span class="pre">DOUT_L_MSROOT</span></code>: root directory on mass store system of long term archive files</li>
+<li><code class="docutils literal"><span class="pre">BASELINE_ROOT</span></code>:  Root directory for system test baseline files</li>
+<li><code class="docutils literal"><span class="pre">CCSM_CPRNC</span></code>: location of the cprnc tool, compares model output in testing</li>
+<li><code class="docutils literal"><span class="pre">GMAKE</span></code>: gnu compatible make tool, default is &#8216;gmake&#8217;</li>
+<li><code class="docutils literal"><span class="pre">GMAKE_J</span></code>: optional number of threads to pass to the gmake flag</li>
+<li><code class="docutils literal"><span class="pre">TESTS</span></code>: (acme only) list of tests to run on this machine</li>
+<li><code class="docutils literal"><span class="pre">BATCH_SYSTEM</span></code>: batch system used on this machine (none is okay)</li>
+<li><code class="docutils literal"><span class="pre">SUPPORTED_BY</span></code>: contact information for support for this system</li>
+<li><code class="docutils literal"><span class="pre">MAX_TASKS_PER_NODE</span></code>: maximum number of threads*tasks per shared memory node on this machine</li>
+<li><code class="docutils literal"><span class="pre">PES_PER_NODE</span></code>: number of physical PES per shared node on this machine, in practice the MPI tasks per node will not exceed this value</li>
+<li><code class="docutils literal"><span class="pre">PROJECT_REQUIRED</span></code>: Does this machine require a project to be specified to the batch system?</li>
+<li><code class="docutils literal"><span class="pre">mpirun</span></code>: The mpi exec to start a job on this machine.
+This is itself an element that has sub elements that must be filled:<ul>
+<li>must have a required <code class="docutils literal"><span class="pre">&lt;executable&gt;</span></code> element</li>
+<li>may have optional attributes of <code class="docutils literal"><span class="pre">compiler</span></code>, <code class="docutils literal"><span class="pre">mpilib</span></code> and/or <code class="docutils literal"><span class="pre">threaded</span></code></li>
+<li>may have zero or more optional <code class="docutils literal"><span class="pre">&lt;arguments&gt;</span></code> elements</li>
+</ul>
+</li>
+<li><code class="docutils literal"><span class="pre">module_system</span></code>: how and what modules to load on this system</li>
+<li><code class="docutils literal"><span class="pre">environment_variables</span></code>: environment_variables to set on this system</li>
+</ul>
+<div class="admonition-todo admonition" id="index-0">
+<p class="first admonition-title">Todo</p>
+<p class="last">Jim Edwards add the contents of this section. A clear explanation of how to add elements to the <code class="docutils literal"><span class="pre">config_machines.xml</span></code> file is really needed!!!</p>
+</div>
+</div>
+<div class="section" id="customizing-the-batch-directives-for-your-machine">
+<span id="customizing-batch-file"></span><h3>2.2.2. Customizing the batch directives for your machine<a class="headerlink" href="#customizing-the-batch-directives-for-your-machine" title="Permalink to this headline">¶</a></h3>
+<div class="admonition-todo admonition" id="index-1">
+<p class="first admonition-title">Todo</p>
+<p class="last">Jim Edwards add the contents of this section</p>
+</div>
+</div>
+<div class="section" id="customize-the-compiler-options-for-your-machine">
+<span id="customizing-compiler-file"></span><h3>2.2.3. Customize the compiler options for your machine<a class="headerlink" href="#customize-the-compiler-options-for-your-machine" title="Permalink to this headline">¶</a></h3>
+<div class="admonition-todo admonition" id="index-2">
+<p class="first admonition-title">Todo</p>
+<p class="last">Jim Edwards add the contents of this section</p>
+</div>
+</div>
 </div>
 <div class="section" id="validating-your-port">
-<h2>8.3. Validating your port<a class="headerlink" href="#validating-your-port" title="Permalink to this headline">¶</a></h2>
+<h2>2.3. Validating your port<a class="headerlink" href="#validating-your-port" title="Permalink to this headline">¶</a></h2>
 <p>The following port validation is recommended for any new machine.
 Carrying out these steps does not guarantee the model is running properly in all cases nor that the model is scientifically valid on the new machine.
 In addition to these tests, detailed validation should be carried out for any new production run.
@@ -229,13 +292,13 @@ Model output data for these runs will be available on the <a class="reference ex
           <a href="../genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="cloning-a-case.html" title="1. Cloning a Case"
+          <a href="optimizing-processor-layout.html" title="3. Optimizing Processor Layout"
              >next</a> |</li>
         <li class="right" >
-          <a href="optimizing-processor-layout.html" title="7. Optimizing Processor Layout"
+          <a href="cime-internals.html" title="1. CIME internals"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">on  documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" >CIME User&#8217;s Guide Part 1: Basic Use</a> &#187;</li> 
+          <li class="nav-item nav-item-1"><a href="index.html" >CIME User&#8217;s Guide Part 1: Basic Usage</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

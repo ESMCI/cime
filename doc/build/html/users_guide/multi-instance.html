@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>2. Multi-instance component functionality &#8212; on  documentation</title>
+    <title>1. Multi-instance component functionality &#8212; on  documentation</title>
     
     <link rel="stylesheet" href="../_static/bizstyle.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -28,8 +28,8 @@
     <script type="text/javascript" src="../_static/bizstyle.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="3. Testing with create_test" href="testing.html" />
-    <link rel="prev" title="1. Cloning a Case" href="cloning-a-case.html" />
+    <link rel="next" title="2. Adding new cases" href="adding-cases.html" />
+    <link rel="prev" title="4. Testing with create_test" href="testing.html" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <!--[if lt IE 9]>
     <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
@@ -43,23 +43,23 @@
           <a href="../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="testing.html" title="3. Testing with create_test"
+          <a href="adding-cases.html" title="2. Adding new cases"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="cloning-a-case.html" title="1. Cloning a Case"
+          <a href="testing.html" title="4. Testing with create_test"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">on  documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">CIME User&#8217;s Guide Part 1: Basic Use</a> &#187;</li> 
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">CIME User&#8217;s Guide Part 1: Basic Usage</a> &#187;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
   <h4>Previous topic</h4>
-  <p class="topless"><a href="cloning-a-case.html"
-                        title="previous chapter">1. Cloning a Case</a></p>
-  <h4>Next topic</h4>
   <p class="topless"><a href="testing.html"
-                        title="next chapter">3. Testing with create_test</a></p>
+                        title="previous chapter">4. Testing with create_test</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="adding-cases.html"
+                        title="next chapter">2. Adding new cases</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -86,7 +86,7 @@
           <div class="body" role="main">
             
   <div class="section" id="multi-instance-component-functionality">
-<span id="multi-instance"></span><h1>2. Multi-instance component functionality<a class="headerlink" href="#multi-instance-component-functionality" title="Permalink to this headline">¶</a></h1>
+<span id="multi-instance"></span><h1>1. Multi-instance component functionality<a class="headerlink" href="#multi-instance-component-functionality" title="Permalink to this headline">¶</a></h1>
 <p>The CIME coupling infrastructure has the capability to run multiple component instances under one model executable.
 The only caveat to this usage is that if N multiple instances of any one active component is used, then N multiple instances of ALL active components are required.
 More details are discussed below.
@@ -108,7 +108,7 @@ However, it also provides you with the ability to run a set of experiments withi
 <span class="n">NTASKS</span><span class="p">(</span><span class="n">CPL</span><span class="p">)</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">NTHRDS</span><span class="p">(</span><span class="n">CPL</span><span class="p">)</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">ROOTPE</span><span class="p">(</span><span class="n">CPL</span><span class="p">)</span><span class="o">=</span><span class="mi">0</span>
 </pre></div>
 </div>
-<p>In this F compset, the atm, lnd, rof are full prognostic components, the ocn is a prescribed data component, cice is a mixed prescribed/prognostic component (ice-coverage is prescribed) and glc and wav are stub components.
+<p>In this F compset, the atm, lnd, rof are active components, the ocn is a prescribed data component, cice is a mixed prescribed/active component (ice-coverage is prescribed) and glc and wav are stub components.
 Lets say we want to run 2 instances of CAM in this experiment.
 The current implementation of multi-instances will also require you to run 2 instances of CLM, CICE and RTM.
 However, you have the flexibility to run either 1 or 2 instances of DOCN (we can ignore glc and wav since they do not do anything in this compset).
@@ -172,13 +172,13 @@ The serial setting is only for EXPERT USERS in upcoming development code impleme
           <a href="../genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="testing.html" title="3. Testing with create_test"
+          <a href="adding-cases.html" title="2. Adding new cases"
              >next</a> |</li>
         <li class="right" >
-          <a href="cloning-a-case.html" title="1. Cloning a Case"
+          <a href="testing.html" title="4. Testing with create_test"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">on  documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" >CIME User&#8217;s Guide Part 1: Basic Use</a> &#187;</li> 
+          <li class="nav-item nav-item-1"><a href="index.html" >CIME User&#8217;s Guide Part 1: Basic Usage</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

@@ -28,7 +28,7 @@
     <script type="text/javascript" src="../_static/bizstyle.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="CIME User’s Guide Part 1: Basic Use" href="../users_guide/index.html" />
+    <link rel="next" title="CIME User’s Guide Part 1: Basic Usage" href="../users_guide/index.html" />
     <link rel="prev" title="Welcome to the CIME documentation!" href="../index.html" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <!--[if lt IE 9]>
@@ -43,7 +43,7 @@
           <a href="../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="../users_guide/index.html" title="CIME User’s Guide Part 1: Basic Use"
+          <a href="../users_guide/index.html" title="CIME User’s Guide Part 1: Basic Usage"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="../index.html" title="Welcome to the CIME documentation!"
@@ -70,7 +70,7 @@
                         title="previous chapter">Welcome to the CIME documentation!</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="../users_guide/index.html"
-                        title="next chapter">CIME User&#8217;s Guide Part 1: Basic Use</a></p>
+                        title="next chapter">CIME User&#8217;s Guide Part 1: Basic Usage</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -100,11 +100,11 @@
 <h1>What is CIME?<a class="headerlink" href="#what-is-cime" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
 </div>
-<p>CIME contains the support scripts (configure, build, run), data models, essential utility libraries,
+<p>CIME contains the support scripts (configure, build, run, test), data models, essential utility libraries,
 a “main” and other tools that are needed to build a single-executable coupled Earth System Model.
 CIME is available in a stand-alone package that
-can be compiled and tested without full prognostic components but is typically included in the source of
-a climate model. CIME does not contain: any prognostic components, any intra-component coupling capability (such as atmosphere physics-dynamics coupling).</p>
+can be compiled and tested without active prognostic components but is typically included in the source of
+a climate model. CIME does not contain: any active components, any intra-component coupling capability (such as atmosphere physics-dynamics coupling).</p>
 <div class="section" id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
 <p>CIME is comprised of:</p>
@@ -114,19 +114,29 @@ a climate model. CIME does not contain: any prognostic components, any intra-com
 <div><ol class="lowerroman simple">
 <li>A programmer interface and libraries to implement a hub-and-spoke inter-component coupling architecture.</li>
 <li>An implementation of a “hub” that needs 7 components (atm, ocn, lnd, sea-ice, land-ice, river, wave). a.k.a. “the driver”.</li>
-<li>The ability to allow prognostic and data components to be mixed in any combination as long as each component implements the coupling programmer interface.</li>
+<li>The ability to allow active and data components to be mixed in any combination as long as each component implements the coupling programmer interface.</li>
 </ol>
 </div></blockquote>
 </li>
-<li><p class="first">Non-prognostic Data and Stub components</p>
+<li><p class="first">Non-active Data and Stub components:</p>
 <blockquote>
 <div><ol class="lowerroman simple">
-<li>“Data-only” versions of 6 of the 7 components that can replace prognostic components at build-time.</li>
+<li>“Data-only” versions of 6 of the 7 components that can replace active components at build-time.</li>
 <li>“Stub” versions of all 7 components for building a complete system.</li>
 </ol>
 </div></blockquote>
 </li>
-<li><p class="first">A system of scripts (perl, csh and python) to support case configuration, executable compilation, workflow, system testing and unit testing infrastructure:</p>
+<li><dl class="first docutils">
+<dt>Additional libraries useful in scientific applications in general and climate models in particular.</dt>
+<dd><ol class="first last lowerroman simple">
+<li>Parallel I/O library.</li>
+<li>The Model Coupling Toolkit.</li>
+<li>Timing library.</li>
+</ol>
+</dd>
+</dl>
+</li>
+<li><p class="first">A system of scripts (python) to support case configuration, executable compilation, workflow, system testing and unit testing infrastructure:</p>
 <blockquote>
 <div><ol class="lowerroman simple">
 <li>Scripts to enable simple generation of model executables and associated input files for different scientific cases, component resolutions and combinations of full, data and stub components with a handful of commands.</li>
@@ -134,19 +144,13 @@ a climate model. CIME does not contain: any prognostic components, any intra-com
 </ol>
 </div></blockquote>
 </li>
-<li><p class="first">Additional stand-alone utilities and libraries useful in scientific applications in general and climate models in particular.</p>
+<li><p class="first">Additional stand-alone tools:</p>
 <blockquote>
 <div><ol class="lowerroman simple">
-<li>Parallel I/O library</li>
-<li>The Model Coupling Toolkit</li>
-<li>Timing library</li>
-<li>Stand-alone programs<ol class="loweralpha">
 <li>Parallel regridding weight generation program</li>
 <li>Scripts to automate off-line load-balancing.</li>
 <li>Scripts to conduct ensemble-based statistical consistency tests.</li>
 <li>Netcdf file comparison program (for bit-for-bit).</li>
-</ol>
-</li>
 </ol>
 </div></blockquote>
 </li>
@@ -179,7 +183,7 @@ a climate model. CIME does not contain: any prognostic components, any intra-com
           <a href="../genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="../users_guide/index.html" title="CIME User’s Guide Part 1: Basic Use"
+          <a href="../users_guide/index.html" title="CIME User’s Guide Part 1: Basic Usage"
              >next</a> |</li>
         <li class="right" >
           <a href="../index.html" title="Welcome to the CIME documentation!"

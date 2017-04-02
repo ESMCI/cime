@@ -28,8 +28,8 @@
     <script type="text/javascript" src="../_static/bizstyle.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="2. Creating a Case" href="create-a-case.html" />
-    <link rel="prev" title="CIME User’s Guide Part 1: Basic Use" href="index.html" />
+    <link rel="next" title="2. The basics of CIME cases" href="case-basics.html" />
+    <link rel="prev" title="CIME User’s Guide Part 1: Basic Usage" href="index.html" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <!--[if lt IE 9]>
     <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
@@ -43,13 +43,13 @@
           <a href="../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="create-a-case.html" title="2. Creating a Case"
+          <a href="case-basics.html" title="2. The basics of CIME cases"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="index.html" title="CIME User’s Guide Part 1: Basic Use"
+          <a href="index.html" title="CIME User’s Guide Part 1: Basic Usage"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">on  documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">CIME User&#8217;s Guide Part 1: Basic Use</a> &#187;</li> 
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">CIME User&#8217;s Guide Part 1: Basic Usage</a> &#187;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -69,10 +69,10 @@
 
   <h4>Previous topic</h4>
   <p class="topless"><a href="index.html"
-                        title="previous chapter">CIME User&#8217;s Guide Part 1: Basic Use</a></p>
+                        title="previous chapter">CIME User&#8217;s Guide Part 1: Basic Usage</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="create-a-case.html"
-                        title="next chapter">2. Creating a Case</a></p>
+  <p class="topless"><a href="case-basics.html"
+                        title="next chapter">2. The basics of CIME cases</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -123,21 +123,21 @@ the computer you are using.  If it is not, see Installing CIME.</p>
 <dd>CIME allows several sub-models and other tools to be linked together in to a climate model. These sub-models and tools are called
 <em>components</em> of the climate model. We say a climate model has an atmosphere component, an ocean component, etc.
 The resulting set of components is called the <em>component set</em> or <em>compset</em>.</dd>
-<dt><strong>full</strong> vs <strong>data</strong> vs <strong>stub</strong> models:</dt>
-<dd><p class="first">A component for the atmosphere or ocean that solve a complex set of equations to describe their behavior are called <em>full</em> models.</p>
-<p>CIME recognizes 7 different full models of a climate model, those are:</p>
+<dt><strong>active</strong> vs <strong>data</strong> vs <strong>stub</strong> models:</dt>
+<dd><p class="first">A component for the atmosphere or ocean that solve a complex set of equations to describe their behavior are called <em>active</em> models, and will sometimes be refered to as <em>prognostic</em> or <em>full</em> models.</p>
+<p>CIME recognizes 7 different active models of a climate model, those are:</p>
 <blockquote>
 <div>atmosphere, ocean, sea-ice, land surface, river, glacier, wave</div></blockquote>
 <p>In addition, an &#8220;external processing system&#8221; or ESP component is also allowed.</p>
-<p>For some climate problems, its necessary to reduce feedbacks within the system by replacing a full model with a
+<p>For some climate problems, its necessary to reduce feedbacks within the system by replacing a active model with a
 version that sends and receives the same variables to and from other models but
 the values sent are not computed from the equations but instead read from files.  The values received are ignored.
-We call these full-model substitutes <em>data models</em>&#8221; and CIME provides data models for each of the supported components.</p>
+We call these active-model substitutes <em>data models</em> and CIME provides data models for each of the supported components.</p>
 <p class="last">For some configurations, a data model is not needed and so CIME provides <em>stub</em> versions that simply occupy the
 required place in the climate execution sequence  and do not send or receive any data.</p>
 </dd>
 <dt><strong>grid set</strong> or <strong>grid</strong>:</dt>
-<dd>Each full model must solve its equations on a numerical grid.  CIME allows several models within the system to have different grids.  The resulting set of numerical grids is called the <em>grid set</em> or sometimes just the
+<dd>Each active model must solve its equations on a numerical grid.  CIME allows several models within the system to have different grids.  The resulting set of numerical grids is called the <em>grid set</em> or sometimes just the
 <em>grid</em> where <em>grid</em> is a unique abbreviation denoting a set of numerical grids.  Sometimes the <em>resolution</em> will also
 refer to a specific set of grids with different resolutions.</dd>
 <dt><strong>machine</strong>:</dt>
@@ -181,7 +181,7 @@ a climate model, cime is usually one of the first subdirectories under the main 
 <td>typical top-level directory content.</td>
 </tr>
 <tr class="row-odd"><td>components/</td>
-<td>source code for all of the full models.</td>
+<td>source code for all of the active models.</td>
 </tr>
 <tr class="row-even"><td>cime/</td>
 <td>All of CIME code</td>
@@ -292,13 +292,13 @@ a climate model, cime is usually one of the first subdirectories under the main 
           <a href="../genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="create-a-case.html" title="2. Creating a Case"
+          <a href="case-basics.html" title="2. The basics of CIME cases"
              >next</a> |</li>
         <li class="right" >
-          <a href="index.html" title="CIME User’s Guide Part 1: Basic Use"
+          <a href="index.html" title="CIME User’s Guide Part 1: Basic Usage"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">on  documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" >CIME User&#8217;s Guide Part 1: Basic Use</a> &#187;</li> 
+          <li class="nav-item nav-item-1"><a href="index.html" >CIME User&#8217;s Guide Part 1: Basic Usage</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

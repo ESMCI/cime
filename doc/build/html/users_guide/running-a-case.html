@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>5. Running a Case &#8212; on  documentation</title>
+    <title>6. Running a Case &#8212; on  documentation</title>
     
     <link rel="stylesheet" href="../_static/bizstyle.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -28,8 +28,8 @@
     <script type="text/javascript" src="../_static/bizstyle.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="6. Customizing a case" href="customizing-a-case.html" />
-    <link rel="prev" title="4. Building a Case" href="building-a-case.html" />
+    <link rel="next" title="7. Customizing a case" href="customizing-a-case.html" />
+    <link rel="prev" title="5. Building a Case" href="building-a-case.html" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <!--[if lt IE 9]>
     <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
@@ -43,32 +43,32 @@
           <a href="../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="customizing-a-case.html" title="6. Customizing a case"
+          <a href="customizing-a-case.html" title="7. Customizing a case"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="building-a-case.html" title="4. Building a Case"
+          <a href="building-a-case.html" title="5. Building a Case"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">on  documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">CIME User&#8217;s Guide Part 1: Basic Use</a> &#187;</li> 
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">CIME User&#8217;s Guide Part 1: Basic Usage</a> &#187;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
   <h3><a href="../index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">5. Running a Case</a><ul>
-<li><a class="reference internal" href="#calling-case-submit">5.1. Calling <strong>case.submit</strong></a></li>
-<li><a class="reference internal" href="#input-data">5.2. Input data</a></li>
-<li><a class="reference internal" href="#controlling-starting-stopping-and-restarting-a-run">5.3. Controlling starting, stopping and restarting a run</a></li>
-<li><a class="reference internal" href="#controlling-output-data">5.4. Controlling output data</a></li>
-<li><a class="reference internal" href="#restarting-a-run">5.5. Restarting a run</a><ul>
-<li><a class="reference internal" href="#backing-up-to-a-previous-restart">5.5.1. Backing up to a previous restart</a></li>
+<li><a class="reference internal" href="#">6. Running a Case</a><ul>
+<li><a class="reference internal" href="#calling-case-submit">6.1. Calling <strong>case.submit</strong></a></li>
+<li><a class="reference internal" href="#input-data">6.2. Input data</a></li>
+<li><a class="reference internal" href="#controlling-starting-stopping-and-restarting-a-run">6.3. Controlling starting, stopping and restarting a run</a></li>
+<li><a class="reference internal" href="#controlling-output-data">6.4. Controlling output data</a></li>
+<li><a class="reference internal" href="#restarting-a-run">6.5. Restarting a run</a><ul>
+<li><a class="reference internal" href="#backing-up-to-a-previous-restart">6.5.1. Backing up to a previous restart</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#archiving-model-output-data">5.6. Archiving model output data</a><ul>
-<li><a class="reference internal" href="#no-archiving">5.6.1. No archiving</a></li>
-<li><a class="reference internal" href="#short-term-archiving">5.6.2. Short-term archiving</a></li>
-<li><a class="reference internal" href="#long-term-archiving">5.6.3. Long-term archiving</a></li>
+<li><a class="reference internal" href="#archiving-model-output-data">6.6. Archiving model output data</a><ul>
+<li><a class="reference internal" href="#no-archiving">6.6.1. No archiving</a></li>
+<li><a class="reference internal" href="#short-term-archiving">6.6.2. Short-term archiving</a></li>
+<li><a class="reference internal" href="#long-term-archiving">6.6.3. Long-term archiving</a></li>
 </ul>
 </li>
 </ul>
@@ -77,10 +77,10 @@
 
   <h4>Previous topic</h4>
   <p class="topless"><a href="building-a-case.html"
-                        title="previous chapter">4. Building a Case</a></p>
+                        title="previous chapter">5. Building a Case</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="customizing-a-case.html"
-                        title="next chapter">6. Customizing a case</a></p>
+                        title="next chapter">7. Customizing a case</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -107,10 +107,10 @@
           <div class="body" role="main">
             
   <div class="section" id="running-a-case">
-<span id="id1"></span><h1>5. Running a Case<a class="headerlink" href="#running-a-case" title="Permalink to this headline">¶</a></h1>
+<span id="id1"></span><h1>6. Running a Case<a class="headerlink" href="#running-a-case" title="Permalink to this headline">¶</a></h1>
 <p>The following summarizes details of running the model exectuable.</p>
 <div class="section" id="calling-case-submit">
-<span id="case-submit"></span><h2>5.1. Calling <strong>case.submit</strong><a class="headerlink" href="#calling-case-submit" title="Permalink to this headline">¶</a></h2>
+<span id="case-submit"></span><h2>6.1. Calling <strong>case.submit</strong><a class="headerlink" href="#calling-case-submit" title="Permalink to this headline">¶</a></h2>
 <p>Before you can run the job, you need to make sure the batch queue variables are set correctly for the specific run being targeted.
 The batch submissions variables are contained in the files <code class="docutils literal"><span class="pre">env_batch.xml</span></code>.
 You should carefully check the batch queue submission lines and make sure that you have appropriate account numbers, time limits, and stdout file names.
@@ -142,7 +142,7 @@ You should also modify <code class="docutils literal"><span class="pre">env_run.
 <p>You can see a complete example of how to run a case in <a class="reference internal" href="faq/basics-a-basic-example.html#faq-basic-example"><span class="std std-ref">the basic example</span></a>.</p>
 </div>
 <div class="section" id="input-data">
-<span id="id2"></span><h2>5.2. Input data<a class="headerlink" href="#input-data" title="Permalink to this headline">¶</a></h2>
+<span id="id2"></span><h2>6.2. Input data<a class="headerlink" href="#input-data" title="Permalink to this headline">¶</a></h2>
 <p>The script <code class="docutils literal"><span class="pre">$CASEROOT</span></code> script <strong>check_input_data</strong> determines if the required data files for your case exist on local disk in the appropriate subdirectory of <code class="docutils literal"><span class="pre">$DIN_LOC_ROOT</span></code>.
 As part of submitting the run to the batch queueing system, <strong>case.submit</strong>  also calls <strong>check_input_data</strong> to verify that required input data sets are on local disk and and download missing data automatically on local disk in the appropriate subdirectory of <code class="docutils literal"><span class="pre">$DIN_LOC_ROOT</span></code></p>
 <p>The required input datasets needed for each component are found in the <code class="docutils literal"><span class="pre">$CASEROOT/Buildconf</span></code> directory in the files <code class="docutils literal"><span class="pre">xxx.input_data_list</span></code>, where <code class="docutils literal"><span class="pre">xxx</span></code> are is the component name.
@@ -172,7 +172,7 @@ These will be placed in the appropriate subdirectory of <code class="docutils li
 <p>In the following, we focus on the handling of run control (e.g. length of run, continuing a run) and output data. We also give a more detailed description of CIME restarts.</p>
 </div>
 <div class="section" id="controlling-starting-stopping-and-restarting-a-run">
-<h2>5.3. Controlling starting, stopping and restarting a run<a class="headerlink" href="#controlling-starting-stopping-and-restarting-a-run" title="Permalink to this headline">¶</a></h2>
+<h2>6.3. Controlling starting, stopping and restarting a run<a class="headerlink" href="#controlling-starting-stopping-and-restarting-a-run" title="Permalink to this headline">¶</a></h2>
 <p><code class="docutils literal"><span class="pre">env_run.xml</span></code> contains variables which may be modified at initialization and any time during the course of that model run.
 Among other features, the file variables comprise coupler namelist settings for the model stop time, model restart frequency, coupler history frequency and a flag to determine if the run should be flagged as a continuation run.
 At a minimum, you will only need to set the variables <code class="docutils literal"><span class="pre">$STOP_OPTION</span></code> and <code class="docutils literal"><span class="pre">$STOP_N</span></code>.
@@ -219,7 +219,7 @@ All run startup variables are discussed in <a class="reference external" href="h
 The default setting is only appropriate for initial testing. Before a longer run is started, update the stop times based on the case throughput and batch queue limits. For example, if the model runs 5 model years/day, set <code class="docutils literal"><span class="pre">RESUBMIT=30,</span> <span class="pre">STOP_OPTION=</span> <span class="pre">nyears,</span> <span class="pre">and</span> <span class="pre">STOP_N=</span> <span class="pre">5</span></code>. The model will then run in five year increments, and stop after 30 submissions.</p>
 </div>
 <div class="section" id="controlling-output-data">
-<span id="id3"></span><h2>5.4. Controlling output data<a class="headerlink" href="#controlling-output-data" title="Permalink to this headline">¶</a></h2>
+<span id="id3"></span><h2>6.4. Controlling output data<a class="headerlink" href="#controlling-output-data" title="Permalink to this headline">¶</a></h2>
 <p>During a model run, each model component produces its own output datasets consisting of history, restart and output log files.
 Component history files and restart files are in netCDF format. Restart files are used to either exactly restart the model or to serve as initial conditions for other model cases.</p>
 <p>Archiving is a phase of a model run where the generated output data is moved from $RUNDIR to a local disk area (short-term archiving) and subsequently to a long-term storage system (long-term archiving). It has no impact on the production run except to clean up disk space and help manage user quotas. Although short-term and long-term archiving are implemented independently in the scripts, there is a dependence between the two since the short-term archiver must be turned on in order for the long-term archiver to be activated. In <code class="docutils literal"><span class="pre">env_run.xml</span></code>, several variables control the behavior of short and long-term archiving. See <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">short and long term archiving</a> for a description of output data control variables. Several important points need to be made about both short and long term archiving:</p>
@@ -244,7 +244,7 @@ Component history files and restart files are in netCDF format. Restart files ar
 the run will automatically submit the <strong>$CASE.l_archive</strong> to the queue upon its completion to archive the data. The system is not bulletproof, and you will want to verify at regular intervals that the archived data is complete, particularly during long running jobs.</p>
 </div>
 <div class="section" id="restarting-a-run">
-<h2>5.5. Restarting a run<a class="headerlink" href="#restarting-a-run" title="Permalink to this headline">¶</a></h2>
+<h2>6.5. Restarting a run<a class="headerlink" href="#restarting-a-run" title="Permalink to this headline">¶</a></h2>
 <p>Restart files are written by each active component (and some data components) at intervals dictated by the driver via the setting of the <code class="docutils literal"><span class="pre">env_run.xml</span></code> variables, <code class="docutils literal"><span class="pre">$REST_OPTION</span></code> and <code class="docutils literal"><span class="pre">$REST_N</span></code>. Restart files allow the model to stop and then start again with bit-for-bit exact capability (i.e. the model output is exactly the same as if it had never been stopped). The driver coordinates the writing of restart files as well as the time evolution of the model. All components receive restart and stop information from the driver and write restarts or stop as specified by the driver.</p>
 <p>It is important to note that runs that are initialized as branch or hybrid runs, will require restart/initial files from previous model runs (as specified by the variables, <code class="docutils literal"><span class="pre">$RUN_REFCASE</span></code> and <code class="docutils literal"><span class="pre">$RUN_REFDATE</span></code>). These required files must be prestaged by the user to the case <code class="docutils literal"><span class="pre">$RUNDIR</span></code> (normally <code class="docutils literal"><span class="pre">$EXEROOT/run</span></code>) before the model run starts. This is normally done by just copying the contents of the relevant <code class="docutils literal"><span class="pre">$RUN_REFCASE/rest/$RUN_REFDATE.00000</span></code> directory.</p>
 <p>Whenever a component writes a restart file, it also writes a restart pointer file of the form, <code class="docutils literal"><span class="pre">rpointer.$component</span></code>. The restart pointer file contains the restart filename that was just written by the component. Upon a restart, each component reads its restart pointer file to determine the filename(s) to read in order to continue the model run. As examples, the following pointer files will be created for a component set using full active model components.</p>
@@ -260,21 +260,21 @@ the run will automatically submit the <strong>$CASE.l_archive</strong> to the qu
 <span class="pre">`</span></code></p>
 <p>If short-term archiving is turned on, then the model archives the component restart datasets and pointer files into <code class="docutils literal"><span class="pre">$DOUT_S_ROOT/rest/yyyy-mm-dd-sssss</span></code>, where yyyy-mm-dd-sssss is the model date at the time of the restart (see <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">below for more details</a>). If long-term archiving these restart then archived in <code class="docutils literal"><span class="pre">$DOUT_L_MSROOT/rest</span></code>. <code class="docutils literal"><span class="pre">DOUT_S_ROOT</span></code> and <code class="docutils literal"><span class="pre">DOUT_L_MSROOT</span></code> are set in <code class="docutils literal"><span class="pre">env_run.xml</span></code>, and can be changed at any time during the run.</p>
 <div class="section" id="backing-up-to-a-previous-restart">
-<h3>5.5.1. Backing up to a previous restart<a class="headerlink" href="#backing-up-to-a-previous-restart" title="Permalink to this headline">¶</a></h3>
+<h3>6.5.1. Backing up to a previous restart<a class="headerlink" href="#backing-up-to-a-previous-restart" title="Permalink to this headline">¶</a></h3>
 <p>If a run encounters problems and crashes, you will normally have to back up to a previous restart. Assuming that short-term archiving is enabled, you will need to find the latest <code class="docutils literal"><span class="pre">$DOUT_S_ROOT/rest/yyyy-mm-dd-ssss/</span></code> directory that was created and copy the contents of that directory into your run directory (<code class="docutils literal"><span class="pre">$RUNDIR</span></code>). You can then continue the run and these restarts will be used. It is important to make sure the new rpointer.* files overwrite the rpointer.* files that were in <code class="docutils literal"><span class="pre">$RUNDIR</span></code>, or the job may not restart in the correct place.</p>
 <p>Occasionally, when a run has problems restarting, it is because the rpointer files are out of sync with the restart files. The rpointer files are text files and can easily be edited to match the correct dates of the restart and history files. All the restart files should have the same date.</p>
 </div>
 </div>
 <div class="section" id="archiving-model-output-data">
-<h2>5.6. Archiving model output data<a class="headerlink" href="#archiving-model-output-data" title="Permalink to this headline">¶</a></h2>
+<h2>6.6. Archiving model output data<a class="headerlink" href="#archiving-model-output-data" title="Permalink to this headline">¶</a></h2>
 <p>All component log files are copied to the directory specified by the <code class="docutils literal"><span class="pre">env_run.xml</span></code> variable <code class="docutils literal"><span class="pre">$LOGDIR</span></code> which by default is set to <code class="docutils literal"><span class="pre">$CASEROOT/logs</span></code>. This location is where log files are copied when the job completes successfully. If the job aborts, the log files will NOT be copied out of the <code class="docutils literal"><span class="pre">$RUNDIR</span></code> directory.</p>
 <p>Once a model run has completed successfully, the output data flow will depend on whether or not short-term archiving is enabled (as set by the <code class="docutils literal"><span class="pre">env_run.xml</span></code> variable, <code class="docutils literal"><span class="pre">$DOUT_S</span></code>). By default, short-term archiving will be done.</p>
 <div class="section" id="no-archiving">
-<h3>5.6.1. No archiving<a class="headerlink" href="#no-archiving" title="Permalink to this headline">¶</a></h3>
+<h3>6.6.1. No archiving<a class="headerlink" href="#no-archiving" title="Permalink to this headline">¶</a></h3>
 <p>If no short-term archiving is performed, then all model output data will remain in the run directory, as specified by the <code class="docutils literal"><span class="pre">env_run.xml</span></code> variable, <code class="docutils literal"><span class="pre">$RUNDIR</span></code>. Furthermore, if short-term archiving is disabled, then long-term archiving will not be allowed.</p>
 </div>
 <div class="section" id="short-term-archiving">
-<h3>5.6.2. Short-term archiving<a class="headerlink" href="#short-term-archiving" title="Permalink to this headline">¶</a></h3>
+<h3>6.6.2. Short-term archiving<a class="headerlink" href="#short-term-archiving" title="Permalink to this headline">¶</a></h3>
 <p>If short-term archiving is enabled, the component output files will be moved to the short term archiving area on local disk, as specified by <code class="docutils literal"><span class="pre">$DOUT_S_ROOT</span></code>. The directory <code class="docutils literal"><span class="pre">DOUT_S_ROOT</span></code> is normally set to <code class="docutils literal"><span class="pre">$EXEROOT/../archive/$CASE.</span></code> and will contain the following directory structure:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">rest</span><span class="o">/</span><span class="n">yyyy</span><span class="o">-</span><span class="n">mm</span><span class="o">-</span><span class="n">dd</span><span class="o">-</span><span class="n">sssss</span><span class="o">/</span>
 <span class="n">logs</span><span class="o">/</span>
@@ -293,7 +293,7 @@ the run will automatically submit the <strong>$CASE.l_archive</strong> to the qu
 <p>rest/ contains a subset of directories that each contain a <em>consistent</em> set of restart files, initial files and rpointer files. Each sub-directory has a unique name corresponding to the model year, month, day and seconds into the day where the files were created (e.g. 1852-01-01-00000/). The contents of any restart directory can be used to <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">create a branch run or a hybrid run</a> or back up to a previous restart date.</p>
 </div>
 <div class="section" id="long-term-archiving">
-<h3>5.6.3. Long-term archiving<a class="headerlink" href="#long-term-archiving" title="Permalink to this headline">¶</a></h3>
+<h3>6.6.3. Long-term archiving<a class="headerlink" href="#long-term-archiving" title="Permalink to this headline">¶</a></h3>
 <p>For long production runs that generate many giga-bytes of data, you will normally want to move the output data from local disk to a long-term archival location. Long-term archiving can be activated by setting <code class="docutils literal"><span class="pre">$DOUT_L_MS</span></code> to TRUE in <code class="docutils literal"><span class="pre">env_run.xml</span></code>. By default, the value of this variable is FALSE, and long-term archiving is disabled. If the value is set to TRUE, then the following additional variables are: <code class="docutils literal"><span class="pre">$DOUT_L_MSROOT,</span> <span class="pre">$DOUT_S_ROOT</span> <span class="pre">DOUT_S</span></code> (see
 <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">variables for output data management</a>).</p>
 <p>As was mentioned above, if long-term archiving is enabled, files will be moved out of <code class="docutils literal"><span class="pre">$DOUT_S_ROOT</span></code> to <code class="docutils literal"><span class="pre">$DOUT_L_ROOT</span></code> by <code class="docutils literal"><span class="pre">$CASE.l_archive</span></code>, which is run as a separate batch job after the successful completion of a model run.</p>
@@ -314,13 +314,13 @@ the run will automatically submit the <strong>$CASE.l_archive</strong> to the qu
           <a href="../genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="customizing-a-case.html" title="6. Customizing a case"
+          <a href="customizing-a-case.html" title="7. Customizing a case"
              >next</a> |</li>
         <li class="right" >
-          <a href="building-a-case.html" title="4. Building a Case"
+          <a href="building-a-case.html" title="5. Building a Case"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">on  documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" >CIME User&#8217;s Guide Part 1: Basic Use</a> &#187;</li> 
+          <li class="nav-item nav-item-1"><a href="index.html" >CIME User&#8217;s Guide Part 1: Basic Usage</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

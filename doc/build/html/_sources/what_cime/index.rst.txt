@@ -13,11 +13,11 @@
    :maxdepth: 3
    :numbered:
       
-CIME contains the support scripts (configure, build, run), data models, essential utility libraries, 
+CIME contains the support scripts (configure, build, run, test), data models, essential utility libraries, 
 a “main” and other tools that are needed to build a single-executable coupled Earth System Model. 
 CIME is available in a stand-alone package that 
-can be compiled and tested without full prognostic components but is typically included in the source of 
-a climate model. CIME does not contain: any prognostic components, any intra-component coupling capability (such as atmosphere physics-dynamics coupling).
+can be compiled and tested without active prognostic components but is typically included in the source of 
+a climate model. CIME does not contain: any active components, any intra-component coupling capability (such as atmosphere physics-dynamics coupling).
 
 *********
 Overview
@@ -29,29 +29,29 @@ CIME is comprised of:
 
     i. A programmer interface and libraries to implement a hub-and-spoke inter-component coupling architecture.
     ii. An implementation of a “hub” that needs 7 components (atm, ocn, lnd, sea-ice, land-ice, river, wave). a.k.a. “the driver”.
-    iii. The ability to allow prognostic and data components to be mixed in any combination as long as each component implements the coupling programmer interface.
+    iii. The ability to allow active and data components to be mixed in any combination as long as each component implements the coupling programmer interface.
 
-2. Non-prognostic Data and Stub components
+2. Non-active Data and Stub components:
 
-    i. “Data-only” versions of 6 of the 7 components that can replace prognostic components at build-time.
+    i. “Data-only” versions of 6 of the 7 components that can replace active components at build-time.
     ii. “Stub” versions of all 7 components for building a complete system.
 
-3. A system of scripts (perl, csh and python) to support case configuration, executable compilation, workflow, system testing and unit testing infrastructure:
+3. Additional libraries useful in scientific applications in general and climate models in particular.
+    i.  Parallel I/O library.
+    ii. The Model Coupling Toolkit.
+    iii. Timing library.
+
+4. A system of scripts (python) to support case configuration, executable compilation, workflow, system testing and unit testing infrastructure:
 
     i. Scripts to enable simple generation of model executables and associated input files for different scientific cases, component resolutions and combinations of full, data and stub components with a handful of commands.
     ii. Testing utilities to run defined system tests and report results for different configurations of the coupled system.
 
-4. Additional stand-alone utilities and libraries useful in scientific applications in general and climate models in particular.
+5. Additional stand-alone tools:
 
-    i. Parallel I/O library
-    ii. The Model Coupling Toolkit
-    iii. Timing library
-    iv. Stand-alone programs
-
-        a. Parallel regridding weight generation program
-        b. Scripts to automate off-line load-balancing.
-        c. Scripts to conduct ensemble-based statistical consistency tests.
-        d. Netcdf file comparison program (for bit-for-bit).
+    i. Parallel regridding weight generation program
+    ii. Scripts to automate off-line load-balancing.
+    iii. Scripts to conduct ensemble-based statistical consistency tests.
+    iv. Netcdf file comparison program (for bit-for-bit).
 
 *************************
 Where is CIME developed?

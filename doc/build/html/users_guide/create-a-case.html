@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>2. Creating a Case &#8212; on  documentation</title>
+    <title>3. Creating a Case &#8212; on  documentation</title>
     
     <link rel="stylesheet" href="../_static/bizstyle.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -28,8 +28,8 @@
     <script type="text/javascript" src="../_static/bizstyle.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="3. Setting up a Case" href="setting-up-a-case.html" />
-    <link rel="prev" title="1. Introduction and Overview" href="introduction-and-overview.html" />
+    <link rel="next" title="4. Setting up a Case" href="setting-up-a-case.html" />
+    <link rel="prev" title="2. The basics of CIME cases" href="case-basics.html" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <!--[if lt IE 9]>
     <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
@@ -43,24 +43,22 @@
           <a href="../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="setting-up-a-case.html" title="3. Setting up a Case"
+          <a href="setting-up-a-case.html" title="4. Setting up a Case"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="introduction-and-overview.html" title="1. Introduction and Overview"
+          <a href="case-basics.html" title="2. The basics of CIME cases"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">on  documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">CIME User&#8217;s Guide Part 1: Basic Use</a> &#187;</li> 
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">CIME User&#8217;s Guide Part 1: Basic Usage</a> &#187;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
   <h3><a href="../index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">2. Creating a Case</a><ul>
-<li><a class="reference internal" href="#calling-create-newcase">2.1. Calling <strong>create_newcase</strong></a><ul>
-<li><a class="reference internal" href="#component-set-naming-convention">2.1.1. Component Set Naming Convention</a></li>
-<li><a class="reference internal" href="#model-grid-naming-convention">2.1.2. Model Grid Naming Convention</a></li>
-<li><a class="reference internal" href="#result-of-calling-create-newcase">2.1.3. Result of calling create_newcase</a></li>
+<li><a class="reference internal" href="#">3. Creating a Case</a><ul>
+<li><a class="reference internal" href="#calling-create-newcase">3.1. Calling <strong>create_newcase</strong></a><ul>
+<li><a class="reference internal" href="#result-of-calling-create-newcase">3.1.1. Result of calling create_newcase</a></li>
 </ul>
 </li>
 </ul>
@@ -68,11 +66,11 @@
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="introduction-and-overview.html"
-                        title="previous chapter">1. Introduction and Overview</a></p>
+  <p class="topless"><a href="case-basics.html"
+                        title="previous chapter">2. The basics of CIME cases</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="setting-up-a-case.html"
-                        title="next chapter">3. Setting up a Case</a></p>
+                        title="next chapter">4. Setting up a Case</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -99,9 +97,9 @@
           <div class="body" role="main">
             
   <div class="section" id="creating-a-case">
-<span id="id1"></span><h1>2. Creating a Case<a class="headerlink" href="#creating-a-case" title="Permalink to this headline">¶</a></h1>
+<span id="id1"></span><h1>3. Creating a Case<a class="headerlink" href="#creating-a-case" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="calling-create-newcase">
-<h2>2.1. Calling <strong>create_newcase</strong><a class="headerlink" href="#calling-create-newcase" title="Permalink to this headline">¶</a></h2>
+<h2>3.1. Calling <strong>create_newcase</strong><a class="headerlink" href="#calling-create-newcase" title="Permalink to this headline">¶</a></h2>
 <p>The first step in creating a CIME based experiment is to use <strong>create_newcase</strong>.</p>
 <p>If you are not on an out-of-the box CIME supported platform, you will need to first <a class="reference internal" href="porting-cime.html#porting"><span class="std std-ref">port</span></a> CIME to your system.</p>
 <p>You should first use the &#8211;help option in calling <strong>create_newcase</strong> to document its input options.  The only required arguments to <strong>create_newcase</strong> are:</p>
@@ -110,106 +108,14 @@
 </div>
 <p>CIME supports out of the box <code class="docutils literal"><span class="pre">component</span> <span class="pre">sets</span></code>, <code class="docutils literal"><span class="pre">model</span> <span class="pre">grids</span></code> and <code class="docutils literal"><span class="pre">hardware</span> <span class="pre">platforms</span></code>.</p>
 <ul class="simple">
-<li>Component sets (usually referred to as compsets) define both the specific model components that will be used in a CIME case, <em>and</em> any component-specific namelist or configuration settings that are specific to this case.</li>
+<li>Component sets (usually referred to as <em>compsets</em>) define both the specific model components that will be used in a CIME case, <em>and</em> any component-specific namelist or configuration settings that are specific to this case.</li>
 <li>Model grids specify the grid for each component making up the model.</li>
 <li>At a minimum creating a CIME experiment requires specifying a component set and a model grid.</li>
 <li>Out of the box compsets and models grids are associated with two names: a longname and an alias name.</li>
 <li>Aliases are required by the CIME regression test system but can also be used for user convenience. Compset aliases are unique - each compset alias is associated with one and only one compset. Grid aliases, on the other hand, are overloaded and the same grid alias may result in a different grid depending on the compset the alias is associated with. We recommend that the user always confirm that the compset longname and grid longname are the expected result when using aliases to create a case.</li>
 </ul>
-<div class="section" id="component-set-naming-convention">
-<h3>2.1.1. Component Set Naming Convention<a class="headerlink" href="#component-set-naming-convention" title="Permalink to this headline">¶</a></h3>
-<p>The component set (compset) longname has the form:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">TIME_ATM</span><span class="p">[</span><span class="o">%</span><span class="n">phys</span><span class="p">]</span><span class="n">_LND</span><span class="p">[</span><span class="o">%</span><span class="n">phys</span><span class="p">]</span><span class="n">_ICE</span><span class="p">[</span><span class="o">%</span><span class="n">phys</span><span class="p">]</span><span class="n">_OCN</span><span class="p">[</span><span class="o">%</span><span class="n">phys</span><span class="p">]</span><span class="n">_ROF</span><span class="p">[</span><span class="o">%</span><span class="n">phys</span><span class="p">]</span><span class="n">_GLC</span><span class="p">[</span><span class="o">%</span><span class="n">phys</span><span class="p">]</span><span class="n">_WAV</span><span class="p">[</span><span class="o">%</span><span class="n">phys</span><span class="p">]</span><span class="n">_ESP</span><span class="p">[</span><span class="n">_BGC</span><span class="o">%</span><span class="n">phys</span><span class="p">]</span>
-
-<span class="n">TIME</span> <span class="o">=</span> <span class="n">model</span> <span class="n">time</span> <span class="n">period</span> <span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">g</span><span class="o">.</span> <span class="mi">2000</span><span class="p">,</span> <span class="mi">20</span><span class="n">TR</span><span class="p">,</span> <span class="n">RCP8</span><span class="o">...</span><span class="p">)</span>
-
-<span class="n">CIME</span> <span class="n">supports</span> <span class="n">the</span> <span class="n">following</span> <span class="n">values</span> <span class="k">for</span> <span class="n">ATM</span><span class="p">,</span><span class="n">LND</span><span class="p">,</span><span class="n">ICE</span><span class="p">,</span><span class="n">OCN</span><span class="p">,</span><span class="n">ROF</span><span class="p">,</span><span class="n">GLC</span><span class="p">,</span><span class="n">WAV</span> <span class="ow">and</span> <span class="n">ESP</span>
-<span class="n">ATM</span>  <span class="o">=</span> <span class="p">[</span><span class="n">DATM</span><span class="p">,</span> <span class="n">SATM</span><span class="p">,</span> <span class="n">XATM</span><span class="p">]</span>
-<span class="n">LND</span>  <span class="o">=</span> <span class="p">[</span><span class="n">DLND</span><span class="p">,</span> <span class="n">SLND</span><span class="p">,</span> <span class="n">XLND</span><span class="p">]</span>
-<span class="n">ICE</span>  <span class="o">=</span> <span class="p">[</span><span class="n">DICE</span><span class="p">,</span> <span class="n">SICE</span><span class="p">,</span> <span class="n">SICE</span><span class="p">]</span>
-<span class="n">OCN</span>  <span class="o">=</span> <span class="p">[</span><span class="n">DOCN</span><span class="p">,</span> <span class="n">SOCN</span><span class="p">,</span> <span class="n">XOCN</span><span class="p">]</span>
-<span class="n">ROF</span>  <span class="o">=</span> <span class="p">[</span><span class="n">DROF</span><span class="p">,</span> <span class="n">SROF</span><span class="p">,</span> <span class="n">XROF</span><span class="p">]</span>
-<span class="n">GLC</span>  <span class="o">=</span> <span class="p">[</span><span class="n">SGLC</span><span class="p">,</span> <span class="n">XGLC</span><span class="p">]</span>
-<span class="n">WAV</span>  <span class="o">=</span> <span class="p">[</span><span class="n">SWAV</span><span class="p">,</span> <span class="n">XWAV</span><span class="p">]</span>
-<span class="n">ESP</span>  <span class="o">=</span> <span class="p">[</span><span class="n">SESP</span><span class="p">]</span>
-
-<span class="n">If</span> <span class="n">CIME</span> <span class="ow">is</span> <span class="n">run</span> <span class="k">with</span> <span class="n">CESM</span> <span class="n">prognostic</span> <span class="n">components</span><span class="p">,</span> <span class="n">the</span> <span class="n">following</span> <span class="n">additional</span> <span class="n">values</span> <span class="n">are</span> <span class="n">permitted</span><span class="p">:</span>
-<span class="n">ATM</span>  <span class="o">=</span> <span class="p">[</span><span class="n">CAM40</span><span class="p">,</span> <span class="n">CAM50</span><span class="p">,</span> <span class="n">CAM55</span><span class="p">,</span> <span class="n">CAM60</span><span class="p">]</span>
-<span class="n">LND</span>  <span class="o">=</span> <span class="p">[</span><span class="n">CLM45</span><span class="p">,</span> <span class="n">CLM50</span><span class="p">]</span>
-<span class="n">ICE</span>  <span class="o">=</span> <span class="p">[</span><span class="n">CICE</span><span class="p">]</span>
-<span class="n">OCN</span>  <span class="o">=</span> <span class="p">[</span><span class="n">POP2</span><span class="p">,</span> <span class="n">AQUAP</span><span class="p">]</span>
-<span class="n">ROF</span>  <span class="o">=</span> <span class="p">[</span><span class="n">RTM</span><span class="p">,</span> <span class="n">MOSART</span><span class="p">]</span>
-<span class="n">GLC</span>  <span class="o">=</span> <span class="p">[</span><span class="n">CISM1</span><span class="p">,</span> <span class="n">CISM2</span><span class="p">]</span>
-<span class="n">WAV</span>  <span class="o">=</span> <span class="p">[</span><span class="n">WW</span><span class="p">]</span>
-<span class="n">BGC</span>  <span class="o">=</span> <span class="n">optional</span> <span class="n">BGC</span> <span class="n">scenario</span>
-
-<span class="n">If</span> <span class="n">CIME</span> <span class="ow">is</span> <span class="n">run</span> <span class="k">with</span> <span class="n">ACME</span> <span class="n">prognostic</span> <span class="n">components</span><span class="p">,</span> <span class="n">the</span> <span class="n">following</span> <span class="n">additional</span> <span class="n">values</span> <span class="n">are</span> <span class="n">permitted</span><span class="p">:</span>
-<span class="n">ATM</span>  <span class="o">=</span> <span class="p">[]</span>
-<span class="n">LND</span>  <span class="o">=</span> <span class="p">[]</span>
-<span class="n">ICE</span>  <span class="o">=</span> <span class="p">[]</span>
-<span class="n">OCN</span>  <span class="o">=</span> <span class="p">[]</span>
-<span class="n">ROF</span>  <span class="o">=</span> <span class="p">[]</span>
-<span class="n">GLC</span>  <span class="o">=</span> <span class="p">[]</span>
-<span class="n">WAV</span>  <span class="o">=</span> <span class="p">[]</span>
-<span class="n">BGC</span>  <span class="o">=</span> <span class="n">optional</span> <span class="n">BGC</span> <span class="n">scenario</span>
-
-<span class="n">The</span> <span class="n">OPTIONAL</span> <span class="o">%</span><span class="n">phys</span> <span class="n">attributes</span> <span class="n">specify</span> <span class="n">sub</span><span class="o">-</span><span class="n">modes</span> <span class="n">of</span> <span class="n">the</span> <span class="n">given</span> <span class="n">system</span>
-<span class="n">For</span> <span class="n">example</span> <span class="n">DOCN</span><span class="o">%</span><span class="n">DOM</span> <span class="ow">is</span> <span class="n">the</span> <span class="n">DOCN</span> <span class="n">data</span> <span class="n">ocean</span> <span class="p">(</span><span class="n">rather</span> <span class="n">than</span> <span class="n">slab</span><span class="o">-</span><span class="n">ocean</span><span class="p">)</span> <span class="n">mode</span><span class="o">.</span>
-<span class="n">ALL</span> <span class="n">the</span> <span class="n">possible</span> <span class="o">%</span><span class="n">phys</span> <span class="n">choices</span> <span class="k">for</span> <span class="n">each</span> <span class="n">component</span> <span class="n">are</span> <span class="n">listed</span> <span class="n">by</span>
-<span class="n">calling</span> <span class="o">**</span><span class="n">manage_case</span><span class="o">**</span> <span class="k">with</span> <span class="n">the</span> <span class="o">**-</span><span class="nb">list</span><span class="o">**</span> <span class="n">compsets</span> <span class="n">argument</span><span class="o">.</span>
-<span class="n">ALL</span> <span class="n">data</span> <span class="n">models</span> <span class="n">have</span> <span class="n">a</span> <span class="o">%</span><span class="n">phys</span> <span class="n">option</span> <span class="n">that</span> <span class="n">corresponds</span> <span class="n">to</span> <span class="n">the</span> <span class="n">data</span> <span class="n">model</span> <span class="n">mode</span><span class="o">.</span>
-</pre></div>
-</div>
-<p>As an example, the CESM compset longname:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="mi">1850</span><span class="n">_CAM60_CLM50</span><span class="o">%</span><span class="n">BGC_CICE_POP2</span><span class="o">%</span><span class="n">ECO_MOSART_CISM2</span><span class="o">%</span><span class="n">NOEVOLVE_WW3_BGC</span><span class="o">%</span><span class="n">BDRD</span>
-</pre></div>
-</div>
-<p>refers to running a pre-industrial control with prognostic CESM components CAM, CLM, CICE, POP2, MOSART, CISM2 and WW3 in a BDRD BGC coupling scenario.
-The alias for this compset is B1850. Either a compset longname or a compset alias can be used as input to <strong>create_newcase</strong>.
-It is also possible to create your own custom compset (see <cite>How do I create my own compset? in the FAQ</cite>)</p>
-</div>
-<div class="section" id="model-grid-naming-convention">
-<h3>2.1.2. Model Grid Naming Convention<a class="headerlink" href="#model-grid-naming-convention" title="Permalink to this headline">¶</a></h3>
-<p>The model grid longname has the form:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">a</span><span class="o">%</span><span class="n">name_l</span><span class="o">%</span><span class="n">name_oi</span><span class="o">%</span><span class="n">name_r</span><span class="o">%</span><span class="n">name_m</span><span class="o">%</span><span class="n">mask_g</span><span class="o">%</span><span class="n">name_w</span><span class="o">%</span><span class="n">name</span>
-
-<span class="n">a</span><span class="o">%</span>  <span class="o">=</span> <span class="n">atmosphere</span> <span class="n">grid</span>
-<span class="n">l</span><span class="o">%</span>  <span class="o">=</span> <span class="n">land</span> <span class="n">grid</span>
-<span class="n">oi</span><span class="o">%</span> <span class="o">=</span> <span class="n">ocean</span><span class="o">/</span><span class="n">sea</span><span class="o">-</span><span class="n">ice</span> <span class="n">grid</span> <span class="p">(</span><span class="n">must</span> <span class="n">be</span> <span class="n">the</span> <span class="n">same</span><span class="p">)</span>
-<span class="n">r</span><span class="o">%</span>  <span class="o">=</span> <span class="n">river</span> <span class="n">grid</span>
-<span class="n">m</span><span class="o">%</span>  <span class="o">=</span> <span class="n">ocean</span> <span class="n">mask</span> <span class="n">grid</span>
-<span class="n">g</span><span class="o">%</span>  <span class="o">=</span> <span class="n">internal</span> <span class="n">land</span><span class="o">-</span><span class="n">ice</span> <span class="p">(</span><span class="n">CISM</span><span class="p">)</span> <span class="n">grid</span>
-<span class="n">w</span><span class="o">%</span>  <span class="o">=</span> <span class="n">wave</span> <span class="n">component</span> <span class="n">grid</span>
-
-<span class="n">The</span> <span class="n">ocean</span> <span class="n">mask</span> <span class="n">grid</span> <span class="n">determines</span> <span class="n">land</span><span class="o">/</span><span class="n">ocean</span> <span class="n">boundaries</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">model</span><span class="o">.</span>
-<span class="n">It</span> <span class="ow">is</span> <span class="n">assumed</span> <span class="n">that</span> <span class="n">on</span> <span class="n">the</span> <span class="n">ocean</span> <span class="n">grid</span><span class="p">,</span> <span class="n">a</span> <span class="n">gridcell</span> <span class="ow">is</span> <span class="n">either</span> <span class="nb">all</span> <span class="n">ocean</span> <span class="ow">or</span> <span class="nb">all</span> <span class="n">land</span><span class="o">.</span>
-<span class="n">The</span> <span class="n">land</span> <span class="n">mask</span> <span class="n">on</span> <span class="n">the</span> <span class="n">land</span> <span class="n">grid</span> <span class="ow">is</span> <span class="n">then</span> <span class="n">obtained</span> <span class="n">by</span> <span class="n">mapping</span> <span class="n">the</span> <span class="n">ocean</span> <span class="n">mask</span>
-<span class="p">(</span><span class="n">using</span> <span class="n">first</span> <span class="n">order</span> <span class="n">conservative</span> <span class="n">mapping</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">the</span> <span class="n">ocean</span> <span class="n">grid</span> <span class="n">to</span> <span class="n">the</span> <span class="n">land</span> <span class="n">grid</span><span class="o">.</span>
-
-<span class="n">From</span> <span class="n">the</span> <span class="n">point</span> <span class="n">of</span> <span class="n">view</span> <span class="n">of</span> <span class="n">model</span> <span class="n">coupling</span> <span class="o">-</span> <span class="n">the</span> <span class="n">glc</span> <span class="p">(</span><span class="n">CISM</span><span class="p">)</span> <span class="n">grid</span> <span class="ow">is</span> <span class="n">assumed</span> <span class="n">to</span>
-<span class="n">be</span> <span class="n">identical</span> <span class="n">to</span> <span class="n">the</span> <span class="n">land</span> <span class="n">grid</span><span class="o">.</span> <span class="n">However</span><span class="p">,</span> <span class="n">the</span> <span class="n">internal</span> <span class="n">CISM</span> <span class="n">grid</span> <span class="n">can</span> <span class="n">be</span> <span class="n">different</span><span class="p">,</span>
-<span class="ow">and</span> <span class="ow">is</span> <span class="n">specified</span> <span class="n">by</span> <span class="n">the</span> <span class="n">g</span><span class="o">%</span> <span class="n">value</span><span class="o">.</span>
-</pre></div>
-</div>
-<p>As an example, the longname:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">a</span><span class="o">%</span><span class="n">ne30np4_l</span><span class="o">%</span><span class="n">ne30np4_oi</span><span class="o">%</span><span class="n">gx1v6_r</span><span class="o">%</span><span class="n">r05_m</span><span class="o">%</span><span class="n">gx1v6_g</span><span class="o">%</span><span class="n">null_w</span><span class="o">%</span><span class="n">null</span>
-</pre></div>
-</div>
-<p>refers to a model grid with a ne30np4 spectral element 1-degree atmosphere and land grids, gx1v6 Greenland pole 1-degree ocean and sea-ice grids, a 1/2 degree river routing grid, null wave and internal cism grids and an gx1v6 ocean mask.
-The alias for this grid is ne30_g16. Either the grid longname or alias can be used as input to <strong>create_newcase</strong>.</p>
-<p>CIME also permits users to introduce their own <a class="reference internal" href="adding-cases.html#adding-a-grid"><span class="std std-ref">&lt;user defined grids</span></a>.</p>
-<p>Component grids (such as the atmosphere grid or ocean grid above) are denoted by the following naming convention:</p>
-<ul class="simple">
-<li>&#8220;[dlat]x[dlon]&#8221; are regular lon/lat finite volume grids where dlat and dlon are the approximate grid spacing. The shorthand convention is &#8220;fnn&#8221; where nn is generally a pair of numbers indicating the resolution. An example is 1.9x2.5 or f19 for the approximately &#8220;2-degree&#8221; finite volume grid. Note that CAM uses an [nlat]x[nlon] naming convention internally for this grid.</li>
-<li>&#8220;Tnn&#8221; are spectral lon/lat grids where nn is the spectral truncation value for the resolution. The shorthand name is identical. An example is T85.</li>
-<li>&#8220;ne[X]np[Y]&#8221; are cubed sphere resolutions where X and Y are integers. The short name is generally ne[X]. An example is ne30np4 or ne30.</li>
-<li>&#8220;pt1&#8221; is a single grid point.</li>
-<li>&#8220;gx[D]v[n]&#8221; is a displaced pole grid where D is the approximate resolution in degrees and n is the grid version. The short name is generally g[D][n]. An example is gx1v7 or g17 for a grid of approximately 1-degree resolution.</li>
-<li>&#8220;tx[D]v[n]&#8221; is a tripole grid where D is the approximate resolution in degrees and n is the grid version.</li>
-</ul>
-</div>
 <div class="section" id="result-of-calling-create-newcase">
-<h3>2.1.3. Result of calling create_newcase<a class="headerlink" href="#result-of-calling-create-newcase" title="Permalink to this headline">¶</a></h3>
+<h3>3.1.1. Result of calling create_newcase<a class="headerlink" href="#result-of-calling-create-newcase" title="Permalink to this headline">¶</a></h3>
 <p>Following is a simple example of using <strong>create_newcase</strong>  using aliases for both compset and grid names.
 The complete example appears in the <a class="reference internal" href="faq/basics-a-basic-example.html#faq-basic-example"><span class="std std-ref">basic example</span></a>.
 In what follows, <code class="docutils literal"><span class="pre">$CIMEROOT</span></code> is the full pathname of the root directory of the CIME distribution.</p>
@@ -235,34 +141,40 @@ In what follows, <code class="docutils literal"><span class="pre">$CIMEROOT</spa
 <col width="91%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td>case.setup&#8221;</td>
+<tr class="row-odd"><td>case.setup</td>
 <td>Script used to set up the case (create the case.run script, the Macros file and user_nl_xxx files)</td>
 </tr>
-<tr class="row-even"><td>case.build&#8221;</td>
-<td>Script to build component and utility libraries and model executable.&#8221;</td>
+<tr class="row-even"><td>case.build</td>
+<td>Script to build component and utility libraries and model executable</td>
 </tr>
-<tr class="row-odd"><td>case.st_archive</td>
+<tr class="row-odd"><td>case.submit</td>
+<td>Script to submit the case to run using the machine&#8217;s batch queueing system</td>
+</tr>
+<tr class="row-even"><td>case.st_archive</td>
 <td>Script to perform short-term archiving of output data</td>
 </tr>
-<tr class="row-even"><td>case.lt_archive</td>
+<tr class="row-odd"><td>case.lt_archive</td>
 <td>Script to perform long-term archiving of output data</td>
 </tr>
-<tr class="row-odd"><td>xmlchange</td>
+<tr class="row-even"><td>xmlchange</td>
 <td>Script to modify values in the xml files</td>
 </tr>
-<tr class="row-even"><td>xmlquery</td>
+<tr class="row-odd"><td>xmlquery</td>
 <td>Script to query values in the xml files</td>
 </tr>
-<tr class="row-odd"><td>preview_namelists</td>
+<tr class="row-even"><td>preview_namelists</td>
 <td><p class="first">Script for users to see their component namelists in <code class="docutils literal"><span class="pre">$CASEROOT/CaseDocs</span></code> before running the model</p>
-<p><strong>NOTE</strong>: the namelists generated in <code class="docutils literal"><span class="pre">$CASEROOT/CaseDocs</span></code> should not be edited by the user</p>
-<p class="last">they are only there to document model behavior.&#8221;</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">the namelists generated in <code class="docutils literal"><span class="pre">$CASEROOT/CaseDocs</span></code> should not be edited by the user</p>
+</div>
+<p class="last">they are only there to document model behavior.</p>
 </td>
 </tr>
-<tr class="row-even"><td>check_input_data</td>
-<td>Script for checking  for various input datasets and moves them into place.&#8221;</td>
+<tr class="row-odd"><td>check_input_data</td>
+<td>Script for checking  for various input datasets and moves them into place.</td>
 </tr>
-<tr class="row-odd"><td>pelayout</td>
+<tr class="row-even"><td>pelayout</td>
 <td>Script to query and modify the NTASKS, ROOTPE, and NTHRDS for each component model.  This a convenience script that can be used in place of xmlchange and xmlquery.</td>
 </tr>
 </tbody>
@@ -296,7 +208,7 @@ You must run the case.build command after changing this file.</p>
 </tr>
 <tr class="row-even"><td>env_mach_pes.xml</td>
 <td><p class="first">Sets component machine-specific processor layout (see <a class="reference internal" href="customizing-a-case.html#changing-the-pe-layout"><span class="std std-ref">changing pe layout</span></a> ).</p>
-<p class="last">The settings in this are critical to a well-load-balanced simulation (see <a class="reference internal" href="optimizing-processor-layout.html#optimizing-processor-layout"><span class="std std-ref">load balancing</span></a>).&#8221;</p>
+<p class="last">The settings in this are critical to a well-load-balanced simulation (see <a class="reference internal" href="optimizing-processor-layout.html#optimizing-processor-layout"><span class="std std-ref">load balancing</span></a>).</p>
 </td>
 </tr>
 <tr class="row-odd"><td>env_run.xml</td>
@@ -321,7 +233,7 @@ You must run the case.build command after changing this file.</p>
 <tbody valign="top">
 <tr class="row-odd"><td>SourceMods</td>
 <td>Top-level directory containing sub-directories for each compset component where
-you can place modified source code for that component.&#8221;</td>
+you can place modified source code for that component.</td>
 </tr>
 </tbody>
 </table>
@@ -400,13 +312,13 @@ Locking these files prevents users from changing variables after they have been 
           <a href="../genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="setting-up-a-case.html" title="3. Setting up a Case"
+          <a href="setting-up-a-case.html" title="4. Setting up a Case"
              >next</a> |</li>
         <li class="right" >
-          <a href="introduction-and-overview.html" title="1. Introduction and Overview"
+          <a href="case-basics.html" title="2. The basics of CIME cases"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">on  documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" >CIME User&#8217;s Guide Part 1: Basic Use</a> &#187;</li> 
+          <li class="nav-item nav-item-1"><a href="index.html" >CIME User&#8217;s Guide Part 1: Basic Usage</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

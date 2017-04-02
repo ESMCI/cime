@@ -6,11 +6,13 @@ Building a Case
 
 The following summarizes details of building the model exectuable.
 
+.. _building-the-model:
+
 ========================
 Calling **case.build**
 ========================
 
-After calling **case.setup**, you can build the model executable by running case.build. Running this will:
+After calling **case.setup**, you can build the model executable by running **case.build**. Running this will:
 
 1. Create the component namelists in ``$RUNDIR`` and ``$CASEROOT/CaseDocs``.
 2. Create the necessary utility libraries for ``mct``, ``pio``, ``gptl`` and ``csm_share``.
@@ -26,7 +28,7 @@ However, since the CIME scripts provide you with a great deal of flexibility in 
 
 The ``env_build.xml`` variables control various aspects of building the model executable.
 Most of the variables should not be modified by users.
-Among the variables that you can modify are ``BUILD_THREADED``, ``DEBUG`` and ``GMAKE_J``.
+Among the variables that you can modify are ``$BUILD_THREADED``, ``$DEBUG`` and ``$GMAKE_J``.
 The best way to see what xml variables are in your ``$CASEROOT`` is to use the ``xmlquery`` command.
 To see its usage, simply call
 ::
@@ -58,21 +60,7 @@ Special include modules are also placed in ``lib/include``. The model executable
 Component namelists, component logs, output datasets, and restart files are placed in ``$RUNDIR``.
 It is important to note that ``$RUNDIR`` and ``$EXEROOT`` are independent variables which are set ``$CASEROOT/env_run.xml``.
 
-All active and data components use input datasets.
-A local disk needs ``$DIN_LOC_ROOT`` to be populated with input data in order to run CIME and the CIME complaint prognostic components.
-Input data is provided as part of the CIME release via data from the subversion input data server.
-Data is downloaded from the server on an as needed basis determined by the case, data may already exists in the default local filesystem input data area as specified by ``$DIN_LOC_ROOT`` (see below).
-There is an extensive amount of input data available and it can take significant space on a system, it is recommended that users share a common ``$DIN_LOC_ROOT`` directory on each system if possible.
-
-Input data is handled by the build process as follows:
-
-- The buildnml scripts in ``Buildconf/`` create listings of required component input datasets in the ``Buildconf/$component.input_data_list`` files.
-
-- ``check_input_data`` (called by ``case.build``) checks for the presence of the required input data files in the root directory ``$DIN_LOC_ROOT``. If all required data sets are found on local disk, then the build can proceed.
-
-- If any of the required input data sets are not found locally, the build script will abort and the files that are missing will be listed. At this point, you must obtain the required data from the input data server using check_input_data with the -export option.
-
-The ``env_run.xml`` variables ``DIN_LOC_ROOT`` and ``DIN_LOC_ROOT_CLMFORC`` determine where you should expect input data to reside on local disk. See the `input data variables <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_.
+.. _rebuilding-the-model:
 
 ========================
 Rebuilding the model
@@ -86,7 +74,7 @@ If either ``env_build.xml`` or ``Macros.make`` has been modified, and/or if code
    > cd $CASEROOT
    > ./case.build --clean
 
-If you have ONLY modified the PE layout in ``env_mach_pes.xml`` (see `setting the PE layout <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_) then it's possible that a clean is not required.
+If you have ONLY modified the PE layout in ``env_mach_pes.xml``,  then it's possible that a clean is not required.
 ::
 
    > cd $CASEROOT
@@ -114,4 +102,28 @@ You are responsible for manually rebuilding the model when needed. If there is a
 
 ``case.build --clean`` will clean all of the model components but not the support libraries such as mct and gptl.
 Use ``case.build --clean-all`` to clean everything associated with the build.
-You can also clean a specific component only using ``case.build --clean compname`` where compname is the name of the component you want to clean (eg 'atm', 'clm', 'pio' ...) see ``case.build --help `` for details.
+You can also clean a specific component only using ``case.build --clean compname`` where compname is the name of the component you want to clean (eg 'atm', 'clm', 'pio' ...) see ``case.build --help`` for details.
+
+.. _inputdata:
+
+==========
+Input Data
+==========
+
+All active and data components use input datasets.
+A local disk needs the directory tree specified by the xml variable ``$DIN_LOC_ROOT`` to be populated with input data in order to run CIME and the CIME complaint active components.
+Input data is provided as part of the CIME release via data from a subversion input data server.
+Data is downloaded from the server on an as needed basis determined by the case, data may already exists in the default local filesystem input data area as specified by ``$DIN_LOC_ROOT`` (see below).
+There is an extensive amount of input data available and it can take significant space on a system, it is recommended that users share a common ``$DIN_LOC_ROOT`` directory on each system if possible.
+
+Input data is handled by the build process as follows:
+
+- The ``buildnml`` scripts in the various component ``cime_config`` directories create listings of required component input datasets in the ``Buildconf/$component.input_data_list`` files.
+
+- ``check_input_data`` (which is called by ``case.build``) checks for the presence of the required input data files in the root directory ``$DIN_LOC_ROOT``. 
+
+  - If all required data sets are found on local disk, then the build can proceed.
+
+  - If any of the required input data sets are not found locally, the files that are missing will be listed. At this point, you must obtain the required data from the input data server using check_input_data with the -export option.
+
+The ``env_run.xml`` variables ``$DIN_LOC_ROOT`` and ``$DIN_LOC_ROOT_CLMFORC`` determine where you should expect input data to reside on local disk. 

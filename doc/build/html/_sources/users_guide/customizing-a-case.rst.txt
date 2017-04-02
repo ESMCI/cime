@@ -234,7 +234,7 @@ The namelist file for DROF is ``drof_in`` (or ``drof_in_NNN`` for multiple insta
   3. modify the ``user_drof.streams.txt.*`` file.
 
 =================================================================
-Customizing CESM prognostic component-specific namelist settings
+Customizing CESM active component-specific namelist settings
 =================================================================
 
 ---
@@ -306,6 +306,6 @@ See `CISM namelist variables <http://www.cesm.ucar.edu/models/cesm2.0/external-l
 There are also some run-time settings set via ``env_run.xml``, as documented in `CISM run time variables <http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_ - in particular, the model resolution, set via ``CISM_GRID``. The value of ``CISM_GRID`` determines the default value of a number of other namelist parameters.
 
 ================================================================
-Customizing ACME prognostic component-specific namelist settings
+Customizing ACME active component-specific namelist settings
 ================================================================
 
