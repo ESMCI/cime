@@ -15,29 +15,42 @@ CIME User's Guide Part 1: Basic Use
    :numbered:
 
    introduction-and-overview.rst
+   case-basics.rst
    create-a-case.rst
    setting-up-a-case.rst
    building-a-case.rst
    running-a-case.rst
    customizing-a-case.rst
-   optimizing-processor-layout.rst
-   porting-cime.rst
+   cloning-a-case.rst
+   troubleshooting.rst
 
 .. _users-guide2:
 
+####################################################
+CIME User's Guide Part 2: Porting and CIME internals
+####################################################
+
+.. toctree::
+   :maxdepth: 3
+   :numbered:
+
+   cime-internals.rst
+   porting-cime.rst
+   optimizing-processor-layout.rst
+
+.. _users-guide3:
+
 #########################################
-CIME User's Guide Part 2: Advanced CIME
+CIME User's Guide Part 3: Advanced CIME
 #########################################
 
 .. toctree::
    :maxdepth: 3
    :numbered:
 
-   cloning-a-case.rst
    multi-instance.rst
    testing.rst
    adding-cases.rst
-   troubleshooting.rst
    faq/faq.rst
 
 Indices and tables
