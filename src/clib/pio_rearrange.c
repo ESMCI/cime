@@ -1100,7 +1100,8 @@ int determine_fill(iosystem_desc_t *ios, io_desc_t *iodesc, const int *gdimlen,
     int mpierr; /* Return code from MPI calls. */
 
     /* Check inputs. */
-    pioassert(ios && iodesc, "invalid input", __FILE__, __LINE__);
+    pioassert(ios && iodesc && gdimlen, "invalid input",
+              __FILE__, __LINE__);
 
     /* Determine size of data space. */
     for (int i = 0; i < iodesc->ndims; i++)
