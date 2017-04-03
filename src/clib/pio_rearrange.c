@@ -26,8 +26,8 @@ void idx_to_dim_list(int ndims, const int *gdimlen, PIO_Offset idx,
                      PIO_Offset *dim_list)
 {
     /* Check inputs. */
-    pioassert(gdimlen && dim_list && idx >= -1, "invalid input", __FILE__,
-              __LINE__);
+    pioassert(ndims >= 0 && gdimlen && idx >= -1 && dim_list, "invalid input",
+              __FILE__, __LINE__);
     LOG((2, "idx_to_dim_list ndims = %d idx = %d", ndims, idx));
 
     /* Easiest to start from the right and move left. */
