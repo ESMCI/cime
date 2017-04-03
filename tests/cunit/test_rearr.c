@@ -819,16 +819,15 @@ int test_box_rearrange_create_2(MPI_Comm test_comm, int my_rank)
         if (iodesc->rcount[i] != my_rank ? 0 : 1)
             return ERR_WRONG;
             
-            /* rfrom only matters if there is a non-zero count. */
-            if (iodesc->rcount[i])
-                if (iodesc->rfrom[i] != i ? 1 : 0)
-                    return ERR_WRONG;
+        /* rfrom only matters if there is a non-zero count. */
+        if (iodesc->rcount[i])
+            if (iodesc->rfrom[i] != i ? 1 : 0)
+                return ERR_WRONG;
             
-            /* rindex is only allocated where there is a non-zero count. */
-            if (iodesc->rcount[i])
-                if (iodesc->rindex[i] != 0)
-                    return ERR_WRONG;
-        }
+        /* rindex is only allocated where there is a non-zero count. */
+        if (iodesc->rcount[i])
+            if (iodesc->rindex[i] != 0)
+                return ERR_WRONG;
     }
 
     /* Free resources allocated in compute_counts(). */
@@ -1150,77 +1149,77 @@ int main(int argc, char **argv)
         if ((ret = PIOc_Init_Intracomm(test_comm, TARGET_NTASKS, 1, 0, PIO_REARR_BOX, &iosysid)))
             return ret;
         
-        /* printf("%d running idx_to_dim_list tests\n", my_rank); */
-        /* if ((ret = test_idx_to_dim_list())) */
-        /*     return ret; */
+        printf("%d running idx_to_dim_list tests\n", my_rank);
+        if ((ret = test_idx_to_dim_list()))
+            return ret;
 
-        /* printf("%d running coord_to_lindex tests\n", my_rank); */
-        /* if ((ret = test_coord_to_lindex())) */
-        /*     return ret; */
+        printf("%d running coord_to_lindex tests\n", my_rank);
+        if ((ret = test_coord_to_lindex()))
+            return ret;
 
-        /* printf("%d running compute_maxIObuffersize tests\n", my_rank); */
-        /* if ((ret = test_compute_maxIObuffersize(test_comm, my_rank))) */
-        /*     return ret; */
+        printf("%d running compute_maxIObuffersize tests\n", my_rank);
+        if ((ret = test_compute_maxIObuffersize(test_comm, my_rank)))
+            return ret;
 
-        /* printf("%d running determine_fill\n", my_rank); */
-        /* if ((ret = test_determine_fill(test_comm))) */
-        /*     return ret; */
+        printf("%d running determine_fill\n", my_rank);
+        if ((ret = test_determine_fill(test_comm)))
+            return ret;
 
-        /* printf("%d running tests for expand_region()\n", my_rank); */
-        /* if ((ret = test_expand_region())) */
-        /*     return ret; */
+        printf("%d running tests for expand_region()\n", my_rank);
+        if ((ret = test_expand_region()))
+            return ret;
 
-        /* printf("%d running tests for find_region()\n", my_rank); */
-        /* if ((ret = test_find_region())) */
-        /*     return ret; */
+        printf("%d running tests for find_region()\n", my_rank);
+        if ((ret = test_find_region()))
+            return ret;
 
-        /* printf("%d running tests for get_regions()\n", my_rank); */
-        /* if ((ret = test_get_regions(my_rank))) */
-        /*     return ret; */
+        printf("%d running tests for get_regions()\n", my_rank);
+        if ((ret = test_get_regions(my_rank)))
+            return ret;
 
-        /* printf("%d running create_mpi_datatypes tests\n", my_rank); */
-        /* if ((ret = test_create_mpi_datatypes())) */
-        /*     return ret; */
+        printf("%d running create_mpi_datatypes tests\n", my_rank);
+        if ((ret = test_create_mpi_datatypes()))
+            return ret;
 
-        /* printf("%d running define_iodesc_datatypes tests\n", my_rank); */
-        /* if ((ret = test_define_iodesc_datatypes())) */
-        /*     return ret; */
+        printf("%d running define_iodesc_datatypes tests\n", my_rank);
+        if ((ret = test_define_iodesc_datatypes()))
+            return ret;
 
-        /* printf("%d running rearranger opts tests 1\n", my_rank); */
-        /* if ((ret = test_rearranger_opts1(iosysid))) */
-        /*     return ret; */
+        printf("%d running rearranger opts tests 1\n", my_rank);
+        if ((ret = test_rearranger_opts1(iosysid)))
+            return ret;
 
-        /* printf("%d running compare_offsets tests\n", my_rank); */
-        /* if ((ret = test_compare_offsets())) */
-        /*     return ret; */
+        printf("%d running compare_offsets tests\n", my_rank);
+        if ((ret = test_compare_offsets()))
+            return ret;
 
-        /* printf("%d running compute_counts tests for box rearranger\n", my_rank); */
-        /* if ((ret = test_compute_counts(test_comm, my_rank))) */
-        /*     return ret; */
+        printf("%d running compute_counts tests for box rearranger\n", my_rank);
+        if ((ret = test_compute_counts(test_comm, my_rank)))
+            return ret;
 
-        /* printf("%d running test for init_decomp\n", my_rank); */
-        /* if ((ret = test_init_decomp(iosysid, test_comm, my_rank))) */
-        /*     return ret; */
+        printf("%d running test for init_decomp\n", my_rank);
+        if ((ret = test_init_decomp(iosysid, test_comm, my_rank)))
+            return ret;
 
-        /* printf("%d running tests for box_rearrange_create\n", my_rank); */
-        /* if ((ret = test_box_rearrange_create(test_comm, my_rank))) */
-        /*     return ret; */
+        printf("%d running tests for box_rearrange_create\n", my_rank);
+        if ((ret = test_box_rearrange_create(test_comm, my_rank)))
+            return ret;
 
         printf("%d running more tests for box_rearrange_create\n", my_rank);
         if ((ret = test_box_rearrange_create_2(test_comm, my_rank)))
             return ret;
 
-        /* printf("%d running tests for default_subset_partition\n", my_rank); */
-        /* if ((ret = test_default_subset_partition(test_comm, my_rank))) */
-        /*     return ret; */
+        printf("%d running tests for default_subset_partition\n", my_rank);
+        if ((ret = test_default_subset_partition(test_comm, my_rank)))
+            return ret;
 
-        /* printf("%d running tests for rearrange_comp2io\n", my_rank); */
-        /* if ((ret = test_rearrange_comp2io(test_comm, my_rank))) */
-        /*     return ret; */
+        printf("%d running tests for rearrange_comp2io\n", my_rank);
+        if ((ret = test_rearrange_comp2io(test_comm, my_rank)))
+            return ret;
 
-        /* printf("%d running tests for rearrange_io2comp\n", my_rank); */
-        /* if ((ret = test_rearrange_io2comp(test_comm, my_rank))) */
-        /*     return ret; */
+        printf("%d running tests for rearrange_io2comp\n", my_rank);
+        if ((ret = test_rearrange_io2comp(test_comm, my_rank)))
+            return ret;
 
         /* Finalize PIO system. */
         if ((ret = PIOc_finalize(iosysid)))
