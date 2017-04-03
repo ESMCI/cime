@@ -26,8 +26,8 @@ void idx_to_dim_list(int ndims, const int *gdimlen, PIO_Offset idx,
                      PIO_Offset *dim_list)
 {
     /* Check inputs. */
-    pioassert(gdimlen && dim_list && idx >= -1, "invalid input", __FILE__,
-              __LINE__);
+    pioassert(ndims >= 0 && gdimlen && idx >= -1 && dim_list, "invalid input",
+              __FILE__, __LINE__);
     LOG((2, "idx_to_dim_list ndims = %d idx = %d", ndims, idx));
 
     /* Easiest to start from the right and move left. */
@@ -255,13 +255,13 @@ int compute_maxIObuffersize(MPI_Comm io_comm, io_desc_t *iodesc)
  * @param basetype The MPI type of data (MPI_INT, etc.).
  * @param msgcnt This is the number of MPI types that are created.
  * @param mindex An array (length numinds) of indexes into the data
- * array from the comp map.
+ * array from the comp map. Will be NULL when count is zero.
  * @param mcount An array (length msgcnt) with the number of indexes
  * to be put on each mpi message/task.
  * @param mfrom A pointer to the previous structure in the read/write
  * list. This is always NULL for the BOX rearranger.
  * @param mtype pointer to an array (length msgcnt) which gets the
- * created datatypes.
+ * created datatypes. Will be NULL when iodesc->nrecvs == 0.
  * @returns 0 on success, error code otherwise.
  */
 int create_mpi_datatypes(MPI_Datatype basetype, int msgcnt,
@@ -778,7 +778,7 @@ int rearrange_comp2io(iosystem_desc_t *ios, io_desc_t *iodesc, void *sbuf,
 #endif
 
     /* Caller must provide these. */
-    pioassert(iodesc && iodesc && nvars > 0, "invalid input", __FILE__, __LINE__);
+    pioassert(ios && iodesc && nvars > 0, "invalid input", __FILE__, __LINE__);
 
     LOG((1, "rearrange_comp2io nvars = %d iodesc->rearranger = %d", nvars,
          iodesc->rearranger));
@@ -969,19 +969,11 @@ int rearrange_io2comp(iosystem_desc_t *ios, io_desc_t *iodesc, void *sbuf,
     MPI_Comm mycomm;
     int ntasks;
     int niotasks;
-    int *scount = iodesc->scount;
-    int *sendcounts;
-    int *recvcounts;
-    int *sdispls;
-    int *rdispls;
-    MPI_Datatype *sendtypes;
-    MPI_Datatype *recvtypes;
-    int i;
     int mpierr; /* Return code from MPI calls. */
     int ret;
 
     /* Check inputs. */
-    pioassert(iodesc, "invalid input", __FILE__, __LINE__);
+    pioassert(ios && iodesc, "invalid input", __FILE__, __LINE__);
 
 #ifdef TIMING
     GPTLstart("PIO:rearrange_io2comp");
@@ -997,7 +989,7 @@ int rearrange_io2comp(iosystem_desc_t *ios, io_desc_t *iodesc, void *sbuf,
     else
     {
         mycomm = iodesc->subset_comm;
-        niotasks=1;
+        niotasks = 1;
     }
     LOG((3, "niotasks = %d", niotasks));
 
@@ -1011,34 +1003,30 @@ int rearrange_io2comp(iosystem_desc_t *ios, io_desc_t *iodesc, void *sbuf,
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
     /* Allocate arrays needed by the pio_swapm() function. */
-    if (!(sendcounts = calloc(ntasks, sizeof(int))))
-        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
-
-    if (!(recvcounts = calloc(ntasks, sizeof(int))))
-        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
-
-    if (!(sdispls = calloc(ntasks, sizeof(int))))
-        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
-
-    if (!(rdispls = calloc(ntasks, sizeof(int))))
-        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
-
-    if (!(sendtypes = malloc(ntasks * sizeof(MPI_Datatype))))
-        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
-
-    if (!(recvtypes = malloc(ntasks * sizeof(MPI_Datatype))))
-        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+    int sendcounts[ntasks];
+    int recvcounts[ntasks];
+    int sdispls[ntasks];
+    int rdispls[ntasks];
+    MPI_Datatype sendtypes[ntasks];
+    MPI_Datatype recvtypes[ntasks];
 
     /* Initialize arrays. */
-    for (i = 0; i < ntasks; i++)
+    for (int i = 0; i < ntasks; i++)
     {
+        sendcounts[i] = 0;
+        recvcounts[i] = 0;
+        sdispls[i] = 0;
+        rdispls[i] = 0;
         sendtypes[i] = PIO_DATATYPE_NULL;
         recvtypes[i] = PIO_DATATYPE_NULL;
     }
 
-    /* In IO tasks ??? */
+    /* In IO tasks set up sendcounts/sendtypes for pio_swapm() call
+     * below. */
     if (ios->ioproc)
-        for (i = 0; i < iodesc->nrecvs; i++)
+    {
+        for (int i = 0; i < iodesc->nrecvs; i++)
+        {
             if (iodesc->rtype[i] != PIO_DATATYPE_NULL)
             {
                 if (iodesc->rearranger == PIO_REARR_SUBSET)
@@ -1055,18 +1043,21 @@ int rearrange_io2comp(iosystem_desc_t *ios, io_desc_t *iodesc, void *sbuf,
                     sendtypes[iodesc->rfrom[i]] = iodesc->rtype[i];
                 }
             }
+        }
+    }
 
     /* In the box rearranger each comp task may communicate with
      * multiple IO tasks here we are setting the count and data type
      * of the communication of a given compute task with each io
      * task. */
-    for (i = 0; i < niotasks; i++)
+    for (int i = 0; i < niotasks; i++)
     {
         int io_comprank = ios->ioranks[i];
+
         if (iodesc->rearranger == PIO_REARR_SUBSET)
             io_comprank = 0;
 
-        if (scount[i] > 0 && iodesc->stype[i] != PIO_DATATYPE_NULL)
+        if (iodesc->scount[i] > 0 && iodesc->stype[i] != PIO_DATATYPE_NULL)
         {
             recvcounts[io_comprank] = 1;
             recvtypes[io_comprank] = iodesc->stype[i];
@@ -1080,14 +1071,6 @@ int rearrange_io2comp(iosystem_desc_t *ios, io_desc_t *iodesc, void *sbuf,
                          iodesc->rearr_opts.io2comp.max_pend_req)))
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
-    /* Release memory. */
-    free(sendcounts);
-    free(recvcounts);
-    free(sdispls);
-    free(rdispls);
-    free(sendtypes);
-    free(recvtypes);
-
 #ifdef TIMING
     GPTLstop("PIO:rearrange_io2comp");
 #endif
@@ -1096,10 +1079,10 @@ int rearrange_io2comp(iosystem_desc_t *ios, io_desc_t *iodesc, void *sbuf,
 }
 
 /**
- * Determine whether fill values are needed. If we have enough data to
- * completely fill the variable, then fill is not needed. This
- * function compares how much data we have to how much data is in a
- * record (or non-record var).
+ * Determine whether fill values are needed. This function compares
+ * how much data we have to how much data is in a record (or
+ * non-record var). If we have enough data to completely fill the
+ * variable, then fill is not needed.
  *
  * @param ios pointer to the iosystem_desc_t struct.
  * @param iodesc a pointer to the io_desc_t struct.
@@ -1117,27 +1100,20 @@ int determine_fill(iosystem_desc_t *ios, io_desc_t *iodesc, const int *gdimlen,
     int mpierr; /* Return code from MPI calls. */
 
     /* Check inputs. */
-    pioassert(ios && iodesc, "invalid input", __FILE__, __LINE__);
+    pioassert(ios && iodesc && gdimlen && compmap, "invalid input",
+              __FILE__, __LINE__);
 
     /* Determine size of data space. */
     for (int i = 0; i < iodesc->ndims; i++)
-    {
         totalgridsize *= gdimlen[i];
-        LOG((3, "gdimlen[%d] = %d", i, gdimlen[i]));
-    }
 
     /* Determine how many values we have locally. */
     if (iodesc->rearranger == PIO_REARR_SUBSET)
         totalllen = iodesc->llen;
     else
-    {
         for (int i = 0; i < iodesc->ndof; i++)
-        {
-            LOG((3, "compmap[%d] = %d", i, compmap[i]));
             if (compmap[i] > 0)
                 totalllen++;
-        }
-    }
 
     /* Add results accross communicator. */
     LOG((2, "determine_fill before allreduce totalllen = %d totalgridsize = %d",
@@ -1149,10 +1125,7 @@ int determine_fill(iosystem_desc_t *ios, io_desc_t *iodesc, const int *gdimlen,
 
     /* If the total size of the data provided to be written is < the
      * total data size then we need fill values. */
-    if (totalllen < totalgridsize)
-        iodesc->needsfill = true;
-    else
-        iodesc->needsfill = false;
+    iodesc->needsfill = totalllen < totalgridsize;
 
     /*  TURN OFF FILL for timing test
         iodesc->needsfill=false; */

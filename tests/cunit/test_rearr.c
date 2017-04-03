@@ -368,7 +368,7 @@ int test_determine_fill(MPI_Comm test_comm)
     iosystem_desc_t *ios;
     io_desc_t *iodesc;
     int gsize[1] = {4};
-    PIO_Offset *compmap = NULL;
+    PIO_Offset compmap[1] = {1};
     int ret;
 
     /* Initialize ios. */
@@ -818,19 +818,12 @@ int test_box_rearrange_create_2(MPI_Comm test_comm, int my_rank)
         /* rcount is 1 for rank 0, 0 on other tasks. */
         if (iodesc->rcount[i] != my_rank ? 0 : 1)
             return ERR_WRONG;
-        
-        /* rfrom is 0 everywhere, except task 0, array elemnt 1. */
-        if (my_rank == 0 && i == 1)
-        {
-            if (iodesc->rfrom[i] != 1)
+            
+        /* rfrom only matters if there is a non-zero count. */
+        if (iodesc->rcount[i])
+            if (iodesc->rfrom[i] != i ? 1 : 0)
                 return ERR_WRONG;
-        }
-        else
-        {
-            if (iodesc->rfrom[i] != 0)
-                return ERR_WRONG;
-        }
-        
+            
         /* rindex is only allocated where there is a non-zero count. */
         if (iodesc->rcount[i])
             if (iodesc->rindex[i] != 0)
