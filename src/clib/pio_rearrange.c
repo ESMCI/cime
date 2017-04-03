@@ -255,13 +255,13 @@ int compute_maxIObuffersize(MPI_Comm io_comm, io_desc_t *iodesc)
  * @param basetype The MPI type of data (MPI_INT, etc.).
  * @param msgcnt This is the number of MPI types that are created.
  * @param mindex An array (length numinds) of indexes into the data
- * array from the comp map.
+ * array from the comp map. Will be NULL when count is zero.
  * @param mcount An array (length msgcnt) with the number of indexes
  * to be put on each mpi message/task.
  * @param mfrom A pointer to the previous structure in the read/write
  * list. This is always NULL for the BOX rearranger.
  * @param mtype pointer to an array (length msgcnt) which gets the
- * created datatypes.
+ * created datatypes. Will be NULL when iodesc->nrecvs == 0.
  * @returns 0 on success, error code otherwise.
  */
 int create_mpi_datatypes(MPI_Datatype basetype, int msgcnt,
@@ -778,7 +778,7 @@ int rearrange_comp2io(iosystem_desc_t *ios, io_desc_t *iodesc, void *sbuf,
 #endif
 
     /* Caller must provide these. */
-    pioassert(iodesc && iodesc && nvars > 0, "invalid input", __FILE__, __LINE__);
+    pioassert(ios && iodesc && nvars > 0, "invalid input", __FILE__, __LINE__);
 
     LOG((1, "rearrange_comp2io nvars = %d iodesc->rearranger = %d", nvars,
          iodesc->rearranger));
@@ -973,7 +973,7 @@ int rearrange_io2comp(iosystem_desc_t *ios, io_desc_t *iodesc, void *sbuf,
     int ret;
 
     /* Check inputs. */
-    pioassert(iodesc, "invalid input", __FILE__, __LINE__);
+    pioassert(ios && iodesc, "invalid input", __FILE__, __LINE__);
 
 #ifdef TIMING
     GPTLstart("PIO:rearrange_io2comp");
