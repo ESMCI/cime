@@ -540,14 +540,11 @@ int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc,
         return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
     /* iodesc->scount is the number of data elements sent to each IO
-     * task from the current compute task. */
+     * task from the current compute task. dest_ioindex[i] may be
+     * -1. */
     for (int i = 0; i < iodesc->ndof; i++)
-    {
         if (dest_ioindex[i] >= 0)
             (iodesc->scount[dest_ioproc[i]])++;
-        LOG((3, "i = %d dest_ioproc[%d] = %d iodesc->scount[dest_ioproc[i]] = %d",
-             i, i, dest_ioproc[i], iodesc->scount[dest_ioproc[i]]));
-    }
 
     /* Initialize arrays used in swapm call. */
     for (int i = 0; i < ntasks; i++)
