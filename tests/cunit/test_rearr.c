@@ -813,21 +813,24 @@ int test_box_rearrange_create_2(MPI_Comm test_comm, int my_rank)
             return ERR_WRONG;
     }
 
-    for (int i = 0; i < iodesc->ndof; i++)
+    if (my_rank == 0)
     {
-        /* rcount is 1 for rank 0, 0 on other tasks. */
-        if (my_rank == 0 && iodesc->rcount[i] != 1)
-            return ERR_WRONG;
-        
-        /* rfrom only matters if there is a non-zero count. */
-        if (iodesc->rcount[i])
-            if (iodesc->rfrom[i] != i ? 1 : 0)
+        for (int i = 0; i < iodesc->ndof; i++)
+        {
+            /* rcount is 1 for rank 0, 0 on other tasks. */
+            if (iodesc->rcount[i] != 1)
                 return ERR_WRONG;
-        
-        /* rindex is only allocated where there is a non-zero count. */
-        if (iodesc->rcount[i])
-            if (iodesc->rindex[i] != 0)
-                return ERR_WRONG;
+            
+            /* rfrom only matters if there is a non-zero count. */
+            if (iodesc->rcount[i])
+                if (iodesc->rfrom[i] != i ? 1 : 0)
+                    return ERR_WRONG;
+            
+            /* rindex is only allocated where there is a non-zero count. */
+            if (iodesc->rcount[i])
+                if (iodesc->rindex[i] != 0)
+                    return ERR_WRONG;
+        }
     }
 
     /* Free resources allocated in compute_counts(). */
