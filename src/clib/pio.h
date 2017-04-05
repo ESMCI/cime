@@ -40,6 +40,9 @@
 /** The maximum number of variables allowed in a netCDF file. */
 #define PIO_MAX_VARS NC_MAX_VARS
 
+/** The maximum number of dimensions allowed in a netCDF file. */
+#define PIO_MAX_DIMS NC_MAX_DIMS
+
 /** Pass this to PIOc_set_iosystem_error_handling() as the iosysid in
  * order to set default error handling. */
 #define PIO_DEFAULT (-1)
