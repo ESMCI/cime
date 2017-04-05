@@ -1405,7 +1405,7 @@ int test_nc4(int iosysid, int num_flavors, int *flavor, int my_rank)
 
 /* This function is part of test_scalar(). It tests the contents of
  * the scalar var. */
-int check_scalar_var(int ncid, int varid)
+int check_scalar_var(int ncid, int varid, int flavor)
 {
     char var_name_in[PIO_MAX_NAME + 1];
     int var_type_in;
@@ -1428,20 +1428,24 @@ int check_scalar_var(int ncid, int varid)
         return ret;
     printf("val_in = %d\n", val_in);
 
-    /* Is the value correct? */
-    /* if (val_in != TEST_VAL_42) */
-    /*     return ERR_WRONG; */
+    /* Is the value correct? PnetCDF not working with scalars; this is
+     * under investigation. */
+    if (flavor != PIO_IOTYPE_PNETCDF && val_in != TEST_VAL_42)
+        return ERR_WRONG;
 
     return 0;
 }
 
 /* Test scalar vars. */
-int test_scalar(int iosysid, int num_flavors, int *flavor, int my_rank, int async)
+int test_scalar(int iosysid, int num_flavors, int *flavor, int my_rank, int async,
+                MPI_Comm test_comm)
 {
     int ncid;    /* The ncid of the netCDF file. */
-    int varid;    /* The ID of the netCDF varable. */
-    int ret;    /* Return code. */
+    int varid;   /* The ID of the netCDF varable. */
+    int ret;     /* Return code. */
 
+    /* Use netCDF classic to create a file with a scalar var, then set
+     * and read the value. */
     if (my_rank == 0)
     {
         char test_file[] = "netcdf_test.nc";
@@ -1469,6 +1473,38 @@ int test_scalar(int iosysid, int num_flavors, int *flavor, int my_rank, int asyn
         if (test_val_in != test_val)
             return ERR_WRONG;
         if ((ret = nc_close(ncid)))
+            return ret;
+    }
+
+    /* Use pnetCDF to create a file with a scalar var, then set and
+     * read the value. */
+    {
+        char test_file[] = "pnetcdf_test.nc";
+        int test_val = TEST_VAL_42;
+        int test_val_in;
+
+        if ((ret = ncmpi_create(test_comm, test_file, NC_CLOBBER, MPI_INFO_NULL, &ncid)))
+            return ret;
+        if ((ret = ncmpi_def_var(ncid, VAR_NAME, NC_INT, 0, NULL, &varid)))
+            return ret;
+        if ((ret = ncmpi_enddef(ncid)))
+            return ret;
+        if ((ret = ncmpi_put_var_int_all(ncid, varid, &test_val)))
+            return ret;
+        if ((ret = ncmpi_close(ncid)))
+            return ret;
+        if ((ret = ncmpi_open(test_comm, test_file, NC_NOWRITE, MPI_INFO_NULL, &ncid)))
+            return ret;
+        if ((ret = ncmpi_get_var_int_all(ncid, varid, &test_val_in)))
+            return ret;
+        if (test_val_in != test_val)
+            return ERR_WRONG;
+        printf("about to call ncmpi_get_vars_int\n");
+        /* ret = ncmpi_get_vars_int(ncid, varid, NULL, NULL, NULL, &test_val_in); */
+        printf("ret = %d test_val_in = %d\n", ret, test_val_in);
+        /* if (test_val_in != test_val) */
+        /*     return ERR_WRONG; */
+        if ((ret = ncmpi_close(ncid)))
             return ret;
     }
 
@@ -1503,7 +1539,7 @@ int test_scalar(int iosysid, int num_flavors, int *flavor, int my_rank, int asyn
             ERR(ret);
 
         /* Check the scalar var. */
-        if ((ret = check_scalar_var(ncid, varid)))
+        if ((ret = check_scalar_var(ncid, varid, flavor[fmt])))
             ERR(ret);
 
         /* Close the netCDF file. */
@@ -1516,7 +1552,7 @@ int test_scalar(int iosysid, int num_flavors, int *flavor, int my_rank, int asyn
             ERR(ret);
 
         /* Check the scalar var again. */
-        if ((ret = check_scalar_var(ncid, varid)))
+        if ((ret = check_scalar_var(ncid, varid, flavor[fmt])))
             ERR(ret);
 
         /* Close the netCDF file. */
@@ -1975,78 +2011,78 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
     sprintf(nc_filename, "decomp_%d.nc", my_rank);
 
     /* Check iotypes. */
-    /* printf("%d Testing iotypes. async = %d\n", my_rank, async); */
-    /* if ((ret = test_iotypes(my_rank))) */
-    /*     ERR(ret); */
+    printf("%d Testing iotypes. async = %d\n", my_rank, async);
+    if ((ret = test_iotypes(my_rank)))
+        ERR(ret);
 
-    /* /\* Test file deletes. *\/ */
-    /* printf("%d Testing deletefile. async = %d\n", my_rank, async); */
-    /* if ((ret = test_deletefile(iosysid, num_flavors, flavor, my_rank))) */
-    /*     return ret; */
+    /* Test file deletes. */
+    printf("%d Testing deletefile. async = %d\n", my_rank, async);
+    if ((ret = test_deletefile(iosysid, num_flavors, flavor, my_rank)))
+        return ret;
 
-    /* /\* Test file stuff. *\/ */
-    /* printf("%d Testing file creation. async = %d\n", my_rank, async); */
-    /* if ((ret = test_files(iosysid, num_flavors, flavor, my_rank))) */
-    /*     return ret; */
+    /* Test file stuff. */
+    printf("%d Testing file creation. async = %d\n", my_rank, async);
+    if ((ret = test_files(iosysid, num_flavors, flavor, my_rank)))
+        return ret;
 
-    /* /\* Test some misc stuff. *\/ */
-    /* if ((ret = test_malloc_iodesc2(iosysid, my_rank))) */
-    /*     return ret; */
+    /* Test some misc stuff. */
+    if ((ret = test_malloc_iodesc2(iosysid, my_rank)))
+        return ret;
 
     /* Test decomposition internal functions. */
     if (!async)
         if ((ret = test_decomp_internal(my_test_size, my_rank, iosysid, DIM_LEN, test_comm, async)))
             return ret;
     /* Test decomposition public API functions. */
-    /* if (!async) */
-    /*     if ((ret = test_decomp_public(my_test_size, my_rank, iosysid, DIM_LEN, test_comm, async))) */
-    /*         return ret; */
+    if (!async)
+        if ((ret = test_decomp_public(my_test_size, my_rank, iosysid, DIM_LEN, test_comm, async)))
+            return ret;
 
-    /* /\* This is a simple test that just creates a decomp. *\/ */
-    /* /\* if ((ret = test_decomp_2(my_test_size, my_rank, iosysid, DIM_LEN, test_comm, async))) *\/ */
-    /* /\*     return ret; *\/ */
-
-    /* /\* This is a simple test that just writes the decomp. *\/ */
-    /* if (!async) */
-    /*     if ((ret = test_decomp_public_2(my_test_size, my_rank, iosysid, DIM_LEN, test_comm, async))) */
-    /*         return ret; */
-
-    /* /\* Decompose the data over the tasks. *\/ */
-    /* if (!async) */
-    /* { */
-    /*     if ((ret = create_decomposition(my_test_size, my_rank, iosysid, DIM_LEN, &ioid))) */
-    /*         return ret; */
-
-    /*     /\* Run the darray tests. *\/ */
-    /*     for (int fv = 0; fv < 2; fv++) */
-    /*         if ((ret = test_darray(iosysid, ioid, num_flavors, flavor, my_rank, fv))) */
-    /*             return ret; */
-
-    /*     /\* Free the PIO decomposition. *\/ */
-    /*     if ((ret = PIOc_freedecomp(iosysid, ioid))) */
-    /*         ERR(ret); */
-    /* } */
-
-    /* /\* Check the error string function. *\/ */
-    /* printf("%d Testing streror. async = %d\n", my_rank, async); */
-    /* if ((ret = check_strerror(my_rank))) */
-    /*     ERR(ret); */
-
-    /* /\* Test name stuff. *\/ */
-    /* printf("%d Testing names. async = %d\n", my_rank, async); */
-    /* if ((ret = test_names(iosysid, num_flavors, flavor, my_rank, test_comm, async))) */
+    /* This is a simple test that just creates a decomp. */
+    /* if ((ret = test_decomp_2(my_test_size, my_rank, iosysid, DIM_LEN, test_comm, async))) */
     /*     return ret; */
 
+    /* This is a simple test that just writes the decomp. */
+    if (!async)
+        if ((ret = test_decomp_public_2(my_test_size, my_rank, iosysid, DIM_LEN, test_comm, async)))
+            return ret;
 
-    /* /\* Test netCDF-4 functions. *\/ */
-    /* printf("%d Testing nc4 functions. async = %d\n", my_rank, async); */
-    /* if ((ret = test_nc4(iosysid, num_flavors, flavor, my_rank))) */
-    /*     return ret; */
+    /* Decompose the data over the tasks. */
+    if (!async)
+    {
+        if ((ret = create_decomposition(my_test_size, my_rank, iosysid, DIM_LEN, &ioid)))
+            return ret;
 
-    /* /\* Test scalar var. *\/ */
-    /* printf("%d Testing scalar var. async = %d\n", my_rank, async); */
-    /* if ((ret = test_scalar(iosysid, num_flavors, flavor, my_rank, async))) */
-    /*     return ret; */
+        /* Run the darray tests. */
+        for (int fv = 0; fv < 2; fv++)
+            if ((ret = test_darray(iosysid, ioid, num_flavors, flavor, my_rank, fv)))
+                return ret;
+
+        /* Free the PIO decomposition. */
+        if ((ret = PIOc_freedecomp(iosysid, ioid)))
+            ERR(ret);
+    }
+
+    /* Check the error string function. */
+    printf("%d Testing streror. async = %d\n", my_rank, async);
+    if ((ret = check_strerror(my_rank)))
+        ERR(ret);
+
+    /* Test name stuff. */
+    printf("%d Testing names. async = %d\n", my_rank, async);
+    if ((ret = test_names(iosysid, num_flavors, flavor, my_rank, test_comm, async)))
+        return ret;
+
+
+    /* Test netCDF-4 functions. */
+    printf("%d Testing nc4 functions. async = %d\n", my_rank, async);
+    if ((ret = test_nc4(iosysid, num_flavors, flavor, my_rank)))
+        return ret;
+    
+    /* Test scalar var. */
+    printf("%d Testing scalar var. async = %d\n", my_rank, async);
+    if ((ret = test_scalar(iosysid, num_flavors, flavor, my_rank, async, test_comm)))
+        return ret;
 
     return PIO_NOERR;
 }

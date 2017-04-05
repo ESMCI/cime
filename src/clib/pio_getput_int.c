@@ -608,7 +608,7 @@ int PIOc_get_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
         if (file->iotype == PIO_IOTYPE_PNETCDF)
         {
             ncmpi_begin_indep_data(file->fh);
-
+            
             /* Only the IO master does the IO, so we are not really
              * getting parallel IO here. */
             if (ios->iomaster == MPI_ROOT)
@@ -639,8 +639,10 @@ int PIOc_get_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
                 default:
                     return pio_err(ios, file, PIO_EBADIOTYPE, __FILE__, __LINE__);
                 }
-            };
+            }
+
             ncmpi_end_indep_data(file->fh);
+            
         }
 #endif /* _PNETCDF */
 
