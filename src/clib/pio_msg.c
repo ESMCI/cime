@@ -819,6 +819,11 @@ int get_vars_handler(iosystem_desc_t *ios)
     int mpierr;
     PIO_Offset typelen; /** Length (in bytes) of this type. */
     nc_type xtype; /** Type of the data being written. */
+    PIO_Offset *start;
+    PIO_Offset *count;
+    PIO_Offset *stride;
+    char start_present;
+    char count_present;
     char stride_present;
     PIO_Offset *startp = NULL, *countp = NULL, *stridep = NULL;
     int ndims; /** Number of dimensions. */
@@ -836,20 +841,33 @@ int get_vars_handler(iosystem_desc_t *ios)
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&ndims, 1, MPI_INT, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
-
-    /* Now we know how big to make these arrays. */
-    PIO_Offset start[ndims], count[ndims], stride[ndims];
-
-    if ((mpierr = MPI_Bcast(start, ndims, MPI_OFFSET, 0, ios->intercomm)))
+    if ((mpierr = MPI_Bcast(&start_present, 1, MPI_CHAR, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
-    LOG((1, "put_vars_handler getting start[0] = %d ndims = %d", start[0], ndims));
-    if ((mpierr = MPI_Bcast(count, ndims, MPI_OFFSET, 0, ios->intercomm)))
+    if (start_present)
+    {
+        if (!(start = malloc(ndims * sizeof(PIO_Offset))))
+            return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);            
+        if ((mpierr = MPI_Bcast(start, ndims, MPI_OFFSET, 0, ios->intercomm)))
+            return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+    }
+    if ((mpierr = MPI_Bcast(&count_present, 1, MPI_CHAR, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+    if (count_present)
+    {
+        if (!(count = malloc(ndims * sizeof(PIO_Offset))))
+            return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);            
+        if ((mpierr = MPI_Bcast(count, ndims, MPI_OFFSET, 0, ios->intercomm)))
+            return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+    }
     if ((mpierr = MPI_Bcast(&stride_present, 1, MPI_CHAR, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if (stride_present)
+    {
+        if (!(stride = malloc(ndims * sizeof(PIO_Offset))))
+            return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);            
         if ((mpierr = MPI_Bcast(stride, ndims, MPI_OFFSET, 0, ios->intercomm)))
             return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+    }
     if ((mpierr = MPI_Bcast(&xtype, 1, MPI_INT, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&num_elem, 1, MPI_OFFSET, 0, ios->intercomm)))
@@ -860,21 +878,17 @@ int get_vars_handler(iosystem_desc_t *ios)
          "stride_present = %d xtype = %d num_elem = %d typelen = %d",
          ncid, varid, ndims, stride_present, xtype, num_elem, typelen));
 
-    for (int d = 0; d < ndims; d++)
-    {
-        LOG((2, "start[%d] = %d", d, start[d]));
-        LOG((2, "count[%d] = %d", d, count[d]));
-        if (stride_present)
-            LOG((2, "stride[%d] = %d", d, stride[d]));
-    }
-
     /* Allocate room for our data. */
     if (!(buf = malloc(num_elem * typelen)))
         return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
     /* Set the non-NULL pointers. */
-    startp = start;
-    countp = count;
+    if (start_present)
+        startp = start;
+
+    if (count_present)
+        countp = count;
+    
     if (stride_present)
         stridep = stride;
 
@@ -928,7 +942,15 @@ int get_vars_handler(iosystem_desc_t *ios)
 #endif /* _NETCDF4 */
     }
 
+    /* Free resourses. */
     free(buf);
+    if (start_present)
+        free(start);
+    if (count_present)
+        free(count);
+    if (stride_present)
+        free(stride);
+    
     LOG((1, "get_vars_handler succeeded!"));
     return PIO_NOERR;
 }

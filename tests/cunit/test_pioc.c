@@ -1403,6 +1403,165 @@ int test_nc4(int iosysid, int num_flavors, int *flavor, int my_rank)
     return PIO_NOERR;
 }
 
+/* This function is part of test_scalar(). It tests the contents of
+ * the scalar var. */
+int check_scalar_var(int ncid, int varid, int flavor)
+{
+    char var_name_in[PIO_MAX_NAME + 1];
+    int var_type_in;
+    int ndims_in;
+    int natts_in;
+    int val_in;
+    int ret;
+
+    /* Learn the var metadata. */
+    if ((ret = PIOc_inq_var(ncid, varid, var_name_in, &var_type_in, &ndims_in, NULL,
+                            &natts_in)))
+        return ret;
+
+    /* Is the metadata correct? */
+    if (strcmp(var_name_in, VAR_NAME) || var_type_in != PIO_INT || ndims_in != 0 || natts_in != 0)
+        return ERR_WRONG;
+
+    /* Get the value. */
+    if ((ret = PIOc_get_var_int(ncid, varid, &val_in)))
+        return ret;
+    printf("val_in = %d\n", val_in);
+
+    /* Is the value correct? PnetCDF not working with scalars; this is
+     * under investigation. */
+    if (flavor != PIO_IOTYPE_PNETCDF && val_in != TEST_VAL_42)
+        return ERR_WRONG;
+
+    return 0;
+}
+
+/* Test scalar vars. */
+int test_scalar(int iosysid, int num_flavors, int *flavor, int my_rank, int async,
+                MPI_Comm test_comm)
+{
+    int ncid;    /* The ncid of the netCDF file. */
+    int varid;   /* The ID of the netCDF varable. */
+    int ret;     /* Return code. */
+
+    /* Use netCDF classic to create a file with a scalar var, then set
+     * and read the value. */
+    if (my_rank == 0)
+    {
+        char test_file[] = "netcdf_test.nc";
+        int test_val = TEST_VAL_42;
+        int test_val_in;
+
+        if ((ret = nc_create(test_file, NC_CLOBBER, &ncid)))
+            return ret;
+        if ((ret = nc_def_var(ncid, VAR_NAME, NC_INT, 0, NULL, &varid)))
+            return ret;
+        if ((ret = nc_enddef(ncid)))
+            return ret;
+        if ((ret = nc_put_var(ncid, varid, &test_val)))
+            return ret;
+        if ((ret = nc_close(ncid)))
+            return ret;
+        if ((ret = nc_open(test_file, NC_NOWRITE, &ncid)))
+            return ret;
+        /* if ((ret = nc_get_var(ncid, varid, &test_val_in))) */
+        /*     return ret; */
+        /* if (test_val_in != test_val) */
+        /*     return ERR_WRONG; */
+        if ((ret = nc_get_vars(ncid, varid, NULL, NULL, NULL, &test_val_in)))
+            return ret;
+        if (test_val_in != test_val)
+            return ERR_WRONG;
+        if ((ret = nc_close(ncid)))
+            return ret;
+    }
+
+    /* Use pnetCDF to create a file with a scalar var, then set and
+     * read the value. */
+    {
+        char test_file[] = "pnetcdf_test.nc";
+        int test_val = TEST_VAL_42;
+        int test_val_in;
+
+        if ((ret = ncmpi_create(test_comm, test_file, NC_CLOBBER, MPI_INFO_NULL, &ncid)))
+            return ret;
+        if ((ret = ncmpi_def_var(ncid, VAR_NAME, NC_INT, 0, NULL, &varid)))
+            return ret;
+        if ((ret = ncmpi_enddef(ncid)))
+            return ret;
+        if ((ret = ncmpi_put_var_int_all(ncid, varid, &test_val)))
+            return ret;
+        if ((ret = ncmpi_close(ncid)))
+            return ret;
+        if ((ret = ncmpi_open(test_comm, test_file, NC_NOWRITE, MPI_INFO_NULL, &ncid)))
+            return ret;
+        if ((ret = ncmpi_get_var_int_all(ncid, varid, &test_val_in)))
+            return ret;
+        if (test_val_in != test_val)
+            return ERR_WRONG;
+        printf("about to call ncmpi_get_vars_int\n");
+        /* ret = ncmpi_get_vars_int(ncid, varid, NULL, NULL, NULL, &test_val_in); */
+        printf("ret = %d test_val_in = %d\n", ret, test_val_in);
+        /* if (test_val_in != test_val) */
+        /*     return ERR_WRONG; */
+        if ((ret = ncmpi_close(ncid)))
+            return ret;
+    }
+
+    /* Use PIO to create the example file in each of the four
+     * available ways. */
+    for (int fmt = 0; fmt < num_flavors; fmt++)
+    {
+        char filename[PIO_MAX_NAME + 1]; /* Test filename. */
+        char iotype_name[PIO_MAX_NAME + 1];
+
+        /* Create a filename. */
+        if ((ret = get_iotype_name(flavor[fmt], iotype_name)))
+            return ret;
+        sprintf(filename, "%s_%s_scalar_async_%d.nc", TEST_NAME, iotype_name, async);
+
+        /* Create the netCDF output file. */
+        printf("%d Creating test file %s.\n", my_rank, filename);
+        if ((ret = PIOc_createfile(iosysid, &ncid, &(flavor[fmt]), filename, PIO_CLOBBER)))
+            ERR(ret);
+
+        /* Define a scalar variable. */
+        if ((ret = PIOc_def_var(ncid, VAR_NAME, PIO_INT, 0, NULL, &varid)))
+            ERR(ret);
+
+        /* End define mode. */
+        if ((ret = PIOc_enddef(ncid)))
+            ERR(ret);
+
+        /* Write a scalar value. */
+        int test_val = TEST_VAL_42;
+        if ((ret = PIOc_put_var_int(ncid, varid, &test_val)))
+            ERR(ret);
+
+        /* Check the scalar var. */
+        if ((ret = check_scalar_var(ncid, varid, flavor[fmt])))
+            ERR(ret);
+
+        /* Close the netCDF file. */
+        printf("%d Closing the sample data file...\n", my_rank);
+        if ((ret = PIOc_closefile(ncid)))
+            ERR(ret);
+
+        /* Reopen the file. */
+        if ((ret = PIOc_openfile(iosysid, &ncid, &(flavor[fmt]), filename, PIO_NOWRITE)))
+            ERR(ret);
+
+        /* Check the scalar var again. */
+        if ((ret = check_scalar_var(ncid, varid, flavor[fmt])))
+            ERR(ret);
+
+        /* Close the netCDF file. */
+        if ((ret = PIOc_closefile(ncid)))
+            ERR(ret);
+    }
+    return PIO_NOERR;
+}
+
 /** Test the malloc_iodesc() function.
  *
  * @param my_rank rank of this task.
@@ -1522,6 +1681,7 @@ int test_decomp_internal(int my_test_size, int my_rank, int iosysid, int dim_len
                                        history_in, source_in, version_in, &fortran_order_in)))
         return ret;
 
+    
     /* Did we get the correct answers? */
     printf("source_in = %s\n", source_in);
     if (strcmp(title, title_in) || strcmp(history, history_in) ||
@@ -1631,7 +1791,6 @@ int test_decomp_internal(int my_test_size, int my_rank, int iosysid, int dim_len
     free(global_dimlen_in);
     free(task_maplen_in);
     free(map_in);
-
 
     /* Free the PIO decomposition. */
     if ((ret = PIOc_freedecomp(iosysid, ioid)))
@@ -1918,6 +2077,11 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
     /* Test netCDF-4 functions. */
     printf("%d Testing nc4 functions. async = %d\n", my_rank, async);
     if ((ret = test_nc4(iosysid, num_flavors, flavor, my_rank)))
+        return ret;
+    
+    /* Test scalar var. */
+    printf("%d Testing scalar var. async = %d\n", my_rank, async);
+    if ((ret = test_scalar(iosysid, num_flavors, flavor, my_rank, async, test_comm)))
         return ret;
 
     return PIO_NOERR;
