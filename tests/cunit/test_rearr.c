@@ -24,12 +24,15 @@
 /* For maplens of 2. */
 #define MAPLEN2 2
 
+/* Name of test var. (Name of a Welsh town.)*/
+#define VAR_NAME "Llanfairpwllgwyngyllgogerychwyrndrobwllllantysiliogogogoch"
+
 /* Test some of the rearranger utility functions. */
 int test_rearranger_opts1(int iosysid)
 {
     iosystem_desc_t *ios;
     int ret;
-    
+
     /* This should not work. */
     if (PIOc_set_rearr_opts(TEST_VAL_42, 0, 0, false, false, 0, false,
                             false, 0) != PIO_EBADID)
@@ -126,11 +129,11 @@ int test_ceil2_pair()
         return ERR_WRONG;
     if (pair(4, 2, 2) != 1)
         return ERR_WRONG;
-    
+
     return 0;
 }
 
-/* Test the create_mpi_datatypes() function. 
+/* Test the create_mpi_datatypes() function.
  * @returns 0 for success, error code otherwise.*/
 int test_create_mpi_datatypes()
 {
@@ -138,17 +141,17 @@ int test_create_mpi_datatypes()
     int *mfrom = NULL;
     int mpierr;
     int ret;
-    
+
     {
         int msgcnt = 1;
         PIO_Offset mindex[1] = {0};
         int mcount[1] = {1};
         MPI_Datatype mtype;
-        
+
         /* Create an MPI data type. */
         if ((ret = create_mpi_datatypes(basetype, msgcnt, mindex, mcount, mfrom, &mtype)))
             return ret;
-        
+
         /* Free the type. */
         if ((mpierr = MPI_Type_free(&mtype)))
             MPIERR(mpierr);
@@ -174,13 +177,13 @@ int test_create_mpi_datatypes()
             if (lb != 0 || extent != 4)
                 return ERR_WRONG;
         }
-            
+
         /* Free them. */
         for (int t = 0; t < 4; t++)
             if ((mpierr = MPI_Type_free(&mtype2[t])))
                 return ERR_WRONG;
     }
-    
+
     return 0;
 }
 
@@ -212,7 +215,7 @@ int test_idx_to_dim_list()
     /* This is the correct result! */
     if (dim_list2[0] != 2 || dim_list2[1] != 0)
         return ERR_WRONG;
-    
+
     return 0;
 }
 
@@ -228,7 +231,7 @@ int test_coord_to_lindex()
     lindex = coord_to_lindex(ndims, lcoord, count);
     if (lindex != 0)
         return ERR_WRONG;
-    
+
     int ndims2 = 2;
     PIO_Offset lcoord2[2] = {0, 0};
     PIO_Offset count2[2] = {1, 1};
@@ -237,7 +240,7 @@ int test_coord_to_lindex()
     lindex2 = coord_to_lindex(ndims2, lcoord2, count2);
     if (lindex2 != 0)
         return ERR_WRONG;
-    
+
     int ndims3 = 2;
     PIO_Offset lcoord3[2] = {1, 2};
     PIO_Offset count3[2] = {1, 1};
@@ -247,7 +250,7 @@ int test_coord_to_lindex()
     printf("lindex = %lld\n", lindex3);
     if (lindex3 != 3)
         return ERR_WRONG;
-    
+
     return 0;
 }
 
@@ -268,16 +271,16 @@ int test_compute_maxIObuffersize(MPI_Comm test_comm, int my_rank)
             return ret;
         ior1->next = NULL;
         ior1->count[0] = 1;
-        
+
         iodesc.firstregion = ior1;
         iodesc.ndims = 1;
-        
+
         /* Run the function. Simplest possible case. */
         if ((ret = compute_maxIObuffersize(test_comm, &iodesc)))
             return ret;
         if (iodesc.maxiobuflen != 1)
             return ERR_WRONG;
-        
+
         /* Free resources for the region. */
         free(ior1->start);
         free(ior1->count);
@@ -300,20 +303,20 @@ int test_compute_maxIObuffersize(MPI_Comm test_comm, int my_rank)
         for (int i = 0; i < ndims; i++)
             if (ior2->start[i] != 0 || ior2->count[i] != 0)
                 return ERR_WRONG;
-        
+
         ior2->next = NULL;
         ior2->count[0] = 10;
         ior2->count[1] = 2;
 
         iodesc.firstregion = ior2;
         iodesc.ndims = 2;
-        
+
         /* Run the function. */
         if ((ret = compute_maxIObuffersize(test_comm, &iodesc)))
             return ret;
         if (iodesc.maxiobuflen != 20)
             return ERR_WRONG;
-        
+
         /* Free resources for the region. */
         free(ior2->start);
         free(ior2->count);
@@ -339,17 +342,17 @@ int test_compute_maxIObuffersize(MPI_Comm test_comm, int my_rank)
         ior3->next = ior4;
         ior3->count[0] = 100;
         ior3->count[1] = 5;
-        
+
         iodesc.firstregion = ior3;
         iodesc.ndims = 2;
-        
+
         /* Run the function. */
         if ((ret = compute_maxIObuffersize(test_comm, &iodesc)))
             return ret;
         printf("iodesc.maxiobuflen = %d\n", iodesc.maxiobuflen);
         if (iodesc.maxiobuflen != 520)
             return ERR_WRONG;
-        
+
         /* Free resources for the region. */
         free(ior4->start);
         free(ior4->count);
@@ -399,7 +402,7 @@ int test_determine_fill(MPI_Comm test_comm)
     /* Free test resources. */
     free(ios);
     free(iodesc);
-    
+
     return 0;
 }
 
@@ -420,7 +423,7 @@ int test_get_regions(int my_rank)
         return ret;
     ior1->next = NULL;
     ior1->count[0] = 1;
-    
+
     /* Call the function we are testing. */
     if ((ret = get_regions(ndims, gdimlen, MAPLEN, map, &maxregions, ior1)))
         return ret;
@@ -434,7 +437,7 @@ int test_get_regions(int my_rank)
     free(ior1->start);
     free(ior1->count);
     free(ior1);
-    
+
     return 0;
 }
 
@@ -456,7 +459,7 @@ int test_find_region()
     printf("regionlen = %lld start[0] = %lld count[0] = %lld\n", regionlen, start[0], count[0]);
     if (regionlen != 1 || start[0] != 0 || count[0] != 1)
         return ERR_WRONG;
-    
+
     return 0;
 }
 
@@ -476,7 +479,7 @@ int test_expand_region()
     if (count[0] != 1)
         return ERR_WRONG;
     printf("max_size[0] = %d count[0] = %lld\n", max_size[0], count[0]);
-    
+
     return 0;
 }
 
@@ -493,7 +496,7 @@ int test_define_iodesc_datatypes()
     {
         iosystem_desc_t ios;
         io_desc_t iodesc;
-        
+
         /* Set up test for IO task with BOX rearranger to create one type. */
         ios.ioproc = 1; /* this is IO proc. */
         ios.num_iotasks = 4; /* The number of IO tasks. */
@@ -514,7 +517,7 @@ int test_define_iodesc_datatypes()
         iodesc.rcount[0] = 1;
 
         iodesc.rearranger = rearranger[r];
-        
+
         /* The two rearrangers create a different number of send types. */
         int num_send_types = iodesc.rearranger == PIO_REARR_BOX ? ios.num_iotasks : 1;
 
@@ -531,7 +534,7 @@ int test_define_iodesc_datatypes()
         /* Run the test function. */
         if ((ret = define_iodesc_datatypes(&ios, &iodesc)))
             return ret;
-        
+
         /* We created send types, so free them. */
         for (int st = 0; st < num_send_types; st++)
             if ((mpierr = MPI_Type_free(&iodesc.stype[st])))
@@ -566,7 +569,7 @@ int test_compute_counts(MPI_Comm test_comm, int my_rank)
     /* Initialize ios. */
     if (!(ios = calloc(1, sizeof(iosystem_desc_t))))
         return PIO_ENOMEM;
-    
+
     ios->num_iotasks = TARGET_NTASKS;
     ios->num_comptasks = TARGET_NTASKS;
     ios->ioproc = 1;
@@ -575,7 +578,7 @@ int test_compute_counts(MPI_Comm test_comm, int my_rank)
         return PIO_ENOMEM;
     for (int t = 0; t < TARGET_NTASKS; t++)
         ios->ioranks[t] = t;
-    
+
     /* Initialize iodesc. */
     if (!(iodesc = calloc(1, sizeof(io_desc_t))))
         return PIO_ENOMEM;
@@ -632,7 +635,7 @@ int test_init_decomp(int iosysid, MPI_Comm test_comm, int my_rank)
     /* Free it. */
     if ((ret = PIOc_freedecomp(iosysid, ioid)))
         return ret;
-            
+
     return 0;
 }
 
@@ -641,7 +644,7 @@ int test_box_rearrange_create(MPI_Comm test_comm, int my_rank)
 {
     iosystem_desc_t *ios;
     io_desc_t *iodesc;
-    io_region *ior1;    
+    io_region *ior1;
     int maplen = MAPLEN2;
     PIO_Offset compmap[MAPLEN2] = {(my_rank * 2) + 1, ((my_rank + 1) * 2) + 1};
     const int gdimlen[NDIM1] = {8};
@@ -681,7 +684,7 @@ int test_box_rearrange_create(MPI_Comm test_comm, int my_rank)
         return ret;
     if (my_rank == 0)
         ior1->count[0] = 8;
-    
+
     iodesc->firstregion = ior1;
 
     /* We are finally ready to run the code under test. */
@@ -706,7 +709,7 @@ int test_box_rearrange_create(MPI_Comm test_comm, int my_rank)
     /*     /\* rcount is 1 for rank 0, 0 on other tasks. *\/ */
     /*     if (iodesc->rcount[i] != my_rank ? 0 : 1) */
     /*         return ERR_WRONG; */
-        
+
     /*     /\* rfrom is 0 everywhere, except task 0, array elemnt 1. *\/ */
     /*     if (my_rank == 0 && i == 1) */
     /*     { */
@@ -718,7 +721,7 @@ int test_box_rearrange_create(MPI_Comm test_comm, int my_rank)
     /*         if (iodesc->rfrom[i] != 0) */
     /*             return ERR_WRONG; */
     /*     } */
-        
+
     /*     /\* rindex is only allocated where there is a non-zero count. *\/ */
     /*     if (iodesc->rcount[i]) */
     /*         if (iodesc->rindex[i] != 0) */
@@ -739,7 +742,7 @@ int test_box_rearrange_create(MPI_Comm test_comm, int my_rank)
     free(ios->ioranks);
     free(iodesc);
     free(ios);
-    
+
     return 0;
 }
 
@@ -749,7 +752,7 @@ int test_box_rearrange_create_2(MPI_Comm test_comm, int my_rank)
 #define MAPLEN2 2
     iosystem_desc_t *ios;
     io_desc_t *iodesc;
-    io_region *ior1;    
+    io_region *ior1;
     int maplen = MAPLEN2;
     PIO_Offset compmap[MAPLEN2] = {1, 0};
     const int gdimlen[NDIM1] = {8};
@@ -793,7 +796,7 @@ int test_box_rearrange_create_2(MPI_Comm test_comm, int my_rank)
     ior1->next = NULL;
     if (my_rank == 0)
         ior1->count[0] = 8;
-    
+
     iodesc->firstregion = ior1;
 
     /* We are finally ready to run the code under test. */
@@ -820,12 +823,12 @@ int test_box_rearrange_create_2(MPI_Comm test_comm, int my_rank)
             /* rcount is 1 for rank 0, 0 on other tasks. */
             if (iodesc->rcount[i] != 1)
                 return ERR_WRONG;
-            
+
             /* rfrom only matters if there is a non-zero count. */
             if (iodesc->rcount[i])
                 if (iodesc->rfrom[i] != i ? 1 : 0)
                     return ERR_WRONG;
-            
+
             /* rindex is only allocated where there is a non-zero count. */
             if (iodesc->rcount[i])
                 if (iodesc->rindex[i] != 0)
@@ -847,7 +850,7 @@ int test_box_rearrange_create_2(MPI_Comm test_comm, int my_rank)
     free(ios->ioranks);
     free(iodesc);
     free(ios);
-    
+
     return 0;
 }
 
@@ -907,7 +910,7 @@ int test_rearrange_comp2io(MPI_Comm test_comm, int my_rank)
         return PIO_ENOMEM;
     if (!(rbuf = calloc(4, sizeof(int))))
         return PIO_ENOMEM;
-        
+
     /* Allocate IO system info struct for this test. */
     if (!(ios = calloc(1, sizeof(iosystem_desc_t))))
         return PIO_ENOMEM;
@@ -962,7 +965,7 @@ int test_rearrange_comp2io(MPI_Comm test_comm, int my_rank)
     ior1->next = NULL;
     if (my_rank == 0)
         ior1->count[0] = 8;
-    
+
     iodesc->firstregion = ior1;
 
     /* Create the box rearranger. */
@@ -976,7 +979,7 @@ int test_rearrange_comp2io(MPI_Comm test_comm, int my_rank)
 
     /* We created send types, so free them. */
     for (int st = 0; st < num_send_types; st++)
-        if (iodesc->stype[st] != PIO_DATATYPE_NULL)        
+        if (iodesc->stype[st] != PIO_DATATYPE_NULL)
             if ((mpierr = MPI_Type_free(&iodesc->stype[st])))
                 MPIERR(mpierr);
 
@@ -1029,7 +1032,7 @@ int test_rearrange_io2comp(MPI_Comm test_comm, int my_rank)
         return PIO_ENOMEM;
     if (!(rbuf = calloc(4, sizeof(int))))
         return PIO_ENOMEM;
-        
+
     /* Allocate IO system info struct for this test. */
     if (!(ios = calloc(1, sizeof(iosystem_desc_t))))
         return PIO_ENOMEM;
@@ -1084,7 +1087,7 @@ int test_rearrange_io2comp(MPI_Comm test_comm, int my_rank)
     ior1->next = NULL;
     if (my_rank == 0)
         ior1->count[0] = 8;
-    
+
     iodesc->firstregion = ior1;
 
     /* Create the box rearranger. */
@@ -1098,7 +1101,7 @@ int test_rearrange_io2comp(MPI_Comm test_comm, int my_rank)
 
     /* We created send types, so free them. */
     for (int st = 0; st < num_send_types; st++)
-        if (iodesc->stype[st] != PIO_DATATYPE_NULL)        
+        if (iodesc->stype[st] != PIO_DATATYPE_NULL)
             if ((mpierr = MPI_Type_free(&iodesc->stype[st])))
                 MPIERR(mpierr);
 
@@ -1131,103 +1134,370 @@ int test_rearrange_io2comp(MPI_Comm test_comm, int my_rank)
     return 0;
 }
 
+/* These tests do not need an iosysid. */
+int run_no_iosys_tests(int my_rank, MPI_Comm test_comm)
+{
+    int ret;
+
+    printf("%d running idx_to_dim_list tests\n", my_rank);
+    if ((ret = test_idx_to_dim_list()))
+        return ret;
+
+    printf("%d running coord_to_lindex tests\n", my_rank);
+    if ((ret = test_coord_to_lindex()))
+        return ret;
+
+    printf("%d running compute_maxIObuffersize tests\n", my_rank);
+    if ((ret = test_compute_maxIObuffersize(test_comm, my_rank)))
+        return ret;
+
+    printf("%d running determine_fill\n", my_rank);
+    if ((ret = test_determine_fill(test_comm)))
+        return ret;
+
+    printf("%d running tests for expand_region()\n", my_rank);
+    if ((ret = test_expand_region()))
+        return ret;
+
+    printf("%d running tests for find_region()\n", my_rank);
+    if ((ret = test_find_region()))
+        return ret;
+
+    printf("%d running tests for get_regions()\n", my_rank);
+    if ((ret = test_get_regions(my_rank)))
+        return ret;
+
+    printf("%d running create_mpi_datatypes tests\n", my_rank);
+    if ((ret = test_create_mpi_datatypes()))
+        return ret;
+
+    printf("%d running define_iodesc_datatypes tests\n", my_rank);
+    if ((ret = test_define_iodesc_datatypes()))
+        return ret;
+
+    printf("%d running compare_offsets tests\n", my_rank);
+    if ((ret = test_compare_offsets()))
+        return ret;
+
+    printf("%d running compute_counts tests for box rearranger\n", my_rank);
+    if ((ret = test_compute_counts(test_comm, my_rank)))
+        return ret;
+
+    printf("%d running tests for box_rearrange_create\n", my_rank);
+    if ((ret = test_box_rearrange_create(test_comm, my_rank)))
+        return ret;
+
+    printf("%d running more tests for box_rearrange_create\n", my_rank);
+    if ((ret = test_box_rearrange_create_2(test_comm, my_rank)))
+        return ret;
+
+    printf("%d running tests for default_subset_partition\n", my_rank);
+    if ((ret = test_default_subset_partition(test_comm, my_rank)))
+        return ret;
+
+    printf("%d running tests for rearrange_comp2io\n", my_rank);
+    if ((ret = test_rearrange_comp2io(test_comm, my_rank)))
+        return ret;
+
+    printf("%d running tests for rearrange_io2comp\n", my_rank);
+    if ((ret = test_rearrange_io2comp(test_comm, my_rank)))
+        return ret;
+
+     return 0;
+}
+
+/* Test scalar vars. */
+int test_scalar(int numio, int iosysid, MPI_Comm test_comm, int my_rank,
+                int num_flavors, int *flavor)
+{
+
+    int var_type[NUM_NETCDF4_TYPES - 1] = {PIO_BYTE, PIO_CHAR, PIO_SHORT, PIO_INT, PIO_FLOAT,
+                                           PIO_DOUBLE, PIO_UBYTE, PIO_USHORT, PIO_UINT, PIO_INT64,
+                                           PIO_UINT64};
+    char char_data = 2;
+    signed char byte_data = -42;
+    short short_data = -300;
+    int int_data = -10000;
+    float float_data = -42.42;
+    double double_data = -420000000000.5;
+    unsigned char ubyte_data = 43;
+    unsigned short ushort_data = 666;
+    unsigned int uint_data = 666666;
+    long long int64_data = -99999999999;
+    unsigned long long uint64_data = 99999999999;
+    char char_data_in;
+    signed char byte_data_in;
+    short short_data_in;
+    unsigned char ubyte_data_in;
+    int int_data_in;
+    float float_data_in;
+    double double_data_in;
+    unsigned short ushort_data_in;
+    unsigned int uint_data_in;
+    long long int64_data_in;
+    unsigned long long uint64_data_in;
+
+    int ret;
+
+    /* Run tests with all available iotypes. */
+    for (int fmt = 0; fmt < num_flavors; fmt++)
+    {
+        /* For netcdf-4, there are extra types. */
+        int num_types = (flavor[fmt] == PIO_IOTYPE_NETCDF4C || flavor[fmt] == PIO_IOTYPE_NETCDF4P) ?
+            NUM_NETCDF4_TYPES - 1 : NUM_CLASSIC_TYPES;
+
+        /* For each available type, create a file with a scalar var of
+         * that type. */
+        for (int t = 0; t < num_types; t++)
+        {
+            int ncid;
+            int varid;
+            char filename[PIO_MAX_NAME + 1];
+
+            printf("test with t = %d\n", t);
+
+            /* These iotypes only handle netCDF classic types. */
+            if (t >= NUM_CLASSIC_TYPES &&
+                (flavor[fmt] == PIO_IOTYPE_PNETCDF || flavor[fmt] == PIO_IOTYPE_NETCDF))
+                continue;
+
+            /* Create filename. */
+            sprintf(filename, "%s_scalar_numio_%d_iotype_%d_var_type_%d.nc", TEST_NAME,
+                    numio, flavor[fmt], var_type[t]);
+
+            /* Create the file. */
+            if ((ret = PIOc_createfile(iosysid, &ncid, &flavor[fmt], filename, NC_CLOBBER)))
+                return ret;
+
+            /* Define scalar var. */
+            if ((ret = PIOc_def_var(ncid, VAR_NAME, var_type[t], 0, NULL, &varid)))
+                return ret;
+
+            /* End define mode. */
+            if ((ret = PIOc_enddef(ncid)))
+                return ret;
+
+            /* Write a value. */
+            switch (var_type[t])
+            {
+            case PIO_BYTE:
+                if ((ret = PIOc_put_var_schar(ncid, varid, &byte_data)))
+                    return ret;
+                break;
+            case PIO_CHAR:
+                if ((ret = PIOc_put_var_text(ncid, varid, &char_data)))
+                    return ret;
+                break;
+            case PIO_SHORT:
+                if ((ret = PIOc_put_var_short(ncid, varid, &short_data)))
+                    return ret;
+                break;
+            case PIO_INT:
+                if ((ret = PIOc_put_var_int(ncid, varid, &int_data)))
+                    return ret;
+                break;
+            case PIO_FLOAT:
+                if ((ret = PIOc_put_var_float(ncid, varid, &float_data)))
+                    return ret;
+                break;
+            case PIO_DOUBLE:
+                if ((ret = PIOc_put_var_double(ncid, varid, &double_data)))
+                    return ret;
+                break;
+#ifdef _NETCDF4                
+            case PIO_UBYTE:
+                if ((ret = PIOc_put_var_uchar(ncid, varid, &ubyte_data)))
+                    return ret;
+                break;
+            case PIO_USHORT:
+                if ((ret = PIOc_put_var_ushort(ncid, varid, &ushort_data)))
+                    return ret;
+                break;
+            case PIO_UINT:
+                if ((ret = PIOc_put_var_uint(ncid, varid, &uint_data)))
+                    return ret;
+                break;
+            case PIO_INT64:
+                if ((ret = PIOc_put_var_longlong(ncid, varid, &int64_data)))
+                    return ret;
+                break;
+            case PIO_UINT64:
+                if ((ret = PIOc_put_var_ulonglong(ncid, varid, &uint64_data)))
+                    return ret;
+                break;
+#endif /* _NETCDF4 */                
+            default:
+                return ERR_WRONG;
+            }
+
+            /* Close the file. */
+            if ((ret = PIOc_closefile(ncid)))
+                return ret;
+
+            /* Reopen the file. */
+            if ((ret = PIOc_openfile(iosysid, &ncid, &flavor[fmt], filename, NC_NOWRITE)))
+                return ret;
+
+            /* Read the value. Is the value correct? */
+            switch (var_type[t])
+            {
+            case PIO_BYTE:
+                if ((ret = PIOc_get_var_schar(ncid, varid, &byte_data_in)))
+                    return ret;
+                if (byte_data_in != byte_data)
+                    return ERR_WRONG;
+                break;
+            case PIO_CHAR:
+                if ((ret = PIOc_get_var_text(ncid, varid, &char_data_in)))
+                    return ret;
+                if (char_data_in != char_data)
+                    return ERR_WRONG;
+                break;
+            case PIO_SHORT:
+                if ((ret = PIOc_get_var_short(ncid, varid, &short_data_in)))
+                    return ret;
+                if (short_data_in != short_data)
+                    return ERR_WRONG;
+                break;
+            case PIO_INT:
+                if ((ret = PIOc_get_var_int(ncid, varid, &int_data_in)))
+                    return ret;
+                if (int_data_in != int_data)
+                    return ERR_WRONG;
+                break;
+            case PIO_FLOAT:
+                if ((ret = PIOc_get_var_float(ncid, varid, &float_data_in)))
+                    return ret;
+                if (float_data_in != float_data)
+                    return ERR_WRONG;
+                break;
+            case PIO_DOUBLE:
+                if ((ret = PIOc_get_var_double(ncid, varid, &double_data_in)))
+                    return ret;
+                if (double_data_in != double_data)
+                    return ERR_WRONG;
+                break;
+#ifdef _NETCDF4                
+            case PIO_UBYTE:
+                if ((ret = PIOc_get_var_uchar(ncid, varid, &ubyte_data_in)))
+                    return ret;
+                if (ubyte_data_in != ubyte_data)
+                    return ERR_WRONG;
+                break;
+            case PIO_USHORT:
+                if ((ret = PIOc_get_var_ushort(ncid, varid, &ushort_data_in)))
+                    return ret;
+                if (ushort_data_in != ushort_data)
+                    return ERR_WRONG;
+                break;
+            case PIO_UINT:
+                if ((ret = PIOc_get_var_uint(ncid, varid, &uint_data_in)))
+                    return ret;
+                if (uint_data_in != uint_data)
+                    return ERR_WRONG;
+                break;
+            case PIO_INT64:
+                if ((ret = PIOc_get_var_longlong(ncid, varid, &int64_data_in)))
+                    return ret;
+                if (int64_data_in != int64_data)
+                    return ERR_WRONG;
+                break;
+            case PIO_UINT64:
+                if ((ret = PIOc_get_var_ulonglong(ncid, varid, &uint64_data_in)))
+                    return ret;
+                if (uint64_data_in != uint64_data)
+                    return ERR_WRONG;
+                break;
+#endif /* _NETCDF4 */                
+            default:
+                return ERR_WRONG;
+            }
+
+            /* Close the file. */
+            if ((ret = PIOc_closefile(ncid)))
+                return ret;
+
+        } /* next iotype */
+    } /* next type */
+
+    return 0;
+}
+
+/* These tests are run with different rearrangers and numbers of IO
+ * tasks. */
+int run_iosys_tests(int numio, int iosysid, int my_rank, MPI_Comm test_comm,
+                    int num_flavors, int *flavor)
+{
+    int ret;
+
+    printf("%d running rearranger opts tests 1\n", my_rank);
+    if ((ret = test_rearranger_opts1(iosysid)))
+        return ret;
+
+    printf("%d running test for init_decomp\n", my_rank);
+    if ((ret = test_init_decomp(iosysid, test_comm, my_rank)))
+        return ret;
+
+    printf("%d running test for init_decomp\n", my_rank);
+    if ((ret = test_scalar(numio, iosysid, test_comm, my_rank, num_flavors, flavor)))
+        return ret;
+
+    return 0;
+}
+
 /* Run Tests for pio_spmd.c functions. */
 int main(int argc, char **argv)
 {
     int my_rank; /* Zero-based rank of processor. */
     int ntasks;  /* Number of processors involved in current execution. */
-    int ret;     /* Return code. */
+    int num_flavors; /* Number of PIO netCDF flavors in this build. */
+    int flavor[NUM_FLAVORS]; /* iotypes for the supported netCDF IO flavors. */
     MPI_Comm test_comm; /* A communicator for this test. */
+    int ret;     /* Return code. */
 
     /* Initialize test. */
     if ((ret = pio_test_init2(argc, argv, &my_rank, &ntasks, MIN_NTASKS,
                               TARGET_NTASKS, 3, &test_comm)))
         ERR(ERR_INIT);
+    if ((ret = PIOc_set_iosystem_error_handling(PIO_DEFAULT, PIO_RETURN_ERROR, NULL)))
+        return ret;
+
+    /* Figure out iotypes. */
+    if ((ret = get_iotypes(&num_flavors, flavor)))
+        ERR(ret);
+    printf("Runnings tests for %d flavors\n", num_flavors);
 
     /* Test code runs on TARGET_NTASKS tasks. The left over tasks do
      * nothing. */
     if (my_rank < TARGET_NTASKS)
     {
-        int iosysid;
-        if ((ret = PIOc_Init_Intracomm(test_comm, TARGET_NTASKS, 1, 0, PIO_REARR_BOX, &iosysid)))
-            return ret;
-        
-        printf("%d running idx_to_dim_list tests\n", my_rank);
-        if ((ret = test_idx_to_dim_list()))
+        /* Run the tests that don't need an iosysid. */
+        if ((ret = run_no_iosys_tests(my_rank, test_comm)))
             return ret;
 
-        printf("%d running coord_to_lindex tests\n", my_rank);
-        if ((ret = test_coord_to_lindex()))
-            return ret;
+        /* Test code with both rearrangers. */
+        for (int r = 0; r < NUM_REARRANGERS; r++)
+        {
+            /* Test code with 1, 2, 3, and 4 io tasks. */
+            for (int numio = 1; numio <= TARGET_NTASKS; numio++)
+            {
+                int iosysid;
+                int rearranger = r ? PIO_REARR_SUBSET : PIO_REARR_BOX;
 
-        printf("%d running compute_maxIObuffersize tests\n", my_rank);
-        if ((ret = test_compute_maxIObuffersize(test_comm, my_rank)))
-            return ret;
+                if ((ret = PIOc_Init_Intracomm(test_comm, numio, 1, 0, rearranger,
+                                               &iosysid)))
+                    return ret;
 
-        printf("%d running determine_fill\n", my_rank);
-        if ((ret = test_determine_fill(test_comm)))
-            return ret;
+                /* Run the tests that need an iosysid. */
+                if ((ret = run_iosys_tests(numio, iosysid, my_rank, test_comm,
+                                           num_flavors, flavor)))
+                    return ret;
 
-        printf("%d running tests for expand_region()\n", my_rank);
-        if ((ret = test_expand_region()))
-            return ret;
-
-        printf("%d running tests for find_region()\n", my_rank);
-        if ((ret = test_find_region()))
-            return ret;
-
-        printf("%d running tests for get_regions()\n", my_rank);
-        if ((ret = test_get_regions(my_rank)))
-            return ret;
-
-        printf("%d running create_mpi_datatypes tests\n", my_rank);
-        if ((ret = test_create_mpi_datatypes()))
-            return ret;
-
-        printf("%d running define_iodesc_datatypes tests\n", my_rank);
-        if ((ret = test_define_iodesc_datatypes()))
-            return ret;
-
-        printf("%d running rearranger opts tests 1\n", my_rank);
-        if ((ret = test_rearranger_opts1(iosysid)))
-            return ret;
-
-        printf("%d running compare_offsets tests\n", my_rank);
-        if ((ret = test_compare_offsets()))
-            return ret;
-
-        printf("%d running compute_counts tests for box rearranger\n", my_rank);
-        if ((ret = test_compute_counts(test_comm, my_rank)))
-            return ret;
-
-        printf("%d running test for init_decomp\n", my_rank);
-        if ((ret = test_init_decomp(iosysid, test_comm, my_rank)))
-            return ret;
-
-        printf("%d running tests for box_rearrange_create\n", my_rank);
-        if ((ret = test_box_rearrange_create(test_comm, my_rank)))
-            return ret;
-
-        printf("%d running more tests for box_rearrange_create\n", my_rank);
-        if ((ret = test_box_rearrange_create_2(test_comm, my_rank)))
-            return ret;
-
-        printf("%d running tests for default_subset_partition\n", my_rank);
-        if ((ret = test_default_subset_partition(test_comm, my_rank)))
-            return ret;
-
-        printf("%d running tests for rearrange_comp2io\n", my_rank);
-        if ((ret = test_rearrange_comp2io(test_comm, my_rank)))
-            return ret;
-
-        printf("%d running tests for rearrange_io2comp\n", my_rank);
-        if ((ret = test_rearrange_io2comp(test_comm, my_rank)))
-            return ret;
-
-        /* Finalize PIO system. */
-        if ((ret = PIOc_finalize(iosysid)))
-            return ret;
-
+                /* Finalize PIO system. */
+                if ((ret = PIOc_finalize(iosysid)))
+                    return ret;
+            } /* next numio */
+        } /* next rearranger */
     } /* endif my_rank < TARGET_NTASKS */
 
     /* Finalize the MPI library. */
