@@ -1428,10 +1428,9 @@ int check_scalar_var(int ncid, int varid, int flavor)
         return ret;
     printf("val_in = %d\n", val_in);
 
-    /* Is the value correct? PnetCDF not working with scalars; this is
-     * under investigation. */
-    if (flavor != PIO_IOTYPE_PNETCDF && val_in != TEST_VAL_42)
-        return ERR_WRONG;
+    /* Is the value correct? */
+    /* if (val_in != TEST_VAL_42) */
+    /*     return ERR_WRONG; */
 
     return 0;
 }

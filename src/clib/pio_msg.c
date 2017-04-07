@@ -675,16 +675,18 @@ int put_vars_handler(iosystem_desc_t *ios)
 {
     int ncid;
     int varid;
-    PIO_Offset typelen;  /** Length (in bytes) of this type. */
-    nc_type xtype;       /** Type of the data being written. */
-    char stride_present; /** Zero if user passed a NULL stride. */
+    PIO_Offset typelen;  /* Length (in bytes) of this type. */
+    nc_type xtype;       /* Type of the data being written. */
+    char start_present;  /* Zero if user passed a NULL start. */
+    char count_present;  /* Zero if user passed a NULL count. */
+    char stride_present; /* Zero if user passed a NULL stride. */
     PIO_Offset *startp = NULL;
     PIO_Offset *countp = NULL;
     PIO_Offset *stridep = NULL;
-    int ndims;           /** Number of dimensions. */
-    void *buf;           /** Buffer for data storage. */
-    PIO_Offset num_elem; /** Number of data elements in the buffer. */
-    int mpierr;          /** Error code from MPI function calls. */
+    int ndims;           /* Number of dimensions. */
+    void *buf;           /* Buffer for data storage. */
+    PIO_Offset num_elem; /* Number of data elements in the buffer. */
+    int mpierr;          /* Error code from MPI function calls. */
 
     LOG((1, "put_vars_handler"));
     assert(ios);
@@ -701,11 +703,17 @@ int put_vars_handler(iosystem_desc_t *ios)
     /* Now we know how big to make these arrays. */
     PIO_Offset start[ndims], count[ndims], stride[ndims];
 
-    if ((mpierr = MPI_Bcast(start, ndims, MPI_OFFSET, 0, ios->intercomm)))
+    if ((mpierr = MPI_Bcast(&start_present, 1, MPI_CHAR, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+    if (start_present)    
+        if ((mpierr = MPI_Bcast(start, ndims, MPI_OFFSET, 0, ios->intercomm)))
+            return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     LOG((1, "put_vars_handler getting start[0] = %d ndims = %d", start[0], ndims));
-    if ((mpierr = MPI_Bcast(count, ndims, MPI_OFFSET, 0, ios->intercomm)))
+    if ((mpierr = MPI_Bcast(&count_present, 1, MPI_CHAR, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+    if (count_present)    
+        if ((mpierr = MPI_Bcast(count, ndims, MPI_OFFSET, 0, ios->intercomm)))
+            return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&stride_present, 1, MPI_CHAR, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if (stride_present)
@@ -718,16 +726,9 @@ int put_vars_handler(iosystem_desc_t *ios)
     if ((mpierr = MPI_Bcast(&typelen, 1, MPI_OFFSET, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     LOG((1, "put_vars_handler ncid = %d varid = %d ndims = %d "
-         "stride_present = %d xtype = %d num_elem = %d typelen = %d",
-         ncid, varid, ndims, stride_present, xtype, num_elem, typelen));
-
-    for (int d = 0; d < ndims; d++)
-    {
-        LOG((2, "start[%d] = %d", d, start[d]));
-        LOG((2, "count[%d] = %d", d, count[d]));
-        if (stride_present)
-            LOG((2, "stride[%d] = %d", d, stride[d]));
-    }
+         "start_present = %d count_present = %d stride_present = %d xtype = %d "
+         "num_elem = %d typelen = %d", ncid, varid, ndims, start_present, count_present,
+         stride_present, xtype, num_elem, typelen));
 
     /* Allocate room for our data. */
     if (!(buf = malloc(num_elem * typelen)))
@@ -735,17 +736,13 @@ int put_vars_handler(iosystem_desc_t *ios)
 
     /* Get the data. */
     if ((mpierr = MPI_Bcast(buf, num_elem * typelen, MPI_BYTE, 0, ios->intercomm)))
-    {
-        free(buf);
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
-    }
-
-    /* for (int e = 0; e < num_elem; e++) */
-    /*  LOG((2, "element %d = %d", e, ((int *)buf)[e])); */
 
     /* Set the non-NULL pointers. */
-    startp = start;
-    countp = count;
+    if (start_present)
+        startp = start;
+    if (count_present)
+        countp = count;
     if (stride_present)
         stridep = stride;
 
