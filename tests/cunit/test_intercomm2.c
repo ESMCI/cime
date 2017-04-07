@@ -339,7 +339,8 @@ int main(int argc, char **argv)
          * and when the do, they should go straight to finalize. */
         if (comp_task)
         {
-            for (int fmt = 0; fmt < num_flavors; fmt++)
+            for (int fmt = 1; fmt < num_flavors; fmt++)
+            /* for (int fmt = 0; fmt < num_flavors; fmt++) */
             {
                 int ncid, varid, dimid;
                 PIO_Offset start[NDIM], count[NDIM] = {0};
@@ -516,7 +517,6 @@ int main(int argc, char **argv)
                  * ignored. */
                 for (int i = 0; i < DIM_LEN; i++)
                     data[i] = i;
-		printf("%d test_intercomm2 writing data\n", my_rank);
 		printf("%d test_intercomm2 writing data\n", my_rank);
                 start[0] = 0;
                 count[0] = DIM_LEN;
