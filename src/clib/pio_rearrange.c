@@ -596,9 +596,7 @@ int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc,
      * tasks. The scounts will end up in array recv_buf. */
     if ((ierr = pio_swapm(iodesc->scount, send_counts, send_displs, sr_types,
                           recv_buf, recv_counts, recv_displs, sr_types, ios->union_comm,
-                          iodesc->rearr_opts.comp2io.hs,
-                          iodesc->rearr_opts.comp2io.isend,
-                          iodesc->rearr_opts.comp2io.max_pend_req)))
+                          &iodesc->rearr_opts.comp2io)))
         return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
 
     /* On IO tasks, set up data receives. */
@@ -741,9 +739,7 @@ int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc,
     LOG((3, "sending mapping"));
     if ((ierr = pio_swapm(s2rindex, send_counts, send_displs, sr_types, iodesc->rindex,
                           recv_counts, recv_displs, sr_types, ios->union_comm,
-                          iodesc->rearr_opts.comp2io.hs,
-                          iodesc->rearr_opts.comp2io.isend,
-                          iodesc->rearr_opts.comp2io.max_pend_req)))
+                          &iodesc->rearr_opts.comp2io)))
         return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
 
     return PIO_NOERR;
@@ -925,9 +921,7 @@ int rearrange_comp2io(iosystem_desc_t *ios, io_desc_t *iodesc, void *sbuf,
     LOG((2, "about to call pio_swapm for sbuf"));
     if ((ret = pio_swapm(sbuf, sendcounts, sdispls, sendtypes,
                          rbuf, recvcounts, rdispls, recvtypes, mycomm,
-                         iodesc->rearr_opts.comp2io.hs,
-                         iodesc->rearr_opts.comp2io.isend,
-                         iodesc->rearr_opts.comp2io.max_pend_req)))
+                         &iodesc->rearr_opts.comp2io)))
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
     /* Free the MPI types. */
@@ -1063,9 +1057,7 @@ int rearrange_io2comp(iosystem_desc_t *ios, io_desc_t *iodesc, void *sbuf,
 
     /* Data in sbuf on the ionodes is sent to rbuf on the compute nodes */
     if ((ret = pio_swapm(sbuf, sendcounts, sdispls, sendtypes, rbuf, recvcounts,
-                         rdispls, recvtypes, mycomm, iodesc->rearr_opts.io2comp.hs,
-                         iodesc->rearr_opts.io2comp.isend,
-                         iodesc->rearr_opts.io2comp.max_pend_req)))
+                         rdispls, recvtypes, mycomm, &iodesc->rearr_opts.io2comp)))
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
 #ifdef TIMING
@@ -1262,9 +1254,7 @@ int box_rearrange_create(iosystem_desc_t *ios, int maplen, const PIO_Offset *com
     /* All-gather the llen to all tasks into array iomaplen. */
     LOG((3, "calling pio_swapm to allgather llen into array iomaplen, ndims = %d", ndims));
     if ((ret = pio_swapm(&iodesc->llen, sendcounts, sdispls, dtypes, iomaplen, recvcounts,
-                         rdispls, dtypes, ios->union_comm,
-                         iodesc->rearr_opts.io2comp.hs, iodesc->rearr_opts.io2comp.isend,
-                         iodesc->rearr_opts.io2comp.max_pend_req)))
+                         rdispls, dtypes, ios->union_comm, &iodesc->rearr_opts.io2comp)))
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
     LOG((3, "iodesc->llen = %d", iodesc->llen));
 #if PIO_ENABLE_LOGGING
@@ -1301,8 +1291,7 @@ int box_rearrange_create(iosystem_desc_t *ios, int maplen, const PIO_Offset *com
                  i, ndims));
             if ((ret = pio_swapm(iodesc->firstregion->count, sendcounts, sdispls, dtypes, count,
                                  recvcounts, rdispls, dtypes, ios->union_comm,
-                                 iodesc->rearr_opts.io2comp.hs, iodesc->rearr_opts.io2comp.isend,
-                                 iodesc->rearr_opts.io2comp.max_pend_req)))
+                                 &iodesc->rearr_opts.io2comp)))
                 return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
             /* The start array from iotask i is sent to all compute tasks. */
@@ -1310,8 +1299,7 @@ int box_rearrange_create(iosystem_desc_t *ios, int maplen, const PIO_Offset *com
                  i, ndims));
             if ((ret = pio_swapm(iodesc->firstregion->start,  sendcounts, sdispls, dtypes,
                                  start, recvcounts, rdispls, dtypes, ios->union_comm,
-                                 iodesc->rearr_opts.io2comp.hs, iodesc->rearr_opts.io2comp.isend,
-                                 iodesc->rearr_opts.io2comp.max_pend_req)))
+                                 &iodesc->rearr_opts.io2comp)))
                 return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
 #if PIO_ENABLE_LOGGING
