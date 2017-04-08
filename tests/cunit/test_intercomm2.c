@@ -517,7 +517,6 @@ int main(int argc, char **argv)
                 for (int i = 0; i < DIM_LEN; i++)
                     data[i] = i;
 		printf("%d test_intercomm2 writing data\n", my_rank);
-		printf("%d test_intercomm2 writing data\n", my_rank);
                 start[0] = 0;
                 count[0] = DIM_LEN;
                 if ((ret = PIOc_put_vars_tc(ncid, varid, start, count, NULL, NC_INT, data)))

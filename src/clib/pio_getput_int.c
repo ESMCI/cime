@@ -580,7 +580,7 @@ int PIOc_get_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
                 mpierr = MPI_Bcast(&num_elem, 1, MPI_OFFSET, ios->compmaster, ios->intercomm);
             if (!mpierr)
                 mpierr = MPI_Bcast(&typelen, 1, MPI_OFFSET, ios->compmaster, ios->intercomm);
-            LOG((2, "PIOc_get_vars_tc ncid = %d varid = %d ndims = %d start_present = %d"
+            LOG((2, "PIOc_get_vars_tc ncid = %d varid = %d ndims = %d start_present = %d "
                  "count_present = %d stride_present = %d xtype = %d num_elem = %d", ncid, varid,
                  ndims, start_present, count_present, stride_present, xtype, num_elem));
         }
@@ -873,22 +873,22 @@ int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
                      const PIO_Offset *stride, nc_type xtype, const void *buf)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
-    file_desc_t *file;     /* Pointer to file information. */
-    int ndims; /* The number of dimensions in the variable. */
+    file_desc_t *file;  /* Pointer to file information. */
+    int ndims;          /* The number of dimensions in the variable. */
     PIO_Offset typelen; /* Size (in bytes) of the data type of data in buf. */
     PIO_Offset num_elem = 1; /* Number of data elements in the buffer. */
-    char start_present = start ? true : false; /* Is start non-NULL? */
-    char count_present = count ? true : false; /* Is count non-NULL? */
-    char stride_present = stride ? true : false; /* Is stride non-NULL? */
-    PIO_Offset *rstart, *rcount, *rstride;
+    char start_present = start ? true : false;    /* Is start non-NULL? */
+    char count_present = count ? true : false;    /* Is count non-NULL? */
+    char stride_present = stride ? true : false;  /* Is stride non-NULL? */
     var_desc_t *vdesc;
     int *request;
     nc_type vartype;   /* The type of the var we are reading from. */
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
     int ierr;          /* Return code from function calls. */
 
-    LOG((1, "PIOc_put_vars_tc ncid = %d varid = %d start = %d count = %d "
-         "stride = %d xtype = %d", ncid, varid, start, count, stride, xtype));
+    LOG((1, "PIOc_put_vars_tc ncid = %d varid = %d start_present = %d "
+         "count_present = %d stride_present = %d xtype = %d", ncid, varid,
+         start_present, count_present, stride_present, xtype));
 
     /* Get file info. */
     if ((ierr = pio_get_file(ncid, &file)))
@@ -926,65 +926,11 @@ int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
 
         LOG((2, "ndims = %d typelen = %d", ndims, typelen));
 
-        PIO_Offset dimlen[ndims];
-
-        /* If no count array was passed, we need to know the dimlens
-         * so we can calculate how many data elements are in the
-         * buf. */
-        if (!count)
-        {
-            int dimid[ndims];
-
-            /* Get the dimids for this var. */
-            if ((ierr = PIOc_inq_vardimid(ncid, varid, dimid)))
-                return check_netcdf(file, ierr, __FILE__, __LINE__);
-
-            /* Get the length of each dimension. */
+        /* How many elements of data? If no count array was passed,
+         * this is a scalar. */
+        if (count)
             for (int vd = 0; vd < ndims; vd++)
-            {
-                if ((ierr = PIOc_inq_dimlen(ncid, dimid[vd], &dimlen[vd])))
-                    return check_netcdf(file, ierr, __FILE__, __LINE__);
-                LOG((3, "dimlen[%d] = %d", vd, dimlen[vd]));
-            }
-        }
-
-        /* Allocate memory for these arrays, now that we know ndims. */
-        if (!(rstart = malloc(ndims * sizeof(PIO_Offset))))
-            return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
-        if (!(rcount = malloc(ndims * sizeof(PIO_Offset))))
-            return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
-        if (!(rstride = malloc(ndims * sizeof(PIO_Offset))))
-            return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
-
-        /* Figure out the real start, count, and stride arrays. (The
-         * user may have passed in NULLs.) */
-        for (int vd = 0; vd < ndims; vd++)
-        {
-            rstart[vd] = start ? start[vd] : 0;
-            rcount[vd] = count ? count[vd] : dimlen[vd];
-            rstride[vd] = stride ? stride[vd] : 1;
-            LOG((3, "rstart[%d] = %d rcount[%d] = %d rstride[%d] = %d", vd,
-                 rstart[vd], vd, rcount[vd], vd, rstride[vd]));
-        }
-
-        /* How many elements in buf? */
-        for (int vd = 0; vd < ndims; vd++)
-            num_elem *= rcount[vd];
-        LOG((2, "PIOc_put_vars_tc num_elem = %d", num_elem));
-
-        /* Free tmp resources. */
-        if (start_present)
-            free(rstart);
-        else
-            start = rstart;
-
-        if (count_present)
-            free(rcount);
-        else
-            count = rcount;
-
-        /* Only PNETCDF requires a non-NULL stride, realocate it later if needed */
-        free(rstride);
+                num_elem *= count[vd];
     }
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
@@ -1006,8 +952,12 @@ int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
             if (!mpierr)
                 mpierr = MPI_Bcast(&ndims, 1, MPI_INT, ios->compmaster, ios->intercomm);
             if (!mpierr)
+                mpierr = MPI_Bcast(&start_present, 1, MPI_CHAR, ios->compmaster, ios->intercomm);
+            if (!mpierr && start_present)
                 mpierr = MPI_Bcast((PIO_Offset *)start, ndims, MPI_OFFSET, ios->compmaster, ios->intercomm);
             if (!mpierr)
+                mpierr = MPI_Bcast(&count_present, 1, MPI_CHAR, ios->compmaster, ios->intercomm);
+            if (!mpierr && count_present)
                 mpierr = MPI_Bcast((PIO_Offset *)count, ndims, MPI_OFFSET, ios->compmaster, ios->intercomm);
             if (!mpierr)
                 mpierr = MPI_Bcast(&stride_present, 1, MPI_CHAR, ios->compmaster, ios->intercomm);
@@ -1184,15 +1134,6 @@ int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
         }
     }
 
-    if (!ios->async || !ios->ioproc)
-    {
-        /* Free tmp start/count allocated to account for NULL start/counts */
-        if (!start_present)
-            free(rstart);
-        if (!count_present)
-            free(rcount);
-    }
-
     /* Broadcast and check the return code. */
     if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
         return check_mpi(file, mpierr, __FILE__, __LINE__);
@@ -1254,4 +1195,79 @@ int PIOc_put_var1_tc(int ncid, int varid, const PIO_Offset *index, nc_type xtype
         count[c] = 1;
 
     return PIOc_put_vars_tc(ncid, varid, index, count, NULL, xtype, op);
+}
+
+/**
+ * Internal PIO function which provides a type-neutral interface to
+ * nc_put_var calls.
+ *
+ * Users should not call this function directly. Instead, call one of
+ * the derived functions, depending on the type of data you are
+ * writing: PIOc_put_var_text(), PIOc_put_var_uchar(),
+ * PIOc_put_var_schar(), PIOc_put_var_ushort(),
+ * PIOc_put_var_short(), PIOc_put_var_uint(), PIOc_put_var_int(),
+ * PIOc_put_var_long(), PIOc_put_var_float(),
+ * PIOc_put_var_longlong(), PIOc_put_var_double(),
+ * PIOc_put_var_ulonglong().
+ *
+ * This routine is called collectively by all tasks in the
+ * communicator ios.union_comm.
+ *
+ * @param ncid identifies the netCDF file
+ * @param varid the variable ID number
+ * @param xtype the netCDF type of the data being passed in buf. Data
+ * will be automatically covnerted from this type to the type of the
+ * variable being written to.
+ * @param op pointer to the data to be written.
+ *
+ * @return PIO_NOERR on success, error code otherwise.
+ */
+int PIOc_put_var_tc(int ncid, int varid, nc_type xtype, const void *op)
+{
+    iosystem_desc_t *ios;  /* Pointer to io system information. */
+    file_desc_t *file;     /* Pointer to file information. */
+    PIO_Offset *startp = NULL; /* Pointer to start array. */
+    PIO_Offset *countp = NULL; /* Pointer to count array. */
+    PIO_Offset start[PIO_MAX_DIMS];
+    PIO_Offset count[PIO_MAX_DIMS];
+    int ndims;   /* The number of dimensions in the variable. */
+    int ierr;    /* Return code from function calls. */
+
+    LOG((1, "PIOc_put_var_tc ncid = %d varid = %d xtype = %d", ncid,
+         varid, xtype));
+
+    /* Find the info about this file. We need this for error handling. */
+    if ((ierr = pio_get_file(ncid, &file)))
+        return pio_err(NULL, NULL, ierr, __FILE__, __LINE__);
+    ios = file->iosystem;
+
+    /* Find the number of dimensions. */
+    if ((ierr = PIOc_inq_varndims(ncid, varid, &ndims)))
+        return pio_err(ios, file, ierr, __FILE__, __LINE__);
+
+    /* Scalar vars (which have ndims == 0) should just pass NULLs for
+     * start/count. */
+    if (ndims)
+    {
+        int dimid[ndims];
+        
+        /* Set up start array. */
+        for (int d = 0; d < ndims; d++)
+            start[d] = 0;
+
+        /* Get the dimids for this var. */
+        if ((ierr = PIOc_inq_vardimid(ncid, varid, dimid)))
+            return check_netcdf(file, ierr, __FILE__, __LINE__);
+        
+        /* Count array are the dimlens. */
+        for (int d = 0; d < ndims; d++)
+            if ((ierr = PIOc_inq_dimlen(ncid, dimid[d], &count[d])))
+                return pio_err(ios, file, ierr, __FILE__, __LINE__);
+
+        /* Set the array pointers. */
+        startp = start;
+        countp = count;
+    }
+
+    return PIOc_put_vars_tc(ncid, varid, startp, countp, NULL, xtype, op);
 }
