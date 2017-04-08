@@ -159,9 +159,9 @@ extern "C" {
     void CheckMPIReturn(int ierr, const char *file, int line);
 
     /* Like MPI_Alltoallw(), but with flow control. */
-    int pio_swapm(void *sndbuf, int *sndlths, int *sdispls, MPI_Datatype *stypes,
-                  void *rcvbuf, int *rcvlths, int *rdispls, MPI_Datatype *rtypes,
-                  MPI_Comm comm, bool handshake, bool isend, int max_requests);
+    int pio_swapm(void *sendbuf, int *sendcounts, int *sdispls, MPI_Datatype *sendtypes,
+                  void *recvbuf, int *recvcounts, int *rdispls, MPI_Datatype *recvtypes,
+                  MPI_Comm comm, rearr_comm_fc_opt_t *fc);
 
     long long lgcd_array(int nain, long long* ain);
 

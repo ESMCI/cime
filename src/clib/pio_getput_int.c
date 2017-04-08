@@ -493,7 +493,7 @@ int PIOc_get_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
     char count_present = count ? true : false;
     char stride_present = stride ? true : false;
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
-    int ierr = PIO_NOERR;               /* Return code. */
+    int ierr;                           /* Return code. */
 
     LOG((1, "PIOc_get_vars_tc ncid = %d varid = %d xtype = %d start_present = %d "
          "count_present = %d stride_present = %d", ncid, varid, xtype, start_present,
@@ -607,7 +607,9 @@ int PIOc_get_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
 #ifdef _PNETCDF
         if (file->iotype == PIO_IOTYPE_PNETCDF)
         {
-            ncmpi_begin_indep_data(file->fh);
+            /* Turn on independent access for pnetcdf file. */
+            if ((ierr = ncmpi_begin_indep_data(file->fh)))
+                return pio_err(ios, file, ierr, __FILE__, __LINE__);
             
             /* Only the IO master does the IO, so we are not really
              * getting parallel IO here. */
@@ -641,8 +643,9 @@ int PIOc_get_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
                 }
             }
 
-            ncmpi_end_indep_data(file->fh);
-            
+            /* Turn off independent access for pnetcdf file. */
+            if ((ierr = ncmpi_end_indep_data(file->fh)))
+                return pio_err(ios, file, ierr, __FILE__, __LINE__);
         }
 #endif /* _PNETCDF */
 

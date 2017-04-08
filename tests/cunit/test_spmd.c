@@ -83,8 +83,9 @@ int run_spmd_tests(MPI_Comm test_comm)
 
         for (int itest = 0; itest < NUM_TEST_CASES; itest++)
         {
-            bool hs = false;
-            bool isend = false;
+            rearr_comm_fc_opt_t fc;            
+            fc.hs = false;
+            fc.isend = false;
 
             /* Wait for all tasks. */
             MPI_Barrier(test_comm);
@@ -97,28 +98,28 @@ int run_spmd_tests(MPI_Comm test_comm)
             /* Set the parameters different for each test case. */
             if (itest == 1)
             {
-                hs = true;
-                isend = true;
+                fc.hs = true;
+                fc.isend = true;
             }
             else if (itest == 2)
             {
-                hs = false;
-                isend = true;
+                fc.hs = false;
+                fc.isend = true;
             }
             else if (itest == 3)
             {
-                hs = false;
-                isend = false;
+                fc.hs = false;
+                fc.isend = false;
             }
             else if (itest == 4)
             {
-                hs = true;
-                isend = false;
+                fc.hs = true;
+                fc.isend = false;
             }
 
             /* Run the swapm function. */
             if ((ret = pio_swapm(sbuf, sendcounts, sdispls, sendtypes, rbuf, recvcounts,
-                                 rdispls, recvtypes, test_comm, hs, isend, msg_cnt)))
+                                 rdispls, recvtypes, test_comm, &fc)))
                 return ret;
 
             /* Print results. */
