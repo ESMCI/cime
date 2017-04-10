@@ -584,10 +584,6 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
     LOG((2, "wmb->validvars = %d iodesc->maxbytes / tsize = %d iodesc->ndof = %d iodesc->llen = %d",
          wmb->validvars, iodesc->maxbytes / tsize, iodesc->ndof, iodesc->llen));
 
-    /* Call the sync when ??? */
-    if (wmb->validvars >= iodesc->maxbytes / tsize)
-        PIOc_sync(ncid);
-
     return PIO_NOERR;
 }
 
