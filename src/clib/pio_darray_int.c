@@ -1345,14 +1345,14 @@ int flush_buffer(int ncid, wmulti_buffer *wmb, bool flushtodisk)
     LOG((1, "flush_buffer ncid = %d flushtodisk = %d", ncid, flushtodisk));
 
     /* If there are any variables in this buffer... */
-    if (wmb->validvars > 0)
+    if (wmb->num_arrays > 0)
     {
         /* Write any data in the buffer. */
-        ret = PIOc_write_darray_multi(ncid, wmb->vid,  wmb->ioid, wmb->validvars,
+        ret = PIOc_write_darray_multi(ncid, wmb->vid,  wmb->ioid, wmb->num_arrays,
                                       wmb->arraylen, wmb->data, wmb->frame,
                                       wmb->fillvalue, flushtodisk);
 
-        wmb->validvars = 0;
+        wmb->num_arrays = 0;
 
         /* Release the list of variable IDs. */
         brel(wmb->vid);

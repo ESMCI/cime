@@ -482,9 +482,10 @@ typedef struct wmulti_buffer
      * PIOc_Init_Decomp().  */
     int ioid;
 
-    /** Number of variables or records of variables in this multi
-     * variable buffer. */
-    int validvars;
+    /** Number of arrays of data in the multibuffer. Each array had
+     * data for one var or record. When multibuffer is flushed, all
+     * arrays are written and num_arrays returns to zero. */
+    int num_arrays;
 
     /** Size of this variables data on local task. All vars in the
      * multi-buffer have the same size. */

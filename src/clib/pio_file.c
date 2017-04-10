@@ -368,7 +368,9 @@ int PIOc_sync(int ncid)
         wmb = &file->buffer;
         while (wmb)
         {
-            if (wmb->validvars > 0)
+            /* If there are any data arrays waiting in the
+             * multibuffer, flush it. */
+            if (wmb->num_arrays > 0)
                 flush_buffer(ncid, wmb, true);
             twmb = wmb;
             wmb = wmb->next;
