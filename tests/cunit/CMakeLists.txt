@@ -98,9 +98,9 @@ add_dependencies (tests test_decomps)
 
 # Test Timeout in seconds.
 if (PIO_VALGRIND_CHECK)
-  set (DEFAULT_TEST_TIMEOUT 120)
+  set (DEFAULT_TEST_TIMEOUT 240)
 else ()
-  set (DEFAULT_TEST_TIMEOUT 60)
+  set (DEFAULT_TEST_TIMEOUT 120)
 endif ()
 
 # All tests need a certain number of tasks, but they should be able to
