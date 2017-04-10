@@ -1429,8 +1429,8 @@ int check_scalar_var(int ncid, int varid, int flavor)
     printf("val_in = %d\n", val_in);
 
     /* Is the value correct? */
-    /* if (val_in != TEST_VAL_42) */
-    /*     return ERR_WRONG; */
+    if (val_in != TEST_VAL_42)
+        return ERR_WRONG;
 
     return 0;
 }
@@ -1494,15 +1494,20 @@ int test_scalar(int iosysid, int num_flavors, int *flavor, int my_rank, int asyn
             return ret;
         if ((ret = ncmpi_open(test_comm, test_file, NC_NOWRITE, MPI_INFO_NULL, &ncid)))
             return ret;
-        if ((ret = ncmpi_get_var_int_all(ncid, varid, &test_val_in)))
+        /* Turn on independent access for pnetcdf file. */
+        if ((ret = ncmpi_begin_indep_data(ncid)))
+            return ret;
+        /* if ((ret = ncmpi_get_var_int(ncid, varid, &test_val_in))) */
+        /*     return ret; */
+        if ((ret = ncmpi_get_vars_int(ncid, varid, NULL, NULL, NULL, &test_val_in)))
+            return ret;
+        if ((ret = ncmpi_end_indep_data(ncid)))
             return ret;
         if (test_val_in != test_val)
             return ERR_WRONG;
-        printf("about to call ncmpi_get_vars_int\n");
-        /* ret = ncmpi_get_vars_int(ncid, varid, NULL, NULL, NULL, &test_val_in); */
         printf("ret = %d test_val_in = %d\n", ret, test_val_in);
-        /* if (test_val_in != test_val) */
-        /*     return ERR_WRONG; */
+        if (test_val_in != test_val)
+            return ERR_WRONG;
         if ((ret = ncmpi_close(ncid)))
             return ret;
     }
