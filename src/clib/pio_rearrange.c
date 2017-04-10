@@ -551,11 +551,10 @@ int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc,
         sr_types[i] = MPI_INT;
     }
 
-    /* Setup for the swapm call at line 550 iodesc->scount is the
-     * amount of data this compute task will transfer to/from each
-     * iotask. For the subset rearranger there is only one io task per
-     * compute task, for the box rearranger there can be more than
-     * one. This provides enough information to know the size of data
+    /* Setup for the swapm call. iodesc->scount is the amount of data
+     * this compute task will transfer to/from each iotask. For the
+     * box rearranger there can be more than one IO task per compute
+     * task. This provides enough information to know the size of data
      * on the iotask, so at line 557 we allocate arrays to hold the
      * map on the iotasks. iodesc->rcount is an array of the amount of
      * data to expect from each compute task and iodesc->rfrom is the
@@ -573,12 +572,12 @@ int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc,
      * swapm call. */
     if (ios->ioproc)
     {
-        /* Allocate memory to hold array of tasks that have recieved
-         * data ??? */
+        /* Allocate memory to hold array of the scounts from all
+         * computation tasks. */
         if (!(recv_buf = calloc(ios->num_comptasks, sizeof(int))))
             return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
-        /* Initialize arrays that keep track of receives. */
+        /* Initialize arrays that keep track of ???. */
         for (int i = 0; i < ios->num_comptasks; i++)
         {
             recv_counts[i] = 1;
