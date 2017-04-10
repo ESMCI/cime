@@ -713,6 +713,9 @@ int PIOc_Init_Intracomm(MPI_Comm comp_comm, int num_iotasks, int stride, int bas
     ios->num_iotasks = num_iotasks;
     ios->num_comptasks = num_comptasks;
 
+    /* For non-async, the IO tasks are a subset of the comptasks. */
+    ios->num_uniontasks = num_comptasks;
+
     /* Initialize the rearranger options. */
     ios->rearr_opts.comm_type = PIO_REARR_COMM_COLL;
     ios->rearr_opts.fcd = PIO_REARR_COMM_FC_2D_DISABLE;
@@ -733,6 +736,10 @@ int PIOc_Init_Intracomm(MPI_Comm comp_comm, int num_iotasks, int stride, int bas
     if ((mpierr = MPI_Comm_rank(ios->comp_comm, &ios->comp_rank)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
 
+    /* With non-async, all tasks are part of computation component. */
+    ios->compproc = true;
+
+    /* Is this the comp master? */
     if (ios->comp_rank == 0)
         ios->compmaster = MPI_ROOT;
     LOG((2, "comp_rank = %d num_comptasks = %d", ios->comp_rank, ios->num_comptasks));
@@ -933,6 +940,9 @@ int PIOc_finalize(int iosysid)
     if (ios->ioranks)
         free(ios->ioranks);
     LOG((3, "Freed ioranks."));
+    if (ios->compranks)
+        free(ios->compranks);
+    LOG((3, "Freed compranks."));
 
     /* Free the buffer pool. */
     int niosysid;
@@ -1297,6 +1307,7 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
         my_iosys->error_handler = default_error_handler;
         my_iosys->num_comptasks = num_procs_per_comp[cmp];
         my_iosys->num_iotasks = num_io_procs;
+        my_iosys->num_uniontasks = my_iosys->num_comptasks + my_iosys->num_iotasks;
         my_iosys->compgroup = MPI_GROUP_NULL;
         my_iosys->iogroup = MPI_GROUP_NULL;
         my_iosys->default_rearranger = rearranger;
@@ -1337,6 +1348,14 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
         for (int p = 0; p < num_procs_per_comp[cmp]; p++)
             proc_list_union[p + num_io_procs] = my_proc_list[cmp][p];
 
+        /* Allocate space for computation task ranks. */
+        if (!(my_iosys->compranks = calloc(my_iosys->num_comptasks, sizeof(int))))
+            return pio_err(NULL, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+        
+        /* Remember computation task ranks. */
+        for (int p = 0; p < num_procs_per_comp[cmp]; p++)
+            my_iosys->compranks[p] = my_proc_list[cmp][p];
+
         /* Create the union group. */
         if ((ret = MPI_Group_incl(world_group, nprocs_union, proc_list_union, &union_group[cmp])))
             return check_mpi(NULL, ret, __FILE__, __LINE__);
@@ -1345,6 +1364,10 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
 
         /* Remember whether this process is in the IO component. */
         my_iosys->ioproc = in_io;
+
+        /* With async, tasks are either in a computation component or
+         * the IO component. */
+        my_iosys->compproc = !in_io;
 
         /* Is this process in this computation component? */
         int in_cmp = 0;
