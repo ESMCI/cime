@@ -485,14 +485,16 @@ int define_iodesc_datatypes(iosystem_desc_t *ios, io_desc_t *iodesc)
  *
  * This function:
  * <ul>
- * <li>Allocates and inits iodesc->scount, array (length
+ * <li>Allocates and inits iodesc->scount, an array (length
  * ios->num_iotasks) containing number of data elements sent to each
  * IO task from current compute task.
  * <li>Uses pio_swapm() to send iodesc->scount array from each
  * computation task to all IO tasks.
  * <li>On IO tasks, allocates and inits iodesc->rcount and
- * iodesc->rfrom arrays (length max(1, nrecvs)) which holds ???.
- * <li>Allocates and init iodesc->sindex arrays (length iodesc->ndof)
+ * iodesc->rfrom arrays (length max(1, nrecvs)) which holds the amount
+ * of data to expect from each compute task and the rank of that
+ * task. .
+ * <li>Allocates and inits iodesc->sindex arrays (length iodesc->ndof)
  * which holds indecies for computation tasks.
  * <li>On IO tasks, allocates and init iodesc->rindex (length
  * totalrecv) with indices of the data to be sent/received from this
