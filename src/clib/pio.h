@@ -401,6 +401,11 @@ typedef struct iosystem_desc_t
     /** The number of tasks in the computation communicator. */
     int num_comptasks;
 
+    /** The number of tasks in the union communicator (will be
+     * num_comptasks for non-async, num_comptasks + num_iotasks for
+     * async). */
+    int num_uniontasks;
+
     /** Rank of this task in the union communicator. */
     int union_rank;
 
@@ -433,6 +438,10 @@ typedef struct iosystem_desc_t
      * communicator. */
     int *ioranks;
 
+    /** An array of the ranks of all computation tasks within the
+     * union communicator. */
+    int *compranks;
+
     /** Controls handling errors. */
     int error_handler;
 
@@ -445,6 +454,10 @@ typedef struct iosystem_desc_t
 
     /** True if this task is a member of the IO communicator. */
     bool ioproc;
+
+    /** True if this task is a member of a computation
+     * communicator. */
+    bool compproc;
 
     /** MPI Info object. */
     MPI_Info info;
