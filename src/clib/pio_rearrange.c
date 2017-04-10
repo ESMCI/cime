@@ -1176,11 +1176,11 @@ int box_rearrange_create(iosystem_desc_t *ios, int maplen, const PIO_Offset *com
     /* Allocate arrays needed for this function. */
     int dest_ioproc[maplen]; /* Destination IO task for each data element on compute task. */
     PIO_Offset dest_ioindex[maplen];    /* Offset into global array for each data element. */
-    int sendcounts[ios->num_comptasks]; /* Send counts for swapm call. */
-    int sdispls[ios->num_comptasks];    /* Send displacements for swapm. */
-    int recvcounts[ios->num_comptasks]; /* Receive counts for swapm. */
-    int rdispls[ios->num_comptasks];    /* Receive displacements for swapm. */
-    MPI_Datatype dtypes[ios->num_comptasks]; /* Array of MPI_OFFSET types for swapm. */
+    int sendcounts[ios->num_uniontasks]; /* Send counts for swapm call. */
+    int sdispls[ios->num_uniontasks];    /* Send displacements for swapm. */
+    int recvcounts[ios->num_uniontasks]; /* Receive counts for swapm. */
+    int rdispls[ios->num_uniontasks];    /* Receive displacements for swapm. */
+    MPI_Datatype dtypes[ios->num_uniontasks]; /* Array of MPI_OFFSET types for swapm. */
     PIO_Offset iomaplen[ios->num_iotasks];   /* Gets the llen of all IO tasks. */
 
     /* This is the box rearranger. */
@@ -1197,7 +1197,7 @@ int box_rearrange_create(iosystem_desc_t *ios, int maplen, const PIO_Offset *com
     }
 
     /* Initialize arrays used in swapm. */
-    for (int i = 0; i < ios->num_comptasks; i++)
+    for (int i = 0; i < ios->num_uniontasks; i++)
     {
         sendcounts[i] = 0;
         sdispls[i] = 0;
@@ -1210,8 +1210,8 @@ int box_rearrange_create(iosystem_desc_t *ios, int maplen, const PIO_Offset *com
      * the IO task. For computation tasks, llen will remain at 0. Also
      * set up arrays for the allgather which will give every IO task a
      * complete list of llens for each IO task. */
-    LOG((3, "ios->ioproc = %d ios->num_comptasks = %d", ios->ioproc,
-         ios->num_comptasks));
+    LOG((3, "ios->ioproc = %d ios->num_uniontasks = %d", ios->ioproc,
+         ios->num_uniontasks));
     pioassert(iodesc->llen == 0, "error", __FILE__, __LINE__);
     if (ios->ioproc)
     {
@@ -1242,8 +1242,6 @@ int box_rearrange_create(iosystem_desc_t *ios, int maplen, const PIO_Offset *com
      * gather of llen. */
     for (int i = 0; i < ios->num_iotasks; i++)
     {
-        LOG((2, "i = %d", i));
-        LOG((2, "i = %d ios->ioranks[i] = %d", i, ios->ioranks[i]));
         recvcounts[ios->ioranks[i]] = 1;
         rdispls[ios->ioranks[i]] = i * SIZEOF_MPI_OFFSET;
         LOG((3, "i = %d ios->ioranks[%d] = %d recvcounts[%d] = %d rdispls[%d] = %d",
@@ -1252,7 +1250,8 @@ int box_rearrange_create(iosystem_desc_t *ios, int maplen, const PIO_Offset *com
     }
 
     /* All-gather the llen to all tasks into array iomaplen. */
-    LOG((3, "calling pio_swapm to allgather llen into array iomaplen, ndims = %d", ndims));
+    LOG((3, "calling pio_swapm to allgather llen into array iomaplen, ndims = %d dtypes[0] = %d",
+         ndims, dtypes));
     if ((ret = pio_swapm(&iodesc->llen, sendcounts, sdispls, dtypes, iomaplen, recvcounts,
                          rdispls, dtypes, ios->union_comm, &iodesc->rearr_opts.io2comp)))
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);

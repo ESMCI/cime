@@ -671,13 +671,19 @@ int test_box_rearrange_create(MPI_Comm test_comm, int my_rank)
 
     /* Set up the IO task info for the test. */
     ios->ioproc = 1;
+    ios->compproc = 1;
     ios->union_rank = my_rank;
     ios->num_iotasks = 4;
     ios->num_comptasks = 4;
+    ios->num_uniontasks = 4;
     if (!(ios->ioranks = calloc(ios->num_iotasks, sizeof(int))))
         return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
     for (int i = 0; i < TARGET_NTASKS; i++)
         ios->ioranks[i] = i;
+    if (!(ios->compranks = calloc(ios->num_comptasks, sizeof(int))))
+        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+    for (int i = 0; i < TARGET_NTASKS; i++)
+        ios->compranks[i] = i;
 
     /* This is how we allocate a region. */
     if ((ret = alloc_region2(NULL, NDIM1, &ior1)))
@@ -740,6 +746,7 @@ int test_box_rearrange_create(MPI_Comm test_comm, int my_rank)
     free(ior1->count);
     free(ior1);
     free(ios->ioranks);
+    free(ios->compranks);
     free(iodesc);
     free(ios);
 
@@ -782,13 +789,19 @@ int test_box_rearrange_create_2(MPI_Comm test_comm, int my_rank)
 
     /* Set up the IO task info for the test. */
     ios->ioproc = 1;
+    ios->compproc = 1;
     ios->union_rank = my_rank;
     ios->num_iotasks = 4;
     ios->num_comptasks = 4;
+    ios->num_uniontasks = 4;
     if (!(ios->ioranks = calloc(ios->num_iotasks, sizeof(int))))
         return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
     for (int i = 0; i < TARGET_NTASKS; i++)
         ios->ioranks[i] = i;
+    if (!(ios->compranks = calloc(ios->num_comptasks, sizeof(int))))
+        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+    for (int i = 0; i < TARGET_NTASKS; i++)
+        ios->compranks[i] = i;
 
     /* This is how we allocate a region. */
     if ((ret = alloc_region2(NULL, NDIM1, &ior1)))
@@ -848,6 +861,7 @@ int test_box_rearrange_create_2(MPI_Comm test_comm, int my_rank)
     free(ior1->count);
     free(ior1);
     free(ios->ioranks);
+    free(ios->compranks);
     free(iodesc);
     free(ios);
 
@@ -920,15 +934,15 @@ int test_rearrange_comp2io(MPI_Comm test_comm, int my_rank)
         return PIO_ENOMEM;
 
     ios->ioproc = 1;
+    ios->compproc = 1;
     ios->io_rank = my_rank;
     ios->union_comm = test_comm;
     ios->num_iotasks = TARGET_NTASKS;
+    ios->num_uniontasks = TARGET_NTASKS;
     iodesc->rearranger = PIO_REARR_BOX;
     iodesc->basetype = MPI_INT;
 
     /* Set up test for IO task with BOX rearranger to create one type. */
-    ios->ioproc = 1; /* this is IO proc. */
-    ios->num_iotasks = 4; /* The number of IO tasks. */
     iodesc->rtype = NULL; /* Array of MPI types will be created here. */
     iodesc->nrecvs = 1; /* Number of types created. */
     iodesc->basetype = MPI_INT;
@@ -950,14 +964,16 @@ int test_rearrange_comp2io(MPI_Comm test_comm, int my_rank)
     iodesc->ndof = 4;
 
     /* Set up the IO task info for the test. */
-    ios->ioproc = 1;
     ios->union_rank = my_rank;
-    ios->num_iotasks = 4;
     ios->num_comptasks = 4;
     if (!(ios->ioranks = calloc(ios->num_iotasks, sizeof(int))))
         return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
     for (int i = 0; i < TARGET_NTASKS; i++)
         ios->ioranks[i] = i;
+    if (!(ios->compranks = calloc(ios->num_comptasks, sizeof(int))))
+        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+    for (int i = 0; i < TARGET_NTASKS; i++)
+        ios->compranks[i] = i;
 
     /* This is how we allocate a region. */
     if ((ret = alloc_region2(NULL, NDIM1, &ior1)))
@@ -1004,6 +1020,7 @@ int test_rearrange_comp2io(MPI_Comm test_comm, int my_rank)
     free(ior1->count);
     free(ior1);
     free(ios->ioranks);
+    free(ios->compranks);
     free(iodesc);
     free(ios);
     free(sbuf);
@@ -1073,13 +1090,19 @@ int test_rearrange_io2comp(MPI_Comm test_comm, int my_rank)
 
     /* Set up the IO task info for the test. */
     ios->ioproc = 1;
+    ios->compproc = 1;
     ios->union_rank = my_rank;
     ios->num_iotasks = 4;
     ios->num_comptasks = 4;
+    ios->num_uniontasks = 4;
     if (!(ios->ioranks = calloc(ios->num_iotasks, sizeof(int))))
         return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
     for (int i = 0; i < TARGET_NTASKS; i++)
         ios->ioranks[i] = i;
+    if (!(ios->compranks = calloc(ios->num_comptasks, sizeof(int))))
+        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+    for (int i = 0; i < TARGET_NTASKS; i++)
+        ios->compranks[i] = i;
 
     /* This is how we allocate a region. */
     if ((ret = alloc_region2(NULL, NDIM1, &ior1)))
@@ -1126,6 +1149,7 @@ int test_rearrange_io2comp(MPI_Comm test_comm, int my_rank)
     free(ior1->count);
     free(ior1);
     free(ios->ioranks);
+    free(ios->compranks);
     free(iodesc);
     free(ios);
     free(sbuf);
