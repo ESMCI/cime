@@ -1477,6 +1477,7 @@ int test_scalar(int iosysid, int num_flavors, int *flavor, int my_rank, int asyn
 
     /* Use pnetCDF to create a file with a scalar var, then set and
      * read the value. */
+#ifdef _PNETCDF
     {
         char test_file[] = "pnetcdf_test.nc";
         int test_val = TEST_VAL_42;
@@ -1511,6 +1512,7 @@ int test_scalar(int iosysid, int num_flavors, int *flavor, int my_rank, int asyn
         if ((ret = ncmpi_close(ncid)))
             return ret;
     }
+#endif /* _PNETCDF */
 
     /* Use PIO to create the example file in each of the four
      * available ways. */
