@@ -643,7 +643,6 @@ int PIOc_get_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
                     return pio_err(ios, file, PIO_EBADIOTYPE, __FILE__, __LINE__);
                 }
             }
-            LOG((2, "result = %d", *(int *)buf));
 
             /* Turn off independent access for pnetcdf file. */
             if ((ierr = ncmpi_end_indep_data(file->fh)))
