@@ -572,12 +572,18 @@ int test_compute_counts(MPI_Comm test_comm, int my_rank)
 
     ios->num_iotasks = TARGET_NTASKS;
     ios->num_comptasks = TARGET_NTASKS;
+    ios->num_uniontasks = TARGET_NTASKS;
     ios->ioproc = 1;
+    ios->compproc = 1;
     ios->union_comm = test_comm;
     if (!(ios->ioranks = malloc(TARGET_NTASKS * sizeof(int))))
         return PIO_ENOMEM;
     for (int t = 0; t < TARGET_NTASKS; t++)
         ios->ioranks[t] = t;
+    if (!(ios->compranks = calloc(ios->num_comptasks, sizeof(int))))
+        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+    for (int i = 0; i < TARGET_NTASKS; i++)
+        ios->compranks[i] = i;
 
     /* Initialize iodesc. */
     if (!(iodesc = calloc(1, sizeof(io_desc_t))))
@@ -611,6 +617,7 @@ int test_compute_counts(MPI_Comm test_comm, int my_rank)
 
     /* Free test resources. */
     free(ios->ioranks);
+    free(ios->compranks);
     free(iodesc);
     free(ios);
 

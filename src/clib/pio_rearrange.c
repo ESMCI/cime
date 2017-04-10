@@ -510,27 +510,22 @@ int define_iodesc_datatypes(iosystem_desc_t *ios, io_desc_t *iodesc)
 int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc,
                    const int *dest_ioproc, const PIO_Offset *dest_ioindex)
 {
-    int ntasks;      /* Number of tasks in union communicator. */
     int *recv_buf = NULL;
     int nrecvs = 0;
     int ierr;
 
     /* Check inputs. */
     pioassert(ios && iodesc && dest_ioproc && dest_ioindex &&
-              iodesc->rearranger == PIO_REARR_BOX, "invalid input", __FILE__,
-              __LINE__);
-    LOG((1, "compute_counts"));
-
-    /* The number of tasks in the union_comm. */
-    ntasks = ios->num_comptasks + (ios->async ? ios->num_iotasks : 0);
-    LOG((2, "ntasks = %d ios->num_iotasks = %d", ntasks, ios->num_iotasks));
+              iodesc->rearranger == PIO_REARR_BOX && ios->num_uniontasks > 0,
+              "invalid input", __FILE__, __LINE__);
+    LOG((1, "compute_counts ios->num_uniontasks = %d", ios->num_uniontasks));
 
     /* Arrays for swapm all to all gather calls. */
-    MPI_Datatype sr_types[ntasks];
-    int send_counts[ntasks];
-    int send_displs[ntasks];
-    int recv_counts[ntasks];
-    int recv_displs[ntasks];
+    MPI_Datatype sr_types[ios->num_uniontasks];
+    int send_counts[ios->num_uniontasks];
+    int send_displs[ios->num_uniontasks];
+    int recv_counts[ios->num_uniontasks];
+    int recv_displs[ios->num_uniontasks];
 
     /* The list of indeces on each compute task */
     PIO_Offset s2rindex[iodesc->ndof];
@@ -547,7 +542,7 @@ int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc,
             (iodesc->scount[dest_ioproc[i]])++;
 
     /* Initialize arrays used in swapm call. */
-    for (int i = 0; i < ntasks; i++)
+    for (int i = 0; i < ios->num_uniontasks; i++)
     {
         send_counts[i] = 0;
         send_displs[i] = 0;
@@ -580,11 +575,11 @@ int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc,
     {
         /* Allocate memory to hold array of tasks that have recieved
          * data ??? */
-        if (!(recv_buf = calloc(ntasks, sizeof(int))))
+        if (!(recv_buf = calloc(ios->num_comptasks, sizeof(int))))
             return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
         /* Initialize arrays that keep track of receives. */
-        for (int i = 0; i < ntasks; i++)
+        for (int i = 0; i < ios->num_comptasks; i++)
         {
             recv_counts[i] = 1;
             recv_displs[i] = i * sizeof(int);
@@ -604,7 +599,7 @@ int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc,
     {
         /* Count the number of non-zero scounts from the compute
          * tasks. */
-        for (int i = 0; i < ntasks; i++)
+        for (int i = 0; i < ios->num_comptasks; i++)
         {
             if (recv_buf[i] != 0)
                 nrecvs++;
@@ -621,7 +616,7 @@ int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc,
         LOG((3, "allocared rfrom max(1, nrecvs) = %d", max(1, nrecvs)));
 
         nrecvs = 0;
-        for (int i = 0; i < ntasks; i++)
+        for (int i = 0; i < ios->num_comptasks; i++)
         {
             if (recv_buf[i] != 0)
             {
@@ -678,7 +673,7 @@ int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc,
     }
 
     /* Initialize arrays to zeros. */
-    for (int i = 0; i < ntasks; i++)
+    for (int i = 0; i < ios->num_uniontasks; i++)
     {
         send_counts[i] = 0;
         send_displs[i] = 0;
@@ -730,7 +725,7 @@ int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc,
     }
 
     /* For the swapm call below, init the types to MPI_OFFSET. */
-    for (int i = 0; i < ntasks; i++)
+    for (int i = 0; i < ios->num_uniontasks; i++)
         sr_types[i] = MPI_OFFSET;
 
     /* Here we are sending the mapping from the index on the compute
