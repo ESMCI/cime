@@ -611,7 +611,7 @@ int PIOc_get_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
             /* Turn on independent access for pnetcdf file. */
             if ((ierr = ncmpi_begin_indep_data(file->fh)))
                 return pio_err(ios, file, ierr, __FILE__, __LINE__);
-            
+
             /* Only the IO master does the IO, so we are not really
              * getting parallel IO here. */
             if (ios->iomaster == MPI_ROOT)
@@ -816,12 +816,12 @@ int PIOc_get_var_tc(int ncid, int varid, nc_type xtype, void *buf)
         int dimids[ndims];
         if ((ierr = PIOc_inq_vardimid(ncid, varid, dimids)))
             return pio_err(ios, file, ierr, __FILE__, __LINE__);
-        
+
         /* Find the dimension lengths. */
         for (int d = 0; d < ndims; d++)
             if ((ierr = PIOc_inq_dimlen(ncid, dimids[d], &dimlen[d])))
                 return pio_err(ios, file, ierr, __FILE__, __LINE__);
-        
+
         /* Set up start array. */
         for (int d = 0; d < ndims; d++)
         {
@@ -1012,11 +1012,11 @@ int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
                 LOG((2, "pnetcdf writing scalar with ncmpi_put_vars_*() file->fh = %d varid = %d",
                      file->fh, varid));
                 pioassert(!start && !count && !stride, "expected NULLs", __FILE__, __LINE__);
-                
+
                 /* Turn on independent access for pnetcdf file. */
                 if ((ierr = ncmpi_begin_indep_data(file->fh)))
                     return pio_err(ios, file, ierr, __FILE__, __LINE__);
-            
+
                 /* Only the IO master does the IO, so we are not really
                  * getting parallel IO here. */
                 if (ios->iomaster == MPI_ROOT)
@@ -1306,7 +1306,7 @@ int PIOc_put_var_tc(int ncid, int varid, nc_type xtype, const void *op)
     if (ndims)
     {
         int dimid[ndims];
-        
+
         /* Set up start array. */
         for (int d = 0; d < ndims; d++)
             start[d] = 0;
@@ -1314,7 +1314,7 @@ int PIOc_put_var_tc(int ncid, int varid, nc_type xtype, const void *op)
         /* Get the dimids for this var. */
         if ((ierr = PIOc_inq_vardimid(ncid, varid, dimid)))
             return check_netcdf(file, ierr, __FILE__, __LINE__);
-        
+
         /* Count array are the dimlens. */
         for (int d = 0; d < ndims; d++)
             if ((ierr = PIOc_inq_dimlen(ncid, dimid[d], &count[d])))
