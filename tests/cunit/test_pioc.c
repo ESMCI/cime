@@ -1999,6 +1999,30 @@ int test_decomp_2(int my_test_size, int my_rank, int iosysid, int dim_len,
     return 0;
 }
 
+/* Test some decomp public API functions with async. */
+int test_decomp_public_async(int my_test_size, int my_rank, int iosysid, MPI_Comm test_comm,
+                             int async)
+{
+#define ELEM1 1
+#define LEN3 3
+    int ioid;
+    int dim_len = LEN3;
+    PIO_Offset elements_per_pe = ELEM1;
+    PIO_Offset compdof[ELEM1] = {my_rank + 1}; 
+    int ret;
+
+    /* Create the PIO decomposition for this test. */
+    if ((ret = PIOc_init_decomp(iosysid, PIO_FLOAT, NDIM1, &dim_len, elements_per_pe,
+                                compdof, &ioid, PIO_REARR_BOX, NULL, NULL)))
+        ERR(ret);
+
+    /* Free the PIO decomposition. */
+    if ((ret = PIOc_freedecomp(iosysid, ioid)))
+        ERR(ret);
+
+    return 0;
+}
+
 /* Run all the tests. */
 int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm test_comm,
              int async)
@@ -2090,6 +2114,12 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
     if ((ret = test_scalar(iosysid, num_flavors, flavor, my_rank, async, test_comm)))
         return ret;
 
+    /* This is a simple test that just creates the decomp with
+     * async. */
+    /* if (async) */
+    /*     if ((ret = test_decomp_public_async(my_test_size, my_rank, iosysid, test_comm, async))) */
+    /*         return ret; */
+    
     return PIO_NOERR;
 }
 
