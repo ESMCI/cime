@@ -124,7 +124,7 @@ Again, this process can be simplified if the atmosphere and land are running on 
 
 7. Create grid file needed for create_newcase.
    The next step is to add the necessary new entries in the appropriate ``config_grids.xml`` file.
-   You will need to modify ``$CIMEROOT/cime_config/cesm/config_grids.xml`` or ``$CIMEROOT/cime_config/acme/config_grids.xml`` depending on the value of ``$CIME_MODEL``.
+   You will need to modify ``$CIMEROOT/config/cesm/config_grids.xml`` or ``$CIMEROOT/config/acme/config_grids.xml`` depending on the value of ``$CIME_MODEL``.
    You will need to:
 
    - add a single  ``<model_grid>`` entry
