@@ -69,6 +69,8 @@ dataMode    component specific mode.
 
 	    :ref:`drof dataMode<drof-datamodes>`
 
+	    :ref:`dwav dataMode<dwav-datamodes>`
+
 domainFile  component domain (all streams will be mapped to this domain).
 
             Spatial gridfile associated with the strdata.  grid information will

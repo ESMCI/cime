@@ -29,6 +29,100 @@ The user then modifies the ``$DOCN_SOM_FILENAME`` variable in env_run.xml to poi
 
 .. note:: A tool is available to derive valid `SOM forcing <http://www.cesm.ucar.edu/models/ccsm1.1/data8/SOM.pdf>`_ and more information on creating the SOM forcing is also available.
 
+.. _docn-xml-vars:
+
+-------------
+xml variables
+-------------
+
+The following are xml variables that CIME supports for DOCN. 
+These variables are defined in ``$CIMEROOT/src/components/data_comps/docn/cime_config/config_component.xml``.
+These variables will appear in ``env_run.xml`` and are used by the DOCN ``cime_config/buildnml`` script to generate the DOCN namelist file ``docn_in`` and the required associated stream files for the case.
+
+.. note:: These xml variables are used by the the docn's **cime_config/buildnml** script in conjunction with docn's **cime_config/namelist_definition_docn.xml** file to generate the namelist file ``docn_in``.
+
+.. csv-table:: "DOCN xml variables"
+   :header: "xml variable", "description"
+   :widths: 15, 85
+
+   "DOCN_MODE", "Data mode"
+   "", "Valid values are: null, prescribed, som, interannual, ww3"
+   "DOCN_SOM_FILENAME", "Sets SOM forcing data filename for pres runs, only used in D and E compset"
+   "SSTICE_STREAM", "Prescribed SST and ice coverage stream name."
+   "", "Sets SST and ice coverage stream name for prescribed runs."
+   "SSTICE_DATA_FILENAME", "Prescribed SST and ice coverage data file name."
+   "", "Sets SST and ice coverage data file name for DOCN prescribed runs."
+   "SSTICE_YEAR_ALIGN", "The model year that corresponds to SSTICE_YEAR_START on the data file."
+   "", "Prescribed SST and ice coverage data will be aligned so that the first year of"
+   "", "data corresponds to SSTICE_YEAR_ALIGN in the model. For instance, if the first"
+   "", "year of prescribed data is the same as the first year of the model run, this" 
+   "", "should be set to the year given in RUN_STARTDATE."
+   "", "If SSTICE_YEAR_ALIGN is later than the model's starting year, or if the model is"
+   "", "run after the prescribed data ends (as determined by SSTICE_YEAR_END), the"
+   "", "default behavior is to assume that the data from SSTICE_YEAR_START to SSTICE_YEAR_END"
+   "", "cyclically repeats. This behavior is controlled by the *taxmode* stream option"
+   "SSTICE_YEAR_START", "The first year of data to use from SSTICE_DATA_FILENAME."
+   "", "This is the first year of prescribed SST and ice coverage data to use. For"
+   "", "example, if a data file has data for years 0-99, and SSTICE_YEAR_START is 10,"
+   "", "years 0-9 in the file will not be used."
+   "SSTICE_YEAR_END", "The last year of data to use from SSTICE_DATA_FILENAME."
+   "", "This is the last year of prescribed SST and ice coverage data to use. For"
+   "", "example, if a data file has data for years 0-99, and value is 49,"
+   "", "years 50-99 in the file will not be used."
+
+.. note:: For multi-year runs requiring AMIP datasets of sst/ice_cov fields, you need to set the xml variables for ``DOCN_SSTDATA_FILENAME``, ``DOCN_SSTDATA_YEAR_START``, and ``DOCN_SSTDATA_YEAR_END``. CICE in prescribed mode also uses these values.
+
+.. _docn-datamodes:
+
+---------------
+datamode values
+---------------
+
+The xml variable ``DOCN_MODE`` sets the streams that are associated with DOCN and also sets the namelist variable ``datamode`` that specifies what additional operations need to be done by DOCN on the streams before returning to the driver.
+One of the variables in ``shr_strdata_nml`` is ``datamode``, whose value is a character string.  Each data model has a unique set of ``datamode`` values that it supports. 
+The valid values for ``datamode`` are set in the file ``namelist_definition_docn.xml`` using the xml variable ``DOCN_MODE`` in the ``config_component.xml`` file for DOCN. 
+CIME will generate a value ``datamode`` that is compset dependent. 
+
+The following are the supported DOCN datamode values and their relationship to the ``DOCN_MODE`` xml variable value.
+
+.. csv-table:: "Valid values for datamode namelist variable"
+   :header: "datamode variable", "description"
+   :widths: 20, 80
+
+   "NULL", "Turns off the data model as a provider of data to the coupler.  The ocn_present flag will be set to false and the coupler will assume no exchange of data to or from the data model."
+   "COPYALL", "The default science mode of the data model is the COPYALL mode. This mode will examine the fields found in all input data streams, if any input field names match the field names used internally, they are copied into the export array and passed directly to the coupler without any special user code.  Any required fields not found on an input stream will be set to zero."
+   "SSTDATA", "assumes the only field in the input stream is SST. It also assumes the SST is in Celsius and must be converted to Kelvin.  All other fields are set to zero except for ocean salinity, which is set to a constant reference salinity value. Normally the ice fraction data is found in the same data files that provide SST data to the data ocean model. They are normally found in the same file because the SST and ice fraction data are derived from the same observational data sets and are consistent with each other. They are normally found in the same file because the SST and ice fraction data are derived from the same observational data sets and are consistent with each other."
+   "IAF", "is the interannually varying version of SSTDATA"
+   "SOM", "(slab ocean model) mode is a prognostic mode.  This mode computes a prognostic sea surface temperature and a freeze/melt potential (surface Q-flux) used by the sea ice model.  This calculation requires an external SOM forcing data file that includes ocean mixed layer depths and bottom-of-the-slab Q-fluxes. Scientifically appropriate bottom-of-the-slab Q-fluxes are normally ocean resolution dependent and are derived from the ocean model output of a fully coupled CCSM run.  Note that while this mode runs out of the box, the default SOM forcing file is not scientifically appropriate and is provided for testing and development purposes only. Users must create scientifically appropriate data for their particular application.  A tool is available to derive valid SOM forcing."
+
+-------------------------------
+DOCN_MODE, datamode and streams
+-------------------------------
+
+The following tabe describes the valid values of ``DOCN_MODE``, and how it relates to the associated input streams and the ``datamode`` namelist variable.
+
+.. csv-table:: "Relationship between DOCN_MODE, datamode and streams"
+   :header: "DOCN_MODE, "description-streams-datamode"
+   :widths: 20, 80
+
+   "null", "null mode"
+   "", "streams: none"
+   "", "datamode: null"
+   "prescribed","run with prescribed climatological SST and ice-coverage"
+   "","streams:  prescribed"
+   "","datamode: SSTDATA"
+   "interannual", "run with interannual SST and ice-coverage"
+   "","streams:  prescribed"
+   "","datamode: SSTDATA"
+   "som", "run in slab ocean mode"
+   "","streams:  som"
+   "","datamode: SOM"
+   "ww3", "ww3 mode"
+   "", "streams: ww3"
+   "", "datamode: COPYALL"
+
+.. _docn-namelists:
+
 ---------
 Namelists
 ---------
@@ -56,93 +150,6 @@ force_prognostic_true  TRUE => force prognostic behavior
 
 To change the namelist settings in docn_in, edit the file user_nl_docn. 
 
-.. _docn-xml-vars:
-
----------------
-XML variables
----------------
-
-The following are xml variables that CIME supports for DOCN.  These variables will appear in ``env_run.xml`` and are used by the DOCN ``cime_config/buildnml`` script to generate the DOCN namelist file ``docn_in`` and the required associated stream files for the case.
-
-.. note:: These xml variables are used by the the docn's **cime_config/buildnml** script in conjunction with docn's **cime_config/namelist_definition_docn.xml** file to generate the namelist file ``docn_in``.
-
-===================== ==================================================================================== 
-DOCN_MODE value       Description
-===================== ==================================================================================== 
-DOCN_MODE             Data mode
-
-DOCN_SOM_FILENAME     Sets SOM forcing data filename for pres runs, only used in D and E compset
-
-SSTICE_STREAM         Prescribed SST and ice coverage stream name.
-
-                      Sets SST and ice coverage stream name for prescribed runs.
-
-SSTICE_DATA_FILENAME  Prescribed SST and ice coverage data file name.
-
-                      Sets SST and ice coverage data file name for DOCN prescribed runs.
-
-SSTICE_YEAR_ALIGN     The model year that corresponds to SSTICE_YEAR_START on the data file.
-
-                      Prescribed SST and ice coverage data will be aligned so that the first year of
-                      data corresponds to SSTICE_YEAR_ALIGN in the model. For instance, if the first
-                      year of prescribed data is the same as the first year of the model run, this
-                      should be set to the year given in RUN_STARTDATE.
-                      If SSTICE_YEAR_ALIGN is later than the model's starting year, or if the model is
-                      run after the prescribed data ends (as determined by SSTICE_YEAR_END), the
-                      default behavior is to assume that the data from SSTICE_YEAR_START to
-                      SSTICE_YEAR_END cyclically repeats. This behavior is controlled by the
-                      *taxmode* stream option
-
-SSTICE_YEAR_START     The first year of data to use from SSTICE_DATA_FILENAME.
-
-                      This is the first year of prescribed SST and ice coverage data to use. For
-                      example, if a data file has data for years 0-99, and SSTICE_YEAR_START is 10,
-                      years 0-9 in the file will not be used.</desc>
-
-SSTICE_YEAR_END       The last year of data to use from SSTICE_DATA_FILENAME.
-
-                      This is the last year of prescribed SST and ice coverage data to use. For
-                      example, if a data file has data for years 0-99, and value is 49,
-                      years 50-99 in the file will not be used.</desc>
-===================== ==================================================================================== 
-
-.. note:: For multi-year runs requiring AMIP datasets of sst/ice_cov fields, you need to set the xml variables for ``DOCN_SSTDATA_FILENAME``, ``DOCN_SSTDATA_YEAR_START``, and ``DOCN_SSTDATA_YEAR_END``. CICE in prescribed mode also uses these values.
-
-===================== =============================================================================== 
-DOCN_MODE value       Description
-===================== =============================================================================== 
-null                  null mode
-prescribed            prescribed climatological mode
-interannual           prescribed interannual mode 
-som                   som mode
-copyall               copy mode
-===================== =============================================================================== 
-
-.. _docn-datamodes:
-
--------------------
-Datamode values
--------------------
-
-One of the variables in ``shr_strdata_nml`` is the ``datamode``, whose value is a character string. 
-Each data model has a unique set of ``datamode`` values that it supports. 
-
-The valid values for ``datamode`` are set by the xml variable ``DOCN_MODE`` in the ``config_component.xml`` file for DOCN. 
-CIME will generate a value ``datamode`` that is compset dependent. 
-
-The following are the supported DOCN datamode values and their relationship to the ``$DOCN_MODE`` xml variable value.
-
-===================    =========================================================================
-datamode value         XML variable value
-===================    =========================================================================
-NULL                   NULL
-SSTDATA                prescribed
-IAF                    interannual
-                       IAF is the interannually varying version of SSTDATA
-SOM                    som
-COPYALL                COPYALL        
-===================    =========================================================================
-
 .. _docn-mode-independent-streams:
 
 ---------------------------------
@@ -153,20 +160,46 @@ There are no datamode independent streams for DOCN.
 
 .. _docn-fields:
 
-------
-Fields
-------
+-----------
+Field names
+-----------
 
-The pre-defined internal field names in the data ocean model are as follows. In general, the stream input file should translate the input variable names into these names for use within the data ocean model.
+DOCN defines a set of pre-defined internal field names as well as mappings for how those field names map to the fields sent to the coupler.
+In general, the stream input file should translate the stream input variable names into the ``docn_fld`` names below for use within the data ocn model.
 
-=========       ==========     =========      ==========     ===========    =====
-(/ "ifrac       ","pslv        ","duu10n      ","taux        ","tauy        ", &
-"swnet          ","lat         ","sen         ","lwup        ","lwdn        ", &
-"melth          ","salt        ","prec        ","snow        ","rain        ", &
-"evap           ","meltw       ","rofl        ","rofi        ",                &
-"t              ","u           ","v           ","dhdx        ","dhdy        ", &
-"s              ","q           ","h           ","qbot        ","fswpen      "  /)
-=========       ==========     =========      ==========     ===========    =====
+.. csv-table:: "DOCN internal field names"
+   :header: "docn_fld (avifld)", "driver_fld (avofld)"
+   :widths: 30, 30
+
+   "ifrac", "Si_ifrac" 
+   "pslv", "Sa_pslv" 
+   "duu10n", "So_duu10n" 
+   "taux", "Foxx_taux" 
+   "tauy", "Foxx_tauy" 
+   "swnet", "Foxx_swnet" 
+   "lat", "Foxx_lat" 
+   "sen", "Foxx_sen" 
+   "lwup", "Foxx_lwup" 
+   "lwdn", "Faxa_lwdn" 
+   "melth", "Fioi_melth" 
+   "salt", "Fioi_salt" 
+   "prec", "Faxa_prec" 
+   "snow", "Faxa_snow" 
+   "rain", "Faxa_rain" 
+   "evap", "Foxx_evap" 
+   "meltw", "Fioi_meltw" 
+   "rofl", "Foxx_rofl" 
+   "rofi", "Foxx_rofi" 
+   "t", "So_t" 
+   "u", "So_u" 
+   "v", "So_v" 
+   "dhdx", "So_dhdx" 
+   "dhdy", "So_dhdy" 
+   "s", "So_s" 
+   "q", "Fioo_q" 
+   "h", "strm_h" 
+   "qbot", "strm_qbot" 
+   "fswpen", "So_fswpen" 
 
 .. _creating-sstdata-input-from-prognostic-run:
 
