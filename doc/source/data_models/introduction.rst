@@ -32,13 +32,38 @@ Design
 ------
 Data models function by reading in different streams of input data and interpolating those data both spatially and temporally to the appropriate final model grid and model time. 
 
-- **Each data model communicates with the driver with fields on only the data model model grid**.
+- **Each data model**
 
-- **Each data model can be associated with multiple stream input files, that are specified in the strdata namelist group**.
+  - communicates with the driver with fields on only the data model model grid.
 
-- **Each stream input file can contain data on a unique grid and unique temporal time stamps**.
+  - can be associated with multiple streams
 
-- **Each stream input file data is interpolated to a single model grid and the present model time**.
+  - is associated with only one datamode value (specified in the ``shr_strdata_nml`` namelist group)
+
+  - has an xml variable in ``env_run.xml`` that specifies its mode. These are:
+    ``DATM_MODE``, ``DICE_MODE``, ``DLND_MODE``, ``DOCN_MODE``, ``DROF_MODE``, ``DWAV_MODE``.
+
+- **Each ``DXXX_MODE`` xml variable variable specfies 2 things:**
+
+  - the list of streams that are associated with the data model.
+
+  - a ``datamode`` namelist variable that is associated with each data model and that determines if additional operations need to be performed on on the input streams before returning to the driver.
+
+    at a minimum, all data models support ``datamode`` values of ``NULL`` and ``COPYALL``.
+
+    - ``NULL`` - turns off the data model as a provider of data to the coupler.
+
+    - ``COPYALL`` - copies all fields directly from the input data streams. Any required fields not found on an input stream will be set to zero.
+ 
+- **Each data model stream**
+
+  - can be associated with multiple stream input files (specified in the ``shr_strdata_nml`` namelist group).
+
+- **Each stream input file** 
+
+  - can contain data on a unique grid and unique temporal time stamps.
+
+  - is interpolated to a single model grid and the present model time.
 
 More details of the data model design are covered in :ref:`design details<design-details>`. 
 
@@ -46,17 +71,17 @@ More details of the data model design are covered in :ref:`design details<design
 Namelist Input
 --------------
 
-Each data model has two namelist groups in its input namelist file: a stream-dependent and a stream-independent namelist group. 
+Each data model has two namelist groups in its input namelist file: a **stream-dependent** and a **stream-independent** namelist group. 
 
 The stream-dependent namelist group (``shr_strdata_nml``) specifies the data model mode, stream description text files, and interpolation options. 
 The stream description files will be provided as separate input files and contain the files and fields that need to be read.
-The stream-independent namelist gorup contains namelist input such as the data model decomposition, etc.
+The stream-independent namelist group (one of ``[datm_nml, dice_nml, dlnd_nml, docn_nml, drof_nml, dwav_nml]``) contains namelist input such as the data model decomposition, etc.
 
 From a user perspective, for any data model, it is important to know what modes are supported and the internal field names in the data model.
 That information will be used in the strdata namelist and stream input files.
 
 Users will primarily setup different data model configurations through namelist settings.
-*The strdata and stream input options and format are identical for all data models*. 
+**The strdata and stream input options and format are identical for all data models**. 
 The data model specific namelist has significant overlap between data models, but each data model has a slightly different set of input namelist variables and each model reads that namelist from a unique filename.
 The detailed namelist options for each data model will be described later, but each model will specify a filename or filenames for strdata namelist input and each strdata namelist will specify a set of stream input files.
 
@@ -71,6 +96,13 @@ The following example illustrates the basic set of namelist inputs::
      streams    = 'streama', 'streamb', 'streamc'
      mapalgo    = 'interpa', 'interpb', 'interpc'
    /
+
+As mentioned above, the ``dataMode`` namelist variable that is associated with each data model specifies if there is any additional operations that need to be performed on that data model's input streams before return to the driver.
+At a minimum, all data models support ``datamode`` values of ``NULL`` and ``COPYALL``.
+
+- ``NULL`` - turns off the data model as a provider of data to the coupler.
+
+- ``COPYALL`` - copies all fields directly from the input data streams. Any required fields not found on an input stream will be set to zero.
 
 Three stream description files are then expected to be available, ``streama``, ``streamb`` and ``streamc``.
 Those files specify the input data filenames, input data grids, and input fields that are expected, among other things. 

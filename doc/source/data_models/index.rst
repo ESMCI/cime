@@ -22,6 +22,7 @@
    data-seaice.rst
    data-ocean.rst
    data-river.rst
+   data-wave.rst
 
 Indices and tables
 ==================
