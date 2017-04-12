@@ -56,27 +56,32 @@ Once you are assured that you have a basic functional MPI environment you will n
 
 The following steps should be followed:
 
-- Create a $HOME/.cime directory
-- Copy the template file ``$CIME/config/xml_schemas/config_machines_template.xml`` to ``$HOME/.cime/config_machines.xml``
-- Fill in the details of ``$HOME/.cime/config_machines.xml`` that specific to your machine.  
-- The completed file should conform to the schema definition provided, check it using: 
+1. Create a ``$HOME/.cime`` directory
 
-::
+2. Copy the template file ``$CIME/config/xml_schemas/config_machines_template.xml`` to ``$HOME/.cime/config_machines.xml``
 
-   xmllint --noout --schema $CIME/config/xml_schemas/config_machines.xsd $HOME/.cime/config_machines.xml
+3. Fill in the contents of ``$HOME/.cime/config_machines.xml`` that specific to your machine. 
+   This file contains all the information that a user needs to set to configure a new machine to be CIME complaint. 
+   For more details see :ref:`customize the config_machines.xml file <customizing-machine-file>`. 
+   The completed file should conform to the schema definition provided, check it using: 
+   ::
 
+      xmllint --noout --schema $CIME/config/xml_schemas/config_machines.xsd $HOME/.cime/config_machines.xml
 
-- The files ``config_batch.xml`` and ``config_compilers.xml`` may also need specific adjustments for your batch system and compiler. You can edit these files in place to add your machine configuration or you can place your custom configuration files in the directory ``$HOME/.cime/``.  We recommend the latter approach. All files in ``$HOME/.cime/`` are appended to the xml objects read into memory.
+4. The files ``config_batch.xml`` and ``config_compilers.xml`` may also need specific adjustments for your batch system and compiler. 
+   You can edit these files in place to add your machine configuration or you can place your custom configuration files in the directory ``$HOME/.cime/``.  
+   We recommend the latter approach. All files in ``$HOME/.cime/`` are appended to the xml objects read into memory.
 
-- Once you have a basic configuration for your machine defined in your new ``$HOME/.cime`` XML files, you should try the ``scripts_regression_test`` in directory ``$CIME/utils/python/tests``. This script will run a number of basic unit tests starting from the simplest issues and working toward more complicated ones.
+5. Once you have a basic configuration for your machine defined in your new ``$HOME/.cime`` XML files, you should try the ``scripts_regression_test`` in directory ``$CIME/utils/python/tests``. 
+   This script will run a number of basic unit tests starting from the simplest issues and working toward more complicated ones.
 
-- Finally when all the previous steps have run correctly, you are ready to try a case at your target compset and resolution.
-
-====================================================
+6. Finally when all the previous steps have run correctly, you are ready to try a case at your target compset and resolution.
+   Once you have successfully created the required xml files in your .cime directory and are satisfied with the results you can merge them into the default files in the ``config/$CIME_MODEL/machines`` directory.   
+   If you would like to make this machine definition available generally you may then issue a pull request to add your changes to the git repository.  
+   
+===================================================
 Enabling out-of-the-box capability for your machine
-====================================================
-Once you have successfully created the required xml files in your .cime directory and are satisfied with the results you can merge them into the default files in the config/$CIME_MODEL/machines directory.   
-If you would like to make this machine definition available generally you may then issue a pull request to add your changes to the git repository.  
+===================================================
 
 .. _customizing-machine-file:
 
@@ -115,14 +120,28 @@ Each ``<machine>`` tag requires the following input:
 - ``mpirun``: The mpi exec to start a job on this machine. 
   This is itself an element that has sub elements that must be filled:
 
-  * must have a required ``<executable>`` element 
-  * may have optional attributes of ``compiler``, ``mpilib`` and/or ``threaded``
-  * may have zero or more optional ``<arguments>`` elements
+  * Must have a required ``<executable>`` element 
+  * May have optional attributes of ``compiler``, ``mpilib`` and/or ``threaded``
+  * May have an optional ``<arguments>`` element which in turn contain one or more ``<arg>`` elements. 
+    These specify the arguments to the mpi executable and as a result are dependent on your mpi library implementation.
 
-- ``module_system``: how and what modules to load on this system 
-- ``environment_variables``: environment_variables to set on this system
 
-.. todo:: Jim Edwards add the contents of this section. A clear explanation of how to add elements to the ``config_machines.xml`` file is really needed!!!
+- ``module_system``: How and what modules to load on this system. Module systems allow you to easily load multiple compiler environments on a given machine. CIME provides support for two types of module tools: `module <http://www.tacc.utexas.edu/tacc-projects/mclay/lmod>`_ and `soft  <http://www.mcs.anl.gov/hs/software/systems/softenv/softenv-intro.html>`_.   If neither of these are available on your machine, the simply set ``<module_system type="none"\>``.
+   
+- ``environment_variables``: environment_variables to set on this system. 
+   This contains sub elements, ``<env>`` with the ``name`` attribute specifying the environment variable name, and the element value specifying the corresponding environment variable value. If the element value is not set, then the corresponding environment variable will be unset in your shell. 
+
+   As an example, the following sets the environment variable ``OMP_STACKSIZE`` to 256M.
+   ::
+
+      <env name="OMP_STACKSIZE">256M</env>
+
+   and the following unsets this environment variable in the shell:
+   ::
+
+      <env name="OMP_STACKSIZE"></env>
+
+   .. note:: These changes are **ONLY** activated for the CIME build and run environment, **BUT NOT** for your login shell. To activate them for your login shell, you would source either ``$CASEROOT/.env_mach_specific.sh`` or ``$CASEROOT/.env_mach_specific.csh``, depending on your shell.
 
 .. _customizing-batch-file:
 
