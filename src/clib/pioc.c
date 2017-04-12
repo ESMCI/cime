@@ -739,6 +739,13 @@ int PIOc_Init_Intracomm(MPI_Comm comp_comm, int num_iotasks, int stride, int bas
     /* With non-async, all tasks are part of computation component. */
     ios->compproc = true;
 
+    /* Create an array that holds the ranks of the tasks to be used
+     * for computation. */
+    if (!(ios->compranks = calloc(ios->num_comptasks, sizeof(int))))
+        return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+    for (int i = 0; i < ios->num_comptasks; i++)
+        ios->compranks[i] = i;
+
     /* Is this the comp master? */
     if (ios->comp_rank == 0)
         ios->compmaster = MPI_ROOT;

@@ -582,8 +582,8 @@ int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc,
         /* Initialize arrays that keep track of ???. */
         for (int i = 0; i < ios->num_comptasks; i++)
         {
-            recv_counts[i] = 1;
-            recv_displs[i] = i * sizeof(int);
+            recv_counts[ios->compranks[i]] = 1;
+            recv_displs[ios->compranks[i]] = i * sizeof(int);
         }
     }
 
