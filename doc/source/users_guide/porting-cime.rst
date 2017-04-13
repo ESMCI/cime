@@ -148,7 +148,15 @@ Each ``<machine>`` tag requires the following input:
 Customizing the batch directives for your machine
 --------------------------------------------------
 
-.. todo:: Jim Edwards add the contents of this section 
+The **config_batch.xml** schema is defined in ``$CIMEROOT/config/xml_schemas/config_batch.xml``
+config batch currently supports batch systems: pbs, cobalt, lsf and slurm.
+General configurations for each system are provided at the top of the file and specific modifications for a
+given machine are provided below.  In particular each machine should define its own queues.   Following
+machine specific queue details is a batch_jobs section, this section of the file describes each job that will
+be submitted to the queue for a CIME workflow, the template file that will be used to generate that job and
+the prerequisets that must be met before the job is submitted and dependancies that must be satisfied
+before that job is run.   By default the CIME workflow consists of three jobs (case.run, case.st_archive, and
+case.lt_archive) there is also a case.test file that is used by the CIME system test workflow. 
 
 .. _customizing-compiler-file:
 
