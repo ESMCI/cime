@@ -60,8 +60,6 @@ module shr_dmodel_mod
   integer(IN),parameter,public :: shr_dmodel_gGridCompareMaskZerosMask  = 106 ! masks have same zeros
   integer(IN),parameter,public :: shr_dmodel_gGridCompareMaskSubsetMask = 107 ! mask is subset of other
 
-  integer(IN),parameter,public :: iotype_std_netcdf = -99 ! non pio option
-
 !--------------------------------------------------------------------------
 ! Private data
 !--------------------------------------------------------------------------
@@ -771,7 +769,7 @@ subroutine shr_dmodel_readstrm(stream, pio_subsystem, pio_iotype, pio_iodesc, gs
 
   call t_stopf(trim(lstr)//'_setup')
 
-  if (pio_iotype == iotype_std_netcdf) then
+  if (pio_iotype == pio_iotype_netcdf) then
 
      call t_startf(trim(lstr)//'_readcdf')
      if (my_task == master_task) then
