@@ -1214,9 +1214,12 @@ int box_rearrange_create(iosystem_desc_t *ios, int maplen, const PIO_Offset *com
     pioassert(iodesc->llen == 0, "error", __FILE__, __LINE__);
     if (ios->ioproc)
     {
-        /* Set up send counts for sending llen in all to all gather. */
+        /* Set up send counts for sending llen in all to all
+         * gather. We are sending to all tasks, IO and computation. */
         for (int i = 0; i < ios->num_comptasks; i++)
             sendcounts[ios->compranks[i]] = 1;
+        for (int i = 0; i < ios->num_iotasks; i++)
+            sendcounts[ios->ioranks[i]] = 1;
 
         /* Determine llen, the lenght of the data array on this IO
          * node, by multipliying the counts in the

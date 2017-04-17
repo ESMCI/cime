@@ -2042,9 +2042,9 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
 
     /* This is a simple test that just creates the decomp with
      * async. */
-    /* if (async) */
-    /*     if ((ret = test_decomp_public_async(my_test_size, my_rank, iosysid, test_comm, async))) */
-    /*         return ret; */
+    if (async)
+        if ((ret = test_decomp_public_async(my_test_size, my_rank, iosysid, test_comm, async)))
+            return ret;
     
     /* Check iotypes. */
     printf("%d Testing iotypes. async = %d\n", my_rank, async);
