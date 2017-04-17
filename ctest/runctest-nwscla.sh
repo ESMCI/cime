@@ -33,12 +33,11 @@ jobid=`qsub -l walltime=01:00:00 runctest.sh`
 
 # Wait for the job to complete before exiting
 while true; do
-	status=`qstat $jobid`
-	echo $status
-	if [ "$status" == "" ]; then
-		break
+	qstat $jobid
+	if [ $? -eq 0 ]; then
+		sleep 30
 	else
-		sleep 10
+		break;
 	fi
 done
 
