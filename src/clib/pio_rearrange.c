@@ -561,14 +561,17 @@ int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc,
      * map on the iotasks. iodesc->rcount is an array of the amount of
      * data to expect from each compute task and iodesc->rfrom is the
      * rank of that task. */
-    for (int i = 0; i < ios->num_iotasks; i++)
+    if (ios->compproc)
     {
-        send_counts[ios->ioranks[i]] = 1;
-        send_displs[ios->ioranks[i]] = i * sizeof(int);
-        LOG((3, "send_counts[%d] = %d send_displs[%d] = %d", ios->ioranks[i],
-             send_counts[ios->ioranks[i]], ios->ioranks[i], send_displs[ios->ioranks[i]]));
+        for (int i = 0; i < ios->num_iotasks; i++)
+        {
+            send_counts[ios->ioranks[i]] = 1;
+            send_displs[ios->ioranks[i]] = i * sizeof(int);
+            LOG((3, "send_counts[%d] = %d send_displs[%d] = %d", ios->ioranks[i],
+                 send_counts[ios->ioranks[i]], ios->ioranks[i], send_displs[ios->ioranks[i]]));
+        }
     }
-
+    
     /* IO tasks need to know how many data elements they will receive
      * from each compute task. Allocate space for that, and set up
      * swapm call. */
@@ -587,7 +590,7 @@ int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc,
         }
     }
 
-    LOG((2, "about to call pio_swapm to share count from each compute task"));
+    LOG((2, "about to share scount from each compute task to all IO tasks."));
     /* Share the iodesc->scount from each compute task to all IO
      * tasks. The scounts will end up in array recv_buf. */
     if ((ierr = pio_swapm(iodesc->scount, send_counts, send_displs, sr_types,
@@ -1213,7 +1216,7 @@ int box_rearrange_create(iosystem_desc_t *ios, int maplen, const PIO_Offset *com
     {
         /* Set up send counts for sending llen in all to all gather. */
         for (int i = 0; i < ios->num_comptasks; i++)
-            sendcounts[i] = 1;
+            sendcounts[ios->compranks[i]] = 1;
 
         /* Determine llen, the lenght of the data array on this IO
          * node, by multipliying the counts in the
