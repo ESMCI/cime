@@ -24,11 +24,12 @@
    cloning-a-case.rst
    troubleshooting.rst
 
+
 .. _users-guide2:
 
-#############################################################
-CIME User's Guide Part 2: CIME internals, Porting and Testing
-#############################################################
+########################################################################
+CIME User's Guide Part 2: CIME internals, Porting, Testing and Use Cases
+########################################################################
 
 .. toctree::
    :maxdepth: 3
@@ -38,17 +39,6 @@ CIME User's Guide Part 2: CIME internals, Porting and Testing
    porting-cime.rst
    optimizing-processor-layout.rst
    testing.rst
-
-.. _users-guide3:
-
-#########################################
-CIME User's Guide Part 3: Advanced Usage
-#########################################
-
-.. toctree::
-   :maxdepth: 3
-   :numbered:
-
    multi-instance.rst
    adding-cases.rst
    faq/faq.rst

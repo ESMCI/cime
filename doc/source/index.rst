@@ -10,9 +10,7 @@ Welcome to the CIME documentation!
 
 :ref:`User's guide - Part 1 <users-guide1>`: basic use of the scripting infrastructure.
 
-:ref:`User's guide - Part 2 <users-guide2>`: porting, testing and CIME internals
-
-:ref:`User's guide - Part 3 <users-guide3>`: advanced use of the scripting infrastructure.
+:ref:`User's guide - Part 2 <users-guide2>`: CIME internals, porting, testing and use cases 
 
 :ref:`Data Models <data-models>`: design and usage of the data models.
 
