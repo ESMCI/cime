@@ -177,9 +177,9 @@ int run_test_main(int argc, char **argv, int min_ntasks, int max_ntasks,
         printf("Runnings tests for %d flavors\n", num_flavors);
 
         /* Run tests without async feature. */
-        if ((ret = test_no_async2(my_rank, num_flavors, flavor, test_comm, max_ntasks,
-                                  dim_len[1], dim_len[2])))
-            return ret;
+        /* if ((ret = test_no_async2(my_rank, num_flavors, flavor, test_comm, max_ntasks, */
+        /*                           dim_len[1], dim_len[2]))) */
+        /*     return ret; */
 
         /* Run tests with async. */
         if ((ret = test_async2(my_rank, num_flavors, flavor, test_comm, component_count,

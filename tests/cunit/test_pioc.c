@@ -2008,13 +2008,20 @@ int test_decomp_public_async(int my_test_size, int my_rank, int iosysid, MPI_Com
     int ioid;
     int dim_len = LEN3;
     PIO_Offset elements_per_pe = ELEM1;
-    PIO_Offset compdof[ELEM1] = {my_rank + 1}; 
+    PIO_Offset compdof[ELEM1] = {my_rank + 1};
+    char filename[PIO_MAX_NAME + 1];
     int ret;
 
+    sprintf(filename, "async_decomp_%s_rank_%d_async_%d.nc", TEST_NAME, my_rank, async);
+    
     /* Create the PIO decomposition for this test. */
     if ((ret = PIOc_init_decomp(iosysid, PIO_FLOAT, NDIM1, &dim_len, elements_per_pe,
                                 compdof, &ioid, PIO_REARR_BOX, NULL, NULL)))
         ERR(ret);
+
+    /* Write the decomp file (on appropriate tasks). */
+    if ((ret = PIOc_write_nc_decomp(iosysid, filename, 0, ioid, NULL, NULL, 0)))
+        return ret;
 
     /* Free the PIO decomposition. */
     if ((ret = PIOc_freedecomp(iosysid, ioid)))
