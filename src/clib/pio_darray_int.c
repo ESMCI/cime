@@ -1408,12 +1408,12 @@ int compute_maxaggregate_bytes(iosystem_desc_t *ios, io_desc_t *iodesc)
     if (ios->comp_rank >= 0 && iodesc->ndof > 0)
         maxbytesoncomputetask = pio_cnbuffer_limit / iodesc->ndof;
 
-    /* ??? */
+    /* Take the min of the max IO and max comp bytes. */
     maxbytes = min(maxbytesoniotask, maxbytesoncomputetask);
     LOG((2, "compute_maxaggregate_bytes maxbytesoniotask = %d maxbytesoncomputetask = %d",
          maxbytesoniotask, maxbytesoncomputetask));
 
-    /* Get the min value on all tasks. */
+    /* Get the min value of this on all tasks. */
     LOG((3, "before allreaduce maxbytes = %d", maxbytes));
     if ((mpierr = MPI_Allreduce(MPI_IN_PLACE, &maxbytes, 1, MPI_INT, MPI_MIN,
                                 ios->union_comm)))

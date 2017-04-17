@@ -1171,7 +1171,7 @@ int box_rearrange_create(iosystem_desc_t *ios, int maplen, const PIO_Offset *com
 
     /* Allocate arrays needed for this function. */
     int dest_ioproc[maplen]; /* Destination IO task for each data element on compute task. */
-    PIO_Offset dest_ioindex[maplen];    /* Offset into global array for each data element. */
+    PIO_Offset dest_ioindex[maplen];    /* Offset into IO task array for each data element. */
     int sendcounts[ios->num_uniontasks]; /* Send counts for swapm call. */
     int sdispls[ios->num_uniontasks];    /* Send displacements for swapm. */
     int recvcounts[ios->num_uniontasks]; /* Receive counts for swapm. */
@@ -1260,9 +1260,12 @@ int box_rearrange_create(iosystem_desc_t *ios, int maplen, const PIO_Offset *com
     /* For each IO task send starts/counts to all compute tasks. */
     for (int i = 0; i < ios->num_iotasks; i++)
     {
+        /* The ipmaplen contains the llen (number of data elements)
+         * for this IO task. */
         LOG((2, "iomaplen[%d] = %d", i, iomaplen[i]));
 
-        /* If there is a map for this task. */
+        /* If there is data for this IO task, send start/count to all
+         * compute tasks. */
         if (iomaplen[i] > 0)
         {
             PIO_Offset start[ndims];
@@ -1270,7 +1273,7 @@ int box_rearrange_create(iosystem_desc_t *ios, int maplen, const PIO_Offset *com
 
             /* Set up send/recv parameters for all to all gather of
              * counts and starts. */
-            for (int j = 0; j < ios->num_comptasks; j++)
+            for (int j = 0; j < ios->num_uniontasks; j++)
             {
                 sendcounts[j] = 0;
                 sdispls[j] = 0;
@@ -1333,7 +1336,9 @@ int box_rearrange_create(iosystem_desc_t *ios, int maplen, const PIO_Offset *com
                 }
 
                 /* Did we find a destination IO task for this element
-                 * of the computation task data array? */
+                 * of the computation task data array? If so, remember
+                 * the destination IO task, and determine the index
+                 * for that element in the IO task data. */
                 if (found)
                 {
                     dest_ioindex[k] = coord_to_lindex(ndims, lcoord, count);
@@ -1363,8 +1368,8 @@ int box_rearrange_create(iosystem_desc_t *ios, int maplen, const PIO_Offset *com
         LOG((3, "iodesc->maxiobuflen = %d", iodesc->maxiobuflen));
     }
 
-    /* Using maxiobuflen compute the maximum number of vars of this
-       type that the io task buffer can handle. */
+    /* Using maxiobuflen compute the maximum number of bytes that the
+     * io task buffer can handle. */
     if ((ret = compute_maxaggregate_bytes(ios, iodesc)))
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
     LOG((3, "iodesc->maxbytes = %d", iodesc->maxbytes));
