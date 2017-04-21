@@ -49,6 +49,27 @@ PIO_Offset PIOc_set_buffer_size_limit(PIO_Offset limit)
  * caller to use their own data buffering (instead of using the
  * buffering implemented in PIOc_write_darray()).
  *
+ * When the user calls PIOc_write_darray() one or more times, then
+ * PIO_write_darray_multi() will be called when the buffer is flushed.
+ *
+ * Internally, this function will:
+ * <ul>
+ * <li>Find info about file, decomposition, and variable.
+ * <li>Do a special flush for pnetcdf if needed.
+ * <li>Allocates a buffer big enough to hold all the data in the
+ * multi-buffer, for all tasks.
+ * <li>Calls rearrange_comp2io() to move data from compute to IO
+ * tasks.
+ * <li>For parallel iotypes (pnetcdf and netCDF-4 parallel) call
+ * pio_write_darray_multi_nc().
+ * <li>For serial iotypes (netcdf classic and netCDF-4 serial) call
+ * pio_write_darray_multi_nc_serial().
+ * <li>For subset rearranger, create holegrid to write missing
+ * data. Then call pio_write_darray_multi_nc() or
+ * pio_write_darray_multi_nc_serial() to write the holegrid.
+ * <li>Special buffer flush for pnetcdf.
+ * </ul>
+ *
  * @param ncid identifies the netCDF file.
  * @param varids an array of length nvars containing the variable ids to
  * be written.
@@ -267,7 +288,7 @@ int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
         }
     }
 
-    /* Flush data to disk. */
+    /* Flush data to disk for pnetcdf. */
     if (ios->ioproc && file->iotype == PIO_IOTYPE_PNETCDF)
         if ((ierr = flush_output_buffer(file, flushtodisk, 0)))
             return pio_err(ios, file, ierr, __FILE__, __LINE__);
@@ -283,20 +304,18 @@ int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
  * is triggered.
  *
  * Internally, this function will:
- * <ul>Locate info about this file, decomposition, and variable.
-
+ * <ul>
+ * <li>Locate info about this file, decomposition, and variable.
  * <li>If we don't have a fillvalue for this variable, determine one
  * and remember it for future calls.
-
  * <li>Initialize or find the multi_buffer for this record/var.
-
  * <li>Find out how much free space is available in the multi buffer
  * and flush if needed.
- *
  * <li>Store the new user data in the mutli buffer.
- * <li>If needed, fill in gaps in data will fillvalue.
- * <li>
- * <li>
+ * <li>If needed (only for subset rearranger), fill in gaps in data
+ * will fillvalue.
+ * <li>Remember the frame value (i.e. record number) of this data if
+ * there is one.
  * </ul>
  *
  * @param ncid the ncid of the open netCDF file.
@@ -304,15 +323,15 @@ int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
  * to.
  * @param ioid the I/O description ID as passed back by
  * PIOc_InitDecomp().
- * @param arraylen the length of the array to be written.  This should
+ * @param arraylen the length of the array to be written. This should
  * be at least the length of the local component of the distrubited
  * array. (Any values beyond length of the local component will be
  * ignored.)
  * @param array pointer to an array of length arraylen with the data
  * to be written. This is a pointer to the distributed portion of the
  * array that is on this task.
- * @param fillvalue pointer to the fill value to be used for
- * missing data.
+ * @param fillvalue pointer to the fill value to be used for missing
+ * data.
  * @returns 0 for success, non-zero error code for failure.
  * @ingroup PIO_write_darray
  */
@@ -560,7 +579,6 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
         }
     }
 
-    LOG((3, "here we are"));
     /* Tell the buffer about the data it is getting. */
     wmb->arraylen = arraylen;
     wmb->vid[wmb->num_arrays] = varid;

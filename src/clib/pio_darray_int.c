@@ -360,6 +360,80 @@ int pio_write_darray_multi_nc(file_desc_t *file, int nvars, const int *vid, int 
     return ierr;
 }
 
+/** 
+ * Fill the tmp_start and tmp_count arrays, which contain the start
+ * and count arrays for all regions.
+ * 
+ * This is an internal function which is only called on io tasks. It
+ * is called by pio_write_darray_multi_nc_serial().
+ *
+ * @param region pointer to the first in a linked list of regions.
+ * @param maxregions the number of regions in the list.
+ * @param fndims the number of dimensions in the file.
+ * @param iodesc_ndims the number of dimensions in the decomposition.
+ * @param vdesc pointer to an array of var_desc_t for the vars being
+ * written.
+ * @param tmp_start pointer to an already allocaed array of length
+ * fndims * maxregions. This array will get the start values for all
+ * regions.
+ * @param tmp_count pointer to an already allocaed array of length
+ * fndims * maxregions. This array will get the count values for all
+ * regions.
+ * @returns 0 for success, error code otherwise.
+ * @ingroup PIO_read_darray
+ **/
+int find_all_start_count(io_region *region, int maxregions, int fndims, 
+                         int iodesc_ndims, var_desc_t *vdesc, size_t *tmp_start,
+                         size_t *tmp_count)
+{
+
+    for (int regioncnt = 0; regioncnt < maxregions; regioncnt++)
+    {
+        /* Initialize the start/count arrays for this region to 0. */
+        for (int i = 0; i < fndims; i++)
+        {
+            tmp_start[i + regioncnt * fndims] = 0;
+            tmp_count[i + regioncnt * fndims] = 0;
+        }
+
+        if (region)
+        {
+            if (vdesc->record >= 0)
+            {
+                /* This is a record based multidimensional
+                 * array. Copy start/count for non-record
+                 * dimensions. */
+                for (int i = fndims - iodesc_ndims; i < fndims; i++)
+                {
+                    tmp_start[i + regioncnt * fndims] = region->start[i - (fndims - iodesc_ndims)];
+                    tmp_count[i + regioncnt * fndims] = region->count[i - (fndims - iodesc_ndims)];
+                    LOG((3, "tmp_start[%d] = %d tmp_count[%d] = %d", i + regioncnt * fndims,
+                         tmp_start[i + regioncnt * fndims], i + regioncnt * fndims,
+                         tmp_count[i + regioncnt * fndims]));
+                }
+            }
+            else
+            {
+                /* This is not a record based multidimensional array. */
+                for (int i = 0; i < iodesc_ndims; i++)
+                {
+                    tmp_start[i + regioncnt * fndims] = region->start[i];
+                    tmp_count[i + regioncnt * fndims] = region->count[i];
+                    LOG((3, "tmp_start[%d] = %d tmp_count[%d] = %d", i + regioncnt * fndims,
+                         tmp_start[i + regioncnt * fndims], i + regioncnt * fndims,
+                         tmp_count[i + regioncnt * fndims]));
+                }
+            }
+
+            /* Move to next region. */
+            region = region->next;
+
+        } /* endif region */
+    } /* next regioncnt */
+
+    return PIO_NOERR;
+}
+
 /**
  * Write a set of one or more aggregated arrays to output file in
  * serial mode. This function is called for netCDF classic and
@@ -471,6 +545,9 @@ int pio_write_darray_multi_nc_serial(file_desc_t *file, int nvars, const int *vi
 
         /* Fill the tmp_start and tmp_count arrays, which contain the
          * start and count arrays for all regions. */
+        /* if ((ierr = find_all_start_count(firstregion, maxregions, fndims, iodesc_ndims, vdesc, tmp_start, tmp_count))) */
+        /*     return pio_err(ios, file, ierr, __FILE__, __LINE__);             */
+
         region = firstregion;
         for (int regioncnt = 0; regioncnt < maxregions; regioncnt++)
         {
