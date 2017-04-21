@@ -16,11 +16,6 @@ tools that are necessary and/or useful when building a climate model.  Guides fo
    :maxdepth: 3
    :numbered:
 
-   unit_testing.rst
-
-
-
-Other sections that will be added later:
 
 Statistical Ensemble Test
 

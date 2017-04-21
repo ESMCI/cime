@@ -39,6 +39,7 @@ CIME User's Guide Part 2: CIME internals, Porting, Testing and Use Cases
    porting-cime.rst
    optimizing-processor-layout.rst
    testing.rst
+   unit_testing.rst
    multi-instance.rst
    adding-cases.rst
    faq/faq.rst
