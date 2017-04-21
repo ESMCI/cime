@@ -9,18 +9,22 @@
   Miscellaneous Tools
 #####################################
 
+In addition to basic infrastructure for a coupled model, CIME contains in its distribution several stand-alone 
+tools that are necessary and/or useful when building a climate model.  Guides for using them will be here.
+
 .. toctree::
    :maxdepth: 3
    :numbered:
-      
-In addition to basic infrastructure for a coupled model, CIME contains in its distribution several stand-alone 
-tools that are necessary and/or useful when building a climate model.  Guides for using them will be here.
+
+   unit_testing.rst
+
+
+
+Other sections that will be added later:
 
 Statistical Ensemble Test
 
 Mapping Tools
-
-Unit Testing
 
 cprnc
 
