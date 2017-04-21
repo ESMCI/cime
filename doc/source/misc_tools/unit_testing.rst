@@ -15,15 +15,15 @@ It typically runs in just milliseconds, and produces a simple pass/fail result.
 
 Unit tests:
 
-* Ensure that code remains correct as it is modified (in this respect, they complement the CIME system tests; the remaining bullet points are unique to unit tests)
+* Ensure that code remains correct as it is modified (in this respect, they complement the CIME system tests; the remaining bullet points are unique to unit tests).
 
-* Ensure that new code is correct
+* Ensure that new code is correct.
 
-* Can help guide development, via test-driven development (TDD)
+* Can help guide development, via test-driven development (TDD).
 
-* Provide executable documentation of the intended behavior of a piece of code
+* Provide executable documentation of the intended behavior of a piece of code.
 
-* Support development on your desktop machine
+* Support development on your desktop machine.
 
 Overview of unit test support in CIME
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -31,11 +31,11 @@ Overview of unit test support in CIME
 CIME comes with a set of tools to support building and running unit tests.
 These consist of:
 
-#. CMake tools to support building and running tests via CMake and CTest
+#. CMake tools to support building and running tests via CMake and CTest.
 
 #. A python script that provides a simple front-end to the CMake-based tests.
 
-The Fortran unit tests use pFUnit (https://sourceforge.net/projects/pfunit/), which is a Fortran unit testing framework that follows conventions of other xUnit frameworks (JUnit, etc.).
+The Fortran unit tests use `pFUnit <https://sourceforge.net/projects/pfunit/>`_, which is a Fortran unit testing framework that follows conventions of other xUnit frameworks (JUnit, etc.).
 
 .. _running_unit_tests:
 
@@ -47,17 +47,17 @@ If that is not the case, then see the section :ref:`adding_machine_support`.
 
 From the top-level cime directory, you can run all of CIME's Fortran unit tests simply by running:
 
-.. code-block:: none
+.. code-block:: shell
 
-   tools/unit_testing/run_tests.py --build-dir MY_BUILD_DIR
+   > tools/unit_testing/run_tests.py --build-dir MY_BUILD_DIR
 
 where you can replace ``MY_BUILD_DIR`` with a path to the directory where you would like the unit test build files to be placed.
 Once you have built the unit tests once (whether the build was successful or not), you can reuse the same build directory later to speed up the rebuild.
 There are a number of useful arguments to ``run_tests.py``; for full usage information, run:
 
-.. code-block:: none
+.. code-block:: shell
 
-   tools/unit_testing/run_tests.py -h
+   > tools/unit_testing/run_tests.py -h
 
 If the build is successful, then you should get a message that looks like this:
 
@@ -112,39 +112,39 @@ To perform a serial build of pFUnit, follow these instructions:
    For example, load the appropriate compilers into your path.
    An easy way to achieve this is to run:
 
-   .. code-block:: none
+   .. code-block:: shell
 
-      cime/tools/configure --mpilib mpi-serial
+      > $CIMEROOT/tools/configure --mpilib mpi-serial
 
    (with an optional ``--compiler`` argument; you'll also want to change the ``--mpilib`` argument if you're doing an MPI-enabled build).
    Then source either ``./.env_mach_specific.sh`` or ``./.env_mach_specific.csh``, depending on your shell.
 
 #. For convenience, set the ``PFUNIT`` environment variable to point to the location where you want to install pFUnit. For example (in bash):
 
-   .. code-block:: none
+   .. code-block:: shell
 
-      export PFUNIT=/glade/p/cesmdata/cseg/tools/pFUnit/pFUnit3.2.8_cheyenne_Intel17.0.1_noMPI_noOpenMP
+      > export PFUNIT=/glade/p/cesmdata/cseg/tools/pFUnit/pFUnit3.2.8_cheyenne_Intel17.0.1_noMPI_noOpenMP
 
 #. Configure and build pFUnit:
 
-   .. code-block:: none
+   .. code-block:: shell
 
-      mkdir build
-      cd build
-      cmake -DMPI=NO -DOPENMP=NO -DCMAKE_INSTALL_PREFIX=$PFUNIT ..
-      make -j 4
+      > mkdir build
+      > cd build
+      > cmake -DMPI=NO -DOPENMP=NO -DCMAKE_INSTALL_PREFIX=$PFUNIT ..
+      > make -j 4
 
 #. Run pFUnit's self-tests:
 
-   .. code-block:: none
+   .. code-block:: shell
 
-      make tests
+      > make tests
 
 #. Install pFUnit in the directory you specified earlier:
 
-   .. code-block:: none
+   .. code-block:: shell
 
-      make install
+      > make install
 
 If you'd like, you can then repeat this process with different compiler environments and/or different choices of ``-DMPI`` and ``-DOPENMP`` in the cmake step (each of these can have the value ``NO`` or ``YES``).
 Make sure to choose a different installation directory for each of these, by setting the ``PFUNIT`` variable differently.
@@ -172,11 +172,8 @@ How to write a new unit test
 TODO: Need to write this section.
 This will draw on some of the information in sections 3 and 4 of https://github.com/NCAR/cesm_unit_test_tutorial (though without the clm and cam stuff).
 
-More details on writing your own unit tests
--------------------------------------------
-
 General guidelines for writing unit tests
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-----------------------------------------
 
 Unit tests typically test a small piece of code (e.g., order 10 - 100 lines,
 such as a single function or small-ish class).
@@ -240,6 +237,20 @@ A good unit test has four distinct pieces:
    `Defining a test class in order to define setUp and tearDown methods`_ and
    `More on test teardown`_.
 
+If you have many tests of the same subroutine, then you'll often find quite a
+lot of duplication between the tests. It's good practice to extract major areas
+of duplication to their own subroutines in the .pf file, which can be called by
+your tests. This aids the understandability and maintainability of your
+tests. pFUnit knows which subroutines are tests and which are "helper" routines
+because of the ``@Test`` directives: You only add a ``@Test`` directive for your
+tests, not for your helper routines.
+
+More details on writing pFUnit-based unit tests
+-----------------------------------------------
+
+Assertion methods
+~~~~~~~~~~~~~~~~~
+
 pFUnit provides many assertion methods that you can use in the Verify step. Some
 of the most useful are the following:
 
@@ -286,14 +297,6 @@ In addition, all of the assertion methods accept an optional ``message``
 argument, which gives a string that will be printed if the assertion fails. If
 no message is provided, you will be pointed to the file and line number of the
 failed assertion.
-
-If you have many tests of the same subroutine, then you'll often find quite a
-lot of duplication between the tests. It's good practice to extract major areas
-of duplication to their own subroutines in the .pf file, which can be called by
-your tests. This aids the understandability and maintainability of your
-tests. pFUnit knows which subroutines are tests and which are "helper" routines
-because of the ``@Test`` directives: You only add a ``@Test`` directive for your
-tests, not for your helper routines.
 
 Defining a test class in order to define setUp and tearDown methods
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -437,10 +440,10 @@ Finding more documentation and examples in CIME
 Documentation of the unit test build system
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The CMake build infrastructure is in ``cime/src/externals/CMake``.
+The CMake build infrastructure is in ``$CIMEROOT/src/externals/CMake``.
 
 The infrastructure for building and running tests with ``run_tests.py`` is in
-``cime/tools/unit_testing``. That directory also contains some general
+``$CIMEROOT/tools/unit_testing``. That directory also contains some general
 documentation about how to use the CIME unit test infrastructure (in the
 ``README`` file), and examples (in the ``Examples`` directory).
 
@@ -451,9 +454,9 @@ At this point, there are many examples of unit tests in CIME, some simple and
 some quite complex. You can find these by looking for files with the '.pf'
 extension:
 
-.. code-block:: none
+.. code-block:: shell
 
-   find . -name '*.pf'
+   > find . -name '*.pf'
 
 You can also see examples of the unit test build scripts by viewing the
 CMakeLists.txt files throughout the source tree.
