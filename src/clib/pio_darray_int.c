@@ -487,11 +487,12 @@ int send_all_start_count(iosystem_desc_t *ios, io_desc_t *iodesc, PIO_Offset lle
     return PIO_NOERR;
 }
 
-int recv_all_start_count(iosystem_desc_t *ios, file_desc_t *file, const int *vid, const int *frame, 
+int recv_all_start_count(file_desc_t *file, const int *vid, const int *frame, 
                          io_desc_t *iodesc, PIO_Offset llen, int maxregions, int nvars,
                          int fndims, int tsize, size_t *tmp_start, size_t *tmp_count, void *iobuf)
 {
     int dsize;             /* Size in bytes of one element of basetype. */    
+    iosystem_desc_t *ios;  /* Pointer to io system information. */
     size_t rlen;    /* Length of IO buffer on this task. */
     int rregions;   /* Number of regions in buffer for this task. */
     size_t start[fndims], count[fndims];
@@ -501,6 +502,8 @@ int recv_all_start_count(iosystem_desc_t *ios, file_desc_t *file, const int *vid
     MPI_Status status;     /* Recv status for MPI. */    
     int mpierr;  /* Return code from MPI function codes. */
     int ierr;    /* Return code. */
+
+    ios = file->iosystem;    
 
     /* Get the size of the MPI data type. */
     if ((mpierr = MPI_Type_size(iodesc->basetype, &dsize)))
@@ -741,7 +744,7 @@ int write_darray_multi_serial(file_desc_t *file, int nvars, const int *vid, io_d
         {
             /* Task 0 will receive data from all other IO tasks. */
 
-            if ((ierr = recv_all_start_count(ios, file, vid, frame, iodesc, llen, maxregions, nvars, fndims,
+            if ((ierr = recv_all_start_count(file, vid, frame, iodesc, llen, maxregions, nvars, fndims,
                                              tsize, tmp_start, tmp_count, iobuf)))
                 return pio_err(ios, file, ierr, __FILE__, __LINE__);
         }
