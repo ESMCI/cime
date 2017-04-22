@@ -360,10 +360,10 @@ int pio_write_darray_multi_nc(file_desc_t *file, int nvars, const int *vid, int 
     return ierr;
 }
 
-/** 
+/**
  * Fill the tmp_start and tmp_count arrays, which contain the start
  * and count arrays for all regions.
- * 
+ *
  * This is an internal function which is only called on io tasks. It
  * is called by pio_write_darray_multi_nc_serial().
  *
@@ -382,7 +382,7 @@ int pio_write_darray_multi_nc(file_desc_t *file, int nvars, const int *vid, int 
  * @returns 0 for success, error code otherwise.
  * @ingroup PIO_read_darray
  **/
-int find_all_start_count(io_region *region, int maxregions, int fndims, 
+int find_all_start_count(io_region *region, int maxregions, int fndims,
                          int iodesc_ndims, var_desc_t *vdesc, size_t *tmp_start,
                          size_t *tmp_count)
 {
@@ -450,11 +450,11 @@ int send_all_start_count(iosystem_desc_t *ios, io_desc_t *iodesc, PIO_Offset lle
     MPI_Status status;     /* Recv status for MPI. */
     int mpierr;  /* Return code from MPI function codes. */
     int ierr;    /* Return code. */
-    
+
     /* Check inputs. */
     pioassert(ios && ios->ioproc && ios->io_rank > 0 && maxregions >= 0,
               "invalid inputs", __FILE__, __LINE__);
-    
+
     /* Do a handshake. */
     if ((mpierr = MPI_Recv(&ierr, 1, MPI_INT, 0, 0, ios->io_comm, &status)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
@@ -483,27 +483,61 @@ int send_all_start_count(iosystem_desc_t *ios, io_desc_t *iodesc, PIO_Offset lle
             return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
         LOG((3, "sent data for maxregions = %d", maxregions));
     }
-    
+
     return PIO_NOERR;
 }
 
-int recv_all_start_count(file_desc_t *file, const int *vid, const int *frame, 
+/**
+ * This is an internal function that is run only on IO proc 0. It
+ * receives data from all the other IO tasks, and write that data to
+ * disk. This is called from write_darray_multi_serial().
+ *
+ * @param file a pointer to the open file descriptor for the file
+ * that will be written to.
+ * @param vid an array of the variable ids to be written
+ * @param frame the record dimension for each of the nvars variables
+ * in iobuf.  NULL if this iodesc contains non-record vars.
+ * @param iodesc pointer to the decomposition info.
+ * @param llen length of the iobuffer on this task for a single
+ * field.
+ * @param maxregions max number of blocks to be written from this
+ * iotask.
+ * @param nvars the number of variables to be written with this
+ * decomposition.
+ * @param fndims the number of dimensions in the file.
+ * @param tmp_start pointer to an already allocaed array of length
+ * fndims * maxregions. This array will get the start values for all
+ * regions.
+ * @param tmp_count pointer to an already allocaed array of length
+ * fndims * maxregions. This array will get the count values for all
+ * regions.
+ * @param iobuf the buffer to be written from this mpi task. May be
+ * null. for example we have 8 ionodes and a distributed array with
+ * global size 4, then at least 4 nodes will have a null iobuf. In
+ * practice the box rearranger trys to have at least blocksize bytes
+ * on each io task and so if the total number of bytes to write is
+ * less than blocksize*numiotasks then some iotasks will have a NULL
+ * iobuf.
+ * @return 0 for success, error code otherwise.
+ * @ingroup PIO_write_darray
+ */
+int recv_all_start_count(file_desc_t *file, const int *vid, const int *frame,
                          io_desc_t *iodesc, PIO_Offset llen, int maxregions, int nvars,
-                         int fndims, int tsize, size_t *tmp_start, size_t *tmp_count, void *iobuf)
+                         int fndims, size_t *tmp_start, size_t *tmp_count, void *iobuf)
 {
-    int dsize;             /* Size in bytes of one element of basetype. */    
+    int dsize;             /* Size in bytes of one element of basetype. */
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     size_t rlen;    /* Length of IO buffer on this task. */
     int rregions;   /* Number of regions in buffer for this task. */
     size_t start[fndims], count[fndims];
     size_t loffset;
     void *bufptr;
-    var_desc_t *vdesc;     /* Contains info about the variable. */    
-    MPI_Status status;     /* Recv status for MPI. */    
+    var_desc_t *vdesc;     /* Contains info about the variable. */
+    MPI_Status status;     /* Recv status for MPI. */
     int mpierr;  /* Return code from MPI function codes. */
     int ierr;    /* Return code. */
 
-    ios = file->iosystem;    
+    ios = file->iosystem;
 
     /* Get the size of the MPI data type. */
     if ((mpierr = MPI_Type_size(iodesc->basetype, &dsize)))
@@ -575,10 +609,10 @@ int recv_all_start_count(file_desc_t *file, const int *vid, const int *frame,
                 for (int nv = 0; nv < nvars; nv++)
                 {
                     LOG((3, "writing buffer var %d", nv));
-                    vdesc = file->varlist + vid[0];                    
+                    vdesc = file->varlist + vid[0];
 
                     /* Get a pointer to the correct part of the buffer. */
-                    bufptr = (void *)((char *)iobuf + tsize * (nv * rlen + loffset));
+                    bufptr = (void *)((char *)iobuf + iodesc->basetype_size * (nv * rlen + loffset));
 
                     /* If this var has an unlimited dim, set
                      * the start on that dim to the frame
@@ -597,15 +631,9 @@ int recv_all_start_count(file_desc_t *file, const int *vid, const int *frame,
                     }
 
                     /* Call the netCDF functions to write the data. */
-                    ierr = nc_put_vara(file->fh, vid[nv], start, count, bufptr);
-
-                    if (ierr)
-                    {
-                        for (int i = 0; i < fndims; i++)
-                            fprintf(stderr, "vid %d dim %d start %ld count %ld \n", vid[nv], i,
-                                    start[i], count[i]);
+                    if ((ierr = nc_put_vara(file->fh, vid[nv], start, count, bufptr)))
                         return check_netcdf2(ios, NULL, ierr, __FILE__, __LINE__);
-                    }
+
                 } /* next var */
 
                 /* Calculate the total size. */
@@ -621,7 +649,7 @@ int recv_all_start_count(file_desc_t *file, const int *vid, const int *frame,
             } /* next regioncnt */
         } /* endif (rlen > 0) */
     } /* next rtask */
-    
+
     return PIO_NOERR;
 }
 
@@ -655,9 +683,8 @@ int recv_all_start_count(file_desc_t *file, const int *vid, const int *frame,
  * @return 0 for success, error code otherwise.
  * @ingroup PIO_write_darray
  */
-int write_darray_multi_serial(file_desc_t *file, int nvars, const int *vid, io_desc_t *iodesc,
-                              int maxregions, io_region *firstregion, PIO_Offset llen, void *iobuf,
-                              const int *frame)
+int write_darray_multi_serial(file_desc_t *file, int nvars, const int *vid,
+                              io_desc_t *iodesc, int fill, const int *frame)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     var_desc_t *vdesc;     /* Contains info about the variable. */
@@ -667,25 +694,30 @@ int write_darray_multi_serial(file_desc_t *file, int nvars, const int *vid, io_d
     int ierr;              /* Return code. */
 
     /* Check inputs. */
-    pioassert(file && file->iosystem && vid && vid[0] >= 0 && vid[0] <= PIO_MAX_VARS,
-              "invalid input", __FILE__, __LINE__);
+    pioassert(file && file->iosystem && file->varlist && vid && vid[0] >= 0 &&
+              vid[0] <= PIO_MAX_VARS && iodesc, "invalid input", __FILE__, __LINE__);
 
-    LOG((1, "pio_write_darray_multi_nc_serial nvars = %d iodesc->ndims = %d iodesc->basetype = %d "
-         "maxregions = %d llen = %d", nvars, iodesc->ndims, iodesc->basetype, maxregions, llen));
-
-#ifdef TIMING
-    /* Start timing this function. */
-    GPTLstart("PIO:write_darray_multi_nc_serial");
-#endif
+    LOG((1, "pio_write_darray_multi_nc_serial nvars = %d iodesc->ndims = %d iodesc->basetype = %d",
+         nvars, iodesc->ndims, iodesc->basetype));
 
     /* Get the iosystem info. */
     ios = file->iosystem;
 
     /* Get the var info. */
     vdesc = file->varlist + vid[0];
-
     LOG((2, "vdesc record %d ndims %d nreqs %d ios->async = %d", vdesc->record,
          vdesc->ndims, vdesc->nreqs, ios->async));
+
+    /* Set these differently for data and fill writing. */
+    int maxregions = fill ? iodesc->maxfillregions: iodesc->maxregions;
+    io_region *firstregion = fill ? iodesc->fillregion : iodesc->firstregion;
+    PIO_Offset llen = fill ? iodesc->holegridsize : iodesc->llen;
+    void *iobuf = fill ? vdesc->fillbuf : vdesc->iobuf;
+
+#ifdef TIMING
+    /* Start timing this function. */
+    GPTLstart("PIO:write_darray_multi_nc_serial");
+#endif
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
     if (ios->async)
@@ -745,7 +777,7 @@ int write_darray_multi_serial(file_desc_t *file, int nvars, const int *vid, io_d
             /* Task 0 will receive data from all other IO tasks. */
 
             if ((ierr = recv_all_start_count(file, vid, frame, iodesc, llen, maxregions, nvars, fndims,
-                                             tsize, tmp_start, tmp_count, iobuf)))
+                                             tmp_start, tmp_count, iobuf)))
                 return pio_err(ios, file, ierr, __FILE__, __LINE__);
         }
     }

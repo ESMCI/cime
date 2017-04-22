@@ -650,6 +650,7 @@ int malloc_iodesc(iosystem_desc_t *ios, int piotype, int ndims,
                   io_desc_t **iodesc)
 {
     MPI_Datatype mpi_type;
+    int mpierr;
     int ret;
 
     /* Check input. */
@@ -668,6 +669,10 @@ int malloc_iodesc(iosystem_desc_t *ios, int piotype, int ndims,
 
     /* Remember the MPI type. */
     (*iodesc)->basetype = mpi_type;
+
+    /* Get the size of the type. */
+    if ((mpierr = MPI_Type_size((*iodesc)->basetype, &(*iodesc)->basetype_size)))
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
 
     /* Initialize some values in the struct. */
     (*iodesc)->maxregions = 1;

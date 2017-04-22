@@ -296,9 +296,8 @@ extern "C" {
                                   const int *frame);
 
     /* Write aggregated arrays to file using serial I/O (netCDF-3/netCDF-4 serial) */
-    int write_darray_multi_serial(file_desc_t *file, int nvars, const int *vid, io_desc_t *iodesc,
-                                  int maxregions, io_region *firstregion, PIO_Offset llen,
-                                  void *iobuf, const int *frame);
+    int write_darray_multi_serial(file_desc_t *file, int nvars, const int *vid,
+                                  io_desc_t *iodesc, int fill, const int *frame);
 
     int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid, void *iobuf);
     int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc, int vid, void *iobuf);
