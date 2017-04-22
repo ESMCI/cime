@@ -435,6 +435,194 @@ int find_all_start_count(io_region *region, int maxregions, int fndims,
 }
 
 /**
+ * Internal function called by IO tasks other than IO task 0 to send
+ * their tmp_start/tmp_count arrays to IO task 0.
+ *
+ * This function is only called on IO tasks other than IO task 0.
+ *
+ * @return 0 for success, error code otherwise.
+ * @ingroup PIO_write_darray
+ **/
+int send_all_start_count(iosystem_desc_t *ios, io_desc_t *iodesc, PIO_Offset llen,
+                         int maxregions, int nvars, int fndims, size_t *tmp_start,
+                         size_t *tmp_count, void *iobuf)
+{
+    MPI_Status status;     /* Recv status for MPI. */
+    int mpierr;  /* Return code from MPI function codes. */
+    int ierr;    /* Return code. */
+    
+    /* Check inputs. */
+    pioassert(ios && ios->ioproc && ios->io_rank > 0 && maxregions >= 0,
+              "invalid inputs", __FILE__, __LINE__);
+    
+    /* Do a handshake. */
+    if ((mpierr = MPI_Recv(&ierr, 1, MPI_INT, 0, 0, ios->io_comm, &status)))
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+
+    /* Send local length of iobuffer for each field (all
+     * fields are the same length). */
+    if ((mpierr = MPI_Send((void *)&llen, 1, MPI_OFFSET, 0, ios->io_rank, ios->io_comm)))
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+    LOG((3, "sent llen = %d", llen));
+
+    /* Send the number of data regions, the start/count for
+     * all regions, and the data buffer with all the data. */
+    if (llen > 0)
+    {
+        if ((mpierr = MPI_Send((void *)&maxregions, 1, MPI_INT, 0, ios->io_rank + ios->num_iotasks,
+                               ios->io_comm)))
+            return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+        if ((mpierr = MPI_Send(tmp_start, maxregions * fndims, MPI_OFFSET, 0,
+                               ios->io_rank + 2 * ios->num_iotasks, ios->io_comm)))
+            return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+        if ((mpierr = MPI_Send(tmp_count, maxregions * fndims, MPI_OFFSET, 0,
+                               ios->io_rank + 3 * ios->num_iotasks, ios->io_comm)))
+            return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+        if ((mpierr = MPI_Send(iobuf, nvars * llen, iodesc->basetype, 0,
+                               ios->io_rank + 4 * ios->num_iotasks, ios->io_comm)))
+            return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+        LOG((3, "sent data for maxregions = %d", maxregions));
+    }
+    
+    return PIO_NOERR;
+}
+
+int recv_all_start_count(iosystem_desc_t *ios, file_desc_t *file, const int *vid, const int *frame, 
+                         io_desc_t *iodesc, PIO_Offset llen, int maxregions, int nvars,
+                         int fndims, int tsize, size_t *tmp_start, size_t *tmp_count, void *iobuf)
+{
+    int dsize;             /* Size in bytes of one element of basetype. */    
+    size_t rlen;    /* Length of IO buffer on this task. */
+    int rregions;   /* Number of regions in buffer for this task. */
+    size_t start[fndims], count[fndims];
+    size_t loffset;
+    void *bufptr;
+    var_desc_t *vdesc;     /* Contains info about the variable. */    
+    MPI_Status status;     /* Recv status for MPI. */    
+    int mpierr;  /* Return code from MPI function codes. */
+    int ierr;    /* Return code. */
+
+    /* Get the size of the MPI data type. */
+    if ((mpierr = MPI_Type_size(iodesc->basetype, &dsize)))
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+    LOG((3, "dsize = %d", dsize));
+
+    /* For each of the other tasks that are using this task
+     * for IO. */
+    for (int rtask = 0; rtask < ios->num_iotasks; rtask++)
+    {
+        /* From the remote tasks, we send information about
+         * the data regions. and also the data. */
+        if (rtask)
+        {
+            /* handshake - tell the sending task I'm ready */
+            if ((mpierr = MPI_Send(&ierr, 1, MPI_INT, rtask, 0, ios->io_comm)))
+                return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+
+            /* Get length of iobuffer for each field on this
+             * task (all fields are the same length). */
+            if ((mpierr = MPI_Recv(&rlen, 1, MPI_OFFSET, rtask, rtask, ios->io_comm,
+                                   &status)))
+                return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+            LOG((3, "received rlen = %d", rlen));
+
+            /* Get the number of regions, the start/count
+             * values for all regions, and the data buffer. */
+            if (rlen > 0)
+            {
+                if ((mpierr = MPI_Recv(&rregions, 1, MPI_INT, rtask, rtask + ios->num_iotasks,
+                                       ios->io_comm, &status)))
+                    return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+                if ((mpierr = MPI_Recv(tmp_start, rregions * fndims, MPI_OFFSET, rtask,
+                                       rtask + 2 * ios->num_iotasks, ios->io_comm, &status)))
+                    return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+                if ((mpierr = MPI_Recv(tmp_count, rregions * fndims, MPI_OFFSET, rtask,
+                                       rtask + 3 * ios->num_iotasks, ios->io_comm, &status)))
+                    return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+                if ((mpierr = MPI_Recv(iobuf, nvars * rlen, iodesc->basetype, rtask,
+                                       rtask + 4 * ios->num_iotasks, ios->io_comm, &status)))
+                    return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+                LOG((3, "received data rregions = %d fndims = %d", rregions, fndims));
+            }
+        }
+        else /* task 0 */
+        {
+            rlen = llen;
+            rregions = maxregions;
+        }
+        LOG((3, "rtask = %d rlen = %d rregions = %d", rtask, rlen, rregions));
+
+        /* If there is data from this task, write it. */
+        if (rlen > 0)
+        {
+            loffset = 0;
+            for (int regioncnt = 0; regioncnt < rregions; regioncnt++)
+            {
+                LOG((3, "writing data for region with regioncnt = %d", regioncnt));
+
+                /* Get the start/count arrays for this region. */
+                for (int i = 0; i < fndims; i++)
+                {
+                    start[i] = tmp_start[i + regioncnt * fndims];
+                    count[i] = tmp_count[i + regioncnt * fndims];
+                    LOG((3, "start[%d] = %d count[%d] = %d", i, start[i], i, count[i]));
+                }
+
+                /* Process each variable in the buffer. */
+                for (int nv = 0; nv < nvars; nv++)
+                {
+                    LOG((3, "writing buffer var %d", nv));
+                    vdesc = file->varlist + vid[0];                    
+
+                    /* Get a pointer to the correct part of the buffer. */
+                    bufptr = (void *)((char *)iobuf + tsize * (nv * rlen + loffset));
+
+                    /* If this var has an unlimited dim, set
+                     * the start on that dim to the frame
+                     * value for this variable. */
+                    if (vdesc->record >= 0)
+                    {
+                        if (fndims > 1 && iodesc->ndims < fndims && count[1] > 0)
+                        {
+                            count[0] = 1;
+                            start[0] = frame[nv];
+                        }
+                        else if (fndims == iodesc->ndims)
+                        {
+                            start[0] += vdesc->record;
+                        }
+                    }
+
+                    /* Call the netCDF functions to write the data. */
+                    ierr = nc_put_vara(file->fh, vid[nv], start, count, bufptr);
+
+                    if (ierr)
+                    {
+                        for (int i = 0; i < fndims; i++)
+                            fprintf(stderr, "vid %d dim %d start %ld count %ld \n", vid[nv], i,
+                                    start[i], count[i]);
+                        return check_netcdf2(ios, NULL, ierr, __FILE__, __LINE__);
+                    }
+                } /* next var */
+
+                /* Calculate the total size. */
+                size_t tsize = 1;
+                for (int i = 0; i < fndims; i++)
+                    tsize *= count[i];
+
+                /* Keep track of where we are in the buffer. */
+                loffset += tsize;
+
+                LOG((3, " at bottom of loop regioncnt = %d tsize = %d loffset = %d", regioncnt,
+                     tsize, loffset));
+            } /* next regioncnt */
+        } /* endif (rlen > 0) */
+    } /* next rtask */
+    
+    return PIO_NOERR;
+}
+
+/**
  * Write a set of one or more aggregated arrays to output file in
  * serial mode. This function is called for netCDF classic and
  * netCDF-4 serial iotypes. Parallel iotypes use
@@ -470,10 +658,8 @@ int write_darray_multi_serial(file_desc_t *file, int nvars, const int *vid, io_d
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     var_desc_t *vdesc;     /* Contains info about the variable. */
-    int dsize;             /* Size in bytes of one element of basetype. */
     int fndims;            /* Number of dims in the var in the file. */
     int tsize;             /* Size of the MPI type, in bytes. */
-    MPI_Status status;     /* Recv status for MPI. */
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
     int ierr;              /* Return code. */
 
@@ -531,7 +717,6 @@ int write_darray_multi_serial(file_desc_t *file, int nvars, const int *vid, io_d
     /* Only IO tasks participate in this code. */
     if (ios->ioproc)
     {
-        void *bufptr;
         size_t tmp_start[fndims * maxregions]; /* A start array for each region. */
         size_t tmp_count[fndims * maxregions]; /* A count array for each region. */
 
@@ -539,161 +724,26 @@ int write_darray_multi_serial(file_desc_t *file, int nvars, const int *vid, io_d
 
         /* Fill the tmp_start and tmp_count arrays, which contain the
          * start and count arrays for all regions. */
-        if ((ierr = find_all_start_count(firstregion, maxregions, fndims, iodesc->ndims, vdesc, tmp_start, tmp_count)))
+        if ((ierr = find_all_start_count(firstregion, maxregions, fndims, iodesc->ndims, vdesc,
+                                         tmp_start, tmp_count)))
             return pio_err(ios, file, ierr, __FILE__, __LINE__);
 
         /* Tasks other than 0 will send their data to task 0. */
         if (ios->io_rank > 0)
         {
-            /* Do a handshake. */
-            if ((mpierr = MPI_Recv(&ierr, 1, MPI_INT, 0, 0, ios->io_comm, &status)))
-                return check_mpi(file, mpierr, __FILE__, __LINE__);
-
-            /* Send local length of iobuffer for each field (all
-             * fields are the same length). */
-            if ((mpierr = MPI_Send((void *)&llen, 1, MPI_OFFSET, 0, ios->io_rank, ios->io_comm)))
-                return check_mpi(file, mpierr, __FILE__, __LINE__);
-            LOG((3, "sent llen = %d", llen));
-
-            /* Send the number of data regions, the start/count for
-             * all regions, and the data buffer with all the data. */
-            if (llen > 0)
-            {
-                if ((mpierr = MPI_Send((void *)&maxregions, 1, MPI_INT, 0, ios->io_rank + ios->num_iotasks, ios->io_comm)))
-                    return check_mpi(file, mpierr, __FILE__, __LINE__);
-                if ((mpierr = MPI_Send(tmp_start, maxregions * fndims, MPI_OFFSET, 0, ios->io_rank + 2 * ios->num_iotasks,
-                                       ios->io_comm)))
-                    return check_mpi(file, mpierr, __FILE__, __LINE__);
-                if ((mpierr = MPI_Send(tmp_count, maxregions * fndims, MPI_OFFSET, 0, ios->io_rank + 3 * ios->num_iotasks,
-                                       ios->io_comm)))
-                    return check_mpi(file, mpierr, __FILE__, __LINE__);
-                if ((mpierr = MPI_Send(iobuf, nvars * llen, iodesc->basetype, 0, ios->io_rank + 4 * ios->num_iotasks, ios->io_comm)))
-                    return check_mpi(file, mpierr, __FILE__, __LINE__);
-                LOG((3, "sent data for maxregions = %d", maxregions));
-            }
+            /* Send the tmp_start and tmp_count arrays from this IO task
+             * to task 0. */
+            if ((ierr = send_all_start_count(ios, iodesc, llen, maxregions, nvars, fndims,
+                                             tmp_start, tmp_count, iobuf)))
+                return pio_err(ios, file, ierr, __FILE__, __LINE__);
         }
         else
         {
             /* Task 0 will receive data from all other IO tasks. */
-            size_t rlen;    /* Length of IO buffer on this task. */
-            int rregions;   /* Number of regions in buffer for this task. */
-            size_t start[fndims], count[fndims];
-            size_t loffset;
 
-            /* Get the size of the MPI data type. */
-            if ((mpierr = MPI_Type_size(iodesc->basetype, &dsize)))
-                return check_mpi(file, mpierr, __FILE__, __LINE__);
-            LOG((3, "dsize = %d", dsize));
-
-            /* For each of the other tasks that are using this task
-             * for IO. */
-            for (int rtask = 0; rtask < ios->num_iotasks; rtask++)
-            {
-                /* From the remote tasks, we send information about
-                 * the data regions. and also the data. */
-                if (rtask)
-                {
-                    /* handshake - tell the sending task I'm ready */
-                    if ((mpierr = MPI_Send(&ierr, 1, MPI_INT, rtask, 0, ios->io_comm)))
-                        return check_mpi(file, mpierr, __FILE__, __LINE__);
-
-                    /* Get length of iobuffer for each field on this
-                     * task (all fields are the same length). */
-                    if ((mpierr = MPI_Recv(&rlen, 1, MPI_OFFSET, rtask, rtask, ios->io_comm, &status)))
-                        return check_mpi(file, mpierr, __FILE__, __LINE__);
-                    LOG((3, "received rlen = %d", rlen));
-
-                    /* Get the number of regions, the start/count
-                     * values for all regions, and the data buffer. */
-                    if (rlen > 0)
-                    {
-                        if ((mpierr = MPI_Recv(&rregions, 1, MPI_INT, rtask, rtask + ios->num_iotasks,
-                                               ios->io_comm, &status)))
-                            return check_mpi(file, mpierr, __FILE__, __LINE__);
-                        if ((mpierr = MPI_Recv(tmp_start, rregions * fndims, MPI_OFFSET, rtask, rtask + 2 * ios->num_iotasks,
-                                               ios->io_comm, &status)))
-                            return check_mpi(file, mpierr, __FILE__, __LINE__);
-                        if ((mpierr = MPI_Recv(tmp_count, rregions * fndims, MPI_OFFSET, rtask, rtask + 3 * ios->num_iotasks,
-                                               ios->io_comm, &status)))
-                            return check_mpi(file, mpierr, __FILE__, __LINE__);
-                        if ((mpierr = MPI_Recv(iobuf, nvars * rlen, iodesc->basetype, rtask, rtask + 4 * ios->num_iotasks, ios->io_comm,
-                                               &status)))
-                            return check_mpi(file, mpierr, __FILE__, __LINE__);
-                        LOG((3, "received data rregions = %d fndims = %d", rregions, fndims));
-                    }
-                }
-                else /* task 0 */
-                {
-                    rlen = llen;
-                    rregions = maxregions;
-                }
-                LOG((3, "rtask = %d rlen = %d rregions = %d", rtask, rlen, rregions));
-
-                /* If there is data from this task, write it. */
-                if (rlen > 0)
-                {
-                    loffset = 0;
-                    for (int regioncnt = 0; regioncnt < rregions; regioncnt++)
-                    {
-                        LOG((3, "writing data for region with regioncnt = %d", regioncnt));
-
-                        /* Get the start/count arrays for this region. */
-                        for (int i = 0; i < fndims; i++)
-                        {
-                            start[i] = tmp_start[i + regioncnt * fndims];
-                            count[i] = tmp_count[i + regioncnt * fndims];
-                            LOG((3, "start[%d] = %d count[%d] = %d", i, start[i], i, count[i]));
-                        }
-
-                        /* Process each variable in the buffer. */
-                        for (int nv = 0; nv < nvars; nv++)
-                        {
-                            LOG((3, "writing buffer var %d", nv));
-
-                            /* Get a pointer to the correct part of the buffer. */
-                            bufptr = (void *)((char *)iobuf + tsize * (nv * rlen + loffset));
-
-                            /* If this var has an unlimited dim, set
-                             * the start on that dim to the frame
-                             * value for this variable. */
-                            if (vdesc->record >= 0)
-                            {
-                                if (fndims > 1 && iodesc->ndims < fndims && count[1] > 0)
-                                {
-                                    count[0] = 1;
-                                    start[0] = frame[nv];
-                                }
-                                else if (fndims == iodesc->ndims)
-                                {
-                                    start[0] += vdesc->record;
-                                }
-                            }
-
-                            /* Call the netCDF functions to write the data. */
-                            ierr = nc_put_vara(file->fh, vid[nv], start, count, bufptr);
-
-                            if (ierr)
-                            {
-                                for (int i = 0; i < fndims; i++)
-                                    fprintf(stderr, "vid %d dim %d start %ld count %ld \n", vid[nv], i,
-                                            start[i], count[i]);
-                                return check_netcdf(file, ierr, __FILE__, __LINE__);
-                            }
-                        } /* next var */
-
-                        /* Calculate the total size. */
-                        size_t tsize = 1;
-                        for (int i = 0; i < fndims; i++)
-                            tsize *= count[i];
-
-                        /* Keep track of where we are in the buffer. */
-                        loffset += tsize;
-
-                        LOG((3, " at bottom of loop regioncnt = %d tsize = %d loffset = %d", regioncnt,
-                             tsize, loffset));
-                    } /* next regioncnt */
-                } /* endif (rlen > 0) */
-            } /* next rtask */
+            if ((ierr = recv_all_start_count(ios, file, vid, frame, iodesc, llen, maxregions, nvars, fndims,
+                                             tsize, tmp_start, tmp_count, iobuf)))
+                return pio_err(ios, file, ierr, __FILE__, __LINE__);
         }
     }
 
