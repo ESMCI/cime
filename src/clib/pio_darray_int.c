@@ -70,7 +70,7 @@ int compute_buffer_init(iosystem_desc_t *ios)
 /**
  * Write a set of one or more aggregated arrays to output file. This
  * function is only used with parallel-netcdf and netcdf-4 parallel
- * iotypes. Serial io types use pio_write_darray_multi_nc_serial().
+ * iotypes. Serial io types use write_darray_multi_serial().
  *
  * @param file a pointer to the open file descriptor for the file
  * that will be written to
@@ -365,7 +365,7 @@ int pio_write_darray_multi_nc(file_desc_t *file, int nvars, const int *vid, int 
  * and count arrays for all regions.
  *
  * This is an internal function which is only called on io tasks. It
- * is called by pio_write_darray_multi_nc_serial().
+ * is called by write_darray_multi_serial().
  *
  * @param region pointer to the first in a linked list of regions.
  * @param maxregions the number of regions in the list.
@@ -386,14 +386,18 @@ int find_all_start_count(io_region *region, int maxregions, int fndims,
                          int iodesc_ndims, var_desc_t *vdesc, size_t *tmp_start,
                          size_t *tmp_count)
 {
+    /* Check inputs. */
+    pioassert(maxregions >= 0 && fndims > 0 && iodesc_ndims >= 0 && vdesc &&
+              tmp_start && tmp_count, "invalid input", __FILE__, __LINE__);
 
-    for (int regioncnt = 0; regioncnt < maxregions; regioncnt++)
+    /* Find the start/count arrays for each region in the list. */
+    for (int r = 0; r < maxregions; r++)
     {
         /* Initialize the start/count arrays for this region to 0. */
-        for (int i = 0; i < fndims; i++)
+        for (int d = 0; d < fndims; d++)
         {
-            tmp_start[i + regioncnt * fndims] = 0;
-            tmp_count[i + regioncnt * fndims] = 0;
+            tmp_start[d + r * fndims] = 0;
+            tmp_count[d + r * fndims] = 0;
         }
 
         if (region)
@@ -405,11 +409,11 @@ int find_all_start_count(io_region *region, int maxregions, int fndims,
                  * dimensions. */
                 for (int i = fndims - iodesc_ndims; i < fndims; i++)
                 {
-                    tmp_start[i + regioncnt * fndims] = region->start[i - (fndims - iodesc_ndims)];
-                    tmp_count[i + regioncnt * fndims] = region->count[i - (fndims - iodesc_ndims)];
-                    LOG((3, "tmp_start[%d] = %d tmp_count[%d] = %d", i + regioncnt * fndims,
-                         tmp_start[i + regioncnt * fndims], i + regioncnt * fndims,
-                         tmp_count[i + regioncnt * fndims]));
+                    tmp_start[i + r * fndims] = region->start[i - (fndims - iodesc_ndims)];
+                    tmp_count[i + r * fndims] = region->count[i - (fndims - iodesc_ndims)];
+                    LOG((3, "tmp_start[%d] = %d tmp_count[%d] = %d", i + r * fndims,
+                         tmp_start[i + r * fndims], i + r * fndims,
+                         tmp_count[i + r * fndims]));
                 }
             }
             else
@@ -417,11 +421,11 @@ int find_all_start_count(io_region *region, int maxregions, int fndims,
                 /* This is not a record based multidimensional array. */
                 for (int i = 0; i < iodesc_ndims; i++)
                 {
-                    tmp_start[i + regioncnt * fndims] = region->start[i];
-                    tmp_count[i + regioncnt * fndims] = region->count[i];
-                    LOG((3, "tmp_start[%d] = %d tmp_count[%d] = %d", i + regioncnt * fndims,
-                         tmp_start[i + regioncnt * fndims], i + regioncnt * fndims,
-                         tmp_count[i + regioncnt * fndims]));
+                    tmp_start[i + r * fndims] = region->start[i];
+                    tmp_count[i + r * fndims] = region->count[i];
+                    LOG((3, "tmp_start[%d] = %d tmp_count[%d] = %d", i + r * fndims,
+                         tmp_start[i + r * fndims], i + r * fndims,
+                         tmp_count[i + r * fndims]));
                 }
             }
 
@@ -429,7 +433,7 @@ int find_all_start_count(io_region *region, int maxregions, int fndims,
             region = region->next;
 
         } /* endif region */
-    } /* next regioncnt */
+    } /* next r */
 
     return PIO_NOERR;
 }
@@ -438,7 +442,8 @@ int find_all_start_count(io_region *region, int maxregions, int fndims,
  * Internal function called by IO tasks other than IO task 0 to send
  * their tmp_start/tmp_count arrays to IO task 0.
  *
- * This function is only called on IO tasks other than IO task 0.
+ * This is an internal function which is only called on io tasks other
+ * than IO task 0. It is called by write_darray_multi_serial().
  *
  * @return 0 for success, error code otherwise.
  * @ingroup PIO_write_darray
@@ -521,9 +526,9 @@ int send_all_start_count(iosystem_desc_t *ios, io_desc_t *iodesc, PIO_Offset lle
  * @return 0 for success, error code otherwise.
  * @ingroup PIO_write_darray
  */
-int recv_all_start_count(file_desc_t *file, const int *vid, const int *frame,
-                         io_desc_t *iodesc, PIO_Offset llen, int maxregions, int nvars,
-                         int fndims, size_t *tmp_start, size_t *tmp_count, void *iobuf)
+int recv_and_write_data(file_desc_t *file, const int *vid, const int *frame,
+                        io_desc_t *iodesc, PIO_Offset llen, int maxregions, int nvars,
+                        int fndims, size_t *tmp_start, size_t *tmp_count, void *iobuf)
 {
     int dsize;             /* Size in bytes of one element of basetype. */
     iosystem_desc_t *ios;  /* Pointer to io system information. */
@@ -689,7 +694,6 @@ int write_darray_multi_serial(file_desc_t *file, int nvars, const int *vid,
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     var_desc_t *vdesc;     /* Contains info about the variable. */
     int fndims;            /* Number of dims in the var in the file. */
-    int tsize;             /* Size of the MPI type, in bytes. */
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
     int ierr;              /* Return code. */
 
@@ -709,8 +713,8 @@ int write_darray_multi_serial(file_desc_t *file, int nvars, const int *vid,
          vdesc->ndims, vdesc->nreqs, ios->async));
 
     /* Set these differently for data and fill writing. */
-    int maxregions = fill ? iodesc->maxfillregions: iodesc->maxregions;
-    io_region *firstregion = fill ? iodesc->fillregion : iodesc->firstregion;
+    int num_regions = fill ? iodesc->maxfillregions: iodesc->maxregions;
+    io_region *region = fill ? iodesc->fillregion : iodesc->firstregion;
     PIO_Offset llen = fill ? iodesc->holegridsize : iodesc->llen;
     void *iobuf = fill ? vdesc->fillbuf : vdesc->iobuf;
 
@@ -744,22 +748,17 @@ int write_darray_multi_serial(file_desc_t *file, int nvars, const int *vid,
     if ((ierr = PIOc_inq_varndims(file->pio_ncid, vid[0], &fndims)))
         return pio_err(ios, file, ierr, __FILE__, __LINE__);
 
-    /* Get the size of the type. */
-    if ((mpierr = MPI_Type_size(iodesc->basetype, &tsize)))
-        return check_mpi(file, mpierr, __FILE__, __LINE__);
-    LOG((3, "fndims = %d tsize = %d", fndims, tsize));
-
     /* Only IO tasks participate in this code. */
     if (ios->ioproc)
     {
-        size_t tmp_start[fndims * maxregions]; /* A start array for each region. */
-        size_t tmp_count[fndims * maxregions]; /* A count array for each region. */
+        size_t tmp_start[fndims * num_regions]; /* A start array for each region. */
+        size_t tmp_count[fndims * num_regions]; /* A count array for each region. */
 
-        LOG((3, "maxregions = %d", maxregions));
+        LOG((3, "num_regions = %d", num_regions));
 
         /* Fill the tmp_start and tmp_count arrays, which contain the
          * start and count arrays for all regions. */
-        if ((ierr = find_all_start_count(firstregion, maxregions, fndims, iodesc->ndims, vdesc,
+        if ((ierr = find_all_start_count(region, num_regions, fndims, iodesc->ndims, vdesc,
                                          tmp_start, tmp_count)))
             return pio_err(ios, file, ierr, __FILE__, __LINE__);
 
@@ -768,7 +767,7 @@ int write_darray_multi_serial(file_desc_t *file, int nvars, const int *vid,
         {
             /* Send the tmp_start and tmp_count arrays from this IO task
              * to task 0. */
-            if ((ierr = send_all_start_count(ios, iodesc, llen, maxregions, nvars, fndims,
+            if ((ierr = send_all_start_count(ios, iodesc, llen, num_regions, nvars, fndims,
                                              tmp_start, tmp_count, iobuf)))
                 return pio_err(ios, file, ierr, __FILE__, __LINE__);
         }
@@ -776,8 +775,8 @@ int write_darray_multi_serial(file_desc_t *file, int nvars, const int *vid,
         {
             /* Task 0 will receive data from all other IO tasks. */
 
-            if ((ierr = recv_all_start_count(file, vid, frame, iodesc, llen, maxregions, nvars, fndims,
-                                             tmp_start, tmp_count, iobuf)))
+            if ((ierr = recv_and_write_data(file, vid, frame, iodesc, llen, num_regions, nvars, fndims,
+                                            tmp_start, tmp_count, iobuf)))
                 return pio_err(ios, file, ierr, __FILE__, __LINE__);
         }
     }
