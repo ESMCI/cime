@@ -89,11 +89,8 @@ int pio_swapm(void *sendbuf, int *sendcounts, int *sdispls, MPI_Datatype *sendty
     MPI_Status status; /* Not actually used - replace with MPI_STATUSES_IGNORE. */
     int mpierr;  /* Return code from MPI functions. */
 
-#ifdef OPEN_MPI
-    /* the derived types are not handled correctly on mpi_alltoallw in openmpi 2.0.2 */
     if(fc->max_pend_req == 0)
       fc->max_pend_req = 32;
-#endif
 
     LOG((2, "pio_swapm fc->hs = %d fc->isend = %d fc->max_pend_req = %d", fc->hs,
          fc->isend, fc->max_pend_req));
