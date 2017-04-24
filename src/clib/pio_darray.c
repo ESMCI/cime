@@ -63,10 +63,10 @@ PIO_Offset PIOc_set_buffer_size_limit(PIO_Offset limit)
  * <li>For parallel iotypes (pnetcdf and netCDF-4 parallel) call
  * pio_write_darray_multi_nc().
  * <li>For serial iotypes (netcdf classic and netCDF-4 serial) call
- * pio_write_darray_multi_nc_serial().
+ * write_darray_multi_serial().
  * <li>For subset rearranger, create holegrid to write missing
  * data. Then call pio_write_darray_multi_nc() or
- * pio_write_darray_multi_nc_serial() to write the holegrid.
+ * write_darray_multi_serial() to write the holegrid.
  * <li>Special buffer flush for pnetcdf.
  * </ul>
  *
