@@ -308,7 +308,7 @@ int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
  * and flush if needed.
  * <li>Store the new user data in the mutli buffer.
  * <li>If needed (only for subset rearranger), fill in gaps in data
- * will fillvalue.
+ * with fillvalue.
  * <li>Remember the frame value (i.e. record number) of this data if
  * there is one.
  * </ul>
