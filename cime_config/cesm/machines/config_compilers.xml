@@ -846,6 +846,30 @@ using a fortran linker.
   <MPICC> cc </MPICC>
 </compiler>
 
+<compiler MACH="fram">
+ <CPPDEFS>
+  <append> -D$(OS) </append>
+ </CPPDEFS>
+  <FFLAGS>
+  <append> -xCORE-AVX2 </append>
+  </FFLAGS>
+  <NETCDF_PATH>$(EBROOTNETCDFMINFORTRAN)</NETCDF_PATH>
+  <PNETCDF_PATH>$(EBROOTPNETCDF)</PNETCDF_PATH>
+  <MPI_PATH>$(MPI_ROOT)</MPI_PATH>
+  <MPI_LIB_NAME>mpi</MPI_LIB_NAME>
+  <FFLAGS>
+    <append DEBUG="FALSE"> -O2 </append>
+    <append MODEL="micom"> -r8 </append>
+  </FFLAGS>
+  <MPICC> mpiicc </MPICC>
+  <MPICXX> mpiicpc </MPICXX>
+  <MPIFC> mpiifort </MPIFC>
+  <PIO_FILESYSTEM_HINTS>lustre</PIO_FILESYSTEM_HINTS>
+  <SLIBS>
+    <append>-mkl=sequential -lnetcdff -lnetcdf</append>
+  </SLIBS>
+</compiler>
+
 <compiler MACH="vilje">
   <NETCDF_PATH>$(NETCDF_ROOT)</NETCDF_PATH>
   <PNETCDF_PATH>$(NETCDF_ROOT)</PNETCDF_PATH>

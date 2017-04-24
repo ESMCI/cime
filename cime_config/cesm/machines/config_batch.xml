@@ -279,6 +279,15 @@
 	    <walltime default="true">00:59:00</walltime>
     </walltimes>
   </batch_system>
+
+  <batch_system MACH="fram" type="slurm">
+    <batch_submit>sbatch</batch_submit>
+    <queues>
+      <queue walltimemax="00:59:00" jobmin="1" jobmax="288" default="true">normal</queue>
+      <!-- <queue walltimemax="24:00:00" jobmin="1" jobmax="1" jobname="case.st_archive">normal</queue>
+                 <queue walltimemax="24:00:00" jobmin="1" jobmax="1" jobname="case.lt_archive">normal</queue> -->
+    </queues>
+  </batch_system>
  
  <batch_system MACH="laramie" type="pbs">
     <directives>
