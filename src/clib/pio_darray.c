@@ -293,7 +293,12 @@ int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
 
 /**
  * Find the fillvalue that should be used for a variable.
-   @param file Info about file we are writing to. 
+ *
+ * @param file Info about file we are writing to. 
+ * @param varid the variable ID.
+ * @param vdesc pointer to var_desc_t info for this var.
+ * @returns 0 for success, non-zero error code for failure.
+ * @ingroup PIO_write_darray
  */
 int find_var_fillvalue(file_desc_t *file, int varid, var_desc_t *vdesc)
 {
