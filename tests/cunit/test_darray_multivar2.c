@@ -80,8 +80,7 @@ int test_multivar_darray(int iosysid, int ioid, int num_flavors, int *flavor,
 
     /* Use PIO to create the example file in each of the four
      * available ways. */
-    /* for (int fmt = 0; fmt < num_flavors; fmt++) */
-    for (int fmt = 0; fmt < 1; fmt++)
+    for (int fmt = 0; fmt < num_flavors; fmt++)
     {
         /* Create the filename. */
         sprintf(filename, "data_%s_iotype_%d_pio_type_%d.nc", TEST_NAME, flavor[fmt], pio_type);
@@ -121,31 +120,31 @@ int test_multivar_darray(int iosysid, int ioid, int num_flavors, int *flavor,
         if ((ret = PIOc_closefile(ncid)))
             ERR(ret);
 
-        /* /\* Check the file contents. *\/ */
-        /* { */
-        /*     int ncid2;            /\* The ncid of the re-opened netCDF file. *\/ */
-        /*     int test_data_int_in[arraylen]; */
+        /* Check the file contents. */
+        {
+            int ncid2;            /* The ncid of the re-opened netCDF file. */
+            int test_data_int_in[arraylen];
                         
-        /*     /\* Reopen the file. *\/ */
-        /*     if ((ret = PIOc_openfile(iosysid, &ncid2, &flavor[fmt], filename, PIO_NOWRITE))) */
-        /*         ERR(ret); */
+            /* Reopen the file. */
+            if ((ret = PIOc_openfile(iosysid, &ncid2, &flavor[fmt], filename, PIO_NOWRITE)))
+                ERR(ret);
             
-        /*     for (int v = 0; v < NUM_VAR; v++) */
-        /*     { */
-        /*         /\* Read the data. *\/ */
-        /*         if ((ret = PIOc_read_darray(ncid2, varid[v], ioid, arraylen, test_data_int_in))) */
-        /*             ERR(ret); */
+            for (int v = 0; v < NUM_VAR; v++)
+            {
+                /* Read the data. */
+                if ((ret = PIOc_read_darray(ncid2, varid[v], ioid, arraylen, test_data_int_in)))
+                    ERR(ret);
                 
-        /*         /\* Check the results. *\/ */
-        /*         for (int f = 0; f < arraylen; f++) */
-        /*             if (test_data_int_in[f] != test_data_int[f]) */
-        /*                 return ERR_WRONG; */
-        /*     } /\* next var *\/ */
+                /* Check the results. */
+                for (int f = 0; f < arraylen; f++)
+                    if (test_data_int_in[f] != test_data_int[f])
+                        return ERR_WRONG;
+            } /* next var */
             
-        /*     /\* Close the netCDF file. *\/ */
-        /*     if ((ret = PIOc_closefile(ncid2))) */
-        /*         ERR(ret); */
-        /* } */
+            /* Close the netCDF file. */
+            if ((ret = PIOc_closefile(ncid2)))
+                ERR(ret);
+        }
     }
 
     return PIO_NOERR;
