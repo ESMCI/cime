@@ -357,6 +357,14 @@ int find_var_fillvalue(file_desc_t *file, int varid, var_desc_t *vdesc)
  * there is one.
  * </ul>
  *
+ * NOTE: The write multi buffer wmulti_buffer is the cache on compute
+ * nodes that will collect and store multiple variables before sending
+ * them to the io nodes. Aggregating variables in this way leads to a
+ * considerable savings in communication expense. Variables in the wmb
+ * array must have the same decomposition and base data size and we
+ * also need to keep track of whether each is a recordvar (has an
+ * unlimited dimension) or not.
+ *
  * @param ncid the ncid of the open netCDF file.
  * @param varid the ID of the variable that these data will be written
  * to.
@@ -433,28 +441,12 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
     recordvar = vdesc->record >= 0 ? 1 : 0;
     LOG((3, "recordvar = %d", recordvar));
 
-    /* The write multi buffer wmulti_buffer is the cache on compute
-       nodes that will collect and store multiple variables before
-       sending them to the io nodes. Aggregating variables in this way
-       leads to a considerable savings in communication
-       expense. Variables in the wmb array must have the same
-       decomposition and base data size and we also need to keep track
-       of whether each is a recordvar (has an unlimited dimension) or
-       not. */
-
     /* Move to end of list or the entry that matches this ioid. */
     for (wmb = &file->buffer; wmb->next; wmb = wmb->next)
-    {
-        LOG((3, "wmb->ioid = %d", wmb->ioid));
         if (wmb->ioid == ioid && wmb->recordvar == recordvar)
             break;
-    }
-    
-    /* for (wmb = &file->buffer; wmb->next && wmb->ioid != ioid; wmb = wmb->next) */
-    /*     ; */
 
     /* If this is a new wmb entry, initialize it. */
-    /* if (wmb->ioid != ioid) */
     if (wmb->ioid != ioid || wmb->recordvar != recordvar)
     {
         /* Allocate a buffer. */
