@@ -446,7 +446,7 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
         if (wmb->ioid == ioid && wmb->recordvar == recordvar)
             break;
 
-    /* If this is a new wmb entry, initialize it. */
+    /* If we did not find an existing wmb entry, create a new wmb. */
     if (wmb->ioid != ioid || wmb->recordvar != recordvar)
     {
         /* Allocate a buffer. */
@@ -466,11 +466,8 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
         wmb->frame = NULL;
         wmb->fillvalue = NULL;
     }
-
-    /* At this point wmb should be pointing to a new or existing buffer
-       so we can add the data. */
-    LOG((2, "wmb->num_arrays = %d arraylen = %d iodesc->basetype_size = %d\n", wmb->num_arrays,
-         arraylen, iodesc->basetype_size));
+    LOG((2, "wmb->num_arrays = %d arraylen = %d iodesc->basetype_size = %d\n",
+         wmb->num_arrays, arraylen, iodesc->basetype_size));
 
     /* Find out how much free, contiguous space is available. */
     bfreespace(&totfree, &maxfree);
