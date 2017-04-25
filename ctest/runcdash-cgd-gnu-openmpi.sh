@@ -9,8 +9,6 @@ fi
 
 module purge
 module load compiler/gnu/5.4.0
-module rm mpi/gcc/openmpi-2.0.2
-module load mpi/gcc/openmpi-2.0.2-static
 module load tool/parallel-netcdf/1.8.1/gnu-5.4.0/openmpi
 
 export CC=mpicc
@@ -37,4 +35,4 @@ git checkout develop
 git pull origin develop
 
 
-ctest -S CTestScript.cmake,${model} -VV
+ctest -S CTestScript.cmake,${model} -VV -D CMAKE_EXE_LINKER_FLAGS:STRING=-ldl
