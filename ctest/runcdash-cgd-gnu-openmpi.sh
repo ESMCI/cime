@@ -35,4 +35,4 @@ git checkout develop
 git pull origin develop
 
 
-ctest -S CTestScript.cmake,${model} -VV -D CMAKE_EXE_LINKER_FLAGS:STRING=-ldl
+ctest -S CTestScript.cmake,${model} -VV -DCTEST_CONFIGURE_OPTIONS="-DCMAKE_EXE_LINKER_FLAGS=-ldl"
