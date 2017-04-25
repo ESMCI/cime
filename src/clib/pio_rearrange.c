@@ -760,7 +760,6 @@ int rearrange_comp2io(iosystem_desc_t *ios, io_desc_t *iodesc, void *sbuf,
 {
     int ntasks;       /* Number of tasks in communicator. */
     int niotasks;     /* Number of IO tasks. */
-    int tsize;        /* Size of the MPI basetype. */
     MPI_Comm mycomm;  /* Communicator that data is transferred over. */
     int mpierr;       /* Return code from MPI calls. */
     int ret;
@@ -810,11 +809,8 @@ int rearrange_comp2io(iosystem_desc_t *ios, io_desc_t *iodesc, void *sbuf,
         recvtypes[i] = PIO_DATATYPE_NULL;
         sendtypes[i] =  PIO_DATATYPE_NULL;
     }
-
-    /* Get the size of the MPI base type. */
-    if ((mpierr = MPI_Type_size(iodesc->basetype, &tsize)))
-        return check_mpi(NULL, mpierr, __FILE__, __LINE__);
-    LOG((3, "ntasks = %d tsize = %d niotasks = %d", ntasks, tsize, niotasks));
+    LOG((3, "ntasks = %d iodesc->basetype_size = %d niotasks = %d", ntasks,
+         iodesc->basetype_size, niotasks));
 
     /* If it has not already been done, define the MPI data types that
      * will be used for this io_desc_t. */
@@ -842,11 +838,11 @@ int rearrange_comp2io(iosystem_desc_t *ios, io_desc_t *iodesc, void *sbuf,
                      *  is 1, the stride here is the length of the
                      *  collected array (llen). */
 #if PIO_USE_MPISERIAL
-                    if ((mpierr = MPI_Type_hvector(nvars, 1, (MPI_Aint)iodesc->llen * tsize,
+                    if ((mpierr = MPI_Type_hvector(nvars, 1, (MPI_Aint)iodesc->llen * iodesc->basetype_size,
                                                    iodesc->rtype[i], &recvtypes[i])))
                         return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 #else
-                    if ((mpierr = MPI_Type_create_hvector(nvars, 1, (MPI_Aint)iodesc->llen * tsize,
+                    if ((mpierr = MPI_Type_create_hvector(nvars, 1, (MPI_Aint)iodesc->llen * iodesc->basetype_size,
                                                           iodesc->rtype[i], &recvtypes[i])))
                         return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 #endif /* PIO_USE_MPISERIAL */
@@ -863,11 +859,11 @@ int rearrange_comp2io(iosystem_desc_t *ios, io_desc_t *iodesc, void *sbuf,
                     recvcounts[iodesc->rfrom[i]] = 1;
 
 #if PIO_USE_MPISERIAL
-                    if ((mpierr = MPI_Type_hvector(nvars, 1, (MPI_Aint)iodesc->llen * tsize,
+                    if ((mpierr = MPI_Type_hvector(nvars, 1, (MPI_Aint)iodesc->llen * iodesc->basetype_size,
                                                    iodesc->rtype[i], &recvtypes[iodesc->rfrom[i]])))
                         return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 #else
-                    if ((mpierr = MPI_Type_create_hvector(nvars, 1, (MPI_Aint)iodesc->llen * tsize,
+                    if ((mpierr = MPI_Type_create_hvector(nvars, 1, (MPI_Aint)iodesc->llen * iodesc->basetype_size,
                                                           iodesc->rtype[i], &recvtypes[iodesc->rfrom[i]])))
                         return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 #endif /* PIO_USE_MPISERIAL */
@@ -897,11 +893,11 @@ int rearrange_comp2io(iosystem_desc_t *ios, io_desc_t *iodesc, void *sbuf,
             LOG((3, "io task %d creating sendtypes[%d]", i, io_comprank));
             sendcounts[io_comprank] = 1;
 #if PIO_USE_MPISERIAL
-            if ((mpierr = MPI_Type_hvector(nvars, 1, (MPI_Aint)iodesc->ndof * tsize,
+            if ((mpierr = MPI_Type_hvector(nvars, 1, (MPI_Aint)iodesc->ndof * iodesc->basetype_size,
                                            iodesc->stype[i], &sendtypes[io_comprank])))
                 return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 #else
-            if ((mpierr = MPI_Type_create_hvector(nvars, 1, (MPI_Aint)iodesc->ndof * tsize,
+            if ((mpierr = MPI_Type_create_hvector(nvars, 1, (MPI_Aint)iodesc->ndof * iodesc->basetype_size,
                                                   iodesc->stype[i], &sendtypes[io_comprank])))
                 return check_mpi(NULL, mpierr, __FILE__, __LINE__);
 #endif /* PIO_USE_MPISERIAL */

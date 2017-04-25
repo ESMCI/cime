@@ -101,10 +101,8 @@ int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Pointer to file information. */
     io_desc_t *iodesc;     /* Pointer to IO description information. */
-    int vsize;             /* size in bytes of the given data. */
     int rlen;              /* total data buffer size. */
     var_desc_t *vdesc0;    /* pointer to var_desc structure for each var. */
-    int mpierr;            /* Return code from MPI functions. */
     int ierr;              /* Return code. */
 
     /* Get the file info. */
@@ -155,23 +153,18 @@ int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
     /* Allocate iobuf. */
     if (rlen > 0)
     {
-        /* Get the size of the MPI type. */
-        if ((mpierr = MPI_Type_size(iodesc->basetype, &vsize)))
-            return check_mpi(file, mpierr, __FILE__, __LINE__);
-        LOG((3, "rlen = %d vsize = %d", rlen, vsize));
-
         /* Allocate memory for the buffer for all vars/records. */
-        if (!(vdesc0->iobuf = bget((size_t)vsize * (size_t)rlen)))
+        if (!(vdesc0->iobuf = bget(iodesc->basetype_size * (size_t)rlen)))
             return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
-        LOG((3, "allocated %lld bytes for variable buffer", (size_t)rlen * (size_t)vsize));
+        LOG((3, "allocated %lld bytes for variable buffer", (size_t)rlen * iodesc->basetype_size));
 
         /* If fill values are desired, and we're using the BOX
          * rearranger, insert fill values. */
         if (iodesc->needsfill && iodesc->rearranger == PIO_REARR_BOX)
             for (int nv = 0; nv < nvars; nv++)
                 for (int i = 0; i < iodesc->maxiobuflen; i++)
-                    memcpy(&((char *)vdesc0->iobuf)[vsize * (i + nv * iodesc->maxiobuflen)],
-                           &((char *)fillvalue)[nv * vsize], vsize);
+                    memcpy(&((char *)vdesc0->iobuf)[iodesc->basetype_size * (i + nv * iodesc->maxiobuflen)],
+                           &((char *)fillvalue)[nv * iodesc->basetype_size], iodesc->basetype_size);
     }
     else if (file->iotype == PIO_IOTYPE_PNETCDF && ios->ioproc)
     {
@@ -239,17 +232,17 @@ int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
 
         /* Get a buffer. */
 	if (ios->io_rank == 0)
-	    vdesc0->fillbuf = bget(iodesc->maxholegridsize * vsize * nvars);
+	    vdesc0->fillbuf = bget(iodesc->maxholegridsize * iodesc->basetype_size * nvars);
 	else if (iodesc->holegridsize > 0)
-	    vdesc0->fillbuf = bget(iodesc->holegridsize * vsize * nvars);
+	    vdesc0->fillbuf = bget(iodesc->holegridsize * iodesc->basetype_size * nvars);
 
         /* copying the fill value into the data buffer for the box
          * rearranger. This will be overwritten with data where
          * provided. */
         for (int nv = 0; nv < nvars; nv++)
             for (int i = 0; i < iodesc->holegridsize; i++)
-                memcpy(&((char *)vdesc0->fillbuf)[vsize * (i + nv * iodesc->holegridsize)],
-                       &((char *)fillvalue)[vsize * nv], vsize);
+                memcpy(&((char *)vdesc0->fillbuf)[iodesc->basetype_size * (i + nv * iodesc->holegridsize)],
+                       &((char *)fillvalue)[iodesc->basetype_size * nv], iodesc->basetype_size);
 
         /* Write the darray based on the iotype. */
         switch (file->iotype)
@@ -534,8 +527,10 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
          * value to the buffer. */
         if (fillvalue)
         {
-            memcpy((char *)wmb->fillvalue + iodesc->basetype_size * wmb->num_arrays, fillvalue, iodesc->basetype_size);
-            LOG((3, "copied user-provided fill value iodesc->basetype_size = %d", iodesc->basetype_size));
+            memcpy((char *)wmb->fillvalue + iodesc->basetype_size * wmb->num_arrays,
+                   fillvalue, iodesc->basetype_size);
+            LOG((3, "copied user-provided fill value iodesc->basetype_size = %d",
+                 iodesc->basetype_size));
         }
         else
         {
@@ -585,7 +580,8 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
             else
                 return pio_err(ios, file, PIO_EBADTYPE, __FILE__, __LINE__);
 
-            memcpy((char *)wmb->fillvalue + iodesc->basetype_size * wmb->num_arrays, fill, iodesc->basetype_size);
+            memcpy((char *)wmb->fillvalue + iodesc->basetype_size * wmb->num_arrays,
+                   fill, iodesc->basetype_size);
             LOG((3, "copied fill value"));
         }
     }
@@ -610,8 +606,9 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
         wmb->frame[wmb->num_arrays] = vdesc->record;
     wmb->num_arrays++;
 
-    LOG((2, "wmb->num_arrays = %d iodesc->maxbytes / iodesc->basetype_size = %d iodesc->ndof = %d iodesc->llen = %d",
-         wmb->num_arrays, iodesc->maxbytes / iodesc->basetype_size, iodesc->ndof, iodesc->llen));
+    LOG((2, "wmb->num_arrays = %d iodesc->maxbytes / iodesc->basetype_size = %d "
+         "iodesc->ndof = %d iodesc->llen = %d", wmb->num_arrays,
+         iodesc->maxbytes / iodesc->basetype_size, iodesc->ndof, iodesc->llen));
 
     return PIO_NOERR;
 }
@@ -640,8 +637,6 @@ int PIOc_read_darray(int ncid, int varid, int ioid, PIO_Offset arraylen,
     io_desc_t *iodesc;     /* Pointer to IO description information. */
     void *iobuf = NULL;    /* holds the data as read on the io node. */
     size_t rlen = 0;       /* the length of data in iobuf. */
-    int tsize;          /* Total size. */
-    int mpierr;         /* Return code from MPI functions. */
     int ierr;           /* Return code. */
 
     /* Get the file info. */
@@ -661,16 +656,10 @@ int PIOc_read_darray(int ncid, int varid, int ioid, PIO_Offset arraylen,
     else
         rlen = iodesc->llen;
 
+    /* Allocate a buffer for one record. */
     if (ios->ioproc && rlen > 0)
-    {
-        /* Get the MPI type size. */
-        if ((mpierr = MPI_Type_size(iodesc->basetype, &tsize)))
-            return check_mpi(file, mpierr, __FILE__, __LINE__);
-
-        /* Allocate a buffer for one record. */
-        if (!(iobuf = bget((size_t)tsize * rlen)))
+        if (!(iobuf = bget(iodesc->basetype_size * rlen)))
             return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
-    }
 
     /* Call the correct darray read function based on iotype. */
     switch (file->iotype)
