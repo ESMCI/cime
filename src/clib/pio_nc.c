@@ -2115,8 +2115,8 @@ int PIOc_inq_var_fill(int ncid, int varid, int *no_fill, void *fill_valuep)
     /* If this is an IO task, then call the netCDF function. */
     if (ios->ioproc)
     {
-        LOG((2, "calling inq_var_fill file->iotype = %d file->fh = %d varid = %d no_fill = %d",
-             file->iotype, file->fh, varid, no_fill));
+        LOG((2, "calling inq_var_fill file->iotype = %d file->fh = %d varid = %d",
+             file->iotype, file->fh, varid));
         if (file->iotype == PIO_IOTYPE_PNETCDF)
         {
 #ifdef _PNETCDF

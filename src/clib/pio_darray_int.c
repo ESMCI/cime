@@ -701,7 +701,7 @@ int write_darray_multi_serial(file_desc_t *file, int nvars, const int *vid,
     pioassert(file && file->iosystem && file->varlist && vid && vid[0] >= 0 &&
               vid[0] <= PIO_MAX_VARS && iodesc, "invalid input", __FILE__, __LINE__);
 
-    LOG((1, "pio_write_darray_multi_nc_serial nvars = %d iodesc->ndims = %d iodesc->basetype = %d",
+    LOG((1, "write_darray_multi_serial nvars = %d iodesc->ndims = %d iodesc->basetype = %d",
          nvars, iodesc->ndims, iodesc->basetype));
 
     /* Get the iosystem info. */

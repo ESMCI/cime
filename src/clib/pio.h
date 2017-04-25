@@ -485,6 +485,9 @@ typedef struct wmulti_buffer
      * PIOc_Init_Decomp().  */
     int ioid;
 
+    /** Non-zero if this is a buffer for a record var. */
+    int recordvar;
+
     /** Number of arrays of data in the multibuffer. Each array had
      * data for one var or record. When multibuffer is flushed, all
      * arrays are written and num_arrays returns to zero. */
