@@ -50,7 +50,8 @@ if (HOSTNAME MATCHES "^yslogin" OR
     set (HOSTNAME_ID "nwsc")
 # New UCAR/NWSC SGI Machines
 elseif (HOSTNAME MATCHES "^laramie" OR
-        HOSTNAME MATCHES "^chadmin")
+        HOSTNAME MATCHES "^chadmin" OR
+	HOSTNAME MATCHES "^cheyenne")
    set (HOSTNAME_ID "nwscla")
 # ALCF/Argonne Machines
 elseif (HOSTNAME MATCHES "^mira" OR
