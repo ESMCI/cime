@@ -69,14 +69,14 @@ int test_multivar_darray(int iosysid, int ioid, int num_flavors, int *flavor,
     int dimids[NDIM];     /* The dimension IDs. */
     int ncid;             /* The ncid of the netCDF file. */
     int varid[NUM_VAR];   /* The IDs of the netCDF varables. */
-    /* PIO_Offset arraylen = 4; */
-    /* int custom_fillvalue_int = -TEST_VAL_42; */
-    /* int test_data_int[arraylen]; */
+    PIO_Offset arraylen = 4;
+    int custom_fillvalue_int = -TEST_VAL_42;
+    int test_data_int[arraylen];
     int ret;       /* Return code. */
 
     /* Initialize some data. */
-    /* for (int f = 0; f < arraylen; f++) */
-    /*     test_data_int[f] = my_rank * 10 + f; */
+    for (int f = 0; f < arraylen; f++)
+        test_data_int[f] = my_rank * 10 + f;
 
     /* Use PIO to create the example file in each of the four
      * available ways. */
@@ -113,9 +113,9 @@ int test_multivar_darray(int iosysid, int ioid, int num_flavors, int *flavor,
             ERR(ret);
 
         /* Write the data. */
-        /* for (int v = 0; v < NUM_VAR; v++) */
-        /*     if ((ret = PIOc_write_darray(ncid, varid[v], ioid, arraylen, test_data_int, &custom_fillvalue_int))) */
-        /*         ERR(ret); */
+        for (int v = 0; v < NUM_VAR; v++)
+            if ((ret = PIOc_write_darray(ncid, varid[v], ioid, arraylen, test_data_int, &custom_fillvalue_int)))
+                ERR(ret);
 
         /* Close the netCDF file. */
         if ((ret = PIOc_closefile(ncid)))

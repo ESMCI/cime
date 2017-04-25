@@ -384,7 +384,7 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
     void *bufptr;          /* A data buffer. */
     MPI_Datatype vtype;    /* The MPI type of the variable. */
     wmulti_buffer *wmb;    /* The write multi buffer for one or more vars. */
-    bool recordvar;        /* True if this is a record variable. */
+    int recordvar;         /* Non-zero if this is a record variable. */
     int needsflush = 0;    /* True if we need to flush buffer. */
     bufsize totfree;       /* Amount of free space in the buffer. */
     bufsize maxfree;       /* Max amount of free space in buffer. */
@@ -430,7 +430,7 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
     /* Is this a record variable? The user must set the vdesc->record
      * value by calling PIOc_setframe() before calling this
      * function. */
-    recordvar = vdesc->record >= 0 ? true : false;
+    recordvar = vdesc->record >= 0 ? 1 : 0;
     LOG((3, "recordvar = %d", recordvar));
 
     /* The write multi buffer wmulti_buffer is the cache on compute
@@ -443,11 +443,19 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
        not. */
 
     /* Move to end of list or the entry that matches this ioid. */
-    for (wmb = &file->buffer; wmb->next && wmb->ioid != ioid; wmb = wmb->next)
-        ;
+    for (wmb = &file->buffer; wmb->next; wmb = wmb->next)
+    {
+        LOG((3, "wmb->ioid = %d", wmb->ioid));
+        if (wmb->ioid == ioid && wmb->recordvar == recordvar)
+            break;
+    }
+    
+    /* for (wmb = &file->buffer; wmb->next && wmb->ioid != ioid; wmb = wmb->next) */
+    /*     ; */
 
     /* If this is a new wmb entry, initialize it. */
-    if (wmb->ioid != ioid)
+    /* if (wmb->ioid != ioid) */
+    if (wmb->ioid != ioid || wmb->recordvar != recordvar)
     {
         /* Allocate a buffer. */
         if (!(wmb->next = bget((bufsize)sizeof(wmulti_buffer))))
@@ -456,6 +464,7 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
 
         /* Set pointer to newly allocated buffer and initialize.*/
         wmb = wmb->next;
+        wmb->recordvar = recordvar;
         wmb->next = NULL;
         wmb->ioid = ioid;
         wmb->num_arrays = 0;

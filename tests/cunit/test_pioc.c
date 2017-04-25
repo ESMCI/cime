@@ -2116,7 +2116,6 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
     if ((ret = test_names(iosysid, num_flavors, flavor, my_rank, test_comm, async)))
         return ret;
 
-
     /* Test netCDF-4 functions. */
     printf("%d Testing nc4 functions. async = %d\n", my_rank, async);
     if ((ret = test_nc4(iosysid, num_flavors, flavor, my_rank)))
