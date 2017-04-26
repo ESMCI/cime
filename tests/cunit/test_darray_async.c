@@ -40,16 +40,16 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm,
     char decomp_filename[PIO_MAX_NAME + 1];
     int ret;
 
-    sprintf(decomp_filename, "darray_async_%s_rank_%d.nc", TEST_NAME, my_rank);
+    sprintf(decomp_filename, "decomp_%s_rank_%d.nc", TEST_NAME, my_rank);
     
     /* Create the PIO decomposition for this test. */
     if ((ret = PIOc_init_decomp(iosysid, PIO_FLOAT, NDIM1, &dim_len, elements_per_pe,
                                 compdof, &ioid, PIO_REARR_BOX, NULL, NULL)))
         ERR(ret);
 
-    /* /\* Write the decomp file (on appropriate tasks). *\/ */
-    /* if ((ret = PIOc_write_nc_decomp(iosysid, decomp_filename, 0, ioid, NULL, NULL, 0))) */
-    /*     return ret; */
+    /* Write the decomp file (on appropriate tasks). */
+    if ((ret = PIOc_write_nc_decomp(iosysid, decomp_filename, 0, ioid, NULL, NULL, 0)))
+        return ret;
 
     /* Create sample output file. */
     
@@ -125,8 +125,8 @@ int main(int argc, char **argv)
         if (my_rank)
         {
             /* Run the simple darray async test. */
-            /* if ((ret = run_darray_async_test(iosysid, my_rank, test_comm, num_flavors, flavor))) */
-            /*     return ret; */
+            if ((ret = run_darray_async_test(iosysid, my_rank, test_comm, num_flavors, flavor)))
+                return ret;
             
             /* Finalize PIO system. */
             if ((ret = PIOc_finalize(iosysid)))
