@@ -27,6 +27,28 @@
 /* Name of test var. (Name of a Welsh town.)*/
 #define VAR_NAME "Llanfairpwllgwyngyllgogerychwyrndrobwllllantysiliogogogoch"
 
+/* Check the file that was created in this test. */
+int check_file(char *data_filename, int iotype)
+{
+    int ncid;
+    int dimid;
+    int varid;
+    
+    /* Reopen the file. */
+    if ((ret = PIOc_openfile(iosysid, &ncid, &iotype, data_filename, NC_NOWRITE)))
+        ERR(ret);
+    
+    /* Check the metadata. */
+    
+    /* Check the data. */
+    
+    /* Close the file. */
+    if ((ret = PIOc_closefile(ncid)))
+        ERR(ret);
+
+    return 0;
+}
+
 /* Run a simple test using darrays with async. */
 int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm,
                           int num_flavors, int *flavor)
@@ -54,6 +76,8 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm,
     for (int fmt = 0; fmt < num_flavors; fmt++)
     {
         int ncid;
+        int dimid;
+        int varid;
         char data_filename[PIO_MAX_NAME + 1];
     
         sprintf(data_filename, "data_%s_iotype_%d.nc", TEST_NAME, flavor[fmt]);
@@ -64,9 +88,13 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm,
             ERR(ret);
     
         /* Define dimension. */
+        if ((ret = PIOc_def_dim(ncid, DIM_NAME, dim_len, &dimid)))
+            ERR(ret);
         
         /* Define variable. */
-        
+        if ((ret = PIOc_def_var(ncid, VAR_NAME, PIO_FLOAT, NDIM1, &dimid, &varid)))
+            ERR(ret);
+            
         /* End define mode. */
         
         /* Write some data. */
@@ -75,22 +103,9 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm,
         if ((ret = PIOc_closefile(ncid)))
             ERR(ret);
 
-        {
-            int ncid2;
-            
-            /* Reopen the file. */
-            if ((ret = PIOc_openfile(iosysid, &ncid2, &flavor[fmt], data_filename,
-                                       NC_NOWRITE)))
-                ERR(ret);
-        
-            /* Check the metadata. */
-            
-            /* Check the data. */
-            
-            /* Close the file. */
-            if ((ret = PIOc_closefile(ncid2)))
-                ERR(ret);
-        }
+        if ((ret = check_file(data_filename, flavor[fmt])))
+            ERR(ret);
+
         
     } /* next iotype */
 
