@@ -24,21 +24,30 @@
 /* For maplens of 2. */
 #define MAPLEN2 2
 
-/* Name of test var. (Name of a Welsh town.)*/
-#define VAR_NAME "Llanfairpwllgwyngyllgogerychwyrndrobwllllantysiliogogogoch"
+/* Name of test dim. */
+#define DIM_NAME "Musketeer"
+
+/* Name of test var. (Don't read anything into it. Sometimes a sword
+ * is just a sword.)*/
+#define VAR_NAME "Sword_Length"
 
 /* Check the file that was created in this test. */
-int check_file(char *data_filename, int iotype)
+int check_darray_file(int iosysid, char *data_filename, int iotype, int my_rank)
 {
     int ncid;
     int dimid;
     int varid;
+    int ret;
     
     /* Reopen the file. */
     if ((ret = PIOc_openfile(iosysid, &ncid, &iotype, data_filename, NC_NOWRITE)))
         ERR(ret);
     
     /* Check the metadata. */
+    if ((ret = PIOc_inq_varid(ncid, VAR_NAME, &varid)))
+        ERR(ret);
+    if ((ret = PIOc_inq_dimid(ncid, DIM_NAME, &dimid)))
+        ERR(ret);
     
     /* Check the data. */
     
@@ -96,6 +105,8 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm,
             ERR(ret);
             
         /* End define mode. */
+        if ((ret = PIOc_enddef(ncid)))
+            ERR(ret);
         
         /* Write some data. */
         
@@ -103,9 +114,9 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm,
         if ((ret = PIOc_closefile(ncid)))
             ERR(ret);
 
-        if ((ret = check_file(data_filename, flavor[fmt])))
+        /* Check the file for correctness. */
+        if ((ret = check_darray_file(iosysid, data_filename, flavor[fmt], my_rank)))
             ERR(ret);
-
         
     } /* next iotype */
 
