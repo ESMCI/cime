@@ -3,7 +3,7 @@
  * to the box and subset rearranger, and the transfer of data betweeen
  * IO and computation tasks.
  *
- * Ed Hartnett, 3/9/17
+ * Ed Hartnett, 4/26/17
  */
 #include <pio.h>
 #include <pio_tests.h>
@@ -27,12 +27,53 @@
 /* Name of test var. (Name of a Welsh town.)*/
 #define VAR_NAME "Llanfairpwllgwyngyllgogerychwyrndrobwllllantysiliogogogoch"
 
-/* These tests are run with different rearrangers and numbers of IO
- * tasks. */
-int run_darray_async_test(int numio, int iosysid, int my_rank, MPI_Comm test_comm,
+/* Run a simple test using darrays with async. */
+int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm,
                           int num_flavors, int *flavor)
 {
+#define ELEM1 1
+#define LEN3 3
+    int ioid;
+    int dim_len = LEN3;
+    PIO_Offset elements_per_pe = ELEM1;
+    PIO_Offset compdof[ELEM1] = {my_rank + 1};
+    char decomp_filename[PIO_MAX_NAME + 1];
     int ret;
+
+    sprintf(decomp_filename, "darray_async_%s_rank_%d.nc", TEST_NAME, my_rank);
+    
+    /* Create the PIO decomposition for this test. */
+    if ((ret = PIOc_init_decomp(iosysid, PIO_FLOAT, NDIM1, &dim_len, elements_per_pe,
+                                compdof, &ioid, PIO_REARR_BOX, NULL, NULL)))
+        ERR(ret);
+
+    /* /\* Write the decomp file (on appropriate tasks). *\/ */
+    /* if ((ret = PIOc_write_nc_decomp(iosysid, decomp_filename, 0, ioid, NULL, NULL, 0))) */
+    /*     return ret; */
+
+    /* Create sample output file. */
+    
+    /* Define dimension. */
+    
+    /* Define variable. */
+    
+    /* End define mode. */
+    
+    /* Write some data. */
+    
+    /* Close the file. */
+    
+    /* Reopen the file. */
+    
+    /* Check the metadata. */
+    
+    /* Check the data. */
+    
+    /* Close the file. */
+
+    /* Free the decomposition. */
+    if ((ret = PIOc_freedecomp(iosysid, ioid)))
+        ERR(ret);
 
     return 0;
 }
@@ -64,19 +105,43 @@ int main(int argc, char **argv)
     if (my_rank < TARGET_NTASKS)
     {
         int iosysid;
-        int rearranger = ;
+
+        /* Initialize with task 0 as IO task, tasks 1-3 as a
+         * computation component. */
+#define NUM_IO_PROCS 1
+#define NUM_COMPUTATION_PROCS 3
+#define COMPONENT_COUNT 1
+        int num_computation_procs = NUM_COMPUTATION_PROCS;
+        MPI_Comm io_comm;              /* Will get a duplicate of IO communicator. */
+        MPI_Comm comp_comm[COMPONENT_COUNT]; /* Will get duplicates of computation communicators. */
+        int mpierr;
         
-        if ((ret = PIOc_Init_Intracomm(test_comm, 1, 1, 0, PIO_REARR_BOX, &iosysid)))
-            return ret;
+        if ((ret = PIOc_init_async(test_comm, NUM_IO_PROCS, NULL, COMPONENT_COUNT,
+                                   &num_computation_procs, NULL, &io_comm, comp_comm,
+                                   PIO_REARR_BOX, &iosysid)))
+            ERR(ERR_INIT);
+        
+        /* This code runs only on computation components. */
+        if (my_rank)
+        {
+            /* Run the simple darray async test. */
+            /* if ((ret = run_darray_async_test(iosysid, my_rank, test_comm, num_flavors, flavor))) */
+            /*     return ret; */
+            
+            /* Finalize PIO system. */
+            if ((ret = PIOc_finalize(iosysid)))
+                return ret;
 
-        /* Run the simple darray async test. */
-        if ((ret = run_darray_async_test(numio, iosysid, my_rank, test_comm,
-                                         num_flavors, flavor)))
-            return ret;
-
-        /* Finalize PIO system. */
-        if ((ret = PIOc_finalize(iosysid)))
-            return ret;
+            /* Free the computation conomponent communicator. */
+            if ((mpierr = MPI_Comm_free(comp_comm)))
+                MPIERR(mpierr);
+        }
+        else
+        {
+            /* Free the IO communicator. */
+            if ((mpierr = MPI_Comm_free(&io_comm)))
+                MPIERR(mpierr);
+        }
     } /* endif my_rank < TARGET_NTASKS */
 
     /* Finalize the MPI library. */

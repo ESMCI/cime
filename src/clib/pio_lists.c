@@ -145,13 +145,16 @@ int pio_delete_iosystem_from_list(int piosysid)
 
     for (ciosystem = pio_iosystem_list; ciosystem; ciosystem = ciosystem->next)
     {
+        LOG((3, "ciosystem->iosysid = %d", ciosystem->iosysid));
         if (ciosystem->iosysid == piosysid)
         {
             if (piosystem == NULL)
                 pio_iosystem_list = ciosystem->next;
             else
                 piosystem->next = ciosystem->next;
+            LOG((3, "freeing ciosystem"));
             free(ciosystem);
+            LOG((3, "freed ciosystem"));
             return PIO_NOERR;
         }
         piosystem = ciosystem;
