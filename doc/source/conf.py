@@ -32,7 +32,8 @@
 # ones.
 extensions = ['sphinx.ext.todo',
     'sphinx.ext.coverage',
-    'sphinx.ext.githubpages']
+    'sphinx.ext.githubpages',
+    'rst2pdf.pdfbuilder']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -155,5 +156,13 @@ texinfo_documents = [
      'Miscellaneous'),
 ]
 
+# -- Options for pdf output -------------------------------------------------
+
+pdf_documents = [
+    (master_doc,
+     u'CIME_Users_Guide', 
+     u'CIME Users Guide (PDF)', 
+     u'Mariana Vertenstein, Rob Jacob, Jim Edwards, Jim Foucar, Alice Bertini, Bill Sacks'),
+]
 
 
