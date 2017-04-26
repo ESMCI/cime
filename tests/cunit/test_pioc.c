@@ -2072,27 +2072,27 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
     if ((ret = test_malloc_iodesc2(iosysid, my_rank)))
         return ret;
 
-    /* Test decomposition internal functions. */
+    /* Run these tests for non-async cases only. */
     if (!async)
+    {
+
+        /* Test decomposition internal functions. */
         if ((ret = test_decomp_internal(my_test_size, my_rank, iosysid, DIM_LEN, test_comm, async)))
             return ret;
-    /* Test decomposition public API functions. */
-    if (!async)
+        
+        /* Test decomposition public API functions. */
         if ((ret = test_decomp_public(my_test_size, my_rank, iosysid, DIM_LEN, test_comm, async)))
             return ret;
 
-    /* This is a simple test that just creates a decomp. */
-    /* if ((ret = test_decomp_2(my_test_size, my_rank, iosysid, DIM_LEN, test_comm, async))) */
-    /*     return ret; */
-
-    /* This is a simple test that just writes the decomp. */
-    if (!async)
+        /* This is a simple test that just creates a decomp. */
+        if ((ret = test_decomp_2(my_test_size, my_rank, iosysid, DIM_LEN, test_comm, async)))
+            return ret;
+        
+        /* This is a simple test that just writes the decomp. */
         if ((ret = test_decomp_public_2(my_test_size, my_rank, iosysid, DIM_LEN, test_comm, async)))
             return ret;
-
-    /* Decompose the data over the tasks. */
-    if (!async)
-    {
+    
+        /* Decompose the data over the tasks. */
         if ((ret = create_decomposition(my_test_size, my_rank, iosysid, DIM_LEN, &ioid)))
             return ret;
 
