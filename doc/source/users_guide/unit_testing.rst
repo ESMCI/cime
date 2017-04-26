@@ -49,15 +49,21 @@ From the top-level cime directory, you can run all of CIME's Fortran unit tests 
 
 .. code-block:: shell
 
-   > tools/unit_testing/run_tests.py --build-dir MY_BUILD_DIR
+   > scripts/fortran_unit_testing/run_tests.py --build-dir MY_BUILD_DIR
 
 where you can replace ``MY_BUILD_DIR`` with a path to the directory where you would like the unit test build files to be placed.
+If you would like to ensure a completely clean build, you can use:
+
+.. code-block:: shell
+
+   > scripts/fortran_unit_testing/run_tests.py --build-dir `mktemp -d ./unit_tests.XXXXXXXX`
+
 Once you have built the unit tests once (whether the build was successful or not), you can reuse the same build directory later to speed up the rebuild.
 There are a number of useful arguments to ``run_tests.py``; for full usage information, run:
 
 .. code-block:: shell
 
-   > tools/unit_testing/run_tests.py -h
+   > scripts/fortran_unit_testing/run_tests.py -h
 
 If the build is successful, then you should get a message that looks like this:
 
@@ -443,7 +449,7 @@ Documentation of the unit test build system
 The CMake build infrastructure is in ``$CIMEROOT/src/externals/CMake``.
 
 The infrastructure for building and running tests with ``run_tests.py`` is in
-``$CIMEROOT/tools/unit_testing``. That directory also contains some general
+``$CIMEROOT/scripts/fortran_unit_testing``. That directory also contains some general
 documentation about how to use the CIME unit test infrastructure (in the
 ``README`` file), and examples (in the ``Examples`` directory).
 
