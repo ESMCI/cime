@@ -51,25 +51,48 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm,
     if ((ret = PIOc_write_nc_decomp(iosysid, decomp_filename, 0, ioid, NULL, NULL, 0)))
         return ret;
 
-    /* Create sample output file. */
+    for (int fmt = 0; fmt < num_flavors; fmt++)
+    {
+        int ncid;
+        char data_filename[PIO_MAX_NAME + 1];
     
-    /* Define dimension. */
+        sprintf(data_filename, "data_%s_iotype_%d.nc", TEST_NAME, flavor[fmt]);
+
+        /* Create sample output file. */
+        if ((ret = PIOc_createfile(iosysid, &ncid, &flavor[fmt], data_filename,
+                                   NC_CLOBBER)))
+            ERR(ret);
     
-    /* Define variable. */
-    
-    /* End define mode. */
-    
-    /* Write some data. */
-    
-    /* Close the file. */
-    
-    /* Reopen the file. */
-    
-    /* Check the metadata. */
-    
-    /* Check the data. */
-    
-    /* Close the file. */
+        /* Define dimension. */
+        
+        /* Define variable. */
+        
+        /* End define mode. */
+        
+        /* Write some data. */
+        
+        /* Close the file. */
+        if ((ret = PIOc_closefile(ncid)))
+            ERR(ret);
+
+        {
+            int ncid2;
+            
+            /* Reopen the file. */
+            if ((ret = PIOc_openfile(iosysid, &ncid2, &flavor[fmt], data_filename,
+                                       NC_NOWRITE)))
+                ERR(ret);
+        
+            /* Check the metadata. */
+            
+            /* Check the data. */
+            
+            /* Close the file. */
+            if ((ret = PIOc_closefile(ncid2)))
+                ERR(ret);
+        }
+        
+    } /* next iotype */
 
     /* Free the decomposition. */
     if ((ret = PIOc_freedecomp(iosysid, ioid)))
