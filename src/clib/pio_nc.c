@@ -742,7 +742,6 @@ int PIOc_inq_var(int ncid, int varid, char *name, nc_type *xtypep, int *ndimsp,
             LOG((2, "PIOc_inq_var about to Bcast ndims = %d ios->ioroot = %d", *ndimsp, ios->ioroot));
         if ((mpierr = MPI_Bcast(ndimsp, 1, MPI_INT, ios->ioroot, ios->my_comm)))
             return check_mpi(file, mpierr, __FILE__, __LINE__);
-        file->varlist[varid].ndims = *ndimsp;
         LOG((2, "PIOc_inq_var Bcast ndims = %d", *ndimsp));
     }
     if (dimidsp)

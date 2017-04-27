@@ -82,12 +82,14 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm,
     if ((ret = PIOc_write_nc_decomp(iosysid, decomp_filename, 0, ioid, NULL, NULL, 0)))
         return ret;
 
-    for (int fmt = 0; fmt < num_flavors; fmt++)
+    /* for (int fmt = 0; fmt < num_flavors; fmt++) */
+    for (int fmt = 1; fmt < 2; fmt++)
     {
         int ncid;
         int dimid;
         int varid;
         char data_filename[PIO_MAX_NAME + 1];
+        float my_data = my_rank * 10;
     
         sprintf(data_filename, "data_%s_iotype_%d.nc", TEST_NAME, flavor[fmt]);
 
@@ -107,8 +109,10 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm,
         /* End define mode. */
         if ((ret = PIOc_enddef(ncid)))
             ERR(ret);
-        
+
         /* Write some data. */
+        if ((ret = PIOc_write_darray(ncid, varid, ioid, ELEM1, &my_data, NULL)))
+            ERR(ret);
         
         /* Close the file. */
         if ((ret = PIOc_closefile(ncid)))

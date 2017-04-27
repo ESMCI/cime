@@ -703,8 +703,8 @@ int write_darray_multi_serial(file_desc_t *file, int nvars, const int *vid,
 
     /* Get the var info. */
     vdesc = file->varlist + vid[0];
-    LOG((2, "vdesc record %d ndims %d nreqs %d ios->async = %d", vdesc->record,
-         vdesc->ndims, vdesc->nreqs, ios->async));
+    LOG((2, "vdesc record %d nreqs %d ios->async = %d", vdesc->record, vdesc->nreqs,
+         ios->async));
 
     /* Set these differently for data and fill writing. */
     int num_regions = fill ? iodesc->maxfillregions: iodesc->maxregions;

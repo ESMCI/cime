@@ -420,8 +420,7 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
 
     /* Get var description. */
     vdesc = &(file->varlist[varid]);
-    LOG((2, "vdesc record %d ndims %d nreqs %d", vdesc->record, vdesc->ndims,
-         vdesc->nreqs));
+    LOG((2, "vdesc record %d nreqs %d", vdesc->record, vdesc->nreqs));
 
     /* If we don't know the fill value for this var, get it. */
     if (!vdesc->fillvalue)
@@ -432,18 +431,22 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
      * value by calling PIOc_setframe() before calling this
      * function. */
     recordvar = vdesc->record >= 0 ? 1 : 0;
-    LOG((3, "recordvar = %d", recordvar));
+    LOG((3, "recordvar = %d looking for multibuffer", recordvar));
 
     /* Move to end of list or the entry that matches this ioid. */
     for (wmb = &file->buffer; wmb->next; wmb = wmb->next)
         if (wmb->ioid == ioid && wmb->recordvar == recordvar)
             break;
+    LOG((3, "wmb->ioid = %d wmb->recordvar = %d", wmb->ioid, wmb->recordvar));
 
     /* If we did not find an existing wmb entry, create a new wmb. */
     if (wmb->ioid != ioid || wmb->recordvar != recordvar)
     {
         /* Allocate a buffer. */
-        if (!(wmb->next = bget((bufsize)sizeof(wmulti_buffer))))
+        LOG((3, "allocating multi-buffer"));
+        /* if (!(wmb->next = bget((bufsize)sizeof(wmulti_buffer)))) */
+        /*     return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__); */
+        if (!(wmb->next = calloc(1, sizeof(wmulti_buffer))))
             return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
         LOG((3, "allocated multi-buffer"));
 

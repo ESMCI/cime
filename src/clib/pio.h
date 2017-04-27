@@ -109,9 +109,6 @@ typedef struct var_desc_t
      * dimension). -1 if there is no unlimited dimension. */
     int record;
 
-    /** Number of dimensions for this variable. */
-    int ndims;
-
     /** ID of each outstanding pnetcdf request for this variable. */
     int *request;
 
