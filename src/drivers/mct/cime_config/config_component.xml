@@ -2228,6 +2228,7 @@
      be computed based on PIO_NUMTASKS and number of compute tasks
     </desc>
     <values>
+      <value component="default">$PES_PER_NODE</value>
       <value component="ATM"></value>
       <value component="CPL"></value>
       <value component="OCN"></value>

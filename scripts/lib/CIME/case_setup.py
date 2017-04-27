@@ -162,9 +162,8 @@ def _case_setup_impl(case, caseroot, clean=False, test_mode=False, reset=False, 
             case.set_value("COST_PES", cost_pes)
 
             # Make sure pio settings are consistent
-            tasks_per_node = env_mach_pes.get_tasks_per_node(pestot, thread_count)
             if adjust_pio:
-                adjust_pio_layout(case, tasks_per_node)
+                adjust_pio_layout(case)
 
             case.initialize_derived_attributes()
 
@@ -172,6 +171,8 @@ def _case_setup_impl(case, caseroot, clean=False, test_mode=False, reset=False, 
             logger.info("Creating batch script case.run")
             env_batch = case.get_env("batch")
             num_nodes = case.num_nodes
+            tasks_per_node = env_mach_pes.get_tasks_per_node(pestot, thread_count)
+
             for job in env_batch.get_jobs():
                 input_batch_script  = os.path.join(case.get_value("MACHDIR"), env_batch.get_value('template', subgroup=job))
                 if job == "case.test" and testcase is not None and not test_mode:
@@ -232,8 +233,8 @@ def _case_setup_impl(case, caseroot, clean=False, test_mode=False, reset=False, 
         env_module.make_env_mach_specific_file(compiler, debug, mpilib, "csh")
         env_module.save_all_env_info("software_environment.txt")
 
-def adjust_pio_layout(case, new_pio_stride):
-
+def adjust_pio_layout(case):
+    new_pio_stride = case.get_value("PIO_STRIDE", attribute={"component":"default"})
     models = case.get_values("COMP_CLASSES")
     for comp in models:
         pio_stride = case.get_value("PIO_STRIDE_%s"%comp)
