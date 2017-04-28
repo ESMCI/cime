@@ -35,7 +35,9 @@ class EntryID(GenericXML):
         return value
 
     def set_default_value(self, vid, val, subgroup=None, ignore_type=False):
-        node = self.get_optional_node("entry", {"id":vid})
+        root = self.root if subgroup is None else self.get_optional_node("group", {"id":subgroup})
+        node = self.get_optional_node("entry", {"id":vid}, root=root)
+        value = None
         if node is not None:
             value = self.get_valid_value_string(node, val, vid, ignore_type)
             value = self.set_element_text("default_value", value, root=node)
