@@ -34,14 +34,15 @@ class EntryID(GenericXML):
 
         return value
 
-    def set_default_value(self, vid, val):
+    def set_default_value(self, vid, val, subgroup=None, ignore_type=False):
         node = self.get_optional_node("entry", {"id":vid})
         if node is not None:
-            val = self.set_element_text("default_value", val, root=node)
-            if val is None:
+            value = self.get_valid_value_string(node, val, vid, ignore_type)
+            value = self.set_element_text("default_value", value, root=node)
+            if value is None:
                 logger.warn("Called set_default_value on a node without default_value field")
 
-        return val
+        return value
 
     def get_value_match(self, vid, attributes=None, exact_match=False, entry_node=None):
         # Handle this case:

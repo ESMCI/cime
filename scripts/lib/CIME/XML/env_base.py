@@ -121,7 +121,7 @@ class EnvBase(EntryID):
         node = self.get_optional_node("entry", {"id":vid}, root=root)
         if node is not None:
             val = self._set_value(node, value, vid, subgroup, ignore_type, component="default")
-
+        return val
 
     # pylint: disable=arguments-differ
     def _set_value(self, node, value, vid=None, subgroup=None, ignore_type=False, component=None):
