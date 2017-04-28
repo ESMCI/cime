@@ -106,6 +106,23 @@ class EnvBase(EntryID):
                 val = self._set_value(node, value, vid, subgroup, ignore_type, component=comp)
         return val
 
+    def set_default_value(self, vid, value, subgroup=None, ignore_type=False):
+        """
+        Set the default value of an compvvar entry-id field to value
+        Returns the value or None if not found
+        subgroup is ignored in the general routine and applied in specific methods
+        """
+        vid, _, iscompvar = self.check_if_comp_var(vid, None)
+        if not iscompvar:
+            logger.debug("Functionality for compvars only")
+            return None
+        val = None
+        root = self.root if subgroup is None else self.get_optional_node("group", {"id":subgroup})
+        node = self.get_optional_node("entry", {"id":vid}, root=root)
+        if node is not None:
+            val = self._set_value(node, value, vid, subgroup, ignore_type, component="default")
+
+
     # pylint: disable=arguments-differ
     def _set_value(self, node, value, vid=None, subgroup=None, ignore_type=False, component=None):
         if vid is None:
