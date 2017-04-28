@@ -849,7 +849,6 @@ class Case(object):
         compset = self.get_value("COMPSET")
         mpilib = self.get_value("MPILIB")
         defaults = pioobj.get_defaults(grid=grid,compset=compset,mach=mach,compiler=compiler, mpilib=mpilib)
-        print "HERE defaults %s"%defaults
         env_run = self.get_env("run")
         for vid, value in defaults.items():
             self.set_value(vid, value)
