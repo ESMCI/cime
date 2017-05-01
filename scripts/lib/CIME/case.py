@@ -853,9 +853,11 @@ class Case(object):
         compset = self.get_value("COMPSET")
         mpilib = self.get_value("MPILIB")
         defaults = pioobj.get_defaults(grid=grid,compset=compset,mach=mach,compiler=compiler, mpilib=mpilib)
-
+        env_run = self.get_env("run")
         for vid, value in defaults.items():
-            self.set_value(vid,value)
+            self.set_value(vid, value)
+            # also update the default value if defined
+            env_run.set_default_value(vid,value)
 
     def _create_caseroot_tools(self):
         machines_dir = os.path.abspath(self.get_value("MACHDIR"))
