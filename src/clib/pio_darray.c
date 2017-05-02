@@ -141,7 +141,9 @@ int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
         if (!ios->ioproc)
         {
             int msg = PIO_MSG_WRITEDARRAYMULTI;
-            char frame_present = frame ? true : false;    /* Is frame non-NULL? */
+            char frame_present = frame ? true : false;         /* Is frame non-NULL? */
+            char fillvalue_present = fillvalue ? true : false; /* Is fillvalue non-NULL? */
+            int flushtodisk_int = flushtodisk; /* Need this to be int not boolean. */
 
             if (ios->compmaster == MPI_ROOT)
                 mpierr = MPI_Send(&msg, 1, MPI_INT, ios->ioroot, 1, ios->union_comm);
@@ -159,13 +161,22 @@ int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
             if (!mpierr)
                 mpierr = MPI_Bcast(&arraylen, 1, MPI_OFFSET, ios->compmaster, ios->intercomm);
             if (!mpierr)
-                mpierr = MPI_Bcast(array, arraylen, MPI_INT, ios->compmaster, ios->intercomm);
+                mpierr = MPI_Bcast(array, arraylen * iodesc->piotype_size, MPI_CHAR, ios->compmaster,
+                                   ios->intercomm);
             if (!mpierr)
                 mpierr = MPI_Bcast(&frame_present, 1, MPI_CHAR, ios->compmaster, ios->intercomm);
             if (!mpierr && frame_present)
                 mpierr = MPI_Bcast((void *)frame, nvars, MPI_INT, ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast(&fillvalue_present, 1, MPI_CHAR, ios->compmaster, ios->intercomm);
+            if (!mpierr && fillvalue_present)
+                mpierr = MPI_Bcast((void *)fillvalue, nvars * iodesc->piotype_size, MPI_CHAR,
+                                   ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast(&flushtodisk_int, 1, MPI_INT, ios->compmaster, ios->intercomm);
             LOG((2, "PIOc_write_darray_multi file->pio_ncid = %d nvars = %d ioid = %d arraylen = %d "
-                 "frame_present = %d", file->pio_ncid, nvars, ioid, arraylen, frame_present));
+                 "frame_present = %d fillvalue_present flushtodisk = %d", file->pio_ncid, nvars,
+                 ioid, arraylen, frame_present, fillvalue_present, flushtodisk));
         }
 
         /* Handle MPI errors. */

@@ -2083,33 +2083,43 @@ int write_darray_multi_handler(iosystem_desc_t *ios)
     int nvars;
     int ioid;
     io_desc_t *iodesc;     /* The IO description. */
-    int fill;
     char frame_present;
     int *framep = NULL;
     int *frame;
+    PIO_Offset arraylen;
+    void *array;
+    char fillvalue_present;
+    void *fillvaluep = NULL;
+    void *fillvalue;
+    int flushtodisk;
     int mpierr;
     int ret;
 
-    LOG((1, "write_darray_multi_serial_handler"));
+    LOG((1, "write_darray_multi_handler"));
     assert(ios);
-    LOG((1, "write_darray_multi_serial_handler 1"));
 
     /* Get the parameters for this function that the the comp master
      * task is broadcasting. */
     if ((mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
-    LOG((1, "write_darray_multi_serial_handler 2"));
     if ((mpierr = MPI_Bcast(&nvars, 1, MPI_INT, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
-    int vid[nvars];
-    LOG((1, "write_darray_multi_serial_handler 3"));
-    if ((mpierr = MPI_Bcast(vid, nvars, MPI_INT, 0, ios->intercomm)))
+    int varids[nvars];
+    if ((mpierr = MPI_Bcast(varids, nvars, MPI_INT, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
-    LOG((1, "write_darray_multi_serial_handler 4"));
     if ((mpierr = MPI_Bcast(&ioid, 1, MPI_INT, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
-    LOG((1, "write_darray_multi_serial_handler 5"));
-    if ((mpierr = MPI_Bcast(&fill, 1, MPI_INT, 0, ios->intercomm)))
+
+    /* Get decomposition information. */
+    if (!(iodesc = pio_get_iodesc_from_id(ioid)))
+        return pio_err(ios, file, PIO_EBADID, __FILE__, __LINE__);
+
+    if ((mpierr = MPI_Bcast(&arraylen, 1, MPI_OFFSET, 0, ios->intercomm)))
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+    if (!(array = malloc(arraylen * iodesc->piotype_size)))
+        return pio_err(NULL, NULL, PIO_ENOMEM, __FILE__, __LINE__);    
+    if ((mpierr = MPI_Bcast(array, arraylen * iodesc->piotype_size, MPI_CHAR, 0,
+                            ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&frame_present, 1, MPI_CHAR, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
@@ -2120,8 +2130,20 @@ int write_darray_multi_handler(iosystem_desc_t *ios)
         if ((mpierr = MPI_Bcast(frame, nvars, MPI_INT, 0, ios->intercomm)))
             return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     }
-    LOG((1, "write_darray_multi_serial_handler ncid = %d nvars = %d ioid = %d fill = %d "
-         "frame_present = %d", ncid, nvars, ioid, fill, frame_present));
+    if ((mpierr = MPI_Bcast(&fillvalue_present, 1, MPI_CHAR, 0, ios->intercomm)))
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+    if (fillvalue_present)
+    {
+        if (!(fillvalue = malloc(nvars * iodesc->piotype_size)))
+            return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);            
+        if ((mpierr = MPI_Bcast(fillvalue, nvars * iodesc->piotype_size, MPI_CHAR, 0, ios->intercomm)))
+            return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+    }
+    if ((mpierr = MPI_Bcast(&flushtodisk, 1, MPI_INT, 0, ios->intercomm)))
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+    LOG((1, "write_darray_multi_handler ncid = %d nvars = %d ioid = %d arraylen = %d "
+         "frame_present = %d fillvalue_present flushtodisk = %d", ncid, nvars,
+         ioid, arraylen, frame_present, fillvalue_present, flushtodisk));
 
     /* Get file info based on ncid. */
     if ((ret = pio_get_file(ncid, &file)))
@@ -2135,13 +2157,21 @@ int write_darray_multi_handler(iosystem_desc_t *ios)
     if (frame_present)
         framep = frame;
 
+    /* Was a fillvalue array provided? */
+    if (fillvalue_present)
+        fillvaluep = fillvalue;
+
     /* Call the function from IO tasks. Errors are handled within
      * function. */
-    write_darray_multi_serial(file, nvars, vid, iodesc, fill, framep);
+    PIOc_write_darray_multi(ncid, varids, ioid, nvars, arraylen, array, framep,
+                            fillvaluep, flushtodisk);
 
     /* Free resources. */
     if (frame_present)
         free(frame);
+    if (fillvalue_present)
+        free(fillvalue);
+    free(array);
     
     LOG((1, "write_darray_multi_serial_handler succeeded!"));
     return PIO_NOERR;
