@@ -711,24 +711,53 @@ int write_darray_multi_serial(file_desc_t *file, int nvars, const int *vid,
     io_region *region = fill ? iodesc->fillregion : iodesc->firstregion;
     PIO_Offset llen = fill ? iodesc->holegridsize : iodesc->llen;
     void *iobuf = fill ? vdesc->fillbuf : vdesc->iobuf;
+    
 
 #ifdef TIMING
     /* Start timing this function. */
     GPTLstart("PIO:write_darray_multi_nc_serial");
 #endif
 
+    /* Run these on all tasks if async is not in use, but only on
+     * non-IO tasks if async is in use. */
+    if (!ios->async || !ios->ioproc)
+    {
+        /* Get the number of dims for this var. */
+        LOG((3, "about to call PIOc_inq_varndims vid[0] = %d", vid[0]));
+        if ((ierr = PIOc_inq_varndims(file->pio_ncid, vid[0], &fndims)))
+            return check_netcdf(file, ierr, __FILE__, __LINE__);
+        LOG((3, "fndims = %d", fndims));
+    }
+
     /* If async is in use, and this is not an IO task, bcast the parameters. */
     if (ios->async)
     {
         if (!ios->ioproc)
         {
-            int msg = 0;
+            int msg = PIO_MSG_WRITEDARRAYMULTISERIAL;
+            char frame_present = frame ? true : false;    /* Is frame non-NULL? */
 
-            if (ios->comp_rank == 0)
+            if (ios->compmaster == MPI_ROOT)
                 mpierr = MPI_Send(&msg, 1, MPI_INT, ios->ioroot, 1, ios->union_comm);
 
+            /* Send the function parameters and associated informaiton
+             * to the msg handler. */
             if (!mpierr)
                 mpierr = MPI_Bcast(&file->pio_ncid, 1, MPI_INT, ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast(&nvars, 1, MPI_INT, ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast((void *)vid, nvars, MPI_INT, ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast(&iodesc->ioid, 1, MPI_INT, ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast(&fill, 1, MPI_INT, ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast(&frame_present, 1, MPI_CHAR, ios->compmaster, ios->intercomm);
+            if (!mpierr && frame_present)
+                mpierr = MPI_Bcast((void *)frame, nvars, MPI_INT, ios->compmaster, ios->intercomm);
+            LOG((2, "write_darray_multi_serial file->pio_ncid = %d nvars = %d iodesc->ioid = %d fill = %d "
+                 "frame_present = %d", file->pio_ncid, nvars, iodesc->ioid, fill, frame_present));
         }
 
         /* Handle MPI errors. */
@@ -736,11 +765,13 @@ int write_darray_multi_serial(file_desc_t *file, int nvars, const int *vid,
             return check_mpi(file, mpierr2, __FILE__, __LINE__);
         if (mpierr)
             return check_mpi(file, mpierr, __FILE__, __LINE__);
-    }
 
-    /* Get the number of dimensions. */
-    if ((ierr = PIOc_inq_varndims(file->pio_ncid, vid[0], &fndims)))
-        return pio_err(ios, file, ierr, __FILE__, __LINE__);
+        /* Broadcast values currently only known on computation tasks to IO tasks. */
+        LOG((3, "Bcasting fndims = %d", fndims));
+        if ((mpierr = MPI_Bcast(&fndims, 1, MPI_INT, ios->comproot, ios->my_comm)))
+            check_mpi(file, mpierr, __FILE__, __LINE__);
+        LOG((3, "Bcast fndims = %d", fndims));
+    }
 
     /* Only IO tasks participate in this code. */
     if (ios->ioproc)
@@ -1444,6 +1475,7 @@ int flush_buffer(int ncid, wmulti_buffer *wmb, bool flushtodisk)
         ret = PIOc_write_darray_multi(ncid, wmb->vid,  wmb->ioid, wmb->num_arrays,
                                       wmb->arraylen, wmb->data, wmb->frame,
                                       wmb->fillvalue, flushtodisk);
+        LOG((2, "return from PIOc_write_darray_multi ret = %d", ret));
 
         wmb->num_arrays = 0;
 

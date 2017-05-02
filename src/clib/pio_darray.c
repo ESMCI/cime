@@ -101,8 +101,9 @@ int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Pointer to file information. */
     io_desc_t *iodesc;     /* Pointer to IO description information. */
-    int rlen;              /* total data buffer size. */
-    var_desc_t *vdesc0;    /* pointer to var_desc structure for each var. */
+    int rlen;              /* Total data buffer size. */
+    var_desc_t *vdesc0;    /* Array of var_desc structure for each var. */
+    int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function calls. */
     int ierr;              /* Return code. */
 
     /* Get the file info. */
@@ -133,6 +134,52 @@ int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
 
     /* Get a pointer to the variable info for the first variable. */
     vdesc0 = &file->varlist[varids[0]];
+
+    /* If async is in use, and this is not an IO task, bcast the parameters. */
+    if (ios->async)
+    {
+        if (!ios->ioproc)
+        {
+            int msg = PIO_MSG_WRITEDARRAYMULTI;
+            char frame_present = frame ? true : false;    /* Is frame non-NULL? */
+
+            if (ios->compmaster == MPI_ROOT)
+                mpierr = MPI_Send(&msg, 1, MPI_INT, ios->ioroot, 1, ios->union_comm);
+
+            /* Send the function parameters and associated informaiton
+             * to the msg handler. */
+            if (!mpierr)
+                mpierr = MPI_Bcast(&ncid, 1, MPI_INT, ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast(&nvars, 1, MPI_INT, ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast((void *)varids, nvars, MPI_INT, ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast(&ioid, 1, MPI_INT, ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast(&arraylen, 1, MPI_OFFSET, ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast(array, arraylen, MPI_INT, ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast(&frame_present, 1, MPI_CHAR, ios->compmaster, ios->intercomm);
+            if (!mpierr && frame_present)
+                mpierr = MPI_Bcast((void *)frame, nvars, MPI_INT, ios->compmaster, ios->intercomm);
+            LOG((2, "PIOc_write_darray_multi file->pio_ncid = %d nvars = %d ioid = %d arraylen = %d "
+                 "frame_present = %d", file->pio_ncid, nvars, ioid, arraylen, frame_present));
+        }
+
+        /* Handle MPI errors. */
+        if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
+            return check_mpi(file, mpierr2, __FILE__, __LINE__);
+        if (mpierr)
+            return check_mpi(file, mpierr, __FILE__, __LINE__);
+
+        /* Broadcast values currently only known on computation tasks to IO tasks. */
+        /* LOG((3, "Bcasting fndims = %d", fndims)); */
+        /* if ((mpierr = MPI_Bcast(&fndims, 1, MPI_INT, ios->comproot, ios->my_comm))) */
+        /*     check_mpi(file, mpierr, __FILE__, __LINE__); */
+        /* LOG((3, "Bcast fndims = %d", fndims)); */
+    }
 
     /* if the buffer is already in use in pnetcdf we need to flush first */
     if (file->iotype == PIO_IOTYPE_PNETCDF && vdesc0->iobuf)
@@ -491,7 +538,9 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
              (1 + wmb->num_arrays) * arraylen * iodesc->basetype_size, totfree));
 #endif /* PIO_ENABLE_LOGGING */
 
-        /* If needsflush == 2 flush to disk otherwise just flush to io node. */
+        /* If needsflush == 2 flush to disk otherwise just flush to io
+         * node. This will cause PIOc_write_darray_multi() to be
+         * called. */
         if ((ierr = flush_buffer(ncid, wmb, needsflush == 2)))
             return pio_err(ios, file, ierr, __FILE__, __LINE__);
     }
