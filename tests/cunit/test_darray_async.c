@@ -67,7 +67,7 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm,
     int ioid;
     int dim_len = LEN3;
     PIO_Offset elements_per_pe = ELEM1;
-    PIO_Offset compdof[ELEM1] = {my_rank + 1};
+    PIO_Offset compdof[ELEM1] = {my_rank};
     char decomp_filename[PIO_MAX_NAME + 1];
     int ret;
 
@@ -111,8 +111,8 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm,
             ERR(ret);
 
         /* Write some data. */
-        /* if ((ret = PIOc_write_darray(ncid, varid, ioid, ELEM1, &my_data, NULL))) */
-        /*     ERR(ret); */
+        if ((ret = PIOc_write_darray(ncid, varid, ioid, ELEM1, &my_data, NULL)))
+            ERR(ret);
         
         /* Close the file. */
         if ((ret = PIOc_closefile(ncid)))

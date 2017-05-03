@@ -219,10 +219,13 @@ int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
         /* If fill values are desired, and we're using the BOX
          * rearranger, insert fill values. */
         if (iodesc->needsfill && iodesc->rearranger == PIO_REARR_BOX)
+        {
+            LOG((3, "inerting fill values iodesc->maxiobuflen = %d", iodesc->maxiobuflen));
             for (int nv = 0; nv < nvars; nv++)
                 for (int i = 0; i < iodesc->maxiobuflen; i++)
                     memcpy(&((char *)vdesc0->iobuf)[iodesc->basetype_size * (i + nv * iodesc->maxiobuflen)],
                            &((char *)fillvalue)[nv * iodesc->basetype_size], iodesc->basetype_size);
+        }
     }
     else if (file->iotype == PIO_IOTYPE_PNETCDF && ios->ioproc)
     {
