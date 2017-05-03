@@ -1997,85 +1997,6 @@ int initdecomp_dof_handler(iosystem_desc_t *ios)
  * from netCDF base function.
  * @internal
  */
-int write_darray_multi_serial_handler(iosystem_desc_t *ios)
-{
-    int ncid;
-    file_desc_t *file;     /* Pointer to file information. */
-    int nvars;
-    int ioid;
-    io_desc_t *iodesc;     /* The IO description. */
-    int fill;
-    char frame_present;
-    int *framep = NULL;
-    int *frame;
-    int mpierr;
-    int ret;
-
-    LOG((1, "write_darray_multi_serial_handler"));
-    assert(ios);
-    LOG((1, "write_darray_multi_serial_handler 1"));
-
-    /* Get the parameters for this function that the the comp master
-     * task is broadcasting. */
-    if ((mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm)))
-        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
-    LOG((1, "write_darray_multi_serial_handler 2"));
-    if ((mpierr = MPI_Bcast(&nvars, 1, MPI_INT, 0, ios->intercomm)))
-        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
-    int vid[nvars];
-    LOG((1, "write_darray_multi_serial_handler 3"));
-    if ((mpierr = MPI_Bcast(vid, nvars, MPI_INT, 0, ios->intercomm)))
-        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
-    LOG((1, "write_darray_multi_serial_handler 4"));
-    if ((mpierr = MPI_Bcast(&ioid, 1, MPI_INT, 0, ios->intercomm)))
-        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
-    LOG((1, "write_darray_multi_serial_handler 5"));
-    if ((mpierr = MPI_Bcast(&fill, 1, MPI_INT, 0, ios->intercomm)))
-        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
-    if ((mpierr = MPI_Bcast(&frame_present, 1, MPI_CHAR, 0, ios->intercomm)))
-        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
-    if (frame_present)
-    {
-        if (!(frame = malloc(nvars * sizeof(int))))
-            return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);            
-        if ((mpierr = MPI_Bcast(frame, nvars, MPI_INT, 0, ios->intercomm)))
-            return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
-    }
-    LOG((1, "write_darray_multi_serial_handler ncid = %d nvars = %d ioid = %d fill = %d "
-         "frame_present = %d", ncid, nvars, ioid, fill, frame_present));
-
-    /* Get file info based on ncid. */
-    if ((ret = pio_get_file(ncid, &file)))
-        return pio_err(NULL, NULL, ret, __FILE__, __LINE__);
-    
-    /* Get decomposition information. */
-    if (!(iodesc = pio_get_iodesc_from_id(ioid)))
-        return pio_err(ios, file, PIO_EBADID, __FILE__, __LINE__);
-
-    /* Was a frame array provided? */
-    if (frame_present)
-        framep = frame;
-
-    /* Call the function from IO tasks. Errors are handled within
-     * function. */
-    write_darray_multi_serial(file, nvars, vid, iodesc, fill, framep);
-
-    /* Free resources. */
-    if (frame_present)
-        free(frame);
-    
-    LOG((1, "write_darray_multi_serial_handler succeeded!"));
-    return PIO_NOERR;
-}
-
-/** This function is run on the IO tasks to do darray writes.
- *
- * @param ios pointer to the iosystem_desc_t data.
- *
- * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
- * from netCDF base function.
- * @internal
- */
 int write_darray_multi_handler(iosystem_desc_t *ios)
 {
     int ncid;
@@ -2645,9 +2566,6 @@ int pio_msg_handler2(int io_rank, int component_count, iosystem_desc_t **iosys,
             break;
         case PIO_MSG_WRITEDARRAYMULTI:
             write_darray_multi_handler(my_iosys);
-            break;
-        case PIO_MSG_WRITEDARRAYMULTISERIAL:
-            write_darray_multi_serial_handler(my_iosys);
             break;
         case PIO_MSG_READDARRAY:
             readdarray_handler(my_iosys);

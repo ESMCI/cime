@@ -109,7 +109,7 @@ int pio_write_darray_multi_nc(file_desc_t *file, int nvars, const int *vid, int 
     int fndims;            /* Number of dims for this var in the file. */
     int dsize;             /* Data size (for one region). */
     int tsize;             /* Size of MPI type. */
-    int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
+    int mpierr;            /* Return code from MPI function calls. */
     int ierr = PIO_NOERR;
 
     /* Check inputs. */
@@ -668,7 +668,6 @@ int write_darray_multi_serial(file_desc_t *file, int nvars, const int *vid,
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     var_desc_t *vdesc;     /* Contains info about the variable. */
     int fndims;            /* Number of dims in the var in the file. */
-    int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
     int ierr;              /* Return code. */
 
     /* Check inputs. */
