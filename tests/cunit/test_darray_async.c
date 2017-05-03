@@ -31,26 +31,38 @@
  * is just a sword.)*/
 #define VAR_NAME "Sword_Length"
 
+/* Number of data elements on each compute task. */
+#define ELEM1 1
+
+/* Length of the dimension. */
+#define LEN3 3
+
 /* Check the file that was created in this test. */
 int check_darray_file(int iosysid, char *data_filename, int iotype, int my_rank)
 {
     int ncid;
     int dimid;
     int varid;
+    float data_in[LEN3];
     int ret;
-    
+
     /* Reopen the file. */
     if ((ret = PIOc_openfile(iosysid, &ncid, &iotype, data_filename, NC_NOWRITE)))
         ERR(ret);
-    
+
     /* Check the metadata. */
     if ((ret = PIOc_inq_varid(ncid, VAR_NAME, &varid)))
         ERR(ret);
     if ((ret = PIOc_inq_dimid(ncid, DIM_NAME, &dimid)))
         ERR(ret);
-    
+
     /* Check the data. */
-    
+    if ((ret = PIOc_get_var(ncid, varid, &data_in)))
+        ERR(ret);
+    for (int r = 1; r < TARGET_NTASKS; r++)
+        if (data_in[r - 1] != r * 10.0)
+            ERR(ret);
+
     /* Close the file. */
     if ((ret = PIOc_closefile(ncid)))
         ERR(ret);
@@ -62,17 +74,15 @@ int check_darray_file(int iosysid, char *data_filename, int iotype, int my_rank)
 int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm,
                           int num_flavors, int *flavor)
 {
-#define ELEM1 1
-#define LEN3 3
     int ioid;
     int dim_len = LEN3;
     PIO_Offset elements_per_pe = ELEM1;
-    PIO_Offset compdof[ELEM1] = {my_rank};
+    PIO_Offset compdof[ELEM1] = {my_rank - 1};
     char decomp_filename[PIO_MAX_NAME + 1];
     int ret;
 
     sprintf(decomp_filename, "decomp_%s_rank_%d.nc", TEST_NAME, my_rank);
-    
+
     /* Create the PIO decomposition for this test. */
     if ((ret = PIOc_init_decomp(iosysid, PIO_FLOAT, NDIM1, &dim_len, elements_per_pe,
                                 compdof, &ioid, PIO_REARR_BOX, NULL, NULL)))
@@ -90,7 +100,7 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm,
         int varid;
         char data_filename[PIO_MAX_NAME + 1];
         float my_data = my_rank * 10;
-    
+
         /* sprintf(data_filename, "data_%s_iotype_%d.nc", TEST_NAME, flavor[fmt]); */
         sprintf(data_filename, "data_%s_iotype_%d.nc", TEST_NAME, PIO_IOTYPE_NETCDF);
 
@@ -101,15 +111,15 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm,
         int my_format = PIO_IOTYPE_NETCDF;
         if ((ret = PIOc_createfile(iosysid, &ncid, &my_format, data_filename, NC_CLOBBER)))
             ERR(ret);
-    
+
         /* Define dimension. */
         if ((ret = PIOc_def_dim(ncid, DIM_NAME, dim_len, &dimid)))
             ERR(ret);
-        
+
         /* Define variable. */
         if ((ret = PIOc_def_var(ncid, VAR_NAME, PIO_FLOAT, NDIM1, &dimid, &varid)))
             ERR(ret);
-            
+
         /* End define mode. */
         if ((ret = PIOc_enddef(ncid)))
             ERR(ret);
@@ -117,7 +127,7 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm,
         /* Write some data. */
         if ((ret = PIOc_write_darray(ncid, varid, ioid, ELEM1, &my_data, NULL)))
             ERR(ret);
-        
+
         /* Close the file. */
         if ((ret = PIOc_closefile(ncid)))
             ERR(ret);
@@ -125,7 +135,9 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm,
         /* Check the file for correctness. */
         /* if ((ret = check_darray_file(iosysid, data_filename, flavor[fmt], my_rank))) */
         /*     ERR(ret); */
-        
+        if ((ret = check_darray_file(iosysid, data_filename, PIO_IOTYPE_NETCDF, my_rank)))
+            ERR(ret);
+
     } /* next iotype */
 
     /* Free the decomposition. */
@@ -172,19 +184,19 @@ int main(int argc, char **argv)
         MPI_Comm io_comm;              /* Will get a duplicate of IO communicator. */
         MPI_Comm comp_comm[COMPONENT_COUNT]; /* Will get duplicates of computation communicators. */
         int mpierr;
-        
+
         if ((ret = PIOc_init_async(test_comm, NUM_IO_PROCS, NULL, COMPONENT_COUNT,
                                    &num_computation_procs, NULL, &io_comm, comp_comm,
                                    PIO_REARR_BOX, &iosysid)))
             ERR(ERR_INIT);
-        
+
         /* This code runs only on computation components. */
         if (my_rank)
         {
             /* Run the simple darray async test. */
             if ((ret = run_darray_async_test(iosysid, my_rank, test_comm, num_flavors, flavor)))
                 return ret;
-            
+
             /* Finalize PIO system. */
             if ((ret = PIOc_finalize(iosysid)))
                 return ret;

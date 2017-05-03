@@ -300,6 +300,9 @@ int create_mpi_datatypes(MPI_Datatype basetype, int msgcnt,
     int pos = 0;
     int ii = 0;
 
+    /* Determine the blocksize. This is done differently for the
+     * rearrangers, but in practice I believe it always comes out to
+     * 1. (If mfrom is NULL, this is the box rearranger.) */
     if (mfrom == NULL)
     {
         LOG((3, "mfrom is NULL"));
@@ -331,15 +334,19 @@ int create_mpi_datatypes(MPI_Datatype basetype, int msgcnt,
         {
             int len = mcount[i] / blocksize;
             int displace[len];
+            LOG((3, "blocksize = %d i = %d mcount[%d] = %d len = %d", blocksize, i, i,
+                 mcount[i], len));
             if (blocksize == 1)
             {
                 if (!mfrom)
                 {
+                    /* Box rearranger. */
                     for (int j = 0; j < len; j++)
                         displace[j] = (int)(lindex[pos + j]);
                 }
                 else
                 {
+                    /* Subset rearranger. */
                     int k = 0;
                     for (int j = 0; j < numinds; j++)
                         if (mfrom[j] == i)

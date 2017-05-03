@@ -2094,7 +2094,7 @@ int write_darray_multi_handler(iosystem_desc_t *ios)
         free(fillvalue);
     free(array);
     
-    LOG((1, "write_darray_multi_serial_handler succeeded!"));
+    LOG((1, "write_darray_multi_handler succeeded!"));
     return PIO_NOERR;
 }
 
