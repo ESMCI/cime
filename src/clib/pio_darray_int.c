@@ -131,26 +131,6 @@ int pio_write_darray_multi_nc(file_desc_t *file, int nvars, const int *vid, int 
     /* Point to var description scruct for first var. */
     vdesc = file->varlist + vid[0];
 
-    /* /\* If async is in use, send message to IO master task. *\/ */
-    /* if (ios->async) */
-    /* { */
-    /*     if (!ios->ioproc) */
-    /*     { */
-    /*         int msg = 0; */
-    /*         if (ios->compmaster == MPI_ROOT) */
-    /*             mpierr = MPI_Send(&msg, 1, MPI_INT, ios->ioroot, 1, ios->union_comm); */
-
-    /*         if (!mpierr) */
-    /*             mpierr = MPI_Bcast(&file->pio_ncid, 1, MPI_INT, ios->compmaster, ios->intercomm); */
-    /*     } */
-
-    /*     /\* Handle MPI errors. *\/ */
-    /*     if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm))) */
-    /*         return check_mpi(file, mpierr2, __FILE__, __LINE__); */
-    /*     if (mpierr) */
-    /*         return check_mpi(file, mpierr, __FILE__, __LINE__); */
-    /* } */
-
     /* Find out how many dims this variable has. */
     if ((ierr = PIOc_inq_varndims(file->pio_ncid, vid[0], &fndims)))
         return pio_err(ios, file, ierr, __FILE__, __LINE__);
@@ -727,50 +707,6 @@ int write_darray_multi_serial(file_desc_t *file, int nvars, const int *vid,
             return check_netcdf(file, ierr, __FILE__, __LINE__);
         LOG((3, "fndims = %d", fndims));
     }
-
-    /* If async is in use, and this is not an IO task, bcast the parameters. */
-    /* if (ios->async) */
-    /* { */
-    /*     if (!ios->ioproc) */
-    /*     { */
-    /*         int msg = PIO_MSG_WRITEDARRAYMULTISERIAL; */
-    /*         char frame_present = frame ? true : false;    /\* Is frame non-NULL? *\/ */
-
-    /*         if (ios->compmaster == MPI_ROOT) */
-    /*             mpierr = MPI_Send(&msg, 1, MPI_INT, ios->ioroot, 1, ios->union_comm); */
-
-    /*         /\* Send the function parameters and associated informaiton */
-    /*          * to the msg handler. *\/ */
-    /*         if (!mpierr) */
-    /*             mpierr = MPI_Bcast(&file->pio_ncid, 1, MPI_INT, ios->compmaster, ios->intercomm); */
-    /*         if (!mpierr) */
-    /*             mpierr = MPI_Bcast(&nvars, 1, MPI_INT, ios->compmaster, ios->intercomm); */
-    /*         if (!mpierr) */
-    /*             mpierr = MPI_Bcast((void *)vid, nvars, MPI_INT, ios->compmaster, ios->intercomm); */
-    /*         if (!mpierr) */
-    /*             mpierr = MPI_Bcast(&iodesc->ioid, 1, MPI_INT, ios->compmaster, ios->intercomm); */
-    /*         if (!mpierr) */
-    /*             mpierr = MPI_Bcast(&fill, 1, MPI_INT, ios->compmaster, ios->intercomm); */
-    /*         if (!mpierr) */
-    /*             mpierr = MPI_Bcast(&frame_present, 1, MPI_CHAR, ios->compmaster, ios->intercomm); */
-    /*         if (!mpierr && frame_present) */
-    /*             mpierr = MPI_Bcast((void *)frame, nvars, MPI_INT, ios->compmaster, ios->intercomm); */
-    /*         LOG((2, "write_darray_multi_serial file->pio_ncid = %d nvars = %d iodesc->ioid = %d fill = %d " */
-    /*              "frame_present = %d", file->pio_ncid, nvars, iodesc->ioid, fill, frame_present)); */
-    /*     } */
-
-    /*     /\* Handle MPI errors. *\/ */
-    /*     if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm))) */
-    /*         return check_mpi(file, mpierr2, __FILE__, __LINE__); */
-    /*     if (mpierr) */
-    /*         return check_mpi(file, mpierr, __FILE__, __LINE__); */
-
-    /*     /\* Broadcast values currently only known on computation tasks to IO tasks. *\/ */
-    /*     LOG((3, "Bcasting fndims = %d", fndims)); */
-    /*     if ((mpierr = MPI_Bcast(&fndims, 1, MPI_INT, ios->comproot, ios->my_comm))) */
-    /*         check_mpi(file, mpierr, __FILE__, __LINE__); */
-    /*     LOG((3, "Bcast fndims = %d", fndims)); */
-    /* } */
 
     /* Only IO tasks participate in this code. */
     if (ios->ioproc)

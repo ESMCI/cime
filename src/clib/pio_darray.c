@@ -184,12 +184,6 @@ int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
             return check_mpi(file, mpierr2, __FILE__, __LINE__);
         if (mpierr)
             return check_mpi(file, mpierr, __FILE__, __LINE__);
-
-        /* Broadcast values currently only known on computation tasks to IO tasks. */
-        /* LOG((3, "Bcasting fndims = %d", fndims)); */
-        /* if ((mpierr = MPI_Bcast(&fndims, 1, MPI_INT, ios->comproot, ios->my_comm))) */
-        /*     check_mpi(file, mpierr, __FILE__, __LINE__); */
-        /* LOG((3, "Bcast fndims = %d", fndims)); */
     }
 
     /* if the buffer is already in use in pnetcdf we need to flush first */
