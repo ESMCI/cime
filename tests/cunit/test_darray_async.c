@@ -105,12 +105,12 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm,
         sprintf(data_filename, "data_%s_iotype_%d.nc", TEST_NAME, PIO_IOTYPE_NETCDF);
 
         /* Create sample output file. */
-        if ((ret = PIOc_createfile(iosysid, &ncid, &flavor[fmt], data_filename,
-                                   NC_CLOBBER)))
-            ERR(ret);
-        /* int my_format = PIO_IOTYPE_NETCDF; */
-        /* if ((ret = PIOc_createfile(iosysid, &ncid, &my_format, data_filename, NC_CLOBBER))) */
+        /* if ((ret = PIOc_createfile(iosysid, &ncid, &flavor[fmt], data_filename, */
+        /*                            NC_CLOBBER))) */
         /*     ERR(ret); */
+        int my_format = PIO_IOTYPE_NETCDF;
+        if ((ret = PIOc_createfile(iosysid, &ncid, &my_format, data_filename, NC_CLOBBER)))
+            ERR(ret);
 
         /* Define dimension. */
         if ((ret = PIOc_def_dim(ncid, DIM_NAME, dim_len, &dimid)))
@@ -133,10 +133,10 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm,
             ERR(ret);
 
         /* Check the file for correctness. */
-        if ((ret = check_darray_file(iosysid, data_filename, flavor[fmt], my_rank)))
-            ERR(ret);
-        /* if ((ret = check_darray_file(iosysid, data_filename, PIO_IOTYPE_NETCDF, my_rank))) */
+        /* if ((ret = check_darray_file(iosysid, data_filename, flavor[fmt], my_rank))) */
         /*     ERR(ret); */
+        if ((ret = check_darray_file(iosysid, data_filename, PIO_IOTYPE_NETCDF, my_rank)))
+            ERR(ret);
 
     } /* next iotype */
 
