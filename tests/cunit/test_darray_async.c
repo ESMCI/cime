@@ -92,7 +92,6 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm,
     if ((ret = PIOc_write_nc_decomp(iosysid, decomp_filename, 0, ioid, NULL, NULL, 0)))
         return ret;
 
-    /* For now, just classic netCDF works. */
     for (int fmt = 0; fmt < num_flavors; fmt++)
     {
         int ncid;
@@ -101,15 +100,15 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm,
         char data_filename[PIO_MAX_NAME + 1];
         float my_data = my_rank * 10;
 
-        /* sprintf(data_filename, "data_%s_iotype_%d.nc", TEST_NAME, flavor[fmt]); */
-        sprintf(data_filename, "data_%s_iotype_%d.nc", TEST_NAME, PIO_IOTYPE_NETCDF);
+        /* For now, only serial iotypes work. Parallel coming soon! */
+        if (flavor[fmt] == PIO_IOTYPE_PNETCDF || flavor[fmt] == PIO_IOTYPE_NETCDF4P)
+            continue;
+
+        sprintf(data_filename, "data_%s_iotype_%d.nc", TEST_NAME, flavor[fmt]);
 
         /* Create sample output file. */
-        /* if ((ret = PIOc_createfile(iosysid, &ncid, &flavor[fmt], data_filename, */
-        /*                            NC_CLOBBER))) */
-        /*     ERR(ret); */
-        int my_format = PIO_IOTYPE_NETCDF;
-        if ((ret = PIOc_createfile(iosysid, &ncid, &my_format, data_filename, NC_CLOBBER)))
+        if ((ret = PIOc_createfile(iosysid, &ncid, &flavor[fmt], data_filename,
+                                   NC_CLOBBER)))
             ERR(ret);
 
         /* Define dimension. */
@@ -133,8 +132,6 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm,
             ERR(ret);
 
         /* Check the file for correctness. */
-        /* if ((ret = check_darray_file(iosysid, data_filename, flavor[fmt], my_rank))) */
-        /*     ERR(ret); */
         if ((ret = check_darray_file(iosysid, data_filename, PIO_IOTYPE_NETCDF, my_rank)))
             ERR(ret);
 
