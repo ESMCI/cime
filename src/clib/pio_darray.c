@@ -499,10 +499,10 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
     {
         /* Allocate a buffer. */
         LOG((3, "allocating multi-buffer"));
-        /* if (!(wmb->next = bget((bufsize)sizeof(wmulti_buffer)))) */
-        /*     return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__); */
-        if (!(wmb->next = calloc(1, sizeof(wmulti_buffer))))
+        if (!(wmb->next = bget((bufsize)sizeof(wmulti_buffer))))
             return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
+        /* if (!(wmb->next = calloc(1, sizeof(wmulti_buffer)))) */
+        /*     return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__); */
         LOG((3, "allocated multi-buffer"));
 
         /* Set pointer to newly allocated buffer and initialize.*/
