@@ -109,7 +109,7 @@ int pio_write_darray_multi_nc(file_desc_t *file, int nvars, const int *vid, int 
     int fndims;            /* Number of dims for this var in the file. */
     int dsize;             /* Data size (for one region). */
     int tsize;             /* Size of MPI type. */
-    int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
+    int mpierr;            /* Return code from MPI function calls. */
     int ierr = PIO_NOERR;
 
     /* Check inputs. */
@@ -130,26 +130,6 @@ int pio_write_darray_multi_nc(file_desc_t *file, int nvars, const int *vid, int 
 
     /* Point to var description scruct for first var. */
     vdesc = file->varlist + vid[0];
-
-    /* If async is in use, send message to IO master task. */
-    if (ios->async)
-    {
-        if (!ios->ioproc)
-        {
-            int msg = 0;
-            if (ios->compmaster == MPI_ROOT)
-                mpierr = MPI_Send(&msg, 1, MPI_INT, ios->ioroot, 1, ios->union_comm);
-
-            if (!mpierr)
-                mpierr = MPI_Bcast(&file->pio_ncid, 1, MPI_INT, ios->compmaster, ios->intercomm);
-        }
-
-        /* Handle MPI errors. */
-        if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
-            return check_mpi(file, mpierr2, __FILE__, __LINE__);
-        if (mpierr)
-            return check_mpi(file, mpierr, __FILE__, __LINE__);
-    }
 
     /* Find out how many dims this variable has. */
     if ((ierr = PIOc_inq_varndims(file->pio_ncid, vid[0], &fndims)))
@@ -688,7 +668,6 @@ int write_darray_multi_serial(file_desc_t *file, int nvars, const int *vid,
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     var_desc_t *vdesc;     /* Contains info about the variable. */
     int fndims;            /* Number of dims in the var in the file. */
-    int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
     int ierr;              /* Return code. */
 
     /* Check inputs. */
@@ -703,8 +682,8 @@ int write_darray_multi_serial(file_desc_t *file, int nvars, const int *vid,
 
     /* Get the var info. */
     vdesc = file->varlist + vid[0];
-    LOG((2, "vdesc record %d ndims %d nreqs %d ios->async = %d", vdesc->record,
-         vdesc->ndims, vdesc->nreqs, ios->async));
+    LOG((2, "vdesc record %d nreqs %d ios->async = %d", vdesc->record, vdesc->nreqs,
+         ios->async));
 
     /* Set these differently for data and fill writing. */
     int num_regions = fill ? iodesc->maxfillregions: iodesc->maxregions;
@@ -717,30 +696,16 @@ int write_darray_multi_serial(file_desc_t *file, int nvars, const int *vid,
     GPTLstart("PIO:write_darray_multi_nc_serial");
 #endif
 
-    /* If async is in use, and this is not an IO task, bcast the parameters. */
-    if (ios->async)
+    /* Run these on all tasks if async is not in use, but only on
+     * non-IO tasks if async is in use. */
+    if (!ios->async || !ios->ioproc)
     {
-        if (!ios->ioproc)
-        {
-            int msg = 0;
-
-            if (ios->comp_rank == 0)
-                mpierr = MPI_Send(&msg, 1, MPI_INT, ios->ioroot, 1, ios->union_comm);
-
-            if (!mpierr)
-                mpierr = MPI_Bcast(&file->pio_ncid, 1, MPI_INT, ios->compmaster, ios->intercomm);
-        }
-
-        /* Handle MPI errors. */
-        if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
-            return check_mpi(file, mpierr2, __FILE__, __LINE__);
-        if (mpierr)
-            return check_mpi(file, mpierr, __FILE__, __LINE__);
+        /* Get the number of dims for this var. */
+        LOG((3, "about to call PIOc_inq_varndims vid[0] = %d", vid[0]));
+        if ((ierr = PIOc_inq_varndims(file->pio_ncid, vid[0], &fndims)))
+            return check_netcdf(file, ierr, __FILE__, __LINE__);
+        LOG((3, "fndims = %d", fndims));
     }
-
-    /* Get the number of dimensions. */
-    if ((ierr = PIOc_inq_varndims(file->pio_ncid, vid[0], &fndims)))
-        return pio_err(ios, file, ierr, __FILE__, __LINE__);
 
     /* Only IO tasks participate in this code. */
     if (ios->ioproc)
@@ -1446,6 +1411,7 @@ int flush_buffer(int ncid, wmulti_buffer *wmb, bool flushtodisk)
         ret = PIOc_write_darray_multi(ncid, wmb->vid,  wmb->ioid, wmb->num_arrays,
                                       wmb->arraylen, wmb->data, wmb->frame,
                                       wmb->fillvalue, flushtodisk);
+        LOG((2, "return from PIOc_write_darray_multi ret = %d", ret));
 
         wmb->num_arrays = 0;
 

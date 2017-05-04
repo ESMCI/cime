@@ -101,8 +101,9 @@ int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Pointer to file information. */
     io_desc_t *iodesc;     /* Pointer to IO description information. */
-    int rlen;              /* total data buffer size. */
-    var_desc_t *vdesc0;    /* pointer to var_desc structure for each var. */
+    int rlen;              /* Total data buffer size. */
+    var_desc_t *vdesc0;    /* Array of var_desc structure for each var. */
+    int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function calls. */
     int ierr;              /* Return code. */
 
     /* Get the file info. */
@@ -134,6 +135,57 @@ int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
     /* Get a pointer to the variable info for the first variable. */
     vdesc0 = &file->varlist[varids[0]];
 
+    /* If async is in use, and this is not an IO task, bcast the parameters. */
+    if (ios->async)
+    {
+        if (!ios->ioproc)
+        {
+            int msg = PIO_MSG_WRITEDARRAYMULTI;
+            char frame_present = frame ? true : false;         /* Is frame non-NULL? */
+            char fillvalue_present = fillvalue ? true : false; /* Is fillvalue non-NULL? */
+            int flushtodisk_int = flushtodisk; /* Need this to be int not boolean. */
+
+            if (ios->compmaster == MPI_ROOT)
+                mpierr = MPI_Send(&msg, 1, MPI_INT, ios->ioroot, 1, ios->union_comm);
+
+            /* Send the function parameters and associated informaiton
+             * to the msg handler. */
+            if (!mpierr)
+                mpierr = MPI_Bcast(&ncid, 1, MPI_INT, ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast(&nvars, 1, MPI_INT, ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast((void *)varids, nvars, MPI_INT, ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast(&ioid, 1, MPI_INT, ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast(&arraylen, 1, MPI_OFFSET, ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast(array, arraylen * iodesc->piotype_size, MPI_CHAR, ios->compmaster,
+                                   ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast(&frame_present, 1, MPI_CHAR, ios->compmaster, ios->intercomm);
+            if (!mpierr && frame_present)
+                mpierr = MPI_Bcast((void *)frame, nvars, MPI_INT, ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast(&fillvalue_present, 1, MPI_CHAR, ios->compmaster, ios->intercomm);
+            if (!mpierr && fillvalue_present)
+                mpierr = MPI_Bcast((void *)fillvalue, nvars * iodesc->piotype_size, MPI_CHAR,
+                                   ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast(&flushtodisk_int, 1, MPI_INT, ios->compmaster, ios->intercomm);
+            LOG((2, "PIOc_write_darray_multi file->pio_ncid = %d nvars = %d ioid = %d arraylen = %d "
+                 "frame_present = %d fillvalue_present flushtodisk = %d", file->pio_ncid, nvars,
+                 ioid, arraylen, frame_present, fillvalue_present, flushtodisk));
+        }
+
+        /* Handle MPI errors. */
+        if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
+            return check_mpi(file, mpierr2, __FILE__, __LINE__);
+        if (mpierr)
+            return check_mpi(file, mpierr, __FILE__, __LINE__);
+    }
+
     /* if the buffer is already in use in pnetcdf we need to flush first */
     if (file->iotype == PIO_IOTYPE_PNETCDF && vdesc0->iobuf)
 	flush_output_buffer(file, 1, 0);
@@ -161,10 +213,13 @@ int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
         /* If fill values are desired, and we're using the BOX
          * rearranger, insert fill values. */
         if (iodesc->needsfill && iodesc->rearranger == PIO_REARR_BOX)
+        {
+            LOG((3, "inerting fill values iodesc->maxiobuflen = %d", iodesc->maxiobuflen));
             for (int nv = 0; nv < nvars; nv++)
                 for (int i = 0; i < iodesc->maxiobuflen; i++)
                     memcpy(&((char *)vdesc0->iobuf)[iodesc->basetype_size * (i + nv * iodesc->maxiobuflen)],
                            &((char *)fillvalue)[nv * iodesc->basetype_size], iodesc->basetype_size);
+        }
     }
     else if (file->iotype == PIO_IOTYPE_PNETCDF && ios->ioproc)
     {
@@ -420,8 +475,7 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
 
     /* Get var description. */
     vdesc = &(file->varlist[varid]);
-    LOG((2, "vdesc record %d ndims %d nreqs %d", vdesc->record, vdesc->ndims,
-         vdesc->nreqs));
+    LOG((2, "vdesc record %d nreqs %d", vdesc->record, vdesc->nreqs));
 
     /* If we don't know the fill value for this var, get it. */
     if (!vdesc->fillvalue)
@@ -432,19 +486,23 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
      * value by calling PIOc_setframe() before calling this
      * function. */
     recordvar = vdesc->record >= 0 ? 1 : 0;
-    LOG((3, "recordvar = %d", recordvar));
+    LOG((3, "recordvar = %d looking for multibuffer", recordvar));
 
     /* Move to end of list or the entry that matches this ioid. */
     for (wmb = &file->buffer; wmb->next; wmb = wmb->next)
         if (wmb->ioid == ioid && wmb->recordvar == recordvar)
             break;
+    LOG((3, "wmb->ioid = %d wmb->recordvar = %d", wmb->ioid, wmb->recordvar));
 
     /* If we did not find an existing wmb entry, create a new wmb. */
     if (wmb->ioid != ioid || wmb->recordvar != recordvar)
     {
         /* Allocate a buffer. */
+        LOG((3, "allocating multi-buffer"));
         if (!(wmb->next = bget((bufsize)sizeof(wmulti_buffer))))
             return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
+        /* if (!(wmb->next = calloc(1, sizeof(wmulti_buffer)))) */
+        /*     return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__); */
         LOG((3, "allocated multi-buffer"));
 
         /* Set pointer to newly allocated buffer and initialize.*/
@@ -488,7 +546,9 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
              (1 + wmb->num_arrays) * arraylen * iodesc->basetype_size, totfree));
 #endif /* PIO_ENABLE_LOGGING */
 
-        /* If needsflush == 2 flush to disk otherwise just flush to io node. */
+        /* If needsflush == 2 flush to disk otherwise just flush to io
+         * node. This will cause PIOc_write_darray_multi() to be
+         * called. */
         if ((ierr = flush_buffer(ncid, wmb, needsflush == 2)))
             return pio_err(ios, file, ierr, __FILE__, __LINE__);
     }

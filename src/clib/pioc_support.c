@@ -650,6 +650,7 @@ int malloc_iodesc(iosystem_desc_t *ios, int piotype, int ndims,
                   io_desc_t **iodesc)
 {
     MPI_Datatype mpi_type;
+    PIO_Offset type_size;
     int mpierr;
     int ret;
 
@@ -663,9 +664,17 @@ int malloc_iodesc(iosystem_desc_t *ios, int piotype, int ndims,
     if ((ret = find_mpi_type(piotype, &mpi_type, NULL)))
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
+    /* What is the size of the pio type? */
+    if ((ret = pioc_pnetcdf_inq_type(0, piotype, NULL, &type_size)))
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+
     /* Allocate space for the io_desc_t struct. */
     if (!(*iodesc = calloc(1, sizeof(io_desc_t))))
         return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+
+    /* Remember the pio type and its size. */
+    (*iodesc)->piotype = piotype;
+    (*iodesc)->piotype_size = type_size;
 
     /* Remember the MPI type. */
     (*iodesc)->basetype = mpi_type;
@@ -1718,7 +1727,7 @@ int PIOc_createfile_int(int iosysid, int *ncidp, int *iotype, const char *filena
     for (int i = 0; i < PIO_MAX_VARS; i++)
     {
         file->varlist[i].record = -1;
-        file->varlist[i].ndims = -1;
+        /* file->varlist[i].ndims = -1; */
 	file->varlist[i].iobuf = NULL;
 	file->varlist[i].fillbuf = NULL;
     }
@@ -1895,10 +1904,7 @@ int PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype, const char *filena
     file->mode = mode;
 
     for (int i = 0; i < PIO_MAX_VARS; i++)
-    {
         file->varlist[i].record = -1;
-        file->varlist[i].ndims = -1;
-    }
 
     /* Set to true if this task should participate in IO (only true
      * for one task with netcdf serial files. */

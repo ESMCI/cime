@@ -686,6 +686,7 @@ int PIOc_inq_var(int ncid, int varid, char *name, nc_type *xtypep, int *ndimsp,
         if (file->iotype != PIO_IOTYPE_PNETCDF && file->do_io)
         {
             ierr = nc_inq_varndims(file->fh, varid, &ndims);
+            LOG((3, "nc_inq_varndims called ndims = %d", ndims));
             if (!ierr)
             {
                 char my_name[NC_MAX_NAME + 1];
@@ -738,11 +739,10 @@ int PIOc_inq_var(int ncid, int varid, char *name, nc_type *xtypep, int *ndimsp,
 
     if (ndimsp)
     {
-        if (ios->ioroot)
-            LOG((2, "PIOc_inq_var about to Bcast ndims = %d ios->ioroot = %d", *ndimsp, ios->ioroot));
+        LOG((2, "PIOc_inq_var about to Bcast ndims = %d ios->ioroot = %d ios->my_comm = %d",
+             *ndimsp, ios->ioroot, ios->my_comm));
         if ((mpierr = MPI_Bcast(ndimsp, 1, MPI_INT, ios->ioroot, ios->my_comm)))
             return check_mpi(file, mpierr, __FILE__, __LINE__);
-        file->varlist[varid].ndims = *ndimsp;
         LOG((2, "PIOc_inq_var Bcast ndims = %d", *ndimsp));
     }
     if (dimidsp)
