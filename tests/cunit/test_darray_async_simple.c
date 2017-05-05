@@ -1,7 +1,8 @@
 /*
- * This program tests darrays with async.
+ * This program tests a very simple case of using distributed arrays
+ * with async.
  *
- * Ed Hartnett, 5/4/17
+ * Ed Hartnett, 4/26/17
  */
 #include <pio.h>
 #include <pio_tests.h>
@@ -14,16 +15,10 @@
 #define MIN_NTASKS 1
 
 /* The name of this test. */
-#define TEST_NAME "test_darray_async"
+#define TEST_NAME "test_darray_async_simple"
 
 /* For 1-D use. */
 #define NDIM1 1
-
-/* For 2-D use. */
-#define NDIM2 2
-
-/* For 3-D use. */
-#define NDIM3 3
 
 /* For maplens of 2. */
 #define MAPLEN2 2
@@ -34,8 +29,6 @@
 /* Name of test var. (Don't read anything into it. Sometimes a sword
  * is just a sword.)*/
 #define VAR_NAME "Sword_Length"
-
-char dim_name[PIO_MAX_NAME + 1][NDIM3] = {"unlim", "lat", "lon"};
 
 /* Number of data elements on each compute task. */
 #define ELEM1 1
@@ -101,7 +94,7 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm,
     for (int fmt = 0; fmt < num_flavors; fmt++)
     {
         int ncid;
-        int dimid[NDIM2];
+        int dimid;
         int varid;
         char data_filename[PIO_MAX_NAME + 1];
         float my_data = my_rank * 10;
@@ -117,10 +110,9 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm,
                                    NC_CLOBBER)))
             ERR(ret);
 
-        /* Define dimensions. */
-        for (int d = 0; d < NDIM3; d++)
-            if ((ret = PIOc_def_dim(ncid, dim_name[d], dim_len[d], &dimid[d])))
-                ERR(ret);
+        /* Define dimension. */
+        if ((ret = PIOc_def_dim(ncid, DIM_NAME, dim_len, &dimid)))
+            ERR(ret);
 
         /* Define variable. */
         if ((ret = PIOc_def_var(ncid, VAR_NAME, PIO_FLOAT, NDIM1, &dimid, &varid)))
@@ -139,8 +131,8 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm,
             ERR(ret);
 
         /* Check the file for correctness. */
-        /* if ((ret = check_darray_file(iosysid, data_filename, PIO_IOTYPE_NETCDF, my_rank))) */
-        /*     ERR(ret); */
+        if ((ret = check_darray_file(iosysid, data_filename, PIO_IOTYPE_NETCDF, my_rank)))
+            ERR(ret);
 
     } /* next iotype */
 
