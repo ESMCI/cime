@@ -199,6 +199,7 @@ class EnvBatch(EnvBase):
             if force_queue:
                 if not self.queue_meets_spec(force_queue, task_count, walltime=walltime, job=job):
                     logger.warning("WARNING: User-requested queue '%s' does not meet requirements for job '%s'" % (force_queue, job))
+                queue = force_queue
             else:
                 queue = self.select_best_queue(task_count, walltime=walltime, job=job)
                 if queue is None and walltime is not None:
