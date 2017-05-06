@@ -137,16 +137,49 @@ int PIOc_advanceframe(int ncid, int varid)
 int PIOc_setframe(int ncid, int varid, int frame)
 {
     file_desc_t *file;
+    iosystem_desc_t *ios;
+    int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
     int ret;
+
+    LOG((1, "PIOc_setframe ncid = %d varid = %d frame = %d", ncid,
+         varid, frame));
 
     /* Get file info. */
     if ((ret = pio_get_file(ncid, &file)))
         return pio_err(NULL, NULL, ret, __FILE__, __LINE__);
+    ios = file->iosystem;
 
     /* Check inputs. */
     if (varid < 0 || varid >= PIO_MAX_VARS)
         return pio_err(NULL, file, PIO_EINVAL, __FILE__, __LINE__);
 
+    /* If using async, and not an IO task, then send parameters. */
+    if (ios->async)
+    {
+        if (!ios->ioproc)
+        {
+            int msg = PIO_MSG_SETFRAME;
+            
+            if (ios->compmaster == MPI_ROOT)
+                mpierr = MPI_Send(&msg, 1, MPI_INT, ios->ioroot, 1, ios->union_comm);
+            
+            if (!mpierr)
+                mpierr = MPI_Bcast(&ncid, 1, MPI_INT, ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast(&varid, 1, MPI_INT, ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast(&frame, 1, MPI_INT, ios->compmaster, ios->intercomm);
+        }
+        
+        /* Handle MPI errors. */
+        if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
+            check_mpi2(ios, NULL, mpierr2, __FILE__, __LINE__);
+        if (mpierr)
+            return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+    }
+
+    /* Set the record dimension value for this variable. This will be
+     * used by the write_darray functions. */
     file->varlist[varid].record = frame;
 
     return PIO_NOERR;

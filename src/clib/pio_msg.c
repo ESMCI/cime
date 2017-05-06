@@ -1287,6 +1287,44 @@ int sync_file_handler(iosystem_desc_t *ios)
     return PIO_NOERR;
 }
 
+/** This function is run on the IO tasks to set the record dimension
+ * value for a netCDF variable.
+ *
+ * @param ios pointer to the iosystem_desc_t.
+ * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
+ * from netCDF base function.
+ * @internal
+ */
+int setframe_handler(iosystem_desc_t *ios)
+{
+    int ncid;
+    int varid;
+    int frame;
+    int mpierr;
+    int ret;
+
+    LOG((1, "sync_file_handler"));
+    assert(ios);
+
+    /* Get the parameters for this function that the comp master
+     * task is broadcasting. */
+    if ((mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm)))
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+    if ((mpierr = MPI_Bcast(&varid, 1, MPI_INT, 0, ios->intercomm)))
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+    if ((mpierr = MPI_Bcast(&frame, 1, MPI_INT, 0, ios->intercomm)))
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+    LOG((1, "setframe_handler got parameter ncid = %d varid = %d frame = %d",
+         ncid, varid, frame));
+
+    /* Call the function. */
+    if ((ret = PIOc_setframe(ncid, varid, frame)))
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+
+    LOG((2, "setframe_handler succeeded!"));
+    return PIO_NOERR;
+}
+
 /** This function is run on the IO tasks to enddef a netCDF file.
  *
  * @param ios pointer to the iosystem_desc_t.
@@ -2566,6 +2604,9 @@ int pio_msg_handler2(int io_rank, int component_count, iosystem_desc_t **iosys,
             break;
         case PIO_MSG_WRITEDARRAYMULTI:
             write_darray_multi_handler(my_iosys);
+            break;
+        case PIO_MSG_SETFRAME:
+            setframe_handler(my_iosys);
             break;
         case PIO_MSG_READDARRAY:
             readdarray_handler(my_iosys);

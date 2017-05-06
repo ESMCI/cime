@@ -28,69 +28,66 @@
 /* For maplens of 2. */
 #define MAPLEN2 2
 
-/* Name of test dim. */
-#define DIM_NAME "Musketeer"
+/* Lengths of non-unlimited dimensions. */
+#define LAT_LEN 2
+#define LON_LEN 3
 
-/* Name of test var. (Don't read anything into it. Sometimes a sword
- * is just a sword.)*/
-#define VAR_NAME "Sword_Length"
+/* Name of test var. */
+#define VAR_NAME "surface_temperature"
 
-char dim_name[PIO_MAX_NAME + 1][NDIM3] = {"unlim", "lat", "lon"};
-
-/* Number of data elements on each compute task. */
-#define ELEM1 1
+char dim_name[NDIM3][PIO_MAX_NAME + 1] = {"unlim", "lat", "lon"};
 
 /* Length of the dimension. */
 #define LEN3 3
 
 /* Check the file that was created in this test. */
-int check_darray_file(int iosysid, char *data_filename, int iotype, int my_rank)
-{
-    int ncid;
-    int dimid;
-    int varid;
-    float data_in[LEN3];
-    int ret;
+/* int check_darray_file(int iosysid, char *data_filename, int iotype, int my_rank) */
+/* { */
+/*     int ncid; */
+/*     int dimid; */
+/*     int varid; */
+/*     float data_in[LEN3]; */
+/*     int ret; */
 
-    /* Reopen the file. */
-    if ((ret = PIOc_openfile(iosysid, &ncid, &iotype, data_filename, NC_NOWRITE)))
-        ERR(ret);
+/*     /\* Reopen the file. *\/ */
+/*     if ((ret = PIOc_openfile(iosysid, &ncid, &iotype, data_filename, NC_NOWRITE))) */
+/*         ERR(ret); */
 
-    /* Check the metadata. */
-    if ((ret = PIOc_inq_varid(ncid, VAR_NAME, &varid)))
-        ERR(ret);
-    if ((ret = PIOc_inq_dimid(ncid, DIM_NAME, &dimid)))
-        ERR(ret);
+/*     /\* Check the metadata. *\/ */
+/*     if ((ret = PIOc_inq_varid(ncid, VAR_NAME, &varid))) */
+/*         ERR(ret); */
+/*     if ((ret = PIOc_inq_dimid(ncid, DIM_NAME, &dimid))) */
+/*         ERR(ret); */
 
-    /* Check the data. */
-    if ((ret = PIOc_get_var(ncid, varid, &data_in)))
-        ERR(ret);
-    for (int r = 1; r < TARGET_NTASKS; r++)
-        if (data_in[r - 1] != r * 10.0)
-            ERR(ret);
+/*     /\* Check the data. *\/ */
+/*     if ((ret = PIOc_get_var(ncid, varid, &data_in))) */
+/*         ERR(ret); */
+/*     for (int r = 1; r < TARGET_NTASKS; r++) */
+/*         if (data_in[r - 1] != r * 10.0) */
+/*             ERR(ret); */
 
-    /* Close the file. */
-    if ((ret = PIOc_closefile(ncid)))
-        ERR(ret);
+/*     /\* Close the file. *\/ */
+/*     if ((ret = PIOc_closefile(ncid))) */
+/*         ERR(ret); */
 
-    return 0;
-}
+/*     return 0; */
+/* } */
 
 /* Run a simple test using darrays with async. */
 int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm,
                           int num_flavors, int *flavor)
 {
     int ioid;
-    int dim_len = LEN3;
-    PIO_Offset elements_per_pe = ELEM1;
-    PIO_Offset compdof[ELEM1] = {my_rank - 1};
+    int dim_len[NDIM3] = {NC_UNLIMITED, 2, 3};
+    PIO_Offset elements_per_pe = LAT_LEN;
+    PIO_Offset compdof[LAT_LEN] = {my_rank * 2 - 2, my_rank * 2 - 1};
     char decomp_filename[PIO_MAX_NAME + 1];
     int ret;
 
     sprintf(decomp_filename, "decomp_%s_rank_%d.nc", TEST_NAME, my_rank);
 
     /* Create the PIO decomposition for this test. */
-    if ((ret = PIOc_init_decomp(iosysid, PIO_FLOAT, NDIM1, &dim_len, elements_per_pe,
+    if ((ret = PIOc_init_decomp(iosysid, PIO_FLOAT, NDIM2, &dim_len[1], elements_per_pe,
                                 compdof, &ioid, PIO_REARR_BOX, NULL, NULL)))
         ERR(ret);
 
@@ -101,10 +98,10 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm,
     for (int fmt = 0; fmt < num_flavors; fmt++)
     {
         int ncid;
-        int dimid[NDIM2];
+        int dimid[NDIM3];
         int varid;
         char data_filename[PIO_MAX_NAME + 1];
-        float my_data = my_rank * 10;
+        float my_data[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1};
 
         /* For now, only serial iotypes work. Parallel coming soon! */
         if (flavor[fmt] == PIO_IOTYPE_PNETCDF || flavor[fmt] == PIO_IOTYPE_NETCDF4P)
@@ -123,15 +120,19 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm,
                 ERR(ret);
 
         /* Define variable. */
-        if ((ret = PIOc_def_var(ncid, VAR_NAME, PIO_FLOAT, NDIM1, &dimid, &varid)))
+        if ((ret = PIOc_def_var(ncid, VAR_NAME, PIO_FLOAT, NDIM3, dimid, &varid)))
             ERR(ret);
 
         /* End define mode. */
         if ((ret = PIOc_enddef(ncid)))
             ERR(ret);
 
+        /* Set the record number. */
+        if ((ret = PIOc_setframe(ncid, varid, 0)))
+            ERR(ret);
+
         /* Write some data. */
-        if ((ret = PIOc_write_darray(ncid, varid, ioid, ELEM1, &my_data, NULL)))
+        if ((ret = PIOc_write_darray(ncid, varid, ioid, elements_per_pe, my_data, NULL)))
             ERR(ret);
 
         /* Close the file. */

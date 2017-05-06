@@ -521,6 +521,14 @@ int recv_and_write_data(file_desc_t *file, const int *vid, const int *frame,
     int mpierr;  /* Return code from MPI function codes. */
     int ierr;    /* Return code. */
 
+    /* Check inputs. */
+    pioassert(file && vid && iodesc && tmp_start && tmp_count, "invalid input",
+              __FILE__, __LINE__);
+
+    LOG((2, "recv_and_write_data llen = %d maxregions = %d nvars = %d fndims = %d",
+         llen, maxregions, nvars, fndims));
+
+    /* Get pointer to IO system. */
     ios = file->iosystem;
 
     /* For each of the other tasks that are using this task
@@ -662,20 +670,19 @@ int recv_and_write_data(file_desc_t *file, const int *vid, const int *frame,
  * @return 0 for success, error code otherwise.
  * @ingroup PIO_write_darray
  */
-int write_darray_multi_serial(file_desc_t *file, int nvars, const int *vid,
+int write_darray_multi_serial(file_desc_t *file, int nvars, int fndims, const int *vid,
                               io_desc_t *iodesc, int fill, const int *frame)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     var_desc_t *vdesc;     /* Contains info about the variable. */
-    int fndims;            /* Number of dims in the var in the file. */
     int ierr;              /* Return code. */
 
     /* Check inputs. */
     pioassert(file && file->iosystem && file->varlist && vid && vid[0] >= 0 &&
               vid[0] <= PIO_MAX_VARS && iodesc, "invalid input", __FILE__, __LINE__);
 
-    LOG((1, "write_darray_multi_serial nvars = %d iodesc->ndims = %d iodesc->basetype = %d",
-         nvars, iodesc->ndims, iodesc->basetype));
+    LOG((1, "write_darray_multi_serial nvars = %d fndims = %d iodesc->ndims = %d "
+         "iodesc->basetype = %d", nvars, iodesc->ndims, fndims, iodesc->basetype));
 
     /* Get the iosystem info. */
     ios = file->iosystem;
@@ -693,19 +700,8 @@ int write_darray_multi_serial(file_desc_t *file, int nvars, const int *vid,
 
 #ifdef TIMING
     /* Start timing this function. */
-    GPTLstart("PIO:write_darray_multi_nc_serial");
+    GPTLstart("PIO:write_darray_multi_serial");
 #endif
-
-    /* Run these on all tasks if async is not in use, but only on
-     * non-IO tasks if async is in use. */
-    if (!ios->async || !ios->ioproc)
-    {
-        /* Get the number of dims for this var. */
-        LOG((3, "about to call PIOc_inq_varndims vid[0] = %d", vid[0]));
-        if ((ierr = PIOc_inq_varndims(file->pio_ncid, vid[0], &fndims)))
-            return check_netcdf(file, ierr, __FILE__, __LINE__);
-        LOG((3, "fndims = %d", fndims));
-    }
 
     /* Only IO tasks participate in this code. */
     if (ios->ioproc)
@@ -742,7 +738,7 @@ int write_darray_multi_serial(file_desc_t *file, int nvars, const int *vid,
 
 #ifdef TIMING
     /* Stop timing this function. */
-    GPTLstop("PIO:write_darray_multi_nc_serial");
+    GPTLstop("PIO:write_darray_multi_serial");
 #endif
 
     return PIO_NOERR;

@@ -103,6 +103,7 @@ int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
     io_desc_t *iodesc;     /* Pointer to IO description information. */
     int rlen;              /* Total data buffer size. */
     var_desc_t *vdesc0;    /* Array of var_desc structure for each var. */
+    int fndims;            /* Number of dims in the var in the file. */
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function calls. */
     int ierr;              /* Return code. */
 
@@ -134,6 +135,17 @@ int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
 
     /* Get a pointer to the variable info for the first variable. */
     vdesc0 = &file->varlist[varids[0]];
+
+    /* Run these on all tasks if async is not in use, but only on
+     * non-IO tasks if async is in use. */
+    if (!ios->async || !ios->ioproc)
+    {
+        /* Get the number of dims for this var. */
+        LOG((3, "about to call PIOc_inq_varndims varids[0] = %d", varids[0]));
+        if ((ierr = PIOc_inq_varndims(file->pio_ncid, varids[0], &fndims)))
+            return check_netcdf(file, ierr, __FILE__, __LINE__);
+        LOG((3, "called PIOc_inq_varndims varids[0] = %d fndims = %d", varids[0], fndims));
+    }
 
     /* If async is in use, and this is not an IO task, bcast the parameters. */
     if (ios->async)
@@ -175,15 +187,24 @@ int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
             if (!mpierr)
                 mpierr = MPI_Bcast(&flushtodisk_int, 1, MPI_INT, ios->compmaster, ios->intercomm);
             LOG((2, "PIOc_write_darray_multi file->pio_ncid = %d nvars = %d ioid = %d arraylen = %d "
-                 "frame_present = %d fillvalue_present flushtodisk = %d", file->pio_ncid, nvars,
+                 "frame_present = %d fillvalue_present = %d flushtodisk = %d", file->pio_ncid, nvars,
                  ioid, arraylen, frame_present, fillvalue_present, flushtodisk));
         }
 
         /* Handle MPI errors. */
+        LOG((2, "checking mpi error mpierr = %d", mpierr));
         if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
             return check_mpi(file, mpierr2, __FILE__, __LINE__);
+        LOG((2, "still checking mpi error mpierr = %d", mpierr));
         if (mpierr)
             return check_mpi(file, mpierr, __FILE__, __LINE__);
+        LOG((2, "done checking mpi error mpierr = %d", mpierr));
+
+        /* Share results known only on computation tasks with IO tasks. */
+        LOG((3, "sharing fndims = %d", fndims));
+        if ((mpierr = MPI_Bcast(&fndims, 1, MPI_INT, ios->comproot, ios->my_comm)))
+            check_mpi(file, mpierr, __FILE__, __LINE__);
+        LOG((3, "shared fndims = %d", fndims));
     }
 
     /* if the buffer is already in use in pnetcdf we need to flush first */
@@ -248,7 +269,8 @@ int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
         break;
     case PIO_IOTYPE_NETCDF4C:
     case PIO_IOTYPE_NETCDF:
-        if ((ierr = write_darray_multi_serial(file, nvars, varids, iodesc, 0, frame)))
+        if ((ierr = write_darray_multi_serial(file, nvars, fndims, varids, iodesc,
+                                              0, frame)))
             return pio_err(ios, file, ierr, __FILE__, __LINE__);
 
         break;
@@ -312,7 +334,7 @@ int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
             break;
         case PIO_IOTYPE_NETCDF4C:
         case PIO_IOTYPE_NETCDF:
-            if ((ierr = write_darray_multi_serial(file, nvars, varids, iodesc, 1, frame)))
+            if ((ierr = write_darray_multi_serial(file, nvars, fndims, varids, iodesc, 1, frame)))
                 return pio_err(ios, file, ierr, __FILE__, __LINE__);
             break;
         default:
