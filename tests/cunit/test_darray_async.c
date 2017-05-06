@@ -41,37 +41,31 @@ char dim_name[NDIM3][PIO_MAX_NAME + 1] = {"unlim", "lat", "lon"};
 #define LEN3 3
 
 /* Check the file that was created in this test. */
-/* int check_darray_file(int iosysid, char *data_filename, int iotype, int my_rank) */
-/* { */
-/*     int ncid; */
-/*     int dimid; */
-/*     int varid; */
-/*     float data_in[LEN3]; */
-/*     int ret; */
+int check_darray_file(int iosysid, char *data_filename, int iotype, int my_rank)
+{
+    int ncid;
+    int varid = 0;
+    float data_in[LAT_LEN * LON_LEN];
+    int ret;
 
-/*     /\* Reopen the file. *\/ */
-/*     if ((ret = PIOc_openfile(iosysid, &ncid, &iotype, data_filename, NC_NOWRITE))) */
-/*         ERR(ret); */
+    /* Reopen the file. */
+    if ((ret = PIOc_openfile(iosysid, &ncid, &iotype, data_filename, NC_NOWRITE)))
+        ERR(ret);
 
-/*     /\* Check the metadata. *\/ */
-/*     if ((ret = PIOc_inq_varid(ncid, VAR_NAME, &varid))) */
-/*         ERR(ret); */
-/*     if ((ret = PIOc_inq_dimid(ncid, DIM_NAME, &dimid))) */
-/*         ERR(ret); */
+    /* Check the data. The values we expect are: 10, 11, 20, 21, 30,
+     * 31. */
+    if ((ret = PIOc_get_var(ncid, varid, &data_in)))
+        ERR(ret);
+    for (int r = 0; r < LAT_LEN * LON_LEN; r++)
+        if (data_in[r] != (r/2 + 1) * 10.0 + r%2)
+            ERR(ret);
 
-/*     /\* Check the data. *\/ */
-/*     if ((ret = PIOc_get_var(ncid, varid, &data_in))) */
-/*         ERR(ret); */
-/*     for (int r = 1; r < TARGET_NTASKS; r++) */
-/*         if (data_in[r - 1] != r * 10.0) */
-/*             ERR(ret); */
+    /* Close the file. */
+    if ((ret = PIOc_closefile(ncid)))
+        ERR(ret);
 
-/*     /\* Close the file. *\/ */
-/*     if ((ret = PIOc_closefile(ncid))) */
-/*         ERR(ret); */
-
-/*     return 0; */
-/* } */
+    return 0;
+}
 
 /* Run a simple test using darrays with async. */
 int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm,
@@ -140,8 +134,8 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm,
             ERR(ret);
 
         /* Check the file for correctness. */
-        /* if ((ret = check_darray_file(iosysid, data_filename, PIO_IOTYPE_NETCDF, my_rank))) */
-        /*     ERR(ret); */
+        if ((ret = check_darray_file(iosysid, data_filename, PIO_IOTYPE_NETCDF, my_rank)))
+            ERR(ret);
 
     } /* next iotype */
 

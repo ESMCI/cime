@@ -192,16 +192,12 @@ int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
         }
 
         /* Handle MPI errors. */
-        LOG((2, "checking mpi error mpierr = %d", mpierr));
         if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
             return check_mpi(file, mpierr2, __FILE__, __LINE__);
-        LOG((2, "still checking mpi error mpierr = %d", mpierr));
         if (mpierr)
             return check_mpi(file, mpierr, __FILE__, __LINE__);
-        LOG((2, "done checking mpi error mpierr = %d", mpierr));
 
         /* Share results known only on computation tasks with IO tasks. */
-        LOG((3, "sharing fndims = %d", fndims));
         if ((mpierr = MPI_Bcast(&fndims, 1, MPI_INT, ios->comproot, ios->my_comm)))
             check_mpi(file, mpierr, __FILE__, __LINE__);
         LOG((3, "shared fndims = %d", fndims));
