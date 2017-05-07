@@ -301,8 +301,7 @@ int create_mpi_datatypes(MPI_Datatype basetype, int msgcnt,
     int ii = 0;
 
     /* Determine the blocksize. This is done differently for the
-     * rearrangers, but in practice I believe it always comes out to
-     * 1. (If mfrom is NULL, this is the box rearranger.) */
+     * rearrangers. (If mfrom is NULL, this is the box rearranger.) */
     if (mfrom == NULL)
     {
         LOG((3, "mfrom is NULL"));
@@ -867,10 +866,10 @@ int rearrange_comp2io(iosystem_desc_t *ios, io_desc_t *iodesc, void *sbuf,
                 }
                 else
                 {
-                    LOG((3, "exchanging data for box rearranger"));
-                    LOG((3, "i = %d iodesc->rfrom[i] = %d recvcounts[iodesc->rfrom[i]] = %d", i,
-                         iodesc->rfrom[i], recvcounts[iodesc->rfrom[i]]));
                     recvcounts[iodesc->rfrom[i]] = 1;
+                    LOG((3, "exchanging data for box rearranger i = %d iodesc->rfrom[i] = %d "
+                         "recvcounts[iodesc->rfrom[i]] = %d", i, iodesc->rfrom[i],
+                         recvcounts[iodesc->rfrom[i]]));
 
 #if PIO_USE_MPISERIAL
                     if ((mpierr = MPI_Type_hvector(nvars, 1, (MPI_Aint)iodesc->llen * iodesc->basetype_size,
@@ -898,6 +897,7 @@ int rearrange_comp2io(iosystem_desc_t *ios, io_desc_t *iodesc, void *sbuf,
     for (int i = 0; i < niotasks; i++)
     {
         int io_comprank = ios->ioranks[i];
+        LOG((3, "ios->ioranks[%d] = %d", i, ios->ioranks[i]));
         if (iodesc->rearranger == PIO_REARR_SUBSET)
             io_comprank = 0;
 
@@ -925,7 +925,7 @@ int rearrange_comp2io(iosystem_desc_t *ios, io_desc_t *iodesc, void *sbuf,
             sendcounts[io_comprank] = 0;
         }
     }
-
+    
     /* Data in sbuf on the compute nodes is sent to rbuf on the ionodes */
     LOG((2, "about to call pio_swapm for sbuf"));
     if ((ret = pio_swapm(sbuf, sendcounts, sdispls, sendtypes,

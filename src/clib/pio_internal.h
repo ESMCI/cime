@@ -296,7 +296,7 @@ extern "C" {
                                   const int *frame);
 
     /* Write aggregated arrays to file using serial I/O (netCDF-3/netCDF-4 serial) */
-    int write_darray_multi_serial(file_desc_t *file, int nvars, const int *vid,
+    int write_darray_multi_serial(file_desc_t *file, int nvars, int fndims, const int *vid,
                                   io_desc_t *iodesc, int fill, const int *frame);
 
     int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid, void *iobuf);
@@ -551,6 +551,7 @@ enum PIO_MSG
     PIO_MSG_INITDECOMP_DOF,
     PIO_MSG_WRITEDARRAY,
     PIO_MSG_WRITEDARRAYMULTI,
+    PIO_MSG_SETFRAME,
     PIO_MSG_READDARRAY,
     PIO_MSG_SETERRORHANDLING,
     PIO_MSG_FREEDECOMP,

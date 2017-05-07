@@ -330,14 +330,45 @@ int PIOc_sync(int ncid)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Pointer to file information. */
-    wmulti_buffer *wmb, *twmb;
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
     int ierr = PIO_NOERR;  /* Return code from function calls. */
+
+    LOG((1, "PIOc_sync ncid = %d", ncid));
 
     /* Get the file info from the ncid. */
     if ((ierr = pio_get_file(ncid, &file)))
         return pio_err(NULL, NULL, ierr, __FILE__, __LINE__);
     ios = file->iosystem;
+
+    /* Flush data buffers on computational tasks. */
+    if (!ios->async || !ios->ioproc)
+    {
+        if (file->mode & PIO_WRITE)
+        {
+            wmulti_buffer *wmb, *twmb;
+            
+            LOG((3, "PIOc_sync checking buffers"));
+            wmb = &file->buffer;
+            while (wmb)
+            {
+                /* If there are any data arrays waiting in the
+                 * multibuffer, flush it. */
+                if (wmb->num_arrays > 0)
+                    flush_buffer(ncid, wmb, true);
+                twmb = wmb;
+                wmb = wmb->next;
+                if (twmb == &file->buffer)
+                {
+                    twmb->ioid = -1;
+                    twmb->next = NULL;
+                }
+                else
+                {
+                    brel(twmb);
+                }
+            }
+        }
+    }
 
     /* If async is in use, send message to IO master tasks. */
     if (ios->async)
@@ -360,31 +391,9 @@ int PIOc_sync(int ncid)
             return check_mpi(file, mpierr, __FILE__, __LINE__);
     }
 
+    /* Call the sync function on IO tasks. */
     if (file->mode & PIO_WRITE)
     {
-        LOG((3, "PIOc_sync checking buffers"));
-
-        /*  cn_buffer_report( *ios, true); */
-        wmb = &file->buffer;
-        while (wmb)
-        {
-            /* If there are any data arrays waiting in the
-             * multibuffer, flush it. */
-            if (wmb->num_arrays > 0)
-                flush_buffer(ncid, wmb, true);
-            twmb = wmb;
-            wmb = wmb->next;
-            if (twmb == &file->buffer)
-            {
-                twmb->ioid = -1;
-                twmb->next = NULL;
-            }
-            else
-            {
-                brel(twmb);
-            }
-        }
-
         if (ios->ioproc)
         {
             switch(file->iotype)
