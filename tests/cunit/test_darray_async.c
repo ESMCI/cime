@@ -73,29 +73,50 @@ int check_darray_file(int iosysid, char *data_filename, int iotype, int my_rank,
         switch (piotype)
         {
         case PIO_BYTE:
+            if (((signed char *)data_in)[r] != (r/2 + 1) * 10.0 + r%2)
+                ERR(ret);
             break;
         case PIO_CHAR:
+            if (((char *)data_in)[r] != (r/2 + 1) * 10.0 + r%2)
+                ERR(ret);
             break;
         case PIO_SHORT:
+            printf("(short *)data_in)[%d] = %d\n", r, ((short *)data_in)[r]);
+            if (((short *)data_in)[r] != (r/2 + 1) * 10.0 + r%2)
+                ERR(ret);
             break;
         case PIO_INT:
+            if (((int *)data_in)[r] != (r/2 + 1) * 10.0 + r%2)
+                ERR(ret);
             break;
         case PIO_FLOAT:
             if (((float *)data_in)[r] != (r/2 + 1) * 10.0 + r%2)
                 ERR(ret);
             break;
         case PIO_DOUBLE:
+            if (((double *)data_in)[r] != (r/2 + 1) * 10.0 + r%2)
+                ERR(ret);
             break;
 #ifdef _NETCDF4
         case PIO_UBYTE:
+            if (((unsigned char *)data_in)[r] != (r/2 + 1) * 10.0 + r%2)
+                ERR(ret);
             break;
         case PIO_USHORT:
+            if (((unsigned short *)data_in)[r] != (r/2 + 1) * 10.0 + r%2)
+                ERR(ret);
             break;
         case PIO_UINT:
+            if (((unsigned int *)data_in)[r] != (r/2 + 1) * 10.0 + r%2)
+                ERR(ret);
             break;
         case PIO_INT64:
+            if (((long long *)data_in)[r] != (r/2 + 1) * 10.0 + r%2)
+                ERR(ret);
             break;
         case PIO_UINT64:
+            if (((unsigned long long *)data_in)[r] != (r/2 + 1) * 10.0 + r%2)
+                ERR(ret);
             break;
 #endif /* _NETCDF4 */
         default:
@@ -142,46 +163,73 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm,
         int varid;
         char data_filename[PIO_MAX_NAME + 1];
         void *my_data;
+        signed char my_data_byte[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1};
+        char my_data_char[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1};
+        short my_data_short[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1};
+        int my_data_int[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1};
         float my_data_float[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1};
+        double my_data_double[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1};
+#ifdef _NETCDF4
+        unsigned char my_data_ubyte[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1};
+        unsigned short my_data_ushort[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1};
+        unsigned int my_data_uint[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1};
+        long long my_data_int64[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1};
+        unsigned long long my_data_uint64[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1};
+#endif /* _NETCDF4 */
 
+        /* For now, only serial iotypes work. Parallel coming soon! */
+        if (flavor[fmt] == PIO_IOTYPE_PNETCDF || flavor[fmt] == PIO_IOTYPE_NETCDF4P)
+            continue;
+
+        /* Only netCDF-4 can handle extended types. */
+        if (piotype > PIO_DOUBLE && flavor[fmt] != PIO_IOTYPE_NETCDF4C && flavor[fmt] != PIO_IOTYPE_NETCDF4P)
+            continue;
+            
+        /* Select the correct data to write, depending on type. */
         switch (piotype)
         {
         case PIO_BYTE:
+            my_data = my_data_byte;
             break;
         case PIO_CHAR:
+            my_data = my_data_char;
             break;
         case PIO_SHORT:
+            my_data = my_data_short;
             break;
         case PIO_INT:
+            my_data = my_data_int;
             break;
         case PIO_FLOAT:
             my_data = my_data_float;
             break;
         case PIO_DOUBLE:
+            my_data = my_data_double;
             break;
 #ifdef _NETCDF4
         case PIO_UBYTE:
+            my_data = my_data_ubyte;
             break;
         case PIO_USHORT:
+            my_data = my_data_ushort;
             break;
         case PIO_UINT:
+            my_data = my_data_uint;
             break;
         case PIO_INT64:
+            my_data = my_data_int64;
             break;
         case PIO_UINT64:
+            my_data = my_data_uint64;
             break;
 #endif /* _NETCDF4 */
         default:
             ERR(ERR_WRONG);
         }
 
-        /* For now, only serial iotypes work. Parallel coming soon! */
-        if (flavor[fmt] == PIO_IOTYPE_PNETCDF || flavor[fmt] == PIO_IOTYPE_NETCDF4P)
-            continue;
-
-        sprintf(data_filename, "data_%s_iotype_%d.nc", TEST_NAME, flavor[fmt]);
-
         /* Create sample output file. */
+        sprintf(data_filename, "data_%s_iotype_%d_piotype_%d.nc", TEST_NAME, flavor[fmt],
+                piotype);
         if ((ret = PIOc_createfile(iosysid, &ncid, &flavor[fmt], data_filename,
                                    NC_CLOBBER)))
             ERR(ret);
@@ -233,11 +281,9 @@ int main(int argc, char **argv)
     int flavor[NUM_FLAVORS]; /* iotypes for the supported netCDF IO flavors. */
     MPI_Comm test_comm; /* A communicator for this test. */
 #ifdef _NETCDF4
-#define NUM_TYPES_TO_TEST 1
-    int test_type[NUM_TYPES_TO_TEST] = {PIO_FLOAT};
-/* #define NUM_TYPES_TO_TEST 11 */
-/*     int test_type[NUM_TYPES_TO_TEST] = {PIO_BYTE, PIO_CHAR, PIO_SHORT, PIO_INT, PIO_FLOAT, PIO_DOUBLE, */
-/*                                         PIO_UBYTE, PIO_USHORT, PIO_UINT, PIO_INT64, PIO_UINT64}; */
+#define NUM_TYPES_TO_TEST 11
+    int test_type[NUM_TYPES_TO_TEST] = {PIO_BYTE, PIO_CHAR, PIO_SHORT, PIO_INT, PIO_FLOAT, PIO_DOUBLE,
+                                        PIO_UBYTE, PIO_USHORT, PIO_UINT, PIO_INT64, PIO_UINT64};
 #else
 #define NUM_TYPES_TO_TEST 6
     int test_type[NUM_TYPES_TO_TEST] = {PIO_BYTE, PIO_CHAR, PIO_SHORT, PIO_INT, PIO_FLOAT, PIO_DOUBLE};
@@ -272,14 +318,14 @@ int main(int argc, char **argv)
         MPI_Comm comp_comm[COMPONENT_COUNT]; /* Will get duplicates of computation communicators. */
         int mpierr;
 
-        if ((ret = PIOc_init_async(test_comm, NUM_IO_PROCS, NULL, COMPONENT_COUNT,
-                                   &num_computation_procs, NULL, &io_comm, comp_comm,
-                                   PIO_REARR_BOX, &iosysid)))
-            ERR(ERR_INIT);
-
         /* Run the test for each data type. */
         for (int t = 0; t < NUM_TYPES_TO_TEST; t++)
-        {        
+        {
+            if ((ret = PIOc_init_async(test_comm, NUM_IO_PROCS, NULL, COMPONENT_COUNT,
+                                       &num_computation_procs, NULL, &io_comm, comp_comm,
+                                       PIO_REARR_BOX, &iosysid)))
+                ERR(ERR_INIT);
+
             /* This code runs only on computation components. */
             if (my_rank)
             {
