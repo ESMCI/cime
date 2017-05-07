@@ -291,10 +291,10 @@ typedef struct io_desc_t
     int piotype_size;
 
     /** The MPI type of the data. */
-    MPI_Datatype basetype;
+    MPI_Datatype mpitype;
 
-    /** The size in bytes of a datum of MPI type basetype. */
-    int basetype_size;
+    /** The size in bytes of a datum of MPI type mpitype. */
+    int mpitype_size;
 
     /** Length of the iobuffer on this task for a single field on the
      * IO node. The arrays from compute nodes gathered and rearranged

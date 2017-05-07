@@ -284,7 +284,7 @@ int test_decomp_read_write(int iosysid, int ioid, int num_flavors, int *flavor, 
                 iodesc->ndof != EXPECTED_MAPLEN)
                 return ERR_WRONG;
             if (iodesc->rearranger != rearranger || iodesc->maxregions != 1 ||
-                iodesc->needsfill || iodesc->basetype != MPI_INT)
+                iodesc->needsfill || iodesc->mpitype != MPI_INT)
                 return ERR_WRONG;
             for (int e = 0; e < iodesc->maplen; e++)
                 if (iodesc->map[e] != my_rank * iodesc->maplen + e + 1)

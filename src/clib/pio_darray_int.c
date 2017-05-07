@@ -79,7 +79,7 @@ int compute_buffer_init(iosystem_desc_t *ios)
  * @param vid: an array of the variable ids to be written.
  * @param iodesc_ndims: the number of dimensions explicitly in the
  * iodesc.
- * @param basetype the basic type of the minimal data unit
+ * @param mpitype the basic type of the minimal data unit
  * @param maxregions max number of blocks to be written from
  * this iotask.
  * @param firstregion pointer to the first element of a linked
@@ -100,7 +100,7 @@ int compute_buffer_init(iosystem_desc_t *ios)
  * @ingroup PIO_write_darray
  */
 int pio_write_darray_multi_nc(file_desc_t *file, int nvars, const int *vid, int iodesc_ndims,
-                              MPI_Datatype basetype, int maxregions, io_region *firstregion,
+                              MPI_Datatype mpitype, int maxregions, io_region *firstregion,
                               PIO_Offset llen, int num_aiotasks, void *iobuf,
                               const int *frame)
 {
@@ -116,9 +116,9 @@ int pio_write_darray_multi_nc(file_desc_t *file, int nvars, const int *vid, int 
     pioassert(file && file->iosystem && vid && vid[0] >= 0 && vid[0] <= PIO_MAX_VARS,
               "invalid input", __FILE__, __LINE__);
 
-    LOG((1, "pio_write_darray_multi_nc nvars = %d iodesc_ndims = %d basetype = %d "
+    LOG((1, "pio_write_darray_multi_nc nvars = %d iodesc_ndims = %d mpitype = %d "
          "maxregions = %d llen = %d num_aiotasks = %d", nvars, iodesc_ndims,
-         basetype, maxregions, llen, num_aiotasks));
+         mpitype, maxregions, llen, num_aiotasks));
 
 #ifdef TIMING
     /* Start timing this function. */
@@ -136,7 +136,7 @@ int pio_write_darray_multi_nc(file_desc_t *file, int nvars, const int *vid, int 
         return pio_err(ios, file, ierr, __FILE__, __LINE__);
 
     /* Find out the size of the MPI type. */
-    if ((mpierr = MPI_Type_size(basetype, &tsize)))
+    if ((mpierr = MPI_Type_size(mpitype, &tsize)))
         return check_mpi(file, mpierr, __FILE__, __LINE__);
     LOG((2, "fndims = %d tsize = %d", fndims, tsize));
 
@@ -300,7 +300,7 @@ int pio_write_darray_multi_nc(file_desc_t *file, int nvars, const int *vid, int 
                         LOG((3, "about to call ncmpi_iput_varn() vid[%d] = %d rrcnt = %d, llen = %d",
                              nv, vid[nv], rrcnt, llen));
                         ierr = ncmpi_iput_varn(file->fh, vid[nv], rrcnt, startlist, countlist,
-                                               bufptr, llen, basetype, vdesc->request + reqn);
+                                               bufptr, llen, mpitype, vdesc->request + reqn);
 
                         /* keeps wait calls in sync */
                         if (vdesc->request[reqn] == NC_REQ_NULL)
@@ -463,7 +463,7 @@ int send_all_start_count(iosystem_desc_t *ios, io_desc_t *iodesc, PIO_Offset lle
         if ((mpierr = MPI_Send(tmp_count, maxregions * fndims, MPI_OFFSET, 0,
                                ios->io_rank + 3 * ios->num_iotasks, ios->io_comm)))
             return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
-        if ((mpierr = MPI_Send(iobuf, nvars * llen, iodesc->basetype, 0,
+        if ((mpierr = MPI_Send(iobuf, nvars * llen, iodesc->mpitype, 0,
                                ios->io_rank + 4 * ios->num_iotasks, ios->io_comm)))
             return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
         LOG((3, "sent data for maxregions = %d", maxregions));
@@ -563,7 +563,7 @@ int recv_and_write_data(file_desc_t *file, const int *vid, const int *frame,
                 if ((mpierr = MPI_Recv(tmp_count, rregions * fndims, MPI_OFFSET, rtask,
                                        rtask + 3 * ios->num_iotasks, ios->io_comm, &status)))
                     return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
-                if ((mpierr = MPI_Recv(iobuf, nvars * rlen, iodesc->basetype, rtask,
+                if ((mpierr = MPI_Recv(iobuf, nvars * rlen, iodesc->mpitype, rtask,
                                        rtask + 4 * ios->num_iotasks, ios->io_comm, &status)))
                     return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
                 LOG((3, "received data rregions = %d fndims = %d", rregions, fndims));
@@ -599,7 +599,7 @@ int recv_and_write_data(file_desc_t *file, const int *vid, const int *frame,
                     vdesc = file->varlist + vid[0];
 
                     /* Get a pointer to the correct part of the buffer. */
-                    bufptr = (void *)((char *)iobuf + iodesc->basetype_size * (nv * rlen + loffset));
+                    bufptr = (void *)((char *)iobuf + iodesc->mpitype_size * (nv * rlen + loffset));
 
                     /* If this var has an unlimited dim, set
                      * the start on that dim to the frame
@@ -682,7 +682,7 @@ int write_darray_multi_serial(file_desc_t *file, int nvars, int fndims, const in
               vid[0] <= PIO_MAX_VARS && iodesc, "invalid input", __FILE__, __LINE__);
 
     LOG((1, "write_darray_multi_serial nvars = %d fndims = %d iodesc->ndims = %d "
-         "iodesc->basetype = %d", nvars, iodesc->ndims, fndims, iodesc->basetype));
+         "iodesc->mpitype = %d", nvars, iodesc->ndims, fndims, iodesc->mpitype));
 
     /* Get the iosystem info. */
     ios = file->iosystem;
@@ -808,8 +808,8 @@ int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid, void *iobu
         PIO_Offset *countlist[iodesc->maxregions];
 
         /* buffer is incremented by byte and loffset is in terms of
-           the iodessc->basetype so we need to multiply by the size of
-           the basetype. */
+           the iodessc->mpitype so we need to multiply by the size of
+           the mpitype. */
         region = iodesc->firstregion;
 
         /* ??? */
@@ -840,7 +840,7 @@ int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid, void *iobu
                 if (regioncnt == 0 || region == NULL)
                     bufptr = iobuf;
                 else
-                    bufptr=(void *)((char *)iobuf + iodesc->basetype_size * region->loffset);
+                    bufptr=(void *)((char *)iobuf + iodesc->mpitype_size * region->loffset);
 
                 LOG((2, "%d %d %d", iodesc->llen - region->loffset, iodesc->llen, region->loffset));
 
@@ -904,7 +904,7 @@ int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid, void *iobu
                 {
                     /* Read a list of subarrays. */
                     ierr = ncmpi_get_varn_all(file->fh, vid, rrlen, startlist,
-                                              countlist, iobuf, iodesc->llen, iodesc->basetype);
+                                              countlist, iobuf, iodesc->llen, iodesc->mpitype);
 
                     /* Release the start and count arrays. */
                     for (int i = 0; i < rrlen; i++)
@@ -1003,8 +1003,8 @@ int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc, int vid,
         void *bufptr;
 
         /* buffer is incremented by byte and loffset is in terms of
-           the iodessc->basetype so we need to multiply by the size of
-           the basetype. */
+           the iodessc->mpitype so we need to multiply by the size of
+           the mpitype. */
         region = iodesc->firstregion;
 
         if (fndims > ndims)
@@ -1089,7 +1089,7 @@ int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc, int vid,
                     return check_mpi(file, mpierr, __FILE__, __LINE__);
                 LOG((3, "sent iodesc->maxregions = %d tmp_count and tmp_start arrays", iodesc->maxregions));
 
-                if ((mpierr = MPI_Recv(iobuf, iodesc->llen, iodesc->basetype, 0,
+                if ((mpierr = MPI_Recv(iobuf, iodesc->llen, iodesc->mpitype, 0,
                                        4 * ios->num_iotasks + ios->io_rank, ios->io_comm, &status)))
                     return check_mpi(file, mpierr, __FILE__, __LINE__);
                 LOG((3, "received %d elements of data", iodesc->llen));
@@ -1138,7 +1138,7 @@ int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc, int vid,
                 for (int regioncnt = 0; regioncnt < maxregions; regioncnt++)
                 {
                     /* Get pointer where data should go. */
-                    bufptr = (void *)((char *)iobuf + iodesc->basetype_size * loffset);
+                    bufptr = (void *)((char *)iobuf + iodesc->mpitype_size * loffset);
                     regionsize = 1;
 
                     /* ??? */
@@ -1175,7 +1175,7 @@ int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc, int vid,
                  * ios->num_iotasks is the number of iotasks actually
                  * used in this decomposition. */
                 if (rtask < ios->num_iotasks && tmp_bufsize > 0)
-                    if ((mpierr = MPI_Send(iobuf, tmp_bufsize, iodesc->basetype, rtask,
+                    if ((mpierr = MPI_Send(iobuf, tmp_bufsize, iodesc->mpitype, rtask,
                                            4 * ios->num_iotasks + rtask, ios->io_comm)))
                         return check_mpi(file, mpierr, __FILE__, __LINE__);
             }
