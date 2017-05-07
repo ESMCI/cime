@@ -69,7 +69,7 @@ int check_darray_file(int iosysid, char *data_filename, int iotype, int my_rank)
 
 /* Run a simple test using darrays with async. */
 int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm,
-                          int num_flavors, int *flavor)
+                          int num_flavors, int *flavor, int piotype)
 {
     int ioid;
     int dim_len[NDIM3] = {NC_UNLIMITED, 2, 3};
@@ -154,6 +154,16 @@ int main(int argc, char **argv)
     int num_flavors; /* Number of PIO netCDF flavors in this build. */
     int flavor[NUM_FLAVORS]; /* iotypes for the supported netCDF IO flavors. */
     MPI_Comm test_comm; /* A communicator for this test. */
+#ifdef _NETCDF4
+#define NUM_TYPES_TO_TEST 1
+    int test_type[NUM_TYPES_TO_TEST] = {PIO_FLOAT};
+/* #define NUM_TYPES_TO_TEST 11 */
+/*     int test_type[NUM_TYPES_TO_TEST] = {PIO_BYTE, PIO_CHAR, PIO_SHORT, PIO_INT, PIO_FLOAT, PIO_DOUBLE, */
+/*                                         PIO_UBYTE, PIO_USHORT, PIO_UINT, PIO_INT64, PIO_UINT64}; */
+#else
+#define NUM_TYPES_TO_TEST 6
+    int test_type[NUM_TYPES_TO_TEST] = {PIO_BYTE, PIO_CHAR, PIO_SHORT, PIO_INT, PIO_FLOAT, PIO_DOUBLE};
+#endif /* _NETCDF4 */
     int ret;     /* Return code. */
 
     /* Initialize test. */
@@ -189,27 +199,32 @@ int main(int argc, char **argv)
                                    PIO_REARR_BOX, &iosysid)))
             ERR(ERR_INIT);
 
-        /* This code runs only on computation components. */
-        if (my_rank)
-        {
-            /* Run the simple darray async test. */
-            if ((ret = run_darray_async_test(iosysid, my_rank, test_comm, num_flavors, flavor)))
-                return ret;
-
-            /* Finalize PIO system. */
-            if ((ret = PIOc_finalize(iosysid)))
-                return ret;
-
-            /* Free the computation conomponent communicator. */
-            if ((mpierr = MPI_Comm_free(comp_comm)))
-                MPIERR(mpierr);
-        }
-        else
-        {
-            /* Free the IO communicator. */
-            if ((mpierr = MPI_Comm_free(&io_comm)))
-                MPIERR(mpierr);
-        }
+        /* Run the test for each data type. */
+        for (int t = 0; t < NUM_TYPES_TO_TEST; t++)
+        {        
+            /* This code runs only on computation components. */
+            if (my_rank)
+            {
+                /* Run the simple darray async test. */
+                if ((ret = run_darray_async_test(iosysid, my_rank, test_comm, num_flavors, flavor,
+                                                 test_type[t])))
+                    return ret;
+                
+                /* Finalize PIO system. */
+                if ((ret = PIOc_finalize(iosysid)))
+                    return ret;
+                
+                /* Free the computation conomponent communicator. */
+                if ((mpierr = MPI_Comm_free(comp_comm)))
+                    MPIERR(mpierr);
+            }
+            else
+            {
+                /* Free the IO communicator. */
+                if ((mpierr = MPI_Comm_free(&io_comm)))
+                    MPIERR(mpierr);
+            }
+        } /* next type */
     } /* endif my_rank < TARGET_NTASKS */
 
     /* Finalize the MPI library. */
