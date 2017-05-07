@@ -141,7 +141,39 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm,
         int dimid[NDIM3];
         int varid;
         char data_filename[PIO_MAX_NAME + 1];
-        float my_data[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1};
+        void *my_data;
+        float my_data_float[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1};
+
+        switch (piotype)
+        {
+        case PIO_BYTE:
+            break;
+        case PIO_CHAR:
+            break;
+        case PIO_SHORT:
+            break;
+        case PIO_INT:
+            break;
+        case PIO_FLOAT:
+            my_data = my_data_float;
+            break;
+        case PIO_DOUBLE:
+            break;
+#ifdef _NETCDF4
+        case PIO_UBYTE:
+            break;
+        case PIO_USHORT:
+            break;
+        case PIO_UINT:
+            break;
+        case PIO_INT64:
+            break;
+        case PIO_UINT64:
+            break;
+#endif /* _NETCDF4 */
+        default:
+            ERR(ERR_WRONG);
+        }
 
         /* For now, only serial iotypes work. Parallel coming soon! */
         if (flavor[fmt] == PIO_IOTYPE_PNETCDF || flavor[fmt] == PIO_IOTYPE_NETCDF4P)
