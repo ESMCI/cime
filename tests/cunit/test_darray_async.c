@@ -81,7 +81,7 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm,
     sprintf(decomp_filename, "decomp_%s_rank_%d.nc", TEST_NAME, my_rank);
 
     /* Create the PIO decomposition for this test. */
-    if ((ret = PIOc_init_decomp(iosysid, PIO_FLOAT, NDIM2, &dim_len[1], elements_per_pe,
+    if ((ret = PIOc_init_decomp(iosysid, piotype, NDIM2, &dim_len[1], elements_per_pe,
                                 compdof, &ioid, PIO_REARR_BOX, NULL, NULL)))
         ERR(ret);
 
@@ -114,7 +114,7 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm,
                 ERR(ret);
 
         /* Define variable. */
-        if ((ret = PIOc_def_var(ncid, VAR_NAME, PIO_FLOAT, NDIM3, dimid, &varid)))
+        if ((ret = PIOc_def_var(ncid, VAR_NAME, piotype, NDIM3, dimid, &varid)))
             ERR(ret);
 
         /* End define mode. */
