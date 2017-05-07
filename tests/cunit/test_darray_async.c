@@ -41,24 +41,70 @@ char dim_name[NDIM3][PIO_MAX_NAME + 1] = {"unlim", "lat", "lon"};
 #define LEN3 3
 
 /* Check the file that was created in this test. */
-int check_darray_file(int iosysid, char *data_filename, int iotype, int my_rank)
+int check_darray_file(int iosysid, char *data_filename, int iotype, int my_rank,
+                      int piotype)
 {
     int ncid;
     int varid = 0;
-    float data_in[LAT_LEN * LON_LEN];
+    void *data_in;
+    PIO_Offset type_size;
     int ret;
 
     /* Reopen the file. */
     if ((ret = PIOc_openfile(iosysid, &ncid, &iotype, data_filename, NC_NOWRITE)))
         ERR(ret);
 
+    /* Get the size of the type. */
+    if ((ret = PIOc_inq_type(ncid, piotype, NULL, &type_size)))
+        ERR(ret);
+
+    /* Allocate memory to read data. */
+    if (!(data_in = malloc(LAT_LEN * LON_LEN * type_size)))
+        ERR(PIO_ENOMEM);
+
     /* Check the data. The values we expect are: 10, 11, 20, 21, 30,
      * 31. */
-    if ((ret = PIOc_get_var(ncid, varid, &data_in)))
+    if ((ret = PIOc_get_var(ncid, varid, data_in)))
         ERR(ret);
+
+    /* Check the results. */
     for (int r = 0; r < LAT_LEN * LON_LEN; r++)
-        if (data_in[r] != (r/2 + 1) * 10.0 + r%2)
-            ERR(ret);
+    {
+        switch (piotype)
+        {
+        case PIO_BYTE:
+            break;
+        case PIO_CHAR:
+            break;
+        case PIO_SHORT:
+            break;
+        case PIO_INT:
+            break;
+        case PIO_FLOAT:
+            if (((float *)data_in)[r] != (r/2 + 1) * 10.0 + r%2)
+                ERR(ret);
+            break;
+        case PIO_DOUBLE:
+            break;
+#ifdef _NETCDF4
+        case PIO_UBYTE:
+            break;
+        case PIO_USHORT:
+            break;
+        case PIO_UINT:
+            break;
+        case PIO_INT64:
+            break;
+        case PIO_UINT64:
+            break;
+#endif /* _NETCDF4 */
+        default:
+            ERR(ERR_WRONG);
+        }
+    }
+
+    /* Free resources. */
+    free(data_in);
 
     /* Close the file. */
     if ((ret = PIOc_closefile(ncid)))
@@ -134,7 +180,7 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm,
             ERR(ret);
 
         /* Check the file for correctness. */
-        if ((ret = check_darray_file(iosysid, data_filename, PIO_IOTYPE_NETCDF, my_rank)))
+        if ((ret = check_darray_file(iosysid, data_filename, PIO_IOTYPE_NETCDF, my_rank, piotype)))
             ERR(ret);
 
     } /* next iotype */
