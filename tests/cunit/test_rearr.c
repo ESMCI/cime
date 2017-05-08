@@ -502,7 +502,7 @@ int test_define_iodesc_datatypes()
         ios.num_iotasks = 4; /* The number of IO tasks. */
         iodesc.rtype = NULL; /* Array of MPI types will be created here. */
         iodesc.nrecvs = 1; /* Number of types created. */
-        iodesc.basetype = MPI_INT;
+        iodesc.mpitype = MPI_INT;
         iodesc.stype = NULL; /* Array of MPI types will be created here. */
 
         /* Allocate space for arrays in iodesc that will be filled in
@@ -947,12 +947,12 @@ int test_rearrange_comp2io(MPI_Comm test_comm, int my_rank)
     ios->num_iotasks = TARGET_NTASKS;
     ios->num_uniontasks = TARGET_NTASKS;
     iodesc->rearranger = PIO_REARR_BOX;
-    iodesc->basetype = MPI_INT;
+    iodesc->mpitype = MPI_INT;
 
     /* Set up test for IO task with BOX rearranger to create one type. */
     iodesc->rtype = NULL; /* Array of MPI types will be created here. */
     iodesc->nrecvs = 1; /* Number of types created. */
-    iodesc->basetype = MPI_INT;
+    iodesc->mpitype = MPI_INT;
     iodesc->stype = NULL; /* Array of MPI types will be created here. */
 
     /* The two rearrangers create a different number of send types. */
@@ -1070,14 +1070,14 @@ int test_rearrange_io2comp(MPI_Comm test_comm, int my_rank)
     ios->union_comm = test_comm;
     ios->num_iotasks = TARGET_NTASKS;
     iodesc->rearranger = PIO_REARR_BOX;
-    iodesc->basetype = MPI_INT;
+    iodesc->mpitype = MPI_INT;
 
     /* Set up test for IO task with BOX rearranger to create one type. */
     ios->ioproc = 1; /* this is IO proc. */
     ios->num_iotasks = 4; /* The number of IO tasks. */
     iodesc->rtype = NULL; /* Array of MPI types will be created here. */
     iodesc->nrecvs = 1; /* Number of types created. */
-    iodesc->basetype = MPI_INT;
+    iodesc->mpitype = MPI_INT;
     iodesc->stype = NULL; /* Array of MPI types will be created here. */
 
     /* The two rearrangers create a different number of send types. */

@@ -232,14 +232,14 @@ int test_decomp_read_write(int iosysid, int ioid, int num_flavors, int *flavor, 
             /* Check values in iodesc. */
             printf("ioid2 = %d iodesc->ioid = %d iodesc->maplen = %d iodesc->ndims = %d "
                    "iodesc->ndof = %d iodesc->rearranger = %d iodesc->maxregions = %d "
-                   "iodesc->needsfill = %d iodesc->basetype = %d expected_mpi_type = %d\n",
+                   "iodesc->needsfill = %d iodesc->mpitype = %d expected_mpi_type = %d\n",
                    ioid2, iodesc->ioid, iodesc->maplen, iodesc->ndims, iodesc->ndof,
-                   iodesc->rearranger, iodesc->maxregions, iodesc->needsfill, iodesc->basetype,
+                   iodesc->rearranger, iodesc->maxregions, iodesc->needsfill, iodesc->mpitype,
                    expected_mpi_type);
             if (strcmp(title, title_in) || strcmp(history, history_in))
                 return ERR_WRONG;
             if (iodesc->ioid != ioid2 || iodesc->rearranger != rearranger ||
-                iodesc->basetype != expected_mpi_type)
+                iodesc->mpitype != expected_mpi_type)
                 return ERR_WRONG;
             if (iodesc->ndims != NDIM3)
                 return ERR_WRONG;
