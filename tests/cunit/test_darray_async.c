@@ -248,19 +248,24 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm,
         /* Define variables. */
         if ((ret = PIOc_def_var(ncid, REC_VAR_NAME, piotype, NDIM3, dimid, &varid[0])))
             ERR(ret);
-        if ((ret = PIOc_def_var(ncid, NOREC_VAR_NAME, piotype, NDIM2, &dimid[1], &varid[1])))
+        if ((ret = PIOc_def_var(ncid, NOREC_VAR_NAME, piotype, NDIM2, &dimid[1],
+                                &varid[1])))
             ERR(ret);
 
         /* End define mode. */
         if ((ret = PIOc_enddef(ncid)))
             ERR(ret);
 
-        /* Set the record number. */
+        /* Set the record number for the record var. */
         if ((ret = PIOc_setframe(ncid, varid[0], 0)))
             ERR(ret);
 
-        /* Write some data. */
+        /* Write some data to the record var. */
         if ((ret = PIOc_write_darray(ncid, varid[0], ioid, elements_per_pe, my_data, NULL)))
+            ERR(ret);
+
+        /* Write some data to the non-record var. */
+        if ((ret = PIOc_write_darray(ncid, varid[1], ioid, elements_per_pe, my_data, NULL)))
             ERR(ret);
 
         /* Close the file. */
