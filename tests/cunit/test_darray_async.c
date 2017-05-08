@@ -41,24 +41,91 @@ char dim_name[NDIM3][PIO_MAX_NAME + 1] = {"unlim", "lat", "lon"};
 #define LEN3 3
 
 /* Check the file that was created in this test. */
-int check_darray_file(int iosysid, char *data_filename, int iotype, int my_rank)
+int check_darray_file(int iosysid, char *data_filename, int iotype, int my_rank,
+                      int piotype)
 {
     int ncid;
     int varid = 0;
-    float data_in[LAT_LEN * LON_LEN];
+    void *data_in;
+    PIO_Offset type_size;
     int ret;
 
     /* Reopen the file. */
     if ((ret = PIOc_openfile(iosysid, &ncid, &iotype, data_filename, NC_NOWRITE)))
         ERR(ret);
 
+    /* Get the size of the type. */
+    if ((ret = PIOc_inq_type(ncid, piotype, NULL, &type_size)))
+        ERR(ret);
+
+    /* Allocate memory to read data. */
+    if (!(data_in = malloc(LAT_LEN * LON_LEN * type_size)))
+        ERR(PIO_ENOMEM);
+
     /* Check the data. The values we expect are: 10, 11, 20, 21, 30,
      * 31. */
-    if ((ret = PIOc_get_var(ncid, varid, &data_in)))
+    if ((ret = PIOc_get_var(ncid, varid, data_in)))
         ERR(ret);
+
+    /* Check the results. */
     for (int r = 0; r < LAT_LEN * LON_LEN; r++)
-        if (data_in[r] != (r/2 + 1) * 10.0 + r%2)
-            ERR(ret);
+    {
+        switch (piotype)
+        {
+        case PIO_BYTE:
+            if (((signed char *)data_in)[r] != (r/2 + 1) * 10.0 + r%2)
+                ERR(ret);
+            break;
+        case PIO_CHAR:
+            if (((char *)data_in)[r] != (r/2 + 1) * 10.0 + r%2)
+                ERR(ret);
+            break;
+        case PIO_SHORT:
+            printf("(short *)data_in)[%d] = %d\n", r, ((short *)data_in)[r]);
+            if (((short *)data_in)[r] != (r/2 + 1) * 10.0 + r%2)
+                ERR(ret);
+            break;
+        case PIO_INT:
+            if (((int *)data_in)[r] != (r/2 + 1) * 10.0 + r%2)
+                ERR(ret);
+            break;
+        case PIO_FLOAT:
+            if (((float *)data_in)[r] != (r/2 + 1) * 10.0 + r%2)
+                ERR(ret);
+            break;
+        case PIO_DOUBLE:
+            if (((double *)data_in)[r] != (r/2 + 1) * 10.0 + r%2)
+                ERR(ret);
+            break;
+#ifdef _NETCDF4
+        case PIO_UBYTE:
+            if (((unsigned char *)data_in)[r] != (r/2 + 1) * 10.0 + r%2)
+                ERR(ret);
+            break;
+        case PIO_USHORT:
+            if (((unsigned short *)data_in)[r] != (r/2 + 1) * 10.0 + r%2)
+                ERR(ret);
+            break;
+        case PIO_UINT:
+            if (((unsigned int *)data_in)[r] != (r/2 + 1) * 10.0 + r%2)
+                ERR(ret);
+            break;
+        case PIO_INT64:
+            if (((long long *)data_in)[r] != (r/2 + 1) * 10.0 + r%2)
+                ERR(ret);
+            break;
+        case PIO_UINT64:
+            if (((unsigned long long *)data_in)[r] != (r/2 + 1) * 10.0 + r%2)
+                ERR(ret);
+            break;
+#endif /* _NETCDF4 */
+        default:
+            ERR(ERR_WRONG);
+        }
+    }
+
+    /* Free resources. */
+    free(data_in);
 
     /* Close the file. */
     if ((ret = PIOc_closefile(ncid)))
@@ -69,7 +136,7 @@ int check_darray_file(int iosysid, char *data_filename, int iotype, int my_rank)
 
 /* Run a simple test using darrays with async. */
 int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm,
-                          int num_flavors, int *flavor)
+                          int num_flavors, int *flavor, int piotype)
 {
     int ioid;
     int dim_len[NDIM3] = {NC_UNLIMITED, 2, 3};
@@ -81,7 +148,7 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm,
     sprintf(decomp_filename, "decomp_%s_rank_%d.nc", TEST_NAME, my_rank);
 
     /* Create the PIO decomposition for this test. */
-    if ((ret = PIOc_init_decomp(iosysid, PIO_FLOAT, NDIM2, &dim_len[1], elements_per_pe,
+    if ((ret = PIOc_init_decomp(iosysid, piotype, NDIM2, &dim_len[1], elements_per_pe,
                                 compdof, &ioid, PIO_REARR_BOX, NULL, NULL)))
         ERR(ret);
 
@@ -95,15 +162,74 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm,
         int dimid[NDIM3];
         int varid;
         char data_filename[PIO_MAX_NAME + 1];
-        float my_data[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1};
+        void *my_data;
+        signed char my_data_byte[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1};
+        char my_data_char[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1};
+        short my_data_short[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1};
+        int my_data_int[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1};
+        float my_data_float[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1};
+        double my_data_double[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1};
+#ifdef _NETCDF4
+        unsigned char my_data_ubyte[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1};
+        unsigned short my_data_ushort[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1};
+        unsigned int my_data_uint[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1};
+        long long my_data_int64[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1};
+        unsigned long long my_data_uint64[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1};
+#endif /* _NETCDF4 */
 
         /* For now, only serial iotypes work. Parallel coming soon! */
         if (flavor[fmt] == PIO_IOTYPE_PNETCDF || flavor[fmt] == PIO_IOTYPE_NETCDF4P)
             continue;
 
-        sprintf(data_filename, "data_%s_iotype_%d.nc", TEST_NAME, flavor[fmt]);
+        /* Only netCDF-4 can handle extended types. */
+        if (piotype > PIO_DOUBLE && flavor[fmt] != PIO_IOTYPE_NETCDF4C && flavor[fmt] != PIO_IOTYPE_NETCDF4P)
+            continue;
+            
+        /* Select the correct data to write, depending on type. */
+        switch (piotype)
+        {
+        case PIO_BYTE:
+            my_data = my_data_byte;
+            break;
+        case PIO_CHAR:
+            my_data = my_data_char;
+            break;
+        case PIO_SHORT:
+            my_data = my_data_short;
+            break;
+        case PIO_INT:
+            my_data = my_data_int;
+            break;
+        case PIO_FLOAT:
+            my_data = my_data_float;
+            break;
+        case PIO_DOUBLE:
+            my_data = my_data_double;
+            break;
+#ifdef _NETCDF4
+        case PIO_UBYTE:
+            my_data = my_data_ubyte;
+            break;
+        case PIO_USHORT:
+            my_data = my_data_ushort;
+            break;
+        case PIO_UINT:
+            my_data = my_data_uint;
+            break;
+        case PIO_INT64:
+            my_data = my_data_int64;
+            break;
+        case PIO_UINT64:
+            my_data = my_data_uint64;
+            break;
+#endif /* _NETCDF4 */
+        default:
+            ERR(ERR_WRONG);
+        }
 
         /* Create sample output file. */
+        sprintf(data_filename, "data_%s_iotype_%d_piotype_%d.nc", TEST_NAME, flavor[fmt],
+                piotype);
         if ((ret = PIOc_createfile(iosysid, &ncid, &flavor[fmt], data_filename,
                                    NC_CLOBBER)))
             ERR(ret);
@@ -114,7 +240,7 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm,
                 ERR(ret);
 
         /* Define variable. */
-        if ((ret = PIOc_def_var(ncid, VAR_NAME, PIO_FLOAT, NDIM3, dimid, &varid)))
+        if ((ret = PIOc_def_var(ncid, VAR_NAME, piotype, NDIM3, dimid, &varid)))
             ERR(ret);
 
         /* End define mode. */
@@ -134,7 +260,7 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm,
             ERR(ret);
 
         /* Check the file for correctness. */
-        if ((ret = check_darray_file(iosysid, data_filename, PIO_IOTYPE_NETCDF, my_rank)))
+        if ((ret = check_darray_file(iosysid, data_filename, PIO_IOTYPE_NETCDF, my_rank, piotype)))
             ERR(ret);
 
     } /* next iotype */
@@ -154,6 +280,14 @@ int main(int argc, char **argv)
     int num_flavors; /* Number of PIO netCDF flavors in this build. */
     int flavor[NUM_FLAVORS]; /* iotypes for the supported netCDF IO flavors. */
     MPI_Comm test_comm; /* A communicator for this test. */
+#ifdef _NETCDF4
+#define NUM_TYPES_TO_TEST 11
+    int test_type[NUM_TYPES_TO_TEST] = {PIO_BYTE, PIO_CHAR, PIO_SHORT, PIO_INT, PIO_FLOAT, PIO_DOUBLE,
+                                        PIO_UBYTE, PIO_USHORT, PIO_UINT, PIO_INT64, PIO_UINT64};
+#else
+#define NUM_TYPES_TO_TEST 6
+    int test_type[NUM_TYPES_TO_TEST] = {PIO_BYTE, PIO_CHAR, PIO_SHORT, PIO_INT, PIO_FLOAT, PIO_DOUBLE};
+#endif /* _NETCDF4 */
     int ret;     /* Return code. */
 
     /* Initialize test. */
@@ -184,32 +318,37 @@ int main(int argc, char **argv)
         MPI_Comm comp_comm[COMPONENT_COUNT]; /* Will get duplicates of computation communicators. */
         int mpierr;
 
-        if ((ret = PIOc_init_async(test_comm, NUM_IO_PROCS, NULL, COMPONENT_COUNT,
-                                   &num_computation_procs, NULL, &io_comm, comp_comm,
-                                   PIO_REARR_BOX, &iosysid)))
-            ERR(ERR_INIT);
-
-        /* This code runs only on computation components. */
-        if (my_rank)
+        /* Run the test for each data type. */
+        for (int t = 0; t < NUM_TYPES_TO_TEST; t++)
         {
-            /* Run the simple darray async test. */
-            if ((ret = run_darray_async_test(iosysid, my_rank, test_comm, num_flavors, flavor)))
-                return ret;
+            if ((ret = PIOc_init_async(test_comm, NUM_IO_PROCS, NULL, COMPONENT_COUNT,
+                                       &num_computation_procs, NULL, &io_comm, comp_comm,
+                                       PIO_REARR_BOX, &iosysid)))
+                ERR(ERR_INIT);
 
-            /* Finalize PIO system. */
-            if ((ret = PIOc_finalize(iosysid)))
-                return ret;
-
-            /* Free the computation conomponent communicator. */
-            if ((mpierr = MPI_Comm_free(comp_comm)))
-                MPIERR(mpierr);
-        }
-        else
-        {
-            /* Free the IO communicator. */
-            if ((mpierr = MPI_Comm_free(&io_comm)))
-                MPIERR(mpierr);
-        }
+            /* This code runs only on computation components. */
+            if (my_rank)
+            {
+                /* Run the simple darray async test. */
+                if ((ret = run_darray_async_test(iosysid, my_rank, test_comm, num_flavors, flavor,
+                                                 test_type[t])))
+                    return ret;
+                
+                /* Finalize PIO system. */
+                if ((ret = PIOc_finalize(iosysid)))
+                    return ret;
+                
+                /* Free the computation conomponent communicator. */
+                if ((mpierr = MPI_Comm_free(comp_comm)))
+                    MPIERR(mpierr);
+            }
+            else
+            {
+                /* Free the IO communicator. */
+                if ((mpierr = MPI_Comm_free(&io_comm)))
+                    MPIERR(mpierr);
+            }
+        } /* next type */
     } /* endif my_rank < TARGET_NTASKS */
 
     /* Finalize the MPI library. */
