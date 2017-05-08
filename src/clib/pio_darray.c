@@ -21,6 +21,11 @@ void *CN_bpool = NULL;
 /* Maximum buffer usage. */
 PIO_Offset maxusage = 0;
 
+/* For write_darray_multi_serial() and write_darray_multi_par() to
+ * indicate whether fill or data are being written. */
+#define DARRAY_FILL 1
+#define DARRAY_DATA 0
+
 /**
  * Set the PIO IO node data buffer size limit.
  *
@@ -259,13 +264,13 @@ int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
     case PIO_IOTYPE_NETCDF4P:
     case PIO_IOTYPE_PNETCDF:
         if ((ierr = write_darray_multi_par(file, nvars, fndims, varids, iodesc,
-                                           0, frame)))
+                                           DARRAY_DATA, frame)))
             return pio_err(ios, file, ierr, __FILE__, __LINE__);
         break;
     case PIO_IOTYPE_NETCDF4C:
     case PIO_IOTYPE_NETCDF:
         if ((ierr = write_darray_multi_serial(file, nvars, fndims, varids, iodesc,
-                                              0, frame)))
+                                              DARRAY_DATA, frame)))
             return pio_err(ios, file, ierr, __FILE__, __LINE__);
 
         break;
@@ -321,12 +326,14 @@ int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
         {
         case PIO_IOTYPE_PNETCDF:
         case PIO_IOTYPE_NETCDF4P:
-            if ((ierr = write_darray_multi_par(file, nvars, fndims, varids, iodesc, 1, frame)))
+            if ((ierr = write_darray_multi_par(file, nvars, fndims, varids, iodesc,
+                                               DARRAY_FILL, frame)))
                 return pio_err(ios, file, ierr, __FILE__, __LINE__);
             break;
         case PIO_IOTYPE_NETCDF4C:
         case PIO_IOTYPE_NETCDF:
-            if ((ierr = write_darray_multi_serial(file, nvars, fndims, varids, iodesc, 1, frame)))
+            if ((ierr = write_darray_multi_serial(file, nvars, fndims, varids, iodesc,
+                                                  DARRAY_FILL, frame)))
                 return pio_err(ios, file, ierr, __FILE__, __LINE__);
             break;
         default:
