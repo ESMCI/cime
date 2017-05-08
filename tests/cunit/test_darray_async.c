@@ -32,8 +32,14 @@
 #define LAT_LEN 2
 #define LON_LEN 3
 
-/* Name of test var. */
-#define VAR_NAME "surface_temperature"
+/* Number of vars in test file. */
+#define NVAR 2
+
+/* Name of record test var. */
+#define REC_VAR_NAME "surface_temperature"
+
+/* Name of non-record test var. */
+#define NOREC_VAR_NAME "surface_height"
 
 char dim_name[NDIM3][PIO_MAX_NAME + 1] = {"unlim", "lat", "lon"};
 
@@ -160,7 +166,7 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm,
     {
         int ncid;
         int dimid[NDIM3];
-        int varid;
+        int varid[NVAR];
         char data_filename[PIO_MAX_NAME + 1];
         void *my_data;
         signed char my_data_byte[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1};
@@ -239,8 +245,10 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm,
             if ((ret = PIOc_def_dim(ncid, dim_name[d], dim_len[d], &dimid[d])))
                 ERR(ret);
 
-        /* Define variable. */
-        if ((ret = PIOc_def_var(ncid, VAR_NAME, piotype, NDIM3, dimid, &varid)))
+        /* Define variables. */
+        if ((ret = PIOc_def_var(ncid, REC_VAR_NAME, piotype, NDIM3, dimid, &varid[0])))
+            ERR(ret);
+        if ((ret = PIOc_def_var(ncid, NOREC_VAR_NAME, piotype, NDIM2, &dimid[1], &varid[1])))
             ERR(ret);
 
         /* End define mode. */
@@ -248,11 +256,11 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm,
             ERR(ret);
 
         /* Set the record number. */
-        if ((ret = PIOc_setframe(ncid, varid, 0)))
+        if ((ret = PIOc_setframe(ncid, varid[0], 0)))
             ERR(ret);
 
         /* Write some data. */
-        if ((ret = PIOc_write_darray(ncid, varid, ioid, elements_per_pe, my_data, NULL)))
+        if ((ret = PIOc_write_darray(ncid, varid[0], ioid, elements_per_pe, my_data, NULL)))
             ERR(ret);
 
         /* Close the file. */
