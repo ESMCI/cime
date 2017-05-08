@@ -258,9 +258,8 @@ int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
     {
     case PIO_IOTYPE_NETCDF4P:
     case PIO_IOTYPE_PNETCDF:
-        if ((ierr = pio_write_darray_multi_nc(file, nvars, varids, iodesc->ndims, iodesc->mpitype,
-                                              iodesc->maxregions, iodesc->firstregion, iodesc->llen,
-                                              iodesc->num_aiotasks, vdesc0->iobuf, frame)))
+        if ((ierr = write_darray_multi_par(file, nvars, fndims, varids, iodesc,
+                                           0, frame)))
             return pio_err(ios, file, ierr, __FILE__, __LINE__);
         break;
     case PIO_IOTYPE_NETCDF4C:
@@ -322,10 +321,7 @@ int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
         {
         case PIO_IOTYPE_PNETCDF:
         case PIO_IOTYPE_NETCDF4P:
-            if ((ierr = pio_write_darray_multi_nc(file, nvars, varids,
-                                                  iodesc->ndims, iodesc->mpitype, iodesc->maxfillregions,
-                                                  iodesc->fillregion, iodesc->holegridsize,
-                                                  iodesc->num_aiotasks, vdesc0->fillbuf, frame)))
+            if ((ierr = write_darray_multi_par(file, nvars, fndims, varids, iodesc, 1, frame)))
                 return pio_err(ios, file, ierr, __FILE__, __LINE__);
             break;
         case PIO_IOTYPE_NETCDF4C:
