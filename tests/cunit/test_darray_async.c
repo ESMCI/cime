@@ -35,6 +35,9 @@
 /* Number of vars in test file. */
 #define NVAR 2
 
+/* Number of records written for record var. */
+#define NREC 3
+
 /* Name of record test var. */
 #define REC_VAR_NAME "surface_temperature"
 
@@ -66,13 +69,13 @@ int check_darray_file(int iosysid, char *data_filename, int iotype, int my_rank,
         ERR(ret);
 
     /* Allocate memory to read data. */
-    if (!(data_in = malloc(LAT_LEN * LON_LEN * type_size)))
+    if (!(data_in = malloc(LAT_LEN * LON_LEN * type_size * NREC)))
         ERR(PIO_ENOMEM);
     if (!(data_in_norec = malloc(LAT_LEN * LON_LEN * type_size)))
         ERR(PIO_ENOMEM);
 
     /* Read the record data. The values we expect are: 10, 11, 20, 21, 30,
-     * 31. */
+     * 31, in each of two records. */
     if ((ret = PIOc_get_var(ncid, varid[0], data_in)))
         ERR(ret);
 
@@ -82,64 +85,110 @@ int check_darray_file(int iosysid, char *data_filename, int iotype, int my_rank,
         ERR(ret);
 
     /* Check the results. */
+    for (int r = 0; r < LAT_LEN * LON_LEN * NREC; r++)
+    {
+        int tmp_r = r % (LAT_LEN * LON_LEN);
+        switch (piotype)
+        {
+        case PIO_BYTE:
+            if (((signed char *)data_in)[r] != (tmp_r/2 + 1) * 10.0 + tmp_r % 2)
+                ERR(ret);
+            break;
+        case PIO_CHAR:
+            if (((char *)data_in)[r] != (tmp_r/2 + 1) * 10.0 + tmp_r % 2)
+                ERR(ret);
+            break;
+        case PIO_SHORT:
+            if (((short *)data_in)[r] != (tmp_r/2 + 1) * 10.0 + tmp_r % 2)
+                ERR(ret);
+            break;
+        case PIO_INT:
+            if (((int *)data_in)[r] != (tmp_r/2 + 1) * 10.0 + tmp_r % 2)
+                ERR(ret);
+            break;
+        case PIO_FLOAT:
+            if (((float *)data_in)[r] != (tmp_r/2 + 1) * 10.0 + tmp_r % 2)
+                ERR(ret);
+            break;
+        case PIO_DOUBLE:
+            if (((double *)data_in)[r] != (tmp_r/2 + 1) * 10.0 + tmp_r % 2)
+                ERR(ret);
+            break;
+#ifdef _NETCDF4
+        case PIO_UBYTE:
+            if (((unsigned char *)data_in)[r] != (tmp_r/2 + 1) * 10.0 + tmp_r % 2)
+                ERR(ret);
+            break;
+        case PIO_USHORT:
+            if (((unsigned short *)data_in)[r] != (tmp_r/2 + 1) * 10.0 + tmp_r % 2)
+                ERR(ret);
+            break;
+        case PIO_UINT:
+            if (((unsigned int *)data_in)[r] != (tmp_r/2 + 1) * 10.0 + tmp_r % 2)
+                ERR(ret);
+            break;
+        case PIO_INT64:
+            if (((long long *)data_in)[r] != (tmp_r/2 + 1) * 10.0 + tmp_r % 2)
+                ERR(ret);
+            break;
+        case PIO_UINT64:
+            if (((unsigned long long *)data_in)[r] != (tmp_r/2 + 1) * 10.0 + tmp_r % 2)
+                ERR(ret);
+            break;
+#endif /* _NETCDF4 */
+        default:
+            ERR(ERR_WRONG);
+        }
+    }
+
+    /* Check the results. */
     for (int r = 0; r < LAT_LEN * LON_LEN; r++)
     {
         switch (piotype)
         {
         case PIO_BYTE:
-            if (((signed char *)data_in)[r] != (r/2 + 1) * 10.0 + r%2 ||
-                ((signed char *)data_in_norec)[r] != (r/2 + 1) * 20.0 + r%2)
+            if (((signed char *)data_in_norec)[r] != (r/2 + 1) * 20.0 + r%2)
                 ERR(ret);
             break;
         case PIO_CHAR:
-            if (((char *)data_in)[r] != (r/2 + 1) * 10.0 + r%2 ||
-                ((char *)data_in_norec)[r] != (r/2 + 1) * 20.0 + r%2)
+            if (((char *)data_in_norec)[r] != (r/2 + 1) * 20.0 + r%2)
                 ERR(ret);
             break;
         case PIO_SHORT:
-            if (((short *)data_in)[r] != (r/2 + 1) * 10.0 + r%2 ||
-                ((short *)data_in_norec)[r] != (r/2 + 1) * 20.0 + r%2)
+            if (((short *)data_in_norec)[r] != (r/2 + 1) * 20.0 + r%2)
                 ERR(ret);
             break;
         case PIO_INT:
-            if (((int *)data_in)[r] != (r/2 + 1) * 10.0 + r%2 ||
-                ((int *)data_in_norec)[r] != (r/2 + 1) * 20.0 + r%2)
+            if (((int *)data_in_norec)[r] != (r/2 + 1) * 20.0 + r%2)
                 ERR(ret);
             break;
         case PIO_FLOAT:
-            if (((float *)data_in)[r] != (r/2 + 1) * 10.0 + r%2 ||
-                ((float *)data_in_norec)[r] != (r/2 + 1) * 20.0 + r%2)
+            if (((float *)data_in_norec)[r] != (r/2 + 1) * 20.0 + r%2)
                 ERR(ret);
             break;
         case PIO_DOUBLE:
-            if (((double *)data_in)[r] != (r/2 + 1) * 10.0 + r%2 ||
-                ((double *)data_in_norec)[r] != (r/2 + 1) * 20.0 + r%2)
+            if (((double *)data_in_norec)[r] != (r/2 + 1) * 20.0 + r%2)
                 ERR(ret);
             break;
 #ifdef _NETCDF4
         case PIO_UBYTE:
-            if (((unsigned char *)data_in)[r] != (r/2 + 1) * 10.0 + r%2 ||
-                ((unsigned char *)data_in_norec)[r] != (r/2 + 1) * 20.0 + r%2)
+            if (((unsigned char *)data_in_norec)[r] != (r/2 + 1) * 20.0 + r%2)
                 ERR(ret);
             break;
         case PIO_USHORT:
-            if (((unsigned short *)data_in)[r] != (r/2 + 1) * 10.0 + r%2 ||
-                ((unsigned short *)data_in_norec)[r] != (r/2 + 1) * 20.0 + r%2)
+            if (((unsigned short *)data_in_norec)[r] != (r/2 + 1) * 20.0 + r%2)
                 ERR(ret);
             break;
         case PIO_UINT:
-            if (((unsigned int *)data_in)[r] != (r/2 + 1) * 10.0 + r%2 ||
-                ((unsigned int *)data_in_norec)[r] != (r/2 + 1) * 20.0 + r%2)
+            if (((unsigned int *)data_in_norec)[r] != (r/2 + 1) * 20.0 + r%2)
                 ERR(ret);
             break;
         case PIO_INT64:
-            if (((long long *)data_in)[r] != (r/2 + 1) * 10.0 + r%2 ||
-                ((long long *)data_in_norec)[r] != (r/2 + 1) * 20.0 + r%2)
+            if (((long long *)data_in_norec)[r] != (r/2 + 1) * 20.0 + r%2)
                 ERR(ret);
             break;
         case PIO_UINT64:
-            if (((unsigned long long *)data_in)[r] != (r/2 + 1) * 10.0 + r%2 ||
-                ((unsigned long long *)data_in_norec)[r] != (r/2 + 1) * 20.0 + r%2)
+            if (((unsigned long long *)data_in_norec)[r] != (r/2 + 1) * 20.0 + r%2)
                 ERR(ret);
             break;
 #endif /* _NETCDF4 */
@@ -223,7 +272,7 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm,
         /* Only netCDF-4 can handle extended types. */
         if (piotype > PIO_DOUBLE && flavor[fmt] != PIO_IOTYPE_NETCDF4C && flavor[fmt] != PIO_IOTYPE_NETCDF4P)
             continue;
-            
+
         /* Select the correct data to write, depending on type. */
         switch (piotype)
         {
@@ -312,6 +361,30 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm,
         if ((ret = PIOc_write_darray(ncid, varid[1], ioid, elements_per_pe, my_data_norec, NULL)))
             ERR(ret);
 
+        /* Sync the file. */
+        if ((ret = PIOc_sync(ncid)))
+            ERR(ret);
+
+        /* Increment the record number for the record var. */
+        if ((ret = PIOc_advanceframe(ncid, varid[0])))
+            ERR(ret);
+
+        /* Write another record. */
+        if ((ret = PIOc_write_darray(ncid, varid[0], ioid, elements_per_pe, my_data, NULL)))
+            ERR(ret);
+
+        /* Sync the file. */
+        if ((ret = PIOc_sync(ncid)))
+            ERR(ret);
+
+        /* Increment the record number for the record var. */
+        if ((ret = PIOc_advanceframe(ncid, varid[0])))
+            ERR(ret);
+
+        /* Write a third record. */
+        if ((ret = PIOc_write_darray(ncid, varid[0], ioid, elements_per_pe, my_data, NULL)))
+            ERR(ret);
+
         /* Close the file. */
         if ((ret = PIOc_closefile(ncid)))
             ERR(ret);
@@ -390,11 +463,11 @@ int main(int argc, char **argv)
                 if ((ret = run_darray_async_test(iosysid, my_rank, test_comm, num_flavors, flavor,
                                                  test_type[t])))
                     return ret;
-                
+
                 /* Finalize PIO system. */
                 if ((ret = PIOc_finalize(iosysid)))
                     return ret;
-                
+
                 /* Free the computation conomponent communicator. */
                 if ((mpierr = MPI_Comm_free(comp_comm)))
                     MPIERR(mpierr);

@@ -1303,7 +1303,7 @@ int setframe_handler(iosystem_desc_t *ios)
     int mpierr;
     int ret;
 
-    LOG((1, "sync_file_handler"));
+    LOG((1, "setframe_handler"));
     assert(ios);
 
     /* Get the parameters for this function that the comp master
@@ -1322,6 +1322,42 @@ int setframe_handler(iosystem_desc_t *ios)
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
     LOG((2, "setframe_handler succeeded!"));
+    return PIO_NOERR;
+}
+
+/** 
+ * This function is run on the IO tasks to increment the record
+ * dimension value for a netCDF variable.
+ *
+ * @param ios pointer to the iosystem_desc_t.
+ * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
+ * from netCDF base function.
+ * @internal
+ */
+int advanceframe_handler(iosystem_desc_t *ios)
+{
+    int ncid;
+    int varid;
+    int mpierr;
+    int ret;
+
+    LOG((1, "advanceframe_handler"));
+    assert(ios);
+
+    /* Get the parameters for this function that the comp master
+     * task is broadcasting. */
+    if ((mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm)))
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+    if ((mpierr = MPI_Bcast(&varid, 1, MPI_INT, 0, ios->intercomm)))
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+    LOG((1, "advanceframe_handler got parameter ncid = %d varid = %d",
+         ncid, varid));
+
+    /* Call the function. */
+    if ((ret = PIOc_advanceframe(ncid, varid)))
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+
+    LOG((2, "advanceframe_handler succeeded!"));
     return PIO_NOERR;
 }
 
@@ -2607,6 +2643,9 @@ int pio_msg_handler2(int io_rank, int component_count, iosystem_desc_t **iosys,
             break;
         case PIO_MSG_SETFRAME:
             setframe_handler(my_iosys);
+            break;
+        case PIO_MSG_ADVANCEFRAME:
+            advanceframe_handler(my_iosys);
             break;
         case PIO_MSG_READDARRAY:
             readdarray_handler(my_iosys);
