@@ -321,7 +321,7 @@ class NamelistDefinition(EntryID):
         user_modifiable_only_by_xml = node.get('modify_via_xml')
         if user_modifiable_only_by_xml is not None:
             expect(False,
-                   "Cannot change %s in user_nl_xxx file, %s" %(name, user_modifiable_only_by_xml))
+                   "Cannot change %s in user_nl_xxx file, use xml variable %s" %(name, user_modifiable_only_by_xml))
         user_cannot_modify = node.get('cannot_modify_by_user_nl')
         if user_cannot_modify is not None:
             expect(False,
