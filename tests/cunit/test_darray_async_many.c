@@ -134,7 +134,7 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm,
         int varid[NVAR];
         char data_filename[PIO_MAX_NAME + 1];
         signed char my_data_byte[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1};
-        /* char my_data_char[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1}; */
+        char my_data_char[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1};
         /* short my_data_short[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1}; */
         /* int my_data_int[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1}; */
 /*         float my_data_float[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1}; */
@@ -147,7 +147,7 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm,
 /*         unsigned long long my_data_uint64[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1}; */
 /* #endif /\* _NETCDF4 *\/ */
         signed char my_data_byte_norec[LAT_LEN] = {my_rank * 20, my_rank * 20 + 1};
-/*         char my_data_char_norec[LAT_LEN] = {my_rank * 20, my_rank * 20 + 1}; */
+        char my_data_char_norec[LAT_LEN] = {my_rank * 20, my_rank * 20 + 1};
 /*         short my_data_short_norec[LAT_LEN] = {my_rank * 20, my_rank * 20 + 1}; */
         /* int my_data_int_norec[LAT_LEN] = {my_rank * 20, my_rank * 20 + 1}; */
 /*         float my_data_float_norec[LAT_LEN] = {my_rank * 20, my_rank * 20 + 1}; */
@@ -199,12 +199,18 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm,
         if ((ret = PIOc_setframe(ncid, varid[0], 0)))
             ERR(ret);
 
-        /* Write some data to the record var. */
+        /* Write some data to the record vars. */
         if ((ret = PIOc_write_darray(ncid, varid[0], ioid, elements_per_pe, my_data_byte, NULL)))
             ERR(ret);
 
-        /* Write some data to the non-record var. */
+        if ((ret = PIOc_write_darray(ncid, varid[2], ioid, elements_per_pe, my_char_byte, NULL)))
+            ERR(ret);
+        
+        /* Write some data to the non-record vars. */
         if ((ret = PIOc_write_darray(ncid, varid[1], ioid, elements_per_pe, my_data_byte_norec, NULL)))
+            ERR(ret);
+
+        if ((ret = PIOc_write_darray(ncid, varid[3], ioid, elements_per_pe, my_data_byte_norec, NULL)))
             ERR(ret);
 
         /* Sync the file. */
