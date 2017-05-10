@@ -203,14 +203,14 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm,
         if ((ret = PIOc_write_darray(ncid, varid[0], ioid, elements_per_pe, my_data_byte, NULL)))
             ERR(ret);
 
-        if ((ret = PIOc_write_darray(ncid, varid[2], ioid, elements_per_pe, my_char_byte, NULL)))
-            ERR(ret);
+        /* if ((ret = PIOc_write_darray(ncid, varid[2], ioid, elements_per_pe, my_data_char, NULL))) */
+        /*     ERR(ret); */
         
         /* Write some data to the non-record vars. */
         if ((ret = PIOc_write_darray(ncid, varid[1], ioid, elements_per_pe, my_data_byte_norec, NULL)))
             ERR(ret);
 
-        if ((ret = PIOc_write_darray(ncid, varid[3], ioid, elements_per_pe, my_data_byte_norec, NULL)))
+        if ((ret = PIOc_write_darray(ncid, varid[3], ioid, elements_per_pe, my_data_char_norec, NULL)))
             ERR(ret);
 
         /* Sync the file. */
