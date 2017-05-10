@@ -54,46 +54,46 @@ int check_darray_file(int iosysid, char *data_filename, int iotype, int my_rank)
 {
     int ncid;
     int varid[NVAR] = {0, 1};
-    void *data_in;
-    void *data_in_norec;
+    signed char byte_data_in[LAT_LEN * LON_LEN * NREC];
+    signed char byte_norec_data_in[LAT_LEN * LON_LEN];
+    signed char expected_byte[LAT_LEN * LON_LEN] = {1, 2, 2, 3, 3, 4};
     int ret;
 
     /* Reopen the file. */
     if ((ret = PIOc_openfile(iosysid, &ncid, &iotype, data_filename, NC_NOWRITE)))
         ERR(ret);
 
-    /* Allocate memory to read data. */
-    if (!(data_in = malloc(LAT_LEN * LON_LEN * sizeof(int) * NREC)))
-        ERR(PIO_ENOMEM);
-    if (!(data_in_norec = malloc(LAT_LEN * LON_LEN * sizeof(int))))
-        ERR(PIO_ENOMEM);
-
-    /* Read the record data. The values we expect are: 10, 11, 20, 21, 30,
-     * 31, in each of two records. */
-    if ((ret = PIOc_get_var(ncid, varid[0], data_in)))
-        ERR(ret);
-
-    /* Read the non-record data. The values we expect are: 10, 11, 20, 21, 30,
-     * 31. */
-    if ((ret = PIOc_get_var(ncid, varid[1], data_in_norec)))
+    /* Read byte record data. */
+    if ((ret = PIOc_get_var_schar(ncid, varid[0], byte_data_in)))
         ERR(ret);
 
     /* Check the results. */
     for (int r = 0; r < LAT_LEN * LON_LEN * NREC; r++)
-    {
-        int tmp_r = r % (LAT_LEN * LON_LEN);
-        if (((signed char *)data_in)[r] != (tmp_r/2 + 1) * 10.0 + tmp_r % 2)
+        if (byte_data_in[r] != expected_byte[r % (LAT_LEN * LON_LEN)])
             ERR(ret);
-    }
 
-    /* Check the results. */
+    /* Read byte non-record data. */
+    if ((ret = PIOc_get_var_schar(ncid, varid[1], byte_norec_data_in)))
+        ERR(ret);
     for (int r = 0; r < LAT_LEN * LON_LEN; r++)
-        if (((signed char *)data_in_norec)[r] != (r/2 + 1) * 20.0 + r%2)
+        if (byte_data_in[r] != expected_byte[r])
             ERR(ret);
 
-    /* Free resources. */
-    free(data_in);
-    free(data_in_norec);
+    /* Read char record data. */
+    /* if ((ret = PIOc_get_var_text(ncid, varid[2], char_data_in))) */
+    /*     ERR(ret); */
+
+    /* /\* Check the results. *\/ */
+    /* for (int r = 0; r < LAT_LEN * LON_LEN * NREC; r++) */
+    /*     if (char_data_in[r] != expected_char[r % (LAT_LEN * LON_LEN)]) */
+    /*         ERR(ret); */
+
+    /* /\* Read byte non-record data. *\/ */
+    /* if ((ret = PIOc_get_var_schar(ncid, varid[1], byte_norec_data_in))) */
+    /*     ERR(ret); */
+    /* for (int r = 0; r < LAT_LEN * LON_LEN; r++) */
+    /*     if (byte_data_in[r] != expected_byte[r]) */
+    /*         ERR(ret); */
 
     /* Close the file. */
     if ((ret = PIOc_closefile(ncid)))
@@ -114,6 +114,34 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm,
     PIO_Offset compdof[LAT_LEN] = {my_rank * 2 - 2, my_rank * 2 - 1};
     char decomp_filename[PIO_MAX_NAME + 1];
     int piotype = PIO_BYTE;
+
+    /* Test data. */
+    signed char my_data_byte[LAT_LEN] = {my_rank, my_rank + 1};
+    char my_data_char[LAT_LEN] = {64 + my_rank, 96 + my_rank};
+/* short my_data_short[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1}; */
+/* int my_data_int[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1}; */
+/*         float my_data_float[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1}; */
+/*         double my_data_double[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1}; */
+/* #ifdef _NETCDF4 */
+/*         unsigned char my_data_ubyte[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1}; */
+/*         unsigned short my_data_ushort[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1}; */
+/*         unsigned int my_data_uint[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1}; */
+/*         long long my_data_int64[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1}; */
+/*         unsigned long long my_data_uint64[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1}; */
+/* #endif /\* _NETCDF4 *\/ */
+    signed char my_data_byte_norec[LAT_LEN] = {my_rank * 20, my_rank * 20 + 1};
+    char my_data_char_norec[LAT_LEN] = {64 + my_rank, 96 + my_rank};
+/*         short my_data_short_norec[LAT_LEN] = {my_rank * 20, my_rank * 20 + 1}; */
+/* int my_data_int_norec[LAT_LEN] = {my_rank * 20, my_rank * 20 + 1}; */
+/*         float my_data_float_norec[LAT_LEN] = {my_rank * 20, my_rank * 20 + 1}; */
+/*         double my_data_double_norec[LAT_LEN] = {my_rank * 20, my_rank * 20 + 1}; */
+/* #ifdef _NETCDF4 */
+/*         unsigned char my_data_ubyte_norec[LAT_LEN] = {my_rank * 20, my_rank * 20 + 1}; */
+/*         unsigned short my_data_ushort_norec[LAT_LEN] = {my_rank * 20, my_rank * 20 + 1}; */
+/*         unsigned int my_data_uint_norec[LAT_LEN] = {my_rank * 20, my_rank * 20 + 1}; */
+/*         long long my_data_int64_norec[LAT_LEN] = {my_rank * 20, my_rank * 20 + 1}; */
+/*         unsigned long long my_data_uint64_norec[LAT_LEN] = {my_rank * 20, my_rank * 20 + 1}; */
+/* #endif /\* _NETCDF4 *\/ */
     int ret;
 
     sprintf(decomp_filename, "decomp_%s_rank_%d.nc", TEST_NAME, my_rank);
@@ -133,32 +161,6 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm,
         int dimid[NDIM3];
         int varid[NVAR];
         char data_filename[PIO_MAX_NAME + 1];
-        signed char my_data_byte[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1};
-        char my_data_char[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1};
-        /* short my_data_short[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1}; */
-        /* int my_data_int[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1}; */
-/*         float my_data_float[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1}; */
-/*         double my_data_double[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1}; */
-/* #ifdef _NETCDF4 */
-/*         unsigned char my_data_ubyte[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1}; */
-/*         unsigned short my_data_ushort[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1}; */
-/*         unsigned int my_data_uint[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1}; */
-/*         long long my_data_int64[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1}; */
-/*         unsigned long long my_data_uint64[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1}; */
-/* #endif /\* _NETCDF4 *\/ */
-        signed char my_data_byte_norec[LAT_LEN] = {my_rank * 20, my_rank * 20 + 1};
-        char my_data_char_norec[LAT_LEN] = {my_rank * 20, my_rank * 20 + 1};
-/*         short my_data_short_norec[LAT_LEN] = {my_rank * 20, my_rank * 20 + 1}; */
-        /* int my_data_int_norec[LAT_LEN] = {my_rank * 20, my_rank * 20 + 1}; */
-/*         float my_data_float_norec[LAT_LEN] = {my_rank * 20, my_rank * 20 + 1}; */
-/*         double my_data_double_norec[LAT_LEN] = {my_rank * 20, my_rank * 20 + 1}; */
-/* #ifdef _NETCDF4 */
-/*         unsigned char my_data_ubyte_norec[LAT_LEN] = {my_rank * 20, my_rank * 20 + 1}; */
-/*         unsigned short my_data_ushort_norec[LAT_LEN] = {my_rank * 20, my_rank * 20 + 1}; */
-/*         unsigned int my_data_uint_norec[LAT_LEN] = {my_rank * 20, my_rank * 20 + 1}; */
-/*         long long my_data_int64_norec[LAT_LEN] = {my_rank * 20, my_rank * 20 + 1}; */
-/*         unsigned long long my_data_uint64_norec[LAT_LEN] = {my_rank * 20, my_rank * 20 + 1}; */
-/* #endif /\* _NETCDF4 *\/ */
 
         /* For now, only serial iotypes work. Parallel coming soon! */
         if (flavor[fmt] == PIO_IOTYPE_PNETCDF || flavor[fmt] == PIO_IOTYPE_NETCDF4P)
@@ -195,16 +197,16 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm,
         if ((ret = PIOc_enddef(ncid)))
             ERR(ret);
 
-        /* Set the record number for the record var. */
+        /* Set the record number and write data for the record vars. */
         if ((ret = PIOc_setframe(ncid, varid[0], 0)))
             ERR(ret);
-
-        /* Write some data to the record vars. */
         if ((ret = PIOc_write_darray(ncid, varid[0], ioid, elements_per_pe, my_data_byte, NULL)))
             ERR(ret);
 
-        /* if ((ret = PIOc_write_darray(ncid, varid[2], ioid, elements_per_pe, my_data_char, NULL))) */
-        /*     ERR(ret); */
+        if ((ret = PIOc_setframe(ncid, varid[2], 0)))
+            ERR(ret);
+        if ((ret = PIOc_write_darray(ncid, varid[2], ioid, elements_per_pe, my_data_char, NULL)))
+            ERR(ret);
         
         /* Write some data to the non-record vars. */
         if ((ret = PIOc_write_darray(ncid, varid[1], ioid, elements_per_pe, my_data_byte_norec, NULL)))
