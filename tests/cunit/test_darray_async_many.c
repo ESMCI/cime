@@ -53,10 +53,13 @@ char dim_name[NDIM4][PIO_MAX_NAME + 1] = {"time", "vert_level", "lat", "lon"};
 int check_darray_file(int iosysid, char *data_filename, int iotype, int my_rank)
 {
     int ncid;
-    int varid[NVAR] = {0, 1};
+    int varid[NVAR] = {0, 1, 2, 3};
     signed char byte_data_in[LAT_LEN * LON_LEN * NREC];
     signed char byte_norec_data_in[LAT_LEN * LON_LEN];
     signed char expected_byte[LAT_LEN * LON_LEN] = {1, 2, 2, 3, 3, 4};
+    char char_data_in[LAT_LEN * LON_LEN * NREC];
+    char char_norec_data_in[LAT_LEN * LON_LEN];
+    char expected_char[LAT_LEN * LON_LEN] = {65, 97, 66, 98, 67, 99};
     int ret;
 
     /* Reopen the file. */
@@ -80,21 +83,30 @@ int check_darray_file(int iosysid, char *data_filename, int iotype, int my_rank)
             ERR(ret);
 
     /* Read char record data. */
-    /* if ((ret = PIOc_get_var_text(ncid, varid[2], char_data_in))) */
-    /*     ERR(ret); */
+    printf("varid[2] = %d\n", varid[2]);
+    if ((ret = PIOc_get_var(ncid, varid[2], char_data_in)))
+        ERR(ret);
 
-    /* /\* Check the results. *\/ */
-    /* for (int r = 0; r < LAT_LEN * LON_LEN * NREC; r++) */
-    /*     if (char_data_in[r] != expected_char[r % (LAT_LEN * LON_LEN)]) */
-    /*         ERR(ret); */
+    /* Check the results. */
+    for (int r = 0; r < LAT_LEN * LON_LEN * NREC; r++)
+    {
+        printf("char_data_in[%d] = %d expected[%d] = %d\n", r, char_data_in[r],
+               r % (LAT_LEN * LON_LEN), expected_char[r % (LAT_LEN * LON_LEN)]);
+        if (char_data_in[r] != expected_char[r % (LAT_LEN * LON_LEN)])
+            ERR(ret);
+    }
 
-    /* /\* Read byte non-record data. *\/ */
-    /* if ((ret = PIOc_get_var_schar(ncid, varid[1], byte_norec_data_in))) */
-    /*     ERR(ret); */
-    /* for (int r = 0; r < LAT_LEN * LON_LEN; r++) */
-    /*     if (byte_data_in[r] != expected_byte[r]) */
-    /*         ERR(ret); */
-
+    /* Read byte non-record data. */
+    if ((ret = PIOc_get_var(ncid, varid[3], char_norec_data_in)))
+        ERR(ret);
+    for (int r = 0; r < LAT_LEN * LON_LEN; r++)
+    {
+        printf("char_norec_data_in[%d] = %d expected[%d] = %d\n", r, char_norec_data_in[r],        
+               r, expected_char[r]);
+        if (char_norec_data_in[r] != expected_char[r])
+            ERR(ret);
+    }
+            
     /* Close the file. */
     if ((ret = PIOc_closefile(ncid)))
         ERR(ret);
@@ -185,12 +197,13 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm,
         for (int v = 0; v < NVAR; v += 2)
         {
             sprintf(var_name, "var_%d", v);
-            sprintf(var_norec_name, "var_norec_%d", v);
+            sprintf(var_norec_name, "var_norec_%d", v + 1);
             if ((ret = PIOc_def_var(ncid, var_name, var_type[v], NDIM3, dimids_3d, &varid[v])))
                 ERR(ret);
             if ((ret = PIOc_def_var(ncid, var_norec_name, var_type[v + 1], NDIM2, dimids_2d,
                                     &varid[v + 1])))
             ERR(ret);
+            printf("in my test v = %d varid = %d\n", v, varid[v]);
         }
 
         /* End define mode. */
@@ -219,24 +232,28 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm,
         if ((ret = PIOc_sync(ncid)))
             ERR(ret);
 
-        /* Increment the record number for the record var. */
+        /* Write another record. */
         if ((ret = PIOc_advanceframe(ncid, varid[0])))
             ERR(ret);
-
-        /* Write another record. */
         if ((ret = PIOc_write_darray(ncid, varid[0], ioid, elements_per_pe, my_data_byte, NULL)))
+            ERR(ret);
+        if ((ret = PIOc_advanceframe(ncid, varid[2])))
+            ERR(ret);
+        if ((ret = PIOc_write_darray(ncid, varid[2], ioid, elements_per_pe, my_data_char, NULL)))
             ERR(ret);
 
         /* Sync the file. */
         if ((ret = PIOc_sync(ncid)))
             ERR(ret);
 
-        /* Increment the record number for the record var. */
+        /* Write a third record. */
         if ((ret = PIOc_advanceframe(ncid, varid[0])))
             ERR(ret);
-
-        /* Write a third record. */
         if ((ret = PIOc_write_darray(ncid, varid[0], ioid, elements_per_pe, my_data_byte, NULL)))
+            ERR(ret);
+        if ((ret = PIOc_advanceframe(ncid, varid[2])))
+            ERR(ret);
+        if ((ret = PIOc_write_darray(ncid, varid[2], ioid, elements_per_pe, my_data_char, NULL)))
             ERR(ret);
 
         /* Close the file. */
