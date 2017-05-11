@@ -67,6 +67,78 @@ int compute_buffer_init(iosystem_desc_t *ios)
     return PIO_NOERR;
 }
 
+/** 
+ * Fill start/count arrays for write_darray_multi_par(). This is an
+ * internal funciton.
+ * 
+ * @param ndims the number of dims in the decomposition.
+ * @param fndims the number of dims in the file.
+ * @param vdesc pointer to the var_desc_t info.
+ * @param region pointer to a region.
+ * @param frame array of record values.
+ * @param start an already-allocated array which gets the start
+ * values.
+ * @param count an already-allocated array which gets the count
+ * values.
+ * @return 0 for success, error code otherwise.
+ * @ingroup PIO_write_darray
+ */
+int find_start_count(int ndims, int fndims, var_desc_t *vdesc,
+                     io_region *region, const int *frame, size_t *start,
+                     size_t *count)
+{
+    /* Init start/count arrays to zero. */
+    for (int i = 0; i < fndims; i++)
+    {
+        start[i] = 0;
+        count[i] = 0;
+    }
+
+    if (region)
+    {
+        if (vdesc->record >= 0)
+        {
+            /* This is a record based multidimensional
+             * array. Figure out start/count for all but the
+             * record dimension (dimid 0). */
+            for (int i = fndims - ndims; i < fndims; i++)
+            {
+                start[i] = region->start[i - (fndims - ndims)];
+                count[i] = region->count[i - (fndims - ndims)];
+            }
+
+            /* Now figure out start/count for record dimension. */
+            if (fndims > 1 && ndims < fndims && count[1] > 0)
+            {
+                count[0] = 1;
+                start[0] = frame[0];
+            }
+            else if (fndims == ndims)
+            {
+                /* ??? */
+                start[0] += vdesc->record;
+            }
+        }
+        else
+        {
+            /* This is a non record variable. */
+            for (int i = 0; i < ndims; i++)
+            {
+                start[i] = region->start[i];
+                count[i] = region->count[i];
+            }
+        }
+
+#if PIO_ENABLE_LOGGING
+        /* Log arrays for debug purposes. */
+        for (int i = 0; i < ndims; i++)
+            LOG((3, "start[%d] = %d count[%d] = %d", i, start[i], i, count[i]));
+#endif /* PIO_ENABLE_LOGGING */
+    }
+    
+    return PIO_NOERR;
+}
+
 /**
  * Write a set of one or more aggregated arrays to output file. This
  * function is only used with parallel-netcdf and netcdf-4 parallel
@@ -86,7 +158,7 @@ int compute_buffer_init(iosystem_desc_t *ios)
  * @return 0 for success, error code otherwise.
  * @ingroup PIO_write_darray
  */
-int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *vid,
+int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *varids,
                            io_desc_t *iodesc, int fill, const int *frame)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
@@ -95,7 +167,7 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
     int ierr = PIO_NOERR;
 
     /* Check inputs. */
-    pioassert(file && file->iosystem && vid && vid[0] >= 0 && vid[0] <= PIO_MAX_VARS &&
+    pioassert(file && file->iosystem && varids && varids[0] >= 0 && varids[0] <= PIO_MAX_VARS &&
               iodesc, "invalid input", __FILE__, __LINE__);
 
     LOG((1, "write_darray_multi_par nvars = %d iodesc->ndims = %d iodesc->mpitype = %d "
@@ -111,7 +183,7 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
     ios = file->iosystem;
 
     /* Point to var description scruct for first var. */
-    vdesc = file->varlist + vid[0];
+    vdesc = file->varlist + varids[0];
 
     /* Set these differently for data and fill writing. */
     int num_regions = fill ? iodesc->maxfillregions: iodesc->maxregions;
@@ -135,53 +207,9 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
         /* Process each region of data to be written. */
         for (int regioncnt = 0; regioncnt < num_regions; regioncnt++)
         {
-            /* Init start/count arrays to zero. */
-            for (int i = 0; i < fndims; i++)
-            {
-                start[i] = 0;
-                count[i] = 0;
-            }
-
-            if (region)
-            {
-                if (vdesc->record >= 0)
-                {
-                    /* This is a record based multidimensional
-                     * array. Figure out start/count for all but the
-                     * record dimension (dimid 0). */
-                    for (int i = fndims - ndims; i < fndims; i++)
-                    {
-                        start[i] = region->start[i - (fndims - ndims)];
-                        count[i] = region->count[i - (fndims - ndims)];
-                    }
-
-                    /* Now figure out start/count for record dimension. */
-                    if (fndims > 1 && ndims < fndims && count[1] > 0)
-                    {
-                        count[0] = 1;
-                        start[0] = frame[0];
-                    }
-                    else if (fndims == ndims)
-                    {
-                        /* ??? */
-                        start[0] += vdesc->record;
-                    }
-                }
-                else
-                {
-                    /* This is a non record variable. */
-                    for (int i = 0; i < ndims; i++)
-                    {
-                        start[i] = region->start[i];
-                        count[i] = region->count[i];
-                    }
-                }
-#if PIO_ENABLE_LOGGING
-                /* Log arrays for debug purposes. */
-                for (int i = 0; i < ndims; i++)
-                    LOG((3, "start[%d] = %d count[%d] = %d", i, start[i], i, count[i]));
-#endif /* PIO_ENABLE_LOGGING */
-            }
+            /* Fill the start/count arrays. */
+            if ((ierr = find_start_count(iodesc->ndims, fndims, vdesc, region, frame, start, count)))
+                return pio_err(ios, file, ierr, __FILE__, __LINE__);            
 
             /* IO tasks will run the netCDF/pnetcdf functions to write the data. */
             switch (file->iotype)
@@ -201,11 +229,11 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
                         bufptr = (void *)((char *)iobuf + iodesc->mpitype_size * (nv * llen + region->loffset));
 
                     /* Ensure collective access. */
-                    ierr = nc_var_par_access(file->fh, vid[nv], NC_COLLECTIVE);
+                    ierr = nc_var_par_access(file->fh, varids[nv], NC_COLLECTIVE);
 
                     /* Write the data for this variable. */
                     if (!ierr)
-                        ierr = nc_put_vara(file->fh, vid[nv], (size_t *)start, (size_t *)count, bufptr);
+                        ierr = nc_put_vara(file->fh, varids[nv], (size_t *)start, (size_t *)count, bufptr);
                 }
                 break;
 #endif
@@ -247,7 +275,7 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
                     for (int nv = 0; nv < nvars; nv++)
                     {
                         /* Get the var info. */
-                        vdesc = file->varlist + vid[nv];
+                        vdesc = file->varlist + varids[nv];
 
                         /* If this is a record var, set the start for
                          * the record dimension. */
@@ -275,9 +303,9 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
                                 reqn++;
 
                         /* Write, in non-blocking fashion, a list of subarrays. */
-                        LOG((3, "about to call ncmpi_iput_varn() vid[%d] = %d rrcnt = %d, llen = %d",
-                             nv, vid[nv], rrcnt, llen));
-                        ierr = ncmpi_iput_varn(file->fh, vid[nv], rrcnt, startlist, countlist,
+                        LOG((3, "about to call ncmpi_iput_varn() varids[%d] = %d rrcnt = %d, llen = %d",
+                             nv, varids[nv], rrcnt, llen));
+                        ierr = ncmpi_iput_varn(file->fh, varids[nv], rrcnt, startlist, countlist,
                                                bufptr, llen, iodesc->mpitype, vdesc->request + reqn);
 
                         /* keeps wait calls in sync */
@@ -457,7 +485,7 @@ int send_all_start_count(iosystem_desc_t *ios, io_desc_t *iodesc, PIO_Offset lle
  *
  * @param file a pointer to the open file descriptor for the file
  * that will be written to.
- * @param vid an array of the variable ids to be written
+ * @param varids an array of the variable ids to be written
  * @param frame the record dimension for each of the nvars variables
  * in iobuf.  NULL if this iodesc contains non-record vars.
  * @param iodesc pointer to the decomposition info.
@@ -484,7 +512,7 @@ int send_all_start_count(iosystem_desc_t *ios, io_desc_t *iodesc, PIO_Offset lle
  * @return 0 for success, error code otherwise.
  * @ingroup PIO_write_darray
  */
-int recv_and_write_data(file_desc_t *file, const int *vid, const int *frame,
+int recv_and_write_data(file_desc_t *file, const int *varids, const int *frame,
                         io_desc_t *iodesc, PIO_Offset llen, int maxregions, int nvars,
                         int fndims, size_t *tmp_start, size_t *tmp_count, void *iobuf)
 {
@@ -500,7 +528,7 @@ int recv_and_write_data(file_desc_t *file, const int *vid, const int *frame,
     int ierr;    /* Return code. */
 
     /* Check inputs. */
-    pioassert(file && vid && iodesc && tmp_start && tmp_count, "invalid input",
+    pioassert(file && varids && iodesc && tmp_start && tmp_count, "invalid input",
               __FILE__, __LINE__);
 
     LOG((2, "recv_and_write_data llen = %d maxregions = %d nvars = %d fndims = %d",
@@ -574,7 +602,7 @@ int recv_and_write_data(file_desc_t *file, const int *vid, const int *frame,
                 for (int nv = 0; nv < nvars; nv++)
                 {
                     LOG((3, "writing buffer var %d", nv));
-                    vdesc = file->varlist + vid[0];
+                    vdesc = file->varlist + varids[0];
 
                     /* Get a pointer to the correct part of the buffer. */
                     bufptr = (void *)((char *)iobuf + iodesc->mpitype_size * (nv * rlen + loffset));
@@ -596,7 +624,7 @@ int recv_and_write_data(file_desc_t *file, const int *vid, const int *frame,
                     }
 
                     /* Call the netCDF functions to write the data. */
-                    if ((ierr = nc_put_vara(file->fh, vid[nv], start, count, bufptr)))
+                    if ((ierr = nc_put_vara(file->fh, varids[nv], start, count, bufptr)))
                         return check_netcdf2(ios, NULL, ierr, __FILE__, __LINE__);
 
                 } /* next var */
@@ -628,7 +656,7 @@ int recv_and_write_data(file_desc_t *file, const int *vid, const int *frame,
  * that will be written to.
  * @param nvars the number of variables to be written with this
  * decomposition.
- * @param vid an array of the variable ids to be written
+ * @param varids an array of the variable ids to be written
  * @param iodesc pointer to the decomposition info.
  * @param fill Non-zero if this write is fill data.
  * @param frame the record dimension for each of the nvars variables
@@ -636,7 +664,7 @@ int recv_and_write_data(file_desc_t *file, const int *vid, const int *frame,
  * @return 0 for success, error code otherwise.
  * @ingroup PIO_write_darray
  */
-int write_darray_multi_serial(file_desc_t *file, int nvars, int fndims, const int *vid,
+int write_darray_multi_serial(file_desc_t *file, int nvars, int fndims, const int *varids,
                               io_desc_t *iodesc, int fill, const int *frame)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
@@ -644,8 +672,8 @@ int write_darray_multi_serial(file_desc_t *file, int nvars, int fndims, const in
     int ierr;              /* Return code. */
 
     /* Check inputs. */
-    pioassert(file && file->iosystem && file->varlist && vid && vid[0] >= 0 &&
-              vid[0] <= PIO_MAX_VARS && iodesc, "invalid input", __FILE__, __LINE__);
+    pioassert(file && file->iosystem && file->varlist && varids && varids[0] >= 0 &&
+              varids[0] <= PIO_MAX_VARS && iodesc, "invalid input", __FILE__, __LINE__);
 
     LOG((1, "write_darray_multi_serial nvars = %d fndims = %d iodesc->ndims = %d "
          "iodesc->mpitype = %d", nvars, iodesc->ndims, fndims, iodesc->mpitype));
@@ -654,7 +682,7 @@ int write_darray_multi_serial(file_desc_t *file, int nvars, int fndims, const in
     ios = file->iosystem;
 
     /* Get the var info. */
-    vdesc = file->varlist + vid[0];
+    vdesc = file->varlist + varids[0];
     LOG((2, "vdesc record %d nreqs %d ios->async = %d", vdesc->record, vdesc->nreqs,
          ios->async));
 
@@ -697,7 +725,7 @@ int write_darray_multi_serial(file_desc_t *file, int nvars, int fndims, const in
         {
             /* Task 0 will receive data from all other IO tasks. */
 
-            if ((ierr = recv_and_write_data(file, vid, frame, iodesc, llen, num_regions, nvars, fndims,
+            if ((ierr = recv_and_write_data(file, varids, frame, iodesc, llen, num_regions, nvars, fndims,
                                             tmp_start, tmp_count, iobuf)))
                 return pio_err(ios, file, ierr, __FILE__, __LINE__);
         }
