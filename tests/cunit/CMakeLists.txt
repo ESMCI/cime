@@ -86,6 +86,8 @@ if (NOT PIO_USE_MPISERIAL)
     target_link_libraries (test_darray_async_simple pioc)
     add_executable (test_darray_async EXCLUDE_FROM_ALL test_darray_async.c test_common.c)
     target_link_libraries (test_darray_async pioc)
+    add_executable (test_darray_async_many EXCLUDE_FROM_ALL test_darray_async_many.c test_common.c)
+    target_link_libraries (test_darray_async_many pioc)
   endif ()
 endif ()
 add_executable (test_spmd EXCLUDE_FROM_ALL test_spmd.c test_common.c)
@@ -107,6 +109,7 @@ add_dependencies (tests test_decomps)
 if(PIO_USE_MALLOC)
   add_dependencies (tests test_darray_async_simple)
   add_dependencies (tests test_darray_async)
+  add_dependencies (tests test_darray_async_many)
 endif ()
 
 # Test Timeout in seconds.
@@ -229,6 +232,10 @@ else ()
       NUMPROCS ${AT_LEAST_FOUR_TASKS}
       TIMEOUT ${DEFAULT_TEST_TIMEOUT})
     add_mpi_test(test_darray_async
+      EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_darray_async
+      NUMPROCS ${AT_LEAST_FOUR_TASKS}
+      TIMEOUT ${DEFAULT_TEST_TIMEOUT})
+    add_mpi_test(test_darray_async_many
       EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_darray_async
       NUMPROCS ${AT_LEAST_FOUR_TASKS}
       TIMEOUT ${DEFAULT_TEST_TIMEOUT})
