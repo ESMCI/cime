@@ -35,6 +35,7 @@
 /* Lengths of non-unlimited dimensions. */
 #define LAT_LEN 2
 #define LON_LEN 3
+#define VERT_LEN 2
 
 /* Number of vars in test file. */
 #ifdef _NETCDF4
@@ -50,7 +51,10 @@ int my_type[NTYPE] = {PIO_BYTE, PIO_CHAR, PIO_SHORT, PIO_INT, PIO_FLOAT,
 /* We will have one record, and one non-record var of each type. */
 #define NVAR (NTYPE * 2)
 
-/* Number of records written for record var. */
+/* We will also add some 4D vars, for extra fun. */
+#define NUM_4D_VARS 2
+
+/* Number of records written for record vars. */
 #define NREC 3
 
 /* Names of the dimensions. */
@@ -58,7 +62,7 @@ char dim_name[NDIM4][PIO_MAX_NAME + 1] = {"time", "vert_level", "lat", "lon"};
 
 /* Check the file that was created in this test. */
 int check_darray_file(int iosysid, char *data_filename, int iotype, int my_rank,
-                      int *rec_varid, int *norec_varid, int num_types)
+                      int *rec_varid, int *norec_varid, int num_types, int *varid_4d)
 {
     int ncid;
     int ret;
@@ -82,6 +86,8 @@ int check_darray_file(int iosysid, char *data_filename, int iotype, int my_rank,
                                                              9223372036854775827ULL, 9223372036854775828ULL,
                                                              9223372036854775837ULL, 9223372036854775838ULL};
 #endif /* _NETCDF4 */
+    int expected_int_4d[VERT_LEN * LAT_LEN * LON_LEN] = {1, 0, 2, 1, 2, 1, 3, 2, 3, 2, 4, 3};
+    float expected_float_4d[VERT_LEN * LAT_LEN * LON_LEN] = {1, 0, 2, 1.5, 2, 1, 3, 2.5, 3, 2, 4, 3.5};
 
     /* Reopen the file. */
     if ((ret = PIOc_openfile(iosysid, &ncid, &iotype, data_filename, NC_NOWRITE)))
@@ -91,7 +97,7 @@ int check_darray_file(int iosysid, char *data_filename, int iotype, int my_rank,
     int ndims_in, nvars_in, ngatts_in, unlimdimid_in;
     if ((ret = PIOc_inq(ncid, &ndims_in, &nvars_in, &ngatts_in, &unlimdimid_in)))
         ERR(ret);
-    if (ndims_in != NDIM4 || nvars_in != num_types * 2 || ngatts_in != 0 || unlimdimid_in != 0)
+    if (ndims_in != NDIM4 || nvars_in != num_types * 2 + NUM_4D_VARS || ngatts_in != 0 || unlimdimid_in != 0)
         ERR(ERR_WRONG);
 
     /* Check the vars. */
@@ -228,6 +234,52 @@ int check_darray_file(int iosysid, char *data_filename, int iotype, int my_rank,
                 ERR(ERR_WRONG);
             }
         }
+
+        /* Check the 4D vars. */
+        for (int v = 0; v < NUM_4D_VARS; v++)
+        {
+            void *data_in;
+            int xtype;
+            PIO_Offset size;
+
+            /* Get the type of the 4d var. */
+            if ((ret = PIOc_inq_vartype(ncid, varid_4d[v], &xtype)))
+                ERR(ret);
+
+            /* Get the size of this type. */
+            if ((ret = PIOc_inq_type(ncid, xtype, NULL, &size)))
+                ERR(ret);
+
+            /* Allocate memory for data. */
+            if (!(data_in = malloc(size * VERT_LEN * LAT_LEN * LON_LEN * NREC)))
+                ERR(PIO_ENOMEM);
+
+            /* Read the data. */
+            if ((ret = PIOc_get_var(ncid, varid_4d[v], data_in)))
+                ERR(ret);
+
+            /* Check each element of data. */
+            for (int r = 0; r < LAT_LEN * LON_LEN * NREC; r++)
+            {
+                switch (xtype)
+                {
+                case PIO_INT:
+                    if (((int *)data_in)[r] != expected_int_4d[r % (VERT_LEN * LAT_LEN * LON_LEN)])
+                        ERR(ERR_WRONG);
+                    break;
+                case PIO_FLOAT:
+                    printf("((float *)data_in)[r] = %g expected = %g\n", ((float *)data_in)[r], expected_float_4d[r % (VERT_LEN * LAT_LEN * LON_LEN)]);
+                    if (((float *)data_in)[r] != expected_float_4d[r % (VERT_LEN * LAT_LEN * LON_LEN)])
+                        ERR(ERR_WRONG);
+                    break;
+                default:
+                    ERR(ERR_WRONG);
+                }
+            }
+
+            /* Release memory. */
+            free(data_in);
+        }
         
         free(data_in);
         free(norec_data_in);
@@ -248,11 +300,17 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm,
     int ioid_2byte;
     int ioid_4byte;
     int ioid_8byte;
-    int dim_len[NDIM4] = {NC_UNLIMITED, 2, 2, 3};
+    int ioid_4byte_3d;
+    int dim_len[NDIM4] = {NC_UNLIMITED, VERT_LEN, LAT_LEN, LON_LEN};
+    int dimids_4d[NDIM4] = {0, 1, 2, 3};
     int dimids_3d[NDIM3] = {0, 2, 3};
     int dimids_2d[NDIM2] = {2, 3};
     PIO_Offset elements_per_pe = LAT_LEN;
+    PIO_Offset elements_per_pe_3d = VERT_LEN * LAT_LEN;
+    /* Recall the task 0 does not run this code, so the firts my_rank
+     * is 1. */
     PIO_Offset compdof[LAT_LEN] = {my_rank * 2 - 2, my_rank * 2 - 1};
+    PIO_Offset compdof_3d[VERT_LEN * LAT_LEN] = {my_rank * 4 - 4, my_rank * 4 - 3, my_rank * 4 - 2, my_rank * 4 - 1};
     char decomp_filename[PIO_MAX_NAME + 1];
 
     /* Test data. */
@@ -267,8 +325,12 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm,
     unsigned short my_data_ushort[LAT_LEN] = {my_rank * 1000, my_rank * 1000 + 1};
     unsigned int my_data_uint[LAT_LEN] = {NC_MAX_SHORT + my_rank * 10, NC_MAX_SHORT + my_rank * 10 + 1};
     long long my_data_int64[LAT_LEN] = {NC_MAX_INT + my_rank * 10, -NC_MAX_INT + my_rank * 10};
-    unsigned long long my_data_uint64[LAT_LEN] = {NC_MAX_INT64 + my_rank * 10, NC_MAX_INT64 + my_rank * 10 + 1};
+    unsigned long long my_data_uint64[LAT_LEN] = {NC_MAX_INT64 + my_rank * 10,
+                                                  NC_MAX_INT64 + my_rank * 10 + 1};
 #endif /* _NETCDF4 */
+    int int_4d_data[VERT_LEN * LAT_LEN] = {my_rank, my_rank - 1, my_rank + 1, my_rank};
+    float float_4d_data[VERT_LEN * LAT_LEN] = {my_rank, my_rank - 1, my_rank + 1,
+                                               my_rank + 0.5};
 
 #ifdef _NETCDF4
     void *my_data[NTYPE] = {my_data_byte, my_data_char, my_data_short, my_data_int, my_data_float, my_data_double,
@@ -292,6 +354,9 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm,
         ERR(ret);
     if ((ret = PIOc_init_decomp(iosysid, PIO_DOUBLE, NDIM2, &dim_len[2], elements_per_pe,
                                 compdof, &ioid_8byte, PIO_REARR_BOX, NULL, NULL)))
+        ERR(ret);
+    if ((ret = PIOc_init_decomp(iosysid, PIO_INT, NDIM3, &dim_len[1], elements_per_pe_3d,
+                                compdof_3d, &ioid_4byte_3d, PIO_REARR_BOX, NULL, NULL)))
         ERR(ret);
 
     /* These are the decompositions associated with each type. */
@@ -348,6 +413,16 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm,
             ERR(ret);
         }
 
+        char var_name_4d[NUM_4D_VARS][PIO_MAX_NAME + 1] = {"var_4d_int", "var_4d_float"};
+        int var_type_4d[NUM_4D_VARS] = {PIO_INT, PIO_FLOAT};
+        int varid_4d[NUM_4D_VARS];
+        void *my_data_4d[NUM_4D_VARS] = {int_4d_data, float_4d_data};
+        
+        /* Define some 4D vars for extra fun. */
+        for (int v = 0; v < NUM_4D_VARS; v++)
+            if ((ret = PIOc_def_var(ncid, var_name_4d[v], var_type_4d[v], NDIM4, dimids_4d, &varid_4d[v])))
+                ERR(ret);
+
         /* End define mode. */
         if ((ret = PIOc_enddef(ncid)))
             ERR(ret);
@@ -379,7 +454,6 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm,
                 if ((ret = PIOc_sync(ncid)))
                     ERR(ret);
             } /* next record. */
-
         } /* next record var */
             
         /* Write some data to the non-record vars. */
@@ -389,13 +463,35 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm,
                 ERR(ret);
         }
 
+        /* Write the 4D vars. */
+        for (int v = 0; v < NUM_4D_VARS; v++)
+        {
+            for (int r = 0; r < NREC; r++)
+            {
+                if (!r)
+                {
+                    if ((ret = PIOc_setframe(ncid, varid_4d[v], 0)))
+                        ERR(ret);
+                }
+                else
+                {
+                    if ((ret = PIOc_advanceframe(ncid, varid_4d[v])))
+                        ERR(ret);
+                }
+
+                if ((ret = PIOc_write_darray(ncid, varid_4d[v], ioid_4byte_3d, elements_per_pe_3d,
+                                             my_data_4d[v], NULL)))
+                    ERR(ret);
+            }
+        }
+
         /* Close the file. */
         if ((ret = PIOc_closefile(ncid)))
             ERR(ret);
 
         /* Check the file for correctness. */
         if ((ret = check_darray_file(iosysid, data_filename, PIO_IOTYPE_NETCDF, my_rank,
-                                     rec_varid, norec_varid, num_types)))
+                                     rec_varid, norec_varid, num_types, varid_4d)))
             ERR(ret);
 
     } /* next iotype */
@@ -408,6 +504,8 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm,
     if ((ret = PIOc_freedecomp(iosysid, ioid_4byte)))
         ERR(ret);
     if ((ret = PIOc_freedecomp(iosysid, ioid_8byte)))
+        ERR(ret);
+    if ((ret = PIOc_freedecomp(iosysid, ioid_4byte_3d)))
         ERR(ret);
 
     return 0;
