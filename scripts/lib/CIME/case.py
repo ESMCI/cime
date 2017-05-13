@@ -451,7 +451,7 @@ class Case(object):
                         compset_info += " with user_mods directory %s"%(self._user_mods)
                     logger.info(compset_info)
                     logger.info("Compset specification file is %s" %(compsets_filename))
-                    logger.info("Pes     specification file is %s" %(pesfile))
+                    logger.info("Pes     specification file is %s" %(self._pesfile))
                     return compset_alias, science_support
 
         if user_compset is True:
@@ -553,11 +553,11 @@ class Case(object):
 
         # final cleanup of lookups table
         for key,value in self.lookups.items():
-            result = self.set_value(key,value)
+            result = self.set_value(key,value, allow_undefined=True)
             if result is not None:
                 del self.lookups[key]
 
-    def _setup_mach_pes(self, pecount, ninst, machine_name, mpilib):
+    def _setup_mach_pes(self, pecount, ncouplers, ninst, machine_name, mpilib):
         #--------------------------------------------
         # pe layout
         #--------------------------------------------
@@ -639,13 +639,15 @@ class Case(object):
                 val = -1*val*pes_per_node
             if val > pesize:
                 pesize = val
+        pesize *= int(ncouplers)
 
         # Make sure that every component has been accounted for
         # set, nthrds and ntasks to 1 otherwise. Also set the ninst values here.
         for compclass in self._component_classes:
-            if compclass == "CPL":
-                continue
             key = "NINST_%s"%compclass
+            if compclass == "CPL":
+                mach_pes_obj.set_value(key, ncouplers)
+                continue
             # ESP models are currently limited to 1 instance
             if compclass == "ESP":
                 mach_pes_obj.set_value(key, 1)
@@ -665,7 +667,7 @@ class Case(object):
     def configure(self, compset_name, grid_name, machine_name=None,
                   project=None, pecount=None, compiler=None, mpilib=None,
                   user_compset=False, pesfile=None,
-                  user_grid=False, gridfile=None, ninst=1, test=False,
+                  user_grid=False, gridfile=None, ncouplers=1, ninst=1, test=False,
                   walltime=None, queue=None, output_root=None, run_unsupported=False, answer=None,
                   input_dir=None):
 
@@ -748,7 +750,10 @@ class Case(object):
         env_mach_specific_obj.populate(machobj)
         self.schedule_rewrite(env_mach_specific_obj)
 
-        pesize = self._setup_mach_pes(pecount, ninst, machine_name, mpilib)
+        pesize = self._setup_mach_pes(pecount, ncouplers, ninst, machine_name, mpilib)
+
+        if ncouplers > 1:
+            logger.info(" Coupler has %s instances" % ncouplers)
 
         #--------------------------------------------
         # batch system
@@ -988,6 +993,9 @@ class Case(object):
                       "README.case", caseroot=self._caseroot)
         for component_class in self._component_classes:
             if component_class == "CPL":
+                append_status("Using %s coupler instances" % 
+                              (self.get_value("NINST_CPL")),
+                              "README.case", caseroot=self._caseroot)
                 continue
             comp_grid = "%s_GRID"%component_class
             append_status("%s is %s"%(comp_grid,self.get_value(comp_grid)),

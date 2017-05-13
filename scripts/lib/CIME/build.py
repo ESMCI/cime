@@ -405,11 +405,10 @@ def _case_build_impl(caseroot, case, sharedlib_only, model_only):
 
     complist = []
     for comp_class in comp_classes:
+        ninst = case.get_value("NINST_%s"%comp_class)
         if comp_class == "CPL":
-            ninst = 1
             config_dir = None
         else:
-            ninst = case.get_value("NINST_%s"%comp_class)
             config_dir = os.path.dirname(case.get_value("CONFIG_%s_FILE"%comp_class))
         comp = case.get_value("COMP_%s"%comp_class)
         thrds =  case.get_value("NTHRDS_%s"%comp_class)
