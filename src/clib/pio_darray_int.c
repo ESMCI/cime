@@ -153,8 +153,6 @@ int find_start_count(int ndims, int fndims, var_desc_t *vdesc,
  * @param fill Non-zero if this write is fill data.
  * @param frame the record dimension for each of the nvars variables
  * in iobuf. NULL if this iodesc contains non-record vars.
- * @param frame the frame or record dimension for each of the nvars
- * variables in iobuf.  NULL if this iodesc contains non-record vars.
  * @return 0 for success, error code otherwise.
  * @ingroup PIO_write_darray
  */
