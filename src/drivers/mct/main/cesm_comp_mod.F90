@@ -26,10 +26,11 @@ module cesm_comp_mod
    use shr_sys_mod,       only: shr_sys_abort, shr_sys_flush
    use shr_const_mod,     only: shr_const_cday
    use shr_file_mod,      only: shr_file_setLogLevel, shr_file_setLogUnit
-   use shr_file_mod,      only: shr_file_setIO, shr_file_getUnit
+   use shr_file_mod,      only: shr_file_setIO, shr_file_getUnit, shr_file_freeUnit
    use shr_scam_mod,      only: shr_scam_checkSurface
    use shr_map_mod,       only: shr_map_setDopole
    use shr_mpi_mod,       only: shr_mpi_min, shr_mpi_max
+   use shr_mpi_mod,       only: shr_mpi_bcast, shr_mpi_commrank, shr_mpi_commsize
    use shr_mem_mod,       only: shr_mem_init, shr_mem_getusage
    use shr_cal_mod,       only: shr_cal_date2ymd, shr_cal_ymd2date, shr_cal_advdateInt
    use shr_orb_mod,       only: shr_orb_params
@@ -535,6 +536,9 @@ module cesm_comp_mod
    logical  :: iamin_CPLALLROFID     ! pe associated with CPLALLROFID
    logical  :: iamin_CPLALLWAVID     ! pe associated with CPLALLWAVID
 
+   ! suffix for log and timing files if multi coupler driver
+   character(len=seq_comm_namelen) :: cpl_inst_tag
+
    !----------------------------------------------------------------------------
    ! complist: list of comps on this pe
    !----------------------------------------------------------------------------
@@ -596,6 +600,7 @@ subroutine cesm_pre_init1()
    logical :: comp_iamin(num_inst_total)
    character(len=seq_comm_namelen) :: comp_name(num_inst_total)
    integer :: i, it
+   integer :: num_inst_cpl, cpl_id
 
    call mpi_init(ierr)
    call shr_mpi_chkerr(ierr,subname//' mpi_init')
@@ -604,6 +609,9 @@ subroutine cesm_pre_init1()
    comp_comm = MPI_COMM_NULL
    time_brun = mpi_wtime()
 
+   !--- Initialize multiple coupler instances, if requested ---
+   call cesm_cpl_init(Global_Comm, num_inst_cpl, cpl_id)
+
    call shr_pio_init1(num_inst_total,NLFileName, Global_Comm)
    !
    ! If pio_async_interface is true Global_Comm is MPI_COMM_NULL on the servernodes
@@ -611,7 +619,13 @@ subroutine cesm_pre_init1()
    !
    !   if (Global_Comm /= MPI_COMM_NULL) then
 
-   call seq_comm_init(Global_Comm, NLFileName)
+   if (num_inst_cpl > 1) then
+      call seq_comm_init(Global_Comm, NLFileName, Comm_ID=cpl_id)
+      write(cpl_inst_tag,'("_",i4.4)') cpl_id
+   else
+      call seq_comm_init(Global_Comm, NLFileName)
+      cpl_inst_tag = ''
+   end if
 
    !--- set task based threading counts ---
    call seq_comm_getinfo(GLOID,pethreads=pethreads_GLOID,iam=iam_GLOID)
@@ -758,10 +772,10 @@ subroutine cesm_pre_init1()
    !----------------------------------------------------------
 
    if (iamroot_CPLID) then
-      inquire(file='cpl_modelio.nml',exist=exists)
+      inquire(file='cpl_modelio.nml'//trim(cpl_inst_tag),exist=exists) 
       if (exists) then
          logunit = shr_file_getUnit()
-         call shr_file_setIO('cpl_modelio.nml',logunit)
+         call shr_file_setIO('cpl_modelio.nml'//trim(cpl_inst_tag),logunit)
          call shr_file_setLogUnit(logunit)
          loglevel = 1
          call shr_file_setLogLevel(loglevel)
@@ -782,6 +796,8 @@ subroutine cesm_pre_init1()
       write(logunit,'(2A)') subname,' USE_ESMF_LIB is NOT set, using esmf_wrf_timemgr'
 #endif
       write(logunit,'(2A)') subname,' MCT_INTERFACE is set'
+      if (num_inst_cpl > 1) &
+         write(logunit,'(2A,I0,A)') subname,' Driver is running with',num_inst_cpl,'instances'
    endif
 
    !
@@ -851,7 +867,12 @@ subroutine cesm_pre_init2()
    !| Initialize infodata
    !----------------------------------------------------------
 
-   call seq_infodata_init(infodata,nlfilename, GLOID, pioid)
+   if (len(cpl_inst_tag) > 0) then
+      call seq_infodata_init(infodata,nlfilename, GLOID, pioid, &
+                             cpl_tag=cpl_inst_tag)
+   else
+      call seq_infodata_init(infodata,nlfilename, GLOID, pioid)
+   end if
 
    !----------------------------------------------------------
    !| Initialize coupled fields (depends on infodata)
@@ -3577,7 +3598,7 @@ end subroutine cesm_init
          call seq_rest_write(EClock_d, seq_SyncClock, infodata,       &
               atm, lnd, ice, ocn, rof, glc, wav, esp,                 &
               fractions_ax, fractions_lx, fractions_ix, fractions_ox, &
-              fractions_rx, fractions_gx, fractions_wx)
+              fractions_rx, fractions_gx, fractions_wx, tag=trim(cpl_inst_tag))
 
          if (drv_threading) call seq_comm_setnthreads(nthreads_GLOID)
          call t_drvstopf  ('CPL:RESTART',cplrun=.true.)
@@ -3856,7 +3877,8 @@ end subroutine cesm_init
          call mpi_barrier(mpicom_GLOID,ierr)
          call t_stopf("sync1_tprof")
 
-         write(timing_file,'(a,i8.8,a1,i5.5)') trim(tchkpt_dir)//"/model_timing_",ymd,"_",tod
+         write(timing_file,'(a,i8.8,a1,i5.5)') & 
+           trim(tchkpt_dir)//"/cesm_timing"//trim(cpl_inst_tag)//"_",ymd,"_",tod
          if (output_perf) then
             call t_prf(filename=trim(timing_file), mpicom=mpicom_GLOID, &
                        num_outpe=0, output_thispe=output_perf)
@@ -3969,10 +3991,11 @@ end subroutine cesm_init
 
    call t_set_prefixf("final:")
    if (output_perf) then
-      call t_prf(trim(timing_dir)//'/model_timing', mpicom=mpicom_GLOID, &
-                 output_thispe=output_perf)
+      call t_prf(trim(timing_dir)//'/model_timing'//trim(cpl_inst_tag), &
+                 mpicom=mpicom_GLOID, output_thispe=output_perf)
    else
-      call t_prf(trim(timing_dir)//'/model_timing', mpicom=mpicom_GLOID)
+      call t_prf(trim(timing_dir)//'/model_timing'//trim(cpl_inst_tag), &
+                 mpicom=mpicom_GLOID)
    endif
    call t_unset_prefixf()
 
@@ -4041,5 +4064,61 @@ subroutine cesm_comp_barriers(mpicom, timer)
      call t_drvstopf (trim(timer))
   endif
 end subroutine cesm_comp_barriers
+
+subroutine cesm_cpl_init(comm, ninst, id)
+
+  !-----------------------------------------------------------------------
+  !
+  ! Initialize multiple coupler instances, if requested
+  !
+  !-----------------------------------------------------------------------
+
+  implicit none
+
+  integer , intent(inout) :: comm
+  integer , intent(out)   :: ninst
+  integer , intent(out)   :: id      ! instance ID, starts from 1
+  !
+  ! Local variables
+  !
+  integer :: ierr, inst_comm, mype, nu, numpes !, pes
+  integer :: cpl_ninst
+
+  namelist /cesm_cpl/ cpl_ninst
+
+  call shr_mpi_commrank(comm, mype  , ' cesm_cpl_init')
+  call shr_mpi_commsize(comm, numpes, ' cesm_cpl_init')
+
+  ninst = 1
+  id    = 0
+
+  if (mype == 0) then
+    ! Read coupler namelist if it exists
+    cpl_ninst = 1
+    nu = shr_file_getUnit()
+    open(unit = nu, file = NLFileName, status = 'old', iostat = ierr)
+    rewind(unit = nu)
+    read(unit = nu, nml = cesm_cpl, iostat = ierr)
+    close(unit = nu)
+    call shr_file_freeUnit(nu)
+    ninst = max(cpl_ninst, 1)
+  end if
+
+  call shr_mpi_bcast(ninst, comm, 'cpl_ninst')
+
+  if (mod(numpes, ninst) /= 0) then
+    call shr_sys_abort(subname // &
+      ' : Total PE number must be a multiple of coupler instance number')
+  end if
+
+  if (ninst > 1) then
+    id = mype * ninst / numpes + 1
+    call mpi_comm_split(comm, id, 0, inst_comm, ierr)
+    if (ierr /= 0) &
+      call shr_sys_abort(subname // ' : Error in generating coupler instances')
+    comm = inst_comm
+  end if
+
+end subroutine cesm_cpl_init
 
 end module cesm_comp_mod

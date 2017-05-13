@@ -102,6 +102,14 @@ class _TimingParser:
         return (0, 0, False)
 
     def getTiming(self):
+        ninst = self.case.get_value("NINST_CPL")
+        if ninst > 1:
+            for inst in range(ninst):
+                self._getTiming(inst+1)
+        else:
+            self._getTiming()
+
+    def _getTiming(self, inst=0):
         components=self.case.get_values("COMP_CLASSES")
         for s in components:
             self.models[s] = _GetTimingInfo(s)
@@ -159,11 +167,16 @@ class _TimingParser:
                 not continue_run:
             inittype = "TRUE"
 
-        binfilename = os.path.join(rundir, "timing", "model_timing_stats")
+        if inst > 0:
+            inst_label = '_%04d' % inst
+        else:
+            inst_label = ''
+
+        binfilename = os.path.join(rundir, "timing", "model_timing%s_stats" % inst_label)
         finfilename = os.path.join(self.caseroot, "timing",
-                                   "%s_timing_stats.%s" % (cime_model, self.lid))
+                                   "%s_timing%s_stats.%s" % (cime_model, inst_label, self.lid))
         foutfilename = os.path.join(self.caseroot, "timing",
-                                    "%s_timing.%s.%s" % (cime_model, caseid, self.lid))
+                                   "%s_timing%s.%s.%s.gz" % (cime_model, inst_label, caseid, self.lid))
 
         timingDir = os.path.join(self.caseroot, "timing")
         if not os.path.isdir(timingDir):
@@ -254,9 +267,13 @@ class _TimingParser:
         maxthrds = 0
         for k in self.case.get_values("COMP_CLASSES"):
             m = self.models[k]
+            if m.comp == "cpl":
+                comp_label = m.comp + inst_label
+            else:
+                comp_label = m.comp
             self.write("  %s = %-8s   %-6u      %-6u   %-6u x %-6u  "
                        "%-6u (%-6u) \n"
-                       % (m.name.lower(), m.comp, (m.ntasks*m.nthrds *smt_factor), m.rootpe,
+                       % (m.name.lower(), comp_label, (m.ntasks*m.nthrds *smt_factor), m.rootpe,
                           m.ntasks, m.nthrds, m.ninst, m.pstrid))
             if m.nthrds > maxthrds:
                 maxthrds = m.nthrds

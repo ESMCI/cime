@@ -62,6 +62,8 @@ def create_namelists(case, component=None):
     # Create namelists - must have cpl last in the list below
     # Note - cpl must be last in the loop below so that in generating its namelist,
     # it can use xml vars potentially set by other component's buildnml scripts
+    xmlfac = {}
+    cpl_ninst = case.get_value("NINST_CPL")
     models = case.get_values("COMP_CLASSES")
     models += [models.pop(0)]
     for model in models:
@@ -70,8 +72,20 @@ def create_namelists(case, component=None):
         config_dir = os.path.dirname(config_file)
         if model_str == "cpl":
             compname = "drv"
+            complist = [m for m in models if m.upper() != "CPL"]
+            if cpl_ninst > 1:
+                xmlfac = {"NINST" : cpl_ninst, "NTASKS" : 1}
         else:
             compname = case.get_value("COMP_%s" % model_str.upper())
+            complist = [model_str.upper()]
+            if cpl_ninst > 1:
+                xmlfac = {"NINST" : cpl_ninst, "NTASKS" : cpl_ninst}
+
+        xmlsave = {}
+        for k in xmlfac.keys():
+            for m in complist:
+                key = "%s_%s" % (k, m.upper())
+                xmlsave[key] = case.get_value("%s" % key)
 
         if component is None or component == model_str:
             cmd = os.path.join(config_dir, "buildnml")
@@ -84,7 +98,12 @@ def create_namelists(case, component=None):
                 if "python" in first_line:
                     mod = imp.load_source("buildnml", cmd)
                     logger.info("   Calling %s buildnml"%compname)
+                    for key, value in xmlsave.items():
+                        case.set_value("%s" % key, xmlfac[key.split('_')[0]] * value)
                     mod.buildnml(case, caseroot, compname)
+                    for key, value in xmlsave.items():
+                        case.set_value("%s" % key, value)
+                    case.flush()
                 else:
                     raise SyntaxError
             except SyntaxError as detail:
@@ -99,9 +118,14 @@ def create_namelists(case, component=None):
 
             if do_run_cmd:
                 logger.info("   Running %s buildnml"%compname)
+                for key, value in xmlsave.items():
+                    case.set_value("%s" % key, xmlfac[key.split('_')[0]] * value)
                 case.flush()
                 output = run_cmd_no_fail("%s %s" % (cmd, caseroot), verbose=False)
                 logger.info(output)
+                for key, value in xmlsave.items():
+                    case.set_value("%s" % key, value)
+                case.flush()
                 # refresh case xml object from file
                 case.read_xml()
 

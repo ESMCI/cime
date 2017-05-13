@@ -20,9 +20,9 @@ def _get_datenames(case):
     rundir = case.get_value('RUNDIR')
     expect(isdir(rundir), 'Cannot open directory %s ' % rundir)
     casename = case.get_value("CASE")
-    files = sorted(glob.glob(os.path.join(rundir, casename + '.cpl.r*.nc')))
+    files = sorted(glob.glob(os.path.join(rundir, casename + '.cpl*.r*.nc')))
     if not files:
-        expect(False, 'Cannot find a %s.cpl.r.*.nc file in directory %s ' % (casename, rundir))
+        expect(False, 'Cannot find a %s.cpl*.r.*.nc file in directory %s ' % (casename, rundir))
     datenames = []
     for filename in files:
         names = filename.split('.')
@@ -36,10 +36,7 @@ def _get_datenames(case):
 def _get_ninst_info(case, compclass):
 ###############################################################################
 
-    if compclass != 'cpl':
-        ninst = case.get_value('NINST_' + compclass.upper())
-    else:
-        ninst = 1
+    ninst = case.get_value('NINST_' + compclass.upper())
     ninst_strings = []
     if ninst is None:
         ninst = 1
@@ -212,7 +209,7 @@ def _archive_restarts(case, archive, archive_entry,
     rundir = case.get_value("RUNDIR")
     casename = case.get_value("CASE")
     archive_restdir = join(dout_s_root, 'rest', datename)
-    if not datename_is_last or case.get_value('DOUT_S_SAVE_INTERIM_RESTART_FILES') \
+    if datename_is_last or case.get_value('DOUT_S_SAVE_INTERIM_RESTART_FILES') \
        or case.get_value("TEST"):
         if not os.path.exists(archive_restdir):
             os.makedirs(archive_restdir)
