@@ -266,7 +266,7 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm,
 #endif /* _NETCDF4 */
 
         /* For now, only serial iotypes work. Parallel coming soon! */
-        if (flavor[fmt] == PIO_IOTYPE_PNETCDF || flavor[fmt] == PIO_IOTYPE_NETCDF4P)
+        if (flavor[fmt] == PIO_IOTYPE_PNETCDF)
             continue;
 
         /* Only netCDF-4 can handle extended types. */

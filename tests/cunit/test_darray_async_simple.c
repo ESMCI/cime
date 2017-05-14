@@ -99,8 +99,8 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm,
         char data_filename[PIO_MAX_NAME + 1];
         float my_data = my_rank * 10;
 
-        /* For now, only serial iotypes work. Parallel coming soon! */
-        if (flavor[fmt] == PIO_IOTYPE_PNETCDF || flavor[fmt] == PIO_IOTYPE_NETCDF4P)
+        /* For now, Pnetcdf does not work. Coming soon! */
+        if (flavor[fmt] == PIO_IOTYPE_PNETCDF)
             continue;
 
         sprintf(data_filename, "data_%s_iotype_%d.nc", TEST_NAME, flavor[fmt]);

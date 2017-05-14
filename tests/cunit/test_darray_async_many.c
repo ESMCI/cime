@@ -384,7 +384,7 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm,
         int norec_varid[num_types];
 
         /* For now, only serial iotypes work. Parallel coming soon! */
-        if (flavor[fmt] == PIO_IOTYPE_PNETCDF || flavor[fmt] == PIO_IOTYPE_NETCDF4P)
+        if (flavor[fmt] == PIO_IOTYPE_PNETCDF)
             continue;
 
         /* Create sample output file. */
