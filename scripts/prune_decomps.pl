@@ -22,29 +22,38 @@ sub rem_dup_decomp_files
     my $rmfile=0;
     # Compare the decomposition files to find
     # duplicates - and delete the dups
-    for(my $i=0; $i< $#decompfiles; $i++){
+    for(my $i=0; $i<=$#decompfiles; $i++){
         my $file  = $decompfiles[$i];
         my $fsize = -s $file;
-        for(my $j=$i+1;$j<$#decompfiles;$j++){
+        for(my $j=$i+1;$j<=$#decompfiles;$j++){
             my $nfile = $decompfiles[$j];
             my $f2size = -s $nfile;
+            if($verbose){
+                print "Comparing $file, size=$fsize, $nfile, size=$f2size\n";
+            }
             if($fsize == $f2size){
                 open(F1,$file);
                 my @file1 = <F1>;
                 open(F2,$nfile);
                 my @file2 = <F2>;
+                $rmfile = 1;
                 foreach my $line (@file1){
                     my $nline = shift (@file2);
+                    next if($line eq $nline);
                     # Ignore stack traces when comparing files
                     # The stack traces start with a line containing
                     # "Obtained" 
                     # Also, stack trace is the last line being
                     # compared
                     if($line =~ /Obtained/){
-                        print "Files $file and $nfile are the same\n";
-                        $rmfile=1;
+                        if($verbose){
+                            print "Files $file and $nfile are the same (ignoring stack traces)\n";
+                        }
                     }
-                    next if($line == $nline);
+                    else{
+                        # Files are different, don't remove    
+                        $rmfile = 0;
+                    }
                     last;
                 }
                 close(F1);
