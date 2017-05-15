@@ -1,10 +1,12 @@
 #!/usr/bin/env perl
 use strict;
+use warnings;
 
 use Getopt::Long;
 
 my $rundir="";
 my $nargs = 0;
+my $verbose = 0;
 
 # Remove duplicate decomposition files in "dirname"
 sub rem_dup_decomp_files
@@ -84,11 +86,14 @@ sub decode_stack_traces
 
 sub print_usage_and_exit()
 {
-    print "\nUsage : ./prune_decomps.pl --decomp-prune-dir=<PRUNE_DECOMP_DIR> \n";
+    print "\nUsage :\n./prune_decomps.pl --decomp-prune-dir=<PRUNE_DECOMP_DIR> \n";
     print "\tOR\n";
     print "./prune_decomps.pl <PRUNE_DECOMP_DIR> \n";
     print "The above commands can be used to remove duplicate decomposition\n";
     print "files in <PRUNE_DECOMP_DIR> \n";
+    print "Available options : \n";
+    print "\t--decomp-prune-dir : Directory that contains the decomp files to be pruned\n";
+    print "\t--verbose : Verbose debug output\n";
     exit;
 }
 
@@ -96,7 +101,8 @@ sub print_usage_and_exit()
 
 # Read input args
 GetOptions(
-    "decomp-prune-dir=s"    => \$rundir
+    "decomp-prune-dir=s"    => \$rundir,
+    "verbose"               => \$verbose
 );
 
 $nargs = @ARGV;
@@ -107,8 +113,9 @@ if($rundir eq ""){
         &print_usage_and_exit();
     }
 }
-
+if($verbose){ print "Removing duplicate decomposition files from : \"", $rundir, "\"\n"; }
 &rem_dup_decomp_files($rundir);
+if($verbose){ print "Decoding stack traces for decomposition files from : \"", $rundir, "\"\n"; }
 &decode_stack_traces($rundir);
 
     
