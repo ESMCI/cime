@@ -9,6 +9,9 @@ my $exe="";
 my $nargs = 0;
 my $verbose = 0;
 
+# Reg expression that match the pio decomposition file names
+my $PIO_DECOMP_FNAMES = "^piodecomp";
+
 # Remove duplicate decomposition files in "dirname"
 sub rem_dup_decomp_files
 {
@@ -18,12 +21,13 @@ sub rem_dup_decomp_files
     # decomposition files
     opendir(F,$dirname);
     #my @decompfiles = grep(/^piodecomp/,readdir(F));
-    my @decompfile_info_tmp = map{ {FNAME=>$_, SIZE=>-s $_, IS_DUP=>0} } grep(/^piodecomp/,readdir(F));
+    my @decompfile_info_tmp = map{ {FNAME=>$_, SIZE=>-s $_, IS_DUP=>0} } grep(/${PIO_DECOMP_FNAMES}/,readdir(F));
     closedir(F);
     my @decompfile_info = sort { $a->{SIZE} <=> $b->{SIZE} } @decompfile_info_tmp;
-    for(my $i=0; $i<=$#decompfile_info; $i++){
-      print "File : $decompfile_info[$i]->{FNAME} , size = $decompfile_info[$i]->{SIZE}\n";
-    }
+
+    #for(my $i=0; $i<=$#decompfile_info; $i++){
+    #  print "File : $decompfile_info[$i]->{FNAME} , size = $decompfile_info[$i]->{SIZE}\n";
+    #}
     
     my $rmfile=0;
     # Compare the decomposition files to find
@@ -89,7 +93,7 @@ sub decode_stack_traces
     my($dirname, $exe) = @_;
     # Decode/Translate the stack trace
     opendir(F,$dirname);
-    my @decompfiles = grep(/^piodecomp/,readdir(F));
+    my @decompfiles = grep(/${PIO_DECOMP_FNAMES}/,readdir(F));
     closedir(F);
     for(my $i=0; $i<= $#decompfiles; $i++){
         my $file = $decompfiles[$i];
