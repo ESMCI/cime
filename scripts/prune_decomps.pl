@@ -1,6 +1,11 @@
 #!/usr/bin/env perl
 use strict;
 
+use Getopt::Long;
+
+my $rundir="";
+my $nargs = 0;
+
 # Remove duplicate decomposition files in "dirname"
 sub rem_dup_decomp_files
 {
@@ -77,8 +82,32 @@ sub decode_stack_traces
     }
 }
 
+sub print_usage_and_exit()
+{
+    print "\nUsage : ./prune_decomps.pl --decomp-prune-dir=<PRUNE_DECOMP_DIR> \n";
+    print "\tOR\n";
+    print "./prune_decomps.pl <PRUNE_DECOMP_DIR> \n";
+    print "The above commands can be used to remove duplicate decomposition\n";
+    print "files in <PRUNE_DECOMP_DIR> \n";
+    exit;
+}
+
 # Main program
-my $rundir = shift;
+
+# Read input args
+GetOptions(
+    "decomp-prune-dir=s"    => \$rundir
+);
+
+$nargs = @ARGV;
+
+if($rundir eq ""){
+    $rundir = shift;
+    if($rundir eq ""){
+        &print_usage_and_exit();
+    }
+}
+
 &rem_dup_decomp_files($rundir);
 &decode_stack_traces($rundir);
 
