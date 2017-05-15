@@ -3,10 +3,15 @@ use strict;
 
 my $rundir = shift;
 
+# Find files in current directory that are
+# named *piodecomp* - these are the pio 
+# decomposition files
 opendir(F,$rundir);
 my @decompfiles = grep(/^piodecomp/,readdir(F));
 closedir(F);
 my $rmfile=0;
+# Compare the decomposition files to find
+# duplicates - and delete the dups
 for(my $i=0; $i< $#decompfiles; $i++){
     my $file  = $decompfiles[$i];
     my $fsize = -s $file;
@@ -20,6 +25,11 @@ for(my $i=0; $i< $#decompfiles; $i++){
             my @file2 = <F2>;
             foreach my $line (@file1){
                 my $nline = shift (@file2);
+                # Ignore stack traces when comparing files
+                # The stack traces start with a line containing
+                # "Obtained" 
+                # Also, stack trace is the last line being
+                # compared
                 if($line =~ /Obtained/){
                     print "Files $file and $nfile are the same\n";
                     $rmfile=1;
@@ -33,6 +43,8 @@ for(my $i=0; $i< $#decompfiles; $i++){
         }
     }
 }
+
+# Decode/Translate the stack trace for CESM runs
 opendir(F,$rundir);
 my @decompfiles = grep(/^piodecomp/,readdir(F));
 closedir(F);
@@ -43,6 +55,9 @@ for(my $i=0; $i<= $#decompfiles; $i++){
     close(F1);
     open(F1,">$file");
     foreach(@file1){
+        # Find stack addresses in the file and use
+        # addrline to translate/decode the filenames and
+        # line numbers from it
         if(/\[(.*)\]/){
             my $decode = `addr2line -e ../bld/cesm.exe $1`;
             print F1 "$decode\n";
