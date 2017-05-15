@@ -17,17 +17,18 @@ sub rem_dup_decomp_files
     # named *piodecomp* - these are the pio 
     # decomposition files
     opendir(F,$dirname);
-    my @decompfiles = grep(/^piodecomp/,readdir(F));
+    #my @decompfiles = grep(/^piodecomp/,readdir(F));
+    my @decompfile_info = map{ {FNAME=>$_, SIZE=>-s $_, IS_DUP=>0} } grep(/^piodecomp/,readdir(F));
     closedir(F);
     my $rmfile=0;
     # Compare the decomposition files to find
     # duplicates - and delete the dups
-    for(my $i=0; $i<=$#decompfiles; $i++){
-        my $file  = $decompfiles[$i];
-        my $fsize = -s $file;
-        for(my $j=$i+1;$j<=$#decompfiles;$j++){
-            my $nfile = $decompfiles[$j];
-            my $f2size = -s $nfile;
+    for(my $i=0; $i<=$#decompfile_info; $i++){
+        my $file  = $decompfile_info[$i]->{FNAME};
+        my $fsize  = $decompfile_info[$i]->{SIZE};
+        for(my $j=$i+1;$j<=$#decompfile_info;$j++){
+            my $nfile = $decompfile_info[$j]->{FNAME};
+            my $f2size = $decompfile_info[$j]->{SIZE};
             if($verbose){
                 print "Comparing $file, size=$fsize, $nfile, size=$f2size\n";
             }
