@@ -5,6 +5,7 @@ use warnings;
 use Getopt::Long;
 
 my $rundir="";
+my $exe="";
 my $nargs = 0;
 my $verbose = 0;
 
@@ -57,8 +58,11 @@ sub rem_dup_decomp_files
 # Decode the stack traces in the pio decomposition files
 sub decode_stack_traces
 {
-    my($dirname) = @_;
-    # Decode/Translate the stack trace for CESM runs
+    # dirname => Directory that contains decomp files
+    # exe => executable (including path) that generated
+    #         the decomposition files
+    my($dirname, $exe) = @_;
+    # Decode/Translate the stack trace
     opendir(F,$dirname);
     my @decompfiles = grep(/^piodecomp/,readdir(F));
     closedir(F);
@@ -73,7 +77,7 @@ sub decode_stack_traces
             # addrline to translate/decode the filenames and
             # line numbers from it
             if(/\[(.*)\]/){
-                my $decode = `addr2line -e ../bld/cesm.exe $1`;
+                my $decode = `addr2line -e $exe $1`;
                 print F1 "$decode\n";
                 print  "$decode\n";
             }else{
@@ -93,7 +97,8 @@ sub print_usage_and_exit()
     print "files in <PRUNE_DECOMP_DIR> \n";
     print "Available options : \n";
     print "\t--decomp-prune-dir : Directory that contains the decomp files to be pruned\n";
-    print "\t--verbose : Verbose debug output\n";
+    print "\t--exe      : Executable that generated the decompositions \n";
+    print "\t--verbose  : Verbose debug output\n";
     exit;
 }
 
@@ -102,6 +107,7 @@ sub print_usage_and_exit()
 # Read input args
 GetOptions(
     "decomp-prune-dir=s"    => \$rundir,
+    "exe=s"             => \$exe,
     "verbose"               => \$verbose
 );
 
@@ -115,7 +121,10 @@ if($rundir eq ""){
 }
 if($verbose){ print "Removing duplicate decomposition files from : \"", $rundir, "\"\n"; }
 &rem_dup_decomp_files($rundir);
-if($verbose){ print "Decoding stack traces for decomposition files from : \"", $rundir, "\"\n"; }
-&decode_stack_traces($rundir);
+
+if($exe ne ""){
+    if($verbose){ print "Decoding stack traces for decomposition files from : \"", $rundir, "\"\n"; }
+    &decode_stack_traces($rundir, $exe);
+}
 
     
