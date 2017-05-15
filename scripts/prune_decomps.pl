@@ -32,6 +32,7 @@ sub rem_dup_decomp_files
             if($verbose){
                 print "Comparing $file, size=$fsize, $nfile, size=$f2size\n";
             }
+            next if($decompfile_info[$j]->{IS_DUP});
             if($fsize == $f2size){
                 open(F1,$file);
                 my @file1 = <F1>;
@@ -59,8 +60,15 @@ sub rem_dup_decomp_files
                 }
                 close(F1);
                 close(F2);
-                unlink($nfile) if ($rmfile==1);
+                if($rmfile == 1){
+                    $decompfile_info[$j]->{IS_DUP} = 1;
+                }
             }
+        }
+    }
+    for(my $i=0; $i<=$#decompfile_info; $i++){
+        if($decompfile_info[$i]->{IS_DUP}){
+            unlink($decompfile_info[$i]->{FNAME});
         }
     }
 }
