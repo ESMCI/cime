@@ -4,7 +4,7 @@
 The basics of CIME cases 
 *********************************
 
-Two neccessary concepts to understand before working with CIME are component sets and model grids.
+Two concepts to understand before working with CIME are component sets and model grids.
 
 - Component sets (usually referred to as *compsets*) define both the specific model components that will be used in a CIME case, *and* any component-specific namelist or configuration settings that are specific to this case.
 
