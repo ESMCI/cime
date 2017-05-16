@@ -11,6 +11,7 @@ my $verbose = 0;
 
 # Reg expression that match the pio decomposition file names
 my $PIO_DECOMP_FNAMES = "^piodecomp";
+my $BEGIN_STACK_TRACE = "Obtained";
 
 # Remove duplicate decomposition files in "dirname"
 sub rem_dup_decomp_files
@@ -58,7 +59,8 @@ sub rem_dup_decomp_files
                     # "Obtained" 
                     # Also, stack trace is the last line being
                     # compared
-                    if(($line =~ /Obtained/) && ($nline =~ /Obtained/)){
+                    if(($line =~ /${BEGIN_STACK_TRACE}/)
+                          && ($nline =~ /${BEGIN_STACK_TRACE}/)){
                         if($verbose){
                             print "Files $file and $nfile are the same (ignoring stack traces)\n";
                         }
