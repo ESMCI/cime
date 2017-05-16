@@ -265,12 +265,12 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm,
         unsigned long long my_data_uint64_norec[LAT_LEN] = {my_rank * 20, my_rank * 20 + 1};
 #endif /* _NETCDF4 */
 
-        /* For now, only serial iotypes work. Parallel coming soon! */
-        if (flavor[fmt] == PIO_IOTYPE_PNETCDF)
-            continue;
-
         /* Only netCDF-4 can handle extended types. */
         if (piotype > PIO_DOUBLE && flavor[fmt] != PIO_IOTYPE_NETCDF4C && flavor[fmt] != PIO_IOTYPE_NETCDF4P)
+            continue;
+
+        /* BYTE and CHAR don't work with pnetcdf. Don't know why yet. */
+        if (flavor[fmt] == PIO_IOTYPE_PNETCDF && (piotype == PIO_BYTE || piotype == PIO_CHAR))
             continue;
 
         /* Select the correct data to write, depending on type. */
