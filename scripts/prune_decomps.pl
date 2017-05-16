@@ -53,7 +53,6 @@ sub rem_dup_decomp_files
                 $rmfile = 1;
                 foreach my $line (@file1){
                     my $nline = shift (@file2);
-                    next if($line eq $nline);
                     # Ignore stack traces when comparing files
                     # The stack traces start with a line containing
                     # "Obtained" 
@@ -63,11 +62,11 @@ sub rem_dup_decomp_files
                         if($verbose){
                             print "Files $file and $nfile are the same (ignoring stack traces)\n";
                         }
+                        last;
                     }
-                    else{
-                        # Files are different, don't remove    
-                        $rmfile = 0;
-                    }
+                    next if($line eq $nline);
+                    # Files are different, don't remove    
+                    $rmfile = 0;
                     last;
                 }
                 close(F1);
