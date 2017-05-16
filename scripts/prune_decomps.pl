@@ -58,7 +58,7 @@ sub rem_dup_decomp_files
                     # "Obtained" 
                     # Also, stack trace is the last line being
                     # compared
-                    if($line =~ /Obtained/){
+                    if(($line =~ /Obtained/) && ($nline =~ /Obtained/)){
                         if($verbose){
                             print "Files $file and $nfile are the same (ignoring stack traces)\n";
                         }
