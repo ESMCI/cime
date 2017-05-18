@@ -54,9 +54,9 @@ All output from the CIME infrastructure regarding this test will be put in the f
 A cs.status.$testid script will be put in the test root. This script will allow you to see the
 current status of all your tests.
 
-=================
+========================
 Using create_test (ACME)
-=================
+========================
 
 Usage will differ slightly depending on if you're using ACME or CESM.
 
@@ -177,9 +177,9 @@ comment at the top of this file indicating that you add a test with
 this format: test>.<grid>.<compset>, and then there is a second
 argument for mods.
 
-=============
+========================
 Scripts regression tests
-=============
+========================
 
 cime/scripts/tests/scripts_regression_tests.py is the suite of internal tests we run
 for CIME. With no arguments, it will run the full suite. You can limit testing to a specific

@@ -8,26 +8,16 @@ Creating a Case
 Calling **create_newcase**
 ===================================
 
-The first step in creating a CIME based experiment is to use **create_newcase**.
+The first step in creating a CIME-based experiment is to use **create_newcase**.
 
-If you are not on an out-of-the box CIME supported platform, you will need to first :ref:`port <porting>` CIME to your system.
+If you are not on an out-of-the box CIME-supported platform, you will need to :ref:`port <porting>` CIME to your system before proceeding.
 
-You should first use the --help option in calling **create_newcase** to document its input options.  The only required arguments to **create_newcase** are:
+Review the input options for **create_newcase** by using the **--help** option. The only required arguments to **create_newcase** are:
 ::
 
    create_newcase --case [CASE] --compset [COMPSET] --res [GRID]
 
-CIME supports out of the box ``component sets``, ``model grids`` and ``hardware platforms``.
-
-- Component sets (usually referred to as *compsets*) define both the specific model components that will be used in a CIME case, *and* any component-specific namelist or configuration settings that are specific to this case.
-
-- Model grids specify the grid for each component making up the model.
-
-- At a minimum creating a CIME experiment requires specifying a component set and a model grid.
-
-- Out of the box compsets and models grids are associated with two names: a longname and an alias name.
-
-- Aliases are required by the CIME regression test system but can also be used for user convenience. Compset aliases are unique - each compset alias is associated with one and only one compset. Grid aliases, on the other hand, are overloaded and the same grid alias may result in a different grid depending on the compset the alias is associated with. We recommend that the user always confirm that the compset longname and grid longname are the expected result when using aliases to create a case.
+CIME supports out of the box ``component sets``, ``model grids`` and ``hardware platforms``. Compsets and grids were discussed in the :ref:`previous section <case-basics>`
 
 ---------------------------------
 Result of calling create_newcase

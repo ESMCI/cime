@@ -2,128 +2,127 @@
 
 
 **************************
-Introduction and Overview
+Introduction
 **************************
 
 The Common Infrastructure for Modeling the Earth (CIME) provides a UNIX command-line-based user interface for
-performing all of the necessary functions to configure, compile and execute an earth system model.  Part 1 of
-this guide will explain all of the basic commands needed to get a model running.  
+configuring, compiling and executing Earth system models. Part 1 of this guide explains the basic commands
+needed to get a model running.  
 
 Prerequisites
 =============
 
-You should be familiar with the basic concepts of climate modeling.
+Familiarity with the basic climate modeling concepts.
 
-You should be familiar with UNIX command line terminals and the UNIX development environment.
+Familiarity with UNIX command line terminals and the UNIX development environment.
 
-CIME's commands are python scripts and require a correct version of the Python interpreter to be installed before any use.
+CIME's commands are Python scripts and require a correct version of the Python interpreter to be installed.
 
-The python version must be greater then 2.7 but less the 3.0.  You can check which version of python you have by typing:
+The Python version must be greater than 2.7 but less than 3.0. Determine which version you have by typing:
 ::
 
    > python --version
 
-**NOTE:**  Part 1 of this user's guide assumes that CIME and necessary input files have already been installed on 
-the computer you are using.  If it is not, see Installing CIME.
+**NOTE:**  Part 1 of this guide assumes that CIME and the necessary input files have been installed on 
+the computer you are using. If that is not the case, see Installing CIME.
 
 
 Terms and concepts
 =======================
 
-The following concepts are ingrained in CIME and will occur frequently in this documentation.
-
-**component set** or **compset**:
-   CIME allows several sub-models and other tools to be linked together in to a climate model. These sub-models and tools are called 
-   *components* of the climate model. We say a climate model has an atmosphere component, an ocean component, etc.  
-   The resulting set of components is called the *component set* or *compset*.
+The following terms and concepts are ingrained in CIME and are used frequently in this documentation.
 
 **active** vs **data** vs **stub** models:
-   A component for the atmosphere or ocean that solve a complex set of equations to describe their behavior are called *active* models, and will sometimes be refered to as *prognostic* or *full* models.
+   Components of a model that solve a complex set of equations to describe the model's behavior are called 
+   *active* models. Sometimes they are called *prognostic* or *full* models.
 
-   CIME recognizes 7 different active models of a climate model, those are:
+   CIME recognizes 7 different active models of a climate model. They are:
 
        atmosphere, ocean, sea-ice, land surface, river, glacier, wave
 
-   In addition, an "external processing system" or ESP component is also allowed.
+   An external processing system (ESP) component is also allowed.
 
-   For some climate problems, its necessary to reduce feedbacks within the system by replacing a active model with a 
-   version that sends and receives the same variables to and from other models but
-   the values sent are not computed from the equations but instead read from files.  The values received are ignored.
-   We call these active-model substitutes *data models* and CIME provides data models for each of the supported components.
+   For some climate problems, it is necessary to reduce feedbacks within the system by replacing an active model with a
+   version that sends and receives the same variables to and from other models, but with the values read from files rather
+   than computed from the equations. The values received are ignored. These active-model substitutes are called *data models*.
+   CIME provides data models for each of the supported components.
 
-   For some configurations, a data model is not needed and so CIME provides *stub* versions that simply occupy the
-   required place in the climate execution sequence  and do not send or receive any data.
-
-**grid set** or **grid**: 
-   Each active model must solve its equations on a numerical grid.  CIME allows several models within the system to have different grids.  The resulting set of numerical grids is called the *grid set* or sometimes just the
-   *grid* where *grid* is a unique abbreviation denoting a set of numerical grids.  Sometimes the *resolution* will also
-   refer to a specific set of grids with different resolutions.
-
-**machine**: 
-   The computer you are using to run CIME and build and run the climate model is called the *machine*.  It could be a workstation or 
-   a national supercomputer.  The *machine* is typically the UNIX host name but could be any string.
-
-**compiler**: 
-   CIME will control compiling the source code (Fortran, C and C++)  of your model in to an executable.  
-   Some machines support multiple compilers and so you may need to specify which one to use.
+   For some configurations, no data model is needed, so CIME provides *stub* versions that simply occupy the
+   required place in the climate execution sequence and do not send or receive any data.
 
 **case**:
-    The most important concept in CIME is a *case*.  To build and execute a CIME-enabled climate model, you have to 
-    make choices of compset, grid set, machine and compiler.  The collection of these choices, and any additional customizations
-    you may make, is called the *case*.
+    The most important concept in CIME is a *case*. To build and execute a CIME-enabled climate model, you have to
+    make choices of compset, grid set, machine and compiler. A collection of these choices, and any additional 
+    customizations you may make, is called the *case*.
 
+**compiler**:
+   CIME controls compiling of your model's source code (Fortran, C and C++) into an executable.
+   Some machines support multiple compilers, so you may need to specify which one to use.
+
+**component set** or **compset**:
+   CIME allows several sub-models and other tools to be linked together into a climate model. These sub-models and 
+   tools are called *components* of the climate model. For example, a climate model has an atmosphere component, an 
+   ocean component, and so on. The resulting set of components is called the *component set* or *compset*.
+
+**grid set** or **grid**:
+   Each active model must solve its equations on a numerical grid. CIME allows models within the system to have 
+   different grids. The resulting set of numerical grids is called the *grid set* or sometimes just the *grid*, where
+   *grid* is a unique name that denotes a set of numerical grids. Sometimes the *resolution* also refers to a specific set 
+   of grids with different resolutions.
+
+**machine**:
+   The *machine* is the computer you are using to run CIME and build and run the climate model. It could be a workstation 
+   or a national supercomputer. The *machine* is typically the UNIX hostname but it could be any string.
 
 Setting defaults
 =================
 
-Before using any CIME commands, you should set the CIME_MODEL environmental variable. In csh, this would be:
+Before using any CIME commands, set the ``CIME_MODEL`` environment variable. In csh, use ``setenv`` as shown and replace 
+``<model>`` with the appropriate text, such as "acme" or "cesm."
 ::
 
    setenv CIME_MODEL <model>
 
-Where <model> is one of "acme" or "cesm".
 
 Directory content
 ==================
 
-If you use CIME as part of a climate model or stand alone, the content of the cime directory is the same.  
+If you use CIME as part of a climate model or standalone, the content of the **cime** directory is the same.  
 
-If you are using it as part of
-a climate model, cime is usually one of the first subdirectories under the main directory:
+If you are using it as part of a climate model, **cime** is usually one of the first subdirectories under the main directory:
 
-.. csv-table:: CIME directory in a climate model
+.. csv-table:: **CIME directory in a climate model**
    :header: "Directory or Filename", "Description"
    :widths: 200, 300
 
-   "README, etc.", "typical top-level directory content."
-   "components/", "source code for all of the active models."
+   "README, etc.", "typical top-level directory content"
+   "components/", "source code for active models"
    "cime/", "All of CIME code"
 
-CIME's content is split in to several subdirectories.
-Users should start in the "scripts" subdirectory.
+CIME's content is split into several subdirectories. Users should start in the **scripts** subdirectory.
 
-.. csv-table:: CIME directory content
+.. csv-table:: **CIME directory content**
    :header: "Directory or Filename", "Description"
    :widths: 150, 300
 
    "CMakeLists.txt", "For building with CMake"
    "ChangeLog", "Developer-maintained record of changes to CIME"
-   "ChangeLog_template", "template for an entry in ChangeLog"
+   "ChangeLog_template", "Template for an entry in ChangeLog"
    "LICENSE.TXT", "The CIME license"
    "README", "Brief intro to CIME"
    "README.md", "README in markdown language"
-   "README.unit_testing", "Instructions on running unit tests with CIME"
+   "README.unit_testing", "Instructions for running unit tests with CIME"
    "config/", "Shared and model-specific configuration files"
    "scripts/", "The CIME user interface"
    "src/", "Model source code provided by CIME"
    "tests/", "tests"
-   "tools/", "Stand-alone tools useful for climate modeling"
-   "utils/", "Some perl source code for CIME scripts; see scripts/lib for python version"
+   "tools/", "Standalone climate modeling tools"
+   "utils/", "Some Perl source code for CIME scripts; see **scripts/lib** for Python version"
 
 Here are some other key subdirectories, down one level in the 
 directory structure.
 
-.. csv-table:: Content of some key CIME sub-directories
+.. csv-table:: **Content of some key CIME subdirectories**
    :header: "Directory or Filename", "Description"
    :widths: 150, 300
 
@@ -138,15 +137,16 @@ directory structure.
 Discovering available cases
 ==============================
 
-You can find what compsets, grids and machines your CIME-enabled model supports using the manage_case command found in cime/scripts.  Use the "--help" option for more information.
+To identify which compsets, grids and machines your CIME-enabled model supports, use the ``manage_case`` command found in **cime/scripts**.  Use the ``--help`` option for more information.
+
 ::
 
    > ./manage_case --help
 
-Quick Start
+Quick start
 ==================
 
-If you would like to quickly see how a case is created, configured, built and run with CIME, try these commands (assuming CIME has been ported to your current machine):
+To quickly see how a case is created, configured, built and run with CIME, execute the following commands for an example. (This assumes that CIME has been ported to your current machine).
 ::
 
    > cd cime/scripts
@@ -154,12 +154,15 @@ If you would like to quickly see how a case is created, configured, built and ru
    > cd mycase
    > ./case.setup
    > ./case.build
-   > ./case submit
+   > ./case.submit
 
-The output from each command will be explained in the sections below. You can follow progress by monitoring the CaseStatus file:
+The output from each command is explained in the following sections.
+
+You can follow the progress of your run by monitoring the **CaseStatus** file.
+
 ::
 
    > tail CaseStatus
 
-Repeat the above command until you see the message "Run SUCCESSFUL".  This tells you the case finished successfully.
+Repeat the command until you see the message "Run SUCCESSFUL."
 
