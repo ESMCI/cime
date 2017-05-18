@@ -294,4 +294,8 @@ class GenericXML(object):
             expect(False, "Could not write file %s, xml formatting error '%s'" % (self.filename, e))
         return xmlstr
 
-
+    def get_id(self):
+        xmlid = self.root.get("id")
+        if xmlid is not None:
+            return xmlid
+        return self.root.tag

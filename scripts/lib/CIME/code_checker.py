@@ -16,7 +16,7 @@ def _run_pylint(on_file, interactive):
 ###############################################################################
     pylint = find_executable("pylint")
 
-    cmd_options = " --disable=I,C,R,logging-not-lazy,wildcard-import,unused-wildcard-import,fixme,broad-except,bare-except,eval-used,exec-used,global-statement"
+    cmd_options = " --disable=I,C,R,logging-not-lazy,wildcard-import,unused-wildcard-import,fixme,broad-except,bare-except,eval-used,exec-used,global-statement,logging-format-interpolation"
     cimeroot = get_cime_root()
 
     if "scripts/Tools" in on_file:
@@ -26,7 +26,7 @@ def _run_pylint(on_file, interactive):
     cmd_options += " --init-hook='sys.path.extend((\"%s\",\"%s\",\"%s\"))'"%\
         (os.path.join(cimeroot,"scripts","lib"),
          os.path.join(cimeroot,"scripts","Tools"),
-         os.path.join(cimeroot,"tools","unit_testing","python"))
+         os.path.join(cimeroot,"scripts","fortran_unit_testing","python"))
 
     cmd = "%s %s %s" % (pylint, cmd_options, on_file)
     logger.debug("pylint command is %s"%cmd)

@@ -235,7 +235,7 @@ def _build_libraries(case, exeroot, sharedpath, caseroot, cimeroot, libroot, lid
     if mpilib == "mpi-serial":
         libs.insert(0, mpilib)
     logs = []
-    sharedlibroot = case.get_value("SHAREDLIBROOT")
+    sharedlibroot = os.path.abspath(case.get_value("SHAREDLIBROOT"))
     for lib in libs:
         if lib == "csm_share":
             # csm_share adds its own dir name
@@ -301,6 +301,7 @@ def _build_model_thread(config_dir, compclass, caseroot, libroot, bldroot, incro
                         thread_bad_results, smp, compiler):
 ###############################################################################
     logger.info("Building %s with output to %s"%(compclass, file_build))
+    t1 = time.time()
     with open(file_build, "w") as fd:
         stat = run_cmd("MODEL=%s SMP=%s %s/buildlib %s %s %s " %
                        (compclass, stringify_bool(smp), config_dir, caseroot, libroot, bldroot),
@@ -313,20 +314,21 @@ def _build_model_thread(config_dir, compclass, caseroot, libroot, bldroot, incro
     for mod_file in glob.glob(os.path.join(bldroot, "*_[Cc][Oo][Mm][Pp]_*.mod")):
         shutil.copy(mod_file, incroot)
 
+    t2 = time.time()
+    logger.info("%s built in %f seconds" % (compclass, (t2 - t1)))
 
 ###############################################################################
 def _clean_impl(case, cleanlist, clean_all):
 ###############################################################################
-    caseroot = case.get_value("CASEROOT")
     if clean_all:
         # If cleanlist is empty just remove the bld directory
-        exeroot = case.get_value("EXEROOT")
+        exeroot = os.path.abspath(case.get_value("EXEROOT"))
         expect(exeroot is not None,"No EXEROOT defined in case")
         if os.path.isdir(exeroot):
             logging.info("cleaning directory %s" %exeroot)
             shutil.rmtree(exeroot)
         # if clean_all is True also remove the sharedlibpath
-        sharedlibroot = case.get_value("SHAREDLIBROOT")
+        sharedlibroot = os.path.abspath(case.get_value("SHAREDLIBROOT"))
         expect(sharedlibroot is not None,"No SHAREDLIBROOT defined in case")
         if sharedlibroot != exeroot and os.path.isdir(sharedlibroot):
             logging.warn("cleaning directory %s" %sharedlibroot)
@@ -337,7 +339,7 @@ def _clean_impl(case, cleanlist, clean_all):
         use_esmf_lib    = case.get_value("USE_ESMF_LIB")
         build_threaded  = case.get_build_threaded()
         gmake           = case.get_value("GMAKE")
-        caseroot        = case.get_value("CASEROOT")
+        caseroot        = os.path.abspath(case.get_value("CASEROOT"))
         casetools       = case.get_value("CASETOOLS")
         clm_config_opts = case.get_value("CLM_CONFIG_OPTS")
 
@@ -396,10 +398,10 @@ def _case_build_impl(caseroot, case, sharedlib_only, model_only):
         del os.environ["MODEL"]
     build_threaded      = case.get_build_threaded()
     casetools           = case.get_value("CASETOOLS")
-    exeroot             = case.get_value("EXEROOT")
-    incroot             = case.get_value("INCROOT")
-    libroot             = case.get_value("LIBROOT")
-    sharedlibroot       = case.get_value("SHAREDLIBROOT")
+    exeroot             = os.path.abspath(case.get_value("EXEROOT"))
+    incroot             = os.path.abspath(case.get_value("INCROOT"))
+    libroot             = os.path.abspath(case.get_value("LIBROOT"))
+    sharedlibroot       = os.path.abspath(case.get_value("SHAREDLIBROOT"))
 
     complist = []
     for comp_class in comp_classes:
