@@ -118,53 +118,35 @@ Component grids are denoted by the following naming convention:
 - "tx[D]v[n]" is a tripole grid where D is the approximate resolution in degrees and n is the grid version.
 
 ==============================================
-Querying CIME - calling **manage_case**
+Querying CIME - calling **query_config**
 ==============================================
 
-The utility **$CIMEROOT/scripts/manage_case** permits you to query the out-of-the-box compsets, grids and machines that are available for either CESM or ACME. If CIME is downloaded in standalone mode, only standalone CIME compsets can be queried. If CIME is part of a larger checkout that includes the prognostic components of either CESM or ACME, then **manage_case** will allow you to query all prognostic component compsets as well.
+The utility **$CIMEROOT/scripts/query_config** permits you to query the out-of-the-box compsets, components, grids and machines that are available for a model.
 
-Here is a summary of **manage_case** usage:
-
-.. code-block:: python
-
-     usage: manage_case [-h] [-d] [-v] [-s]
-			[--query-compsets-setby QUERY_COMPSETS_SETBY]
-			[--query-component-name QUERY_COMPONENT_NAME]
-			[--query-machines] [--long]
-
-     optional arguments:
-       -h, --help            show this help message and exit
-       -d, --debug           Print debug information (very verbose) to file /glade/
-			     p/work/mvertens/cime.data_model_fields/scripts/manage_
-			     case.log
-       -v, --verbose         Add additional context (time and file) to log messages
-       -s, --silent          Print only warnings and error messages
-       --query-compsets-setby QUERY_COMPSETS_SETBY
-			     Query compsets that are set by the target component
-			     for cesm model
-       --query-component-name QUERY_COMPONENT_NAME
-			     Query component settings that are set by the target
-			     component for cesm model
-       --query-grids         Query supported model grids for cesm model
-       --query-machines      Query supported machines for cesm model
-       --long                Provide long output for queries
-
-
-To query **manage-case** for compset information, use the **--query-compsets-setby** option. For CESM, the value of ``QUERY_COMPSETS_SETBY`` can be one of the following:
+Optional arguments include the following:
   ::
 
-     allactive, cam, cice, cism, clm, drv, pop
+     --compsets
+     --components
+     --grids
+     --machines
 
-  To see what the compsets are for standalone CIME, run **manage_case** as in this example: 
+If CIME is downloaded in standalone mode, only standalone CIME compsets can be queried. If CIME is part of a larger checkout that includes the prognostic components of a model, **query_config** will allow you to query all prognostic component compsets, as well.
+
+Run **query_config \--help** to see lists of available compsets, components, grids and machines.
+
+**Usage examples**
+
+  To run **query_config** for compset information, use the **--compsets** option and the component name,which is **drv** in this example:
   ::
 
-     manage_case --query-compsets-setby drv
+     query_config --compsets drv
 
-  The output will be:
+  The output will be similar to this:
   ::
 
      --------------------------------------
-     Compset Short Name: Compset Long Name 
+     Compset Short Name: Compset Long Name
      --------------------------------------
               A : 2000_DATM%NYF_SLND_DICE%SSMI_DOCN%DOM_DROF%NYF_SGLC_SWAV
            AWAV : 2000_DATM%WW3_SLND_DICE%COPY_DOCN%COPY_SROF_SGLC_WW3
@@ -174,25 +156,14 @@ To query **manage-case** for compset information, use the **--query-compsets-set
           ADESP : 2000_DATM%NYF_SLND_DICE%SSMI_DOCN%DOM_DROF%NYF_SGLC_SWAV_DESP
            AIAF : 2000_DATM%IAF_SLND_DICE%IAF_DOCN%IAF_DROF%IAF_SGLC_SWAV
 
-  CIME only sets compsets that associated with standalone CIME - that is, primarily compsets that are associated only with data models. Each prognostic component that is CIME-compliant is responsible for setting those compsets that have the appropriate target feedbacks turned off.
+Each model component specifies its own definitions of what can appear after the ``%`` modifier in the compset longname (for example, ``DOM`` in ``DOCN%DOM``).
 
-  In CESM, for example, CAM is responsible for setting all compsets that have CAM, CICE (in prescribed ice mode), CLM and DOCN as the components.
-
-To query **manage_case** for component-specific compset settings, use the **--query-component-name** option.  
-
-  Every model component specifies its own definitions of what can appear after the  ``%`` modifier in the compset longname (for example, ``DOM`` in ``DOCN%DOM``). 
-
-  For CESM, the value of ``QUERY_COMPONENT_NAME`` can be one of the following:
+  To see what supported modifiers are for ``DOCN``, run **query_config** as in this example:
   ::
 
-     aquap, cam, cice, cism, clm, datm, dice, dlnd, docn, drof, dwav, mosart, pop, socn, rtm, ww3
+     query_config --compsets docn
 
-  To see what supported modifiers are for ``DOCN``, run **manage_case** as in this example:
-  ::
-
-     manage_case --query-compsets-name docn
-
-  The output will be:
+  The output will be similar to this:
   ::
 
      =========================================
@@ -206,10 +177,5 @@ To query **manage_case** for component-specific compset settings, use the **--qu
      _DOCN%SOM  : docn slab ocean mode:
      _DOCN%IAF  : docn interannual mode:
 
-To query **manage_case** for the out-of-the box model grids that are supported, use the **query-grids** option.
-
-To query **manage_case** for the out-of-the box machines that are supported, use the **query-machines** option.
-
-For more details on how CIME determines the output for **manage_case**, see :ref:`cime-internals`.
-
+For more details on how CIME determines the output for **query_config**, see :ref:`cime-internals`.
 

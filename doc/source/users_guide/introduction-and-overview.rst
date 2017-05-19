@@ -40,7 +40,7 @@ The following terms and concepts are ingrained in CIME and are used frequently i
 
        atmosphere, ocean, sea-ice, land surface, river, glacier, wave
 
-   An external processing system (ESP) component is also allowed.
+   An external system processing (ESP) stub-only component is also allowed.
 
    For some climate problems, it is necessary to reduce feedbacks within the system by replacing an active model with a
    version that sends and receives the same variables to and from other models, but with the values read from files rather
