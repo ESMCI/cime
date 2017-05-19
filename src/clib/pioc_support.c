@@ -1727,8 +1727,14 @@ int PIOc_createfile_int(int iosysid, int *ncidp, int *iotype, const char *filena
     for (int i = 0; i < PIO_MAX_VARS; i++)
     {
         file->varlist[i].record = -1;
-	file->varlist[i].iobuf = NULL;
-	file->varlist[i].fillbuf = NULL;
+        file->varlist[i].request = NULL;
+        file->varlist[i].nreqs = 0;
+        file->varlist[i].fillvalue = NULL;
+        file->varlist[i].pio_type = 0;
+        file->varlist[i].type_size = 0;
+        file->varlist[i].use_fill = 0;
+        file->varlist[i].fillbuf = NULL;
+        file->varlist[i].iobuf = NULL;
     }
     file->mode = mode;
 

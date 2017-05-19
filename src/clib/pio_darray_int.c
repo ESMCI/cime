@@ -284,9 +284,7 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
                         /* Get a pointer to the data. */
                         bufptr = (void *)((char *)iobuf + nv * iodesc->mpitype_size * llen);
 
-                        /* ??? */
-                        int reqn = 0;
-                        if (vdesc->nreqs % PIO_REQUEST_ALLOC_CHUNK == 0 )
+                        if (vdesc->nreqs % PIO_REQUEST_ALLOC_CHUNK == 0)
                         {
                             if (!(vdesc->request = realloc(vdesc->request, sizeof(int) *
                                                            (vdesc->nreqs + PIO_REQUEST_ALLOC_CHUNK))))
@@ -294,24 +292,19 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
 
                             for (int i = vdesc->nreqs; i < vdesc->nreqs + PIO_REQUEST_ALLOC_CHUNK; i++)
                                 vdesc->request[i] = NC_REQ_NULL;
-                            reqn = vdesc->nreqs;
                         }
-                        else
-                            while(vdesc->request[reqn] != NC_REQ_NULL)
-                                reqn++;
 
                         /* Write, in non-blocking fashion, a list of subarrays. */
                         LOG((3, "about to call ncmpi_iput_varn() varids[%d] = %d rrcnt = %d, llen = %d",
                              nv, varids[nv], rrcnt, llen));
                         ierr = ncmpi_iput_varn(file->fh, varids[nv], rrcnt, startlist, countlist,
-                                               bufptr, llen, iodesc->mpitype, vdesc->request + reqn);
+                                               bufptr, llen, iodesc->mpitype, vdesc->request + vdesc->nreqs);
 
                         /* keeps wait calls in sync */
-                        if (vdesc->request[reqn] == NC_REQ_NULL)
-                            vdesc->request[reqn] = PIO_REQ_NULL;
+                        if (vdesc->request[vdesc->nreqs] == NC_REQ_NULL)
+                            vdesc->request[vdesc->nreqs] = PIO_REQ_NULL;
 
-                        vdesc->nreqs += reqn + 1;
-
+                        vdesc->nreqs++;
                     }
 
                     /* Free resources. */
