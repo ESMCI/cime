@@ -153,7 +153,7 @@ def post_run_check(case, lid):
     rundir = case.get_value("RUNDIR")
     model = case.get_value("MODEL")
     cpl_ninst = case.get_value("NINST_CPL")
-
+    
     cpl_logs = []
     if cpl_ninst > 1:
         for inst in range(cpl_ninst):
@@ -176,7 +176,8 @@ def post_run_check(case, lid):
             with open(cpl_logfile, 'r') as fd:
                 if 'SUCCESSFUL TERMINATION' in fd.read():
                     count_ok += 1
-        if count_ok != cpl_ninst: 
+
+        if count_ok != cpl_ninst:
             expect(False, "Model did not complete - see {} \n " .format(cpl_logfile))
 
 ###############################################################################
