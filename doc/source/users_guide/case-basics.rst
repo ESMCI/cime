@@ -8,13 +8,13 @@ Two concepts to understand before working with CIME are component sets and model
 
 - *Component sets*, which are usually referred to as "compsets," define both individual model components and any component-specific namelist or configuration settings that are used in a case.
 
-- *Model grids* specify the grid for each component making up the model.
+- *Model grids* specify the grid or resolution for each component making up the model.
 
 Creating a CIME experiment or *case* requires, at a minimum, specifying a compset and a model grid.
 
-Out-of-the-box compsets and models grids are associated with two names: a longname and an alias name. Examples of both follow
+Out-of-the-box compsets and models grids are associated with two names: a longname and an alias name. Examples of both follow.
 
-The CIME regression test system requires aliases, but aliases they can also be used for convenience. Compset aliases are unique; each compset alias is associated with one and only one compset. Grid aliases, on the other hand, are overloaded; the same grid alias may result in a different grid depending on the associated compset. Always confirm that the *compset longname* and the *grid longname* are correct when using aliases to create a case.
+The CIME regression test system requires aliases, but aliases can also be used for convenience. Compset aliases are unique; each compset alias is associated with one and only one compset. Grid aliases, on the other hand, are overloaded; the same grid alias may result in a different grid depending on the associated compset. Always confirm that the *compset longname* and the *grid longname* are correct when using aliases to create a case.
 
 ================
  Component sets
@@ -24,7 +24,7 @@ A compset longname has this form::
 
   TIME_ATM[%phys]_LND[%phys]_ICE[%phys]_OCN[%phys]_ROF[%phys]_GLC[%phys]_WAV[%phys]_ESP[_BGC%phys]
 
-  TIME = model time period (e.g. 2000, 20TR, RCP8...)
+  TIME = model time period (e.g. 1850, 2000, 20TR, RCP8...)
 
   CIME supports the following values for ATM,LND,ICE,OCN,ROF,GLC,WAV and ESP.
   ATM  = [DATM, SATM, XATM]
@@ -96,9 +96,9 @@ A model grid longname has the form::
 
 As an example, examine this longname::
 
-   a%ne30np4_l%ne30np4_oi%gx1v6_r%r05_m%gx1v6_g%null_w%null
+   a%ne30np4_l%ne30np4_oi%gx1v7_r%r05_m%gx1v7_g%null_w%null
 
-It refers to a model grid with a ne30np4 spectral element 1-degree atmosphere and land grids, gx1v6 Greenland pole 1-degree ocean and sea-ice grids, a 1/2 degree river routing grid, null wave and internal cism grids, and an gx1v6 ocean mask.
+It refers to a model grid with a ne30np4 spectral element 1-degree atmosphere and land grids, gx1v7 Greenland pole 1-degree ocean and sea-ice grids, a 1/2 degree river routing grid, null wave and internal cism grids, and an gx1v7 ocean mask.
 The alias for this grid is ne30_g16.
 
 CIME also permits users to introduce their own :ref:`user-defined grids <adding-a-grid>`.
@@ -133,11 +133,10 @@ Optional arguments include the following:
 
 If CIME is downloaded in standalone mode, only standalone CIME compsets can be queried. If CIME is part of a larger checkout that includes the prognostic components of a model, **query_config** will allow you to query all prognostic component compsets, as well.
 
-Run **query_config \--help** to see lists of available compsets, components, grids and machines.
+Run **query_config ---help** to see lists of available compsets, components, grids and machines.
 
 **Usage examples**
-
-  To run **query_config** for compset information, use the **--compsets** option and the component name,which is **drv** in this example:
+  To run **query_config** for compset information, use the **---compsets** option and the component name, which is **drv** in this example:
   ::
 
      query_config --compsets drv
@@ -148,20 +147,21 @@ Run **query_config \--help** to see lists of available compsets, components, gri
      --------------------------------------
      Compset Short Name: Compset Long Name
      --------------------------------------
-              A : 2000_DATM%NYF_SLND_DICE%SSMI_DOCN%DOM_DROF%NYF_SGLC_SWAV
-           AWAV : 2000_DATM%WW3_SLND_DICE%COPY_DOCN%COPY_SROF_SGLC_WW3
-              S : 2000_SATM_SLND_SICE_SOCN_SROF_SGLC_SWAV_SESP
-     ADESP_TEST : 2000_DATM%NYF_SLND_DICE%SSMI_DOCN%DOM_DROF%NYF_SGLC_SWAV_DESP%TEST
-              X : 2000_XATM_XLND_XICE_XOCN_XROF_XGLC_XWAV
-          ADESP : 2000_DATM%NYF_SLND_DICE%SSMI_DOCN%DOM_DROF%NYF_SGLC_SWAV_DESP
-           AIAF : 2000_DATM%IAF_SLND_DICE%IAF_DOCN%IAF_DROF%IAF_SGLC_SWAV
+   A                    : 2000_DATM%NYF_SLND_DICE%SSMI_DOCN%DOM_DROF%NYF_SGLC_SWAV
+   ADWAV                : 2000_SATM_SLND_SICE_SOCN_SROF_SGLC_DWAV%CLIMO
+   S                    : 2000_SATM_SLND_SICE_SOCN_SROF_SGLC_SWAV_SESP
+   ADLND                : 2000_SATM_DLND%SCPL_SICE_SOCN_SROF_SGLC_SWAV
+   ADESP_TEST           : 2000_DATM%NYF_SLND_DICE%SSMI_DOCN%DOM_DROF%NYF_SGLC_SWAV_DESP%TEST
+   X                    : 2000_XATM_XLND_XICE_XOCN_XROF_XGLC_XWAV
+   ADESP                : 2000_DATM%NYF_SLND_DICE%SSMI_DOCN%DOM_DROF%NYF_SGLC_SWAV_DESP
+   AIAF                 : 2000_DATM%IAF_SLND_DICE%IAF_DOCN%IAF_DROF%IAF_SGLC_SWAV
 
 Each model component specifies its own definitions of what can appear after the ``%`` modifier in the compset longname (for example, ``DOM`` in ``DOCN%DOM``).
 
   To see what supported modifiers are for ``DOCN``, run **query_config** as in this example:
   ::
 
-     query_config --compsets docn
+     query_config --component docn
 
   The output will be similar to this:
   ::
@@ -170,12 +170,23 @@ Each model component specifies its own definitions of what can appear after the 
      DOCN naming conventions
      =========================================
 
-     _DOCN%NULL : docn null mode:
-     _DOCN%COPY : docn copy mode:
-     _DOCN%US20 : docn us20 mode:
-     _DOCN%DOM  : docn data mode:
-     _DOCN%SOM  : docn slab ocean mode:
-     _DOCN%IAF  : docn interannual mode:
+         _DOCN%AQP1 : docn prescribed aquaplanet sst - option 1
+        _DOCN%AQP10 : docn prescribed aquaplanet sst - option 10
+         _DOCN%AQP2 : docn prescribed aquaplanet sst - option 2
+         _DOCN%AQP3 : docn prescribed aquaplanet sst - option 3
+         _DOCN%AQP4 : docn prescribed aquaplanet sst - option 4
+         _DOCN%AQP5 : docn prescribed aquaplanet sst - option 5
+         _DOCN%AQP6 : docn prescribed aquaplanet sst - option 6
+         _DOCN%AQP7 : docn prescribed aquaplanet sst - option 7
+         _DOCN%AQP8 : docn prescribed aquaplanet sst - option 8
+         _DOCN%AQP9 : docn prescribed aquaplanet sst - option 9
+          _DOCN%DOM : docn prescribed ocean mode
+          _DOCN%IAF : docn interannual mode
+         _DOCN%NULL : docn null mode
+          _DOCN%SOM : docn slab ocean mode
+       _DOCN%SOMAQP : docn aquaplanet slab ocean mode
+    _DOCN%SST_AQUAP : docn aquaplanet mode:
+
 
 For more details on how CIME determines the output for **query_config**, see :ref:`cime-internals`.
 

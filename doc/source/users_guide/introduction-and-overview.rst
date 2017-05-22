@@ -52,7 +52,7 @@ The following terms and concepts are ingrained in CIME and are used frequently i
 
 **case**:
     The most important concept in CIME is a *case*. To build and execute a CIME-enabled climate model, you have to
-    make choices of compset, grid set, machine and compiler. A collection of these choices, and any additional 
+    make choices of compset, model grid, machine and compiler. A collection of these choices, and any additional 
     customizations you may make, is called the *case*.
 
 **compiler**:
@@ -64,9 +64,9 @@ The following terms and concepts are ingrained in CIME and are used frequently i
    tools are called *components* of the climate model. For example, a climate model has an atmosphere component, an 
    ocean component, and so on. The resulting set of components is called the *component set* or *compset*.
 
-**grid set** or **grid**:
+**grid** or **model grid**:
    Each active model must solve its equations on a numerical grid. CIME allows models within the system to have 
-   different grids. The resulting set of numerical grids is called the *grid set* or sometimes just the *grid*, where
+   different grids. The resulting set of numerical grids is called the *model grid* or sometimes just the *grid*, where
    *grid* is a unique name that denotes a set of numerical grids. Sometimes the *resolution* also refers to a specific set 
    of grids with different resolutions.
 
@@ -133,15 +133,16 @@ directory structure.
    "src/externals/", "Software provided with CIME for building a climate model"
    "src/share/", "Model source code provided by CIME and used by multiple components"
    "scripts/lib/", "Infrastructure source code for CIME scripts and functions"
+   "scripts/Tools/", "Auxiliary tools; scripts and functions"
 
 Discovering available cases
 ==============================
 
-To identify which compsets, grids and machines your CIME-enabled model supports, use the ``manage_case`` command found in **cime/scripts**.  Use the ``--help`` option for more information.
+To identify which compsets, grids and machines your CIME-enabled model supports, use the ``query_config`` command found in **cime/scripts**.  Use the ``--help`` option for more information.
 
 ::
 
-   > ./manage_case --help
+   > ./query_config --help
 
 Quick start
 ==================
@@ -164,5 +165,5 @@ You can follow the progress of your run by monitoring the **CaseStatus** file.
 
    > tail CaseStatus
 
-Repeat the command until you see the message "Run SUCCESSFUL."
+Repeat the command until you see the message "case.run success"
 

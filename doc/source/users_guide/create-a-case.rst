@@ -12,7 +12,7 @@ The first step in creating a CIME-based experiment is to use **create_newcase**.
 
 If you are not on an out-of-the box CIME-supported platform, you will need to :ref:`port <porting>` CIME to your system before proceeding.
 
-Review the input options for **create_newcase** by using the **--help** option. The only required arguments to **create_newcase** are:
+Review the input options for **create_newcase** by using the **---help** option. The only required arguments to **create_newcase** are:
 ::
 
    create_newcase --case [CASE] --compset [COMPSET] --res [GRID]
@@ -35,7 +35,7 @@ This example
 
 - creates the ``$CASEROOT`` directory ``~/cime/example1`` (if the directory already exists, a warning is printed and ``create_newcase`` aborts)
 
-- ``$CASE`` is ``"example1"`` (``$CASE`` can include letters, numbers, ".", and "_")
+- ``$CASE`` is ``"example1"`` (``$CASE`` can include letters, numbers, ".", and "_") Note: CESM user should following the `CESM case naming conventions <http://www.cesm.ucar.edu/models/cesm2.0/cesm/casename_conventions_cesm.html>`_.
 
 - the model resolution is ``a%0.9x1.25_l%0.9x1.25_oi%gx1v6_r%r05_m%gx1v6_g%null_w%null``
 
@@ -47,50 +47,49 @@ Various scripts, files and directories are created in ``$CASEROOT`` by **create_
 
 - ``user scripts``
 
-   =================     =====================================================================================================
-   case.setup            Script used to set up the case (create the case.run script, the Macros file and user_nl_xxx files)
+   ===================== ====================================================================================================================
    case.build            Script to build component and utility libraries and model executable
-   case.submit           Script to submit the case to run using the machine's batch queueing system
+   case.cmpgen_namelists Script to perform namelist baseline operations (compare, generate, or both) for this case.
+   case.run              Template to create a case run script. **This should only ever be called by
+   			 case.submit when on batch system**. This script only exists as a way of
+			 providing batch directives. Use case.submit from the command line to run your case.
+   case.setup            Script used to set up the case (create the case.run script, the Macros file and user_nl_xxx files)
    case.st_archive       Script to perform short-term archiving of output data
-   case.lt_archive       Script to perform long-term archiving of output data
-   xmlchange 	         Script to modify values in the xml files
-   xmlquery 	         Script to query values in the xml files
+   case.submit           Script to submit the case to run using the machine's batch queueing system
+   check_input_data      Script for checking  for various input datasets and moves them into place.
+   pelayout              Script to query and modify the NTASKS, ROOTPE, and NTHRDS for each component model.  
+   			 This a convenience script that can be used in place of xmlchange and xmlquery.
    preview_namelists	 Script for users to see their component namelists in ``$CASEROOT/CaseDocs`` before running the model
 
                          .. warning:: the namelists generated in ``$CASEROOT/CaseDocs`` should not be edited by the user
 
                          they are only there to document model behavior.
-   check_input_data      Script for checking  for various input datasets and moves them into place.
-   pelayout              Script to query and modify the NTASKS, ROOTPE, and NTHRDS for each component model.  This a convenience script that can be used in place of xmlchange and xmlquery.
-
-   =================     =====================================================================================================
+   preview_run		 Script to query key CIME shell commands (mpirun and batch submission).
+   xmlchange 	         Script to modify values in the xml files
+   xmlquery 	         Script to query values in the xml files
+   ===================== ====================================================================================================================
 
 - ``XML files``
 
-   =====================  ===============================================================================================================================
-   env_mach_specific.xml  Sets a number of machine-specific environment variables for building and/or running.
-
-                          You can edit this file at any time.
-
-   env_case.xml           Sets case specific variables (e.g. model components, model and case root directories).
-
-                          Cannot be modified after a case has been created.
-
-			  To make changes, your should re-run **create_newcase** with different options.
+   ====================== ===============================================================================================================================
+   env_archive.xml        Defines rules for pattern matching of filenames to be archived by the case.st_archive script.
+   env_batch.xml          Sets batch system specific settings such as wallclock time and queue name.
    env_build.xml          Sets model build settings.
-
                           This includes component resolutions and component compile-time configuration options.
 			  You must run the case.build command after changing this file.
-
+   env_case.xml           Sets case specific variables (e.g. model components, model and case root directories).
+                          Cannot be modified after a case has been created.
+			  To make changes, your should re-run **create_newcase** with different options.
    env_mach_pes.xml       Sets component machine-specific processor layout (see :ref:`changing pe layout<changing-the-pe-layout>` ).
-
                           The settings in this are critical to a well-load-balanced simulation (see :ref:`load balancing <optimizing-processor-layout>`).
+   env_mach_specific.xml  Sets a number of machine-specific environment variables for building and/or running.
+                          You can edit this file at any time.
    env_run.xml            Sets run-time settings such as length of run, frequency of restarts, output of coupler diagnostics,
 
                           and short-term and long-term archiving.  This file can be edited at any time before a job starts.
-   env_batch.xml          Sets batch system specific settings such as wallclock time and queue name.
 
-   =====================  ===============================================================================================================================
+
+   ====================== ===============================================================================================================================
 
 - ``User Source Mods Directory``
 
@@ -131,5 +130,5 @@ Locking these files prevents users from changing variables after they have been 
 
 These files can be "unlocked" as follows.
 - ``env_case.xml can never by unlocked``
-- **case.setup --clean** unlocks ``env_mach_pes.xml``
-- **case.build --clean** unlocks ``env_build.xml``
+- **case.setup ---clean** unlocks ``env_mach_pes.xml``
+- **case.build ---clean** unlocks ``env_build.xml``

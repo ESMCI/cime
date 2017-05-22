@@ -4,3 +4,6 @@ buildnmlc
 
 # Ignore emacs backup files
 *~
+
+# Ignore doc/build/doctrees
+doc/build/doctrees
