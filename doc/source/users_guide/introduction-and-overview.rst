@@ -77,8 +77,8 @@ The following terms and concepts are ingrained in CIME and are used frequently i
 Setting defaults
 =================
 
-Before using any CIME commands, set the ``CIME_MODEL`` environment variable. In csh, use ``setenv`` as shown and replace 
-``<model>`` with the appropriate text, such as "acme" or "cesm."
+Before using any CIME commands, set the ``CIME_MODEL`` environment variable. In csh, use **setenv** as shown and replace 
+**<model>** with the appropriate text, such as "acme" or "cesm."
 ::
 
    setenv CIME_MODEL <model>
@@ -138,7 +138,7 @@ directory structure.
 Discovering available cases
 ==============================
 
-To identify which compsets, grids and machines your CIME-enabled model supports, use the ``query_config`` command found in **cime/scripts**.  Use the ``--help`` option for more information.
+To identify which compsets, grids and machines your CIME-enabled model supports, use the **query_config** command found in **cime/scripts**.  Use the **---help** option for more information.
 
 ::
 
@@ -166,4 +166,3 @@ You can follow the progress of your run by monitoring the **CaseStatus** file.
    > tail CaseStatus
 
 Repeat the command until you see the message "case.run success"
-

@@ -133,7 +133,7 @@ Optional arguments include the following:
 
 If CIME is downloaded in standalone mode, only standalone CIME compsets can be queried. If CIME is part of a larger checkout that includes the prognostic components of a model, **query_config** will allow you to query all prognostic component compsets, as well.
 
-Run **query_config ---help** to see lists of available compsets, components, grids and machines.
+Run **query_config -- --help** to see lists of available compsets, components, grids and machines.
 
 **Usage examples**
   To run **query_config** for compset information, use the **---compsets** option and the component name, which is **drv** in this example:
