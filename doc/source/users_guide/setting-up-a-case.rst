@@ -16,7 +16,7 @@ To see the options that are available with **case.setup**, use the **---help**. 
    case.run                        Run script containing the batch directives
 
                                    The batch directives are generated using the contents of env_mach_pes.xml.
-                                   Calling **case.setup ---clean** will remove this file.
+                                   Calling **case.setup --clean** will remove this file.
 
    Macros.make                     File containing machine-specific makefile directives for your target platform/compiler.
 
@@ -24,30 +24,36 @@ To see the options that are available with **case.setup**, use the **---help**. 
 
                                    The user can modify this file to change certain aspects of the build, such as compiler flags.
 
-                                   Calling **case.setup ---clean** will not remove the file once it has been created.
+                                   Calling **case.setup --clean** will not remove the file once it has been created.
                                    However. if you remove or rename the Macros.make file, **case.setup** will recreate it.
 
-   user_nl_xxx[_NNNN] files        Files where all user modifications to component namelists are made. 
-   
-                                   **xxx** is any one of the set of components targeted for the case. 
+   user_nl_xxx[_NNNN] files        Files where all user modifications to component namelists are made.
+
+                                   **xxx** is any one of the set of components targeted for the case.
                                    For example, for a full active CESM compset, **xxx** would be cam, clm, rtm, and so on.
 
-                                   NNNN goes from 0001 to the number of instances of that component. (See :ref:`multiple instances<multi-instance>`)
+                                   NNNN goes from 0001 to the number of instances of that component.
+                                   (See :ref:`multiple instances<multi-instance>`)
 
-                                   For a case with 1 instance of each component (default), NNNN will not appear in the user_nl file names.
+                                   For a case with 1 instance of each component (default), NNNN will not appear
+                                   in the user_nl file names.
 
                                    A user_nl file of a given name will only be created once.
 
-                                   Calling **case.setup ---clean** will *not remove* any user_nl files.
+                                   Calling **case.setup -\ -\ clean** will *not remove* any user_nl files.
 
-                                   Changing the number of instances in the **env_mach_pes.xml** file will only cause new user_nl files to be                                    added to ``$CASEROOT``.
+                                   Changing the number of instances in the **env_mach_pes.xml** file will cause only
+                                   new user_nl files to be added to ``$CASEROOT``.
    CaseDocs/                       Directory that contains all the component namelists for the run.
 
                                    This is for reference only and files in this directory SHOULD NOT BE EDITED since they will
                                    be overwritten at build time and runtime.
 
-   .env_mach_specific.[cs,sh]      Files summarizing the **module load** commands and environment variables that are set when the scripts in                                    ``$CASEROOT`` are called. These files are not used by the case but can be useful for debugging **module load** and environment settings.
+   .env_mach_specific.*            Files summarizing the **module load** commands and environment variables that are set when
+                                   the scripts in ``$CASEROOT`` are called. These files are not used by the case but can be
+                                   useful for debugging **module load** and environment settings.
 
-   software_environment.txt        This file records some aspects of the computing system on which the case is built, such as the shell environment.
+   software_environment.txt        This file records some aspects of the computing system on which the case is built, 
+                                   such as the shell environment.
    =============================   ===============================================================================================================================
 
