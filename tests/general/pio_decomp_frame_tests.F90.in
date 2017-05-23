@@ -96,7 +96,7 @@ PIO_TF_TEMPLATE<PIO_TF_PREDEF_TYPENAME PIO_TF_DATA_TYPE, PIO_TF_PREDEF_TYPENAME 
 PIO_TF_AUTO_TEST_SUB_BEGIN nc_write_read_4d_col_decomp
   implicit none
   integer, parameter :: NDIMS = 4
-  integer, parameter :: NFRAMES = 3
+  integer, parameter :: NFRAMES = 6
   type(var_desc_t)  :: pio_var
   type(file_desc_t) :: pio_file
   character(len=PIO_TF_MAX_STR_LEN) :: filename
