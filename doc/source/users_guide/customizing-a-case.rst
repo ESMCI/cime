@@ -8,8 +8,10 @@ All CIME-compliant components generate their namelist settings using the **cime_
 For example, the CIME data atmosphere model (DATM) generates namelists using the script **$CIMEROOT/components/data_comps/datm/cime_config/buildnml**.
 
 User-specific component namelist changes should be made only by:
--  editing the **$CASEROOT/user_nl_xxx** files
--  using :ref:`**xmlchange**<modifying-an-xml-file>` to modify xml variables in **env_run.xml**, **env_build.xml** or **env_mach_pes.xml**
+
+-  editing the **$CASEROOT/user_nl_xxx** files.
+
+-  using :ref:`xmlchange<modifying-an-xml-file>` to modify xml variables in **env_run.xml**, **env_build.xml** or **env_mach_pes.xml**.
 
 You can preview the component namelists by running **preview_namelists** from ``$CASEROOT``.
 This results in the creation of component namelists (for example, atm_in, lnd_in, and so on) in **$CASEROOT/CaseDocs/**. The namelist files are there only for user reference and SHOULD NOT BE EDITED since they are overwritten every time **preview_namelists**  and  **case.submit** are called.
