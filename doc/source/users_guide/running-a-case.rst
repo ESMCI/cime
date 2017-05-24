@@ -166,14 +166,14 @@ If data sets are missing, obtain them from the input data server:
 Controlling starting, stopping and restarting a run
 ====================================================
 
-The file **env_run.xml** contains variables which may be modified at
-initialization and any time during the course of a model run. Among 
+The file **env_run.xml** contains variables that may be modified at
+initialization or any time during the course of a model run. Among 
 other features, the variables comprise coupler namelist settings for 
 the model stop time, restart frequency, coupler history frequency, and 
 a flag to determine if the run should be flagged as a continuation run.
 
 At a minimum, you will need to set the variables ``$STOP_OPTION`` and 
-``$STOP_N``. Other driver namelist settings will then have consistent and
+``$STOP_N``. Other driver namelist settings then will have consistent and
 reasonable default values. These default settings guarantee that
 restart files are produced at the end of the model run.
 
@@ -254,26 +254,24 @@ a hybrid or branch run, you must specify values for ``$RUN_REFCASE`` and
 ``$RUN_REFDATE``.  All run startup variables are discussed in 
 `run start control variables<http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_.
 
-WHERE IS THAT INTERNAL LINK??????????????????????????????
-SHOULD IT BE SPECIFIC TO CESM????????????????????????????
+**A brief note on restarting runs**
 
-A brief note on restarting runs: When you first begin a branch, hybrid
-or startup run, ``CONTINUE_RUN`` must be set to ``FALSE``. After the
-job has successfully run and there are restart files, you will need to
-change ``CONTINUE_RUN`` to TRUE for the remainder of your run.
-Setting the ``RESUBMIT`` option to a value > 0 will cause the
-``CONTINUE_RUN`` variable to be set to ``TRUE`` automatically upon
-completion of the initial run.
+When you first begin a branch, hybrid or startup run, ``CONTINUE_RUN`` 
+must be set to ``FALSE``. After the job has run successfully and 
+there are restart files, you will need to change ``CONTINUE_RUN`` to 
+TRUE for the remainder of your run. Setting the ``RESUBMIT`` option to
+a value > 0 will cause the ``CONTINUE_RUN`` variable to be set to ``TRUE``
+automatically upon completion of the initial run.
 
-By default,
+By default, the stop time settings are:
 ::
 
   STOP_OPTION = ndays
   STOP_N = 5
   STOP_DATE = -999
 
-The default setting is only appropriate for initial testing. Before a
-longer run is started, update the stop times based on the case
+The default settings are appropriate only for initial testing. Before
+starting a longer run, update the stop times based on the case
 throughput and batch queue limits. For example, if the model runs 5
 model years/day, set ``RESUBMIT=30, STOP_OPTION= nyears, and STOP_N=
 5``. The model will then run in five-year increments, and stop after
@@ -323,10 +321,10 @@ Standard output generated from each component is saved in ``$RUNDIR``
 in a  *log file*. Each time the model is run, a single coordinated datestamp 
 is incorporated into the filename of each output log file. This common 
 The run script generates the datestamp in the form YYMMDD-hhmmss, indicating
-the year, month, day, hour, minute and second that the run began (e.g. ocn.log.040526-082714). 
-Log files are copied to a user-specified directory using the variable
-``$LOGDIR`` in **env_run.xml**. The default is a 'logs' subdirectory
-in the **$CASEROOT** directory.
+the year, month, day, hour, minute and second that the run began
+(ocn.log.040526-082714, for example). Log files are copied to a user-specified 
+directory using the variable ``$LOGDIR`` in **env_run.xml**. The default is a "logs" 
+subdirectory in the **$CASEROOT** directory.
 
 By default, each component also periodically writes history files
 (usually monthly) in netCDF format and also writes netCDF or binary
@@ -355,30 +353,28 @@ for a description of output data filenames.
 Restarting a run
 ======================
 
-Restart files are written by each active component (and some data
-components) at intervals dictated by the driver via the setting of the
-``env_run.xml`` variables, ``$REST_OPTION`` and ``$REST_N``. Restart
+Each active component (and some data components) write restart files 
+at intervals that are dictated by the driver via the setting of the
+``$REST_OPTION`` and ``$REST_N`` variables in **env_run.xml**. Restart
 files allow the model to stop and then start again with bit-for-bit
-exact capability (i.e. the model output is exactly the same as if it
-had never been stopped). The driver coordinates the writing of restart
+exact capability; the model output is exactly the same as if the model
+had not stopped). The driver coordinates the writing of restart
 files as well as the time evolution of the model. All components
 receive restart and stop information from the driver and write
-restarts or stop as specified by the driver.
+restarts or stop as the drives specifies.
 
-It is important to note that runs that are initialized as branch or
-hybrid runs, will require restart/initial files from previous model
-runs (as specified by the variables, ``$RUN_REFCASE`` and
-``$RUN_REFDATE``). These required files must be prestaged by the user
-to the case ``$RUNDIR`` (normally ``$EXEROOT/run``) before the model
-run starts. This is normally done by just copying the contents of the
-relevant ``$RUN_REFCASE/rest/$RUN_REFDATE.00000`` directory.
+Keep in mind that runs initialized as branch or hybrid runs, require 
+restart/initial files from previous model runs (as specified by the 
+variables ``$RUN_REFCASE`` and ``$RUN_REFDATE``). The user must pre-stage
+these required files to the case ``$RUNDIR`` (normally ``$EXEROOT/run``) 
+before the model run starts. Normally this is done by copying the contents 
+of the relevant **$RUN_REFCASE/rest/$RUN_REFDATE.00000** directory.
 
 Whenever a component writes a restart file, it also writes a restart
-pointer file of the form, ``rpointer.$component``. The restart pointer
-file contains the restart filename that was just written by the
-component. Upon a restart, each component reads its restart pointer
-file to determine the filename(s) to read in order to continue the
-model run. As examples, the following pointer files will be created
+pointer file in the format **rpointer.$component**. The pointer
+file contains the name of that new restart file. Upon a restart, each 
+component reads the pointer file to determine which file to read in
+order to continue the run. These are examples of pointer files created
 for a component set using full active model components.
 ::
 
@@ -392,64 +388,60 @@ for a component set using full active model components.
   - rpointer.ocn.restart
 
 
-If short-term archiving is turned on, then the model archives the
-component restart datasets and pointer files into
-``$DOUT_S_ROOT/rest/yyyy-mm-dd-sssss``, where yyyy-mm-dd-sssss is the
-model date at the time of the restart (see `below for more details
-<http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_).
+If short-term archiving is turned on, the model archives the
+component restart data sets and pointer files into
+**$DOUT_S_ROOT/rest/yyyy-mm-dd-sssss**, where yyyy-mm-dd-sssss is the
+model date at the time of the restart. (See `below for more details
+<http://www.cesm.ucar.edu/models/cesm2.0/external-link-here>`_.)
 
 ---------------------------------
 Backing up to a previous restart
 ---------------------------------
 
 If a run encounters problems and crashes, you will normally have to
-back up to a previous restart. Assuming that short-term archiving is
-enabled, you will need to find the latest
-``$DOUT_S_ROOT/rest/yyyy-mm-dd-ssss/`` directory that was created and
-copy the contents of that directory into your run directory
-(``$RUNDIR``). You can then continue the run and these restarts will
-be used. It is important to make sure the new rpointer.* files
-overwrite the rpointer.* files that were in ``$RUNDIR``, or the job
-may not restart in the correct place.
+back up to a previous restart. If short-term archiving is enabled, 
+find the latest **$DOUT_S_ROOT/rest/yyyy-mm-dd-ssss/** directory
+and copy its contents into your run directory (``$RUNDIR``).
+
+Make sure that the new rpointer.* files overwrite older files in 
+in ``$RUNDIR``, or the job may not restart in the correct place.
+
+You can then continue the run using the new restarts.
 
 Occasionally, when a run has problems restarting, it is because the
-rpointer files are out of sync with the restart files. The rpointer
-files are text files and can easily be edited to match the correct
-dates of the restart and history files. All the restart files should
+rpointer.* and restart files are out of sync. The rpointer.* files 
+are text files that can easily be edited to match the correct dates 
+of the restart and history files. All the restart files should
 have the same date.
 
 ============================
 Archiving model output data
 ============================
 
-All component log files are copied to the directory specified by the
-``env_run.xml`` variable ``$LOGDIR`` which by default is set to
-``$CASEROOT/logs``. This location is where log files are copied when
-the job completes successfully. If the job aborts, the log files will
-NOT be copied out of the ``$RUNDIR`` directory.
+When a job has run successfully, the component log files are copied 
+to the directory specified by the **env_run.xml** variable ``$LOGDIR``, 
+which is set to **$CASEROOT/logs** by default. If the job aborts, log 
+files are NOT be copied out of the ``$RUNDIR`` directory.
 
-Once a model run has completed successfully, the output data flow will
-depend on whether or not short-term archiving is enabled (as set by
-the ``env_run.xml`` variable, ``$DOUT_S``). By default, short-term
-archiving will be done (``DOUT_S=TRUE``).
+The output data flow from a successful run depends on whether or not
+short-term archiving is enabled, as it is by default. (The **env_run.xml** 
+variable ``$DOUT_S`` is set as ``DOUT_S=TRUE``.
 
 -------------
 No archiving
 -------------
 
-If no short-term archiving is performed, then all model output data
-will remain in the run directory, as specified by the ``env_run.xml``
-variable, ``$RUNDIR``.
+If no short-term archiving is performed, model output data remains
+remain in the run directory as specified by ``$RUNDIR``.
 
 ---------------------
 Short-term archiving
 ---------------------
 
-If short-term archiving is enabled, the component output files will be
-moved to the short term archiving area on local disk, as specified by
-``$DOUT_S_ROOT``. The directory ``DOUT_S_ROOT`` is normally set to
-``$EXEROOT/../archive/$CASE.`` and will contain the following
-directory structure: ::
+If short-term archiving is enabled, component output files are moved
+to the short-term archiving area on local disk, as specified by
+``$DOUT_S_ROOT``. The directory normally is **$EXEROOT/../archive/$CASE.** 
+and has the following directory structure: ::
 
    rest/yyyy-mm-dd-sssss/
    logs/
@@ -463,25 +455,24 @@ directory structure: ::
    wav/hist
    ....
 
-logs/ contains component log files created during the run. In addition
-to ``$LOGDIR``, log files are also copied to the short-term archiving
-directory and therefore are available for long-term archiving.
+The **logs/** subdirectory contains component log files that were
+created during the run. Log files are also copied to the short-term
+archiving directory and therefore are available for long-term archiving.
 
-rest/ contains a subset of directories that each contain a
-*consistent* set of restart files, initial files and rpointer
-files. Each sub-directory has a unique name corresponding to the model
-year, month, day and seconds into the day where the files were created
-(e.g. 1852-01-01-00000/). The contents of any restart directory can be
-used to create a branch run or a hybrid run or back up to a previous
-restart date.
+The **rest/** subdirectory contains a subset of directories that each contains
+a *consistent* set of restart files, initial files and rpointer
+files. Each subdirectory has a unique name corresponding to the model
+year, month, day and seconds into the day when the files were created.
+The contents of any restart directory can be used to create a branch run 
+or a hybrid run or to back up to a previous restart date.
 
 ---------------------
 Long-term archiving
 ---------------------
 
-Users may choose to user their institution's preferred method for long-term
+Users may choose to follow their institution's preferred method for long-term
 archiving of model output. Previous releases of CESM provided an external
-long-term archiver tool which supported mass tape storage and HPSS systems.
+long-term archiver tool that supported mass tape storage and HPSS systems.
 However, with the industry migration away from tape archives, it is no longer
 feasible for CIME to support all the possible archival schemes available.
 

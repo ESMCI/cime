@@ -1,21 +1,20 @@
 .. _customizing-a-case:
 
 **************************************************
-Customizing a case
+Customizing a Case
 **************************************************
 
-All CIME_compliant components generate their namelist settings using the ``cime_config/buildnml`` file located in the component's directory tree.
-As an example, the CIME data atmosphere model (DATM), generates namelists using the script ``$CIMEROOT/components/data_comps/datm/cime_config/buildnml``.
+All CIME-compliant components generate their namelist settings using the **cime_config/buildnml** file located in the component's directory tree.
+For example, the CIME data atmosphere model (DATM) generates namelists using the script **$CIMEROOT/components/data_comps/datm/cime_config/buildnml**.
 
-User specific component namelist changes should only be made only by:
--  editing the ``$CASEROOT/user_nl_xxx`` files 
--  using :ref:`**xmlchange**<modifying-an-xml-file>` to modify xml variables in ``env_run.xml``, ``env_build.xml`` or ``env_mach_pes.xml`` 
+User-specific component namelist changes should be made only by:
+-  editing the **$CASEROOT/user_nl_xxx** files
+-  using :ref:`**xmlchange**<modifying-an-xml-file>` to modify xml variables in **env_run.xml**, **env_build.xml** or **env_mach_pes.xml**
 
-You can preview the component namelists by running **preview_namelists** from ``$CASEROOT``. 
-Calling **preview_namelists** results in the creation of component namelists (e.g. atm_in, lnd_in, .etc) in ``$CASEROOT/CaseDocs/``. 
-The namelist files created in the ``CaseDocs/`` are there only for user reference and SHOULD NOT BE EDITED since they are overwritten every time ``preview_namelists``  and  ``case.submit`` are called. 
+You can preview the component namelists by running **preview_namelists** from ``$CASEROOT``.
+This results in the creation of component namelists (for example, atm_in, lnd_in, and so on) in **$CASEROOT/CaseDocs/**. The namelist files are there only for user reference and SHOULD NOT BE EDITED since they are overwritten every time **preview_namelists**  and  **case.submit** are called.
 
-The following sections are a summary of how to modify CIME, CESM and ACME components following represents a summary of controlling and modifying component-specific run-time settings:
+The following sections summarize how to modify component-specific runtime settings:
 
 .. _modifying-an-xml-file:
 
@@ -23,41 +22,20 @@ The following sections are a summary of how to modify CIME, CESM and ACME compon
 Modifying an xml file
 =================================================
 
-Modification of ``$CASEROOT`` xml variables the ``$CASEROOT`` script **xmlchange**, which performs variable error checking as part of changing values in the xml files. 
+Run the ``$CASEROOT`` script **xmlchange** to modify variables in xml files. The script performs variable error checking.
 
-To invoke **xmlchange**:
+Here are two examples of how to invoke **xmlchange**:
 ::
 
    xmlchange <entry id>=<value>
    -- OR --
-   xmlchange -id <entry id> -val <name> -file <filename>  
-             [-help] [-silent] [-verbose] [-warn] [-append] [-file]
+   xmlchange -id <entry id> -val <name> -file <filename>
+   
+The ``-id`` argument identifies the variable to be changed, and ``-val`` is the intended value of that variable. See the **help** text for more usage information.
+::
 
--id
+   xmlchange --help
 
-  The xml variable name to be changed. (required)
-
--val
-
-  The intended value of the variable associated with the -id argument. (required)
-
-  **Note**: If you want a single quotation mark ("'", also called an apostrophe) to appear in the string provided by the -val option, you must specify it as "&apos;".
-
--file
-
-  The xml file to be edited. (optional)
-
--silent
-
-  Turns on silent mode. Only fatal messages will be issued. (optional)
-
--verbose
-
-  Echoes all settings made by **create_newcase** and **case.setup**. (optional)
-
--help
-
-  Print usage info to STDOUT. (optional)
 
 .. _changing-the-pe-layout:
 
