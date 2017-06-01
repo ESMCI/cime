@@ -146,7 +146,7 @@ Review the daily model date stamps in the <strong>cpl.log</strong> file and the 
 If the model was running fine, but the wallclock limit was reached, either reduce the run length or increase the wallclock setting.</p>
 <p>If the model hangs and then times out, that usually indicates an MPI or file system problem or possibly a model problem. If you suspect an intermittent system problem, try resubmitting the job. Also send a help request to local site consultants to provide them with feedback about system problems and to get help.</p>
 <p>Another error that can cause a timeout is a slow or intermittently slow node.
-The <strong>cpl.log</strong> file normally outputs the time used for every model simulation day. To review that data, grep the <strong>cpl.log</strong> file for the string``tStamp`` as shown here:</p>
+The <strong>cpl.log</strong> file normally outputs the time used for every model simulation day. To review that data, grep the <strong>cpl.log</strong> file for the string <code class="docutils literal"><span class="pre">tStamp</span></code> as shown here:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">grep</span> <span class="n">tStamp</span> <span class="n">cpl</span><span class="o">.</span><span class="n">log</span><span class="o">.*</span> <span class="o">|</span> <span class="n">more</span>
 </pre></div>
 </div>
