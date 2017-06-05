@@ -659,7 +659,7 @@ def parse_args_and_handle_standard_logging_options(args, parser=None):
     stderr_stream_handler.setLevel(logging.WARNING)
 
     # scripts_regression_tests is the only thing that should pass a None argument in parser
-    if parser is not None:
+    if parser is None:
         _check_for_invalid_args(args[1:])
         args = parser.parse_args(args[1:])
 
