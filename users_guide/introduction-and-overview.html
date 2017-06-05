@@ -99,37 +99,40 @@
             
   <div class="section" id="introduction">
 <span id="introduction-and-overview"></span><h1>1. Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
-<p>The Common Infrastructure for Modeling the Earth (CIME) provides a UNIX command-line-based user interface for
+<p>The Common Infrastructure for Modeling the Earth (CIME) provides a UNIX command-line-based interface for
 configuring, compiling and executing Earth system models. Part 1 of this guide explains the basic commands
-needed to get a model running.</p>
+that are needed to get a model running.</p>
 <div class="section" id="prerequisites">
 <h2>1.1. Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h2>
-<p>Familiarity with the basic climate modeling concepts.</p>
-<p>Familiarity with UNIX command line terminals and the UNIX development environment.</p>
-<p>CIME&#8217;s commands are Python scripts and require a correct version of the Python interpreter to be installed.</p>
-<p>The Python version must be greater than 2.7 but less than 3.0. Determine which version you have by typing:</p>
+<p>Part 1 of this guide assumes that CIME and the necessary input files have been installed on
+the computer you are using. If that is not the case, see Installing CIME.</p>
+<p>Other prerequisites:</p>
+<ul class="simple">
+<li>Familiarity with basic climate modeling concepts.</li>
+<li>Familiarity with UNIX command line terminals and the UNIX development environment.</li>
+<li>A correct version of the Python interpreter.</li>
+</ul>
+<p>CIME&#8217;s commands are Python scripts and require a correct version of the Python interpreter to be installed. The Python version must be greater than 2.7 but less than 3.0. Determine which version you have by typing:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">python</span> <span class="o">--</span><span class="n">version</span>
 </pre></div>
 </div>
-<p><strong>NOTE:</strong>  Part 1 of this guide assumes that CIME and the necessary input files have been installed on
-the computer you are using. If that is not the case, see Installing CIME.</p>
 </div>
 <div class="section" id="terms-and-concepts">
 <h2>1.2. Terms and concepts<a class="headerlink" href="#terms-and-concepts" title="Permalink to this headline">¶</a></h2>
 <p>The following terms and concepts are ingrained in CIME and are used frequently in this documentation.</p>
 <dl class="docutils">
-<dt><strong>active</strong> vs <strong>data</strong> vs <strong>stub</strong> models:</dt>
-<dd><p class="first">Components of a model that solve a complex set of equations to describe the model&#8217;s behavior are called
+<dt><strong>active, data and stub models</strong></dt>
+<dd><p class="first"><em>active models</em>: Components of a model that solve a complex set of equations to describe the model&#8217;s behavior are called
 <em>active</em> models. Sometimes they are called <em>prognostic</em> or <em>full</em> models.</p>
-<p>CIME recognizes 7 different active models of a climate model. They are:</p>
+<p>CIME recognizes 7 different active models. They are:</p>
 <blockquote>
 <div>atmosphere, ocean, sea-ice, land surface, river, glacier, wave</div></blockquote>
 <p>An external system processing (ESP) stub-only component is also allowed.</p>
-<p>For some climate problems, it is necessary to reduce feedbacks within the system by replacing an active model with a
+<p><em>data models</em>: For some climate problems, it is necessary to reduce feedbacks within the system by replacing an active model with a
 version that sends and receives the same variables to and from other models, but with the values read from files rather
 than computed from the equations. The values received are ignored. These active-model substitutes are called <em>data models</em>.
 CIME provides data models for each of the supported components.</p>
-<p class="last">For some configurations, no data model is needed, so CIME provides <em>stub</em> versions that simply occupy the
+<p class="last"><em>stub models</em>: For some configurations, no data model is needed, so CIME provides <em>stub</em> versions that simply occupy the
 required place in the climate execution sequence and do not send or receive any data.</p>
 </dd>
 <dt><strong>case</strong>:</dt>
@@ -157,7 +160,7 @@ or a national supercomputer. The <em>machine</em> is typically the UNIX hostname
 <h2>1.3. Setting defaults<a class="headerlink" href="#setting-defaults" title="Permalink to this headline">¶</a></h2>
 <p>Before using any CIME commands, set the <code class="docutils literal"><span class="pre">CIME_MODEL</span></code> environment variable. In csh, use <strong>setenv</strong> as shown and replace
 <strong>&lt;model&gt;</strong> with the appropriate text, such as &#8220;acme&#8221; or &#8220;cesm.&#8221;</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">setenv</span> <span class="n">CIME_MODEL</span> <span class="o">&lt;</span><span class="n">model</span><span class="o">&gt;</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">setenv</span> <span class="n">CIME_MODEL</span> <span class="o">&lt;</span><span class="n">model</span><span class="o">&gt;</span>
 </pre></div>
 </div>
 </div>
@@ -285,14 +288,14 @@ directory structure.</p>
 </div>
 <div class="section" id="discovering-available-cases">
 <h2>1.5. Discovering available cases<a class="headerlink" href="#discovering-available-cases" title="Permalink to this headline">¶</a></h2>
-<p>To identify which compsets, grids and machines your CIME-enabled model supports, use the <strong>query_config</strong> command found in <strong>cime/scripts</strong>.  Use the <strong>&#8212;help</strong> option for more information.</p>
+<p>To identify which compsets, grids and machines your CIME-enabled model supports, use the <strong>query_config</strong> command found in <strong>cime/scripts</strong>.  See the <strong>help</strong> text for more information.</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="o">./</span><span class="n">query_config</span> <span class="o">--</span><span class="n">help</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="quick-start">
 <h2>1.6. Quick start<a class="headerlink" href="#quick-start" title="Permalink to this headline">¶</a></h2>
-<p>To quickly see how a case is created, configured, built and run with CIME, execute the following commands for an example. (This assumes that CIME has been ported to your current machine).</p>
+<p>To see an example of how a case is created, configured, built and run with CIME, execute the following commands for an example. (This assumes that CIME has been ported to your current machine).</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">cd</span> <span class="n">cime</span><span class="o">/</span><span class="n">scripts</span>
 <span class="o">&gt;</span> <span class="o">./</span><span class="n">create_newcase</span> <span class="o">--</span><span class="n">case</span> <span class="n">mycase</span> <span class="o">--</span><span class="n">compset</span> <span class="n">X</span> <span class="o">--</span><span class="n">res</span> <span class="n">f19_g16</span>
 <span class="o">&gt;</span> <span class="n">cd</span> <span class="n">mycase</span>
@@ -302,11 +305,11 @@ directory structure.</p>
 </pre></div>
 </div>
 <p>The output from each command is explained in the following sections.</p>
-<p>You can follow the progress of your run by monitoring the <strong>CaseStatus</strong> file.</p>
+<p>After you submit the case, you can follow the progress of your run by monitoring the <strong>CaseStatus</strong> file.</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">tail</span> <span class="n">CaseStatus</span>
 </pre></div>
 </div>
-<p>Repeat the command until you see the message &#8220;case.run success&#8221;</p>
+<p>Repeat the command until you see the message <code class="docutils literal"><span class="pre">case.run</span> <span class="pre">success</span></code>.</p>
 </div>
 </div>
 

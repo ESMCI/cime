@@ -99,17 +99,19 @@
 <p>Two concepts to understand before working with CIME are component sets and model grids.</p>
 <ul class="simple">
 <li><em>Component sets</em>, which are usually referred to as &#8220;compsets,&#8221; define both individual model components and any component-specific namelist or configuration settings that are used in a case.</li>
-<li><em>Model grids</em> specify the grid or resolution for each component making up the model.</li>
+<li><em>Model grids</em> specify the grid or resolution for each component of the model.</li>
 </ul>
 <p>Creating a CIME experiment or <em>case</em> requires, at a minimum, specifying a compset and a model grid.</p>
-<p>Out-of-the-box compsets and models grids are associated with two names: a longname and an alias name. Examples of both follow.</p>
-<p>The CIME regression test system requires aliases, but aliases can also be used for convenience. Compset aliases are unique; each compset alias is associated with one and only one compset. Grid aliases, on the other hand, are overloaded; the same grid alias may result in a different grid depending on the associated compset. Always confirm that the <em>compset longname</em> and the <em>grid longname</em> are correct when using aliases to create a case.</p>
+<p>Out-of-the-box compsets and models grids each have two names: a <em>longname</em> and an <em>alias</em> name. Examples of both follow.</p>
+<p>The CIME regression test system requires aliases, but aliases can also be used for convenience. <em>Compset aliases</em> are unique; each is associated with one and only one compset. <em>Grid aliases</em>, on the other hand, are overloaded; the same grid alias may result in a different grid depending on the associated compset. Always confirm that the <em>compset longname</em> and the <em>grid longname</em> are correct when using aliases to create a case.</p>
 <div class="section" id="component-sets">
 <h2>2.1. Component sets<a class="headerlink" href="#component-sets" title="Permalink to this headline">¶</a></h2>
 <p>A compset longname has this form:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">TIME_ATM</span><span class="p">[</span><span class="o">%</span><span class="n">phys</span><span class="p">]</span><span class="n">_LND</span><span class="p">[</span><span class="o">%</span><span class="n">phys</span><span class="p">]</span><span class="n">_ICE</span><span class="p">[</span><span class="o">%</span><span class="n">phys</span><span class="p">]</span><span class="n">_OCN</span><span class="p">[</span><span class="o">%</span><span class="n">phys</span><span class="p">]</span><span class="n">_ROF</span><span class="p">[</span><span class="o">%</span><span class="n">phys</span><span class="p">]</span><span class="n">_GLC</span><span class="p">[</span><span class="o">%</span><span class="n">phys</span><span class="p">]</span><span class="n">_WAV</span><span class="p">[</span><span class="o">%</span><span class="n">phys</span><span class="p">]</span><span class="n">_ESP</span><span class="p">[</span><span class="n">_BGC</span><span class="o">%</span><span class="n">phys</span><span class="p">]</span>
-
-<span class="n">TIME</span> <span class="o">=</span> <span class="n">model</span> <span class="n">time</span> <span class="n">period</span> <span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">g</span><span class="o">.</span> <span class="mi">1850</span><span class="p">,</span> <span class="mi">2000</span><span class="p">,</span> <span class="mi">20</span><span class="n">TR</span><span class="p">,</span> <span class="n">RCP8</span><span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Here are the supported values for each element of the longname:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">TIME</span> <span class="o">=</span> <span class="n">model</span> <span class="n">time</span> <span class="n">period</span> <span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">g</span><span class="o">.</span> <span class="mi">1850</span><span class="p">,</span> <span class="mi">2000</span><span class="p">,</span> <span class="mi">20</span><span class="n">TR</span><span class="p">,</span> <span class="n">RCP8</span><span class="o">...</span><span class="p">)</span>
 
 <span class="n">CIME</span> <span class="n">supports</span> <span class="n">the</span> <span class="n">following</span> <span class="n">values</span> <span class="k">for</span> <span class="n">ATM</span><span class="p">,</span><span class="n">LND</span><span class="p">,</span><span class="n">ICE</span><span class="p">,</span><span class="n">OCN</span><span class="p">,</span><span class="n">ROF</span><span class="p">,</span><span class="n">GLC</span><span class="p">,</span><span class="n">WAV</span> <span class="ow">and</span> <span class="n">ESP</span><span class="o">.</span>
 <span class="n">ATM</span>  <span class="o">=</span> <span class="p">[</span><span class="n">DATM</span><span class="p">,</span> <span class="n">SATM</span><span class="p">,</span> <span class="n">XATM</span><span class="p">]</span>
@@ -144,23 +146,24 @@
 <span class="n">The</span> <span class="n">OPTIONAL</span> <span class="o">%</span><span class="n">phys</span> <span class="n">attributes</span> <span class="n">specify</span> <span class="n">sub</span><span class="o">-</span><span class="n">modes</span> <span class="n">of</span> <span class="n">the</span> <span class="n">given</span> <span class="n">system</span><span class="o">.</span>
 <span class="n">For</span> <span class="n">example</span><span class="p">,</span> <span class="n">DOCN</span><span class="o">%</span><span class="n">DOM</span> <span class="ow">is</span> <span class="n">the</span> <span class="n">DOCN</span> <span class="n">data</span> <span class="n">ocean</span> <span class="p">(</span><span class="n">rather</span> <span class="n">than</span> <span class="n">slab</span><span class="o">-</span><span class="n">ocean</span><span class="p">)</span> <span class="n">mode</span><span class="o">.</span>
 <span class="n">ALL</span> <span class="n">the</span> <span class="n">possible</span> <span class="o">%</span><span class="n">phys</span> <span class="n">choices</span> <span class="k">for</span> <span class="n">each</span> <span class="n">component</span> <span class="n">are</span> <span class="n">listed</span> <span class="n">by</span>
-<span class="n">calling</span> <span class="o">**</span><span class="n">manage_case</span><span class="o">**</span> <span class="k">with</span> <span class="n">the</span> <span class="o">**-</span><span class="nb">list</span><span class="o">**</span> <span class="n">compsets</span> <span class="n">argument</span><span class="o">.</span>
+<span class="n">calling</span> <span class="n">manage_case</span> <span class="k">with</span> <span class="n">the</span> <span class="o">-</span><span class="nb">list</span> <span class="n">compsets</span> <span class="n">argument</span><span class="o">.</span>
 <span class="n">ALL</span> <span class="n">data</span> <span class="n">models</span> <span class="n">have</span> <span class="n">a</span> <span class="o">%</span><span class="n">phys</span> <span class="n">option</span> <span class="n">that</span> <span class="n">corresponds</span> <span class="n">to</span> <span class="n">the</span> <span class="n">data</span> <span class="n">model</span> <span class="n">mode</span><span class="o">.</span>
 </pre></div>
 </div>
-<p>As an example, the CESM compset longname (below) refers to running a pre-industrial control with active CESM components CAM, CLM, CICE, POP2, MOSART, CISM2 and WW3 in a BDRD BGC coupling scenario.:</p>
+<p>As an example, this actual CESM compset longname refers to running a pre-industrial control with active CESM components CAM, CLM, CICE, POP2, MOSART, CISM2 and WW3 in a BDRD BGC coupling scenario:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="mi">1850</span><span class="n">_CAM60_CLM50</span><span class="o">%</span><span class="n">BGC_CICE_POP2</span><span class="o">%</span><span class="n">ECO_MOSART_CISM2</span><span class="o">%</span><span class="n">NOEVOLVE_WW3_BGC</span><span class="o">%</span><span class="n">BDRD</span>
 </pre></div>
 </div>
-<p>The alias for this compset is B1850. Input to <strong>create_newcase</strong> can be either a compset longname or a compset alias.
-It is also possible to create your own custom compset. See <em>How do I create my own compset?</em> in the FAQ.</p>
+<p>The alias for this compset is B1850. Either a compset longname or a compset alias can be input to <strong>create_newcase</strong>. You can also create your own custom compset. See <em>How do I create my own compset?</em> in the FAQ.</p>
 </div>
 <div class="section" id="model-grids">
 <h2>2.2. Model Grids<a class="headerlink" href="#model-grids" title="Permalink to this headline">¶</a></h2>
 <p>A model grid longname has the form:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">a</span><span class="o">%</span><span class="n">name_l</span><span class="o">%</span><span class="n">name_oi</span><span class="o">%</span><span class="n">name_r</span><span class="o">%</span><span class="n">name_m</span><span class="o">%</span><span class="n">mask_g</span><span class="o">%</span><span class="n">name_w</span><span class="o">%</span><span class="n">name</span>
-
-<span class="n">a</span><span class="o">%</span>  <span class="o">=</span> <span class="n">atmosphere</span> <span class="n">grid</span>
+</pre></div>
+</div>
+<p>For reference:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">a</span><span class="o">%</span>  <span class="o">=</span> <span class="n">atmosphere</span> <span class="n">grid</span>
 <span class="n">l</span><span class="o">%</span>  <span class="o">=</span> <span class="n">land</span> <span class="n">grid</span>
 <span class="n">oi</span><span class="o">%</span> <span class="o">=</span> <span class="n">ocean</span><span class="o">/</span><span class="n">sea</span><span class="o">-</span><span class="n">ice</span> <span class="n">grid</span> <span class="p">(</span><span class="n">must</span> <span class="n">be</span> <span class="n">the</span> <span class="n">same</span><span class="p">)</span>
 <span class="n">r</span><span class="o">%</span>  <span class="o">=</span> <span class="n">river</span> <span class="n">grid</span>
@@ -178,16 +181,16 @@ It is also possible to create your own custom compset. See <em>How do I create m
 <span class="n">however</span><span class="p">,</span> <span class="ow">and</span> <span class="ow">is</span> <span class="n">specified</span> <span class="n">by</span> <span class="n">the</span> <span class="n">g</span><span class="o">%</span> <span class="n">value</span><span class="o">.</span>
 </pre></div>
 </div>
-<p>As an example, examine this longname:</p>
+<p>As an example, examine this actual grid longname:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">a</span><span class="o">%</span><span class="n">ne30np4_l</span><span class="o">%</span><span class="n">ne30np4_oi</span><span class="o">%</span><span class="n">gx1v7_r</span><span class="o">%</span><span class="n">r05_m</span><span class="o">%</span><span class="n">gx1v7_g</span><span class="o">%</span><span class="n">null_w</span><span class="o">%</span><span class="n">null</span>
 </pre></div>
 </div>
-<p>It refers to a model grid with a ne30np4 spectral element 1-degree atmosphere and land grids, gx1v7 Greenland pole 1-degree ocean and sea-ice grids, a 1/2 degree river routing grid, null wave and internal cism grids, and an gx1v7 ocean mask.
+<p>It refers to a model grid with a ne30np4 spectral element, 1-degree atmosphere and land grids, gx1v7 Greenland pole, 1-degree ocean and sea-ice grids, a 1/2 degree river routing grid, null wave and internal cism grids, and an gx1v7 ocean mask.
 The alias for this grid is ne30_g16.</p>
 <p>CIME also permits users to introduce their own <a class="reference internal" href="adding-cases.html#adding-a-grid"><span class="std std-ref">user-defined grids</span></a>.</p>
 <p>Component grids are denoted by the following naming convention:</p>
 <ul class="simple">
-<li>&#8220;[dlat]x[dlon]&#8221; are regular lon/lat finite volume grids where dlat and dlon are the approximate grid spacing. The shorthand convention is &#8220;fnn&#8221; where nn generally is a pair of numbers indicating the resolution. An example is 1.9x2.5 or f19 for the approximately &#8220;2-degree&#8221; finite volume grid. Note that CAM uses an [nlat]x[nlon] naming convention internally for this grid.</li>
+<li>&#8220;[dlat]x[dlon]&#8221; are regular lon/lat finite volume grids where dlat and dlon are the approximate grid spacing. The shorthand convention is &#8220;fnn&#8221; where nn generally is a pair of numbers indicating the resolution. An example is 1.9x2.5 or f19 for the approximately &#8220;2-degree&#8221; finite-volume grid. Note that CAM uses an [nlat]x[nlon] naming convention internally for this grid.</li>
 <li>&#8220;Tnn&#8221; are spectral lon/lat grids where nn is the spectral truncation value for the resolution. The shorthand name is identical. Example: T85.</li>
 <li>&#8220;ne[X]np[Y]&#8221; are cubed sphere resolutions where X and Y are integers. The short name generally is ne[X]. Examples: ne30np4 or ne30.</li>
 <li>&#8220;pt1&#8221; is a single grid point.</li>
@@ -197,7 +200,7 @@ The alias for this grid is ne30_g16.</p>
 </div>
 <div class="section" id="querying-cime-calling-query-config">
 <h2>2.3. Querying CIME - calling <strong>query_config</strong><a class="headerlink" href="#querying-cime-calling-query-config" title="Permalink to this headline">¶</a></h2>
-<p>The utility <strong>$CIMEROOT/scripts/query_config</strong> permits you to query the out-of-the-box compsets, components, grids and machines that are available for a model.</p>
+<p>Use the utility <strong>$CIMEROOT/scripts/query_config</strong> to see which out-of-the-box compsets, components, grids and machines are available for a model.</p>
 <dl class="docutils">
 <dt>Optional arguments include the following:</dt>
 <dd><div class="first last highlight-default"><div class="highlight"><pre><span></span><span class="o">--</span><span class="n">compsets</span>
@@ -208,16 +211,23 @@ The alias for this grid is ne30_g16.</p>
 </div>
 </dd>
 </dl>
-<p>If CIME is downloaded in standalone mode, only standalone CIME compsets can be queried. If CIME is part of a larger checkout that includes the prognostic components of a model, <strong>query_config</strong> will allow you to query all prognostic component compsets, as well.</p>
-<p>Run <strong>query_config &#8211; &#8211;help</strong> to see lists of available compsets, components, grids and machines.</p>
+<p>If CIME is downloaded in standalone mode, only standalone CIME compsets can be queried. If CIME is part of a larger checkout that includes the prognostic components of a model, <strong>query_config</strong> will allow you to query all prognostic component compsets.</p>
 <dl class="docutils">
-<dt><strong>Usage examples</strong></dt>
-<dd><p class="first">To run <strong>query_config</strong> for compset information, use the <strong>&#8212;compsets</strong> option and the component name, which is <strong>drv</strong> in this example:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">query_config</span> <span class="o">--</span><span class="n">compsets</span> <span class="n">drv</span>
+<dt>To see lists of available compsets, components, grids and machines, look at the <strong>help</strong> text:</dt>
+<dd><div class="first last highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">query_config</span> <span class="o">--</span><span class="n">help</span>
 </pre></div>
 </div>
-<p>The output will be similar to this:</p>
-<div class="last highlight-default"><div class="highlight"><pre><span></span>  <span class="o">--------------------------------------</span>
+</dd>
+</dl>
+<p><strong>Usage examples</strong></p>
+<dl class="docutils">
+<dt>To run <strong>query_config</strong> for compset information, follow this example, where <strong>drv</strong> is the component name:</dt>
+<dd><div class="first last highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">query_config</span> <span class="o">--</span><span class="n">compsets</span> <span class="n">drv</span>
+</pre></div>
+</div>
+</dd>
+<dt>The output will be similar to this:</dt>
+<dd><div class="first last highlight-default"><div class="highlight"><pre><span></span>  <span class="o">--------------------------------------</span>
   <span class="n">Compset</span> <span class="n">Short</span> <span class="n">Name</span><span class="p">:</span> <span class="n">Compset</span> <span class="n">Long</span> <span class="n">Name</span>
   <span class="o">--------------------------------------</span>
 <span class="n">A</span>                    <span class="p">:</span> <span class="mi">2000</span><span class="n">_DATM</span><span class="o">%</span><span class="n">NYF_SLND_DICE</span><span class="o">%</span><span class="n">SSMI_DOCN</span><span class="o">%</span><span class="n">DOM_DROF</span><span class="o">%</span><span class="n">NYF_SGLC_SWAV</span>
@@ -233,13 +243,14 @@ The alias for this grid is ne30_g16.</p>
 </dd>
 </dl>
 <p>Each model component specifies its own definitions of what can appear after the <code class="docutils literal"><span class="pre">%</span></code> modifier in the compset longname (for example, <code class="docutils literal"><span class="pre">DOM</span></code> in <code class="docutils literal"><span class="pre">DOCN%DOM</span></code>).</p>
-<blockquote>
-<div><p>To see what supported modifiers are for <code class="docutils literal"><span class="pre">DOCN</span></code>, run <strong>query_config</strong> as in this example:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">query_config</span> <span class="o">--</span><span class="n">component</span> <span class="n">docn</span>
+<dl class="docutils">
+<dt>To see what supported modifiers are for <code class="docutils literal"><span class="pre">DOCN</span></code>, run <strong>query_config</strong> as in this example:</dt>
+<dd><div class="first last highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">query_config</span> <span class="o">--</span><span class="n">component</span> <span class="n">docn</span>
 </pre></div>
 </div>
-<p>The output will be similar to this:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span> <span class="o">=========================================</span>
+</dd>
+<dt>The output will be similar to this:</dt>
+<dd><div class="first last highlight-default"><div class="highlight"><pre><span></span> <span class="o">=========================================</span>
  <span class="n">DOCN</span> <span class="n">naming</span> <span class="n">conventions</span>
  <span class="o">=========================================</span>
 
@@ -261,7 +272,8 @@ The alias for this grid is ne30_g16.</p>
 <span class="n">_DOCN</span><span class="o">%</span><span class="n">SST_AQUAP</span> <span class="p">:</span> <span class="n">docn</span> <span class="n">aquaplanet</span> <span class="n">mode</span><span class="p">:</span>
 </pre></div>
 </div>
-</div></blockquote>
+</dd>
+</dl>
 <p>For more details on how CIME determines the output for <strong>query_config</strong>, see <a class="reference internal" href="cime-internals.html#cime-internals"><span class="std std-ref">CIME internals</span></a>.</p>
 </div>
 </div>

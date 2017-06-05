@@ -87,15 +87,15 @@
   <div class="section" id="cloning-a-case">
 <span id="id1"></span><h1>8. Cloning a Case<a class="headerlink" href="#cloning-a-case" title="Permalink to this headline">¶</a></h1>
 <p>If you have access to a run that you want to clone, the <strong>create_clone</strong> command will create a new case while preserving local modifications to the case.</p>
-<p>Here is the simplest example of using <strong>create_clone</strong>:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>cd $CIMEROOT/scripts
-create_clone --case $CASEROOT --clone $CLONEROOT
+<p>Here is a simple example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>&gt; cd $CIMEROOT/scripts
+&gt; create_clone --case $CASEROOT --clone $CLONEROOT
 </pre></div>
 </div>
 <p>The <strong>create_clone</strong> script preserves any local namelist modifications made in the <strong>user_nl_xxxx</strong> files as well as any source code modifications in the <strong>SourceMods</strong> tree. Otherwise, <strong>$CASEROOT/</strong> directory will appear as if <strong>create_newcase</strong> had just been run.</p>
 <p><strong>Important</strong>: Do not change anything in the <strong>env_case.xml</strong> file.</p>
 <p>See the <strong>help</strong> text for more usage information.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">create_clone</span> <span class="o">--</span><span class="n">help</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">create_clone</span> <span class="o">--</span><span class="n">help</span>
 </pre></div>
 </div>
 <p>Another approach to duplicating a case is to use the information in the case&#8217;s <strong>README.case</strong> and <strong>CaseStatus</strong> files to create a new case and duplicate the relevant <strong>xlmchange</strong> commands that were issued in the original case. This alternative will <em>not</em> preserve any local modifications that were made to the original case, such as source-code or build-script revisions; you will need to import those changes manually.</p>

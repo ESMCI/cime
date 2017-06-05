@@ -101,25 +101,36 @@
 <h2>3.1. Calling <strong>create_newcase</strong><a class="headerlink" href="#calling-create-newcase" title="Permalink to this headline">¶</a></h2>
 <p>The first step in creating a CIME-based experiment is to use <strong>create_newcase</strong>.</p>
 <p>If you are not on an out-of-the box CIME-supported platform, you will need to <a class="reference internal" href="porting-cime.html#porting"><span class="std std-ref">port</span></a> CIME to your system before proceeding.</p>
-<p>Review the input options for <strong>create_newcase</strong> by using the <strong>&#8212;help</strong> option. The only required arguments to <strong>create_newcase</strong> are:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">create_newcase</span> <span class="o">--</span><span class="n">case</span> <span class="p">[</span><span class="n">CASE</span><span class="p">]</span> <span class="o">--</span><span class="n">compset</span> <span class="p">[</span><span class="n">COMPSET</span><span class="p">]</span> <span class="o">--</span><span class="n">res</span> <span class="p">[</span><span class="n">GRID</span><span class="p">]</span>
+<dl class="docutils">
+<dt>Review the input options for <strong>create_newcase</strong> in the  <strong>help</strong> text.</dt>
+<dd><div class="first last highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">create_newcase</span> <span class="o">--</span><span class="n">help</span>
 </pre></div>
 </div>
-<p>CIME supports out of the box <em>component sets</em>, <em>model grids*</em> and <em>hardware platforms</em>. Compsets and grids were discussed in the <a class="reference internal" href="case-basics.html#case-basics"><span class="std std-ref">previous section</span></a>.</p>
+</dd>
+<dt>The only required arguments to <strong>create_newcase</strong> are shown here:</dt>
+<dd><div class="first last highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">create_newcase</span> <span class="o">--</span><span class="n">case</span> <span class="p">[</span><span class="n">CASE</span><span class="p">]</span> <span class="o">--</span><span class="n">compset</span> <span class="p">[</span><span class="n">COMPSET</span><span class="p">]</span> <span class="o">--</span><span class="n">res</span> <span class="p">[</span><span class="n">GRID</span><span class="p">]</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+<p>CIME supports out-of-the-box <em>component sets</em>, <em>model grids</em> and <em>hardware platforms</em>. Compsets and grids were discussed in the <a class="reference internal" href="case-basics.html#case-basics"><span class="std std-ref">previous section</span></a>.</p>
 <div class="section" id="result-of-calling-create-newcase">
 <h3>3.1.1. Result of calling create_newcase<a class="headerlink" href="#result-of-calling-create-newcase" title="Permalink to this headline">¶</a></h3>
 <p>Following is a simple example of using <strong>create_newcase</strong> with aliases for both compset and grid names.
 The complete example appears in the <a class="reference internal" href="faq/basics-a-basic-example.html#faq-basic-example"><span class="std std-ref">basic example</span></a>.</p>
-<p>In what follows, <code class="docutils literal"><span class="pre">$CIMEROOT</span></code> is the full pathname of the root directory of the CIME distribution.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>&gt; cd $CIMEROOT/scripts
+<dl class="docutils">
+<dt>Here, <code class="docutils literal"><span class="pre">$CIMEROOT</span></code> is the full pathname of the root directory of the CIME distribution.</dt>
+<dd><div class="first last highlight-default"><div class="highlight"><pre><span></span>&gt; cd $CIMEROOT/scripts
 &gt; create_newcase --case ~/cime/example1 --compset A --res f09_g16_rx1
 </pre></div>
 </div>
-<p>In the example, the command creates a <code class="docutils literal"><span class="pre">$CASEROOT</span></code> directory <strong>~/cime/example1</strong>. (If that directory already exists, a warning is printed and the command aborts.</p>
+</dd>
+</dl>
+<p>In the example, the command creates a <code class="docutils literal"><span class="pre">$CASEROOT</span></code> directory: <strong>~/cime/example1</strong>. If that directory already exists, a warning is printed and the command aborts. Additional details:</p>
 <ul class="simple">
-<li><code class="docutils literal"><span class="pre">$CASE</span></code> is <code class="docutils literal"><span class="pre">example1</span></code> (<code class="docutils literal"><span class="pre">$CASE</span></code> can include letters, numbers, &#8221;.&#8221;, and &#8220;_&#8221;)</li>
+<li><code class="docutils literal"><span class="pre">$CASE</span></code> can include letters, numbers,  &#8221;.&#8221;, and &#8220;_&#8221;. In the example, it is <code class="docutils literal"><span class="pre">example1</span></code>.</li>
 <li>The compset is <code class="docutils literal"><span class="pre">2000_DATM%NYF_SLND_DICE%SSMI_DOCN%DOM_DROF%NYF_SGLC_SWAV</span></code>.</li>
-<li>The model resolution is <code class="docutils literal"><span class="pre">a%0.9x1.25_l%0.9x1.25_oi%gx1v6_r%r05_m%gx1v6_g%null_w%null</span></code></li>
+<li>The model resolution is <code class="docutils literal"><span class="pre">a%0.9x1.25_l%0.9x1.25_oi%gx1v6_r%r05_m%gx1v6_g%null_w%null</span></code>.</li>
 <li><strong>create_newcase</strong> installs files in <code class="docutils literal"><span class="pre">$CASEROOT</span></code> to build and run the model and to optionally archive the case on the target platform.</li>
 </ul>
 <p>Running <strong>create_newcase</strong> creates various scripts, files and directories <code class="docutils literal"><span class="pre">$CASEROOT</span></code>, as shown here.</p>
@@ -133,37 +144,36 @@ The complete example appears in the <a class="reference internal" href="faq/basi
 </colgroup>
 <tbody valign="top">
 <tr class="row-odd"><td>case.setup</td>
-<td>Script used to set up the case (create the case.run script, the Macros file and user_nl_xxx files)</td>
+<td>Script used to set up the case (create the case.run script, the Macros file and user_nl_xxx files).</td>
 </tr>
 <tr class="row-even"><td>case.build</td>
-<td>Script to build component and utility libraries and model executable</td>
+<td>Script to build component and utility libraries and model executable.</td>
 </tr>
 <tr class="row-odd"><td>case.submit</td>
-<td>Script to submit the case to run using the machine&#8217;s batch queueing system</td>
+<td>Script to submit the case to run using the machine&#8217;s batch queueing system.</td>
 </tr>
 <tr class="row-even"><td>case.st_archive</td>
-<td>Script to perform short-term archiving of output data</td>
+<td>Script to perform short-term archiving of output data.</td>
 </tr>
 <tr class="row-odd"><td>case.lt_archive</td>
-<td>Script to perform long-term archiving of output data</td>
+<td>Script to perform long-term archiving of output data.</td>
 </tr>
 <tr class="row-even"><td>xmlchange</td>
-<td>Script to modify values in the xml files</td>
+<td>Script to modify values in the xml files.</td>
 </tr>
 <tr class="row-odd"><td>xmlquery</td>
-<td>Script to query values in the xml files</td>
+<td>Script to query values in the xml files.</td>
 </tr>
 <tr class="row-even"><td>preview_namelists</td>
-<td><p class="first">Script for users to see their component namelists in <code class="docutils literal"><span class="pre">$CASEROOT/CaseDocs</span></code> before running the model</p>
-<div class="admonition warning">
+<td><p class="first">Script for users to see their component namelists in <code class="docutils literal"><span class="pre">$CASEROOT/CaseDocs</span></code> before running the model.</p>
+<div class="last admonition warning">
 <p class="first admonition-title">Warning</p>
-<p class="last">the namelists generated in <code class="docutils literal"><span class="pre">$CASEROOT/CaseDocs</span></code> should not be edited by the user</p>
+<p class="last">Users should not edit namelists that are generated in <code class="docutils literal"><span class="pre">$CASEROOT/CaseDocs</span></code>. They are there only to document model behavior.</p>
 </div>
-<p class="last">they are only there to document model behavior.</p>
 </td>
 </tr>
 <tr class="row-odd"><td>check_input_data</td>
-<td>Script for checking  for various input datasets and moves them into place.</td>
+<td>Script for checking for various input data sets and moving them into place.</td>
 </tr>
 <tr class="row-even"><td>pelayout</td>
 <td>Script to query and modify the NTASKS, ROOTPE, and NTHRDS for each component model.  This a convenience script that can be used in place of xmlchange and xmlquery.</td>
@@ -203,12 +213,11 @@ You must run the case.build command after changing this file.</p>
 </td>
 </tr>
 <tr class="row-odd"><td>env_run.xml</td>
-<td><p class="first">Sets run-time settings such as length of run, frequency of restarts, output of coupler diagnostics,</p>
-<p class="last">and short-term and long-term archiving.  This file can be edited at any time before a job starts.</p>
-</td>
+<td>Sets runtime settings such as length of run, frequency of restarts, output of coupler diagnostics,
+and short-term and long-term archiving.  This file can be edited at any time before a job starts.</td>
 </tr>
 <tr class="row-even"><td>env_batch.xml</td>
-<td>Sets batch system specific settings such as wallclock time and queue name.</td>
+<td>Sets batch system settings such as wallclock time and queue name.</td>
 </tr>
 </tbody>
 </table>
@@ -223,7 +232,7 @@ You must run the case.build command after changing this file.</p>
 </colgroup>
 <tbody valign="top">
 <tr class="row-odd"><td>SourceMods</td>
-<td>Top-level directory containing sub-directories for each compset component where
+<td>Top-level directory containing subdirectories for each compset component where
 you can place modified source code for that component.</td>
 </tr>
 </tbody>
@@ -257,14 +266,13 @@ you can place modified source code for that component.</td>
 </colgroup>
 <tbody valign="top">
 <tr class="row-odd"><td>Buildconf/</td>
-<td><p class="first">Work directory containing scripts to generate component namelists and component and utility libraries (e.g., PIO, MCT)</p>
-<p class="last">You should never have to edit the contents of this directory.</p>
-</td>
+<td>Work directory containing scripts to generate component namelists and component and utility libraries
+(PIO or MCT, for example). You should never have to edit the contents of this directory.</td>
 </tr>
 <tr class="row-even"><td>LockedFiles/</td>
 <td><p class="first">Work directory that holds copies of files that should not be changed.</p>
 <p>Certain xml files are <em>locked</em> after their variables have been used by should no longer be changed.</p>
-<p class="last">CIME does this by <em>locking</em> a file and not permitting you to modify that file unless, depending on the file,                           <strong>case.setup &#8212;clean</strong> or  <strong>case.build &#8212;clean</strong> are called.</p>
+<p class="last">CIME does this by <em>locking</em> a file and not permitting you to modify that file unless, depending on the file,                              <code class="docutils literal"><span class="pre">case.setup</span> <span class="pre">--clean</span></code> or  <code class="docutils literal"><span class="pre">case.build</span> <span class="pre">--clean</span></code> is called.</p>
 </td>
 </tr>
 <tr class="row-odd"><td>Tools/</td>
@@ -275,19 +283,19 @@ you can place modified source code for that component.</td>
 </div></blockquote>
 </li>
 </ul>
-<p>The <code class="docutils literal"><span class="pre">$CASEROOT</span></code> xml files are organized so that variables can be locked at certain points to prevent users from changing variables after they have been resolved (used) in other parts of the scripts system.</p>
+<p>The <code class="docutils literal"><span class="pre">$CASEROOT</span></code> xml files are organized so that variables can be locked at certain points to prevent users from changing them after they have been resolved (used) in other parts of the scripts system.</p>
 <p>CIME does the following:</p>
 <ul class="simple">
 <li>Locks variables in <strong>env_case.xml</strong> after <strong>create_newcase</strong>.</li>
-<li>Locks variables in <strong>env_mach_pes.xml</strong> are locked after <strong>case.setup</strong>.</li>
+<li>Locks variables in <strong>env_mach_pes.xml</strong> after <strong>case.setup</strong>.</li>
 <li>Locks variables in <strong>env_build.xml</strong> after completion of <strong>case.build</strong>.</li>
 </ul>
 <p>Variables in <strong>env_run.xml</strong>, <strong>env_batch.xml</strong> and <strong>env_archive.xml</strong> are never locked, and most can be changed at any time. There are some exceptions in the <strong>env_batch.xml</strong> file.</p>
 <p>The <strong>env_case.html</strong> file can never be unlocked.</p>
-<p>These files can be &#8220;unlocked&#8221; as follows:</p>
+<p>These other files can be &#8220;unlocked&#8221; as follows:</p>
 <ul class="simple">
-<li><strong>case.setup &#8211;clean</strong> unlocks <strong>env_mach_pes.xml</strong></li>
-<li><strong>case.build &#8211;clean</strong> unlocks <strong>env_build.xml</strong></li>
+<li>To unlock <strong>env_mach_pes.xml</strong>, run <code class="docutils literal"><span class="pre">case.setup</span> <span class="pre">--clean</span></code>.</li>
+<li>To unlock <strong>env_build.xml</strong>, run <code class="docutils literal"><span class="pre">case.build</span> <span class="pre">--clean</span></code>.</li>
 </ul>
 </div>
 </div>
