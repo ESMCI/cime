@@ -27,7 +27,7 @@
     <script type="text/javascript" src="../_static/bizstyle.js"></script>
     <link rel="top" title="CIME 5.3.0_alpha17 documentation" href="../index.html" />
     <link rel="up" title="CIME User’s Guide Part 1: Basic Usage" href="index.html" />
-    <link rel="next" title="2. Porting and Validating CIME on a new Platform" href="porting-cime.html" />
+    <link rel="next" title="2. Porting and validating CIME on a new platform" href="porting-cime.html" />
     <link rel="prev" title="9. Troubleshooting" href="troubleshooting.html" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <!--[if lt IE 9]>
@@ -42,7 +42,7 @@
           <a href="../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="porting-cime.html" title="2. Porting and Validating CIME on a new Platform"
+          <a href="porting-cime.html" title="2. Porting and validating CIME on a new platform"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="troubleshooting.html" title="9. Troubleshooting"
@@ -72,7 +72,7 @@
                         title="previous chapter">9. Troubleshooting</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="porting-cime.html"
-                        title="next chapter">2. Porting and Validating CIME on a new Platform</a></p>
+                        title="next chapter">2. Porting and validating CIME on a new platform</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -146,7 +146,7 @@
 </div>
 <div class="section" id="where-are-compsets-defined">
 <span id="defining-compsets"></span><h2>1.1. Where are compsets defined?<a class="headerlink" href="#where-are-compsets-defined" title="Permalink to this headline">¶</a></h2>
-<p>CIME looks at the xml element <code class="docutils literal"><span class="pre">COMPSETS_SPEC_FILE</span></code> in the <strong>config_files.xml</strong> file to determine where to find the list of supported compsets lists all model components that set compsets.</p>
+<p>CIME looks at the xml element <code class="docutils literal"><span class="pre">COMPSETS_SPEC_FILE</span></code> in the <strong>config_files.xml</strong> file to determine which xml file to read in order to satisfy the configuration specifications defined in the compset longname.</p>
 <p>In the case of CESM, this xml element has the contents shown here, where <code class="docutils literal"><span class="pre">$SRCROOT</span></code> is the root of your CESM sandbox and contains <code class="docutils literal"><span class="pre">$CIMEROOT</span></code> as a subdirectory:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span>&lt;entry id=&quot;COMPSETS_SPEC_FILE&quot;&gt;
   &lt;type&gt;char&lt;/type&gt;
@@ -167,10 +167,6 @@
 &lt;/entry&gt;
 </pre></div>
 </div>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">CIME searches each of the <strong>config_compsets.xml</strong> files in the <code class="docutils literal"><span class="pre">&lt;value&gt;</span></code> nodes to determine if there is a match for the compset longname. If a match is found,  the value of the <em>component</em> attribute is set for all other searches that appear below.</p>
-</div>
 </div>
 <div class="section" id="where-are-component-specific-settings-defined-for-the-target-compset">
 <span id="defining-component-specific-compset-settings"></span><h2>1.2. Where are component-specific settings defined for the target compset?<a class="headerlink" href="#where-are-component-specific-settings-defined-for-the-target-compset" title="Permalink to this headline">¶</a></h2>
@@ -184,14 +180,14 @@
    ...
    &lt;default_value&gt;$CIMEROOT/driver_cpl/cime_config/config_component.xml&lt;/default_value&gt;
    ..
-        &lt;/entry&gt;
+   &lt;/entry&gt;
 
   &lt;entry id=&quot;CONFIG_CPL_FILE_MODEL_SPECIFIC&quot;&gt;
      &lt;default_value&gt;$CIMEROOT/driver_cpl/cime_config/config_component_$MODEL.xml&lt;/default_value&gt;
   &lt;/entry&gt;
 </pre></div>
 </div>
-<p>CIME then parses each of the nodes listed below, using using the value of the <em>component</em> attribute to determine which <strong>config_component.xml</strong> files to use for the requested compset longname.</p>
+<p>CIME then parses each of the nodes listed below, using using the value of the <em>component</em> attribute to determine which xml files to use for the requested compset longname.</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">entry</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;CONFIG_ATM_FILE&quot;</span><span class="o">&gt;</span>
 <span class="o">&lt;</span><span class="n">entry</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;CONFIG_ESP_FILE&quot;</span><span class="o">&gt;</span>
 <span class="o">&lt;</span><span class="n">entry</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;CONFIG_ICE_FILE&quot;</span><span class="o">&gt;</span>
@@ -202,7 +198,7 @@
 <span class="o">&lt;</span><span class="n">entry</span> <span class="nb">id</span><span class="o">=</span><span class="s2">&quot;CONFIG_WAV_FILE&quot;</span><span class="o">&gt;</span>
 </pre></div>
 </div>
-<p>As an example, the possible atmosphere components for CESM have the following associated <strong>config_component.xml</strong> files.</p>
+<p>As an example, the possible atmosphere components for CESM have the following associated xml files.</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span>&lt;entry id=&quot;CONFIG_ATM_FILE&quot;&gt;
   &lt;type&gt;char&lt;/type&gt;
   &lt;default_value&gt;unset&lt;/default_value&gt;
@@ -230,11 +226,11 @@
 <p>CIME looks at the xml element <code class="docutils literal"><span class="pre">PES_SPEC_FILE</span></code> in the <strong>config_files.xml</strong> file to determine where
 to find the supported out-of-the-box model grids for the target component.</p>
 <p>Each component that sets compsets has an associated <strong>config_pes.xml</strong> file that specifies an out-of-the-box pe-layout for those compsets.
-In addition, this pe-layout might also have dependencies on the model grid and the target machine.
+The pe-layout might also have dependencies on the model grid and the target machine.
 Finally, there might be more than one out-of-the-box pe-layout that could be used for a compset/grid/machine combination: one for a low processor setting and one for a high processor setting.</p>
 <p>A typical entry in <strong>config_pes.xml</strong> looks like this:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">grid</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;a%T62&quot;</span><span class="o">&gt;</span>
-  <span class="o">&lt;</span><span class="n">mach</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;yellowstone|pronghorn&quot;</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">mach</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;cheyenne&quot;</span><span class="o">&gt;</span>
     <span class="o">&lt;</span><span class="n">pes</span> <span class="n">pesize</span><span class="o">=</span><span class="s2">&quot;any&quot;</span> <span class="n">compset</span><span class="o">=</span><span class="s2">&quot;DATM%IAF&quot;</span><span class="o">&gt;</span>
     <span class="o">.......</span>
     <span class="o">&lt;/</span><span class="n">pes</span><span class="o">&gt;</span>
@@ -247,7 +243,7 @@ Finally, there might be more than one out-of-the-box pe-layout that could be use
 <li><p class="first">grid match</p>
 <p>CIME first searches the grid nodes for a grid match in <strong>config_grids.xml</strong>.
 The search is based on a regular expression match for the grid longname.
-All nodes that have a grid match are used in the subsequent search. If there is no grid match,  all nodes that have <code class="docutils literal"><span class="pre">&lt;grid</span> <span class="pre">name=&quot;any&quot;&gt;</span></code> are used in the subsequent search.</p>
+All nodes that have a grid match are used in the subsequent search. If there is no grid match, all nodes that have <code class="docutils literal"><span class="pre">&lt;grid</span> <span class="pre">name=&quot;any&quot;&gt;</span></code> are used in the subsequent search.</p>
 </li>
 <li><p class="first">machine match</p>
 <p>CIME next uses the list of nodes obtained in the grid match to search for the machine name using the <code class="docutils literal"><span class="pre">&lt;mach&gt;</span></code> nodes. If there is no machine match, then all nodes with <code class="docutils literal"><span class="pre">&lt;machine</span> <span class="pre">name=&quot;any&quot;&gt;</span></code> are used in the subsequent search.</p>
@@ -332,7 +328,7 @@ All nodes that have a grid match are used in the subsequent search. If there is 
           <a href="../genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="porting-cime.html" title="2. Porting and Validating CIME on a new Platform"
+          <a href="porting-cime.html" title="2. Porting and validating CIME on a new platform"
              >next</a> |</li>
         <li class="right" >
           <a href="troubleshooting.html" title="9. Troubleshooting"

@@ -187,7 +187,7 @@ Running CTest tests for __command_line_test__/__command_line_test__.
 </div>
 <div class="section" id="how-to-add-unit-testing-support-on-your-machine">
 <span id="adding-machine-support"></span><h2>5.3. How to add unit testing support on your machine<a class="headerlink" href="#how-to-add-unit-testing-support-on-your-machine" title="Permalink to this headline">¶</a></h2>
-<p>The below instructions assume that you have already ported CIME to your machine, by following the instructions in <a class="reference internal" href="porting-cime.html"><span class="doc">Porting and Validating CIME on a new Platform</span></a>.
+<p>The below instructions assume that you have already ported CIME to your machine, by following the instructions in <a class="reference internal" href="porting-cime.html"><span class="doc">Porting and validating CIME on a new platform</span></a>.
 Once you have done that, you can add unit testing support by building pFUnit on your machine and then pointing to the build in <code class="docutils literal"><span class="pre">config_compilers.xml</span></code>.</p>
 <p>At a minimum, you should do a serial build of pFUnit (without MPI or OpenMP), using the default compiler on your machine (according to <code class="docutils literal"><span class="pre">config_machines.xml</span></code>).
 That is the default used by <code class="docutils literal"><span class="pre">run_tests.py</span></code>, and is required for <code class="docutils literal"><span class="pre">scripts_regression_tests.py</span></code> to run the unit tests on your machine.
