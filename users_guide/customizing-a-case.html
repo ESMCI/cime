@@ -77,7 +77,6 @@
 </li>
 </ul>
 </li>
-<li><a class="reference internal" href="#customizing-acme-active-component-specific-namelist-settings">7.6. Customizing ACME active component-specific namelist settings</a></li>
 </ul>
 </li>
 </ul>
@@ -234,16 +233,18 @@ For example, to change the driver namelist value of <code class="docutils litera
 DATM can be user-customized by changing either its  <em>namelist input files</em> or its <em>stream files</em>.
 The namelist file for DATM is <strong>datm_in</strong> (or <strong>datm_in_NNN</strong> for multiple instances).</p>
 <ul>
+<li><p class="first">To modify <strong>datm_in</strong> or <strong>datm_in_NNN</strong>, add the appropriate keyword/value pair(s) for the namelist changes that you want at the end of the <strong>user_nl_datm</strong> file or the <strong>user_nl_datm_NNN</strong> file in <code class="docutils literal"><span class="pre">$CASEROOT</span></code>.</p>
+</li>
 <li><p class="first">To modify the contents of a DATM stream file, first run <strong>preview_namelists</strong> to list the <em>streams.txt</em> files in the <strong>CaseDocs/</strong> directory. Then, in the same directory:</p>
 <ol class="arabic">
 <li><dl class="first docutils">
 <dt>Make a <em>copy</em> of the file with the string <em>&#8220;user_&#8221;</em> prepended.</dt>
-<dd><p class="first last"><code class="docutils literal"><span class="pre">&gt;</span>&nbsp; <span class="pre">cp</span> <span class="pre">datm.streams.txt.[extension]</span>&nbsp; <span class="pre">user_datm.streams.txt[extension.</span></code></p>
+<dd><p class="first last"><code class="docutils literal"><span class="pre">&gt;</span> <span class="pre">cp</span> <span class="pre">datm.streams.txt.[extension]</span> <span class="pre">user_datm.streams.txt[extension.</span></code></p>
 </dd>
 </dl>
 </li>
 <li><dl class="first docutils">
-<dt><strong>Change the permissions of the file to be writeable.</strong></dt>
+<dt><strong>Change the permissions of the file to be writeable.</strong> (chmod 644)</dt>
 <dd><p class="first last"><code class="docutils literal"><span class="pre">chmod</span> <span class="pre">644</span> <span class="pre">user_datm.streams.txt[extension</span></code></p>
 </dd>
 </dl>
@@ -262,29 +263,56 @@ After calling <strong>preview_namelists</strong> again, your edits should appear
 <p>DOCN is discussed in detail in <a class="reference internal" href="../data_models/data-ocean.html#data-ocean"><span class="std std-ref">data ocean overview</span></a>.
 DOCN can be user-customized by changing either its namelist input or its stream files.
 The namelist file for DOCN is <strong>docn_in</strong> (or <strong>docn_in_NNN</strong> for multiple instances).</p>
-<ul class="simple">
-<li>To modify <strong>docn_in</strong> or <strong>docn_in_NNN</strong>, add the appropriate keyword/value pair(s) for the namelist changes that you want at the end of the file in <code class="docutils literal"><span class="pre">$CASEROOT</span></code>.</li>
-<li>To modify the contents of a DOCN stream file, first use <strong>preview_namelists</strong> to obtain the contents of the stream txt files in <code class="docutils literal"><span class="pre">CaseDocs/</span></code>. Then:<ol class="arabic">
-<li>place a <em>copy</em> of this file in <code class="docutils literal"><span class="pre">$CASEROOT</span></code> with the string <em>&#8220;user_&#8221;</em> prepended</li>
-<li><strong>Make sure you change the permissions of the file to be writeable</strong> (chmod 644)</li>
-<li>modify the <code class="docutils literal"><span class="pre">user_docn.streams.txt.*</span></code> file.</li>
+<ul>
+<li><p class="first">To modify <strong>docn_in</strong> or <strong>docn_in_NNN</strong>, add the appropriate keyword/value pair(s) for the namelist changes that you want at the end of the file in <code class="docutils literal"><span class="pre">$CASEROOT</span></code>.</p>
+</li>
+<li><p class="first">To modify the contents of a DOCN stream file, first run <strong>preview_namelists</strong> to list the <em>streams.txt</em> files in the <strong>CaseDocs/</strong> directory. Then, in the same directory:</p>
+<ol class="arabic">
+<li><dl class="first docutils">
+<dt>Make a <em>copy</em> of the file with the string <em>&#8220;user_&#8221;</em> prepended.</dt>
+<dd><p class="first last"><code class="docutils literal"><span class="pre">&gt;</span> <span class="pre">cp</span> <span class="pre">docn.streams.txt.[extension]</span> <span class="pre">user_docn.streams.txt[extension.</span></code></p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><strong>Change the permissions of the file to be writeable.</strong> (chmod 644)</dt>
+<dd><p class="first last"><code class="docutils literal"><span class="pre">chmod</span> <span class="pre">644</span> <span class="pre">user_docn.streams.txt[extension</span></code></p>
+</dd>
+</dl>
+</li>
+<li><p class="first">Edit the <strong>user_docn.streams.txt.*</strong> file.</p>
+</li>
 </ol>
 </li>
 </ul>
-<p>As an example, if the stream text file in <code class="docutils literal"><span class="pre">CaseDocs/</span></code> is <code class="docutils literal"><span class="pre">docn.stream.txt.prescribed</span></code>, the modified copy in <code class="docutils literal"><span class="pre">$CASEROOT</span></code> should be <code class="docutils literal"><span class="pre">user_docn.streams.txt.prescribed</span></code>.
-After changing this file and calling <strong>preview_namelists</strong> again, you should see your new modifications appear in <code class="docutils literal"><span class="pre">CaseDocs/docn.streams.txt.prescribed</span></code>.</p>
+<p><strong>Example</strong></p>
+<p>As an example, if the stream text file is <strong>docn.stream.txt.prescribed</strong>, the modified copy should be <strong>user_docn.streams.txt.prescribed</strong>.
+After changing this file and calling <strong>preview_namelists</strong> again, your edits should appear in <strong>CaseDocs/docn.streams.txt.prescribed</strong>.</p>
 </div>
 <div class="section" id="data-sea-ice-dice">
 <h3>7.4.3. Data Sea-ice (DICE)<a class="headerlink" href="#data-sea-ice-dice" title="Permalink to this headline">¶</a></h3>
 <p>DICE is discussed in detail in <a class="reference internal" href="../data_models/data-seaice.html#data-seaice"><span class="std std-ref">data sea-ice overview</span></a>.
-DICE can be user-customized in by either changing its namelist input or its stream files.
+DICE can be user-customized by changing either its namelist input or its stream files.
 The namelist file for DICE is <code class="docutils literal"><span class="pre">dice_in</span></code> (or <code class="docutils literal"><span class="pre">dice_in_NNN</span></code> for multiple instances) and its values can be changed by editing the <code class="docutils literal"><span class="pre">$CASEROOT</span></code> file <code class="docutils literal"><span class="pre">user_nl_dice</span></code> (or <code class="docutils literal"><span class="pre">user_nl_dice_NNN</span></code> for multiple instances).</p>
-<ul class="simple">
-<li>To modify <code class="docutils literal"><span class="pre">dice_in</span></code>, add the appropriate keyword/value pair(s) for the namelist changes you want at the end of the <code class="docutils literal"><span class="pre">$CASEROOT</span></code> file <code class="docutils literal"><span class="pre">user_nl_dice</span></code> (or <code class="docutils literal"><span class="pre">user_nl_dice_NNN</span></code> for multiple instances).</li>
-<li>To modify the contents of a DICE stream file, first use <strong>preview_namelists</strong> to obtain the contents of the stream txt files in <code class="docutils literal"><span class="pre">CaseDocs/</span></code>. Then:<ol class="arabic">
-<li>place a <em>copy</em> of this file in <code class="docutils literal"><span class="pre">$CASEROOT</span></code> with the string <em>&#8220;user_&#8221;</em> prepended</li>
-<li><strong>Make sure you change the permissions of the file to be writeable</strong> (chmod 644)</li>
-<li>modify the <code class="docutils literal"><span class="pre">user_dice.streams.txt.*</span></code> file.</li>
+<ul>
+<li><p class="first">To modify <strong>dice_in</strong> or <strong>dice_in_NNN</strong>, add the appropriate keyword/value pair(s) for the namelist changes that you want at the end of the file in <code class="docutils literal"><span class="pre">$CASEROOT</span></code>.</p>
+</li>
+<li><p class="first">To modify the contents of a DICE stream file, first run <strong>preview_namelists</strong> to list the <em>streams.txt</em> files in the <strong>CaseDocs/</strong> directory. Then, in the same directory:</p>
+<ol class="arabic">
+<li><dl class="first docutils">
+<dt>Make a <em>copy</em> of the file with the string <em>&#8220;user_&#8221;</em> prepended.</dt>
+<dd><p class="first last"><code class="docutils literal"><span class="pre">&gt;</span> <span class="pre">cp</span> <span class="pre">dice.streams.txt.[extension]</span> <span class="pre">user_dice.streams.txt[extension.</span></code></p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><strong>Change the permissions of the file to be writeable.</strong> (chmod 644)</dt>
+<dd><p class="first last"><code class="docutils literal"><span class="pre">chmod</span> <span class="pre">644</span> <span class="pre">user_dice.streams.txt[extension</span></code></p>
+</dd>
+</dl>
+</li>
+<li><p class="first">Edit the <strong>user_dice.streams.txt.*</strong> file.</p>
+</li>
 </ol>
 </li>
 </ul>
@@ -292,14 +320,27 @@ The namelist file for DICE is <code class="docutils literal"><span class="pre">d
 <div class="section" id="data-land-dlnd">
 <h3>7.4.4. Data Land (DLND)<a class="headerlink" href="#data-land-dlnd" title="Permalink to this headline">¶</a></h3>
 <p>DLND is discussed in detail in <a class="reference internal" href="../data_models/data-lnd.html#data-lnd"><span class="std std-ref">data land overview</span></a>.
-DLND can be user-customized in by either changing its namelist input or its stream files.
+DLND can be user-customized by changing either its namelist input or its stream files.
 The namelist file for DLND is <code class="docutils literal"><span class="pre">dlnd_in</span></code> (or <code class="docutils literal"><span class="pre">dlnd_in_NNN</span></code> for multiple instances) and its values can be changed by editing the <code class="docutils literal"><span class="pre">$CASEROOT</span></code> file <code class="docutils literal"><span class="pre">user_nl_dlnd</span></code> (or <code class="docutils literal"><span class="pre">user_nl_dlnd_NNN</span></code> for multiple instances).</p>
-<ul class="simple">
-<li>To modify <code class="docutils literal"><span class="pre">dlnd_in</span></code>, add the appropriate keyword/value pair(s) for the namelist changes you want at the end of the <code class="docutils literal"><span class="pre">$CASEROOT</span></code> file <code class="docutils literal"><span class="pre">user_nl_dlnd</span></code> (or <code class="docutils literal"><span class="pre">user_nl_dlnd_NNN</span></code> for multiple instances).</li>
-<li>To modify the contents of a DLND stream file, first use <strong>preview_namelists</strong> to obtain the contents of the stream txt files in <code class="docutils literal"><span class="pre">CaseDocs/</span></code>. Then:<ol class="arabic">
-<li>place a <em>copy</em> of this file in <code class="docutils literal"><span class="pre">$CASEROOT</span></code> with the string <em>&#8220;user_&#8221;</em> prepended</li>
-<li><strong>Make sure you change the permissions of the file to be writeable</strong> (chmod 644)</li>
-<li>modify the <code class="docutils literal"><span class="pre">user_dlnd.streams.txt.*</span></code> file.</li>
+<ul>
+<li><p class="first">To modify <strong>dlnd_in</strong> or <strong>dlnd_in_NNN</strong>, add the appropriate keyword/value pair(s) for the namelist changes that you want at the end of the file in <code class="docutils literal"><span class="pre">$CASEROOT</span></code>.</p>
+</li>
+<li><p class="first">To modify the contents of a DLND stream file, first run <strong>preview_namelists</strong> to list the <em>streams.txt</em> files in the <strong>CaseDocs/</strong> directory. Then, in the same directory:</p>
+<ol class="arabic">
+<li><dl class="first docutils">
+<dt>Make a <em>copy</em> of the file with the string <em>&#8220;user_&#8221;</em> prepended.</dt>
+<dd><p class="first last"><code class="docutils literal"><span class="pre">&gt;</span> <span class="pre">cp</span> <span class="pre">dlnd.streams.txt.[extension]</span> <span class="pre">user_dlnd.streams.txt[extension.</span></code></p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><strong>Change the permissions of the file to be writeable.</strong> (chmod 644)</dt>
+<dd><p class="first last"><code class="docutils literal"><span class="pre">chmod</span> <span class="pre">644</span> <span class="pre">user_dlnd.streams.txt[extension</span></code></p>
+</dd>
+</dl>
+</li>
+<li><p class="first">Edit the <strong>user_dlnd.streams.txt.*</strong> file.</p>
+</li>
 </ol>
 </li>
 </ul>
@@ -307,14 +348,27 @@ The namelist file for DLND is <code class="docutils literal"><span class="pre">d
 <div class="section" id="data-river-drof">
 <h3>7.4.5. Data River (DROF)<a class="headerlink" href="#data-river-drof" title="Permalink to this headline">¶</a></h3>
 <p>DROF is discussed in detail in <a class="reference internal" href="../data_models/data-river.html#data-river"><span class="std std-ref">data river overview</span></a>.
-DROF can be user-customized in by either changing its namelist input or its stream files.
+DROF can be user-customized by changing either its namelist input or its stream files.
 The namelist file for DROF is <code class="docutils literal"><span class="pre">drof_in</span></code> (or <code class="docutils literal"><span class="pre">drof_in_NNN</span></code> for multiple instances) and its values can be changed by editing the <code class="docutils literal"><span class="pre">$CASEROOT</span></code> file <code class="docutils literal"><span class="pre">user_nl_drof</span></code> (or <code class="docutils literal"><span class="pre">user_nl_drof_NNN</span></code> for multiple instances).</p>
-<ul class="simple">
-<li>To modify <code class="docutils literal"><span class="pre">drof_in</span></code>, add the appropriate keyword/value pair(s) for the namelist changes you want at the end of the <code class="docutils literal"><span class="pre">$CASEROOT</span></code> file <code class="docutils literal"><span class="pre">user_nl_drof</span></code> (or <code class="docutils literal"><span class="pre">user_nl_drof_NNN</span></code> for multiple instances).</li>
-<li>To modify the contents of a DROF stream file, first use <strong>preview_namelists</strong> to obtain the contents of the stream txt files in <code class="docutils literal"><span class="pre">CaseDocs/</span></code>. Then:<ol class="arabic">
-<li>place a <em>copy</em> of this file in <code class="docutils literal"><span class="pre">$CASEROOT</span></code> with the string <em>&#8220;user_&#8221;</em> prepended</li>
-<li><strong>Make sure you change the permissions of the file to be writeable</strong> (chmod 644)</li>
-<li>modify the <code class="docutils literal"><span class="pre">user_drof.streams.txt.*</span></code> file.</li>
+<ul>
+<li><p class="first">To modify <strong>drof_in</strong> or <strong>drof_in_NNN</strong>, add the appropriate keyword/value pair(s) for the namelist changes that you want at the end of the file in <code class="docutils literal"><span class="pre">$CASEROOT</span></code>.</p>
+</li>
+<li><p class="first">To modify the contents of a DROF stream file, first run <strong>preview_namelists</strong> to list the <em>streams.txt</em> files in the <strong>CaseDocs/</strong> directory. Then, in the same directory:</p>
+<ol class="arabic">
+<li><dl class="first docutils">
+<dt>Make a <em>copy</em> of the file with the string <em>&#8220;user_&#8221;</em> prepended.</dt>
+<dd><p class="first last"><code class="docutils literal"><span class="pre">&gt;</span> <span class="pre">cp</span> <span class="pre">drof.streams.txt.[extension]</span> <span class="pre">user_drof.streams.txt[extension.</span></code></p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt><strong>Change the permissions of the file to be writeable.</strong> (chmod 644)</dt>
+<dd><p class="first last"><code class="docutils literal"><span class="pre">chmod</span> <span class="pre">644</span> <span class="pre">user_drof.streams.txt[extension</span></code></p>
+</dd>
+</dl>
+</li>
+<li><p class="first">Edit the <strong>user_drof.streams.txt.*</strong> file.</p>
+</li>
 </ol>
 </li>
 </ul>
@@ -324,36 +378,43 @@ The namelist file for DROF is <code class="docutils literal"><span class="pre">d
 <h2>7.5. Customizing CESM active component-specific namelist settings<a class="headerlink" href="#customizing-cesm-active-component-specific-namelist-settings" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="cam">
 <h3>7.5.1. CAM<a class="headerlink" href="#cam" title="Permalink to this headline">¶</a></h3>
-<p>CAM&#8217;s <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">configure</a> and <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">build-namelist</a> utilities are called by <code class="docutils literal"><span class="pre">Buildconf/cam.buildnml.csh</span></code>.
-<a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">CAM_CONFIG_OPTS</a>, <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">CAM_NAMELIST_OPTS</a> and <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">CAM_NML_USECASE</a> are used to set compset variables (e.g., &#8220;-phys cam5&#8221; for CAM_CONFIG_OPTS) and in general should not be modified for supported compsets.
-For a complete documentation of namelist settings, see <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">CAM namelist variables</a>.
-To modify CAM namelist settings, you should add the appropriate keyword/value pair at the end of the <code class="docutils literal"><span class="pre">$CASEROOT/user_nl_cam</span></code> file (see the documentation for each file at the top of that file).
-For example, to change the solar constant to 1363.27, modify the <code class="docutils literal"><span class="pre">user_nl_cam</span></code> file to contain the following line at the end &#8220;solar_const=1363.27&#8221;.
-To see the result of adding this, call <strong>preview_namelists</strong> and verify that this new value appears in <code class="docutils literal"><span class="pre">CaseDocs/atm_in</span></code>.</p>
+<p>CAM&#8217;s <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">configure</a> and <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">build-namelist</a> utilities are called by <code class="docutils literal"><span class="pre">Buildconf/cam.buildnml.csh</span></code>. The folllowing are used to set compset variables (for example, &#8220;-phys cam5&#8221; for CAM_CONFIG_OPTS) and in general should not be modified for supported compsets:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>`CAM_CONFIG_OPTS &lt;http://www.cesm.ucar.edu/models/cesm2.0/external-link-here&gt;`_
+`CAM_NAMELIST_OPTS &lt;http://www.cesm.ucar.edu/models/cesm2.0/external-link-here&gt;`_
+`CAM_NML_USECASE &lt;http://www.cesm.ucar.edu/models/cesm2.0/external-link-here&gt;`_
+</pre></div>
+</div>
+<p>For complete documentation of namelist settings, see <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">CAM namelist variables</a>.</p>
+<p>To modify CAM namelist settings, add the appropriate keyword/value pair at the end of the <strong>$CASEROOT/user_nl_cam</strong> file. (See the documentation for each file at the top of that file.)</p>
+<p>For example, to change the solar constant to 1363.27, modify <strong>user_nl_cam</strong> file to contain the following line at the end:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">solar_const</span><span class="o">=</span><span class="mf">1363.27</span>
+</pre></div>
+</div>
+<p>To see the result, call <strong>preview_namelists</strong> and verify that the new value appears in <strong>CaseDocs/atm_in</strong>.</p>
 </div>
 <div class="section" id="clm">
 <h3>7.5.2. CLM<a class="headerlink" href="#clm" title="Permalink to this headline">¶</a></h3>
-<p>CIME generates the CLM namelist variables by calling <code class="docutils literal"><span class="pre">$SRCROOT/components/clm/cime_config/buildnml</span></code>.
-CLM-specific CIME xml variables are set in <code class="docutils literal"><span class="pre">$SRCROOT/components/clm/cime_config/config_component.xml</span></code> and are used by CLM&#8217;s <code class="docutils literal"><span class="pre">buildnml</span></code> script to generate the namelist.
-For a complete documentation of namelist settings, see <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">CLM namelist variables</a>.
-To modify CLM namelist settings, you should add the appropriate keyword/value pair at the end of the <code class="docutils literal"><span class="pre">$CASEROOT/user_nl_clm</span></code> file
-To see the result of your change, call <strong>preview_namelists</strong> and verify that the changes appear correctly in <code class="docutils literal"><span class="pre">CaseDocs/lnd_in</span></code>.</p>
+<p>CIME calls <strong>$SRCROOT/components/clm/cime_config/buildnml</strong> to generate the CLM namelist variables.
+CLM-specific CIME xml variables are set in <strong>$SRCROOT/components/clm/cime_config/config_component.xml</strong> and are used by CLM&#8217;s <strong>buildnml</strong> script to generate the namelist.</p>
+<p>For complete documentation of namelist settings, see <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">CLM namelist variables</a>.</p>
+<p>To modify CLM namelist settings, add the appropriate keyword/value pair at the end of the <strong>$CASEROOT/user_nl_clm</strong> file. To see the result, call <strong>preview_namelists</strong> and verify that the changes appear correctly in <strong>CaseDocs/lnd_in</strong>.</p>
 </div>
 <div class="section" id="rtm">
 <h3>7.5.3. RTM<a class="headerlink" href="#rtm" title="Permalink to this headline">¶</a></h3>
-<p>CIME generates the RTM namelist variables by calling <code class="docutils literal"><span class="pre">$SRCROOT/components/rtm/cime_config/buildnml</span></code>.
-For a complete documentation of namelist settings, see RTM namelist variables.
-To modify RTM namelist settings you should add the appropriate keyword/value pair at the end of the <code class="docutils literal"><span class="pre">$CASEROOT/user_nl_rtm</span></code> file.
-To see the result of your change, call <strong>preview_namelists</strong> and verify that the changes appear correctly in <code class="docutils literal"><span class="pre">CaseDocs/rof_in</span></code>.</p>
+<p>CIME calls <strong>$SRCROOT/components/rtm/cime_config/buildnml</strong> to generate the RTM namelist variables.</p>
+<p>For complete documentation of namelist settings, see RTM namelist variables. //SHOULD THERE BE A LINK HERE?//</p>
+<p>To modify RTM namelist settings, add the appropriate keyword/value pair at the end of the <strong>$CASEROOT/user_nl_rtm</strong> file. To see the result of your change, call <strong>preview_namelists</strong> and verify that the changes appear correctly in <strong>CaseDocs/rof_in</strong>.</p>
 <p>&#8212;
 CICE
 &#8212;</p>
-<p>CICE&#8217;s <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">configure</a> and <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">build-namelist</a> utilities are now called by <code class="docutils literal"><span class="pre">Buildconf/cice.buildnml.csh</span></code>. Note that <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">CICE_CONFIG_OPTS</a>, and <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">CICE_NAMELIST_OPTS</a> are used to set compset specific variables and in general should not be modified for supported compsets. For a complete documentation of namelist settings, see <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">CICE namelist variables</a>. To modify CICE namelist settings, you should add the appropriate keyword/value pair at the end of the <code class="docutils literal"><span class="pre">$CASEROOT/user_nl_cice</span></code> file (see the documentation for each file at the top of that file). To see the result of your change, call <strong>preview_namelists</strong> and verify that the changes appear correctly in <code class="docutils literal"><span class="pre">CaseDocs/ice_in</span></code>.</p>
-<p>In addition, <strong>case.setup</strong> creates CICE&#8217;s compile time <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">block decomposition variables</a> in <code class="docutils literal"><span class="pre">env_build.xml</span></code> as follows:</p>
+<p>The CICE <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">configure</a> and <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">build-namelist</a> utilities are called by <strong>Buildconf/cice.buildnml.csh</strong>. Note that <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">CICE_CONFIG_OPTS</a> and <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">CICE_NAMELIST_OPTS</a> are used to set compset-specific variables and in general should not be modified for supported compsets.</p>
+<p>For complete documentation of namelist settings, see <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">CICE namelist variables</a>.</p>
+<p>To modify CICE namelist settings, add the appropriate keyword/value pair at the end of the <strong>$CASEROOT/user_nl_cice</strong> file. (See the documentation for each file at the top of that file.) To see the result of your change, call <strong>preview_namelists</strong> and verify that the changes appear correctly in <strong>CaseDocs/ice_in</strong>.</p>
+<p>In addition, <strong>case.setup</strong> creates CICE&#8217;s compile time <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">block decomposition variables</a> in <strong>env_build.xml</strong> as follows:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span>./case.setup
-  ⇓
+  ?
 Buildconf/cice.buildnml.csh and $NTASKS_ICE and $NTHRDS_ICE
-  ⇓
+  ?
 env_build.xml variables CICE_BLCKX, CICE_BLCKY, CICE_MXBLCKS, CICE_DECOMPTYPE
 CPP variables in cice.buildexe.csh
 </pre></div>
@@ -361,25 +422,24 @@ CPP variables in cice.buildexe.csh
 </div>
 <div class="section" id="pop2">
 <h3>7.5.4. POP2<a class="headerlink" href="#pop2" title="Permalink to this headline">¶</a></h3>
-<p>See <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">POP2 namelist variables</a> for a complete description of the POP2 run-time namelist variables. Note that <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">OCN_COUPLING, OCN_ICE_FORCING, OCN_TRANSIENT</a> are normally utilized ONLY to set compset specific variables and should not be edited. For a complete documentation of namelist settings, see <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">CICE namelist variables</a>. To modify POP2 namelist settings, you should add the appropriate keyword/value pair at the end of the <code class="docutils literal"><span class="pre">$CASEROOT/user_nl_pop2</span></code> file (see the documentation for each file at the top of that file). To see the result of your change, call <strong>preview_namelists</strong> and verify that the changes appear correctly in <code class="docutils literal"><span class="pre">CaseDocs/ocn_in</span></code>.</p>
-<p>In addition, <strong>cesm_setup</strong> also generates POP2&#8217;s compile time compile time <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">block decomposition variables</a> in <code class="docutils literal"><span class="pre">env_build.xml</span></code> as follows:</p>
+<p>See <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">POP2 namelist variables</a> for complete description of the POP2 runtime namelist variables. Note that <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">OCN_COUPLING, OCN_ICE_FORCING andOCN_TRANSIENT</a> are normally used ONLY to set compset-specific variables and should not be edited. For complete documentation of namelist settings, see <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">CICE namelist variables</a>.</p>
+<p>To modify POP2 namelist settings, add the appropriate keyword/value pair at the end of the <strong>$CASEROOT/user_nl_pop2</strong> file. (See the documentation for each file at the top of that file.) To see the result of your change, call <strong>preview_namelists</strong> and verify that the changes appear correctly in <strong>CaseDocs/ocn_in</strong>.</p>
+<p>In addition, <strong>cesm_setup</strong> generates POP2&#8217;s compile-time <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">block decomposition variables</a> in <strong>env_build.xml</strong> as shown here:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span>./cesm_setup
-    ⇓
+    ?
 Buildconf/pop2.buildnml.csh and $NTASKS_OCN and $NTHRDS_OCN
-    ⇓
+    ?
 env_build.xml variables POP2_BLCKX, POP2_BLCKY, POP2_MXBLCKS, POP2_DECOMPTYPE
 CPP variables in pop2.buildexe.csh
 </pre></div>
 </div>
 <div class="section" id="cism">
 <h4>7.5.4.1. CISM<a class="headerlink" href="#cism" title="Permalink to this headline">¶</a></h4>
-<p>See <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">CISM namelist variables</a> for a complete description of the CISM run-time namelist variables. This includes variables that appear both in <code class="docutils literal"><span class="pre">cism_in</span></code> and in <code class="docutils literal"><span class="pre">cism.config</span></code>. To modify any of these settings, you should add the appropriate keyword/value pair at the end of the <code class="docutils literal"><span class="pre">user_nl_cism</span></code> file (see the documentation for each file at the top of that file). To see the result of your change, call <strong>preview_namelists</strong> and verify that the changes appear correctly in <code class="docutils literal"><span class="pre">CaseDocs/cism_in</span></code> and <code class="docutils literal"><span class="pre">CaseDocs/cism.config</span></code>.</p>
-<p>There are also some run-time settings set via <code class="docutils literal"><span class="pre">env_run.xml</span></code>, as documented in <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">CISM run time variables</a> - in particular, the model resolution, set via <code class="docutils literal"><span class="pre">CISM_GRID</span></code>. The value of <code class="docutils literal"><span class="pre">CISM_GRID</span></code> determines the default value of a number of other namelist parameters.</p>
+<p>See <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">CISM namelist variables</a> for a complete description of the CISM runtime namelist variables. This includes variables that appear both in <strong>cism_in</strong> and in <strong>cism.config</strong>.</p>
+<p>To modify any of these settings, add the appropriate keyword/value pair at the end of the <strong>user_nl_cism</strong> file. (See the documentation for each file at the top of that file.) To see the result of your change, call <strong>preview_namelists</strong> and verify that the changes appear correctly in <strong>CaseDocs/cism_in</strong> and <strong>CaseDocs/cism.config</strong>.</p>
+<p>Some CISM runtime settings are sets via <strong>env_run.xml</strong>, as documented in <a class="reference external" href="http://www.cesm.ucar.edu/models/cesm2.0/external-link-here">CISM runtime variables</a>. The model resolution, for example, is set via <code class="docutils literal"><span class="pre">CISM_GRID</span></code>. The value of <code class="docutils literal"><span class="pre">CISM_GRID</span></code> determines the default value of a number of other namelist parameters.</p>
 </div>
 </div>
-</div>
-<div class="section" id="customizing-acme-active-component-specific-namelist-settings">
-<h2>7.6. Customizing ACME active component-specific namelist settings<a class="headerlink" href="#customizing-acme-active-component-specific-namelist-settings" title="Permalink to this headline">¶</a></h2>
 </div>
 </div>
 
