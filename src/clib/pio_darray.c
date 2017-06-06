@@ -463,8 +463,12 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
     wmulti_buffer *wmb;    /* The write multi buffer for one or more vars. */
     int recordvar;         /* Non-zero if this is a record variable. */
     int needsflush = 0;    /* True if we need to flush buffer. */
+#if PIO_USE_MALLOC
+    void *realloc_data = NULL;
+#else
     bufsize totfree;       /* Amount of free space in the buffer. */
     bufsize maxfree;       /* Max amount of free space in buffer. */
+#endif
     int mpierr = MPI_SUCCESS;  /* Return code from MPI functions. */
     int ierr = PIO_NOERR;  /* Return code. */
 
@@ -541,6 +545,24 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
     LOG((2, "wmb->num_arrays = %d arraylen = %d iodesc->mpitype_size = %d\n",
          wmb->num_arrays, arraylen, iodesc->mpitype_size));
 
+#if PIO_USE_MALLOC
+    /* Try realloc first and call flush if realloc fails. */
+    if (arraylen > 0)
+    {
+        realloc_data = realloc(wmb->data, (1 + wmb->num_arrays) * arraylen * iodesc->mpitype_size);
+        if (realloc_data)
+        {
+            needsflush = 0;
+            wmb->data = realloc_data;
+            LOG((2, "realloc got %ld bytes for data", (1 + wmb->num_arrays) * arraylen * iodesc->mpitype_size));
+        }
+        else /* Failed to realloc, but wmb->data is still valid for a flush. */
+        {
+            needsflush = 1;
+            LOG((2, "realloc failed to get %ld bytes for data", (1 + wmb->num_arrays) * arraylen * iodesc->mpitype_size));
+        }
+    }
+#else
     /* Find out how much free, contiguous space is available. */
     bfreespace(&totfree, &maxfree);
 
@@ -548,6 +570,7 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
      * the size of the current request needsflush is true. */
     if (needsflush == 0)
         needsflush = (maxfree <= 1.1 * (1 + wmb->num_arrays) * arraylen * iodesc->mpitype_size);
+#endif
 
     /* Tell all tasks on the computation communicator whether we need
      * to flush data. */
@@ -559,6 +582,7 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
     /* Flush data if needed. */
     if (needsflush > 0)
     {
+#if !PIO_USE_MALLOC
 #ifdef PIO_ENABLE_LOGGING
         /* Collect a debug report about buffer. */
         cn_buffer_report(ios, true);
@@ -566,6 +590,7 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
              " arraylen * iodesc->mpitype_size = %ld totfree = %ld\n", maxfree, wmb->num_arrays,
              (1 + wmb->num_arrays) * arraylen * iodesc->mpitype_size, totfree));
 #endif /* PIO_ENABLE_LOGGING */
+#endif /* !PIO_USE_MALLOC */
 
         /* If needsflush == 2 flush to disk otherwise just flush to io
          * node. This will cause PIOc_write_darray_multi() to be
@@ -574,6 +599,15 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
             return pio_err(ios, file, ierr, __FILE__, __LINE__);
     }
 
+#if PIO_USE_MALLOC
+    /* Try realloc again if there is a flush. */
+    if (arraylen > 0 && needsflush > 0)
+    {
+        if (!(wmb->data = realloc(wmb->data, (1 + wmb->num_arrays) * arraylen * iodesc->mpitype_size)))
+            return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
+        LOG((2, "after a flush, realloc got %ld bytes for data", (1 + wmb->num_arrays) * arraylen * iodesc->mpitype_size));
+    }
+#else
     /* Get memory for data. */
     if (arraylen > 0)
     {
@@ -581,6 +615,7 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
             return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
         LOG((2, "got %ld bytes for data", (1 + wmb->num_arrays) * arraylen * iodesc->mpitype_size));
     }
+#endif
 
     /* vid is an array of variable ids in the wmb list, grow the list
      * and add the new entry. */
