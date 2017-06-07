@@ -173,7 +173,7 @@ PRE    pause-resume test: by default a BFB test of pause-resume cycling
 
 LII    CLM initial condition interpolation test
 
-LVIRTUALGLC   CLM test: Ensure that adding virtual glacier columns doesn't change answers
+LVIRTUALGLC   CLM test: Verify that adding virtual glacier columns doesn't change answers
 
 ======================================================================
     Infrastructural tests for CIME. These are used by scripts_regression_tests.
@@ -462,7 +462,7 @@ NODEFAIL          Tests restart upon detected node failure. Generates fake failu
   </test>
 
   <test NAME="LVIRTUALGLC">
-    <DESC>CLM test: Ensure that adding virtual glacier columns doesn't change answers</DESC>
+    <DESC>CLM test: Verify that adding virtual glacier columns doesn't change answers</DESC>
     <INFO_DBUG>1</INFO_DBUG>
     <DOUT_S>FALSE</DOUT_S>
     <CONTINUE_RUN>FALSE</CONTINUE_RUN>
