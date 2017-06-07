@@ -216,8 +216,8 @@
 </pre></div>
 </div>
 <p>If the compset&#8217;s atm component attribute is <code class="docutils literal"><span class="pre">datm</span></code>, the file <code class="docutils literal"><span class="pre">$CIMEROOT/components/data_comps/datm/cime_config/config_component.xml</span></code> specifies all possible component settings for <code class="docutils literal"><span class="pre">DATM</span></code>.</p>
-<p>The schema for every <strong>config_component.xml</strong> file has a <code class="docutils literal"><span class="pre">&lt;description&gt;</span></code> node that specifies all possible values that can follow the <code class="docutils literal"><span class="pre">%</span></code> character in the compset name. To list the possible values, use the <strong>manage_case</strong> command with <code class="docutils literal"><span class="pre">--query-component-name</span></code> as shown in this example for CESM cam:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">manage_case</span> <span class="o">--</span><span class="n">query</span><span class="o">-</span><span class="n">component</span><span class="o">-</span><span class="n">name</span> <span class="n">cam</span>
+<p>The schema for every <strong>config_component.xml</strong> file has a <code class="docutils literal"><span class="pre">&lt;description&gt;</span></code> node that specifies all possible values that can follow the <code class="docutils literal"><span class="pre">%</span></code> character in the compset name. To list the possible values, use the <strong>query_case</strong> command with <code class="docutils literal"><span class="pre">--components</span></code> as shown in this example for CAM:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">query_case</span> <span class="o">--</span><span class="n">components</span> <span class="n">cam</span>
 </pre></div>
 </div>
 </div>

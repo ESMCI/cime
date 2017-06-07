@@ -154,12 +154,14 @@ of grids with different resolutions.</dd>
 <dt><strong>machine</strong>:</dt>
 <dd>The <em>machine</em> is the computer you are using to run CIME and build and run the climate model. It could be a workstation
 or a national supercomputer. The <em>machine</em> is typically the UNIX hostname but it could be any string.</dd>
+<dt><strong>out-of-the-box</strong>:</dt>
+<dd>Any case or capability available with a basic installation of a CIME-driven model.</dd>
 </dl>
 </div>
 <div class="section" id="setting-defaults">
 <h2>1.3. Setting defaults<a class="headerlink" href="#setting-defaults" title="Permalink to this headline">¶</a></h2>
 <p>Before using any CIME commands, set the <code class="docutils literal"><span class="pre">CIME_MODEL</span></code> environment variable. In csh, use <strong>setenv</strong> as shown and replace
-<strong>&lt;model&gt;</strong> with the appropriate text, such as &#8220;acme&#8221; or &#8220;cesm.&#8221;</p>
+<strong>&lt;model&gt;</strong> with the appropriate text. Current possibilities are &#8220;acme&#8221; or &#8220;cesm.&#8221;</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">setenv</span> <span class="n">CIME_MODEL</span> <span class="o">&lt;</span><span class="n">model</span><span class="o">&gt;</span>
 </pre></div>
 </div>

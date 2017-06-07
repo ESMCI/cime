@@ -56,10 +56,8 @@
   <h3><a href="../index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">3. Creating a Case</a><ul>
-<li><a class="reference internal" href="#calling-create-newcase">3.1. Calling <strong>create_newcase</strong></a><ul>
-<li><a class="reference internal" href="#result-of-calling-create-newcase">3.1.1. Result of calling create_newcase</a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#calling-create-newcase">3.1. Calling <strong>create_newcase</strong></a></li>
+<li><a class="reference internal" href="#results-of-calling-create-newcase">3.2. Results of calling <strong>create_newcase</strong></a></li>
 </ul>
 </li>
 </ul>
@@ -114,8 +112,9 @@
 </dd>
 </dl>
 <p>CIME supports out-of-the-box <em>component sets</em>, <em>model grids</em> and <em>hardware platforms</em>. Compsets and grids were discussed in the <a class="reference internal" href="case-basics.html#case-basics"><span class="std std-ref">previous section</span></a>.</p>
-<div class="section" id="result-of-calling-create-newcase">
-<h3>3.1.1. Result of calling create_newcase<a class="headerlink" href="#result-of-calling-create-newcase" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="results-of-calling-create-newcase">
+<h2>3.2. Results of calling <strong>create_newcase</strong><a class="headerlink" href="#results-of-calling-create-newcase" title="Permalink to this headline">¶</a></h2>
 <p>Following is a simple example of using <strong>create_newcase</strong> with aliases for both compset and grid names.
 The complete example appears in the <a class="reference internal" href="faq/basics-a-basic-example.html#faq-basic-example"><span class="std std-ref">basic example</span></a>.</p>
 <dl class="docutils">
@@ -139,8 +138,8 @@ The complete example appears in the <a class="reference internal" href="faq/basi
 <blockquote>
 <div><table border="1" class="docutils">
 <colgroup>
-<col width="9%" />
-<col width="91%" />
+<col width="11%" />
+<col width="89%" />
 </colgroup>
 <tbody valign="top">
 <tr class="row-odd"><td>case.setup</td>
@@ -152,30 +151,28 @@ The complete example appears in the <a class="reference internal" href="faq/basi
 <tr class="row-odd"><td>case.submit</td>
 <td>Script to submit the case to run using the machine&#8217;s batch queueing system.</td>
 </tr>
-<tr class="row-even"><td>case.st_archive</td>
-<td>Script to perform short-term archiving of output data.</td>
+<tr class="row-even"><td>case.cmpgen_namelist</td>
+<td>Script to perform namelist baseline operations (compare, generate, or both).</td>
 </tr>
-<tr class="row-odd"><td>case.lt_archive</td>
-<td>Script to perform long-term archiving of output data.</td>
-</tr>
-<tr class="row-even"><td>xmlchange</td>
+<tr class="row-odd"><td>xmlchange</td>
 <td>Script to modify values in the xml files.</td>
 </tr>
-<tr class="row-odd"><td>xmlquery</td>
+<tr class="row-even"><td>xmlquery</td>
 <td>Script to query values in the xml files.</td>
 </tr>
-<tr class="row-even"><td>preview_namelists</td>
-<td><p class="first">Script for users to see their component namelists in <code class="docutils literal"><span class="pre">$CASEROOT/CaseDocs</span></code> before running the model.</p>
-<div class="last admonition warning">
-<p class="first admonition-title">Warning</p>
-<p class="last">Users should not edit namelists that are generated in <code class="docutils literal"><span class="pre">$CASEROOT/CaseDocs</span></code>. They are there only to document model behavior.</p>
-</div>
-</td>
+<tr class="row-odd"><td>preview_namelists</td>
+<td>Script for users to see their component namelists in <code class="docutils literal"><span class="pre">$CASEROOT/CaseDocs</span></code> before running the model.</td>
+</tr>
+<tr class="row-even"><td>preview_run</td>
+<td>Script for users to see batch submit and mpirun command.</td>
 </tr>
 <tr class="row-odd"><td>check_input_data</td>
 <td>Script for checking for various input data sets and moving them into place.</td>
 </tr>
-<tr class="row-even"><td>pelayout</td>
+<tr class="row-even"><td>check_case</td>
+<td>Script to verify case is set up correctly</td>
+</tr>
+<tr class="row-odd"><td>pelayout</td>
 <td>Script to query and modify the NTASKS, ROOTPE, and NTHRDS for each component model.  This a convenience script that can be used in place of xmlchange and xmlquery.</td>
 </tr>
 </tbody>
@@ -190,33 +187,36 @@ The complete example appears in the <a class="reference internal" href="faq/basi
 <col width="86%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td>env_mach_specific.xml</td>
+<tr class="row-odd"><td>env_archive.xml</td>
+<td>Defines patters of files to be sent to the short-term archive.</td>
+</tr>
+<tr class="row-even"><td>env_mach_specific.xml</td>
 <td><p class="first">Sets a number of machine-specific environment variables for building and/or running.</p>
 <p class="last">You can edit this file at any time.</p>
 </td>
 </tr>
-<tr class="row-even"><td>env_case.xml</td>
+<tr class="row-odd"><td>env_case.xml</td>
 <td><p class="first">Sets case specific variables (e.g. model components, model and case root directories).</p>
 <p>Cannot be modified after a case has been created.</p>
 <p class="last">To make changes, your should re-run <strong>create_newcase</strong> with different options.</p>
 </td>
 </tr>
-<tr class="row-odd"><td>env_build.xml</td>
+<tr class="row-even"><td>env_build.xml</td>
 <td><p class="first">Sets model build settings.</p>
 <p class="last">This includes component resolutions and component compile-time configuration options.
 You must run the case.build command after changing this file.</p>
 </td>
 </tr>
-<tr class="row-even"><td>env_mach_pes.xml</td>
+<tr class="row-odd"><td>env_mach_pes.xml</td>
 <td><p class="first">Sets component machine-specific processor layout (see <a class="reference internal" href="customizing-a-case.html#changing-the-pe-layout"><span class="std std-ref">changing pe layout</span></a> ).</p>
 <p class="last">The settings in this are critical to a well-load-balanced simulation (see <a class="reference internal" href="optimizing-processor-layout.html#optimizing-processor-layout"><span class="std std-ref">load balancing</span></a>).</p>
 </td>
 </tr>
-<tr class="row-odd"><td>env_run.xml</td>
+<tr class="row-even"><td>env_run.xml</td>
 <td>Sets runtime settings such as length of run, frequency of restarts, output of coupler diagnostics,
 and short-term and long-term archiving.  This file can be edited at any time before a job starts.</td>
 </tr>
-<tr class="row-even"><td>env_batch.xml</td>
+<tr class="row-odd"><td>env_batch.xml</td>
 <td>Sets batch system settings such as wallclock time and queue name.</td>
 </tr>
 </tbody>
@@ -283,7 +283,7 @@ you can place modified source code for that component.</td>
 </div></blockquote>
 </li>
 </ul>
-<p>The <code class="docutils literal"><span class="pre">$CASEROOT</span></code> xml files are organized so that variables can be locked at certain points to prevent users from changing them after they have been resolved (used) in other parts of the scripts system.</p>
+<p>The <code class="docutils literal"><span class="pre">$CASEROOT</span></code> xml files are organized so that variables can be locked at certain points after they have been resolved (used) in other parts of the scripts system.</p>
 <p>CIME does the following:</p>
 <ul class="simple">
 <li>Locks variables in <strong>env_case.xml</strong> after <strong>create_newcase</strong>.</li>
@@ -297,7 +297,6 @@ you can place modified source code for that component.</td>
 <li>To unlock <strong>env_mach_pes.xml</strong>, run <code class="docutils literal"><span class="pre">case.setup</span> <span class="pre">--clean</span></code>.</li>
 <li>To unlock <strong>env_build.xml</strong>, run <code class="docutils literal"><span class="pre">case.build</span> <span class="pre">--clean</span></code>.</li>
 </ul>
-</div>
 </div>
 </div>
 
