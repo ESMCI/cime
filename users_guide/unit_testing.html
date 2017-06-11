@@ -122,12 +122,12 @@
 <h2>5.1. Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="what-is-a-unit-test">
 <h3>5.1.1. What is a unit test?<a class="headerlink" href="#what-is-a-unit-test" title="Permalink to this headline">¶</a></h3>
-<p>A unit test is a fast, self-verying test of a small piece of code.
-A single unit test typically covers 10s to 100s of lines of code (e.g., a single function or small module).
-It typically runs in just milliseconds, and produces a simple pass/fail result.</p>
+<p>A unit test is a fast, self-verifying test of a small piece of code.
+A single unit test typically covers 10s to 100s of lines of code; a single function or small module, for example.
+It typically runs in milliseconds and produces a simple pass/fail result.</p>
 <p>Unit tests:</p>
 <ul class="simple">
-<li>Ensure that code remains correct as it is modified (in this respect, they complement the CIME system tests; the remaining bullet points are unique to unit tests).</li>
+<li>Ensure that code remains correct as it is modified. In this respect, unit tests complement the CIME system tests.</li>
 <li>Ensure that new code is correct.</li>
 <li>Can help guide development, via test-driven development (TDD).</li>
 <li>Provide executable documentation of the intended behavior of a piece of code.</li>
@@ -140,36 +140,36 @@ It typically runs in just milliseconds, and produces a simple pass/fail result.<
 These consist of:</p>
 <ol class="arabic simple">
 <li>CMake tools to support building and running tests via CMake and CTest.</li>
-<li>A python script that provides a simple front-end to the CMake-based tests.</li>
+<li>A Python script that provides a simple front end for the CMake-based tests.</li>
 </ol>
-<p>The Fortran unit tests use <a class="reference external" href="https://sourceforge.net/projects/pfunit/">pFUnit</a>, which is a Fortran unit testing framework that follows conventions of other xUnit frameworks (JUnit, etc.).</p>
+<p>The Fortran unit tests use <a class="reference external" href="https://sourceforge.net/projects/pfunit/">pFUnit</a>, which is a Fortran testing framework that follows conventions of other xUnit frameworks.</p>
 </div>
 </div>
 <div class="section" id="running-cime-s-fortran-unit-tests">
 <span id="running-unit-tests"></span><h2>5.2. Running CIME&#8217;s Fortran unit tests<a class="headerlink" href="#running-cime-s-fortran-unit-tests" title="Permalink to this headline">¶</a></h2>
 <p>These instructions assume that you are using a machine that already has pFUnit installed, along with the necessary support in CIME.
-If that is not the case, then see the section <a class="reference internal" href="#adding-machine-support"><span class="std std-ref">How to add unit testing support on your machine</span></a>.</p>
-<p>From the top-level cime directory, you can run all of CIME&#8217;s Fortran unit tests simply by running:</p>
+If that is not the case, see <a class="reference internal" href="#adding-machine-support"><span class="std std-ref">How to add unit testing support on your machine</span></a>.</p>
+<p>From the top-level CIME directory, you can run all of CIME&#8217;s Fortran unit tests by running:</p>
 <div class="highlight-shell"><div class="highlight"><pre><span></span>&gt; scripts/fortran_unit_testing/run_tests.py --build-dir MY_BUILD_DIR
 </pre></div>
 </div>
-<p>where you can replace <code class="docutils literal"><span class="pre">MY_BUILD_DIR</span></code> with a path to the directory where you would like the unit test build files to be placed.
-If you would like to ensure a completely clean build, you can use:</p>
+<p>You can replace <code class="docutils literal"><span class="pre">MY_BUILD_DIR</span></code> with a path to the directory where you would like the unit test build files to be placed.
+To ensure a completely clean build, use:</p>
 <div class="highlight-shell"><div class="highlight"><pre><span></span>&gt; scripts/fortran_unit_testing/run_tests.py --build-dir <span class="sb">`</span>mktemp -d ./unit_tests.XXXXXXXX<span class="sb">`</span>
 </pre></div>
 </div>
-<p>Once you have built the unit tests once (whether the build was successful or not), you can reuse the same build directory later to speed up the rebuild.
-There are a number of useful arguments to <code class="docutils literal"><span class="pre">run_tests.py</span></code>; for full usage information, run:</p>
-<div class="highlight-shell"><div class="highlight"><pre><span></span>&gt; scripts/fortran_unit_testing/run_tests.py -h
+<p>Once you have built the unit tests (whether the build was successful or not), you can reuse the same build directory later to speed up the rebuild.
+There are a number of useful arguments to <strong>run_tests.py</strong>. For full usage information, run:</p>
+<div class="highlight-shell"><div class="highlight"><pre><span></span>&gt; scripts/fortran_unit_testing/run_tests.py --help
 </pre></div>
 </div>
-<p>If the build is successful, then you should get a message that looks like this:</p>
+<p>If your build is successful, you will get a message like this:</p>
 <div class="highlight-none"><div class="highlight"><pre><span></span>==================================================
 Running CTest tests for __command_line_test__/__command_line_test__.
 ==================================================
 </pre></div>
 </div>
-<p>This will be followed by a list of tests, with a Pass/Fail message for each, like this:</p>
+<p>This will be followed by a list of tests, with a Pass/Fail message for each, like these examples:</p>
 <div class="highlight-none"><div class="highlight"><pre><span></span>Test project /Users/sacks/cime/unit_tests.0XHUkfqL/__command_line_test__/__command_line_test__
       Start  1: avect_wrapper
  1/17 Test  #1: avect_wrapper ....................   Passed    0.02 sec
@@ -179,35 +179,35 @@ Running CTest tests for __command_line_test__/__command_line_test__.
  3/17 Test  #3: glc_elevclass ....................   Passed    0.01 sec
 </pre></div>
 </div>
-<p>You should then see a final message like this:</p>
+<p>You will also see a final message like this:</p>
 <div class="highlight-none"><div class="highlight"><pre><span></span>100% tests passed, 0 tests failed out of 17
 </pre></div>
 </div>
-<p>For machines that have a serial build of pFUnit available for the default compiler, these unit tests are run automatically as part of <code class="docutils literal"><span class="pre">scripts_regression_tests</span></code>.</p>
+<p>These unit tests are run automatically as part of <strong>scripts_regression_tests</strong> on machines that have a serial build of pFUnit available for the default compiler.</p>
 </div>
 <div class="section" id="how-to-add-unit-testing-support-on-your-machine">
 <span id="adding-machine-support"></span><h2>5.3. How to add unit testing support on your machine<a class="headerlink" href="#how-to-add-unit-testing-support-on-your-machine" title="Permalink to this headline">¶</a></h2>
-<p>The below instructions assume that you have already ported CIME to your machine, by following the instructions in <a class="reference internal" href="porting-cime.html"><span class="doc">Porting and validating CIME on a new platform</span></a>.
-Once you have done that, you can add unit testing support by building pFUnit on your machine and then pointing to the build in <code class="docutils literal"><span class="pre">config_compilers.xml</span></code>.</p>
-<p>At a minimum, you should do a serial build of pFUnit (without MPI or OpenMP), using the default compiler on your machine (according to <code class="docutils literal"><span class="pre">config_machines.xml</span></code>).
-That is the default used by <code class="docutils literal"><span class="pre">run_tests.py</span></code>, and is required for <code class="docutils literal"><span class="pre">scripts_regression_tests.py</span></code> to run the unit tests on your machine.
-Optionally, you can also provide pFUnit builds with other supported compilers on your machine.
-If you&#8217;d like, you can also provide additional pFUnit builds with other combinations of MPI and OpenMP on or off.
-However, at this time, no unit tests require parallel support, so there is no benefit gained by providing MPI-enabled builds.</p>
+<p>The following instructions assume that you have ported CIME to your machine by following the instructions in <a class="reference internal" href="porting-cime.html"><span class="doc">Porting and validating CIME on a new platform</span></a>.
+If you have done that, you can add unit testing support by building pFUnit on your machine and then pointing to the build in your <strong>config_compilers.xml</strong> file.</p>
+<p>At a minimum, do a serial build of pFUnit (without MPI or OpenMP) using the default compiler on your machine.
+That is the default that <strong>run_tests.py</strong> and that is required for <strong>scripts_regression_tests.py</strong> to run the unit tests on your machine.</p>
+<p>Optionally, you can also provide pFUnit builds with other supported compilers on your machine.
+You can also provide additional pFUnit builds with other combinations of MPI and OpenMP on or off.
+At this time, however, no unit tests require parallel support so no benefit is gained by providing MPI-enabled builds.</p>
 <div class="section" id="building-pfunit">
 <h3>5.3.1. Building pFUnit<a class="headerlink" href="#building-pfunit" title="Permalink to this headline">¶</a></h3>
-<p>To perform a serial build of pFUnit, follow these instructions:</p>
+<p>For a serial build of pFUnit, follow these instructions:</p>
 <ol class="arabic">
-<li><p class="first">Download pFUnit from <a class="reference external" href="https://sourceforge.net/projects/pfunit/">https://sourceforge.net/projects/pfunit/</a></p>
+<li><p class="first">Download pFUnit from <a class="reference external" href="https://sourceforge.net/projects/pfunit/">https://sourceforge.net/projects/pfunit/</a>.</p>
 </li>
-<li><p class="first">Set up your environment to be similar to the environment used in system builds of CIME.
+<li><p class="first">Set up your environment to be similar to the environment used in CIME system builds.
 For example, load the appropriate compilers into your path.
-An easy way to achieve this is to run:</p>
+An easy way to achieve this is to run the following with an optional compiler argument:</p>
 <div class="highlight-shell"><div class="highlight"><pre><span></span>&gt; <span class="nv">$CIMEROOT</span>/tools/configure --mpilib mpi-serial
 </pre></div>
 </div>
-<p>(with an optional <code class="docutils literal"><span class="pre">--compiler</span></code> argument; you&#8217;ll also want to change the <code class="docutils literal"><span class="pre">--mpilib</span></code> argument if you&#8217;re doing an MPI-enabled build).
-Then source either <code class="docutils literal"><span class="pre">./.env_mach_specific.sh</span></code> or <code class="docutils literal"><span class="pre">./.env_mach_specific.csh</span></code>, depending on your shell.</p>
+<p>If you are doing an MPI-enabled build, also change the <code class="docutils literal"><span class="pre">--mpilib</span></code> argument.
+Then source either <strong>./.env_mach_specific.sh</strong> or <strong>./.env_mach_specific.csh</strong>, depending on your shell.</p>
 </li>
 <li><p class="first">For convenience, set the <code class="docutils literal"><span class="pre">PFUNIT</span></code> environment variable to point to the location where you want to install pFUnit. For example (in bash):</p>
 <div class="highlight-shell"><div class="highlight"><pre><span></span>&gt; <span class="nb">export</span> <span class="nv">PFUNIT</span><span class="o">=</span>/glade/p/cesmdata/cseg/tools/pFUnit/pFUnit3.2.8_cheyenne_Intel17.0.1_noMPI_noOpenMP
@@ -233,8 +233,8 @@ Then source either <code class="docutils literal"><span class="pre">./.env_mach_
 </div>
 </li>
 </ol>
-<p>If you&#8217;d like, you can then repeat this process with different compiler environments and/or different choices of <code class="docutils literal"><span class="pre">-DMPI</span></code> and <code class="docutils literal"><span class="pre">-DOPENMP</span></code> in the cmake step (each of these can have the value <code class="docutils literal"><span class="pre">NO</span></code> or <code class="docutils literal"><span class="pre">YES</span></code>).
-Make sure to choose a different installation directory for each of these, by setting the <code class="docutils literal"><span class="pre">PFUNIT</span></code> variable differently.</p>
+<p>You can repeat this process with different compiler environments and/or different choices of <code class="docutils literal"><span class="pre">-DMPI</span></code> and <code class="docutils literal"><span class="pre">-DOPENMP</span></code> in the cmake step. (Each of them can have the value <code class="docutils literal"><span class="pre">NO</span></code> or <code class="docutils literal"><span class="pre">YES</span></code>.)
+Make sure to choose a different installation directory for each build by setting the <code class="docutils literal"><span class="pre">PFUNIT</span></code> variable differently.</p>
 </div>
 <div class="section" id="adding-to-the-xml-file">
 <h3>5.3.2. Adding to the xml file<a class="headerlink" href="#adding-to-the-xml-file" title="Permalink to this headline">¶</a></h3>
