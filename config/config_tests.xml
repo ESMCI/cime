@@ -173,6 +173,8 @@ PRE    pause-resume test: by default a BFB test of pause-resume cycling
 
 LII    CLM initial condition interpolation test
 
+LVIRTUALGLC   CLM test: Verify that adding virtual glacier columns doesn't change answers
+
 ======================================================================
     Infrastructural tests for CIME. These are used by scripts_regression_tests.
     Users won't generally run these.
@@ -457,6 +459,24 @@ NODEFAIL          Tests restart upon detected node failure. Generates fake failu
     <REST_OPTION>never</REST_OPTION>
     <HIST_OPTION>$STOP_OPTION</HIST_OPTION>
     <HIST_N>$STOP_N</HIST_N>
+  </test>
+
+  <test NAME="LVIRTUALGLC">
+    <DESC>CLM test: Verify that adding virtual glacier columns doesn't change answers</DESC>
+    <INFO_DBUG>1</INFO_DBUG>
+    <DOUT_S>FALSE</DOUT_S>
+    <CONTINUE_RUN>FALSE</CONTINUE_RUN>
+    <REST_OPTION>never</REST_OPTION>
+    <!-- Need HIST_OPTION=never for this test because we expect answer changes
+         in the l2x fields that are separated by elevation class. So for this
+         test, we just ensure that there are no answer changes in
+         gridcell-average CLM fields, via comparison of the CLM history
+         files. This means that, for this test to be effective, it needs to be
+         done with a testmod that produces at least one CLM history file, which
+         should only contain gridcell-average fields. (If we had a way to
+         exclude individual fields from the list of compared fields, then we
+         could compare cpl hist files, excluding certain l2x fields.) -->
+    <HIST_OPTION>never</HIST_OPTION>
   </test>
 
   <test NAME="PEA">
