@@ -86,18 +86,18 @@
             
   <div class="section" id="multi-instance-component-functionality">
 <span id="multi-instance"></span><h1>6. Multi-instance component functionality<a class="headerlink" href="#multi-instance-component-functionality" title="Permalink to this headline">¶</a></h1>
-<p>The CIME coupling infrastructure has the capability to run multiple component instances under one model executable.
-The only caveat to this usage is that if N multiple instances of any one active component is used, then N multiple instances of ALL active components are required.
-More details are discussed below.
-The primary motivation for this development was to be able to run an ensemble Kalman-Filter for data assimilation and parameter estimation (e.g. UQ).
-However, it also provides you with the ability to run a set of experiments within a single model executable where each instance can have a different namelist, and have all the output go to one directory.</p>
-<p>In the following an F compset will be used as an illustration. Utilizing the multiple instance code involves the following steps:</p>
-<p>1. create the case</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">create_newcase</span> <span class="o">-</span><span class="n">case</span> <span class="n">Fmulti</span> <span class="o">-</span><span class="n">compset</span> <span class="n">F</span> <span class="o">-</span><span class="n">res</span> <span class="n">ne30_g16</span>
+<p>The CIME coupling infrastructure is capable of running multiple component instances under one model executable.
+One caveat: If N multiple instances of any one active component are used, the same number of multiple instances of ALL active components are required.
+More details are discussed below.</p>
+<p>The primary motivation for this development was to be able to run an ensemble Kalman-Filter for data assimilation and parameter estimation (UQ, for example).
+However, it also provides the ability to run a set of experiments within a single model executable where each instance can have a different namelist, and to have all the output go to one directory.</p>
+<p>An F compset is used in the following example. Using the multiple-instance code involves the following steps:</p>
+<p>1. Create the case.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">create_newcase</span> <span class="o">--</span><span class="n">case</span> <span class="n">Fmulti</span> <span class="o">--</span><span class="n">compset</span> <span class="n">F</span> <span class="o">--</span><span class="n">res</span> <span class="n">ne30_g16</span>
 <span class="o">&gt;</span> <span class="n">cd</span> <span class="n">Fmulti</span>
 </pre></div>
 </div>
-<p>2. Lets assume the following out of the box pe-layout</p>
+<p>2. Assume this is the out-of-the-box pe-layout:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">NTASKS</span><span class="p">(</span><span class="n">ATM</span><span class="p">)</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">NTHRDS</span><span class="p">(</span><span class="n">ATM</span><span class="p">)</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">ROOTPE</span><span class="p">(</span><span class="n">ATM</span><span class="p">)</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">NINST</span><span class="p">(</span><span class="n">ATM</span><span class="p">)</span><span class="o">=</span><span class="mi">1</span>
 <span class="n">NTASKS</span><span class="p">(</span><span class="n">LND</span><span class="p">)</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">NTHRDS</span><span class="p">(</span><span class="n">LND</span><span class="p">)</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">ROOTPE</span><span class="p">(</span><span class="n">LND</span><span class="p">)</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">NINST</span><span class="p">(</span><span class="n">LND</span><span class="p">)</span><span class="o">=</span><span class="mi">1</span>
 <span class="n">NTASKS</span><span class="p">(</span><span class="n">ICE</span><span class="p">)</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">NTHRDS</span><span class="p">(</span><span class="n">ICE</span><span class="p">)</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">ROOTPE</span><span class="p">(</span><span class="n">ICE</span><span class="p">)</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">NINST</span><span class="p">(</span><span class="n">ICE</span><span class="p">)</span><span class="o">=</span><span class="mi">1</span>
@@ -107,25 +107,26 @@ However, it also provides you with the ability to run a set of experiments withi
 <span class="n">NTASKS</span><span class="p">(</span><span class="n">CPL</span><span class="p">)</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">NTHRDS</span><span class="p">(</span><span class="n">CPL</span><span class="p">)</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">ROOTPE</span><span class="p">(</span><span class="n">CPL</span><span class="p">)</span><span class="o">=</span><span class="mi">0</span>
 </pre></div>
 </div>
-<p>In this F compset, the atm, lnd, rof are active components, the ocn is a prescribed data component, cice is a mixed prescribed/active component (ice-coverage is prescribed) and glc and wav are stub components.
-Lets say we want to run 2 instances of CAM in this experiment.
-The current implementation of multi-instances will also require you to run 2 instances of CLM, CICE and RTM.
-However, you have the flexibility to run either 1 or 2 instances of DOCN (we can ignore glc and wav since they do not do anything in this compset).
-To run 2 instances of CAM, CLM, CICE, RTM and DOCN, all you need to do is to invoke the following command in your <code class="docutils literal"><span class="pre">$CASEROOT</span></code>:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">xmlchange</span> <span class="n">NINST_ATM</span><span class="o">=</span><span class="mi">2</span>
-<span class="o">./</span><span class="n">xmlchange</span> <span class="n">NINST_LND</span><span class="o">=</span><span class="mi">2</span>
-<span class="o">./</span><span class="n">xmlchange</span> <span class="n">NINST_ICE</span><span class="o">=</span><span class="mi">2</span>
-<span class="o">./</span><span class="n">xmlchange</span> <span class="n">NINST_ROF</span><span class="o">=</span><span class="mi">2</span>
-<span class="o">./</span><span class="n">xmlchange</span> <span class="n">NINST_OCN</span><span class="o">=</span><span class="mi">2</span>
+<p>The atm, lnd and rof are active components in this compset. The ocn is a prescribed data component, cice is a mixed prescribed/active component (ice-coverage is prescribed), and glc and wav are stub components.</p>
+<p>Let&#8217;s say we want to run two instances of CAM in this experiment.
+We will also have to run two instances of CLM, CICE and RTM.
+However, we can run either one or two instances of DOCN, and we can ignore glc and wav since they do not do anything in this compset as stub components.</p>
+<p>To run two instances of CAM, CLM, CICE, RTM and DOCN, invoke the following commands in your <strong>$CASEROOT</strong> directory:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="o">./</span><span class="n">xmlchange</span> <span class="n">NINST_ATM</span><span class="o">=</span><span class="mi">2</span>
+<span class="o">&gt;</span> <span class="o">./</span><span class="n">xmlchange</span> <span class="n">NINST_LND</span><span class="o">=</span><span class="mi">2</span>
+<span class="o">&gt;</span> <span class="o">./</span><span class="n">xmlchange</span> <span class="n">NINST_ICE</span><span class="o">=</span><span class="mi">2</span>
+<span class="o">&gt;</span> <span class="o">./</span><span class="n">xmlchange</span> <span class="n">NINST_ROF</span><span class="o">=</span><span class="mi">2</span>
+<span class="o">&gt;</span> <span class="o">./</span><span class="n">xmlchange</span> <span class="n">NINST_OCN</span><span class="o">=</span><span class="mi">2</span>
 </pre></div>
 </div>
-<p>As a result of this, you will have 2 instances of CAM, CLM and CICE (prescribed), RTM, and DOCN,  each running concurrently on 64 MPI tasks  <strong>TODO: put in reference to xmlchange&#8221;.</strong></p>
-<p>3. Setup the case</p>
+<p>As a result, you will have two instances of CAM, CLM and CICE (prescribed), RTM, and DOCN, each running concurrently on 64 MPI tasks.</p>
+<p><strong>TODO: put in reference to xmlchange&#8221;.</strong></p>
+<p>3. Set up the case</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="o">./</span><span class="n">case</span><span class="o">.</span><span class="n">setup</span>
 </pre></div>
 </div>
-<p>New user_nl_xxx_NNNN file (where NNNN is the number of the component instances) will be generated when <strong>case.setup</strong> is called.
-In particular, calling <strong>case.setup</strong> with the above <code class="docutils literal"><span class="pre">env_mach_pes.xml</span></code> file will result in the following <code class="docutils literal"><span class="pre">user_nl_*</span></code> files in <code class="docutils literal"><span class="pre">$CASEROOT</span></code></p>
+<p>A new <strong>user_nl_xxx_NNNN</strong> file (where NNNN is the number of the component instances) is generated when <strong>case.setup</strong> is called.
+When calling <strong>case.setup</strong> with the above <code class="docutils literal"><span class="pre">env_mach_pes.xml</span></code> file specifically, these files are created in <strong>$CASEROOT</strong>:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">user_nl_cam_0001</span><span class="p">,</span>  <span class="n">user_nl_cam_0002</span>
 <span class="n">user_nl_cice_0001</span><span class="p">,</span> <span class="n">user_nl_cice_0002</span>
 <span class="n">user_nl_clm_0001</span><span class="p">,</span>  <span class="n">user_nl_clm_0002</span>
@@ -134,7 +135,7 @@ In particular, calling <strong>case.setup</strong> with the above <code class="d
 <span class="n">user_nl_cpl</span>
 </pre></div>
 </div>
-<p>and the following <code class="docutils literal"><span class="pre">*_in_*</span></code> files and <code class="docutils literal"><span class="pre">*txt*</span></code> files in $CASEROOT/CaseDocs:</p>
+<p>Also, <strong>case.setup</strong> creates the following <code class="docutils literal"><span class="pre">*_in_*</span></code> files and <code class="docutils literal"><span class="pre">*txt*</span></code> files in <strong>$CASEROOT/CaseDocs</strong>:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">atm_in_0001</span><span class="p">,</span> <span class="n">atm_in_0002</span>
 <span class="n">docn</span><span class="o">.</span><span class="n">streams</span><span class="o">.</span><span class="n">txt</span><span class="o">.</span><span class="n">prescribed_0001</span><span class="p">,</span> <span class="n">docn</span><span class="o">.</span><span class="n">streams</span><span class="o">.</span><span class="n">txt</span><span class="o">.</span><span class="n">prescribed_0002</span>
 <span class="n">docn_in_0001</span><span class="p">,</span> <span class="n">docn_in_0002</span>
@@ -145,15 +146,15 @@ In particular, calling <strong>case.setup</strong> with the above <code class="d
 <span class="n">rof_in_0001</span><span class="p">,</span> <span class="n">rof_in_0002</span>
 </pre></div>
 </div>
-<p>The namelist for each component instance can be modified by changing the corresponding user_nl_xxx_NNNN file for that component instance.
-Modifying the user_nl_cam_0002 will result in the namelist changes you put in to be active ONLY for instance 2 of CAM.
-To change the DOCN stream txt file instance 0002, you should place a copy of <code class="docutils literal"><span class="pre">docn.streams.txt.prescribed_0002</span></code> in <code class="docutils literal"><span class="pre">$CASEROOT</span></code> with the name <code class="docutils literal"><span class="pre">user_docn.streams.txt.prescribed_0002</span></code> and modify it accordlingly.</p>
-<p>It is also important to stress the following points:</p>
+<p>The namelist for each component instance can be modified by changing the corresponding <strong>user_nl_xxx_NNNN</strong> file.
+Modifying <strong>user_nl_cam_0002</strong> will result in your namelist changes being active ONLY for the second instance of CAM.
+To change the DOCN stream txt file instance 0002, copy <strong>docn.streams.txt.prescribed_0002</strong> to your <strong>$CASEROOT</strong> directory with the name <strong>user_docn.streams.txt.prescribed_0002</strong> and modify it accordlingly.</p>
+<p>Also keep these important points in mind:</p>
 <ol class="arabic simple">
-<li><strong>Different component instances can ONLY differ by differences in namelist settings - they are ALL using the same model executable.</strong></li>
-<li>Only 1 coupler component is supported currently in multiple instance implementation.</li>
-<li><code class="docutils literal"><span class="pre">user_nl_xxx_NN</span></code> files once they are created by <strong>case.setup</strong> <em>ARE NOT</em> removed by calling <strong>case.setup -clean</strong>.</li>
-<li>In general, you should run multiple instances concurrently (the default setting in <code class="docutils literal"><span class="pre">env_mach_pes.xml</span></code>).
+<li><strong>Multiple component instances can differ ONLY in namelist settings; they ALL use the same model executable.</strong></li>
+<li>Multiple-instance implementation supports only one coupler component.</li>
+<li>Calling <strong>case.setup</strong> with <code class="docutils literal"><span class="pre">--clean</span></code> <em>DOES NOT</em> remove the <strong>user_nl_xxx_NN</strong> files created by <strong>case.setup</strong>.</li>
+<li>Multiple instances generally should un concurrently, which is the default setting in <strong>env_mach_pes.xml</strong>.
 The serial setting is only for EXPERT USERS in upcoming development code implementations.</li>
 </ol>
 </div>
