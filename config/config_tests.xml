@@ -471,9 +471,11 @@ NODEFAIL          Tests restart upon detected node failure. Generates fake failu
          in the l2x fields that are separated by elevation class. So for this
          test, we just ensure that there are no answer changes in
          gridcell-average CLM fields, via comparison of the CLM history
-         files. (If we had a way to exclude individual fields from the list of
-         compared fields, then we could compare cpl hist files, excluding
-         certain l2x fields.) -->
+         files. This means that, for this test to be effective, it needs to be
+         done with a testmod that produces at least one CLM history file, which
+         should only contain gridcell-average fields. (If we had a way to
+         exclude individual fields from the list of compared fields, then we
+         could compare cpl hist files, excluding certain l2x fields.) -->
     <HIST_OPTION>never</HIST_OPTION>
   </test>
 
