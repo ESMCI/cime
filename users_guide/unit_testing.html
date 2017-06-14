@@ -73,12 +73,12 @@
 <li><a class="reference internal" href="#assertion-methods">5.6.1. Assertion methods</a></li>
 <li><a class="reference internal" href="#defining-a-test-class-in-order-to-define-setup-and-teardown-methods">5.6.2. Defining a test class in order to define setUp and tearDown methods</a></li>
 <li><a class="reference internal" href="#more-on-test-teardown">5.6.3. More on test teardown</a></li>
-<li><a class="reference internal" href="#pfunit-documentation-and-examples">5.6.4. pFUnit documentation and examples</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#finding-more-documentation-and-examples-in-cime">5.7. Finding more documentation and examples in CIME</a><ul>
-<li><a class="reference internal" href="#documentation-of-the-unit-test-build-system">5.7.1. Documentation of the unit test build system</a></li>
-<li><a class="reference internal" href="#finding-more-detailed-examples">5.7.2. Finding more detailed examples</a></li>
+<li><a class="reference internal" href="#finding-more-documentation-and-examples">5.7. Finding more documentation and examples</a><ul>
+<li><a class="reference internal" href="#more-detailed-examples-in-cime">5.7.1. More detailed examples in CIME</a></li>
+<li><a class="reference internal" href="#other-pfunit-documentation-sources">5.7.2. Other pFUnit documentation sources</a></li>
+<li><a class="reference internal" href="#documentation-of-the-unit-test-build-system">5.7.3. Documentation of the unit test build system</a></li>
 </ul>
 </li>
 </ul>
@@ -255,8 +255,8 @@ For a serial build, your setting will look like this example:</p>
 </div>
 <div class="section" id="how-to-write-a-new-unit-test">
 <h2>5.4. How to write a new unit test<a class="headerlink" href="#how-to-write-a-new-unit-test" title="Permalink to this headline">¶</a></h2>
-<p>TODO: Need to write this section.
-This will draw on some of the information in sections 3 and 4 of <a class="reference external" href="https://github.com/NCAR/cesm_unit_test_tutorial">https://github.com/NCAR/cesm_unit_test_tutorial</a> (though without the clm and cam stuff).</p>
+<p>TODO: Need to write this section. This will draw on some of the information in sections 3 and 4 of <a class="reference external" href="https://github.com/NCAR/cesm_unit_test_tutorial">https://github.com/NCAR/cesm_unit_test_tutorial</a> (though without the clm and cam stuff).</p>
+<p>It should also introduce the role of .pf files, which are referenced several paragraphs later as if already explained.</p>
 </div>
 <div class="section" id="general-guidelines-for-writing-unit-tests">
 <h2>5.5. General guidelines for writing unit tests<a class="headerlink" href="#general-guidelines-for-writing-unit-tests" title="Permalink to this headline">¶</a></h2>
@@ -434,36 +434,11 @@ indirectly by a routine you are testing. If your test has allocated or modified
 any global variables, it is important to reset them to their initial state in the
 teardown portion of the test.</p>
 </div>
-<div class="section" id="pfunit-documentation-and-examples">
-<h3>5.6.4. pFUnit documentation and examples<a class="headerlink" href="#pfunit-documentation-and-examples" title="Permalink to this headline">¶</a></h3>
-<p>Some pFUnit documentation is available here: <a class="reference external" href="http://pfunit.sourceforge.net/">http://pfunit.sourceforge.net/</a></p>
-<p>If you download pFUnit (from
-<a class="reference external" href="http://sourceforge.net/projects/pfunit/">http://sourceforge.net/projects/pfunit/</a>), you can find more
-extensive documentation and examples in the following places. Among other
-things, this can show you other assertion methods that are available:</p>
-<ul class="simple">
-<li>documentation/pFUnit3-ReferenceManual.pdf</li>
-<li>Examples/</li>
-<li>tests/<ul>
-<li>These are tests of the pFUnit code itself, written in pFUnit. You can see
-many uses of pFUnit features in these tests.</li>
-</ul>
-</li>
-</ul>
 </div>
-</div>
-<div class="section" id="finding-more-documentation-and-examples-in-cime">
-<h2>5.7. Finding more documentation and examples in CIME<a class="headerlink" href="#finding-more-documentation-and-examples-in-cime" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="documentation-of-the-unit-test-build-system">
-<h3>5.7.1. Documentation of the unit test build system<a class="headerlink" href="#documentation-of-the-unit-test-build-system" title="Permalink to this headline">¶</a></h3>
-<p>The CMake build infrastructure is in <strong>$CIMEROOT/src/externals/CMake</strong>.</p>
-<p>The infrastructure for building and running tests with <strong>run_tests.py</strong> is in
-<strong>$CIMEROOT/scripts/fortran_unit_testing</strong>. That directory also contains general
-documentation about how to use the CIME unit test infrastructure (in the
-<strong>README</strong> file) and examples (in the <strong>Examples</strong> directory).</p>
-</div>
-<div class="section" id="finding-more-detailed-examples">
-<h3>5.7.2. Finding more detailed examples<a class="headerlink" href="#finding-more-detailed-examples" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="finding-more-documentation-and-examples">
+<h2>5.7. Finding more documentation and examples<a class="headerlink" href="#finding-more-documentation-and-examples" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="more-detailed-examples-in-cime">
+<h3>5.7.1. More detailed examples in CIME<a class="headerlink" href="#more-detailed-examples-in-cime" title="Permalink to this headline">¶</a></h3>
 <p>There are many examples of unit tests in CIME, some simple and some quite complex.
 You can find them by looking for files with the &#8221;.pf&#8221; extension:</p>
 <div class="highlight-shell"><div class="highlight"><pre><span></span>&gt; find . --name <span class="s1">&#39;*.pf&#39;</span>
@@ -471,6 +446,28 @@ You can find them by looking for files with the &#8221;.pf&#8221; extension:</p>
 </div>
 <p>You can also see examples of the unit test build scripts by viewing the
 <strong>CMakeLists.txt</strong> files throughout the source tree.</p>
+</div>
+<div class="section" id="other-pfunit-documentation-sources">
+<h3>5.7.2. Other pFUnit documentation sources<a class="headerlink" href="#other-pfunit-documentation-sources" title="Permalink to this headline">¶</a></h3>
+<p>Some pFUnit documentation is available here: <a class="reference external" href="http://pfunit.sourceforge.net/">http://pfunit.sourceforge.net/</a>.</p>
+<p>Extensive documentation and examples are included in the following when you download
+pFUnit from <a class="reference external" href="http://sourceforge.net/projects/pfunit/">http://sourceforge.net/projects/pfunit/</a>:</p>
+<ul class="simple">
+<li>documentation/pFUnit3-ReferenceManual.pdf</li>
+<li>Examples/</li>
+<li>tests/</li>
+</ul>
+<p>The tests are tests of the pFUnit code itself, written in pFUnit. They demonstrate
+many uses of pFUnit features. Other documentation includes additional assertion
+methods that are available.</p>
+</div>
+<div class="section" id="documentation-of-the-unit-test-build-system">
+<h3>5.7.3. Documentation of the unit test build system<a class="headerlink" href="#documentation-of-the-unit-test-build-system" title="Permalink to this headline">¶</a></h3>
+<p>The CMake build infrastructure is in <strong>$CIMEROOT/src/externals/CMake</strong>.</p>
+<p>The infrastructure for building and running tests with <strong>run_tests.py</strong> is in
+<strong>$CIMEROOT/scripts/fortran_unit_testing</strong>. That directory also contains general
+documentation about how to use the CIME unit test infrastructure (in the
+<strong>README</strong> file) and examples (in the <strong>Examples</strong> directory).</p>
 </div>
 </div>
 </div>

@@ -84,8 +84,9 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="multi-instance-component-functionality">
-<span id="multi-instance"></span><h1>6. Multi-instance component functionality<a class="headerlink" href="#multi-instance-component-functionality" title="Permalink to this headline">¶</a></h1>
+  <p id="multi-instance"><strong>TODO: Need to update PE elements and explain + and - values</strong></p>
+<div class="section" id="multi-instance-component-functionality">
+<h1>6. Multi-instance component functionality<a class="headerlink" href="#multi-instance-component-functionality" title="Permalink to this headline">¶</a></h1>
 <p>The CIME coupling infrastructure is capable of running multiple component instances under one model executable.
 One caveat: If N multiple instances of any one active component are used, the same number of multiple instances of ALL active components are required.
 More details are discussed below.</p>
@@ -126,7 +127,7 @@ However, we can run either one or two instances of DOCN, and we can ignore glc a
 </pre></div>
 </div>
 <p>A new <strong>user_nl_xxx_NNNN</strong> file (where NNNN is the number of the component instances) is generated when <strong>case.setup</strong> is called.
-When calling <strong>case.setup</strong> with the above <code class="docutils literal"><span class="pre">env_mach_pes.xml</span></code> file specifically, these files are created in <strong>$CASEROOT</strong>:</p>
+When calling <strong>case.setup</strong> with the <strong>env_mach_pes.xml</strong> file specifically, these files are created in <strong>$CASEROOT</strong>:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">user_nl_cam_0001</span><span class="p">,</span>  <span class="n">user_nl_cam_0002</span>
 <span class="n">user_nl_cice_0001</span><span class="p">,</span> <span class="n">user_nl_cice_0002</span>
 <span class="n">user_nl_clm_0001</span><span class="p">,</span>  <span class="n">user_nl_clm_0002</span>

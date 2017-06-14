@@ -101,34 +101,48 @@
 </div>
 <div class="section" id="adding-grids">
 <h2>7.2. Adding grids<a class="headerlink" href="#adding-grids" title="Permalink to this headline">¶</a></h2>
-<p id="adding-a-grid">CIME is accompanied by support for numerous out-of-the box model resolutions. To see the supported grids call <strong>manange_case &#8211;query-grids</strong>.
-In general, CIME model grids are associated with a specific combination of atmosphere, land, land-ice, river-runoff and ocean/ice grids. The naming convention for these grids still only involves atmosphere, land, and ocean/ice grid specifications.</p>
+<dl class="docutils" id="adding-a-grid">
+<dt>CIME supports numerous out-of-the box model resolutions. To see the grids that are supported, call <strong>manage_case</strong> as shown here:</dt>
+<dd><div class="first last highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">manage_case</span> <span class="o">--</span><span class="n">query</span><span class="o">-</span><span class="n">grids</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+<p>CIME model grids generally are associated with a specific combination of atmosphere, land, land-ice, river-runoff and ocean/ice grids. The naming convention for these grids uses only atmosphere, land, and ocean/ice grid specifications.</p>
 <p>The most common resolutions have the atmosphere and land components on one grid and the ocean and ice on a second grid. The following overview assumes that this is the case.
 The naming convention looks like <em>f19_g16</em>, where the f19 indicates that the atmosphere and land are on the 1.9x2.5 (finite volume dycore) grid while the g16 means the ocean and ice are on the gx1v6 one-degree displaced pole grid.</p>
-<p>CIME provides support for you to add your own specific component grid combinations.
-To achieve this, CIME has a <code class="docutils literal"><span class="pre">$CIMEROOT/tools/mapping/</span></code>.
-A brief list of the steps needed to add a new component grid to the model system follows.
-Again, this process can be simplified if the atmosphere and land are running on the same grid.</p>
+<p>CIME enables users to add their own component grid combinations.
+The steps for adding a new component grid to the model system follow. gain, this process can be simplified if the atmosphere and land are running on the same grid.</p>
 <ol class="arabic">
-<li><p class="first">You must have or generate SCRIP grid files for the atmosphere, land, ocean, land-ice, river and wave component grids that will comprise your model grid.
-If your new model grid just introduces one new grid, then you can leverage SCRIP grid files that are already in place for the other components.
-At present there is no supported functionality for creating the SCRIP format file.</p>
+<li><p class="first">The first step is to have or generate SCRIP grid files for the atmosphere, land, ocean, land-ice, river and wave component grids that will comprise your model grid.
+If you are introducing just one new grid, you can leverage SCRIP grid files that are already in place for the other components.
+There is no supported functionality for creating the SCRIP format file.</p>
 </li>
-<li><p class="first">Build the <code class="docutils literal"><span class="pre">check_map</span></code> utility.
-When you add new user-defined grid files, you will also need to generate a set of mapping files so the coupler can send data from a component on one grid to a component on another grid.
+<li><p class="first">Build the <strong>check_map</strong> utility by following the instructions in <strong>$CCSMROOT/mapping/check_maps/INSTALL</strong>. Also confirm that the <a class="reference external" href="http://www.cesm.ucar.edu/models2.0/external-link-here">ESMF</a> toolkit is installed on your machine.
+When you add new user-defined grid files, you also need to generate a set of mapping files so the coupler can send data from a component on one grid to a component on another grid.
 There is an ESMF tool that tests the mapping file by comparing a mapping of a smooth function to its true value on the destination grid.
-We have tweaked this utility to test a suite of of smooth functions, as well as ensure conservation (when the map is conservative).
+We have tweaked this utility to test a suite of smooth functions, as well as ensure conservation (when the map is conservative).
 Before generating mapping functions it is <em>highly recommended</em> that you build this utility.</p>
-<p>To build this tool, follow the instructions in <code class="docutils literal"><span class="pre">$CCSMROOT/mapping/check_maps/INSTALL</span></code>.
-As with many of the steps in this document, you will need to have the <a class="reference external" href="http://www.cesm.ucar.edu/models2.0/external-link-here">ESMF</a> toolkit installed. It is installed by default on most NCAR computers.</p>
 </li>
-<li><p class="first">Generate <code class="docutils literal"><span class="pre">atm</span> <span class="pre">&lt;-&gt;</span> <span class="pre">ocn</span></code>, <code class="docutils literal"><span class="pre">atm</span> <span class="pre">&lt;-&gt;</span> <span class="pre">wav</span></code>, <code class="docutils literal"><span class="pre">lnd</span> <span class="pre">&lt;-&gt;</span> <span class="pre">rof</span></code>, <code class="docutils literal"><span class="pre">lnd</span> <span class="pre">&lt;-&gt;</span> <span class="pre">glc</span></code>, <code class="docutils literal"><span class="pre">ocn</span> <span class="pre">&lt;-&gt;</span> <span class="pre">wav</span></code> and  <code class="docutils literal"><span class="pre">rof</span> <span class="pre">-&gt;</span> <span class="pre">ocn</span></code> mapping files.</p>
-<p>Using the SCRIP grid files from step one, you must generate a set of conservative (area-averaged) and non-conservative (patch and bilinear) mapping files.
-You can do this by calling <strong>gen_cesm_maps.sh</strong> in <code class="docutils literal"><span class="pre">$CCSMROOT/tools/mapping/gen_mapping_files/</span></code>.
+<li><p class="first">Generate these mapping files:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">atm</span> <span class="o">&lt;-&gt;</span> <span class="n">ocn</span>
+<span class="n">atm</span> <span class="o">&lt;-&gt;</span> <span class="n">wav</span>
+<span class="n">lnd</span> <span class="o">&lt;-&gt;</span> <span class="n">rof</span>
+<span class="n">lnd</span> <span class="o">&lt;-&gt;</span> <span class="n">glc</span>
+<span class="n">ocn</span> <span class="o">&lt;-&gt;</span> <span class="n">wav</span>
+<span class="n">rof</span> <span class="o">-&gt;</span> <span class="n">ocn</span>
+</pre></div>
+</div>
+</li>
+</ol>
+<blockquote>
+<div><p>Using the SCRIP grid files from step one, you must generate a set of conservative (area-averaged) and non-conservative (patch and bilinear) mapping files.</p>
+<p>You can do this by calling <strong>gen_cesm_maps.sh</strong> in <code class="docutils literal"><span class="pre">$CCSMROOT/tools/mapping/gen_mapping_files/</span></code>.
 This script generates all the mapping files needed except <code class="docutils literal"><span class="pre">rof</span> <span class="pre">-&gt;</span> <span class="pre">ocn</span></code>, which is discussed below.
 This script uses the ESMF offline weight generation utility, which you must build <em>prior</em> to running <strong>gen_cesm_maps.sh</strong>.</p>
-<p>The <code class="docutils literal"><span class="pre">README</span> <span class="pre">file</span></code> in the <code class="docutils literal"><span class="pre">gen_mapping_files/</span></code> directory contains details on how to run <strong>gen_cesm_maps.sh</strong>. The basic usage is</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>&gt; cd $CCSMROOT/mapping/gen_mapping_files
+<dl class="docutils">
+<dt>The <strong>README</strong> file in the <strong>gen_mapping_files/</strong> directory describes how to run <strong>gen_cesm_maps.sh</strong>. The basic usage is shown here:</dt>
+<dd><div class="first last highlight-default"><div class="highlight"><pre><span></span>&gt; cd $CCSMROOT/mapping/gen_mapping_files
 &gt; ./gen_cesm_maps.sh \
    --fileocn  &lt;input SCRIP ocn_grid full pathname&gt;  \
    --fileatm  &lt;input SCRIP atm grid full pathname&gt;  \
@@ -140,8 +154,9 @@ This script uses the ESMF offline weight generation utility, which you must buil
    --namertm  &lt;rtmname in output mapping file&gt;
 </pre></div>
 </div>
-<p>This command will generate the following mapping files:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">map_atmname_TO_ocnname_aave</span><span class="o">.</span><span class="n">yymmdd</span><span class="o">.</span><span class="n">nc</span>
+</dd>
+<dt>This command generates the following mapping files:</dt>
+<dd><div class="first highlight-default"><div class="highlight"><pre><span></span><span class="n">map_atmname_TO_ocnname_aave</span><span class="o">.</span><span class="n">yymmdd</span><span class="o">.</span><span class="n">nc</span>
 <span class="n">map_atmname_TO_ocnname_blin</span><span class="o">.</span><span class="n">yymmdd</span><span class="o">.</span><span class="n">nc</span>
 <span class="n">map_atmname_TO_ocnname_patc</span><span class="o">.</span><span class="n">yymmdd</span><span class="o">.</span><span class="n">nc</span>
 <span class="n">map_ocnname_TO_atmname_aave</span><span class="o">.</span><span class="n">yymmdd</span><span class="o">.</span><span class="n">nc</span>
@@ -159,21 +174,24 @@ This script uses the ESMF offline weight generation utility, which you must buil
 <p class="last">You do not need to specify all four grids. For example, if you are running with the atmosphere and land on the same grid, then you do not need to specify the land grid (and atm&lt;-&gt;rtm maps will be generated).
 If you also omit the runoff grid, then only the 5 atm&lt;-&gt;ocn maps will be generated.</p>
 </div>
-<div class="admonition note">
+<div class="last admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">ESMF_RegridWeightGen runs in parallel, and the <code class="docutils literal"><span class="pre">gen_cesm_maps.sh</span></code> script has been written to run on yellowstone.
 To run on any other machine, you may need to add some environment variables to <code class="docutils literal"><span class="pre">$CCSMROOT/mapping/gen_mapping_files/gen_ESMF_mapping_file/create_ESMF_map.sh</span></code> &#8211; search for hostname to see where to edit the file.</p>
 </div>
-</li>
+</dd>
+</dl>
+</div></blockquote>
+<ol class="arabic" start="4">
 <li><p class="first">Generate atmosphere, land and ocean / ice domain files.</p>
 <p>Using the conservative ocean to land and ocean to atmosphere mapping files created in the previous step, you can create domain files for the atmosphere, land, and ocean; these are basically grid files with consistent masks and fractions.
-You make these files by calling <strong>gen_domain</strong> in <code class="docutils literal"><span class="pre">$CCSMROOT/mapping/gen_domain_files</span></code>.
-The <code class="docutils literal"><span class="pre">INSTALL</span></code> file in the <code class="docutils literal"><span class="pre">gen_domain_files/</span></code> directory contains details on how to build the <strong>gen_domain</strong> executable. After you have built it, the README in the same directory contains details on how to use the tool. The basic usage is:</p>
+You make these files by calling <strong>gen_domain</strong> in <strong>$CCSMROOT/mapping/gen_domain_files</strong>.
+The <strong>INSTALL</strong> file in the <strong>gen_domain_files/</strong> directory describes how to build the <strong>gen_domain</strong> executable. The <strong>README</strong> file in the same directory explains how to use the tool. The basic usage is:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="o">./</span><span class="n">gen_domain</span> <span class="o">-</span><span class="n">m</span> <span class="o">../</span><span class="n">gen_mapping_files</span><span class="o">/</span><span class="n">map_ocnname_TO_lndname_aave</span><span class="o">.</span><span class="n">yymmdd</span><span class="o">.</span><span class="n">nc</span> <span class="o">-</span><span class="n">o</span> <span class="n">ocnname</span> <span class="o">-</span><span class="n">l</span> <span class="n">lndname</span>
 <span class="o">&gt;</span> <span class="o">./</span><span class="n">gen_domain</span> <span class="o">-</span><span class="n">m</span> <span class="o">../</span><span class="n">gen_mapping_files</span><span class="o">/</span><span class="n">map_ocnname_TO_atmname_aave</span><span class="o">.</span><span class="n">yymmdd</span><span class="o">.</span><span class="n">nc</span> <span class="o">-</span><span class="n">o</span> <span class="n">ocnname</span> <span class="o">-</span><span class="n">l</span> <span class="n">atmname</span>
 </pre></div>
 </div>
-<p>These commands will generate the following domain files:</p>
+<p>These commands generate the following domain files:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">domain</span><span class="o">.</span><span class="n">lnd</span><span class="o">.</span><span class="n">lndname_ocnname</span><span class="o">.</span><span class="n">yymmdd</span><span class="o">.</span><span class="n">nc</span>
 <span class="n">domain</span><span class="o">.</span><span class="n">ocn</span><span class="o">.</span><span class="n">lndname_ocnname</span><span class="o">.</span><span class="n">yymmdd</span><span class="o">.</span><span class="n">nc</span>
 <span class="n">domain</span><span class="o">.</span><span class="n">lnd</span><span class="o">.</span><span class="n">atmname_ocnname</span><span class="o">.</span><span class="n">yymmdd</span><span class="o">.</span><span class="n">nc</span>
