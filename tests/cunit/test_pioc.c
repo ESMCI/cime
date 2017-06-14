@@ -798,6 +798,12 @@ int check_metadata(int ncid, int my_rank, int flavor)
         return ret;
     if (ndims != NDIM || nvars != 1 || ngatts != 0 || unlimdimid != 0)
         return ERR_AWFUL;
+    int num_unlimdims;
+    int unlimdimid2;
+    if ((ret = PIOc_inq_unlimdims(ncid, &num_unlimdims, &unlimdimid2)))
+        return ret;
+    if (unlimdimid2 != 0)
+        return ERR_AWFUL;        
 
     /* Check the dimensions. */
     for (int d = 0; d < NDIM; d++)

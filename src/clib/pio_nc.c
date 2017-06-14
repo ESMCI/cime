@@ -194,17 +194,35 @@ int PIOc_inq_natts(int ncid, int *ngattsp)
 
 /**
  * @ingroup PIO_inq_unlimdim
- * Find out the dimension ids of any unlimited dimensions.
+ * Find out the dimension ids of the unlimited dimension.
  *
  * @param ncid the ncid of the open file.
- * @param nattsp a pointer that will get an array of unlimited
- * dimension IDs.
+ * @param unlimdimidp a pointer that will the ID of the unlimited
+ * dimension, or -1 if there is no unlimited dimension.
  * @returns 0 for success, error code otherwise.
  */
 int PIOc_inq_unlimdim(int ncid, int *unlimdimidp)
 {
     LOG((1, "PIOc_inq_unlimdim ncid = %d", ncid));
     return PIOc_inq(ncid, NULL, NULL, NULL, unlimdimidp);
+}
+
+/**
+ * Find out the dimension ids of all unlimited dimensions. Note that
+ * only netCDF-4 files can have more than 1 unlimited dimension.
+ *
+ * @param ncid the ncid of the open file.
+ * @param nunlimdimsp a pointer that gets the number of unlimited
+ * dimensions. Ignored if NULL.
+ * @param unlimdimidsp a pointer that will get an array of unlimited
+ * dimension IDs.
+ * @returns 0 for success, error code otherwise.
+ * @ingroup PIO_inq_unlimdim
+ */
+int PIOc_inq_unlimdims(int ncid, int *nunlimdimsp, int *unlimdimidsp)
+{
+    LOG((1, "PIOc_inq_unlimdims ncid = %d", ncid));
+    return PIOc_inq(ncid, NULL, NULL, NULL, unlimdimidsp);
 }
 
 /**
