@@ -277,6 +277,54 @@ int inq_handler(iosystem_desc_t *ios)
     return PIO_NOERR;
 }
 
+/** 
+ * This function is run on the IO tasks to inq unlimited dimension
+ * ids of a netCDF file. It is only ever run on the IO tasks.
+ *
+ * @param ios pointer to the iosystem_desc_t.
+ * @returns 0 for success, PIO_EIO for MPI Bcast errors, or error code
+ * from netCDF base function.
+ * @internal
+ */
+int inq_unlimdims_handler(iosystem_desc_t *ios)
+{
+    int ncid;
+    int nunlimdims;
+    int unlimdimids;
+    int *nunlimdimsp = NULL, *unlimdimidsp = NULL;
+    char nunlimdimsp_present, unlimdimidsp_present;
+    int mpierr;
+    int ret;
+
+    LOG((1, "inq_unlimdims_handler"));
+    assert(ios);
+
+    /* Get the parameters for this function that the the comp master
+     * task is broadcasting. */
+    if ((mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm)))
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+    if ((mpierr = MPI_Bcast(&nunlimdimsp_present, 1, MPI_CHAR, 0, ios->intercomm)))
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+    if ((mpierr = MPI_Bcast(&unlimdimidsp_present, 1, MPI_CHAR, 0, ios->intercomm)))
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+    LOG((1, "inq_unlimdims_handler nunlimdimsp_present = %d unlimdimidsp_present = %d",
+         nunlimdimsp_present, unlimdimidsp_present));
+
+    /* NULLs passed in to any of the pointers in the original call
+     * need to be matched with NULLs here. Assign pointers where
+     * non-NULL pointers were passed in. */
+    if (nunlimdimsp_present)
+        nunlimdimsp = &nunlimdims;
+    if (unlimdimidsp_present)
+        unlimdimidsp = &unlimdimids;
+
+    /* Call the inq function to get the values. */
+    if ((ret = PIOc_inq_unlimdims(ncid, nunlimdimsp, unlimdimidsp)))
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+
+    return PIO_NOERR;
+}
+
 /** Do an inq_dim on a netCDF dimension. This function is only run on
  * IO tasks.
  *
@@ -2592,6 +2640,9 @@ int pio_msg_handler2(int io_rank, int component_count, iosystem_desc_t **iosys,
             break;
         case PIO_MSG_INQ:
             inq_handler(my_iosys);
+            break;
+        case PIO_MSG_INQ_UNLIMDIMS:
+            inq_unlimdims_handler(my_iosys);
             break;
         case PIO_MSG_INQ_DIM:
             inq_dim_handler(my_iosys, msg);

@@ -221,8 +221,100 @@ int PIOc_inq_unlimdim(int ncid, int *unlimdimidp)
  */
 int PIOc_inq_unlimdims(int ncid, int *nunlimdimsp, int *unlimdimidsp)
 {
+    iosystem_desc_t *ios;  /* Pointer to io system information. */
+    file_desc_t *file;     /* Pointer to file information. */
+    int ierr;              /* Return code from function calls. */
+    int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function calls. */
+
     LOG((1, "PIOc_inq_unlimdims ncid = %d", ncid));
-    return PIOc_inq(ncid, NULL, NULL, NULL, unlimdimidsp);
+
+    /* Find the info about this file. */
+    if ((ierr = pio_get_file(ncid, &file)))
+        return pio_err(NULL, NULL, ierr, __FILE__, __LINE__);
+    ios = file->iosystem;
+
+    /* If async is in use, and this is not an IO task, bcast the parameters. */
+    if (ios->async)
+    {
+        if (!ios->ioproc)
+        {
+            int msg = PIO_MSG_INQ_UNLIMDIMS; /* Message for async notification. */
+            char nunlimdimsp_present = nunlimdimsp ? true : false;
+            char unlimdimidsp_present = unlimdimidsp ? true : false;
+
+            if (ios->compmaster == MPI_ROOT)
+                mpierr = MPI_Send(&msg, 1, MPI_INT, ios->ioroot, 1, ios->union_comm);
+
+            if (!mpierr)
+                mpierr = MPI_Bcast(&ncid, 1, MPI_INT, ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast(&nunlimdimsp_present, 1, MPI_CHAR, ios->compmaster, ios->intercomm);
+            if (!mpierr)
+                mpierr = MPI_Bcast(&unlimdimidsp_present, 1, MPI_CHAR, ios->compmaster, ios->intercomm);
+            LOG((2, "PIOc_inq ncid = %d nunlimdimsp_present = %d unlimdimidsp_present = %d",
+                 ncid, nunlimdimsp_present, unlimdimidsp_present));
+        }
+
+        /* Handle MPI errors. */
+        if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
+            return check_mpi(file, mpierr2, __FILE__, __LINE__);
+        if (mpierr)
+            return check_mpi(file, mpierr, __FILE__, __LINE__);
+    }
+
+    /* If this is an IO task, then call the netCDF function. */
+    if (ios->ioproc)
+    {
+#ifdef _PNETCDF
+        if (file->iotype == PIO_IOTYPE_PNETCDF)
+        {
+            ierr = ncmpi_inq_unlimdim(file->fh, unlimdimidsp);
+            if (unlimdimidsp)
+                LOG((2, "ncmpi_inq_unlimdimid *unlimdimidsp = %d", *unlimdimidsp));
+        }
+#endif /* _PNETCDF */
+        if (file->iotype == PIO_IOTYPE_NETCDF && file->do_io)
+        {
+            int tmp_unlimdimids;
+            ierr = nc_inq_unlimdim(file->fh, &tmp_unlimdimids);
+            LOG((2, "classic tmp_unlimdimids = %d", tmp_unlimdimids));
+            if (nunlimdimsp)
+                *nunlimdimsp = tmp_unlimdimids >= 0 ? 1 : 0;
+            if (unlimdimidsp)
+                *unlimdimidsp = tmp_unlimdimids;
+        }
+#ifdef _NETCDF4
+        else if (file->iotype != PIO_IOTYPE_PNETCDF && file->do_io)
+        {
+            LOG((2, "PIOc_inq calling netcdf-4 nc_inq_unlimdims"));
+            int tmp_nunlimdims, tmp_unlimdimids;
+            ierr = nc_inq_unlimdims(file->fh, &tmp_nunlimdims, &tmp_unlimdimids);
+            if (nunlimdimsp)
+                *nunlimdimsp = tmp_unlimdimids >= 0 ? 1 : 0;
+            if (unlimdimidsp)
+                *unlimdimidsp = tmp_unlimdimids;
+        }
+#endif /* _NETCDF4 */
+
+        LOG((2, "PIOc_inq_unlimdims netcdf call returned %d", ierr));
+    }
+
+    /* Broadcast and check the return code. */
+    if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
+        return check_mpi(file, mpierr, __FILE__, __LINE__);
+    if (ierr)
+        return check_netcdf(file, ierr, __FILE__, __LINE__);
+
+    /* Broadcast results to all tasks. Ignore NULL parameters. */
+    if (nunlimdimsp)
+        if ((mpierr = MPI_Bcast(nunlimdimsp, 1, MPI_INT, ios->ioroot, ios->my_comm)))
+            return check_mpi(file, mpierr, __FILE__, __LINE__);
+
+    if (unlimdimidsp)
+        if ((mpierr = MPI_Bcast(unlimdimidsp, 1, MPI_INT, ios->ioroot, ios->my_comm)))
+            return check_mpi(file, mpierr, __FILE__, __LINE__);
+
+    return PIO_NOERR;
 }
 
 /**
