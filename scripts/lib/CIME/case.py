@@ -746,6 +746,10 @@ class Case(object):
         files = Files()
         compset_alias, science_support, component_defining_compset = self._set_compset(
             compset_name, files, user_compset=user_compset)
+        # WARNING: component_defining_compset will be None for a user-defined
+        # compset. If you use this variable, behavior of user-defined compsets
+        # will differ from behavior of compsets with aliases, which is typically
+        # undesirable. Instead, use self._primary_component, which is set below.
 
         self._components = self.get_compset_components()
         #--------------------------------------------
