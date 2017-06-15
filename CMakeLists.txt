@@ -1,3 +1,8 @@
+# AGS: CMake logic already existed -- preserving that functionalituy
+#       within !ACME_BUILD.
+if (NOT ACME_BUILD)
+#### CMake File for unit testing -- independent from ACME build####
+
 cmake_minimum_required(VERSION 2.8)
 include(ExternalProject)
 set(CIME_ROOT "${CMAKE_CURRENT_SOURCE_DIR}")
@@ -94,3 +99,12 @@ include_directories(${SHARE_ROOT}/esmf_wrf_timemgr)
 # Now the actual test directories.
 add_subdirectory(${CIME_ROOT}/src/drivers/mct/unit_test)
 add_subdirectory(${SHARE_ROOT}/test/unit)
+
+ELSE()  #ACME_BUILD
+
+# CMakeLists.txt file for ACME build is stash in cmake-scripts dir
+SET(CIME_REL_DIR .)
+INCLUDE (scripts/cmake/includedCMakeLists.txt)
+
+ENDIF()
+

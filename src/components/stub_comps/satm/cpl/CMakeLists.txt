@@ -1,0 +1,10 @@
+MESSAGE("   + SATM:")
+FILE(GLOB SATM_SOURCE *F90)
+INCLUDE_DIRECTORIES (
+          ${SHR_BINARY_DIR}
+          ${ESMF_BINARY_DIR}
+          ${GPTL_BINARY_DIR}
+          ${SEQ_BINARY_DIR}
+)
+ADD_LIBRARY (satm ${SATM_SOURCE})
+ADD_DEPENDENCIES(satm  shrsys shr seq esmf gptl)
