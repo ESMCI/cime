@@ -11,14 +11,13 @@ logger = logging.getLogger(__name__)
 
 class GenericXML(object):
 
-    def __init__(self, infile=None):
+    def __init__(self, infile=None, schema=None):
         """
         Initialize an object
         """
 
         logger.debug("Initializing %s" , infile)
         self.tree = None
-        self.version = None
 
         if infile == None:
             # if file is not defined just return
@@ -28,7 +27,7 @@ class GenericXML(object):
         if os.path.isfile(infile) and os.access(infile, os.R_OK):
             # If file is defined and exists, read it
             self.filename = infile
-            self.read(infile)
+            self.read(infile, schema)
         else:
             # if file does not exist create a root xml element
             # and set it's id to file
@@ -38,12 +37,11 @@ class GenericXML(object):
 
             self.filename = infile
             root = ET.Element("xml")
-            root.set("version", "1.0")
             self.root = ET.SubElement(root, "file")
             self.root.set("id", os.path.basename(infile))
             self.tree = ET.ElementTree(root)
 
-    def read(self, infile):
+    def read(self, infile, schema=None):
         """
         Read and parse an xml file into the object
         """
@@ -53,9 +51,16 @@ class GenericXML(object):
         else:
             self.tree = ET.parse(infile)
             self.root = self.tree.getroot()
-        self.version = self.root.get("version")
-        self.version = "1.0" if self.version is None else self.version
-        logger.debug("File version is "+self.version)
+
+        if schema is not None and self.get_version() != "1.0":
+            self.validate_xml_file(infile, schema)
+
+        logger.debug("File version is "+self.get_version())
+
+    def get_version(self):
+        version = self.root.get("version")
+        version = "1.0" if version is None else version
+        return version
 
     def write(self, outfile=None):
         """
@@ -65,11 +70,8 @@ class GenericXML(object):
             outfile = self.filename
 
         logger.debug("write: " + outfile)
-        try:
-            xmlstr = ET.tostring(self.root)
-        except ET.ParseError as e:
-            ET.dump(self.root)
-            expect(False, "Could not write file %s, xml formatting error '%s'" % (self.filename, e))
+
+        xmlstr = self.get_raw_record()
 
         # xmllint provides a better format option for the output file
         xmllint = find_executable("xmllint")
@@ -125,7 +127,8 @@ class GenericXML(object):
 
             for key, value in attributes.iteritems():
                 if value is not None:
-                    expect(isinstance(value, str), " Bad value passed for key %s"%key)
+                    expect(isinstance(value, basestring),
+                           " Bad value passed for key %s"%key)
                     xpath = ".//%s[@%s=\'%s\']" % (nodename, key, value)
                     logger.debug("xpath is %s"%xpath)
 
@@ -166,6 +169,10 @@ class GenericXML(object):
         """
         logger.debug("Get Value for " + item)
         return None
+
+    def get_values(self, vid, attribute=None, resolved=True, subgroup=None):# pylint: disable=unused-argument
+        logger.debug("Get Values for " + vid)        
+        return []
 
     def set_value(self, vid, value, subgroup=None, ignore_type=True): # pylint: disable=unused-argument
         """
@@ -224,7 +231,9 @@ class GenericXML(object):
                 srcroot = os.path.join(get_cime_root(),"..")
                 item_data = item_data.replace(m.group(), srcroot)
             elif var in os.environ:
-                logging.debug("resolve from env: " + var)
+                # this is a list of suppressed warnings (things normally expected to be resolved in env)
+                if var not in ("USER",):
+                    logging.debug("Resolved from env: " + var)
                 item_data = item_data.replace(m.group(), os.environ[var])
         if math_re.search(item_data):
             try:
@@ -232,6 +241,7 @@ class GenericXML(object):
             except:
                 tmp = item_data
             item_data = str(tmp)
+
         return item_data
 
     def add_sub_node(self, node, subnode_name, subnode_text):
@@ -240,3 +250,41 @@ class GenericXML(object):
         subnode.text = subnode_text
         node.append(subnode)
         return node
+
+    def validate_xml_file(self, filename, schema):
+        """
+        validate an XML file against a provided schema file using pylint
+        """
+        expect(os.path.isfile(filename),"xml file not found %s"%filename)
+        expect(os.path.isfile(schema),"schema file not found %s"%schema)
+        xmllint = find_executable("xmllint")
+        if xmllint is not None:
+            logger.debug("Checking file %s against schema %s"%(filename, schema))
+            run_cmd_no_fail("%s --noout --schema %s %s"%(xmllint, schema, filename))
+        else:
+            logger.warn("xmllint not found, could not validate file %s"%filename)
+
+    def get_element_text(self, element_name, attributes=None, root=None, xpath=None):
+        element_node = self.get_optional_node(element_name, attributes, root, xpath)
+        if element_node is not None:
+            return element_node.text
+        return None
+
+    def set_element_text(self, element_name, new_text, attributes=None, root=None, xpath=None):
+        element_node = self.get_optional_node(element_name, attributes, root, xpath)
+        if element_node is not None:
+            element_node.text = new_text
+            return new_text
+        return None
+
+    def get_raw_record(self, root=None):
+        if root is None:
+            root = self.root
+        try:
+            xmlstr = ET.tostring(root)
+        except ET.ParseError as e:
+            ET.dump(root)
+            expect(False, "Could not write file %s, xml formatting error '%s'" % (self.filename, e))
+        return xmlstr
+
+

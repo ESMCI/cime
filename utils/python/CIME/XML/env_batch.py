@@ -11,7 +11,6 @@ from CIME.XML.env_base import EnvBase
 from CIME.utils import transform_vars, get_cime_root
 from copy import deepcopy
 
-
 logger = logging.getLogger(__name__)
 
 # pragma pylint: disable=attribute-defined-outside-init
@@ -22,17 +21,22 @@ class EnvBatch(EnvBase):
         """
         initialize an object interface to file env_batch.xml in the case directory
         """
-        EnvBase.__init__(self, case_root, infile)
         self.prereq_jobid = None
         self.batchtype = None
+        # This arbitrary setting should always be overwritten
+        self._default_walltime = "00:20:00"
+        EnvBase.__init__(self, case_root, infile)
 
     def set_value(self, item, value, subgroup=None, ignore_type=False):
+        """
+        Override the entry_id set_value function with some special cases for this class
+        """
         val = None
         if item == "JOB_WALLCLOCK_TIME":
-            # Most systems use %H:%M:%S format for wallclock but LSF
-            # uses %H:%M this code corrects the value passed in to be
-            # the correct format - if we find we have more exceptions
-            # than this we may need to generalize this further
+            #Most systems use %H:%M:%S format for wallclock but LSF
+            #uses %H:%M this code corrects the value passed in to be
+            #the correct format - if we find we have more exceptions
+            #than this we may need to generalize this further
             walltime_format = self.get_value("walltime_format", subgroup=None)
             if walltime_format is not None and walltime_format.count(":") != value.count(":"): # pylint: disable=maybe-no-member
                 if value.count(":") == 1:
@@ -63,93 +67,33 @@ class EnvBatch(EnvBase):
         """
         Must default subgroup to something in order to provide single return value
         """
+
         value = None
         if subgroup is None:
-            node = self.get_optional_node(item, attribute)
-            if node is not None:
+            nodes = self.get_nodes(item, attribute)
+            if len(nodes) == 1:
+                node = nodes[0]
                 value = node.text
                 if resolved:
                     value = self.get_resolved_value(value)
-            else:
+            elif not nodes:
                 value = EnvBase.get_value(self,item,attribute,resolved)
         else:
             job_node = self.get_optional_node("job", {"name":subgroup})
             if job_node is not None:
                 node = self.get_optional_node("entry", {"id":item}, root=job_node)
                 if node is not None:
-                    value = self.get_resolved_value(node.get("value"))
+                    value = node.get("value")
+
+                    if resolved:
+                        value = self.get_resolved_value(value)
 
                     # Return value as right type if we were able to fully resolve
                     # otherwise, we have to leave as string.
-                    if "$" not in value:
+                    if value is not None and "$" not in value:
                         type_str = self._get_type_info(node)
                         value = convert_to_type(value, type_str, item)
         return value
-
-    def get_values(self, item, attribute=None, resolved=True, subgroup=None):
-        """Returns the value as a string of the first xml element with item as attribute value.
-        <elememt_name attribute='attribute_value>value</element_name>"""
-
-        logger.debug("(get_values) Input values: %s , %s , %s , %s , %s" , self.__class__.__name__ , item, attribute, resolved, subgroup)
-
-        nodes   = [] # List of identified xml elements
-        results = [] # List of identified parameters
-
-
-        # Find all nodes with attribute name and attribute value item
-        # xpath .//*[name='item']
-        # for job in self.get_nodes("job") :
-
-        groups = self.get_nodes("group")
-
-        for group in groups :
-
-            roots = []
-            jobs  = []
-            jobs  = self.get_nodes("job" , root=group)
-
-            if (len(jobs)) :
-                roots = jobs
-            else :
-                roots = [group]
-
-            for root in roots :
-
-                if item :
-                    nodes = self.get_nodes("entry",{"id" : item} , root=root )
-                else :
-                    # Return all nodes
-                    nodes = self.get_nodes("entry" , root=root)
-
-                # seach in all entry nodes
-                for node in nodes:
-
-
-                    # Build return structure
-                    attr          = node.get('id')
-                    group_name     = None
-
-                    # determine group
-                    if (root.tag == "job") :
-                        group_name = root.get('name')
-                    else:
-                        group_name = root.get('id')
-
-                    val             = node.get('value')
-                    attribute_type  = self._get_type(node)
-                    desc            = self._get_description(node)
-                    default         = super(EnvBatch , self)._get_default(node)
-                    filename        = self.filename
-
-                    tmp = { 'group' : group_name , 'attribute' : attr , 'value' : val , 'type' : attribute_type , 'description' : desc , 'default' : default , 'file' : filename}
-                    logger.debug("Found node with value for %s = %s" , item , tmp )
-
-                    # add single result to list
-                    results.append(tmp)
-
-        logger.debug("(get_values) Return value:  %s" , results )
-
-        return results
 
     def get_type_info(self, vid):
         nodes = self.get_nodes("entry",{"id":vid})
@@ -223,8 +167,8 @@ class EnvBatch(EnvBase):
         self.num_tasks = total_tasks
         self.tasks_per_numa = tasks_per_node / 2
         self.thread_count = thread_count
-
         task_count = self.get_value("task_count", subgroup=job)
+
         if task_count == "default":
             self.total_tasks = total_tasks
             self.num_nodes = num_nodes
@@ -266,7 +210,11 @@ class EnvBatch(EnvBase):
             walltime = self.get_max_walltime(queue) if walltime is None else walltime
             if walltime is None:
                 logger.warn("Could not find a queue matching task count %d, falling back to depreciated default walltime parameter"%task_count)
-                walltime = self.get_default_walltime()
+                #if the user names a queue which is not defined in config_batch.xml and does not set a
+                #walltime, fall back to the max walltime in the default queue
+                if force_queue:
+                    self.get_default_queue()
+                walltime = self._default_walltime
 
             self.set_value( "JOB_WALLCLOCK_TIME", walltime , subgroup=job)
             logger.info("Job %s queue %s walltime %s"%(job, queue, walltime))
@@ -326,6 +274,9 @@ class EnvBatch(EnvBase):
                         rval = eval(val)
                     except:
                         rval = val
+                    # need a correction for tasks per node
+                    if flag == "-n" and rval<= 0:
+                        rval = 1
 
                     if flag.rfind("=", len(flag)-1, len(flag)) >= 0 or\
                        flag.rfind(":", len(flag)-1, len(flag)) >= 0:
@@ -348,8 +299,12 @@ class EnvBatch(EnvBase):
             if index < startindex:
                 continue
             try:
-                prereq = case.get_resolved_value(self.get_value('prereq', subgroup=job))
-                prereq = eval(prereq)
+                prereq = self.get_value('prereq', subgroup=job, resolved=False)
+                if prereq is None:
+                    prereq = True
+                else:
+                    prereq = case.get_resolved_value(prereq)
+                    prereq = eval(prereq)
             except:
                 expect(False,"Unable to evaluate prereq expression '%s' for job '%s'"%(self.get_value('prereq',subgroup=job), job))
             if prereq:
@@ -383,6 +338,7 @@ class EnvBatch(EnvBase):
             depid[job] = self.submit_single_job(case, job, jobid, no_batch=no_batch)
             if self.batchtype == "cobalt":
                 break
+        return sorted(list(depid.values()))
 
     def submit_single_job(self, case, job, depid=None, no_batch=False):
         logger.warn("Submit job %s"%job)
@@ -430,7 +386,7 @@ class EnvBatch(EnvBase):
         logger.info("Submitting job script %s"%submitcmd)
         output = run_cmd_no_fail(submitcmd)
         jobid = self.get_job_id(output)
-        logger.debug("Submitted job id is %s"%jobid)
+        logger.info("Submitted job id is %s"%jobid)
         return jobid
 
     def get_batch_system_type(self):
@@ -473,13 +429,28 @@ class EnvBatch(EnvBase):
             if queue_node.text == queue:
                 return queue_node.get("walltimemax")
 
-    def get_default_walltime(self):
-        walltime = self.get_value("walltime", attribute={"default" : "true"}, subgroup=None)
-        expect(walltime is not None,"Could not find walltime setting in config_batch.xml")
-        return walltime
-
     def get_default_queue(self):
-        return self.get_optional_node("queue", attributes={"default" : "true"})
+        node = self.get_optional_node("queue", attributes={"default" : "true"})
+        if node is None:
+            node = self.get_optional_node("queue")
+        expect(node is not None, "No queues found")
+        self._default_walltime = node.get("walltimemax")
+        return(node)
 
     def get_all_queues(self):
         return self.get_nodes("queue")
+
+    def get_nodes(self, nodename, attributes=None, root=None, xpath=None):
+        if nodename in ("JOB_WALLCLOCK_TIME", "PROJECT", "PROJECT_REQUIRED",
+                        "JOB_QUEUE"):
+            nodes = EnvBase.get_nodes(self, "entry", attributes={"id":nodename},
+                                        root=root, xpath=xpath)
+        else:
+            nodes =  EnvBase.get_nodes(self, nodename, attributes, root, xpath)
+        return nodes
+
+    def get_groups(self, root):
+        groups = EnvBase.get_groups(self, root)
+        if len(groups) == 1 and groups[0] == "job_submission":
+            groups = self.get_jobs()
+        return groups
