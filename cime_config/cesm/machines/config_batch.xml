@@ -270,7 +270,7 @@
   <batch_system MACH="hexagon"  type="pbs" version="x.y">
     <directives>
       <directive>-A nn2345k</directive>
-      <directive>-l mppwidth={{ num_tasks }}</directive>
+      <directive>-l mppwidth={{ total_tasks }}</directive>
     </directives>
     <queues>
 	   <queue walltimemax="00:59:00" jobmin="1" jobmax="9999" default="true">batch</queue>
