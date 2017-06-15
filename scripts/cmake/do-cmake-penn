@@ -6,12 +6,14 @@ rm -rf CMakeFiles
 CIMEDIR=/home/agsalin/CIME
 NETCDFDIR=$SEMS_NETCDF_ROOT
 HDF5DIR=$SEMS_HDF5_ROOT
-PIODIR=/home/agsalin/install/pio
+PIODIR=/home/agsalin/install/pio1/pio
+BUILDTYPE=Release
 
 
 cmake \
   -D ACME_BUILD=ON \
-  -D CMAKE_VERBOSE_MAKEFILE=OFF \
+  -D CMAKE_BUILD_TYPE=$BUILDTYPE \
+  -D CMAKE_VERBOSE_MAKEFILE=ON \
   -D CMAKE_Fortran_COMPILER=mpif90 \
   -D CMAKE_C_COMPILER=mpicc \
   -D CMAKE_Fortran_FLAGS=-ffree-line-length-none \
