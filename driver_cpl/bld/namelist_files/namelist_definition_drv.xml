@@ -107,6 +107,18 @@ If CCSM_BGC is set to 'CO2_DMSA', then flds_co2_dmsa will be set to .true.
 </entry>
 
 <entry
+id="flds_co2_dmsb"
+type="logical"
+category="seq_flds"
+group="seq_cplflds_inparm" >
+Previously, new fields that were needed to be passed between components
+for certain compsets were specified by cpp-variables. This has been
+modified to now be use cases. This use cases are specified in the
+namelist cpl_flds_inparm and are currently triggered by the xml variable CCSM_BGC.
+If CCSM_BGC is set to 'CO2_DMSB', then flds_co2_dmsb will be set to .true.
+</entry>
+
+<entry
 id="flds_bgc"
 type="logical"
 category="seq_flds"
