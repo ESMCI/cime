@@ -99,32 +99,25 @@
 <h2>3.1. Calling <strong>create_newcase</strong><a class="headerlink" href="#calling-create-newcase" title="Permalink to this headline">¶</a></h2>
 <p>The first step in creating a CIME-based experiment is to use <strong>create_newcase</strong>.</p>
 <p>If you are not on an out-of-the box CIME-supported platform, you will need to <a class="reference internal" href="porting-cime.html#porting"><span class="std std-ref">port</span></a> CIME to your system before proceeding.</p>
-<dl class="docutils">
-<dt>Review the input options for <strong>create_newcase</strong> in the  <strong>help</strong> text.</dt>
-<dd><div class="first last highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">create_newcase</span> <span class="o">--</span><span class="n">help</span>
+<p>Review the input options for <strong>create_newcase</strong> in the  <strong>help</strong> text.:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">create_newcase</span> <span class="o">--</span><span class="n">help</span>
 </pre></div>
 </div>
-</dd>
-<dt>The only required arguments to <strong>create_newcase</strong> are shown here:</dt>
-<dd><div class="first last highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">create_newcase</span> <span class="o">--</span><span class="n">case</span> <span class="p">[</span><span class="n">CASE</span><span class="p">]</span> <span class="o">--</span><span class="n">compset</span> <span class="p">[</span><span class="n">COMPSET</span><span class="p">]</span> <span class="o">--</span><span class="n">res</span> <span class="p">[</span><span class="n">GRID</span><span class="p">]</span>
+<p>The only required arguments to <strong>create_newcase</strong> are shown here:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">create_newcase</span> <span class="o">--</span><span class="n">case</span> <span class="p">[</span><span class="n">CASE</span><span class="p">]</span> <span class="o">--</span><span class="n">compset</span> <span class="p">[</span><span class="n">COMPSET</span><span class="p">]</span> <span class="o">--</span><span class="n">res</span> <span class="p">[</span><span class="n">GRID</span><span class="p">]</span>
 </pre></div>
 </div>
-</dd>
-</dl>
 <p>CIME supports out-of-the-box <em>component sets</em>, <em>model grids</em> and <em>hardware platforms</em>. Compsets and grids were discussed in the <a class="reference internal" href="case-basics.html#case-basics"><span class="std std-ref">previous section</span></a>.</p>
 </div>
 <div class="section" id="results-of-calling-create-newcase">
 <h2>3.2. Results of calling <strong>create_newcase</strong><a class="headerlink" href="#results-of-calling-create-newcase" title="Permalink to this headline">¶</a></h2>
 <p>Following is a simple example of using <strong>create_newcase</strong> with aliases for both compset and grid names.
-The complete example appears in the <a class="reference internal" href="faq/basics-a-basic-example.html#faq-basic-example"><span class="std std-ref">basic example</span></a>.</p>
-<dl class="docutils">
-<dt>Here, <code class="docutils literal"><span class="pre">$CIMEROOT</span></code> is the full pathname of the root directory of the CIME distribution.</dt>
-<dd><div class="first last highlight-default"><div class="highlight"><pre><span></span>&gt; cd $CIMEROOT/scripts
+The complete example appears in the <a class="reference internal" href="use_cases/basics-a-basic-example.html#use-cases-basic-example"><span class="std std-ref">basic example</span></a>.</p>
+<p>Here, <code class="docutils literal"><span class="pre">$CIMEROOT</span></code> is the full pathname of the root directory of the CIME distribution:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>&gt; cd $CIMEROOT/scripts
 &gt; create_newcase --case ~/cime/example1 --compset A --res f09_g16_rx1
 </pre></div>
 </div>
-</dd>
-</dl>
 <p>In the example, the command creates a <code class="docutils literal"><span class="pre">$CASEROOT</span></code> directory: <strong>~/cime/example1</strong>. If that directory already exists, a warning is printed and the command aborts. Additional details:</p>
 <ul class="simple">
 <li><code class="docutils literal"><span class="pre">$CASE</span></code> can include letters, numbers,  &#8221;.&#8221;, and &#8220;_&#8221;. In the example, it is <code class="docutils literal"><span class="pre">example1</span></code>.</li>

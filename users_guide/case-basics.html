@@ -182,33 +182,25 @@ The alias for this grid is ne30_g16.</p>
 <div class="section" id="querying-cime-calling-query-config">
 <h2>2.3. Querying CIME - calling <strong>query_config</strong><a class="headerlink" href="#querying-cime-calling-query-config" title="Permalink to this headline">¶</a></h2>
 <p>Use the utility <strong>$CIMEROOT/scripts/query_config</strong> to see which out-of-the-box compsets, components, grids and machines are available for a model.</p>
-<dl class="docutils">
-<dt>Optional arguments include the following:</dt>
-<dd><div class="first last highlight-default"><div class="highlight"><pre><span></span><span class="o">--</span><span class="n">compsets</span>
+<p>Optional arguments include the following:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">--</span><span class="n">compsets</span>
 <span class="o">--</span><span class="n">components</span>
 <span class="o">--</span><span class="n">grids</span>
 <span class="o">--</span><span class="n">machines</span>
 </pre></div>
 </div>
-</dd>
-</dl>
 <p>If CIME is downloaded in standalone mode, only standalone CIME compsets can be queried. If CIME is part of CIME-driven model, <strong>query_config</strong> will allow you to query all prognostic component compsets.</p>
-<dl class="docutils">
-<dt>To see lists of available compsets, components, grids and machines, look at the <strong>help</strong> text:</dt>
-<dd><div class="first last highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">query_config</span> <span class="o">--</span><span class="n">help</span>
+<p>To see lists of available compsets, components, grids and machines, look at the <strong>help</strong> text:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">query_config</span> <span class="o">--</span><span class="n">help</span>
 </pre></div>
 </div>
-</dd>
-</dl>
 <p><strong>Usage examples</strong></p>
-<dl class="docutils">
-<dt>To run <strong>query_config</strong> for compset information, follow this example, where <strong>drv</strong> is the component name:</dt>
-<dd><div class="first last highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">query_config</span> <span class="o">--</span><span class="n">compsets</span> <span class="n">drv</span>
+<p>To run <strong>query_config</strong> for compset information, follow this example, where <strong>drv</strong> is the component name:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">query_config</span> <span class="o">--</span><span class="n">compsets</span> <span class="n">drv</span>
 </pre></div>
 </div>
-</dd>
-<dt>The output will be similar to this:</dt>
-<dd><div class="first last highlight-default"><div class="highlight"><pre><span></span>  <span class="o">--------------------------------------</span>
+<p>The output will be similar to this:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>  <span class="o">--------------------------------------</span>
   <span class="n">Compset</span> <span class="n">Short</span> <span class="n">Name</span><span class="p">:</span> <span class="n">Compset</span> <span class="n">Long</span> <span class="n">Name</span>
   <span class="o">--------------------------------------</span>
 <span class="n">A</span>                    <span class="p">:</span> <span class="mi">2000</span><span class="n">_DATM</span><span class="o">%</span><span class="n">NYF_SLND_DICE</span><span class="o">%</span><span class="n">SSMI_DOCN</span><span class="o">%</span><span class="n">DOM_DROF</span><span class="o">%</span><span class="n">NYF_SGLC_SWAV</span>
@@ -221,17 +213,13 @@ The alias for this grid is ne30_g16.</p>
 <span class="n">AIAF</span>                 <span class="p">:</span> <span class="mi">2000</span><span class="n">_DATM</span><span class="o">%</span><span class="n">IAF_SLND_DICE</span><span class="o">%</span><span class="n">IAF_DOCN</span><span class="o">%</span><span class="n">IAF_DROF</span><span class="o">%</span><span class="n">IAF_SGLC_SWAV</span>
 </pre></div>
 </div>
-</dd>
-</dl>
 <p>Each model component specifies its own definitions of what can appear after the <code class="docutils literal"><span class="pre">%</span></code> modifier in the compset longname (for example, <code class="docutils literal"><span class="pre">DOM</span></code> in <code class="docutils literal"><span class="pre">DOCN%DOM</span></code>).</p>
-<dl class="docutils">
-<dt>To see what supported modifiers are for <code class="docutils literal"><span class="pre">DOCN</span></code>, run <strong>query_config</strong> as in this example:</dt>
-<dd><div class="first last highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">query_config</span> <span class="o">--</span><span class="n">component</span> <span class="n">docn</span>
+<p>To see what supported modifiers are for <code class="docutils literal"><span class="pre">DOCN</span></code>, run <strong>query_config</strong> as in this example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">query_config</span> <span class="o">--</span><span class="n">component</span> <span class="n">docn</span>
 </pre></div>
 </div>
-</dd>
-<dt>The output will be similar to this:</dt>
-<dd><div class="first last highlight-default"><div class="highlight"><pre><span></span> <span class="o">=========================================</span>
+<p>The output will be similar to this:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span> <span class="o">=========================================</span>
  <span class="n">DOCN</span> <span class="n">naming</span> <span class="n">conventions</span>
  <span class="o">=========================================</span>
 
@@ -253,8 +241,6 @@ The alias for this grid is ne30_g16.</p>
 <span class="n">_DOCN</span><span class="o">%</span><span class="n">SST_AQUAP</span> <span class="p">:</span> <span class="n">docn</span> <span class="n">aquaplanet</span> <span class="n">mode</span><span class="p">:</span>
 </pre></div>
 </div>
-</dd>
-</dl>
 <p>For more details on how CIME determines the output for <strong>query_config</strong>, see <a class="reference internal" href="cime-internals.html#cime-internals"><span class="std std-ref">CIME internals</span></a>.</p>
 </div>
 </div>
