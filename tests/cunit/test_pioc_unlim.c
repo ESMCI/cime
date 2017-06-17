@@ -164,6 +164,27 @@ int run_multiple_unlim_test(int iosysid, int ioid, int iotype, int my_rank)
         if (unlimdimids[d] != dimid[d])
             ERR(ERR_WRONG);
     }
+
+    {
+        int nunlimdims;
+        int unlimdimids[NUM_UNLIM_DIMS];
+        
+        /* These should also work. */
+        if ((ret = PIOc_inq_unlimdims(ncid, NULL, NULL)))
+            ERR(ret);
+        if ((ret = PIOc_inq_unlimdims(ncid, &nunlimdims, NULL)))
+            ERR(ret);
+        if (nunlimdims != NUM_UNLIM_DIMS)
+            ERR(ERR_WRONG);
+        if ((ret = PIOc_inq_unlimdims(ncid, NULL, unlimdimids)))
+            ERR(ret);
+        for (int d = 0; d < NUM_UNLIM_DIMS; d++)
+        {
+            printf("unlimdimids[%d] = %d\n", d, unlimdimids[d]);
+            if (unlimdimids[d] != dimid[d])
+                ERR(ERR_WRONG);
+        }
+    }
     
     /* Close the file. */
     if ((PIOc_closefile(ncid)))
