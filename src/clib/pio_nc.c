@@ -223,6 +223,7 @@ int PIOc_inq_unlimdims(int ncid, int *nunlimdimsp, int *unlimdimidsp)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Pointer to file information. */
+    int tmp_nunlimdims;    /* The number of unlimited dims. */
     int ierr;              /* Return code from function calls. */
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function calls. */
 
@@ -262,37 +263,59 @@ int PIOc_inq_unlimdims(int ncid, int *nunlimdimsp, int *unlimdimidsp)
             return check_mpi(file, mpierr, __FILE__, __LINE__);
     }
 
+    LOG((2, "file->iotype = %d", file->iotype));
     /* If this is an IO task, then call the netCDF function. */
     if (ios->ioproc)
     {
-#ifdef _PNETCDF
-        if (file->iotype == PIO_IOTYPE_PNETCDF)
-        {
-            ierr = ncmpi_inq_unlimdim(file->fh, unlimdimidsp);
-            if (unlimdimidsp)
-                LOG((2, "ncmpi_inq_unlimdimid *unlimdimidsp = %d", *unlimdimidsp));
-        }
-#endif /* _PNETCDF */
         if (file->iotype == PIO_IOTYPE_NETCDF && file->do_io)
         {
-            int tmp_unlimdimids;
-            ierr = nc_inq_unlimdim(file->fh, &tmp_unlimdimids);
-            LOG((2, "classic tmp_unlimdimids = %d", tmp_unlimdimids));
+            LOG((2, "netcdf"));
+            int tmp_unlimdimid;
+            ierr = nc_inq_unlimdim(file->fh, &tmp_unlimdimid);
+            LOG((2, "classic tmp_unlimdimid = %d", tmp_unlimdimid));
+            tmp_nunlimdims = tmp_unlimdimid >= 0 ? 1 : 0;
             if (nunlimdimsp)
-                *nunlimdimsp = tmp_unlimdimids >= 0 ? 1 : 0;
+                *nunlimdimsp = tmp_unlimdimid >= 0 ? 1 : 0;
             if (unlimdimidsp)
-                *unlimdimidsp = tmp_unlimdimids;
+                *unlimdimidsp = tmp_unlimdimid;
         }
+#ifdef _PNETCDF
+        else if (file->iotype == PIO_IOTYPE_PNETCDF)
+        {
+            LOG((2, "pnetcdf"));
+            int tmp_unlimdimid;            
+            ierr = ncmpi_inq_unlimdim(file->fh, &tmp_unlimdimid);
+            tmp_nunlimdims = tmp_unlimdimid >= 0 ? 1 : 0;            
+            if (nunlimdimsp)
+                *nunlimdimsp = tmp_nunlimdims;
+            if (unlimdimidsp)
+                *unlimdimidsp = tmp_unlimdimid;
+        }
+#endif /* _PNETCDF */
 #ifdef _NETCDF4
-        else if (file->iotype != PIO_IOTYPE_PNETCDF && file->do_io)
+        else if ((file->iotype == PIO_IOTYPE_NETCDF4C || file->iotype == PIO_IOTYPE_NETCDF4P) &&
+                 file->do_io)
         {
             LOG((2, "PIOc_inq calling netcdf-4 nc_inq_unlimdims"));
-            int tmp_nunlimdims, tmp_unlimdimids;
-            ierr = nc_inq_unlimdims(file->fh, &tmp_nunlimdims, &tmp_unlimdimids);
-            if (nunlimdimsp)
-                *nunlimdimsp = tmp_unlimdimids >= 0 ? 1 : 0;
-            if (unlimdimidsp)
-                *unlimdimidsp = tmp_unlimdimids;
+            int *tmp_unlimdimids;
+            ierr = nc_inq_unlimdims(file->fh, &tmp_nunlimdims, NULL);
+            if (!ierr)
+            {
+                if (nunlimdimsp)
+                    *nunlimdimsp = tmp_nunlimdims;
+                LOG((3, "tmp_nunlimdims = %d", tmp_nunlimdims));
+                if (!(tmp_unlimdimids = malloc(tmp_nunlimdims * sizeof(int))))
+                    ierr = PIO_ENOMEM;
+                if (!ierr)
+                    ierr = nc_inq_unlimdims(file->fh, &tmp_nunlimdims, tmp_unlimdimids);
+                if (unlimdimidsp)
+                    for (int d = 0; d < tmp_nunlimdims; d++)
+                    {
+                        LOG((3, "tmp_unlimdimids[%d] = %d", d, tmp_unlimdimids[d]));
+                        unlimdimidsp[d] = tmp_unlimdimids[d];
+                    }
+                free(tmp_unlimdimids);
+            }
         }
 #endif /* _NETCDF4 */
 
@@ -306,12 +329,15 @@ int PIOc_inq_unlimdims(int ncid, int *nunlimdimsp, int *unlimdimidsp)
         return check_netcdf(file, ierr, __FILE__, __LINE__);
 
     /* Broadcast results to all tasks. Ignore NULL parameters. */
+    if ((mpierr = MPI_Bcast(&tmp_nunlimdims, 1, MPI_INT, ios->ioroot, ios->my_comm)))
+        return check_mpi(file, mpierr, __FILE__, __LINE__);
+    
     if (nunlimdimsp)
         if ((mpierr = MPI_Bcast(nunlimdimsp, 1, MPI_INT, ios->ioroot, ios->my_comm)))
             return check_mpi(file, mpierr, __FILE__, __LINE__);
 
     if (unlimdimidsp)
-        if ((mpierr = MPI_Bcast(unlimdimidsp, 1, MPI_INT, ios->ioroot, ios->my_comm)))
+        if ((mpierr = MPI_Bcast(unlimdimidsp, tmp_nunlimdims, MPI_INT, ios->ioroot, ios->my_comm)))
             return check_mpi(file, mpierr, __FILE__, __LINE__);
 
     return PIO_NOERR;
