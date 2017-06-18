@@ -8,11 +8,11 @@
 #include <string.h>
 #include <stdio.h>
 
-static io_desc_t *pio_iodesc_list=NULL;
-static io_desc_t *current_iodesc=NULL;
-static iosystem_desc_t *pio_iosystem_list=NULL;
+static io_desc_t *pio_iodesc_list = NULL;
+static io_desc_t *current_iodesc = NULL;
+static iosystem_desc_t *pio_iosystem_list = NULL;
 static file_desc_t *pio_file_list = NULL;
-static file_desc_t *current_file=NULL;
+static file_desc_t *current_file = NULL;
 
 /** Add a new entry to the global list of open files.
  *
@@ -246,9 +246,10 @@ int pio_add_to_iodesc_list(io_desc_t *iodesc)
     iodesc->next = NULL;
     if (pio_iodesc_list == NULL)
         pio_iodesc_list = iodesc;
-    else{
+    else
+    {
         imax++;
-        for (ciodesc = pio_iodesc_list; ciodesc->next; ciodesc=ciodesc->next, imax=ciodesc->ioid + 1);
+        for (ciodesc = pio_iodesc_list; ciodesc->next; ciodesc = ciodesc->next, imax = ciodesc->ioid + 1);
         ciodesc->next = iodesc;
     }
     iodesc->ioid = imax;
@@ -266,15 +267,17 @@ io_desc_t *pio_get_iodesc_from_id(int ioid)
 {
     io_desc_t *ciodesc = NULL;
 
-    if (current_iodesc != NULL && current_iodesc->ioid == abs(ioid))
-        ciodesc = current_iodesc;
-    else
-        for (ciodesc = pio_iodesc_list; ciodesc; ciodesc = ciodesc->next)
-            if (ciodesc->ioid == abs(ioid))
-            {
-                current_iodesc = ciodesc;
-                break;
-            }
+    /* Do we already have a pointer to it? */
+    if (current_iodesc && current_iodesc->ioid == ioid)
+        return current_iodesc;
+
+    /* Find the decomposition in the list. */
+    for (ciodesc = pio_iodesc_list; ciodesc; ciodesc = ciodesc->next)
+        if (ciodesc->ioid == ioid)
+        {
+            current_iodesc = ciodesc;
+            break;
+        }
 
     return ciodesc;
 }
