@@ -831,15 +831,18 @@ extern "C" {
     int PIOc_openfile(int iosysid, int *ncidp, int *iotype, const char *fname, int mode);
     int PIOc_open(int iosysid, const char *path, int mode, int *ncidp);
     int PIOc_closefile(int ncid);
+    int PIOc_File_is_Open(int ncid);
+
+    /* Learn about files. */
     int PIOc_inq_format(int ncid, int *formatp);
     int PIOc_inq(int ncid, int *ndimsp, int *nvarsp, int *ngattsp, int *unlimdimidp);
     int PIOc_inq_ndims(int ncid, int *ndimsp);
     int PIOc_inq_nvars(int ncid, int *nvarsp);
     int PIOc_inq_natts(int ncid, int *ngattsp);
     int PIOc_inq_unlimdim(int ncid, int *unlimdimidp);
+    int PIOc_inq_unlimdims(int ncid, int *nunlimdimsp, int *unlimdimidsp);
     int PIOc_inq_type(int ncid, nc_type xtype, char *name, PIO_Offset *sizep);
     int PIOc_set_blocksize(int newblocksize);
-    int PIOc_File_is_Open(int ncid);
 
     /* Set the IO node data buffer size limit. */
     PIO_Offset PIOc_set_buffer_size_limit(PIO_Offset limit);
