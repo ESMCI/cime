@@ -199,15 +199,16 @@ contains
   end function seq_comm_get_ncomps
 
 
-  subroutine seq_comm_init(Comm_in, nmlfile, Comm_ID)
-
+  subroutine seq_comm_init(Comm_in, nmlfile, Cpl_comm_id)
     !----------------------------------------------------------
     !
     ! Arguments
     implicit none
     integer, intent(in) :: Comm_in
     character(len=*), intent(IN) :: nmlfile
-    integer, optional, intent(in) :: Comm_ID
+    ! Optional argument cpl_comm_id is used to identify the particular
+    ! coupler instance used by each component instance in a multi-coupler case.
+    integer, optional, intent(in) :: Cpl_comm_id
     !
     ! Local variables
     !
@@ -765,9 +766,9 @@ contains
           pelist(3,1) = astr(n)
        end if
        call mpi_bcast(pelist, size(pelist), MPI_INTEGER, 0, GLOBAL_COMM, ierr)
-       if (present(Comm_ID)) then
-          call seq_comm_setcomm(ATMID(n), pelist, atm_nthreads, 'ATM', inst=Comm_ID)
-          call seq_comm_joincomm(CPLID, ATMID(n), CPLATMID(n), 'CPLATM', inst=Comm_ID)
+       if (present(Cpl_comm_id)) then
+          call seq_comm_setcomm(ATMID(n), pelist, atm_nthreads, 'ATM', inst=Cpl_comm_id)
+          call seq_comm_joincomm(CPLID, ATMID(n), CPLATMID(n), 'CPLATM', inst=Cpl_comm_id)
        else
           call seq_comm_setcomm(ATMID(n), pelist, atm_nthreads, 'ATM', n, num_inst_atm)
           call seq_comm_joincomm(CPLID, ATMID(n), CPLATMID(n), 'CPLATM', n, num_inst_atm)
@@ -783,9 +784,9 @@ contains
           pelist(3,1) = lstr(n)
        end if
        call mpi_bcast(pelist, size(pelist), MPI_INTEGER, 0, GLOBAL_COMM, ierr)
-       if (present(Comm_ID)) then
-          call seq_comm_setcomm(LNDID(n), pelist, lnd_nthreads, 'LND', inst=Comm_ID)
-          call seq_comm_joincomm(CPLID, LNDID(n), CPLLNDID(n), 'CPLLND', inst=Comm_ID)
+       if (present(Cpl_comm_id)) then
+          call seq_comm_setcomm(LNDID(n), pelist, lnd_nthreads, 'LND', inst=Cpl_comm_id)
+          call seq_comm_joincomm(CPLID, LNDID(n), CPLLNDID(n), 'CPLLND', inst=Cpl_comm_id)
        else
           call seq_comm_setcomm(LNDID(n), pelist, lnd_nthreads, 'LND', n, num_inst_lnd)
           call seq_comm_joincomm(CPLID, LNDID(n), CPLLNDID(n), 'CPLLND', n, num_inst_lnd)
@@ -801,9 +802,9 @@ contains
           pelist(3,1) = ostr(n)
        end if
        call mpi_bcast(pelist, size(pelist), MPI_INTEGER, 0, GLOBAL_COMM, ierr)
-       if (present(Comm_ID)) then
-          call seq_comm_setcomm(OCNID(n), pelist, ocn_nthreads, 'OCN', inst=Comm_ID)
-          call seq_comm_joincomm(CPLID, OCNID(n), CPLOCNID(n), 'CPLOCN', inst=Comm_ID)
+       if (present(Cpl_comm_id)) then
+          call seq_comm_setcomm(OCNID(n), pelist, ocn_nthreads, 'OCN', inst=Cpl_comm_id)
+          call seq_comm_joincomm(CPLID, OCNID(n), CPLOCNID(n), 'CPLOCN', inst=Cpl_comm_id)
        else
           call seq_comm_setcomm(OCNID(n), pelist, ocn_nthreads, 'OCN', n, num_inst_ocn)
           call seq_comm_joincomm(CPLID, OCNID(n), CPLOCNID(n), 'CPLOCN', n, num_inst_ocn)
@@ -819,9 +820,9 @@ contains
           pelist(3,1) = istr(n)
        end if
        call mpi_bcast(pelist, size(pelist), MPI_INTEGER, 0, GLOBAL_COMM, ierr)
-       if (present(Comm_ID)) then
-          call seq_comm_setcomm(ICEID(n), pelist, ice_nthreads, 'ICE', inst=Comm_ID)
-          call seq_comm_joincomm(CPLID, ICEID(n), CPLICEID(n), 'CPLICE', inst=Comm_ID)
+       if (present(Cpl_comm_id)) then
+          call seq_comm_setcomm(ICEID(n), pelist, ice_nthreads, 'ICE', inst=Cpl_comm_id)
+          call seq_comm_joincomm(CPLID, ICEID(n), CPLICEID(n), 'CPLICE', inst=Cpl_comm_id)
        else
           call seq_comm_setcomm(ICEID(n), pelist, ice_nthreads, 'ICE', n, num_inst_ice)
           call seq_comm_joincomm(CPLID, ICEID(n), CPLICEID(n), 'CPLICE', n, num_inst_ice)
@@ -837,9 +838,9 @@ contains
           pelist(3,1) = gstr(n)
        end if
        call mpi_bcast(pelist, size(pelist), MPI_INTEGER, 0, GLOBAL_COMM, ierr)
-       if (present(Comm_ID)) then
-          call seq_comm_setcomm(GLCID(n), pelist, glc_nthreads, 'GLC', inst=Comm_ID)
-          call seq_comm_joincomm(CPLID, GLCID(n), CPLGLCID(n), 'CPLGLC', inst=Comm_ID)
+       if (present(Cpl_comm_id)) then
+          call seq_comm_setcomm(GLCID(n), pelist, glc_nthreads, 'GLC', inst=Cpl_comm_id)
+          call seq_comm_joincomm(CPLID, GLCID(n), CPLGLCID(n), 'CPLGLC', inst=Cpl_comm_id)
        else
           call seq_comm_setcomm(GLCID(n), pelist, glc_nthreads, 'GLC', n, num_inst_glc)
           call seq_comm_joincomm(CPLID, GLCID(n), CPLGLCID(n), 'CPLGLC', n, num_inst_glc)
@@ -855,9 +856,9 @@ contains
           pelist(3,1) = rstr(n)
        end if
        call mpi_bcast(pelist, size(pelist), MPI_INTEGER, 0, GLOBAL_COMM, ierr)
-       if (present(Comm_ID)) then
-          call seq_comm_setcomm(ROFID(n), pelist, rof_nthreads, 'ROF', inst=Comm_ID)
-          call seq_comm_joincomm(CPLID, ROFID(n), CPLROFID(n), 'CPLROF', inst=Comm_ID)
+       if (present(Cpl_comm_id)) then
+          call seq_comm_setcomm(ROFID(n), pelist, rof_nthreads, 'ROF', inst=Cpl_comm_id)
+          call seq_comm_joincomm(CPLID, ROFID(n), CPLROFID(n), 'CPLROF', inst=Cpl_comm_id)
        else
           call seq_comm_setcomm(ROFID(n), pelist, rof_nthreads, 'ROF', n, num_inst_rof)
           call seq_comm_joincomm(CPLID, ROFID(n), CPLROFID(n), 'CPLROF', n, num_inst_rof)
@@ -873,9 +874,9 @@ contains
           pelist(3,1) = wstr(n)
        end if
        call mpi_bcast(pelist, size(pelist), MPI_INTEGER, 0, GLOBAL_COMM, ierr)
-       if (present(Comm_ID)) then
-          call seq_comm_setcomm(WAVID(n), pelist, wav_nthreads, 'WAV', inst=Comm_ID)
-          call seq_comm_joincomm(CPLID, WAVID(n), CPLWAVID(n), 'CPLWAV', inst=Comm_ID)
+       if (present(Cpl_comm_id)) then
+          call seq_comm_setcomm(WAVID(n), pelist, wav_nthreads, 'WAV', inst=Cpl_comm_id)
+          call seq_comm_joincomm(CPLID, WAVID(n), CPLWAVID(n), 'CPLWAV', inst=Cpl_comm_id)
        else
           call seq_comm_setcomm(WAVID(n), pelist, wav_nthreads, 'WAV', n, num_inst_wav)
           call seq_comm_joincomm(CPLID, WAVID(n), CPLWAVID(n), 'CPLWAV', n, num_inst_wav)
