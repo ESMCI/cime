@@ -204,7 +204,7 @@ int run_sc_tests(MPI_Comm test_comm)
     return 0;
 }
 
-/* Tesst some list stuff. */
+/* Test some list stuff. */
 int test_lists()
 {
     file_desc_t *fdesc;
@@ -220,6 +220,174 @@ int test_lists()
         return ERR_WRONG;
     if (pio_get_file(42, &fdesc) != PIO_EBADID)
         return ERR_WRONG;
+    return 0;
+}
+
+/* 
+ * Test some list stuff for varlists. 
+ *
+ * @author Ed Hartnett
+ */
+int test_varlists()
+{
+    var_desc_t *varlist = NULL;
+    var_desc_t *var_desc;
+    int ret;
+
+    /* Try to delete a non-existing var. */
+    if (delete_var_desc(2, &varlist) != PIO_ENOTVAR)
+        return ERR_WRONG;
+
+    /* Add a var to the list. */
+    if ((ret = add_to_varlist(0, 1, &varlist)))
+        return ret;
+
+    /* Find that var_desc_t. */
+    if ((ret = get_var_desc(0, &varlist, &var_desc)))
+        return ret;
+    if (var_desc->varid != 0 || !var_desc->rec_var)
+        return ERR_WRONG;
+
+    /* Try to delete a non-existing var - should fail. */
+    if (delete_var_desc(2, &varlist) != PIO_ENOTVAR)
+        return ERR_WRONG;
+
+    /* Delete it. */
+    if ((ret = delete_var_desc(0, &varlist)))
+        return ret;
+
+    /* Make sure it is gone. */
+    if (get_var_desc(0, &varlist, &var_desc) != PIO_ENOTVAR)
+        return ERR_WRONG;
+    
+    return 0;
+}
+
+/* 
+ * Test some more list stuff for varlists. 
+ *
+ * @author Ed Hartnett
+ */
+int test_varlists2()
+{
+    var_desc_t *varlist = NULL;
+    var_desc_t *var_desc;
+    int ret;
+
+    /* Add some vars to the list. */
+    if ((ret = add_to_varlist(0, 1, &varlist)))
+        return ret;
+    if ((ret = add_to_varlist(1, 0, &varlist)))
+        return ret;
+    if ((ret = add_to_varlist(2, 1, &varlist)))
+        return ret;
+
+    /* Find those var_desc_t. */
+    if ((ret = get_var_desc(0, &varlist, &var_desc)))
+        return ret;
+    if (var_desc->varid != 0 || !var_desc->rec_var)
+        return ERR_WRONG;
+
+    if ((ret = get_var_desc(1, &varlist, &var_desc)))
+        return ret;
+    if (var_desc->varid != 1 || var_desc->rec_var)
+        return ERR_WRONG;
+
+    if ((ret = get_var_desc(2, &varlist, &var_desc)))
+        return ret;
+    if (var_desc->varid != 2 || !var_desc->rec_var)
+        return ERR_WRONG;
+
+    /* Try to delete a non-existing var - should fail. */
+    if (delete_var_desc(3, &varlist) != PIO_ENOTVAR)
+        return ERR_WRONG;
+
+    /* Delete one of the vars. */
+    if ((ret = delete_var_desc(0, &varlist)))
+        return ret;
+
+    /* Make sure it is gone. */
+    if (get_var_desc(0, &varlist, &var_desc) != PIO_ENOTVAR)
+        return ERR_WRONG;
+
+    /* Make sure the others are still there. */
+    var_desc = NULL;
+    if ((ret = get_var_desc(1, &varlist, &var_desc)))
+        return ret;
+    if (var_desc->varid != 1 || var_desc->rec_var)
+        return ERR_WRONG;
+
+    var_desc = NULL;
+    if ((ret = get_var_desc(2, &varlist, &var_desc)))
+        return ret;
+    if (var_desc->varid != 2 || !var_desc->rec_var)
+        return ERR_WRONG;
+
+    /* Delete the other two vars from the varlist. */
+    if ((ret = delete_var_desc(1, &varlist)))
+        return ret;
+    if ((ret = delete_var_desc(2, &varlist)))
+        return ret;
+    
+    return 0;
+}
+
+/* 
+ * Test even more list stuff for varlists. 
+ *
+ * @author Ed Hartnett
+ */
+int test_varlists3()
+{
+    var_desc_t *varlist = NULL;
+    var_desc_t *var_desc;
+    int ret;
+
+    /* Add some vars to the list. */
+    if ((ret = add_to_varlist(0, 1, &varlist)))
+        return ret;
+    if ((ret = add_to_varlist(1, 0, &varlist)))
+        return ret;
+    if ((ret = add_to_varlist(2, 1, &varlist)))
+        return ret;
+    if ((ret = add_to_varlist(3, 0, &varlist)))
+        return ret;
+
+    /* Delete one of the vars. */
+    if ((ret = delete_var_desc(1, &varlist)))
+        return ret;
+
+    /* Make sure it is gone. */
+    if (get_var_desc(1, &varlist, &var_desc) != PIO_ENOTVAR)
+        return ERR_WRONG;
+
+    /* Make sure the others are still there. */
+    var_desc = NULL;
+    if ((ret = get_var_desc(0, &varlist, &var_desc)))
+        return ret;
+    if (var_desc->varid != 0 || !var_desc->rec_var)
+        return ERR_WRONG;
+
+    var_desc = NULL;
+    if ((ret = get_var_desc(2, &varlist, &var_desc)))
+        return ret;
+    if (var_desc->varid != 2 || !var_desc->rec_var)
+        return ERR_WRONG;
+
+    var_desc = NULL;
+    if ((ret = get_var_desc(3, &varlist, &var_desc)))
+        return ret;
+    if (var_desc->varid != 3 || var_desc->rec_var)
+        return ERR_WRONG;
+
+    /* Delete the other vars from the varlist. */
+    if ((ret = delete_var_desc(0, &varlist)))
+        return ret;
+    if ((ret = delete_var_desc(2, &varlist)))
+        return ret;
+    if ((ret = delete_var_desc(3, &varlist)))
+        return ret;
+    
     return 0;
 }
 
@@ -484,36 +652,48 @@ int main(int argc, char **argv)
             return ret;
 
         printf("%d running tests for functions in pioc_sc.c\n", my_rank);
-        if ((ret = run_sc_tests(test_comm)))
-            return ret;
+        /* if ((ret = run_sc_tests(test_comm))) */
+        /*     return ret; */
 
-        printf("%d running tests for GCDblocksize()\n", my_rank);
-        if ((ret = run_GDCblocksize_tests(test_comm)))
-            return ret;
+        /* printf("%d running tests for GCDblocksize()\n", my_rank); */
+        /* if ((ret = run_GDCblocksize_tests(test_comm))) */
+        /*     return ret; */
 
-        printf("%d running spmd test code\n", my_rank);
-        if ((ret = run_spmd_tests(test_comm)))
-            return ret;
+        /* printf("%d running spmd test code\n", my_rank); */
+        /* if ((ret = run_spmd_tests(test_comm))) */
+        /*     return ret; */
         
-        printf("%d running CalcStartandCount test code\n", my_rank);
-        if ((ret = test_CalcStartandCount()))
+        /* printf("%d running CalcStartandCount test code\n", my_rank); */
+        /* if ((ret = test_CalcStartandCount())) */
+        /*     return ret; */
+
+        /* printf("%d running list tests\n", my_rank); */
+        /* if ((ret = test_lists())) */
+        /*     return ret; */
+
+        printf("%d running varlist tests\n", my_rank);
+        if ((ret = test_varlists()))
             return ret;
 
-        printf("%d running list tests\n", my_rank);
-        if ((ret = test_lists()))
+        printf("%d running more varlist tests\n", my_rank);
+        if ((ret = test_varlists2()))
             return ret;
 
-        printf("%d running ceil2/pair tests\n", my_rank);
-        if ((ret = test_ceil2_pair()))
+        printf("%d running even more varlist tests\n", my_rank);
+        if ((ret = test_varlists3()))
             return ret;
 
-        printf("%d running find_mpi_type tests\n", my_rank);
-        if ((ret = test_find_mpi_type()))
-            return ret;
+        /* printf("%d running ceil2/pair tests\n", my_rank); */
+        /* if ((ret = test_ceil2_pair())) */
+        /*     return ret; */
 
-        printf("%d running misc tests\n", my_rank);
-        if ((ret = test_misc()))
-            return ret;
+        /* printf("%d running find_mpi_type tests\n", my_rank); */
+        /* if ((ret = test_find_mpi_type())) */
+        /*     return ret; */
+
+        /* printf("%d running misc tests\n", my_rank); */
+        /* if ((ret = test_misc())) */
+        /*     return ret; */
 
         /* Finalize PIO system. */
         if ((ret = PIOc_finalize(iosysid)))
