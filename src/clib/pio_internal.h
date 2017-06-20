@@ -104,6 +104,8 @@ extern "C" {
                          MPI_Comm io_comm);
 
     void pio_get_env(void);
+
+    /* List operations. */
     int  pio_add_to_iodesc_list(io_desc_t *iodesc);
     io_desc_t *pio_get_iodesc_from_id(int ioid);
     int pio_delete_iodesc_from_list(int ioid);
@@ -112,6 +114,16 @@ extern "C" {
     int pio_get_file(int ncid, file_desc_t **filep);
     int pio_delete_file_from_list(int ncid);
     void pio_add_to_file_list(file_desc_t *file);
+
+    /* Add a var_desc_t to a varlist. */
+    int add_to_varlist(int varid, int rec_var, var_desc_t **varlist);
+
+    /* Find a var_desc_t in a varlist. */
+    int get_var_desc(int varid, var_desc_t **varlist, var_desc_t **var_desc);
+
+    /* Delete a var_desc_t from a varlist. */
+    int delete_var_desc(int varid, var_desc_t **varlist);    
+    
     void pio_push_request(file_desc_t *file, int request);
 
     /* Create a file (internal function). */
@@ -559,8 +571,7 @@ enum PIO_MSG
     PIO_MSG_EXIT,
     PIO_MSG_GET_ATT,
     PIO_MSG_PUT_ATT,
-    PIO_MSG_INQ_TYPE,
-    PIO_MSG_INQ_UNLIMDIMS
+    PIO_MSG_INQ_TYPE
 };
 
 #endif /* __PIO_INTERNAL__ */
