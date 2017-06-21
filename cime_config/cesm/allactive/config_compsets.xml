@@ -274,13 +274,18 @@
   </compset>
 
   <compset>
-    <alias>N1850OCDMSBPRP</alias>
-    <lname>1850_CAM60%PTAERO_CLM50%BGC_CICE_MICOM%ECO_MOSART_SGLC_SWAV_BGC%DMSBPRP</lname>
+    <alias>N1850OCBPRPDMS</alias>
+    <lname>1850_CAM60%PTAERO_CLM50%BGC_CICE_MICOM%ECO_MOSART_SGLC_SWAV_BGC%BPRPDMS</lname>
   </compset>
 
   <compset>
-    <alias>N1850OCDMSBDRD</alias>
-    <lname>1850_CAM60%PTAERO_CLM50%BGC_CICE_MICOM%ECO_MOSART_SGLC_SWAV_BGC%DMSBDRD</lname>
+    <alias>N1850OCBDRDDMS</alias>
+    <lname>1850_CAM60%PTAERO_CLM50%BGC_CICE_MICOM%ECO_MOSART_SGLC_SWAV_BGC%BDRDDMS</lname>
+  </compset>
+
+  <compset>
+    <alias>N1850OCDMS</alias>
+    <lname>1850_CAM60%PTAERO_CLM50%BGC_CICE_MICOM%ECO_MOSART_SGLC_SWAV_BGC%DMS</lname>
   </compset>
 
   <compset>

@@ -2453,8 +2453,9 @@
       <value compset="_DATM%S1850.+POP\d">CO2A</value>
       <value compset="_BGC%BPRP">CO2C</value>
       <value compset="_BGC%BDRD">CO2A</value>
-      <value compset="_BGC%DMSBPRP">CO2_DMSA</value>
-      <value compset="_BGC%DMSBDRD">CO2_DMSB</value>
+      <value compset="_BGC%BPRPDMS">CO2_DMSA</value>
+      <value compset="_BGC%BDRDDMS">CO2_DMSB</value>
+      <value compset="_BGC%DMS">CO2_DMSB</value>
       <value compset="HIST.*_DATM%(QIA|CRU)">CO2A</value>
       <value compset="RCP.*_DATM%(QIA|CRU)" >CO2A</value>
     </values>
