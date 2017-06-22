@@ -57,22 +57,22 @@ ELSE()
   #       end up in BINARY (build) tree
   IF (NOT EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/shr_infnan_mod.F90)
   #IF (NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/shr_infnan_mod.F90)
-    # Do genf90 on 2 input files
-    MESSAGE("     - Generating shr_infnan_mod, shr_assert_mod, and shr_frz_mod")
-    SET (GENF90 ${ACME_SOURCE_DIR}/${CIME_DIR}/src/externals/genf90/genf90.pl)
-    #SET (GENF90 ${CIME_DIR}/src/externals/genf90/genf90.pl)
+    # Do genf90 on input files
+    SET (GENF90 ${ACME_SOURCE_DIR}/${CIME_REL_DIR}/src/externals/genf90/genf90.pl)
+    MESSAGE("     - Generating shr_infnan_mod, shr_assert_mod, and shr_frz_mod with ${GENF90}")
+
     execute_process (COMMAND ${GENF90}
-${CMAKE_CURRENT_SOURCE_DIR}/shr_infnan_mod.F90.in
+                     ${CMAKE_CURRENT_SOURCE_DIR}/shr_infnan_mod.F90.in
                      OUTPUT_FILE shr_infnan_mod.F90
                      WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-                     #WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+
     execute_process (COMMAND ${GENF90}
-${CMAKE_CURRENT_SOURCE_DIR}/shr_assert_mod.F90.in
+                     ${CMAKE_CURRENT_SOURCE_DIR}/shr_assert_mod.F90.in
                      OUTPUT_FILE shr_assert_mod.F90
                      WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-                     #WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+
     execute_process (COMMAND ${GENF90}
-${CMAKE_CURRENT_SOURCE_DIR}/shr_frz_mod.F90.in
+                     ${CMAKE_CURRENT_SOURCE_DIR}/shr_frz_mod.F90.in
                      OUTPUT_FILE shr_frz_mod.F90
                      WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 
