@@ -1977,7 +1977,7 @@ int open_file_handler(iosystem_desc_t *ios)
 
     /* Call the open file function. Errors are handling within
      * function, so return code can be ignored. */
-    PIOc_openfile(ios->iosysid, &ncid, &iotype, filename, mode);
+    PIOc_openfile_retry(ios->iosysid, &ncid, &iotype, filename, mode, 0);
 
     return PIO_NOERR;
 }

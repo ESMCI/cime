@@ -958,10 +958,12 @@ int PIOc_set_hint(int iosysid, const char *hint, const char *hintval)
  * @param iosysid: the io system ID provided by PIOc_Init_Intracomm().
  * @returns 0 for success or non-zero for error.
  * @ingroup PIO_finalize
+ * @author Jim Edwards, Ed Hartnett
  */
 int PIOc_finalize(int iosysid)
 {
     iosystem_desc_t *ios;
+    int niosysid;          /* The number of currently open IO systems. */
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
     int ierr = PIO_NOERR;
 
@@ -1013,8 +1015,7 @@ int PIOc_finalize(int iosysid)
         free(ios->compranks);
     LOG((3, "Freed compranks."));
 
-    /* Free the buffer pool. */
-    int niosysid;
+    /* Learn the number of open IO systems. */
     if ((ierr = pio_num_iosystem(&niosysid)))
         return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
     LOG((2, "%d iosystems are still open.", niosysid));

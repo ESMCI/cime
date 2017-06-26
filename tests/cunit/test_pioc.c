@@ -1126,7 +1126,7 @@ int test_deletefile(int iosysid, int num_flavors, int *flavor, int my_rank)
 
         /* Make sure it is gone. Openfile will now return an error
          * code when I try to open the file. */
-        if (!PIOc_openfile(iosysid, &ncid, &(flavor[fmt]), filename, PIO_NOWRITE))
+        if (!PIOc_openfile2(iosysid, &ncid, &(flavor[fmt]), filename, PIO_NOWRITE))
             ERR(ERR_WRONG);
     }
 
@@ -1560,7 +1560,7 @@ int test_scalar(int iosysid, int num_flavors, int *flavor, int my_rank, int asyn
             ERR(ret);
 
         /* Reopen the file. */
-        if ((ret = PIOc_openfile(iosysid, &ncid, &(flavor[fmt]), filename, PIO_NOWRITE)))
+        if ((ret = PIOc_openfile2(iosysid, &ncid, &(flavor[fmt]), filename, PIO_NOWRITE)))
             ERR(ret);
 
         /* Check the scalar var again. */
