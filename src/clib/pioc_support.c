@@ -2067,6 +2067,62 @@ int PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype, const char *filena
 }
 
 /**
+ * Internal function used when opening an existing file. This function
+ * is called by PIOc_openfile() and PIOc_openfile2(). It opens the
+ * file and then learns some things about the metadata in that file.
+ *
+ * Input parameters are read on comp task 0 and ignored elsewhere.
+ *
+ * @param iosysid: A defined pio system descriptor (input)
+ * @param ncidp: A pio file descriptor (output)
+ * @param iotype: A pio output format (input)
+ * @param filename: The filename to open
+ * @param mode: The netcdf mode for the open operation
+ * @param retry: non-zero to automatically retry with netCDF serial
+ * classic.
+ *
+ * @return 0 for success, error code otherwise.
+ * @ingroup PIO_openfile
+ * @author Ed Hartnett
+ */
+int openfile_int(int iosysid, int *ncidp, int *iotype, const char *filename,
+                 int mode, int retry)
+{
+    int nvars;             /* The number of vars in the file. */
+    iosystem_desc_t *ios;  /* Pointer to io system information. */
+    file_desc_t *file;     /* Pointer to file information. */
+    int ierr = PIO_NOERR;  /* Return code from function calls. */
+
+    /* Get the IO system info from the iosysid. */
+    if (!(ios = pio_get_iosystem_from_id(iosysid)))
+        return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
+    
+    /* Open the file. */
+    if ((ierr = PIOc_openfile_retry(iosysid, ncidp, iotype, filename, mode, retry)))
+        return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
+
+    /* How many variabls in this file? */
+    if ((ierr = PIOc_inq_nvars(*ncidp, &nvars)))
+        return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
+
+    /* Find the file_info_t struct for this file. */
+    if ((ierr = pio_get_file(*ncidp, &file)))
+        return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
+
+    /* Create an entry in the varlist for each variable. */
+    for (int v = 0; v < nvars; v++)
+    {
+        int rec_var = 0; /* Does var use unlimited dimension? */
+
+        /* Add to the list of var_desc_t structs for this file. */
+        /* if ((ierr = add_to_varlist(v, rec_var, &file->varlist2))) */
+        /*     return pio_err(ios, NULL, ierr, __FILE__, __LINE__); */
+    }
+
+    return PIO_NOERR;
+}
+
+/**
  * Internal function to provide inq_type function for pnetcdf.
  *
  * @param ncid ignored because pnetcdf does not have user-defined

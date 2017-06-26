@@ -388,7 +388,7 @@ int test_atts_byte(int iosysid, int num_flavors, int *flavor, int my_rank,
             ERR(ret);
 
         /* Reopen the file. */
-        if ((ret = PIOc_openfile(iosysid, &ncid, &(flavor[fmt]), filename, PIO_NOWRITE)))
+        if ((ret = PIOc_openfile2(iosysid, &ncid, &(flavor[fmt]), filename, PIO_NOWRITE)))
             ERR(ret);
 
         /* Test the attribute conversions. */
@@ -493,7 +493,7 @@ int test_atts_int64(int iosysid, int num_flavors, int *flavor, int my_rank,
             ERR(ret);
 
         /* Reopen the file. */
-        if ((ret = PIOc_openfile(iosysid, &ncid, &(flavor[fmt]), filename, PIO_NOWRITE)))
+        if ((ret = PIOc_openfile2(iosysid, &ncid, &(flavor[fmt]), filename, PIO_NOWRITE)))
             ERR(ret);
 
         if ((ret = test_att_conv_int64(ncid, flavor[fmt], SCHAR_ATT_NAME, int64_expected, expected_data)))
@@ -2025,7 +2025,7 @@ int test_putget(int iosysid, int num_flavors, int *flavor, int my_rank,
 
                 /* /\* Access to read it. *\/ */
                 printf("about to try to open file %s\n", filename);
-                if ((ret = PIOc_openfile(iosysid, &ncid, &(flavor[fmt]), filename, PIO_NOWRITE)))
+                if ((ret = PIOc_openfile2(iosysid, &ncid, &(flavor[fmt]), filename, PIO_NOWRITE)))
                     ERR(ret);
 
                 /* Check contents of the file. */

@@ -366,7 +366,7 @@ check_nc_sample_0(int iosysid, int format, char *filename, int my_rank, int *nci
 
     /* Re-open the file to check it. */
     printf("%d opening file %s format %d\n", my_rank, filename, format);
-    if ((ret = PIOc_openfile(iosysid, &ncid, &format, filename,
+    if ((ret = PIOc_openfile2(iosysid, &ncid, &format, filename,
                              NC_NOWRITE)))
         return ret;
 
@@ -508,7 +508,7 @@ check_nc_sample_1(int iosysid, int format, char *filename, int my_rank, int *nci
 
     /* Re-open the file to check it. */
     printf("%d opening file %s format %d\n", my_rank, filename, format);
-    if ((ret = PIOc_openfile(iosysid, &ncid, &format, filename,
+    if ((ret = PIOc_openfile2(iosysid, &ncid, &format, filename,
                              NC_NOWRITE)))
         return ret;
 
@@ -730,7 +730,7 @@ check_nc_sample_2(int iosysid, int format, char *filename, int my_rank, int *nci
 
     /* Re-open the file to check it. */
     printf("%d opening file %s format %d\n", my_rank, filename, format);
-    if ((ret = PIOc_openfile(iosysid, &ncid, &format, filename, NC_NOWRITE)))
+    if ((ret = PIOc_openfile2(iosysid, &ncid, &format, filename, NC_NOWRITE)))
         return ERR_CHECK;
 
     /* Try to read the data. */

@@ -126,6 +126,10 @@ extern "C" {
     /* Create a file (internal function). */
     int PIOc_createfile_int(int iosysid, int *ncidp, int *iotype, const char *filename, int mode);
 
+    /* Open a file and learn about metadata. */
+    int openfile_int(int iosysid, int *ncidp, int *iotype, const char *filename,
+                     int mode, int retry);
+
     /* Open a file with optional retry as netCDF-classic if first
      * iotype does not work. */
     int PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype,
