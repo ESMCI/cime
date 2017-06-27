@@ -127,9 +127,9 @@ int pio_delete_file_from_list(int ncid)
                     free(cfile->varlist[v].fillvalue);
 
             /* Free the varlist entries for this file. */
-            /* for (var_desc_t *var = cfile->varlist2; var->next; var = var->next) */
-            /*     if ((ret = delete_var_desc(var->varid, &cfile->varlist2))) */
-            /*         return pio_err(NULL, cfile, ret, __FILE__, __LINE__); */
+            while (cfile->varlist2)
+                if ((ret = delete_var_desc(cfile->varlist2->varid, &cfile->varlist2)))
+                    return pio_err(NULL, cfile, ret, __FILE__, __LINE__);
 
             /* Free the memory used for this file. */
             free(cfile);

@@ -2089,6 +2089,7 @@ int openfile_int(int iosysid, int *ncidp, int *iotype, const char *filename,
                  int mode, int retry)
 {
     int nvars;             /* The number of vars in the file. */
+    int nunlimdim;         /* The number of unlimited dimensions. */
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Pointer to file information. */
     int ierr = PIO_NOERR;  /* Return code from function calls. */
@@ -2105,6 +2106,15 @@ int openfile_int(int iosysid, int *ncidp, int *iotype, const char *filename,
     if ((ierr = PIOc_inq_nvars(*ncidp, &nvars)))
         return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
 
+    /* How many unlimited dims for this file? */
+    if ((ierr = PIOc_inq_unlimdims(*ncidp, &nunlimdim, NULL)))
+        return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
+
+    /* Learn the unlimited dimension ID(s). */
+    int unlimdimids[nunlimdim];
+    if ((ierr = PIOc_inq_unlimdims(*ncidp, NULL, unlimdimids)))
+        return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
+
     /* Find the file_info_t struct for this file. */
     if ((ierr = pio_get_file(*ncidp, &file)))
         return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
@@ -2113,10 +2123,23 @@ int openfile_int(int iosysid, int *ncidp, int *iotype, const char *filename,
     for (int v = 0; v < nvars; v++)
     {
         int rec_var = 0; /* Does var use unlimited dimension? */
+        int var_ndims;
+
+        /* How many dims for this var? */
+        if ((ierr = PIOc_inq_varndims(*ncidp, v, &var_ndims)))
+            return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
+
+        /* What are the dimids associated with this var? */
+        if (var_ndims)
+        {
+            int var_dimids[var_ndims];
+            if ((ierr = PIOc_inq_vardimid(*ncidp, v, var_dimids)))
+                return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
+        }
 
         /* Add to the list of var_desc_t structs for this file. */
-        /* if ((ierr = add_to_varlist(v, rec_var, &file->varlist2))) */
-        /*     return pio_err(ios, NULL, ierr, __FILE__, __LINE__); */
+        if ((ierr = add_to_varlist(v, rec_var, &file->varlist2)))
+            return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
     }
 
     return PIO_NOERR;
