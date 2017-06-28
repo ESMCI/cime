@@ -114,9 +114,9 @@ endif ()
 
 # Test Timeout in seconds.
 if (PIO_VALGRIND_CHECK)
-  set (DEFAULT_TEST_TIMEOUT 240)
+  set (DEFAULT_TEST_TIMEOUT 480)
 else ()
-  set (DEFAULT_TEST_TIMEOUT 120)
+  set (DEFAULT_TEST_TIMEOUT 240)
 endif ()
 
 # All tests need a certain number of tasks, but they should be able to
