@@ -832,11 +832,13 @@ using a fortran linker.
 </compiler>
 
 <compiler MACH="hexagon">
-  <NETCDF_PATH>/opt/cray/netcdf/4.3.3.1/INTEL/14.0</NETCDF_PATH>
+  <NETCDF_PATH>$(NETCDF_DIR)</NETCDF_PATH>
+  <PNETCDF_PATH>$(PARALLEL_NETCDF_DIR)</PNETCDF_PATH>
   <MPI_PATH>$(MPI_ROOT)</MPI_PATH>
   <MPI_LIB_NAME>mpi</MPI_LIB_NAME>
   <FFLAGS>
     <append DEBUG="FALSE"> -O2 </append>
+    <append MODEL="micom"> -r8 </append>
   </FFLAGS>
   <SLIBS>
     <append>-L$(NETCDF_DIR)/lib -lnetcdff -lnetcdf</append>
@@ -844,12 +846,38 @@ using a fortran linker.
   <MPICC> cc </MPICC>
 </compiler>
 
+<compiler MACH="fram">
+ <CPPDEFS>
+  <append> -D$(OS) </append>
+ </CPPDEFS>
+  <FFLAGS>
+  <append> -xCORE-AVX2 </append>
+  </FFLAGS>
+  <NETCDF_PATH>$(EBROOTNETCDFMINFORTRAN)</NETCDF_PATH>
+  <PNETCDF_PATH>$(EBROOTPNETCDF)</PNETCDF_PATH>
+  <MPI_PATH>$(MPI_ROOT)</MPI_PATH>
+  <MPI_LIB_NAME>mpi</MPI_LIB_NAME>
+  <FFLAGS>
+    <append DEBUG="FALSE"> -O2 </append>
+    <append MODEL="micom"> -r8 </append>
+  </FFLAGS>
+  <MPICC> mpiicc </MPICC>
+  <MPICXX> mpiicpc </MPICXX>
+  <MPIFC> mpiifort </MPIFC>
+  <PIO_FILESYSTEM_HINTS>lustre</PIO_FILESYSTEM_HINTS>
+  <SLIBS>
+    <append>-mkl=sequential -lnetcdff -lnetcdf</append>
+  </SLIBS>
+</compiler>
+
 <compiler MACH="vilje">
-  <NETCDF_PATH>/sw/sdev/Modules/netcdf/netcdf-4.3.2</NETCDF_PATH>
+  <NETCDF_PATH>$(NETCDF_ROOT)</NETCDF_PATH>
+  <PNETCDF_PATH>$(NETCDF_ROOT)</PNETCDF_PATH>
   <MPI_PATH>$(MPI_ROOT)</MPI_PATH>
   <MPI_LIB_NAME>mpi</MPI_LIB_NAME>
   <FFLAGS>
     <append DEBUG="FALSE"> -O2 -xAVX </append>
+    <append MODEL="micom"> -r8 </append>
   </FFLAGS>
   <SLIBS>
     <append>-L$(NETCDF_DIR)/lib -lnetcdff -lnetcdf</append>

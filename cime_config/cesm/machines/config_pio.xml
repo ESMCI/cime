@@ -48,10 +48,11 @@
       <value mach="eastwind">netcdf</value>
       <value mach="constance">netcdf</value>
       <value mach="pleiades.*">netcdf</value>
-      <value mach="vilje">netcdf</value>
-      <value mach="hexagon">netcdf</value>
+      <value mach="vilje">pnetcdf</value>
+      <value mach="hexagon">pnetcdf</value>
       <value mach="hobart" compiler="pgi">netcdf</value>
       <value mach="hobart" compiler="nag">netcdf</value>
+      <value mach="fram">pnetcdf</value>
       <value mpilib="mpi-serial">netcdf</value>
     </values>
   </entry>
