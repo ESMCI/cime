@@ -1761,6 +1761,7 @@
          <modules>
             <command name="unload">PrgEnv-cray PrgEnv-pgi PrgEnv-intel</command>
             <command name="unload">netcdf</command>
+            <command name="unload">cray-mpich/7.5.3</command>
             <command name="load">perl/5.22.0-dso</command>
             <command name="load">PrgEnv-intel</command>
             <command name="load">intel/16.0.3</command>
