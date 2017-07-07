@@ -103,7 +103,6 @@ add_subdirectory(${SHARE_ROOT}/test/unit)
 ELSE()  #ACME_BUILD
 
 # CMakeLists.txt file for ACME build is stash in cmake-scripts dir
-SET(CIME_REL_DIR .)
 INCLUDE (scripts/cmake/includedCMakeLists.txt)
 
 ENDIF()

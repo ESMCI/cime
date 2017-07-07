@@ -12,12 +12,11 @@ cmake_minimum_required(VERSION 2.7)
 # May want to rename CIME_BUILD
 OPTION(ACME_BUILD "Flag to distinguish Cmake logic for CIME code build, as opposed to Unit Tests" ON)
 OPTION(HAVE_ACME "Flag for CIME to know that we are building ACME components" OFF)
+SET(CIME_REL_DIR "." CACHE PATH "The relative path to CIME from the top level CMakeLists file. Default set by CIME.")
 
 
-IF (NOT DEFINED CIME_REL_DIR)
-  MESSAGE(FATAL_ERROR "\nERROR: CIME_REL_DIR, the relative path to CIME from
-the top level CMakeLists file, must be defined: 
- '.' for CIME build, 'cime' for ACME build.\n")
+IF(NOT EXISTS ${CIME_REL_DIR})
+  MESSAGE(FATAL_ERROR "Error: Provided CIME_REL_DIR of '${CIME_REL_DIR}' does not exist.")
 ENDIF()
 
 MESSAGE("----------------------------------------------")
