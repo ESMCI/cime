@@ -32,7 +32,6 @@ ENDIF()
 MESSAGE("----------------------------------------------\n")
 
 PROJECT(ACME Fortran C)
-FIND_PACKAGE(MPI)
 
 #AGS: needed this or ran into error in  gptl. Need logic?
 ADD_DEFINITIONS(-DHAVE_MPI)
