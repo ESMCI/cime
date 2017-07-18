@@ -173,7 +173,7 @@ class SystemTestsCompareTwo(SystemTestsCommon):
         self._activate_case2()
         # we need to make sure run2 is properly staged.
         if run_type != "startup":
-            check_case(self._case2, self._caseroot2)
+            check_case(self._case2)
         self._force_case2_settings()
         self.run_indv(suffix = self._run_two_suffix)
 
