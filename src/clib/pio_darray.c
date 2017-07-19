@@ -98,6 +98,7 @@ PIO_Offset PIOc_set_buffer_size_limit(PIO_Offset limit)
  * @param flushtodisk non-zero to cause buffers to be flushed to disk.
  * @return 0 for success, error code otherwise.
  * @ingroup PIO_write_darray
+ * @author Jim Edwards, Ed Hartnett
  */
 int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
                             PIO_Offset arraylen, void *array, const int *frame,
@@ -368,7 +369,8 @@ int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
  * @param vdesc pointer to var_desc_t info for this var.
  * @returns 0 for success, non-zero error code for failure.
  * @ingroup PIO_write_darray
- */
+ * @author Ed Hartnett 
+*/
 int find_var_fillvalue(file_desc_t *file, int varid, var_desc_t *vdesc)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */    
@@ -450,6 +452,7 @@ int find_var_fillvalue(file_desc_t *file, int varid, var_desc_t *vdesc)
  * data.
  * @returns 0 for success, non-zero error code for failure.
  * @ingroup PIO_write_darray
+ * @author Jim Edwards, Ed Hartnett
  */
 int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *array,
                       void *fillvalue)
@@ -744,6 +747,7 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
  * processor.
  * @return 0 for success, error code otherwise.
  * @ingroup PIO_read_darray
+ * @author Jim Edwards, Ed Hartnett
  */
 int PIOc_read_darray(int ncid, int varid, int ioid, PIO_Offset arraylen,
                      void *array)

@@ -117,6 +117,7 @@ int PIOc_open(int iosysid, const char *path, int mode, int *ncidp)
  * @param mode The netcdf mode for the create operation.
  * @returns 0 for success, error code otherwise.
  * @ingroup PIO_createfile
+ * @author Jim Edwards, Ed Hartnett
  */
 int PIOc_createfile(int iosysid, int *ncidp, int *iotype, const char *filename,
                     int mode)
@@ -157,6 +158,7 @@ int PIOc_createfile(int iosysid, int *ncidp, int *iotype, const char *filename,
  * @param ncidp : A pio file descriptor (output)
  * @return 0 for success, error code otherwise.
  * @ingroup PIO_create
+ * @author Ed Hartnett
  */
 int PIOc_create(int iosysid, const char *filename, int cmode, int *ncidp)
 {
@@ -186,6 +188,7 @@ int PIOc_create(int iosysid, const char *filename, int cmode, int *ncidp)
  *
  * @param ncid: the file pointer
  * @returns PIO_NOERR for success, error code otherwise.
+ * @author Jim Edwards, Ed Hartnett
  */
 int PIOc_closefile(int ncid)
 {
@@ -277,6 +280,7 @@ int PIOc_closefile(int ncid)
  * @param iosysid a pio system handle.
  * @param filename a filename.
  * @returns PIO_NOERR for success, error code otherwise.
+ * @author Jim Edwards, Ed Hartnett
  */
 int PIOc_deletefile(int iosysid, const char *filename)
 {
@@ -352,6 +356,7 @@ int PIOc_deletefile(int iosysid, const char *filename)
  *
  * @param ncid the ncid of the file to sync.
  * @returns PIO_NOERR for success, error code otherwise.
+ * @author Jim Edwards, Ed Hartnett
  */
 int PIOc_sync(int ncid)
 {

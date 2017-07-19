@@ -18,6 +18,7 @@
  * @param i input number
  * @returns the smallest power of 2 greater than
  * or equal to i.
+ * @author Jim Edwards
  */
 int ceil2(int i)
 {
@@ -36,6 +37,7 @@ int ceil2(int i)
  * @param p integer between 0 and np - 1.
  * @param k integer between 0 and np - 1.
  * @returns (p + 1) ^ k else -1.
+ * @author Jim Edwards
  */
 int pair(int np, int p, int k)
 {
@@ -69,6 +71,7 @@ int pair(int np, int p, int k)
  * @param comm MPI communicator for the MPI_Alltoallw call.
  * @param fc pointer to the struct that provided flow control options.
  * @returns 0 for success, error code otherwise.
+ * @author Jim Edwards
  */
 int pio_swapm(void *sendbuf, int *sendcounts, int *sdispls, MPI_Datatype *sendtypes,
               void *recvbuf, int *recvcounts, int *rdispls, MPI_Datatype *recvtypes,
@@ -390,6 +393,7 @@ int pio_swapm(void *sendbuf, int *sendcounts, int *sdispls, MPI_Datatype *sendty
  * @param comm communicator.
  * @param flow_cntl if non-zero, flow control will be used.
  * @returns 0 for success, error code otherwise.
+ * @author Jim Edwards
  */
 int pio_fc_gatherv(const void *sendbuf, int sendcnt, MPI_Datatype sendtype,
                    void *recvbuf, const int *recvcnts, const int *displs,
