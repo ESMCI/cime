@@ -165,6 +165,7 @@ int run_multiple_unlim_test(int iosysid, int ioid, int iotype, int my_rank)
             ERR(ERR_WRONG);
     }
 
+    /* Check some more stuff. */
     {
         int nunlimdims;
         int unlimdimids[NUM_UNLIM_DIMS];
@@ -185,6 +186,13 @@ int run_multiple_unlim_test(int iosysid, int ioid, int iotype, int my_rank)
                 ERR(ERR_WRONG);
         }
     }
+
+    /* Now try to add a var with two unlimited dims. It will fail. */
+    int varid;
+    #define VAR_NAME2 "some_dumb_variable_name_def_var_will_fail_anyway"
+    if (PIOc_def_var(ncid, VAR_NAME2, PIO_INT, NUM_UNLIM_DIMS, unlimdimids,
+                     &varid) != PIO_EINVAL)
+        ERR(ERR_WRONG);
     
     /* Close the file. */
     if ((PIOc_closefile(ncid)))
