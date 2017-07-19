@@ -258,7 +258,7 @@ int PIOc_inq_unlimdims(int ncid, int *nunlimdimsp, int *unlimdimidsp)
                 mpierr = MPI_Bcast(&nunlimdimsp_present, 1, MPI_CHAR, ios->compmaster, ios->intercomm);
             if (!mpierr)
                 mpierr = MPI_Bcast(&unlimdimidsp_present, 1, MPI_CHAR, ios->compmaster, ios->intercomm);
-            LOG((2, "PIOc_inq ncid = %d nunlimdimsp_present = %d unlimdimidsp_present = %d",
+            LOG((2, "PIOc_inq_unlimdims ncid = %d nunlimdimsp_present = %d unlimdimidsp_present = %d",
                  ncid, nunlimdimsp_present, unlimdimidsp_present));
         }
 
@@ -291,6 +291,7 @@ int PIOc_inq_unlimdims(int ncid, int *nunlimdimsp, int *unlimdimidsp)
             LOG((2, "pnetcdf"));
             int tmp_unlimdimid;            
             ierr = ncmpi_inq_unlimdim(file->fh, &tmp_unlimdimid);
+            LOG((2, "pnetcdf tmp_unlimdimid = %d", tmp_unlimdimid));
             tmp_nunlimdims = tmp_unlimdimid >= 0 ? 1 : 0;            
             if (nunlimdimsp)
                 *nunlimdimsp = tmp_nunlimdims;

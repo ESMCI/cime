@@ -228,9 +228,9 @@ int run_multiple_unlim_test(int iosysid, int ioid, int iotype, int my_rank,
     MPI_Barrier(test_comm);
 
     /* Try to read file. It will not work. */
-    /* if (PIOc_openfile2(iosysid, &ncid, &iotype, NETCDF4_UNLIM_FILE_NAME, */
-    /*                    0) != PIO_EINVAL) */
-    /*     ERR(ERR_WRONG); */
+    if (PIOc_openfile2(iosysid, &ncid, &iotype, NETCDF4_UNLIM_FILE_NAME,
+                       0) != PIO_EINVAL)
+        ERR(ERR_WRONG);
 
     return PIO_NOERR;
 }
