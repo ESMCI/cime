@@ -1875,15 +1875,17 @@ int PIOc_createfile_int(int iosysid, int *ncidp, int *iotype, const char *filena
  *
  * @return 0 for success, error code otherwise.
  * @ingroup PIO_openfile
+ * @author Jim Edwards, Ed Hartnett
  */
 int PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype, const char *filename,
                         int mode, int retry)
 {
-    iosystem_desc_t *ios;  /** Pointer to io system information. */
-    file_desc_t *file;     /** Pointer to file information. */
-    int imode;  /** internal mode val for netcdf4 file open */
+    iosystem_desc_t *ios;      /* Pointer to io system information. */
+    file_desc_t *file;         /* Pointer to file information. */
+    int imode;                 /* Internal mode val for netcdf4 file open. */
+    int invalid_unlim_dim = 0; /* Will be try if var has invalid use of unlim dims. */
     int mpierr = MPI_SUCCESS, mpierr2;  /** Return code from MPI function codes. */
-    int ierr = PIO_NOERR;  /** Return code from function calls. */
+    int ierr = PIO_NOERR;      /* Return code from function calls. */
 
     /* Get the IO system info from the iosysid. */
     if (!(ios = pio_get_iosystem_from_id(iosysid)))
@@ -2026,13 +2028,14 @@ int PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype, const char *filena
                 else
                     file->do_io = 0;
             }
-            LOG((2, "retry nc_open(%s) : fd = %d, iotype = %d, do_io = %d, ierr = %d", filename, file->fh, file->iotype, file->do_io, ierr));
+            LOG((2, "retry nc_open(%s) : fd = %d, iotype = %d, do_io = %d, ierr = %d",
+                 filename, file->fh, file->iotype, file->do_io, ierr));
         }
     }
 
     /* Broadcast and check the return code. */
-    LOG((2, "Bcasting error code ierr = %d ios->ioroot = %d ios->my_comm = %d", ierr, ios->ioroot,
-         ios->my_comm));
+    LOG((2, "Bcasting error code ierr = %d ios->ioroot = %d ios->my_comm = %d",
+         ierr, ios->ioroot, ios->my_comm));
     if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
         return check_mpi(file, mpierr, __FILE__, __LINE__);
     LOG((2, "Bcast error code ierr = %d", ierr));
@@ -2043,9 +2046,8 @@ int PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype, const char *filena
         free(file);
         return check_netcdf2(ios, NULL, ierr, __FILE__, __LINE__);
     }
-    LOG((2, "error code Bcast complete ierr = %d ios->my_comm = %d", ierr, ios->my_comm));
 
-    /* Broadcast results to all tasks. Ignore NULL parameters. */
+    /* Broadcast open mode to all tasks. */
     if ((mpierr = MPI_Bcast(&file->mode, 1, MPI_INT, ios->ioroot, ios->my_comm)))
         return check_mpi(file, mpierr, __FILE__, __LINE__);
 
@@ -2062,6 +2064,71 @@ int PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype, const char *filena
 
     LOG((2, "Opened file %s file->pio_ncid = %d file->fh = %d ierr = %d",
          filename, file->pio_ncid, file->fh, ierr));
+
+    /* Run this on all tasks if async is not in use, but only on
+     * non-IO tasks if async is in use. Check that all vars have at
+     * most one unlimited dim, and that if they have one, it is the
+     * first dim. */
+    if (!ios->async || !ios->ioproc)
+    {
+        int nunlimdims;
+
+        /* How many unlimited dims? */
+        if ((ierr = PIOc_inq_unlimdims(file->pio_ncid, &nunlimdims, NULL)))
+            return check_netcdf(file, ierr, __FILE__, __LINE__);
+
+        if (nunlimdims > 1)
+        {
+            int nvars;
+            
+            /* What are the dimids of the unlimited dims? */
+            int unlimdimid[nunlimdims];
+            if ((ierr = PIOc_inq_unlimdims(*ncidp, NULL, unlimdimid)))
+                return check_netcdf(file, ierr, __FILE__, __LINE__);
+
+            /* How many vars? */
+            if ((ierr = PIOc_inq_nvars(*ncidp, &nvars)))
+                return check_netcdf(file, ierr, __FILE__, __LINE__);
+
+            /* Check each var - only first dim may be unlimited. */
+            LOG((3, "checking vars nvars = %d", nvars));
+            for (int v = 0; v < nvars; v++)
+            {
+                int ndims;
+                
+                if ((ierr = PIOc_inq_varndims(*ncidp, v, &ndims)))
+                    return check_netcdf(file, ierr, __FILE__, __LINE__);
+
+                int vdimid[ndims];
+                if ((ierr = PIOc_inq_vardimid(*ncidp, v, vdimid)))
+                    return check_netcdf(file, ierr, __FILE__, __LINE__);
+
+                for (int vd = 1; vd < ndims; vd++)
+                    for (int d = 0; d < nunlimdims; d++)
+                        if (vdimid[vd] == unlimdimid[d])
+                        {
+                            /* invalid_unlim_dim++; */
+                            break;
+                        }
+                
+            }
+        }
+    }
+
+    /* Bcast the validity of unlimited dims in this file. */
+    LOG((3, "invalid_unlim_dim = %d", invalid_unlim_dim));
+    /* if (ios->async) */
+    /*     if ((mpierr = MPI_Bcast(&invalid_unlim_dim, 1, MPI_INT, ios->comproot, ios->my_comm))) */
+    /*         return check_mpi(file, mpierr, __FILE__, __LINE__); */
+    LOG((3, "after bcast invalid_unlim_dim = %d", invalid_unlim_dim));
+
+    /* Does one or more var make invalid use of unlimited dims? */
+    if (invalid_unlim_dim)
+    {
+        LOG((1, "invalid unlimited dim detected!"));
+        /* PIOc_closefile(*ncidp); */
+        /* return check_netcdf2(ios, NULL, PIO_EINVAL, __FILE__, __LINE__); */
+    }
 
     return ierr;
 }
