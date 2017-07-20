@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>1. Introduction &mdash; CIME 5.3.0_alpha17 documentation</title>
+    <title>1. Introduction &mdash; CIME 5.3.0 documentation</title>
     
     <link rel="stylesheet" href="../_static/bizstyle.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '5.3.0_alpha17',
+        VERSION:     '5.3.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,10 +25,10 @@
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="../_static/bizstyle.js"></script>
-    <link rel="top" title="CIME 5.3.0_alpha17 documentation" href="../index.html" />
-    <link rel="up" title="CIME User’s Guide Part 1: Basic Usage" href="index.html" />
+    <link rel="top" title="CIME 5.3.0 documentation" href="../index.html" />
+    <link rel="up" title="CIME User’s Guide Part 1: Beginner - Basic Usage" href="index.html" />
     <link rel="next" title="2. The basics of CIME cases" href="case-basics.html" />
-    <link rel="prev" title="CIME User’s Guide Part 1: Basic Usage" href="index.html" />
+    <link rel="prev" title="CIME User’s Guide Part 1: Beginner - Basic Usage" href="index.html" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <!--[if lt IE 9]>
     <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
@@ -45,10 +45,10 @@
           <a href="case-basics.html" title="2. The basics of CIME cases"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="index.html" title="CIME User’s Guide Part 1: Basic Usage"
+          <a href="index.html" title="CIME User’s Guide Part 1: Beginner - Basic Usage"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0_alpha17 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">CIME User&#8217;s Guide Part 1: Basic Usage</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">CIME User&#8217;s Guide Part 1: Beginner - Basic Usage</a> &raquo;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -57,7 +57,7 @@
   <ul>
 <li><a class="reference internal" href="#">1. Introduction</a><ul>
 <li><a class="reference internal" href="#prerequisites">1.1. Prerequisites</a></li>
-<li><a class="reference internal" href="#terms-and-concepts">1.2. Terms and concepts</a></li>
+<li><a class="reference internal" href="#key-terms-and-concepts">1.2. Key Terms and concepts</a></li>
 <li><a class="reference internal" href="#setting-defaults">1.3. Setting defaults</a></li>
 <li><a class="reference internal" href="#directory-content">1.4. Directory content</a></li>
 <li><a class="reference internal" href="#discovering-available-cases">1.5. Discovering available cases</a></li>
@@ -68,7 +68,7 @@
 
   <h4>Previous topic</h4>
   <p class="topless"><a href="index.html"
-                        title="previous chapter">CIME User&#8217;s Guide Part 1: Basic Usage</a></p>
+                        title="previous chapter">CIME User&#8217;s Guide Part 1: Beginner - Basic Usage</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="case-basics.html"
                         title="next chapter">2. The basics of CIME cases</a></p>
@@ -99,8 +99,7 @@
             
   <div class="section" id="introduction">
 <span id="introduction-and-overview"></span><h1>1. Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
-<p>The Common Infrastructure for Modeling the Earth (CIME) provides a UNIX command-line-based interface for
-configuring, compiling and executing Earth system models. Part 1 of this guide explains the basic commands
+<p>Part 1 of this guide explains the basic commands
 that are needed to get a model running.</p>
 <div class="section" id="prerequisites">
 <h2>1.1. Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h2>
@@ -112,14 +111,18 @@ the computer you are using. If that is not the case, see Installing CIME.</p>
 <li>Familiarity with UNIX command line terminals and the UNIX development environment.</li>
 <li>A correct version of the Python interpreter.</li>
 </ul>
-<p>CIME&#8217;s commands are Python scripts and require a correct version of the Python interpreter to be installed. The Python version must be greater than 2.7 but less than 3.0. Determine which version you have like this:</p>
+<p>CIME&#8217;s commands are Python scripts and require a correct version of
+the Python interpreter to be installed. The Python version must be
+greater than 2.7 but less than 3.0. Determine which version you have
+like this:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">python</span> <span class="o">--</span><span class="n">version</span>
 </pre></div>
 </div>
 </div>
-<div class="section" id="terms-and-concepts">
-<h2>1.2. Terms and concepts<a class="headerlink" href="#terms-and-concepts" title="Permalink to this headline">¶</a></h2>
-<p>The following terms and concepts are ingrained in CIME and are used frequently in this documentation.</p>
+<div class="section" id="key-terms-and-concepts">
+<h2>1.2. Key Terms and concepts<a class="headerlink" href="#key-terms-and-concepts" title="Permalink to this headline">¶</a></h2>
+<p>The following key terms and concepts are ingrained in CIME and are used frequently in this documentation.
+See the glossary for a more complete list of terms.</p>
 <dl class="docutils">
 <dt><strong>active, data and stub models</strong></dt>
 <dd><p class="first"><em>active models</em>: Components of a model that solve a complex set of equations to describe the model&#8217;s behavior are called
@@ -331,10 +334,10 @@ directory structure.</p>
           <a href="case-basics.html" title="2. The basics of CIME cases"
              >next</a> |</li>
         <li class="right" >
-          <a href="index.html" title="CIME User’s Guide Part 1: Basic Usage"
+          <a href="index.html" title="CIME User’s Guide Part 1: Beginner - Basic Usage"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0_alpha17 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" >CIME User&#8217;s Guide Part 1: Basic Usage</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >CIME User&#8217;s Guide Part 1: Beginner - Basic Usage</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>8. Cloning a Case &mdash; CIME 5.3.0 documentation</title>
+    <title>9. Adding components &mdash; CIME 5.3.0 documentation</title>
     
     <link rel="stylesheet" href="../_static/bizstyle.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -27,8 +27,8 @@
     <script type="text/javascript" src="../_static/bizstyle.js"></script>
     <link rel="top" title="CIME 5.3.0 documentation" href="../index.html" />
     <link rel="up" title="CIME User’s Guide Part 1: Beginner - Basic Usage" href="index.html" />
-    <link rel="next" title="9. Troubleshooting" href="troubleshooting.html" />
-    <link rel="prev" title="7. Customizing a Case" href="customizing-a-case.html" />
+    <link rel="next" title="Building a Coupled Model with CIME" href="../build_cpl/index.html" />
+    <link rel="prev" title="8.3. Setting up a branch or hybrid run" href="use_cases/basics-setting-up-a-branch-or-hybrid-run.html" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <!--[if lt IE 9]>
     <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
@@ -42,10 +42,10 @@
           <a href="../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="troubleshooting.html" title="9. Troubleshooting"
+          <a href="../build_cpl/index.html" title="Building a Coupled Model with CIME"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="customizing-a-case.html" title="7. Customizing a Case"
+          <a href="use_cases/basics-setting-up-a-branch-or-hybrid-run.html" title="8.3. Setting up a branch or hybrid run"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">CIME User&#8217;s Guide Part 1: Beginner - Basic Usage</a> &raquo;</li> 
@@ -54,15 +54,15 @@
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
   <h4>Previous topic</h4>
-  <p class="topless"><a href="customizing-a-case.html"
-                        title="previous chapter">7. Customizing a Case</a></p>
+  <p class="topless"><a href="use_cases/basics-setting-up-a-branch-or-hybrid-run.html"
+                        title="previous chapter">8.3. Setting up a branch or hybrid run</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="troubleshooting.html"
-                        title="next chapter">9. Troubleshooting</a></p>
+  <p class="topless"><a href="../build_cpl/index.html"
+                        title="next chapter">Building a Coupled Model with CIME</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="../_sources/users_guide/cloning-a-case.txt"
+      <li><a href="../_sources/users_guide/adding-components.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
@@ -84,21 +84,35 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="cloning-a-case">
-<span id="id1"></span><h1>8. Cloning a Case<a class="headerlink" href="#cloning-a-case" title="Permalink to this headline">¶</a></h1>
-<p>If you have access to a run that you want to clone, the <strong>create_clone</strong> command will create a new case while preserving local modifications to the case.</p>
-<p>Here is a simple example:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>&gt; cd $CIMEROOT/scripts
-&gt; create_clone --case $CASEROOT --clone $CLONEROOT
-</pre></div>
-</div>
-<p>The <strong>create_clone</strong> script preserves any local namelist modifications made in the <strong>user_nl_xxxx</strong> files as well as any source code modifications in the <strong>SourceMods</strong> tree. Otherwise, <strong>$CASEROOT/</strong> directory will appear as if <strong>create_newcase</strong> had just been run.</p>
-<p><strong>Important</strong>: Do not change anything in the <strong>env_case.xml</strong> file.</p>
-<p>See the <strong>help</strong> text for more usage information.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">create_clone</span> <span class="o">--</span><span class="n">help</span>
-</pre></div>
-</div>
-<p>Another approach to duplicating a case is to use the information in the case&#8217;s <strong>README.case</strong> and <strong>CaseStatus</strong> files to create a new case and duplicate the relevant <strong>xlmchange</strong> commands that were issued in the original case. This alternative will <em>not</em> preserve any local modifications that were made to the original case, such as source-code or build-script revisions; you will need to import those changes manually.</p>
+  <div class="section" id="adding-components">
+<span id="id1"></span><h1>9. Adding components<a class="headerlink" href="#adding-components" title="Permalink to this headline">¶</a></h1>
+<p>Here are the steps to add prognostic components to CIME models.</p>
+<p>There are a couple of aspects of a component interface to CIME, the
+scripts interface which controls setting up component inputs and
+building the component and the run interface which controls connecting
+the component to the coupler and through the coupler, the other
+components of the CIME based model.</p>
+<p>The component should have a subdirectory <strong>cime_config</strong> and this
+subdirectory should have two files <strong>buildnml</strong> and <strong>buildlib</strong> The
+<strong>buildnml</strong> script is used to build the components instructional,
+runtime inputs.  These have traditionally been in the form of fortran
+namelists but may also follow other formats.  The <strong>buildnml</strong> may
+either be called from the command line or as a python subroutine.  If
+buildnml is called from the command line it will be passed the
+caseroot directory on the command line.  If it is called as a
+subroutine, the subroutine name must be buildnml and it will take
+three arguments, a Case object, a caseroot directory and a component
+name.  The <strong>buildlib</strong> script will always be called from the command
+line, it is called in the case.build step and is expected to build the
+the buildlib script will be called with three arguments in order they
+are caseroot, libroot (the location of the installed library,
+typically EXEROOT/lib) and bldroot, the location of the component
+build directory.  Look at the cime internal components such as datm
+for an example.</p>
+<p>The coupler interface is dependent on which coupler is used, for the mct coupler in cime
+the component model must provide NNN_INIT_MCT, NNN_RUN_MCT, NNN_FINAL_MCT where NNN is the
+component type of the particular component (eg ATM for an atmosphere, LND for a land model)
+these subroutines are expected to be in the component library.</p>
 </div>
 
 
@@ -114,10 +128,10 @@
           <a href="../genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="troubleshooting.html" title="9. Troubleshooting"
+          <a href="../build_cpl/index.html" title="Building a Coupled Model with CIME"
              >next</a> |</li>
         <li class="right" >
-          <a href="customizing-a-case.html" title="7. Customizing a Case"
+          <a href="use_cases/basics-setting-up-a-branch-or-hybrid-run.html" title="8.3. Setting up a branch or hybrid run"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
           <li class="nav-item nav-item-1"><a href="index.html" >CIME User&#8217;s Guide Part 1: Beginner - Basic Usage</a> &raquo;</li> 
