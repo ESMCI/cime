@@ -1863,6 +1863,7 @@ int PIOc_createfile_int(int iosysid, int *ncidp, int *iotype, const char *filena
  */
 int check_unlim_use(int ncid)
 {
+#ifdef _NETCDF4
     int nunlimdims; /* Number of unlimited dims in file. */
     int nvars;       /* Number of vars in file. */
     int ierr;        /* Return code. */
@@ -1901,7 +1902,8 @@ int check_unlim_use(int ncid)
             }
         }
     }
-
+#endif /* _NETCDF4 */
+    
     return PIO_NOERR;
 }
 
@@ -2037,7 +2039,7 @@ int PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype, const char *filena
                     break;                    
             }
             break;
-#endif
+#endif /* _NETCDF4 */
 
         case PIO_IOTYPE_NETCDF:
             if (ios->io_rank == 0)
