@@ -45,6 +45,7 @@ void bpool_free(void *p)
  * @param ios pointer to the iosystem descriptor which will use the
  * new buffer.
  * @returns 0 for success, error code otherwise.
+ * @author Jim Edwards
  */
 int compute_buffer_init(iosystem_desc_t *ios)
 {
@@ -82,6 +83,7 @@ int compute_buffer_init(iosystem_desc_t *ios)
  * values.
  * @return 0 for success, error code otherwise.
  * @ingroup PIO_write_darray
+ * @author Ed Hartnett
  */
 int find_start_count(int ndims, int fndims, var_desc_t *vdesc,
                      io_region *region, const int *frame, size_t *start,
@@ -155,6 +157,7 @@ int find_start_count(int ndims, int fndims, var_desc_t *vdesc,
  * in iobuf. NULL if this iodesc contains non-record vars.
  * @return 0 for success, error code otherwise.
  * @ingroup PIO_write_darray
+ * @author Jim Edwards, Ed Hartnett
  */
 int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *varids,
                            io_desc_t *iodesc, int fill, const int *frame)
@@ -358,6 +361,7 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
  * regions.
  * @returns 0 for success, error code otherwise.
  * @ingroup PIO_read_darray
+ * @author Jim Edwards, Ed Hartnett
  **/
 int find_all_start_count(io_region *region, int maxregions, int fndims,
                          int iodesc_ndims, var_desc_t *vdesc, size_t *tmp_start,
@@ -424,7 +428,8 @@ int find_all_start_count(io_region *region, int maxregions, int fndims,
  *
  * @return 0 for success, error code otherwise.
  * @ingroup PIO_write_darray
- **/
+ * @author Jim Edwards, Ed Hartnett
+ */
 int send_all_start_count(iosystem_desc_t *ios, io_desc_t *iodesc, PIO_Offset llen,
                          int maxregions, int nvars, int fndims, size_t *tmp_start,
                          size_t *tmp_count, void *iobuf)
@@ -502,6 +507,7 @@ int send_all_start_count(iosystem_desc_t *ios, io_desc_t *iodesc, PIO_Offset lle
  * iobuf.
  * @return 0 for success, error code otherwise.
  * @ingroup PIO_write_darray
+ * @author Jim Edwards, Ed Hartnett
  */
 int recv_and_write_data(file_desc_t *file, const int *varids, const int *frame,
                         io_desc_t *iodesc, PIO_Offset llen, int maxregions, int nvars,
@@ -654,6 +660,7 @@ int recv_and_write_data(file_desc_t *file, const int *varids, const int *frame,
  * in iobuf. NULL if this iodesc contains non-record vars.
  * @return 0 for success, error code otherwise.
  * @ingroup PIO_write_darray
+ * @author Jim Edwards, Ed Hartnett
  */
 int write_darray_multi_serial(file_desc_t *file, int nvars, int fndims, const int *varids,
                               io_desc_t *iodesc, int fill, const int *frame)
@@ -746,6 +753,7 @@ int write_darray_multi_serial(file_desc_t *file, int nvars, int fndims, const in
  * iobuf.
  * @return 0 on success, error code otherwise.
  * @ingroup PIO_read_darray
+ * @author Jim Edwards, Ed Hartnett
  */
 int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid, void *iobuf)
 {
@@ -942,6 +950,7 @@ int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid, void *iobu
  * iobuf.
  * @returns 0 for success, error code otherwise.
  * @ingroup PIO_read_darray
+ * @author Jim Edwards, Ed Hartnett
  */
 int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc, int vid,
                               void *iobuf)
@@ -1186,6 +1195,7 @@ int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc, int vid,
  * @param addsize additional size to add to buffer (in bytes)
  * @return 0 for success, error code otherwise.
  * @ingroup PIO_write_darray
+ * @author Jim Edwards, Ed Hartnett
  */
 int flush_output_buffer(file_desc_t *file, bool force, PIO_Offset addsize)
 {
@@ -1298,6 +1308,7 @@ int flush_output_buffer(file_desc_t *file, bool force, PIO_Offset addsize)
  * @param ios pointer to the IO system structure
  * @param collective true if collective report is desired
  * @ingroup PIO_write_darray
+ * @author Jim Edwards
  */
 void cn_buffer_report(iosystem_desc_t *ios, bool collective)
 {
@@ -1346,6 +1357,7 @@ void cn_buffer_report(iosystem_desc_t *ios, bool collective)
  *
  * @param ios pointer to the IO system structure.
  * @ingroup PIO_write_darray
+ * @author Jim Edwards
  */
 void free_cn_buffer_pool(iosystem_desc_t *ios)
 {
@@ -1371,6 +1383,7 @@ void free_cn_buffer_pool(iosystem_desc_t *ios)
  * @param flushtodisk if true, then flush data to disk.
  * @returns 0 for success, error code otherwise.
  * @ingroup PIO_write_darray
+ * @author Jim Edwards, Ed Hartnett
  */
 int flush_buffer(int ncid, wmulti_buffer *wmb, bool flushtodisk)
 {
@@ -1429,6 +1442,7 @@ int flush_buffer(int ncid, wmulti_buffer *wmb, bool flushtodisk)
  * @param ios pointer to the IO system structure.
  * @param iodesc a pointer to decomposition description.
  * @returns 0 for success, error code otherwise.
+ * @author Jim Edwards
  */
 int compute_maxaggregate_bytes(iosystem_desc_t *ios, io_desc_t *iodesc)
 {
