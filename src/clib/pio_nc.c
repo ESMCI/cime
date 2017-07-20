@@ -33,6 +33,7 @@
  *
  * @return PIO_NOERR for success, error code otherwise. See
  * PIOc_Set_File_Error_Handling
+ * @author Jim Edwards, Ed Hartnett
  */
 int PIOc_inq(int ncid, int *ndimsp, int *nvarsp, int *ngattsp, int *unlimdimidp)
 {
@@ -159,6 +160,7 @@ int PIOc_inq(int ncid, int *ndimsp, int *nvarsp, int *ngattsp, int *unlimdimidp)
  * @param ncid the ncid of the open file.
  * @param ndimsp a pointer that will get the number of dimensions.
  * @returns 0 for success, error code otherwise.
+ * @author Jim Edwards, Ed Hartnett
  */
 int PIOc_inq_ndims(int ncid, int *ndimsp)
 {
@@ -173,6 +175,7 @@ int PIOc_inq_ndims(int ncid, int *ndimsp)
  * @param ncid the ncid of the open file.
  * @param nvarsp a pointer that will get the number of variables.
  * @returns 0 for success, error code otherwise.
+ * @author Jim Edwards, Ed Hartnett
  */
 int PIOc_inq_nvars(int ncid, int *nvarsp)
 {
@@ -186,6 +189,7 @@ int PIOc_inq_nvars(int ncid, int *nvarsp)
  * @param ncid the ncid of the open file.
  * @param nattsp a pointer that will get the number of attributes.
  * @returns 0 for success, error code otherwise.
+ * @author Jim Edwards, Ed Hartnett
  */
 int PIOc_inq_natts(int ncid, int *ngattsp)
 {
@@ -200,6 +204,7 @@ int PIOc_inq_natts(int ncid, int *ngattsp)
  * @param unlimdimidp a pointer that will the ID of the unlimited
  * dimension, or -1 if there is no unlimited dimension.
  * @returns 0 for success, error code otherwise.
+ * @author Jim Edwards, Ed Hartnett
  */
 int PIOc_inq_unlimdim(int ncid, int *unlimdimidp)
 {
@@ -218,6 +223,7 @@ int PIOc_inq_unlimdim(int ncid, int *unlimdimidp)
  * dimension IDs.
  * @returns 0 for success, error code otherwise.
  * @ingroup PIO_inq_unlimdim
+ * @author Jim Edwards, Ed Hartnett
  */
 int PIOc_inq_unlimdims(int ncid, int *nunlimdimsp, int *unlimdimidsp)
 {
@@ -252,7 +258,7 @@ int PIOc_inq_unlimdims(int ncid, int *nunlimdimsp, int *unlimdimidsp)
                 mpierr = MPI_Bcast(&nunlimdimsp_present, 1, MPI_CHAR, ios->compmaster, ios->intercomm);
             if (!mpierr)
                 mpierr = MPI_Bcast(&unlimdimidsp_present, 1, MPI_CHAR, ios->compmaster, ios->intercomm);
-            LOG((2, "PIOc_inq ncid = %d nunlimdimsp_present = %d unlimdimidsp_present = %d",
+            LOG((2, "PIOc_inq_unlimdims ncid = %d nunlimdimsp_present = %d unlimdimidsp_present = %d",
                  ncid, nunlimdimsp_present, unlimdimidsp_present));
         }
 
@@ -285,6 +291,7 @@ int PIOc_inq_unlimdims(int ncid, int *nunlimdimsp, int *unlimdimidsp)
             LOG((2, "pnetcdf"));
             int tmp_unlimdimid;            
             ierr = ncmpi_inq_unlimdim(file->fh, &tmp_unlimdimid);
+            LOG((2, "pnetcdf tmp_unlimdimid = %d", tmp_unlimdimid));
             tmp_nunlimdims = tmp_unlimdimid >= 0 ? 1 : 0;            
             if (nunlimdimsp)
                 *nunlimdimsp = tmp_nunlimdims;
@@ -352,6 +359,7 @@ int PIOc_inq_unlimdims(int ncid, int *nunlimdimsp, int *unlimdimidsp)
  * @param name pointer that will get the name of the type.
  * @param sizep pointer that will get the size of the type in bytes.
  * @returns 0 for success, error code otherwise.
+ * @author Ed Hartnett
  */
 int PIOc_inq_type(int ncid, nc_type xtype, char *name, PIO_Offset *sizep)
 {
@@ -441,6 +449,7 @@ int PIOc_inq_type(int ncid, nc_type xtype, char *name, PIO_Offset *sizep)
  * @param ncid the ncid of an open file.
  * @param formatp a pointer that will get the format.
  * @returns 0 for success, error code otherwise.
+ * @author Jim Edwards, Ed Hartnett
  */
 int PIOc_inq_format(int ncid, int *formatp)
 {
@@ -520,6 +529,7 @@ int PIOc_inq_format(int ncid, int *formatp)
  * PIOc_openfile() or PIOc_createfile().
  * @param lenp a pointer that will get the number of values
  * @return PIO_NOERR for success, error code otherwise.  See PIOc_Set_File_Error_Handling
+ * @author Jim Edwards, Ed Hartnett
  */
 int PIOc_inq_dim(int ncid, int dimid, char *name, PIO_Offset *lenp)
 {
@@ -621,6 +631,7 @@ int PIOc_inq_dim(int ncid, int dimid, char *name, PIO_Offset *lenp)
  * @param name a pointer that gets the name of the dimension. Igorned
  * if NULL.
  * @returns 0 for success, error code otherwise.
+ * @author Jim Edwards, Ed Hartnett
  */
 int PIOc_inq_dimname(int ncid, int dimid, char *name)
 {
@@ -637,6 +648,7 @@ int PIOc_inq_dimname(int ncid, int dimid, char *name)
  * @param lenp a pointer that gets the length of the dimension. Igorned
  * if NULL.
  * @returns 0 for success, error code otherwise.
+ * @author Jim Edwards, Ed Hartnett
  */
 int PIOc_inq_dimlen(int ncid, int dimid, PIO_Offset *lenp)
 {
@@ -656,6 +668,7 @@ int PIOc_inq_dimlen(int ncid, int dimid, PIO_Offset *lenp)
  * PIOc_openfile() or PIOc_createfile().
  * @param idp a pointer that will get the id of the variable or attribute.
  * @return PIO_NOERR for success, error code otherwise.  See PIOc_Set_File_Error_Handling
+ * @author Jim Edwards, Ed Hartnett
  */
 int PIOc_inq_dimid(int ncid, const char *name, int *idp)
 {
@@ -747,6 +760,7 @@ int PIOc_inq_dimid(int ncid, const char *name, int *idp)
  * @param xtypep a pointer that will get the type of the attribute.
  * @param nattsp a pointer that will get the number of attributes
  * @return PIO_NOERR for success, error code otherwise.
+ * @author Jim Edwards, Ed Hartnett
  */
 int PIOc_inq_var(int ncid, int varid, char *name, nc_type *xtypep, int *ndimsp,
                  int *dimidsp, int *nattsp)
@@ -903,6 +917,7 @@ int PIOc_inq_var(int ncid, int varid, char *name, nc_type *xtypep, int *ndimsp,
  * @param varid the variable ID.
  * @param name a pointer that will get the variable name.
  * @return PIO_NOERR for success, error code otherwise.
+ * @author Jim Edwards, Ed Hartnett
  */
 int PIOc_inq_varname(int ncid, int varid, char *name)
 {
@@ -918,6 +933,7 @@ int PIOc_inq_varname(int ncid, int varid, char *name)
  * @param xtypep a pointer that will get the type of the
  * attribute. Ignored if NULL.
  * @return PIO_NOERR for success, error code otherwise.
+ * @author Jim Edwards, Ed Hartnett
  */
 int PIOc_inq_vartype(int ncid, int varid, nc_type *xtypep)
 {
@@ -933,6 +949,7 @@ int PIOc_inq_vartype(int ncid, int varid, nc_type *xtypep)
  * @param ndimsp a pointer that will get the number of
  * dimensions. Ignored if NULL.
  * @return PIO_NOERR for success, error code otherwise.
+ * @author Jim Edwards, Ed Hartnett
  */
 int PIOc_inq_varndims(int ncid, int varid, int *ndimsp)
 {
@@ -948,6 +965,7 @@ int PIOc_inq_varndims(int ncid, int varid, int *ndimsp)
  * @param dimidsp a pointer that will get an array of dimids. Ignored
  * if NULL.
  * @return PIO_NOERR for success, error code otherwise.
+ * @author Jim Edwards, Ed Hartnett
  */
 int PIOc_inq_vardimid(int ncid, int varid, int *dimidsp)
 {
@@ -963,6 +981,7 @@ int PIOc_inq_vardimid(int ncid, int varid, int *dimidsp)
  * @param nattsp a pointer that will get the number of attriburtes. Ignored
  * if NULL.
  * @return PIO_NOERR for success, error code otherwise.
+ * @author Jim Edwards, Ed Hartnett
  */
 int PIOc_inq_varnatts(int ncid, int varid, int *nattsp)
 {
@@ -983,6 +1002,7 @@ int PIOc_inq_varnatts(int ncid, int varid, int *nattsp)
  * @param varid the variable ID.
  * @param varidp a pointer that will get the variable id
  * @return PIO_NOERR for success, error code otherwise.  See PIOc_Set_File_Error_Handling
+ * @author Jim Edwards, Ed Hartnett
  */
 int PIOc_inq_varid(int ncid, const char *name, int *varidp)
 {
@@ -1069,6 +1089,7 @@ int PIOc_inq_varid(int ncid, const char *name, int *varidp)
  * @param xtypep a pointer that will get the type of the attribute.
  * @param lenp a pointer that will get the number of values
  * @return PIO_NOERR for success, error code otherwise.
+ * @author Jim Edwards, Ed Hartnett
  */
 int PIOc_inq_att(int ncid, int varid, const char *name, nc_type *xtypep,
                  PIO_Offset *lenp)
@@ -1163,6 +1184,7 @@ int PIOc_inq_att(int ncid, int varid, const char *name, nc_type *xtypep,
  * @param lenp a pointer that gets the lenght of the attribute
  * array. Ignored if NULL.
  * @return PIO_NOERR for success, error code otherwise.
+ * @author Jim Edwards, Ed Hartnett
  */
 int PIOc_inq_attlen(int ncid, int varid, const char *name, PIO_Offset *lenp)
 {
@@ -1179,6 +1201,7 @@ int PIOc_inq_attlen(int ncid, int varid, const char *name, PIO_Offset *lenp)
  * @param xtypep a pointer that gets the type of the
  * attribute. Ignored if NULL.
  * @return PIO_NOERR for success, error code otherwise.
+ * @author Jim Edwards, Ed Hartnett
  */
 int PIOc_inq_atttype(int ncid, int varid, const char *name, nc_type *xtypep)
 {
@@ -1199,6 +1222,7 @@ int PIOc_inq_atttype(int ncid, int varid, const char *name, nc_type *xtypep)
  * @param varid the variable ID.
  * @param attnum the attribute ID.
  * @return PIO_NOERR for success, error code otherwise.  See PIOc_Set_File_Error_Handling
+ * @author Jim Edwards, Ed Hartnett
  */
 int PIOc_inq_attname(int ncid, int varid, int attnum, char *name)
 {
@@ -1290,6 +1314,7 @@ int PIOc_inq_attname(int ncid, int varid, int attnum, char *name)
  * @param varid the variable ID.
  * @param idp a pointer that will get the id of the variable or attribute.
  * @return PIO_NOERR for success, error code otherwise.  See PIOc_Set_File_Error_Handling
+ * @author Jim Edwards, Ed Hartnett
  */
 int PIOc_inq_attid(int ncid, int varid, const char *name, int *idp)
 {
@@ -1379,6 +1404,7 @@ int PIOc_inq_attid(int ncid, int varid, const char *name, int *idp)
  * @param ncid the ncid of the open file, obtained from
  * PIOc_openfile() or PIOc_createfile().
  * @return PIO_NOERR for success, error code otherwise.  See PIOc_Set_File_Error_Handling
+ * @author Jim Edwards, Ed Hartnett
  */
 int PIOc_rename_dim(int ncid, int dimid, const char *name)
 {
@@ -1464,6 +1490,7 @@ int PIOc_rename_dim(int ncid, int dimid, const char *name)
  * PIOc_openfile() or PIOc_createfile().
  * @param varid the variable ID.
  * @return PIO_NOERR for success, error code otherwise.  See PIOc_Set_File_Error_Handling
+ * @author Jim Edwards, Ed Hartnett
  */
 int PIOc_rename_var(int ncid, int varid, const char *name)
 {
@@ -1550,6 +1577,7 @@ int PIOc_rename_var(int ncid, int varid, const char *name)
  * @param varid the variable ID.
  * @return PIO_NOERR for success, error code otherwise.  See
  * PIOc_Set_File_Error_Handling
+ * @author Jim Edwards, Ed Hartnett
  */
 int PIOc_rename_att(int ncid, int varid, const char *name,
                     const char *newname)
@@ -1641,6 +1669,7 @@ int PIOc_rename_att(int ncid, int varid, const char *name,
  * @param varid the variable ID.
  * @param name of the attribute to delete.
  * @return PIO_NOERR for success, error code otherwise.
+ * @author Jim Edwards, Ed Hartnett
  */
 int PIOc_del_att(int ncid, int varid, const char *name)
 {
@@ -1723,6 +1752,7 @@ int PIOc_del_att(int ncid, int varid, const char *name)
  * @param old_modep a pointer to an int that gets the old setting.
  * @return PIO_NOERR for success, error code otherwise.
  * @ingroup PIO_set_fill
+ * @author Jim Edwards, Ed Hartnett
  */
 int PIOc_set_fill(int ncid, int fillmode, int *old_modep)
 {
@@ -1811,6 +1841,7 @@ int PIOc_set_fill(int ncid, int fillmode, int *old_modep)
  * @param ncid the ncid of the open file, obtained from
  * PIOc_openfile() or PIOc_createfile().
  * @return PIO_NOERR for success, error code otherwise.
+ * @author Jim Edwards, Ed Hartnett
  */
 int PIOc_enddef(int ncid)
 {
@@ -1829,6 +1860,7 @@ int PIOc_enddef(int ncid)
  * @param ncid the ncid of the open file, obtained from
  * PIOc_openfile() or PIOc_createfile().
  * @return PIO_NOERR for success, error code otherwise.
+ * @author Jim Edwards, Ed Hartnett
  */
 int PIOc_redef(int ncid)
 {
@@ -1848,6 +1880,7 @@ int PIOc_redef(int ncid)
  * PIOc_openfile() or PIOc_createfile().
  * @param idp a pointer that will get the id of the variable or attribute.
  * @return PIO_NOERR for success, error code otherwise.
+ * @author Jim Edwards, Ed Hartnett
  */
 int PIOc_def_dim(int ncid, const char *name, PIO_Offset len, int *idp)
 {
@@ -1938,14 +1971,16 @@ int PIOc_def_dim(int ncid, const char *name, PIO_Offset len, int *idp)
  * @param varidp a pointer that will get the variable id
  * @return PIO_NOERR for success, error code otherwise.
  * @ingroup PIO_def_var
+ * @author Jim Edwards, Ed Hartnett
  */
 int PIOc_def_var(int ncid, const char *name, nc_type xtype, int ndims,
                  const int *dimidsp, int *varidp)
 {
-    iosystem_desc_t *ios;  /* Pointer to io system information. */
-    file_desc_t *file;     /* Pointer to file information. */
-    int ierr;              /* Return code from function calls. */
+    iosystem_desc_t *ios;      /* Pointer to io system information. */
+    file_desc_t *file;         /* Pointer to file information. */
+    int invalid_unlim_dim = 0; /* True invalid dims are used. */
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
+    int ierr;                  /* Return code from function calls. */
 
     /* Get the file information. */
     if ((ierr = pio_get_file(ncid, &file)))
@@ -1958,6 +1993,22 @@ int PIOc_def_var(int ncid, const char *name, nc_type xtype, int ndims,
 
     LOG((1, "PIOc_def_var ncid = %d name = %s xtype = %d ndims = %d", ncid, name,
          xtype, ndims));
+
+    /* Run this on all tasks if async is not in use, but only on
+     * non-IO tasks if async is in use. Learn whether each dimension
+     * is unlimited. */
+    if (!ios->async || !ios->ioproc)
+    {
+        for (int d = 1; d < ndims; d++)
+        {
+            PIO_Offset dimlen;
+            
+            if ((ierr = PIOc_inq_dimlen(ncid, dimidsp[d], &dimlen)))
+                return check_netcdf(file, ierr, __FILE__, __LINE__);
+            if (dimlen == PIO_UNLIMITED)
+                invalid_unlim_dim++;
+        }
+    }
 
     /* If using async, and not an IO task, then send parameters. */
     if (ios->async)
@@ -1989,7 +2040,16 @@ int PIOc_def_var(int ncid, const char *name, nc_type xtype, int ndims,
             check_mpi(file, mpierr2, __FILE__, __LINE__);
         if (mpierr)
             return check_mpi(file, mpierr, __FILE__, __LINE__);
+
+        /* Broadcast values currently only known on computation tasks to IO tasks. */
+        if ((mpierr = MPI_Bcast(&invalid_unlim_dim, 1, MPI_INT, ios->comproot, ios->my_comm)))
+            check_mpi(file, mpierr, __FILE__, __LINE__);
     }
+
+    /* Check that only one unlimited dim is specified, and that it is
+     * first. */
+    if (invalid_unlim_dim)
+            return PIO_EINVAL;
 
     /* If this is an IO task, then call the netCDF function. */
     if (ios->ioproc)
@@ -2051,6 +2111,7 @@ int PIOc_def_var(int ncid, const char *name, nc_type xtype, int ndims,
  * @param fill_value pointer to the fill value to be used if fill_mode is set to NC_FILL.
  * @return PIO_NOERR for success, otherwise an error code.
  * @ingroup PIO_def_var
+ * @author Jim Edwards, Ed Hartnett
  */
 int PIOc_def_var_fill(int ncid, int varid, int fill_mode, const void *fill_valuep)
 {
@@ -2178,6 +2239,7 @@ int PIOc_def_var_fill(int ncid, int varid, int fill_mode, const void *fill_value
  * this variable. Ignored if NULL.
  * @return PIO_NOERR for success, error code otherwise.
  * @ingroup PIO_inq_var_fill
+ * @author Jim Edwards, Ed Hartnett
  */
 int PIOc_inq_var_fill(int ncid, int varid, int *no_fill, void *fill_valuep)
 {
@@ -2348,6 +2410,7 @@ int PIOc_inq_var_fill(int ncid, int varid, int *no_fill, void *fill_valuep)
  * @param ip a pointer that will get the attribute value.
  * @return PIO_NOERR for success, error code otherwise.
  * @ingroup PIO_get_att
+ * @author Jim Edwards, Ed Hartnett
  */
 int PIOc_get_att(int ncid, int varid, const char *name, void *ip)
 {
@@ -2390,6 +2453,7 @@ int PIOc_get_att(int ncid, int varid, const char *name, void *ip)
  * @param len the length of the attribute array.
  * @param op a pointer with the attribute data.
  * @return PIO_NOERR for success, error code otherwise.
+ * @author Jim Edwards, Ed Hartnett
  */
 int PIOc_put_att(int ncid, int varid, const char *name, nc_type xtype,
                  PIO_Offset len, const void *op)
@@ -2410,6 +2474,7 @@ int PIOc_put_att(int ncid, int varid, const char *name, nc_type xtype,
  * @param name the name of the attribute to get
  * @param ip a pointer that will get the attribute value.
  * @return PIO_NOERR for success, error code otherwise.
+ * @author Jim Edwards, Ed Hartnett
  */
 int PIOc_get_att_double(int ncid, int varid, const char *name, double *ip)
 {
@@ -2429,6 +2494,7 @@ int PIOc_get_att_double(int ncid, int varid, const char *name, double *ip)
  * @param name the name of the attribute to get
  * @param ip a pointer that will get the attribute value.
  * @return PIO_NOERR for success, error code otherwise.
+ * @author Jim Edwards, Ed Hartnett
  */
 int PIOc_get_att_uchar(int ncid, int varid, const char *name, unsigned char *ip)
 {
@@ -2448,6 +2514,7 @@ int PIOc_get_att_uchar(int ncid, int varid, const char *name, unsigned char *ip)
  * @param name the name of the attribute to get
  * @param ip a pointer that will get the attribute value.
  * @return PIO_NOERR for success, error code otherwise.
+ * @author Jim Edwards, Ed Hartnett
  */
 int PIOc_get_att_ushort(int ncid, int varid, const char *name, unsigned short *ip)
 {
@@ -2467,6 +2534,7 @@ int PIOc_get_att_ushort(int ncid, int varid, const char *name, unsigned short *i
  * @param ip a pointer that will get the attribute value.
  * @return PIO_NOERR for success, error code otherwise.
  * @ingroup PIO_get_att
+ * @author Jim Edwards, Ed Hartnett
  */
 int PIOc_get_att_uint(int ncid, int varid, const char *name, unsigned int *ip)
 {
@@ -2486,6 +2554,7 @@ int PIOc_get_att_uint(int ncid, int varid, const char *name, unsigned int *ip)
  * @param name the name of the attribute to get
  * @param ip a pointer that will get the attribute value.
  * @return PIO_NOERR for success, error code otherwise.
+ * @author Jim Edwards, Ed Hartnett
  */
 int PIOc_get_att_long(int ncid, int varid, const char *name, long *ip)
 {
@@ -2507,6 +2576,7 @@ int PIOc_get_att_long(int ncid, int varid, const char *name, long *ip)
  * @param ip a pointer that will get the attribute value.
  * @return PIO_NOERR for success, error code otherwise.
  * @ingroup PIO_get_att
+ * @author Jim Edwards, Ed Hartnett
  */
 int PIOc_get_att_text(int ncid, int varid, const char *name, char *ip)
 {
@@ -2526,6 +2596,7 @@ int PIOc_get_att_text(int ncid, int varid, const char *name, char *ip)
  * @param name the name of the attribute to get
  * @param ip a pointer that will get the attribute value.
  * @return PIO_NOERR for success, error code otherwise.
+ * @author Jim Edwards, Ed Hartnett
  */
 int PIOc_get_att_schar(int ncid, int varid, const char *name, signed char *ip)
 {
@@ -2545,6 +2616,7 @@ int PIOc_get_att_schar(int ncid, int varid, const char *name, signed char *ip)
  * @param name the name of the attribute to get
  * @param ip a pointer that will get the attribute value.
  * @return PIO_NOERR for success, error code otherwise.
+ * @author Jim Edwards, Ed Hartnett
  */
 int PIOc_get_att_ulonglong(int ncid, int varid, const char *name, unsigned long long *ip)
 {
@@ -2564,6 +2636,7 @@ int PIOc_get_att_ulonglong(int ncid, int varid, const char *name, unsigned long 
  * @param name the name of the attribute to get
  * @param ip a pointer that will get the attribute value.
  * @return PIO_NOERR for success, error code otherwise.
+ * @author Jim Edwards, Ed Hartnett
  */
 int PIOc_get_att_short(int ncid, int varid, const char *name, short *ip)
 {
@@ -2583,6 +2656,7 @@ int PIOc_get_att_short(int ncid, int varid, const char *name, short *ip)
  * @param name the name of the attribute to get
  * @param ip a pointer that will get the attribute value.
  * @return PIO_NOERR for success, error code otherwise.
+ * @author Jim Edwards, Ed Hartnett
  */
 int PIOc_get_att_int(int ncid, int varid, const char *name, int *ip)
 {
@@ -2602,6 +2676,7 @@ int PIOc_get_att_int(int ncid, int varid, const char *name, int *ip)
  * @param name the name of the attribute to get
  * @param ip a pointer that will get the attribute value.
  * @return PIO_NOERR for success, error code otherwise.
+ * @author Jim Edwards, Ed Hartnett
  */
 int PIOc_get_att_longlong(int ncid, int varid, const char *name, long long *ip)
 {
@@ -2621,6 +2696,7 @@ int PIOc_get_att_longlong(int ncid, int varid, const char *name, long long *ip)
  * @param name the name of the attribute to get
  * @param ip a pointer that will get the attribute value.
  * @return PIO_NOERR for success, error code otherwise.
+ * @author Jim Edwards, Ed Hartnett
  */
 int PIOc_get_att_float(int ncid, int varid, const char *name, float *ip)
 {
@@ -2642,6 +2718,7 @@ int PIOc_get_att_float(int ncid, int varid, const char *name, float *ip)
  * @param len the length of the attribute array.
  * @param op a pointer with the attribute data.
  * @return PIO_NOERR for success, error code otherwise.
+ * @author Jim Edwards, Ed Hartnett
  */
 int PIOc_put_att_schar(int ncid, int varid, const char *name, nc_type xtype,
                        PIO_Offset len, const signed char *op)
@@ -2664,6 +2741,7 @@ int PIOc_put_att_schar(int ncid, int varid, const char *name, nc_type xtype,
  * @param len the length of the attribute array.
  * @param op a pointer with the attribute data.
  * @return PIO_NOERR for success, error code otherwise.
+ * @author Jim Edwards, Ed Hartnett
  */
 int PIOc_put_att_long(int ncid, int varid, const char *name, nc_type xtype,
                       PIO_Offset len, const long *op)
@@ -2686,6 +2764,7 @@ int PIOc_put_att_long(int ncid, int varid, const char *name, nc_type xtype,
  * @param len the length of the attribute array.
  * @param op a pointer with the attribute data.
  * @return PIO_NOERR for success, error code otherwise.
+ * @author Jim Edwards, Ed Hartnett
  */
 int PIOc_put_att_int(int ncid, int varid, const char *name, nc_type xtype,
                      PIO_Offset len, const int *op)
@@ -2708,6 +2787,7 @@ int PIOc_put_att_int(int ncid, int varid, const char *name, nc_type xtype,
  * @param len the length of the attribute array.
  * @param op a pointer with the attribute data.
  * @return PIO_NOERR for success, error code otherwise.
+ * @author Jim Edwards, Ed Hartnett
  */
 int PIOc_put_att_uchar(int ncid, int varid, const char *name, nc_type xtype,
                        PIO_Offset len, const unsigned char *op)
@@ -2730,6 +2810,7 @@ int PIOc_put_att_uchar(int ncid, int varid, const char *name, nc_type xtype,
  * @param len the length of the attribute array.
  * @param op a pointer with the attribute data.
  * @return PIO_NOERR for success, error code otherwise.
+ * @author Jim Edwards, Ed Hartnett
  */
 int PIOc_put_att_longlong(int ncid, int varid, const char *name, nc_type xtype,
                           PIO_Offset len, const long long *op)
@@ -2752,6 +2833,7 @@ int PIOc_put_att_longlong(int ncid, int varid, const char *name, nc_type xtype,
  * @param len the length of the attribute array.
  * @param op a pointer with the attribute data.
  * @return PIO_NOERR for success, error code otherwise.
+ * @author Jim Edwards, Ed Hartnett
  */
 int PIOc_put_att_uint(int ncid, int varid, const char *name, nc_type xtype,
                       PIO_Offset len, const unsigned int *op)
@@ -2774,6 +2856,7 @@ int PIOc_put_att_uint(int ncid, int varid, const char *name, nc_type xtype,
  * @param len the length of the attribute array.
  * @param op a pointer with the attribute data.
  * @return PIO_NOERR for success, error code otherwise.
+ * @author Jim Edwards, Ed Hartnett
  */
 int PIOc_put_att_float(int ncid, int varid, const char *name, nc_type xtype,
                        PIO_Offset len, const float *op)
@@ -2796,6 +2879,7 @@ int PIOc_put_att_float(int ncid, int varid, const char *name, nc_type xtype,
  * @param len the length of the attribute array.
  * @param op a pointer with the attribute data.
  * @return PIO_NOERR for success, error code otherwise.
+ * @author Jim Edwards, Ed Hartnett
  */
 int PIOc_put_att_ulonglong(int ncid, int varid, const char *name, nc_type xtype,
                            PIO_Offset len, const unsigned long long *op)
@@ -2818,6 +2902,7 @@ int PIOc_put_att_ulonglong(int ncid, int varid, const char *name, nc_type xtype,
  * @param len the length of the attribute array.
  * @param op a pointer with the attribute data.
  * @return PIO_NOERR for success, error code otherwise.
+ * @author Jim Edwards, Ed Hartnett
  */
 int PIOc_put_att_ushort(int ncid, int varid, const char *name, nc_type xtype,
                         PIO_Offset len, const unsigned short *op)
@@ -2840,6 +2925,7 @@ int PIOc_put_att_ushort(int ncid, int varid, const char *name, nc_type xtype,
  * @param len the length of the attribute array.
  * @param op a pointer with the attribute data.
  * @return PIO_NOERR for success, error code otherwise.
+ * @author Jim Edwards, Ed Hartnett
  */
 int PIOc_put_att_text(int ncid, int varid, const char *name,
                       PIO_Offset len, const char *op)
@@ -2862,6 +2948,7 @@ int PIOc_put_att_text(int ncid, int varid, const char *name,
  * @param len the length of the attribute array.
  * @param op a pointer with the attribute data.
  * @return PIO_NOERR for success, error code otherwise.
+ * @author Jim Edwards, Ed Hartnett
  */
 int PIOc_put_att_short(int ncid, int varid, const char *name, nc_type xtype,
                        PIO_Offset len, const short *op)
@@ -2884,6 +2971,7 @@ int PIOc_put_att_short(int ncid, int varid, const char *name, nc_type xtype,
  * @param len the length of the attribute array.
  * @param op a pointer with the attribute data.
  * @return PIO_NOERR for success, error code otherwise.
+ * @author Jim Edwards, Ed Hartnett
  */
 int PIOc_put_att_double(int ncid, int varid, const char *name, nc_type xtype,
                         PIO_Offset len, const double *op)

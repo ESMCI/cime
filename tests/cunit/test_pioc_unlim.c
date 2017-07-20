@@ -47,6 +47,10 @@ char dim_name[NDIM][PIO_MAX_NAME + 1] = {"timestep", "x", "y"};
 /* Length of the dimensions in the sample data. */
 int dim_len[NDIM] = {NC_UNLIMITED, X_DIM_LEN, Y_DIM_LEN};
 
+#define NETCDF4_UNLIM_FILE_NAME "netcdf4_unlim_file.nc"
+#define DIM_NAME1 "dim1"
+#define DIM_NAME2 "dim2"
+
 /* Create the decomposition to divide the 3-dimensional sample data
  * between the 4 tasks.
  *
@@ -125,7 +129,8 @@ int create_test_file(int iosysid, int ioid, int iotype, int my_rank, int *ncid, 
 
 /* Tests with multiple unlimited dims. Only netcdf-4 IOTYPES support
  * multiple unlimited dims. */
-int run_multiple_unlim_test(int iosysid, int ioid, int iotype, int my_rank)
+int run_multiple_unlim_test(int iosysid, int ioid, int iotype, int my_rank,
+                            MPI_Comm test_comm)
 {
 #define UDIM1_NAME "unlimited1"
 #define UDIM2_NAME "unlimited2"
@@ -165,6 +170,7 @@ int run_multiple_unlim_test(int iosysid, int ioid, int iotype, int my_rank)
             ERR(ERR_WRONG);
     }
 
+    /* Check some more stuff. */
     {
         int nunlimdims;
         int unlimdimids[NUM_UNLIM_DIMS];
@@ -185,10 +191,46 @@ int run_multiple_unlim_test(int iosysid, int ioid, int iotype, int my_rank)
                 ERR(ERR_WRONG);
         }
     }
+
+    /* Now try to add a var with two unlimited dims. It will fail. */
+    int varid;
+    #define VAR_NAME2 "some_dumb_variable_name_def_var_will_fail_anyway"
+    if (PIOc_def_var(ncid, VAR_NAME2, PIO_INT, NUM_UNLIM_DIMS, unlimdimids,
+                     &varid) != PIO_EINVAL)
+        ERR(ERR_WRONG);
     
     /* Close the file. */
     if ((PIOc_closefile(ncid)))
         return ret;
+
+    /* Use netCDF-4 directly to create a file that PIO can not create
+     * or read. */
+    if (my_rank == 0)
+    {
+        int ncid;
+        int dimids[NUM_UNLIM_DIMS];
+        int varid;
+        
+        if ((ret = nc_create(NETCDF4_UNLIM_FILE_NAME, NC_CLOBBER|NC_NETCDF4, &ncid)))
+            ERR(ret);
+        
+        if ((ret = nc_def_dim(ncid, DIM_NAME1, NC_UNLIMITED, &dimids[0])))
+            ERR(ret);
+        if ((ret = nc_def_dim(ncid, DIM_NAME2, NC_UNLIMITED, &dimids[1])))
+            ERR(ret);
+        if ((ret = nc_def_var(ncid, VAR_NAME, PIO_INT, NUM_UNLIM_DIMS, dimids, &varid)))
+            ERR(ret);
+        if ((ret = nc_close(ncid)))
+            ERR(ret);
+    }
+
+    /* Other tasks wait for task 0 to write file using netCDF-4... */
+    MPI_Barrier(test_comm);
+
+    /* Try to read file. It will not work. */
+    if (PIOc_openfile2(iosysid, &ncid, &iotype, NETCDF4_UNLIM_FILE_NAME,
+                       0) != PIO_EINVAL)
+        ERR(ERR_WRONG);
 
     return PIO_NOERR;
 }
@@ -243,7 +285,7 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
             /* Test file with multiple unlimited dims. Only netCDF-4
              * iotypes can run this test. */
             if (flavor[fmt] == PIO_IOTYPE_NETCDF4C || flavor[fmt] == PIO_IOTYPE_NETCDF4P)
-                if ((ret = run_multiple_unlim_test(iosysid, ioid, flavor[fmt], my_rank)))
+                if ((ret = run_multiple_unlim_test(iosysid, ioid, flavor[fmt], my_rank, test_comm)))
                     return ret;
         }
 
