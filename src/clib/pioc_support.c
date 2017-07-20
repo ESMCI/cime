@@ -1734,7 +1734,6 @@ int PIOc_createfile_int(int iosysid, int *ncidp, int *iotype, const char *filena
         file->varlist[i].type_size = 0;
         file->varlist[i].use_fill = 0;
         file->varlist[i].fillbuf = NULL;
-        file->varlist[i].iobuf = NULL;
     }
     file->mode = mode;
 
