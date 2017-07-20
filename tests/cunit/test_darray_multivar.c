@@ -339,7 +339,7 @@ int test_multivar_darray(int iosysid, int ioid, int num_flavors, int *flavor,
             for (int v = 0; v < NUM_VAR; v++)
             {
                 /* Read the data. */
-                if ((ret = PIOc_read_darray(ncid2, varid[0], ioid, arraylen, test_data_in)))
+                if ((ret = PIOc_read_darray(ncid2, varid[v], ioid, arraylen, test_data_in)))
                     ERR(ret);
                 
                 /* Check the results. */
