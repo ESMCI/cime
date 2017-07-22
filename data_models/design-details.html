@@ -2,31 +2,28 @@
 
 <!doctype html>
 
-
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>3. Design Details &mdash; CIME 5.3.0 documentation</title>
-    
+    <title>3. Design Details &#8212; CIME 5.3.0 documentation</title>
     <link rel="stylesheet" href="../_static/bizstyle.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
         VERSION:     '5.3.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="../_static/bizstyle.js"></script>
-    <link rel="top" title="CIME 5.3.0 documentation" href="../index.html" />
-    <link rel="up" title="CIME Data Models" href="index.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="4. Data Model Science" href="data-model-science.html" />
     <link rel="prev" title="2. Input Streams" href="input-streams.html" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
@@ -34,7 +31,7 @@
     <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
     <![endif]-->
   </head>
-  <body role="document">
+  <body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -47,8 +44,8 @@
         <li class="right" >
           <a href="input-streams.html" title="2. Input Streams"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">CIME Data Models</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">CIME Data Models</a> &#187;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -72,7 +69,7 @@
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="../_sources/data_models/design-details.txt"
+      <li><a href="../_sources/data_models/design-details.rst.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
@@ -115,7 +112,7 @@ Those two sets of inputdata are first filled based on the user setting of the na
 That operation occurs on the input data grid.
 The lower and upper bound data are then spatially mapped to the model grid based upon the user setting of the namelist variables <code class="docutils literal"><span class="pre">str_mapalgo</span></code> and <code class="docutils literal"><span class="pre">str_mapmask</span></code>.
 Spatial interpolation only occurs if the input data grid and model grid are not the identical, and this is determined in the strdata module automatically.
-Time interpolation is the final step and is done using a time interpolation method specified by the user in namelist (via the shr_strdata_nml namelist variable &#8220;tintalgo&#8221;).
+Time interpolation is the final step and is done using a time interpolation method specified by the user in namelist (via the shr_strdata_nml namelist variable “tintalgo”).
 A final set of fields is then available to the data model on the model grid and for the current model time.</p>
 <p>There are two primary costs associated with strdata, reading data and spatially mapping data.
 Time interpolation is relatively cheap in the current implementation.
@@ -123,13 +120,13 @@ As much as possible, redundant operations are minimized.
 Fill and mapping weights are generated at initialization and saved.
 The upper and lower bound mapped input data is saved between time steps to reduce mapping costs in cases where data is time interpolated more often than new data is read.
 If the input data timestep is relatively small (for example, hourly data as opposed to daily or monthly data) the cost of reading input data can be quite large.
-Also, there can be significant variation in cost of the data model over the coarse of the run, for instance, when new inputdata must be read and interpolated, although it&#8217;s relatively predictable.
-The present implementation doesn&#8217;t support changing the order of operations, for instance, time interpolating the data before spatial mapping.
+Also, there can be significant variation in cost of the data model over the coarse of the run, for instance, when new inputdata must be read and interpolated, although it’s relatively predictable.
+The present implementation doesn’t support changing the order of operations, for instance, time interpolating the data before spatial mapping.
 Because the present computations are always linear, changing the order of operations will not fundamentally change the results.
 The present order of operations generally minimizes the mapping cost for typical data model use cases.</p>
 <p>There are several limitations in both options and usage within the data models at the present time.
 Spatial interpolation can only be performed from a two-dimensional latitude-longitude input grid.
-The target grid can be arbitrary but the source grid must be able to be described by simple one-dimensional lists of longitudes and latitudes, although they don&#8217;t have to have equally spaced.</p>
+The target grid can be arbitrary but the source grid must be able to be described by simple one-dimensional lists of longitudes and latitudes, although they don’t have to have equally spaced.</p>
 <p>At the present time, data models can only read netcdf data, and IO is handled through either standard netcdf interfaces or through the PIO library using either netcdf or pnetcdf.
 If standard netcdf is used, global fields are read and then scattered one field at a time.
 If PIO is used, then data will be read either serially or in parallel in chunks that are approximately the global field size divided by the number of io tasks.
@@ -328,13 +325,13 @@ end type shr_strdata_type
         <li class="right" >
           <a href="input-streams.html" title="2. Input Streams"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" >CIME Data Models</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >CIME Data Models</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &copy; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.3.
+        &#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
     </div>
   </body>
 </html>

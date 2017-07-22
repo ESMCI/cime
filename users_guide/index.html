@@ -2,30 +2,28 @@
 
 <!doctype html>
 
-
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>CIME User’s Guide Part 1: Beginner - Basic Usage &mdash; CIME 5.3.0 documentation</title>
-    
+    <title>CIME User’s Guide Part 1: Beginner - Basic Usage &#8212; CIME 5.3.0 documentation</title>
     <link rel="stylesheet" href="../_static/bizstyle.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
         VERSION:     '5.3.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="../_static/bizstyle.js"></script>
-    <link rel="top" title="CIME 5.3.0 documentation" href="../index.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="1. Introduction" href="introduction-and-overview.html" />
     <link rel="prev" title="What is CIME?" href="../what_cime/index.html" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
@@ -33,7 +31,7 @@
     <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
     <![endif]-->
   </head>
-  <body role="document">
+  <body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -46,15 +44,15 @@
         <li class="right" >
           <a href="../what_cime/index.html" title="What is CIME?"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &#187;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
   <h3><a href="../index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">CIME User&#8217;s Guide Part 1: Beginner - Basic Usage</a></li>
-<li><a class="reference internal" href="#cime-user-s-guide-part-2-intermediate-cime-internals-porting-testing-and-use-cases">CIME User&#8217;s Guide Part 2: Intermediate - CIME internals, Porting, Testing and Use Cases</a><ul>
+<li><a class="reference internal" href="#">CIME User’s Guide Part 1: Beginner - Basic Usage</a></li>
+<li><a class="reference internal" href="#cime-user-s-guide-part-2-intermediate-cime-internals-porting-testing-and-use-cases">CIME User’s Guide Part 2: Intermediate - CIME Internals, Porting, Testing and Use Cases</a><ul>
 <li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
 </ul>
 </li>
@@ -69,7 +67,7 @@
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="../_sources/users_guide/index.txt"
+      <li><a href="../_sources/users_guide/index.rst.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
@@ -92,7 +90,7 @@
           <div class="body" role="main">
             
   <div class="section" id="cime-user-s-guide-part-1-beginner-basic-usage">
-<span id="users-guide1"></span><h1>CIME User&#8217;s Guide Part 1: Beginner - Basic Usage<a class="headerlink" href="#cime-user-s-guide-part-1-beginner-basic-usage" title="Permalink to this headline">¶</a></h1>
+<span id="users-guide1"></span><h1>CIME User’s Guide Part 1: Beginner - Basic Usage<a class="headerlink" href="#cime-user-s-guide-part-1-beginner-basic-usage" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="introduction-and-overview.html">1. Introduction</a><ul>
@@ -182,7 +180,7 @@
 </div>
 </div>
 <div class="section" id="cime-user-s-guide-part-2-intermediate-cime-internals-porting-testing-and-use-cases">
-<span id="users-guide2"></span><h1>CIME User&#8217;s Guide Part 2: Intermediate - CIME internals, Porting, Testing and Use Cases<a class="headerlink" href="#cime-user-s-guide-part-2-intermediate-cime-internals-porting-testing-and-use-cases" title="Permalink to this headline">¶</a></h1>
+<span id="users-guide2"></span><h1>CIME User’s Guide Part 2: Intermediate - CIME Internals, Porting, Testing and Use Cases<a class="headerlink" href="#cime-user-s-guide-part-2-intermediate-cime-internals-porting-testing-and-use-cases" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="cime-internals.html">1. CIME internals</a><ul>
@@ -224,7 +222,7 @@
 <li class="toctree-l3"><a class="reference internal" href="unit_testing.html#overview-of-unit-test-support-in-cime">5.1.2. Overview of unit test support in CIME</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="unit_testing.html#running-cime-s-fortran-unit-tests">5.2. Running CIME&#8217;s Fortran unit tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_testing.html#running-cime-s-fortran-unit-tests">5.2. Running CIME’s Fortran unit tests</a></li>
 <li class="toctree-l2"><a class="reference internal" href="unit_testing.html#how-to-add-unit-testing-support-on-your-machine">5.3. How to add unit testing support on your machine</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="unit_testing.html#building-pfunit">5.3.1. Building pFUnit</a></li>
 <li class="toctree-l3"><a class="reference internal" href="unit_testing.html#adding-to-the-xml-file">5.3.2. Adding to the xml file</a></li>
@@ -258,7 +256,6 @@
 <li class="toctree-l2"><a class="reference internal" href="use_cases/basics-setting-up-a-branch-or-hybrid-run.html">8.3. Setting up a branch or hybrid run</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="adding-components.html">9. Adding components</a></li>
 </ul>
 </div>
 <div class="section" id="indices-and-tables">
@@ -289,12 +286,12 @@
         <li class="right" >
           <a href="../what_cime/index.html" title="What is CIME?"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &copy; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.3.
+        &#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
     </div>
   </body>
 </html>

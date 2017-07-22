@@ -2,39 +2,36 @@
 
 <!doctype html>
 
-
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>1. Introduction &mdash; CIME 5.3.0 documentation</title>
-    
+    <title>1. Introduction &#8212; CIME 5.3.0 documentation</title>
     <link rel="stylesheet" href="../_static/bizstyle.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
         VERSION:     '5.3.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="../_static/bizstyle.js"></script>
-    <link rel="top" title="CIME 5.3.0 documentation" href="../index.html" />
-    <link rel="up" title="Building a Coupled Model with CIME" href="index.html" />
-    <link rel="next" title="CIME Data Models" href="../data_models/index.html" />
-    <link rel="prev" title="Building a Coupled Model with CIME" href="index.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="2. Adding components" href="adding-components.html" />
+    <link rel="prev" title="CIME User’s Guide Part 3: Advanced - Building a Coupled Model with CIME" href="index.html" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <!--[if lt IE 9]>
     <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
     <![endif]-->
   </head>
-  <body role="document">
+  <body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -42,27 +39,27 @@
           <a href="../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="../data_models/index.html" title="CIME Data Models"
+          <a href="adding-components.html" title="2. Adding components"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="index.html" title="Building a Coupled Model with CIME"
+          <a href="index.html" title="CIME User’s Guide Part 3: Advanced - Building a Coupled Model with CIME"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Building a Coupled Model with CIME</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">CIME User’s Guide Part 3: Advanced - Building a Coupled Model with CIME</a> &#187;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
   <h4>Previous topic</h4>
   <p class="topless"><a href="index.html"
-                        title="previous chapter">Building a Coupled Model with CIME</a></p>
+                        title="previous chapter">CIME User’s Guide Part 3: Advanced - Building a Coupled Model with CIME</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="../data_models/index.html"
-                        title="next chapter">CIME Data Models</a></p>
+  <p class="topless"><a href="adding-components.html"
+                        title="next chapter">2. Adding components</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="../_sources/build_cpl/introduction.txt"
+      <li><a href="../_sources/build_cpl/introduction.rst.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
@@ -87,7 +84,8 @@
   <div class="section" id="introduction">
 <h1>1. Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
 <p>Content to go here:</p>
-<p>How to replace an existing cime model with another one,</p>
+<p>How to add a new component model to cime.</p>
+<p>How to replace an existing cime model with another one.</p>
 <p>How to integrate your model in to the cime build/configure system and coupler.</p>
 <p>How to work with the CIME-supplied models.</p>
 <p>What to do if you want to add another component to the long name.</p>
@@ -106,18 +104,18 @@
           <a href="../genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="../data_models/index.html" title="CIME Data Models"
+          <a href="adding-components.html" title="2. Adding components"
              >next</a> |</li>
         <li class="right" >
-          <a href="index.html" title="Building a Coupled Model with CIME"
+          <a href="index.html" title="CIME User’s Guide Part 3: Advanced - Building a Coupled Model with CIME"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" >Building a Coupled Model with CIME</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >CIME User’s Guide Part 3: Advanced - Building a Coupled Model with CIME</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &copy; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.3.
+        &#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
     </div>
   </body>
 </html>

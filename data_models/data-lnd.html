@@ -2,31 +2,28 @@
 
 <!doctype html>
 
-
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>6. Data Land (DLND) &mdash; CIME 5.3.0 documentation</title>
-    
+    <title>6. Data Land (DLND) &#8212; CIME 5.3.0 documentation</title>
     <link rel="stylesheet" href="../_static/bizstyle.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
         VERSION:     '5.3.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="../_static/bizstyle.js"></script>
-    <link rel="top" title="CIME 5.3.0 documentation" href="../index.html" />
-    <link rel="up" title="CIME Data Models" href="index.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="7. Data Ice (DICE)" href="data-seaice.html" />
     <link rel="prev" title="5. Data Atmosphere (DATM)" href="data-atm.html" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
@@ -34,7 +31,7 @@
     <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
     <![endif]-->
   </head>
-  <body role="document">
+  <body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -47,8 +44,8 @@
         <li class="right" >
           <a href="data-atm.html" title="5. Data Atmosphere (DATM)"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">CIME Data Models</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">CIME Data Models</a> &#187;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -75,7 +72,7 @@
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="../_sources/data_models/data-lnd.txt"
+      <li><a href="../_sources/data_models/data-lnd.rst.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
@@ -111,10 +108,10 @@ These variables are defined in <code class="docutils literal"><span class="pre">
 These variables will appear in <code class="docutils literal"><span class="pre">env_run.xml</span></code> and are used by the DLND <code class="docutils literal"><span class="pre">cime_config/buildnml</span></code> script to generate the DLND namelist file <code class="docutils literal"><span class="pre">dlnd_in</span></code> and the required associated stream files for the case.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">These xml variables are used by the the dlnd&#8217;s <strong>cime_config/buildnml</strong> script in conjunction with dlnd&#8217;s <strong>cime_config/namelist_definition_dlnd.xml</strong> file to generate the namelist file <code class="docutils literal"><span class="pre">dlnd_in</span></code>.</p>
+<p class="last">These xml variables are used by the the dlnd’s <strong>cime_config/buildnml</strong> script in conjunction with dlnd’s <strong>cime_config/namelist_definition_dlnd.xml</strong> file to generate the namelist file <code class="docutils literal"><span class="pre">dlnd_in</span></code>.</p>
 </div>
-<table border="1" class="docutils" id="id1">
-<caption><span class="caption-text">&#8220;DLND xml variables&#8221;</span><a class="headerlink" href="#id1" title="Permalink to this table">¶</a></caption>
+<table border="1" class="colwidths-given docutils" id="id1">
+<caption><span class="caption-text">“DLND xml variables”</span><a class="headerlink" href="#id1" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col width="15%" />
 <col width="85%" />
@@ -128,7 +125,7 @@ These variables will appear in <code class="docutils literal"><span class="pre">
 <tr class="row-even"><td>DLND_MODE</td>
 <td>Mode for data land component</td>
 </tr>
-<tr class="row-odd"><td>&nbsp;</td>
+<tr class="row-odd"><td>&#160;</td>
 <td>Valid values are: NULL, CPLHIST, GLC_CPLHIST</td>
 </tr>
 <tr class="row-even"><td>DLND_CPLHIST_CASE</td>
@@ -156,8 +153,8 @@ One of the variables in <code class="docutils literal"><span class="pre">shr_str
 The valid values for <code class="docutils literal"><span class="pre">datamode</span></code> are set in the file <code class="docutils literal"><span class="pre">namelist_definition_dlnd.xml</span></code> using the xml variable <code class="docutils literal"><span class="pre">DLND_MODE</span></code> in the <code class="docutils literal"><span class="pre">config_component.xml</span></code> file for DLND.
 CIME will generate a value <code class="docutils literal"><span class="pre">datamode</span></code> that is compset dependent.</p>
 <p>The following are the supported DATM datamode values and their relationship to the <code class="docutils literal"><span class="pre">$DATM_MODE</span></code> xml variable value.</p>
-<table border="1" class="docutils" id="id2">
-<caption><span class="caption-text">&#8220;Valid values for datamode namelist variable&#8221;</span><a class="headerlink" href="#id2" title="Permalink to this table">¶</a></caption>
+<table border="1" class="colwidths-given docutils" id="id2">
+<caption><span class="caption-text">“Valid values for datamode namelist variable”</span><a class="headerlink" href="#id2" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col width="20%" />
 <col width="80%" />
@@ -180,8 +177,8 @@ CIME will generate a value <code class="docutils literal"><span class="pre">data
 <div class="section" id="dlnd-mode-datamode-and-streams">
 <h2>6.3. DLND_MODE, datamode and streams<a class="headerlink" href="#dlnd-mode-datamode-and-streams" title="Permalink to this headline">¶</a></h2>
 <p>The following tabe describes the valid values of <code class="docutils literal"><span class="pre">DLND_MODE</span></code>, and how it relates to the associated input streams and the <code class="docutils literal"><span class="pre">datamode</span></code> namelist variable.</p>
-<table border="1" class="docutils" id="id3">
-<caption><span class="caption-text">&#8220;Relationship between DLND_MODE, datamode and streams&#8221;</span><a class="headerlink" href="#id3" title="Permalink to this table">¶</a></caption>
+<table border="1" class="colwidths-given docutils" id="id3">
+<caption><span class="caption-text">“Relationship between DLND_MODE, datamode and streams”</span><a class="headerlink" href="#id3" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col width="20%" />
 <col width="80%" />
@@ -195,28 +192,28 @@ CIME will generate a value <code class="docutils literal"><span class="pre">data
 <tr class="row-even"><td>NULL</td>
 <td>null mode</td>
 </tr>
-<tr class="row-odd"><td>&nbsp;</td>
+<tr class="row-odd"><td>&#160;</td>
 <td>streams: none</td>
 </tr>
-<tr class="row-even"><td>&nbsp;</td>
+<tr class="row-even"><td>&#160;</td>
 <td>datamode: null</td>
 </tr>
 <tr class="row-odd"><td>CPLHIST</td>
 <td>land forcing data (e.g. produced by CESM/CLM) from a previous model run is output in coupler history files and read in by the data land model.</td>
 </tr>
-<tr class="row-even"><td>&nbsp;</td>
+<tr class="row-even"><td>&#160;</td>
 <td>streams: lnd.cplhist</td>
 </tr>
-<tr class="row-odd"><td>&nbsp;</td>
+<tr class="row-odd"><td>&#160;</td>
 <td>COPYALL</td>
 </tr>
 <tr class="row-even"><td>GLC_CPLHIST</td>
 <td>glc coupling fields (e.g. produced by CESM/CLM) from a previous model run are read in from a coupler history file.</td>
 </tr>
-<tr class="row-odd"><td>&nbsp;</td>
+<tr class="row-odd"><td>&#160;</td>
 <td>streams: glc.cplhist</td>
 </tr>
-<tr class="row-even"><td>&nbsp;</td>
+<tr class="row-even"><td>&#160;</td>
 <td>COPYALL</td>
 </tr>
 </tbody>
@@ -260,8 +257,8 @@ CIME will generate a value <code class="docutils literal"><span class="pre">data
 <span id="dlnd-fields"></span><h2>6.6. Field names<a class="headerlink" href="#field-names" title="Permalink to this headline">¶</a></h2>
 <p>DLND defines a set of pre-defined internal field names as well as mappings for how those field names map to the fields sent to the coupler.
 In general, the stream input file should translate the stream input variable names into the <code class="docutils literal"><span class="pre">dlnd_fld</span></code> names below for use within the data land model.</p>
-<table border="1" class="docutils" id="id4">
-<caption><span class="caption-text">&#8220;DLND internal field names&#8221;</span><a class="headerlink" href="#id4" title="Permalink to this table">¶</a></caption>
+<table border="1" class="colwidths-given docutils" id="id4">
+<caption><span class="caption-text">“DLND internal field names”</span><a class="headerlink" href="#id4" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col width="50%" />
 <col width="50%" />
@@ -349,7 +346,7 @@ In general, the stream input file should translate the stream input variable nam
 </tr>
 </tbody>
 </table>
-<p>where NN = (01,02,...,``nflds_snow * glc_nec)``, and <code class="docutils literal"><span class="pre">nflds_snow</span></code> is the number of snow fields in each elevation class and <code class="docutils literal"><span class="pre">glc_nec</span></code> is the number of elevation classes.</p>
+<p>where NN = (01,02,…,``nflds_snow * glc_nec)``, and <code class="docutils literal"><span class="pre">nflds_snow</span></code> is the number of snow fields in each elevation class and <code class="docutils literal"><span class="pre">glc_nec</span></code> is the number of elevation classes.</p>
 </div>
 </div>
 
@@ -371,13 +368,13 @@ In general, the stream input file should translate the stream input variable nam
         <li class="right" >
           <a href="data-atm.html" title="5. Data Atmosphere (DATM)"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" >CIME Data Models</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >CIME Data Models</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &copy; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.3.
+        &#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
     </div>
   </body>
 </html>

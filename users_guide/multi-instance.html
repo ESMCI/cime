@@ -2,31 +2,28 @@
 
 <!doctype html>
 
-
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>6. Multi-instance component functionality &mdash; CIME 5.3.0 documentation</title>
-    
+    <title>6. Multi-instance component functionality &#8212; CIME 5.3.0 documentation</title>
     <link rel="stylesheet" href="../_static/bizstyle.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
         VERSION:     '5.3.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="../_static/bizstyle.js"></script>
-    <link rel="top" title="CIME 5.3.0 documentation" href="../index.html" />
-    <link rel="up" title="CIME User’s Guide Part 1: Beginner - Basic Usage" href="index.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="7. Adding new cases" href="adding-cases.html" />
     <link rel="prev" title="5. Fortran Unit Testing" href="unit_testing.html" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
@@ -34,7 +31,7 @@
     <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
     <![endif]-->
   </head>
-  <body role="document">
+  <body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -47,8 +44,8 @@
         <li class="right" >
           <a href="unit_testing.html" title="5. Fortran Unit Testing"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">CIME User&#8217;s Guide Part 1: Beginner - Basic Usage</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">CIME User’s Guide Part 1: Beginner - Basic Usage</a> &#187;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -62,7 +59,7 @@
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="../_sources/users_guide/multi-instance.txt"
+      <li><a href="../_sources/users_guide/multi-instance.rst.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
@@ -109,7 +106,7 @@ However, it also provides the ability to run a set of experiments within a singl
 </pre></div>
 </div>
 <p>The atm, lnd and rof are active components in this compset. The ocn is a prescribed data component, cice is a mixed prescribed/active component (ice-coverage is prescribed), and glc and wav are stub components.</p>
-<p>Let&#8217;s say we want to run two instances of CAM in this experiment.
+<p>Let’s say we want to run two instances of CAM in this experiment.
 We will also have to run two instances of CLM, CICE and RTM.
 However, we can run either one or two instances of DOCN, and we can ignore glc and wav since they do not do anything in this compset as stub components.</p>
 <p>To run two instances of CAM, CLM, CICE, RTM and DOCN, invoke the following commands in your <strong>$CASEROOT</strong> directory:</p>
@@ -121,7 +118,7 @@ However, we can run either one or two instances of DOCN, and we can ignore glc a
 </pre></div>
 </div>
 <p>As a result, you will have two instances of CAM, CLM and CICE (prescribed), RTM, and DOCN, each running concurrently on 64 MPI tasks.</p>
-<p><strong>TODO: put in reference to xmlchange&#8221;.</strong></p>
+<p><strong>TODO: put in reference to xmlchange”.</strong></p>
 <p>3. Set up the case</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="o">./</span><span class="n">case</span><span class="o">.</span><span class="n">setup</span>
 </pre></div>
@@ -178,13 +175,13 @@ The serial setting is only for EXPERT USERS in upcoming development code impleme
         <li class="right" >
           <a href="unit_testing.html" title="5. Fortran Unit Testing"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" >CIME User&#8217;s Guide Part 1: Beginner - Basic Usage</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >CIME User’s Guide Part 1: Beginner - Basic Usage</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &copy; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.3.
+        &#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
     </div>
   </body>
 </html>

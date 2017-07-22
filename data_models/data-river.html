@@ -2,31 +2,28 @@
 
 <!doctype html>
 
-
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>9. Data River (DROF) &mdash; CIME 5.3.0 documentation</title>
-    
+    <title>9. Data River (DROF) &#8212; CIME 5.3.0 documentation</title>
     <link rel="stylesheet" href="../_static/bizstyle.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
         VERSION:     '5.3.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="../_static/bizstyle.js"></script>
-    <link rel="top" title="CIME 5.3.0 documentation" href="../index.html" />
-    <link rel="up" title="CIME Data Models" href="index.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="10. Data Wave (DWAV)" href="data-wave.html" />
     <link rel="prev" title="8. Data Ocean (DOCN)" href="data-ocean.html" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
@@ -34,7 +31,7 @@
     <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
     <![endif]-->
   </head>
-  <body role="document">
+  <body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -47,8 +44,8 @@
         <li class="right" >
           <a href="data-ocean.html" title="8. Data Ocean (DOCN)"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">CIME Data Models</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">CIME Data Models</a> &#187;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -75,7 +72,7 @@
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="../_sources/data_models/data-river.txt"
+      <li><a href="../_sources/data_models/data-river.rst.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
@@ -108,10 +105,10 @@ These variables are defined in <code class="docutils literal"><span class="pre">
 These variables will appear in <code class="docutils literal"><span class="pre">env_run.xml</span></code> and are used by the DROF <code class="docutils literal"><span class="pre">cime_config/buildnml</span></code> script to generate the DROF namelist file <code class="docutils literal"><span class="pre">drof_in</span></code> and the required associated stream files for the case.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">These xml variables are used by the the drof&#8217;s <strong>cime_config/buildnml</strong> script in conjunction with drof&#8217;s <strong>cime_config/namelist_definition_drof.xml</strong> file to generate the namelist file <code class="docutils literal"><span class="pre">drof_in</span></code>.</p>
+<p class="last">These xml variables are used by the the drof’s <strong>cime_config/buildnml</strong> script in conjunction with drof’s <strong>cime_config/namelist_definition_drof.xml</strong> file to generate the namelist file <code class="docutils literal"><span class="pre">drof_in</span></code>.</p>
 </div>
-<table border="1" class="docutils" id="id1">
-<caption><span class="caption-text">&#8220;DROF xml variables&#8221;</span><a class="headerlink" href="#id1" title="Permalink to this table">¶</a></caption>
+<table border="1" class="colwidths-given docutils" id="id1">
+<caption><span class="caption-text">“DROF xml variables”</span><a class="headerlink" href="#id1" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col width="15%" />
 <col width="85%" />
@@ -125,7 +122,7 @@ These variables will appear in <code class="docutils literal"><span class="pre">
 <tr class="row-even"><td>DROF_MODE</td>
 <td>Data mode</td>
 </tr>
-<tr class="row-odd"><td>&nbsp;</td>
+<tr class="row-odd"><td>&#160;</td>
 <td>Valid values are: NULL,CPLHIST,DIATREN_ANN_RX1,DIATREN_IAF_RX1</td>
 </tr>
 <tr class="row-even"><td>DROF_CPLHIST_CASE</td>
@@ -153,8 +150,8 @@ One of the variables in <code class="docutils literal"><span class="pre">shr_str
 The valid values for <code class="docutils literal"><span class="pre">datamode</span></code> are set in the file <code class="docutils literal"><span class="pre">namelist_definition_drof.xml</span></code> using the xml variable <code class="docutils literal"><span class="pre">DROF_MODE</span></code> in the <code class="docutils literal"><span class="pre">config_component.xml</span></code> file for DROF.
 CIME will generate a value <code class="docutils literal"><span class="pre">datamode</span></code> that is compset dependent.</p>
 <p>The following are the supported DROF datamode values and their relationship to the <code class="docutils literal"><span class="pre">DROF_MODE</span></code> xml variable value.</p>
-<table border="1" class="docutils" id="id2">
-<caption><span class="caption-text">&#8220;Valid values for datamode namelist variable&#8221;</span><a class="headerlink" href="#id2" title="Permalink to this table">¶</a></caption>
+<table border="1" class="colwidths-given docutils" id="id2">
+<caption><span class="caption-text">“Valid values for datamode namelist variable”</span><a class="headerlink" href="#id2" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col width="20%" />
 <col width="80%" />
@@ -208,8 +205,8 @@ The stream-independent group is <code class="docutils literal"><span class="pre"
 <div class="section" id="drof-mode-datamode-and-streams">
 <h2>9.4. DROF_MODE, datamode and streams<a class="headerlink" href="#drof-mode-datamode-and-streams" title="Permalink to this headline">¶</a></h2>
 <p>The following tabe describes the valid values of <code class="docutils literal"><span class="pre">DROF_MODE</span></code>, and how it relates to the associated input streams and the <code class="docutils literal"><span class="pre">datamode</span></code> namelist variable.</p>
-<table border="1" class="docutils" id="id3">
-<caption><span class="caption-text">&#8220;Relationship between DROF_MODE, datamode and streams&#8221;</span><a class="headerlink" href="#id3" title="Permalink to this table">¶</a></caption>
+<table border="1" class="colwidths-given docutils" id="id3">
+<caption><span class="caption-text">“Relationship between DROF_MODE, datamode and streams”</span><a class="headerlink" href="#id3" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col width="15%" />
 <col width="85%" />
@@ -223,37 +220,37 @@ The stream-independent group is <code class="docutils literal"><span class="pre"
 <tr class="row-even"><td>NULL</td>
 <td>null mode</td>
 </tr>
-<tr class="row-odd"><td>&nbsp;</td>
+<tr class="row-odd"><td>&#160;</td>
 <td>streams: none</td>
 </tr>
-<tr class="row-even"><td>&nbsp;</td>
+<tr class="row-even"><td>&#160;</td>
 <td>datamode: NULL</td>
 </tr>
 <tr class="row-odd"><td>DIATREN_ANN_RX1</td>
 <td>Reads in annual forcing river data used for CORE2 forcing runs.</td>
 </tr>
-<tr class="row-even"><td>&nbsp;</td>
+<tr class="row-even"><td>&#160;</td>
 <td>streams: rof.diatren_ann_rx1</td>
 </tr>
-<tr class="row-odd"><td>&nbsp;</td>
+<tr class="row-odd"><td>&#160;</td>
 <td>datamode: COPYALL</td>
 </tr>
 <tr class="row-even"><td>DIATREN_IAF_RX1</td>
 <td>Reads in intra-annual forcing river data used for CORE2 forcing runs.</td>
 </tr>
-<tr class="row-odd"><td>&nbsp;</td>
+<tr class="row-odd"><td>&#160;</td>
 <td>streams: rof.diatren_iaf_rx1</td>
 </tr>
-<tr class="row-even"><td>&nbsp;</td>
+<tr class="row-even"><td>&#160;</td>
 <td>datamode: COPYALL</td>
 </tr>
 <tr class="row-odd"><td>CPLHIST</td>
 <td>Reads in data from coupler history files generated by a previous run.</td>
 </tr>
-<tr class="row-even"><td>&nbsp;</td>
+<tr class="row-even"><td>&#160;</td>
 <td>streams: rof.cplhist</td>
 </tr>
-<tr class="row-odd"><td>&nbsp;</td>
+<tr class="row-odd"><td>&#160;</td>
 <td>datamode: COPYALL</td>
 </tr>
 </tbody>
@@ -267,8 +264,8 @@ The stream-independent group is <code class="docutils literal"><span class="pre"
 <span id="drof-fields"></span><h2>9.6. DROF Field names<a class="headerlink" href="#drof-field-names" title="Permalink to this headline">¶</a></h2>
 <p>DROF defines a set of pre-defined internal field names as well as mappings for how those field names map to the fields sent to the coupler.
 In general, the stream input file should translate the stream input variable names into the <code class="docutils literal"><span class="pre">drof_fld</span></code> names for use within the data rofosphere model.</p>
-<table border="1" class="docutils" id="id4">
-<caption><span class="caption-text">&#8220;DROF internal field names&#8221;</span><a class="headerlink" href="#id4" title="Permalink to this table">¶</a></caption>
+<table border="1" class="colwidths-given docutils" id="id4">
+<caption><span class="caption-text">“DROF internal field names”</span><a class="headerlink" href="#id4" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col width="50%" />
 <col width="50%" />
@@ -308,13 +305,13 @@ In general, the stream input file should translate the stream input variable nam
         <li class="right" >
           <a href="data-ocean.html" title="8. Data Ocean (DOCN)"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" >CIME Data Models</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >CIME Data Models</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &copy; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.3.
+        &#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
     </div>
   </body>
 </html>

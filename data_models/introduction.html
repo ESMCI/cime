@@ -2,31 +2,28 @@
 
 <!doctype html>
 
-
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>1. Introduction &mdash; CIME 5.3.0 documentation</title>
-    
+    <title>1. Introduction &#8212; CIME 5.3.0 documentation</title>
     <link rel="stylesheet" href="../_static/bizstyle.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
         VERSION:     '5.3.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="../_static/bizstyle.js"></script>
-    <link rel="top" title="CIME 5.3.0 documentation" href="../index.html" />
-    <link rel="up" title="CIME Data Models" href="index.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="2. Input Streams" href="input-streams.html" />
     <link rel="prev" title="CIME Data Models" href="index.html" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
@@ -34,7 +31,7 @@
     <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
     <![endif]-->
   </head>
-  <body role="document">
+  <body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -47,8 +44,8 @@
         <li class="right" >
           <a href="index.html" title="CIME Data Models"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">CIME Data Models</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">CIME Data Models</a> &#187;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -73,7 +70,7 @@
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="../_sources/data_models/introduction.txt"
+      <li><a href="../_sources/data_models/introduction.rst.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
@@ -107,12 +104,12 @@ However, rather than determining these fields prognostically, most data models s
 <p>The data models typically read gridded data from observations or reanalysis products.
 Out of the box, they often provide a few possible data sources and/or time periods that you can choose from when setting up a case.
 However, data models can also be configured to read output from a previous coupled run.
-For example, you can perform a fully-coupled run in which you ask for particular extra output streams; you can then use these saved &#8220;driver history&#8221; files as inputs to datm to run a later land-only spinup.</p>
+For example, you can perform a fully-coupled run in which you ask for particular extra output streams; you can then use these saved “driver history” files as inputs to datm to run a later land-only spinup.</p>
 <p>In some cases, data models have prognostic functionality, that is, they also receive and use data sent by the driver.
 However, in most cases, the data models are not running prognostically and have no need to receive any data from the driver.</p>
 <p>The CIME data models have parallel capability and share significant amounts of source code.
 Methods for reading and interpolating data have been established and can easily be reused:
-The data model calls strdata (&#8220;stream data&#8221;) methods which then call stream methods.
+The data model calls strdata (“stream data”) methods which then call stream methods.
 The stream methods are responsible for managing lists of input data files and their time axis.
 The information is then passed up to the strdata methods where the data is read and interpolated in space and time.
 The interpolated data is passed up to the data model where final fields are derived, packed, and returned to the driver.</p>
@@ -181,7 +178,7 @@ The detailed namelist options for each data model will be described later, but e
 <span class="o">/</span>
 </pre></div>
 </div>
-<p>As mentioned above, the <code class="docutils literal"><span class="pre">dataMode</span></code> namelist variable that is associated with each data model specifies if there is any additional operations that need to be performed on that data model&#8217;s input streams before return to the driver.
+<p>As mentioned above, the <code class="docutils literal"><span class="pre">dataMode</span></code> namelist variable that is associated with each data model specifies if there is any additional operations that need to be performed on that data model’s input streams before return to the driver.
 At a minimum, all data models support <code class="docutils literal"><span class="pre">datamode</span></code> values of <code class="docutils literal"><span class="pre">NULL</span></code> and <code class="docutils literal"><span class="pre">COPYALL</span></code>.</p>
 <ul class="simple">
 <li><code class="docutils literal"><span class="pre">NULL</span></code> - turns off the data model as a provider of data to the coupler.</li>
@@ -260,13 +257,13 @@ The internal data model field names are important because they are used to setup
         <li class="right" >
           <a href="index.html" title="CIME Data Models"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" >CIME Data Models</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >CIME Data Models</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &copy; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.3.
+        &#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
     </div>
   </body>
 </html>

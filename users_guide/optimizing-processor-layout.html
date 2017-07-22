@@ -2,31 +2,28 @@
 
 <!doctype html>
 
-
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>3. Optimizing Processor Layout &mdash; CIME 5.3.0 documentation</title>
-    
+    <title>3. Optimizing Processor Layout &#8212; CIME 5.3.0 documentation</title>
     <link rel="stylesheet" href="../_static/bizstyle.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
         VERSION:     '5.3.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="../_static/bizstyle.js"></script>
-    <link rel="top" title="CIME 5.3.0 documentation" href="../index.html" />
-    <link rel="up" title="CIME User’s Guide Part 1: Beginner - Basic Usage" href="index.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="4. Testing with create_test" href="testing.html" />
     <link rel="prev" title="2. Porting and validating CIME on a new platform" href="porting-cime.html" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
@@ -34,7 +31,7 @@
     <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
     <![endif]-->
   </head>
-  <body role="document">
+  <body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -47,8 +44,8 @@
         <li class="right" >
           <a href="porting-cime.html" title="2. Porting and validating CIME on a new platform"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">CIME User&#8217;s Guide Part 1: Beginner - Basic Usage</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">CIME User’s Guide Part 1: Beginner - Basic Usage</a> &#187;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -72,7 +69,7 @@
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="../_sources/users_guide/optimizing-processor-layout.txt"
+      <li><a href="../_sources/users_guide/optimizing-processor-layout.rst.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
@@ -99,12 +96,12 @@
 <p>Load balancing is the practice of specifying processor layout for a given model configuration
 (compset, grid, and so on) to optimize throughput and efficiency. For a fixed total number of
 processors, the goal of optimization to achieve maximum throughput. In contrast, for a given
-configuration across varied processor counts, the purpose is to find several &#8220;sweet spots&#8221; where
+configuration across varied processor counts, the purpose is to find several “sweet spots” where
 the model is minimally idle, cost is relatively low, and the throughput is relatively high.</p>
 <p>As with most models, increasing total processors normally results in both increased throughput
 and increased cost.
 If models scaled linearly, the cost would remain constant across different processor counts,
-but models generally don&#8217;t scale linearly and the cost increases as processor count increases.</p>
+but models generally don’t scale linearly and the cost increases as processor count increases.</p>
 <p>Performing a load-balancing exercise on a proposed model run before undertaking a long production run is recommended practice.</p>
 <p>CIME experimental cases have significant flexibility with respect to the layout of components
 across different hardware processors. There are eight unique models (atm, lnd, rof, ocn, ice,
@@ -132,7 +129,7 @@ The following describes the most important parts of a timing file:</p>
 Also, the use of OpenMP threading in some or all of the components is dependent on the hardware/OS support as well as whether the system supports running all MPI and mixed MPI/OpenMP on overlapping processors for different components.</p>
 <p>Finally, decide whether components should run sequentially, concurrently, or in some combination.</p>
 <p>Typically, a series of short test runs with the desired production configuration can establish a reasonable load balance setup for the production job. The timing output can be used to compare test runs to help determine the optimal load balance.</p>
-<p>Changing the pe layout of the model has NO IMPACT on the scientific results. The basic order of operations and calling sequence are hardwired into the driver and do not change with the pe layout. that doesn&#8217;t change when the pe layout is changed.
+<p>Changing the pe layout of the model has NO IMPACT on the scientific results. The basic order of operations and calling sequence are hardwired into the driver and do not change with the pe layout. that doesn’t change when the pe layout is changed.
 There are some constraints on the ability of either the CESM or ACME fully active configuration fully concurrent. For example, the atmosphere model always run sequentially with the ice and land models for scientific reasons. As a result, running the atmosphere concurrently with the ice and land will result in idle processors at some point in the timestepping sequence.</p>
 <p>For more information about how the driver is implemented, see (Craig, A.P., Vertenstein, M., Jacob, R., 2012: A new flexible coupler for earth system modeling developed for CCSM4 and CESM1.0. International Journal of High Performance Computing Applications, 26, 31-42, 10.1177/1094342011428141).</p>
 <p><strong>One approach to load balancing</strong></p>
@@ -173,7 +170,7 @@ There are some constraints on the ability of either the CESM or ACME fully activ
 <div class="section" id="setting-the-time-limits">
 <h2>3.3. Setting the time limits<a class="headerlink" href="#setting-the-time-limits" title="Permalink to this headline">¶</a></h2>
 <dl class="docutils">
-<dt>When you look at the <strong>ccsm_timing.$CASE.$datestamp</strong> file for &#8220;Model Throughput&#8221;, you will find output like this:</dt>
+<dt>When you look at the <strong>ccsm_timing.$CASE.$datestamp</strong> file for “Model Throughput”, you will find output like this:</dt>
 <dd><div class="first last highlight-default"><div class="highlight"><pre><span></span><span class="n">Overall</span> <span class="n">Metrics</span><span class="p">:</span>
 <span class="n">Model</span> <span class="n">Cost</span><span class="p">:</span> <span class="mf">327.14</span> <span class="n">pe</span><span class="o">-</span><span class="n">hrs</span><span class="o">/</span><span class="n">simulated_year</span> <span class="p">(</span><span class="n">scale</span><span class="o">=</span> <span class="mf">0.50</span><span class="p">)</span>
 <span class="n">Model</span> <span class="n">Throughput</span><span class="p">:</span> <span class="mf">4.70</span> <span class="n">simulated_years</span><span class="o">/</span><span class="n">day</span>
@@ -183,7 +180,7 @@ There are some constraints on the ability of either the CESM or ACME fully activ
 </dl>
 <p>The model throughput is the estimated number of model years that you can run in a wallclock day. Based on this, you can maximize your <strong>$CASE.run</strong> queue limit and change <code class="docutils literal"><span class="pre">$STOP_OPTION</span></code> and <code class="docutils literal"><span class="pre">$STOP_N</span></code> in <strong>env_run.xml</strong>.</p>
 <dl class="docutils">
-<dt>For example, say a model&#8217;s throughput is 4.7 simulated_years/day, and the maximum runtime limit on your machine is 12 hours. 4.7 model years/24 hours * 12 hours = 2.35 years. On the massively parallel computers, there is always some variability in how long it will take a job to run. On some machines, you may need to leave as much as 20% buffer time in your run to guarantee that jobs finish reliably before the time limit. For that reason, set your model to run only one model year/job. In this example, set your wallclock at 12 hours and invoke <strong>xmlchange</strong> in <code class="docutils literal"><span class="pre">CASEROOT</span></code> as shown here:</dt>
+<dt>For example, say a model’s throughput is 4.7 simulated_years/day, and the maximum runtime limit on your machine is 12 hours. 4.7 model years/24 hours * 12 hours = 2.35 years. On the massively parallel computers, there is always some variability in how long it will take a job to run. On some machines, you may need to leave as much as 20% buffer time in your run to guarantee that jobs finish reliably before the time limit. For that reason, set your model to run only one model year/job. In this example, set your wallclock at 12 hours and invoke <strong>xmlchange</strong> in <code class="docutils literal"><span class="pre">CASEROOT</span></code> as shown here:</dt>
 <dd><div class="first last highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;./</span><span class="n">xmlchange</span> <span class="n">STOP_OPTION</span><span class="o">=</span><span class="n">nyears</span>
 <span class="o">&gt;./</span><span class="n">xmlchange</span> <span class="n">STOP_N</span><span class="o">=</span><span class="mi">1</span>
 <span class="o">&gt;./</span><span class="n">xmlchange</span> <span class="n">REST_OPTION</span><span class="o">=</span><span class="n">nyears</span>
@@ -213,13 +210,13 @@ There are some constraints on the ability of either the CESM or ACME fully activ
         <li class="right" >
           <a href="porting-cime.html" title="2. Porting and validating CIME on a new platform"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" >CIME User&#8217;s Guide Part 1: Beginner - Basic Usage</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >CIME User’s Guide Part 1: Beginner - Basic Usage</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &copy; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.3.
+        &#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
     </div>
   </body>
 </html>

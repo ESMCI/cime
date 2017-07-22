@@ -2,31 +2,28 @@
 
 <!doctype html>
 
-
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>7. Data Ice (DICE) &mdash; CIME 5.3.0 documentation</title>
-    
+    <title>7. Data Ice (DICE) &#8212; CIME 5.3.0 documentation</title>
     <link rel="stylesheet" href="../_static/bizstyle.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
         VERSION:     '5.3.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="../_static/bizstyle.js"></script>
-    <link rel="top" title="CIME 5.3.0 documentation" href="../index.html" />
-    <link rel="up" title="CIME Data Models" href="index.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="8. Data Ocean (DOCN)" href="data-ocean.html" />
     <link rel="prev" title="6. Data Land (DLND)" href="data-lnd.html" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
@@ -34,7 +31,7 @@
     <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
     <![endif]-->
   </head>
-  <body role="document">
+  <body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -47,8 +44,8 @@
         <li class="right" >
           <a href="data-lnd.html" title="6. Data Land (DLND)"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">CIME Data Models</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">CIME Data Models</a> &#187;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -75,7 +72,7 @@
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="../_sources/data_models/data-seaice.txt"
+      <li><a href="../_sources/data_models/data-seaice.rst.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
@@ -103,7 +100,7 @@
 The data functionality reads in ice coverage.
 The prognostic functionality calculates the ice/atmosphere and ice/ocean fluxes.
 DICE receives the same atmospheric input from the coupler as the active CICE model (i.e., atmospheric  states, shortwave fluxes, and ocean ice melt flux) and acts very similarly to CICE running in prescribed mode.
-Currently, this component is only used to drive POP in &#8220;C&#8221; compsets.</p>
+Currently, this component is only used to drive POP in “C” compsets.</p>
 <div class="section" id="xml-variables">
 <span id="dice-xml-vars"></span><h2>7.1. xml variables<a class="headerlink" href="#xml-variables" title="Permalink to this headline">¶</a></h2>
 <p>The following are xml variables that CIME supports for DICE.
@@ -111,10 +108,10 @@ These variables are defined in <code class="docutils literal"><span class="pre">
 These variables will appear in <code class="docutils literal"><span class="pre">env_run.xml</span></code> and are used by the DICE <code class="docutils literal"><span class="pre">cime_config/buildnml</span></code> script to generate the DICE namelist file <code class="docutils literal"><span class="pre">dice_in</span></code> and the required associated stream files for the case.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">These xml variables are used by the the dice&#8217;s <strong>cime_config/buildnml</strong> script in conjunction with dice&#8217;s <strong>cime_config/namelist_definition_dice.xml</strong> file to generate the namelist file <code class="docutils literal"><span class="pre">dice_in</span></code>.</p>
+<p class="last">These xml variables are used by the the dice’s <strong>cime_config/buildnml</strong> script in conjunction with dice’s <strong>cime_config/namelist_definition_dice.xml</strong> file to generate the namelist file <code class="docutils literal"><span class="pre">dice_in</span></code>.</p>
 </div>
-<table border="1" class="docutils" id="id1">
-<caption><span class="caption-text">&#8220;DICE xml variables&#8221;</span><a class="headerlink" href="#id1" title="Permalink to this table">¶</a></caption>
+<table border="1" class="colwidths-given docutils" id="id1">
+<caption><span class="caption-text">“DICE xml variables”</span><a class="headerlink" href="#id1" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col width="15%" />
 <col width="85%" />
@@ -128,7 +125,7 @@ These variables will appear in <code class="docutils literal"><span class="pre">
 <tr class="row-even"><td>DICE_MODE</td>
 <td>Mode for sea-ice component</td>
 </tr>
-<tr class="row-odd"><td>&nbsp;</td>
+<tr class="row-odd"><td>&#160;</td>
 <td>Valid values are: null, prescribed, ssmi, ssmi_iaf, ww3</td>
 </tr>
 </tbody>
@@ -141,8 +138,8 @@ One of the variables in <code class="docutils literal"><span class="pre">shr_str
 The valid values for <code class="docutils literal"><span class="pre">datamode</span></code> are set in the file <code class="docutils literal"><span class="pre">namelist_definition_dice.xml</span></code> using the xml variable <code class="docutils literal"><span class="pre">DICE_MODE</span></code> in the <code class="docutils literal"><span class="pre">config_component.xml</span></code> file for DICE.
 CIME will generate a value <code class="docutils literal"><span class="pre">datamode</span></code> that is compset dependent.</p>
 <p>The following are the supported DICE datamode values and their relationship to the <code class="docutils literal"><span class="pre">DICE_MODE</span></code> xml variable value.</p>
-<table border="1" class="docutils" id="id2">
-<caption><span class="caption-text">&#8220;Valid values for datamode namelist variable&#8221;</span><a class="headerlink" href="#id2" title="Permalink to this table">¶</a></caption>
+<table border="1" class="colwidths-given docutils" id="id2">
+<caption><span class="caption-text">“Valid values for datamode namelist variable”</span><a class="headerlink" href="#id2" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col width="20%" />
 <col width="80%" />
@@ -168,61 +165,61 @@ CIME will generate a value <code class="docutils literal"><span class="pre">data
 <div class="section" id="dice-mode-datamode-and-streams">
 <h2>7.3. DICE_MODE, datamode and streams<a class="headerlink" href="#dice-mode-datamode-and-streams" title="Permalink to this headline">¶</a></h2>
 <p>The following tabe describes the valid values of <code class="docutils literal"><span class="pre">DICE_MODE</span></code>, and how it relates to the associated input streams and the <code class="docutils literal"><span class="pre">datamode</span></code> namelist variable.</p>
-<table border="1" class="docutils" id="id3">
-<caption><span class="caption-text">&#8220;Relationship between DICE_MODE, datamode and streams&#8221;</span><a class="headerlink" href="#id3" title="Permalink to this table">¶</a></caption>
+<table border="1" class="colwidths-given docutils" id="id3">
+<caption><span class="caption-text">“Relationship between DICE_MODE, datamode and streams”</span><a class="headerlink" href="#id3" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col width="20%" />
 <col width="80%" />
 </colgroup>
 <thead valign="bottom">
-<tr class="row-odd"><th class="head">DICE_MODE, description-streams-datamode&#8221;</th>
-<th class="head">&nbsp;</th>
+<tr class="row-odd"><th class="head">DICE_MODE, description-streams-datamode”</th>
+<th class="head">&#160;</th>
 </tr>
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td>null</td>
 <td>null mode</td>
 </tr>
-<tr class="row-odd"><td>&nbsp;</td>
+<tr class="row-odd"><td>&#160;</td>
 <td>streams: none</td>
 </tr>
-<tr class="row-even"><td>&nbsp;</td>
+<tr class="row-even"><td>&#160;</td>
 <td>datamode: null</td>
 </tr>
 <tr class="row-odd"><td>prescribed</td>
 <td>prognostic mode - requires data to be sent to DICE</td>
 </tr>
-<tr class="row-even"><td>&nbsp;</td>
+<tr class="row-even"><td>&#160;</td>
 <td>streams:  prescribed</td>
 </tr>
-<tr class="row-odd"><td>&nbsp;</td>
+<tr class="row-odd"><td>&#160;</td>
 <td>datamode: SSTDATA</td>
 </tr>
 <tr class="row-even"><td>ssmi</td>
 <td>Special Sensor Microwave Imager climatological data</td>
 </tr>
-<tr class="row-odd"><td>&nbsp;</td>
+<tr class="row-odd"><td>&#160;</td>
 <td>streams: SSMI</td>
 </tr>
-<tr class="row-even"><td>&nbsp;</td>
+<tr class="row-even"><td>&#160;</td>
 <td>datamode: SSTDATA</td>
 </tr>
 <tr class="row-odd"><td>ssmi</td>
 <td>Special Sensor Microwave Imager inter-annual forcing data</td>
 </tr>
-<tr class="row-even"><td>&nbsp;</td>
+<tr class="row-even"><td>&#160;</td>
 <td>streams: SSMI_IAF</td>
 </tr>
-<tr class="row-odd"><td>&nbsp;</td>
+<tr class="row-odd"><td>&#160;</td>
 <td>datamode: SSTDATA</td>
 </tr>
 <tr class="row-even"><td>ww3</td>
 <td>ww3 mode</td>
 </tr>
-<tr class="row-odd"><td>&nbsp;</td>
+<tr class="row-odd"><td>&#160;</td>
 <td>streams: ww3</td>
 </tr>
-<tr class="row-even"><td>&nbsp;</td>
+<tr class="row-even"><td>&#160;</td>
 <td>datamode: COPYALL</td>
 </tr>
 </tbody>
@@ -282,8 +279,8 @@ They are normally found in the same file because the SST and ice fraction data a
 <span id="dice-fields"></span><h2>7.6. Field names<a class="headerlink" href="#field-names" title="Permalink to this headline">¶</a></h2>
 <p>DICE defines a set of pre-defined internal field names as well as mappings for how those field names map to the fields sent to the coupler.
 In general, the stream input file should translate the stream input variable names into the <code class="docutils literal"><span class="pre">dice_fld</span></code> names below for use within the data ice model.</p>
-<table border="1" class="docutils" id="id4">
-<caption><span class="caption-text">&#8220;DICE internal field names&#8221;</span><a class="headerlink" href="#id4" title="Permalink to this table">¶</a></caption>
+<table border="1" class="colwidths-given docutils" id="id4">
+<caption><span class="caption-text">“DICE internal field names”</span><a class="headerlink" href="#id4" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col width="50%" />
 <col width="50%" />
@@ -443,13 +440,13 @@ In general, the stream input file should translate the stream input variable nam
         <li class="right" >
           <a href="data-lnd.html" title="6. Data Land (DLND)"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" >CIME Data Models</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >CIME Data Models</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &copy; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.3.
+        &#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
     </div>
   </body>
 </html>

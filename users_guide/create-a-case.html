@@ -2,31 +2,28 @@
 
 <!doctype html>
 
-
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>3. Creating a Case &mdash; CIME 5.3.0 documentation</title>
-    
+    <title>3. Creating a Case &#8212; CIME 5.3.0 documentation</title>
     <link rel="stylesheet" href="../_static/bizstyle.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
         VERSION:     '5.3.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="../_static/bizstyle.js"></script>
-    <link rel="top" title="CIME 5.3.0 documentation" href="../index.html" />
-    <link rel="up" title="CIME User’s Guide Part 1: Beginner - Basic Usage" href="index.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="4. Setting up a Case" href="setting-up-a-case.html" />
     <link rel="prev" title="2. The basics of CIME cases" href="case-basics.html" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
@@ -34,7 +31,7 @@
     <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
     <![endif]-->
   </head>
-  <body role="document">
+  <body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -47,8 +44,8 @@
         <li class="right" >
           <a href="case-basics.html" title="2. The basics of CIME cases"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">CIME User&#8217;s Guide Part 1: Beginner - Basic Usage</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">CIME User’s Guide Part 1: Beginner - Basic Usage</a> &#187;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -71,7 +68,7 @@
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="../_sources/users_guide/create-a-case.txt"
+      <li><a href="../_sources/users_guide/create-a-case.rst.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
@@ -120,7 +117,7 @@ The complete example appears in the <a class="reference internal" href="use_case
 </div>
 <p>In the example, the command creates a <code class="docutils literal"><span class="pre">$CASEROOT</span></code> directory: <strong>~/cime/example1</strong>. If that directory already exists, a warning is printed and the command aborts. Additional details:</p>
 <ul class="simple">
-<li><code class="docutils literal"><span class="pre">$CASE</span></code> can include letters, numbers,  &#8221;.&#8221;, and &#8220;_&#8221;. In the example, it is <code class="docutils literal"><span class="pre">example1</span></code>.</li>
+<li><code class="docutils literal"><span class="pre">$CASE</span></code> can include letters, numbers,  “.”, and “_”. In the example, it is <code class="docutils literal"><span class="pre">example1</span></code>.</li>
 <li>The compset is <code class="docutils literal"><span class="pre">2000_DATM%NYF_SLND_DICE%SSMI_DOCN%DOM_DROF%NYF_SGLC_SWAV</span></code>.</li>
 <li>The model resolution is <code class="docutils literal"><span class="pre">a%0.9x1.25_l%0.9x1.25_oi%gx1v6_r%r05_m%gx1v6_g%null_w%null</span></code>.</li>
 <li><strong>create_newcase</strong> installs files in <code class="docutils literal"><span class="pre">$CASEROOT</span></code> to build and run the model and to optionally archive the case on the target platform.</li>
@@ -142,7 +139,7 @@ The complete example appears in the <a class="reference internal" href="use_case
 <td>Script to build component and utility libraries and model executable.</td>
 </tr>
 <tr class="row-odd"><td>case.submit</td>
-<td>Script to submit the case to run using the machine&#8217;s batch queueing system.</td>
+<td>Script to submit the case to run using the machine’s batch queueing system.</td>
 </tr>
 <tr class="row-even"><td>case.cmpgen_namelist</td>
 <td>Script to perform namelist baseline operations (compare, generate, or both).</td>
@@ -286,7 +283,7 @@ buildnml and buildlib scripts here.</td>
 </ul>
 <p>Variables in <strong>env_run.xml</strong>, <strong>env_batch.xml</strong> and <strong>env_archive.xml</strong> are never locked, and most can be changed at any time. There are some exceptions in the <strong>env_batch.xml</strong> file.</p>
 <p>The <strong>env_case.html</strong> file can never be unlocked.</p>
-<p>These other files can be &#8220;unlocked&#8221; as follows:</p>
+<p>These other files can be “unlocked” as follows:</p>
 <ul class="simple">
 <li>To unlock <strong>env_mach_pes.xml</strong>, run <code class="docutils literal"><span class="pre">case.setup</span> <span class="pre">--clean</span></code>.</li>
 <li>To unlock <strong>env_build.xml</strong>, run <code class="docutils literal"><span class="pre">case.build</span> <span class="pre">--clean</span></code>.</li>
@@ -312,13 +309,13 @@ buildnml and buildlib scripts here.</td>
         <li class="right" >
           <a href="case-basics.html" title="2. The basics of CIME cases"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" >CIME User&#8217;s Guide Part 1: Beginner - Basic Usage</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >CIME User’s Guide Part 1: Beginner - Basic Usage</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &copy; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.3.
+        &#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
     </div>
   </body>
 </html>

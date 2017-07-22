@@ -2,31 +2,28 @@
 
 <!doctype html>
 
-
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>3.2. Grids &mdash; CIME 5.3.0 documentation</title>
-    
+    <title>3.2. Grids &#8212; CIME 5.3.0 documentation</title>
     <link rel="stylesheet" href="../_static/bizstyle.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
         VERSION:     '5.3.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="../_static/bizstyle.js"></script>
-    <link rel="top" title="CIME 5.3.0 documentation" href="../index.html" />
-    <link rel="up" title="3. Implementation" href="implementation.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="3.3. Initialization and Restart" href="initialization-and-restart.html" />
     <link rel="prev" title="3.1. Time Management" href="time-management.html" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
@@ -34,7 +31,7 @@
     <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
     <![endif]-->
   </head>
-  <body role="document">
+  <body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -47,9 +44,9 @@
         <li class="right" >
           <a href="time-management.html" title="3.1. Time Management"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" >CIME Driver/Coupler</a> &raquo;</li>
-          <li class="nav-item nav-item-2"><a href="implementation.html" accesskey="U">3. Implementation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >CIME Driver/Coupler</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="implementation.html" accesskey="U">3. Implementation</a> &#187;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -76,7 +73,7 @@
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="../_sources/driver_cpl/grids.txt"
+      <li><a href="../_sources/driver_cpl/grids.rst.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
@@ -106,7 +103,7 @@
 The ocean model mask is used to derive a complementary mask for the land grid such that for any given combination of atmosphere/land and ocean/ice grids, there is a unique land mask.
 This approach for dealing with grids is still used a majority of the time.
 But there is a new capability, called <code class="docutils literal"><span class="pre">trigrid</span></code> that allows the atmosphere and land grids to be unique.
-A typical grid is the finite volume &#8220;1 degree&#8221; atmosphere/land grid matched with the  &#8220;1 degree&#8221; ocean/ice grid.
+A typical grid is the finite volume “1 degree” atmosphere/land grid matched with the  “1 degree” ocean/ice grid.
 The runoff grid is generally unique to runoff and the land ice grid is coupled on the land grid with interpolation carried out to a unique land ice grid inside that component.</p>
 <p>Historically, the ocean grid has been the higher resolution grid in CIME model configurations.
 While that is no longer always the case, the current driver implementation largely reflects that presumption.
@@ -148,7 +145,7 @@ This can be different from lfrac because of the trigrid implementation.
 lfrac is the land fraction consistent with the ocean mask and lfrin is the land fraction in the land model.
 ifrad and ofrad are fractions at the last radiation timestep.
 These fractions preserve conservation of heat in the net shortwave calculation because the net shortwave calculation is one timestep behind the ice fraction evolution in the system.
-When the variable &#8220;dom&#8221; is mentioned below, that refers to a field sent from a component at initialization.</p>
+When the variable “dom” is mentioned below, that refers to a field sent from a component at initialization.</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span>!  the fractions fields are now afrac, ifrac, ofrac, lfrac, and lfrin.
 !    afrac = fraction of atm on a grid
 !    lfrac = fraction of lnd on a grid
@@ -319,12 +316,12 @@ State fields are generally mapped using bilinear interpolation from the atmosphe
 But this is not a requirement of the system.
 The individual state and flux mapping files are specified at runtime using the <code class="docutils literal"><span class="pre">seq_maps.rc</span></code> input file, and any valid mapping file using any mapping approach can be specified in that input file.</p>
 <p>The <code class="docutils literal"><span class="pre">seq_maps.c</span></code> file contains information about the mapping files as well as the mapping type.
-There are currently two types of mapping implementations, &#8220;X&#8221; and &#8220;Y&#8221;.</p>
+There are currently two types of mapping implementations, “X” and “Y”.</p>
 <ul class="simple">
-<li>&#8220;X&#8221; mapping rearranges the source data to the destination grid decomposition and then a local mapping is done from the source to the destination grid on the destination decomposition. In the &#8220;X&#8221; type, the source grid is rearranged.</li>
-<li>&#8220;Y&#8221; mapping does a local mapping from the source grid to the destination grid on the source grid decomposition. That generates a partial sum of the destination values which are then rearranged to the destination decomposition and summed. Both options produce reasonable results, although they may differ in value by &#8220;roundoff&#8221; due to differences in order or operations. The type chosen impacts performance. In both implementations, the number of flops is basically identical. The difference is the communication. In the &#8220;Y&#8221; type, the destination grid is rearranged.</li>
+<li>“X” mapping rearranges the source data to the destination grid decomposition and then a local mapping is done from the source to the destination grid on the destination decomposition. In the “X” type, the source grid is rearranged.</li>
+<li>“Y” mapping does a local mapping from the source grid to the destination grid on the source grid decomposition. That generates a partial sum of the destination values which are then rearranged to the destination decomposition and summed. Both options produce reasonable results, although they may differ in value by “roundoff” due to differences in order or operations. The type chosen impacts performance. In both implementations, the number of flops is basically identical. The difference is the communication. In the “Y” type, the destination grid is rearranged.</li>
 </ul>
-<p>Since historically, the ocean grid is higher resolution than the atmosphere grid, &#8220;X&#8221; mapping is used for atmosphere to ocean/ice mapping and &#8220;Y&#8221; mapping is used from ocean/ice to atmosphere mapping to optimize mapping performance.</p>
+<p>Since historically, the ocean grid is higher resolution than the atmosphere grid, “X” mapping is used for atmosphere to ocean/ice mapping and “Y” mapping is used from ocean/ice to atmosphere mapping to optimize mapping performance.</p>
 <p>Mapping corrections are made in some cases in the polar region.
 In particular, the current bilinear and area conservative mapping approaches introduce relatively large errors in mapping vector fields around the pole.
 The current coupler can correct the interpolated surface wind velocity near the pole when mapping from the atmosphere to the ocean and ice grids.
@@ -385,14 +382,14 @@ One critical point is that if mapping files are generated by different tools off
         <li class="right" >
           <a href="time-management.html" title="3.1. Time Management"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" >CIME Driver/Coupler</a> &raquo;</li>
-          <li class="nav-item nav-item-2"><a href="implementation.html" >3. Implementation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >CIME Driver/Coupler</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="implementation.html" >3. Implementation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &copy; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.3.
+        &#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
     </div>
   </body>
 </html>
