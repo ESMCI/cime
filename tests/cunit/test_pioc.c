@@ -700,18 +700,14 @@ int define_metadata(int ncid, int my_rank, int flavor)
         return ERR_WRONG;
     if (PIOc_def_var(ncid, NULL, PIO_INT, NDIM, dimids, &varid) != PIO_EINVAL)
         return ERR_WRONG;
-    if (PIOc_def_var(ncid, VAR_NAME, PIO_INT, NDIM, dimids, NULL) != PIO_EINVAL)
-        return ERR_WRONG;
-    if (PIOc_def_var(ncid, too_long_name, PIO_INT, NDIM, dimids, NULL) != PIO_EINVAL)
-        return ERR_WRONG;
-    if (PIOc_def_var(ncid, too_long_name, TEST_VAL_42, NDIM, dimids, &varid) != PIO_EINVAL)
-        return ERR_WRONG;
-    if (PIOc_def_var(ncid, too_long_name, PIO_LONG_INTERNAL, NDIM, dimids, &varid) != PIO_EINVAL)
+    if (PIOc_def_var(ncid, too_long_name, PIO_INT, NDIM, dimids, &varid) != PIO_EINVAL)
         return ERR_WRONG;
 
-    /* Define a variable. */
-    if ((ret = PIOc_def_var(ncid, VAR_NAME, PIO_INT, NDIM, dimids, &varid)))
+    /* Define a variable. Test that varidp can be NULL. Since this is
+     * the first var in the file, the varid will be 0. */
+    if ((ret = PIOc_def_var(ncid, VAR_NAME, PIO_INT, NDIM, dimids, NULL)))
         return ret;
+    varid = 0;
 
     /* Set the fill mode. */
     int fillmode = PIO_NOFILL;

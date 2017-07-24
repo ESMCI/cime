@@ -1989,8 +1989,8 @@ int PIOc_def_var(int ncid, const char *name, nc_type xtype, int ndims,
         return pio_err(NULL, NULL, ierr, __FILE__, __LINE__);
     ios = file->iosystem;
 
-    /* User must provide name and storage for varid. */
-    if (!name || !varidp || strlen(name) > NC_MAX_NAME)
+    /* User must provide name. */
+    if (!name || strlen(name) > NC_MAX_NAME)
         return pio_err(ios, file, PIO_EINVAL, __FILE__, __LINE__);
 
     LOG((1, "PIOc_def_var ncid = %d name = %s xtype = %d ndims = %d", ncid, name,
