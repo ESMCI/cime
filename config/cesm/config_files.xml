@@ -180,6 +180,7 @@
       <value component="pop"      >$SRCROOT/components/pop/cime_config/testdefs/testlist_pop.xml</value>
       <value component="rtm"      >$SRCROOT/components/rtm/cime_config/testdefs/testlist_rtm.xml</value>
       <value component="mosart"   >$SRCROOT/components/mosart/cime_config/testdefs/testlist_mosart.xml</value>
+      <value component="micom"      >$SRCROOT/components/pop/cime_config/testdefs/testlist_micom.xml</value>
     </values>
     <group>case_last</group>
     <file>env_case.xml</file>
@@ -200,6 +201,7 @@
       <value component="rtm"      >$SRCROOT/components/rtm/cime_config/testdefs/testmods_dirs</value>
       <value component="mosart"   >$SRCROOT/components/mosart/cime_config/testdefs/testmods_dirs</value>
       <value component="pop"      >$SRCROOT/components/pop/cime_config/testdefs/testmods_dirs</value>
+      <value component="micom"      >$SRCROOT/components/micom/cime_config/testdefs/testmods_dirs</value>
     </values>
     <group>case_last</group>
     <file>env_case.xml</file>
@@ -352,7 +354,7 @@
       <value component="docn" >$CIMEROOT/src/components/data_comps/docn/cime_config/config_component.xml</value>
       <value component="socn" >$CIMEROOT/src/components/stub_comps/socn/cime_config/config_component.xml</value>
       <value component="xocn" >$CIMEROOT/src/components/xcpl_comps/xocn/cime_config/config_component.xml</value>
-      <value component="micom"  >$SRCROOT/src/components/micom/cime_config/config_component.xml</value>
+      <value component="micom"  >$SRCROOT/components/micom/cime_config/config_component.xml</value>
     </values>
     <group>case_last</group>
     <file>env_case.xml</file>

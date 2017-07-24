@@ -81,7 +81,7 @@ def _save_build_provenance_cesm(case, lid): # pylint: disable=unused-argument
     caseroot = case.get_value("CASEROOT")
     with open(os.path.join(caseroot, "README.case"), "a") as fd:
         fd.write("CESM version is {}\n".format(version))
-
+        
 def save_build_provenance(case, lid=None):
     with SharedArea():
         model = case.get_value("MODEL")
