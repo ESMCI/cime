@@ -106,23 +106,6 @@
     </values>
   </entry>
 
-  <entry id="flds_co2_dmsb">
-    <type>logical</type>
-    <category>seq_flds</category>
-    <group>seq_cplflds_inparm</group>
-    <desc>
-    Previously, new fields that were needed to be passed between components
-    for certain compsets were specified by cpp-variables. This has been
-    modified to now be use cases. This use cases are specified in the
-    namelist cpl_flds_inparm and are currently triggered by the xml variable CCSM_BGC.
-    If CCSM_BGC is set to 'CO2_DMSB', then flds_co2_dmsb will be set to .true.
-    </desc>
-    <values>
-      <value>.false.</value>
-      <value BGC_MODE="CO2_DMSB">.true.</value>
-    </values>
-  </entry>
-
   <entry id="flds_bgc">
     <type>logical</type>
     <category>seq_flds</category>
@@ -660,42 +643,6 @@
     </desc>
     <values>
       <value>0.0D0</value>
-    </values>
-  </entry>
-
-  <entry id="flux_scheme">
-    <type>integer</type>
-    <category>control</category>
-    <group>seq_infodata_inparm</group>
-    <valid_values>0,1,2</valid_values>
-    <desc>
-      integer parameter controlling choice of notional equilibrium
-      self-similarity parametrisation scheme for surface turbulent
-      fluxes between ocean and atmosphere: 
-	=0 -> CESM default (derived from of Large et al. 1994)
-        =1 -> COARE v3.0 (Fairall et al. 2003)
-        =2 -> like 0, but with fixed number of iterations 
-              towards convergence - N.B. 2 not allowed if
-              FLUX_DIURNAL is set to TRUE
-    </desc>
-    <values>
-      <value>0</value>
-    </values>
-  </entry>
-
-  <entry id="alb_cosz_avg">
-    <type>logical</type>
-    <category>control</category>
-    <group>seq_infodata_inparm</group>
-    <desc>
-      logical parameter controlling whether a time-step average is
-      used for the computation of albedos in addition to the      
-      computation for radiances: 
-	=F -> CESM default 
-        =T -> use cosz average over time-step also for albedos
-    </desc>
-    <values>
-      <value>.false.</value>
     </values>
   </entry>
 
