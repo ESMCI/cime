@@ -1253,7 +1253,7 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
 
     /* Turn on the logging system for PIO. */
     pio_init_logging();
-    LOG((1, "PIOc_Init_Async num_io_procs = %d component_count = %d", num_io_procs,
+    LOG((1, "PIOc_init_async num_io_procs = %d component_count = %d", num_io_procs,
          component_count));
 
     /* If the user did not supply a list of process numbers to use for
