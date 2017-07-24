@@ -461,6 +461,7 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
     file_desc_t *file;     /* Info about file we are writing to. */
     io_desc_t *iodesc;     /* The IO description. */
     var_desc_t *vdesc;     /* Info about the var being written. */
+    var_desc_t *vdesc2;    /* Info about the var being written. */
     void *bufptr;          /* A data buffer. */
     MPI_Datatype vtype;    /* The MPI type of the variable. */
     wmulti_buffer *wmb;    /* The write multi buffer for one or more vars. */
@@ -503,7 +504,10 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
 
     /* Get var description. */
     vdesc = &(file->varlist[varid]);
-    LOG((2, "vdesc record %d nreqs %d", vdesc->record, vdesc->nreqs));
+    if ((ierr = get_var_desc(varid, &file->varlist2, &vdesc2)))
+        return pio_err(ios, file, ierr, __FILE__, __LINE__);        
+    LOG((2, "vdesc record %d nreqs %d vdesc2->rec_var %d", vdesc->record,
+         vdesc->nreqs, vdesc2->rec_var));
 
     /* If we don't know the fill value for this var, get it. */
     if (!vdesc->fillvalue)

@@ -1681,7 +1681,7 @@ int PIOc_writemap_from_f90(const char *file, int ndims, const int *gdims,
  * parameters are read on comp task 0 and ignored elsewhere.
  *
  * @param iosysid A defined pio system ID, obtained from
- * PIOc_InitIntercomm() or PIOc_InitAsync().
+ * PIOc_Init_Intercomm() or PIOc_InitAsync().
  * @param ncidp A pointer that gets the ncid of the newly created
  * file.
  * @param iotype A pointer to a pio output format. Must be one of
@@ -1712,7 +1712,7 @@ int PIOc_createfile_int(int iosysid, int *ncidp, int *iotype, const char *filena
     if (!iotype_is_valid(*iotype))
         return pio_err(ios, NULL, PIO_EINVAL, __FILE__, __LINE__);
 
-    LOG((1, "PIOc_createfile iosysid = %d iotype = %d filename = %s mode = %d",
+    LOG((1, "PIOc_createfile_int iosysid = %d iotype = %d filename = %s mode = %d",
          iosysid, *iotype, filename, mode));
 
     /* Allocate space for the file info. */

@@ -129,6 +129,9 @@ int PIOc_createfile(int iosysid, int *ncidp, int *iotype, const char *filename,
     if (!(ios = pio_get_iosystem_from_id(iosysid)))
         return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
 
+    LOG((1, "PIOc_createfile iosysid = %d iotype = %d filename = %s mode = %d",
+         iosysid, *iotype, filename, mode));
+
     /* Create the file. */
     if ((ret = PIOc_createfile_int(iosysid, ncidp, iotype, filename, mode)))
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);

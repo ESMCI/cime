@@ -1979,6 +1979,8 @@ int PIOc_def_var(int ncid, const char *name, nc_type xtype, int ndims,
     iosystem_desc_t *ios;      /* Pointer to io system information. */
     file_desc_t *file;         /* Pointer to file information. */
     int invalid_unlim_dim = 0; /* True invalid dims are used. */
+    int varid;                 /* The varid of the created var. */
+    int rec_var;               /* Non-zero if this var uses unlimited dim. */
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
     int ierr;                  /* Return code from function calls. */
 
@@ -1987,8 +1989,8 @@ int PIOc_def_var(int ncid, const char *name, nc_type xtype, int ndims,
         return pio_err(NULL, NULL, ierr, __FILE__, __LINE__);
     ios = file->iosystem;
 
-    /* User must provide name and storage for varid. */
-    if (!name || !varidp || strlen(name) > NC_MAX_NAME)
+    /* User must provide name. */
+    if (!name || strlen(name) > NC_MAX_NAME)
         return pio_err(ios, file, PIO_EINVAL, __FILE__, __LINE__);
 
     LOG((1, "PIOc_def_var ncid = %d name = %s xtype = %d ndims = %d", ncid, name,
@@ -1999,14 +2001,19 @@ int PIOc_def_var(int ncid, const char *name, nc_type xtype, int ndims,
      * is unlimited. */
     if (!ios->async || !ios->ioproc)
     {
-        for (int d = 1; d < ndims; d++)
+        for (int d = 0; d < ndims; d++)
         {
             PIO_Offset dimlen;
             
             if ((ierr = PIOc_inq_dimlen(ncid, dimidsp[d], &dimlen)))
                 return check_netcdf(file, ierr, __FILE__, __LINE__);
+
+            /* Only first dim may be unlimited, for PIO. */
             if (dimlen == PIO_UNLIMITED)
-                invalid_unlim_dim++;
+                if (d == 0)
+                    rec_var++;
+                else
+                    invalid_unlim_dim++;
         }
     }
 
@@ -2042,6 +2049,8 @@ int PIOc_def_var(int ncid, const char *name, nc_type xtype, int ndims,
             return check_mpi(file, mpierr, __FILE__, __LINE__);
 
         /* Broadcast values currently only known on computation tasks to IO tasks. */
+        if ((mpierr = MPI_Bcast(&rec_var, 1, MPI_INT, ios->comproot, ios->my_comm)))
+            check_mpi(file, mpierr, __FILE__, __LINE__);
         if ((mpierr = MPI_Bcast(&invalid_unlim_dim, 1, MPI_INT, ios->comproot, ios->my_comm)))
             check_mpi(file, mpierr, __FILE__, __LINE__);
     }
@@ -2056,19 +2065,19 @@ int PIOc_def_var(int ncid, const char *name, nc_type xtype, int ndims,
     {
 #ifdef _PNETCDF
         if (file->iotype == PIO_IOTYPE_PNETCDF)
-            ierr = ncmpi_def_var(file->fh, name, xtype, ndims, dimidsp, varidp);
+            ierr = ncmpi_def_var(file->fh, name, xtype, ndims, dimidsp, &varid);
 #endif /* _PNETCDF */
 
         if (file->iotype != PIO_IOTYPE_PNETCDF && file->do_io)
-            ierr = nc_def_var(file->fh, name, xtype, ndims, dimidsp, varidp);
+            ierr = nc_def_var(file->fh, name, xtype, ndims, dimidsp, &varid);
 #ifdef _NETCDF4
         /* For netCDF-4 serial files, turn on compression for this variable. */
         if (!ierr && file->iotype == PIO_IOTYPE_NETCDF4C)
-            ierr = nc_def_var_deflate(file->fh, *varidp, 0, 1, 1);
+            ierr = nc_def_var_deflate(file->fh, varid, 0, 1, 1);
 
         /* For netCDF-4 parallel files, set parallel access to collective. */
         if (!ierr && file->iotype == PIO_IOTYPE_NETCDF4P)
-            ierr = nc_var_par_access(file->fh, *varidp, NC_COLLECTIVE);
+            ierr = nc_var_par_access(file->fh, varid, NC_COLLECTIVE);
 #endif /* _NETCDF4 */
     }
 
@@ -2079,10 +2088,15 @@ int PIOc_def_var(int ncid, const char *name, nc_type xtype, int ndims,
         return check_netcdf(file, ierr, __FILE__, __LINE__);
 
     /* Broadcast results. */
+    if ((mpierr = MPI_Bcast(&varid, 1, MPI_INT, ios->ioroot, ios->my_comm)))
+        check_mpi(file, mpierr, __FILE__, __LINE__);
     if (varidp)
-        if ((mpierr = MPI_Bcast(varidp, 1, MPI_INT, ios->ioroot, ios->my_comm)))
-            check_mpi(file, mpierr, __FILE__, __LINE__);
+        *varidp = varid;
 
+    /* Add to the list of var_desc_t structs for this file. */
+    if ((ierr = add_to_varlist(varid, rec_var, &file->varlist2)))
+        return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
+ 
     return PIO_NOERR;
 }
 
