@@ -388,22 +388,16 @@ int get_var_desc(int varid, var_desc_t **varlist, var_desc_t **var_desc)
     var_desc_t *my_var;
     
     /* Check inputs. */
-    pioassert(varid >= 0 && varlist && var_desc, "invalid input",
-              __FILE__, __LINE__);
     LOG((2, "get_var_desc varid = %d", varid));
 
     /* Empty varlist. */
-    LOG((3, "*varlist = %d", *varlist));
     if (!*varlist)
         return PIO_ENOTVAR;
 
     /* Find the var_desc_t for this varid. */
     for (my_var = *varlist; my_var->next; my_var = my_var->next)
-    {
-        LOG((2, "my_var->varid = %d", my_var->varid));
         if (my_var->varid == varid)
             break;
-    }
 
     /* Did we find it? */
     if (my_var->varid != varid)

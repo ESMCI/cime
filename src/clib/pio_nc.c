@@ -1980,7 +1980,7 @@ int PIOc_def_var(int ncid, const char *name, nc_type xtype, int ndims,
     file_desc_t *file;         /* Pointer to file information. */
     int invalid_unlim_dim = 0; /* True invalid dims are used. */
     int varid;                 /* The varid of the created var. */
-    int rec_var;               /* Non-zero if this var uses unlimited dim. */
+    int rec_var = 0;           /* Non-zero if this var uses unlimited dim. */
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
     int ierr;                  /* Return code from function calls. */
 
@@ -2001,19 +2001,45 @@ int PIOc_def_var(int ncid, const char *name, nc_type xtype, int ndims,
      * is unlimited. */
     if (!ios->async || !ios->ioproc)
     {
-        for (int d = 0; d < ndims; d++)
+        int nunlimdims;
+
+        /* How many unlimited dims are present in the file? */
+        if ((ierr = PIOc_inq_unlimdims(ncid, &nunlimdims, NULL)))
+            return check_netcdf(file, ierr, __FILE__, __LINE__);
+        
+        if (nunlimdims)
         {
-            PIO_Offset dimlen;
-            
-            if ((ierr = PIOc_inq_dimlen(ncid, dimidsp[d], &dimlen)))
+            int unlimdimids[nunlimdims];
+
+            /* Find the IDs of the unlimited dimension(s). */
+            if ((ierr = PIOc_inq_unlimdims(ncid, NULL, unlimdimids)))
                 return check_netcdf(file, ierr, __FILE__, __LINE__);
 
-            /* Only first dim may be unlimited, for PIO. */
-            if (dimlen == PIO_UNLIMITED)
-                if (d == 0)
-                    rec_var++;
-                else
-                    invalid_unlim_dim++;
+            /* Check each dimid for this variable to see it it is an
+             * unlimited dimension. */
+            for (int d = 0; d < ndims; d++)
+            {
+                int unlim_found = 0;
+
+                /* Check against each unlimited dimid. */
+                for (int ud = 0; ud < nunlimdims; ud++)
+                {
+                    if (dimidsp[d] == unlimdimids[ud])
+                    {
+                        unlim_found++;
+                        break;
+                    }
+                }
+                
+                /* Only first dim may be unlimited, for PIO. */
+                if (unlim_found)
+                {
+                    if (d == 0)
+                        rec_var++;
+                    else
+                        invalid_unlim_dim++;
+                }
+            }
         }
     }
 

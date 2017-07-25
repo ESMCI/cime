@@ -2151,7 +2151,7 @@ int openfile_int(int iosysid, int *ncidp, int *iotype, const char *filename,
                  int mode, int retry)
 {
     int nvars;             /* The number of vars in the file. */
-    int nunlimdim;         /* The number of unlimited dimensions. */
+    int nunlimdims;         /* The number of unlimited dimensions. */
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Pointer to file information. */
     int ierr = PIO_NOERR;  /* Return code from function calls. */
@@ -2169,11 +2169,11 @@ int openfile_int(int iosysid, int *ncidp, int *iotype, const char *filename,
         return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
 
     /* How many unlimited dims for this file? */
-    if ((ierr = PIOc_inq_unlimdims(*ncidp, &nunlimdim, NULL)))
+    if ((ierr = PIOc_inq_unlimdims(*ncidp, &nunlimdims, NULL)))
         return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
 
     /* Learn the unlimited dimension ID(s). */
-    int unlimdimids[nunlimdim];
+    int unlimdimids[nunlimdims];
     if ((ierr = PIOc_inq_unlimdims(*ncidp, NULL, unlimdimids)))
         return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
 
@@ -2197,8 +2197,34 @@ int openfile_int(int iosysid, int *ncidp, int *iotype, const char *filename,
             int var_dimids[var_ndims];
             if ((ierr = PIOc_inq_vardimid(*ncidp, v, var_dimids)))
                 return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
-        }
 
+            /* Check against each variable dimid agains each unlimited
+             * dimid. */
+            for (int d = 0; d < var_ndims; d++)
+            {
+                int unlim_found = 0;
+
+                /* Check against each unlimited dimid. */
+                for (int ud = 0; ud < nunlimdims; ud++)
+                {
+                    if (var_dimids[d] == unlimdimids[ud])
+                    {
+                        unlim_found++;
+                        break;
+                    }
+                }
+                
+                /* Only first dim may be unlimited, for PIO. */
+                if (unlim_found)
+                {
+                    if (d == 0)
+                        rec_var++;
+                    else
+                        return pio_err(ios, NULL, PIO_EINVAL, __FILE__, __LINE__);
+                }
+            }
+        }
+                
         /* Add to the list of var_desc_t structs for this file. */
         if ((ierr = add_to_varlist(v, rec_var, &file->varlist2)))
             return pio_err(ios, NULL, ierr, __FILE__, __LINE__);

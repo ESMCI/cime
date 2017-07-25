@@ -112,8 +112,9 @@ int PIOc_Set_File_Error_Handling(int ncid, int method)
  */
 int PIOc_advanceframe(int ncid, int varid)
 {
-    file_desc_t *file;
-    iosystem_desc_t *ios;
+    iosystem_desc_t *ios;     /* Pointer to io system information. */
+    file_desc_t *file;        /* Pointer to file information. */
+    var_desc_t *vdesc;        /* Info about the var. */
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
     int ret;
 
@@ -124,9 +125,11 @@ int PIOc_advanceframe(int ncid, int varid)
         return pio_err(NULL, NULL, ret, __FILE__, __LINE__);
     ios = file->iosystem;
 
-    /* Check inputs. */
-    if (varid < 0 || varid >= PIO_MAX_VARS)
-        return pio_err(NULL, file, PIO_EINVAL, __FILE__, __LINE__);
+    /* Get info about variable. */
+    if ((ret = get_var_desc(varid, &file->varlist2, &vdesc)))
+        return pio_err(ios, file, ret, __FILE__, __LINE__);
+    if (!vdesc->rec_var)
+        return pio_err(ios, file, PIO_EINVAL, __FILE__, __LINE__);
 
     /* If using async, and not an IO task, then send parameters. */
     if (ios->async)
@@ -153,7 +156,8 @@ int PIOc_advanceframe(int ncid, int varid)
 
     /* Increment the record number. */
     file->varlist[varid].record++;
-
+    vdesc->record++;
+    
     return PIO_NOERR;
 }
 
@@ -170,8 +174,9 @@ int PIOc_advanceframe(int ncid, int varid)
  */
 int PIOc_setframe(int ncid, int varid, int frame)
 {
-    file_desc_t *file;
-    iosystem_desc_t *ios;
+    iosystem_desc_t *ios;     /* Pointer to io system information. */
+    file_desc_t *file;        /* Pointer to file information. */
+    var_desc_t *vdesc;        /* Info about the var. */
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
     int ret;
 
@@ -183,9 +188,12 @@ int PIOc_setframe(int ncid, int varid, int frame)
         return pio_err(NULL, NULL, ret, __FILE__, __LINE__);
     ios = file->iosystem;
 
-    /* Check inputs. */
-    if (varid < 0 || varid >= PIO_MAX_VARS)
-        return pio_err(NULL, file, PIO_EINVAL, __FILE__, __LINE__);
+    /* Get info about variable. */
+    if ((ret = get_var_desc(varid, &file->varlist2, &vdesc)))
+        return pio_err(ios, file, ret, __FILE__, __LINE__);
+    LOG((2, "vdesc->rec_var = %d", vdesc->rec_var));
+    if (!vdesc->rec_var)
+        return pio_err(ios, file, PIO_EINVAL, __FILE__, __LINE__);
 
     /* If using async, and not an IO task, then send parameters. */
     if (ios->async)
@@ -215,6 +223,7 @@ int PIOc_setframe(int ncid, int varid, int frame)
     /* Set the record dimension value for this variable. This will be
      * used by the write_darray functions. */
     file->varlist[varid].record = frame;
+    vdesc->record = frame;
 
     return PIO_NOERR;
 }
