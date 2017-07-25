@@ -215,6 +215,19 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
         if ((ret = PIOc_enddef(ncid)))
             ERR(ret);
 
+        /* These should not work, because this is not a record
+         * variable. */
+        if (PIOc_setframe(ncid, varid, 0) != PIO_EINVAL)
+            ERR(ERR_WRONG);
+        if (PIOc_advanceframe(ncid, varid) != PIO_EINVAL)
+            ERR(ERR_WRONG);
+
+        /* These should not work, because invalid varids are given. */
+        if (PIOc_setframe(ncid, TEST_VAL_42, 0) != PIO_ENOTVAR)
+            ERR(ERR_WRONG);
+        if (PIOc_advanceframe(ncid, TEST_VAL_42) != PIO_ENOTVAR)
+            ERR(ERR_WRONG);
+
         /* Write some data. */
         PIO_Offset arraylen = 1;
         float fillvalue = 0.0;
@@ -887,15 +900,15 @@ int test_names(int iosysid, int num_flavors, int *flavor, int my_rank,
         /* These should not work. */
         if (PIOc_setframe(ncid + TEST_VAL_42, 0, 0) != PIO_EBADID)
             return ERR_WRONG;
-        if (PIOc_setframe(ncid, -1, 0) != PIO_EINVAL)
+        if (PIOc_setframe(ncid, -1, 0) != PIO_ENOTVAR)
             return ERR_WRONG;
-        if (PIOc_setframe(ncid, NC_MAX_VARS + 1, 0) != PIO_EINVAL)
+        if (PIOc_setframe(ncid, NC_MAX_VARS + 1, 0) != PIO_ENOTVAR)
             return ERR_WRONG;
         if (PIOc_advanceframe(ncid + TEST_VAL_42, 0) != PIO_EBADID)
             return ERR_WRONG;
-        if (PIOc_advanceframe(ncid, -1) != PIO_EINVAL)
+        if (PIOc_advanceframe(ncid, -1) != PIO_ENOTVAR)
             return ERR_WRONG;
-        if (PIOc_advanceframe(ncid, NC_MAX_VARS + 1) != PIO_EINVAL)
+        if (PIOc_advanceframe(ncid, NC_MAX_VARS + 1) != PIO_ENOTVAR)
             return ERR_WRONG;
 
         /* Check the dimension names. */
