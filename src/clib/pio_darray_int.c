@@ -1295,6 +1295,16 @@ int flush_output_buffer(file_desc_t *file, bool force, PIO_Offset addsize)
                 vdesc->fillbuf = NULL;
             }
         }
+        for (int v = 0; v < file->nvars; v++)
+        {
+            if ((ierr = get_var_desc(v, &file->varlist2, &vdesc)))
+                return pio_err(NULL, file, ierr, __FILE__, __LINE__);        
+            if (vdesc->fillbuf)
+            {
+                brel(vdesc->fillbuf);
+                vdesc->fillbuf = NULL;
+            }
+        }
     }
 
 #endif /* _PNETCDF */
