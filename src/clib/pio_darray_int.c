@@ -34,7 +34,6 @@ void bpool_free(void *p)
   }
 }
 
-
 /**
  * Initialize the compute buffer to size pio_cnbuffer_limit.
  *
@@ -184,7 +183,7 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
     ios = file->iosystem;
 
     /* Point to var description scruct for first var. */
-    if ((ierr = get_var_desc(varids[0], &file->varlist2, &vdesc)))
+    if ((ierr = get_var_desc(varids[0], &file->varlist, &vdesc)))
         return pio_err(NULL, file, ierr, __FILE__, __LINE__);        
 
     /* Set these differently for data and fill writing. */
@@ -210,7 +209,8 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
         for (int regioncnt = 0; regioncnt < num_regions; regioncnt++)
         {
             /* Fill the start/count arrays. */
-            if ((ierr = find_start_count(iodesc->ndims, fndims, vdesc, region, frame, start, count)))
+            if ((ierr = find_start_count(iodesc->ndims, fndims, vdesc, region, frame,
+                                         start, count)))
                 return pio_err(ios, file, ierr, __FILE__, __LINE__);            
 
             /* IO tasks will run the netCDF/pnetcdf functions to write the data. */
@@ -277,7 +277,7 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
                     for (int nv = 0; nv < nvars; nv++)
                     {
                         /* Get the var info. */
-                        if ((ierr = get_var_desc(varids[nv], &file->varlist2, &vdesc)))
+                        if ((ierr = get_var_desc(varids[nv], &file->varlist, &vdesc)))
                             return pio_err(NULL, file, ierr, __FILE__, __LINE__);
 
                         /* If this is a record var, set the start for
@@ -521,7 +521,7 @@ int recv_and_write_data(file_desc_t *file, const int *varids, const int *frame,
     size_t start[fndims], count[fndims];
     size_t loffset;
     void *bufptr;
-    var_desc_t *vdesc2;    /* Contains info about the variable. */
+    var_desc_t *vdesc;    /* Contains info about the variable. */
     MPI_Status status;     /* Recv status for MPI. */
     int mpierr;  /* Return code from MPI function codes. */
     int ierr;    /* Return code. */
@@ -601,7 +601,7 @@ int recv_and_write_data(file_desc_t *file, const int *varids, const int *frame,
                 for (int nv = 0; nv < nvars; nv++)
                 {
                     LOG((3, "writing buffer var %d", nv));
-                    if ((ierr = get_var_desc(varids[0], &file->varlist2, &vdesc2)))
+                    if ((ierr = get_var_desc(varids[0], &file->varlist, &vdesc)))
                         return pio_err(NULL, file, ierr, __FILE__, __LINE__);
 
                     /* Get a pointer to the correct part of the buffer. */
@@ -610,7 +610,7 @@ int recv_and_write_data(file_desc_t *file, const int *varids, const int *frame,
                     /* If this var has an unlimited dim, set
                      * the start on that dim to the frame
                      * value for this variable. */
-                    if (vdesc2->rec_var)
+                    if (vdesc->rec_var)
                     {
                         if (fndims > 1 && iodesc->ndims < fndims && count[1] > 0)
                         {
@@ -619,7 +619,7 @@ int recv_and_write_data(file_desc_t *file, const int *varids, const int *frame,
                         }
                         else if (fndims == iodesc->ndims)
                         {
-                            start[0] += vdesc2->record;
+                            start[0] += vdesc->record;
                         }
                     }
 
@@ -683,7 +683,7 @@ int write_darray_multi_serial(file_desc_t *file, int nvars, int fndims, const in
     ios = file->iosystem;
 
     /* Get the var info. */
-    if ((ierr = get_var_desc(varids[0], &file->varlist2, &vdesc)))
+    if ((ierr = get_var_desc(varids[0], &file->varlist, &vdesc)))
         return pio_err(NULL, file, ierr, __FILE__, __LINE__);
 
     /* Set these differently for data and fill writing. iobuf may be
@@ -778,7 +778,7 @@ int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid, void *iobu
     ios = file->iosystem;
 
     /* Get the variable info. */
-    if ((ierr = get_var_desc(vid, &file->varlist2, &vdesc)))
+    if ((ierr = get_var_desc(vid, &file->varlist, &vdesc)))
         return pio_err(NULL, file, ierr, __FILE__, __LINE__);
 
     /* Get the number of dimensions in the decomposition. */
@@ -972,7 +972,7 @@ int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc, int vid,
     ios = file->iosystem;
 
     /* Get var info for this var. */
-    if ((ierr = get_var_desc(vid, &file->varlist2, &vdesc)))
+    if ((ierr = get_var_desc(vid, &file->varlist, &vdesc)))
         return pio_err(NULL, file, ierr, __FILE__, __LINE__);
 
     /* Get the number of dims in our decomposition. */
@@ -1236,7 +1236,7 @@ int flush_output_buffer(file_desc_t *file, bool force, PIO_Offset addsize)
 
         for (int i = 0; i < file->nvars; i++)
         {
-            if ((ierr = get_var_desc(i, &file->varlist2, &vdesc)))
+            if ((ierr = get_var_desc(i, &file->varlist, &vdesc)))
                 return pio_err(NULL, file, ierr, __FILE__, __LINE__);        
             reqcnt += vdesc->nreqs;
             if (vdesc->nreqs > 0)
@@ -1247,7 +1247,7 @@ int flush_output_buffer(file_desc_t *file, bool force, PIO_Offset addsize)
 
         for (int i = 0; i <= maxreq; i++)
         {
-            if ((ierr = get_var_desc(i, &file->varlist2, &vdesc)))
+            if ((ierr = get_var_desc(i, &file->varlist, &vdesc)))
                 return pio_err(NULL, file, ierr, __FILE__, __LINE__);        
 #ifdef MPIO_ONESIDED
             /*onesided optimization requires that all of the requests in a wait_all call represent
@@ -1286,7 +1286,7 @@ int flush_output_buffer(file_desc_t *file, bool force, PIO_Offset addsize)
 
         for (int v = 0; v < file->nvars; v++)
         {
-            if ((ierr = get_var_desc(v, &file->varlist2, &vdesc)))
+            if ((ierr = get_var_desc(v, &file->varlist, &vdesc)))
                 return pio_err(NULL, file, ierr, __FILE__, __LINE__);        
             if (vdesc->fillbuf)
             {

@@ -48,7 +48,7 @@ int PIOc_put_varm (int ncid, int varid, const PIO_Offset start[], const PIO_Offs
             break;
 #ifdef _PNETCDF
         case PIO_IOTYPE_PNETCDF:
-            if ((ierr = get_var_desc(varid, &file->varlist2, &vdesc)))
+            if ((ierr = get_var_desc(varid, &file->varlist, &vdesc)))
                 return pio_err(ios, file, ierr, __FILE__, __LINE__);        
 
             if (vdesc->nreqs%PIO_REQUEST_ALLOC_CHUNK == 0 ){
@@ -118,7 +118,7 @@ int PIOc_put_varm_uchar (int ncid, int varid, const PIO_Offset start[], const PI
             break;
 #ifdef _PNETCDF
         case PIO_IOTYPE_PNETCDF:
-            if ((ierr = get_var_desc(varid, &file->varlist2, &vdesc)))
+            if ((ierr = get_var_desc(varid, &file->varlist, &vdesc)))
                 return pio_err(ios, file, ierr, __FILE__, __LINE__);        
 
             if (vdesc->nreqs%PIO_REQUEST_ALLOC_CHUNK == 0 ){
@@ -188,7 +188,7 @@ int PIOc_put_varm_short (int ncid, int varid, const PIO_Offset start[], const PI
             break;
 #ifdef _PNETCDF
         case PIO_IOTYPE_PNETCDF:
-            if ((ierr = get_var_desc(varid, &file->varlist2, &vdesc)))
+            if ((ierr = get_var_desc(varid, &file->varlist, &vdesc)))
                 return pio_err(ios, file, ierr, __FILE__, __LINE__);        
 
             if (vdesc->nreqs%PIO_REQUEST_ALLOC_CHUNK == 0 ){
@@ -259,7 +259,7 @@ int PIOc_put_varm_text (int ncid, int varid, const PIO_Offset start[], const PIO
             break;
 #ifdef _PNETCDF
         case PIO_IOTYPE_PNETCDF:
-            if ((ierr = get_var_desc(varid, &file->varlist2, &vdesc)))
+            if ((ierr = get_var_desc(varid, &file->varlist, &vdesc)))
                 return pio_err(ios, file, ierr, __FILE__, __LINE__);        
 
             if (vdesc->nreqs%PIO_REQUEST_ALLOC_CHUNK == 0 ){
@@ -331,7 +331,7 @@ int PIOc_put_varm_ushort (int ncid, int varid, const PIO_Offset start[], const P
             break;
 #ifdef _PNETCDF
         case PIO_IOTYPE_PNETCDF:
-            if ((ierr = get_var_desc(varid, &file->varlist2, &vdesc)))
+            if ((ierr = get_var_desc(varid, &file->varlist, &vdesc)))
                 return pio_err(ios, file, ierr, __FILE__, __LINE__);        
 
             if (vdesc->nreqs%PIO_REQUEST_ALLOC_CHUNK == 0 ){
@@ -403,7 +403,7 @@ int PIOc_put_varm_ulonglong (int ncid, int varid, const PIO_Offset start[], cons
             break;
 #ifdef _PNETCDF
         case PIO_IOTYPE_PNETCDF:
-            if ((ierr = get_var_desc(varid, &file->varlist2, &vdesc)))
+            if ((ierr = get_var_desc(varid, &file->varlist, &vdesc)))
                 return pio_err(ios, file, ierr, __FILE__, __LINE__);        
 
             if (vdesc->nreqs%PIO_REQUEST_ALLOC_CHUNK == 0 ){
@@ -474,7 +474,7 @@ int PIOc_put_varm_int (int ncid, int varid, const PIO_Offset start[], const PIO_
             break;
 #ifdef _PNETCDF
         case PIO_IOTYPE_PNETCDF:
-            if ((ierr = get_var_desc(varid, &file->varlist2, &vdesc)))
+            if ((ierr = get_var_desc(varid, &file->varlist, &vdesc)))
                 return pio_err(ios, file, ierr, __FILE__, __LINE__);        
 
             if (vdesc->nreqs%PIO_REQUEST_ALLOC_CHUNK == 0 ){
@@ -546,7 +546,7 @@ int PIOc_put_varm_float (int ncid, int varid, const PIO_Offset start[], const PI
             break;
 #ifdef _PNETCDF
         case PIO_IOTYPE_PNETCDF:
-            if ((ierr = get_var_desc(varid, &file->varlist2, &vdesc)))
+            if ((ierr = get_var_desc(varid, &file->varlist, &vdesc)))
                 return pio_err(ios, file, ierr, __FILE__, __LINE__);        
 
             if (vdesc->nreqs%PIO_REQUEST_ALLOC_CHUNK == 0 ){
@@ -617,7 +617,7 @@ int PIOc_put_varm_long (int ncid, int varid, const PIO_Offset start[], const PIO
             break;
 #ifdef _PNETCDF
         case PIO_IOTYPE_PNETCDF:
-            if ((ierr = get_var_desc(varid, &file->varlist2, &vdesc)))
+            if ((ierr = get_var_desc(varid, &file->varlist, &vdesc)))
                 return pio_err(ios, file, ierr, __FILE__, __LINE__);        
 
             if (vdesc->nreqs%PIO_REQUEST_ALLOC_CHUNK == 0 ){
@@ -690,7 +690,7 @@ int PIOc_put_varm_uint (int ncid, int varid, const PIO_Offset start[], const PIO
             break;
 #ifdef _PNETCDF
         case PIO_IOTYPE_PNETCDF:
-            if ((ierr = get_var_desc(varid, &file->varlist2, &vdesc)))
+            if ((ierr = get_var_desc(varid, &file->varlist, &vdesc)))
                 return pio_err(ios, file, ierr, __FILE__, __LINE__);        
 
             if (vdesc->nreqs%PIO_REQUEST_ALLOC_CHUNK == 0 ){
@@ -762,7 +762,7 @@ int PIOc_put_varm_double (int ncid, int varid, const PIO_Offset start[], const P
             break;
 #ifdef _PNETCDF
         case PIO_IOTYPE_PNETCDF:
-            if ((ierr = get_var_desc(varid, &file->varlist2, &vdesc)))
+            if ((ierr = get_var_desc(varid, &file->varlist, &vdesc)))
                 return pio_err(ios, file, ierr, __FILE__, __LINE__);        
 
             if (vdesc->nreqs%PIO_REQUEST_ALLOC_CHUNK == 0 ){
@@ -833,7 +833,7 @@ int PIOc_put_varm_schar (int ncid, int varid, const PIO_Offset start[], const PI
             break;
 #ifdef _PNETCDF
         case PIO_IOTYPE_PNETCDF:
-            if ((ierr = get_var_desc(varid, &file->varlist2, &vdesc)))
+            if ((ierr = get_var_desc(varid, &file->varlist, &vdesc)))
                 return pio_err(ios, file, ierr, __FILE__, __LINE__);        
 
             if (vdesc->nreqs%PIO_REQUEST_ALLOC_CHUNK == 0 ){
@@ -903,7 +903,7 @@ int PIOc_put_varm_longlong (int ncid, int varid, const PIO_Offset start[], const
             break;
 #ifdef _PNETCDF
         case PIO_IOTYPE_PNETCDF:
-            if ((ierr = get_var_desc(varid, &file->varlist2, &vdesc)))
+            if ((ierr = get_var_desc(varid, &file->varlist, &vdesc)))
                 return pio_err(ios, file, ierr, __FILE__, __LINE__);        
 
             if (vdesc->nreqs%PIO_REQUEST_ALLOC_CHUNK == 0 ){

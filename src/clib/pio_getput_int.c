@@ -1077,7 +1077,7 @@ int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Off
 
                 LOG((2, "PIOc_put_vars_tc calling pnetcdf function"));
                 /*vdesc = &file->varlist[varid];*/
-                if ((ierr = get_var_desc(varid, &file->varlist2, &vdesc)))
+                if ((ierr = get_var_desc(varid, &file->varlist, &vdesc)))
                     return pio_err(ios, file, ierr, __FILE__, __LINE__);        
                 if (vdesc->nreqs % PIO_REQUEST_ALLOC_CHUNK == 0)
                     if (!(vdesc->request = realloc(vdesc->request,

@@ -1724,17 +1724,6 @@ int PIOc_createfile_int(int iosysid, int *ncidp, int *iotype, const char *filena
     file->iosystem = ios;
     file->iotype = *iotype;
     file->buffer.ioid = -1;
-    /* for (int i = 0; i < PIO_MAX_VARS; i++) */
-    /* { */
-    /*     file->varlist[i].record = -1; */
-    /*     file->varlist[i].request = NULL; */
-    /*     file->varlist[i].nreqs = 0; */
-    /*     file->varlist[i].fillvalue = NULL; */
-    /*     file->varlist[i].pio_type = 0; */
-    /*     file->varlist[i].type_size = 0; */
-    /*     file->varlist[i].use_fill = 0; */
-    /*     file->varlist[i].fillbuf = NULL; */
-    /* } */
     file->mode = mode;
 
     /* Set to true if this task should participate in IO (only true for
@@ -1963,9 +1952,6 @@ int PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype, const char *filena
     file->iotype = *iotype;
     file->iosystem = ios;
     file->mode = mode;
-
-    /* for (int i = 0; i < PIO_MAX_VARS; i++) */
-    /*     file->varlist[i].record = -1; */
 
     /* Set to true if this task should participate in IO (only true
      * for one task with netcdf serial files. */
@@ -2226,7 +2212,7 @@ int openfile_int(int iosysid, int *ncidp, int *iotype, const char *filename,
         }
                 
         /* Add to the list of var_desc_t structs for this file. */
-        if ((ierr = add_to_varlist(v, rec_var, &file->varlist2)))
+        if ((ierr = add_to_varlist(v, rec_var, &file->varlist)))
             return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
         file->nvars++;
     }

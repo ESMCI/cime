@@ -278,7 +278,7 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
 
             if ((ret = pio_get_file(ncid, &file)))
                 return ret;
-            if ((ret = get_var_desc(varid, &file->varlist2, &vdesc)))
+            if ((ret = get_var_desc(varid, &file->varlist, &vdesc)))
                 return ret;
             if (vdesc->record != 1)
                 return ERR_WRONG;

@@ -545,13 +545,10 @@ typedef struct file_desc_t
     int iotype;
 
     /** List of variables in this file. */
-    struct var_desc_t *varlist2;
+    struct var_desc_t *varlist;
 
     /** Number of variables. */
     int nvars;
-
-    /** List of variables in this file (deprecated). */
-    /* struct var_desc_t varlist[PIO_MAX_VARS]; */
 
     /** Mode used when file was opened. */
     int mode;
