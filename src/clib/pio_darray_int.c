@@ -193,7 +193,7 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
     int num_regions = fill ? iodesc->maxfillregions: iodesc->maxregions;
     io_region *region = fill ? iodesc->fillregion : iodesc->firstregion;
     PIO_Offset llen = fill ? iodesc->holegridsize : iodesc->llen;
-    void *iobuf = fill ? vdesc->fillbuf : file->iobuf;
+    void *iobuf = fill ? vdesc2->fillbuf : file->iobuf;
 
     /* If this is an IO task write the data. */
     if (ios->ioproc)
@@ -212,7 +212,7 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
         for (int regioncnt = 0; regioncnt < num_regions; regioncnt++)
         {
             /* Fill the start/count arrays. */
-            if ((ierr = find_start_count(iodesc->ndims, fndims, vdesc, region, frame, start, count)))
+            if ((ierr = find_start_count(iodesc->ndims, fndims, vdesc2, region, frame, start, count)))
                 return pio_err(ios, file, ierr, __FILE__, __LINE__);            
 
             /* IO tasks will run the netCDF/pnetcdf functions to write the data. */
@@ -225,7 +225,7 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
                 {
                     /* Set the start of the record dimension. (Hasn't
                      * this already been set above ???) */
-                    if (vdesc->record >= 0 && ndims < fndims)
+                    if (vdesc2->rec_var && ndims < fndims)
                         start[0] = frame[nv];
 
                     /* If there is data for this region, get a pointer to it. */
@@ -286,7 +286,7 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
 
                         /* If this is a record var, set the start for
                          * the record dimension. */
-                        if (vdesc->record >= 0 && ndims < fndims)
+                        if (vdesc2->rec_var && ndims < fndims)
                             for (int rc = 0; rc < rrcnt; rc++)
                                 startlist[rc][0] = frame[nv];
 
@@ -389,7 +389,7 @@ int find_all_start_count(io_region *region, int maxregions, int fndims,
 
         if (region)
         {
-            if (vdesc->record >= 0)
+            if (vdesc->rec_var)
             {
                 /* This is a record based multidimensional
                  * array. Copy start/count for non-record
@@ -719,7 +719,7 @@ int write_darray_multi_serial(file_desc_t *file, int nvars, int fndims, const in
 
         /* Fill the tmp_start and tmp_count arrays, which contain the
          * start and count arrays for all regions. */
-        if ((ierr = find_all_start_count(region, num_regions, fndims, iodesc->ndims, vdesc,
+        if ((ierr = find_all_start_count(region, num_regions, fndims, iodesc->ndims, vdesc2,
                                          tmp_start, tmp_count)))
             return pio_err(ios, file, ierr, __FILE__, __LINE__);
 
