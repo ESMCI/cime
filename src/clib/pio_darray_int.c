@@ -293,27 +293,27 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
                         /* Get a pointer to the data. */
                         bufptr = (void *)((char *)iobuf + nv * iodesc->mpitype_size * llen);
 
-                        if (vdesc->nreqs % PIO_REQUEST_ALLOC_CHUNK == 0)
+                        if (vdesc2->nreqs % PIO_REQUEST_ALLOC_CHUNK == 0)
                         {
-                            if (!(vdesc->request = realloc(vdesc->request, sizeof(int) *
-                                                           (vdesc->nreqs + PIO_REQUEST_ALLOC_CHUNK))))
+                            if (!(vdesc2->request = realloc(vdesc2->request, sizeof(int) *
+                                                           (vdesc2->nreqs + PIO_REQUEST_ALLOC_CHUNK))))
                                 return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
 
-                            for (int i = vdesc->nreqs; i < vdesc->nreqs + PIO_REQUEST_ALLOC_CHUNK; i++)
-                                vdesc->request[i] = NC_REQ_NULL;
+                            for (int i = vdesc2->nreqs; i < vdesc2->nreqs + PIO_REQUEST_ALLOC_CHUNK; i++)
+                                vdesc2->request[i] = NC_REQ_NULL;
                         }
 
                         /* Write, in non-blocking fashion, a list of subarrays. */
                         LOG((3, "about to call ncmpi_iput_varn() varids[%d] = %d rrcnt = %d, llen = %d",
                              nv, varids[nv], rrcnt, llen));
                         ierr = ncmpi_iput_varn(file->fh, varids[nv], rrcnt, startlist, countlist,
-                                               bufptr, llen, iodesc->mpitype, vdesc->request + vdesc->nreqs);
+                                               bufptr, llen, iodesc->mpitype, vdesc2->request + vdesc2->nreqs);
 
                         /* keeps wait calls in sync */
-                        if (vdesc->request[vdesc->nreqs] == NC_REQ_NULL)
-                            vdesc->request[vdesc->nreqs] = PIO_REQ_NULL;
+                        if (vdesc2->request[vdesc2->nreqs] == NC_REQ_NULL)
+                            vdesc2->request[vdesc2->nreqs] = PIO_REQ_NULL;
 
-                        vdesc->nreqs++;
+                        vdesc2->nreqs++;
                     }
 
                     /* Free resources. */
@@ -691,18 +691,15 @@ int write_darray_multi_serial(file_desc_t *file, int nvars, int fndims, const in
 
     /* Get the var info. */
     vdesc = file->varlist + varids[0];
-    LOG((2, "vdesc record %d nreqs %d ios->async = %d", vdesc->record, vdesc->nreqs,
-         ios->async));
     if ((ierr = get_var_desc(varids[0], &file->varlist2, &vdesc2)))
         return pio_err(NULL, file, ierr, __FILE__, __LINE__);
-    
 
     /* Set these differently for data and fill writing. iobuf may be
      * null if array size < number of nodes. */
     int num_regions = fill ? iodesc->maxfillregions: iodesc->maxregions;
     io_region *region = fill ? iodesc->fillregion : iodesc->firstregion;
     PIO_Offset llen = fill ? iodesc->holegridsize : iodesc->llen;
-    void *iobuf = fill ? vdesc->fillbuf : file->iobuf; 
+    void *iobuf = fill ? vdesc2->fillbuf : file->iobuf; 
 
 #ifdef TIMING
     /* Start timing this function. */
@@ -1264,9 +1261,17 @@ int flush_output_buffer(file_desc_t *file, bool force, PIO_Offset addsize)
         maxreq = 0;
         reqcnt = 0;
         rcnt = 0;
-        for (int i = 0; i < PIO_MAX_VARS; i++)
+        /* for (int i = 0; i < PIO_MAX_VARS; i++) */
+        /* { */
+        /*     vdesc = file->varlist + i; */
+        /*     reqcnt += vdesc->nreqs; */
+        /*     if (vdesc->nreqs > 0) */
+        /*         maxreq = i; */
+        /* } */
+        for (int i = 0; i < file->nvars; i++)
         {
-            vdesc = file->varlist + i;
+            if ((ierr = get_var_desc(i, &file->varlist2, &vdesc)))
+                return pio_err(NULL, file, ierr, __FILE__, __LINE__);        
             reqcnt += vdesc->nreqs;
             if (vdesc->nreqs > 0)
                 maxreq = i;
@@ -1276,11 +1281,13 @@ int flush_output_buffer(file_desc_t *file, bool force, PIO_Offset addsize)
 
         for (int i = 0; i <= maxreq; i++)
         {
-            vdesc = file->varlist + i;
+            if ((ierr = get_var_desc(i, &file->varlist2, &vdesc)))
+                return pio_err(NULL, file, ierr, __FILE__, __LINE__);        
+            /* vdesc = file->varlist + i; */
 #ifdef MPIO_ONESIDED
             /*onesided optimization requires that all of the requests in a wait_all call represent
               a contiguous block of data in the file */
-            if (rcnt > 0 && (prev_record != vdesc->record || vdesc->nreqs==0))
+            if (rcnt > 0 && (prev_record != vdesc->record || vdesc->nreqs == 0))
             {
                 ierr = ncmpi_wait_all(file->fh, rcnt, request, status);
                 rcnt = 0;
@@ -1311,15 +1318,15 @@ int flush_output_buffer(file_desc_t *file, bool force, PIO_Offset addsize)
             brel(file->iobuf);
             file->iobuf = NULL;
         }
-        for (int i = 0; i < PIO_MAX_VARS; i++)
-        {
-            vdesc = file->varlist + i;
-            if (vdesc->fillbuf)
-            {
-                brel(vdesc->fillbuf);
-                vdesc->fillbuf = NULL;
-            }
-        }
+        /* for (int i = 0; i < PIO_MAX_VARS; i++) */
+        /* { */
+        /*     vdesc = file->varlist + i; */
+        /*     if (vdesc->fillbuf) */
+        /*     { */
+        /*         brel(vdesc->fillbuf); */
+        /*         vdesc->fillbuf = NULL; */
+        /*     } */
+        /* } */
         for (int v = 0; v < file->nvars; v++)
         {
             if ((ierr = get_var_desc(v, &file->varlist2, &vdesc)))
