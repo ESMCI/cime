@@ -163,7 +163,6 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
                            io_desc_t *iodesc, int fill, const int *frame)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
-    var_desc_t *vdesc;     /* Pointer to var info struct. */
     var_desc_t *vdesc2;    /* Pointer to var info struct. */
     int dsize;             /* Data size (for one region). */
     int ierr = PIO_NOERR;
@@ -185,7 +184,6 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
     ios = file->iosystem;
 
     /* Point to var description scruct for first var. */
-    vdesc = file->varlist + varids[0];
     if ((ierr = get_var_desc(varids[0], &file->varlist2, &vdesc2)))
         return pio_err(NULL, file, ierr, __FILE__, __LINE__);        
 
@@ -279,8 +277,6 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
                     for (int nv = 0; nv < nvars; nv++)
                     {
                         /* Get the var info. */
-                        vdesc = file->varlist + varids[nv];
-                        LOG((3, "getting var_desc_t for varid %d", varids[nv]));
                         if ((ierr = get_var_desc(varids[nv], &file->varlist2, &vdesc2)))
                             return pio_err(NULL, file, ierr, __FILE__, __LINE__);
 
@@ -675,7 +671,6 @@ int write_darray_multi_serial(file_desc_t *file, int nvars, int fndims, const in
                               io_desc_t *iodesc, int fill, const int *frame)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
-    var_desc_t *vdesc;     /* Contains info about the variable. */
     var_desc_t *vdesc2;     /* Contains info about the variable. */
     int ierr;              /* Return code. */
 
@@ -690,7 +685,6 @@ int write_darray_multi_serial(file_desc_t *file, int nvars, int fndims, const in
     ios = file->iosystem;
 
     /* Get the var info. */
-    vdesc = file->varlist + varids[0];
     if ((ierr = get_var_desc(varids[0], &file->varlist2, &vdesc2)))
         return pio_err(NULL, file, ierr, __FILE__, __LINE__);
 
@@ -1261,13 +1255,7 @@ int flush_output_buffer(file_desc_t *file, bool force, PIO_Offset addsize)
         maxreq = 0;
         reqcnt = 0;
         rcnt = 0;
-        /* for (int i = 0; i < PIO_MAX_VARS; i++) */
-        /* { */
-        /*     vdesc = file->varlist + i; */
-        /*     reqcnt += vdesc->nreqs; */
-        /*     if (vdesc->nreqs > 0) */
-        /*         maxreq = i; */
-        /* } */
+
         for (int i = 0; i < file->nvars; i++)
         {
             if ((ierr = get_var_desc(i, &file->varlist2, &vdesc)))
@@ -1318,15 +1306,7 @@ int flush_output_buffer(file_desc_t *file, bool force, PIO_Offset addsize)
             brel(file->iobuf);
             file->iobuf = NULL;
         }
-        /* for (int i = 0; i < PIO_MAX_VARS; i++) */
-        /* { */
-        /*     vdesc = file->varlist + i; */
-        /*     if (vdesc->fillbuf) */
-        /*     { */
-        /*         brel(vdesc->fillbuf); */
-        /*         vdesc->fillbuf = NULL; */
-        /*     } */
-        /* } */
+
         for (int v = 0; v < file->nvars; v++)
         {
             if ((ierr = get_var_desc(v, &file->varlist2, &vdesc)))
