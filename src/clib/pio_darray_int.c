@@ -1007,6 +1007,11 @@ int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc, int vid,
     if (fndims == ndims)
         vdesc->record = -1;
 
+    /* Confirm rec_var setting. */
+    pioassert((fndims == ndims && !vdesc2->rec_var) ||
+              (fndims == ndims + 1 && vdesc2->rec_var),
+              "invalid rec_var", __FILE__, __LINE__);
+
     if (ios->ioproc)
     {
         io_region *region;
@@ -1043,7 +1048,7 @@ int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc, int vid,
             }
             else
             {
-                if (vdesc->record >= 0 && fndims > 1)
+                if (vdesc2->rec_var && fndims > 1)
                 {
                     /* This is a record var. Find start for record dims. */
                     tmp_start[regioncnt * fndims] = vdesc->record;
