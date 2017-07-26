@@ -214,7 +214,8 @@ int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
 
     /* if the buffer is already in use in pnetcdf we need to flush first */
     if (file->iotype == PIO_IOTYPE_PNETCDF && file->iobuf)
-	flush_output_buffer(file, 1, 0);
+        if ((ierr = flush_output_buffer(file, 1, 0)))
+            return pio_err(ios, file, ierr, __FILE__, __LINE__);
 
     pioassert(!file->iobuf, "buffer overwrite",__FILE__, __LINE__);
 
