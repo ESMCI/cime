@@ -98,7 +98,7 @@ int PIOc_open(int iosysid, const char *path, int mode, int *ncidp)
 
     /* Open the file. If the open fails, do not retry as serial
      * netCDF. Just return the error code. */
-    return PIOc_openfile_retry(iosysid, ncidp, &iotype, path, mode, 0);
+    return openfile_int(iosysid, ncidp, &iotype, path, mode, 0);
 }
 
 /**

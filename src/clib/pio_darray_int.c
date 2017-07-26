@@ -973,6 +973,7 @@ int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc, int vid,
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     var_desc_t *vdesc;     /* Information about the variable. */
+    var_desc_t *vdesc2;    /* Information about the variable. */
     int ndims;             /* Number of dims in decomposition. */
     int fndims;            /* Number of dims for this var in file. */
     MPI_Status status;
@@ -983,6 +984,7 @@ int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc, int vid,
     pioassert(file && file->iosystem && iodesc && vid >= 0 && vid <= PIO_MAX_VARS,
               "invalid input", __FILE__, __LINE__);
 
+    LOG((2, "pio_read_darray_nc_serial vid = %d", vid));
 #ifdef TIMING
     /* Start timing this function. */
     GPTLstart("PIO:read_darray_nc_serial");
@@ -991,6 +993,8 @@ int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc, int vid,
 
     /* Get var info for this var. */
     vdesc = file->varlist + vid;
+    if ((ierr = get_var_desc(vid, &file->varlist2, &vdesc2)))
+        return pio_err(NULL, file, ierr, __FILE__, __LINE__);
 
     /* Get the number of dims in our decomposition. */
     ndims = iodesc->ndims;
