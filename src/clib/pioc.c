@@ -155,7 +155,7 @@ int PIOc_advanceframe(int ncid, int varid)
     }
 
     /* Increment the record number. */
-    file->varlist[varid].record++;
+    /* file->varlist[varid].record++; */
     vdesc->record++;
     
     return PIO_NOERR;
@@ -222,7 +222,7 @@ int PIOc_setframe(int ncid, int varid, int frame)
 
     /* Set the record dimension value for this variable. This will be
      * used by the write_darray functions. */
-    file->varlist[varid].record = frame;
+    /* file->varlist[varid].record = frame; */
     vdesc->record = frame;
 
     return PIO_NOERR;

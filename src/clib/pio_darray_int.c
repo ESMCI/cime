@@ -669,11 +669,11 @@ int write_darray_multi_serial(file_desc_t *file, int nvars, int fndims, const in
                               io_desc_t *iodesc, int fill, const int *frame)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
-    var_desc_t *vdesc2;     /* Contains info about the variable. */
+    var_desc_t *vdesc;     /* Contains info about the variable. */
     int ierr;              /* Return code. */
 
     /* Check inputs. */
-    pioassert(file && file->iosystem && file->varlist && varids && varids[0] >= 0 &&
+    pioassert(file && file->iosystem && varids && varids[0] >= 0 &&
               varids[0] <= PIO_MAX_VARS && iodesc, "invalid input", __FILE__, __LINE__);
 
     LOG((1, "write_darray_multi_serial nvars = %d fndims = %d iodesc->ndims = %d "
@@ -683,7 +683,7 @@ int write_darray_multi_serial(file_desc_t *file, int nvars, int fndims, const in
     ios = file->iosystem;
 
     /* Get the var info. */
-    if ((ierr = get_var_desc(varids[0], &file->varlist2, &vdesc2)))
+    if ((ierr = get_var_desc(varids[0], &file->varlist2, &vdesc)))
         return pio_err(NULL, file, ierr, __FILE__, __LINE__);
 
     /* Set these differently for data and fill writing. iobuf may be
@@ -691,7 +691,7 @@ int write_darray_multi_serial(file_desc_t *file, int nvars, int fndims, const in
     int num_regions = fill ? iodesc->maxfillregions: iodesc->maxregions;
     io_region *region = fill ? iodesc->fillregion : iodesc->firstregion;
     PIO_Offset llen = fill ? iodesc->holegridsize : iodesc->llen;
-    void *iobuf = fill ? vdesc2->fillbuf : file->iobuf; 
+    void *iobuf = fill ? vdesc->fillbuf : file->iobuf; 
 
 #ifdef TIMING
     /* Start timing this function. */
@@ -708,7 +708,7 @@ int write_darray_multi_serial(file_desc_t *file, int nvars, int fndims, const in
 
         /* Fill the tmp_start and tmp_count arrays, which contain the
          * start and count arrays for all regions. */
-        if ((ierr = find_all_start_count(region, num_regions, fndims, iodesc->ndims, vdesc2,
+        if ((ierr = find_all_start_count(region, num_regions, fndims, iodesc->ndims, vdesc,
                                          tmp_start, tmp_count)))
             return pio_err(ios, file, ierr, __FILE__, __LINE__);
 
@@ -760,7 +760,7 @@ int write_darray_multi_serial(file_desc_t *file, int nvars, int fndims, const in
 int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid, void *iobuf)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
-    var_desc_t *vdesc2;     /* Information about the variable. */
+    var_desc_t *vdesc;     /* Information about the variable. */
     int ndims;             /* Number of dims in decomposition. */
     int fndims;            /* Number of dims for this var in file. */
     int ierr;              /* Return code from netCDF functions. */
@@ -778,7 +778,7 @@ int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid, void *iobu
     ios = file->iosystem;
 
     /* Get the variable info. */
-    if ((ierr = get_var_desc(vid, &file->varlist2, &vdesc2)))
+    if ((ierr = get_var_desc(vid, &file->varlist2, &vdesc)))
         return pio_err(NULL, file, ierr, __FILE__, __LINE__);
 
     /* Get the number of dimensions in the decomposition. */
@@ -836,11 +836,11 @@ int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid, void *iobu
                 LOG((2, "%d %d %d", iodesc->llen - region->loffset, iodesc->llen, region->loffset));
 
                 /* Get the start/count arrays. */
-                if (vdesc2->rec_var && fndims > 1)
+                if (vdesc->rec_var && fndims > 1)
                 {
                     /* This is a record var. The unlimited dimension
                      * (0) is handled specially. */
-                    start[0] = vdesc2->record;
+                    start[0] = vdesc->record;
                     for (int i = 1; i < ndims; i++)
                     {
                         start[i] = region->start[i-1];
@@ -953,7 +953,7 @@ int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc, int vid,
                               void *iobuf)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
-    var_desc_t *vdesc2;    /* Information about the variable. */
+    var_desc_t *vdesc;    /* Information about the variable. */
     int ndims;             /* Number of dims in decomposition. */
     int fndims;            /* Number of dims for this var in file. */
     MPI_Status status;
@@ -972,7 +972,7 @@ int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc, int vid,
     ios = file->iosystem;
 
     /* Get var info for this var. */
-    if ((ierr = get_var_desc(vid, &file->varlist2, &vdesc2)))
+    if ((ierr = get_var_desc(vid, &file->varlist2, &vdesc)))
         return pio_err(NULL, file, ierr, __FILE__, __LINE__);
 
     /* Get the number of dims in our decomposition. */
@@ -983,8 +983,8 @@ int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc, int vid,
         return pio_err(ios, file, ierr, __FILE__, __LINE__);
 
     /* Confirm rec_var setting. */
-    pioassert((fndims == ndims && !vdesc2->rec_var) ||
-              (fndims == ndims + 1 && vdesc2->rec_var),
+    pioassert((fndims == ndims && !vdesc->rec_var) ||
+              (fndims == ndims + 1 && vdesc->rec_var),
               "invalid rec_var", __FILE__, __LINE__);
 
     if (ios->ioproc)
@@ -1017,10 +1017,10 @@ int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc, int vid,
             }
             else
             {
-                if (vdesc2->rec_var && fndims > 1)
+                if (vdesc->rec_var && fndims > 1)
                 {
                     /* This is a record var. Find start for record dims. */
-                    tmp_start[regioncnt * fndims] = vdesc2->record;
+                    tmp_start[regioncnt * fndims] = vdesc->record;
 
                     /* Find start/count for all non-record dims. */
                     for (int i = 1; i < fndims; i++)

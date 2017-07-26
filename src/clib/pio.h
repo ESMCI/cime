@@ -551,7 +551,7 @@ typedef struct file_desc_t
     int nvars;
 
     /** List of variables in this file (deprecated). */
-    struct var_desc_t varlist[PIO_MAX_VARS];
+    /* struct var_desc_t varlist[PIO_MAX_VARS]; */
 
     /** Mode used when file was opened. */
     int mode;

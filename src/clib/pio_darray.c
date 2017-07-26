@@ -108,7 +108,7 @@ int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
     file_desc_t *file;     /* Pointer to file information. */
     io_desc_t *iodesc;     /* Pointer to IO description information. */
     int rlen;              /* Total data buffer size. */
-    var_desc_t *vdesc0;    /* Array of var_desc structure for each var. */
+    /* var_desc_t *vdesc0;    /\* Array of var_desc structure for each var. *\/ */
     var_desc_t *vdesc0_2;  /* First entry in array of var_desc structure for each var. */
     int fndims;            /* Number of dims in the var in the file. */
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function calls. */
@@ -141,7 +141,7 @@ int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
               "unknown rearranger", __FILE__, __LINE__);
 
     /* Get a pointer to the variable info for the first variable. */
-    vdesc0 = &file->varlist[varids[0]];
+    /* vdesc0 = &file->varlist[varids[0]]; */
     if ((ierr = get_var_desc(varids[0], &file->varlist2, &vdesc0_2)))
         return pio_err(ios, file, ierr, __FILE__, __LINE__);        
 
@@ -310,14 +310,14 @@ int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
         LOG((2, "nvars = %d holegridsize = %ld iodesc->needsfill = %d\n", nvars,
              iodesc->holegridsize, iodesc->needsfill));
 
-	pioassert(!vdesc0->fillbuf, "buffer overwrite",__FILE__, __LINE__);
+	/* pioassert(!vdesc0->fillbuf, "buffer overwrite",__FILE__, __LINE__); */
 	pioassert(!vdesc0_2->fillbuf, "buffer overwrite",__FILE__, __LINE__);
 
         /* Get a buffer. */
-	if (ios->io_rank == 0)
-	    vdesc0->fillbuf = bget(iodesc->maxholegridsize * iodesc->mpitype_size * nvars);
-	else if (iodesc->holegridsize > 0)
-	    vdesc0->fillbuf = bget(iodesc->holegridsize * iodesc->mpitype_size * nvars);
+	/* if (ios->io_rank == 0) */
+	/*     vdesc0->fillbuf = bget(iodesc->maxholegridsize * iodesc->mpitype_size * nvars); */
+	/* else if (iodesc->holegridsize > 0) */
+	/*     vdesc0->fillbuf = bget(iodesc->holegridsize * iodesc->mpitype_size * nvars); */
 	if (ios->io_rank == 0)
 	    vdesc0_2->fillbuf = bget(iodesc->maxholegridsize * iodesc->mpitype_size * nvars);
 	else if (iodesc->holegridsize > 0)
@@ -326,10 +326,10 @@ int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
         /* copying the fill value into the data buffer for the box
          * rearranger. This will be overwritten with data where
          * provided. */
-        for (int nv = 0; nv < nvars; nv++)
-            for (int i = 0; i < iodesc->holegridsize; i++)
-                memcpy(&((char *)vdesc0->fillbuf)[iodesc->mpitype_size * (i + nv * iodesc->holegridsize)],
-                       &((char *)fillvalue)[iodesc->mpitype_size * nv], iodesc->mpitype_size);
+        /* for (int nv = 0; nv < nvars; nv++) */
+        /*     for (int i = 0; i < iodesc->holegridsize; i++) */
+        /*         memcpy(&((char *)vdesc0->fillbuf)[iodesc->mpitype_size * (i + nv * iodesc->holegridsize)], */
+        /*                &((char *)fillvalue)[iodesc->mpitype_size * nv], iodesc->mpitype_size); */
         for (int nv = 0; nv < nvars; nv++)
             for (int i = 0; i < iodesc->holegridsize; i++)
                 memcpy(&((char *)vdesc0_2->fillbuf)[iodesc->mpitype_size * (i + nv * iodesc->holegridsize)],
@@ -358,11 +358,11 @@ int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
         if (file->iotype != PIO_IOTYPE_PNETCDF)
         {
             /* Free resources. */
-            if (vdesc0->fillbuf)
-            {
-                brel(vdesc0->fillbuf);
-                vdesc0->fillbuf = NULL;
-            }
+            /* if (vdesc0->fillbuf) */
+            /* { */
+            /*     brel(vdesc0->fillbuf); */
+            /*     vdesc0->fillbuf = NULL; */
+            /* } */
             if (vdesc0_2->fillbuf)
             {
                 brel(vdesc0_2->fillbuf);
@@ -478,7 +478,6 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Info about file we are writing to. */
     io_desc_t *iodesc;     /* The IO description. */
-    var_desc_t *vdesc;     /* Info about the var being written. */
     var_desc_t *vdesc2;    /* Info about the var being written. */
     void *bufptr;          /* A data buffer. */
     MPI_Datatype vtype;    /* The MPI type of the variable. */
@@ -521,7 +520,6 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
          arraylen, iodesc->ndof));
 
     /* Get var description. */
-    vdesc = &(file->varlist[varid]);
     if ((ierr = get_var_desc(varid, &file->varlist2, &vdesc2)))
         return pio_err(ios, file, ierr, __FILE__, __LINE__);        
 
@@ -533,7 +531,8 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
     /* Is this a record variable? The user must set the vdesc->record
      * value by calling PIOc_setframe() before calling this
      * function. */
-    recordvar = vdesc->record >= 0 ? 1 : 0;
+    /* recordvar = vdesc->record >= 0 ? 1 : 0; */
+    recordvar = vdesc2->rec_var;
     LOG((3, "recordvar = %d looking for multibuffer", recordvar));
 
     /* Move to end of list or the entry that matches this ioid. */
@@ -648,7 +647,7 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
     /* wmb->frame is the record number, we assume that the variables
      * in the wmb list may not all have the same unlimited dimension
      * value although they usually do. */
-    if (vdesc->record >= 0)
+    if (vdesc2->rec_var)
         if (!(wmb->frame = bgetr(wmb->frame, sizeof(int) * (1 + wmb->num_arrays))))
             return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
 
@@ -742,7 +741,7 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
     /* Add the unlimited dimension value of this variable to the frame
      * array in wmb. */
     if (wmb->frame)
-        wmb->frame[wmb->num_arrays] = vdesc->record;
+        wmb->frame[wmb->num_arrays] = vdesc2->record;
     wmb->num_arrays++;
 
     LOG((2, "wmb->num_arrays = %d iodesc->maxbytes / iodesc->mpitype_size = %d "

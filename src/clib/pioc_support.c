@@ -1724,17 +1724,17 @@ int PIOc_createfile_int(int iosysid, int *ncidp, int *iotype, const char *filena
     file->iosystem = ios;
     file->iotype = *iotype;
     file->buffer.ioid = -1;
-    for (int i = 0; i < PIO_MAX_VARS; i++)
-    {
-        file->varlist[i].record = -1;
-        file->varlist[i].request = NULL;
-        file->varlist[i].nreqs = 0;
-        file->varlist[i].fillvalue = NULL;
-        file->varlist[i].pio_type = 0;
-        file->varlist[i].type_size = 0;
-        file->varlist[i].use_fill = 0;
-        file->varlist[i].fillbuf = NULL;
-    }
+    /* for (int i = 0; i < PIO_MAX_VARS; i++) */
+    /* { */
+    /*     file->varlist[i].record = -1; */
+    /*     file->varlist[i].request = NULL; */
+    /*     file->varlist[i].nreqs = 0; */
+    /*     file->varlist[i].fillvalue = NULL; */
+    /*     file->varlist[i].pio_type = 0; */
+    /*     file->varlist[i].type_size = 0; */
+    /*     file->varlist[i].use_fill = 0; */
+    /*     file->varlist[i].fillbuf = NULL; */
+    /* } */
     file->mode = mode;
 
     /* Set to true if this task should participate in IO (only true for
@@ -1964,8 +1964,8 @@ int PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype, const char *filena
     file->iosystem = ios;
     file->mode = mode;
 
-    for (int i = 0; i < PIO_MAX_VARS; i++)
-        file->varlist[i].record = -1;
+    /* for (int i = 0; i < PIO_MAX_VARS; i++) */
+    /*     file->varlist[i].record = -1; */
 
     /* Set to true if this task should participate in IO (only true
      * for one task with netcdf serial files. */
