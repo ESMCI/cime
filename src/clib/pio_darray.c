@@ -109,6 +109,7 @@ int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
     io_desc_t *iodesc;     /* Pointer to IO description information. */
     int rlen;              /* Total data buffer size. */
     var_desc_t *vdesc0;    /* Array of var_desc structure for each var. */
+    var_desc_t *vdesc0_2;  /* First entry in array of var_desc structure for each var. */
     int fndims;            /* Number of dims in the var in the file. */
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function calls. */
     int ierr;              /* Return code. */
@@ -141,6 +142,8 @@ int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
 
     /* Get a pointer to the variable info for the first variable. */
     vdesc0 = &file->varlist[varids[0]];
+    if ((ierr = get_var_desc(varids[0], &file->varlist2, &vdesc0_2)))
+        return pio_err(ios, file, ierr, __FILE__, __LINE__);        
 
     /* Run these on all tasks if async is not in use, but only on
      * non-IO tasks if async is in use. */
@@ -307,12 +310,17 @@ int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
              iodesc->holegridsize, iodesc->needsfill));
 
 	pioassert(!vdesc0->fillbuf, "buffer overwrite",__FILE__, __LINE__);
+	pioassert(!vdesc0_2->fillbuf, "buffer overwrite",__FILE__, __LINE__);
 
         /* Get a buffer. */
 	if (ios->io_rank == 0)
 	    vdesc0->fillbuf = bget(iodesc->maxholegridsize * iodesc->mpitype_size * nvars);
 	else if (iodesc->holegridsize > 0)
 	    vdesc0->fillbuf = bget(iodesc->holegridsize * iodesc->mpitype_size * nvars);
+	if (ios->io_rank == 0)
+	    vdesc0_2->fillbuf = bget(iodesc->maxholegridsize * iodesc->mpitype_size * nvars);
+	else if (iodesc->holegridsize > 0)
+	    vdesc0_2->fillbuf = bget(iodesc->holegridsize * iodesc->mpitype_size * nvars);
 
         /* copying the fill value into the data buffer for the box
          * rearranger. This will be overwritten with data where
@@ -320,6 +328,10 @@ int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
         for (int nv = 0; nv < nvars; nv++)
             for (int i = 0; i < iodesc->holegridsize; i++)
                 memcpy(&((char *)vdesc0->fillbuf)[iodesc->mpitype_size * (i + nv * iodesc->holegridsize)],
+                       &((char *)fillvalue)[iodesc->mpitype_size * nv], iodesc->mpitype_size);
+        for (int nv = 0; nv < nvars; nv++)
+            for (int i = 0; i < iodesc->holegridsize; i++)
+                memcpy(&((char *)vdesc0_2->fillbuf)[iodesc->mpitype_size * (i + nv * iodesc->holegridsize)],
                        &((char *)fillvalue)[iodesc->mpitype_size * nv], iodesc->mpitype_size);
 
         /* Write the darray based on the iotype. */
@@ -349,6 +361,11 @@ int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
             {
                 brel(vdesc0->fillbuf);
                 vdesc0->fillbuf = NULL;
+            }
+            if (vdesc0_2->fillbuf)
+            {
+                brel(vdesc0_2->fillbuf);
+                vdesc0_2->fillbuf = NULL;
             }
         }
     }
