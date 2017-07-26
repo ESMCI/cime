@@ -163,7 +163,7 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
                            io_desc_t *iodesc, int fill, const int *frame)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
-    var_desc_t *vdesc2;    /* Pointer to var info struct. */
+    var_desc_t *vdesc;    /* Pointer to var info struct. */
     int dsize;             /* Data size (for one region). */
     int ierr = PIO_NOERR;
 
@@ -184,14 +184,14 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
     ios = file->iosystem;
 
     /* Point to var description scruct for first var. */
-    if ((ierr = get_var_desc(varids[0], &file->varlist2, &vdesc2)))
+    if ((ierr = get_var_desc(varids[0], &file->varlist2, &vdesc)))
         return pio_err(NULL, file, ierr, __FILE__, __LINE__);        
 
     /* Set these differently for data and fill writing. */
     int num_regions = fill ? iodesc->maxfillregions: iodesc->maxregions;
     io_region *region = fill ? iodesc->fillregion : iodesc->firstregion;
     PIO_Offset llen = fill ? iodesc->holegridsize : iodesc->llen;
-    void *iobuf = fill ? vdesc2->fillbuf : file->iobuf;
+    void *iobuf = fill ? vdesc->fillbuf : file->iobuf;
 
     /* If this is an IO task write the data. */
     if (ios->ioproc)
@@ -210,7 +210,7 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
         for (int regioncnt = 0; regioncnt < num_regions; regioncnt++)
         {
             /* Fill the start/count arrays. */
-            if ((ierr = find_start_count(iodesc->ndims, fndims, vdesc2, region, frame, start, count)))
+            if ((ierr = find_start_count(iodesc->ndims, fndims, vdesc, region, frame, start, count)))
                 return pio_err(ios, file, ierr, __FILE__, __LINE__);            
 
             /* IO tasks will run the netCDF/pnetcdf functions to write the data. */
@@ -223,7 +223,7 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
                 {
                     /* Set the start of the record dimension. (Hasn't
                      * this already been set above ???) */
-                    if (vdesc2->rec_var && ndims < fndims)
+                    if (vdesc->rec_var && ndims < fndims)
                         start[0] = frame[nv];
 
                     /* If there is data for this region, get a pointer to it. */
@@ -277,39 +277,39 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
                     for (int nv = 0; nv < nvars; nv++)
                     {
                         /* Get the var info. */
-                        if ((ierr = get_var_desc(varids[nv], &file->varlist2, &vdesc2)))
+                        if ((ierr = get_var_desc(varids[nv], &file->varlist2, &vdesc)))
                             return pio_err(NULL, file, ierr, __FILE__, __LINE__);
 
                         /* If this is a record var, set the start for
                          * the record dimension. */
-                        if (vdesc2->rec_var && ndims < fndims)
+                        if (vdesc->rec_var && ndims < fndims)
                             for (int rc = 0; rc < rrcnt; rc++)
                                 startlist[rc][0] = frame[nv];
 
                         /* Get a pointer to the data. */
                         bufptr = (void *)((char *)iobuf + nv * iodesc->mpitype_size * llen);
 
-                        if (vdesc2->nreqs % PIO_REQUEST_ALLOC_CHUNK == 0)
+                        if (vdesc->nreqs % PIO_REQUEST_ALLOC_CHUNK == 0)
                         {
-                            if (!(vdesc2->request = realloc(vdesc2->request, sizeof(int) *
-                                                           (vdesc2->nreqs + PIO_REQUEST_ALLOC_CHUNK))))
+                            if (!(vdesc->request = realloc(vdesc->request, sizeof(int) *
+                                                           (vdesc->nreqs + PIO_REQUEST_ALLOC_CHUNK))))
                                 return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
 
-                            for (int i = vdesc2->nreqs; i < vdesc2->nreqs + PIO_REQUEST_ALLOC_CHUNK; i++)
-                                vdesc2->request[i] = NC_REQ_NULL;
+                            for (int i = vdesc->nreqs; i < vdesc->nreqs + PIO_REQUEST_ALLOC_CHUNK; i++)
+                                vdesc->request[i] = NC_REQ_NULL;
                         }
 
                         /* Write, in non-blocking fashion, a list of subarrays. */
                         LOG((3, "about to call ncmpi_iput_varn() varids[%d] = %d rrcnt = %d, llen = %d",
                              nv, varids[nv], rrcnt, llen));
                         ierr = ncmpi_iput_varn(file->fh, varids[nv], rrcnt, startlist, countlist,
-                                               bufptr, llen, iodesc->mpitype, vdesc2->request + vdesc2->nreqs);
+                                               bufptr, llen, iodesc->mpitype, vdesc->request + vdesc->nreqs);
 
                         /* keeps wait calls in sync */
-                        if (vdesc2->request[vdesc2->nreqs] == NC_REQ_NULL)
-                            vdesc2->request[vdesc2->nreqs] = PIO_REQ_NULL;
+                        if (vdesc->request[vdesc->nreqs] == NC_REQ_NULL)
+                            vdesc->request[vdesc->nreqs] = PIO_REQ_NULL;
 
-                        vdesc2->nreqs++;
+                        vdesc->nreqs++;
                     }
 
                     /* Free resources. */
@@ -521,7 +521,6 @@ int recv_and_write_data(file_desc_t *file, const int *varids, const int *frame,
     size_t start[fndims], count[fndims];
     size_t loffset;
     void *bufptr;
-    var_desc_t *vdesc;     /* Contains info about the variable. */
     var_desc_t *vdesc2;    /* Contains info about the variable. */
     MPI_Status status;     /* Recv status for MPI. */
     int mpierr;  /* Return code from MPI function codes. */
@@ -602,7 +601,6 @@ int recv_and_write_data(file_desc_t *file, const int *varids, const int *frame,
                 for (int nv = 0; nv < nvars; nv++)
                 {
                     LOG((3, "writing buffer var %d", nv));
-                    vdesc = file->varlist + varids[0];
                     if ((ierr = get_var_desc(varids[0], &file->varlist2, &vdesc2)))
                         return pio_err(NULL, file, ierr, __FILE__, __LINE__);
 
@@ -612,7 +610,7 @@ int recv_and_write_data(file_desc_t *file, const int *varids, const int *frame,
                     /* If this var has an unlimited dim, set
                      * the start on that dim to the frame
                      * value for this variable. */
-                    if (vdesc->record >= 0)
+                    if (vdesc2->rec_var)
                     {
                         if (fndims > 1 && iodesc->ndims < fndims && count[1] > 0)
                         {
@@ -621,7 +619,7 @@ int recv_and_write_data(file_desc_t *file, const int *varids, const int *frame,
                         }
                         else if (fndims == iodesc->ndims)
                         {
-                            start[0] += vdesc->record;
+                            start[0] += vdesc2->record;
                         }
                     }
 
@@ -762,7 +760,6 @@ int write_darray_multi_serial(file_desc_t *file, int nvars, int fndims, const in
 int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid, void *iobuf)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
-    var_desc_t *vdesc;     /* Information about the variable. */
     var_desc_t *vdesc2;     /* Information about the variable. */
     int ndims;             /* Number of dims in decomposition. */
     int fndims;            /* Number of dims for this var in file. */
@@ -781,7 +778,6 @@ int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid, void *iobu
     ios = file->iosystem;
 
     /* Get the variable info. */
-    vdesc = file->varlist + vid;
     if ((ierr = get_var_desc(vid, &file->varlist2, &vdesc2)))
         return pio_err(NULL, file, ierr, __FILE__, __LINE__);
 
@@ -791,10 +787,6 @@ int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid, void *iobu
     /* Get the number of dims for this var in the file. */
     if ((ierr = PIOc_inq_varndims(file->pio_ncid, vid, &fndims)))
         return pio_err(ios, file, ierr, __FILE__, __LINE__);
-
-    /* Is this a non-record var? */
-    if (fndims == ndims)
-        vdesc->record = -1;
 
     /* IO procs will actially read the data. */
     if (ios->ioproc)
@@ -817,8 +809,6 @@ int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid, void *iobu
         if (fndims > ndims)
         {
             ndims++;
-            if (vdesc->record < 0)
-                vdesc->record = 0;
         }
 
         /* For each regions, read the data. */
@@ -846,11 +836,11 @@ int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid, void *iobu
                 LOG((2, "%d %d %d", iodesc->llen - region->loffset, iodesc->llen, region->loffset));
 
                 /* Get the start/count arrays. */
-                if (vdesc->record >= 0 && fndims > 1)
+                if (vdesc2->rec_var && fndims > 1)
                 {
                     /* This is a record var. The unlimited dimension
                      * (0) is handled specially. */
-                    start[0] = vdesc->record;
+                    start[0] = vdesc2->record;
                     for (int i = 1; i < ndims; i++)
                     {
                         start[i] = region->start[i-1];
@@ -963,7 +953,6 @@ int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc, int vid,
                               void *iobuf)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
-    var_desc_t *vdesc;     /* Information about the variable. */
     var_desc_t *vdesc2;    /* Information about the variable. */
     int ndims;             /* Number of dims in decomposition. */
     int fndims;            /* Number of dims for this var in file. */
@@ -983,7 +972,6 @@ int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc, int vid,
     ios = file->iosystem;
 
     /* Get var info for this var. */
-    vdesc = file->varlist + vid;
     if ((ierr = get_var_desc(vid, &file->varlist2, &vdesc2)))
         return pio_err(NULL, file, ierr, __FILE__, __LINE__);
 
@@ -993,10 +981,6 @@ int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc, int vid,
     /* Get number of dims for this var. */
     if ((ierr = PIOc_inq_varndims(file->pio_ncid, vid, &fndims)))
         return pio_err(ios, file, ierr, __FILE__, __LINE__);
-
-    /* Is this a non-record var? */
-    if (fndims == ndims)
-        vdesc->record = -1;
 
     /* Confirm rec_var setting. */
     pioassert((fndims == ndims && !vdesc2->rec_var) ||
@@ -1018,12 +1002,6 @@ int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc, int vid,
            the mpitype. */
         region = iodesc->firstregion;
 
-        if (fndims > ndims)
-        {
-            if (vdesc->record < 0)
-                vdesc->record = 0;
-        }
-
         /* Put together start/count arrays for all regions. */
         for (int regioncnt = 0; regioncnt < iodesc->maxregions; regioncnt++)
         {
@@ -1042,7 +1020,7 @@ int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc, int vid,
                 if (vdesc2->rec_var && fndims > 1)
                 {
                     /* This is a record var. Find start for record dims. */
-                    tmp_start[regioncnt * fndims] = vdesc->record;
+                    tmp_start[regioncnt * fndims] = vdesc2->record;
 
                     /* Find start/count for all non-record dims. */
                     for (int i = 1; i < fndims; i++)
@@ -1271,7 +1249,6 @@ int flush_output_buffer(file_desc_t *file, bool force, PIO_Offset addsize)
         {
             if ((ierr = get_var_desc(i, &file->varlist2, &vdesc)))
                 return pio_err(NULL, file, ierr, __FILE__, __LINE__);        
-            /* vdesc = file->varlist + i; */
 #ifdef MPIO_ONESIDED
             /*onesided optimization requires that all of the requests in a wait_all call represent
               a contiguous block of data in the file */
