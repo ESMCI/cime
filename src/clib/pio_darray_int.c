@@ -98,7 +98,7 @@ int find_start_count(int ndims, int fndims, var_desc_t *vdesc,
 
     if (region)
     {
-        if (vdesc->record >= 0)
+        if (vdesc->rec_var)
         {
             /* This is a record based multidimensional
              * array. Figure out start/count for all but the
