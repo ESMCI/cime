@@ -506,12 +506,10 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
     vdesc = &(file->varlist[varid]);
     if ((ierr = get_var_desc(varid, &file->varlist2, &vdesc2)))
         return pio_err(ios, file, ierr, __FILE__, __LINE__);        
-    LOG((2, "vdesc record %d nreqs %d vdesc2->rec_var %d", vdesc->record,
-         vdesc->nreqs, vdesc2->rec_var));
 
     /* If we don't know the fill value for this var, get it. */
-    if (!vdesc->fillvalue)
-        if ((ierr = find_var_fillvalue(file, varid, vdesc)))
+    if (!vdesc2->fillvalue)
+        if ((ierr = find_var_fillvalue(file, varid, vdesc2)))
             return pio_err(ios, file, PIO_EBADID, __FILE__, __LINE__);            
 
     /* Is this a record variable? The user must set the vdesc->record

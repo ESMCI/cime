@@ -547,6 +547,9 @@ typedef struct file_desc_t
     /** List of variables in this file. */
     struct var_desc_t *varlist2;
 
+    /** Number of variables. */
+    int nvars;
+
     /** List of variables in this file (deprecated). */
     struct var_desc_t varlist[PIO_MAX_VARS];
 
