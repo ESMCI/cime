@@ -172,7 +172,7 @@ class EnvBatch(EnvBase):
 
         self.pedocumentation = ""
         self.job_id = case.get_value("CASE") + os.path.splitext(job)[1]
-        if "pleiades" in case.get_value("MACH"):
+        if "pleiades" or "vilje" in case.get_value("MACH"):
             # pleiades jobname needs to be limited to 15 chars
             self.job_id = self.job_id[:15]
         self.output_error_path = self.job_id
@@ -258,7 +258,9 @@ class EnvBatch(EnvBase):
                     elif default is not None:
                         directive = transform_vars(directive, default=default)
                     result.append("{} {}".format(directive_prefix, directive))
-
+                if "fram" in case.get_value("MACH") and job == "case.st_archive":
+                    directive = "--qos=preproc"
+                    result.append("{} {}".format(directive_prefix, directive))
         return "\n".join(result)
 
     def get_submit_args(self, case, job):
