@@ -164,6 +164,7 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     var_desc_t *vdesc;     /* Pointer to var info struct. */
+    var_desc_t *vdesc2;    /* Pointer to var info struct. */
     int dsize;             /* Data size (for one region). */
     int ierr = PIO_NOERR;
 
@@ -185,6 +186,8 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
 
     /* Point to var description scruct for first var. */
     vdesc = file->varlist + varids[0];
+    if ((ierr = get_var_desc(varids[0], &file->varlist2, &vdesc2)))
+        return pio_err(NULL, file, ierr, __FILE__, __LINE__);        
 
     /* Set these differently for data and fill writing. */
     int num_regions = fill ? iodesc->maxfillregions: iodesc->maxregions;
@@ -277,6 +280,9 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
                     {
                         /* Get the var info. */
                         vdesc = file->varlist + varids[nv];
+                        LOG((3, "getting var_desc_t for varid %d", varids[nv]));
+                        if ((ierr = get_var_desc(varids[nv], &file->varlist2, &vdesc2)))
+                            return pio_err(NULL, file, ierr, __FILE__, __LINE__);
 
                         /* If this is a record var, set the start for
                          * the record dimension. */
@@ -520,6 +526,7 @@ int recv_and_write_data(file_desc_t *file, const int *varids, const int *frame,
     size_t loffset;
     void *bufptr;
     var_desc_t *vdesc;     /* Contains info about the variable. */
+    var_desc_t *vdesc2;    /* Contains info about the variable. */
     MPI_Status status;     /* Recv status for MPI. */
     int mpierr;  /* Return code from MPI function codes. */
     int ierr;    /* Return code. */
@@ -600,6 +607,8 @@ int recv_and_write_data(file_desc_t *file, const int *varids, const int *frame,
                 {
                     LOG((3, "writing buffer var %d", nv));
                     vdesc = file->varlist + varids[0];
+                    if ((ierr = get_var_desc(varids[0], &file->varlist2, &vdesc2)))
+                        return pio_err(NULL, file, ierr, __FILE__, __LINE__);
 
                     /* Get a pointer to the correct part of the buffer. */
                     bufptr = (void *)((char *)iobuf + iodesc->mpitype_size * (nv * rlen + loffset));
@@ -667,6 +676,7 @@ int write_darray_multi_serial(file_desc_t *file, int nvars, int fndims, const in
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     var_desc_t *vdesc;     /* Contains info about the variable. */
+    var_desc_t *vdesc2;     /* Contains info about the variable. */
     int ierr;              /* Return code. */
 
     /* Check inputs. */
@@ -683,6 +693,9 @@ int write_darray_multi_serial(file_desc_t *file, int nvars, int fndims, const in
     vdesc = file->varlist + varids[0];
     LOG((2, "vdesc record %d nreqs %d ios->async = %d", vdesc->record, vdesc->nreqs,
          ios->async));
+    if ((ierr = get_var_desc(varids[0], &file->varlist2, &vdesc2)))
+        return pio_err(NULL, file, ierr, __FILE__, __LINE__);
+    
 
     /* Set these differently for data and fill writing. iobuf may be
      * null if array size < number of nodes. */
@@ -759,6 +772,7 @@ int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid, void *iobu
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     var_desc_t *vdesc;     /* Information about the variable. */
+    var_desc_t *vdesc2;     /* Information about the variable. */
     int ndims;             /* Number of dims in decomposition. */
     int fndims;            /* Number of dims for this var in file. */
     int ierr;              /* Return code from netCDF functions. */
@@ -777,6 +791,8 @@ int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid, void *iobu
 
     /* Get the variable info. */
     vdesc = file->varlist + vid;
+    if ((ierr = get_var_desc(vid, &file->varlist2, &vdesc2)))
+        return pio_err(NULL, file, ierr, __FILE__, __LINE__);
 
     /* Get the number of dimensions in the decomposition. */
     ndims = iodesc->ndims;
