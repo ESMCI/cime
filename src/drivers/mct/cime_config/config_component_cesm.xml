@@ -94,7 +94,7 @@
 
   <entry id="CCSM_BGC">
     <type>char</type>
-    <valid_values>none,CO2A,CO2B,CO2C</valid_values>
+    <valid_values>none,CO2A,CO2B,CO2C,CO2_DMSA,CO2_DMSB</valid_values>
     <default_value>none</default_value>
     <values match="last">
       <value compset="_CAM">CO2A</value>
@@ -102,6 +102,9 @@
       <value compset="_DATM%CPLHIST.+POP\d">CO2A</value>
       <value compset="_BGC%BPRP">CO2C</value>
       <value compset="_BGC%BDRD">CO2C</value>
+      <value compset="_BGC%BPRPDMS">CO2_DMSA</value>
+      <value compset="_BGC%BDRDDMS">CO2_DMSB</value>
+      <value compset="_BGC%DMS">CO2_DMSB</value>
       <value compset="HIST.*_DATM%(QIA|CRU)">CO2A</value>
       <value compset="RCP.*_DATM%(QIA|CRU)" >CO2A</value>
     </values>
