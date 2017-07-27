@@ -303,7 +303,7 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
                         LOG((3, "about to call ncmpi_iput_varn() varids[%d] = %d rrcnt = %d, llen = %d",
                              nv, varids[nv], rrcnt, llen));
                         ierr = ncmpi_iput_varn(file->fh, varids[nv], rrcnt, startlist, countlist,
-                                               bufptr, llen, iodesc->mpitype, vdesc->request + vdesc->nreqs);
+                                               bufptr, llen, iodesc->mpitype, &vdesc->request[vdesc->nreqs]);
 
                         /* keeps wait calls in sync */
                         if (vdesc->request[vdesc->nreqs] == NC_REQ_NULL)
