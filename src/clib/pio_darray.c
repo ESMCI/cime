@@ -375,7 +375,9 @@ int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
 */
 int find_var_fillvalue(file_desc_t *file, int varid, var_desc_t *vdesc)
 {
-    iosystem_desc_t *ios;  /* Pointer to io system information. */    
+    iosystem_desc_t *ios;  /* Pointer to io system information. */
+    int pio_type;
+    PIO_Offset type_size;
     int no_fill;
     int ierr;
 
@@ -386,17 +388,17 @@ int find_var_fillvalue(file_desc_t *file, int varid, var_desc_t *vdesc)
     LOG((3, "find_var_fillvalue file->pio_ncid = %d varid = %d", file->pio_ncid, varid));
     
     /* Find out PIO data type of var. */
-    if ((ierr = PIOc_inq_vartype(file->pio_ncid, varid, &vdesc->pio_type)))
+    if ((ierr = PIOc_inq_vartype(file->pio_ncid, varid, &pio_type)))
         return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
     
     /* Find out length of type. */
-    if ((ierr = PIOc_inq_type(file->pio_ncid, vdesc->pio_type, NULL, &vdesc->type_size)))
+    if ((ierr = PIOc_inq_type(file->pio_ncid, pio_type, NULL, &type_size)))
         return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
     LOG((3, "getting fill value for varid = %d pio_type = %d type_size = %d",
-         varid, vdesc->pio_type, vdesc->type_size));
+         varid, pio_type, type_size));
     
     /* Allocate storage for the fill value. */
-    if (!(vdesc->fillvalue = malloc(vdesc->type_size)))
+    if (!(vdesc->fillvalue = malloc(type_size)))
         return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
     
     /* Get the fill value. */

@@ -125,12 +125,6 @@ typedef struct var_desc_t
     /* Holds the fill value of this var. */
     void *fillvalue;
 
-    /* The PIO data type (PIO_INT, PIO_FLOAT, etc.) */
-    int pio_type;
-
-    /* The size of the data type (2 for PIO_SHORT, 4 for PIO_INT, etc.) */
-    PIO_Offset type_size;
-
     /** Non-zero if fill mode is turned on for this var. */
     int use_fill;
 
