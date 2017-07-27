@@ -121,14 +121,9 @@ int pio_delete_file_from_list(int ncid)
             if (current_file == cfile)
                 current_file = pfile;
 
-            /* Free any fill values that were allocated. */
-            for (int v = 0; v < PIO_MAX_VARS; v++)
-                if (cfile->varlist[v].fillvalue)
-                    free(cfile->varlist[v].fillvalue);
-
             /* Free the varlist entries for this file. */
-            while (cfile->varlist2)
-                if ((ret = delete_var_desc(cfile->varlist2->varid, &cfile->varlist2)))
+            while (cfile->varlist)
+                if ((ret = delete_var_desc(cfile->varlist->varid, &cfile->varlist)))
                     return pio_err(NULL, cfile, ret, __FILE__, __LINE__);
 
             /* Free the memory used for this file. */
@@ -451,6 +446,8 @@ int delete_var_desc(int varid, var_desc_t **varlist)
         *varlist = v->next;
 
     /* Free memory. */
+    if (v->fillvalue)
+        free(v->fillvalue);
     free(v);
     
     return PIO_NOERR;

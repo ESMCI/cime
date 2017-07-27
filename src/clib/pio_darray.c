@@ -108,7 +108,7 @@ int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
     file_desc_t *file;     /* Pointer to file information. */
     io_desc_t *iodesc;     /* Pointer to IO description information. */
     int rlen;              /* Total data buffer size. */
-    var_desc_t *vdesc0;    /* Array of var_desc structure for each var. */
+    var_desc_t *vdesc0;  /* First entry in array of var_desc structure for each var. */
     int fndims;            /* Number of dims in the var in the file. */
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function calls. */
     int ierr;              /* Return code. */
@@ -140,7 +140,8 @@ int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
               "unknown rearranger", __FILE__, __LINE__);
 
     /* Get a pointer to the variable info for the first variable. */
-    vdesc0 = &file->varlist[varids[0]];
+    if ((ierr = get_var_desc(varids[0], &file->varlist, &vdesc0)))
+        return pio_err(ios, file, ierr, __FILE__, __LINE__);        
 
     /* Run these on all tasks if async is not in use, but only on
      * non-IO tasks if async is in use. */
@@ -211,7 +212,8 @@ int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
 
     /* if the buffer is already in use in pnetcdf we need to flush first */
     if (file->iotype == PIO_IOTYPE_PNETCDF && file->iobuf)
-	flush_output_buffer(file, 1, 0);
+        if ((ierr = flush_output_buffer(file, 1, 0)))
+            return pio_err(ios, file, ierr, __FILE__, __LINE__);
 
     pioassert(!file->iobuf, "buffer overwrite",__FILE__, __LINE__);
 
@@ -460,8 +462,7 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Info about file we are writing to. */
     io_desc_t *iodesc;     /* The IO description. */
-    var_desc_t *vdesc;     /* Info about the var being written. */
-    var_desc_t *vdesc2;    /* Info about the var being written. */
+    var_desc_t *vdesc;    /* Info about the var being written. */
     void *bufptr;          /* A data buffer. */
     MPI_Datatype vtype;    /* The MPI type of the variable. */
     wmulti_buffer *wmb;    /* The write multi buffer for one or more vars. */
@@ -503,11 +504,8 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
          arraylen, iodesc->ndof));
 
     /* Get var description. */
-    vdesc = &(file->varlist[varid]);
-    if ((ierr = get_var_desc(varid, &file->varlist2, &vdesc2)))
+    if ((ierr = get_var_desc(varid, &file->varlist, &vdesc)))
         return pio_err(ios, file, ierr, __FILE__, __LINE__);        
-    LOG((2, "vdesc record %d nreqs %d vdesc2->rec_var %d", vdesc->record,
-         vdesc->nreqs, vdesc2->rec_var));
 
     /* If we don't know the fill value for this var, get it. */
     if (!vdesc->fillvalue)
@@ -517,7 +515,8 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
     /* Is this a record variable? The user must set the vdesc->record
      * value by calling PIOc_setframe() before calling this
      * function. */
-    recordvar = vdesc->record >= 0 ? 1 : 0;
+    /* recordvar = vdesc->record >= 0 ? 1 : 0; */
+    recordvar = vdesc->rec_var;
     LOG((3, "recordvar = %d looking for multibuffer", recordvar));
 
     /* Move to end of list or the entry that matches this ioid. */
@@ -632,7 +631,7 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
     /* wmb->frame is the record number, we assume that the variables
      * in the wmb list may not all have the same unlimited dimension
      * value although they usually do. */
-    if (vdesc->record >= 0)
+    if (vdesc->rec_var)
         if (!(wmb->frame = bgetr(wmb->frame, sizeof(int) * (1 + wmb->num_arrays))))
             return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
 

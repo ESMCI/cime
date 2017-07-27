@@ -274,9 +274,13 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
             /* Look at the internals to check that the frame commands
              * worked. */
             file_desc_t *file;            
+            var_desc_t *vdesc;     /* Contains info about the variable. */
+
             if ((ret = pio_get_file(ncid, &file)))
                 return ret;
-            if (file->varlist[varid].record != 1)
+            if ((ret = get_var_desc(varid, &file->varlist, &vdesc)))
+                return ret;
+            if (vdesc->record != 1)
                 return ERR_WRONG;
             
             if ((PIOc_closefile(ncid)))

@@ -126,7 +126,7 @@ int PIOc_advanceframe(int ncid, int varid)
     ios = file->iosystem;
 
     /* Get info about variable. */
-    if ((ret = get_var_desc(varid, &file->varlist2, &vdesc)))
+    if ((ret = get_var_desc(varid, &file->varlist, &vdesc)))
         return pio_err(ios, file, ret, __FILE__, __LINE__);
     if (!vdesc->rec_var)
         return pio_err(ios, file, PIO_EINVAL, __FILE__, __LINE__);
@@ -155,7 +155,7 @@ int PIOc_advanceframe(int ncid, int varid)
     }
 
     /* Increment the record number. */
-    file->varlist[varid].record++;
+    /* file->varlist[varid].record++; */
     vdesc->record++;
     
     return PIO_NOERR;
@@ -189,7 +189,7 @@ int PIOc_setframe(int ncid, int varid, int frame)
     ios = file->iosystem;
 
     /* Get info about variable. */
-    if ((ret = get_var_desc(varid, &file->varlist2, &vdesc)))
+    if ((ret = get_var_desc(varid, &file->varlist, &vdesc)))
         return pio_err(ios, file, ret, __FILE__, __LINE__);
     LOG((2, "vdesc->rec_var = %d", vdesc->rec_var));
     if (!vdesc->rec_var)
@@ -222,7 +222,7 @@ int PIOc_setframe(int ncid, int varid, int frame)
 
     /* Set the record dimension value for this variable. This will be
      * used by the write_darray functions. */
-    file->varlist[varid].record = frame;
+    /* file->varlist[varid].record = frame; */
     vdesc->record = frame;
 
     return PIO_NOERR;
