@@ -464,10 +464,11 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Info about file we are writing to. */
     io_desc_t *iodesc;     /* The IO description. */
-    var_desc_t *vdesc;     /* Info about the var being written. */
+    var_desc_t *vdesc;    /* Info about the var being written. */
     void *bufptr;          /* A data buffer. */
     MPI_Datatype vtype;    /* The MPI type of the variable. */
     wmulti_buffer *wmb;    /* The write multi buffer for one or more vars. */
+    int recordvar;         /* Non-zero if this is a record variable. */
     int needsflush = 0;    /* True if we need to flush buffer. */
 #if PIO_USE_MALLOC
     void *realloc_data = NULL;
@@ -476,7 +477,7 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
     bufsize maxfree;       /* Max amount of free space in buffer. */
 #endif
     int mpierr = MPI_SUCCESS;  /* Return code from MPI functions. */
-    int ierr = PIO_NOERR;      /* Return code. */
+    int ierr = PIO_NOERR;  /* Return code. */
 
     LOG((1, "PIOc_write_darray ncid = %d varid = %d ioid = %d arraylen = %d",
          ncid, varid, ioid, arraylen));
@@ -513,23 +514,33 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
         if ((ierr = find_var_fillvalue(file, varid, vdesc)))
             return pio_err(ios, file, PIO_EBADID, __FILE__, __LINE__);            
 
+    /* Is this a record variable? The user must set the vdesc->record
+     * value by calling PIOc_setframe() before calling this
+     * function. */
+    /* recordvar = vdesc->record >= 0 ? 1 : 0; */
+    recordvar = vdesc->rec_var;
+    LOG((3, "recordvar = %d looking for multibuffer", recordvar));
+
     /* Move to end of list or the entry that matches this ioid. */
     for (wmb = &file->buffer; wmb->next; wmb = wmb->next)
-        if (wmb->ioid == ioid && wmb->recordvar == vdesc->rec_var)
+        if (wmb->ioid == ioid && wmb->recordvar == recordvar)
             break;
     LOG((3, "wmb->ioid = %d wmb->recordvar = %d", wmb->ioid, wmb->recordvar));
 
     /* If we did not find an existing wmb entry, create a new wmb. */
-    if (wmb->ioid != ioid || wmb->recordvar != vdesc->rec_var)
+    if (wmb->ioid != ioid || wmb->recordvar != recordvar)
     {
         /* Allocate a buffer. */
+        LOG((3, "allocating multi-buffer"));
         if (!(wmb->next = bget((bufsize)sizeof(wmulti_buffer))))
             return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
+        /* if (!(wmb->next = calloc(1, sizeof(wmulti_buffer)))) */
+        /*     return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__); */
         LOG((3, "allocated multi-buffer"));
 
         /* Set pointer to newly allocated buffer and initialize.*/
         wmb = wmb->next;
-        wmb->recordvar = vdesc->rec_var;
+        wmb->recordvar = recordvar;
         wmb->next = NULL;
         wmb->ioid = ioid;
         wmb->num_arrays = 0;
