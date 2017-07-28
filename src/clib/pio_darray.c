@@ -464,7 +464,7 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Info about file we are writing to. */
     io_desc_t *iodesc;     /* The IO description. */
-    var_desc_t *vdesc;    /* Info about the var being written. */
+    var_desc_t *vdesc;     /* Info about the var being written. */
     void *bufptr;          /* A data buffer. */
     MPI_Datatype vtype;    /* The MPI type of the variable. */
     wmulti_buffer *wmb;    /* The write multi buffer for one or more vars. */
@@ -476,7 +476,7 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
     bufsize maxfree;       /* Max amount of free space in buffer. */
 #endif
     int mpierr = MPI_SUCCESS;  /* Return code from MPI functions. */
-    int ierr = PIO_NOERR;  /* Return code. */
+    int ierr = PIO_NOERR;      /* Return code. */
 
     LOG((1, "PIOc_write_darray ncid = %d varid = %d ioid = %d arraylen = %d",
          ncid, varid, ioid, arraylen));
@@ -523,7 +523,6 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
     if (wmb->ioid != ioid || wmb->recordvar != vdesc->rec_var)
     {
         /* Allocate a buffer. */
-        LOG((3, "allocating multi-buffer"));
         if (!(wmb->next = bget((bufsize)sizeof(wmulti_buffer))))
             return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
         LOG((3, "allocated multi-buffer"));
@@ -547,20 +546,17 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
     /* Try realloc first and call flush if realloc fails. */
     if (arraylen > 0)
     {
-        realloc_data = realloc(wmb->data, (1 + wmb->num_arrays) * arraylen *
-                               iodesc->mpitype_size);
+        realloc_data = realloc(wmb->data, (1 + wmb->num_arrays) * arraylen * iodesc->mpitype_size);
         if (realloc_data)
         {
             needsflush = 0;
             wmb->data = realloc_data;
-            LOG((2, "realloc got %ld bytes for data", (1 + wmb->num_arrays) * arraylen *
-                 iodesc->mpitype_size));
+            LOG((2, "realloc got %ld bytes for data", (1 + wmb->num_arrays) * arraylen * iodesc->mpitype_size));
         }
         else /* Failed to realloc, but wmb->data is still valid for a flush. */
         {
             needsflush = 1;
-            LOG((2, "realloc failed to get %ld bytes for data", (1 + wmb->num_arrays) *
-                 arraylen * iodesc->mpitype_size));
+            LOG((2, "realloc failed to get %ld bytes for data", (1 + wmb->num_arrays) * arraylen * iodesc->mpitype_size));
         }
     }
 #else
@@ -606,8 +602,7 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
     {
         if (!(wmb->data = realloc(wmb->data, (1 + wmb->num_arrays) * arraylen * iodesc->mpitype_size)))
             return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
-        LOG((2, "after a flush, realloc got %ld bytes for data", (1 + wmb->num_arrays) * arraylen *
-             iodesc->mpitype_size));
+        LOG((2, "after a flush, realloc got %ld bytes for data", (1 + wmb->num_arrays) * arraylen * iodesc->mpitype_size));
     }
 #else
     /* Get memory for data. */
