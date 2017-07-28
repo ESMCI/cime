@@ -526,8 +526,6 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
         LOG((3, "allocating multi-buffer"));
         if (!(wmb->next = bget((bufsize)sizeof(wmulti_buffer))))
             return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
-        /* if (!(wmb->next = calloc(1, sizeof(wmulti_buffer)))) */
-        /*     return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__); */
         LOG((3, "allocated multi-buffer"));
 
         /* Set pointer to newly allocated buffer and initialize.*/
@@ -549,17 +547,20 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
     /* Try realloc first and call flush if realloc fails. */
     if (arraylen > 0)
     {
-        realloc_data = realloc(wmb->data, (1 + wmb->num_arrays) * arraylen * iodesc->mpitype_size);
+        realloc_data = realloc(wmb->data, (1 + wmb->num_arrays) * arraylen *
+                               iodesc->mpitype_size);
         if (realloc_data)
         {
             needsflush = 0;
             wmb->data = realloc_data;
-            LOG((2, "realloc got %ld bytes for data", (1 + wmb->num_arrays) * arraylen * iodesc->mpitype_size));
+            LOG((2, "realloc got %ld bytes for data", (1 + wmb->num_arrays) * arraylen *
+                 iodesc->mpitype_size));
         }
         else /* Failed to realloc, but wmb->data is still valid for a flush. */
         {
             needsflush = 1;
-            LOG((2, "realloc failed to get %ld bytes for data", (1 + wmb->num_arrays) * arraylen * iodesc->mpitype_size));
+            LOG((2, "realloc failed to get %ld bytes for data", (1 + wmb->num_arrays) *
+                 arraylen * iodesc->mpitype_size));
         }
     }
 #else
@@ -605,7 +606,8 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
     {
         if (!(wmb->data = realloc(wmb->data, (1 + wmb->num_arrays) * arraylen * iodesc->mpitype_size)))
             return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
-        LOG((2, "after a flush, realloc got %ld bytes for data", (1 + wmb->num_arrays) * arraylen * iodesc->mpitype_size));
+        LOG((2, "after a flush, realloc got %ld bytes for data", (1 + wmb->num_arrays) * arraylen *
+             iodesc->mpitype_size));
     }
 #else
     /* Get memory for data. */
