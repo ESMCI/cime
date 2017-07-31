@@ -208,6 +208,10 @@ int test_multivar_darray(int iosysid, int ioid, int num_flavors, int *flavor,
                 /*     if (file_fv_float != custom_fillvalue_float) */
                 /*         return ERR_WRONG; */
                 /* } */
+
+                /* Close the netCDF file. */
+                if ((ret = PIOc_closefile(ncid2)))
+                    ERR(ret);
             }
         }
     }
