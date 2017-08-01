@@ -1,0 +1,14 @@
+
+.. _preview_namelists:
+
+####################################################
+preview_namelists 
+####################################################
+
+**preview_namelists** is a script in CIMEROOT/scripts/Tools.
+
+.. toctree::
+   :maxdepth: 1
+
+.. command-output:: ./preview_namelists --help
+   :cwd: ../../../scripts/Tools

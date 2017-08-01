@@ -1,0 +1,14 @@
+
+.. _case.build:
+
+####################################################
+case.build 
+####################################################
+
+**case.build** is a script in CIMEROOT/scripts/Tools.
+
+.. toctree::
+   :maxdepth: 1
+
+.. command-output:: ./case.build --help
+   :cwd: ../../../scripts/Tools

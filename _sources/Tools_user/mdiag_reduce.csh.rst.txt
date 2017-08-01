@@ -1,0 +1,14 @@
+
+.. _mdiag_reduce.csh:
+
+####################################################
+mdiag_reduce.csh 
+####################################################
+
+**mdiag_reduce.csh** is a script in CIMEROOT/scripts/Tools.
+
+.. toctree::
+   :maxdepth: 1
+
+.. command-output:: ./mdiag_reduce.csh --help
+   :cwd: ../../../scripts/Tools

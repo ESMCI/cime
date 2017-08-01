@@ -5,7 +5,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>5. CIME Driver XML Files &#8212; CIME 5.3.0 documentation</title>
+    <title>Driver XML Files &#8212; CIME 5.3.0 documentation</title>
     <link rel="stylesheet" href="../_static/bizstyle.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
@@ -24,7 +24,8 @@
     <script type="text/javascript" src="../_static/bizstyle.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="prev" title="4.8. CIME Wave Data and Stub XML Files" href="wave.html" />
+    <link rel="next" title="CIME" href="../CIME_api/modules.html" />
+    <link rel="prev" title="CIME Wave Data and Stub XML Files" href="wave.html" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <!--[if lt IE 9]>
     <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
@@ -38,7 +39,13 @@
           <a href="../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="wave.html" title="4.8. CIME Wave Data and Stub XML Files"
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../CIME_api/modules.html" title="CIME"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="wave.html" title="CIME Wave Data and Stub XML Files"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">XML Files</a> &#187;</li> 
@@ -48,16 +55,19 @@
         <div class="sphinxsidebarwrapper">
   <h3><a href="../index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">5. CIME Driver XML Files</a><ul>
-<li><a class="reference internal" href="#cimeroot-src-drivers-mct-cime-config">5.1. CIMEROOT/src/drivers/mct/cime_config</a></li>
-<li><a class="reference internal" href="#cimeroot-src-drivers-mct-cime-config-namelist-definition-xml">5.2. CIMEROOT/src/drivers/mct/cime_config/namelist_definition_*.xml</a></li>
+<li><a class="reference internal" href="#">Driver XML Files</a><ul>
+<li><a class="reference internal" href="#cimeroot-src-drivers-mct-cime-config">CIMEROOT/src/drivers/mct/cime_config</a></li>
+<li><a class="reference internal" href="#cimeroot-src-drivers-mct-cime-config-namelist-definition-xml">CIMEROOT/src/drivers/mct/cime_config/namelist_definition_*.xml</a></li>
 </ul>
 </li>
 </ul>
 
   <h4>Previous topic</h4>
   <p class="topless"><a href="wave.html"
-                        title="previous chapter">4.8. CIME Wave Data and Stub XML Files</a></p>
+                        title="previous chapter">CIME Wave Data and Stub XML Files</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../CIME_api/modules.html"
+                        title="next chapter">CIME</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -83,13 +93,13 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="cime-driver-xml-files">
-<span id="drivers"></span><h1>5. CIME Driver XML Files<a class="headerlink" href="#cime-driver-xml-files" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="driver-xml-files">
+<span id="drivers"></span><h1>Driver XML Files<a class="headerlink" href="#driver-xml-files" title="Permalink to this headline">¶</a></h1>
 <p>Driver/Coupler XML files in CIMEROOT/src/drivers/mct/cime_config</p>
 <div class="toctree-wrapper compound">
 </div>
 <div class="section" id="cimeroot-src-drivers-mct-cime-config">
-<h2>5.1. CIMEROOT/src/drivers/mct/cime_config<a class="headerlink" href="#cimeroot-src-drivers-mct-cime-config" title="Permalink to this headline">¶</a></h2>
+<h2>CIMEROOT/src/drivers/mct/cime_config<a class="headerlink" href="#cimeroot-src-drivers-mct-cime-config" title="Permalink to this headline">¶</a></h2>
 <p>The Model Coupling Toolkit (MCT) based driver/coupler is
 treated as a component by CIME with associated XML files
 to define behavior.</p>
@@ -247,7 +257,7 @@ to define behavior.</p>
     &lt;desc&gt;Component set long name (for documentation only - DO NOT EDIT)&lt;/desc&gt;
   &lt;/entry&gt;
 
-  &lt;entry id=&#39;GRID&#39;&gt;
+  &lt;entry id=&quot;GRID&quot;&gt;
     &lt;type&gt;char&lt;/type&gt;
     &lt;default_value&gt;UNSET&lt;/default_value&gt;
     &lt;group&gt;build_grid&lt;/group&gt;
@@ -599,6 +609,13 @@ to define behavior.</p>
     &lt;desc&gt;Logical to determine whether CESM run has been submitted with the submit script or not&lt;/desc&gt;
   &lt;/entry&gt;
 
+ &lt;entry id=&quot;JOB_IDS&quot;&gt;
+   &lt;type&gt;char&lt;/type&gt;
+   &lt;default_value&gt;&lt;/default_value&gt;
+   &lt;group&gt;run_begin_stop_restart&lt;/group&gt;
+   &lt;file&gt;env_run.xml&lt;/file&gt;
+   &lt;desc&gt;List of job ids for most recent case.submit&lt;/desc&gt;
+ &lt;/entry&gt;
 
   &lt;!-- ===================================================================== --&gt;
   &lt;!-- definitions archive --&gt;
@@ -2269,6 +2286,27 @@ to define behavior.</p>
     &lt;/values&gt;
   &lt;/entry&gt;
 
+  &lt;entry id=&quot;PIO_NETCDF_FORMAT&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;valid_values&gt;classic,64bit_offset,64bit_data&lt;/valid_values&gt;
+    &lt;group&gt;run_pio&lt;/group&gt;
+    &lt;file&gt;env_run.xml&lt;/file&gt;
+    &lt;desc&gt;pio netcdf format (ignored for netcdf4p and netcdf4c)
+    https://www.unidata.ucar.edu/software/netcdf/docs/data_type.html
+    &lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value component=&quot;ATM&quot;&gt;64bit_offset&lt;/value&gt;
+      &lt;value component=&quot;CPL&quot;&gt;64bit_offset&lt;/value&gt;
+      &lt;value component=&quot;OCN&quot;&gt;64bit_offset&lt;/value&gt;
+      &lt;value component=&quot;WAV&quot;&gt;64bit_offset&lt;/value&gt;
+      &lt;value component=&quot;GLC&quot;&gt;64bit_offset&lt;/value&gt;
+      &lt;value component=&quot;ICE&quot;&gt;64bit_offset&lt;/value&gt;
+      &lt;value component=&quot;ROF&quot;&gt;64bit_offset&lt;/value&gt;
+      &lt;value component=&quot;LND&quot;&gt;64bit_offset&lt;/value&gt;
+      &lt;value component=&quot;ESP&quot;&gt;64bit_offset&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
   &lt;entry id=&quot;PIO_STRIDE&quot;&gt;
     &lt;type&gt;integer&lt;/type&gt;
     &lt;group&gt;run_pio&lt;/group&gt;
@@ -2666,7 +2704,6 @@ to define behavior.</p>
    &lt;file&gt;env_case.xml&lt;/file&gt;
    &lt;desc&gt;Apparent version of the model used for this case&lt;/desc&gt;
  &lt;/entry&gt;
-
 
  &lt;entry id=&quot;PROJECT_REQUIRED&quot;&gt;
    &lt;type&gt;logical&lt;/type&gt;
@@ -4278,7 +4315,7 @@ to define behavior.</p>
 </div>
 </div>
 <div class="section" id="cimeroot-src-drivers-mct-cime-config-namelist-definition-xml">
-<h2>5.2. CIMEROOT/src/drivers/mct/cime_config/namelist_definition_*.xml<a class="headerlink" href="#cimeroot-src-drivers-mct-cime-config-namelist-definition-xml" title="Permalink to this headline">¶</a></h2>
+<h2>CIMEROOT/src/drivers/mct/cime_config/namelist_definition_*.xml<a class="headerlink" href="#cimeroot-src-drivers-mct-cime-config-namelist-definition-xml" title="Permalink to this headline">¶</a></h2>
 <p>XML namelist definitions for the driver/coupler.</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span>&lt;?xml version=&quot;1.0&quot;?&gt;
 
@@ -4446,6 +4483,19 @@ to define behavior.</p>
     &lt;/desc&gt;
     &lt;values&gt;
       &lt;value&gt;$CPL_I2O_PER_CAT&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;nan_check_component_fields&quot;&gt;
+    &lt;type&gt;logical&lt;/type&gt;
+    &lt;category&gt;seq_flds&lt;/category&gt;
+    &lt;group&gt;seq_cplflds_inparm&lt;/group&gt;
+    &lt;desc&gt;
+      .true. means that all fields passed to coupler are checked for NaN values
+    &lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;.false.&lt;/value&gt;
+      &lt;value cime_model=&#39;cesm&#39;&gt;.true.&lt;/value&gt;
     &lt;/values&gt;
   &lt;/entry&gt;
 
@@ -5115,18 +5165,6 @@ to define behavior.</p>
     &lt;/desc&gt;
     &lt;values&gt;
       &lt;value&gt;$CPL_SEQ_OPTION&lt;/value&gt;
-    &lt;/values&gt;
-  &lt;/entry&gt;
-
-  &lt;entry id=&quot;cpl_cdf64&quot;&gt;
-    &lt;type&gt;logical&lt;/type&gt;
-    &lt;category&gt;expdef&lt;/category&gt;
-    &lt;group&gt;seq_infodata_inparm&lt;/group&gt;
-    &lt;desc&gt;
-      default: true
-    &lt;/desc&gt;
-    &lt;values&gt;
-      &lt;value&gt;.true.&lt;/value&gt;
     &lt;/values&gt;
   &lt;/entry&gt;
 
@@ -6959,7 +6997,7 @@ to define behavior.</p>
     &lt;group&gt;ccsm_pes&lt;/group&gt;
     &lt;desc&gt;
       Determines what ESMF log files (if any) are generated when
-          USE_ESMF_LIB is TRUE. 
+          USE_ESMF_LIB is TRUE.
       ESMF_LOGKIND_SINGLE: Use a single log file, combining messages from
           all of the PETs. Not supported on some platforms.
       ESMF_LOGKIND_MULTI: Use multiple log files — one per PET.
@@ -8217,7 +8255,6 @@ to define behavior.</p>
   &lt;/entry&gt;
 
 &lt;/entry_id&gt;
-
 </pre></div>
 </div>
 <p>XML namelist definitions for the driver/coupler fields.</p>
@@ -8521,6 +8558,28 @@ to define behavior.</p>
     &lt;/values&gt;
   &lt;/entry&gt;
 
+  &lt;entry id=&quot;pio_netcdf_format&quot; modify_via_xml=&quot;PIO_NETCDF_FORMAT&quot;&gt;
+    &lt;type&gt;char*64&lt;/type&gt;
+    &lt;category&gt;pio&lt;/category&gt;
+    &lt;group&gt;pio_inparm&lt;/group&gt;
+    &lt;valid_values&gt;classic,64bit_offset,64bit_data&lt;/valid_values&gt;
+    &lt;desc&gt;
+      format of netcdf files created by pio, ignored if
+      PIO_TYPENAME is netcdf4p or netcdf4c.  64bit_data only
+      supported in netcdf 4.4.0 or newer
+    &lt;/desc&gt;
+    &lt;values&gt;
+    &lt;value component=&quot;cpl&quot;&gt;$CPL_PIO_NETCDF_FORMAT&lt;/value&gt;
+    &lt;value component=&quot;atm&quot;&gt;$ATM_PIO_NETCDF_FORMAT&lt;/value&gt;
+    &lt;value component=&quot;lnd&quot;&gt;$LND_PIO_NETCDF_FORMAT&lt;/value&gt;
+    &lt;value component=&quot;ocn&quot;&gt;$OCN_PIO_NETCDF_FORMAT&lt;/value&gt;
+    &lt;value component=&quot;ice&quot;&gt;$ICE_PIO_NETCDF_FORMAT&lt;/value&gt;
+    &lt;value component=&quot;rof&quot;&gt;$ROF_PIO_NETCDF_FORMAT&lt;/value&gt;
+    &lt;value component=&quot;glc&quot;&gt;$GLC_PIO_NETCDF_FORMAT&lt;/value&gt;
+    &lt;value component=&quot;wav&quot;&gt;$WAV_PIO_NETCDF_FORMAT&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
+
   &lt;!-- =========================== --&gt;
   &lt;!-- group modelio               --&gt;
   &lt;!-- =========================== --&gt;
@@ -8574,7 +8633,13 @@ to define behavior.</p>
           <a href="../genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="wave.html" title="4.8. CIME Wave Data and Stub XML Files"
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../CIME_api/modules.html" title="CIME"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="wave.html" title="CIME Wave Data and Stub XML Files"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &#187;</li>
           <li class="nav-item nav-item-1"><a href="index.html" >XML Files</a> &#187;</li> 

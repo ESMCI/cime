@@ -5,7 +5,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>1. CIME ACME Coupled Model XML Files &#8212; CIME 5.3.0 documentation</title>
+    <title>ACME Coupled Model XML Files &#8212; CIME 5.3.0 documentation</title>
     <link rel="stylesheet" href="../_static/bizstyle.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="../_static/bizstyle.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="2. CIME CESM Coupled Model XML Files" href="cesm.html" />
+    <link rel="next" title="CESM Coupled Model XML Files" href="cesm.html" />
     <link rel="prev" title="XML Files" href="index.html" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <!--[if lt IE 9]>
@@ -39,7 +39,10 @@
           <a href="../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="cesm.html" title="2. CIME CESM Coupled Model XML Files"
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="cesm.html" title="CESM Coupled Model XML Files"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="index.html" title="XML Files"
@@ -52,10 +55,10 @@
         <div class="sphinxsidebarwrapper">
   <h3><a href="../index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">1. CIME ACME Coupled Model XML Files</a><ul>
-<li><a class="reference internal" href="#cimeroot-config-acme">1.1. CIMEROOT/config/acme</a></li>
-<li><a class="reference internal" href="#cimeroot-config-acme-allactive">1.2. CIMEROOT/config/acme/allactive</a></li>
-<li><a class="reference internal" href="#cimeroot-config-acme-machines">1.3. CIMEROOT/config/acme/machines</a></li>
+<li><a class="reference internal" href="#">ACME Coupled Model XML Files</a><ul>
+<li><a class="reference internal" href="#cimeroot-config-acme">CIMEROOT/config/acme</a></li>
+<li><a class="reference internal" href="#cimeroot-config-acme-allactive">CIMEROOT/config/acme/allactive</a></li>
+<li><a class="reference internal" href="#cimeroot-config-acme-machines">CIMEROOT/config/acme/machines</a></li>
 </ul>
 </li>
 </ul>
@@ -65,7 +68,7 @@
                         title="previous chapter">XML Files</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="cesm.html"
-                        title="next chapter">2. CIME CESM Coupled Model XML Files</a></p>
+                        title="next chapter">CESM Coupled Model XML Files</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -91,13 +94,13 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="cime-acme-coupled-model-xml-files">
-<span id="acme"></span><h1>1. CIME ACME Coupled Model XML Files<a class="headerlink" href="#cime-acme-coupled-model-xml-files" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="acme-coupled-model-xml-files">
+<span id="acme"></span><h1>ACME Coupled Model XML Files<a class="headerlink" href="#acme-coupled-model-xml-files" title="Permalink to this headline">¶</a></h1>
 <p>XML files for ACME in CIMEROOT/config/acme.</p>
 <div class="toctree-wrapper compound">
 </div>
 <div class="section" id="cimeroot-config-acme">
-<h2>1.1. CIMEROOT/config/acme<a class="headerlink" href="#cimeroot-config-acme" title="Permalink to this headline">¶</a></h2>
+<h2>CIMEROOT/config/acme<a class="headerlink" href="#cimeroot-config-acme" title="Permalink to this headline">¶</a></h2>
 <p>ACME XML settings for short term archiver.</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span>&lt;components version=&quot;2.0&quot;&gt;
 
@@ -3379,7 +3382,7 @@
 </div>
 </div>
 <div class="section" id="cimeroot-config-acme-allactive">
-<h2>1.2. CIMEROOT/config/acme/allactive<a class="headerlink" href="#cimeroot-config-acme-allactive" title="Permalink to this headline">¶</a></h2>
+<h2>CIMEROOT/config/acme/allactive<a class="headerlink" href="#cimeroot-config-acme-allactive" title="Permalink to this headline">¶</a></h2>
 <p>ACME XML settings for all-active component set (compset) configurations.</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span>&lt;?xml version=&quot;1.0&quot;?&gt;
 
@@ -10675,7 +10678,7 @@
 </div>
 </div>
 <div class="section" id="cimeroot-config-acme-machines">
-<h2>1.3. CIMEROOT/config/acme/machines<a class="headerlink" href="#cimeroot-config-acme-machines" title="Permalink to this headline">¶</a></h2>
+<h2>CIMEROOT/config/acme/machines<a class="headerlink" href="#cimeroot-config-acme-machines" title="Permalink to this headline">¶</a></h2>
 <p>ACME XML settings for supported batch queuing systems.</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span>&lt;?xml version=&quot;1.0&quot;?&gt;
 &lt;config_batch version=&quot;2.0&quot;&gt;
@@ -10847,7 +10850,7 @@
    &lt;/batch_system&gt;
 
   &lt;batch_system type=&quot;slurm&quot; &gt;
-    &lt;batch_query&gt;squeue&lt;/batch_query&gt;
+    &lt;batch_query per_job_arg=&quot;-j&quot;&gt;squeue&lt;/batch_query&gt;
     &lt;batch_submit&gt;sbatch&lt;/batch_submit&gt;
     &lt;batch_directive&gt;#SBATCH&lt;/batch_directive&gt;
     &lt;jobid_pattern&gt;(\d+)$&lt;/jobid_pattern&gt;
@@ -11134,7 +11137,7 @@
       &lt;template&gt;template.st_archive&lt;/template&gt;
       &lt;task_count&gt;1&lt;/task_count&gt;
       &lt;!-- If DOUT_S is true and case.run (or case.test) exits successfully then run st_archive--&gt;
-      &lt;dependency&gt;case.run or case.test&lt;/dependency&gt;
+      &lt;dependency&gt;case.run case.test&lt;/dependency&gt;
       &lt;prereq&gt;$DOUT_S&lt;/prereq&gt;
     &lt;/job&gt;
   &lt;/batch_jobs&gt;
@@ -15506,7 +15509,10 @@ lude &lt;/CFLAGS&gt;
           <a href="../genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="cesm.html" title="2. CIME CESM Coupled Model XML Files"
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="cesm.html" title="CESM Coupled Model XML Files"
              >next</a> |</li>
         <li class="right" >
           <a href="index.html" title="XML Files"

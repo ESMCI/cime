@@ -1,0 +1,14 @@
+
+.. _archive_metadata.sh:
+
+####################################################
+archive_metadata.sh 
+####################################################
+
+**archive_metadata.sh** is a script in CIMEROOT/scripts/Tools.
+
+.. toctree::
+   :maxdepth: 1
+
+.. command-output:: ./archive_metadata.sh --help
+   :cwd: ../../../scripts/Tools

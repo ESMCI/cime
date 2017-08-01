@@ -1,0 +1,326 @@
+
+
+<!doctype html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>CIME.case_setup &#8212; CIME 5.3.0 documentation</title>
+    <link rel="stylesheet" href="../../_static/bizstyle.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '5.3.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/bizstyle.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">CIME 5.3.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for CIME.case_setup</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Library for case.setup.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="k">import</span> <span class="o">*</span>
+
+<span class="kn">from</span> <span class="nn">CIME.check_lockedfiles</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">CIME.preview_namelists</span> <span class="k">import</span> <span class="n">create_dirs</span><span class="p">,</span> <span class="n">create_namelists</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.env_mach_pes</span>  <span class="k">import</span> <span class="n">EnvMachPes</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.machines</span>      <span class="k">import</span> <span class="n">Machines</span>
+<span class="kn">from</span> <span class="nn">CIME.BuildTools.configure</span> <span class="k">import</span> <span class="n">configure</span>
+<span class="kn">from</span> <span class="nn">CIME.utils</span>             <span class="k">import</span> <span class="n">get_cime_root</span><span class="p">,</span> <span class="n">run_and_log_case_status</span><span class="p">,</span> <span class="n">get_model</span>
+<span class="kn">from</span> <span class="nn">CIME.test_status</span>       <span class="k">import</span> <span class="o">*</span>
+
+<span class="kn">import</span> <span class="nn">shutil</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="c1">###############################################################################</span>
+<span class="k">def</span> <span class="nf">_build_usernl_files</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">comp</span><span class="p">):</span>
+<span class="c1">###############################################################################</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create user_nl_xxx files, expects cwd is caseroot</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">model</span> <span class="o">==</span> <span class="s2">&quot;DRV&quot;</span><span class="p">:</span>
+        <span class="n">model_file</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CONFIG_CPL_FILE&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">model_file</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CONFIG_</span><span class="si">{}</span><span class="s2">_FILE&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">model</span><span class="p">))</span>
+    <span class="n">expect</span><span class="p">(</span><span class="n">model_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span>
+           <span class="s2">&quot;Could not locate CONFIG_</span><span class="si">{}</span><span class="s2">_FILE in config_files.xml&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">model</span><span class="p">))</span>
+    <span class="n">model_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">model_file</span><span class="p">)</span>
+
+    <span class="n">expect</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">model_dir</span><span class="p">),</span>
+           <span class="s2">&quot;cannot find cime_config directory </span><span class="si">{}</span><span class="s2"> for component </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">model_dir</span><span class="p">,</span> <span class="n">comp</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">comp</span> <span class="o">==</span> <span class="s2">&quot;cpl&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s2">&quot;user_nl_cpl&quot;</span><span class="p">):</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">model_dir</span><span class="p">,</span> <span class="s2">&quot;user_nl_cpl&quot;</span><span class="p">),</span> <span class="s2">&quot;.&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">ninst</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;NINST_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">model</span><span class="p">))</span>
+        <span class="n">nlfile</span> <span class="o">=</span> <span class="s2">&quot;user_nl_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">)</span>
+        <span class="n">model_nl</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">model_dir</span><span class="p">,</span> <span class="n">nlfile</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ninst</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">inst_counter</span> <span class="ow">in</span> <span class="n">xrange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">ninst</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+                <span class="n">inst_nlfile</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">_</span><span class="si">{:04d}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nlfile</span><span class="p">,</span> <span class="n">inst_counter</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">inst_nlfile</span><span class="p">):</span>
+                    <span class="c1"># If there is a user_nl_foo in the case directory, copy it</span>
+                    <span class="c1"># to user_nl_foo_INST; otherwise, copy the original</span>
+                    <span class="c1"># user_nl_foo from model_dir</span>
+                    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">nlfile</span><span class="p">):</span>
+                        <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">nlfile</span><span class="p">,</span> <span class="n">inst_nlfile</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">model_nl</span><span class="p">):</span>
+                        <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">model_nl</span><span class="p">,</span> <span class="n">inst_nlfile</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># ninst = 1</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">nlfile</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">model_nl</span><span class="p">):</span>
+                    <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">model_nl</span><span class="p">,</span> <span class="n">nlfile</span><span class="p">)</span>
+
+<span class="c1">###############################################################################</span>
+<span class="k">def</span> <span class="nf">_case_setup_impl</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">caseroot</span><span class="p">,</span> <span class="n">clean</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">test_mode</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">reset</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="c1">###############################################################################</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">caseroot</span><span class="p">)</span>
+
+    <span class="n">cimeroot</span> <span class="o">=</span> <span class="n">get_cime_root</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
+
+    <span class="c1"># Check that $DIN_LOC_ROOT exists - and abort if not a namelist compare tests</span>
+    <span class="n">din_loc_root</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;DIN_LOC_ROOT&quot;</span><span class="p">)</span>
+    <span class="n">testcase</span>     <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;TESTCASE&quot;</span><span class="p">)</span>
+    <span class="n">expect</span><span class="p">(</span><span class="ow">not</span> <span class="p">(</span><span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">din_loc_root</span><span class="p">)</span> <span class="ow">and</span> <span class="n">testcase</span> <span class="o">!=</span> <span class="s2">&quot;SBN&quot;</span><span class="p">),</span>
+           <span class="s2">&quot;inputdata root is not a directory: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">din_loc_root</span><span class="p">))</span>
+
+    <span class="c1"># Check that userdefine settings are specified before expanding variable</span>
+    <span class="k">for</span> <span class="n">vid</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">case</span><span class="p">:</span>
+        <span class="n">expect</span><span class="p">(</span><span class="ow">not</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span> <span class="ow">and</span> <span class="s2">&quot;USERDEFINED_required_build&quot;</span> <span class="ow">in</span> <span class="n">value</span><span class="p">),</span>
+               <span class="s2">&quot;Parameter &#39;</span><span class="si">{}</span><span class="s2">&#39; must be defined&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">vid</span><span class="p">))</span>
+
+    <span class="c1"># Create batch script</span>
+    <span class="k">if</span> <span class="n">reset</span> <span class="ow">or</span> <span class="n">clean</span><span class="p">:</span>
+        <span class="c1"># back up relevant files</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s2">&quot;case.run&quot;</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">&quot;case.run&quot;</span><span class="p">)</span>
+
+        <span class="c1"># only do the following if are NOT in testmode</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">test_mode</span><span class="p">:</span>
+            <span class="c1"># rebuild the models (even on restart)</span>
+            <span class="n">case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;BUILD_COMPLETE&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+
+            <span class="c1"># backup and then clean test script</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s2">&quot;case.test&quot;</span><span class="p">):</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">&quot;case.test&quot;</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Successfully cleaned test script case.test&quot;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s2">&quot;case.testdriver&quot;</span><span class="p">):</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">&quot;case.testdriver&quot;</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Successfully cleaned test script case.testdriver&quot;</span><span class="p">)</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Successfully cleaned batch script case.run&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">clean</span><span class="p">:</span>
+        <span class="n">case</span><span class="o">.</span><span class="n">load_env</span><span class="p">()</span>
+
+        <span class="n">models</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_values</span><span class="p">(</span><span class="s2">&quot;COMP_CLASSES&quot;</span><span class="p">)</span>
+        <span class="n">mach</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MACH&quot;</span><span class="p">)</span>
+        <span class="n">compiler</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;COMPILER&quot;</span><span class="p">)</span>
+        <span class="n">debug</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;DEBUG&quot;</span><span class="p">)</span>
+        <span class="n">mpilib</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MPILIB&quot;</span><span class="p">)</span>
+        <span class="n">sysos</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;OS&quot;</span><span class="p">)</span>
+        <span class="n">expect</span><span class="p">(</span><span class="n">mach</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;xml variable MACH is not set&quot;</span><span class="p">)</span>
+
+        <span class="c1"># creates the Macros.make, Depends.compiler, Depends.machine, Depends.machine.compiler</span>
+        <span class="c1"># and env_mach_specific.xml if they don&#39;t already exist.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="s2">&quot;Macros.make&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="s2">&quot;env_mach_specific.xml&quot;</span><span class="p">):</span>
+            <span class="n">configure</span><span class="p">(</span><span class="n">Machines</span><span class="p">(</span><span class="n">machine</span><span class="o">=</span><span class="n">mach</span><span class="p">),</span> <span class="n">caseroot</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;Makefile&quot;</span><span class="p">],</span> <span class="n">compiler</span><span class="p">,</span> <span class="n">mpilib</span><span class="p">,</span> <span class="n">debug</span><span class="p">,</span> <span class="n">sysos</span><span class="p">)</span>
+
+        <span class="c1"># Set tasks to 1 if mpi-serial library</span>
+        <span class="k">if</span> <span class="n">mpilib</span> <span class="o">==</span> <span class="s2">&quot;mpi-serial&quot;</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">vid</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">case</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">vid</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;NTASKS_&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">value</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">vid</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># Check ninst.</span>
+        <span class="c1"># In CIME there can be multiple instances of each component model (an ensemble) NINST is the instance of that component.</span>
+        <span class="k">for</span> <span class="n">comp</span> <span class="ow">in</span> <span class="n">models</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">comp</span> <span class="o">==</span> <span class="s2">&quot;CPL&quot;</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">ninst</span>  <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;NINST_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">))</span>
+            <span class="n">ntasks</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;NTASKS_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">))</span>
+            <span class="c1"># ESP models are currently limited to 1 instance</span>
+            <span class="n">expect</span><span class="p">((</span><span class="n">comp</span> <span class="o">!=</span> <span class="s2">&quot;ESP&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">ninst</span> <span class="o">==</span> <span class="mi">1</span><span class="p">),</span>
+                   <span class="s2">&quot;ESP components may only have one instance&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">ninst</span> <span class="o">&gt;</span> <span class="n">ntasks</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">ntasks</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;NTASKS_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">),</span> <span class="n">ninst</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">expect</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;NINST_</span><span class="si">{}</span><span class="s2"> value </span><span class="si">{:d}</span><span class="s2"> greater than NTASKS_</span><span class="si">{}</span><span class="s2"> </span><span class="si">{:d}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">,</span> <span class="n">ninst</span><span class="p">,</span> <span class="n">comp</span><span class="p">,</span> <span class="n">ntasks</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s2">&quot;case.run&quot;</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Machine/Decomp/Pes configuration has already been done ...skipping&quot;</span><span class="p">)</span>
+
+            <span class="n">case</span><span class="o">.</span><span class="n">initialize_derived_attributes</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">check_pelayouts_require_rebuild</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">models</span><span class="p">)</span>
+
+            <span class="n">unlock_file</span><span class="p">(</span><span class="s2">&quot;env_build.xml&quot;</span><span class="p">)</span>
+
+            <span class="n">case</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+            <span class="n">check_lockedfiles</span><span class="p">()</span>
+            <span class="n">env_mach_pes</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_env</span><span class="p">(</span><span class="s2">&quot;mach_pes&quot;</span><span class="p">)</span>
+            <span class="n">pestot</span> <span class="o">=</span> <span class="n">env_mach_pes</span><span class="o">.</span><span class="n">get_total_tasks</span><span class="p">(</span><span class="n">models</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;at update TOTALPES = </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pestot</span><span class="p">))</span>
+            <span class="n">case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;TOTALPES&quot;</span><span class="p">,</span> <span class="n">pestot</span><span class="p">)</span>
+            <span class="n">thread_count</span> <span class="o">=</span> <span class="n">env_mach_pes</span><span class="o">.</span><span class="n">get_max_thread_count</span><span class="p">(</span><span class="n">models</span><span class="p">)</span>
+            <span class="n">cost_pes</span> <span class="o">=</span> <span class="n">env_mach_pes</span><span class="o">.</span><span class="n">get_cost_pes</span><span class="p">(</span><span class="n">pestot</span><span class="p">,</span> <span class="n">thread_count</span><span class="p">,</span> <span class="n">machine</span><span class="o">=</span><span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MACH&quot;</span><span class="p">))</span>
+            <span class="n">case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;COST_PES&quot;</span><span class="p">,</span> <span class="n">cost_pes</span><span class="p">)</span>
+
+            <span class="c1"># Make sure pio settings are consistent</span>
+            <span class="n">tasks_per_node</span> <span class="o">=</span> <span class="n">env_mach_pes</span><span class="o">.</span><span class="n">get_tasks_per_node</span><span class="p">(</span><span class="n">pestot</span><span class="p">,</span> <span class="n">thread_count</span><span class="p">)</span>
+
+            <span class="n">case</span><span class="o">.</span><span class="n">initialize_derived_attributes</span><span class="p">()</span>
+
+            <span class="c1"># create batch files</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Creating batch script case.run&quot;</span><span class="p">)</span>
+            <span class="n">env_batch</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_env</span><span class="p">(</span><span class="s2">&quot;batch&quot;</span><span class="p">)</span>
+            <span class="n">num_nodes</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">num_nodes</span>
+            <span class="k">for</span> <span class="n">job</span> <span class="ow">in</span> <span class="n">env_batch</span><span class="o">.</span><span class="n">get_jobs</span><span class="p">():</span>
+                <span class="n">input_batch_script</span>  <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MACHDIR&quot;</span><span class="p">),</span> <span class="n">env_batch</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">&#39;template&#39;</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="n">job</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">job</span> <span class="o">==</span> <span class="s2">&quot;case.test&quot;</span> <span class="ow">and</span> <span class="n">testcase</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">test_mode</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Writing </span><span class="si">{}</span><span class="s2"> script&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">job</span><span class="p">))</span>
+                    <span class="n">env_batch</span><span class="o">.</span><span class="n">make_batch_script</span><span class="p">(</span><span class="n">input_batch_script</span><span class="p">,</span> <span class="n">job</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="n">pestot</span><span class="p">,</span> <span class="n">tasks_per_node</span><span class="p">,</span> <span class="n">num_nodes</span><span class="p">,</span> <span class="n">thread_count</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">job</span> <span class="o">!=</span> <span class="s2">&quot;case.test&quot;</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Writing </span><span class="si">{}</span><span class="s2"> script from input template </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">job</span><span class="p">,</span> <span class="n">input_batch_script</span><span class="p">))</span>
+                    <span class="n">env_batch</span><span class="o">.</span><span class="n">make_batch_script</span><span class="p">(</span><span class="n">input_batch_script</span><span class="p">,</span> <span class="n">job</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="n">pestot</span><span class="p">,</span> <span class="n">tasks_per_node</span><span class="p">,</span> <span class="n">num_nodes</span><span class="p">,</span> <span class="n">thread_count</span><span class="p">)</span>
+
+            <span class="c1"># Make a copy of env_mach_pes.xml in order to be able</span>
+            <span class="c1"># to check that it does not change once case.setup is invoked</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Locking file env_mach_pes.xml&quot;</span><span class="p">)</span>
+            <span class="n">case</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;at copy TOTALPES = </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;TOTALPES&quot;</span><span class="p">)))</span>
+            <span class="n">lock_file</span><span class="p">(</span><span class="s2">&quot;env_mach_pes.xml&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Create user_nl files for the required number of instances</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s2">&quot;user_nl_cpl&quot;</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Creating user_nl_xxx files for components and cpl&quot;</span><span class="p">)</span>
+
+        <span class="c1"># loop over models</span>
+        <span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">models</span><span class="p">:</span>
+            <span class="n">comp</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;COMP_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">model</span><span class="p">))</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Building </span><span class="si">{}</span><span class="s2"> usernl files&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">model</span><span class="p">))</span>
+            <span class="n">_build_usernl_files</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">comp</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">comp</span> <span class="o">==</span> <span class="s2">&quot;cism&quot;</span><span class="p">:</span>
+                <span class="n">run_cmd_no_fail</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/../components/cism/cime_config/cism.template </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cimeroot</span><span class="p">,</span> <span class="n">caseroot</span><span class="p">))</span>
+
+        <span class="n">_build_usernl_files</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="s2">&quot;drv&quot;</span><span class="p">,</span> <span class="s2">&quot;cpl&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Create needed directories for case</span>
+        <span class="n">create_dirs</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;If an old case build already exists, might want to run </span><span class="se">\&#39;</span><span class="s2">case.build --clean</span><span class="se">\&#39;</span><span class="s2"> before building&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Some tests need namelists created here (ERP) - so do this if we are in test mode</span>
+        <span class="k">if</span> <span class="n">test_mode</span> <span class="ow">or</span> <span class="n">get_model</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;acme&quot;</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Generating component namelists as part of setup&quot;</span><span class="p">)</span>
+            <span class="n">create_namelists</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
+
+        <span class="c1"># Record env information</span>
+        <span class="n">env_module</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_env</span><span class="p">(</span><span class="s2">&quot;mach_specific&quot;</span><span class="p">)</span>
+        <span class="n">env_module</span><span class="o">.</span><span class="n">make_env_mach_specific_file</span><span class="p">(</span><span class="n">compiler</span><span class="p">,</span> <span class="n">debug</span><span class="p">,</span> <span class="n">mpilib</span><span class="p">,</span> <span class="s2">&quot;sh&quot;</span><span class="p">)</span>
+        <span class="n">env_module</span><span class="o">.</span><span class="n">make_env_mach_specific_file</span><span class="p">(</span><span class="n">compiler</span><span class="p">,</span> <span class="n">debug</span><span class="p">,</span> <span class="n">mpilib</span><span class="p">,</span> <span class="s2">&quot;csh&quot;</span><span class="p">)</span>
+        <span class="n">env_module</span><span class="o">.</span><span class="n">save_all_env_info</span><span class="p">(</span><span class="s2">&quot;software_environment.txt&quot;</span><span class="p">)</span>
+
+<span class="c1">###############################################################################</span>
+<div class="viewcode-block" id="case_setup"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.case_setup.case_setup">[docs]</a><span class="k">def</span> <span class="nf">case_setup</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">clean</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">test_mode</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">reset</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="c1">###############################################################################</span>
+    <span class="n">caseroot</span><span class="p">,</span> <span class="n">casebaseid</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASEROOT&quot;</span><span class="p">),</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASEBASEID&quot;</span><span class="p">)</span>
+    <span class="n">phase</span> <span class="o">=</span> <span class="s2">&quot;setup.clean&quot;</span> <span class="k">if</span> <span class="n">clean</span> <span class="k">else</span> <span class="s2">&quot;case.setup&quot;</span>
+    <span class="n">functor</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">_case_setup_impl</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">caseroot</span><span class="p">,</span> <span class="n">clean</span><span class="p">,</span> <span class="n">test_mode</span><span class="p">,</span> <span class="n">reset</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;TEST&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">test_mode</span><span class="p">:</span>
+        <span class="n">test_name</span> <span class="o">=</span> <span class="n">casebaseid</span> <span class="k">if</span> <span class="n">casebaseid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASE&quot;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">TestStatus</span><span class="p">(</span><span class="n">test_dir</span><span class="o">=</span><span class="n">caseroot</span><span class="p">,</span> <span class="n">test_name</span><span class="o">=</span><span class="n">test_name</span><span class="p">)</span> <span class="k">as</span> <span class="n">ts</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">run_and_log_case_status</span><span class="p">(</span><span class="n">functor</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="n">caseroot</span><span class="o">=</span><span class="n">caseroot</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="n">ts</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span><span class="n">SETUP_PHASE</span><span class="p">,</span> <span class="n">TEST_FAIL_STATUS</span><span class="p">)</span>
+                <span class="k">raise</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">clean</span><span class="p">:</span>
+                    <span class="n">ts</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span><span class="n">SETUP_PHASE</span><span class="p">,</span> <span class="n">TEST_PEND_STATUS</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">ts</span><span class="o">.</span><span class="n">set_status</span><span class="p">(</span><span class="n">SETUP_PHASE</span><span class="p">,</span> <span class="n">TEST_PASS_STATUS</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">run_and_log_case_status</span><span class="p">(</span><span class="n">functor</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="n">caseroot</span><span class="o">=</span><span class="n">caseroot</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">CIME 5.3.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
+    </div>
+  </body>
+</html>

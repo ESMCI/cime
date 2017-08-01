@@ -1,0 +1,14 @@
+
+.. _create_train:
+
+####################################################
+create_train 
+####################################################
+
+**create_train** is a script in CIMEROOT/scripts/Tools.
+
+.. toctree::
+   :maxdepth: 1
+
+.. command-output:: ./create_train --help
+   :cwd: ../../../scripts/Tools

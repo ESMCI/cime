@@ -1,0 +1,229 @@
+
+
+<!doctype html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>CIME.SystemTests.erp &#8212; CIME 5.3.0 documentation</title>
+    <link rel="stylesheet" href="../../../_static/bizstyle.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '5.3.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/bizstyle.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">CIME 5.3.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for CIME.SystemTests.erp</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">CIME ERP test.  This class inherits from SystemTestsCommon</span>
+
+<span class="sd">This is a pes counts hybrid (open-MP/MPI) restart bfb test from</span>
+<span class="sd">startup.  This is just like an ERS test but the pe-counts/threading</span>
+<span class="sd">count are modified on retart.</span>
+<span class="sd">(1) Do an initial run with pes set up out of the box (suffix base)</span>
+<span class="sd">(2) Do a restart test with half the number of tasks and threads (suffix rest)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">CIME.case_setup</span> <span class="k">import</span> <span class="n">case_setup</span>
+<span class="kn">import</span> <span class="nn">CIME.utils</span>
+<span class="kn">from</span> <span class="nn">CIME.SystemTests.system_tests_common</span> <span class="k">import</span> <span class="n">SystemTestsCommon</span>
+<span class="kn">from</span> <span class="nn">CIME.check_lockedfiles</span> <span class="k">import</span> <span class="o">*</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ERP"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.erp.ERP">[docs]</a><span class="k">class</span> <span class="nc">ERP</span><span class="p">(</span><span class="n">SystemTestsCommon</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        initialize a test object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">SystemTestsCommon</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ERP.build_phase"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.erp.ERP.build_phase">[docs]</a>    <span class="k">def</span> <span class="nf">build_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sharedlib_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">model_only</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Build two cases.  Case one uses defaults, case2 uses half the number of threads</span>
+<span class="sd">        and tasks. This test will fail for components (e.g. pop) that do not reproduce exactly</span>
+<span class="sd">        with different numbers of mpi tasks.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;BUILD_THREADED&quot;</span><span class="p">,</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">sharedlib_only</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">build_indv</span><span class="p">(</span><span class="n">sharedlib_only</span><span class="o">=</span><span class="n">sharedlib_only</span><span class="p">,</span> <span class="n">model_only</span><span class="o">=</span><span class="n">model_only</span><span class="p">)</span>
+
+        <span class="n">exeroot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;EXEROOT&quot;</span><span class="p">)</span>
+        <span class="n">cime_model</span> <span class="o">=</span> <span class="n">CIME</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_model</span><span class="p">()</span>
+
+        <span class="c1"># Make backup copies of the ORIGINAL env_mach_pes.xml and</span>
+        <span class="c1"># env_build.xml in LockedFiles if they are not there. If there</span>
+        <span class="c1"># are already copies there then simply copy them back to</span>
+        <span class="c1"># have the starting env_mach_pes.xml and env_build.xml</span>
+        <span class="n">machpes1</span> <span class="o">=</span> <span class="s2">&quot;env_mach_pes.ERP1.xml&quot;</span>
+        <span class="n">envbuild1</span> <span class="o">=</span> <span class="s2">&quot;env_build.ERP1.xml&quot;</span>
+        <span class="k">if</span> <span class="n">is_locked</span><span class="p">(</span><span class="n">machpes1</span><span class="p">):</span>
+            <span class="n">restore</span><span class="p">(</span><span class="n">machpes1</span><span class="p">,</span> <span class="n">newname</span><span class="o">=</span><span class="s2">&quot;env_mach_pes.xml&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">lock_file</span><span class="p">(</span><span class="s2">&quot;env_mach_pes.xml&quot;</span><span class="p">,</span> <span class="n">newname</span><span class="o">=</span><span class="n">machpes1</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">is_locked</span><span class="p">(</span><span class="n">envbuild1</span><span class="p">):</span>
+            <span class="n">restore</span><span class="p">(</span><span class="n">envbuild1</span><span class="p">,</span> <span class="n">newname</span><span class="o">=</span><span class="s2">&quot;env_build.xml&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Build two executables, one using the original tasks and threads (ERP1) and</span>
+        <span class="c1"># one using the modified tasks and threads (ERP2)</span>
+        <span class="c1"># The reason we currently need two executables that CESM-CICE has a compile time decomposition</span>
+        <span class="c1"># For cases where ERP works, changing this decomposition will not affect answers, but it will</span>
+        <span class="c1"># affect the executable that is used</span>
+        <span class="k">for</span> <span class="n">bld</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">):</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Starting bld </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">bld</span><span class="p">))</span>
+
+            <span class="k">if</span> <span class="p">(</span><span class="n">bld</span> <span class="o">==</span> <span class="mi">2</span><span class="p">):</span>
+                <span class="c1"># halve the number of tasks and threads</span>
+                <span class="k">for</span> <span class="n">comp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_values</span><span class="p">(</span><span class="s2">&quot;COMP_CLASSES&quot;</span><span class="p">):</span>
+                    <span class="n">ntasks</span>    <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;NTASKS_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">))</span>
+                    <span class="n">nthreads</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;NTHRDS_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">))</span>
+                    <span class="n">rootpe</span>    <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;ROOTPE_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">))</span>
+                    <span class="k">if</span> <span class="p">(</span> <span class="n">nthreads</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="p">):</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;NTHRDS_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">),</span> <span class="n">nthreads</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="p">(</span> <span class="n">ntasks</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="p">):</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;NTASKS_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">),</span> <span class="n">ntasks</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;ROOTPE_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">),</span> <span class="n">rootpe</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+
+                <span class="c1"># Note, some components, like CESM-CICE, have</span>
+                <span class="c1"># decomposition information in env_build.xml</span>
+                <span class="c1"># case_setup(self._case, test_mode=True, reset=True)that</span>
+                <span class="c1"># needs to be regenerated for the above new tasks and thread counts</span>
+                <span class="n">case_setup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="p">,</span> <span class="n">test_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">reset</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+            <span class="c1"># Now rebuild the system, given updated information in env_build.xml</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">build_indv</span><span class="p">(</span><span class="n">sharedlib_only</span><span class="o">=</span><span class="n">sharedlib_only</span><span class="p">,</span> <span class="n">model_only</span><span class="o">=</span><span class="n">model_only</span><span class="p">)</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">.exe&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">exeroot</span><span class="p">,</span><span class="n">cime_model</span><span class="p">),</span>
+                        <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">.ERP</span><span class="si">{}</span><span class="s2">.exe&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">exeroot</span><span class="p">,</span><span class="n">cime_model</span><span class="p">,</span><span class="n">bld</span><span class="p">))</span>
+
+            <span class="c1"># Make copies of the new env_mach_pes.xml and the new</span>
+            <span class="c1"># env_build.xml to be used in the run phase</span>
+            <span class="n">lock_file</span><span class="p">(</span><span class="s2">&quot;env_mach_pes.xml&quot;</span><span class="p">,</span> <span class="n">newname</span><span class="o">=</span><span class="s2">&quot;env_mach_pes.ERP</span><span class="si">{}</span><span class="s2">.xml&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">bld</span><span class="p">))</span>
+            <span class="n">lock_file</span><span class="p">(</span><span class="s2">&quot;env_build.xml&quot;</span><span class="p">,</span> <span class="n">newname</span><span class="o">=</span><span class="s2">&quot;env_build.ERP</span><span class="si">{}</span><span class="s2">.xml&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">bld</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="ERP.run_phase"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.erp.ERP.run_phase">[docs]</a>    <span class="k">def</span> <span class="nf">run_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># run will have values 1,2</span>
+        <span class="k">for</span> <span class="n">run</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">):</span>
+
+            <span class="n">expect</span><span class="p">(</span><span class="n">is_locked</span><span class="p">(</span><span class="s2">&quot;env_mach_pes.ERP</span><span class="si">{:d}</span><span class="s2">.xml&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">run</span><span class="p">)),</span>
+                   <span class="s2">&quot;ERROR: LockedFiles/env_mach_pes.ERP</span><span class="si">{:d}</span><span class="s2">.xml does not exist, run case.build&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">run</span> <span class="p">))</span>
+
+            <span class="c1"># Use the second env_mach_pes.xml and env_build.xml files</span>
+            <span class="n">restore</span><span class="p">(</span><span class="s2">&quot;env_mach_pes.ERP</span><span class="si">{:d}</span><span class="s2">.xml&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">run</span><span class="p">),</span> <span class="n">newname</span><span class="o">=</span><span class="s2">&quot;env_mach_pes.xml&quot;</span><span class="p">)</span>
+            <span class="n">restore</span><span class="p">(</span><span class="s2">&quot;env_build.ERP</span><span class="si">{:d}</span><span class="s2">.xml&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">run</span><span class="p">),</span> <span class="n">newname</span><span class="o">=</span><span class="s2">&quot;env_build.xml&quot;</span><span class="p">)</span>
+
+            <span class="c1"># update the case to use the new values</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">read_xml</span><span class="p">()</span>
+
+            <span class="c1"># Use the second executable that was created</span>
+            <span class="n">exeroot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;EXEROOT&quot;</span><span class="p">)</span>
+            <span class="n">cime_model</span> <span class="o">=</span> <span class="n">CIME</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_model</span><span class="p">()</span>
+            <span class="n">exefile</span>  <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">exeroot</span><span class="p">,</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">.exe&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cime_model</span><span class="p">))</span>
+            <span class="n">exefile2</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">exeroot</span><span class="p">,</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">.ERP</span><span class="si">{:d}</span><span class="s2">.exe&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cime_model</span><span class="p">,</span><span class="n">run</span><span class="p">))</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">exefile</span><span class="p">)):</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">exefile</span><span class="p">)</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">exefile2</span><span class="p">,</span> <span class="n">exefile</span><span class="p">)</span>
+
+            <span class="n">case_setup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="p">,</span> <span class="n">test_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">reset</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">stop_n</span>      <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;STOP_N&quot;</span><span class="p">)</span>
+            <span class="n">stop_option</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;STOP_OPTION&quot;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">run</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">expect</span><span class="p">(</span><span class="n">stop_n</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;ERROR: stop_n value </span><span class="si">{:d}</span><span class="s2"> too short&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">stop_n</span><span class="p">))</span>
+                <span class="n">rest_n</span> <span class="o">=</span> <span class="n">stop_n</span><span class="o">/</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;REST_N&quot;</span><span class="p">,</span> <span class="n">rest_n</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;REST_OPTION&quot;</span><span class="p">,</span> <span class="n">stop_option</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;HIST_N&quot;</span><span class="p">,</span> <span class="n">stop_n</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;HIST_OPTION&quot;</span><span class="p">,</span> <span class="n">stop_option</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;CONTINUE_RUN&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+                <span class="n">suffix</span> <span class="o">=</span> <span class="s2">&quot;base&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">rest_n</span> <span class="o">=</span> <span class="n">stop_n</span><span class="o">/</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span>
+                <span class="n">stop_new</span> <span class="o">=</span> <span class="n">stop_n</span> <span class="o">-</span> <span class="n">rest_n</span>
+                <span class="n">expect</span><span class="p">(</span><span class="n">stop_new</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;ERROR: stop_n value </span><span class="si">{:d}</span><span class="s2"> too short </span><span class="si">{:d}</span><span class="s2"> </span><span class="si">{:d}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">stop_new</span><span class="p">,</span><span class="n">stop_n</span><span class="p">,</span><span class="n">rest_n</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;STOP_N&quot;</span><span class="p">,</span> <span class="n">stop_new</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;CONTINUE_RUN&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;REST_OPTION&quot;</span><span class="p">,</span><span class="s2">&quot;never&quot;</span><span class="p">)</span>
+                <span class="n">suffix</span> <span class="o">=</span> <span class="s2">&quot;rest&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">run_indv</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="n">suffix</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_component_compare_test</span><span class="p">(</span><span class="s2">&quot;base&quot;</span><span class="p">,</span> <span class="s2">&quot;rest&quot;</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">CIME 5.3.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
+    </div>
+  </body>
+</html>
