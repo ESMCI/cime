@@ -247,7 +247,7 @@ PIO_Offset GCDblocksize(int arrlen, const PIO_Offset *arr_in)
         if (arr_in[0] > 0)
             bsize = lgcd(bsize, arr_in[0]);
     }
-    
+
     return bsize;
 }
 
@@ -269,7 +269,7 @@ PIO_Offset GCDblocksize(int arrlen, const PIO_Offset *arr_in)
 int CalcStartandCount(int pio_type, int ndims, const int *gdims, int num_io_procs,
                       int myiorank, PIO_Offset *start, PIO_Offset *count, int *num_aiotasks)
 {
-    int minbytes; 
+    int minbytes;
     int maxbytes;
     int minblocksize; /* Like minbytes, but in data elements. */
     int basesize;     /* Size in bytes of base data type. */
@@ -435,6 +435,6 @@ int CalcStartandCount(int pio_type, int ndims, const int *gdims, int num_io_proc
 
     /* Return the number of IO procs used to the caller. */
     *num_aiotasks = use_io_procs;
-    
+
     return PIO_NOERR;
 }

@@ -289,10 +289,10 @@ int PIOc_inq_unlimdims(int ncid, int *nunlimdimsp, int *unlimdimidsp)
         else if (file->iotype == PIO_IOTYPE_PNETCDF)
         {
             LOG((2, "pnetcdf"));
-            int tmp_unlimdimid;            
+            int tmp_unlimdimid;
             ierr = ncmpi_inq_unlimdim(file->fh, &tmp_unlimdimid);
             LOG((2, "pnetcdf tmp_unlimdimid = %d", tmp_unlimdimid));
-            tmp_nunlimdims = tmp_unlimdimid >= 0 ? 1 : 0;            
+            tmp_nunlimdims = tmp_unlimdimid >= 0 ? 1 : 0;
             if (nunlimdimsp)
                 *nunlimdimsp = tmp_nunlimdims;
             if (unlimdimidsp)
@@ -338,7 +338,7 @@ int PIOc_inq_unlimdims(int ncid, int *nunlimdimsp, int *unlimdimidsp)
     /* Broadcast results to all tasks. Ignore NULL parameters. */
     if ((mpierr = MPI_Bcast(&tmp_nunlimdims, 1, MPI_INT, ios->ioroot, ios->my_comm)))
         return check_mpi(file, mpierr, __FILE__, __LINE__);
-    
+
     if (nunlimdimsp)
         if ((mpierr = MPI_Bcast(nunlimdimsp, 1, MPI_INT, ios->ioroot, ios->my_comm)))
             return check_mpi(file, mpierr, __FILE__, __LINE__);
@@ -2006,7 +2006,7 @@ int PIOc_def_var(int ncid, const char *name, nc_type xtype, int ndims,
         /* How many unlimited dims are present in the file? */
         if ((ierr = PIOc_inq_unlimdims(ncid, &nunlimdims, NULL)))
             return check_netcdf(file, ierr, __FILE__, __LINE__);
-        
+
         if (nunlimdims)
         {
             int unlimdimids[nunlimdims];
@@ -2030,7 +2030,7 @@ int PIOc_def_var(int ncid, const char *name, nc_type xtype, int ndims,
                         break;
                     }
                 }
-                
+
                 /* Only first dim may be unlimited, for PIO. */
                 if (unlim_found)
                 {
@@ -2084,7 +2084,7 @@ int PIOc_def_var(int ncid, const char *name, nc_type xtype, int ndims,
     /* Check that only one unlimited dim is specified, and that it is
      * first. */
     if (invalid_unlim_dim)
-            return PIO_EINVAL;
+        return PIO_EINVAL;
 
     /* If this is an IO task, then call the netCDF function. */
     if (ios->ioproc)
@@ -2123,7 +2123,7 @@ int PIOc_def_var(int ncid, const char *name, nc_type xtype, int ndims,
     if ((ierr = add_to_varlist(varid, rec_var, xtype, &file->varlist)))
         return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
     file->nvars++;
- 
+
     return PIO_NOERR;
 }
 
@@ -2240,7 +2240,7 @@ int PIOc_def_var_fill(int ncid, int varid, int fill_mode, const void *fill_value
         else if (file->iotype == PIO_IOTYPE_NETCDF)
         {
             LOG((2, "defining fill value attribute for netCDF classic file"));
-            if (file->do_io)            
+            if (file->do_io)
                 ierr = nc_put_att(file->fh, varid, _FillValue, xtype, 1, fill_valuep);
         }
         else

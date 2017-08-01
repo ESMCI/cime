@@ -28,10 +28,10 @@ extern PIO_Offset maxusage;
 /* handler for freeing the memory buffer pool */
 void bpool_free(void *p)
 {
-  free(p);
-  if(p == CN_bpool){
-    CN_bpool = NULL;
-  }
+    free(p);
+    if(p == CN_bpool){
+        CN_bpool = NULL;
+    }
 }
 
 /**
@@ -67,10 +67,10 @@ int compute_buffer_init(iosystem_desc_t *ios)
     return PIO_NOERR;
 }
 
-/** 
+/**
  * Fill start/count arrays for write_darray_multi_par(). This is an
  * internal funciton.
- * 
+ *
  * @param ndims the number of dims in the decomposition.
  * @param fndims the number of dims in the file.
  * @param vdesc pointer to the var_desc_t info.
@@ -136,7 +136,7 @@ int find_start_count(int ndims, int fndims, var_desc_t *vdesc,
             LOG((3, "start[%d] = %d count[%d] = %d", i, start[i], i, count[i]));
 #endif /* PIO_ENABLE_LOGGING */
     }
-    
+
     return PIO_NOERR;
 }
 
@@ -184,7 +184,7 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
 
     /* Point to var description scruct for first var. */
     if ((ierr = get_var_desc(varids[0], &file->varlist, &vdesc)))
-        return pio_err(NULL, file, ierr, __FILE__, __LINE__);        
+        return pio_err(NULL, file, ierr, __FILE__, __LINE__);
 
     /* Set these differently for data and fill writing. */
     int num_regions = fill ? iodesc->maxfillregions: iodesc->maxregions;
@@ -211,7 +211,7 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
             /* Fill the start/count arrays. */
             if ((ierr = find_start_count(iodesc->ndims, fndims, vdesc, region, frame,
                                          start, count)))
-                return pio_err(ios, file, ierr, __FILE__, __LINE__);            
+                return pio_err(ios, file, ierr, __FILE__, __LINE__);
 
             /* IO tasks will run the netCDF/pnetcdf functions to write the data. */
             switch (file->iotype)
@@ -691,7 +691,7 @@ int write_darray_multi_serial(file_desc_t *file, int nvars, int fndims, const in
     int num_regions = fill ? iodesc->maxfillregions: iodesc->maxregions;
     io_region *region = fill ? iodesc->fillregion : iodesc->firstregion;
     PIO_Offset llen = fill ? iodesc->holegridsize : iodesc->llen;
-    void *iobuf = fill ? vdesc->fillbuf : file->iobuf; 
+    void *iobuf = fill ? vdesc->fillbuf : file->iobuf;
 
 #ifdef TIMING
     /* Start timing this function. */
@@ -1237,7 +1237,7 @@ int flush_output_buffer(file_desc_t *file, bool force, PIO_Offset addsize)
         for (int i = 0; i < file->nvars; i++)
         {
             if ((ierr = get_var_desc(i, &file->varlist, &vdesc)))
-                return pio_err(NULL, file, ierr, __FILE__, __LINE__);        
+                return pio_err(NULL, file, ierr, __FILE__, __LINE__);
             reqcnt += vdesc->nreqs;
             if (vdesc->nreqs > 0)
                 maxreq = i;
@@ -1248,7 +1248,7 @@ int flush_output_buffer(file_desc_t *file, bool force, PIO_Offset addsize)
         for (int i = 0; i <= maxreq; i++)
         {
             if ((ierr = get_var_desc(i, &file->varlist, &vdesc)))
-                return pio_err(NULL, file, ierr, __FILE__, __LINE__);        
+                return pio_err(NULL, file, ierr, __FILE__, __LINE__);
 #ifdef MPIO_ONESIDED
             /*onesided optimization requires that all of the requests in a wait_all call represent
               a contiguous block of data in the file */
@@ -1287,7 +1287,7 @@ int flush_output_buffer(file_desc_t *file, bool force, PIO_Offset addsize)
         for (int v = 0; v < file->nvars; v++)
         {
             if ((ierr = get_var_desc(v, &file->varlist, &vdesc)))
-                return pio_err(NULL, file, ierr, __FILE__, __LINE__);        
+                return pio_err(NULL, file, ierr, __FILE__, __LINE__);
             if (vdesc->fillbuf)
             {
                 brel(vdesc->fillbuf);

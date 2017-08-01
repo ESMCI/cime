@@ -466,23 +466,23 @@ int define_iodesc_datatypes(iosystem_desc_t *ios, io_desc_t *iodesc)
         if (!iodesc->stype)
         {
             int ntypes;
-            
+
             /* Subset rearranger gets one type; box rearranger gets one
              * type per IO task. */
             ntypes = iodesc->rearranger == PIO_REARR_SUBSET ? 1 : ios->num_iotasks;
-            
+
             /* Allocate memory for array of MPI types for the computation tasks. */
             if (!(iodesc->stype = malloc(ntypes * sizeof(MPI_Datatype))))
                 return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
             LOG((3, "allocated memory for computation MPI types ntypes = %d", ntypes));
-            
+
             /* Initialize send types to NULL. */
             for (int i = 0; i < ntypes; i++)
                 iodesc->stype[i] = PIO_DATATYPE_NULL;
-            
+
             /* Remember how many types we created for the send side. */
             iodesc->num_stypes = ntypes;
-            
+
             /* Create the MPI data types. */
             LOG((3, "about to call create_mpi_datatypes for computation MPI types"));
             if ((ret = create_mpi_datatypes(iodesc->mpitype, ntypes, iodesc->sindex,
@@ -590,7 +590,7 @@ int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc,
                  send_counts[ios->ioranks[i]], ios->ioranks[i], send_displs[ios->ioranks[i]]));
         }
     }
-    
+
     /* IO tasks need to know how many data elements they will receive
      * from each compute task. Allocate space for that, and set up
      * swapm call. */
@@ -849,7 +849,7 @@ int rearrange_comp2io(iosystem_desc_t *ios, io_desc_t *iodesc, void *sbuf,
             if (iodesc->rtype[i] != PIO_DATATYPE_NULL)
             {
                 LOG((3, "iodesc->rtype[%d] = %d iodesc->rearranger = %d", i, iodesc->rtype[i],
-                        iodesc->rearranger));
+                     iodesc->rearranger));
                 if (iodesc->rearranger == PIO_REARR_SUBSET)
                 {
                     LOG((3, "exchanging data for subset rearranger"));
@@ -934,7 +934,7 @@ int rearrange_comp2io(iosystem_desc_t *ios, io_desc_t *iodesc, void *sbuf,
             sendcounts[io_comprank] = 0;
         }
     }
-    
+
     /* Data in sbuf on the compute nodes is sent to rbuf on the ionodes */
     LOG((2, "about to call pio_swapm for sbuf"));
     if ((ret = pio_swapm(sbuf, sendcounts, sdispls, sendtypes,
@@ -1636,7 +1636,7 @@ int subset_rearrange_create(iosystem_desc_t *ios, int maplen, PIO_Offset *compma
      * of that subset_comm */
     /* TODO: introduce a mechanism for users to define partitions */
     if ((ret = default_subset_partition(ios, iodesc)))
-            return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
     iodesc->rearranger = PIO_REARR_SUBSET;
 
     /* Get size of this subset communicator and rank of this task in it. */

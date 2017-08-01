@@ -119,8 +119,8 @@ extern "C" {
     int get_var_desc(int varid, var_desc_t **varlist, var_desc_t **var_desc);
 
     /* Delete a var_desc_t from a varlist. */
-    int delete_var_desc(int varid, var_desc_t **varlist);    
-    
+    int delete_var_desc(int varid, var_desc_t **varlist);
+
     void pio_push_request(file_desc_t *file, int request);
 
     /* Create a file (internal function). */
@@ -326,7 +326,7 @@ extern "C" {
     int PIOc_get_var1_tc(int ncid, int varid, const PIO_Offset *index, nc_type xtype,
                          void *buf);
     int PIOc_get_var_tc(int ncid, int varid, nc_type xtype, void *buf);
-    
+
 
     /* Generalized put functions. */
     int PIOc_put_vars_tc(int ncid, int varid, const PIO_Offset *start, const PIO_Offset *count,
@@ -334,7 +334,7 @@ extern "C" {
     int PIOc_put_var1_tc(int ncid, int varid, const PIO_Offset *index, nc_type xtype,
                          const void *op);
     int PIOc_put_var_tc(int ncid, int varid, nc_type xtype, const void *op);
-    
+
     /* An internal replacement for a function pnetcdf does not
      * have. */
     int pioc_pnetcdf_inq_type(int ncid, nc_type xtype, char *name,

@@ -14,7 +14,7 @@ static iosystem_desc_t *pio_iosystem_list = NULL;
 static file_desc_t *pio_file_list = NULL;
 static file_desc_t *current_file = NULL;
 
-/** 
+/**
  * Add a new entry to the global list of open files.
  *
  * @param file pointer to the file_desc_t struct for the new file.
@@ -47,7 +47,7 @@ void pio_add_to_file_list(file_desc_t *file)
     }
 }
 
-/** 
+/**
  * Given ncid, find the file_desc_t data for an open file. The ncid
  * used is the interally generated pio_ncid.
  *
@@ -96,7 +96,7 @@ int pio_get_file(int ncid, file_desc_t **cfile1)
     return PIO_NOERR;
 }
 
-/** 
+/**
  * Delete a file from the list of open files.
  *
  * @param ncid ID of file to delete from list
@@ -128,7 +128,7 @@ int pio_delete_file_from_list(int ncid)
 
             /* Free the memory used for this file. */
             free(cfile);
-            
+
             return PIO_NOERR;
         }
         pfile = cfile;
@@ -138,7 +138,7 @@ int pio_delete_file_from_list(int ncid)
     return PIO_EBADID;
 }
 
-/** 
+/**
  * Delete iosystem info from list.
  *
  * @param piosysid the iosysid to delete
@@ -168,7 +168,7 @@ int pio_delete_iosystem_from_list(int piosysid)
     return PIO_EBADID;
 }
 
-/** 
+/**
  * Add iosystem info to list.
  *
  * @param ios pointer to the iosystem_desc_t info to add.
@@ -202,7 +202,7 @@ int pio_add_to_iosystem_list(iosystem_desc_t *ios)
     return ios->iosysid;
 }
 
-/** 
+/**
  * Get iosystem info from list.
  *
  * @param iosysid id of the iosystem
@@ -222,7 +222,7 @@ iosystem_desc_t *pio_get_iosystem_from_id(int iosysid)
     return NULL;
 }
 
-/** 
+/**
  * Count the number of open iosystems.
  *
  * @param niosysid pointer that will get the number of open iosystems.
@@ -244,7 +244,7 @@ int pio_num_iosystem(int *niosysid)
     return PIO_NOERR;
 }
 
-/** 
+/**
  * Add an iodesc.
  *
  * @param io_desc_t pointer to data to add to list.
@@ -273,7 +273,7 @@ int pio_add_to_iodesc_list(io_desc_t *iodesc)
     return iodesc->ioid;
 }
 
-/** 
+/**
  * Get an iodesc.
  *
  * @param ioid ID of iodesc to get.
@@ -299,7 +299,7 @@ io_desc_t *pio_get_iodesc_from_id(int ioid)
     return ciodesc;
 }
 
-/** 
+/**
  * Delete an iodesc.
  *
  * @param ioid ID of iodesc to delete.
@@ -329,7 +329,7 @@ int pio_delete_iodesc_from_list(int ioid)
     return PIO_EBADID;
 }
 
-/** 
+/**
  * Add var_desc_t info to the list.
  *
  * @param varid the varid of the variable.
@@ -358,7 +358,7 @@ int add_to_varlist(int varid, int rec_var, int pio_type, var_desc_t **varlist)
     if (*varlist)
     {
         var_desc_t *v;
-        
+
         /* Move to end of list. */
         for (v = *varlist; v->next; v = v->next)
             ;
@@ -366,11 +366,11 @@ int add_to_varlist(int varid, int rec_var, int pio_type, var_desc_t **varlist)
     }
     else
         *varlist = var_desc;
-    
+
     return PIO_NOERR;
 }
 
-/** 
+/**
  * Get a var_desc_t info for a variable.
  *
  * @param varid ID of variable to get var_desc_t of.
@@ -382,7 +382,7 @@ int add_to_varlist(int varid, int rec_var, int pio_type, var_desc_t **varlist)
 int get_var_desc(int varid, var_desc_t **varlist, var_desc_t **var_desc)
 {
     var_desc_t *my_var;
-    
+
     /* Check inputs. */
     LOG((2, "get_var_desc varid = %d", varid));
 
@@ -400,11 +400,11 @@ int get_var_desc(int varid, var_desc_t **varlist, var_desc_t **var_desc)
         return PIO_ENOTVAR;
     else
         *var_desc = my_var;
-    
+
     return PIO_NOERR;
 }
 
-/** 
+/**
  * Delete var_desc_t info for a variable.
  *
  * @param varid ID of variable to delete.
@@ -450,6 +450,6 @@ int delete_var_desc(int varid, var_desc_t **varlist)
     if (v->fillvalue)
         free(v->fillvalue);
     free(v);
-    
+
     return PIO_NOERR;
 }

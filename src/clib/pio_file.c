@@ -290,7 +290,7 @@ int PIOc_deletefile(int iosysid, const char *filename)
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     int ierr = PIO_NOERR;  /* Return code from function calls. */
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
-     int msg = PIO_MSG_DELETE_FILE;
+    int msg = PIO_MSG_DELETE_FILE;
     size_t len;
 
     LOG((1, "PIOc_deletefile iosysid = %d filename = %s", iosysid, filename));
@@ -333,7 +333,7 @@ int PIOc_deletefile(int iosysid, const char *filename)
         mpierr = MPI_Barrier(ios->io_comm);
 
         if (!mpierr && ios->io_rank == 0)
-             ierr = nc_delete(filename);
+            ierr = nc_delete(filename);
 
         if (!mpierr)
             mpierr = MPI_Barrier(ios->io_comm);
@@ -381,7 +381,7 @@ int PIOc_sync(int ncid)
         if (file->mode & PIO_WRITE)
         {
             wmulti_buffer *wmb, *twmb;
-            
+
             LOG((3, "PIOc_sync checking buffers"));
             wmb = &file->buffer;
             while (wmb)

@@ -137,16 +137,16 @@ int PIOc_advanceframe(int ncid, int varid)
         if (!ios->ioproc)
         {
             int msg = PIO_MSG_ADVANCEFRAME;
-            
+
             if (ios->compmaster == MPI_ROOT)
                 mpierr = MPI_Send(&msg, 1, MPI_INT, ios->ioroot, 1, ios->union_comm);
-            
+
             if (!mpierr)
                 mpierr = MPI_Bcast(&ncid, 1, MPI_INT, ios->compmaster, ios->intercomm);
             if (!mpierr)
                 mpierr = MPI_Bcast(&varid, 1, MPI_INT, ios->compmaster, ios->intercomm);
         }
-        
+
         /* Handle MPI errors. */
         if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
             check_mpi2(ios, NULL, mpierr2, __FILE__, __LINE__);
@@ -157,7 +157,7 @@ int PIOc_advanceframe(int ncid, int varid)
     /* Increment the record number. */
     /* file->varlist[varid].record++; */
     vdesc->record++;
-    
+
     return PIO_NOERR;
 }
 
@@ -201,10 +201,10 @@ int PIOc_setframe(int ncid, int varid, int frame)
         if (!ios->ioproc)
         {
             int msg = PIO_MSG_SETFRAME;
-            
+
             if (ios->compmaster == MPI_ROOT)
                 mpierr = MPI_Send(&msg, 1, MPI_INT, ios->ioroot, 1, ios->union_comm);
-            
+
             if (!mpierr)
                 mpierr = MPI_Bcast(&ncid, 1, MPI_INT, ios->compmaster, ios->intercomm);
             if (!mpierr)
@@ -212,7 +212,7 @@ int PIOc_setframe(int ncid, int varid, int frame)
             if (!mpierr)
                 mpierr = MPI_Bcast(&frame, 1, MPI_INT, ios->compmaster, ios->intercomm);
         }
-        
+
         /* Handle MPI errors. */
         if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
             check_mpi2(ios, NULL, mpierr2, __FILE__, __LINE__);
@@ -543,8 +543,8 @@ int PIOc_InitDecomp(int iosysid, int pio_type, int ndims, const int *gdimlen, in
                 /* Compute start and count values for each io task. */
                 LOG((2, "about to call CalcStartandCount pio_type = %d ndims = %d", pio_type, ndims));
                 if ((ierr = CalcStartandCount(pio_type, ndims, gdimlen, ios->num_iotasks,
-                                             ios->io_rank, iodesc->firstregion->start,
-                                             iodesc->firstregion->count, &iodesc->num_aiotasks)))
+                                              ios->io_rank, iodesc->firstregion->start,
+                                              iodesc->firstregion->count, &iodesc->num_aiotasks)))
                     return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
             }
 
@@ -580,7 +580,7 @@ int PIOc_InitDecomp(int iosysid, int pio_type, int ndims, const int *gdimlen, in
          iodesc->maxiobuflen));
     for (int j = 0; j < iodesc->llen; j++)
         LOG((3, "rindex[%d] = %lld", j, iodesc->rindex[j]));
-#endif /* PIO_ENABLE_LOGGING */            
+#endif /* PIO_ENABLE_LOGGING */
 
     /* This function only does something if pre-processor macro
      * PERFTUNE is set. */
@@ -803,7 +803,7 @@ int PIOc_Init_Intracomm(MPI_Comm comp_comm, int num_iotasks, int stride, int bas
     /* Initialize the rearranger options. */
     ios->rearr_opts.comm_type = PIO_REARR_COMM_COLL;
     ios->rearr_opts.fcd = PIO_REARR_COMM_FC_2D_DISABLE;
-    
+
     /* Copy the computation communicator into union_comm. */
     if ((mpierr = MPI_Comm_dup(comp_comm, &ios->union_comm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
@@ -1414,7 +1414,7 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
         /* Initialize the rearranger options. */
         my_iosys->rearr_opts.comm_type = PIO_REARR_COMM_COLL;
         my_iosys->rearr_opts.fcd = PIO_REARR_COMM_FC_2D_DISABLE;
-        
+
         /* The rank of the computation leader in the union comm. */
         my_iosys->comproot = num_io_procs;
         LOG((3, "my_iosys->comproot = %d", my_iosys->comproot));
@@ -1450,7 +1450,7 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
         /* Allocate space for computation task ranks. */
         if (!(my_iosys->compranks = calloc(my_iosys->num_comptasks, sizeof(int))))
             return pio_err(NULL, NULL, PIO_ENOMEM, __FILE__, __LINE__);
-        
+
         /* Remember computation task ranks. */
         for (int p = 0; p < num_procs_per_comp[cmp]; p++)
             my_iosys->compranks[p] = my_proc_list[cmp][p];
