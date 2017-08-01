@@ -113,7 +113,7 @@ extern "C" {
     int pio_delete_file_from_list(int ncid);
     void pio_add_to_file_list(file_desc_t *file);
     /* Add a var_desc_t to a varlist. */
-    int add_to_varlist(int varid, int rec_var, var_desc_t **varlist);
+    int add_to_varlist(int varid, int rec_var, int pio_type, var_desc_t **varlist);
 
     /* Find a var_desc_t in a varlist. */
     int get_var_desc(int varid, var_desc_t **varlist, var_desc_t **var_desc);

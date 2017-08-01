@@ -509,6 +509,11 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
     if ((ierr = get_var_desc(varid, &file->varlist, &vdesc)))
         return pio_err(ios, file, ierr, __FILE__, __LINE__);        
 
+    /* If the type of the var doesn't match the type of the
+     * decomposition, return an error. */
+    if (iodesc->piotype != vdesc->pio_type)
+        return pio_err(ios, file, PIO_EINVAL, __FILE__, __LINE__);        
+
     /* If we don't know the fill value for this var, get it. */
     if (!vdesc->fillvalue)
         if ((ierr = find_var_fillvalue(file, varid, vdesc)))

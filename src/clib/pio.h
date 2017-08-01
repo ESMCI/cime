@@ -132,6 +132,9 @@ typedef struct var_desc_t
      * missing sections of data when using the subset rearranger. */
     void *fillbuf;
 
+    /** The PIO data type. */
+    int pio_type;
+
     /** Pointer to next var in list. */
     struct var_desc_t *next;
 } var_desc_t;
@@ -535,7 +538,7 @@ typedef struct file_desc_t
     /** The ncid that will be returned to the user. */
     int pio_ncid;
 
-    /** The PIO_TYPE value that was used to open this file. */
+    /** The IOTYPE value that was used to open this file. */
     int iotype;
 
     /** List of variables in this file. */
@@ -553,6 +556,9 @@ typedef struct file_desc_t
 
     /** Data buffer for this file. */
     void *iobuf;
+
+    /** PIO data type. */
+    int pio_type;
 
     /** Pointer to the next file_desc_t in the list of open files. */
     struct file_desc_t *next;
