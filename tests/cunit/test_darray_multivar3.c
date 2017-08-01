@@ -1,5 +1,7 @@
 /*
- * Tests for PIO distributed arrays.
+ * Tests for PIO distributed arrays. This test demonstrates problems
+ * with the fill value that can arrise from mixing types in a
+ * decomposition.
  *
  * @author Ed Hartnett
  */
@@ -139,9 +141,21 @@ int test_multivar_darray(int iosysid, int ioid, int num_flavors, int *flavor,
             if ((ret = PIOc_write_darray(ncid, varid[1], ioid, arraylen, test_data_int,
                                          fvp_int)))
                 ERR(ret);
-            if ((ret = PIOc_write_darray(ncid, varid[2], ioid, arraylen, test_data_float,
-                                         fvp_float)))
-                ERR(ret);
+
+            /* This should not work, since the type of the var is
+             * PIO_FLOAT, and the type if the decomposition is
+             * PIO_INT. */
+            if (PIOc_write_darray(ncid, varid[2], ioid, arraylen, test_data_float,
+                                  fvp_float) != PIO_EINVAL)
+                ERR(ERR_WRONG);
+
+            /* This should also fail, because it mixes an int and a
+             * float. */
+            int frame[NUM_VAR] = {0, 0, 0};
+            if (PIOc_write_darray_multi(ncid, varid, ioid, NUM_VAR, arraylen * NUM_VAR, test_data_float,
+                                        frame, NULL, 0) != PIO_EINVAL)
+                ERR(ERR_WRONG);
+            
 
             /* Close the netCDF file. */
             if ((ret = PIOc_closefile(ncid)))
@@ -151,7 +165,7 @@ int test_multivar_darray(int iosysid, int ioid, int num_flavors, int *flavor,
             {
                 int ncid2;            /* The ncid of the re-opened netCDF file. */
                 int test_data_int_in[arraylen];
-                float test_data_float_in[arraylen];
+                /* float test_data_float_in[arraylen]; */
                         
                 /* Reopen the file. */
                 if ((ret = PIOc_openfile(iosysid, &ncid2, &flavor[fmt], filename, PIO_NOWRITE)))
@@ -169,17 +183,6 @@ int test_multivar_darray(int iosysid, int ioid, int num_flavors, int *flavor,
                         /* Check the results. */
                         for (int f = 0; f < arraylen; f++)
                             if (test_data_int_in[f] != test_data_int[f])
-                                return ERR_WRONG;
-                    }
-                    else
-                    {
-                        /* Read the data. */
-                        if ((ret = PIOc_read_darray(ncid2, varid[v], ioid, arraylen, test_data_float_in)))
-                            ERR(ret);
-                
-                        /* Check the results. */
-                        for (int f = 0; f < arraylen; f++)
-                            if (test_data_float_in[f] != test_data_float[f])
                                 return ERR_WRONG;
                     }
                 } /* next var */

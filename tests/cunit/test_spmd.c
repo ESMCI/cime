@@ -239,13 +239,13 @@ int test_varlists()
         return ERR_WRONG;
 
     /* Add a var to the list. */
-    if ((ret = add_to_varlist(0, 1, &varlist)))
+    if ((ret = add_to_varlist(0, 1, PIO_INT, &varlist)))
         return ret;
 
     /* Find that var_desc_t. */
     if ((ret = get_var_desc(0, &varlist, &var_desc)))
         return ret;
-    if (var_desc->varid != 0 || !var_desc->rec_var)
+    if (var_desc->varid != 0 || !var_desc->rec_var || var_desc->pio_type != PIO_INT)
         return ERR_WRONG;
 
     /* Try to delete a non-existing var - should fail. */
@@ -275,27 +275,27 @@ int test_varlists2()
     int ret;
 
     /* Add some vars to the list. */
-    if ((ret = add_to_varlist(0, 1, &varlist)))
+    if ((ret = add_to_varlist(0, 1, PIO_INT, &varlist)))
         return ret;
-    if ((ret = add_to_varlist(1, 0, &varlist)))
+    if ((ret = add_to_varlist(1, 0, PIO_DOUBLE, &varlist)))
         return ret;
-    if ((ret = add_to_varlist(2, 1, &varlist)))
+    if ((ret = add_to_varlist(2, 1, PIO_BYTE, &varlist)))
         return ret;
 
     /* Find those var_desc_t. */
     if ((ret = get_var_desc(0, &varlist, &var_desc)))
         return ret;
-    if (var_desc->varid != 0 || !var_desc->rec_var)
+    if (var_desc->varid != 0 || !var_desc->rec_var || var_desc->pio_type != PIO_INT)
         return ERR_WRONG;
 
     if ((ret = get_var_desc(1, &varlist, &var_desc)))
         return ret;
-    if (var_desc->varid != 1 || var_desc->rec_var)
+    if (var_desc->varid != 1 || var_desc->rec_var || var_desc->pio_type != PIO_DOUBLE)
         return ERR_WRONG;
 
     if ((ret = get_var_desc(2, &varlist, &var_desc)))
         return ret;
-    if (var_desc->varid != 2 || !var_desc->rec_var)
+    if (var_desc->varid != 2 || !var_desc->rec_var || var_desc->pio_type != PIO_BYTE)
         return ERR_WRONG;
 
     /* Try to delete a non-existing var - should fail. */
@@ -344,13 +344,13 @@ int test_varlists3()
     int ret;
 
     /* Add some vars to the list. */
-    if ((ret = add_to_varlist(0, 1, &varlist)))
+    if ((ret = add_to_varlist(0, 1, PIO_INT, &varlist)))
         return ret;
-    if ((ret = add_to_varlist(1, 0, &varlist)))
+    if ((ret = add_to_varlist(1, 0, PIO_INT, &varlist)))
         return ret;
-    if ((ret = add_to_varlist(2, 1, &varlist)))
+    if ((ret = add_to_varlist(2, 1, PIO_INT, &varlist)))
         return ret;
-    if ((ret = add_to_varlist(3, 0, &varlist)))
+    if ((ret = add_to_varlist(3, 0, PIO_INT, &varlist)))
         return ret;
 
     /* Delete one of the vars. */
