@@ -49,7 +49,7 @@ int PIOc_put_varm (int ncid, int varid, const PIO_Offset start[], const PIO_Offs
 #ifdef _PNETCDF
         case PIO_IOTYPE_PNETCDF:
             if ((ierr = get_var_desc(varid, &file->varlist, &vdesc)))
-                return pio_err(ios, file, ierr, __FILE__, __LINE__);        
+                return pio_err(ios, file, ierr, __FILE__, __LINE__);
 
             if (vdesc->nreqs%PIO_REQUEST_ALLOC_CHUNK == 0 ){
                 vdesc->request = realloc(vdesc->request,
@@ -119,7 +119,7 @@ int PIOc_put_varm_uchar (int ncid, int varid, const PIO_Offset start[], const PI
 #ifdef _PNETCDF
         case PIO_IOTYPE_PNETCDF:
             if ((ierr = get_var_desc(varid, &file->varlist, &vdesc)))
-                return pio_err(ios, file, ierr, __FILE__, __LINE__);        
+                return pio_err(ios, file, ierr, __FILE__, __LINE__);
 
             if (vdesc->nreqs%PIO_REQUEST_ALLOC_CHUNK == 0 ){
                 vdesc->request = realloc(vdesc->request,
@@ -189,7 +189,7 @@ int PIOc_put_varm_short (int ncid, int varid, const PIO_Offset start[], const PI
 #ifdef _PNETCDF
         case PIO_IOTYPE_PNETCDF:
             if ((ierr = get_var_desc(varid, &file->varlist, &vdesc)))
-                return pio_err(ios, file, ierr, __FILE__, __LINE__);        
+                return pio_err(ios, file, ierr, __FILE__, __LINE__);
 
             if (vdesc->nreqs%PIO_REQUEST_ALLOC_CHUNK == 0 ){
                 vdesc->request = realloc(vdesc->request,
@@ -260,7 +260,7 @@ int PIOc_put_varm_text (int ncid, int varid, const PIO_Offset start[], const PIO
 #ifdef _PNETCDF
         case PIO_IOTYPE_PNETCDF:
             if ((ierr = get_var_desc(varid, &file->varlist, &vdesc)))
-                return pio_err(ios, file, ierr, __FILE__, __LINE__);        
+                return pio_err(ios, file, ierr, __FILE__, __LINE__);
 
             if (vdesc->nreqs%PIO_REQUEST_ALLOC_CHUNK == 0 ){
                 vdesc->request = realloc(vdesc->request,
@@ -332,7 +332,7 @@ int PIOc_put_varm_ushort (int ncid, int varid, const PIO_Offset start[], const P
 #ifdef _PNETCDF
         case PIO_IOTYPE_PNETCDF:
             if ((ierr = get_var_desc(varid, &file->varlist, &vdesc)))
-                return pio_err(ios, file, ierr, __FILE__, __LINE__);        
+                return pio_err(ios, file, ierr, __FILE__, __LINE__);
 
             if (vdesc->nreqs%PIO_REQUEST_ALLOC_CHUNK == 0 ){
                 vdesc->request = realloc(vdesc->request,
@@ -404,7 +404,7 @@ int PIOc_put_varm_ulonglong (int ncid, int varid, const PIO_Offset start[], cons
 #ifdef _PNETCDF
         case PIO_IOTYPE_PNETCDF:
             if ((ierr = get_var_desc(varid, &file->varlist, &vdesc)))
-                return pio_err(ios, file, ierr, __FILE__, __LINE__);        
+                return pio_err(ios, file, ierr, __FILE__, __LINE__);
 
             if (vdesc->nreqs%PIO_REQUEST_ALLOC_CHUNK == 0 ){
                 vdesc->request = realloc(vdesc->request,
@@ -475,7 +475,7 @@ int PIOc_put_varm_int (int ncid, int varid, const PIO_Offset start[], const PIO_
 #ifdef _PNETCDF
         case PIO_IOTYPE_PNETCDF:
             if ((ierr = get_var_desc(varid, &file->varlist, &vdesc)))
-                return pio_err(ios, file, ierr, __FILE__, __LINE__);        
+                return pio_err(ios, file, ierr, __FILE__, __LINE__);
 
             if (vdesc->nreqs%PIO_REQUEST_ALLOC_CHUNK == 0 ){
                 vdesc->request = realloc(vdesc->request,
@@ -547,7 +547,7 @@ int PIOc_put_varm_float (int ncid, int varid, const PIO_Offset start[], const PI
 #ifdef _PNETCDF
         case PIO_IOTYPE_PNETCDF:
             if ((ierr = get_var_desc(varid, &file->varlist, &vdesc)))
-                return pio_err(ios, file, ierr, __FILE__, __LINE__);        
+                return pio_err(ios, file, ierr, __FILE__, __LINE__);
 
             if (vdesc->nreqs%PIO_REQUEST_ALLOC_CHUNK == 0 ){
                 vdesc->request = realloc(vdesc->request,
@@ -618,7 +618,7 @@ int PIOc_put_varm_long (int ncid, int varid, const PIO_Offset start[], const PIO
 #ifdef _PNETCDF
         case PIO_IOTYPE_PNETCDF:
             if ((ierr = get_var_desc(varid, &file->varlist, &vdesc)))
-                return pio_err(ios, file, ierr, __FILE__, __LINE__);        
+                return pio_err(ios, file, ierr, __FILE__, __LINE__);
 
             if (vdesc->nreqs%PIO_REQUEST_ALLOC_CHUNK == 0 ){
                 vdesc->request = realloc(vdesc->request,
@@ -691,7 +691,7 @@ int PIOc_put_varm_uint (int ncid, int varid, const PIO_Offset start[], const PIO
 #ifdef _PNETCDF
         case PIO_IOTYPE_PNETCDF:
             if ((ierr = get_var_desc(varid, &file->varlist, &vdesc)))
-                return pio_err(ios, file, ierr, __FILE__, __LINE__);        
+                return pio_err(ios, file, ierr, __FILE__, __LINE__);
 
             if (vdesc->nreqs%PIO_REQUEST_ALLOC_CHUNK == 0 ){
                 vdesc->request = realloc(vdesc->request,
@@ -763,7 +763,7 @@ int PIOc_put_varm_double (int ncid, int varid, const PIO_Offset start[], const P
 #ifdef _PNETCDF
         case PIO_IOTYPE_PNETCDF:
             if ((ierr = get_var_desc(varid, &file->varlist, &vdesc)))
-                return pio_err(ios, file, ierr, __FILE__, __LINE__);        
+                return pio_err(ios, file, ierr, __FILE__, __LINE__);
 
             if (vdesc->nreqs%PIO_REQUEST_ALLOC_CHUNK == 0 ){
                 vdesc->request = realloc(vdesc->request,
@@ -834,7 +834,7 @@ int PIOc_put_varm_schar (int ncid, int varid, const PIO_Offset start[], const PI
 #ifdef _PNETCDF
         case PIO_IOTYPE_PNETCDF:
             if ((ierr = get_var_desc(varid, &file->varlist, &vdesc)))
-                return pio_err(ios, file, ierr, __FILE__, __LINE__);        
+                return pio_err(ios, file, ierr, __FILE__, __LINE__);
 
             if (vdesc->nreqs%PIO_REQUEST_ALLOC_CHUNK == 0 ){
                 vdesc->request = realloc(vdesc->request,
@@ -904,7 +904,7 @@ int PIOc_put_varm_longlong (int ncid, int varid, const PIO_Offset start[], const
 #ifdef _PNETCDF
         case PIO_IOTYPE_PNETCDF:
             if ((ierr = get_var_desc(varid, &file->varlist, &vdesc)))
-                return pio_err(ios, file, ierr, __FILE__, __LINE__);        
+                return pio_err(ios, file, ierr, __FILE__, __LINE__);
 
             if (vdesc->nreqs%PIO_REQUEST_ALLOC_CHUNK == 0 ){
                 vdesc->request = realloc(vdesc->request,

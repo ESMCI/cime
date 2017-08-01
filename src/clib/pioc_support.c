@@ -108,7 +108,7 @@ int PIOc_set_log_level(int level)
 
 #if NETCDF_C_LOGGING_ENABLED
     int ret;
-    
+
     /* If netcdf logging is available turn it on starting at level = 4. */
     if (level > NC_LEVEL_DIFF)
         if ((ret = nc_set_log_level(level - NC_LEVEL_DIFF)))
@@ -534,7 +534,7 @@ int alloc_region2(iosystem_desc_t *ios, int ndims, io_region **regionp)
     pioassert(ndims >= 0 && regionp, "invalid input", __FILE__, __LINE__);
     LOG((1, "alloc_region2 ndims = %d sizeof(io_region) = %d", ndims,
          sizeof(io_region)));
-    
+
     /* Allocate memory for the io_region struct. */
     if (!(region = calloc(1, sizeof(io_region))))
         return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
@@ -549,7 +549,7 @@ int alloc_region2(iosystem_desc_t *ios, int ndims, io_region **regionp)
 
     /* Return pointer to new region to caller. */
     *regionp = region;
-    
+
     return PIO_NOERR;
 }
 
@@ -690,7 +690,7 @@ int malloc_iodesc(iosystem_desc_t *ios, int piotype, int ndims,
 
     /* Allocate space for, and initialize, the first region. */
     if ((ret = alloc_region2(ios, ndims, &((*iodesc)->firstregion))))
-        return pio_err(ios, NULL, ret, __FILE__, __LINE__);        
+        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
     /* Set the swap memory settings to defaults for this IO system. */
     (*iodesc)->rearr_opts = ios->rearr_opts;
@@ -1028,12 +1028,12 @@ int PIOc_write_nc_decomp(int iosysid, const char *filename, int cmode, int ioid,
         my_map[e] = e < iodesc->maplen ? iodesc->map[e] - 1 : NC_FILL_INT;
         LOG((3, "my_map[%d] = %d", e, my_map[e]));
     }
-    
+
     /* Gather my_map from all computation tasks and fill the full_map array. */
     if ((mpierr = MPI_Allgather(&my_map, max_maplen, MPI_INT, full_map, max_maplen,
                                 MPI_INT, ios->comp_comm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
-    
+
     for (int p = 0; p < ios->num_comptasks; p++)
         for (int e = 0; e < max_maplen; e++)
             LOG((3, "full_map[%d][%d] = %d", p, e, full_map[p][e]));
@@ -1229,7 +1229,7 @@ int pioc_write_nc_decomp_int(iosystem_desc_t *ios, const char *filename, int cmo
 
     /* Write an attribute with the stack trace. This can be helpful
      * for debugging. */
-    #define MAX_BACKTRACE 10
+#define MAX_BACKTRACE 10
     void *bt[MAX_BACKTRACE];
     size_t bt_size;
     char **bt_strings;
@@ -1844,7 +1844,7 @@ int PIOc_createfile_int(int iosysid, int *ncidp, int *iotype, const char *filena
  * Check that a file meets PIO requirements for use of unlimited
  * dimensions. This function is only called on netCDF-4 files. If the
  * file is found to violate PIO requirements it is closed.
- * 
+ *
  * @param ncid the file->fh for this file (the real netCDF ncid, not
  * the pio_ncid).
  * @returns 0 if file is OK, error code otherwise.
@@ -1892,7 +1892,7 @@ int check_unlim_use(int ncid)
         }
     }
 #endif /* _NETCDF4 */
-    
+
     return PIO_NOERR;
 }
 
@@ -2022,7 +2022,7 @@ int PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype, const char *filena
                 file->mode = imode;
                 /* Check the vars for valid use of unlim dims. */
                 if ((ierr = check_unlim_use(file->fh)))
-                    break;                    
+                    break;
             }
             break;
 #endif /* _NETCDF4 */
@@ -2145,7 +2145,7 @@ int openfile_int(int iosysid, int *ncidp, int *iotype, const char *filename,
     /* Get the IO system info from the iosysid. */
     if (!(ios = pio_get_iosystem_from_id(iosysid)))
         return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
-    
+
     /* Open the file. */
     if ((ierr = PIOc_openfile_retry(iosysid, ncidp, iotype, filename, mode, retry)))
         return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
@@ -2200,7 +2200,7 @@ int openfile_int(int iosysid, int *ncidp, int *iotype, const char *filename,
                         break;
                     }
                 }
-                
+
                 /* Only first dim may be unlimited, for PIO. */
                 if (unlim_found)
                 {
@@ -2211,7 +2211,7 @@ int openfile_int(int iosysid, int *ncidp, int *iotype, const char *filename,
                 }
             }
         }
-                
+
         /* Add to the list of var_desc_t structs for this file. */
         if ((ierr = add_to_varlist(v, rec_var, pio_type, &file->varlist)))
             return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
@@ -2433,7 +2433,7 @@ int PIOc_set_rearr_opts(int iosysid, int comm_type, int fcd, bool enable_hs_c2i,
         (fcd < 0 || fcd > PIO_REARR_COMM_FC_2D_DISABLE) ||
         (max_pend_req_c2i != PIO_REARR_COMM_UNLIMITED_PEND_REQ && max_pend_req_c2i < 0) ||
         (max_pend_req_i2c != PIO_REARR_COMM_UNLIMITED_PEND_REQ && max_pend_req_i2c < 0))
-        return pio_err(NULL, NULL, PIO_EINVAL, __FILE__, __LINE__);        
+        return pio_err(NULL, NULL, PIO_EINVAL, __FILE__, __LINE__);
 
     /* Get the IO system info. */
     if (!(ios = pio_get_iosystem_from_id(iosysid)))

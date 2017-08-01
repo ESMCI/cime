@@ -311,7 +311,7 @@ int pio_swapm(void *sendbuf, int *sendcounts, int *sdispls, MPI_Datatype *sendty
             else if (fc->isend)
             {
                 if ((mpierr = MPI_Isend(ptr, sendcounts[p], sendtypes[p], p, tag, comm,
-                                         sndids + istep)))
+                                        sndids + istep)))
                     return check_mpi(NULL, mpierr, __FILE__, __LINE__);
             }
             else

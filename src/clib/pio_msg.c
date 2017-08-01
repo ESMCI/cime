@@ -17,7 +17,7 @@ extern int my_rank;
 extern int pio_log_level;
 #endif /* PIO_ENABLE_LOGGING */
 
-/** 
+/**
  * This function is run on the IO tasks to handle nc_inq_type*()
  * functions.
  *
@@ -65,7 +65,7 @@ int inq_type_handler(iosystem_desc_t *ios)
     return PIO_NOERR;
 }
 
-/** 
+/**
  * This function is run on the IO tasks to find netCDF file
  * format.
  *
@@ -110,7 +110,7 @@ int inq_format_handler(iosystem_desc_t *ios)
     return PIO_NOERR;
 }
 
-/** 
+/**
  * This function is run on the IO tasks to set the file fill mode.
  *
  * @param ios pointer to the iosystem info.
@@ -154,7 +154,7 @@ int set_fill_handler(iosystem_desc_t *ios)
     return PIO_NOERR;
 }
 
-/** 
+/**
  * This function is run on the IO tasks to create a netCDF file.
  *
  * @param ios pointer to the iosystem info.
@@ -200,7 +200,7 @@ int create_file_handler(iosystem_desc_t *ios)
     return PIO_NOERR;
 }
 
-/** 
+/**
  * This function is run on the IO tasks to close a netCDF file. It is
  * only ever run on the IO tasks.
  *
@@ -233,7 +233,7 @@ int close_file_handler(iosystem_desc_t *ios)
     return PIO_NOERR;
 }
 
-/** 
+/**
  * This function is run on the IO tasks to inq a netCDF file. It is
  * only ever run on the IO tasks.
  *
@@ -289,7 +289,7 @@ int inq_handler(iosystem_desc_t *ios)
     return PIO_NOERR;
 }
 
-/** 
+/**
  * This function is run on the IO tasks to inq unlimited dimension
  * ids of a netCDF file. It is only ever run on the IO tasks.
  *
@@ -774,13 +774,13 @@ int put_vars_handler(iosystem_desc_t *ios)
 
     if ((mpierr = MPI_Bcast(&start_present, 1, MPI_CHAR, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
-    if (start_present)    
+    if (start_present)
         if ((mpierr = MPI_Bcast(start, ndims, MPI_OFFSET, 0, ios->intercomm)))
             return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     LOG((1, "put_vars_handler getting start[0] = %d ndims = %d", start[0], ndims));
     if ((mpierr = MPI_Bcast(&count_present, 1, MPI_CHAR, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
-    if (count_present)    
+    if (count_present)
         if ((mpierr = MPI_Bcast(count, ndims, MPI_OFFSET, 0, ios->intercomm)))
             return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(&stride_present, 1, MPI_CHAR, 0, ios->intercomm)))
@@ -885,7 +885,7 @@ int get_vars_handler(iosystem_desc_t *ios)
     int varid;
     int mpierr;
     PIO_Offset typelen; /** Length (in bytes) of this type. */
-    nc_type xtype; /** 
+    nc_type xtype; /**
                     * Type of the data being written. */
     PIO_Offset *start;
     PIO_Offset *count;
@@ -914,7 +914,7 @@ int get_vars_handler(iosystem_desc_t *ios)
     if (start_present)
     {
         if (!(start = malloc(ndims * sizeof(PIO_Offset))))
-            return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);            
+            return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
         if ((mpierr = MPI_Bcast(start, ndims, MPI_OFFSET, 0, ios->intercomm)))
             return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     }
@@ -923,7 +923,7 @@ int get_vars_handler(iosystem_desc_t *ios)
     if (count_present)
     {
         if (!(count = malloc(ndims * sizeof(PIO_Offset))))
-            return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);            
+            return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
         if ((mpierr = MPI_Bcast(count, ndims, MPI_OFFSET, 0, ios->intercomm)))
             return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     }
@@ -932,7 +932,7 @@ int get_vars_handler(iosystem_desc_t *ios)
     if (stride_present)
     {
         if (!(stride = malloc(ndims * sizeof(PIO_Offset))))
-            return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);            
+            return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
         if ((mpierr = MPI_Bcast(stride, ndims, MPI_OFFSET, 0, ios->intercomm)))
             return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     }
@@ -956,7 +956,7 @@ int get_vars_handler(iosystem_desc_t *ios)
 
     if (count_present)
         countp = count;
-    
+
     if (stride_present)
         stridep = stride;
 
@@ -1018,7 +1018,7 @@ int get_vars_handler(iosystem_desc_t *ios)
         free(count);
     if (stride_present)
         free(stride);
-    
+
     LOG((1, "get_vars_handler succeeded!"));
     return PIO_NOERR;
 }
@@ -1329,7 +1329,7 @@ int inq_varid_handler(iosystem_desc_t *ios)
     return PIO_NOERR;
 }
 
-/** 
+/**
  * This function is run on the IO tasks to sync a netCDF file.
  *
  * @param ios pointer to the iosystem_desc_t.
@@ -1361,7 +1361,7 @@ int sync_file_handler(iosystem_desc_t *ios)
     return PIO_NOERR;
 }
 
-/** 
+/**
  * This function is run on the IO tasks to set the record dimension
  * value for a netCDF variable.
  *
@@ -1401,7 +1401,7 @@ int setframe_handler(iosystem_desc_t *ios)
     return PIO_NOERR;
 }
 
-/** 
+/**
  * This function is run on the IO tasks to increment the record
  * dimension value for a netCDF variable.
  *
@@ -1438,7 +1438,7 @@ int advanceframe_handler(iosystem_desc_t *ios)
     return PIO_NOERR;
 }
 
-/** 
+/**
  * This function is run on the IO tasks to enddef a netCDF file.
  *
  * @param ios pointer to the iosystem_desc_t.
@@ -1470,7 +1470,7 @@ int change_def_file_handler(iosystem_desc_t *ios, int msg)
     return PIO_NOERR;
 }
 
-/** 
+/**
  * This function is run on the IO tasks to define a netCDF
  *  variable.
  *
@@ -1761,7 +1761,7 @@ int set_var_chunk_cache_handler(iosystem_desc_t *ios)
     return PIO_NOERR;
 }
 
-/** 
+/**
  * This function is run on the IO tasks to define a netCDF
  * dimension.
  *
@@ -1804,7 +1804,7 @@ int def_dim_handler(iosystem_desc_t *ios)
     return PIO_NOERR;
 }
 
-/** 
+/**
  * This function is run on the IO tasks to rename a netCDF
  * dimension.
  *
@@ -1847,7 +1847,7 @@ int rename_dim_handler(iosystem_desc_t *ios)
     return PIO_NOERR;
 }
 
-/** 
+/**
  * This function is run on the IO tasks to rename a netCDF
  * dimension.
  *
@@ -1890,7 +1890,7 @@ int rename_var_handler(iosystem_desc_t *ios)
     return PIO_NOERR;
 }
 
-/** 
+/**
  * This function is run on the IO tasks to rename a netCDF
  * attribute.
  *
@@ -1937,7 +1937,7 @@ int rename_att_handler(iosystem_desc_t *ios)
     return PIO_NOERR;
 }
 
-/** 
+/**
  * This function is run on the IO tasks to delete a netCDF
  * attribute.
  *
@@ -1980,7 +1980,7 @@ int delete_att_handler(iosystem_desc_t *ios)
     return PIO_NOERR;
 }
 
-/** 
+/**
  * This function is run on the IO tasks to open a netCDF file.
  *
  *
@@ -2027,7 +2027,7 @@ int open_file_handler(iosystem_desc_t *ios)
     return PIO_NOERR;
 }
 
-/** 
+/**
  * This function is run on the IO tasks to delete a netCDF file.
  *
  * @param ios pointer to the iosystem_desc_t data.
@@ -2067,7 +2067,7 @@ int delete_file_handler(iosystem_desc_t *ios)
     return PIO_NOERR;
 }
 
-/** 
+/**
  * This function is run on the IO tasks to initialize a decomposition.
  *
  * @param ios pointer to the iosystem_desc_t data.
@@ -2153,12 +2153,12 @@ int initdecomp_dof_handler(iosystem_desc_t *ios)
     /* Call the function. */
     ret = PIOc_InitDecomp(iosysid, pio_type, ndims, dims, maplen, compmap, &ioid, rearrangerp,
                           iostartp, iocountp);
-    
+
     LOG((1, "PIOc_InitDecomp returned %d", ret));
     return PIO_NOERR;
 }
 
-/** 
+/**
  * This function is run on the IO tasks to do darray writes.
  *
  * @param ios pointer to the iosystem_desc_t data.
@@ -2209,7 +2209,7 @@ int write_darray_multi_handler(iosystem_desc_t *ios)
     if ((mpierr = MPI_Bcast(&arraylen, 1, MPI_OFFSET, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     if (!(array = malloc(arraylen * iodesc->piotype_size)))
-        return pio_err(NULL, NULL, PIO_ENOMEM, __FILE__, __LINE__);    
+        return pio_err(NULL, NULL, PIO_ENOMEM, __FILE__, __LINE__);
     if ((mpierr = MPI_Bcast(array, arraylen * iodesc->piotype_size, MPI_CHAR, 0,
                             ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
@@ -2218,7 +2218,7 @@ int write_darray_multi_handler(iosystem_desc_t *ios)
     if (frame_present)
     {
         if (!(frame = malloc(nvars * sizeof(int))))
-            return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);            
+            return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
         if ((mpierr = MPI_Bcast(frame, nvars, MPI_INT, 0, ios->intercomm)))
             return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     }
@@ -2227,7 +2227,7 @@ int write_darray_multi_handler(iosystem_desc_t *ios)
     if (fillvalue_present)
     {
         if (!(fillvalue = malloc(nvars * iodesc->piotype_size)))
-            return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);            
+            return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
         if ((mpierr = MPI_Bcast(fillvalue, nvars * iodesc->piotype_size, MPI_CHAR, 0, ios->intercomm)))
             return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
     }
@@ -2240,7 +2240,7 @@ int write_darray_multi_handler(iosystem_desc_t *ios)
     /* Get file info based on ncid. */
     if ((ret = pio_get_file(ncid, &file)))
         return pio_err(NULL, NULL, ret, __FILE__, __LINE__);
-    
+
     /* Get decomposition information. */
     if (!(iodesc = pio_get_iodesc_from_id(ioid)))
         return pio_err(ios, file, PIO_EBADID, __FILE__, __LINE__);
@@ -2264,12 +2264,12 @@ int write_darray_multi_handler(iosystem_desc_t *ios)
     if (fillvalue_present)
         free(fillvalue);
     free(array);
-    
+
     LOG((1, "write_darray_multi_handler succeeded!"));
     return PIO_NOERR;
 }
 
-/** 
+/**
  * This function is run on the IO tasks to...
  * NOTE: not yet implemented
  *
@@ -2286,7 +2286,7 @@ int readdarray_handler(iosystem_desc_t *ios)
     return PIO_NOERR;
 }
 
-/** 
+/**
  * This function is run on the IO tasks to set the error handler.
  *
  * @param ios pointer to the iosystem_desc_t data.
@@ -2484,7 +2484,7 @@ int get_var_chunk_cache_handler(iosystem_desc_t *ios)
     return PIO_NOERR;
 }
 
-/** 
+/**
  * This function is run on the IO tasks to free the decomp hanlder.
  *
  * @param ios pointer to the iosystem_desc_t data.
@@ -2512,12 +2512,12 @@ int freedecomp_handler(iosystem_desc_t *ios)
 
     /* Call the function. */
     ret = PIOc_freedecomp(iosysid, ioid);
-    
+
     LOG((1, "PIOc_freedecomp returned %d", ret));
     return PIO_NOERR;
 }
 
-/** 
+/**
  * Handle the finalize call.
  *
  * @param ios pointer to the iosystem info

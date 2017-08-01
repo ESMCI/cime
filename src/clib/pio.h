@@ -107,11 +107,11 @@ typedef struct var_desc_t
 {
     /* Variable ID. */
     int varid;
-    
+
     /* Non-zero if this is a record var (i.e. uses unlimited
      * dimension). */
     int rec_var;
-    
+
     /** The record number to be written. Ignored if there is no
      * unlimited dimension. */
     int record;
@@ -776,7 +776,7 @@ extern "C" {
 
     /* Free resources associated with a decomposition. */
     int PIOc_freedecomp(int iosysid, int ioid);
-    
+
     int PIOc_readmap(const char *file, int *ndims, int **gdims, PIO_Offset *fmaplen,
                      PIO_Offset **map, MPI_Comm comm);
     int PIOc_readmap_from_f90(const char *file,int *ndims, int **gdims, PIO_Offset *maplen,
@@ -801,7 +801,7 @@ extern "C" {
     int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list, int component_count,
                         int *num_procs_per_comp, int **proc_list, MPI_Comm *io_comm, MPI_Comm *comp_comm,
                         int rearranger, int *iosysidp);
-    
+
     int PIOc_Init_Intercomm(int component_count, MPI_Comm peer_comm, MPI_Comm *comp_comms,
                             MPI_Comm io_comm, int *iosysidp);
     int PIOc_get_numiotasks(int iosysid, int *numiotasks);

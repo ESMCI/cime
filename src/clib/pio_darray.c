@@ -152,7 +152,7 @@ int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
 
     /* Get a pointer to the variable info for the first variable. */
     if ((ierr = get_var_desc(varids[0], &file->varlist, &vdesc0)))
-        return pio_err(ios, file, ierr, __FILE__, __LINE__);        
+        return pio_err(ios, file, ierr, __FILE__, __LINE__);
 
     /* Run these on all tasks if async is not in use, but only on
      * non-IO tasks if async is in use. */
@@ -260,8 +260,8 @@ int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
     else if (file->iotype == PIO_IOTYPE_PNETCDF && ios->ioproc)
     {
 	/* this assures that iobuf is allocated on all iotasks thus
-	 assuring that the flush_output_buffer call above is called
-	 collectively (from all iotasks) */
+           assuring that the flush_output_buffer call above is called
+           collectively (from all iotasks) */
         if (!(file->iobuf = bget(1)))
             return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
         LOG((3, "allocated token for variable buffer"));
@@ -377,13 +377,13 @@ int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
 /**
  * Find the fillvalue that should be used for a variable.
  *
- * @param file Info about file we are writing to. 
+ * @param file Info about file we are writing to.
  * @param varid the variable ID.
  * @param vdesc pointer to var_desc_t info for this var.
  * @returns 0 for success, non-zero error code for failure.
  * @ingroup PIO_write_darray
- * @author Ed Hartnett 
-*/
+ * @author Ed Hartnett
+ */
 int find_var_fillvalue(file_desc_t *file, int varid, var_desc_t *vdesc)
 {
     iosystem_desc_t *ios;  /* Pointer to io system information. */
@@ -395,23 +395,23 @@ int find_var_fillvalue(file_desc_t *file, int varid, var_desc_t *vdesc)
     /* Check inputs. */
     pioassert(file && file->iosystem && vdesc, "invalid input", __FILE__, __LINE__);
     ios = file->iosystem;
-    
+
     LOG((3, "find_var_fillvalue file->pio_ncid = %d varid = %d", file->pio_ncid, varid));
-    
+
     /* Find out PIO data type of var. */
     if ((ierr = PIOc_inq_vartype(file->pio_ncid, varid, &pio_type)))
         return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
-    
+
     /* Find out length of type. */
     if ((ierr = PIOc_inq_type(file->pio_ncid, pio_type, NULL, &type_size)))
         return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
     LOG((3, "getting fill value for varid = %d pio_type = %d type_size = %d",
          varid, pio_type, type_size));
-    
+
     /* Allocate storage for the fill value. */
     if (!(vdesc->fillvalue = malloc(type_size)))
         return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
-    
+
     /* Get the fill value. */
     if ((ierr = PIOc_inq_var_fill(file->pio_ncid, varid, &no_fill, vdesc->fillvalue)))
         return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
@@ -518,17 +518,17 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
 
     /* Get var description. */
     if ((ierr = get_var_desc(varid, &file->varlist, &vdesc)))
-        return pio_err(ios, file, ierr, __FILE__, __LINE__);        
+        return pio_err(ios, file, ierr, __FILE__, __LINE__);
 
     /* If the type of the var doesn't match the type of the
      * decomposition, return an error. */
     if (iodesc->piotype != vdesc->pio_type)
-        return pio_err(ios, file, PIO_EINVAL, __FILE__, __LINE__);        
+        return pio_err(ios, file, PIO_EINVAL, __FILE__, __LINE__);
 
     /* If we don't know the fill value for this var, get it. */
     if (!vdesc->fillvalue)
         if ((ierr = find_var_fillvalue(file, varid, vdesc)))
-            return pio_err(ios, file, PIO_EBADID, __FILE__, __LINE__);            
+            return pio_err(ios, file, PIO_EBADID, __FILE__, __LINE__);
 
     /* Is this a record variable? The user must set the vdesc->record
      * value by calling PIOc_setframe() before calling this
@@ -808,7 +808,7 @@ int PIOc_read_darray(int ncid, int varid, int ioid, PIO_Offset arraylen,
     case PIO_IOTYPE_NETCDF:
     case PIO_IOTYPE_NETCDF4C:
         if ((ierr = pio_read_darray_nc_serial(file, iodesc, varid, iobuf)))
-                return pio_err(ios, file, ierr, __FILE__, __LINE__);
+            return pio_err(ios, file, ierr, __FILE__, __LINE__);
         break;
     case PIO_IOTYPE_PNETCDF:
     case PIO_IOTYPE_NETCDF4P:
