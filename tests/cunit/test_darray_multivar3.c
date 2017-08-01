@@ -149,6 +149,14 @@ int test_multivar_darray(int iosysid, int ioid, int num_flavors, int *flavor,
                                   fvp_float) != PIO_EINVAL)
                 ERR(ERR_WRONG);
 
+            /* This should also fail, because it mixes an int and a
+             * float. */
+            int frame[NUM_VAR] = {0, 0, 0};
+            if (PIOc_write_darray_multi(ncid, varid, ioid, NUM_VAR, arraylen * NUM_VAR, test_data_float,
+                                        frame, NULL, 0) != PIO_EINVAL)
+                ERR(ERR_WRONG);
+            
+
             /* Close the netCDF file. */
             if ((ret = PIOc_closefile(ncid)))
                 ERR(ret);

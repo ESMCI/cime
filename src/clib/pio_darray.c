@@ -139,6 +139,17 @@ int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
     pioassert(iodesc->rearranger == PIO_REARR_BOX || iodesc->rearranger == PIO_REARR_SUBSET,
               "unknown rearranger", __FILE__, __LINE__);
 
+    /* Check the types of all the vars. They must match the type of
+     * the decomposition. */
+    for (int v = 0; v < nvars; v++)
+    {
+        var_desc_t *vdesc;
+        if ((ierr = get_var_desc(varids[v], &file->varlist, &vdesc)))
+            return pio_err(ios, file, ierr, __FILE__, __LINE__);
+        if (vdesc->pio_type != iodesc->piotype)
+            return pio_err(ios, file, PIO_EINVAL, __FILE__, __LINE__);
+    }
+
     /* Get a pointer to the variable info for the first variable. */
     if ((ierr = get_var_desc(varids[0], &file->varlist, &vdesc0)))
         return pio_err(ios, file, ierr, __FILE__, __LINE__);        
