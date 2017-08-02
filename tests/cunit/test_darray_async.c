@@ -1,7 +1,8 @@
 /*
  * This program tests darrays with async.
  *
- * Ed Hartnett, 5/4/17
+ * @author Ed Hartnett
+ * @date 5/4/17
  */
 #include <pio.h>
 #include <pio_tests.h>
@@ -209,7 +210,7 @@ int check_darray_file(int iosysid, char *data_filename, int iotype, int my_rank,
 }
 
 /* Run a simple test using darrays with async. */
-int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm,
+int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm, MPI_Comm comp_comm,
                           int num_flavors, int *flavor, int piotype)
 {
     int ioid;
@@ -227,9 +228,20 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm,
         ERR(ret);
 
     /* Write the decomp file (on appropriate tasks). */
-    if ((ret = PIOc_write_nc_decomp(iosysid, decomp_filename, 0, ioid, NULL, NULL, 0)))
-        return ret;
+    /* if ((ret = PIOc_write_nc_decomp(iosysid, decomp_filename, 0, ioid, NULL, NULL, 0))) */
+    /*     return ret; */
 
+    int fortran_order;
+    int ioid2;
+    printf("about to call PIOc_read_nc_decomp\n");
+    if ((ret = PIOc_read_nc_decomp(iosysid, decomp_filename, &ioid2, comp_comm,
+                                   PIO_INT, NULL, NULL, &fortran_order)))
+        return ret;
+    printf("done with PIOc_read_nc_decomp\n");
+    /* Free the decomposition. */
+    if ((ret = PIOc_freedecomp(iosysid, ioid2)))
+        ERR(ret);
+    
     for (int fmt = 0; fmt < num_flavors; fmt++)
     {
         int ncid;
@@ -449,7 +461,8 @@ int main(int argc, char **argv)
         int mpierr;
 
         /* Run the test for each data type. */
-        for (int t = 0; t < NUM_TYPES_TO_TEST; t++)
+        /* for (int t = 0; t < NUM_TYPES_TO_TEST; t++) */
+        for (int t = 0; t < 1; t++)
         {
             if ((ret = PIOc_init_async(test_comm, NUM_IO_PROCS, NULL, COMPONENT_COUNT,
                                        &num_computation_procs, NULL, &io_comm, comp_comm,
@@ -460,8 +473,8 @@ int main(int argc, char **argv)
             if (my_rank)
             {
                 /* Run the simple darray async test. */
-                if ((ret = run_darray_async_test(iosysid, my_rank, test_comm, num_flavors, flavor,
-                                                 test_type[t])))
+                if ((ret = run_darray_async_test(iosysid, my_rank, test_comm, comp_comm[0], num_flavors,
+                                                 flavor, test_type[t])))
                     return ret;
 
                 /* Finalize PIO system. */
