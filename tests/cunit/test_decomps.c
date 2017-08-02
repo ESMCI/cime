@@ -1,7 +1,7 @@
 /*
  * Tests for PIO data decompositons.
  *
- * Ed Hartnett
+ * @author Ed Hartnett
  */
 #include <pio.h>
 #include <pio_tests.h>
@@ -26,9 +26,6 @@
 /* The length of our sample data along each dimension. */
 #define X_DIM_LEN 4
 #define Y_DIM_LEN 4
-
-/* The number of timesteps of data to write. */
-#define NUM_TIMESTEPS 1
 
 /* Files of decompositions. */
 #define DECOMP_FILE "decomp.txt"
@@ -339,7 +336,6 @@ int main(int argc, char **argv)
     int my_rank; /* Zero-based rank of processor. */
     int ntasks;  /* Number of processors involved in current execution. */
     int iosysid; /* The ID for the parallel I/O system. */
-    MPI_Group world_group;      /* An MPI group of world. */
     MPI_Comm test_comm;
     int num_flavors;            /* Number of PIO netCDF flavors in this build. */
     int flavor[NUM_FLAVORS];    /* iotypes for the supported netCDF IO flavors. */
@@ -364,17 +360,9 @@ int main(int argc, char **argv)
         printf("%d about to call Init_Intracomm\n", my_rank);
         if ((ret = PIOc_Init_Intracomm(test_comm, NUM_IO4, STRIDE1, BASE0, REARRANGER, &iosysid)))
             ERR(ret);
-        printf("%d done with Init_Intracomm\n", my_rank);
 
         /* Set the error handler. */
-        /*PIOc_Set_IOSystem_Error_Handling(iosysid, PIO_BCAST_ERROR);*/
-        printf("%d about to set iosystem error hanlder for world\n", my_rank);
         if ((ret = PIOc_set_iosystem_error_handling(iosysid, PIO_BCAST_ERROR, NULL)))
-            ERR(ret);
-        printf("%d done setting iosystem error hanlder for world\n", my_rank);
-
-        /* Get MPI_Group of world comm. */
-        if ((ret = MPI_Comm_group(test_comm, &world_group)))
             ERR(ret);
 
         /* Test basic decomp stuff. */
@@ -402,11 +390,6 @@ int main(int argc, char **argv)
         printf("%d pio finalized\n", my_rank);
         if ((ret = PIOc_finalize(iosysid)))
             ERR(ret);
-
-        /* Free MPI resources used by test. */
-        if ((ret = MPI_Group_free(&world_group)))
-            ERR(ret);
-
     } /* my_rank < TARGET_NTASKS */
 
     /* Finalize test. */
