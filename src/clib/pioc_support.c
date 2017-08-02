@@ -1009,7 +1009,7 @@ int PIOc_write_nc_decomp(int iosysid, const char *filename, int cmode, int ioid,
                                 ios->comp_comm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
 
-    /* Find the max maxplen. */
+    /* Find the max maplen. */
     if ((mpierr = MPI_Allreduce(&iodesc->maplen, &max_maplen, 1, MPI_INT, MPI_MAX,
                                 ios->comp_comm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);

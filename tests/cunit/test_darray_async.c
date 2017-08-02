@@ -219,7 +219,7 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm,
     char decomp_filename[PIO_MAX_NAME + 1];
     int ret;
 
-    sprintf(decomp_filename, "decomp_%s_rank_%d.nc", TEST_NAME, my_rank);
+    sprintf(decomp_filename, "decomp_rdat_%s_.nc", TEST_NAME);
 
     /* Create the PIO decomposition for this test. */
     if ((ret = PIOc_init_decomp(iosysid, piotype, NDIM2, &dim_len[1], elements_per_pe,
