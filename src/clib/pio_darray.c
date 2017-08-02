@@ -108,7 +108,7 @@ int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
     file_desc_t *file;     /* Pointer to file information. */
     io_desc_t *iodesc;     /* Pointer to IO description information. */
     int rlen;              /* Total data buffer size. */
-    var_desc_t *vdesc0;  /* First entry in array of var_desc structure for each var. */
+    var_desc_t *vdesc0;    /* First entry in array of var_desc structure for each var. */
     int fndims;            /* Number of dims in the var in the file. */
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function calls. */
     int ierr;              /* Return code. */
