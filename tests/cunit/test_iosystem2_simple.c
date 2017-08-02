@@ -69,7 +69,7 @@ int main(int argc, char **argv)
 
         /* Reset the buffer size limit. */
         oldlimit = PIOc_set_buffer_size_limit(TEN_MEG);
-        if (oldlimit != TEN_MEG)
+        if (oldlimit != NEW_LIMIT)
             ERR(ERR_WRONG);
 
         /* Figure out iotypes. */
