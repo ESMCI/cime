@@ -1,7 +1,8 @@
 /*
  * Tests for PIO distributed arrays.
  *
- * Ed Hartnett, 2/16/17
+ * @author Ed Hartnett
+ * @date 2/16/17
  */
 #include <pio.h>
 #include <pio_internal.h>
@@ -169,6 +170,8 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
                     if (PIOc_write_darray(ncid, varid, ioid + TEST_VAL_42, arraylen, test_data, fillvalue) != PIO_EBADID)
                         ERR(ERR_WRONG);
                     if (PIOc_write_darray(ncid, varid, ioid, arraylen - 1, test_data, fillvalue) != PIO_EINVAL)
+                        ERR(ERR_WRONG);
+                    if (PIOc_write_darray(ncid, TEST_VAL_42, ioid, arraylen, test_data, fillvalue) != PIO_ENOTVAR)
                         ERR(ERR_WRONG);
 
                     /* Write the data. */
