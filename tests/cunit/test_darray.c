@@ -73,6 +73,7 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
     int ncid;      /* The ncid of the netCDF file. */
     int ncid2;     /* The ncid of the re-opened netCDF file. */
     int varid;     /* The ID of the netCDF varable. */
+    int wrong_varid = TEST_VAL_42;  /* A wrong ID. */
     int ret;       /* Return code. */
     PIO_Offset arraylen = 4;
     void *fillvalue;
@@ -191,11 +192,11 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
                     if (PIOc_write_darray_multi(ncid, &varid, ioid, -1, arraylen, test_data, &frame,
                                                 fillvalue, flushtodisk) != PIO_EINVAL)
                         ERR(ERR_WRONG);
-                    /* if (PIOc_write_darray_multi(ncid, &varid, ioid, 1, arraylen, test_data, NULL, */
-                    /*                             fillvalue, flushtodisk) != PIO_EINVAL) */
-                    /*     ERR(ERR_WRONG); */
                     if (PIOc_write_darray_multi(ncid, &varid_big, ioid, 1, arraylen, test_data, &frame,
-                                                fillvalue, flushtodisk) != PIO_EINVAL)
+                                                fillvalue, flushtodisk) != PIO_ENOTVAR)
+                        ERR(ERR_WRONG);
+                    if (PIOc_write_darray_multi(ncid, &wrong_varid, ioid, 1, arraylen, test_data, &frame,
+                                                fillvalue, flushtodisk) != PIO_ENOTVAR)
                         ERR(ERR_WRONG);
                 
                     /* Write the data with the _multi function. */
