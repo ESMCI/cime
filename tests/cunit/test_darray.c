@@ -1,7 +1,8 @@
 /*
  * Tests for PIO distributed arrays.
  *
- * Ed Hartnett, 2/16/17
+ * @author Ed Hartnett
+ * @date 2/16/17
  */
 #include <pio.h>
 #include <pio_internal.h>
@@ -36,8 +37,9 @@
 /* The number of timesteps of data to write. */
 #define NUM_TIMESTEPS 2
 
-/* The name of the variable in the netCDF output files. */
-#define VAR_NAME "foo"
+/* The names of variables in the netCDF output files. */
+#define VAR_NAME "Billy-Bob"
+#define VAR_NAME2 "Sally-Sue"
 
 /* Test cases relating to PIOc_write_darray_multi(). */
 #define NUM_TEST_CASES_WRT_MULTI 3
@@ -73,6 +75,8 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
     int ncid;      /* The ncid of the netCDF file. */
     int ncid2;     /* The ncid of the re-opened netCDF file. */
     int varid;     /* The ID of the netCDF varable. */
+    int varid2;    /* The ID of a varable of different type. */
+    int wrong_varid = TEST_VAL_42;  /* A wrong ID. */
     int ret;       /* Return code. */
     PIO_Offset arraylen = 4;
     void *fillvalue;
@@ -149,6 +153,11 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
                 /* Define a variable. */
                 if ((ret = PIOc_def_var(ncid, VAR_NAME, pio_type, NDIM, dimids, &varid)))
                     ERR(ret);
+                
+                /* Define a variable with a different type. */
+                int other_type = pio_type == PIO_INT ? PIO_FLOAT : PIO_INT;
+                if ((ret = PIOc_def_var(ncid, VAR_NAME2, other_type, NDIM, dimids, &varid2)))
+                    ERR(ret);
 
                 /* End define mode. */
                 if ((ret = PIOc_enddef(ncid)))
@@ -168,6 +177,10 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
                     if (PIOc_write_darray(ncid, varid, ioid + TEST_VAL_42, arraylen, test_data, fillvalue) != PIO_EBADID)
                         ERR(ERR_WRONG);
                     if (PIOc_write_darray(ncid, varid, ioid, arraylen - 1, test_data, fillvalue) != PIO_EINVAL)
+                        ERR(ERR_WRONG);
+                    if (PIOc_write_darray(ncid, TEST_VAL_42, ioid, arraylen, test_data, fillvalue) != PIO_ENOTVAR)
+                        ERR(ERR_WRONG);
+                    if (PIOc_write_darray(ncid, varid2, ioid, arraylen, test_data, fillvalue) != PIO_EINVAL)
                         ERR(ERR_WRONG);
 
                     /* Write the data. */
@@ -191,11 +204,11 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
                     if (PIOc_write_darray_multi(ncid, &varid, ioid, -1, arraylen, test_data, &frame,
                                                 fillvalue, flushtodisk) != PIO_EINVAL)
                         ERR(ERR_WRONG);
-                    /* if (PIOc_write_darray_multi(ncid, &varid, ioid, 1, arraylen, test_data, NULL, */
-                    /*                             fillvalue, flushtodisk) != PIO_EINVAL) */
-                    /*     ERR(ERR_WRONG); */
                     if (PIOc_write_darray_multi(ncid, &varid_big, ioid, 1, arraylen, test_data, &frame,
-                                                fillvalue, flushtodisk) != PIO_EINVAL)
+                                                fillvalue, flushtodisk) != PIO_ENOTVAR)
+                        ERR(ERR_WRONG);
+                    if (PIOc_write_darray_multi(ncid, &wrong_varid, ioid, 1, arraylen, test_data, &frame,
+                                                fillvalue, flushtodisk) != PIO_ENOTVAR)
                         ERR(ERR_WRONG);
                 
                     /* Write the data with the _multi function. */

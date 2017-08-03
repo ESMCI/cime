@@ -108,7 +108,7 @@ int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
     file_desc_t *file;     /* Pointer to file information. */
     io_desc_t *iodesc;     /* Pointer to IO description information. */
     int rlen;              /* Total data buffer size. */
-    var_desc_t *vdesc0;  /* First entry in array of var_desc structure for each var. */
+    var_desc_t *vdesc0;    /* First entry in array of var_desc structure for each var. */
     int fndims;            /* Number of dims in the var in the file. */
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function calls. */
     int ierr;              /* Return code. */
@@ -121,9 +121,6 @@ int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
     /* Check inputs. */
     if (nvars <= 0 || !varids)
         return pio_err(ios, file, PIO_EINVAL, __FILE__, __LINE__);
-    for (int v = 0; v < nvars; v++)
-        if (varids[v] < 0 || varids[v] > PIO_MAX_VARS)
-            return pio_err(ios, file, PIO_EINVAL, __FILE__, __LINE__);
 
     LOG((1, "PIOc_write_darray_multi ncid = %d ioid = %d nvars = %d arraylen = %ld "
          "flushtodisk = %d",

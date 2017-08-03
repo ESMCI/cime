@@ -29,6 +29,9 @@
 /* Ten megabytes. */
 #define TEN_MEG 10485760
 
+/* Used to set PIOc_set_buffer_size_limit(). */
+#define NEW_LIMIT 200000
+
 /* Run test. */
 int main(int argc, char **argv)
 {
@@ -55,10 +58,19 @@ int main(int argc, char **argv)
             ERR(ret);
 
         /* Try setting the buffer size limit. */
-        oldlimit = PIOc_set_buffer_size_limit(200000);
+        oldlimit = PIOc_set_buffer_size_limit(NEW_LIMIT);
         if (oldlimit != TEN_MEG)
             ERR(ERR_WRONG);
+
+        /* A negative limit will silently do nothing. */
+        oldlimit = PIOc_set_buffer_size_limit(-NEW_LIMIT);
+        if (oldlimit != NEW_LIMIT)
+            ERR(ERR_WRONG);
+
+        /* Reset the buffer size limit. */
         oldlimit = PIOc_set_buffer_size_limit(TEN_MEG);
+        if (oldlimit != NEW_LIMIT)
+            ERR(ERR_WRONG);
 
         /* Figure out iotypes. */
         if ((ret = get_iotypes(&num_flavors, flavor)))

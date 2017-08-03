@@ -2,7 +2,8 @@
  * Tests for PIO distributed arrays. This program tests the
  * PIOc_write_darray_multi() function with more than one variable.
  *
- * Ed Hartnett, 3/7/17
+ * @author Ed Hartnett
+ * @date 3/7/17
  */
 #include <pio.h>
 #include <pio_internal.h>
@@ -81,11 +82,13 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
     int ncid;              /* The ncid of the netCDF file. */
     int ncid2;             /* The ncid of the re-opened netCDF file. */
     int varid[NVAR];       /* The IDs of the netCDF varables. */
-    int ret;               /* Return code. */
+    int other_varid;       /* The IDs of a var of different type. */
+    int wrong_varid[NVAR]; /* These will not work. */
     PIO_Offset arraylen = 4; /* Amount of data from each task. */
     void *fillvalue;       /* Pointer to fill value. */
     void *test_data;       /* Pointer to test data we will write. */
     void *test_data_in;    /* Pointer to buffer we will read into. */
+    int ret;               /* Return code. */
 
     /* Default fill value array for each type. */
     signed char byte_fill[NVAR] = {NC_FILL_BYTE, NC_FILL_BYTE, NC_FILL_BYTE};
@@ -255,6 +258,11 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
                     if ((ret = PIOc_def_var(ncid, var_name[v], pio_type, NDIM, dimids, &varid[v])))
                         ERR(ret);
 
+                /* Define a variable of a different type, to test error handling. */
+                int other_pio_type = pio_type < 5 ? pio_type + 1 : PIO_INT;
+                if ((ret = PIOc_def_var(ncid, "OTHER_VAR", other_pio_type, NDIM, dimids, &other_varid)))
+                    ERR(ret);
+
                 /* Leave a note. */
                 if ((ret = PIOc_put_att_text(ncid, NC_GLOBAL, NOTE_NAME, strlen(NOTE), NOTE)))
                     ERR(ret);
@@ -273,6 +281,14 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
                 int frame[NVAR] = {0, 0, 0};
                 int flushtodisk = test_multi;
 
+                /* This will not work, because we mix var types. */
+                wrong_varid[0] = varid[0];
+                wrong_varid[1] = varid[1];
+                wrong_varid[0] = other_varid;
+                if (PIOc_write_darray_multi(ncid, wrong_varid, ioid, NVAR, arraylen, test_data, frame,
+                                            fillvalue, flushtodisk) != PIO_EINVAL)
+                    ERR(ERR_WRONG);
+                
                 /* Write the data with the _multi function. */
                 if ((ret = PIOc_write_darray_multi(ncid, varid, ioid, NVAR, arraylen, test_data, frame,
                                                    fillvalue, flushtodisk)))
