@@ -269,8 +269,8 @@ int test_decomp_read_write(int iosysid, int ioid, int num_flavors, int *flavor, 
 #endif /* _NETCDF4 */
 
     /* Only checking subset rearranger with this test. */
-    if (rearranger == PIO_REARR_BOX)
-        return PIO_NOERR;
+    /* if (rearranger == PIO_REARR_BOX) */
+    /*     return PIO_NOERR; */
     
     for (int decomp_file_type = 0; decomp_file_type < num_decomp_file_types; decomp_file_type++)
     {
@@ -304,7 +304,9 @@ int test_decomp_read_write(int iosysid, int ioid, int num_flavors, int *flavor, 
             {
                 iosystem_desc_t *ios;
                 io_desc_t *iodesc;
-            
+                int target_nrecvs;
+                int target_num_aiotasks;
+                
                 /* Get the IO system info. */
                 if (!(ios = pio_get_iosystem_from_id(iosysid)))
                     return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
@@ -312,10 +314,28 @@ int test_decomp_read_write(int iosysid, int ioid, int num_flavors, int *flavor, 
                 /* Get the IO desc, which describes the decomposition. */
                 if (!(iodesc = pio_get_iodesc_from_id(ioid2)))
                     return pio_err(ios, NULL, PIO_EBADID, __FILE__, __LINE__);
+
+                /* The answers depend on the rearranger. */
+                if (rearranger == PIO_REARR_BOX)
+                {
+                    target_num_aiotasks = 1;
+                    if (my_rank == 0)
+                        target_nrecvs = TARGET_NTASKS;
+                    else
+                        target_nrecvs = 0;
+                }
+                else if (rearranger == PIO_REARR_SUBSET)
+                {
+                    target_num_aiotasks = TARGET_NTASKS;
+                    target_nrecvs = 1;
+                }
+                else
+                    return ERR_WRONG;
+
+                /* Check the results. */
                 if (iodesc->ioid != ioid2 || iodesc->maplen != TARGET_NTASKS || iodesc->ndims != NDIM2 ||
-                    iodesc->nrecvs != 1 || iodesc->ndof != TARGET_NTASKS || iodesc->num_aiotasks != TARGET_NTASKS
-                    || iodesc->rearranger != rearranger || iodesc->maxregions != 1 ||
-                    iodesc->needsfill || iodesc->mpitype != MPI_INT)
+                    iodesc->nrecvs != target_nrecvs || iodesc->ndof != TARGET_NTASKS || iodesc->num_aiotasks != target_num_aiotasks ||
+                    iodesc->rearranger != rearranger || iodesc->maxregions != 1 || iodesc->needsfill || iodesc->mpitype != MPI_INT)
                     return ERR_WRONG;
                 for (int e = 0; e < iodesc->maplen; e++)
                     if (iodesc->map[e] != my_rank * iodesc->maplen + e + 1)
@@ -325,7 +345,6 @@ int test_decomp_read_write(int iosysid, int ioid, int num_flavors, int *flavor, 
                 printf("%d in my test iodesc->maxiobuflen = %d\n", my_rank, iodesc->maxiobuflen);
             }
         
-
             /* Free the PIO decomposition. */
             if ((ret = PIOc_freedecomp(iosysid, ioid2)))
                 ERR(ret);
