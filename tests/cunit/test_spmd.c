@@ -151,10 +151,10 @@ int run_sc_tests(MPI_Comm test_comm)
     int my_rank;  /* 0-based rank in test_comm. */
     int ntasks;   /* Number of tasks in test_comm. */
     int mpierr;   /* Return value from MPI calls. */
-    int array1[SC_ARRAY_LEN] = {7, 42, 14};
-    int array2[SC_ARRAY_LEN] = {2, 3, 7};
-    int array3[SC_ARRAY_LEN] = {90, 180, 270};
-    int array4[SC_ARRAY_LEN] = {1, 180, 270};
+    long long larray1[SC_ARRAY_LEN] = {7, 42, 14};
+    long long larray2[SC_ARRAY_LEN] = {2, 3, 7};
+    long long larray3[SC_ARRAY_LEN] = {90, 180, 270};
+    long long larray4[SC_ARRAY_LEN] = {1, 180, 270};
 
     /* Learn rank and size. */
     if ((mpierr = MPI_Comm_size(test_comm, &ntasks)))
@@ -179,13 +179,13 @@ int run_sc_tests(MPI_Comm test_comm)
         return ERR_WRONG;
 
     /* Test the gcd_array() function. */
-    if (gcd_array(SC_ARRAY_LEN, array1) != 7)
+    if (lgcd_array(SC_ARRAY_LEN, larray1) != 7)
         return ERR_WRONG;
-    if (gcd_array(SC_ARRAY_LEN, array2) != 1)
+    if (lgcd_array(SC_ARRAY_LEN, larray2) != 1)
         return ERR_WRONG;
-    if (gcd_array(SC_ARRAY_LEN, array3) != 90)
+    if (lgcd_array(SC_ARRAY_LEN, larray3) != 90)
         return ERR_WRONG;
-    if (gcd_array(SC_ARRAY_LEN, array4) != 1)
+    if (lgcd_array(SC_ARRAY_LEN, larray4) != 1)
         return ERR_WRONG;
 
     /* Test compute_one_dim. */
