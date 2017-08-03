@@ -268,10 +268,6 @@ int test_decomp_read_write(int iosysid, int ioid, int num_flavors, int *flavor, 
     num_decomp_file_types = 3;
 #endif /* _NETCDF4 */
 
-    /* Only checking subset rearranger with this test. */
-    /* if (rearranger == PIO_REARR_BOX) */
-    /*     return PIO_NOERR; */
-    
     for (int decomp_file_type = 0; decomp_file_type < num_decomp_file_types; decomp_file_type++)
     {
         int cmode = 0;
@@ -381,7 +377,8 @@ int main(int argc, char **argv)
             ERR(ret);
 
         /* Test for each rearranger. */
-        for (int r = 0; r < NUM_REARRANGERS; r++)
+        /* for (int r = 0; r < NUM_REARRANGERS; r++) */
+        for (int r = 1; r < NUM_REARRANGERS; r++)
         {
             /* Initialize PIO system on world. */
             printf("%d about to call Init_Intracomm\n", my_rank);

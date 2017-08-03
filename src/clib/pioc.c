@@ -535,7 +535,6 @@ int PIOc_InitDecomp(int iosysid, int pio_type, int ndims, const int *gdimlen, in
                 {
                     iodesc->firstregion->start[i] = iostart[i];
                     iodesc->firstregion->count[i] = iocount[i];
-                    LOG((3, "iostart[%d] = %d iocount[%d] = %d", i, iostart[i], i, iocount[i]));
                 }
                 iodesc->num_aiotasks = ios->num_iotasks;
             }
