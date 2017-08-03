@@ -243,7 +243,7 @@ else ()
       NUMPROCS ${AT_LEAST_FOUR_TASKS}
       TIMEOUT ${DEFAULT_TEST_TIMEOUT})
     add_mpi_test(test_darray_async_many
-      EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_darray_async
+      EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_darray_async_many
       NUMPROCS ${AT_LEAST_FOUR_TASKS}
       TIMEOUT ${DEFAULT_TEST_TIMEOUT})
   endif ()
