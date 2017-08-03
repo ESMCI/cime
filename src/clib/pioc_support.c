@@ -1009,7 +1009,7 @@ int PIOc_write_nc_decomp(int iosysid, const char *filename, int cmode, int ioid,
                                 ios->comp_comm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
 
-    /* Find the max maxplen. */
+    /* Find the max maplen. */
     if ((mpierr = MPI_Allreduce(&iodesc->maplen, &max_maplen, 1, MPI_INT, MPI_MAX,
                                 ios->comp_comm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
@@ -1526,8 +1526,10 @@ int pioc_read_nc_decomp_int(int iosysid, const char *filename, int *ndims, int *
     }
 
     /* Close the netCDF decomp file. */
+    LOG((2, "pioc_read_nc_decomp_int about to close file ncid = %d", ncid));
     if ((ret = PIOc_closefile(ncid)))
         return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+    LOG((2, "pioc_read_nc_decomp_int closed file"));
 
     return PIO_NOERR;
 }
