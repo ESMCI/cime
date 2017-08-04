@@ -85,7 +85,8 @@ module seq_comm_mct
                                                 num_inst_wav + &
                                                 num_inst_rof + &
                                                 num_inst_esp + 1
-
+  integer, public :: num_inst_cpl = 1
+  integer, public :: cpl_inst_iamin = 1
   integer, public :: num_inst_min, num_inst_max
   integer, public :: num_inst_xao    ! for xao flux
   integer, public :: num_inst_frc    ! for fractions
@@ -150,6 +151,10 @@ module seq_comm_mct
 
   integer, parameter, public :: seq_comm_namelen=16
 
+  ! suffix for log and timing files if multi coupler driver
+  character(len=seq_comm_namelen), public  :: cpl_inst_tag
+
+
   type seq_comm_type
     character(len=seq_comm_namelen) :: name     ! my name
     character(len=seq_comm_namelen) :: suffix   ! recommended suffix
@@ -182,7 +187,7 @@ module seq_comm_mct
   character(*), parameter :: F12 = "(a,a,'(',i3,' ',a,')',a,2i6,6x,' (',a,i6,')',' (',a,i3,')','(',a,2i6,')')"
   character(*), parameter :: F13 = "(a,a,'(',i3,' ',a,')',a,2i6,6x,' (',a,i6,')',' (',a,i3,')')"
   character(*), parameter :: F14 = "(a,a,'(',i3,' ',a,')',a,    6x,' (',a,i6,')',' (',a,i3,')')"
-  integer :: Global_Comm
+  integer :: Coupler_Comm
 
 
   character(len=32), public :: &
@@ -263,7 +268,9 @@ contains
        call shr_sys_abort()
     endif
     seq_comm_mct_initialized = .true.
-    Global_Comm = Comm_in
+
+    call mpi_comm_dup(Comm_in, Coupler_Comm, ierr)
+    call shr_mpi_chkerr(ierr,subname//' mpi_comm_dup')
 
     !! Initialize seq_comms elements
 
@@ -289,9 +296,9 @@ contains
     ! Initialize MPI
     ! Note that if no MPI, will call MCTs fake version
 
-    call mpi_comm_rank(GLOBAL_COMM, mype  , ierr)
+    call mpi_comm_rank(Coupler_Comm, mype  , ierr)
     call shr_mpi_chkerr(ierr,subname//' mpi_comm_rank comm_world')
-    call mpi_comm_size(GLOBAL_COMM, numpes, ierr)
+    call mpi_comm_size(Coupler_Comm, numpes, ierr)
     call shr_mpi_chkerr(ierr,subname//' mpi_comm_size comm_world')
 
     ! Initialize gloiam on all IDs
@@ -719,15 +726,15 @@ contains
        cstr = cpl_pestride
     end if
 
-    call shr_mpi_bcast(atm_nthreads,GLOBAL_COMM,'atm_nthreads')
-    call shr_mpi_bcast(lnd_nthreads,GLOBAL_COMM,'lnd_nthreads')
-    call shr_mpi_bcast(ocn_nthreads,GLOBAL_COMM,'ocn_nthreads')
-    call shr_mpi_bcast(ice_nthreads,GLOBAL_COMM,'ice_nthreads')
-    call shr_mpi_bcast(glc_nthreads,GLOBAL_COMM,'glc_nthreads')
-    call shr_mpi_bcast(wav_nthreads,GLOBAL_COMM,'wav_nthreads')
-    call shr_mpi_bcast(rof_nthreads,GLOBAL_COMM,'rof_nthreads')
-    call shr_mpi_bcast(esp_nthreads,GLOBAL_COMM,'esp_nthreads')
-    call shr_mpi_bcast(cpl_nthreads,GLOBAL_COMM,'cpl_nthreads')
+    call shr_mpi_bcast(atm_nthreads,Coupler_Comm,'atm_nthreads')
+    call shr_mpi_bcast(lnd_nthreads,Coupler_Comm,'lnd_nthreads')
+    call shr_mpi_bcast(ocn_nthreads,Coupler_Comm,'ocn_nthreads')
+    call shr_mpi_bcast(ice_nthreads,Coupler_Comm,'ice_nthreads')
+    call shr_mpi_bcast(glc_nthreads,Coupler_Comm,'glc_nthreads')
+    call shr_mpi_bcast(wav_nthreads,Coupler_Comm,'wav_nthreads')
+    call shr_mpi_bcast(rof_nthreads,Coupler_Comm,'rof_nthreads')
+    call shr_mpi_bcast(esp_nthreads,Coupler_Comm,'esp_nthreads')
+    call shr_mpi_bcast(cpl_nthreads,Coupler_Comm,'cpl_nthreads')
 
     call shr_mpi_bcast(atm_layout,GLOBAL_COMM,'atm_layout')
     call shr_mpi_bcast(lnd_layout,GLOBAL_COMM,'lnd_layout')
@@ -746,7 +753,7 @@ contains
        pelist(2,1) = numpes-1
        pelist(3,1) = 1
     end if
-    call mpi_bcast(pelist, size(pelist), MPI_INTEGER, 0, GLOBAL_COMM, ierr)
+    call mpi_bcast(pelist, size(pelist), MPI_INTEGER, 0, Coupler_Comm, ierr)
     call seq_comm_setcomm(GLOID, pelist,iname='GLOBAL')
 
     if (mype == 0) then
@@ -754,7 +761,7 @@ contains
        pelist(2,1) = cmax
        pelist(3,1) = cstr
     end if
-    call mpi_bcast(pelist, size(pelist), MPI_INTEGER, 0, GLOBAL_COMM, ierr)
+    call mpi_bcast(pelist, size(pelist), MPI_INTEGER, 0, Coupler_Comm, ierr)
     call seq_comm_setcomm(CPLID,pelist,cpl_nthreads,'CPL')
 
     do n = 1, num_inst_atm
@@ -763,7 +770,7 @@ contains
           pelist(2,1) = amax(n)
           pelist(3,1) = astr(n)
        end if
-       call mpi_bcast(pelist, size(pelist), MPI_INTEGER, 0, GLOBAL_COMM, ierr)
+       call mpi_bcast(pelist, size(pelist), MPI_INTEGER, 0, Coupler_Comm, ierr)
        if (present(Cpl_comm_id)) then
           call seq_comm_setcomm(ATMID(n), pelist, atm_nthreads, 'ATM', inst=Cpl_comm_id)
           call seq_comm_joincomm(CPLID, ATMID(n), CPLATMID(n), 'CPLATM', inst=Cpl_comm_id)
@@ -781,7 +788,7 @@ contains
           pelist(2,1) = lmax(n)
           pelist(3,1) = lstr(n)
        end if
-       call mpi_bcast(pelist, size(pelist), MPI_INTEGER, 0, GLOBAL_COMM, ierr)
+       call mpi_bcast(pelist, size(pelist), MPI_INTEGER, 0, Coupler_Comm, ierr)
        if (present(Cpl_comm_id)) then
           call seq_comm_setcomm(LNDID(n), pelist, lnd_nthreads, 'LND', inst=Cpl_comm_id)
           call seq_comm_joincomm(CPLID, LNDID(n), CPLLNDID(n), 'CPLLND', inst=Cpl_comm_id)
@@ -799,7 +806,7 @@ contains
           pelist(2,1) = omax(n)
           pelist(3,1) = ostr(n)
        end if
-       call mpi_bcast(pelist, size(pelist), MPI_INTEGER, 0, GLOBAL_COMM, ierr)
+       call mpi_bcast(pelist, size(pelist), MPI_INTEGER, 0, Coupler_Comm, ierr)
        if (present(Cpl_comm_id)) then
           call seq_comm_setcomm(OCNID(n), pelist, ocn_nthreads, 'OCN', inst=Cpl_comm_id)
           call seq_comm_joincomm(CPLID, OCNID(n), CPLOCNID(n), 'CPLOCN', inst=Cpl_comm_id)
@@ -817,7 +824,7 @@ contains
           pelist(2,1) = imax(n)
           pelist(3,1) = istr(n)
        end if
-       call mpi_bcast(pelist, size(pelist), MPI_INTEGER, 0, GLOBAL_COMM, ierr)
+       call mpi_bcast(pelist, size(pelist), MPI_INTEGER, 0, Coupler_Comm, ierr)
        if (present(Cpl_comm_id)) then
           call seq_comm_setcomm(ICEID(n), pelist, ice_nthreads, 'ICE', inst=Cpl_comm_id)
           call seq_comm_joincomm(CPLID, ICEID(n), CPLICEID(n), 'CPLICE', inst=Cpl_comm_id)
@@ -835,7 +842,7 @@ contains
           pelist(2,1) = gmax(n)
           pelist(3,1) = gstr(n)
        end if
-       call mpi_bcast(pelist, size(pelist), MPI_INTEGER, 0, GLOBAL_COMM, ierr)
+       call mpi_bcast(pelist, size(pelist), MPI_INTEGER, 0, Coupler_Comm, ierr)
        if (present(Cpl_comm_id)) then
           call seq_comm_setcomm(GLCID(n), pelist, glc_nthreads, 'GLC', inst=Cpl_comm_id)
           call seq_comm_joincomm(CPLID, GLCID(n), CPLGLCID(n), 'CPLGLC', inst=Cpl_comm_id)
@@ -853,7 +860,7 @@ contains
           pelist(2,1) = rmax(n)
           pelist(3,1) = rstr(n)
        end if
-       call mpi_bcast(pelist, size(pelist), MPI_INTEGER, 0, GLOBAL_COMM, ierr)
+       call mpi_bcast(pelist, size(pelist), MPI_INTEGER, 0, Coupler_Comm, ierr)
        if (present(Cpl_comm_id)) then
           call seq_comm_setcomm(ROFID(n), pelist, rof_nthreads, 'ROF', inst=Cpl_comm_id)
           call seq_comm_joincomm(CPLID, ROFID(n), CPLROFID(n), 'CPLROF', inst=Cpl_comm_id)
@@ -871,7 +878,7 @@ contains
           pelist(2,1) = wmax(n)
           pelist(3,1) = wstr(n)
        end if
-       call mpi_bcast(pelist, size(pelist), MPI_INTEGER, 0, GLOBAL_COMM, ierr)
+       call mpi_bcast(pelist, size(pelist), MPI_INTEGER, 0, Coupler_Comm, ierr)
        if (present(Cpl_comm_id)) then
           call seq_comm_setcomm(WAVID(n), pelist, wav_nthreads, 'WAV', inst=Cpl_comm_id)
           call seq_comm_joincomm(CPLID, WAVID(n), CPLWAVID(n), 'CPLWAV', inst=Cpl_comm_id)
@@ -889,7 +896,7 @@ contains
           pelist(2,1) = emax(n)
           pelist(3,1) = estr(n)
        end if
-       call mpi_bcast(pelist, size(pelist), MPI_INTEGER, 0, GLOBAL_COMM, ierr)
+       call mpi_bcast(pelist, size(pelist), MPI_INTEGER, 0, Coupler_Comm, ierr)
        call seq_comm_setcomm(ESPID(n), pelist, esp_nthreads, 'ESP', n, num_inst_esp)
     end do
     call seq_comm_jcommarr(ESPID,ALLESPID,'ALLESPID',1,1)
@@ -910,7 +917,7 @@ contains
     do n = 1,ncomps
        gloroot = -999
        if (seq_comms(n)%iamroot) gloroot = seq_comms(n)%gloiam
-       call shr_mpi_max(gloroot,seq_comms(n)%gloroot,GLOBAL_COMM, &
+       call shr_mpi_max(gloroot,seq_comms(n)%gloroot,Coupler_Comm, &
                         trim(subname)//' gloroot',all=.true.)
     enddo
 
@@ -948,12 +955,12 @@ contains
        call shr_sys_abort()
     endif
 
-    call mct_world_init(ncomps, GLOBAL_COMM, comms, comps)
+    call mct_world_init(ncomps, Coupler_Comm, comms, comps)
 
     deallocate(comps,comms)
 
     ! ESMF logging (only has effect if ESMF libraries are used)
-    call mpi_bcast(esmf_logging, len(esmf_logging), MPI_CHARACTER, 0, GLOBAL_COMM, ierr)
+    call mpi_bcast(esmf_logging, len(esmf_logging), MPI_CHARACTER, 0, Coupler_Comm, ierr)
 
     select case(esmf_logging)
     case ("ESMF_LOGKIND_SINGLE")
@@ -1028,11 +1035,11 @@ contains
        call shr_sys_abort()
     endif
 
-    call mpi_comm_group(GLOBAL_COMM, mpigrp_world, ierr)
+    call mpi_comm_group(Coupler_Comm, mpigrp_world, ierr)
     call shr_mpi_chkerr(ierr,subname//' mpi_comm_group mpigrp_world')
     call mpi_group_range_incl(mpigrp_world, 1, pelist, mpigrp,ierr)
     call shr_mpi_chkerr(ierr,subname//' mpi_group_range_incl mpigrp')
-    call mpi_comm_create(GLOBAL_COMM, mpigrp, mpicom, ierr)
+    call mpi_comm_create(Coupler_Comm, mpigrp, mpicom, ierr)
     call shr_mpi_chkerr(ierr,subname//' mpi_comm_create mpigrp')
 
     ntasks = ((pelist(2,1) - pelist(1,1)) / pelist(3,1)) + 1
@@ -1156,7 +1163,7 @@ contains
 
     call mpi_group_union(seq_comms(ID1)%mpigrp,seq_comms(ID2)%mpigrp,mpigrp,ierr)
     call shr_mpi_chkerr(ierr,subname//' mpi_comm_union mpigrp')
-    call mpi_comm_create(GLOBAL_COMM, mpigrp, mpicom, ierr)
+    call mpi_comm_create(Coupler_Comm, mpigrp, mpicom, ierr)
     call shr_mpi_chkerr(ierr,subname//' mpi_comm_create mpigrp')
 
     seq_comms(ID)%set = .true.
@@ -1282,7 +1289,7 @@ contains
        call mpi_group_union(mpigrpp,seq_comms(IDs(n))%mpigrp,mpigrp,ierr)
        call shr_mpi_chkerr(ierr,subname//' mpi_comm_union mpigrp')
     enddo
-    call mpi_comm_create(GLOBAL_COMM, mpigrp, mpicom, ierr)
+    call mpi_comm_create(Coupler_Comm, mpigrp, mpicom, ierr)
     call shr_mpi_chkerr(ierr,subname//' mpi_comm_create mpigrp')
 
     seq_comms(ID)%set = .true.
@@ -1362,13 +1369,13 @@ contains
     character(*),parameter :: subName =   '(seq_comm_printcomms) '
     integer :: n,mype,npes,ierr
 
-    call mpi_comm_size(GLOBAL_COMM, npes  , ierr)
+    call mpi_comm_size(Coupler_Comm, npes  , ierr)
     call shr_mpi_chkerr(ierr,subname//' mpi_comm_size comm_world')
-    call mpi_comm_rank(GLOBAL_COMM, mype  , ierr)
+    call mpi_comm_rank(Coupler_Comm, mype  , ierr)
     call shr_mpi_chkerr(ierr,subname//' mpi_comm_rank comm_world')
 
     call shr_sys_flush(logunit)
-    call mpi_barrier(GLOBAL_COMM,ierr)
+    call mpi_barrier(Coupler_Comm,ierr)
     if (mype == 0) then
        do n = 1,ncomps
           write(logunit,'(a,4i6,2x,3a)') trim(subName),n, &
