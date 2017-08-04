@@ -1,7 +1,7 @@
 /*
  * Tests for PIO Functions.
  *
- * Ed Hartnett
+ * @author Ed Hartnett
  */
 #include <pio.h>
 #include <pio_internal.h>
@@ -54,9 +54,6 @@
 /* Number of NetCDF classic types. */
 #define NUM_CLASSIC_TYPES 6
 
-/* Number of NetCDF-4 types. */
-#define NUM_NETCDF4_TYPES 12
-
 /* The dimension names. */
 char dim_name[NDIM][PIO_MAX_NAME + 1] = {"timestep", "x", "y"};
 
@@ -73,6 +70,17 @@ PIO_Offset chunksize[NDIM] = {2, X_DIM_LEN/2, Y_DIM_LEN/2};
 /* Length of the max maplen in decomp testing. */
 #define MAX_MAPLEN 1
 
+signed char custom_fill_byte = -TEST_VAL_42;
+unsigned char custom_fill_char = TEST_VAL_42;
+short custom_fill_short = -1000;
+int custom_fill_int = -100000;
+float custom_fill_float = 10.5;
+double custom_fill_double = 1000000.5;
+unsigned char custom_fill_ubyte = 5;
+unsigned short custom_fill_ushort = 1000;
+unsigned int custom_fill_uint = 100000;
+long long custom_fill_int64 = -100000000;
+unsigned long long custom_fill_uint64 = 100000000;
 
 /* Create the decomposition to divide the 1-dimensional sample data
  * between the 4 tasks.
@@ -812,7 +820,7 @@ int check_metadata(int ncid, int my_rank, int flavor)
     if ((ret = PIOc_inq_unlimdims(ncid, &num_unlimdims, &unlimdimid2)))
         return ret;
     if (unlimdimid2 != 0)
-        return ERR_AWFUL;        
+        return ERR_AWFUL;
 
     /* Check the dimensions. */
     for (int d = 0; d < NDIM; d++)
@@ -1064,6 +1072,309 @@ int test_files(int iosysid, int num_flavors, int *flavor, int my_rank)
         if ((ret = PIOc_closefile(ncid)))
             ERR(ret);
 
+    }
+
+    return PIO_NOERR;
+}
+
+/* Check that the fill values are correctly reported by find_var_fill().
+ *
+ * @param ncid the ID of the open test file.
+ * @param ntypes the number ot types we are testing. 
+ * @param use_custom_fill true if custom fill values were used.
+ * @param my_rank rank of this task.
+ * @return 0 on success. 
+ */
+int check_fillvalues(int ncid, int num_types, int use_custom_fill, int my_rank)
+{
+    file_desc_t *file;
+    signed char fill_byte;
+    unsigned char fill_char;
+    short fill_short;
+    int fill_int;
+    float fill_float;
+    double fill_double;
+    unsigned char fill_ubyte;
+    unsigned short fill_ushort;
+    unsigned int fill_uint;
+    long long fill_int64;
+    unsigned long long fill_uint64;
+    int ret;
+
+    if (use_custom_fill)
+    {
+        fill_byte = custom_fill_byte;
+        fill_char = custom_fill_char;
+        fill_short = custom_fill_short;
+        fill_int = custom_fill_int;
+        fill_float = custom_fill_float;
+        fill_double = custom_fill_double;
+        fill_ubyte = custom_fill_ubyte;
+        fill_ushort = custom_fill_ushort;
+        fill_uint = custom_fill_uint;
+        fill_int64 = custom_fill_int64;
+        fill_uint64 = custom_fill_uint64;
+    }
+    else
+    {
+        fill_byte = PIO_FILL_BYTE;
+        fill_char = PIO_FILL_CHAR;
+        fill_short = PIO_FILL_SHORT;
+        fill_int = PIO_FILL_INT;
+        fill_float = PIO_FILL_FLOAT;
+        fill_double = PIO_FILL_DOUBLE;
+        fill_ubyte = PIO_FILL_UBYTE;
+        fill_ushort = PIO_FILL_USHORT;
+        fill_uint = PIO_FILL_UINT;
+        fill_int64 = PIO_FILL_INT64;
+        fill_uint64 = PIO_FILL_UINT64;
+    }
+
+    printf("checking fillvalues ncid = %d num_types = %d my_rank = %d\n", ncid, num_types, my_rank);
+    if ((ret = pio_get_file(ncid, &file)))
+        ERR(ret);
+            
+    for (int v = 0; v < num_types; v++)
+    {
+        var_desc_t *vdesc;
+
+        /* Get the var info. */
+        if ((ret = get_var_desc(v, &file->varlist, &vdesc)))
+            ERR(ret);
+        printf("got var_desc for v = %d\n", v);
+                
+        /* Check the fill value with this internal function. */
+        if ((ret = find_var_fillvalue(file, v, vdesc)))
+            ERR(ret);
+
+        switch (vdesc->pio_type)
+        {
+        case PIO_BYTE:
+            printf("signed char vdesc->fillvalue = %d\n", *(signed char *)vdesc->fillvalue);
+            if (*(signed char *)vdesc->fillvalue != fill_byte)
+                ERR(ERR_WRONG);
+            break;
+        case PIO_CHAR:
+            printf("unsigned char vdesc->fillvalue = %d\n", *(unsigned char *)vdesc->fillvalue);
+            if (*(unsigned char *)vdesc->fillvalue != fill_char)
+                ERR(ERR_WRONG);
+            break;
+        case PIO_SHORT:
+            printf("short vdesc->fillvalue = %d\n", *(short *)vdesc->fillvalue);
+            if (*(short *)vdesc->fillvalue != fill_short)
+                ERR(ERR_WRONG);
+            break;
+        case PIO_INT:
+            printf("int vdesc->fillvalue = %d\n", *(int *)vdesc->fillvalue);
+            if (*(int *)vdesc->fillvalue != fill_int)
+                ERR(ERR_WRONG);
+            break;
+        case PIO_FLOAT:
+            printf("float vdesc->fillvalue = %g\n", *(float *)vdesc->fillvalue);
+            if (*(float *)vdesc->fillvalue != fill_float)
+                ERR(ERR_WRONG);
+            break;
+        case PIO_DOUBLE:
+            printf("double vdesc->fillvalue = %g\n", *(double *)vdesc->fillvalue);
+            if (*(double *)vdesc->fillvalue != fill_double)
+                ERR(ERR_WRONG);
+            break;
+        case PIO_UBYTE:
+            printf("unsigned char vdesc->fillvalue = %d\n", *(unsigned char *)vdesc->fillvalue);
+            if (*(unsigned char *)vdesc->fillvalue != fill_ubyte)
+                ERR(ERR_WRONG);
+            break;
+        case PIO_USHORT:
+            printf("unsigned short vdesc->fillvalue = %d\n", *(unsigned short *)vdesc->fillvalue);
+            if (*(unsigned short *)vdesc->fillvalue != fill_ushort)
+                ERR(ERR_WRONG);
+            break;
+        case PIO_UINT:
+            printf("unsigned int vdesc->fillvalue = %d\n", *(unsigned int *)vdesc->fillvalue);
+            if (*(unsigned int *)vdesc->fillvalue != fill_uint)
+                ERR(ERR_WRONG);
+            break;
+        case PIO_INT64:
+            printf("long long vdesc->fillvalue = %lld\n", *(long long *)vdesc->fillvalue);
+            if (*(long long *)vdesc->fillvalue != fill_int64)
+                ERR(ERR_WRONG);
+            break;
+        case PIO_UINT64:
+            printf("unsigned long long vdesc->fillvalue = %lld\n", *(unsigned long long *)vdesc->fillvalue);
+            if (*(unsigned long long *)vdesc->fillvalue != fill_uint64)
+                ERR(ERR_WRONG);
+            break;
+        default:
+            ERR(ERR_AWFUL);
+        }
+    }
+
+    return PIO_NOERR;
+}
+        
+/* Test the internal function that determins a var's fillvalue.
+ *
+ * @param iosysid the iosystem ID that will be used for the test.
+ * @param num_flavors the number of different IO types that will be tested.
+ * @param flavor an array of the valid IO types.
+ * @param my_rank 0-based rank of task.
+ * @returns 0 for success, error code otherwise.
+ */
+int test_find_var_fillvalue(int iosysid, int num_flavors, int *flavor,
+                            int my_rank, int async)
+{
+#define NUM_FILL_TESTS 2
+    int ncid;
+    int dimid;
+    int test_type[NUM_NETCDF4_TYPES - 1] = {PIO_BYTE, PIO_CHAR, PIO_SHORT, PIO_INT,
+                                            PIO_FLOAT, PIO_DOUBLE, PIO_UBYTE, PIO_USHORT,
+                                            PIO_UINT, PIO_INT64, PIO_UINT64};
+    int ret;    /* Return code. */
+
+    /* Use PIO to create the example file in each of the four
+     * available ways. */
+    for (int fmt = 0; fmt < num_flavors; fmt++)
+    {
+        char filename[PIO_MAX_NAME + 1]; /* Test filename. */
+        char iotype_name[PIO_MAX_NAME + 1];
+        int num_types = NUM_CLASSIC_TYPES;
+
+        /* Overwrite existing test file. */
+        int mode = PIO_CLOBBER;
+
+        /* If this is netCDF-4, add the netCDF4 flag. */
+        if (flavor[fmt] == PIO_IOTYPE_NETCDF4C || flavor[fmt] == PIO_IOTYPE_NETCDF4P)
+        {
+            printf("%d adding NC_NETCDF4 flag\n", my_rank);
+            mode |= NC_NETCDF4;
+            num_types = NUM_NETCDF4_TYPES - 1;
+        }
+        else
+            num_types = NUM_CLASSIC_TYPES;
+
+        /* If this is pnetcdf or netCDF-4 parallel, add the MPIIO flag. */
+        if (flavor[fmt] == PIO_IOTYPE_PNETCDF || flavor[fmt] == PIO_IOTYPE_NETCDF4P)
+        {
+            printf("%d adding NC_MPIIO flag\n", my_rank);
+            mode |= NC_MPIIO;
+        }
+
+        /* Get memory for varids. */
+        int varid[num_types];
+
+        /* Create a filename. */
+        if ((ret = get_iotype_name(flavor[fmt], iotype_name)))
+            return ret;
+        sprintf(filename, "%s_find_var_fillvalue_%s.nc", TEST_NAME, iotype_name);
+
+        /* Test with and without custom fill values. */
+        for (int fvt = 0; fvt < NUM_FILL_TESTS; fvt++)
+        {
+            /* Create the netCDF output file. */
+            printf("my_rank = %d Creating sample file %s with format %d num_types = %d.\n",
+                   my_rank, filename, flavor[fmt], num_types);
+            if ((ret = PIOc_create(iosysid, filename, mode, &ncid)))
+                ERR(ret);
+
+            /* Create a dimension. */
+            if ((ret = PIOc_def_dim(ncid, DIM_NAME, DIM_LEN, &dimid)))
+                ERR(ret);
+
+            /* Create a var of each type. */
+            for (int v = 0; v < num_types; v++)
+            {
+                char var_name[PIO_MAX_NAME + 1];
+                sprintf(var_name, "var_of_type_%d", test_type[v]);
+                if ((ret = PIOc_def_var(ncid, var_name, test_type[v], NDIM1, &dimid, &varid[v])))
+                    ERR(ret);
+
+                /* Use custom fill values for this test? */
+                if (fvt)
+                {
+                    switch(test_type[v])
+                    {
+                    case PIO_BYTE:
+                        if ((ret = PIOc_def_var_fill(ncid, varid[v], NC_FILL, &custom_fill_byte)))
+                            ERR(ret);
+                        break;
+                    case PIO_CHAR:
+                        if ((ret = PIOc_def_var_fill(ncid, varid[v], NC_FILL, &custom_fill_char)))
+                            ERR(ret);
+                        break;
+                    case PIO_SHORT:
+                        if ((ret = PIOc_def_var_fill(ncid, varid[v], NC_FILL, &custom_fill_short)))
+                            ERR(ret);
+                        break;
+                    case PIO_INT:
+                        if ((ret = PIOc_def_var_fill(ncid, varid[v], NC_FILL, &custom_fill_int)))
+                            ERR(ret);
+                        break;
+                    case PIO_FLOAT:
+                        if ((ret = PIOc_def_var_fill(ncid, varid[v], NC_FILL, &custom_fill_float)))
+                            ERR(ret);
+                        break;
+                    case PIO_DOUBLE:
+                        if ((ret = PIOc_def_var_fill(ncid, varid[v], NC_FILL, &custom_fill_double)))
+                            ERR(ret);
+                        break;
+                    case PIO_UBYTE:
+                        if ((ret = PIOc_def_var_fill(ncid, varid[v], NC_FILL, &custom_fill_ubyte)))
+                            ERR(ret);
+                        break;
+                    case PIO_USHORT:
+                        if ((ret = PIOc_def_var_fill(ncid, varid[v], NC_FILL, &custom_fill_ushort)))
+                            ERR(ret);
+                        break;
+                    case PIO_UINT:
+                        if ((ret = PIOc_def_var_fill(ncid, varid[v], NC_FILL, &custom_fill_uint)))
+                            ERR(ret);
+                        break;
+                    case PIO_INT64:
+                        if ((ret = PIOc_def_var_fill(ncid, varid[v], NC_FILL, &custom_fill_int64)))
+                            ERR(ret);
+                        break;
+                    case PIO_UINT64:
+                        if ((ret = PIOc_def_var_fill(ncid, varid[v], NC_FILL, &custom_fill_uint64)))
+                            ERR(ret);
+                        break;
+                    default:
+                        ERR(ERR_AWFUL);
+                    }
+                } /* endif fvt */
+            }
+
+            /* Check the fill values. */
+            if ((ret = check_fillvalues(ncid, num_types, fvt, my_rank)))
+                ERR(ret);
+
+            /* End define mode. */
+            if ((ret = PIOc_enddef(ncid)))
+                ERR(ret);
+
+            /* Check the fill values. */
+            if ((ret = check_fillvalues(ncid, num_types, fvt, my_rank)))
+                ERR(ret);
+
+            /* Close the netCDF file. */
+            if ((ret = PIOc_closefile(ncid)))
+                ERR(ret);
+
+            /* Reopen the test file. */
+            printf("%d Re-opening sample file %s with format %d...\n",
+                   my_rank, filename, flavor[fmt]);
+            /* if ((ret = PIOc_open(iosysid, filename, NC_WRITE, &ncid))) */
+            /*     ERR(ret); */
+            if ((ret = PIOc_openfile2(iosysid, &ncid, &flavor[fmt], filename, NC_WRITE)))
+                ERR(ret);
+
+            /* Check the fill values. */
+            if ((ret = check_fillvalues(ncid, num_types, fvt, my_rank)))
+                ERR(ret);
+
+            /* Close the netCDF file. */
+            if ((ret = PIOc_closefile(ncid)))
+                ERR(ret);
+        } /* next fill value test */
     }
 
     return PIO_NOERR;
@@ -1703,7 +2014,7 @@ int test_decomp_internal(int my_test_size, int my_rank, int iosysid, int dim_len
                                        history_in, source_in, version_in, &fortran_order_in)))
         return ret;
 
-    
+
     /* Did we get the correct answers? */
     printf("source_in = %s\n", source_in);
     if (strcmp(title, title_in) || strcmp(history, history_in) ||
@@ -2029,7 +2340,7 @@ int test_decomp_public_async(int my_test_size, int my_rank, int iosysid, MPI_Com
     int ret;
 
     sprintf(filename, "async_decomp_%s_rank_%d_async_%d.nc", TEST_NAME, my_rank, async);
-    
+
     /* Create the PIO decomposition for this test. */
     if ((ret = PIOc_init_decomp(iosysid, PIO_FLOAT, NDIM1, &dim_len, elements_per_pe,
                                 compdof, &ioid, PIO_REARR_BOX, NULL, NULL)))
@@ -2068,7 +2379,7 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
     if (async)
         if ((ret = test_decomp_public_async(my_test_size, my_rank, iosysid, test_comm, async)))
             return ret;
-    
+
     /* Check iotypes. */
     printf("%d Testing iotypes. async = %d\n", my_rank, async);
     if ((ret = test_iotypes(my_rank)))
@@ -2088,6 +2399,10 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
     if ((ret = test_malloc_iodesc2(iosysid, my_rank)))
         return ret;
 
+    /* Test internal function find_var_fillvalue(). */
+    if ((ret = test_find_var_fillvalue(iosysid, num_flavors, flavor, my_rank, async)))
+        return ret;
+
     /* Run these tests for non-async cases only. */
     if (!async)
     {
@@ -2095,7 +2410,7 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
         /* Test decomposition internal functions. */
         if ((ret = test_decomp_internal(my_test_size, my_rank, iosysid, DIM_LEN, test_comm, async)))
             return ret;
-        
+
         /* Test decomposition public API functions. */
         if ((ret = test_decomp_public(my_test_size, my_rank, iosysid, DIM_LEN, test_comm, async)))
             return ret;
@@ -2103,11 +2418,11 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
         /* This is a simple test that just creates a decomp. */
         if ((ret = test_decomp_2(my_test_size, my_rank, iosysid, DIM_LEN, test_comm, async)))
             return ret;
-        
+
         /* This is a simple test that just writes the decomp. */
         if ((ret = test_decomp_public_2(my_test_size, my_rank, iosysid, DIM_LEN, test_comm, async)))
             return ret;
-    
+
         /* Decompose the data over the tasks. */
         if ((ret = create_decomposition(my_test_size, my_rank, iosysid, DIM_LEN, &ioid)))
             return ret;
@@ -2136,7 +2451,7 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
     printf("%d Testing nc4 functions. async = %d\n", my_rank, async);
     if ((ret = test_nc4(iosysid, num_flavors, flavor, my_rank)))
         return ret;
-    
+
     /* Test scalar var. */
     printf("%d Testing scalar var. async = %d\n", my_rank, async);
     if ((ret = test_scalar(iosysid, num_flavors, flavor, my_rank, async, test_comm)))
