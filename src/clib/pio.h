@@ -50,7 +50,7 @@
 /** Used in the decomposition netCDF file. */
 
 /* Holds the version of the decomposition file. */
-#define DECOMP_VERSION_ATT_NAME "version"
+#define DECOMP_VERSION_ATT_NAME "PIO_library_version"
 
 /* Holds the maximum length of any task map. */
 #define DECOMP_MAX_MAPLEN_ATT_NAME "max_maplen"
