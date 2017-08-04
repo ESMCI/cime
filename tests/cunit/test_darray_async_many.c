@@ -415,7 +415,7 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm,
     for (int fmt = 0; fmt < num_flavors; fmt++)
     {
         int ncid;
-        int dimid[NDIM3];
+        int dimid[NDIM4];
         char data_filename[PIO_MAX_NAME + 1];
         int num_types = flavor[fmt] == PIO_IOTYPE_NETCDF4C || flavor[fmt] == PIO_IOTYPE_NETCDF4P ?
             NUM_NETCDF4_TYPES - 1 : NUM_CLASSIC_TYPES;
