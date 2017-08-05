@@ -1351,10 +1351,6 @@ int test_find_var_fillvalue(int iosysid, int num_flavors, int *flavor,
             if ((ret = PIOc_enddef(ncid)))
                 ERR(ret);
 
-            /* Check the fill values. */
-            if ((ret = check_fillvalues(ncid, num_types, fvt, my_rank)))
-                ERR(ret);
-
             /* Close the netCDF file. */
             if ((ret = PIOc_closefile(ncid)))
                 ERR(ret);
