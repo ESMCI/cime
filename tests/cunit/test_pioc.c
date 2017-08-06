@@ -151,33 +151,33 @@ int check_darray_file(int iosysid, int ntasks, int my_rank, char *filename)
 
     /* Open the file. */
     if ((ret = PIOc_open(iosysid, filename, NC_NOWRITE, &ncid)))
-        return ret;
+        ERR(ret);
 
     /* Check metadata. */
     if ((ret = PIOc_inq(ncid, &ndims, &nvars, &ngatts, &unlimdimid)))
-        return ret;
+        ERR(ret);
     if (ndims != 1 || nvars != 1 || ngatts != 0 || unlimdimid != -1)
-        return ERR_WRONG;
+        ERR(ERR_WRONG);
     if ((ret = PIOc_inq_dim(ncid, 0, dim_name_in, &dim_len_in)))
-        return ret;
+        ERR(ret);
     if (strcmp(dim_name_in, DIM_NAME) || dim_len_in != DIM_LEN)
-        return ERR_WRONG;
+        ERR(ERR_WRONG);
 
     /* Decompose the data over the tasks. */
     if ((ret = create_decomposition(ntasks, my_rank, iosysid, DIM_LEN, &ioid)))
-        return ret;
+        ERR(ret);
 
     /* Read data. */
     if ((ret = PIOc_read_darray(ncid, 0, ioid, arraylen, &data_in)))
-        return ret;
+        ERR(ret);
 
     /* Check data. */
     if (data_in != my_rank * 10)
-        return ERR_WRONG;
+        ERR(ERR_WRONG);
 
     /* Close the file. */
     if ((ret = PIOc_closefile(ncid)))
-        return ret;
+        ERR(ret);
 
     /* Free the PIO decomposition. */
     if ((ret = PIOc_freedecomp(iosysid, ioid)))
@@ -278,7 +278,7 @@ int check_dim_names(int my_rank, int ncid, MPI_Comm test_comm)
     {
         memset(dim_name, 0, sizeof(dim_name));
         if ((ret = PIOc_inq_dimname(ncid, d, dim_name)))
-            return ret;
+            ERR(ret);
         printf("my_rank %d my_test_rank %d dim %d name %s\n", my_rank, my_test_rank, d, dim_name);
 
         /* Did other ranks get the same name? */
@@ -315,7 +315,7 @@ int check_var_name(int my_rank, int ncid, MPI_Comm test_comm)
 
     memset(var_name, 0, sizeof(var_name));
     if ((ret = PIOc_inq_varname(ncid, 0, var_name)))
-        return ret;
+        ERR(ret);
     printf("my_rank %d var name %s\n", my_rank, var_name);
 
     /* Did other ranks get the same name? */
@@ -368,7 +368,7 @@ int check_atts(int my_rank, int ncid, int flavor, MPI_Comm test_comm, int async)
 
     memset(att_name, 0, sizeof(att_name));
     if ((ret = PIOc_inq_attname(ncid, NC_GLOBAL, 0, att_name)))
-        return ret;
+        ERR(ret);
 
     /* Did all ranks get the same name? */
     memset(zero_att_name, 0, sizeof(zero_att_name));
@@ -382,87 +382,87 @@ int check_atts(int my_rank, int ncid, int flavor, MPI_Comm test_comm, int async)
 
     /* These should not work. */
     if (PIOc_get_att_int(ncid + TEST_VAL_42, NC_GLOBAL, ATT_NAME, &att_int_value) != PIO_EBADID)
-        return ERR_WRONG;
+        ERR(ERR_WRONG);
     if (PIOc_get_att_int(ncid, TEST_VAL_42, ATT_NAME, &att_int_value) != PIO_ENOTVAR)
-        return ERR_WRONG;
+        ERR(ERR_WRONG);
     if (PIOc_get_att_int(ncid, NC_GLOBAL, NULL, &att_int_value) != PIO_EINVAL)
-        return ERR_WRONG;
+        ERR(ERR_WRONG);
     if (PIOc_get_att_int(ncid, NC_GLOBAL, ATT_NAME, NULL) != PIO_EINVAL)
-        return ERR_WRONG;
+        ERR(ERR_WRONG);
 
     /* These should not work. */
     if (PIOc_inq_att(ncid, NC_GLOBAL, too_long_name, &att_type, &att_len) != PIO_EINVAL)
-        return ERR_WRONG;
+        ERR(ERR_WRONG);
     int tmp_attid;
     if (PIOc_inq_attid(ncid, NC_GLOBAL, too_long_name, &tmp_attid) != PIO_EINVAL)
-        return ERR_WRONG;
+        ERR(ERR_WRONG);
 
     /* Check first att. */
     if ((ret = PIOc_inq_att(ncid, NC_GLOBAL, ATT_NAME, &att_type, &att_len)))
-        return ret;
+        ERR(ret);
     if (att_type != PIO_INT || att_len != 1)
-        return ERR_WRONG;
+        ERR(ERR_WRONG);
     if ((ret = PIOc_get_att_int(ncid, NC_GLOBAL, ATT_NAME, &att_int_value)))
-        return ret;
+        ERR(ret);
     if (att_int_value != ATT_VAL)
-        return ERR_WRONG;
+        ERR(ERR_WRONG);
 
     /* Try the typeless get. */
     int att_int_value2;
     if ((ret = PIOc_get_att(ncid, NC_GLOBAL, ATT_NAME, &att_int_value2)))
         ERR(ret);
     if (att_int_value2 != ATT_VAL)
-        return ERR_WRONG;
+        ERR(ERR_WRONG);
 
     /* Check second att. */
     if ((ret = PIOc_inq_att(ncid, NC_GLOBAL, ATT_NAME2, &att_type, &att_len)))
-        return ret;
+        ERR(ret);
     if (att_type != PIO_FLOAT || att_len != 1)
-        return ERR_WRONG;
+        ERR(ERR_WRONG);
 
     /* Try converting to every type. */
     if ((ret = PIOc_get_att_schar(ncid, NC_GLOBAL, ATT_NAME2, &att_schar_value)))
-        return ret;
+        ERR(ret);
     if (att_schar_value != ATT_VAL)
-        return ERR_WRONG;
+        ERR(ERR_WRONG);
     if ((ret = PIOc_get_att_short(ncid, NC_GLOBAL, ATT_NAME2, &att_short_value)))
-        return ret;
+        ERR(ret);
     if (att_short_value != ATT_VAL)
-        return ERR_WRONG;
+        ERR(ERR_WRONG);
     if ((ret = PIOc_get_att_int(ncid, NC_GLOBAL, ATT_NAME2, &att_int_value)))
-        return ret;
+        ERR(ret);
     if (att_int_value != ATT_VAL)
-        return ERR_WRONG;
+        ERR(ERR_WRONG);
     if ((ret = PIOc_get_att_float(ncid, NC_GLOBAL, ATT_NAME2, &att_float_value)))
-        return ret;
+        ERR(ret);
     if (att_float_value != ATT_VAL)
-        return ERR_WRONG;
+        ERR(ERR_WRONG);
     if ((ret = PIOc_get_att_double(ncid, NC_GLOBAL, ATT_NAME2, &att_double_value)))
-        return ret;
+        ERR(ret);
     if (att_double_value != ATT_VAL)
-        return ERR_WRONG;
+        ERR(ERR_WRONG);
     if (flavor == PIO_IOTYPE_NETCDF4C || flavor == PIO_IOTYPE_NETCDF4P)
     {
         if ((ret = PIOc_get_att_uchar(ncid, NC_GLOBAL, ATT_NAME2, &att_uchar_value)))
-            return ret;
+            ERR(ret);
         if (att_uchar_value != ATT_VAL)
-            return ERR_WRONG;
+            ERR(ERR_WRONG);
         if ((ret = PIOc_get_att_ushort(ncid, NC_GLOBAL, ATT_NAME2, &att_ushort_value)))
-            return ret;
+            ERR(ret);
         if (att_ushort_value != ATT_VAL)
-            return ERR_WRONG;
+            ERR(ERR_WRONG);
         if ((ret = PIOc_get_att_uint(ncid, NC_GLOBAL, ATT_NAME2, &att_uint_value)))
-            return ret;
+            ERR(ret);
         if (att_uint_value != ATT_VAL)
-            return ERR_WRONG;
+            ERR(ERR_WRONG);
         if ((ret = PIOc_get_att_longlong(ncid, NC_GLOBAL, ATT_NAME2, &att_int64_value)))
-            return ret;
+            ERR(ret);
         if (att_int64_value != ATT_VAL)
-            return ERR_WRONG;
+            ERR(ERR_WRONG);
         if ((ret = PIOc_get_att_ulonglong(ncid, NC_GLOBAL, ATT_NAME2, &att_uint64_value)))
-            return ret;
+            ERR(ret);
         if (att_uint64_value != ATT_VAL)
-            return ERR_WRONG;
+            ERR(ERR_WRONG);
     }
     return 0;
 }
@@ -489,7 +489,7 @@ int check_error_strings(int my_rank, int num_tries, int *errcode,
 
         /* Get the error string for this errcode. */
         if ((ret = PIOc_strerror(errcode[try], errstr)))
-            return ret;
+            ERR(ret);
 
         printf("%d for errcode = %d message = %s\n", my_rank, errcode[try], errstr);
 
@@ -515,32 +515,32 @@ int test_iotypes(int my_rank)
 {
     /* This is never present. */
     if (PIOc_iotype_available(1000))
-        return ERR_WRONG;
+        ERR(ERR_WRONG);
 
     /* NetCDF is always present. */
     if (!PIOc_iotype_available(PIO_IOTYPE_NETCDF))
-        return ERR_WRONG;
+        ERR(ERR_WRONG);
 
     /* Pnetcdf may or may not be present. */
 #ifdef _PNETCDF
     if (!PIOc_iotype_available(PIO_IOTYPE_PNETCDF))
-        return ERR_WRONG;
+        ERR(ERR_WRONG);
 #else
     if (PIOc_iotype_available(PIO_IOTYPE_PNETCDF))
-        return ERR_WRONG;
+        ERR(ERR_WRONG);
 #endif /* _PNETCDF */
 
     /* NetCDF-4 may or may not be present. */
 #ifdef _NETCDF4
     if (!PIOc_iotype_available(PIO_IOTYPE_NETCDF4C))
-        return ERR_WRONG;
+        ERR(ERR_WRONG);
     if (!PIOc_iotype_available(PIO_IOTYPE_NETCDF4P))
-        return ERR_WRONG;
+        ERR(ERR_WRONG);
 #else
     if (PIOc_iotype_available(PIO_IOTYPE_NETCDF4C))
-        return ERR_WRONG;
+        ERR(ERR_WRONG);
     if (PIOc_iotype_available(PIO_IOTYPE_NETCDF4P))
-        return ERR_WRONG;
+        ERR(ERR_WRONG);
 #endif /* _NETCDF4 */
 
     return PIO_NOERR;
@@ -561,27 +561,27 @@ int check_strerror_netcdf(int my_rank)
     int ret;
 
     if ((ret = check_error_strings(my_rank, NUM_NETCDF_TRIES, errcode, expected)))
-        return ret;
+        ERR(ret);
 
     /* When called with a code of 0, these functions should do nothing
      * and return 0. */
     if (check_mpi(NULL, 0, __FILE__, __LINE__))
-        return ERR_WRONG;
+        ERR(ERR_WRONG);
     if (check_mpi2(NULL, NULL, 0, __FILE__, __LINE__))
-        return ERR_WRONG;
+        ERR(ERR_WRONG);
     if (pio_err(NULL, NULL, 0, __FILE__, __LINE__))
-        return ERR_WRONG;
+        ERR(ERR_WRONG);
     if (check_netcdf(NULL, 0, __FILE__, __LINE__))
-        return ERR_WRONG;
+        ERR(ERR_WRONG);
     if (check_netcdf2(NULL, NULL, 0, __FILE__, __LINE__))
-        return ERR_WRONG;
+        ERR(ERR_WRONG);
 
     /* When called with other error messages, these functions should
      * return PIO_EIO. */
     if (check_mpi(NULL, MPI_ERR_OTHER, __FILE__, __LINE__) != PIO_EIO)
-        return ERR_WRONG;
+        ERR(ERR_WRONG);
     if (check_mpi(NULL, MPI_ERR_UNKNOWN, __FILE__, __LINE__) != PIO_EIO)
-        return ERR_WRONG;
+        ERR(ERR_WRONG);
 
     if (!my_rank)
         printf("check_strerror_netcdf SUCCEEDED!\n");
@@ -605,7 +605,7 @@ int check_strerror_netcdf4(int my_rank)
     int ret;
 
     if ((ret = check_error_strings(my_rank, NUM_NETCDF4_TRIES, errcode, expected)))
-        return ret;
+        ERR(ret);
 
     if (!my_rank)
         printf("check_strerror_netcdf4 SUCCEEDED!\n");
@@ -630,7 +630,7 @@ int check_strerror_pnetcdf(int my_rank)
     int ret;
 
     if ((ret = check_error_strings(my_rank, NUM_PNETCDF_TRIES, errcode, expected)))
-        return ret;
+        ERR(ret);
 
     if (!my_rank)
         printf("check_strerror_pnetcdf SUCCEEDED!\n");
@@ -657,7 +657,7 @@ int check_strerror_pio(int my_rank)
     int ret;
 
     if ((ret = check_error_strings(my_rank, NUM_PIO_TRIES, errcode, expected)))
-        return ret;
+        ERR(ret);
 
     if (!my_rank)
         printf("check_strerror_pio SUCCEEDED!\n");
@@ -676,19 +676,19 @@ int check_strerror(int my_rank)
 
     printf("checking strerror for netCDF-classic error codes...\n");
     if ((ret = check_strerror_netcdf(my_rank)))
-        return ret;
+        ERR(ret);
 
     printf("checking strerror for netCDF-4 error codes...\n");
     if ((ret = check_strerror_netcdf4(my_rank)))
-        return ret;
+        ERR(ret);
 
     printf("checking strerror for pnetcdf error codes...\n");
     if ((ret = check_strerror_pnetcdf(my_rank)))
-        return ret;
+        ERR(ret);
 
     printf("checking strerror for PIO error codes...\n");
     if ((ret = check_strerror_pio(my_rank)))
-        return ret;
+        ERR(ret);
 
     return PIO_NOERR;
 }
@@ -705,29 +705,29 @@ int define_metadata(int ncid, int my_rank, int flavor)
     memset(too_long_name, 74, PIO_MAX_NAME * 5);
     too_long_name[PIO_MAX_NAME * 5] = 0;
     if (PIOc_def_dim(ncid + 1, dim_name[0], (PIO_Offset)dim_len[0], &dimids[0]) != PIO_EBADID)
-        return ERR_WRONG;
+        ERR(ERR_WRONG);
     if (PIOc_def_dim(ncid, NULL, (PIO_Offset)dim_len[0], &dimids[0]) != PIO_EINVAL)
-        return ERR_WRONG;
+        ERR(ERR_WRONG);
     if (PIOc_def_dim(ncid, too_long_name, (PIO_Offset)dim_len[0], &dimids[0]) != PIO_EINVAL)
-        return ERR_WRONG;
+        ERR(ERR_WRONG);
 
     /* Define dimensions. */
     for (int d = 0; d < NDIM; d++)
         if ((ret = PIOc_def_dim(ncid, dim_name[d], (PIO_Offset)dim_len[d], &dimids[d])))
-            return ret;
+            ERR(ret);
 
     /* Check invalid parameters. */
     if (PIOc_def_var(ncid + 1, VAR_NAME, PIO_INT, NDIM, dimids, &varid) != PIO_EBADID)
-        return ERR_WRONG;
+        ERR(ERR_WRONG);
     if (PIOc_def_var(ncid, NULL, PIO_INT, NDIM, dimids, &varid) != PIO_EINVAL)
-        return ERR_WRONG;
+        ERR(ERR_WRONG);
     if (PIOc_def_var(ncid, too_long_name, PIO_INT, NDIM, dimids, &varid) != PIO_EINVAL)
-        return ERR_WRONG;
+        ERR(ERR_WRONG);
 
     /* Define a variable. Test that varidp can be NULL. Since this is
      * the first var in the file, the varid will be 0. */
     if ((ret = PIOc_def_var(ncid, VAR_NAME, PIO_INT, NDIM, dimids, NULL)))
-        return ret;
+        ERR(ret);
     varid = 0;
 
     /* Set the fill mode. */
@@ -735,14 +735,14 @@ int define_metadata(int ncid, int my_rank, int flavor)
     int temp_mode;
     int old_mode;
     if ((ret = PIOc_set_fill(ncid, fillmode, &old_mode)))
-        return ERR_WRONG;
+        ERR(ERR_WRONG);
     if ((ret = PIOc_set_fill(ncid, fillmode, &temp_mode)))
-        return ERR_WRONG;
+        ERR(ERR_WRONG);
     printf("%d old_mode = %d temp_mode = %d\n", my_rank, old_mode, temp_mode);
     if (temp_mode != PIO_NOFILL)
-        return ERR_WRONG;
+        ERR(ERR_WRONG);
     if ((ret = PIOc_set_fill(ncid, old_mode, NULL)))
-        return ret;
+        ERR(ret);
 
     /* Set the fill value for netCDF-4 files. */
     int int_fill = -999;
@@ -751,27 +751,27 @@ int define_metadata(int ncid, int my_rank, int flavor)
 
     /* These should not work. */
     if (PIOc_def_var_fill(ncid + TEST_VAL_42, varid, NC_FILL, &int_fill) != PIO_EBADID)
-        return ERR_WRONG;
+        ERR(ERR_WRONG);
     if (PIOc_def_var_fill(ncid, varid + TEST_VAL_42, NC_FILL, &int_fill) != PIO_ENOTVAR)
-        return ERR_WRONG;
+        ERR(ERR_WRONG);
     if (PIOc_def_var_fill(ncid, varid, NC_FILL + TEST_VAL_42, &int_fill) != PIO_EINVAL)
-        return ERR_WRONG;
+        ERR(ERR_WRONG);
     if (PIOc_def_var_fill(ncid, varid, NC_FILL, NULL) != PIO_EINVAL)
-        return ERR_WRONG;
+        ERR(ERR_WRONG);
 
     /* Set the fill value. */
     if ((ret = PIOc_def_var_fill(ncid, varid, NC_FILL, &int_fill)))
-        return ret;
+        ERR(ret);
 
     /* These should not work. */
     if (PIOc_inq_var_fill(ncid + TEST_VAL_42, varid, &fill_mode, &int_fill_in) != PIO_EBADID)
-        return ERR_WRONG;
+        ERR(ERR_WRONG);
     if (PIOc_inq_var_fill(ncid, varid + TEST_VAL_42, &fill_mode, &int_fill_in) != PIO_ENOTVAR)
-        return ERR_WRONG;
+        ERR(ERR_WRONG);
 
     /* Check the fill value. */
     if ((ret = PIOc_inq_var_fill(ncid, varid, &fill_mode, &int_fill_in)))
-        return ret;
+        ERR(ret);
     if (fill_mode != NC_FILL || int_fill_in != int_fill)
         ERR(ERR_WRONG);
 
@@ -782,14 +782,14 @@ int define_metadata(int ncid, int my_rank, int flavor)
     if (flavor != PIO_IOTYPE_PNETCDF)
     {
         if ((ret = PIOc_inq_var_fill(ncid, varid, NULL, &int_fill_in)))
-            return ret;
+            ERR(ret);
         if (int_fill_in != int_fill)
             ERR(ERR_WRONG);
         if ((ret = PIOc_inq_var_fill(ncid, varid, NULL, NULL)))
-            return ret;
+            ERR(ret);
     }
     if ((ret = PIOc_inq_var_fill(ncid, varid, &fill_mode, NULL)))
-        return ret;
+        ERR(ret);
     if (fill_mode != NC_FILL)
         ERR(ERR_WRONG);
 
@@ -808,17 +808,17 @@ int check_metadata(int ncid, int my_rank, int flavor)
     /* Check how many dims, vars, global atts there are, and the id of
      * the unlimited dimension. */
     if (PIOc_inq(ncid + 1, &ndims, &nvars, &ngatts, &unlimdimid) != PIO_EBADID)
-        return ERR_WRONG;
+        ERR(ERR_WRONG);
     if ((ret = PIOc_inq(ncid, NULL, NULL, NULL, NULL)))
-        return ret;
+        ERR(ret);
     if ((ret = PIOc_inq(ncid, &ndims, &nvars, &ngatts, &unlimdimid)))
-        return ret;
+        ERR(ret);
     if (ndims != NDIM || nvars != 1 || ngatts != 0 || unlimdimid != 0)
         return ERR_AWFUL;
     int num_unlimdims;
     int unlimdimid2;
     if ((ret = PIOc_inq_unlimdims(ncid, &num_unlimdims, &unlimdimid2)))
-        return ret;
+        ERR(ret);
     if (unlimdimid2 != 0)
         return ERR_AWFUL;
 
@@ -826,26 +826,26 @@ int check_metadata(int ncid, int my_rank, int flavor)
     for (int d = 0; d < NDIM; d++)
     {
         if (PIOc_inq_dim(ncid + 1, d, name_in, &len_in) != PIO_EBADID)
-            return ERR_WRONG;
+            ERR(ERR_WRONG);
         if (PIOc_inq_dim(ncid, d + 40, name_in, &len_in) != PIO_EBADDIM)
-            return ERR_WRONG;
+            ERR(ERR_WRONG);
         if ((ret = PIOc_inq_dim(ncid, d, NULL, NULL)))
-            return ret;
+            ERR(ret);
         if ((ret = PIOc_inq_dim(ncid, d, name_in, &len_in)))
-            return ret;
+            ERR(ret);
         if (len_in != dim_len[d] || strcmp(name_in, dim_name[d]))
             return ERR_AWFUL;
     }
 
     /* Check the variable. */
     if (PIOc_inq_var(ncid + 1, 0, name_in, &xtype_in, &ndims, dimid, &natts) != PIO_EBADID)
-        return ERR_WRONG;
+        ERR(ERR_WRONG);
     if (PIOc_inq_var(ncid, 45, name_in, &xtype_in, &ndims, dimid, &natts) != PIO_ENOTVAR)
-        return ERR_WRONG;
+        ERR(ERR_WRONG);
     if ((ret = PIOc_inq_var(ncid, 0, name_in, NULL, NULL, NULL, NULL)))
-        return ret;
+        ERR(ret);
     if ((ret = PIOc_inq_var(ncid, 0, name_in, &xtype_in, &ndims, dimid, &natts)))
-        return ret;
+        ERR(ret);
     if (strcmp(name_in, VAR_NAME) || xtype_in != PIO_INT || ndims != NDIM ||
         dimid[0] != 0 || dimid[1] != 1 || dimid[2] != 2 || natts != 1)
         return ERR_AWFUL;
@@ -886,14 +886,14 @@ int test_names(int iosysid, int num_flavors, int *flavor, int my_rank,
 
         /* Create a filename. */
         if ((ret = get_iotype_name(flavor[fmt], iotype_name)))
-            return ret;
+            ERR(ret);
         sprintf(filename, "%s_%s_names.nc", TEST_NAME, iotype_name);
 
         /* Create the netCDF output file. */
         printf("rank: %d Creating sample file %s with format %d...\n",
                my_rank, filename, flavor[fmt]);
         if ((ret = PIOc_createfile(iosysid, &ncid, &(flavor[fmt]), filename, PIO_CLOBBER)))
-            return ret;
+            ERR(ret);
 
         /* Define netCDF dimensions and variable. */
         printf("rank: %d Defining netCDF metadata...\n", my_rank);
@@ -902,22 +902,22 @@ int test_names(int iosysid, int num_flavors, int *flavor, int my_rank,
             printf("rank: %d Defining netCDF dimension %s, length %d\n", my_rank,
                    dim_name[d], dim_len[d]);
             if ((ret = PIOc_def_dim(ncid, dim_name[d], (PIO_Offset)dim_len[d], &dimids[d])))
-                return ret;
+                ERR(ret);
         }
 
         /* These should not work. */
         if (PIOc_setframe(ncid + TEST_VAL_42, 0, 0) != PIO_EBADID)
-            return ERR_WRONG;
+            ERR(ERR_WRONG);
         if (PIOc_setframe(ncid, -1, 0) != PIO_ENOTVAR)
-            return ERR_WRONG;
+            ERR(ERR_WRONG);
         if (PIOc_setframe(ncid, NC_MAX_VARS + 1, 0) != PIO_ENOTVAR)
-            return ERR_WRONG;
+            ERR(ERR_WRONG);
         if (PIOc_advanceframe(ncid + TEST_VAL_42, 0) != PIO_EBADID)
-            return ERR_WRONG;
+            ERR(ERR_WRONG);
         if (PIOc_advanceframe(ncid, -1) != PIO_ENOTVAR)
-            return ERR_WRONG;
+            ERR(ERR_WRONG);
         if (PIOc_advanceframe(ncid, NC_MAX_VARS + 1) != PIO_ENOTVAR)
-            return ERR_WRONG;
+            ERR(ERR_WRONG);
 
         /* Check the dimension names. */
         if ((ret = check_dim_names(my_rank, ncid, test_comm)))
@@ -1010,16 +1010,16 @@ int test_files(int iosysid, int num_flavors, int *flavor, int my_rank)
 
         /* Create a filename. */
         if ((ret = get_iotype_name(flavor[fmt], iotype_name)))
-            return ret;
+            ERR(ret);
         sprintf(filename, "%s_%s.nc", TEST_NAME, iotype_name);
 
         /* Testing some invalid parameters. */
         if (PIOc_create(iosysid + 1, filename, mode, &ncid) != PIO_EBADID)
-            return ERR_WRONG;
+            ERR(ERR_WRONG);
         if (PIOc_create(iosysid, filename, mode, NULL) != PIO_EINVAL)
-            return ERR_WRONG;
+            ERR(ERR_WRONG);
         if (PIOc_create(iosysid, NULL, mode, &ncid) != PIO_EINVAL)
-            return ERR_WRONG;
+            ERR(ERR_WRONG);
 
         /* Create the netCDF output file. */
         printf("%d Creating sample file %s with format %d...\n", my_rank, filename, flavor[fmt]);
@@ -1038,24 +1038,24 @@ int test_files(int iosysid, int num_flavors, int *flavor, int my_rank)
 
         /* End define mode. */
         if (PIOc_enddef(ncid + 1) != PIO_EBADID)
-            return ERR_WRONG;
+            ERR(ERR_WRONG);
         if ((ret = PIOc_enddef(ncid)))
             ERR(ret);
 
         /* Close the netCDF file. */
         printf("%d Closing the sample data file...\n", my_rank);
         if (PIOc_closefile(ncid + 1) != PIO_EBADID)
-            return ERR_WRONG;
+            ERR(ERR_WRONG);
         if ((ret = PIOc_closefile(ncid)))
             ERR(ret);
 
         /* Check some invalid paramters. */
         if (PIOc_open(iosysid + 1, filename, mode, &ncid) != PIO_EBADID)
-            return ERR_WRONG;
+            ERR(ERR_WRONG);
         if (PIOc_open(iosysid, NULL, mode, &ncid) != PIO_EINVAL)
-            return ERR_WRONG;
+            ERR(ERR_WRONG);
         if (PIOc_open(iosysid, filename, mode, NULL) != PIO_EINVAL)
-            return ERR_WRONG;
+            ERR(ERR_WRONG);
 
         /* Reopen the test file. */
         printf("%d Re-opening sample file %s with format %d...\n",
@@ -1264,7 +1264,7 @@ int test_find_var_fillvalue(int iosysid, int num_flavors, int *flavor,
 
         /* Create a filename. */
         if ((ret = get_iotype_name(flavor[fmt], iotype_name)))
-            return ret;
+            ERR(ret);
         sprintf(filename, "%s_find_var_fillvalue_%s.nc", TEST_NAME, iotype_name);
 
         /* Test with and without custom fill values. */
@@ -1399,26 +1399,26 @@ int test_deletefile(int iosysid, int num_flavors, int *flavor, int my_rank)
 
         /* These should fail. */
         if (PIOc_set_iosystem_error_handling(iosysid + TEST_VAL_42, PIO_RETURN_ERROR, &old_method) != PIO_EBADID)
-            return ERR_WRONG;
+            ERR(ERR_WRONG);
         if (PIOc_set_iosystem_error_handling(iosysid, PIO_RETURN_ERROR + TEST_VAL_42, &old_method) != PIO_EINVAL)
-            return ERR_WRONG;
+            ERR(ERR_WRONG);
 
         /* Set error handling. */
         if ((ret = PIOc_set_iosystem_error_handling(iosysid, PIO_RETURN_ERROR, &old_method)))
-            return ret;
+            ERR(ret);
         if (old_method != PIO_INTERNAL_ERROR && old_method != PIO_RETURN_ERROR)
-            return ERR_WRONG;
+            ERR(ERR_WRONG);
 
         /* Create a filename. */
         if ((ret = get_iotype_name(flavor[fmt], iotype_name)))
-            return ret;
+            ERR(ret);
         sprintf(filename, "delete_me_%s_%s.nc", TEST_NAME, iotype_name);
 
         printf("%d testing delete for file %s with format %d...\n",
                my_rank, filename, flavor[fmt]);
         int bad_iotype = TEST_VAL_42;
         if (PIOc_createfile(iosysid, &ncid, &bad_iotype, filename, PIO_CLOBBER) != PIO_EINVAL)
-            return ERR_WRONG;
+            ERR(ERR_WRONG);
         if ((ret = PIOc_createfile(iosysid, &ncid, &(flavor[fmt]), filename, PIO_CLOBBER)))
             ERR(ret);
 
@@ -1488,7 +1488,7 @@ int test_nc4(int iosysid, int num_flavors, int *flavor, int my_rank)
 
         /* Create a filename. */
         if ((ret = get_iotype_name(flavor[fmt], iotype_name)))
-            return ret;
+            ERR(ret);
         sprintf(filename, "%s_%s.nc", TEST_NAME, iotype_name);
 
         printf("%d Setting chunk cache for file %s with format %d...\n",
@@ -1727,7 +1727,7 @@ int test_nc4(int iosysid, int num_flavors, int *flavor, int my_rank)
 
 /* This function is part of test_scalar(). It tests the contents of
  * the scalar var. */
-int check_scalar_var(int ncid, int varid, int flavor)
+int check_scalar_var(int ncid, int varid, int flavor, int my_rank)
 {
     char var_name_in[PIO_MAX_NAME + 1];
     int var_type_in;
@@ -1739,20 +1739,20 @@ int check_scalar_var(int ncid, int varid, int flavor)
     /* Learn the var metadata. */
     if ((ret = PIOc_inq_var(ncid, varid, var_name_in, &var_type_in, &ndims_in, NULL,
                             &natts_in)))
-        return ret;
+        ERR(ret);
 
     /* Is the metadata correct? */
     if (strcmp(var_name_in, VAR_NAME) || var_type_in != PIO_INT || ndims_in != 0 || natts_in != 0)
-        return ERR_WRONG;
+        ERR(ERR_WRONG);
 
     /* Get the value. */
     if ((ret = PIOc_get_var_int(ncid, varid, &val_in)))
-        return ret;
+        ERR(ret);
     printf("val_in = %d\n", val_in);
 
     /* Is the value correct? */
     if (val_in != TEST_VAL_42)
-        return ERR_WRONG;
+        ERR(ERR_WRONG);
 
     return 0;
 }
@@ -1774,27 +1774,27 @@ int test_scalar(int iosysid, int num_flavors, int *flavor, int my_rank, int asyn
         int test_val_in;
 
         if ((ret = nc_create(test_file, NC_CLOBBER, &ncid)))
-            return ret;
+            ERR(ret);
         if ((ret = nc_def_var(ncid, VAR_NAME, NC_INT, 0, NULL, &varid)))
-            return ret;
+            ERR(ret);
         if ((ret = nc_enddef(ncid)))
-            return ret;
+            ERR(ret);
         if ((ret = nc_put_var(ncid, varid, &test_val)))
-            return ret;
+            ERR(ret);
         if ((ret = nc_close(ncid)))
-            return ret;
+            ERR(ret);
         if ((ret = nc_open(test_file, NC_NOWRITE, &ncid)))
-            return ret;
+            ERR(ret);
         /* if ((ret = nc_get_var(ncid, varid, &test_val_in))) */
-        /*     return ret; */
+        /*     ERR(ret); */
         /* if (test_val_in != test_val) */
-        /*     return ERR_WRONG; */
+        /*     ERR(ERR_WRONG); */
         if ((ret = nc_get_vars(ncid, varid, NULL, NULL, NULL, &test_val_in)))
-            return ret;
+            ERR(ret);
         if (test_val_in != test_val)
-            return ERR_WRONG;
+            ERR(ERR_WRONG);
         if ((ret = nc_close(ncid)))
-            return ret;
+            ERR(ret);
     }
 
     /* Use pnetCDF to create a file with a scalar var, then set and
@@ -1806,33 +1806,33 @@ int test_scalar(int iosysid, int num_flavors, int *flavor, int my_rank, int asyn
         int test_val_in;
 
         if ((ret = ncmpi_create(test_comm, test_file, NC_CLOBBER, MPI_INFO_NULL, &ncid)))
-            return ret;
+            ERR(ret);
         if ((ret = ncmpi_def_var(ncid, VAR_NAME, NC_INT, 0, NULL, &varid)))
-            return ret;
+            ERR(ret);
         if ((ret = ncmpi_enddef(ncid)))
-            return ret;
+            ERR(ret);
         if ((ret = ncmpi_put_var_int_all(ncid, varid, &test_val)))
-            return ret;
+            ERR(ret);
         if ((ret = ncmpi_close(ncid)))
-            return ret;
+            ERR(ret);
         if ((ret = ncmpi_open(test_comm, test_file, NC_NOWRITE, MPI_INFO_NULL, &ncid)))
-            return ret;
+            ERR(ret);
         /* Turn on independent access for pnetcdf file. */
         if ((ret = ncmpi_begin_indep_data(ncid)))
-            return ret;
+            ERR(ret);
         /* if ((ret = ncmpi_get_var_int(ncid, varid, &test_val_in))) */
-        /*     return ret; */
+        /*     ERR(ret); */
         if ((ret = ncmpi_get_vars_int(ncid, varid, NULL, NULL, NULL, &test_val_in)))
-            return ret;
+            ERR(ret);
         if ((ret = ncmpi_end_indep_data(ncid)))
-            return ret;
+            ERR(ret);
         if (test_val_in != test_val)
-            return ERR_WRONG;
+            ERR(ERR_WRONG);
         printf("ret = %d test_val_in = %d\n", ret, test_val_in);
         if (test_val_in != test_val)
-            return ERR_WRONG;
+            ERR(ERR_WRONG);
         if ((ret = ncmpi_close(ncid)))
-            return ret;
+            ERR(ret);
     }
 #endif /* _PNETCDF */
 
@@ -1845,7 +1845,7 @@ int test_scalar(int iosysid, int num_flavors, int *flavor, int my_rank, int asyn
 
         /* Create a filename. */
         if ((ret = get_iotype_name(flavor[fmt], iotype_name)))
-            return ret;
+            ERR(ret);
         sprintf(filename, "%s_%s_scalar_async_%d.nc", TEST_NAME, iotype_name, async);
 
         /* Create the netCDF output file. */
@@ -1867,7 +1867,7 @@ int test_scalar(int iosysid, int num_flavors, int *flavor, int my_rank, int asyn
             ERR(ret);
 
         /* Check the scalar var. */
-        if ((ret = check_scalar_var(ncid, varid, flavor[fmt])))
+        if ((ret = check_scalar_var(ncid, varid, flavor[fmt], my_rank)))
             ERR(ret);
 
         /* Close the netCDF file. */
@@ -1880,7 +1880,7 @@ int test_scalar(int iosysid, int num_flavors, int *flavor, int my_rank, int asyn
             ERR(ret);
 
         /* Check the scalar var again. */
-        if ((ret = check_scalar_var(ncid, varid, flavor[fmt])))
+        if ((ret = check_scalar_var(ncid, varid, flavor[fmt], my_rank)))
             ERR(ret);
 
         /* Close the netCDF file. */
@@ -1924,16 +1924,16 @@ int test_malloc_iodesc2(int iosysid, int my_rank)
     {
 
         if ((ret = malloc_iodesc(ios, test_type[t], 1, &iodesc)))
-            return ret;
+            ERR(ret);
         if (iodesc->mpitype != mpi_type[t])
-            return ERR_WRONG;
+            ERR(ERR_WRONG);
         if (iodesc->ndims != 1)
-            return ERR_WRONG;
+            ERR(ERR_WRONG);
         ioid = pio_add_to_iodesc_list(iodesc);
         if (iodesc->firstregion)
             free_region_list(iodesc->firstregion);
         if ((ret = pio_delete_iodesc_from_list(ioid)))
-            return ret;
+            ERR(ret);
     }
     return 0;
 }
@@ -1954,11 +1954,11 @@ int test_decomp_internal(int my_test_size, int my_rank, int iosysid, int dim_len
 
     /* Decompose the data over the tasks. */
     if ((ret = create_decomposition(my_test_size, my_rank, iosysid, dim_len, &ioid)))
-        return ret;
+        ERR(ret);
 
     /* Write the decomp file (on appropriate tasks). */
     if ((ret = PIOc_write_decomp(filename, iosysid, ioid, test_comm)))
-        return ret;
+        ERR(ret);
 
     /* Some values for the netCDF decomp file for this iosystem. */
     char *title = "Very Simple Test Decompositon";
@@ -1975,7 +1975,7 @@ int test_decomp_internal(int my_test_size, int my_rank, int iosysid, int dim_len
     if ((ret = pioc_write_nc_decomp_int(ios, nc_filename, 0, NDIM1, global_dimlen,
                                         TARGET_NTASKS, task_maplen, (int *)map, title,
                                         history, 0)))
-        return ret;
+        ERR(ret);
 
     int ndims_in;
     int num_tasks_in;
@@ -1994,41 +1994,41 @@ int test_decomp_internal(int my_test_size, int my_rank, int iosysid, int dim_len
     if (pioc_read_nc_decomp_int(iosysid + TEST_VAL_42, nc_filename, &ndims_in, &global_dimlen_in,
                                 &num_tasks_in, &task_maplen_in, &max_maplen_in, &map_in, title_in,
                                 history_in, source_in, version_in, &fortran_order_in) != PIO_EBADID)
-        return ERR_WRONG;
+        ERR(ERR_WRONG);
     if (pioc_read_nc_decomp_int(iosysid, NULL, &ndims_in, &global_dimlen_in,
                                 &num_tasks_in, &task_maplen_in, &max_maplen_in, &map_in, title_in,
                                 history_in, source_in, version_in, &fortran_order_in) != PIO_EINVAL)
-        return ERR_WRONG;
+        ERR(ERR_WRONG);
     if (!pioc_read_nc_decomp_int(iosysid, "no_file", &ndims_in, &global_dimlen_in,
                                 &num_tasks_in, &task_maplen_in, &max_maplen_in, &map_in, title_in,
                                 history_in, source_in, version_in, &fortran_order_in))
-        return ERR_WRONG;
+        ERR(ERR_WRONG);
 
     /* Read the decomp file. */
     if ((ret = pioc_read_nc_decomp_int(iosysid, nc_filename, &ndims_in, &global_dimlen_in,
                                        &num_tasks_in, &task_maplen_in, &max_maplen_in, &map_in, title_in,
                                        history_in, source_in, version_in, &fortran_order_in)))
-        return ret;
+        ERR(ret);
 
 
     /* Did we get the correct answers? */
     printf("source_in = %s\n", source_in);
     if (strcmp(title, title_in) || strcmp(history, history_in) ||
         strcmp(source_in, expected_source))
-        return ERR_WRONG;
+        ERR(ERR_WRONG);
     if (ndims_in != NDIM1 || num_tasks_in != TARGET_NTASKS || max_maplen_in != 1 ||
         fortran_order_in)
-        return ERR_WRONG;
+        ERR(ERR_WRONG);
     for (int d = 0; d < ndims_in; d++)
         if (global_dimlen_in[d] != global_dimlen[d])
-            return ERR_WRONG;
+            ERR(ERR_WRONG);
     for (int t = 0; t < num_tasks_in; t++)
         if (task_maplen_in[t] != 1)
-            return ERR_WRONG;
+            ERR(ERR_WRONG);
     for (int t = 0; t < num_tasks_in; t++)
         for (int l = 0; l < max_maplen_in; l++)
             if (map_in[t * max_maplen_in + l] != map[t][l])
-                return ERR_WRONG;
+                ERR(ERR_WRONG);
 
     /* Free resources. */
     free(global_dimlen_in);
@@ -2039,7 +2039,7 @@ int test_decomp_internal(int my_test_size, int my_rank, int iosysid, int dim_len
     if ((ret = pioc_read_nc_decomp_int(iosysid, nc_filename, NULL, &global_dimlen_in,
                                        &num_tasks_in, &task_maplen_in, &max_maplen_in, &map_in, title_in,
                                        history_in, source_in, version_in, &fortran_order_in)))
-        return ret;
+        ERR(ret);
     free(global_dimlen_in);
     free(task_maplen_in);
     free(map_in);
@@ -2047,14 +2047,14 @@ int test_decomp_internal(int my_test_size, int my_rank, int iosysid, int dim_len
     if ((ret = pioc_read_nc_decomp_int(iosysid, nc_filename, &ndims_in, NULL,
                                        &num_tasks_in, &task_maplen_in, &max_maplen_in, &map_in, title_in,
                                        history_in, source_in, version_in, &fortran_order_in)))
-        return ret;
+        ERR(ret);
     free(task_maplen_in);
     free(map_in);
 
     if ((ret = pioc_read_nc_decomp_int(iosysid, nc_filename, &ndims_in, &global_dimlen_in,
                                        NULL, &task_maplen_in, &max_maplen_in, &map_in, title_in,
                                        history_in, source_in, version_in, &fortran_order_in)))
-        return ret;
+        ERR(ret);
     free(global_dimlen_in);
     free(task_maplen_in);
     free(map_in);
@@ -2062,14 +2062,14 @@ int test_decomp_internal(int my_test_size, int my_rank, int iosysid, int dim_len
     if ((ret = pioc_read_nc_decomp_int(iosysid, nc_filename, &ndims_in, &global_dimlen_in,
                                        &num_tasks_in, NULL, &max_maplen_in, &map_in, title_in,
                                        history_in, source_in, version_in, &fortran_order_in)))
-        return ret;
+        ERR(ret);
     free(global_dimlen_in);
     free(map_in);
 
     if ((ret = pioc_read_nc_decomp_int(iosysid, nc_filename, &ndims_in, &global_dimlen_in,
                                        &num_tasks_in, &task_maplen_in, NULL, &map_in, title_in,
                                        history_in, source_in, version_in, &fortran_order_in)))
-        return ret;
+        ERR(ret);
     free(global_dimlen_in);
     free(task_maplen_in);
     free(map_in);
@@ -2077,14 +2077,14 @@ int test_decomp_internal(int my_test_size, int my_rank, int iosysid, int dim_len
     if ((ret = pioc_read_nc_decomp_int(iosysid, nc_filename, &ndims_in, &global_dimlen_in,
                                        &num_tasks_in, &task_maplen_in, &max_maplen_in, NULL, title_in,
                                        history_in, source_in, version_in, &fortran_order_in)))
-        return ret;
+        ERR(ret);
     free(global_dimlen_in);
     free(task_maplen_in);
 
     if ((ret = pioc_read_nc_decomp_int(iosysid, nc_filename, &ndims_in, &global_dimlen_in,
                                        &num_tasks_in, &task_maplen_in, &max_maplen_in, &map_in, NULL,
                                        history_in, source_in, version_in, &fortran_order_in)))
-        return ret;
+        ERR(ret);
     free(global_dimlen_in);
     free(task_maplen_in);
     free(map_in);
@@ -2092,7 +2092,7 @@ int test_decomp_internal(int my_test_size, int my_rank, int iosysid, int dim_len
     if ((ret = pioc_read_nc_decomp_int(iosysid, nc_filename, &ndims_in, &global_dimlen_in,
                                        &num_tasks_in, &task_maplen_in, &max_maplen_in, &map_in, title_in,
                                        NULL, source_in, version_in, &fortran_order_in)))
-        return ret;
+        ERR(ret);
     free(global_dimlen_in);
     free(task_maplen_in);
     free(map_in);
@@ -2100,7 +2100,7 @@ int test_decomp_internal(int my_test_size, int my_rank, int iosysid, int dim_len
     if ((ret = pioc_read_nc_decomp_int(iosysid, nc_filename, &ndims_in, &global_dimlen_in,
                                        &num_tasks_in, &task_maplen_in, &max_maplen_in, &map_in, title_in,
                                        history_in, NULL, version_in, &fortran_order_in)))
-        return ret;
+        ERR(ret);
     free(global_dimlen_in);
     free(task_maplen_in);
     free(map_in);
@@ -2108,7 +2108,7 @@ int test_decomp_internal(int my_test_size, int my_rank, int iosysid, int dim_len
     if ((ret = pioc_read_nc_decomp_int(iosysid, nc_filename, &ndims_in, &global_dimlen_in,
                                        &num_tasks_in, &task_maplen_in, &max_maplen_in, &map_in, title_in,
                                        history_in, source_in, NULL, &fortran_order_in)))
-        return ret;
+        ERR(ret);
     free(global_dimlen_in);
     free(task_maplen_in);
     free(map_in);
@@ -2116,7 +2116,7 @@ int test_decomp_internal(int my_test_size, int my_rank, int iosysid, int dim_len
     if ((ret = pioc_read_nc_decomp_int(iosysid, nc_filename, &ndims_in, &global_dimlen_in,
                                        &num_tasks_in, &task_maplen_in, &max_maplen_in, &map_in, title_in,
                                        history_in, source_in, version_in, NULL)))
-        return ret;
+        ERR(ret);
     free(global_dimlen_in);
     free(task_maplen_in);
     free(map_in);
@@ -2141,7 +2141,7 @@ int test_decomp_public(int my_test_size, int my_rank, int iosysid, int dim_len,
 
     /* Decompose the data over the tasks. */
     if ((ret = create_decomposition(my_test_size, my_rank, iosysid, dim_len, &ioid)))
-        return ret;
+        ERR(ret);
 
     /* We will document our decomp file with metadata, like good
      * netCDF users should. */
@@ -2155,24 +2155,24 @@ int test_decomp_public(int my_test_size, int my_rank, int iosysid, int dim_len,
 
     if (PIOc_write_nc_decomp(iosysid + TEST_VAL_42, nc_filename, 0, ioid,
                              title, history, 0) != PIO_EBADID)
-        return ERR_WRONG;
+        ERR(ERR_WRONG);
     if (PIOc_write_nc_decomp(iosysid, NULL, 0, ioid, title, history, 0) != PIO_EINVAL)
-        return ERR_WRONG;
+        ERR(ERR_WRONG);
     if (PIOc_write_nc_decomp(iosysid, nc_filename, 0, ioid + TEST_VAL_42,
                              title, history, 0) != PIO_EBADID)
-        return ERR_WRONG;
+        ERR(ERR_WRONG);
 
     if (PIOc_write_nc_decomp(iosysid, nc_filename, 0, ioid,
                              too_long_name, history, 0) != PIO_EINVAL)
-        return ERR_WRONG;
+        ERR(ERR_WRONG);
     if (PIOc_write_nc_decomp(iosysid, nc_filename, 0, ioid,
                              title, too_long_name, 0) != PIO_EINVAL)
-        return ERR_WRONG;
+        ERR(ERR_WRONG);
 
     /* Write a netCDF decomp file for this iosystem. */
     if ((ret = PIOc_write_nc_decomp(iosysid, nc_filename, 0, ioid, title,
                                     history, 0)))
-        return ret;
+        ERR(ret);
 
     int ioid_in;
     char title_in[PIO_MAX_NAME + 1];
@@ -2182,22 +2182,22 @@ int test_decomp_public(int my_test_size, int my_rank, int iosysid, int dim_len,
     /* These should not work. */
     if (PIOc_read_nc_decomp(iosysid + TEST_VAL_42, nc_filename, &ioid_in, test_comm,
                             PIO_INT, title_in, history_in, &fortran_order_in) != PIO_EBADID)
-        return ret;
+        ERR(ret);
     if (PIOc_read_nc_decomp(iosysid, NULL, &ioid_in, test_comm, PIO_INT, title_in,
                             history_in, &fortran_order_in) != PIO_EINVAL)
-        return ret;
+        ERR(ret);
     if (PIOc_read_nc_decomp(iosysid, nc_filename, NULL, test_comm, PIO_INT, title_in,
                             history_in, &fortran_order_in) != PIO_EINVAL)
-        return ret;
+        ERR(ret);
 
     /* Read it using the public read function. */
     if ((ret = PIOc_read_nc_decomp(iosysid, nc_filename, &ioid_in, test_comm, PIO_INT,
                                    title_in, history_in, &fortran_order_in)))
-        return ret;
+        ERR(ret);
 
     /* Did we get expected results? */
     if (strcmp(title, title_in) || strcmp(history, history_in))
-        return ERR_WRONG;
+        ERR(ERR_WRONG);
 
     /* Free the PIO decomposition. */
     if ((ret = PIOc_freedecomp(iosysid, ioid_in)))
@@ -2206,19 +2206,19 @@ int test_decomp_public(int my_test_size, int my_rank, int iosysid, int dim_len,
     /* These should also work. */
     if ((ret = PIOc_read_nc_decomp(iosysid, nc_filename, &ioid_in, test_comm, PIO_CHAR, NULL,
                                    history_in, &fortran_order_in)))
-        return ret;
+        ERR(ret);
     if ((ret = PIOc_freedecomp(iosysid, ioid_in)))
         ERR(ret);
 
     if ((ret = PIOc_read_nc_decomp(iosysid, nc_filename, &ioid_in, test_comm, PIO_BYTE, title_in,
                                    NULL, &fortran_order_in)))
-        return ret;
+        ERR(ret);
     if ((ret = PIOc_freedecomp(iosysid, ioid_in)))
         ERR(ret);
 
     if ((ret = PIOc_read_nc_decomp(iosysid, nc_filename, &ioid_in, test_comm, PIO_SHORT, title_in,
                                   history_in, NULL)))
-        return ret;
+        ERR(ret);
     if ((ret = PIOc_freedecomp(iosysid, ioid_in)))
         ERR(ret);
 
@@ -2237,26 +2237,26 @@ int test_decomp_public(int my_test_size, int my_rank, int iosysid, int dim_len,
     if ((ret = pioc_read_nc_decomp_int(iosysid, nc_filename, &ndims_in, &global_dimlen_in,
                                        &num_tasks_in, &task_maplen_in, &max_maplen_in, &map_in, title_in,
                                        history_in, source_in, version_in, &fortran_order_in)))
-        return ret;
+        ERR(ret);
 
     /* Did we get the correct answers? */
     printf("source_in = %s\n", source_in);
     if (strcmp(title, title_in) || strcmp(history, history_in) ||
         strcmp(source_in, expected_source))
-        return ERR_WRONG;
+        ERR(ERR_WRONG);
     if (ndims_in != NDIM1 || num_tasks_in != TARGET_NTASKS || max_maplen_in != 1 ||
         fortran_order_in)
-        return ERR_WRONG;
+        ERR(ERR_WRONG);
     for (int d = 0; d < ndims_in; d++)
         if (global_dimlen_in[d] != DIM_LEN)
-            return ERR_WRONG;
+            ERR(ERR_WRONG);
     for (int t = 0; t < num_tasks_in; t++)
         if (task_maplen_in[t] != 1)
-            return ERR_WRONG;
+            ERR(ERR_WRONG);
     for (int t = 0; t < num_tasks_in; t++)
         for (int l = 0; l < max_maplen_in; l++)
             if (map_in[t * max_maplen_in + l] != t)
-                return ERR_WRONG;
+                ERR(ERR_WRONG);
 
     /* Free resources. */
     free(global_dimlen_in);
@@ -2265,7 +2265,7 @@ int test_decomp_public(int my_test_size, int my_rank, int iosysid, int dim_len,
 
     /* /\* These should also work. *\/ */
     /* if ((ret = PIOc_write_nc_decomp(iosysid, nc_filename, 0, ioid, title, history, 0))) */
-    /*     return ret; */
+    /*     ERR(ret); */
 
     /* Free the PIO decomposition. */
     if ((ret = PIOc_freedecomp(iosysid, ioid)))
@@ -2287,11 +2287,11 @@ int test_decomp_public_2(int my_test_size, int my_rank, int iosysid, int dim_len
 
     /* Decompose the data over the tasks. */
     if ((ret = create_decomposition(my_test_size, my_rank, iosysid, dim_len, &ioid)))
-        return ret;
+        ERR(ret);
 
     /* Write a netCDF decomp file for this iosystem. */
     if ((ret = PIOc_write_nc_decomp(iosysid, nc_filename, 0, ioid, NULL, NULL, 0)))
-        return ret;
+        ERR(ret);
 
     /* Free the PIO decomposition. */
     if ((ret = PIOc_freedecomp(iosysid, ioid)))
@@ -2313,7 +2313,7 @@ int test_decomp_2(int my_test_size, int my_rank, int iosysid, int dim_len,
 
     /* Decompose the data over the tasks. */
     if ((ret = create_decomposition(my_test_size, my_rank, iosysid, dim_len, &ioid)))
-        return ret;
+        ERR(ret);
 
     /* Free the PIO decomposition. */
     if ((ret = PIOc_freedecomp(iosysid, ioid)))
@@ -2344,7 +2344,7 @@ int test_decomp_public_async(int my_test_size, int my_rank, int iosysid, MPI_Com
 
     /* Write the decomp file (on appropriate tasks). */
     if ((ret = PIOc_write_nc_decomp(iosysid, filename, 0, ioid, NULL, NULL, 0)))
-        return ret;
+        ERR(ret);
 
     /* Free the PIO decomposition. */
     if ((ret = PIOc_freedecomp(iosysid, ioid)))
@@ -2374,7 +2374,7 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
      * async. */
     if (async)
         if ((ret = test_decomp_public_async(my_test_size, my_rank, iosysid, test_comm, async)))
-            return ret;
+            ERR(ret);
 
     /* Check iotypes. */
     printf("%d Testing iotypes. async = %d\n", my_rank, async);
@@ -2384,20 +2384,20 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
     /* Test file deletes. */
     printf("%d Testing deletefile. async = %d\n", my_rank, async);
     if ((ret = test_deletefile(iosysid, num_flavors, flavor, my_rank)))
-        return ret;
+        ERR(ret);
 
     /* Test file stuff. */
     printf("%d Testing file creation. async = %d\n", my_rank, async);
     if ((ret = test_files(iosysid, num_flavors, flavor, my_rank)))
-        return ret;
+        ERR(ret);
 
     /* Test some misc stuff. */
     if ((ret = test_malloc_iodesc2(iosysid, my_rank)))
-        return ret;
+        ERR(ret);
 
     /* Test internal function find_var_fillvalue(). */
     if ((ret = test_find_var_fillvalue(iosysid, num_flavors, flavor, my_rank, async)))
-        return ret;
+        ERR(ret);
 
     /* Run these tests for non-async cases only. */
     if (!async)
@@ -2405,28 +2405,28 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
 
         /* Test decomposition internal functions. */
         if ((ret = test_decomp_internal(my_test_size, my_rank, iosysid, DIM_LEN, test_comm, async)))
-            return ret;
+            ERR(ret);
 
         /* Test decomposition public API functions. */
         if ((ret = test_decomp_public(my_test_size, my_rank, iosysid, DIM_LEN, test_comm, async)))
-            return ret;
+            ERR(ret);
 
         /* This is a simple test that just creates a decomp. */
         if ((ret = test_decomp_2(my_test_size, my_rank, iosysid, DIM_LEN, test_comm, async)))
-            return ret;
+            ERR(ret);
 
         /* This is a simple test that just writes the decomp. */
         if ((ret = test_decomp_public_2(my_test_size, my_rank, iosysid, DIM_LEN, test_comm, async)))
-            return ret;
+            ERR(ret);
 
         /* Decompose the data over the tasks. */
         if ((ret = create_decomposition(my_test_size, my_rank, iosysid, DIM_LEN, &ioid)))
-            return ret;
+            ERR(ret);
 
         /* Run the darray tests. */
         for (int fv = 0; fv < 2; fv++)
             if ((ret = test_darray(iosysid, ioid, num_flavors, flavor, my_rank, fv)))
-                return ret;
+                ERR(ret);
 
         /* Free the PIO decomposition. */
         if ((ret = PIOc_freedecomp(iosysid, ioid)))
@@ -2441,17 +2441,17 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
     /* Test name stuff. */
     printf("%d Testing names. async = %d\n", my_rank, async);
     if ((ret = test_names(iosysid, num_flavors, flavor, my_rank, test_comm, async)))
-        return ret;
+        ERR(ret);
 
     /* Test netCDF-4 functions. */
     printf("%d Testing nc4 functions. async = %d\n", my_rank, async);
     if ((ret = test_nc4(iosysid, num_flavors, flavor, my_rank)))
-        return ret;
+        ERR(ret);
 
     /* Test scalar var. */
     printf("%d Testing scalar var. async = %d\n", my_rank, async);
     if ((ret = test_scalar(iosysid, num_flavors, flavor, my_rank, async, test_comm)))
-        return ret;
+        ERR(ret);
 
     return PIO_NOERR;
 }
