@@ -272,7 +272,8 @@ int PIOc_closefile(int ncid)
         return check_netcdf(file, ierr, __FILE__, __LINE__);
 
     /* Delete file from our list of open files. */
-    pio_delete_file_from_list(ncid);
+    if ((ierr = pio_delete_file_from_list(ncid)))
+        return pio_err(ios, file, ierr, __FILE__, __LINE__);
 
     return ierr;
 }
