@@ -312,6 +312,7 @@ extern "C" {
 
     int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid, void *iobuf);
     int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc, int vid, void *iobuf);
+    int find_var_fillvalue(file_desc_t *file, int varid, var_desc_t *vdesc);    
 
     /* Read atts with type conversion. */
     int PIOc_get_att_tc(int ncid, int varid, const char *name, nc_type memtype, void *ip);
