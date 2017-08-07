@@ -210,7 +210,7 @@ int PIOc_closefile(int ncid)
     /* Sync changes before closing on all tasks if async is not in
      * use, but only on non-IO tasks if async is in use. */
     if (!ios->async || !ios->ioproc)
-        if (file->mode & PIO_WRITE)
+        if (file->writable)
             PIOc_sync(ncid);
 
     /* If async is in use and this is a comp tasks, then the compmaster
@@ -254,9 +254,8 @@ int PIOc_closefile(int ncid)
             break;
 #ifdef _PNETCDF
         case PIO_IOTYPE_PNETCDF:
-            if ((file->mode & PIO_WRITE)){
+            if (file->writable)
                 ierr = ncmpi_buffer_detach(file->fh);
-            }
             ierr = ncmpi_close(file->fh);
             break;
 #endif
@@ -379,7 +378,7 @@ int PIOc_sync(int ncid)
     /* Flush data buffers on computational tasks. */
     if (!ios->async || !ios->ioproc)
     {
-        if (file->mode & PIO_WRITE)
+        if (file->writable)
         {
             wmulti_buffer *wmb, *twmb;
 
@@ -428,7 +427,7 @@ int PIOc_sync(int ncid)
     }
 
     /* Call the sync function on IO tasks. */
-    if (file->mode & PIO_WRITE)
+    if (file->writable)
     {
         if (ios->ioproc)
         {

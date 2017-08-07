@@ -1726,7 +1726,6 @@ int PIOc_createfile_int(int iosysid, int *ncidp, int *iotype, const char *filena
     file->iosystem = ios;
     file->iotype = *iotype;
     file->buffer.ioid = -1;
-    file->mode = mode;
     file->writable = 1;
 
     /* Set to true if this task should participate in IO (only true for
@@ -1758,9 +1757,9 @@ int PIOc_createfile_int(int iosysid, int *ncidp, int *iotype, const char *filena
             if (!mpierr)
                 mpierr = MPI_Bcast(&file->iotype, 1, MPI_INT, ios->compmaster, ios->intercomm);
             if (!mpierr)
-                mpierr = MPI_Bcast(&file->mode, 1, MPI_INT, ios->compmaster, ios->intercomm);
+                mpierr = MPI_Bcast(&mode, 1, MPI_INT, ios->compmaster, ios->intercomm);
             LOG((2, "len = %d filename = %s iotype = %d mode = %d", len, filename,
-                 file->iotype, file->mode));
+                 file->iotype, mode));
         }
 
         /* Handle MPI errors. */
@@ -1778,26 +1777,26 @@ int PIOc_createfile_int(int iosysid, int *ncidp, int *iotype, const char *filena
         {
 #ifdef _NETCDF4
         case PIO_IOTYPE_NETCDF4P:
-            file->mode = file->mode |  NC_MPIIO | NC_NETCDF4;
+            mode = mode |  NC_MPIIO | NC_NETCDF4;
             LOG((2, "Calling nc_create_par io_comm = %d mode = %d fh = %d",
-                 ios->io_comm, file->mode, file->fh));
-            ierr = nc_create_par(filename, file->mode, ios->io_comm, ios->info, &file->fh);
+                 ios->io_comm, mode, file->fh));
+            ierr = nc_create_par(filename, mode, ios->io_comm, ios->info, &file->fh);
             LOG((2, "nc_create_par returned %d file->fh = %d", ierr, file->fh));
             break;
         case PIO_IOTYPE_NETCDF4C:
-            file->mode = file->mode | NC_NETCDF4;
+            mode = mode | NC_NETCDF4;
 #endif
         case PIO_IOTYPE_NETCDF:
             if (!ios->io_rank)
             {
-                LOG((2, "Calling nc_create mode = %d", file->mode));
-                ierr = nc_create(filename, file->mode, &file->fh);
+                LOG((2, "Calling nc_create mode = %d", mode));
+                ierr = nc_create(filename, mode, &file->fh);
             }
             break;
 #ifdef _PNETCDF
         case PIO_IOTYPE_PNETCDF:
-            LOG((2, "Calling ncmpi_create mode = %d", file->mode));
-            ierr = ncmpi_create(ios->io_comm, filename, file->mode, ios->info, &file->fh);
+            LOG((2, "Calling ncmpi_create mode = %d", mode));
+            ierr = ncmpi_create(ios->io_comm, filename, mode, ios->info, &file->fh);
             if (!ierr)
                 ierr = ncmpi_buffer_attach(file->fh, pio_buffer_size_limit);
             break;
@@ -1816,17 +1815,9 @@ int PIOc_createfile_int(int iosysid, int *ncidp, int *iotype, const char *filena
         return check_netcdf2(ios, NULL, ierr, __FILE__, __LINE__);
     }
 
-    /* Broadcast mode to all tasks. */
-    if ((mpierr = MPI_Bcast(&file->mode, 1, MPI_INT, ios->ioroot, ios->union_comm)))
-        return check_mpi(file, mpierr, __FILE__, __LINE__);
-
     /* Broadcast writablility to all tasks. */
     if ((mpierr = MPI_Bcast(&file->writable, 1, MPI_INT, ios->ioroot, ios->union_comm)))
         return check_mpi(file, mpierr, __FILE__, __LINE__);
-
-    /* This flag is implied by netcdf create functions but we need
-       to know if its set. */
-    file->mode = file->mode | PIO_WRITE;
 
     /* Assign the PIO ncid, necessary because files may be opened
      * on mutilple iosystems, causing the underlying library to
@@ -1958,7 +1949,6 @@ int PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype, const char *filena
     file->fh = -1;
     file->iotype = *iotype;
     file->iosystem = ios;
-    file->mode = mode;
     file->writable = (mode & PIO_WRITE) ? 1 : 0;
 
     /* Set to true if this task should participate in IO (only true
@@ -1987,7 +1977,7 @@ int PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype, const char *filena
             if (!mpierr)
                 mpierr = MPI_Bcast(&file->iotype, 1, MPI_INT, ios->compmaster, ios->intercomm);
             if (!mpierr)
-                mpierr = MPI_Bcast(&file->mode, 1, MPI_INT, ios->compmaster, ios->intercomm);
+                mpierr = MPI_Bcast(&mode, 1, MPI_INT, ios->compmaster, ios->intercomm);
         }
 
         /* Handle MPI errors. */
@@ -2006,25 +1996,24 @@ int PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype, const char *filena
 
         case PIO_IOTYPE_NETCDF4P:
 #ifdef _MPISERIAL
-            ierr = nc_open(filename, file->mode, &file->fh);
+            ierr = nc_open(filename, mode, &file->fh);
 #else
-            imode = file->mode |  NC_MPIIO;
+            imode = mode |  NC_MPIIO;
             if ((ierr = nc_open_par(filename, imode, ios->io_comm, ios->info, &file->fh)))
                 break;
-            file->mode = imode;
 
             /* Check the vars for valid use of unlim dims. */
             if ((ierr = check_unlim_use(file->fh)))
                 break;
             LOG((2, "PIOc_openfile_retry:nc_open_par filename = %s mode = %d imode = %d ierr = %d",
-                 filename, file->mode, imode, ierr));
+                 filename, mode, imode, ierr));
 #endif
             break;
 
         case PIO_IOTYPE_NETCDF4C:
             if (ios->io_rank == 0)
             {
-                if ((ierr = nc_open(filename, file->mode, &file->fh)))
+                if ((ierr = nc_open(filename, mode, &file->fh)))
                     break;
                 /* Check the vars for valid use of unlim dims. */
                 if ((ierr = check_unlim_use(file->fh)))
@@ -2035,15 +2024,15 @@ int PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype, const char *filena
 
         case PIO_IOTYPE_NETCDF:
             if (ios->io_rank == 0)
-                ierr = nc_open(filename, file->mode, &file->fh);
+                ierr = nc_open(filename, mode, &file->fh);
             break;
 
 #ifdef _PNETCDF
         case PIO_IOTYPE_PNETCDF:
-            ierr = ncmpi_open(ios->io_comm, filename, file->mode, ios->info, &file->fh);
+            ierr = ncmpi_open(ios->io_comm, filename, mode, ios->info, &file->fh);
 
             // This should only be done with a file opened to append
-            if (ierr == PIO_NOERR && (file->mode & PIO_WRITE))
+            if (ierr == PIO_NOERR && (mode & PIO_WRITE))
             {
                 if (ios->iomaster == MPI_ROOT)
                     LOG((2, "%d Setting IO buffer %ld", __LINE__, pio_buffer_size_limit));
@@ -2076,7 +2065,7 @@ int PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype, const char *filena
 
                 /* open netcdf file serially on main task */
                 if (ios->io_rank == 0)
-                    ierr = nc_open(filename, file->mode, &file->fh);
+                    ierr = nc_open(filename, mode, &file->fh);
                 else
                     file->do_io = 0;
             }
@@ -2099,9 +2088,7 @@ int PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype, const char *filena
         return check_netcdf2(ios, NULL, ierr, __FILE__, __LINE__);
     }
 
-    /* Broadcast open mode to all tasks. */
-    if ((mpierr = MPI_Bcast(&file->mode, 1, MPI_INT, ios->ioroot, ios->my_comm)))
-        return check_mpi(file, mpierr, __FILE__, __LINE__);
+    /* Broadcast writability to all tasks. */
     if ((mpierr = MPI_Bcast(&file->writable, 1, MPI_INT, ios->ioroot, ios->my_comm)))
         return check_mpi(file, mpierr, __FILE__, __LINE__);
 
