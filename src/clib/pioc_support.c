@@ -2018,10 +2018,8 @@ int PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype, const char *filena
         case PIO_IOTYPE_NETCDF4C:
             if (ios->io_rank == 0)
             {
-                imode = file->mode | NC_NETCDF4;
-                if ((ierr = nc_open(filename, imode, &file->fh)))
+                if ((ierr = nc_open(filename, file->mode, &file->fh)))
                     break;
-                file->mode = imode;
                 /* Check the vars for valid use of unlim dims. */
                 if ((ierr = check_unlim_use(file->fh)))
                     break;
