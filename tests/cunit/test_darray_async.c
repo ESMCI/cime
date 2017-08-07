@@ -37,7 +37,7 @@
 #define NVAR 4
 
 /* Number of records written for record var. */
-#define NREC 3
+#define NREC 4
 
 /* Name of record test var. */
 #define REC_VAR_NAME "surface_temperature"
@@ -87,7 +87,7 @@ int check_darray_file(int iosysid, char *data_filename, int iotype, int my_rank,
         int norec_varid = vs ? varid[2] : varid[3];
         
         /* Read the record data. The values we expect are: 10, 11, 20, 21, 30,
-         * 31, in each of two records. */
+         * 31, in each of three records. */
         if ((ret = PIOc_get_var(ncid, rec_varid, data_in)))
             ERR(ret);
 
@@ -254,7 +254,8 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm, MPI_Comm
     /* Free the decomposition. */
     if ((ret = PIOc_freedecomp(iosysid, ioid2)))
         ERR(ret);
-    
+
+    /* Test each available iotype. */
     for (int fmt = 0; fmt < num_flavors; fmt++)
     {
         int ncid;
@@ -424,6 +425,18 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm, MPI_Comm
             ERR(ret);
 
         /* Write a third record. */
+        if ((ret = PIOc_write_darray(ncid, varid[0], ioid, elements_per_pe, my_data, NULL)))
+            ERR(ret);
+        if ((ret = PIOc_write_darray(ncid, varid[1], ioid, elements_per_pe, my_data, NULL)))
+            ERR(ret);
+
+        /* Increment the record number for the record var. */
+        if ((ret = PIOc_advanceframe(ncid, varid[0])))
+            ERR(ret);
+        if ((ret = PIOc_advanceframe(ncid, varid[1])))
+            ERR(ret);
+
+        /* Write a forth record. */
         if ((ret = PIOc_write_darray(ncid, varid[0], ioid, elements_per_pe, my_data, NULL)))
             ERR(ret);
         if ((ret = PIOc_write_darray(ncid, varid[1], ioid, elements_per_pe, my_data, NULL)))
