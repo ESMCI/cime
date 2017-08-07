@@ -103,6 +103,7 @@ int check_darray_file(int iosysid, char *data_filename, int iotype, int my_rank,
             switch (piotype)
             {
             case PIO_BYTE:
+                printf("tmp_r = %d data_in %d expected %g\n", tmp_r, ((signed char *)data_in)[r], (tmp_r/2 + 1) * 10.0 + tmp_r % 2);
                 if (((signed char *)data_in)[r] != (tmp_r/2 + 1) * 10.0 + tmp_r % 2)
                     ERR(ret);
                 break;
@@ -259,10 +260,12 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm, MPI_Comm
     for (int fmt = 0; fmt < num_flavors; fmt++)
     {
         int ncid;
+        PIO_Offset type_size;
         int dimid[NDIM3];
         int varid[NVAR];
         char data_filename[PIO_MAX_NAME + 1];
         void *my_data;
+        void *my_data_multi;
         void *my_data_norec;
         signed char my_data_byte[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1};
         char my_data_char[LAT_LEN] = {my_rank * 10, my_rank * 10 + 1};
@@ -359,6 +362,23 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm, MPI_Comm
                                    NC_CLOBBER)))
             ERR(ret);
 
+        /* Find the size of the type. */
+        if ((ret = PIOc_inq_type(ncid, piotype, NULL, &type_size)))
+            ERR(ret);
+
+        /* Create the data for the darray_multi call by making two
+         * copies of the data. */
+        if (!(my_data_multi = malloc(2 * type_size * elements_per_pe)))
+            ERR(PIO_ENOMEM);
+        memcpy(my_data_multi, my_data, type_size * elements_per_pe);
+        memcpy((char *)my_data_multi + type_size * elements_per_pe, my_data, type_size * LAT_LEN * LON_LEN);
+        for (int d = 0; d < elements_per_pe * type_size * 2; d++)
+        {
+            if (d < elements_per_pe * type_size)
+                printf("my_rank %d my_data[%d] = %d\n", my_rank, d, ((char *)my_data)[d]);
+            printf("my_rank %d my_data_multi[%d] = %d\n", my_rank, d, ((char *)my_data_multi)[d]);
+        }
+        
         /* Define dimensions. */
         for (int d = 0; d < NDIM3; d++)
             if ((ret = PIOc_def_dim(ncid, dim_name[d], dim_len[d], &dimid[d])))
@@ -436,15 +456,17 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm, MPI_Comm
         if ((ret = PIOc_advanceframe(ncid, varid[1])))
             ERR(ret);
 
-        /* Write a forth record. */
-        if ((ret = PIOc_write_darray(ncid, varid[0], ioid, elements_per_pe, my_data, NULL)))
-            ERR(ret);
-        if ((ret = PIOc_write_darray(ncid, varid[1], ioid, elements_per_pe, my_data, NULL)))
+        /* Write a forth record, using darray_multi(). */
+        int frame[2] = {3, 3};
+        if ((ret = PIOc_write_darray_multi(ncid, varid, ioid, 2, elements_per_pe, my_data_multi, frame, NULL, 0)))
             ERR(ret);
 
         /* Close the file. */
         if ((ret = PIOc_closefile(ncid)))
             ERR(ret);
+
+        /* Free resources. */
+        free(my_data_multi);
 
         /* Check the file for correctness. */
         if ((ret = check_darray_file(iosysid, data_filename, PIO_IOTYPE_NETCDF, my_rank, piotype)))
