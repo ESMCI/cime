@@ -34,28 +34,32 @@
 #define LON_LEN 3
 
 /* Number of vars in test file. */
-#define NVAR 2
+#define NVAR 4
 
 /* Number of records written for record var. */
 #define NREC 3
 
 /* Name of record test var. */
 #define REC_VAR_NAME "surface_temperature"
+#define REC_VAR_NAME2 "surface_temperature2"
 
 /* Name of non-record test var. */
 #define NOREC_VAR_NAME "surface_height"
+#define NOREC_VAR_NAME2 "surface_height2"
 
 char dim_name[NDIM3][PIO_MAX_NAME + 1] = {"unlim", "lat", "lon"};
 
 /* Length of the dimension. */
 #define LEN3 3
 
+#define NUM_VAR_SETS 2
+
 /* Check the file that was created in this test. */
 int check_darray_file(int iosysid, char *data_filename, int iotype, int my_rank,
                       int piotype)
 {
     int ncid;
-    int varid[NVAR] = {0, 1};
+    int varid[NVAR] = {0, 1, 2, 3};
     void *data_in;
     void *data_in_norec;
     PIO_Offset type_size;
@@ -75,129 +79,137 @@ int check_darray_file(int iosysid, char *data_filename, int iotype, int my_rank,
     if (!(data_in_norec = malloc(LAT_LEN * LON_LEN * type_size)))
         ERR(PIO_ENOMEM);
 
-    /* Read the record data. The values we expect are: 10, 11, 20, 21, 30,
-     * 31, in each of two records. */
-    if ((ret = PIOc_get_var(ncid, varid[0], data_in)))
-        ERR(ret);
-
-    /* Read the non-record data. The values we expect are: 10, 11, 20, 21, 30,
-     * 31. */
-    if ((ret = PIOc_get_var(ncid, varid[1], data_in_norec)))
-        ERR(ret);
-
-    /* Check the results. */
-    for (int r = 0; r < LAT_LEN * LON_LEN * NREC; r++)
+    /* We have two sets of variables, those with unlimted, and those
+     * without unlimited dimension. */
+    for (int vs = 0; vs < NUM_VAR_SETS; vs++)
     {
-        int tmp_r = r % (LAT_LEN * LON_LEN);
-        switch (piotype)
-        {
-        case PIO_BYTE:
-            if (((signed char *)data_in)[r] != (tmp_r/2 + 1) * 10.0 + tmp_r % 2)
-                ERR(ret);
-            break;
-        case PIO_CHAR:
-            if (((char *)data_in)[r] != (tmp_r/2 + 1) * 10.0 + tmp_r % 2)
-                ERR(ret);
-            break;
-        case PIO_SHORT:
-            if (((short *)data_in)[r] != (tmp_r/2 + 1) * 10.0 + tmp_r % 2)
-                ERR(ret);
-            break;
-        case PIO_INT:
-            if (((int *)data_in)[r] != (tmp_r/2 + 1) * 10.0 + tmp_r % 2)
-                ERR(ret);
-            break;
-        case PIO_FLOAT:
-            if (((float *)data_in)[r] != (tmp_r/2 + 1) * 10.0 + tmp_r % 2)
-                ERR(ret);
-            break;
-        case PIO_DOUBLE:
-            if (((double *)data_in)[r] != (tmp_r/2 + 1) * 10.0 + tmp_r % 2)
-                ERR(ret);
-            break;
-#ifdef _NETCDF4
-        case PIO_UBYTE:
-            if (((unsigned char *)data_in)[r] != (tmp_r/2 + 1) * 10.0 + tmp_r % 2)
-                ERR(ret);
-            break;
-        case PIO_USHORT:
-            if (((unsigned short *)data_in)[r] != (tmp_r/2 + 1) * 10.0 + tmp_r % 2)
-                ERR(ret);
-            break;
-        case PIO_UINT:
-            if (((unsigned int *)data_in)[r] != (tmp_r/2 + 1) * 10.0 + tmp_r % 2)
-                ERR(ret);
-            break;
-        case PIO_INT64:
-            if (((long long *)data_in)[r] != (tmp_r/2 + 1) * 10.0 + tmp_r % 2)
-                ERR(ret);
-            break;
-        case PIO_UINT64:
-            if (((unsigned long long *)data_in)[r] != (tmp_r/2 + 1) * 10.0 + tmp_r % 2)
-                ERR(ret);
-            break;
-#endif /* _NETCDF4 */
-        default:
-            ERR(ERR_WRONG);
-        }
-    }
+        int rec_varid = vs ? varid[0] : varid[1];
+        int norec_varid = vs ? varid[2] : varid[3];
+        
+        /* Read the record data. The values we expect are: 10, 11, 20, 21, 30,
+         * 31, in each of two records. */
+        if ((ret = PIOc_get_var(ncid, rec_varid, data_in)))
+            ERR(ret);
 
-    /* Check the results. */
-    for (int r = 0; r < LAT_LEN * LON_LEN; r++)
-    {
-        switch (piotype)
-        {
-        case PIO_BYTE:
-            if (((signed char *)data_in_norec)[r] != (r/2 + 1) * 20.0 + r%2)
-                ERR(ret);
-            break;
-        case PIO_CHAR:
-            if (((char *)data_in_norec)[r] != (r/2 + 1) * 20.0 + r%2)
-                ERR(ret);
-            break;
-        case PIO_SHORT:
-            if (((short *)data_in_norec)[r] != (r/2 + 1) * 20.0 + r%2)
-                ERR(ret);
-            break;
-        case PIO_INT:
-            if (((int *)data_in_norec)[r] != (r/2 + 1) * 20.0 + r%2)
-                ERR(ret);
-            break;
-        case PIO_FLOAT:
-            if (((float *)data_in_norec)[r] != (r/2 + 1) * 20.0 + r%2)
-                ERR(ret);
-            break;
-        case PIO_DOUBLE:
-            if (((double *)data_in_norec)[r] != (r/2 + 1) * 20.0 + r%2)
-                ERR(ret);
-            break;
-#ifdef _NETCDF4
-        case PIO_UBYTE:
-            if (((unsigned char *)data_in_norec)[r] != (r/2 + 1) * 20.0 + r%2)
-                ERR(ret);
-            break;
-        case PIO_USHORT:
-            if (((unsigned short *)data_in_norec)[r] != (r/2 + 1) * 20.0 + r%2)
-                ERR(ret);
-            break;
-        case PIO_UINT:
-            if (((unsigned int *)data_in_norec)[r] != (r/2 + 1) * 20.0 + r%2)
-                ERR(ret);
-            break;
-        case PIO_INT64:
-            if (((long long *)data_in_norec)[r] != (r/2 + 1) * 20.0 + r%2)
-                ERR(ret);
-            break;
-        case PIO_UINT64:
-            if (((unsigned long long *)data_in_norec)[r] != (r/2 + 1) * 20.0 + r%2)
-                ERR(ret);
-            break;
-#endif /* _NETCDF4 */
-        default:
-            ERR(ERR_WRONG);
-        }
-    }
+        /* Read the non-record data. The values we expect are: 10, 11, 20, 21, 30,
+         * 31. */
+        if ((ret = PIOc_get_var(ncid, norec_varid, data_in_norec)))
+            ERR(ret);
 
+        /* Check the results. */
+        for (int r = 0; r < LAT_LEN * LON_LEN * NREC; r++)
+        {
+            int tmp_r = r % (LAT_LEN * LON_LEN);
+            switch (piotype)
+            {
+            case PIO_BYTE:
+                if (((signed char *)data_in)[r] != (tmp_r/2 + 1) * 10.0 + tmp_r % 2)
+                    ERR(ret);
+                break;
+            case PIO_CHAR:
+                if (((char *)data_in)[r] != (tmp_r/2 + 1) * 10.0 + tmp_r % 2)
+                    ERR(ret);
+                break;
+            case PIO_SHORT:
+                if (((short *)data_in)[r] != (tmp_r/2 + 1) * 10.0 + tmp_r % 2)
+                    ERR(ret);
+                break;
+            case PIO_INT:
+                if (((int *)data_in)[r] != (tmp_r/2 + 1) * 10.0 + tmp_r % 2)
+                    ERR(ret);
+                break;
+            case PIO_FLOAT:
+                if (((float *)data_in)[r] != (tmp_r/2 + 1) * 10.0 + tmp_r % 2)
+                    ERR(ret);
+                break;
+            case PIO_DOUBLE:
+                if (((double *)data_in)[r] != (tmp_r/2 + 1) * 10.0 + tmp_r % 2)
+                    ERR(ret);
+                break;
+#ifdef _NETCDF4
+            case PIO_UBYTE:
+                if (((unsigned char *)data_in)[r] != (tmp_r/2 + 1) * 10.0 + tmp_r % 2)
+                    ERR(ret);
+                break;
+            case PIO_USHORT:
+                if (((unsigned short *)data_in)[r] != (tmp_r/2 + 1) * 10.0 + tmp_r % 2)
+                    ERR(ret);
+                break;
+            case PIO_UINT:
+                if (((unsigned int *)data_in)[r] != (tmp_r/2 + 1) * 10.0 + tmp_r % 2)
+                    ERR(ret);
+                break;
+            case PIO_INT64:
+                if (((long long *)data_in)[r] != (tmp_r/2 + 1) * 10.0 + tmp_r % 2)
+                    ERR(ret);
+                break;
+            case PIO_UINT64:
+                if (((unsigned long long *)data_in)[r] != (tmp_r/2 + 1) * 10.0 + tmp_r % 2)
+                    ERR(ret);
+                break;
+#endif /* _NETCDF4 */
+            default:
+                ERR(ERR_WRONG);
+            }
+        }
+
+        /* Check the results. */
+        for (int r = 0; r < LAT_LEN * LON_LEN; r++)
+        {
+            switch (piotype)
+            {
+            case PIO_BYTE:
+                if (((signed char *)data_in_norec)[r] != (r/2 + 1) * 20.0 + r%2)
+                    ERR(ret);
+                break;
+            case PIO_CHAR:
+                if (((char *)data_in_norec)[r] != (r/2 + 1) * 20.0 + r%2)
+                    ERR(ret);
+                break;
+            case PIO_SHORT:
+                if (((short *)data_in_norec)[r] != (r/2 + 1) * 20.0 + r%2)
+                    ERR(ret);
+                break;
+            case PIO_INT:
+                if (((int *)data_in_norec)[r] != (r/2 + 1) * 20.0 + r%2)
+                    ERR(ret);
+                break;
+            case PIO_FLOAT:
+                if (((float *)data_in_norec)[r] != (r/2 + 1) * 20.0 + r%2)
+                    ERR(ret);
+                break;
+            case PIO_DOUBLE:
+                if (((double *)data_in_norec)[r] != (r/2 + 1) * 20.0 + r%2)
+                    ERR(ret);
+                break;
+#ifdef _NETCDF4
+            case PIO_UBYTE:
+                if (((unsigned char *)data_in_norec)[r] != (r/2 + 1) * 20.0 + r%2)
+                    ERR(ret);
+                break;
+            case PIO_USHORT:
+                if (((unsigned short *)data_in_norec)[r] != (r/2 + 1) * 20.0 + r%2)
+                    ERR(ret);
+                break;
+            case PIO_UINT:
+                if (((unsigned int *)data_in_norec)[r] != (r/2 + 1) * 20.0 + r%2)
+                    ERR(ret);
+                break;
+            case PIO_INT64:
+                if (((long long *)data_in_norec)[r] != (r/2 + 1) * 20.0 + r%2)
+                    ERR(ret);
+                break;
+            case PIO_UINT64:
+                if (((unsigned long long *)data_in_norec)[r] != (r/2 + 1) * 20.0 + r%2)
+                    ERR(ret);
+                break;
+#endif /* _NETCDF4 */
+            default:
+                ERR(ERR_WRONG);
+            }
+        }
+    } /* next var set */
+    
     /* Free resources. */
     free(data_in);
     free(data_in_norec);
@@ -238,6 +250,7 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm, MPI_Comm
                                    PIO_INT, NULL, NULL, &fortran_order)))
         return ret;
     printf("done with PIOc_read_nc_decomp\n");
+
     /* Free the decomposition. */
     if ((ret = PIOc_freedecomp(iosysid, ioid2)))
         ERR(ret);
@@ -353,37 +366,52 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm, MPI_Comm
         /* Define variables. */
         if ((ret = PIOc_def_var(ncid, REC_VAR_NAME, piotype, NDIM3, dimid, &varid[0])))
             ERR(ret);
+        if ((ret = PIOc_def_var(ncid, REC_VAR_NAME2, piotype, NDIM3, dimid, &varid[1])))
+            ERR(ret);
         if ((ret = PIOc_def_var(ncid, NOREC_VAR_NAME, piotype, NDIM2, &dimid[1],
-                                &varid[1])))
+                                &varid[2])))
+            ERR(ret);
+        if ((ret = PIOc_def_var(ncid, NOREC_VAR_NAME2, piotype, NDIM2, &dimid[1],
+                                &varid[3])))
             ERR(ret);
 
         /* End define mode. */
         if ((ret = PIOc_enddef(ncid)))
             ERR(ret);
 
-        /* Set the record number for the record var. */
+        /* Set the record number for the record vars. */
         if ((ret = PIOc_setframe(ncid, varid[0], 0)))
             ERR(ret);
-
-        /* Write some data to the record var. */
-        if ((ret = PIOc_write_darray(ncid, varid[0], ioid, elements_per_pe, my_data, NULL)))
+        if ((ret = PIOc_setframe(ncid, varid[1], 0)))
             ERR(ret);
 
-        /* Write some data to the non-record var. */
-        if ((ret = PIOc_write_darray(ncid, varid[1], ioid, elements_per_pe, my_data_norec, NULL)))
+        /* Write some data to the record vars. */
+        if ((ret = PIOc_write_darray(ncid, varid[0], ioid, elements_per_pe, my_data, NULL)))
+            ERR(ret);
+        if ((ret = PIOc_write_darray(ncid, varid[1], ioid, elements_per_pe, my_data, NULL)))
+            ERR(ret);
+
+        /* Write some data to the non-record vars. */
+        if ((ret = PIOc_write_darray(ncid, varid[2], ioid, elements_per_pe, my_data_norec, NULL)))
+            ERR(ret);
+        if ((ret = PIOc_write_darray(ncid, varid[3], ioid, elements_per_pe, my_data_norec, NULL)))
             ERR(ret);
 
         /* Sync the file. */
         if ((ret = PIOc_sync(ncid)))
             ERR(ret);
 
-        /* Increment the record number for the record var. */
+        /* Increment the record number for the record vars. */
         if ((ret = PIOc_advanceframe(ncid, varid[0])))
+            ERR(ret);
+        if ((ret = PIOc_advanceframe(ncid, varid[1])))
             ERR(ret);
 
         /* Write another record. */
         if ((ret = PIOc_write_darray(ncid, varid[0], ioid, elements_per_pe, my_data, NULL)))
             ERR(ret);
+        if ((ret = PIOc_write_darray(ncid, varid[1], ioid, elements_per_pe, my_data, NULL)))
+            ERR(ret);
 
         /* Sync the file. */
         if ((ret = PIOc_sync(ncid)))
@@ -392,9 +420,13 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm, MPI_Comm
         /* Increment the record number for the record var. */
         if ((ret = PIOc_advanceframe(ncid, varid[0])))
             ERR(ret);
+        if ((ret = PIOc_advanceframe(ncid, varid[1])))
+            ERR(ret);
 
         /* Write a third record. */
         if ((ret = PIOc_write_darray(ncid, varid[0], ioid, elements_per_pe, my_data, NULL)))
+            ERR(ret);
+        if ((ret = PIOc_write_darray(ncid, varid[1], ioid, elements_per_pe, my_data, NULL)))
             ERR(ret);
 
         /* Close the file. */
