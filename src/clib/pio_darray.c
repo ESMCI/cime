@@ -127,7 +127,7 @@ int PIOc_write_darray_multi(int ncid, const int *varids, int ioid, int nvars,
          ncid, ioid, nvars, arraylen, flushtodisk));
 
     /* Check that we can write to this file. */
-    if (!(file->mode & PIO_WRITE))
+    if (!file->writable)
         return pio_err(ios, file, PIO_EPERM, __FILE__, __LINE__);
 
     /* Get iodesc. */
@@ -496,7 +496,7 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
     ios = file->iosystem;
 
     /* Can we write to this file? */
-    if (!(file->mode & PIO_WRITE))
+    if (!file->writable)
         return pio_err(ios, file, PIO_EPERM, __FILE__, __LINE__);
 
     /* Get decomposition information. */

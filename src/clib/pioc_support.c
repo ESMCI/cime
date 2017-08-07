@@ -1727,6 +1727,7 @@ int PIOc_createfile_int(int iosysid, int *ncidp, int *iotype, const char *filena
     file->iotype = *iotype;
     file->buffer.ioid = -1;
     file->mode = mode;
+    file->writable = 1;
 
     /* Set to true if this task should participate in IO (only true for
      * one task with netcdf serial files. */
@@ -1817,6 +1818,10 @@ int PIOc_createfile_int(int iosysid, int *ncidp, int *iotype, const char *filena
 
     /* Broadcast mode to all tasks. */
     if ((mpierr = MPI_Bcast(&file->mode, 1, MPI_INT, ios->ioroot, ios->union_comm)))
+        return check_mpi(file, mpierr, __FILE__, __LINE__);
+
+    /* Broadcast writablility to all tasks. */
+    if ((mpierr = MPI_Bcast(&file->writable, 1, MPI_INT, ios->ioroot, ios->union_comm)))
         return check_mpi(file, mpierr, __FILE__, __LINE__);
 
     /* This flag is implied by netcdf create functions but we need
@@ -1954,6 +1959,7 @@ int PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype, const char *filena
     file->iotype = *iotype;
     file->iosystem = ios;
     file->mode = mode;
+    file->writable = (mode & PIO_WRITE) ? 1 : 0;
 
     /* Set to true if this task should participate in IO (only true
      * for one task with netcdf serial files. */
@@ -2095,6 +2101,8 @@ int PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype, const char *filena
 
     /* Broadcast open mode to all tasks. */
     if ((mpierr = MPI_Bcast(&file->mode, 1, MPI_INT, ios->ioroot, ios->my_comm)))
+        return check_mpi(file, mpierr, __FILE__, __LINE__);
+    if ((mpierr = MPI_Bcast(&file->writable, 1, MPI_INT, ios->ioroot, ios->my_comm)))
         return check_mpi(file, mpierr, __FILE__, __LINE__);
 
     /* Create the ncid that the user will see. This is necessary

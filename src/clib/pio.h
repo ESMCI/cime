@@ -550,6 +550,9 @@ typedef struct file_desc_t
     /** Mode used when file was opened. */
     int mode;
 
+    /** True if file can be written to. */
+    int writable;
+
     /** The wmulti_buffer is used to aggregate multiple variables with
      * the same communication pattern prior to a write. */
     struct wmulti_buffer buffer;
