@@ -114,49 +114,49 @@ void init_arrays()
 
 /* Use the vara functions to write some data to an open test file. */
 int putget_write_vara(int ncid, int *varid, PIO_Offset *start, PIO_Offset *count,
-                      int flavor)
+                      int flavor, int my_rank)
 {
     int ret;
     printf("now writing data\n");
 
     if ((ret = PIOc_put_vara_schar(ncid, varid[0], start, count, (signed char *)byte_array)))
-        return ret;
+        ERR(ret);
 
     if ((ret = PIOc_put_vara_text(ncid, varid[1], start, count, (char *)text_array)))
-        return ret;
+        ERR(ret);
 
     if ((ret = PIOc_put_vara_short(ncid, varid[2], start, count, (short *)short_array)))
-        return ret;
+        ERR(ret);
 
     if ((ret = PIOc_put_vara_int(ncid, varid[3], start, count, (int *)int_array)))
-        return ret;
+        ERR(ret);
 
     if ((ret = PIOc_put_vara_float(ncid, varid[4], start, count, (float *)float_array)))
-        return ret;
+        ERR(ret);
 
     if ((ret = PIOc_put_vara_double(ncid, varid[5], start, count, (double *)double_array)))
-        return ret;
+        ERR(ret);
 
     printf("now wrote classic data\n");
     if (flavor == PIO_IOTYPE_NETCDF4C || flavor == PIO_IOTYPE_NETCDF4P)
     {
         printf("now writing netcdf4 data\n");
         if ((ret = PIOc_put_vara_uchar(ncid, varid[6], start, count, (unsigned char *)ubyte_array)))
-            return ret;
+            ERR(ret);
         if ((ret = PIOc_put_vara_ushort(ncid, varid[7], start, count, (unsigned short *)ushort_array)))
-            return ret;
+            ERR(ret);
         if ((ret = PIOc_put_vara_uint(ncid, varid[8], start, count, (unsigned int *)uint_array)))
-            return ret;
+            ERR(ret);
         if ((ret = PIOc_put_vara_longlong(ncid, varid[9], start, count, (long long *)int64_array)))
-            return ret;
+            ERR(ret);
         if ((ret = PIOc_put_vara_ulonglong(ncid, varid[10], start, count, (unsigned long long *)uint64_array)))
-            return ret;
+            ERR(ret);
     }
 
     return 0;
 }
 
-int check_fill(int ncid, int *varid, int flavor, int default_fill)
+int check_fill(int ncid, int *varid, int flavor, int default_fill, int my_rank)
 {
     int fill_mode;
     char char_fill_value_in;
@@ -175,73 +175,73 @@ int check_fill(int ncid, int *varid, int flavor, int default_fill)
     printf("checking fill values for flavor %d default_fill %d\n", flavor, default_fill);
 
     if ((ret = PIOc_inq_var_fill(ncid, varid[0], &fill_mode, &byte_fill_value_in)))
-        return ret;
+        ERR(ret);
     printf("byte_fill_value_in = %d\n", (int)byte_fill_value_in);
     if (fill_mode != NC_FILL || byte_fill_value_in != (default_fill ? NC_FILL_BYTE : byte_fill_value))
-        return ERR_WRONG;
+        ERR(ERR_WRONG);
     fill_mode = -99;
 
     if ((ret = PIOc_inq_var_fill(ncid, varid[1], &fill_mode, &char_fill_value_in)))
-        return ret;
+        ERR(ret);
     if (fill_mode != NC_FILL || char_fill_value_in != (default_fill ? NC_FILL_CHAR : char_fill_value))
-        return ERR_WRONG;
+        ERR(ERR_WRONG);
     fill_mode = -99;
 
     if ((ret = PIOc_inq_var_fill(ncid, varid[2], &fill_mode, &short_fill_value_in)))
-        return ret;
+        ERR(ret);
     if (fill_mode != NC_FILL || short_fill_value_in != (default_fill ? NC_FILL_SHORT : short_fill_value))
-        return ERR_WRONG;
+        ERR(ERR_WRONG);
     fill_mode = -99;
 
     if ((ret = PIOc_inq_var_fill(ncid, varid[3], &fill_mode, &int_fill_value_in)))
-        return ret;
+        ERR(ret);
     printf("int_fill_value_in = %d\n", int_fill_value_in);
     if (fill_mode != NC_FILL || int_fill_value_in != (default_fill ? NC_FILL_INT : int_fill_value))
-        return ERR_WRONG;
+        ERR(ERR_WRONG);
     fill_mode = -99;
 
     if ((ret = PIOc_inq_var_fill(ncid, varid[4], &fill_mode, &float_fill_value_in)))
-        return ret;
+        ERR(ret);
     if (fill_mode != NC_FILL || float_fill_value_in != (default_fill ? NC_FILL_FLOAT : float_fill_value))
-        return ERR_WRONG;
+        ERR(ERR_WRONG);
     fill_mode = -99;
 
     if ((ret = PIOc_inq_var_fill(ncid, varid[5], &fill_mode, &double_fill_value_in)))
-        return ret;
+        ERR(ret);
     if (fill_mode != NC_FILL || double_fill_value_in != (default_fill ? NC_FILL_DOUBLE : double_fill_value))
-        return ERR_WRONG;
+        ERR(ERR_WRONG);
     fill_mode = -99;
 
     if (flavor == PIO_IOTYPE_NETCDF4C || flavor == PIO_IOTYPE_NETCDF4P)
     {
         if ((ret = PIOc_inq_var_fill(ncid, varid[6], &fill_mode, &ubyte_fill_value_in)))
-            return ret;
+            ERR(ret);
         if (fill_mode != NC_FILL || ubyte_fill_value_in != (default_fill ? NC_FILL_UBYTE : ubyte_fill_value))
-            return ERR_WRONG;
+            ERR(ERR_WRONG);
         fill_mode = -99;
 
         if ((ret = PIOc_inq_var_fill(ncid, varid[7], &fill_mode, &ushort_fill_value_in)))
-            return ret;
+            ERR(ret);
         if (fill_mode != NC_FILL || ushort_fill_value_in != (default_fill ? NC_FILL_USHORT : ushort_fill_value))
-            return ERR_WRONG;
+            ERR(ERR_WRONG);
         fill_mode = -99;
 
         if ((ret = PIOc_inq_var_fill(ncid, varid[8], &fill_mode, &uint_fill_value_in)))
-            return ret;
+            ERR(ret);
         if (fill_mode != NC_FILL || uint_fill_value_in != (default_fill ? NC_FILL_UINT : uint_fill_value))
-            return ERR_WRONG;
+            ERR(ERR_WRONG);
         fill_mode = -99;
 
         if ((ret = PIOc_inq_var_fill(ncid, varid[9], &fill_mode, &int64_fill_value_in)))
-            return ret;
+            ERR(ret);
         if (fill_mode != NC_FILL || int64_fill_value_in != (default_fill ? NC_FILL_INT64 : int64_fill_value))
-            return ERR_WRONG;
+            ERR(ERR_WRONG);
         fill_mode = -99;
 
         if ((ret = PIOc_inq_var_fill(ncid, varid[10], &fill_mode, &uint64_fill_value_in)))
-            return ret;
+            ERR(ret);
         if (fill_mode != NC_FILL || uint64_fill_value_in != (default_fill ? NC_FILL_UINT64 : uint64_fill_value))
-            return ERR_WRONG;
+            ERR(ERR_WRONG);
         fill_mode = -99;
     }
 
@@ -250,7 +250,7 @@ int check_fill(int ncid, int *varid, int flavor, int default_fill)
 
 /* Use the vara functions to read some data from an open test file. */
 int putget_read_vara(int ncid, int *varid, PIO_Offset *start, PIO_Offset *count,
-                     int default_fill, int flavor)
+                     int default_fill, int flavor, int my_rank)
 {
     signed char byte_array_in[X_DIM_LEN/2][Y_DIM_LEN];
     char text_array_in[X_DIM_LEN/2][Y_DIM_LEN];
@@ -268,68 +268,68 @@ int putget_read_vara(int ncid, int *varid, PIO_Offset *start, PIO_Offset *count,
 
     /* Read the data we wrote. */
     if ((ret = PIOc_get_vara_schar(ncid, varid[0], start, count, (signed char *)byte_array_in)))
-        return ret;
+        ERR(ret);
     if ((ret = PIOc_get_vara_text(ncid, varid[1], start, count, (char *)text_array_in)))
-        return ret;
+        ERR(ret);
     if ((ret = PIOc_get_vara_short(ncid, varid[2], start, count, (short *)short_array_in)))
-        return ret;
+        ERR(ret);
     if ((ret = PIOc_get_vara_int(ncid, varid[3], start, count, (int *)int_array_in)))
-        return ret;
+        ERR(ret);
     if ((ret = PIOc_get_vara_float(ncid, varid[4], start, count, (float *)float_array_in)))
-        return ret;
+        ERR(ret);
     if ((ret = PIOc_get_vara_double(ncid, varid[5], start, count, (double *)double_array_in)))
-        return ret;
+        ERR(ret);
 
     for (x = 0; x < X_DIM_LEN/2; x++)
     {
         if (strncmp(text_array_in[x], text, strlen(text)))
-                return ERR_WRONG;
+                ERR(ERR_WRONG);
         for (y = 0; y < Y_DIM_LEN; y++)
         {
             if (byte_array_in[x][y] != byte_array[x][y])
-                return ERR_WRONG;
+                ERR(ERR_WRONG);
             if (short_array_in[x][y] != short_array[x][y])
-                return ERR_WRONG;
+                ERR(ERR_WRONG);
             if (int_array_in[x][y] != int_array[x][y])
-                return ERR_WRONG;
+                ERR(ERR_WRONG);
             if (float_array_in[x][y] != float_array[x][y])
-                return ERR_WRONG;
+                ERR(ERR_WRONG);
             if (double_array_in[x][y] != double_array[x][y])
-                return ERR_WRONG;
+                ERR(ERR_WRONG);
         }
     }
 
     if (flavor == PIO_IOTYPE_NETCDF4C || flavor == PIO_IOTYPE_NETCDF4P)
     {
         if ((ret = PIOc_get_vara_uchar(ncid, varid[6], start, count, (unsigned char *)ubyte_array_in)))
-            return ret;
+            ERR(ret);
         if ((ret = PIOc_get_vara_ushort(ncid, varid[7], start, count, (unsigned short *)ushort_array_in)))
-            return ret;
+            ERR(ret);
         if ((ret = PIOc_get_vara_uint(ncid, varid[8], start, count, (unsigned int *)uint_array_in)))
-            return ret;
+            ERR(ret);
         if ((ret = PIOc_get_vara_longlong(ncid, varid[9], start, count, (long long *)int64_array_in)))
-            return ret;
+            ERR(ret);
         if ((ret = PIOc_get_vara_ulonglong(ncid, varid[10], start, count, (unsigned long long *)uint64_array_in)))
-            return ret;
+            ERR(ret);
         for (x = 0; x < X_DIM_LEN/2; x++)
             for (y = 0; y < Y_DIM_LEN; y++)
             {
                 if (ubyte_array_in[x][y] != ubyte_array[x][y])
-                    return ERR_WRONG;
+                    ERR(ERR_WRONG);
                 if (ushort_array_in[x][y] != ushort_array[x][y])
-                    return ERR_WRONG;
+                    ERR(ERR_WRONG);
                 if (uint_array_in[x][y] != uint_array[x][y])
-                    return ERR_WRONG;
+                    ERR(ERR_WRONG);
                 if (int64_array_in[x][y] != int64_array[x][y])
-                    return ERR_WRONG;
+                    ERR(ERR_WRONG);
                 if (uint64_array_in[x][y] != uint64_array[x][y])
-                    return ERR_WRONG;
+                    ERR(ERR_WRONG);
             }
     }
 
     /* Check some fill value stuff. */
-    if ((ret = check_fill(ncid, varid, flavor, default_fill)))
-        return ret;
+    if ((ret = check_fill(ncid, varid, flavor, default_fill, my_rank)))
+        ERR(ret);
 
     return 0;
 }
@@ -337,7 +337,7 @@ int putget_read_vara(int ncid, int *varid, PIO_Offset *start, PIO_Offset *count,
 /* Use the vara functions to read some data from an open test
  * file. Expect only fill data. */
 int putget_read_vara_fill(int ncid, int *varid, PIO_Offset *start, PIO_Offset *count,
-                          int default_fill, int flavor)
+                          int default_fill, int flavor, int my_rank)
 {
     signed char byte_array_in[X_DIM_LEN/2][Y_DIM_LEN];
     char text_array_in[X_DIM_LEN/2][Y_DIM_LEN];
@@ -355,62 +355,62 @@ int putget_read_vara_fill(int ncid, int *varid, PIO_Offset *start, PIO_Offset *c
 
     /* Read the data we wrote. */
     if ((ret = PIOc_get_vara_schar(ncid, varid[0], start, count, (signed char *)byte_array_in)))
-        return ret;
+        ERR(ret);
     if ((ret = PIOc_get_vara_text(ncid, varid[1], start, count, (char *)text_array_in)))
-        return ret;
+        ERR(ret);
     if ((ret = PIOc_get_vara_short(ncid, varid[2], start, count, (short *)short_array_in)))
-        return ret;
+        ERR(ret);
     if ((ret = PIOc_get_vara_int(ncid, varid[3], start, count, (int *)int_array_in)))
-        return ret;
+        ERR(ret);
     if ((ret = PIOc_get_vara_float(ncid, varid[4], start, count, (float *)float_array_in)))
-        return ret;
+        ERR(ret);
     if ((ret = PIOc_get_vara_double(ncid, varid[5], start, count, (double *)double_array_in)))
-        return ret;
+        ERR(ret);
 
     for (x = 0; x < X_DIM_LEN/2; x++)
     {
         for (y = 0; y < Y_DIM_LEN; y++)
         {
             if (byte_array_in[x][y] != (default_fill ? NC_FILL_BYTE : byte_fill_value))
-                return ERR_WRONG;
+                ERR(ERR_WRONG);
             if (text_array_in[x][y] != (default_fill ? NC_FILL_CHAR : char_fill_value))
-                return ERR_WRONG;
+                ERR(ERR_WRONG);
             if (short_array_in[x][y] != (default_fill ? NC_FILL_SHORT : short_fill_value))
-                return ERR_WRONG;
+                ERR(ERR_WRONG);
             if (int_array_in[x][y] != (default_fill ? NC_FILL_INT : int_fill_value))
-                return ERR_WRONG;
+                ERR(ERR_WRONG);
             if (float_array_in[x][y] != (default_fill ? NC_FILL_FLOAT : float_fill_value))
-                return ERR_WRONG;
+                ERR(ERR_WRONG);
             if (double_array_in[x][y] != (default_fill ? NC_FILL_DOUBLE : double_fill_value))
-                return ERR_WRONG;
+                ERR(ERR_WRONG);
         }
     }
 
     if (flavor == PIO_IOTYPE_NETCDF4C || flavor == PIO_IOTYPE_NETCDF4P)
     {
         if ((ret = PIOc_get_vara_uchar(ncid, varid[6], start, count, (unsigned char *)ubyte_array_in)))
-            return ret;
+            ERR(ret);
         if ((ret = PIOc_get_vara_ushort(ncid, varid[7], start, count, (unsigned short *)ushort_array_in)))
-            return ret;
+            ERR(ret);
         if ((ret = PIOc_get_vara_uint(ncid, varid[8], start, count, (unsigned int *)uint_array_in)))
-            return ret;
+            ERR(ret);
         if ((ret = PIOc_get_vara_longlong(ncid, varid[9], start, count, (long long *)int64_array_in)))
-            return ret;
+            ERR(ret);
         if ((ret = PIOc_get_vara_ulonglong(ncid, varid[10], start, count, (unsigned long long *)uint64_array_in)))
-            return ret;
+            ERR(ret);
         for (x = 0; x < X_DIM_LEN/2; x++)
             for (y = 0; y < Y_DIM_LEN; y++)
             {
                 if (ubyte_array_in[x][y] != (default_fill ? NC_FILL_UBYTE : ubyte_fill_value))
-                    return ERR_WRONG;
+                    ERR(ERR_WRONG);
                 if (ushort_array_in[x][y] != (default_fill ? NC_FILL_USHORT : ushort_fill_value))
-                    return ERR_WRONG;
+                    ERR(ERR_WRONG);
                 if (uint_array_in[x][y] != (default_fill ? NC_FILL_UINT : uint_fill_value))
-                    return ERR_WRONG;
+                    ERR(ERR_WRONG);
                 if (int64_array_in[x][y] != (default_fill ? NC_FILL_INT64 : int64_fill_value))
-                    return ERR_WRONG;
+                    ERR(ERR_WRONG);
                 if (uint64_array_in[x][y] != (default_fill ? NC_FILL_UINT64 : uint64_fill_value))
-                    return ERR_WRONG;
+                    ERR(ERR_WRONG);
             }
     }
 
@@ -433,7 +433,7 @@ int putget_read_vara_fill(int ncid, int *varid, PIO_Offset *start, PIO_Offset *c
  * @returns 0 for success, error code otherwise.
  */
 int create_putget_file(int iosysid, int flavor, int *dim_len, int *varid, const char *filename,
-                       int default_fill, int *ncidp)
+                       int default_fill, int *ncidp, int my_rank)
 {
     int dimids[NDIM];        /* The dimension IDs. */
     int num_vars = NUM_CLASSIC_TYPES;
@@ -445,23 +445,23 @@ int create_putget_file(int iosysid, int flavor, int *dim_len, int *varid, const 
 
     /* Create the netCDF output file. */
     if ((ret = PIOc_createfile(iosysid, &ncid, &flavor, filename, PIO_CLOBBER)))
-        return ret;
+        ERR(ret);
 
     /* This should not work. */
     if (PIOc_set_fill(ncid + TEST_VAL_42, NC_FILL, &old_mode) != PIO_EBADID)
-        return ret;
+        ERR(ret);
 
     /* Turn on fill mode. */
     if ((ret = PIOc_set_fill(ncid, NC_FILL, &old_mode)))
-        return ret;
+        ERR(ret);
     printf("old_mode = %d\n", old_mode);
     if (old_mode != NC_NOFILL)
-        return ERR_WRONG;
+        ERR(ERR_WRONG);
 
     /* Define netCDF dimensions and variable. */
     for (int d = 0; d < NDIM; d++)
         if ((ret = PIOc_def_dim(ncid, dim_name[d], (PIO_Offset)dim_len[d], &dimids[d])))
-            return ret;
+            ERR(ret);
 
     /* For netcdf-4, there are extra types. */
     if (flavor == PIO_IOTYPE_NETCDF4C || flavor == PIO_IOTYPE_NETCDF4P)
@@ -474,41 +474,41 @@ int create_putget_file(int iosysid, int flavor, int *dim_len, int *varid, const 
         snprintf(var_name, PIO_MAX_NAME, "%s_%d", VAR_NAME, xtype[v]);
         printf("defining var %s\n", var_name);
         if ((ret = PIOc_def_var(ncid, var_name, xtype[v], NDIM, dimids, &varid[v])))
-            return ret;
+            ERR(ret);
     }
 
     /* Maybe set fill values. */
     if (!default_fill)
     {
         if ((ret = PIOc_def_var_fill(ncid, varid[0], NC_FILL, &byte_fill_value)))
-            return ret;
+            ERR(ret);
         if ((ret = PIOc_def_var_fill(ncid, varid[1], NC_FILL, &char_fill_value)))
-            return ret;
+            ERR(ret);
         if ((ret = PIOc_def_var_fill(ncid, varid[2], NC_FILL, &short_fill_value)))
-            return ret;
+            ERR(ret);
         if ((ret = PIOc_def_var_fill(ncid, varid[3], NC_FILL, &int_fill_value)))
-            return ret;
+            ERR(ret);
         if ((ret = PIOc_def_var_fill(ncid, varid[4], NC_FILL, &float_fill_value)))
-            return ret;
+            ERR(ret);
         if ((ret = PIOc_def_var_fill(ncid, varid[5], NC_FILL, &double_fill_value)))
-            return ret;
+            ERR(ret);
         if (flavor == PIO_IOTYPE_NETCDF4C || flavor == PIO_IOTYPE_NETCDF4P)
         {
             if ((ret = PIOc_def_var_fill(ncid, varid[6], NC_FILL, &ubyte_fill_value)))
-                return ret;
+                ERR(ret);
             if ((ret = PIOc_def_var_fill(ncid, varid[7], NC_FILL, &ushort_fill_value)))
-                return ret;
+                ERR(ret);
             if ((ret = PIOc_def_var_fill(ncid, varid[8], NC_FILL, &uint_fill_value)))
-                return ret;
+                ERR(ret);
             if ((ret = PIOc_def_var_fill(ncid, varid[9], NC_FILL, &int64_fill_value)))
-                return ret;
+                ERR(ret);
             if ((ret = PIOc_def_var_fill(ncid, varid[10], NC_FILL, &uint64_fill_value)))
-                return ret;
+                ERR(ret);
         }
     }
 
     if ((ret = PIOc_enddef(ncid)))
-        return ret;
+        ERR(ret);
 
     /* Pass back the ncid. */
     *ncidp = ncid;
@@ -552,14 +552,14 @@ int test_fill(int iosysid, int num_flavors, int *flavor, int my_rank,
 
             /* Create a filename. */
             if ((ret = get_iotype_name(flavor[fmt], iotype_name)))
-                return ret;
+                ERR(ret);
             snprintf(filename, PIO_MAX_NAME, "%s_default_fill_%d_%s.nc", TEST_NAME, default_fill, iotype_name);
 
             /* Create test file with dims and vars defined. */
             printf("%d creating test file %s for flavor = %d...\n", my_rank, filename, flavor[fmt]);
             if ((ret = create_putget_file(iosysid, flavor[fmt], dim_len, varid, filename,
-                                          default_fill, &ncid)))
-                return ret;
+                                          default_fill, &ncid, my_rank)))
+                ERR(ret);
             printf("created file %s\n", filename);
 
             /* Write some data. */
@@ -568,17 +568,17 @@ int test_fill(int iosysid, int num_flavors, int *flavor, int my_rank,
 
             printf("writing data to %s\n", filename);
             /* Use the no-type vara functions to write some data. */
-            if ((ret = putget_write_vara(ncid, varid, start, count, flavor[fmt])))
-                return ret;
+            if ((ret = putget_write_vara(ncid, varid, start, count, flavor[fmt], my_rank)))
+                ERR(ret);
 
             printf("wrote data to %s\n", filename);
             /* Make sure all data are written (pnetcdf needs this). */
             if ((ret = PIOc_sync(ncid)))
-                return ret;
+                ERR(ret);
 
             /* Use the vara functions to read some data. */
-            if ((ret = putget_read_vara(ncid, varid, start, count, default_fill, flavor[fmt])))
-                return ret;
+            if ((ret = putget_read_vara(ncid, varid, start, count, default_fill, flavor[fmt], my_rank)))
+                ERR(ret);
 
             /* Close the netCDF file. */
             if ((ret = PIOc_closefile(ncid)))
@@ -590,13 +590,13 @@ int test_fill(int iosysid, int num_flavors, int *flavor, int my_rank,
                 ERR(ret);
 
             /* Use the vara functions to read some data. */
-            if ((ret = putget_read_vara(ncid, varid, start, count, default_fill, flavor[fmt])))
-                return ret;
+            if ((ret = putget_read_vara(ncid, varid, start, count, default_fill, flavor[fmt], my_rank)))
+                ERR(ret);
 
             /* Use the vara functions to read some data which are just fill values. */
             start[0] = 0;
-            if ((ret = putget_read_vara_fill(ncid, varid, start, count, default_fill, flavor[fmt])))
-                return ret;
+            if ((ret = putget_read_vara_fill(ncid, varid, start, count, default_fill, flavor[fmt], my_rank)))
+                ERR(ret);
 
             /* Close the netCDF file. */
             if ((ret = PIOc_closefile(ncid)))
@@ -660,36 +660,36 @@ int test_fill_mode(int iosysid, int num_flavors, int *flavor, int my_rank,
 
                     /* Create a filename. */
                     if ((ret = get_iotype_name(flavor[fmt], iotype_name)))
-                        return ret;
+                        ERR(ret);
                     snprintf(filename, PIO_MAX_NAME, "%s_fill_mode_async_%d_default_fill_%d_extra_var_%d_%s.nc",
                              TEST_NAME, async, default_fill, extra_var, iotype_name);
 
                     /* Create the test file. */
                     if ((ret = PIOc_createfile(iosysid, &ncid, &flavor[fmt], filename, PIO_CLOBBER)))
-                        return ret;
+                        ERR(ret);
 
                     /* Turn on fill mode. */
                     if ((ret = PIOc_set_fill(ncid, NC_FILL, NULL)))
-                        return ret;
+                        ERR(ret);
 
                     /* Define a dimension. */
                     if ((ret = PIOc_def_dim(ncid, DIM_NAME, DIM_LEN, &dimid)))
-                        return ret;
+                        ERR(ret);
 
                     /* Define a variable. */
                     if ((ret = PIOc_def_var(ncid, VAR_NAME, xtype[t], 1, &dimid, &varid)))
-                        return ret;
+                        ERR(ret);
 
                     /* Do we want an extra variable? */
                     if (extra_var)
                         if ((ret = PIOc_def_var(ncid, VAR_NAME_2, xtype[t], 1, &dimid, &varid2)))
-                            return ret;
+                            ERR(ret);
 
                     /* Find the size of our type. */
                     if ((ret = PIOc_inq_type(ncid, xtype[t], NULL, &type_size)))
-                        return ret;
+                        ERR(ret);
                     if ((xtype[t] == PIO_INT || xtype[t] == PIO_FLOAT) && type_size != 4)
-                        return ERR_WRONG;
+                        ERR(ERR_WRONG);
 
                     /* Determine fill value and extra data, depending on type. */
                     switch (xtype[t])
@@ -703,22 +703,22 @@ int test_fill_mode(int iosysid, int num_flavors, int *flavor, int my_rank,
                         extra_data = &extra_data_float;
                         break;
                     default:
-                        return ERR_WRONG;
+                        ERR(ERR_WRONG);
                     }
                 
                     /* If not using a default fill value, set one. */
                     if (!default_fill)
                         if ((ret = PIOc_def_var_fill(ncid, varid, NC_FILL, fillvalue)))
-                            return ret;
+                            ERR(ret);
 
                     /* End define mode. */
                     if ((ret = PIOc_enddef(ncid)))
-                        return ret;
+                        ERR(ret);
 
                     /* If there is an extra variable, write data to it. */
                     if (extra_var)
                         if ((ret = PIOc_put_var(ncid, varid2, extra_data)))
-                            return ret;
+                            ERR(ret);
                     
                     /* Close the netCDF file. */
                     if ((ret = PIOc_closefile(ncid)))
@@ -736,11 +736,11 @@ int test_fill_mode(int iosysid, int num_flavors, int *flavor, int my_rank,
                     if (!(fillvalue_in = malloc(type_size)))
                         return PIO_ENOMEM;
                     if ((ret = PIOc_inq_var_fill(ncid, varid, &fill_mode_in, fillvalue_in)))
-                        return ret;
+                        ERR(ret);
                     if (fill_mode_in != NC_FILL)
-                        return ERR_WRONG;
+                        ERR(ERR_WRONG);
                     if (memcmp(fillvalue_in, fillvalue, type_size))
-                        return ERR_WRONG;
+                        ERR(ERR_WRONG);
                     free(fillvalue_in);
 
                     /* Allocate space to read one element of data. */
@@ -752,9 +752,9 @@ int test_fill_mode(int iosysid, int num_flavors, int *flavor, int my_rank,
                      * the var we didn't write to. We should get a
                      * fill value. */
                     if ((ret = PIOc_get_var(ncid, varid, data_in)))
-                        return ret;
+                        ERR(ret);
                     if (memcmp(data_in, fillvalue, type_size))
-                        return ERR_WRONG;
+                        ERR(ERR_WRONG);
 
                     /* Use the vara functions to read 1 datum from the
                      * var we did write to. We should get the value we
@@ -762,9 +762,9 @@ int test_fill_mode(int iosysid, int num_flavors, int *flavor, int my_rank,
                     if (extra_var)
                     {
                         if ((ret = PIOc_get_var(ncid, varid2, data_in)))
-                            return ret;
+                            ERR(ret);
                         if (memcmp(data_in, extra_data, type_size))
-                            return ERR_WRONG;
+                            ERR(ERR_WRONG);
                     }
 
                     /* Free memory. */
