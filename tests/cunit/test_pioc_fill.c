@@ -47,6 +47,9 @@ int dim_len[NDIM] = {NC_UNLIMITED, X_DIM_LEN, Y_DIM_LEN};
 #define DIM_NAME "SonsOfTheDesert"
 #define DIM_LEN 1
 
+/* Test openfile with PIO_WRITE/PIO_NOWRITE. */
+#define NUM_OPEN_MODE_TESTS 2
+
 /* Some sample data values to write. */
 char text[] = "hi";
 char char_data = 2;
@@ -156,7 +159,7 @@ int putget_write_vara(int ncid, int *varid, PIO_Offset *start, PIO_Offset *count
     return 0;
 }
 
-int check_fill(int ncid, int *varid, int flavor, int default_fill, int my_rank)
+int check_fill(int ncid, int *varid, int flavor, int default_fill, int nowrite, int my_rank)
 {
     int fill_mode;
     char char_fill_value_in;
@@ -176,39 +179,40 @@ int check_fill(int ncid, int *varid, int flavor, int default_fill, int my_rank)
 
     if ((ret = PIOc_inq_var_fill(ncid, varid[0], &fill_mode, &byte_fill_value_in)))
         ERR(ret);
-    printf("byte_fill_value_in = %d\n", (int)byte_fill_value_in);
-    if (fill_mode != NC_FILL || byte_fill_value_in != (default_fill ? NC_FILL_BYTE : byte_fill_value))
+    printf("nowrite = %d PIO_FILL = %d fill_mode = %d byte_fill_value_in = %d\n",
+           nowrite, PIO_FILL, fill_mode, (int)byte_fill_value_in);
+    if (fill_mode != PIO_FILL || byte_fill_value_in != (default_fill ? NC_FILL_BYTE : byte_fill_value))
         ERR(ERR_WRONG);
     fill_mode = -99;
 
     if ((ret = PIOc_inq_var_fill(ncid, varid[1], &fill_mode, &char_fill_value_in)))
         ERR(ret);
-    if (fill_mode != NC_FILL || char_fill_value_in != (default_fill ? NC_FILL_CHAR : char_fill_value))
+    if (fill_mode != PIO_FILL || char_fill_value_in != (default_fill ? NC_FILL_CHAR : char_fill_value))
         ERR(ERR_WRONG);
     fill_mode = -99;
 
     if ((ret = PIOc_inq_var_fill(ncid, varid[2], &fill_mode, &short_fill_value_in)))
         ERR(ret);
-    if (fill_mode != NC_FILL || short_fill_value_in != (default_fill ? NC_FILL_SHORT : short_fill_value))
+    if (fill_mode != PIO_FILL || short_fill_value_in != (default_fill ? NC_FILL_SHORT : short_fill_value))
         ERR(ERR_WRONG);
     fill_mode = -99;
 
     if ((ret = PIOc_inq_var_fill(ncid, varid[3], &fill_mode, &int_fill_value_in)))
         ERR(ret);
     printf("int_fill_value_in = %d\n", int_fill_value_in);
-    if (fill_mode != NC_FILL || int_fill_value_in != (default_fill ? NC_FILL_INT : int_fill_value))
+    if (fill_mode != PIO_FILL || int_fill_value_in != (default_fill ? NC_FILL_INT : int_fill_value))
         ERR(ERR_WRONG);
     fill_mode = -99;
 
     if ((ret = PIOc_inq_var_fill(ncid, varid[4], &fill_mode, &float_fill_value_in)))
         ERR(ret);
-    if (fill_mode != NC_FILL || float_fill_value_in != (default_fill ? NC_FILL_FLOAT : float_fill_value))
+    if (fill_mode != PIO_FILL || float_fill_value_in != (default_fill ? NC_FILL_FLOAT : float_fill_value))
         ERR(ERR_WRONG);
     fill_mode = -99;
 
     if ((ret = PIOc_inq_var_fill(ncid, varid[5], &fill_mode, &double_fill_value_in)))
         ERR(ret);
-    if (fill_mode != NC_FILL || double_fill_value_in != (default_fill ? NC_FILL_DOUBLE : double_fill_value))
+    if (fill_mode != PIO_FILL || double_fill_value_in != (default_fill ? NC_FILL_DOUBLE : double_fill_value))
         ERR(ERR_WRONG);
     fill_mode = -99;
 
@@ -216,31 +220,31 @@ int check_fill(int ncid, int *varid, int flavor, int default_fill, int my_rank)
     {
         if ((ret = PIOc_inq_var_fill(ncid, varid[6], &fill_mode, &ubyte_fill_value_in)))
             ERR(ret);
-        if (fill_mode != NC_FILL || ubyte_fill_value_in != (default_fill ? NC_FILL_UBYTE : ubyte_fill_value))
+        if (fill_mode != PIO_FILL || ubyte_fill_value_in != (default_fill ? NC_FILL_UBYTE : ubyte_fill_value))
             ERR(ERR_WRONG);
         fill_mode = -99;
 
         if ((ret = PIOc_inq_var_fill(ncid, varid[7], &fill_mode, &ushort_fill_value_in)))
             ERR(ret);
-        if (fill_mode != NC_FILL || ushort_fill_value_in != (default_fill ? NC_FILL_USHORT : ushort_fill_value))
+        if (fill_mode != PIO_FILL || ushort_fill_value_in != (default_fill ? NC_FILL_USHORT : ushort_fill_value))
             ERR(ERR_WRONG);
         fill_mode = -99;
 
         if ((ret = PIOc_inq_var_fill(ncid, varid[8], &fill_mode, &uint_fill_value_in)))
             ERR(ret);
-        if (fill_mode != NC_FILL || uint_fill_value_in != (default_fill ? NC_FILL_UINT : uint_fill_value))
+        if (fill_mode != PIO_FILL || uint_fill_value_in != (default_fill ? NC_FILL_UINT : uint_fill_value))
             ERR(ERR_WRONG);
         fill_mode = -99;
 
         if ((ret = PIOc_inq_var_fill(ncid, varid[9], &fill_mode, &int64_fill_value_in)))
             ERR(ret);
-        if (fill_mode != NC_FILL || int64_fill_value_in != (default_fill ? NC_FILL_INT64 : int64_fill_value))
+        if (fill_mode != PIO_FILL || int64_fill_value_in != (default_fill ? NC_FILL_INT64 : int64_fill_value))
             ERR(ERR_WRONG);
         fill_mode = -99;
 
         if ((ret = PIOc_inq_var_fill(ncid, varid[10], &fill_mode, &uint64_fill_value_in)))
             ERR(ret);
-        if (fill_mode != NC_FILL || uint64_fill_value_in != (default_fill ? NC_FILL_UINT64 : uint64_fill_value))
+        if (fill_mode != PIO_FILL || uint64_fill_value_in != (default_fill ? NC_FILL_UINT64 : uint64_fill_value))
             ERR(ERR_WRONG);
         fill_mode = -99;
     }
@@ -250,7 +254,7 @@ int check_fill(int ncid, int *varid, int flavor, int default_fill, int my_rank)
 
 /* Use the vara functions to read some data from an open test file. */
 int putget_read_vara(int ncid, int *varid, PIO_Offset *start, PIO_Offset *count,
-                     int default_fill, int flavor, int my_rank)
+                     int default_fill, int flavor, int nowrite, int my_rank)
 {
     signed char byte_array_in[X_DIM_LEN/2][Y_DIM_LEN];
     char text_array_in[X_DIM_LEN/2][Y_DIM_LEN];
@@ -328,7 +332,7 @@ int putget_read_vara(int ncid, int *varid, PIO_Offset *start, PIO_Offset *count,
     }
 
     /* Check some fill value stuff. */
-    if ((ret = check_fill(ncid, varid, flavor, default_fill, my_rank)))
+    if ((ret = check_fill(ncid, varid, flavor, default_fill, nowrite, my_rank)))
         ERR(ret);
 
     return 0;
@@ -577,7 +581,7 @@ int test_fill(int iosysid, int num_flavors, int *flavor, int my_rank,
                 ERR(ret);
 
             /* Use the vara functions to read some data. */
-            if ((ret = putget_read_vara(ncid, varid, start, count, default_fill, flavor[fmt], my_rank)))
+            if ((ret = putget_read_vara(ncid, varid, start, count, default_fill, flavor[fmt], 0, my_rank)))
                 ERR(ret);
 
             /* Close the netCDF file. */
@@ -585,23 +589,28 @@ int test_fill(int iosysid, int num_flavors, int *flavor, int my_rank,
                 ERR(ret);
 
             /* Access to read it. */
-            printf("about to try to open file %s\n", filename);
-            if ((ret = PIOc_openfile(iosysid, &ncid, &(flavor[fmt]), filename, PIO_WRITE)))
-                ERR(ret);
-
-            /* Use the vara functions to read some data. */
-            if ((ret = putget_read_vara(ncid, varid, start, count, default_fill, flavor[fmt], my_rank)))
-                ERR(ret);
-
-            /* Use the vara functions to read some data which are just fill values. */
-            start[0] = 0;
-            if ((ret = putget_read_vara_fill(ncid, varid, start, count, default_fill, flavor[fmt], my_rank)))
-                ERR(ret);
-
-            /* Close the netCDF file. */
-            if ((ret = PIOc_closefile(ncid)))
-                ERR(ret);
-
+            for (int omt = 0; omt < NUM_OPEN_MODE_TESTS; omt++)
+            {
+                int omode = omt ? PIO_NOWRITE : PIO_WRITE;
+                
+                printf("about to try to open file %s\n", filename);
+                if ((ret = PIOc_openfile(iosysid, &ncid, &(flavor[fmt]), filename, omode)))
+                    ERR(ret);
+                
+                /* Use the vara functions to read some data. */
+                start[0] = 1;
+                if ((ret = putget_read_vara(ncid, varid, start, count, default_fill, flavor[fmt], omt, my_rank)))
+                    ERR(ret);
+                
+                /* Use the vara functions to read some data which are just fill values. */
+                start[0] = 0;
+                if ((ret = putget_read_vara_fill(ncid, varid, start, count, default_fill, flavor[fmt], my_rank)))
+                    ERR(ret);
+                
+                /* Close the netCDF file. */
+                if ((ret = PIOc_closefile(ncid)))
+                    ERR(ret);
+            } /* next open mode test */
         } /* next flavor */
     }
 
@@ -812,7 +821,7 @@ int main(int argc, char **argv)
     init_arrays();
 
     /* Change the 5th arg to 3 to turn on logging. */
-    if ((ret = run_test_main(argc, argv, MIN_NTASKS, TARGET_NTASKS, 0,
+    if ((ret = run_test_main(argc, argv, MIN_NTASKS, TARGET_NTASKS, 3,
                              TEST_NAME, dim_len, COMPONENT_COUNT, NUM_IO_PROCS)))
         return ret;
 

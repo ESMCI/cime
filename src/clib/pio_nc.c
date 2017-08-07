@@ -2367,9 +2367,18 @@ int PIOc_inq_var_fill(int ncid, int varid, int *no_fill, void *fill_valuep)
             /* Get the file-level fill mode. */
             if (no_fill)
             {
-                ierr = nc_set_fill(file->fh, NC_NOFILL, no_fill);
-                if (!ierr)
-                    ierr = nc_set_fill(file->fh, *no_fill, NULL);
+                if (file->writable)
+                {
+                    ierr = nc_set_fill(file->fh, NC_NOFILL, no_fill);
+                    if (!ierr)
+                        ierr = nc_set_fill(file->fh, *no_fill, NULL);
+                }
+                else
+                {
+                    /* pnetcdf and netCDF-4 return PIO_FILL for read-only
+                     * files. */
+                    *no_fill = PIO_FILL;
+                }
             }
 
             if (!ierr && fill_valuep)
