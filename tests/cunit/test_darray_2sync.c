@@ -1,0 +1,176 @@
+/*
+ * This program tests darrays with async and non-async. 
+ *
+ * @author Ed Hartnett
+ * @date 7/8/17
+ */
+#include <pio.h>
+#include <pio_tests.h>
+#include <pio_internal.h>
+
+/* The number of tasks this test should run on. */
+#define TARGET_NTASKS 4
+
+/* The minimum number of tasks this test should run on. */
+#define MIN_NTASKS 1
+
+/* The name of this test. */
+#define TEST_NAME "test_darray_2sync"
+
+#define NUM_IO_PROCS 1
+#define NUM_COMPUTATION_PROCS 3
+#define COMPONENT_COUNT 1
+
+int darray_simple_test(int iosysid, int my_rank, int num_iotypes, int *iotype, int async)
+{
+    int ncid;
+    int ret;
+
+    /* For each of the available IOtypes... */
+    for (int iot = 0; iot < num_iotypes; iot++)
+    {
+        char filename[PIO_MAX_NAME + 1];
+
+        /* Create test filename. */
+        sprintf(filename, "%s_simple_async_%d_iotype_%d.nc", TEST_NAME, async, iotype[iot]);
+        printf("rank %d creating test file %s\n", my_rank, filename);
+
+        /* Create the test file. */
+        if ((ret = PIOc_createfile(iosysid, &ncid, &iotype[iot], filename, PIO_CLOBBER)))
+            ERR(ret);
+
+        /* End define mode. */
+        if ((ret = PIOc_enddef(ncid)))
+            ERR(ret);
+
+        /* Close the test file. */
+        if ((ret = PIOc_closefile(ncid)))
+            ERR(ret);
+    }
+    
+    return PIO_NOERR;
+}
+
+/* Initialize with task 0 as IO task, tasks 1-3 as a
+ * computation component. */
+int run_async_tests(MPI_Comm test_comm, int my_rank, int num_iotypes, int *iotype)
+{
+    int iosysid;
+    int num_computation_procs = NUM_COMPUTATION_PROCS;
+    MPI_Comm io_comm;              /* Will get a duplicate of IO communicator. */
+    MPI_Comm comp_comm[COMPONENT_COUNT]; /* Will get duplicates of computation communicators. */
+    int mpierr;
+    int ret;
+
+    if ((ret = PIOc_init_async(test_comm, NUM_IO_PROCS, NULL, COMPONENT_COUNT,
+                               &num_computation_procs, NULL, &io_comm, comp_comm,
+                               PIO_REARR_BOX, &iosysid)))
+        ERR(ERR_INIT);
+        
+    /* This code runs only on computation components. */
+    if (my_rank)
+    {
+        if ((ret = darray_simple_test(iosysid, my_rank, num_iotypes, iotype, 1)))
+            ERR(ret);
+        
+        /* Finalize PIO system. */
+        if ((ret = PIOc_finalize(iosysid)))
+            return ret;
+            
+        /* Free the computation conomponent communicator. */
+        if ((mpierr = MPI_Comm_free(comp_comm)))
+            MPIERR(mpierr);
+    }
+    else
+    {
+        /* Free the IO communicator. */
+        if ((mpierr = MPI_Comm_free(&io_comm)))
+            MPIERR(mpierr);
+    }
+
+    return PIO_NOERR;
+}    
+
+/* Initialize with task 0 as IO task, tasks 1-3 as a
+ * computation component. */
+int run_noasync_tests(MPI_Comm test_comm, int my_rank, int num_iotypes, int *iotype)
+{
+    int iosysid;
+    int num_computation_procs = NUM_COMPUTATION_PROCS;
+    MPI_Comm io_comm;              /* Will get a duplicate of IO communicator. */
+    MPI_Comm comp_comm[COMPONENT_COUNT]; /* Will get duplicates of computation communicators. */
+    int mpierr;
+    int ret;
+
+    if ((ret = PIOc_init_async(test_comm, NUM_IO_PROCS, NULL, COMPONENT_COUNT,
+                               &num_computation_procs, NULL, &io_comm, comp_comm,
+                               PIO_REARR_BOX, &iosysid)))
+        ERR(ERR_INIT);
+        
+    /* This code runs only on computation components. */
+    if (my_rank)
+    {
+        if ((ret = darray_simple_test(iosysid, my_rank, num_iotypes, iotype, 0)))
+            ERR(ret);
+        
+        /* Finalize PIO system. */
+        if ((ret = PIOc_finalize(iosysid)))
+            return ret;
+            
+        /* Free the computation conomponent communicator. */
+        if ((mpierr = MPI_Comm_free(comp_comm)))
+            MPIERR(mpierr);
+    }
+    else
+    {
+        /* Free the IO communicator. */
+        if ((mpierr = MPI_Comm_free(&io_comm)))
+            MPIERR(mpierr);
+    }
+
+    return PIO_NOERR;
+}    
+
+/* Run Tests for darray functions. */
+int main(int argc, char **argv)
+{
+    int my_rank; /* Zero-based rank of processor. */
+    int ntasks;  /* Number of processors involved in current execution. */
+    int num_iotypes; /* Number of PIO netCDF iotypes in this build. */
+    int iotype[NUM_IOTYPES]; /* iotypes for the supported netCDF IO iotypes. */
+    MPI_Comm test_comm; /* A communicator for this test. */
+    int ret;     /* Return code. */
+
+    /* Initialize test. */
+    if ((ret = pio_test_init2(argc, argv, &my_rank, &ntasks, MIN_NTASKS,
+                              TARGET_NTASKS, 3, &test_comm)))
+        ERR(ERR_INIT);
+    if ((ret = PIOc_set_iosystem_error_handling(PIO_DEFAULT, PIO_RETURN_ERROR, NULL)))
+        return ret;
+
+    /* Figure out iotypes. */
+    if ((ret = get_iotypes(&num_iotypes, iotype)))
+        ERR(ret);
+    printf("Runnings tests for %d iotypes\n", num_iotypes);
+
+    /* Test code runs on TARGET_NTASKS tasks. The left over tasks do
+     * nothing. */
+    if (my_rank < TARGET_NTASKS)
+    {
+        if ((ret = run_async_tests(test_comm, my_rank, num_iotypes, iotype)))
+            ERR(ret);
+        
+        if ((ret = run_noasync_tests(test_comm, my_rank, num_iotypes, iotype)))
+            ERR(ret);
+        
+    } /* endif my_rank < TARGET_NTASKS */
+
+    /* Finalize the MPI library. */
+    printf("%d %s Finalizing...\n", my_rank, TEST_NAME);
+    if ((ret = pio_test_finalize(&test_comm)))
+        return ret;
+
+    printf("%d %s SUCCESS!!\n", my_rank, TEST_NAME);
+
+    return 0;
+}
