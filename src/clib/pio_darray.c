@@ -476,7 +476,6 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
     void *bufptr;          /* A data buffer. */
     MPI_Datatype vtype;    /* The MPI type of the variable. */
     wmulti_buffer *wmb;    /* The write multi buffer for one or more vars. */
-    int recordvar;         /* Non-zero if this is a record variable. */
     int needsflush = 0;    /* True if we need to flush buffer. */
 #if PIO_USE_MALLOC
     void *realloc_data = NULL;
@@ -527,33 +526,22 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
         if ((ierr = find_var_fillvalue(file, varid, vdesc)))
             return pio_err(ios, file, PIO_EBADID, __FILE__, __LINE__);
 
-    /* Is this a record variable? The user must set the vdesc->record
-     * value by calling PIOc_setframe() before calling this
-     * function. */
-    /* recordvar = vdesc->record >= 0 ? 1 : 0; */
-    recordvar = vdesc->rec_var;
-    LOG((3, "recordvar = %d looking for multibuffer", recordvar));
-
     /* Move to end of list or the entry that matches this ioid. */
     for (wmb = &file->buffer; wmb->next; wmb = wmb->next)
-        if (wmb->ioid == ioid && wmb->recordvar == recordvar)
+        if (wmb->ioid == ioid && wmb->recordvar == vdesc->rec_var)
             break;
     LOG((3, "wmb->ioid = %d wmb->recordvar = %d", wmb->ioid, wmb->recordvar));
 
     /* If we did not find an existing wmb entry, create a new wmb. */
-    if (wmb->ioid != ioid || wmb->recordvar != recordvar)
+    if (wmb->ioid != ioid || wmb->recordvar != vdesc->rec_var)
     {
         /* Allocate a buffer. */
-        LOG((3, "allocating multi-buffer"));
         if (!(wmb->next = bget((bufsize)sizeof(wmulti_buffer))))
             return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);
-        /* if (!(wmb->next = calloc(1, sizeof(wmulti_buffer)))) */
-        /*     return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__); */
-        LOG((3, "allocated multi-buffer"));
 
         /* Set pointer to newly allocated buffer and initialize.*/
         wmb = wmb->next;
-        wmb->recordvar = recordvar;
+        wmb->recordvar = vdesc->rec_var;
         wmb->next = NULL;
         wmb->ioid = ioid;
         wmb->num_arrays = 0;
@@ -575,12 +563,14 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
         {
             needsflush = 0;
             wmb->data = realloc_data;
-            LOG((2, "realloc got %ld bytes for data", (1 + wmb->num_arrays) * arraylen * iodesc->mpitype_size));
+            LOG((2, "realloc got %ld bytes for data", (1 + wmb->num_arrays) * arraylen *
+                 iodesc->mpitype_size));
         }
         else /* Failed to realloc, but wmb->data is still valid for a flush. */
         {
             needsflush = 1;
-            LOG((2, "realloc failed to get %ld bytes for data", (1 + wmb->num_arrays) * arraylen * iodesc->mpitype_size));
+            LOG((2, "realloc failed to get %ld bytes for data", (1 + wmb->num_arrays) * arraylen *
+                 iodesc->mpitype_size));
         }
     }
 #else
