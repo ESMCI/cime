@@ -12,6 +12,9 @@ cmake_minimum_required(VERSION 2.7)
 # May want to rename CIME_BUILD
 OPTION(ACME_BUILD "Flag to distinguish Cmake logic for CIME code build, as opposed to Unit Tests" ON)
 OPTION(HAVE_ACME "Flag for CIME to know that we are building ACME components" OFF)
+
+SET(ACME_NETCDF_DIR "." CACHE PATH "Install location of NetCDF. Default set by CIME.")
+SET(ACME_HDF5_DIR "." CACHE PATH "Install location of HDF5. Default set by CIME.")
 SET(CIME_REL_DIR "." CACHE PATH "The relative path to CIME from the top level CMakeLists file. Default set by CIME.")
 IF(NOT EXISTS ${CIME_REL_DIR})
   MESSAGE(FATAL_ERROR "Error: Provided CIME_REL_DIR of '${CIME_REL_DIR}' does not exist.")
@@ -36,27 +39,23 @@ PROJECT(ACME Fortran C)
 ADD_DEFINITIONS(-DHAVE_MPI)
 
 
-# Require installed NETCDF under ACME_NETCDF_DIR
-IF (NOT DEFINED ACME_NETCDF_DIR)
-  MESSAGE(FATAL_ERROR "ACME_NETCDF_DIR must be defined.")
-ENDIF()
-IF (EXISTS ${ACME_NETCDF_DIR}/include/netcdf.mod)
-  INCLUDE_DIRECTORIES(${ACME_NETCDF_DIR}/include)
-  MESSAGE("-- Found netcdf.mod")
-ELSE()
+FIND_PATH(ACME_NETCDF_INCLUDE_DIR netcdf.mod PATHS ${ACME_NETCDF_DIR}/include NO_DEFAULT_PATHS)
+IF(NOT ACME_NETCDF_INCLUDE_DIR)
   MESSAGE(FATAL_ERROR "Can't find netcdf.mod under ${ACME_NETCDF_DIR}/include")
 ENDIF()
+FIND_PATH(ACME_NETCDF_LIBRARY_DIR NAMES libnetcdff.a libnetcdf.a libpnetcdf.a PATHS ${ACME_NETCDF_DIR}/lib NO_DEFAULT_PATHS)
 
-# Require installed HDF5 under ACME_HDF5_DIR
-IF (NOT DEFINED ACME_HDF5_DIR)
-  MESSAGE(FATAL_ERROR "ACME_HDF5_DIR must be defined.")
+INCLUDE_DIRECTORIES(${ACME_NETCDF_INCLUDE_DIR})
+MESSAGE("-- Found netcdf.mod at ${ACME_NETCDF_INCLUDE_DIR}")
+
+FIND_PATH(ACME_HDF5_INCLUDE_DIR hdf5.h PATHS ${ACME_HDF5_DIR}/include NO_DEFAULT_PATHS)
+IF(NOT ACME_HDF5_INCLUDE_DIR)
+  MESSAGE(FATAL_ERROR "Can't find hdf5.h under ${ACME_HDF5_DIR}/include")
 ENDIF()
-IF (EXISTS ${ACME_HDF5_DIR}/lib/libhdf5.a)
-  INCLUDE_DIRECTORIES(${ACME_HDF5_DIR}/include)
-  MESSAGE("-- Found libhdf5.a")
-ELSE()
-  MESSAGE(FATAL_ERROR "Can't find libhdf5.a under ${ACME_HDF5_DIR}/include")
-ENDIF()
+FIND_PATH(ACME_HDF5_LIBRARY_DIR NAMES libhdf5_hl.a libhdf5.a PATHS ${ACME_HDF5_DIR}/lib NO_DEFAULT_PATHS)
+
+INCLUDE_DIRECTORIES(${ACME_HDF5_INCLUDE_DIR})
+MESSAGE("-- Found hdf5.h at ${ACME_HDF5_INCLUDE_DIR}")
 
 # Require installed PIO under ACME_PIO_DIR
 IF (NOT DEFINED ACME_PIO_DIR)
@@ -195,6 +194,7 @@ IF (HAVE_ACME)
   ADD_SUBDIRECTORY(${ATM_CAM_DIR})
 ENDIF()
 
+LINK_DIRECTORIES( ${ACME_NETCDF_LIBRARY_DIR} ${ACME_HDF5_LIBRARY_DIR} ${ACME_PIO_DIR})
 MESSAGE("\nAdding executables:")
 MESSAGE("   + acme_A.exe: A-Compset")
 ADD_EXECUTABLE(acme_A.exe ${DRIVER_DIR}/cesm_driver.F90)
@@ -235,13 +235,12 @@ MESSAGE("   + CompMod:")
 ADD_LIBRARY(compmod ${DRIVER_DIR}/cesm_comp_mod.F90)
 ADD_DEPENDENCIES(compmod dlnd docn dice sglc datm drof swav sesp driver)
 
-LINK_DIRECTORIES( ${ACME_NETCDF_DIR}/lib ${ACME_PIO_DIR})
 set (PIO_LIB ${ACME_PIO_DIR}/libpio.a)
-set (NETCDF_LIB ${ACME_NETCDF_DIR}/lib/libnetcdff.a
-                ${ACME_NETCDF_DIR}/lib/libnetcdf.a
-                ${ACME_NETCDF_DIR}/lib/libpnetcdf.a
-                ${ACME_HDF5_DIR}/lib/libhdf5_hl.a
-                ${ACME_HDF5_DIR}/lib/libhdf5.a
+set (NETCDF_LIB netcdff
+                netcdf
+                pnetcdf
+                hdf5_hl
+                hdf5
                 z curl)
 
 message ("\nAGS: these are pio netcdf Libs : ${PIO_LIB} ${NETCDF_LIB}")
