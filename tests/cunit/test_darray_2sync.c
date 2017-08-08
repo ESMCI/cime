@@ -21,7 +21,10 @@
 #define NUM_COMPUTATION_PROCS 3
 #define COMPONENT_COUNT 1
 
-int darray_simple_test(int iosysid, int my_rank, int num_iotypes, int *iotype, int async)
+/* Tests for darray that can run on both async and non-async
+ * iosysids. */
+int darray_simple_test(int iosysid, int my_rank, int num_iotypes, int *iotype,
+                       int async)
 {
     int ncid;
     int ret;
@@ -96,38 +99,19 @@ int run_async_tests(MPI_Comm test_comm, int my_rank, int num_iotypes, int *iotyp
 int run_noasync_tests(MPI_Comm test_comm, int my_rank, int num_iotypes, int *iotype)
 {
     int iosysid;
-    int num_computation_procs = NUM_COMPUTATION_PROCS;
-    MPI_Comm io_comm;              /* Will get a duplicate of IO communicator. */
-    MPI_Comm comp_comm[COMPONENT_COUNT]; /* Will get duplicates of computation communicators. */
-    int mpierr;
     int ret;
 
-    if ((ret = PIOc_init_async(test_comm, NUM_IO_PROCS, NULL, COMPONENT_COUNT,
-                               &num_computation_procs, NULL, &io_comm, comp_comm,
-                               PIO_REARR_BOX, &iosysid)))
-        ERR(ERR_INIT);
-        
-    /* This code runs only on computation components. */
-    if (my_rank)
-    {
-        if ((ret = darray_simple_test(iosysid, my_rank, num_iotypes, iotype, 0)))
-            ERR(ret);
-        
-        /* Finalize PIO system. */
-        if ((ret = PIOc_finalize(iosysid)))
-            return ret;
-            
-        /* Free the computation conomponent communicator. */
-        if ((mpierr = MPI_Comm_free(comp_comm)))
-            MPIERR(mpierr);
-    }
-    else
-    {
-        /* Free the IO communicator. */
-        if ((mpierr = MPI_Comm_free(&io_comm)))
-            MPIERR(mpierr);
-    }
+    /* Initialize PIO system. */
+    if ((ret = PIOc_Init_Intracomm(test_comm, NUM_IO_PROCS, 1, 0, PIO_REARR_BOX, &iosysid)))
+        ERR(ret);
 
+    if ((ret = darray_simple_test(iosysid, my_rank, num_iotypes, iotype, 0)))
+        ERR(ret);
+        
+    /* Finalize PIO system. */
+    if ((ret = PIOc_finalize(iosysid)))
+        return ret;
+            
     return PIO_NOERR;
 }    
 
