@@ -21,18 +21,26 @@
 #define NUM_COMPUTATION_PROCS 3
 #define COMPONENT_COUNT 1
 
+#define DIM_NAME "simple_dim"
+#define DIM_LEN 6
+#define VAR_NAME "simple_var"
+#define NDIM1 1
+
 /* Tests for darray that can run on both async and non-async
- * iosysids. */
+ * iosysids. This is a deliberately simple test, to make debugging
+ * easier. */
 int darray_simple_test(int iosysid, int my_rank, int num_iotypes, int *iotype,
                        int async)
 {
-    int ncid;
-    int ret;
-
     /* For each of the available IOtypes... */
     for (int iot = 0; iot < num_iotypes; iot++)
     {
+        int ncid;
+        int dimid;
+        int varid;
+        int ioid;
         char filename[PIO_MAX_NAME + 1];
+        int ret;
 
         /* Create test filename. */
         sprintf(filename, "%s_simple_async_%d_iotype_%d.nc", TEST_NAME, async, iotype[iot]);
@@ -42,8 +50,38 @@ int darray_simple_test(int iosysid, int my_rank, int num_iotypes, int *iotype,
         if ((ret = PIOc_createfile(iosysid, &ncid, &iotype[iot], filename, PIO_CLOBBER)))
             ERR(ret);
 
+        /* Define a dimension. */
+        if ((ret = PIOc_def_dim(ncid, DIM_NAME, DIM_LEN, &dimid)))
+            ERR(ret);
+
+        /* Define a 1D var. */
+        if ((ret = PIOc_def_var(ncid, VAR_NAME, PIO_INT, NDIM1, &dimid, &varid)))
+            ERR(ret);
+
         /* End define mode. */
         if ((ret = PIOc_enddef(ncid)))
+            ERR(ret);
+
+        /* Create the PIO decomposition for this test. */
+        int elements_per_pe = 2;
+        PIO_Offset compdof[elements_per_pe];
+        int gdimlen = DIM_LEN;
+        compdof[0] = my_rank * elements_per_pe;
+        compdof[1] = compdof[0] + 1;
+        
+        if ((ret = PIOc_InitDecomp(iosysid, PIO_INT, NDIM1, &gdimlen, elements_per_pe,
+                                   compdof, &ioid, NULL, NULL, NULL)))
+            ERR(ret);
+
+        /* Set the record number for the unlimited dimension. */
+        if ((ret = PIOc_setframe(ncid, varid, 0)))
+            ERR(ret);
+
+        /* Write the data. There are 3 procs with data, each writes 2
+         * values. */
+        int arraylen = 2;
+        int test_data[2] = {my_rank + 1, -(my_rank + 1)};
+        if ((ret = PIOc_write_darray(ncid, varid, ioid, arraylen, test_data, NULL)))
             ERR(ret);
 
         /* Close the test file. */
@@ -99,12 +137,16 @@ int run_async_tests(MPI_Comm test_comm, int my_rank, int num_iotypes, int *iotyp
 int run_noasync_tests(MPI_Comm test_comm, int my_rank, int num_iotypes, int *iotype)
 {
     int iosysid;
+    int stride = 1;
+    int base = 1;
     int ret;
 
     /* Initialize PIO system. */
-    if ((ret = PIOc_Init_Intracomm(test_comm, NUM_IO_PROCS, 1, 0, PIO_REARR_BOX, &iosysid)))
+    if ((ret = PIOc_Init_Intracomm(test_comm, NUM_IO_PROCS, stride, base, PIO_REARR_BOX,
+                                   &iosysid)))
         ERR(ret);
 
+    /* Run the simple darray test. */
     if ((ret = darray_simple_test(iosysid, my_rank, num_iotypes, iotype, 0)))
         ERR(ret);
         
