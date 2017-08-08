@@ -371,7 +371,7 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm, MPI_Comm
         if (!(my_data_multi = malloc(2 * type_size * elements_per_pe)))
             ERR(PIO_ENOMEM);
         memcpy(my_data_multi, my_data, type_size * elements_per_pe);
-        memcpy((char *)my_data_multi + type_size * elements_per_pe, my_data, type_size * LAT_LEN * LON_LEN);
+        memcpy((char *)my_data_multi + type_size * elements_per_pe, my_data, type_size * elements_per_pe);
         for (int d = 0; d < elements_per_pe * type_size * 2; d++)
         {
             if (d < elements_per_pe * type_size)
