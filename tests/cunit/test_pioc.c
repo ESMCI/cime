@@ -150,7 +150,7 @@ int check_darray_file(int iosysid, int ntasks, int my_rank, char *filename)
     assert(filename);
 
     /* Open the file. */
-    if ((ret = PIOc_open(iosysid, filename, NC_NOWRITE, &ncid)))
+    if ((ret = PIOc_open(iosysid, filename, PIO_NOWRITE, &ncid)))
         ERR(ret);
 
     /* Check metadata. */
@@ -169,6 +169,13 @@ int check_darray_file(int iosysid, int ntasks, int my_rank, char *filename)
 
     /* Read data. */
     if ((ret = PIOc_read_darray(ncid, 0, ioid, arraylen, &data_in)))
+        ERR(ret);
+
+    /* Try to write, but this will fail because file was opened with
+     * NOWRITE. */
+    float fillvalue = 0.0;
+    float test_data =  my_rank * 10;
+    if (PIOc_write_darray(ncid, 0, ioid, arraylen, &test_data, &fillvalue) != PIO_EPERM)
         ERR(ret);
 
     /* Check data. */

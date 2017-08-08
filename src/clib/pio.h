@@ -547,8 +547,8 @@ typedef struct file_desc_t
     /** Number of variables. */
     int nvars;
 
-    /** Mode used when file was opened. */
-    int mode;
+    /** True if file can be written to. */
+    int writable;
 
     /** The wmulti_buffer is used to aggregate multiple variables with
      * the same communication pattern prior to a write. */
