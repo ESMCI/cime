@@ -123,6 +123,19 @@ int darray_simple_test(int iosysid, int my_rank, int num_iotypes, int *iotype,
     return PIO_NOERR;
 }
 
+/* This function can be run for both async and non async. It runs all
+ * the test functions. */
+int run_darray_tests(int iosysid, int my_rank, int num_iotypes, int *iotype, int async)
+{
+    int ret;
+    
+    /* Run the simple darray test. */
+    if ((ret = darray_simple_test(iosysid, my_rank, num_iotypes, iotype, async)))
+        ERR(ret);
+        
+    return PIO_NOERR;
+}
+
 /* Initialize with task 0 as IO task, tasks 1-3 as a
  * computation component. */
 int run_async_tests(MPI_Comm test_comm, int my_rank, int num_iotypes, int *iotype)
@@ -142,9 +155,10 @@ int run_async_tests(MPI_Comm test_comm, int my_rank, int num_iotypes, int *iotyp
     /* This code runs only on computation components. */
     if (my_rank)
     {
-        if ((ret = darray_simple_test(iosysid, my_rank, num_iotypes, iotype, 1)))
+        /* Run the tests. */
+        if ((ret = run_darray_tests(iosysid, my_rank, num_iotypes, iotype, 1)))
             ERR(ret);
-        
+
         /* Finalize PIO system. */
         if ((ret = PIOc_finalize(iosysid)))
             return ret;
@@ -177,10 +191,10 @@ int run_noasync_tests(MPI_Comm test_comm, int my_rank, int num_iotypes, int *iot
                                    &iosysid)))
         ERR(ret);
 
-    /* Run the simple darray test. */
-    if ((ret = darray_simple_test(iosysid, my_rank, num_iotypes, iotype, 0)))
+    /* Run the tests. */
+    if ((ret = run_darray_tests(iosysid, my_rank, num_iotypes, iotype, 1)))
         ERR(ret);
-        
+    
     /* Finalize PIO system. */
     if ((ret = PIOc_finalize(iosysid)))
         return ret;
