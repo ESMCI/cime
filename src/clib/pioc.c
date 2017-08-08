@@ -128,8 +128,8 @@ int PIOc_advanceframe(int ncid, int varid)
     /* Get info about variable. */
     if ((ret = get_var_desc(varid, &file->varlist, &vdesc)))
         return pio_err(ios, file, ret, __FILE__, __LINE__);
-    if (!vdesc->rec_var)
-        return pio_err(ios, file, PIO_EINVAL, __FILE__, __LINE__);
+    /* if (!vdesc->rec_var) */
+    /*     return pio_err(ios, file, PIO_EINVAL, __FILE__, __LINE__); */
 
     /* If using async, and not an IO task, then send parameters. */
     if (ios->async)
@@ -191,9 +191,8 @@ int PIOc_setframe(int ncid, int varid, int frame)
     /* Get info about variable. */
     if ((ret = get_var_desc(varid, &file->varlist, &vdesc)))
         return pio_err(ios, file, ret, __FILE__, __LINE__);
-    LOG((2, "vdesc->rec_var = %d", vdesc->rec_var));
-    if (!vdesc->rec_var)
-        return pio_err(ios, file, PIO_EINVAL, __FILE__, __LINE__);
+    /* if (!vdesc->rec_var) */
+    /*     return pio_err(ios, file, PIO_EINVAL, __FILE__, __LINE__); */
 
     /* If using async, and not an IO task, then send parameters. */
     if (ios->async)

@@ -230,13 +230,6 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
         if ((ret = PIOc_enddef(ncid)))
             ERR(ret);
 
-        /* These should not work, because this is not a record
-         * variable. */
-        if (PIOc_setframe(ncid, varid, 0) != PIO_EINVAL)
-            ERR(ERR_WRONG);
-        if (PIOc_advanceframe(ncid, varid) != PIO_EINVAL)
-            ERR(ERR_WRONG);
-
         /* These should not work, because invalid varids are given. */
         if (PIOc_setframe(ncid, TEST_VAL_42, 0) != PIO_ENOTVAR)
             ERR(ERR_WRONG);
