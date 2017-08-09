@@ -24,4 +24,8 @@ AC_CHECK_LIB([pnetcdf], [ncmpi_create], [], [AC_MSG_ERROR([Can't find or link to
 
 AC_CONFIG_HEADERS([config.h])
 
-AC_OUTPUT(Makefile src/Makefile src/clib/Makefile)
+AC_OUTPUT(Makefile
+          src/Makefile
+          src/clib/Makefile
+          tests/Makefile
+          tests/cunit/Makefile)
