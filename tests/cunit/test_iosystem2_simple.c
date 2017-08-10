@@ -6,6 +6,8 @@
  *
  * Ed Hartnett
  */
+#include <config.h>
+#include <config.h>
 #include <pio.h>
 #include <pio_tests.h>
 

@@ -4,6 +4,7 @@
  * @author Ed Hartnett
  * @date 7/8/17
  */
+#include <config.h>
 #include <pio.h>
 #include <pio_tests.h>
 #include <pio_internal.h>
