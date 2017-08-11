@@ -982,7 +982,7 @@ int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc, int vid,
     if ((ierr = PIOc_inq_varndims(file->pio_ncid, vid, &fndims)))
         return pio_err(ios, file, ierr, __FILE__, __LINE__);
 
-    /* Confirm rec_var setting. */
+    /* Confirm that we are being called with the correct ndims. */
     pioassert((fndims == ndims && vdesc->record < 0) ||
               (fndims == ndims + 1 && vdesc->record >= 0),
               "unexpected record", __FILE__, __LINE__);
