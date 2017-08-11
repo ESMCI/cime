@@ -4,6 +4,7 @@
  * Jim Edwards
  * Ed Hartnett, 11/23/16
  */
+#include <config.h>
 #include <pio.h>
 #include <pio_tests.h>
 #include <pio_internal.h>

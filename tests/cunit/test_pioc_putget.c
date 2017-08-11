@@ -3,6 +3,7 @@
  *
  * Ed Hartnett
  */
+#include <config.h>
 #include <pio.h>
 #include <pio_internal.h>
 #include <pio_tests.h>
