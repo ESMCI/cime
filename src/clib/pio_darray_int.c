@@ -223,7 +223,7 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
                 {
                     /* Set the start of the record dimension. (Hasn't
                      * this already been set above ???) */
-                    if (vdesc->record >= 1 && ndims < fndims)
+                    if (vdesc->record >= 0 && ndims < fndims)
                         start[0] = frame[nv];
 
                     /* If there is data for this region, get a pointer to it. */
@@ -282,7 +282,7 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
 
                         /* If this is a record var, set the start for
                          * the record dimension. */
-                        if (vdesc->record >= 1 && ndims < fndims)
+                        if (vdesc->record >= 0 && ndims < fndims)
                             for (int rc = 0; rc < rrcnt; rc++)
                                 startlist[rc][0] = frame[nv];
 
@@ -385,7 +385,7 @@ int find_all_start_count(io_region *region, int maxregions, int fndims,
 
         if (region)
         {
-            if (vdesc->rec_var)
+            if (vdesc->record >= 0)
             {
                 /* This is a record based multidimensional
                  * array. Copy start/count for non-record

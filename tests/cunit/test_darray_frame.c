@@ -45,7 +45,7 @@
 /**
  * Test the darray functionality. Create a netCDF file with 3
  * dimensions and 1 PIO_INT variable, and use darray to write some
- * data.
+ * data. There are no unlimited dimensions.
  *
  * @param iosysid the IO system ID.
  * @param num_iotypes the number of IOTYPES available in this build.
@@ -59,8 +59,6 @@ int test_frame_simple(int iosysid, int num_iotypes, int *iotype, int my_rank,
 {
     int ioid;
     int dim_len_2d[NDIM2] = {LAT_LEN_SHORT, LON_LEN_SHORT};
-    /* int varid2;    /\* The ID of a varable of different type. *\/ */
-    /* int wrong_varid = TEST_VAL_42;  /\* A wrong ID. *\/ */
     /* PIO_Offset arraylen = 4; */
     /* void *fillvalue; */
     /* void *test_data; */
@@ -118,11 +116,6 @@ int test_frame_simple(int iosysid, int num_iotypes, int *iotype, int my_rank,
         /* Define a variable. */
         if ((ret = PIOc_def_var(ncid, VAR_NAME, PIO_INT, NDIM3, dimids, &varid)))
             ERR(ret);
-
-        /* /\* Define a variable with a different type. *\/ */
-        /* int other_type = pio_type == PIO_INT ? PIO_FLOAT : PIO_INT; */
-        /* if ((ret = PIOc_def_var(ncid, VAR_NAME2, other_type, NDIM, dimids, &varid2))) */
-        /*     ERR(ret); */
 
         /* End define mode. */
         if ((ret = PIOc_enddef(ncid)))
