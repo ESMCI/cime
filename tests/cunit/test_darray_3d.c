@@ -3,7 +3,6 @@
  *
  * Ed Hartnett, 2/21/17
  */
-#include <config.h>
 #include <pio.h>
 #include <pio_internal.h>
 #include <pio_tests.h>
@@ -197,6 +196,10 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
 
         /* Reopen the file. */
         if ((ret = PIOc_openfile(iosysid, &ncid2, &flavor[fmt], filename, PIO_NOWRITE)))
+            ERR(ret);
+
+        /* Set the value of the record dimension. */
+        if ((ret = PIOc_setframe(ncid2, varid, 0)))
             ERR(ret);
 
         /* Read the data. */

@@ -482,6 +482,7 @@ int PIOc_InitDecomp(int iosysid, int pio_type, int ndims, const int *gdimlen, in
     /* Allocate space for the iodesc info. This also allocates the
      * first region and copies the rearranger opts into this
      * iodesc. */
+    LOG((2, "allocating iodesc pio_type %d ndims %d", pio_type, ndims));
     if ((ierr = malloc_iodesc(ios, pio_type, ndims, &iodesc)))
         return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
 

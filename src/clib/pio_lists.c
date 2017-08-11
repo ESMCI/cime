@@ -353,6 +353,7 @@ int add_to_varlist(int varid, int rec_var, int pio_type, var_desc_t **varlist)
     var_desc->varid = varid;
     var_desc->rec_var = rec_var;
     var_desc->pio_type = pio_type;
+    var_desc->record = -1;
 
     /* Add to list. */
     if (*varlist)

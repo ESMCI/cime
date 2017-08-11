@@ -3,7 +3,6 @@
  *
  * Ed Hartnett, 2/16/17
  */
-#include <config.h>
 #include <pio.h>
 #include <pio_internal.h>
 #include <pio_tests.h>
@@ -339,6 +338,9 @@ int test_multivar_darray(int iosysid, int ioid, int num_flavors, int *flavor,
 
             for (int v = 0; v < NUM_VAR; v++)
             {
+                if ((ret = PIOc_setframe(ncid2, varid[v], 0)))
+                    ERR(ret);
+                
                 /* Read the data. */
                 if ((ret = PIOc_read_darray(ncid2, varid[v], ioid, arraylen, test_data_in)))
                     ERR(ret);
@@ -408,6 +410,9 @@ int test_multivar_darray(int iosysid, int ioid, int num_flavors, int *flavor,
              * should have fill values. */
             if (tc == 0 && use_fill && flavor[fmt] != PIO_IOTYPE_PNETCDF)
             {
+                if ((ret = PIOc_setframe(ncid2, varid[1], 0)))
+                    ERR(ret);
+                
                 /* Read the data. */
                 if ((ret = PIOc_read_darray(ncid2, varid[1], ioid, arraylen, test_data_in)))
                     ERR(ret);
