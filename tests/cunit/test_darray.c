@@ -4,7 +4,6 @@
  * @author Ed Hartnett
  * @date 2/16/17
  */
-#include <config.h>
 #include <pio.h>
 #include <pio_internal.h>
 #include <pio_tests.h>
@@ -233,6 +232,10 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
                 if (PIOc_read_darray(ncid2, varid, ioid + TEST_VAL_42, arraylen,
                                      test_data_in) != PIO_EBADID)
                     ERR(ERR_WRONG);
+
+                /* Set the record number. */
+                if ((ret = PIOc_setframe(ncid2, varid, 0)))
+                    ERR(ret);
         
                 /* Read the data. */
                 if ((ret = PIOc_read_darray(ncid2, varid, ioid, arraylen, test_data_in)))

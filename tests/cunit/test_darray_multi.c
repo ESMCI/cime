@@ -5,7 +5,6 @@
  * @author Ed Hartnett
  * @date 3/7/17
  */
-#include <config.h>
 #include <pio.h>
 #include <pio_internal.h>
 #include <pio_tests.h>
@@ -307,6 +306,10 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
                  * sure we get correct data. */
                 for (int v = 0; v < NVAR; v++)
                 {
+                    /* Set the value of the record dimension. */
+                    if ((ret = PIOc_setframe(ncid2, varid[v], 0)))
+                        ERR(ret);
+
                     /* Read the data. */
                     if ((ret = PIOc_read_darray(ncid2, varid[v], ioid, arraylen, test_data_in)))
                         ERR(ret);

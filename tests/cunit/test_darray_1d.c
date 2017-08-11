@@ -4,7 +4,6 @@
  *
  * Ed Hartnett, 2/27/17
  */
-#include <config.h>
 #include <pio.h>
 #include <pio_internal.h>
 #include <pio_tests.h>
@@ -586,6 +585,10 @@ int test_darray_fill_unlim(int iosysid, int ioid, int pio_type, int num_flavors,
         /* Allocate space for data. */
         if (!(test_data_in = malloc(type_size * arraylen)))
             ERR(PIO_ENOMEM);
+
+        /* Set the record number for the unlimited dimension. */
+        if ((ret = PIOc_setframe(ncid, varid, 0)))
+            ERR(ret);
 
         /* Read the data. */
         if ((ret = PIOc_read_darray(ncid, varid, ioid, arraylen, test_data_in)))

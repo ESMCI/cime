@@ -97,7 +97,7 @@ int find_start_count(int ndims, int fndims, var_desc_t *vdesc,
 
     if (region)
     {
-        if (vdesc->rec_var)
+        if (vdesc->record >= 0)
         {
             /* This is a record based multidimensional
              * array. Figure out start/count for all but the
@@ -223,7 +223,7 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
                 {
                     /* Set the start of the record dimension. (Hasn't
                      * this already been set above ???) */
-                    if (vdesc->rec_var && ndims < fndims)
+                    if (vdesc->record >= 1 && ndims < fndims)
                         start[0] = frame[nv];
 
                     /* If there is data for this region, get a pointer to it. */
@@ -282,7 +282,7 @@ int write_darray_multi_par(file_desc_t *file, int nvars, int fndims, const int *
 
                         /* If this is a record var, set the start for
                          * the record dimension. */
-                        if (vdesc->rec_var && ndims < fndims)
+                        if (vdesc->record >= 1 && ndims < fndims)
                             for (int rc = 0; rc < rrcnt; rc++)
                                 startlist[rc][0] = frame[nv];
 
@@ -610,7 +610,7 @@ int recv_and_write_data(file_desc_t *file, const int *varids, const int *frame,
                     /* If this var has an unlimited dim, set
                      * the start on that dim to the frame
                      * value for this variable. */
-                    if (vdesc->rec_var)
+                    if (vdesc->record >= 0)
                     {
                         if (fndims > 1 && iodesc->ndims < fndims && count[1] > 0)
                         {
@@ -836,7 +836,7 @@ int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid, void *iobu
                 LOG((2, "%d %d %d", iodesc->llen - region->loffset, iodesc->llen, region->loffset));
 
                 /* Get the start/count arrays. */
-                if (vdesc->rec_var && fndims > 1)
+                if (vdesc->record >= 0 && fndims > 1)
                 {
                     /* This is a record var. The unlimited dimension
                      * (0) is handled specially. */
@@ -983,9 +983,9 @@ int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc, int vid,
         return pio_err(ios, file, ierr, __FILE__, __LINE__);
 
     /* Confirm rec_var setting. */
-    pioassert((fndims == ndims && !vdesc->rec_var) ||
-              (fndims == ndims + 1 && vdesc->rec_var),
-              "invalid rec_var", __FILE__, __LINE__);
+    pioassert((fndims == ndims && vdesc->record < 0) ||
+              (fndims == ndims + 1 && vdesc->record >= 0),
+              "unexpected record", __FILE__, __LINE__);
 
     if (ios->ioproc)
     {
@@ -1017,7 +1017,7 @@ int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc, int vid,
             }
             else
             {
-                if (vdesc->rec_var && fndims > 1)
+                if (vdesc->record >= 0 && fndims > 1)
                 {
                     /* This is a record var. Find start for record dims. */
                     tmp_start[regioncnt * fndims] = vdesc->record;

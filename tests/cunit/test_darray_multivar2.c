@@ -3,7 +3,6 @@
  *
  * Ed Hartnett, Jim Edwards, 4/20/17
  */
-#include <config.h>
 #include <pio.h>
 #include <pio_internal.h>
 #include <pio_tests.h>
@@ -66,87 +65,94 @@ int dim_len[NDIM] = {NC_UNLIMITED, X_DIM_LEN, Y_DIM_LEN};
 int test_multivar_darray(int iosysid, int ioid, int num_flavors, int *flavor,
                          int my_rank, int pio_type, MPI_Comm test_comm)
 {
-    char filename[PIO_MAX_NAME + 1]; /* Name for the output files. */
-    int dimids[NDIM];     /* The dimension IDs. */
-    int ncid;             /* The ncid of the netCDF file. */
-    int varid[NUM_VAR];   /* The IDs of the netCDF varables. */
-    PIO_Offset arraylen = 4;
-    int custom_fillvalue_int = -TEST_VAL_42;
-    int test_data_int[arraylen];
-    int ret;       /* Return code. */
+    /* char filename[PIO_MAX_NAME + 1]; /\* Name for the output files. *\/ */
+    /* int dimids[NDIM];     /\* The dimension IDs. *\/ */
+    /* int ncid;             /\* The ncid of the netCDF file. *\/ */
+    /* int varid[NUM_VAR];   /\* The IDs of the netCDF varables. *\/ */
+    /* PIO_Offset arraylen = 4; */
+    /* int custom_fillvalue_int = -TEST_VAL_42; */
+    /* int test_data_int[arraylen]; */
+    /* int ret;       /\* Return code. *\/ */
 
-    /* Initialize some data. */
-    for (int f = 0; f < arraylen; f++)
-        test_data_int[f] = my_rank * 10 + f;
+    /* /\* Initialize some data. *\/ */
+    /* for (int f = 0; f < arraylen; f++) */
+    /*     test_data_int[f] = my_rank * 10 + f; */
 
-    /* Use PIO to create the example file in each of the four
-     * available ways. */
-    for (int fmt = 0; fmt < num_flavors; fmt++)
-    {
-        /* Create the filename. */
-        sprintf(filename, "data_%s_iotype_%d_pio_type_%d.nc", TEST_NAME, flavor[fmt], pio_type);
+    /* /\* Use PIO to create the example file in each of the four */
+    /*  * available ways. *\/ */
+    /* for (int fmt = 0; fmt < num_flavors; fmt++) */
+    /* { */
+    /*     /\* Create the filename. *\/ */
+    /*     sprintf(filename, "data_%s_iotype_%d_pio_type_%d.nc", TEST_NAME, flavor[fmt], pio_type); */
 
-        /* Create the netCDF output file. */
-        printf("rank: %d Creating sample file %s with format %d type %d\n", my_rank, filename,
-               flavor[fmt], pio_type);
-        if ((ret = PIOc_createfile(iosysid, &ncid, &flavor[fmt], filename, PIO_CLOBBER)))
-            ERR(ret);
+    /*     /\* Create the netCDF output file. *\/ */
+    /*     printf("rank: %d Creating sample file %s with format %d type %d\n", my_rank, filename, */
+    /*            flavor[fmt], pio_type); */
+    /*     if ((ret = PIOc_createfile(iosysid, &ncid, &flavor[fmt], filename, PIO_CLOBBER))) */
+    /*         ERR(ret); */
 
-        /* Define netCDF dimensions and variable. */
-        printf("%d Defining netCDF metadata...\n", my_rank);
-        for (int d = 0; d < NDIM; d++)
-            if ((ret = PIOc_def_dim(ncid, dim_name[d], (PIO_Offset)dim_len[d], &dimids[d])))
-                ERR(ret);
+    /*     /\* Define netCDF dimensions and variable. *\/ */
+    /*     printf("%d Defining netCDF metadata...\n", my_rank); */
+    /*     for (int d = 0; d < NDIM; d++) */
+    /*         if ((ret = PIOc_def_dim(ncid, dim_name[d], (PIO_Offset)dim_len[d], &dimids[d]))) */
+    /*             ERR(ret); */
 
-        /* Var 0 does not have a record dim, varid 1 is a record var. */
-        if ((ret = PIOc_def_var(ncid, var_name[0], pio_type, NDIM - 1, &dimids[1], &varid[0])))
-            ERR(ret);
-        if ((ret = PIOc_def_var(ncid, var_name[1], pio_type, NDIM, dimids, &varid[1])))
-            ERR(ret);
+    /*     /\* Var 0 does not have a record dim, varid 1 is a record var. *\/ */
+    /*     if ((ret = PIOc_def_var(ncid, var_name[0], pio_type, NDIM - 1, &dimids[1], &varid[0]))) */
+    /*         ERR(ret); */
+    /*     if ((ret = PIOc_def_var(ncid, var_name[1], pio_type, NDIM, dimids, &varid[1]))) */
+    /*         ERR(ret); */
 
-        /* End define mode. */
-        if ((ret = PIOc_enddef(ncid)))
-            ERR(ret);
+    /*     /\* End define mode. *\/ */
+    /*     if ((ret = PIOc_enddef(ncid))) */
+    /*         ERR(ret); */
 
-        /* Set the value of the record dimension for varid 1. */
-        if ((ret = PIOc_setframe(ncid, varid[1], 0)))
-            ERR(ret);
+    /*     /\* Write the data. *\/ */
+    /*     for (int v = 0; v < NUM_VAR; v++) */
+    /*     { */
+    /*         if ((ret = PIOc_setframe(ncid, varid[v], 0))) */
+    /*             ERR(ret); */
+    /*         if ((ret = PIOc_write_darray(ncid, varid[v], ioid, arraylen, test_data_int, &custom_fillvalue_int))) */
+    /*             ERR(ret); */
+    /*     } */
 
-        /* Write the data. */
-        for (int v = 0; v < NUM_VAR; v++)
-            if ((ret = PIOc_write_darray(ncid, varid[v], ioid, arraylen, test_data_int, &custom_fillvalue_int)))
-                ERR(ret);
+    /*     /\* Close the netCDF file. *\/ */
+    /*     if ((ret = PIOc_closefile(ncid))) */
+    /*         ERR(ret); */
 
-        /* Close the netCDF file. */
-        if ((ret = PIOc_closefile(ncid)))
-            ERR(ret);
-
-        /* Check the file contents. */
-        {
-            int ncid2;            /* The ncid of the re-opened netCDF file. */
-            int test_data_int_in[arraylen];
+    /*     /\* Check the file contents. *\/ */
+    /*     { */
+    /*         int ncid2;            /\* The ncid of the re-opened netCDF file. *\/ */
+    /*         int test_data_int_in[arraylen]; */
                         
-            /* Reopen the file. */
-            if ((ret = PIOc_openfile(iosysid, &ncid2, &flavor[fmt], filename, PIO_NOWRITE)))
-                ERR(ret);
+    /*         /\* Reopen the file. *\/ */
+    /*         if ((ret = PIOc_openfile(iosysid, &ncid2, &flavor[fmt], filename, PIO_NOWRITE))) */
+    /*             ERR(ret); */
             
-            for (int v = 0; v < NUM_VAR; v++)
-            {
-                /* Read the data. */
-                if ((ret = PIOc_read_darray(ncid2, varid[v], ioid, arraylen, test_data_int_in)))
-                    ERR(ret);
+    /*         for (int v = 0; v < NUM_VAR; v++) */
+    /*         { */
+    /*             if ((ret = PIOc_setframe(ncid2, varid[v], 0))) */
+    /*                 ERR(ret); */
                 
-                /* Check the results. */
-                for (int f = 0; f < arraylen; f++)
-                    if (test_data_int_in[f] != test_data_int[f])
-                        return ERR_WRONG;
-            } /* next var */
+    /*             /\* Read the data. *\/ */
+    /*             if ((ret = PIOc_read_darray(ncid2, varid[v], ioid, arraylen, test_data_int_in))) */
+    /*                 ERR(ret); */
+                
+    /*             /\* Check the results. *\/ */
+    /*             for (int f = 0; f < arraylen; f++) */
+    /*                 if (test_data_int_in[f] != test_data_int[f]) */
+    /*                 { */
+    /*                     printf("my_rank %d test_data_int_in[%d] = %d expected %d\n", my_rank, */
+    /*                            f, test_data_int_in[f], test_data_int[f]); */
+    /*                     return ERR_WRONG; */
+    /*                 } */
+    /*         } /\* next var *\/ */
             
-            /* Close the netCDF file. */
-            if ((ret = PIOc_closefile(ncid2)))
-                ERR(ret);
-        }
-    }
+    /*         /\* Close the netCDF file. *\/ */
+    /*         if ((ret = PIOc_closefile(ncid2))) */
+    /*             ERR(ret); */
+    /*     } */
+    /* } */
 
     return PIO_NOERR;
 }
