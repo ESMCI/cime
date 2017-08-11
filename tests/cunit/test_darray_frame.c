@@ -32,9 +32,9 @@
 /* #define LON_LEN 192 */
 
 /* Here's a shorter version for a simpler test. */
-#define TIME_LEN_SHORT 5
+#define TIME_LEN_SHORT 3
 #define LAT_LEN_SHORT 2
-#define LON_LEN_SHORT 3
+#define LON_LEN_SHORT 2
 
 /* The number of timesteps of data to write. */
 #define NUM_TIMESTEPS 2
@@ -55,42 +55,39 @@
  * @returns 0 for success, error code otherwise.
  */
 int test_frame_simple(int iosysid, int num_iotypes, int *iotype, int my_rank,
-                      int pio_type)
+                      int rearranger)
 {
+    PIO_Offset elements_per_pe;     /* Array elements per processing unit. */
+    PIO_Offset *compdof;  /* The decomposition mapping. */
     int ioid;
     int dim_len_2d[NDIM2] = {LAT_LEN_SHORT, LON_LEN_SHORT};
-    /* PIO_Offset arraylen = 4; */
-    /* void *fillvalue; */
-    /* void *test_data; */
-    /* void *test_data_in; */
-    /* int fillvalue_int = NC_FILL_INT; */
-    /* int test_data_int[arraylen]; */
-    /* int test_data_int_in[arraylen]; */
-    /* float fillvalue_float = NC_FILL_FLOAT; */
-    /* float test_data_float[arraylen]; */
-    /* float test_data_float_in[arraylen]; */
-    /* double fillvalue_double = NC_FILL_DOUBLE; */
-    /* double test_data_double[arraylen]; */
-    /* double test_data_double_in[arraylen]; */
     int ret;       /* Return code. */
 
-    /* Decompose the data over the tasks. */
-    if ((ret = create_decomposition_2d(TARGET_NTASKS, my_rank, iosysid, dim_len_2d,
-                                       &ioid, PIO_INT)))
-        return ret;
+    /* How many elements per task? */
+    elements_per_pe = dim_len_2d[0] * dim_len_2d[1] / TARGET_NTASKS;
 
-    /* /\* Initialize some data. *\/ */
-    /* for (int f = 0; f < arraylen; f++) */
-    /* { */
-    /*     test_data_int[f] = my_rank * 10 + f; */
-    /*     test_data_float[f] = my_rank * 10 + f + 0.5; */
-    /*     test_data_double[f] = my_rank * 100000 + f + 0.5; */
-    /* } */
+    /* Allocate space for the decomposition array. */
+    if (!(compdof = malloc(elements_per_pe * sizeof(PIO_Offset))))
+        return PIO_ENOMEM;
+
+    /* Describe the decomposition. This is a 1-based array, so add 1! */
+    for (int i = 0; i < elements_per_pe; i++)
+        compdof[i] = my_rank * elements_per_pe + i + 1;
+
+    /* Create the PIO decomposition for this test. */
+    printf("%d Creating decomposition elements_per_pe = %lld\n", my_rank, elements_per_pe);
+    if ((ret = PIOc_InitDecomp(iosysid, PIO_INT, NDIM2, dim_len_2d, elements_per_pe,
+                               compdof, &ioid, NULL, NULL, NULL)))
+        ERR(ret);
+
+    printf("%d decomposition initialized.\n", my_rank);
+
+    /* Free the mapping. */
+    free(compdof);
 
     /* Use PIO to create the example file in each of the four
      * available ways. */
-    /* for (int fmt = 0; fmt < num_iotypes; fmt++)  */
-    for (int fmt = 0; fmt < 1; fmt++)
+    for (int fmt = 0; fmt < num_iotypes; fmt++)
     {
         int ncid;      /* The ncid of the netCDF file. */
         int ncid2;     /* The ncid of the re-opened netCDF file. */
@@ -101,7 +98,8 @@ int test_frame_simple(int iosysid, int num_iotypes, int *iotype, int my_rank,
         int varid;     /* The ID of the netCDF varable. */
         
         /* Create the filename. */
-        sprintf(filename, "simple_frame_%s_iotype_%d.nc", TEST_NAME, iotype[fmt]);
+        sprintf(filename, "simple_frame_%s_iotype_%d_rearr_%d.nc", TEST_NAME, iotype[fmt],
+                rearranger);
 
         /* Create the netCDF output file. */
         printf("rank: %d Creating sample file %s\n", my_rank, filename);
@@ -121,123 +119,57 @@ int test_frame_simple(int iosysid, int num_iotypes, int *iotype, int my_rank,
         if ((ret = PIOc_enddef(ncid)))
             ERR(ret);
 
-        /* /\* Set the value of the record dimension. *\/ */
-        /* if ((ret = PIOc_setframe(ncid, varid, 0))) */
-        /*     ERR(ret); */
+        /* Write records of data. */
+        for (int r = 0; r < TIME_LEN_SHORT; r++)
+        {
+            int test_data_int[elements_per_pe];
 
-        /* int frame = 0; */
-        /* int flushtodisk = test_multi - 1; */
-        /* if (!test_multi) */
-        /* { */
-        /*     /\* These should not work. *\/ */
-        /*     if (PIOc_write_darray(ncid + TEST_VAL_42, varid, ioid, arraylen, test_data, fillvalue) != PIO_EBADID) */
-        /*         ERR(ERR_WRONG); */
-        /*     if (PIOc_write_darray(ncid, varid, ioid + TEST_VAL_42, arraylen, test_data, fillvalue) != PIO_EBADID) */
-        /*         ERR(ERR_WRONG); */
-        /*     if (PIOc_write_darray(ncid, varid, ioid, arraylen - 1, test_data, fillvalue) != PIO_EINVAL) */
-        /*         ERR(ERR_WRONG); */
-        /*     if (PIOc_write_darray(ncid, TEST_VAL_42, ioid, arraylen, test_data, fillvalue) != PIO_ENOTVAR) */
-        /*         ERR(ERR_WRONG); */
-        /*     if (PIOc_write_darray(ncid, varid2, ioid, arraylen, test_data, fillvalue) != PIO_EINVAL) */
-        /*         ERR(ERR_WRONG); */
+            /* Initialize test data. */
+            for (int i = 0; i < elements_per_pe; i++)
+                test_data_int[i] = my_rank + r * 100;
 
-        /*     /\* Write the data. *\/ */
-        /*     if ((ret = PIOc_write_darray(ncid, varid, ioid, arraylen, test_data, fillvalue))) */
-        /*         ERR(ret); */
-        /* } */
-        /* else */
-        /* { */
-        /*     int varid_big = NC_MAX_VARS + TEST_VAL_42; */
+            /* Set the value of the record dimension. */
+            if ((ret = PIOc_setframe(ncid, varid, r)))
+                ERR(ret);
 
-        /*     /\* These will not work. *\/ */
-        /*     if (PIOc_write_darray_multi(ncid + TEST_VAL_42, &varid, ioid, 1, arraylen, test_data, &frame, */
-        /*                                 fillvalue, flushtodisk) != PIO_EBADID) */
-        /*         ERR(ERR_WRONG); */
-        /*     if (PIOc_write_darray_multi(ncid, NULL, ioid, 1, arraylen, test_data, &frame, */
-        /*                                 fillvalue, flushtodisk) != PIO_EINVAL) */
-        /*         ERR(ERR_WRONG); */
-        /*     if (PIOc_write_darray_multi(ncid, &varid, ioid + TEST_VAL_42, 1, arraylen, test_data, &frame, */
-        /*                                 fillvalue, flushtodisk) != PIO_EBADID) */
-        /*         ERR(ERR_WRONG); */
-        /*     if (PIOc_write_darray_multi(ncid, &varid, ioid, -1, arraylen, test_data, &frame, */
-        /*                                 fillvalue, flushtodisk) != PIO_EINVAL) */
-        /*         ERR(ERR_WRONG); */
-        /*     if (PIOc_write_darray_multi(ncid, &varid_big, ioid, 1, arraylen, test_data, &frame, */
-        /*                                 fillvalue, flushtodisk) != PIO_ENOTVAR) */
-        /*         ERR(ERR_WRONG); */
-        /*     if (PIOc_write_darray_multi(ncid, &wrong_varid, ioid, 1, arraylen, test_data, &frame, */
-        /*                                 fillvalue, flushtodisk) != PIO_ENOTVAR) */
-        /*         ERR(ERR_WRONG); */
-
-        /*     /\* Write the data with the _multi function. *\/ */
-        /*     if ((ret = PIOc_write_darray_multi(ncid, &varid, ioid, 1, arraylen, test_data, &frame, */
-        /*                                        fillvalue, flushtodisk))) */
-        /*         ERR(ret); */
-        /* } */
+            /* Write the data. */
+            if ((ret = PIOc_write_darray(ncid, varid, ioid, elements_per_pe, test_data_int, NULL)))
+                ERR(ret);
+        }
 
         /* Close the netCDF file. */
         if ((ret = PIOc_closefile(ncid)))
             ERR(ret);
 
-        /* Reopen the file. */
-        if ((ret = PIOc_openfile(iosysid, &ncid2, &iotype[fmt], filename, PIO_NOWRITE)))
-            ERR(ret);
+        {
+            int test_data_int_in[elements_per_pe];
 
-        /* /\* These should not work. *\/ */
-        /* if (PIOc_read_darray(ncid2 + TEST_VAL_42, varid, ioid, arraylen, */
-        /*                      test_data_in) != PIO_EBADID) */
-        /*     ERR(ERR_WRONG); */
-        /* if (PIOc_read_darray(ncid2, varid, ioid + TEST_VAL_42, arraylen, */
-        /*                      test_data_in) != PIO_EBADID) */
-        /*     ERR(ERR_WRONG); */
+            /* Reopen the file. */
+            if ((ret = PIOc_openfile(iosysid, &ncid2, &iotype[fmt], filename, PIO_NOWRITE)))
+                ERR(ret);
 
-        /* /\* Set the record number. *\/ */
-        /* if ((ret = PIOc_setframe(ncid2, varid, 0))) */
-        /*     ERR(ret); */
+            for (int r = 0; r < TIME_LEN_SHORT; r++)
+            {
 
-        /* /\* Read the data. *\/ */
-        /* if ((ret = PIOc_read_darray(ncid2, varid, ioid, arraylen, test_data_in))) */
-        /*     ERR(ret); */
+                /* Set the record number. */
+                if ((ret = PIOc_setframe(ncid2, varid, r)))
+                    ERR(ret);
 
-        /* /\* Check the results. *\/ */
-        /* for (int f = 0; f < arraylen; f++) */
-        /* { */
-        /*     switch (pio_type) */
-        /*     { */
-        /*     case PIO_INT: */
-        /*         if (test_data_int_in[f] != test_data_int[f]) */
-        /*             return ERR_WRONG; */
-        /*         break; */
-        /*     case PIO_FLOAT: */
-        /*         if (test_data_float_in[f] != test_data_float[f]) */
-        /*             return ERR_WRONG; */
-        /*         break; */
-        /*     case PIO_DOUBLE: */
-        /*         if (test_data_double_in[f] != test_data_double[f]) */
-        /*             return ERR_WRONG; */
-        /*         break; */
-        /*     default: */
-        /*         ERR(ERR_WRONG); */
-        /*     } */
-        /* } */
+                /* Read the data. */
+                if ((ret = PIOc_read_darray(ncid2, varid, ioid, elements_per_pe, test_data_int_in)))
+                    ERR(ret);
 
-        /* /\* Try to write, but it won't work, because we opened file read-only. *\/ */
-        /* if (!test_multi) */
-        /* { */
-        /*     if (PIOc_write_darray(ncid2, varid, ioid, arraylen, test_data, fillvalue) != PIO_EPERM) */
-        /*         ERR(ERR_WRONG); */
-        /* } */
-        /* else */
-        /* { */
-        /*     if (PIOc_write_darray_multi(ncid2, &varid, ioid, 1, arraylen, test_data, &frame, */
-        /*                                 fillvalue, flushtodisk) != PIO_EPERM) */
-        /*         ERR(ERR_WRONG); */
-        /* } */
+                /* Check the results. */
+                for (int f = 0; f < elements_per_pe; f++)
+                    if (test_data_int_in[f] != my_rank + r * 100)
+                        return ERR_WRONG;
+            }
 
-        /* Close the netCDF file. */
-        printf("%d Closing the sample data file...\n", my_rank);
-        if ((ret = PIOc_closefile(ncid2)))
-            ERR(ret);
+            /* Close the netCDF file. */
+            printf("%d Closing the sample data file...\n", my_rank);
+            if ((ret = PIOc_closefile(ncid2)))
+                ERR(ret);
+        }
     } /* next iotype */
 
     /* Free the PIO decomposition. */
@@ -289,7 +221,7 @@ int main(int argc, char **argv)
 
             /* Run tests. */
             printf("%d Running tests...\n", my_rank);
-            if ((ret = test_frame_simple(iosysid, num_iotypes, iotype, my_rank, test_comm)))
+            if ((ret = test_frame_simple(iosysid, num_iotypes, iotype, my_rank, rearranger[r])))
                 return ret;
 
             /* Finalize PIO system. */
