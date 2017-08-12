@@ -4,8 +4,8 @@
  * @author Jim Edwards
  */
 #include <config.h>
-#include <pio.h>
 #include <pio_internal.h>
+#include <pio.h>
 
 /**
  * Convert a 1-D index into a coordinate value in an arbitrary

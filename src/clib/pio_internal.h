@@ -10,6 +10,7 @@
 #ifndef __PIO_INTERNAL__
 #define __PIO_INTERNAL__
 
+#include <config.h>
 #include <pio.h>
 
 /* These are the sizes of types in netCDF files. Do not replace these
