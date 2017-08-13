@@ -6,6 +6,8 @@
  * <pre>mpiexec -n 4 valgrind -v --leak-check=full --suppressions=../../../tests/unit/valsupp_test.supp
  * --error-exitcode=99 --track-origins=yes ./test_intercomm2</pre>
  *
+ * @author Ed Hartnett
+ *
  */
 #include <pio.h>
 #include <pio_tests.h>
@@ -97,7 +99,6 @@ int check_file(int iosysid, int format, char *filename, int my_rank)
             ERR(ret);
         for (int i = 0; i < count[0]; i++)
         {
-            printf("%d test_intercomm2 read data_in[%d] = %d, start_index = %d\n", my_rank, i, data_in[i], start_index);
             if (data_in[i] != (i + start_index))
                 ERR(ERR_AWFUL);
         }
@@ -226,7 +227,6 @@ int check_file(int iosysid, int format, char *filename, int my_rank)
         ERR(ERR_WRONG);
     if ((ret = PIOc_get_att_int(ncid, NC_GLOBAL, ATT_NAME, &att_data)))
         ERR(ret);
-    printf("%d test_intercomm2 att_data = %d\n", my_rank, att_data);
     if (att_data != ATT_VALUE)
         ERR(ERR_WRONG);
     if ((ret = PIOc_inq_att(ncid, NC_GLOBAL, SHORT_ATT_NAME, &atttype, &attlen)))
@@ -296,8 +296,10 @@ int main(int argc, char **argv)
     /* Create a name that is too long. */
     memset(too_long_name, 74, PIO_MAX_NAME * 5);
     too_long_name[PIO_MAX_NAME * 5] = 0;
-    
-    if ((ret = pio_test_init(argc, argv, &my_rank, &ntasks, TARGET_NTASKS, &test_comm)))
+
+    /* Set up test. */
+    if ((ret = pio_test_init2(argc, argv, &my_rank, &ntasks, TARGET_NTASKS, TARGET_NTASKS,
+                              0, &test_comm)))
         ERR(ERR_INIT);
 
     /* Figure out iotypes. */
@@ -308,13 +310,6 @@ int main(int argc, char **argv)
     {
 	printf("%d: test_intercomm2 ParallelIO Library test_intercomm2 running on %d processors.\n",
 	       my_rank, ntasks);
-
-        /* Initialize the PIO IO system. This specifies how many and which
-         * processors are involved in I/O. */
-
-        /* Turn on logging. */
-        if ((ret = PIOc_set_log_level(3)))
-            ERR(ret);
 
         /* How many processors will be used for our IO and 2 computation components. */
         int num_procs[COMPONENT_COUNT] = {2};
@@ -330,9 +325,6 @@ int main(int argc, char **argv)
         if ((ret = PIOc_init_async(test_comm, NUM_IO_PROCS, NULL, COMPONENT_COUNT,
                                    num_procs, NULL, NULL, NULL, PIO_REARR_BOX, iosysid)))
             ERR(ERR_AWFUL);
-
-	printf("%d: test_intercomm2 ParallelIO Library test_intercomm2 comp task returned.\n",
-	       my_rank);
 
         /* All the netCDF calls are only executed on the computation
          * tasks. The IO tasks have not returned from PIOc_Init_Intercomm,
@@ -353,12 +345,10 @@ int main(int argc, char **argv)
                 if ((ret = PIOc_createfile(iosysid[my_comp_idx], &ncid, &flavor[fmt], filename[fmt],
                                            NC_CLOBBER)))
                     ERR(ret);
-		printf("%d test_intercomm2 file created ncid = %d\n", my_rank, ncid);
 
                 /* End define mode, then re-enter it. */
                 if ((ret = PIOc_enddef(ncid)))
                     ERR(ret);
-		printf("%d test_intercomm2 calling redef\n", my_rank);
                 if ((ret = PIOc_redef(ncid)))
                     ERR(ret);
 
@@ -398,7 +388,6 @@ int main(int argc, char **argv)
 
                 /* Define a dimension. */
                 char dimname2[NC_MAX_NAME + 1];
-		printf("%d test_intercomm2 defining dimension %s\n", my_rank, DIM_NAME);
                 if ((ret = PIOc_def_dim(ncid, FIRST_DIM_NAME, DIM_LEN, &dimid)))
                     ERR(ret);
                 if ((ret = PIOc_inq_dimname(ncid, 0, dimname2)))
@@ -418,7 +407,6 @@ int main(int argc, char **argv)
 
                 /* Define a 1-D variable. */
                 char varname2[NC_MAX_NAME + 1];
-		printf("%d test_intercomm2 defining variable %s\n", my_rank, VAR_NAME);
                 if ((ret = PIOc_def_var(ncid, FIRST_VAR_NAME, NC_INT, NDIM, &dimid, &varid)))
                     ERR(ret);
                 if ((ret = PIOc_inq_varname(ncid, 0, varname2)))
@@ -437,7 +425,6 @@ int main(int argc, char **argv)
                     ERR(ERR_WRONG);
 
                 /* Add a global attribute. */
-		printf("%d test_intercomm2 writing attributes %s\n", my_rank, ATT_NAME);
                 int att_data = ATT_VALUE;
                 short short_att_data = ATT_VALUE;
                 float float_att_data = ATT_VALUE;
@@ -505,7 +492,6 @@ int main(int argc, char **argv)
                     ERR(ERR_WRONG);
 
                 /* End define mode. */
-		printf("%d test_intercomm2 ending define mode ncid = %d\n", my_rank, ncid);
                 if ((ret = PIOc_enddef(ncid)))
                     ERR(ret);
 
@@ -516,7 +502,6 @@ int main(int argc, char **argv)
                  * ignored. */
                 for (int i = 0; i < DIM_LEN; i++)
                     data[i] = i;
-		printf("%d test_intercomm2 writing data\n", my_rank);
                 start[0] = 0;
                 count[0] = DIM_LEN;
                 if ((ret = PIOc_put_vars_tc(ncid, varid, start, count, NULL, NC_INT, data)))
