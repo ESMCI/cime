@@ -1,8 +1,8 @@
 /*
  * This program tests some internal functions in the PIO library.
  *
- * Jim Edwards
- * Ed Hartnett, 11/23/16
+ * @author Jim Edwards, Ed Hartnett
+ * @date 11/23/16
  */
 #include <config.h>
 #include <pio.h>
@@ -639,7 +639,7 @@ int main(int argc, char **argv)
 
     /* Initialize test. */
     if ((ret = pio_test_init2(argc, argv, &my_rank, &ntasks, MIN_NTASKS,
-                              TARGET_NTASKS, 3, &test_comm)))
+                              TARGET_NTASKS, 0, &test_comm)))
         ERR(ERR_INIT);
 
     /* Test code runs on TARGET_NTASKS tasks. The left over tasks do
@@ -653,24 +653,24 @@ int main(int argc, char **argv)
             return ret;
 
         printf("%d running tests for functions in pioc_sc.c\n", my_rank);
-        /* if ((ret = run_sc_tests(test_comm))) */
-        /*     return ret; */
+        if ((ret = run_sc_tests(test_comm)))
+            return ret;
 
-        /* printf("%d running tests for GCDblocksize()\n", my_rank); */
-        /* if ((ret = run_GDCblocksize_tests(test_comm))) */
-        /*     return ret; */
+        printf("%d running tests for GCDblocksize()\n", my_rank);
+        if ((ret = run_GDCblocksize_tests(test_comm)))
+            return ret;
 
-        /* printf("%d running spmd test code\n", my_rank); */
-        /* if ((ret = run_spmd_tests(test_comm))) */
-        /*     return ret; */
+        printf("%d running spmd test code\n", my_rank);
+        if ((ret = run_spmd_tests(test_comm)))
+            return ret;
         
-        /* printf("%d running CalcStartandCount test code\n", my_rank); */
-        /* if ((ret = test_CalcStartandCount())) */
-        /*     return ret; */
+        printf("%d running CalcStartandCount test code\n", my_rank);
+        if ((ret = test_CalcStartandCount()))
+            return ret;
 
-        /* printf("%d running list tests\n", my_rank); */
-        /* if ((ret = test_lists())) */
-        /*     return ret; */
+        printf("%d running list tests\n", my_rank);
+        if ((ret = test_lists()))
+            return ret;
 
         printf("%d running varlist tests\n", my_rank);
         if ((ret = test_varlists()))
@@ -684,17 +684,17 @@ int main(int argc, char **argv)
         if ((ret = test_varlists3()))
             return ret;
 
-        /* printf("%d running ceil2/pair tests\n", my_rank); */
-        /* if ((ret = test_ceil2_pair())) */
-        /*     return ret; */
+        printf("%d running ceil2/pair tests\n", my_rank);
+        if ((ret = test_ceil2_pair()))
+            return ret;
 
-        /* printf("%d running find_mpi_type tests\n", my_rank); */
-        /* if ((ret = test_find_mpi_type())) */
-        /*     return ret; */
+        printf("%d running find_mpi_type tests\n", my_rank);
+        if ((ret = test_find_mpi_type()))
+            return ret;
 
-        /* printf("%d running misc tests\n", my_rank); */
-        /* if ((ret = test_misc())) */
-        /*     return ret; */
+        printf("%d running misc tests\n", my_rank);
+        if ((ret = test_misc()))
+            return ret;
 
         /* Finalize PIO system. */
         if ((ret = PIOc_finalize(iosysid)))

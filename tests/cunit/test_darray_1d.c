@@ -2,8 +2,10 @@
  * Tests for PIO distributed arrays. This test uses 1 dimension,
  * everything very simple. ;-)
  *
- * Ed Hartnett, 2/27/17
+ * @author Ed Hartnett
+ * @date 2/27/17
  */
+#include <config.h>
 #include <pio.h>
 #include <pio_internal.h>
 #include <pio_tests.h>

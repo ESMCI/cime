@@ -3,7 +3,8 @@
  * to the box and subset rearranger, and the transfer of data betweeen
  * IO and computation tasks.
  *
- * Ed Hartnett, 3/9/17
+ * @author Ed Hartnett
+ * @date 3/9/17
  */
 #include <config.h>
 #include <pio.h>
@@ -1206,6 +1207,7 @@ int run_no_iosys_tests(int my_rank, MPI_Comm test_comm)
     printf("%d running define_iodesc_datatypes tests\n", my_rank);
     if ((ret = test_define_iodesc_datatypes()))
         return ret;
+    printf("what?\n");
 
     printf("%d running compare_offsets tests\n", my_rank);
     if ((ret = test_compare_offsets()))
