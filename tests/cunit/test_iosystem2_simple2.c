@@ -4,7 +4,7 @@
  *
  * This is a simplified, C version of the fortran pio_iosystem_tests2.F90.
  *
- * Ed Hartnett
+ * @author Ed Hartnett
  */
 #include <config.h>
 #include <pio.h>
@@ -42,8 +42,8 @@ int main(int argc, char **argv)
     MPI_Comm test_comm;
 
     /* Initialize test. */
-    if ((ret = pio_test_init(argc, argv, &my_rank, &ntasks, TARGET_NTASKS,
-			     &test_comm)))
+    if ((ret = pio_test_init2(argc, argv, &my_rank, &ntasks, TARGET_NTASKS, TARGET_NTASKS,
+                              0, &test_comm)))
         ERR(ERR_INIT);
 
     /* Only do something on the first TARGET_NTASKS tasks. */
@@ -58,7 +58,6 @@ int main(int argc, char **argv)
         int even = my_rank % 2 ? 0 : 1;
         if ((ret = MPI_Comm_split(test_comm, even, 0, &newcomm)))
             MPIERR(ret);
-        printf("%d newcomm = %d even = %d\n", my_rank, newcomm, even);
 
         /* Get size of new communicator. */
         int new_size;
@@ -133,7 +132,6 @@ int main(int argc, char **argv)
     MPI_Barrier(MPI_COMM_WORLD);
 
     /* Finalize test. */
-    printf("%d %s finalizing...\n", my_rank, TEST_NAME);
     if ((ret = pio_test_finalize(&test_comm)))
         return ERR_AWFUL;
 

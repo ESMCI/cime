@@ -9,7 +9,7 @@
  * <pre>mpiexec -n 4 valgrind -v --leak-check=full --suppressions=../../../tests/unit/valsupp_test.supp
  * --error-exitcode=99 --track-origins=yes ./test_async_simple</pre>
  *
- * Ed Hartnett
+ * @author Ed Hartnett
  */
 #include <config.h>
 #include <pio.h>
@@ -45,8 +45,8 @@ int main(int argc, char **argv)
     MPI_Comm test_comm;
 
     /* Initialize test. */
-    if ((ret = pio_test_init(argc, argv, &my_rank, &ntasks, TARGET_NTASKS,
-			     &test_comm)))
+    if ((ret = pio_test_init2(argc, argv, &my_rank, &ntasks, TARGET_NTASKS, TARGET_NTASKS,
+                              0, &test_comm)))
         ERR(ERR_INIT);
 
     /* Only do something on TARGET_NTASKS tasks. */
@@ -111,17 +111,12 @@ int main(int argc, char **argv)
             /* Finalize the IO system. Only call this from the computation tasks. */
             printf("%d %s Freeing PIO resources\n", my_rank, TEST_NAME);
             for (int c = 0; c < COMPONENT_COUNT; c++)
-            {
                 if ((ret = PIOc_finalize(iosysid[c])))
                     ERR(ret);
-                printf("%d %s PIOc_finalize completed for iosysid = %d\n", my_rank, TEST_NAME,
-                       iosysid[c]);
-            }
         } /* endif comp_task */
     } /* endif my_rank < TARGET_NTASKS */
 
     /* Finalize test. */
-    printf("%d %s finalizing...\n", my_rank, TEST_NAME);
     if ((ret = pio_test_finalize(&test_comm)))
         return ERR_AWFUL;
 

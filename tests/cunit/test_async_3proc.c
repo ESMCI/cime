@@ -5,11 +5,7 @@
  * other 24 for computation. The netCDF sample files are created and
  * checked.
  *
- * To run with valgrind, use this command:
- * <pre>mpiexec -n 4 valgrind -v --leak-check=full --suppressions=../../../tests/unit/valsupp_test.supp
- * --error-exitcode=99 --track-origins=yes ./test_async_8io_24comp</pre>
- *
- * Ed Hartnett
+ * @author Ed Hartnett
  */
 #include <config.h>
 #include <pio.h>
@@ -46,8 +42,8 @@ int main(int argc, char **argv)
     int num_io_procs[NUM_COMBOS] = {2, 1};
 
     /* Initialize test. */
-    if ((ret = pio_test_init(argc, argv, &my_rank, &ntasks, TARGET_NTASKS,
-			     &test_comm)))
+    if ((ret = pio_test_init2(argc, argv, &my_rank, &ntasks, TARGET_NTASKS, TARGET_NTASKS,
+                              0, &test_comm)))
         ERR(ERR_INIT);
 
     /* Test code runs on TARGET_NTASKS tasks. The left over tasks do
@@ -67,9 +63,6 @@ int main(int argc, char **argv)
             if ((ret = PIOc_init_async(test_comm, num_io_procs[combo], NULL, COMPONENT_COUNT,
                                        num_procs[combo], NULL, NULL, NULL, PIO_REARR_BOX, iosysid)))
                 ERR(ERR_INIT);
-
-            for (int c = 0; c < COMPONENT_COUNT; c++)
-                printf("%d iosysid[%d] = %d\n", my_rank, c, iosysid[c]);
 
             /* All the netCDF calls are only executed on the computation
              * tasks. The IO tasks have not returned from PIOc_Init_Intercomm,
@@ -113,13 +106,11 @@ int main(int argc, char **argv)
             } /* endif comp_task */
 
             /* Wait for everyone to catch up. */
-            printf("%d %s waiting for all processes!\n", my_rank, TEST_NAME);
             MPI_Barrier(test_comm);
         } /* next combo */
     } /* endif my_rank < TARGET_NTASKS */
 
     /* Finalize test. */
-    printf("%d %s finalizing...\n", my_rank, TEST_NAME);
     if ((ret = pio_test_finalize(&test_comm)))
         return ERR_AWFUL;
 
