@@ -440,6 +440,14 @@ which causes the build commands to be made visible.
 
 <p>Note also the -DPIO_ENABLE_LOGGING=On which is helpful for debugging but should probably not be used in production builds.
 
+<li>Building PIO with autotools.
+
+<p>To build the PIO library with autotools, clone the repo and use a command like this:
+
+<pre>
+autoreconf -i && CC=mpicc CPPFLAGS='-g -I/usr/local/netcdf-4.4.1_mpich-3.2/include/ -I/usr/local/pnetcdf-1.8.1_mpich-3.2/include' LDFLAGS='-L/usr/local/netcdf-4.4.1_mpich-3.2/lib -L/usr/local/pnetcdf-1.8.1_mpich-3.2/lib' ./configure && make -j check
+</pre>
+
 <li>Building and Running Performance Tests
 
 <p>Download a decomp file from our <a
