@@ -45,7 +45,6 @@ int darray_simple_test(int iosysid, int my_rank, int num_iotypes, int *iotype,
 
         /* Create test filename. */
         sprintf(filename, "%s_simple_async_%d_iotype_%d.nc", TEST_NAME, async, iotype[iot]);
-        printf("rank %d creating test file %s\n", my_rank, filename);
 
         /* Create the test file. */
         if ((ret = PIOc_createfile(iosysid, &ncid, &iotype[iot], filename, PIO_CLOBBER)))
@@ -215,7 +214,7 @@ int main(int argc, char **argv)
 
     /* Initialize test. */
     if ((ret = pio_test_init2(argc, argv, &my_rank, &ntasks, MIN_NTASKS,
-                              TARGET_NTASKS, 3, &test_comm)))
+                              TARGET_NTASKS, -1, &test_comm)))
         ERR(ERR_INIT);
     if ((ret = PIOc_set_iosystem_error_handling(PIO_DEFAULT, PIO_RETURN_ERROR, NULL)))
         return ret;
@@ -223,7 +222,6 @@ int main(int argc, char **argv)
     /* Figure out iotypes. */
     if ((ret = get_iotypes(&num_iotypes, iotype)))
         ERR(ret);
-    printf("Runnings tests for %d iotypes\n", num_iotypes);
 
     /* Test code runs on TARGET_NTASKS tasks. The left over tasks do
      * nothing. */
@@ -238,7 +236,6 @@ int main(int argc, char **argv)
     } /* endif my_rank < TARGET_NTASKS */
 
     /* Finalize the MPI library. */
-    printf("%d %s Finalizing...\n", my_rank, TEST_NAME);
     if ((ret = pio_test_finalize(&test_comm)))
         return ret;
 

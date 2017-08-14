@@ -1,7 +1,7 @@
 /*
  * Tests for PIO data reading and writing routines.
  *
- * Ed Hartnett
+ * @author Ed Hartnett
  */
 #include <config.h>
 #include <pio.h>
@@ -164,8 +164,6 @@ int test_att_conv_byte(int ncid, int flavor, char *name, int *expected, long lon
     unsigned long long uint64_array_in[ATT_LEN];
 
     /* Read the att and check results. */
-    printf("expecting %d got %d\n", expected[PIO_BYTE], PIOc_get_att_schar(ncid, NC_GLOBAL, name, byte_array_in));
-
     if (expected[PIO_BYTE] != PIOc_get_att_schar(ncid, NC_GLOBAL, name, byte_array_in))
         return ERR_WRONG;
 
@@ -326,9 +324,6 @@ int test_atts_byte(int iosysid, int num_flavors, int *flavor, int my_rank,
         int ret;    /* Return code. */
 
         /* Create test file with dims and vars defined. */
-        printf("%d creating test file for flavor = %d...\n", my_rank, flavor[fmt]);
-
-        /* Create a filename. */
         if ((ret = get_iotype_name(flavor[fmt], iotype_name)))
             return ret;
         sprintf(filename, "%s_att_byte_%s.nc", TEST_NAME, iotype_name);
@@ -443,9 +438,6 @@ int test_atts_int64(int iosysid, int num_flavors, int *flavor, int my_rank,
         /* Only do these tests on netCDF-4 files. */
         if (flavor[fmt] != PIO_IOTYPE_NETCDF4C && flavor[fmt] != PIO_IOTYPE_NETCDF4P)
             continue;
-
-        /* Create test file with dims and vars defined. */
-        printf("%d creating test file for flavor = %d...\n", my_rank, flavor[fmt]);
 
         /* Create a filename. */
         if ((ret = get_iotype_name(flavor[fmt], iotype_name)))
@@ -1067,7 +1059,6 @@ int putget_read_var1(int ncid, int *varid, PIO_Offset *index, int flavor)
     memset(text_data_in, 0, sizeof(text_data_in));
     if ((ret = PIOc_get_var1_text(ncid, varid[1], index, text_data_in)))
         return ret;
-    printf("text_data_in = %s\n", text_data_in);
     if (strncmp(text_data_in, "h", 1))
         return ERR_WRONG;
 
@@ -1156,7 +1147,6 @@ int putget_read_var1_nt(int ncid, int *varid, PIO_Offset *index, int flavor)
     memset(text_data_in, 0, sizeof(text_data_in));
     if ((ret = PIOc_get_var1(ncid, varid[1], index, text_data_in)))
         return ret;
-    printf("text_data_in = %s\n", text_data_in);
     if (strncmp(text_data_in, "h", 1))
         return ERR_WRONG;
 
@@ -1796,7 +1786,6 @@ int create_putget_file(int iosysid, int access, int unlim, int flavor, int *dim_
     if (!unlim)
         dim_len[0] = NUM_TIMESTEPS;
 
-    printf("filename = %s\n", filename);
     /* Define netCDF dimensions and variable. */
     for (int d = 0; d < NDIM; d++)
         if ((ret = PIOc_def_dim(ncid, dim_name[d], (PIO_Offset)dim_len[d], &dimids[d])))
@@ -1806,13 +1795,11 @@ int create_putget_file(int iosysid, int access, int unlim, int flavor, int *dim_
     if (flavor == PIO_IOTYPE_NETCDF4C || flavor == PIO_IOTYPE_NETCDF4P)
         num_vars = NUM_NETCDF4_TYPES + 1;
 
-    printf("filename = %s\n", filename);
     /* Define variables. */
     for (int v = 0; v < num_vars; v++)
     {
         char var_name[PIO_MAX_NAME + 1];
         snprintf(var_name, PIO_MAX_NAME, "%s_%d", VAR_NAME, xtype[v]);
-        printf("defining var %s\n", var_name);
         /*nc_type my_type = xtype[v] == PIO_LONG_INTERNAL ? PIO_INT : xtype[v];*/
         nc_type my_type;
         if (xtype[v] == PIO_LONG_INTERNAL)
@@ -1823,7 +1810,6 @@ int create_putget_file(int iosysid, int access, int unlim, int flavor, int *dim_
             return ret;
     }
 
-    printf("filename = %s\n", filename);
     /* For the first access, also test attributes. */
     if (access == 0)
         if ((ret = test_write_atts(ncid, varid, flavor)))
@@ -1941,12 +1927,9 @@ int test_putget(int iosysid, int num_flavors, int *flavor, int my_rank,
                          access, unlim, iotype_name);
 
                 /* Create test file with dims and vars defined. */
-                printf("%d Access %d creating test file %s for flavor = %d...\n", my_rank, access,
-                       filename, flavor[fmt]);
                 if ((ret = create_putget_file(iosysid, access, unlim, flavor[fmt], dim_len, varid,
                                               filename, &ncid)))
                     return ret;
-                printf("created file %s\n", filename);
 
                 /* Write some data. */
                 PIO_Offset index[NDIM] = {0, 0, 0};
@@ -1957,8 +1940,6 @@ int test_putget(int iosysid, int num_flavors, int *flavor, int my_rank,
                 switch (access)
                 {
                 case 0:
-                    printf("%d Access %d writing data with var functions for flavor = %d...\n",
-                           my_rank, access, flavor[fmt]);
                     /* Use the var functions to write some data. */
                     if ((ret = putget_write_var(ncid, varid, flavor[fmt])))
                         return ret;
@@ -2025,7 +2006,6 @@ int test_putget(int iosysid, int num_flavors, int *flavor, int my_rank,
                     ERR(ret);
 
                 /* /\* Access to read it. *\/ */
-                printf("about to try to open file %s\n", filename);
                 if ((ret = PIOc_openfile2(iosysid, &ncid, &(flavor[fmt]), filename, PIO_NOWRITE)))
                     ERR(ret);
 
@@ -2054,16 +2034,13 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
         MPIERR(ret);
 
     /* Test attribute stuff. */
-    printf("%d Testing attributes with NC_BYTE data, async = %d\n", my_rank, async);
     if ((ret = test_atts_byte(iosysid, num_flavors, flavor, my_rank, test_comm)))
         return ret;
 
-    printf("%d Testing attributes with NC_INT64 data, async = %d\n", my_rank, async);
     if ((ret = test_atts_int64(iosysid, num_flavors, flavor, my_rank, test_comm)))
         return ret;
 
     /* Test read/write stuff. */
-    printf("%d Testing putget. async = %d\n", my_rank, async);
     if ((ret = test_putget(iosysid, num_flavors, flavor, my_rank, test_comm)))
         return ret;
 
@@ -2076,7 +2053,7 @@ int main(int argc, char **argv)
     /* Initialize data arrays with sample data. */
     init_arrays();
 
-    return run_test_main(argc, argv, MIN_NTASKS, TARGET_NTASKS, 0,
+    return run_test_main(argc, argv, MIN_NTASKS, TARGET_NTASKS, -1,
                          TEST_NAME, dim_len, COMPONENT_COUNT, NUM_IO_PROCS);
 
     return 0;

@@ -2,7 +2,8 @@
  * Tests for PIO distributed arrays. This tests cases when arrays do
  * not distribute evenly over the processors.
  *
- * Ed Hartnett, 3/6/17
+ * @author Ed Hartnett
+ * @date 3/6/17
  */
 #include <config.h>
 #include <pio.h>
@@ -59,7 +60,6 @@ int create_decomposition_3d(int ntasks, int my_rank, int iosysid, int *dim_len,
     /* Distribute the remaining elements. */
     if (my_rank < remainder)
         elements_per_pe++;
-    printf("%d elements_per_pe = %lld remainder = %lld\n", my_rank, elements_per_pe, remainder);
 
     /* Allocate space for the decomposition array. */
     if (!(compdof = malloc(elements_per_pe * sizeof(PIO_Offset))))
@@ -72,16 +72,12 @@ int create_decomposition_3d(int ntasks, int my_rank, int iosysid, int *dim_len,
         if (my_rank >= remainder)
             my_remainder = remainder;
         compdof[i] = my_rank * elements_per_pe + i + my_remainder;
-        printf("%d my_remainder = %d compdof[%d] = %lld\n", my_rank, i, my_remainder, compdof[i]);
     }
 
     /* Create the PIO decomposition for this test. */
-    printf("%d Creating decomposition elements_per_pe = %lld\n", my_rank, elements_per_pe);
     if ((ret = PIOc_init_decomp(iosysid, pio_type, NDIM3, dim_len, elements_per_pe,
                                 compdof, ioid, 0, NULL, NULL)))
         ERR(ret);
-
-    printf("%d decomposition initialized.\n", my_rank);
 
     /* Free the mapping. */
     free(compdof);
@@ -139,10 +135,8 @@ int test_decomp_read_write(int iosysid, int ioid, int num_flavors, int *flavor, 
         /* Create history string. */
         strncat(history, filename, NC_MAX_NAME - strlen(TEST_DECOMP_HISTORY));
 
-        printf("writing decomp file %s\n", filename);
         if ((ret = PIOc_write_nc_decomp(iosysid, filename, 0, ioid, title, history, 0)))
             return ret;
-        printf("about to check map with netCDF\n");
 
         /* Open the decomposition file with netCDF. */
         int ncid_in;
@@ -154,7 +148,6 @@ int test_decomp_read_write(int iosysid, int ioid, int num_flavors, int *flavor, 
         int max_maplen;
         if ((ret = PIOc_get_att_int(ncid_in, NC_GLOBAL, DECOMP_MAX_MAPLEN_ATT_NAME, &max_maplen)))
             return ret;
-        printf("max_maplen = %d\n", max_maplen);
 
         /* Check dims. */
         PIO_Offset ndims_in;
@@ -177,7 +170,6 @@ int test_decomp_read_write(int iosysid, int ioid, int num_flavors, int *flavor, 
             return ret;
         for (int t = 0; t < TARGET_NTASKS; t++)
         {
-            printf("%d maplen_in[%d] = %d expected_maplen[%d] = %d\n", my_rank, t, maplen_in[t], t, expected_maplen[t]);
             if (maplen_in[t] != expected_maplen[t])
                 return ERR_WRONG;
         }
@@ -189,13 +181,10 @@ int test_decomp_read_write(int iosysid, int ioid, int num_flavors, int *flavor, 
             return ret;
         if ((ret = PIOc_get_var(ncid_in, map_varid, (int *)&map_in)))
             return ret;
-        printf("about to check map\n");
         for (int t = 0; t < TARGET_NTASKS; t++)
         {
             for (int e = 0; e < max_maplen; e++)
             {
-                printf("%d t = %d e = %d map_in[t][e] = %d expected_map[t * max_maplen + e] = %d\n",
-                       my_rank, t, e, map_in[t][e], expected_map[t * max_maplen + e]);
                 if (map_in[t][e] != expected_map[t * max_maplen + e])
                     return ERR_WRONG;
             }
@@ -206,7 +195,6 @@ int test_decomp_read_write(int iosysid, int ioid, int num_flavors, int *flavor, 
             return ret;
 
         /* Read the decomposition file into PIO. */
-        printf("reading decomp file %s\n", filename);
         if ((ret = PIOc_read_nc_decomp(iosysid, filename, &ioid2, test_comm, pio_type,
                                        title_in, history_in, &fortran_order_in)))
             return ret;
@@ -231,12 +219,12 @@ int test_decomp_read_write(int iosysid, int ioid, int num_flavors, int *flavor, 
                 return ret;
 
             /* Check values in iodesc. */
-            printf("ioid2 = %d iodesc->ioid = %d iodesc->maplen = %d iodesc->ndims = %d "
-                   "iodesc->ndof = %d iodesc->rearranger = %d iodesc->maxregions = %d "
-                   "iodesc->needsfill = %d iodesc->mpitype = %d expected_mpi_type = %d\n",
-                   ioid2, iodesc->ioid, iodesc->maplen, iodesc->ndims, iodesc->ndof,
-                   iodesc->rearranger, iodesc->maxregions, iodesc->needsfill, iodesc->mpitype,
-                   expected_mpi_type);
+            /* printf("ioid2 = %d iodesc->ioid = %d iodesc->maplen = %d iodesc->ndims = %d " */
+            /*        "iodesc->ndof = %d iodesc->rearranger = %d iodesc->maxregions = %d " */
+            /*        "iodesc->needsfill = %d iodesc->mpitype = %d expected_mpi_type = %d\n", */
+            /*        ioid2, iodesc->ioid, iodesc->maplen, iodesc->ndims, iodesc->ndof, */
+            /*        iodesc->rearranger, iodesc->maxregions, iodesc->needsfill, iodesc->mpitype, */
+            /*        expected_mpi_type); */
             if (strcmp(title, title_in) || strcmp(history, history_in))
                 return ERR_WRONG;
             if (iodesc->ioid != ioid2 || iodesc->rearranger != rearranger ||
@@ -253,8 +241,8 @@ int test_decomp_read_write(int iosysid, int ioid, int num_flavors, int *flavor, 
             /* Don't forget to add 1! */
             for (int e = 0; e < iodesc->maplen; e++)
             {
-                printf("%d e = %d max_maplen = %d iodesc->map[e] = %lld expected_map[my_rank * max_maplen + e] = %d\n",
-                       my_rank, e, max_maplen, iodesc->map[e], expected_map[my_rank * max_maplen + e]);
+                /* printf("%d e = %d max_maplen = %d iodesc->map[e] = %lld expected_map[my_rank * max_maplen + e] = %d\n", */
+                /*        my_rank, e, max_maplen, iodesc->map[e], expected_map[my_rank * max_maplen + e]); */
                 if (iodesc->map[e] != expected_map[my_rank * max_maplen + e] + 1)
                     return ERR_WRONG;
             }
@@ -286,7 +274,7 @@ int main(int argc, char **argv)
 
     /* Initialize test. */
     if ((ret = pio_test_init2(argc, argv, &my_rank, &ntasks, MIN_NTASKS,
-                              MIN_NTASKS, 3, &test_comm)))
+                              MIN_NTASKS, -1, &test_comm)))
         ERR(ERR_INIT);
 
     if ((ret = PIOc_set_iosystem_error_handling(PIO_DEFAULT, PIO_RETURN_ERROR, NULL)))
@@ -324,7 +312,6 @@ int main(int argc, char **argv)
         /* Figure out iotypes. */
         if ((ret = get_iotypes(&num_flavors, flavor)))
             ERR(ret);
-        printf("Runnings tests for %d flavors\n", num_flavors);
 
         for (int r = 0; r < NUM_REARRANGERS_TO_TEST; r++)
         {
@@ -372,7 +359,6 @@ int main(int argc, char **argv)
     } /* endif my_rank < TARGET_NTASKS */
 
     /* Finalize the MPI library. */
-    printf("%d %s Finalizing...\n", my_rank, TEST_NAME);
     if ((ret = pio_test_finalize(&test_comm)))
         return ret;
 

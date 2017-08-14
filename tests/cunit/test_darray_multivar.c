@@ -245,12 +245,10 @@ int test_multivar_darray(int iosysid, int ioid, int num_flavors, int *flavor,
         int datum;
         MPI_Offset start[1] = {0};
         ret = ncmpi_get_var1_int(ncid, varid, start, &datum);
-        printf("datum ret = %d\n", ret);
 
         /* Not sure why this doesn't work. */
         /* if ((ret = ncmpi_get_var1_int(ncid, varid, start, &datum))) */
         /*     return ret; */
-        printf("datum = %d\n", datum);
         if ((ret = ncmpi_close(ncid)))
             return ret;
 #endif /* _PNETCDF */
@@ -267,7 +265,6 @@ int test_multivar_darray(int iosysid, int ioid, int num_flavors, int *flavor,
                 continue;
             
             /* NetCDF-4 types only work with netCDF-4 formats. */
-            printf("pio_type = %d flavor[fmt] = %d\n", pio_type, flavor[fmt]);
             if (pio_type > PIO_DOUBLE && flavor[fmt] != PIO_IOTYPE_NETCDF4C &&
                 flavor[fmt] != PIO_IOTYPE_NETCDF4P)
                 continue;
@@ -277,8 +274,6 @@ int test_multivar_darray(int iosysid, int ioid, int num_flavors, int *flavor,
                     TEST_NAME, flavor[fmt], tc, pio_type, use_fill, use_default);
             
             /* Create the netCDF output file. */
-            printf("rank: %d Creating sample file %s with format %d type %d\n", my_rank, filename,
-                   flavor[fmt], pio_type);
             if ((ret = PIOc_createfile(iosysid, &ncid, &flavor[fmt], filename, PIO_CLOBBER)))
                 ERR(ret);
 
@@ -288,7 +283,6 @@ int test_multivar_darray(int iosysid, int ioid, int num_flavors, int *flavor,
                     ERR(ret);
 
             /* Define netCDF dimensions and variable. */
-            printf("%d Defining netCDF metadata...\n", my_rank);
             for (int d = 0; d < NDIM; d++)
                 if ((ret = PIOc_def_dim(ncid, dim_name[d], (PIO_Offset)dim_len[d], &dimids[d])))
                     ERR(ret);
@@ -476,7 +470,6 @@ int test_multivar_darray(int iosysid, int ioid, int num_flavors, int *flavor,
             }
 
             /* Close the netCDF file. */
-            printf("%d Closing the sample data file...\n", my_rank);
             if ((ret = PIOc_closefile(ncid2)))
                 ERR(ret);
         }
@@ -559,7 +552,7 @@ int main(int argc, char **argv)
 
     /* Initialize test. */
     if ((ret = pio_test_init2(argc, argv, &my_rank, &ntasks, MIN_NTASKS, MIN_NTASKS,
-                              3, &test_comm)))
+                              -1, &test_comm)))
         ERR(ERR_INIT);
 
     if ((ret = PIOc_set_iosystem_error_handling(PIO_DEFAULT, PIO_RETURN_ERROR, NULL)))
@@ -576,7 +569,6 @@ int main(int argc, char **argv)
         /* Figure out iotypes. */
         if ((ret = get_iotypes(&num_flavors, flavor)))
             ERR(ret);
-        printf("Runnings tests for %d flavors\n", num_flavors);
 
         /* Test for both arrangers. */
         for (int r = 0; r < NUM_REARRANGERS; r++)
@@ -589,7 +581,6 @@ int main(int argc, char **argv)
                 return ret;
             
             /* Run tests. */
-            printf("%d Running tests...\n", my_rank);
             if ((ret = test_all_darray(iosysid, num_flavors, flavor, my_rank, test_comm,
                                        rearranger[r])))
                 return ret;
@@ -602,7 +593,6 @@ int main(int argc, char **argv)
     } /* endif my_rank < TARGET_NTASKS */
 
     /* Finalize the MPI library. */
-    printf("%d %s Finalizing...\n", my_rank, TEST_NAME);
     if ((ret = pio_test_finalize(&test_comm)))
         return ret;
 

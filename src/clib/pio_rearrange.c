@@ -21,7 +21,7 @@
  * of data.
  * @param dim_list array of length ndims that will get the dimensions
  * corresponding to this index.
- * @author Jim Edwards, Ed Hartnett
+ * @author Jim Edwards
  */
 void idx_to_dim_list(int ndims, const int *gdimlen, PIO_Offset idx,
                      PIO_Offset *dim_list)

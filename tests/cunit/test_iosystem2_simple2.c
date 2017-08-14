@@ -43,7 +43,7 @@ int main(int argc, char **argv)
 
     /* Initialize test. */
     if ((ret = pio_test_init2(argc, argv, &my_rank, &ntasks, TARGET_NTASKS, TARGET_NTASKS,
-                              0, &test_comm)))
+                              -1, &test_comm)))
         ERR(ERR_INIT);
 
     /* Only do something on the first TARGET_NTASKS tasks. */
@@ -88,7 +88,6 @@ int main(int argc, char **argv)
                 sprintf(filename[sample], "%s_%s_%d_%d.nc", TEST_NAME, iotype_name, sample, 0);
 
                 /* Create sample file. */
-                printf("%d %s creating file %s\n", my_rank, TEST_NAME, filename[sample]);
                 if ((ret = create_nc_sample(sample, iosysid_world, flavor[flv], filename[sample],
 					    my_rank, NULL)))
                     ERR(ret);

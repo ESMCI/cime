@@ -49,7 +49,7 @@ int main(int argc, char **argv)
 
     /* Initialize test. */
     if ((ret = pio_test_init2(argc, argv, &my_rank, &ntasks, TARGET_NTASKS, TARGET_NTASKS,
-                              0, &test_comm)))
+                              -1, &test_comm)))
         ERR(ERR_INIT);
 
     /* Test code runs on TARGET_NTASKS tasks. The left over tasks do
@@ -89,7 +89,6 @@ int main(int argc, char **argv)
         int new_size;
         if ((ret = MPI_Comm_size(newcomm, &new_size)))
             MPIERR(ret);
-        printf("%d newcomm = %d even = %d new_size = %d\n", my_rank, newcomm, even, new_size);
 
         /* Check that some bad inputs are rejected. */
         if (PIOc_Init_Intracomm(newcomm, new_size, STRIDE + 30, BASE, REARRANGER,
@@ -122,7 +121,6 @@ int main(int argc, char **argv)
             ERR(ret);
         if ((ret = PIOc_get_numiotasks(iosysid, &numiotasks)))
             ERR(ret);
-        printf("%d numiotasks = %d\n", my_rank, numiotasks);
         if (numiotasks != 1)
             ERR(ERR_WRONG);
 
@@ -133,7 +131,6 @@ int main(int argc, char **argv)
             ERR(ret);
         if ((ret = PIOc_iotask_rank(iosysid, &iorank)))
             ERR(ret);
-        printf("%d iorank = %d\n", my_rank, iorank);
         /* Each of two tasks has an iosystem. On both iosystems, the
          * single task has iorank of zero. */
         if (iorank != 0)
@@ -203,7 +200,6 @@ int main(int argc, char **argv)
             char dimname_in[NC_MAX_NAME + 1];
             if ((ret = PIOc_inq_dimname(ncid, 0, dimname_in)))
                 return ret;
-            printf("%d ncid dimname_in = %s should be %s\n", my_rank, dimname_in, dimname[0]);
             if (strcmp(dimname_in, dimname[0]))
                 return ERR_WRONG;
 
@@ -214,7 +210,6 @@ int main(int argc, char **argv)
                     return ret;
                 if ((ret = PIOc_inq_dimname(ncid2, 0, dimname_in)))
                     return ret;
-                printf("%d ncid2 dimname_in = %s should be %s\n", my_rank, dimname_in, dimname[1]);
                 if (strcmp(dimname_in, dimname[1]))
                     return ERR_WRONG;
             }
@@ -240,7 +235,6 @@ int main(int argc, char **argv)
     }/* my_rank < TARGET_NTASKS */
 
     /* Finalize test. */
-    printf("%d %s finalizing...\n", my_rank, TEST_NAME);
     if ((ret = pio_test_finalize(&test_comm)))
         return ERR_AWFUL;
 

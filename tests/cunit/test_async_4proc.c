@@ -41,7 +41,7 @@ int main(int argc, char **argv)
 
     /* Initialize test. */
     if ((ret = pio_test_init2(argc, argv, &my_rank, &ntasks, TARGET_NTASKS, TARGET_NTASKS,
-                              0, &test_comm)))
+                              -1, &test_comm)))
         ERR(ERR_INIT);
     
     /* Test code runs on TARGET_NTASKS tasks. The left over tasks do
@@ -82,7 +82,6 @@ int main(int argc, char **argv)
                         sprintf(filename, "%s_%s_%d_%d.nc", TEST_NAME, iotype_name, sample, my_comp_idx);
 
                         /* Create sample file. */
-                        printf("%d %s creating file %s\n", my_rank, TEST_NAME, filename);
                         if ((ret = create_nc_sample(sample, iosysid[my_comp_idx], flavor[flv], filename, my_rank, NULL)))
                             ERR(ret);
 
@@ -93,7 +92,6 @@ int main(int argc, char **argv)
                 } /* next netcdf flavor */
 
                 /* Finalize the IO system. Only call this from the computation tasks. */
-                printf("%d %s Freeing PIO resources\n", my_rank, TEST_NAME);
                 for (int c = 0; c < COMPONENT_COUNT; c++)
                     if ((ret = PIOc_finalize(iosysid[c])))
                         ERR(ret);

@@ -1,34 +1,19 @@
-#set -e
-printf 'running PIO tests...'
-echo
-printf 'running test_spmd...\n'
-mpiexec -n 4 ./test_spmd
-# echo
-# printf 'running test_rearr...'
-# mpiexec -n 4 ./test_rearr
-# mpiexec -n 4 ./test_intercomm2
-# mpiexec -n 4 ./test_async_simple
-# mpiexec -n 4 ./test_async_3proc
-# mpiexec -n 4 ./test_async_4proc
-# mpiexec -n 4 ./test_iosystem2_simple
-# mpiexec -n 4 ./test_iosystem2_simple2
-# mpiexec -n 4 ./test_iosystem2
-# mpiexec -n 4 ./test_iosystem3_simple
-# mpiexec -n 4 ./test_iosystem3_simple2
-# mpiexec -n 4 ./test_iosystem3
-# mpiexec -n 4 ./test_pioc
-# mpiexec -n 4 ./test_pioc_unlim
-# mpiexec -n 4 ./test_pioc_putget
-# mpiexec -n 4 ./test_pioc_fill
-# mpiexec -n 4 ./test_darray
-# mpiexec -n 4 ./test_darray_multi
-# mpiexec -n 4 ./test_darray_multivar
-# mpiexec -n 4 ./test_darray_multivar2
-# mpiexec -n 4 ./test_darray_multivar3
-# mpiexec -n 4 ./test_darray_1d
-# mpiexec -n 4 ./test_darray_3d
-# mpiexec -n 4 ./test_decomp_uneven
-# mpiexec -n 4 ./test_decomps
-# mpiexec -n 4 ./test_darray_async_simple
-# mpiexec -n 4 ./test_darray_async
-# mpiexec -n 4 ./test_darray_async_many
+# Stop execution of script if error is returned.
+set -e
+
+# Stop loop if ctrl-c is pressed.
+trap exit SIGINT SIGTERM
+
+printf 'running PIO tests...\n'
+PIO_TESTS='test_spmd test_rearr test_intercomm2 test_async_simple test_async_3proc '\
+'test_async_4proc test_iosystem2_simple test_iosystem2_simple2 test_iosystem2 '\
+'test_iosystem3_simple test_iosystem3_simple2 test_iosystem3 test_pioc '\
+'test_pioc_unlim test_pioc_putget test_pioc_fill test_darray test_darray_multi '\
+'test_darray_multivar test_darray_multivar2 test_darray_multivar3 test_darray_1d '\
+'test_darray_3d test_decomp_uneven test_decomps test_darray_async_simple '\
+'test_darray_async test_darray_async_many test_darray_2sync'
+for TEST in $PIO_TESTS
+do
+    echo "running ${TEST}"
+    mpiexec -n 4 ./${TEST} || break
+done
