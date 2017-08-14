@@ -493,7 +493,7 @@ int main(int argc, char **argv)
 
     /* Initialize test. */
     if ((ret = pio_test_init2(argc, argv, &my_rank, &ntasks, MIN_NTASKS,
-                              TARGET_NTASKS, 3, &test_comm)))
+                              TARGET_NTASKS, -1, &test_comm)))
         ERR(ERR_INIT);
     if ((ret = PIOc_set_iosystem_error_handling(PIO_DEFAULT, PIO_RETURN_ERROR, NULL)))
         return ret;
@@ -519,8 +519,7 @@ int main(int argc, char **argv)
         int mpierr;
 
         /* Run the test for each data type. */
-        /* for (int t = 0; t < NUM_TYPES_TO_TEST; t++) */
-        for (int t = 0; t < 1; t++)
+        for (int t = 0; t < NUM_TYPES_TO_TEST; t++)
         {
             if ((ret = PIOc_init_async(test_comm, NUM_IO_PROCS, NULL, COMPONENT_COUNT,
                                        &num_computation_procs, NULL, &io_comm, comp_comm,
