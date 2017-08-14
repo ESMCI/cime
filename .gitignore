@@ -26,5 +26,6 @@ build/
 .deps/
 .libs/
 m4/
+*.nc
 
 
