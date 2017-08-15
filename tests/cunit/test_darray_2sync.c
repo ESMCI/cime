@@ -78,7 +78,8 @@ int darray_simple_test(int iosysid, int my_rank, int num_iotypes, int *iotype,
             compdof[0] = (my_rank - 1) * elements_per_pe;
             compdof[1] = compdof[0] + 1;
         }
-        
+
+        /* Initialize the decomposition. */
         if ((ret = PIOc_init_decomp(iosysid, PIO_INT, NDIM1, &gdimlen, elements_per_pe,
                                     compdof, &ioid, PIO_REARR_BOX, NULL, NULL)))
             ERR(ret);
@@ -94,30 +95,34 @@ int darray_simple_test(int iosysid, int my_rank, int num_iotypes, int *iotype,
         if ((ret = PIOc_write_darray(ncid, varid, ioid, arraylen, test_data, NULL)))
             ERR(ret);
 
+        /* Free decomposition. */
+        if ((ret = PIOc_freedecomp(iosysid, ioid)))
+            ERR(ret);
+
         /* Close the test file. */
         if ((ret = PIOc_closefile(ncid)))
             ERR(ret);
 
-        /* Check the file. */
-        {
-            int ncid2;
-            int data_in[elements_per_pe * NUM_COMPUTATION_PROCS];
+        /* /\* Check the file. *\/ */
+        /* { */
+        /*     int ncid2; */
+        /*     int data_in[elements_per_pe * NUM_COMPUTATION_PROCS]; */
 
-            /* Reopen the file. */
-            if ((ret = PIOc_openfile2(iosysid, &ncid2, &iotype[iot], filename, PIO_NOWRITE)))
-                ERR(ret);
+        /*     /\* Reopen the file. *\/ */
+        /*     if ((ret = PIOc_openfile2(iosysid, &ncid2, &iotype[iot], filename, PIO_NOWRITE))) */
+        /*         ERR(ret); */
 
-            /* Read the data. */
-            if ((ret = PIOc_get_var_int(ncid2, 0, data_in)))
-                ERR(ret);
-            if (my_rank && data_in[0] != 1 && data_in[1] != -1 && data_in[2] != 2 &&
-                data_in[3] != -2 && data_in[4] != 3 && data_in[5] != -3)
-                ERR(ret);
+        /*     /\* Read the data. *\/ */
+        /*     if ((ret = PIOc_get_var_int(ncid2, 0, data_in))) */
+        /*         ERR(ret); */
+        /*     if (my_rank && data_in[0] != 1 && data_in[1] != -1 && data_in[2] != 2 && */
+        /*         data_in[3] != -2 && data_in[4] != 3 && data_in[5] != -3) */
+        /*         ERR(ret); */
 
-            /* Close the test file. */
-            if ((ret = PIOc_closefile(ncid2)))
-                ERR(ret);
-        }
+        /*     /\* Close the test file. *\/ */
+        /*     if ((ret = PIOc_closefile(ncid2))) */
+        /*         ERR(ret); */
+        /* } */
     }
     
     return PIO_NOERR;
