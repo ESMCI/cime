@@ -92,12 +92,9 @@ int create_decomposition_3d(int ntasks, int my_rank, int iosysid, int *ioid)
         compdof[i] = my_rank * elements_per_pe + i;
 
     /* Create the PIO decomposition for this test. */
-    printf("%d Creating decomposition elements_per_pe = %lld\n", my_rank, elements_per_pe);
     if ((ret = PIOc_init_decomp(iosysid, PIO_INT, NDIM3, dim_len_3d, elements_per_pe,
                                 compdof, ioid, 0, NULL, NULL)))
         ERR(ret);
-
-    printf("%d decomposition initialized.\n", my_rank);
 
     /* Free the mapping. */
     free(compdof);
@@ -153,8 +150,6 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
         sprintf(filename, "data_%s_iotype_%d.nc", TEST_NAME, flavor[fmt]);
 
         /* Create the netCDF output file. */
-        printf("rank: %d Creating sample file %s with format %d...\n", my_rank, filename,
-               flavor[fmt]);
         if ((ret = PIOc_createfile(iosysid, &ncid, &flavor[fmt], filename, PIO_CLOBBER)))
             ERR(ret);
 
@@ -163,7 +158,6 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
             ERR(ret);
 
         /* Define netCDF dimensions and variable. */
-        printf("%d Defining netCDF metadata...\n", my_rank);
         for (int d = 0; d < NDIM; d++)
             if ((ret = PIOc_def_dim(ncid, dim_name[d], (PIO_Offset)dim_len[d], &dimids[d])))
                 ERR(ret);
@@ -227,7 +221,6 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
                 return ERR_WRONG;
 
         /* Close the netCDF file. */
-        printf("%d Closing the sample data file...\n", my_rank);
         if ((ret = PIOc_closefile(ncid2)))
             ERR(ret);
     }
@@ -264,12 +257,10 @@ int test_decomp_read_write(int iosysid, int ioid, int num_flavors, int *flavor, 
         /* Create the filename. */
         sprintf(filename, "decomp_%s_iotype_%d.nc", TEST_NAME, flavor[fmt]);
 
-        printf("writing decomp file %s\n", filename);
         if ((ret = PIOc_write_nc_decomp(iosysid, filename, 0, ioid, NULL, NULL, 0)))
             return ret;
 
         /* Read the data. */
-        printf("reading decomp file %s\n", filename);
         if ((ret = PIOc_read_nc_decomp(iosysid, filename, &ioid2, test_comm, PIO_INT,
                                        title_in, history_in, &fortran_order_in)))
             return ret;
@@ -307,8 +298,8 @@ int test_decomp_read_write(int iosysid, int ioid, int num_flavors, int *flavor, 
             {
                 /* I haven't figured out yet what these should be for
                  * the box rearranger. */
-                printf("iodesc->nrecv = %d iodesc->num_aiotasks = %d\n", iodesc->nrecvs,
-                       iodesc->num_aiotasks);
+                /* printf("iodesc->nrecv = %d iodesc->num_aiotasks = %d\n", iodesc->nrecvs, */
+                /*        iodesc->num_aiotasks); */
             }
         }
 
@@ -377,7 +368,7 @@ int main(int argc, char **argv)
 
     /* Initialize test. */
     if ((ret = pio_test_init2(argc, argv, &my_rank, &ntasks, MIN_NTASKS,
-                              MIN_NTASKS, 3, &test_comm)))
+                              MIN_NTASKS, -1, &test_comm)))
         ERR(ERR_INIT);
 
     if ((ret = PIOc_set_iosystem_error_handling(PIO_DEFAULT, PIO_RETURN_ERROR, NULL)))
@@ -395,7 +386,6 @@ int main(int argc, char **argv)
         /* Figure out iotypes. */
         if ((ret = get_iotypes(&num_flavors, flavor)))
             ERR(ret);
-        printf("Runnings tests for %d flavors\n", num_flavors);
 
         for (int r = 0; r < NUM_REARRANGERS_TO_TEST; r++)
         {
@@ -406,7 +396,6 @@ int main(int argc, char **argv)
                 return ret;
 
             /* Run tests. */
-            printf("%d Running tests...\n", my_rank);
             if ((ret = test_all_darray(iosysid, num_flavors, flavor, my_rank,
                                        rearranger[r], test_comm)))
                 return ret;
@@ -419,7 +408,6 @@ int main(int argc, char **argv)
     } /* endif my_rank < TARGET_NTASKS */
 
     /* Finalize the MPI library. */
-    printf("%d %s Finalizing...\n", my_rank, TEST_NAME);
     if ((ret = pio_test_finalize(&test_comm)))
         return ret;
 

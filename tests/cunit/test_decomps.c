@@ -109,7 +109,6 @@ int test_decomp1(int iosysid, int use_io, int my_rank, MPI_Comm test_comm)
     }
 
     /* Create the PIO decomposition for this test. */
-    printf("%d Creating decomposition...\n", my_rank);
     if ((ret = PIOc_InitDecomp(iosysid, PIO_FLOAT, 2, slice_dimlen, (PIO_Offset)elements_per_pe,
                                compdof, &ioid, NULL, iostart, iocount)))
         return ret;
@@ -152,17 +151,8 @@ int test_decomp1(int iosysid, int use_io, int my_rank, MPI_Comm test_comm)
     if ((ret = PIOc_readmap(DECOMP_FILE, &ndims, (int **)&gdims, &fmaplen, (PIO_Offset **)&map,
                             test_comm)))
         return ret;
-    printf("ndims = %d fmaplen = %lld\n", ndims, fmaplen);
     if (ndims != 2 || fmaplen != 4)
         return ERR_WRONG;
-    for (int d = 0; d < ndims; d++)
-    {
-        printf("gdims[%d] = %d\n", d, gdims[d]);
-    }
-    for (int m = 0; m < fmaplen; m++)
-    {
-        printf("map[%d] = %lld\n", m, map[m]);
-    }
 
     free(map);
     free(gdims);
@@ -174,7 +164,6 @@ int test_decomp1(int iosysid, int use_io, int my_rank, MPI_Comm test_comm)
         return ERR_WRONG;
         
     /* Free the PIO decomposition. */
-    printf("%d Freeing PIO decomposition...\n", my_rank);
     if ((ret = PIOc_freedecomp(iosysid, ioid)))
         return ret;
         
@@ -214,7 +203,6 @@ int test_decomp_bc(int iosysid, int my_rank, MPI_Comm test_comm)
     /* These should not work. */
     if (PIOc_InitDecomp_bc(iosysid + TEST_VAL_42, PIO_FLOAT, 2, slice_dimlen, start, count, &ioid) != PIO_EBADID)
         return ERR_WRONG;
-    printf("ret = %d\n", PIOc_InitDecomp_bc(iosysid, PIO_FLOAT, 2, NULL, start, count, &ioid));
     if (PIOc_InitDecomp_bc(iosysid, PIO_FLOAT, 2, NULL, start, count, &ioid) != PIO_EINVAL)
         return ERR_WRONG;
     if (PIOc_InitDecomp_bc(iosysid, PIO_FLOAT, 2, slice_dimlen, NULL, count, &ioid) != PIO_EINVAL)
@@ -229,7 +217,6 @@ int test_decomp_bc(int iosysid, int my_rank, MPI_Comm test_comm)
         return ERR_WRONG;
         
     /* Create the PIO decomposition for this test. */
-    printf("%d Creating decomposition...\n", my_rank);
     if ((ret = PIOc_InitDecomp_bc(iosysid, PIO_FLOAT, 2, slice_dimlen, start, count, &ioid)))
         return ret;
 
@@ -241,23 +228,13 @@ int test_decomp_bc(int iosysid, int my_rank, MPI_Comm test_comm)
     if ((ret = PIOc_readmap(DECOMP_BC_FILE, &ndims, (int **)&gdims, &fmaplen, (PIO_Offset **)&map,
                             test_comm)))
         return ret;
-    printf("ndims = %d fmaplen = %lld\n", ndims, fmaplen);
     if (ndims != 2 || fmaplen != 4)
         return ERR_WRONG;
-    for (int d = 0; d < ndims; d++)
-    {
-        printf("gdims[%d] = %d\n", d, gdims[d]);
-    }
-    for (int m = 0; m < fmaplen; m++)
-    {
-        printf("map[%d] = %lld\n", m, map[m]);
-    }
 
     free(map);
     free(gdims);
         
     /* Free the PIO decomposition. */
-    printf("%d Freeing PIO decomposition...\n", my_rank);
     if ((ret = PIOc_freedecomp(iosysid, ioid)))
         return ret;
         
@@ -309,12 +286,10 @@ int test_decomp_read_write(int iosysid, int ioid, int num_flavors, int *flavor, 
             sprintf(filename, "decomp_%s_iotype_%d_rearr_%d_decomp_type_%d.nc", TEST_NAME,
                     flavor[fmt], rearranger, decomp_file_type);
 
-            printf("writing decomp file %s\n", filename);
             if ((ret = PIOc_write_nc_decomp(iosysid, filename, cmode, ioid, NULL, NULL, 0)))
                 return ret;
     
             /* Read the data. */
-            printf("reading decomp file %s\n", filename);
             if ((ret = PIOc_read_nc_decomp(iosysid, filename, &ioid2, test_comm, PIO_INT,
                                            title_in, history_in, &fortran_order_in)))
                 return ret;
@@ -361,7 +336,6 @@ int test_decomp_read_write(int iosysid, int ioid, int num_flavors, int *flavor, 
                         return ERR_WRONG;
                 if (iodesc->dimlen[0] != X_DIM_LEN || iodesc->dimlen[1] != Y_DIM_LEN)
                     return ERR_WRONG;
-                printf("%d in my test iodesc->maxiobuflen = %d\n", my_rank, iodesc->maxiobuflen);
             }
         
             /* Free the PIO decomposition. */
@@ -387,8 +361,8 @@ int main(int argc, char **argv)
     int ret;                    /* Return code. */
 
     /* Initialize test. */
-    if ((ret = pio_test_init(argc, argv, &my_rank, &ntasks, TARGET_NTASKS,
-                             &test_comm)))
+    if ((ret = pio_test_init2(argc, argv, &my_rank, &ntasks, TARGET_NTASKS, TARGET_NTASKS,
+                              -1, &test_comm)))
         ERR(ERR_INIT);
 
     /* Test code runs on TARGET_NTASKS tasks. The left over tasks do
@@ -408,7 +382,6 @@ int main(int argc, char **argv)
             for (int io_test = 0; io_test < num_iotests; io_test++)
             {
                 /* Initialize PIO system on world. */
-                printf("%d about to call Init_Intracomm\n", my_rank);
                 if ((ret = PIOc_Init_Intracomm(test_comm, NUM_IO4, STRIDE1, BASE0, rearranger[r], &iosysid)))
                     ERR(ret);
                 
@@ -439,7 +412,6 @@ int main(int argc, char **argv)
                     ERR(ret);
                 
                 /* Finalize PIO systems. */
-                printf("%d pio finalized\n", my_rank);
                 if ((ret = PIOc_finalize(iosysid)))
                     ERR(ret);
             } /* next io test */
@@ -447,7 +419,6 @@ int main(int argc, char **argv)
     } /* my_rank < TARGET_NTASKS */
 
     /* Finalize test. */
-    printf("%d %s finalizing...\n", my_rank, TEST_NAME);
     if ((ret = pio_test_finalize(&test_comm)))
         return ERR_AWFUL;
 

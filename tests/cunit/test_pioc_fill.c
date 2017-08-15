@@ -121,7 +121,6 @@ int putget_write_vara(int ncid, int *varid, PIO_Offset *start, PIO_Offset *count
                       int flavor, int my_rank)
 {
     int ret;
-    printf("now writing data\n");
 
     if ((ret = PIOc_put_vara_schar(ncid, varid[0], start, count, (signed char *)byte_array)))
         ERR(ret);
@@ -141,10 +140,8 @@ int putget_write_vara(int ncid, int *varid, PIO_Offset *start, PIO_Offset *count
     if ((ret = PIOc_put_vara_double(ncid, varid[5], start, count, (double *)double_array)))
         ERR(ret);
 
-    printf("now wrote classic data\n");
     if (flavor == PIO_IOTYPE_NETCDF4C || flavor == PIO_IOTYPE_NETCDF4P)
     {
-        printf("now writing netcdf4 data\n");
         if ((ret = PIOc_put_vara_uchar(ncid, varid[6], start, count, (unsigned char *)ubyte_array)))
             ERR(ret);
         if ((ret = PIOc_put_vara_ushort(ncid, varid[7], start, count, (unsigned short *)ushort_array)))
@@ -176,12 +173,9 @@ int check_fill(int ncid, int *varid, int flavor, int default_fill, int nowrite, 
     unsigned long long uint64_fill_value_in;
     int ret;
 
-    printf("checking fill values for flavor %d default_fill %d\n", flavor, default_fill);
 
     if ((ret = PIOc_inq_var_fill(ncid, varid[0], &fill_mode, &byte_fill_value_in)))
         ERR(ret);
-    printf("nowrite = %d PIO_FILL = %d fill_mode = %d byte_fill_value_in = %d\n",
-           nowrite, PIO_FILL, fill_mode, (int)byte_fill_value_in);
     if (fill_mode != PIO_FILL || byte_fill_value_in != (default_fill ? NC_FILL_BYTE : byte_fill_value))
         ERR(ERR_WRONG);
     fill_mode = -99;
@@ -200,7 +194,6 @@ int check_fill(int ncid, int *varid, int flavor, int default_fill, int nowrite, 
 
     if ((ret = PIOc_inq_var_fill(ncid, varid[3], &fill_mode, &int_fill_value_in)))
         ERR(ret);
-    printf("int_fill_value_in = %d\n", int_fill_value_in);
     if (fill_mode != PIO_FILL || int_fill_value_in != (default_fill ? NC_FILL_INT : int_fill_value))
         ERR(ERR_WRONG);
     fill_mode = -99;
@@ -459,7 +452,6 @@ int create_putget_file(int iosysid, int flavor, int *dim_len, int *varid, const 
     /* Turn on fill mode. */
     if ((ret = PIOc_set_fill(ncid, NC_FILL, &old_mode)))
         ERR(ret);
-    printf("old_mode = %d\n", old_mode);
     if (old_mode != NC_NOFILL)
         ERR(ERR_WRONG);
 
@@ -477,7 +469,6 @@ int create_putget_file(int iosysid, int flavor, int *dim_len, int *varid, const 
     {
         char var_name[PIO_MAX_NAME + 1];
         snprintf(var_name, PIO_MAX_NAME, "%s_%d", VAR_NAME, xtype[v]);
-        printf("defining var %s\n", var_name);
         if ((ret = PIOc_def_var(ncid, var_name, xtype[v], NDIM, dimids, &varid[v])))
             ERR(ret);
     }
@@ -540,8 +531,6 @@ int test_fill(int iosysid, int num_flavors, int *flavor, int my_rank,
 {
     int dim_len[NDIM] = {NUM_TIMESTEPS, X_DIM_LEN, Y_DIM_LEN};
 
-    printf("running tests for %d flavors\n", num_flavors);
-
     /* Test with and without default fill values. */
     for (int default_fill = 0; default_fill < 2; default_fill++)
     {
@@ -561,22 +550,18 @@ int test_fill(int iosysid, int num_flavors, int *flavor, int my_rank,
             snprintf(filename, PIO_MAX_NAME, "%s_default_fill_%d_%s.nc", TEST_NAME, default_fill, iotype_name);
 
             /* Create test file with dims and vars defined. */
-            printf("%d creating test file %s for flavor = %d...\n", my_rank, filename, flavor[fmt]);
             if ((ret = create_putget_file(iosysid, flavor[fmt], dim_len, varid, filename,
                                           default_fill, &ncid, my_rank)))
                 ERR(ret);
-            printf("created file %s\n", filename);
 
             /* Write some data. */
             PIO_Offset start[NDIM] = {1, 0, 0};
             PIO_Offset count[NDIM] = {1, X_DIM_LEN/2, Y_DIM_LEN};
 
-            printf("writing data to %s\n", filename);
             /* Use the no-type vara functions to write some data. */
             if ((ret = putget_write_vara(ncid, varid, start, count, flavor[fmt], my_rank)))
                 ERR(ret);
 
-            printf("wrote data to %s\n", filename);
             /* Make sure all data are written (pnetcdf needs this). */
             if ((ret = PIOc_sync(ncid)))
                 ERR(ret);
@@ -594,7 +579,6 @@ int test_fill(int iosysid, int num_flavors, int *flavor, int my_rank,
             {
                 int omode = omt ? PIO_NOWRITE : PIO_WRITE;
                 
-                printf("about to try to open file %s\n", filename);
                 if ((ret = PIOc_openfile(iosysid, &ncid, &(flavor[fmt]), filename, omode)))
                     ERR(ret);
                 
@@ -638,8 +622,6 @@ int test_fill_mode(int iosysid, int num_flavors, int *flavor, int my_rank,
 {
 #define NUM_TYPES_TO_TEST 2
     int xtype[NUM_TYPES_TO_TEST] = {PIO_INT, PIO_FLOAT};
-
-    printf("test_fill_mode async = %d\n", async);
 
     /* Test with and without default fill values. */
     for (int default_fill = 0; default_fill < 2; default_fill++)
@@ -735,7 +717,6 @@ int test_fill_mode(int iosysid, int num_flavors, int *flavor, int my_rank,
                         ERR(ret);
 
                     /* Access to read it. */
-                    printf("about to try to open file %s\n", filename);
                     if ((ret = PIOc_openfile(iosysid, &ncid, &flavor[fmt], filename, PIO_WRITE)))
                         ERR(ret);
 
@@ -822,7 +803,7 @@ int main(int argc, char **argv)
     init_arrays();
 
     /* Change the 5th arg to 3 to turn on logging. */
-    if ((ret = run_test_main(argc, argv, MIN_NTASKS, TARGET_NTASKS, 3,
+    if ((ret = run_test_main(argc, argv, MIN_NTASKS, TARGET_NTASKS, -1,
                              TEST_NAME, dim_len, COMPONENT_COUNT, NUM_IO_PROCS)))
         return ret;
 

@@ -78,8 +78,6 @@ int create_decomposition_1d(int ntasks, int my_rank, int iosysid, int pio_type, 
                                compdof, ioid, NULL, NULL, NULL)))
         ERR(ret);
 
-    printf("%d decomposition initialized.\n", my_rank);
-
     return 0;
 }
 
@@ -150,7 +148,6 @@ int test_darray_fill(int iosysid, int ioid, int pio_type, int num_flavors, int *
             continue;
 
         /* NetCDF-4 types only work with netCDF-4 formats. */
-        printf("pio_type = %d flavor[fmt] = %d\n", pio_type, flavor[fmt]);
         if (pio_type > PIO_DOUBLE && flavor[fmt] != PIO_IOTYPE_NETCDF4C &&
             flavor[fmt] != PIO_IOTYPE_NETCDF4P)
             continue;
@@ -162,8 +159,6 @@ int test_darray_fill(int iosysid, int ioid, int pio_type, int num_flavors, int *
                     pio_type, with_fillvalue);
 
             /* Create the netCDF output file. */
-            printf("rank: %d Creating sample file %s with format %d...\n", my_rank, filename,
-                   flavor[fmt]);
             if ((ret = PIOc_createfile(iosysid, &ncid, &flavor[fmt], filename, PIO_CLOBBER)))
                 ERR(ret);
 
@@ -364,7 +359,6 @@ int test_darray_fill(int iosysid, int ioid, int pio_type, int num_flavors, int *
             free(bufr);
 
             /* Close the netCDF file. */
-            printf("%d Closing the sample data file...\n", my_rank);
             if ((ret = PIOc_closefile(ncid)))
                 ERR(ret);
         } /* with_fillvalue */
@@ -440,7 +434,6 @@ int test_darray_fill_unlim(int iosysid, int ioid, int pio_type, int num_flavors,
             continue;
 
         /* NetCDF-4 types only work with netCDF-4 formats. */
-        printf("pio_type = %d flavor[fmt] = %d\n", pio_type, flavor[fmt]);
         if (pio_type > PIO_DOUBLE && flavor[fmt] != PIO_IOTYPE_NETCDF4C &&
             flavor[fmt] != PIO_IOTYPE_NETCDF4P)
             continue;
@@ -450,8 +443,6 @@ int test_darray_fill_unlim(int iosysid, int ioid, int pio_type, int num_flavors,
                 pio_type);
 
         /* Create the netCDF output file. */
-        printf("rank: %d Creating sample file %s with format %d...\n", my_rank, filename,
-               flavor[fmt]);
         if ((ret = PIOc_createfile(iosysid, &ncid, &flavor[fmt], filename, PIO_CLOBBER)))
             ERR(ret);
 
@@ -673,7 +664,6 @@ int test_darray_fill_unlim(int iosysid, int ioid, int pio_type, int num_flavors,
         free(bufr);
 
         /* Close the netCDF file. */
-        printf("%d Closing the sample data file...\n", my_rank);
         if ((ret = PIOc_closefile(ncid)))
             ERR(ret);
     } /* next iotype */
@@ -711,12 +701,10 @@ int test_decomp_read_write(int iosysid, int ioid, int num_flavors, int *flavor, 
         /* Create the filename. */
         sprintf(filename, "decomp_%s_iotype_%d.nc", TEST_NAME, flavor[fmt]);
 
-        printf("writing decomp file %s\n", filename);
         if ((ret = PIOc_write_nc_decomp(iosysid, filename, 0, ioid, NULL, NULL, 0)))
             return ret;
 
         /* Read the data. */
-        printf("reading decomp file %s\n", filename);
         if ((ret = PIOc_read_nc_decomp(iosysid, filename, &ioid2, test_comm, pio_type,
                                        title_in, history_in, &fortran_order_in)))
             return ret;
@@ -781,7 +769,6 @@ int test_decomp_read_write(int iosysid, int ioid, int num_flavors, int *flavor, 
             /*     return ERR_WRONG; */
             /* if (iodesc->num_aiotasks != TARGET_NTASKS) */
             /*     return ERR_WRONG; */
-            printf("iodesc->nrecvs = %d iodesc->num_aiotasks = %d\n", iodesc->nrecvs, iodesc->num_aiotasks);
             if (iodesc->ndof != EXPECTED_MAPLEN)
                 return ERR_WRONG;
             if (iodesc->rearranger != rearranger || iodesc->maxregions != 1)
@@ -824,7 +811,7 @@ int main(int argc, char **argv)
 
     /* Initialize test. */
     if ((ret = pio_test_init2(argc, argv, &my_rank, &ntasks, MIN_NTASKS,
-                              MIN_NTASKS, 3, &test_comm)))
+                              MIN_NTASKS, -1, &test_comm)))
         ERR(ERR_INIT);
 
     if ((ret = PIOc_set_iosystem_error_handling(PIO_DEFAULT, PIO_RETURN_ERROR, NULL)))
@@ -842,7 +829,6 @@ int main(int argc, char **argv)
         /* Figure out iotypes. */
         if ((ret = get_iotypes(&num_flavors, flavor)))
             ERR(ret);
-        printf("Runnings tests for %d flavors\n", num_flavors);
 
         for (int r = 0; r < NUM_REARRANGERS_TO_TEST; r++)
         {
@@ -888,7 +874,6 @@ int main(int argc, char **argv)
     } /* endif my_rank < TARGET_NTASKS */
 
     /* Finalize the MPI library. */
-    printf("%d %s Finalizing...\n", my_rank, TEST_NAME);
     if ((ret = pio_test_finalize(&test_comm)))
         return ret;
 

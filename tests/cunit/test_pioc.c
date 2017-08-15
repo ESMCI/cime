@@ -123,12 +123,9 @@ int create_decomposition(int ntasks, int my_rank, int iosysid, int dim1_len, int
         ERR(ERR_WRONG);
 
     /* Create the PIO decomposition for this test. */
-    printf("%d Creating decomposition elements_per_pe = %lld\n", my_rank, elements_per_pe);
     if ((ret = PIOc_init_decomp(iosysid, PIO_FLOAT, NDIM1, dim_len, elements_per_pe,
                                 compdof, ioid, 0, NULL, NULL)))
         ERR(ret);
-
-    printf("%d decomposition initialized.\n", my_rank);
 
     /* Free the mapping. */
     free(compdof);
@@ -213,13 +210,10 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
         sprintf(filename, "%s_flavor_%d_fv_%d.nc", TEST_NAME, flavor[fmt], fv);
 
         /* Create the netCDF output file. */
-        printf("rank: %d Creating sample file %s with format %d...\n", my_rank, filename,
-               flavor[fmt]);
         if ((ret = PIOc_createfile(iosysid, &ncid, &(flavor[fmt]), filename, PIO_CLOBBER)))
             ERR(ret);
 
         /* Define netCDF dimensions and variable. */
-        printf("rank: %d Defining netCDF metadata...\n", my_rank);
         if ((ret = PIOc_def_dim(ncid, DIM_NAME, (PIO_Offset)dim_len[0], &dimids[0])))
             ERR(ret);
 
@@ -248,7 +242,6 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
             ERR(ret);
 
         /* Close the netCDF file. */
-        printf("rank: %d Closing the sample data file...\n", my_rank);
         if ((ret = PIOc_closefile(ncid)))
             ERR(ret);
 
@@ -280,17 +273,14 @@ int check_dim_names(int my_rank, int ncid, MPI_Comm test_comm)
         memset(dim_name, 0, sizeof(dim_name));
         if ((ret = PIOc_inq_dimname(ncid, d, dim_name)))
             ERR(ret);
-        printf("my_rank %d my_test_rank %d dim %d name %s\n", my_rank, my_test_rank, d, dim_name);
 
         /* Did other ranks get the same name? */
         memset(zero_dim_name, 0, sizeof(zero_dim_name));
         if (!my_test_rank)
             strcpy(zero_dim_name, dim_name);
-        printf("rank %d dim_name %s zero_dim_name %s\n", my_rank, dim_name, zero_dim_name);
         if ((ret = MPI_Bcast(&zero_dim_name, strlen(dim_name) + 1, MPI_CHAR, 0,
                              test_comm)))
             MPIERR(ret);
-        printf("%d zero_dim_name = %s dim_name = %s\n", my_rank, zero_dim_name, dim_name);
         if (strcmp(dim_name, zero_dim_name))
             return ERR_AWFUL;
     }
@@ -317,7 +307,6 @@ int check_var_name(int my_rank, int ncid, MPI_Comm test_comm)
     memset(var_name, 0, sizeof(var_name));
     if ((ret = PIOc_inq_varname(ncid, 0, var_name)))
         ERR(ret);
-    printf("my_rank %d var name %s\n", my_rank, var_name);
 
     /* Did other ranks get the same name? */
     memset(zero_var_name, 0, sizeof(zero_var_name));
@@ -492,16 +481,12 @@ int check_error_strings(int my_rank, int num_tries, int *errcode,
         if ((ret = PIOc_strerror(errcode[try], errstr)))
             ERR(ret);
 
-        printf("%d for errcode = %d message = %s\n", my_rank, errcode[try], errstr);
-
         /* Check that it was as expected. */
         if (strncmp(errstr, expected[try], strlen(expected[try])))
         {
             printf("%d expected %s got %s\n", my_rank, expected[try], errstr);
             return ERR_AWFUL;
         }
-        if (!my_rank)
-            printf("%d errcode = %d passed\n", my_rank, errcode[try]);
     }
 
     return PIO_NOERR;
@@ -584,9 +569,6 @@ int check_strerror_netcdf(int my_rank)
     if (check_mpi(NULL, MPI_ERR_UNKNOWN, __FILE__, __LINE__) != PIO_EIO)
         ERR(ERR_WRONG);
 
-    if (!my_rank)
-        printf("check_strerror_netcdf SUCCEEDED!\n");
-
     return PIO_NOERR;
 }
 
@@ -608,8 +590,6 @@ int check_strerror_netcdf4(int my_rank)
     if ((ret = check_error_strings(my_rank, NUM_NETCDF4_TRIES, errcode, expected)))
         ERR(ret);
 
-    if (!my_rank)
-        printf("check_strerror_netcdf4 SUCCEEDED!\n");
 #endif /* _NETCDF4 */
 
     return PIO_NOERR;
@@ -633,8 +613,6 @@ int check_strerror_pnetcdf(int my_rank)
     if ((ret = check_error_strings(my_rank, NUM_PNETCDF_TRIES, errcode, expected)))
         ERR(ret);
 
-    if (!my_rank)
-        printf("check_strerror_pnetcdf SUCCEEDED!\n");
 #endif /* _PNETCDF */
 
     return PIO_NOERR;
@@ -660,9 +638,6 @@ int check_strerror_pio(int my_rank)
     if ((ret = check_error_strings(my_rank, NUM_PIO_TRIES, errcode, expected)))
         ERR(ret);
 
-    if (!my_rank)
-        printf("check_strerror_pio SUCCEEDED!\n");
-
     return PIO_NOERR;
 }
 
@@ -675,19 +650,15 @@ int check_strerror(int my_rank)
 {
     int ret;
 
-    printf("checking strerror for netCDF-classic error codes...\n");
     if ((ret = check_strerror_netcdf(my_rank)))
         ERR(ret);
 
-    printf("checking strerror for netCDF-4 error codes...\n");
     if ((ret = check_strerror_netcdf4(my_rank)))
         ERR(ret);
 
-    printf("checking strerror for pnetcdf error codes...\n");
     if ((ret = check_strerror_pnetcdf(my_rank)))
         ERR(ret);
 
-    printf("checking strerror for PIO error codes...\n");
     if ((ret = check_strerror_pio(my_rank)))
         ERR(ret);
 
@@ -739,7 +710,6 @@ int define_metadata(int ncid, int my_rank, int flavor)
         ERR(ERR_WRONG);
     if ((ret = PIOc_set_fill(ncid, fillmode, &temp_mode)))
         ERR(ERR_WRONG);
-    printf("%d old_mode = %d temp_mode = %d\n", my_rank, old_mode, temp_mode);
     if (temp_mode != PIO_NOFILL)
         ERR(ERR_WRONG);
     if ((ret = PIOc_set_fill(ncid, old_mode, NULL)))
@@ -891,17 +861,12 @@ int test_names(int iosysid, int num_flavors, int *flavor, int my_rank,
         sprintf(filename, "%s_%s_names.nc", TEST_NAME, iotype_name);
 
         /* Create the netCDF output file. */
-        printf("rank: %d Creating sample file %s with format %d...\n",
-               my_rank, filename, flavor[fmt]);
         if ((ret = PIOc_createfile(iosysid, &ncid, &(flavor[fmt]), filename, PIO_CLOBBER)))
             ERR(ret);
 
         /* Define netCDF dimensions and variable. */
-        printf("rank: %d Defining netCDF metadata...\n", my_rank);
         for (int d = 0; d < NDIM; d++)
         {
-            printf("rank: %d Defining netCDF dimension %s, length %d\n", my_rank,
-                   dim_name[d], dim_len[d]);
             if ((ret = PIOc_def_dim(ncid, dim_name[d], (PIO_Offset)dim_len[d], &dimids[d])))
                 ERR(ret);
         }
@@ -964,7 +929,6 @@ int test_names(int iosysid, int num_flavors, int *flavor, int my_rank,
             ERR(ret);
 
         /* Close the netCDF file. */
-        printf("rank: %d Closing the sample data file...\n", my_rank);
         if ((ret = PIOc_closefile(ncid)))
             ERR(ret);
     }
@@ -998,14 +962,12 @@ int test_files(int iosysid, int num_flavors, int *flavor, int my_rank)
         /* If this is netCDF-4, add the netCDF4 flag. */
         if (flavor[fmt] == PIO_IOTYPE_NETCDF4C || flavor[fmt] == PIO_IOTYPE_NETCDF4P)
         {
-            printf("%d adding NC_NETCDF4 flag\n", my_rank);
             mode |= NC_NETCDF4;
         }
 
         /* If this is pnetcdf or netCDF-4 parallel, add the MPIIO flag. */
         if (flavor[fmt] == PIO_IOTYPE_PNETCDF || flavor[fmt] == PIO_IOTYPE_NETCDF4P)
         {
-            printf("%d adding NC_MPIIO flag\n", my_rank);
             mode |= NC_MPIIO;
         }
 
@@ -1023,7 +985,6 @@ int test_files(int iosysid, int num_flavors, int *flavor, int my_rank)
             ERR(ERR_WRONG);
 
         /* Create the netCDF output file. */
-        printf("%d Creating sample file %s with format %d...\n", my_rank, filename, flavor[fmt]);
         if ((ret = PIOc_create(iosysid, filename, mode, &ncid)))
             ERR(ret);
 
@@ -1044,7 +1005,6 @@ int test_files(int iosysid, int num_flavors, int *flavor, int my_rank)
             ERR(ret);
 
         /* Close the netCDF file. */
-        printf("%d Closing the sample data file...\n", my_rank);
         if (PIOc_closefile(ncid + 1) != PIO_EBADID)
             ERR(ERR_WRONG);
         if ((ret = PIOc_closefile(ncid)))
@@ -1059,8 +1019,6 @@ int test_files(int iosysid, int num_flavors, int *flavor, int my_rank)
             ERR(ERR_WRONG);
 
         /* Reopen the test file. */
-        printf("%d Re-opening sample file %s with format %d...\n",
-               my_rank, filename, flavor[fmt]);
         if ((ret = PIOc_open(iosysid, filename, mode, &ncid)))
             ERR(ret);
 
@@ -1069,7 +1027,6 @@ int test_files(int iosysid, int num_flavors, int *flavor, int my_rank)
             ERR(ret);
 
         /* Close the netCDF file. */
-        printf("%d Closing the sample data file...\n", my_rank);
         if ((ret = PIOc_closefile(ncid)))
             ERR(ret);
 
@@ -1131,7 +1088,6 @@ int check_fillvalues(int ncid, int num_types, int use_custom_fill, int my_rank)
         fill_uint64 = PIO_FILL_UINT64;
     }
 
-    printf("checking fillvalues ncid = %d num_types = %d my_rank = %d\n", ncid, num_types, my_rank);
     if ((ret = pio_get_file(ncid, &file)))
         ERR(ret);
             
@@ -1142,7 +1098,6 @@ int check_fillvalues(int ncid, int num_types, int use_custom_fill, int my_rank)
         /* Get the var info. */
         if ((ret = get_var_desc(v, &file->varlist, &vdesc)))
             ERR(ret);
-        printf("got var_desc for v = %d\n", v);
                 
         /* Check the fill value with this internal function. */
         if ((ret = find_var_fillvalue(file, v, vdesc)))
@@ -1151,57 +1106,46 @@ int check_fillvalues(int ncid, int num_types, int use_custom_fill, int my_rank)
         switch (vdesc->pio_type)
         {
         case PIO_BYTE:
-            printf("signed char vdesc->fillvalue = %d\n", *(signed char *)vdesc->fillvalue);
             if (*(signed char *)vdesc->fillvalue != fill_byte)
                 ERR(ERR_WRONG);
             break;
         case PIO_CHAR:
-            printf("unsigned char vdesc->fillvalue = %d\n", *(unsigned char *)vdesc->fillvalue);
             if (*(unsigned char *)vdesc->fillvalue != fill_char)
                 ERR(ERR_WRONG);
             break;
         case PIO_SHORT:
-            printf("short vdesc->fillvalue = %d\n", *(short *)vdesc->fillvalue);
             if (*(short *)vdesc->fillvalue != fill_short)
                 ERR(ERR_WRONG);
             break;
         case PIO_INT:
-            printf("int vdesc->fillvalue = %d\n", *(int *)vdesc->fillvalue);
             if (*(int *)vdesc->fillvalue != fill_int)
                 ERR(ERR_WRONG);
             break;
         case PIO_FLOAT:
-            printf("float vdesc->fillvalue = %g\n", *(float *)vdesc->fillvalue);
             if (*(float *)vdesc->fillvalue != fill_float)
                 ERR(ERR_WRONG);
             break;
         case PIO_DOUBLE:
-            printf("double vdesc->fillvalue = %g\n", *(double *)vdesc->fillvalue);
             if (*(double *)vdesc->fillvalue != fill_double)
                 ERR(ERR_WRONG);
             break;
         case PIO_UBYTE:
-            printf("unsigned char vdesc->fillvalue = %d\n", *(unsigned char *)vdesc->fillvalue);
             if (*(unsigned char *)vdesc->fillvalue != fill_ubyte)
                 ERR(ERR_WRONG);
             break;
         case PIO_USHORT:
-            printf("unsigned short vdesc->fillvalue = %d\n", *(unsigned short *)vdesc->fillvalue);
             if (*(unsigned short *)vdesc->fillvalue != fill_ushort)
                 ERR(ERR_WRONG);
             break;
         case PIO_UINT:
-            printf("unsigned int vdesc->fillvalue = %d\n", *(unsigned int *)vdesc->fillvalue);
             if (*(unsigned int *)vdesc->fillvalue != fill_uint)
                 ERR(ERR_WRONG);
             break;
         case PIO_INT64:
-            printf("long long vdesc->fillvalue = %lld\n", *(long long *)vdesc->fillvalue);
             if (*(long long *)vdesc->fillvalue != fill_int64)
                 ERR(ERR_WRONG);
             break;
         case PIO_UINT64:
-            printf("unsigned long long vdesc->fillvalue = %lld\n", *(unsigned long long *)vdesc->fillvalue);
             if (*(unsigned long long *)vdesc->fillvalue != fill_uint64)
                 ERR(ERR_WRONG);
             break;
@@ -1246,7 +1190,6 @@ int test_find_var_fillvalue(int iosysid, int num_flavors, int *flavor,
         /* If this is netCDF-4, add the netCDF4 flag. */
         if (flavor[fmt] == PIO_IOTYPE_NETCDF4C || flavor[fmt] == PIO_IOTYPE_NETCDF4P)
         {
-            printf("%d adding NC_NETCDF4 flag\n", my_rank);
             mode |= NC_NETCDF4;
             num_types = NUM_NETCDF4_TYPES - 1;
         }
@@ -1256,7 +1199,6 @@ int test_find_var_fillvalue(int iosysid, int num_flavors, int *flavor,
         /* If this is pnetcdf or netCDF-4 parallel, add the MPIIO flag. */
         if (flavor[fmt] == PIO_IOTYPE_PNETCDF || flavor[fmt] == PIO_IOTYPE_NETCDF4P)
         {
-            printf("%d adding NC_MPIIO flag\n", my_rank);
             mode |= NC_MPIIO;
         }
 
@@ -1272,8 +1214,6 @@ int test_find_var_fillvalue(int iosysid, int num_flavors, int *flavor,
         for (int fvt = 0; fvt < NUM_FILL_TESTS; fvt++)
         {
             /* Create the netCDF output file. */
-            printf("my_rank = %d Creating sample file %s with format %d num_types = %d.\n",
-                   my_rank, filename, flavor[fmt], num_types);
             if ((ret = PIOc_create(iosysid, filename, mode, &ncid)))
                 ERR(ret);
 
@@ -1357,8 +1297,6 @@ int test_find_var_fillvalue(int iosysid, int num_flavors, int *flavor,
                 ERR(ret);
 
             /* Reopen the test file. */
-            printf("%d Re-opening sample file %s with format %d...\n",
-                   my_rank, filename, flavor[fmt]);
             /* if ((ret = PIOc_open(iosysid, filename, NC_WRITE, &ncid))) */
             /*     ERR(ret); */
             if ((ret = PIOc_openfile2(iosysid, &ncid, &flavor[fmt], filename, NC_WRITE)))
@@ -1415,8 +1353,6 @@ int test_deletefile(int iosysid, int num_flavors, int *flavor, int my_rank)
             ERR(ret);
         sprintf(filename, "delete_me_%s_%s.nc", TEST_NAME, iotype_name);
 
-        printf("%d testing delete for file %s with format %d...\n",
-               my_rank, filename, flavor[fmt]);
         int bad_iotype = TEST_VAL_42;
         if (PIOc_createfile(iosysid, &ncid, &bad_iotype, filename, PIO_CLOBBER) != PIO_EINVAL)
             ERR(ERR_WRONG);
@@ -1428,7 +1364,6 @@ int test_deletefile(int iosysid, int num_flavors, int *flavor, int my_rank)
             ERR(ret);
 
         /* Close the netCDF file. */
-        printf("%d Closing the sample data file...\n", my_rank);
         if ((ret = PIOc_closefile(ncid)))
             ERR(ret);
 
@@ -1437,7 +1372,6 @@ int test_deletefile(int iosysid, int num_flavors, int *flavor, int my_rank)
             ERR(ERR_WRONG);
 
         /* Now delete the file. */
-        printf("%d Deleting %s...\n", my_rank, filename);
         if ((ret = PIOc_deletefile(iosysid, filename)))
             ERR(ret);
 
@@ -1492,9 +1426,6 @@ int test_nc4(int iosysid, int num_flavors, int *flavor, int my_rank)
             ERR(ret);
         sprintf(filename, "%s_%s.nc", TEST_NAME, iotype_name);
 
-        printf("%d Setting chunk cache for file %s with format %d...\n",
-               my_rank, filename, flavor[fmt]);
-
         /* Try to set the chunk cache. */
         chunk_cache_preemption = 0.5;
         ret = PIOc_set_chunk_cache(iosysid, flavor[fmt], chunk_cache_size,
@@ -1526,21 +1457,15 @@ int test_nc4(int iosysid, int num_flavors, int *flavor, int my_rank)
         }
 
         /* Create the netCDF output file. */
-        printf("%d Creating sample file %s with format %d...\n",
-               my_rank, filename, flavor[fmt]);
         if ((ret = PIOc_createfile(iosysid, &ncid, &(flavor[fmt]), filename, PIO_CLOBBER)))
             ERR(ret);
 
         /* Define netCDF dimensions and variable. */
-        printf("%d Defining netCDF metadata...\n", my_rank);
         for (int d = 0; d < NDIM; d++)
         {
-            printf("%d Defining netCDF dimension %s, length %d\n", my_rank,
-                   dim_name[d], dim_len[d]);
             if ((ret = PIOc_def_dim(ncid, dim_name[d], (PIO_Offset)dim_len[d], &dimids[d])))
                 ERR(ret);
         }
-        printf("%d Defining netCDF variable %s, ndims %d\n", my_rank, VAR_NAME, NDIM);
         if ((ret = PIOc_def_var(ncid, VAR_NAME, PIO_FLOAT, NDIM, dimids, &varid)))
             ERR(ret);
 
@@ -1585,7 +1510,6 @@ int test_nc4(int iosysid, int num_flavors, int *flavor, int my_rank)
         }
         else
         {
-            printf("my ret = %d\n", PIOc_def_var_chunking(ncid, TEST_VAL_42, NC_CHUNKED, chunksize));
             if (PIOc_def_var_chunking(ncid, TEST_VAL_42, NC_CHUNKED, chunksize) != PIO_ENOTNC4)
                 ERR(ERR_AWFUL);
             if (PIOc_inq_var_chunking(ncid, TEST_VAL_42, &storage, my_chunksize) != PIO_ENOTNC4)
@@ -1605,12 +1529,10 @@ int test_nc4(int iosysid, int num_flavors, int *flavor, int my_rank)
             if (PIOc_def_var_chunking(ncid, 0, NC_CHUNKED, (MPI_Offset *)too_big_chunksize) == PIO_NOERR)
                 ERR(ret);
 
-            printf("%d Defining chunksizes\n", my_rank);
             if ((ret = PIOc_def_var_chunking(ncid, 0, NC_CHUNKED, chunksize)))
                 ERR(ret);
 
             /* Setting deflate should not work with parallel iotype. */
-            printf("%d Defining deflate\n", my_rank);
             ret = PIOc_def_var_deflate(ncid, 0, 0, 1, 1);
             if (flavor[fmt] == PIO_IOTYPE_NETCDF4P)
             {
@@ -1624,14 +1546,12 @@ int test_nc4(int iosysid, int num_flavors, int *flavor, int my_rank)
             }
 
             /* Check that the inq_varname function works. */
-            printf("%d Checking varname\n", my_rank);
             if ((ret = PIOc_inq_varname(ncid, 0, NULL)))
                 ERR(ret);
             if ((ret = PIOc_inq_varname(ncid, 0, varname_in)))
                 ERR(ret);
 
             /* Check that the inq_var_chunking function works. */
-            printf("%d Checking chunksizes\n", my_rank);
             if ((ret = PIOc_inq_var_chunking(ncid, 0, NULL, NULL)))
                 ERR(ret);
             if ((ret = PIOc_inq_var_chunking(ncid, 0, &storage, my_chunksize)))
@@ -1659,19 +1579,16 @@ int test_nc4(int iosysid, int num_flavors, int *flavor, int my_rank)
                     ERR(ERR_AWFUL);
 
             /* Check setting the chunk cache for the variable. */
-            printf("%d PIOc_set_var_chunk_cache...\n", my_rank);
             if ((ret = PIOc_set_var_chunk_cache(ncid, 0, VAR_CACHE_SIZE, VAR_CACHE_NELEMS,
                                                 VAR_CACHE_PREEMPTION)))
                 ERR(ret);
 
             /* Check getting the chunk cache values for the variable. */
-            printf("%d PIOc_get_var_chunk_cache...\n", my_rank);
             if ((ret = PIOc_get_var_chunk_cache(ncid, 0, &var_cache_size, &var_cache_nelems,
                                                 &var_cache_preemption)))
                 ERR(ret);
 
             /* Check that we got expected values. */
-            printf("%d var_cache_size = %lld\n", my_rank, var_cache_size);
             if (var_cache_size != VAR_CACHE_SIZE)
                 ERR(ERR_AWFUL);
             if (var_cache_nelems != VAR_CACHE_NELEMS)
@@ -1719,7 +1636,6 @@ int test_nc4(int iosysid, int num_flavors, int *flavor, int my_rank)
             ERR(ret);
 
         /* Close the netCDF file. */
-        printf("%d Closing the sample data file...\n", my_rank);
         if ((ret = PIOc_closefile(ncid)))
             ERR(ret);
     }
@@ -1749,7 +1665,6 @@ int check_scalar_var(int ncid, int varid, int flavor, int my_rank)
     /* Get the value. */
     if ((ret = PIOc_get_var_int(ncid, varid, &val_in)))
         ERR(ret);
-    printf("val_in = %d\n", val_in);
 
     /* Is the value correct? */
     if (val_in != TEST_VAL_42)
@@ -1829,7 +1744,6 @@ int test_scalar(int iosysid, int num_flavors, int *flavor, int my_rank, int asyn
             ERR(ret);
         if (test_val_in != test_val)
             ERR(ERR_WRONG);
-        printf("ret = %d test_val_in = %d\n", ret, test_val_in);
         if (test_val_in != test_val)
             ERR(ERR_WRONG);
         if ((ret = ncmpi_close(ncid)))
@@ -1850,7 +1764,6 @@ int test_scalar(int iosysid, int num_flavors, int *flavor, int my_rank, int asyn
         sprintf(filename, "%s_%s_scalar_async_%d.nc", TEST_NAME, iotype_name, async);
 
         /* Create the netCDF output file. */
-        printf("%d Creating test file %s.\n", my_rank, filename);
         if ((ret = PIOc_createfile(iosysid, &ncid, &(flavor[fmt]), filename, PIO_CLOBBER)))
             ERR(ret);
 
@@ -1872,7 +1785,6 @@ int test_scalar(int iosysid, int num_flavors, int *flavor, int my_rank, int asyn
             ERR(ret);
 
         /* Close the netCDF file. */
-        printf("%d Closing the sample data file...\n", my_rank);
         if ((ret = PIOc_closefile(ncid)))
             ERR(ret);
 
@@ -1919,7 +1831,6 @@ int test_malloc_iodesc2(int iosysid, int my_rank)
 
     if (!(ios = pio_get_iosystem_from_id(iosysid)))
         return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
-    printf("test_malloc_iodesc2 num_types %d\n",num_types);
     /* Test with each type. */
     for (int t = 0; t < num_types; t++)
     {
@@ -2013,7 +1924,6 @@ int test_decomp_internal(int my_test_size, int my_rank, int iosysid, int dim_len
 
 
     /* Did we get the correct answers? */
-    printf("source_in = %s\n", source_in);
     if (strcmp(title, title_in) || strcmp(history, history_in) ||
         strcmp(source_in, expected_source))
         ERR(ERR_WRONG);
@@ -2241,7 +2151,6 @@ int test_decomp_public(int my_test_size, int my_rank, int iosysid, int dim_len,
         ERR(ret);
 
     /* Did we get the correct answers? */
-    printf("source_in = %s\n", source_in);
     if (strcmp(title, title_in) || strcmp(history, history_in) ||
         strcmp(source_in, expected_source))
         ERR(ERR_WRONG);
@@ -2378,17 +2287,14 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
             ERR(ret);
 
     /* Check iotypes. */
-    printf("%d Testing iotypes. async = %d\n", my_rank, async);
     if ((ret = test_iotypes(my_rank)))
         ERR(ret);
 
     /* Test file deletes. */
-    printf("%d Testing deletefile. async = %d\n", my_rank, async);
     if ((ret = test_deletefile(iosysid, num_flavors, flavor, my_rank)))
         ERR(ret);
 
     /* Test file stuff. */
-    printf("%d Testing file creation. async = %d\n", my_rank, async);
     if ((ret = test_files(iosysid, num_flavors, flavor, my_rank)))
         ERR(ret);
 
@@ -2435,22 +2341,18 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
     }
 
     /* Check the error string function. */
-    printf("%d Testing streror. async = %d\n", my_rank, async);
     if ((ret = check_strerror(my_rank)))
         ERR(ret);
 
     /* Test name stuff. */
-    printf("%d Testing names. async = %d\n", my_rank, async);
     if ((ret = test_names(iosysid, num_flavors, flavor, my_rank, test_comm, async)))
         ERR(ret);
 
     /* Test netCDF-4 functions. */
-    printf("%d Testing nc4 functions. async = %d\n", my_rank, async);
     if ((ret = test_nc4(iosysid, num_flavors, flavor, my_rank)))
         ERR(ret);
 
     /* Test scalar var. */
-    printf("%d Testing scalar var. async = %d\n", my_rank, async);
     if ((ret = test_scalar(iosysid, num_flavors, flavor, my_rank, async, test_comm)))
         ERR(ret);
 
@@ -2461,6 +2363,6 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
 int main(int argc, char **argv)
 {
     /* Change the 5th arg to 3 to turn on logging. */
-    return run_test_main(argc, argv, MIN_NTASKS, TARGET_NTASKS, 3,
+    return run_test_main(argc, argv, MIN_NTASKS, TARGET_NTASKS, -1,
                          TEST_NAME, dim_len, COMPONENT_COUNT, NUM_IO_PROCS);
 }

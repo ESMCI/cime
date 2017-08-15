@@ -79,9 +79,6 @@ int run_spmd_tests(MPI_Comm test_comm)
      * with msg_cnt = 1!). */
     for (int msg_cnt = 0; msg_cnt < TARGET_NTASKS; msg_cnt = msg_cnt ? msg_cnt * 2 : 4)
     {
-        if (!my_rank)
-            printf("message count %d\n",msg_cnt);
-
         for (int itest = 0; itest < NUM_TEST_CASES; itest++)
         {
             rearr_comm_fc_opt_t fc;            
@@ -90,11 +87,6 @@ int run_spmd_tests(MPI_Comm test_comm)
 
             /* Wait for all tasks. */
             MPI_Barrier(test_comm);
-
-            /* Print results. */
-            if (!my_rank)
-                for (int e = 0; e < num_elem; e++)
-                    printf("sbuf[%d] = %d\n", e, sbuf[e]);
 
             /* Set the parameters different for each test case. */
             if (itest == 1)
@@ -201,7 +193,6 @@ int run_sc_tests(MPI_Comm test_comm)
     compute_one_dim(5, 4, my_rank, &start, &count);
     if (start != my_rank || count != (my_rank == 3 ? 2 : 1))
         return ERR_WRONG;
-    printf("my_rank = %d start = %lld count = %lld\n", my_rank, start, count);
     return 0;
 }
 
@@ -543,9 +534,6 @@ int test_CalcStartandCount()
             if ((ret = CalcStartandCount(PIO_DOUBLE, ndims, gdims, num_io_procs, iorank,
                                          start, kount, &numaiotasks)))
                 return ret;
-            if (iorank < numaiotasks)
-                printf("iorank %d start %lld %lld count %lld %lld\n", iorank, start[0],
-                       start[1], kount[0], kount[1]);
 
             if (numaiotasks < 0)
                 return numaiotasks;
@@ -564,7 +552,6 @@ int test_CalcStartandCount()
             converged = true;
         else
         {
-            printf("Failed to converge %ld %ld %d\n", tpsize, pgdims, num_io_procs);
             tpsize = 0;
             num_io_procs--;
         }
@@ -639,7 +626,7 @@ int main(int argc, char **argv)
 
     /* Initialize test. */
     if ((ret = pio_test_init2(argc, argv, &my_rank, &ntasks, MIN_NTASKS,
-                              TARGET_NTASKS, 0, &test_comm)))
+                              TARGET_NTASKS, -1, &test_comm)))
         ERR(ERR_INIT);
 
     /* Test code runs on TARGET_NTASKS tasks. The left over tasks do
@@ -652,47 +639,36 @@ int main(int argc, char **argv)
         if ((ret = PIOc_Init_Intracomm(test_comm, TARGET_NTASKS, 1, 0, PIO_REARR_BOX, &iosysid)))
             return ret;
 
-        printf("%d running tests for functions in pioc_sc.c\n", my_rank);
         if ((ret = run_sc_tests(test_comm)))
             return ret;
 
-        printf("%d running tests for GCDblocksize()\n", my_rank);
         if ((ret = run_GDCblocksize_tests(test_comm)))
             return ret;
 
-        printf("%d running spmd test code\n", my_rank);
         if ((ret = run_spmd_tests(test_comm)))
             return ret;
         
-        printf("%d running CalcStartandCount test code\n", my_rank);
         if ((ret = test_CalcStartandCount()))
             return ret;
 
-        printf("%d running list tests\n", my_rank);
         if ((ret = test_lists()))
             return ret;
 
-        printf("%d running varlist tests\n", my_rank);
         if ((ret = test_varlists()))
             return ret;
 
-        printf("%d running more varlist tests\n", my_rank);
         if ((ret = test_varlists2()))
             return ret;
 
-        printf("%d running even more varlist tests\n", my_rank);
         if ((ret = test_varlists3()))
             return ret;
 
-        printf("%d running ceil2/pair tests\n", my_rank);
         if ((ret = test_ceil2_pair()))
             return ret;
 
-        printf("%d running find_mpi_type tests\n", my_rank);
         if ((ret = test_find_mpi_type()))
             return ret;
 
-        printf("%d running misc tests\n", my_rank);
         if ((ret = test_misc()))
             return ret;
 
@@ -703,7 +679,6 @@ int main(int argc, char **argv)
     } /* endif my_rank < TARGET_NTASKS */
 
     /* Finalize the MPI library. */
-    printf("%d %s Finalizing...\n", my_rank, TEST_NAME);
     if ((ret = pio_test_finalize(&test_comm)))
         return ret;
 

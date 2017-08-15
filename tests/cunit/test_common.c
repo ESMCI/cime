@@ -112,25 +112,6 @@ int get_iotype_name(int iotype, char *name)
  * @param ntasks pointer that gets the number of tasks in WORLD
  * communicator.
  * @param target_ntasks the number of tasks this test needs to run.
- * @param comm a pointer to an MPI communicator that will be created
- * for this test and contain target_ntasks tasks from WORLD.
- * @returns 0 for success, error code otherwise.
-*/
-int pio_test_init(int argc, char **argv, int *my_rank, int *ntasks,
-		  int target_ntasks, MPI_Comm *comm)
-{
-    return pio_test_init2(argc,argv, my_rank, ntasks, target_ntasks,
-                          target_ntasks, 3, comm);
-}
-
-/* Initalize the test system.
- *
- * @param argc argument count from main().
- * @param argv argument array from main().
- * @param my_rank pointer that gets this tasks rank.
- * @param ntasks pointer that gets the number of tasks in WORLD
- * communicator.
- * @param target_ntasks the number of tasks this test needs to run.
  * @param log_level PIOc_set_log_level() will be called with this value.
  * @param comm a pointer to an MPI communicator that will be created
  * for this test and contain target_ntasks tasks from WORLD.
@@ -156,7 +137,6 @@ int pio_test_init2(int argc, char **argv, int *my_rank, int *ntasks,
         MPIERR(ret);
     if ((ret = MPI_Comm_size(MPI_COMM_WORLD, ntasks)))
         MPIERR(ret);
-    printf("%d has %d tasks\n", *my_rank, *ntasks);
 
     /* Check that a valid number of processors was specified. */
     if (*ntasks < min_ntasks)
@@ -181,22 +161,18 @@ int pio_test_init2(int argc, char **argv, int *my_rank, int *ntasks,
             color = 1;
             key = *my_rank - max_ntasks;
         }
-	printf("%d splitting comm for test color = %d key = %d\n", *my_rank, color, key);
         if ((ret = MPI_Comm_split(MPI_COMM_WORLD, color, key, comm)))
             MPIERR(ret);
     }
     else
     {
-	printf("%d using whole comm for test\n", *my_rank);
         if ((ret = MPI_Comm_dup(MPI_COMM_WORLD, comm)))
             MPIERR(ret);
     }
 
     /* Turn on logging. */
-    printf("%d setting log level to %d\n", *my_rank, log_level);
     if ((ret = PIOc_set_log_level(log_level)))
         return ret;
-    printf("%d done setting log level\n", *my_rank);
 
     /* Change error handling so we can test inval parameters. */
     if ((ret = PIOc_set_iosystem_error_handling(PIO_DEFAULT, PIO_RETURN_ERROR, NULL)))
@@ -328,7 +304,6 @@ create_nc_sample_0(int iosysid, int format, char *filename, int my_rank, int *nc
     /* Create the file. */
     if ((ret = PIOc_createfile(iosysid, &ncid, &format, filename, NC_CLOBBER)))
         return ret;
-    printf("%d file created ncid = %d\n", my_rank, ncid);
 
     /* End define mode. */
     if ((ret = PIOc_enddef(ncid)))
@@ -347,10 +322,8 @@ create_nc_sample_0(int iosysid, int format, char *filename, int my_rank, int *nc
         *ncidp = ncid;
     else
     {
-        printf("%d closing file ncid = %d\n", my_rank, ncid);
         if ((ret = PIOc_closefile(ncid)))
             return ret;
-        printf("%d closed file ncid = %d\n", my_rank, ncid);
     }
 
     return PIO_NOERR;
@@ -366,7 +339,6 @@ check_nc_sample_0(int iosysid, int format, char *filename, int my_rank, int *nci
     int ret;
 
     /* Re-open the file to check it. */
-    printf("%d opening file %s format %d\n", my_rank, filename, format);
     if ((ret = PIOc_openfile2(iosysid, &ncid, &format, filename,
                              NC_NOWRITE)))
         return ret;
@@ -400,7 +372,6 @@ check_nc_sample_0(int iosysid, int format, char *filename, int my_rank, int *nci
         *ncidp = ncid;
     else
     {
-        printf("%d closing file (again) ncid = %d\n", my_rank, ncid);
         if ((ret = PIOc_closefile(ncid)))
             return ret;
     }
@@ -434,30 +405,24 @@ create_nc_sample_1(int iosysid, int format, char *filename, int my_rank, int *nc
     /* Create the file. */
     if ((ret = PIOc_createfile(iosysid, &ncid, &format, filename, NC_CLOBBER)))
         return ret;
-    printf("%d file created ncid = %d\n", my_rank, ncid);
 
     /* /\* End define mode, then re-enter it. *\/ */
     if ((ret = PIOc_enddef(ncid)))
         return ret;
-    printf("%d calling redef\n", my_rank);
     if ((ret = PIOc_redef(ncid)))
         return ret;
 
     /* Define a dimension. */
-    printf("%d defining dimension %s\n", my_rank, DIM_NAME_S1);
     if ((ret = PIOc_def_dim(ncid, DIM_NAME_S1, DIM_LEN_S1, &dimid)))
         return ret;
 
     /* Define a 1-D variable. */
-    printf("%d defining variable %s\n", my_rank, VAR_NAME_S1);
     if ((ret = PIOc_def_var(ncid, VAR_NAME_S1, NC_INT, NDIM_S1, &dimid, &varid)))
         return ret;
 
     /* End define mode. */
-    printf("%d ending define mode ncid = %d\n", my_rank, ncid);
     if ((ret = PIOc_enddef(ncid)))
         return ret;
-    printf("%d define mode ended ncid = %d\n", my_rank, ncid);
 
     /* Write some data. For the PIOc_put/get functions, all data must
      * be on compmaster before the function is called. Only
@@ -465,7 +430,6 @@ create_nc_sample_1(int iosysid, int format, char *filename, int my_rank, int *nc
      * other computation tasks are ignored. */
     for (int i = 0; i < DIM_LEN_S1; i++)
         data[i] = i;
-    printf("%d writing data\n", my_rank);
     start[0] = 0;
     count[0] = DIM_LEN_S1;
     if ((ret = PIOc_put_vars_tc(ncid, varid, start, count, NULL, NC_INT, data)))
@@ -484,10 +448,8 @@ create_nc_sample_1(int iosysid, int format, char *filename, int my_rank, int *nc
         *ncidp = ncid;
     else
     {
-        printf("%d closing file ncid = %d\n", my_rank, ncid);
         if ((ret = PIOc_closefile(ncid)))
             return ret;
-        printf("%d closed file ncid = %d\n", my_rank, ncid);
     }
 
     return PIO_NOERR;
@@ -508,7 +470,6 @@ check_nc_sample_1(int iosysid, int format, char *filename, int my_rank, int *nci
     int varndims, vardimids, varnatts;
 
     /* Re-open the file to check it. */
-    printf("%d opening file %s format %d\n", my_rank, filename, format);
     if ((ret = PIOc_openfile2(iosysid, &ncid, &format, filename,
                              NC_NOWRITE)))
         return ret;
@@ -520,7 +481,6 @@ check_nc_sample_1(int iosysid, int format, char *filename, int my_rank, int *nci
         return ret;
     for (int i = 0; i < DIM_LEN_S1; i++)
     {
-        printf("%d read data_in[%d] = %d\n", my_rank, i, data_in[i]);
         if (data_in[i] != i)
             return ERR_AWFUL;
     }
@@ -571,7 +531,6 @@ check_nc_sample_1(int iosysid, int format, char *filename, int my_rank, int *nci
         *ncidp = ncid;
     else
     {
-        printf("%d closing file (again) ncid = %d\n", my_rank, ncid);
         if ((ret = PIOc_closefile(ncid)))
             return ret;
     }
@@ -590,10 +549,8 @@ create_nc_sample_2(int iosysid, int format, char *filename, int my_rank, int *nc
     int ret;
 
     /* Create a netCDF file with one dimension and one variable. */
-    printf("%d creating file %s\n", my_rank, filename);
     if ((ret = PIOc_createfile(iosysid, &ncid, &format, filename, NC_CLOBBER)))
         return ret;
-    printf("%d file created ncid = %d\n", my_rank, ncid);
 
     /* End define mode, then re-enter it. */
     if ((ret = PIOc_enddef(ncid)))
@@ -603,7 +560,6 @@ create_nc_sample_2(int iosysid, int format, char *filename, int my_rank, int *nc
 
     /* Define a dimension. */
     char dimname2[NC_MAX_NAME + 1];
-    printf("%d defining dimension %s\n", my_rank, DIM_NAME_S2);
     if ((ret = PIOc_def_dim(ncid, FIRST_DIM_NAME_S2, DIM_LEN_S2, &dimid)))
         return ret;
     if ((ret = PIOc_inq_dimname(ncid, 0, dimname2)))
@@ -615,7 +571,6 @@ create_nc_sample_2(int iosysid, int format, char *filename, int my_rank, int *nc
 
     /* Define a 1-D variable. */
     char varname2[NC_MAX_NAME + 1];
-    printf("%d defining variable %s\n", my_rank, VAR_NAME_S2);
     if ((ret = PIOc_def_var(ncid, FIRST_VAR_NAME_S2, NC_INT, NDIM_S2, &dimid, &varid)))
         return ret;
     if ((ret = PIOc_inq_varname(ncid, 0, varname2)))
@@ -626,7 +581,6 @@ create_nc_sample_2(int iosysid, int format, char *filename, int my_rank, int *nc
         return ret;
 
     /* Add a global attribute. */
-    printf("%d writing attributes %s\n", my_rank, ATT_NAME_S2);
     int att_data = ATT_VALUE_S2;
     short short_att_data = ATT_VALUE_S2;
     float float_att_data = ATT_VALUE_S2;
@@ -662,10 +616,8 @@ create_nc_sample_2(int iosysid, int format, char *filename, int my_rank, int *nc
         return ret;
 
     /* End define mode. */
-    printf("%d ending define mode ncid = %d\n", my_rank, ncid);
     if ((ret = PIOc_enddef(ncid)))
         return ret;
-    printf("%d define mode ended ncid = %d\n", my_rank, ncid);
 
     /* Write some data. For the PIOc_put/get functions, all data must
      * be on compmaster before the function is called. Only
@@ -673,8 +625,6 @@ create_nc_sample_2(int iosysid, int format, char *filename, int my_rank, int *nc
      * other computation tasks are ignored. */
     for (int i = 0; i < DIM_LEN_S2; i++)
         data[i] = i;
-    printf("%d writing data\n", my_rank);
-    printf("%d writing data\n", my_rank);
     start[0] = 0;
     count[0] = DIM_LEN_S2;
     if ((ret = PIOc_put_vars_tc(ncid, varid, start, count, NULL, NC_INT, data)))
@@ -685,10 +635,8 @@ create_nc_sample_2(int iosysid, int format, char *filename, int my_rank, int *nc
         *ncidp = ncid;
     else
     {
-        printf("%d closing file ncid = %d\n", my_rank, ncid);
         if ((ret = PIOc_closefile(ncid)))
             return ret;
-        printf("%d closed file ncid = %d\n", my_rank, ncid);
     }
 
     return PIO_NOERR;
@@ -730,7 +678,6 @@ check_nc_sample_2(int iosysid, int format, char *filename, int my_rank, int *nci
     int data_in[DIM_LEN_S2];
 
     /* Re-open the file to check it. */
-    printf("%d opening file %s format %d\n", my_rank, filename, format);
     if ((ret = PIOc_openfile2(iosysid, &ncid, &format, filename, NC_NOWRITE)))
         return ERR_CHECK;
 
@@ -739,7 +686,6 @@ check_nc_sample_2(int iosysid, int format, char *filename, int my_rank, int *nci
         return ERR_CHECK;
     for (int i = 0; i < DIM_LEN_S2; i++)
     {
-        printf("%d read data_in[%d] = %d\n", my_rank, i, data_in[i]);
         if (data_in[i] != i)
             return ERR_AWFUL;
     }
@@ -847,7 +793,6 @@ check_nc_sample_2(int iosysid, int format, char *filename, int my_rank, int *nci
         return ERR_WRONG;
     if ((ret = PIOc_get_att_int(ncid, NC_GLOBAL, ATT_NAME_S2, &att_data)))
         return ERR_CHECK;
-    printf("%d att_data = %d\n", my_rank, att_data);
     if (att_data != ATT_VALUE_S2)
         return ERR_WRONG;
     if ((ret = PIOc_inq_att(ncid, NC_GLOBAL, SHORT_ATT_NAME_S2, &atttype, &attlen)))
@@ -872,7 +817,6 @@ check_nc_sample_2(int iosysid, int format, char *filename, int my_rank, int *nci
         *ncidp = ncid;
     else
     {
-        printf("%d closing file (again) ncid = %d\n", my_rank, ncid);
         if ((ret = PIOc_closefile(ncid)))
             return ERR_CHECK;
     }
@@ -912,12 +856,10 @@ int create_decomposition_2d(int ntasks, int my_rank, int iosysid, int *dim_len_2
         compdof[i] = my_rank * elements_per_pe + i + 1;
 
     /* Create the PIO decomposition for this test. */
-    printf("%d Creating decomposition elements_per_pe = %lld\n", my_rank, elements_per_pe);
     if ((ret = PIOc_InitDecomp(iosysid, pio_type, NDIM2, dim_len_2d, elements_per_pe,
                                compdof, ioid, NULL, NULL, NULL)))
         ERR(ret);
 
-    printf("%d decomposition initialized.\n", my_rank);
 
     /* Free the mapping. */
     free(compdof);

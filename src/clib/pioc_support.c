@@ -1253,7 +1253,6 @@ int pioc_write_nc_decomp_int(iosystem_desc_t *ios, const char *filename, int cmo
         strcat(full_bt, "\n");
     }
     free(bt_strings);
-    printf("full_bt = %s", full_bt);
 
     /* Write the stack trace as an attribute. */
     if ((ret = PIOc_put_att_text(ncid, NC_GLOBAL, DECOMP_BACKTRACE_ATT_NAME,

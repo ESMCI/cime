@@ -190,12 +190,9 @@ int create_decomposition_2d_2(int ntasks, int my_rank, int iosysid, int *dim_len
         compdof[i] = my_rank * elements_per_pe + i + 1;
 
     /* Create the PIO decomposition for this test. */
-    printf("%d Creating decomposition elements_per_pe = %lld\n", my_rank, elements_per_pe);
     if ((ret = PIOc_InitDecomp(iosysid, pio_type, NDIM2, dim_len_2d, elements_per_pe,
                                compdof, ioid, NULL, NULL, NULL)))
         ERR(ret);
-
-    printf("%d decomposition initialized.\n", my_rank);
 
     /* Free the mapping. */
     free(compdof);
@@ -249,7 +246,7 @@ int main(int argc, char **argv)
 
     /* Initialize test. */
     if ((ret = pio_test_init2(argc, argv, &my_rank, &ntasks, MIN_NTASKS, MIN_NTASKS,
-                              3, &test_comm)))
+                              -1, &test_comm)))
         ERR(ERR_INIT);
 
     if ((ret = PIOc_set_iosystem_error_handling(PIO_DEFAULT, PIO_RETURN_ERROR, NULL)))
@@ -266,7 +263,6 @@ int main(int argc, char **argv)
         /* Figure out iotypes. */
         if ((ret = get_iotypes(&num_flavors, flavor)))
             ERR(ret);
-        printf("Runnings tests for %d flavors\n", num_flavors);
 
         /* Initialize the PIO IO system. This specifies how
          * many and which processors are involved in I/O. */
@@ -275,7 +271,6 @@ int main(int argc, char **argv)
             return ret;
 
         /* Run tests. */
-        printf("%d Running tests...\n", my_rank);
         if ((ret = test_all_darray(iosysid, num_flavors, flavor, my_rank, test_comm)))
             return ret;
         
@@ -286,7 +281,6 @@ int main(int argc, char **argv)
     } /* endif my_rank < TARGET_NTASKS */
 
     /* Finalize the MPI library. */
-    printf("%d %s Finalizing...\n", my_rank, TEST_NAME);
     if ((ret = pio_test_finalize(&test_comm)))
         return ret;
 

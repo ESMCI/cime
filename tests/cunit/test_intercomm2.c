@@ -82,7 +82,6 @@ int check_file(int iosysid, int format, char *filename, int my_rank)
     too_long_name[PIO_MAX_NAME * 5] = 0;
 
     /* Re-open the file to check it. */
-    printf("%d test_intercomm2 opening file %s format %d\n", my_rank, filename, format);
     if ((ret = PIOc_openfile(iosysid, &ncid, &format, filename,
                              NC_NOWRITE)))
         ERR(ret);
@@ -261,7 +260,6 @@ int check_file(int iosysid, int format, char *filename, int my_rank)
         ERR(ERR_WRONG);
 
     /* Close the file. */
-    printf("%d test_intercomm2 closing file (again) ncid = %d\n", my_rank, ncid);
     if ((ret = PIOc_closefile(ncid)))
         ERR(ret);
 
@@ -299,17 +297,15 @@ int main(int argc, char **argv)
 
     /* Set up test. */
     if ((ret = pio_test_init2(argc, argv, &my_rank, &ntasks, TARGET_NTASKS, TARGET_NTASKS,
-                              0, &test_comm)))
+                              -1, &test_comm)))
         ERR(ERR_INIT);
 
     /* Figure out iotypes. */
     if ((ret = get_iotypes(&num_flavors, flavor)))
         ERR(ret);
 
-    if(my_rank < TARGET_NTASKS)
+    if (my_rank < TARGET_NTASKS)
     {
-	printf("%d: test_intercomm2 ParallelIO Library test_intercomm2 running on %d processors.\n",
-	       my_rank, ntasks);
 
         /* How many processors will be used for our IO and 2 computation components. */
         int num_procs[COMPONENT_COUNT] = {2};
@@ -341,7 +337,6 @@ int main(int argc, char **argv)
                 sprintf(filename[fmt], "test_intercomm2_%d.nc", flavor[fmt]);
 
                 /* Create a netCDF file with one dimension and one variable. */
-		printf("%d test_intercomm2 creating file %s\n", my_rank, filename[fmt]);
                 if ((ret = PIOc_createfile(iosysid[my_comp_idx], &ncid, &flavor[fmt], filename[fmt],
                                            NC_CLOBBER)))
                     ERR(ret);
@@ -508,7 +503,6 @@ int main(int argc, char **argv)
                     ERR(ret);
 
                 /* Close the file. */
-		printf("%d test_intercomm2 closing file ncid = %d\n", my_rank, ncid);
                 if ((ret = PIOc_closefile(ncid)))
                     ERR(ret);
 
@@ -526,14 +520,12 @@ int main(int argc, char **argv)
             } /* next netcdf flavor */
 
             /* Finalize the IO system. Only call this from the computation tasks. */
-	    printf("%d test_intercomm2 Freeing PIO resources\n", my_rank);
             if ((ret = PIOc_finalize(iosysid[my_comp_idx])))
                 ERR(ret);
         }
     } /* my_rank < TARGET_NTASKS */
 
     /* Finalize test. */
-    printf("%d %s finalizing...\n", my_rank, TEST_NAME);
     if ((ret = pio_test_finalize(&test_comm)))
         return ERR_AWFUL;
 

@@ -104,7 +104,6 @@ int check_darray_file(int iosysid, char *data_filename, int iotype, int my_rank,
             switch (piotype)
             {
             case PIO_BYTE:
-                printf("tmp_r = %d data_in %d expected %g\n", tmp_r, ((signed char *)data_in)[r], (tmp_r/2 + 1) * 10.0 + tmp_r % 2);
                 if (((signed char *)data_in)[r] != (tmp_r/2 + 1) * 10.0 + tmp_r % 2)
                     ERR(ret);
                 break;
@@ -247,11 +246,9 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm, MPI_Comm
 
     int fortran_order;
     int ioid2;
-    printf("about to call PIOc_read_nc_decomp\n");
     if ((ret = PIOc_read_nc_decomp(iosysid, decomp_filename, &ioid2, comp_comm,
                                    PIO_INT, NULL, NULL, &fortran_order)))
         return ret;
-    printf("done with PIOc_read_nc_decomp\n");
 
     /* Free the decomposition. */
     if ((ret = PIOc_freedecomp(iosysid, ioid2)))
@@ -373,12 +370,6 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm, MPI_Comm
             ERR(PIO_ENOMEM);
         memcpy(my_data_multi, my_data, type_size * elements_per_pe);
         memcpy((char *)my_data_multi + type_size * elements_per_pe, my_data, type_size * elements_per_pe);
-        for (int d = 0; d < elements_per_pe * type_size * 2; d++)
-        {
-            if (d < elements_per_pe * type_size)
-                printf("my_rank %d my_data[%d] = %d\n", my_rank, d, ((char *)my_data)[d]);
-            printf("my_rank %d my_data_multi[%d] = %d\n", my_rank, d, ((char *)my_data_multi)[d]);
-        }
         
         /* Define dimensions. */
         for (int d = 0; d < NDIM3; d++)
@@ -502,7 +493,7 @@ int main(int argc, char **argv)
 
     /* Initialize test. */
     if ((ret = pio_test_init2(argc, argv, &my_rank, &ntasks, MIN_NTASKS,
-                              TARGET_NTASKS, 3, &test_comm)))
+                              TARGET_NTASKS, -1, &test_comm)))
         ERR(ERR_INIT);
     if ((ret = PIOc_set_iosystem_error_handling(PIO_DEFAULT, PIO_RETURN_ERROR, NULL)))
         return ret;
@@ -510,7 +501,6 @@ int main(int argc, char **argv)
     /* Figure out iotypes. */
     if ((ret = get_iotypes(&num_flavors, flavor)))
         ERR(ret);
-    printf("Runnings tests for %d flavors\n", num_flavors);
 
     /* Test code runs on TARGET_NTASKS tasks. The left over tasks do
      * nothing. */
@@ -529,8 +519,7 @@ int main(int argc, char **argv)
         int mpierr;
 
         /* Run the test for each data type. */
-        /* for (int t = 0; t < NUM_TYPES_TO_TEST; t++) */
-        for (int t = 0; t < 1; t++)
+        for (int t = 0; t < NUM_TYPES_TO_TEST; t++)
         {
             if ((ret = PIOc_init_async(test_comm, NUM_IO_PROCS, NULL, COMPONENT_COUNT,
                                        &num_computation_procs, NULL, &io_comm, comp_comm,
@@ -563,7 +552,6 @@ int main(int argc, char **argv)
     } /* endif my_rank < TARGET_NTASKS */
 
     /* Finalize the MPI library. */
-    printf("%d %s Finalizing...\n", my_rank, TEST_NAME);
     if ((ret = pio_test_finalize(&test_comm)))
         return ret;
 

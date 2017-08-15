@@ -2,7 +2,8 @@
  * This program tests darrays with async. This tests uses many types
  * of vars and iodesc's, all in the same file.
  *
- * Ed Hartnett, 5/10/17
+ * @author Ed Hartnett
+ * @date 5/10/17
  */
 #include <config.h>
 #include <pio.h>
@@ -269,7 +270,6 @@ int check_darray_file(int iosysid, char *data_filename, int iotype, int my_rank,
                         ERR(ERR_WRONG);
                     break;
                 case PIO_FLOAT:
-                    printf("((float *)data_in)[r] = %g expected = %g\n", ((float *)data_in)[r], expected_float_4d[r % (VERT_LEN * LAT_LEN * LON_LEN)]);
                     if (((float *)data_in)[r] != expected_float_4d[r % (VERT_LEN * LAT_LEN * LON_LEN)])
                         ERR(ERR_WRONG);
                     break;
@@ -582,7 +582,7 @@ int main(int argc, char **argv)
 
     /* Initialize test. */
     if ((ret = pio_test_init2(argc, argv, &my_rank, &ntasks, MIN_NTASKS,
-                              TARGET_NTASKS, 3, &test_comm)))
+                              TARGET_NTASKS, -1, &test_comm)))
         ERR(ERR_INIT);
     if ((ret = PIOc_set_iosystem_error_handling(PIO_DEFAULT, PIO_RETURN_ERROR, NULL)))
         return ret;
@@ -590,7 +590,6 @@ int main(int argc, char **argv)
     /* Figure out iotypes. */
     if ((ret = get_iotypes(&num_flavors, flavor)))
         ERR(ret);
-    printf("Runnings tests for %d flavors\n", num_flavors);
 
     /* Test code runs on TARGET_NTASKS tasks. The left over tasks do
      * nothing. */
@@ -637,7 +636,6 @@ int main(int argc, char **argv)
     } /* endif my_rank < TARGET_NTASKS */
 
     /* Finalize the MPI library. */
-    printf("%d %s Finalizing...\n", my_rank, TEST_NAME);
     if ((ret = pio_test_finalize(&test_comm)))
         return ret;
 

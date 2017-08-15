@@ -2,7 +2,8 @@
  * This program tests a very simple case of using distributed arrays
  * with async.
  *
- * Ed Hartnett, 4/26/17
+ * @author Ed Hartnett
+ * @date 4/26/17
  */
 #include <config.h>
 #include <pio.h>
@@ -153,7 +154,7 @@ int main(int argc, char **argv)
 
     /* Initialize test. */
     if ((ret = pio_test_init2(argc, argv, &my_rank, &ntasks, MIN_NTASKS,
-                              TARGET_NTASKS, 3, &test_comm)))
+                              TARGET_NTASKS, -1, &test_comm)))
         ERR(ERR_INIT);
     if ((ret = PIOc_set_iosystem_error_handling(PIO_DEFAULT, PIO_RETURN_ERROR, NULL)))
         return ret;
@@ -161,7 +162,6 @@ int main(int argc, char **argv)
     /* Figure out iotypes. */
     if ((ret = get_iotypes(&num_flavors, flavor)))
         ERR(ret);
-    printf("Runnings tests for %d flavors\n", num_flavors);
 
     /* Test code runs on TARGET_NTASKS tasks. The left over tasks do
      * nothing. */
@@ -208,7 +208,6 @@ int main(int argc, char **argv)
     } /* endif my_rank < TARGET_NTASKS */
 
     /* Finalize the MPI library. */
-    printf("%d %s Finalizing...\n", my_rank, TEST_NAME);
     if ((ret = pio_test_finalize(&test_comm)))
         return ret;
 

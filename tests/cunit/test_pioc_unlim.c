@@ -3,7 +3,8 @@
  * with an unlimited dimension. The data will have two timesteps, and
  * 4x4 elements each timestep.
  *
- * Ed Hartnett, 2/14/17
+ * @author Ed Hartnett
+ * @date 2/14/17
  */
 #include <config.h>
 #include <pio.h>
@@ -81,12 +82,9 @@ int create_decomposition(int ntasks, int my_rank, int iosysid, int dim1_len,
         compdof[i] = my_rank * elements_per_pe + i + 1;
 
     /* Create the PIO decomposition for this test. */
-    printf("%d Creating decomposition elements_per_pe = %lld\n", my_rank, elements_per_pe);
     if ((ret = PIOc_InitDecomp(iosysid, PIO_FLOAT, NDIM - 1, &dim_len[1], elements_per_pe,
                                compdof, ioid, NULL, NULL, NULL)))
         ERR(ret);
-
-    printf("%d decomposition initialized.\n", my_rank);
 
     /* Free the mapping. */
     free(compdof);
@@ -106,13 +104,10 @@ int create_test_file(int iosysid, int ioid, int iotype, int my_rank, int *ncid, 
     sprintf(filename, "%s_iotype_%d.nc", TEST_NAME, iotype);
     
     /* Create the netCDF output file. */
-    printf("rank: %d Creating sample file %s with format %d...\n", my_rank, filename,
-           iotype);
     if ((ret = PIOc_createfile(iosysid, ncid, &iotype, filename, PIO_CLOBBER)))
         ERR(ret);
     
     /* Define netCDF dimensions and variable. */
-    printf("rank: %d Defining netCDF metadata...\n", my_rank);
     for (int d = 0; d < NDIM; d++)
         if ((ret = PIOc_def_dim(*ncid, dim_name[d], (PIO_Offset)dim_len[d], &dimids[d])))
             ERR(ret);
@@ -161,12 +156,10 @@ int run_multiple_unlim_test(int iosysid, int ioid, int iotype, int my_rank,
     /* Check for correctness. */
     if ((ret = PIOc_inq_unlimdims(ncid, &nunlimdims, unlimdimids)))
         ERR(ret);
-    printf("nunlimdims = %d\n", nunlimdims);
     if (nunlimdims != NUM_UNLIM_DIMS)
         ERR(ERR_WRONG);
     for (int d = 0; d < NUM_UNLIM_DIMS; d++)
     {
-        printf("unlimdimids[%d] = %d\n", d, unlimdimids[d]);
         if (unlimdimids[d] != dimid[d])
             ERR(ERR_WRONG);
     }
@@ -187,7 +180,6 @@ int run_multiple_unlim_test(int iosysid, int ioid, int iotype, int my_rank,
             ERR(ret);
         for (int d = 0; d < NUM_UNLIM_DIMS; d++)
         {
-            printf("unlimdimids[%d] = %d\n", d, unlimdimids[d]);
             if (unlimdimids[d] != dimid[d])
                 ERR(ERR_WRONG);
         }
@@ -255,8 +247,6 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
 
     if (!async)
     {
-        printf("%d Testing darray. async = %d\n", my_rank, async);
-        
         /* Decompose the data over the tasks. */
         if ((ret = create_decomposition(my_test_size, my_rank, iosysid, X_DIM_LEN, &ioid)))
             return ret;
@@ -306,6 +296,6 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
 int main(int argc, char **argv)
 {
     /* Change the 5th arg to 3 to turn on logging. */
-    return run_test_main(argc, argv, MIN_NTASKS, TARGET_NTASKS, 3,
+    return run_test_main(argc, argv, MIN_NTASKS, TARGET_NTASKS, -1,
                          TEST_NAME, dim_len, COMPONENT_COUNT, NUM_IO_PROCS);
 }
