@@ -5,6 +5,11 @@
  * messages from the computation nodes, and responds to messages by
  * running the appropriate netCDF function.
  *
+ * Note that when calling the PIOc_* funtion, the return code should
+ * be ignored. It is handled within the function. Only errors in
+ * internal pio_msg code should return an error from the handler
+ * function.
+ *
  * @author Ed Hartnett
  */
 
@@ -35,7 +40,6 @@ int inq_type_handler(iosystem_desc_t *ios)
     char *namep = NULL, name[NC_MAX_NAME + 1];
     PIO_Offset *sizep = NULL, size;
     int mpierr;
-    int ret;
 
     LOG((1, "inq_type_handler"));
     assert(ios);
@@ -58,8 +62,7 @@ int inq_type_handler(iosystem_desc_t *ios)
         sizep = &size;
 
     /* Call the function. */
-    if ((ret = PIOc_inq_type(ncid, xtype, namep, sizep)))
-        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+    PIOc_inq_type(ncid, xtype, namep, sizep);
 
     LOG((1, "inq_type_handler succeeded!"));
     return PIO_NOERR;
@@ -81,7 +84,6 @@ int inq_format_handler(iosystem_desc_t *ios)
     int *formatp = NULL, format;
     char format_present;
     int mpierr;
-    int ret;
 
     LOG((1, "inq_format_handler"));
     assert(ios);
@@ -100,11 +102,8 @@ int inq_format_handler(iosystem_desc_t *ios)
         formatp = &format;
 
     /* Call the function. */
-    if ((ret = PIOc_inq_format(ncid, formatp)))
-        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+    PIOc_inq_format(ncid, formatp);
 
-    if (formatp)
-        LOG((2, "inq_format_handler format = %d", *formatp));
     LOG((1, "inq_format_handler succeeded!"));
 
     return PIO_NOERR;
@@ -125,7 +124,6 @@ int set_fill_handler(iosystem_desc_t *ios)
     int old_modep_present;
     int old_mode, *old_modep = NULL;
     int mpierr;
-    int ret;
 
     LOG((1, "set_fill_handler"));
     assert(ios);
@@ -146,8 +144,7 @@ int set_fill_handler(iosystem_desc_t *ios)
         old_modep = &old_mode;
 
     /* Call the function. */
-    if ((ret = PIOc_set_fill(ncid, fillmode, old_modep)))
-        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+    PIOc_set_fill(ncid, fillmode, old_modep);
 
     LOG((1, "set_fill_handler succeeded!"));
 
@@ -170,7 +167,6 @@ int create_file_handler(iosystem_desc_t *ios)
     int iotype;
     int mode;
     int mpierr;
-    int ret;
 
     LOG((1, "create_file_handler comproot = %d", ios->comproot));
     assert(ios);
@@ -193,9 +189,8 @@ int create_file_handler(iosystem_desc_t *ios)
          len, filename, iotype, mode));
 
     /* Call the create file function. */
-    if ((ret = PIOc_createfile(ios->iosysid, &ncid, &iotype, filename, mode)))
-        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
-
+    PIOc_createfile(ios->iosysid, &ncid, &iotype, filename, mode);
+    
     LOG((1, "create_file_handler succeeded!"));
     return PIO_NOERR;
 }
@@ -214,7 +209,6 @@ int close_file_handler(iosystem_desc_t *ios)
 {
     int ncid;
     int mpierr;
-    int ret;
 
     LOG((1, "close_file_handler"));
     assert(ios);
@@ -226,8 +220,7 @@ int close_file_handler(iosystem_desc_t *ios)
     LOG((1, "create_file_handler got parameter ncid = %d", ncid));
 
     /* Call the close file function. */
-    if ((ret = PIOc_closefile(ncid)))
-        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+    PIOc_closefile(ncid);
 
     LOG((1, "close_file_handler succeeded!"));
     return PIO_NOERR;
@@ -250,7 +243,6 @@ int inq_handler(iosystem_desc_t *ios)
     int *ndimsp = NULL, *nvarsp = NULL, *ngattsp = NULL, *unlimdimidp = NULL;
     char ndims_present, nvars_present, ngatts_present, unlimdimid_present;
     int mpierr;
-    int ret;
 
     LOG((1, "inq_handler"));
     assert(ios);
@@ -283,9 +275,8 @@ int inq_handler(iosystem_desc_t *ios)
         unlimdimidp = &unlimdimid;
 
     /* Call the inq function to get the values. */
-    if ((ret = PIOc_inq(ncid, ndimsp, nvarsp, ngattsp, unlimdimidp)))
-        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
-
+    PIOc_inq(ncid, ndimsp, nvarsp, ngattsp, unlimdimidp);
+    
     return PIO_NOERR;
 }
 
@@ -307,7 +298,6 @@ int inq_unlimdims_handler(iosystem_desc_t *ios)
     int *nunlimdimsp = NULL, *unlimdimidsp = NULL;
     char nunlimdimsp_present, unlimdimidsp_present;
     int mpierr;
-    int ret;
 
     LOG((1, "inq_unlimdims_handler"));
     assert(ios);
@@ -332,8 +322,7 @@ int inq_unlimdims_handler(iosystem_desc_t *ios)
         unlimdimidsp = &unlimdimids;
 
     /* Call the inq function to get the values. */
-    if ((ret = PIOc_inq_unlimdims(ncid, nunlimdimsp, unlimdimidsp)))
-        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+    PIOc_inq_unlimdims(ncid, nunlimdimsp, unlimdimidsp);
 
     return PIO_NOERR;
 }
@@ -357,9 +346,7 @@ int inq_dim_handler(iosystem_desc_t *ios, int msg)
     PIO_Offset *dimlenp = NULL;
     char dimname[NC_MAX_NAME + 1];
     PIO_Offset dimlen;
-
     int mpierr;
-    int ret;
 
     LOG((1, "inq_dim_handler"));
     assert(ios);
@@ -384,8 +371,7 @@ int inq_dim_handler(iosystem_desc_t *ios, int msg)
         dimlenp = &dimlen;
 
     /* Call the inq function to get the values. */
-    if ((ret = PIOc_inq_dim(ncid, dimid, dimnamep, dimlenp)))
-        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+    PIOc_inq_dim(ncid, dimid, dimnamep, dimlenp);
 
     return PIO_NOERR;
 }
@@ -403,11 +389,10 @@ int inq_dimid_handler(iosystem_desc_t *ios)
 {
     int ncid;
     int *dimidp = NULL, dimid;
-    int mpierr;
     int id_present;
-    int ret;
     int namelen;
     char name[PIO_MAX_NAME + 1];
+    int mpierr;
 
     LOG((1, "inq_dimid_handler"));
     assert(ios);
@@ -430,8 +415,7 @@ int inq_dimid_handler(iosystem_desc_t *ios)
         dimidp = &dimid;
 
     /* Call the inq_dimid function. */
-    if ((ret = PIOc_inq_dimid(ncid, name, dimidp)))
-        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+    PIOc_inq_dimid(ncid, name, dimidp);
 
     return PIO_NOERR;
 }
@@ -450,13 +434,12 @@ int inq_att_handler(iosystem_desc_t *ios)
 {
     int ncid;
     int varid;
-    int mpierr;
-    int ret;
     char name[PIO_MAX_NAME + 1];
     int namelen;
     nc_type xtype, *xtypep = NULL;
     PIO_Offset len, *lenp = NULL;
     char xtype_present, len_present;
+    int mpierr;
 
     LOG((1, "inq_att_handler"));
     assert(ios);
@@ -484,8 +467,7 @@ int inq_att_handler(iosystem_desc_t *ios)
         lenp = &len;
 
     /* Call the function to learn about the attribute. */
-    if ((ret = PIOc_inq_att(ncid, varid, name, xtypep, lenp)))
-        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+    PIOc_inq_att(ncid, varid, name, xtypep, lenp);
 
     return PIO_NOERR;
 }
@@ -508,7 +490,6 @@ int inq_attname_handler(iosystem_desc_t *ios)
     char name[NC_MAX_NAME + 1], *namep = NULL;
     char name_present;
     int mpierr;
-    int ret;
 
     LOG((1, "inq_att_name_handler"));
     assert(ios);
@@ -531,8 +512,7 @@ int inq_attname_handler(iosystem_desc_t *ios)
         namep = name;
 
     /* Call the function to learn about the attribute. */
-    if ((ret = PIOc_inq_attname(ncid, varid, attnum, namep)))
-        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+    PIOc_inq_attname(ncid, varid, attnum, namep);
 
     return PIO_NOERR;
 }
@@ -556,7 +536,6 @@ int inq_attid_handler(iosystem_desc_t *ios)
     int id, *idp = NULL;
     char id_present;
     int mpierr;
-    int ret;
 
     LOG((1, "inq_attid_handler"));
     assert(ios);
@@ -581,8 +560,7 @@ int inq_attid_handler(iosystem_desc_t *ios)
         idp = &id;
 
     /* Call the function to learn about the attribute. */
-    if ((ret = PIOc_inq_attid(ncid, varid, name, idp)))
-        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+    PIOc_inq_attid(ncid, varid, name, idp);
 
     return PIO_NOERR;
 }
@@ -600,8 +578,6 @@ int att_put_handler(iosystem_desc_t *ios)
 {
     int ncid;
     int varid;
-    int mpierr;
-    int ret;
     char name[PIO_MAX_NAME + 1];
     int namelen;
     PIO_Offset attlen;  /* Number of elements in att array. */
@@ -610,6 +586,7 @@ int att_put_handler(iosystem_desc_t *ios)
     nc_type memtype;    /* Type of att data in memory. */
     PIO_Offset memtype_len; /* Length of element of memtype. */
     void *op;
+    int mpierr;
 
     LOG((1, "att_put_handler"));
     assert(ios);
@@ -648,14 +625,10 @@ int att_put_handler(iosystem_desc_t *ios)
          ncid, varid, namelen, name, atttype, attlen, atttype_len, memtype, memtype_len));
 
     /* Call the function to write the attribute. */
-    ret = PIOc_put_att_tc(ncid, varid, name, atttype, attlen, memtype, op);
+    PIOc_put_att_tc(ncid, varid, name, atttype, attlen, memtype, op);
 
     /* Free resources. */
     free(op);
-
-    /* Did it work? */
-    if (ret)
-        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
     LOG((2, "att_put_handler complete!"));
     return PIO_NOERR;
@@ -684,7 +657,6 @@ int att_get_handler(iosystem_desc_t *ios)
     PIO_Offset memtype_len; /* Length in bytes of an element of memype. */
     int *ip;
     int iotype;
-    int ret;
 
     LOG((1, "att_get_handler"));
     assert(ios);
@@ -720,14 +692,10 @@ int att_get_handler(iosystem_desc_t *ios)
         return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
     /* Call the function to read the attribute. */
-    ret = PIOc_get_att_tc(ncid, varid, name, memtype, ip);
+    PIOc_get_att_tc(ncid, varid, name, memtype, ip);
 
     /* Free resources. */
     free(ip);
-
-    /* Did it work? */
-    if (ret)
-        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
     return PIO_NOERR;
 }
@@ -1034,13 +1002,12 @@ int inq_var_handler(iosystem_desc_t *ios)
 {
     int ncid;
     int varid;
-    int mpierr;
     char name_present, xtype_present, ndims_present, dimids_present, natts_present;
     char name[NC_MAX_NAME + 1], *namep = NULL;
     nc_type xtype, *xtypep = NULL;
     int *ndimsp = NULL, *dimidsp = NULL, *nattsp = NULL;
     int ndims, dimids[NC_MAX_DIMS], natts;
-    int ret;
+    int mpierr;
 
     LOG((1, "inq_var_handler"));
     assert(ios);
@@ -1078,8 +1045,7 @@ int inq_var_handler(iosystem_desc_t *ios)
         nattsp = &natts;
 
     /* Call the inq function to get the values. */
-    if ((ret = PIOc_inq_var(ncid, varid, namep, xtypep, ndimsp, dimidsp, nattsp)))
-        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+    PIOc_inq_var(ncid, varid, namep, xtypep, ndimsp, dimidsp, nattsp);
 
     if (ndims_present)
         LOG((2, "inq_var_handler ndims = %d", ndims));
@@ -1102,7 +1068,6 @@ int inq_var_chunking_handler(iosystem_desc_t *ios)
     int storage, *storagep = NULL;
     PIO_Offset chunksizes[NC_MAX_DIMS], *chunksizesp = NULL;
     int mpierr;
-    int ret;
 
     assert(ios);
     LOG((1, "inq_var_chunking_handler"));
@@ -1127,8 +1092,7 @@ int inq_var_chunking_handler(iosystem_desc_t *ios)
         chunksizesp = chunksizes;
 
     /* Call the inq function to get the values. */
-    if ((ret = PIOc_inq_var_chunking(ncid, varid, storagep, chunksizesp)))
-        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+    PIOc_inq_var_chunking(ncid, varid, storagep, chunksizesp);
 
     return PIO_NOERR;
 }
@@ -1203,7 +1167,6 @@ int inq_var_endian_handler(iosystem_desc_t *ios)
     char endian_present;
     int endian, *endianp = NULL;
     int mpierr;
-    int ret;
 
     assert(ios);
     LOG((1, "inq_var_endian_handler"));
@@ -1224,8 +1187,7 @@ int inq_var_endian_handler(iosystem_desc_t *ios)
         endianp = &endian;
 
     /* Call the inq function to get the values. */
-    if ((ret = PIOc_inq_var_endian(ncid, varid, endianp)))
-        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+    PIOc_inq_var_endian(ncid, varid, endianp);
 
     return PIO_NOERR;
 }
@@ -1248,7 +1210,6 @@ int inq_var_deflate_handler(iosystem_desc_t *ios)
     int deflate, *deflatep;
     int deflate_level, *deflate_levelp;
     int mpierr;
-    int ret;
 
     assert(ios);
     LOG((1, "inq_var_deflate_handler"));
@@ -1287,8 +1248,7 @@ int inq_var_deflate_handler(iosystem_desc_t *ios)
         deflate_levelp = &deflate_level;
 
     /* Call the inq function to get the values. */
-    if ((ret = PIOc_inq_var_deflate(ncid, varid, shufflep, deflatep, deflate_levelp)))
-        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+    PIOc_inq_var_deflate(ncid, varid, shufflep, deflatep, deflate_levelp);
 
     return PIO_NOERR;
 }
@@ -1306,10 +1266,9 @@ int inq_varid_handler(iosystem_desc_t *ios)
 {
     int ncid;
     int varid;
-    int mpierr;
-    int ret;
     int namelen;
     char name[PIO_MAX_NAME + 1];
+    int mpierr;
 
     assert(ios);
 
@@ -1323,8 +1282,7 @@ int inq_varid_handler(iosystem_desc_t *ios)
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
 
     /* Call the inq_dimid function. */
-    if ((ret = PIOc_inq_varid(ncid, name, &varid)))
-        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+    PIOc_inq_varid(ncid, name, &varid);
 
     return PIO_NOERR;
 }
@@ -1342,7 +1300,6 @@ int sync_file_handler(iosystem_desc_t *ios)
 {
     int ncid;
     int mpierr;
-    int ret;
 
     LOG((1, "sync_file_handler"));
     assert(ios);
@@ -1354,8 +1311,7 @@ int sync_file_handler(iosystem_desc_t *ios)
     LOG((1, "sync_file_handler got parameter ncid = %d", ncid));
 
     /* Call the sync file function. */
-    if ((ret = PIOc_sync(ncid)))
-        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+    PIOc_sync(ncid);
 
     LOG((2, "sync_file_handler succeeded!"));
     return PIO_NOERR;
@@ -1377,7 +1333,6 @@ int setframe_handler(iosystem_desc_t *ios)
     int varid;
     int frame;
     int mpierr;
-    int ret;
 
     LOG((1, "setframe_handler"));
     assert(ios);
@@ -1394,8 +1349,7 @@ int setframe_handler(iosystem_desc_t *ios)
          ncid, varid, frame));
 
     /* Call the function. */
-    if ((ret = PIOc_setframe(ncid, varid, frame)))
-        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+    PIOc_setframe(ncid, varid, frame);
 
     LOG((2, "setframe_handler succeeded!"));
     return PIO_NOERR;
@@ -1416,7 +1370,6 @@ int advanceframe_handler(iosystem_desc_t *ios)
     int ncid;
     int varid;
     int mpierr;
-    int ret;
 
     LOG((1, "advanceframe_handler"));
     assert(ios);
@@ -1431,8 +1384,7 @@ int advanceframe_handler(iosystem_desc_t *ios)
          ncid, varid));
 
     /* Call the function. */
-    if ((ret = PIOc_advanceframe(ncid, varid)))
-        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+    PIOc_advanceframe(ncid, varid);
 
     LOG((2, "advanceframe_handler succeeded!"));
     return PIO_NOERR;
@@ -1485,12 +1437,11 @@ int def_var_handler(iosystem_desc_t *ios)
     int ncid;
     int namelen;
     char name[PIO_MAX_NAME + 1];
-    int mpierr;
-    int ret;
     int varid;
     nc_type xtype;
     int ndims;
     int *dimids;
+    int mpierr;
 
     LOG((1, "def_var_handler comproot = %d", ios->comproot));
     assert(ios);
@@ -1518,11 +1469,7 @@ int def_var_handler(iosystem_desc_t *ios)
          "name = %s ncid = %d", namelen, name, ncid));
 
     /* Call the function. */
-    if ((ret = PIOc_def_var(ncid, name, xtype, ndims, dimids, &varid)))
-    {
-        free(dimids);
-        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
-    }
+    PIOc_def_var(ncid, name, xtype, ndims, dimids, &varid);
 
     /* Free resources. */
     free(dimids);
@@ -1547,7 +1494,6 @@ int def_var_chunking_handler(iosystem_desc_t *ios)
     char chunksizes_present;
     PIO_Offset chunksizes[NC_MAX_DIMS], *chunksizesp = NULL;
     int mpierr;
-    int ret;
 
     assert(ios);
     LOG((1, "def_var_chunking_handler comproot = %d", ios->comproot));
@@ -1575,8 +1521,7 @@ int def_var_chunking_handler(iosystem_desc_t *ios)
         chunksizesp = chunksizes;
 
     /* Call the function. */
-    if ((ret = PIOc_def_var_chunking(ncid, varid, storage, chunksizesp)))
-        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+    PIOc_def_var_chunking(ncid, varid, storage, chunksizesp);
 
     LOG((1, "def_var_chunking_handler succeeded!"));
     return PIO_NOERR;
@@ -1651,7 +1596,6 @@ int def_var_endian_handler(iosystem_desc_t *ios)
     int varid;
     int endian;
     int mpierr;
-    int ret;
 
     assert(ios);
     LOG((1, "def_var_endian_handler comproot = %d", ios->comproot));
@@ -1668,8 +1612,7 @@ int def_var_endian_handler(iosystem_desc_t *ios)
          ncid, varid, endian));
 
     /* Call the function. */
-    if ((ret = PIOc_def_var_endian(ncid, varid, endian)))
-        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+    PIOc_def_var_endian(ncid, varid, endian);
 
     LOG((1, "def_var_chunking_handler succeeded!"));
     return PIO_NOERR;
@@ -1690,7 +1633,6 @@ int def_var_deflate_handler(iosystem_desc_t *ios)
     int deflate;
     int deflate_level;
     int mpierr;
-    int ret;
 
     assert(ios);
     LOG((1, "def_var_deflate_handler comproot = %d", ios->comproot));
@@ -1711,8 +1653,7 @@ int def_var_deflate_handler(iosystem_desc_t *ios)
          "deflate = %d deflate_level = %d", ncid, varid, shuffle, deflate, deflate_level));
 
     /* Call the function. */
-    if ((ret = PIOc_def_var_deflate(ncid, varid, shuffle, deflate, deflate_level)))
-        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+    PIOc_def_var_deflate(ncid, varid, shuffle, deflate, deflate_level);
 
     LOG((1, "def_var_deflate_handler succeeded!"));
     return PIO_NOERR;
@@ -1733,7 +1674,6 @@ int set_var_chunk_cache_handler(iosystem_desc_t *ios)
     PIO_Offset nelems;
     float preemption;
     int mpierr = MPI_SUCCESS;  /* Return code from MPI function codes. */
-    int ret; /* Return code. */
 
     assert(ios);
     LOG((1, "set_var_chunk_cache_handler comproot = %d", ios->comproot));
@@ -1754,8 +1694,7 @@ int set_var_chunk_cache_handler(iosystem_desc_t *ios)
          "nelems = %d preemption = %g", ncid, varid, size, nelems, preemption));
 
     /* Call the function. */
-    if ((ret = PIOc_set_var_chunk_cache(ncid, varid, size, nelems, preemption)))
-        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+    PIOc_set_var_chunk_cache(ncid, varid, size, nelems, preemption);
 
     LOG((1, "def_var_chunk_cache_handler succeeded!"));
     return PIO_NOERR;
@@ -1776,9 +1715,8 @@ int def_dim_handler(iosystem_desc_t *ios)
     int ncid;
     int len, namelen;
     char name[PIO_MAX_NAME + 1];
-    int mpierr;
-    int ret;
     int dimid;
+    int mpierr;
 
     LOG((1, "def_dim_handler comproot = %d", ios->comproot));
     assert(ios);
@@ -1797,8 +1735,7 @@ int def_dim_handler(iosystem_desc_t *ios)
          "name = %s len = %d ncid = %d", namelen, name, len, ncid));
 
     /* Call the function. */
-    if ((ret = PIOc_def_dim(ncid, name, len, &dimid)))
-        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+    PIOc_def_dim(ncid, name, len, &dimid);
 
     LOG((1, "def_dim_handler succeeded!"));
     return PIO_NOERR;
@@ -1819,9 +1756,8 @@ int rename_dim_handler(iosystem_desc_t *ios)
     int ncid;
     int namelen;
     char name[PIO_MAX_NAME + 1];
-    int mpierr;
-    int ret;
     int dimid;
+    int mpierr;
 
     LOG((1, "rename_dim_handler"));
     assert(ios);
@@ -1840,8 +1776,7 @@ int rename_dim_handler(iosystem_desc_t *ios)
          "name = %s ncid = %d dimid = %d", namelen, name, ncid, dimid));
 
     /* Call the function. */
-    if ((ret = PIOc_rename_dim(ncid, dimid, name)))
-        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+    PIOc_rename_dim(ncid, dimid, name);
 
     LOG((1, "rename_dim_handler succeeded!"));
     return PIO_NOERR;
@@ -1862,9 +1797,8 @@ int rename_var_handler(iosystem_desc_t *ios)
     int ncid;
     int namelen;
     char name[PIO_MAX_NAME + 1];
-    int mpierr;
-    int ret;
     int varid;
+    int mpierr;
 
     LOG((1, "rename_var_handler"));
     assert(ios);
@@ -1883,8 +1817,7 @@ int rename_var_handler(iosystem_desc_t *ios)
          "name = %s ncid = %d varid = %d", namelen, name, ncid, varid));
 
     /* Call the function. */
-    if ((ret = PIOc_rename_var(ncid, varid, name)))
-        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+    PIOc_rename_var(ncid, varid, name);
 
     LOG((1, "rename_var_handler succeeded!"));
     return PIO_NOERR;
@@ -1907,7 +1840,6 @@ int rename_att_handler(iosystem_desc_t *ios)
     int namelen, newnamelen;
     char name[PIO_MAX_NAME + 1], newname[PIO_MAX_NAME + 1];
     int mpierr;
-    int ret;
 
     LOG((1, "rename_att_handler"));
     assert(ios);
@@ -1930,8 +1862,7 @@ int rename_att_handler(iosystem_desc_t *ios)
          "newnamelen = %d newname = %s", namelen, name, ncid, varid, newnamelen, newname));
 
     /* Call the function. */
-    if ((ret = PIOc_rename_att(ncid, varid, name, newname)))
-        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+    PIOc_rename_att(ncid, varid, name, newname);
 
     LOG((1, "rename_att_handler succeeded!"));
     return PIO_NOERR;
@@ -1954,7 +1885,6 @@ int delete_att_handler(iosystem_desc_t *ios)
     int namelen;
     char name[PIO_MAX_NAME + 1];
     int mpierr;
-    int ret;
 
     LOG((1, "delete_att_handler"));
     assert(ios);
@@ -1973,8 +1903,7 @@ int delete_att_handler(iosystem_desc_t *ios)
          namelen, name, ncid, varid));
 
     /* Call the function. */
-    if ((ret = PIOc_del_att(ncid, varid, name)))
-        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+    PIOc_del_att(ncid, varid, name);
 
     LOG((1, "delete_att_handler succeeded!"));
     return PIO_NOERR;
@@ -2041,7 +1970,6 @@ int delete_file_handler(iosystem_desc_t *ios)
 {
     int len;
     int mpierr;
-    int ret;
 
     LOG((1, "delete_file_handler comproot = %d", ios->comproot));
     assert(ios);
@@ -2060,8 +1988,7 @@ int delete_file_handler(iosystem_desc_t *ios)
          len, filename));
 
     /* Call the delete file function. */
-    if ((ret = PIOc_deletefile(ios->iosysid, filename)))
-        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+    PIOc_deletefile(ios->iosysid, filename);
 
     LOG((1, "delete_file_handler succeeded!"));
     return PIO_NOERR;
@@ -2303,7 +2230,6 @@ int seterrorhandling_handler(iosystem_desc_t *ios)
     int old_method;
     int *old_methodp = NULL;
     int mpierr;
-    int ret;
 
     LOG((1, "seterrorhandling_handler comproot = %d", ios->comproot));
     assert(ios);
@@ -2322,8 +2248,7 @@ int seterrorhandling_handler(iosystem_desc_t *ios)
         old_methodp = &old_method;
 
     /* Call the function. */
-    if ((ret = PIOc_set_iosystem_error_handling(ios->iosysid, method, old_methodp)))
-        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+    PIOc_set_iosystem_error_handling(ios->iosysid, method, old_methodp);
 
     LOG((1, "seterrorhandling_handler succeeded!"));
     return PIO_NOERR;
@@ -2346,7 +2271,6 @@ int set_chunk_cache_handler(iosystem_desc_t *ios)
     PIO_Offset nelems;
     float preemption;
     int mpierr = MPI_SUCCESS;  /* Return code from MPI function codes. */
-    int ret; /* Return code. */
 
     LOG((1, "set_chunk_cache_handler called"));
     assert(ios);
@@ -2367,8 +2291,7 @@ int set_chunk_cache_handler(iosystem_desc_t *ios)
          "nelems = %d preemption = %g", iosysid, iotype, size, nelems, preemption));
 
     /* Call the function. */
-    if ((ret = PIOc_set_chunk_cache(iosysid, iotype, size, nelems, preemption)))
-        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+    PIOc_set_chunk_cache(iosysid, iotype, size, nelems, preemption);
 
     LOG((1, "set_chunk_cache_handler succeeded!"));
     return PIO_NOERR;
@@ -2392,7 +2315,6 @@ int get_chunk_cache_handler(iosystem_desc_t *ios)
     PIO_Offset nelems, *nelemsp;
     float preemption, *preemptionp;
     int mpierr = MPI_SUCCESS;  /* Return code from MPI function codes. */
-    int ret; /* Return code. */
 
     LOG((1, "get_chunk_cache_handler called"));
     assert(ios);
@@ -2422,8 +2344,7 @@ int get_chunk_cache_handler(iosystem_desc_t *ios)
         preemptionp = &preemption;
 
     /* Call the function. */
-    if ((ret = PIOc_get_chunk_cache(iosysid, iotype, sizep, nelemsp, preemptionp)))
-        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+    PIOc_get_chunk_cache(iosysid, iotype, sizep, nelemsp, preemptionp);
 
     LOG((1, "get_chunk_cache_handler succeeded!"));
     return PIO_NOERR;
@@ -2447,7 +2368,6 @@ int get_var_chunk_cache_handler(iosystem_desc_t *ios)
     PIO_Offset nelems, *nelemsp;
     float preemption, *preemptionp;
     int mpierr = MPI_SUCCESS;  /* Return code from MPI function codes. */
-    int ret; /* Return code. */
 
     LOG((1, "get_var_chunk_cache_handler called"));
     assert(ios);
@@ -2477,8 +2397,7 @@ int get_var_chunk_cache_handler(iosystem_desc_t *ios)
         preemptionp = &preemption;
 
     /* Call the function. */
-    if ((ret = PIOc_get_var_chunk_cache(ncid, varid, sizep, nelemsp, preemptionp)))
-        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+    PIOc_get_var_chunk_cache(ncid, varid, sizep, nelemsp, preemptionp);
 
     LOG((1, "get_var_chunk_cache_handler succeeded!"));
     return PIO_NOERR;
@@ -2531,7 +2450,6 @@ int finalize_handler(iosystem_desc_t *ios, int index)
 {
     int iosysid;
     int mpierr;
-    int ret;
 
     LOG((1, "finalize_handler called index = %d", index));
     assert(ios);
@@ -2543,10 +2461,7 @@ int finalize_handler(iosystem_desc_t *ios, int index)
     LOG((1, "finalize_handler got parameter iosysid = %d", iosysid));
 
     /* Call the function. */
-    LOG((2, "finalize_handler calling PIOc_finalize for iosysid = %d",
-         iosysid));
-    if ((ret = PIOc_finalize(iosysid)))
-        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
+    PIOc_finalize(iosysid);
 
     LOG((1, "finalize_handler succeeded!"));
     return PIO_NOERR;
@@ -2571,9 +2486,9 @@ int pio_msg_handler2(int io_rank, int component_count, iosystem_desc_t **iosys,
     MPI_Request req[component_count];
     MPI_Status status;
     int index;
+    int open_components = component_count;
     int mpierr;
     int ret = PIO_NOERR;
-    int open_components = component_count;
 
     LOG((1, "pio_msg_handler2 called"));
     assert(iosys);
@@ -2632,95 +2547,92 @@ int pio_msg_handler2(int io_rank, int component_count, iosystem_desc_t **iosys,
         switch (msg)
         {
         case PIO_MSG_INQ_TYPE:
-            inq_type_handler(my_iosys);
+            ret = inq_type_handler(my_iosys);
             break;
         case PIO_MSG_INQ_FORMAT:
-            inq_format_handler(my_iosys);
+            ret = inq_format_handler(my_iosys);
             break;
         case PIO_MSG_CREATE_FILE:
-            create_file_handler(my_iosys);
-            LOG((2, "returned from create_file_handler"));
+            ret = create_file_handler(my_iosys);
             break;
         case PIO_MSG_SYNC:
-            sync_file_handler(my_iosys);
+            ret = sync_file_handler(my_iosys);
             break;
         case PIO_MSG_ENDDEF:
         case PIO_MSG_REDEF:
-            LOG((2, "calling change_def_file_handler"));
-            change_def_file_handler(my_iosys, msg);
-            LOG((2, "returned from change_def_file_handler"));
+            ret = change_def_file_handler(my_iosys, msg);
             break;
         case PIO_MSG_OPEN_FILE:
-            open_file_handler(my_iosys);
+            ret = open_file_handler(my_iosys);
             break;
         case PIO_MSG_CLOSE_FILE:
-            close_file_handler(my_iosys);
+            ret = close_file_handler(my_iosys);
             break;
         case PIO_MSG_DELETE_FILE:
-            delete_file_handler(my_iosys);
+            ret = delete_file_handler(my_iosys);
             break;
         case PIO_MSG_RENAME_DIM:
-            rename_dim_handler(my_iosys);
+            ret = rename_dim_handler(my_iosys);
             break;
         case PIO_MSG_RENAME_VAR:
-            rename_var_handler(my_iosys);
+            ret = rename_var_handler(my_iosys);
             break;
         case PIO_MSG_RENAME_ATT:
-            rename_att_handler(my_iosys);
+            ret = rename_att_handler(my_iosys);
             break;
         case PIO_MSG_DEL_ATT:
-            delete_att_handler(my_iosys);
+            ret = delete_att_handler(my_iosys);
             break;
         case PIO_MSG_DEF_DIM:
-            def_dim_handler(my_iosys);
+            ret = def_dim_handler(my_iosys);
             break;
         case PIO_MSG_DEF_VAR:
-            def_var_handler(my_iosys);
+            ret = def_var_handler(my_iosys);
             break;
         case PIO_MSG_DEF_VAR_CHUNKING:
-            def_var_chunking_handler(my_iosys);
+            ret = def_var_chunking_handler(my_iosys);
             break;
         case PIO_MSG_DEF_VAR_FILL:
-            def_var_fill_handler(my_iosys);
+            ret = def_var_fill_handler(my_iosys);
             break;
         case PIO_MSG_DEF_VAR_ENDIAN:
-            def_var_endian_handler(my_iosys);
+            ret = def_var_endian_handler(my_iosys);
             break;
         case PIO_MSG_DEF_VAR_DEFLATE:
-            def_var_deflate_handler(my_iosys);
+            ret = def_var_deflate_handler(my_iosys);
             break;
         case PIO_MSG_INQ_VAR_ENDIAN:
-            inq_var_endian_handler(my_iosys);
+            ret = inq_var_endian_handler(my_iosys);
             break;
         case PIO_MSG_SET_VAR_CHUNK_CACHE:
-            set_var_chunk_cache_handler(my_iosys);
+            ret = set_var_chunk_cache_handler(my_iosys);
             break;
         case PIO_MSG_GET_VAR_CHUNK_CACHE:
-            get_var_chunk_cache_handler(my_iosys);
+            ret = get_var_chunk_cache_handler(my_iosys);
             break;
         case PIO_MSG_INQ:
-            inq_handler(my_iosys);
+            ret = inq_handler(my_iosys);
             break;
         case PIO_MSG_INQ_UNLIMDIMS:
-            inq_unlimdims_handler(my_iosys);
+            ret = inq_unlimdims_handler(my_iosys);
             break;
         case PIO_MSG_INQ_DIM:
-            inq_dim_handler(my_iosys, msg);
+            ret = inq_dim_handler(my_iosys, msg);
             break;
         case PIO_MSG_INQ_DIMID:
-            inq_dimid_handler(my_iosys);
+            ret = inq_dimid_handler(my_iosys);
             break;
         case PIO_MSG_INQ_VAR:
-            inq_var_handler(my_iosys);
+            ret = inq_var_handler(my_iosys);
             break;
         case PIO_MSG_INQ_VAR_CHUNKING:
-            inq_var_chunking_handler(my_iosys);
+            ret = inq_var_chunking_handler(my_iosys);
             break;
         case PIO_MSG_INQ_VAR_FILL:
-            inq_var_fill_handler(my_iosys);
+            ret = inq_var_fill_handler(my_iosys);
             break;
         case PIO_MSG_INQ_VAR_DEFLATE:
-            inq_var_deflate_handler(my_iosys);
+            ret = inq_var_deflate_handler(my_iosys);
             break;
         case PIO_MSG_GET_ATT:
             ret = att_get_handler(my_iosys);
@@ -2729,55 +2641,55 @@ int pio_msg_handler2(int io_rank, int component_count, iosystem_desc_t **iosys,
             ret = att_put_handler(my_iosys);
             break;
         case PIO_MSG_INQ_VARID:
-            inq_varid_handler(my_iosys);
+            ret = inq_varid_handler(my_iosys);
             break;
         case PIO_MSG_INQ_ATT:
-            inq_att_handler(my_iosys);
+            ret = inq_att_handler(my_iosys);
             break;
         case PIO_MSG_INQ_ATTNAME:
-            inq_attname_handler(my_iosys);
+            ret = inq_attname_handler(my_iosys);
             break;
         case PIO_MSG_INQ_ATTID:
-            inq_attid_handler(my_iosys);
+            ret = inq_attid_handler(my_iosys);
             break;
         case PIO_MSG_GET_VARS:
-            get_vars_handler(my_iosys);
+            ret = get_vars_handler(my_iosys);
             break;
         case PIO_MSG_PUT_VARS:
-            put_vars_handler(my_iosys);
+            ret = put_vars_handler(my_iosys);
             break;
         case PIO_MSG_INITDECOMP_DOF:
-            initdecomp_dof_handler(my_iosys);
+            ret = initdecomp_dof_handler(my_iosys);
             break;
         case PIO_MSG_WRITEDARRAYMULTI:
-            write_darray_multi_handler(my_iosys);
+            ret = write_darray_multi_handler(my_iosys);
             break;
         case PIO_MSG_SETFRAME:
-            setframe_handler(my_iosys);
+            ret = setframe_handler(my_iosys);
             break;
         case PIO_MSG_ADVANCEFRAME:
-            advanceframe_handler(my_iosys);
+            ret = advanceframe_handler(my_iosys);
             break;
         case PIO_MSG_READDARRAY:
-            readdarray_handler(my_iosys);
+            ret = readdarray_handler(my_iosys);
             break;
         case PIO_MSG_SETERRORHANDLING:
-            seterrorhandling_handler(my_iosys);
+            ret = seterrorhandling_handler(my_iosys);
             break;
         case PIO_MSG_SET_CHUNK_CACHE:
-            set_chunk_cache_handler(my_iosys);
+            ret = set_chunk_cache_handler(my_iosys);
             break;
         case PIO_MSG_GET_CHUNK_CACHE:
-            get_chunk_cache_handler(my_iosys);
+            ret = get_chunk_cache_handler(my_iosys);
             break;
         case PIO_MSG_FREEDECOMP:
-            freedecomp_handler(my_iosys);
+            ret = freedecomp_handler(my_iosys);
             break;
         case PIO_MSG_SET_FILL:
-            set_fill_handler(my_iosys);
+            ret = set_fill_handler(my_iosys);
             break;
         case PIO_MSG_EXIT:
-            finalize_handler(my_iosys, index);
+            ret = finalize_handler(my_iosys, index);
             msg = -1;
             break;
         default:
@@ -2785,8 +2697,10 @@ int pio_msg_handler2(int io_rank, int component_count, iosystem_desc_t **iosys,
             return PIO_EINVAL;
         }
 
-        /* If an error was returned by the handler, do nothing! */
-        LOG((3, "pio_msg_handler2 checking error ret = %d", ret));
+        /* If an error was returned by the handler, exit. */
+        LOG((3, "pio_msg_handler2 ret = %d", ret));
+        if (ret)
+            return pio_err(my_iosys, NULL, ret, __FILE__, __LINE__);            
 
         /* Listen for another msg from the component whose message we
          * just handled. */
