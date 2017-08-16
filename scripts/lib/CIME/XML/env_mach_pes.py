@@ -20,6 +20,13 @@ class EnvMachPes(EnvBase):
         EnvBase.__init__(self, case_root, infile, schema=schema)
 
     def get_value(self, vid, attribute=None, resolved=True, subgroup=None, pes_per_node=None): # pylint: disable=arguments-differ
+
+        if vid == "NINST_MAX":
+            value = 1
+            for comp in self._components:
+                value = max(value, self.get_value("NINST_{}".format(comp)))
+            return value
+
         value = EnvBase.get_value(self, vid, attribute, resolved, subgroup)
 
         if "NTASKS" in vid or "ROOTPE" in vid:
@@ -57,12 +64,16 @@ class EnvMachPes(EnvBase):
 
     def get_total_tasks(self, comp_classes):
         total_tasks = 0
+        maxinst = 1
         for comp in comp_classes:
             ntasks = self.get_value("NTASKS", attribute={"component":comp})
             rootpe = self.get_value("ROOTPE", attribute={"component":comp})
             pstrid = self.get_value("PSTRID", attribute={"component":comp})
+            maxinst = max(maxinst, self.get_value("NINST", attribute={"component":comp}))
             tt = rootpe + (ntasks - 1) * pstrid + 1
             total_tasks = max(tt, total_tasks)
+        if self.get_value("MULTI_COUPLER"):
+            total_tasks *= maxinst
         return total_tasks
 
     def get_tasks_per_node(self, total_tasks, max_thread_count):

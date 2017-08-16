@@ -377,7 +377,7 @@ def _case_build_impl(caseroot, case, sharedlib_only, model_only):
 
     comp_classes = case.get_values("COMP_CLASSES")
 
-    check_lockedfiles(caseroot)
+    check_lockedfiles(case)
 
     # Retrieve relevant case data
     # This environment variable gets set for cesm Make and
@@ -390,15 +390,21 @@ def _case_build_impl(caseroot, case, sharedlib_only, model_only):
     incroot             = os.path.abspath(case.get_value("INCROOT"))
     libroot             = os.path.abspath(case.get_value("LIBROOT"))
     sharedlibroot       = os.path.abspath(case.get_value("SHAREDLIBROOT"))
-
+    multi_coupler = case.get_value("MULTI_COUPLER")
     complist = []
+    ninst = 1
     for comp_class in comp_classes:
         if comp_class == "CPL":
-            ninst = 1
             config_dir = None
+            if multi_coupler:
+                ninst = case.get_value("NINST_MAX")
         else:
-            ninst = case.get_value("NINST_{}".format(comp_class))
             config_dir = os.path.dirname(case.get_value("CONFIG_{}_FILE".format(comp_class)))
+            if multi_coupler:
+                ninst = 1
+            else:
+                ninst = case.get_value("NINST_{}".format(comp_class))
+
         comp = case.get_value("COMP_{}".format(comp_class))
         thrds =  case.get_value("NTHRDS_{}".format(comp_class))
         expect(ninst is not None,"Failed to get ninst for comp_class {}".format(comp_class))

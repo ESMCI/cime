@@ -26,10 +26,11 @@ module cime_comp_mod
    use shr_sys_mod,       only: shr_sys_abort, shr_sys_flush
    use shr_const_mod,     only: shr_const_cday
    use shr_file_mod,      only: shr_file_setLogLevel, shr_file_setLogUnit
-   use shr_file_mod,      only: shr_file_setIO, shr_file_getUnit
+   use shr_file_mod,      only: shr_file_setIO, shr_file_getUnit, shr_file_freeUnit
    use shr_scam_mod,      only: shr_scam_checkSurface
    use shr_map_mod,       only: shr_map_setDopole
    use shr_mpi_mod,       only: shr_mpi_min, shr_mpi_max
+   use shr_mpi_mod,       only: shr_mpi_bcast, shr_mpi_commrank, shr_mpi_commsize
    use shr_mem_mod,       only: shr_mem_init, shr_mem_getusage
    use shr_cal_mod,       only: shr_cal_date2ymd, shr_cal_ymd2date, shr_cal_advdateInt
    use shr_orb_mod,       only: shr_orb_params
@@ -71,7 +72,7 @@ module cime_comp_mod
     use seq_comm_mct, only: seq_comm_iamin, seq_comm_name, seq_comm_namelen
     use seq_comm_mct, only: seq_comm_init, seq_comm_setnthreads, seq_comm_getnthreads
     use seq_comm_mct, only: seq_comm_getinfo => seq_comm_setptrs
-    use seq_comm_mct, only: seq_comm_petlist
+    use seq_comm_mct, only: seq_comm_petlist, cpl_inst_tag
 
    ! clock & alarm routines and variables
    use seq_timemgr_mod, only: seq_timemgr_type
@@ -507,8 +508,7 @@ module cime_comp_mod
    !----------------------------------------------------------------------------
    ! communicator groups and related
    !----------------------------------------------------------------------------
-   integer  :: Global_Comm
-
+   integer :: driver_comm
    integer  :: mpicom_GLOID          ! MPI global communicator
    integer  :: mpicom_CPLID          ! MPI cpl communicator
    integer  :: mpicom_OCNID          ! MPI ocn communicator for ensemble member 1
@@ -533,6 +533,7 @@ module cime_comp_mod
    logical  :: iamin_CPLALLGLCID     ! pe associated with CPLALLGLCID
    logical  :: iamin_CPLALLROFID     ! pe associated with CPLALLROFID
    logical  :: iamin_CPLALLWAVID     ! pe associated with CPLALLWAVID
+
 
    !----------------------------------------------------------------------------
    ! complist: list of comps on this pe
@@ -586,7 +587,7 @@ contains
 
 subroutine cime_pre_init1()
    use shr_pio_mod, only : shr_pio_init1, shr_pio_init2
-
+   use seq_comm_mct, only: num_inst_cpl
    !----------------------------------------------------------
    !| Initialize MCT and MPI communicators and IO
    !----------------------------------------------------------
@@ -595,22 +596,34 @@ subroutine cime_pre_init1()
    logical :: comp_iamin(num_inst_total)
    character(len=seq_comm_namelen) :: comp_name(num_inst_total)
    integer :: i, it
+   integer :: cpl_id
+   integer :: cpl_comm
 
    call mpi_init(ierr)
    call shr_mpi_chkerr(ierr,subname//' mpi_init')
+   call mpi_comm_dup(MPI_COMM_WORLD, driver_comm, ierr)
+   call shr_mpi_chkerr(ierr,subname//' mpi_comm_dup')
 
-   Global_Comm=MPI_COMM_WORLD
    comp_comm = MPI_COMM_NULL
    time_brun = mpi_wtime()
 
-   call shr_pio_init1(num_inst_total,NLFileName, Global_Comm)
+   !--- Initialize multiple coupler instances, if requested ---
+   call cime_cpl_init(driver_comm, cpl_comm, num_inst_cpl, cpl_id)
+
+   call shr_pio_init1(num_inst_total,NLFileName, cpl_comm)
    !
-   ! If pio_async_interface is true Global_Comm is MPI_COMM_NULL on the servernodes
+   ! If pio_async_interface is true Driver_comm is MPI_COMM_NULL on the servernodes
    ! and server nodes do not return from shr_pio_init2
    !
-   !   if (Global_Comm /= MPI_COMM_NULL) then
+   !   if (Driver_comm /= MPI_COMM_NULL) then
 
-   call seq_comm_init(Global_Comm, NLFileName)
+   if (num_inst_cpl > 1) then
+      call seq_comm_init(cpl_comm, NLFileName, cpl_comm_ID=cpl_id)
+      write(cpl_inst_tag,'("_",i4.4)') cpl_id
+   else
+      call seq_comm_init(cpl_comm, NLFileName)
+      cpl_inst_tag = ''
+   end if
 
    !--- set task based threading counts ---
    call seq_comm_getinfo(GLOID,pethreads=pethreads_GLOID,iam=iam_GLOID)
@@ -757,10 +770,10 @@ subroutine cime_pre_init1()
    !----------------------------------------------------------
 
    if (iamroot_CPLID) then
-      inquire(file='cpl_modelio.nml',exist=exists)
+      inquire(file='cpl_modelio.nml'//trim(cpl_inst_tag),exist=exists)
       if (exists) then
          logunit = shr_file_getUnit()
-         call shr_file_setIO('cpl_modelio.nml',logunit)
+         call shr_file_setIO('cpl_modelio.nml'//trim(cpl_inst_tag),logunit)
          call shr_file_setLogUnit(logunit)
          loglevel = 1
          call shr_file_setLogLevel(loglevel)
@@ -781,6 +794,8 @@ subroutine cime_pre_init1()
       write(logunit,'(2A)') subname,' USE_ESMF_LIB is NOT set, using esmf_wrf_timemgr'
 #endif
       write(logunit,'(2A)') subname,' MCT_INTERFACE is set'
+      if (num_inst_cpl > 1) &
+         write(logunit,'(2A,I0,A)') subname,' Driver is running with',num_inst_cpl,'instances'
    endif
 
    !
@@ -844,7 +859,12 @@ subroutine cime_pre_init2()
    !| Initialize infodata
    !----------------------------------------------------------
 
-   call seq_infodata_init(infodata,nlfilename, GLOID, pioid)
+   if (len(cpl_inst_tag) > 0) then
+      call seq_infodata_init(infodata,nlfilename, GLOID, pioid, &
+                             cpl_tag=cpl_inst_tag)
+   else
+      call seq_infodata_init(infodata,nlfilename, GLOID, pioid)
+   end if
 
    !----------------------------------------------------------
    ! Print Model heading and copyright message
@@ -2039,7 +2059,7 @@ subroutine cime_init()
          call seq_hist_write(infodata, EClock_d, &
               atm, lnd, ice, ocn, rof, glc, wav, &
               fractions_ax, fractions_lx, fractions_ix, fractions_ox, &
-              fractions_rx, fractions_gx, fractions_wx)
+              fractions_rx, fractions_gx, fractions_wx, trim(cpl_inst_tag))
          if (drv_threading) call seq_comm_setnthreads(nthreads_GLOID)
 
          call t_adj_detailf(-2)
@@ -2522,7 +2542,6 @@ end subroutine cime_init
       !----------------------------------------------------------
       !| WAV SETUP-SEND
       !----------------------------------------------------------
-
       if (wav_present .and. wavrun_alarm) then
 
          !----------------------------------------------------------
@@ -2723,7 +2742,6 @@ end subroutine cime_init
       !----------------------------------------------------------
       !| ATM/OCN SETUP (cesm1_orig, cesm1_orig_tight, cesm1_mod or cesm1_mod_tight)
       !----------------------------------------------------------
-
       if ((trim(cpl_seq_option) == 'CESM1_ORIG'       .or. &
            trim(cpl_seq_option) == 'CESM1_ORIG_TIGHT' .or. &
            trim(cpl_seq_option) == 'CESM1_MOD'        .or. &
@@ -3561,7 +3579,6 @@ end subroutine cime_init
       !----------------------------------------------------------
       !| Write driver restart file
       !----------------------------------------------------------
-
       if ( (restart_alarm .or. drv_pause) .and. iamin_CPLID) then
          call cime_comp_barriers(mpicom=mpicom_CPLID, timer='CPL:RESTART_BARRIER')
          call t_drvstartf ('CPL:RESTART',cplrun=.true.,barrier=mpicom_CPLID)
@@ -3574,7 +3591,7 @@ end subroutine cime_init
          call seq_rest_write(EClock_d, seq_SyncClock, infodata,       &
               atm, lnd, ice, ocn, rof, glc, wav, esp,                 &
               fractions_ax, fractions_lx, fractions_ix, fractions_ox, &
-              fractions_rx, fractions_gx, fractions_wx)
+              fractions_rx, fractions_gx, fractions_wx, tag=trim(cpl_inst_tag))
 
          if (drv_threading) call seq_comm_setnthreads(nthreads_GLOID)
          call t_drvstopf  ('CPL:RESTART',cplrun=.true.)
@@ -3598,14 +3615,15 @@ end subroutine cime_init
             call seq_hist_write(infodata, EClock_d, &
                  atm, lnd, ice, ocn, rof, glc, wav, &
                  fractions_ax, fractions_lx, fractions_ix, fractions_ox,     &
-                 fractions_rx, fractions_gx, fractions_wx)
+                 fractions_rx, fractions_gx, fractions_wx, trim(cpl_inst_tag))
 
             if (drv_threading) call seq_comm_setnthreads(nthreads_GLOID)
          endif
 
          if (do_histavg) then
             call seq_hist_writeavg(infodata, EClock_d, &
-                 atm, lnd, ice, ocn, rof, glc, wav, histavg_alarm)
+                 atm, lnd, ice, ocn, rof, glc, wav, histavg_alarm, &
+                 trim(cpl_inst_tag))
          endif
 
          if (do_hist_a2x) then
@@ -3720,11 +3738,13 @@ end subroutine cime_init
          call t_drvstopf  ('CPL:HISTORY',cplrun=.true.)
 
       endif
-
       !----------------------------------------------------------
       !| RUN ESP MODEL
       !----------------------------------------------------------
       if (esp_present .and. esprun_alarm) then
+         ! Make sure that all couplers are here in multicoupler mode before running ESP component
+         call mpi_barrier(driver_comm, ierr)
+
          call component_run(Eclock_e, esp, esp_run, infodata, &
               comp_prognostic=esp_prognostic, comp_num=comp_num_esp, &
               timer_barrier= 'CPL:ESP_RUN_BARRIER', timer_comp_run='CPL:ESP_RUN', &
@@ -3853,7 +3873,8 @@ end subroutine cime_init
          call mpi_barrier(mpicom_GLOID,ierr)
          call t_stopf("sync1_tprof")
 
-         write(timing_file,'(a,i8.8,a1,i5.5)') trim(tchkpt_dir)//"/model_timing_",ymd,"_",tod
+         write(timing_file,'(a,i8.8,a1,i5.5)') &
+           trim(tchkpt_dir)//"/cesm_timing"//trim(cpl_inst_tag)//"_",ymd,"_",tod
          if (output_perf) then
             call t_prf(filename=trim(timing_file), mpicom=mpicom_GLOID, &
                        num_outpe=0, output_thispe=output_perf)
@@ -3966,10 +3987,11 @@ end subroutine cime_init
 
    call t_set_prefixf("final:")
    if (output_perf) then
-      call t_prf(trim(timing_dir)//'/model_timing', mpicom=mpicom_GLOID, &
-                 output_thispe=output_perf)
+      call t_prf(trim(timing_dir)//'/model_timing'//trim(cpl_inst_tag), &
+                 mpicom=mpicom_GLOID, output_thispe=output_perf)
    else
-      call t_prf(trim(timing_dir)//'/model_timing', mpicom=mpicom_GLOID)
+      call t_prf(trim(timing_dir)//'/model_timing'//trim(cpl_inst_tag), &
+                 mpicom=mpicom_GLOID)
    endif
    call t_unset_prefixf()
 
@@ -4042,5 +4064,63 @@ subroutine cime_comp_barriers(mpicom, timer)
      call t_drvstopf (trim(timer))
   endif
 end subroutine cime_comp_barriers
+
+subroutine cime_cpl_init(comm_in, comm_out, num_inst_cpl, id)
+  use seq_comm_mct, only : cpl_inst_iamin
+  !-----------------------------------------------------------------------
+  !
+  ! Initialize multiple coupler instances, if requested
+  !
+  !-----------------------------------------------------------------------
+
+  implicit none
+
+  integer , intent(in) :: comm_in
+  integer , intent(in) :: comm_out
+  integer , intent(out)   :: num_inst_cpl
+  integer , intent(out)   :: id      ! instance ID, starts from 1
+  !
+  ! Local variables
+  !
+  integer :: ierr, inst_comm, mype, nu, numpes !, pes
+  integer :: ninst_cpl
+
+  namelist /cime_cpl_inst/ ninst_cpl
+
+  call shr_mpi_commrank(comm_in, mype  , ' cime_cpl_init')
+  call shr_mpi_commsize(comm_in, numpes, ' cime_cpl_init')
+
+  num_inst_cpl = 1
+  id    = 0
+
+  if (mype == 0) then
+    ! Read coupler namelist if it exists
+    ninst_cpl = 1
+    nu = shr_file_getUnit()
+    open(unit = nu, file = NLFileName, status = 'old', iostat = ierr)
+    rewind(unit = nu)
+    read(unit = nu, nml = cime_cpl_inst, iostat = ierr)
+    close(unit = nu)
+    call shr_file_freeUnit(nu)
+    num_inst_cpl = max(ninst_cpl, 1)
+  end if
+
+  call shr_mpi_bcast(num_inst_cpl, comm_in, 'ninst_cpl')
+
+  if (mod(numpes, num_inst_cpl) /= 0) then
+    call shr_sys_abort(subname // &
+      ' : Total PE number must be a multiple of coupler instance number')
+  end if
+
+  if (num_inst_cpl == 1) then
+     call mpi_comm_dup(comm_in, comm_out, ierr)
+     call shr_mpi_chkerr(ierr,subname//' mpi_comm_dup')
+  else
+    id = mype * num_inst_cpl / numpes + 1
+    call mpi_comm_split(comm_in, id, 0, comm_out, ierr)
+    call shr_mpi_chkerr(ierr,subname//' mpi_comm_split')
+  end if
+
+end subroutine cime_cpl_init
 
 end module cime_comp_mod
