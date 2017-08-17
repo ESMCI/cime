@@ -52,11 +52,11 @@ AC_DEFINE([LINUX], [1], [defined by CMake build])
 AC_CHECK_LIB([netcdf], [nc_create], [], [AC_MSG_ERROR([Can't find or link to the netcdf library.])])
 
 # Check for pnetcdf library.
-AC_CHECK_LIB([pnetcdf], [ncmpi_create],
-[AC_DEFINE([_PNETCDF], [1], [parallel-netcdf library available])], [])
+AC_CHECK_LIB([pnetcdf], [ncmpi_create], [], [])
 
 # If we have parallel-netcdf, then set these as well.
 if test x$ac_cv_lib_pnetcdf_ncmpi_create = xyes; then
+   AC_DEFINE([_PNETCDF], [1], [parallel-netcdf library available])
    AC_DEFINE([USE_PNETCDF_VARN], [1], [defined by CMake build])
    AC_DEFINE([USE_PNETCDF_VARN_ON_READ], [1], [defined by CMake build])
 fi
