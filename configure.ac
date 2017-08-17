@@ -15,10 +15,6 @@ AC_PROG_CC
 # Libtool initialisation.
 AC_PROG_LIBTOOL
 
-# Not working for some reason, so I will just set it...
-#AC_CHECK_SIZEOF([MPI_Offset], []. [INCLUDES = 'include <mpi.h>'])
-AC_DEFINE([SIZEOF_MPI_OFFSET], [8], [netCDF classic library available])
-
 # Always use malloc in autotools builds.
 AC_DEFINE([PIO_USE_MALLOC], [1], [use malloc for memory])
 
@@ -73,6 +69,17 @@ AC_MSG_RESULT([${have_netcdf_par}])
 if test x$have_netcdf_par = xyes; then
   AC_DEFINE([_NETCDF4],[1],[Does netCDF library provide netCDF-4 with parallel access])
 fi
+
+# Not working for some reason, so I will just set it...
+AC_CHECK_TYPE([MPI_Offset], [], [], [#include <mpi.h>])
+if test "x${ac_cv_type_MPI_Offset}" = xyes; then
+   AC_CHECK_SIZEOF([MPI_Offset], [], [#include <mpi.h>])
+else
+   AC_MSG_ERROR([Unable to find type MPI_Offset in mpi.h])
+fi
+
+#AC_CHECK_SIZEOF([MPI_Offset], [], [[#include <mpi.h>]])
+#AC_DEFINE([SIZEOF_MPI_OFFSET], [8], [netCDF classic library available])
 
 # Create the config.h file.
 AC_CONFIG_HEADERS([config.h])

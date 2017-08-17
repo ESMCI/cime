@@ -445,13 +445,13 @@ which causes the build commands to be made visible.
 <p>To build the PIO library with autotools, clone the repo and use a command like this:
 
 <pre>
-autoreconf -i && CC=mpicc CFLAGS=-g CPPFLAGS='-I/usr/local/netcdf-4.4.1_mpich-3.2/include/ -I/usr/local/pnetcdf-1.8.1_mpich-3.2/include' LDFLAGS='-L/usr/local/netcdf-4.4.1_mpich-3.2/lib -L/usr/local/pnetcdf-1.8.1_mpich-3.2/lib' ./configure && make -j check
+autoreconf -i && LD_LIBRARY_PATH=/usr/local/netcdf-4.4.1_mpich-3.2/lib CC=mpicc CFLAGS='-g' CPPFLAGS='-I/usr/local/netcdf-4.4.1_mpich-3.2/include/ -I/usr/local/pnetcdf-1.8.1_mpich-3.2/include' LDFLAGS='-L/usr/local/netcdf-4.4.1_mpich-3.2/lib -L/usr/local/pnetcdf-1.8.1_mpich-3.2/lib' ./configure && make check
 </pre>
 
 <p>To build with the address sanitizer for memory checking (debugging builds only!):
 
 <pre>
-autoreconf -i && CC=mpicc CPPFLAGS='-I/usr/local/netcdf-4.4.1_mpich-3.2/include/ -I/usr/local/pnetcdf-1.8.1_mpich-3.2/include' CFLAGS='-g -fsanitize=address -fno-omit-frame-pointer' LDFLAGS='-L/usr/local/netcdf-4.4.1_mpich-3.2/lib -L/usr/local/pnetcdf-1.8.1_mpich-3.2/lib' ./configure && make check
+autoreconf -i && LD_LIBRARY_PATH=/usr/local/netcdf-4.4.1_mpich-3.2/lib CC=mpicc CFLAGS='-g -fsanitize=address -fno-omit-frame-pointer' CPPFLAGS='-I/usr/local/netcdf-4.4.1_mpich-3.2/include/ -I/usr/local/pnetcdf-1.8.1_mpich-3.2/include' LDFLAGS='-L/usr/local/netcdf-4.4.1_mpich-3.2/lib -L/usr/local/pnetcdf-1.8.1_mpich-3.2/lib' ./configure && make check
  </pre>
 
 <li>Building and Running Performance Tests
