@@ -406,7 +406,6 @@ int check_netcdf2(iosystem_desc_t *ios, file_desc_t *file, int status,
                   const char *fname, int line)
 {
     int eh = default_error_handler; /* Error handler that will be used. */
-    char errmsg[PIO_MAX_NAME + 1];  /* Error message. */
 
     /* User must provide this. */
     pioassert(fname, "code file name must be provided", __FILE__, __LINE__);
@@ -426,16 +425,13 @@ int check_netcdf2(iosystem_desc_t *ios, file_desc_t *file, int status,
               "invalid error handler", __FILE__, __LINE__);
     LOG((2, "check_netcdf2 chose error handler = %d", eh));
 
-    /* Get an error message. */
-    if (eh != PIO_BCAST_ERROR && !PIOc_strerror(status, errmsg))
-    {
-        /* fprintf(stderr, "%s\n", errmsg); */
-        LOG((1, "check_netcdf2 errmsg = %s", errmsg));
-    }
-
     /* Decide what to do based on the error handler. */
     if (eh == PIO_INTERNAL_ERROR)
+    {
+        char errmsg[PIO_MAX_NAME + 1];  /* Error message. */
+        PIOc_strerror(status, errmsg);        
         piodie(errmsg, fname, line);        /* Die! */
+    }
     else if (eh == PIO_BCAST_ERROR)
     {
 	if (ios)
