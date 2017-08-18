@@ -429,7 +429,7 @@ int check_netcdf2(iosystem_desc_t *ios, file_desc_t *file, int status,
     /* Get an error message. */
     if (eh != PIO_BCAST_ERROR && !PIOc_strerror(status, errmsg))
     {
-        fprintf(stderr, "%s\n", errmsg);
+        /* fprintf(stderr, "%s\n", errmsg); */
         LOG((1, "check_netcdf2 errmsg = %s", errmsg));
     }
 

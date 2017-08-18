@@ -253,7 +253,8 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
 
         /* Use PIO to create the example file in each of the four
          * available ways. */
-        for (int fmt = 0; fmt < num_flavors; fmt++)
+        /* for (int fmt = 0; fmt < num_flavors; fmt++) */
+        for (int fmt = 2; fmt < 3; fmt++)
         {
             if ((ret = create_test_file(iosysid, ioid, flavor[fmt], my_rank, &ncid, &varid)))
                 return ret;
@@ -264,7 +265,7 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
 
             /* Look at the internals to check that the frame commands
              * worked. */
-            file_desc_t *file;            
+            file_desc_t *file;
             var_desc_t *vdesc;     /* Contains info about the variable. */
 
             if ((ret = pio_get_file(ncid, &file)))
