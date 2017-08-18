@@ -1135,7 +1135,7 @@ class Case(object):
         else:
             return comp_user_mods
 
-    def create_clone(self, newcase, keepexe=False, mach_dir=None, project=None, cime_output_root=None):
+    def create_clone(self, newcase, keepexe=False, mach_dir=None, project=None, cime_output_root=None, share_rundir=False):
         if cime_output_root is None:
             cime_output_root = self.get_value("CIME_OUTPUT_ROOT")
         expect(os.access(cime_output_root, os.W_OK), "Directory {} is not writable"
@@ -1177,6 +1177,7 @@ class Case(object):
                     raise
             newcase.set_value("CIME_OUTPUT_ROOT", outputroot)
             newcase.set_value("USER", newuser)
+
         # determine if will use clone executable or not
         if keepexe:
             orig_exeroot = self.get_value("EXEROOT")
@@ -1188,6 +1189,10 @@ class Case(object):
                 logger.warn("Avoid this message by building case one before you clone.\n")
         else:
             newcase.set_value("BUILD_COMPLETE","FALSE")
+
+        if share_rundir:
+            orig_rundir = self.get_value("RUNDIR")
+            newcase.set_value("RUNDIR", orig_rundir)
 
         # set machdir
         if mach_dir is not None:
