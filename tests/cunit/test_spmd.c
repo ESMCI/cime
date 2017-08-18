@@ -81,7 +81,7 @@ int run_spmd_tests(MPI_Comm test_comm)
     {
         for (int itest = 0; itest < NUM_TEST_CASES; itest++)
         {
-            rearr_comm_fc_opt_t fc;            
+            rearr_comm_fc_opt_t fc;
             fc.hs = false;
             fc.isend = false;
 
@@ -133,9 +133,9 @@ int run_spmd_tests(MPI_Comm test_comm)
     return 0;
 }
 
-/* Test some of the functions in the file pioc_sc.c. 
+/* Test some of the functions in the file pioc_sc.c.
  *
- * @param test_comm the MPI communicator that the test code is running on. 
+ * @param test_comm the MPI communicator that the test code is running on.
  * @returns 0 for success, error code otherwise.
  */
 int run_sc_tests(MPI_Comm test_comm)
@@ -200,7 +200,7 @@ int run_sc_tests(MPI_Comm test_comm)
 int test_lists()
 {
     file_desc_t *fdesc;
-    
+
     /* Test that bad input is correctly rejected. */
     if (pio_delete_iodesc_from_list(42) != PIO_EBADID)
         return ERR_WRONG;
@@ -215,8 +215,8 @@ int test_lists()
     return 0;
 }
 
-/* 
- * Test some list stuff for varlists. 
+/*
+ * Test some list stuff for varlists.
  *
  * @author Ed Hartnett
  */
@@ -251,12 +251,12 @@ int test_varlists()
     /* Make sure it is gone. */
     if (get_var_desc(0, &varlist, &var_desc) != PIO_ENOTVAR)
         return ERR_WRONG;
-    
+
     return 0;
 }
 
-/* 
- * Test some more list stuff for varlists. 
+/*
+ * Test some more list stuff for varlists.
  *
  * @author Ed Hartnett
  */
@@ -320,12 +320,12 @@ int test_varlists2()
         return ret;
     if ((ret = delete_var_desc(2, &varlist)))
         return ret;
-    
+
     return 0;
 }
 
-/* 
- * Test even more list stuff for varlists. 
+/*
+ * Test even more list stuff for varlists.
  *
  * @author Ed Hartnett
  */
@@ -379,7 +379,7 @@ int test_varlists3()
         return ret;
     if ((ret = delete_var_desc(3, &varlist)))
         return ret;
-    
+
     return 0;
 }
 
@@ -405,7 +405,7 @@ int test_ceil2_pair()
         return ERR_WRONG;
     if (pair(4, 2, 2) != 1)
         return ERR_WRONG;
-    
+
     return 0;
 }
 
@@ -567,7 +567,7 @@ int run_GDCblocksize_tests(MPI_Comm test_comm)
         int arrlen = 1;
         PIO_Offset arr_in[1] = {0};
         PIO_Offset blocksize;
-        
+
         blocksize = GCDblocksize(arrlen, arr_in);
         if (blocksize != 1)
             return ERR_WRONG;
@@ -577,12 +577,12 @@ int run_GDCblocksize_tests(MPI_Comm test_comm)
         int arrlen = 4;
         PIO_Offset arr_in[4] = {0, 1, 2, 3};
         PIO_Offset blocksize;
-        
+
         blocksize = GCDblocksize(arrlen, arr_in);
         if (blocksize != 4)
             return ERR_WRONG;
     }
-    
+
     {
         int arrlen = 4;
         PIO_Offset arr_in[4] = {0, 2, 3, 4};
@@ -592,7 +592,7 @@ int run_GDCblocksize_tests(MPI_Comm test_comm)
         if (blocksize != 1)
             return ERR_WRONG;
     }
-    
+
     {
         int arrlen = 4;
         PIO_Offset arr_in[4] = {0, 1, 3, 4};
@@ -602,7 +602,7 @@ int run_GDCblocksize_tests(MPI_Comm test_comm)
         if (blocksize != 1)
             return ERR_WRONG;
     }
-    
+
     {
         int arrlen = 4;
         PIO_Offset arr_in[4] = {0, 1, 2, 4};
@@ -612,7 +612,7 @@ int run_GDCblocksize_tests(MPI_Comm test_comm)
         if (blocksize != 1)
             return ERR_WRONG;
     }
-    
+
     return 0;
 }
 
@@ -647,7 +647,7 @@ int main(int argc, char **argv)
 
         if ((ret = run_spmd_tests(test_comm)))
             return ret;
-        
+
         if ((ret = test_CalcStartandCount()))
             return ret;
 

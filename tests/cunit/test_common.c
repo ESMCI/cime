@@ -116,7 +116,7 @@ int get_iotype_name(int iotype, char *name)
  * @param comm a pointer to an MPI communicator that will be created
  * for this test and contain target_ntasks tasks from WORLD.
  * @returns 0 for success, error code otherwise.
-*/
+ */
 int pio_test_init2(int argc, char **argv, int *my_rank, int *ntasks,
                    int min_ntasks, int max_ntasks, int log_level, MPI_Comm *comm)
 {
@@ -147,14 +147,14 @@ int pio_test_init2(int argc, char **argv, int *my_rank, int *ntasks,
     }
     else if (*ntasks > max_ntasks)
     {
-	/* If more tasks are available than we need for this test,
-	 * create a communicator with exactly the number of tasks we
-	 * need. */
+        /* If more tasks are available than we need for this test,
+         * create a communicator with exactly the number of tasks we
+         * need. */
         int color, key;
         if (*my_rank < max_ntasks)
         {
             color = 0;
-	    key = *my_rank;
+            key = *my_rank;
         }
         else
         {
@@ -182,10 +182,10 @@ int pio_test_init2(int argc, char **argv, int *my_rank, int *ntasks,
 }
 
 /* Finalize a PIO C test.
-*
-* @param test_comm pointer to the test communicator.
-* @returns 0 for success, error code otherwise.
-*/
+ *
+ * @param test_comm pointer to the test communicator.
+ * @returns 0 for success, error code otherwise.
+ */
 int pio_test_finalize(MPI_Comm *test_comm)
 {
     int ret = PIO_NOERR; /* Return value. */
@@ -340,7 +340,7 @@ check_nc_sample_0(int iosysid, int format, char *filename, int my_rank, int *nci
 
     /* Re-open the file to check it. */
     if ((ret = PIOc_openfile2(iosysid, &ncid, &format, filename,
-                             NC_NOWRITE)))
+                              NC_NOWRITE)))
         return ret;
 
     /* Find the number of dimensions, variables, and global attributes.*/
@@ -471,7 +471,7 @@ check_nc_sample_1(int iosysid, int format, char *filename, int my_rank, int *nci
 
     /* Re-open the file to check it. */
     if ((ret = PIOc_openfile2(iosysid, &ncid, &format, filename,
-                             NC_NOWRITE)))
+                              NC_NOWRITE)))
         return ret;
 
     /* Try to read the data. */
@@ -866,4 +866,3 @@ int create_decomposition_2d(int ntasks, int my_rank, int iosysid, int *dim_len_2
 
     return 0;
 }
-

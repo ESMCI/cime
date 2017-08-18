@@ -1211,7 +1211,7 @@ int run_no_iosys_tests(int my_rank, MPI_Comm test_comm)
     if ((ret = test_rearrange_io2comp(test_comm, my_rank)))
         return ret;
 
-     return 0;
+    return 0;
 }
 
 /* Test scalar vars. */
@@ -1310,7 +1310,7 @@ int test_scalar(int numio, int iosysid, MPI_Comm test_comm, int my_rank,
                 if ((ret = PIOc_put_var_double(ncid, varid, &double_data)))
                     return ret;
                 break;
-#ifdef _NETCDF4                
+#ifdef _NETCDF4
             case PIO_UBYTE:
                 if ((ret = PIOc_put_var_uchar(ncid, varid, &ubyte_data)))
                     return ret;
@@ -1331,7 +1331,7 @@ int test_scalar(int numio, int iosysid, MPI_Comm test_comm, int my_rank,
                 if ((ret = PIOc_put_var_ulonglong(ncid, varid, &uint64_data)))
                     return ret;
                 break;
-#endif /* _NETCDF4 */                
+#endif /* _NETCDF4 */
             default:
                 return ERR_WRONG;
             }
@@ -1383,7 +1383,7 @@ int test_scalar(int numio, int iosysid, MPI_Comm test_comm, int my_rank,
                 if (double_data_in != double_data)
                     return ERR_WRONG;
                 break;
-#ifdef _NETCDF4                
+#ifdef _NETCDF4
             case PIO_UBYTE:
                 if ((ret = PIOc_get_var_uchar(ncid, varid, &ubyte_data_in)))
                     return ret;
@@ -1414,7 +1414,7 @@ int test_scalar(int numio, int iosysid, MPI_Comm test_comm, int my_rank,
                 if (uint64_data_in != uint64_data)
                     return ERR_WRONG;
                 break;
-#endif /* _NETCDF4 */                
+#endif /* _NETCDF4 */
             default:
                 return ERR_WRONG;
             }

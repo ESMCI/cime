@@ -96,7 +96,7 @@ int test_frame_simple(int iosysid, int num_iotypes, int *iotype, int my_rank,
         int dim_len[NDIM3] = {TIME_LEN_SHORT, LAT_LEN_SHORT, LON_LEN_SHORT};
         char dim_name[NDIM3][PIO_MAX_NAME + 1] = {"time", "lat", "lon"};
         int varid;     /* The ID of the netCDF varable. */
-        
+
         /* Create the filename. */
         sprintf(filename, "simple_frame_%s_iotype_%d_rearr_%d.nc", TEST_NAME, iotype[fmt],
                 rearranger);

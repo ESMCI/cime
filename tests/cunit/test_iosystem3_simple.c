@@ -43,7 +43,7 @@ int main(int argc, char **argv)
     if ((ret = pio_test_init2(argc, argv, &my_rank, &ntasks, TARGET_NTASKS, TARGET_NTASKS,
                               0, &test_comm)))
         ERR(ERR_INIT);
-    
+
     /* Test code runs on TARGET_NTASKS tasks. The left over tasks do
      * nothing. */
     if (my_rank < TARGET_NTASKS)

@@ -92,7 +92,7 @@ int create_decomposition_1d(int ntasks, int my_rank, int iosysid, int pio_type, 
  * @param my_rank rank of this task.
  * @param test_comm the MPI communicator running the test.
  * @returns 0 for success, error code otherwise.
-*/
+ */
 int test_darray_fill(int iosysid, int ioid, int pio_type, int num_flavors, int *flavor,
                      int my_rank, MPI_Comm test_comm)
 {
@@ -108,10 +108,10 @@ int test_darray_fill(int iosysid, int ioid, int pio_type, int num_flavors, int *
     void *expected_in;
     PIO_Offset type_size;             /* Size of the data type. */
     /* My rank as each type. */
-    signed char my_byte_rank = my_rank;   
-    char my_char_rank = my_rank;   
-    short my_short_rank = my_rank;   
-    float my_float_rank = my_rank;   
+    signed char my_byte_rank = my_rank;
+    char my_char_rank = my_rank;
+    short my_short_rank = my_rank;
+    float my_float_rank = my_rank;
     double my_double_rank = my_rank;
 #ifdef _NETCDF4
     unsigned char my_ubyte_rank = my_rank;
@@ -151,7 +151,7 @@ int test_darray_fill(int iosysid, int ioid, int pio_type, int num_flavors, int *
         if (pio_type > PIO_DOUBLE && flavor[fmt] != PIO_IOTYPE_NETCDF4C &&
             flavor[fmt] != PIO_IOTYPE_NETCDF4P)
             continue;
-        
+
         for (int with_fillvalue = 0; with_fillvalue < NUM_FILLVALUE_PRESENT_TESTS; with_fillvalue++)
         {
             /* Create the filename. */
@@ -196,7 +196,7 @@ int test_darray_fill(int iosysid, int ioid, int pio_type, int num_flavors, int *
             long long int64_test_data[2] = {my_rank, my_rank};
             unsigned long long uint64_test_data[2] = {my_rank, my_rank};
 #endif /* _NETCDF4 */
-            
+
             switch (pio_type)
             {
             case PIO_BYTE:
@@ -378,7 +378,7 @@ int test_darray_fill(int iosysid, int ioid, int pio_type, int num_flavors, int *
  * @param my_rank rank of this task.
  * @param test_comm the MPI communicator running the test.
  * @returns 0 for success, error code otherwise.
-*/
+ */
 int test_darray_fill_unlim(int iosysid, int ioid, int pio_type, int num_flavors,
                            int *flavor, int my_rank, MPI_Comm test_comm)
 {
@@ -395,10 +395,10 @@ int test_darray_fill_unlim(int iosysid, int ioid, int pio_type, int num_flavors,
     PIO_Offset type_size;             /* Size of the data type. */
 
     /* My rank as each type. */
-    signed char my_byte_rank = my_rank;   
-    char my_char_rank = my_rank;   
-    short my_short_rank = my_rank;   
-    float my_float_rank = my_rank;   
+    signed char my_byte_rank = my_rank;
+    char my_char_rank = my_rank;
+    short my_short_rank = my_rank;
+    float my_float_rank = my_rank;
     double my_double_rank = my_rank;
 #ifdef _NETCDF4
     unsigned char my_ubyte_rank = my_rank;
@@ -437,7 +437,7 @@ int test_darray_fill_unlim(int iosysid, int ioid, int pio_type, int num_flavors,
         if (pio_type > PIO_DOUBLE && flavor[fmt] != PIO_IOTYPE_NETCDF4C &&
             flavor[fmt] != PIO_IOTYPE_NETCDF4P)
             continue;
-        
+
         /* Create the filename. */
         sprintf(filename, "data_%s_iotype_%d_pio_type_%d_unlim.nc", TEST_NAME, flavor[fmt],
                 pio_type);
@@ -683,7 +683,7 @@ int test_darray_fill_unlim(int iosysid, int ioid, int pio_type, int num_flavors,
  * @param rearranger the rearranger in use.
  * @param test_comm the MPI communicator for this test.
  * @returns 0 for success, error code otherwise.
-*/
+ */
 int test_decomp_read_write(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank,
                            int pio_type, int rearranger, MPI_Comm test_comm)
 {

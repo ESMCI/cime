@@ -49,9 +49,9 @@ int main(int argc, char **argv)
     /* Only do something on the first TARGET_NTASKS tasks. */
     if (my_rank < TARGET_NTASKS)
     {
-	/* Figure out iotypes. */
-	if ((ret = get_iotypes(&num_flavors, flavor)))
-	    ERR(ret);
+        /* Figure out iotypes. */
+        if ((ret = get_iotypes(&num_flavors, flavor)))
+            ERR(ret);
 
         /* Split world into odd and even. */
         MPI_Comm newcomm;
@@ -89,12 +89,12 @@ int main(int argc, char **argv)
 
                 /* Create sample file. */
                 if ((ret = create_nc_sample(sample, iosysid_world, flavor[flv], filename[sample],
-					    my_rank, NULL)))
+                                            my_rank, NULL)))
                     ERR(ret);
 
                 /* Check the file for correctness. */
                 if ((ret = check_nc_sample(sample, iosysid_world, flavor[flv], filename[sample],
-					   my_rank, &sample_ncid[sample])))
+                                           my_rank, &sample_ncid[sample])))
                     ERR(ret);
 
             }

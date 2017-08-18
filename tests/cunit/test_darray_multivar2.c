@@ -62,7 +62,7 @@ int dim_len[NDIM] = {NC_UNLIMITED, X_DIM_LEN, Y_DIM_LEN};
  * @param pio_type the type of the data.
  * @param test_comm the communicator that is running this test.
  * @returns 0 for success, error code otherwise.
-*/
+ */
 int test_multivar_darray(int iosysid, int ioid, int num_flavors, int *flavor,
                          int my_rank, int pio_type, MPI_Comm test_comm)
 {
@@ -125,20 +125,20 @@ int test_multivar_darray(int iosysid, int ioid, int num_flavors, int *flavor,
     /*     { */
     /*         int ncid2;            /\* The ncid of the re-opened netCDF file. *\/ */
     /*         int test_data_int_in[arraylen]; */
-                        
+
     /*         /\* Reopen the file. *\/ */
     /*         if ((ret = PIOc_openfile(iosysid, &ncid2, &flavor[fmt], filename, PIO_NOWRITE))) */
     /*             ERR(ret); */
-            
+
     /*         for (int v = 0; v < NUM_VAR; v++) */
     /*         { */
     /*             if ((ret = PIOc_setframe(ncid2, varid[v], 0))) */
     /*                 ERR(ret); */
-                
+
     /*             /\* Read the data. *\/ */
     /*             if ((ret = PIOc_read_darray(ncid2, varid[v], ioid, arraylen, test_data_int_in))) */
     /*                 ERR(ret); */
-                
+
     /*             /\* Check the results. *\/ */
     /*             for (int f = 0; f < arraylen; f++) */
     /*                 if (test_data_int_in[f] != test_data_int[f]) */
@@ -148,7 +148,7 @@ int test_multivar_darray(int iosysid, int ioid, int num_flavors, int *flavor,
     /*                     return ERR_WRONG; */
     /*                 } */
     /*         } /\* next var *\/ */
-            
+
     /*         /\* Close the netCDF file. *\/ */
     /*         if ((ret = PIOc_closefile(ncid2))) */
     /*             ERR(ret); */
@@ -221,12 +221,12 @@ int test_all_darray(int iosysid, int num_flavors, int *flavor, int my_rank,
     if ((ret = create_decomposition_2d_2(TARGET_NTASKS, my_rank, iosysid, dim_len_2d,
                                          &ioid, PIO_INT)))
         return ret;
-    
+
     /* Run the multivar darray tests. */
     if ((ret = test_multivar_darray(iosysid, ioid, num_flavors, flavor, my_rank, PIO_INT,
                                     test_comm)))
         return ret;
-    
+
     /* Free the PIO decomposition. */
     if ((ret = PIOc_freedecomp(iosysid, ioid)))
         ERR(ret);
@@ -273,7 +273,7 @@ int main(int argc, char **argv)
         /* Run tests. */
         if ((ret = test_all_darray(iosysid, num_flavors, flavor, my_rank, test_comm)))
             return ret;
-        
+
         /* Finalize PIO system. */
         if ((ret = PIOc_finalize(iosysid)))
             return ret;

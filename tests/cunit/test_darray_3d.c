@@ -114,7 +114,7 @@ int create_decomposition_3d(int ntasks, int my_rank, int iosysid, int *ioid)
  * @param my_rank rank of this task.
  * @param provide_fill 1 if fillvalue should be provided to PIOc_write_darray().
  * @returns 0 for success, error code otherwise.
-*/
+ */
 int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank,
                 int provide_fill)
 {
@@ -239,7 +239,7 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
  * PIO_REARR_SUBSET).
  * @param test_comm the MPI communicator for this test.
  * @returns 0 for success, error code otherwise.
-*/
+ */
 int test_decomp_read_write(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank,
                            int rearranger, MPI_Comm test_comm)
 {

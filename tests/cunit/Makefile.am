@@ -49,3 +49,5 @@ TESTS = run_tests.sh
 run_tests.sh : tests
 
 EXTRA_DIST = run_tests.sh
+
+CLEANFILES = *.nc *.txt

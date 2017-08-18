@@ -43,7 +43,7 @@
 #define NUM_REARRANGER 2
 
 /**
- * Test some decomposition functions. 
+ * Test some decomposition functions.
  *
  * @param iosysid the IO system ID.
  * @param use_io if true, fill the iostart/iocounter arrays.
@@ -65,7 +65,7 @@ int test_decomp1(int iosysid, int use_io, int my_rank, MPI_Comm test_comm)
     PIO_Offset *iostart = NULL;
     PIO_Offset *iocount = NULL;
     int ret;
-    
+
     /* Describe the decomposition. This is a 1-based array, so add 1! */
     slice_dimlen[0] = X_DIM_LEN;
     slice_dimlen[1] = Y_DIM_LEN;
@@ -162,16 +162,16 @@ int test_decomp1(int iosysid, int use_io, int my_rank, MPI_Comm test_comm)
         return ERR_WRONG;
     if (PIOc_freedecomp(iosysid, ioid + TEST_VAL_42) != PIO_EBADID)
         return ERR_WRONG;
-        
+
     /* Free the PIO decomposition. */
     if ((ret = PIOc_freedecomp(iosysid, ioid)))
         return ret;
-        
+
     return 0;
 }
 
 /**
- * Test PIOc_InitDecomp_bc(). 
+ * Test PIOc_InitDecomp_bc().
  *
  * @param iosysid the IO system ID.
  * @param my_rank the 0-based rank of this task.
@@ -191,7 +191,7 @@ int test_decomp_bc(int iosysid, int my_rank, MPI_Comm test_comm)
     PIO_Offset *map;
     int slice_dimlen[NDIM2];
     int ret;
-    
+
     /* Describe the decomposition. This is a 1-based array, so add 1! */
     start[0] = my_rank;
     start[1] = 0;
@@ -215,7 +215,7 @@ int test_decomp_bc(int iosysid, int my_rank, MPI_Comm test_comm)
         return ERR_WRONG;
     if (PIOc_InitDecomp_bc(iosysid, PIO_FLOAT, 2, slice_dimlen, start, bad_count, &ioid) != PIO_EINVAL)
         return ERR_WRONG;
-        
+
     /* Create the PIO decomposition for this test. */
     if ((ret = PIOc_InitDecomp_bc(iosysid, PIO_FLOAT, 2, slice_dimlen, start, count, &ioid)))
         return ret;
@@ -233,15 +233,15 @@ int test_decomp_bc(int iosysid, int my_rank, MPI_Comm test_comm)
 
     free(map);
     free(gdims);
-        
+
     /* Free the PIO decomposition. */
     if ((ret = PIOc_freedecomp(iosysid, ioid)))
         return ret;
-        
+
     return 0;
 }
 
-/** 
+/**
  * Test the decomp read/write functionality.
  *
  * @param iosysid the IO system ID.
@@ -251,7 +251,7 @@ int test_decomp_bc(int iosysid, int my_rank, MPI_Comm test_comm)
  * @param my_rank rank of this task.
  * @param test_comm the MPI communicator for this test.
  * @returns 0 for success, error code otherwise.
-*/
+ */
 int test_decomp_read_write(int iosysid, int ioid, int num_flavors, int *flavor, int rearranger,
                            int my_rank, MPI_Comm test_comm)
 {
@@ -271,16 +271,16 @@ int test_decomp_read_write(int iosysid, int ioid, int num_flavors, int *flavor, 
     for (int decomp_file_type = 0; decomp_file_type < num_decomp_file_types; decomp_file_type++)
     {
         int cmode = 0;
-            
+
         /* Determine the create mode. */
         if (decomp_file_type)
             cmode |= NC_NETCDF4;
         if (decomp_file_type == 2)
             cmode |= NC_MPIIO;
-            
+
         /* Use PIO to create the decomp file in each of the four
          * available ways. */
-        for (int fmt = 0; fmt < num_flavors; fmt++) 
+        for (int fmt = 0; fmt < num_flavors; fmt++)
         {
             /* Create the filename. */
             sprintf(filename, "decomp_%s_iotype_%d_rearr_%d_decomp_type_%d.nc", TEST_NAME,
@@ -288,19 +288,19 @@ int test_decomp_read_write(int iosysid, int ioid, int num_flavors, int *flavor, 
 
             if ((ret = PIOc_write_nc_decomp(iosysid, filename, cmode, ioid, NULL, NULL, 0)))
                 return ret;
-    
+
             /* Read the data. */
             if ((ret = PIOc_read_nc_decomp(iosysid, filename, &ioid2, test_comm, PIO_INT,
                                            title_in, history_in, &fortran_order_in)))
                 return ret;
-    
+
             /* Check the results. */
             {
                 iosystem_desc_t *ios;
                 io_desc_t *iodesc;
                 int target_nrecvs;
                 int target_num_aiotasks;
-                
+
                 /* Get the IO system info. */
                 if (!(ios = pio_get_iosystem_from_id(iosysid)))
                     return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
@@ -337,7 +337,7 @@ int test_decomp_read_write(int iosysid, int ioid, int num_flavors, int *flavor, 
                 if (iodesc->dimlen[0] != X_DIM_LEN || iodesc->dimlen[1] != Y_DIM_LEN)
                     return ERR_WRONG;
             }
-        
+
             /* Free the PIO decomposition. */
             if ((ret = PIOc_freedecomp(iosysid, ioid2)))
                 ERR(ret);
@@ -378,39 +378,39 @@ int main(int argc, char **argv)
         for (int r = 1; r < NUM_REARRANGERS; r++)
         {
             int num_iotests = (rearranger[r] == PIO_REARR_BOX) ? 2 : 1;
-            
+
             for (int io_test = 0; io_test < num_iotests; io_test++)
             {
                 /* Initialize PIO system on world. */
                 if ((ret = PIOc_Init_Intracomm(test_comm, NUM_IO4, STRIDE1, BASE0, rearranger[r], &iosysid)))
                     ERR(ret);
-                
+
                 /* Set the error handler. */
                 if ((ret = PIOc_set_iosystem_error_handling(iosysid, PIO_BCAST_ERROR, NULL)))
                     ERR(ret);
-                
+
                 /* Test basic decomp stuff. */
                 if ((ret = test_decomp1(iosysid, io_test, my_rank, test_comm)))
                     return ret;
-                
+
                 /* Test PIOc_InitDecomp_bc(). */
                 if ((ret = test_decomp_bc(iosysid, my_rank, test_comm)))
                     return ret;
-                
+
                 /* Decompose the data over the tasks. */
                 if ((ret = create_decomposition_2d(TARGET_NTASKS, my_rank, iosysid, dim_len_2d, &ioid,
                                                    PIO_INT)))
                     return ret;
-                
+
                 /* Test decomposition read/write. */
                 if ((ret = test_decomp_read_write(iosysid, ioid, num_flavors, flavor, rearranger[r],
                                                   my_rank, test_comm)))
                     return ret;
-                
+
                 /* Free the PIO decomposition. */
                 if ((ret = PIOc_freedecomp(iosysid, ioid)))
                     ERR(ret);
-                
+
                 /* Finalize PIO systems. */
                 if ((ret = PIOc_finalize(iosysid)))
                     ERR(ret);

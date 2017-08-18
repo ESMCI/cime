@@ -47,7 +47,7 @@ int my_type[NTYPE] = {PIO_BYTE, PIO_CHAR, PIO_SHORT, PIO_INT, PIO_FLOAT,
 #else
 #define NTYPE NUM_CLASSIC_TYPES
 int my_type[NTYPE] = {PIO_BYTE, PIO_CHAR, PIO_SHORT, PIO_INT, PIO_FLOAT,
-                       PIO_DOUBLE};
+                      PIO_DOUBLE};
 #endif /* _NETCDF4 */
 
 /* We will have one record, and one non-record var of each type. */
@@ -180,7 +180,7 @@ int check_darray_file(int iosysid, char *data_filename, int iotype, int my_rank,
                 ERR(ERR_WRONG);
             }
         }
-        
+
         /* Check each value of record data. */
         for (int r = 0; r < LAT_LEN * LON_LEN * NREC; r++)
         {
@@ -281,11 +281,11 @@ int check_darray_file(int iosysid, char *data_filename, int iotype, int my_rank,
             /* Release memory. */
             free(data_in);
         }
-        
+
         free(data_in);
         free(norec_data_in);
     }
-            
+
     /* Close the file. */
     if ((ret = PIOc_closefile(ncid)))
         ERR(ret);
@@ -309,7 +309,7 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm,
     int ioid_uint;
     int ioid_int64;
     int ioid_uint64;
-#endif    
+#endif
     int ioid_4d_float;
     int ioid_4d_int;
     int dim_len[NDIM4] = {NC_UNLIMITED, VERT_LEN, LAT_LEN, LON_LEN};
@@ -390,7 +390,7 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm,
                                 compdof, &ioid_uint64, PIO_REARR_BOX, NULL, NULL)))
         ERR(ret);
 #endif
-    
+
     if ((ret = PIOc_init_decomp(iosysid, PIO_INT, NDIM3, &dim_len[1], elements_per_pe_3d,
                                 compdof_3d, &ioid_4d_int, PIO_REARR_BOX, NULL, NULL)))
         ERR(ret);
@@ -406,9 +406,9 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm,
 #else
     int var_ioid[NTYPE] = {ioid_byte, ioid_char, ioid_short, ioid_int, ioid_float,
                            ioid_double};
-#endif /* _NETCDF4 */    
+#endif /* _NETCDF4 */
     int var_ioid_4d[NUM_4D_VARS] = {ioid_4d_int, ioid_4d_float};
-    
+
     /* Write the decomp file for the 1-byte ioid. */
     if ((ret = PIOc_write_nc_decomp(iosysid, decomp_filename, 0, ioid_byte, NULL, NULL, 0)))
         return ret;
@@ -451,14 +451,14 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm,
                 ERR(ret);
             if ((ret = PIOc_def_var(ncid, var_norec_name, my_type[t], NDIM2, dimids_2d,
                                     &norec_varid[t])))
-            ERR(ret);
+                ERR(ret);
         }
 
         char var_name_4d[NUM_4D_VARS][PIO_MAX_NAME + 1] = {"var_4d_int", "var_4d_float"};
         int var_type_4d[NUM_4D_VARS] = {PIO_INT, PIO_FLOAT};
         int varid_4d[NUM_4D_VARS];
         void *my_data_4d[NUM_4D_VARS] = {int_4d_data, float_4d_data};
-        
+
         /* Define some 4D vars for extra fun. */
         for (int v = 0; v < NUM_4D_VARS; v++)
             if ((ret = PIOc_def_var(ncid, var_name_4d[v], var_type_4d[v], NDIM4, dimids_4d, &varid_4d[v])))
@@ -496,7 +496,7 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm,
                     ERR(ret);
             } /* next record. */
         } /* next type */
-            
+
         /* Write some data to the non-record vars. */
         for (int t = 0; t < num_types; t++)
         {
@@ -550,7 +550,7 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm,
         ERR(ret);
     if ((ret = PIOc_freedecomp(iosysid, ioid_double)))
         ERR(ret);
-#ifdef _NETCDF4    
+#ifdef _NETCDF4
     if ((ret = PIOc_freedecomp(iosysid, ioid_ubyte)))
         ERR(ret);
     if ((ret = PIOc_freedecomp(iosysid, ioid_ushort)))
@@ -561,7 +561,7 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm,
         ERR(ret);
     if ((ret = PIOc_freedecomp(iosysid, ioid_uint64)))
         ERR(ret);
-#endif /* _NETCDF4 */    
+#endif /* _NETCDF4 */
 
     if ((ret = PIOc_freedecomp(iosysid, ioid_4d_int)))
         ERR(ret);
@@ -611,18 +611,18 @@ int main(int argc, char **argv)
                                    &num_computation_procs, NULL, &io_comm, comp_comm,
                                    PIO_REARR_BOX, &iosysid)))
             ERR(ERR_INIT);
-        
+
         /* This code runs only on computation components. */
         if (my_rank)
         {
             /* Run the simple darray async test. */
             if ((ret = run_darray_async_test(iosysid, my_rank, test_comm, num_flavors, flavor)))
                 return ret;
-            
+
             /* Finalize PIO system. */
             if ((ret = PIOc_finalize(iosysid)))
                 return ret;
-            
+
             /* Free the computation conomponent communicator. */
             if ((mpierr = MPI_Comm_free(comp_comm)))
                 MPIERR(mpierr);

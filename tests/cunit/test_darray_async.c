@@ -86,7 +86,7 @@ int check_darray_file(int iosysid, char *data_filename, int iotype, int my_rank,
     {
         int rec_varid = vs ? varid[0] : varid[1];
         int norec_varid = vs ? varid[2] : varid[3];
-        
+
         /* Read the record data. The values we expect are: 10, 11, 20, 21, 30,
          * 31, in each of three records. */
         if ((ret = PIOc_get_var(ncid, rec_varid, data_in)))
@@ -210,7 +210,7 @@ int check_darray_file(int iosysid, char *data_filename, int iotype, int my_rank,
             }
         }
     } /* next var set */
-    
+
     /* Free resources. */
     free(data_in);
     free(data_in_norec);
@@ -370,7 +370,7 @@ int run_darray_async_test(int iosysid, int my_rank, MPI_Comm test_comm, MPI_Comm
             ERR(PIO_ENOMEM);
         memcpy(my_data_multi, my_data, type_size * elements_per_pe);
         memcpy((char *)my_data_multi + type_size * elements_per_pe, my_data, type_size * elements_per_pe);
-        
+
         /* Define dimensions. */
         for (int d = 0; d < NDIM3; d++)
             if ((ret = PIOc_def_dim(ncid, dim_name[d], dim_len[d], &dimid[d])))
