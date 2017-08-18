@@ -253,8 +253,7 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
 
         /* Use PIO to create the example file in each of the four
          * available ways. */
-        /* for (int fmt = 0; fmt < num_flavors; fmt++) */
-        for (int fmt = 2; fmt < 3; fmt++)
+        for (int fmt = 0; fmt < num_flavors; fmt++)
         {
             if ((ret = create_test_file(iosysid, ioid, flavor[fmt], my_rank, &ncid, &varid)))
                 return ret;
