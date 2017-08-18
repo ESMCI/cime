@@ -264,7 +264,7 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
 
             /* Look at the internals to check that the frame commands
              * worked. */
-            file_desc_t *file;            
+            file_desc_t *file;
             var_desc_t *vdesc;     /* Contains info about the variable. */
 
             if ((ret = pio_get_file(ncid, &file)))
