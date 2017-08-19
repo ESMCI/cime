@@ -1,5 +1,5 @@
 /*
- * This program tests darrays with async and non-async. 
+ * This program tests darrays with async and non-async.
  *
  * @author Ed Hartnett
  * @date 7/8/17
@@ -124,7 +124,7 @@ int darray_simple_test(int iosysid, int my_rank, int num_iotypes, int *iotype,
         /*         ERR(ret); */
         /* } */
     }
-    
+
     return PIO_NOERR;
 }
 
@@ -133,11 +133,11 @@ int darray_simple_test(int iosysid, int my_rank, int num_iotypes, int *iotype,
 int run_darray_tests(int iosysid, int my_rank, int num_iotypes, int *iotype, int async)
 {
     int ret;
-    
+
     /* Run the simple darray test. */
     if ((ret = darray_simple_test(iosysid, my_rank, num_iotypes, iotype, async)))
         ERR(ret);
-        
+
     return PIO_NOERR;
 }
 
@@ -156,7 +156,7 @@ int run_async_tests(MPI_Comm test_comm, int my_rank, int num_iotypes, int *iotyp
                                &num_computation_procs, NULL, &io_comm, comp_comm,
                                PIO_REARR_BOX, &iosysid)))
         ERR(ERR_INIT);
-        
+
     /* This code runs only on computation components. */
     if (my_rank)
     {
@@ -167,7 +167,7 @@ int run_async_tests(MPI_Comm test_comm, int my_rank, int num_iotypes, int *iotyp
         /* Finalize PIO system. */
         if ((ret = PIOc_finalize(iosysid)))
             return ret;
-            
+
         /* Free the computation conomponent communicator. */
         if ((mpierr = MPI_Comm_free(comp_comm)))
             MPIERR(mpierr);
@@ -180,7 +180,7 @@ int run_async_tests(MPI_Comm test_comm, int my_rank, int num_iotypes, int *iotyp
     }
 
     return PIO_NOERR;
-}    
+}
 
 /* Initialize with task 0 as IO task, tasks 1-3 as a
  * computation component. */
@@ -199,13 +199,13 @@ int run_noasync_tests(MPI_Comm test_comm, int my_rank, int num_iotypes, int *iot
     /* Run the tests. */
     if ((ret = run_darray_tests(iosysid, my_rank, num_iotypes, iotype, 1)))
         ERR(ret);
-    
+
     /* Finalize PIO system. */
     if ((ret = PIOc_finalize(iosysid)))
         return ret;
-            
+
     return PIO_NOERR;
-}    
+}
 
 /* Run Tests for darray functions. */
 int main(int argc, char **argv)
@@ -234,10 +234,10 @@ int main(int argc, char **argv)
     {
         if ((ret = run_async_tests(test_comm, my_rank, num_iotypes, iotype)))
             ERR(ret);
-        
+
         if ((ret = run_noasync_tests(test_comm, my_rank, num_iotypes, iotype)))
             ERR(ret);
-        
+
     } /* endif my_rank < TARGET_NTASKS */
 
     /* Finalize the MPI library. */

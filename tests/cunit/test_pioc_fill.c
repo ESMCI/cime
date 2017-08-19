@@ -281,7 +281,7 @@ int putget_read_vara(int ncid, int *varid, PIO_Offset *start, PIO_Offset *count,
     for (x = 0; x < X_DIM_LEN/2; x++)
     {
         if (strncmp(text_array_in[x], text, strlen(text)))
-                ERR(ERR_WRONG);
+            ERR(ERR_WRONG);
         for (y = 0; y < Y_DIM_LEN; y++)
         {
             if (byte_array_in[x][y] != byte_array[x][y])
@@ -436,7 +436,7 @@ int create_putget_file(int iosysid, int flavor, int *dim_len, int *varid, const 
     int dimids[NDIM];        /* The dimension IDs. */
     int num_vars = NUM_CLASSIC_TYPES;
     int xtype[NUM_NETCDF_TYPES] = {PIO_BYTE, PIO_CHAR, PIO_SHORT, PIO_INT, PIO_FLOAT, PIO_DOUBLE,
-                                    PIO_UBYTE, PIO_USHORT, PIO_UINT, PIO_INT64, PIO_UINT64, PIO_STRING};
+                                   PIO_UBYTE, PIO_USHORT, PIO_UINT, PIO_INT64, PIO_UINT64, PIO_STRING};
     int ncid;
     int old_mode;
     int ret;
@@ -578,20 +578,20 @@ int test_fill(int iosysid, int num_flavors, int *flavor, int my_rank,
             for (int omt = 0; omt < NUM_OPEN_MODE_TESTS; omt++)
             {
                 int omode = omt ? PIO_NOWRITE : PIO_WRITE;
-                
+
                 if ((ret = PIOc_openfile(iosysid, &ncid, &(flavor[fmt]), filename, omode)))
                     ERR(ret);
-                
+
                 /* Use the vara functions to read some data. */
                 start[0] = 1;
                 if ((ret = putget_read_vara(ncid, varid, start, count, default_fill, flavor[fmt], omt, my_rank)))
                     ERR(ret);
-                
+
                 /* Use the vara functions to read some data which are just fill values. */
                 start[0] = 0;
                 if ((ret = putget_read_vara_fill(ncid, varid, start, count, default_fill, flavor[fmt], my_rank)))
                     ERR(ret);
-                
+
                 /* Close the netCDF file. */
                 if ((ret = PIOc_closefile(ncid)))
                     ERR(ret);
@@ -697,7 +697,7 @@ int test_fill_mode(int iosysid, int num_flavors, int *flavor, int my_rank,
                     default:
                         ERR(ERR_WRONG);
                     }
-                
+
                     /* If not using a default fill value, set one. */
                     if (!default_fill)
                         if ((ret = PIOc_def_var_fill(ncid, varid, NC_FILL, fillvalue)))
@@ -711,7 +711,7 @@ int test_fill_mode(int iosysid, int num_flavors, int *flavor, int my_rank,
                     if (extra_var)
                         if ((ret = PIOc_put_var(ncid, varid2, extra_data)))
                             ERR(ret);
-                    
+
                     /* Close the netCDF file. */
                     if ((ret = PIOc_closefile(ncid)))
                         ERR(ret);

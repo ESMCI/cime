@@ -697,7 +697,7 @@ int putget_write_var_nt(int ncid, int *varid, int flavor)
  * @param varid an array of varids in the file.
  * @param flavor the PIO IO type of the test file.
  * @returns 0 for success, error code otherwise.
-*/
+ */
 int test_write_atts(int ncid, int *varid, int flavor)
 {
     int ret;
@@ -725,7 +725,7 @@ int test_write_atts(int ncid, int *varid, int flavor)
         return ret;
 
     if ((ret = PIOc_put_att_int(ncid, varid[3], INT_ATT_NAME, PIO_INT,
-                                  ATT_LEN, (int *)int_array)))
+                                ATT_LEN, (int *)int_array)))
         return ret;
 
     if ((ret = PIOc_put_att_long(ncid, varid[4], LONG_ATT_NAME, PIO_INT,
@@ -737,7 +737,7 @@ int test_write_atts(int ncid, int *varid, int flavor)
         return ret;
 
     if ((ret = PIOc_put_att_double(ncid, varid[6], DOUBLE_ATT_NAME, PIO_DOUBLE,
-                                  ATT_LEN, (double *)double_array)))
+                                   ATT_LEN, (double *)double_array)))
         return ret;
 
     if (flavor == PIO_IOTYPE_NETCDF4C || flavor == PIO_IOTYPE_NETCDF4P)
@@ -1209,7 +1209,7 @@ int putget_read_var1_nt(int ncid, int *varid, PIO_Offset *index, int flavor)
  * @param unlim non-zero if unlimited dimension is in use.
  * @param flavor the PIO IO type of the test file.
  * @returns 0 for success, error code otherwise.
-*/
+ */
 int putget_read_var(int ncid, int *varid, int unlim, int flavor)
 {
     signed char byte_array_in[X_DIM_LEN][Y_DIM_LEN];
@@ -1252,7 +1252,7 @@ int putget_read_var(int ncid, int *varid, int unlim, int flavor)
     for (x = 0; x < X_DIM_LEN; x++)
     {
         if (strncmp(text_array_in[x], text, strlen(text)))
-                return ERR_WRONG;
+            return ERR_WRONG;
         for (y = 0; y < Y_DIM_LEN; y++)
         {
             if (byte_array_in[x][y] != byte_array[x][y])
@@ -1308,7 +1308,7 @@ int putget_read_var(int ncid, int *varid, int unlim, int flavor)
  * @param unlim non-zero if unlimited dimension is in use.
  * @param flavor the PIO IO type of the test file.
  * @returns 0 for success, error code otherwise.
-*/
+ */
 int putget_read_var_nt(int ncid, int *varid, int unlim, int flavor)
 {
     signed char byte_array_in[X_DIM_LEN][Y_DIM_LEN];
@@ -1351,7 +1351,7 @@ int putget_read_var_nt(int ncid, int *varid, int unlim, int flavor)
     for (x = 0; x < X_DIM_LEN; x++)
     {
         if (strncmp(text_array_in[x], text, strlen(text)))
-                return ERR_WRONG;
+            return ERR_WRONG;
         for (y = 0; y < Y_DIM_LEN; y++)
         {
             if (byte_array_in[x][y] != byte_array[x][y])
@@ -1437,7 +1437,7 @@ int putget_read_vara(int ncid, int *varid, PIO_Offset *start, PIO_Offset *count,
     for (x = 0; x < X_DIM_LEN; x++)
     {
         if (strncmp(text_array_in[x], text, strlen(text)))
-                return ERR_WRONG;
+            return ERR_WRONG;
         for (y = 0; y < Y_DIM_LEN; y++)
         {
             if (byte_array_in[x][y] != byte_array[x][y])
@@ -1611,7 +1611,7 @@ int putget_read_vara_nt(int ncid, int *varid, PIO_Offset *start, PIO_Offset *cou
     for (x = 0; x < X_DIM_LEN; x++)
     {
         if (strncmp(text_array_in[x], text, strlen(text)))
-                return ERR_WRONG;
+            return ERR_WRONG;
         for (y = 0; y < Y_DIM_LEN; y++)
         {
             if (byte_array_in[x][y] != byte_array[x][y])
@@ -1829,7 +1829,7 @@ int check_file(int access, int ncid, int *varid, int flavor, PIO_Offset *index, 
                PIO_Offset *count, PIO_Offset *stride, int unlim)
 {
     int ret;
-    
+
     switch (access)
     {
     case 0:

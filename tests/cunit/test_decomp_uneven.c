@@ -108,7 +108,7 @@ int create_decomposition_3d(int ntasks, int my_rank, int iosysid, int *dim_len,
  * @param pointer to expected map, an array of TARGET_NTASKS *
  * max_maplen.
  * @returns 0 for success, error code otherwise.
-*/
+ */
 int test_decomp_read_write(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank,
                            int rearranger, MPI_Comm test_comm, int *dim_len, int *expected_maplen,
                            int pio_type, int fill_maplen, int *expected_map)
@@ -297,7 +297,7 @@ int main(int argc, char **argv)
         int map_1x2x3[] = {0, 1, 2, 3, 4, PIO_FILL_INT, 5, PIO_FILL_INT};
 #define NUM_DIM_COMBOS_TO_TEST 5
         int dim_len[NUM_DIM_COMBOS_TO_TEST][NDIM3] = {{1, 4, 4},
-                                                      {2, 4, 4},                                                      
+                                                      {2, 4, 4},
                                                       {3, 4, 4},
                                                       {1, 3, 3},
                                                       {1, 2, 3}};
@@ -316,7 +316,7 @@ int main(int argc, char **argv)
         for (int r = 0; r < NUM_REARRANGERS_TO_TEST; r++)
         {
             int ioid; /* Decomposition ID. */
-            
+
             /* Initialize the PIO IO system. This specifies how
              * many and which processors are involved in I/O. */
             if ((ret = PIOc_Init_Intracomm(test_comm, TARGET_NTASKS, ioproc_stride,
@@ -332,25 +332,25 @@ int main(int argc, char **argv)
                     int full_maplen = 1;
                     for (int d = 0; d < NDIM3; d++)
                         full_maplen *= dim_len[dc][d];
-                    
+
                     /* Decompose the data over the tasks. */
                     if ((ret = create_decomposition_3d(TARGET_NTASKS, my_rank, iosysid, dim_len[dc],
                                                        test_type[t], &ioid)))
                         return ret;
-                    
+
                     /* Test decomposition read/write. */
                     if ((ret = test_decomp_read_write(iosysid, ioid, num_flavors, flavor, my_rank,
                                                       rearranger[r], test_comm, dim_len[dc],
                                                       expected_maplen[dc], test_type[t], full_maplen,
                                                       expected_map[dc])))
                         return ret;
-                    
+
                     /* Free the PIO decomposition. */
                     if ((ret = PIOc_freedecomp(iosysid, ioid)))
                         ERR(ret);
                 }
             }
-            
+
             /* Finalize PIO system. */
             if ((ret = PIOc_finalize(iosysid)))
                 return ret;

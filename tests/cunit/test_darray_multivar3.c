@@ -43,7 +43,7 @@
 #define NUM_VAR 3
 
 /* Test with and without custom fill value. */
-#define NUM_FV_TESTS 2        
+#define NUM_FV_TESTS 2
 
 /* The dimension names. */
 char dim_name[NDIM][PIO_MAX_NAME + 1] = {"timestep", "x", "y"};
@@ -66,7 +66,7 @@ int dim_len[NDIM] = {NC_UNLIMITED, X_DIM_LEN, Y_DIM_LEN};
  * @param my_rank rank of this task.
  * @param test_comm the communicator that is running this test.
  * @returns 0 for success, error code otherwise.
-*/
+ */
 int test_multivar_darray(int iosysid, int ioid, int num_flavors, int *flavor,
                          int my_rank, MPI_Comm test_comm)
 {
@@ -131,7 +131,7 @@ int test_multivar_darray(int iosysid, int ioid, int num_flavors, int *flavor,
                 fvp_int = &custom_fillvalue_int;
                 fvp_float = &custom_fillvalue_float;
             }
-                
+
             /* Write the data. */
             if ((ret = PIOc_write_darray(ncid, varid[0], ioid, arraylen, test_data_int,
                                          fvp_int)))
@@ -153,7 +153,7 @@ int test_multivar_darray(int iosysid, int ioid, int num_flavors, int *flavor,
             if (PIOc_write_darray_multi(ncid, varid, ioid, NUM_VAR, arraylen * NUM_VAR, test_data_float,
                                         frame, NULL, 0) != PIO_EINVAL)
                 ERR(ERR_WRONG);
-            
+
 
             /* Close the netCDF file. */
             if ((ret = PIOc_closefile(ncid)))
@@ -164,11 +164,11 @@ int test_multivar_darray(int iosysid, int ioid, int num_flavors, int *flavor,
             /*     int ncid2;            /\* The ncid of the re-opened netCDF file. *\/ */
             /*     int test_data_int_in[arraylen]; */
             /*     /\* float test_data_float_in[arraylen]; *\/ */
-                        
+
             /*     /\* Reopen the file. *\/ */
             /*     if ((ret = PIOc_openfile(iosysid, &ncid2, &flavor[fmt], filename, PIO_NOWRITE))) */
             /*         ERR(ret); */
-            
+
             /*     /\* Read the var data with read_darray(). *\/ */
             /*     for (int v = 0; v < NUM_VAR; v++) */
             /*     { */
@@ -180,7 +180,7 @@ int test_multivar_darray(int iosysid, int ioid, int num_flavors, int *flavor,
             /*             /\* Read the data. *\/ */
             /*             if ((ret = PIOc_read_darray(ncid2, varid[v], ioid, arraylen, test_data_int_in))) */
             /*                 ERR(ret); */
-                
+
             /*             /\* Check the results. *\/ */
             /*             for (int f = 0; f < arraylen; f++) */
             /*                 if (test_data_int_in[f] != test_data_int[f]) */
@@ -304,14 +304,14 @@ int main(int argc, char **argv)
 
         /* Decompose the data over the tasks. */
         if ((ret = create_dcomp_gaps(TARGET_NTASKS, my_rank, iosysid, dim_len_2d,
-                                             &ioid, PIO_INT)))
+                                     &ioid, PIO_INT)))
             return ret;
-    
+
         /* Run the multivar darray tests. */
         if ((ret = test_multivar_darray(iosysid, ioid, num_flavors, flavor, my_rank,
                                         test_comm)))
             return ret;
-    
+
         /* Free the PIO decomposition. */
         if ((ret = PIOc_freedecomp(iosysid, ioid)))
             ERR(ret);
