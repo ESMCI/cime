@@ -629,8 +629,6 @@ int main(int argc, char **argv)
                               TARGET_NTASKS, -1, &test_comm)))
         ERR(ERR_INIT);
 
-    return PIO_EINVAL;
-
     /* Test code runs on TARGET_NTASKS tasks. The left over tasks do
      * nothing. */
     if (my_rank < TARGET_NTASKS)
