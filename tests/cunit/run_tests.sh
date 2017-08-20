@@ -14,6 +14,13 @@ PIO_TESTS='test_spmd test_rearr test_intercomm2 test_async_simple test_async_3pr
 'test_darray_async test_darray_async_many test_darray_2sync'
 for TEST in $PIO_TESTS
 do
+    success=false
     echo "running ${TEST}"
-    mpiexec -n 4 ./${TEST} || break
+    mpiexec -n 4 ./${TEST} && success=true || break
 done
+
+# Did we succeed?
+if test x$success = xtrue; then
+    exit 0
+fi
+exit 1
