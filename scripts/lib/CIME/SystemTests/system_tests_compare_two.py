@@ -14,13 +14,24 @@ Classes that inherit from this are REQUIRED to implement the following methods:
 (2) _case_two_setup
     This method will be called to set up case 2, the "test" case
 
-In addition, they MAY require the following method:
+In addition, they MAY require the following methods:
 
 (1) _common_setup
     This method will be called to set up both cases. It should contain any setup
     that's needed in both cases. This is called before _case_one_setup or
     _case_two_setup.
 
+(2) _case_one_custom_prerun_action(self):
+    Use this to do arbitrary actions immediately before running case one
+
+(3) _case_two_custom_prerun_action(self):
+    Use this to do arbitrary actions immediately before running case two
+
+(4) _case_one_custom_postrun_action(self):
+    Use this to do arbitrary actions immediately after running case one
+
+(5) _case_two_custom_postrun_action(self):
+    Use this to do arbitrary actions immediately after running case two
 """
 
 from CIME.XML.standard_module_setup import *
@@ -37,7 +48,7 @@ class SystemTestsCompareTwo(SystemTestsCommon):
     def __init__(self,
                  case,
                  separate_builds=True,
-                 separate_runs=True,
+                 separate_rundirs=True,
                  run_two_suffix = 'test',
                  run_one_description = '',
                  run_two_description = '',
@@ -51,7 +62,7 @@ class SystemTestsCompareTwo(SystemTestsCommon):
                 test. This is the main case associated with the test.
             separate_builds (bool): Whether separate builds are needed for the
                 two cases. If False, case2 uses the case1 executable.
-            separate_builds (bool): Whether separate runs are needed for the
+            separate_rundirs (bool): Whether separate run directories are needed for the
                 two cases. If False, case2 uses the case1 run area. Can be useful for restart tests
             run_two_suffix (str, optional): Suffix appended to the case name for
                 the second run. Defaults to 'test'. This can be anything other
@@ -60,12 +71,13 @@ class SystemTestsCompareTwo(SystemTestsCommon):
                 when starting the first run. Defaults to ''.
             run_two_description (str, optional): Description printed to log file
                 when starting the second run. Defaults to ''.
-            multisubmit (bool): Do first and second runs as different submissions
+            multisubmit (bool): Do first and second runs as different submissions.
+                Designed for tests with RESUBMIT=1
         """
         SystemTestsCommon.__init__(self, case)
 
-        self._separate_builds = separate_builds
-        self._separate_runs   = separate_runs
+        self._separate_builds  = separate_builds
+        self._separate_rundirs = separate_rundirs
 
         # run_one_suffix is just used as the suffix for the netcdf files
         # produced by the first case; we may eventually remove this, but for now
@@ -193,7 +205,7 @@ class SystemTestsCompareTwo(SystemTestsCommon):
         Runs both phases of the two-phase test and compares their results
         If success_change is True, success requires some files to be different
         """
-        first_phase = self._case1.get_value("RESUBMIT") == 1
+        first_phase = self._case1.get_value("RESUBMIT") == 1 # Only relevant for multi-submit tests
         run_type = self._case1.get_value("RUN_TYPE")
 
         # First run
@@ -221,7 +233,7 @@ class SystemTestsCompareTwo(SystemTestsCommon):
             # Compare results
             # Case1 is the "main" case, and we need to do the comparisons from there
             self._activate_case1()
-            if self._separate_runs:
+            if self._separate_rundirs:
                 self._link_to_case2_output()
 
             self._component_compare_test(self._run_one_suffix, self._run_two_suffix, success_change=success_change)
@@ -240,7 +252,7 @@ class SystemTestsCompareTwo(SystemTestsCommon):
         casename1 = self._case1.get_value("CASE")
         caseroot1 = self._case1.get_value("CASEROOT")
 
-        casename2 = "{}.{}".format(casename1, self._run_two_suffix) if self._separate_runs else casename1
+        casename2 = "{}.{}".format(casename1, self._run_two_suffix) if self._separate_rundirs else casename1
 
         # Nest the case directory for case2 inside the case directory for case1
         caseroot2 = os.path.join(caseroot1, casename2)
@@ -280,7 +292,7 @@ class SystemTestsCompareTwo(SystemTestsCommon):
                 self._case2 = self._case1.create_clone(
                     self._caseroot2,
                     keepexe=not self._separate_builds,
-                    share_rundir=not self._separate_runs)
+                    share_rundir=not self._separate_rundirs)
                 self._setup_cases()
             except:
                 # If a problem occurred in setting up the test cases, it's
