@@ -218,6 +218,10 @@ class SystemTestsCompareTwo(SystemTestsCommon):
 
         # Second run
         if not self._multisubmit or not first_phase:
+            # Subtle issue: case1 is already in a writeable state since it tends to be opened
+            # with a with statement in all the API entrances in CIME. case2 was created via clone,
+            # not a with statement, so it's not in a writeable state, so we need to use a with
+            # statement here to put it in a writeable state.
             with self._case2:
                 logger.info('Doing second run: ' + self._run_two_description)
                 self._activate_case2()
