@@ -18,7 +18,7 @@ class ERR(ERS):
         """
         SystemTestsCompareTwo.__init__(self, case, # pylint: disable=non-parent-init-called
                                        separate_builds = False,
-                                       separate_runs = False,
+                                       separate_rundirs = False,
                                        run_two_suffix = 'rest',
                                        run_one_description = 'initial',
                                        run_two_description = 'restart',
