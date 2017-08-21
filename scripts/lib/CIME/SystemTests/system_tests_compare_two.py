@@ -182,6 +182,9 @@ class SystemTestsCompareTwo(SystemTestsCommon):
 
     def build_phase(self, sharedlib_only=False, model_only=False):
         if self._separate_builds:
+            expect(self._case1.get_value("EXEROOT") != self._case2.get_value("EXEROOT"),
+                   "Separate builds cannot live in same EXEROOT")
+
             self._activate_case1()
             self.build_indv(sharedlib_only=sharedlib_only, model_only=model_only)
             self._activate_case2()
@@ -256,7 +259,13 @@ class SystemTestsCompareTwo(SystemTestsCommon):
         casename1 = self._case1.get_value("CASE")
         caseroot1 = self._case1.get_value("CASEROOT")
 
-        casename2 = "{}.{}".format(casename1, self._run_two_suffix) if self._separate_rundirs else casename1
+        if self._separate_rundirs:
+            casename2 = "{}.{}".format(casename1, self._run_two_suffix)
+        else:
+            # Cases need the exact same name for restart tests which is a common usage
+            # of shared rundirs. We insert an intermediary directory to help clarify things.
+            intermediary = self._run_two_description.replace(" ", "_") if self._run_two_description else self._run_two_suffix
+            casename2 = os.path.join(intermediary, casename1)
 
         # Nest the case directory for case2 inside the case directory for case1
         caseroot2 = os.path.join(caseroot1, casename2)

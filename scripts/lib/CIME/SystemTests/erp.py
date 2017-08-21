@@ -57,6 +57,10 @@ class ERP(SystemTestsCompareTwo):
         self._case.set_value("CONTINUE_RUN", True)
         self._case.set_value("REST_OPTION","never")
 
+        # May need to change EXEROOT since separate_rundirs is False and separate_builds is True
+        if self._case1.get_value("EXEROOT") == self._case2.get_value("EXEROOT"):
+            self._case.set_value("EXEROOT", self._case.get_value("EXEROOT") + "_" + self._run_two_description)
+
         # Note, some components, like CESM-CICE, have
         # decomposition information in env_build.xml
         # case_setup(self._case, test_mode=True, reset=True)that
