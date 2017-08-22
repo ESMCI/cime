@@ -132,7 +132,7 @@ void pio_init_logging(void)
     {
         /* Create a filename with the rank in it. */
         MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
-        sprintf(log_filename, "pio_log_%d.txt", my_rank);
+        sprintf(log_filename, "pio_log_%d.log", my_rank);
 
         /* Open a file for this rank to log messages. */
         LOG_FILE = fopen(log_filename, "w");
