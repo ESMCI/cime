@@ -95,34 +95,34 @@ int darray_simple_test(int iosysid, int my_rank, int num_iotypes, int *iotype,
         if ((ret = PIOc_write_darray(ncid, varid, ioid, arraylen, test_data, NULL)))
             ERR(ret);
 
-        /* Free decomposition. */
-        if ((ret = PIOc_freedecomp(iosysid, ioid)))
-            ERR(ret);
-
         /* Close the test file. */
         if ((ret = PIOc_closefile(ncid)))
             ERR(ret);
 
-        /* /\* Check the file. *\/ */
-        /* { */
-        /*     int ncid2; */
-        /*     int data_in[elements_per_pe * NUM_COMPUTATION_PROCS]; */
+        /* Free decomposition. */
+        if ((ret = PIOc_freedecomp(iosysid, ioid)))
+            ERR(ret);
 
-        /*     /\* Reopen the file. *\/ */
-        /*     if ((ret = PIOc_openfile2(iosysid, &ncid2, &iotype[iot], filename, PIO_NOWRITE))) */
-        /*         ERR(ret); */
+        /* Check the file. */
+        {
+            int ncid2;
+            int data_in[elements_per_pe * NUM_COMPUTATION_PROCS];
 
-        /*     /\* Read the data. *\/ */
-        /*     if ((ret = PIOc_get_var_int(ncid2, 0, data_in))) */
-        /*         ERR(ret); */
-        /*     if (my_rank && data_in[0] != 1 && data_in[1] != -1 && data_in[2] != 2 && */
-        /*         data_in[3] != -2 && data_in[4] != 3 && data_in[5] != -3) */
-        /*         ERR(ret); */
+            /* Reopen the file. */
+            if ((ret = PIOc_openfile2(iosysid, &ncid2, &iotype[iot], filename, PIO_NOWRITE)))
+                ERR(ret);
 
-        /*     /\* Close the test file. *\/ */
-        /*     if ((ret = PIOc_closefile(ncid2))) */
-        /*         ERR(ret); */
-        /* } */
+            /* Read the data. */
+            if ((ret = PIOc_get_var_int(ncid2, 0, data_in)))
+                ERR(ret);
+            if (my_rank && data_in[0] != 1 && data_in[1] != -1 && data_in[2] != 2 &&
+                data_in[3] != -2 && data_in[4] != 3 && data_in[5] != -3)
+                ERR(ret);
+
+            /* Close the test file. */
+            if ((ret = PIOc_closefile(ncid2)))
+                ERR(ret);
+        }
     }
 
     return PIO_NOERR;
@@ -197,7 +197,7 @@ int run_noasync_tests(MPI_Comm test_comm, int my_rank, int num_iotypes, int *iot
         ERR(ret);
 
     /* Run the tests. */
-    if ((ret = run_darray_tests(iosysid, my_rank, num_iotypes, iotype, 1)))
+    if ((ret = run_darray_tests(iosysid, my_rank, num_iotypes, iotype, 0)))
         ERR(ret);
 
     /* Finalize PIO system. */
@@ -219,7 +219,7 @@ int main(int argc, char **argv)
 
     /* Initialize test. */
     if ((ret = pio_test_init2(argc, argv, &my_rank, &ntasks, MIN_NTASKS,
-                              TARGET_NTASKS, -1, &test_comm)))
+                              TARGET_NTASKS, 3, &test_comm)))
         ERR(ERR_INIT);
     if ((ret = PIOc_set_iosystem_error_handling(PIO_DEFAULT, PIO_RETURN_ERROR, NULL)))
         return ret;

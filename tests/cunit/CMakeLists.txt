@@ -119,6 +119,7 @@ if(PIO_USE_MALLOC)
   add_dependencies (tests test_darray_async_simple)
   add_dependencies (tests test_darray_async)
   add_dependencies (tests test_darray_async_many)
+  add_dependencies (tests test_darray_2sync)
 endif ()
 
 # Test Timeout in seconds.
