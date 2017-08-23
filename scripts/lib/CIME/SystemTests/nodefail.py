@@ -18,7 +18,8 @@ class NODEFAIL(ERS):
         self._fail_sentinel = os.path.join(case.get_value("RUNDIR"), "FAIL_SENTINEL")
         self._fail_str      = case.get_value("NODE_FAIL_REGEX")
 
-    def _restart_fake_phase(self):
+
+    def _case_two_custom_prerun_action(self):
         # Swap out model.exe for one that emits node failures
         rundir = self._case.get_value("RUNDIR")
         exeroot = self._case.get_value("EXEROOT")
@@ -69,8 +70,3 @@ fi
         env_mach_specific = self._case.get_env("mach_specific")
         env_mach_specific.set_value("run_exe", prev_run_exe)
         self._case.flush(flushall=True)
-
-    def run_phase(self):
-        self._ers_first_phase()
-        self._restart_fake_phase()
-        self._ers_second_phase()

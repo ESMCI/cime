@@ -63,7 +63,7 @@ class CaseFake(object):
 
         return newcase
 
-    def create_clone(self, newcase, keepexe=False):
+    def create_clone(self, newcase, keepexe=False, share_rundir=False):
         # Need to disable unused-argument checking: keepexe is needed to match
         # the interface of Case, but is not used in this fake implementation
         #
@@ -101,3 +101,9 @@ class CaseFake(object):
         inside CASEROOT)
         """
         self.set_value('RUNDIR', os.path.join(self.get_value('CASEROOT'), 'run'))
+
+    def __enter__(self):
+        pass
+
+    def __exit__(self, *_):
+        pass
