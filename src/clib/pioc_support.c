@@ -2163,10 +2163,15 @@ int openfile_int(int iosysid, int *ncidp, int *iotype, const char *filename,
         int rec_var = 0; /* Does var use unlimited dimension? */
         int pio_type;    /* Type of this var. */
         int var_ndims;   /* Number of dims for this var. */
+        PIO_Offset pio_type_size;  /* Size of pio type in bytes. */
 
         /* Find type of the var and number of dims. */
         if ((ierr = PIOc_inq_var(*ncidp, v, NULL, &pio_type, &var_ndims, NULL, NULL)))
             return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
+
+        /* Get size of type. */
+        if ((ierr = PIOc_inq_type(*ncidp, pio_type, NULL, &pio_type_size)))
+            return check_netcdf(file, ierr, __FILE__, __LINE__);
 
         /* What are the dimids associated with this var? */
         if (var_ndims)
@@ -2203,7 +2208,7 @@ int openfile_int(int iosysid, int *ncidp, int *iotype, const char *filename,
         }
 
         /* Add to the list of var_desc_t structs for this file. */
-        if ((ierr = add_to_varlist(v, rec_var, pio_type, &file->varlist)))
+        if ((ierr = add_to_varlist(v, rec_var, pio_type, (int)pio_type_size, &file->varlist)))
             return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
         file->nvars++;
     }

@@ -135,6 +135,15 @@ typedef struct var_desc_t
     /** The PIO data type. */
     int pio_type;
 
+    /** The size, in bytes, of the PIO data type. */
+    int pio_type_size;
+
+    /** The MPI type of the data. */
+    MPI_Datatype mpitype;
+
+    /** The size in bytes of a datum of MPI type mpitype. */
+    int mpitype_size;
+
     /** Pointer to next var in list. */
     struct var_desc_t *next;
 } var_desc_t;

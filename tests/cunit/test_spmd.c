@@ -231,13 +231,14 @@ int test_varlists()
         return ERR_WRONG;
 
     /* Add a var to the list. */
-    if ((ret = add_to_varlist(0, 1, PIO_INT, &varlist)))
+    if ((ret = add_to_varlist(0, 1, PIO_INT, 4, &varlist)))
         return ret;
 
     /* Find that var_desc_t. */
     if ((ret = get_var_desc(0, &varlist, &var_desc)))
         return ret;
-    if (var_desc->varid != 0 || !var_desc->rec_var || var_desc->pio_type != PIO_INT)
+    if (var_desc->varid != 0 || !var_desc->rec_var || var_desc->pio_type != PIO_INT ||
+        var_desc->pio_type_size != 4)
         return ERR_WRONG;
 
     /* Try to delete a non-existing var - should fail. */
@@ -267,27 +268,30 @@ int test_varlists2()
     int ret;
 
     /* Add some vars to the list. */
-    if ((ret = add_to_varlist(0, 1, PIO_INT, &varlist)))
+    if ((ret = add_to_varlist(0, 1, PIO_INT, 4, &varlist)))
         return ret;
-    if ((ret = add_to_varlist(1, 0, PIO_DOUBLE, &varlist)))
+    if ((ret = add_to_varlist(1, 0, PIO_DOUBLE, 4, &varlist)))
         return ret;
-    if ((ret = add_to_varlist(2, 1, PIO_BYTE, &varlist)))
+    if ((ret = add_to_varlist(2, 1, PIO_BYTE, 1, &varlist)))
         return ret;
 
     /* Find those var_desc_t. */
     if ((ret = get_var_desc(0, &varlist, &var_desc)))
         return ret;
-    if (var_desc->varid != 0 || !var_desc->rec_var || var_desc->pio_type != PIO_INT)
+    if (var_desc->varid != 0 || !var_desc->rec_var || var_desc->pio_type != PIO_INT ||
+        var_desc->pio_type_size != 4)
         return ERR_WRONG;
 
     if ((ret = get_var_desc(1, &varlist, &var_desc)))
         return ret;
-    if (var_desc->varid != 1 || var_desc->rec_var || var_desc->pio_type != PIO_DOUBLE)
+    if (var_desc->varid != 1 || var_desc->rec_var || var_desc->pio_type != PIO_DOUBLE ||
+        var_desc->pio_type_size != 4)
         return ERR_WRONG;
 
     if ((ret = get_var_desc(2, &varlist, &var_desc)))
         return ret;
-    if (var_desc->varid != 2 || !var_desc->rec_var || var_desc->pio_type != PIO_BYTE)
+    if (var_desc->varid != 2 || !var_desc->rec_var || var_desc->pio_type != PIO_BYTE ||
+        var_desc->pio_type_size != 1)
         return ERR_WRONG;
 
     /* Try to delete a non-existing var - should fail. */
@@ -336,13 +340,13 @@ int test_varlists3()
     int ret;
 
     /* Add some vars to the list. */
-    if ((ret = add_to_varlist(0, 1, PIO_INT, &varlist)))
+    if ((ret = add_to_varlist(0, 1, PIO_INT, 4, &varlist)))
         return ret;
-    if ((ret = add_to_varlist(1, 0, PIO_INT, &varlist)))
+    if ((ret = add_to_varlist(1, 0, PIO_INT, 4, &varlist)))
         return ret;
-    if ((ret = add_to_varlist(2, 1, PIO_INT, &varlist)))
+    if ((ret = add_to_varlist(2, 1, PIO_INT, 4, &varlist)))
         return ret;
-    if ((ret = add_to_varlist(3, 0, PIO_INT, &varlist)))
+    if ((ret = add_to_varlist(3, 0, PIO_INT, 4, &varlist)))
         return ret;
 
     /* Delete one of the vars. */
