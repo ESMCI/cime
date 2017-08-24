@@ -315,7 +315,8 @@ int test_multivar_darray(int iosysid, int ioid, int num_flavors, int *flavor,
             /* Write the data. */
             for (int v = 0; v < NUM_VAR; v++)
             {
-                if ((ret = PIOc_write_darray(ncid, varid[v], ioid, arraylen, test_data, fillvalue)))
+                void *fp = use_fill ? fillvalue : NULL;
+                if ((ret = PIOc_write_darray(ncid, varid[v], ioid, arraylen, test_data, fp)))
                     ERR(ret);
 
                 /* For the first test case we just write the first variable. */
