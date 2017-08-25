@@ -233,7 +233,7 @@ int test_darray(int iosysid, int ioid, int num_flavors, int *flavor, int my_rank
 
         /* Write some data. */
         PIO_Offset arraylen = 1;
-        float fillvalue = 0.0;
+        float fillvalue = PIO_FILL_FLOAT;
         float *fillvaluep = fv ? &fillvalue : NULL;
         float test_data[arraylen];
         for (int f = 0; f < arraylen; f++)

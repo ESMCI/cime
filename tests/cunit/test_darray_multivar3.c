@@ -114,6 +114,14 @@ int test_multivar_darray(int iosysid, int ioid, int num_flavors, int *flavor,
             if ((ret = PIOc_def_var(ncid, var_name[2], PIO_FLOAT, NDIM, dimids, &varid[2])))
                 ERR(ret);
 
+            /* Set the custom fill values. */
+            if ((ret = PIOc_def_var_fill(ncid, varid[0], 0, &custom_fillvalue_int))) 
+                ERR(ret);
+            if ((ret = PIOc_def_var_fill(ncid, varid[1], 0, &custom_fillvalue_int))) 
+                ERR(ret);
+            if ((ret = PIOc_def_var_fill(ncid, varid[2], 0, &custom_fillvalue_float))) 
+                ERR(ret);
+
             /* End define mode. */
             if ((ret = PIOc_enddef(ncid)))
                 ERR(ret);
