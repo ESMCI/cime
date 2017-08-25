@@ -561,31 +561,31 @@ int main(int argc, char **argv)
     int ret;     /* Return code. */
 
     /* Initialize test. */
-    /* if ((ret = pio_test_init2(argc, argv, &my_rank, &ntasks, MIN_NTASKS, */
-    /*                           TARGET_NTASKS, -1, &test_comm))) */
-    /*     ERR(ERR_INIT); */
-    /* if ((ret = PIOc_set_iosystem_error_handling(PIO_DEFAULT, PIO_RETURN_ERROR, NULL))) */
-    /*     return ret; */
+    if ((ret = pio_test_init2(argc, argv, &my_rank, &ntasks, MIN_NTASKS,
+                              TARGET_NTASKS, -1, &test_comm)))
+        ERR(ERR_INIT);
+    if ((ret = PIOc_set_iosystem_error_handling(PIO_DEFAULT, PIO_RETURN_ERROR, NULL)))
+        return ret;
 
-    /* /\* Figure out iotypes. *\/ */
-    /* if ((ret = get_iotypes(&num_iotypes, iotype))) */
-    /*     ERR(ret); */
+    /* Figure out iotypes. */
+    if ((ret = get_iotypes(&num_iotypes, iotype)))
+        ERR(ret);
 
-    /* /\* Test code runs on TARGET_NTASKS tasks. The left over tasks do */
-    /*  * nothing. *\/ */
-    /* if (my_rank < TARGET_NTASKS) */
-    /* { */
-    /*     /\* if ((ret = run_async_tests(test_comm, my_rank, num_iotypes, iotype))) *\/ */
-    /*     /\*     ERR(ret); *\/ */
+    /* Test code runs on TARGET_NTASKS tasks. The left over tasks do
+     * nothing. */
+    if (my_rank < TARGET_NTASKS)
+    {
+        if ((ret = run_async_tests(test_comm, my_rank, num_iotypes, iotype)))
+            ERR(ret);
 
-    /*     /\* if ((ret = run_noasync_tests(test_comm, my_rank, num_iotypes, iotype))) *\/ */
-    /*     /\*     ERR(ret); *\/ */
+        if ((ret = run_noasync_tests(test_comm, my_rank, num_iotypes, iotype)))
+            ERR(ret);
 
-    /* } /\* endif my_rank < TARGET_NTASKS *\/ */
+    } /* endif my_rank < TARGET_NTASKS */
 
-    /* /\* Finalize the MPI library. *\/ */
-    /* if ((ret = pio_test_finalize(&test_comm))) */
-    /*     return ret; */
+    /* Finalize the MPI library. */
+    if ((ret = pio_test_finalize(&test_comm)))
+        return ret;
 
     printf("%d %s SUCCESS!!\n", my_rank, TEST_NAME);
 
