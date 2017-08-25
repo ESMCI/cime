@@ -93,6 +93,8 @@ if (NOT PIO_USE_MPISERIAL)
     target_link_libraries (test_darray_async pioc)
     add_executable (test_darray_async_many EXCLUDE_FROM_ALL test_darray_async_many.c test_common.c)
     target_link_libraries (test_darray_async_many pioc)
+    add_executable (test_darray_2sync2 EXCLUDE_FROM_ALL test_darray_2sync2.c test_common.c)
+    target_link_libraries (test_darray_2sync2 pioc)
     add_executable (test_darray_2sync EXCLUDE_FROM_ALL test_darray_2sync.c test_common.c)
     target_link_libraries (test_darray_2sync pioc)
   endif ()
@@ -119,6 +121,7 @@ if(PIO_USE_MALLOC)
   add_dependencies (tests test_darray_async_simple)
   add_dependencies (tests test_darray_async)
   add_dependencies (tests test_darray_async_many)
+  add_dependencies (tests test_darray_2sync2)
   add_dependencies (tests test_darray_2sync)
 endif ()
 
@@ -236,15 +239,11 @@ else ()
     EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_darray_3d
     NUMPROCS ${AT_LEAST_FOUR_TASKS}
     TIMEOUT ${DEFAULT_TEST_TIMEOUT})
-  add_mpi_test(test_decomp_uneven
-    EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_decomp_uneven
-    NUMPROCS ${AT_LEAST_FOUR_TASKS}
-    TIMEOUT ${DEFAULT_TEST_TIMEOUT})
-  add_mpi_test(test_decomps
-    EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_decomps
-    NUMPROCS ${AT_LEAST_FOUR_TASKS}
-    TIMEOUT ${DEFAULT_TEST_TIMEOUT})
   if(PIO_USE_MALLOC)
+    add_mpi_test(test_darray_2sync
+      EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_darray_2sync
+      NUMPROCS ${AT_LEAST_FOUR_TASKS}
+      TIMEOUT ${DEFAULT_TEST_TIMEOUT})
     add_mpi_test(test_darray_async_simple
       EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_darray_async_simple
       NUMPROCS ${AT_LEAST_FOUR_TASKS}
@@ -258,4 +257,12 @@ else ()
       NUMPROCS ${AT_LEAST_FOUR_TASKS}
       TIMEOUT ${DEFAULT_TEST_TIMEOUT})
   endif ()
+  add_mpi_test(test_decomp_uneven
+    EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_decomp_uneven
+    NUMPROCS ${AT_LEAST_FOUR_TASKS}
+    TIMEOUT ${DEFAULT_TEST_TIMEOUT})
+  add_mpi_test(test_decomps
+    EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_decomps
+    NUMPROCS ${AT_LEAST_FOUR_TASKS}
+    TIMEOUT ${DEFAULT_TEST_TIMEOUT})
 endif ()
