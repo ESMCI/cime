@@ -1982,6 +1982,8 @@ int PIOc_def_var(int ncid, const char *name, nc_type xtype, int ndims,
     int varid;                 /* The varid of the created var. */
     int rec_var = 0;           /* Non-zero if this var uses unlimited dim. */
     PIO_Offset pio_type_size;  /* Size of pio type in bytes. */
+    MPI_Datatype mpi_type;     /* The correspoding MPI type. */
+    int mpi_type_size;         /* Size of mpi type. */
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function codes. */
     int ierr;                  /* Return code from function calls. */
 
@@ -2007,7 +2009,15 @@ int PIOc_def_var(int ncid, const char *name, nc_type xtype, int ndims,
         /* Get size of type. */
         if ((ierr = PIOc_inq_type(ncid, xtype, NULL, &pio_type_size)))
             return check_netcdf(file, ierr, __FILE__, __LINE__);
+
+        /* Get the MPI type corresponding with the PIO type. */
+        if ((ierr = find_mpi_type(xtype, &mpi_type, NULL)))
+            return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
         
+        /* Get the size of the MPI type. */
+        if ((mpierr = MPI_Type_size(mpi_type, &mpi_type_size)))
+            return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+
         /* How many unlimited dims are present in the file? */
         if ((ierr = PIOc_inq_unlimdims(ncid, &nunlimdims, NULL)))
             return check_netcdf(file, ierr, __FILE__, __LINE__);
@@ -2086,6 +2096,10 @@ int PIOc_def_var(int ncid, const char *name, nc_type xtype, int ndims,
             check_mpi(file, mpierr, __FILE__, __LINE__);
         if ((mpierr = MPI_Bcast(&pio_type_size, 1, MPI_OFFSET, ios->comproot, ios->my_comm)))
             check_mpi(file, mpierr, __FILE__, __LINE__);
+        if ((mpierr = MPI_Bcast(&mpi_type, 1, MPI_INT, ios->comproot, ios->my_comm)))
+            check_mpi(file, mpierr, __FILE__, __LINE__);
+        if ((mpierr = MPI_Bcast(&mpi_type_size, 1, MPI_INT, ios->comproot, ios->my_comm)))
+            check_mpi(file, mpierr, __FILE__, __LINE__);
     }
 
     /* Check that only one unlimited dim is specified, and that it is
@@ -2127,7 +2141,8 @@ int PIOc_def_var(int ncid, const char *name, nc_type xtype, int ndims,
         *varidp = varid;
 
     /* Add to the list of var_desc_t structs for this file. */
-    if ((ierr = add_to_varlist(varid, rec_var, xtype, (int)pio_type_size, &file->varlist)))
+    if ((ierr = add_to_varlist(varid, rec_var, xtype, (int)pio_type_size, mpi_type,
+                               mpi_type_size, &file->varlist)))
         return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
     file->nvars++;
 

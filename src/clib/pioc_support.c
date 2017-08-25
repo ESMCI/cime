@@ -2130,6 +2130,7 @@ int openfile_int(int iosysid, int *ncidp, int *iotype, const char *filename,
     int nunlimdims;        /* The number of unlimited dimensions. */
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Pointer to file information. */
+    int mpierr;            /* Return code from MPI functions. */    
     int ierr = PIO_NOERR;  /* Return code from function calls. */
 
     /* Get the IO system info from the iosysid. */
@@ -2164,6 +2165,8 @@ int openfile_int(int iosysid, int *ncidp, int *iotype, const char *filename,
         int pio_type;    /* Type of this var. */
         int var_ndims;   /* Number of dims for this var. */
         PIO_Offset pio_type_size;  /* Size of pio type in bytes. */
+        MPI_Datatype mpi_type;
+        int mpi_type_size;
 
         /* Find type of the var and number of dims. */
         if ((ierr = PIOc_inq_var(*ncidp, v, NULL, &pio_type, &var_ndims, NULL, NULL)))
@@ -2172,6 +2175,14 @@ int openfile_int(int iosysid, int *ncidp, int *iotype, const char *filename,
         /* Get size of type. */
         if ((ierr = PIOc_inq_type(*ncidp, pio_type, NULL, &pio_type_size)))
             return check_netcdf(file, ierr, __FILE__, __LINE__);
+
+        /* Get the MPI type corresponding with the PIO type. */
+        if ((ierr = find_mpi_type(pio_type, &mpi_type, NULL)))
+            return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
+        
+        /* Get the size of the MPI type. */
+        if ((mpierr = MPI_Type_size(mpi_type, &mpi_type_size)))
+            return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
 
         /* What are the dimids associated with this var? */
         if (var_ndims)
@@ -2208,7 +2219,8 @@ int openfile_int(int iosysid, int *ncidp, int *iotype, const char *filename,
         }
 
         /* Add to the list of var_desc_t structs for this file. */
-        if ((ierr = add_to_varlist(v, rec_var, pio_type, (int)pio_type_size, &file->varlist)))
+        if ((ierr = add_to_varlist(v, rec_var, pio_type, (int)pio_type_size, mpi_type,
+                                   mpi_type_size, &file->varlist)))
             return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
         file->nvars++;
     }
