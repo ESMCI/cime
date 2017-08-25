@@ -139,10 +139,10 @@ typedef struct var_desc_t
     int pio_type_size;
 
     /** The MPI type of the data. */
-    MPI_Datatype mpitype;
+    MPI_Datatype mpi_type;
 
     /** The size in bytes of a datum of MPI type mpitype. */
-    int mpitype_size;
+    int mpi_type_size;
 
     /** Pointer to next var in list. */
     struct var_desc_t *next;

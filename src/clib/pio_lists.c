@@ -338,7 +338,8 @@ int pio_delete_iodesc_from_list(int ioid)
  * @returns 0 for success, error code otherwise.
  * @author Ed Hartnett
  */
-int add_to_varlist(int varid, int rec_var, int pio_type, int pio_type_size, var_desc_t **varlist)
+int add_to_varlist(int varid, int rec_var, int pio_type, int pio_type_size, MPI_Datatype mpi_type,
+                   int mpi_type_size, var_desc_t **varlist)
 {
     var_desc_t *var_desc;
 
@@ -354,6 +355,8 @@ int add_to_varlist(int varid, int rec_var, int pio_type, int pio_type_size, var_
     var_desc->rec_var = rec_var;
     var_desc->pio_type = pio_type;
     var_desc->pio_type_size = pio_type_size;
+    var_desc->mpi_type = mpi_type;
+    var_desc->mpi_type_size = mpi_type_size;
     var_desc->record = -1;
 
     /* Add to list. */
