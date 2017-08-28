@@ -99,6 +99,14 @@ CIME\.SystemTests\.icp module
     :undoc-members:
     :show-inheritance:
 
+CIME\.SystemTests\.irt module
+-----------------------------
+
+.. automodule:: CIME.SystemTests.irt
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 CIME\.SystemTests\.nck module
 -----------------------------
 

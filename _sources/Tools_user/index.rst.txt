@@ -24,7 +24,6 @@ and **case.setup**.
    case.submit
    case_diff
    check_case
-   check_exactrestart.pl
    check_input_data
    check_lockedfiles
    cime_bisect
@@ -37,14 +36,11 @@ and **case.setup**.
    component_compare_test
    component_generate_baseline
    concat_daily_hist.csh
-   create_train
    cs.status
    getTiming
    jenkins_generic_job
    jenkins_script
    list_acme_tests
-   mdiag_reduce.csh
-   mdiag_reduce.pl
    normalize_cases
    pelayout
    preview_namelists

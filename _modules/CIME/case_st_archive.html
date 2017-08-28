@@ -73,7 +73,7 @@
 <span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="k">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">CIME.case_submit</span>               <span class="k">import</span> <span class="n">submit</span>
 <span class="kn">from</span> <span class="nn">CIME.XML.env_archive</span>           <span class="k">import</span> <span class="n">EnvArchive</span>
-<span class="kn">from</span> <span class="nn">CIME.utils</span>                     <span class="k">import</span> <span class="n">run_and_log_case_status</span>
+<span class="kn">from</span> <span class="nn">CIME.utils</span>                     <span class="k">import</span> <span class="n">run_and_log_case_status</span><span class="p">,</span> <span class="n">ls_sorted_by_mtime</span>
 <span class="kn">from</span> <span class="nn">os.path</span>                        <span class="k">import</span> <span class="n">isdir</span><span class="p">,</span> <span class="n">join</span>
 <span class="kn">import</span> <span class="nn">datetime</span>
 
@@ -156,13 +156,16 @@
 
             <span class="c1"># loop through the possible rpointer files and contents</span>
             <span class="k">for</span> <span class="n">rpointer_file</span><span class="p">,</span> <span class="n">rpointer_content</span> <span class="ow">in</span> <span class="n">rpointer_items</span><span class="p">:</span>
-
+                <span class="n">temp_rpointer_file</span> <span class="o">=</span> <span class="n">rpointer_file</span>
+                <span class="n">temp_rpointer_content</span> <span class="o">=</span> <span class="n">rpointer_content</span>
                 <span class="c1"># put in a temporary setting for ninst_strings if they are empty</span>
                 <span class="c1"># in order to have just one loop over ninst_strings below</span>
                 <span class="k">if</span> <span class="n">rpointer_content</span> <span class="ow">is</span> <span class="ow">not</span> <span class="s1">&#39;unset&#39;</span><span class="p">:</span>
                     <span class="k">if</span> <span class="ow">not</span> <span class="n">ninst_strings</span><span class="p">:</span>
                         <span class="n">ninst_strings</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;empty&quot;</span><span class="p">]</span>
                 <span class="k">for</span> <span class="n">ninst_string</span> <span class="ow">in</span> <span class="n">ninst_strings</span><span class="p">:</span>
+                    <span class="n">rpointer_file</span> <span class="o">=</span> <span class="n">temp_rpointer_file</span>
+                    <span class="n">rpointer_content</span> <span class="o">=</span> <span class="n">temp_rpointer_content</span>
                     <span class="k">if</span> <span class="n">ninst_string</span> <span class="o">==</span> <span class="s1">&#39;empty&#39;</span><span class="p">:</span>
                         <span class="n">ninst_string</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
                     <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="p">[(</span><span class="s1">&#39;$CASE&#39;</span><span class="p">,</span> <span class="n">casename</span><span class="p">),</span>
@@ -450,16 +453,21 @@
                                        <span class="n">archive_file_fn</span><span class="p">)</span>
 
 <span class="c1">###############################################################################</span>
-<div class="viewcode-block" id="restore_from_archive"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.case_st_archive.restore_from_archive">[docs]</a><span class="k">def</span> <span class="nf">restore_from_archive</span><span class="p">(</span><span class="n">case</span><span class="p">):</span>
+<div class="viewcode-block" id="restore_from_archive"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.case_st_archive.restore_from_archive">[docs]</a><span class="k">def</span> <span class="nf">restore_from_archive</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">rest_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="c1">###############################################################################</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Take most recent archived restart files and load them into current case.</span>
+<span class="sd">    Take archived restart files and load them into current case.  Use rest_dir if provided otherwise use most recent</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">dout_sr</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;DOUT_S_ROOT&quot;</span><span class="p">)</span>
     <span class="n">rundir</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUNDIR&quot;</span><span class="p">)</span>
-    <span class="n">most_recent_rest</span> <span class="o">=</span> <span class="n">run_cmd_no_fail</span><span class="p">(</span><span class="s2">&quot;ls -1dt </span><span class="si">{}</span><span class="s2">/rest/* | head -1&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">dout_sr</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">rest_dir</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isabs</span><span class="p">(</span><span class="n">rest_dir</span><span class="p">):</span>
+            <span class="n">rest_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dout_sr</span><span class="p">,</span> <span class="s2">&quot;rest&quot;</span><span class="p">,</span> <span class="n">rest_dir</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">rest_dir</span> <span class="o">=</span> <span class="n">ls_sorted_by_mtime</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dout_sr</span><span class="p">,</span> <span class="s2">&quot;rest&quot;</span><span class="p">))[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 
-    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/*&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">most_recent_rest</span><span class="p">)):</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Restoring from </span><span class="si">{}</span><span class="s2"> to </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rest_dir</span><span class="p">,</span> <span class="n">rundir</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/*&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rest_dir</span><span class="p">)):</span>
         <span class="n">base</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
         <span class="n">dst</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="n">base</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">dst</span><span class="p">):</span>

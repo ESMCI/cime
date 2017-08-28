@@ -470,6 +470,19 @@ NODEFAIL          Tests restart upon detected node failure. Generates fake failu
     &lt;CONTINUE_RUN&gt;FALSE&lt;/CONTINUE_RUN&gt;
   &lt;/test&gt;
 
+  &lt;test NAME=&quot;IRT&quot;&gt;
+    &lt;DESC&gt;exact restart from startup, default 4 days + 7 days with restart from interim file&lt;/DESC&gt;
+    &lt;INFO_DBUG&gt;1&lt;/INFO_DBUG&gt;
+    &lt;STOP_OPTION&gt;ndays&lt;/STOP_OPTION&gt;
+    &lt;STOP_N&gt;11&lt;/STOP_N&gt;
+    &lt;REST_N&gt;$STOP_N / 2 - 1&lt;/REST_N&gt;
+    &lt;REST_OPTION&gt;$STOP_OPTION&lt;/REST_OPTION&gt;
+    &lt;HIST_N&gt;$STOP_N&lt;/HIST_N&gt;
+    &lt;HIST_OPTION&gt;$STOP_OPTION&lt;/HIST_OPTION&gt;
+    &lt;DOUT_S_SAVE_INTERIM_RESTART_FILES&gt;TRUE&lt;/DOUT_S_SAVE_INTERIM_RESTART_FILES&gt;
+    &lt;CONTINUE_RUN&gt;FALSE&lt;/CONTINUE_RUN&gt;
+  &lt;/test&gt;
+
   &lt;test NAME=&quot;ERIO&quot;&gt;
     &lt;DESC&gt;exact restart from startup with different PIO methods, default 6 days + 5 days&lt;/DESC&gt;
     &lt;INFO_DBUG&gt;1&lt;/INFO_DBUG&gt;
@@ -639,7 +652,7 @@ NODEFAIL          Tests restart upon detected node failure. Generates fake failu
     &lt;CONTINUE_RUN&gt;FALSE&lt;/CONTINUE_RUN&gt;
     &lt;CHECK_TIMING&gt;FALSE&lt;/CHECK_TIMING&gt;
     &lt;NODE_FAIL_REGEX&gt;JGF FAKE NODE FAIL&lt;/NODE_FAIL_REGEX&gt;
-    &lt;PCT_SPARE_NODES&gt;300&lt;/PCT_SPARE_NODES&gt;
+    &lt;FORCE_SPARE_NODES&gt;3&lt;/FORCE_SPARE_NODES&gt;
   &lt;/test&gt;
 
   &lt;test NAME=&quot;ICP&quot;&gt;

@@ -393,6 +393,11 @@ find and return id value pairs here</p>
 <code class="descname">print_values</code><span class="sig-paren">(</span><em>arg_help=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/compsets.html#Compsets.print_values"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.compsets.Compsets.print_values" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="method">
+<dt id="CIME.XML.compsets.Compsets.return_all_values">
+<code class="descname">return_all_values</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/compsets.html#Compsets.return_all_values"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.compsets.Compsets.return_all_values" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 </div>
@@ -1118,6 +1123,11 @@ This is not an abstract class - but inherits from the abstact class GenericXML</
 <code class="descname">print_values</code><span class="sig-paren">(</span><em>long_output=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/grids.html#Grids.print_values"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.grids.Grids.print_values" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="method">
+<dt id="CIME.XML.grids.Grids.return_all_values">
+<code class="descname">return_all_values</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/grids.html#Grids.return_all_values"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.grids.Grids.return_all_values" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 </div>
@@ -1233,7 +1243,7 @@ if it is a valid setting for the machine</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">machobj</span> <span class="o">=</span> <span class="n">Machines</span><span class="p">(</span><span class="n">machine</span><span class="o">=</span><span class="s2">&quot;edison&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">machobj</span><span class="o">.</span><span class="n">get_default_compiler</span><span class="p">()</span>
 <span class="go">&#39;intel&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">machobj</span><span class="o">.</span><span class="n">is_valid_compiler</span><span class="p">(</span><span class="s2">&quot;cray&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">machobj</span><span class="o">.</span><span class="n">is_valid_compiler</span><span class="p">(</span><span class="s2">&quot;gnu&quot;</span><span class="p">)</span>
 <span class="go">True</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">machobj</span><span class="o">.</span><span class="n">is_valid_compiler</span><span class="p">(</span><span class="s2">&quot;nag&quot;</span><span class="p">)</span>
 <span class="go">False</span>
@@ -1258,6 +1268,11 @@ if it is a valid setting for the machine</p>
 <dd><p>Find a matching regular expression for hostname
 in the NODENAME_REGEX field in the file.   First match wins.</p>
 </dd></dl>
+
+<dl class="method">
+<dt id="CIME.XML.machines.Machines.return_all_values">
+<code class="descname">return_all_values</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/machines.html#Machines.return_all_values"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.machines.Machines.return_all_values" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="CIME.XML.machines.Machines.set_machine">

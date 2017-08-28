@@ -124,6 +124,7 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;NTASKS_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">),</span> <span class="n">newntasks</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;ROOTPE_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">),</span> <span class="n">rootpe</span><span class="p">)</span>
                     <span class="n">rootpe</span> <span class="o">+=</span> <span class="n">newntasks</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
         <span class="n">case_setup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="p">,</span> <span class="n">test_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">reset</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">clean_build</span><span class="p">()</span>
@@ -157,6 +158,9 @@
         <span class="c1"># update the pelayout settings for this run</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">read_xml</span><span class="p">()</span>
 
+        <span class="n">case_setup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="p">,</span> <span class="n">test_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">reset</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;BUILD_COMPLETE&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span> <span class="c1"># rootpe changes should not require a rebuild</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">run_indv</span><span class="p">()</span>
 
         <span class="n">restore</span><span class="p">(</span><span class="s2">&quot;env_mach_pes.SEQ2.xml&quot;</span><span class="p">,</span> <span class="n">newname</span><span class="o">=</span><span class="s2">&quot;env_mach_pes.xml&quot;</span><span class="p">)</span>
@@ -168,6 +172,9 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;doing a second </span><span class="si">{:d}</span><span class="s2"> </span><span class="si">{}</span><span class="s2"> test with rootpes set to zero&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">stop_n</span><span class="p">,</span> <span class="n">stop_option</span><span class="p">))</span>
         <span class="c1"># update the pelayout settings for this run</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">read_xml</span><span class="p">()</span>
+
+        <span class="n">case_setup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="p">,</span> <span class="n">test_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">reset</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;BUILD_COMPLETE&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span> <span class="c1"># rootpe changes should not require a rebuild</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">run_indv</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;seq&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_component_compare_test</span><span class="p">(</span><span class="s2">&quot;base&quot;</span><span class="p">,</span> <span class="s2">&quot;seq&quot;</span><span class="p">)</span></div></div>

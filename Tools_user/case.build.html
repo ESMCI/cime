@@ -121,6 +121,9 @@ optional arguments:
   --clean [{cpl,atm,lnd,ice,ocn,rof,glc,wav,esp,csmshare,mct,pio,gptl} [{cpl,atm,lnd,ice,ocn,rof,glc,wav,esp,csmshare,mct,pio,gptl} ...]]
                         objects to cleanif no arguments then clean all objects
                         other than sharedlib objects (default: None)
+  -b {cpl,atm,lnd,ice,ocn,rof,glc,wav,esp,csmshare,mct,pio,gptl} [{cpl,atm,lnd,ice,ocn,rof,glc,wav,esp,csmshare,mct,pio,gptl} ...], --build {cpl,atm,lnd,ice,ocn,rof,glc,wav,esp,csmshare,mct,pio,gptl} [{cpl,atm,lnd,ice,ocn,rof,glc,wav,esp,csmshare,mct,pio,gptl} ...]
+                        libs to build. Will cause namelist generation to be
+                        skipped. (default: None)
   --clean-all           clean all objects including sharedlibobjects that may
                         be used by other builds (default: False)
 </pre></div>

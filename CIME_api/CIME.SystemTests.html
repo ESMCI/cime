@@ -70,6 +70,7 @@
 <li><a class="reference internal" href="#module-CIME.SystemTests.ert">CIME.SystemTests.ert module</a></li>
 <li><a class="reference internal" href="#module-CIME.SystemTests.homme">CIME.SystemTests.homme module</a></li>
 <li><a class="reference internal" href="#module-CIME.SystemTests.icp">CIME.SystemTests.icp module</a></li>
+<li><a class="reference internal" href="#module-CIME.SystemTests.irt">CIME.SystemTests.irt module</a></li>
 <li><a class="reference internal" href="#module-CIME.SystemTests.nck">CIME.SystemTests.nck module</a></li>
 <li><a class="reference internal" href="#module-CIME.SystemTests.ncr">CIME.SystemTests.ncr module</a></li>
 <li><a class="reference internal" href="#module-CIME.SystemTests.nodefail">CIME.SystemTests.nodefail module</a></li>
@@ -331,6 +332,24 @@ Exact restart from startup, default 2 month + 1 month</p>
 <code class="descname">run_phase</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/SystemTests/icp.html#ICP.run_phase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.SystemTests.icp.ICP.run_phase" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+</dd></dl>
+
+</div>
+<div class="section" id="module-CIME.SystemTests.irt">
+<span id="cime-systemtests-irt-module"></span><h2>CIME.SystemTests.irt module<a class="headerlink" href="#module-CIME.SystemTests.irt" title="Permalink to this headline">¶</a></h2>
+<p>Implementation of the CIME IRT. (Interim Restart Test)
+This test the model’s restart capability as well as the short term archiver’s interim restart capability</p>
+<ol class="arabic simple">
+<li>Do a Run of length N with restart at N/2 and DOUT_S_SAVE_INTERIM_RESTART set to TRUE</li>
+<li>Archive Run using ST archive tools</li>
+<li>Recover first interim restart to the case2 run directory</li>
+<li>Start case2 from restart and run to the end of case1</li>
+<li>compare results.</li>
+</ol>
+<dl class="class">
+<dt id="CIME.SystemTests.irt.IRT">
+<em class="property">class </em><code class="descclassname">CIME.SystemTests.irt.</code><code class="descname">IRT</code><span class="sig-paren">(</span><em>case</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/SystemTests/irt.html#IRT"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.SystemTests.irt.IRT" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#CIME.SystemTests.system_tests_compare_two.SystemTestsCompareTwo" title="CIME.SystemTests.system_tests_compare_two.SystemTestsCompareTwo"><code class="xref py py-class docutils literal"><span class="pre">CIME.SystemTests.system_tests_compare_two.SystemTestsCompareTwo</span></code></a></p>
 </dd></dl>
 
 </div>
@@ -717,16 +736,24 @@ This method will be called to set up case 1, the “base” case</li>
 <li>_case_two_setup
 This method will be called to set up case 2, the “test” case</li>
 </ol>
-<p>In addition, they MAY require the following method:</p>
+<p>In addition, they MAY require the following methods:</p>
 <ol class="arabic simple">
 <li>_common_setup
 This method will be called to set up both cases. It should contain any setup
 that’s needed in both cases. This is called before _case_one_setup or
 _case_two_setup.</li>
+<li>_case_one_custom_prerun_action(self):
+Use this to do arbitrary actions immediately before running case one</li>
+<li>_case_two_custom_prerun_action(self):
+Use this to do arbitrary actions immediately before running case two</li>
+<li>_case_one_custom_postrun_action(self):
+Use this to do arbitrary actions immediately after running case one</li>
+<li>_case_two_custom_postrun_action(self):
+Use this to do arbitrary actions immediately after running case two</li>
 </ol>
 <dl class="class">
 <dt id="CIME.SystemTests.system_tests_compare_two.SystemTestsCompareTwo">
-<em class="property">class </em><code class="descclassname">CIME.SystemTests.system_tests_compare_two.</code><code class="descname">SystemTestsCompareTwo</code><span class="sig-paren">(</span><em>case</em>, <em>separate_builds</em>, <em>run_two_suffix='test'</em>, <em>run_one_description=''</em>, <em>run_two_description=''</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/SystemTests/system_tests_compare_two.html#SystemTestsCompareTwo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.SystemTests.system_tests_compare_two.SystemTestsCompareTwo" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">CIME.SystemTests.system_tests_compare_two.</code><code class="descname">SystemTestsCompareTwo</code><span class="sig-paren">(</span><em>case</em>, <em>separate_builds</em>, <em>run_two_suffix='test'</em>, <em>run_one_description=''</em>, <em>run_two_description=''</em>, <em>multisubmit=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/SystemTests/system_tests_compare_two.html#SystemTestsCompareTwo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.SystemTests.system_tests_compare_two.SystemTestsCompareTwo" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#CIME.SystemTests.system_tests_common.SystemTestsCommon" title="CIME.SystemTests.system_tests_common.SystemTestsCommon"><code class="xref py py-class docutils literal"><span class="pre">CIME.SystemTests.system_tests_common.SystemTestsCommon</span></code></a></p>
 <dl class="method">
 <dt id="CIME.SystemTests.system_tests_compare_two.SystemTestsCompareTwo.build_phase">

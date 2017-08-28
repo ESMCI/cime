@@ -110,7 +110,7 @@ to define behavior.</p>
     &lt;hist_file_extension&gt;\.h.*.nc$&lt;/hist_file_extension&gt;
     &lt;rest_history_varname&gt;unset&lt;/rest_history_varname&gt;
     &lt;rpointer&gt;
-      &lt;rpointer_file&gt;rpointer.cpl&lt;/rpointer_file&gt;
+      &lt;rpointer_file&gt;rpointer.drv&lt;/rpointer_file&gt;
       &lt;rpointer_content &gt;$CASE.cpl.r.$DATENAME.nc&lt;/rpointer_content&gt;
     &lt;/rpointer&gt;
   &lt;/comp_archive_spec&gt;
@@ -1999,12 +1999,21 @@ to define behavior.</p>
   &lt;!-- definitions pelayout --&gt;
   &lt;!-- ===================================================================== --&gt;
 
-  &lt;entry id=&quot;PCT_SPARE_NODES&quot;&gt;
-    &lt;type&gt;integer&lt;/type&gt;
-    &lt;default_value&gt;0&lt;/default_value&gt;
+  &lt;entry id=&quot;ALLOCATE_SPARE_NODES&quot;&gt;
+    &lt;type&gt;logical&lt;/type&gt;
+    &lt;valid_values&gt;TRUE,FALSE&lt;/valid_values&gt;
+    &lt;default_value&gt;FALSE&lt;/default_value&gt;
     &lt;group&gt;mach_pes&lt;/group&gt;
     &lt;file&gt;env_mach_pes.xml&lt;/file&gt;
-    &lt;desc&gt;Percent of extra spare nodes to allocate&lt;/desc&gt;
+    &lt;desc&gt;Allocate some spare nodes to handle node failures. The system will pick a reasonable number&lt;/desc&gt;
+  &lt;/entry&gt;
+
+  &lt;entry id=&quot;FORCE_SPARE_NODES&quot;&gt;
+    &lt;type&gt;integer&lt;/type&gt;
+    &lt;default_value&gt;-999&lt;/default_value&gt;
+    &lt;group&gt;mach_pes&lt;/group&gt;
+    &lt;file&gt;env_mach_pes.xml&lt;/file&gt;
+    &lt;desc&gt;Force this exact number of spare nodes to be allocated&lt;/desc&gt;
   &lt;/entry&gt;
 
   &lt;entry id=&quot;NTASKS&quot;&gt;
@@ -2558,7 +2567,7 @@ to define behavior.</p>
 
   &lt;entry id=&quot;HIST_OPTION&quot;&gt;
     &lt;type&gt;char&lt;/type&gt;
-    &lt;valid_values&gt;&lt;/valid_values&gt;
+    &lt;valid_values&gt;none,never,nsteps,nstep,nseconds,nsecond,nminutes,nminute,nhours,nhour,ndays,nday,nmonths,nmonth,nyears,nyear,date,ifdays0,end&lt;/valid_values&gt;
     &lt;default_value&gt;never&lt;/default_value&gt;
     &lt;group&gt;run_drv_history&lt;/group&gt;
     &lt;file&gt;env_run.xml&lt;/file&gt;
@@ -3210,7 +3219,7 @@ to define behavior.</p>
 
   &lt;entry id=&quot;AVGHIST_OPTION&quot;&gt;
     &lt;type&gt;char&lt;/type&gt;
-    &lt;valid_values&gt;&lt;/valid_values&gt;
+    &lt;valid_values&gt;none,never,nsteps,nstep,nseconds,nsecond,nminutes,nminute,nhours,nhour,ndays,nday,nmonths,nmonth,nyears,nyear,date,ifdays0,end&lt;/valid_values&gt;
     &lt;default_value&gt;never&lt;/default_value&gt;
     &lt;values match=&quot;last&quot;&gt;
       &lt;value compset=&quot;_DOCN%IAF&quot;&gt;nmonths&lt;/value&gt;
@@ -3500,7 +3509,6 @@ to define behavior.</p>
     &lt;desc cpl=&quot;BGC[%BDRD][%BPRP]&quot;&gt;Biogeochemistry intercomponent &lt;/desc&gt;
     &lt;desc option=&quot;BDRD&quot;&gt; with diagnostic CO2&lt;/desc&gt;
     &lt;desc option=&quot;BPRP&quot;&gt; with prognostic CO2 &lt;/desc&gt;
-
   &lt;/description&gt;
 
   &lt;entry id=&quot;DRV_THREADING&quot;&gt;
@@ -3871,7 +3879,7 @@ to define behavior.</p>
 
   &lt;entry id=&quot;AVGHIST_OPTION&quot;&gt;
     &lt;type&gt;char&lt;/type&gt;
-    &lt;valid_values&gt;&lt;/valid_values&gt;
+    &lt;valid_values&gt;none,never,nsteps,nstep,nseconds,nsecond,nminutes,nminute,nhours,nhour,ndays,nday,nmonths,nmonth,nyears,nyear,date,ifdays0,end&lt;/valid_values&gt;
     &lt;default_value&gt;never&lt;/default_value&gt;
     &lt;values match=&quot;last&quot;&gt;
       &lt;value compset=&quot;_DOCN%IAF&quot;&gt;nmonths&lt;/value&gt;
@@ -6988,24 +6996,6 @@ to define behavior.</p>
     &lt;/desc&gt;
     &lt;values&gt;
       &lt;value&gt;$PSTRID_CPL&lt;/value&gt;
-    &lt;/values&gt;
-  &lt;/entry&gt;
-
-  &lt;entry id=&quot;esmf_logging&quot; modify_via_xml=&quot;ESMF_LOGFILE_KIND&quot;&gt;
-    &lt;type&gt;char&lt;/type&gt;
-    &lt;category&gt;ccsm_pes&lt;/category&gt;
-    &lt;group&gt;ccsm_pes&lt;/group&gt;
-    &lt;desc&gt;
-      Determines what ESMF log files (if any) are generated when
-          USE_ESMF_LIB is TRUE.
-      ESMF_LOGKIND_SINGLE: Use a single log file, combining messages from
-          all of the PETs. Not supported on some platforms.
-      ESMF_LOGKIND_MULTI: Use multiple log files — one per PET.
-      ESMF_LOGKIND_NONE: Do not issue messages to a log file.
-      By default, no ESMF log files are generated.
-    &lt;/desc&gt;
-    &lt;values&gt;
-      &lt;value&gt;$ESMF_LOGFILE_KIND&lt;/value&gt;
     &lt;/values&gt;
   &lt;/entry&gt;
 

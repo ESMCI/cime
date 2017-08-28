@@ -86,6 +86,7 @@
             <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">case_root</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s1">&#39;CASEROOT&#39;</span><span class="p">,</span> <span class="n">case_root</span><span class="p">)</span>
         <span class="n">casename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">case_root</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s1">&#39;CIME_OUTPUT_ROOT&#39;</span><span class="p">,</span><span class="s1">&#39;/tmp&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s1">&#39;CASE&#39;</span><span class="p">,</span> <span class="n">casename</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s1">&#39;CASEBASEID&#39;</span><span class="p">,</span> <span class="n">casename</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s1">&#39;RUN_TYPE&#39;</span><span class="p">,</span> <span class="s1">&#39;startup&#39;</span><span class="p">)</span>
@@ -129,7 +130,7 @@
 
         <span class="k">return</span> <span class="n">newcase</span></div>
 
-<div class="viewcode-block" id="CaseFake.create_clone"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.case_fake.CaseFake.create_clone">[docs]</a>    <span class="k">def</span> <span class="nf">create_clone</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">newcase</span><span class="p">,</span> <span class="n">keepexe</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="CaseFake.create_clone"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.case_fake.CaseFake.create_clone">[docs]</a>    <span class="k">def</span> <span class="nf">create_clone</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">newcase</span><span class="p">,</span> <span class="n">keepexe</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">mach_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">project</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cime_output_root</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="c1"># Need to disable unused-argument checking: keepexe is needed to match</span>
         <span class="c1"># the interface of Case, but is not used in this fake implementation</span>
         <span class="c1">#</span>
@@ -166,7 +167,13 @@
 <span class="sd">        Assumes CASEROOT is already set; sets an appropriate RUNDIR (nested</span>
 <span class="sd">        inside CASEROOT)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s1">&#39;RUNDIR&#39;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">&#39;CASEROOT&#39;</span><span class="p">),</span> <span class="s1">&#39;run&#39;</span><span class="p">))</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s1">&#39;RUNDIR&#39;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">&#39;CASEROOT&#39;</span><span class="p">),</span> <span class="s1">&#39;run&#39;</span><span class="p">))</span></div>
+
+    <span class="k">def</span> <span class="nf">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">_</span><span class="p">):</span>
+        <span class="k">pass</span></div>
 </pre></div>
 
           </div>

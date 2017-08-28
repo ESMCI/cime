@@ -290,8 +290,15 @@
                             <span class="c1"># We need to pick up here</span>
                             <span class="k">break</span>
                         <span class="k">else</span><span class="p">:</span>
-                            <span class="bp">self</span><span class="o">.</span><span class="n">_update_test_status</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="n">TEST_PEND_STATUS</span><span class="p">)</span>
-                            <span class="bp">self</span><span class="o">.</span><span class="n">_update_test_status</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="n">status</span><span class="p">)</span>
+                            <span class="k">if</span> <span class="n">phase</span> <span class="o">!=</span> <span class="n">SUBMIT_PHASE</span><span class="p">:</span>
+                                <span class="c1"># Somewhat subtle. Create_test considers submit/run to be the run phase,</span>
+                                <span class="c1"># so don&#39;t try to update test status for a passed submit phase</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">_update_test_status</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="n">TEST_PEND_STATUS</span><span class="p">)</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">_update_test_status</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="n">phase</span><span class="p">,</span> <span class="n">status</span><span class="p">)</span>
+
+                                <span class="k">if</span> <span class="n">phase</span> <span class="o">==</span> <span class="n">RUN_PHASE</span><span class="p">:</span>
+                                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Test </span><span class="si">{}</span><span class="s2"> passed and will not be re-run&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">test</span><span class="p">))</span>
+
                 <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Using existing test directory </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_test_dir</span><span class="p">(</span><span class="n">test</span><span class="p">)))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># None of the test directories should already exist.</span>

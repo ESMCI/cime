@@ -164,6 +164,7 @@
 <li class="toctree-l2"><a class="reference internal" href="CIME.SystemTests.html#module-CIME.SystemTests.ert">CIME.SystemTests.ert module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.SystemTests.html#module-CIME.SystemTests.homme">CIME.SystemTests.homme module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.SystemTests.html#module-CIME.SystemTests.icp">CIME.SystemTests.icp module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CIME.SystemTests.html#module-CIME.SystemTests.irt">CIME.SystemTests.irt module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.SystemTests.html#module-CIME.SystemTests.nck">CIME.SystemTests.nck module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.SystemTests.html#module-CIME.SystemTests.ncr">CIME.SystemTests.ncr module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.SystemTests.html#module-CIME.SystemTests.nodefail">CIME.SystemTests.nodefail module</a></li>
@@ -281,7 +282,7 @@ code to compute and assemble aprun commands.</p>
 <p>functions for building CIME models</p>
 <dl class="function">
 <dt id="CIME.build.case_build">
-<code class="descclassname">CIME.build.</code><code class="descname">case_build</code><span class="sig-paren">(</span><em>caseroot</em>, <em>case</em>, <em>sharedlib_only=False</em>, <em>model_only=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/build.html#case_build"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.build.case_build" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">CIME.build.</code><code class="descname">case_build</code><span class="sig-paren">(</span><em>caseroot</em>, <em>case</em>, <em>sharedlib_only=False</em>, <em>model_only=False</em>, <em>buildlist=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/build.html#case_build"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.build.case_build" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
@@ -635,8 +636,8 @@ name is returned</p>
 
 <dl class="function">
 <dt id="CIME.case_st_archive.restore_from_archive">
-<code class="descclassname">CIME.case_st_archive.</code><code class="descname">restore_from_archive</code><span class="sig-paren">(</span><em>case</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case_st_archive.html#restore_from_archive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case_st_archive.restore_from_archive" title="Permalink to this definition">¶</a></dt>
-<dd><p>Take most recent archived restart files and load them into current case.</p>
+<code class="descclassname">CIME.case_st_archive.</code><code class="descname">restore_from_archive</code><span class="sig-paren">(</span><em>case</em>, <em>rest_dir=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case_st_archive.html#restore_from_archive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case_st_archive.restore_from_archive" title="Permalink to this definition">¶</a></dt>
+<dd><p>Take archived restart files and load them into current case.  Use rest_dir if provided otherwise use most recent</p>
 </dd></dl>
 
 </div>
@@ -695,6 +696,11 @@ jobs.</p>
 <code class="descclassname">CIME.check_input_data.</code><code class="descname">find_files</code><span class="sig-paren">(</span><em>rootdir</em>, <em>pattern</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/check_input_data.html#find_files"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.check_input_data.find_files" title="Permalink to this definition">¶</a></dt>
 <dd><p>recursively find all files matching a pattern</p>
 </dd></dl>
+
+<dl class="function">
+<dt id="CIME.check_input_data.stage_refcase">
+<code class="descclassname">CIME.check_input_data.</code><code class="descname">stage_refcase</code><span class="sig-paren">(</span><em>case</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/check_input_data.html#stage_refcase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.check_input_data.stage_refcase" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </div>
 <div class="section" id="module-CIME.check_lockedfiles">
@@ -2564,6 +2570,12 @@ the zipped file.</p>
 <dt id="CIME.utils.is_python_executable">
 <code class="descclassname">CIME.utils.</code><code class="descname">is_python_executable</code><span class="sig-paren">(</span><em>filepath</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#is_python_executable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.is_python_executable" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="function">
+<dt id="CIME.utils.ls_sorted_by_mtime">
+<code class="descclassname">CIME.utils.</code><code class="descname">ls_sorted_by_mtime</code><span class="sig-paren">(</span><em>path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#ls_sorted_by_mtime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.ls_sorted_by_mtime" title="Permalink to this definition">¶</a></dt>
+<dd><p>return list of path sorted by timestamp oldest first</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="CIME.utils.match_any">

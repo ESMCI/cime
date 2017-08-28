@@ -142,13 +142,11 @@
         <span class="n">expect</span><span class="p">(</span><span class="ow">not</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span> <span class="ow">and</span> <span class="s2">&quot;USERDEFINED_required_build&quot;</span> <span class="ow">in</span> <span class="n">value</span><span class="p">),</span>
                <span class="s2">&quot;Parameter &#39;</span><span class="si">{}</span><span class="s2">&#39; must be defined&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">vid</span><span class="p">))</span>
 
-    <span class="c1"># Create batch script</span>
+    <span class="c1"># Remove batch scripts</span>
     <span class="k">if</span> <span class="n">reset</span> <span class="ow">or</span> <span class="n">clean</span><span class="p">:</span>
-        <span class="c1"># back up relevant files</span>
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s2">&quot;case.run&quot;</span><span class="p">):</span>
             <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">&quot;case.run&quot;</span><span class="p">)</span>
 
-        <span class="c1"># only do the following if are NOT in testmode</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">test_mode</span><span class="p">:</span>
             <span class="c1"># rebuild the models (even on restart)</span>
             <span class="n">case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;BUILD_COMPLETE&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
