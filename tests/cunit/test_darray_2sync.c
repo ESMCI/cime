@@ -73,20 +73,20 @@ int darray_fill_test(int iosysid, int my_rank, int num_iotypes, int *iotype,
             unsigned long long default_fill_uint64 = PIO_FILL_UINT64;
 #endif /* _NETCDF4 */
             
-/*             /\* Some incorrect fill values. *\/ */
-/*             signed char wrong_fill_byte = TEST_VAL_42; */
-/*             unsigned char wrong_fill_char = TEST_VAL_42; */
-/*             short wrong_fill_short = TEST_VAL_42; */
-/*             int wrong_fill_int = TEST_VAL_42; */
-/*             float wrong_fill_float = TEST_VAL_42; */
-/*             double wrong_fill_double = TEST_VAL_42; */
-/* #ifdef _NETCDF4 */
-/*             unsigned char wrong_fill_ubyte = TEST_VAL_42; */
-/*             unsigned short wrong_fill_ushort = TEST_VAL_42; */
-/*             unsigned int wrong_fill_uint = TEST_VAL_42; */
-/*             long long wrong_fill_int64 = TEST_VAL_42; */
-/*             unsigned long long wrong_fill_uint64 = TEST_VAL_42; */
-/* #endif /\* _NETCDF4 *\/ */
+            /* Some incorrect fill values. */
+            signed char wrong_fill_byte = TEST_VAL_42;
+            unsigned char wrong_fill_char = TEST_VAL_42;
+            short wrong_fill_short = TEST_VAL_42;
+            int wrong_fill_int = TEST_VAL_42;
+            float wrong_fill_float = TEST_VAL_42;
+            double wrong_fill_double = TEST_VAL_42;
+#ifdef _NETCDF4
+            unsigned char wrong_fill_ubyte = TEST_VAL_42;
+            unsigned short wrong_fill_ushort = TEST_VAL_42;
+            unsigned int wrong_fill_uint = TEST_VAL_42;
+            long long wrong_fill_int64 = TEST_VAL_42;
+            unsigned long long wrong_fill_uint64 = TEST_VAL_42;
+#endif /* _NETCDF4 */
 
             /* Some sample data. */
             signed char test_data_byte[LEN2] = {my_rank, -my_rank};
@@ -104,7 +104,7 @@ int darray_fill_test(int iosysid, int my_rank, int num_iotypes, int *iotype,
 #endif /* _NETCDF4 */
             void *test_data;
             void *default_fillvalue;
-            /* void *wrong_fillvalue; */
+            void *wrong_fillvalue;
             int ret;
 
             /* For unexplained reasons, pnetcdf code can't handle these types. */
@@ -117,58 +117,58 @@ int darray_fill_test(int iosysid, int my_rank, int num_iotypes, int *iotype,
             case PIO_BYTE:
                 test_data = test_data_byte;
                 default_fillvalue = &default_fill_byte;
-                /* wrong_fillvalue = &wrong_fill_byte; */
+                wrong_fillvalue = &wrong_fill_byte;
                 break;
             case PIO_CHAR:
                 test_data = test_data_char;
                 default_fillvalue = &default_fill_char;
-                /* wrong_fillvalue = &wrong_fill_char; */
+                wrong_fillvalue = &wrong_fill_char;
                 break;
             case PIO_SHORT:
                 test_data = test_data_short;
                 default_fillvalue = &default_fill_short;
-                /* wrong_fillvalue = &wrong_fill_short; */
+                wrong_fillvalue = &wrong_fill_short;
                 break;
             case PIO_INT:
                 test_data = test_data_int;
                 default_fillvalue = &default_fill_int;
-                /* wrong_fillvalue = &wrong_fill_int; */
+                wrong_fillvalue = &wrong_fill_int;
                 break;
             case PIO_FLOAT:
                 test_data = test_data_float;
                 default_fillvalue = &default_fill_float;
-                /* wrong_fillvalue = &wrong_fill_float; */
+                wrong_fillvalue = &wrong_fill_float;
                 break;
             case PIO_DOUBLE:
                 test_data = test_data_double;
                 default_fillvalue = &default_fill_double;
-                /* wrong_fillvalue = &wrong_fill_double; */
+                wrong_fillvalue = &wrong_fill_double;
                 break;
 #ifdef _NETCDF4
             case PIO_UBYTE:
                 test_data = test_data_ubyte;
                 default_fillvalue = &default_fill_ubyte;
-                /* wrong_fillvalue = &wrong_fill_ubyte; */
+                wrong_fillvalue = &wrong_fill_ubyte;
                 break;
             case PIO_USHORT:
                 test_data = test_data_ushort;
                 default_fillvalue = &default_fill_ushort;
-                /* wrong_fillvalue = &wrong_fill_ushort; */
+                wrong_fillvalue = &wrong_fill_ushort;
                 break;
             case PIO_UINT:
                 test_data = test_data_uint;
                 default_fillvalue = &default_fill_uint;
-                /* wrong_fillvalue = &wrong_fill_uint; */
+                wrong_fillvalue = &wrong_fill_uint;
                 break;
             case PIO_INT64:
                 test_data = test_data_int64;
                 default_fillvalue = &default_fill_int64;
-                /* wrong_fillvalue = &wrong_fill_int64; */
+                wrong_fillvalue = &wrong_fill_int64;
                 break;
             case PIO_UINT64:
                 test_data = test_data_uint64;
                 default_fillvalue = &default_fill_uint64;
-                /* wrong_fillvalue = &wrong_fill_uint64; */
+                wrong_fillvalue = &wrong_fill_uint64;
                 break;
 #endif /* _NETCDF4 */
             }
@@ -223,8 +223,8 @@ int darray_fill_test(int iosysid, int my_rank, int num_iotypes, int *iotype,
             /* This should not work, because fill value is
              * incorrect. (Test turned off until Fortran API/tests are
              * fixed.) */
-            /* if (PIOc_write_darray(ncid, varid, ioid, LEN2, test_data, wrong_fillvalue) != PIO_EINVAL) */
-            /*     ERR(ERR_WRONG); */
+            if (PIOc_write_darray(ncid, varid, ioid, LEN2, test_data, wrong_fillvalue) != PIO_EINVAL)
+                ERR(ERR_WRONG);
             
             /* Write the data. There are 3 procs with data, each writes 2
              * values. */
