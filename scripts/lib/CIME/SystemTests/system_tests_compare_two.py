@@ -38,6 +38,8 @@ from CIME.XML.standard_module_setup import *
 from CIME.SystemTests.system_tests_common import SystemTestsCommon
 from CIME.case import Case
 from CIME.case_submit import check_case
+from CIME.case_st_archive import get_datenames, get_histfiles_for_restarts
+from CIME.XML.env_archive import EnvArchive
 
 import shutil, os, glob
 
@@ -234,6 +236,34 @@ class SystemTestsCompareTwo(SystemTestsCommon):
         self._link_to_case2_output()
 
         self._component_compare_test(self._run_one_suffix, self._run_two_suffix, success_change=success_change)
+
+    def setup_restart(self):
+        """ copy rpointer files and link restart and history from case1 to case2 """
+        rundir1 = self._case1.get_value("RUNDIR")
+        rundir2 = self._case2.get_value("RUNDIR")
+        case = self._case1.get_value("CASE")
+        datenames = get_datenames(self._case1)
+        arch = self._case1.get_env("archive")
+        arch_entries = arch.get_entries()
+
+
+        for file_ in glob.iglob(os.path.join(rundir1,"*")):
+            logger.debug("File is {}".format(file_))
+            if os.path.basename(file_).startswith("rpointer"):
+                logger.info("Copy {} to {}".format(file_, rundir2))
+                shutil.copy(file_, rundir2)
+            elif os.path.basename(file_).startswith(case) and datenames[0] in file_:
+                file_case2 = os.path.join(rundir2, os.path.basename(file_))
+                if not os.path.isfile(file_case2):
+                    logger.info("Link {} to {}".format(file_, rundir2))
+                    os.symlink(file_, file_case2)
+                    for arch_entry in arch_entries:
+                        histfiles = get_histfiles_for_restarts(self._case1, arch, arch_entry, file_)
+                        for histfile in histfiles:
+                            logger.info("Copying histfile {}".format(histfile))
+                            shutil.copy(os.path.join(rundir1,histfile), rundir2)
+
+
 
     # ========================================================================
     # Private methods
