@@ -7,7 +7,11 @@ case.setup - create the $caseroot/case.run script and user_nl_xxx component name
 from standard_script_setup import *
 
 from CIME.case_setup import case_setup
-from CIME.case       import Case
+from CIME.case import Case
+from CIME.user_mod_support import apply_user_mods
+from CIME.utils import expect
+
+logger = logging.getLogger(__name__)
 
 ###############################################################################
 def parse_command_line(args, description):
@@ -45,9 +49,16 @@ OR
     parser.add_argument("-r", "--reset", action="store_true",
                         help="Does a clean followed by setup")
 
+    parser.add_argument("-a", "--apply-usermods",
+                        help="Specify a directory to apply user mods")
+
     args = CIME.utils.parse_args_and_handle_standard_logging_options(args, parser)
 
-    return args.caseroot, args.clean, args.test_mode, args.reset
+    if args.apply_usermods is not None:
+        expect(not args.reset and not args.clean,
+               "Error: cannot set --reset or --clean if are using --apply-usermods")
+
+    return args.caseroot, args.clean, args.test_mode, args.reset, args.apply_usermods
 
 ###############################################################################
 def _main_func(description):
@@ -56,9 +67,14 @@ def _main_func(description):
         test_results = doctest.testmod(verbose=True)
         sys.exit(1 if test_results.failed > 0 else 0)
 
-    caseroot, clean, test_mode, reset = parse_command_line(sys.argv, description)
-    with Case(caseroot, read_only=False) as case:
-        case_setup(case, clean=clean, test_mode=test_mode, reset=reset)
+    caseroot, clean, test_mode, reset, usermods_dir = parse_command_line(sys.argv, description)
+
+    if usermods_dir is not None:
+        logger.warn("WARNING: REMOVING all user_nl_xxx files as part of ./case_setup --apply-usermods")
+        apply_user_mods(caseroot, usermods_dir, cleanfirst=True)
+    else:
+        with Case(caseroot, read_only=False) as case:
+            case_setup(case, clean=clean, test_mode=test_mode, reset=reset)
 
 if __name__ == "__main__":
     _main_func(__doc__)
