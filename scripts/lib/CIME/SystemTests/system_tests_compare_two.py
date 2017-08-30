@@ -254,16 +254,19 @@ class SystemTestsCompareTwo(SystemTestsCommon):
                 shutil.copy(file_, rundir2)
             elif os.path.basename(file_).startswith(case) and datenames[0] in file_:
                 file_case2 = os.path.join(rundir2, os.path.basename(file_))
-                if not os.path.isfile(file_case2):
+                hfile_found = False
+                for arch_entry in arch_entries:
+                    histfiles = get_histfiles_for_restarts(self._case1, arch, arch_entry, file_)
+                    for histfile in histfiles:
+                        logger.info("Copying histfile {}".format(histfile))
+                        shutil.copy(os.path.join(rundir1,histfile), rundir2)
+                    for suffix in arch.get_hist_file_extensions(arch_entry):
+                        hfile = re.compile(suffix)
+                        if hfile.search(file_):
+                            hfile_found = True
+                if not os.path.isfile(file_case2) and not hfile_found:
                     logger.info("Link {} to {}".format(file_, rundir2))
                     os.symlink(file_, file_case2)
-                    for arch_entry in arch_entries:
-                        histfiles = get_histfiles_for_restarts(self._case1, arch, arch_entry, file_)
-                        for histfile in histfiles:
-                            logger.info("Copying histfile {}".format(histfile))
-                            shutil.copy(os.path.join(rundir1,histfile), rundir2)
-
-
 
     # ========================================================================
     # Private methods
