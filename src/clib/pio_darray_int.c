@@ -867,7 +867,48 @@ int pio_read_darray_nc(file_desc_t *file, io_desc_t *iodesc, int vid, void *iobu
             {
 #ifdef _NETCDF4
             case PIO_IOTYPE_NETCDF4P:
-                ierr = nc_get_vara(file->fh, vid, start, count, bufptr);
+                /* ierr = nc_get_vara(file->fh, vid, start, count, bufptr); */
+                switch (iodesc->piotype)
+                {
+                case PIO_BYTE:
+                    ierr = nc_get_vara_schar(file->fh, vid, start, count, (signed char*)bufptr);
+                    break;
+                case PIO_CHAR:
+                    ierr = nc_get_vara_text(file->fh, vid, start, count, (char*)bufptr);
+                    break;
+                case PIO_SHORT:
+                    ierr = nc_get_vara_short(file->fh, vid, start, count, (short*)bufptr);
+                    break;
+                case PIO_INT:
+                    ierr = nc_get_vara_int(file->fh, vid, start, count, (int*)bufptr);
+                    break;
+                case PIO_FLOAT:
+                    ierr = nc_get_vara_float(file->fh, vid, start, count, (float*)bufptr);
+                    break;
+                case PIO_DOUBLE:
+                    ierr = nc_get_vara_double(file->fh, vid, start, count, (double*)bufptr);
+                    break;
+                case PIO_UBYTE:
+                    ierr = nc_get_vara_uchar(file->fh, vid, start, count, (unsigned char*)bufptr);
+                    break;
+                case PIO_USHORT:
+                    ierr = nc_get_vara_ushort(file->fh, vid, start, count, (unsigned short*)bufptr);
+                    break;
+                case PIO_UINT:
+                    ierr = nc_get_vara_uint(file->fh, vid, start, count, (unsigned int*)bufptr);
+                    break;
+                case PIO_INT64:
+                    ierr = nc_get_vara_longlong(file->fh, vid, start, count, (long long*)bufptr);
+                    break;
+                case PIO_UINT64:
+                    ierr = nc_get_vara_ulonglong(file->fh, vid, start, count, (unsigned long long*)bufptr);
+                    break;
+                case PIO_STRING:
+                    ierr = nc_get_vara_string(file->fh, vid, start, count, (char**)bufptr);
+                    break;
+                default:
+                    return pio_err(ios, file, PIO_EBADTYPE, __FILE__, __LINE__);
+                }
                 break;
 #endif
 #ifdef _PNETCDF
@@ -1152,7 +1193,50 @@ int pio_read_darray_nc_serial(file_desc_t *file, io_desc_t *iodesc, int vid,
                     loffset += regionsize;
 
                     /* Read the data. */
-                    ierr = nc_get_vara(file->fh, vid, start, count, bufptr);
+                    /* ierr = nc_get_vara(file->fh, vid, start, count, bufptr); */
+                    switch (iodesc->piotype)
+                    {
+                    case PIO_BYTE:
+                        ierr = nc_get_vara_schar(file->fh, vid, start, count, (signed char*)bufptr);
+                        break;
+                    case PIO_CHAR:
+                        ierr = nc_get_vara_text(file->fh, vid, start, count, (char*)bufptr);
+                        break;
+                    case PIO_SHORT:
+                        ierr = nc_get_vara_short(file->fh, vid, start, count, (short*)bufptr);
+                        break;
+                    case PIO_INT:
+                        ierr = nc_get_vara_int(file->fh, vid, start, count, (int*)bufptr);
+                        break;
+                    case PIO_FLOAT:
+                        ierr = nc_get_vara_float(file->fh, vid, start, count, (float*)bufptr);
+                        break;
+                    case PIO_DOUBLE:
+                        ierr = nc_get_vara_double(file->fh, vid, start, count, (double*)bufptr);
+                        break;
+#ifdef _NETCDF4
+                    case PIO_UBYTE:
+                        ierr = nc_get_vara_uchar(file->fh, vid, start, count, (unsigned char*)bufptr);
+                        break;
+                    case PIO_USHORT:
+                        ierr = nc_get_vara_ushort(file->fh, vid, start, count, (unsigned short*)bufptr);
+                        break;
+                    case PIO_UINT:
+                        ierr = nc_get_vara_uint(file->fh, vid, start, count, (unsigned int*)bufptr);
+                        break;
+                    case PIO_INT64:
+                        ierr = nc_get_vara_longlong(file->fh, vid, start, count, (long long*)bufptr);
+                        break;
+                    case PIO_UINT64:
+                        ierr = nc_get_vara_ulonglong(file->fh, vid, start, count, (unsigned long long*)bufptr);
+                        break;
+                    case PIO_STRING:
+                        ierr = nc_get_vara_string(file->fh, vid, start, count, (char**)bufptr);
+                        break;
+#endif /* _NETCDF4 */
+                    default:
+                        return pio_err(ios, file, PIO_EBADTYPE, __FILE__, __LINE__);
+                    }
 
                     /* Check error code of netCDF call. */
                     if (ierr)
