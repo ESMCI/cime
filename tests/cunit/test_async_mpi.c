@@ -139,6 +139,7 @@ int main(int argc, char **argv)
         MPI_Comm io_comm;
         if ((ret = MPI_Comm_create(test_comm, io_group, &io_comm)))
             MPIERR(ret);
+        MPI_Group_free(&io_group);
         /* printf("my_rank %d created io comm io_comm = %d\n", my_rank, io_comm); */
 
         /* Set in_io true for rank 0 of test_comm/world. */
@@ -217,6 +218,7 @@ int main(int argc, char **argv)
             MPI_Comm comp_comm;
             if ((ret = MPI_Comm_create(test_comm, group[cmp], &comp_comm)))
                 MPIERR(ret);
+            MPI_Group_free(&group[cmp]);
             
             if (in_cmp)
             {
@@ -248,8 +250,7 @@ int main(int argc, char **argv)
              * and one of the computation components. */
             if ((ret = MPI_Comm_create(test_comm, union_group[cmp], &union_comm)))
                 MPIERR(ret);
-            /* printf("my_rank %d created union comm for cmp %d union_comm %d\n", */
-            /*        my_rank, cmp, union_comm); */
+            MPI_Group_free(&union_group[cmp]);
 
             if (in_io || in_cmp)
             {
@@ -260,8 +261,6 @@ int main(int argc, char **argv)
                 if (in_io)
                 {
                     /* Create the intercomm from IO to computation component. */
-                    /* printf("my_rank %d about to create intercomm for IO component to cmp = %d " */
-                    /*        "io_comm = %d\n", my_rank, cmp, io_comm); */
                     if ((ret = MPI_Intercomm_create(io_comm, 0, union_comm,
                                                     1, cmp, &intercomm)))
                         MPIERR(ret);
@@ -269,16 +268,28 @@ int main(int argc, char **argv)
                 else if (in_cmp)
                 {
                     /* Create the intercomm from computation component to IO component. */
-                    /* printf("my_rank %d about to create intercomm for cmp = %d comp_comm = %d", */
-                    /*        my_rank, cmp, comp_comm); */
                     if ((ret = MPI_Intercomm_create(comp_comm, 0, union_comm,
                                                     0, cmp, &intercomm)))
                         MPIERR(ret);
                 }
                 /* printf("my_rank %d intercomm created for cmp = %d\n", my_rank, cmp); */
             } /* in_io || in_cmp */
+
+            /* Free resources. */
+            if (comp_comm != MPI_COMM_NULL)            
+                MPI_Comm_free(&comp_comm);            
+            if (in_io)
+                MPI_Comm_free(&io_comm2);
+            if (union_comm != MPI_COMM_NULL)
+                MPI_Comm_free(&union_comm);
+            if (in_io || in_cmp)
+                MPI_Comm_free(&intercomm);
         } /* next computation component. */
-    }    
+        MPI_Group_free(&world_group);
+        if (io_comm != MPI_COMM_NULL)            
+            MPI_Comm_free(&io_comm);            
+    }
+    MPI_Comm_free(&test_comm);    
 
     /* Finalize MPI. */
     MPI_Finalize();
