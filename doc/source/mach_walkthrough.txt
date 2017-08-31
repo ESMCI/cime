@@ -434,6 +434,12 @@ cd build
 rm -rf * && CFLAGS='-Wall -g' FFLAGS=-g CC=mpicc FC=mpifort cmake -DNetCDF_C_PATH=/usr/local/netcdf-4.4.1_mpich-3.2 -DNetCDF_Fortran_PATH=/usr/local/netcdf-fortran-4.4.4_c_4.4.1_mpich-3.2 -DPnetCDF_PATH=/usr/local/pnetcdf-1.8.1_mpich-3.2 -DPIO_HDF5_LOGGING=On -DPIO_USE_MALLOC=On -DPIO_ENABLE_LOGGING=On .. && make VERBOSE=1 all tests check
 </pre>
 
+<p>To build with address sanitizer:
+
+<pre>
+rm -rf * && CFLAGS='-Wall -g  -fsanitize=address -fno-omit-frame-pointer' FFLAGS='-g  -fsanitize=address -fno-omit-frame-pointer' CC=mpicc FC=mpifort cmake -DNetCDF_C_PATH=/usr/local/netcdf-4.4.1_mpich-3.2 -DNetCDF_Fortran_PATH=/usr/local/netcdf-fortran-4.4.4_c_4.4.1_mpich-3.2 -DPnetCDF_PATH=/usr/local/pnetcdf-1.8.1_mpich-3.2 -DPIO_HDF5_LOGGING=On -DPIO_USE_MALLOC=On -DPIO_ENABLE_LOGGING=On .. && make VERBOSE=1 all tests check
+</pre>
+
 <p>Note the optional CFLAGS=-g which allows the use of a debugger
 with this code. Also note the optional VERBOSE=1 provided to make,
 which causes the build commands to be made visible.
