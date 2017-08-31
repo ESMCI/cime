@@ -7,14 +7,18 @@ AM_LDFLAGS = ${top_builddir}/src/clib/libpio.la
 AM_CPPFLAGS = -I$(top_srcdir)/src/clib
 
 # The tests that will be run.
-PIO_TESTS =  test_spmd test_intercomm2 test_async_simple test_async_3proc test_async_4proc \
-test_iosystem2_simple test_iosystem2_simple2 test_iosystem2 test_iosystem3_simple \
-test_iosystem3_simple2 test_iosystem3 test_pioc test_pioc_unlim test_pioc_putget \
-test_pioc_fill test_darray test_darray_multi test_darray_multivar test_darray_multivar2 \
-test_darray_multivar3 test_darray_1d test_darray_3d test_decomp_uneven test_decomps \
-test_rearr test_darray_async_simple test_darray_async test_darray_async_many test_darray_2sync
+PIO_TESTS = test_async_mpi test_spmd test_intercomm2			\
+test_async_simple test_async_3proc test_async_4proc			\
+test_iosystem2_simple test_iosystem2_simple2 test_iosystem2		\
+test_iosystem3_simple test_iosystem3_simple2 test_iosystem3 test_pioc	\
+test_pioc_unlim test_pioc_putget test_pioc_fill test_darray		\
+test_darray_multi test_darray_multivar test_darray_multivar2		\
+test_darray_multivar3 test_darray_1d test_darray_3d			\
+test_decomp_uneven test_decomps test_rearr test_darray_async_simple	\
+test_darray_async test_darray_async_many test_darray_2sync
 
 # Source code for each test.
+test_async_mpi_SOURCES = test_async_mpi.c
 test_intercomm2_SOURCES = test_intercomm2.c test_common.c pio_tests.h
 test_async_simple_SOURCES = test_async_simple.c test_common.c pio_tests.h
 test_async_3proc_SOURCES = test_async_3proc.c test_common.c pio_tests.h

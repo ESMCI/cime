@@ -26,6 +26,8 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O0")
 
 # Don't run these tests if we are using MPI SERIAL.
 if (NOT PIO_USE_MPISERIAL)
+  add_executable (test_async_mpi EXCLUDE_FROM_ALL test_async_mpi.c)
+  add_dependencies (tests test_async_mpi)
   add_executable (test_intercomm2 EXCLUDE_FROM_ALL test_intercomm2.c test_common.c)
   target_link_libraries (test_intercomm2 pioc)
   add_dependencies (tests test_intercomm2)
@@ -140,6 +142,10 @@ if (PIO_USE_MPISERIAL)
   add_test(NAME test_pioc
     COMMAND test_pioc)
 else ()
+  add_mpi_test(test_async_mpi
+    EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_async_mpi
+    NUMPROCS ${AT_LEAST_FOUR_TASKS}
+    TIMEOUT ${DEFAULT_TEST_TIMEOUT})
   add_mpi_test(test_spmd
     EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_spmd
     NUMPROCS ${AT_LEAST_FOUR_TASKS}
