@@ -54,9 +54,9 @@ int main(int argc, char **argv)
         int comp_task = my_rank < NUM_IO_PROCS ? 0 : 1;
 
         /* Initialize the IO system. */
-        /* if ((ret = PIOc_init_async(test_comm, NUM_IO_PROCS, io_proc_list, COMPONENT_COUNT, */
-        /*                            num_procs, (int **)proc_list, NULL, NULL, PIO_REARR_BOX, iosysid))) */
-        /*     ERR(ERR_INIT); */
+        if ((ret = PIOc_init_async(test_comm, NUM_IO_PROCS, io_proc_list, COMPONENT_COUNT,
+                                   num_procs, (int **)proc_list, NULL, NULL, PIO_REARR_BOX, iosysid)))
+            ERR(ERR_INIT);
 
         /* All the netCDF calls are only executed on the computation
          * tasks. The IO tasks have not returned from PIOc_Init_Intercomm,
@@ -88,9 +88,9 @@ int main(int argc, char **argv)
             /* } /\* next netcdf flavor *\/ */
 
             /* Finalize the IO system. Only call this from the computation tasks. */
-            /* for (int c = 0; c < COMPONENT_COUNT; c++) */
-            /*     if ((ret = PIOc_finalize(iosysid[c]))) */
-            /*         ERR(ret); */
+            for (int c = 0; c < COMPONENT_COUNT; c++)
+                if ((ret = PIOc_finalize(iosysid[c])))
+                    ERR(ret);
         } /* endif comp_task */
     } /* endif my_rank < TARGET_NTASKS */
 

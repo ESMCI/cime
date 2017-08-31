@@ -1525,15 +1525,13 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
 
         /* All the processes in this component, and the IO component,
          * are part of the union_comm. */
+        LOG((3, "before creating union_comm my_iosys->io_comm = %d group = %d", my_iosys->io_comm, union_group[cmp]));
+        if ((ret = MPI_Comm_create(world, union_group[cmp], &my_iosys->union_comm)))
+            return check_mpi(NULL, ret, __FILE__, __LINE__);
+        LOG((3, "created union comm for cmp %d my_iosys->union_comm %d", cmp, my_iosys->union_comm));
+
         if (in_io || in_cmp)
         {
-            LOG((3, "before creating union_comm my_iosys->io_comm = %d group = %d", my_iosys->io_comm, union_group[cmp]));
-            /* Create a group for the union of the IO component
-             * and one of the computation components. */
-            if ((ret = MPI_Comm_create(world, union_group[cmp], &my_iosys->union_comm)))
-                return check_mpi(NULL, ret, __FILE__, __LINE__);
-            LOG((3, "created union comm for cmp %d my_iosys->union_comm %d", cmp, my_iosys->union_comm));
-
             if ((ret = MPI_Comm_rank(my_iosys->union_comm, &my_iosys->union_rank)))
                 return check_mpi(NULL, ret, __FILE__, __LINE__);
             LOG((3, "my_iosys->union_rank %d", my_iosys->union_rank));
@@ -1550,7 +1548,7 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
                 LOG((3, "about to create intercomm for IO component to cmp = %d "
                      "my_iosys->io_comm = %d", cmp, my_iosys->io_comm));
                 if ((ret = MPI_Intercomm_create(my_iosys->io_comm, 0, my_iosys->union_comm,
-                                                my_proc_list[cmp][0], 0, &my_iosys->intercomm)))
+                                                my_iosys->num_iotasks, cmp, &my_iosys->intercomm)))
                     return check_mpi(NULL, ret, __FILE__, __LINE__);
             }
             else
@@ -1559,7 +1557,7 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
                 LOG((3, "about to create intercomm for cmp = %d my_iosys->comp_comm = %d", cmp,
                      my_iosys->comp_comm));
                 if ((ret = MPI_Intercomm_create(my_iosys->comp_comm, 0, my_iosys->union_comm,
-                                                my_io_proc_list[0], 0, &my_iosys->intercomm)))
+                                                0, cmp, &my_iosys->intercomm)))
                     return check_mpi(NULL, ret, __FILE__, __LINE__);
             }
             LOG((3, "intercomm created for cmp = %d", cmp));
