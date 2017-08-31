@@ -14,7 +14,7 @@ import datetime
 logger = logging.getLogger(__name__)
 
 ###############################################################################
-def _get_datenames(case, last_date=None):
+def get_datenames(case, last_date=None):
 ###############################################################################
     if last_date is not None:
         try:
@@ -365,7 +365,7 @@ def _archive_process(case, archive, last_date, archive_incomplete_logs, copy_onl
         logger.info('-------------------------------------------')
         logger.info('doing short term archiving for {} ({})'.format(compname, compclass))
         logger.info('-------------------------------------------')
-        datenames = _get_datenames(case, last_date)
+        datenames = get_datenames(case, last_date)
         for datename in datenames:
             logger.info('Archiving for date %s' % datename)
             datename_is_last = False
