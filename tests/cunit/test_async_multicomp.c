@@ -17,14 +17,44 @@
 /* Number of processors that will do IO. */
 #define NUM_IO_PROCS 1
 
+/* Number of tasks in each computation component. */
+#define NUM_COMP_PROCS 1
+
 /* Number of computational components to create. */
 #define COMPONENT_COUNT 2
+
+/* This creates an empty netCDF file in the specified format. */
+int create_test_file(int iosysid, int iotype, int my_rank, int my_comp_idx, char *filename)
+{
+    char iotype_name[NC_MAX_NAME + 1];
+    int ncid;
+    int ret;
+
+    /* Learn name of IOTYPE. */
+    if ((ret = get_iotype_name(iotype, iotype_name)))
+        return ret;
+    
+    /* Create a filename. */
+    sprintf(filename, "%s_iotype_%s_cmp_%d.nc", TEST_NAME, iotype_name, my_comp_idx);
+
+    /* Create the file. */
+    /* if ((ret = PIOc_createfile(iosysid, &ncid, &iotype, filename, NC_CLOBBER))) */
+    /*     return ret; */
+
+    /* /\* End define mode. *\/ */
+    /* if ((ret = PIOc_enddef(ncid))) */
+    /*     return ret; */
+
+    /* /\* Close the file if ncidp was not provided. *\/ */
+    /* if ((ret = PIOc_closefile(ncid))) */
+    /*     return ret; */
+
+    return PIO_NOERR;
+}
 
 /* Run simple async test. */
 int main(int argc, char **argv)
 {
-#define NUM_IO_PROCS 1
-#define NUM_COMP_PROCS 1
     int my_rank; /* Zero-based rank of processor. */
     int ntasks; /* Number of processors involved in current execution. */
     int iosysid[COMPONENT_COUNT]; /* The ID for the parallel I/O system. */
@@ -63,29 +93,19 @@ int main(int argc, char **argv)
          * and when the do, they should go straight to finalize. */
         if (comp_task)
         {
-            /* for (int flv = 0; flv < num_flavors; flv++) */
-            /* { */
-            /*     int my_comp_idx = my_rank - 1; /\* Index in iosysid array. *\/ */
+            for (int flv = 0; flv < num_flavors; flv++)
+            {
+                char filename[NC_MAX_NAME + 1]; /* Test filename. */
+                int my_comp_idx = my_rank - 1; /* Index in iosysid array. */
 
-            /*     for (int sample = 0; sample < NUM_SAMPLES; sample++) */
-            /*     { */
-            /*         char filename[NC_MAX_NAME + 1]; /\* Test filename. *\/ */
-            /*         char iotype_name[NC_MAX_NAME + 1]; */
+                /* Create sample file. */
+                if ((ret = create_test_file(iosysid[my_comp_idx], flavor[flv], my_rank, my_comp_idx, filename)))
+                    ERR(ret);
 
-            /*         /\* Create a filename. *\/ */
-            /*         if ((ret = get_iotype_name(flavor[flv], iotype_name))) */
-            /*             return ret; */
-            /*         sprintf(filename, "%s_%s_%d_%d.nc", TEST_NAME, iotype_name, sample, my_comp_idx); */
-
-            /*         /\* Create sample file. *\/ */
-            /*         if ((ret = create_nc_sample(sample, iosysid[my_comp_idx], flavor[flv], filename, my_rank, NULL))) */
-            /*             ERR(ret); */
-
-            /*         /\* Check the file for correctness. *\/ */
-            /*         if ((ret = check_nc_sample(sample, iosysid[my_comp_idx], flavor[flv], filename, my_rank, NULL))) */
-            /*             ERR(ret); */
-            /*     } */
-            /* } /\* next netcdf flavor *\/ */
+                /* Check the file for correctness. */
+                /* if ((ret = check_nc_sample(sample, iosysid[my_comp_idx], flavor[flv], filename, my_rank, NULL))) */
+                /*     ERR(ret); */
+            } /* next netcdf flavor */
 
             /* Finalize the IO system. Only call this from the computation tasks. */
             for (int c = 0; c < COMPONENT_COUNT; c++)

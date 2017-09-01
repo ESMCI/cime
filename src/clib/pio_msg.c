@@ -217,7 +217,7 @@ int close_file_handler(iosystem_desc_t *ios)
      * task is broadcasting. */
     if ((mpierr = MPI_Bcast(&ncid, 1, MPI_INT, 0, ios->intercomm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
-    LOG((1, "create_file_handler got parameter ncid = %d", ncid));
+    LOG((1, "close_file_handler got parameter ncid = %d", ncid));
 
     /* Call the close file function. */
     PIOc_closefile(ncid);

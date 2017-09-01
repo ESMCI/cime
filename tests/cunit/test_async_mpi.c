@@ -172,6 +172,11 @@ int main(int argc, char **argv)
         MPI_Group union_group[COMPONENT_COUNT];
 
         int my_proc_list[COMPONENT_COUNT][1] = {{1}, {2}};   /* Array of arrays of procs for comp components. */
+        MPI_Comm comp_comm[COMPONENT_COUNT];
+        MPI_Comm union_comm[COMPONENT_COUNT];
+        MPI_Comm intercomm[COMPONENT_COUNT];
+        /* Is this process in this computation component? */
+        int in_cmp[COMPONENT_COUNT] = {0, 0};
         
         /* For each computation component. */
         for (int cmp = 0; cmp < COMPONENT_COUNT; cmp++)
@@ -197,13 +202,11 @@ int main(int argc, char **argv)
             for (int p = 0; p < num_procs_per_comp[cmp]; p++)
                 proc_list_union[p + num_io_procs] = my_proc_list[cmp][p];
 
-            /* Is this process in this computation component? */
-            int in_cmp = 0;
             int pidx;
             for (pidx = 0; pidx < num_procs_per_comp[cmp]; pidx++)
                 if (my_rank == my_proc_list[cmp][pidx])
                     break;
-            in_cmp = (pidx == num_procs_per_comp[cmp]) ? 0 : 1;
+            in_cmp[cmp] = (pidx == num_procs_per_comp[cmp]) ? 0 : 1;
             /* printf("my_rank %d pidx = %d num_procs_per_comp[%d] = %d in_cmp = %d\n", */
 
             /* Create the union group. */
@@ -215,16 +218,15 @@ int main(int argc, char **argv)
             /* Create an intracomm for this component. Only processes in
              * the component need to participate in the intracomm create
              * call. */
-            MPI_Comm comp_comm;
-            if ((ret = MPI_Comm_create(test_comm, group[cmp], &comp_comm)))
+            if ((ret = MPI_Comm_create(test_comm, group[cmp], &comp_comm[cmp])))
                 MPIERR(ret);
             MPI_Group_free(&group[cmp]);
             
-            if (in_cmp)
+            if (in_cmp[cmp])
             {
                 /* Get the rank in this comp comm. */
                 int comp_rank;
-                if ((ret = MPI_Comm_rank(comp_comm, &comp_rank)))
+                if ((ret = MPI_Comm_rank(comp_comm[cmp], &comp_rank)))
                     MPIERR(ret);
                 /* printf("my_rank %d intracomm created for cmp = %d comp_comm = %d comp_rank = %d\n", */
                 /*        my_rank, cmp, comp_comm, comp_rank); */
@@ -242,53 +244,58 @@ int main(int argc, char **argv)
 
             /* All the processes in this component, and the IO component,
              * are part of the union_comm. */
-            MPI_Comm union_comm;
             int union_rank;
-            MPI_Comm intercomm;
             
             /* Create a group for the union of the IO component
              * and one of the computation components. */
-            if ((ret = MPI_Comm_create(test_comm, union_group[cmp], &union_comm)))
+            if ((ret = MPI_Comm_create(test_comm, union_group[cmp], &union_comm[cmp])))
                 MPIERR(ret);
             MPI_Group_free(&union_group[cmp]);
 
-            if (in_io || in_cmp)
+            if (in_io || in_cmp[cmp])
             {
-                if ((ret = MPI_Comm_rank(union_comm, &union_rank)))
+                if ((ret = MPI_Comm_rank(union_comm[cmp], &union_rank)))
                     MPIERR(ret);
                 /* printf("my_rank %d union_rank %d", my_rank, union_rank); */
                 
                 if (in_io)
                 {
                     /* Create the intercomm from IO to computation component. */
-                    if ((ret = MPI_Intercomm_create(io_comm, 0, union_comm,
-                                                    1, cmp, &intercomm)))
+                    if ((ret = MPI_Intercomm_create(io_comm, 0, union_comm[cmp],
+                                                    1, cmp, &intercomm[cmp])))
                         MPIERR(ret);
                 }
-                else if (in_cmp)
+                else if (in_cmp[cmp])
                 {
                     /* Create the intercomm from computation component to IO component. */
-                    if ((ret = MPI_Intercomm_create(comp_comm, 0, union_comm,
-                                                    0, cmp, &intercomm)))
+                    if ((ret = MPI_Intercomm_create(comp_comm[cmp], 0, union_comm[cmp],
+                                                    0, cmp, &intercomm[cmp])))
                         MPIERR(ret);
                 }
                 /* printf("my_rank %d intercomm created for cmp = %d\n", my_rank, cmp); */
             } /* in_io || in_cmp */
 
             /* Free resources. */
-            if (comp_comm != MPI_COMM_NULL)            
-                MPI_Comm_free(&comp_comm);            
             if (in_io)
                 MPI_Comm_free(&io_comm2);
-            if (union_comm != MPI_COMM_NULL)
-                MPI_Comm_free(&union_comm);
-            if (in_io || in_cmp)
-                MPI_Comm_free(&intercomm);
         } /* next computation component. */
+
+        /* Free MPI resources. */
+        for (int cmp = 0; cmp < COMPONENT_COUNT; cmp++)
+        {
+            if (comp_comm[cmp] != MPI_COMM_NULL)            
+                MPI_Comm_free(&comp_comm[cmp]);
+            if (union_comm[cmp] != MPI_COMM_NULL)
+                MPI_Comm_free(&union_comm[cmp]);
+            if (in_io || in_cmp[cmp])
+                MPI_Comm_free(&intercomm[cmp]);
+        }
         MPI_Group_free(&world_group);
         if (io_comm != MPI_COMM_NULL)            
             MPI_Comm_free(&io_comm);            
     }
+
+    /* Free the MPI communicator for this test. */
     MPI_Comm_free(&test_comm);    
 
     /* Finalize MPI. */
