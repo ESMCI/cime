@@ -15,7 +15,8 @@ test_pioc_unlim test_pioc_putget test_pioc_fill test_darray		\
 test_darray_multi test_darray_multivar test_darray_multivar2		\
 test_darray_multivar3 test_darray_1d test_darray_3d			\
 test_decomp_uneven test_decomps test_rearr test_darray_async_simple	\
-test_darray_async test_darray_async_many test_darray_2sync
+test_darray_async test_darray_async_many test_darray_2sync		\
+test_async_multicomp
 
 # Source code for each test.
 test_async_mpi_SOURCES = test_async_mpi.c
@@ -50,6 +51,7 @@ test_darray_2sync_SOURCES = test_darray_2sync.c test_common.c pio_tests.h
 test_spmd_SOURCES = test_spmd.c test_common.c pio_tests.h
 test_intercomm2_SOURCES = test_async_simple.c test_common.c pio_tests.h
 test_async_3proc_SOURCES = test_async_3proc.c test_common.c pio_tests.h
+test_async_multicomp_SOURCES = test_async_multicomp.c test_common.c pio_tests.h
 
 # Build the tests for the tests target.
 tests: ${PIO_TESTS}
