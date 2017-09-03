@@ -1243,7 +1243,7 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
                     int *iosysidp)
 {
     int my_rank;          /* Rank of this task. */
-    int **my_proc_list;   /* Array of arrays of procs for comp components. */
+    int *my_proc_list[component_count];   /* Array of arrays of procs for comp components. */
     int my_io_proc_list[num_io_procs]; /* List of processors in IO component. */
     int mpierr;           /* Return code from MPI functions. */
     int ret;              /* Return code. */
@@ -1268,14 +1268,11 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
     {
         int last_proc = num_io_procs;
 
-        /* Allocate space for array of arrays. */
-        if (!(my_proc_list = malloc((component_count) * sizeof(int *))))
-            return pio_err(NULL, NULL, PIO_ENOMEM, __FILE__, __LINE__);
-
         /* Fill the array of arrays. */
         for (int cmp = 0; cmp < component_count; cmp++)
         {
-            LOG((3, "calculating processors for component %d num_procs_per_comp[cmp] = %d", cmp, num_procs_per_comp[cmp]));
+            LOG((3, "calculating processors for component %d num_procs_per_comp[cmp] = %d",
+                 cmp, num_procs_per_comp[cmp]));
 
             /* Allocate space for each array. */
             if (!(my_proc_list[cmp] = malloc(num_procs_per_comp[cmp] * sizeof(int))))
@@ -1291,7 +1288,14 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
         }
     }
     else
-        my_proc_list = proc_list;
+    {
+        int offset = 0;
+        for (int cmp = 0; cmp < component_count; cmp++)
+        {
+            my_proc_list[cmp] = proc_list[offset];
+            offset += num_procs_per_comp[cmp];
+        }
+    }
 
     /* Get rank of this task in world. */
     if ((ret = MPI_Comm_rank(world, &my_rank)))
@@ -1576,7 +1580,6 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
     {
         for (int cmp = 0; cmp < component_count; cmp++)
             free(my_proc_list[cmp]);
-        free(my_proc_list);
     }
 
     /* Free MPI groups. */
