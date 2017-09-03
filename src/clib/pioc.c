@@ -1244,7 +1244,7 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
 {
     int my_rank;          /* Rank of this task. */
     int **my_proc_list;   /* Array of arrays of procs for comp components. */
-    int *my_io_proc_list; /* List of processors in IO component. */
+    int my_io_proc_list[num_io_procs]; /* List of processors in IO component. */
     int mpierr;           /* Return code from MPI functions. */
     int ret;              /* Return code. */
 
@@ -1258,21 +1258,9 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
     LOG((1, "PIOc_init_async num_io_procs = %d component_count = %d", num_io_procs,
          component_count));
 
-    /* If the user did not supply a list of process numbers to use for
-     * IO, create it. */
-    if (!io_proc_list)
-    {
-        LOG((3, "calculating processors for IO component"));
-        if (!(my_io_proc_list = malloc(num_io_procs * sizeof(int))))
-            return pio_err(NULL, NULL, PIO_ENOMEM, __FILE__, __LINE__);
-        for (int p = 0; p < num_io_procs; p++)
-        {
-            my_io_proc_list[p] = p;
-            LOG((3, "my_io_proc_list[%d] = %d", p, my_io_proc_list[p]));
-        }
-    }
-    else
-        my_io_proc_list = io_proc_list;
+    /* Determine which tasks to use for IO. */
+    for (int p = 0; p < num_io_procs; p++)
+        my_io_proc_list[p] = io_proc_list ? io_proc_list[p] : p;
 
     /* If the user did not provide a list of processes for each
      * component, create one. */
@@ -1580,9 +1568,6 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
     }
 
     /* Free resources if needed. */
-    if (!io_proc_list)
-        free(my_io_proc_list);
-
     if (in_io)
         if ((mpierr = MPI_Comm_free(&io_comm)))
             return check_mpi(NULL, ret, __FILE__, __LINE__);
