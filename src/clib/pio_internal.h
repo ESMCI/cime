@@ -360,6 +360,10 @@ extern "C" {
                                 int *num_tasks, int **task_maplen, int *max_maplen, int **map, char *title,
                                 char *history, char *source, char *version, int *fortran_order);
 
+    /* Determine what tasks to use for each computational component. */
+    int determine_procs(int num_io_procs, int component_count, int *num_procs_per_comp,
+                        int **proc_list, int **my_proc_list);
+
 #if defined(__cplusplus)
 }
 #endif
