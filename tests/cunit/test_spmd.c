@@ -219,6 +219,7 @@ int test_lists()
 int test_determine_procs()
 {
 #define ONE_COMPONENT 1
+#define TWO_COMPONENTS 2
     int ret;
     
     {
@@ -226,11 +227,34 @@ int test_determine_procs()
         int component_count = ONE_COMPONENT;
         int num_procs_per_comp[ONE_COMPONENT] = {1};
         int *my_proc_list[ONE_COMPONENT];
-            if ((ret = determine_procs(num_io_procs, component_count, num_procs_per_comp, NULL, (int **)my_proc_list)))
+        
+        if ((ret = determine_procs(num_io_procs, component_count, num_procs_per_comp, NULL,
+                                   (int **)my_proc_list)))
             return ret;
+
+        /* Check results and free resources. */
         for (int c = 0; c < ONE_COMPONENT; c++)
         {
             if (my_proc_list[c][0] != 1)
+                return ERR_WRONG;
+            free(my_proc_list[c]);
+        }
+    }
+    
+    {
+        int num_io_procs = 1;
+        int component_count = TWO_COMPONENTS;
+        int num_procs_per_comp[TWO_COMPONENTS] = {1, 1};
+        int *my_proc_list[TWO_COMPONENTS];
+        
+        if ((ret = determine_procs(num_io_procs, component_count, num_procs_per_comp, NULL,
+                                   (int **)my_proc_list)))
+            return ret;
+        
+        /* Check results and free resources. */
+        for (int c = 0; c < TWO_COMPONENTS; c++)
+        {
+            if (my_proc_list[c][0] != c + 1)
                 return ERR_WRONG;
             free(my_proc_list[c]);
         }
