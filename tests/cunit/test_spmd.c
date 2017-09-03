@@ -219,15 +219,23 @@ int test_lists()
 int test_determine_procs()
 {
 #define ONE_COMPONENT 1
-    int num_io_procs = 1;
-    int component_count = ONE_COMPONENT;
-    int num_procs_per_comp[ONE_COMPONENT] = {1};
-    int *my_proc_list[ONE_COMPONENT];
     int ret;
-    if ((ret = determine_procs(num_io_procs, component_count, num_procs_per_comp, NULL, (int **)my_proc_list)))
-        return ret;
-    for (int c = 0; c < ONE_COMPONENT; c++)
-        free(my_proc_list[c]);
+    
+    {
+        int num_io_procs = 1;
+        int component_count = ONE_COMPONENT;
+        int num_procs_per_comp[ONE_COMPONENT] = {1};
+        int *my_proc_list[ONE_COMPONENT];
+            if ((ret = determine_procs(num_io_procs, component_count, num_procs_per_comp, NULL, (int **)my_proc_list)))
+            return ret;
+        for (int c = 0; c < ONE_COMPONENT; c++)
+        {
+            if (my_proc_list[c][0] != 1)
+                return ERR_WRONG;
+            free(my_proc_list[c]);
+        }
+    }
+    
     return PIO_NOERR;
 }
 
