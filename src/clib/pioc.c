@@ -744,8 +744,7 @@ int PIOc_InitDecomp_bc(int iosysid, int pio_type, int ndims, const int *gdimlen,
  * </ul>
  *
  * When complete, there are three MPI communicators (ios->comp_comm,
- * ios->union_comm, and ios->io_comm), and two MPI groups
- * (ios->compgroup and ios->iogroup) that must be freed by MPI.
+ * ios->union_comm, and ios->io_comm) that must be freed by MPI.
  *
  * @param comp_comm the MPI_Comm of the compute tasks.
  * @param num_iotasks the number of io tasks to use.
@@ -764,6 +763,8 @@ int PIOc_Init_Intracomm(MPI_Comm comp_comm, int num_iotasks, int stride, int bas
 {
     iosystem_desc_t *ios;
     int ustride;
+    MPI_Group compgroup;  /* Contains tasks involved in computation. */
+    MPI_Group iogroup;    /* Contains the processors involved in I/O. */
     int num_comptasks; /* The size of the comp_comm. */
     int mpierr;        /* Return value for MPI calls. */
     int ret;           /* Return code for function calls. */
@@ -852,17 +853,24 @@ int PIOc_Init_Intracomm(MPI_Comm comp_comm, int num_iotasks, int stride, int bas
         ios->iomaster = MPI_ROOT;
 
     /* Create a group for the computation tasks. */
-    if ((mpierr = MPI_Comm_group(ios->comp_comm, &ios->compgroup)))
+    if ((mpierr = MPI_Comm_group(ios->comp_comm, &compgroup)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
 
     /* Create a group for the IO tasks. */
-    if ((mpierr = MPI_Group_incl(ios->compgroup, ios->num_iotasks, ios->ioranks,
-                                 &ios->iogroup)))
-        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+    if ((mpierr = MPI_Group_incl(compgroup, ios->num_iotasks, ios->ioranks,
+                                 &iogroup)))
+        return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);    
 
     /* Create an MPI communicator for the IO tasks. */
-    if ((mpierr = MPI_Comm_create(ios->comp_comm, ios->iogroup, &ios->io_comm)))
+    if ((mpierr = MPI_Comm_create(ios->comp_comm, iogroup, &ios->io_comm)))
         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+
+    /* Free the MPI groups. */
+    if (compgroup != MPI_GROUP_NULL)
+        MPI_Group_free(&compgroup);
+
+    if (iogroup != MPI_GROUP_NULL)
+        MPI_Group_free(&iogroup);
 
     /* For the tasks that are doing IO, get their rank within the IO
      * communicator. If they are not doing IO, set their io_rank to
@@ -1046,13 +1054,6 @@ int PIOc_finalize(int iosysid)
         free_cn_buffer_pool(ios);
         LOG((2, "Freed buffer pool."));
     }
-
-    /* Free the MPI groups. */
-    if (ios->compgroup != MPI_GROUP_NULL)
-        MPI_Group_free(&ios->compgroup);
-
-    if (ios->iogroup != MPI_GROUP_NULL)
-        MPI_Group_free(&(ios->iogroup));
 
     /* Free the MPI communicators. my_comm is just a copy (but not an
      * MPI copy), so does not have to have an MPI_Comm_free()
@@ -1399,8 +1400,6 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
         my_iosys->num_comptasks = num_procs_per_comp[cmp];
         my_iosys->num_iotasks = num_io_procs;
         my_iosys->num_uniontasks = my_iosys->num_comptasks + my_iosys->num_iotasks;
-        my_iosys->compgroup = MPI_GROUP_NULL;
-        my_iosys->iogroup = MPI_GROUP_NULL;
         my_iosys->default_rearranger = rearranger;
 
         /* Initialize the rearranger options. */

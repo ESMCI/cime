@@ -407,13 +407,6 @@ typedef struct iosystem_desc_t
      * non-async) or the union (for async) communicator. */
     MPI_Comm my_comm;
 
-    /** This MPI group contains the processors involved in
-     * computation. */
-    MPI_Group compgroup;
-
-    /** This MPI group contains the processors involved in I/O. */
-    MPI_Group iogroup;
-
     /** The number of tasks in the IO communicator. */
     int num_iotasks;
 
