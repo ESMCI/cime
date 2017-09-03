@@ -1160,6 +1160,66 @@ int PIOc_iotype_available(int iotype)
 }
 
 /**
+ * This function determines which processes are assigned to the
+ * different computation components. The user may have passed this in
+ * as array proc_list, or it may be calculated by assigning processors
+ * starting at the first one after the IO component, and assigning
+ * them in order to each computation component.
+ *
+ * @param num_io_proc the number of IO processes.
+ * @param component_count the number of computational components.
+ * @param num_procs_per_comp array (length component_count) which
+ * contains the number of processes to assign to each computation
+ * component.
+ * @param proc_list array (length component count) of arrays (length
+ * num_procs_per_comp_array[cmp]) which contain the list of processes
+ * for each computation component. May be NULL.
+ * @param array (length component count) of arrays (length
+ * num_procs_per_comp_array[cmp]) which will get the list of processes
+ * for each computation component.
+ * @returns 0 for success, error code otherwise
+ * @author Ed Hartnett
+ */
+int determine_procs(num_io_proc, component_count, num_procs_per_comp, proc_list, my_proc_list)
+{
+    /* If the user did not provide a list of processes for each
+     * component, create one. */
+    if (!proc_list)
+    {
+        int last_proc = num_io_procs;
+
+        /* Fill the array of arrays. */
+        for (int cmp = 0; cmp < component_count; cmp++)
+        {
+            LOG((3, "calculating processors for component %d num_procs_per_comp[cmp] = %d",
+                 cmp, num_procs_per_comp[cmp]));
+
+            /* Allocate space for each array. */
+            if (!(my_proc_list[cmp] = malloc(num_procs_per_comp[cmp] * sizeof(int))))
+                return pio_err(NULL, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+
+            int proc;
+            for (proc = last_proc; proc < num_procs_per_comp[cmp] + last_proc; proc++)
+            {
+                my_proc_list[cmp][proc - last_proc] = proc;
+                LOG((3, "my_proc_list[%d][%d] = %d", cmp, proc - last_proc, proc));
+            }
+            last_proc = proc;
+        }
+    }
+    else
+    {
+        int offset = 0;
+        for (int cmp = 0; cmp < component_count; cmp++)
+        {
+            my_proc_list[cmp] = proc_list[offset];
+            offset += num_procs_per_comp[cmp];
+        }
+    }
+    return PIO_NOERR;
+}
+
+/**
  * Library initialization used when IO tasks are distinct from compute
  * tasks.
  *
@@ -1262,40 +1322,8 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
     for (int p = 0; p < num_io_procs; p++)
         my_io_proc_list[p] = io_proc_list ? io_proc_list[p] : p;
 
-    /* If the user did not provide a list of processes for each
-     * component, create one. */
-    if (!proc_list)
-    {
-        int last_proc = num_io_procs;
-
-        /* Fill the array of arrays. */
-        for (int cmp = 0; cmp < component_count; cmp++)
-        {
-            LOG((3, "calculating processors for component %d num_procs_per_comp[cmp] = %d",
-                 cmp, num_procs_per_comp[cmp]));
-
-            /* Allocate space for each array. */
-            if (!(my_proc_list[cmp] = malloc(num_procs_per_comp[cmp] * sizeof(int))))
-                return pio_err(NULL, NULL, PIO_ENOMEM, __FILE__, __LINE__);
-
-            int proc;
-            for (proc = last_proc; proc < num_procs_per_comp[cmp] + last_proc; proc++)
-            {
-                my_proc_list[cmp][proc - last_proc] = proc;
-                LOG((3, "my_proc_list[%d][%d] = %d", cmp, proc - last_proc, proc));
-            }
-            last_proc = proc;
-        }
-    }
-    else
-    {
-        int offset = 0;
-        for (int cmp = 0; cmp < component_count; cmp++)
-        {
-            my_proc_list[cmp] = proc_list[offset];
-            offset += num_procs_per_comp[cmp];
-        }
-    }
+    if ((ret = determine_procs(num_io_proc, component_count, num_procs_per_comp, my_proc_list)))
+        return pio_err(NULL, NULL, ret, __FILE__, __LINE__);        
 
     /* Get rank of this task in world. */
     if ((ret = MPI_Comm_rank(world, &my_rank)))
