@@ -2509,11 +2509,16 @@ int determine_procs(int num_io_procs, int component_count, int *num_procs_per_co
     }
     else
     {
-        int offset = 0;
         for (int cmp = 0; cmp < component_count; cmp++)
         {
-            my_proc_list[cmp] = proc_list[offset];
-            offset += num_procs_per_comp[cmp];
+            /* Allocate space for each array. */
+            if (!(my_proc_list[cmp] = malloc(num_procs_per_comp[cmp] * sizeof(int))))
+                return pio_err(NULL, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+            LOG((3, "about to memcpy computation proc list num_procs_per_comp[%d] %d",
+                 cmp, num_procs_per_comp[cmp]));
+            LOG((3, "about to memcpy computation proc list num_procs_per_comp[%d] %d *proc_list[cmp] %d",
+                 cmp, num_procs_per_comp[cmp], (proc_list[cmp])));
+            memcpy(my_proc_list[cmp], proc_list[cmp], num_procs_per_comp[cmp] * sizeof(int));
         }
     }
     return PIO_NOERR;

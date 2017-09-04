@@ -1546,11 +1546,9 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
         if ((mpierr = MPI_Comm_free(&io_comm)))
             return check_mpi(NULL, ret, __FILE__, __LINE__);
 
-    if (!proc_list)
-    {
-        for (int cmp = 0; cmp < component_count; cmp++)
-            free(my_proc_list[cmp]);
-    }
+    /* Free the arrays of processor numbers. */
+    for (int cmp = 0; cmp < component_count; cmp++)
+        free(my_proc_list[cmp]);
 
     /* Free MPI groups. */
     if ((ret = MPI_Group_free(&io_group)))
