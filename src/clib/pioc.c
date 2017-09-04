@@ -1574,7 +1574,7 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
     {
         LOG((2, "Starting message handler io_rank = %d component_count = %d",
              io_rank, component_count));
-        if ((ret = pio_msg_handler2(io_rank, component_count, iosys, io_comm)))
+        if ((ret = pio_msg_handler2(io_rank, component_count, iosys, my_iosys->io_comm)))
             return pio_err(NULL, NULL, ret, __FILE__, __LINE__);
         LOG((2, "Returned from pio_msg_handler2() ret = %d", ret));
     }
