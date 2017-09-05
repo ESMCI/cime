@@ -2451,3 +2451,76 @@ int PIOc_set_rearr_opts(int iosysid, int comm_type, int fcd, bool enable_hs_c2i,
 
     return PIO_NOERR;
 }
+
+/**
+ * This function determines which processes are assigned to the
+ * different computation components. This function is called by
+ * PIOc_init_async(). 
+ * 
+ * The user may have passed a specification of tasks as array
+ * proc_list, or it may be calculated by assigning processors starting
+ * at the first one after the IO component, and assigning them in
+ * order to each computation component.
+ *
+ * Note that memory is allocated for my_proc_list. This must be freed
+ * by the caller.
+ *
+ * @param num_io_proc the number of IO processes.
+ * @param component_count the number of computational components.
+ * @param num_procs_per_comp array (length component_count) which
+ * contains the number of processes to assign to each computation
+ * component.
+ * @param proc_list array (length component count) of arrays (length
+ * num_procs_per_comp_array[cmp]) which contain the list of processes
+ * for each computation component. May be NULL.
+ * @param array (length component count) of arrays (length
+ * num_procs_per_comp_array[cmp]) which will get the list of processes
+ * for each computation component.
+ * @returns 0 for success, error code otherwise
+ * @author Ed Hartnett
+ */
+int determine_procs(int num_io_procs, int component_count, int *num_procs_per_comp,
+                    int **proc_list, int **my_proc_list)
+{
+    /* If the user did not provide a list of processes for each
+     * component, create one. */
+    if (!proc_list)
+    {
+        int last_proc = num_io_procs;
+
+        /* Fill the array of arrays. */
+        for (int cmp = 0; cmp < component_count; cmp++)
+        {
+            LOG((3, "calculating processors for component %d num_procs_per_comp[cmp] = %d",
+                 cmp, num_procs_per_comp[cmp]));
+
+            /* Allocate space for each array. */
+            if (!(my_proc_list[cmp] = malloc(num_procs_per_comp[cmp] * sizeof(int))))
+                return pio_err(NULL, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+
+            int proc;
+            for (proc = last_proc; proc < num_procs_per_comp[cmp] + last_proc; proc++)
+            {
+                my_proc_list[cmp][proc - last_proc] = proc;
+                LOG((3, "my_proc_list[%d][%d] = %d", cmp, proc - last_proc, proc));
+            }
+            last_proc = proc;
+        }
+    }
+    else
+    {
+        for (int cmp = 0; cmp < component_count; cmp++)
+        {
+            /* Allocate space for each array. */
+            if (!(my_proc_list[cmp] = malloc(num_procs_per_comp[cmp] * sizeof(int))))
+                return pio_err(NULL, NULL, PIO_ENOMEM, __FILE__, __LINE__);
+            LOG((3, "about to memcpy computation proc list num_procs_per_comp[%d] %d",
+                 cmp, num_procs_per_comp[cmp]));
+            LOG((3, "about to memcpy computation proc list num_procs_per_comp[%d] %d *proc_list[cmp] %d",
+                 cmp, num_procs_per_comp[cmp], (proc_list[cmp])));
+            memcpy(my_proc_list[cmp], proc_list[cmp], num_procs_per_comp[cmp] * sizeof(int));
+        }
+    }
+    return PIO_NOERR;
+}
+

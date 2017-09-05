@@ -215,6 +215,98 @@ int test_lists()
     return 0;
 }
 
+/* Test some list stuff. */
+int test_determine_procs()
+{
+#define ONE_COMPONENT 1
+#define TWO_COMPONENTS 2
+#define THREE_PROCS 3
+    int ret;
+    
+    {
+        int num_io_procs = 1;
+        int component_count = ONE_COMPONENT;
+        int num_procs_per_comp[ONE_COMPONENT] = {1};
+        int *my_proc_list[ONE_COMPONENT];
+        
+        if ((ret = determine_procs(num_io_procs, component_count, num_procs_per_comp, NULL,
+                                   my_proc_list)))
+            return ret;
+
+        /* Check results and free resources. */
+        for (int c = 0; c < ONE_COMPONENT; c++)
+        {
+            if (my_proc_list[c][0] != 1)
+                return ERR_WRONG;
+            free(my_proc_list[c]);
+        }
+    }
+    
+    {
+        int num_io_procs = 3;
+        int component_count = TWO_COMPONENTS;
+        int num_procs_per_comp[TWO_COMPONENTS] = {1, 1};
+        int *my_proc_list[TWO_COMPONENTS];
+        
+        if ((ret = determine_procs(num_io_procs, component_count, num_procs_per_comp, NULL,
+                                   my_proc_list)))
+            return ret;
+        
+        /* Check results and free resources. */
+        for (int c = 0; c < TWO_COMPONENTS; c++)
+        {
+            if (my_proc_list[c][0] != c + 3)
+                return ERR_WRONG;
+            free(my_proc_list[c]);
+        }
+    }
+    
+    {
+        int num_io_procs = 3;
+        int component_count = TWO_COMPONENTS;
+        int num_procs_per_comp[TWO_COMPONENTS] = {THREE_PROCS, THREE_PROCS};
+        int *my_proc_list[TWO_COMPONENTS];
+        
+        if ((ret = determine_procs(num_io_procs, component_count, num_procs_per_comp, NULL,
+                                   my_proc_list)))
+            return ret;
+        
+        /* Check results and free resources. */
+        for (int c = 0; c < TWO_COMPONENTS; c++)
+        {
+            for (int p = 0; p < THREE_PROCS; p++)
+                if (my_proc_list[c][p] != 3 + c * THREE_PROCS + p)
+                    return ERR_WRONG;
+            free(my_proc_list[c]);
+        }
+    }
+    
+    {
+        int num_io_procs = 3;
+        int component_count = TWO_COMPONENTS;
+        int num_procs_per_comp[TWO_COMPONENTS] = {THREE_PROCS, THREE_PROCS};
+        int proc_list_1[THREE_PROCS] = {8, 9, 10};
+        int proc_list_2[THREE_PROCS] = {11, 12, 13};
+        int *proc_list[TWO_COMPONENTS] = {proc_list_1, proc_list_2};
+        int *my_proc_list[TWO_COMPONENTS];
+        
+        if ((ret = determine_procs(num_io_procs, component_count, num_procs_per_comp,
+                                   (int **)proc_list, my_proc_list)))
+            return ret;
+        
+        /* Check results and free resources. */
+        for (int c = 0; c < TWO_COMPONENTS; c++)
+        {
+            for (int p = 0; p < THREE_PROCS; p++)
+                if (my_proc_list[c][p] != proc_list[c][p])
+                    return ERR_WRONG;
+            free(my_proc_list[c]);
+        }
+    }
+    
+    return PIO_NOERR;
+}
+
 /*
  * Test some list stuff for varlists.
  *
@@ -656,6 +748,9 @@ int main(int argc, char **argv)
             return ret;
 
         if ((ret = test_lists()))
+            return ret;
+
+        if ((ret = test_determine_procs()))
             return ret;
 
         if ((ret = test_varlists()))
