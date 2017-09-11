@@ -15,10 +15,6 @@
 /* The name of this test. */
 #define TEST_NAME "test_async_multicomp"
 
-/* The names of the variables created in test file. */
-#define SCALAR_VAR_NAME "scalar_var"
-#define TWOD_VAR_NAME "twod_var"
-
 /* Number of processors that will do IO. */
 #define NUM_IO_PROCS 1
 
@@ -34,12 +30,19 @@
 /* Number of vars in test file. */
 #define NVAR2 2
 
+/* The names of the variables created in test file. */
+#define SCALAR_VAR_NAME "scalar_var"
+#define TWOD_VAR_NAME "twod_var"
+
 /* Used to create dimension names. */
 #define DIM_NAME "dim_name"
 
 /* Dimension lengths. */
 #define DIM_0_LEN 2
 #define DIM_1_LEN 3
+
+/* Attribute name. */
+#define GLOBAL_ATT_NAME "global_att_name"
 
 /* Check a test file for correctness. */
 int check_test_file(int iosysid, int iotype, int my_rank, int my_comp_idx,
@@ -50,6 +53,8 @@ int check_test_file(int iosysid, int iotype, int my_rank, int my_comp_idx,
     int ndims;
     int ngatts;
     int unlimdimid;
+    PIO_Offset att_len;
+    char att_name[PIO_MAX_NAME + 1];
     char var_name[PIO_MAX_NAME + 1];
     char var_name_expected[PIO_MAX_NAME + 1];
     int dimid[NDIM2];
@@ -57,6 +62,7 @@ int check_test_file(int iosysid, int iotype, int my_rank, int my_comp_idx,
     int natts;
     int comp_idx_in;
     short data_2d[DIM_0_LEN * DIM_1_LEN];
+    signed char att_data;
     int ret;
 
     /* Open the test file. */
@@ -67,6 +73,17 @@ int check_test_file(int iosysid, int iotype, int my_rank, int my_comp_idx,
     if ((ret = PIOc_inq(ncid, &ndims, &nvars, &ngatts, &unlimdimid)))
         ERR(ret);
     if (ndims != 2 || nvars != 2 || ngatts != 1 || unlimdimid != -1)
+        ERR(ERR_WRONG);
+
+    /* Check the global attribute. */
+    sprintf(att_name, "%s_%d", GLOBAL_ATT_NAME, my_comp_idx);
+    if ((ret = PIOc_inq_att(ncid, NC_GLOBAL, att_name, &xtype, &att_len)))
+        ERR(ret);
+    if (xtype != PIO_BYTE || att_len != 1)
+        ERR(ERR_WRONG);
+    if ((ret = PIOc_get_att_schar(ncid, PIO_GLOBAL, att_name, &att_data)))
+        ERR(ret);
+    if (att_data != my_comp_idx)
         ERR(ERR_WRONG);
 
     /* Check the scalar variable metadata. */
@@ -109,7 +126,9 @@ int create_test_file(int iosysid, int iotype, int my_rank, int my_comp_idx, char
 {
     char iotype_name[NC_MAX_NAME + 1];
     int ncid;
+    signed char my_char_comp_idx = my_comp_idx;
     int varid[NVAR2];
+    char att_name[PIO_MAX_NAME + 1];
     char var_name[PIO_MAX_NAME + 1];
     char dim_name[PIO_MAX_NAME + 1];
     int dimid[NDIM2];
@@ -130,8 +149,8 @@ int create_test_file(int iosysid, int iotype, int my_rank, int my_comp_idx, char
         ERR(ret);
 
     /* Create a global attribute. */
-    signed char my_char_comp_idx = my_comp_idx;
-    if ((ret = PIOc_put_att_schar(ncid, PIO_GLOBAL, GLOBAL_ATT_NAME, PIO_BYTE, 1, &my_char_comp_idx)))
+    sprintf(att_name, "%s_%d", GLOBAL_ATT_NAME, my_comp_idx);
+    if ((ret = PIOc_put_att_schar(ncid, PIO_GLOBAL, att_name, PIO_BYTE, 1, &my_char_comp_idx)))
         ERR(ret);
 
     /* Define a scalar variable. */
