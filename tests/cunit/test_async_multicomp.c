@@ -27,17 +27,32 @@
 /* Number of computational components to create. */
 #define COMPONENT_COUNT 2
 
+/* Check a test file for correctness. */
+int check_test_file(int iosysid, int iotype, int my_rank, int my_comp_idx,
+                    const char *filename)
+{
+    int ncid;
+    int nvars;
+    int ndims;
+    int ngatts;
+    int ret;
+
+    /* Open the test file. */
+    if ((ret = PIOc_openfile2(iosysid, &ncid, &iotype, filename, PIO_NOWRITE)))
+        ERR(ret);
+
+    /* Close the test file. */
+    if ((ret = PIOc_closefile(ncid)))
+        ERR(ret);
+    return 0;
+}
+
 /* This creates an empty netCDF file in the specified format. */
 int create_test_file(int iosysid, int iotype, int my_rank, int my_comp_idx, char *filename)
 {
     char iotype_name[NC_MAX_NAME + 1];
     int ncid;
     int ret;
-
-    if (my_rank == 2)
-    {
-        return 0;
-    }
 
     /* Learn name of IOTYPE. */
     if ((ret = get_iotype_name(iotype, iotype_name)))
@@ -122,8 +137,8 @@ int main(int argc, char **argv)
                     ERR(ret);
 
                 /* Check the file for correctness. */
-                /* if ((ret = check_nc_sample(sample, iosysid[my_comp_idx], flavor[flv], filename, my_rank, NULL))) */
-                /*     ERR(ret); */
+                if ((ret = check_test_file(iosysid[my_comp_idx], flavor[flv], my_rank, my_comp_idx, filename)))
+                    ERR(ret);
             } /* next netcdf flavor */
 
             /* Finalize the IO system. Only call this from the computation tasks. */
