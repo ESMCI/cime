@@ -1037,6 +1037,55 @@ int test_files(int iosysid, int num_flavors, int *flavor, int my_rank)
     return PIO_NOERR;
 }
 
+/* Test empty file operations.
+ *
+ * @param iosysid the iosystem ID that will be used for the test.
+ * @param num_flavors the number of different IO types that will be tested.
+ * @param flavor an array of the valid IO types.
+ * @param my_rank 0-based rank of task.
+ * @returns 0 for success, error code otherwise.
+ */
+int test_empty_files(int iosysid, int num_flavors, int *flavor, int my_rank)
+{
+    int ncid, ncid2;
+    int ret;    /* Return code. */
+
+    /* Use PIO to create the example file in each of the four
+     * available ways. */
+    for (int fmt = 0; fmt < num_flavors; fmt++)
+    {
+        char filename[PIO_MAX_NAME + 1]; /* Test filename. */
+        char iotype_name[PIO_MAX_NAME + 1];
+
+        /* Create a filename. */
+        if ((ret = get_iotype_name(flavor[fmt], iotype_name)))
+            ERR(ret);
+        sprintf(filename, "%s_empty_%s.nc", TEST_NAME, iotype_name);
+        
+        if ((ret = PIOc_createfile(iosysid, &ncid, &flavor[fmt], filename, PIO_CLOBBER)))
+            ERR(ret);
+
+        /* End define mode. */
+        if ((ret = PIOc_enddef(ncid)))
+            ERR(ret);
+
+        /* Close the netCDF file. */
+        if ((ret = PIOc_closefile(ncid)))
+            ERR(ret);
+
+        /* Reopen the test file. */
+        if ((ret = PIOc_openfile2(iosysid, &ncid2, &flavor[fmt], filename, PIO_NOWRITE)))
+            ERR(ret);
+
+        /* Close the netCDF file. */
+        if ((ret = PIOc_closefile(ncid2)))
+            ERR(ret);
+
+    }
+
+    return PIO_NOERR;
+}
+
 /* Check that the fill values are correctly reported by find_var_fill().
  *
  * @param ncid the ID of the open test file.
@@ -2311,6 +2360,10 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
     /* Run these tests for non-async cases only. */
     if (!async)
     {
+
+        /* Test empty file stuff. */
+        if ((ret = test_empty_files(iosysid, num_flavors, flavor, my_rank)))
+            ERR(ret);
 
         /* Test decomposition internal functions. */
         if ((ret = test_decomp_internal(my_test_size, my_rank, iosysid, DIM_LEN, test_comm, async)))
