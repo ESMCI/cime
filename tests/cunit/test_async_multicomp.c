@@ -66,7 +66,7 @@ int check_test_file(int iosysid, int iotype, int my_rank, int my_comp_idx,
     /* Check file metadata. */
     if ((ret = PIOc_inq(ncid, &ndims, &nvars, &ngatts, &unlimdimid)))
         ERR(ret);
-    if (ndims != 2 || nvars != 2 || ngatts != 0 || unlimdimid != -1)
+    if (ndims != 2 || nvars != 2 || ngatts != 1 || unlimdimid != -1)
         ERR(ERR_WRONG);
 
     /* Check the scalar variable metadata. */
@@ -127,6 +127,11 @@ int create_test_file(int iosysid, int iotype, int my_rank, int my_comp_idx, char
 
     /* Create the file. */
     if ((ret = PIOc_createfile(iosysid, &ncid, &iotype, filename, NC_CLOBBER)))
+        ERR(ret);
+
+    /* Create a global attribute. */
+    signed char my_char_comp_idx = my_comp_idx;
+    if ((ret = PIOc_put_att_schar(ncid, PIO_GLOBAL, GLOBAL_ATT_NAME, PIO_BYTE, 1, &my_char_comp_idx)))
         ERR(ret);
 
     /* Define a scalar variable. */
