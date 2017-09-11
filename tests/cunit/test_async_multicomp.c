@@ -36,16 +36,25 @@ int check_test_file(int iosysid, int iotype, int my_rank, int my_comp_idx,
     int ndims;
     int ngatts;
     int unlimdimid;
+    char var_name[PIO_MAX_NAME + 1];
+    int xtype;
+    int natts;
     int ret;
 
     /* Open the test file. */
     if ((ret = PIOc_openfile2(iosysid, &ncid, &iotype, filename, PIO_NOWRITE)))
         ERR(ret);
 
-    /* Check metadata. */
+    /* Check file metadata. */
     if ((ret = PIOc_inq(ncid, &ndims, &nvars, &ngatts, &unlimdimid)))
         ERR(ret);
     if (ndims != 0 || nvars != 1 || ngatts != 0 || unlimdimid != -1)
+        ERR(ERR_WRONG);
+
+    /* Check the variable. */
+    if ((ret = PIOc_inq_var(ncid, 0, var_name, &xtype, &ndims, NULL, &natts)))
+        ERR(ret);
+    if (strcmp(var_name, VAR_NAME) || xtype != PIO_INT || ndims != 0 || natts != 0)
         ERR(ERR_WRONG);
 
     /* Close the test file. */
