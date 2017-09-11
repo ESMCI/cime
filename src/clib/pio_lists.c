@@ -235,7 +235,10 @@ int pio_num_iosystem(int *niosysid)
 
     /* Count the elements in the list. */
     for (iosystem_desc_t *c = pio_iosystem_list; c; c = c->next)
+    {
+        LOG((3, "pio_num_iosystem c->iosysid %d", c->iosysid));
         count++;
+    }
 
     /* Return count to caller via pointer. */
     if (niosysid)

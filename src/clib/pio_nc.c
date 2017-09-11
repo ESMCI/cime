@@ -1776,6 +1776,7 @@ int PIOc_set_fill(int ncid, int fillmode, int *old_modep)
             int msg = PIO_MSG_SET_FILL;
             int old_modep_present = old_modep ? 1 : 0;
 
+            LOG((3, "PIOc_set_fill about to send msg %d", msg));
             if (ios->compmaster == MPI_ROOT)
                 mpierr = MPI_Send(&msg, 1,MPI_INT, ios->ioroot, 1, ios->union_comm);
 

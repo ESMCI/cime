@@ -2487,6 +2487,7 @@ int pio_msg_handler2(int io_rank, int component_count, iosystem_desc_t **iosys,
     MPI_Status status;
     int index;
     int open_components = component_count;
+    int finalize = 0;
     int mpierr;
     int ret = PIO_NOERR;
 
@@ -2508,8 +2509,8 @@ int pio_msg_handler2(int io_rank, int component_count, iosystem_desc_t **iosys,
         }
     }
 
-    /* If the message is not -1, keep processing messages. */
-    while (msg != -1)
+    /* Keep processing messages until loop is broken. */
+    while (1)
     {
         LOG((3, "pio_msg_handler2 at top of loop"));
 
@@ -2521,10 +2522,12 @@ int pio_msg_handler2(int io_rank, int component_count, iosystem_desc_t **iosys,
             LOG((1, "about to call MPI_Waitany req[0] = %d MPI_REQUEST_NULL = %d",
                  req[0], MPI_REQUEST_NULL));
             for (int c = 0; c < component_count; c++)
-                LOG((2, "req[%d] = %d", c, req[c]));
+                LOG((3, "req[%d] = %d", c, req[c]));
             if ((mpierr = MPI_Waitany(component_count, req, &index, &status)))
                 return check_mpi(NULL, mpierr, __FILE__, __LINE__);
             LOG((3, "Waitany returned index = %d req[%d] = %d", index, index, req[index]));
+            for (int c = 0; c < component_count; c++)
+                LOG((3, "req[%d] = %d", c, req[c]));
         }
 
         /* Broadcast the index of the computational component that
@@ -2538,8 +2541,8 @@ int pio_msg_handler2(int io_rank, int component_count, iosystem_desc_t **iosys,
         my_iosys = iosys[index];
 
         /* Broadcast the msg value to the rest of the IO tasks. */
-        LOG((3, "about to call msg MPI_Bcast my_iosys->io_comm = %d", my_iosys->io_comm));
-        if ((mpierr = MPI_Bcast(&msg, 1, MPI_INT, 0, my_iosys->io_comm)))
+        LOG((3, "about to call msg MPI_Bcast io_comm = %d", io_comm));
+        if ((mpierr = MPI_Bcast(&msg, 1, MPI_INT, 0, io_comm)))
             return check_mpi(NULL, mpierr, __FILE__, __LINE__);
         LOG((1, "pio_msg_handler2 msg MPI_Bcast complete msg = %d", msg));
 
@@ -2689,8 +2692,8 @@ int pio_msg_handler2(int io_rank, int component_count, iosystem_desc_t **iosys,
             ret = set_fill_handler(my_iosys);
             break;
         case PIO_MSG_EXIT:
+            finalize++;
             ret = finalize_handler(my_iosys, index);
-            msg = -1;
             break;
         default:
             LOG((0, "unknown message received %d", msg));
@@ -2698,13 +2701,13 @@ int pio_msg_handler2(int io_rank, int component_count, iosystem_desc_t **iosys,
         }
 
         /* If an error was returned by the handler, exit. */
-        LOG((3, "pio_msg_handler2 ret = %d", ret));
+        LOG((3, "pio_msg_handler2 ret %d msg %d index %d io_rank %d", ret, msg, index, io_rank));
         if (ret)
             return pio_err(my_iosys, NULL, ret, __FILE__, __LINE__);            
 
         /* Listen for another msg from the component whose message we
          * just handled. */
-        if (!io_rank && msg != -1)
+        if (!io_rank && !finalize)
         {
             my_iosys = iosys[index];
             LOG((3, "pio_msg_handler2 about to Irecv index = %d comproot = %d union_comm = %d",
@@ -2719,9 +2722,13 @@ int pio_msg_handler2(int io_rank, int component_count, iosystem_desc_t **iosys,
              msg, open_components));
 
         /* If there are no more open components, exit. */
-        if (msg == -1)
+        if (finalize)
+        {
             if (--open_components)
-                msg = PIO_MSG_EXIT;
+                finalize = 0;
+            else
+                break;
+        }
     }
 
     LOG((3, "returning from pio_msg_handler2"));
