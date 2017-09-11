@@ -2349,10 +2349,6 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
     if ((ret = test_files(iosysid, num_flavors, flavor, my_rank)))
         ERR(ret);
 
-    /* Test empty file stuff. */
-    if ((ret = test_empty_files(iosysid, num_flavors, flavor, my_rank)))
-        ERR(ret);
-
     /* Test some misc stuff. */
     if ((ret = test_malloc_iodesc2(iosysid, my_rank)))
         ERR(ret);
@@ -2364,6 +2360,10 @@ int test_all(int iosysid, int num_flavors, int *flavor, int my_rank, MPI_Comm te
     /* Run these tests for non-async cases only. */
     if (!async)
     {
+
+        /* Test empty file stuff. */
+        if ((ret = test_empty_files(iosysid, num_flavors, flavor, my_rank)))
+            ERR(ret);
 
         /* Test decomposition internal functions. */
         if ((ret = test_decomp_internal(my_test_size, my_rank, iosysid, DIM_LEN, test_comm, async)))
