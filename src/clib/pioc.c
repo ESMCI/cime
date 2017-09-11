@@ -1079,8 +1079,11 @@ int PIOc_finalize(int iosysid)
     if ((ierr = pio_delete_iosystem_from_list(iosysid)))
         return pio_err(NULL, NULL, ierr, __FILE__, __LINE__);
 
-    LOG((1, "about to finalize logging"));
-    pio_finalize_logging();
+    if (niosysid == 1)
+    {
+        LOG((1, "about to finalize logging"));
+        pio_finalize_logging();
+    }
 
     LOG((2, "PIOc_finalize completed successfully"));
     return PIO_NOERR;

@@ -15,6 +15,9 @@
 /* The name of this test. */
 #define TEST_NAME "test_async_multicomp"
 
+/* The name of the variable created in test file. */
+#define VAR_NAME "Jack_London"
+
 /* Number of processors that will do IO. */
 #define NUM_IO_PROCS 1
 
@@ -46,6 +49,11 @@ int create_test_file(int iosysid, int iotype, int my_rank, int my_comp_idx, char
 
     /* Create the file. */
     if ((ret = PIOc_createfile(iosysid, &ncid, &iotype, filename, NC_CLOBBER)))
+        return ret;
+
+    /* Define a variable. */
+    int varid;
+    if ((ret = PIOc_def_var(ncid, VAR_NAME, PIO_INT, 0, NULL, &varid)))
         return ret;
 
     /* End define mode. */
