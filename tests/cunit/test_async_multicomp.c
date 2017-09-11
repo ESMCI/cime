@@ -35,11 +35,18 @@ int check_test_file(int iosysid, int iotype, int my_rank, int my_comp_idx,
     int nvars;
     int ndims;
     int ngatts;
+    int unlimdimid;
     int ret;
 
     /* Open the test file. */
     if ((ret = PIOc_openfile2(iosysid, &ncid, &iotype, filename, PIO_NOWRITE)))
         ERR(ret);
+
+    /* Check metadata. */
+    if ((ret = PIOc_inq(ncid, &ndims, &nvars, &ngatts, &unlimdimid)))
+        ERR(ret);
+    if (ndims != 0 || nvars != 1 || ngatts != 0 || unlimdimid != -1)
+        ERR(ERR_WRONG);
 
     /* Close the test file. */
     if ((ret = PIOc_closefile(ncid)))
