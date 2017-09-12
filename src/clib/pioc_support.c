@@ -2093,8 +2093,8 @@ int PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype, const char *filena
         return check_mpi(file, mpierr, __FILE__, __LINE__);
 
     /* Broadcast next ncid to all tasks from io root. */
-    if ((mpierr = MPI_Bcast(&pio_next_ncid, 1, MPI_INT, ios->ioroot, ios->union_comm)))
-        return check_mpi(file, mpierr, __FILE__, __LINE__);
+    /* if ((mpierr = MPI_Bcast(&pio_next_ncid, 1, MPI_INT, ios->ioroot, ios->union_comm))) */
+    /*     return check_mpi(file, mpierr, __FILE__, __LINE__); */
 
     /* Create the ncid that the user will see. This is necessary
      * because otherwise ncids will be reused if files are opened
