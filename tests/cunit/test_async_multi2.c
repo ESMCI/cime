@@ -1,8 +1,9 @@
 /*
- * This tests async with multiple computation components.
+ * This tests async with multiple computation components. This is a
+ * more comprehensive test than test_async_multicomp.c.
  *
  * @author Ed Hartnett
- * @date 8/25/17
+ * @date 9/12/17
  */
 #include <config.h>
 #include <pio.h>
@@ -13,7 +14,7 @@
 #define TARGET_NTASKS 3
 
 /* The name of this test. */
-#define TEST_NAME "test_async_multicomp"
+#define TEST_NAME "test_async_multi2"
 
 /* Number of processors that will do IO. */
 #define NUM_IO_PROCS 1
@@ -210,7 +211,7 @@ int main(int argc, char **argv)
 
     /* Initialize test. */
     if ((ret = pio_test_init2(argc, argv, &my_rank, &ntasks, TARGET_NTASKS, TARGET_NTASKS,
-                              -1, &test_comm)))
+                              3, &test_comm)))
         ERR(ERR_INIT);
 
     /* Is the current process a computation task? */    

@@ -12,7 +12,8 @@ PIO_TESTS='test_async_mpi test_spmd test_rearr test_intercomm2 test_async_simple
 'test_pioc_unlim test_pioc_putget test_pioc_fill test_darray test_darray_multi '\
 'test_darray_multivar test_darray_multivar2 test_darray_multivar3 test_darray_1d '\
 'test_darray_3d test_decomp_uneven test_decomps test_darray_async_simple '\
-'test_darray_async test_darray_async_many test_darray_2sync test_async_multicomp'
+'test_darray_async test_darray_async_many test_darray_2sync test_async_multicomp '\
+'test_async_multi2'
 
 for TEST in $PIO_TESTS
 do
