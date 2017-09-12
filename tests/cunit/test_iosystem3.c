@@ -150,7 +150,7 @@ int main(int argc, char **argv)
 
     /* Initialize test. */
     if ((ret = pio_test_init2(argc, argv, &my_rank, &ntasks, TARGET_NTASKS, TARGET_NTASKS,
-                              -1, &test_comm)))
+                              3, &test_comm)))
         ERR(ERR_INIT);
 
     /* Test code runs on TARGET_NTASKS tasks. The left over tasks do
@@ -170,7 +170,6 @@ int main(int argc, char **argv)
                 ERR(ret);
 
             /* Set the error handler. */
-            /*PIOc_Set_IOSystem_Error_Handling(iosysid_world, PIO_BCAST_ERROR);*/
             if ((ret = PIOc_set_iosystem_error_handling(iosysid_world, PIO_BCAST_ERROR, NULL)))
                 ERR(ret);
 
@@ -253,18 +252,21 @@ int main(int argc, char **argv)
 
             for (int i = 0; i < num_flavors; i++)
             {
-                char fname0[] = "pio_iosys_test_file0.nc";
-                char fname1[] = "pio_iosys_test_file1.nc";
-                char fname2[] = "pio_iosys_test_file2.nc";
+                char fname0[PIO_MAX_NAME + 1];
+                char fname1[PIO_MAX_NAME + 1];
+                char fname2[PIO_MAX_NAME + 1];
 
+                sprintf(fname0, "%s_file_0_iotype_%d_rearr_%d.nc", TEST_NAME, flavor[i], rearranger[r]);
                 if ((ret = create_file(test_comm, iosysid_world, flavor[i], fname0, ATTNAME,
                                        DIMNAME, my_rank)))
                     ERR(ret);
 
+                sprintf(fname1, "%s_file_1_iotype_%d_rearr_%d.nc", TEST_NAME, flavor[i], rearranger[r]);
                 if ((ret = create_file(test_comm, iosysid_world, flavor[i], fname1, ATTNAME,
                                        DIMNAME, my_rank)))
                     ERR(ret);
 
+                sprintf(fname2, "%s_file_2_iotype_%d_rearr_%d.nc", TEST_NAME, flavor[i], rearranger[r]);
                 if ((ret = create_file(test_comm, iosysid_world, flavor[i], fname2, ATTNAME,
                                        DIMNAME, my_rank)))
                     ERR(ret);
@@ -300,14 +302,14 @@ int main(int argc, char **argv)
                 }
 
                 /* Close the still-open files. */
-                if ((ret = PIOc_closefile(ncid)))
-                    ERR(ret);
                 if (even_comm != MPI_COMM_NULL)
                     if ((ret = PIOc_closefile(ncid2)))
                         ERR(ret);
                 if (overlap_comm != MPI_COMM_NULL)
                     if ((ret = PIOc_closefile(ncid3)))
                         ERR(ret);
+                if ((ret = PIOc_closefile(ncid)))
+                    ERR(ret);
 
             } /* next iotype */
         

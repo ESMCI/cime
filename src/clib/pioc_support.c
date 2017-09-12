@@ -1811,16 +1811,21 @@ int PIOc_createfile_int(int iosysid, int *ncidp, int *iotype, const char *filena
     }
 
     /* Broadcast writablility to all tasks. */
-    if ((mpierr = MPI_Bcast(&file->writable, 1, MPI_INT, ios->ioroot, ios->union_comm)))
+    if ((mpierr = MPI_Bcast(&file->writable, 1, MPI_INT, ios->ioroot, ios->my_comm)))
         return check_mpi(file, mpierr, __FILE__, __LINE__);
 
     /* Broadcast next ncid to all tasks from io root, necessary
      * because files may be opened on mutilple iosystems, causing the
      * underlying library to reuse ncids. Hilarious confusion
      * ensues. */
-    if ((mpierr = MPI_Bcast(&pio_next_ncid, 1, MPI_INT, ios->ioroot, ios->union_comm)))
-        return check_mpi(file, mpierr, __FILE__, __LINE__);
-
+    if (ios->async)
+    {
+        LOG((3, "createfile bcasting pio_next_ncid %d", pio_next_ncid));
+        if ((mpierr = MPI_Bcast(&pio_next_ncid, 1, MPI_INT, ios->ioroot, ios->my_comm)))
+            return check_mpi(file, mpierr, __FILE__, __LINE__);
+        LOG((3, "createfile bcast pio_next_ncid %d", pio_next_ncid));
+    }
+    
     /* Assign the PIO ncid. */
     file->pio_ncid = pio_next_ncid++;
     LOG((2, "file->fh = %d file->pio_ncid = %d", file->fh, file->pio_ncid));
@@ -2093,8 +2098,13 @@ int PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype, const char *filena
         return check_mpi(file, mpierr, __FILE__, __LINE__);
 
     /* Broadcast next ncid to all tasks from io root. */
-    /* if ((mpierr = MPI_Bcast(&pio_next_ncid, 1, MPI_INT, ios->ioroot, ios->union_comm))) */
-    /*     return check_mpi(file, mpierr, __FILE__, __LINE__); */
+    if (ios->async)
+    {
+        LOG((3, "open bcasting pio_next_ncid %d ios->ioroot %d", pio_next_ncid, ios->ioroot));
+        if ((mpierr = MPI_Bcast(&pio_next_ncid, 1, MPI_INT, ios->ioroot, ios->my_comm)))
+            return check_mpi(file, mpierr, __FILE__, __LINE__);
+        LOG((3, "open bcast pio_next_ncid %d", pio_next_ncid));
+    }
 
     /* Create the ncid that the user will see. This is necessary
      * because otherwise ncids will be reused if files are opened
