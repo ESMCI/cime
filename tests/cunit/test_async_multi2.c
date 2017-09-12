@@ -8,7 +8,6 @@
 #include <config.h>
 #include <pio.h>
 #include <pio_tests.h>
-#include <unistd.h>
 
 /* The number of tasks this test should run on. */
 #define TARGET_NTASKS 3
@@ -43,19 +42,59 @@
 #define DIM_1_LEN 3
 
 /* Attribute name. */
-#define GLOBAL_ATT_NAME "global_att_name"
+#define GLOBAL_ATT_NAME "global_att"
+
+/* Length of all attributes. */
+#define ATT_LEN 3
+
+#ifdef _NETCDF4
+#define NUM_TYPES_TO_TEST 11
+int pio_type[NUM_TYPES_TO_TEST] = {PIO_BYTE, PIO_CHAR, PIO_SHORT, PIO_INT, PIO_FLOAT, PIO_DOUBLE,
+                                   PIO_UBYTE, PIO_USHORT, PIO_UINT, PIO_INT64, PIO_UINT64};
+#else
+#define NUM_TYPES_TO_TEST 6
+int pio_type[NUM_TYPES_TO_TEST] = {PIO_BYTE, PIO_CHAR, PIO_SHORT, PIO_INT, PIO_FLOAT, PIO_DOUBLE};
+#endif /* _NETCDF4 */
+
+/* Attribute test data. */
+signed char byte_att_data[ATT_LEN] = {NC_MAX_BYTE, NC_MIN_BYTE, NC_MAX_BYTE};
+char char_att_data[ATT_LEN] = {NC_MAX_CHAR, 0, NC_MAX_CHAR};
+short short_att_data[ATT_LEN] = {NC_MAX_SHORT, NC_MIN_SHORT, NC_MAX_SHORT};
+int int_att_data[ATT_LEN] = {NC_MAX_INT, NC_MIN_INT, NC_MAX_INT};
+float float_att_data[ATT_LEN] = {NC_MAX_FLOAT, NC_MIN_FLOAT, NC_MAX_FLOAT};
+double double_att_data[ATT_LEN] = {NC_MAX_DOUBLE, NC_MIN_DOUBLE, NC_MAX_DOUBLE};
+#ifdef _NETCDF4
+unsigned char ubyte_att_data[ATT_LEN] = {NC_MAX_UBYTE, 0, NC_MAX_UBYTE};
+unsigned short ushort_att_data[ATT_LEN] = {NC_MAX_USHORT, 0, NC_MAX_USHORT};
+unsigned int uint_att_data[ATT_LEN] = {NC_MAX_UINT, 0, NC_MAX_UINT};
+long long int64_att_data[ATT_LEN] = {NC_MAX_INT64, NC_MIN_INT64, NC_MAX_INT64};
+unsigned long long uint64_att_data[ATT_LEN] = {NC_MAX_UINT64, 0, NC_MAX_UINT64};
+#endif /* _NETCDF4 */
+
+/* Pointers to the data. */
+#ifdef _NETCDF4
+void *att_data[NUM_TYPES_TO_TEST] = {&byte_att_data, &char_att_data, &short_att_data,
+                                     int_att_data, float_att_data, double_att_data,
+                                     ubyte_att_data, ushort_att_data, uint_att_data,
+                                     int64_att_data, uint64_att_data};
+#else
+void *att_data[NUM_TYPES_TO_TEST] = {&byte_att_data, &char_att_data, &short_att_data,
+                                     int_att_data, float_att_data, double_att_data};
+#endif /* _NETCDF4 */
+
+
 
 /* Check a test file for correctness. */
 int check_test_file(int iosysid, int iotype, int my_rank, int my_comp_idx,
-                    const char *filename)
+                    const char *filename, int verbose, int num_types)
 {
     int ncid;
     int nvars;
     int ndims;
     int ngatts;
     int unlimdimid;
-    PIO_Offset att_len;
-    char att_name[PIO_MAX_NAME + 1];
+    /* PIO_Offset att_len; */
+    /* char att_name[PIO_MAX_NAME + 1]; */
     char var_name[PIO_MAX_NAME + 1];
     char var_name_expected[PIO_MAX_NAME + 1];
     int dimid[NDIM2];
@@ -63,7 +102,6 @@ int check_test_file(int iosysid, int iotype, int my_rank, int my_comp_idx,
     int natts;
     int comp_idx_in;
     short data_2d[DIM_0_LEN * DIM_1_LEN];
-    signed char att_data;
     int ret;
 
     /* Open the test file. */
@@ -73,19 +111,35 @@ int check_test_file(int iosysid, int iotype, int my_rank, int my_comp_idx,
     /* Check file metadata. */
     if ((ret = PIOc_inq(ncid, &ndims, &nvars, &ngatts, &unlimdimid)))
         ERR(ret);
-    if (ndims != 2 || nvars != 2 || ngatts != 1 || unlimdimid != -1)
+    if (ndims != 2 || nvars != 2 || ngatts != num_types || unlimdimid != -1)
         ERR(ERR_WRONG);
 
-    /* Check the global attribute. */
-    sprintf(att_name, "%s_%d", GLOBAL_ATT_NAME, my_comp_idx);
-    if ((ret = PIOc_inq_att(ncid, NC_GLOBAL, att_name, &xtype, &att_len)))
-        ERR(ret);
-    if (xtype != PIO_BYTE || att_len != 1)
-        ERR(ERR_WRONG);
-    if ((ret = PIOc_get_att_schar(ncid, PIO_GLOBAL, att_name, &att_data)))
-        ERR(ret);
-    if (att_data != my_comp_idx)
-        ERR(ERR_WRONG);
+    /* Check the global attributes. */
+    for (int t = 0; t < num_types; t++)
+    {
+        PIO_Offset type_size;
+        PIO_Offset att_len_in;
+        void *att_data_in;
+        char att_name[PIO_MAX_NAME + 1];
+        
+        sprintf(att_name, "%s_cmp_%d_type_%d", GLOBAL_ATT_NAME, my_comp_idx, pio_type[t]);
+        if ((ret = PIOc_inq_att(ncid, NC_GLOBAL, att_name, &xtype, &att_len_in)))
+            ERR(ret);
+        if (xtype != pio_type[t] || att_len_in != ATT_LEN)
+            ERR(ERR_WRONG);
+        if ((ret = PIOc_inq_type(ncid, xtype, NULL, &type_size)))
+            ERR(ret);
+        if (!(att_data_in = malloc(type_size * ATT_LEN)))
+            ERR(ERR_AWFUL);
+        if (verbose)
+            printf("my_rank %d t %d pio_type[t] %d type_size %lld\n", my_rank, t, pio_type[t],
+                   type_size);
+        if ((ret = PIOc_get_att(ncid, PIO_GLOBAL, att_name, att_data_in)))
+            ERR(ret);
+        if (memcmp(att_data_in, att_data[t], type_size * ATT_LEN))
+            ERR(ERR_WRONG);
+        free(att_data_in);
+    }
 
     /* Check the scalar variable metadata. */
     if ((ret = PIOc_inq_var(ncid, 0, var_name, &xtype, &ndims, NULL, &natts)))
@@ -123,11 +177,11 @@ int check_test_file(int iosysid, int iotype, int my_rank, int my_comp_idx,
 }
 
 /* This creates an empty netCDF file in the specified format. */
-int create_test_file(int iosysid, int iotype, int my_rank, int my_comp_idx, char *filename)
+int create_test_file(int iosysid, int iotype, int my_rank, int my_comp_idx,
+                     char *filename, int verbose, int num_types)
 {
     char iotype_name[NC_MAX_NAME + 1];
     int ncid;
-    signed char my_char_comp_idx = my_comp_idx;
     int varid[NVAR2];
     char att_name[PIO_MAX_NAME + 1];
     char var_name[PIO_MAX_NAME + 1];
@@ -143,16 +197,20 @@ int create_test_file(int iosysid, int iotype, int my_rank, int my_comp_idx, char
     
     /* Create a filename. */
     sprintf(filename, "%s_%s_cmp_%d.nc", TEST_NAME, iotype_name, my_comp_idx);
-    printf("my_rank %d creating test file %s for iosysid %d\n", my_rank, filename, iosysid);
+    if (verbose)
+        printf("my_rank %d creating test file %s for iosysid %d\n", my_rank, filename, iosysid);
 
     /* Create the file. */
     if ((ret = PIOc_createfile(iosysid, &ncid, &iotype, filename, NC_CLOBBER)))
         ERR(ret);
 
-    /* Create a global attribute. */
-    sprintf(att_name, "%s_%d", GLOBAL_ATT_NAME, my_comp_idx);
-    if ((ret = PIOc_put_att_schar(ncid, PIO_GLOBAL, att_name, PIO_BYTE, 1, &my_char_comp_idx)))
-        ERR(ret);
+    /* Create a global attributes of all types. */
+    for (int t = 0; t < num_types; t++)
+    {
+        sprintf(att_name, "%s_cmp_%d_type_%d", GLOBAL_ATT_NAME, my_comp_idx, pio_type[t]);
+        if ((ret = PIOc_put_att(ncid, PIO_GLOBAL, att_name, pio_type[t], ATT_LEN, att_data[t])))
+            ERR(ret);
+    }
 
     /* Define a scalar variable. */
     sprintf(var_name, "%s_%d", SCALAR_VAR_NAME, my_comp_idx);
@@ -199,15 +257,16 @@ int main(int argc, char **argv)
     int my_rank; /* Zero-based rank of processor. */
     int ntasks; /* Number of processors involved in current execution. */
     int iosysid[COMPONENT_COUNT]; /* The ID for the parallel I/O system. */
-    int num_flavors; /* Number of PIO netCDF flavors in this build. */
-    int flavor[NUM_FLAVORS]; /* iotypes for the supported netCDF IO flavors. */
-    int ret; /* Return code. */
+    int num_iotypes; /* Number of PIO netCDF iotypes in this build. */
+    int iotype[NUM_IOTYPES]; /* iotypes for the supported netCDF IO iotypes. */
     int num_procs[COMPONENT_COUNT] = {1, 1}; /* Num procs for IO and computation. */
     int io_proc_list[NUM_IO_PROCS] = {0};
     int comp_proc_list1[NUM_COMP_PROCS] = {1};
     int comp_proc_list2[NUM_COMP_PROCS] = {2};
     int *proc_list[COMPONENT_COUNT] = {comp_proc_list1, comp_proc_list2};
     MPI_Comm test_comm;
+    int verbose = 1;
+    int ret; /* Return code. */
 
     /* Initialize test. */
     if ((ret = pio_test_init2(argc, argv, &my_rank, &ntasks, TARGET_NTASKS, TARGET_NTASKS,
@@ -221,7 +280,7 @@ int main(int argc, char **argv)
     if (my_rank < TARGET_NTASKS)
     {
         /* Figure out iotypes. */
-        if ((ret = get_iotypes(&num_flavors, flavor)))
+        if ((ret = get_iotypes(&num_iotypes, iotype)))
             ERR(ret);
 
         /* Initialize the IO system. The IO task will not return from
@@ -230,27 +289,31 @@ int main(int argc, char **argv)
         if ((ret = PIOc_init_async(test_comm, NUM_IO_PROCS, io_proc_list, COMPONENT_COUNT,
                                    num_procs, (int **)proc_list, NULL, NULL, PIO_REARR_BOX, iosysid)))
             ERR(ERR_INIT);
-        for (int c = 0; c < COMPONENT_COUNT; c++)
-            printf("my_rank %d cmp %d iosysid[%d] %d\n", my_rank, c, c, iosysid[c]);
+        if (verbose)
+            for (int c = 0; c < COMPONENT_COUNT; c++)
+                printf("my_rank %d cmp %d iosysid[%d] %d\n", my_rank, c, c, iosysid[c]);
 
         /* All the netCDF calls are only executed on the computation
          * tasks. */
         if (comp_task)
         {
-            /* for (int flv = 0; flv < num_flavors; flv++) */
-            for (int flv = 0; flv < 1; flv++)
+            for (int i = 0; i < num_iotypes; i++)
             {
                 char filename[NC_MAX_NAME + 1]; /* Test filename. */
                 int my_comp_idx = my_rank - 1; /* Index in iosysid array. */
+                int num_types = (iotype[i] == PIO_IOTYPE_NETCDF4C ||
+                                 iotype[i] == PIO_IOTYPE_NETCDF4P) ? NUM_NETCDF_TYPES - 1 : NUM_CLASSIC_TYPES;
 
                 /* Create sample file. */
-                if ((ret = create_test_file(iosysid[my_comp_idx], flavor[flv], my_rank, my_comp_idx, filename)))
+                if ((ret = create_test_file(iosysid[my_comp_idx], iotype[i], my_rank, my_comp_idx,
+                                            filename, verbose, num_types)))
                     ERR(ret);
 
                 /* Check the file for correctness. */
-                if ((ret = check_test_file(iosysid[my_comp_idx], flavor[flv], my_rank, my_comp_idx, filename)))
+                if ((ret = check_test_file(iosysid[my_comp_idx], iotype[i], my_rank, my_comp_idx,
+                                           filename, verbose, num_types)))
                     ERR(ret);
-            } /* next netcdf flavor */
+            } /* next netcdf iotype */
 
             /* Finalize the IO system. Only call this from the computation tasks. */
             for (int c = 0; c < COMPONENT_COUNT; c++)
