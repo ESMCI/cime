@@ -1814,9 +1814,14 @@ int PIOc_createfile_int(int iosysid, int *ncidp, int *iotype, const char *filena
     if ((mpierr = MPI_Bcast(&file->writable, 1, MPI_INT, ios->ioroot, ios->union_comm)))
         return check_mpi(file, mpierr, __FILE__, __LINE__);
 
-    /* Assign the PIO ncid, necessary because files may be opened
-     * on mutilple iosystems, causing the underlying library to
-     * reuse ncids. Hilarious confusion ensues. */
+    /* Broadcast next ncid to all tasks from io root, necessary
+     * because files may be opened on mutilple iosystems, causing the
+     * underlying library to reuse ncids. Hilarious confusion
+     * ensues. */
+    if ((mpierr = MPI_Bcast(&pio_next_ncid, 1, MPI_INT, ios->ioroot, ios->union_comm)))
+        return check_mpi(file, mpierr, __FILE__, __LINE__);
+
+    /* Assign the PIO ncid. */
     file->pio_ncid = pio_next_ncid++;
     LOG((2, "file->fh = %d file->pio_ncid = %d", file->fh, file->pio_ncid));
 
@@ -2086,6 +2091,10 @@ int PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype, const char *filena
     /* Broadcast writability to all tasks. */
     if ((mpierr = MPI_Bcast(&file->writable, 1, MPI_INT, ios->ioroot, ios->my_comm)))
         return check_mpi(file, mpierr, __FILE__, __LINE__);
+
+    /* Broadcast next ncid to all tasks from io root. */
+    /* if ((mpierr = MPI_Bcast(&pio_next_ncid, 1, MPI_INT, ios->ioroot, ios->union_comm))) */
+    /*     return check_mpi(file, mpierr, __FILE__, __LINE__); */
 
     /* Create the ncid that the user will see. This is necessary
      * because otherwise ncids will be reused if files are opened
