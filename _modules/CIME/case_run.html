@@ -66,7 +66,7 @@
   <h1>Source code for CIME.case_run</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="k">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">CIME.case_submit</span>               <span class="k">import</span> <span class="n">submit</span>
-<span class="kn">from</span> <span class="nn">CIME.utils</span>                     <span class="k">import</span> <span class="n">gzip_existing_file</span><span class="p">,</span> <span class="n">new_lid</span><span class="p">,</span> <span class="n">run_and_log_case_status</span>
+<span class="kn">from</span> <span class="nn">CIME.utils</span>                     <span class="k">import</span> <span class="n">gzip_existing_file</span><span class="p">,</span> <span class="n">new_lid</span><span class="p">,</span> <span class="n">run_and_log_case_status</span><span class="p">,</span> <span class="n">get_timestamp</span>
 <span class="kn">from</span> <span class="nn">CIME.check_lockedfiles</span>         <span class="k">import</span> <span class="n">check_lockedfiles</span>
 <span class="kn">from</span> <span class="nn">CIME.get_timing</span>                <span class="k">import</span> <span class="n">get_timing</span>
 <span class="kn">from</span> <span class="nn">CIME.provenance</span>                <span class="k">import</span> <span class="n">save_prerun_provenance</span><span class="p">,</span> <span class="n">save_postrun_provenance</span>
@@ -94,7 +94,7 @@
         <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">env_mach_pes</span><span class="p">,</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">.</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">env_mach_pes</span><span class="p">,</span> <span class="n">lid</span><span class="p">))</span>
 
     <span class="c1"># check for locked files.</span>
-    <span class="n">check_lockedfiles</span><span class="p">(</span><span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASEROOT&quot;</span><span class="p">))</span>
+    <span class="n">check_lockedfiles</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;check_lockedfiles OK&quot;</span><span class="p">)</span>
 
     <span class="c1"># check that build is done</span>
@@ -218,21 +218,34 @@
 
     <span class="n">rundir</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUNDIR&quot;</span><span class="p">)</span>
     <span class="n">model</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MODEL&quot;</span><span class="p">)</span>
+    <span class="n">cpl_ninst</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MULTI_DRIVER&quot;</span><span class="p">):</span>
+        <span class="n">cpl_ninst</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;NINST_MAX&quot;</span><span class="p">)</span>
+    <span class="n">cpl_logs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="n">cpl_ninst</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">inst</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">cpl_ninst</span><span class="p">):</span>
+            <span class="n">cpl_logs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="s2">&quot;cpl_</span><span class="si">%04d</span><span class="s2">.log.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">inst</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">lid</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">cpl_logs</span> <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="s2">&quot;cpl&quot;</span> <span class="o">+</span> <span class="s2">&quot;.log.&quot;</span> <span class="o">+</span> <span class="n">lid</span><span class="p">)]</span>
+    <span class="n">cpl_logfile</span> <span class="o">=</span> <span class="n">cpl_logs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
     <span class="c1"># find the last model.log and cpl.log</span>
     <span class="n">model_logfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="n">model</span> <span class="o">+</span> <span class="s2">&quot;.log.&quot;</span> <span class="o">+</span> <span class="n">lid</span><span class="p">)</span>
-    <span class="n">cpl_logfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="s2">&quot;cpl&quot;</span> <span class="o">+</span> <span class="s2">&quot;.log.&quot;</span> <span class="o">+</span> <span class="n">lid</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">model_logfile</span><span class="p">):</span>
         <span class="n">expect</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;Model did not complete, no </span><span class="si">{}</span><span class="s2"> log file &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">model_logfile</span><span class="p">))</span>
-    <span class="k">elif</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">cpl_logfile</span><span class="p">):</span>
-        <span class="n">expect</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;Model did not complete, no cpl log file &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cpl_logfile</span><span class="p">))</span>
     <span class="k">elif</span> <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">model_logfile</span><span class="p">)</span><span class="o">.</span><span class="n">st_size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">expect</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;Run FAILED&quot;</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">cpl_logfile</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
-            <span class="k">if</span> <span class="s1">&#39;SUCCESSFUL TERMINATION&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">fd</span><span class="o">.</span><span class="n">read</span><span class="p">():</span>
-                <span class="n">expect</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;Model did not complete - see </span><span class="si">{}</span><span class="s2"> </span><span class="se">\n</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cpl_logfile</span><span class="p">))</span></div>
+        <span class="n">count_ok</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">cpl_logfile</span> <span class="ow">in</span> <span class="n">cpl_logs</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">cpl_logfile</span><span class="p">):</span>
+                <span class="k">break</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">cpl_logfile</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
+                <span class="k">if</span> <span class="s1">&#39;SUCCESSFUL TERMINATION&#39;</span> <span class="ow">in</span> <span class="n">fd</span><span class="o">.</span><span class="n">read</span><span class="p">():</span>
+                    <span class="n">count_ok</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">count_ok</span> <span class="o">!=</span> <span class="n">cpl_ninst</span><span class="p">:</span>
+            <span class="n">expect</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;Model did not complete - see </span><span class="si">{}</span><span class="s2"> </span><span class="se">\n</span><span class="s2"> &quot;</span> <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cpl_logfile</span><span class="p">))</span></div>
 
 <span class="c1">###############################################################################</span>
 <div class="viewcode-block" id="save_logs"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.case_run.save_logs">[docs]</a><span class="k">def</span> <span class="nf">save_logs</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">lid</span><span class="p">):</span>
@@ -310,7 +323,7 @@
            <span class="s2">&quot;You are not calling the run script via the submit script. &quot;</span>
            <span class="s2">&quot;As a result, short-term archiving will not be called automatically.&quot;</span>
            <span class="s2">&quot;Please submit your run using the submit script like so:&quot;</span>
-           <span class="s2">&quot; ./case.submit&quot;</span><span class="p">)</span>
+           <span class="s2">&quot; ./case.submit Time: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">get_timestamp</span><span class="p">()))</span>
 
     <span class="c1"># Forces user to use case.submit if they re-submit</span>
     <span class="k">if</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;TESTCASE&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>

@@ -72,16 +72,30 @@
 
 <span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="k">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">CIME.case_submit</span>               <span class="k">import</span> <span class="n">submit</span>
-<span class="kn">from</span> <span class="nn">CIME.XML.env_archive</span>           <span class="k">import</span> <span class="n">EnvArchive</span>
-<span class="kn">from</span> <span class="nn">CIME.utils</span>                     <span class="k">import</span> <span class="n">run_and_log_case_status</span><span class="p">,</span> <span class="n">ls_sorted_by_mtime</span>
+<span class="kn">from</span> <span class="nn">CIME.utils</span>                     <span class="k">import</span> <span class="n">run_and_log_case_status</span><span class="p">,</span> <span class="n">ls_sorted_by_mtime</span><span class="p">,</span> <span class="n">symlink_force</span>
 <span class="kn">from</span> <span class="nn">os.path</span>                        <span class="k">import</span> <span class="n">isdir</span><span class="p">,</span> <span class="n">join</span>
 <span class="kn">import</span> <span class="nn">datetime</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 <span class="c1">###############################################################################</span>
+<span class="k">def</span> <span class="nf">_get_archive_file_fn</span><span class="p">(</span><span class="n">copy_only</span><span class="p">):</span>
+<span class="c1">###############################################################################</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns the function to use for archiving some files</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">shutil</span><span class="o">.</span><span class="n">copyfile</span> <span class="k">if</span> <span class="n">copy_only</span> <span class="k">else</span> <span class="n">shutil</span><span class="o">.</span><span class="n">move</span>
+
+
+<span class="c1">###############################################################################</span>
 <span class="k">def</span> <span class="nf">_get_datenames</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">last_date</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="c1">###############################################################################</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a list of datenames giving the dates of cpl restart files</span>
+
+<span class="sd">    If there are no cpl restart files, this will return []</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">if</span> <span class="n">last_date</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">last</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">last_date</span><span class="p">,</span> <span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span>
@@ -91,9 +105,9 @@
     <span class="n">rundir</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">&#39;RUNDIR&#39;</span><span class="p">)</span>
     <span class="n">expect</span><span class="p">(</span><span class="n">isdir</span><span class="p">(</span><span class="n">rundir</span><span class="p">),</span> <span class="s1">&#39;Cannot open directory </span><span class="si">{}</span><span class="s1"> &#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rundir</span><span class="p">))</span>
     <span class="n">casename</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASE&quot;</span><span class="p">)</span>
-    <span class="n">files</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="n">casename</span> <span class="o">+</span> <span class="s1">&#39;.cpl.r*.nc&#39;</span><span class="p">)))</span>
+    <span class="n">files</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="n">casename</span> <span class="o">+</span> <span class="s1">&#39;.cpl*.r*.nc&#39;</span><span class="p">)))</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">files</span><span class="p">:</span>
-        <span class="n">expect</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="s1">&#39;Cannot find a </span><span class="si">{}</span><span class="s1">.cpl.r.*.nc file in directory </span><span class="si">{}</span><span class="s1"> &#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">casename</span><span class="p">,</span> <span class="n">rundir</span><span class="p">))</span>
+        <span class="n">expect</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="s1">&#39;Cannot find a </span><span class="si">{}</span><span class="s1">.cpl*.r.*.nc file in directory </span><span class="si">{}</span><span class="s1"> &#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">casename</span><span class="p">,</span> <span class="n">rundir</span><span class="p">))</span>
     <span class="n">datenames</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
         <span class="n">names</span> <span class="o">=</span> <span class="n">filename</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
@@ -112,10 +126,7 @@
 <span class="k">def</span> <span class="nf">_get_ninst_info</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">compclass</span><span class="p">):</span>
 <span class="c1">###############################################################################</span>
 
-    <span class="k">if</span> <span class="n">compclass</span> <span class="o">!=</span> <span class="s1">&#39;cpl&#39;</span><span class="p">:</span>
-        <span class="n">ninst</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">&#39;NINST_&#39;</span> <span class="o">+</span> <span class="n">compclass</span><span class="o">.</span><span class="n">upper</span><span class="p">())</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">ninst</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">ninst</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">&#39;NINST_&#39;</span> <span class="o">+</span> <span class="n">compclass</span><span class="o">.</span><span class="n">upper</span><span class="p">())</span>
     <span class="n">ninst_strings</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">if</span> <span class="n">ninst</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">ninst</span> <span class="o">=</span> <span class="mi">1</span>
@@ -128,6 +139,22 @@
     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;ninst and ninst_strings are: </span><span class="si">{}</span><span class="s2"> and </span><span class="si">{}</span><span class="s2"> for </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ninst</span><span class="p">,</span> <span class="n">ninst_strings</span><span class="p">,</span> <span class="n">compclass</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">ninst</span><span class="p">,</span> <span class="n">ninst_strings</span>
 
+<span class="c1">###############################################################################</span>
+<span class="k">def</span> <span class="nf">_get_component_archive_entries</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">archive</span><span class="p">):</span>
+<span class="c1">###############################################################################</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Each time this is generator function is called, it yields a tuple</span>
+<span class="sd">    (archive_entry, compname, compclass) for one component in this</span>
+<span class="sd">    case&#39;s compset components.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">compset_comps</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_compset_components</span><span class="p">()</span>
+    <span class="n">compset_comps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;cpl&#39;</span><span class="p">)</span>
+    <span class="n">compset_comps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;dart&#39;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">compname</span> <span class="ow">in</span> <span class="n">compset_comps</span><span class="p">:</span>
+        <span class="n">archive_entry</span> <span class="o">=</span> <span class="n">archive</span><span class="o">.</span><span class="n">get_entry</span><span class="p">(</span><span class="n">compname</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">archive_entry</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">yield</span><span class="p">(</span><span class="n">archive_entry</span><span class="p">,</span> <span class="n">compname</span><span class="p">,</span> <span class="n">archive_entry</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;compclass&quot;</span><span class="p">))</span>
 
 <span class="c1">###############################################################################</span>
 <span class="k">def</span> <span class="nf">_archive_rpointer_files</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">archive</span><span class="p">,</span> <span class="n">archive_entry</span><span class="p">,</span> <span class="n">archive_restdir</span><span class="p">,</span>
@@ -288,16 +315,53 @@
     <span class="k">return</span> <span class="n">histfiles</span></div>
 
 <span class="c1">###############################################################################</span>
-<span class="k">def</span> <span class="nf">_archive_restarts</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">archive</span><span class="p">,</span> <span class="n">archive_entry</span><span class="p">,</span>
-                      <span class="n">compclass</span><span class="p">,</span> <span class="n">compname</span><span class="p">,</span> <span class="n">datename</span><span class="p">,</span> <span class="n">datename_is_last</span><span class="p">,</span>
-                      <span class="n">archive_file_fn</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_archive_restarts_date</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">archive</span><span class="p">,</span>
+                           <span class="n">datename</span><span class="p">,</span> <span class="n">datename_is_last</span><span class="p">,</span>
+                           <span class="n">archive_restdir</span><span class="p">,</span> <span class="n">archive_file_fn</span><span class="p">,</span>
+                           <span class="n">link_to_last_restart_files</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="c1">###############################################################################</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Archive restart files for a single date</span>
 
-    <span class="c1"># determine directory for archiving restarts based on datename</span>
-    <span class="n">dout_s_root</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;DOUT_S_ROOT&quot;</span><span class="p">)</span>
+<span class="sd">    Returns a dictionary of histfiles that need saving in the run</span>
+<span class="sd">    directory, indexed by compname</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;-------------------------------------------&#39;</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Archiving restarts for date </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">datename</span><span class="p">))</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;-------------------------------------------&#39;</span><span class="p">)</span>
+
+    <span class="n">histfiles_savein_rundir_by_compname</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">for</span> <span class="p">(</span><span class="n">archive_entry</span><span class="p">,</span> <span class="n">compname</span><span class="p">,</span> <span class="n">compclass</span><span class="p">)</span> <span class="ow">in</span> <span class="n">_get_component_archive_entries</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">archive</span><span class="p">):</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Archiving restarts for </span><span class="si">{}</span><span class="s1"> (</span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">compname</span><span class="p">,</span> <span class="n">compclass</span><span class="p">))</span>
+
+        <span class="c1"># archive restarts</span>
+        <span class="n">histfiles_savein_rundir</span> <span class="o">=</span> <span class="n">_archive_restarts_date_comp</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">archive</span><span class="p">,</span> <span class="n">archive_entry</span><span class="p">,</span>
+                                                              <span class="n">compclass</span><span class="p">,</span> <span class="n">compname</span><span class="p">,</span>
+                                                              <span class="n">datename</span><span class="p">,</span> <span class="n">datename_is_last</span><span class="p">,</span>
+                                                              <span class="n">archive_restdir</span><span class="p">,</span> <span class="n">archive_file_fn</span><span class="p">,</span>
+                                                              <span class="n">link_to_last_restart_files</span><span class="p">)</span>
+        <span class="n">histfiles_savein_rundir_by_compname</span><span class="p">[</span><span class="n">compname</span><span class="p">]</span> <span class="o">=</span> <span class="n">histfiles_savein_rundir</span>
+
+    <span class="k">return</span> <span class="n">histfiles_savein_rundir_by_compname</span>
+
+<span class="c1">###############################################################################</span>
+<span class="k">def</span> <span class="nf">_archive_restarts_date_comp</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">archive</span><span class="p">,</span> <span class="n">archive_entry</span><span class="p">,</span>
+                                <span class="n">compclass</span><span class="p">,</span> <span class="n">compname</span><span class="p">,</span> <span class="n">datename</span><span class="p">,</span> <span class="n">datename_is_last</span><span class="p">,</span>
+                                <span class="n">archive_restdir</span><span class="p">,</span> <span class="n">archive_file_fn</span><span class="p">,</span>
+                                <span class="n">link_to_last_restart_files</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="c1">###############################################################################</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Archive restart files for a single date and single component</span>
+
+<span class="sd">    If link_to_last_restart_files is True, then make a symlink to the</span>
+<span class="sd">    last set of restart files (i.e., the set with datename_is_last</span>
+<span class="sd">    True); if False (the default), copy them. (This has no effect on the</span>
+<span class="sd">    history files that are associated with these restart files.)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">rundir</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUNDIR&quot;</span><span class="p">)</span>
     <span class="n">casename</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASE&quot;</span><span class="p">)</span>
-    <span class="n">archive_restdir</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">dout_s_root</span><span class="p">,</span> <span class="s1">&#39;rest&#39;</span><span class="p">,</span> <span class="n">datename</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">datename_is_last</span> <span class="ow">or</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">&#39;DOUT_S_SAVE_INTERIM_RESTART_FILES&#39;</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">archive_restdir</span><span class="p">):</span>
             <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">archive_restdir</span><span class="p">)</span>
@@ -312,6 +376,14 @@
     <span class="c1"># move all but latest restart files into the archive restart directory</span>
     <span class="c1"># copy latest restart files to archive restart directory</span>
     <span class="n">histfiles_savein_rundir</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c1"># determine function to use for last set of restart files</span>
+    <span class="k">if</span> <span class="n">link_to_last_restart_files</span><span class="p">:</span>
+        <span class="n">last_restart_file_fn</span> <span class="o">=</span> <span class="n">symlink_force</span>
+        <span class="n">last_restart_file_fn_msg</span> <span class="o">=</span> <span class="s2">&quot;linking&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">last_restart_file_fn</span> <span class="o">=</span> <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span>
+        <span class="n">last_restart_file_fn_msg</span> <span class="o">=</span> <span class="s2">&quot;copying&quot;</span>
 
     <span class="c1"># get file_extension suffixes</span>
     <span class="k">for</span> <span class="n">suffix</span> <span class="ow">in</span> <span class="n">archive</span><span class="o">.</span><span class="n">get_rest_file_extensions</span><span class="p">(</span><span class="n">archive_entry</span><span class="p">):</span>
@@ -357,8 +429,9 @@
                 <span class="k">if</span> <span class="n">datename_is_last</span><span class="p">:</span>
                     <span class="n">srcfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="n">restfile</span><span class="p">)</span>
                     <span class="n">destfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">archive_restdir</span><span class="p">,</span> <span class="n">restfile</span><span class="p">)</span>
-                    <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">srcfile</span><span class="p">,</span> <span class="n">destfile</span><span class="p">)</span>
-                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;copying </span><span class="se">\n</span><span class="si">{}</span><span class="s2"> to </span><span class="se">\n</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">srcfile</span><span class="p">,</span> <span class="n">destfile</span><span class="p">))</span>
+                    <span class="n">last_restart_file_fn</span><span class="p">(</span><span class="n">srcfile</span><span class="p">,</span> <span class="n">destfile</span><span class="p">)</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> </span><span class="se">\n</span><span class="si">{}</span><span class="s2"> to </span><span class="se">\n</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                        <span class="n">last_restart_file_fn_msg</span><span class="p">,</span> <span class="n">srcfile</span><span class="p">,</span> <span class="n">destfile</span><span class="p">))</span>
                     <span class="k">for</span> <span class="n">histfile</span> <span class="ow">in</span> <span class="n">histfiles_for_restart</span><span class="p">:</span>
                         <span class="n">srcfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="n">histfile</span><span class="p">)</span>
                         <span class="n">destfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">archive_restdir</span><span class="p">,</span> <span class="n">histfile</span><span class="p">)</span>
@@ -407,50 +480,35 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;In archive_process...&#39;</span><span class="p">)</span>
-    <span class="n">compset_comps</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_compset_components</span><span class="p">()</span>
-    <span class="n">compset_comps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;cpl&#39;</span><span class="p">)</span>
-    <span class="n">compset_comps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;dart&#39;</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">copy_only</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-        <span class="n">archive_file_fn</span> <span class="o">=</span> <span class="n">shutil</span><span class="o">.</span><span class="n">copyfile</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">archive_file_fn</span> <span class="o">=</span> <span class="n">shutil</span><span class="o">.</span><span class="n">move</span>
+    <span class="n">archive_file_fn</span> <span class="o">=</span> <span class="n">_get_archive_file_fn</span><span class="p">(</span><span class="n">copy_only</span><span class="p">)</span>
 
     <span class="c1"># archive log files</span>
     <span class="n">_archive_log_files</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">archive_incomplete_logs</span><span class="p">,</span> <span class="n">archive_file_fn</span><span class="p">)</span>
 
-    <span class="k">for</span> <span class="n">archive_entry</span> <span class="ow">in</span> <span class="n">archive</span><span class="o">.</span><span class="n">get_entries</span><span class="p">():</span>
-        <span class="c1"># determine compname and compclass</span>
-        <span class="n">compname</span><span class="p">,</span> <span class="n">compclass</span> <span class="o">=</span> <span class="n">archive</span><span class="o">.</span><span class="n">get_entry_info</span><span class="p">(</span><span class="n">archive_entry</span><span class="p">)</span>
+    <span class="c1"># archive restarts and all necessary associated files (e.g. rpointer files)</span>
+    <span class="n">histfiles_savein_rundir_by_compname</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">dout_s_root</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;DOUT_S_ROOT&quot;</span><span class="p">)</span>
+    <span class="n">datenames</span> <span class="o">=</span> <span class="n">_get_datenames</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">last_date</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">datename</span> <span class="ow">in</span> <span class="n">datenames</span><span class="p">:</span>
+        <span class="n">datename_is_last</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">datename</span> <span class="o">==</span> <span class="n">datenames</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="n">datename_is_last</span> <span class="o">=</span> <span class="kc">True</span>
 
-        <span class="c1"># check for validity of compname</span>
-        <span class="k">if</span> <span class="n">compname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">compset_comps</span><span class="p">:</span>
-            <span class="k">continue</span>
+        <span class="n">archive_restdir</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">dout_s_root</span><span class="p">,</span> <span class="s1">&#39;rest&#39;</span><span class="p">,</span> <span class="n">datename</span><span class="p">)</span>
+        <span class="n">histfiles_savein_rundir_by_compname_this_date</span> <span class="o">=</span> <span class="n">_archive_restarts_date</span><span class="p">(</span>
+            <span class="n">case</span><span class="p">,</span> <span class="n">archive</span><span class="p">,</span> <span class="n">datename</span><span class="p">,</span> <span class="n">datename_is_last</span><span class="p">,</span> <span class="n">archive_restdir</span><span class="p">,</span> <span class="n">archive_file_fn</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">datename_is_last</span><span class="p">:</span>
+            <span class="n">histfiles_savein_rundir_by_compname</span> <span class="o">=</span> <span class="n">histfiles_savein_rundir_by_compname_this_date</span>
 
-        <span class="c1"># archive restarts and all necessary associated fields (e.g. rpointer files)</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;-------------------------------------------&#39;</span><span class="p">)</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;doing short term archiving for </span><span class="si">{}</span><span class="s1"> (</span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">compname</span><span class="p">,</span> <span class="n">compclass</span><span class="p">))</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;-------------------------------------------&#39;</span><span class="p">)</span>
-        <span class="n">datenames</span> <span class="o">=</span> <span class="n">_get_datenames</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">last_date</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">datename</span> <span class="ow">in</span> <span class="n">datenames</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Archiving for date </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">datename</span><span class="p">)</span>
-            <span class="n">datename_is_last</span> <span class="o">=</span> <span class="kc">False</span>
-            <span class="k">if</span> <span class="n">datename</span> <span class="o">==</span> <span class="n">datenames</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
-                <span class="n">datename_is_last</span> <span class="o">=</span> <span class="kc">True</span>
-
-            <span class="c1"># archive restarts</span>
-            <span class="n">histfiles_savein_rundir</span> <span class="o">=</span> <span class="n">_archive_restarts</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">archive</span><span class="p">,</span> <span class="n">archive_entry</span><span class="p">,</span>
-                                                        <span class="n">compclass</span><span class="p">,</span> <span class="n">compname</span><span class="p">,</span>
-                                                        <span class="n">datename</span><span class="p">,</span> <span class="n">datename_is_last</span><span class="p">,</span>
-                                                        <span class="n">archive_file_fn</span><span class="p">)</span>
-
-            <span class="c1"># if the last datename for restart files, then archive history files</span>
-            <span class="c1"># for this compname</span>
-            <span class="k">if</span> <span class="n">datename_is_last</span><span class="p">:</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;histfiles_savein_rundir </span><span class="si">{}</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">histfiles_savein_rundir</span><span class="p">))</span>
-                <span class="n">_archive_history_files</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">archive</span><span class="p">,</span> <span class="n">archive_entry</span><span class="p">,</span>
-                                       <span class="n">compclass</span><span class="p">,</span> <span class="n">compname</span><span class="p">,</span> <span class="n">histfiles_savein_rundir</span><span class="p">,</span>
-                                       <span class="n">archive_file_fn</span><span class="p">)</span>
+    <span class="c1"># archive history files</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">archive_entry</span><span class="p">,</span> <span class="n">compname</span><span class="p">,</span> <span class="n">compclass</span><span class="p">)</span> <span class="ow">in</span> <span class="n">_get_component_archive_entries</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">archive</span><span class="p">):</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Archiving history files for </span><span class="si">{}</span><span class="s1"> (</span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">compname</span><span class="p">,</span> <span class="n">compclass</span><span class="p">))</span>
+        <span class="n">histfiles_savein_rundir</span> <span class="o">=</span> <span class="n">histfiles_savein_rundir_by_compname</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">compname</span><span class="p">,</span> <span class="p">[])</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;histfiles_savein_rundir </span><span class="si">{}</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">histfiles_savein_rundir</span><span class="p">))</span>
+        <span class="n">_archive_history_files</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">archive</span><span class="p">,</span> <span class="n">archive_entry</span><span class="p">,</span>
+                               <span class="n">compclass</span><span class="p">,</span> <span class="n">compname</span><span class="p">,</span> <span class="n">histfiles_savein_rundir</span><span class="p">,</span>
+                               <span class="n">archive_file_fn</span><span class="p">)</span>
 
 <span class="c1">###############################################################################</span>
 <div class="viewcode-block" id="restore_from_archive"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.case_st_archive.restore_from_archive">[docs]</a><span class="k">def</span> <span class="nf">restore_from_archive</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">rest_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -474,6 +532,39 @@
             <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">dst</span><span class="p">)</span>
 
         <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">rundir</span><span class="p">)</span></div>
+
+<span class="c1">###############################################################################</span>
+<div class="viewcode-block" id="archive_last_restarts"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.case_st_archive.archive_last_restarts">[docs]</a><span class="k">def</span> <span class="nf">archive_last_restarts</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">archive_restdir</span><span class="p">,</span> <span class="n">link_to_restart_files</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="c1">###############################################################################</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convenience function for archiving just the last set of restart</span>
+<span class="sd">    files to a given directory. This also saves files attached to the</span>
+<span class="sd">    restart set, such as rpointer files and necessary history</span>
+<span class="sd">    files. However, it does not save other files that are typically</span>
+<span class="sd">    archived (e.g., history files, log files).</span>
+
+<span class="sd">    Files are copied to the directory given by archive_restdir.</span>
+
+<span class="sd">    If link_to_restart_files is True, then symlinks rather than copies</span>
+<span class="sd">    are done for the restart files. (This has no effect on the history</span>
+<span class="sd">    files that are associated with these restart files.)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">archive</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_env</span><span class="p">(</span><span class="s1">&#39;archive&#39;</span><span class="p">)</span>
+    <span class="n">datenames</span> <span class="o">=</span> <span class="n">_get_datenames</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
+    <span class="n">expect</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">datenames</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;No restart dates found&quot;</span><span class="p">)</span>
+    <span class="n">last_datename</span> <span class="o">=</span> <span class="n">datenames</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="c1"># Not currently used for anything if we&#39;re only archiving the last</span>
+    <span class="c1"># set of restart files, but needed to satisfy the following interface</span>
+    <span class="n">archive_file_fn</span> <span class="o">=</span> <span class="n">_get_archive_file_fn</span><span class="p">(</span><span class="n">copy_only</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="n">_</span> <span class="o">=</span> <span class="n">_archive_restarts_date</span><span class="p">(</span><span class="n">case</span><span class="o">=</span><span class="n">case</span><span class="p">,</span>
+                               <span class="n">archive</span><span class="o">=</span><span class="n">archive</span><span class="p">,</span>
+                               <span class="n">datename</span><span class="o">=</span><span class="n">last_datename</span><span class="p">,</span>
+                               <span class="n">datename_is_last</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                               <span class="n">archive_restdir</span><span class="o">=</span><span class="n">archive_restdir</span><span class="p">,</span>
+                               <span class="n">archive_file_fn</span><span class="o">=</span><span class="n">archive_file_fn</span><span class="p">,</span>
+                               <span class="n">link_to_last_restart_files</span><span class="o">=</span><span class="n">link_to_restart_files</span><span class="p">)</span></div>
 
 <span class="c1">###############################################################################</span>
 <div class="viewcode-block" id="case_st_archive"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.case_st_archive.case_st_archive">[docs]</a><span class="k">def</span> <span class="nf">case_st_archive</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">last_date</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">archive_incomplete_logs</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">copy_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">no_resubmit</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
@@ -500,7 +591,7 @@
 
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;st_archive starting&quot;</span><span class="p">)</span>
 
-    <span class="n">archive</span> <span class="o">=</span> <span class="n">EnvArchive</span><span class="p">(</span><span class="n">infile</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">caseroot</span><span class="p">,</span> <span class="s1">&#39;env_archive.xml&#39;</span><span class="p">))</span>
+    <span class="n">archive</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_env</span><span class="p">(</span><span class="s1">&#39;archive&#39;</span><span class="p">)</span>
     <span class="n">functor</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">_archive_process</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">archive</span><span class="p">,</span> <span class="n">last_date</span><span class="p">,</span> <span class="n">archive_incomplete_logs</span><span class="p">,</span> <span class="n">copy_only</span><span class="p">)</span>
     <span class="n">run_and_log_case_status</span><span class="p">(</span><span class="n">functor</span><span class="p">,</span> <span class="s2">&quot;st_archive&quot;</span><span class="p">,</span> <span class="n">caseroot</span><span class="o">=</span><span class="n">caseroot</span><span class="p">)</span>
 

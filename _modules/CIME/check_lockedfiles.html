@@ -143,13 +143,13 @@
 
         <span class="n">unlock_file</span><span class="p">(</span><span class="s2">&quot;env_mach_pes.xml&quot;</span><span class="p">,</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASEROOT&quot;</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="check_lockedfiles"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.check_lockedfiles.check_lockedfiles">[docs]</a><span class="k">def</span> <span class="nf">check_lockedfiles</span><span class="p">(</span><span class="n">caseroot</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="check_lockedfiles"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.check_lockedfiles.check_lockedfiles">[docs]</a><span class="k">def</span> <span class="nf">check_lockedfiles</span><span class="p">(</span><span class="n">case</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Check that all lockedfiles match what&#39;s in case</span>
 
 <span class="sd">    If caseroot is not specified, it is set to the current working directory</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">caseroot</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span> <span class="k">if</span> <span class="n">caseroot</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">caseroot</span>
+    <span class="n">caseroot</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASEROOT&quot;</span><span class="p">)</span>
     <span class="n">lockedfiles</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">caseroot</span><span class="p">,</span> <span class="s2">&quot;LockedFiles&quot;</span><span class="p">,</span> <span class="s2">&quot;*.xml&quot;</span><span class="p">))</span>
     <span class="k">for</span> <span class="n">lfile</span> <span class="ow">in</span> <span class="n">lockedfiles</span><span class="p">:</span>
         <span class="n">fpart</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">lfile</span><span class="p">)</span>
@@ -157,19 +157,20 @@
         <span class="k">if</span> <span class="n">fpart</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">continue</span>
         <span class="n">cfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">caseroot</span><span class="p">,</span> <span class="n">fpart</span><span class="p">)</span>
+        <span class="n">components</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_values</span><span class="p">(</span><span class="s2">&quot;COMP_CLASSES&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">cfile</span><span class="p">):</span>
             <span class="n">objname</span> <span class="o">=</span> <span class="n">fpart</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">objname</span> <span class="o">==</span> <span class="s2">&quot;env_build&quot;</span><span class="p">:</span>
-                <span class="n">f1obj</span> <span class="o">=</span> <span class="n">EnvBuild</span><span class="p">(</span><span class="n">caseroot</span><span class="p">,</span> <span class="n">cfile</span><span class="p">)</span>
+                <span class="n">f1obj</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_env</span><span class="p">(</span><span class="s1">&#39;build&#39;</span><span class="p">)</span>
                 <span class="n">f2obj</span> <span class="o">=</span> <span class="n">EnvBuild</span><span class="p">(</span><span class="n">caseroot</span><span class="p">,</span> <span class="n">lfile</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">objname</span> <span class="o">==</span> <span class="s2">&quot;env_mach_pes&quot;</span><span class="p">:</span>
-                <span class="n">f1obj</span> <span class="o">=</span> <span class="n">EnvMachPes</span><span class="p">(</span><span class="n">caseroot</span><span class="p">,</span> <span class="n">cfile</span><span class="p">)</span>
-                <span class="n">f2obj</span> <span class="o">=</span> <span class="n">EnvMachPes</span><span class="p">(</span><span class="n">caseroot</span><span class="p">,</span> <span class="n">lfile</span><span class="p">)</span>
+                <span class="n">f1obj</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_env</span><span class="p">(</span><span class="s1">&#39;mach_pes&#39;</span><span class="p">)</span>
+                <span class="n">f2obj</span> <span class="o">=</span> <span class="n">EnvMachPes</span><span class="p">(</span><span class="n">caseroot</span><span class="p">,</span> <span class="n">lfile</span><span class="p">,</span> <span class="n">components</span><span class="o">=</span><span class="n">components</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">objname</span> <span class="o">==</span> <span class="s2">&quot;env_case&quot;</span><span class="p">:</span>
-                <span class="n">f1obj</span> <span class="o">=</span> <span class="n">EnvCase</span><span class="p">(</span><span class="n">caseroot</span><span class="p">,</span> <span class="n">cfile</span><span class="p">)</span>
+                <span class="n">f1obj</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_env</span><span class="p">(</span><span class="s1">&#39;case&#39;</span><span class="p">)</span>
                 <span class="n">f2obj</span> <span class="o">=</span> <span class="n">EnvCase</span><span class="p">(</span><span class="n">caseroot</span><span class="p">,</span> <span class="n">lfile</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">objname</span> <span class="o">==</span> <span class="s2">&quot;env_batch&quot;</span><span class="p">:</span>
-                <span class="n">f1obj</span> <span class="o">=</span> <span class="n">EnvBatch</span><span class="p">(</span><span class="n">caseroot</span><span class="p">,</span> <span class="n">cfile</span><span class="p">)</span>
+                <span class="n">f1obj</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_env</span><span class="p">(</span><span class="s1">&#39;batch&#39;</span><span class="p">)</span>
                 <span class="n">f2obj</span> <span class="o">=</span> <span class="n">EnvBatch</span><span class="p">(</span><span class="n">caseroot</span><span class="p">,</span> <span class="n">lfile</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">logging</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Locked XML file &#39;</span><span class="si">{}</span><span class="s2">&#39; is not current being handled&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fpart</span><span class="p">))</span>
@@ -188,15 +189,13 @@
                            <span class="s2">&quot; recover the original copy from LockedFiles&quot;</span><span class="p">)</span>
                 <span class="k">elif</span> <span class="n">objname</span> <span class="o">==</span> <span class="s2">&quot;env_build&quot;</span><span class="p">:</span>
                     <span class="n">logging</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Setting build complete to False&quot;</span><span class="p">)</span>
-                    <span class="n">f1obj</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;BUILD_COMPLETE&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+                    <span class="n">case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;BUILD_COMPLETE&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
                     <span class="k">if</span> <span class="s2">&quot;PIO_VERSION&quot;</span> <span class="ow">in</span> <span class="n">diffs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-                        <span class="n">f1obj</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;BUILD_STATUS&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
-                        <span class="n">f1obj</span><span class="o">.</span><span class="n">write</span><span class="p">()</span>
+                        <span class="n">case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;BUILD_STATUS&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
                         <span class="n">logging</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s2">&quot;Changing PIO_VERSION requires running &quot;</span>
                                          <span class="s2">&quot;case.build --clean-all and rebuilding&quot;</span><span class="p">)</span>
                     <span class="k">else</span><span class="p">:</span>
-                        <span class="n">f1obj</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;BUILD_STATUS&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-                        <span class="n">f1obj</span><span class="o">.</span><span class="n">write</span><span class="p">()</span>
+                        <span class="n">case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;BUILD_STATUS&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
                 <span class="k">elif</span> <span class="n">objname</span> <span class="o">==</span> <span class="s2">&quot;env_batch&quot;</span><span class="p">:</span>
                     <span class="n">expect</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;Batch configuration has changed, please run case.setup --reset&quot;</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>

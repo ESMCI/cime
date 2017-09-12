@@ -74,7 +74,7 @@
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
-<div class="viewcode-block" id="apply_user_mods"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.user_mod_support.apply_user_mods">[docs]</a><span class="k">def</span> <span class="nf">apply_user_mods</span><span class="p">(</span><span class="n">caseroot</span><span class="p">,</span> <span class="n">user_mods_path</span><span class="p">):</span>
+<div class="viewcode-block" id="apply_user_mods"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.user_mod_support.apply_user_mods">[docs]</a><span class="k">def</span> <span class="nf">apply_user_mods</span><span class="p">(</span><span class="n">caseroot</span><span class="p">,</span> <span class="n">user_mods_path</span><span class="p">,</span> <span class="n">keepexe</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Recursivlely apply user_mods to caseroot - this includes updating user_nl_xxx,</span>
 <span class="sd">    updating SourceMods and creating case shell_commands and xmlchange_cmds files</span>
@@ -83,6 +83,9 @@
 
 <span class="sd">    If this function is called multiple times, settings from later calls will</span>
 <span class="sd">    take precedence over earlier calls, if there are conflicts.</span>
+
+<span class="sd">    keepexe is an optional argument that is needed for cases where apply_user_mods is</span>
+<span class="sd">    called from create_clone</span>
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="n">case_shell_command_files</span> <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">caseroot</span><span class="p">,</span><span class="s2">&quot;shell_commands&quot;</span><span class="p">),</span>
                            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">caseroot</span><span class="p">,</span><span class="s2">&quot;xmlchange_cmnds&quot;</span><span class="p">)]</span>
@@ -116,6 +119,9 @@
         <span class="c1"># update SourceMods in caseroot</span>
         <span class="k">for</span> <span class="n">root</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">files</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">include_dir</span><span class="p">,</span><span class="n">followlinks</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">topdown</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
             <span class="k">if</span> <span class="s2">&quot;src&quot;</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">root</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">keepexe</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">expect</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span>
+                           <span class="s2">&quot;cannot have any source mods in </span><span class="si">{}</span><span class="s2"> if keepexe is an option&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">user_mods_path</span><span class="p">))</span>
                 <span class="k">for</span> <span class="n">sfile</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
                     <span class="n">source_mods</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span><span class="n">sfile</span><span class="p">)</span>
                     <span class="n">case_source_mods</span> <span class="o">=</span> <span class="n">source_mods</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">include_dir</span><span class="p">,</span> <span class="n">caseroot</span><span class="p">)</span>

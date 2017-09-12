@@ -110,8 +110,8 @@ to define behavior.</p>
     &lt;hist_file_extension&gt;\.h.*.nc$&lt;/hist_file_extension&gt;
     &lt;rest_history_varname&gt;unset&lt;/rest_history_varname&gt;
     &lt;rpointer&gt;
-      &lt;rpointer_file&gt;rpointer.drv&lt;/rpointer_file&gt;
-      &lt;rpointer_content &gt;$CASE.cpl.r.$DATENAME.nc&lt;/rpointer_content&gt;
+      &lt;rpointer_file&gt;rpointer$NINST_STRING.drv&lt;/rpointer_file&gt;
+      &lt;rpointer_content &gt;$CASE.cpl$NINST_STRING.r.$DATENAME.nc&lt;/rpointer_content&gt;
     &lt;/rpointer&gt;
   &lt;/comp_archive_spec&gt;
 
@@ -2070,6 +2070,18 @@ to define behavior.</p>
     &lt;desc&gt;ROOTPE (mpi task in MPI_COMM_WORLD) for each component&lt;/desc&gt;
   &lt;/entry&gt;
 
+  &lt;entry id=&quot;MULTI_DRIVER&quot;&gt;
+    &lt;type&gt;logical&lt;/type&gt;
+    &lt;default_value&gt;FALSE&lt;/default_value&gt;
+    &lt;valid_values&gt;TRUE,FALSE&lt;/valid_values&gt;
+    &lt;group&gt;mach_pes&lt;/group&gt;
+    &lt;file&gt;env_mach_pes.xml&lt;/file&gt;
+    &lt;desc&gt;MULTI_DRIVER mode provides a separate driver/coupler component for each
+    ensemble member.  All components must have an equal number of members.  If
+    MULTI_DRIVER mode is False prognostic components must have the same number
+    of members but data or stub components may also have 1 member. &lt;/desc&gt;
+  &lt;/entry&gt;
+
   &lt;entry id=&quot;NINST&quot;&gt;
     &lt;type&gt;integer&lt;/type&gt;
     &lt;values&gt;
@@ -2084,7 +2096,9 @@ to define behavior.</p>
     &lt;/values&gt;
     &lt;group&gt;mach_pes&lt;/group&gt;
     &lt;file&gt;env_mach_pes.xml&lt;/file&gt;
-    &lt;desc&gt;Number of instances for each component&lt;/desc&gt;
+    &lt;desc&gt;Number of instances for each component.  If MULTI_DRIVER is True
+    the NINST_MAX value will be used.
+    &lt;/desc&gt;
   &lt;/entry&gt;
 
   &lt;entry id=&quot;NINST_LAYOUT&quot;&gt;
@@ -4366,6 +4380,23 @@ to define behavior.</p>
           This is an optional attribute that is mainly useful for variables
           that have only a small number of allowed values.
   --&gt;
+
+  &lt;!-- =========================== --&gt;
+  &lt;!-- group cime_driver_inst              --&gt;
+  &lt;!-- =========================== --&gt;
+
+  &lt;entry id=&quot;ninst_driver&quot; modify_via_xml=&quot;NINST_MAX&quot;&gt;
+    &lt;type&gt;integer&lt;/type&gt;
+    &lt;category&gt;cime_driver_inst&lt;/category&gt;
+    &lt;group&gt;cime_driver_inst&lt;/group&gt;
+    &lt;desc&gt;
+      Number of CESM driver instances.  Only used if MULTI_DRIVER is TRUE.
+    &lt;/desc&gt;
+    &lt;values&gt;
+      &lt;value&gt;1&lt;/value&gt;
+      &lt;value MULTI_DRIVER=&quot;.true.&quot;&gt;$NINST_MAX&lt;/value&gt;
+    &lt;/values&gt;
+  &lt;/entry&gt;
 
   &lt;!-- =========================== --&gt;
   &lt;!-- group seq_cplflds_inparm    --&gt;

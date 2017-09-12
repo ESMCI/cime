@@ -76,37 +76,22 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">CIME.SystemTests.system_tests_compare_two</span> <span class="k">import</span> <span class="n">SystemTestsCompareTwo</span>
+<span class="kn">from</span> <span class="nn">CIME.SystemTests.restart_tests</span> <span class="k">import</span> <span class="n">RestartTest</span>
 <span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="k">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">CIME.case_st_archive</span> <span class="k">import</span> <span class="n">case_st_archive</span><span class="p">,</span> <span class="n">restore_from_archive</span>
 <span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="k">import</span> <span class="n">ls_sorted_by_mtime</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
-<div class="viewcode-block" id="IRT"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.irt.IRT">[docs]</a><span class="k">class</span> <span class="nc">IRT</span><span class="p">(</span><span class="n">SystemTestsCompareTwo</span><span class="p">):</span>
+<div class="viewcode-block" id="IRT"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.irt.IRT">[docs]</a><span class="k">class</span> <span class="nc">IRT</span><span class="p">(</span><span class="n">RestartTest</span><span class="p">):</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">):</span>
-        <span class="n">SystemTestsCompareTwo</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span>
-                                       <span class="n">separate_builds</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                                       <span class="n">run_two_suffix</span> <span class="o">=</span> <span class="s1">&#39;restart&#39;</span><span class="p">,</span>
-                                       <span class="n">run_one_description</span> <span class="o">=</span> <span class="s1">&#39;initial&#39;</span><span class="p">,</span>
-                                       <span class="n">run_two_description</span> <span class="o">=</span> <span class="s1">&#39;restart&#39;</span><span class="p">,</span>
-                                       <span class="n">multisubmit</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">_case_one_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">stop_n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case1</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;STOP_N&quot;</span><span class="p">)</span>
-        <span class="n">expect</span><span class="p">(</span><span class="n">stop_n</span> <span class="o">&gt;=</span> <span class="mi">3</span><span class="p">,</span><span class="s2">&quot;STOP_N must be at least 3, STOP_N = </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">stop_n</span><span class="p">))</span>
-
-    <span class="k">def</span> <span class="nf">_case_two_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">rest_n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case1</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;REST_N&quot;</span><span class="p">)</span>
-        <span class="n">stop_n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case1</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;STOP_N&quot;</span><span class="p">)</span>
-        <span class="n">stop_new</span> <span class="o">=</span> <span class="n">stop_n</span> <span class="o">-</span> <span class="n">rest_n</span>
-        <span class="n">expect</span><span class="p">(</span><span class="n">stop_new</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;ERROR: stop_n value </span><span class="si">{:d}</span><span class="s2"> too short </span><span class="si">{:d}</span><span class="s2"> </span><span class="si">{:d}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">stop_new</span><span class="p">,</span><span class="n">stop_n</span><span class="p">,</span><span class="n">rest_n</span><span class="p">))</span>
-        <span class="c1"># hist_n is set to the stop_n value of case1</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;HIST_N&quot;</span><span class="p">,</span> <span class="n">stop_n</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;STOP_N&quot;</span><span class="p">,</span> <span class="n">stop_new</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;CONTINUE_RUN&quot;</span><span class="p">,</span><span class="kc">True</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;REST_OPTION&quot;</span><span class="p">,</span> <span class="s2">&quot;never&quot;</span><span class="p">)</span>
+        <span class="n">RestartTest</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span>
+                             <span class="n">separate_builds</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                             <span class="n">run_two_suffix</span> <span class="o">=</span> <span class="s1">&#39;restart&#39;</span><span class="p">,</span>
+                             <span class="n">run_one_description</span> <span class="o">=</span> <span class="s1">&#39;initial&#39;</span><span class="p">,</span>
+                             <span class="n">run_two_description</span> <span class="o">=</span> <span class="s1">&#39;restart&#39;</span><span class="p">,</span>
+                             <span class="n">multisubmit</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_case_one_custom_postrun_action</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">case_st_archive</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="p">)</span>

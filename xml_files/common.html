@@ -322,7 +322,6 @@ NCR    multi-instance validation vs single instance - concurrent PE for instance
        do an initial run test with NINST 1 (suffix: base)
        do an initial run test with NINST 2 (suffix: multiinst for both _0001 and _0002)
         compare base and _0001 and _0002
-       (***note that NCR_script and NCK_script are the same - but NCR_build.csh and NCK_build.csh are different***)
 
 NOC    multi-instance validation for single instance ocean (default length)
        do an initial run test with NINST 2 (other than ocn), with mod to instance 1 (suffix: inst1_base, inst2_mod)
@@ -442,6 +441,10 @@ NODEFAIL          Tests restart upon detected node failure. Generates fake failu
     &lt;STOP_OPTION&gt;ndays&lt;/STOP_OPTION&gt;
     &lt;STOP_N&gt;11&lt;/STOP_N&gt;
     &lt;DOUT_S&gt;FALSE&lt;/DOUT_S&gt;
+    &lt;REST_N&gt;$STOP_N / 2 + 1 &lt;/REST_N&gt;
+    &lt;REST_OPTION&gt;$STOP_OPTION&lt;/REST_OPTION&gt;
+    &lt;HIST_OPTION&gt;$STOP_OPTION&lt;/HIST_OPTION&gt;
+    &lt;HIST_N&gt;$STOP_N&lt;/HIST_N&gt;
   &lt;/test&gt;
 
   &lt;test NAME=&quot;ERS&quot;&gt;
@@ -708,6 +711,17 @@ NODEFAIL          Tests restart upon detected node failure. Generates fake failu
     &lt;REST_OPTION&gt;none&lt;/REST_OPTION&gt;
     &lt;DOUT_S&gt;FALSE&lt;/DOUT_S&gt;
     &lt;CONTINUE_RUN&gt;FALSE&lt;/CONTINUE_RUN&gt;
+  &lt;/test&gt;
+
+  &lt;test NAME=&quot;MCC&quot;&gt;
+    &lt;DESC&gt;multi-driver validation vs single-instance (default length)&lt;/DESC&gt;
+    &lt;INFO_DBUG&gt;1&lt;/INFO_DBUG&gt;
+    &lt;DOUT_S&gt;FALSE&lt;/DOUT_S&gt;
+    &lt;CONTINUE_RUN&gt;FALSE&lt;/CONTINUE_RUN&gt;
+    &lt;REST_OPTION&gt;none&lt;/REST_OPTION&gt;
+    &lt;HIST_OPTION&gt;$STOP_OPTION&lt;/HIST_OPTION&gt;
+    &lt;HIST_N&gt;$STOP_N&lt;/HIST_N&gt;
+    &lt;MULTI_DRIVER&gt;TRUE&lt;/MULTI_DRIVER&gt;
   &lt;/test&gt;
 
   &lt;test NAME=&quot;NCK&quot;&gt;

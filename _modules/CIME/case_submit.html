@@ -83,8 +83,6 @@
 
 <span class="k">def</span> <span class="nf">_submit</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">job</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">resubmit</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">no_batch</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">skip_pnl</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
             <span class="n">mail_user</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mail_type</span><span class="o">=</span><span class="s1">&#39;never&#39;</span><span class="p">,</span> <span class="n">batch_args</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="n">caseroot</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASEROOT&quot;</span><span class="p">)</span>
-
     <span class="k">if</span> <span class="n">job</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;TEST&quot;</span><span class="p">):</span>
             <span class="n">job</span> <span class="o">=</span> <span class="s2">&quot;case.test&quot;</span>
@@ -99,7 +97,7 @@
             <span class="n">case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;CONTINUE_RUN&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">job</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;case.test&quot;</span><span class="p">,</span><span class="s2">&quot;case.run&quot;</span><span class="p">):</span>
-            <span class="n">check_case</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">caseroot</span><span class="p">)</span>
+            <span class="n">check_case</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
             <span class="n">check_DA_settings</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MACH&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;mira&quot;</span><span class="p">:</span>
                 <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;.original_host&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
@@ -173,8 +171,8 @@
 
         <span class="k">raise</span></div>
 
-<div class="viewcode-block" id="check_case"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.case_submit.check_case">[docs]</a><span class="k">def</span> <span class="nf">check_case</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">caseroot</span><span class="p">):</span>
-    <span class="n">check_lockedfiles</span><span class="p">(</span><span class="n">caseroot</span><span class="p">)</span>
+<div class="viewcode-block" id="check_case"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.case_submit.check_case">[docs]</a><span class="k">def</span> <span class="nf">check_case</span><span class="p">(</span><span class="n">case</span><span class="p">):</span>
+    <span class="n">check_lockedfiles</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
     <span class="n">create_namelists</span><span class="p">(</span><span class="n">case</span><span class="p">)</span> <span class="c1"># Must be called before check_all_input_data</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Checking that inputdata is available as part of case submission&quot;</span><span class="p">)</span>
     <span class="n">check_all_input_data</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>

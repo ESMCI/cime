@@ -71,7 +71,7 @@
 <span class="sd">through the Case module.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">copy</span> <span class="k">import</span> <span class="n">deepcopy</span>
-<span class="kn">import</span> <span class="nn">glob</span><span class="o">,</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">shutil</span><span class="o">,</span> <span class="nn">math</span><span class="o">,</span> <span class="nn">string</span>
+<span class="kn">import</span> <span class="nn">glob</span><span class="o">,</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">shutil</span><span class="o">,</span> <span class="nn">math</span>
 <span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="k">import</span> <span class="o">*</span>
 
 <span class="kn">from</span> <span class="nn">CIME.utils</span>                     <span class="k">import</span> <span class="n">expect</span><span class="p">,</span> <span class="n">get_cime_root</span><span class="p">,</span> <span class="n">append_status</span>
@@ -98,8 +98,8 @@
 <span class="kn">from</span> <span class="nn">CIME.XML.env_batch</span>             <span class="k">import</span> <span class="n">EnvBatch</span>
 <span class="kn">from</span> <span class="nn">CIME.XML.generic_xml</span>           <span class="k">import</span> <span class="n">GenericXML</span>
 <span class="kn">from</span> <span class="nn">CIME.user_mod_support</span>          <span class="k">import</span> <span class="n">apply_user_mods</span>
-<span class="kn">from</span> <span class="nn">CIME.case_setup</span> <span class="k">import</span> <span class="n">case_setup</span>
 <span class="kn">from</span> <span class="nn">CIME.aprun</span> <span class="k">import</span> <span class="n">get_aprun_cmd_for_case</span>
+<span class="kn">from</span> <span class="nn">CIME.case_clone</span> <span class="k">import</span> <span class="n">create_case_clone</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -522,8 +522,11 @@
                     <span class="k">return</span> <span class="n">compset_alias</span><span class="p">,</span> <span class="n">science_support</span>
 
         <span class="k">if</span> <span class="n">compset_alias</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Did not find a compset match for longname </span><span class="si">{}</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">compset_name</span><span class="p">))</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Did not find an alias or longname compset match for </span><span class="si">{}</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">compset_name</span><span class="p">))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_compsetname</span> <span class="o">=</span> <span class="n">compset_name</span>
+            <span class="c1"># if this is a valiid compset longname there will be at least 7 components.</span>
+            <span class="n">components</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_compset_components</span><span class="p">()</span>
+            <span class="n">expect</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">components</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">6</span><span class="p">,</span> <span class="s2">&quot;No compset alias </span><span class="si">{}</span><span class="s2"> found and this does not appear to be a compset longname.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">compset_name</span><span class="p">))</span>
 
         <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="n">science_support</span>
 
@@ -615,7 +618,7 @@
         <span class="k">if</span> <span class="n">compset</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">compset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compsetname</span>
         <span class="n">expect</span><span class="p">(</span><span class="n">compset</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span>
-               <span class="s2">&quot;ERROR: compset is not set&quot;</span><span class="p">)</span>
+               <span class="s2">&quot;compset is not set&quot;</span><span class="p">)</span>
         <span class="c1"># the first element is always the date operator - skip it</span>
         <span class="n">elements</span> <span class="o">=</span> <span class="n">compset</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]</span> <span class="c1"># pylint: disable=maybe-no-member</span>
         <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">elements</span><span class="p">:</span>
@@ -685,6 +688,7 @@
             <span class="n">node_name</span> <span class="o">=</span> <span class="s1">&#39;CONFIG_&#39;</span> <span class="o">+</span> <span class="n">comp_class</span> <span class="o">+</span> <span class="s1">&#39;_FILE&#39;</span>
             <span class="c1"># Add the group and elements for the config_files.xml</span>
             <span class="n">comp_config_file</span> <span class="o">=</span> <span class="n">files</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">node_name</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;component&quot;</span><span class="p">:</span><span class="n">comp_name</span><span class="p">},</span> <span class="n">resolved</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">expect</span><span class="p">(</span><span class="n">comp_config_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span><span class="s2">&quot;No component </span><span class="si">{}</span><span class="s2"> found for class </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp_name</span><span class="p">,</span> <span class="n">comp_class</span><span class="p">))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">node_name</span><span class="p">,</span> <span class="n">comp_config_file</span><span class="p">)</span>
             <span class="n">comp_config_file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_resolved_value</span><span class="p">(</span><span class="n">comp_config_file</span><span class="p">)</span>
             <span class="n">expect</span><span class="p">(</span><span class="n">comp_config_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">comp_config_file</span><span class="p">),</span>
@@ -701,7 +705,8 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">clean_up_lookups</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">_setup_mach_pes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pecount</span><span class="p">,</span> <span class="n">ninst</span><span class="p">,</span> <span class="n">machine_name</span><span class="p">,</span> <span class="n">mpilib</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">_setup_mach_pes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pecount</span><span class="p">,</span> <span class="n">multi_driver</span><span class="p">,</span> <span class="n">ninst</span><span class="p">,</span> <span class="n">machine_name</span><span class="p">,</span> <span class="n">mpilib</span><span class="p">):</span>
         <span class="c1">#--------------------------------------------</span>
         <span class="c1"># pe layout</span>
         <span class="c1">#--------------------------------------------</span>
@@ -785,18 +790,17 @@
                 <span class="n">val</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="o">*</span><span class="n">val</span><span class="o">*</span><span class="n">pes_per_node</span>
             <span class="k">if</span> <span class="n">val</span> <span class="o">&gt;</span> <span class="n">pesize</span><span class="p">:</span>
                 <span class="n">pesize</span> <span class="o">=</span> <span class="n">val</span>
+        <span class="k">if</span> <span class="n">multi_driver</span><span class="p">:</span>
+            <span class="n">pesize</span> <span class="o">*=</span> <span class="nb">int</span><span class="p">(</span><span class="n">ninst</span><span class="p">)</span>
+            <span class="n">mach_pes_obj</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;MULTI_DRIVER&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
 
         <span class="c1"># Make sure that every component has been accounted for</span>
         <span class="c1"># set, nthrds and ntasks to 1 otherwise. Also set the ninst values here.</span>
         <span class="k">for</span> <span class="n">compclass</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_component_classes</span><span class="p">:</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;NINST_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">compclass</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">compclass</span> <span class="o">==</span> <span class="s2">&quot;CPL&quot;</span><span class="p">:</span>
                 <span class="k">continue</span>
-            <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;NINST_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">compclass</span><span class="p">)</span>
-            <span class="c1"># ESP models are currently limited to 1 instance</span>
-            <span class="k">if</span> <span class="n">compclass</span> <span class="o">==</span> <span class="s2">&quot;ESP&quot;</span><span class="p">:</span>
-                <span class="n">mach_pes_obj</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">mach_pes_obj</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">ninst</span><span class="p">)</span>
+            <span class="n">mach_pes_obj</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">ninst</span><span class="p">)</span>
 
             <span class="n">key</span> <span class="o">=</span> <span class="s2">&quot;NTASKS_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">compclass</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">pes_ntasks</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
@@ -810,8 +814,10 @@
 
 <div class="viewcode-block" id="Case.configure"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.case.Case.configure">[docs]</a>    <span class="k">def</span> <span class="nf">configure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compset_name</span><span class="p">,</span> <span class="n">grid_name</span><span class="p">,</span> <span class="n">machine_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                   <span class="n">project</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">pecount</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">compiler</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mpilib</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                  <span class="n">pesfile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">user_grid</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">gridfile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ninst</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">test</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                  <span class="n">walltime</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">queue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output_root</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">run_unsupported</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">answer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                  <span class="n">pesfile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">user_grid</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">gridfile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                  <span class="n">multi_driver</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ninst</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">test</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                  <span class="n">walltime</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">queue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output_root</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                  <span class="n">run_unsupported</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">answer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                   <span class="n">input_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 
         <span class="n">expect</span><span class="p">(</span><span class="n">check_name</span><span class="p">(</span><span class="n">compset_name</span><span class="p">,</span> <span class="n">additional_chars</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">),</span> <span class="s2">&quot;Invalid compset name </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">compset_name</span><span class="p">))</span>
@@ -900,7 +906,10 @@
         <span class="n">env_mach_specific_obj</span><span class="o">.</span><span class="n">populate</span><span class="p">(</span><span class="n">machobj</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">schedule_rewrite</span><span class="p">(</span><span class="n">env_mach_specific_obj</span><span class="p">)</span>
 
-        <span class="n">pesize</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setup_mach_pes</span><span class="p">(</span><span class="n">pecount</span><span class="p">,</span> <span class="n">ninst</span><span class="p">,</span> <span class="n">machine_name</span><span class="p">,</span> <span class="n">mpilib</span><span class="p">)</span>
+        <span class="n">pesize</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setup_mach_pes</span><span class="p">(</span><span class="n">pecount</span><span class="p">,</span> <span class="n">multi_driver</span><span class="p">,</span> <span class="n">ninst</span><span class="p">,</span> <span class="n">machine_name</span><span class="p">,</span> <span class="n">mpilib</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">multi_driver</span> <span class="ow">and</span> <span class="n">ninst</span><span class="o">&gt;</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot; Driver/Coupler has </span><span class="si">%s</span><span class="s2"> instances&quot;</span> <span class="o">%</span> <span class="n">ninst</span><span class="p">)</span>
 
         <span class="c1">#--------------------------------------------</span>
         <span class="c1"># batch system</span>
@@ -1143,6 +1152,9 @@
                <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_component_description</span><span class="p">[</span><span class="n">component_class</span><span class="p">])</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
                 <span class="n">append_status</span><span class="p">(</span><span class="s2">&quot;Component </span><span class="si">{}</span><span class="s2"> is </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">component_class</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_component_description</span><span class="p">[</span><span class="n">component_class</span><span class="p">]),</span><span class="s2">&quot;README.case&quot;</span><span class="p">,</span> <span class="n">caseroot</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_caseroot</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">component_class</span> <span class="o">==</span> <span class="s2">&quot;CPL&quot;</span><span class="p">:</span>
+                <span class="n">append_status</span><span class="p">(</span><span class="s2">&quot;Using </span><span class="si">%s</span><span class="s2"> coupler instances&quot;</span> <span class="o">%</span>
+                              <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;NINST_CPL&quot;</span><span class="p">)),</span>
+                              <span class="s2">&quot;README.case&quot;</span><span class="p">,</span> <span class="n">caseroot</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_caseroot</span><span class="p">)</span>
                 <span class="k">continue</span>
             <span class="n">comp_grid</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">_GRID&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">component_class</span><span class="p">)</span>
 
@@ -1200,109 +1212,6 @@
             <span class="k">return</span> <span class="kc">None</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">comp_user_mods</span>
-
-<div class="viewcode-block" id="Case.create_clone"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.case.Case.create_clone">[docs]</a>    <span class="k">def</span> <span class="nf">create_clone</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">newcase</span><span class="p">,</span> <span class="n">keepexe</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">mach_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">project</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cime_output_root</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">cime_output_root</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">cime_output_root</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CIME_OUTPUT_ROOT&quot;</span><span class="p">)</span>
-
-        <span class="n">newcaseroot</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">newcase</span><span class="p">)</span>
-        <span class="n">expect</span><span class="p">(</span><span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">newcaseroot</span><span class="p">),</span>
-               <span class="s2">&quot;New caseroot directory </span><span class="si">{}</span><span class="s2"> already exists&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">newcaseroot</span><span class="p">))</span>
-        <span class="n">newcasename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">newcaseroot</span><span class="p">)</span>
-        <span class="n">newcase_cimeroot</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">get_cime_root</span><span class="p">())</span>
-
-        <span class="c1"># create clone from self to case</span>
-        <span class="n">clone_cimeroot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CIMEROOT&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">newcase_cimeroot</span> <span class="o">!=</span> <span class="n">clone_cimeroot</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot; case  CIMEROOT is </span><span class="si">{}</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">newcase_cimeroot</span><span class="p">))</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot; clone CIMEROOT is </span><span class="si">{}</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">clone_cimeroot</span><span class="p">))</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot; It is NOT recommended to clone cases from different versions of CIME.&quot;</span><span class="p">)</span>
-
-        <span class="c1"># *** create case object as deepcopy of clone object ***</span>
-        <span class="n">srcroot</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">newcase_cimeroot</span><span class="p">,</span><span class="s2">&quot;..&quot;</span><span class="p">)</span>
-        <span class="n">newcase</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">newcasename</span><span class="p">,</span> <span class="n">newcaseroot</span><span class="p">,</span> <span class="n">newsrcroot</span><span class="o">=</span><span class="n">srcroot</span><span class="p">)</span>
-        <span class="n">newcase</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;CIMEROOT&quot;</span><span class="p">,</span> <span class="n">newcase_cimeroot</span><span class="p">)</span>
-
-        <span class="c1"># if we are cloning to a different user modify the output directory</span>
-        <span class="n">olduser</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;USER&quot;</span><span class="p">)</span>
-        <span class="n">newuser</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;USER&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">olduser</span> <span class="o">!=</span> <span class="n">newuser</span><span class="p">:</span>
-            <span class="n">cime_output_root</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">cime_output_root</span><span class="p">,</span> <span class="n">olduser</span><span class="p">,</span> <span class="n">newuser</span><span class="p">)</span>
-            <span class="n">newcase</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;USER&quot;</span><span class="p">,</span> <span class="n">newuser</span><span class="p">)</span>
-        <span class="n">newcase</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;CIME_OUTPUT_ROOT&quot;</span><span class="p">,</span> <span class="n">cime_output_root</span><span class="p">)</span>
-
-        <span class="c1"># try to make the new output directory and raise an exception</span>
-        <span class="c1"># on any error other than directory already exists.</span>
-        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">cime_output_root</span><span class="p">):</span>
-            <span class="n">expect</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="n">cime_output_root</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">W_OK</span><span class="p">),</span> <span class="s2">&quot;Directory </span><span class="si">{}</span><span class="s2"> is not writable&quot;</span>
-                   <span class="s2">&quot;by this user.  Use the --cime-output-root flag to provide a writable &quot;</span>
-                   <span class="s2">&quot;scratch directory&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cime_output_root</span><span class="p">))</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">cime_output_root</span><span class="p">)</span>
-            <span class="k">except</span><span class="p">:</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">cime_output_root</span><span class="p">):</span>
-                    <span class="k">raise</span>
-
-        <span class="c1"># determine if will use clone executable or not</span>
-        <span class="k">if</span> <span class="n">keepexe</span><span class="p">:</span>
-            <span class="n">orig_exeroot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;EXEROOT&quot;</span><span class="p">)</span>
-            <span class="n">newcase</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;EXEROOT&quot;</span><span class="p">,</span> <span class="n">orig_exeroot</span><span class="p">)</span>
-            <span class="n">newcase</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;BUILD_COMPLETE&quot;</span><span class="p">,</span><span class="s2">&quot;TRUE&quot;</span><span class="p">)</span>
-            <span class="n">orig_bld_complete</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;BUILD_COMPLETE&quot;</span><span class="p">)</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">orig_bld_complete</span><span class="p">:</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">WARNING: Creating a clone with --keepexe before building the original case may cause PIO_TYPENAME to be invalid in the clone&quot;</span><span class="p">)</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Avoid this message by building case one before you clone.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">newcase</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;BUILD_COMPLETE&quot;</span><span class="p">,</span><span class="s2">&quot;FALSE&quot;</span><span class="p">)</span>
-
-        <span class="c1"># set machdir</span>
-        <span class="k">if</span> <span class="n">mach_dir</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">newcase</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;MACHDIR&quot;</span><span class="p">,</span> <span class="n">mach_dir</span><span class="p">)</span>
-
-        <span class="c1"># Set project id</span>
-        <span class="c1"># Note: we do not just copy this from the clone because it seems likely that</span>
-        <span class="c1"># users will want to change this sometimes, especially when cloning another</span>
-        <span class="c1"># user&#39;s case. However, note that, if a project is not given, the fallback will</span>
-        <span class="c1"># be to copy it from the clone, just like other xml variables are copied.</span>
-        <span class="k">if</span> <span class="n">project</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">project</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;PROJECT&quot;</span><span class="p">,</span> <span class="n">subgroup</span><span class="o">=</span><span class="s2">&quot;case.run&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">project</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">newcase</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;PROJECT&quot;</span><span class="p">,</span> <span class="n">project</span><span class="p">)</span>
-
-        <span class="c1"># create caseroot</span>
-        <span class="n">newcase</span><span class="o">.</span><span class="n">create_caseroot</span><span class="p">(</span><span class="n">clone</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">newcase</span><span class="o">.</span><span class="n">flush</span><span class="p">(</span><span class="n">flushall</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-        <span class="c1"># copy user_ files</span>
-        <span class="n">cloneroot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_caseroot</span>
-        <span class="n">files</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">cloneroot</span> <span class="o">+</span> <span class="s1">&#39;/user_*&#39;</span><span class="p">)</span>
-
-        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
-            <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">newcaseroot</span><span class="p">)</span>
-
-        <span class="c1"># copy SourceMod and Buildconf files</span>
-        <span class="c1"># if symlinks exist, copy rather than follow links</span>
-        <span class="k">for</span> <span class="n">casesub</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;SourceMods&quot;</span><span class="p">,</span> <span class="s2">&quot;Buildconf&quot;</span><span class="p">):</span>
-            <span class="n">shutil</span><span class="o">.</span><span class="n">copytree</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cloneroot</span><span class="p">,</span> <span class="n">casesub</span><span class="p">),</span>
-                            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">newcaseroot</span><span class="p">,</span> <span class="n">casesub</span><span class="p">),</span>
-                            <span class="n">symlinks</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-        <span class="c1"># lock env_case.xml in new case</span>
-        <span class="n">lock_file</span><span class="p">(</span><span class="s2">&quot;env_case.xml&quot;</span><span class="p">,</span> <span class="n">newcaseroot</span><span class="p">)</span>
-
-        <span class="c1"># Update README.case</span>
-        <span class="n">fclone</span>   <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">cloneroot</span> <span class="o">+</span> <span class="s2">&quot;/README.case&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
-        <span class="n">fnewcase</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">newcaseroot</span>  <span class="o">+</span> <span class="s2">&quot;/README.case&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span>
-        <span class="n">fnewcase</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">    *** original clone README follows ****&quot;</span><span class="p">)</span>
-        <span class="n">fnewcase</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> &quot;</span> <span class="o">+</span>  <span class="n">fclone</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
-
-        <span class="n">clonename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASE&quot;</span><span class="p">)</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot; Successfully created new case </span><span class="si">{}</span><span class="s2"> from clone case </span><span class="si">{}</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">newcasename</span><span class="p">,</span> <span class="n">clonename</span><span class="p">))</span>
-
-        <span class="n">case_setup</span><span class="p">(</span><span class="n">newcase</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">newcase</span></div>
 
 <div class="viewcode-block" id="Case.submit_jobs"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.case.Case.submit_jobs">[docs]</a>    <span class="k">def</span> <span class="nf">submit_jobs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">no_batch</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">job</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">skip_pnl</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                     <span class="n">mail_user</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mail_type</span><span class="o">=</span><span class="s1">&#39;never&#39;</span><span class="p">,</span> <span class="n">batch_args</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -1497,11 +1406,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_object</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">schedule_rewrite</span><span class="p">(</span><span class="n">new_object</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Case.get_latest_cpl_log"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.case.Case.get_latest_cpl_log">[docs]</a>    <span class="k">def</span> <span class="nf">get_latest_cpl_log</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Case.get_latest_cpl_log"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.case.Case.get_latest_cpl_log">[docs]</a>    <span class="k">def</span> <span class="nf">get_latest_cpl_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coupler_log_path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        find and return the latest cpl log file in the run directory</span>
+<span class="sd">        find and return the latest cpl log file in the</span>
+<span class="sd">        coupler_log_path directory</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">coupler_log_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUNDIR&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">coupler_log_path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">coupler_log_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUNDIR&quot;</span><span class="p">)</span>
         <span class="n">cpllog</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">cpllogs</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">coupler_log_path</span><span class="p">,</span> <span class="s1">&#39;cpl.log.*&#39;</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">cpllogs</span><span class="p">:</span>
@@ -1510,10 +1421,13 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span></div>
 
-<div class="viewcode-block" id="Case.create"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.case.Case.create">[docs]</a>    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">casename</span><span class="p">,</span> <span class="n">srcroot</span><span class="p">,</span> <span class="n">compset_name</span><span class="p">,</span> <span class="n">grid_name</span><span class="p">,</span> <span class="n">user_mods_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">machine_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<div class="viewcode-block" id="Case.create"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.case.Case.create">[docs]</a>    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">casename</span><span class="p">,</span> <span class="n">srcroot</span><span class="p">,</span> <span class="n">compset_name</span><span class="p">,</span> <span class="n">grid_name</span><span class="p">,</span>
+               <span class="n">user_mods_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">machine_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                <span class="n">project</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">pecount</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">compiler</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mpilib</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-               <span class="n">pesfile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">user_grid</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">gridfile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ninst</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">test</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-               <span class="n">walltime</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">queue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output_root</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">run_unsupported</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">answer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+               <span class="n">pesfile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">user_grid</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">gridfile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+               <span class="n">multi_driver</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ninst</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">test</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+               <span class="n">walltime</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">queue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">output_root</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+               <span class="n">run_unsupported</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">answer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                <span class="n">input_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="c1"># Set values for env_case.xml</span>
@@ -1522,10 +1436,13 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">set_lookup_value</span><span class="p">(</span><span class="s2">&quot;SRCROOT&quot;</span><span class="p">,</span> <span class="n">srcroot</span><span class="p">)</span>
 
             <span class="c1"># Configure the Case</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">compset_name</span><span class="p">,</span> <span class="n">grid_name</span><span class="p">,</span> <span class="n">machine_name</span><span class="o">=</span><span class="n">machine_name</span><span class="p">,</span> <span class="n">project</span><span class="o">=</span><span class="n">project</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span><span class="n">compset_name</span><span class="p">,</span> <span class="n">grid_name</span><span class="p">,</span> <span class="n">machine_name</span><span class="o">=</span><span class="n">machine_name</span><span class="p">,</span>
+                           <span class="n">project</span><span class="o">=</span><span class="n">project</span><span class="p">,</span>
                            <span class="n">pecount</span><span class="o">=</span><span class="n">pecount</span><span class="p">,</span> <span class="n">compiler</span><span class="o">=</span><span class="n">compiler</span><span class="p">,</span> <span class="n">mpilib</span><span class="o">=</span><span class="n">mpilib</span><span class="p">,</span>
-                           <span class="n">pesfile</span><span class="o">=</span><span class="n">pesfile</span><span class="p">,</span><span class="n">user_grid</span><span class="o">=</span><span class="n">user_grid</span><span class="p">,</span> <span class="n">gridfile</span><span class="o">=</span><span class="n">gridfile</span><span class="p">,</span> <span class="n">ninst</span><span class="o">=</span><span class="n">ninst</span><span class="p">,</span> <span class="n">test</span><span class="o">=</span><span class="n">test</span><span class="p">,</span>
-                           <span class="n">walltime</span><span class="o">=</span><span class="n">walltime</span><span class="p">,</span> <span class="n">queue</span><span class="o">=</span><span class="n">queue</span><span class="p">,</span> <span class="n">output_root</span><span class="o">=</span><span class="n">output_root</span><span class="p">,</span>
+                           <span class="n">pesfile</span><span class="o">=</span><span class="n">pesfile</span><span class="p">,</span><span class="n">user_grid</span><span class="o">=</span><span class="n">user_grid</span><span class="p">,</span> <span class="n">gridfile</span><span class="o">=</span><span class="n">gridfile</span><span class="p">,</span>
+                           <span class="n">multi_driver</span><span class="o">=</span><span class="n">multi_driver</span><span class="p">,</span> <span class="n">ninst</span><span class="o">=</span><span class="n">ninst</span><span class="p">,</span> <span class="n">test</span><span class="o">=</span><span class="n">test</span><span class="p">,</span>
+                           <span class="n">walltime</span><span class="o">=</span><span class="n">walltime</span><span class="p">,</span> <span class="n">queue</span><span class="o">=</span><span class="n">queue</span><span class="p">,</span>
+                           <span class="n">output_root</span><span class="o">=</span><span class="n">output_root</span><span class="p">,</span>
                            <span class="n">run_unsupported</span><span class="o">=</span><span class="n">run_unsupported</span><span class="p">,</span> <span class="n">answer</span><span class="o">=</span><span class="n">answer</span><span class="p">,</span>
                            <span class="n">input_dir</span><span class="o">=</span><span class="n">input_dir</span><span class="p">)</span>
 
@@ -1538,13 +1455,20 @@
             <span class="c1"># Lock env_case.xml</span>
             <span class="n">lock_file</span><span class="p">(</span><span class="s2">&quot;env_case.xml&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_caseroot</span><span class="p">)</span>
         <span class="k">except</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_caseroot</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">logger</span><span class="o">.</span><span class="n">isEnabledFor</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">test</span><span class="p">:</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Failed to setup case, removing </span><span class="si">{}</span><span class="se">\n</span><span class="s2">Use --debug to force me to keep caseroot&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_caseroot</span><span class="p">))</span>
-                <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_caseroot</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Leaving broken case dir </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_caseroot</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_caseroot</span><span class="p">):</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">logger</span><span class="o">.</span><span class="n">isEnabledFor</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">test</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Failed to setup case, removing </span><span class="si">{}</span><span class="se">\n</span><span class="s2">Use --debug to force me to keep caseroot&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_caseroot</span><span class="p">))</span>
+                    <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_caseroot</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Leaving broken case dir </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_caseroot</span><span class="p">))</span>
 
-            <span class="k">raise</span></div></div>
+            <span class="k">raise</span></div>
+<div class="viewcode-block" id="Case.create_clone"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.case.Case.create_clone">[docs]</a>    <span class="k">def</span> <span class="nf">create_clone</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">newcase</span><span class="p">,</span> <span class="n">keepexe</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">mach_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">project</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cime_output_root</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">user_mods_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; moved to case_clone &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">create_case_clone</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">newcase</span><span class="p">,</span> <span class="n">keepexe</span><span class="o">=</span><span class="n">keepexe</span><span class="p">,</span> <span class="n">mach_dir</span><span class="o">=</span><span class="n">mach_dir</span><span class="p">,</span>
+                          <span class="n">project</span><span class="o">=</span><span class="n">project</span><span class="p">,</span> <span class="n">cime_output_root</span><span class="o">=</span><span class="n">cime_output_root</span><span class="p">,</span>
+                          <span class="n">user_mods_dir</span><span class="o">=</span><span class="n">user_mods_dir</span><span class="p">)</span></div></div>
 </pre></div>
 
           </div>

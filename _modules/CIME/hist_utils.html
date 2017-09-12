@@ -248,10 +248,10 @@
     <span class="n">all_success</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">num_compared</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">comments</span> <span class="o">=</span> <span class="s2">&quot;Comparing hists for case &#39;</span><span class="si">{}</span><span class="s2">&#39; dir1=&#39;</span><span class="si">{}</span><span class="s2">&#39;, suffix1=&#39;</span><span class="si">{}</span><span class="s2">&#39;,  dir2=&#39;</span><span class="si">{}</span><span class="s2">&#39; suffix2=&#39;</span><span class="si">{}</span><span class="s2">&#39;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">testcase</span><span class="p">,</span> <span class="n">from_dir1</span><span class="p">,</span> <span class="n">suffix1</span><span class="p">,</span> <span class="n">from_dir2</span><span class="p">,</span> <span class="n">suffix2</span><span class="p">)</span>
-    <span class="n">multiinst_cpl_compare</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">multiinst_driver_compare</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">_iter_model_file_substrs</span><span class="p">(</span><span class="n">case</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">model</span> <span class="o">==</span> <span class="s1">&#39;cpl&#39;</span> <span class="ow">and</span> <span class="n">suffix2</span> <span class="o">==</span> <span class="s1">&#39;multiinst&#39;</span><span class="p">:</span>
-            <span class="n">multiinst_cpl_compare</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">multiinst_driver_compare</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="n">comments</span> <span class="o">+=</span> <span class="s2">&quot;  comparing model &#39;</span><span class="si">{}</span><span class="s2">&#39;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
         <span class="n">hists1</span> <span class="o">=</span> <span class="n">_get_latest_hist_files</span><span class="p">(</span><span class="n">testcase</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">from_dir1</span><span class="p">,</span> <span class="n">suffix1</span><span class="p">)</span>
         <span class="n">hists2</span> <span class="o">=</span> <span class="n">_get_latest_hist_files</span><span class="p">(</span><span class="n">testcase</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">from_dir2</span><span class="p">,</span> <span class="n">suffix2</span><span class="p">)</span>
@@ -271,7 +271,7 @@
 
         <span class="k">for</span> <span class="n">hist1</span><span class="p">,</span> <span class="n">hist2</span> <span class="ow">in</span> <span class="n">match_ups</span><span class="p">:</span>
             <span class="n">success</span><span class="p">,</span> <span class="n">cprnc_log_file</span> <span class="o">=</span> <span class="n">cprnc</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">hist1</span><span class="p">,</span> <span class="n">hist2</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="n">from_dir1</span><span class="p">,</span>
-                                            <span class="n">multiinst_cpl_compare</span><span class="o">=</span><span class="n">multiinst_cpl_compare</span><span class="p">,</span>
+                                            <span class="n">multiinst_driver_compare</span><span class="o">=</span><span class="n">multiinst_driver_compare</span><span class="p">,</span>
                                             <span class="n">outfile_suffix</span><span class="o">=</span><span class="n">outfile_suffix</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">success</span><span class="p">:</span>
                 <span class="n">comments</span> <span class="o">+=</span> <span class="s2">&quot;    </span><span class="si">{}</span><span class="s2"> matched </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">hist1</span><span class="p">,</span> <span class="n">hist2</span><span class="p">)</span>
@@ -303,7 +303,7 @@
 
     <span class="k">return</span> <span class="n">_compare_hists</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">rundir</span><span class="p">,</span> <span class="n">rundir</span><span class="p">,</span> <span class="n">suffix1</span><span class="p">,</span> <span class="n">suffix2</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="cprnc"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.hist_utils.cprnc">[docs]</a><span class="k">def</span> <span class="nf">cprnc</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">file1</span><span class="p">,</span> <span class="n">file2</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="n">rundir</span><span class="p">,</span> <span class="n">multiinst_cpl_compare</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">outfile_suffix</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="cprnc"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.hist_utils.cprnc">[docs]</a><span class="k">def</span> <span class="nf">cprnc</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">file1</span><span class="p">,</span> <span class="n">file2</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="n">rundir</span><span class="p">,</span> <span class="n">multiinst_driver_compare</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">outfile_suffix</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Run cprnc to compare two individual nc files</span>
 
@@ -343,7 +343,7 @@
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">output_filename</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
             <span class="n">out</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
 
-    <span class="k">if</span> <span class="n">multiinst_cpl_compare</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">multiinst_driver_compare</span><span class="p">:</span>
         <span class="c1">#  In a multiinstance test the cpl hist file will have a different number of</span>
         <span class="c1"># dimensions and so cprnc will indicate that the files seem to be DIFFERENT</span>
         <span class="c1"># in this case we only want to check that the fields we are able to compare</span>
@@ -467,10 +467,12 @@
 
     <span class="c1"># copy latest cpl log to baseline</span>
     <span class="c1"># drop the date so that the name is generic</span>
-    <span class="n">newestcpllogfile</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_latest_cpl_log</span><span class="p">()</span>
-    <span class="k">if</span> <span class="n">newestcpllogfile</span><span class="p">:</span>
+    <span class="n">newestcpllogfile</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_latest_cpl_log</span><span class="p">(</span><span class="n">coupler_log_path</span><span class="o">=</span><span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;LOGDIR&quot;</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">newestcpllogfile</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;No cpl.log file found in log directory </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;LOGDIR&quot;</span><span class="p">)))</span>
+    <span class="k">else</span><span class="p">:</span>
         <span class="n">shutil</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">newestcpllogfile</span><span class="p">,</span>
-                        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">basegen_dir</span><span class="p">,</span> <span class="s2">&quot;cpl.log.gz&quot;</span><span class="p">))</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">basegen_dir</span><span class="p">,</span> <span class="s2">&quot;cpl.log.gz&quot;</span><span class="p">))</span>
 
     <span class="n">expect</span><span class="p">(</span><span class="n">num_gen</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;Could not generate any hist files for case &#39;</span><span class="si">{}</span><span class="s2">&#39;, something is seriously wrong&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">testcase</span><span class="p">))</span>
     <span class="c1">#make sure permissions are open in baseline directory</span>

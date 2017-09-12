@@ -139,7 +139,7 @@
 
 <dl class="class">
 <dt id="CIME.tests.SystemTests.test_system_tests_compare_two.SystemTestsCompareTwoFake">
-<em class="property">class </em><code class="descclassname">CIME.tests.SystemTests.test_system_tests_compare_two.</code><code class="descname">SystemTestsCompareTwoFake</code><span class="sig-paren">(</span><em>case1</em>, <em>run_one_suffix='base'</em>, <em>run_two_suffix='test'</em>, <em>case2setup_raises_exception=False</em>, <em>run_one_should_pass=True</em>, <em>run_two_should_pass=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/SystemTests/test_system_tests_compare_two.html#SystemTestsCompareTwoFake"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.SystemTests.test_system_tests_compare_two.SystemTestsCompareTwoFake" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">CIME.tests.SystemTests.test_system_tests_compare_two.</code><code class="descname">SystemTestsCompareTwoFake</code><span class="sig-paren">(</span><em>case1</em>, <em>run_one_suffix='base'</em>, <em>run_two_suffix='test'</em>, <em>multisubmit=False</em>, <em>case2setup_raises_exception=False</em>, <em>run_one_should_pass=True</em>, <em>run_two_should_pass=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/SystemTests/test_system_tests_compare_two.html#SystemTestsCompareTwoFake"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.SystemTests.test_system_tests_compare_two.SystemTestsCompareTwoFake" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="CIME.SystemTests.html#CIME.SystemTests.system_tests_compare_two.SystemTestsCompareTwo" title="CIME.SystemTests.system_tests_compare_two.SystemTestsCompareTwo"><code class="xref py py-class docutils literal"><span class="pre">CIME.SystemTests.system_tests_compare_two.SystemTestsCompareTwo</span></code></a></p>
 <dl class="method">
 <dt id="CIME.tests.SystemTests.test_system_tests_compare_two.SystemTestsCompareTwoFake.run_indv">
@@ -158,6 +158,12 @@ removed if it’s a maintenance problem.)</p>
 <dt id="CIME.tests.SystemTests.test_system_tests_compare_two.TestSystemTestsCompareTwo">
 <em class="property">class </em><code class="descclassname">CIME.tests.SystemTests.test_system_tests_compare_two.</code><code class="descname">TestSystemTestsCompareTwo</code><span class="sig-paren">(</span><em>methodName='runTest'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/SystemTests/test_system_tests_compare_two.html#TestSystemTestsCompareTwo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.SystemTests.test_system_tests_compare_two.TestSystemTestsCompareTwo" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">unittest.case.TestCase</span></code></p>
+<dl class="method">
+<dt id="CIME.tests.SystemTests.test_system_tests_compare_two.TestSystemTestsCompareTwo.get_caseroots">
+<code class="descname">get_caseroots</code><span class="sig-paren">(</span><em>casename='mytest'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/SystemTests/test_system_tests_compare_two.html#TestSystemTestsCompareTwo.get_caseroots"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.SystemTests.test_system_tests_compare_two.TestSystemTestsCompareTwo.get_caseroots" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a tuple (case1root, case2root)</p>
+</dd></dl>
+
 <dl class="method">
 <dt id="CIME.tests.SystemTests.test_system_tests_compare_two.TestSystemTestsCompareTwo.setUp">
 <code class="descname">setUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/SystemTests/test_system_tests_compare_two.html#TestSystemTestsCompareTwo.setUp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.SystemTests.test_system_tests_compare_two.TestSystemTestsCompareTwo.setUp" title="Permalink to this definition">¶</a></dt>
@@ -181,6 +187,16 @@ removed if it’s a maintenance problem.)</p>
 <dl class="method">
 <dt id="CIME.tests.SystemTests.test_system_tests_compare_two.TestSystemTestsCompareTwo.test_run_phase_internal_calls">
 <code class="descname">test_run_phase_internal_calls</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/SystemTests/test_system_tests_compare_two.html#TestSystemTestsCompareTwo.test_run_phase_internal_calls"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.SystemTests.test_system_tests_compare_two.TestSystemTestsCompareTwo.test_run_phase_internal_calls" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CIME.tests.SystemTests.test_system_tests_compare_two.TestSystemTestsCompareTwo.test_run_phase_internal_calls_multisubmit_phase1">
+<code class="descname">test_run_phase_internal_calls_multisubmit_phase1</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/SystemTests/test_system_tests_compare_two.html#TestSystemTestsCompareTwo.test_run_phase_internal_calls_multisubmit_phase1"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.SystemTests.test_system_tests_compare_two.TestSystemTestsCompareTwo.test_run_phase_internal_calls_multisubmit_phase1" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CIME.tests.SystemTests.test_system_tests_compare_two.TestSystemTestsCompareTwo.test_run_phase_internal_calls_multisubmit_phase2">
+<code class="descname">test_run_phase_internal_calls_multisubmit_phase2</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/SystemTests/test_system_tests_compare_two.html#TestSystemTestsCompareTwo.test_run_phase_internal_calls_multisubmit_phase2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.SystemTests.test_system_tests_compare_two.TestSystemTestsCompareTwo.test_run_phase_internal_calls_multisubmit_phase2" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">

@@ -15,7 +15,6 @@ and **case.setup**.
 
    acme_check_env
    advanced-py-prof
-   archive_metadata.sh
    bless_test_results
    case.build
    case.cmpgen_namelists

@@ -71,6 +71,7 @@
 <li><a class="reference internal" href="#module-CIME.SystemTests.homme">CIME.SystemTests.homme module</a></li>
 <li><a class="reference internal" href="#module-CIME.SystemTests.icp">CIME.SystemTests.icp module</a></li>
 <li><a class="reference internal" href="#module-CIME.SystemTests.irt">CIME.SystemTests.irt module</a></li>
+<li><a class="reference internal" href="#module-CIME.SystemTests.mcc">CIME.SystemTests.mcc module</a></li>
 <li><a class="reference internal" href="#module-CIME.SystemTests.nck">CIME.SystemTests.nck module</a></li>
 <li><a class="reference internal" href="#module-CIME.SystemTests.ncr">CIME.SystemTests.ncr module</a></li>
 <li><a class="reference internal" href="#module-CIME.SystemTests.nodefail">CIME.SystemTests.nodefail module</a></li>
@@ -80,6 +81,7 @@
 <li><a class="reference internal" href="#module-CIME.SystemTests.pfs">CIME.SystemTests.pfs module</a></li>
 <li><a class="reference internal" href="#module-CIME.SystemTests.pre">CIME.SystemTests.pre module</a></li>
 <li><a class="reference internal" href="#module-CIME.SystemTests.rep">CIME.SystemTests.rep module</a></li>
+<li><a class="reference internal" href="#module-CIME.SystemTests.restart_tests">CIME.SystemTests.restart_tests module</a></li>
 <li><a class="reference internal" href="#module-CIME.SystemTests.seq">CIME.SystemTests.seq module</a></li>
 <li><a class="reference internal" href="#module-CIME.SystemTests.sms">CIME.SystemTests.sms module</a></li>
 <li><a class="reference internal" href="#module-CIME.SystemTests.system_tests_common">CIME.SystemTests.system_tests_common module</a></li>
@@ -191,7 +193,7 @@ cime/scripts/data_assimilation directory</p>
 </div>
 <div class="section" id="module-CIME.SystemTests.erp">
 <span id="cime-systemtests-erp-module"></span><h2>CIME.SystemTests.erp module<a class="headerlink" href="#module-CIME.SystemTests.erp" title="Permalink to this headline">¶</a></h2>
-<p>CIME ERP test.  This class inherits from SystemTestsCommon</p>
+<p>CIME ERP test.  This class inherits from RestartTest</p>
 <p>This is a pes counts hybrid (open-MP/MPI) restart bfb test from
 startup.  This is just like an ERS test but the pe-counts/threading
 count are modified on retart.
@@ -200,20 +202,7 @@ count are modified on retart.
 <dl class="class">
 <dt id="CIME.SystemTests.erp.ERP">
 <em class="property">class </em><code class="descclassname">CIME.SystemTests.erp.</code><code class="descname">ERP</code><span class="sig-paren">(</span><em>case</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/SystemTests/erp.html#ERP"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.SystemTests.erp.ERP" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#CIME.SystemTests.system_tests_common.SystemTestsCommon" title="CIME.SystemTests.system_tests_common.SystemTestsCommon"><code class="xref py py-class docutils literal"><span class="pre">CIME.SystemTests.system_tests_common.SystemTestsCommon</span></code></a></p>
-<dl class="method">
-<dt id="CIME.SystemTests.erp.ERP.build_phase">
-<code class="descname">build_phase</code><span class="sig-paren">(</span><em>sharedlib_only=False</em>, <em>model_only=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/SystemTests/erp.html#ERP.build_phase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.SystemTests.erp.ERP.build_phase" title="Permalink to this definition">¶</a></dt>
-<dd><p>Build two cases.  Case one uses defaults, case2 uses half the number of threads
-and tasks. This test will fail for components (e.g. pop) that do not reproduce exactly
-with different numbers of mpi tasks.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="CIME.SystemTests.erp.ERP.run_phase">
-<code class="descname">run_phase</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/SystemTests/erp.html#ERP.run_phase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.SystemTests.erp.ERP.run_phase" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
+<dd><p>Bases: <a class="reference internal" href="#CIME.SystemTests.restart_tests.RestartTest" title="CIME.SystemTests.restart_tests.RestartTest"><code class="xref py py-class docutils literal"><span class="pre">CIME.SystemTests.restart_tests.RestartTest</span></code></a></p>
 </dd></dl>
 
 </div>
@@ -224,12 +213,7 @@ ERR tests short term archiving and restart capabilities</p>
 <dl class="class">
 <dt id="CIME.SystemTests.err.ERR">
 <em class="property">class </em><code class="descclassname">CIME.SystemTests.err.</code><code class="descname">ERR</code><span class="sig-paren">(</span><em>case</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/SystemTests/err.html#ERR"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.SystemTests.err.ERR" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#CIME.SystemTests.ers.ERS" title="CIME.SystemTests.ers.ERS"><code class="xref py py-class docutils literal"><span class="pre">CIME.SystemTests.ers.ERS</span></code></a></p>
-<dl class="method">
-<dt id="CIME.SystemTests.err.ERR.run_phase">
-<code class="descname">run_phase</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/SystemTests/err.html#ERR.run_phase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.SystemTests.err.ERR.run_phase" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
+<dd><p>Bases: <a class="reference internal" href="#CIME.SystemTests.restart_tests.RestartTest" title="CIME.SystemTests.restart_tests.RestartTest"><code class="xref py py-class docutils literal"><span class="pre">CIME.SystemTests.restart_tests.RestartTest</span></code></a></p>
 </dd></dl>
 
 </div>
@@ -241,11 +225,6 @@ ERRI tests short term archiving and restart capabilities with “incomplete” (
 <dt id="CIME.SystemTests.erri.ERRI">
 <em class="property">class </em><code class="descclassname">CIME.SystemTests.erri.</code><code class="descname">ERRI</code><span class="sig-paren">(</span><em>case</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/SystemTests/erri.html#ERRI"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.SystemTests.erri.ERRI" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#CIME.SystemTests.err.ERR" title="CIME.SystemTests.err.ERR"><code class="xref py py-class docutils literal"><span class="pre">CIME.SystemTests.err.ERR</span></code></a></p>
-<dl class="method">
-<dt id="CIME.SystemTests.erri.ERRI.run_phase">
-<code class="descname">run_phase</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/SystemTests/erri.html#ERRI.run_phase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.SystemTests.erri.ERRI.run_phase" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
 </dd></dl>
 
 </div>
@@ -349,6 +328,20 @@ This test the model’s restart capability as well as the short term archiver’
 <dl class="class">
 <dt id="CIME.SystemTests.irt.IRT">
 <em class="property">class </em><code class="descclassname">CIME.SystemTests.irt.</code><code class="descname">IRT</code><span class="sig-paren">(</span><em>case</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/SystemTests/irt.html#IRT"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.SystemTests.irt.IRT" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#CIME.SystemTests.restart_tests.RestartTest" title="CIME.SystemTests.restart_tests.RestartTest"><code class="xref py py-class docutils literal"><span class="pre">CIME.SystemTests.restart_tests.RestartTest</span></code></a></p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-CIME.SystemTests.mcc">
+<span id="cime-systemtests-mcc-module"></span><h2>CIME.SystemTests.mcc module<a class="headerlink" href="#module-CIME.SystemTests.mcc" title="Permalink to this headline">¶</a></h2>
+<p>Implemetation of CIME MCC test: Compares ensemble methods</p>
+<dl class="docutils">
+<dt>This does two runs: In the first we run a three member ensemble using the</dt>
+<dd>MULTI_DRIVER capability, then we run a second single instance case and compare</dd>
+</dl>
+<dl class="class">
+<dt id="CIME.SystemTests.mcc.MCC">
+<em class="property">class </em><code class="descclassname">CIME.SystemTests.mcc.</code><code class="descname">MCC</code><span class="sig-paren">(</span><em>case</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/SystemTests/mcc.html#MCC"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.SystemTests.mcc.MCC" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#CIME.SystemTests.system_tests_compare_two.SystemTestsCompareTwo" title="CIME.SystemTests.system_tests_compare_two.SystemTestsCompareTwo"><code class="xref py py-class docutils literal"><span class="pre">CIME.SystemTests.system_tests_compare_two.SystemTestsCompareTwo</span></code></a></p>
 </dd></dl>
 
@@ -483,6 +476,16 @@ file. Compare to non-pause/resume run.</p>
 <dl class="class">
 <dt id="CIME.SystemTests.rep.REP">
 <em class="property">class </em><code class="descclassname">CIME.SystemTests.rep.</code><code class="descname">REP</code><span class="sig-paren">(</span><em>case</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/SystemTests/rep.html#REP"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.SystemTests.rep.REP" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#CIME.SystemTests.system_tests_compare_two.SystemTestsCompareTwo" title="CIME.SystemTests.system_tests_compare_two.SystemTestsCompareTwo"><code class="xref py py-class docutils literal"><span class="pre">CIME.SystemTests.system_tests_compare_two.SystemTestsCompareTwo</span></code></a></p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-CIME.SystemTests.restart_tests">
+<span id="cime-systemtests-restart-tests-module"></span><h2>CIME.SystemTests.restart_tests module<a class="headerlink" href="#module-CIME.SystemTests.restart_tests" title="Permalink to this headline">¶</a></h2>
+<p>Abstract class for restart tests</p>
+<dl class="class">
+<dt id="CIME.SystemTests.restart_tests.RestartTest">
+<em class="property">class </em><code class="descclassname">CIME.SystemTests.restart_tests.</code><code class="descname">RestartTest</code><span class="sig-paren">(</span><em>case</em>, <em>separate_builds</em>, <em>run_two_suffix='restart'</em>, <em>run_one_description='initial'</em>, <em>run_two_description='restart'</em>, <em>multisubmit=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/SystemTests/restart_tests.html#RestartTest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.SystemTests.restart_tests.RestartTest" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#CIME.SystemTests.system_tests_compare_two.SystemTestsCompareTwo" title="CIME.SystemTests.system_tests_compare_two.SystemTestsCompareTwo"><code class="xref py py-class docutils literal"><span class="pre">CIME.SystemTests.system_tests_compare_two.SystemTestsCompareTwo</span></code></a></p>
 </dd></dl>
 
@@ -759,6 +762,16 @@ Use this to do arbitrary actions immediately after running case two</li>
 <dt id="CIME.SystemTests.system_tests_compare_two.SystemTestsCompareTwo.build_phase">
 <code class="descname">build_phase</code><span class="sig-paren">(</span><em>sharedlib_only=False</em>, <em>model_only=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/SystemTests/system_tests_compare_two.html#SystemTestsCompareTwo.build_phase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.SystemTests.system_tests_compare_two.SystemTestsCompareTwo.build_phase" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="method">
+<dt id="CIME.SystemTests.system_tests_compare_two.SystemTestsCompareTwo.copy_case1_restarts_to_case2">
+<code class="descname">copy_case1_restarts_to_case2</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/SystemTests/system_tests_compare_two.html#SystemTestsCompareTwo.copy_case1_restarts_to_case2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.SystemTests.system_tests_compare_two.SystemTestsCompareTwo.copy_case1_restarts_to_case2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Makes a copy (or symlink) of restart files and related files
+(necessary history files, rpointer files) from case1 to case2.</p>
+<p>This is not done automatically, but can be called by individual
+tests where case2 does a continue_run using case1’s restart
+files.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="CIME.SystemTests.system_tests_compare_two.SystemTestsCompareTwo.run_phase">

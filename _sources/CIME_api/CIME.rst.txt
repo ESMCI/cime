@@ -62,6 +62,14 @@ CIME\.case module
     :undoc-members:
     :show-inheritance:
 
+CIME\.case\_clone module
+------------------------
+
+.. automodule:: CIME.case_clone
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 CIME\.case\_cmpgen\_namelists module
 ------------------------------------
 

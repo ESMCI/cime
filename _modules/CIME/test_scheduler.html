@@ -75,6 +75,7 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">traceback</span><span class="o">,</span> <span class="nn">stat</span><span class="o">,</span> <span class="nn">threading</span><span class="o">,</span> <span class="nn">time</span><span class="o">,</span> <span class="nn">glob</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">OrderedDict</span>
 <span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="k">import</span> <span class="o">*</span>
 <span class="kn">import</span> <span class="nn">CIME.compare_namelists</span>
 <span class="kn">import</span> <span class="nn">CIME.utils</span>
@@ -258,7 +259,7 @@
         <span class="c1"># Each test has it&#39;s own value and setting/retrieving items from a dict</span>
         <span class="c1"># is atomic, so this should be fine to use without mutex.</span>
         <span class="c1"># name -&gt; (phase, status)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_tests</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tests</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">test_name</span> <span class="ow">in</span> <span class="n">test_names</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_tests</span><span class="p">[</span><span class="n">test_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">TEST_START</span><span class="p">,</span> <span class="n">TEST_PASS_STATUS</span><span class="p">)</span>
 
@@ -460,6 +461,8 @@
             <span class="n">create_newcase_cmd</span> <span class="o">+=</span> <span class="s2">&quot; --user-mods-dir </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">test_mod_file</span><span class="p">)</span>
 
         <span class="n">mpilib</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">ninst</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">ncpl</span> <span class="o">=</span> <span class="mi">1</span>
         <span class="k">if</span> <span class="n">case_opts</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">case_opt</span> <span class="ow">in</span> <span class="n">case_opts</span><span class="p">:</span> <span class="c1"># pylint: disable=not-an-iterable</span>
                 <span class="k">if</span> <span class="n">case_opt</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;M&#39;</span><span class="p">):</span>
@@ -467,9 +470,15 @@
                     <span class="n">create_newcase_cmd</span> <span class="o">+=</span> <span class="s2">&quot; --mpilib </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mpilib</span><span class="p">)</span>
                     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span> <span class="p">(</span><span class="s2">&quot; MPILIB set to </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mpilib</span><span class="p">))</span>
                 <span class="k">if</span> <span class="n">case_opt</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;N&#39;</span><span class="p">):</span>
+                    <span class="n">expect</span><span class="p">(</span><span class="n">ncpl</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span><span class="s2">&quot;Cannot combine _C and _N options&quot;</span><span class="p">)</span>
                     <span class="n">ninst</span> <span class="o">=</span> <span class="n">case_opt</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
                     <span class="n">create_newcase_cmd</span> <span class="o">+=</span> <span class="s2">&quot; --ninst </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ninst</span><span class="p">)</span>
                     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span> <span class="p">(</span><span class="s2">&quot; NINST set to </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ninst</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">case_opt</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;C&#39;</span><span class="p">):</span>
+                    <span class="n">expect</span><span class="p">(</span><span class="n">ninst</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span><span class="s2">&quot;Cannot combine _C and _N options&quot;</span><span class="p">)</span>
+                    <span class="n">ncpl</span> <span class="o">=</span> <span class="n">case_opt</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+                    <span class="n">create_newcase_cmd</span> <span class="o">+=</span> <span class="s2">&quot; --ninst </span><span class="si">{}</span><span class="s2"> --multi-driver&quot;</span> <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ncpl</span><span class="p">)</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span> <span class="p">(</span><span class="s2">&quot; NCPL set to </span><span class="si">{}</span><span class="s2">&quot;</span> <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ncpl</span><span class="p">))</span>
                 <span class="k">if</span> <span class="n">case_opt</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;P&#39;</span><span class="p">):</span>
                     <span class="n">pesize</span> <span class="o">=</span> <span class="n">case_opt</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
                     <span class="n">create_newcase_cmd</span> <span class="o">+=</span> <span class="s2">&quot; --pecount </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pesize</span><span class="p">)</span>
@@ -587,6 +596,9 @@
                     <span class="k">continue</span>
 
                 <span class="k">elif</span> <span class="n">opt</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;N&#39;</span><span class="p">):</span>
+                    <span class="c1"># handled in create_newcase</span>
+                    <span class="k">continue</span>
+                <span class="k">elif</span> <span class="n">opt</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;C&#39;</span><span class="p">):</span>
                     <span class="c1"># handled in create_newcase</span>
                     <span class="k">continue</span>
                 <span class="k">elif</span> <span class="n">opt</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;IOP&#39;</span><span class="p">):</span>
@@ -774,12 +786,14 @@
             <span class="n">num_threads_launched_this_iteration</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="k">for</span> <span class="n">test</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tests</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;test_name: &quot;</span> <span class="o">+</span> <span class="n">test</span><span class="p">)</span>
-                <span class="c1"># If we have no workers available, immediately wait</span>
-                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">threads_in_flight</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parallel_jobs</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_wait_for_something_to_finish</span><span class="p">(</span><span class="n">threads_in_flight</span><span class="p">)</span>
 
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_work_remains</span><span class="p">(</span><span class="n">test</span><span class="p">):</span>
                     <span class="n">work_to_do</span> <span class="o">=</span> <span class="kc">True</span>
+
+                    <span class="c1"># If we have no workers available, immediately break out of loop so we can wait</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">threads_in_flight</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parallel_jobs</span><span class="p">:</span>
+                        <span class="k">break</span>
+
                     <span class="k">if</span> <span class="n">test</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">threads_in_flight</span><span class="p">:</span>
                         <span class="n">test_phase</span><span class="p">,</span> <span class="n">test_status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_test_data</span><span class="p">(</span><span class="n">test</span><span class="p">)</span>
                         <span class="n">expect</span><span class="p">(</span><span class="n">test_status</span> <span class="o">!=</span> <span class="n">TEST_PEND_STATUS</span><span class="p">,</span> <span class="n">test</span><span class="p">)</span>

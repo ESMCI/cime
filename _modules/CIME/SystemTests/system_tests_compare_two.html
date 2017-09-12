@@ -104,6 +104,7 @@
 <span class="kn">from</span> <span class="nn">CIME.SystemTests.system_tests_common</span> <span class="k">import</span> <span class="n">SystemTestsCommon</span>
 <span class="kn">from</span> <span class="nn">CIME.case</span> <span class="k">import</span> <span class="n">Case</span>
 <span class="kn">from</span> <span class="nn">CIME.case_submit</span> <span class="k">import</span> <span class="n">check_case</span>
+<span class="kn">from</span> <span class="nn">CIME.case_st_archive</span> <span class="k">import</span> <span class="n">archive_last_restarts</span>
 
 <span class="kn">import</span> <span class="nn">shutil</span><span class="o">,</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">glob</span>
 
@@ -287,19 +288,32 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">_activate_case2</span><span class="p">()</span>
                 <span class="c1"># we need to make sure run2 is properly staged.</span>
                 <span class="k">if</span> <span class="n">run_type</span> <span class="o">!=</span> <span class="s2">&quot;startup&quot;</span><span class="p">:</span>
-                    <span class="n">check_case</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_case2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_caseroot2</span><span class="p">)</span>
+                    <span class="n">check_case</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_case2</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_force_case2_settings</span><span class="p">()</span>
 
                 <span class="bp">self</span><span class="o">.</span><span class="n">_case_two_custom_prerun_action</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">run_indv</span><span class="p">(</span><span class="n">suffix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_two_suffix</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_case_two_custom_postrun_action</span><span class="p">()</span>
+            <span class="c1"># Compare results</span>
+            <span class="c1"># Case1 is the &quot;main&quot; case, and we need to do the comparisons from there</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_activate_case1</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_link_to_case2_output</span><span class="p">()</span>
 
-        <span class="c1"># Compare results</span>
-        <span class="c1"># Case1 is the &quot;main&quot; case, and we need to do the comparisons from there</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_activate_case1</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_link_to_case2_output</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_component_compare_test</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_run_one_suffix</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_two_suffix</span><span class="p">,</span> <span class="n">success_change</span><span class="o">=</span><span class="n">success_change</span><span class="p">)</span></div>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_component_compare_test</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_run_one_suffix</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_two_suffix</span><span class="p">,</span> <span class="n">success_change</span><span class="o">=</span><span class="n">success_change</span><span class="p">)</span></div>
+<div class="viewcode-block" id="SystemTestsCompareTwo.copy_case1_restarts_to_case2"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.system_tests_compare_two.SystemTestsCompareTwo.copy_case1_restarts_to_case2">[docs]</a>    <span class="k">def</span> <span class="nf">copy_case1_restarts_to_case2</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Makes a copy (or symlink) of restart files and related files</span>
+<span class="sd">        (necessary history files, rpointer files) from case1 to case2.</span>
+
+<span class="sd">        This is not done automatically, but can be called by individual</span>
+<span class="sd">        tests where case2 does a continue_run using case1&#39;s restart</span>
+<span class="sd">        files.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">rundir2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case2</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUNDIR&quot;</span><span class="p">)</span>
+        <span class="n">archive_last_restarts</span><span class="p">(</span><span class="n">case</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case1</span><span class="p">,</span>
+                              <span class="n">archive_restdir</span> <span class="o">=</span> <span class="n">rundir2</span><span class="p">,</span>
+                              <span class="n">link_to_restart_files</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span></div>
 
     <span class="c1"># ========================================================================</span>
     <span class="c1"># Private methods</span>
@@ -353,7 +367,7 @@
                 <span class="n">case2_output_root</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_case1</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CIME_OUTPUT_ROOT&quot;</span><span class="p">),</span>
                                                   <span class="bp">self</span><span class="o">.</span><span class="n">_case1</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASE&quot;</span><span class="p">),</span> <span class="s2">&quot;case2&quot;</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_case2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case1</span><span class="o">.</span><span class="n">create_clone</span><span class="p">(</span>
-                    <span class="n">newcase</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_caseroot2</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_caseroot2</span><span class="p">,</span>
                     <span class="n">keepexe</span> <span class="o">=</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_separate_builds</span><span class="p">,</span>
                     <span class="n">cime_output_root</span> <span class="o">=</span> <span class="n">case2_output_root</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_setup_cases</span><span class="p">()</span>

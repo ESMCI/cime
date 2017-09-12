@@ -69,42 +69,32 @@
 <span class="sd">ERR tests short term archiving and restart capabilities</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="k">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">CIME.SystemTests.ers</span> <span class="k">import</span> <span class="n">ERS</span>
-
-<span class="kn">import</span> <span class="nn">shutil</span><span class="o">,</span> <span class="nn">glob</span>
+<span class="kn">from</span> <span class="nn">CIME.SystemTests.restart_tests</span> <span class="k">import</span> <span class="n">RestartTest</span>
+<span class="kn">from</span> <span class="nn">CIME.case_st_archive</span> <span class="k">import</span> <span class="n">restore_from_archive</span>
+<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="k">import</span> <span class="n">ls_sorted_by_mtime</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
-<div class="viewcode-block" id="ERR"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.err.ERR">[docs]</a><span class="k">class</span> <span class="nc">ERR</span><span class="p">(</span><span class="n">ERS</span><span class="p">):</span>
+<div class="viewcode-block" id="ERR"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.err.ERR">[docs]</a><span class="k">class</span> <span class="nc">ERR</span><span class="p">(</span><span class="n">RestartTest</span><span class="p">):</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">):</span> <span class="c1"># pylint: disable=super-init-not-called</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        initialize an object interface to the ERR system test</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">ERS</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">)</span>
+        <span class="n">RestartTest</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="c1"># pylint: disable=non-parent-init-called</span>
+                             <span class="n">separate_builds</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                             <span class="n">run_two_suffix</span> <span class="o">=</span> <span class="s1">&#39;rest&#39;</span><span class="p">,</span>
+                             <span class="n">run_one_description</span> <span class="o">=</span> <span class="s1">&#39;initial&#39;</span><span class="p">,</span>
+                             <span class="n">run_two_description</span> <span class="o">=</span> <span class="s1">&#39;restart&#39;</span><span class="p">,</span>
+                             <span class="n">multisubmit</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
 
-<div class="viewcode-block" id="ERR.run_phase"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.err.ERR.run_phase">[docs]</a>    <span class="k">def</span> <span class="nf">run_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">first_phase</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RESUBMIT&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
-
-        <span class="k">if</span> <span class="n">first_phase</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;DOUT_S&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_ers_first_phase</span><span class="p">()</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">dout_s_root</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;DOUT_S_ROOT&quot;</span><span class="p">)</span>
-            <span class="n">rundir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUNDIR&quot;</span><span class="p">)</span>
-            <span class="n">case</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASE&quot;</span><span class="p">)</span>
-            <span class="c1"># First remove restart, history and rpointer files from the run directory</span>
-            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">iglob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">.*&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">case</span><span class="p">))):</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">item</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;base&quot;</span><span class="p">):</span>
-                    <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">iglob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="s2">&quot;rpointer.*&quot;</span><span class="p">)):</span>
-                <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
-            <span class="c1"># Then replace them from the restart directory</span>
-            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">iglob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dout_s_root</span><span class="p">,</span><span class="s2">&quot;rest&quot;</span><span class="p">,</span><span class="s2">&quot;*&quot;</span><span class="p">,</span><span class="s2">&quot;*&quot;</span><span class="p">)):</span>
-                <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">rundir</span><span class="p">)</span>
-
-            <span class="bp">self</span><span class="o">.</span><span class="n">_ers_second_phase</span><span class="p">()</span></div></div>
+    <span class="k">def</span> <span class="nf">_case_two_custom_prerun_action</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">dout_s_root</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case1</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;DOUT_S_ROOT&quot;</span><span class="p">)</span>
+        <span class="n">rest_root</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dout_s_root</span><span class="p">,</span><span class="s2">&quot;rest&quot;</span><span class="p">))</span>
+        <span class="n">restart_list</span> <span class="o">=</span> <span class="n">ls_sorted_by_mtime</span><span class="p">(</span><span class="n">rest_root</span><span class="p">)</span>
+        <span class="n">expect</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">restart_list</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;No restart files found in </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rest_root</span><span class="p">))</span>
+        <span class="n">restore_from_archive</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="p">,</span> <span class="n">rest_dir</span><span class="o">=</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rest_root</span><span class="p">,</span> <span class="n">restart_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span></div>
 </pre></div>
 
           </div>

@@ -64,6 +64,7 @@
 <li><a class="reference internal" href="#module-CIME.buildlib">CIME.buildlib module</a></li>
 <li><a class="reference internal" href="#module-CIME.buildnml">CIME.buildnml module</a></li>
 <li><a class="reference internal" href="#module-CIME.case">CIME.case module</a></li>
+<li><a class="reference internal" href="#module-CIME.case_clone">CIME.case_clone module</a></li>
 <li><a class="reference internal" href="#module-CIME.case_cmpgen_namelists">CIME.case_cmpgen_namelists module</a></li>
 <li><a class="reference internal" href="#module-CIME.case_run">CIME.case_run module</a></li>
 <li><a class="reference internal" href="#module-CIME.case_setup">CIME.case_setup module</a></li>
@@ -165,6 +166,7 @@
 <li class="toctree-l2"><a class="reference internal" href="CIME.SystemTests.html#module-CIME.SystemTests.homme">CIME.SystemTests.homme module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.SystemTests.html#module-CIME.SystemTests.icp">CIME.SystemTests.icp module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.SystemTests.html#module-CIME.SystemTests.irt">CIME.SystemTests.irt module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CIME.SystemTests.html#module-CIME.SystemTests.mcc">CIME.SystemTests.mcc module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.SystemTests.html#module-CIME.SystemTests.nck">CIME.SystemTests.nck module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.SystemTests.html#module-CIME.SystemTests.ncr">CIME.SystemTests.ncr module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.SystemTests.html#module-CIME.SystemTests.nodefail">CIME.SystemTests.nodefail module</a></li>
@@ -174,6 +176,7 @@
 <li class="toctree-l2"><a class="reference internal" href="CIME.SystemTests.html#module-CIME.SystemTests.pfs">CIME.SystemTests.pfs module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.SystemTests.html#module-CIME.SystemTests.pre">CIME.SystemTests.pre module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.SystemTests.html#module-CIME.SystemTests.rep">CIME.SystemTests.rep module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CIME.SystemTests.html#module-CIME.SystemTests.restart_tests">CIME.SystemTests.restart_tests module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.SystemTests.html#module-CIME.SystemTests.seq">CIME.SystemTests.seq module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.SystemTests.html#module-CIME.SystemTests.sms">CIME.SystemTests.sms module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="CIME.SystemTests.html#module-CIME.SystemTests.system_tests_common">CIME.SystemTests.system_tests_common module</a></li>
@@ -382,7 +385,7 @@ or they can be in the compset definition, or both.</p>
 
 <dl class="method">
 <dt id="CIME.case.Case.configure">
-<code class="descname">configure</code><span class="sig-paren">(</span><em>compset_name</em>, <em>grid_name</em>, <em>machine_name=None</em>, <em>project=None</em>, <em>pecount=None</em>, <em>compiler=None</em>, <em>mpilib=None</em>, <em>pesfile=None</em>, <em>user_grid=False</em>, <em>gridfile=None</em>, <em>ninst=1</em>, <em>test=False</em>, <em>walltime=None</em>, <em>queue=None</em>, <em>output_root=None</em>, <em>run_unsupported=False</em>, <em>answer=None</em>, <em>input_dir=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case.html#Case.configure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.Case.configure" title="Permalink to this definition">¶</a></dt>
+<code class="descname">configure</code><span class="sig-paren">(</span><em>compset_name</em>, <em>grid_name</em>, <em>machine_name=None</em>, <em>project=None</em>, <em>pecount=None</em>, <em>compiler=None</em>, <em>mpilib=None</em>, <em>pesfile=None</em>, <em>user_grid=False</em>, <em>gridfile=None</em>, <em>multi_driver=False</em>, <em>ninst=1</em>, <em>test=False</em>, <em>walltime=None</em>, <em>queue=None</em>, <em>output_root=None</em>, <em>run_unsupported=False</em>, <em>answer=None</em>, <em>input_dir=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case.html#Case.configure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.Case.configure" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -392,7 +395,7 @@ or they can be in the compset definition, or both.</p>
 
 <dl class="method">
 <dt id="CIME.case.Case.create">
-<code class="descname">create</code><span class="sig-paren">(</span><em>casename</em>, <em>srcroot</em>, <em>compset_name</em>, <em>grid_name</em>, <em>user_mods_dir=None</em>, <em>machine_name=None</em>, <em>project=None</em>, <em>pecount=None</em>, <em>compiler=None</em>, <em>mpilib=None</em>, <em>pesfile=None</em>, <em>user_grid=False</em>, <em>gridfile=None</em>, <em>ninst=1</em>, <em>test=False</em>, <em>walltime=None</em>, <em>queue=None</em>, <em>output_root=None</em>, <em>run_unsupported=False</em>, <em>answer=None</em>, <em>input_dir=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case.html#Case.create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.Case.create" title="Permalink to this definition">¶</a></dt>
+<code class="descname">create</code><span class="sig-paren">(</span><em>casename</em>, <em>srcroot</em>, <em>compset_name</em>, <em>grid_name</em>, <em>user_mods_dir=None</em>, <em>machine_name=None</em>, <em>project=None</em>, <em>pecount=None</em>, <em>compiler=None</em>, <em>mpilib=None</em>, <em>pesfile=None</em>, <em>user_grid=False</em>, <em>gridfile=None</em>, <em>multi_driver=False</em>, <em>ninst=1</em>, <em>test=False</em>, <em>walltime=None</em>, <em>queue=None</em>, <em>output_root=None</em>, <em>run_unsupported=False</em>, <em>answer=None</em>, <em>input_dir=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case.html#Case.create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.Case.create" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -402,8 +405,9 @@ or they can be in the compset definition, or both.</p>
 
 <dl class="method">
 <dt id="CIME.case.Case.create_clone">
-<code class="descname">create_clone</code><span class="sig-paren">(</span><em>newcase</em>, <em>keepexe=False</em>, <em>mach_dir=None</em>, <em>project=None</em>, <em>cime_output_root=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case.html#Case.create_clone"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.Case.create_clone" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="descname">create_clone</code><span class="sig-paren">(</span><em>newcase</em>, <em>keepexe=False</em>, <em>mach_dir=None</em>, <em>project=None</em>, <em>cime_output_root=None</em>, <em>user_mods_dir=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case.html#Case.create_clone"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.Case.create_clone" title="Permalink to this definition">¶</a></dt>
+<dd><p>moved to case_clone</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="CIME.case.Case.flush">
@@ -444,8 +448,9 @@ or they can be in the compset definition, or both.</p>
 
 <dl class="method">
 <dt id="CIME.case.Case.get_latest_cpl_log">
-<code class="descname">get_latest_cpl_log</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case.html#Case.get_latest_cpl_log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.Case.get_latest_cpl_log" title="Permalink to this definition">¶</a></dt>
-<dd><p>find and return the latest cpl log file in the run directory</p>
+<code class="descname">get_latest_cpl_log</code><span class="sig-paren">(</span><em>coupler_log_path=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case.html#Case.get_latest_cpl_log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.Case.get_latest_cpl_log" title="Permalink to this definition">¶</a></dt>
+<dd><p>find and return the latest cpl log file in the
+coupler_log_path directory</p>
 </dd></dl>
 
 <dl class="method">
@@ -559,6 +564,15 @@ name is returned</p>
 </dd></dl>
 
 </div>
+<div class="section" id="module-CIME.case_clone">
+<span id="cime-case-clone-module"></span><h2>CIME.case_clone module<a class="headerlink" href="#module-CIME.case_clone" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="CIME.case_clone.create_case_clone">
+<code class="descclassname">CIME.case_clone.</code><code class="descname">create_case_clone</code><span class="sig-paren">(</span><em>case</em>, <em>newcase</em>, <em>keepexe=False</em>, <em>mach_dir=None</em>, <em>project=None</em>, <em>cime_output_root=None</em>, <em>user_mods_dir=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case_clone.html#create_case_clone"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case_clone.create_case_clone" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a case clone</p>
+</dd></dl>
+
+</div>
 <div class="section" id="module-CIME.case_cmpgen_namelists">
 <span id="cime-case-cmpgen-namelists-module"></span><h2>CIME.case_cmpgen_namelists module<a class="headerlink" href="#module-CIME.case_cmpgen_namelists" title="Permalink to this headline">¶</a></h2>
 <p>Library for case.cmpgen_namelists.</p>
@@ -624,6 +638,20 @@ name is returned</p>
 <span id="cime-case-st-archive-module"></span><h2>CIME.case_st_archive module<a class="headerlink" href="#module-CIME.case_st_archive" title="Permalink to this headline">¶</a></h2>
 <p>short term archiving</p>
 <dl class="function">
+<dt id="CIME.case_st_archive.archive_last_restarts">
+<code class="descclassname">CIME.case_st_archive.</code><code class="descname">archive_last_restarts</code><span class="sig-paren">(</span><em>case</em>, <em>archive_restdir</em>, <em>link_to_restart_files=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case_st_archive.html#archive_last_restarts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case_st_archive.archive_last_restarts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convenience function for archiving just the last set of restart
+files to a given directory. This also saves files attached to the
+restart set, such as rpointer files and necessary history
+files. However, it does not save other files that are typically
+archived (e.g., history files, log files).</p>
+<p>Files are copied to the directory given by archive_restdir.</p>
+<p>If link_to_restart_files is True, then symlinks rather than copies
+are done for the restart files. (This has no effect on the history
+files that are associated with these restart files.)</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="CIME.case_st_archive.case_st_archive">
 <code class="descclassname">CIME.case_st_archive.</code><code class="descname">case_st_archive</code><span class="sig-paren">(</span><em>case</em>, <em>last_date=None</em>, <em>archive_incomplete_logs=True</em>, <em>copy_only=False</em>, <em>no_resubmit=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case_st_archive.html#case_st_archive"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case_st_archive.case_st_archive" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create archive object and perform short term archiving</p>
@@ -653,7 +681,7 @@ jobs.</p>
 
 <dl class="function">
 <dt id="CIME.case_submit.check_case">
-<code class="descclassname">CIME.case_submit.</code><code class="descname">check_case</code><span class="sig-paren">(</span><em>case</em>, <em>caseroot</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case_submit.html#check_case"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case_submit.check_case" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">CIME.case_submit.</code><code class="descname">check_case</code><span class="sig-paren">(</span><em>case</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case_submit.html#check_case"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case_submit.check_case" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
@@ -708,7 +736,7 @@ jobs.</p>
 <p>API for checking locked files</p>
 <dl class="function">
 <dt id="CIME.check_lockedfiles.check_lockedfiles">
-<code class="descclassname">CIME.check_lockedfiles.</code><code class="descname">check_lockedfiles</code><span class="sig-paren">(</span><em>caseroot=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/check_lockedfiles.html#check_lockedfiles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.check_lockedfiles.check_lockedfiles" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">CIME.check_lockedfiles.</code><code class="descname">check_lockedfiles</code><span class="sig-paren">(</span><em>case</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/check_lockedfiles.html#check_lockedfiles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.check_lockedfiles.check_lockedfiles" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check that all lockedfiles match what’s in case</p>
 <p>If caseroot is not specified, it is set to the current working directory</p>
 </dd></dl>
@@ -852,7 +880,7 @@ suffix - The string suffix you want to add to saved files, this can be used to f
 
 <dl class="function">
 <dt id="CIME.hist_utils.cprnc">
-<code class="descclassname">CIME.hist_utils.</code><code class="descname">cprnc</code><span class="sig-paren">(</span><em>model</em>, <em>file1</em>, <em>file2</em>, <em>case</em>, <em>rundir</em>, <em>multiinst_cpl_compare=False</em>, <em>outfile_suffix=''</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/hist_utils.html#cprnc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.hist_utils.cprnc" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">CIME.hist_utils.</code><code class="descname">cprnc</code><span class="sig-paren">(</span><em>model</em>, <em>file1</em>, <em>file2</em>, <em>case</em>, <em>rundir</em>, <em>multiinst_driver_compare=False</em>, <em>outfile_suffix=''</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/hist_utils.html#cprnc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.hist_utils.cprnc" title="Permalink to this definition">¶</a></dt>
 <dd><p>Run cprnc to compare two individual nc files</p>
 <p>file1 - the full or relative path of the first file
 file2 - the full or relative path of the second file
@@ -2155,12 +2183,14 @@ show_options (bool): if True, print test options, too (note that the ‘comment�
 <p>user_mod_support.py</p>
 <dl class="function">
 <dt id="CIME.user_mod_support.apply_user_mods">
-<code class="descclassname">CIME.user_mod_support.</code><code class="descname">apply_user_mods</code><span class="sig-paren">(</span><em>caseroot</em>, <em>user_mods_path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/user_mod_support.html#apply_user_mods"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.user_mod_support.apply_user_mods" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">CIME.user_mod_support.</code><code class="descname">apply_user_mods</code><span class="sig-paren">(</span><em>caseroot</em>, <em>user_mods_path</em>, <em>keepexe=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/user_mod_support.html#apply_user_mods"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.user_mod_support.apply_user_mods" title="Permalink to this definition">¶</a></dt>
 <dd><p>Recursivlely apply user_mods to caseroot - this includes updating user_nl_xxx,
 updating SourceMods and creating case shell_commands and xmlchange_cmds files</p>
 <p>First remove case shell_commands files if any already exist</p>
 <p>If this function is called multiple times, settings from later calls will
 take precedence over earlier calls, if there are conflicts.</p>
+<p>keepexe is an optional argument that is needed for cases where apply_user_mods is
+called from create_clone</p>
 </dd></dl>
 
 <dl class="function">
@@ -2707,7 +2737,7 @@ Expects command to work. Just returns output string.</p>
 
 <dl class="function">
 <dt id="CIME.utils.run_sub_or_cmd">
-<code class="descclassname">CIME.utils.</code><code class="descname">run_sub_or_cmd</code><span class="sig-paren">(</span><em>cmd</em>, <em>cmdargs</em>, <em>subname</em>, <em>subargs</em>, <em>logfile=None</em>, <em>case=None</em>, <em>input_str=None</em>, <em>from_dir=None</em>, <em>verbose=None</em>, <em>arg_stdout=&lt;object object&gt;</em>, <em>arg_stderr=&lt;object object&gt;</em>, <em>env=None</em>, <em>combine_output=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#run_sub_or_cmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.run_sub_or_cmd" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">CIME.utils.</code><code class="descname">run_sub_or_cmd</code><span class="sig-paren">(</span><em>cmd</em>, <em>cmdargs</em>, <em>subname</em>, <em>subargs</em>, <em>logfile=None</em>, <em>case=None</em>, <em>from_dir=None</em>, <em>combine_output=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#run_sub_or_cmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.run_sub_or_cmd" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
@@ -2746,6 +2776,14 @@ default behavior.</p>
 <dt id="CIME.utils.stringify_bool">
 <code class="descclassname">CIME.utils.</code><code class="descname">stringify_bool</code><span class="sig-paren">(</span><em>val</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#stringify_bool"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.stringify_bool" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="function">
+<dt id="CIME.utils.symlink_force">
+<code class="descclassname">CIME.utils.</code><code class="descname">symlink_force</code><span class="sig-paren">(</span><em>target</em>, <em>link_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#symlink_force"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.symlink_force" title="Permalink to this definition">¶</a></dt>
+<dd><p>Makes a symlink from link_name to target. Unlike the standard
+os.symlink, this will work even if link_name already exists (in
+which case link_name will be overwritten).</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="CIME.utils.touch">

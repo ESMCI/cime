@@ -178,6 +178,12 @@
                            <span class="n">expected_sourcemod</span> <span class="o">=</span> <span class="s2">&quot;foo</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
                            <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;test_basic&quot;</span><span class="p">)</span></div>
 
+<div class="viewcode-block" id="TestUserModSupport.test_keepexe"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_user_mod_support.TestUserModSupport.test_keepexe">[docs]</a>    <span class="k">def</span> <span class="nf">test_keepexe</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">createUserMod</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertRaisesRegexp</span><span class="p">(</span><span class="ne">SystemExit</span><span class="p">,</span> <span class="s2">&quot;cannot have any source mods&quot;</span><span class="p">):</span>
+            <span class="n">apply_user_mods</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_caseroot</span><span class="p">,</span>
+                            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_user_mods_parent_dir</span><span class="p">,</span> <span class="s2">&quot;foo&quot;</span><span class="p">),</span> <span class="n">keepexe</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
 <div class="viewcode-block" id="TestUserModSupport.test_two_applications"><a class="viewcode-back" href="../../../CIME_api/CIME.tests.html#CIME.tests.test_user_mod_support.TestUserModSupport.test_two_applications">[docs]</a>    <span class="k">def</span> <span class="nf">test_two_applications</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;If apply_user_mods is called twice, the second should appear after the first so that it takes precedence.&quot;&quot;&quot;</span>
 
