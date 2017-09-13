@@ -231,7 +231,7 @@ int main(int argc, char **argv)
     int ntasks;         /* Number of processors involved in current execution. */
     MPI_Comm test_comm; /* Communicator for tasks running tests. */
     int mpierr;         /* Return code from MPI functions. */
-    int verbose = 1;    /* Non-zero to turn on printf statements. */
+    int verbose = 0;    /* Non-zero to turn on printf statements. */
     int ret;            /* Return code from function calls. */
 
     /* Initialize MPI. */
