@@ -9,6 +9,9 @@
 #include <pio.h>
 #include <pio_tests.h>
 
+/* These are in test_common.c. */
+extern int *pio_type;
+
 /* The number of tasks this test should run on. */
 #define TARGET_NTASKS 3
 
@@ -77,6 +80,13 @@ int main(int argc, char **argv)
                 int num_types = (iotype[i] == PIO_IOTYPE_NETCDF4C ||
                                  iotype[i] == PIO_IOTYPE_NETCDF4P) ? NUM_NETCDF_TYPES - 1 : NUM_CLASSIC_TYPES;
 
+                /* Create a decomposition. */
+                int dim_len_2d[NDIM2] = {DIM_LEN2, DIM_LEN3};
+                int ioid[num_types];
+                /* for (int t = 0; t < num_types; t++) */
+                /*     if ((ret = create_decomposition_2d(NUM_COMP_PROCS, my_rank, iosysid[my_comp_idx], dim_len_2d, &ioid[t], pio_type[t]))) */
+                /*         ERR(ret); */
+            
                 /* Create sample file. */
                 if ((ret = create_nc_sample_4(iosysid[my_comp_idx], iotype[i], my_rank, my_comp_idx,
                                               filename, TEST_NAME, verbose, num_types)))
@@ -86,6 +96,11 @@ int main(int argc, char **argv)
                 if ((ret = check_nc_sample_4(iosysid[my_comp_idx], iotype[i], my_rank, my_comp_idx,
                                              filename, verbose, num_types)))
                     ERR(ret);
+
+                /* Free the decompositions. */
+                /* for (int t = 0; t < num_types; t++) */
+                /*     if ((ret = PIOc_freedecomp(iosysid[my_comp_idx], ioid[t]))) */
+                /*         ERR(ret); */
             } /* next netcdf iotype */
 
             /* Finalize the IO system. Only call this from the computation tasks. */

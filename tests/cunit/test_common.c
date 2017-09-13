@@ -46,16 +46,6 @@
 /* The value of the global attribute in the sample 2 output file. */
 #define ATT_VALUE_S2 42
 
-/* For when we need 2D. */
-#define NDIM2 2
-
-/* For when we have 2 vars. */
-#define NVAR2 2
-
-/* Dimension lengths. */
-#define DIM_0_LEN 2
-#define DIM_1_LEN 3
-
 /* Attribute name. */
 #define GLOBAL_ATT_NAME "global_att"
 
@@ -65,10 +55,6 @@
 
 /* Used to create dimension names. */
 #define DIM_NAME "dim"
-
-/* Number of dims in test file. */
-#define NDIM2 2
-#define NDIM3 3
 
 /* Number of vars in test file. */
 #define NVAR2 2
@@ -85,11 +71,9 @@
 #define ATT_LEN 3
 
 #ifdef _NETCDF4
-#define NUM_TYPES_TO_TEST 11
 int pio_type[NUM_TYPES_TO_TEST] = {PIO_BYTE, PIO_CHAR, PIO_SHORT, PIO_INT, PIO_FLOAT, PIO_DOUBLE,
                                    PIO_UBYTE, PIO_USHORT, PIO_UINT, PIO_INT64, PIO_UINT64};
 #else
-#define NUM_TYPES_TO_TEST 6
 int pio_type[NUM_TYPES_TO_TEST] = {PIO_BYTE, PIO_CHAR, PIO_SHORT, PIO_INT, PIO_FLOAT, PIO_DOUBLE};
 #endif /* _NETCDF4 */
 
@@ -975,7 +959,7 @@ int check_nc_sample_3(int iosysid, int iotype, int my_rank, int my_comp_idx,
     int xtype;
     int natts;
     int comp_idx_in;
-    short data_2d[DIM_0_LEN * DIM_1_LEN];
+    short data_2d[DIM_X_LEN * DIM_Y_LEN];
     signed char att_data;
     int ret;
 
@@ -1025,7 +1009,7 @@ int check_nc_sample_3(int iosysid, int iotype, int my_rank, int my_comp_idx,
         ERR(ret);
 
     /* Check 2D data for correctness. */
-    for (int i = 0; i < DIM_0_LEN * DIM_1_LEN; i++)
+    for (int i = 0; i < DIM_X_LEN * DIM_Y_LEN; i++)
         if (data_2d[i] != my_comp_idx + i)
             ERR(ERR_WRONG);
 
@@ -1047,8 +1031,8 @@ int create_nc_sample_3(int iosysid, int iotype, int my_rank, int my_comp_idx,
     char var_name[PIO_MAX_NAME + 1];
     char dim_name[PIO_MAX_NAME + 1];
     int dimid[NDIM2];
-    int dim_len[NDIM2] = {DIM_0_LEN, DIM_1_LEN};
-    short data_2d[DIM_0_LEN * DIM_1_LEN];
+    int dim_len[NDIM2] = {DIM_X_LEN, DIM_Y_LEN};
+    short data_2d[DIM_X_LEN * DIM_Y_LEN];
     int ret;
 
     /* Learn name of IOTYPE. */
@@ -1096,7 +1080,7 @@ int create_nc_sample_3(int iosysid, int iotype, int my_rank, int my_comp_idx,
         ERR(ret);
 
     /* Write the 2-D variable. */
-    for (int i = 0; i < DIM_0_LEN * DIM_1_LEN; i++)
+    for (int i = 0; i < DIM_X_LEN * DIM_Y_LEN; i++)
         data_2d[i] = my_comp_idx + i;
     if ((ret = PIOc_put_var_short(ncid, 1, data_2d)))
         ERR(ret);
@@ -1196,8 +1180,8 @@ int check_nc_sample_4(int iosysid, int iotype, int my_rank, int my_comp_idx,
     for (int t = 0; t < num_types; t++)
     {
         int vid;
-        PIO_Offset type_size;
-        void *threed_data_in;
+        /* PIO_Offset type_size; */
+        /* void *threed_data_in; */
         int var_dimids[NDIM3];
         
         sprintf(var_name, "%s_cmp_%d_type_%d", THREED_VAR_NAME, my_comp_idx, pio_type[t]);        

@@ -47,6 +47,19 @@
 /** The meaning of life, the universe, and everything. */
 #define TEST_VAL_42 42
 
+/* Dimension lengths used in some C tests. */
+#define DIM_LEN2 2
+#define DIM_LEN3 3
+
+/* Number of dims in test file. */
+#define NDIM2 2
+#define NDIM3 3
+#ifdef _NETCDF4
+#define NUM_TYPES_TO_TEST 11
+#else
+#define NUM_TYPES_TO_TEST 6
+#endif /* _NETCDF4 */
+
 /** Handle MPI errors. This should only be used with MPI library
  * function calls. */
 #define MPIERR(e) do {                                                  \
