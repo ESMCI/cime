@@ -146,6 +146,7 @@ endif ()
 set (AT_LEAST_TWO_TASKS 3)
 set (AT_LEAST_THREE_TASKS 4)
 set (AT_LEAST_FOUR_TASKS 5)
+set (AT_LEAST_EIGHT_TASKS 9)
 
 if (PIO_USE_MPISERIAL)
   add_test(NAME test_pioc
@@ -278,7 +279,7 @@ else ()
       TIMEOUT ${DEFAULT_TEST_TIMEOUT})
     add_mpi_test(test_async_manyproc
       EXECUTABLE ${CMAKE_CURRENT_BINARY_DIR}/test_async_manyproc
-      NUMPROCS ${AT_LEAST_FOUR_TASKS}
+      NUMPROCS ${AT_LEAST_EIGHT_TASKS}
       TIMEOUT ${DEFAULT_TEST_TIMEOUT})
   endif ()
   add_mpi_test(test_decomp_uneven

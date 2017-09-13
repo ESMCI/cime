@@ -1,6 +1,8 @@
 /*
  * This tests async with multiple computation components. This test
- * uses more processors than test_async_multicomp.c.
+ * uses more processors than test_async_multicomp.c. In this test, the
+ * IO component has 3 processors, and the computational components
+ * each have 2 processors, so the test uses 7 total.
  *
  * @author Ed Hartnett
  * @date 9/13/17
@@ -10,16 +12,16 @@
 #include <pio_tests.h>
 
 /* The number of tasks this test should run on. */
-#define TARGET_NTASKS 3
+#define TARGET_NTASKS 7
 
 /* The name of this test. */
 #define TEST_NAME "test_async_manyproc"
 
 /* Number of processors that will do IO. */
-#define NUM_IO_PROCS 1
+#define NUM_IO_PROCS 3
 
 /* Number of tasks in each computation component. */
-#define NUM_COMP_PROCS 1
+#define NUM_COMP_PROCS 2
 
 /* Number of computational components to create. */
 #define COMPONENT_COUNT 2
@@ -121,7 +123,7 @@ int check_test_file(int iosysid, int iotype, int my_rank, int my_comp_idx,
     return 0;
 }
 
-/* This creates an empty netCDF file in the specified format. */
+/* This creates a netCDF test file in the specified format. */
 int create_test_file(int iosysid, int iotype, int my_rank, int my_comp_idx,
                      char *filename, int verbose)
 {
@@ -202,14 +204,18 @@ int main(int argc, char **argv)
     int iosysid[COMPONENT_COUNT]; /* The ID for the parallel I/O system. */
     int num_iotypes; /* Number of PIO netCDF iotypes in this build. */
     int iotype[NUM_IOTYPES]; /* iotypes for the supported netCDF IO iotypes. */
-    int num_procs[COMPONENT_COUNT] = {1, 1}; /* Num procs for IO and computation. */
-    int io_proc_list[NUM_IO_PROCS] = {0};
-    int comp_proc_list1[NUM_COMP_PROCS] = {1};
-    int comp_proc_list2[NUM_COMP_PROCS] = {2};
+    int num_procs[COMPONENT_COUNT] = {NUM_COMP_PROCS, NUM_COMP_PROCS}; /* Num procs for IO and computation. */
+    int io_proc_list[NUM_IO_PROCS];
+    int comp_proc_list1[NUM_COMP_PROCS] = {NUM_IO_PROCS, NUM_IO_PROCS + 1};
+    int comp_proc_list2[NUM_COMP_PROCS] = {NUM_IO_PROCS + 2, NUM_IO_PROCS + 3};
     int *proc_list[COMPONENT_COUNT] = {comp_proc_list1, comp_proc_list2};
     MPI_Comm test_comm;
     int verbose = 0;
     int ret; /* Return code. */
+
+    /* Initialize our list of IO tasks. */
+    for (int p = 0; p < NUM_IO_PROCS; p++)
+        io_proc_list[p] = p;
 
     /* Initialize test. */
     if ((ret = pio_test_init2(argc, argv, &my_rank, &ntasks, TARGET_NTASKS, TARGET_NTASKS,
@@ -243,9 +249,13 @@ int main(int argc, char **argv)
             for (int i = 0; i < num_iotypes; i++)
             {
                 char filename[NC_MAX_NAME + 1]; /* Test filename. */
-                int my_comp_idx = my_rank - 1; /* Index in iosysid array. */
+                /* Ranks 0, 1, 2 are IO. 3, 4 are the first
+                 * computation component. 5, 6 are the second. */
+                int my_comp_idx = my_rank < NUM_IO_PROCS + NUM_COMP_PROCS ? 0 : 1;  /* Index in iosysid array. */
 
                 /* Create sample file. */
+                if (verbose)
+                    printf("my_rank %d about to create test file my_comp_idx = %d\n", my_rank, my_comp_idx);
                 if ((ret = create_test_file(iosysid[my_comp_idx], iotype[i], my_rank, my_comp_idx,
                                             filename, verbose)))
                     ERR(ret);
