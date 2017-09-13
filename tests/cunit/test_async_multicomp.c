@@ -30,6 +30,9 @@
 /* Number of vars in test file. */
 #define NVAR2 2
 
+/* These are in test_common.c. */
+extern int *pio_type;
+
 /* Run simple async test. */
 int main(int argc, char **argv)
 {
@@ -49,7 +52,7 @@ int main(int argc, char **argv)
 
     /* Initialize test. */
     if ((ret = pio_test_init2(argc, argv, &my_rank, &ntasks, TARGET_NTASKS, TARGET_NTASKS,
-                              -1, &test_comm)))
+                              3, &test_comm)))
         ERR(ERR_INIT);
 
     /* Is the current process a computation task? */    
@@ -80,16 +83,28 @@ int main(int argc, char **argv)
             {
                 char filename[NC_MAX_NAME + 1]; /* Test filename. */
                 int my_comp_idx = my_rank - 1; /* Index in iosysid array. */
+                int use_darray = 0;
+                /* int dim_len_2d[NDIM2] = {DIM_LEN2, DIM_LEN3}; */
+                int ioid = 0;
+                
+                /* if ((ret = create_decomposition_2d(NUM_COMP_PROCS, my_rank, iosysid[my_comp_idx], dim_len_2d, */
+                /*                                    &ioid, PIO_INT))) */
+                /*     ERR(ret); */
 
                 /* Create sample file. */
                 if ((ret = create_nc_sample_3(iosysid[my_comp_idx], iotype[i], my_rank, my_comp_idx,
-                                              filename, TEST_NAME, verbose)))
+                                              filename, TEST_NAME, verbose, use_darray, ioid)))
                     ERR(ret);
 
                 /* Check the file for correctness. */
                 if ((ret = check_nc_sample_3(iosysid[my_comp_idx], iotype[i], my_rank, my_comp_idx,
-                                             filename, verbose)))
+                                             filename, verbose, use_darray, ioid)))
                     ERR(ret);
+
+                /* Free the decomposition. */
+                /* if ((ret = PIOc_freedecomp(iosysid[my_comp_idx], ioid))) */
+                /*     ERR(ret); */
+
             } /* next netcdf iotype */
 
             /* Finalize the IO system. Only call this from the computation tasks. */

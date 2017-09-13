@@ -9,9 +9,6 @@
 #include <pio.h>
 #include <pio_tests.h>
 
-/* These are in test_common.c. */
-extern int *pio_type;
-
 /* The number of tasks this test should run on. */
 #define TARGET_NTASKS 3
 
@@ -26,6 +23,9 @@ extern int *pio_type;
 
 /* Number of computational components to create. */
 #define COMPONENT_COUNT 2
+
+/* These are in test_common.c. */
+extern int *pio_type;
 
 /* Run simple async test. */
 int main(int argc, char **argv)
@@ -81,8 +81,8 @@ int main(int argc, char **argv)
                                  iotype[i] == PIO_IOTYPE_NETCDF4P) ? NUM_NETCDF_TYPES - 1 : NUM_CLASSIC_TYPES;
 
                 /* Create a decomposition. */
-                int dim_len_2d[NDIM2] = {DIM_LEN2, DIM_LEN3};
-                int ioid[num_types];
+                /* int dim_len_2d[NDIM2] = {DIM_LEN2, DIM_LEN3}; */
+                /* int ioid[num_types]; */
                 /* for (int t = 0; t < num_types; t++) */
                 /*     if ((ret = create_decomposition_2d(NUM_COMP_PROCS, my_rank, iosysid[my_comp_idx], dim_len_2d, &ioid[t], pio_type[t]))) */
                 /*         ERR(ret); */

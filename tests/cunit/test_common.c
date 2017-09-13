@@ -71,10 +71,10 @@
 #define ATT_LEN 3
 
 #ifdef _NETCDF4
-int pio_type[NUM_TYPES_TO_TEST] = {PIO_BYTE, PIO_CHAR, PIO_SHORT, PIO_INT, PIO_FLOAT, PIO_DOUBLE,
-                                   PIO_UBYTE, PIO_USHORT, PIO_UINT, PIO_INT64, PIO_UINT64};
+int pio_type[NUM_PIO_TYPES_TO_TEST] = {PIO_BYTE, PIO_CHAR, PIO_SHORT, PIO_INT, PIO_FLOAT, PIO_DOUBLE,
+                                       PIO_UBYTE, PIO_USHORT, PIO_UINT, PIO_INT64, PIO_UINT64};
 #else
-int pio_type[NUM_TYPES_TO_TEST] = {PIO_BYTE, PIO_CHAR, PIO_SHORT, PIO_INT, PIO_FLOAT, PIO_DOUBLE};
+int pio_type[NUM_PIO_TYPES_TO_TEST] = {PIO_BYTE, PIO_CHAR, PIO_SHORT, PIO_INT, PIO_FLOAT, PIO_DOUBLE};
 #endif /* _NETCDF4 */
 
 /* Attribute test data. */
@@ -109,19 +109,19 @@ unsigned long long uint64_scalar_data = NC_MAX_UINT64;
 
 /* Pointers to the data. */
 #ifdef _NETCDF4
-void *att_data[NUM_TYPES_TO_TEST] = {byte_att_data, char_att_data, short_att_data,
-                                     int_att_data, float_att_data, double_att_data,
-                                     ubyte_att_data, ushort_att_data, uint_att_data,
-                                     int64_att_data, uint64_att_data};
-void *scalar_data[NUM_TYPES_TO_TEST] = {&byte_scalar_data, &char_scalar_data, &short_scalar_data,
-                                        &int_scalar_data, &float_scalar_data, &double_scalar_data,
-                                        &ubyte_scalar_data, &ushort_scalar_data, &uint_scalar_data,
-                                        &int64_scalar_data, &uint64_scalar_data};
+void *att_data[NUM_PIO_TYPES_TO_TEST] = {byte_att_data, char_att_data, short_att_data,
+                                         int_att_data, float_att_data, double_att_data,
+                                         ubyte_att_data, ushort_att_data, uint_att_data,
+                                         int64_att_data, uint64_att_data};
+void *scalar_data[NUM_PIO_TYPES_TO_TEST] = {&byte_scalar_data, &char_scalar_data, &short_scalar_data,
+                                            &int_scalar_data, &float_scalar_data, &double_scalar_data,
+                                            &ubyte_scalar_data, &ushort_scalar_data, &uint_scalar_data,
+                                            &int64_scalar_data, &uint64_scalar_data};
 #else
-void *att_data[NUM_TYPES_TO_TEST] = {byte_att_data, char_att_data, short_att_data,
-                                     int_att_data, float_att_data, double_att_data};
-void *scalar_data[NUM_TYPES_TO_TEST] = {&byte_scalar_data, &char_scalar_data, &short_scalar_data,
-                                        &int_scalar_data, &float_scalar_data, &double_scalar_data};
+void *att_data[NUM_PIO_TYPES_TO_TEST] = {byte_att_data, char_att_data, short_att_data,
+                                         int_att_data, float_att_data, double_att_data};
+void *scalar_data[NUM_PIO_TYPES_TO_TEST] = {&byte_scalar_data, &char_scalar_data, &short_scalar_data,
+                                            &int_scalar_data, &float_scalar_data, &double_scalar_data};
 #endif /* _NETCDF4 */
 
 /* How many flavors of netCDF are available? */
@@ -942,9 +942,122 @@ int create_decomposition_2d(int ntasks, int my_rank, int iosysid, int *dim_len_2
     return 0;
 }
 
-/* Check a test file for correctness. */
+/*
+ * This creates a test netCDF file in the specified format. This file
+ * is simple, with a global attribute, 2 dimensions, a scalar var, and
+ * a 2D var.
+ *
+ * @param iosysid identifies the IO system.
+ * @param iotype the iotype to be used to create the file.
+ * @param my_rank rank of this task in world (for debugging messages
+ * only).
+ * @param my_comp_idx the index of the computational component
+ * creating the file.
+ * @param filename pointer to buffer that will get filename. Must be
+ * PIO_MAX_NAME + 1 in size.
+ * @param test_name name of the test program.
+ * @param verbose non-zero to turn on printf statements.
+ * @param use_darray if non-zero, use darray functions to write data,
+ * otherwise use PIOc_put_var().
+ * @param ioid the decomposition ID to use if darrays are used to
+ * write data.
+ * @returns 0 for success, error code otherwise.
+ */
+int create_nc_sample_3(int iosysid, int iotype, int my_rank, int my_comp_idx,
+                       char *filename, char *test_name, int verbose, int use_darray,
+                       int ioid)
+{
+    char iotype_name[NC_MAX_NAME + 1];
+    int ncid;
+    signed char my_char_comp_idx = my_comp_idx;
+    int varid[NVAR2];
+    char att_name[PIO_MAX_NAME + 1];
+    char var_name[PIO_MAX_NAME + 1];
+    char dim_name[PIO_MAX_NAME + 1];
+    int dimid[NDIM2];
+    int dim_len[NDIM2] = {DIM_X_LEN, DIM_Y_LEN};
+    short data_2d[DIM_X_LEN * DIM_Y_LEN];
+    int ret;
+
+    /* Learn name of IOTYPE. */
+    if ((ret = get_iotype_name(iotype, iotype_name)))
+        ERR(ret);
+
+    /* Create a filename. */
+    sprintf(filename, "%s_%s_cmp_%d.nc", test_name, iotype_name, my_comp_idx);
+    if (verbose)
+        printf("my_rank %d creating test file %s for iosysid %d\n", my_rank, filename, iosysid);
+
+    /* Create the file. */
+    if ((ret = PIOc_createfile(iosysid, &ncid, &iotype, filename, NC_CLOBBER)))
+        ERR(ret);
+
+    /* Create a global attribute. */
+    sprintf(att_name, "%s_%d", GLOBAL_ATT_NAME, my_comp_idx);
+    if ((ret = PIOc_put_att_schar(ncid, PIO_GLOBAL, att_name, PIO_BYTE, 1, &my_char_comp_idx)))
+        ERR(ret);
+
+    /* Define a scalar variable. */
+    sprintf(var_name, "%s_%d", SCALAR_VAR_NAME, my_comp_idx);
+    if ((ret = PIOc_def_var(ncid, var_name, PIO_INT, 0, NULL, &varid[0])))
+        ERR(ret);
+
+    /* Define two dimensions. */
+    for (int d = 0; d < NDIM2; d++)
+    {
+        sprintf(dim_name, "%s_%d_cmp_%d", DIM_NAME, d, my_comp_idx);
+        if ((ret = PIOc_def_dim(ncid, dim_name, dim_len[d], &dimid[d])))
+            ERR(ret);
+    }
+
+    /* Define a 2D variable. */
+    sprintf(var_name, "%s_%d", TWOD_VAR_NAME, my_comp_idx);
+    if ((ret = PIOc_def_var(ncid, var_name, PIO_SHORT, NDIM2, dimid, &varid[1])))
+        ERR(ret);
+
+    /* End define mode. */
+    if ((ret = PIOc_enddef(ncid)))
+        ERR(ret);
+
+    /* Write the scalar variable. */
+    if ((ret = PIOc_put_var_int(ncid, 0, &my_comp_idx)))
+        ERR(ret);
+
+    /* Write the 2-D variable. */
+    for (int i = 0; i < DIM_X_LEN * DIM_Y_LEN; i++)
+        data_2d[i] = my_comp_idx + i;
+    if ((ret = PIOc_put_var_short(ncid, 1, data_2d)))
+        ERR(ret);
+
+    /* Close the file if ncidp was not provided. */
+    if ((ret = PIOc_closefile(ncid)))
+        ERR(ret);
+
+    return PIO_NOERR;
+}
+
+/*
+ * Check the file produced by create_nc_sample_3() for
+ * correctness. This checks all the metadata and data in the test
+ * file.
+ *
+ * @param iosysid identifies the IO system.
+ * @param iotype the iotype to be used to create the file.
+ * @param my_rank rank of this task in world (for debugging messages
+ * only).
+ * @param my_comp_idx the index of the computational component
+ * creating the file.
+ * @param filename the name of the file to check.
+ * @param test_name name of the test program.
+ * @param verbose non-zero to turn on printf statements.
+ * @param use_darray if non-zero, use darray functions to write data,
+ * otherwise use PIOc_put_var().
+ * @param ioid the decomposition ID to use if darrays are used to
+ * write data.
+ * @returns 0 for success, error code otherwise.
+ */
 int check_nc_sample_3(int iosysid, int iotype, int my_rank, int my_comp_idx,
-                      const char *filename, int verbose)
+                      const char *filename, int verbose, int use_darray, int ioid)
 {
     int ncid;
     int nvars;
@@ -1019,202 +1132,24 @@ int check_nc_sample_3(int iosysid, int iotype, int my_rank, int my_comp_idx,
     return 0;
 }
 
-/* This creates an empty netCDF file in the specified format. */
-int create_nc_sample_3(int iosysid, int iotype, int my_rank, int my_comp_idx,
-                       char *filename, char *test_name, int verbose)
-{
-    char iotype_name[NC_MAX_NAME + 1];
-    int ncid;
-    signed char my_char_comp_idx = my_comp_idx;
-    int varid[NVAR2];
-    char att_name[PIO_MAX_NAME + 1];
-    char var_name[PIO_MAX_NAME + 1];
-    char dim_name[PIO_MAX_NAME + 1];
-    int dimid[NDIM2];
-    int dim_len[NDIM2] = {DIM_X_LEN, DIM_Y_LEN};
-    short data_2d[DIM_X_LEN * DIM_Y_LEN];
-    int ret;
-
-    /* Learn name of IOTYPE. */
-    if ((ret = get_iotype_name(iotype, iotype_name)))
-        ERR(ret);
-    
-    /* Create a filename. */
-    sprintf(filename, "%s_%s_cmp_%d.nc", test_name, iotype_name, my_comp_idx);
-    if (verbose)
-        printf("my_rank %d creating test file %s for iosysid %d\n", my_rank, filename, iosysid);
-
-    /* Create the file. */
-    if ((ret = PIOc_createfile(iosysid, &ncid, &iotype, filename, NC_CLOBBER)))
-        ERR(ret);
-
-    /* Create a global attribute. */
-    sprintf(att_name, "%s_%d", GLOBAL_ATT_NAME, my_comp_idx);
-    if ((ret = PIOc_put_att_schar(ncid, PIO_GLOBAL, att_name, PIO_BYTE, 1, &my_char_comp_idx)))
-        ERR(ret);
-
-    /* Define a scalar variable. */
-    sprintf(var_name, "%s_%d", SCALAR_VAR_NAME, my_comp_idx);
-    if ((ret = PIOc_def_var(ncid, var_name, PIO_INT, 0, NULL, &varid[0])))
-        ERR(ret);
-
-    /* Define two dimensions. */
-    for (int d = 0; d < NDIM2; d++)
-    {
-        sprintf(dim_name, "%s_%d_cmp_%d", DIM_NAME, d, my_comp_idx);
-        if ((ret = PIOc_def_dim(ncid, dim_name, dim_len[d], &dimid[d])))
-            ERR(ret);
-    }
-
-    /* Define a 2D variable. */
-    sprintf(var_name, "%s_%d", TWOD_VAR_NAME, my_comp_idx);
-    if ((ret = PIOc_def_var(ncid, var_name, PIO_SHORT, NDIM2, dimid, &varid[1])))
-        ERR(ret);
-
-    /* End define mode. */
-    if ((ret = PIOc_enddef(ncid)))
-        ERR(ret);
-
-    /* Write the scalar variable. */
-    if ((ret = PIOc_put_var_int(ncid, 0, &my_comp_idx)))
-        ERR(ret);
-
-    /* Write the 2-D variable. */
-    for (int i = 0; i < DIM_X_LEN * DIM_Y_LEN; i++)
-        data_2d[i] = my_comp_idx + i;
-    if ((ret = PIOc_put_var_short(ncid, 1, data_2d)))
-        ERR(ret);
-
-    /* Close the file if ncidp was not provided. */
-    if ((ret = PIOc_closefile(ncid)))
-        ERR(ret);
-
-    return PIO_NOERR;
-}
-
-/* Check a test file for correctness. */
-int check_nc_sample_4(int iosysid, int iotype, int my_rank, int my_comp_idx,
-                      const char *filename, int verbose, int num_types)
-{
-    int ncid;
-    int nvars;
-    int ndims;
-    int ngatts;
-    int unlimdimid;
-    /* PIO_Offset att_len; */
-    /* char att_name[PIO_MAX_NAME + 1]; */
-    char var_name[PIO_MAX_NAME + 1];
-    /* int dimid[NDIM2]; */
-    int xtype;
-    int natts;
-    /* int comp_idx_in; */
-    /* short data_2d[DIM_X_LEN * DIM_Y_LEN]; */
-    int ret;
-
-    /* Open the test file. */
-    if ((ret = PIOc_openfile2(iosysid, &ncid, &iotype, filename, PIO_NOWRITE)))
-        ERR(ret);
-
-    /* Check file metadata. */
-    if ((ret = PIOc_inq(ncid, &ndims, &nvars, &ngatts, &unlimdimid)))
-        ERR(ret);
-    if (ndims != NDIM3 || nvars != num_types * 2 || ngatts != num_types || unlimdimid != 0)
-        ERR(ERR_WRONG);
-
-    /* Check the global attributes. */
-    for (int t = 0; t < num_types; t++)
-    {
-        PIO_Offset type_size;
-        PIO_Offset att_len_in;
-        void *att_data_in;
-        char att_name[PIO_MAX_NAME + 1];
-        
-        sprintf(att_name, "%s_cmp_%d_type_%d", GLOBAL_ATT_NAME, my_comp_idx, pio_type[t]);
-        if ((ret = PIOc_inq_att(ncid, NC_GLOBAL, att_name, &xtype, &att_len_in)))
-            ERR(ret);
-        if (xtype != pio_type[t] || att_len_in != ATT_LEN)
-            ERR(ERR_WRONG);
-        if ((ret = PIOc_inq_type(ncid, xtype, NULL, &type_size)))
-            ERR(ret);
-        if (!(att_data_in = malloc(type_size * ATT_LEN)))
-            ERR(ERR_AWFUL);
-        if (verbose)
-            printf("my_rank %d t %d pio_type[t] %d type_size %lld\n", my_rank, t, pio_type[t],
-                   type_size);
-        if ((ret = PIOc_get_att(ncid, PIO_GLOBAL, att_name, att_data_in)))
-            ERR(ret);
-        if (memcmp(att_data_in, att_data[t], type_size * ATT_LEN))
-            ERR(ERR_WRONG);
-        free(att_data_in);
-    }
-
-    /* Check the scalar variables. */
-    for (int t = 0; t < num_types; t++)
-    {
-        int vid;
-        PIO_Offset type_size;
-        void *scalar_data_in;
-        
-        sprintf(var_name, "%s_cmp_%d_type_%d", SCALAR_VAR_NAME, my_comp_idx, pio_type[t]);
-        if ((ret = PIOc_inq_varid(ncid, var_name, &vid)))
-            ERR(ret);
-        if ((ret = PIOc_inq_var(ncid, vid, var_name, &xtype, &ndims, NULL, &natts)))
-            ERR(ret);
-        if (xtype != pio_type[t] || ndims != 0 || natts != 0)
-            ERR(ERR_WRONG);
-        
-        /* Check the data. */
-        if ((ret = PIOc_inq_type(ncid, xtype, NULL, &type_size)))
-            ERR(ret);
-        if (!(scalar_data_in = malloc(type_size)))
-            ERR(ERR_AWFUL);
-        
-        if ((ret = PIOc_get_var(ncid, vid, scalar_data_in)))
-            ERR(ret);
-        /* if (comp_idx_in != my_comp_idx) */
-        /*     ERR(ERR_WRONG); */
-        free(scalar_data_in);
-    }
-
-    /* Check the 3D variables. */
-    for (int t = 0; t < num_types; t++)
-    {
-        int vid;
-        /* PIO_Offset type_size; */
-        /* void *threed_data_in; */
-        int var_dimids[NDIM3];
-        
-        sprintf(var_name, "%s_cmp_%d_type_%d", THREED_VAR_NAME, my_comp_idx, pio_type[t]);        
-        if ((ret = PIOc_inq_varid(ncid, var_name, &vid)))
-            ERR(ret);
-        if ((ret = PIOc_inq_var(ncid, vid, var_name, &xtype, &ndims, var_dimids, &natts)))
-            ERR(ret);
-        if (xtype != pio_type[t] || ndims != NDIM3 || natts != 0)
-            ERR(ERR_WRONG);
-    
-        /* if ((ret = PIOc_inq_var(ncid, 1, var_name, &xtype, &ndims, dimid, &natts))) */
-        /*     ERR(ret); */
-        /* sprintf(var_name_expected, "%s_%d", THREED_VAR_NAME, my_comp_idx); */
-        /* if (strcmp(var_name, var_name_expected) || xtype != PIO_SHORT || ndims != 2 || natts != 0) */
-        /*     ERR(ERR_WRONG); */
-        
-        /* /\* Read the 2-D variable. *\/ */
-        /* if ((ret = PIOc_get_var_short(ncid, 1, data_2d))) */
-        /*     ERR(ret); */
-        
-        /* /\* Check 2D data for correctness. *\/ */
-        /* for (int i = 0; i < DIM_X_LEN * DIM_Y_LEN; i++) */
-        /*     if (data_2d[i] != my_comp_idx + i) */
-        /*         ERR(ERR_WRONG); */
-    }
-
-    /* Close the test file. */
-    if ((ret = PIOc_closefile(ncid)))
-        ERR(ret);
-    return 0;
-}
-
-/* This creates an empty netCDF file in the specified format. */
+/*
+ * This creates a test netCDF file in the specified format. This file
+ * is more complex. It has a global attribute of every type, 3
+ * dimensions, including unlimited dimension, a scalar var of each
+ * type, and a 3D var of each type.
+ *
+ * @param iosysid identifies the IO system.
+ * @param iotype the iotype to be used to create the file.
+ * @param my_rank rank of this task in world (for debugging messages
+ * only).
+ * @param my_comp_idx the index of the computational component
+ * creating the file.
+ * @param filename pointer to buffer that will get filename. Must be
+ * PIO_MAX_NAME + 1 in size.
+ * @param test_name name of the test program.
+ * @param varbose non-zero to turn on printf statements.
+ * @returns 0 for success, error code otherwise.
+ */
 int create_nc_sample_4(int iosysid, int iotype, int my_rank, int my_comp_idx,
                        char *filename, char *test_name, int verbose, int num_types)
 {
@@ -1233,7 +1168,7 @@ int create_nc_sample_4(int iosysid, int iotype, int my_rank, int my_comp_idx,
     /* Learn name of IOTYPE. */
     if ((ret = get_iotype_name(iotype, iotype_name)))
         ERR(ret);
-    
+
     /* Create a filename. */
     sprintf(filename, "%s_%s_cmp_%d.nc", test_name, iotype_name, my_comp_idx);
     if (verbose)
@@ -1300,3 +1235,124 @@ int create_nc_sample_4(int iosysid, int iotype, int my_rank, int my_comp_idx,
     return PIO_NOERR;
 }
 
+/* Check a test file for correctness. */
+int check_nc_sample_4(int iosysid, int iotype, int my_rank, int my_comp_idx,
+                      const char *filename, int verbose, int num_types)
+{
+    int ncid;
+    int nvars;
+    int ndims;
+    int ngatts;
+    int unlimdimid;
+    /* PIO_Offset att_len; */
+    /* char att_name[PIO_MAX_NAME + 1]; */
+    char var_name[PIO_MAX_NAME + 1];
+    /* int dimid[NDIM2]; */
+    int xtype;
+    int natts;
+    /* int comp_idx_in; */
+    /* short data_2d[DIM_X_LEN * DIM_Y_LEN]; */
+    int ret;
+
+    /* Open the test file. */
+    if ((ret = PIOc_openfile2(iosysid, &ncid, &iotype, filename, PIO_NOWRITE)))
+        ERR(ret);
+
+    /* Check file metadata. */
+    if ((ret = PIOc_inq(ncid, &ndims, &nvars, &ngatts, &unlimdimid)))
+        ERR(ret);
+    if (ndims != NDIM3 || nvars != num_types * 2 || ngatts != num_types || unlimdimid != 0)
+        ERR(ERR_WRONG);
+
+    /* Check the global attributes. */
+    for (int t = 0; t < num_types; t++)
+    {
+        PIO_Offset type_size;
+        PIO_Offset att_len_in;
+        void *att_data_in;
+        char att_name[PIO_MAX_NAME + 1];
+
+        sprintf(att_name, "%s_cmp_%d_type_%d", GLOBAL_ATT_NAME, my_comp_idx, pio_type[t]);
+        if ((ret = PIOc_inq_att(ncid, NC_GLOBAL, att_name, &xtype, &att_len_in)))
+            ERR(ret);
+        if (xtype != pio_type[t] || att_len_in != ATT_LEN)
+            ERR(ERR_WRONG);
+        if ((ret = PIOc_inq_type(ncid, xtype, NULL, &type_size)))
+            ERR(ret);
+        if (!(att_data_in = malloc(type_size * ATT_LEN)))
+            ERR(ERR_AWFUL);
+        if (verbose)
+            printf("my_rank %d t %d pio_type[t] %d type_size %lld\n", my_rank, t, pio_type[t],
+                   type_size);
+        if ((ret = PIOc_get_att(ncid, PIO_GLOBAL, att_name, att_data_in)))
+            ERR(ret);
+        if (memcmp(att_data_in, att_data[t], type_size * ATT_LEN))
+            ERR(ERR_WRONG);
+        free(att_data_in);
+    }
+
+    /* Check the scalar variables. */
+    for (int t = 0; t < num_types; t++)
+    {
+        int vid;
+        PIO_Offset type_size;
+        void *scalar_data_in;
+
+        sprintf(var_name, "%s_cmp_%d_type_%d", SCALAR_VAR_NAME, my_comp_idx, pio_type[t]);
+        if ((ret = PIOc_inq_varid(ncid, var_name, &vid)))
+            ERR(ret);
+        if ((ret = PIOc_inq_var(ncid, vid, var_name, &xtype, &ndims, NULL, &natts)))
+            ERR(ret);
+        if (xtype != pio_type[t] || ndims != 0 || natts != 0)
+            ERR(ERR_WRONG);
+
+        /* Check the data. */
+        if ((ret = PIOc_inq_type(ncid, xtype, NULL, &type_size)))
+            ERR(ret);
+        if (!(scalar_data_in = malloc(type_size)))
+            ERR(ERR_AWFUL);
+
+        if ((ret = PIOc_get_var(ncid, vid, scalar_data_in)))
+            ERR(ret);
+        /* if (comp_idx_in != my_comp_idx) */
+        /*     ERR(ERR_WRONG); */
+        free(scalar_data_in);
+    }
+
+    /* Check the 3D variables. */
+    for (int t = 0; t < num_types; t++)
+    {
+        int vid;
+        /* PIO_Offset type_size; */
+        /* void *threed_data_in; */
+        int var_dimids[NDIM3];
+
+        sprintf(var_name, "%s_cmp_%d_type_%d", THREED_VAR_NAME, my_comp_idx, pio_type[t]);
+        if ((ret = PIOc_inq_varid(ncid, var_name, &vid)))
+            ERR(ret);
+        if ((ret = PIOc_inq_var(ncid, vid, var_name, &xtype, &ndims, var_dimids, &natts)))
+            ERR(ret);
+        if (xtype != pio_type[t] || ndims != NDIM3 || natts != 0)
+            ERR(ERR_WRONG);
+
+        /* if ((ret = PIOc_inq_var(ncid, 1, var_name, &xtype, &ndims, dimid, &natts))) */
+        /*     ERR(ret); */
+        /* sprintf(var_name_expected, "%s_%d", THREED_VAR_NAME, my_comp_idx); */
+        /* if (strcmp(var_name, var_name_expected) || xtype != PIO_SHORT || ndims != 2 || natts != 0) */
+        /*     ERR(ERR_WRONG); */
+
+        /* /\* Read the 2-D variable. *\/ */
+        /* if ((ret = PIOc_get_var_short(ncid, 1, data_2d))) */
+        /*     ERR(ret); */
+
+        /* /\* Check 2D data for correctness. *\/ */
+        /* for (int i = 0; i < DIM_X_LEN * DIM_Y_LEN; i++) */
+        /*     if (data_2d[i] != my_comp_idx + i) */
+        /*         ERR(ERR_WRONG); */
+    }
+
+    /* Close the test file. */
+    if ((ret = PIOc_closefile(ncid)))
+        ERR(ret);
+    return 0;
+}

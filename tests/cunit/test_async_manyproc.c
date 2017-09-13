@@ -88,12 +88,12 @@ int main(int argc, char **argv)
 
                 /* Create sample file. */
                 if ((ret = create_nc_sample_3(iosysid[my_comp_idx], iotype[i], my_rank, my_comp_idx,
-                                              filename, TEST_NAME, verbose)))
+                                              filename, TEST_NAME, verbose, 0, 0)))
                     ERR(ret);
 
                 /* Check the file for correctness. */
                 if ((ret = check_nc_sample_3(iosysid[my_comp_idx], iotype[i], my_rank, my_comp_idx,
-                                             filename, verbose)))
+                                             filename, verbose, 0, 0)))
                     ERR(ret);
             } /* next netcdf iotype */
 
