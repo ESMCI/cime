@@ -108,15 +108,36 @@ long long int64_att_data[ATT_LEN] = {NC_MAX_INT64, NC_MIN_INT64, NC_MAX_INT64};
 unsigned long long uint64_att_data[ATT_LEN] = {NC_MAX_UINT64, 0, NC_MAX_UINT64};
 #endif /* _NETCDF4 */
 
+/* Scalar variable test data. */
+signed char byte_scalar_data = NC_MAX_BYTE;
+char char_scalar_data = NC_MAX_CHAR;
+short short_scalar_data = NC_MAX_SHORT;
+int int_scalar_data = NC_MAX_INT;
+float float_scalar_data = NC_MAX_FLOAT;
+double double_scalar_data = NC_MAX_DOUBLE;
+#ifdef _NETCDF4
+unsigned char ubyte_scalar_data = NC_MAX_UBYTE;
+unsigned short ushort_scalar_data = NC_MAX_USHORT;
+unsigned int uint_scalar_data = NC_MAX_UINT;
+long long int64_scalar_data = NC_MAX_INT64;
+unsigned long long uint64_scalar_data = NC_MAX_UINT64;
+#endif /* _NETCDF4 */
+
 /* Pointers to the data. */
 #ifdef _NETCDF4
-void *att_data[NUM_TYPES_TO_TEST] = {&byte_att_data, &char_att_data, &short_att_data,
+void *att_data[NUM_TYPES_TO_TEST] = {byte_att_data, char_att_data, short_att_data,
                                      int_att_data, float_att_data, double_att_data,
                                      ubyte_att_data, ushort_att_data, uint_att_data,
                                      int64_att_data, uint64_att_data};
+void *scalar_data[NUM_TYPES_TO_TEST] = {&byte_scalar_data, &char_scalar_data, &short_scalar_data,
+                                        &int_scalar_data, &float_scalar_data, &double_scalar_data,
+                                        &ubyte_scalar_data, &ushort_scalar_data, &uint_scalar_data,
+                                        &int64_scalar_data, &uint64_scalar_data};
 #else
-void *att_data[NUM_TYPES_TO_TEST] = {&byte_att_data, &char_att_data, &short_att_data,
+void *att_data[NUM_TYPES_TO_TEST] = {byte_att_data, char_att_data, short_att_data,
                                      int_att_data, float_att_data, double_att_data};
+void *scalar_data[NUM_TYPES_TO_TEST] = {&byte_scalar_data, &char_scalar_data, &short_scalar_data,
+                                        &int_scalar_data, &float_scalar_data, &double_scalar_data};
 #endif /* _NETCDF4 */
 
 /* How many flavors of netCDF are available? */
@@ -1099,12 +1120,11 @@ int check_nc_sample_4(int iosysid, int iotype, int my_rank, int my_comp_idx,
     /* PIO_Offset att_len; */
     /* char att_name[PIO_MAX_NAME + 1]; */
     char var_name[PIO_MAX_NAME + 1];
-    char var_name_expected[PIO_MAX_NAME + 1];
-    int dimid[NDIM2];
+    /* int dimid[NDIM2]; */
     int xtype;
     int natts;
-    int comp_idx_in;
-    short data_2d[DIM_X_LEN * DIM_Y_LEN];
+    /* int comp_idx_in; */
+    /* short data_2d[DIM_X_LEN * DIM_Y_LEN]; */
     int ret;
 
     /* Open the test file. */
@@ -1144,34 +1164,65 @@ int check_nc_sample_4(int iosysid, int iotype, int my_rank, int my_comp_idx,
         free(att_data_in);
     }
 
-    /* Check the scalar variable metadata. */
-    /* if ((ret = PIOc_inq_var(ncid, 0, var_name, &xtype, &ndims, NULL, &natts))) */
-    /*     ERR(ret); */
-    /* sprintf(var_name_expected, "%s_%d", SCALAR_VAR_NAME, my_comp_idx); */
-    /* if (strcmp(var_name, var_name_expected) || xtype != PIO_INT || ndims != 0 || natts != 0) */
-    /*     ERR(ERR_WRONG); */
+    /* Check the scalar variables. */
+    for (int t = 0; t < num_types; t++)
+    {
+        int vid;
+        PIO_Offset type_size;
+        void *scalar_data_in;
+        
+        sprintf(var_name, "%s_cmp_%d_type_%d", SCALAR_VAR_NAME, my_comp_idx, pio_type[t]);
+        if ((ret = PIOc_inq_varid(ncid, var_name, &vid)))
+            ERR(ret);
+        if ((ret = PIOc_inq_var(ncid, vid, var_name, &xtype, &ndims, NULL, &natts)))
+            ERR(ret);
+        if (xtype != pio_type[t] || ndims != 0 || natts != 0)
+            ERR(ERR_WRONG);
+        
+        /* Check the data. */
+        if ((ret = PIOc_inq_type(ncid, xtype, NULL, &type_size)))
+            ERR(ret);
+        if (!(scalar_data_in = malloc(type_size)))
+            ERR(ERR_AWFUL);
+        
+        if ((ret = PIOc_get_var(ncid, vid, scalar_data_in)))
+            ERR(ret);
+        /* if (comp_idx_in != my_comp_idx) */
+        /*     ERR(ERR_WRONG); */
+        free(scalar_data_in);
+    }
 
-    /* Check the scalar variable data. */
-    if ((ret = PIOc_get_var_int(ncid, 0, &comp_idx_in)))
-        ERR(ret);
-    if (comp_idx_in != my_comp_idx)
-        ERR(ERR_WRONG);
-
-    /* /\* Check the 2D variable metadata. *\/ */
-    /* if ((ret = PIOc_inq_var(ncid, 1, var_name, &xtype, &ndims, dimid, &natts))) */
-    /*     ERR(ret); */
-    /* sprintf(var_name_expected, "%s_%d", THREED_VAR_NAME, my_comp_idx); */
-    /* if (strcmp(var_name, var_name_expected) || xtype != PIO_SHORT || ndims != 2 || natts != 0) */
-    /*     ERR(ERR_WRONG); */
-
-    /* /\* Read the 2-D variable. *\/ */
-    /* if ((ret = PIOc_get_var_short(ncid, 1, data_2d))) */
-    /*     ERR(ret); */
-
-    /* /\* Check 2D data for correctness. *\/ */
-    /* for (int i = 0; i < DIM_X_LEN * DIM_Y_LEN; i++) */
-    /*     if (data_2d[i] != my_comp_idx + i) */
-    /*         ERR(ERR_WRONG); */
+    /* Check the 3D variables. */
+    for (int t = 0; t < num_types; t++)
+    {
+        int vid;
+        PIO_Offset type_size;
+        void *threed_data_in;
+        int var_dimids[NDIM3];
+        
+        sprintf(var_name, "%s_cmp_%d_type_%d", THREED_VAR_NAME, my_comp_idx, pio_type[t]);        
+        if ((ret = PIOc_inq_varid(ncid, var_name, &vid)))
+            ERR(ret);
+        if ((ret = PIOc_inq_var(ncid, vid, var_name, &xtype, &ndims, var_dimids, &natts)))
+            ERR(ret);
+        if (xtype != pio_type[t] || ndims != NDIM3 || natts != 0)
+            ERR(ERR_WRONG);
+    
+        /* if ((ret = PIOc_inq_var(ncid, 1, var_name, &xtype, &ndims, dimid, &natts))) */
+        /*     ERR(ret); */
+        /* sprintf(var_name_expected, "%s_%d", THREED_VAR_NAME, my_comp_idx); */
+        /* if (strcmp(var_name, var_name_expected) || xtype != PIO_SHORT || ndims != 2 || natts != 0) */
+        /*     ERR(ERR_WRONG); */
+        
+        /* /\* Read the 2-D variable. *\/ */
+        /* if ((ret = PIOc_get_var_short(ncid, 1, data_2d))) */
+        /*     ERR(ret); */
+        
+        /* /\* Check 2D data for correctness. *\/ */
+        /* for (int i = 0; i < DIM_X_LEN * DIM_Y_LEN; i++) */
+        /*     if (data_2d[i] != my_comp_idx + i) */
+        /*         ERR(ERR_WRONG); */
+    }
 
     /* Close the test file. */
     if ((ret = PIOc_closefile(ncid)))
@@ -1192,7 +1243,7 @@ int create_nc_sample_4(int iosysid, int iotype, int my_rank, int my_comp_idx,
     char dim_name[PIO_MAX_NAME + 1];
     int dimid[NDIM3];
     int dim_len[NDIM3] = {PIO_UNLIMITED, DIM_X_LEN, DIM_Y_LEN};
-    short data_2d[DIM_X_LEN * DIM_Y_LEN];
+    /* short data_2d[DIM_X_LEN * DIM_Y_LEN]; */
     int ret;
 
     /* Learn name of IOTYPE. */
@@ -1244,15 +1295,19 @@ int create_nc_sample_4(int iosysid, int iotype, int my_rank, int my_comp_idx,
     if ((ret = PIOc_enddef(ncid)))
         ERR(ret);
 
-    /* Write the scalar variable. */
-    if ((ret = PIOc_put_var_int(ncid, 0, &my_comp_idx)))
-        ERR(ret);
+    /* Write the scalar variables. */
+    for (int t = 0; t < num_types; t++)
+        if ((ret = PIOc_put_var(ncid, scalar_varid[t], scalar_data[t])))
+            ERR(ret);
 
-    /* Write the 2-D variable. */
-    /* for (int i = 0; i < DIM_X_LEN * DIM_Y_LEN; i++) */
-    /*     data_2d[i] = my_comp_idx + i; */
-    /* if ((ret = PIOc_put_var_short(ncid, 1, data_2d))) */
-    /*     ERR(ret); */
+    /* Write the 3-D variables. */
+    /* for (int t = 0; t < num_types; t++) */
+    /* { */
+    /*     for (int i = 0; i < DIM_X_LEN * DIM_Y_LEN; i++) */
+    /*         data_2d[i] = my_comp_idx + i; */
+    /*     if ((ret = PIOc_put_var_short(ncid, 1, data_2d))) */
+    /*         ERR(ret); */
+    /* } */
 
     /* Close the file if ncidp was not provided. */
     if ((ret = PIOc_closefile(ncid)))
