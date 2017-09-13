@@ -84,6 +84,10 @@ int create_nc_sample_1(int iosysid, int format, char *filename, int my_rank, int
 int check_nc_sample_1(int iosysid, int format, char *filename, int my_rank, int *ncid);
 int create_nc_sample_2(int iosysid, int format, char *filename, int my_rank, int *ncid);
 int check_nc_sample_2(int iosysid, int format, char *filename, int my_rank, int *ncid);
+int create_nc_sample_3(int iosysid, int iotype, int my_rank, int my_comp_idx,
+                       char *filename, char *test_name, int verbose);
+int check_nc_sample_3(int iosysid, int iotype, int my_rank, int my_comp_idx,
+                      const char *filename, int verbose);
 int get_iotypes(int *num_flavors, int *flavors);
 int get_iotype_name(int iotype, char *name);
 int pio_test_finalize(MPI_Comm *test_comm);
