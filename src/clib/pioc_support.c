@@ -1735,12 +1735,13 @@ int PIOc_createfile_int(int iosysid, int *ncidp, int *iotype, const char *filena
      * parameters. */
     if (ios->async)
     {
-        int msg = PIO_MSG_CREATE_FILE;
-        size_t len = strlen(filename);
-
         if (!ios->ioproc)
         {
+            int msg = PIO_MSG_CREATE_FILE;
+            size_t len = strlen(filename);
+
             /* Send the message to the message handler. */
+            LOG((3, "msg %d ios->union_comm %d MPI_COMM_NULL %d", msg, ios->union_comm, MPI_COMM_NULL));
             if (ios->compmaster == MPI_ROOT)
                 mpierr = MPI_Send(&msg, 1, MPI_INT, ios->ioroot, 1, ios->union_comm);
 
@@ -2533,10 +2534,6 @@ int determine_procs(int num_io_procs, int component_count, int *num_procs_per_co
             /* Allocate space for each array. */
             if (!(my_proc_list[cmp] = malloc(num_procs_per_comp[cmp] * sizeof(int))))
                 return pio_err(NULL, NULL, PIO_ENOMEM, __FILE__, __LINE__);
-            LOG((3, "about to memcpy computation proc list num_procs_per_comp[%d] %d",
-                 cmp, num_procs_per_comp[cmp]));
-            LOG((3, "about to memcpy computation proc list num_procs_per_comp[%d] %d *proc_list[cmp] %d",
-                 cmp, num_procs_per_comp[cmp], (proc_list[cmp])));
             memcpy(my_proc_list[cmp], proc_list[cmp], num_procs_per_comp[cmp] * sizeof(int));
         }
     }
