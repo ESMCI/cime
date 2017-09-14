@@ -2214,6 +2214,15 @@ Warning: you cannot use CIME Classes in this module as it causes circular depend
 <p>Enable 0002 umask within this manager</p>
 </dd></dl>
 
+<dl class="class">
+<dt id="CIME.utils.Timeout">
+<em class="property">class </em><code class="descclassname">CIME.utils.</code><code class="descname">Timeout</code><span class="sig-paren">(</span><em>seconds</em>, <em>action=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#Timeout"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.Timeout" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>A context manager that implements a timeout. By default, it
+will raise exception, but a custon function call can be provided.
+Provided None as seconds makes this class a no-op</p>
+</dd></dl>
+
 <dl class="function">
 <dt id="CIME.utils.analyze_build_log">
 <code class="descclassname">CIME.utils.</code><code class="descname">analyze_build_log</code><span class="sig-paren">(</span><em>comp</em>, <em>log</em>, <em>compiler</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#analyze_build_log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.analyze_build_log" title="Permalink to this definition">¶</a></dt>
@@ -2855,7 +2864,7 @@ recursively.</p>
 
 <dl class="function">
 <dt id="CIME.wait_for_tests.wait_for_tests">
-<code class="descclassname">CIME.wait_for_tests.</code><code class="descname">wait_for_tests</code><span class="sig-paren">(</span><em>test_paths</em>, <em>no_wait=False</em>, <em>check_throughput=False</em>, <em>check_memory=False</em>, <em>ignore_namelists=False</em>, <em>ignore_memleak=False</em>, <em>cdash_build_name=None</em>, <em>cdash_project='ACME_Climate'</em>, <em>cdash_build_group='ACME_Latest'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/wait_for_tests.html#wait_for_tests"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.wait_for_tests.wait_for_tests" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">CIME.wait_for_tests.</code><code class="descname">wait_for_tests</code><span class="sig-paren">(</span><em>test_paths</em>, <em>no_wait=False</em>, <em>check_throughput=False</em>, <em>check_memory=False</em>, <em>ignore_namelists=False</em>, <em>ignore_memleak=False</em>, <em>cdash_build_name=None</em>, <em>cdash_project='ACME_Climate'</em>, <em>cdash_build_group='ACME_Latest'</em>, <em>timeout=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/wait_for_tests.html#wait_for_tests"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.wait_for_tests.wait_for_tests" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">

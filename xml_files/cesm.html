@@ -2153,7 +2153,7 @@
       &lt;map name=&quot;ICE2WAV_SMAPNAME&quot;&gt;cpl/gridmaps/tx1v1/map_tx1v1_TO_ww3a_blin.170523.nc&lt;/map&gt;
     &lt;/gridmap&gt;
 
-    &lt;gridmap atm_grid=&quot;48x96&quot; wav_grid=&quot;ww3a&quot;&gt;
+    &lt;gridmap atm_grid=&quot;T31&quot; wav_grid=&quot;ww3a&quot;&gt;
       &lt;map name=&quot;ATM2WAV_SMAPNAME&quot;&gt;cpl/gridmaps/T31/map_T31_TO_ww3a_bilin_131104.nc&lt;/map&gt;
     &lt;/gridmap&gt;
 
@@ -2618,8 +2618,10 @@
  be used.  The following variables can be used to choose a queue :
  walltimemin: Giving the minimum amount of walltime for the queue.
  walltimemax: The maximum amount of walltime for a queue.
- jobmin:      The minimum node count required to use this queue.
- jobmax:      The maximum node count required to use this queue.
+ jobmin:      The minimum task count required to use this queue.
+ jobmax:      The maximum task count required to use this queue.
+ nodemin:      The minimum node count required to use this queue.
+ nodemax:      The maximum node count required to use this queue.
     --&gt;
   &lt;batch_system type=&quot;template&quot; &gt;
     &lt;batch_query args=&quot;&quot;&gt;&lt;/batch_query&gt;
@@ -3041,12 +3043,10 @@
     &lt;!-- order matters, with no-batch jobs will be run in the order listed here --&gt;
     &lt;job name=&quot;case.run&quot;&gt;
       &lt;template&gt;template.case.run&lt;/template&gt;
-      &lt;task_count&gt;default&lt;/task_count&gt;
       &lt;prereq&gt;$BUILD_COMPLETE and not $TEST&lt;/prereq&gt;
     &lt;/job&gt;
     &lt;job name=&quot;case.test&quot;&gt;
       &lt;template&gt;template.case.test&lt;/template&gt;
-      &lt;task_count&gt;default&lt;/task_count&gt;
       &lt;prereq&gt;$BUILD_COMPLETE and $TEST&lt;/prereq&gt;
     &lt;/job&gt;
     &lt;job name=&quot;case.st_archive&quot;&gt;

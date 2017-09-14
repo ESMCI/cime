@@ -10985,8 +10985,8 @@
        &lt;directive&gt;--ntasks-per-node={{ tasks_per_node }}&lt;/directive&gt;
     &lt;/directives&gt;
     &lt;queues&gt;
-      &lt;queue jobmin=&quot;1&quot; jobmax=&quot;512&quot; walltimemax=&quot;04:00:00&quot; default=&quot;true&quot;&gt;short&lt;/queue&gt;
-      &lt;queue jobmin=&quot;1&quot; jobmax=&quot;1024&quot; walltimemax=&quot;24:00:00&quot;&gt;batch&lt;/queue&gt;
+      &lt;queue nodemin=&quot;1&quot; nodemax=&quot;12&quot; walltimemax=&quot;04:00:00&quot; default=&quot;true&quot;&gt;short&lt;/queue&gt;
+      &lt;queue nodemin=&quot;1&quot; nodemax=&quot;64&quot; walltimemax=&quot;24:00:00&quot;&gt;batch&lt;/queue&gt;
     &lt;/queues&gt;
   &lt;/batch_system&gt;
 
@@ -10995,8 +10995,8 @@
        &lt;directive&gt;--ntasks-per-node={{ tasks_per_node }}&lt;/directive&gt;
     &lt;/directives&gt;
     &lt;queues&gt;
-      &lt;queue jobmin=&quot;1&quot; jobmax=&quot;512&quot; walltimemax=&quot;04:00:00&quot; default=&quot;true&quot;&gt;short&lt;/queue&gt;
-      &lt;queue jobmin=&quot;1&quot; jobmax=&quot;1024&quot; walltimemax=&quot;24:00:00&quot;&gt;batch&lt;/queue&gt;
+      &lt;queue nodemin=&quot;1&quot; nodemax=&quot;12&quot; walltimemax=&quot;04:00:00&quot; default=&quot;true&quot;&gt;short&lt;/queue&gt;
+      &lt;queue nodemin=&quot;1&quot; nodemax=&quot;64&quot; walltimemax=&quot;24:00:00&quot;&gt;batch&lt;/queue&gt;
     &lt;/queues&gt;
   &lt;/batch_system&gt;
 
@@ -11098,7 +11098,7 @@
        &lt;directive&gt;--ntasks-per-node={{ tasks_per_node }}&lt;/directive&gt;
      &lt;/directives&gt;
     &lt;queues&gt;
-      &lt;queue walltimemin=&quot;0&quot; walltimemax=&quot;01:00:00&quot; jobmin=&quot;0&quot; jobmax=&quot;64&quot; default=&quot;true&quot;&gt;lr3&lt;/queue&gt;
+      &lt;queue walltimemax=&quot;01:00:00&quot; jobmin=&quot;0&quot; jobmax=&quot;64&quot; default=&quot;true&quot;&gt;lr3&lt;/queue&gt;
     &lt;/queues&gt;
   &lt;/batch_system&gt;
 
@@ -11110,7 +11110,7 @@
       &lt;directive&gt;--ntasks-per-node={{ tasks_per_node }}&lt;/directive&gt;
     &lt;/directives&gt;
     &lt;queues&gt;
-      &lt;queue walltimemin=&quot;0&quot; walltimemax=&quot;01:00:00&quot; jobmin=&quot;0&quot; jobmax=&quot;64&quot; default=&quot;true&quot;&gt;lr3&lt;/queue&gt;
+      &lt;queue walltimemax=&quot;01:00:00&quot; jobmin=&quot;0&quot; jobmax=&quot;64&quot; default=&quot;true&quot;&gt;lr3&lt;/queue&gt;
     &lt;/queues&gt;
   &lt;/batch_system&gt;
 
@@ -11118,12 +11118,10 @@
     &lt;!-- order matters, with no-batch jobs will be run in the order listed here --&gt;
     &lt;job name=&quot;case.run&quot;&gt;
       &lt;template&gt;template.case.run&lt;/template&gt;
-      &lt;task_count&gt;default&lt;/task_count&gt;
       &lt;prereq&gt;$BUILD_COMPLETE and not $TEST&lt;/prereq&gt;
     &lt;/job&gt;
     &lt;job name=&quot;case.test&quot;&gt;
       &lt;template&gt;template.case.test&lt;/template&gt;
-      &lt;task_count&gt;default&lt;/task_count&gt;
       &lt;prereq&gt;$BUILD_COMPLETE and $TEST&lt;/prereq&gt;
     &lt;/job&gt;
     &lt;job name=&quot;case.st_archive&quot;&gt;

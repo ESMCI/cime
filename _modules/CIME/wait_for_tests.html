@@ -69,7 +69,7 @@
 <span class="kn">import</span> <span class="nn">xml.etree.ElementTree</span> <span class="k">as</span> <span class="nn">xmlet</span>
 
 <span class="kn">import</span> <span class="nn">CIME.utils</span>
-<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="k">import</span> <span class="n">expect</span>
+<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="k">import</span> <span class="n">expect</span><span class="p">,</span> <span class="n">Timeout</span>
 <span class="kn">from</span> <span class="nn">CIME.XML.machines</span> <span class="k">import</span> <span class="n">Machines</span>
 <span class="kn">from</span> <span class="nn">CIME.test_status</span> <span class="k">import</span> <span class="o">*</span>
 
@@ -403,13 +403,15 @@
                    <span class="n">ignore_memleak</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                    <span class="n">cdash_build_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                    <span class="n">cdash_project</span><span class="o">=</span><span class="n">ACME_MAIN_CDASH</span><span class="p">,</span>
-                   <span class="n">cdash_build_group</span><span class="o">=</span><span class="n">CDASH_DEFAULT_BUILD_GROUP</span><span class="p">):</span>
+                   <span class="n">cdash_build_group</span><span class="o">=</span><span class="n">CDASH_DEFAULT_BUILD_GROUP</span><span class="p">,</span>
+                   <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="c1">###############################################################################</span>
     <span class="c1"># Set up signal handling, we want to print results before the program</span>
     <span class="c1"># is terminated</span>
     <span class="n">set_up_signal_handlers</span><span class="p">()</span>
 
-    <span class="n">test_results</span> <span class="o">=</span> <span class="n">wait_for_tests_impl</span><span class="p">(</span><span class="n">test_paths</span><span class="p">,</span> <span class="n">no_wait</span><span class="p">,</span> <span class="n">check_throughput</span><span class="p">,</span> <span class="n">check_memory</span><span class="p">,</span> <span class="n">ignore_namelists</span><span class="p">,</span> <span class="n">ignore_memleak</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">Timeout</span><span class="p">(</span><span class="n">timeout</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="n">signal_handler</span><span class="p">):</span>
+        <span class="n">test_results</span> <span class="o">=</span> <span class="n">wait_for_tests_impl</span><span class="p">(</span><span class="n">test_paths</span><span class="p">,</span> <span class="n">no_wait</span><span class="p">,</span> <span class="n">check_throughput</span><span class="p">,</span> <span class="n">check_memory</span><span class="p">,</span> <span class="n">ignore_namelists</span><span class="p">,</span> <span class="n">ignore_memleak</span><span class="p">)</span>
 
     <span class="n">all_pass</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="k">for</span> <span class="n">test_name</span><span class="p">,</span> <span class="n">test_data</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">test_results</span><span class="o">.</span><span class="n">iteritems</span><span class="p">()):</span>

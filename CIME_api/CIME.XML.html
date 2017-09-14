@@ -677,13 +677,6 @@ subgroup is ignored in the general routine and applied in specific methods</p>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="CIME.XML.env_batch.EnvBatch.get_queue_specs">
-<code class="descname">get_queue_specs</code><span class="sig-paren">(</span><em>queue</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_batch.html#EnvBatch.get_queue_specs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_batch.EnvBatch.get_queue_specs" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get queue specifications by name.</p>
-<p>Returns (jobmin, jobmax, jobname, walltimemax, is_strict)</p>
-</dd></dl>
-
-<dl class="method">
 <dt id="CIME.XML.env_batch.EnvBatch.get_status">
 <code class="descname">get_status</code><span class="sig-paren">(</span><em>jobid</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_batch.html#EnvBatch.get_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_batch.EnvBatch.get_status" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -712,12 +705,12 @@ subgroup is ignored in the general routine and applied in specific methods</p>
 
 <dl class="method">
 <dt id="CIME.XML.env_batch.EnvBatch.queue_meets_spec">
-<code class="descname">queue_meets_spec</code><span class="sig-paren">(</span><em>queue</em>, <em>num_pes</em>, <em>walltime=None</em>, <em>job=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_batch.html#EnvBatch.queue_meets_spec"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_batch.EnvBatch.queue_meets_spec" title="Permalink to this definition">¶</a></dt>
+<code class="descname">queue_meets_spec</code><span class="sig-paren">(</span><em>queue</em>, <em>num_pes</em>, <em>num_nodes</em>, <em>walltime=None</em>, <em>job=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_batch.html#EnvBatch.queue_meets_spec"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_batch.EnvBatch.queue_meets_spec" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="CIME.XML.env_batch.EnvBatch.select_best_queue">
-<code class="descname">select_best_queue</code><span class="sig-paren">(</span><em>num_pes</em>, <em>walltime=None</em>, <em>job=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_batch.html#EnvBatch.select_best_queue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_batch.EnvBatch.select_best_queue" title="Permalink to this definition">¶</a></dt>
+<code class="descname">select_best_queue</code><span class="sig-paren">(</span><em>num_pes</em>, <em>num_nodes</em>, <em>walltime=None</em>, <em>job=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_batch.html#EnvBatch.select_best_queue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_batch.EnvBatch.select_best_queue" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -732,7 +725,7 @@ subgroup is ignored in the general routine and applied in specific methods</p>
 
 <dl class="method">
 <dt id="CIME.XML.env_batch.EnvBatch.set_job_defaults">
-<code class="descname">set_job_defaults</code><span class="sig-paren">(</span><em>batch_jobs</em>, <em>pesize=None</em>, <em>walltime=None</em>, <em>force_queue=None</em>, <em>allow_walltime_override=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_batch.html#EnvBatch.set_job_defaults"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_batch.EnvBatch.set_job_defaults" title="Permalink to this definition">¶</a></dt>
+<code class="descname">set_job_defaults</code><span class="sig-paren">(</span><em>batch_jobs</em>, <em>pesize=None</em>, <em>num_nodes=None</em>, <em>tasks_per_node=None</em>, <em>walltime=None</em>, <em>force_queue=None</em>, <em>allow_walltime_override=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_batch.html#EnvBatch.set_job_defaults"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_batch.EnvBatch.set_job_defaults" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
