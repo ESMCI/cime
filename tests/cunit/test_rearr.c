@@ -494,6 +494,7 @@ int test_define_iodesc_datatypes()
 
         /* Set up test for IO task with BOX rearranger to create one type. */
         ios.ioproc = 1; /* this is IO proc. */
+        ios.compproc = 1;
         ios.num_iotasks = 4; /* The number of IO tasks. */
         iodesc.rtype = NULL; /* Array of MPI types will be created here. */
         iodesc.nrecvs = 1; /* Number of types created. */
