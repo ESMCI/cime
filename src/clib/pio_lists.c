@@ -252,7 +252,7 @@ int pio_num_iosystem(int *niosysid)
  *
  * @param io_desc_t pointer to data to add to list.
  * @returns 0 for success, error code otherwise.
- * @author Jim Edwards
+ * @author Jim Edwards, Ed Hartnett
  */
 int pio_add_to_iodesc_list(io_desc_t *iodesc)
 {
