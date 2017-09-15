@@ -65,6 +65,11 @@ int main(int argc, char **argv)
         if ((ret = get_iotypes(&num_iotypes, iotype)))
             ERR(ret);
 
+        /* This should fail. */
+        if (PIOc_init_async(test_comm, NUM_IO_PROCS, io_proc_list, COMPONENT_COUNT,
+                            num_procs, (int **)proc_list, NULL, NULL, PIO_REARR_SUBSET, iosysid) != PIO_EINVAL)
+            ERR(ERR_WRONG);
+
         /* Initialize the IO system. The IO task will not return from
          * this call, but instead will go into a loop, listening for
          * messages. */
@@ -84,12 +89,12 @@ int main(int argc, char **argv)
                 char filename[NC_MAX_NAME + 1]; /* Test filename. */
                 int my_comp_idx = my_rank - 1; /* Index in iosysid array. */
                 int use_darray = 0;
-                /* int dim_len_2d[NDIM2] = {DIM_LEN2, DIM_LEN3}; */
+                int dim_len_2d[NDIM2] = {DIM_LEN2, DIM_LEN3};
                 int ioid = 0;
                 
-                /* if ((ret = create_decomposition_2d(NUM_COMP_PROCS, my_rank, iosysid[my_comp_idx], dim_len_2d, */
-                /*                                    &ioid, PIO_INT))) */
-                /*     ERR(ret); */
+                if ((ret = create_decomposition_2d(NUM_COMP_PROCS, my_rank, iosysid[my_comp_idx], dim_len_2d,
+                                                   &ioid, PIO_INT)))
+                    ERR(ret);
 
                 /* Create sample file. */
                 if ((ret = create_nc_sample_3(iosysid[my_comp_idx], iotype[i], my_rank, my_comp_idx,
@@ -102,8 +107,8 @@ int main(int argc, char **argv)
                     ERR(ret);
 
                 /* Free the decomposition. */
-                /* if ((ret = PIOc_freedecomp(iosysid[my_comp_idx], ioid))) */
-                /*     ERR(ret); */
+                if ((ret = PIOc_freedecomp(iosysid[my_comp_idx], ioid)))
+                    ERR(ret);
 
             } /* next netcdf iotype */
 

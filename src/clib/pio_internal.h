@@ -289,8 +289,6 @@ extern "C" {
     /* Flush PIO's data buffer. */
     int flush_buffer(int ncid, wmulti_buffer *wmb, bool flushtodisk);
 
-    int compute_maxaggregate_bytes(iosystem_desc_t *ios, io_desc_t *iodesc);
-
     /* Compute an element of start/count arrays. */
     void compute_one_dim(int gdim, int ioprocs, int rank, PIO_Offset *start,
                          PIO_Offset *count);

@@ -1230,8 +1230,9 @@ int PIOc_iotype_available(int iotype)
  * caller.)
  *
  * @param rearranger the default rearranger to use for decompositions
- * in this IO system. Must be either PIO_REARR_BOX or
- * PIO_REARR_SUBSET.
+ * in this IO system. Only PIO_REARR_BOX is supported for
+ * async. Support for PIO_REARR_SUBSET will be provided in a future
+ * version.
  *
  * @param iosysidp pointer to array of length component_count that
  * gets the iosysid for each component.
@@ -1251,9 +1252,9 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
     int mpierr;           /* Return code from MPI functions. */
     int ret;              /* Return code. */
 
-    /* Check input parameters. */
+    /* Check input parameters. Only allow box rearranger for now. */
     if (num_io_procs < 1 || component_count < 1 || !num_procs_per_comp || !iosysidp ||
-        (rearranger != PIO_REARR_BOX && rearranger != PIO_REARR_SUBSET))
+        (rearranger != PIO_REARR_BOX))
         return pio_err(NULL, NULL, PIO_EINVAL, __FILE__, __LINE__);
 
     /* Turn on the logging system for PIO. */
