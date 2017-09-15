@@ -722,6 +722,7 @@ void free_region_list(io_region *top)
  * @param iosysid the IO system ID.
  * @param ioid the ID of the decomposition map to free.
  * @returns 0 for success, error code otherwise.
+ * @author Jim Edwards
  */
 int PIOc_freedecomp(int iosysid, int ioid)
 {
@@ -765,6 +766,7 @@ int PIOc_freedecomp(int iosysid, int ioid)
     /* Free the dimlens. */
     free(iodesc->dimlen);
 
+    LOG((3, "freeing rfrom, rtype"));
     if (iodesc->rfrom)
         free(iodesc->rfrom);
 
@@ -778,6 +780,7 @@ int PIOc_freedecomp(int iosysid, int ioid)
         free(iodesc->rtype);
     }
 
+    LOG((3, "freeing stype, scount"));
     if (iodesc->stype)
     {
         for (int i = 0; i < iodesc->num_stypes; i++)
@@ -801,6 +804,7 @@ int PIOc_freedecomp(int iosysid, int ioid)
     if (iodesc->rindex)
         free(iodesc->rindex);
 
+    LOG((3, "freeing regions"));
     if (iodesc->firstregion)
         free_region_list(iodesc->firstregion);
 
