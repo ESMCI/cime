@@ -538,7 +538,8 @@ int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc,
     pioassert(ios && iodesc && dest_ioproc && dest_ioindex &&
               iodesc->rearranger == PIO_REARR_BOX && ios->num_uniontasks > 0,
               "invalid input", __FILE__, __LINE__);
-    LOG((1, "compute_counts ios->num_uniontasks = %d", ios->num_uniontasks));
+    LOG((1, "compute_counts ios->num_uniontasks = %d ios->compproc %d ios->ioproc %d",
+         ios->num_uniontasks, ios->compproc, ios->ioproc));
 
     /* Arrays for swapm all to all gather calls. */
     MPI_Datatype sr_types[ios->num_uniontasks];
@@ -601,11 +602,15 @@ int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc,
         if (!(recv_buf = calloc(ios->num_comptasks, sizeof(int))))
             return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
-        /* Initialize arrays that keep track of ???. */
+        /* Initialize arrays that keep track of counts and
+         * displacements for the all-to-all gather. */
         for (int i = 0; i < ios->num_comptasks; i++)
         {
             recv_counts[ios->compranks[i]] = 1;
             recv_displs[ios->compranks[i]] = i * sizeof(int);
+            LOG((3, "recv_counts[%d] = %d recv_displs[%d] = %d", ios->compranks[i],
+                 recv_counts[ios->compranks[i]], ios->compranks[i],
+                 recv_displs[ios->compranks[i]]));
         }
     }
 

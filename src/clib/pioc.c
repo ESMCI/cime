@@ -1412,9 +1412,10 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
         if (!(my_iosys->compranks = calloc(my_iosys->num_comptasks, sizeof(int))))
             return pio_err(NULL, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
-        /* Remember computation task ranks. */
+        /* Remember computation task ranks. We need the ranks within
+         * the union_comm. */
         for (int p = 0; p < num_procs_per_comp[cmp]; p++)
-            my_iosys->compranks[p] = my_proc_list[cmp][p];
+            my_iosys->compranks[p] = num_io_procs + p;
 
         /* Remember whether this process is in the IO component. */
         my_iosys->ioproc = in_io;
