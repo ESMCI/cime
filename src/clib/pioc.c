@@ -18,6 +18,9 @@ int default_error_handler = PIO_INTERNAL_ERROR;
  * used (see pio_sc.c). */
 extern int blocksize;
 
+/* Used when assiging decomposition IDs. */
+int pio_next_ioid = 512;
+
 /**
  * Check to see if PIO has been initialized.
  *
@@ -388,7 +391,8 @@ int PIOc_set_iosystem_error_handling(int iosysid, int method, int *old_method)
  * @param compmap a 1 based array of offsets into the array record on
  * file. A 0 in this array indicates a value which should not be
  * transfered.
- * @param ioidp pointer that will get the io description ID.
+ * @param ioidp pointer that will get the io description ID. Ignored
+ * if NULL.
  * @param rearranger pointer to the rearranger to be used for this
  * decomp or NULL to use the default.
  * @param iostart An array of start values for block cyclic
@@ -564,8 +568,23 @@ int PIOc_InitDecomp(int iosysid, int pio_type, int ndims, const int *gdimlen, in
                 return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
     }
 
+    /* Broadcast next ioid to all tasks from io root.*/
+    if (ios->async)
+    {
+        LOG((3, "createfile bcasting pio_next_ioid %d", pio_next_ioid));
+        if ((mpierr = MPI_Bcast(&pio_next_ioid, 1, MPI_INT, ios->ioroot, ios->my_comm)))
+            return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+        LOG((3, "createfile bcast pio_next_ioid %d", pio_next_ioid));
+    }
+
+    /* Set the decomposition ID. */
+    iodesc->ioid = pio_next_ioid++;
+    if (ioidp)
+        *ioidp = iodesc->ioid;
+
     /* Add this IO description to the list. */
-    *ioidp = pio_add_to_iodesc_list(iodesc);
+    if ((ierr = pio_add_to_iodesc_list(iodesc)))
+        return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
 
 #if PIO_ENABLE_LOGGING
     /* Log results. */

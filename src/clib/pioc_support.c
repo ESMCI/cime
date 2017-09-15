@@ -730,6 +730,8 @@ int PIOc_freedecomp(int iosysid, int ioid)
     io_desc_t *iodesc;
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function calls. */
 
+    LOG((1, "PIOc_freedecomp iosysid = %d ioid = %d", iosysid, ioid));
+
     if (!(ios = pio_get_iosystem_from_id(iosysid)))
         return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
 
@@ -754,12 +756,15 @@ int PIOc_freedecomp(int iosysid, int ioid)
         }
 
         /* Handle MPI errors. */
+        LOG((3, "handline error mpierr %d ios->comproot %d", mpierr, ios->comproot));
         if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
             return check_mpi(NULL, mpierr2, __FILE__, __LINE__);
+        LOG((3, "handline error mpierr2 %d", mpierr2));
         if (mpierr)
             return check_mpi(NULL, mpierr, __FILE__, __LINE__);
     }
 
+    LOG((3, "freeing map, dimlen"));
     /* Free the map. */
     free(iodesc->map);
 
