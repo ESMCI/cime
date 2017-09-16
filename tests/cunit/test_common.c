@@ -1023,11 +1023,25 @@ int create_nc_sample_3(int iosysid, int iotype, int my_rank, int my_comp_idx,
     if ((ret = PIOc_put_var_int(ncid, 0, &my_comp_idx)))
         ERR(ret);
 
-    /* Write the 2-D variable. */
+    /* Create some 2D data. */
     for (int i = 0; i < DIM_X_LEN * DIM_Y_LEN; i++)
         data_2d[i] = my_comp_idx + i;
-    if ((ret = PIOc_put_var_short(ncid, 1, data_2d)))
-        ERR(ret);
+
+    /* Write the data. */
+    if (use_darray)
+    {
+        /* Write the 2-D data with PIOc_write_darray(). */
+        if ((ret = PIOc_setframe(ncid, 1, 0)))
+            ERR(ret);
+        if ((ret = PIOc_write_darray(ncid, 1, ioid, DIM_X_LEN * DIM_Y_LEN, data_2d, NULL)))
+            ERR(ret);
+    }
+    else
+    {
+        /* Write the 2-D variable with put_var(). */
+        if ((ret = PIOc_put_var_short(ncid, 1, data_2d)))
+            ERR(ret);
+    }
 
     /* Close the file if ncidp was not provided. */
     if ((ret = PIOc_closefile(ncid)))
