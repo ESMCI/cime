@@ -251,29 +251,25 @@ int pio_num_iosystem(int *niosysid)
  * Add an iodesc.
  *
  * @param io_desc_t pointer to data to add to list.
- * @returns the ioid of the newly added iodesc.
- * @author Jim Edwards
+ * @returns 0 for success, error code otherwise.
+ * @author Jim Edwards, Ed Hartnett
  */
 int pio_add_to_iodesc_list(io_desc_t *iodesc)
 {
     io_desc_t *ciodesc;
-    int imax = 512;
 
     iodesc->next = NULL;
     if (pio_iodesc_list == NULL)
         pio_iodesc_list = iodesc;
     else
     {
-        imax++;
-        for (ciodesc = pio_iodesc_list; ciodesc->next;
-             ciodesc = ciodesc->next, imax = ciodesc->ioid + 1)
+        for (ciodesc = pio_iodesc_list; ciodesc->next; ciodesc = ciodesc->next)
             ;
         ciodesc->next = iodesc;
     }
-    iodesc->ioid = imax;
     current_iodesc = iodesc;
 
-    return iodesc->ioid;
+    return PIO_NOERR;
 }
 
 /**

@@ -722,12 +722,15 @@ void free_region_list(io_region *top)
  * @param iosysid the IO system ID.
  * @param ioid the ID of the decomposition map to free.
  * @returns 0 for success, error code otherwise.
+ * @author Jim Edwards
  */
 int PIOc_freedecomp(int iosysid, int ioid)
 {
     iosystem_desc_t *ios;
     io_desc_t *iodesc;
     int mpierr = MPI_SUCCESS, mpierr2;  /* Return code from MPI function calls. */
+
+    LOG((1, "PIOc_freedecomp iosysid = %d ioid = %d", iosysid, ioid));
 
     if (!(ios = pio_get_iosystem_from_id(iosysid)))
         return pio_err(NULL, NULL, PIO_EBADID, __FILE__, __LINE__);
@@ -753,18 +756,22 @@ int PIOc_freedecomp(int iosysid, int ioid)
         }
 
         /* Handle MPI errors. */
+        LOG((3, "handline error mpierr %d ios->comproot %d", mpierr, ios->comproot));
         if ((mpierr2 = MPI_Bcast(&mpierr, 1, MPI_INT, ios->comproot, ios->my_comm)))
             return check_mpi(NULL, mpierr2, __FILE__, __LINE__);
+        LOG((3, "handline error mpierr2 %d", mpierr2));
         if (mpierr)
             return check_mpi(NULL, mpierr, __FILE__, __LINE__);
     }
 
+    LOG((3, "freeing map, dimlen"));
     /* Free the map. */
     free(iodesc->map);
 
     /* Free the dimlens. */
     free(iodesc->dimlen);
 
+    LOG((3, "freeing rfrom, rtype"));
     if (iodesc->rfrom)
         free(iodesc->rfrom);
 
@@ -778,6 +785,7 @@ int PIOc_freedecomp(int iosysid, int ioid)
         free(iodesc->rtype);
     }
 
+    LOG((3, "freeing stype, scount"));
     if (iodesc->stype)
     {
         for (int i = 0; i < iodesc->num_stypes; i++)
@@ -801,6 +809,7 @@ int PIOc_freedecomp(int iosysid, int ioid)
     if (iodesc->rindex)
         free(iodesc->rindex);
 
+    LOG((3, "freeing regions"));
     if (iodesc->firstregion)
         free_region_list(iodesc->firstregion);
 

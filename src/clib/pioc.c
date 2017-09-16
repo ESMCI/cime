@@ -18,6 +18,9 @@ int default_error_handler = PIO_INTERNAL_ERROR;
  * used (see pio_sc.c). */
 extern int blocksize;
 
+/* Used when assiging decomposition IDs. */
+int pio_next_ioid = 512;
+
 /**
  * Check to see if PIO has been initialized.
  *
@@ -388,7 +391,8 @@ int PIOc_set_iosystem_error_handling(int iosysid, int method, int *old_method)
  * @param compmap a 1 based array of offsets into the array record on
  * file. A 0 in this array indicates a value which should not be
  * transfered.
- * @param ioidp pointer that will get the io description ID.
+ * @param ioidp pointer that will get the io description ID. Ignored
+ * if NULL.
  * @param rearranger pointer to the rearranger to be used for this
  * decomp or NULL to use the default.
  * @param iostart An array of start values for block cyclic
@@ -564,8 +568,23 @@ int PIOc_InitDecomp(int iosysid, int pio_type, int ndims, const int *gdimlen, in
                 return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
     }
 
+    /* Broadcast next ioid to all tasks from io root.*/
+    if (ios->async)
+    {
+        LOG((3, "createfile bcasting pio_next_ioid %d", pio_next_ioid));
+        if ((mpierr = MPI_Bcast(&pio_next_ioid, 1, MPI_INT, ios->ioroot, ios->my_comm)))
+            return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+        LOG((3, "createfile bcast pio_next_ioid %d", pio_next_ioid));
+    }
+
+    /* Set the decomposition ID. */
+    iodesc->ioid = pio_next_ioid++;
+    if (ioidp)
+        *ioidp = iodesc->ioid;
+
     /* Add this IO description to the list. */
-    *ioidp = pio_add_to_iodesc_list(iodesc);
+    if ((ierr = pio_add_to_iodesc_list(iodesc)))
+        return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
 
 #if PIO_ENABLE_LOGGING
     /* Log results. */
@@ -1230,8 +1249,9 @@ int PIOc_iotype_available(int iotype)
  * caller.)
  *
  * @param rearranger the default rearranger to use for decompositions
- * in this IO system. Must be either PIO_REARR_BOX or
- * PIO_REARR_SUBSET.
+ * in this IO system. Only PIO_REARR_BOX is supported for
+ * async. Support for PIO_REARR_SUBSET will be provided in a future
+ * version.
  *
  * @param iosysidp pointer to array of length component_count that
  * gets the iosysid for each component.
@@ -1251,9 +1271,9 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
     int mpierr;           /* Return code from MPI functions. */
     int ret;              /* Return code. */
 
-    /* Check input parameters. */
+    /* Check input parameters. Only allow box rearranger for now. */
     if (num_io_procs < 1 || component_count < 1 || !num_procs_per_comp || !iosysidp ||
-        (rearranger != PIO_REARR_BOX && rearranger != PIO_REARR_SUBSET))
+        (rearranger != PIO_REARR_BOX))
         return pio_err(NULL, NULL, PIO_EINVAL, __FILE__, __LINE__);
 
     /* Turn on the logging system for PIO. */
@@ -1411,9 +1431,10 @@ int PIOc_init_async(MPI_Comm world, int num_io_procs, int *io_proc_list,
         if (!(my_iosys->compranks = calloc(my_iosys->num_comptasks, sizeof(int))))
             return pio_err(NULL, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
-        /* Remember computation task ranks. */
+        /* Remember computation task ranks. We need the ranks within
+         * the union_comm. */
         for (int p = 0; p < num_procs_per_comp[cmp]; p++)
-            my_iosys->compranks[p] = my_proc_list[cmp][p];
+            my_iosys->compranks[p] = num_io_procs + p;
 
         /* Remember whether this process is in the IO component. */
         my_iosys->ioproc = in_io;

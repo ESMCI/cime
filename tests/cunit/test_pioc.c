@@ -1875,7 +1875,6 @@ int test_malloc_iodesc2(int iosysid, int my_rank)
                                                MPI_FLOAT, MPI_DOUBLE, MPI_UNSIGNED_CHAR,
                                                MPI_UNSIGNED_SHORT, MPI_UNSIGNED, MPI_LONG_LONG,
                                                MPI_UNSIGNED_LONG_LONG, MPI_CHAR};
-    int ioid;
     iosystem_desc_t *ios;
     io_desc_t *iodesc;
     int ret;
@@ -1892,10 +1891,10 @@ int test_malloc_iodesc2(int iosysid, int my_rank)
             ERR(ERR_WRONG);
         if (iodesc->ndims != 1)
             ERR(ERR_WRONG);
-        ioid = pio_add_to_iodesc_list(iodesc);
+        pio_add_to_iodesc_list(iodesc);
         if (iodesc->firstregion)
             free_region_list(iodesc->firstregion);
-        if ((ret = pio_delete_iodesc_from_list(ioid)))
+        if ((ret = pio_delete_iodesc_from_list(iodesc->ioid)))
             ERR(ret);
     }
     return 0;

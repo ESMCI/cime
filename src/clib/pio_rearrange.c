@@ -538,7 +538,8 @@ int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc,
     pioassert(ios && iodesc && dest_ioproc && dest_ioindex &&
               iodesc->rearranger == PIO_REARR_BOX && ios->num_uniontasks > 0,
               "invalid input", __FILE__, __LINE__);
-    LOG((1, "compute_counts ios->num_uniontasks = %d", ios->num_uniontasks));
+    LOG((1, "compute_counts ios->num_uniontasks = %d ios->compproc %d ios->ioproc %d",
+         ios->num_uniontasks, ios->compproc, ios->ioproc));
 
     /* Arrays for swapm all to all gather calls. */
     MPI_Datatype sr_types[ios->num_uniontasks];
@@ -601,11 +602,15 @@ int compute_counts(iosystem_desc_t *ios, io_desc_t *iodesc,
         if (!(recv_buf = calloc(ios->num_comptasks, sizeof(int))))
             return pio_err(ios, NULL, PIO_ENOMEM, __FILE__, __LINE__);
 
-        /* Initialize arrays that keep track of ???. */
+        /* Initialize arrays that keep track of counts and
+         * displacements for the all-to-all gather. */
         for (int i = 0; i < ios->num_comptasks; i++)
         {
             recv_counts[ios->compranks[i]] = 1;
             recv_displs[ios->compranks[i]] = i * sizeof(int);
+            LOG((3, "recv_counts[%d] = %d recv_displs[%d] = %d", ios->compranks[i],
+                 recv_counts[ios->compranks[i]], ios->compranks[i],
+                 recv_displs[ios->compranks[i]]));
         }
     }
 
@@ -1145,9 +1150,9 @@ int determine_fill(iosystem_desc_t *ios, io_desc_t *iodesc, const int *gdimlen,
 /**
  * The box rearranger computes a mapping between IO tasks and compute
  * tasks such that the data on IO tasks can be written with a single
- * call to the underlying netCDF library. This may involve an all to
- * all rearrangement in the mapping, but should minimize data movement
- * in lower level libraries.
+ * call to the underlying netCDF library. This may involve an
+ * all-to-all rearrangement in the mapping, but should minimize data
+ * movement in lower level libraries.
  *
  * On each compute task the application program passes a compmap array
  * of length ndof. This array describes the arrangement of data in
@@ -1162,12 +1167,11 @@ int determine_fill(iosystem_desc_t *ios, io_desc_t *iodesc, const int *gdimlen,
  * <ul>
  * <li>For IO tasks, determines llen.
  * <li>Determine whether fill values will be needed.
- * <li>Do an allgether of llen values into array iomaplen.
+ * <li>Do an allgather of llen values into array iomaplen.
  * <li>For each IO task, send starts/counts to all compute tasks.
  * <li>Find dest_ioindex and dest_ioproc for each element in the map.
  * <li>Call compute_counts().
  * <li>On IO tasks, compute the max IO buffer size.
- * <li>Call compute_maxaggregate_bytes().
  * </ul>
  *
  * @param ios pointer to the iosystem_desc_t struct.
@@ -1396,12 +1400,6 @@ int box_rearrange_create(iosystem_desc_t *ios, int maplen, const PIO_Offset *com
         LOG((3, "iodesc->maxiobuflen = %d", iodesc->maxiobuflen));
     }
 
-    /* Using maxiobuflen compute the maximum number of bytes that the
-     * io task buffer can handle. */
-    if ((ret = compute_maxaggregate_bytes(ios, iodesc)))
-        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
-    LOG((3, "iodesc->maxbytes = %d", iodesc->maxbytes));
-
     return PIO_NOERR;
 }
 
@@ -1596,7 +1594,6 @@ int default_subset_partition(iosystem_desc_t *ios, io_desc_t *iodesc)
  * <li>On IO tasks, call get_regions() and distribute the max
  * maxregions to all tasks in IO communicator.
  * <li>On IO tasks, call compute_maxIObuffersize().
- * <li>Call compute_maxaggregate_bytes().
  * </ul>
  *
  * @param ios pointer to the iosystem_desc_t struct.
@@ -2002,11 +1999,6 @@ int subset_rearrange_create(iosystem_desc_t *ios, int maplen, PIO_Offset *compma
 
         iodesc->nrecvs = ntasks;
     }
-
-    /* Using maxiobuflen compute the maximum number of vars of this type that the io
-       task buffer can handle. */
-    if ((ret = compute_maxaggregate_bytes(ios, iodesc)))
-        return pio_err(ios, NULL, ret, __FILE__, __LINE__);
 
     return PIO_NOERR;
 }
