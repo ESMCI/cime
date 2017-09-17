@@ -57,7 +57,7 @@
 #define DIM_NAME "dim"
 
 /* Number of vars in test file. */
-#define NVAR2 2
+#define NVAR 3
 
 /* The names of the variables created in test file. */
 #define SCALAR_VAR_NAME "scalar_var"
@@ -900,7 +900,7 @@ check_nc_sample_2(int iosysid, int format, char *filename, int my_rank, int *nci
 }
 
 /* Create the decomposition to divide the 3-dimensional sample data
- * between the 4 tasks. For the purposes of decomposition we are only
+ * between tasks. For the purposes of decomposition we are only
  * concerned with 2 dimensions - we ignore the unlimited dimension.
  *
  * @param ntasks the number of available tasks
@@ -970,12 +970,12 @@ int create_nc_sample_3(int iosysid, int iotype, int my_rank, int my_comp_idx,
     char iotype_name[NC_MAX_NAME + 1];
     int ncid;
     signed char my_char_comp_idx = my_comp_idx;
-    int varid[NVAR2];
+    int varid[NVAR];
     char att_name[PIO_MAX_NAME + 1];
     char var_name[PIO_MAX_NAME + 1];
     char dim_name[PIO_MAX_NAME + 1];
-    int dimid[NDIM2];
-    int dim_len[NDIM2] = {DIM_X_LEN, DIM_Y_LEN};
+    int dimid[NDIM3];
+    int dim_len[NDIM3] = {NC_UNLIMITED, DIM_X_LEN, DIM_Y_LEN};
     short data_2d[DIM_X_LEN * DIM_Y_LEN];
     int ret;
 
@@ -984,7 +984,8 @@ int create_nc_sample_3(int iosysid, int iotype, int my_rank, int my_comp_idx,
         ERR(ret);
 
     /* Create a filename. */
-    sprintf(filename, "%s_%s_cmp_%d.nc", test_name, iotype_name, my_comp_idx);
+    sprintf(filename, "%s_%s_cmp_%d_darray_%d.nc", test_name, iotype_name, my_comp_idx,
+            use_darray);
     if (verbose)
         printf("my_rank %d creating test file %s for iosysid %d\n", my_rank, filename, iosysid);
 
@@ -1002,8 +1003,8 @@ int create_nc_sample_3(int iosysid, int iotype, int my_rank, int my_comp_idx,
     if ((ret = PIOc_def_var(ncid, var_name, PIO_INT, 0, NULL, &varid[0])))
         ERR(ret);
 
-    /* Define two dimensions. */
-    for (int d = 0; d < NDIM2; d++)
+    /* Define dimensions. */
+    for (int d = 0; d < NDIM3; d++)
     {
         sprintf(dim_name, "%s_%d_cmp_%d", DIM_NAME, d, my_comp_idx);
         if ((ret = PIOc_def_dim(ncid, dim_name, dim_len[d], &dimid[d])))
@@ -1012,9 +1013,14 @@ int create_nc_sample_3(int iosysid, int iotype, int my_rank, int my_comp_idx,
 
     /* Define a 2D variable. */
     sprintf(var_name, "%s_%d", TWOD_VAR_NAME, my_comp_idx);
-    if ((ret = PIOc_def_var(ncid, var_name, PIO_SHORT, NDIM2, dimid, &varid[1])))
+    if ((ret = PIOc_def_var(ncid, var_name, PIO_SHORT, NDIM2, &dimid[1], &varid[1])))
         ERR(ret);
 
+    /* Define a 3D variable. */
+    sprintf(var_name, "%s_%d", THREED_VAR_NAME, my_comp_idx);
+    if ((ret = PIOc_def_var(ncid, var_name, PIO_SHORT, NDIM3, dimid, &varid[2])))
+        ERR(ret);
+    
     /* End define mode. */
     if ((ret = PIOc_enddef(ncid)))
         ERR(ret);
@@ -1023,11 +1029,41 @@ int create_nc_sample_3(int iosysid, int iotype, int my_rank, int my_comp_idx,
     if ((ret = PIOc_put_var_int(ncid, 0, &my_comp_idx)))
         ERR(ret);
 
-    /* Write the 2-D variable. */
+    /* Create some 2D data. */
     for (int i = 0; i < DIM_X_LEN * DIM_Y_LEN; i++)
         data_2d[i] = my_comp_idx + i;
+
+    /* Write the 2-D variable with put_var(). */
     if ((ret = PIOc_put_var_short(ncid, 1, data_2d)))
         ERR(ret);
+    
+    /* Write the 3D data. */
+    if (use_darray)
+    {
+        /* Write the records of data with PIOc_write_darray(). */
+        if ((ret = PIOc_setframe(ncid, varid[2], 0)))
+            ERR(ret);
+        if ((ret = PIOc_write_darray(ncid, varid[2], ioid, DIM_X_LEN * DIM_Y_LEN, data_2d, NULL)))
+            ERR(ret);
+        if ((ret = PIOc_setframe(ncid, varid[2], 1)))
+            ERR(ret);
+        if ((ret = PIOc_write_darray(ncid, varid[2], ioid, DIM_X_LEN * DIM_Y_LEN, data_2d, NULL)))
+            ERR(ret);
+    }
+    else
+    {
+        PIO_Offset start[NDIM3] = {0, 0, 0};
+        PIO_Offset count[NDIM3] = {1, DIM_X_LEN, DIM_Y_LEN};
+        
+        /* Write a record of the 3-D variable with put_vara(). */
+        if ((ret = PIOc_put_vara_short(ncid, varid[2], start, count, data_2d)))
+            ERR(ret);
+        
+        /* Write another record of the 3-D variable with put_vara(). */
+        start[0] = 1;
+        if ((ret = PIOc_put_vara_short(ncid, varid[2], start, count, data_2d)))
+            ERR(ret);
+    }
 
     /* Close the file if ncidp was not provided. */
     if ((ret = PIOc_closefile(ncid)))
@@ -1083,7 +1119,7 @@ int check_nc_sample_3(int iosysid, int iotype, int my_rank, int my_comp_idx,
     /* Check file metadata. */
     if ((ret = PIOc_inq(ncid, &ndims, &nvars, &ngatts, &unlimdimid)))
         ERR(ret);
-    if (ndims != 2 || nvars != 2 || ngatts != 1 || unlimdimid != -1)
+    if (ndims != NDIM3 || nvars != NVAR || ngatts != 1 || unlimdimid != 0)
         ERR(ERR_WRONG);
 
     /* Check the global attribute. */
@@ -1125,6 +1161,40 @@ int check_nc_sample_3(int iosysid, int iotype, int my_rank, int my_comp_idx,
     for (int i = 0; i < DIM_X_LEN * DIM_Y_LEN; i++)
         if (data_2d[i] != my_comp_idx + i)
             ERR(ERR_WRONG);
+
+    /* Check the 3-D variable. */
+    if (use_darray)
+    {
+        /* Read the record of data with PIOc_read_darray(). */
+        if ((ret = PIOc_setframe(ncid, 2, 0)))
+            ERR(ret);
+        if ((ret = PIOc_read_darray(ncid, 2, ioid, DIM_X_LEN * DIM_Y_LEN, data_2d)))
+            ERR(ret);
+        if ((ret = PIOc_setframe(ncid, 2, 1)))
+            ERR(ret);
+        if ((ret = PIOc_read_darray(ncid, 2, ioid, DIM_X_LEN * DIM_Y_LEN, data_2d)))
+            ERR(ret);
+    }
+    else
+    {
+        PIO_Offset start[NDIM3] = {0, 0, 0};
+        PIO_Offset count[NDIM3] = {1, DIM_X_LEN, DIM_Y_LEN};
+        
+        /* Read a record of the 3-D variable with get_vara(). */
+        if ((ret = PIOc_get_vara_short(ncid, 2, start, count, data_2d)))
+            ERR(ret);
+        for (int i = 0; i < DIM_X_LEN * DIM_Y_LEN; i++)
+            if (data_2d[i] != my_comp_idx + i)
+                ERR(ERR_WRONG);
+        
+        /* Read another record of the 3-D variable with get_vara(). */
+        start[0] = 1;
+        if ((ret = PIOc_get_vara_short(ncid, 2, start, count, data_2d)))
+            ERR(ret);
+        for (int i = 0; i < DIM_X_LEN * DIM_Y_LEN; i++)
+            if (data_2d[i] != my_comp_idx + i)
+                ERR(ERR_WRONG);
+    }
 
     /* Close the test file. */
     if ((ret = PIOc_closefile(ncid)))

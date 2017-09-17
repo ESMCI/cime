@@ -52,7 +52,7 @@ int main(int argc, char **argv)
 
     /* Initialize test. */
     if ((ret = pio_test_init2(argc, argv, &my_rank, &ntasks, TARGET_NTASKS, TARGET_NTASKS,
-                              3, &test_comm)))
+                              -1, &test_comm)))
         ERR(ERR_INIT);
 
     /* Is the current process a computation task? */    
@@ -88,23 +88,27 @@ int main(int argc, char **argv)
             {
                 char filename[NC_MAX_NAME + 1]; /* Test filename. */
                 int my_comp_idx = my_rank - 1; /* Index in iosysid array. */
-                int use_darray = 0;
                 int dim_len_2d[NDIM2] = {DIM_LEN2, DIM_LEN3};
                 int ioid = 0;
                 
                 if ((ret = create_decomposition_2d(NUM_COMP_PROCS, my_rank, iosysid[my_comp_idx], dim_len_2d,
-                                                   &ioid, PIO_INT)))
+                                                   &ioid, PIO_SHORT)))
                     ERR(ret);
 
-                /* Create sample file. */
-                if ((ret = create_nc_sample_3(iosysid[my_comp_idx], iotype[i], my_rank, my_comp_idx,
-                                              filename, TEST_NAME, verbose, use_darray, ioid)))
-                    ERR(ret);
+                /* Test with and without darrays. */
+                for (int use_darray = 0; use_darray < 2; use_darray++)
+                {
 
-                /* Check the file for correctness. */
-                if ((ret = check_nc_sample_3(iosysid[my_comp_idx], iotype[i], my_rank, my_comp_idx,
-                                             filename, verbose, use_darray, ioid)))
-                    ERR(ret);
+                    /* Create sample file. */
+                    if ((ret = create_nc_sample_3(iosysid[my_comp_idx], iotype[i], my_rank, my_comp_idx,
+                                                  filename, TEST_NAME, verbose, use_darray, ioid)))
+                        ERR(ret);
+                    
+                    /* Check the file for correctness. */
+                    if ((ret = check_nc_sample_3(iosysid[my_comp_idx], iotype[i], my_rank, my_comp_idx,
+                                                 filename, verbose, 0, ioid)))
+                        ERR(ret);
+                } /* next use_darray */
 
                 /* Free the decomposition. */
                 if ((ret = PIOc_freedecomp(iosysid[my_comp_idx], ioid)))

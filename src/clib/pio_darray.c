@@ -34,6 +34,7 @@ PIO_Offset maxusage = 0;
  *
  * @param limit the size of the buffer on the IO nodes
  * @return The previous limit setting.
+ * @author Jim Edwards
  */
 PIO_Offset PIOc_set_buffer_size_limit(PIO_Offset limit)
 {
@@ -564,20 +565,19 @@ int PIOc_write_darray(int ncid, int varid, int ioid, PIO_Offset arraylen, void *
     /* Try realloc first and call flush if realloc fails. */
     if (arraylen > 0)
     {
-        realloc_data = realloc(wmb->data, (1 + wmb->num_arrays) * arraylen * vdesc->mpi_type_size);
-        if (realloc_data)
+        size_t data_size = (1 + wmb->num_arrays) * arraylen * vdesc->mpi_type_size;
+        
+        if ((realloc_data = realloc(wmb->data, data_size)))
         {
             needsflush = 0;
             wmb->data = realloc_data;
-            LOG((2, "realloc got %ld bytes for data", (1 + wmb->num_arrays) * arraylen *
-                 vdesc->mpi_type_size));
         }
         else /* Failed to realloc, but wmb->data is still valid for a flush. */
         {
             needsflush = 1;
-            LOG((2, "realloc failed to get %ld bytes for data", (1 + wmb->num_arrays) * arraylen *
-                 vdesc->mpi_type_size));
         }
+        LOG((2, "realloc attempted to get %ld bytes for data, needsflush %d", data_size,
+             needsflush));
     }
 #else
     /* Find out how much free, contiguous space is available. */
