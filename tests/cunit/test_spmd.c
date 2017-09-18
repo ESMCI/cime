@@ -476,6 +476,14 @@ int test_varlists3()
     if ((ret = delete_var_desc(3, &varlist)))
         return ret;
 
+    /* Make sure they are gone. */
+    if (get_var_desc(0, &varlist, &var_desc) != PIO_ENOTVAR)
+        return ERR_WRONG;
+    if (get_var_desc(2, &varlist, &var_desc) != PIO_ENOTVAR)
+        return ERR_WRONG;
+    if (get_var_desc(3, &varlist, &var_desc) != PIO_ENOTVAR)
+        return ERR_WRONG;
+    
     return 0;
 }
 
