@@ -1940,7 +1940,13 @@ int PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype, const char *filena
     iosystem_desc_t *ios;      /* Pointer to io system information. */
     file_desc_t *file;         /* Pointer to file information. */
     int imode;                 /* Internal mode val for netcdf4 file open. */
-    int mpierr = MPI_SUCCESS, mpierr2;  /** Return code from MPI function codes. */
+    int nvars = 0;
+    int *rec_var = NULL;
+    int *pio_type = NULL;
+    int *pio_type_size = NULL;
+    int *mpi_type = NULL;
+    int *mpi_type_size = NULL;
+int mpierr = MPI_SUCCESS, mpierr2;  /** Return code from MPI function codes. */
     int ierr = PIO_NOERR;      /* Return code from function calls. */
 
     /* Get the IO system info from the iosysid. */
@@ -2020,6 +2026,9 @@ int PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype, const char *filena
             /* Check the vars for valid use of unlim dims. */
             if ((ierr = check_unlim_use(file->fh)))
                 break;
+
+            if ((ierr = nc_inq_nvar(file->fh, &nvar)))
+                break;
             LOG((2, "PIOc_openfile_retry:nc_open_par filename = %s mode = %d imode = %d ierr = %d",
                  filename, mode, imode, ierr));
 #endif
@@ -2033,13 +2042,20 @@ int PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype, const char *filena
                 /* Check the vars for valid use of unlim dims. */
                 if ((ierr = check_unlim_use(file->fh)))
                     break;
+                if ((ierr = nc_inq_nvar(file->fh, &nvar)))
+                    break;
             }
             break;
 #endif /* _NETCDF4 */
 
         case PIO_IOTYPE_NETCDF:
             if (ios->io_rank == 0)
-                ierr = nc_open(filename, mode, &file->fh);
+            {
+                if ((ierr = nc_open(filename, mode, &file->fh)))
+                    break;
+                if ((ierr = nc_inq_nvar(file->fh, &nvar)))
+                    break;
+            }
             break;
 
 #ifdef _PNETCDF
@@ -2054,6 +2070,27 @@ int PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype, const char *filena
                 ierr = ncmpi_buffer_attach(file->fh, pio_buffer_size_limit);
             }
             LOG((2, "ncmpi_open(%s) : fd = %d", filename, file->fh));
+
+            if (!ierr)
+            {
+                if ((ierr = ncmpi_inq_nvars(file->fh, &nvars)))
+                    break;
+
+                if (nvars)
+                {
+                    if (!(rec_var = malloc(nvars * sizeof(int))))
+                        return PIO_ENOMEM;
+                    if (!(pio_type = malloc(nvars * sizeof(int))))
+                        return PIO_ENOMEM;
+                    if (!(pio_type_size = malloc(nvars * sizeof(int))))
+                        return PIO_ENOMEM;
+                    if (!(mpi_type = malloc(nvars * sizeof(int))))
+                        return PIO_ENOMEM;
+                    if (!(mpi_type_size = malloc(nvars * sizeof(int))))
+                        return PIO_ENOMEM;
+                }
+            }
+
             break;
 #endif
 
@@ -2080,7 +2117,12 @@ int PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype, const char *filena
 
                 /* open netcdf file serially on main task */
                 if (ios->io_rank == 0)
-                    ierr = nc_open(filename, mode, &file->fh);
+                {
+                    if ((ierr = nc_open(filename, mode, &file->fh)))
+                        break;
+                    if ((ierr = nc_inq_nvar(file->fh, &nvar)))
+                        break;
+                }
                 else
                     file->do_io = 0;
             }
@@ -2126,6 +2168,21 @@ int PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype, const char *filena
 
     /* Add this file to the list of currently open files. */
     pio_add_to_file_list(file);
+
+    /* Free resources. */
+    if (nvars)
+    {
+        if (rec_var)
+            free(rec_var);
+        if (pio_type)
+            free(pio_type);
+        if (pio_type_size)
+            free(pio_type_size);
+        if (mpi_type)
+            free(mpi_type);
+        if (mpi_type_size)
+            free(mpi_type_size);
+    }
 
     LOG((2, "Opened file %s file->pio_ncid = %d file->fh = %d ierr = %d",
          filename, file->pio_ncid, file->fh, ierr));
