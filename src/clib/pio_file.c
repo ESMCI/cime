@@ -33,6 +33,8 @@ int pio_next_ncid = 16;
 int PIOc_openfile(int iosysid, int *ncidp, int *iotype, const char *filename,
                   int mode)
 {
+    LOG((1, "PIOc_openfile iosysid %d *iotype %d filename %s mode %d", iosysid,
+         iotype ? *iotype: 0, filename, mode));
     return openfile_int(iosysid, ncidp, iotype, filename, mode, 1);
 }
 
@@ -58,6 +60,8 @@ int PIOc_openfile(int iosysid, int *ncidp, int *iotype, const char *filename,
 int PIOc_openfile2(int iosysid, int *ncidp, int *iotype, const char *filename,
                    int mode)
 {
+    LOG((1, "PIOc_openfile2 iosysid %d *iotype %d filename %s mode %d", iosysid,
+         iotype ? *iotype : 0, filename, mode));
     return openfile_int(iosysid, ncidp, iotype, filename, mode, 0);
 }
 
