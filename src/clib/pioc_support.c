@@ -1915,6 +1915,7 @@ int inq_file_vars(file_desc_t *file, int ncid, int iotype, int *nvars, int **rec
     int nunlimdims;        /* The number of unlimited dimensions. */
     int unlimdimid;
     int *unlimdimids;
+    int mpierr;
     int ret;
 
     if (iotype == PIO_IOTYPE_PNETCDF)
@@ -1970,6 +1971,92 @@ int inq_file_vars(file_desc_t *file, int ncid, int iotype, int *nvars, int **rec
                 return pio_err(NULL, file, ret, __FILE__, __LINE__);
         }
     }
+
+    /* Learn about each variable in the file. */
+    for (int v = 0; v < *nvars; v++)
+    {
+        int var_ndims;   /* Number of dims for this var. */
+        nc_type my_type;
+
+        /* Find type of the var and number of dims in this var. Also
+         * learn about type. */
+        if (iotype == PIO_IOTYPE_PNETCDF)
+        {
+            PIO_Offset type_size;
+            
+            if ((ret = ncmpi_inq_var(ncid, v, NULL, &my_type, &var_ndims, NULL, NULL)))
+                return pio_err(NULL, file, ret, __FILE__, __LINE__);
+            (*pio_type)[v] = (int)my_type;
+            if ((ret = pioc_pnetcdf_inq_type(ncid, (*pio_type)[v], NULL, &type_size)))
+                return check_netcdf(file, ret, __FILE__, __LINE__);
+            (*pio_type_size)[v] = type_size;
+        }
+        else
+        {
+            size_t type_size;
+            
+            if ((ret = nc_inq_var(ncid, v, NULL, &my_type, &var_ndims, NULL, NULL)))
+                return pio_err(NULL, file, ret, __FILE__, __LINE__);
+            (*pio_type)[v] = (int)my_type;
+            if ((ret = nc_inq_type(ncid, (*pio_type)[v], NULL, &type_size)))
+                return check_netcdf(file, ret, __FILE__, __LINE__);
+            (*pio_type_size)[v] = type_size;
+        }
+
+        /* Get the MPI type corresponding with the PIO type. */
+        if ((ret = find_mpi_type((*pio_type)[v], &(*mpi_type)[v], NULL)))
+            return pio_err(NULL, file, ret, __FILE__, __LINE__);
+
+        /* Get the size of the MPI type. */
+        if ((mpierr = MPI_Type_size((*mpi_type)[v], &(*mpi_type_size)[v])))
+            return check_mpi2(NULL, file, mpierr, __FILE__, __LINE__);
+
+        /* What are the dimids associated with this var? */
+        if (var_ndims)
+        {
+            int var_dimids[var_ndims];
+            if (iotype == PIO_IOTYPE_PNETCDF)
+            {
+                if ((ret = ncmpi_inq_vardimid(ncid, v, var_dimids)))
+                    return pio_err(NULL, file, ret, __FILE__, __LINE__);
+            }
+            else
+            {
+                if ((ret = nc_inq_vardimid(ncid, v, var_dimids)))
+                    return pio_err(NULL, file, ret, __FILE__, __LINE__);
+            }
+            
+            /* Check against each variable dimid agains each unlimited
+             * dimid. */
+            for (int d = 0; d < var_ndims; d++)
+            {
+                int unlim_found = 0;
+
+                /* Check against each unlimited dimid. */
+                for (int ud = 0; ud < nunlimdims; ud++)
+                {
+                    if (var_dimids[d] == unlimdimids[ud])
+                    {
+                        unlim_found++;
+                        break;
+                    }
+                }
+
+                /* Only first dim may be unlimited, for PIO. */
+                if (unlim_found)
+                {
+                    if (d == 0)
+                        (*rec_var)[v] = 1;
+                    else
+                        return pio_err(NULL, file, PIO_EINVAL, __FILE__, __LINE__);
+                    
+                }
+                else
+                    (*rec_var)[v] = 0;
+                    
+            }
+        }
+    } /* next var */
     
     /* Free resources. */
     if (nunlimdims)
@@ -1977,7 +2064,6 @@ int inq_file_vars(file_desc_t *file, int ncid, int iotype, int *nvars, int **rec
     
     return PIO_NOERR;
 }
-
 
 /**
  * Open an existing file using PIO library. This is an internal
