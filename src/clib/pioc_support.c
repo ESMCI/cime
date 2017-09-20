@@ -429,7 +429,7 @@ int check_netcdf2(iosystem_desc_t *ios, file_desc_t *file, int status,
     if (eh == PIO_INTERNAL_ERROR)
     {
         char errmsg[PIO_MAX_NAME + 1];  /* Error message. */
-        PIOc_strerror(status, errmsg);        
+        PIOc_strerror(status, errmsg);
         piodie(errmsg, fname, line);        /* Die! */
     }
     else if (eh == PIO_BCAST_ERROR)
@@ -1835,7 +1835,7 @@ int PIOc_createfile_int(int iosysid, int *ncidp, int *iotype, const char *filena
             return check_mpi(file, mpierr, __FILE__, __LINE__);
         LOG((3, "createfile bcast pio_next_ncid %d", pio_next_ncid));
     }
-    
+
     /* Assign the PIO ncid. */
     file->pio_ncid = pio_next_ncid++;
     LOG((2, "file->fh = %d file->pio_ncid = %d", file->fh, file->pio_ncid));
@@ -1909,6 +1909,76 @@ int check_unlim_use(int ncid)
     return PIO_NOERR;
 }
 
+int inq_file_vars(file_desc_t *file, int ncid, int iotype, int *nvars, int **rec_var,
+                  int **pio_type, int **pio_type_size, int **mpi_type, int **mpi_type_size)
+{
+    int nunlimdims;        /* The number of unlimited dimensions. */
+    int unlimdimid;
+    int *unlimdimids;
+    int ret;
+
+    if (iotype == PIO_IOTYPE_PNETCDF)
+    {
+        if ((ret = ncmpi_inq_nvars(ncid, nvars)))
+            return pio_err(NULL, file, PIO_ENOMEM, __FILE__, __LINE__);
+    }
+    else
+    {
+        if ((ret = nc_inq_nvars(ncid, nvars)))
+            return pio_err(NULL, file, PIO_ENOMEM, __FILE__, __LINE__);
+    }
+
+    if (*nvars)
+    {
+        if (!(*rec_var = malloc(*nvars * sizeof(int))))
+            return PIO_ENOMEM;
+        if (!(*pio_type = malloc(*nvars * sizeof(int))))
+            return PIO_ENOMEM;
+        if (!(*pio_type_size = malloc(*nvars * sizeof(int))))
+            return PIO_ENOMEM;
+        if (!(*mpi_type = malloc(*nvars * sizeof(int))))
+            return PIO_ENOMEM;
+        if (!(*mpi_type_size = malloc(*nvars * sizeof(int))))
+            return PIO_ENOMEM;
+    }
+
+    /* How many unlimited dims for this file? */
+    if (iotype == PIO_IOTYPE_PNETCDF)
+    {
+        if ((ret = ncmpi_inq_unlimdim(ncid, &unlimdimid)))
+            return pio_err(NULL, file, ret, __FILE__, __LINE__);
+        nunlimdims = unlimdimid == -1 ? 0 : 1;
+    }
+    else
+    {
+        if ((ret = nc_inq_unlimdims(ncid, &nunlimdims, NULL)))
+            return pio_err(NULL, file, ret, __FILE__, __LINE__);
+    }
+
+    /* Learn the unlimited dimension ID(s), if there are any. */
+    if (nunlimdims)
+    {
+        if (!(unlimdimids = malloc(nunlimdims * sizeof(int))))
+            return pio_err(NULL, file, PIO_ENOMEM, __FILE__, __LINE__);        
+        if (iotype == PIO_IOTYPE_PNETCDF)
+        {
+            unlimdimids[0] = unlimdimid;
+        }
+        else
+        {
+            if ((ret = nc_inq_unlimdims(ncid, NULL, unlimdimids)))
+                return pio_err(NULL, file, ret, __FILE__, __LINE__);
+        }
+    }
+    
+    /* Free resources. */
+    if (nunlimdims)
+        free(unlimdimids);
+    
+    return PIO_NOERR;
+}
+
+
 /**
  * Open an existing file using PIO library. This is an internal
  * function. Depending on the value of the retry parameter, a failed
@@ -1946,7 +2016,7 @@ int PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype, const char *filena
     int *pio_type_size = NULL;
     int *mpi_type = NULL;
     int *mpi_type_size = NULL;
-int mpierr = MPI_SUCCESS, mpierr2;  /** Return code from MPI function codes. */
+    int mpierr = MPI_SUCCESS, mpierr2;  /** Return code from MPI function codes. */
     int ierr = PIO_NOERR;      /* Return code from function calls. */
 
     /* Get the IO system info from the iosysid. */
@@ -2027,7 +2097,8 @@ int mpierr = MPI_SUCCESS, mpierr2;  /** Return code from MPI function codes. */
             if ((ierr = check_unlim_use(file->fh)))
                 break;
 
-            if ((ierr = nc_inq_nvar(file->fh, &nvar)))
+            if ((ierr = inq_file_vars(file, file->fh, PIO_IOTYPE_NETCDF, &nvars, &rec_var, &pio_type,
+                                      &pio_type_size, &mpi_type, &mpi_type_size)))
                 break;
             LOG((2, "PIOc_openfile_retry:nc_open_par filename = %s mode = %d imode = %d ierr = %d",
                  filename, mode, imode, ierr));
@@ -2042,8 +2113,8 @@ int mpierr = MPI_SUCCESS, mpierr2;  /** Return code from MPI function codes. */
                 /* Check the vars for valid use of unlim dims. */
                 if ((ierr = check_unlim_use(file->fh)))
                     break;
-                if ((ierr = nc_inq_nvar(file->fh, &nvar)))
-                    break;
+                ierr = inq_file_vars(file, file->fh, PIO_IOTYPE_NETCDF4C, &nvars, &rec_var, &pio_type,
+                                     &pio_type_size, &mpi_type, &mpi_type_size);
             }
             break;
 #endif /* _NETCDF4 */
@@ -2053,8 +2124,8 @@ int mpierr = MPI_SUCCESS, mpierr2;  /** Return code from MPI function codes. */
             {
                 if ((ierr = nc_open(filename, mode, &file->fh)))
                     break;
-                if ((ierr = nc_inq_nvar(file->fh, &nvar)))
-                    break;
+                ierr = inq_file_vars(file, file->fh, PIO_IOTYPE_NETCDF, &nvars, &rec_var, &pio_type,
+                                     &pio_type_size, &mpi_type, &mpi_type_size);
             }
             break;
 
@@ -2072,25 +2143,8 @@ int mpierr = MPI_SUCCESS, mpierr2;  /** Return code from MPI function codes. */
             LOG((2, "ncmpi_open(%s) : fd = %d", filename, file->fh));
 
             if (!ierr)
-            {
-                if ((ierr = ncmpi_inq_nvars(file->fh, &nvars)))
-                    break;
-
-                if (nvars)
-                {
-                    if (!(rec_var = malloc(nvars * sizeof(int))))
-                        return PIO_ENOMEM;
-                    if (!(pio_type = malloc(nvars * sizeof(int))))
-                        return PIO_ENOMEM;
-                    if (!(pio_type_size = malloc(nvars * sizeof(int))))
-                        return PIO_ENOMEM;
-                    if (!(mpi_type = malloc(nvars * sizeof(int))))
-                        return PIO_ENOMEM;
-                    if (!(mpi_type_size = malloc(nvars * sizeof(int))))
-                        return PIO_ENOMEM;
-                }
-            }
-
+                ierr = inq_file_vars(file, file->fh, PIO_IOTYPE_PNETCDF, &nvars, &rec_var, &pio_type,
+                                     &pio_type_size, &mpi_type, &mpi_type_size);
             break;
 #endif
 
@@ -2119,9 +2173,10 @@ int mpierr = MPI_SUCCESS, mpierr2;  /** Return code from MPI function codes. */
                 if (ios->io_rank == 0)
                 {
                     if ((ierr = nc_open(filename, mode, &file->fh)))
-                        break;
-                    if ((ierr = nc_inq_nvar(file->fh, &nvar)))
-                        break;
+                        return pio_err(ios, file, ierr, __FILE__, __LINE__);
+                    if ((ierr = inq_file_vars(file, file->fh, PIO_IOTYPE_NETCDF, &nvars, &rec_var, &pio_type,
+                                              &pio_type_size, &mpi_type, &mpi_type_size)))
+                        return pio_err(ios, file, ierr, __FILE__, __LINE__);
                 }
                 else
                     file->do_io = 0;
@@ -2216,7 +2271,7 @@ int openfile_int(int iosysid, int *ncidp, int *iotype, const char *filename,
     int nunlimdims;        /* The number of unlimited dimensions. */
     iosystem_desc_t *ios;  /* Pointer to io system information. */
     file_desc_t *file;     /* Pointer to file information. */
-    int mpierr;            /* Return code from MPI functions. */    
+    int mpierr;            /* Return code from MPI functions. */
     int ierr = PIO_NOERR;  /* Return code from function calls. */
 
     /* Get the IO system info from the iosysid. */
@@ -2265,7 +2320,7 @@ int openfile_int(int iosysid, int *ncidp, int *iotype, const char *filename,
         /* Get the MPI type corresponding with the PIO type. */
         if ((ierr = find_mpi_type(pio_type, &mpi_type, NULL)))
             return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
-        
+
         /* Get the size of the MPI type. */
         if ((mpierr = MPI_Type_size(mpi_type, &mpi_type_size)))
             return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
@@ -2541,8 +2596,8 @@ int PIOc_set_rearr_opts(int iosysid, int comm_type, int fcd, bool enable_hs_c2i,
 /**
  * This function determines which processes are assigned to the
  * different computation components. This function is called by
- * PIOc_init_async(). 
- * 
+ * PIOc_init_async().
+ *
  * The user may have passed a specification of tasks as array
  * proc_list, or it may be calculated by assigning processors starting
  * at the first one after the IO component, and assigning them in
@@ -2605,4 +2660,3 @@ int determine_procs(int num_io_procs, int component_count, int *num_procs_per_co
     }
     return PIO_NOERR;
 }
-
