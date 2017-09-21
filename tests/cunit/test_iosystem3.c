@@ -272,10 +272,10 @@ int main(int argc, char **argv)
                     ERR(ret);
 
                 /* /\* Now check the first file from WORLD communicator. *\/ */
-                /* int ncid; */
-                /* if ((ret = open_and_check_file(test_comm, iosysid_world, flavor[i], &ncid, fname0, */
-                /*                                ATTNAME, DIMNAME, 1, my_rank))) */
-                /*     ERR(ret); */
+                int ncid;
+                if ((ret = open_and_check_file(test_comm, iosysid_world, flavor[i], &ncid, fname0,
+                                               ATTNAME, DIMNAME, 1, my_rank)))
+                    ERR(ret);
 
                 /* Now have the even communicators check the files. */
                 int ncid2;
@@ -308,8 +308,8 @@ int main(int argc, char **argv)
                 if (overlap_comm != MPI_COMM_NULL)
                     if ((ret = PIOc_closefile(ncid3)))
                         ERR(ret);
-                /* if ((ret = PIOc_closefile(ncid))) */
-                /*     ERR(ret); */
+                if ((ret = PIOc_closefile(ncid)))
+                    ERR(ret);
 
             } /* next iotype */
         
