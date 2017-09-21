@@ -1947,8 +1947,10 @@ int inq_file_metadata(file_desc_t *file, int ncid, int iotype, int *nvars, int *
 
     if (iotype == PIO_IOTYPE_PNETCDF)
     {
+#ifdef _PNETCDF
         if ((ret = ncmpi_inq_nvars(ncid, nvars)))
             return pio_err(NULL, file, PIO_ENOMEM, __FILE__, __LINE__);
+#endif /* _PNETCDF */
     }
     else
     {
