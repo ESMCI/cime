@@ -2183,7 +2183,7 @@ int PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype, const char *filena
             if ((ierr = check_unlim_use(file->fh)))
                 break;
 
-            if ((ierr = inq_file_vars(file, file->fh, PIO_IOTYPE_NETCDF, &nvars, &rec_var, &pio_type,
+            if ((ierr = inq_file_vars(file, file->fh, PIO_IOTYPE_NETCDF4P, &nvars, &rec_var, &pio_type,
                                       &pio_type_size, &mpi_type, &mpi_type_size)))
                 break;
             LOG((2, "PIOc_openfile_retry:nc_open_par filename = %s mode = %d imode = %d ierr = %d",
@@ -2273,7 +2273,7 @@ int PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype, const char *filena
     }
 
     /* Broadcast and check the return code. */
-    LOG((2, "Bcasting error code ierr = %d ios->ioroot = %d ios->my_comm = %d",
+    LOG((2, "Bcasting error code ierr %d ios->ioroot %d ios->my_comm %d",
          ierr, ios->ioroot, ios->my_comm));
     if ((mpierr = MPI_Bcast(&ierr, 1, MPI_INT, ios->ioroot, ios->my_comm)))
         return check_mpi(file, mpierr, __FILE__, __LINE__);
@@ -2290,14 +2290,44 @@ int PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype, const char *filena
     if ((mpierr = MPI_Bcast(&file->writable, 1, MPI_INT, ios->ioroot, ios->my_comm)))
         return check_mpi(file, mpierr, __FILE__, __LINE__);
 
-    /* Broadcast next ncid to all tasks from io root. */
-    if (ios->async)
+    /* Broadcast some values to all tasks from io root. */
+    if (ios->async || (ios->ioproc && ios->io_rank != 0))
     {
         LOG((3, "open bcasting pio_next_ncid %d ios->ioroot %d", pio_next_ncid, ios->ioroot));
         if ((mpierr = MPI_Bcast(&pio_next_ncid, 1, MPI_INT, ios->ioroot, ios->my_comm)))
             return check_mpi(file, mpierr, __FILE__, __LINE__);
-        LOG((3, "open bcast pio_next_ncid %d", pio_next_ncid));
+        if ((mpierr = MPI_Bcast(&nvars, 1, MPI_INT, ios->ioroot, ios->my_comm)))
+            return check_mpi(file, mpierr, __FILE__, __LINE__);
+
+        /* Non io tasks need to allocate to store info about variables. */
+        if (nvars && !rec_var)
+        {
+            if (!(rec_var = malloc(nvars * sizeof(int))))
+                return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);                    
+            if (!(pio_type = malloc(nvars * sizeof(int))))
+                return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);                    
+            if (!(pio_type_size = malloc(nvars * sizeof(int))))
+                return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);                    
+            if (!(mpi_type = malloc(nvars * sizeof(int))))
+                return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);                    
+            if (!(mpi_type_size = malloc(nvars * sizeof(int))))
+                return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);                    
+        }
+        if (nvars)
+        {
+            if ((mpierr = MPI_Bcast(rec_var, nvars, MPI_INT, ios->ioroot, ios->my_comm)))
+                return check_mpi(file, mpierr, __FILE__, __LINE__);
+            if ((mpierr = MPI_Bcast(pio_type, nvars, MPI_INT, ios->ioroot, ios->my_comm)))
+                return check_mpi(file, mpierr, __FILE__, __LINE__);
+            if ((mpierr = MPI_Bcast(pio_type_size, nvars, MPI_INT, ios->ioroot, ios->my_comm)))
+                return check_mpi(file, mpierr, __FILE__, __LINE__);
+            if ((mpierr = MPI_Bcast(mpi_type, nvars, MPI_INT, ios->ioroot, ios->my_comm)))
+                return check_mpi(file, mpierr, __FILE__, __LINE__);
+            if ((mpierr = MPI_Bcast(mpi_type_size, nvars, MPI_INT, ios->ioroot, ios->my_comm)))
+                return check_mpi(file, mpierr, __FILE__, __LINE__);
+        }
     }
+
 
     /* Create the ncid that the user will see. This is necessary
      * because otherwise ncids will be reused if files are opened
@@ -2309,6 +2339,13 @@ int PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype, const char *filena
 
     /* Add this file to the list of currently open files. */
     pio_add_to_file_list(file);
+
+    /* Add info about the variables to the file_desc_t struct. */
+    for (int v = 0; v < nvars; v++)
+        if ((ierr = add_to_varlist(v, rec_var[v], pio_type[v], pio_type_size[v], mpi_type[v],
+                                   mpi_type_size[v], &file->varlist)))
+            return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
+    file->nvars = nvars;
 
     /* Free resources. */
     if (nvars)
@@ -2353,11 +2390,11 @@ int PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype, const char *filena
 int openfile_int(int iosysid, int *ncidp, int *iotype, const char *filename,
                  int mode, int retry)
 {
-    int nvars;             /* The number of vars in the file. */
-    int nunlimdims;        /* The number of unlimited dimensions. */
     iosystem_desc_t *ios;  /* Pointer to io system information. */
-    file_desc_t *file;     /* Pointer to file information. */
-    int mpierr;            /* Return code from MPI functions. */
+    /* int nvars;             /\* The number of vars in the file. *\/ */
+    /* int nunlimdims;        /\* The number of unlimited dimensions. *\/ */
+    /* file_desc_t *file;     /\* Pointer to file information. *\/ */
+    /* int mpierr;            /\* Return code from MPI functions. *\/ */
     int ierr = PIO_NOERR;  /* Return code from function calls. */
 
     /* Get the IO system info from the iosysid. */
@@ -2368,89 +2405,89 @@ int openfile_int(int iosysid, int *ncidp, int *iotype, const char *filename,
     if ((ierr = PIOc_openfile_retry(iosysid, ncidp, iotype, filename, mode, retry)))
         return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
 
-    /* How many variabls in this file? */
-    if ((ierr = PIOc_inq_nvars(*ncidp, &nvars)))
-        return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
+    /* /\* How many variabls in this file? *\/ */
+    /* if ((ierr = PIOc_inq_nvars(*ncidp, &nvars))) */
+    /*     return pio_err(ios, NULL, ierr, __FILE__, __LINE__); */
 
-    /* How many unlimited dims for this file? */
-    if ((ierr = PIOc_inq_unlimdims(*ncidp, &nunlimdims, NULL)))
-        return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
+    /* /\* How many unlimited dims for this file? *\/ */
+    /* if ((ierr = PIOc_inq_unlimdims(*ncidp, &nunlimdims, NULL))) */
+    /*     return pio_err(ios, NULL, ierr, __FILE__, __LINE__); */
 
-    /* Learn the unlimited dimension ID(s). */
-    int unlimdimids[nunlimdims];
-    if ((ierr = PIOc_inq_unlimdims(*ncidp, NULL, unlimdimids)))
-        return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
+    /* /\* Learn the unlimited dimension ID(s). *\/ */
+    /* int unlimdimids[nunlimdims]; */
+    /* if ((ierr = PIOc_inq_unlimdims(*ncidp, NULL, unlimdimids))) */
+    /*     return pio_err(ios, NULL, ierr, __FILE__, __LINE__); */
 
-    /* Find the file_info_t struct for this file. */
-    if ((ierr = pio_get_file(*ncidp, &file)))
-        return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
+    /* /\* Find the file_info_t struct for this file. *\/ */
+    /* if ((ierr = pio_get_file(*ncidp, &file))) */
+    /*     return pio_err(ios, NULL, ierr, __FILE__, __LINE__); */
 
-    /* Create an entry in the varlist for each variable. */
-    for (int v = 0; v < nvars; v++)
-    {
-        int rec_var = 0; /* Does var use unlimited dimension? */
-        int pio_type;    /* Type of this var. */
-        int var_ndims;   /* Number of dims for this var. */
-        PIO_Offset pio_type_size;  /* Size of pio type in bytes. */
-        MPI_Datatype mpi_type;
-        int mpi_type_size;
+    /* /\* Create an entry in the varlist for each variable. *\/ */
+    /* for (int v = 0; v < nvars; v++) */
+    /* { */
+    /*     int rec_var = 0; /\* Does var use unlimited dimension? *\/ */
+    /*     int pio_type;    /\* Type of this var. *\/ */
+    /*     int var_ndims;   /\* Number of dims for this var. *\/ */
+    /*     PIO_Offset pio_type_size;  /\* Size of pio type in bytes. *\/ */
+    /*     MPI_Datatype mpi_type; */
+    /*     int mpi_type_size; */
 
-        /* Find type of the var and number of dims. */
-        if ((ierr = PIOc_inq_var(*ncidp, v, NULL, &pio_type, &var_ndims, NULL, NULL)))
-            return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
+    /*     /\* Find type of the var and number of dims. *\/ */
+    /*     if ((ierr = PIOc_inq_var(*ncidp, v, NULL, &pio_type, &var_ndims, NULL, NULL))) */
+    /*         return pio_err(ios, NULL, ierr, __FILE__, __LINE__); */
 
-        /* Get size of type. */
-        if ((ierr = PIOc_inq_type(*ncidp, pio_type, NULL, &pio_type_size)))
-            return check_netcdf(file, ierr, __FILE__, __LINE__);
+    /*     /\* Get size of type. *\/ */
+    /*     if ((ierr = PIOc_inq_type(*ncidp, pio_type, NULL, &pio_type_size))) */
+    /*         return check_netcdf(file, ierr, __FILE__, __LINE__); */
 
-        /* Get the MPI type corresponding with the PIO type. */
-        if ((ierr = find_mpi_type(pio_type, &mpi_type, NULL)))
-            return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
+    /*     /\* Get the MPI type corresponding with the PIO type. *\/ */
+    /*     if ((ierr = find_mpi_type(pio_type, &mpi_type, NULL))) */
+    /*         return pio_err(ios, NULL, ierr, __FILE__, __LINE__); */
 
-        /* Get the size of the MPI type. */
-        if ((mpierr = MPI_Type_size(mpi_type, &mpi_type_size)))
-            return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__);
+    /*     /\* Get the size of the MPI type. *\/ */
+    /*     if ((mpierr = MPI_Type_size(mpi_type, &mpi_type_size))) */
+    /*         return check_mpi2(ios, NULL, mpierr, __FILE__, __LINE__); */
 
-        /* What are the dimids associated with this var? */
-        if (var_ndims)
-        {
-            int var_dimids[var_ndims];
-            if ((ierr = PIOc_inq_vardimid(*ncidp, v, var_dimids)))
-                return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
+    /*     /\* What are the dimids associated with this var? *\/ */
+    /*     if (var_ndims) */
+    /*     { */
+    /*         int var_dimids[var_ndims]; */
+    /*         if ((ierr = PIOc_inq_vardimid(*ncidp, v, var_dimids))) */
+    /*             return pio_err(ios, NULL, ierr, __FILE__, __LINE__); */
 
-            /* Check against each variable dimid agains each unlimited
-             * dimid. */
-            for (int d = 0; d < var_ndims; d++)
-            {
-                int unlim_found = 0;
+    /*         /\* Check against each variable dimid agains each unlimited */
+    /*          * dimid. *\/ */
+    /*         for (int d = 0; d < var_ndims; d++) */
+    /*         { */
+    /*             int unlim_found = 0; */
 
-                /* Check against each unlimited dimid. */
-                for (int ud = 0; ud < nunlimdims; ud++)
-                {
-                    if (var_dimids[d] == unlimdimids[ud])
-                    {
-                        unlim_found++;
-                        break;
-                    }
-                }
+    /*             /\* Check against each unlimited dimid. *\/ */
+    /*             for (int ud = 0; ud < nunlimdims; ud++) */
+    /*             { */
+    /*                 if (var_dimids[d] == unlimdimids[ud]) */
+    /*                 { */
+    /*                     unlim_found++; */
+    /*                     break; */
+    /*                 } */
+    /*             } */
 
-                /* Only first dim may be unlimited, for PIO. */
-                if (unlim_found)
-                {
-                    if (d == 0)
-                        rec_var++;
-                    else
-                        return pio_err(ios, NULL, PIO_EINVAL, __FILE__, __LINE__);
-                }
-            }
-        }
+    /*             /\* Only first dim may be unlimited, for PIO. *\/ */
+    /*             if (unlim_found) */
+    /*             { */
+    /*                 if (d == 0) */
+    /*                     rec_var++; */
+    /*                 else */
+    /*                     return pio_err(ios, NULL, PIO_EINVAL, __FILE__, __LINE__); */
+    /*             } */
+    /*         } */
+    /*     } */
 
-        /* Add to the list of var_desc_t structs for this file. */
-        if ((ierr = add_to_varlist(v, rec_var, pio_type, (int)pio_type_size, mpi_type,
-                                   mpi_type_size, &file->varlist)))
-            return pio_err(ios, NULL, ierr, __FILE__, __LINE__);
-        file->nvars++;
-    }
+    /*     /\* Add to the list of var_desc_t structs for this file. *\/ */
+    /*     if ((ierr = add_to_varlist(v, rec_var, pio_type, (int)pio_type_size, mpi_type, */
+    /*                                mpi_type_size, &file->varlist))) */
+    /*         return pio_err(ios, NULL, ierr, __FILE__, __LINE__); */
+    /*     file->nvars++; */
+    /* } */
 
     return PIO_NOERR;
 }
