@@ -114,8 +114,8 @@ extern "C" {
     int pio_delete_file_from_list(int ncid);
     void pio_add_to_file_list(file_desc_t *file);
     /* Add a var_desc_t to a varlist. */
-    int add_to_varlist(int varid, int rec_var, int pio_type, int pio_type_size, MPI_Datatype mpi_type,
-                       int mpi_type_size, var_desc_t **varlist);
+    int add_to_varlist(int varid, int rec_var, int pio_type, int pio_type_size,
+                       MPI_Datatype mpi_type, int mpi_type_size, var_desc_t **varlist);
 
     /* Find a var_desc_t in a varlist. */
     int get_var_desc(int varid, var_desc_t **varlist, var_desc_t **var_desc);
@@ -128,14 +128,10 @@ extern "C" {
     /* Create a file (internal function). */
     int PIOc_createfile_int(int iosysid, int *ncidp, int *iotype, const char *filename, int mode);
 
-    /* Open a file and learn about metadata. */
-    int openfile_int(int iosysid, int *ncidp, int *iotype, const char *filename,
-                     int mode, int retry);
-
     /* Open a file with optional retry as netCDF-classic if first
      * iotype does not work. */
-    int PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype,
-                            const char *filename, int mode, int retry);
+    int PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype, const char *filename, int mode,
+                            int retry);
 
     iosystem_desc_t *pio_get_iosystem_from_id(int iosysid);
     int pio_add_to_iosystem_list(iosystem_desc_t *ios);
