@@ -1981,10 +1981,18 @@ int inq_file_metadata(file_desc_t *file, int ncid, int iotype, int *nvars, int *
         nunlimdims = unlimdimid == -1 ? 0 : 1;
 #endif /* _PNETCDF */
     }
+    else if (iotype == PIO_IOTYPE_NETCDF)
+    {
+        if ((ret = nc_inq_unlimdim(ncid, &unlimdimid)))
+            return pio_err(NULL, file, ret, __FILE__, __LINE__);
+        nunlimdims = unlimdimid == -1 ? 0 : 1;
+    }
     else
     {
+#ifdef _NETCDF4
         if ((ret = nc_inq_unlimdims(ncid, &nunlimdims, NULL)))
             return pio_err(NULL, file, ret, __FILE__, __LINE__);
+#endif /* _NETCDF4 */
     }
 
     /* Learn the unlimited dimension ID(s), if there are any. */
@@ -1992,14 +2000,16 @@ int inq_file_metadata(file_desc_t *file, int ncid, int iotype, int *nvars, int *
     {
         if (!(unlimdimids = malloc(nunlimdims * sizeof(int))))
             return pio_err(NULL, file, PIO_ENOMEM, __FILE__, __LINE__);        
-        if (iotype == PIO_IOTYPE_PNETCDF)
+        if (iotype == PIO_IOTYPE_PNETCDF || iotype == PIO_IOTYPE_NETCDF)
         {
             unlimdimids[0] = unlimdimid;
         }
         else
         {
+#ifdef _NETCDF4
             if ((ret = nc_inq_unlimdims(ncid, NULL, unlimdimids)))
                 return pio_err(NULL, file, ret, __FILE__, __LINE__);
+#endif /* _NETCDF4 */
         }
     }
 
