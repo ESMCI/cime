@@ -2291,43 +2291,43 @@ int PIOc_openfile_retry(int iosysid, int *ncidp, int *iotype, const char *filena
         return check_mpi(file, mpierr, __FILE__, __LINE__);
 
     /* Broadcast some values to all tasks from io root. */
-    if (ios->async || (ios->ioproc && ios->io_rank != 0))
+    if (ios->async)
     {
         LOG((3, "open bcasting pio_next_ncid %d ios->ioroot %d", pio_next_ncid, ios->ioroot));
         if ((mpierr = MPI_Bcast(&pio_next_ncid, 1, MPI_INT, ios->ioroot, ios->my_comm)))
             return check_mpi(file, mpierr, __FILE__, __LINE__);
-        if ((mpierr = MPI_Bcast(&nvars, 1, MPI_INT, ios->ioroot, ios->my_comm)))
-            return check_mpi(file, mpierr, __FILE__, __LINE__);
-
-        /* Non io tasks need to allocate to store info about variables. */
-        if (nvars && !rec_var)
-        {
-            if (!(rec_var = malloc(nvars * sizeof(int))))
-                return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);                    
-            if (!(pio_type = malloc(nvars * sizeof(int))))
-                return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);                    
-            if (!(pio_type_size = malloc(nvars * sizeof(int))))
-                return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);                    
-            if (!(mpi_type = malloc(nvars * sizeof(int))))
-                return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);                    
-            if (!(mpi_type_size = malloc(nvars * sizeof(int))))
-                return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);                    
-        }
-        if (nvars)
-        {
-            if ((mpierr = MPI_Bcast(rec_var, nvars, MPI_INT, ios->ioroot, ios->my_comm)))
-                return check_mpi(file, mpierr, __FILE__, __LINE__);
-            if ((mpierr = MPI_Bcast(pio_type, nvars, MPI_INT, ios->ioroot, ios->my_comm)))
-                return check_mpi(file, mpierr, __FILE__, __LINE__);
-            if ((mpierr = MPI_Bcast(pio_type_size, nvars, MPI_INT, ios->ioroot, ios->my_comm)))
-                return check_mpi(file, mpierr, __FILE__, __LINE__);
-            if ((mpierr = MPI_Bcast(mpi_type, nvars, MPI_INT, ios->ioroot, ios->my_comm)))
-                return check_mpi(file, mpierr, __FILE__, __LINE__);
-            if ((mpierr = MPI_Bcast(mpi_type_size, nvars, MPI_INT, ios->ioroot, ios->my_comm)))
-                return check_mpi(file, mpierr, __FILE__, __LINE__);
-        }
     }
+    
+    if ((mpierr = MPI_Bcast(&nvars, 1, MPI_INT, ios->ioroot, ios->my_comm)))
+        return check_mpi(file, mpierr, __FILE__, __LINE__);
 
+    /* Non io tasks need to allocate to store info about variables. */
+    if (nvars && !rec_var)
+    {
+        if (!(rec_var = malloc(nvars * sizeof(int))))
+            return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);                    
+        if (!(pio_type = malloc(nvars * sizeof(int))))
+            return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);                    
+        if (!(pio_type_size = malloc(nvars * sizeof(int))))
+            return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);                    
+        if (!(mpi_type = malloc(nvars * sizeof(int))))
+            return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);                    
+        if (!(mpi_type_size = malloc(nvars * sizeof(int))))
+            return pio_err(ios, file, PIO_ENOMEM, __FILE__, __LINE__);                    
+    }
+    if (nvars)
+    {
+        if ((mpierr = MPI_Bcast(rec_var, nvars, MPI_INT, ios->ioroot, ios->my_comm)))
+            return check_mpi(file, mpierr, __FILE__, __LINE__);
+        if ((mpierr = MPI_Bcast(pio_type, nvars, MPI_INT, ios->ioroot, ios->my_comm)))
+            return check_mpi(file, mpierr, __FILE__, __LINE__);
+        if ((mpierr = MPI_Bcast(pio_type_size, nvars, MPI_INT, ios->ioroot, ios->my_comm)))
+            return check_mpi(file, mpierr, __FILE__, __LINE__);
+        if ((mpierr = MPI_Bcast(mpi_type, nvars, MPI_INT, ios->ioroot, ios->my_comm)))
+            return check_mpi(file, mpierr, __FILE__, __LINE__);
+        if ((mpierr = MPI_Bcast(mpi_type_size, nvars, MPI_INT, ios->ioroot, ios->my_comm)))
+            return check_mpi(file, mpierr, __FILE__, __LINE__);
+    }
 
     /* Create the ncid that the user will see. This is necessary
      * because otherwise ncids will be reused if files are opened
