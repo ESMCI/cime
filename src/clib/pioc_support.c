@@ -1973,9 +1973,11 @@ int inq_file_metadata(file_desc_t *file, int ncid, int iotype, int *nvars, int *
     /* How many unlimited dims for this file? */
     if (iotype == PIO_IOTYPE_PNETCDF)
     {
+#ifdef _PNETCDF
         if ((ret = ncmpi_inq_unlimdim(ncid, &unlimdimid)))
             return pio_err(NULL, file, ret, __FILE__, __LINE__);
         nunlimdims = unlimdimid == -1 ? 0 : 1;
+#endif /* _PNETCDF */
     }
     else
     {
@@ -2011,12 +2013,14 @@ int inq_file_metadata(file_desc_t *file, int ncid, int iotype, int *nvars, int *
         {
             PIO_Offset type_size;
             
+#ifdef _PNETCDF
             if ((ret = ncmpi_inq_var(ncid, v, NULL, &my_type, &var_ndims, NULL, NULL)))
                 return pio_err(NULL, file, ret, __FILE__, __LINE__);
             (*pio_type)[v] = (int)my_type;
             if ((ret = pioc_pnetcdf_inq_type(ncid, (*pio_type)[v], NULL, &type_size)))
                 return check_netcdf(file, ret, __FILE__, __LINE__);
             (*pio_type_size)[v] = type_size;
+#endif /* _PNETCDF */            
         }
         else
         {
@@ -2044,8 +2048,10 @@ int inq_file_metadata(file_desc_t *file, int ncid, int iotype, int *nvars, int *
             int var_dimids[var_ndims];
             if (iotype == PIO_IOTYPE_PNETCDF)
             {
+#ifdef _PNETCDF
                 if ((ret = ncmpi_inq_vardimid(ncid, v, var_dimids)))
                     return pio_err(NULL, file, ret, __FILE__, __LINE__);
+#endif /* _PNETCDF */                
             }
             else
             {
