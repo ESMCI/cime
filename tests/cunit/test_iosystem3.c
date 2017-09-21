@@ -271,7 +271,7 @@ int main(int argc, char **argv)
                                        DIMNAME, my_rank)))
                     ERR(ret);
 
-                /* /\* Now check the first file from WORLD communicator. *\/ */
+                /* Now check the first file from WORLD communicator. */
                 int ncid;
                 if ((ret = open_and_check_file(test_comm, iosysid_world, flavor[i], &ncid, fname0,
                                                ATTNAME, DIMNAME, 1, my_rank)))
