@@ -8,6 +8,9 @@ set(VERSION_MINOR   3   CACHE STRING "Project minor version number.")
 set(VERSION_PATCH   0   CACHE STRING "Project patch version number.")
 mark_as_advanced(VERSION_MAJOR VERSION_MINOR VERSION_PATCH)
 
+# The size of the data buffer for write/read_darray().
+set(PIO_BUFFER_SIZE 134217728)
+
 #==============================================================================
 #  USER-DEFINED OPTIONS (set with "-DOPT=VAL" from command line)
 #==============================================================================
