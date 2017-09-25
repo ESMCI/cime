@@ -18,6 +18,14 @@ AC_PROG_LIBTOOL
 # Always use malloc in autotools builds.
 AC_DEFINE([PIO_USE_MALLOC], [1], [use malloc for memory])
 
+AC_MSG_CHECKING([whether a PIO_BUFFER_SIZE was specified])
+AC_ARG_WITH([piobuffersize],
+              [AS_HELP_STRING([--with-piobuffersize=<integer>],
+                              [Specify buffer size for PIO.])],
+            [PIO_BUFFER_SIZE=$with_piobuffersize], [PIO_BUFFER_SIZE=134217728])
+AC_MSG_RESULT([$PIO_BUFFER_SIZE])
+AC_DEFINE_UNQUOTED([PIO_BUFFER_SIZE], [$PIO_BUFFER_SIZE], [buffer size for darray data.])
+
 # Need to allow user to set this.
 AC_DEFINE([PIO_ENABLE_LOGGING], [1], [log messages from library])
 

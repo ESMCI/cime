@@ -13,7 +13,7 @@
 #include <pio_internal.h>
 
 /* 10MB default limit. */
-PIO_Offset pio_buffer_size_limit = 10485760;
+PIO_Offset pio_buffer_size_limit = PIO_BUFFER_SIZE;
 
 /* Global buffer pool pointer. */
 void *CN_bpool = NULL;
