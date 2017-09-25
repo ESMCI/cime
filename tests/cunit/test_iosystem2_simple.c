@@ -7,7 +7,6 @@
  * @author Ed Hartnett
  */
 #include <config.h>
-#include <config.h>
 #include <pio.h>
 #include <pio_tests.h>
 
@@ -27,9 +26,6 @@
 #define STRIDE 1
 #define BASE 0
 #define REARRANGER 1
-
-/* Ten megabytes. */
-#define TEN_MEG 10485760
 
 /* Used to set PIOc_set_buffer_size_limit(). */
 #define NEW_LIMIT 200000
@@ -62,7 +58,7 @@ int main(int argc, char **argv)
 
         /* Try setting the buffer size limit. */
         oldlimit = PIOc_set_buffer_size_limit(NEW_LIMIT);
-        if (oldlimit != TEN_MEG)
+        if (oldlimit != PIO_BUFFER_SIZE)
             ERR(ERR_WRONG);
 
         /* A negative limit will silently do nothing. */
@@ -71,7 +67,7 @@ int main(int argc, char **argv)
             ERR(ERR_WRONG);
 
         /* Reset the buffer size limit. */
-        oldlimit = PIOc_set_buffer_size_limit(TEN_MEG);
+        oldlimit = PIOc_set_buffer_size_limit(PIO_BUFFER_SIZE);
         if (oldlimit != NEW_LIMIT)
             ERR(ERR_WRONG);
 
