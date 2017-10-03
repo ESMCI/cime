@@ -5,6 +5,7 @@ Warning: you cannot use CIME Classes in this module as it causes circular depend
 import logging, gzip, sys, os, time, re, shutil, glob, string, random, imp, errno, signal
 import stat as statlib
 import warnings
+from CIME import six
 from contextlib import contextmanager
 
 # Return this error code if the scripts worked but tests failed
@@ -856,9 +857,9 @@ def convert_to_string(value, type_str=None, vid=""):
     """
     if value is not None and type(value) is not str:
         if type_str == "char":
-            expect(type(value) is str, "Wrong type for entry id '{}'".format(vid))
+            expect(isinstance(value, six.string_types), "Wrong type for entry id '{}'".format(vid))
         elif type_str == "integer":
-            expect(type(value) is int, "Wrong type for entry id '{}'".format(vid))
+            expect(isinstance(value, six.integer_types), "Wrong type for entry id '{}'".format(vid))
             value = str(value)
         elif type_str == "logical":
             expect(type(value) is bool, "Wrong type for entry id '{}'".format(vid))
