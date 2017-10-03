@@ -86,7 +86,7 @@ def _read_cime_config_file():
     CIME_MODEL=acme,cesm
     PROJECT=someprojectnumber
     """
-    from ConfigParser import SafeConfigParser as config_parser
+    from configparser import SafeConfigParser as config_parser
 
     cime_config_file = os.path.abspath(os.path.join(os.path.expanduser("~"),
                                                   ".cime","config"))
@@ -944,7 +944,7 @@ def compute_total_time(job_cost_map, proc_pool):
     running_jobs = {} # name -> (procs, est-time, start-time)
     while len(waiting_jobs) > 0 or len(running_jobs) > 0:
         launched_jobs = []
-        for jobname, data in waiting_jobs.iteritems():
+        for jobname, data in waiting_jobs.items():
             procs_for_job, time_for_job = data
             if procs_for_job <= proc_pool:
                 proc_pool -= procs_for_job
@@ -955,7 +955,7 @@ def compute_total_time(job_cost_map, proc_pool):
             del waiting_jobs[launched_job]
 
         completed_jobs = []
-        for jobname, data in running_jobs.iteritems():
+        for jobname, data in running_jobs.items():
             procs_for_job, time_for_job, time_started = data
             if (current_time - time_started) >= time_for_job:
                 proc_pool += procs_for_job

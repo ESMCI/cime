@@ -387,7 +387,7 @@ def _case_build_impl(caseroot, case, sharedlib_only, model_only, buildlist):
     # Retrieve relevant case data
     # This environment variable gets set for cesm Make and
     # needs to be unset before building again.
-    if "MODEL" in os.environ.keys():
+    if "MODEL" in list(os.environ.keys()):
         del os.environ["MODEL"]
     build_threaded      = case.get_build_threaded()
     casetools           = case.get_value("CASETOOLS")

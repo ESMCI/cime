@@ -732,21 +732,21 @@ def compress_literal_list(literals):
                 # Otherwise, write out the previous literal and start tracking the
                 # new one.
                 rep_str = str(num_reps) + '*' if num_reps > 1 else ''
-                if isinstance(old_literal, basestring):
+                if isinstance(old_literal, str):
                     compressed.append(rep_str + old_literal)
                 else:
                     compressed.append(rep_str + str(old_literal))
                 old_literal = literal
                 num_reps = 1
         rep_str = str(num_reps) + '*' if num_reps > 1 else ''
-        if isinstance(old_literal, basestring):
+        if isinstance(old_literal, str):
             compressed.append(rep_str + old_literal)
         else:
             compressed.append(rep_str + str(old_literal))
         return compressed
     else:
         for literal in literals:
-            if isinstance(literal, basestring):
+            if isinstance(literal, str):
                 compressed.append(literal)
             else:
                 compressed.append(str(literal))
@@ -833,7 +833,7 @@ def parse(in_file=None, text=None, groupless=False, convert_tab_to_space=True):
            "Must specify an input file or text to the namelist parser.")
     expect(in_file is None or text is None,
            "Cannot specify both input file and text to the namelist parser.")
-    if isinstance(in_file, str) or isinstance(in_file, unicode):
+    if isinstance(in_file, str) or isinstance(in_file, str):
         logger.debug("Reading namelist at: {}".format(in_file))
         with open(in_file) as in_file_obj:
             text = in_file_obj.read()
@@ -901,7 +901,7 @@ class Namelist(object):
         >>> sorted(parse(text='&foo / &bar /').get_group_names())
         [u'bar', u'foo']
         """
-        return self._groups.keys()
+        return list(self._groups.keys())
 
     def get_variable_names(self, group_name):
         """Return a list of all variables in the given namelist group.
@@ -923,7 +923,7 @@ class Namelist(object):
         group_name = group_name.lower()
         if group_name not in self._groups:
             return []
-        return self._groups[group_name].keys()
+        return list(self._groups[group_name].keys())
 
     def get_variable_value(self, group_name, variable_name):
         """Return the value of the specified variable.
@@ -943,7 +943,7 @@ class Namelist(object):
         variable_name = variable_name.lower()
         if group_name not in self._groups or \
            variable_name not in self._groups[group_name]:
-            return [u'']
+            return ['']
 
         return self._groups[group_name][variable_name]
 
@@ -974,7 +974,7 @@ class Namelist(object):
         if possible_groups:
             return self._groups[possible_groups[0]][variable_name]
         else:
-            return [u'']
+            return ['']
 
     def set_variable_value(self, group_name, variable_name, value, var_size=1):
         """Set the value of the specified variable.
@@ -1134,7 +1134,7 @@ class Namelist(object):
         """
         expect(format_ in ('nml', 'rc', 'nmlcontents'),
                "Namelist.write: unexpected output format {!r}".format(str(format_)))
-        if isinstance(out_file, str) or isinstance(out_file, unicode):
+        if isinstance(out_file, str) or isinstance(out_file, str):
             logger.debug("Writing namelist to: {}".format(out_file))
             flag = 'a' if append else 'w'
             with open(out_file, flag) as file_obj:
@@ -1146,7 +1146,7 @@ class Namelist(object):
     def _write(self, out_file, groups, format_, sorted_groups):
         """Unwrapped version of `write` assuming that a file object is input."""
         if groups is None:
-            groups = self._groups.keys()
+            groups = list(self._groups.keys())
         if format_ == 'nml' or format_ == 'nmlcontents':
             equals = ' ='
         elif format_ == 'rc':
@@ -1249,7 +1249,7 @@ class _NamelistParser(object): # pylint:disable=too-few-public-methods
         self._line = 1
         self._col = 0
         # Text and its size.
-        self._text = unicode(text)
+        self._text = str(text)
         self._len = len(self._text)
         # Dictionary with group names as keys, and dictionaries of variable
         # name-value pairs as values. (Or a single flat dictionary if
@@ -1800,7 +1800,7 @@ class _NamelistParser(object): # pylint:disable=too-few-public-methods
         """
         # Deal with empty input string.
         if allow_eof_end and self._pos == self._len:
-            return u''
+            return ''
         # Deal with a repeated value prefix.
         old_pos = self._pos
         if FORTRAN_REPEAT_PREFIX_REGEX.search(self._text[self._pos:]):
@@ -2029,7 +2029,7 @@ class _NamelistParser(object): # pylint:disable=too-few-public-methods
         except _NamelistEOF:
             # If we hit the end of file, return a name assigned to a null value.
             if allow_eof_end:
-                return name, [u''], addto
+                return name, [''], addto
             else:
                 raise
         # Expect at least one literal, even if it's a null value.

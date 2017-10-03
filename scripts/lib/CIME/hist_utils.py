@@ -44,7 +44,7 @@ def _get_latest_hist_files(testcase, model, from_dir, suffix=""):
         ext = get_extension(model, hist)
         latest_files[ext] = hist
 
-    for key in latest_files.keys():
+    for key in list(latest_files.keys()):
         histlist.append(latest_files[key])
     return histlist
 

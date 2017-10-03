@@ -402,7 +402,7 @@ class Case(object):
                 return result
 
     def set_lookup_value(self, item, value):
-        if item in self.lookups.keys() and self.lookups[item] is not None:
+        if item in list(self.lookups.keys()) and self.lookups[item] is not None:
             logger.warn("Item {} already in lookups with value {}".format(item,self.lookups[item]))
         else:
             logger.debug("Setting in lookups: item {}, value {}".format(item,value))
@@ -410,7 +410,7 @@ class Case(object):
 
     def clean_up_lookups(self, allow_undefined=False):
         # put anything in the lookups table into existing env objects
-        for key,value in self.lookups.items():
+        for key,value in list(self.lookups.items()):
             logger.debug("lookup key {} value {}".format(key, value))
             result = self.set_value(key,value, allow_undefined=allow_undefined)
             if result is not None:
@@ -614,7 +614,7 @@ class Case(object):
         if len(self._component_classes) > len(self._components):
             self._components.append('sesp')
 
-        for i in xrange(1,len(self._component_classes)):
+        for i in range(1,len(self._component_classes)):
             comp_class = self._component_classes[i]
             comp_name  = self._components[i-1]
             node_name = 'CONFIG_' + comp_class + '_FILE'
@@ -694,7 +694,7 @@ class Case(object):
         mach_pes_obj = self.get_env("mach_pes")
 
         if other is not None:
-            for key, value in other.items():
+            for key, value in list(other.items()):
                 self.set_value(key, value)
 
         totaltasks = []
@@ -733,10 +733,10 @@ class Case(object):
             mach_pes_obj.set_value(key, ninst)
 
             key = "NTASKS_{}".format(compclass)
-            if key not in pes_ntasks.keys():
+            if key not in list(pes_ntasks.keys()):
                 mach_pes_obj.set_value(key,1)
             key = "NTHRDS_{}".format(compclass)
-            if compclass not in pes_nthrds.keys():
+            if compclass not in list(pes_nthrds.keys()):
                 mach_pes_obj.set_value(compclass,1)
 
         return pesize
@@ -768,7 +768,7 @@ class Case(object):
         gridinfo = grids.get_grid_info(name=grid_name, compset=self._compsetname)
 
         self._gridname = gridinfo["GRID"]
-        for key,value in gridinfo.items():
+        for key,value in list(gridinfo.items()):
             logger.debug("Set grid {} {}".format(key,value))
             self.set_lookup_value(key,value)
 
@@ -887,7 +887,7 @@ class Case(object):
             if os.path.exists(wdir):
                 expect(not test, "Directory {} already exists, aborting test".format(wdir))
                 if answer is None:
-                    response = raw_input("\nDirectory {} already exists, (r)eplace, (a)bort, or (u)se existing?".format(wdir))
+                    response = input("\nDirectory {} already exists, (r)eplace, (a)bort, or (u)se existing?".format(wdir))
                 else:
                     response = answer
 
@@ -967,7 +967,7 @@ class Case(object):
         mpilib = self.get_value("MPILIB")
         defaults = pioobj.get_defaults(grid=grid,compset=compset,mach=mach,compiler=compiler, mpilib=mpilib)
 
-        for vid, value in defaults.items():
+        for vid, value in list(defaults.items()):
             self.set_value(vid,value)
 
     def _create_caseroot_tools(self):
@@ -1176,7 +1176,7 @@ class Case(object):
         if not jobmap:
             logger.info("No job ids associated with this case. Either case.submit was not run or was run with no-batch")
         else:
-            for jobname, jobid in jobmap.iteritems():
+            for jobname, jobid in jobmap.items():
                 status = self.get_env("batch").get_status(jobid)
                 if status:
                     logger.info("{}: {}".format(jobname, status))

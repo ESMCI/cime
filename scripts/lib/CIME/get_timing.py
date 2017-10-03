@@ -145,7 +145,7 @@ class _TimingParser:
         else:
             pecost = totalpes
 
-        for m in self.models.values():
+        for m in list(self.models.values()):
             for key in ["NTASKS", "ROOTPE", "PSTRID", "NTHRDS", "NINST"]:
                 if key == "NINST" and m.name == "CPL":
                     m.ninst = 1
@@ -179,7 +179,7 @@ class _TimingParser:
 
         try:
             shutil.copyfile(binfilename, finfilename)
-        except Exception, e:
+        except Exception as e:
             if not os.path.isfile(binfilename):
                 logger.critical("File {} not found".format(binfilename))
             else:
@@ -191,7 +191,7 @@ class _TimingParser:
             fin = open(finfilename, "r")
             self.finlines = fin.readlines()
             fin.close()
-        except Exception, e:
+        except Exception as e:
             logger.critical("Unable to open file {}".format(finfilename))
             raise e
 
@@ -215,7 +215,7 @@ class _TimingParser:
         if inittype == "TRUE":
             odays = odays - (tlen/ocn_ncpl)
 
-        peminmax = max([m.rootpe for m in self.models.values()])+1
+        peminmax = max([m.rootpe for m in list(self.models.values())])+1
         if ncpl_base_period in ["decade","year","day"] and int(adays) > 0:
             adays = int(adays)
             if tlen % ocn_ncpl == 0:
@@ -223,12 +223,12 @@ class _TimingParser:
         self.adays = adays
         maxoffset = 40
         extraoff = 20
-        for m in self.models.values():
+        for m in list(self.models.values()):
             m.offset = int((maxoffset*m.rootpe)/peminmax) + extraoff
         cpl.offset = 0
         try:
             self.fout = open(foutfilename, "w")
-        except Exception, e:
+        except Exception as e:
             logger.critical("Could not open file for writing: {}".format(foutfilename))
             raise e
 
@@ -293,7 +293,7 @@ class _TimingParser:
         tmax = tmax + wtmin + correction
         ocn.tmax += ocnrunitime
 
-        for m in self.models.values():
+        for m in list(self.models.values()):
             m.tmaxr = 0
             if m.tmax > 0:
                 m.tmaxr = adays*86400.0/(m.tmax*365.0)

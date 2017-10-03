@@ -68,7 +68,7 @@ def _submit(case, job=None, resubmit=False, no_batch=False, skip_pnl=False,
                                batch_args=batch_args)
 
     xml_jobids = []
-    for jobname, jobid in job_ids.iteritems():
+    for jobname, jobid in job_ids.items():
         logger.info("Submitted job {} with id {}".format(jobname, jobid))
         if jobid:
             xml_jobids.append("{}:{}".format(jobname, jobid))

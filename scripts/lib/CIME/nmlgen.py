@@ -329,7 +329,7 @@ class NamelistGenerator(object):
                 if self._case.get_value('GLC_NEC') == 0:
                     glc_nec_indices = [0]
                 else:
-                    glc_nec_indices = range(self._case.get_value('GLC_NEC'))
+                    glc_nec_indices = list(range(self._case.get_value('GLC_NEC')))
                 glc_nec_indices.append(glc_nec_indices[-1] + 1)
                 glc_nec_indices.pop(0)
                 for i in glc_nec_indices:

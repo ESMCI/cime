@@ -249,7 +249,7 @@ class TestScheduler(object):
 
     ###########################################################################
     def get_testnames(self):
-        return self._tests.keys()
+        return list(self._tests.keys())
 
     ###########################################################################
     def _log_output(self, test, output):
@@ -643,7 +643,7 @@ class TestScheduler(object):
                 # Will force serialization of sharedlib builds
                 # TODO - instead of serializing, compute all library configs needed and build
                 # them all in parallel
-                for _, _, running_phase in threads_in_flight.values():
+                for _, _, running_phase in list(threads_in_flight.values()):
                     if (running_phase == SHAREDLIB_BUILD_PHASE):
                         return self._proc_pool + 1
 
@@ -660,7 +660,7 @@ class TestScheduler(object):
         expect(len(threads_in_flight) <= self._parallel_jobs, "Oversubscribed?")
         finished_tests = []
         while not finished_tests:
-            for test, thread_info in threads_in_flight.iteritems():
+            for test, thread_info in threads_in_flight.items():
                 if not thread_info[0].is_alive():
                     finished_tests.append((test, thread_info[1]))
 
@@ -774,7 +774,7 @@ class TestScheduler(object):
                 # No free resources, wait for something in flight to finish
                 self._wait_for_something_to_finish(threads_in_flight)
 
-        for unfinished_thread, _, _ in threads_in_flight.values():
+        for unfinished_thread, _, _ in list(threads_in_flight.values()):
             unfinished_thread.join()
 
     ###########################################################################
