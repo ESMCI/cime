@@ -216,7 +216,7 @@ def get_test_suite(suite, machine=None, compiler=None):
 ###############################################################################
 def get_test_suites():
 ###############################################################################
-    return _TEST_SUITES.keys()
+    return list(_TEST_SUITES.keys())
 
 ###############################################################################
 def infer_machine_name_from_tests(testargs):
