@@ -6,7 +6,7 @@ which creates the namelist and other model input files, it then
 copies those files to the CaseDocs subdirectory for inspection
 """
 
-from standard_script_setup import *
+from .standard_script_setup import *
 
 from CIME.preview_namelists import create_namelists
 from CIME.case              import Case

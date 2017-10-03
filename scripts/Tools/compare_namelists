@@ -5,7 +5,7 @@ Compare namelists. Should be called by an ACME test. Designed
 to not be sensitive to order or whitespace.
 """
 
-from standard_script_setup import *
+from .standard_script_setup import *
 import CIME.compare_namelists
 from CIME.utils import expect
 
@@ -67,7 +67,7 @@ def _main_func(description):
     expect(success,
            "Namelist diff between files {} and {}\n{}".format(gold_file, compare_file, comments))
 
-    print "Files {} and {} MATCH".format(gold_file, compare_file)
+    print("Files {} and {} MATCH".format(gold_file, compare_file))
 
 ###############################################################################
 

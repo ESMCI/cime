@@ -5,7 +5,7 @@ List acme test suites. Can be used to show what's being tested. Can just
 list tested grids, compsets, etc.
 """
 
-from standard_script_setup import *
+from .standard_script_setup import *
 from CIME.utils import expect
 import update_acme_tests
 
@@ -69,9 +69,9 @@ def list_tests(thing_to_list, categories):
             else:
                 expect(False, "Unrecognized thing to list '{}'".format(thing_to_list))
 
-    print("Tested {} for test categories: {}".format(thing_to_list, ", ".join(categories)))
+    print(("Tested {} for test categories: {}".format(thing_to_list, ", ".join(categories))))
     for item in sorted(things):
-        print(" ", item)
+        print((" ", item))
 
 ###############################################################################
 def _main_func(description):

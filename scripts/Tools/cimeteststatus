@@ -6,7 +6,7 @@ and send the test results back to the test database.
 Authors: Jay Shollenberger and Ben Andre
 """
 
-from __future__ import print_function
+
 import sys
 if sys.hexversion < 0x02070000:
     print(70 * "*")
@@ -18,8 +18,8 @@ if sys.hexversion < 0x02070000:
 import xml.etree.ElementTree as etree
 import argparse
 import os, glob, re
-import urllib
-import urllib2
+import urllib.request, urllib.parse, urllib.error
+import urllib.request, urllib.error, urllib.parse
 import pprint
 import getpass
 
@@ -221,11 +221,11 @@ class CimeTestStatus():
         root = etree.Element('test')
         root.set('name', self._test_status['name'])
         root.set('status', self._test_status['status'])
-        for name, section in self._test_status.items():
+        for name, section in list(self._test_status.items()):
             if isinstance(section, dict):
                 elem = etree.Element('section')
                 elem.set('name', name)
-                for key, value in section.items():
+                for key, value in list(section.items()):
                     child = etree.Element("{0}".format('key'))
                     child.set('name', key)
                     child.text = value
@@ -354,10 +354,10 @@ def getSuiteInfo(specfile):
 
     for t in root.findall('test'):
         testlist.append(t.get('case'))
-        if 'machine' not in suiteinfo.keys():
+        if 'machine' not in list(suiteinfo.keys()):
             machnodelist = t.findall('mach')
             suiteinfo['machine'] = machnodelist[0].text
-        if 'compiler' not in suiteinfo.keys():
+        if 'compiler' not in list(suiteinfo.keys()):
             compnodelist = t.findall('compiler')
             suiteinfo['compiler'] = compnodelist[0].text
 
@@ -527,13 +527,13 @@ def sendTestReport(args, suiteinfo, cimetests, auth):
     # Get the testdb username/password, and POST
     # the data.
     print("sending test report for " + suiteinfo['machine'] + " " + suiteinfo['compiler'])
-    data = urllib.urlencode({'username':auth['username'],
+    data = urllib.parse.urlencode({'username':auth['username'],
                              'password':auth['password'],
                              'testXML':testrecord})
-    req = urllib2.Request(testdburl, data)
+    req = urllib.request.Request(testdburl, data)
     try:
-        urllib2.urlopen(req)
-    except urllib2.URLError as e:
+        urllib.request.urlopen(req)
+    except urllib.error.URLError as e:
         print("Error when posting data: " + e.reason)
 
     if(args.debug):

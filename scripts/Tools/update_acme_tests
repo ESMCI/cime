@@ -8,7 +8,7 @@ this file to create new test entries, and then inserts these entries
 into the XML file.
 """
 
-from standard_script_setup import *
+from .standard_script_setup import *
 from CIME.utils import expect
 from update_acme_tests import get_test_suites, update_acme_tests
 

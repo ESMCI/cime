@@ -5,7 +5,7 @@ Compare files in a normalized way. Used by create_test for
 diffing non-namelist files.
 """
 
-from standard_script_setup import *
+from .standard_script_setup import *
 import CIME.simple_compare
 from CIME.utils import expect
 
@@ -67,7 +67,7 @@ def _main_func(description):
     expect(success,
            "Diff between files {} and {}:\n{}".format(gold_file, compare_file, comments))
 
-    print("Files {} and {} MATCH".format(gold_file, compare_file))
+    print(("Files {} and {} MATCH".format(gold_file, compare_file)))
 
 ###############################################################################
 
