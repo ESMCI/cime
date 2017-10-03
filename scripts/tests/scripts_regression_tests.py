@@ -239,8 +239,8 @@ class N_TestUnitTest(unittest.TestCase):
         teardown_root = True
         for tfile in cls._testdirs:
             if tfile not in cls._do_teardown:
-                print "Detected failed test or user request no teardown"
-                print "Leaving case directory : %s"%tfile
+                print("Detected failed test or user request no teardown")
+                print("Leaving case directory : %s"%tfile)
                 teardown_root = False
             elif do_teardown:
                 shutil.rmtree(tfile)
@@ -517,8 +517,8 @@ class J_TestCreateNewcase(unittest.TestCase):
 
         for tfile in cls._testdirs:
             if tfile not in cls._do_teardown:
-                print "Detected failed test or user request no teardown"
-                print "Leaving case directory : %s"%tfile
+                print("Detected failed test or user request no teardown")
+                print("Leaving case directory : %s"%tfile)
             elif do_teardown:
                 shutil.rmtree(tfile)
 
@@ -768,10 +768,10 @@ class TestCreateTestCommon(unittest.TestCase):
 
         do_teardown = self._do_teardown and sys.exc_info() == (None, None, None)
         if (not do_teardown):
-            print "Detected failed test or user request no teardown"
-            print "Leaving files:"
+            print("Detected failed test or user request no teardown")
+            print("Leaving files:")
             for file_to_clean in files_to_clean:
-                print " ", file_to_clean
+                print(" ", file_to_clean)
         else:
             # For batch machines need to avoid race condition as batch system
             # finishes I/O for the case.
@@ -1692,7 +1692,7 @@ def get_macros(macro_maker, build_xml, build_system):
     """
     # Build.write_macros expects file-like objects as input, so
     # we need to wrap the strings in StringIO objects.
-    xml = io.StringIO(unicode(build_xml))
+    xml = io.StringIO(str(build_xml))
     output = io.StringIO()
     output_format = None
     if build_system == "Makefile":
@@ -2337,7 +2337,7 @@ def check_for_pylint():
         major = int(pylintver.group(1))
         minor = int(pylintver.group(2))
     if pylint is None or major < 1 or (major == 1 and minor < 5):
-        print "pylint version 1.5 or newer not found, pylint tests skipped"
+        print("pylint version 1.5 or newer not found, pylint tests skipped")
         return False
     return True
 
@@ -2436,9 +2436,9 @@ def _main_func():
     except SystemExit:
         had_fails = sys.exc_info()[1].message
         if had_fails:
-            print "Detected failures, leaving directory:", TEST_ROOT
+            print("Detected failures, leaving directory:", TEST_ROOT)
         else:
-            print "All pass, removing directory:", TEST_ROOT
+            print("All pass, removing directory:", TEST_ROOT)
             if os.path.exists(TEST_ROOT):
                 shutil.rmtree(TEST_ROOT)
 
