@@ -1,4 +1,5 @@
-import os, time, threading, queue, socket, signal, distutils.spawn, shutil, glob
+from CIME.six.moves import queue
+import os, time, threading, socket, signal, distutils.spawn, shutil, glob
 import logging
 import xml.etree.ElementTree as xmlet
 
@@ -6,6 +7,7 @@ import CIME.utils
 from CIME.utils import expect, Timeout
 from CIME.XML.machines import Machines
 from CIME.test_status import *
+
 
 SIGNAL_RECEIVED           = False
 ACME_MAIN_CDASH           = "ACME_Climate"

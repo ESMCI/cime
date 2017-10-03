@@ -688,8 +688,8 @@ def expand_literal_list(literals):
     ['true']
     >>> expand_literal_list(['1', '2', 'f*', '3*3', '5'])
     ['1', '2', 'f*', '3', '3', '3', '5']
-    >>> expand_literal_list([u'2*f*'])
-    [u'f*', u'f*']
+    >>> expand_literal_list(['2*f*'])
+    ['f*', 'f*']
     """
     expanded = []
     for literal in literals:
@@ -711,8 +711,8 @@ def compress_literal_list(literals):
     ['true']
     >>> compress_literal_list(['1', '2', 'f*', '3', '3', '3', '5'])
     ['1', '2', 'f*', '3', '3', '3', '5']
-    >>> compress_literal_list([u'f*', u'f*'])
-    [u'f*', u'f*']
+    >>> compress_literal_list(['f*', 'f*'])
+    ['f*', 'f*']
     """
     compressed = []
     if len(literals) == 0:
@@ -899,7 +899,7 @@ class Namelist(object):
         >>> Namelist().get_group_names()
         []
         >>> sorted(parse(text='&foo / &bar /').get_group_names())
-        [u'bar', u'foo']
+        ['bar', 'foo']
         """
         return list(self._groups.keys())
 
@@ -912,13 +912,13 @@ class Namelist(object):
         []
         >>> x = parse(text='&foo bar=,bazz=true,bazz(2)=fred,bang=6*""/')
         >>> sorted(x.get_variable_names('fOo'))
-        [u'bang', u'bar', u'bazz', u'bazz(2)']
+        ['bang', 'bar', 'bazz', 'bazz(2)']
         >>> x = parse(text='&foo bar=,bazz=true,bang=6*""/')
         >>> sorted(x.get_variable_names('fOo'))
-        [u'bang', u'bar', u'bazz']
+        ['bang', 'bar', 'bazz']
         >>> x = parse(text='&foo bar(::)=,bazz=false,bazz(2)=true,bazz(:2:)=6*""/')
         >>> sorted(x.get_variable_names('fOo'))
-        [u'bar(::)', u'bazz', u'bazz(2)', u'bazz(:2:)']
+        ['bar(::)', 'bazz', 'bazz(2)', 'bazz(:2:)']
         """
         group_name = group_name.lower()
         if group_name not in self._groups:
@@ -929,15 +929,15 @@ class Namelist(object):
         """Return the value of the specified variable.
 
         This function always returns a non-empty list containing strings. If the
-        specified `group_name` or `variable_name` is not present, `[u'']` is
+        specified `group_name` or `variable_name` is not present, `['']` is
         returned.
 
         >>> Namelist().get_variable_value('foo', 'bar')
-        [u'']
+        ['']
         >>> parse(text='&foo bar=1,2 /').get_variable_value('foo', 'bazz')
-        [u'']
+        ['']
         >>> parse(text='&foo bar=1,2 /').get_variable_value('foO', 'Bar')
-        [u'1', u'2']
+        ['1', '2']
         """
         group_name = group_name.lower()
         variable_name = variable_name.lower()
@@ -957,13 +957,13 @@ class Namelist(object):
         >>> parse(text='&foo bar=1 / &bazz bar=1 /').get_value('bar')
         Traceback (most recent call last):
         ...
-        SystemExit: ERROR: Namelist.get_value: Variable {} is present in multiple groups: [u'bazz', u'foo']
+        SystemExit: ERROR: Namelist.get_value: Variable {} is present in multiple groups: ['bazz', 'foo']
         >>> parse(text='&foo bar=1 / &bazz /').get_value('Bar')
-        [u'1']
+        ['1']
         >>> parse(text='&foo bar(2)=1 / &bazz /').get_value('Bar(2)')
-        [u'1']
+        ['1']
         >>> parse(text='&foo / &bazz /').get_value('bar')
-        [u'']
+        ['']
         """
         variable_name = variable_name.lower()
         possible_groups = [group_name for group_name in self._groups
@@ -981,25 +981,25 @@ class Namelist(object):
 
         >>> x = parse(text='&foo bar=1 /')
         >>> x.get_variable_value('foo', 'bar')
-        [u'1']
-        >>> x.set_variable_value('foo', 'bar(2)', [u'3'], var_size=4)
+        ['1']
+        >>> x.set_variable_value('foo', 'bar(2)', ['3'], var_size=4)
         >>> x.get_variable_value('foo', 'bar')
-        [u'1', u'3']
-        >>> x.set_variable_value('foo', 'bar(1)', [u'2'])
+        ['1', '3']
+        >>> x.set_variable_value('foo', 'bar(1)', ['2'])
         >>> x.get_variable_value('foo', 'bar')
-        [u'2', u'3']
-        >>> x.set_variable_value('foo', 'bar', [u'1'])
+        ['2', '3']
+        >>> x.set_variable_value('foo', 'bar', ['1'])
         >>> x.get_variable_value('foo', 'bar')
-        [u'1', u'3']
-        >>> x.set_variable_value('foo', 'bazz', [u'3'])
-        >>> x.set_variable_value('Brack', 'baR', [u'4'])
+        ['1', '3']
+        >>> x.set_variable_value('foo', 'bazz', ['3'])
+        >>> x.set_variable_value('Brack', 'baR', ['4'])
         >>> x.get_variable_value('foo', 'bazz')
-        [u'3']
+        ['3']
         >>> x.get_variable_value('brack', 'bar')
-        [u'4']
-        >>> x.set_variable_value('foo', 'red(2:6:2)', [u'2', u'4', u'6'], var_size=12)
+        ['4']
+        >>> x.set_variable_value('foo', 'red(2:6:2)', ['2', '4', '6'], var_size=12)
         >>> x.get_variable_value('foo', 'red')
-        ['', u'2', '', u'4', '', u'6']
+        ['', '2', '', '4', '', '6']
         """
         group_name = group_name.lower()
 
@@ -1058,43 +1058,43 @@ class Namelist(object):
         >>> x = parse(text='&foo bar=1 bazz=,2 brat=3/')
         >>> y = parse(text='&foo bar=2 bazz=3*1 baker=4 / &foo2 barter=5 /')
         >>> y.get_value('bazz')
-        [u'1', u'1', u'1']
+        ['1', '1', '1']
         >>> x.merge_nl(y)
         >>> sorted(x.get_group_names())
-        [u'foo', u'foo2']
+        ['foo', 'foo2']
         >>> sorted(x.get_variable_names('foo'))
-        [u'baker', u'bar', u'bazz', u'brat']
+        ['baker', 'bar', 'bazz', 'brat']
         >>> sorted(x.get_variable_names('foo2'))
-        [u'barter']
+        ['barter']
         >>> x.get_value('bar')
-        [u'1']
+        ['1']
         >>> x.get_value('bazz')
-        [u'1', u'2', u'1']
+        ['1', '2', '1']
         >>> x.get_value('brat')
-        [u'3']
+        ['3']
         >>> x.get_value('baker')
-        [u'4']
+        ['4']
         >>> x.get_value('barter')
-        [u'5']
+        ['5']
         >>> x = parse(text='&foo bar=1 bazz=,2 brat=3/')
         >>> y = parse(text='&foo bar=2 bazz=3*1 baker=4 / &foo2 barter=5 /')
         >>> x.merge_nl(y, overwrite=True)
         >>> sorted(x.get_group_names())
-        [u'foo', u'foo2']
+        ['foo', 'foo2']
         >>> sorted(x.get_variable_names('foo'))
-        [u'baker', u'bar', u'bazz', u'brat']
+        ['baker', 'bar', 'bazz', 'brat']
         >>> sorted(x.get_variable_names('foo2'))
-        [u'barter']
+        ['barter']
         >>> x.get_value('bar')
-        [u'2']
+        ['2']
         >>> x.get_value('bazz')
-        [u'1', u'1', u'1']
+        ['1', '1', '1']
         >>> x.get_value('brat')
-        [u'3']
+        ['3']
         >>> x.get_value('baker')
-        [u'4']
+        ['4']
         >>> x.get_value('barter')
-        [u'5']
+        ['5']
         """
         # Pretty simple strategy: go through the entire other namelist, and
         # merge all values with this one's.
@@ -1331,7 +1331,7 @@ class _NamelistParser(object): # pylint:disable=too-few-public-methods
         >>> x._advance(check_eof=True)
         False
         >>> x._curr()
-        u'b'
+        'b'
         >>> x._advance(check_eof=True)
         True
         """
@@ -1365,7 +1365,7 @@ class _NamelistParser(object): # pylint:disable=too-few-public-methods
         >>> x._eat_whitespace()
         True
         >>> x._curr()
-        u'a'
+        'a'
         >>> x._eat_whitespace()
         False
         >>> x._advance()
@@ -1377,22 +1377,22 @@ class _NamelistParser(object): # pylint:disable=too-few-public-methods
         >>> x._eat_whitespace()
         True
         >>> x._curr()
-        u'a'
+        'a'
         >>> x = _NamelistParser('! blah\n a')
         >>> x._eat_whitespace()
         False
         >>> x._curr()
-        u'!'
+        '!'
         >>> x = _NamelistParser(' ! blah\n a')
         >>> x._eat_whitespace()
         True
         >>> x._curr()
-        u'!'
+        '!'
         >>> x = _NamelistParser(' ! blah\n a')
         >>> x._eat_whitespace(allow_initial_comment=True)
         True
         >>> x._curr()
-        u'a'
+        'a'
         """
         eaten = False
         comment_allowed = allow_initial_comment
@@ -1416,7 +1416,7 @@ class _NamelistParser(object): # pylint:disable=too-few-public-methods
         >>> x._eat_comment()
         True
         >>> x._curr()
-        u' '
+        ' '
         >>> x._eat_comment()
         False
         >>> x._eat_whitespace()
@@ -1424,7 +1424,7 @@ class _NamelistParser(object): # pylint:disable=too-few-public-methods
         >>> x._eat_comment()
         True
         >>> x._curr()
-        u'a'
+        'a'
         >>> x._advance(2)
         >>> x._eat_comment()
         Traceback (most recent call last):
@@ -1483,9 +1483,9 @@ class _NamelistParser(object): # pylint:disable=too-few-public-methods
             ...
         _NamelistEOF: Unexpected end of file encountered in namelist.
         >>> _NamelistParser('&abc ')._parse_namelist_group_name()
-        u'abc'
+        'abc'
         >>> _NamelistParser('&abc\n')._parse_namelist_group_name()
-        u'abc'
+        'abc'
         >>> _NamelistParser('&abc/ ')._parse_namelist_group_name()
         Traceback (most recent call last):
             ...
@@ -1515,21 +1515,21 @@ class _NamelistParser(object): # pylint:disable=too-few-public-methods
             ...
         _NamelistEOF: Unexpected end of file encountered in namelist.
         >>> _NamelistParser('foo(2)= ')._parse_variable_name()
-        u'foo(2)'
+        'foo(2)'
         >>> _NamelistParser('abc ')._parse_variable_name()
-        u'abc'
+        'abc'
         >>> _NamelistParser('ABC ')._parse_variable_name()
-        u'abc'
+        'abc'
         >>> _NamelistParser('abc\n')._parse_variable_name()
-        u'abc'
+        'abc'
         >>> _NamelistParser('abc%fred\n')._parse_variable_name()
-        u'abc%fred'
+        'abc%fred'
         >>> _NamelistParser('abc(2)@fred\n')._parse_variable_name()
-        u'abc(2)@fred'
+        'abc(2)@fred'
         >>> _NamelistParser('abc(1:2:3)\n')._parse_variable_name()
-        u'abc(1:2:3)'
+        'abc(1:2:3)'
         >>> _NamelistParser('abc=')._parse_variable_name()
-        u'abc'
+        'abc'
         >>> _NamelistParser('abc(1,2) ')._parse_variable_name()
         Traceback (most recent call last):
             ...
@@ -1543,7 +1543,7 @@ class _NamelistParser(object): # pylint:disable=too-few-public-methods
             ...
         _NamelistParseError: Error in parsing namelist: '' is not a valid variable name
         >>> _NamelistParser('foo+= ')._parse_variable_name()
-        u'foo'
+        'foo'
         """
         old_pos = self._pos
         separators = (' ', '\n', '=', '+') if allow_equals else (' ', '\n')
@@ -1586,19 +1586,19 @@ class _NamelistParser(object): # pylint:disable=too-few-public-methods
             ...
         _NamelistEOF: Unexpected end of file encountered in namelist.
         >>> _NamelistParser('"abc" ')._parse_character_literal()
-        u'"abc"'
+        '"abc"'
         >>> _NamelistParser("'abc' ")._parse_character_literal()
-        u"'abc'"
+        "'abc'"
         >>> _NamelistParser("*abc* ")._parse_character_literal()
         Traceback (most recent call last):
             ...
         _NamelistParseError: Error in parsing namelist: *abc* is not a valid character literal
         >>> _NamelistParser("'abc''def' ")._parse_character_literal()
-        u"'abc''def'"
+        "'abc''def'"
         >>> _NamelistParser("'abc''' ")._parse_character_literal()
-        u"'abc'''"
+        "'abc'''"
         >>> _NamelistParser("'''abc' ")._parse_character_literal()
-        u"'''abc'"
+        "'''abc'"
         """
         delimiter = self._curr()
         old_pos = self._pos
@@ -1630,7 +1630,7 @@ class _NamelistParser(object): # pylint:disable=too-few-public-methods
             ...
         _NamelistEOF: Unexpected end of file encountered in namelist.
         >>> _NamelistParser('(1.,2.) ')._parse_complex_literal()
-        u'(1.,2.)'
+        '(1.,2.)'
         >>> _NamelistParser("(A,B) ")._parse_complex_literal()
         Traceback (most recent call last):
             ...
@@ -1710,57 +1710,57 @@ class _NamelistParser(object): # pylint:disable=too-few-public-methods
         to mark the end of a literal.
 
         >>> _NamelistParser('"abc" ')._parse_literal()
-        u'"abc"'
+        '"abc"'
         >>> _NamelistParser("'abc' ")._parse_literal()
-        u"'abc'"
+        "'abc'"
         >>> _NamelistParser('"abc"')._parse_literal()
         Traceback (most recent call last):
             ...
         _NamelistEOF: Unexpected end of file encountered in namelist.
         >>> _NamelistParser('"abc"')._parse_literal(allow_eof_end=True)
-        u'"abc"'
+        '"abc"'
         >>> _NamelistParser('(1.,2.) ')._parse_literal()
-        u'(1.,2.)'
+        '(1.,2.)'
         >>> _NamelistParser('(1.,2.)')._parse_literal()
         Traceback (most recent call last):
             ...
         _NamelistEOF: Unexpected end of file encountered in namelist.
         >>> _NamelistParser('(1.,2.)')._parse_literal(allow_eof_end=True)
-        u'(1.,2.)'
+        '(1.,2.)'
         >>> _NamelistParser('5 ')._parse_literal()
-        u'5'
+        '5'
         >>> _NamelistParser('6.9 ')._parse_literal()
-        u'6.9'
+        '6.9'
         >>> _NamelistParser('inf ')._parse_literal()
-        u'inf'
+        'inf'
         >>> _NamelistParser('nan(booga) ')._parse_literal()
-        u'nan(booga)'
+        'nan(booga)'
         >>> _NamelistParser('.FLORIDA$ ')._parse_literal()
-        u'.FLORIDA$'
+        '.FLORIDA$'
         >>> _NamelistParser('hamburger ')._parse_literal()
         Traceback (most recent call last):
             ...
         _NamelistParseError: Error in parsing namelist: expected literal value, but got 'hamburger'
         >>> _NamelistParser('5,')._parse_literal()
-        u'5'
+        '5'
         >>> _NamelistParser('5\n')._parse_literal()
-        u'5'
+        '5'
         >>> _NamelistParser('5/')._parse_literal()
-        u'5'
+        '5'
         >>> _NamelistParser(',')._parse_literal()
-        u''
+        ''
         >>> _NamelistParser('6*5 ')._parse_literal()
-        u'6*5'
+        '6*5'
         >>> _NamelistParser('6*(1., 2.) ')._parse_literal()
-        u'6*(1., 2.)'
+        '6*(1., 2.)'
         >>> _NamelistParser('6*"a" ')._parse_literal()
-        u'6*"a"'
+        '6*"a"'
         >>> _NamelistParser('6*')._parse_literal()
         Traceback (most recent call last):
             ...
         _NamelistEOF: Unexpected end of file encountered in namelist.
         >>> _NamelistParser('6*')._parse_literal(allow_eof_end=True)
-        u'6*'
+        '6*'
         >>> _NamelistParser('foo= ')._parse_literal()
         Traceback (most recent call last):
             ...
@@ -1770,15 +1770,15 @@ class _NamelistParser(object): # pylint:disable=too-few-public-methods
             ...
         _NamelistParseError: Error in parsing namelist: expected literal value, but got 'foo+='
         >>> _NamelistParser('5,')._parse_literal(allow_name=True)
-        u'5'
+        '5'
         >>> x = _NamelistParser('foo= ')
         >>> x._parse_literal(allow_name=True)
         >>> x._curr()
-        u'f'
+        'f'
         >>> x = _NamelistParser('foo+= ')
         >>> x._parse_literal(allow_name=True)
         >>> x._curr()
-        u'f'
+        'f'
         >>> _NamelistParser('6*foo= ')._parse_literal(allow_name=True)
         Traceback (most recent call last):
             ...
@@ -1790,13 +1790,13 @@ class _NamelistParser(object): # pylint:disable=too-few-public-methods
         >>> x = _NamelistParser('foo = ')
         >>> x._parse_literal(allow_name=True)
         >>> x._curr()
-        u'f'
+        'f'
         >>> x = _NamelistParser('foo\n= ')
         >>> x._parse_literal(allow_name=True)
         >>> x._curr()
-        u'f'
+        'f'
         >>> _NamelistParser('')._parse_literal(allow_eof_end=True)
-        u''
+        ''
         """
         # Deal with empty input string.
         if allow_eof_end and self._pos == self._len:
@@ -1871,22 +1871,22 @@ class _NamelistParser(object): # pylint:disable=too-few-public-methods
         >>> x._expect_separator()
         True
         >>> x._curr()
-        u'a'
+        'a'
         >>> x = _NamelistParser(" a")
         >>> x._expect_separator()
         True
         >>> x._curr()
-        u'a'
+        'a'
         >>> x = _NamelistParser(",a")
         >>> x._expect_separator()
         True
         >>> x._curr()
-        u'a'
+        'a'
         >>> x = _NamelistParser("/a")
         >>> x._expect_separator()
         False
         >>> x._curr()
-        u'/'
+        '/'
         >>> x = _NamelistParser("a")
         >>> x._expect_separator()
         Traceback (most recent call last):
@@ -1896,22 +1896,22 @@ class _NamelistParser(object): # pylint:disable=too-few-public-methods
         >>> x._expect_separator()
         True
         >>> x._curr()
-        u'a'
+        'a'
         >>> x = _NamelistParser(" / a")
         >>> x._expect_separator()
         False
         >>> x._curr()
-        u'/'
+        '/'
         >>> x = _NamelistParser(" , ! Some stuff\n a")
         >>> x._expect_separator()
         True
         >>> x._curr()
-        u'a'
+        'a'
         >>> x = _NamelistParser(" , ! Some stuff\n ! Other stuff\n a")
         >>> x._expect_separator()
         True
         >>> x._curr()
-        u'a'
+        'a'
         >>> _NamelistParser("")._expect_separator(allow_eof=True)
         False
         >>> x = _NamelistParser(" ")
@@ -1966,53 +1966,53 @@ class _NamelistParser(object): # pylint:disable=too-few-public-methods
         alternate file format in "groupless" mode.)
 
         >>> _NamelistParser("foo='bar' /")._parse_name_and_values()
-        (u'foo', [u"'bar'"], False)
+        ('foo', ["'bar'"], False)
         >>> _NamelistParser("foo(3)='bar' /")._parse_name_and_values()
-        (u'foo(3)', [u"'bar'"], False)
+        ('foo(3)', ["'bar'"], False)
         >>> _NamelistParser("foo ='bar' /")._parse_name_and_values()
-        (u'foo', [u"'bar'"], False)
+        ('foo', ["'bar'"], False)
         >>> _NamelistParser("foo=\n'bar' /")._parse_name_and_values()
-        (u'foo', [u"'bar'"], False)
+        ('foo', ["'bar'"], False)
         >>> _NamelistParser("foo 'bar' /")._parse_name_and_values()
         Traceback (most recent call last):
             ...
         _NamelistParseError: Error in parsing namelist: expected '=' but found "'"
         >>> _NamelistParser("foo='bar','bazz' /")._parse_name_and_values()
-        (u'foo', [u"'bar'", u"'bazz'"], False)
+        ('foo', ["'bar'", "'bazz'"], False)
         >>> _NamelistParser("foo=,,'bazz',6*/")._parse_name_and_values()
-        (u'foo', [u'', u'', u"'bazz'", u'6*'], False)
+        ('foo', ['', '', "'bazz'", '6*'], False)
         >>> _NamelistParser("foo='bar' 'bazz' foo2='ban'")._parse_name_and_values()
-        (u'foo', [u"'bar'", u"'bazz'"], False)
+        ('foo', ["'bar'", "'bazz'"], False)
         >>> _NamelistParser("foo='bar' 'bazz' foo2(2)='ban'")._parse_name_and_values()
-        (u'foo', [u"'bar'", u"'bazz'"], False)
+        ('foo', ["'bar'", "'bazz'"], False)
         >>> _NamelistParser("foo= foo2='ban' ")._parse_name_and_values()
         Traceback (most recent call last):
             ...
         _NamelistParseError: Error in parsing namelist: expected literal value, but got "foo2='ban'"
         >>> _NamelistParser("foo=,,'bazz',6* ")._parse_name_and_values(allow_eof_end=True)
-        (u'foo', [u'', u'', u"'bazz'", u'6*'], False)
+        ('foo', ['', '', "'bazz'", '6*'], False)
         >>> _NamelistParser("foo(3)='bazz'")._parse_name_and_values(allow_eof_end=True)
-        (u'foo(3)', [u"'bazz'"], False)
+        ('foo(3)', ["'bazz'"], False)
         >>> _NamelistParser("foo=")._parse_name_and_values()
         Traceback (most recent call last):
             ...
         _NamelistEOF: Unexpected end of file encountered in namelist.
         >>> _NamelistParser("foo=")._parse_name_and_values(allow_eof_end=True)
-        (u'foo', [u''], False)
+        ('foo', [''], False)
         >>> _NamelistParser("foo= ")._parse_name_and_values(allow_eof_end=True)
-        (u'foo', [u''], False)
+        ('foo', [''], False)
         >>> _NamelistParser("foo=2")._parse_name_and_values(allow_eof_end=True)
-        (u'foo', [u'2'], False)
+        ('foo', ['2'], False)
         >>> _NamelistParser("foo=1,2")._parse_name_and_values(allow_eof_end=True)
-        (u'foo', [u'1', u'2'], False)
+        ('foo', ['1', '2'], False)
         >>> _NamelistParser("foo(1:2)=1,2,3 ")._parse_name_and_values(allow_eof_end=True)
         Traceback (most recent call last):
         ...
         SystemExit: ERROR: Too many values for array foo(1:2)
         >>> _NamelistParser("foo=1,")._parse_name_and_values(allow_eof_end=True)
-        (u'foo', [u'1', u''], False)
+        ('foo', ['1', ''], False)
         >>> _NamelistParser("foo+=1")._parse_name_and_values(allow_eof_end=True)
-        (u'foo', [u'1'], True)
+        ('foo', ['1'], True)
         """
         name = self._parse_variable_name()
         addto = False  # This keeps track of whether += existed
@@ -2059,19 +2059,19 @@ class _NamelistParser(object): # pylint:disable=too-few-public-methods
         >>> x = _NamelistParser("&group /")
         >>> x._parse_namelist_group()
         >>> x._settings
-        OrderedDict([(u'group', {})])
+        OrderedDict([('group', {})])
         >>> x._curr()
-        u'/'
+        '/'
         >>> x = _NamelistParser("&group\n foo='bar','bazz'\n,, foo2=2*5\n /")
         >>> x._parse_namelist_group()
         >>> x._settings
-        OrderedDict([(u'group', {u'foo': [u"'bar'", u"'bazz'", u''], u'foo2': [u'5', u'5']})])
+        OrderedDict([('group', {'foo': ["'bar'", "'bazz'", ''], 'foo2': ['5', '5']})])
         >>> x = _NamelistParser("&group\n foo='bar','bazz'\n,, foo2=2*5\n /", groupless=True)
         >>> x._parse_namelist_group()
         >>> x._settings
-        OrderedDict([(u'foo', [u"'bar'", u"'bazz'", u'']), (u'foo2', [u'5', u'5'])])
+        OrderedDict([('foo', ["'bar'", "'bazz'", '']), ('foo2', ['5', '5'])])
         >>> x._curr()
-        u'/'
+        '/'
         >>> x = _NamelistParser("&group /&group /")
         >>> x._parse_namelist_group()
         >>> x._advance()
@@ -2082,31 +2082,31 @@ class _NamelistParser(object): # pylint:disable=too-few-public-methods
         >>> x = _NamelistParser("&group foo='bar', foo='bazz' /")
         >>> x._parse_namelist_group()
         >>> x._settings
-        OrderedDict([(u'group', {u'foo': [u"'bazz'"]})])
+        OrderedDict([('group', {'foo': ["'bazz'"]})])
         >>> x = _NamelistParser("&group foo='bar', foo= /")
         >>> x._parse_namelist_group()
         >>> x._settings
-        OrderedDict([(u'group', {u'foo': [u"'bar'"]})])
+        OrderedDict([('group', {'foo': ["'bar'"]})])
         >>> x = _NamelistParser("&group foo='bar', foo= /", groupless=True)
         >>> x._parse_namelist_group()
         >>> x._settings
-        OrderedDict([(u'foo', [u"'bar'"])])
+        OrderedDict([('foo', ["'bar'"])])
         >>> x = _NamelistParser("&group foo='bar', foo+='baz' /", groupless=True)
         >>> x._parse_namelist_group()
         >>> x._settings
-        OrderedDict([(u'foo', [u"'bar'", u"'baz'"])])
+        OrderedDict([('foo', ["'bar'", "'baz'"])])
         >>> x = _NamelistParser("&group foo+='bar' /", groupless=True)
         >>> x._parse_namelist_group()
         >>> x._settings
-        OrderedDict([(u'foo', [u"'bar'"])])
+        OrderedDict([('foo', ["'bar'"])])
         >>> x = _NamelistParser("&group foo='bar', foo+='baz' /")
         >>> x._parse_namelist_group()
         >>> x._settings
-        OrderedDict([(u'group', {u'foo': [u"'bar'", u"'baz'"]})])
+        OrderedDict([('group', {'foo': ["'bar'", "'baz'"]})])
         >>> x = _NamelistParser("&group foo+='bar' /")
         >>> x._parse_namelist_group()
         >>> x._settings
-        OrderedDict([(u'group', {u'foo': [u"'bar'"]})])
+        OrderedDict([('group', {'foo': ["'bar'"]})])
         """
         group_name = self._parse_namelist_group_name()
         if not self._groupless:
@@ -2147,37 +2147,37 @@ class _NamelistParser(object): # pylint:disable=too-few-public-methods
         >>> _NamelistParser(" \n!Comment").parse_namelist()
         OrderedDict()
         >>> _NamelistParser(" &group /").parse_namelist()
-        OrderedDict([(u'group', {})])
+        OrderedDict([('group', {})])
         >>> _NamelistParser("! Comment \n &group /! Comment\n ").parse_namelist()
-        OrderedDict([(u'group', {})])
+        OrderedDict([('group', {})])
         >>> _NamelistParser("! Comment \n &group /! Comment ").parse_namelist()
-        OrderedDict([(u'group', {})])
+        OrderedDict([('group', {})])
         >>> _NamelistParser("&group1\n foo='bar','bazz'\n,, foo2=2*5\n / &group2 /").parse_namelist()
-        OrderedDict([(u'group1', {u'foo': [u"'bar'", u"'bazz'", u''], u'foo2': [u'5', u'5']}), (u'group2', {})])
+        OrderedDict([('group1', {'foo': ["'bar'", "'bazz'", ''], 'foo2': ['5', '5']}), ('group2', {})])
         >>> _NamelistParser("!blah \n foo='bar','bazz'\n,, foo2=2*5\n ", groupless=True).parse_namelist()
-        OrderedDict([(u'foo', [u"'bar'", u"'bazz'", u'']), (u'foo2', [u'2*5'])])
+        OrderedDict([('foo', ["'bar'", "'bazz'", '']), ('foo2', ['2*5'])])
         >>> _NamelistParser("!blah \n foo='bar','bazz'\n,, foo2=2*5,6\n ", groupless=True).parse_namelist()
-        OrderedDict([(u'foo', [u"'bar'", u"'bazz'", u'']), (u'foo2', [u'2*5', u'6'])])
+        OrderedDict([('foo', ["'bar'", "'bazz'", '']), ('foo2', ['2*5', '6'])])
         >>> _NamelistParser("!blah \n foo='bar'", groupless=True).parse_namelist()
-        OrderedDict([(u'foo', [u"'bar'"])])
+        OrderedDict([('foo', ["'bar'"])])
         >>> _NamelistParser("foo='bar', foo(3)='bazz'", groupless=True).parse_namelist()
-        OrderedDict([(u'foo', [u"'bar'"]), (u'foo(3)', [u"'bazz'"])])
+        OrderedDict([('foo', ["'bar'"]), ('foo(3)', ["'bazz'"])])
         >>> _NamelistParser("foo(2)='bar'", groupless=True).parse_namelist()
-        OrderedDict([(u'foo(2)', [u"'bar'"])])
+        OrderedDict([('foo(2)', ["'bar'"])])
         >>> _NamelistParser("foo(2)='bar', foo(3)='bazz'", groupless=True).parse_namelist()
-        OrderedDict([(u'foo(2)', [u"'bar'"]), (u'foo(3)', [u"'bazz'"])])
+        OrderedDict([('foo(2)', ["'bar'"]), ('foo(3)', ["'bazz'"])])
         >>> _NamelistParser("foo='bar', foo='bazz'", groupless=True).parse_namelist()
-        OrderedDict([(u'foo', [u"'bazz'"])])
+        OrderedDict([('foo', ["'bazz'"])])
         >>> _NamelistParser("foo='bar'\n foo+='bazz'", groupless=True).parse_namelist()
-        OrderedDict([(u'foo', [u"'bar'", u"'bazz'"])])
+        OrderedDict([('foo', ["'bar'", "'bazz'"])])
         >>> _NamelistParser("foo='bar', foo='bazz'", groupless=True).parse_namelist()
-        OrderedDict([(u'foo', [u"'bazz'"])])
+        OrderedDict([('foo', ["'bazz'"])])
         >>> _NamelistParser("foo='bar', foo=", groupless=True).parse_namelist()
-        OrderedDict([(u'foo', [u"'bar'"])])
+        OrderedDict([('foo', ["'bar'"])])
         >>> _NamelistParser("foo='bar', 'bazz'\n foo+='ban'", groupless=True).parse_namelist()
-        OrderedDict([(u'foo', [u"'bar'", u"'bazz'", u"'ban'"])])
+        OrderedDict([('foo', ["'bar'", "'bazz'", "'ban'"])])
         >>> _NamelistParser("foo+='bar'", groupless=True).parse_namelist()
-        OrderedDict([(u'foo', [u"'bar'"])])
+        OrderedDict([('foo', ["'bar'"])])
         """
         # Return empty dictionary for empty files.
         if self._len == 0:

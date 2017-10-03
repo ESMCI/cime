@@ -1692,7 +1692,7 @@ def get_macros(macro_maker, build_xml, build_system):
     """
     # Build.write_macros expects file-like objects as input, so
     # we need to wrap the strings in StringIO objects.
-    xml = io.StringIO(str(build_xml))
+    xml = io.StringIO(unicode(build_xml))
     output = io.StringIO()
     output_format = None
     if build_system == "Makefile":

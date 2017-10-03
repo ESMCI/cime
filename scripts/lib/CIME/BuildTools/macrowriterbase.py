@@ -14,6 +14,8 @@ import os
 from abc import ABCMeta, abstractmethod
 from CIME.XML.standard_module_setup import *
 from CIME.utils import get_cime_root
+from CIME.six import add_metaclass
+
 logger = logging.getLogger(__name__)
 
 def _get_components(value):
@@ -69,7 +71,8 @@ def _get_components(value):
 
     return components
 
-class MacroWriterBase(object, metaclass=ABCMeta):
+@add_metaclass(ABCMeta)
+class MacroWriterBase(object):
 
     """Abstract base class for macro file writers.
 
@@ -130,7 +133,7 @@ class MacroWriterBase(object, metaclass=ABCMeta):
 
         A trailing newline is added, whether or not the input has one.
         """
-        self.output.write(str(self.indent_string() + line + "\n"))
+        self.output.write(unicode(self.indent_string() + line + "\n"))
 
     @abstractmethod
     def environment_variable_string(self, name):
