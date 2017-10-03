@@ -7,7 +7,7 @@ from CIME.XML.standard_module_setup import *
 from CIME.XML.generic_xml import GenericXML
 from CIME.utils import expect,get_model
 
-import urllib
+import urllib.request, urllib.parse, urllib.error
 
 
 
@@ -97,17 +97,17 @@ class TestReporter(GenericXML):
         # Post test result XML to CESM test database
         #
         xmlstr = ET.tostring(self.root,method="xml",encoding="UTF-8")
-        username=raw_input("Username:")
+        username=input("Username:")
         os.system("stty -echo")
-        password=raw_input("Password:")
+        password=input("Password:")
         os.system("stty echo")
         params={'username':username,'password':password,'testXML':xmlstr}
         url="https://csegweb.cgd.ucar.edu/testdb/cgi-bin/processXMLtest.cgi"
-        params = urllib.urlencode(params)
-        f = urllib.urlopen(url, params)
+        params = urllib.parse.urlencode(params)
+        f = urllib.request.urlopen(url, params)
         #
         # Print any messages from the post command
         #
-        print(f.read())
-        print(f.code)
+        print((f.read()))
+        print((f.code))
 

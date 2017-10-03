@@ -533,7 +533,7 @@ class Grids(GenericXML):
                 logger.info("   short name: {}".format(sname))
             if alias is not None:
                 logger.info("   alias: {}".format(alias))
-            for attr, value in grid_node.items():
+            for attr, value in list(grid_node.items()):
                 if  attr == 'compset':
                     logger.info("   compset match: {}".format(value))
 
@@ -582,7 +582,7 @@ class Grids(GenericXML):
                 "alias" : alias,
                 }
             compset_list = list()
-            for attr, value in grid_node.items():
+            for attr, value in list(grid_node.items()):
                 if  attr == 'compset':
                     compset_list.append(value)
 

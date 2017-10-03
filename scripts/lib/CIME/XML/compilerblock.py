@@ -201,7 +201,7 @@ class CompilerBlock(object):
         variables that this setting depends on.
         """
         # Attributes on an element are the conditions on that element.
-        conditions = dict(elem.items())
+        conditions = dict(list(elem.items()))
         if self._compiler is not None:
             conditions["COMPILER"] = self._compiler
         # Deal with internal markup.
@@ -225,7 +225,7 @@ class CompilerBlock(object):
                       of all settings for each variable.
         """
         # Skip this if the element's MPILIB is not valid.
-        if "MPILIB" in elem.keys() and \
+        if "MPILIB" in list(elem.keys()) and \
            not self._machobj.is_valid_MPIlib(elem.get("MPILIB")):
             return
         setting, depends = self._elem_to_setting(elem)
@@ -259,13 +259,13 @@ class CompilerBlock(object):
         before add_settings_to_lists if machine-specific output is needed.
         """
         self._specificity = 0
-        if "MACH" in self._compiler_elem.keys():
+        if "MACH" in list(self._compiler_elem.keys()):
             if self._machobj.get_machine_name() == \
                self._compiler_elem.get("MACH"):
                 self._specificity += 2
             else:
                 return False
-        if "OS" in self._compiler_elem.keys():
+        if "OS" in list(self._compiler_elem.keys()):
             if self._machobj.get_value("OS") == self._compiler_elem.get("OS"):
                 self._specificity += 1
             else:

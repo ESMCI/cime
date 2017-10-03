@@ -123,9 +123,9 @@ class GenericXML(object):
             # one attribute in an xpath query so we query seperately for each attribute
             # and create a result with the intersection of those lists
 
-            for key, value in attributes.iteritems():
+            for key, value in attributes.items():
                 if value is not None:
-                    expect(isinstance(value, basestring),
+                    expect(isinstance(value, str),
                            " Bad value passed for key {}".format(key))
                     xpath = ".//{}[@{}=\'{}\']".format(nodename, key, value)
                     logger.debug("xpath is {}".format(xpath))
