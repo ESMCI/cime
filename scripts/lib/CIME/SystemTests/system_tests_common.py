@@ -343,12 +343,12 @@ class SystemTestsCommon(object):
         f1obj = EnvRun(self._caseroot, "env_run.xml", components=components)
         f2obj = EnvRun(self._caseroot, os.path.join(LOCKED_DIR, "env_run.orig.xml"), components=components)
         diffs = f1obj.compare_xml(f2obj)
-        for key in diffs.keys():
+        for key in list(diffs.keys()):
             if expected is not None and key in expected:
                 logging.warn("  Resetting {} for test".format(key))
                 f1obj.set_value(key, f2obj.get_value(key, resolved=False))
             else:
-                print("WARNING: Found difference in test {}: case: {} original value {}".format(key, diffs[key][0], diffs[key][1]))
+                print(("WARNING: Found difference in test {}: case: {} original value {}".format(key, diffs[key][0], diffs[key][1])))
                 return False
         return True
 
@@ -463,7 +463,7 @@ class FakeTest(SystemTestsCommon):
                 f.write("#!/bin/bash\n")
                 f.write(self._script)
 
-            os.chmod(modelexe, 0755)
+            os.chmod(modelexe, 0o755)
 
             build.post_build(self._case, [])
 
