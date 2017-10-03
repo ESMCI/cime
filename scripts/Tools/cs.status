@@ -4,7 +4,7 @@ List test results based on TestStatus files. Returns True if
 no errors occured (not based on test statuses).
 """
 
-from .standard_script_setup import *
+from standard_script_setup import *
 import argparse, sys, os, logging, glob
 from CIME.test_status import *
 
@@ -66,7 +66,8 @@ def cs_status(test_paths, summary=False):
 
     for test_id in sorted(test_id_output):
         print(test_id)
-        print(test_id_output[test_id], end=' ')
+        print(test_id_output[test_id])
+        print(' ')
 
 ###############################################################################
 def _main_func(description):
