@@ -58,6 +58,8 @@ def _should_pylint_skip(filepath):
     for dir_to_skip in list_of_directories_to_ignore:
         if dir_to_skip + "/" in filepath:
             return True
+        if filepath == "scripts/lib/six.py":
+            return True
 
     return False
 

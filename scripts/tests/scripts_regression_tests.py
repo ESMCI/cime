@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import io, glob, os, re, shutil, signal, sys, tempfile, \
+import glob, os, re, shutil, signal, sys, tempfile, \
     threading, time, logging, unittest, getpass
 
 from xml.etree.ElementTree import ParseError
