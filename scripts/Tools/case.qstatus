@@ -4,7 +4,7 @@
 Show the batch status of all jobs associated with this case.
 """
 
-from .standard_script_setup import *
+from standard_script_setup import *
 
 from CIME.case            import Case
 from CIME.test_status     import *

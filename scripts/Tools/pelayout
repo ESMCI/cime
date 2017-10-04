@@ -28,7 +28,7 @@ information is available at https://github.com/ESMCI/cime.
         it under the same terms as Python itself.
 """
 
-from .standard_script_setup import *
+from standard_script_setup import *
 
 from CIME.case import Case
 from CIME.utils import expect, convert_to_string

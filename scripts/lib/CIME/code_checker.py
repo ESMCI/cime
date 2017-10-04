@@ -100,6 +100,10 @@ def check_code(files, num_procs=10, interactive=False):
         # Check every python file
         files_to_check = get_all_checkable_files()
 
+    if "scripts/lib/CIME/six.py" in files_to_check:
+        files_to_check.remove("scripts/lib/CIME/six.py")
+        logger.info("Not checking contributed file six.py")
+
     expect(len(files_to_check) > 0, "No matching files found")
 
     # No point in using more threads than files
