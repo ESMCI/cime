@@ -547,7 +547,7 @@ class TestScheduler(object):
                     # handled in create_newcase
                     continue
                 elif opt.startswith('IOP'):
-                    logger.warn("IOP test option not yet implemented")
+                    logger.warning("IOP test option not yet implemented")
                 else:
                     expect(False, "Could not parse option '{}' ".format(opt))
 

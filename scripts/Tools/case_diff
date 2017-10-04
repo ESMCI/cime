@@ -100,7 +100,7 @@ def recursive_diff(dir1, dir2, repls, show_binary=False, skip_list=()):
 
             stat, out, err = run_cmd("file {}".format(path1))
             if (stat != 0):
-                logging.warn("Failed to probe file '{}', out: '{}', err: '{}'".format(path1, out, err))
+                logging.warning("Failed to probe file '{}', out: '{}', err: '{}'".format(path1, out, err))
                 continue
 
             is_text_file = "text" in out

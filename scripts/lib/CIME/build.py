@@ -252,7 +252,7 @@ def _build_libraries(case, exeroot, sharedpath, caseroot, cimeroot, libroot, lid
             bldlog = open(file_build, "r")
             for line in bldlog:
                 if re.search("Current setting for", line):
-                    logger.warn(line)
+                    logger.warning(line)
 
     # clm not a shared lib for ACME
     if get_model() != "acme" and (buildlist is None or "lnd" in buildlist):
@@ -290,7 +290,7 @@ def _build_model_thread(config_dir, compclass, compname, caseroot, libroot, bldr
     t1 = time.time()
     cmd = os.path.join(caseroot, "SourceMods", "src." + compname, "buildlib")
     if os.path.isfile(cmd):
-        logger.warn("WARNING: using local buildlib script for {}".format(compname))
+        logger.warning("WARNING: using local buildlib script for {}".format(compname))
     else:
         cmd = os.path.join(config_dir, "buildlib")
         expect(os.path.isfile(cmd), "Could not find buildlib for {}".format(compname))

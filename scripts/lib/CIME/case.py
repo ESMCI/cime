@@ -404,7 +404,7 @@ class Case(object):
 
     def set_lookup_value(self, item, value):
         if item in list(self.lookups.keys()) and self.lookups[item] is not None:
-            logger.warn("Item {} already in lookups with value {}".format(item,self.lookups[item]))
+            logger.warning("Item {} already in lookups with value {}".format(item,self.lookups[item]))
         else:
             logger.debug("Setting in lookups: item {}, value {}".format(item,value))
             self.lookups[item] = value
@@ -1244,7 +1244,7 @@ class Case(object):
         if version != "unknown":
             logger.info("{} model version found: {}".format(model, version))
         else:
-            logger.warn("WARNING: No {} Model version found.".format(model))
+            logger.warning("WARNING: No {} Model version found.".format(model))
 
     def load_env(self):
         if not self._is_env_loaded:
@@ -1285,9 +1285,9 @@ class Case(object):
                 if test["category"] == "prealpha" or test["category"] == "prebeta" or "aux_" in test["category"]:
                     testcnt += 1
         if testcnt > 0:
-            logger.warn("\n*********************************************************************************************************************************")
-            logger.warn("This compset and grid combination is not scientifically supported, however it is used in {:d} tests.".format(testcnt))
-            logger.warn("*********************************************************************************************************************************\n")
+            logger.warning("\n*********************************************************************************************************************************")
+            logger.warning("This compset and grid combination is not scientifically supported, however it is used in {:d} tests.".format(testcnt))
+            logger.warning("*********************************************************************************************************************************\n")
         else:
             expect(False, "\nThis compset and grid combination is untested in CESM.  "
                    "Override this warning with the --run-unsupported option to create_newcase.",
@@ -1305,7 +1305,7 @@ class Case(object):
         gfile = GenericXML(infile=xmlfile)
         ftype = gfile.get_id()
         components = self.get_value("COMP_CLASSES")
-        logger.warn("setting case file to {}".format(xmlfile))
+        logger.warning("setting case file to {}".format(xmlfile))
         new_env_file = None
         for env_file in self._env_entryid_files:
             if os.path.basename(env_file.filename) == ftype:
@@ -1412,10 +1412,10 @@ class Case(object):
         except:
             if os.path.exists(self._caseroot):
                 if not logger.isEnabledFor(logging.DEBUG) and not test:
-                    logger.warn("Failed to setup case, removing {}\nUse --debug to force me to keep caseroot".format(self._caseroot))
+                    logger.warning("Failed to setup case, removing {}\nUse --debug to force me to keep caseroot".format(self._caseroot))
                     shutil.rmtree(self._caseroot)
                 else:
-                    logger.warn("Leaving broken case dir {}".format(self._caseroot))
+                    logger.warning("Leaving broken case dir {}".format(self._caseroot))
 
             raise
 

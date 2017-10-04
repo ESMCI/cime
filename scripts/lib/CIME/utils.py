@@ -77,7 +77,7 @@ def check_name(fullname, additional_chars=None, fullpath=False):
         name = fullname
     match = re.search(r"["+re.escape(chars)+"]", name)
     if match is not None:
-        logger.warn("Illegal character {} found in name {}".format(match.group(0), name))
+        logger.warning("Illegal character {} found in name {}".format(match.group(0), name))
         return False
     return True
 
@@ -1115,7 +1115,7 @@ def transform_vars(text, case=None, subgroup=None, overrides=None, default=None)
             if "-q {{ queue }}" in text:
                 text = ""
             else:
-                logger.warn("Could not replace variable '{}'".format(variable))
+                logger.warning("Could not replace variable '{}'".format(variable))
                 text = text.replace(whole_match, "")
 
     return text
@@ -1274,9 +1274,9 @@ def analyze_build_log(comp, log, compiler):
             if re.search(warn_re, line):
                 warncnt += 1
             if re.search(error_re, line):
-                logger.warn(line)
+                logger.warning(line)
             if re.search(undefined_re, line):
-                logger.warn(line)
+                logger.warning(line)
 
     if warncnt > 0:
         logger.info("Component {} build complete with {} warnings".format(comp, warncnt))
