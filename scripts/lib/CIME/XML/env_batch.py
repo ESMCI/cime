@@ -359,7 +359,7 @@ class EnvBatch(EnvBase):
             if self._prereq_jobid is not None:
                 jobid = self._prereq_jobid
             for dep in deps:
-                if dep in depid:
+                if dep in depid and depid[dep] is not None:
                     jobid += " " + str(depid[dep])
 #TODO: doubt these will be used
 #               elif dep == "and":
