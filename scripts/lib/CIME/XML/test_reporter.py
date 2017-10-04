@@ -3,7 +3,7 @@ Interface to the testreporter xml.  This class inherits from GenericXML.py
 
 """
 #pylint: disable=import-error
-from CIME.six.moves import urllib
+from six.moves import urllib
 from CIME.XML.standard_module_setup import *
 from CIME.XML.generic_xml import GenericXML
 from CIME.utils import expect,get_model

@@ -5,10 +5,10 @@ Warning: you cannot use CIME Classes in this module as it causes circular depend
 import logging, gzip, sys, os, time, re, shutil, glob, string, random, imp, errno, signal
 import stat as statlib
 import warnings
-from CIME import six
+import six
 from contextlib import contextmanager
 #pylint: disable=import-error
-from CIME.six.moves import configparser
+from six.moves import configparser
 
 # Return this error code if the scripts worked but tests failed
 TESTS_FAILED_ERR_CODE = 100

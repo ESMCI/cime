@@ -8,7 +8,7 @@ from copy import deepcopy
 import glob, os, shutil, math
 from CIME.XML.standard_module_setup import *
 #pylint: disable=import-error,redefined-builtin
-from CIME.six.moves import input
+from six.moves import input
 from CIME.utils                     import expect, get_cime_root, append_status
 from CIME.utils                     import convert_to_type, get_model, get_project
 from CIME.utils                     import get_current_commit, check_name

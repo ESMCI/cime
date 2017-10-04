@@ -7,7 +7,7 @@ Authors: Jay Shollenberger and Ben Andre
 """
 from standard_script_setup import *
 #pylint: disable=import-error
-from CIME.six.moves import urllib
+from six.moves import urllib
 if sys.hexversion < 0x02070000:
     print(70 * "*")
     print("ERROR: {0} requires python >= 2.7.x. ".format(sys.argv[0]))
