@@ -15,7 +15,7 @@ def bless_namelists(test_name, report_only, force, baseline_name, baseline_root)
     # re-run create_test.
 
     # Update namelist files
-    print(("Test '{}' had namelist diff".format(test_name)))
+    print("Test '{}' had namelist diff".format(test_name))
     if (not report_only and
         (force or input("Update namelists (y/n)? ").upper() in ["Y", "YES"])):
         create_test_gen_args = " -g {} ".format(baseline_name if get_model() == "cesm" else " -g -b {} ".format(baseline_name))
@@ -97,11 +97,11 @@ def bless_test_results(baseline_name, baseline_root, test_root, compiler, test_i
 
             # Now, do the bless
             if not nl_bless and not hist_bless:
-                print(("Nothing to bless for test:", test_name, " overall status:", overall_result))
+                print("Nothing to bless for test:", test_name, " overall status:", overall_result)
             else:
 
                 print("###############################################################################")
-                print(("Blessing results for test:", test_name, "most recent result:", overall_result))
+                print("Blessing results for test:", test_name, "most recent result:", overall_result)
                 print("###############################################################################")
                 if not force:
                     time.sleep(2)

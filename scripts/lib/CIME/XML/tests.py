@@ -50,4 +50,4 @@ class Tests(GenericXML):
                     continue
             name = one_test.get("NAME")
             desc = one_test.find("DESC").text
-            print(("{}: {}".format(name, desc)))
+            print("{}: {}".format(name, desc))

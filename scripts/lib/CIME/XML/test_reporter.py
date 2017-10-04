@@ -105,6 +105,5 @@ class TestReporter(GenericXML):
         #
         # Print any messages from the post command
         #
-        print((f.read()))
-        print((f.code))
-
+        print(f.read())
+        print(f.code)

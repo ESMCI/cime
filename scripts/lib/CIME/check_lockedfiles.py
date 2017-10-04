@@ -113,8 +113,8 @@ def check_lockedfiles(case):
             if diffs:
                 logging.warn("File {} has been modified".format(lfile))
                 for key in list(diffs.keys()):
-                    print(("  found difference in {} : case {} locked {}"
-                          .format(key, repr(diffs[key][0]), repr(diffs[key][1]))))
+                    print("  found difference in {} : case {} locked {}"
+                          .format(key, repr(diffs[key][0]), repr(diffs[key][1])))
 
                 if objname == "env_mach_pes":
                     expect(False, "Invoke case.setup --reset ")
