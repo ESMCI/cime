@@ -157,7 +157,7 @@ def get_model():
     >>> del os.environ["CIME_MODEL"]
     >>> set_model('rocky')
     >>> get_model()
-    u'rocky'
+    'rocky'
     >>> reset_cime_config()
     """
     model = os.environ.get("CIME_MODEL")

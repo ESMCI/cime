@@ -355,11 +355,15 @@ def sort_by_time(test_one, test_two):
     """
     rec1, rec2 = get_recommended_test_time(test_one), get_recommended_test_time(test_two)
     if rec1 == rec2:
-        return cmp(test_one, test_two)
+        return (test_one > test_two) - (test_two < test_one)
     else:
         if rec2 is None:
             return -1
         elif rec1 is None:
             return 1
         else:
-            return cmp(convert_to_seconds(rec2), convert_to_seconds(rec1))
+            a = convert_to_seconds(rec2)
+            b = convert_to_seconds(rec1)
+            return (a < b) - (b < a)
+
+	

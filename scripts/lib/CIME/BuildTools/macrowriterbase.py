@@ -133,7 +133,7 @@ class MacroWriterBase(object):
 
         A trailing newline is added, whether or not the input has one.
         """
-        self.output.write(unicode(self.indent_string() + line + "\n"))
+        self.output.write(str(self.indent_string() + line + "\n"))
 
     @abstractmethod
     def environment_variable_string(self, name):
@@ -208,7 +208,7 @@ def write_macros_file_v1(macros, compiler, os_, machine, macros_file="Macros", o
     # A few things can be used from environ if not in XML
     for item in ["MPI_PATH", "NETCDF_PATH"]:
         if not item in macros and item in os.environ:
-            logger.warn("Setting {} from Environment".format(item))
+            logger.warning("Setting {} from Environment".format(item))
             macros[item] = os.environ[item]
 
     with open(macros_file, "w") as fd:

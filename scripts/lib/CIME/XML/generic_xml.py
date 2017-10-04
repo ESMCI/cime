@@ -267,7 +267,7 @@ class GenericXML(object):
             logger.debug("Checking file {} against schema {}".format(filename, schema))
             run_cmd_no_fail("{} --noout --schema {} {}".format(xmllint, schema, filename))
         else:
-            logger.warn("xmllint not found, could not validate file {}".format(filename))
+            logger.warning("xmllint not found, could not validate file {}".format(filename))
 
     def get_element_text(self, element_name, attributes=None, root=None, xpath=None):
         element_node = self.get_optional_node(element_name, attributes, root, xpath)
