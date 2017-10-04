@@ -7,6 +7,8 @@ import stat as statlib
 import warnings
 from CIME import six
 from contextlib import contextmanager
+#pylint: disable=import-error
+from CIME.six.moves import configparser
 
 # Return this error code if the scripts worked but tests failed
 TESTS_FAILED_ERR_CODE = 100
@@ -87,11 +89,10 @@ def _read_cime_config_file():
     CIME_MODEL=acme,cesm
     PROJECT=someprojectnumber
     """
-    from configparser import SafeConfigParser as config_parser
 
     cime_config_file = os.path.abspath(os.path.join(os.path.expanduser("~"),
                                                   ".cime","config"))
-    cime_config = config_parser()
+    cime_config = configparser.SafeConfigParser()
     if(os.path.isfile(cime_config_file)):
         cime_config.read(cime_config_file)
     else:
