@@ -403,7 +403,7 @@ class Case(object):
                 return result
 
     def set_lookup_value(self, item, value):
-        if item in list(self.lookups.keys()) and self.lookups[item] is not None:
+        if item in self.lookups and self.lookups[item] is not None:
             logger.warning("Item {} already in lookups with value {}".format(item,self.lookups[item]))
         else:
             logger.debug("Setting in lookups: item {}, value {}".format(item,value))
@@ -411,7 +411,7 @@ class Case(object):
 
     def clean_up_lookups(self, allow_undefined=False):
         # put anything in the lookups table into existing env objects
-        for key,value in list(self.lookups.items()):
+        for key,value in self.lookups.items():
             logger.debug("lookup key {} value {}".format(key, value))
             result = self.set_value(key,value, allow_undefined=allow_undefined)
             if result is not None:
@@ -695,7 +695,7 @@ class Case(object):
         mach_pes_obj = self.get_env("mach_pes")
 
         if other is not None:
-            for key, value in list(other.items()):
+            for key, value in other.items():
                 self.set_value(key, value)
 
         totaltasks = []
@@ -734,10 +734,10 @@ class Case(object):
             mach_pes_obj.set_value(key, ninst)
 
             key = "NTASKS_{}".format(compclass)
-            if key not in list(pes_ntasks.keys()):
+            if key not in pes_ntasks:
                 mach_pes_obj.set_value(key,1)
             key = "NTHRDS_{}".format(compclass)
-            if compclass not in list(pes_nthrds.keys()):
+            if compclass not in pes_nthrds:
                 mach_pes_obj.set_value(compclass,1)
 
         return pesize
@@ -769,7 +769,7 @@ class Case(object):
         gridinfo = grids.get_grid_info(name=grid_name, compset=self._compsetname)
 
         self._gridname = gridinfo["GRID"]
-        for key,value in list(gridinfo.items()):
+        for key,value in gridinfo.items():
             logger.debug("Set grid {} {}".format(key,value))
             self.set_lookup_value(key,value)
 
@@ -968,7 +968,7 @@ class Case(object):
         mpilib = self.get_value("MPILIB")
         defaults = pioobj.get_defaults(grid=grid,compset=compset,mach=mach,compiler=compiler, mpilib=mpilib)
 
-        for vid, value in list(defaults.items()):
+        for vid, value in defaults.items():
             self.set_value(vid,value)
 
     def _create_caseroot_tools(self):

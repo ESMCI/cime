@@ -220,11 +220,11 @@ class CimeTestStatus():
         root = etree.Element('test')
         root.set('name', self._test_status['name'])
         root.set('status', self._test_status['status'])
-        for name, section in list(self._test_status.items()):
+        for name, section in self._test_status.items():
             if isinstance(section, dict):
                 elem = etree.Element('section')
                 elem.set('name', name)
-                for key, value in list(section.items()):
+                for key, value in section.items():
                     child = etree.Element("{0}".format('key'))
                     child.set('name', key)
                     child.text = value
@@ -353,10 +353,10 @@ def getSuiteInfo(specfile):
 
     for t in root.findall('test'):
         testlist.append(t.get('case'))
-        if 'machine' not in list(suiteinfo.keys()):
+        if 'machine' not in suiteinfo:
             machnodelist = t.findall('mach')
             suiteinfo['machine'] = machnodelist[0].text
-        if 'compiler' not in list(suiteinfo.keys()):
+        if 'compiler' not in suiteinfo:
             compnodelist = t.findall('compiler')
             suiteinfo['compiler'] = compnodelist[0].text
 
@@ -596,4 +596,3 @@ def _main_func():
 
 if __name__ == "__main__":
     _main_func()
-

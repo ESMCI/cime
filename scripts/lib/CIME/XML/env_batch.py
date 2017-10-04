@@ -123,7 +123,7 @@ class EnvBatch(EnvBase):
         for name, jdict in batch_jobs:
             new_job_group = ET.Element("group")
             new_job_group.set("id", name)
-            for field in list(jdict.keys()):
+            for field in jdict.keys():
                 val = jdict[field]
                 node = ET.SubElement(new_job_group, "entry", {"id":field,"value":val})
                 tnode = ET.SubElement(node, "type")
@@ -359,7 +359,7 @@ class EnvBatch(EnvBase):
             if self._prereq_jobid is not None:
                 jobid = self._prereq_jobid
             for dep in deps:
-                if dep in list(depid.keys()) and depid[dep] is not None:
+                if dep in depid:
                     jobid += " " + str(depid[dep])
 #TODO: doubt these will be used
 #               elif dep == "and":

@@ -108,6 +108,7 @@ import collections
 
 from CIME.XML.standard_module_setup import *
 from CIME.utils import expect
+import six
 
 logger = logging.getLogger(__name__)
 
@@ -732,21 +733,21 @@ def compress_literal_list(literals):
                 # Otherwise, write out the previous literal and start tracking the
                 # new one.
                 rep_str = str(num_reps) + '*' if num_reps > 1 else ''
-                if isinstance(old_literal, str):
+                if isinstance(old_literal, six.string_types):
                     compressed.append(rep_str + old_literal)
                 else:
                     compressed.append(rep_str + str(old_literal))
                 old_literal = literal
                 num_reps = 1
         rep_str = str(num_reps) + '*' if num_reps > 1 else ''
-        if isinstance(old_literal, str):
+        if isinstance(old_literal, six.string_types):
             compressed.append(rep_str + old_literal)
         else:
             compressed.append(rep_str + str(old_literal))
         return compressed
     else:
         for literal in literals:
-            if isinstance(literal, str):
+            if isinstance(literal, six.string_types):
                 compressed.append(literal)
             else:
                 compressed.append(str(literal))
@@ -833,7 +834,7 @@ def parse(in_file=None, text=None, groupless=False, convert_tab_to_space=True):
            "Must specify an input file or text to the namelist parser.")
     expect(in_file is None or text is None,
            "Cannot specify both input file and text to the namelist parser.")
-    if isinstance(in_file, str) or isinstance(in_file, str):
+    if isinstance(in_file, six.string_types):
         logger.debug("Reading namelist at: {}".format(in_file))
         with open(in_file) as in_file_obj:
             text = in_file_obj.read()
@@ -1134,7 +1135,7 @@ class Namelist(object):
         """
         expect(format_ in ('nml', 'rc', 'nmlcontents'),
                "Namelist.write: unexpected output format {!r}".format(str(format_)))
-        if isinstance(out_file, str) or isinstance(out_file, str):
+        if isinstance(out_file, six.string_types):
             logger.debug("Writing namelist to: {}".format(out_file))
             flag = 'a' if append else 'w'
             with open(out_file, flag) as file_obj:

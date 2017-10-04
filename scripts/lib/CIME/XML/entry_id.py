@@ -83,7 +83,7 @@ class EntryID(GenericXML):
             # For each node in the list start a score.
             score = 0
             if attributes:
-                for attribute in list(vnode.keys()):
+                for attribute in vnode.keys():
                     # For each attribute, add to the score.
                     score += 1
                     # If some attribute is specified that we don't know about,
@@ -360,7 +360,7 @@ class EntryID(GenericXML):
                 gname = "group_not_set"
             # If group with id=$gname does not exist in self.groups
             # then create the group node and add it to infile file
-            if gname not in list(self.groups.keys()):
+            if gname not in self.groups.keys():
                 newgroup = ET.Element("group")
                 newgroup.set("id",gname)
                 # initialize an empty list

@@ -32,7 +32,7 @@ class MacroConditionTree(object): # pylint: disable=too-many-instance-attributes
             # To make merging more effective, sort the conditions.
             all_conditions = []
             for setting in settings:
-                all_conditions += list(setting.conditions.keys())
+                all_conditions += setting.conditions.keys()
             if all_conditions:
                 condition = sorted(all_conditions)[0]
         if condition is None:
@@ -119,7 +119,7 @@ class MacroConditionTree(object): # pylint: disable=too-many-instance-attributes
                     return other.merge(self)
                 # If neither is a leaf and their conditions match, merge
                 # their sets of branches.
-                for (cond_val, other_branch) in list(other._branches.items()):
+                for (cond_val, other_branch) in other._branches.items():
                     if cond_val in self._branches:
                         self._branches[cond_val] = \
                             self._branches[cond_val].merge(other_branch)

@@ -6,6 +6,7 @@ from CIME.XML.standard_module_setup import *
 from distutils.spawn import find_executable
 from xml.dom import minidom
 import getpass
+import six
 
 logger = logging.getLogger(__name__)
 
@@ -125,7 +126,7 @@ class GenericXML(object):
 
             for key, value in attributes.items():
                 if value is not None:
-                    expect(isinstance(value, str),
+                    expect(isinstance(value, six.string_types),
                            " Bad value passed for key {}".format(key))
                     xpath = ".//{}[@{}=\'{}\']".format(nodename, key, value)
                     logger.debug("xpath is {}".format(xpath))

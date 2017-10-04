@@ -249,12 +249,12 @@ def run_cmd(cmd, input_str=None, from_dir=None, verbose=None,
     # Real defaults for these value should be subprocess.PIPE
     if arg_stdout is _hack:
         arg_stdout = subprocess.PIPE
-    elif isinstance(arg_stdout, str):
+    elif isinstance(arg_stdout, six.string_types):
         arg_stdout = _convert_to_fd(arg_stdout, from_dir)
 
     if arg_stderr is _hack:
         arg_stderr = subprocess.STDOUT if combine_output else subprocess.PIPE
-    elif isinstance(arg_stderr, str):
+    elif isinstance(arg_stderr, six.string_types):
         arg_stderr = _convert_to_fd(arg_stdout, from_dir)
 
     if (verbose != False and (verbose or logger.isEnabledFor(logging.DEBUG))):

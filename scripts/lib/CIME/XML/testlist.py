@@ -115,7 +115,7 @@ class Testlist(GenericXML):
             machnodes = self.get_nodes("machine",machatts,root=tnode)
             if machnodes:
                 this_test_node = {}
-                for key, value in list(tnode.items()):
+                for key, value in tnode.items():
                     if key == "name":
                         this_test_node["testname"] = value
                     else:
@@ -124,7 +124,7 @@ class Testlist(GenericXML):
                 for mach in machnodes:
                     # this_test_node can include multiple tests
                     this_test = dict(this_test_node)
-                    for key, value in list(mach.items()):
+                    for key, value in mach.items():
                         if key == "name":
                             this_test["machine"] = value
                         else:
@@ -157,4 +157,3 @@ class Testlist(GenericXML):
         else:
             logger.critical("Did not recognize testlist file version {} for file {}"
                              .format(self.get_version(), self.filename))
-
