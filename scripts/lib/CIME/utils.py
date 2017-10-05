@@ -2,7 +2,7 @@
 Common functions used by cime python scripts
 Warning: you cannot use CIME Classes in this module as it causes circular dependencies
 """
-import logging, gzip, sys, os, time, re, shutil, glob, string, random, imp, errno, signal
+import io, logging, gzip, sys, os, time, re, shutil, glob, string, random, imp, errno, signal
 import stat as statlib
 import warnings
 import six
@@ -277,12 +277,17 @@ def run_cmd(cmd, input_str=None, from_dir=None, verbose=None,
     output = output.strip() if output is not None else output
     errput = errput.strip() if errput is not None else errput
     stat = proc.wait()
-
-    if isinstance(arg_stdout, file):
-        arg_stdout.close() # pylint: disable=no-member
-
-    if isinstance(arg_stderr, file) and arg_stderr is not arg_stdout:
-        arg_stderr.close() # pylint: disable=no-member
+    if six.PY2:
+        if isinstance(arg_stdout, file):
+            arg_stdout.close() # pylint: disable=no-member
+        if isinstance(arg_stderr, file) and arg_stderr is not arg_stdout:
+            arg_stderr.close() # pylint: disable=no-member
+    else:
+        if isinstance(arg_stdout, io.IOBase):
+            arg_stdout.close() # pylint: disable=no-member
+        if isinstance(arg_stderr, io.IOBase) and arg_stderr is not arg_stdout:
+            arg_stderr.close() # pylint: disable=no-member
+        
 
     if (verbose != False and (verbose or logger.isEnabledFor(logging.DEBUG))):
         if stat != 0:

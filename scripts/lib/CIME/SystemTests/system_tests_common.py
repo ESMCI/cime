@@ -155,15 +155,14 @@ class SystemTestsCommon(object):
 
             self._check_for_memleak()
 
-        except:
+        except BaseException as msg:
             success = False
-            msg = sys.exc_info()[1].message
-            if "RUN FAIL" in msg:
+            if "RUN FAIL" in str(msg):
                 # Don't want to print stacktrace for a model failure since that
                 # is not a CIME/infrastructure problem.
                 excmsg = msg
             else:
-                excmsg = "Exception during run:\n{}\n{}".format(sys.exc_info()[1], traceback.format_exc())
+                excmsg = "Exception during run:\n{}\n{}".format(msg, traceback.format_exc())
             logger.warning(excmsg)
             append_testlog(excmsg)
 
