@@ -16,7 +16,9 @@ def _run_pylint(on_file, interactive):
 ###############################################################################
     pylint = find_executable("pylint")
 
-    cmd_options = " --disable=I,C,R,logging-not-lazy,wildcard-import,unused-wildcard-import,fixme,broad-except,bare-except,eval-used,exec-used,global-statement,logging-format-interpolation"
+    cmd_options = " --disable=I,C,R,logging-not-lazy,wildcard-import,unused-wildcard-import"
+    cmd_options += ",fixme,broad-except,bare-except,eval-used,exec-used,global-statement"
+    cmd_options += ",logging-format-interpolation,no-name-in-module"
     cimeroot = get_cime_root()
 
     if "scripts/Tools" in on_file:
@@ -69,8 +71,8 @@ def get_all_checkable_files():
     cimeroot = get_cime_root()
     all_git_files = run_cmd_no_fail("git ls-files", from_dir=cimeroot, verbose=False).splitlines()
 
-    files_to_test = [str(item) for item in all_git_files
-                     if ((str(item).endswith(".py") or is_python_executable(os.path.join(cimeroot, str(item)))) and not _should_pylint_skip(str(item)))]
+    files_to_test = [item for item in all_git_files
+                     if ((item.endswith(".py") or is_python_executable(os.path.join(cimeroot, item))) and not _should_pylint_skip(item))]
     return files_to_test
 
 ###############################################################################

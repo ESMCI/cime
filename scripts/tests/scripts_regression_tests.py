@@ -1925,19 +1925,19 @@ class G_TestMacrosBasic(unittest.TestCase):
     def test_script_is_callable(self):
         """The test script can be called on valid output without dying."""
         # This is really more a smoke test of this script than anything else.
-        maker = Compilers(MockMachines("mymachine", "SomeOS"), version="2.0")
+        maker = Compilers(MockMachines("mymachine", "SomeOS"), version=2.0)
         test_xml = _wrap_config_build_xml("<compiler><SUPPORTS_CXX>FALSE</SUPPORTS_CXX></compiler>")
         get_macros(maker, test_xml, "Makefile")
 
     def test_script_rejects_bad_xml(self):
         """The macro writer rejects input that's not valid XML."""
-        maker = Compilers(MockMachines("mymachine", "SomeOS"), version="2.0")
+        maker = Compilers(MockMachines("mymachine", "SomeOS"), version=2.0)
         with self.assertRaises(ParseError):
             get_macros(maker, "This is not valid XML.", "Makefile")
 
     def test_script_rejects_bad_build_system(self):
         """The macro writer rejects a bad build system string."""
-        maker = Compilers(MockMachines("mymachine", "SomeOS"), version="2.0")
+        maker = Compilers(MockMachines("mymachine", "SomeOS"), version=2.0)
         bad_string = "argle-bargle."
         with six.assertRaisesRegex(self,
                 SystemExit,
@@ -2334,7 +2334,7 @@ def check_for_pylint():
     pylint = find_executable("pylint")
     if pylint is not None:
         output = run_cmd_no_fail("pylint --version")
-        pylintver = re.search(r"pylint\s+(\d+)[.](\d+)[.](\d+)", str(output))
+        pylintver = re.search(r"pylint\s+(\d+)[.](\d+)[.](\d+)", output)
         major = int(pylintver.group(1))
         minor = int(pylintver.group(2))
     if pylint is None or major < 1 or (major == 1 and minor < 5):

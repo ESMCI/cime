@@ -274,13 +274,18 @@ def run_cmd(cmd, input_str=None, from_dir=None, verbose=None,
                             env=env)
 
     output, errput = proc.communicate(input_str)
-    output = output.strip() if output is not None else output
-    errput = errput.strip() if errput is not None else errput
+    if output is not None:
+        output = output.strip()
+        output = output.decode("utf-8")
+    if errput is not None:
+        errput = errput.strip()
+        errput = errput.decode("utf-8")
+
     stat = proc.wait()
     if six.PY2:
-        if isinstance(arg_stdout, file):
+        if isinstance(arg_stdout, file): # pylint: disable=undefined-variable
             arg_stdout.close() # pylint: disable=no-member
-        if isinstance(arg_stderr, file) and arg_stderr is not arg_stdout:
+        if isinstance(arg_stderr, file) and arg_stderr is not arg_stdout: # pylint: disable=undefined-variable
             arg_stderr.close() # pylint: disable=no-member
     else:
         if isinstance(arg_stdout, io.IOBase):
@@ -335,7 +340,8 @@ def check_minimum_python_version(major, minor):
     >>> check_minimum_python_version(sys.version_info[0], sys.version_info[1])
     >>>
     """
-    expect(sys.version_info[0] == major and sys.version_info[1] >= minor,
+    expect(sys.version_info[0] > major or 
+           (sys.version_info[0] == major and sys.version_info[1] >= minor),
            "Python {:d}, minor version {:d}+ is required, you have {:d}.{:d}".format(major, minor, sys.version_info[0], sys.version_info[1]))
 
 def normalize_case_id(case_id):
@@ -1287,11 +1293,15 @@ def analyze_build_log(comp, log, compiler):
         logger.info("Component {} build complete with {} warnings".format(comp, warncnt))
 
 def is_python_executable(filepath):
+    first_line = None
     if os.path.isfile(filepath):
-        with open(filepath, "r") as f:
-            first_line = f.readline()
-
-        return first_line.startswith("#!") and "python" in first_line
+        with open(filepath, "rt") as f:
+            try:
+                first_line = f.readline()
+            except:
+                pass
+        
+        return first_line is not None and first_line.startswith("#!") and "python" in first_line
     return False
 
 def get_umask():

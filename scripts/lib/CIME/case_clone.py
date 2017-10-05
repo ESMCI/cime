@@ -1,4 +1,4 @@
-import os, glob, shutil, string
+import os, glob, shutil
 from CIME.XML.standard_module_setup import *
 from CIME.utils import expect
 from CIME.user_mod_support import apply_user_mods
@@ -44,7 +44,7 @@ def create_case_clone(case, newcase, keepexe=False, mach_dir=None, project=None,
     olduser = case.get_value("USER")
     newuser = os.environ.get("USER")
     if olduser != newuser:
-        cime_output_root = string.replace(cime_output_root, olduser, newuser)
+        cime_output_root = cime_output_root.replace(olduser, newuser)
         newcase.set_value("USER", newuser)
     newcase.set_value("CIME_OUTPUT_ROOT", cime_output_root)
 

@@ -344,7 +344,7 @@ class SystemTestsCommon(object):
         diffs = f1obj.compare_xml(f2obj)
         for key in diffs.keys():
             if expected is not None and key in expected:
-                logging.warn("  Resetting {} for test".format(key))
+                logging.warning("  Resetting {} for test".format(key))
                 f1obj.set_value(key, f2obj.get_value(key, resolved=False))
             else:
                 print("WARNING: Found difference in test {}: case: {} original value {}".format(key, diffs[key][0], diffs[key][1]))

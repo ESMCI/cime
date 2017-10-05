@@ -324,7 +324,7 @@ def _clean_impl(case, cleanlist, clean_all):
         sharedlibroot = os.path.abspath(case.get_value("SHAREDLIBROOT"))
         expect(sharedlibroot is not None,"No SHAREDLIBROOT defined in case")
         if sharedlibroot != exeroot and os.path.isdir(sharedlibroot):
-            logging.warn("cleaning directory {}".format(sharedlibroot))
+            logging.warning("cleaning directory {}".format(sharedlibroot))
             shutil.rmtree(sharedlibroot)
     else:
         expect(cleanlist is not None and len(cleanlist) > 0,"Empty cleanlist not expected")
