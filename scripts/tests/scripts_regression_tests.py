@@ -4,13 +4,13 @@ import glob, os, re, shutil, signal, sys, tempfile, \
     threading, time, logging, unittest, getpass
 
 from xml.etree.ElementTree import ParseError
-import six
 
 LIB_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)),"..","lib")
 sys.path.append(LIB_DIR)
 # Remove all pyc files to ensure we're testing the right things
 import subprocess
 subprocess.call('/bin/rm $(find . -name "*.pyc")', shell=True, cwd=LIB_DIR)
+import six
 
 from CIME.utils import run_cmd, run_cmd_no_fail, get_lids, get_current_commit
 import update_acme_tests
@@ -2334,7 +2334,7 @@ def check_for_pylint():
     pylint = find_executable("pylint")
     if pylint is not None:
         output = run_cmd_no_fail("pylint --version")
-        pylintver = re.search(r"pylint\s+(\d+)[.](\d+)[.](\d+)", output)
+        pylintver = re.search(r"pylint\s+(\d+)[.](\d+)[.](\d+)", str(output))
         major = int(pylintver.group(1))
         minor = int(pylintver.group(2))
     if pylint is None or major < 1 or (major == 1 and minor < 5):
@@ -2434,8 +2434,7 @@ def _main_func():
 
     try:
         unittest.main(verbosity=2, catchbreak=True)
-    except SystemExit:
-        had_fails = sys.exc_info()[1].message
+    except SystemExit as had_fails:
         if had_fails:
             print("Detected failures, leaving directory:", TEST_ROOT)
         else:
