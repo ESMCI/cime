@@ -310,19 +310,17 @@ def run_cmd_no_fail(cmd, input_str=None, from_dir=None, verbose=None,
     Wrapper around subprocess to make it much more convenient to run shell commands.
     Expects command to work. Just returns output string.
 
-    >>> run_cmd_no_fail('echo foo')
-    'foo'
-
+    >>> run_cmd_no_fail('echo foo') == 'foo'
+    True
     >>> run_cmd_no_fail('echo THE ERROR >&2; false') # doctest:+ELLIPSIS
     Traceback (most recent call last):
         ...
     SystemExit: ERROR: Command: 'echo THE ERROR >&2; false' failed with error 'THE ERROR' from dir ...
 
-    >>> run_cmd_no_fail('grep foo', input_str='foo')
-    'foo'
-
-    >>> run_cmd_no_fail('echo THE ERROR >&2', combine_output=True)
-    'THE ERROR'
+    >>> run_cmd_no_fail('grep foo', input_str=b'foo') == 'foo'
+    True
+    >>> run_cmd_no_fail('echo THE ERROR >&2', combine_output=True) == 'THE ERROR'
+    True
     """
     stat, output, errput = run_cmd(cmd, input_str, from_dir, verbose, arg_stdout, arg_stderr, env, combine_output)
     if stat != 0:
@@ -913,9 +911,9 @@ def convert_to_babylonian_time(seconds):
     >>> convert_to_babylonian_time(3661)
     '01:01:01'
     """
-    hours = seconds / 3600
+    hours = int(seconds / 3600)
     seconds %= 3600
-    minutes = seconds / 60
+    minutes = int(seconds / 60)
     seconds %= 60
 
     return "{:02d}:{:02d}:{:02d}".format(hours, minutes, seconds)
@@ -1160,11 +1158,11 @@ def gzip_existing_file(filepath):
 
     >>> import tempfile
     >>> fd, filename = tempfile.mkstemp(text=True)
-    >>> _ = os.write(fd, "Hello World")
+    >>> _ = os.write(fd, b"Hello World")
     >>> os.close(fd)
     >>> gzfile = gzip_existing_file(filename)
-    >>> gunzip_existing_file(gzfile)
-    'Hello World'
+    >>> gunzip_existing_file(gzfile) == b'Hello World'
+    True
     >>> os.remove(gzfile)
     """
     expect(os.path.exists(filepath), "{} does not exists".format(filepath))

@@ -74,7 +74,7 @@ def _get_aprun_cmd_for_case_impl(ntasks, nthreads, rootpes, pstrids,
         0, 1, maxt[0], maxt[0], 0, ""
     for c1 in range(1, total_tasks):
         if maxt[c1] != thread_count:
-            tasks_per_node = min(MAX_MPITASKS_PER_NODE, max_tasks_per_node / thread_count)
+            tasks_per_node = min(MAX_MPITASKS_PER_NODE, int(max_tasks_per_node / thread_count))
 
             tasks_per_node = min(task_count, tasks_per_node)
 
@@ -99,7 +99,7 @@ def _get_aprun_cmd_for_case_impl(ntasks, nthreads, rootpes, pstrids,
             task_count += 1
 
     if MAX_MPITASKS_PER_NODE > 0:
-        tasks_per_node = min(MAX_MPITASKS_PER_NODE, max_tasks_per_node / thread_count)
+        tasks_per_node = min(MAX_MPITASKS_PER_NODE, int(max_tasks_per_node / thread_count))
     else:
         tasks_per_node = max_tasks_per_node / thread_count
 

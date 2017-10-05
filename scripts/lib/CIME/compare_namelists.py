@@ -425,7 +425,7 @@ def _compare_namelists(gold_namelists, comp_namelists, case):
     ...   val3 = .false.
     ... /'''
     >>> comments = _compare_namelists(_parse_namelists(teststr1.splitlines(), 'foo'), _parse_namelists(teststr2.splitlines(), 'bar'), None)
-    >>> print comments
+    >>> print(comments)
     Missing namelist: nml1
     Differences in namelist 'nml2':
       BASE: val21 = 'foo'
