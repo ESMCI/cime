@@ -28,6 +28,7 @@ def list_tests_from():
         test_classes.append("B_CheckCode")
         if set(test_classes) != set(test_classes_hard):
             print ("Error: hard coded test_class list out of sync with actual, please fix")
+            sys.exit(1)
         test_classes_hard = test_classes
 
     for ctest in sorted(list(set(test_classes_hard))):
