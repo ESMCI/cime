@@ -281,7 +281,7 @@ class SystemTestsCommon(object):
                 fopen = open
             with fopen(cpllog, "rb") as f:
                 for line in f:
-                    m = meminfo.match(line)
+                    m = meminfo.match(line.decode('utf-8'))
                     if m:
                         memlist.append((float(m.group(1)), float(m.group(2))))
         # Remove the last mem record, it's sometimes artificially high
@@ -296,7 +296,7 @@ class SystemTestsCommon(object):
         """
         if cpllog is not None and os.path.isfile(cpllog):
             with gzip.open(cpllog, "rb") as f:
-                cpltext = f.read()
+                cpltext = f.read().decode('utf-8')
                 m = re.search(r"# simulated years / cmp-day =\s+(\d+\.\d+)\s",cpltext)
                 if m:
                     return float(m.group(1))

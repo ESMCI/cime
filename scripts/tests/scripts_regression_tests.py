@@ -747,7 +747,7 @@ class TestCreateTestCommon(unittest.TestCase):
         self._baseline_area     = os.path.join(TEST_ROOT, "baselines")
         self._testroot          = TEST_ROOT
         self._hasbatch          = MACHINE.has_batch_system() and not NO_BATCH
-        self._do_teardown       = False # Will never do teardown if test failed
+        self._do_teardown       = True # Will never do teardown if test failed
 
     ###########################################################################
     def tearDown(self):
