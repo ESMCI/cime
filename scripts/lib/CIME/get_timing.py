@@ -125,8 +125,11 @@ class _TimingParser:
         ncpl_base_period = self.case.get_value("NCPL_BASE_PERIOD")
         ncpl = 0
         for compclass in self.case.get_values("COMP_CLASSES"):
-            ncpl = max(ncpl, self.case.get_value("{}_NCPL".format(compclass)))
-        ocn_ncpl = self.case.get_value("OCN_NCPL")
+            comp_ncpl = self.case.get_value("{}_NCPL".format(compclass))
+            if compclass == "OCN":
+                ocn_ncpl = comp_ncpl
+            if comp_ncpl is not None:
+                ncpl = max(ncpl, comp_ncpl)
 
         compset = self.case.get_value("COMPSET")
         if compset is None:
