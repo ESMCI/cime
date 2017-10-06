@@ -25,7 +25,8 @@ class EnvMachPes(EnvBase):
         if vid == "NINST_MAX":
             value = 1
             for comp in self._components:
-                value = max(value, self.get_value("NINST_{}".format(comp)))
+                if comp != "CPL":
+                    value = max(value, self.get_value("NINST_{}".format(comp)))
             return value
 
         value = EnvBase.get_value(self, vid, attribute, resolved, subgroup)
