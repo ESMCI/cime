@@ -144,7 +144,7 @@ def _case_setup_impl(case, caseroot, clean=False, test_mode=False, reset=False):
                         ntasks = ninst
                     else:
                         expect(False, "NINST_{} value {:d} greater than NTASKS_{} {:d}".format(comp, ninst, comp, ntasks))
-                case.set_value("NTASKS_PER_INST_{}".format(comp), ntasks / ninst)
+                case.set_value("NTASKS_PER_INST_{}".format(comp), int(ntasks / ninst))
 
         if os.path.exists("case.run"):
             logger.info("Machine/Decomp/Pes configuration has already been done ...skipping")

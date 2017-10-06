@@ -411,7 +411,7 @@ class Case(object):
 
     def clean_up_lookups(self, allow_undefined=False):
         # put anything in the lookups table into existing env objects
-        for key,value in self.lookups.items():
+        for key,value in list(self.lookups.items()):
             logger.debug("lookup key {} value {}".format(key, value))
             result = self.set_value(key,value, allow_undefined=allow_undefined)
             if result is not None:

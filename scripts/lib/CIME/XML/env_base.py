@@ -48,9 +48,9 @@ class EnvBase(EntryID):
         new_vid = None
         for comp in self._components:
             if "_"+comp in vid:
-                new_vid = string.replace(vid, '_'+comp, '', 1)
+                new_vid = vid.replace('_'+comp, '', 1)
             elif comp+"_" in vid:
-                new_vid = string.replace(vid, comp+'_', '', 1)
+                new_vid = vid.replace(comp+'_', '', 1)
 
             if new_vid is not None:
                 break

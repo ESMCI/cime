@@ -88,7 +88,9 @@ class EnvMachPes(EnvBase):
             ntasks = self.get_value("NTASKS", attribute={"component":comp})
             rootpe = self.get_value("ROOTPE", attribute={"component":comp})
             pstrid = self.get_value("PSTRID", attribute={"component":comp})
-            maxinst = max(maxinst, self.get_value("NINST", attribute={"component":comp}))
+            if comp != "CPL":
+                ninst = self.get_value("NINST", attribute={"component":comp})
+                maxinst = max(maxinst, ninst)
             tt = rootpe + (ntasks - 1) * pstrid + 1
             total_tasks = max(tt, total_tasks)
         if self.get_value("MULTI_DRIVER"):
