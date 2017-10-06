@@ -275,11 +275,15 @@ def run_cmd(cmd, input_str=None, from_dir=None, verbose=None,
 
     output, errput = proc.communicate(input_str)
     if output is not None:
-        output = output.strip()
-        output = output.decode("utf-8")
+        try:
+            output = output.decode('utf-8').strip()
+        except AttributeError:
+            pass
     if errput is not None:
-        errput = errput.strip()
-        errput = errput.decode("utf-8")
+        try:
+            errput = errput.decode('utf-8').strip()
+        except AttributeError:
+            pass
 
     stat = proc.wait()
     if six.PY2:
