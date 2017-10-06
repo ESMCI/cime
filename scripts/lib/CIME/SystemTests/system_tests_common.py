@@ -157,7 +157,8 @@ class SystemTestsCommon(object):
 
         except BaseException as msg:
             success = False
-            if "RUN FAIL" in str(msg):
+            msg = str(msg)
+            if "RUN FAIL" in msg:
                 # Don't want to print stacktrace for a model failure since that
                 # is not a CIME/infrastructure problem.
                 excmsg = msg
