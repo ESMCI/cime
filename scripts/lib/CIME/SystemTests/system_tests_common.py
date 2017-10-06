@@ -13,7 +13,7 @@ from CIME.hist_utils import *
 
 import CIME.build as build
 
-import shutil, glob, gzip, time, traceback
+import shutil, glob, gzip, time, traceback, six
 
 logger = logging.getLogger(__name__)
 
@@ -239,10 +239,11 @@ class SystemTestsCommon(object):
         allgood = len(newestcpllogfiles)
         for cpllog in newestcpllogfiles:
             try:
-                if "SUCCESSFUL TERMINATION" in gzip.open(cpllog, 'rb').read():
+                if six.b("SUCCESSFUL TERMINATION") in gzip.open(cpllog, 'rb').read():
                     allgood = allgood - 1
-            except:
-                logger.info("{} is not compressed, assuming run failed".format(cpllog))
+            except BaseException as msg:
+
+                logger.info("{} is not compressed, assuming run failed {}".format(cpllog, msg))
 
         return allgood==0
 
