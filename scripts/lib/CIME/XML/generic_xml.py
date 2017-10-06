@@ -197,8 +197,8 @@ class GenericXML(object):
         '4'
         >>> obj.get_resolved_value("0001-01-01")
         '0001-01-01'
-        >>> obj.get_resolved_value("$SHELL{echo hi}")
-        'hi'
+        >>> obj.get_resolved_value("$SHELL{echo hi}") == 'hi'
+        True
         """
         logger.debug("raw_value {}".format(raw_value))
         reference_re = re.compile(r'\${?(\w+)}?')
