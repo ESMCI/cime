@@ -1,7 +1,6 @@
 """
 Base class for env files.  This class inherits from EntryID.py
 """
-import string
 from CIME.XML.standard_module_setup import *
 from CIME.XML.entry_id import EntryID
 from CIME.XML.headers import Headers

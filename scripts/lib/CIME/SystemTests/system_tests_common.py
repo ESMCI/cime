@@ -88,16 +88,18 @@ class SystemTestsCommon(object):
                 try:
                     self.build_phase(sharedlib_only=(phase_name==SHAREDLIB_BUILD_PHASE),
                                      model_only=(phase_name==MODEL_BUILD_PHASE))
-                except:
+                except BaseException as e:
                     success = False
-                    msg = sys.exc_info()[1].message
-
+                    try:
+                        msg = e.message
+                    except:
+                        msg = str(e)
                     if "BUILD FAIL" in msg:
                         # Don't want to print stacktrace for a model failure since that
                         # is not a CIME/infrastructure problem.
                         excmsg = msg
                     else:
-                        excmsg = "Exception during build:\n{}\n{}".format(sys.exc_info()[1], traceback.format_exc())
+                        excmsg = "Exception during build:\n{}\n{}".format(msg, traceback.format_exc())
 
                     logger.warning(excmsg)
                     append_testlog(excmsg)
@@ -155,9 +157,12 @@ class SystemTestsCommon(object):
 
             self._check_for_memleak()
 
-        except BaseException as msg:
+        except BaseException as e:
             success = False
-            msg = str(msg)
+            try:
+                msg = e.message
+            except:
+                msg = str(e)
             if "RUN FAIL" in msg:
                 # Don't want to print stacktrace for a model failure since that
                 # is not a CIME/infrastructure problem.
@@ -242,8 +247,12 @@ class SystemTestsCommon(object):
             try:
                 if six.b("SUCCESSFUL TERMINATION") in gzip.open(cpllog, 'rb').read():
                     allgood = allgood - 1
-            except BaseException as msg:
-
+            except BaseException as e:
+                try:
+                    msg = e.message
+                except:
+                    msg = str(e)
+                    
                 logger.info("{} is not compressed, assuming run failed {}".format(cpllog, msg))
 
         return allgood==0

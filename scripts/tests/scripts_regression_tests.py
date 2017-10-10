@@ -2434,8 +2434,8 @@ def _main_func():
 
     try:
         unittest.main(verbosity=2, catchbreak=True)
-    except SystemExit as had_fails:
-        if had_fails:
+    except SystemExit as e:
+        if e.__str__() != "False":
             print("Detected failures, leaving directory:", TEST_ROOT)
         else:
             print("All pass, removing directory:", TEST_ROOT)

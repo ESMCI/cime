@@ -6,7 +6,6 @@ from CIME.XML.standard_module_setup import *
 from CIME.case import Case
 from CIME.utils import parse_args_and_handle_standard_logging_options, setup_standard_logging_options
 import sys, os, argparse, doctest
-import six
 logger = logging.getLogger(__name__)
 
 ###############################################################################
