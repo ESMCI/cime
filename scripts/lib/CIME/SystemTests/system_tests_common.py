@@ -90,10 +90,7 @@ class SystemTestsCommon(object):
                                      model_only=(phase_name==MODEL_BUILD_PHASE))
                 except BaseException as e:
                     success = False
-                    try:
-                        msg = e.message
-                    except:
-                        msg = str(e)
+                    msg = e.__str__()
                     if "BUILD FAIL" in msg:
                         # Don't want to print stacktrace for a model failure since that
                         # is not a CIME/infrastructure problem.
@@ -159,10 +156,7 @@ class SystemTestsCommon(object):
 
         except BaseException as e:
             success = False
-            try:
-                msg = e.message
-            except:
-                msg = str(e)
+            msg = e.__str__()
             if "RUN FAIL" in msg:
                 # Don't want to print stacktrace for a model failure since that
                 # is not a CIME/infrastructure problem.
@@ -248,10 +242,7 @@ class SystemTestsCommon(object):
                 if six.b("SUCCESSFUL TERMINATION") in gzip.open(cpllog, 'rb').read():
                     allgood = allgood - 1
             except BaseException as e:
-                try:
-                    msg = e.message
-                except:
-                    msg = str(e)
+                msg = e.__str__()
                     
                 logger.info("{} is not compressed, assuming run failed {}".format(cpllog, msg))
 
