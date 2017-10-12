@@ -865,22 +865,6 @@ def python_2_unicode_compatible(klass):
         klass.__str__ = lambda self: self.__unicode__().encode('utf-8')
     return klass
 
-
-def shouldRaise(eclass, method, *args, **kw):
-    """
-    http://python3porting.com/problems.html#running-doctests
-    """
-    try:
-        method(*args, **kw)
-    except:
-        e = sys.exc_info()[1]
-        if not isinstance(e, eclass):
-            raise
-        return
-    raise Exception("Expected exception %s not raised" %
-                    str(eclass))
-
-
 # Complete the moves implementation.
 # This code is at the end of this module to speed up module loading.
 # Turn this module into a package.

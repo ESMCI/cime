@@ -641,7 +641,7 @@ def literal_to_python_value(literal, type_=None):
     >>> literal_to_python_value("")
     >>> literal_to_python_value("-1.D+10")
     -10000000000.0
-    >>> six.shouldRaise(ValueError, literal_to_python_value, "nan(1234)")
+    >>> shouldRaise(ValueError, literal_to_python_value, "nan(1234)")
     """
     expect(FORTRAN_REPEAT_PREFIX_REGEX.search(literal) is None,
            "Cannot use repetition syntax in literal_to_python_value")
@@ -849,6 +849,23 @@ def parse(in_file=None, text=None, groupless=False, convert_tab_to_space=True):
         return namelist_dict
     else:
         return Namelist(namelist_dict)
+
+
+def shouldRaise(eclass, method, *args, **kw):
+    """
+    A helper function to make doctests py3 compatible
+    http://python3porting.com/problems.html#running-doctests
+    """
+    try:
+        method(*args, **kw)
+    except:
+        e = sys.exc_info()[1]
+        if not isinstance(e, eclass):
+            raise
+        return
+    raise Exception("Expected exception %s not raised" %
+                    str(eclass))
+
 
 
 class Namelist(object):
@@ -1275,7 +1292,7 @@ class _NamelistParser(object): # pylint:disable=too-few-public-methods
     def _next(self):
         """Return the character at the next position.
 
-        >>> six.shouldRaise(_NamelistEOF, _NamelistParser(' ')._next)
+        >>> shouldRaise(_NamelistEOF, _NamelistParser(' ')._next)
 
         """
         # If at the end of the file, we should raise _NamelistEOF. The easiest
@@ -1315,9 +1332,9 @@ class _NamelistParser(object): # pylint:disable=too-few-public-methods
         >>> x._advance(3)
         >>> (x._pos, x._line, x._col)
         (7, 3, 1)
-        >>> six.shouldRaise(_NamelistEOF, x._advance, 1) 
+        >>> shouldRaise(_NamelistEOF, x._advance, 1) 
 
-        >>> six.shouldRaise(_NamelistEOF, _NamelistParser('abc\n')._advance, 4)
+        >>> shouldRaise(_NamelistEOF, _NamelistParser('abc\n')._advance, 4)
 
         >>> x = _NamelistParser('ab')
         >>> x._advance(check_eof=True)
@@ -1361,7 +1378,7 @@ class _NamelistParser(object): # pylint:disable=too-few-public-methods
         >>> x._eat_whitespace()
         False
         >>> x._advance()
-        >>> six.shouldRaise(_NamelistEOF, x._eat_whitespace)
+        >>> shouldRaise(_NamelistEOF, x._eat_whitespace)
 
         >>> x = _NamelistParser(' \n! blah\n ! blah\n a')
         >>> x._eat_whitespace()
@@ -1416,10 +1433,10 @@ class _NamelistParser(object): # pylint:disable=too-few-public-methods
         >>> x._curr()
         'a'
         >>> x._advance(2)
-        >>> six.shouldRaise(_NamelistEOF, x._eat_comment)
+        >>> shouldRaise(_NamelistEOF, x._eat_comment)
 
         >>> x = _NamelistParser('! foo\n')
-        >>> six.shouldRaise(_NamelistEOF, x._eat_comment)
+        >>> shouldRaise(_NamelistEOF, x._eat_comment)
 
         """
         if self._curr() != '!':
@@ -1444,7 +1461,7 @@ class _NamelistParser(object): # pylint:disable=too-few-public-methods
         >>> x = _NamelistParser('ab')
         >>> x._expect_char('a')
         >>> x._advance()
-        >>> six.shouldRaise(_NamelistParseError, x._expect_char, 'a')
+        >>> shouldRaise(_NamelistParseError, x._expect_char, 'a')
 
         >>> x._expect_char('ab')
         """
@@ -1458,19 +1475,19 @@ class _NamelistParser(object): # pylint:disable=too-few-public-methods
     def _parse_namelist_group_name(self):
         r"""Parses and returns a namelist group name at the current position.
 
-        >>> six.shouldRaise(_NamelistParseError, _NamelistParser('abc')._parse_namelist_group_name)
+        >>> shouldRaise(_NamelistParseError, _NamelistParser('abc')._parse_namelist_group_name)
 
-        >>> six.shouldRaise(_NamelistEOF, _NamelistParser('&abc')._parse_namelist_group_name)
+        >>> shouldRaise(_NamelistEOF, _NamelistParser('&abc')._parse_namelist_group_name)
 
         >>> _NamelistParser('&abc ')._parse_namelist_group_name()
         'abc'
         >>> _NamelistParser('&abc\n')._parse_namelist_group_name()
         'abc'
-        >>> six.shouldRaise(_NamelistParseError, _NamelistParser('&abc/ ')._parse_namelist_group_name)
+        >>> shouldRaise(_NamelistParseError, _NamelistParser('&abc/ ')._parse_namelist_group_name)
 
-        >>> six.shouldRaise(_NamelistParseError, _NamelistParser('&abc= ')._parse_namelist_group_name)
+        >>> shouldRaise(_NamelistParseError, _NamelistParser('&abc= ')._parse_namelist_group_name)
 
-        >>> six.shouldRaise(_NamelistParseError, _NamelistParser('& ')._parse_namelist_group_name)
+        >>> shouldRaise(_NamelistParseError, _NamelistParser('& ')._parse_namelist_group_name)
 
         """
         self._expect_char("&")
@@ -1484,7 +1501,7 @@ class _NamelistParser(object): # pylint:disable=too-few-public-methods
         variable name; if it is `False`, only white space can be used for this
         purpose.
 
-        >>> six.shouldRaise(_NamelistEOF, _NamelistParser('abc')._parse_variable_name)
+        >>> shouldRaise(_NamelistEOF, _NamelistParser('abc')._parse_variable_name)
 
         >>> _NamelistParser('foo(2)= ')._parse_variable_name()
         'foo(2)'
@@ -1556,13 +1573,13 @@ class _NamelistParser(object): # pylint:disable=too-few-public-methods
         Position on return is the last character of the string; we avoid
         advancing past that in order to avoid potential EOF errors.
 
-        >>> six.shouldRaise(_NamelistEOF, _NamelistParser('"abc')._parse_character_literal)
+        >>> shouldRaise(_NamelistEOF, _NamelistParser('"abc')._parse_character_literal)
 
         >>> _NamelistParser('"abc" ')._parse_character_literal()
         '"abc"'
         >>> _NamelistParser("'abc' ")._parse_character_literal()
         "'abc'"
-        >>> six.shouldRaise(_NamelistParseError, _NamelistParser("*abc* ")._parse_character_literal)
+        >>> shouldRaise(_NamelistParseError, _NamelistParser("*abc* ")._parse_character_literal)
 
         >>> _NamelistParser("'abc''def' ")._parse_character_literal()
         "'abc''def'"
@@ -1596,11 +1613,11 @@ class _NamelistParser(object): # pylint:disable=too-few-public-methods
         Position on return is the last character of the string; we avoid
         advancing past that in order to avoid potential EOF errors.
 
-        >>> six.shouldRaise(_NamelistEOF, _NamelistParser('(1.,2.')._parse_complex_literal)
+        >>> shouldRaise(_NamelistEOF, _NamelistParser('(1.,2.')._parse_complex_literal)
 
         >>> _NamelistParser('(1.,2.) ')._parse_complex_literal()
         '(1.,2.)'
-        >>> six.shouldRaise(_NamelistParseError, _NamelistParser("(A,B) ")._parse_complex_literal)
+        >>> shouldRaise(_NamelistParseError, _NamelistParser("(A,B) ")._parse_complex_literal)
 
         """
         old_pos = self._pos
@@ -1680,13 +1697,13 @@ class _NamelistParser(object): # pylint:disable=too-few-public-methods
         '"abc"'
         >>> _NamelistParser("'abc' ")._parse_literal()
         "'abc'"
-        >>> six.shouldRaise(_NamelistEOF, _NamelistParser('"abc"')._parse_literal)
+        >>> shouldRaise(_NamelistEOF, _NamelistParser('"abc"')._parse_literal)
 
         >>> _NamelistParser('"abc"')._parse_literal(allow_eof_end=True)
         '"abc"'
         >>> _NamelistParser('(1.,2.) ')._parse_literal()
         '(1.,2.)'
-        >>> six.shouldRaise(_NamelistEOF, _NamelistParser('(1.,2.)')._parse_literal)
+        >>> shouldRaise(_NamelistEOF, _NamelistParser('(1.,2.)')._parse_literal)
 
         >>> _NamelistParser('(1.,2.)')._parse_literal(allow_eof_end=True)
         '(1.,2.)'
@@ -1700,7 +1717,7 @@ class _NamelistParser(object): # pylint:disable=too-few-public-methods
         'nan(booga)'
         >>> _NamelistParser('.FLORIDA$ ')._parse_literal()
         '.FLORIDA$'
-        >>> six.shouldRaise(_NamelistParseError, _NamelistParser('hamburger ')._parse_literal)
+        >>> shouldRaise(_NamelistParseError, _NamelistParser('hamburger ')._parse_literal)
 
         >>> _NamelistParser('5,')._parse_literal()
         '5'
@@ -1716,13 +1733,13 @@ class _NamelistParser(object): # pylint:disable=too-few-public-methods
         '6*(1., 2.)'
         >>> _NamelistParser('6*"a" ')._parse_literal()
         '6*"a"'
-        >>> six.shouldRaise(_NamelistEOF, _NamelistParser('6*')._parse_literal)
+        >>> shouldRaise(_NamelistEOF, _NamelistParser('6*')._parse_literal)
 
         >>> _NamelistParser('6*')._parse_literal(allow_eof_end=True)
         '6*'
-        >>> six.shouldRaise(_NamelistParseError, _NamelistParser('foo= ')._parse_literal)
+        >>> shouldRaise(_NamelistParseError, _NamelistParser('foo= ')._parse_literal)
 
-        >>> six.shouldRaise(_NamelistParseError, _NamelistParser('foo+= ')._parse_literal)
+        >>> shouldRaise(_NamelistParseError, _NamelistParser('foo+= ')._parse_literal)
 
         >>> _NamelistParser('5,')._parse_literal(allow_name=True)
         '5'
@@ -1734,9 +1751,9 @@ class _NamelistParser(object): # pylint:disable=too-few-public-methods
         >>> x._parse_literal(allow_name=True)
         >>> x._curr()
         'f'
-        >>> six.shouldRaise(_NamelistParseError, _NamelistParser('6*foo= ')._parse_literal, allow_name=True)
+        >>> shouldRaise(_NamelistParseError, _NamelistParser('6*foo= ')._parse_literal, allow_name=True)
 
-        >>> six.shouldRaise(_NamelistParseError, _NamelistParser('6*foo+= ')._parse_literal, allow_name=True)
+        >>> shouldRaise(_NamelistParseError, _NamelistParser('6*foo+= ')._parse_literal, allow_name=True)
 
         >>> x = _NamelistParser('foo = ')
         >>> x._parse_literal(allow_name=True)
@@ -1839,7 +1856,7 @@ class _NamelistParser(object): # pylint:disable=too-few-public-methods
         >>> x._curr()
         '/'
         >>> x = _NamelistParser("a")
-        >>> six.shouldRaise(_NamelistParseError, x._expect_separator)
+        >>> shouldRaise(_NamelistParseError, x._expect_separator)
 
         >>> x = _NamelistParser(" , a")
         >>> x._expect_separator()
@@ -1870,7 +1887,7 @@ class _NamelistParser(object): # pylint:disable=too-few-public-methods
         >>> x._expect_separator(allow_eof=True)
         True
         >>> x = _NamelistParser(" / ")
-        >>> six.shouldRaise(_NamelistParseError, x._expect_separator, allow_eof=True)
+        >>> shouldRaise(_NamelistParseError, x._expect_separator, allow_eof=True)
 
         """
         errstring = "found group-terminating '/' in file without group names"
@@ -1920,7 +1937,7 @@ class _NamelistParser(object): # pylint:disable=too-few-public-methods
         ('foo', ["'bar'"], False)
         >>> _NamelistParser("foo=\n'bar' /")._parse_name_and_values()
         ('foo', ["'bar'"], False)
-        >>> six.shouldRaise(_NamelistParseError, _NamelistParser("foo 'bar' /")._parse_name_and_values)
+        >>> shouldRaise(_NamelistParseError, _NamelistParser("foo 'bar' /")._parse_name_and_values)
 
         >>> _NamelistParser("foo='bar','bazz' /")._parse_name_and_values()
         ('foo', ["'bar'", "'bazz'"], False)
@@ -1930,13 +1947,13 @@ class _NamelistParser(object): # pylint:disable=too-few-public-methods
         ('foo', ["'bar'", "'bazz'"], False)
         >>> _NamelistParser("foo='bar' 'bazz' foo2(2)='ban'")._parse_name_and_values()
         ('foo', ["'bar'", "'bazz'"], False)
-        >>> six.shouldRaise(_NamelistParseError, _NamelistParser("foo= foo2='ban' ")._parse_name_and_values)
+        >>> shouldRaise(_NamelistParseError, _NamelistParser("foo= foo2='ban' ")._parse_name_and_values)
 
         >>> _NamelistParser("foo=,,'bazz',6* ")._parse_name_and_values(allow_eof_end=True)
         ('foo', ['', '', "'bazz'", '6*'], False)
         >>> _NamelistParser("foo(3)='bazz'")._parse_name_and_values(allow_eof_end=True)
         ('foo(3)', ["'bazz'"], False)
-        >>> six.shouldRaise(_NamelistEOF, _NamelistParser("foo=")._parse_name_and_values)
+        >>> shouldRaise(_NamelistEOF, _NamelistParser("foo=")._parse_name_and_values)
 
         >>> _NamelistParser("foo=")._parse_name_and_values(allow_eof_end=True)
         ('foo', [''], False)
@@ -2016,7 +2033,7 @@ class _NamelistParser(object): # pylint:disable=too-few-public-methods
         >>> x = _NamelistParser("&group /&group /")
         >>> x._parse_namelist_group()
         >>> x._advance()
-        >>> six.shouldRaise(_NamelistParseError, x._parse_namelist_group)
+        >>> shouldRaise(_NamelistParseError, x._parse_namelist_group)
 
         >>> x = _NamelistParser("&group foo='bar', foo='bazz' /")
         >>> x._parse_namelist_group()
