@@ -2,28 +2,31 @@
 
 <!doctype html>
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>CIME Atmosphere Data and Stub XML Files &#8212; CIME 5.3.0 documentation</title>
+    
+    <title>CIME Atmosphere Data and Stub XML Files &mdash; CIME 5.3.0 documentation</title>
+    
     <link rel="stylesheet" href="../_static/bizstyle.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
         VERSION:     '5.3.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
+        HAS_SOURCE:  true
       };
     </script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="../_static/bizstyle.js"></script>
-    <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" />
+    <link rel="top" title="CIME 5.3.0 documentation" href="../index.html" />
+    <link rel="up" title="Data, Stub and Driver Component XML Files" href="components.html" />
     <link rel="next" title="CIME ESP Data and Stub XML Files" href="esp.html" />
     <link rel="prev" title="Data, Stub and Driver Component XML Files" href="components.html" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
@@ -31,7 +34,7 @@
     <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
     <![endif]-->
   </head>
-  <body>
+  <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -47,9 +50,9 @@
         <li class="right" >
           <a href="components.html" title="Data, Stub and Driver Component XML Files"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" >XML Files</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="components.html" accesskey="U">Data, Stub and Driver Component XML Files</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >XML Files</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="components.html" accesskey="U">Data, Stub and Driver Component XML Files</a> &raquo;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -73,7 +76,7 @@
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="../_sources/xml_files/atmosphere.rst.txt"
+      <li><a href="../_sources/xml_files/atmosphere.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
@@ -99,6 +102,8 @@
 <span id="atmosphere"></span><h1>CIME Atmosphere Data and Stub XML Files<a class="headerlink" href="#cime-atmosphere-data-and-stub-xml-files" title="Permalink to this headline">¶</a></h1>
 <p>Atmosphere component XML files for data, stub, and dead components.</p>
 <div class="toctree-wrapper compound">
+<ul class="simple">
+</ul>
 </div>
 <div class="section" id="cimeroot-src-components-data-comps-datm-cime-config">
 <h2>CIMEROOT/src/components/data_comps/datm/cime_config<a class="headerlink" href="#cimeroot-src-components-data-comps-datm-cime-config" title="Permalink to this headline">¶</a></h2>
@@ -136,7 +141,7 @@
     &lt;desc option=&quot;CRUv7&quot;&gt; CLM CRU NCEP v7 data set &lt;/desc&gt;
     &lt;desc option=&quot;GSW&quot;&gt; GSWP3 data set &lt;/desc&gt;
     &lt;desc option=&quot;GSWP3v1&quot;&gt; GSWP3v1 data set &lt;/desc&gt;
-    &lt;desc option=&quot;CPLHIST&quot;&gt; Coupler hist data set &lt;/desc&gt;
+    &lt;desc option=&quot;CPLHIST&quot;&gt; Coupler hist data set (in this mode, it is strongly recommended that the model domain and the coupler history forcing are on the same domain)&lt;/desc&gt;
     &lt;desc option=&quot;1PT&quot;&gt;single point tower site data set &lt;/desc&gt;
     &lt;desc option=&quot;NYF&quot;&gt;COREv2 normal year forcing&lt;/desc&gt;
     &lt;desc option=&quot;IAF&quot;&gt;COREv2 interannual forcing&lt;/desc&gt;
@@ -153,7 +158,7 @@
 
   &lt;entry id=&quot;DATM_MODE&quot;&gt;
     &lt;type&gt;char&lt;/type&gt;
-    &lt;valid_values&gt;CORE2_NYF,CORE2_IAF,CLM_QIAN,CLM_QIAN_WISO,CLM1PT,CLMCRUNCEP,CLMCRUNCEPv7,CLMGSWP3v1,CPLHISTForcing&lt;/valid_values&gt;
+    &lt;valid_values&gt;CORE2_NYF,CORE2_IAF,CLM_QIAN,CLM_QIAN_WISO,CLM1PT,CLMCRUNCEP,CLMCRUNCEPv7,CLMGSWP3v1,CPLHIST&lt;/valid_values&gt;
     &lt;default_value&gt;CORE2_NYF&lt;/default_value&gt;
     &lt;group&gt;run_component_datm&lt;/group&gt;
     &lt;file&gt;env_run.xml&lt;/file&gt;
@@ -169,7 +174,7 @@
       &lt;value compset=&quot;%CRUv7&quot;&gt;CLMCRUNCEPv7&lt;/value&gt;
       &lt;value compset=&quot;%GSWP3v1&quot;&gt;CLMGSWP3v1&lt;/value&gt;
       &lt;value compset=&quot;%1PT&quot;&gt;CLM1PT&lt;/value&gt;
-      &lt;value compset=&quot;%CPLHIST&quot;&gt;CPLHISTForcing&lt;/value&gt;
+      &lt;value compset=&quot;%CPLHIST&quot;&gt;CPLHIST&lt;/value&gt;
     &lt;/values&gt;
   &lt;/entry&gt;
 
@@ -201,12 +206,13 @@
 
   &lt;entry id=&quot;DATM_TOPO&quot;&gt;
     &lt;type&gt;char&lt;/type&gt;
-    &lt;valid_values&gt;none,observed&lt;/valid_values&gt;
+    &lt;valid_values&gt;none,observed,cplhist&lt;/valid_values&gt;
     &lt;default_value&gt;observed&lt;/default_value&gt;
     &lt;values match=&quot;last&quot;&gt;
       &lt;!-- Only needed for compsets with active land; for other compsets, turn it off --&gt;
       &lt;value compset=&quot;_SLND&quot;&gt;none&lt;/value&gt;
       &lt;value compset=&quot;_DLND&quot;&gt;none&lt;/value&gt;
+      &lt;value compset=&quot;_DATM%CPLHIST&quot;&gt;cplhist&lt;/value&gt;
     &lt;/values&gt;
     &lt;group&gt;run_component_datm&lt;/group&gt;
     &lt;file&gt;env_run.xml&lt;/file&gt;
@@ -230,61 +236,77 @@
     &lt;desc&gt;DATM CO2 time series&lt;/desc&gt;
   &lt;/entry&gt;
 
+  &lt;entry id=&quot;DATM_CPLHIST_DOMAIN_FILE&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;valid_values&gt;&lt;/valid_values&gt;
+    &lt;default_value&gt;null&lt;/default_value&gt;
+    &lt;group&gt;run_component_datm&lt;/group&gt;
+    &lt;file&gt;env_run.xml&lt;/file&gt;
+    &lt;desc&gt;
+      Full pathname for domain file for datm when DATM_MODE is
+      CPLHIST, NOTE: if this is set to &#39;null&#39; (the default), then
+      domain information is read in from the first coupler history
+      file in the target stream and it is assumed that the first
+      coupler stream file that is pointed to contains the domain
+      information for that stream.
+    &lt;/desc&gt;
+  &lt;/entry&gt;
+
   &lt;entry id=&quot;DATM_CPLHIST_DIR&quot;&gt;
     &lt;type&gt;char&lt;/type&gt;
     &lt;valid_values&gt;&lt;/valid_values&gt;
     &lt;default_value&gt;UNSET&lt;/default_value&gt;
     &lt;group&gt;run_component_datm&lt;/group&gt;
     &lt;file&gt;env_run.xml&lt;/file&gt;
-    &lt;desc&gt;directory for coupler history data mode (only used for CPLHIST3HrWx mode)&lt;/desc&gt;
+    &lt;desc&gt;directory for coupler history data mode (only used for when DATM_MODE is CPLHIST)&lt;/desc&gt;
   &lt;/entry&gt;
 
   &lt;entry id=&quot;DATM_CPLHIST_CASE&quot;&gt;
     &lt;type&gt;char&lt;/type&gt;
     &lt;valid_values&gt;&lt;/valid_values&gt;
     &lt;default_value&gt;UNSET&lt;/default_value&gt;
-    &lt;values match=&quot;last&quot;&gt;
-      &lt;value compset=&quot;1850_DATM%CPLHIST&quot;&gt;b40.1850.track1.1deg.006a&lt;/value&gt;
-    &lt;/values&gt;
     &lt;group&gt;run_component_datm&lt;/group&gt;
     &lt;file&gt;env_run.xml&lt;/file&gt;
-    &lt;desc&gt;case name for coupler history data mode (only used for CPLHIST3HrWx mode)&lt;/desc&gt;
+    &lt;desc&gt;case name used to determine stream filenames when DATM_MODE is CPLHIST&lt;/desc&gt;
   &lt;/entry&gt;
 
   &lt;entry id=&quot;DATM_CPLHIST_YR_ALIGN&quot;&gt;
     &lt;type&gt;integer&lt;/type&gt;
     &lt;valid_values&gt;&lt;/valid_values&gt;
-    &lt;default_value&gt;1&lt;/default_value&gt;
-    &lt;values match=&quot;last&quot;&gt;
-      &lt;value compset=&quot;1850_DATM%CPLHIST&quot;&gt;1&lt;/value&gt;
-    &lt;/values&gt;
+    &lt;default_value&gt;-999&lt;/default_value&gt;
     &lt;group&gt;run_component_datm&lt;/group&gt;
     &lt;file&gt;env_run.xml&lt;/file&gt;
-    &lt;desc&gt;Simulation year corresponding to starting year (only used for CPLHIST3HrWx mode)&lt;/desc&gt;
+    &lt;desc&gt;
+      Simulation year corresponding to DATM_CPLHIST_YR_START (only used
+      when DATM_MODE is CPLHIST). A common usage is to set this to
+      RUN_STARTDATE. With this setting, the forcing in the first year of
+      the run will be the forcing of year DATM_CPLHIST_YR_START. Another
+      use case is to align the calendar of transient forcing with the
+      model calendar. For example, setting
+      DATM_CPLHIST_YR_ALIGN=DATM_CPLHIST_YR_START will lead to the
+      forcing calendar being the same as the model calendar. The forcing
+      for a given model year would be the forcing of the same year. This
+      would be appropriate in transient runs where the model calendar is
+      setup to span the same year range as the forcing data.
+    &lt;/desc&gt;
   &lt;/entry&gt;
 
   &lt;entry id=&quot;DATM_CPLHIST_YR_START&quot;&gt;
     &lt;type&gt;integer&lt;/type&gt;
     &lt;valid_values&gt;&lt;/valid_values&gt;
     &lt;default_value&gt;-999&lt;/default_value&gt;
-    &lt;values match=&quot;last&quot;&gt;
-      &lt;value compset=&quot;1850_DATM%CPLHIST&quot;&gt;960&lt;/value&gt;
-    &lt;/values&gt;
     &lt;group&gt;run_component_datm&lt;/group&gt;
     &lt;file&gt;env_run.xml&lt;/file&gt;
-    &lt;desc&gt;starting year to loop data over (only used for CPLHIST3HrWx mode)&lt;/desc&gt;
+    &lt;desc&gt;starting year to loop data over (only used when DATM_MODE is CPLHIST)&lt;/desc&gt;
   &lt;/entry&gt;
 
   &lt;entry id=&quot;DATM_CPLHIST_YR_END&quot;&gt;
     &lt;type&gt;integer&lt;/type&gt;
     &lt;valid_values&gt;&lt;/valid_values&gt;
     &lt;default_value&gt;-999&lt;/default_value&gt;
-    &lt;values match=&quot;last&quot;&gt;
-      &lt;value compset=&quot;1850_DATM%CPLHIST&quot;&gt;1030&lt;/value&gt;
-    &lt;/values&gt;
     &lt;group&gt;run_component_datm&lt;/group&gt;
     &lt;file&gt;env_run.xml&lt;/file&gt;
-    &lt;desc&gt;ending year to loop data over (only used for CPLHIST3HrWx mode)&lt;/desc&gt;
+    &lt;desc&gt;ending year to loop data over (only used when DATM_MODE is CPLHIST)&lt;/desc&gt;
   &lt;/entry&gt;
 
   &lt;entry id=&quot;DATM_CLMNCEP_YR_ALIGN&quot;&gt;
@@ -439,7 +461,7 @@
     CLM1PT		= Run with supplied single point data (force CLM)
     CORE2_NYF		= CORE2 normal year forcing (for forcing POP and CICE)
     CORE2_IAF		= CORE2 intra-annual year forcing (for forcing POP and CICE)
-    CPLHISTForcing	= Streams for lnd or ocn/ice forcing used for spinup 
+    CPLHIST     	= Streams for lnd or ocn/ice forcing used for spinup
     presaero		= Prescribed aerosol forcing
     topo		= Surface topography
     co2tseries		= Time series of prescribed CO2 forcing
@@ -508,7 +530,7 @@
 
     Note for CORE2_IAF:
     The most current versions of forcing files(those recommended for use) are duplicated
-    below and stored at /ccsm/ocn/iaf/): 
+    below and stored at /ccsm/ocn/iaf/):
     gcgcs.prec.T62.current, giss.lwdn.T62.current, giss.swdn.T62.current, giss.swup.T62.current,
     ncep.dn10.T62.current, ncep.q_10.T62.current ncep.slp_.T62.current,
     ncep.t_10.T62.current, ncep.u_10.T62.current, ncep.v_10.T62.current
@@ -535,13 +557,14 @@
     presaero.cplhist
 
     topo.observed
+    topo.cplhist
 
       **********IMPORTANT NOTE: *************
-      In the value matches below, regular expressions are used **** 
+      In the value matches below, regular expressions are used ****
       If two matches are equivalent, the FIRST one will be used, so need to make sure
       that matches are not equivalent if possible
 
-	 As an example, say datm_mode=CLMCRUNCEPv7, 
+	 As an example, say datm_mode=CLMCRUNCEPv7,
 
          the following order would result in an INCORRECT setting of streams for this datm_mode
              &lt;value datm_mode=&quot;CLMCRUNCEP&quot;&gt;CLMCRUNCEP.Solar,CLMCRUNCEP.Precip,CLMCRUNCEP.TPQW&lt;/value&gt;
@@ -571,7 +594,7 @@
       &lt;value datm_mode=&quot;CORE2_NYF&quot; &gt;CORE2_NYF.GISS,CORE2_NYF.GXGXS,CORE2_NYF.NCEP&lt;/value&gt;
       &lt;value datm_mode=&quot;CORE2_IAF&quot; &gt;CORE2_IAF.GCGCS.PREC,CORE2_IAF.GISS.LWDN,CORE2_IAF.GISS.SWDN,CORE2_IAF.GISS.SWUP,CORE2_IAF.NCEP.DN10,CORE2_IAF.NCEP.Q_10,CORE2_IAF.NCEP.SLP_,CORE2_IAF.NCEP.T_10,CORE2_IAF.NCEP.U_10,CORE2_IAF.NCEP.V_10,CORE2_IAF.CORE2.ArcFactor&lt;/value&gt;
       &lt;value datm_mode=&quot;CORE2_IAF&quot; atm_grid=&quot;01col&quot; &gt;CORE2_IAF.NCEP.DENS.SOFS,CORE2_IAF.NCEP.PSLV.SOFS,CORE2_IAF.PREC.SOFS.DAILY,CORE2_IAF.LWDN.SOFS.DAILY,CORE2_IAF.SWDN.SOFS.DAILY,CORE2_IAF.SWUP.SOFS.DAILY,CORE2_IAF.SHUM.SOFS.6HOUR,CORE2_IAF.TBOT.SOFS.6HOUR,CORE2_IAF.U.SOFS.6HOUR,CORE2_IAF.V.SOFS.6HOUR,CORE2_IAF.CORE2.ArcFactor&lt;/value&gt;
-      &lt;value datm_mode=&quot;CPLHISTForcing&quot;&gt;CPLHISTForcing.Solar,CPLHISTForcing.nonSolarFlux,CPLHISTForcing.State3hr,CPLHISTForcing.State1hr&lt;/value&gt;
+      &lt;value datm_mode=&quot;CPLHIST&quot;&gt;CPLHISTForcing.Solar,CPLHISTForcing.nonSolarFlux,CPLHISTForcing.State3hr,CPLHISTForcing.State1hr&lt;/value&gt;
     &lt;/values&gt;
   &lt;/entry&gt;
 
@@ -622,6 +645,7 @@
       &lt;value stream=&quot;presaero.trans_1850-2000&quot;&gt;$DIN_LOC_ROOT/atm/cam/chem/trop_mozart_aero/aero&lt;/value&gt;
       &lt;value stream=&quot;presaero.rcp&quot;&gt;$DIN_LOC_ROOT/atm/cam/chem/trop_mozart_aero/aero&lt;/value&gt;
       &lt;value stream=&quot;topo.observed&quot;&gt;$DIN_LOC_ROOT/atm/datm7/topo_forcing&lt;/value&gt;
+      &lt;value stream=&quot;topo.cplhist&quot;&gt;null&lt;/value&gt;
     &lt;/values&gt;
   &lt;/entry&gt;
 
@@ -694,6 +718,7 @@
       &lt;value stream=&quot;presaero.rcp6.0&quot;&gt;aerosoldep_rcp6.0_monthly_1849-2104_1.9x2.5_c100830.nc&lt;/value&gt;
       &lt;value stream=&quot;presaero.rcp8.5&quot;&gt;aerosoldep_rcp8.5_monthly_1849-2104_1.9x2.5_c100201.nc&lt;/value&gt;
       &lt;value stream=&quot;topo.observed&quot;&gt;topodata_0.9x1.25_USGS_070110_stream_c151201.nc&lt;/value&gt;
+      &lt;value stream=&quot;topo.cplhist&quot;&gt;null&lt;/value&gt;
     &lt;/values&gt;
   &lt;/entry&gt;
 
@@ -710,7 +735,7 @@
         area    area
         mask    mask
       &lt;/value&gt;
-      &lt;value stream=&quot;CPLHISTForcing|presaero.cplhist&quot;&gt;
+      &lt;value stream=&quot;CPLHISTForcing|presaero.cplhist|topo.cplhist&quot;&gt;
         time         time
         doma_lon     lon
         doma_lat     lat
@@ -786,6 +811,7 @@
       &lt;value stream=&quot;presaero.cplhist&quot;&gt;$DATM_CPLHIST_DIR&lt;/value&gt;
       &lt;value stream=&quot;presaero&quot;&gt;$DIN_LOC_ROOT/atm/cam/chem/trop_mozart_aero/aero&lt;/value&gt;
       &lt;value stream=&quot;topo.observed&quot;&gt;$DIN_LOC_ROOT/atm/datm7/topo_forcing&lt;/value&gt;
+      &lt;value stream=&quot;topo.cplhist&quot;&gt;$DATM_CPLHIST_DIR&lt;/value&gt;
     &lt;/values&gt;
   &lt;/entry&gt;
 
@@ -822,6 +848,7 @@
       &lt;value  stream=&quot;CPLHISTForcing.State3hr&quot;&gt;$DATM_CPLHIST_CASE.cpl.ha2x3h.%ym.nc&lt;/value&gt;
       &lt;value  stream=&quot;CPLHISTForcing.State1hr&quot;&gt;$DATM_CPLHIST_CASE.cpl.ha2x1h.%ym.nc&lt;/value&gt;
       &lt;value  stream=&quot;presaero.cplhist&quot;&gt;$DATM_CPLHIST_CASE.cpl.ha2x1d.%ym.nc&lt;/value&gt;
+      &lt;value  stream=&quot;topo.cplhist&quot;&gt;$DATM_CPLHIST_CASE.cpl.ha2x3h.%ym.nc&lt;/value&gt;
       &lt;value  stream=&quot;CLM_QIAN.Solar&quot;&gt;clmforc.Qian.c2006.T62.Solr.%ym.nc&lt;/value&gt;
       &lt;value  stream=&quot;CLM_QIAN.Precip&quot;&gt;clmforc.Qian.c2006.T62.Prec.%ym.nc&lt;/value&gt;
       &lt;value  stream=&quot;CLM_QIAN.TPQW&quot;&gt;clmforc.Qian.c2006.T62.TPQW.%ym.nc&lt;/value&gt;
@@ -1596,7 +1623,7 @@
       &lt;value stream=&quot;CPLHISTForcing.State3hr&quot;&gt;
         a2x3h_Sa_z       z
         a2x3h_Sa_tbot    tbot
-        a2x3h_Sa_ptem    ptem  
+        a2x3h_Sa_ptem    ptem
         a2x3h_Sa_shum    shum
         a2x3h_Sa_pbot    pbot
         a2x3h_Sa_dens    dens
@@ -1828,6 +1855,9 @@
         DSTX04WD   dstwet4
         DSTX04DD   dstdry4
       &lt;/value&gt;
+      &lt;value stream=&quot;topo.cplhist&quot;&gt;
+        a2x3h_Sa_topo  topo
+      &lt;/value&gt;
       &lt;value stream=&quot;topo.observed&quot;&gt;
         TOPO topo
       &lt;/value&gt;
@@ -1860,6 +1890,7 @@
       &lt;value stream=&quot;presaero.trans_1850-2000&quot;&gt;1849&lt;/value&gt;
       &lt;value stream=&quot;presaero.rcp&quot;&gt;1849&lt;/value&gt;
       &lt;value stream=&quot;topo.observed&quot;&gt;1&lt;/value&gt;
+      &lt;value stream=&quot;topo.cplhist&quot;&gt;$DATM_CPLHIST_YR_ALIGN&lt;/value&gt;
     &lt;/values&gt;
   &lt;/entry&gt;
 
@@ -1911,6 +1942,7 @@
       &lt;value stream=&quot;presaero.trans_1850-2000&quot;&gt;1849&lt;/value&gt;
       &lt;value stream=&quot;presaero.rcp&quot;&gt;1849&lt;/value&gt;
       &lt;value stream=&quot;topo.observed&quot;&gt;1&lt;/value&gt;
+      &lt;value stream=&quot;topo.cplhist&quot;&gt;$DATM_CPLHIST_YR_START&lt;/value&gt;
     &lt;/values									&gt;
   &lt;/entry&gt;
 
@@ -1963,6 +1995,7 @@
       &lt;value stream=&quot;presaero.trans_1850-2000&quot;&gt;2006&lt;/value&gt;
       &lt;value stream=&quot;presaero.rcp&quot;&gt;2104&lt;/value&gt;
       &lt;value stream=&quot;topo.observed&quot;&gt;1&lt;/value&gt;
+      &lt;value stream=&quot;topo.cplhist&quot;&gt;$DATM_CPLHIST_YR_END&lt;/value&gt;
     &lt;/values&gt;
   &lt;/entry&gt;
 
@@ -1978,6 +2011,7 @@
       &lt;value stream=&quot;CPLHISTForcing.State3hr&quot;&gt;900&lt;/value&gt;
       &lt;value stream=&quot;CPLHISTForcing.State1hr&quot;&gt;900&lt;/value&gt;
       &lt;value stream=&quot;presaero.cplhist&quot;&gt;0&lt;/value&gt;
+      &lt;value stream=&quot;topo.cplhist&quot;&gt;0&lt;/value&gt;
     &lt;/values&gt;
   &lt;/entry&gt;
 
@@ -1993,7 +2027,7 @@
     &lt;type&gt;char&lt;/type&gt;
     &lt;category&gt;streams&lt;/category&gt;
     &lt;group&gt;shr_strdata_nml&lt;/group&gt;
-    &lt;valid_values&gt;CLMNCEP,COPYALL,CPLHIST,CORE2_NYF,CORE2_IAF,NULL&lt;/valid_values&gt;
+    &lt;valid_values&gt;CLMNCEP,COPYALL,CORE2_NYF,CORE2_IAF,NULL&lt;/valid_values&gt;
     &lt;desc&gt;
       general method that operates on the data.  this is generally
       implemented in the data models but is set in the strdata method for
@@ -2016,8 +2050,6 @@
       scientific modes supported by the model, they are listed below.  The
       mode is selected by a character string set in the strdata namelist
       variable dataMode.
-      datamode = &quot;CPLHIST&quot;
-      The same as COPYALL mode.
       datamode = &quot;CORE2_NYF&quot;
       Coordinated Ocean-ice Reference Experiments (CORE) Version 2 Normal Year Forcing.
       datamode = &quot;CORE2_IAF&quot;
@@ -2044,7 +2076,7 @@
       &lt;value datm_mode=&quot;CLM&quot;&gt;CLMNCEP&lt;/value&gt;
       &lt;value datm_mode=&quot;CORE2_NYF&quot;&gt;CORE2_NYF&lt;/value&gt;
       &lt;value datm_mode=&quot;CORE2_IAF&quot;&gt;CORE2_IAF&lt;/value&gt;
-      &lt;value datm_mode=&quot;CPLHISTForcing&quot;&gt;CPLHIST&lt;/value&gt;
+      &lt;value datm_mode=&quot;CPLHIST&quot;&gt;COPYALL&lt;/value&gt;
     &lt;/values&gt;
   &lt;/entry&gt;
 
@@ -2218,6 +2250,7 @@
       &lt;value stream=&quot;CPLHISTForcing.State3hr&quot;&gt;linear&lt;/value&gt;
       &lt;value stream=&quot;CPLHISTForcing.State1hr&quot;&gt;linear&lt;/value&gt;
       &lt;value stream=&quot;presaero.cplhist&quot;&gt;nearest&lt;/value&gt;
+      &lt;value stream=&quot;topo.cplhist&quot;&gt;nearest&lt;/value&gt;
       &lt;value stream=&quot;CLM_QIAN.Solar&quot;&gt;coszen&lt;/value&gt;
       &lt;value stream=&quot;CLM_QIAN.Precip&quot;&gt;nearest&lt;/value&gt;
       &lt;value stream=&quot;CLM_QIAN_WISO.Solar&quot;&gt;coszen&lt;/value&gt;
@@ -2313,6 +2346,7 @@
       &lt;value stream=&quot;CPLHISTForcing.State3hr&quot;&gt;3.0&lt;/value&gt;
       &lt;value stream=&quot;CPLHISTForcing.State1hr&quot;&gt;3.0&lt;/value&gt;
       &lt;value stream=&quot;presaero.cplhist&quot;&gt;3.0&lt;/value&gt;
+      &lt;value stream=&quot;topo.cplhist&quot;&gt;3.0&lt;/value&gt;
     &lt;/values&gt;
   &lt;/entry&gt;
 
@@ -2599,14 +2633,14 @@ does it have any namelist settings.</p>
         <li class="right" >
           <a href="components.html" title="Data, Stub and Driver Component XML Files"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" >XML Files</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="components.html" >Data, Stub and Driver Component XML Files</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >XML Files</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="components.html" >Data, Stub and Driver Component XML Files</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
+        &copy; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.3.
     </div>
   </body>
 </html>

@@ -2,28 +2,31 @@
 
 <!doctype html>
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>CESM Coupled Model XML Files &#8212; CIME 5.3.0 documentation</title>
+    
+    <title>CESM Coupled Model XML Files &mdash; CIME 5.3.0 documentation</title>
+    
     <link rel="stylesheet" href="../_static/bizstyle.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
         VERSION:     '5.3.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
+        HAS_SOURCE:  true
       };
     </script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="../_static/bizstyle.js"></script>
-    <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" />
+    <link rel="top" title="CIME 5.3.0 documentation" href="../index.html" />
+    <link rel="up" title="XML Files" href="index.html" />
     <link rel="next" title="Common XML Files" href="common.html" />
     <link rel="prev" title="ACME Coupled Model XML Files" href="acme.html" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
@@ -31,7 +34,7 @@
     <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
     <![endif]-->
   </head>
-  <body>
+  <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -47,8 +50,8 @@
         <li class="right" >
           <a href="acme.html" title="ACME Coupled Model XML Files"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">XML Files</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">XML Files</a> &raquo;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -72,7 +75,7 @@
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="../_sources/xml_files/cesm.rst.txt"
+      <li><a href="../_sources/xml_files/cesm.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
@@ -98,6 +101,8 @@
 <span id="cesm"></span><h1>CESM Coupled Model XML Files<a class="headerlink" href="#cesm-coupled-model-xml-files" title="Permalink to this headline">¶</a></h1>
 <p>XML files for CESM in CIMEROOT/config/cesm.</p>
 <div class="toctree-wrapper compound">
+<ul class="simple">
+</ul>
 </div>
 <div class="section" id="cimeroot-config-cesm">
 <h2>CIMEROOT/config/cesm<a class="headerlink" href="#cimeroot-config-cesm" title="Permalink to this headline">¶</a></h2>
@@ -188,6 +193,10 @@
     &lt;rpointer&gt;
       &lt;rpointer_file&gt;rpointer.ocn$NINST_STRING.ovf&lt;/rpointer_file&gt;
       &lt;rpointer_content&gt;./$CASE.pop$NINST_STRING.ro.$DATENAME&lt;/rpointer_content&gt;
+    &lt;/rpointer&gt;
+    &lt;rpointer&gt;
+      &lt;rpointer_file&gt;rpointer.ocn$NINST_STRING.tavg&lt;/rpointer_file&gt;
+      &lt;rpointer_content&gt;./$CASE.pop$NINST_STRING.rh.$DATENAME.nc&lt;/rpointer_content&gt;
     &lt;/rpointer&gt;
   &lt;/comp_archive_spec&gt;
 
@@ -1256,10 +1265,24 @@
 
     &lt;!--  spectral element grids --&gt;
 
+    &lt;model_grid alias=&quot;ne5_ne5_mg37&quot; not_compset=&quot;_POP&quot;&gt;
+      &lt;grid name=&quot;atm&quot;&gt;ne5np4&lt;/grid&gt;
+      &lt;grid name=&quot;lnd&quot;&gt;ne5np4&lt;/grid&gt;
+      &lt;grid name=&quot;ocnice&quot;&gt;ne5np4&lt;/grid&gt;
+      &lt;mask&gt;gx3v7&lt;/mask&gt;
+    &lt;/model_grid&gt;
+
     &lt;model_grid alias=&quot;ne16_g37&quot;&gt;
       &lt;grid name=&quot;atm&quot;&gt;ne16np4&lt;/grid&gt;
       &lt;grid name=&quot;lnd&quot;&gt;ne16np4&lt;/grid&gt;
       &lt;grid name=&quot;ocnice&quot;&gt;gx3v7&lt;/grid&gt;
+      &lt;mask&gt;gx3v7&lt;/mask&gt;
+    &lt;/model_grid&gt;
+
+    &lt;model_grid alias=&quot;ne16_ne16_mg37&quot; not_compset=&quot;_POP&quot;&gt;
+      &lt;grid name=&quot;atm&quot;&gt;ne16np4&lt;/grid&gt;
+      &lt;grid name=&quot;lnd&quot;&gt;ne16np4&lt;/grid&gt;
+      &lt;grid name=&quot;ocnice&quot;&gt;ne16np4&lt;/grid&gt;
       &lt;mask&gt;gx3v7&lt;/mask&gt;
     &lt;/model_grid&gt;
 
@@ -1309,6 +1332,20 @@
       &lt;mask&gt;gx1v7&lt;/mask&gt;
     &lt;/model_grid&gt;
 
+    &lt;model_grid alias=&quot;ne30_ne30_mg16&quot; not_compset=&quot;_POP&quot;&gt;
+      &lt;grid name=&quot;atm&quot;&gt;ne30np4&lt;/grid&gt;
+      &lt;grid name=&quot;lnd&quot;&gt;ne30np4&lt;/grid&gt;
+      &lt;grid name=&quot;ocnice&quot;&gt;ne30np4&lt;/grid&gt;
+      &lt;mask&gt;gx1v6&lt;/mask&gt;
+    &lt;/model_grid&gt;
+
+    &lt;model_grid alias=&quot;ne30_ne30_mg17&quot; not_compset=&quot;_POP&quot;&gt;
+      &lt;grid name=&quot;atm&quot;&gt;ne30np4&lt;/grid&gt;
+      &lt;grid name=&quot;lnd&quot;&gt;ne30np4&lt;/grid&gt;
+      &lt;grid name=&quot;ocnice&quot;&gt;ne30np4&lt;/grid&gt;
+      &lt;mask&gt;gx1v7&lt;/mask&gt;
+    &lt;/model_grid&gt;
+
     &lt;model_grid alias=&quot;ne60_g16&quot;&gt;
       &lt;grid name=&quot;atm&quot;&gt;ne60np4&lt;/grid&gt;
       &lt;grid name=&quot;lnd&quot;&gt;ne60np4&lt;/grid&gt;
@@ -1321,6 +1358,13 @@
       &lt;grid name=&quot;lnd&quot;&gt;ne60np4&lt;/grid&gt;
       &lt;grid name=&quot;ocnice&quot;&gt;gx1v7&lt;/grid&gt;
       &lt;mask&gt;gx1v7&lt;/mask&gt;
+    &lt;/model_grid&gt;
+
+    &lt;model_grid alias=&quot;ne60_ne60_mg16&quot; not_compset=&quot;_POP&quot;&gt;
+      &lt;grid name=&quot;atm&quot;&gt;ne60np4&lt;/grid&gt;
+      &lt;grid name=&quot;lnd&quot;&gt;ne60np4&lt;/grid&gt;
+      &lt;grid name=&quot;ocnice&quot;&gt;ne60np4&lt;/grid&gt;
+      &lt;mask&gt;gx1v6&lt;/mask&gt;
     &lt;/model_grid&gt;
 
     &lt;model_grid alias=&quot;ne120_g16&quot;&gt;
@@ -1342,6 +1386,13 @@
       &lt;grid name=&quot;lnd&quot;&gt;ne120np4&lt;/grid&gt;
       &lt;grid name=&quot;ocnice&quot;&gt;tx0.1v2&lt;/grid&gt;
       &lt;mask&gt;tx0.1v2&lt;/mask&gt;
+    &lt;/model_grid&gt;
+
+    &lt;model_grid alias=&quot;ne120_ne120_mg16&quot; not_compset=&quot;_POP&quot;&gt;
+      &lt;grid name=&quot;atm&quot;&gt;ne120np4&lt;/grid&gt;
+      &lt;grid name=&quot;lnd&quot;&gt;ne120np4&lt;/grid&gt;
+      &lt;grid name=&quot;ocnice&quot;&gt;ne120np4&lt;/grid&gt;
+      &lt;mask&gt;gx1v6&lt;/mask&gt;
     &lt;/model_grid&gt;
 
     &lt;model_grid alias=&quot;ne240_f02_g16&quot;&gt;
@@ -1367,90 +1418,6 @@
       &lt;mask&gt;tx0.1v2&lt;/mask&gt;
     &lt;/model_grid&gt;
 
-    &lt;model_grid alias=&quot;ne16_ne16&quot; not_compset=&quot;_POP&quot;&gt;
-      &lt;grid name=&quot;atm&quot;&gt;ne16np4&lt;/grid&gt;
-      &lt;grid name=&quot;lnd&quot;&gt;ne16np4&lt;/grid&gt;
-      &lt;grid name=&quot;ocnice&quot;&gt;ne16np4&lt;/grid&gt;
-      &lt;mask&gt;gx3v7&lt;/mask&gt;
-    &lt;/model_grid&gt;
-
-    &lt;model_grid alias=&quot;ne16_ne16_mg37&quot; not_compset=&quot;_POP&quot;&gt;
-      &lt;grid name=&quot;atm&quot;&gt;ne16np4&lt;/grid&gt;
-      &lt;grid name=&quot;lnd&quot;&gt;ne16np4&lt;/grid&gt;
-      &lt;grid name=&quot;ocnice&quot;&gt;ne16np4&lt;/grid&gt;
-      &lt;mask&gt;gx3v7&lt;/mask&gt;
-    &lt;/model_grid&gt;
-
-    &lt;model_grid alias=&quot;ne30_ne30&quot; not_compset=&quot;_POP&quot;&gt;
-      &lt;grid name=&quot;atm&quot;&gt;ne30np4&lt;/grid&gt;
-      &lt;grid name=&quot;lnd&quot;&gt;ne30np4&lt;/grid&gt;
-      &lt;grid name=&quot;ocnice&quot;&gt;ne30np4&lt;/grid&gt;
-      &lt;mask&gt;gx1v6&lt;/mask&gt;
-    &lt;/model_grid&gt;
-
-    &lt;model_grid alias=&quot;ne30_ne30_mg16&quot; not_compset=&quot;_POP&quot;&gt;
-      &lt;grid name=&quot;atm&quot;&gt;ne30np4&lt;/grid&gt;
-      &lt;grid name=&quot;lnd&quot;&gt;ne30np4&lt;/grid&gt;
-      &lt;grid name=&quot;ocnice&quot;&gt;ne30np4&lt;/grid&gt;
-      &lt;mask&gt;gx1v6&lt;/mask&gt;
-    &lt;/model_grid&gt;
-
-    &lt;model_grid alias=&quot;ne30_ne30_mg17&quot; not_compset=&quot;_POP&quot;&gt;
-      &lt;grid name=&quot;atm&quot;&gt;ne30np4&lt;/grid&gt;
-      &lt;grid name=&quot;lnd&quot;&gt;ne30np4&lt;/grid&gt;
-      &lt;grid name=&quot;ocnice&quot;&gt;ne30np4&lt;/grid&gt;
-      &lt;mask&gt;gx1v7&lt;/mask&gt;
-    &lt;/model_grid&gt;
-
-    &lt;model_grid alias=&quot;ne60_ne60&quot; not_compset=&quot;_POP&quot;&gt;
-      &lt;grid name=&quot;atm&quot;&gt;ne60np4&lt;/grid&gt;
-      &lt;grid name=&quot;lnd&quot;&gt;ne60np4&lt;/grid&gt;
-      &lt;grid name=&quot;ocnice&quot;&gt;ne60np4&lt;/grid&gt;
-      &lt;mask&gt;gx1v6&lt;/mask&gt;
-    &lt;/model_grid&gt;
-
-    &lt;model_grid alias=&quot;ne60_ne60_mg16&quot; not_compset=&quot;_POP&quot;&gt;
-      &lt;grid name=&quot;atm&quot;&gt;ne60np4&lt;/grid&gt;
-      &lt;grid name=&quot;lnd&quot;&gt;ne60np4&lt;/grid&gt;
-      &lt;grid name=&quot;ocnice&quot;&gt;ne60np4&lt;/grid&gt;
-      &lt;mask&gt;gx1v6&lt;/mask&gt;
-    &lt;/model_grid&gt;
-
-    &lt;model_grid alias=&quot;ne60_ne60_mg17&quot; not_compset=&quot;_POP&quot;&gt;
-      &lt;grid name=&quot;atm&quot;&gt;ne60np4&lt;/grid&gt;
-      &lt;grid name=&quot;lnd&quot;&gt;ne60np4&lt;/grid&gt;
-      &lt;grid name=&quot;ocnice&quot;&gt;ne60np4&lt;/grid&gt;
-      &lt;mask&gt;gx1v7&lt;/mask&gt;
-    &lt;/model_grid&gt;
-
-    &lt;model_grid alias=&quot;ne120_ne120&quot; not_compset=&quot;_POP&quot;&gt;
-      &lt;grid name=&quot;atm&quot;&gt;ne120np4&lt;/grid&gt;
-      &lt;grid name=&quot;lnd&quot;&gt;ne120np4&lt;/grid&gt;
-      &lt;grid name=&quot;ocnice&quot;&gt;ne120np4&lt;/grid&gt;
-      &lt;mask&gt;gx1v6&lt;/mask&gt;
-    &lt;/model_grid&gt;
-
-    &lt;model_grid alias=&quot;ne120_ne120_mg16&quot; not_compset=&quot;_POP&quot;&gt;
-      &lt;grid name=&quot;atm&quot;&gt;ne120np4&lt;/grid&gt;
-      &lt;grid name=&quot;lnd&quot;&gt;ne120np4&lt;/grid&gt;
-      &lt;grid name=&quot;ocnice&quot;&gt;ne120np4&lt;/grid&gt;
-      &lt;mask&gt;gx1v6&lt;/mask&gt;
-    &lt;/model_grid&gt;
-
-    &lt;model_grid alias=&quot;ne120_ne120_mg17&quot; not_compset=&quot;_POP&quot;&gt;
-      &lt;grid name=&quot;atm&quot;&gt;ne120np4&lt;/grid&gt;
-      &lt;grid name=&quot;lnd&quot;&gt;ne120np4&lt;/grid&gt;
-      &lt;grid name=&quot;ocnice&quot;&gt;ne120np4&lt;/grid&gt;
-      &lt;mask&gt;gx1v7&lt;/mask&gt;
-    &lt;/model_grid&gt;
-
-    &lt;model_grid alias=&quot;ne240_ne240&quot; not_compset=&quot;_POP&quot;&gt;
-      &lt;grid name=&quot;atm&quot;&gt;ne240np4&lt;/grid&gt;
-      &lt;grid name=&quot;lnd&quot;&gt;ne240np4&lt;/grid&gt;
-      &lt;grid name=&quot;ocnice&quot;&gt;ne240np4&lt;/grid&gt;
-      &lt;mask&gt;gx1v6&lt;/mask&gt;
-    &lt;/model_grid&gt;
-
     &lt;model_grid alias=&quot;ne240_ne240_mg16&quot; not_compset=&quot;_POP&quot;&gt;
       &lt;grid name=&quot;atm&quot;&gt;ne240np4&lt;/grid&gt;
       &lt;grid name=&quot;lnd&quot;&gt;ne240np4&lt;/grid&gt;
@@ -1458,11 +1425,110 @@
       &lt;mask&gt;gx1v6&lt;/mask&gt;
     &lt;/model_grid&gt;
 
-    &lt;model_grid alias=&quot;ne240_ne240_mg17&quot; not_compset=&quot;_POP&quot;&gt;
-      &lt;grid name=&quot;atm&quot;&gt;ne240np4&lt;/grid&gt;
-      &lt;grid name=&quot;lnd&quot;&gt;ne240np4&lt;/grid&gt;
-      &lt;grid name=&quot;ocnice&quot;&gt;ne240np4&lt;/grid&gt;
+    &lt;!--  spectral element grids with 2x2 FVM physics grid --&gt;
+
+    &lt;model_grid alias=&quot;ne30pg2_ne30pg2_mg17&quot; not_compset=&quot;_POP|_CLM&quot;&gt;
+      &lt;grid name=&quot;atm&quot;&gt;ne30np4.pg2&lt;/grid&gt;
+      &lt;grid name=&quot;lnd&quot;&gt;ne30np4.pg2&lt;/grid&gt;
+      &lt;grid name=&quot;ocnice&quot;&gt;ne30np4.pg2&lt;/grid&gt;
       &lt;mask&gt;gx1v7&lt;/mask&gt;
+    &lt;/model_grid&gt;
+
+    &lt;model_grid alias=&quot;ne60pg2_ne60pg2_mg17&quot; not_compset=&quot;_POP|_CLM&quot;&gt;
+      &lt;grid name=&quot;atm&quot;&gt;ne60np4.pg2&lt;/grid&gt;
+      &lt;grid name=&quot;lnd&quot;&gt;ne60np4.pg2&lt;/grid&gt;
+      &lt;grid name=&quot;ocnice&quot;&gt;ne60np4.pg2&lt;/grid&gt;
+      &lt;mask&gt;gx1v7&lt;/mask&gt;
+    &lt;/model_grid&gt;
+
+    &lt;model_grid alias=&quot;ne120pg2_ne120pg2_mg17&quot; not_compset=&quot;_POP|_CLM&quot;&gt;
+      &lt;grid name=&quot;atm&quot;&gt;ne120np4.pg2&lt;/grid&gt;
+      &lt;grid name=&quot;lnd&quot;&gt;ne120np4.pg2&lt;/grid&gt;
+      &lt;grid name=&quot;ocnice&quot;&gt;ne120np4.pg2&lt;/grid&gt;
+      &lt;mask&gt;gx1v7&lt;/mask&gt;
+    &lt;/model_grid&gt;
+
+    &lt;model_grid alias=&quot;ne240pg2_ne240pg2_mg17&quot; not_compset=&quot;_POP|_CLM&quot;&gt;
+      &lt;grid name=&quot;atm&quot;&gt;ne240np4.pg2&lt;/grid&gt;
+      &lt;grid name=&quot;lnd&quot;&gt;ne240np4.pg2&lt;/grid&gt;
+      &lt;grid name=&quot;ocnice&quot;&gt;ne240np4.pg2&lt;/grid&gt;
+      &lt;mask&gt;gx1v7&lt;/mask&gt;
+    &lt;/model_grid&gt;
+
+    &lt;!--  spectral element grids with 3x3 FVM physics grid --&gt;
+
+    &lt;model_grid alias=&quot;ne5pg3_ne5pg3_mg37&quot; not_compset=&quot;_POP&quot;&gt;
+      &lt;grid name=&quot;atm&quot;&gt;ne5np4.pg3&lt;/grid&gt;
+      &lt;grid name=&quot;lnd&quot;&gt;ne5np4.pg3&lt;/grid&gt;
+      &lt;grid name=&quot;ocnice&quot;&gt;ne5np4.pg3&lt;/grid&gt;
+      &lt;mask&gt;gx3v7&lt;/mask&gt;
+    &lt;/model_grid&gt;
+
+    &lt;model_grid alias=&quot;ne16pg3_ne16pg3_mg37&quot; not_compset=&quot;_POP|_CLM&quot;&gt;
+      &lt;grid name=&quot;atm&quot;&gt;ne16np4.pg3&lt;/grid&gt;
+      &lt;grid name=&quot;lnd&quot;&gt;ne16np4.pg3&lt;/grid&gt;
+      &lt;grid name=&quot;ocnice&quot;&gt;ne16np4.pg3&lt;/grid&gt;
+      &lt;mask&gt;gx3v7&lt;/mask&gt;
+    &lt;/model_grid&gt;
+
+    &lt;model_grid alias=&quot;ne30pg3_ne30pg3_mg17&quot; not_compset=&quot;_POP|_CLM&quot;&gt;
+      &lt;grid name=&quot;atm&quot;&gt;ne30np4.pg3&lt;/grid&gt;
+      &lt;grid name=&quot;lnd&quot;&gt;ne30np4.pg3&lt;/grid&gt;
+      &lt;grid name=&quot;ocnice&quot;&gt;ne30np4.pg3&lt;/grid&gt;
+      &lt;mask&gt;gx1v7&lt;/mask&gt;
+    &lt;/model_grid&gt;
+
+    &lt;model_grid alias=&quot;ne60pg3_ne60pg3_mg17&quot; not_compset=&quot;_POP|_CLM&quot;&gt;
+      &lt;grid name=&quot;atm&quot;&gt;ne60np4.pg3&lt;/grid&gt;
+      &lt;grid name=&quot;lnd&quot;&gt;ne60np4.pg3&lt;/grid&gt;
+      &lt;grid name=&quot;ocnice&quot;&gt;ne60np4.pg3&lt;/grid&gt;
+      &lt;mask&gt;gx1v7&lt;/mask&gt;
+    &lt;/model_grid&gt;
+
+    &lt;model_grid alias=&quot;ne120pg3_ne120pg3_mg17&quot; not_compset=&quot;_POP|_CLM&quot;&gt;
+      &lt;grid name=&quot;atm&quot;&gt;ne120np4.pg3&lt;/grid&gt;
+      &lt;grid name=&quot;lnd&quot;&gt;ne120np4.pg3&lt;/grid&gt;
+      &lt;grid name=&quot;ocnice&quot;&gt;ne120np4.pg3&lt;/grid&gt;
+      &lt;mask&gt;gx1v7&lt;/mask&gt;
+    &lt;/model_grid&gt;
+
+    &lt;model_grid alias=&quot;ne240pg3_ne240pg3_mg17&quot; not_compset=&quot;_POP|_CLM&quot;&gt;
+      &lt;grid name=&quot;atm&quot;&gt;ne240np4.pg3&lt;/grid&gt;
+      &lt;grid name=&quot;lnd&quot;&gt;ne240np4.pg3&lt;/grid&gt;
+      &lt;grid name=&quot;ocnice&quot;&gt;ne240np4.pg3&lt;/grid&gt;
+      &lt;mask&gt;gx1v7&lt;/mask&gt;
+    &lt;/model_grid&gt;
+
+    &lt;!--  spectral element grids with 4x4 FVM physics grid --&gt;
+
+    &lt;model_grid alias=&quot;ne30pg4_ne30pg4_mg17&quot; not_compset=&quot;_POP|_CLM&quot;&gt;
+      &lt;grid name=&quot;atm&quot;&gt;ne30np4.pg4&lt;/grid&gt;
+      &lt;grid name=&quot;lnd&quot;&gt;ne30np4.pg4&lt;/grid&gt;
+      &lt;grid name=&quot;ocnice&quot;&gt;ne30np4.pg4&lt;/grid&gt;
+      &lt;mask&gt;gx1v7&lt;/mask&gt;
+    &lt;/model_grid&gt;
+
+    &lt;model_grid alias=&quot;ne60pg4_ne60pg4_mg17&quot; not_compset=&quot;_POP|_CLM&quot;&gt;
+      &lt;grid name=&quot;atm&quot;&gt;ne60np4.pg4&lt;/grid&gt;
+      &lt;grid name=&quot;lnd&quot;&gt;ne60np4.pg4&lt;/grid&gt;
+      &lt;grid name=&quot;ocnice&quot;&gt;ne60np4.pg4&lt;/grid&gt;
+      &lt;mask&gt;gx1v7&lt;/mask&gt;
+    &lt;/model_grid&gt;
+
+    &lt;model_grid alias=&quot;ne120pg4_ne120pg4_mg17&quot; not_compset=&quot;_POP|_CLM&quot;&gt;
+      &lt;grid name=&quot;atm&quot;&gt;ne120np4.pg4&lt;/grid&gt;
+      &lt;grid name=&quot;lnd&quot;&gt;ne120np4.pg4&lt;/grid&gt;
+      &lt;grid name=&quot;ocnice&quot;&gt;ne120np4.pg4&lt;/grid&gt;
+      &lt;mask&gt;gx1v7&lt;/mask&gt;
+    &lt;/model_grid&gt;
+
+   &lt;!-- VR-CESM grids with CAM-SE --&gt;
+
+    &lt;model_grid alias=&quot;ne0CONUSne30x8_ne0CONUSne30x8_mg17&quot; not_compset=&quot;_POP&quot;&gt;
+      &lt;grid name=&quot;atm&quot;&gt;ne0np4CONUS.ne30x8&lt;/grid&gt;
+      &lt;grid name=&quot;lnd&quot;&gt;ne0np4CONUS.ne30x8&lt;/grid&gt;
+      &lt;grid name=&quot;ocnice&quot;&gt;ne0np4CONUS.ne30x8&lt;/grid&gt;
+      &lt;mask&gt;tx0.1v2&lt;/mask&gt;
     &lt;/model_grid&gt;
 
     &lt;!-- new runoff grids for data runoff model DROF --&gt;
@@ -1707,19 +1773,69 @@
       &lt;desc&gt;T42 is Gaussian grid:&lt;/desc&gt;
     &lt;/domain&gt;
 
+    &lt;domain name=&quot;ne5np4&quot;&gt;
+      &lt;nx&gt;1352&lt;/nx&gt; &lt;ny&gt;1&lt;/ny&gt;
+      &lt;file grid=&quot;atm|lnd&quot; mask=&quot;gx3v7&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.lnd.ne5np4_gx3v7.140810.nc&lt;/file&gt;
+      &lt;file grid=&quot;ocnice&quot; mask=&quot;gx3v7&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.ocn.ne5np4_gx3v7.140810.nc&lt;/file&gt;
+      &lt;desc&gt;ne5np4 is Spectral Elem 6-deg grid:&lt;/desc&gt;
+      &lt;support&gt;For ultra-low resolution spectral element grid testing&lt;/support&gt;
+    &lt;/domain&gt;
+
+    &lt;domain name=&quot;ne5np4.pg3&quot;&gt;
+      &lt;nx&gt;1350&lt;/nx&gt; &lt;ny&gt;1&lt;/ny&gt;
+      &lt;file grid=&quot;atm|lnd&quot; mask=&quot;gx3v7&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.lnd.ne5np4.pg3_gx3v7.170605.nc&lt;/file&gt;
+      &lt;file grid=&quot;ocnice&quot; mask=&quot;gx3v7&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.ocn.ne5np4.pg3_gx3v7.170605.nc&lt;/file&gt;
+      &lt;desc&gt;ne5np4 is Spectral Elem 6-deg grid with a 3x3 FVM physics grid:&lt;/desc&gt;
+      &lt;support&gt;EXPERIMENTAL FVM physics grid&lt;/support&gt;
+    &lt;/domain&gt;
+
     &lt;domain name=&quot;ne16np4&quot;&gt;
       &lt;nx&gt;13826&lt;/nx&gt; &lt;ny&gt;1&lt;/ny&gt;
-      &lt;file grid=&quot;atm|lnd&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.lnd.ne16np4_gx3v7.120406.nc&lt;/file&gt;
-      &lt;file grid=&quot;ocnice&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.ocn.ne16np4_gx3v7.121113.nc&lt;/file&gt;
+      &lt;file grid=&quot;atm|lnd&quot; mask=&quot;gx1v7&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.lnd.ne16_gx1v7.171003.nc&lt;/file&gt;
+      &lt;file grid=&quot;ocnice&quot; mask=&quot;gx1v7&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.ocn.ne16_gx1v7.171003.nc&lt;/file&gt;
       &lt;desc&gt;ne16np4 is Spectral Elem 2-deg grid:&lt;/desc&gt;
       &lt;support&gt;For low resolution spectral element grid testing&lt;/support&gt;
+    &lt;/domain&gt;
+
+    &lt;domain name=&quot;ne16np4.pg3&quot;&gt;
+      &lt;nx&gt;13824&lt;/nx&gt; &lt;ny&gt;1&lt;/ny&gt;
+      &lt;file grid=&quot;atm|lnd&quot; mask=&quot;gx1v7&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.lnd.ne16pg3_gx1v7.171003.nc&lt;/file&gt;
+      &lt;file grid=&quot;ocnice&quot;  mask=&quot;gx1v7&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.ocn.ne16pg3_gx1v7.171003.nc&lt;/file&gt;
+      &lt;desc&gt;ne16np4.pg3 is a Spectral Elem 2-deg grid with a 3x3 FVM physics grid:&lt;/desc&gt;
+      &lt;support&gt;EXPERIMENTAL FVM physics grid&lt;/support&gt;
     &lt;/domain&gt;
 
     &lt;domain name=&quot;ne30np4&quot;&gt;
       &lt;nx&gt;48602&lt;/nx&gt; &lt;ny&gt;1&lt;/ny&gt;
       &lt;file grid=&quot;atm|lnd&quot; mask=&quot;gx1v6&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.lnd.ne30np4_gx1v6.110905.nc&lt;/file&gt;
       &lt;file grid=&quot;ocnice&quot;  mask=&quot;gx1v6&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.ocn.ne30np4_gx1v6_110217.nc&lt;/file&gt;
+      &lt;file grid=&quot;atm|lnd&quot; mask=&quot;gx1v7&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.lnd.ne30_gx1v7.171003.nc&lt;/file&gt;
+      &lt;file grid=&quot;ocnice&quot;  mask=&quot;gx1v7&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.ocn.ne30_gx1v7.171003.nc&lt;/file&gt;
       &lt;desc&gt;ne30np4 is Spectral Elem 1-deg grid:&lt;/desc&gt;
+    &lt;/domain&gt;
+
+    &lt;domain name=&quot;ne30np4.pg2&quot;&gt;
+      &lt;nx&gt;21600&lt;/nx&gt; &lt;ny&gt;1&lt;/ny&gt;
+      &lt;file grid=&quot;atm|lnd&quot; mask=&quot;gx1v7&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.lnd.ne30np4.pg2_gx1v7.170628.nc&lt;/file&gt;
+      &lt;file grid=&quot;ocnice&quot;  mask=&quot;gx1v7&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.ocn.ne30np4.pg2_gx1v7.170628.nc&lt;/file&gt;
+      &lt;desc&gt;ne30np4.pg2 is a Spectral Elem 1-deg grid with a 2x2 FVM physics grid:&lt;/desc&gt;
+      &lt;support&gt;EXPERIMENTAL FVM physics grid&lt;/support&gt;
+    &lt;/domain&gt;
+
+    &lt;domain name=&quot;ne30np4.pg3&quot;&gt;
+      &lt;nx&gt;48600&lt;/nx&gt; &lt;ny&gt;1&lt;/ny&gt;
+      &lt;file grid=&quot;atm|lnd&quot; mask=&quot;gx1v7&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.lnd.ne30np4.pg3_gx1v7.170605.nc&lt;/file&gt;
+      &lt;file grid=&quot;ocnice&quot;  mask=&quot;gx1v7&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.ocn.ne30np4.pg3_gx1v7_170605.nc&lt;/file&gt;
+      &lt;desc&gt;ne30np4.pg3 is a Spectral Elem 1-deg grid with a 3x3 FVM physics grid:&lt;/desc&gt;
+      &lt;support&gt;EXPERIMENTAL FVM physics grid&lt;/support&gt;
+    &lt;/domain&gt;
+
+    &lt;domain name=&quot;ne30np4.pg4&quot;&gt;
+      &lt;nx&gt;86400&lt;/nx&gt; &lt;ny&gt;1&lt;/ny&gt;
+      &lt;file grid=&quot;atm|lnd&quot; mask=&quot;gx1v7&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.lnd.ne30np4.pg4_gx1v7.170628.nc&lt;/file&gt;
+      &lt;file grid=&quot;ocnice&quot;  mask=&quot;gx1v7&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.ocn.ne30np4.pg4_gx1v7.170628.nc&lt;/file&gt;
+      &lt;desc&gt;ne30np4.pg4 is a Spectral Elem 1-deg grid with a 4x4 FVM physics grid:&lt;/desc&gt;
+      &lt;support&gt;EXPERIMENTAL FVM physics grid&lt;/support&gt;
     &lt;/domain&gt;
 
     &lt;domain name=&quot;ne60np4&quot;&gt;
@@ -1729,11 +1845,59 @@
       &lt;desc&gt;ne60np4 is Spectral Elem 1/2-deg grid:&lt;/desc&gt;
     &lt;/domain&gt;
 
+    &lt;domain name=&quot;ne60np4.pg2&quot;&gt;
+      &lt;nx&gt;86400&lt;/nx&gt; &lt;ny&gt;1&lt;/ny&gt;
+      &lt;file grid=&quot;atm|lnd&quot; mask=&quot;gx1v7&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.lnd.ne60np4.pg2_gx1v7.170628.nc&lt;/file&gt;
+      &lt;file grid=&quot;ocnice&quot;  mask=&quot;gx1v7&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.ocn.ne60np4.pg2_gx1v7.170628.nc&lt;/file&gt;
+      &lt;desc&gt;ne60np4.pg2 is a Spectral Elem 0.5-deg grid with a 2x2 FVM physics grid:&lt;/desc&gt;
+      &lt;support&gt;EXPERIMENTAL FVM physics grid&lt;/support&gt;
+    &lt;/domain&gt;
+
+    &lt;domain name=&quot;ne60np4.pg3&quot;&gt;
+      &lt;nx&gt;194400&lt;/nx&gt; &lt;ny&gt;1&lt;/ny&gt;
+      &lt;file grid=&quot;atm|lnd&quot; mask=&quot;gx1v7&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.lnd.ne60np4.pg3_gx1v7.170628.nc&lt;/file&gt;
+      &lt;file grid=&quot;ocnice&quot;  mask=&quot;gx1v7&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.ocn.ne60np4.pg3_gx1v7.170628.nc&lt;/file&gt;
+      &lt;desc&gt;ne60np4.pg3 is a Spectral Elem 0.5-deg grid with a 3x3 FVM physics grid:&lt;/desc&gt;
+      &lt;support&gt;EXPERIMENTAL FVM physics grid&lt;/support&gt;
+    &lt;/domain&gt;
+
+    &lt;domain name=&quot;ne60np4.pg4&quot;&gt;
+      &lt;nx&gt;345600&lt;/nx&gt; &lt;ny&gt;1&lt;/ny&gt;
+      &lt;file grid=&quot;atm|lnd&quot; mask=&quot;gx1v7&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.lnd.ne60np4.pg4_gx1v7.170628.nc&lt;/file&gt;
+      &lt;file grid=&quot;ocnice&quot;  mask=&quot;gx1v7&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.ocn.ne60np4.pg4_gx1v7.170628.nc&lt;/file&gt;
+      &lt;desc&gt;ne60np4.pg4 is a Spectral Elem 0.5-deg grid with a 4x4 FVM physics grid:&lt;/desc&gt;
+      &lt;support&gt;EXPERIMENTAL FVM physics grid&lt;/support&gt;
+    &lt;/domain&gt;
+
     &lt;domain name=&quot;ne120np4&quot;&gt;
       &lt;nx&gt;777602&lt;/nx&gt; &lt;ny&gt;1&lt;/ny&gt;
       &lt;file grid=&quot;atm|lnd&quot; mask=&quot;gx1v6&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.lnd.ne120np4_gx1v6.110502.nc&lt;/file&gt;
       &lt;file grid=&quot;ocnice&quot;  mask=&quot;gx1v6&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.ocn.ne120np4_gx1v6.121113.nc&lt;/file&gt;
       &lt;desc&gt;ne120np4 is Spectral Elem 1/4-deg grid:&lt;/desc&gt;
+    &lt;/domain&gt;
+
+    &lt;domain name=&quot;ne120np4.pg2&quot;&gt;
+      &lt;nx&gt;345600&lt;/nx&gt; &lt;ny&gt;1&lt;/ny&gt;
+      &lt;file grid=&quot;atm|lnd&quot; mask=&quot;gx1v7&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.lnd.ne120np4.pg2_gx1v7.170629.nc&lt;/file&gt;
+      &lt;file grid=&quot;ocnice&quot;  mask=&quot;gx1v7&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.ocn.ne120np4.pg2_gx1v7.170629.nc&lt;/file&gt;
+      &lt;desc&gt;ne120np4.pg2 is a Spectral Elem 0.25-deg grid with a 2x2 FVM physics grid:&lt;/desc&gt;
+      &lt;support&gt;EXPERIMENTAL FVM physics grid&lt;/support&gt;
+    &lt;/domain&gt;
+
+    &lt;domain name=&quot;ne120np4.pg3&quot;&gt;
+      &lt;nx&gt;777600&lt;/nx&gt; &lt;ny&gt;1&lt;/ny&gt;
+      &lt;file grid=&quot;atm|lnd&quot; mask=&quot;gx1v7&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.lnd.ne120np4.pg3_gx1v7.170629.nc&lt;/file&gt;
+      &lt;file grid=&quot;ocnice&quot;  mask=&quot;gx1v7&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.ocn.ne120np4.pg3_gx1v7.170629.nc&lt;/file&gt;
+      &lt;desc&gt;ne120np4.pg3 is a Spectral Elem 0.25-deg grid with a 3x3 FVM physics grid:&lt;/desc&gt;
+      &lt;support&gt;EXPERIMENTAL FVM physics grid&lt;/support&gt;
+    &lt;/domain&gt;
+
+    &lt;domain name=&quot;ne120np4.pg4&quot;&gt;
+      &lt;nx&gt;1382400&lt;/nx&gt; &lt;ny&gt;1&lt;/ny&gt;
+      &lt;file grid=&quot;atm|lnd&quot; mask=&quot;gx1v7&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.lnd.ne120np4.pg4_gx1v7.170629.nc&lt;/file&gt;
+      &lt;file grid=&quot;ocnice&quot;  mask=&quot;gx1v7&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.ocn.ne120np4.pg4_gx1v7.170629.nc&lt;/file&gt;
+      &lt;desc&gt;ne120np4.pg4 is a Spectral Elem 0.25-deg grid with a 4x4 FVM physics grid:&lt;/desc&gt;
+      &lt;support&gt;EXPERIMENTAL FVM physics grid&lt;/support&gt;
     &lt;/domain&gt;
 
     &lt;domain name=&quot;ne240np4&quot;&gt;
@@ -1742,6 +1906,22 @@
       &lt;file grid=&quot;ocnice&quot;  mask=&quot;gx1v6&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.ocn.ne240np4_gx1v6.111226.nc&lt;/file&gt;
       &lt;desc&gt;ne240np4 is Spectral Elem 1/8-deg grid:&lt;/desc&gt;
       &lt;support&gt;Experimental for very high resolution experiments&lt;/support&gt;
+    &lt;/domain&gt;
+
+    &lt;domain name=&quot;ne240np4.pg2&quot;&gt;
+      &lt;nx&gt;1382400&lt;/nx&gt; &lt;ny&gt;1&lt;/ny&gt;
+      &lt;file grid=&quot;atm|lnd&quot; mask=&quot;gx1v7&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.lnd.ne240np4.pg2_gx1v7.170629.nc&lt;/file&gt;
+      &lt;file grid=&quot;ocnice&quot;  mask=&quot;gx1v7&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.ocn.ne240np4.pg2_gx1v7.170629.nc&lt;/file&gt;
+      &lt;desc&gt;ne240np4.pg2 is a Spectral Elem 0.125-deg grid with a 2x2 FVM physics grid:&lt;/desc&gt;
+      &lt;support&gt;EXPERIMENTAL FVM physics grid&lt;/support&gt;
+    &lt;/domain&gt;
+
+    &lt;domain name=&quot;ne240np4.pg3&quot;&gt;
+      &lt;nx&gt;3110400&lt;/nx&gt; &lt;ny&gt;1&lt;/ny&gt;
+      &lt;file grid=&quot;atm|lnd&quot; mask=&quot;gx1v7&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.lnd.ne240np4.pg3_gx1v7.170629.nc&lt;/file&gt;
+      &lt;file grid=&quot;ocnice&quot;  mask=&quot;gx1v7&quot;&gt;$DIN_LOC_ROOT/share/domains/domain.ocn.ne240np4.pg3_gx1v7.170629.nc&lt;/file&gt;
+      &lt;desc&gt;ne240np4.pg3 is a Spectral Elem 0.125-deg grid with a 3x3 FVM physics grid:&lt;/desc&gt;
+      &lt;support&gt;EXPERIMENTAL FVM physics grid&lt;/support&gt;
     &lt;/domain&gt;
 
     &lt;domain name=&quot;gx1v6&quot;&gt;
@@ -2618,8 +2798,6 @@
  be used.  The following variables can be used to choose a queue :
  walltimemin: Giving the minimum amount of walltime for the queue.
  walltimemax: The maximum amount of walltime for a queue.
- jobmin:      The minimum task count required to use this queue.
- jobmax:      The maximum task count required to use this queue.
  nodemin:      The minimum node count required to use this queue.
  nodemax:      The maximum node count required to use this queue.
     --&gt;
@@ -2646,6 +2824,8 @@
   &lt;batch_system type=&quot;cobalt&quot; &gt;
     &lt;batch_query&gt;qstat&lt;/batch_query&gt;
     &lt;batch_submit&gt;qsub&lt;/batch_submit&gt;
+    &lt;batch_cancel&gt;qdel&lt;/batch_cancel&gt;
+    &lt;batch_env&gt;-v&lt;/batch_env&gt;
     &lt;batch_directive&gt;&lt;/batch_directive&gt;
     &lt;jobid_pattern&gt;(\d+)&lt;/jobid_pattern&gt;
     &lt;depend_string&gt; --dependencies&lt;/depend_string&gt;
@@ -2658,7 +2838,7 @@
       &lt;arg flag=&quot;-A&quot; name=&quot;PROJECT&quot;/&gt;
       &lt;arg flag=&quot;-t&quot; name=&quot;JOB_WALLCLOCK_TIME&quot;/&gt;
       &lt;!-- space required at beginning of name --&gt;
-      &lt;arg flag=&quot;-n&quot; name=&quot; $TOTALPES / $PES_PER_NODE&quot;/&gt;
+      &lt;arg flag=&quot;-n&quot; name=&quot; $TOTALPES / $MAX_MPITASKS_PER_NODE&quot;/&gt;
       &lt;arg flag=&quot;-q&quot; name=&quot;JOB_QUEUE&quot;/&gt;
       &lt;arg flag=&quot;--mode script&quot;/&gt;
     &lt;/submit_args&gt;
@@ -2667,6 +2847,8 @@
   &lt;batch_system type=&quot;cobalt_theta&quot; &gt;
     &lt;batch_query&gt;qstat&lt;/batch_query&gt;
     &lt;batch_submit&gt;qsub&lt;/batch_submit&gt;
+    &lt;batch_cancel&gt;qdel&lt;/batch_cancel&gt;
+    &lt;batch_env&gt;-v&lt;/batch_env&gt;
     &lt;batch_directive&gt;#COBALT&lt;/batch_directive&gt;
     &lt;jobid_pattern&gt;(\d+)&lt;/jobid_pattern&gt;
     &lt;depend_string&gt; --dependencies&lt;/depend_string&gt;
@@ -2676,7 +2858,7 @@
     &lt;submit_args&gt;
       &lt;arg flag=&quot;-A&quot; name=&quot;PROJECT&quot;/&gt;
       &lt;arg flag=&quot;-t&quot; name=&quot;JOB_WALLCLOCK_TIME&quot;/&gt;
-      &lt;arg flag=&quot;-n&quot; name=&quot; $TOTALPES/$PES_PER_NODE&quot;/&gt;
+      &lt;arg flag=&quot;-n&quot; name=&quot; $TOTALPES/$MAX_MPITASKS_PER_NODE&quot;/&gt;
       &lt;arg flag=&quot;-q&quot; name=&quot;JOB_QUEUE&quot;/&gt;
       &lt;arg flag=&quot;--mode script&quot;/&gt;
     &lt;/submit_args&gt;
@@ -2685,6 +2867,7 @@
   &lt;batch_system type=&quot;lsf&quot; version=&quot;9.1&quot;&gt;
     &lt;batch_query args=&quot; -w&quot; &gt;bjobs&lt;/batch_query&gt;
     &lt;batch_submit&gt;bsub&lt;/batch_submit&gt;
+    &lt;batch_cancel&gt;bkill&lt;/batch_cancel&gt;
     &lt;batch_redirect&gt;&amp;lt;&lt;/batch_redirect&gt;
     &lt;batch_directive&gt;#BSUB&lt;/batch_directive&gt;
     &lt;jobid_pattern&gt;&amp;lt;(\d+)&amp;gt;&lt;/jobid_pattern&gt;
@@ -2703,8 +2886,8 @@
       &lt;directive                       &gt; -R &quot;span[ptile={{ tasks_per_node }}]&quot;&lt;/directive&gt;
       &lt;directive                       &gt; -N  &lt;/directive&gt;
       &lt;directive default=&quot;poe&quot;         &gt; -a {{ poe }} &lt;/directive&gt;
-      &lt;directive default=&quot;cesm.stdout&quot; &gt; -o {{ output_error_path }}.%J  &lt;/directive&gt;
-      &lt;directive default=&quot;cesm.stderr&quot; &gt; -e {{ output_error_path }}.%J  &lt;/directive&gt;
+      &lt;directive default=&quot;cesm.stdout&quot; &gt; -o {{ job_id }}.%J  &lt;/directive&gt;
+      &lt;directive default=&quot;cesm.stderr&quot; &gt; -e {{ job_id }}.%J  &lt;/directive&gt;
       &lt;directive                       &gt; -J {{ job_id }} &lt;/directive&gt;
     &lt;/directives&gt;
   &lt;/batch_system&gt;
@@ -2712,6 +2895,8 @@
   &lt;batch_system type=&quot;pbs&quot; &gt;
     &lt;batch_query args=&quot;-f&quot; &gt;qstat&lt;/batch_query&gt;
     &lt;batch_submit&gt;qsub &lt;/batch_submit&gt;
+    &lt;batch_cancel&gt;qdel&lt;/batch_cancel&gt;
+    &lt;batch_env&gt;-v&lt;/batch_env&gt;
     &lt;batch_directive&gt;#PBS&lt;/batch_directive&gt;
     &lt;jobid_pattern&gt;^(\S+)$&lt;/jobid_pattern&gt;
     &lt;depend_string&gt; -W depend=afterok:jobid&lt;/depend_string&gt;
@@ -2727,7 +2912,7 @@
     &lt;directives&gt;
       &lt;directive&gt; -N {{ job_id }}&lt;/directive&gt;
       &lt;directive default=&quot;n&quot;&gt; -r {{ rerunnable }} &lt;/directive&gt;
-      &lt;!-- &lt;directive&gt; -j oe {{ output_error_path }} &lt;/directive&gt; --&gt;
+      &lt;!-- &lt;directive&gt; -j oe {{ job_id }} &lt;/directive&gt; --&gt;
       &lt;directive&gt; -j oe &lt;/directive&gt;
       &lt;directive&gt; -V &lt;/directive&gt;
     &lt;/directives&gt;
@@ -2735,6 +2920,7 @@
 
   &lt;batch_system type=&quot;slurm&quot; &gt;
     &lt;batch_query per_job_arg=&quot;-j&quot;&gt;squeue&lt;/batch_query&gt;
+    &lt;batch_cancel&gt;scancel&lt;/batch_cancel&gt;
     &lt;batch_directive&gt;#SBATCH&lt;/batch_directive&gt;
     &lt;jobid_pattern&gt;(\d+)$&lt;/jobid_pattern&gt;
     &lt;depend_string&gt; --dependency=afterok:jobid&lt;/depend_string&gt;
@@ -2751,7 +2937,7 @@
       &lt;directive&gt; --job-name={{ job_id }}&lt;/directive&gt;
       &lt;directive&gt; --nodes={{ num_nodes }}&lt;/directive&gt;
       &lt;directive&gt; --ntasks-per-node={{ tasks_per_node }}&lt;/directive&gt;
-      &lt;directive&gt; --output={{ output_error_path }}   &lt;/directive&gt;
+      &lt;directive&gt; --output={{ job_id }}   &lt;/directive&gt;
       &lt;directive&gt; --exclusive                        &lt;/directive&gt;
     &lt;/directives&gt;
   &lt;/batch_system&gt;
@@ -2776,7 +2962,7 @@
       &lt;directive default=&quot;/bin/bash&quot; &gt; -S {{ shell }}  &lt;/directive&gt;
     &lt;/directives&gt;
     &lt;queues&gt;
-      &lt;queue walltimemax=&quot;00:59:00&quot; jobmin=&quot;1&quot; jobmax=&quot;9999&quot; default=&quot;true&quot;&gt;batch&lt;/queue&gt;
+      &lt;queue walltimemax=&quot;00:59:00&quot; nodemin=&quot;1&quot; nodemax=&quot;624&quot; default=&quot;true&quot;&gt;batch&lt;/queue&gt;
     &lt;/queues&gt;
   &lt;/batch_system&gt;
 
@@ -2788,7 +2974,7 @@
     &lt;/directives&gt;
     &lt;queues&gt;
       &lt;queue walltimemax=&quot;24:00:00&quot; default=&quot;true&quot;&gt;regular&lt;/queue&gt;
-      &lt;queue walltimemax=&quot;00:30:00&quot; jobmin=&quot;1&quot; jobmax=&quot;512&quot;&gt;debug&lt;/queue&gt;
+      &lt;queue walltimemax=&quot;00:30:00&quot; nodemin=&quot;1&quot; nodemax=&quot;16&quot;&gt;debug&lt;/queue&gt;
     &lt;/queues&gt;
   &lt;/batch_system&gt;
 
@@ -2829,8 +3015,8 @@
       &lt;directive&gt;-S /bin/bash  &lt;/directive&gt;
     &lt;/directives&gt;
     &lt;queues&gt;
-      &lt;queue walltimemax=&quot;01:00:00&quot; jobmin=&quot;1&quot; jobmax=&quot;860&quot;&gt;debug&lt;/queue&gt;
-      &lt;queue walltimemax=&quot;24:00:00&quot; jobmin=&quot;861&quot; jobmax=&quot;99999&quot; default=&quot;true&quot;&gt;batch&lt;/queue&gt;
+      &lt;queue walltimemax=&quot;01:00:00&quot; nodemin=&quot;1&quot; nodemax=&quot;35&quot;&gt;debug&lt;/queue&gt;
+      &lt;queue walltimemax=&quot;24:00:00&quot; nodemin=&quot;861&quot; nodemax=&quot;4166&quot; default=&quot;true&quot;&gt;batch&lt;/queue&gt;
     &lt;/queues&gt;
   &lt;/batch_system&gt;
 
@@ -2841,11 +3027,11 @@
       &lt;directive default=&quot;/bin/bash&quot; &gt; -S {{ shell }}  &lt;/directive&gt;
     &lt;/directives&gt;
     &lt;queues&gt;
-      &lt;queue walltimemax=&quot;02:00:00&quot; jobmin=&quot;1&quot; jobmax=&quot;192&quot; &gt;short&lt;/queue&gt;
-      &lt;queue walltimemax=&quot;06:00:00&quot; jobmin=&quot;1&quot; jobmax=&quot;192&quot; default=&quot;true&quot;&gt;medium&lt;/queue&gt;
-      &lt;queue walltimemax=&quot;40:00:00&quot; jobmin=&quot;1&quot; jobmax=&quot;144&quot; &gt;long&lt;/queue&gt;
-      &lt;queue jobmax=&quot;768&quot; jobmin=&quot;1&quot; walltimemax=&quot;12:00:00&quot;&gt;overnight&lt;/queue&gt;
-      &lt;queue jobmax=&quot;1536&quot; jobmin=&quot;1&quot; walltimemax=&quot;3000:00:&quot;&gt;monster&lt;/queue&gt;
+      &lt;queue walltimemax=&quot;02:00:00&quot; nodemin=&quot;1&quot; nodemax=&quot;4&quot; &gt;short&lt;/queue&gt;
+      &lt;queue walltimemax=&quot;06:00:00&quot; nodemin=&quot;1&quot; nodemax=&quot;4&quot; default=&quot;true&quot;&gt;medium&lt;/queue&gt;
+      &lt;queue walltimemax=&quot;40:00:00&quot; nodemin=&quot;1&quot; nodemax=&quot;3&quot; &gt;long&lt;/queue&gt;
+      &lt;queue nodemax=&quot;16&quot; nodemin=&quot;1&quot; walltimemax=&quot;12:00:00&quot;&gt;overnight&lt;/queue&gt;
+      &lt;queue nodemax=&quot;32&quot; nodemin=&quot;1&quot; walltimemax=&quot;3000:00:&quot;&gt;monster&lt;/queue&gt;
     &lt;/queues&gt;
   &lt;/batch_system&gt;
 
@@ -2865,7 +3051,7 @@
       &lt;directive&gt; -l select={{ num_nodes }}:ncpus={{ max_tasks_per_node }}:mpiprocs={{ tasks_per_node }}:ompthreads={{ thread_count }}&lt;/directive&gt;
     &lt;/directives&gt;
     &lt;queues&gt;
-      &lt;queue default=&quot;true&quot; walltimemax=&quot;12:00&quot; jobmin=&quot;1&quot; jobmax=&quot;2592&quot;&gt;regular&lt;/queue&gt;
+      &lt;queue default=&quot;true&quot; walltimemax=&quot;12:00&quot; nodemin=&quot;1&quot; nodemax=&quot;72&quot;&gt;regular&lt;/queue&gt;
     &lt;/queues&gt;
   &lt;/batch_system&gt;
 
@@ -2875,26 +3061,26 @@
       &lt;directive&gt; -l select={{ num_nodes }}:ncpus={{ max_tasks_per_node }}:mpiprocs={{ tasks_per_node }}:ompthreads={{ thread_count }}&lt;/directive&gt;
     &lt;/directives&gt;
     &lt;queues&gt;
-      &lt;queue default=&quot;true&quot; walltimemax=&quot;12:00&quot; jobmin=&quot;1&quot; jobmax=&quot;2592&quot;&gt;regular&lt;/queue&gt;
+      &lt;queue default=&quot;true&quot; walltimemax=&quot;12:00&quot; nodemin=&quot;1&quot; nodemax=&quot;72&quot;&gt;regular&lt;/queue&gt;
     &lt;/queues&gt;
   &lt;/batch_system&gt;
 
   &lt;batch_system MACH=&quot;mira&quot; type=&quot;cobalt&quot;&gt;
     &lt;queues&gt;
-      &lt;queue walltimemax=&quot;06:00:00&quot; jobmin=&quot;1&quot; jobmax=&quot;786432&quot; default=&quot;true&quot;&gt;default&lt;/queue&gt;
+      &lt;queue walltimemax=&quot;06:00:00&quot; nodemin=&quot;1&quot; nodemax=&quot;12288&quot; default=&quot;true&quot;&gt;default&lt;/queue&gt;
     &lt;/queues&gt;
   &lt;/batch_system&gt;
 
   &lt;batch_system MACH=&quot;theta&quot; type=&quot;cobalt_theta&quot;&gt;
     &lt;queues&gt;
-      &lt;queue walltimemax=&quot;00:60:00&quot; jobmin=&quot;1&quot; jobmax=&quot;3200&quot; default=&quot;true&quot;&gt;default&lt;/queue&gt;
+      &lt;queue walltimemax=&quot;00:60:00&quot; nodemin=&quot;1&quot; nodemax=&quot;50&quot; default=&quot;true&quot;&gt;default&lt;/queue&gt;
     &lt;/queues&gt;
   &lt;/batch_system&gt;
 
   &lt;batch_system MACH=&quot;olympus&quot; type=&quot;slurm&quot;&gt;
     &lt;batch_submit&gt;sbatch&lt;/batch_submit&gt;
     &lt;queues&gt;
-      &lt;queue walltimemin=&quot;0&quot; walltimemax=&quot;00:59:00&quot; jobmin=&quot;0&quot; jobmax=&quot;9999&quot; default=&quot;true&quot;&gt;queue&lt;/queue&gt;
+      &lt;queue walltimemin=&quot;0&quot; walltimemax=&quot;00:59:00&quot; nodemin=&quot;0&quot; nodemax=&quot;312&quot; default=&quot;true&quot;&gt;queue&lt;/queue&gt;
     &lt;/queues&gt;
   &lt;/batch_system&gt;
 
@@ -2907,7 +3093,7 @@
       &lt;directive default=&quot;/bin/bash&quot; &gt; -S {{ shell }}  &lt;/directive&gt;
     &lt;/directives&gt;
     &lt;queues&gt;
-      &lt;queue walltimemin=&quot;&quot; walltimemax=&quot;08:00:00&quot; jobmin=&quot;0&quot; jobmax=&quot;9999&quot; default=&quot;true&quot;&gt;normal&lt;/queue&gt;
+      &lt;queue walltimemin=&quot;&quot; walltimemax=&quot;08:00:00&quot; nodemin=&quot;0&quot; nodemax=&quot;357&quot; default=&quot;true&quot;&gt;normal&lt;/queue&gt;
     &lt;/queues&gt;
   &lt;/batch_system&gt;
 
@@ -2919,7 +3105,7 @@
       &lt;directive default=&quot;/bin/bash&quot; &gt; -S {{ shell }}  &lt;/directive&gt;
     &lt;/directives&gt;
     &lt;queues&gt;
-      &lt;queue walltimemin=&quot;&quot; walltimemax=&quot;08:00:00&quot; jobmin=&quot;0&quot; jobmax=&quot;9999&quot; default=&quot;true&quot;&gt;normal&lt;/queue&gt;
+      &lt;queue walltimemin=&quot;&quot; walltimemax=&quot;08:00:00&quot; nodemin=&quot;0&quot; nodemax=&quot;357&quot; default=&quot;true&quot;&gt;normal&lt;/queue&gt;
     &lt;/queues&gt;
   &lt;/batch_system&gt;
 
@@ -2931,7 +3117,7 @@
       &lt;directive default=&quot;/bin/bash&quot; &gt; -S {{ shell }}  &lt;/directive&gt;
     &lt;/directives&gt;
     &lt;queues&gt;
-      &lt;queue walltimemin=&quot;&quot; walltimemax=&quot;08:00:00&quot; jobmin=&quot;0&quot; jobmax=&quot;9999&quot; default=&quot;true&quot;&gt;normal&lt;/queue&gt;
+      &lt;queue walltimemin=&quot;&quot; walltimemax=&quot;08:00:00&quot; nodemin=&quot;0&quot; nodemax=&quot;500&quot; default=&quot;true&quot;&gt;normal&lt;/queue&gt;
     &lt;/queues&gt;
   &lt;/batch_system&gt;
 
@@ -2943,14 +3129,7 @@
       &lt;directive default=&quot;/bin/bash&quot; &gt; -S {{ shell }}  &lt;/directive&gt;
     &lt;/directives&gt;
     &lt;queues&gt;
-      &lt;queue walltimemin=&quot;&quot; walltimemax=&quot;08:00:00&quot; jobmin=&quot;0&quot; jobmax=&quot;9999&quot; default=&quot;true&quot;&gt;normal&lt;/queue&gt;
-    &lt;/queues&gt;
-  &lt;/batch_system&gt;
-
-  &lt;batch_system MACH=&quot;skybridge&quot; type=&quot;slurm&quot; &gt;
-    &lt;batch_submit&gt;sbatch&lt;/batch_submit&gt;
-    &lt;queues&gt;
-      &lt;queue jobmin=&quot;1&quot; jobmax=&quot;480&quot; default=&quot;true&quot;&gt;ec&lt;/queue&gt;
+      &lt;queue walltimemin=&quot;&quot; walltimemax=&quot;08:00:00&quot; nodemin=&quot;0&quot; nodemax=&quot;624&quot; default=&quot;true&quot;&gt;normal&lt;/queue&gt;
     &lt;/queues&gt;
   &lt;/batch_system&gt;
 
@@ -2969,7 +3148,7 @@
   &lt;batch_system MACH=&quot;eastwind&quot; type=&quot;slurm&quot; &gt;
     &lt;batch_submit&gt;sbatch&lt;/batch_submit&gt;
     &lt;queues&gt;
-      &lt;queue jobmin=&quot;1&quot; jobmax=&quot;9999&quot; default=&quot;true&quot;&gt;batch&lt;/queue&gt;
+      &lt;queue nodemin=&quot;1&quot; nodemax=&quot;833&quot; default=&quot;true&quot;&gt;batch&lt;/queue&gt;
     &lt;/queues&gt;
   &lt;/batch_system&gt;
 
@@ -2979,8 +3158,8 @@
       &lt;directive&gt;-C haswell &lt;/directive&gt;
     &lt;/directives&gt;
     &lt;queues&gt;
-      &lt;queue walltimemax=&quot;06:00:00&quot; jobmin=&quot;1&quot; jobmax=&quot;45440&quot;&gt;regular&lt;/queue&gt;
-    &lt;!--  &lt;queue walltimemax=&quot;00:30:00&quot; jobmin=&quot;1&quot; jobmax=&quot;3072&quot; default=&quot;true&quot;&gt;debug&lt;/queue&gt; --&gt;
+      &lt;queue walltimemax=&quot;06:00:00&quot; nodemin=&quot;1&quot; nodemax=&quot;710&quot;&gt;regular&lt;/queue&gt;
+    &lt;!--  &lt;queue walltimemax=&quot;00:30:00&quot; nodemin=&quot;1&quot; nodemax=&quot;3072&quot; default=&quot;true&quot;&gt;debug&lt;/queue&gt; --&gt;
     &lt;/queues&gt;
   &lt;/batch_system&gt;
 
@@ -2991,24 +3170,24 @@
       &lt;directive&gt;-S 2 &lt;/directive&gt;
     &lt;/directives&gt;
     &lt;queues&gt;
-      &lt;queue walltimemax=&quot;02:00:00&quot; jobmin=&quot;1&quot; jobmax=&quot;45440&quot;&gt;regular&lt;/queue&gt;
-    &lt;!--  &lt;queue walltimemax=&quot;00:30:00&quot; jobmin=&quot;1&quot; jobmax=&quot;3072&quot; default=&quot;true&quot;&gt;debug&lt;/queue&gt; --&gt;
+      &lt;queue walltimemax=&quot;02:00:00&quot; nodemin=&quot;1&quot; nodemax=&quot;177&quot;&gt;regular&lt;/queue&gt;
+    &lt;!--  &lt;queue walltimemax=&quot;00:30:00&quot; nodemin=&quot;1&quot; nodemax=&quot;3072&quot; default=&quot;true&quot;&gt;debug&lt;/queue&gt; --&gt;
     &lt;/queues&gt;
   &lt;/batch_system&gt;
 
   &lt;batch_system MACH=&quot;edison&quot; type=&quot;slurm&quot; &gt;
     &lt;batch_submit&gt;sbatch&lt;/batch_submit&gt;
     &lt;queues&gt;
-      &lt;queue walltimemax=&quot;36:00:00&quot; jobmin=&quot;1&quot; jobmax=&quot;130181&quot; &gt;regular&lt;/queue&gt;
-      &lt;queue walltimemax=&quot;00:30:00&quot; jobmin=&quot;1&quot; jobmax=&quot;12288&quot; default=&quot;true&quot;&gt;debug&lt;/queue&gt;
+      &lt;queue walltimemax=&quot;36:00:00&quot; nodemin=&quot;1&quot; nodemax=&quot;2712&quot; &gt;regular&lt;/queue&gt;
+      &lt;queue walltimemax=&quot;00:30:00&quot; nodemin=&quot;1&quot; nodemax=&quot;256&quot; default=&quot;true&quot;&gt;debug&lt;/queue&gt;
     &lt;/queues&gt;
   &lt;/batch_system&gt;
 
   &lt;batch_system MACH=&quot;stampede&quot; type=&quot;slurm&quot; &gt;
     &lt;batch_submit&gt;ssh stampede.tacc.utexas.edu cd $CASEROOT ; sbatch&lt;/batch_submit&gt;
     &lt;queues&gt;
-      &lt;queue walltimemax=&quot;48:00:00&quot; jobmin=&quot;1&quot; jobmax=&quot;4096&quot; &gt;normal&lt;/queue&gt;
-      &lt;queue walltimemax=&quot;02:00:00&quot; jobmin=&quot;1&quot; jobmax=&quot;256&quot; default=&quot;true&quot;&gt;development&lt;/queue&gt;
+      &lt;queue walltimemax=&quot;48:00:00&quot; nodemin=&quot;1&quot; nodemax=&quot;256&quot; &gt;normal&lt;/queue&gt;
+      &lt;queue walltimemax=&quot;02:00:00&quot; nodemin=&quot;1&quot; nodemax=&quot;16&quot; default=&quot;true&quot;&gt;development&lt;/queue&gt;
     &lt;/queues&gt;
   &lt;/batch_system&gt;
 
@@ -3032,10 +3211,10 @@
 
   &lt;batch_system MACH=&quot;yellowstone&quot; type=&quot;lsf&quot; version=&quot;9.1&quot;&gt;
     &lt;queues&gt;
-      &lt;queue walltimemax=&quot;24:00&quot; jobmin=&quot;1&quot; jobmax=&quot;8&quot; &gt;caldera&lt;/queue&gt;
-      &lt;queue walltimemax=&quot;12:00&quot; jobmin=&quot;9&quot; jobmax=&quot;16384&quot; default=&quot;true&quot;&gt;regular&lt;/queue&gt;
-      &lt;queue walltimemax=&quot;12:00&quot; jobmin=&quot;16385&quot; jobmax=&quot;65536&quot;&gt;capability&lt;/queue&gt;
-      &lt;queue walltimemax=&quot;12:00&quot; jobmin=&quot;1&quot; jobmax=&quot;16384&quot;&gt;premium&lt;/queue&gt;
+      &lt;queue walltimemax=&quot;24:00&quot; nodemin=&quot;1&quot; nodemax=&quot;1&quot; &gt;caldera&lt;/queue&gt;
+      &lt;queue walltimemax=&quot;12:00&quot; nodemin=&quot;9&quot; nodemax=&quot;546&quot; default=&quot;true&quot;&gt;regular&lt;/queue&gt;
+      &lt;queue walltimemax=&quot;12:00&quot; nodemin=&quot;16385&quot; nodemax=&quot;2184&quot;&gt;capability&lt;/queue&gt;
+      &lt;queue walltimemax=&quot;12:00&quot; nodemin=&quot;1&quot; nodemax=&quot;546&quot;&gt;premium&lt;/queue&gt;
     &lt;/queues&gt;
   &lt;/batch_system&gt;
 
@@ -3786,6 +3965,14 @@ using a fortran linker.
   &lt;/SLIBS&gt;
 &lt;/compiler&gt;
 
+&lt;compiler MACH=&quot;homebrew&quot; COMPILER=&quot;gnu&quot;&gt;
+  &lt;LDFLAGS&gt;
+    &lt;!-- These LDFLAGS provide lapack and blas support on a Mac. This
+         may require installation of the Apple Developer Tools. --&gt;
+    &lt;append&gt; -framework Accelerate &lt;/append&gt;
+  &lt;/LDFLAGS&gt;
+&lt;/compiler&gt;
+
 &lt;compiler MACH=&quot;juqueen&quot; COMPILER=&quot;ibm&quot;&gt;
   &lt;MPICC&gt; mpixlc_r &lt;/MPICC&gt;
   &lt;MPIFC&gt; mpixlf2003_r &lt;/MPIFC&gt;
@@ -4206,14 +4393,14 @@ using a fortran linker.
     &lt;BATCH_SYSTEM&gt;pbs&lt;/BATCH_SYSTEM&gt;
     &lt;SUPPORTED_BY&gt;cseg&lt;/SUPPORTED_BY&gt;
     &lt;MAX_TASKS_PER_NODE&gt;32&lt;/MAX_TASKS_PER_NODE&gt;
-    &lt;PES_PER_NODE&gt;16&lt;/PES_PER_NODE&gt;
+    &lt;MAX_MPITASKS_PER_NODE&gt;16&lt;/MAX_MPITASKS_PER_NODE&gt;
     &lt;PROJECT_REQUIRED&gt;TRUE&lt;/PROJECT_REQUIRED&gt;
     &lt;mpirun mpilib=&quot;default&quot;&gt;
       &lt;executable&gt;aprun&lt;/executable&gt;
       &lt;arguments&gt;
 	&lt;arg name=&quot;num_tasks&quot;&gt; -n $TOTALPES&lt;/arg&gt;
 	&lt;!-- &lt;arg name=&quot;tasks_per_numa&quot;&gt; -S {{ tasks_per_numa }}&lt;/arg&gt; --&gt;
-	&lt;arg name=&quot;tasks_per_node&quot;&gt; -N $PES_PER_NODE&lt;/arg&gt;
+	&lt;arg name=&quot;tasks_per_node&quot;&gt; -N $MAX_MPITASKS_PER_NODE&lt;/arg&gt;
 	&lt;arg name=&quot;thread_count&quot;&gt; -d $ENV{OMP_NUM_THREADS}&lt;/arg&gt;
       &lt;/arguments&gt;
     &lt;/mpirun&gt;
@@ -4285,12 +4472,12 @@ using a fortran linker.
     &lt;BATCH_SYSTEM&gt;lsf&lt;/BATCH_SYSTEM&gt;
     &lt;SUPPORTED_BY&gt;tcraig -at- ucar.edu&lt;/SUPPORTED_BY&gt;
     &lt;MAX_TASKS_PER_NODE&gt;16&lt;/MAX_TASKS_PER_NODE&gt;
-    &lt;PES_PER_NODE&gt;16&lt;/PES_PER_NODE&gt;
+    &lt;MAX_MPITASKS_PER_NODE&gt;16&lt;/MAX_MPITASKS_PER_NODE&gt;
     &lt;mpirun mpilib=&quot;mpich&quot;&gt;
       &lt;executable&gt;mpirun&lt;/executable&gt;
       &lt;arguments&gt;
 	&lt;arg name=&quot;machine_file&quot;&gt;-hostfile $ENV{PBS_JOBID}&lt;/arg&gt;
-	&lt;arg name=&quot;tasks_per_node&quot;&gt; -ppn $PES_PER_NODE&lt;/arg&gt;
+	&lt;arg name=&quot;tasks_per_node&quot;&gt; -ppn $MAX_MPITASKS_PER_NODE&lt;/arg&gt;
 	&lt;arg name=&quot;num_tasks&quot;&gt; -n $TOTALPES&lt;/arg&gt;
       &lt;/arguments&gt;
     &lt;/mpirun&gt;
@@ -4331,6 +4518,64 @@ using a fortran linker.
     &lt;/environment_variables&gt;
   &lt;/machine&gt;
 
+  &lt;machine MACH=&quot;centos7-linux&quot;&gt;
+    &lt;DESC&gt;
+	Example port to centos7 linux system with gcc, netcdf, pnetcdf and mpich
+        using modules from http://www.admin-magazine.com/HPC/Articles/Environment-Modules         
+    &lt;/DESC&gt;
+    &lt;NODENAME_REGEX&gt;regex.expression.matching.your.machine&lt;/NODENAME_REGEX&gt;
+    &lt;OS&gt;LINUX&lt;/OS&gt;
+    &lt;PROXY&gt; https://howto.get.out &lt;/PROXY&gt;
+    &lt;COMPILERS&gt;gnu&lt;/COMPILERS&gt;
+    &lt;MPILIBS&gt;mpich&lt;/MPILIBS&gt;
+    &lt;PROJECT&gt;none&lt;/PROJECT&gt;
+    &lt;SAVE_TIMING_DIR&gt; &lt;/SAVE_TIMING_DIR&gt;
+    &lt;CIME_OUTPUT_ROOT&gt;$ENV{HOME}/cesm/scratch&lt;/CIME_OUTPUT_ROOT&gt;
+    &lt;DIN_LOC_ROOT&gt;$ENV{HOME}/cesm/inputdata&lt;/DIN_LOC_ROOT&gt;
+    &lt;DIN_LOC_ROOT_CLMFORC&gt;$ENV{HOME}/cesm/inputdata/lmwg&lt;/DIN_LOC_ROOT_CLMFORC&gt;
+    &lt;DOUT_S_ROOT&gt;$ENV{HOME}/cesm/archive/$CASE&lt;/DOUT_S_ROOT&gt;
+    &lt;BASELINE_ROOT&gt;$ENV{HOME}/cesm/cesm_baselines&lt;/BASELINE_ROOT&gt;
+    &lt;CCSM_CPRNC&gt;$ENV{HOME}/cesm/tools/cime/tools/cprnc/cprnc&lt;/CCSM_CPRNC&gt;
+    &lt;GMAKE&gt;gmake&lt;/GMAKE&gt;
+    &lt;GMAKE_J&gt;8&lt;/GMAKE_J&gt;
+    &lt;BATCH_SYSTEM&gt;none&lt;/BATCH_SYSTEM&gt;
+    &lt;SUPPORTED_BY&gt;me@my.address&lt;/SUPPORTED_BY&gt;
+    &lt;MAX_TASKS_PER_NODE&gt;8&lt;/MAX_TASKS_PER_NODE&gt;
+    &lt;MAX_MPITASKS_PER_NODE&gt;8&lt;/MAX_MPITASKS_PER_NODE&gt;
+    &lt;PROJECT_REQUIRED&gt;FALSE&lt;/PROJECT_REQUIRED&gt;
+    &lt;mpirun mpilib=&quot;default&quot;&gt;
+      &lt;executable&gt;mpiexec&lt;/executable&gt;
+      &lt;arguments&gt;
+	&lt;arg name=&quot;ntasks&quot;&gt; -np {{ total_tasks }} &lt;/arg&gt;
+      &lt;/arguments&gt;
+    &lt;/mpirun&gt;
+    &lt;module_system type=&quot;module&quot;&gt;
+      &lt;init_path lang=&quot;perl&quot;&gt;/usr/share/Modules/init/perl.pm&lt;/init_path&gt;
+      &lt;init_path lang=&quot;python&quot;&gt;/usr/share/Modules/init/python.py&lt;/init_path&gt;
+      &lt;init_path lang=&quot;csh&quot;&gt;/usr/share/Modules/init/csh&lt;/init_path&gt;
+      &lt;init_path lang=&quot;sh&quot;&gt;/usr/share/Modules/init/sh&lt;/init_path&gt;
+      &lt;cmd_path lang=&quot;perl&quot;&gt;/usr/bin/modulecmd perl&lt;/cmd_path&gt;
+      &lt;cmd_path lang=&quot;python&quot;&gt;/usr/bin/modulecmd python&lt;/cmd_path&gt;
+      &lt;cmd_path lang=&quot;sh&quot;&gt;module&lt;/cmd_path&gt;
+      &lt;cmd_path lang=&quot;csh&quot;&gt;module&lt;/cmd_path&gt;
+      &lt;modules&gt;
+	&lt;command name=&quot;purge&quot;/&gt;
+      &lt;/modules&gt;
+       &lt;modules compiler=&quot;gnu&quot;&gt;
+	&lt;command name=&quot;load&quot;&gt;compiler/gnu/7.2.0&lt;/command&gt;
+	&lt;command name=&quot;load&quot;&gt;mpi/gcc/mpich-3.2&lt;/command&gt;
+	&lt;command name=&quot;load&quot;&gt;tool/netcdf/4.4.1.1/gcc&lt;/command&gt;
+	&lt;command name=&quot;load&quot;&gt;tool/parallel-netcdf/mpich&lt;/command&gt;
+      &lt;/modules&gt;
+    &lt;/module_system&gt;
+    &lt;environment_variables&gt;
+      &lt;env name=&quot;OMP_STACKSIZE&quot;&gt;256M&lt;/env&gt;
+    &lt;/environment_variables&gt;
+    &lt;resource_limits&gt;
+      &lt;resource name=&quot;RLIMIT_STACK&quot;&gt;-1&lt;/resource&gt;
+    &lt;/resource_limits&gt;
+  &lt;/machine&gt;
+
   &lt;machine MACH=&quot;cheyenne&quot;&gt;
     &lt;DESC&gt;NCAR SGI platform, os is Linux, 36 pes/node, batch system is PBS&lt;/DESC&gt;
     &lt;NODENAME_REGEX&gt;.*.cheyenne.ucar.edu&lt;/NODENAME_REGEX&gt;
@@ -4348,7 +4593,7 @@ using a fortran linker.
     &lt;SUPPORTED_BY&gt;cseg&lt;/SUPPORTED_BY&gt;
     &lt;!-- have not seen any performance benefit in smt --&gt;
     &lt;MAX_TASKS_PER_NODE&gt;36&lt;/MAX_TASKS_PER_NODE&gt;
-    &lt;PES_PER_NODE&gt;36&lt;/PES_PER_NODE&gt;
+    &lt;MAX_MPITASKS_PER_NODE&gt;36&lt;/MAX_MPITASKS_PER_NODE&gt;
     &lt;PROJECT_REQUIRED&gt;TRUE&lt;/PROJECT_REQUIRED&gt;
     &lt;mpirun mpilib=&quot;default&quot;&gt;
       &lt;executable&gt;mpiexec_mpt&lt;/executable&gt;
@@ -4452,7 +4697,7 @@ using a fortran linker.
     &lt;BATCH_SYSTEM&gt;slurm&lt;/BATCH_SYSTEM&gt;
     &lt;SUPPORTED_BY&gt;tcraig -at- ucar.edu&lt;/SUPPORTED_BY&gt;
     &lt;MAX_TASKS_PER_NODE&gt;24&lt;/MAX_TASKS_PER_NODE&gt;
-    &lt;PES_PER_NODE&gt;24&lt;/PES_PER_NODE&gt;
+    &lt;MAX_MPITASKS_PER_NODE&gt;24&lt;/MAX_MPITASKS_PER_NODE&gt;
     &lt;PROJECT_REQUIRED&gt;FALSE&lt;/PROJECT_REQUIRED&gt;
     &lt;mpirun mpilib=&quot;mvapich2&quot;&gt;
       &lt;executable&gt;srun&lt;/executable&gt;
@@ -4549,7 +4794,7 @@ using a fortran linker.
     &lt;BATCH_SYSTEM&gt;slurm&lt;/BATCH_SYSTEM&gt;
     &lt;SUPPORTED_BY&gt;cseg&lt;/SUPPORTED_BY&gt;
     &lt;MAX_TASKS_PER_NODE&gt;64&lt;/MAX_TASKS_PER_NODE&gt;
-    &lt;PES_PER_NODE&gt;32&lt;/PES_PER_NODE&gt;
+    &lt;MAX_MPITASKS_PER_NODE&gt;32&lt;/MAX_MPITASKS_PER_NODE&gt;
     &lt;mpirun mpilib=&quot;default&quot;&gt;
       &lt;executable&gt;srun&lt;/executable&gt;
       &lt;arguments&gt;
@@ -4652,7 +4897,7 @@ using a fortran linker.
     &lt;BATCH_SYSTEM&gt;slurm&lt;/BATCH_SYSTEM&gt;
     &lt;SUPPORTED_BY&gt;cseg&lt;/SUPPORTED_BY&gt;
     &lt;MAX_TASKS_PER_NODE&gt;256&lt;/MAX_TASKS_PER_NODE&gt;
-    &lt;PES_PER_NODE&gt;64&lt;/PES_PER_NODE&gt;
+    &lt;MAX_MPITASKS_PER_NODE&gt;64&lt;/MAX_MPITASKS_PER_NODE&gt;
     &lt;mpirun mpilib=&quot;default&quot;&gt;
       &lt;executable&gt;srun&lt;/executable&gt;
       &lt;arguments&gt;
@@ -4752,7 +4997,7 @@ using a fortran linker.
     &lt;BATCH_SYSTEM&gt;slurm&lt;/BATCH_SYSTEM&gt;
     &lt;SUPPORTED_BY&gt;tcraig -at- ucar.edu&lt;/SUPPORTED_BY&gt;
     &lt;MAX_TASKS_PER_NODE&gt;12&lt;/MAX_TASKS_PER_NODE&gt;
-    &lt;PES_PER_NODE&gt;12&lt;/PES_PER_NODE&gt;
+    &lt;MAX_MPITASKS_PER_NODE&gt;12&lt;/MAX_MPITASKS_PER_NODE&gt;
     &lt;mpirun mpilib=&quot;mvapich&quot;&gt;
       &lt;executable&gt;srun&lt;/executable&gt;
       &lt;arguments&gt;
@@ -4809,7 +5054,7 @@ using a fortran linker.
     &lt;BATCH_SYSTEM&gt;slurm&lt;/BATCH_SYSTEM&gt;
     &lt;SUPPORTED_BY&gt;cseg&lt;/SUPPORTED_BY&gt;
     &lt;MAX_TASKS_PER_NODE&gt;48&lt;/MAX_TASKS_PER_NODE&gt;
-    &lt;PES_PER_NODE&gt;24&lt;/PES_PER_NODE&gt;
+    &lt;MAX_MPITASKS_PER_NODE&gt;24&lt;/MAX_MPITASKS_PER_NODE&gt;
     &lt;mpirun mpilib=&quot;default&quot;&gt;
       &lt;executable&gt;srun&lt;/executable&gt;
       &lt;arguments&gt;
@@ -4908,14 +5153,14 @@ using a fortran linker.
     &lt;BATCH_SYSTEM&gt;pbs&lt;/BATCH_SYSTEM&gt;
     &lt;SUPPORTED_BY&gt;julio -at- ucar.edu&lt;/SUPPORTED_BY&gt;
     &lt;MAX_TASKS_PER_NODE&gt;24&lt;/MAX_TASKS_PER_NODE&gt;
-    &lt;PES_PER_NODE&gt;24&lt;/PES_PER_NODE&gt;
+    &lt;MAX_MPITASKS_PER_NODE&gt;24&lt;/MAX_MPITASKS_PER_NODE&gt;
     &lt;mpirun mpilib=&quot;default&quot;&gt;
       &lt;executable&gt;aprun&lt;/executable&gt;
       &lt;arguments&gt;
 	&lt;arg name=&quot;hyperthreading&quot; default=&quot;2&quot;&gt; -j {{ hyperthreading }}&lt;/arg&gt;
 	&lt;arg name=&quot;num_tasks&quot; &gt; -n $TOTALPES&lt;/arg&gt;
 	&lt;arg name=&quot;tasks_per_numa&quot; &gt; -S {{ tasks_per_numa }}&lt;/arg&gt;
-	&lt;arg name=&quot;tasks_per_node&quot; &gt; -N $PES_PER_NODE&lt;/arg&gt;
+	&lt;arg name=&quot;tasks_per_node&quot; &gt; -N $MAX_MPITASKS_PER_NODE&lt;/arg&gt;
 	&lt;arg name=&quot;thread_count&quot; &gt; -d $ENV{OMP_NUM_THREADS}&lt;/arg&gt;
       &lt;/arguments&gt;
     &lt;/mpirun&gt;
@@ -4974,7 +5219,7 @@ using a fortran linker.
     &lt;BATCH_SYSTEM&gt;pbs&lt;/BATCH_SYSTEM&gt;
     &lt;SUPPORTED_BY&gt; cseg &lt;/SUPPORTED_BY&gt;
     &lt;MAX_TASKS_PER_NODE&gt;48&lt;/MAX_TASKS_PER_NODE&gt;
-    &lt;PES_PER_NODE&gt;48&lt;/PES_PER_NODE&gt;
+    &lt;MAX_MPITASKS_PER_NODE&gt;48&lt;/MAX_MPITASKS_PER_NODE&gt;
     &lt;mpirun mpilib=&quot;mvapich2&quot;&gt;
       &lt;executable&gt;mpiexec&lt;/executable&gt;
       &lt;arguments&gt;
@@ -5029,7 +5274,7 @@ using a fortran linker.
     &lt;DESC&gt;
 
      Customize these fields as appropriate for your system,
-     particularly changing MAX_TASKS_PER_NODE and PES_PER_NODE to the
+     particularly changing MAX_TASKS_PER_NODE and MAX_MPITASKS_PER_NODE to the
      number of cores on your machine.  You may also want to change
      instances of &#39;$ENV{HOME}/projects&#39; to your desired directory
      organization.  You can use this in either of two ways: (1)
@@ -5038,9 +5283,12 @@ using a fortran linker.
      config_machines.xml file in your personal .cime directory and
      then changing the machine name (MACH=&quot;homebrew&quot;) to
      your machine name and the NODENAME_REGEX to something matching
-     your machine&#39;s hostname.  In this case, you should not need the
+     your machine&#39;s hostname.  With (2), you should not need the
      `--machine` argument, because the machine should be determined
-     automatically.
+     automatically.  However, with (2), you will also need to copy the
+     homebrew-specific settings in config_compilers.xml into a
+     config_compilers.xml file in your personal .cime directory, again
+     changing the machine name (MACH=&quot;homebrew&quot;) to your machine name.
 
     &lt;/DESC&gt;
     &lt;NODENAME_REGEX&gt; something.matching.your.machine.hostname &lt;/NODENAME_REGEX&gt;
@@ -5058,7 +5306,7 @@ using a fortran linker.
     &lt;BATCH_SYSTEM&gt;none&lt;/BATCH_SYSTEM&gt;
     &lt;SUPPORTED_BY&gt;__YOUR_NAME_HERE__&lt;/SUPPORTED_BY&gt;
     &lt;MAX_TASKS_PER_NODE&gt;4&lt;/MAX_TASKS_PER_NODE&gt;
-    &lt;PES_PER_NODE&gt;4&lt;/PES_PER_NODE&gt;
+    &lt;MAX_MPITASKS_PER_NODE&gt;4&lt;/MAX_MPITASKS_PER_NODE&gt;
     &lt;mpirun mpilib=&quot;default&quot;&gt;
       &lt;executable&gt;mpirun&lt;/executable&gt;
       &lt;arguments&gt;
@@ -5090,7 +5338,7 @@ using a fortran linker.
     &lt;SUPPORTED_BY&gt;cseg&lt;/SUPPORTED_BY&gt;
     &lt;!-- have not seen any performance benefit in smt --&gt;
     &lt;MAX_TASKS_PER_NODE&gt;36&lt;/MAX_TASKS_PER_NODE&gt;
-    &lt;PES_PER_NODE&gt;36&lt;/PES_PER_NODE&gt;
+    &lt;MAX_MPITASKS_PER_NODE&gt;36&lt;/MAX_MPITASKS_PER_NODE&gt;
     &lt;PROJECT_REQUIRED&gt;TRUE&lt;/PROJECT_REQUIRED&gt;
     &lt;mpirun mpilib=&quot;default&quot;&gt;
       &lt;executable&gt;mpiexec_mpt&lt;/executable&gt;
@@ -5157,7 +5405,7 @@ using a fortran linker.
     &lt;BATCH_SYSTEM&gt;none&lt;/BATCH_SYSTEM&gt;
     &lt;SUPPORTED_BY&gt;jgfouca at sandia dot gov&lt;/SUPPORTED_BY&gt;
     &lt;MAX_TASKS_PER_NODE&gt;64&lt;/MAX_TASKS_PER_NODE&gt;
-    &lt;PES_PER_NODE&gt;64&lt;/PES_PER_NODE&gt;
+    &lt;MAX_MPITASKS_PER_NODE&gt;64&lt;/MAX_MPITASKS_PER_NODE&gt;
     &lt;mpirun mpilib=&quot;default&quot;&gt;
       &lt;executable&gt;mpirun&lt;/executable&gt;
       &lt;arguments&gt;
@@ -5209,14 +5457,14 @@ using a fortran linker.
     &lt;BATCH_SYSTEM&gt;cobalt&lt;/BATCH_SYSTEM&gt;
     &lt;SUPPORTED_BY&gt; cseg &lt;/SUPPORTED_BY&gt;
     &lt;MAX_TASKS_PER_NODE&gt;64&lt;/MAX_TASKS_PER_NODE&gt;
-    &lt;PES_PER_NODE&gt;8&lt;/PES_PER_NODE&gt;
+    &lt;MAX_MPITASKS_PER_NODE&gt;8&lt;/MAX_MPITASKS_PER_NODE&gt;
     &lt;PROJECT_REQUIRED&gt;TRUE&lt;/PROJECT_REQUIRED&gt;
     &lt;mpirun mpilib=&quot;default&quot;&gt;
        &lt;executable&gt;/usr/bin/runjob&lt;/executable&gt;
       &lt;arguments&gt;
 	&lt;arg name=&quot;label&quot;&gt; --label short&lt;/arg&gt;
 	&lt;!-- Ranks per node!! --&gt;
-	&lt;arg name=&quot;tasks_per_node&quot;&gt; --ranks-per-node $PES_PER_NODE&lt;/arg&gt;
+	&lt;arg name=&quot;tasks_per_node&quot;&gt; --ranks-per-node $MAX_MPITASKS_PER_NODE&lt;/arg&gt;
 	&lt;!-- Total MPI Tasks --&gt;
 	&lt;arg name=&quot;num_tasks&quot;&gt; --np $TOTALPES&lt;/arg&gt;
 	&lt;arg name=&quot;locargs&quot;&gt;--block $COBALT_PARTNAME --envs OMP_WAIT_POLICY=active --envs BG_SMP_FAST_WAKEUP=yes $LOCARGS&lt;/arg&gt;
@@ -5260,7 +5508,7 @@ using a fortran linker.
     &lt;BATCH_SYSTEM&gt;slurm&lt;/BATCH_SYSTEM&gt;
     &lt;SUPPORTED_BY&gt;tcraig -at- ucar.edu&lt;/SUPPORTED_BY&gt;
     &lt;MAX_TASKS_PER_NODE&gt;32&lt;/MAX_TASKS_PER_NODE&gt;
-    &lt;PES_PER_NODE&gt;32&lt;/PES_PER_NODE&gt;
+    &lt;MAX_MPITASKS_PER_NODE&gt;32&lt;/MAX_MPITASKS_PER_NODE&gt;
     &lt;PROJECT_REQUIRED&gt;FALSE&lt;/PROJECT_REQUIRED&gt;
     &lt;mpirun mpilib=&quot;default&quot;&gt;
       &lt;executable&gt;mpiexec_mpt&lt;/executable&gt;
@@ -5305,7 +5553,7 @@ using a fortran linker.
     &lt;BATCH_SYSTEM&gt;pbs&lt;/BATCH_SYSTEM&gt;
     &lt;SUPPORTED_BY&gt;fvitt -at- ucar.edu&lt;/SUPPORTED_BY&gt;
     &lt;MAX_TASKS_PER_NODE&gt;28&lt;/MAX_TASKS_PER_NODE&gt;
-    &lt;PES_PER_NODE&gt;28&lt;/PES_PER_NODE&gt;
+    &lt;MAX_MPITASKS_PER_NODE&gt;28&lt;/MAX_MPITASKS_PER_NODE&gt;
     &lt;PROJECT_REQUIRED&gt;TRUE&lt;/PROJECT_REQUIRED&gt;
     &lt;mpirun mpilib=&quot;default&quot;&gt;
       &lt;executable&gt;mpiexec_mpt&lt;/executable&gt;
@@ -5359,7 +5607,7 @@ using a fortran linker.
     &lt;BATCH_SYSTEM&gt;pbs&lt;/BATCH_SYSTEM&gt;
     &lt;SUPPORTED_BY&gt;fvitt -at- ucar.edu&lt;/SUPPORTED_BY&gt;
     &lt;MAX_TASKS_PER_NODE&gt;24&lt;/MAX_TASKS_PER_NODE&gt;
-    &lt;PES_PER_NODE&gt;24&lt;/PES_PER_NODE&gt;
+    &lt;MAX_MPITASKS_PER_NODE&gt;24&lt;/MAX_MPITASKS_PER_NODE&gt;
     &lt;PROJECT_REQUIRED&gt;TRUE&lt;/PROJECT_REQUIRED&gt;
     &lt;mpirun mpilib=&quot;default&quot;&gt;
       &lt;executable&gt;mpiexec_mpt&lt;/executable&gt;
@@ -5413,7 +5661,7 @@ using a fortran linker.
     &lt;BATCH_SYSTEM&gt;pbs&lt;/BATCH_SYSTEM&gt;
     &lt;SUPPORTED_BY&gt;fvitt -at- ucar.edu&lt;/SUPPORTED_BY&gt;
     &lt;MAX_TASKS_PER_NODE&gt;16&lt;/MAX_TASKS_PER_NODE&gt;
-    &lt;PES_PER_NODE&gt;16&lt;/PES_PER_NODE&gt;
+    &lt;MAX_MPITASKS_PER_NODE&gt;16&lt;/MAX_MPITASKS_PER_NODE&gt;
     &lt;PROJECT_REQUIRED&gt;TRUE&lt;/PROJECT_REQUIRED&gt;
     &lt;mpirun mpilib=&quot;default&quot;&gt;
       &lt;executable&gt;mpiexec_mpt&lt;/executable&gt;
@@ -5467,7 +5715,7 @@ using a fortran linker.
     &lt;BATCH_SYSTEM&gt;pbs&lt;/BATCH_SYSTEM&gt;
     &lt;SUPPORTED_BY&gt;fvitt -at- ucar.edu&lt;/SUPPORTED_BY&gt;
     &lt;MAX_TASKS_PER_NODE&gt;20&lt;/MAX_TASKS_PER_NODE&gt;
-    &lt;PES_PER_NODE&gt;20&lt;/PES_PER_NODE&gt;
+    &lt;MAX_MPITASKS_PER_NODE&gt;20&lt;/MAX_MPITASKS_PER_NODE&gt;
     &lt;PROJECT_REQUIRED&gt;TRUE&lt;/PROJECT_REQUIRED&gt;
     &lt;mpirun mpilib=&quot;default&quot;&gt;
       &lt;executable&gt;mpiexec_mpt&lt;/executable&gt;
@@ -5521,12 +5769,12 @@ using a fortran linker.
     &lt;BATCH_SYSTEM&gt;slurm&lt;/BATCH_SYSTEM&gt;
     &lt;SUPPORTED_BY&gt;edouard.davin -at- env.ethz.ch&lt;/SUPPORTED_BY&gt;
     &lt;MAX_TASKS_PER_NODE&gt;32&lt;/MAX_TASKS_PER_NODE&gt;
-    &lt;PES_PER_NODE&gt;32&lt;/PES_PER_NODE&gt;
+    &lt;MAX_MPITASKS_PER_NODE&gt;32&lt;/MAX_MPITASKS_PER_NODE&gt;
     &lt;mpirun mpilib=&quot;default&quot;&gt;
       &lt;executable&gt;aprun&lt;/executable&gt;
       &lt;arguments&gt;
 	&lt;arg name=&quot;num_tasks&quot;&gt; -n $TOTALPES&lt;/arg&gt;
-	&lt;arg name=&quot;tasks_per_node&quot;&gt; -N $PES_PER_NODE&lt;/arg&gt;
+	&lt;arg name=&quot;tasks_per_node&quot;&gt; -N $MAX_MPITASKS_PER_NODE&lt;/arg&gt;
 	&lt;arg name=&quot;thread_count&quot;&gt; -d $ENV{OMP_NUM_THREADS}&lt;/arg&gt;
       &lt;/arguments&gt;
     &lt;/mpirun&gt;
@@ -5557,7 +5805,7 @@ using a fortran linker.
     &lt;BATCH_SYSTEM&gt;none&lt;/BATCH_SYSTEM&gt;
     &lt;SUPPORTED_BY&gt;jgfouca at sandia dot gov&lt;/SUPPORTED_BY&gt;
     &lt;MAX_TASKS_PER_NODE&gt;64&lt;/MAX_TASKS_PER_NODE&gt;
-    &lt;PES_PER_NODE&gt;64&lt;/PES_PER_NODE&gt;
+    &lt;MAX_MPITASKS_PER_NODE&gt;64&lt;/MAX_MPITASKS_PER_NODE&gt;
     &lt;mpirun mpilib=&quot;default&quot;&gt;
       &lt;executable&gt;mpirun&lt;/executable&gt;
       &lt;arguments&gt;
@@ -5609,14 +5857,14 @@ using a fortran linker.
     &lt;BATCH_SYSTEM&gt;slurm&lt;/BATCH_SYSTEM&gt;
     &lt;SUPPORTED_BY&gt;jgfouca at sandia dot gov&lt;/SUPPORTED_BY&gt;
     &lt;MAX_TASKS_PER_NODE&gt;16&lt;/MAX_TASKS_PER_NODE&gt;
-    &lt;PES_PER_NODE&gt;16&lt;/PES_PER_NODE&gt;
+    &lt;MAX_MPITASKS_PER_NODE&gt;16&lt;/MAX_MPITASKS_PER_NODE&gt;
     &lt;PROJECT_REQUIRED&gt;TRUE&lt;/PROJECT_REQUIRED&gt;
 
     &lt;mpirun mpilib=&quot;default&quot;&gt;
       &lt;executable&gt;mpirun&lt;/executable&gt;
       &lt;arguments&gt;
 	&lt;arg name=&quot;num_tasks&quot;&gt; -np $TOTALPES&lt;/arg&gt;
-	&lt;arg name=&quot;tasks_per_node&quot;&gt; -npernode $PES_PER_NODE&lt;/arg&gt;
+	&lt;arg name=&quot;tasks_per_node&quot;&gt; -npernode $MAX_MPITASKS_PER_NODE&lt;/arg&gt;
       &lt;/arguments&gt;
     &lt;/mpirun&gt;
     &lt;module_system type=&quot;module&quot;&gt;
@@ -5671,7 +5919,7 @@ using a fortran linker.
     &lt;BATCH_SYSTEM&gt;slurm&lt;/BATCH_SYSTEM&gt;
     &lt;SUPPORTED_BY&gt;cseg&lt;/SUPPORTED_BY&gt;
     &lt;MAX_TASKS_PER_NODE&gt;16&lt;/MAX_TASKS_PER_NODE&gt;
-    &lt;PES_PER_NODE&gt;16&lt;/PES_PER_NODE&gt;
+    &lt;MAX_MPITASKS_PER_NODE&gt;16&lt;/MAX_MPITASKS_PER_NODE&gt;
 
     &lt;mpirun mpilib=&quot;impi&quot;&gt;
       &lt;executable&gt;ibrun&lt;/executable&gt;
@@ -5734,13 +5982,13 @@ using a fortran linker.
     &lt;BATCH_SYSTEM&gt;cobalt_theta&lt;/BATCH_SYSTEM&gt;
     &lt;SUPPORTED_BY&gt;cseg&lt;/SUPPORTED_BY&gt;
     &lt;MAX_TASKS_PER_NODE&gt;64&lt;/MAX_TASKS_PER_NODE&gt;
-    &lt;PES_PER_NODE&gt;64&lt;/PES_PER_NODE&gt;
+    &lt;MAX_MPITASKS_PER_NODE&gt;64&lt;/MAX_MPITASKS_PER_NODE&gt;
     &lt;PROJECT_REQUIRED&gt;TRUE&lt;/PROJECT_REQUIRED&gt;
     &lt;mpirun mpilib=&quot;default&quot;&gt;
       &lt;executable&gt;aprun&lt;/executable&gt;
       &lt;arguments&gt;
 	&lt;arg name=&quot;num_tasks&quot; &gt;-n $TOTALPES&lt;/arg&gt;
-	&lt;arg name=&quot;tasks_per_node&quot; &gt;-N $PES_PER_NODE&lt;/arg&gt;
+	&lt;arg name=&quot;tasks_per_node&quot; &gt;-N $MAX_MPITASKS_PER_NODE&lt;/arg&gt;
 	&lt;arg name=&quot;thread_count&quot;&gt;--cc depth -d $OMP_NUM_THREADS&lt;/arg&gt;
 	&lt;arg name=&quot;env_omp_stacksize&quot;&gt;-e OMP_STACKSIZE=64M&lt;/arg&gt;
 	&lt;arg name=&quot;env_thread_count&quot;&gt;-e OMP_NUM_THREADS=$OMP_NUM_THREADS&lt;/arg&gt;
@@ -5822,7 +6070,7 @@ using a fortran linker.
     &lt;BATCH_SYSTEM&gt;lsf&lt;/BATCH_SYSTEM&gt;
     &lt;SUPPORTED_BY&gt;cseg&lt;/SUPPORTED_BY&gt;
     &lt;MAX_TASKS_PER_NODE&gt;30&lt;/MAX_TASKS_PER_NODE&gt;
-    &lt;PES_PER_NODE&gt;15&lt;/PES_PER_NODE&gt;
+    &lt;MAX_MPITASKS_PER_NODE&gt;15&lt;/MAX_MPITASKS_PER_NODE&gt;
     &lt;PROJECT_REQUIRED&gt;TRUE&lt;/PROJECT_REQUIRED&gt;
     &lt;mpirun mpilib=&quot;default&quot; unit_testing=&quot;true&quot;&gt;
       &lt;!-- For unit testing, avoid all of the extra stuff that we use before and
@@ -5830,13 +6078,27 @@ using a fortran linker.
       &lt;executable&gt;mpirun.lsf &lt;/executable&gt;
     &lt;/mpirun&gt;
     &lt;mpirun mpilib=&quot;default&quot; threaded=&quot;false&quot;&gt;
-      &lt;executable&gt;TARGET_PROCESSOR_LIST=AUTO_SELECT mpirun.lsf $ENV{CESMDATAROOT}/tools/bin/launch &lt;/executable&gt;
+      &lt;executable&gt;TARGET_PROCESSOR_LIST=AUTO_SELECT $ENV{CESMDATAROOT}/tools/bin/mpirun &lt;/executable&gt;
+      &lt;arguments&gt;
+	&lt;arg name=&quot;anum_tasks&quot;&gt; -n $TOTALPES&lt;/arg&gt;
+        &lt;arg name=&quot;tasks_per_node&quot;&gt; -tpn {{ tasks_per_node }} &lt;/arg&gt;
+	&lt;arg name=&quot;bindtool&quot;&gt;$ENV{CESMDATAROOT}/tools/bin/launch &lt;/arg&gt;
+      &lt;/arguments&gt;
     &lt;/mpirun&gt;
     &lt;mpirun mpilib=&quot;default&quot; threaded=&quot;true&quot;&gt;
-      &lt;executable&gt;unset MP_PE_AFFINITY; unset MP_TASK_AFFINITY; unset MP_CPU_BIND_LIST; mpirun.lsf $ENV{CESMDATAROOT}/tools/bin/hybrid_launch &lt;/executable&gt;
+      &lt;executable&gt;unset MP_PE_AFFINITY; unset MP_TASK_AFFINITY; unset MP_CPU_BIND_LIST; $ENV{CESMDATAROOT}/tools/bin/mpirun &lt;/executable&gt;
+      &lt;arguments&gt;
+	&lt;arg name=&quot;anum_tasks&quot;&gt; -n $TOTALPES&lt;/arg&gt;
+        &lt;arg name=&quot;tasks_per_node&quot;&gt; -tpn {{ tasks_per_node }} &lt;/arg&gt;
+	&lt;arg name=&quot;bindtool&quot;&gt;$ENV{CESMDATAROOT}/tools/bin/hybrid_launch &lt;/arg&gt;
+      &lt;/arguments&gt;
     &lt;/mpirun&gt;
     &lt;mpirun compiler=&quot;gnu&quot;&gt;
-      &lt;executable&gt;mpirun.lsf &lt;/executable&gt;
+      &lt;executable&gt; $ENV{CESMDATAROOT}/tools/bin/mpirun &lt;/executable&gt;
+      &lt;arguments&gt;
+	&lt;arg name=&quot;anum_tasks&quot;&gt; -n $TOTALPES&lt;/arg&gt;
+        &lt;arg name=&quot;tasks_per_node&quot;&gt; -tpn {{ tasks_per_node }} &lt;/arg&gt;
+      &lt;/arguments&gt;
     &lt;/mpirun&gt;
     &lt;module_system type=&quot;module&quot;&gt;
       &lt;init_path lang=&quot;perl&quot;&gt;/glade/apps/opt/lmod/lmod/init/perl&lt;/init_path&gt;
@@ -5955,7 +6217,7 @@ using a fortran linker.
 
   &lt;entry id=&quot;PIO_STRIDE&quot;&gt;
     &lt;values&gt;
-      &lt;value&gt;$PES_PER_NODE&lt;/value&gt;
+      &lt;value&gt;$MAX_MPITASKS_PER_NODE&lt;/value&gt;
       &lt;value mach=&quot;yellowstone&quot; grid=&quot;a%ne120.+oi%gx1&quot;&gt;60&lt;/value&gt;
     &lt;/values&gt;
   &lt;/entry&gt;
@@ -6342,6 +6604,10 @@ the following XML files.</p>
     &lt;lname&gt;1850_CAM60%WCTS_CLM50%BGC-CROP_CICE_POP2%ECO_MOSART_CISM2%NOEVOLVE_WW3&lt;/lname&gt;
     &lt;science_support grid=&quot;f09_g16&quot;/&gt;
   &lt;/compset&gt;
+  &lt;compset&gt;
+    &lt;alias&gt;BWma1850&lt;/alias&gt;
+    &lt;lname&gt;1850_CAM60%WCCM_CLM50%BGC-CROP_CICE_POP2%ECO_MOSART_CISM2%NOEVOLVE_WW3&lt;/lname&gt;
+  &lt;/compset&gt;
 
   &lt;!--
        Other B water isotope compsets that are only relevant for clm water isotope branches
@@ -6580,6 +6846,33 @@ the following XML files.</p>
         &lt;value compset=&quot;2013_&quot;     &gt;2013-01-01&lt;/value&gt;
       &lt;/values&gt;
     &lt;/entry&gt;
+    &lt;entry id=&quot;RUN_REFDATE&quot;&gt;
+      &lt;values match=&quot;first&quot;&gt;
+        &lt;value grid=&quot;a%0.9x1.25_l%0.9x1.25_oi%gx1v7_r%r05_g%gland4_w%ww3a_m%gx1v7&quot;      compset=&quot;1850_CAM60_CLM50%BGC-CROP_CICE_POP2%ECO_MOSART_CISM2%NOEVOLVE_WW3_BGC%BDRD&quot;     &gt;0402-01-01&lt;/value&gt;
+        &lt;value grid=&quot;a%0.9x1.25_l%0.9x1.25_oi%gx1v7_r%r05_g%gland4_w%null_m%gx1v7&quot;      compset=&quot;1850_CAM60_CLM50%BGC-CROP_CICE_POP2%ECO_MOSART_CISM2%NOEVOLVE_SWAV_BGC%BDRD&quot;    &gt;0402-01-01&lt;/value&gt;
+      &lt;/values&gt;
+    &lt;/entry&gt;
+
+    &lt;entry id=&quot;RUN_TYPE&quot;&gt;
+      &lt;values match=&quot;first&quot;&gt;
+        &lt;value grid=&quot;a%0.9x1.25_l%0.9x1.25_oi%gx1v7_r%r05_g%gland4_w%ww3a_m%gx1v7&quot;      compset=&quot;1850_CAM60_CLM50%BGC-CROP_CICE_POP2%ECO_MOSART_CISM2%NOEVOLVE_WW3_BGC%BDRD&quot;     &gt;hybrid&lt;/value&gt;
+        &lt;value grid=&quot;a%0.9x1.25_l%0.9x1.25_oi%gx1v7_r%r05_g%gland4_w%null_m%gx1v7&quot;      compset=&quot;1850_CAM60_CLM50%BGC-CROP_CICE_POP2%ECO_MOSART_CISM2%NOEVOLVE_SWAV_BGC%BDRD&quot;    &gt;hybrid&lt;/value&gt;
+      &lt;/values&gt;
+    &lt;/entry&gt;
+
+    &lt;entry id=&quot;RUN_REFCASE&quot;&gt;
+      &lt;values match=&quot;first&quot;&gt;
+        &lt;value grid=&quot;a%0.9x1.25_l%0.9x1.25_oi%gx1v7_r%r05_g%gland4_w%ww3a_m%gx1v7&quot;      compset=&quot;1850_CAM60_CLM50%BGC-CROP_CICE_POP2%ECO_MOSART_CISM2%NOEVOLVE_WW3_BGC%BDRD&quot;     &gt;b.e11.B1850C5CN.f09_g16.005_yr402_cesm2_v2&lt;/value&gt;
+        &lt;value grid=&quot;a%0.9x1.25_l%0.9x1.25_oi%gx1v7_r%r05_g%gland4_w%null_m%gx1v7&quot;      compset=&quot;1850_CAM60_CLM50%BGC-CROP_CICE_POP2%ECO_MOSART_CISM2%NOEVOLVE_SWAV_BGC%BDRD&quot;    &gt;b.e11.B1850C5CN.f09_g16.005_yr402_cesm2_v2&lt;/value&gt;
+      &lt;/values&gt;
+    &lt;/entry&gt;
+
+    &lt;entry id=&quot;RUN_REFDIR&quot;&gt;
+      &lt;values match=&quot;first&quot;&gt;
+        &lt;value grid=&quot;a%0.9x1.25_l%0.9x1.25_oi%gx1v7_r%r05_g%gland4_w%ww3a_m%gx1v7&quot;      compset=&quot;1850_CAM60_CLM50%BGC-CROP_CICE_POP2%ECO_MOSART_CISM2%NOEVOLVE_WW3_BGC%BDRD&quot;     &gt;cesm2_init&lt;/value&gt;
+        &lt;value grid=&quot;a%0.9x1.25_l%0.9x1.25_oi%gx1v7_r%r05_g%gland4_w%null_m%gx1v7&quot;      compset=&quot;1850_CAM60_CLM50%BGC-CROP_CICE_POP2%ECO_MOSART_CISM2%NOEVOLVE_SWAV_BGC%BDRD&quot;    &gt;cesm2_init&lt;/value&gt;
+      &lt;/values&gt;
+    &lt;/entry&gt;
   &lt;/entries&gt;
 
 &lt;/compsets&gt;
@@ -6634,10 +6927,10 @@ the following XML files.</p>
       &lt;machine name=&quot;cheyenne&quot; compiler=&quot;intel&quot; category=&quot;prealpha&quot;/&gt;
     &lt;/machines&gt;
     &lt;options&gt;
-      &lt;option name=&quot;wallclock&quot;&gt; 04:00 &lt;/option&gt;
+      &lt;option name=&quot;wallclock&quot;&gt; 06:00 &lt;/option&gt;
     &lt;/options&gt;
   &lt;/test&gt;
-  &lt;test name=&quot;ERS&quot; grid=&quot;f19_g17&quot; compset=&quot;B1850C4L45BGCRBPRPWs&quot; testmods=&quot;allactive/defaultio&quot;&gt;
+  &lt;test name=&quot;IRT&quot; grid=&quot;f19_g17&quot; compset=&quot;B1850C4L45BGCRBPRPWs&quot; testmods=&quot;allactive/defaultio&quot;&gt;
     &lt;machines&gt;
       &lt;machine name=&quot;bluewaters&quot; compiler=&quot;pgi&quot; category=&quot;prebeta&quot;/&gt;
       &lt;options&gt;
@@ -6645,7 +6938,7 @@ the following XML files.</p>
       &lt;/options&gt;
     &lt;/machines&gt;
   &lt;/test&gt;
-  &lt;test name=&quot;ERS&quot; grid=&quot;f09_g17&quot; compset=&quot;B1850Ws&quot; testmods=&quot;allactive/defaultio&quot;&gt;
+  &lt;test name=&quot;IRT&quot; grid=&quot;f09_g17&quot; compset=&quot;B1850Ws&quot; testmods=&quot;allactive/defaultio&quot;&gt;
     &lt;machines&gt;
       &lt;machine name=&quot;bluewaters&quot; compiler=&quot;pgi&quot; category=&quot;prealpha&quot;/&gt;
       &lt;machine name=&quot;edison&quot; compiler=&quot;cray&quot; category=&quot;prealpha&quot;/&gt;
@@ -6663,7 +6956,7 @@ the following XML files.</p>
       &lt;option name=&quot;wallclock&quot;&gt; 00:25 &lt;/option&gt;
     &lt;/options&gt;
   &lt;/test&gt;
-  &lt;test name=&quot;ERS&quot; grid=&quot;f09_g17&quot; compset=&quot;BRCP85C5L45BGCR&quot; testmods=&quot;allactive/defaultio&quot;&gt;
+  &lt;test name=&quot;IRT&quot; grid=&quot;f09_g17&quot; compset=&quot;BRCP85C5L45BGCR&quot; testmods=&quot;allactive/defaultio&quot;&gt;
     &lt;machines&gt;
       &lt;machine name=&quot;cheyenne&quot; compiler=&quot;intel&quot; category=&quot;prebeta&quot;/&gt;
     &lt;/machines&gt;
@@ -6679,7 +6972,7 @@ the following XML files.</p>
       &lt;option name=&quot;wallclock&quot;&gt; 00:30 &lt;/option&gt;
     &lt;/options&gt;
   &lt;/test&gt;
-  &lt;test name=&quot;ERS_Ld7&quot; grid=&quot;f09_g17&quot; compset=&quot;BHIST&quot; testmods=&quot;allactive/defaultio&quot;&gt;
+  &lt;test name=&quot;IRT_Ld7&quot; grid=&quot;f09_g17&quot; compset=&quot;BHIST&quot; testmods=&quot;allactive/defaultio&quot;&gt;
     &lt;machines&gt;
       &lt;machine name=&quot;bluewaters&quot; compiler=&quot;pgi&quot; category=&quot;prebeta&quot;/&gt;
       &lt;machine name=&quot;cheyenne&quot; compiler=&quot;intel&quot; category=&quot;prealpha&quot;/&gt;
@@ -6688,16 +6981,25 @@ the following XML files.</p>
       &lt;option name=&quot;wallclock&quot;&gt; 00:30 &lt;/option&gt;
     &lt;/options&gt;
   &lt;/test&gt;
-  &lt;test name=&quot;SMS_Ld5&quot; grid=&quot;f09_g17&quot; compset=&quot;BW1850&quot; testmods=&quot;allactive/default&quot;&gt;
+  &lt;test name=&quot;SMS_Ld1&quot; grid=&quot;f09_g17&quot; compset=&quot;BW1850&quot; testmods=&quot;allactive/default&quot;&gt;
     &lt;machines&gt;
       &lt;machine name=&quot;cheyenne&quot; compiler=&quot;intel&quot; category=&quot;prebeta&quot;/&gt;
-      &lt;machine name=&quot;cheyenne&quot; compiler=&quot;intel&quot; category=&quot;waccm&quot;/&gt;
+      &lt;machine name=&quot;cheyenne&quot; compiler=&quot;intel&quot; category=&quot;bwaccm&quot;/&gt;
     &lt;/machines&gt;
     &lt;options&gt;
       &lt;option name=&quot;wallclock&quot;&gt; 01:00 &lt;/option&gt;
     &lt;/options&gt;
   &lt;/test&gt;
-  &lt;test name=&quot;ERS_Ld5&quot; grid=&quot;T31_g37&quot; compset=&quot;B1850C5L45BGCR&quot; testmods=&quot;allactive/defaultio&quot;&gt;
+  &lt;test name=&quot;SMS_Ld5&quot; grid=&quot;f19_g17&quot; compset=&quot;BWma1850&quot; testmods=&quot;allactive/default&quot;&gt;
+    &lt;machines&gt;
+      &lt;machine name=&quot;cheyenne&quot; compiler=&quot;intel&quot; category=&quot;prebeta&quot;/&gt;
+      &lt;machine name=&quot;cheyenne&quot; compiler=&quot;intel&quot; category=&quot;bwaccm&quot;/&gt;
+    &lt;/machines&gt;
+    &lt;options&gt;
+      &lt;option name=&quot;wallclock&quot;&gt; 01:00 &lt;/option&gt;
+    &lt;/options&gt;
+  &lt;/test&gt;
+  &lt;test name=&quot;IRT_Ld7&quot; grid=&quot;T31_g37&quot; compset=&quot;B1850C5L45BGCR&quot; testmods=&quot;allactive/defaultio&quot;&gt;
     &lt;machines&gt;
       &lt;machine name=&quot;cheyenne&quot; compiler=&quot;intel&quot; category=&quot;prealpha&quot;/&gt;
     &lt;/machines&gt;
@@ -6715,14 +7017,15 @@ the following XML files.</p>
   &lt;/test&gt;
   &lt;test name=&quot;ERS_Ld7&quot; grid=&quot;f19_g17&quot; compset=&quot;B1850&quot; testmods=&quot;allactive/defaultio&quot;&gt;
     &lt;machines&gt;
-      &lt;machine name=&quot;bluewaters&quot; compiler=&quot;pgi&quot; category=&quot;prebeta&quot;/&gt;
-      &lt;machine name=&quot;cheyenne&quot; compiler=&quot;intel&quot; category=&quot;prealpha&quot;/&gt;
+      &lt;machine name=&quot;bluewaters&quot; compiler=&quot;pgi&quot;   category=&quot;prebeta&quot;/&gt;
+      &lt;machine name=&quot;cheyenne&quot;   compiler=&quot;intel&quot; category=&quot;prealpha&quot;/&gt;
+      &lt;machine name=&quot;hobart&quot;     compiler=&quot;pgi&quot;   category=&quot;prealpha&quot;/&gt;
     &lt;/machines&gt;
     &lt;options&gt;
       &lt;option name=&quot;wallclock&quot;&gt; 00:30 &lt;/option&gt;
     &lt;/options&gt;
   &lt;/test&gt;
-  &lt;test name=&quot;ERS_Ld7&quot; grid=&quot;ne30_g17&quot; compset=&quot;B1850&quot; testmods=&quot;allactive/defaultio&quot;&gt;
+  &lt;test name=&quot;IRT_Ld7&quot; grid=&quot;ne30_g17&quot; compset=&quot;B1850&quot; testmods=&quot;allactive/defaultio&quot;&gt;
     &lt;machines&gt;
       &lt;machine name=&quot;cheyenne&quot; compiler=&quot;gnu&quot; category=&quot;prealpha&quot;/&gt;
       &lt;machine name=&quot;cheyenne&quot; compiler=&quot;gnu&quot; category=&quot;prebeta&quot;/&gt;
@@ -6747,7 +7050,7 @@ the following XML files.</p>
       &lt;option name=&quot;wallclock&quot;&gt; 00:30 &lt;/option&gt;
     &lt;/options&gt;
   &lt;/test&gt;
-  &lt;test name=&quot;ERS_N3_Ld7&quot; grid=&quot;f19_g17&quot; compset=&quot;BHISTWs&quot; testmods=&quot;allactive/defaultio&quot;&gt;
+  &lt;test name=&quot;IRT_N3_Ld7&quot; grid=&quot;f19_g17&quot; compset=&quot;BHISTWs&quot; testmods=&quot;allactive/defaultio&quot;&gt;
     &lt;machines&gt;
       &lt;machine name=&quot;edison&quot; compiler=&quot;intel&quot; category=&quot;prebeta&quot;/&gt;
       &lt;machine name=&quot;cheyenne&quot; compiler=&quot;intel&quot; category=&quot;prealpha&quot;/&gt;
@@ -6783,18 +7086,10 @@ the following XML files.</p>
       &lt;option name=&quot;comment&quot;&gt;Needs to be B1850GWs rather than B1850G because WW3 currently does not support multi-instance&lt;/option&gt;
     &lt;/options&gt;
   &lt;/test&gt;
-  &lt;test name=&quot;PEA_P1&quot; grid=&quot;f19_g17&quot; compset=&quot;B1850&quot; testmods=&quot;allactive/defaultio&quot;&gt;
-    &lt;machines&gt;
-      &lt;machine name=&quot;hobart&quot; compiler=&quot;intel&quot; category=&quot;prebeta&quot;/&gt;
-      &lt;machine name=&quot;hobart&quot; compiler=&quot;pgi&quot; category=&quot;prebeta&quot;/&gt;
-    &lt;/machines&gt;
-    &lt;options&gt;
-      &lt;option name=&quot;wallclock&quot;&gt; 00:30 &lt;/option&gt;
-    &lt;/options&gt;
-  &lt;/test&gt;
-  &lt;test name=&quot;PET&quot; grid=&quot;f19_g17&quot; compset=&quot;B1850&quot; testmods=&quot;allactive/defaultio&quot;&gt;
+  &lt;test name=&quot;PET_PM&quot; grid=&quot;f19_g17&quot; compset=&quot;B1850&quot; testmods=&quot;allactive/defaultio&quot;&gt;
     &lt;machines&gt;
       &lt;machine name=&quot;cheyenne&quot; compiler=&quot;gnu&quot; category=&quot;prealpha&quot;/&gt;
+      &lt;machine name=&quot;cheyenne&quot; compiler=&quot;intel&quot; category=&quot;prealpha&quot;/&gt;
     &lt;/machines&gt;
     &lt;options&gt;
       &lt;option name=&quot;wallclock&quot;&gt; 00:30 &lt;/option&gt;
@@ -8126,14 +8421,14 @@ the following XML files.</p>
   &lt;/grid&gt;
   &lt;grid name=&quot;a%0.9x1.25.+l%0.9x1.25.+oi%gx1&quot; &gt;
     &lt;mach name=&quot;cheyenne&quot;&gt;
-      &lt;pes pesize=&quot;any&quot; compset=&quot;CAM.+CLM.+CICE.+POP.+WW3.+&quot;&gt;
-	&lt;comment&gt;about 5ypd expected&lt;/comment&gt;
+      &lt;pes pesize=&quot;any&quot; compset=&quot;CAM.+CLM.+CICE.+POP.+WW3&quot;&gt;
+	&lt;comment&gt;about 6.5ypd expected&lt;/comment&gt;
 	&lt;ntasks&gt;
 	  &lt;ntasks_atm&gt;-16&lt;/ntasks_atm&gt;
-	  &lt;ntasks_lnd&gt;-12&lt;/ntasks_lnd&gt;
-	  &lt;ntasks_rof&gt;-12&lt;/ntasks_rof&gt;
-	  &lt;ntasks_ice&gt;-3&lt;/ntasks_ice&gt;
-	  &lt;ntasks_ocn&gt;-3&lt;/ntasks_ocn&gt;
+	  &lt;ntasks_lnd&gt;-13&lt;/ntasks_lnd&gt;
+	  &lt;ntasks_rof&gt;-13&lt;/ntasks_rof&gt;
+	  &lt;ntasks_ice&gt;-2&lt;/ntasks_ice&gt;
+	  &lt;ntasks_ocn&gt;-4&lt;/ntasks_ocn&gt;
 	  &lt;ntasks_glc&gt;-16&lt;/ntasks_glc&gt;
 	  &lt;ntasks_wav&gt;-1&lt;/ntasks_wav&gt;
 	  &lt;ntasks_cpl&gt;-16&lt;/ntasks_cpl&gt;
@@ -8152,14 +8447,81 @@ the following XML files.</p>
 	  &lt;rootpe_atm&gt;0&lt;/rootpe_atm&gt;
 	  &lt;rootpe_lnd&gt;0&lt;/rootpe_lnd&gt;
 	  &lt;rootpe_rof&gt;0&lt;/rootpe_rof&gt;
-	  &lt;rootpe_ice&gt;-12&lt;/rootpe_ice&gt;
+	  &lt;rootpe_ice&gt;-13&lt;/rootpe_ice&gt;
 	  &lt;rootpe_ocn&gt;-16&lt;/rootpe_ocn&gt;
 	  &lt;rootpe_glc&gt;0&lt;/rootpe_glc&gt;
 	  &lt;rootpe_wav&gt;-15&lt;/rootpe_wav&gt;
 	  &lt;rootpe_cpl&gt;0&lt;/rootpe_cpl&gt;
 	&lt;/rootpe&gt;
       &lt;/pes&gt;
+
+      &lt;pes pesize=&quot;any&quot; compset=&quot;CAM.+CLM.+CICE.+POP.+SWAV&quot;&gt;
+	&lt;comment&gt;about 8 ypd expected&lt;/comment&gt;
+	&lt;ntasks&gt;
+	  &lt;ntasks_atm&gt;-20&lt;/ntasks_atm&gt;
+	  &lt;ntasks_lnd&gt;-17&lt;/ntasks_lnd&gt;
+	  &lt;ntasks_rof&gt;-17&lt;/ntasks_rof&gt;
+	  &lt;ntasks_ice&gt;-3&lt;/ntasks_ice&gt;
+	  &lt;ntasks_ocn&gt;-4&lt;/ntasks_ocn&gt;
+	  &lt;ntasks_glc&gt;-20&lt;/ntasks_glc&gt;
+	  &lt;ntasks_wav&gt;1&lt;/ntasks_wav&gt;
+	  &lt;ntasks_cpl&gt;-20&lt;/ntasks_cpl&gt;
+	&lt;/ntasks&gt;
+	&lt;nthrds&gt;
+	  &lt;nthrds_atm&gt;1&lt;/nthrds_atm&gt;
+	  &lt;nthrds_lnd&gt;1&lt;/nthrds_lnd&gt;
+	  &lt;nthrds_rof&gt;1&lt;/nthrds_rof&gt;
+	  &lt;nthrds_ice&gt;1&lt;/nthrds_ice&gt;
+	  &lt;nthrds_ocn&gt;1&lt;/nthrds_ocn&gt;
+	  &lt;nthrds_glc&gt;1&lt;/nthrds_glc&gt;
+	  &lt;nthrds_wav&gt;1&lt;/nthrds_wav&gt;
+	  &lt;nthrds_cpl&gt;1&lt;/nthrds_cpl&gt;
+	&lt;/nthrds&gt;
+	&lt;rootpe&gt;
+	  &lt;rootpe_atm&gt;0&lt;/rootpe_atm&gt;
+	  &lt;rootpe_lnd&gt;0&lt;/rootpe_lnd&gt;
+	  &lt;rootpe_rof&gt;0&lt;/rootpe_rof&gt;
+	  &lt;rootpe_ice&gt;-17&lt;/rootpe_ice&gt;
+	  &lt;rootpe_ocn&gt;-20&lt;/rootpe_ocn&gt;
+	  &lt;rootpe_glc&gt;0&lt;/rootpe_glc&gt;
+	  &lt;rootpe_wav&gt;0&lt;/rootpe_wav&gt;
+	  &lt;rootpe_cpl&gt;0&lt;/rootpe_cpl&gt;
+	&lt;/rootpe&gt;
+      &lt;/pes&gt;
       &lt;pes pesize=&quot;L&quot; compset=&quot;CAM.+CLM.+CICE.+POP.+WW3.+&quot;&gt;
+	&lt;comment&gt;about 15ypd expected&lt;/comment&gt;
+	&lt;ntasks&gt;
+	  &lt;ntasks_atm&gt;1728&lt;/ntasks_atm&gt;
+	  &lt;ntasks_lnd&gt;1440&lt;/ntasks_lnd&gt;
+	  &lt;ntasks_rof&gt;1440&lt;/ntasks_rof&gt;
+	  &lt;ntasks_ice&gt;252&lt;/ntasks_ice&gt;
+	  &lt;ntasks_ocn&gt;432&lt;/ntasks_ocn&gt;
+	  &lt;ntasks_glc&gt;1728&lt;/ntasks_glc&gt;
+	  &lt;ntasks_wav&gt;36&lt;/ntasks_wav&gt;
+	  &lt;ntasks_cpl&gt;1728&lt;/ntasks_cpl&gt;
+	&lt;/ntasks&gt;
+	&lt;nthrds&gt;
+	  &lt;nthrds_atm&gt;1&lt;/nthrds_atm&gt;
+	  &lt;nthrds_lnd&gt;1&lt;/nthrds_lnd&gt;
+	  &lt;nthrds_rof&gt;1&lt;/nthrds_rof&gt;
+	  &lt;nthrds_ice&gt;1&lt;/nthrds_ice&gt;
+	  &lt;nthrds_ocn&gt;1&lt;/nthrds_ocn&gt;
+	  &lt;nthrds_glc&gt;1&lt;/nthrds_glc&gt;
+	  &lt;nthrds_wav&gt;1&lt;/nthrds_wav&gt;
+	  &lt;nthrds_cpl&gt;1&lt;/nthrds_cpl&gt;
+	&lt;/nthrds&gt;
+	&lt;rootpe&gt;
+	  &lt;rootpe_atm&gt;0&lt;/rootpe_atm&gt;
+	  &lt;rootpe_lnd&gt;0&lt;/rootpe_lnd&gt;
+	  &lt;rootpe_rof&gt;0&lt;/rootpe_rof&gt;
+	  &lt;rootpe_ice&gt;1440&lt;/rootpe_ice&gt;
+	  &lt;rootpe_ocn&gt;1728&lt;/rootpe_ocn&gt;
+	  &lt;rootpe_glc&gt;0&lt;/rootpe_glc&gt;
+	  &lt;rootpe_wav&gt;1692&lt;/rootpe_wav&gt;
+	  &lt;rootpe_cpl&gt;0&lt;/rootpe_cpl&gt;
+	&lt;/rootpe&gt;
+      &lt;/pes&gt;
+      &lt;pes pesize=&quot;X1&quot; compset=&quot;CAM.+CLM.+CICE.+POP.+WW3.+&quot;&gt;
 	&lt;comment&gt;about 25ypd expected&lt;/comment&gt;
 	&lt;ntasks&gt;
 	  &lt;ntasks_atm&gt;-32&lt;/ntasks_atm&gt;
@@ -8192,17 +8554,19 @@ the following XML files.</p>
 	  &lt;rootpe_cpl&gt;0&lt;/rootpe_cpl&gt;
 	&lt;/rootpe&gt;
       &lt;/pes&gt;
-      &lt;pes pesize=&quot;any&quot; compset=&quot;_(CAM50|CAM60)%(CC|WC)&quot;&gt;
-	&lt;comment&gt;none&lt;/comment&gt;
+    &lt;/mach&gt;
+    &lt;mach name=&quot;edison&quot;&gt;
+      &lt;pes pesize=&quot;any&quot; compset=&quot;CAM.+CLM.+CICE.+POP.+WW3&quot;&gt;
+	&lt;comment&gt;about 17ypd expected&lt;/comment&gt;
 	&lt;ntasks&gt;
-	  &lt;ntasks_atm&gt;288&lt;/ntasks_atm&gt;
-	  &lt;ntasks_lnd&gt;216&lt;/ntasks_lnd&gt;
-	  &lt;ntasks_rof&gt;216&lt;/ntasks_rof&gt;
-	  &lt;ntasks_ice&gt;63&lt;/ntasks_ice&gt;
-	  &lt;ntasks_ocn&gt;18&lt;/ntasks_ocn&gt;
-	  &lt;ntasks_glc&gt;288&lt;/ntasks_glc&gt;
-	  &lt;ntasks_wav&gt;9&lt;/ntasks_wav&gt;
-	  &lt;ntasks_cpl&gt;288&lt;/ntasks_cpl&gt;
+	  &lt;ntasks_atm&gt;-50&lt;/ntasks_atm&gt;
+	  &lt;ntasks_lnd&gt;-30&lt;/ntasks_lnd&gt;
+	  &lt;ntasks_rof&gt;-30&lt;/ntasks_rof&gt;
+	  &lt;ntasks_ice&gt;-18&lt;/ntasks_ice&gt;
+	  &lt;ntasks_ocn&gt;-20&lt;/ntasks_ocn&gt;
+	  &lt;ntasks_glc&gt;-30&lt;/ntasks_glc&gt;
+	  &lt;ntasks_wav&gt;-2&lt;/ntasks_wav&gt;
+	  &lt;ntasks_cpl&gt;-50&lt;/ntasks_cpl&gt;
 	&lt;/ntasks&gt;
 	&lt;nthrds&gt;
 	  &lt;nthrds_atm&gt;4&lt;/nthrds_atm&gt;
@@ -8218,14 +8582,13 @@ the following XML files.</p>
 	  &lt;rootpe_atm&gt;0&lt;/rootpe_atm&gt;
 	  &lt;rootpe_lnd&gt;0&lt;/rootpe_lnd&gt;
 	  &lt;rootpe_rof&gt;0&lt;/rootpe_rof&gt;
-	  &lt;rootpe_ice&gt;216&lt;/rootpe_ice&gt;
-	  &lt;rootpe_ocn&gt;288&lt;/rootpe_ocn&gt;
+	  &lt;rootpe_ice&gt;-30&lt;/rootpe_ice&gt;
+	  &lt;rootpe_ocn&gt;-50&lt;/rootpe_ocn&gt;
 	  &lt;rootpe_glc&gt;0&lt;/rootpe_glc&gt;
-	  &lt;rootpe_wav&gt;279&lt;/rootpe_wav&gt;
+	  &lt;rootpe_wav&gt;-48&lt;/rootpe_wav&gt;
 	  &lt;rootpe_cpl&gt;0&lt;/rootpe_cpl&gt;
 	&lt;/rootpe&gt;
       &lt;/pes&gt;
-
     &lt;/mach&gt;
   &lt;/grid&gt;
   &lt;grid name=&quot;a%0.9x1.25.+l%0.9x1.25.+oi%gx1&quot; &gt;
@@ -8566,7 +8929,7 @@ the following XML files.</p>
   &lt;grid name=&quot;a%0.9x1.25.+l%0.9x1.25.+oi%gx1&quot; &gt;
     &lt;mach name=&quot;yellowstone&quot;&gt;
       &lt;pes pesize=&quot;X2&quot; compset=&quot;CAM.+CLM.+CICE.+POP.+&quot;&gt;
-	&lt;PES_PER_NODE&gt;16&lt;/PES_PER_NODE&gt;
+	&lt;MAX_MPITASKS_PER_NODE&gt;16&lt;/MAX_MPITASKS_PER_NODE&gt;
 	&lt;MAX_TASKS_PER_NODE&gt;16&lt;/MAX_TASKS_PER_NODE&gt;
 	&lt;comment&gt;none&lt;/comment&gt;
 	&lt;ntasks&gt;
@@ -8601,7 +8964,7 @@ the following XML files.</p>
 	&lt;/rootpe&gt;
       &lt;/pes&gt;
       &lt;pes pesize=&quot;X1&quot; compset=&quot;CAM.+CLM.+CICE.+POP.+&quot;&gt;
-	&lt;PES_PER_NODE&gt;16&lt;/PES_PER_NODE&gt;
+	&lt;MAX_MPITASKS_PER_NODE&gt;16&lt;/MAX_MPITASKS_PER_NODE&gt;
 	&lt;MAX_TASKS_PER_NODE&gt;16&lt;/MAX_TASKS_PER_NODE&gt;
 	&lt;comment&gt;none&lt;/comment&gt;
 	&lt;ntasks&gt;
@@ -8965,13 +9328,13 @@ the following XML files.</p>
         <li class="right" >
           <a href="acme.html" title="ACME Coupled Model XML Files"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" >XML Files</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >XML Files</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
+        &copy; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.3.
     </div>
   </body>
 </html>

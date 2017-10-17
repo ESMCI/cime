@@ -2,34 +2,37 @@
 
 <!doctype html>
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>CIME.SystemTests.seq &#8212; CIME 5.3.0 documentation</title>
+    
+    <title>CIME.SystemTests.seq &mdash; CIME 5.3.0 documentation</title>
+    
     <link rel="stylesheet" href="../../../_static/bizstyle.css" type="text/css" />
     <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../../',
         VERSION:     '5.3.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
+        HAS_SOURCE:  true
       };
     </script>
     <script type="text/javascript" src="../../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../../_static/doctools.js"></script>
     <script type="text/javascript" src="../../../_static/bizstyle.js"></script>
-    <link rel="index" title="Index" href="../../../genindex.html" />
-    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="top" title="CIME 5.3.0 documentation" href="../../../index.html" />
+    <link rel="up" title="Module code" href="../../index.html" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <!--[if lt IE 9]>
     <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
     <![endif]-->
   </head>
-  <body>
+  <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -39,8 +42,8 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">CIME 5.3.0 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../../../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -67,23 +70,23 @@
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">CIME smoke test  This class inherits from SystemTestsCommon</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="k">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">CIME.SystemTests.system_tests_common</span> <span class="k">import</span> <span class="n">SystemTestsCommon</span>
-<span class="kn">from</span> <span class="nn">CIME.case_setup</span> <span class="k">import</span> <span class="n">case_setup</span>
-<span class="kn">from</span> <span class="nn">CIME.check_lockedfiles</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">CIME.SystemTests.system_tests_common</span> <span class="kn">import</span> <span class="n">SystemTestsCommon</span>
+<span class="kn">from</span> <span class="nn">CIME.case_setup</span> <span class="kn">import</span> <span class="n">case_setup</span>
+<span class="kn">from</span> <span class="nn">CIME.check_lockedfiles</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">import</span> <span class="nn">shutil</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 <div class="viewcode-block" id="SEQ"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.seq.SEQ">[docs]</a><span class="k">class</span> <span class="nc">SEQ</span><span class="p">(</span><span class="n">SystemTestsCommon</span><span class="p">):</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        initialize an object interface to file env_test.xml in the case directory</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">SystemTestsCommon</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">case</span><span class="p">,</span> <span class="n">expected</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;TEST&quot;</span><span class="p">])</span>
 
-<div class="viewcode-block" id="SEQ.build_phase"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.seq.SEQ.build_phase">[docs]</a>    <span class="k">def</span> <span class="nf">build_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sharedlib_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">model_only</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="SEQ.build_phase"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.seq.SEQ.build_phase">[docs]</a>    <span class="k">def</span> <span class="nf">build_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sharedlib_only</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">model_only</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Build two cases.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -95,9 +98,9 @@
         <span class="c1"># Build the model with all components with different rootpes</span>
         <span class="n">exeroot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;EXEROOT&quot;</span><span class="p">)</span>
         <span class="n">cime_model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MODEL&quot;</span><span class="p">)</span>
-        <span class="n">shutil</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">.exe&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">exeroot</span><span class="p">,</span><span class="n">cime_model</span><span class="p">),</span>
-                    <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">.exe.SEQ1&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">exeroot</span><span class="p">,</span><span class="n">cime_model</span><span class="p">))</span>
-        <span class="n">any_changes</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">shutil</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="s2">&quot;{}/{}.exe&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">exeroot</span><span class="p">,</span><span class="n">cime_model</span><span class="p">),</span>
+                    <span class="s2">&quot;{}/{}.exe.SEQ1&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">exeroot</span><span class="p">,</span><span class="n">cime_model</span><span class="p">))</span>
+        <span class="n">any_changes</span> <span class="o">=</span> <span class="bp">False</span>
         <span class="n">machpes1</span> <span class="o">=</span> <span class="s2">&quot;env_mach_pes.SEQ1.xml&quot;</span>
         <span class="k">if</span> <span class="n">is_locked</span><span class="p">(</span><span class="n">machpes1</span><span class="p">):</span>
             <span class="n">restore</span><span class="p">(</span><span class="n">machpes1</span><span class="p">,</span> <span class="n">newname</span><span class="o">=</span><span class="s2">&quot;env_mach_pes.xml&quot;</span><span class="p">)</span>
@@ -106,10 +109,10 @@
 
         <span class="n">comp_classes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_values</span><span class="p">(</span><span class="s2">&quot;COMP_CLASSES&quot;</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">comp</span> <span class="ow">in</span> <span class="n">comp_classes</span><span class="p">:</span>
-            <span class="n">any_changes</span> <span class="o">|=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;ROOTPE_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">))</span> <span class="o">!=</span> <span class="mi">0</span>
+            <span class="n">any_changes</span> <span class="o">|=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;ROOTPE_{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">))</span> <span class="o">!=</span> <span class="mi">0</span>
         <span class="k">if</span> <span class="n">any_changes</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">comp</span> <span class="ow">in</span> <span class="n">comp_classes</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;ROOTPE_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;ROOTPE_{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">),</span> <span class="mi">0</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">totalpes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;TOTALPES&quot;</span><span class="p">)</span>
             <span class="n">newntasks</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">totalpes</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">comp_classes</span><span class="p">))</span>
@@ -121,21 +124,21 @@
                 <span class="k">if</span> <span class="n">comp</span> <span class="o">==</span> <span class="s2">&quot;CPL&quot;</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;NTASKS_CPL&quot;</span><span class="p">,</span> <span class="n">newntasks</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;NTASKS_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">),</span> <span class="n">newntasks</span><span class="p">)</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;ROOTPE_</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">),</span> <span class="n">rootpe</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;NTASKS_{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">),</span> <span class="n">newntasks</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;ROOTPE_{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">comp</span><span class="p">),</span> <span class="n">rootpe</span><span class="p">)</span>
                     <span class="n">rootpe</span> <span class="o">+=</span> <span class="n">newntasks</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
-        <span class="n">case_setup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="p">,</span> <span class="n">test_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">reset</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">case_setup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="p">,</span> <span class="n">test_mode</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">reset</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">clean_build</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">build_indv</span><span class="p">(</span><span class="n">sharedlib_only</span><span class="o">=</span><span class="n">sharedlib_only</span><span class="p">,</span> <span class="n">model_only</span><span class="o">=</span><span class="n">model_only</span><span class="p">)</span>
-        <span class="n">shutil</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">.exe&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">exeroot</span><span class="p">,</span><span class="n">cime_model</span><span class="p">),</span>
-                    <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">.exe.SEQ2&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">exeroot</span><span class="p">,</span><span class="n">cime_model</span><span class="p">))</span>
+        <span class="n">shutil</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="s2">&quot;{}/{}.exe&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">exeroot</span><span class="p">,</span><span class="n">cime_model</span><span class="p">),</span>
+                    <span class="s2">&quot;{}/{}.exe.SEQ2&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">exeroot</span><span class="p">,</span><span class="n">cime_model</span><span class="p">))</span>
         <span class="n">lock_file</span><span class="p">(</span><span class="s2">&quot;env_mach_pes.xml&quot;</span><span class="p">,</span> <span class="n">newname</span><span class="o">=</span><span class="s2">&quot;env_mach_pes.SEQ2.xml&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="SEQ.run_phase"><a class="viewcode-back" href="../../../CIME_api/CIME.SystemTests.html#CIME.SystemTests.seq.SEQ.run_phase">[docs]</a>    <span class="k">def</span> <span class="nf">run_phase</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># Move to config_tests.xml once that&#39;s ready.</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;CONTINUE_RUN&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;CONTINUE_RUN&quot;</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;REST_OPTION&quot;</span><span class="p">,</span> <span class="s2">&quot;never&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;HIST_OPTION&quot;</span><span class="p">,</span> <span class="s2">&quot;$STOP_OPTION&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;HIST_N&quot;</span><span class="p">,</span> <span class="s2">&quot;$STOP_N&quot;</span><span class="p">)</span>
@@ -149,32 +152,32 @@
         <span class="c1">#</span>
         <span class="c1"># do an initial run test with default layout</span>
         <span class="c1">#</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;doing a </span><span class="si">{:d}</span><span class="s2"> </span><span class="si">{}</span><span class="s2"> initial test with default layout&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">stop_n</span><span class="p">,</span> <span class="n">stop_option</span><span class="p">))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;doing a {:d} {} initial test with default layout&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">stop_n</span><span class="p">,</span> <span class="n">stop_option</span><span class="p">))</span>
 
-        <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">.exe.SEQ1&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">exeroot</span><span class="p">,</span><span class="n">cime_model</span><span class="p">),</span>
-                    <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">.exe&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">exeroot</span><span class="p">,</span><span class="n">cime_model</span><span class="p">))</span>
+        <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="s2">&quot;{}/{}.exe.SEQ1&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">exeroot</span><span class="p">,</span><span class="n">cime_model</span><span class="p">),</span>
+                    <span class="s2">&quot;{}/{}.exe&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">exeroot</span><span class="p">,</span><span class="n">cime_model</span><span class="p">))</span>
         <span class="n">restore</span><span class="p">(</span><span class="s2">&quot;env_mach_pes.SEQ1.xml&quot;</span><span class="p">,</span> <span class="n">newname</span><span class="o">=</span><span class="s2">&quot;env_mach_pes.xml&quot;</span><span class="p">)</span>
 
         <span class="c1"># update the pelayout settings for this run</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">read_xml</span><span class="p">()</span>
 
-        <span class="n">case_setup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="p">,</span> <span class="n">test_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">reset</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;BUILD_COMPLETE&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span> <span class="c1"># rootpe changes should not require a rebuild</span>
+        <span class="n">case_setup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="p">,</span> <span class="n">test_mode</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">reset</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;BUILD_COMPLETE&quot;</span><span class="p">,</span> <span class="bp">True</span><span class="p">)</span> <span class="c1"># rootpe changes should not require a rebuild</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">run_indv</span><span class="p">()</span>
 
         <span class="n">restore</span><span class="p">(</span><span class="s2">&quot;env_mach_pes.SEQ2.xml&quot;</span><span class="p">,</span> <span class="n">newname</span><span class="o">=</span><span class="s2">&quot;env_mach_pes.xml&quot;</span><span class="p">)</span>
 
-        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">.exe&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">exeroot</span><span class="p">,</span><span class="n">cime_model</span><span class="p">))</span>
-        <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">.exe.SEQ1&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">exeroot</span><span class="p">,</span><span class="n">cime_model</span><span class="p">),</span>
-                    <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">.exe&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">exeroot</span><span class="p">,</span><span class="n">cime_model</span><span class="p">))</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">&quot;{}/{}.exe&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">exeroot</span><span class="p">,</span><span class="n">cime_model</span><span class="p">))</span>
+        <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="s2">&quot;{}/{}.exe.SEQ1&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">exeroot</span><span class="p">,</span><span class="n">cime_model</span><span class="p">),</span>
+                    <span class="s2">&quot;{}/{}.exe&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">exeroot</span><span class="p">,</span><span class="n">cime_model</span><span class="p">))</span>
 
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;doing a second </span><span class="si">{:d}</span><span class="s2"> </span><span class="si">{}</span><span class="s2"> test with rootpes set to zero&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">stop_n</span><span class="p">,</span> <span class="n">stop_option</span><span class="p">))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;doing a second {:d} {} test with rootpes set to zero&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">stop_n</span><span class="p">,</span> <span class="n">stop_option</span><span class="p">))</span>
         <span class="c1"># update the pelayout settings for this run</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">read_xml</span><span class="p">()</span>
 
-        <span class="n">case_setup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="p">,</span> <span class="n">test_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">reset</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;BUILD_COMPLETE&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span> <span class="c1"># rootpe changes should not require a rebuild</span>
+        <span class="n">case_setup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="p">,</span> <span class="n">test_mode</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">reset</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_case</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s2">&quot;BUILD_COMPLETE&quot;</span><span class="p">,</span> <span class="bp">True</span><span class="p">)</span> <span class="c1"># rootpe changes should not require a rebuild</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">run_indv</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;seq&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_component_compare_test</span><span class="p">(</span><span class="s2">&quot;base&quot;</span><span class="p">,</span> <span class="s2">&quot;seq&quot;</span><span class="p">)</span></div></div>
@@ -194,13 +197,13 @@
         <li class="right" >
           <a href="../../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../../index.html">CIME 5.3.0 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../../../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
+        &copy; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.3.
     </div>
   </body>
 </html>

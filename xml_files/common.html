@@ -2,28 +2,31 @@
 
 <!doctype html>
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Common XML Files &#8212; CIME 5.3.0 documentation</title>
+    
+    <title>Common XML Files &mdash; CIME 5.3.0 documentation</title>
+    
     <link rel="stylesheet" href="../_static/bizstyle.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
         VERSION:     '5.3.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
+        HAS_SOURCE:  true
       };
     </script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="../_static/bizstyle.js"></script>
-    <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" />
+    <link rel="top" title="CIME 5.3.0 documentation" href="../index.html" />
+    <link rel="up" title="XML Files" href="index.html" />
     <link rel="next" title="Data, Stub and Driver Component XML Files" href="components.html" />
     <link rel="prev" title="CESM Coupled Model XML Files" href="cesm.html" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
@@ -31,7 +34,7 @@
     <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
     <![endif]-->
   </head>
-  <body>
+  <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -47,8 +50,8 @@
         <li class="right" >
           <a href="cesm.html" title="CESM Coupled Model XML Files"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">XML Files</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">XML Files</a> &raquo;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -71,7 +74,7 @@
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="../_sources/xml_files/common.rst.txt"
+      <li><a href="../_sources/xml_files/common.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
@@ -97,6 +100,8 @@
 <span id="common"></span><h1>Common XML Files<a class="headerlink" href="#common-xml-files" title="Permalink to this headline">¶</a></h1>
 <p>Common XML files in CIMEROOT/config.</p>
 <div class="toctree-wrapper compound">
+<ul class="simple">
+</ul>
 </div>
 <div class="section" id="cimeroot-config-config-headers-xml">
 <h2>CIMEROOT/config/config_headers.xml<a class="headerlink" href="#cimeroot-config-config-headers-xml" title="Permalink to this headline">¶</a></h2>
@@ -170,7 +175,7 @@
     to determine how those mpi tasks should be placed across the machine.
 
     The following values should not be set by the user since they&#39;ll be
-    overwritten by scripts: TOTALPES, MAX_TASKS_PER_NODE, PES_PER_NODE
+    overwritten by scripts: TOTALPES, NTASKS_PER_INST
     &lt;/header&gt;
   &lt;/file&gt;
 
@@ -213,6 +218,9 @@ The following are the test functionality categories:
   11) other component-specific tests
 
 NOTES:
+- specifying the attribute INFRASTRUCTURE_TEST=&quot;TRUE&quot; declares the given
+  test type to be an infrastructure-only test that is only meant to be
+  run by scripts_regression_tests.
 - unless otherwise noted everything is run in one executable directory
 - suffix: denotes the component history file suffixes that are added as part of the test
 - IOP test is done along with regular tests - not as a separate test
@@ -504,7 +512,6 @@ NODEFAIL          Tests restart upon detected node failure. Generates fake failu
     &lt;REST_OPTION&gt;$STOP_OPTION&lt;/REST_OPTION&gt;
     &lt;HIST_N&gt;$STOP_N&lt;/HIST_N&gt;
     &lt;HIST_OPTION&gt;$STOP_OPTION&lt;/HIST_OPTION&gt;
-    &lt;DOUT_S&gt;TRUE&lt;/DOUT_S&gt;
     &lt;RESUBMIT&gt;1&lt;/RESUBMIT&gt;
     &lt;CONTINUE_RUN&gt;FALSE&lt;/CONTINUE_RUN&gt;
   &lt;/test&gt;
@@ -534,7 +541,7 @@ NODEFAIL          Tests restart upon detected node failure. Generates fake failu
   &lt;/test&gt;
 
   &lt;test NAME=&quot;HOMME&quot;&gt;
-    &lt;DESC&gt;Run homme tests.&lt;/DESC&gt;
+    &lt;DESC&gt;Run homme tests. Only works with the ACME version of the atmosphere component.&lt;/DESC&gt;
     &lt;INFO_DBUG&gt;1&lt;/INFO_DBUG&gt;
     &lt;STOP_OPTION&gt;ndays&lt;/STOP_OPTION&gt;
     &lt;STOP_N&gt;11&lt;/STOP_N&gt;
@@ -552,7 +559,7 @@ NODEFAIL          Tests restart upon detected node failure. Generates fake failu
     &lt;DOUT_S&gt;FALSE&lt;/DOUT_S&gt;
   &lt;/test&gt;
 
-  &lt;test NAME=&quot;TESTBUILDFAIL&quot;&gt;
+  &lt;test NAME=&quot;TESTBUILDFAIL&quot; INFRASTRUCTURE_TEST=&quot;TRUE&quot;&gt;
     &lt;DESC&gt;For testing infra only. Insta-fail build step.&lt;/DESC&gt;
     &lt;INFO_DBUG&gt;1&lt;/INFO_DBUG&gt;
     &lt;STOP_OPTION&gt;ndays&lt;/STOP_OPTION&gt;
@@ -561,7 +568,7 @@ NODEFAIL          Tests restart upon detected node failure. Generates fake failu
     &lt;DOUT_S&gt;FALSE&lt;/DOUT_S&gt;
   &lt;/test&gt;
 
-  &lt;test NAME=&quot;TESTBUILDFAILEXC&quot;&gt;
+  &lt;test NAME=&quot;TESTBUILDFAILEXC&quot; INFRASTRUCTURE_TEST=&quot;TRUE&quot;&gt;
     &lt;DESC&gt;For testing infra only. Insta-fail build step by failing to init.&lt;/DESC&gt;
     &lt;INFO_DBUG&gt;1&lt;/INFO_DBUG&gt;
     &lt;STOP_OPTION&gt;ndays&lt;/STOP_OPTION&gt;
@@ -570,7 +577,7 @@ NODEFAIL          Tests restart upon detected node failure. Generates fake failu
     &lt;DOUT_S&gt;FALSE&lt;/DOUT_S&gt;
   &lt;/test&gt;
 
-  &lt;test NAME=&quot;TESTRUNFAIL&quot;&gt;
+  &lt;test NAME=&quot;TESTRUNFAIL&quot; INFRASTRUCTURE_TEST=&quot;TRUE&quot;&gt;
     &lt;DESC&gt;For testing infra only. Insta-fail run step.&lt;/DESC&gt;
     &lt;INFO_DBUG&gt;1&lt;/INFO_DBUG&gt;
     &lt;STOP_OPTION&gt;ndays&lt;/STOP_OPTION&gt;
@@ -579,7 +586,7 @@ NODEFAIL          Tests restart upon detected node failure. Generates fake failu
     &lt;DOUT_S&gt;FALSE&lt;/DOUT_S&gt;
   &lt;/test&gt;
 
-  &lt;test NAME=&quot;TESTRUNFAILEXC&quot;&gt;
+  &lt;test NAME=&quot;TESTRUNFAILEXC&quot; INFRASTRUCTURE_TEST=&quot;TRUE&quot;&gt;
     &lt;DESC&gt;For testing infra only. Insta-fail run step via exception.&lt;/DESC&gt;
     &lt;INFO_DBUG&gt;1&lt;/INFO_DBUG&gt;
     &lt;STOP_OPTION&gt;ndays&lt;/STOP_OPTION&gt;
@@ -588,7 +595,7 @@ NODEFAIL          Tests restart upon detected node failure. Generates fake failu
     &lt;DOUT_S&gt;FALSE&lt;/DOUT_S&gt;
   &lt;/test&gt;
 
-  &lt;test NAME=&quot;TESTRUNPASS&quot;&gt;
+  &lt;test NAME=&quot;TESTRUNPASS&quot; INFRASTRUCTURE_TEST=&quot;TRUE&quot;&gt;
     &lt;DESC&gt;For testing infra only. Insta-pass run step.&lt;/DESC&gt;
     &lt;INFO_DBUG&gt;1&lt;/INFO_DBUG&gt;
     &lt;STOP_OPTION&gt;ndays&lt;/STOP_OPTION&gt;
@@ -597,7 +604,7 @@ NODEFAIL          Tests restart upon detected node failure. Generates fake failu
     &lt;DOUT_S&gt;FALSE&lt;/DOUT_S&gt;
   &lt;/test&gt;
 
-  &lt;test NAME=&quot;TESTMEMLEAKFAIL&quot;&gt;
+  &lt;test NAME=&quot;TESTMEMLEAKFAIL&quot; INFRASTRUCTURE_TEST=&quot;TRUE&quot;&gt;
     &lt;DESC&gt;For testing infra only. Insta-fail memleak step.&lt;/DESC&gt;
     &lt;INFO_DBUG&gt;1&lt;/INFO_DBUG&gt;
     &lt;STOP_OPTION&gt;ndays&lt;/STOP_OPTION&gt;
@@ -606,7 +613,7 @@ NODEFAIL          Tests restart upon detected node failure. Generates fake failu
     &lt;DOUT_S&gt;FALSE&lt;/DOUT_S&gt;
   &lt;/test&gt;
 
-  &lt;test NAME=&quot;TESTMEMLEAKPASS&quot;&gt;
+  &lt;test NAME=&quot;TESTMEMLEAKPASS&quot; INFRASTRUCTURE_TEST=&quot;TRUE&quot;&gt;
     &lt;DESC&gt;For testing infra only. Insta-pass memleak step.&lt;/DESC&gt;
     &lt;INFO_DBUG&gt;1&lt;/INFO_DBUG&gt;
     &lt;STOP_OPTION&gt;ndays&lt;/STOP_OPTION&gt;
@@ -615,7 +622,7 @@ NODEFAIL          Tests restart upon detected node failure. Generates fake failu
     &lt;DOUT_S&gt;FALSE&lt;/DOUT_S&gt;
   &lt;/test&gt;
 
-  &lt;test NAME=&quot;TESTRUNDIFF&quot;&gt;
+  &lt;test NAME=&quot;TESTRUNDIFF&quot; INFRASTRUCTURE_TEST=&quot;TRUE&quot;&gt;
     &lt;DESC&gt;For testing infra only. Produces a canned hist file.&lt;/DESC&gt;
     &lt;INFO_DBUG&gt;1&lt;/INFO_DBUG&gt;
     &lt;STOP_OPTION&gt;ndays&lt;/STOP_OPTION&gt;
@@ -624,7 +631,7 @@ NODEFAIL          Tests restart upon detected node failure. Generates fake failu
     &lt;DOUT_S&gt;FALSE&lt;/DOUT_S&gt;
   &lt;/test&gt;
 
-  &lt;test NAME=&quot;TESTTESTDIFF&quot;&gt;
+  &lt;test NAME=&quot;TESTTESTDIFF&quot; INFRASTRUCTURE_TEST=&quot;TRUE&quot;&gt;
     &lt;DESC&gt;For testing infra only. Simulates internal test diff (non baseline)&lt;/DESC&gt;
     &lt;INFO_DBUG&gt;1&lt;/INFO_DBUG&gt;
     &lt;STOP_OPTION&gt;ndays&lt;/STOP_OPTION&gt;
@@ -633,7 +640,7 @@ NODEFAIL          Tests restart upon detected node failure. Generates fake failu
     &lt;DOUT_S&gt;FALSE&lt;/DOUT_S&gt;
   &lt;/test&gt;
 
-  &lt;test NAME=&quot;TESTRUNSLOWPASS&quot;&gt;
+  &lt;test NAME=&quot;TESTRUNSLOWPASS&quot; INFRASTRUCTURE_TEST=&quot;TRUE&quot;&gt;
     &lt;DESC&gt;For testing infra only. After 5 minutes of sleep, pass run step.&lt;/DESC&gt;
     &lt;INFO_DBUG&gt;1&lt;/INFO_DBUG&gt;
     &lt;STOP_OPTION&gt;ndays&lt;/STOP_OPTION&gt;
@@ -642,7 +649,7 @@ NODEFAIL          Tests restart upon detected node failure. Generates fake failu
     &lt;DOUT_S&gt;FALSE&lt;/DOUT_S&gt;
   &lt;/test&gt;
 
-  &lt;test NAME=&quot;NODEFAIL&quot;&gt;
+  &lt;test NAME=&quot;NODEFAIL&quot; INFRASTRUCTURE_TEST=&quot;TRUE&quot;&gt;
     &lt;DESC&gt;For testing infra only. Tests restart upon detected node failure&lt;/DESC&gt;
     &lt;INFO_DBUG&gt;1&lt;/INFO_DBUG&gt;
     &lt;STOP_OPTION&gt;nsteps&lt;/STOP_OPTION&gt;
@@ -688,7 +695,6 @@ NODEFAIL          Tests restart upon detected node failure. Generates fake failu
     &lt;HIST_OPTION&gt;$STOP_OPTION&lt;/HIST_OPTION&gt;
     &lt;HIST_N&gt;$STOP_N&lt;/HIST_N&gt;
     &lt;CONTINUE_RUN&gt;FALSE&lt;/CONTINUE_RUN&gt;
-    &lt;REST_OPTION&gt;none&lt;/REST_OPTION&gt;
   &lt;/test&gt;
 
   &lt;test NAME=&quot;PET&quot;&gt;
@@ -823,13 +829,13 @@ NODEFAIL          Tests restart upon detected node failure. Generates fake failu
         <li class="right" >
           <a href="cesm.html" title="CESM Coupled Model XML Files"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" >XML Files</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >XML Files</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
+        &copy; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.3.
     </div>
   </body>
 </html>

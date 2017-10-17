@@ -2,28 +2,31 @@
 
 <!doctype html>
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Driver XML Files &#8212; CIME 5.3.0 documentation</title>
+    
+    <title>Driver XML Files &mdash; CIME 5.3.0 documentation</title>
+    
     <link rel="stylesheet" href="../_static/bizstyle.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
         VERSION:     '5.3.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
+        HAS_SOURCE:  true
       };
     </script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="../_static/bizstyle.js"></script>
-    <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" />
+    <link rel="top" title="CIME 5.3.0 documentation" href="../index.html" />
+    <link rel="up" title="XML Files" href="index.html" />
     <link rel="next" title="CIME" href="../CIME_api/modules.html" />
     <link rel="prev" title="CIME Wave Data and Stub XML Files" href="wave.html" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
@@ -31,7 +34,7 @@
     <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
     <![endif]-->
   </head>
-  <body>
+  <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -47,8 +50,8 @@
         <li class="right" >
           <a href="wave.html" title="CIME Wave Data and Stub XML Files"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">XML Files</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">XML Files</a> &raquo;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -71,7 +74,7 @@
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="../_sources/xml_files/drivers.rst.txt"
+      <li><a href="../_sources/xml_files/drivers.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
@@ -97,6 +100,8 @@
 <span id="drivers"></span><h1>Driver XML Files<a class="headerlink" href="#driver-xml-files" title="Permalink to this headline">¶</a></h1>
 <p>Driver/Coupler XML files in CIMEROOT/src/drivers/mct/cime_config</p>
 <div class="toctree-wrapper compound">
+<ul class="simple">
+</ul>
 </div>
 <div class="section" id="cimeroot-src-drivers-mct-cime-config">
 <h2>CIMEROOT/src/drivers/mct/cime_config<a class="headerlink" href="#cimeroot-src-drivers-mct-cime-config" title="Permalink to this headline">¶</a></h2>
@@ -1070,7 +1075,7 @@ to define behavior.</p>
     &lt;default_value&gt;0&lt;/default_value&gt;
     &lt;group&gt;mach_pes_last&lt;/group&gt;
     &lt;file&gt;env_mach_pes.xml&lt;/file&gt;
-    &lt;desc&gt;pes or cores used relative to PES_PER_NODE for accounting (0 means TOTALPES is valid)&lt;/desc&gt;
+    &lt;desc&gt;pes or cores used relative to MAX_MPITASKS_PER_NODE for accounting (0 means TOTALPES is valid)&lt;/desc&gt;
   &lt;/entry&gt;
 
   &lt;!-- ===================================================================== --&gt;
@@ -2019,33 +2024,50 @@ to define behavior.</p>
   &lt;entry id=&quot;NTASKS&quot;&gt;
     &lt;type&gt;integer&lt;/type&gt;
     &lt;values&gt;
-      &lt;value component=&quot;ATM&quot;&gt; 0&lt;/value&gt;
-      &lt;value component=&quot;CPL&quot;&gt; 0&lt;/value&gt;
-      &lt;value component=&quot;OCN&quot;&gt; 0&lt;/value&gt;
-      &lt;value component=&quot;WAV&quot;&gt; 0&lt;/value&gt;
-      &lt;value component=&quot;GLC&quot;&gt; 0&lt;/value&gt;
-      &lt;value component=&quot;ICE&quot;&gt; 0&lt;/value&gt;
-      &lt;value component=&quot;ROF&quot;&gt; 0&lt;/value&gt;
-      &lt;value component=&quot;LND&quot;&gt; 0&lt;/value&gt;
-      &lt;value component=&quot;ESP&quot;&gt; 0&lt;/value&gt;
+      &lt;value compclass=&quot;ATM&quot;&gt; 0&lt;/value&gt;
+      &lt;value compclass=&quot;CPL&quot;&gt; 0&lt;/value&gt;
+      &lt;value compclass=&quot;OCN&quot;&gt; 0&lt;/value&gt;
+      &lt;value compclass=&quot;WAV&quot;&gt; 0&lt;/value&gt;
+      &lt;value compclass=&quot;GLC&quot;&gt; 0&lt;/value&gt;
+      &lt;value compclass=&quot;ICE&quot;&gt; 0&lt;/value&gt;
+      &lt;value compclass=&quot;ROF&quot;&gt; 0&lt;/value&gt;
+      &lt;value compclass=&quot;LND&quot;&gt; 0&lt;/value&gt;
+      &lt;value compclass=&quot;ESP&quot;&gt; 0&lt;/value&gt;
     &lt;/values&gt;
     &lt;group&gt;mach_pes&lt;/group&gt;
     &lt;file&gt;env_mach_pes.xml&lt;/file&gt;
     &lt;desc&gt;number of tasks for each component&lt;/desc&gt;
   &lt;/entry&gt;
 
+  &lt;entry id=&quot;NTASKS_PER_INST&quot;&gt;
+    &lt;type&gt;integer&lt;/type&gt;
+    &lt;values&gt;
+      &lt;value compclass=&quot;ATM&quot;&gt; 0&lt;/value&gt;
+      &lt;value compclass=&quot;OCN&quot;&gt; 0&lt;/value&gt;
+      &lt;value compclass=&quot;WAV&quot;&gt; 0&lt;/value&gt;
+      &lt;value compclass=&quot;GLC&quot;&gt; 0&lt;/value&gt;
+      &lt;value compclass=&quot;ICE&quot;&gt; 0&lt;/value&gt;
+      &lt;value compclass=&quot;ROF&quot;&gt; 0&lt;/value&gt;
+      &lt;value compclass=&quot;LND&quot;&gt; 0&lt;/value&gt;
+      &lt;value compclass=&quot;ESP&quot;&gt; 0&lt;/value&gt;
+    &lt;/values&gt;
+    &lt;group&gt;mach_pes&lt;/group&gt;
+    &lt;file&gt;env_mach_pes.xml&lt;/file&gt;
+    &lt;desc&gt;Number of tasks per instance for each component. DO NOT EDIT: Set automatically by case.setup based on NTASKS, NINST and MULTI_DRIVER&lt;/desc&gt;
+  &lt;/entry&gt;
+
   &lt;entry id=&quot;NTHRDS&quot;&gt;
     &lt;type&gt;integer&lt;/type&gt;
     &lt;values&gt;
-      &lt;value component=&quot;ATM&quot;&gt;1&lt;/value&gt;
-      &lt;value component=&quot;CPL&quot;&gt;1&lt;/value&gt;
-      &lt;value component=&quot;OCN&quot;&gt;1&lt;/value&gt;
-      &lt;value component=&quot;WAV&quot;&gt;1&lt;/value&gt;
-      &lt;value component=&quot;GLC&quot;&gt;1&lt;/value&gt;
-      &lt;value component=&quot;ICE&quot;&gt;1&lt;/value&gt;
-      &lt;value component=&quot;ROF&quot;&gt;1&lt;/value&gt;
-      &lt;value component=&quot;LND&quot;&gt;1&lt;/value&gt;
-      &lt;value component=&quot;ESP&quot;&gt;1&lt;/value&gt;
+      &lt;value compclass=&quot;ATM&quot;&gt;1&lt;/value&gt;
+      &lt;value compclass=&quot;CPL&quot;&gt;1&lt;/value&gt;
+      &lt;value compclass=&quot;OCN&quot;&gt;1&lt;/value&gt;
+      &lt;value compclass=&quot;WAV&quot;&gt;1&lt;/value&gt;
+      &lt;value compclass=&quot;GLC&quot;&gt;1&lt;/value&gt;
+      &lt;value compclass=&quot;ICE&quot;&gt;1&lt;/value&gt;
+      &lt;value compclass=&quot;ROF&quot;&gt;1&lt;/value&gt;
+      &lt;value compclass=&quot;LND&quot;&gt;1&lt;/value&gt;
+      &lt;value compclass=&quot;ESP&quot;&gt;1&lt;/value&gt;
     &lt;/values&gt;
     &lt;group&gt;mach_pes&lt;/group&gt;
     &lt;file&gt;env_mach_pes.xml&lt;/file&gt;
@@ -2055,15 +2077,15 @@ to define behavior.</p>
   &lt;entry id=&quot;ROOTPE&quot;&gt;
     &lt;type&gt;integer&lt;/type&gt;
     &lt;values&gt;
-      &lt;value component=&quot;ATM&quot;&gt;0&lt;/value&gt;
-      &lt;value component=&quot;CPL&quot;&gt;0&lt;/value&gt;
-      &lt;value component=&quot;OCN&quot;&gt;0&lt;/value&gt;
-      &lt;value component=&quot;WAV&quot;&gt;0&lt;/value&gt;
-      &lt;value component=&quot;GLC&quot;&gt;0&lt;/value&gt;
-      &lt;value component=&quot;ICE&quot;&gt;0&lt;/value&gt;
-      &lt;value component=&quot;ROF&quot;&gt;0&lt;/value&gt;
-      &lt;value component=&quot;LND&quot;&gt;0&lt;/value&gt;
-      &lt;value component=&quot;ESP&quot;&gt;0&lt;/value&gt;
+      &lt;value compclass=&quot;ATM&quot;&gt;0&lt;/value&gt;
+      &lt;value compclass=&quot;CPL&quot;&gt;0&lt;/value&gt;
+      &lt;value compclass=&quot;OCN&quot;&gt;0&lt;/value&gt;
+      &lt;value compclass=&quot;WAV&quot;&gt;0&lt;/value&gt;
+      &lt;value compclass=&quot;GLC&quot;&gt;0&lt;/value&gt;
+      &lt;value compclass=&quot;ICE&quot;&gt;0&lt;/value&gt;
+      &lt;value compclass=&quot;ROF&quot;&gt;0&lt;/value&gt;
+      &lt;value compclass=&quot;LND&quot;&gt;0&lt;/value&gt;
+      &lt;value compclass=&quot;ESP&quot;&gt;0&lt;/value&gt;
     &lt;/values&gt;
     &lt;group&gt;mach_pes&lt;/group&gt;
     &lt;file&gt;env_mach_pes.xml&lt;/file&gt;
@@ -2085,14 +2107,14 @@ to define behavior.</p>
   &lt;entry id=&quot;NINST&quot;&gt;
     &lt;type&gt;integer&lt;/type&gt;
     &lt;values&gt;
-      &lt;value component=&quot;ATM&quot;&gt;1&lt;/value&gt;
-      &lt;value component=&quot;OCN&quot;&gt;1&lt;/value&gt;
-      &lt;value component=&quot;WAV&quot;&gt;1&lt;/value&gt;
-      &lt;value component=&quot;GLC&quot;&gt;1&lt;/value&gt;
-      &lt;value component=&quot;ICE&quot;&gt;1&lt;/value&gt;
-      &lt;value component=&quot;ROF&quot;&gt;1&lt;/value&gt;
-      &lt;value component=&quot;LND&quot;&gt;1&lt;/value&gt;
-      &lt;value component=&quot;ESP&quot;&gt;1&lt;/value&gt;
+      &lt;value compclass=&quot;ATM&quot;&gt;1&lt;/value&gt;
+      &lt;value compclass=&quot;OCN&quot;&gt;1&lt;/value&gt;
+      &lt;value compclass=&quot;WAV&quot;&gt;1&lt;/value&gt;
+      &lt;value compclass=&quot;GLC&quot;&gt;1&lt;/value&gt;
+      &lt;value compclass=&quot;ICE&quot;&gt;1&lt;/value&gt;
+      &lt;value compclass=&quot;ROF&quot;&gt;1&lt;/value&gt;
+      &lt;value compclass=&quot;LND&quot;&gt;1&lt;/value&gt;
+      &lt;value compclass=&quot;ESP&quot;&gt;1&lt;/value&gt;
     &lt;/values&gt;
     &lt;group&gt;mach_pes&lt;/group&gt;
     &lt;file&gt;env_mach_pes.xml&lt;/file&gt;
@@ -2105,14 +2127,14 @@ to define behavior.</p>
     &lt;type&gt;char&lt;/type&gt;
     &lt;valid_values&gt;sequential,concurrent&lt;/valid_values&gt;
     &lt;values&gt;
-      &lt;value component=&quot;ATM&quot;&gt;concurrent&lt;/value&gt;
-      &lt;value component=&quot;OCN&quot;&gt;concurrent&lt;/value&gt;
-      &lt;value component=&quot;WAV&quot;&gt;concurrent&lt;/value&gt;
-      &lt;value component=&quot;GLC&quot;&gt;concurrent&lt;/value&gt;
-      &lt;value component=&quot;ICE&quot;&gt;concurrent&lt;/value&gt;
-      &lt;value component=&quot;ROF&quot;&gt;concurrent&lt;/value&gt;
-      &lt;value component=&quot;LND&quot;&gt;concurrent&lt;/value&gt;
-      &lt;value component=&quot;ESP&quot;&gt;concurrent&lt;/value&gt;
+      &lt;value compclass=&quot;ATM&quot;&gt;concurrent&lt;/value&gt;
+      &lt;value compclass=&quot;OCN&quot;&gt;concurrent&lt;/value&gt;
+      &lt;value compclass=&quot;WAV&quot;&gt;concurrent&lt;/value&gt;
+      &lt;value compclass=&quot;GLC&quot;&gt;concurrent&lt;/value&gt;
+      &lt;value compclass=&quot;ICE&quot;&gt;concurrent&lt;/value&gt;
+      &lt;value compclass=&quot;ROF&quot;&gt;concurrent&lt;/value&gt;
+      &lt;value compclass=&quot;LND&quot;&gt;concurrent&lt;/value&gt;
+      &lt;value compclass=&quot;ESP&quot;&gt;concurrent&lt;/value&gt;
     &lt;/values&gt;
     &lt;group&gt;mach_pes&lt;/group&gt;
     &lt;file&gt;env_mach_pes.xml&lt;/file&gt;
@@ -2122,15 +2144,15 @@ to define behavior.</p>
   &lt;entry id=&quot;PSTRID&quot;&gt;
     &lt;type&gt;integer&lt;/type&gt;
     &lt;values&gt;
-      &lt;value component=&quot;ATM&quot;&gt;1&lt;/value&gt;
-      &lt;value component=&quot;CPL&quot;&gt;1&lt;/value&gt;
-      &lt;value component=&quot;OCN&quot;&gt;1&lt;/value&gt;
-      &lt;value component=&quot;WAV&quot;&gt;1&lt;/value&gt;
-      &lt;value component=&quot;GLC&quot;&gt;1&lt;/value&gt;
-      &lt;value component=&quot;ICE&quot;&gt;1&lt;/value&gt;
-      &lt;value component=&quot;ROF&quot;&gt;1&lt;/value&gt;
-      &lt;value component=&quot;LND&quot;&gt;1&lt;/value&gt;
-      &lt;value component=&quot;ESP&quot;&gt;1&lt;/value&gt;
+      &lt;value compclass=&quot;ATM&quot;&gt;1&lt;/value&gt;
+      &lt;value compclass=&quot;CPL&quot;&gt;1&lt;/value&gt;
+      &lt;value compclass=&quot;OCN&quot;&gt;1&lt;/value&gt;
+      &lt;value compclass=&quot;WAV&quot;&gt;1&lt;/value&gt;
+      &lt;value compclass=&quot;GLC&quot;&gt;1&lt;/value&gt;
+      &lt;value compclass=&quot;ICE&quot;&gt;1&lt;/value&gt;
+      &lt;value compclass=&quot;ROF&quot;&gt;1&lt;/value&gt;
+      &lt;value compclass=&quot;LND&quot;&gt;1&lt;/value&gt;
+      &lt;value compclass=&quot;ESP&quot;&gt;1&lt;/value&gt;
     &lt;/values&gt;
     &lt;group&gt;mach_pes&lt;/group&gt;
     &lt;file&gt;env_mach_pes.xml&lt;/file&gt;
@@ -2153,7 +2175,7 @@ to define behavior.</p>
     &lt;desc&gt;maximum number of tasks/ threads allowed per node &lt;/desc&gt;
   &lt;/entry&gt;
 
-  &lt;entry id=&quot;PES_PER_NODE&quot;&gt;
+  &lt;entry id=&quot;MAX_MPITASKS_PER_NODE&quot;&gt;
     &lt;type&gt;integer&lt;/type&gt;
     &lt;default_value&gt;0&lt;/default_value&gt;
     &lt;group&gt;mach_pes_last&lt;/group&gt;
@@ -2297,15 +2319,15 @@ to define behavior.</p>
     &lt;file&gt;env_run.xml&lt;/file&gt;
     &lt;desc&gt;pio io type&lt;/desc&gt;
     &lt;values&gt;
-      &lt;value component=&quot;ATM&quot;&gt;default&lt;/value&gt;
-      &lt;value component=&quot;CPL&quot;&gt;default&lt;/value&gt;
-      &lt;value component=&quot;OCN&quot;&gt;default&lt;/value&gt;
-      &lt;value component=&quot;WAV&quot;&gt;default&lt;/value&gt;
-      &lt;value component=&quot;GLC&quot;&gt;default&lt;/value&gt;
-      &lt;value component=&quot;ICE&quot;&gt;default&lt;/value&gt;
-      &lt;value component=&quot;ROF&quot;&gt;default&lt;/value&gt;
-      &lt;value component=&quot;LND&quot;&gt;default&lt;/value&gt;
-      &lt;value component=&quot;ESP&quot;&gt;default&lt;/value&gt;
+      &lt;value compclass=&quot;ATM&quot;&gt;default&lt;/value&gt;
+      &lt;value compclass=&quot;CPL&quot;&gt;default&lt;/value&gt;
+      &lt;value compclass=&quot;OCN&quot;&gt;default&lt;/value&gt;
+      &lt;value compclass=&quot;WAV&quot;&gt;default&lt;/value&gt;
+      &lt;value compclass=&quot;GLC&quot;&gt;default&lt;/value&gt;
+      &lt;value compclass=&quot;ICE&quot;&gt;default&lt;/value&gt;
+      &lt;value compclass=&quot;ROF&quot;&gt;default&lt;/value&gt;
+      &lt;value compclass=&quot;LND&quot;&gt;default&lt;/value&gt;
+      &lt;value compclass=&quot;ESP&quot;&gt;default&lt;/value&gt;
     &lt;/values&gt;
   &lt;/entry&gt;
 
@@ -2318,15 +2340,15 @@ to define behavior.</p>
     https://www.unidata.ucar.edu/software/netcdf/docs/data_type.html
     &lt;/desc&gt;
     &lt;values&gt;
-      &lt;value component=&quot;ATM&quot;&gt;64bit_offset&lt;/value&gt;
-      &lt;value component=&quot;CPL&quot;&gt;64bit_offset&lt;/value&gt;
-      &lt;value component=&quot;OCN&quot;&gt;64bit_offset&lt;/value&gt;
-      &lt;value component=&quot;WAV&quot;&gt;64bit_offset&lt;/value&gt;
-      &lt;value component=&quot;GLC&quot;&gt;64bit_offset&lt;/value&gt;
-      &lt;value component=&quot;ICE&quot;&gt;64bit_offset&lt;/value&gt;
-      &lt;value component=&quot;ROF&quot;&gt;64bit_offset&lt;/value&gt;
-      &lt;value component=&quot;LND&quot;&gt;64bit_offset&lt;/value&gt;
-      &lt;value component=&quot;ESP&quot;&gt;64bit_offset&lt;/value&gt;
+      &lt;value compclass=&quot;ATM&quot;&gt;64bit_offset&lt;/value&gt;
+      &lt;value compclass=&quot;CPL&quot;&gt;64bit_offset&lt;/value&gt;
+      &lt;value compclass=&quot;OCN&quot;&gt;64bit_offset&lt;/value&gt;
+      &lt;value compclass=&quot;WAV&quot;&gt;64bit_offset&lt;/value&gt;
+      &lt;value compclass=&quot;GLC&quot;&gt;64bit_offset&lt;/value&gt;
+      &lt;value compclass=&quot;ICE&quot;&gt;64bit_offset&lt;/value&gt;
+      &lt;value compclass=&quot;ROF&quot;&gt;64bit_offset&lt;/value&gt;
+      &lt;value compclass=&quot;LND&quot;&gt;64bit_offset&lt;/value&gt;
+      &lt;value compclass=&quot;ESP&quot;&gt;64bit_offset&lt;/value&gt;
     &lt;/values&gt;
   &lt;/entry&gt;
 
@@ -2339,15 +2361,15 @@ to define behavior.</p>
      be computed based on PIO_NUMTASKS and number of compute tasks
     &lt;/desc&gt;
     &lt;values&gt;
-      &lt;value component=&quot;ATM&quot;&gt;&lt;/value&gt;
-      &lt;value component=&quot;CPL&quot;&gt;&lt;/value&gt;
-      &lt;value component=&quot;OCN&quot;&gt;&lt;/value&gt;
-      &lt;value component=&quot;WAV&quot;&gt;&lt;/value&gt;
-      &lt;value component=&quot;GLC&quot;&gt;&lt;/value&gt;
-      &lt;value component=&quot;ICE&quot;&gt;&lt;/value&gt;
-      &lt;value component=&quot;ROF&quot;&gt;&lt;/value&gt;
-      &lt;value component=&quot;LND&quot;&gt;&lt;/value&gt;
-      &lt;value component=&quot;ESP&quot;&gt;&lt;/value&gt;
+      &lt;value compclass=&quot;ATM&quot;&gt;&lt;/value&gt;
+      &lt;value compclass=&quot;CPL&quot;&gt;&lt;/value&gt;
+      &lt;value compclass=&quot;OCN&quot;&gt;&lt;/value&gt;
+      &lt;value compclass=&quot;WAV&quot;&gt;&lt;/value&gt;
+      &lt;value compclass=&quot;GLC&quot;&gt;&lt;/value&gt;
+      &lt;value compclass=&quot;ICE&quot;&gt;&lt;/value&gt;
+      &lt;value compclass=&quot;ROF&quot;&gt;&lt;/value&gt;
+      &lt;value compclass=&quot;LND&quot;&gt;&lt;/value&gt;
+      &lt;value compclass=&quot;ESP&quot;&gt;&lt;/value&gt;
     &lt;/values&gt;
   &lt;/entry&gt;
 
@@ -2359,15 +2381,15 @@ to define behavior.</p>
     &lt;desc&gt;pio rearranger choice box=1, subset=2 &lt;/desc&gt;
     &lt;values&gt;
       &lt;value&gt;$PIO_VERSION&lt;/value&gt;
-      &lt;value component=&quot;ATM&quot;&gt;&lt;/value&gt;
-      &lt;value component=&quot;CPL&quot;&gt;&lt;/value&gt;
-      &lt;value component=&quot;OCN&quot;&gt;&lt;/value&gt;
-      &lt;value component=&quot;WAV&quot;&gt;&lt;/value&gt;
-      &lt;value component=&quot;GLC&quot;&gt;&lt;/value&gt;
-      &lt;value component=&quot;ICE&quot;&gt;&lt;/value&gt;
-      &lt;value component=&quot;ROF&quot;&gt;&lt;/value&gt;
-      &lt;value component=&quot;LND&quot;&gt;&lt;/value&gt;
-      &lt;value component=&quot;ESP&quot;&gt;&lt;/value&gt;
+      &lt;value compclass=&quot;ATM&quot;&gt;&lt;/value&gt;
+      &lt;value compclass=&quot;CPL&quot;&gt;&lt;/value&gt;
+      &lt;value compclass=&quot;OCN&quot;&gt;&lt;/value&gt;
+      &lt;value compclass=&quot;WAV&quot;&gt;&lt;/value&gt;
+      &lt;value compclass=&quot;GLC&quot;&gt;&lt;/value&gt;
+      &lt;value compclass=&quot;ICE&quot;&gt;&lt;/value&gt;
+      &lt;value compclass=&quot;ROF&quot;&gt;&lt;/value&gt;
+      &lt;value compclass=&quot;LND&quot;&gt;&lt;/value&gt;
+      &lt;value compclass=&quot;ESP&quot;&gt;&lt;/value&gt;
     &lt;/values&gt;
   &lt;/entry&gt;
 
@@ -2377,15 +2399,15 @@ to define behavior.</p>
     &lt;file&gt;env_run.xml&lt;/file&gt;
     &lt;desc&gt;pio root processor relative to component root&lt;/desc&gt;
     &lt;values&gt;
-      &lt;value component=&quot;ATM&quot;&gt;1&lt;/value&gt;
-      &lt;value component=&quot;CPL&quot;&gt;1&lt;/value&gt;
-      &lt;value component=&quot;OCN&quot;&gt;1&lt;/value&gt;
-      &lt;value component=&quot;WAV&quot;&gt;1&lt;/value&gt;
-      &lt;value component=&quot;GLC&quot;&gt;1&lt;/value&gt;
-      &lt;value component=&quot;ICE&quot;&gt;1&lt;/value&gt;
-      &lt;value component=&quot;ROF&quot;&gt;1&lt;/value&gt;
-      &lt;value component=&quot;LND&quot;&gt;1&lt;/value&gt;
-      &lt;value component=&quot;ESP&quot;&gt;1&lt;/value&gt;
+      &lt;value compclass=&quot;ATM&quot;&gt;1&lt;/value&gt;
+      &lt;value compclass=&quot;CPL&quot;&gt;1&lt;/value&gt;
+      &lt;value compclass=&quot;OCN&quot;&gt;1&lt;/value&gt;
+      &lt;value compclass=&quot;WAV&quot;&gt;1&lt;/value&gt;
+      &lt;value compclass=&quot;GLC&quot;&gt;1&lt;/value&gt;
+      &lt;value compclass=&quot;ICE&quot;&gt;1&lt;/value&gt;
+      &lt;value compclass=&quot;ROF&quot;&gt;1&lt;/value&gt;
+      &lt;value compclass=&quot;LND&quot;&gt;1&lt;/value&gt;
+      &lt;value compclass=&quot;ESP&quot;&gt;1&lt;/value&gt;
     &lt;/values&gt;
   &lt;/entry&gt;
 
@@ -2398,15 +2420,15 @@ to define behavior.</p>
       number of tasks
     &lt;/desc&gt;
     &lt;values&gt;
-      &lt;value component=&quot;ATM&quot;&gt;-99&lt;/value&gt;
-      &lt;value component=&quot;CPL&quot;&gt;-99&lt;/value&gt;
-      &lt;value component=&quot;OCN&quot;&gt;-99&lt;/value&gt;
-      &lt;value component=&quot;WAV&quot;&gt;-99&lt;/value&gt;
-      &lt;value component=&quot;GLC&quot;&gt;-99&lt;/value&gt;
-      &lt;value component=&quot;ICE&quot;&gt;-99&lt;/value&gt;
-      &lt;value component=&quot;ROF&quot;&gt;-99&lt;/value&gt;
-      &lt;value component=&quot;LND&quot;&gt;-99&lt;/value&gt;
-      &lt;value component=&quot;ESP&quot;&gt;-99&lt;/value&gt;
+      &lt;value compclass=&quot;ATM&quot;&gt;-99&lt;/value&gt;
+      &lt;value compclass=&quot;CPL&quot;&gt;-99&lt;/value&gt;
+      &lt;value compclass=&quot;OCN&quot;&gt;-99&lt;/value&gt;
+      &lt;value compclass=&quot;WAV&quot;&gt;-99&lt;/value&gt;
+      &lt;value compclass=&quot;GLC&quot;&gt;-99&lt;/value&gt;
+      &lt;value compclass=&quot;ICE&quot;&gt;-99&lt;/value&gt;
+      &lt;value compclass=&quot;ROF&quot;&gt;-99&lt;/value&gt;
+      &lt;value compclass=&quot;LND&quot;&gt;-99&lt;/value&gt;
+      &lt;value compclass=&quot;ESP&quot;&gt;-99&lt;/value&gt;
     &lt;/values&gt;
   &lt;/entry&gt;
 
@@ -2685,6 +2707,20 @@ to define behavior.</p>
   &lt;/entry&gt;
 
  &lt;!-- Job Submission stuff --&gt;
+ &lt;entry id=&quot;USER_REQUESTED_QUEUE&quot;&gt;
+   &lt;type&gt;char&lt;/type&gt;
+   &lt;group&gt;run_desc&lt;/group&gt;
+   &lt;file&gt;env_run.xml&lt;/file&gt;
+   &lt;desc&gt;Store user override for queue&lt;/desc&gt;
+ &lt;/entry&gt;
+
+ &lt;entry id=&quot;USER_REQUESTED_WALLTIME&quot;&gt;
+   &lt;type&gt;char&lt;/type&gt;
+   &lt;group&gt;run_desc&lt;/group&gt;
+   &lt;file&gt;env_run.xml&lt;/file&gt;
+   &lt;desc&gt;Store user override for walltime&lt;/desc&gt;
+ &lt;/entry&gt;
+
  &lt;entry id=&quot;JOB_QUEUE&quot;&gt;
    &lt;type&gt;char&lt;/type&gt;
    &lt;valid_values&gt;&lt;/valid_values&gt;
@@ -3678,8 +3714,16 @@ to define behavior.</p>
       &lt;value compset=&quot;_MPAS&quot;&gt;1&lt;/value&gt;
       &lt;value compset=&quot;.+&quot; grid=&quot;a%0.23x0.31&quot;&gt;96&lt;/value&gt;
       &lt;value compset=&quot;.+&quot; grid=&quot;a%ne60np4&quot;&gt;96&lt;/value&gt;
+      &lt;value compset=&quot;.+&quot; grid=&quot;a%ne60np4.pg3&quot;&gt;96&lt;/value&gt;
+      &lt;value compset=&quot;.+&quot; grid=&quot;a%ne60np4.pg4&quot;&gt;96&lt;/value&gt;
       &lt;value compset=&quot;.+&quot; grid=&quot;a%ne120np4&quot;&gt;96&lt;/value&gt;
-      &lt;value compset=&quot;.+&quot; grid=&quot;a%ne240np4&quot;&gt;96&lt;/value&gt;
+      &lt;value compset=&quot;.+&quot; grid=&quot;a%ne120np4.pg2&quot;&gt;96&lt;/value&gt;
+      &lt;value compset=&quot;.+&quot; grid=&quot;a%ne120np4.pg3&quot;&gt;96&lt;/value&gt;
+      &lt;value compset=&quot;.+&quot; grid=&quot;a%ne120np4.pg4&quot;&gt;96&lt;/value&gt;
+      &lt;value compset=&quot;.+&quot; grid=&quot;a%ne240np4&quot;&gt;144&lt;/value&gt;
+      &lt;value compset=&quot;.+&quot; grid=&quot;a%ne240np4.pg2&quot;&gt;144&lt;/value&gt;
+      &lt;value compset=&quot;.+&quot; grid=&quot;a%ne240np4.pg3&quot;&gt;144&lt;/value&gt;
+      &lt;value compset=&quot;.+&quot; grid=&quot;a%ne0np4CONUS.ne30x8&quot;&gt;144&lt;/value&gt;
       &lt;value compset=&quot;.+&quot; grid=&quot;a%T42&quot;&gt;72&lt;/value&gt;
       &lt;value compset=&quot;.+&quot; grid=&quot;a%T85&quot;&gt;144&lt;/value&gt;
       &lt;value compset=&quot;.+&quot; grid=&quot;a%T341&quot;&gt;288&lt;/value&gt;
@@ -8662,13 +8706,13 @@ to define behavior.</p>
         <li class="right" >
           <a href="wave.html" title="CIME Wave Data and Stub XML Files"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" >XML Files</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >XML Files</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
+        &copy; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.3.
     </div>
   </body>
 </html>

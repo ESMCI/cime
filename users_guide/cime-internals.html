@@ -2,28 +2,31 @@
 
 <!doctype html>
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>1. CIME internals &#8212; CIME 5.3.0 documentation</title>
+    
+    <title>1. CIME internals &mdash; CIME 5.3.0 documentation</title>
+    
     <link rel="stylesheet" href="../_static/bizstyle.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
         VERSION:     '5.3.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
+        HAS_SOURCE:  true
       };
     </script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="../_static/bizstyle.js"></script>
-    <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" />
+    <link rel="top" title="CIME 5.3.0 documentation" href="../index.html" />
+    <link rel="up" title="CIME User’s Guide Part 1: Beginner - Basic Usage" href="index.html" />
     <link rel="next" title="2. Porting and validating CIME on a new platform" href="porting-cime.html" />
     <link rel="prev" title="9. Troubleshooting" href="troubleshooting.html" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
@@ -31,7 +34,7 @@
     <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
     <![endif]-->
   </head>
-  <body>
+  <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -47,8 +50,8 @@
         <li class="right" >
           <a href="troubleshooting.html" title="9. Troubleshooting"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">CIME User’s Guide Part 1: Beginner - Basic Usage</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">CIME User&#8217;s Guide Part 1: Beginner - Basic Usage</a> &raquo;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -76,7 +79,7 @@
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="../_sources/users_guide/cime-internals.rst.txt"
+      <li><a href="../_sources/users_guide/cime-internals.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
@@ -215,7 +218,7 @@
 &lt;/entry&gt;
 </pre></div>
 </div>
-<p>If the compset’s atm component attribute is <code class="docutils literal"><span class="pre">datm</span></code>, the file <code class="docutils literal"><span class="pre">$CIMEROOT/components/data_comps/datm/cime_config/config_component.xml</span></code> specifies all possible component settings for <code class="docutils literal"><span class="pre">DATM</span></code>.</p>
+<p>If the compset&#8217;s atm component attribute is <code class="docutils literal"><span class="pre">datm</span></code>, the file <code class="docutils literal"><span class="pre">$CIMEROOT/components/data_comps/datm/cime_config/config_component.xml</span></code> specifies all possible component settings for <code class="docutils literal"><span class="pre">DATM</span></code>.</p>
 <p>The schema for every <strong>config_component.xml</strong> file has a <code class="docutils literal"><span class="pre">&lt;description&gt;</span></code> node that specifies all possible values that can follow the <code class="docutils literal"><span class="pre">%</span></code> character in the compset name. To list the possible values, use the <strong>query_case</strong> command with <code class="docutils literal"><span class="pre">--components</span></code> as shown in this example for CAM:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">query_case</span> <span class="o">--</span><span class="n">components</span> <span class="n">cam</span>
 </pre></div>
@@ -336,13 +339,13 @@ All nodes that have a grid match are used in the subsequent search. If there is 
         <li class="right" >
           <a href="troubleshooting.html" title="9. Troubleshooting"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" >CIME User’s Guide Part 1: Beginner - Basic Usage</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >CIME User&#8217;s Guide Part 1: Beginner - Basic Usage</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
+        &copy; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.3.
     </div>
   </body>
 </html>

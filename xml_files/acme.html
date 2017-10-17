@@ -2,28 +2,31 @@
 
 <!doctype html>
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>ACME Coupled Model XML Files &#8212; CIME 5.3.0 documentation</title>
+    
+    <title>ACME Coupled Model XML Files &mdash; CIME 5.3.0 documentation</title>
+    
     <link rel="stylesheet" href="../_static/bizstyle.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
         VERSION:     '5.3.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
+        HAS_SOURCE:  true
       };
     </script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="../_static/bizstyle.js"></script>
-    <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" />
+    <link rel="top" title="CIME 5.3.0 documentation" href="../index.html" />
+    <link rel="up" title="XML Files" href="index.html" />
     <link rel="next" title="CESM Coupled Model XML Files" href="cesm.html" />
     <link rel="prev" title="XML Files" href="index.html" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
@@ -31,7 +34,7 @@
     <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
     <![endif]-->
   </head>
-  <body>
+  <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -47,8 +50,8 @@
         <li class="right" >
           <a href="index.html" title="XML Files"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">XML Files</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">XML Files</a> &raquo;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -72,7 +75,7 @@
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="../_sources/xml_files/acme.rst.txt"
+      <li><a href="../_sources/xml_files/acme.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
@@ -98,6 +101,8 @@
 <span id="acme"></span><h1>ACME Coupled Model XML Files<a class="headerlink" href="#acme-coupled-model-xml-files" title="Permalink to this headline">¶</a></h1>
 <p>XML files for ACME in CIMEROOT/config/acme.</p>
 <div class="toctree-wrapper compound">
+<ul class="simple">
+</ul>
 </div>
 <div class="section" id="cimeroot-config-acme">
 <h2>CIMEROOT/config/acme<a class="headerlink" href="#cimeroot-config-acme" title="Permalink to this headline">¶</a></h2>
@@ -8143,7 +8148,7 @@
     &lt;mach name=&quot;anvil&quot;&gt;
       &lt;pes compset=&quot;any&quot; pesize=&quot;S&quot;&gt;
         &lt;comment&gt;ne30_ne30 grid on 45 nodes 32 ppn pure-MPI&lt;/comment&gt;
-        &lt;PES_PER_NODE&gt;32&lt;/PES_PER_NODE&gt;
+        &lt;MAX_MPITASKS_PER_NODE&gt;32&lt;/MAX_MPITASKS_PER_NODE&gt;
         &lt;MAX_TASKS_PER_NODE&gt;32&lt;/MAX_TASKS_PER_NODE&gt;
         &lt;ntasks&gt;
           &lt;ntasks_atm&gt;1350&lt;/ntasks_atm&gt;
@@ -10279,7 +10284,7 @@
     &lt;mach name=&quot;anvil&quot;&gt;
       &lt;pes compset=&quot;.*CAM5.+CLM45.+MPASCICE.+MPASO.+MOSART.+SGLC.+SWAV&quot; pesize=&quot;S&quot;&gt;
         &lt;comment&gt; -compset A_WCYCL* -res ne30_oEC* on 32 nodes pure-MPI &lt;/comment&gt;
-        &lt;PES_PER_NODE&gt;32&lt;/PES_PER_NODE&gt;
+        &lt;MAX_MPITASKS_PER_NODE&gt;32&lt;/MAX_MPITASKS_PER_NODE&gt;
         &lt;MAX_TASKS_PER_NODE&gt;32&lt;/MAX_TASKS_PER_NODE&gt;
         &lt;ntasks&gt;
           &lt;ntasks_atm&gt;675&lt;/ntasks_atm&gt;
@@ -10314,7 +10319,7 @@
       &lt;/pes&gt;
       &lt;pes compset=&quot;.*CAM5.+CLM45.+MPASCICE.+MPASO.+MOSART.+SGLC.+SWAV&quot; pesize=&quot;any&quot;&gt;
         &lt;comment&gt; -compset A_WCYCL* -res ne30_oEC* on 59 nodes pure-MPI &lt;/comment&gt;
-        &lt;PES_PER_NODE&gt;32&lt;/PES_PER_NODE&gt;
+        &lt;MAX_MPITASKS_PER_NODE&gt;32&lt;/MAX_MPITASKS_PER_NODE&gt;
         &lt;MAX_TASKS_PER_NODE&gt;32&lt;/MAX_TASKS_PER_NODE&gt;
         &lt;ntasks&gt;
           &lt;ntasks_atm&gt;1350&lt;/ntasks_atm&gt;
@@ -10349,7 +10354,7 @@
       &lt;/pes&gt;
       &lt;pes compset=&quot;.*CAM5.+CLM45.+MPASCICE.+MPASO.+MOSART.+SGLC.+SWAV&quot; pesize=&quot;L&quot;&gt;
         &lt;comment&gt; -compset A_WCYCL* -res ne30_oEC* on 115 nodes pure-MPI &lt;/comment&gt;
-        &lt;PES_PER_NODE&gt;32&lt;/PES_PER_NODE&gt;
+        &lt;MAX_MPITASKS_PER_NODE&gt;32&lt;/MAX_MPITASKS_PER_NODE&gt;
         &lt;MAX_TASKS_PER_NODE&gt;32&lt;/MAX_TASKS_PER_NODE&gt;
         &lt;ntasks&gt;
           &lt;ntasks_atm&gt;2700&lt;/ntasks_atm&gt;
@@ -10689,6 +10694,7 @@
   &lt;batch_system type=&quot;template&quot; &gt;
     &lt;batch_query args=&quot;&quot;&gt;&lt;/batch_query&gt;
     &lt;batch_submit&gt;&lt;/batch_submit&gt;
+    &lt;batch_cancel&gt;&lt;/batch_cancel&gt;
     &lt;batch_redirect&gt;&lt;/batch_redirect&gt;
     &lt;batch_directive&gt;&lt;/batch_directive&gt;
     &lt;directives&gt;
@@ -10699,6 +10705,7 @@
   &lt;batch_system type=&quot;none&quot; &gt;
     &lt;batch_query args=&quot;&quot;&gt;&lt;/batch_query&gt;
     &lt;batch_submit&gt;&lt;/batch_submit&gt;
+    &lt;batch_cancel&gt;&lt;/batch_cancel&gt;
     &lt;batch_redirect&gt;&lt;/batch_redirect&gt;
     &lt;batch_directive&gt;&lt;/batch_directive&gt;
     &lt;directives&gt;
@@ -10709,6 +10716,8 @@
   &lt;batch_system type=&quot;cobalt&quot; &gt;
     &lt;batch_query&gt;qstat&lt;/batch_query&gt;
     &lt;batch_submit&gt;qsub&lt;/batch_submit&gt;
+    &lt;batch_cancel&gt;qdel&lt;/batch_cancel&gt;
+    &lt;batch_env&gt;-v&lt;/batch_env&gt;
     &lt;batch_directive&gt;&lt;/batch_directive&gt;
     &lt;jobid_pattern&gt;(\d+)&lt;/jobid_pattern&gt;
     &lt;depend_string&gt; --dependencies&lt;/depend_string&gt;
@@ -10720,7 +10729,7 @@
       &lt;arg flag=&quot;--cwd&quot; name=&quot;CASEROOT&quot;/&gt;
       &lt;arg flag=&quot;-A&quot; name=&quot;PROJECT&quot;/&gt;
       &lt;arg flag=&quot;-t&quot; name=&quot;JOB_WALLCLOCK_TIME&quot;/&gt;
-      &lt;arg flag=&quot;-n&quot; name=&quot; $TOTALPES/$PES_PER_NODE&quot;/&gt;
+      &lt;arg flag=&quot;-n&quot; name=&quot; $TOTALPES/$MAX_MPITASKS_PER_NODE&quot;/&gt;
       &lt;arg flag=&quot;-q&quot; name=&quot;JOB_QUEUE&quot;/&gt;
       &lt;arg flag=&quot;--mode script&quot;/&gt;
     &lt;/submit_args&gt;
@@ -10729,6 +10738,8 @@
   &lt;batch_system type=&quot;cobalt_theta&quot; &gt;
     &lt;batch_query&gt;qstat&lt;/batch_query&gt;
     &lt;batch_submit&gt;qsub&lt;/batch_submit&gt;
+    &lt;batch_cancel&gt;qdel&lt;/batch_cancel&gt;
+    &lt;batch_env&gt;-v&lt;/batch_env&gt;
     &lt;batch_directive&gt;#COBALT&lt;/batch_directive&gt;
     &lt;jobid_pattern&gt;(\d+)&lt;/jobid_pattern&gt;
     &lt;depend_string&gt; --dependencies&lt;/depend_string&gt;
@@ -10738,7 +10749,7 @@
     &lt;submit_args&gt;
       &lt;arg flag=&quot;-A&quot; name=&quot;PROJECT&quot;/&gt;
       &lt;arg flag=&quot;-t&quot; name=&quot;JOB_WALLCLOCK_TIME&quot;/&gt;
-      &lt;arg flag=&quot;-n&quot; name=&quot; $TOTALPES/$PES_PER_NODE&quot;/&gt;
+      &lt;arg flag=&quot;-n&quot; name=&quot; $TOTALPES/$MAX_MPITASKS_PER_NODE&quot;/&gt;
       &lt;arg flag=&quot;-q&quot; name=&quot;JOB_QUEUE&quot;/&gt;
       &lt;arg flag=&quot;--mode script&quot;/&gt;
     &lt;/submit_args&gt;
@@ -10747,6 +10758,7 @@
   &lt;batch_system type=&quot;lsf&quot; version=&quot;9.1&quot;&gt;
     &lt;batch_query args=&quot; -w&quot; &gt;bjobs&lt;/batch_query&gt;
     &lt;batch_submit&gt;bsub&lt;/batch_submit&gt;
+    &lt;batch_cancel&gt;bkill&lt;/batch_cancel&gt;
     &lt;batch_redirect&gt;&amp;lt;&lt;/batch_redirect&gt;
     &lt;batch_directive&gt;#BSUB&lt;/batch_directive&gt;
     &lt;jobid_pattern&gt;&amp;lt;(\d+)&amp;gt;&lt;/jobid_pattern&gt;
@@ -10765,8 +10777,8 @@
       &lt;directive                       &gt; -R &quot;span[ptile={{ tasks_per_node }}]&quot;&lt;/directive&gt;
       &lt;directive                       &gt; -N  &lt;/directive&gt;
       &lt;directive default=&quot;poe&quot;         &gt; -a {{ poe }} &lt;/directive&gt;
-      &lt;directive default=&quot;acme.stdout&quot; &gt; -o {{ output_error_path }}.%J  &lt;/directive&gt;
-      &lt;directive default=&quot;acme.stderr&quot; &gt; -e {{ output_error_path }}.%J  &lt;/directive&gt;
+      &lt;directive default=&quot;acme.stdout&quot; &gt; -o {{ job_id }}.%J  &lt;/directive&gt;
+      &lt;directive default=&quot;acme.stderr&quot; &gt; -e {{ job_id }}.%J  &lt;/directive&gt;
       &lt;directive                       &gt; -J {{ job_id }} &lt;/directive&gt;
     &lt;/directives&gt;
   &lt;/batch_system&gt;
@@ -10774,6 +10786,8 @@
   &lt;batch_system type=&quot;pbs&quot; &gt;
     &lt;batch_query args=&quot;-f&quot; &gt;qstat&lt;/batch_query&gt;
     &lt;batch_submit&gt;qsub &lt;/batch_submit&gt;
+    &lt;batch_cancel&gt;qdel&lt;/batch_cancel&gt;
+    &lt;batch_env&gt;-v&lt;/batch_env&gt;
     &lt;batch_directive&gt;#PBS&lt;/batch_directive&gt;
     &lt;jobid_pattern&gt;^(\S+)$&lt;/jobid_pattern&gt;
     &lt;depend_string&gt; -W depend=afterok:jobid&lt;/depend_string&gt;
@@ -10789,7 +10803,7 @@
     &lt;directives&gt;
       &lt;directive&gt; -N {{ job_id }}&lt;/directive&gt;
       &lt;directive default=&quot;n&quot;&gt; -r {{ rerunnable }} &lt;/directive&gt;
-      &lt;!-- &lt;directive&gt; -j oe {{ output_error_path }} &lt;/directive&gt; --&gt;
+      &lt;!-- &lt;directive&gt; -j oe {{ job_id }} &lt;/directive&gt; --&gt;
       &lt;directive&gt; -j oe &lt;/directive&gt;
       &lt;directive&gt; -V &lt;/directive&gt;
     &lt;/directives&gt;
@@ -10798,6 +10812,7 @@
   &lt;batch_system type=&quot;moab&quot; &gt;
     &lt;batch_query&gt;showq&lt;/batch_query&gt;
     &lt;batch_submit&gt;msub &lt;/batch_submit&gt;
+    &lt;batch_cancel&gt;canceljob&lt;/batch_cancel&gt;
     &lt;batch_directive&gt;#MSUB&lt;/batch_directive&gt;
     &lt;jobid_pattern&gt;(\d+)$&lt;/jobid_pattern&gt;
     &lt;depend_string&gt; -W depend=afterok:jobid&lt;/depend_string&gt;
@@ -10820,6 +10835,7 @@
   &lt;!-- for cab llnl --&gt;
    &lt;batch_system type=&quot;lc_slurm&quot;&gt;
      &lt;batch_submit&gt;msub&lt;/batch_submit&gt;
+     &lt;batch_cancel&gt;canceljob&lt;/batch_cancel&gt;
      &lt;batch_directive&gt;#MSUB&lt;/batch_directive&gt;
      &lt;jobid_pattern&gt;(\d+)$&lt;/jobid_pattern&gt;
      &lt;depend_string&gt; -l depend=jobid&lt;/depend_string&gt;
@@ -10830,19 +10846,20 @@
        &lt;directive&gt;-N {{ job_id }}&lt;/directive&gt;
        &lt;directive&gt;-l nodes={{ num_nodes }}:ppn={{ tasks_per_node }}&lt;/directive&gt;
        &lt;directive&gt;-l walltime={{ job_wallclock_time }}&lt;/directive&gt;
-       &lt;directive&gt;-o {{ output_error_path }}.out&lt;/directive&gt;
-       &lt;directive&gt;-e {{ output_error_path }}.err&lt;/directive&gt;
+       &lt;directive&gt;-o {{ job_id }}.out&lt;/directive&gt;
+       &lt;directive&gt;-e {{ job_id }}.err&lt;/directive&gt;
        &lt;directive&gt;-m be&lt;/directive&gt;
       &lt;directive&gt; -A {{ project }} &lt;/directive&gt;
      &lt;/directives&gt;
      &lt;queues&gt;
-        &lt;queue walltimemax=&quot;01:00:00&quot; jobmin=&quot;1&quot; jobmax=&quot;4320&quot; default=&quot;true&quot;&gt;pbatch&lt;/queue&gt;
+        &lt;queue walltimemax=&quot;01:00:00&quot; nodemin=&quot;1&quot; nodemax=&quot;270&quot; default=&quot;true&quot;&gt;pbatch&lt;/queue&gt;
      &lt;/queues&gt;
    &lt;/batch_system&gt;
 
   &lt;batch_system type=&quot;slurm&quot; &gt;
     &lt;batch_query per_job_arg=&quot;-j&quot;&gt;squeue&lt;/batch_query&gt;
     &lt;batch_submit&gt;sbatch&lt;/batch_submit&gt;
+    &lt;batch_cancel&gt;scancel&lt;/batch_cancel&gt;
     &lt;batch_directive&gt;#SBATCH&lt;/batch_directive&gt;
     &lt;jobid_pattern&gt;(\d+)$&lt;/jobid_pattern&gt;
     &lt;depend_string&gt; --dependency=afterok:jobid&lt;/depend_string&gt;
@@ -10860,7 +10877,7 @@
     &lt;directives&gt;
       &lt;directive&gt; --job-name={{ job_id }}&lt;/directive&gt;
       &lt;directive&gt; --nodes={{ num_nodes }}&lt;/directive&gt;
-      &lt;directive&gt; --output={{ output_error_path }}.%j &lt;/directive&gt;
+      &lt;directive&gt; --output={{ job_id }}.%j &lt;/directive&gt;
       &lt;directive&gt; --exclusive                        &lt;/directive&gt;
     &lt;/directives&gt;
   &lt;/batch_system&gt;
@@ -10872,8 +10889,8 @@
       &lt;directive&gt;-l nodes={{ num_nodes }}:ppn={{ tasks_per_node }}&lt;/directive&gt;
     &lt;/directives&gt;
     &lt;queues&gt;
-      &lt;queue walltimemax=&quot;01:00:00&quot; jobmin=&quot;1&quot; jobmax=&quot;64&quot; strict=&quot;true&quot;&gt;shared&lt;/queue&gt;
-      &lt;queue walltimemax=&quot;03:00:00&quot; jobmin=&quot;1&quot; jobmax=&quot;4096&quot; default=&quot;true&quot;&gt;batch&lt;/queue&gt;
+      &lt;queue walltimemax=&quot;01:00:00&quot; nodemin=&quot;1&quot; nodemax=&quot;4&quot; strict=&quot;true&quot;&gt;shared&lt;/queue&gt;
+      &lt;queue walltimemax=&quot;03:00:00&quot; nodemin=&quot;1&quot; nodemax=&quot;256&quot; default=&quot;true&quot;&gt;batch&lt;/queue&gt;
     &lt;/queues&gt;
   &lt;/batch_system&gt;
 
@@ -10884,15 +10901,15 @@
       &lt;directive&gt;-l nodes={{ num_nodes }}:ppn={{ tasks_per_node }}&lt;/directive&gt;
     &lt;/directives&gt;
     &lt;queues&gt;
-      &lt;queue walltimemax=&quot;01:00:00&quot; jobmin=&quot;1&quot; jobmax=&quot;4320&quot; default=&quot;true&quot;&gt;acme&lt;/queue&gt;
+      &lt;queue walltimemax=&quot;01:00:00&quot; nodemin=&quot;1&quot; nodemax=&quot;120&quot; default=&quot;true&quot;&gt;acme&lt;/queue&gt;
     &lt;/queues&gt;
   &lt;/batch_system&gt;
 
   &lt;!-- edison is SLURM as of Jan-4-2016 --&gt;
   &lt;batch_system MACH=&quot;edison&quot; type=&quot;slurm&quot; &gt;
     &lt;queues&gt;
-      &lt;queue walltimemax=&quot;00:30:00&quot; jobmin=&quot;1&quot; jobmax=&quot;12288&quot; strict=&quot;true&quot;&gt;debug&lt;/queue&gt;
-      &lt;queue walltimemax=&quot;01:30:00&quot; jobmin=&quot;1&quot; jobmax=&quot;150000&quot; default=&quot;true&quot;&gt;regular&lt;/queue&gt;
+      &lt;queue walltimemax=&quot;00:30:00&quot; nodemin=&quot;1&quot; nodemax=&quot;512&quot; strict=&quot;true&quot;&gt;debug&lt;/queue&gt;
+      &lt;queue walltimemax=&quot;01:30:00&quot; nodemin=&quot;1&quot; nodemax=&quot;6250&quot; default=&quot;true&quot;&gt;regular&lt;/queue&gt;
     &lt;/queues&gt;
   &lt;/batch_system&gt;
 
@@ -10903,7 +10920,7 @@
       &lt;directive&gt;-l  nodes={{ num_nodes }}&lt;/directive&gt;
     &lt;/directives&gt;
     &lt;queues&gt;
-      &lt;queue walltimemax=&quot;00:30:00&quot; jobmin=&quot;1&quot; jobmax=&quot;9999&quot; default=&quot;true&quot;&gt;batch&lt;/queue&gt;
+      &lt;queue walltimemax=&quot;00:30:00&quot; nodemin=&quot;1&quot; nodemax=&quot;312&quot; default=&quot;true&quot;&gt;batch&lt;/queue&gt;
     &lt;/queues&gt;
   &lt;/batch_system&gt;
 
@@ -10912,8 +10929,8 @@
         &lt;directive&gt; --constraint=haswell&lt;/directive&gt;
       &lt;/directives&gt;
       &lt;queues&gt;
-	&lt;queue walltimemax=&quot;00:30:00&quot; jobmin=&quot;1&quot; jobmax=&quot;4096&quot; strict=&quot;true&quot;&gt;debug&lt;/queue&gt;
-        &lt;queue walltimemax=&quot;01:00:00&quot; jobmin=&quot;1&quot; jobmax=&quot;10000&quot; default=&quot;true&quot;&gt;regular&lt;/queue&gt;
+	&lt;queue walltimemax=&quot;00:30:00&quot; nodemin=&quot;1&quot; nodemax=&quot;128&quot; strict=&quot;true&quot;&gt;debug&lt;/queue&gt;
+        &lt;queue walltimemax=&quot;01:00:00&quot; nodemin=&quot;1&quot; nodemax=&quot;312&quot; default=&quot;true&quot;&gt;regular&lt;/queue&gt;
       &lt;/queues&gt;
     &lt;/batch_system&gt;
 
@@ -10922,26 +10939,26 @@
         &lt;directive&gt; --constraint=knl,quad,cache&lt;/directive&gt;
       &lt;/directives&gt;
       &lt;queues&gt;
-	&lt;queue walltimemax=&quot;00:30:00&quot; jobmin=&quot;1&quot; jobmax=&quot;100000&quot; strict=&quot;true&quot;&gt;debug&lt;/queue&gt;
-        &lt;queue walltimemax=&quot;01:00:00&quot; jobmin=&quot;1&quot; jobmax=&quot;3000000&quot; default=&quot;true&quot;&gt;regular&lt;/queue&gt;
+	&lt;queue walltimemax=&quot;00:30:00&quot; nodemin=&quot;1&quot; nodemax=&quot;390&quot; strict=&quot;true&quot;&gt;debug&lt;/queue&gt;
+        &lt;queue walltimemax=&quot;01:00:00&quot; nodemin=&quot;1&quot; nodemax=&quot;11718&quot; default=&quot;true&quot;&gt;regular&lt;/queue&gt;
       &lt;/queues&gt;
     &lt;/batch_system&gt;
 
     &lt;batch_system MACH=&quot;mira&quot; type=&quot;cobalt&quot;&gt;
       &lt;queues&gt;
-        &lt;queue walltimemax=&quot;03:00:00&quot; jobmin=&quot;1&quot; jobmax=&quot;786432&quot; default=&quot;true&quot;&gt;default&lt;/queue&gt;
+        &lt;queue walltimemax=&quot;03:00:00&quot; nodemin=&quot;1&quot; nodemax=&quot;12288&quot; default=&quot;true&quot;&gt;default&lt;/queue&gt;
       &lt;/queues&gt;
     &lt;/batch_system&gt;
 
     &lt;batch_system MACH=&quot;cetus&quot; type=&quot;cobalt&quot;&gt;
       &lt;queues&gt;
-        &lt;queue walltimemax=&quot;01:00:00&quot; jobmin=&quot;1&quot; jobmax=&quot;65536&quot; default=&quot;true&quot;&gt;default&lt;/queue&gt;
+        &lt;queue walltimemax=&quot;01:00:00&quot; nodemin=&quot;1&quot; nodemax=&quot;1024&quot; default=&quot;true&quot;&gt;default&lt;/queue&gt;
       &lt;/queues&gt;
     &lt;/batch_system&gt;
 
     &lt;batch_system MACH=&quot;theta&quot; type=&quot;cobalt_theta&quot;&gt;
       &lt;queues&gt;
-        &lt;queue walltimemax=&quot;00:60:00&quot; jobmin=&quot;1&quot; jobmax=&quot;3200&quot; default=&quot;true&quot;&gt;default&lt;/queue&gt;
+        &lt;queue walltimemax=&quot;00:60:00&quot; nodemin=&quot;1&quot; nodemax=&quot;50&quot; default=&quot;true&quot;&gt;default&lt;/queue&gt;
       &lt;/queues&gt;
     &lt;/batch_system&gt;
 
@@ -10951,7 +10968,7 @@
         &lt;directive&gt;--mail-user=email@pnnl.gov&lt;/directive&gt;
       &lt;/directives&gt;
       &lt;queues&gt;
-        &lt;queue walltimemax=&quot;00:30:00&quot; jobmin=&quot;1&quot; jobmax=&quot;9999&quot; default=&quot;true&quot;&gt;small&lt;/queue&gt;
+        &lt;queue walltimemax=&quot;00:30:00&quot; nodemin=&quot;1&quot; nodemax=&quot;624&quot; default=&quot;true&quot;&gt;small&lt;/queue&gt;
       &lt;/queues&gt;
     &lt;/batch_system&gt;
 
@@ -10963,7 +10980,7 @@
        &lt;directive&gt;--error=slurm.err&lt;/directive&gt;
     &lt;/directives&gt;
     &lt;queues&gt;
-      &lt;queue walltimemax=&quot;00:59:00&quot; jobmin=&quot;1&quot; jobmax=&quot;9999&quot; default=&quot;true&quot;&gt;slurm&lt;/queue&gt;
+      &lt;queue walltimemax=&quot;00:59:00&quot; nodemin=&quot;1&quot; nodemax=&quot;416&quot; default=&quot;true&quot;&gt;slurm&lt;/queue&gt;
     &lt;/queues&gt;
    &lt;/batch_system&gt;
 
@@ -10976,7 +10993,7 @@
        &lt;directive&gt;--error=slurm.err&lt;/directive&gt;
      &lt;/directives&gt;
      &lt;queues&gt;
-       &lt;queue walltimemax=&quot;00:59:00&quot; jobmin=&quot;1&quot; jobmax=&quot;9999&quot; default=&quot;true&quot;&gt;slurm&lt;/queue&gt;
+       &lt;queue walltimemax=&quot;00:59:00&quot; nodemin=&quot;1&quot; nodemax=&quot;1249&quot; default=&quot;true&quot;&gt;slurm&lt;/queue&gt;
      &lt;/queues&gt;
    &lt;/batch_system&gt;
 
@@ -10997,15 +11014,6 @@
     &lt;queues&gt;
       &lt;queue nodemin=&quot;1&quot; nodemax=&quot;12&quot; walltimemax=&quot;04:00:00&quot; default=&quot;true&quot;&gt;short&lt;/queue&gt;
       &lt;queue nodemin=&quot;1&quot; nodemax=&quot;64&quot; walltimemax=&quot;24:00:00&quot;&gt;batch&lt;/queue&gt;
-    &lt;/queues&gt;
-  &lt;/batch_system&gt;
-
-  &lt;batch_system MACH=&quot;redsky&quot; type=&quot;slurm&quot; &gt;
-    &lt;directives&gt;
-       &lt;directive&gt;--ntasks-per-node={{ tasks_per_node }}&lt;/directive&gt;
-    &lt;/directives&gt;
-    &lt;queues&gt;
-      &lt;queue jobmin=&quot;1&quot; jobmax=&quot;1024&quot; walltimemax=&quot;06:00:00&quot; default=&quot;true&quot;&gt;ec&lt;/queue&gt;
     &lt;/queues&gt;
   &lt;/batch_system&gt;
 
@@ -11086,7 +11094,7 @@
      &lt;/directives&gt;
      &lt;queues&gt;
        &lt;queue walltimemax=&quot;02:00:00&quot; default=&quot;true&quot;&gt;batch&lt;/queue&gt;
-       &lt;queue walltimemax=&quot;01:00:00&quot; jobmin=&quot;0&quot; jobmax=&quot;64&quot; strict=&quot;true&quot;&gt;debug&lt;/queue&gt;
+       &lt;queue walltimemax=&quot;01:00:00&quot; nodemin=&quot;0&quot; nodemax=&quot;4&quot; strict=&quot;true&quot;&gt;debug&lt;/queue&gt;
      &lt;/queues&gt;
    &lt;/batch_system&gt;
 
@@ -11098,7 +11106,7 @@
        &lt;directive&gt;--ntasks-per-node={{ tasks_per_node }}&lt;/directive&gt;
      &lt;/directives&gt;
     &lt;queues&gt;
-      &lt;queue walltimemax=&quot;01:00:00&quot; jobmin=&quot;0&quot; jobmax=&quot;64&quot; default=&quot;true&quot;&gt;lr3&lt;/queue&gt;
+      &lt;queue walltimemax=&quot;01:00:00&quot; nodemin=&quot;0&quot; nodemax=&quot;6&quot; default=&quot;true&quot;&gt;lr3&lt;/queue&gt;
     &lt;/queues&gt;
   &lt;/batch_system&gt;
 
@@ -11110,7 +11118,7 @@
       &lt;directive&gt;--ntasks-per-node={{ tasks_per_node }}&lt;/directive&gt;
     &lt;/directives&gt;
     &lt;queues&gt;
-      &lt;queue walltimemax=&quot;01:00:00&quot; jobmin=&quot;0&quot; jobmax=&quot;64&quot; default=&quot;true&quot;&gt;lr3&lt;/queue&gt;
+      &lt;queue walltimemax=&quot;01:00:00&quot; nodemin=&quot;0&quot; nodemax=&quot;4&quot; default=&quot;true&quot;&gt;lr3&lt;/queue&gt;
     &lt;/queues&gt;
   &lt;/batch_system&gt;
 
@@ -12629,7 +12637,7 @@ lude &lt;/CFLAGS&gt;
   &lt;SUPPORTED_BY&gt;acme&lt;/SUPPORTED_BY&gt;
   &lt;GMAKE_J&gt;8&lt;/GMAKE_J&gt;
   &lt;MAX_TASKS_PER_NODE&gt;24&lt;/MAX_TASKS_PER_NODE&gt;
-  &lt;PES_PER_NODE&gt;24&lt;/PES_PER_NODE&gt;
+  &lt;MAX_MPITASKS_PER_NODE&gt;24&lt;/MAX_MPITASKS_PER_NODE&gt;
   &lt;PROJECT&gt;acme&lt;/PROJECT&gt;
   &lt;PROJECT_REQUIRED&gt;TRUE&lt;/PROJECT_REQUIRED&gt;
   &lt;DIN_LOC_ROOT&gt;/project/projectdirs/acme/inputdata&lt;/DIN_LOC_ROOT&gt;
@@ -12753,7 +12761,7 @@ lude &lt;/CFLAGS&gt;
     &lt;SUPPORTED_BY&gt;acme&lt;/SUPPORTED_BY&gt;
     &lt;GMAKE_J&gt;8&lt;/GMAKE_J&gt;
     &lt;MAX_TASKS_PER_NODE&gt;32&lt;/MAX_TASKS_PER_NODE&gt;
-    &lt;PES_PER_NODE&gt;32&lt;/PES_PER_NODE&gt;
+    &lt;MAX_MPITASKS_PER_NODE&gt;32&lt;/MAX_MPITASKS_PER_NODE&gt;
     &lt;PROJECT&gt;acme&lt;/PROJECT&gt;
     &lt;PROJECT_REQUIRED&gt;TRUE&lt;/PROJECT_REQUIRED&gt;
     &lt;PIO_CONFIG_OPTS&gt; -D PIO_BUILD_TIMING:BOOL=ON &lt;/PIO_CONFIG_OPTS&gt;
@@ -12890,7 +12898,7 @@ lude &lt;/CFLAGS&gt;
     &lt;SUPPORTED_BY&gt;acme&lt;/SUPPORTED_BY&gt;
     &lt;GMAKE_J&gt;8&lt;/GMAKE_J&gt;
     &lt;MAX_TASKS_PER_NODE&gt;256&lt;/MAX_TASKS_PER_NODE&gt;
-    &lt;PES_PER_NODE&gt;64&lt;/PES_PER_NODE&gt;
+    &lt;MAX_MPITASKS_PER_NODE&gt;64&lt;/MAX_MPITASKS_PER_NODE&gt;
     &lt;PROJECT&gt;acme&lt;/PROJECT&gt;
     &lt;PROJECT_REQUIRED&gt;TRUE&lt;/PROJECT_REQUIRED&gt;
     &lt;PIO_CONFIG_OPTS&gt; -D PIO_BUILD_TIMING:BOOL=ON &lt;/PIO_CONFIG_OPTS&gt;
@@ -13026,7 +13034,7 @@ lude &lt;/CFLAGS&gt;
 &lt;!--    &lt;GMAKE&gt;make&lt;/GMAKE&gt; &lt;- this doesn&#39;t actually work! --&gt;
     &lt;GMAKE_J&gt;4&lt;/GMAKE_J&gt;
     &lt;MAX_TASKS_PER_NODE&gt;4&lt;/MAX_TASKS_PER_NODE&gt;
-    &lt;PES_PER_NODE&gt;2&lt;/PES_PER_NODE&gt;
+    &lt;MAX_MPITASKS_PER_NODE&gt;2&lt;/MAX_MPITASKS_PER_NODE&gt;
 &lt;/machine&gt;
 
 &lt;machine MACH=&quot;linux-generic&quot;&gt;
@@ -13050,7 +13058,7 @@ lude &lt;/CFLAGS&gt;
 &lt;!--    &lt;GMAKE&gt;make&lt;/GMAKE&gt; &lt;- this doesn&#39;t actually work! --&gt;
     &lt;GMAKE_J&gt;4&lt;/GMAKE_J&gt;
     &lt;MAX_TASKS_PER_NODE&gt;4&lt;/MAX_TASKS_PER_NODE&gt;
-    &lt;PES_PER_NODE&gt;2&lt;/PES_PER_NODE&gt;
+    &lt;MAX_MPITASKS_PER_NODE&gt;2&lt;/MAX_MPITASKS_PER_NODE&gt;
     &lt;mpirun mpilib=&quot;default&quot;&gt;
       &lt;executable&gt;mpirun&lt;/executable&gt;
       &lt;arguments&gt;
@@ -13081,7 +13089,7 @@ lude &lt;/CFLAGS&gt;
 &lt;!--    &lt;GMAKE&gt;make&lt;/GMAKE&gt; &lt;- this doesn&#39;t actually work! --&gt;
     &lt;GMAKE_J&gt;32&lt;/GMAKE_J&gt;
     &lt;MAX_TASKS_PER_NODE&gt;64&lt;/MAX_TASKS_PER_NODE&gt;
-    &lt;PES_PER_NODE&gt;64&lt;/PES_PER_NODE&gt;
+    &lt;MAX_MPITASKS_PER_NODE&gt;64&lt;/MAX_MPITASKS_PER_NODE&gt;
     &lt;BATCH_SYSTEM&gt;none&lt;/BATCH_SYSTEM&gt;
     &lt;mpirun mpilib=&quot;default&quot;&gt;
       &lt;executable&gt;mpirun&lt;/executable&gt;
@@ -13148,7 +13156,7 @@ lude &lt;/CFLAGS&gt;
 &lt;!--    &lt;GMAKE&gt;make&lt;/GMAKE&gt; &lt;- this doesn&#39;t actually work! --&gt;
     &lt;GMAKE_J&gt;32&lt;/GMAKE_J&gt;
     &lt;MAX_TASKS_PER_NODE&gt;64&lt;/MAX_TASKS_PER_NODE&gt;
-    &lt;PES_PER_NODE&gt;64&lt;/PES_PER_NODE&gt;
+    &lt;MAX_MPITASKS_PER_NODE&gt;64&lt;/MAX_MPITASKS_PER_NODE&gt;
     &lt;BATCH_SYSTEM&gt;none&lt;/BATCH_SYSTEM&gt;
     &lt;mpirun mpilib=&quot;default&quot;&gt;
       &lt;executable&gt;mpirun&lt;/executable&gt;
@@ -13214,7 +13222,7 @@ lude &lt;/CFLAGS&gt;
     &lt;GMAKE&gt;make&lt;/GMAKE&gt;
     &lt;GMAKE_J&gt;32&lt;/GMAKE_J&gt;
     &lt;MAX_TASKS_PER_NODE&gt;64&lt;/MAX_TASKS_PER_NODE&gt;
-    &lt;PES_PER_NODE&gt;64&lt;/PES_PER_NODE&gt;
+    &lt;MAX_MPITASKS_PER_NODE&gt;64&lt;/MAX_MPITASKS_PER_NODE&gt;
     &lt;BATCH_SYSTEM&gt;none&lt;/BATCH_SYSTEM&gt;
     &lt;mpirun mpilib=&quot;default&quot;&gt;
       &lt;executable&gt;mpirun&lt;/executable&gt;
@@ -13276,7 +13284,7 @@ lude &lt;/CFLAGS&gt;
   &lt;SUPPORTED_BY&gt;jgfouca at sandia dot gov&lt;/SUPPORTED_BY&gt;
   &lt;GMAKE_J&gt;8&lt;/GMAKE_J&gt;
   &lt;MAX_TASKS_PER_NODE&gt;16&lt;/MAX_TASKS_PER_NODE&gt;
-  &lt;PES_PER_NODE&gt;16&lt;/PES_PER_NODE&gt;
+  &lt;MAX_MPITASKS_PER_NODE&gt;16&lt;/MAX_MPITASKS_PER_NODE&gt;
   &lt;PIO_BUFFER_SIZE_LIMIT&gt;1&lt;/PIO_BUFFER_SIZE_LIMIT&gt;
   &lt;PROJECT_REQUIRED&gt;TRUE&lt;/PROJECT_REQUIRED&gt;
   &lt;PROJECT&gt;fy150001&lt;/PROJECT&gt;
@@ -13351,7 +13359,7 @@ lude &lt;/CFLAGS&gt;
   &lt;SUPPORTED_BY&gt;jgfouca at sandia dot gov&lt;/SUPPORTED_BY&gt;
   &lt;GMAKE_J&gt;8&lt;/GMAKE_J&gt;
   &lt;MAX_TASKS_PER_NODE&gt;16&lt;/MAX_TASKS_PER_NODE&gt;
-  &lt;PES_PER_NODE&gt;16&lt;/PES_PER_NODE&gt;
+  &lt;MAX_MPITASKS_PER_NODE&gt;16&lt;/MAX_MPITASKS_PER_NODE&gt;
   &lt;PIO_BUFFER_SIZE_LIMIT&gt;1&lt;/PIO_BUFFER_SIZE_LIMIT&gt;
   &lt;PROJECT_REQUIRED&gt;TRUE&lt;/PROJECT_REQUIRED&gt;
   &lt;PROJECT&gt;fy150001&lt;/PROJECT&gt;
@@ -13426,7 +13434,7 @@ lude &lt;/CFLAGS&gt;
   &lt;SUPPORTED_BY&gt;jgfouca at sandia dot gov&lt;/SUPPORTED_BY&gt;
   &lt;GMAKE_J&gt;8&lt;/GMAKE_J&gt;
   &lt;MAX_TASKS_PER_NODE&gt;36&lt;/MAX_TASKS_PER_NODE&gt;
-  &lt;PES_PER_NODE&gt;36&lt;/PES_PER_NODE&gt;
+  &lt;MAX_MPITASKS_PER_NODE&gt;36&lt;/MAX_MPITASKS_PER_NODE&gt;
   &lt;PIO_BUFFER_SIZE_LIMIT&gt;1&lt;/PIO_BUFFER_SIZE_LIMIT&gt;
   &lt;PROJECT_REQUIRED&gt;TRUE&lt;/PROJECT_REQUIRED&gt;
   &lt;PROJECT&gt;fy150001&lt;/PROJECT&gt;
@@ -13492,7 +13500,7 @@ lude &lt;/CFLAGS&gt;
          &lt;SUPPORTED_BY&gt;acme&lt;/SUPPORTED_BY&gt;
          &lt;GMAKE_J&gt;4&lt;/GMAKE_J&gt;
          &lt;MAX_TASKS_PER_NODE&gt;16&lt;/MAX_TASKS_PER_NODE&gt;
-	 &lt;PES_PER_NODE&gt;16&lt;/PES_PER_NODE&gt;
+	 &lt;MAX_MPITASKS_PER_NODE&gt;16&lt;/MAX_MPITASKS_PER_NODE&gt;
          &lt;PROJECT_REQUIRED&gt;TRUE&lt;/PROJECT_REQUIRED&gt;
 	 &lt;PROJECT&gt;ACME&lt;/PROJECT&gt;
          &lt;mpirun mpilib=&quot;mvapich&quot;&gt;
@@ -13604,7 +13612,7 @@ lude &lt;/CFLAGS&gt;
          &lt;SUPPORTED_BY&gt;acme&lt;/SUPPORTED_BY&gt;
          &lt;GMAKE_J&gt;8&lt;/GMAKE_J&gt;
          &lt;MAX_TASKS_PER_NODE&gt;36&lt;/MAX_TASKS_PER_NODE&gt;
-	 &lt;PES_PER_NODE&gt;36&lt;/PES_PER_NODE&gt;
+	 &lt;MAX_MPITASKS_PER_NODE&gt;36&lt;/MAX_MPITASKS_PER_NODE&gt;
          &lt;PROJECT_REQUIRED&gt;FALSE&lt;/PROJECT_REQUIRED&gt;
 	 &lt;PROJECT&gt;ACME&lt;/PROJECT&gt;
          &lt;mpirun mpilib=&quot;openmpi&quot;&gt;
@@ -13710,7 +13718,7 @@ lude &lt;/CFLAGS&gt;
     &lt;SUPPORTED_BY&gt;acme&lt;/SUPPORTED_BY&gt;
     &lt;GMAKE_J&gt;8&lt;/GMAKE_J&gt;
     &lt;MAX_TASKS_PER_NODE&gt;36&lt;/MAX_TASKS_PER_NODE&gt;
-    &lt;PES_PER_NODE&gt;36&lt;/PES_PER_NODE&gt;
+    &lt;MAX_MPITASKS_PER_NODE&gt;36&lt;/MAX_MPITASKS_PER_NODE&gt;
     &lt;PROJECT&gt;acme&lt;/PROJECT&gt;
     &lt;PROJECT_REQUIRED&gt;TRUE&lt;/PROJECT_REQUIRED&gt;
     &lt;PIO_CONFIG_OPTS&gt; -D PIO_BUILD_TIMING:BOOL=ON &lt;/PIO_CONFIG_OPTS&gt;
@@ -13783,7 +13791,7 @@ lude &lt;/CFLAGS&gt;
          &lt;BATCH_SYSTEM&gt;cobalt&lt;/BATCH_SYSTEM&gt;
          &lt;SUPPORTED_BY&gt;   jayesh -at- mcs.anl.gov&lt;/SUPPORTED_BY&gt;
          &lt;GMAKE_J&gt;8&lt;/GMAKE_J&gt;
-         &lt;PES_PER_NODE&gt;4&lt;/PES_PER_NODE&gt;
+         &lt;MAX_MPITASKS_PER_NODE&gt;4&lt;/MAX_MPITASKS_PER_NODE&gt;
          &lt;MAX_TASKS_PER_NODE&gt;64&lt;/MAX_TASKS_PER_NODE&gt;
          &lt;PROJECT_REQUIRED&gt;TRUE&lt;/PROJECT_REQUIRED&gt;
          &lt;PROJECT&gt;ClimateEnergy_2&lt;/PROJECT&gt;
@@ -13792,7 +13800,7 @@ lude &lt;/CFLAGS&gt;
            &lt;executable&gt;/usr/bin/runjob&lt;/executable&gt;
              &lt;arguments&gt;
                &lt;arg name=&quot;label&quot;&gt;--label short&lt;/arg&gt;
-               &lt;arg name=&quot;tasks_per_node&quot;&gt;--ranks-per-node $PES_PER_NODE&lt;/arg&gt;
+               &lt;arg name=&quot;tasks_per_node&quot;&gt;--ranks-per-node $MAX_MPITASKS_PER_NODE&lt;/arg&gt;
                &lt;arg name=&quot;num_tasks&quot;&gt;--np $TOTALPES&lt;/arg&gt;
                &lt;arg name=&quot;locargs&quot;&gt;--block $COBALT_PARTNAME $LOCARGS&lt;/arg&gt;
                &lt;arg name=&quot;bgq_smp_vars&quot;&gt;$ENV{BGQ_SMP_VARS}&lt;/arg&gt;
@@ -13837,7 +13845,7 @@ lude &lt;/CFLAGS&gt;
          &lt;SUPPORTED_BY&gt;bogenschutz1 -at- llnl.gov&lt;/SUPPORTED_BY&gt;
          &lt;GMAKE_J&gt;8&lt;/GMAKE_J&gt;
          &lt;MAX_TASKS_PER_NODE&gt;16&lt;/MAX_TASKS_PER_NODE&gt;
-	 &lt;PES_PER_NODE&gt;16&lt;/PES_PER_NODE&gt;
+	 &lt;MAX_MPITASKS_PER_NODE&gt;16&lt;/MAX_MPITASKS_PER_NODE&gt;
 	 &lt;BATCH_SYSTEM&gt;lc_slurm&lt;/BATCH_SYSTEM&gt;
 	 &lt;mpirun mpilib=&quot;mpi-serial&quot;&gt;
 	   &lt;executable&gt;&lt;/executable&gt;
@@ -13893,7 +13901,7 @@ lude &lt;/CFLAGS&gt;
          &lt;SUPPORTED_BY&gt;bogenschutz1 -at- llnl.gov&lt;/SUPPORTED_BY&gt;
          &lt;GMAKE_J&gt;8&lt;/GMAKE_J&gt;
          &lt;MAX_TASKS_PER_NODE&gt;16&lt;/MAX_TASKS_PER_NODE&gt;
-	 &lt;PES_PER_NODE&gt;16&lt;/PES_PER_NODE&gt;
+	 &lt;MAX_MPITASKS_PER_NODE&gt;16&lt;/MAX_MPITASKS_PER_NODE&gt;
 	 &lt;BATCH_SYSTEM&gt;lc_slurm&lt;/BATCH_SYSTEM&gt;
 	 &lt;mpirun mpilib=&quot;mpi-serial&quot;&gt;
 	   &lt;executable&gt;&lt;/executable&gt;
@@ -13954,7 +13962,7 @@ lude &lt;/CFLAGS&gt;
          &lt;SUPPORTED_BY&gt;donahue5 -at- llnl.gov&lt;/SUPPORTED_BY&gt;
          &lt;GMAKE_J&gt;8&lt;/GMAKE_J&gt;
          &lt;MAX_TASKS_PER_NODE&gt;36&lt;/MAX_TASKS_PER_NODE&gt;
-	 &lt;PES_PER_NODE&gt;36&lt;/PES_PER_NODE&gt;
+	 &lt;MAX_MPITASKS_PER_NODE&gt;36&lt;/MAX_MPITASKS_PER_NODE&gt;
 	 &lt;BATCH_SYSTEM&gt;lc_slurm&lt;/BATCH_SYSTEM&gt;
 	 &lt;mpirun mpilib=&quot;mpi-serial&quot;&gt;
 	   &lt;executable&gt;&lt;/executable&gt;
@@ -14008,7 +14016,7 @@ lude &lt;/CFLAGS&gt;
 	 &lt;BATCH_SYSTEM&gt;cobalt&lt;/BATCH_SYSTEM&gt;
          &lt;SUPPORTED_BY&gt;   mickelso -at- mcs.anl.gov&lt;/SUPPORTED_BY&gt;
          &lt;GMAKE_J&gt;8&lt;/GMAKE_J&gt;
-         &lt;PES_PER_NODE&gt;4&lt;/PES_PER_NODE&gt;
+         &lt;MAX_MPITASKS_PER_NODE&gt;4&lt;/MAX_MPITASKS_PER_NODE&gt;
          &lt;MAX_TASKS_PER_NODE&gt;64&lt;/MAX_TASKS_PER_NODE&gt;
          &lt;PROJECT_REQUIRED&gt;TRUE&lt;/PROJECT_REQUIRED&gt;
          &lt;PROJECT&gt;ClimateEnergy_2&lt;/PROJECT&gt;
@@ -14017,7 +14025,7 @@ lude &lt;/CFLAGS&gt;
            &lt;executable&gt;/usr/bin/runjob&lt;/executable&gt;
              &lt;arguments&gt;
                &lt;arg name=&quot;label&quot;&gt;--label short&lt;/arg&gt;
-               &lt;arg name=&quot;tasks_per_node&quot;&gt;--ranks-per-node $PES_PER_NODE&lt;/arg&gt;
+               &lt;arg name=&quot;tasks_per_node&quot;&gt;--ranks-per-node $MAX_MPITASKS_PER_NODE&lt;/arg&gt;
                &lt;arg name=&quot;num_tasks&quot;&gt;--np $TOTALPES&lt;/arg&gt;
                &lt;arg name=&quot;locargs&quot;&gt;--block $COBALT_PARTNAME $LOCARGS&lt;/arg&gt;
                &lt;arg name=&quot;bgq_smp_vars&quot;&gt;$ENV{BGQ_SMP_VARS}&lt;/arg&gt;
@@ -14062,7 +14070,7 @@ lude &lt;/CFLAGS&gt;
     &lt;SUPPORTED_BY&gt;acme&lt;/SUPPORTED_BY&gt;
     &lt;GMAKE_J&gt;8&lt;/GMAKE_J&gt;
     &lt;MAX_TASKS_PER_NODE&gt;64&lt;/MAX_TASKS_PER_NODE&gt;
-    &lt;PES_PER_NODE&gt;64&lt;/PES_PER_NODE&gt;
+    &lt;MAX_MPITASKS_PER_NODE&gt;64&lt;/MAX_MPITASKS_PER_NODE&gt;
     &lt;PROJECT&gt;OceanClimate&lt;/PROJECT&gt;
     &lt;PROJECT_REQUIRED&gt;TRUE&lt;/PROJECT_REQUIRED&gt;
     &lt;PIO_CONFIG_OPTS&gt; -D PIO_BUILD_TIMING:BOOL=ON &lt;/PIO_CONFIG_OPTS&gt;
@@ -14070,7 +14078,7 @@ lude &lt;/CFLAGS&gt;
       &lt;executable&gt;aprun&lt;/executable&gt;
       &lt;arguments&gt;
         &lt;arg name=&quot;num_tasks&quot; &gt;-n $TOTALPES&lt;/arg&gt;
-        &lt;arg name=&quot;tasks_per_node&quot; &gt;-N $PES_PER_NODE&lt;/arg&gt;
+        &lt;arg name=&quot;tasks_per_node&quot; &gt;-N $MAX_MPITASKS_PER_NODE&lt;/arg&gt;
         &lt;arg name=&quot;thread_count&quot;&gt;--cc depth -d $OMP_NUM_THREADS&lt;/arg&gt;
         &lt;arg name=&quot;env_omp_stacksize&quot;&gt;-e OMP_STACKSIZE=128M&lt;/arg&gt;
         &lt;arg name=&quot;env_thread_count&quot;&gt;-e OMP_NUM_THREADS=$OMP_NUM_THREADS&lt;/arg&gt;
@@ -14158,7 +14166,7 @@ lude &lt;/CFLAGS&gt;
     &lt;BATCH_SYSTEM&gt;slurm&lt;/BATCH_SYSTEM&gt;
     &lt;SUPPORTED_BY&gt;balwinder.singh -at- pnnl.gov&lt;/SUPPORTED_BY&gt;
     &lt;MAX_TASKS_PER_NODE&gt;8&lt;/MAX_TASKS_PER_NODE&gt;
-    &lt;PES_PER_NODE&gt;8&lt;/PES_PER_NODE&gt;
+    &lt;MAX_MPITASKS_PER_NODE&gt;8&lt;/MAX_MPITASKS_PER_NODE&gt;
     &lt;PROJECT_REQUIRED&gt;FALSE&lt;/PROJECT_REQUIRED&gt;
     &lt;mpirun mpilib=&quot;mpi-serial&quot;&gt;
       &lt;executable/&gt;
@@ -14231,7 +14239,7 @@ lude &lt;/CFLAGS&gt;
     &lt;SUPPORTED_BY&gt;balwinder.singh -at- pnnl.gov&lt;/SUPPORTED_BY&gt;
     &lt;GMAKE_J&gt;8&lt;/GMAKE_J&gt;
     &lt;MAX_TASKS_PER_NODE&gt;16&lt;/MAX_TASKS_PER_NODE&gt;
-    &lt;PES_PER_NODE&gt;16&lt;/PES_PER_NODE&gt;
+    &lt;MAX_MPITASKS_PER_NODE&gt;16&lt;/MAX_MPITASKS_PER_NODE&gt;
     &lt;PROJECT_REQUIRED&gt;TRUE&lt;/PROJECT_REQUIRED&gt;
     &lt;mpirun mpilib=&quot;mpi-serial&quot;&gt;
       &lt;executable&gt;&lt;/executable&gt;
@@ -14298,7 +14306,7 @@ lude &lt;/CFLAGS&gt;
          &lt;SUPPORTED_BY&gt;balwinder.singh -at- pnnl.gov&lt;/SUPPORTED_BY&gt;
          &lt;GMAKE_J&gt;8&lt;/GMAKE_J&gt;
 	 &lt;MAX_TASKS_PER_NODE&gt;24&lt;/MAX_TASKS_PER_NODE&gt;
-	 &lt;PES_PER_NODE&gt;24&lt;/PES_PER_NODE&gt;
+	 &lt;MAX_MPITASKS_PER_NODE&gt;24&lt;/MAX_MPITASKS_PER_NODE&gt;
 	 &lt;PROJECT_REQUIRED&gt;FALSE&lt;/PROJECT_REQUIRED&gt;
 	 &lt;mpirun mpilib=&quot;mpi-serial&quot;&gt;
 	   &lt;executable&gt;&lt;/executable&gt;
@@ -14397,7 +14405,7 @@ lude &lt;/CFLAGS&gt;
 	 &lt;BATCH_SYSTEM&gt;pbs&lt;/BATCH_SYSTEM&gt;
          &lt;SUPPORTED_BY&gt;dmricciuto&lt;/SUPPORTED_BY&gt;
          &lt;GMAKE_J&gt;8&lt;/GMAKE_J&gt;
-	 &lt;PES_PER_NODE&gt;8&lt;/PES_PER_NODE&gt;
+	 &lt;MAX_MPITASKS_PER_NODE&gt;8&lt;/MAX_MPITASKS_PER_NODE&gt;
          &lt;MAX_TASKS_PER_NODE&gt;8&lt;/MAX_TASKS_PER_NODE&gt;
          &lt;mpirun mpilib=&quot;mpich&quot;&gt;
               &lt;executable args=&quot;default&quot;&gt;/projects/cesm/devtools/mpich-3.0.4-gcc4.8.1/bin/mpirun &lt;/executable&gt;
@@ -14445,7 +14453,7 @@ lude &lt;/CFLAGS&gt;
 	 &lt;BATCH_SYSTEM&gt;pbs&lt;/BATCH_SYSTEM&gt;
          &lt;SUPPORTED_BY&gt;dmricciuto&lt;/SUPPORTED_BY&gt;
          &lt;GMAKE_J&gt;32&lt;/GMAKE_J&gt;
-	 &lt;PES_PER_NODE&gt;32&lt;/PES_PER_NODE&gt;
+	 &lt;MAX_MPITASKS_PER_NODE&gt;32&lt;/MAX_MPITASKS_PER_NODE&gt;
          &lt;MAX_TASKS_PER_NODE&gt;32&lt;/MAX_TASKS_PER_NODE&gt;
          &lt;mpirun mpilib=&quot;mpich&quot;&gt;
               &lt;executable args=&quot;default&quot;&gt;/projects/cesm/devtools/mpich-3.0.4-gcc4.8.1/bin/mpirun &lt;/executable&gt;
@@ -14481,7 +14489,7 @@ lude &lt;/CFLAGS&gt;
       &lt;SUPPORTED_BY&gt;yinj -at- ornl.gov&lt;/SUPPORTED_BY&gt;
       &lt;GMAKE_J&gt;4&lt;/GMAKE_J&gt;
       &lt;MAX_TASKS_PER_NODE&gt;32&lt;/MAX_TASKS_PER_NODE&gt;
-      &lt;PES_PER_NODE&gt;16&lt;/PES_PER_NODE&gt;
+      &lt;MAX_MPITASKS_PER_NODE&gt;16&lt;/MAX_MPITASKS_PER_NODE&gt;
       &lt;BATCH_SYSTEM&gt;pbs&lt;/BATCH_SYSTEM&gt;
       &lt;PROJECT_REQUIRED&gt;FALSE&lt;/PROJECT_REQUIRED&gt;
       &lt;mpirun mpilib=&quot;openmpi&quot; compiler=&quot;gnu&quot;&gt;
@@ -14539,7 +14547,7 @@ lude &lt;/CFLAGS&gt;
     &lt;SAVE_TIMING_DIR&gt;$ENV{PROJWORK}/$PROJECT&lt;/SAVE_TIMING_DIR&gt;
     &lt;OS&gt;CNL&lt;/OS&gt;
     &lt;BATCH_SYSTEM&gt;pbs&lt;/BATCH_SYSTEM&gt;
-    &lt;PES_PER_NODE&gt;16&lt;/PES_PER_NODE&gt;
+    &lt;MAX_MPITASKS_PER_NODE&gt;16&lt;/MAX_MPITASKS_PER_NODE&gt;
     &lt;!-- difference to MAX_TASKS_PER_NODE--&gt;
     &lt;SUPPORTED_BY&gt;acme&lt;/SUPPORTED_BY&gt;
     &lt;GMAKE_J&gt;8&lt;/GMAKE_J&gt;
@@ -14554,7 +14562,7 @@ lude &lt;/CFLAGS&gt;
 	&lt;!-- &lt;arg name=&quot;hyperthreading&quot; default=&quot;2&quot;&gt; -j {{ hyperthreading }}&lt;/arg&gt;
         &lt;arg name=&quot;tasks_per_numa&quot; &gt; -S {{ tasks_per_numa }}&lt;/arg&gt;
         &lt;arg name=&quot;num_tasks&quot; &gt; -n $TOTALPES&lt;/arg&gt;
-        &lt;arg name=&quot;tasks_per_node&quot; &gt; -N $PES_PER_NODE&lt;/arg&gt;
+        &lt;arg name=&quot;tasks_per_node&quot; &gt; -N $MAX_MPITASKS_PER_NODE&lt;/arg&gt;
         &lt;arg name=&quot;thread_count&quot; &gt; -d $ENV{OMP_NUM_THREADS}&lt;/arg&gt;
         &lt;arg name=&quot;numa_node&quot; &gt; -cc numa_node &lt;/arg&gt;
 	--&gt;
@@ -14727,7 +14735,7 @@ lude &lt;/CFLAGS&gt;
          &lt;BATCH_SYSTEM&gt;pbs&lt;/BATCH_SYSTEM&gt;
          &lt;SUPPORTED_BY&gt;acme&lt;/SUPPORTED_BY&gt;
          &lt;GMAKE_J&gt;8&lt;/GMAKE_J&gt;
-         &lt;PES_PER_NODE&gt;16&lt;/PES_PER_NODE&gt;
+         &lt;MAX_MPITASKS_PER_NODE&gt;16&lt;/MAX_MPITASKS_PER_NODE&gt;
          &lt;MAX_TASKS_PER_NODE&gt;32&lt;/MAX_TASKS_PER_NODE&gt;
          &lt;PROJECT_REQUIRED&gt;TRUE&lt;/PROJECT_REQUIRED&gt;
          &lt;PIO_CONFIG_OPTS&gt; -D PIO_BUILD_TIMING:BOOL=ON &lt;/PIO_CONFIG_OPTS&gt;
@@ -14737,7 +14745,7 @@ lude &lt;/CFLAGS&gt;
              &lt;arg name=&quot;hyperthreading&quot; default=&quot;2&quot;&gt; -j {{ hyperthreading }}&lt;/arg&gt;
              &lt;arg name=&quot;tasks_per_numa&quot; &gt; -S {{ tasks_per_numa }}&lt;/arg&gt;
              &lt;arg name=&quot;num_tasks&quot; &gt; -n $TOTALPES&lt;/arg&gt;
-             &lt;arg name=&quot;tasks_per_node&quot; &gt; -N $PES_PER_NODE&lt;/arg&gt;
+             &lt;arg name=&quot;tasks_per_node&quot; &gt; -N $MAX_MPITASKS_PER_NODE&lt;/arg&gt;
              &lt;arg name=&quot;thread_count&quot; &gt; -d $ENV{OMP_NUM_THREADS}&lt;/arg&gt;
              &lt;arg name=&quot;numa_node&quot; &gt; -cc numa_node&lt;/arg&gt;
            &lt;/arguments&gt;
@@ -14877,7 +14885,7 @@ lude &lt;/CFLAGS&gt;
 	&lt;/mpirun&gt;
 	&lt;GMAKE_J&gt;4&lt;/GMAKE_J&gt;
 	&lt;MAX_TASKS_PER_NODE&gt;36&lt;/MAX_TASKS_PER_NODE&gt;
-	&lt;PES_PER_NODE&gt;32&lt;/PES_PER_NODE&gt;
+	&lt;MAX_MPITASKS_PER_NODE&gt;32&lt;/MAX_MPITASKS_PER_NODE&gt;
 	&lt;PROJECT&gt;climateacme&lt;/PROJECT&gt;
     	&lt;PROJECT_REQUIRED&gt;TRUE&lt;/PROJECT_REQUIRED&gt;
     	&lt;SUPPORTED_BY&gt;luke.vanroekel @ gmail.com&lt;/SUPPORTED_BY&gt;
@@ -14899,7 +14907,7 @@ lude &lt;/CFLAGS&gt;
 	&lt;SUPPORTED_BY&gt;jonbob -at- lanl.gov&lt;/SUPPORTED_BY&gt;
 	&lt;GMAKE_J&gt;4&lt;/GMAKE_J&gt;
 	&lt;MAX_TASKS_PER_NODE&gt;16&lt;/MAX_TASKS_PER_NODE&gt;
-	&lt;PES_PER_NODE&gt;16&lt;/PES_PER_NODE&gt;
+	&lt;MAX_MPITASKS_PER_NODE&gt;16&lt;/MAX_MPITASKS_PER_NODE&gt;
 	&lt;PROJECT&gt;climateacme&lt;/PROJECT&gt;
 	&lt;PROJECT_REQUIRED&gt;TRUE&lt;/PROJECT_REQUIRED&gt;
 	&lt;DIN_LOC_ROOT&gt;/lustre/scratch3/turquoise/$ENV{USER}/ACME/input_data&lt;/DIN_LOC_ROOT&gt;
@@ -14987,7 +14995,7 @@ lude &lt;/CFLAGS&gt;
   &lt;SUPPORTED_BY&gt;jedwards@ucar.edu&lt;/SUPPORTED_BY&gt;
   &lt;GMAKE_J&gt;8&lt;/GMAKE_J&gt;
   &lt;MAX_TASKS_PER_NODE&gt;30&lt;/MAX_TASKS_PER_NODE&gt;
-  &lt;PES_PER_NODE&gt;15&lt;/PES_PER_NODE&gt;
+  &lt;MAX_MPITASKS_PER_NODE&gt;15&lt;/MAX_MPITASKS_PER_NODE&gt;
   &lt;PROJECT_REQUIRED&gt;TRUE&lt;/PROJECT_REQUIRED&gt;
   &lt;SAVE_TIMING_DIR&gt;/glade/scratch/$USER/acme/timing/performance_archive&lt;/SAVE_TIMING_DIR&gt;
   &lt;mpirun &gt;
@@ -15099,7 +15107,7 @@ lude &lt;/CFLAGS&gt;
              &lt;arguments&gt;
                 &lt;arg name=&quot;num_tasks&quot;&gt; -n $TOTALPES&lt;/arg&gt;
                 &lt;arg name=&quot;tasks_per_numa&quot;&gt; -S {{ tasks_per_numa }}&lt;/arg&gt;
-                &lt;arg name=&quot;tasks_per_node&quot;&gt; -N $PES_PER_NODE&lt;/arg&gt;
+                &lt;arg name=&quot;tasks_per_node&quot;&gt; -N $MAX_MPITASKS_PER_NODE&lt;/arg&gt;
                 &lt;arg name=&quot;thread_count&quot;&gt; -d $ENV{OMP_NUM_THREADS}&lt;/arg&gt;
              &lt;/arguments&gt;
          &lt;/mpirun&gt;
@@ -15138,7 +15146,7 @@ lude &lt;/CFLAGS&gt;
              &lt;arguments&gt;
                 &lt;arg name=&quot;num_tasks&quot;&gt; -n $TOTALPES&lt;/arg&gt;
                 &lt;arg name=&quot;tasks_per_numa&quot;&gt; -S {{ tasks_per_numa }}&lt;/arg&gt;
-                &lt;arg name=&quot;tasks_per_node&quot;&gt; -N $PES_PER_NODE&lt;/arg&gt;
+                &lt;arg name=&quot;tasks_per_node&quot;&gt; -N $MAX_MPITASKS_PER_NODE&lt;/arg&gt;
                 &lt;arg name=&quot;thread_count&quot;&gt; -d $ENV{OMP_NUM_THREADS}&lt;/arg&gt;
              &lt;/arguments&gt;
          &lt;/mpirun&gt;
@@ -15163,20 +15171,20 @@ lude &lt;/CFLAGS&gt;
   &lt;SUPPORTED_BY&gt;gbisht at lbl dot gov &lt;/SUPPORTED_BY&gt;
   &lt;GMAKE_J&gt;4&lt;/GMAKE_J&gt;
   &lt;MAX_TASKS_PER_NODE&gt;16&lt;/MAX_TASKS_PER_NODE&gt;
-  &lt;PES_PER_NODE&gt;16&lt;/PES_PER_NODE&gt;
+  &lt;MAX_MPITASKS_PER_NODE&gt;16&lt;/MAX_MPITASKS_PER_NODE&gt;
   &lt;PROJECT_REQUIRED&gt;TRUE&lt;/PROJECT_REQUIRED&gt;
   &lt;mpirun mpilib=&quot;mpi-serial&quot;&gt;
     &lt;executable&gt;mpirun&lt;/executable&gt;
     &lt;arguments&gt;
       &lt;arg name=&quot;num_tasks&quot;&gt;-np $TOTALPES&lt;/arg&gt;
-      &lt;arg name=&quot;tasks_per_node&quot;&gt; -npernode $PES_PER_NODE&lt;/arg&gt;
+      &lt;arg name=&quot;tasks_per_node&quot;&gt; -npernode $MAX_MPITASKS_PER_NODE&lt;/arg&gt;
     &lt;/arguments&gt;
   &lt;/mpirun&gt;
   &lt;mpirun mpilib=&quot;default&quot;&gt;
     &lt;executable&gt;mpirun&lt;/executable&gt;
     &lt;arguments&gt;
       &lt;arg name=&quot;num_tasks&quot;&gt;-np $TOTALPES&lt;/arg&gt;
-      &lt;arg name=&quot;tasks_per_node&quot;&gt; -npernode $PES_PER_NODE&lt;/arg&gt;
+      &lt;arg name=&quot;tasks_per_node&quot;&gt; -npernode $MAX_MPITASKS_PER_NODE&lt;/arg&gt;
     &lt;/arguments&gt;
   &lt;/mpirun&gt;
   &lt;module_system type=&quot;module&quot;&gt;
@@ -15226,20 +15234,20 @@ lude &lt;/CFLAGS&gt;
   &lt;SUPPORTED_BY&gt;gbisht at lbl dot gov&lt;/SUPPORTED_BY&gt;
   &lt;GMAKE_J&gt;4&lt;/GMAKE_J&gt;
   &lt;MAX_TASKS_PER_NODE&gt;12&lt;/MAX_TASKS_PER_NODE&gt;
-  &lt;PES_PER_NODE&gt;12&lt;/PES_PER_NODE&gt;
+  &lt;MAX_MPITASKS_PER_NODE&gt;12&lt;/MAX_MPITASKS_PER_NODE&gt;
   &lt;PROJECT_REQUIRED&gt;TRUE&lt;/PROJECT_REQUIRED&gt;
   &lt;mpirun mpilib=&quot;mpi-serial&quot;&gt;
     &lt;executable&gt;mpirun&lt;/executable&gt;
     &lt;arguments&gt;
       &lt;arg name=&quot;num_tasks&quot;&gt;-np $TOTALPES&lt;/arg&gt;
-      &lt;arg name=&quot;tasks_per_node&quot;&gt; -npernode $PES_PER_NODE&lt;/arg&gt;
+      &lt;arg name=&quot;tasks_per_node&quot;&gt; -npernode $MAX_MPITASKS_PER_NODE&lt;/arg&gt;
     &lt;/arguments&gt;
   &lt;/mpirun&gt;
   &lt;mpirun mpilib=&quot;default&quot;&gt;
     &lt;executable&gt;mpirun&lt;/executable&gt;
     &lt;arguments&gt;
       &lt;arg name=&quot;num_tasks&quot;&gt;-np $TOTALPES&lt;/arg&gt;
-      &lt;arg name=&quot;tasks_per_node&quot;&gt; -npernode $PES_PER_NODE&lt;/arg&gt;
+      &lt;arg name=&quot;tasks_per_node&quot;&gt; -npernode $MAX_MPITASKS_PER_NODE&lt;/arg&gt;
     &lt;/arguments&gt;
   &lt;/mpirun&gt;
   &lt;module_system type=&quot;module&quot;&gt;
@@ -15287,7 +15295,7 @@ lude &lt;/CFLAGS&gt;
   &lt;BATCH_SYSTEM&gt;none&lt;/BATCH_SYSTEM&gt;
   &lt;SUPPORTED_BY&gt;rgknox at lbl gov&lt;/SUPPORTED_BY&gt;
   &lt;MAX_TASKS_PER_NODE&gt;4&lt;/MAX_TASKS_PER_NODE&gt;
-  &lt;PES_PER_NODE&gt;4&lt;/PES_PER_NODE&gt;
+  &lt;MAX_MPITASKS_PER_NODE&gt;4&lt;/MAX_MPITASKS_PER_NODE&gt;
   &lt;PROJECT_REQUIRED&gt;FALSE&lt;/PROJECT_REQUIRED&gt;
   &lt;mpirun mpilib=&quot;mpi-serial&quot;&gt;
     &lt;executable&gt;&lt;/executable&gt;
@@ -15296,7 +15304,7 @@ lude &lt;/CFLAGS&gt;
     &lt;executable&gt;mpirun&lt;/executable&gt;
     &lt;arguments&gt;
       &lt;arg name=&quot;num_tasks&quot;&gt;-np $TOTALPES&lt;/arg&gt;
-      &lt;arg name=&quot;tasks_per_node&quot;&gt; -npernode $PES_PER_NODE&lt;/arg&gt;
+      &lt;arg name=&quot;tasks_per_node&quot;&gt; -npernode $MAX_MPITASKS_PER_NODE&lt;/arg&gt;
     &lt;/arguments&gt;
   &lt;/mpirun&gt;
   &lt;module_system type=&quot;none&quot;/&gt;
@@ -15323,7 +15331,7 @@ lude &lt;/CFLAGS&gt;
 	 &lt;BATCH_SYSTEM&gt;lsf&lt;/BATCH_SYSTEM&gt;
 	 &lt;SUPPORTED_BY&gt;acme&lt;/SUPPORTED_BY&gt;
 	 &lt;GMAKE_J&gt;32&lt;/GMAKE_J&gt;
-	 &lt;PES_PER_NODE&gt;20&lt;/PES_PER_NODE&gt;
+	 &lt;MAX_MPITASKS_PER_NODE&gt;20&lt;/MAX_MPITASKS_PER_NODE&gt;
 	 &lt;MAX_TASKS_PER_NODE&gt;160&lt;/MAX_TASKS_PER_NODE&gt;
 	 &lt;PROJECT_REQUIRED&gt;TRUE&lt;/PROJECT_REQUIRED&gt;
 	 &lt;PROJECT&gt;csc249&lt;/PROJECT&gt;
@@ -15338,7 +15346,7 @@ lude &lt;/CFLAGS&gt;
 		 &lt;arg name=&quot;show-binding&quot;&gt; --report-bindings &lt;/arg&gt;
 		 &lt;arg name=&quot;show-processmap&quot;&gt; --display-map &lt;/arg&gt;
 		 &lt;!--
-		 &lt;arg name=&quot;tasks_per_node&quot;&gt; map-by ppr:$PES_PER_NODE:node&lt;/arg&gt;
+		 &lt;arg name=&quot;tasks_per_node&quot;&gt; map-by ppr:$MAX_MPITASKS_PER_NODE:node&lt;/arg&gt;
 		 --&gt;
 	 &lt;/arguments&gt;  
 	 &lt;/mpirun&gt;
@@ -15439,7 +15447,7 @@ lude &lt;/CFLAGS&gt;
 
   &lt;entry id=&quot;PIO_STRIDE&quot;&gt;
     &lt;values&gt;
-      &lt;value&gt;$PES_PER_NODE&lt;/value&gt;
+      &lt;value&gt;$MAX_MPITASKS_PER_NODE&lt;/value&gt;
       &lt;value mach=&quot;yellowstone&quot; grid=&quot;a%ne120.+oi%gx1&quot;&gt;60&lt;/value&gt;
       &lt;value mach=&quot;mira|cetus&quot;&gt;128&lt;/value&gt;
       &lt;value mach=&quot;cori-knl&quot;&gt;64&lt;/value&gt;
@@ -15806,13 +15814,13 @@ lude &lt;/CFLAGS&gt;
         <li class="right" >
           <a href="index.html" title="XML Files"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" >XML Files</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >XML Files</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
+        &copy; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.3.
     </div>
   </body>
 </html>

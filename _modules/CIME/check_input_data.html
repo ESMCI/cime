@@ -2,34 +2,37 @@
 
 <!doctype html>
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>CIME.check_input_data &#8212; CIME 5.3.0 documentation</title>
+    
+    <title>CIME.check_input_data &mdash; CIME 5.3.0 documentation</title>
+    
     <link rel="stylesheet" href="../../_static/bizstyle.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
         VERSION:     '5.3.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
+        HAS_SOURCE:  true
       };
     </script>
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <script type="text/javascript" src="../../_static/bizstyle.js"></script>
-    <link rel="index" title="Index" href="../../genindex.html" />
-    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="top" title="CIME 5.3.0 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <!--[if lt IE 9]>
     <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
     <![endif]-->
   </head>
-  <body>
+  <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -39,8 +42,8 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">CIME 5.3.0 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -68,8 +71,8 @@
 <span class="sd">API for checking input for testcase</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="k">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="k">import</span> <span class="n">get_model</span><span class="p">,</span> <span class="n">SharedArea</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="kn">import</span> <span class="n">get_model</span><span class="p">,</span> <span class="n">SharedArea</span>
 
 <span class="kn">import</span> <span class="nn">fnmatch</span><span class="o">,</span> <span class="nn">glob</span><span class="o">,</span> <span class="nn">shutil</span>
 
@@ -100,43 +103,43 @@
     <span class="n">rel_path</span> <span class="o">=</span> <span class="n">rel_path</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
     <span class="n">full_url</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">svn_loc</span><span class="p">,</span> <span class="n">rel_path</span><span class="p">)</span>
 
-    <span class="n">err</span> <span class="o">=</span> <span class="n">run_cmd</span><span class="p">(</span><span class="s2">&quot;svn --non-interactive --trust-server-cert ls </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">svn_loc</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">err</span> <span class="o">=</span> <span class="n">run_cmd</span><span class="p">(</span><span class="s2">&quot;svn --non-interactive --trust-server-cert ls {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">svn_loc</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Could not connect to svn repo &#39;{0}&#39;</span>
 <span class="sd">This is most likely either a credential, proxy, or network issue .</span>
 <span class="sd">To check connection and store your credential run &#39;svn ls {0}&#39; and permanently store your password&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">svn_loc</span><span class="p">))</span>
-        <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="bp">False</span>
 
     <span class="n">full_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">input_data_root</span><span class="p">,</span> <span class="n">rel_path</span><span class="p">)</span>
-    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Trying to download file: &#39;</span><span class="si">{}</span><span class="s2">&#39; to path &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">full_url</span><span class="p">,</span> <span class="n">full_path</span><span class="p">))</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Trying to download file: &#39;{}&#39; to path &#39;{}&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">full_url</span><span class="p">,</span> <span class="n">full_path</span><span class="p">))</span>
     <span class="c1"># Make sure local path exists, create if it does not</span>
     <span class="k">if</span><span class="p">(</span><span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">full_path</span><span class="p">))):</span>
         <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">full_path</span><span class="p">))</span>
 
-    <span class="n">stat</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="n">run_cmd</span><span class="p">(</span><span class="s2">&quot;svn --non-interactive --trust-server-cert ls </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">full_url</span><span class="p">))</span>
+    <span class="n">stat</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="n">run_cmd</span><span class="p">(</span><span class="s2">&quot;svn --non-interactive --trust-server-cert ls {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">full_url</span><span class="p">))</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">stat</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">):</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;FAIL: SVN repo &#39;</span><span class="si">{}</span><span class="s2">&#39; does not have file &#39;</span><span class="si">{}</span><span class="s2">&#39;</span><span class="se">\n</span><span class="s2">Reason:</span><span class="si">{}</span><span class="se">\n</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">svn_loc</span><span class="p">,</span> <span class="n">full_url</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">err</span><span class="p">))</span>
-        <span class="k">return</span> <span class="kc">False</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;FAIL: SVN repo &#39;{}&#39; does not have file &#39;{}&#39;</span><span class="se">\n</span><span class="s2">Reason:{}</span><span class="se">\n</span><span class="s2">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">svn_loc</span><span class="p">,</span> <span class="n">full_url</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">err</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">False</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="c1"># Use umask to make sure files are group read/writable. As long as parent directories</span>
         <span class="c1"># have +s, then everything should work.</span>
         <span class="k">with</span> <span class="n">SharedArea</span><span class="p">():</span>
             <span class="n">stat</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">errput</span> <span class="o">=</span> \
-                <span class="n">run_cmd</span><span class="p">(</span><span class="s2">&quot;svn --non-interactive --trust-server-cert export </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">full_url</span><span class="p">,</span> <span class="n">full_path</span><span class="p">))</span>
+                <span class="n">run_cmd</span><span class="p">(</span><span class="s2">&quot;svn --non-interactive --trust-server-cert export {} {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">full_url</span><span class="p">,</span> <span class="n">full_path</span><span class="p">))</span>
             <span class="k">if</span> <span class="p">(</span><span class="n">stat</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">):</span>
-                <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;svn export failed with output: </span><span class="si">{}</span><span class="s2"> and errput </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">errput</span><span class="p">))</span>
-                <span class="k">return</span> <span class="kc">False</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;svn export failed with output: {} and errput {}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">errput</span><span class="p">))</span>
+                <span class="k">return</span> <span class="bp">False</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;SUCCESS</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-                <span class="k">return</span> <span class="kc">True</span></div>
+                <span class="k">return</span> <span class="bp">True</span></div>
 
 <span class="c1">###############################################################################</span>
 <div class="viewcode-block" id="check_all_input_data"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.check_input_data.check_all_input_data">[docs]</a><span class="k">def</span> <span class="nf">check_all_input_data</span><span class="p">(</span><span class="n">case</span><span class="p">):</span>
 <span class="c1">###############################################################################</span>
 
-    <span class="n">success</span> <span class="o">=</span> <span class="n">check_input_data</span><span class="p">(</span><span class="n">case</span><span class="o">=</span><span class="n">case</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">success</span> <span class="o">=</span> <span class="n">check_input_data</span><span class="p">(</span><span class="n">case</span><span class="o">=</span><span class="n">case</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
     <span class="n">expect</span><span class="p">(</span><span class="n">success</span><span class="p">,</span> <span class="s2">&quot;Failed to download input data&quot;</span><span class="p">)</span>
 
     <span class="n">stage_refcase</span><span class="p">(</span><span class="n">case</span><span class="p">)</span></div>
@@ -174,49 +177,49 @@
 <span class="sd">*****************************************************************</span>
 <span class="sd">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">refdir</span><span class="p">,</span> <span class="n">refdir</span><span class="p">,</span> <span class="n">refdir</span><span class="p">))</span>
 
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot; - Prestaging REFCASE (</span><span class="si">{}</span><span class="s2">) to </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">refdir</span><span class="p">,</span> <span class="n">rundir</span><span class="p">))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot; - Prestaging REFCASE ({}) to {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">refdir</span><span class="p">,</span> <span class="n">rundir</span><span class="p">))</span>
 
         <span class="c1"># prestage the reference case&#39;s files.</span>
 
         <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">rundir</span><span class="p">)):</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Creating run directory: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rundir</span><span class="p">))</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Creating run directory: {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rundir</span><span class="p">))</span>
             <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">rundir</span><span class="p">)</span>
 
         <span class="c1"># copy the refcases&#39; rpointer files to the run directory</span>
-        <span class="k">for</span> <span class="n">rpointerfile</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">iglob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span><span class="p">,</span><span class="s2">&quot;*rpointer*&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">refdir</span><span class="p">)):</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Copy rpointer </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rpointerfile</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">rpointerfile</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">iglob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;{}&quot;</span><span class="p">,</span><span class="s2">&quot;*rpointer*&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">refdir</span><span class="p">)):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Copy rpointer {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rpointerfile</span><span class="p">))</span>
             <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">rpointerfile</span><span class="p">,</span> <span class="n">rundir</span><span class="p">)</span>
 
         <span class="c1"># link everything else</span>
 
         <span class="k">for</span> <span class="n">rcfile</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">iglob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">refdir</span><span class="p">,</span><span class="s2">&quot;*&quot;</span><span class="p">)):</span>
             <span class="n">rcbaseline</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">rcfile</span><span class="p">)</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="n">rcbaseline</span><span class="p">)):</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Staging file </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rcfile</span><span class="p">))</span>
-                <span class="n">os</span><span class="o">.</span><span class="n">symlink</span><span class="p">(</span><span class="n">rcfile</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="n">rcbaseline</span><span class="p">))</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s2">&quot;{}/{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="n">rcbaseline</span><span class="p">)):</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Staging file {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rcfile</span><span class="p">))</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">symlink</span><span class="p">(</span><span class="n">rcfile</span><span class="p">,</span> <span class="s2">&quot;{}/{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="n">rcbaseline</span><span class="p">))</span>
 
-        <span class="k">for</span> <span class="n">cam2file</span> <span class="ow">in</span>  <span class="n">glob</span><span class="o">.</span><span class="n">iglob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span><span class="p">,</span><span class="s2">&quot;*.cam2.*&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rundir</span><span class="p">)):</span>
+        <span class="k">for</span> <span class="n">cam2file</span> <span class="ow">in</span>  <span class="n">glob</span><span class="o">.</span><span class="n">iglob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;{}&quot;</span><span class="p">,</span><span class="s2">&quot;*.cam2.*&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rundir</span><span class="p">)):</span>
             <span class="n">camfile</span> <span class="o">=</span> <span class="n">cam2file</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;cam2&quot;</span><span class="p">,</span> <span class="s2">&quot;cam&quot;</span><span class="p">)</span>
             <span class="n">os</span><span class="o">.</span><span class="n">symlink</span><span class="p">(</span><span class="n">cam2file</span><span class="p">,</span> <span class="n">camfile</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="check_input_data"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.check_input_data.check_input_data">[docs]</a><span class="k">def</span> <span class="nf">check_input_data</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">svn_loc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">input_data_root</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">data_list_dir</span><span class="o">=</span><span class="s2">&quot;Buildconf&quot;</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="check_input_data"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.check_input_data.check_input_data">[docs]</a><span class="k">def</span> <span class="nf">check_input_data</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">svn_loc</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">input_data_root</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">data_list_dir</span><span class="o">=</span><span class="s2">&quot;Buildconf&quot;</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return True if no files missing</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Fill in defaults as needed</span>
-    <span class="n">svn_loc</span> <span class="o">=</span> <span class="n">SVN_LOCS</span><span class="p">[</span><span class="n">get_model</span><span class="p">()]</span> <span class="k">if</span> <span class="n">svn_loc</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">svn_loc</span>
+    <span class="n">svn_loc</span> <span class="o">=</span> <span class="n">SVN_LOCS</span><span class="p">[</span><span class="n">get_model</span><span class="p">()]</span> <span class="k">if</span> <span class="n">svn_loc</span> <span class="ow">is</span> <span class="bp">None</span> <span class="k">else</span> <span class="n">svn_loc</span>
 
-    <span class="n">input_data_root</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;DIN_LOC_ROOT&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">input_data_root</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">input_data_root</span>
+    <span class="n">input_data_root</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;DIN_LOC_ROOT&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">input_data_root</span> <span class="ow">is</span> <span class="bp">None</span> <span class="k">else</span> <span class="n">input_data_root</span>
 
-    <span class="n">expect</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">input_data_root</span><span class="p">),</span> <span class="s2">&quot;Invalid input_data_root directory: &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">input_data_root</span><span class="p">))</span>
-    <span class="n">expect</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">data_list_dir</span><span class="p">),</span> <span class="s2">&quot;Invalid data_list_dir directory: &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">data_list_dir</span><span class="p">))</span>
+    <span class="n">expect</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">input_data_root</span><span class="p">),</span> <span class="s2">&quot;Invalid input_data_root directory: &#39;{}&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">input_data_root</span><span class="p">))</span>
+    <span class="n">expect</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">data_list_dir</span><span class="p">),</span> <span class="s2">&quot;Invalid data_list_dir directory: &#39;{}&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">data_list_dir</span><span class="p">))</span>
 
     <span class="n">data_list_files</span> <span class="o">=</span> <span class="n">find_files</span><span class="p">(</span><span class="n">data_list_dir</span><span class="p">,</span> <span class="s2">&quot;*.input_data_list&quot;</span><span class="p">)</span>
-    <span class="n">expect</span><span class="p">(</span><span class="n">data_list_files</span><span class="p">,</span> <span class="s2">&quot;No .input_data_list files found in dir &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">data_list_dir</span><span class="p">))</span>
+    <span class="n">expect</span><span class="p">(</span><span class="n">data_list_files</span><span class="p">,</span> <span class="s2">&quot;No .input_data_list files found in dir &#39;{}&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">data_list_dir</span><span class="p">))</span>
 
-    <span class="n">no_files_missing</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">no_files_missing</span> <span class="o">=</span> <span class="bp">True</span>
     <span class="k">for</span> <span class="n">data_list_file</span> <span class="ow">in</span> <span class="n">data_list_files</span><span class="p">:</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Loading input file list: &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">data_list_file</span><span class="p">))</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Loading input file list: &#39;{}&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">data_list_file</span><span class="p">))</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">data_list_file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
             <span class="n">lines</span> <span class="o">=</span> <span class="n">fd</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
 
@@ -236,12 +239,12 @@
                         <span class="c1"># rel_path, and so cannot download the file. If it already exists, we can</span>
                         <span class="c1"># proceed</span>
                         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">full_path</span><span class="p">):</span>
-                            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;  Model </span><span class="si">{}</span><span class="s2"> missing file </span><span class="si">{}</span><span class="s2"> = &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">full_path</span><span class="p">))</span>
+                            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;  Model {} missing file {} = &#39;{}&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">full_path</span><span class="p">))</span>
                             <span class="k">if</span> <span class="n">download</span><span class="p">:</span>
-                                <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;    Cannot download file since it lives outside of the input_data_root &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">input_data_root</span><span class="p">))</span>
-                            <span class="n">no_files_missing</span> <span class="o">=</span> <span class="kc">False</span>
+                                <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;    Cannot download file since it lives outside of the input_data_root &#39;{}&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">input_data_root</span><span class="p">))</span>
+                            <span class="n">no_files_missing</span> <span class="o">=</span> <span class="bp">False</span>
                         <span class="k">else</span><span class="p">:</span>
-                            <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;  Found input file: &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">full_path</span><span class="p">))</span>
+                            <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;  Found input file: &#39;{}&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">full_path</span><span class="p">))</span>
 
                     <span class="k">else</span><span class="p">:</span>
                         <span class="c1"># There are some special values of rel_path that</span>
@@ -251,7 +254,7 @@
                         <span class="c1"># directory tree) you can assume it&#39;s a special</span>
                         <span class="c1"># value and ignore it (perhaps with a warning)</span>
                         <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;/&quot;</span> <span class="ow">in</span> <span class="n">rel_path</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">full_path</span><span class="p">)):</span>
-                            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;  Model </span><span class="si">{}</span><span class="s2"> missing file </span><span class="si">{}</span><span class="s2"> = &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">full_path</span><span class="p">))</span>
+                            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;  Model {} missing file {} = &#39;{}&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">full_path</span><span class="p">))</span>
 
                             <span class="k">if</span> <span class="p">(</span><span class="n">download</span><span class="p">):</span>
                                 <span class="n">success</span> <span class="o">=</span> <span class="n">download_if_in_repo</span><span class="p">(</span><span class="n">svn_loc</span><span class="p">,</span> <span class="n">input_data_root</span><span class="p">,</span> <span class="n">rel_path</span><span class="p">)</span>
@@ -260,18 +263,18 @@
                                     <span class="k">if</span> <span class="p">(</span><span class="n">get_model</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;acme&quot;</span> <span class="ow">and</span> <span class="n">svn_loc</span> <span class="o">!=</span> <span class="n">SVN_LOCS</span><span class="p">[</span><span class="s2">&quot;cesm&quot;</span><span class="p">]):</span>
                                         <span class="n">success</span> <span class="o">=</span> <span class="n">download_if_in_repo</span><span class="p">(</span><span class="n">SVN_LOCS</span><span class="p">[</span><span class="s2">&quot;cesm&quot;</span><span class="p">],</span> <span class="n">input_data_root</span><span class="p">,</span> <span class="n">rel_path</span><span class="p">)</span>
                                         <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">success</span><span class="p">):</span>
-                                            <span class="n">no_files_missing</span> <span class="o">=</span> <span class="kc">False</span>
+                                            <span class="n">no_files_missing</span> <span class="o">=</span> <span class="bp">False</span>
                                     <span class="k">else</span><span class="p">:</span>
-                                        <span class="n">no_files_missing</span> <span class="o">=</span> <span class="kc">False</span>
+                                        <span class="n">no_files_missing</span> <span class="o">=</span> <span class="bp">False</span>
                             <span class="c1"># if not download</span>
                             <span class="k">else</span><span class="p">:</span>
-                                <span class="n">no_files_missing</span> <span class="o">=</span> <span class="kc">False</span>
+                                <span class="n">no_files_missing</span> <span class="o">=</span> <span class="bp">False</span>
                         <span class="k">else</span><span class="p">:</span>
-                            <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;  Already had input file: &#39;</span><span class="si">{}</span><span class="s2">&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">full_path</span><span class="p">))</span>
+                            <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;  Already had input file: &#39;{}&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">full_path</span><span class="p">))</span>
 
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">model</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">data_list_file</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-                    <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Model </span><span class="si">{}</span><span class="s2"> no file specified for </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">description</span><span class="p">))</span>
+                    <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Model {} no file specified for {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">description</span><span class="p">))</span>
 
     <span class="k">return</span> <span class="n">no_files_missing</span></div>
 </pre></div>
@@ -290,13 +293,13 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">CIME 5.3.0 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
+        &copy; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.3.
     </div>
   </body>
 </html>

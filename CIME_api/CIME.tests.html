@@ -2,28 +2,31 @@
 
 <!doctype html>
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>CIME.tests package &#8212; CIME 5.3.0 documentation</title>
+    
+    <title>CIME.tests package &mdash; CIME 5.3.0 documentation</title>
+    
     <link rel="stylesheet" href="../_static/bizstyle.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
         VERSION:     '5.3.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
+        HAS_SOURCE:  true
       };
     </script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="../_static/bizstyle.js"></script>
-    <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" />
+    <link rel="top" title="CIME 5.3.0 documentation" href="../index.html" />
+    <link rel="up" title="CIME package" href="CIME.html" />
     <link rel="next" title="CIME.tests.SystemTests package" href="CIME.tests.SystemTests.html" />
     <link rel="prev" title="CIME.XML package" href="CIME.XML.html" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
@@ -31,7 +34,7 @@
     <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
     <![endif]-->
   </head>
-  <body>
+  <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -47,9 +50,9 @@
         <li class="right" >
           <a href="CIME.XML.html" title="CIME.XML package"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="modules.html" >CIME</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="CIME.html" accesskey="U">CIME package</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >CIME</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="CIME.html" accesskey="U">CIME package</a> &raquo;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -76,7 +79,7 @@
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="../_sources/CIME_api/CIME.tests.rst.txt"
+      <li><a href="../_sources/CIME_api/CIME.tests.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
@@ -148,7 +151,7 @@ newcaseroot (str): new value for CASEROOT</dd>
 
 <dl class="method">
 <dt id="CIME.tests.case_fake.CaseFake.create_clone">
-<code class="descname">create_clone</code><span class="sig-paren">(</span><em>newcase</em>, <em>keepexe=False</em>, <em>mach_dir=None</em>, <em>project=None</em>, <em>cime_output_root=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/case_fake.html#CaseFake.create_clone"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.case_fake.CaseFake.create_clone" title="Permalink to this definition">¶</a></dt>
+<code class="descname">create_clone</code><span class="sig-paren">(</span><em>newcase</em>, <em>keepexe=False</em>, <em>mach_dir=None</em>, <em>project=None</em>, <em>cime_output_root=None</em>, <em>exeroot=None</em>, <em>rundir=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/case_fake.html#CaseFake.create_clone"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.case_fake.CaseFake.create_clone" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a clone of the current case. Also creates the CASEROOT directory
 for the clone case (given by newcase).</p>
 <dl class="docutils">
@@ -157,7 +160,14 @@ for the clone case (given by newcase).</p>
 <dt>newcase (str): full path to the new case. This directory should not</dt>
 <dd>already exist; it will be created</dd>
 </dl>
-<p class="last">keepexe (bool, optional): Ignored</p>
+<p>keepexe (bool, optional): Ignored
+mach_dir (str, optional): Ignored
+project (str, optional): Ignored
+cime_output_root (str, optional): New CIME_OUTPUT_ROOT for the clone
+exeroot (str, optional): Ignored (because exeroot isn&#8217;t used</p>
+<blockquote>
+<div>in this fake case implementation)</div></blockquote>
+<p class="last">rundir (str, optional): New RUNDIR for the clone</p>
 </dd>
 </dl>
 <p>Returns the clone case object</p>
@@ -172,7 +182,7 @@ for the clone case (given by newcase).</p>
 <dt id="CIME.tests.case_fake.CaseFake.get_value">
 <code class="descname">get_value</code><span class="sig-paren">(</span><em>item</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/case_fake.html#CaseFake.get_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.case_fake.CaseFake.get_value" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the value of the given item</p>
-<p>Returns None if item isn’t set for this case</p>
+<p>Returns None if item isn&#8217;t set for this case</p>
 <dl class="docutils">
 <dt>Args:</dt>
 <dd>item (str): variable of interest</dd>
@@ -249,7 +259,7 @@ value (any type): new value for item</dd>
 <code class="descname">createUserMod</code><span class="sig-paren">(</span><em>name</em>, <em>include_dirs=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/tests/test_user_mod_support.html#TestUserModSupport.createUserMod"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.tests.test_user_mod_support.TestUserModSupport.createUserMod" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a user_mods directory with the given name.</p>
 <p>This directory is created within self._user_mods_parent_dir</p>
-<p>For name=’foo’, it will contain:</p>
+<p>For name=&#8217;foo&#8217;, it will contain:</p>
 <ul class="simple">
 <li>A user_nl_cpl file with contents:
 foo</li>
@@ -260,8 +270,8 @@ foo</li>
 </ul>
 <p>If include_dirs is given, it should be a list of strings, giving names
 of other user_mods directories to include. e.g., if include_dirs is
-[‘foo1’, ‘foo2’], then this will create a file ‘include_user_mods’ that
-contains paths to the ‘foo1’ and ‘foo2’ user_mods directories, one per
+[&#8216;foo1&#8217;, &#8216;foo2&#8217;], then this will create a file &#8216;include_user_mods&#8217; that
+contains paths to the &#8216;foo1&#8217; and &#8216;foo2&#8217; user_mods directories, one per
 line.</p>
 </dd></dl>
 
@@ -333,14 +343,14 @@ line.</p>
         <li class="right" >
           <a href="CIME.XML.html" title="CIME.XML package"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="modules.html" >CIME</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="CIME.html" >CIME package</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >CIME</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="CIME.html" >CIME package</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
+        &copy; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.3.
     </div>
   </body>
 </html>

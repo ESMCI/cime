@@ -1,5 +1,5 @@
-CIME\.SystemTests package
-=========================
+CIME.SystemTests package
+========================
 
 Subpackages
 -----------
@@ -11,216 +11,216 @@ Subpackages
 Submodules
 ----------
 
-CIME\.SystemTests\.dae module
------------------------------
+CIME.SystemTests.dae module
+---------------------------
 
 .. automodule:: CIME.SystemTests.dae
     :members:
     :undoc-members:
     :show-inheritance:
 
-CIME\.SystemTests\.eri module
------------------------------
+CIME.SystemTests.eri module
+---------------------------
 
 .. automodule:: CIME.SystemTests.eri
     :members:
     :undoc-members:
     :show-inheritance:
 
-CIME\.SystemTests\.erio module
-------------------------------
+CIME.SystemTests.erio module
+----------------------------
 
 .. automodule:: CIME.SystemTests.erio
     :members:
     :undoc-members:
     :show-inheritance:
 
-CIME\.SystemTests\.erp module
------------------------------
+CIME.SystemTests.erp module
+---------------------------
 
 .. automodule:: CIME.SystemTests.erp
     :members:
     :undoc-members:
     :show-inheritance:
 
-CIME\.SystemTests\.err module
------------------------------
+CIME.SystemTests.err module
+---------------------------
 
 .. automodule:: CIME.SystemTests.err
     :members:
     :undoc-members:
     :show-inheritance:
 
-CIME\.SystemTests\.erri module
-------------------------------
+CIME.SystemTests.erri module
+----------------------------
 
 .. automodule:: CIME.SystemTests.erri
     :members:
     :undoc-members:
     :show-inheritance:
 
-CIME\.SystemTests\.ers module
------------------------------
+CIME.SystemTests.ers module
+---------------------------
 
 .. automodule:: CIME.SystemTests.ers
     :members:
     :undoc-members:
     :show-inheritance:
 
-CIME\.SystemTests\.ers2 module
-------------------------------
+CIME.SystemTests.ers2 module
+----------------------------
 
 .. automodule:: CIME.SystemTests.ers2
     :members:
     :undoc-members:
     :show-inheritance:
 
-CIME\.SystemTests\.ert module
------------------------------
+CIME.SystemTests.ert module
+---------------------------
 
 .. automodule:: CIME.SystemTests.ert
     :members:
     :undoc-members:
     :show-inheritance:
 
-CIME\.SystemTests\.homme module
--------------------------------
+CIME.SystemTests.homme module
+-----------------------------
 
 .. automodule:: CIME.SystemTests.homme
     :members:
     :undoc-members:
     :show-inheritance:
 
-CIME\.SystemTests\.icp module
------------------------------
+CIME.SystemTests.icp module
+---------------------------
 
 .. automodule:: CIME.SystemTests.icp
     :members:
     :undoc-members:
     :show-inheritance:
 
-CIME\.SystemTests\.irt module
------------------------------
+CIME.SystemTests.irt module
+---------------------------
 
 .. automodule:: CIME.SystemTests.irt
     :members:
     :undoc-members:
     :show-inheritance:
 
-CIME\.SystemTests\.mcc module
------------------------------
+CIME.SystemTests.mcc module
+---------------------------
 
 .. automodule:: CIME.SystemTests.mcc
     :members:
     :undoc-members:
     :show-inheritance:
 
-CIME\.SystemTests\.nck module
------------------------------
+CIME.SystemTests.nck module
+---------------------------
 
 .. automodule:: CIME.SystemTests.nck
     :members:
     :undoc-members:
     :show-inheritance:
 
-CIME\.SystemTests\.ncr module
------------------------------
+CIME.SystemTests.ncr module
+---------------------------
 
 .. automodule:: CIME.SystemTests.ncr
     :members:
     :undoc-members:
     :show-inheritance:
 
-CIME\.SystemTests\.nodefail module
-----------------------------------
+CIME.SystemTests.nodefail module
+--------------------------------
 
 .. automodule:: CIME.SystemTests.nodefail
     :members:
     :undoc-members:
     :show-inheritance:
 
-CIME\.SystemTests\.pea module
------------------------------
+CIME.SystemTests.pea module
+---------------------------
 
 .. automodule:: CIME.SystemTests.pea
     :members:
     :undoc-members:
     :show-inheritance:
 
-CIME\.SystemTests\.pem module
------------------------------
+CIME.SystemTests.pem module
+---------------------------
 
 .. automodule:: CIME.SystemTests.pem
     :members:
     :undoc-members:
     :show-inheritance:
 
-CIME\.SystemTests\.pet module
------------------------------
+CIME.SystemTests.pet module
+---------------------------
 
 .. automodule:: CIME.SystemTests.pet
     :members:
     :undoc-members:
     :show-inheritance:
 
-CIME\.SystemTests\.pfs module
------------------------------
+CIME.SystemTests.pfs module
+---------------------------
 
 .. automodule:: CIME.SystemTests.pfs
     :members:
     :undoc-members:
     :show-inheritance:
 
-CIME\.SystemTests\.pre module
------------------------------
+CIME.SystemTests.pre module
+---------------------------
 
 .. automodule:: CIME.SystemTests.pre
     :members:
     :undoc-members:
     :show-inheritance:
 
-CIME\.SystemTests\.rep module
------------------------------
+CIME.SystemTests.rep module
+---------------------------
 
 .. automodule:: CIME.SystemTests.rep
     :members:
     :undoc-members:
     :show-inheritance:
 
-CIME\.SystemTests\.restart\_tests module
-----------------------------------------
+CIME.SystemTests.restart_tests module
+-------------------------------------
 
 .. automodule:: CIME.SystemTests.restart_tests
     :members:
     :undoc-members:
     :show-inheritance:
 
-CIME\.SystemTests\.seq module
------------------------------
+CIME.SystemTests.seq module
+---------------------------
 
 .. automodule:: CIME.SystemTests.seq
     :members:
     :undoc-members:
     :show-inheritance:
 
-CIME\.SystemTests\.sms module
------------------------------
+CIME.SystemTests.sms module
+---------------------------
 
 .. automodule:: CIME.SystemTests.sms
     :members:
     :undoc-members:
     :show-inheritance:
 
-CIME\.SystemTests\.system\_tests\_common module
------------------------------------------------
+CIME.SystemTests.system_tests_common module
+-------------------------------------------
 
 .. automodule:: CIME.SystemTests.system_tests_common
     :members:
     :undoc-members:
     :show-inheritance:
 
-CIME\.SystemTests\.system\_tests\_compare\_two module
------------------------------------------------------
+CIME.SystemTests.system_tests_compare_two module
+------------------------------------------------
 
 .. automodule:: CIME.SystemTests.system_tests_compare_two
     :members:

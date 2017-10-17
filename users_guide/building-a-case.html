@@ -2,28 +2,31 @@
 
 <!doctype html>
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>5. Building a Case &#8212; CIME 5.3.0 documentation</title>
+    
+    <title>5. Building a Case &mdash; CIME 5.3.0 documentation</title>
+    
     <link rel="stylesheet" href="../_static/bizstyle.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
         VERSION:     '5.3.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
+        HAS_SOURCE:  true
       };
     </script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="../_static/bizstyle.js"></script>
-    <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" />
+    <link rel="top" title="CIME 5.3.0 documentation" href="../index.html" />
+    <link rel="up" title="CIME User’s Guide Part 1: Beginner - Basic Usage" href="index.html" />
     <link rel="next" title="6. Running a Case" href="running-a-case.html" />
     <link rel="prev" title="4. Setting up a Case" href="setting-up-a-case.html" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
@@ -31,7 +34,7 @@
     <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
     <![endif]-->
   </head>
-  <body>
+  <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -47,8 +50,8 @@
         <li class="right" >
           <a href="setting-up-a-case.html" title="4. Setting up a Case"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">CIME User’s Guide Part 1: Beginner - Basic Usage</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">CIME User&#8217;s Guide Part 1: Beginner - Basic Usage</a> &raquo;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -72,7 +75,7 @@
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="../_sources/users_guide/building-a-case.rst.txt"
+      <li><a href="../_sources/users_guide/building-a-case.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
@@ -129,7 +132,7 @@ The libraries will be placed in a path below <code class="docutils literal"><spa
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">atm</span><span class="o">/</span><span class="p">,</span> <span class="n">cpl</span><span class="o">/</span><span class="p">,</span> <span class="n">esp</span><span class="o">/</span><span class="p">,</span> <span class="n">glc</span><span class="o">/</span><span class="p">,</span> <span class="n">ice</span><span class="o">/</span><span class="p">,</span> <span class="n">intel</span><span class="o">/</span><span class="p">,</span> <span class="n">lib</span><span class="o">/</span><span class="p">,</span> <span class="n">lnd</span><span class="o">/</span><span class="p">,</span> <span class="n">ocn</span><span class="o">/</span><span class="p">,</span> <span class="n">rof</span><span class="o">/</span><span class="p">,</span> <span class="n">wav</span><span class="o">/</span>
 </pre></div>
 </div>
-<p>Except for <strong>intel/</strong> and <strong>lib/</strong>, each directory contains an <strong>obj/</strong> subdirectory for the target model component’s compiled object files.</p>
+<p>Except for <strong>intel/</strong> and <strong>lib/</strong>, each directory contains an <strong>obj/</strong> subdirectory for the target model component&#8217;s compiled object files.</p>
 <p>The <em>mct</em>, <em>pio</em>, <em>gptl</em> and <em>csm_share</em> libraries are placed in a directory tree that reflects their dependencies. See the <strong>bldlog</strong> for a given component to locate the library.</p>
 <p>Special <strong>include</strong> modules are placed in <strong>lib/include</strong>. The model executable (<strong>cesm.exe</strong> or <strong>acme.exe</strong>, for example) is placed directly in <code class="docutils literal"><span class="pre">$EXEROOT</span></code>.</p>
 <p>Component namelists, component logs, output data sets, and restart files are placed in <code class="docutils literal"><span class="pre">$RUNDIR</span></code>.
@@ -138,7 +141,7 @@ It is important to note that <code class="docutils literal"><span class="pre">$R
 <div class="section" id="rebuilding-the-model">
 <span id="id2"></span><h2>5.2. Rebuilding the model<a class="headerlink" href="#rebuilding-the-model" title="Permalink to this headline">¶</a></h2>
 <p>Rebuild the model under the following circumstances:</p>
-<p>If either <strong>env_build.xml</strong> or <strong>Macros.make</strong> has been modified, and/or if code is added to <strong>SourceMods/src.</strong>, it’s safest to clean the build and rebuild from scratch as shown here:</p>
+<p>If either <strong>env_build.xml</strong> or <strong>Macros.make</strong> has been modified, and/or if code is added to <strong>SourceMods/src.</strong>, it&#8217;s safest to clean the build and rebuild from scratch as shown here:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span>&gt; cd $CASEROOT
 &gt; ./case.build --clean
 </pre></div>
@@ -176,7 +179,7 @@ It is important to note that <code class="docutils literal"><span class="pre">$R
 </pre></div>
 </div>
 </dd>
-<dt>You can also clean an individual component as shown here, where “compname” is the name of the component you want to clean (for example, atm, clm, pio and so on).</dt>
+<dt>You can also clean an individual component as shown here, where &#8220;compname&#8221; is the name of the component you want to clean (for example, atm, clm, pio and so on).</dt>
 <dd><div class="first last highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">case</span><span class="o">.</span><span class="n">build</span> <span class="o">--</span><span class="n">clean</span> <span class="n">compname</span>
 </pre></div>
 </div>
@@ -187,7 +190,7 @@ It is important to note that <code class="docutils literal"><span class="pre">$R
 <div class="section" id="input-data">
 <span id="inputdata"></span><h2>5.3. Input data<a class="headerlink" href="#input-data" title="Permalink to this headline">¶</a></h2>
 <p>All active components and data components use input data sets. In order to run CIME and the CIME-compliant active components, a local disk needs the directory tree that is specified by the xml variable <code class="docutils literal"><span class="pre">$DIN_LOC_ROOT</span></code> to be populated with input data.</p>
-<p>Input data is provided as part of the CIME release via data from a subversion input data server. It is downloaded from the server on an as-needed basis determined by the case. Data may already exist in the default local file system’s input data area as specified by <code class="docutils literal"><span class="pre">$DIN_LOC_ROOT</span></code>.</p>
+<p>Input data is provided as part of the CIME release via data from a subversion input data server. It is downloaded from the server on an as-needed basis determined by the case. Data may already exist in the default local file system&#8217;s input data area as specified by <code class="docutils literal"><span class="pre">$DIN_LOC_ROOT</span></code>.</p>
 <p>Input data can occupy significant space on a system, so users should share a common <code class="docutils literal"><span class="pre">$DIN_LOC_ROOT</span></code> directory on each system if possible.</p>
 <p>The build process handles input data as follows:</p>
 <ul>
@@ -228,13 +231,13 @@ It is important to note that <code class="docutils literal"><span class="pre">$R
         <li class="right" >
           <a href="setting-up-a-case.html" title="4. Setting up a Case"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" >CIME User’s Guide Part 1: Beginner - Basic Usage</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >CIME User&#8217;s Guide Part 1: Beginner - Basic Usage</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
+        &copy; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.3.
     </div>
   </body>
 </html>

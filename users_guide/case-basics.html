@@ -2,28 +2,31 @@
 
 <!doctype html>
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>2. The basics of CIME cases &#8212; CIME 5.3.0 documentation</title>
+    
+    <title>2. The basics of CIME cases &mdash; CIME 5.3.0 documentation</title>
+    
     <link rel="stylesheet" href="../_static/bizstyle.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
         VERSION:     '5.3.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
+        HAS_SOURCE:  true
       };
     </script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="../_static/bizstyle.js"></script>
-    <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" />
+    <link rel="top" title="CIME 5.3.0 documentation" href="../index.html" />
+    <link rel="up" title="CIME User’s Guide Part 1: Beginner - Basic Usage" href="index.html" />
     <link rel="next" title="3. Creating a Case" href="create-a-case.html" />
     <link rel="prev" title="1. Introduction" href="introduction-and-overview.html" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
@@ -31,7 +34,7 @@
     <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
     <![endif]-->
   </head>
-  <body>
+  <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -47,8 +50,8 @@
         <li class="right" >
           <a href="introduction-and-overview.html" title="1. Introduction"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">CIME User’s Guide Part 1: Beginner - Basic Usage</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">CIME User&#8217;s Guide Part 1: Beginner - Basic Usage</a> &raquo;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -72,7 +75,7 @@
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="../_sources/users_guide/case-basics.rst.txt"
+      <li><a href="../_sources/users_guide/case-basics.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
@@ -98,7 +101,7 @@
 <span id="case-basics"></span><h1>2. The basics of CIME cases<a class="headerlink" href="#the-basics-of-cime-cases" title="Permalink to this headline">¶</a></h1>
 <p>Two concepts to understand before working with CIME are component sets and model grids.</p>
 <ul class="simple">
-<li><em>Component sets</em>, which are usually referred to as “compsets,” define both individual model components and any component-specific namelist or configuration settings that are used in a case.</li>
+<li><em>Component sets</em>, which are usually referred to as &#8220;compsets,&#8221; define both individual model components and any component-specific namelist or configuration settings that are used in a case.</li>
 <li><em>Model grids</em> specify the grid or resolution for each component of the model.</li>
 </ul>
 <p>Creating a CIME experiment or <em>case</em> requires, at a minimum, specifying a compset and a model grid.</p>
@@ -128,7 +131,7 @@
 <p>The OPTIONAL %phys attributes specify sub-modes of the given system.
 For example, DOCN%DOM is the DOCN data ocean (rather than slab-ocean) mode.
 ALL the possible %phys choices for each component are listed by
-calling <strong>query_case</strong> with the –compsets all argument.  ALL data models have
+calling <strong>query_case</strong> with the &#8211;compsets all argument.  ALL data models have
 a %phys option that corresponds to the data model mode.</p>
 <p>As an example, this actual CESM compset longname refers to running a pre-industrial control with active CESM components CAM, CLM, CICE, POP2, MOSART, CISM2 and WW3 in a BDRD BGC coupling scenario:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="mi">1850</span><span class="n">_CAM60_CLM50</span><span class="o">%</span><span class="n">BGC_CICE_POP2</span><span class="o">%</span><span class="n">ECO_MOSART_CISM2</span><span class="o">%</span><span class="n">NOEVOLVE_WW3_BGC</span><span class="o">%</span><span class="n">BDRD</span>
@@ -169,14 +172,14 @@ The alias for this grid is ne30_g16.</p>
 <p>CIME also permits users to introduce their own <a class="reference internal" href="adding-cases.html#adding-a-grid"><span class="std std-ref">user-defined grids</span></a>.</p>
 <p>Component grids are denoted by the following naming convention:</p>
 <ul class="simple">
-<li>“[dlat]x[dlon]” are regular lon/lat finite volume grids where dlat and dlon are the approximate grid spacing. The shorthand convention is “fnn” where nn generally is a pair of numbers indicating the resolution. An example is 1.9x2.5 or f19 for the approximately “2-degree” finite-volume grid. Note that CAM uses an [nlat]x[nlon] naming convention internally for this grid.</li>
-<li>“Tnn” are spectral lon/lat grids where nn is the spectral truncation value for the resolution. The shorthand name is identical. Example: T85.</li>
-<li>“ne[X]np[Y]” are cubed sphere resolutions where X and Y are integers. The short name generally is ne[X]. Examples: ne30np4 or ne30.</li>
-<li>“pt1” is a single grid point.</li>
-<li>“gx[D]v[n]” is a POP displaced pole grid where D is the approximate resolution in degrees and n is the grid version. The short name generally is g[D][n]. An example is gx1v7 or g17 for a grid of approximately 1-degree resolution.</li>
-<li>“tx[D]v[n]” is a POP tripole grid where D is the approximate resolution in degrees and n is the grid version.</li>
-<li>“oRSS[x]to[y]” is an MPAS grid with grid spacing from x to y kilometers.</li>
-<li>“oEC[x]to[y]” is an MPAS grid with grid spacing from x to y kilometers.</li>
+<li>&#8220;[dlat]x[dlon]&#8221; are regular lon/lat finite volume grids where dlat and dlon are the approximate grid spacing. The shorthand convention is &#8220;fnn&#8221; where nn generally is a pair of numbers indicating the resolution. An example is 1.9x2.5 or f19 for the approximately &#8220;2-degree&#8221; finite-volume grid. Note that CAM uses an [nlat]x[nlon] naming convention internally for this grid.</li>
+<li>&#8220;Tnn&#8221; are spectral lon/lat grids where nn is the spectral truncation value for the resolution. The shorthand name is identical. Example: T85.</li>
+<li>&#8220;ne[X]np[Y]&#8221; are cubed sphere resolutions where X and Y are integers. The short name generally is ne[X]. Examples: ne30np4 or ne30.</li>
+<li>&#8220;pt1&#8221; is a single grid point.</li>
+<li>&#8220;gx[D]v[n]&#8221; is a POP displaced pole grid where D is the approximate resolution in degrees and n is the grid version. The short name generally is g[D][n]. An example is gx1v7 or g17 for a grid of approximately 1-degree resolution.</li>
+<li>&#8220;tx[D]v[n]&#8221; is a POP tripole grid where D is the approximate resolution in degrees and n is the grid version.</li>
+<li>&#8220;oRSS[x]to[y]&#8221; is an MPAS grid with grid spacing from x to y kilometers.</li>
+<li>&#8220;oEC[x]to[y]&#8221; is an MPAS grid with grid spacing from x to y kilometers.</li>
 </ul>
 </div>
 <div class="section" id="querying-cime-calling-query-config">
@@ -266,13 +269,13 @@ The alias for this grid is ne30_g16.</p>
         <li class="right" >
           <a href="introduction-and-overview.html" title="1. Introduction"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" >CIME User’s Guide Part 1: Beginner - Basic Usage</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >CIME User&#8217;s Guide Part 1: Beginner - Basic Usage</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
+        &copy; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.3.
     </div>
   </body>
 </html>

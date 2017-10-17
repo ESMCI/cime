@@ -2,28 +2,31 @@
 
 <!doctype html>
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>CIME.BuildTools package &#8212; CIME 5.3.0 documentation</title>
+    
+    <title>CIME.BuildTools package &mdash; CIME 5.3.0 documentation</title>
+    
     <link rel="stylesheet" href="../_static/bizstyle.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
         VERSION:     '5.3.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
+        HAS_SOURCE:  true
       };
     </script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="../_static/bizstyle.js"></script>
-    <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" />
+    <link rel="top" title="CIME 5.3.0 documentation" href="../index.html" />
+    <link rel="up" title="CIME package" href="CIME.html" />
     <link rel="next" title="CIME.SystemTests package" href="CIME.SystemTests.html" />
     <link rel="prev" title="CIME package" href="CIME.html" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
@@ -31,7 +34,7 @@
     <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
     <![endif]-->
   </head>
-  <body>
+  <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -47,9 +50,9 @@
         <li class="right" >
           <a href="CIME.html" title="CIME package"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="modules.html" >CIME</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="CIME.html" accesskey="U">CIME package</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >CIME</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="CIME.html" accesskey="U">CIME package</a> &raquo;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -79,7 +82,7 @@
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="../_sources/CIME_api/CIME.BuildTools.rst.txt"
+      <li><a href="../_sources/CIME_api/CIME.BuildTools.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
@@ -212,13 +215,13 @@ class inherits from.</p>
 <p>This script writes CIME build information to a directory.</p>
 <p>The pieces of information that will be written include:</p>
 <ol class="arabic simple">
-<li>Machine-specific build settings (i.e. the “Macros” file).</li>
-<li>File-specific build settings (i.e. “Depends” files).</li>
+<li>Machine-specific build settings (i.e. the &#8220;Macros&#8221; file).</li>
+<li>File-specific build settings (i.e. &#8220;Depends&#8221; files).</li>
 <li>Environment variable loads (i.e. the env_mach_specific files).</li>
 </ol>
 <p>The .env_mach_specific.sh and .env_mach_specific.csh files are specific to a
 given compiler, MPI library, and DEBUG setting. By default, these will be the
-machine’s default compiler, the machine’s default MPI library, and FALSE,
+machine&#8217;s default compiler, the machine&#8217;s default MPI library, and FALSE,
 respectively. These can be changed by setting the environment variables
 COMPILER, MPILIB, and DEBUG, respectively.</p>
 <dl class="function">
@@ -228,13 +231,13 @@ COMPILER, MPILIB, and DEBUG, respectively.</p>
 <p>Arguments:
 machobj - Machines argument for this machine.
 output_dir - Directory in which to place output.
-macros_format - Container containing the string ‘Makefile’ to produce</p>
+macros_format - Container containing the string &#8216;Makefile&#8217; to produce</p>
 <blockquote>
-<div>Makefile Macros output, and/or ‘CMake’ for CMake output.</div></blockquote>
+<div>Makefile Macros output, and/or &#8216;CMake&#8217; for CMake output.</div></blockquote>
 <p>compiler - String containing the compiler vendor to configure for.
 mpilib - String containing the MPI implementation to configure for.
 debug - Boolean specifying whether debugging options are enabled.
-unit_testing - Boolean specifying whether we’re running unit tests (as</p>
+unit_testing - Boolean specifying whether we&#8217;re running unit tests (as</p>
 <blockquote>
 <div>opposed to a system run)</div></blockquote>
 </dd></dl>
@@ -259,7 +262,7 @@ write_out</p>
 <code class="descname">merge</code><span class="sig-paren">(</span><em>other</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/BuildTools/macroconditiontree.html#MacroConditionTree.merge"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.BuildTools.macroconditiontree.MacroConditionTree.merge" title="Permalink to this definition">¶</a></dt>
 <dd><p>Merge another tree with this one.</p>
 <p>This should be considered destructive to both trees. The only valid
-value is the one that’s returned.</p>
+value is the one that&#8217;s returned.</p>
 </dd></dl>
 
 <dl class="method">
@@ -298,7 +301,7 @@ more.</p>
 <blockquote>
 <div>the class.</div></blockquote>
 <ol class="arabic simple" start="2">
-<li>The various methods ending in “_string” return strings relevant to the
+<li>The various methods ending in &#8220;_string&#8221; return strings relevant to the
 build system.</li>
 <li>The other methods write information to the file handle associated with
 an individual writer instance.</li>
@@ -388,8 +391,8 @@ if pre is not None:</p>
 <blockquote>
 <div>writer.write(pre)</div></blockquote>
 <p># Use the variable to write an if block.
-writer.start_ifeq(var, “TRUE”)
-writer.set_variable(“foo”, “bar”)
+writer.start_ifeq(var, &#8220;TRUE&#8221;)
+writer.set_variable(&#8220;foo&#8221;, &#8220;bar&#8221;)
 writer.end_ifeq()</p>
 <p># Cleanup
 if post is not None:</p>
@@ -530,7 +533,7 @@ class inherits from.</p>
 <dt id="CIME.BuildTools.possiblevalues.PossibleValues">
 <em class="property">class </em><code class="descclassname">CIME.BuildTools.possiblevalues.</code><code class="descname">PossibleValues</code><span class="sig-paren">(</span><em>name</em>, <em>setting</em>, <em>specificity</em>, <em>depends</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/BuildTools/possiblevalues.html#PossibleValues"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.BuildTools.possiblevalues.PossibleValues" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
-<p>Holds a list of settings for a single “Macros” variable.</p>
+<p>Holds a list of settings for a single &#8220;Macros&#8221; variable.</p>
 <p>This helper class takes in variable settings and, for each one, decides
 whether to throw it out, add it to the list of values, or replace the
 existing list of values with the new, more specific setting.</p>
@@ -600,7 +603,7 @@ set first).</dd>
 <code class="descname">to_cond_trees</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/BuildTools/possiblevalues.html#PossibleValues.to_cond_trees"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.BuildTools.possiblevalues.PossibleValues.to_cond_trees" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert this object to a pair of MacroConditionTree objects.</p>
 <p>This represents the step where the list of possible values is
-frozen and we’re ready to convert it into an actual text file. This
+frozen and we&#8217;re ready to convert it into an actual text file. This
 object is checked for ambiguities before conversion.</p>
 <p>The return value is a tuple of two trees. The first contains all
 initial settings, and the second contains all appending settings.
@@ -617,7 +620,7 @@ If either would be empty, None is returned instead.</p>
 <em class="property">class </em><code class="descclassname">CIME.BuildTools.valuesetting.</code><code class="descname">ValueSetting</code><span class="sig-paren">(</span><em>value</em>, <em>do_append</em>, <em>conditions</em>, <em>set_up</em>, <em>tear_down</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/BuildTools/valuesetting.html#ValueSetting"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.BuildTools.valuesetting.ValueSetting" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
 <p>Holds data about how a value can be assigned to a variable.</p>
-<p>Note that this class doesn’t know or care <em>which</em> variable might be
+<p>Note that this class doesn&#8217;t know or care <em>which</em> variable might be
 assigned in this way, only that there is a procedure to perform that
 operation</p>
 <p>Public attributes:
@@ -629,7 +632,7 @@ than overwriting other settings.</div></blockquote>
 <dl class="docutils">
 <dt>conditions - Dictionary containing the set of values that different</dt>
 <dd>variables have to have to use this setting (e.g.
-DEBUG=”TRUE” might be a condition on a debug flag).</dd>
+DEBUG=&#8221;TRUE&#8221; might be a condition on a debug flag).</dd>
 <dt>set_up - List of any commands that have to be executed in the build</dt>
 <dd>system before this setting can occur.</dd>
 <dt>tear_down - List of any commands that should be executed to clean up</dt>
@@ -648,7 +651,7 @@ is a symmetric relation (this function returns the same value if
 self and other are swapped).</p>
 <p>The rules to determine this are as follows:</p>
 <ol class="arabic simple">
-<li>If one or both settings are appending to the value, there’s no
+<li>If one or both settings are appending to the value, there&#8217;s no
 ambiguity, because both can cooperate to set the value.</li>
 </ol>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ValueSetting</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="nb">dict</span><span class="p">(),</span> <span class="p">[],</span> <span class="p">[])</span>
@@ -661,7 +664,7 @@ ambiguity, because both can cooperate to set the value.</li>
 </div>
 <ol class="arabic simple" start="2">
 <li>If the two settings have conflicting conditions, then there
-is no ambiguity because they can’t both apply to the same
+is no ambiguity because they can&#8217;t both apply to the same
 build.</li>
 </ol>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ValueSetting</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;DEBUG&quot;</span><span class="p">:</span> <span class="s2">&quot;TRUE&quot;</span><span class="p">},</span> <span class="p">[],</span> <span class="p">[])</span>
@@ -672,7 +675,7 @@ build.</li>
 </div>
 <ol class="arabic simple" start="3">
 <li>If one setting is strictly more specific than the other, then
-there’s no ambiguity, because we prefer the more specific
+there&#8217;s no ambiguity, because we prefer the more specific
 setting whenever both apply to a build.</li>
 </ol>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">ValueSetting</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;DEBUG&quot;</span><span class="p">:</span> <span class="s2">&quot;TRUE&quot;</span><span class="p">},</span> <span class="p">[],</span> <span class="p">[])</span>
@@ -727,14 +730,14 @@ setting whenever both apply to a build.</li>
         <li class="right" >
           <a href="CIME.html" title="CIME package"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="modules.html" >CIME</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="CIME.html" >CIME package</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >CIME</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="CIME.html" >CIME package</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
+        &copy; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.3.
     </div>
   </body>
 </html>

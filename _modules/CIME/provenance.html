@@ -2,34 +2,37 @@
 
 <!doctype html>
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>CIME.provenance &#8212; CIME 5.3.0 documentation</title>
+    
+    <title>CIME.provenance &mdash; CIME 5.3.0 documentation</title>
+    
     <link rel="stylesheet" href="../../_static/bizstyle.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
         VERSION:     '5.3.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
+        HAS_SOURCE:  true
       };
     </script>
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <script type="text/javascript" src="../../_static/bizstyle.js"></script>
-    <link rel="index" title="Index" href="../../genindex.html" />
-    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="top" title="CIME 5.3.0 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <!--[if lt IE 9]>
     <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
     <![endif]-->
   </head>
-  <body>
+  <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -39,8 +42,8 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">CIME 5.3.0 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -70,8 +73,8 @@
 <span class="sd">Library for saving build/run provenance.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="k">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="k">import</span> <span class="n">touch</span><span class="p">,</span> <span class="n">gzip_existing_file</span><span class="p">,</span> <span class="n">SharedArea</span><span class="p">,</span> <span class="n">copy_umask</span>
+<span class="kn">from</span> <span class="nn">CIME.XML.standard_module_setup</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">CIME.utils</span> <span class="kn">import</span> <span class="n">touch</span><span class="p">,</span> <span class="n">gzip_existing_file</span><span class="p">,</span> <span class="n">SharedArea</span><span class="p">,</span> <span class="n">copy_umask</span>
 
 <span class="kn">import</span> <span class="nn">tarfile</span><span class="o">,</span> <span class="nn">getpass</span><span class="o">,</span> <span class="nn">signal</span><span class="o">,</span> <span class="nn">glob</span><span class="o">,</span> <span class="nn">shutil</span>
 
@@ -92,7 +95,7 @@
     <span class="k">except</span><span class="p">:</span>
         <span class="k">pass</span>
 
-    <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">return</span> <span class="bp">None</span>
 
 <span class="k">def</span> <span class="nf">_save_build_provenance_acme</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">lid</span><span class="p">):</span>
     <span class="n">cimeroot</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CIMEROOT&quot;</span><span class="p">)</span>
@@ -100,14 +103,14 @@
     <span class="n">caseroot</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASEROOT&quot;</span><span class="p">)</span>
 
     <span class="c1"># Save git describe</span>
-    <span class="n">describe_prov</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">exeroot</span><span class="p">,</span> <span class="s2">&quot;GIT_DESCRIBE.</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lid</span><span class="p">))</span>
+    <span class="n">describe_prov</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">exeroot</span><span class="p">,</span> <span class="s2">&quot;GIT_DESCRIBE.{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lid</span><span class="p">))</span>
     <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">describe_prov</span><span class="p">):</span>
         <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">describe_prov</span><span class="p">)</span>
     <span class="n">run_cmd_no_fail</span><span class="p">(</span><span class="s2">&quot;git describe&quot;</span><span class="p">,</span> <span class="n">arg_stdout</span><span class="o">=</span><span class="n">describe_prov</span><span class="p">,</span> <span class="n">from_dir</span><span class="o">=</span><span class="n">cimeroot</span><span class="p">)</span>
 
     <span class="c1"># Save HEAD</span>
     <span class="n">headfile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cimeroot</span><span class="p">,</span> <span class="s2">&quot;.git&quot;</span><span class="p">,</span> <span class="s2">&quot;logs&quot;</span><span class="p">,</span> <span class="s2">&quot;HEAD&quot;</span><span class="p">)</span>
-    <span class="n">headfile_prov</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">exeroot</span><span class="p">,</span> <span class="s2">&quot;GIT_LOGS_HEAD.</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lid</span><span class="p">))</span>
+    <span class="n">headfile_prov</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">exeroot</span><span class="p">,</span> <span class="s2">&quot;GIT_LOGS_HEAD.{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lid</span><span class="p">))</span>
     <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">headfile_prov</span><span class="p">):</span>
         <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">headfile_prov</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">headfile</span><span class="p">):</span>
@@ -115,7 +118,7 @@
 
     <span class="c1"># Save SourceMods</span>
     <span class="n">sourcemods</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">caseroot</span><span class="p">,</span> <span class="s2">&quot;SourceMods&quot;</span><span class="p">)</span>
-    <span class="n">sourcemods_prov</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">exeroot</span><span class="p">,</span> <span class="s2">&quot;SourceMods.</span><span class="si">{}</span><span class="s2">.tar.gz&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lid</span><span class="p">))</span>
+    <span class="n">sourcemods_prov</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">exeroot</span><span class="p">,</span> <span class="s2">&quot;SourceMods.{}.tar.gz&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lid</span><span class="p">))</span>
     <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">sourcemods_prov</span><span class="p">):</span>
         <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">sourcemods_prov</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">sourcemods</span><span class="p">):</span>
@@ -123,7 +126,7 @@
             <span class="n">tfd</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">sourcemods</span><span class="p">,</span> <span class="n">arcname</span><span class="o">=</span><span class="s2">&quot;SourceMods&quot;</span><span class="p">)</span>
 
     <span class="c1"># Save build env</span>
-    <span class="n">env_prov</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">exeroot</span><span class="p">,</span> <span class="s2">&quot;build_environment.</span><span class="si">{}</span><span class="s2">.txt&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lid</span><span class="p">))</span>
+    <span class="n">env_prov</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">exeroot</span><span class="p">,</span> <span class="s2">&quot;build_environment.{}.txt&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lid</span><span class="p">))</span>
     <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">env_prov</span><span class="p">):</span>
         <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">env_prov</span><span class="p">)</span>
     <span class="n">copy_umask</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">caseroot</span><span class="p">,</span> <span class="s2">&quot;software_environment.txt&quot;</span><span class="p">),</span> <span class="n">env_prov</span><span class="p">)</span>
@@ -131,12 +134,12 @@
     <span class="c1"># For all the just-created post-build provenance files, symlink a generic name</span>
     <span class="c1"># to them to indicate that these are the most recent or active.</span>
     <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;GIT_DESCRIBE&quot;</span><span class="p">,</span> <span class="s2">&quot;GIT_LOGS_HEAD&quot;</span><span class="p">,</span> <span class="s2">&quot;SourceMods&quot;</span><span class="p">,</span> <span class="s2">&quot;build_environment&quot;</span><span class="p">]:</span>
-        <span class="n">globstr</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/</span><span class="si">{}</span><span class="s2">.</span><span class="si">{}</span><span class="s2">*&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">exeroot</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">lid</span><span class="p">)</span>
+        <span class="n">globstr</span> <span class="o">=</span> <span class="s2">&quot;{}/{}.{}*&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">exeroot</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">lid</span><span class="p">)</span>
         <span class="n">matches</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">globstr</span><span class="p">)</span>
-        <span class="n">expect</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">matches</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;Multiple matches for glob </span><span class="si">{}</span><span class="s2"> should not have happened&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">globstr</span><span class="p">))</span>
+        <span class="n">expect</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">matches</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;Multiple matches for glob {} should not have happened&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">globstr</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">matches</span><span class="p">:</span>
             <span class="n">the_match</span> <span class="o">=</span> <span class="n">matches</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">generic_name</span> <span class="o">=</span> <span class="n">the_match</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lid</span><span class="p">),</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+            <span class="n">generic_name</span> <span class="o">=</span> <span class="n">the_match</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lid</span><span class="p">),</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">generic_name</span><span class="p">):</span>
                 <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">generic_name</span><span class="p">)</span>
             <span class="n">os</span><span class="o">.</span><span class="n">symlink</span><span class="p">(</span><span class="n">the_match</span><span class="p">,</span> <span class="n">generic_name</span><span class="p">)</span>
@@ -146,12 +149,12 @@
     <span class="c1"># version has already been recorded</span>
     <span class="n">caseroot</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASEROOT&quot;</span><span class="p">)</span>
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">caseroot</span><span class="p">,</span> <span class="s2">&quot;README.case&quot;</span><span class="p">),</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
-        <span class="n">fd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;CESM version is </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">version</span><span class="p">))</span>
+        <span class="n">fd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;CESM version is {}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">version</span><span class="p">))</span>
 
-<div class="viewcode-block" id="save_build_provenance"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.provenance.save_build_provenance">[docs]</a><span class="k">def</span> <span class="nf">save_build_provenance</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">lid</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="save_build_provenance"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.provenance.save_build_provenance">[docs]</a><span class="k">def</span> <span class="nf">save_build_provenance</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">lid</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
     <span class="k">with</span> <span class="n">SharedArea</span><span class="p">():</span>
         <span class="n">model</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MODEL&quot;</span><span class="p">)</span>
-        <span class="n">lid</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;LID&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="n">lid</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">lid</span>
+        <span class="n">lid</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;LID&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="n">lid</span> <span class="ow">is</span> <span class="bp">None</span> <span class="k">else</span> <span class="n">lid</span>
 
         <span class="k">if</span> <span class="n">model</span> <span class="o">==</span> <span class="s2">&quot;acme&quot;</span><span class="p">:</span>
             <span class="n">_save_build_provenance_acme</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">lid</span><span class="p">)</span>
@@ -160,27 +163,27 @@
 
 <span class="k">def</span> <span class="nf">_save_prerun_timing_acme</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">lid</span><span class="p">):</span>
     <span class="n">timing_dir</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;SAVE_TIMING_DIR&quot;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">timing_dir</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">timing_dir</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">timing_dir</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">timing_dir</span><span class="p">):</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;SAVE_TIMING_DIR &#39;</span><span class="si">%s</span><span class="s2">&#39; is not valid. ACME requires a valid SAVE_TIMING_DIR to be set in order to archive timings. Skipping archive timings&quot;</span> <span class="o">%</span> <span class="n">timing_dir</span><span class="p">)</span>
         <span class="k">return</span>
 
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;timing dir is </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">timing_dir</span><span class="p">))</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;timing dir is {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">timing_dir</span><span class="p">))</span>
     <span class="n">rundir</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;RUNDIR&quot;</span><span class="p">)</span>
     <span class="n">blddir</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;EXEROOT&quot;</span><span class="p">)</span>
     <span class="n">caseroot</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASEROOT&quot;</span><span class="p">)</span>
     <span class="n">cimeroot</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CIMEROOT&quot;</span><span class="p">)</span>
     <span class="n">base_case</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASE&quot;</span><span class="p">)</span>
     <span class="n">full_timing_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">timing_dir</span><span class="p">,</span> <span class="s2">&quot;performance_archive&quot;</span><span class="p">,</span> <span class="n">getpass</span><span class="o">.</span><span class="n">getuser</span><span class="p">(),</span> <span class="n">base_case</span><span class="p">,</span> <span class="n">lid</span><span class="p">)</span>
-    <span class="n">expect</span><span class="p">(</span><span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">full_timing_dir</span><span class="p">),</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> already exists&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">full_timing_dir</span><span class="p">))</span>
+    <span class="n">expect</span><span class="p">(</span><span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">full_timing_dir</span><span class="p">),</span> <span class="s2">&quot;{} already exists&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">full_timing_dir</span><span class="p">))</span>
 
     <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">full_timing_dir</span><span class="p">)</span>
-    <span class="n">expect</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">full_timing_dir</span><span class="p">),</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> does not exists&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">full_timing_dir</span><span class="p">))</span>
+    <span class="n">expect</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">full_timing_dir</span><span class="p">),</span> <span class="s2">&quot;{} does not exists&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">full_timing_dir</span><span class="p">))</span>
     <span class="n">mach</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MACH&quot;</span><span class="p">)</span>
     <span class="n">compiler</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;COMPILER&quot;</span><span class="p">)</span>
 
     <span class="c1"># For some batch machines save queue info</span>
     <span class="n">job_id</span> <span class="o">=</span> <span class="n">_get_batch_job_id_for_syslog</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">job_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">job_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">mach</span> <span class="o">==</span> <span class="s2">&quot;mira&quot;</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">cmd</span><span class="p">,</span> <span class="n">filename</span> <span class="ow">in</span> <span class="p">[(</span><span class="s2">&quot;qstat -f&quot;</span><span class="p">,</span> <span class="s2">&quot;qstatf&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;qstat -lf </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">job_id</span><span class="p">,</span> <span class="s2">&quot;qstatf_jobid&quot;</span><span class="p">)]:</span>
                 <span class="n">filename</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">lid</span><span class="p">)</span>
@@ -218,11 +221,11 @@
     <span class="c1"># copy/tar SourceModes</span>
     <span class="n">source_mods_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">caseroot</span><span class="p">,</span> <span class="s2">&quot;SourceMods&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">source_mods_dir</span><span class="p">):</span>
-        <span class="k">with</span> <span class="n">tarfile</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">full_timing_dir</span><span class="p">,</span> <span class="s2">&quot;SourceMods.</span><span class="si">{}</span><span class="s2">.tar.gz&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lid</span><span class="p">)),</span> <span class="s2">&quot;w:gz&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">tfd</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">tarfile</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">full_timing_dir</span><span class="p">,</span> <span class="s2">&quot;SourceMods.{}.tar.gz&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lid</span><span class="p">)),</span> <span class="s2">&quot;w:gz&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">tfd</span><span class="p">:</span>
             <span class="n">tfd</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">source_mods_dir</span><span class="p">,</span> <span class="n">arcname</span><span class="o">=</span><span class="s2">&quot;SourceMods&quot;</span><span class="p">)</span>
 
     <span class="c1"># Save various case configuration items</span>
-    <span class="n">case_docs</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">full_timing_dir</span><span class="p">,</span> <span class="s2">&quot;CaseDocs.</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lid</span><span class="p">))</span>
+    <span class="n">case_docs</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">full_timing_dir</span><span class="p">,</span> <span class="s2">&quot;CaseDocs.{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lid</span><span class="p">))</span>
     <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">case_docs</span><span class="p">)</span>
     <span class="n">globs_to_copy</span> <span class="o">=</span> <span class="p">[</span>
         <span class="s2">&quot;CaseDocs/*&quot;</span><span class="p">,</span>
@@ -232,9 +235,9 @@
         <span class="s2">&quot;*env_mach_specific*&quot;</span><span class="p">,</span>
         <span class="s2">&quot;Macros&quot;</span><span class="p">,</span>
         <span class="s2">&quot;README.case&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;Depends.</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mach</span><span class="p">),</span>
-        <span class="s2">&quot;Depends.</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">compiler</span><span class="p">),</span>
-        <span class="s2">&quot;Depends.</span><span class="si">{}</span><span class="s2">.</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mach</span><span class="p">,</span> <span class="n">compiler</span><span class="p">),</span>
+        <span class="s2">&quot;Depends.{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mach</span><span class="p">),</span>
+        <span class="s2">&quot;Depends.{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">compiler</span><span class="p">),</span>
+        <span class="s2">&quot;Depends.{}.{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mach</span><span class="p">,</span> <span class="n">compiler</span><span class="p">),</span>
         <span class="s2">&quot;software_environment.txt&quot;</span>
         <span class="p">]</span>
     <span class="k">for</span> <span class="n">glob_to_copy</span> <span class="ow">in</span> <span class="n">globs_to_copy</span><span class="p">:</span>
@@ -251,22 +254,22 @@
             <span class="n">copy_umask</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">full_timing_dir</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.&quot;</span> <span class="o">+</span> <span class="n">lid</span><span class="p">))</span>
 
     <span class="c1"># What this block does is mysterious to me (JGF)</span>
-    <span class="k">if</span> <span class="n">job_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">job_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
         <span class="n">sample_interval</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;SYSLOG_N&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">sample_interval</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">archive_checkpoints</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">full_timing_dir</span><span class="p">,</span> <span class="s2">&quot;checkpoints.</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lid</span><span class="p">))</span>
+            <span class="n">archive_checkpoints</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">full_timing_dir</span><span class="p">,</span> <span class="s2">&quot;checkpoints.{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lid</span><span class="p">))</span>
             <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">archive_checkpoints</span><span class="p">)</span>
-            <span class="n">touch</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">/acme.log.</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="n">lid</span><span class="p">))</span>
-            <span class="n">syslog_jobid</span> <span class="o">=</span> <span class="n">run_cmd_no_fail</span><span class="p">(</span><span class="s2">&quot;./mach_syslog </span><span class="si">{:d}</span><span class="s2"> </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2"> </span><span class="si">{}</span><span class="s2">/timing/checkpoints </span><span class="si">{}</span><span class="s2"> &gt;&amp; /dev/null &amp; echo $!&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sample_interval</span><span class="p">,</span> <span class="n">job_id</span><span class="p">,</span> <span class="n">lid</span><span class="p">,</span> <span class="n">rundir</span><span class="p">,</span> <span class="n">rundir</span><span class="p">,</span> <span class="n">archive_checkpoints</span><span class="p">),</span>
+            <span class="n">touch</span><span class="p">(</span><span class="s2">&quot;{}/acme.log.{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="n">lid</span><span class="p">))</span>
+            <span class="n">syslog_jobid</span> <span class="o">=</span> <span class="n">run_cmd_no_fail</span><span class="p">(</span><span class="s2">&quot;./mach_syslog {:d} {} {} {} {}/timing/checkpoints {} &gt;&amp; /dev/null &amp; echo $!&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sample_interval</span><span class="p">,</span> <span class="n">job_id</span><span class="p">,</span> <span class="n">lid</span><span class="p">,</span> <span class="n">rundir</span><span class="p">,</span> <span class="n">rundir</span><span class="p">,</span> <span class="n">archive_checkpoints</span><span class="p">),</span>
                                            <span class="n">from_dir</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">caseroot</span><span class="p">,</span> <span class="s2">&quot;Tools&quot;</span><span class="p">))</span>
-            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="s2">&quot;syslog_jobid.</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">job_id</span><span class="p">)),</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
-                <span class="n">fd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">syslog_jobid</span><span class="p">))</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="s2">&quot;syslog_jobid.{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">job_id</span><span class="p">)),</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
+                <span class="n">fd</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">syslog_jobid</span><span class="p">))</span>
 
     <span class="c1"># Save state of repo</span>
     <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cimeroot</span><span class="p">,</span> <span class="s2">&quot;.git&quot;</span><span class="p">)):</span>
-        <span class="n">run_cmd_no_fail</span><span class="p">(</span><span class="s2">&quot;git describe&quot;</span><span class="p">,</span> <span class="n">arg_stdout</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">full_timing_dir</span><span class="p">,</span> <span class="s2">&quot;GIT_DESCRIBE.</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lid</span><span class="p">)),</span> <span class="n">from_dir</span><span class="o">=</span><span class="n">cimeroot</span><span class="p">)</span>
+        <span class="n">run_cmd_no_fail</span><span class="p">(</span><span class="s2">&quot;git describe&quot;</span><span class="p">,</span> <span class="n">arg_stdout</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">full_timing_dir</span><span class="p">,</span> <span class="s2">&quot;GIT_DESCRIBE.{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lid</span><span class="p">)),</span> <span class="n">from_dir</span><span class="o">=</span><span class="n">cimeroot</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">run_cmd_no_fail</span><span class="p">(</span><span class="s2">&quot;git describe&quot;</span><span class="p">,</span> <span class="n">arg_stdout</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">full_timing_dir</span><span class="p">,</span> <span class="s2">&quot;GIT_DESCRIBE.</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lid</span><span class="p">)),</span> <span class="n">from_dir</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">cimeroot</span><span class="p">))</span>
+        <span class="n">run_cmd_no_fail</span><span class="p">(</span><span class="s2">&quot;git describe&quot;</span><span class="p">,</span> <span class="n">arg_stdout</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">full_timing_dir</span><span class="p">,</span> <span class="s2">&quot;GIT_DESCRIBE.{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lid</span><span class="p">)),</span> <span class="n">from_dir</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">cimeroot</span><span class="p">))</span>
 
 <span class="k">def</span> <span class="nf">_save_prerun_provenance_acme</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">lid</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;SAVE_TIMING&quot;</span><span class="p">):</span>
@@ -275,15 +278,15 @@
 <span class="k">def</span> <span class="nf">_save_prerun_provenance_cesm</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">lid</span><span class="p">):</span> <span class="c1"># pylint: disable=unused-argument</span>
     <span class="k">pass</span>
 
-<div class="viewcode-block" id="save_prerun_provenance"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.provenance.save_prerun_provenance">[docs]</a><span class="k">def</span> <span class="nf">save_prerun_provenance</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">lid</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="save_prerun_provenance"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.provenance.save_prerun_provenance">[docs]</a><span class="k">def</span> <span class="nf">save_prerun_provenance</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">lid</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
     <span class="k">with</span> <span class="n">SharedArea</span><span class="p">():</span>
         <span class="c1"># Always save env</span>
-        <span class="n">lid</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;LID&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="n">lid</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">lid</span>
+        <span class="n">lid</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;LID&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="n">lid</span> <span class="ow">is</span> <span class="bp">None</span> <span class="k">else</span> <span class="n">lid</span>
         <span class="n">env_module</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_env</span><span class="p">(</span><span class="s2">&quot;mach_specific&quot;</span><span class="p">)</span>
         <span class="n">logdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASEROOT&quot;</span><span class="p">),</span> <span class="s2">&quot;logs&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">logdir</span><span class="p">):</span>
             <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">logdir</span><span class="p">)</span>
-        <span class="n">env_module</span><span class="o">.</span><span class="n">save_all_env_info</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">logdir</span><span class="p">,</span> <span class="s2">&quot;run_environment.txt.</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lid</span><span class="p">)))</span>
+        <span class="n">env_module</span><span class="o">.</span><span class="n">save_all_env_info</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">logdir</span><span class="p">,</span> <span class="s2">&quot;run_environment.txt.{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lid</span><span class="p">)))</span>
 
         <span class="n">model</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MODEL&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">model</span> <span class="o">==</span> <span class="s2">&quot;acme&quot;</span><span class="p">:</span>
@@ -319,7 +322,7 @@
     <span class="n">timing_saved_file</span> <span class="o">=</span> <span class="s2">&quot;timing.</span><span class="si">%s</span><span class="s2">.saved&quot;</span> <span class="o">%</span> <span class="n">lid</span>
     <span class="n">touch</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">caseroot</span><span class="p">,</span> <span class="s2">&quot;timing&quot;</span><span class="p">,</span> <span class="n">timing_saved_file</span><span class="p">))</span>
 
-    <span class="k">if</span> <span class="n">timing_dir</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">timing_dir</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">timing_dir</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">timing_dir</span><span class="p">):</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;SAVE_TIMING_DIR &#39;</span><span class="si">%s</span><span class="s2">&#39; is not valid. ACME requires a valid SAVE_TIMING_DIR to be set in order to archive timings. Skipping archive timings&quot;</span> <span class="o">%</span> <span class="n">timing_dir</span><span class="p">)</span>
         <span class="k">return</span>
 
@@ -329,15 +332,15 @@
 
     <span class="c1"># Kill mach_syslog</span>
     <span class="n">job_id</span> <span class="o">=</span> <span class="n">_get_batch_job_id_for_syslog</span><span class="p">(</span><span class="n">case</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">job_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">syslog_jobid_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="s2">&quot;syslog_jobid.</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">job_id</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">job_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">syslog_jobid_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rundir</span><span class="p">,</span> <span class="s2">&quot;syslog_jobid.{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">job_id</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">syslog_jobid_path</span><span class="p">):</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">syslog_jobid_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fd</span><span class="p">:</span>
                     <span class="n">syslog_jobid</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">fd</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
                 <span class="n">os</span><span class="o">.</span><span class="n">kill</span><span class="p">(</span><span class="n">syslog_jobid</span><span class="p">,</span> <span class="n">signal</span><span class="o">.</span><span class="n">SIGTERM</span><span class="p">)</span>
             <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">OSError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Failed to kill syslog: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Failed to kill syslog: {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
             <span class="k">finally</span><span class="p">:</span>
                 <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">syslog_jobid_path</span><span class="p">)</span>
 
@@ -348,7 +351,7 @@
     <span class="c1"># save output files and logs</span>
     <span class="c1">#</span>
     <span class="n">globs_to_copy</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">if</span> <span class="n">job_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">job_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">mach</span> <span class="o">==</span> <span class="s2">&quot;titan&quot;</span><span class="p">:</span>
             <span class="n">globs_to_copy</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">*OU&quot;</span> <span class="o">%</span> <span class="n">job_id</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">mach</span> <span class="o">==</span> <span class="s2">&quot;anvil&quot;</span><span class="p">:</span>
@@ -359,10 +362,10 @@
         <span class="k">elif</span> <span class="n">mach</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;edison&quot;</span><span class="p">,</span> <span class="s2">&quot;cori-haswell&quot;</span><span class="p">,</span> <span class="s2">&quot;cori-knl&quot;</span><span class="p">]:</span>
             <span class="n">globs_to_copy</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">*run*</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;CASE&quot;</span><span class="p">),</span> <span class="n">job_id</span><span class="p">))</span>
 
-    <span class="n">globs_to_copy</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;logs/run_environment.txt.</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lid</span><span class="p">))</span>
-    <span class="n">globs_to_copy</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;logs/acme.log.</span><span class="si">{}</span><span class="s2">.gz&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lid</span><span class="p">))</span>
-    <span class="n">globs_to_copy</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;logs/cpl.log.</span><span class="si">{}</span><span class="s2">.gz&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lid</span><span class="p">))</span>
-    <span class="n">globs_to_copy</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;timing/*.</span><span class="si">{}</span><span class="s2">*&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lid</span><span class="p">))</span>
+    <span class="n">globs_to_copy</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;logs/run_environment.txt.{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lid</span><span class="p">))</span>
+    <span class="n">globs_to_copy</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;logs/acme.log.{}.gz&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lid</span><span class="p">))</span>
+    <span class="n">globs_to_copy</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;logs/cpl.log.{}.gz&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lid</span><span class="p">))</span>
+    <span class="n">globs_to_copy</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;timing/*.{}*&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">lid</span><span class="p">))</span>
     <span class="n">globs_to_copy</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;CaseStatus&quot;</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">glob_to_copy</span> <span class="ow">in</span> <span class="n">globs_to_copy</span><span class="p">:</span>
@@ -370,7 +373,7 @@
             <span class="n">basename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">basename</span> <span class="o">!=</span> <span class="n">timing_saved_file</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">lid</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">basename</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">basename</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.gz&quot;</span><span class="p">):</span>
-                    <span class="n">copy_umask</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">full_timing_dir</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">.</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">basename</span><span class="p">,</span> <span class="n">lid</span><span class="p">)))</span>
+                    <span class="n">copy_umask</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">full_timing_dir</span><span class="p">,</span> <span class="s2">&quot;{}.{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">basename</span><span class="p">,</span> <span class="n">lid</span><span class="p">)))</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">copy_umask</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">full_timing_dir</span><span class="p">)</span>
 
@@ -384,10 +387,10 @@
     <span class="k">if</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;SAVE_TIMING&quot;</span><span class="p">):</span>
         <span class="n">_save_postrun_timing_acme</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">lid</span><span class="p">)</span>
 
-<div class="viewcode-block" id="save_postrun_provenance"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.provenance.save_postrun_provenance">[docs]</a><span class="k">def</span> <span class="nf">save_postrun_provenance</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">lid</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="save_postrun_provenance"><a class="viewcode-back" href="../../CIME_api/CIME.html#CIME.provenance.save_postrun_provenance">[docs]</a><span class="k">def</span> <span class="nf">save_postrun_provenance</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">lid</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
     <span class="k">with</span> <span class="n">SharedArea</span><span class="p">():</span>
         <span class="n">model</span> <span class="o">=</span> <span class="n">case</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s2">&quot;MODEL&quot;</span><span class="p">)</span>
-        <span class="n">lid</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;LID&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="n">lid</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">lid</span>
+        <span class="n">lid</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;LID&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="n">lid</span> <span class="ow">is</span> <span class="bp">None</span> <span class="k">else</span> <span class="n">lid</span>
 
         <span class="k">if</span> <span class="n">model</span> <span class="o">==</span> <span class="s2">&quot;acme&quot;</span><span class="p">:</span>
             <span class="n">_save_postrun_provenance_acme</span><span class="p">(</span><span class="n">case</span><span class="p">,</span> <span class="n">lid</span><span class="p">)</span>
@@ -409,13 +412,13 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../../index.html">CIME 5.3.0 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
+        &copy; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.3.
     </div>
   </body>
 </html>

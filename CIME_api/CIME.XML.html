@@ -2,28 +2,31 @@
 
 <!doctype html>
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>CIME.XML package &#8212; CIME 5.3.0 documentation</title>
+    
+    <title>CIME.XML package &mdash; CIME 5.3.0 documentation</title>
+    
     <link rel="stylesheet" href="../_static/bizstyle.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
         VERSION:     '5.3.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
+        HAS_SOURCE:  true
       };
     </script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="../_static/bizstyle.js"></script>
-    <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" />
+    <link rel="top" title="CIME 5.3.0 documentation" href="../index.html" />
+    <link rel="up" title="CIME package" href="CIME.html" />
     <link rel="next" title="CIME.tests package" href="CIME.tests.html" />
     <link rel="prev" title="CIME.SystemTests.test_utils package" href="CIME.SystemTests.test_utils.html" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
@@ -31,7 +34,7 @@
     <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
     <![endif]-->
   </head>
-  <body>
+  <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -47,9 +50,9 @@
         <li class="right" >
           <a href="CIME.SystemTests.test_utils.html" title="CIME.SystemTests.test_utils package"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="modules.html" >CIME</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="CIME.html" accesskey="U">CIME package</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >CIME</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="CIME.html" accesskey="U">CIME package</a> &raquo;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -101,7 +104,7 @@
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="../_sources/CIME_api/CIME.XML.rst.txt"
+      <li><a href="../_sources/CIME_api/CIME.XML.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
@@ -146,8 +149,8 @@
 <div class="section" id="module-CIME.XML.batch">
 <span id="cime-xml-batch-module"></span><h2>CIME.XML.batch module<a class="headerlink" href="#module-CIME.XML.batch" title="Permalink to this headline">¶</a></h2>
 <p>Interface to the config_batch.xml file.  This class inherits from GenericXML.py</p>
-<p>The batch_system type=”foo” blocks define most things. Machine-specific overrides
-can be defined by providing a batch_system MACH=”mach” block.</p>
+<p>The batch_system type=&#8221;foo&#8221; blocks define most things. Machine-specific overrides
+can be defined by providing a batch_system MACH=&#8221;mach&#8221; block.</p>
 <dl class="class">
 <dt id="CIME.XML.batch.Batch">
 <em class="property">class </em><code class="descclassname">CIME.XML.batch.</code><code class="descname">Batch</code><span class="sig-paren">(</span><em>batch_system=None</em>, <em>machine=None</em>, <em>infile=None</em>, <em>files=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/batch.html#Batch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.batch.Batch" title="Permalink to this definition">¶</a></dt>
@@ -189,10 +192,10 @@ and the second a dict of qualifiers for the job</p>
 <div class="section" id="module-CIME.XML.compilerblock">
 <span id="cime-xml-compilerblock-module"></span><h2>CIME.XML.compilerblock module<a class="headerlink" href="#module-CIME.XML.compilerblock" title="Permalink to this headline">¶</a></h2>
 <p>Classes used to build the CIME Macros file.</p>
-<p>The main “public” class here is Build. It is initialized with machine-specific
+<p>The main &#8220;public&#8221; class here is Build. It is initialized with machine-specific
 information, and its write_macros method is the driver for translating the
 config_build.xml file into a Makefile or CMake-format Macros file.</p>
-<p>For developers, here’s the role of the other classes in the process:</p>
+<p>For developers, here&#8217;s the role of the other classes in the process:</p>
 <ul class="simple">
 <li>A CompilerBlock is responsible for translating the XML code in a &lt;compiler&gt;
 tag into Python data structures.</li>
@@ -216,7 +219,7 @@ associated with it.</p>
 instance. This object is responsible for translating the XML in its block, in
 order to populate the PossibleValues instances. This includes handling the
 &lt;var&gt;/&lt;env&gt;/&lt;shell&gt; tags, and keeping track of dependencies induced by one
-variable referencing another’s value.</p>
+variable referencing another&#8217;s value.</p>
 </li>
 <li><p class="first">The PossibleValues object holds the information about how one variable can be
 set, based on various build options. It has two main roles:</p>
@@ -263,7 +266,7 @@ matches_machine</p>
 <code class="descname">add_settings_to_lists</code><span class="sig-paren">(</span><em>flag_vars</em>, <em>value_lists</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/compilerblock.html#CompilerBlock.add_settings_to_lists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.compilerblock.CompilerBlock.add_settings_to_lists" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add all data in the &lt;compiler&gt; element to lists of settings.</p>
 <p>Arguments:
-flag_vars - A set of variables containing “flag-like” data.
+flag_vars - A set of variables containing &#8220;flag-like&#8221; data.
 value_lists - A dictionary of PossibleValues, containing the lists</p>
 <blockquote>
 <div>of all settings for each variable.</div></blockquote>
@@ -310,10 +313,10 @@ before add_settings_to_lists if machine-specific output is needed.</p>
 <code class="descname">set_compiler</code><span class="sig-paren">(</span><em>compiler</em>, <em>machine=None</em>, <em>os_=None</em>, <em>mpilib=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/compilers.html#Compilers.set_compiler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.compilers.Compilers.set_compiler" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sets the compiler block in the Compilers object
 &gt;&gt;&gt; from CIME.XML.machines import Machines
-&gt;&gt;&gt; compobj = Compilers(Machines(machine=”melvin”))
-&gt;&gt;&gt; compobj.set_compiler(“gnu”)
+&gt;&gt;&gt; compobj = Compilers(Machines(machine=&#8221;melvin&#8221;))
+&gt;&gt;&gt; compobj.set_compiler(&#8220;gnu&#8221;)
 &gt;&gt;&gt; compobj.get_compiler()
-‘gnu’</p>
+&#8216;gnu&#8217;</p>
 </dd></dl>
 
 <dl class="method">
@@ -344,7 +347,7 @@ before add_settings_to_lists if machine-specific output is needed.</p>
 <dl class="method">
 <dt id="CIME.XML.component.Component.get_valid_model_components">
 <code class="descname">get_valid_model_components</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/component.html#Component.get_valid_model_components"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.component.Component.get_valid_model_components" title="Permalink to this definition">¶</a></dt>
-<dd><p>return a list of all possible valid generic (e.g. atm, clm, …) model components
+<dd><p>return a list of all possible valid generic (e.g. atm, clm, ...) model components
 from the entries in the model CONFIG_CPL_FILE</p>
 </dd></dl>
 
@@ -415,7 +418,7 @@ be used by other XML interface modules and not directly.</p>
 <code class="descname">add_elements_by_group</code><span class="sig-paren">(</span><em>srcobj</em>, <em>attributes=None</em>, <em>infile=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/entry_id.html#EntryID.add_elements_by_group"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.entry_id.EntryID.add_elements_by_group" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add elements from srcobj to self under the appropriate
 group element, entries to be added must have a child element
-&lt;file&gt; with value “infile”</p>
+&lt;file&gt; with value &#8220;infile&#8221;</p>
 </dd></dl>
 
 <dl class="method">
@@ -627,6 +630,11 @@ subgroup is ignored in the general routine and applied in specific methods</p>
 <em class="property">class </em><code class="descclassname">CIME.XML.env_batch.</code><code class="descname">EnvBatch</code><span class="sig-paren">(</span><em>case_root=None</em>, <em>infile='env_batch.xml'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_batch.html#EnvBatch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_batch.EnvBatch" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#CIME.XML.env_base.EnvBase" title="CIME.XML.env_base.EnvBase"><code class="xref py py-class docutils literal"><span class="pre">CIME.XML.env_base.EnvBase</span></code></a></p>
 <dl class="method">
+<dt id="CIME.XML.env_batch.EnvBatch.cancel_job">
+<code class="descname">cancel_job</code><span class="sig-paren">(</span><em>jobid</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_batch.html#EnvBatch.cancel_job"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_batch.EnvBatch.cancel_job" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="CIME.XML.env_batch.EnvBatch.cleanupnode">
 <code class="descname">cleanupnode</code><span class="sig-paren">(</span><em>node</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_batch.html#EnvBatch.cleanupnode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_batch.EnvBatch.cleanupnode" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -643,7 +651,7 @@ subgroup is ignored in the general routine and applied in specific methods</p>
 
 <dl class="method">
 <dt id="CIME.XML.env_batch.EnvBatch.get_batch_directives">
-<code class="descname">get_batch_directives</code><span class="sig-paren">(</span><em>case</em>, <em>job</em>, <em>raw=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_batch.html#EnvBatch.get_batch_directives"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_batch.EnvBatch.get_batch_directives" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get_batch_directives</code><span class="sig-paren">(</span><em>case</em>, <em>job</em>, <em>overrides=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_batch.html#EnvBatch.get_batch_directives"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_batch.EnvBatch.get_batch_directives" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -677,6 +685,13 @@ subgroup is ignored in the general routine and applied in specific methods</p>
 <dd></dd></dl>
 
 <dl class="method">
+<dt id="CIME.XML.env_batch.EnvBatch.get_queue_specs">
+<code class="descname">get_queue_specs</code><span class="sig-paren">(</span><em>queue</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_batch.html#EnvBatch.get_queue_specs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_batch.EnvBatch.get_queue_specs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get queue specifications by name.</p>
+<p>Returns (nodemin, nodemax, jobname, walltimemax, is_strict)</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="CIME.XML.env_batch.EnvBatch.get_status">
 <code class="descname">get_status</code><span class="sig-paren">(</span><em>jobid</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_batch.html#EnvBatch.get_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_batch.EnvBatch.get_status" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -700,17 +715,17 @@ subgroup is ignored in the general routine and applied in specific methods</p>
 
 <dl class="method">
 <dt id="CIME.XML.env_batch.EnvBatch.make_batch_script">
-<code class="descname">make_batch_script</code><span class="sig-paren">(</span><em>input_template</em>, <em>job</em>, <em>case</em>, <em>total_tasks</em>, <em>tasks_per_node</em>, <em>num_nodes</em>, <em>thread_count</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_batch.html#EnvBatch.make_batch_script"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_batch.EnvBatch.make_batch_script" title="Permalink to this definition">¶</a></dt>
+<code class="descname">make_batch_script</code><span class="sig-paren">(</span><em>input_template</em>, <em>job</em>, <em>case</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_batch.html#EnvBatch.make_batch_script"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_batch.EnvBatch.make_batch_script" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="CIME.XML.env_batch.EnvBatch.queue_meets_spec">
-<code class="descname">queue_meets_spec</code><span class="sig-paren">(</span><em>queue</em>, <em>num_pes</em>, <em>num_nodes</em>, <em>walltime=None</em>, <em>job=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_batch.html#EnvBatch.queue_meets_spec"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_batch.EnvBatch.queue_meets_spec" title="Permalink to this definition">¶</a></dt>
+<code class="descname">queue_meets_spec</code><span class="sig-paren">(</span><em>queue</em>, <em>num_nodes</em>, <em>walltime=None</em>, <em>job=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_batch.html#EnvBatch.queue_meets_spec"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_batch.EnvBatch.queue_meets_spec" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="CIME.XML.env_batch.EnvBatch.select_best_queue">
-<code class="descname">select_best_queue</code><span class="sig-paren">(</span><em>num_pes</em>, <em>num_nodes</em>, <em>walltime=None</em>, <em>job=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_batch.html#EnvBatch.select_best_queue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_batch.EnvBatch.select_best_queue" title="Permalink to this definition">¶</a></dt>
+<code class="descname">select_best_queue</code><span class="sig-paren">(</span><em>num_nodes</em>, <em>walltime=None</em>, <em>job=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_batch.html#EnvBatch.select_best_queue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_batch.EnvBatch.select_best_queue" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -725,7 +740,7 @@ subgroup is ignored in the general routine and applied in specific methods</p>
 
 <dl class="method">
 <dt id="CIME.XML.env_batch.EnvBatch.set_job_defaults">
-<code class="descname">set_job_defaults</code><span class="sig-paren">(</span><em>batch_jobs</em>, <em>pesize=None</em>, <em>num_nodes=None</em>, <em>tasks_per_node=None</em>, <em>walltime=None</em>, <em>force_queue=None</em>, <em>allow_walltime_override=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_batch.html#EnvBatch.set_job_defaults"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_batch.EnvBatch.set_job_defaults" title="Permalink to this definition">¶</a></dt>
+<code class="descname">set_job_defaults</code><span class="sig-paren">(</span><em>batch_jobs</em>, <em>case</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_batch.html#EnvBatch.set_job_defaults"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_batch.EnvBatch.set_job_defaults" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -804,7 +819,7 @@ subgroup is ignored in the general routine and applied in specific methods</p>
 
 <dl class="method">
 <dt id="CIME.XML.env_mach_pes.EnvMachPes.get_value">
-<code class="descname">get_value</code><span class="sig-paren">(</span><em>vid</em>, <em>attribute=None</em>, <em>resolved=True</em>, <em>subgroup=None</em>, <em>pes_per_node=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_mach_pes.html#EnvMachPes.get_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_mach_pes.EnvMachPes.get_value" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get_value</code><span class="sig-paren">(</span><em>vid</em>, <em>attribute=None</em>, <em>resolved=True</em>, <em>subgroup=None</em>, <em>MAX_MPITASKS_PER_NODE=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_mach_pes.html#EnvMachPes.get_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_mach_pes.EnvMachPes.get_value" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -843,7 +858,7 @@ subgroup is ignored in the general routine and applied in specific methods</p>
 
 <dl class="method">
 <dt id="CIME.XML.env_mach_specific.EnvMachSpecific.get_mpirun">
-<code class="descname">get_mpirun</code><span class="sig-paren">(</span><em>case</em>, <em>attribs</em>, <em>check_members=None</em>, <em>job='case.run'</em>, <em>exe_only=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_mach_specific.html#EnvMachSpecific.get_mpirun"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_mach_specific.EnvMachSpecific.get_mpirun" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get_mpirun</code><span class="sig-paren">(</span><em>case</em>, <em>attribs</em>, <em>job='case.run'</em>, <em>exe_only=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/env_mach_specific.html#EnvMachSpecific.get_mpirun"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.env_mach_specific.EnvMachSpecific.get_mpirun" title="Permalink to this definition">¶</a></dt>
 <dd><p>Find best match, return (executable, {arg_name : text})</p>
 </dd></dl>
 
@@ -1055,8 +1070,8 @@ the perl style with $name and $ENV{name}.</p>
 <span class="go">&#39;4&#39;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">get_resolved_value</span><span class="p">(</span><span class="s2">&quot;0001-01-01&quot;</span><span class="p">)</span>
 <span class="go">&#39;0001-01-01&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">get_resolved_value</span><span class="p">(</span><span class="s2">&quot;$SHELL{echo hi}&quot;</span><span class="p">)</span>
-<span class="go">&#39;hi&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">get_resolved_value</span><span class="p">(</span><span class="s2">&quot;$SHELL{echo hi}&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;hi&#39;</span>
+<span class="go">True</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1394,7 +1409,7 @@ returns nodes that do not have attributes of <cite>skip_default_entry</cite> or 
 <dl class="method">
 <dt id="CIME.XML.namelist_definition.NamelistDefinition.split_type_string">
 <code class="descname">split_type_string</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/namelist_definition.html#NamelistDefinition.split_type_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.namelist_definition.NamelistDefinition.split_type_string" title="Permalink to this definition">¶</a></dt>
-<dd><p>Split a ‘type’ attribute string into its component parts.</p>
+<dd><p>Split a &#8216;type&#8217; attribute string into its component parts.</p>
 <p>The <cite>name</cite> argument is the variable name.
 This is used for error reporting purposes.</p>
 <p>The return value is a tuple consisting of the type itself, a length
@@ -1479,26 +1494,26 @@ It supports versions 1.0 and 2.0 of the testlist.xml file</p>
 set of tests. They can be specified either at the top level, in which case they
 apply to all machines/compilers for this test:</p>
 <dl class="docutils">
-<dt>&lt;test …&gt;</dt>
+<dt>&lt;test ...&gt;</dt>
 <dd><dl class="first docutils">
 <dt>&lt;options&gt;</dt>
-<dd>&lt;option name=”wallclock”&gt;00:20&lt;/option&gt;</dd>
+<dd>&lt;option name=&#8221;wallclock&#8221;&gt;00:20&lt;/option&gt;</dd>
 </dl>
 <p class="last">&lt;/options&gt;
-…</p>
+...</p>
 </dd>
 </dl>
 <p>&lt;/test&gt;</p>
 <p>or at the level of a particular machine/compiler:</p>
 <dl class="docutils">
-<dt>&lt;test …&gt;</dt>
+<dt>&lt;test ...&gt;</dt>
 <dd><dl class="first docutils">
 <dt>&lt;machines&gt;</dt>
 <dd><dl class="first docutils">
-<dt>&lt;machine …&gt;</dt>
+<dt>&lt;machine ...&gt;</dt>
 <dd><dl class="first docutils">
 <dt>&lt;options&gt;</dt>
-<dd>&lt;option name=”wallclock”&gt;00:20&lt;/option&gt;</dd>
+<dd>&lt;option name=&#8221;wallclock&#8221;&gt;00:20&lt;/option&gt;</dd>
 </dl>
 <p class="last">&lt;/options&gt;</p>
 </dd>
@@ -1539,6 +1554,15 @@ apply to all machines/compilers for this test:</p>
 <dt id="CIME.XML.tests.Tests.get_test_node">
 <code class="descname">get_test_node</code><span class="sig-paren">(</span><em>testname</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/tests.html#Tests.get_test_node"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.tests.Tests.get_test_node" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="method">
+<dt id="CIME.XML.tests.Tests.print_values">
+<code class="descname">print_values</code><span class="sig-paren">(</span><em>skip_infrastructure_tests=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/XML/tests.html#Tests.print_values"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.XML.tests.Tests.print_values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Print each test type and its description.</p>
+<p>If skip_infrastructure_tests is True, then this does not write
+information for tests with the attribute
+INFRASTRUCTURE_TEST=&#8221;TRUE&#8221;.</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -1594,14 +1618,14 @@ apply to all machines/compilers for this test:</p>
         <li class="right" >
           <a href="CIME.SystemTests.test_utils.html" title="CIME.SystemTests.test_utils package"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="modules.html" >CIME</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="CIME.html" >CIME package</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >CIME</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="CIME.html" >CIME package</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
+        &copy; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.3.
     </div>
   </body>
 </html>

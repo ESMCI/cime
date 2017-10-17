@@ -4,16 +4,16 @@ Tools package
 Submodules
 ----------
 
-Tools\.standard\_script\_setup module
--------------------------------------
+Tools.standard_script_setup module
+----------------------------------
 
 .. automodule:: Tools.standard_script_setup
     :members:
     :undoc-members:
     :show-inheritance:
 
-Tools\.testreporter module
---------------------------
+Tools.testreporter module
+-------------------------
 
 .. automodule:: Tools.testreporter
     :members:

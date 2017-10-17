@@ -2,28 +2,31 @@
 
 <!doctype html>
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>CIME package &#8212; CIME 5.3.0 documentation</title>
+    
+    <title>CIME package &mdash; CIME 5.3.0 documentation</title>
+    
     <link rel="stylesheet" href="../_static/bizstyle.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
         VERSION:     '5.3.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
+        HAS_SOURCE:  true
       };
     </script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="../_static/bizstyle.js"></script>
-    <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" />
+    <link rel="top" title="CIME 5.3.0 documentation" href="../index.html" />
+    <link rel="up" title="CIME" href="modules.html" />
     <link rel="next" title="CIME.BuildTools package" href="CIME.BuildTools.html" />
     <link rel="prev" title="CIME" href="modules.html" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
@@ -31,7 +34,7 @@
     <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
     <![endif]-->
   </head>
-  <body>
+  <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -47,8 +50,8 @@
         <li class="right" >
           <a href="modules.html" title="CIME"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="modules.html" accesskey="U">CIME</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" accesskey="U">CIME</a> &raquo;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -103,7 +106,7 @@
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="../_sources/CIME_api/CIME.rst.txt"
+      <li><a href="../_sources/CIME_api/CIME.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
@@ -356,14 +359,14 @@ with that file.</p>
 <p>XML files which are part of the CIME distribution and are meant to
 be readonly with respect to a case are typically named
 config_something.xml and the corresponding python Class is
-Something and can be found in file CIME.XML.something.py.  I’ll
+Something and can be found in file CIME.XML.something.py.  I&#8217;ll
 refer to these as the CIME config classes.</p>
 <p>XML files which are part of a case and thus are read/write to a
 case are typically named env_whatever.xml and the cooresponding
 python modules are CIME.XML.env_whatever.py and classes are
-EnvWhatever.  I’ll refer to these as the Case env classes.</p>
+EnvWhatever.  I&#8217;ll refer to these as the Case env classes.</p>
 <p>The Case Class includes an array of the Case env classes, in the
-configure function and it’s supporting functions defined below
+configure function and it&#8217;s supporting functions defined below
 the case object creates and manipulates the Case env classes
 by reading and interpreting the CIME config classes.</p>
 <dl class="method">
@@ -372,6 +375,11 @@ by reading and interpreting the CIME config classes.</p>
 <dd><p>User mods can be specified on the create_newcase command line (usually when called from create test)
 or they can be in the compset definition, or both.</p>
 </dd></dl>
+
+<dl class="method">
+<dt id="CIME.case.Case.cancel_batch_jobs">
+<code class="descname">cancel_batch_jobs</code><span class="sig-paren">(</span><em>jobids</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case.html#Case.cancel_batch_jobs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.Case.cancel_batch_jobs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="CIME.case.Case.check_if_comp_var">
@@ -405,7 +413,7 @@ or they can be in the compset definition, or both.</p>
 
 <dl class="method">
 <dt id="CIME.case.Case.create_clone">
-<code class="descname">create_clone</code><span class="sig-paren">(</span><em>newcase</em>, <em>keepexe=False</em>, <em>mach_dir=None</em>, <em>project=None</em>, <em>cime_output_root=None</em>, <em>user_mods_dir=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case.html#Case.create_clone"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.Case.create_clone" title="Permalink to this definition">¶</a></dt>
+<code class="descname">create_clone</code><span class="sig-paren">(</span><em>newcase</em>, <em>keepexe=False</em>, <em>mach_dir=None</em>, <em>project=None</em>, <em>cime_output_root=None</em>, <em>exeroot=None</em>, <em>rundir=None</em>, <em>user_mods_dir=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case.html#Case.create_clone"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.Case.create_clone" title="Permalink to this definition">¶</a></dt>
 <dd><p>moved to case_clone</p>
 </dd></dl>
 
@@ -447,6 +455,12 @@ or they can be in the compset definition, or both.</p>
 <dd></dd></dl>
 
 <dl class="method">
+<dt id="CIME.case.Case.get_job_info">
+<code class="descname">get_job_info</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case.html#Case.get_job_info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.Case.get_job_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get information on batch jobs associated with this case</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="CIME.case.Case.get_latest_cpl_log">
 <code class="descname">get_latest_cpl_log</code><span class="sig-paren">(</span><em>coupler_log_path=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case.html#Case.get_latest_cpl_log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.Case.get_latest_cpl_log" title="Permalink to this definition">¶</a></dt>
 <dd><p>find and return the latest cpl log file in the
@@ -456,6 +470,11 @@ coupler_log_path directory</p>
 <dl class="method">
 <dt id="CIME.case.Case.get_mpirun_cmd">
 <code class="descname">get_mpirun_cmd</code><span class="sig-paren">(</span><em>job='case.run'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case.html#Case.get_mpirun_cmd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.Case.get_mpirun_cmd" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="CIME.case.Case.get_primary_component">
+<code class="descname">get_primary_component</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case.html#Case.get_primary_component"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case.Case.get_primary_component" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -568,8 +587,11 @@ name is returned</p>
 <span id="cime-case-clone-module"></span><h2>CIME.case_clone module<a class="headerlink" href="#module-CIME.case_clone" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="CIME.case_clone.create_case_clone">
-<code class="descclassname">CIME.case_clone.</code><code class="descname">create_case_clone</code><span class="sig-paren">(</span><em>case</em>, <em>newcase</em>, <em>keepexe=False</em>, <em>mach_dir=None</em>, <em>project=None</em>, <em>cime_output_root=None</em>, <em>user_mods_dir=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case_clone.html#create_case_clone"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case_clone.create_case_clone" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">CIME.case_clone.</code><code class="descname">create_case_clone</code><span class="sig-paren">(</span><em>case</em>, <em>newcase</em>, <em>keepexe=False</em>, <em>mach_dir=None</em>, <em>project=None</em>, <em>cime_output_root=None</em>, <em>exeroot=None</em>, <em>rundir=None</em>, <em>user_mods_dir=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case_clone.html#create_case_clone"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case_clone.create_case_clone" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a case clone</p>
+<p>If exeroot or rundir are provided (not None), sets these directories
+to the given paths; if not provided, uses default values for these
+directories. It is an error to provide exeroot if keepexe is True.</p>
 </dd></dl>
 
 </div>
@@ -606,7 +628,7 @@ name is returned</p>
 
 <dl class="function">
 <dt id="CIME.case_run.pre_run_check">
-<code class="descclassname">CIME.case_run.</code><code class="descname">pre_run_check</code><span class="sig-paren">(</span><em>case</em>, <em>lid</em>, <em>skip_pnl=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case_run.html#pre_run_check"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case_run.pre_run_check" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">CIME.case_run.</code><code class="descname">pre_run_check</code><span class="sig-paren">(</span><em>case</em>, <em>lid</em>, <em>skip_pnl=False</em>, <em>da_cycle=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case_run.html#pre_run_check"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case_run.pre_run_check" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
@@ -616,7 +638,7 @@ name is returned</p>
 
 <dl class="function">
 <dt id="CIME.case_run.run_model">
-<code class="descclassname">CIME.case_run.</code><code class="descname">run_model</code><span class="sig-paren">(</span><em>case</em>, <em>lid</em>, <em>skip_pnl=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case_run.html#run_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case_run.run_model" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">CIME.case_run.</code><code class="descname">run_model</code><span class="sig-paren">(</span><em>case</em>, <em>lid</em>, <em>skip_pnl=False</em>, <em>da_cycle=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/case_run.html#run_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.case_run.run_model" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
@@ -737,7 +759,7 @@ jobs.</p>
 <dl class="function">
 <dt id="CIME.check_lockedfiles.check_lockedfiles">
 <code class="descclassname">CIME.check_lockedfiles.</code><code class="descname">check_lockedfiles</code><span class="sig-paren">(</span><em>case</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/check_lockedfiles.html#check_lockedfiles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.check_lockedfiles.check_lockedfiles" title="Permalink to this definition">¶</a></dt>
-<dd><p>Check that all lockedfiles match what’s in case</p>
+<dd><p>Check that all lockedfiles match what&#8217;s in case</p>
 <p>If caseroot is not specified, it is set to the current working directory</p>
 </dd></dl>
 
@@ -853,7 +875,7 @@ information from a run.</p>
 baseline_dir - Optionally, specify a specific baseline dir, otherwise it will be computed from case config
 outfile_suffix - if non-blank, then the cprnc output file name ends with</p>
 <blockquote>
-<div>this suffix (with a ‘.’ added before the given suffix). if None, no output file saved.</div></blockquote>
+<div>this suffix (with a &#8216;.&#8217; added before the given suffix). if None, no output file saved.</div></blockquote>
 <p>returns (SUCCESS, comments)
 SUCCESS means all hist files matched their corresponding baseline</p>
 </dd></dl>
@@ -872,7 +894,7 @@ suffix1 - The suffix that identifies the second batch of hist files</p>
 <dt id="CIME.hist_utils.copy">
 <code class="descclassname">CIME.hist_utils.</code><code class="descname">copy</code><span class="sig-paren">(</span><em>case</em>, <em>suffix</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/hist_utils.html#copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.hist_utils.copy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Copy the most recent batch of hist files in a case, adding the given suffix.</p>
-<p>This can allow you to temporarily “save” these files so they won’t be blown
+<p>This can allow you to temporarily &#8220;save&#8221; these files so they won&#8217;t be blown
 away if you re-run the case.</p>
 <p>case - The case containing the files you want to save
 suffix - The string suffix you want to add to saved files, this can be used to find them later.</p>
@@ -888,7 +910,7 @@ case - the case containing the files
 rundir - the rundir for the case
 outfile_suffix - if non-blank, then the output file name ends with this</p>
 <blockquote>
-<div>suffix (with a ‘.’ added before the given suffix)</div></blockquote>
+<div>suffix (with a &#8216;.&#8217; added before the given suffix)</div></blockquote>
 <p>returns (True if the files matched, log_name)</p>
 </dd></dl>
 
@@ -905,7 +927,7 @@ allow_baseline_overwrite must be true to generate baselines to an existing direc
 <dl class="function">
 <dt id="CIME.hist_utils.get_extension">
 <code class="descclassname">CIME.hist_utils.</code><code class="descname">get_extension</code><span class="sig-paren">(</span><em>model</em>, <em>filepath</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/hist_utils.html#get_extension"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.hist_utils.get_extension" title="Permalink to this definition">¶</a></dt>
-<dd><p>For a hist file for the given model, return what we call the “extension”</p>
+<dd><p>For a hist file for the given model, return what we call the &#8220;extension&#8221;</p>
 <p>model - The component model
 filepath - The path of the hist file</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_extension</span><span class="p">(</span><span class="s2">&quot;cpl&quot;</span><span class="p">,</span> <span class="s2">&quot;cpl.hi.nc&quot;</span><span class="p">)</span>
@@ -946,13 +968,13 @@ filepath - The path of the hist file</p>
 assume that only variables of intrinsic type are used, and indexing/co-indexing
 of arrays to set a portion of a variable is not supported. (However, null values
 and repeated values may be used to set or fill a variable as indexing would.)</p>
-<p>We also always assume that a period (“.”) is the decimal separator, not a comma
-(“,”). We also assume that the file encoding is UTF-8 or some compatible format
+<p>We also always assume that a period (&#8221;.&#8221;) is the decimal separator, not a comma
+(&#8221;,&#8221;). We also assume that the file encoding is UTF-8 or some compatible format
 (e.g. ASCII).</p>
 <p>Otherwise, most Fortran syntax rules implemented here are compatible with
 Fortran 2008 (which is largely the same as previous standards, and will be
 similar to Fortran 2015). The only exceptions should be cases where (a) we
-deliberately prohibit “troublesome” behavior that would be allowed by the
+deliberately prohibit &#8220;troublesome&#8221; behavior that would be allowed by the
 standard, or (b) we rely on conventions shared by all major compilers.</p>
 <p>One important convention is that newline characters can be used to denote the
 end of a record. This makes them equivalent to spaces at most locations in a
@@ -963,7 +985,7 @@ surprising. Namelist comments are only allowed in two situations:</p>
 <ol class="arabic simple">
 <li>As the only thing on a line (aside from optional indentation with spaces).</li>
 </ol>
-<p>(2) Immediately after a “value separator” (the space, newline, comma, or slash
+<p>(2) Immediately after a &#8220;value separator&#8221; (the space, newline, comma, or slash
 after a value).</p>
 <p>This implies that all lines except for the last are syntax errors, in this
 example:</p>
@@ -976,7 +998,7 @@ example:</p>
 <span class="pre">bazz</span> <span class="pre">=</span> <span class="pre">3</span> <span class="pre">!</span> <span class="pre">Nor</span> <span class="pre">this,</span> <span class="pre">because</span> <span class="pre">it</span> <span class="pre">comes</span> <span class="pre">between</span> <span class="pre">the</span> <span class="pre">value</span> <span class="pre">and</span> <span class="pre">the</span> <span class="pre">following</span> <span class="pre">slash.</span>
 <span class="pre">/!</span> <span class="pre">This</span> <span class="pre">is</span> <span class="pre">fine,</span> <span class="pre">but</span> <span class="pre">technically</span> <span class="pre">it</span> <span class="pre">is</span> <span class="pre">outside</span> <span class="pre">the</span> <span class="pre">namelist,</span> <span class="pre">not</span> <span class="pre">a</span> <span class="pre">comment.</span>
 <span class="pre">`</span></code></p>
-<p>However, the above would actually be valid if all the “comments” were removed.
+<p>However, the above would actually be valid if all the &#8220;comments&#8221; were removed.
 The Fortran standard is not clear about whether whitespace is allowed after
 inline comments and before subsequent non-whitespace text (!), but this module
 allows such whitespace, to preserve the sanity of both implementors and users.</p>
@@ -1027,10 +1049,15 @@ write</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Namelist</span><span class="p">()</span><span class="o">.</span><span class="n">get_group_names</span><span class="p">()</span>
 <span class="go">[]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">sorted</span><span class="p">(</span><span class="n">parse</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;&amp;foo / &amp;bar /&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get_group_names</span><span class="p">())</span>
-<span class="go">[u&#39;bar&#39;, u&#39;foo&#39;]</span>
+<span class="go">[&#39;bar&#39;, &#39;foo&#39;]</span>
 </pre></div>
 </div>
 </dd></dl>
+
+<dl class="method">
+<dt id="CIME.namelist.Namelist.get_group_variables">
+<code class="descname">get_group_variables</code><span class="sig-paren">(</span><em>group_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/namelist.html#Namelist.get_group_variables"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.namelist.Namelist.get_group_variables" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="CIME.namelist.Namelist.get_value">
@@ -1039,16 +1066,16 @@ write</p>
 <p>This function is similar to <cite>get_variable_value</cite>, except that it does
 not require a <cite>group_name</cite>, and it requires that the <cite>variable_name</cite> be
 unique across all groups.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">parse</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;&amp;foo bar=1 / &amp;bazz bar=1 /&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">&#39;bar&#39;</span><span class="p">)</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">parse</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;&amp;foo bar=1 / &amp;bazz bar=1 /&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">&#39;bar&#39;</span><span class="p">)</span>  
 <span class="gt">Traceback (most recent call last):</span>
 <span class="c">...</span>
-<span class="gr">SystemExit</span>: <span class="n">ERROR: Namelist.get_value: Variable {} is present in multiple groups: [u&#39;bazz&#39;, u&#39;foo&#39;]</span>
+<span class="gr">SystemExit</span>: <span class="n">ERROR: Namelist.get_value: Variable {} is present in multiple groups: ...</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">parse</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;&amp;foo bar=1 / &amp;bazz /&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">&#39;Bar&#39;</span><span class="p">)</span>
-<span class="go">[u&#39;1&#39;]</span>
+<span class="go">[&#39;1&#39;]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">parse</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;&amp;foo bar(2)=1 / &amp;bazz /&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">&#39;Bar(2)&#39;</span><span class="p">)</span>
-<span class="go">[u&#39;1&#39;]</span>
+<span class="go">[&#39;1&#39;]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">parse</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;&amp;foo / &amp;bazz /&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">&#39;bar&#39;</span><span class="p">)</span>
-<span class="go">[u&#39;&#39;]</span>
+<span class="go">[&#39;&#39;]</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1062,13 +1089,13 @@ unique across all groups.</p>
 <span class="go">[]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">parse</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;&amp;foo bar=,bazz=true,bazz(2)=fred,bang=6*&quot;&quot;/&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">sorted</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">get_variable_names</span><span class="p">(</span><span class="s1">&#39;fOo&#39;</span><span class="p">))</span>
-<span class="go">[u&#39;bang&#39;, u&#39;bar&#39;, u&#39;bazz&#39;, u&#39;bazz(2)&#39;]</span>
+<span class="go">[&#39;bang&#39;, &#39;bar&#39;, &#39;bazz&#39;, &#39;bazz(2)&#39;]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">parse</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;&amp;foo bar=,bazz=true,bang=6*&quot;&quot;/&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">sorted</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">get_variable_names</span><span class="p">(</span><span class="s1">&#39;fOo&#39;</span><span class="p">))</span>
-<span class="go">[u&#39;bang&#39;, u&#39;bar&#39;, u&#39;bazz&#39;]</span>
+<span class="go">[&#39;bang&#39;, &#39;bar&#39;, &#39;bazz&#39;]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">parse</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;&amp;foo bar(::)=,bazz=false,bazz(2)=true,bazz(:2:)=6*&quot;&quot;/&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">sorted</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">get_variable_names</span><span class="p">(</span><span class="s1">&#39;fOo&#39;</span><span class="p">))</span>
-<span class="go">[u&#39;bar(::)&#39;, u&#39;bazz&#39;, u&#39;bazz(2)&#39;, u&#39;bazz(:2:)&#39;]</span>
+<span class="go">[&#39;bar(::)&#39;, &#39;bazz&#39;, &#39;bazz(2)&#39;, &#39;bazz(:2:)&#39;]</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1078,14 +1105,14 @@ unique across all groups.</p>
 <code class="descname">get_variable_value</code><span class="sig-paren">(</span><em>group_name</em>, <em>variable_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/namelist.html#Namelist.get_variable_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.namelist.Namelist.get_variable_value" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the value of the specified variable.</p>
 <p>This function always returns a non-empty list containing strings. If the
-specified <cite>group_name</cite> or <cite>variable_name</cite> is not present, <cite>[u’‘]</cite> is
+specified <cite>group_name</cite> or <cite>variable_name</cite> is not present, <cite>[&#8216;&#8217;]</cite> is
 returned.</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Namelist</span><span class="p">()</span><span class="o">.</span><span class="n">get_variable_value</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="s1">&#39;bar&#39;</span><span class="p">)</span>
-<span class="go">[u&#39;&#39;]</span>
+<span class="go">[&#39;&#39;]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">parse</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;&amp;foo bar=1,2 /&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get_variable_value</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="s1">&#39;bazz&#39;</span><span class="p">)</span>
-<span class="go">[u&#39;&#39;]</span>
+<span class="go">[&#39;&#39;]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">parse</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;&amp;foo bar=1,2 /&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get_variable_value</span><span class="p">(</span><span class="s1">&#39;foO&#39;</span><span class="p">,</span> <span class="s1">&#39;Bar&#39;</span><span class="p">)</span>
-<span class="go">[u&#39;1&#39;, u&#39;2&#39;]</span>
+<span class="go">[&#39;1&#39;, &#39;2&#39;]</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1100,43 +1127,43 @@ in which case <cite>other</cite> values take precedence.</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">parse</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;&amp;foo bar=1 bazz=,2 brat=3/&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">parse</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;&amp;foo bar=2 bazz=3*1 baker=4 / &amp;foo2 barter=5 /&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">y</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">&#39;bazz&#39;</span><span class="p">)</span>
-<span class="go">[u&#39;1&#39;, u&#39;1&#39;, u&#39;1&#39;]</span>
+<span class="go">[&#39;1&#39;, &#39;1&#39;, &#39;1&#39;]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">merge_nl</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">sorted</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">get_group_names</span><span class="p">())</span>
-<span class="go">[u&#39;foo&#39;, u&#39;foo2&#39;]</span>
+<span class="go">[&#39;foo&#39;, &#39;foo2&#39;]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">sorted</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">get_variable_names</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">))</span>
-<span class="go">[u&#39;baker&#39;, u&#39;bar&#39;, u&#39;bazz&#39;, u&#39;brat&#39;]</span>
+<span class="go">[&#39;baker&#39;, &#39;bar&#39;, &#39;bazz&#39;, &#39;brat&#39;]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">sorted</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">get_variable_names</span><span class="p">(</span><span class="s1">&#39;foo2&#39;</span><span class="p">))</span>
-<span class="go">[u&#39;barter&#39;]</span>
+<span class="go">[&#39;barter&#39;]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">&#39;bar&#39;</span><span class="p">)</span>
-<span class="go">[u&#39;1&#39;]</span>
+<span class="go">[&#39;1&#39;]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">&#39;bazz&#39;</span><span class="p">)</span>
-<span class="go">[u&#39;1&#39;, u&#39;2&#39;, u&#39;1&#39;]</span>
+<span class="go">[&#39;1&#39;, &#39;2&#39;, &#39;1&#39;]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">&#39;brat&#39;</span><span class="p">)</span>
-<span class="go">[u&#39;3&#39;]</span>
+<span class="go">[&#39;3&#39;]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">&#39;baker&#39;</span><span class="p">)</span>
-<span class="go">[u&#39;4&#39;]</span>
+<span class="go">[&#39;4&#39;]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">&#39;barter&#39;</span><span class="p">)</span>
-<span class="go">[u&#39;5&#39;]</span>
+<span class="go">[&#39;5&#39;]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">parse</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;&amp;foo bar=1 bazz=,2 brat=3/&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">parse</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;&amp;foo bar=2 bazz=3*1 baker=4 / &amp;foo2 barter=5 /&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">merge_nl</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">sorted</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">get_group_names</span><span class="p">())</span>
-<span class="go">[u&#39;foo&#39;, u&#39;foo2&#39;]</span>
+<span class="go">[&#39;foo&#39;, &#39;foo2&#39;]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">sorted</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">get_variable_names</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">))</span>
-<span class="go">[u&#39;baker&#39;, u&#39;bar&#39;, u&#39;bazz&#39;, u&#39;brat&#39;]</span>
+<span class="go">[&#39;baker&#39;, &#39;bar&#39;, &#39;bazz&#39;, &#39;brat&#39;]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">sorted</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">get_variable_names</span><span class="p">(</span><span class="s1">&#39;foo2&#39;</span><span class="p">))</span>
-<span class="go">[u&#39;barter&#39;]</span>
+<span class="go">[&#39;barter&#39;]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">&#39;bar&#39;</span><span class="p">)</span>
-<span class="go">[u&#39;2&#39;]</span>
+<span class="go">[&#39;2&#39;]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">&#39;bazz&#39;</span><span class="p">)</span>
-<span class="go">[u&#39;1&#39;, u&#39;1&#39;, u&#39;1&#39;]</span>
+<span class="go">[&#39;1&#39;, &#39;1&#39;, &#39;1&#39;]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">&#39;brat&#39;</span><span class="p">)</span>
-<span class="go">[u&#39;3&#39;]</span>
+<span class="go">[&#39;3&#39;]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">&#39;baker&#39;</span><span class="p">)</span>
-<span class="go">[u&#39;4&#39;]</span>
+<span class="go">[&#39;4&#39;]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">&#39;barter&#39;</span><span class="p">)</span>
-<span class="go">[u&#39;5&#39;]</span>
+<span class="go">[&#39;5&#39;]</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1147,25 +1174,25 @@ in which case <cite>other</cite> values take precedence.</p>
 <dd><p>Set the value of the specified variable.</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">parse</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s1">&#39;&amp;foo bar=1 /&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">get_variable_value</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="s1">&#39;bar&#39;</span><span class="p">)</span>
-<span class="go">[u&#39;1&#39;]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">set_variable_value</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="s1">&#39;bar(2)&#39;</span><span class="p">,</span> <span class="p">[</span><span class="sa">u</span><span class="s1">&#39;3&#39;</span><span class="p">],</span> <span class="n">var_size</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="go">[&#39;1&#39;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">set_variable_value</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="s1">&#39;bar(2)&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;3&#39;</span><span class="p">],</span> <span class="n">var_size</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">get_variable_value</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="s1">&#39;bar&#39;</span><span class="p">)</span>
-<span class="go">[u&#39;1&#39;, u&#39;3&#39;]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">set_variable_value</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="s1">&#39;bar(1)&#39;</span><span class="p">,</span> <span class="p">[</span><span class="sa">u</span><span class="s1">&#39;2&#39;</span><span class="p">])</span>
+<span class="go">[&#39;1&#39;, &#39;3&#39;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">set_variable_value</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="s1">&#39;bar(1)&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;2&#39;</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">get_variable_value</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="s1">&#39;bar&#39;</span><span class="p">)</span>
-<span class="go">[u&#39;2&#39;, u&#39;3&#39;]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">set_variable_value</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="s1">&#39;bar&#39;</span><span class="p">,</span> <span class="p">[</span><span class="sa">u</span><span class="s1">&#39;1&#39;</span><span class="p">])</span>
+<span class="go">[&#39;2&#39;, &#39;3&#39;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">set_variable_value</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="s1">&#39;bar&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;1&#39;</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">get_variable_value</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="s1">&#39;bar&#39;</span><span class="p">)</span>
-<span class="go">[u&#39;1&#39;, u&#39;3&#39;]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">set_variable_value</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="s1">&#39;bazz&#39;</span><span class="p">,</span> <span class="p">[</span><span class="sa">u</span><span class="s1">&#39;3&#39;</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">set_variable_value</span><span class="p">(</span><span class="s1">&#39;Brack&#39;</span><span class="p">,</span> <span class="s1">&#39;baR&#39;</span><span class="p">,</span> <span class="p">[</span><span class="sa">u</span><span class="s1">&#39;4&#39;</span><span class="p">])</span>
+<span class="go">[&#39;1&#39;, &#39;3&#39;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">set_variable_value</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="s1">&#39;bazz&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;3&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">set_variable_value</span><span class="p">(</span><span class="s1">&#39;Brack&#39;</span><span class="p">,</span> <span class="s1">&#39;baR&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;4&#39;</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">get_variable_value</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="s1">&#39;bazz&#39;</span><span class="p">)</span>
-<span class="go">[u&#39;3&#39;]</span>
+<span class="go">[&#39;3&#39;]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">get_variable_value</span><span class="p">(</span><span class="s1">&#39;brack&#39;</span><span class="p">,</span> <span class="s1">&#39;bar&#39;</span><span class="p">)</span>
-<span class="go">[u&#39;4&#39;]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">set_variable_value</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="s1">&#39;red(2:6:2)&#39;</span><span class="p">,</span> <span class="p">[</span><span class="sa">u</span><span class="s1">&#39;2&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;4&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;6&#39;</span><span class="p">],</span> <span class="n">var_size</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+<span class="go">[&#39;4&#39;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">set_variable_value</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="s1">&#39;red(2:6:2)&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;2&#39;</span><span class="p">,</span> <span class="s1">&#39;4&#39;</span><span class="p">,</span> <span class="s1">&#39;6&#39;</span><span class="p">],</span> <span class="n">var_size</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">get_variable_value</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">,</span> <span class="s1">&#39;red&#39;</span><span class="p">)</span>
-<span class="go">[&#39;&#39;, u&#39;2&#39;, &#39;&#39;, u&#39;4&#39;, &#39;&#39;, u&#39;6&#39;]</span>
+<span class="go">[&#39;&#39;, &#39;2&#39;, &#39;&#39;, &#39;4&#39;, &#39;&#39;, &#39;6&#39;]</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1180,8 +1207,8 @@ the <cite>groups</cite> argument specifies a subset of all groups to write out.<
 <p>If <cite>out_file</cite> is a file name, and <cite>append=True</cite> is passed in, the
 namelist will be appended to the named file instead of overwriting it.
 The <cite>append</cite> option has no effect if a file object is passed in.</p>
-<p>The <cite>format_</cite> option can be either ‘nml’ (namelist) or ‘rc’, and
-specifies the file format. Formats other than ‘nml’ may not support all
+<p>The <cite>format_</cite> option can be either &#8216;nml&#8217; (namelist) or &#8216;rc&#8217;, and
+specifies the file format. Formats other than &#8216;nml&#8217; may not support all
 possible output values.</p>
 </dd></dl>
 
@@ -1214,8 +1241,8 @@ possible output values.</p>
 <span class="go">[&#39;true&#39;]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">compress_literal_list</span><span class="p">([</span><span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;2&#39;</span><span class="p">,</span> <span class="s1">&#39;f*&#39;</span><span class="p">,</span> <span class="s1">&#39;3&#39;</span><span class="p">,</span> <span class="s1">&#39;3&#39;</span><span class="p">,</span> <span class="s1">&#39;3&#39;</span><span class="p">,</span> <span class="s1">&#39;5&#39;</span><span class="p">])</span>
 <span class="go">[&#39;1&#39;, &#39;2&#39;, &#39;f*&#39;, &#39;3&#39;, &#39;3&#39;, &#39;3&#39;, &#39;5&#39;]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">compress_literal_list</span><span class="p">([</span><span class="sa">u</span><span class="s1">&#39;f*&#39;</span><span class="p">,</span> <span class="sa">u</span><span class="s1">&#39;f*&#39;</span><span class="p">])</span>
-<span class="go">[u&#39;f*&#39;, u&#39;f*&#39;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">compress_literal_list</span><span class="p">([</span><span class="s1">&#39;f*&#39;</span><span class="p">,</span> <span class="s1">&#39;f*&#39;</span><span class="p">])</span>
+<span class="go">[&#39;f*&#39;, &#39;f*&#39;]</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1230,8 +1257,8 @@ possible output values.</p>
 <span class="go">[&#39;true&#39;]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">expand_literal_list</span><span class="p">([</span><span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;2&#39;</span><span class="p">,</span> <span class="s1">&#39;f*&#39;</span><span class="p">,</span> <span class="s1">&#39;3*3&#39;</span><span class="p">,</span> <span class="s1">&#39;5&#39;</span><span class="p">])</span>
 <span class="go">[&#39;1&#39;, &#39;2&#39;, &#39;f*&#39;, &#39;3&#39;, &#39;3&#39;, &#39;3&#39;, &#39;5&#39;]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">expand_literal_list</span><span class="p">([</span><span class="sa">u</span><span class="s1">&#39;2*f*&#39;</span><span class="p">])</span>
-<span class="go">[u&#39;f*&#39;, u&#39;f*&#39;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">expand_literal_list</span><span class="p">([</span><span class="s1">&#39;2*f*&#39;</span><span class="p">])</span>
+<span class="go">[&#39;f*&#39;, &#39;f*&#39;]</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1260,20 +1287,20 @@ possible output values.</p>
 <dt id="CIME.namelist.get_fortran_name_only">
 <code class="descclassname">CIME.namelist.</code><code class="descname">get_fortran_name_only</code><span class="sig-paren">(</span><em>full_var</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/namelist.html#get_fortran_name_only"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.namelist.get_fortran_name_only" title="Permalink to this definition">¶</a></dt>
 <dd><p>remove array section if any and return only the variable name
-&gt;&gt;&gt; get_fortran_name_only(‘foo’)
-‘foo’
-&gt;&gt;&gt; get_fortran_name_only(‘foo(3)’)
-‘foo’
-&gt;&gt;&gt; get_fortran_name_only(‘foo(::)’)
-‘foo’
-&gt;&gt;&gt; get_fortran_name_only(‘foo(1::)’)
-‘foo’
-&gt;&gt;&gt; get_fortran_name_only(‘foo(:+2:)’)
-‘foo’
-&gt;&gt;&gt; get_fortran_name_only(‘foo(::-3)’)
-‘foo’
-&gt;&gt;&gt; get_fortran_name_only(‘foo(::)’)
-‘foo’</p>
+&gt;&gt;&gt; get_fortran_name_only(&#8216;foo&#8217;)
+&#8216;foo&#8217;
+&gt;&gt;&gt; get_fortran_name_only(&#8216;foo(3)&#8217;)
+&#8216;foo&#8217;
+&gt;&gt;&gt; get_fortran_name_only(&#8216;foo(::)&#8217;)
+&#8216;foo&#8217;
+&gt;&gt;&gt; get_fortran_name_only(&#8216;foo(1::)&#8217;)
+&#8216;foo&#8217;
+&gt;&gt;&gt; get_fortran_name_only(&#8216;foo(:+2:)&#8217;)
+&#8216;foo&#8217;
+&gt;&gt;&gt; get_fortran_name_only(&#8216;foo(::-3)&#8217;)
+&#8216;foo&#8217;
+&gt;&gt;&gt; get_fortran_name_only(&#8216;foo(::)&#8217;)
+&#8216;foo&#8217;</p>
 </dd></dl>
 
 <dl class="function">
@@ -1349,7 +1376,7 @@ literals only. BOZ literals and compiler extensions (e.g. backslash escapes)
 are not allowed.</p>
 <p>Null values, however, are allowed for all types. This means that passing in
 a string containing nothing but spaces and newlines will always cause
-<cite>True</cite> to be returned. Repetition (e.g. <cite>5*’a’</cite>) is also allowed, including
+<cite>True</cite> to be returned. Repetition (e.g. <cite>5*&#8217;a&#8217;</cite>) is also allowed, including
 repetition of null values.</p>
 <p>Detailed rules and examples follow.</p>
 <p>Integers: Must be a sequence of one or more digits, with an optional sign.</p>
@@ -1398,12 +1425,12 @@ repetition of null values.</p>
 <p>Reals:
 - For fixed-point format, there is an optional sign, followed by an integer
 part, or a decimal point followed by a fractional part, or both.
-- Scientific notation is allowed, with an optional, case-insensitive “e” or
-“d” followed by an optionally-signed integer exponent. (Either the “e”/”d”
+- Scientific notation is allowed, with an optional, case-insensitive &#8220;e&#8221; or
+&#8220;d&#8221; followed by an optionally-signed integer exponent. (Either the &#8220;e&#8221;/&#8221;d&#8221;
 or a sign must be present to separate the number from the exponent.)
-- The (case-insensitive) strings “inf”, “infinity”, and “nan” are allowed.
+- The (case-insensitive) strings &#8220;inf&#8221;, &#8220;infinity&#8221;, and &#8220;nan&#8221; are allowed.
 NaN values can also contain additional information in parentheses, e.g.
-“NaN(x1234ABCD)”.</p>
+&#8220;NaN(x1234ABCD)&#8221;.</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;real&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
 <span class="go">True</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;real&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span>
@@ -1501,11 +1528,11 @@ NaN values can also contain additional information in parentheses, e.g.
 - Must begin and end with the same delimiter character, either a single
 quote (apostrophe), or a double quote (quotation mark).
 - Whichever character is used as a delimiter must not appear in the
-string itself, unless it appears in doubled pairs (e.g. ‘’‘’ or “’” are the
+string itself, unless it appears in doubled pairs (e.g. &#8216;&#8217;&#8216;&#8217; or &#8220;&#8217;&#8221; are the
 two ways of representing a string containing a single apostrophe).
 - Note that newlines cannot be represented in a namelist character literal
-since they are interpreted as an “end of record”, but they are allowed as
-long as they don’t come between one of the aforementioned double pairs of
+since they are interpreted as an &#8220;end of record&#8221;, but they are allowed as
+long as they don&#8217;t come between one of the aforementioned double pairs of
 characters.</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">is_valid_fortran_namelist_literal</span><span class="p">(</span><span class="s2">&quot;character&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
 <span class="go">True</span>
@@ -1552,7 +1579,7 @@ characters.</p>
 </pre></div>
 </div>
 <p>Logicals:
-- Must contain a (case-insensitive) “t” or “f”.
+- Must contain a (case-insensitive) &#8220;t&#8221; or &#8220;f&#8221;.
 - This must be either the first nonblank character, or the second following
 a period.
 - The rest of the string is ignored, but cannot contain a comma, newline,
@@ -1602,19 +1629,19 @@ ignored).</p>
 repetition syntax is not used. The type can be specified by passing a string
 as the <cite>type_</cite> argument, or if this option is not provided, this function
 will attempt to autodetect the variable type.</p>
-<p>Note that it is not possible to be certain whether a literal like “123” is
+<p>Note that it is not possible to be certain whether a literal like &#8220;123&#8221; is
 intended to represent an integer or a floating-point value, however, nor can
 we be certain of the precision that will be used to hold this value in
 actual Fortran code. We also cannot use the optional information in a NaN
 float, so this will cause the function to throw an error if that information
-is present (e.g. a string like “NAN(1234)” will cause an error).</p>
+is present (e.g. a string like &#8220;NAN(1234)&#8221; will cause an error).</p>
 <p>The Python type of the return value is as follows for different <cite>type_</cite>
 arguments:
-“character” - <cite>str</cite>
-“complex” - <cite>complex</cite>
-“integer” - <cite>int</cite>
-“logical” - <cite>bool</cite>
-“real” - <cite>float</cite></p>
+&#8220;character&#8221; - <cite>str</cite>
+&#8220;complex&#8221; - <cite>complex</cite>
+&#8220;integer&#8221; - <cite>int</cite>
+&#8220;logical&#8221; - <cite>bool</cite>
+&#8220;real&#8221; - <cite>float</cite></p>
 <p>If a null value is input (i.e. the empty string), <cite>None</cite> will be returned.</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">literal_to_python_value</span><span class="p">(</span><span class="s2">&quot;&#39;She&#39;&#39;s a winner!&#39;&quot;</span><span class="p">)</span>
 <span class="go">&quot;She&#39;s a winner!&quot;</span>
@@ -1649,10 +1676,7 @@ arguments:
 <span class="gp">&gt;&gt;&gt; </span><span class="n">literal_to_python_value</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">literal_to_python_value</span><span class="p">(</span><span class="s2">&quot;-1.D+10&quot;</span><span class="p">)</span>
 <span class="go">-10000000000.0</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">literal_to_python_value</span><span class="p">(</span><span class="s2">&quot;nan(1234)&quot;</span><span class="p">)</span>
-<span class="gt">Traceback (most recent call last):</span>
-<span class="c">...</span>
-<span class="gr">ValueError</span>: <span class="n">invalid literal for float(): nan(1234)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">shouldRaise</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="n">literal_to_python_value</span><span class="p">,</span> <span class="s2">&quot;nan(1234)&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1709,25 +1733,32 @@ to be converted to spaces, and is on by default. Note that this will usually
 allow files that use tabs as whitespace to be parsed. However, the
 implementation of this option is crude; it converts <em>all</em> tabs in the file,
 including those in character literals. (Note that there are many characters
-that cannot be passed in via namelist in any standard way, including ‘</p>
+that cannot be passed in via namelist in any standard way, including &#8216;</p>
 </div></blockquote>
 <dl class="docutils">
-<dt>‘,</dt>
+<dt>&#8216;,</dt>
 <dd><p class="first">so it is already a bad idea to assume that the namelist will preserve
 whitespace in strings, aside from simple spaces.)</p>
 <p>The return value, if <cite>groupless=False</cite>, is a <cite>Namelist</cite> object.</p>
 <p class="last">All names and values returned are ultimately unicode strings. E.g. a value
-of “6*2” is returned as that string; it is not converted to 6 copies of the
-Python integer <cite>2</cite>. Null values are returned as the empty string (“”).</p>
+of &#8220;6*2&#8221; is returned as that string; it is not converted to 6 copies of the
+Python integer <cite>2</cite>. Null values are returned as the empty string (&#8220;&#8221;).</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="CIME.namelist.shouldRaise">
+<code class="descclassname">CIME.namelist.</code><code class="descname">shouldRaise</code><span class="sig-paren">(</span><em>eclass</em>, <em>method</em>, <em>*args</em>, <em>**kw</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/namelist.html#shouldRaise"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.namelist.shouldRaise" title="Permalink to this definition">¶</a></dt>
+<dd><p>A helper function to make doctests py3 compatible
+<a class="reference external" href="http://python3porting.com/problems.html#running-doctests">http://python3porting.com/problems.html#running-doctests</a></p>
 </dd></dl>
 
 <dl class="function">
 <dt id="CIME.namelist.string_to_character_literal">
 <code class="descclassname">CIME.namelist.</code><code class="descname">string_to_character_literal</code><span class="sig-paren">(</span><em>string</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/namelist.html#string_to_character_literal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.namelist.string_to_character_literal" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert a Python string to a Fortran character literal.</p>
-<p>This function always uses double quotes (“) as the delimiter.</p>
+<p>This function always uses double quotes (&#8221;) as the delimiter.</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">string_to_character_literal</span><span class="p">(</span><span class="s1">&#39;blah&#39;</span><span class="p">)</span>
 <span class="go">&#39;&quot;blah&quot;&#39;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">string_to_character_literal</span><span class="p">(</span><span class="s2">&quot;&#39;blah&#39;&quot;</span><span class="p">)</span>
@@ -1816,13 +1847,18 @@ optional, as long as the literal does not contain whitespace, commas,
 or (single or double) quotes. If a setting for a character variable
 does not seem to have quotes (and is not a null value), this function
 will add them.</li>
-<li>Default values may refer to variables in a case’s <cite>env_*.xml</cite> files.
+<li>Default values may refer to variables in a case&#8217;s <cite>env_*.xml</cite> files.
 This function replaces references of the form <cite>$VAR</cite> or <cite>${VAR}</cite> with
 the value of the variable <cite>VAR</cite> in an env file, if that variable
 exists. This behavior is suppressed within single-quoted strings
 (similar to parameter expansion in shell scripts).</li>
 </ol>
 </dd></dl>
+
+<dl class="method">
+<dt id="CIME.nmlgen.NamelistGenerator.get_group_variables">
+<code class="descname">get_group_variables</code><span class="sig-paren">(</span><em>group_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/nmlgen.html#NamelistGenerator.get_group_variables"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.nmlgen.NamelistGenerator.get_group_variables" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="CIME.nmlgen.NamelistGenerator.get_streams">
@@ -1836,11 +1872,11 @@ exists. This behavior is suppressed within single-quoted strings
 <dd><p>Get the current value of a given namelist variable.</p>
 <p>Note that the return value of this function is always a string or a list
 of strings. E.g. the scalar logical value .false. will be returned as
-<cite>“.false.”</cite>, while an array of two .false. values will be returned as
-<cite>[“.false.”, “.false.”]</cite>. Whether or not a value is scalar is determined
+<cite>&#8221;.false.&#8221;</cite>, while an array of two .false. values will be returned as
+<cite>[&#8221;.false.&#8221;, &#8221;.false.&#8221;]</cite>. Whether or not a value is scalar is determined
 by checking the array size in the namelist definition file.</p>
 <p>Null values are converted to <cite>None</cite>, and repeated values are expanded,
-e.g. <cite>[‘2*3’]</cite> is converted to <cite>[‘3’, ‘3’, ‘3’]</cite>.</p>
+e.g. <cite>[&#8216;2*3&#8217;]</cite> is converted to <cite>[&#8216;3&#8217;, &#8216;3&#8217;, &#8216;3&#8217;]</cite>.</p>
 <p>For character variables, the value is converted to a Python string (e.g.
 quotation marks are removed).</p>
 <p>All other literals are returned as the raw string values that will be
@@ -1881,7 +1917,7 @@ written to the namelist.</p>
 <p>The <cite>name</cite> argument is the name of the variable to set, and the <cite>value</cite>
 is a list of strings to use as settings. If the variable is scalar, the
 list is optional; i.e. a scalar logical can be set using either
-<cite>value=’.false.’</cite> or <cite>value=[‘.false.’]</cite>. If the variable is of type
+<cite>value=&#8217;.false.&#8217;</cite> or <cite>value=[&#8216;.false.&#8217;]</cite>. If the variable is of type
 character, and the input is missing quotes, quotes will be added
 automatically. If <cite>None</cite> is provided in place of a string, this will be
 translated to a null value.</p>
@@ -1894,7 +1930,7 @@ the old setting for the variable will be thrown out completely.</p>
 <dt id="CIME.nmlgen.NamelistGenerator.update_shr_strdata_nml">
 <code class="descname">update_shr_strdata_nml</code><span class="sig-paren">(</span><em>config</em>, <em>stream</em>, <em>stream_path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/nmlgen.html#NamelistGenerator.update_shr_strdata_nml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.nmlgen.NamelistGenerator.update_shr_strdata_nml" title="Permalink to this definition">¶</a></dt>
 <dd><p>Updates values for the <cite>shr_strdata_nml</cite> namelist group.</p>
-<p>This should be done once per stream, and it shouldn’t usually be called
+<p>This should be done once per stream, and it shouldn&#8217;t usually be called
 directly, since <cite>create_stream_file</cite> calls this method itself.</p>
 </dd></dl>
 
@@ -1981,6 +2017,11 @@ they can be run outside the context of TestScheduler.</p>
 <em class="property">class </em><code class="descclassname">CIME.test_scheduler.</code><code class="descname">TestScheduler</code><span class="sig-paren">(</span><em>test_names</em>, <em>test_data=None</em>, <em>no_run=False</em>, <em>no_build=False</em>, <em>no_setup=False</em>, <em>no_batch=None</em>, <em>test_root=None</em>, <em>test_id=None</em>, <em>machine_name=None</em>, <em>compiler=None</em>, <em>baseline_root=None</em>, <em>baseline_cmp_name=None</em>, <em>baseline_gen_name=None</em>, <em>clean=False</em>, <em>namelists_only=False</em>, <em>project=None</em>, <em>parallel_jobs=None</em>, <em>walltime=None</em>, <em>proc_pool=None</em>, <em>use_existing=False</em>, <em>save_timing=False</em>, <em>queue=None</em>, <em>allow_baseline_overwrite=False</em>, <em>output_root=None</em>, <em>force_procs=None</em>, <em>force_threads=None</em>, <em>mpilib=None</em>, <em>input_dir=None</em>, <em>pesfile=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/test_scheduler.html#TestScheduler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.test_scheduler.TestScheduler" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
 <dl class="method">
+<dt id="CIME.test_scheduler.TestScheduler.get_testnames">
+<code class="descname">get_testnames</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/test_scheduler.html#TestScheduler.get_testnames"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.test_scheduler.TestScheduler.get_testnames" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="CIME.test_scheduler.TestScheduler.run_tests">
 <code class="descname">run_tests</code><span class="sig-paren">(</span><em>wait=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/test_scheduler.html#TestScheduler.run_tests"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.test_scheduler.TestScheduler.run_tests" title="Permalink to this definition">¶</a></dt>
 <dd><p>Main API for this class.</p>
@@ -2040,8 +2081,8 @@ RUN state are no longer valid.</li>
 <dt id="CIME.test_status.TestStatus.get_overall_test_status">
 <code class="descname">get_overall_test_status</code><span class="sig-paren">(</span><em>wait_for_run=False</em>, <em>check_throughput=False</em>, <em>check_memory=False</em>, <em>ignore_namelists=False</em>, <em>ignore_memleak=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/test_status.html#TestStatus.get_overall_test_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.test_status.TestStatus.get_overall_test_status" title="Permalink to this definition">¶</a></dt>
 <dd><p>Given the current phases and statuses, produce a single results for this test. Preference
-is given to PEND since we don’t want to stop waiting for a test
-that hasn’t finished. Namelist diffs are given the lowest precedence.</p>
+is given to PEND since we don&#8217;t want to stop waiting for a test
+that hasn&#8217;t finished. Namelist diffs are given the lowest precedence.</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">_test_helper2</span><span class="p">(</span><span class="s1">&#39;PASS ERS.foo.A RUN&#39;</span><span class="p">)</span>
 <span class="go">&#39;PASS&#39;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">_test_helper2</span><span class="p">(</span><span class="s1">&#39;PASS ERS.foo.A SHAREDLIB_BUILD</span><span class="se">\n</span><span class="s1">PEND ERS.foo.A RUN&#39;</span><span class="p">)</span>
@@ -2158,23 +2199,23 @@ get test lists.</p>
 </dl>
 <p>category_field_width (int): minimum amount of space to use for printing the test category
 test_field_width (int): minimum amount of space to use for printing the test category
-show_options (bool): if True, print test options, too (note that the ‘comment’</p>
+show_options (bool): if True, print test options, too (note that the &#8216;comment&#8217;</p>
 <blockquote class="last">
 <div>option is always printed, if present)</div></blockquote>
 </dd>
 </dl>
 <p>Basic functionality:
-&gt;&gt;&gt; mytest = {‘name’: ‘SMS.f19_g16.A.yellowstone_intel’, ‘category’: ‘prealpha’, ‘options’: {}}
+&gt;&gt;&gt; mytest = {&#8216;name&#8217;: &#8216;SMS.f19_g16.A.yellowstone_intel&#8217;, &#8216;category&#8217;: &#8216;prealpha&#8217;, &#8216;options&#8217;: {}}
 &gt;&gt;&gt; test_to_string(mytest, 10)
-‘prealpha  : SMS.f19_g16.A.yellowstone_intel’</p>
+&#8216;prealpha  : SMS.f19_g16.A.yellowstone_intel&#8217;</p>
 <p>Printing comments:
-&gt;&gt;&gt; mytest = {‘name’: ‘SMS.f19_g16.A.yellowstone_intel’, ‘category’: ‘prealpha’, ‘options’: {‘comment’: ‘my remarks’}}
+&gt;&gt;&gt; mytest = {&#8216;name&#8217;: &#8216;SMS.f19_g16.A.yellowstone_intel&#8217;, &#8216;category&#8217;: &#8216;prealpha&#8217;, &#8216;options&#8217;: {&#8216;comment&#8217;: &#8216;my remarks&#8217;}}
 &gt;&gt;&gt; test_to_string(mytest, 10)
-‘prealpha  : SMS.f19_g16.A.yellowstone_intel # my remarks’</p>
+&#8216;prealpha  : SMS.f19_g16.A.yellowstone_intel # my remarks&#8217;</p>
 <p>Printing other options, too:
-&gt;&gt;&gt; mytest = {‘name’: ‘SMS.f19_g16.A.yellowstone_intel’, ‘category’: ‘prealpha’, ‘options’: {‘comment’: ‘my remarks’, ‘wallclock’: ‘0:20’, ‘memleak_tolerance’: 0.2}}
+&gt;&gt;&gt; mytest = {&#8216;name&#8217;: &#8216;SMS.f19_g16.A.yellowstone_intel&#8217;, &#8216;category&#8217;: &#8216;prealpha&#8217;, &#8216;options&#8217;: {&#8216;comment&#8217;: &#8216;my remarks&#8217;, &#8216;wallclock&#8217;: &#8216;0:20&#8217;, &#8216;memleak_tolerance&#8217;: 0.2}}
 &gt;&gt;&gt; test_to_string(mytest, 10, show_options=True)
-‘prealpha  : SMS.f19_g16.A.yellowstone_intel # my remarks  # memleak_tolerance: 0.2  # wallclock: 0:20’</p>
+&#8216;prealpha  : SMS.f19_g16.A.yellowstone_intel # my remarks  # memleak_tolerance: 0.2  # wallclock: 0:20&#8217;</p>
 </dd></dl>
 
 </div>
@@ -2196,7 +2237,7 @@ called from create_clone</p>
 <dl class="function">
 <dt id="CIME.user_mod_support.build_include_dirs_list">
 <code class="descclassname">CIME.user_mod_support.</code><code class="descname">build_include_dirs_list</code><span class="sig-paren">(</span><em>user_mods_path</em>, <em>include_dirs=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/user_mod_support.html#build_include_dirs_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.user_mod_support.build_include_dirs_list" title="Permalink to this definition">¶</a></dt>
-<dd><p>If user_mods_path has a file “include_user_mods” read that
+<dd><p>If user_mods_path has a file &#8220;include_user_mods&#8221; read that
 file and add directories to the include_dirs, recursively check
 each of those directories for further directories.
 The file may also include comments deleneated with # in the first column</p>
@@ -2316,7 +2357,15 @@ estimate for a given processor pool size</p>
 <dt id="CIME.utils.convert_to_string">
 <code class="descclassname">CIME.utils.</code><code class="descname">convert_to_string</code><span class="sig-paren">(</span><em>value</em>, <em>type_str=None</em>, <em>vid=''</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#convert_to_string"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.convert_to_string" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert value back to string.
-vid is only for generating better error messages.</p>
+vid is only for generating better error messages.
+&gt;&gt;&gt; convert_to_string(6, type_str=&#8221;integer&#8221;) == &#8216;6&#8217;
+True
+&gt;&gt;&gt; convert_to_string(&#8216;6&#8217;, type_str=&#8221;integer&#8221;) == &#8216;6&#8217;
+True
+&gt;&gt;&gt; convert_to_string(&#8216;6.0&#8217;, type_str=&#8221;real&#8221;) == &#8216;6.0&#8217;
+True
+&gt;&gt;&gt; convert_to_string(6.01, type_str=&#8221;real&#8221;) == &#8216;6.01&#8217;
+True</p>
 </dd></dl>
 
 <dl class="function">
@@ -2329,7 +2378,7 @@ vid is only for generating better error messages.</p>
 <dl class="function">
 <dt id="CIME.utils.convert_to_unknown_type">
 <code class="descclassname">CIME.utils.</code><code class="descname">convert_to_unknown_type</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#convert_to_unknown_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.convert_to_unknown_type" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convert value to it’s real type by probing conversions.</p>
+<dd><p>Convert value to it&#8217;s real type by probing conversions.</p>
 </dd></dl>
 
 <dl class="function">
@@ -2337,11 +2386,6 @@ vid is only for generating better error messages.</p>
 <code class="descclassname">CIME.utils.</code><code class="descname">copy_umask</code><span class="sig-paren">(</span><em>src</em>, <em>dst</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#copy_umask"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.copy_umask" title="Permalink to this definition">¶</a></dt>
 <dd><p>Preserves all file metadata except making sure new file obeys umask</p>
 </dd></dl>
-
-<dl class="function">
-<dt id="CIME.utils.delete_jobs">
-<code class="descclassname">CIME.utils.</code><code class="descname">delete_jobs</code><span class="sig-paren">(</span><em>_</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#delete_jobs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.delete_jobs" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
 
 <dl class="function">
 <dt id="CIME.utils.does_file_have_string">
@@ -2352,7 +2396,7 @@ vid is only for generating better error messages.</p>
 <dl class="function">
 <dt id="CIME.utils.expect">
 <code class="descclassname">CIME.utils.</code><code class="descname">expect</code><span class="sig-paren">(</span><em>condition</em>, <em>error_msg</em>, <em>exc_type=&lt;type 'exceptions.SystemExit'&gt;</em>, <em>error_prefix='ERROR:'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#expect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.expect" title="Permalink to this definition">¶</a></dt>
-<dd><p>Similar to assert except doesn’t generate an ugly stacktrace. Useful for
+<dd><p>Similar to assert except doesn&#8217;t generate an ugly stacktrace. Useful for
 checking user error, not programming error.</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">expect</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;error1&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">expect</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;error2&quot;</span><span class="p">)</span>
@@ -2383,12 +2427,12 @@ Fail if the test is not found in any of the paths.</p>
 <dt id="CIME.utils.format_time">
 <code class="descclassname">CIME.utils.</code><code class="descname">format_time</code><span class="sig-paren">(</span><em>time_format</em>, <em>input_format</em>, <em>input_time</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#format_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.format_time" title="Permalink to this definition">¶</a></dt>
 <dd><p>Converts the string input_time from input_format to time_format
-Valid format specifiers are “%H”, “%M”, and “%S”
+Valid format specifiers are &#8220;%H&#8221;, &#8220;%M&#8221;, and &#8220;%S&#8221;
 % signs must be followed by an H, M, or S and then a separator
 Separators can be any string without digits or a % sign
 Each specifier can occur more than once in the input_format,
 but only the first occurence will be used.
-An example of a valid format: “%H:%M:%S”
+An example of a valid format: &#8220;%H:%M:%S&#8221;
 Unlike strptime, this does support %H &gt;= 24</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">format_time</span><span class="p">(</span><span class="s2">&quot;%H:%M:%S&quot;</span><span class="p">,</span> <span class="s2">&quot;%H&quot;</span><span class="p">,</span> <span class="s2">&quot;43&quot;</span><span class="p">)</span>
 <span class="go">&#39;43:00:00&#39;</span>
@@ -2503,17 +2547,12 @@ The CIME_MODEL env variable may or may not be set</p>
 <dl class="function">
 <dt id="CIME.utils.get_model_config_root">
 <code class="descclassname">CIME.utils.</code><code class="descname">get_model_config_root</code><span class="sig-paren">(</span><em>model=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#get_model_config_root"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.get_model_config_root" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get absolute path to model config area”</p>
+<dd><p>Get absolute path to model config area&#8221;</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">get_model_config_root</span><span class="p">())</span>
 <span class="go">True</span>
 </pre></div>
 </div>
 </dd></dl>
-
-<dl class="function">
-<dt id="CIME.utils.get_my_queued_jobs">
-<code class="descclassname">CIME.utils.</code><code class="descname">get_my_queued_jobs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#get_my_queued_jobs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.get_my_queued_jobs" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
 
 <dl class="function">
 <dt id="CIME.utils.get_project">
@@ -2562,7 +2601,7 @@ The CIME_MODEL env variable may or may not be set</p>
 <dl class="function">
 <dt id="CIME.utils.get_time_in_seconds">
 <code class="descclassname">CIME.utils.</code><code class="descname">get_time_in_seconds</code><span class="sig-paren">(</span><em>timeval</em>, <em>unit</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#get_time_in_seconds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.get_time_in_seconds" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convert a time from ‘unit’ to seconds</p>
+<dd><p>Convert a time from &#8216;unit&#8217; to seconds</p>
 </dd></dl>
 
 <dl class="function">
@@ -2590,11 +2629,11 @@ Note the that the timestamp of the original file will be maintained in
 the zipped file.</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">tempfile</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">fd</span><span class="p">,</span> <span class="n">filename</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkstemp</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="s2">&quot;Hello World&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;Hello World&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">os</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">fd</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">gzfile</span> <span class="o">=</span> <span class="n">gzip_existing_file</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">gunzip_existing_file</span><span class="p">(</span><span class="n">gzfile</span><span class="p">)</span>
-<span class="go">&#39;Hello World&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gunzip_existing_file</span><span class="p">(</span><span class="n">gzfile</span><span class="p">)</span> <span class="o">==</span> <span class="sa">b</span><span class="s1">&#39;Hello World&#39;</span>
+<span class="go">True</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">gzfile</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -2648,9 +2687,9 @@ the zipped file.</p>
 <code class="descclassname">CIME.utils.</code><code class="descname">parse_args_and_handle_standard_logging_options</code><span class="sig-paren">(</span><em>args</em>, <em>parser=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#parse_args_and_handle_standard_logging_options"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.parse_args_and_handle_standard_logging_options" title="Permalink to this definition">¶</a></dt>
 <dd><p>Guide to logging in CIME.</p>
 <p>logger.debug -&gt; Verbose/detailed output, use for debugging, off by default. Goes to a .log file
-logger.info -&gt; Goes to stdout (and log if –debug). Use for normal program output
-logger.warning -&gt; Goes to stderr (and log if –debug). Use for minor problems
-logger.error -&gt; Goes to stderr (and log if –debug)</p>
+logger.info -&gt; Goes to stdout (and log if &#8211;debug). Use for normal program output
+logger.warning -&gt; Goes to stderr (and log if &#8211;debug). Use for minor problems
+logger.error -&gt; Goes to stderr (and log if &#8211;debug)</p>
 </dd></dl>
 
 <dl class="function">
@@ -2724,22 +2763,18 @@ parse and return the partial results.</p>
 <code class="descclassname">CIME.utils.</code><code class="descname">run_cmd_no_fail</code><span class="sig-paren">(</span><em>cmd</em>, <em>input_str=None</em>, <em>from_dir=None</em>, <em>verbose=None</em>, <em>arg_stdout=&lt;object object&gt;</em>, <em>arg_stderr=&lt;object object&gt;</em>, <em>env=None</em>, <em>combine_output=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#run_cmd_no_fail"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.run_cmd_no_fail" title="Permalink to this definition">¶</a></dt>
 <dd><p>Wrapper around subprocess to make it much more convenient to run shell commands.
 Expects command to work. Just returns output string.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">run_cmd_no_fail</span><span class="p">(</span><span class="s1">&#39;echo foo&#39;</span><span class="p">)</span>
-<span class="go">&#39;foo&#39;</span>
-</pre></div>
-</div>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">run_cmd_no_fail</span><span class="p">(</span><span class="s1">&#39;echo THE ERROR &gt;&amp;2; false&#39;</span><span class="p">)</span> 
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">run_cmd_no_fail</span><span class="p">(</span><span class="s1">&#39;echo foo&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;foo&#39;</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">run_cmd_no_fail</span><span class="p">(</span><span class="s1">&#39;echo THE ERROR &gt;&amp;2; false&#39;</span><span class="p">)</span> 
 <span class="gt">Traceback (most recent call last):</span>
     <span class="o">...</span>
 <span class="gr">SystemExit</span>: <span class="n">ERROR: Command: &#39;echo THE ERROR &gt;&amp;2; false&#39; failed with error &#39;THE ERROR&#39; from dir ...</span>
 </pre></div>
 </div>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">run_cmd_no_fail</span><span class="p">(</span><span class="s1">&#39;grep foo&#39;</span><span class="p">,</span> <span class="n">input_str</span><span class="o">=</span><span class="s1">&#39;foo&#39;</span><span class="p">)</span>
-<span class="go">&#39;foo&#39;</span>
-</pre></div>
-</div>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">run_cmd_no_fail</span><span class="p">(</span><span class="s1">&#39;echo THE ERROR &gt;&amp;2&#39;</span><span class="p">,</span> <span class="n">combine_output</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="go">&#39;THE ERROR&#39;</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">run_cmd_no_fail</span><span class="p">(</span><span class="s1">&#39;grep foo&#39;</span><span class="p">,</span> <span class="n">input_str</span><span class="o">=</span><span class="sa">b</span><span class="s1">&#39;foo&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;foo&#39;</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">run_cmd_no_fail</span><span class="p">(</span><span class="s1">&#39;echo THE ERROR &gt;&amp;2&#39;</span><span class="p">,</span> <span class="n">combine_output</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;THE ERROR&#39;</span>
+<span class="go">True</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -2771,7 +2806,7 @@ matched on the tgt side.</p>
 <dl class="function">
 <dt id="CIME.utils.start_buffering_output">
 <code class="descclassname">CIME.utils.</code><code class="descname">start_buffering_output</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#start_buffering_output"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.start_buffering_output" title="Permalink to this definition">¶</a></dt>
-<dd><p>All stdout, stderr will be buffered after this is called. This is python’s
+<dd><p>All stdout, stderr will be buffered after this is called. This is python&#8217;s
 default behavior.</p>
 </dd></dl>
 
@@ -2801,14 +2836,14 @@ which case link_name will be overwritten).</p>
 
 <dl class="function">
 <dt id="CIME.utils.transform_vars">
-<code class="descclassname">CIME.utils.</code><code class="descname">transform_vars</code><span class="sig-paren">(</span><em>text</em>, <em>case=None</em>, <em>subgroup=None</em>, <em>check_members=None</em>, <em>default=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#transform_vars"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.transform_vars" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">CIME.utils.</code><code class="descname">transform_vars</code><span class="sig-paren">(</span><em>text</em>, <em>case=None</em>, <em>subgroup=None</em>, <em>overrides=None</em>, <em>default=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/CIME/utils.html#transform_vars"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#CIME.utils.transform_vars" title="Permalink to this definition">¶</a></dt>
 <dd><p>Do the variable substitution for any variables that need transforms
 recursively.</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">transform_vars</span><span class="p">(</span><span class="s2">&quot;{{ cesm_stdout }}&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;cesm.stdout&quot;</span><span class="p">)</span>
 <span class="go">&#39;cesm.stdout&#39;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">member_store</span> <span class="o">=</span> <span class="k">lambda</span> <span class="p">:</span> <span class="kc">None</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">member_store</span><span class="o">.</span><span class="n">foo</span> <span class="o">=</span> <span class="s2">&quot;hi&quot;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">transform_vars</span><span class="p">(</span><span class="s2">&quot;I say {{ foo }}&quot;</span><span class="p">,</span> <span class="n">check_members</span><span class="o">=</span><span class="n">member_store</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">transform_vars</span><span class="p">(</span><span class="s2">&quot;I say {{ foo }}&quot;</span><span class="p">,</span> <span class="n">overrides</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;foo&quot;</span><span class="p">:</span><span class="s2">&quot;hi&quot;</span><span class="p">})</span>
 <span class="go">&#39;I say hi&#39;</span>
 </pre></div>
 </div>
@@ -2899,13 +2934,13 @@ recursively.</p>
         <li class="right" >
           <a href="modules.html" title="CIME"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="modules.html" >CIME</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >CIME</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
+        &copy; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.3.
     </div>
   </body>
 </html>

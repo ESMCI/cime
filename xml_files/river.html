@@ -2,28 +2,31 @@
 
 <!doctype html>
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>CIME River Runoff Data and Stub XML Files &#8212; CIME 5.3.0 documentation</title>
+    
+    <title>CIME River Runoff Data and Stub XML Files &mdash; CIME 5.3.0 documentation</title>
+    
     <link rel="stylesheet" href="../_static/bizstyle.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
         VERSION:     '5.3.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
+        HAS_SOURCE:  true
       };
     </script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="../_static/bizstyle.js"></script>
-    <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" />
+    <link rel="top" title="CIME 5.3.0 documentation" href="../index.html" />
+    <link rel="up" title="Data, Stub and Driver Component XML Files" href="components.html" />
     <link rel="next" title="CIME Sea Ice Data and Stub XML Files" href="seaice.html" />
     <link rel="prev" title="CIME Ocean Data and Stub XML Files" href="ocean.html" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
@@ -31,7 +34,7 @@
     <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
     <![endif]-->
   </head>
-  <body>
+  <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -47,9 +50,9 @@
         <li class="right" >
           <a href="ocean.html" title="CIME Ocean Data and Stub XML Files"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" >XML Files</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="components.html" accesskey="U">Data, Stub and Driver Component XML Files</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >XML Files</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="components.html" accesskey="U">Data, Stub and Driver Component XML Files</a> &raquo;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -73,7 +76,7 @@
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="../_sources/xml_files/river.rst.txt"
+      <li><a href="../_sources/xml_files/river.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
@@ -99,6 +102,8 @@
 <span id="river"></span><h1>CIME River Runoff Data and Stub XML Files<a class="headerlink" href="#cime-river-runoff-data-and-stub-xml-files" title="Permalink to this headline">¶</a></h1>
 <p>River runoff component XML files for data, stub, and dead components.</p>
 <div class="toctree-wrapper compound">
+<ul class="simple">
+</ul>
 </div>
 <div class="section" id="cimeroot-src-components-data-comps-drof-cime-config">
 <h2>CIMEROOT/src/components/data_comps/drof/cime_config<a class="headerlink" href="#cimeroot-src-components-data-comps-drof-cime-config" title="Permalink to this headline">¶</a></h2>
@@ -171,13 +176,29 @@
     default is DIATREN_ANN_RX1.&lt;/desc&gt;
   &lt;/entry&gt;
 
+  &lt;entry id=&quot;DROF_CPLHIST_DOMAIN_FILE&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;valid_values&gt;&lt;/valid_values&gt;
+    &lt;default_value&gt;null&lt;/default_value&gt;
+    &lt;group&gt;run_component_drof&lt;/group&gt;
+    &lt;file&gt;env_run.xml&lt;/file&gt;
+    &lt;desc&gt;
+      Full pathname for domain file for drof when DROF_MODE is
+      CPLHIST.  NOTE: if this is set to &#39;null&#39; (the default), then
+      domain information is read in from the first coupler history
+      file in the target stream and it is assumed that the first
+      coupler stream file that is pointed to contains the domain
+      information for that stream.
+    &lt;/desc&gt;
+  &lt;/entry&gt;
+
   &lt;entry id=&quot;DROF_CPLHIST_DIR&quot;&gt;
     &lt;type&gt;char&lt;/type&gt;
     &lt;valid_values&gt;&lt;/valid_values&gt;
     &lt;default_value&gt;UNSET&lt;/default_value&gt;
     &lt;group&gt;run_component_drof&lt;/group&gt;
     &lt;file&gt;env_run.xml&lt;/file&gt;
-    &lt;desc&gt;directory for coupler history data mode (only used for CPLHIST mode)&lt;/desc&gt;
+    &lt;desc&gt;directory for coupler history data mode (only used when DROF_MODE is CPLHIST mode)&lt;/desc&gt;
   &lt;/entry&gt;
 
   &lt;entry id=&quot;DROF_CPLHIST_CASE&quot;&gt;
@@ -186,34 +207,46 @@
     &lt;default_value&gt;UNSET&lt;/default_value&gt;
     &lt;group&gt;run_component_drof&lt;/group&gt;
     &lt;file&gt;env_run.xml&lt;/file&gt;
-    &lt;desc&gt;case name for coupler history data mode (only used for CPLHIST mode)&lt;/desc&gt;
+    &lt;desc&gt;case name for coupler history data mode (only used when DROF_MODE is CPLHIST mode)&lt;/desc&gt;
   &lt;/entry&gt;
 
   &lt;entry id=&quot;DROF_CPLHIST_YR_ALIGN&quot;&gt;
     &lt;type&gt;integer&lt;/type&gt;
     &lt;valid_values&gt;&lt;/valid_values&gt;
-    &lt;default_value&gt;1&lt;/default_value&gt;
+    &lt;default_value&gt;-999&lt;/default_value&gt;
     &lt;group&gt;run_component_drof&lt;/group&gt;
     &lt;file&gt;env_run.xml&lt;/file&gt;
-    &lt;desc&gt;year align (only used for CPLHIST mode)&lt;/desc&gt;
+    &lt;desc&gt;
+      Simulation year corresponding to DROF_CPLHIST_YR_START (only used
+      when DROF_MODE is CPLHIST). A common usage is to set this to
+      RUN_STARTDATE. With this setting, the forcing in the first year of
+      the run will be the forcing of year DROF_CPLHIST_YR_START. Another
+      use case is to align the calendar of transient forcing with the
+      model calendar. For example, setting
+      DROF_CPLHIST_YR_ALIGN=DROF_CPLHIST_YR_START will lead to the
+      forcing calendar being the same as the model calendar. The forcing
+      for a given model year would be the forcing of the same year. This
+      would be appropriate in transient runs where the model calendar is
+      setup to span the same year range as the forcing data.
+    &lt;/desc&gt;
   &lt;/entry&gt;
 
   &lt;entry id=&quot;DROF_CPLHIST_YR_START&quot;&gt;
     &lt;type&gt;integer&lt;/type&gt;
     &lt;valid_values&gt;&lt;/valid_values&gt;
-    &lt;default_value&gt;1&lt;/default_value&gt;
+    &lt;default_value&gt;-999&lt;/default_value&gt;
     &lt;group&gt;run_component_drof&lt;/group&gt;
     &lt;file&gt;env_run.xml&lt;/file&gt;
-    &lt;desc&gt;starting year to loop data over (only used for CPLHIST mode)&lt;/desc&gt;
+    &lt;desc&gt;starting year to loop data over (only used when DROF_MODE is CPLHIST)&lt;/desc&gt;
   &lt;/entry&gt;
 
   &lt;entry id=&quot;DROF_CPLHIST_YR_END&quot;&gt;
     &lt;type&gt;integer&lt;/type&gt;
     &lt;valid_values&gt;&lt;/valid_values&gt;
-    &lt;default_value&gt;1&lt;/default_value&gt;
+    &lt;default_value&gt;-999&lt;/default_value&gt;
     &lt;group&gt;run_component_drof&lt;/group&gt;
     &lt;file&gt;env_run.xml&lt;/file&gt;
-    &lt;desc&gt;ending year to loop data over (only used for CPLHIST mode)&lt;/desc&gt;
+    &lt;desc&gt;ending year to loop data over (only used when DROF_MODE is CPLHIST)&lt;/desc&gt;
   &lt;/entry&gt;
 
   &lt;help&gt;
@@ -280,13 +313,29 @@
     default is DIATREN_ANN_RX1.&lt;/desc&gt;
   &lt;/entry&gt;
 
+  &lt;entry id=&quot;DROF_CPLHIST_DOMAIN_FILE&quot;&gt;
+    &lt;type&gt;char&lt;/type&gt;
+    &lt;valid_values&gt;&lt;/valid_values&gt;
+    &lt;default_value&gt;null&lt;/default_value&gt;
+    &lt;group&gt;run_component_drof&lt;/group&gt;
+    &lt;file&gt;env_run.xml&lt;/file&gt;
+    &lt;desc&gt;
+      Full pathname for domain file for drof when DROF_MODE is
+      CPLHIST.  NOTE: if this is set to &#39;null&#39; (the default), then
+      domain information is read in from the first coupler history
+      file in the target stream and it is assumed that the first
+      coupler stream file that is pointed to contains the domain
+      information for that stream.
+    &lt;/desc&gt;
+  &lt;/entry&gt;
+
   &lt;entry id=&quot;DROF_CPLHIST_DIR&quot;&gt;
     &lt;type&gt;char&lt;/type&gt;
     &lt;valid_values&gt;&lt;/valid_values&gt;
     &lt;default_value&gt;UNSET&lt;/default_value&gt;
     &lt;group&gt;run_component_drof&lt;/group&gt;
     &lt;file&gt;env_run.xml&lt;/file&gt;
-    &lt;desc&gt;directory for coupler history data mode (only used for CPLHIST mode)&lt;/desc&gt;
+    &lt;desc&gt;directory for coupler history data mode (only used when DROF_MODE is CPLHIST mode)&lt;/desc&gt;
   &lt;/entry&gt;
 
   &lt;entry id=&quot;DROF_CPLHIST_CASE&quot;&gt;
@@ -295,34 +344,46 @@
     &lt;default_value&gt;UNSET&lt;/default_value&gt;
     &lt;group&gt;run_component_drof&lt;/group&gt;
     &lt;file&gt;env_run.xml&lt;/file&gt;
-    &lt;desc&gt;case name for coupler history data mode (only used for CPLHIST mode)&lt;/desc&gt;
+    &lt;desc&gt;case name for coupler history data mode (only used when DROF_MODE is CPLHIST mode)&lt;/desc&gt;
   &lt;/entry&gt;
 
   &lt;entry id=&quot;DROF_CPLHIST_YR_ALIGN&quot;&gt;
     &lt;type&gt;integer&lt;/type&gt;
     &lt;valid_values&gt;&lt;/valid_values&gt;
-    &lt;default_value&gt;1&lt;/default_value&gt;
+    &lt;default_value&gt;-999&lt;/default_value&gt;
     &lt;group&gt;run_component_drof&lt;/group&gt;
     &lt;file&gt;env_run.xml&lt;/file&gt;
-    &lt;desc&gt;year align (only used for CPLHIST mode)&lt;/desc&gt;
+    &lt;desc&gt;
+      Simulation year corresponding to DROF_CPLHIST_YR_START (only used
+      when DROF_MODE is CPLHIST). A common usage is to set this to
+      RUN_STARTDATE. With this setting, the forcing in the first year of
+      the run will be the forcing of year DROF_CPLHIST_YR_START. Another
+      use case is to align the calendar of transient forcing with the
+      model calendar. For example, setting
+      DROF_CPLHIST_YR_ALIGN=DROF_CPLHIST_YR_START will lead to the
+      forcing calendar being the same as the model calendar. The forcing
+      for a given model year would be the forcing of the same year. This
+      would be appropriate in transient runs where the model calendar is
+      setup to span the same year range as the forcing data.
+    &lt;/desc&gt;
   &lt;/entry&gt;
 
   &lt;entry id=&quot;DROF_CPLHIST_YR_START&quot;&gt;
     &lt;type&gt;integer&lt;/type&gt;
     &lt;valid_values&gt;&lt;/valid_values&gt;
-    &lt;default_value&gt;1&lt;/default_value&gt;
+    &lt;default_value&gt;-999&lt;/default_value&gt;
     &lt;group&gt;run_component_drof&lt;/group&gt;
     &lt;file&gt;env_run.xml&lt;/file&gt;
-    &lt;desc&gt;starting year to loop data over (only used for CPLHIST mode)&lt;/desc&gt;
+    &lt;desc&gt;starting year to loop data over (only used when DROF_MODE is CPLHIST)&lt;/desc&gt;
   &lt;/entry&gt;
 
   &lt;entry id=&quot;DROF_CPLHIST_YR_END&quot;&gt;
     &lt;type&gt;integer&lt;/type&gt;
     &lt;valid_values&gt;&lt;/valid_values&gt;
-    &lt;default_value&gt;1&lt;/default_value&gt;
+    &lt;default_value&gt;-999&lt;/default_value&gt;
     &lt;group&gt;run_component_drof&lt;/group&gt;
     &lt;file&gt;env_run.xml&lt;/file&gt;
-    &lt;desc&gt;ending year to loop data over (only used for CPLHIST mode)&lt;/desc&gt;
+    &lt;desc&gt;ending year to loop data over (only used when DROF_MODE is CPLHIST)&lt;/desc&gt;
   &lt;/entry&gt;
 
   &lt;help&gt;
@@ -986,14 +1047,14 @@ does it have any namelist settings.</p>
         <li class="right" >
           <a href="ocean.html" title="CIME Ocean Data and Stub XML Files"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" >XML Files</a> &#187;</li>
-          <li class="nav-item nav-item-2"><a href="components.html" >Data, Stub and Driver Component XML Files</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >XML Files</a> &raquo;</li>
+          <li class="nav-item nav-item-2"><a href="components.html" >Data, Stub and Driver Component XML Files</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
+        &copy; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.3.
     </div>
   </body>
 </html>

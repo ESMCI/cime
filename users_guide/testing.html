@@ -2,28 +2,31 @@
 
 <!doctype html>
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>4. Testing with create_test &#8212; CIME 5.3.0 documentation</title>
+    
+    <title>4. Testing with create_test &mdash; CIME 5.3.0 documentation</title>
+    
     <link rel="stylesheet" href="../_static/bizstyle.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
         VERSION:     '5.3.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
+        HAS_SOURCE:  true
       };
     </script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="../_static/bizstyle.js"></script>
-    <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" />
+    <link rel="top" title="CIME 5.3.0 documentation" href="../index.html" />
+    <link rel="up" title="CIME User’s Guide Part 1: Beginner - Basic Usage" href="index.html" />
     <link rel="next" title="5. Fortran Unit Testing" href="unit_testing.html" />
     <link rel="prev" title="3. Optimizing Processor Layout" href="optimizing-processor-layout.html" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
@@ -31,7 +34,7 @@
     <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
     <![endif]-->
   </head>
-  <body>
+  <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -47,8 +50,8 @@
         <li class="right" >
           <a href="optimizing-processor-layout.html" title="3. Optimizing Processor Layout"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">CIME User’s Guide Part 1: Beginner - Basic Usage</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">CIME User&#8217;s Guide Part 1: Beginner - Basic Usage</a> &raquo;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -74,7 +77,7 @@
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="../_sources/users_guide/testing.rst.txt"
+      <li><a href="../_sources/users_guide/testing.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
@@ -149,7 +152,7 @@ the test.</p>
 current status of all your tests.</p>
 <div class="section" id="using-create-test-acme">
 <h2>4.1. Using create_test (ACME)<a class="headerlink" href="#using-create-test-acme" title="Permalink to this headline">¶</a></h2>
-<p>Usage will differ slightly depending on if you’re using ACME or CESM.</p>
+<p>Usage will differ slightly depending on if you&#8217;re using ACME or CESM.</p>
 <p>Using examples to illustrate common use cases</p>
 <p>To run a test:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">create_test</span> <span class="n">SMS</span><span class="o">.</span><span class="n">f19_f19</span><span class="o">.</span><span class="n">A</span>
@@ -159,11 +162,11 @@ current status of all your tests.</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">create_test</span> <span class="n">SMS</span><span class="o">.</span><span class="n">f19_f19</span><span class="o">.</span><span class="n">A</span> <span class="o">--</span><span class="n">compiler</span> <span class="n">intel</span>
 </pre></div>
 </div>
-<p>To run a test with baseline comparisons against baseline name ‘master’:</p>
+<p>To run a test with baseline comparisons against baseline name &#8216;master&#8217;:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">create_test</span> <span class="n">SMS</span><span class="o">.</span><span class="n">f19_f19</span><span class="o">.</span><span class="n">A</span> <span class="o">-</span><span class="n">c</span> <span class="o">-</span><span class="n">b</span> <span class="n">master</span>
 </pre></div>
 </div>
-<p>To run a test and update baselines with baseline name ‘master’:</p>
+<p>To run a test and update baselines with baseline name &#8216;master&#8217;:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">create_test</span> <span class="n">SMS</span><span class="o">.</span><span class="n">f19_f19</span><span class="o">.</span><span class="n">A</span> <span class="o">-</span><span class="n">g</span> <span class="o">-</span><span class="n">b</span> <span class="n">master</span>
 </pre></div>
 </div>
@@ -235,13 +238,13 @@ tools to help the user do this without having to repeat full runs of test cases 
 results to a baseline area.</p>
 <p>compare_test_results: Takes a batch of cases of tests that have already been run and compare their
 results to a baseline area.</p>
-<p>Take a batch of results for the jenkins user for the testid ‘mytest’ and copy the results to
-baselines for ‘master’:</p>
+<p>Take a batch of results for the jenkins user for the testid &#8216;mytest&#8217; and copy the results to
+baselines for &#8216;master&#8217;:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">bless_test_results</span> <span class="o">-</span><span class="n">r</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">jenkins</span><span class="o">/</span><span class="n">acme</span><span class="o">/</span><span class="n">scratch</span><span class="o">/</span><span class="n">jenkins</span><span class="o">/</span> <span class="o">-</span><span class="n">t</span> <span class="n">mytest</span> <span class="o">-</span><span class="n">b</span> <span class="n">master</span>
 </pre></div>
 </div>
-<p>Take a batch of results for the jenkins user for the testid ‘mytest’ and compare the results to
-baselines for ‘master’:</p>
+<p>Take a batch of results for the jenkins user for the testid &#8216;mytest&#8217; and compare the results to
+baselines for &#8216;master&#8217;:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">compare_test_results</span> <span class="o">-</span><span class="n">r</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">jenkins</span><span class="o">/</span><span class="n">acme</span><span class="o">/</span><span class="n">scratch</span><span class="o">/</span><span class="n">jenkins</span><span class="o">/</span> <span class="o">-</span><span class="n">t</span> <span class="n">mytest</span> <span class="o">-</span><span class="n">b</span> <span class="n">master</span>
 </pre></div>
 </div>
@@ -251,7 +254,7 @@ baselines for ‘master’:</p>
 </div>
 <div class="section" id="adding-tests">
 <h2>4.4. Adding tests<a class="headerlink" href="#adding-tests" title="Permalink to this headline">¶</a></h2>
-<p>Open the update_acme_tests.py file, you’ll see a python dict at the top
+<p>Open the update_acme_tests.py file, you&#8217;ll see a python dict at the top
 of the file called TEST_SUITES, find the test category you want to
 change in this dict and add your testcase to the list.  Note the
 comment at the top of this file indicating that you add a test with
@@ -276,7 +279,7 @@ test class or even a specific test within a test class.</p>
 </pre></div>
 </div>
 <p>If a test fails, the unittest module that drives scripts_regression_tests wil note the failure, but
-won’t print the output of the test until testing has completed. When there are failures for a
+won&#8217;t print the output of the test until testing has completed. When there are failures for a
 test, the case directories for that test will not be cleaned up so that the user can do a post-mortem
 analysis. The user will be notified of the specific directories that will be left for them to
 examine.</p>
@@ -304,13 +307,13 @@ examine.</p>
         <li class="right" >
           <a href="optimizing-processor-layout.html" title="3. Optimizing Processor Layout"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" >CIME User’s Guide Part 1: Beginner - Basic Usage</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >CIME User&#8217;s Guide Part 1: Beginner - Basic Usage</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
+        &copy; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.3.
     </div>
   </body>
 </html>

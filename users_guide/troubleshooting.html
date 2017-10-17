@@ -2,28 +2,31 @@
 
 <!doctype html>
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>9. Troubleshooting &#8212; CIME 5.3.0 documentation</title>
+    
+    <title>9. Troubleshooting &mdash; CIME 5.3.0 documentation</title>
+    
     <link rel="stylesheet" href="../_static/bizstyle.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
         VERSION:     '5.3.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
+        HAS_SOURCE:  true
       };
     </script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="../_static/bizstyle.js"></script>
-    <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" />
+    <link rel="top" title="CIME 5.3.0 documentation" href="../index.html" />
+    <link rel="up" title="CIME User’s Guide Part 1: Beginner - Basic Usage" href="index.html" />
     <link rel="next" title="1. CIME internals" href="cime-internals.html" />
     <link rel="prev" title="8. Cloning a Case" href="cloning-a-case.html" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
@@ -31,7 +34,7 @@
     <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
     <![endif]-->
   </head>
-  <body>
+  <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -47,8 +50,8 @@
         <li class="right" >
           <a href="cloning-a-case.html" title="8. Cloning a Case"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">CIME User’s Guide Part 1: Beginner - Basic Usage</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">CIME User&#8217;s Guide Part 1: Beginner - Basic Usage</a> &raquo;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -72,7 +75,7 @@
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="../_sources/users_guide/troubleshooting.rst.txt"
+      <li><a href="../_sources/users_guide/troubleshooting.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
@@ -99,7 +102,7 @@
 <div class="section" id="troubleshooting-case-creation">
 <h2>9.1. Troubleshooting case creation<a class="headerlink" href="#troubleshooting-case-creation" title="Permalink to this headline">¶</a></h2>
 <p>Generally, <strong>create_newcase</strong> errors are reported to the terminal and should provide some guidance about what caused them.</p>
-<p>If <strong>create_newcase</strong> fails on a relatively generic error, first check to make sure the command-line arguments match the interface’s specification. See the help text to review usage.</p>
+<p>If <strong>create_newcase</strong> fails on a relatively generic error, first check to make sure the command-line arguments match the interface&#8217;s specification. See the help text to review usage.</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&gt;</span> <span class="n">create_newcase</span> <span class="o">--</span><span class="n">help</span>
 </pre></div>
 </div>
@@ -111,7 +114,7 @@ The batch and run aspects of the <strong>case.submit</strong> script are created
 <p>Take these steps to check for problems:</p>
 <ol class="arabic simple">
 <li>Review the batch submission options in <strong>$CASEROOT/env_batch.xml</strong>. Confirm that they are consistent with the site-specific batch environment, and that the queue names, time limits, and hardware processor request make sense and are consistent with the case.</li>
-<li>Make sure that <strong>case.submit</strong> uses the correct batch job tool for submitting the <strong>case.run</strong> script. Depending on the batch environment, it might be <strong>bsub</strong>, <strong>qsub</strong> or another command. Also confirm if a redirection “&lt;” character is required. The information for how <strong>case.submit</strong> submits jobs appears at the end of the standard output stream.</li>
+<li>Make sure that <strong>case.submit</strong> uses the correct batch job tool for submitting the <strong>case.run</strong> script. Depending on the batch environment, it might be <strong>bsub</strong>, <strong>qsub</strong> or another command. Also confirm if a redirection &#8220;&lt;&#8221; character is required. The information for how <strong>case.submit</strong> submits jobs appears at the end of the standard output stream.</li>
 </ol>
 </div>
 <div class="section" id="troubleshooting-runtime-problems">
@@ -135,7 +138,7 @@ Check each log file for an error message, especially at or near the end.</li>
 The standard out/err file often captures a significant amount of extra model output and also often contains significant system output when a job terminates.
 Useful error messages sometimes are found well above the bottom of a large standard out/err file. Backtrack from the bottom in search of an error message.</li>
 <li>Check for core files in your run directory and review them using an appropriate tool.</li>
-<li>Check any automated email from the job about why a job failed. Some sites’ batch schedulers send these.</li>
+<li>Check any automated email from the job about why a job failed. Some sites&#8217; batch schedulers send these.</li>
 <li>Check the archive directory: <strong>$DOUT_S_ROOT/$CASE</strong>.   If a case failed, the log files
 or data may still have been archived.</li>
 </ul>
@@ -155,7 +158,7 @@ The <strong>cpl.log</strong> file normally outputs the time used for every model
 </pre></div>
 </div>
 <p>Review the run times at the end of each line for each model day.
-The “avg dt =” is  the average time to simulate a model day and “dt = ” is the time needed to simulate the latest model day.</p>
+The &#8220;avg dt =&#8221; is  the average time to simulate a model day and &#8220;dt = &#8221; is the time needed to simulate the latest model day.</p>
 <p>The model date is printed in YYYYMMDD format and the wallclock is the local date and time.
 In the example, 10120 is Jan 20, 0001, and the model took 58 seconds to run that day.
 The next day, Jan 21, took 105.90 seconds.</p>
@@ -165,7 +168,7 @@ Also, some model configurations read data mid-month or run physics intermittentl
 In those cases, some variability is expected. The time variation typically is quite erratic and unpredictable if the problem is system performance variability.</p>
 <p>Sometimes when a job times out or overflows disk space, the restart files will get mangled.
 With the exception of the CAM and CLM history files, all the restart files have consistent sizes.</p>
-<p>Compare the restart files against the sizes of a previous restart. If they don’t match, remove them and move the previous restart into place before resubmitting the job.
+<p>Compare the restart files against the sizes of a previous restart. If they don&#8217;t match, remove them and move the previous restart into place before resubmitting the job.
 See <a class="reference external" href="http://esmci.github.io/cime/users_guide/running-a-case.html#restarting-a-run">Restarting a run</a>.</p>
 <p>It is not uncommon for nodes to fail on HPC systems or for access to large file systems to hang. Before you file a bug report, make sure a case fails consistently in the same place.</p>
 </div>
@@ -192,13 +195,13 @@ See <a class="reference external" href="http://esmci.github.io/cime/users_guide/
         <li class="right" >
           <a href="cloning-a-case.html" title="8. Cloning a Case"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" >CIME User’s Guide Part 1: Beginner - Basic Usage</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >CIME User&#8217;s Guide Part 1: Beginner - Basic Usage</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
+        &copy; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.3.
     </div>
   </body>
 </html>

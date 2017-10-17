@@ -2,28 +2,31 @@
 
 <!doctype html>
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>5. Fortran Unit Testing &#8212; CIME 5.3.0 documentation</title>
+    
+    <title>5. Fortran Unit Testing &mdash; CIME 5.3.0 documentation</title>
+    
     <link rel="stylesheet" href="../_static/bizstyle.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
         VERSION:     '5.3.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
+        HAS_SOURCE:  true
       };
     </script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="../_static/bizstyle.js"></script>
-    <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" />
+    <link rel="top" title="CIME 5.3.0 documentation" href="../index.html" />
+    <link rel="up" title="CIME User’s Guide Part 1: Beginner - Basic Usage" href="index.html" />
     <link rel="next" title="6. Multi-instance component functionality" href="multi-instance.html" />
     <link rel="prev" title="4. Testing with create_test" href="testing.html" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
@@ -31,7 +34,7 @@
     <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
     <![endif]-->
   </head>
-  <body>
+  <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -47,8 +50,8 @@
         <li class="right" >
           <a href="testing.html" title="4. Testing with create_test"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">CIME User’s Guide Part 1: Beginner - Basic Usage</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">CIME User&#8217;s Guide Part 1: Beginner - Basic Usage</a> &raquo;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -61,7 +64,7 @@
 <li><a class="reference internal" href="#overview-of-unit-test-support-in-cime">5.1.2. Overview of unit test support in CIME</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#running-cime-s-fortran-unit-tests">5.2. Running CIME’s Fortran unit tests</a></li>
+<li><a class="reference internal" href="#running-cime-s-fortran-unit-tests">5.2. Running CIME&#8217;s Fortran unit tests</a></li>
 <li><a class="reference internal" href="#how-to-add-unit-testing-support-on-your-machine">5.3. How to add unit testing support on your machine</a><ul>
 <li><a class="reference internal" href="#building-pfunit">5.3.1. Building pFUnit</a></li>
 <li><a class="reference internal" href="#adding-to-the-xml-file">5.3.2. Adding to the xml file</a></li>
@@ -94,7 +97,7 @@
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="../_sources/users_guide/unit_testing.rst.txt"
+      <li><a href="../_sources/users_guide/unit_testing.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
@@ -146,10 +149,10 @@ These consist of:</p>
 </div>
 </div>
 <div class="section" id="running-cime-s-fortran-unit-tests">
-<span id="running-unit-tests"></span><h2>5.2. Running CIME’s Fortran unit tests<a class="headerlink" href="#running-cime-s-fortran-unit-tests" title="Permalink to this headline">¶</a></h2>
+<span id="running-unit-tests"></span><h2>5.2. Running CIME&#8217;s Fortran unit tests<a class="headerlink" href="#running-cime-s-fortran-unit-tests" title="Permalink to this headline">¶</a></h2>
 <p>These instructions assume that you are using a machine that already has pFUnit installed, along with the necessary support in CIME.
 If that is not the case, see <a class="reference internal" href="#adding-machine-support"><span class="std std-ref">How to add unit testing support on your machine</span></a>.</p>
-<p>From the top-level CIME directory, you can run all of CIME’s Fortran unit tests by running:</p>
+<p>From the top-level CIME directory, you can run all of CIME&#8217;s Fortran unit tests by running:</p>
 <div class="highlight-shell"><div class="highlight"><pre><span></span>&gt; scripts/fortran_unit_testing/run_tests.py --build-dir MY_BUILD_DIR
 </pre></div>
 </div>
@@ -222,7 +225,7 @@ Then source either <strong>./.env_mach_specific.sh</strong> or <strong>./.env_ma
 </pre></div>
 </div>
 </li>
-<li><p class="first">Run pFUnit’s self-tests:</p>
+<li><p class="first">Run pFUnit&#8217;s self-tests:</p>
 <div class="highlight-shell"><div class="highlight"><pre><span></span>&gt; make tests
 </pre></div>
 </div>
@@ -247,10 +250,10 @@ For a serial build, your setting will look like this example:</p>
 <p>The <code class="docutils literal"><span class="pre">MPILIB</span></code> attribute should be either:</p>
 <ul class="simple">
 <li><code class="docutils literal"><span class="pre">mpi-serial</span></code> for a pFUnit build where <code class="docutils literal"><span class="pre">-DMPI=NO</span></code>, or</li>
-<li>the name of the MPI library you used for a pFUnit build where <code class="docutils literal"><span class="pre">-DMPI=YES</span></code>. (For example, you might use <code class="docutils literal"><span class="pre">mpich</span></code>, which should be one of the machine’s MPI libraries specified by <code class="docutils literal"><span class="pre">MPILIBS</span></code> in <strong>config_machines.xml</strong>.)</li>
+<li>the name of the MPI library you used for a pFUnit build where <code class="docutils literal"><span class="pre">-DMPI=YES</span></code>. (For example, you might use <code class="docutils literal"><span class="pre">mpich</span></code>, which should be one of the machine&#8217;s MPI libraries specified by <code class="docutils literal"><span class="pre">MPILIBS</span></code> in <strong>config_machines.xml</strong>.)</li>
 </ul>
 <p>The <code class="docutils literal"><span class="pre">compile_threaded</span></code> attribute should be either <code class="docutils literal"><span class="pre">true</span></code> or <code class="docutils literal"><span class="pre">false</span></code> depending on the value of <code class="docutils literal"><span class="pre">-DOPENMP</span></code>.</p>
-<p>Once you have specified the path for your build(s), you should be able to run the unit tests by following the instructions in <a class="reference internal" href="#running-unit-tests"><span class="std std-ref">Running CIME’s Fortran unit tests</span></a>.</p>
+<p>Once you have specified the path for your build(s), you should be able to run the unit tests by following the instructions in <a class="reference internal" href="#running-unit-tests"><span class="std std-ref">Running CIME&#8217;s Fortran unit tests</span></a>.</p>
 </div>
 </div>
 <div class="section" id="how-to-write-a-new-unit-test">
@@ -261,34 +264,34 @@ For a serial build, your setting will look like this example:</p>
 <div class="section" id="general-guidelines-for-writing-unit-tests">
 <h2>5.5. General guidelines for writing unit tests<a class="headerlink" href="#general-guidelines-for-writing-unit-tests" title="Permalink to this headline">¶</a></h2>
 <p>Unit tests typically test a small piece of code, on the order of 10-100 lines, as in a single function or small class.</p>
-<p>Good unit tests are <strong>“FIRST”</strong>:
+<p>Good unit tests are <strong>&#8220;FIRST&#8221;</strong>:
 (<a class="reference external" href="https://pragprog.com/magazines/2012-01/unit-tests-are-first">https://pragprog.com/magazines/2012-01/unit-tests-are-first</a>):</p>
 <ul class="simple">
 <li><strong>Fast</strong> (milliseconds or less). This means that, generally, they should not do any file i/o. Also, if you are testing a complex function, test it with a simple set of inputs rather than a 10,000-element array that will require a few seconds of runtime to process.</li>
-<li><strong>Independent</strong>. This means that test Y shouldn’t depend on some global variable that text X created. Such dependencies cause problems if the tests run in a different order, if one test is dropped, and so on.</li>
-<li><strong>Repeatable</strong>. This means, for example, that you shouldn’t generate random numbers in your tests.</li>
-<li><strong>Self-verifying</strong>. Don’t write a test that writes out its answers for manual comparison. Tests should generate an automatic pass/fail result.</li>
-<li><strong>Timely</strong>. Write the tests <em>before</em> the production code (TDD) or immediately afterwards - not six months later when it’s time to finally merge your changes onto the trunk and you have forgotten the details. Much of the benefit of unit tests comes from developing them concurrently with the production code.</li>
+<li><strong>Independent</strong>. This means that test Y shouldn&#8217;t depend on some global variable that text X created. Such dependencies cause problems if the tests run in a different order, if one test is dropped, and so on.</li>
+<li><strong>Repeatable</strong>. This means, for example, that you shouldn&#8217;t generate random numbers in your tests.</li>
+<li><strong>Self-verifying</strong>. Don&#8217;t write a test that writes out its answers for manual comparison. Tests should generate an automatic pass/fail result.</li>
+<li><strong>Timely</strong>. Write the tests <em>before</em> the production code (TDD) or immediately afterwards - not six months later when it&#8217;s time to finally merge your changes onto the trunk and you have forgotten the details. Much of the benefit of unit tests comes from developing them concurrently with the production code.</li>
 </ul>
 <p>Good unit tests test a single, well-defined condition. This generally means that
-you make a single call to the function or subroutine that you’re testing, with a
+you make a single call to the function or subroutine that you&#8217;re testing, with a
 single set of inputs. Usually you need to run multiple tests in order to test
-all of the unit’s possible behaviors.</p>
+all of the unit&#8217;s possible behaviors.</p>
 <p>Testing a single condition in each test makes pinpointing problems easier when a test fails.
 This also makes it easier to read and understand the tests, allowing them to serve as useful
 documentation of how the code should operate.</p>
 <p>A good unit test has four distinct pieces:</p>
 <ol class="arabic simple">
-<li><strong>Setup</strong>: For example, creating variables that will be needed for the routine you’re testing. For simple tests, this piece may be empty.</li>
-<li><strong>Exercise</strong>: Calling the routine you’re testing.</li>
+<li><strong>Setup</strong>: For example, creating variables that will be needed for the routine you&#8217;re testing. For simple tests, this piece may be empty.</li>
+<li><strong>Exercise</strong>: Calling the routine you&#8217;re testing.</li>
 <li><strong>Verify</strong>: Calling assertion methods (next section) to ensure that the results match what you expected.</li>
 <li><strong>Teardown</strong>: For example, deallocating variables. For simple tests, this piece may be empty. If it is needed, however, it is best done in the special tearDown routine discussed in <a class="reference internal" href="#defining-a-test-class-in-order-to-define-setup-and-teardown-methods">Defining a test class in order to define setUp and tearDown methods</a> and <a class="reference internal" href="#more-on-test-teardown">More on test teardown</a>.**</li>
 </ol>
 <p>If you have many tests of the same subroutine, you may find quite a
-lot of duplication. It’s good practice to extract major areas of duplication to their own
+lot of duplication. It&#8217;s good practice to extract major areas of duplication to their own
 subroutines in the <strong>.pf</strong> file, which your tests can call. This aids the understandability
 and maintainability of your tests. pFUnit knows which subroutines are tests and which are
-“helper” routines because of the <code class="docutils literal"><span class="pre">&#64;Test</span></code> directives: You only add a <code class="docutils literal"><span class="pre">&#64;Test</span></code> directive
+&#8220;helper&#8221; routines because of the <code class="docutils literal"><span class="pre">&#64;Test</span></code> directives: You only add a <code class="docutils literal"><span class="pre">&#64;Test</span></code> directive
 for your tests, not for your helper routines.</p>
 </div>
 <div class="section" id="more-details-on-writing-pfunit-based-unit-tests">
@@ -315,17 +318,17 @@ real-valued comparisons.</td>
 <td>Ensures that expected &gt; actual.</td>
 </tr>
 <tr class="row-even"><td><code class="docutils literal"><span class="pre">&#64;assertLessThanOrEqual(expected,</span> <span class="pre">actual)</span></code></td>
-<td>&#160;</td>
+<td>&nbsp;</td>
 </tr>
 <tr class="row-odd"><td><code class="docutils literal"><span class="pre">&#64;assertGreaterThanOrEqual(expected,</span> <span class="pre">actual)</span></code></td>
-<td>&#160;</td>
+<td>&nbsp;</td>
 </tr>
 <tr class="row-even"><td><code class="docutils literal"><span class="pre">&#64;assertTrue(condition)</span></code></td>
 <td>It is better to use the two-valued assertions above, if possible.
 They provide more information if a test fails.</td>
 </tr>
 <tr class="row-odd"><td><code class="docutils literal"><span class="pre">&#64;assertFalse(condition)</span></code></td>
-<td>&#160;</td>
+<td>&nbsp;</td>
 </tr>
 <tr class="row-even"><td><code class="docutils literal"><span class="pre">&#64;assertIsFinite(value)</span></code></td>
 <td>Ensures that the result is not NaN or infinity.</td>
@@ -389,7 +392,7 @@ that the tearDown method can access it.</p>
 <p>The setUp method can create <code class="docutils literal"><span class="pre">somedata</span></code> if it needs to be the same
 for every test.</p>
 <p>Alternatively, it can be created in each test routine that needs it if it
-differs from test to test. (Some tests don’t need it at all.) In that situation,
+differs from test to test. (Some tests don&#8217;t need it at all.) In that situation,
 create it like this:</p>
 <div class="highlight-Fortran"><div class="highlight"><pre><span></span><span class="k">allocate</span><span class="p">(</span><span class="n">this</span><span class="p">%</span><span class="n">somedata</span><span class="p">(</span><span class="mi">5</span><span class="p">))</span>
 <span class="n">this</span><span class="p">%</span><span class="n">somedata</span><span class="p">(:)</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">]</span>
@@ -412,7 +415,7 @@ still gets done, regardless of pass/fail status. Teardown code might otherwise b
 skipped, which can lead other tests to fail or give unexpected results.</p>
 <p>All of the tests in a single test executable run one after another. For CIME, this
 means all of the tests that are defined in all <strong>.pf</strong> files in a single test directory.</p>
-<p>As a result, tests can interact with each other if you don’t clean up after yourself.
+<p>As a result, tests can interact with each other if you don&#8217;t clean up after yourself.
 In the best case, you might get a memory leak. In the worst case, the pass/fail status of tests
 depends on which other tests have run previously, making your unit tests unrepeatable
 and unreliable.</p>
@@ -440,7 +443,7 @@ teardown portion of the test.</p>
 <div class="section" id="more-detailed-examples-in-cime">
 <h3>5.7.1. More detailed examples in CIME<a class="headerlink" href="#more-detailed-examples-in-cime" title="Permalink to this headline">¶</a></h3>
 <p>There are many examples of unit tests in CIME, some simple and some quite complex.
-You can find them by looking for files with the “.pf” extension:</p>
+You can find them by looking for files with the &#8221;.pf&#8221; extension:</p>
 <div class="highlight-shell"><div class="highlight"><pre><span></span>&gt; find . --name <span class="s1">&#39;*.pf&#39;</span>
 </pre></div>
 </div>
@@ -493,13 +496,13 @@ documentation about how to use the CIME unit test infrastructure (in the
         <li class="right" >
           <a href="testing.html" title="4. Testing with create_test"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" >CIME User’s Guide Part 1: Beginner - Basic Usage</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >CIME User&#8217;s Guide Part 1: Beginner - Basic Usage</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
+        &copy; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.3.
     </div>
   </body>
 </html>

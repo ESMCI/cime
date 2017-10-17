@@ -2,36 +2,39 @@
 
 <!doctype html>
 
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>5. Data Atmosphere (DATM) &#8212; CIME 5.3.0 documentation</title>
+    
+    <title>6. Data Atmosphere (DATM) &mdash; CIME 5.3.0 documentation</title>
+    
     <link rel="stylesheet" href="../_static/bizstyle.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
         VERSION:     '5.3.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
+        HAS_SOURCE:  true
       };
     </script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="../_static/bizstyle.js"></script>
-    <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="6. Data Land (DLND)" href="data-lnd.html" />
-    <link rel="prev" title="4. Data Model Science" href="data-model-science.html" />
+    <link rel="top" title="CIME 5.3.0 documentation" href="../index.html" />
+    <link rel="up" title="CIME Data Models" href="index.html" />
+    <link rel="next" title="7. Data Land (DLND)" href="data-lnd.html" />
+    <link rel="prev" title="5. Data Model Science" href="data-model-science.html" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <!--[if lt IE 9]>
     <script type="text/javascript" src="_static/css3-mediaqueries.js"></script>
     <![endif]-->
   </head>
-  <body>
+  <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -42,40 +45,40 @@
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="data-lnd.html" title="6. Data Land (DLND)"
+          <a href="data-lnd.html" title="7. Data Land (DLND)"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="data-model-science.html" title="4. Data Model Science"
+          <a href="data-model-science.html" title="5. Data Model Science"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">CIME Data Models</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">CIME Data Models</a> &raquo;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
   <h3><a href="../index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">5. Data Atmosphere (DATM)</a><ul>
-<li><a class="reference internal" href="#xml-variables">5.1. xml variables</a></li>
-<li><a class="reference internal" href="#datamode-values">5.2. datamode values</a></li>
-<li><a class="reference internal" href="#datm-mode-datamode-and-streams">5.3. DATM_MODE, datamode and streams</a></li>
-<li><a class="reference internal" href="#namelists">5.4. Namelists</a></li>
-<li><a class="reference internal" href="#streams-independent-of-datm-mode-value">5.5. Streams independent of DATM_MODE value</a></li>
-<li><a class="reference internal" href="#datm-field-names">5.6. DATM Field names</a></li>
+<li><a class="reference internal" href="#">6. Data Atmosphere (DATM)</a><ul>
+<li><a class="reference internal" href="#xml-variables">6.1. xml variables</a></li>
+<li><a class="reference internal" href="#datamode-values">6.2. datamode values</a></li>
+<li><a class="reference internal" href="#datm-mode-datamode-and-streams">6.3. DATM_MODE, datamode and streams</a></li>
+<li><a class="reference internal" href="#namelists">6.4. Namelists</a></li>
+<li><a class="reference internal" href="#streams-independent-of-datm-mode-value">6.5. Streams independent of DATM_MODE value</a></li>
+<li><a class="reference internal" href="#datm-field-names">6.6. DATM Field names</a></li>
 </ul>
 </li>
 </ul>
 
   <h4>Previous topic</h4>
   <p class="topless"><a href="data-model-science.html"
-                        title="previous chapter">4. Data Model Science</a></p>
+                        title="previous chapter">5. Data Model Science</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="data-lnd.html"
-                        title="next chapter">6. Data Land (DLND)</a></p>
+                        title="next chapter">7. Data Land (DLND)</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="../_sources/data_models/data-atm.rst.txt"
+      <li><a href="../_sources/data_models/data-atm.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
@@ -98,23 +101,23 @@
           <div class="body" role="main">
             
   <div class="section" id="data-atmosphere-datm">
-<span id="data-atm"></span><h1>5. Data Atmosphere (DATM)<a class="headerlink" href="#data-atmosphere-datm" title="Permalink to this headline">¶</a></h1>
+<span id="data-atm"></span><h1>6. Data Atmosphere (DATM)<a class="headerlink" href="#data-atmosphere-datm" title="Permalink to this headline">¶</a></h1>
 <p>DATM is normally used to provide observational forcing data (or forcing data produced by a previous run using active components) to drive prognostic components.
 In the case of CESM, these would be: CLM (I compset), POP2 (C compset), and POP2/CICE (G compset).
 As a result, DATM variable settings are specific to the compset that will be targeted.
 As examples, CORE2_NYF (CORE2 normal year forcing) is the DATM mode used in C and G compsets.
 CLM_QIAN, CLMCRUNCEP, CLMGSWP3 and CLM1PT are DATM modes using observational data for forcing CLM in I compsets.</p>
 <div class="section" id="xml-variables">
-<span id="datm-xml-vars"></span><h2>5.1. xml variables<a class="headerlink" href="#xml-variables" title="Permalink to this headline">¶</a></h2>
+<span id="datm-xml-vars"></span><h2>6.1. xml variables<a class="headerlink" href="#xml-variables" title="Permalink to this headline">¶</a></h2>
 <p>The following are <code class="docutils literal"><span class="pre">$CASEROOT</span></code> xml variables that CIME supports for DATM.
 These variables are defined in <code class="docutils literal"><span class="pre">$CIMEROOT/src/components/data_comps/datm/cime_config/config_component.xml</span></code>.
 These variables will appear in <code class="docutils literal"><span class="pre">env_run.xml</span></code> and the resulting values are compset dependent.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">These xml variables are used by the the datm’s <strong>cime_config/buildnml</strong> script in conjunction with datm’s <strong>cime_config/namelist_definition_datm.xml</strong> file to generate the namelist file <code class="docutils literal"><span class="pre">datm_in</span></code>.</p>
+<p class="last">These xml variables are used by the the datm&#8217;s <strong>cime_config/buildnml</strong> script in conjunction with datm&#8217;s <strong>cime_config/namelist_definition_datm.xml</strong> file to generate the namelist file <code class="docutils literal"><span class="pre">datm_in</span></code>.</p>
 </div>
 <table border="1" class="colwidths-given docutils" id="id1">
-<caption><span class="caption-text">“DATM xml variables”</span><a class="headerlink" href="#id1" title="Permalink to this table">¶</a></caption>
+<caption><span class="caption-text">&#8220;DATM xml variables&#8221;</span><a class="headerlink" href="#id1" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col width="20%" />
 <col width="80%" />
@@ -128,57 +131,71 @@ These variables will appear in <code class="docutils literal"><span class="pre">
 <tr class="row-even"><td>DATM_MODE</td>
 <td>Mode for atmospheric component</td>
 </tr>
-<tr class="row-odd"><td>&#160;</td>
+<tr class="row-odd"><td>&nbsp;</td>
 <td>Valid values are: CORE2_NYF,CORE2_IAF,CLM_QIAN,CLM_QIAN_WISO,CLM1PT,CLMCRUNCEP,</td>
 </tr>
-<tr class="row-even"><td>&#160;</td>
-<td>CLMCRUNCEP_V5,CLMGSWP3,WW3,CPLHISTForcing</td>
+<tr class="row-even"><td>&nbsp;</td>
+<td>CLMCRUNCEP_V5,CLMGSWP3,WW3,CPLHIST</td>
 </tr>
-<tr class="row-odd"><td>DATM_PRESAERO</td>
-<td>Prescribed aerosol forcing, if any</td>
+<tr class="row-odd"><td>&nbsp;</td>
+<td>&nbsp;</td>
 </tr>
-<tr class="row-even"><td>DATM_TOPO</td>
-<td>Surface topography</td>
+<tr class="row-even"><td>DATM_PRESAERO</td>
+<td>Optional prescribed aerosol forcing</td>
 </tr>
-<tr class="row-odd"><td>DATM_CO2_TSERIES</td>
-<td>CO2 time series type</td>
+<tr class="row-odd"><td>DATM_TOPO</td>
+<td>Optional Surface topography</td>
 </tr>
-<tr class="row-even"><td>DATM_CPLHIST_CASE</td>
-<td>Coupler history data mode case name</td>
+<tr class="row-even"><td>DATM_CO2_TSERIES</td>
+<td>Optional CO2 time series type</td>
 </tr>
-<tr class="row-odd"><td>DATM_CPLHIST_DIR</td>
-<td>Coupler history data mode directory containing coupler history data</td>
+<tr class="row-odd"><td>&nbsp;</td>
+<td>&nbsp;</td>
 </tr>
-<tr class="row-even"><td>DATM_CPLHIST_YR_ALIGN</td>
-<td>Coupler history data model simulation year corresponding to data starting year</td>
+<tr class="row-even"><td>DATM_CPLHIST_DOMAIN_FILE</td>
+<td>Coupler history forcing data mode - full pathname of model domain file</td>
 </tr>
-<tr class="row-odd"><td>DATM_CPLHIST_YR_START</td>
-<td>Coupler history data model starting year to loop data over</td>
+<tr class="row-odd"><td>DATM_CPLHIST_CASE</td>
+<td>Coupler history forcing data mode - case name</td>
 </tr>
-<tr class="row-even"><td>DATM_CPLHIST_YR_END</td>
-<td>Coupler history data model ending year to loop data over</td>
+<tr class="row-even"><td>DATM_CPLHIST_DIR</td>
+<td>Coupler history forcing data mode - directory containing coupler history data</td>
+</tr>
+<tr class="row-odd"><td>DATM_CPLHIST_YR_ALIGN</td>
+<td>Coupler history forcing data mode - simulation year corresponding to DATM_CPLHIST_YR_START</td>
+</tr>
+<tr class="row-even"><td>DATM_CPLHIST_YR_START</td>
+<td>Coupler history forcing data mode - starting year to loop data over</td>
+</tr>
+<tr class="row-odd"><td>DATM_CPLHIST_YR_END</td>
+<td>Coupler history forcing data mode - ending year to loop data over</td>
+</tr>
+<tr class="row-even"><td>&nbsp;</td>
+<td>&nbsp;</td>
 </tr>
 <tr class="row-odd"><td>DATM_CLMNCEP_YR_ALIGN</td>
 <td>I compsets only - simulation year corresponding to data starting year</td>
 </tr>
-<tr class="row-even"><td>DATM_CPLHIST_YR_START</td>
+<tr class="row-even"><td>DATM_CLMNCEP_YR_START</td>
 <td>I compsets only - data model starting year to loop data over</td>
 </tr>
-<tr class="row-odd"><td>DATM_CPLHIST_YR_END</td>
+<tr class="row-odd"><td>DATM_CLMNCEP_YR_END</td>
 <td>I compsets only - data model ending year to loop data over</td>
 </tr>
 </tbody>
 </table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If <code class="docutils literal"><span class="pre">DATM_MODE</span></code> is set to <code class="docutils literal"><span class="pre">CPLHIST</span></code>, it is normally assumed that the model domain will be identical to <strong>all</strong> of the stream domains. To ensure this, the xml variables <code class="docutils literal"><span class="pre">ATM_DOMAIN_PATH</span></code> and <code class="docutils literal"><span class="pre">ATM_DOMAIN_FILE</span></code> are ignored and a valid setting <strong>must be given</strong> for <code class="docutils literal"><span class="pre">DATM_CPLHIST_DOMAIN_FILE</span></code>. If <code class="docutils literal"><span class="pre">DATM_CPLHIST_DOMAIN_FILE</span></code> is set to <code class="docutils literal"><span class="pre">null</span></code>, then the datm component domain information is read in from the first coupler history file in the target stream and it is assumed that the first coupler stream file that is pointed to contains the domain information for that stream. This is the default that should be used for this mode. Alternatively, <code class="docutils literal"><span class="pre">DATM_CPLHIST_DOMAIN_FILE</span></code> can be set to <code class="docutils literal"><span class="pre">$ATM_DOMAIN_PATH/$ATM_DOMAIN_FILE</span></code> in a non-default configuration.</p>
+</div>
 </div>
 <div class="section" id="datamode-values">
-<span id="datm-datamodes"></span><h2>5.2. datamode values<a class="headerlink" href="#datamode-values" title="Permalink to this headline">¶</a></h2>
-<p>The xml variable <code class="docutils literal"><span class="pre">DATM_MODE</span></code> sets the streams that are associated with DATM and also sets the namelist variable <code class="docutils literal"><span class="pre">datamode</span></code> that specifies what additional operations need to be done by DATM on the streams before returning to the driver.
-One of the variables in <code class="docutils literal"><span class="pre">shr_strdata_nml</span></code> is <code class="docutils literal"><span class="pre">datamode</span></code>, whose value is a character string.  Each data model has a unique set of <code class="docutils literal"><span class="pre">datamode</span></code> values that it supports.
-The valid values for <code class="docutils literal"><span class="pre">datamode</span></code> are set in the file <code class="docutils literal"><span class="pre">namelist_definition_datm.xml</span></code> using the xml variable <code class="docutils literal"><span class="pre">DATM_MODE</span></code> in the <code class="docutils literal"><span class="pre">config_component.xml</span></code> file for DATM.
-CIME will generate a value <code class="docutils literal"><span class="pre">datamode</span></code> that is compset dependent.</p>
-<p>The following are the supported DATM datamode values and their relationship to the <code class="docutils literal"><span class="pre">$DATM_MODE</span></code> xml variable value.</p>
+<span id="datm-datamodes"></span><h2>6.2. datamode values<a class="headerlink" href="#datamode-values" title="Permalink to this headline">¶</a></h2>
+<p>The xml variable <code class="docutils literal"><span class="pre">DATM_MODE</span></code> (described in <a class="reference internal" href="#datm-mode"><span class="std std-ref">DATM_MODE, datamode and streams</span></a>) sets the streams that are associated with DATM and also sets the namelist variable <code class="docutils literal"><span class="pre">datamode</span></code>.
+<code class="docutils literal"><span class="pre">datamode</span></code> (which appears in <code class="docutils literal"><span class="pre">shr_strdata_nml</span></code>) specifies what additional operations need to be done by DATM on the streams before returning to the driver.</p>
+<p>Each data model has its own set of supported <code class="docutils literal"><span class="pre">datamode</span></code> values. The following are the supported DATM <code class="docutils literal"><span class="pre">datamode</span></code> values, as defined in the file <code class="docutils literal"><span class="pre">namelist_definition_datm.xml</span></code>.</p>
 <table border="1" class="colwidths-given docutils" id="id2">
-<caption><span class="caption-text">“Valid values for datamode namelist variable”</span><a class="headerlink" href="#id2" title="Permalink to this table">¶</a></caption>
+<caption><span class="caption-text">&#8220;Valid values for datamode namelist variable&#8221;</span><a class="headerlink" href="#id2" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col width="20%" />
 <col width="80%" />
@@ -193,28 +210,26 @@ CIME will generate a value <code class="docutils literal"><span class="pre">data
 <td>This mode turns off the data model as a provider of data to the coupler. The <code class="docutils literal"><span class="pre">atm_present</span></code> flag will be set to <code class="docutils literal"><span class="pre">false</span></code> and the coupler assumes no exchange of data to or from the data model.</td>
 </tr>
 <tr class="row-odd"><td>COPYALL</td>
-<td>The default science mode of the data model is the COPYALL mode. This mode will examine the fields found in all input data streams, if any input field names match the field names used internally, they are copied into the export array and passed directly to the coupler without any special user code.  Any required fields not found on an input stream will be set to zero except for aerosol deposition fields which will be set to a special value.</td>
+<td>The default science mode of the data model is the COPYALL mode. This mode will examine the fields found in all input data streams; if any input field names match the field names used internally, they are copied into the export array and passed directly to the coupler without any special user code.  Any required fields not found on an input stream will be set to zero except for aerosol deposition fields which will be set to a special value.</td>
 </tr>
-<tr class="row-even"><td>CPLHIST</td>
-<td>Uilize user-generated coupler history data to spin up prognostic component. Works exactly like COPYALL.</td>
+<tr class="row-even"><td>CLMNCEP</td>
+<td>In conjunction with NCEP climatological atmosphere data, provides the atmosphere forcing favored by the Land Model Working Group when coupling an active land model with observed atmospheric forcing. This  mode replicates code previously found in CLM (circa 2005), before the LMWG started using the CIME coupling infrastructure and data models to do active-land-only simulations.</td>
 </tr>
-<tr class="row-odd"><td>CLMNCEP</td>
-<td>In conjunction with NCEP climatological atmosphere data, provides the atmosphere forcing favored by the Land Model Working Group when coupling an active land model with observed atmospheric forcing. This  mode replicates code previously found in CLM (circa 2005), before the LMWG started using the CCSM flux coupler and data models to do active-land-only simulations.</td>
-</tr>
-<tr class="row-even"><td>CORE2_NYF</td>
+<tr class="row-odd"><td>CORE2_NYF</td>
 <td>Coordinated Ocean-ice Reference Experiments (CORE) Version 2 Normal Year Forcing.</td>
 </tr>
-<tr class="row-odd"><td>CORE2_IAF</td>
+<tr class="row-even"><td>CORE2_IAF</td>
 <td>In conjunction with with CORE Version 2 atmospheric forcing data, provides the atmosphere forcing favored by the Ocean Model Working Group when coupling an active ocean model with observed atmospheric forcing. This mode and associated data sets implement the CORE-IAF Version 2 forcing data, as developed by Large and Yeager (2008) at NCAR.  Note that CORE2_NYF and CORE2_IAF work exactly the same way.</td>
 </tr>
 </tbody>
 </table>
 </div>
 <div class="section" id="datm-mode-datamode-and-streams">
-<h2>5.3. DATM_MODE, datamode and streams<a class="headerlink" href="#datm-mode-datamode-and-streams" title="Permalink to this headline">¶</a></h2>
-<p>The following tabe describes the valid values of <code class="docutils literal"><span class="pre">DATM_MODE</span></code>, and how it relates to the associated input streams and the <code class="docutils literal"><span class="pre">datamode</span></code> namelist variable.</p>
+<span id="datm-mode"></span><h2>6.3. DATM_MODE, datamode and streams<a class="headerlink" href="#datm-mode-datamode-and-streams" title="Permalink to this headline">¶</a></h2>
+<p>The following table describes the valid values of <code class="docutils literal"><span class="pre">DATM_MODE</span></code> (defined in the <code class="docutils literal"><span class="pre">config_component.xml</span></code> file for DATM), and how they relate to the associated input streams and the <code class="docutils literal"><span class="pre">datamode</span></code> namelist variable.
+CIME will generate a value of <code class="docutils literal"><span class="pre">DATM_MODE</span></code> based on the compset.</p>
 <table border="1" class="colwidths-given docutils" id="id3">
-<caption><span class="caption-text">“Relationship between DATM_MODE, datamode and streams”</span><a class="headerlink" href="#id3" title="Permalink to this table">¶</a></caption>
+<caption><span class="caption-text">&#8220;Relationship between DATM_MODE, datamode and streams&#8221;</span><a class="headerlink" href="#id3" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col width="15%" />
 <col width="85%" />
@@ -228,116 +243,116 @@ CIME will generate a value <code class="docutils literal"><span class="pre">data
 <tr class="row-even"><td>NULL</td>
 <td>null mode</td>
 </tr>
-<tr class="row-odd"><td>&#160;</td>
+<tr class="row-odd"><td>&nbsp;</td>
 <td>streams: none</td>
 </tr>
-<tr class="row-even"><td>&#160;</td>
+<tr class="row-even"><td>&nbsp;</td>
 <td>datamode: NULL</td>
 </tr>
 <tr class="row-odd"><td>CORE2_NYF</td>
 <td>CORE2 normal year forcing (C ang G compsets)</td>
 </tr>
-<tr class="row-even"><td>&#160;</td>
+<tr class="row-even"><td>&nbsp;</td>
 <td>streams: CORE2_NYF.GISS,CORE2_NYF.GXGXS,CORE2_NYF.NCEP</td>
 </tr>
-<tr class="row-odd"><td>&#160;</td>
+<tr class="row-odd"><td>&nbsp;</td>
 <td>datamode: CORE2_NYF</td>
 </tr>
 <tr class="row-even"><td>CORE2_IAF</td>
 <td>CORE2 interannual year forcing (C ang G compsets)</td>
 </tr>
-<tr class="row-odd"><td>&#160;</td>
+<tr class="row-odd"><td>&nbsp;</td>
 <td>streams: CORE2_IAF.GCGCS.PREC,CORE2_IAF.GISS.LWDN,CORE2_IAF.GISS.SWDN,CORE2_IAF.GISS.SWUP,</td>
 </tr>
-<tr class="row-even"><td>&#160;</td>
+<tr class="row-even"><td>&nbsp;</td>
 <td>CORE2_IAF.NCEP.DN10,CORE2_IAF.NCEP.Q_10,CORE2_IAF.NCEP.SLP_,CORE2_IAF.NCEP.T_10,CORE2_IAF.NCEP.U_10,</td>
 </tr>
-<tr class="row-odd"><td>&#160;</td>
+<tr class="row-odd"><td>&nbsp;</td>
 <td>CORE2_IAF.NCEP.V_10,CORE2_IAF.CORE2.ArcFactor</td>
 </tr>
-<tr class="row-even"><td>&#160;</td>
+<tr class="row-even"><td>&nbsp;</td>
 <td>datamode: CORE2_IAF</td>
 </tr>
 <tr class="row-odd"><td>CLM_QIAN_WISO</td>
 <td>QIAN atm input data with water isotopes (I compsets)</td>
 </tr>
-<tr class="row-even"><td>&#160;</td>
+<tr class="row-even"><td>&nbsp;</td>
 <td>streams: CLM_QIAN_WISO.Solar,CLM_QIAN_WISO.Precip,CLM_QIAN_WISO.TPQW</td>
 </tr>
-<tr class="row-odd"><td>&#160;</td>
+<tr class="row-odd"><td>&nbsp;</td>
 <td>datamode: CLMNCEP</td>
 </tr>
 <tr class="row-even"><td>CLM_QIAN</td>
 <td>QIAN atm input data (I compsets)</td>
 </tr>
-<tr class="row-odd"><td>&#160;</td>
+<tr class="row-odd"><td>&nbsp;</td>
 <td>streams: CLM_QIAN.Solar,CLM_QIAN.Precip,CLM_QIAN.TPQW</td>
 </tr>
-<tr class="row-even"><td>&#160;</td>
+<tr class="row-even"><td>&nbsp;</td>
 <td>datamode: CLMNCEP</td>
 </tr>
 <tr class="row-odd"><td>CLMCRUNCEP</td>
 <td>CRUNCEP atm input data (I compsets)</td>
 </tr>
-<tr class="row-even"><td>&#160;</td>
+<tr class="row-even"><td>&nbsp;</td>
 <td>streams: CLMCRUNCEP.Solar,CLMCRUNCEP.Precip,CLMCRUNCEP.TPQW</td>
 </tr>
-<tr class="row-odd"><td>&#160;</td>
+<tr class="row-odd"><td>&nbsp;</td>
 <td>datamode: CLMNCEP</td>
 </tr>
 <tr class="row-even"><td>CLMCRUNCEP_V5</td>
 <td>CRUNCEP atm input data (I compsets)</td>
 </tr>
-<tr class="row-odd"><td>&#160;</td>
+<tr class="row-odd"><td>&nbsp;</td>
 <td>streams: CLMCRUNCEP_V5.Solar,CLMCRUNCEP_V5.Precip,CLMCRUNCEP_V5.TPQW</td>
 </tr>
-<tr class="row-even"><td>&#160;</td>
+<tr class="row-even"><td>&nbsp;</td>
 <td>datamode: CLMNCEP</td>
 </tr>
 <tr class="row-odd"><td>CLMGSWP3</td>
 <td>GSWP3 atm input data (I compsets)</td>
 </tr>
-<tr class="row-even"><td>&#160;</td>
+<tr class="row-even"><td>&nbsp;</td>
 <td>streams: CLMGSWP3.Solar,CLMGSWP3.Precip,CLMGSWP3.TPQW</td>
 </tr>
-<tr class="row-odd"><td>&#160;</td>
+<tr class="row-odd"><td>&nbsp;</td>
 <td>datamode: CLMNCEP</td>
 </tr>
 <tr class="row-even"><td>CLM1PT</td>
 <td>single point tower site atm input data</td>
 </tr>
-<tr class="row-odd"><td>&#160;</td>
+<tr class="row-odd"><td>&nbsp;</td>
 <td>streams: CLM1PT.$ATM_GRID</td>
 </tr>
-<tr class="row-even"><td>&#160;</td>
+<tr class="row-even"><td>&nbsp;</td>
 <td>datamode: CLMNCEP</td>
 </tr>
-<tr class="row-odd"><td>CPLHISTForcing</td>
-<td>user generated forcing data to spinup for I and G compsets</td>
+<tr class="row-odd"><td>CPLHIST</td>
+<td>user generated forcing data from using coupler history files used to spinup relevant prognostic components (for CESM this is CLM, POP and CISM)</td>
 </tr>
-<tr class="row-even"><td>&#160;</td>
-<td>streams: CPLHISTForcingForOcnIce.Solar,CPLHISTForcingForOcnIce.nonSolarFlux,</td>
+<tr class="row-even"><td>&nbsp;</td>
+<td>streams: CPLHISTForcing.Solar,CPLHISTForcing.nonSolarFlux,</td>
 </tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>CPLHISTForcingForOcnIce.State3hr,CPLHISTForcingForOcnIce.State1hr</td>
+<tr class="row-odd"><td>&nbsp;</td>
+<td>CPLHISTForcing.State3hr,CPLHISTForcing.State1hr</td>
 </tr>
-<tr class="row-even"><td>&#160;</td>
+<tr class="row-even"><td>&nbsp;</td>
 <td>datamode: CPLHIST</td>
 </tr>
 <tr class="row-odd"><td>WW3</td>
 <td>WW3 wave watch data from a short period of hi WW3 wave watch data from a short period of hi temporal frequency COREv2 data</td>
 </tr>
-<tr class="row-even"><td>&#160;</td>
+<tr class="row-even"><td>&nbsp;</td>
 <td>streams: WW3</td>
 </tr>
-<tr class="row-odd"><td>&#160;</td>
+<tr class="row-odd"><td>&nbsp;</td>
 <td>datamode: COPYALL</td>
 </tr>
 </tbody>
 </table>
 </div>
 <div class="section" id="namelists">
-<h2>5.4. Namelists<a class="headerlink" href="#namelists" title="Permalink to this headline">¶</a></h2>
+<h2>6.4. Namelists<a class="headerlink" href="#namelists" title="Permalink to this headline">¶</a></h2>
 <p>The DATM namelist file is <code class="docutils literal"><span class="pre">datm_in</span></code> (or <code class="docutils literal"><span class="pre">datm_in_NNN</span></code> for multiple instances). DATM namelists can be separated into two groups: <em>stream-independent</em> namelist variables that are specific to the DATM model and <em>stream-specific</em> namelist variables whose names are common to all the data models.</p>
 <p>Stream dependent input is in the namelist group <code class="docutils literal"><span class="pre">&quot;shr_strdata_nml</span></code> which is discussed in <a class="reference internal" href="input-streams.html#input-streams"><span class="std std-ref">input streams</span></a> and is the same for all data models.</p>
 <p id="datm-stream-independent-namelists">The stream-independent group is <code class="docutils literal"><span class="pre">datm_nml</span></code> and the DATM stream-independent namelist variables are:</p>
@@ -388,7 +403,7 @@ CIME will generate a value <code class="docutils literal"><span class="pre">data
 </table>
 </div>
 <div class="section" id="streams-independent-of-datm-mode-value">
-<span id="datm-mode-independent-streams"></span><h2>5.5. Streams independent of DATM_MODE value<a class="headerlink" href="#streams-independent-of-datm-mode-value" title="Permalink to this headline">¶</a></h2>
+<span id="datm-mode-independent-streams"></span><h2>6.5. Streams independent of DATM_MODE value<a class="headerlink" href="#streams-independent-of-datm-mode-value" title="Permalink to this headline">¶</a></h2>
 <p>In general, each <code class="docutils literal"><span class="pre">DATM_MODE</span></code> xml variable is identified with a unique set of streams.
 However, there are several streams in DATM that can accompany any <code class="docutils literal"><span class="pre">DATM_MODE</span></code> setting.
 Currently, these are streams associated with prescribed aerosols, co2 time series, topography, anomoly forcing and bias correction.
@@ -428,11 +443,11 @@ To add this stream, you need to add any of the following keywword/value pair to 
 </ul>
 </div>
 <div class="section" id="datm-field-names">
-<span id="datm-fields"></span><h2>5.6. DATM Field names<a class="headerlink" href="#datm-field-names" title="Permalink to this headline">¶</a></h2>
+<span id="datm-fields"></span><h2>6.6. DATM Field names<a class="headerlink" href="#datm-field-names" title="Permalink to this headline">¶</a></h2>
 <p>DATM defines a set of pre-defined internal field names as well as mappings for how those field names map to the fields sent to the coupler.
 In general, the stream input file should translate the stream input variable names into the <code class="docutils literal"><span class="pre">datm_fld</span></code> names for use within the data atmosphere model.</p>
 <table border="1" class="colwidths-given docutils" id="id4">
-<caption><span class="caption-text">“DATM internal field names”</span><a class="headerlink" href="#id4" title="Permalink to this table">¶</a></caption>
+<caption><span class="caption-text">&#8220;DATM internal field names&#8221;</span><a class="headerlink" href="#id4" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col width="50%" />
 <col width="50%" />
@@ -692,18 +707,18 @@ In general, the stream input file should translate the stream input variable nam
           <a href="../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="data-lnd.html" title="6. Data Land (DLND)"
+          <a href="data-lnd.html" title="7. Data Land (DLND)"
              >next</a> |</li>
         <li class="right" >
-          <a href="data-model-science.html" title="4. Data Model Science"
+          <a href="data-model-science.html" title="5. Data Model Science"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &#187;</li>
-          <li class="nav-item nav-item-1"><a href="index.html" >CIME Data Models</a> &#187;</li> 
+        <li class="nav-item nav-item-0"><a href="../index.html">CIME 5.3.0 documentation</a> &raquo;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >CIME Data Models</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.6.3.
+        &copy; Copyright 2017, U.S. National Science Foundation and U.S. Department of Energy.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.3.
     </div>
   </body>
 </html>
