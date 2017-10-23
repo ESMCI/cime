@@ -1062,6 +1062,7 @@ using a fortran linker.
     <append MPILIB="mpich2"> -Wl,-rpath ${PAPI_LIB} -L${PAPI_LIB} -lpapi</append>
   </SLIBS>
   <TRILINOS_PATH MPILIB="mpich2">$ENV{TRILINOS_PATH}</TRILINOS_PATH>
+  <HAS_F2008_CONTIGUOUS>FALSE</HAS_F2008_CONTIGUOUS>
 </compiler>
 
 <compiler MACH="yellowstone" COMPILER="pgi">
