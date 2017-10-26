@@ -141,7 +141,7 @@
      <directives>
        <directive> --job-name={{ job_id }}</directive>
        <directive> --nodes={{ num_nodes }}</directive>
-       <directive> --ntasks-per-node={{ tasks_per_node }}</directive>
+       <!-- <directive> -ntasks-per-node={{ tasks_per_node }}</directive> -->
        <directive> --output={{ output_error_path }}   </directive>
        <directive> --exclusive                        </directive>
      </directives>
@@ -281,22 +281,15 @@
 
   <batch_system MACH="fram" type="slurm">
     <batch_submit>sbatch</batch_submit>
+    <directives>
+     <directive> --ntasks={{ total_tasks }}</directive>
+     <directive> --export=ALL</directive>
+   </directives>
     <queues>
       <queue walltimemax="00:59:00" jobmin="1" jobmax="288" default="true">normal</queue>
-      <!-- <queue walltimemax="24:00:00" jobmin="1" jobmax="1" jobname="case.st_archive">normal</queue>
-                 <queue walltimemax="24:00:00" jobmin="1" jobmax="1" jobname="case.lt_archive">normal</queue> -->
     </queues>
   </batch_system>
 
-  <batch_system MACH="fram" type="slurm">
-    <batch_submit>sbatch</batch_submit>
-    <queues>
-      <queue walltimemax="00:59:00" jobmin="1" jobmax="288" default="true">normal</queue>
-      <!-- <queue walltimemax="24:00:00" jobmin="1" jobmax="1" jobname="case.st_archive">normal</queue>
-                 <queue walltimemax="24:00:00" jobmin="1" jobmax="1" jobname="case.lt_archive">normal</queue> -->
-    </queues>
-  </batch_system>
- 
  <batch_system MACH="laramie" type="pbs">
     <directives>
       <directive default="/bin/bash" > -S {{ shell }}  </directive>

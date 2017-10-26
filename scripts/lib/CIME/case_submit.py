@@ -16,8 +16,11 @@ from CIME.test_status               import *
 logger = logging.getLogger(__name__)
 
 def _submit(case, job=None, resubmit=False, no_batch=False, skip_pnl=False, batch_args=None):
+    import resource
+    import sys
+    if "fram" in case.get_value("MACH"):
+        resource.setrlimit(resource.RLIMIT_STACK, [-1, -1])
     caseroot = case.get_value("CASEROOT")
-
     if job is None:
         if case.get_value("TEST"):
             job = "case.test"
