@@ -404,6 +404,8 @@ def restore_from_archive(case):
 ###############################################################################
 def case_st_archive(case, last_date=None, archive_incomplete_logs=True, copy_only=False, no_resubmit=False):
 ###############################################################################
+    import resource
+    import sys
     """
     Create archive object and perform short term archiving
     """
@@ -433,6 +435,8 @@ def case_st_archive(case, last_date=None, archive_incomplete_logs=True, copy_onl
     logger.info("st_archive completed")
 
     # resubmit case if appropriate
+    if "fram" in case.get_value("MACH"):
+        resource.setrlimit(resource.RLIMIT_STACK, [-1, -1])
     resubmit = case.get_value("RESUBMIT")
     if resubmit > 0 and not no_resubmit:
         logger.info("resubmitting from st_archive, resubmit={:d}".format(resubmit))

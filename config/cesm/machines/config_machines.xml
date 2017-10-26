@@ -1834,11 +1834,7 @@
       <executable></executable>
     </mpirun>
     <mpirun mpilib="default">
-      <executable>srun</executable>
-      <arguments>
-        <arg name="num_tasks">--ntasks=$TOTALPES</arg>
-        <arg name="kill-on-bad-exit">--kill-on-bad-exit</arg>
-      </arguments>
+      <executable>mpirun</executable>
     </mpirun>
     <module_system type="module">
       <init_path lang="perl">/cluster/software/lmod/lmod/init/perl</init_path>
@@ -1859,7 +1855,9 @@
       </modules>
     </module_system>
     <environment_variables>
-      <env name="OMP_STACKSIZE">64M</env>
+      <env name="KMP_STACKSIZE">64M</env>
+      <env name="I_MPI_EXTRA_FILESYSTEM_LIST">lustre</env>
+      <env name="I_MPI_EXTRA_FILESYSTEM">on</env>
     </environment_variables>
   </machine>
 
