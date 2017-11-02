@@ -8,13 +8,19 @@
 #
 #
 cmake_minimum_required(VERSION 2.7)
+INCLUDE(ExternalProject)
+
+PROJECT(ACME Fortran C)
 
 # May want to rename CIME_BUILD
 OPTION(ACME_BUILD "Flag to distinguish Cmake logic for CIME code build, as opposed to Unit Tests" ON)
 OPTION(HAVE_ACME "Flag for CIME to know that we are building ACME components" OFF)
 
+SET(CIME_EXTERNALS ${PROJECT_SOURCE_DIR}/src/externals CACHE FILEPATH "Location of externals directory. Default set by CIME.")
 SET(ACME_NETCDF_DIR "." CACHE PATH "Install location of NetCDF. Default set by CIME.")
 SET(ACME_HDF5_DIR "." CACHE PATH "Install location of HDF5. Default set by CIME.")
+SET(ACME_PIO_DIR "${PROJECT_SOURCE_DIR}/src/externals/pio1" CACHE PATH "Location of PIO to build. Default set by CIME")
+SET(GENF90_EXE "${PROJECT_SOURCE_DIR}/src/externals/genf90" CACHE STRING "Location of GEN90 executable. Degault set by CIME")
 SET(CIME_REL_DIR "." CACHE PATH "The relative path to CIME from the top level CMakeLists file. Default set by CIME.")
 IF(NOT EXISTS ${CIME_REL_DIR})
   MESSAGE(FATAL_ERROR "Error: Provided CIME_REL_DIR of '${CIME_REL_DIR}' does not exist.")
@@ -32,8 +38,6 @@ ELSE()
   SET(HAVE_ACME OFF)
 ENDIF()
 MESSAGE("----------------------------------------------\n")
-
-PROJECT(ACME Fortran C)
 
 #AGS: needed this or ran into error in  gptl. Need logic?
 ADD_DEFINITIONS(-DHAVE_MPI)
@@ -59,14 +63,17 @@ MESSAGE("-- Found hdf5.h at ${ACME_HDF5_INCLUDE_DIR}")
 
 # Require installed PIO under ACME_PIO_DIR
 IF (NOT DEFINED ACME_PIO_DIR)
-  MESSAGE(FATAL_ERROR "ACME_PIO_DIR must be defined.")
+  MESSAGE(FATAL_ERROR "ACME_PIO_DIR of ${ACME_PIO_DIR} does not exist.")
 ENDIF()
-IF (EXISTS ${ACME_PIO_DIR}/pio.mod)
-  INCLUDE_DIRECTORIES(${ACME_PIO_DIR})
-  MESSAGE("-- Found pio.mod")
-ELSE()
-  MESSAGE(FATAL_ERROR "Can't find pio.mod under ${ACME_PIO_DIR}")
-ENDIF()
+
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/pio_config.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/pio_config.cmake @ONLY)
+externalproject_add(PIO
+  PREFIX PIO
+  SOURCE_DIR ${ACME_PIO_DIR}
+  CMAKE_ARGS -C ${CMAKE_CURRENT_BINARY_DIR}/pio_config.cmake
+  INSTALL_COMMAND ""
+)
+SET(ACME_PIO_LIBRARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/PIO/src/PIO-build/pio)
 
 message("\nAGS hack for GNU:  -DCPRGNU") 
 ADD_DEFINITIONS(-DCPRGNU)
@@ -194,7 +201,6 @@ IF (HAVE_ACME)
   ADD_SUBDIRECTORY(${ATM_CAM_DIR})
 ENDIF()
 
-LINK_DIRECTORIES( ${ACME_NETCDF_LIBRARY_DIR} ${ACME_HDF5_LIBRARY_DIR} ${ACME_PIO_DIR})
 MESSAGE("\nAdding executables:")
 MESSAGE("   + acme_A.exe: A-Compset")
 ADD_EXECUTABLE(acme_A.exe ${DRIVER_DIR}/cesm_driver.F90)
@@ -229,13 +235,15 @@ INCLUDE_DIRECTORIES (${SHR_BINARY_DIR}
                      ${ATM_D_BINARY_DIR}
                      ${ROF_D_BINARY_DIR}
                      ${WAV_S_BINARY_DIR}
-                     ${ESP_S_BINARY_DIR})
+                     ${ESP_S_BINARY_DIR}
+                     ${ACME_PIO_LIBRARY_DIR}
+                     )
 
 MESSAGE("   + CompMod:")
 ADD_LIBRARY(compmod ${DRIVER_DIR}/cesm_comp_mod.F90)
 ADD_DEPENDENCIES(compmod dlnd docn dice sglc datm drof swav sesp driver)
 
-set (PIO_LIB ${ACME_PIO_DIR}/libpio.a)
+set (PIO_LIB ${ACME_PIO_LIBRARY_DIR}/libpio.a)
 set (NETCDF_LIB netcdff
                 netcdf
                 pnetcdf

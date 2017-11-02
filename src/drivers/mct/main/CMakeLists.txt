@@ -33,7 +33,9 @@ INCLUDE_DIRECTORIES (
      ${SEQ_BINARY_DIR}  #seq_comm_mct
      ${GPTL_BINARY_DIR} #Need perf_mod.mod
      ${ESMF_BINARY_DIR} #esmf.mod
-     ${MPI_Fortran_INCLUDE_PATH}) #mpif.h
+     ${MPI_Fortran_INCLUDE_PATH} #mpif.h
+     ${ACME_PIO_LIBRARY_DIR} #pio.mod
+)
 
 ADD_LIBRARY (driver ${DRIVER_SOURCE})
 ADD_DEPENDENCIES(driver  shr gptl seq esmf)

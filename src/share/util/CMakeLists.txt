@@ -117,7 +117,7 @@ ELSE()
                        ${GPTL_BINARY_DIR}  #Need perf_mod.mod
                        ${ESMF_BINARY_DIR}
                        ${SEQ_BINARY_DIR}  #seq_flds_mod
-                       ${ACME_PIO_DIR} #Need pio.mod
+                       ${ACME_PIO_LIBRARY_DIR} #Need pio.mod
                        ${MPI_Fortran_INCLUDE_PATH})
   ADD_LIBRARY (shr ${SHR_SOURCE})
   ADD_DEPENDENCIES(shr  mct mpeu gptl esmf seq)

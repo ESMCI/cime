@@ -5,6 +5,7 @@ INCLUDE_DIRECTORIES (
           ${ESMF_BINARY_DIR}
           ${GPTL_BINARY_DIR}
           ${SEQ_BINARY_DIR}
+          ${ACME_PIO_LIBRARY_DIR}
 )
 ADD_LIBRARY (datm ${DATM_SOURCE})
 ADD_DEPENDENCIES(datm  shrsys shr seq esmf gptl)

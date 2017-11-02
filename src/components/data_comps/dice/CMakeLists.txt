@@ -6,6 +6,7 @@ INCLUDE_DIRECTORIES (
           ${ESMF_BINARY_DIR}
           ${GPTL_BINARY_DIR}
           ${SEQ_BINARY_DIR}
+          ${ACME_PIO_LIBRARY_DIR}
 )
 ADD_LIBRARY (dice ${DICE_SOURCE})
 ADD_DEPENDENCIES(dice  shrsys shr seq esmf gptl)
