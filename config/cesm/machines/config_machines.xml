@@ -1818,7 +1818,7 @@
     <COMPILERS>intel</COMPILERS>
     <MPILIBS>impi</MPILIBS>
     <CIME_OUTPUT_ROOT>/cluster/work/users/$USER/noresm</CIME_OUTPUT_ROOT>
-    <DIN_LOC_ROOT>/cluster/nird/projects/noresm/inputdata</DIN_LOC_ROOT>
+    <DIN_LOC_ROOT>/cluster/shared/noresm/inputdata</DIN_LOC_ROOT>
     <DIN_LOC_ROOT_CLMFORC>UNSET</DIN_LOC_ROOT_CLMFORC>
     <DOUT_S_ROOT>/cluster/work/users/$USER/archive/$CASE</DOUT_S_ROOT>
     <!--DOUT_L_MSROOT>UNSET</DOUT_L_MSROOT-->
