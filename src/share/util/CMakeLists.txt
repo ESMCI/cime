@@ -101,13 +101,14 @@ ELSE()
   # infnan required  -DCPRGNU to compile on gnu)
   INCLUDE_DIRECTORIES (${ACME_SHR_DIR}) #shr_assert.h
   ADD_LIBRARY (shrsys ${SHR_SYS_SOURCE})
+  ADD_DEPENDENCIES(shrsys  PIO)
 
   #Later, build these files, teasing out circular directory dependencies
   FILE(GLOB SHR_CAL_SOURCE
           shr_cal_mod.F90 # need esmf timers
           mct_mod.F90) # need m_attrvec
   ADD_LIBRARY (shrcal ${SHR_CAL_SOURCE})
-  ADD_DEPENDENCIES(shrcal esmf mct)
+  ADD_DEPENDENCIES(shrcal  esmf mct)
 
   #Then build the rest of the files, which have dependencies
   FILE(GLOB SHR_SOURCE  *F90 *c)
@@ -121,5 +122,6 @@ ELSE()
                        ${MPI_Fortran_INCLUDE_PATH})
   ADD_LIBRARY (shr ${SHR_SOURCE})
   ADD_DEPENDENCIES(shr  mct mpeu gptl esmf seq)
+  ADD_DEPENDENCIES(shr  PIO)
 
 ENDIF()
