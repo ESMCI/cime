@@ -93,7 +93,8 @@ ELSE()
                            shr_file_mod.F90 shr_string_mod.F90 shr_timer_mod.F90
                            shr_const_mod.F90 shr_orb_mod.F90
                            shr_nl_mod.F90 shr_strconvert_mod.F90
-                           shr_wv_sat_mod.F90
+                           shr_wv_sat_mod.F90 
+                           shr_abort_mod.F90 shr_ncread_mod.F90 shr_map_mod.F90
                            shr_infnan_mod.F90 shr_frz_mod.F90 shr_assert_mod.F90)
                            #${CMAKE_CURRENT_BINARY_DIR}/shr_infnan_mod.F90
                            #${CMAKE_CURRENT_BINARY_DIR}/shr_assert_mod.F90)
@@ -106,6 +107,8 @@ ELSE()
   #Later, build these files, teasing out circular directory dependencies
   FILE(GLOB SHR_CAL_SOURCE
           shr_cal_mod.F90 # need esmf timers
+          shr_mct_mod.F90
+          shr_pcdf_mod.F90
           mct_mod.F90) # need m_attrvec
   ADD_LIBRARY (shrcal ${SHR_CAL_SOURCE})
   ADD_DEPENDENCIES(shrcal  esmf mct)
@@ -113,15 +116,17 @@ ELSE()
   #Then build the rest of the files, which have dependencies
   FILE(GLOB SHR_SOURCE  *F90 *c)
   LIST(REMOVE_ITEM SHR_SOURCE ${SHR_SYS_SOURCE} ${SHR_CAL_SOURCE})
+message("AGS DEBUG SHR_SRC ${SHR_SOURCE}")
   INCLUDE_DIRECTORIES (${MCT_BINARY_DIR}
                        ${MPEU_BINARY_DIR}
                        ${GPTL_BINARY_DIR}  #Need perf_mod.mod
-                       ${ESMF_BINARY_DIR}
+                       ${ESMF_BINARY_DIR} # esmf.mod
                        ${SEQ_BINARY_DIR}  #seq_flds_mod
+                       ${STREAMS_BINARY_DIR}  #shr_dmodel_mod
                        ${ACME_PIO_LIBRARY_DIR} #Need pio.mod
                        ${MPI_Fortran_INCLUDE_PATH})
   ADD_LIBRARY (shr ${SHR_SOURCE})
-  ADD_DEPENDENCIES(shr  mct mpeu gptl esmf seq)
+  ADD_DEPENDENCIES(shr  mct mpeu gptl esmf seq streams)
   ADD_DEPENDENCIES(shr  PIO)
 
 ENDIF()

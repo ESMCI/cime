@@ -24,7 +24,7 @@ FILE(GLOB DRIVER_SOURCE  *F90)
 #  ccsm_comp_mod depends on which dycores are built (i.e. clm vs dlnd)
 #  The two ccsm* files are compiled for each executable which link
 #  against the precompiled driver library.
-FILE(GLOB MAIN_SOURCE  cesm_*F90)
+FILE(GLOB MAIN_SOURCE  cime_*F90)
 LIST(REMOVE_ITEM DRIVER_SOURCE ${MAIN_SOURCE})
 
 INCLUDE_DIRECTORIES (
