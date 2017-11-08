@@ -116,7 +116,6 @@ ELSE()
   #Then build the rest of the files, which have dependencies
   FILE(GLOB SHR_SOURCE  *F90 *c)
   LIST(REMOVE_ITEM SHR_SOURCE ${SHR_SYS_SOURCE} ${SHR_CAL_SOURCE})
-message("AGS DEBUG SHR_SRC ${SHR_SOURCE}")
   INCLUDE_DIRECTORIES (${MCT_BINARY_DIR}
                        ${MPEU_BINARY_DIR}
                        ${GPTL_BINARY_DIR}  #Need perf_mod.mod
